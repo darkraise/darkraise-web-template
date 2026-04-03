@@ -1,16 +1,47 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
-import { Home, Settings } from "lucide-react"
+import {
+  Home,
+  BarChart3,
+  Package,
+  Tags,
+  ShoppingCart,
+  Users,
+  Inbox,
+  Settings,
+} from "lucide-react"
 import { SidebarLayout } from "@/core/layout"
 import { useAuthStore } from "@/features/auth"
 import type { NavGroup } from "@/core/layout/types"
 
 const nav: NavGroup[] = [
   {
-    label: "Main",
+    label: "Overview",
     items: [
       { label: "Dashboard", href: "/", icon: Home },
-      { label: "Settings", href: "/settings", icon: Settings },
+      { label: "Analytics", href: "/analytics", icon: BarChart3 },
     ],
+  },
+  {
+    label: "Catalog",
+    items: [
+      { label: "Products", href: "/products", icon: Package },
+      { label: "Categories", href: "/categories", icon: Tags },
+    ],
+  },
+  {
+    label: "Sales",
+    items: [
+      { label: "Orders", href: "/orders", icon: ShoppingCart },
+      { label: "Customers", href: "/customers", icon: Users },
+    ],
+  },
+  {
+    label: "Messaging",
+    items: [{ label: "Inbox", href: "/inbox", icon: Inbox }],
+  },
+  {
+    label: "System",
+    items: [{ label: "Settings", href: "/settings", icon: Settings }],
   },
 ]
 
