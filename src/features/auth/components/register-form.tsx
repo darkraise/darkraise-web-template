@@ -53,8 +53,8 @@ export function RegisterForm() {
               />
               {field.state.meta.isTouched &&
                 field.state.meta.errors.map((err) => (
-                  <p key={err.message} className="text-xs text-destructive">
-                    {err.message}
+                  <p key={err?.message} className="text-xs text-destructive">
+                    {err?.message}
                   </p>
                 ))}
             </div>
@@ -76,8 +76,8 @@ export function RegisterForm() {
               />
               {field.state.meta.isTouched &&
                 field.state.meta.errors.map((err) => (
-                  <p key={err.message} className="text-xs text-destructive">
-                    {err.message}
+                  <p key={err?.message} className="text-xs text-destructive">
+                    {err?.message}
                   </p>
                 ))}
             </div>
@@ -99,8 +99,8 @@ export function RegisterForm() {
               />
               {field.state.meta.isTouched &&
                 field.state.meta.errors.map((err) => (
-                  <p key={err.message} className="text-xs text-destructive">
-                    {err.message}
+                  <p key={err?.message} className="text-xs text-destructive">
+                    {err?.message}
                   </p>
                 ))}
             </div>

@@ -1,10 +1,14 @@
-import type { TooltipProps } from "recharts"
+interface ChartTooltipProps {
+  active?: boolean
+  payload?: Array<{
+    name?: string
+    value?: number
+    color?: string
+  }>
+  label?: string
+}
 
-export function ChartTooltip({
-  active,
-  payload,
-  label,
-}: TooltipProps<number, string>) {
+export function ChartTooltip({ active, payload, label }: ChartTooltipProps) {
   if (!active || !payload?.length) return null
 
   return (
