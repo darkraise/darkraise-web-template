@@ -1,3 +1,10 @@
+@import "../core/theme/primitives.css";
+@import "../core/theme/themes/default.css";
+@import "../core/theme/themes/emerald.css";
+@import "../core/theme/themes/rose.css";
+@import "../core/theme/themes/amber.css";
+@import "../core/theme/themes/violet.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
