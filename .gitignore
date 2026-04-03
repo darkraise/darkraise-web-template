@@ -1,0 +1,14 @@
+node_modules
+dist
+dist-ssr
+*.local
+.env
+.env.*
+!.env.example
+*.tsbuildinfo
+coverage
+test-results
+playwright-report
+storybook-static
+src/routeTree.gen.ts
+.superpowers
