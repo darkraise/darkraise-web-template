@@ -1,0 +1,138 @@
+import { useState } from "react"
+import { Link } from "@tanstack/react-router"
+import { PanelLeftClose, PanelLeft } from "lucide-react"
+import { cn } from "@/core/lib/utils"
+import { Button } from "@/core/components/ui/button"
+import { ScrollArea } from "@/core/components/ui/scroll-area"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/core/components/ui/tooltip"
+import { ThemeSwitcher } from "@/core/theme"
+import { SearchCommand } from "./search-command"
+import { UserMenu } from "./user-menu"
+import { NotificationBell } from "./notification-bell"
+import { MobileDrawer } from "./mobile-drawer"
+import type { LayoutProps } from "./types"
+
+export function SidebarLayout({ children, nav, headerSlot }: LayoutProps) {
+  const [collapsed, setCollapsed] = useState(false)
+
+  const flatNavItems = nav.flatMap((g) =>
+    g.items.map((i) => ({ label: i.label, href: i.href })),
+  )
+
+  return (
+    <TooltipProvider delayDuration={0}>
+      <div className="flex h-screen overflow-hidden">
+        {/* Sidebar */}
+        <aside
+          className={cn(
+            "hidden flex-col border-r border-border-default bg-surface-sidebar text-gray-300 transition-all duration-300 md:flex",
+            collapsed ? "w-16" : "w-64",
+          )}
+        >
+          {/* Logo */}
+          <div
+            className={cn(
+              "flex h-14 items-center border-b border-white/10 px-4",
+              collapsed && "justify-center px-0",
+            )}
+          >
+            {collapsed ? (
+              <div className="h-8 w-8 rounded-md bg-primary" />
+            ) : (
+              <span className="text-lg font-medium text-white">App</span>
+            )}
+          </div>
+
+          {/* Nav */}
+          <ScrollArea className="flex-1 py-4">
+            <nav className="flex flex-col gap-1 px-2">
+              {nav.map((group, gi) => (
+                <div key={gi} className={gi > 0 ? "mt-4" : ""}>
+                  {group.label && !collapsed && (
+                    <p className="mb-1 px-3 text-xs font-medium uppercase tracking-wider text-gray-500">
+                      {group.label}
+                    </p>
+                  )}
+                  {group.items.map((item) => {
+                    const linkContent = (
+                      <Link
+                        key={item.href}
+                        to={item.href}
+                        className={cn(
+                          "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors duration-150 hover:bg-white/10 hover:text-white [&.active]:bg-white/10 [&.active]:text-white",
+                          collapsed && "justify-center px-0",
+                        )}
+                        activeProps={{ className: "active" }}
+                      >
+                        {item.icon && (
+                          <item.icon className="h-4 w-4 shrink-0" />
+                        )}
+                        {!collapsed && <span>{item.label}</span>}
+                        {!collapsed && item.badge && (
+                          <span className="ml-auto rounded-full bg-primary/20 px-2 py-0.5 text-xs text-primary">
+                            {item.badge}
+                          </span>
+                        )}
+                      </Link>
+                    )
+
+                    if (collapsed) {
+                      return (
+                        <Tooltip key={item.href}>
+                          <TooltipTrigger asChild>{linkContent}</TooltipTrigger>
+                          <TooltipContent side="right">
+                            {item.label}
+                          </TooltipContent>
+                        </Tooltip>
+                      )
+                    }
+                    return linkContent
+                  })}
+                </div>
+              ))}
+            </nav>
+          </ScrollArea>
+
+          {/* Collapse toggle */}
+          <div className="border-t border-white/10 p-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="w-full text-gray-400 hover:bg-white/10 hover:text-white"
+              onClick={() => setCollapsed(!collapsed)}
+            >
+              {collapsed ? (
+                <PanelLeft className="h-4 w-4" />
+              ) : (
+                <PanelLeftClose className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
+        </aside>
+
+        {/* Main area */}
+        <div className="flex flex-1 flex-col overflow-hidden">
+          {/* Global header */}
+          <header className="flex h-14 items-center gap-2 border-b border-border bg-surface-header px-4">
+            <MobileDrawer nav={nav} />
+            <SearchCommand navItems={flatNavItems} />
+            <div className="ml-auto flex items-center gap-1">
+              {headerSlot}
+              <ThemeSwitcher />
+              <NotificationBell />
+              <UserMenu />
+            </div>
+          </header>
+
+          {/* Content */}
+          <main className="flex-1 overflow-y-auto p-6">{children}</main>
+        </div>
+      </div>
+    </TooltipProvider>
+  )
+}
