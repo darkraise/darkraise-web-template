@@ -41,17 +41,17 @@ function generateGradient(
 ): string {
   const accent = accentColors[accentColor]
   const index = ACCENT_COLORS.indexOf(accentColor)
-  const complementIndex = (index + 5) % ACCENT_COLORS.length
-  const secondIndex = (index + 8) % ACCENT_COLORS.length
-  const complementName = ACCENT_COLORS[complementIndex] ?? accentColor
-  const secondName = ACCENT_COLORS[secondIndex] ?? accentColor
-  const complement = accentColors[complementName]
-  const second = accentColors[secondName]
+  const nextIndex = (index + 2) % ACCENT_COLORS.length
+  const thirdIndex = (index + 4) % ACCENT_COLORS.length
+  const nextName = ACCENT_COLORS[nextIndex] ?? accentColor
+  const thirdName = ACCENT_COLORS[thirdIndex] ?? accentColor
+  const next = accentColors[nextName]
+  const third = accentColors[thirdName]
 
   if (mode === "light") {
-    return `linear-gradient(135deg, hsl(${accent[300]} / 0.8) 0%, hsl(${complement[400]} / 0.7) 50%, hsl(${second[300]} / 0.6) 100%)`
+    return `linear-gradient(135deg, hsl(${accent[300]} / 0.8) 0%, hsl(${next[400]} / 0.7) 50%, hsl(${third[300]} / 0.6) 100%)`
   }
-  return `linear-gradient(135deg, hsl(${accent[700]} / 0.8) 0%, hsl(${complement[800]} / 0.7) 50%, hsl(${second[800]} / 0.6) 100%)`
+  return `linear-gradient(135deg, hsl(${accent[700]} / 0.8) 0%, hsl(${next[800]} / 0.7) 50%, hsl(${third[800]} / 0.6) 100%)`
 }
 
 export function generateTokens(
