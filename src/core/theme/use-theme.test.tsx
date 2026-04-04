@@ -44,33 +44,71 @@ describe("useTheme", () => {
     vi.stubGlobal("localStorage", storageMock)
     storageMock.clear()
     mockMatchMedia()
-    document.documentElement.removeAttribute("data-theme")
     document.documentElement.removeAttribute("data-mode")
+    document.documentElement.style.cssText = ""
   })
 
-  it("returns default theme and system mode", () => {
+  it("returns default axis values", () => {
     const { result } = renderHook(() => useTheme(), { wrapper })
-    expect(result.current.theme).toBe("default")
+    expect(result.current.accentColor).toBe("blue")
+    expect(result.current.surfaceColor).toBe("slate")
+    expect(result.current.surfaceStyle).toBe("default")
     expect(result.current.mode).toBe("system")
   })
 
-  it("setTheme updates theme attribute", () => {
+  it("setAccentColor updates accent and persists to localStorage", () => {
     const { result } = renderHook(() => useTheme(), { wrapper })
-    act(() => result.current.setTheme("emerald"))
-    expect(result.current.theme).toBe("emerald")
-    expect(document.documentElement.getAttribute("data-theme")).toBe("emerald")
+    act(() => result.current.setAccentColor("rose"))
+    expect(result.current.accentColor).toBe("rose")
+    expect(localStorage.getItem("theme-accent")).toBe("rose")
   })
 
-  it("setMode updates mode attribute", () => {
+  it("setSurfaceColor updates surface and persists to localStorage", () => {
+    const { result } = renderHook(() => useTheme(), { wrapper })
+    act(() => result.current.setSurfaceColor("zinc"))
+    expect(result.current.surfaceColor).toBe("zinc")
+    expect(localStorage.getItem("theme-surface")).toBe("zinc")
+  })
+
+  it("setSurfaceStyle updates style and persists to localStorage", () => {
+    const { result } = renderHook(() => useTheme(), { wrapper })
+    act(() => result.current.setSurfaceStyle("elevated"))
+    expect(result.current.surfaceStyle).toBe("elevated")
+    expect(localStorage.getItem("theme-style")).toBe("elevated")
+  })
+
+  it("setMode updates mode and applies data-mode attribute", () => {
     const { result } = renderHook(() => useTheme(), { wrapper })
     act(() => result.current.setMode("dark"))
     expect(result.current.mode).toBe("dark")
+    expect(result.current.resolvedMode).toBe("dark")
     expect(document.documentElement.getAttribute("data-mode")).toBe("dark")
   })
 
-  it("persists to localStorage", () => {
+  it("applies CSS variables to document.documentElement.style", () => {
+    renderHook(() => useTheme(), { wrapper })
+    const style = document.documentElement.style
+    expect(style.getPropertyValue("--primary")).toBeTruthy()
+    expect(style.getPropertyValue("--background")).toBeTruthy()
+    expect(style.getPropertyValue("--radius")).toBeTruthy()
+  })
+
+  it("throws when used outside ThemeProvider", () => {
+    expect(() => {
+      renderHook(() => useTheme())
+    }).toThrow("useTheme must be used within a ThemeProvider")
+  })
+
+  it("reads persisted values from localStorage on mount", () => {
+    storageMock.setItem("theme-accent", "emerald")
+    storageMock.setItem("theme-surface", "neutral")
+    storageMock.setItem("theme-style", "flat")
+    storageMock.setItem("mode", "dark")
+
     const { result } = renderHook(() => useTheme(), { wrapper })
-    act(() => result.current.setTheme("rose"))
-    expect(localStorage.getItem("theme")).toBe("rose")
+    expect(result.current.accentColor).toBe("emerald")
+    expect(result.current.surfaceColor).toBe("neutral")
+    expect(result.current.surfaceStyle).toBe("flat")
+    expect(result.current.mode).toBe("dark")
   })
 })
