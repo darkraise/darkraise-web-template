@@ -25,21 +25,14 @@ export function AreaChart({
   height = 300,
   stacked = false,
 }: AreaChartProps) {
-  const colors = useChartColors()
+  const { series, gridStroke, tickFill } = useChartColors()
 
   return (
     <ResponsiveContainer width="100%" height={height}>
       <RechartsAreaChart data={data}>
-        <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-        <XAxis
-          dataKey={xKey}
-          className="text-xs"
-          tick={{ fill: "hsl(var(--muted-foreground))" }}
-        />
-        <YAxis
-          className="text-xs"
-          tick={{ fill: "hsl(var(--muted-foreground))" }}
-        />
+        <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
+        <XAxis dataKey={xKey} className="text-xs" tick={{ fill: tickFill }} />
+        <YAxis className="text-xs" tick={{ fill: tickFill }} />
         <Tooltip content={<ChartTooltip />} />
         {yKeys.map((key, i) => (
           <Area
@@ -47,8 +40,8 @@ export function AreaChart({
             type="monotone"
             dataKey={key}
             stackId={stacked ? "stack" : undefined}
-            stroke={colors[i % colors.length]}
-            fill={colors[i % colors.length]}
+            stroke={series[i % series.length]}
+            fill={series[i % series.length]}
             fillOpacity={0.1}
           />
         ))}

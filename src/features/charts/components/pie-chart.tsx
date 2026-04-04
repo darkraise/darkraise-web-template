@@ -20,7 +20,7 @@ export function PieChart({
   height = 300,
   innerRadius = 0,
 }: PieChartProps) {
-  const colors = useChartColors()
+  const { series } = useChartColors()
 
   return (
     <ResponsiveContainer width="100%" height={height}>
@@ -35,7 +35,7 @@ export function PieChart({
           nameKey="name"
         >
           {data.map((_, i) => (
-            <Cell key={i} fill={colors[i % colors.length]} />
+            <Cell key={i} fill={series[i % series.length]} />
           ))}
         </Pie>
         <Tooltip content={<ChartTooltip />} />

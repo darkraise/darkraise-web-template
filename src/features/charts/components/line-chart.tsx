@@ -18,28 +18,21 @@ interface LineChartProps {
 }
 
 export function LineChart({ data, xKey, yKeys, height = 300 }: LineChartProps) {
-  const colors = useChartColors()
+  const { series, gridStroke, tickFill } = useChartColors()
 
   return (
     <ResponsiveContainer width="100%" height={height}>
       <RechartsLineChart data={data}>
-        <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-        <XAxis
-          dataKey={xKey}
-          className="text-xs"
-          tick={{ fill: "hsl(var(--muted-foreground))" }}
-        />
-        <YAxis
-          className="text-xs"
-          tick={{ fill: "hsl(var(--muted-foreground))" }}
-        />
+        <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
+        <XAxis dataKey={xKey} className="text-xs" tick={{ fill: tickFill }} />
+        <YAxis className="text-xs" tick={{ fill: tickFill }} />
         <Tooltip content={<ChartTooltip />} />
         {yKeys.map((key, i) => (
           <Line
             key={key}
             type="monotone"
             dataKey={key}
-            stroke={colors[i % colors.length]}
+            stroke={series[i % series.length]}
             strokeWidth={2}
             dot={false}
           />

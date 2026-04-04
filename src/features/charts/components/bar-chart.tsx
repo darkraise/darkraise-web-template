@@ -25,28 +25,21 @@ export function BarChart({
   height = 300,
   stacked = false,
 }: BarChartProps) {
-  const colors = useChartColors()
+  const { series, gridStroke, tickFill } = useChartColors()
 
   return (
     <ResponsiveContainer width="100%" height={height}>
       <RechartsBarChart data={data}>
-        <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-        <XAxis
-          dataKey={xKey}
-          className="text-xs"
-          tick={{ fill: "hsl(var(--muted-foreground))" }}
-        />
-        <YAxis
-          className="text-xs"
-          tick={{ fill: "hsl(var(--muted-foreground))" }}
-        />
+        <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
+        <XAxis dataKey={xKey} className="text-xs" tick={{ fill: tickFill }} />
+        <YAxis className="text-xs" tick={{ fill: tickFill }} />
         <Tooltip content={<ChartTooltip />} />
         {yKeys.map((key, i) => (
           <Bar
             key={key}
             dataKey={key}
             stackId={stacked ? "stack" : undefined}
-            fill={colors[i % colors.length]}
+            fill={series[i % series.length]}
             radius={[4, 4, 0, 0]}
           />
         ))}
