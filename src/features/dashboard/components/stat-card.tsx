@@ -5,7 +5,7 @@ import type { StatCardProps } from "../types"
 
 export function StatCard({ label, value, icon: Icon, trend }: StatCardProps) {
   return (
-    <Card>
+    <Card className="transition-all duration-200 hover:-translate-y-px hover:shadow-md">
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
           <p className="text-sm text-muted-foreground">{label}</p>

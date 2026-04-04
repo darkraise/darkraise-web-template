@@ -12,7 +12,7 @@ export function KPICard({
   const range = max - min || 1
 
   return (
-    <Card>
+    <Card className="transition-all duration-200 hover:-translate-y-px hover:shadow-md">
       <CardContent className="p-6">
         <p className="text-sm text-muted-foreground">{label}</p>
         <div className="mt-2 flex items-end justify-between">
