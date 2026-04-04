@@ -79,7 +79,7 @@ const glassmorphism: SurfaceStyleRecipe = {
     borderDefault: (scale, mode) => lightDark(scale, mode, 200, 700),
   },
   overrides: {
-    radius: "0.75rem",
+    radius: "0.5rem",
     shadowCard: "0 1px 3px 0 rgb(0 0 0 / 0.1)",
     shadowDropdown:
       "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
