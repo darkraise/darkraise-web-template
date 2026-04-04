@@ -9,10 +9,23 @@ import { Label } from "@/core/components/ui/label"
 import { Separator } from "@/core/components/ui/separator"
 import { cn } from "@/core/lib/utils"
 import { useTheme } from "./use-theme"
-import { ACCENT_COLORS, SURFACE_STYLES } from "./types"
-import type { Mode, AccentColor, BackgroundStyle, SurfaceStyle } from "./types"
+import {
+  ACCENT_COLORS,
+  SURFACE_STYLES,
+  FONT_FAMILIES,
+  DENSITIES,
+} from "./types"
+import type {
+  Mode,
+  AccentColor,
+  BackgroundStyle,
+  SurfaceStyle,
+  FontFamily,
+  Density,
+} from "./types"
 import { accentColors } from "./palettes/accent-colors"
 import { surfaceStyles } from "./styles/surface-styles"
+import { fontFamilies } from "./palettes/font-families"
 
 const modeOptions: { value: Mode; icon: typeof Sun; label: string }[] = [
   { value: "light", icon: Sun, label: "Light" },
@@ -25,10 +38,14 @@ export function ThemeSwitcher() {
     accentColor,
     surfaceStyle,
     backgroundStyle,
+    fontFamily,
+    density,
     mode,
     setAccentColor,
     setSurfaceStyle,
     setBackgroundStyle,
+    setFontFamily,
+    setDensity,
     setMode,
   } = useTheme()
 
@@ -145,6 +162,58 @@ export function ThemeSwitcher() {
                   </button>
                 )
               })}
+            </div>
+          </div>
+
+          <Separator />
+
+          <div>
+            <Label className="text-xs font-medium text-muted-foreground">
+              Font
+            </Label>
+            <div className="mt-1.5 grid grid-cols-1 gap-1">
+              {FONT_FAMILIES.map((font: FontFamily) => {
+                const def = fontFamilies[font]
+                return (
+                  <button
+                    key={font}
+                    type="button"
+                    className={cn(
+                      "rounded-md px-2 py-1.5 text-left text-xs transition-colors",
+                      fontFamily === font
+                        ? "bg-primary text-primary-foreground"
+                        : "hover:bg-accent hover:text-accent-foreground",
+                    )}
+                    onClick={() => setFontFamily(font)}
+                  >
+                    <span className="font-medium">{def.label}</span>
+                    <span className="ml-2 text-[10px] opacity-70">
+                      {def.description}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          <Separator />
+
+          <div>
+            <Label className="text-xs font-medium text-muted-foreground">
+              Density
+            </Label>
+            <div className="mt-1.5 flex gap-1">
+              {DENSITIES.map((d: Density) => (
+                <Button
+                  key={d}
+                  variant={density === d ? "default" : "outline"}
+                  size="sm"
+                  className="flex-1 capitalize"
+                  onClick={() => setDensity(d)}
+                >
+                  {d}
+                </Button>
+              ))}
             </div>
           </div>
         </div>

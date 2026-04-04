@@ -3,17 +3,22 @@ import type {
   AccentColor,
   BackgroundStyle,
   SurfaceStyle,
+  FontFamily,
+  Density,
   Mode,
   ResolvedMode,
   ThemeContextValue,
 } from "./types"
 import { generateTokens } from "./engine/generate-tokens"
+import { loadFont, applyFontFamily } from "./engine/font-loader"
 
 export const ThemeContext = createContext<ThemeContextValue | null>(null)
 
 const LS_ACCENT = "theme-accent"
 const LS_STYLE = "theme-style"
 const LS_BG_STYLE = "theme-bg-style"
+const LS_FONT = "theme-font"
+const LS_DENSITY = "theme-density"
 const LS_MODE = "mode"
 
 function getSystemMode(): ResolvedMode {
@@ -52,6 +57,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     },
   )
 
+  const [fontFamily, setFontFamilyState] = useState<FontFamily>(() => {
+    const stored = localStorage.getItem(LS_FONT)
+    return (stored as FontFamily) || "default"
+  })
+
+  const [density, setDensityState] = useState<Density>(() => {
+    const stored = localStorage.getItem(LS_DENSITY)
+    return (stored as Density) || "comfortable"
+  })
+
   const [mode, setModeState] = useState<Mode>(() => {
     const stored = localStorage.getItem(LS_MODE)
     return (stored as Mode) || "system"
@@ -66,13 +81,19 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       accent: AccentColor,
       style: SurfaceStyle,
       bgStyle: BackgroundStyle,
+      font: FontFamily,
+      dens: Density,
       resolved: ResolvedMode,
     ) => {
       document.documentElement.setAttribute("data-mode", resolved)
+      loadFont(font)
+      applyFontFamily(font)
       const tokens = generateTokens({
         accentColor: accent,
         surfaceStyle: style,
         backgroundStyle: bgStyle,
+        fontFamily: font,
+        density: dens,
         mode: resolved,
       })
       applyTokens(tokens)
@@ -84,27 +105,108 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     (color: AccentColor) => {
       setAccentColorState(color)
       localStorage.setItem(LS_ACCENT, color)
-      applyTheme(color, surfaceStyle, backgroundStyle, resolvedMode)
+      applyTheme(
+        color,
+        surfaceStyle,
+        backgroundStyle,
+        fontFamily,
+        density,
+        resolvedMode,
+      )
     },
-    [applyTheme, surfaceStyle, backgroundStyle, resolvedMode],
+    [
+      applyTheme,
+      surfaceStyle,
+      backgroundStyle,
+      fontFamily,
+      density,
+      resolvedMode,
+    ],
   )
 
   const setSurfaceStyle = useCallback(
     (style: SurfaceStyle) => {
       setSurfaceStyleState(style)
       localStorage.setItem(LS_STYLE, style)
-      applyTheme(accentColor, style, backgroundStyle, resolvedMode)
+      applyTheme(
+        accentColor,
+        style,
+        backgroundStyle,
+        fontFamily,
+        density,
+        resolvedMode,
+      )
     },
-    [applyTheme, accentColor, backgroundStyle, resolvedMode],
+    [
+      applyTheme,
+      accentColor,
+      backgroundStyle,
+      fontFamily,
+      density,
+      resolvedMode,
+    ],
   )
 
   const setBackgroundStyle = useCallback(
     (bgStyle: BackgroundStyle) => {
       setBackgroundStyleState(bgStyle)
       localStorage.setItem(LS_BG_STYLE, bgStyle)
-      applyTheme(accentColor, surfaceStyle, bgStyle, resolvedMode)
+      applyTheme(
+        accentColor,
+        surfaceStyle,
+        bgStyle,
+        fontFamily,
+        density,
+        resolvedMode,
+      )
     },
-    [applyTheme, accentColor, surfaceStyle, resolvedMode],
+    [applyTheme, accentColor, surfaceStyle, fontFamily, density, resolvedMode],
+  )
+
+  const setFontFamily = useCallback(
+    (font: FontFamily) => {
+      setFontFamilyState(font)
+      localStorage.setItem(LS_FONT, font)
+      applyTheme(
+        accentColor,
+        surfaceStyle,
+        backgroundStyle,
+        font,
+        density,
+        resolvedMode,
+      )
+    },
+    [
+      applyTheme,
+      accentColor,
+      surfaceStyle,
+      backgroundStyle,
+      density,
+      resolvedMode,
+    ],
+  )
+
+  const setDensity = useCallback(
+    (dens: Density) => {
+      setDensityState(dens)
+      localStorage.setItem(LS_DENSITY, dens)
+      applyTheme(
+        accentColor,
+        surfaceStyle,
+        backgroundStyle,
+        fontFamily,
+        dens,
+        resolvedMode,
+      )
+    },
+    [
+      applyTheme,
+      accentColor,
+      surfaceStyle,
+      backgroundStyle,
+      fontFamily,
+      resolvedMode,
+    ],
   )
 
   const setMode = useCallback(
@@ -113,14 +215,43 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       setModeState(m)
       setResolvedMode(resolved)
       localStorage.setItem(LS_MODE, m)
-      applyTheme(accentColor, surfaceStyle, backgroundStyle, resolved)
+      applyTheme(
+        accentColor,
+        surfaceStyle,
+        backgroundStyle,
+        fontFamily,
+        density,
+        resolved,
+      )
     },
-    [applyTheme, accentColor, surfaceStyle, backgroundStyle],
+    [
+      applyTheme,
+      accentColor,
+      surfaceStyle,
+      backgroundStyle,
+      fontFamily,
+      density,
+    ],
   )
 
   useEffect(() => {
-    applyTheme(accentColor, surfaceStyle, backgroundStyle, resolvedMode)
-  }, [applyTheme, accentColor, surfaceStyle, backgroundStyle, resolvedMode])
+    applyTheme(
+      accentColor,
+      surfaceStyle,
+      backgroundStyle,
+      fontFamily,
+      density,
+      resolvedMode,
+    )
+  }, [
+    applyTheme,
+    accentColor,
+    surfaceStyle,
+    backgroundStyle,
+    fontFamily,
+    density,
+    resolvedMode,
+  ])
 
   useEffect(() => {
     if (mode !== "system") return
@@ -128,33 +259,56 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const handler = () => {
       const resolved = getSystemMode()
       setResolvedMode(resolved)
-      applyTheme(accentColor, surfaceStyle, backgroundStyle, resolved)
+      applyTheme(
+        accentColor,
+        surfaceStyle,
+        backgroundStyle,
+        fontFamily,
+        density,
+        resolved,
+      )
     }
     mq.addEventListener("change", handler)
     return () => mq.removeEventListener("change", handler)
-  }, [mode, accentColor, surfaceStyle, backgroundStyle, applyTheme])
+  }, [
+    mode,
+    accentColor,
+    surfaceStyle,
+    backgroundStyle,
+    fontFamily,
+    density,
+    applyTheme,
+  ])
 
   const value = useMemo<ThemeContextValue>(
     () => ({
       accentColor,
       surfaceStyle,
       backgroundStyle,
+      fontFamily,
+      density,
       mode,
       resolvedMode,
       setAccentColor,
       setSurfaceStyle,
       setBackgroundStyle,
+      setFontFamily,
+      setDensity,
       setMode,
     }),
     [
       accentColor,
       surfaceStyle,
       backgroundStyle,
+      fontFamily,
+      density,
       mode,
       resolvedMode,
       setAccentColor,
       setSurfaceStyle,
       setBackgroundStyle,
+      setFontFamily,
+      setDensity,
       setMode,
     ],
   )

@@ -8,8 +8,11 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Inter", ...defaultTheme.fontFamily.sans],
-        mono: ["JetBrains Mono", ...defaultTheme.fontFamily.mono],
+        sans: ["var(--font-sans, Inter)", ...defaultTheme.fontFamily.sans],
+        mono: [
+          "var(--font-mono, JetBrains Mono)",
+          ...defaultTheme.fontFamily.mono,
+        ],
       },
       colors: {
         border: "hsl(var(--border))",

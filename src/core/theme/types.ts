@@ -30,6 +30,18 @@ export type SurfaceStyle = (typeof SURFACE_STYLES)[number]
 export const BACKGROUND_STYLES = ["solid", "gradient"] as const
 export type BackgroundStyle = (typeof BACKGROUND_STYLES)[number]
 
+export const FONT_FAMILIES = [
+  "default",
+  "editorial",
+  "modern",
+  "humanist",
+  "technical",
+] as const
+export type FontFamily = (typeof FONT_FAMILIES)[number]
+
+export const DENSITIES = ["compact", "comfortable", "spacious"] as const
+export type Density = (typeof DENSITIES)[number]
+
 export const MODES = ["light", "dark", "system"] as const
 export type Mode = (typeof MODES)[number]
 
@@ -88,10 +100,14 @@ export interface ThemeContextValue {
   accentColor: AccentColor
   surfaceStyle: SurfaceStyle
   backgroundStyle: BackgroundStyle
+  fontFamily: FontFamily
+  density: Density
   mode: Mode
   resolvedMode: ResolvedMode
   setAccentColor: (color: AccentColor) => void
   setSurfaceStyle: (style: SurfaceStyle) => void
   setBackgroundStyle: (style: BackgroundStyle) => void
+  setFontFamily: (font: FontFamily) => void
+  setDensity: (density: Density) => void
   setMode: (mode: Mode) => void
 }

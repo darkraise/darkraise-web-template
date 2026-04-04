@@ -4,17 +4,51 @@ import type {
   SurfaceStyle,
   ResolvedMode,
   ColorScale,
+  FontFamily,
+  Density,
 } from "../types"
 import { accentColors, LIGHT_ACCENT_COLORS } from "../palettes/accent-colors"
 import { surfaceColors } from "../palettes/surface-colors"
 import { surfaceStyles } from "../styles/surface-styles"
 import { ACCENT_COLORS } from "../types"
+import { fontFamilies } from "../palettes/font-families"
 
 export interface GenerateTokensInput {
   accentColor: AccentColor
   surfaceStyle: SurfaceStyle
   backgroundStyle: BackgroundStyle
+  fontFamily: FontFamily
+  density: Density
   mode: ResolvedMode
+}
+
+const DENSITY_SCALES: Record<
+  Density,
+  {
+    fontSize: string
+    spacing: string
+    cardPadding: string
+    headerHeight: string
+  }
+> = {
+  compact: {
+    fontSize: "13px",
+    spacing: "0.75",
+    cardPadding: "1rem",
+    headerHeight: "2.75rem",
+  },
+  comfortable: {
+    fontSize: "14px",
+    spacing: "1",
+    cardPadding: "1.5rem",
+    headerHeight: "3.5rem",
+  },
+  spacious: {
+    fontSize: "15px",
+    spacing: "1.25",
+    cardPadding: "2rem",
+    headerHeight: "4rem",
+  },
 }
 
 function getChartColors(
@@ -70,7 +104,14 @@ function resolveOpacity(
 export function generateTokens(
   input: GenerateTokensInput,
 ): Record<string, string> {
-  const { accentColor, surfaceStyle, backgroundStyle, mode } = input
+  const {
+    accentColor,
+    surfaceStyle,
+    backgroundStyle,
+    fontFamily,
+    density,
+    mode,
+  } = input
 
   const accent: ColorScale = accentColors[accentColor]
   const surface: ColorScale = surfaceColors.slate as ColorScale
@@ -191,6 +232,14 @@ export function generateTokens(
       backgroundStyle === "gradient" && surfaceStyle !== "glassmorphism"
         ? `linear-gradient(135deg, hsl(${accent[mode === "light" ? 100 : 900]} / 0.4) 0%, transparent 60%)`
         : "none",
+
+    "--font-sans": fontFamilies[fontFamily].sans,
+    "--font-mono": fontFamilies[fontFamily].mono,
+
+    "--density-font-size": DENSITY_SCALES[density].fontSize,
+    "--density-spacing": DENSITY_SCALES[density].spacing,
+    "--density-card-padding": DENSITY_SCALES[density].cardPadding,
+    "--density-header-height": DENSITY_SCALES[density].headerHeight,
   }
 
   return tokens
