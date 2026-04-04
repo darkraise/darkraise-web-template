@@ -159,6 +159,24 @@
     z-index: 1;
   }
 
+  .header-gradient-overlay {
+    position: relative;
+  }
+
+  .header-gradient-overlay::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--sidebar-gradient, none);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .header-gradient-overlay > * {
+    position: relative;
+    z-index: 1;
+  }
+
   main[data-content]::before {
     content: "";
     position: fixed;
