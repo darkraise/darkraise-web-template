@@ -51,6 +51,9 @@ export const SURFACE_STYLES = [
 ] as const
 export type SurfaceStyle = (typeof SURFACE_STYLES)[number]
 
+export const BACKGROUND_STYLES = ["solid", "gradient"] as const
+export type BackgroundStyle = (typeof BACKGROUND_STYLES)[number]
+
 export const MODES = ["light", "dark", "system"] as const
 export type Mode = (typeof MODES)[number]
 
@@ -109,10 +112,12 @@ export interface ThemeContextValue {
   accentColor: AccentColor
   surfaceColor: SurfaceColor
   surfaceStyle: SurfaceStyle
+  backgroundStyle: BackgroundStyle
   mode: Mode
   resolvedMode: ResolvedMode
   setAccentColor: (color: AccentColor) => void
   setSurfaceColor: (color: SurfaceColor) => void
   setSurfaceStyle: (style: SurfaceStyle) => void
+  setBackgroundStyle: (style: BackgroundStyle) => void
   setMode: (mode: Mode) => void
 }

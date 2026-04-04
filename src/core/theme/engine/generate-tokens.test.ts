@@ -7,6 +7,7 @@ describe("generateTokens", () => {
       accentColor: "blue",
       surfaceColor: "slate",
       surfaceStyle: "default",
+      backgroundStyle: "solid",
       mode: "light",
     })
 
@@ -61,12 +62,14 @@ describe("generateTokens", () => {
       accentColor: "blue",
       surfaceColor: "slate",
       surfaceStyle: "default",
+      backgroundStyle: "solid",
       mode: "light",
     })
     const dark = generateTokens({
       accentColor: "blue",
       surfaceColor: "slate",
       surfaceStyle: "default",
+      backgroundStyle: "solid",
       mode: "dark",
     })
 
@@ -79,6 +82,7 @@ describe("generateTokens", () => {
       accentColor: "amber",
       surfaceColor: "slate",
       surfaceStyle: "default",
+      backgroundStyle: "solid",
       mode: "light",
     })
     expect(amber["--primary-foreground"]).toBe("21 92% 14%")
@@ -87,6 +91,7 @@ describe("generateTokens", () => {
       accentColor: "blue",
       surfaceColor: "slate",
       surfaceStyle: "default",
+      backgroundStyle: "solid",
       mode: "light",
     })
     expect(blue["--primary-foreground"]).toBe("0 0% 100%")
@@ -97,6 +102,7 @@ describe("generateTokens", () => {
       accentColor: "blue",
       surfaceColor: "slate",
       surfaceStyle: "default",
+      backgroundStyle: "solid",
       mode: "dark",
     })
 
@@ -109,6 +115,7 @@ describe("generateTokens", () => {
       accentColor: "blue",
       surfaceColor: "slate",
       surfaceStyle: "tinted",
+      backgroundStyle: "solid",
       mode: "light",
     })
 
@@ -120,6 +127,7 @@ describe("generateTokens", () => {
       accentColor: "blue",
       surfaceColor: "slate",
       surfaceStyle: "tinted",
+      backgroundStyle: "solid",
       mode: "light",
     })
 
@@ -132,6 +140,7 @@ describe("generateTokens", () => {
       accentColor: "blue",
       surfaceColor: "slate",
       surfaceStyle: "default",
+      backgroundStyle: "solid",
       mode: "light",
     })
 
@@ -156,6 +165,7 @@ describe("generateTokens", () => {
       accentColor: "blue",
       surfaceColor: "slate",
       surfaceStyle: "high-contrast",
+      backgroundStyle: "solid",
       mode: "light",
     })
 
@@ -167,12 +177,14 @@ describe("generateTokens", () => {
       accentColor: "blue",
       surfaceColor: "slate",
       surfaceStyle: "bold",
+      backgroundStyle: "solid",
       mode: "light",
     })
     const dark = generateTokens({
       accentColor: "blue",
       surfaceColor: "slate",
       surfaceStyle: "bold",
+      backgroundStyle: "solid",
       mode: "dark",
     })
 
@@ -185,6 +197,7 @@ describe("generateTokens", () => {
       accentColor: "blue",
       surfaceColor: "slate",
       surfaceStyle: "glassmorphism",
+      backgroundStyle: "solid",
       mode: "light",
     })
 
@@ -197,12 +210,14 @@ describe("generateTokens", () => {
       accentColor: "blue",
       surfaceColor: "slate",
       surfaceStyle: "default",
+      backgroundStyle: "solid",
       mode: "light",
     })
     const dark = generateTokens({
       accentColor: "blue",
       surfaceColor: "slate",
       surfaceStyle: "default",
+      backgroundStyle: "solid",
       mode: "dark",
     })
 

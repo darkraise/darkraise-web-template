@@ -71,6 +71,12 @@
     @apply tracking-tight;
   }
 
+  /* Background style: gradient applies to main content area */
+  body {
+    background: var(--bg-gradient, none);
+    background-color: hsl(var(--background));
+  }
+
   /* Surface style tokens applied to cards, popovers, dialogs.
      Background transparency is handled by Tailwind color definitions
      (bg-card, bg-popover include --surface-opacity in their alpha channel),

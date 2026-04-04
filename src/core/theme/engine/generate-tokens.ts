@@ -1,5 +1,6 @@
 import type {
   AccentColor,
+  BackgroundStyle,
   SurfaceColor,
   SurfaceStyle,
   ResolvedMode,
@@ -14,6 +15,7 @@ export interface GenerateTokensInput {
   accentColor: AccentColor
   surfaceColor: SurfaceColor
   surfaceStyle: SurfaceStyle
+  backgroundStyle: BackgroundStyle
   mode: ResolvedMode
 }
 
@@ -33,10 +35,27 @@ function getChartColors(
   })
 }
 
+function generateGradient(
+  accentColor: AccentColor,
+  mode: ResolvedMode,
+): string {
+  const accent = accentColors[accentColor]
+  const index = ACCENT_COLORS.indexOf(accentColor)
+  const complementIndex = (index + 5) % ACCENT_COLORS.length
+  const complementName = ACCENT_COLORS[complementIndex] ?? accentColor
+  const complement = accentColors[complementName]
+
+  if (mode === "light") {
+    return `linear-gradient(135deg, hsl(${accent[400]}) 0%, hsl(${accent[600]}) 40%, hsl(${complement[500]}) 100%)`
+  }
+  return `linear-gradient(135deg, hsl(${accent[800]}) 0%, hsl(${accent[900]}) 40%, hsl(${complement[900]}) 100%)`
+}
+
 export function generateTokens(
   input: GenerateTokensInput,
 ): Record<string, string> {
-  const { accentColor, surfaceColor, surfaceStyle, mode } = input
+  const { accentColor, surfaceColor, surfaceStyle, backgroundStyle, mode } =
+    input
 
   const accent: ColorScale = accentColors[accentColor]
   const surface: ColorScale = surfaceColors[surfaceColor]
@@ -132,6 +151,12 @@ export function generateTokens(
         ? "none"
         : `blur(${recipe.overrides.backdropBlur})`,
     "--surface-opacity": recipe.overrides.surfaceOpacity,
+
+    "--bg-style": backgroundStyle,
+    "--bg-gradient":
+      backgroundStyle === "gradient"
+        ? generateGradient(accentColor, mode)
+        : "none",
   }
 
   return tokens

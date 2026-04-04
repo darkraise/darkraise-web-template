@@ -1,4 +1,4 @@
-import { Moon, Sun, Monitor, Palette } from "lucide-react"
+import { Moon, Sun, Monitor, Palette, Square, Blend } from "lucide-react"
 import { Button } from "@/core/components/ui/button"
 import {
   Popover,
@@ -10,7 +10,13 @@ import { Separator } from "@/core/components/ui/separator"
 import { cn } from "@/core/lib/utils"
 import { useTheme } from "./use-theme"
 import { ACCENT_COLORS, SURFACE_COLORS, SURFACE_STYLES } from "./types"
-import type { Mode, AccentColor, SurfaceColor, SurfaceStyle } from "./types"
+import type {
+  Mode,
+  AccentColor,
+  BackgroundStyle,
+  SurfaceColor,
+  SurfaceStyle,
+} from "./types"
 import { accentColors } from "./palettes/accent-colors"
 import { surfaceColors } from "./palettes/surface-colors"
 import { surfaceStyles } from "./styles/surface-styles"
@@ -26,12 +32,23 @@ export function ThemeSwitcher() {
     accentColor,
     surfaceColor,
     surfaceStyle,
+    backgroundStyle,
     mode,
     setAccentColor,
     setSurfaceColor,
     setSurfaceStyle,
+    setBackgroundStyle,
     setMode,
   } = useTheme()
+
+  const bgOptions: {
+    value: BackgroundStyle
+    icon: typeof Square
+    label: string
+  }[] = [
+    { value: "solid", icon: Square, label: "Solid" },
+    { value: "gradient", icon: Blend, label: "Gradient" },
+  ]
 
   return (
     <Popover>
@@ -55,6 +72,28 @@ export function ThemeSwitcher() {
                   size="sm"
                   className="flex-1"
                   onClick={() => setMode(value)}
+                >
+                  <Icon className="mr-1.5 h-3.5 w-3.5" />
+                  {label}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          <Separator />
+
+          <div>
+            <Label className="text-xs font-medium text-muted-foreground">
+              Background
+            </Label>
+            <div className="mt-1.5 flex gap-1">
+              {bgOptions.map(({ value, icon: Icon, label }) => (
+                <Button
+                  key={value}
+                  variant={backgroundStyle === value ? "default" : "outline"}
+                  size="sm"
+                  className="flex-1"
+                  onClick={() => setBackgroundStyle(value)}
                 >
                   <Icon className="mr-1.5 h-3.5 w-3.5" />
                   {label}
