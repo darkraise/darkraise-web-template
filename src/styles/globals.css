@@ -48,6 +48,11 @@
     @apply border-border;
   }
 
+  html,
+  body {
+    @apply h-full overflow-hidden;
+  }
+
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings:
@@ -55,10 +60,31 @@
       "calt" 1;
   }
 
+  #root {
+    @apply h-full;
+  }
+
   h1,
   h2,
   h3 {
     @apply tracking-tight;
+  }
+
+  /* Surface style tokens applied to cards, popovers, dialogs */
+  .card-surface {
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+    opacity: var(--surface-opacity);
+    backdrop-filter: var(--backdrop-filter, none);
+    -webkit-backdrop-filter: var(--backdrop-filter, none);
+  }
+
+  .overlay-surface {
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-dropdown);
+    opacity: var(--surface-opacity);
+    backdrop-filter: var(--backdrop-filter, none);
+    -webkit-backdrop-filter: var(--backdrop-filter, none);
   }
 
   /* Scrollbar styling */

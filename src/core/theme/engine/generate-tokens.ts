@@ -127,6 +127,10 @@ export function generateTokens(
     "--shadow-card": recipe.overrides.shadowCard,
     "--shadow-dropdown": recipe.overrides.shadowDropdown,
     "--backdrop-blur": recipe.overrides.backdropBlur,
+    "--backdrop-filter":
+      recipe.overrides.backdropBlur === "none"
+        ? "none"
+        : `blur(${recipe.overrides.backdropBlur})`,
     "--surface-opacity": recipe.overrides.surfaceOpacity,
   }
 

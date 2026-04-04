@@ -23,7 +23,7 @@ export function RadioGroupField({
         onValueChange={(v) => field.handleChange(v)}
       >
         {options.map((opt) => (
-          <div key={opt.value} className="flex items-center gap-2">
+          <div key={opt.value} className="flex items-center gap-2 py-0.5">
             <RadioGroupItem
               value={opt.value}
               id={`${field.name}-${opt.value}`}

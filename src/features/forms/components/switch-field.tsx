@@ -10,7 +10,7 @@ interface SwitchFieldProps {
 
 export function SwitchField({ field, label, description }: SwitchFieldProps) {
   return (
-    <div className="flex items-center justify-between rounded-lg border border-border p-4">
+    <div className="flex items-start justify-between rounded-lg border border-border p-4">
       <div className="space-y-0.5">
         <Label htmlFor={field.name}>{label}</Label>
         {description && (
