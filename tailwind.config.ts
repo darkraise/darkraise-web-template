@@ -38,11 +38,11 @@ const config: Config = {
           foreground: "hsl(var(--accent-foreground))",
         },
         popover: {
-          DEFAULT: "hsl(var(--popover))",
+          DEFAULT: "hsl(var(--popover) / var(--surface-opacity, 1))",
           foreground: "hsl(var(--popover-foreground))",
         },
         card: {
-          DEFAULT: "hsl(var(--card))",
+          DEFAULT: "hsl(var(--card) / var(--surface-opacity, 1))",
           foreground: "hsl(var(--card-foreground))",
         },
         sidebar: {
@@ -50,8 +50,8 @@ const config: Config = {
         },
         surface: {
           base: "hsl(var(--surface-base))",
-          raised: "hsl(var(--surface-raised))",
-          overlay: "hsl(var(--surface-overlay))",
+          raised: "hsl(var(--surface-raised) / var(--surface-opacity, 1))",
+          overlay: "hsl(var(--surface-overlay) / var(--surface-opacity, 1))",
           sunken: "hsl(var(--surface-sunken))",
           sidebar: "hsl(var(--surface-sidebar))",
           header: "hsl(var(--surface-header))",

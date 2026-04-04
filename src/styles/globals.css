@@ -71,11 +71,13 @@
     @apply tracking-tight;
   }
 
-  /* Surface style tokens applied to cards, popovers, dialogs */
+  /* Surface style tokens applied to cards, popovers, dialogs.
+     Background transparency is handled by Tailwind color definitions
+     (bg-card, bg-popover include --surface-opacity in their alpha channel),
+     so we do NOT set opacity here — that would make text transparent too. */
   .card-surface {
     border-radius: var(--radius);
     box-shadow: var(--shadow-card);
-    opacity: var(--surface-opacity);
     backdrop-filter: var(--backdrop-filter, none);
     -webkit-backdrop-filter: var(--backdrop-filter, none);
   }
@@ -83,7 +85,6 @@
   .overlay-surface {
     border-radius: var(--radius);
     box-shadow: var(--shadow-dropdown);
-    opacity: var(--surface-opacity);
     backdrop-filter: var(--backdrop-filter, none);
     -webkit-backdrop-filter: var(--backdrop-filter, none);
   }
