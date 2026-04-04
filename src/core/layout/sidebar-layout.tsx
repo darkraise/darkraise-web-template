@@ -30,7 +30,7 @@ export function SidebarLayout({ children, nav, headerSlot }: LayoutProps) {
         {/* Sidebar */}
         <aside
           className={cn(
-            "hidden flex-col border-r border-border-default bg-surface-sidebar text-gray-300 transition-all duration-300 md:flex",
+            "theme-transition hidden flex-col border-r border-border-default bg-surface-sidebar text-gray-300 transition-all duration-300 md:flex",
             collapsed ? "w-16" : "w-64",
           )}
         >
@@ -118,7 +118,7 @@ export function SidebarLayout({ children, nav, headerSlot }: LayoutProps) {
         {/* Main area */}
         <div className="flex flex-1 flex-col overflow-hidden">
           {/* Global header */}
-          <header className="flex h-14 items-center gap-2 border-b border-border bg-surface-header px-4">
+          <header className="theme-transition flex h-14 items-center gap-2 border-b border-border bg-surface-header px-4">
             <MobileDrawer nav={nav} />
             <SearchCommand navItems={flatNavItems} />
             <div className="ml-auto flex items-center gap-1">
