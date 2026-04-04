@@ -8,7 +8,6 @@ describe("generateTokens", () => {
       surfaceStyle: "default",
       backgroundStyle: "solid",
       fontFamily: "default",
-      density: "comfortable",
       mode: "light",
     })
 
@@ -64,7 +63,6 @@ describe("generateTokens", () => {
       surfaceStyle: "default",
       backgroundStyle: "solid",
       fontFamily: "default",
-      density: "comfortable",
       mode: "light",
     })
     const dark = generateTokens({
@@ -72,7 +70,6 @@ describe("generateTokens", () => {
       surfaceStyle: "default",
       backgroundStyle: "solid",
       fontFamily: "default",
-      density: "comfortable",
       mode: "dark",
     })
 
@@ -86,7 +83,6 @@ describe("generateTokens", () => {
       surfaceStyle: "default",
       backgroundStyle: "solid",
       fontFamily: "default",
-      density: "comfortable",
       mode: "light",
     })
     expect(amber["--primary-foreground"]).toBe("21 92% 14%")
@@ -96,7 +92,6 @@ describe("generateTokens", () => {
       surfaceStyle: "default",
       backgroundStyle: "solid",
       fontFamily: "default",
-      density: "comfortable",
       mode: "light",
     })
     expect(blue["--primary-foreground"]).toBe("0 0% 100%")
@@ -108,7 +103,6 @@ describe("generateTokens", () => {
       surfaceStyle: "default",
       backgroundStyle: "solid",
       fontFamily: "default",
-      density: "comfortable",
       mode: "dark",
     })
 
@@ -122,7 +116,6 @@ describe("generateTokens", () => {
       surfaceStyle: "tinted",
       backgroundStyle: "solid",
       fontFamily: "default",
-      density: "comfortable",
       mode: "light",
     })
 
@@ -135,7 +128,6 @@ describe("generateTokens", () => {
       surfaceStyle: "tinted",
       backgroundStyle: "solid",
       fontFamily: "default",
-      density: "comfortable",
       mode: "light",
     })
 
@@ -149,7 +141,6 @@ describe("generateTokens", () => {
       surfaceStyle: "default",
       backgroundStyle: "solid",
       fontFamily: "default",
-      density: "comfortable",
       mode: "light",
     })
 
@@ -175,7 +166,6 @@ describe("generateTokens", () => {
       surfaceStyle: "glassmorphism",
       backgroundStyle: "solid",
       fontFamily: "default",
-      density: "comfortable",
       mode: "light",
     })
 
@@ -189,7 +179,6 @@ describe("generateTokens", () => {
       surfaceStyle: "default",
       backgroundStyle: "solid",
       fontFamily: "default",
-      density: "comfortable",
       mode: "light",
     })
     const dark = generateTokens({
@@ -197,7 +186,6 @@ describe("generateTokens", () => {
       surfaceStyle: "default",
       backgroundStyle: "solid",
       fontFamily: "default",
-      density: "comfortable",
       mode: "dark",
     })
 
@@ -211,35 +199,10 @@ describe("generateTokens", () => {
       surfaceStyle: "default",
       backgroundStyle: "solid",
       fontFamily: "humanist",
-      density: "comfortable",
       mode: "light",
     })
 
     expect(tokens["--font-sans"]).toBe("DM Sans")
     expect(tokens["--font-mono"]).toBe("DM Mono")
-  })
-
-  it("emits density tokens for each density level", () => {
-    const compact = generateTokens({
-      accentColor: "blue",
-      surfaceStyle: "default",
-      backgroundStyle: "solid",
-      fontFamily: "default",
-      density: "compact",
-      mode: "light",
-    })
-    const spacious = generateTokens({
-      accentColor: "blue",
-      surfaceStyle: "default",
-      backgroundStyle: "solid",
-      fontFamily: "default",
-      density: "spacious",
-      mode: "light",
-    })
-
-    expect(compact["--density-font-size"]).toBe("13px")
-    expect(spacious["--density-font-size"]).toBe("15px")
-    expect(compact["--density-header-height"]).toBe("2.75rem")
-    expect(spacious["--density-header-height"]).toBe("4rem")
   })
 })

@@ -9,19 +9,13 @@ import { Label } from "@/core/components/ui/label"
 import { Separator } from "@/core/components/ui/separator"
 import { cn } from "@/core/lib/utils"
 import { useTheme } from "./use-theme"
-import {
-  ACCENT_COLORS,
-  SURFACE_STYLES,
-  FONT_FAMILIES,
-  DENSITIES,
-} from "./types"
+import { ACCENT_COLORS, SURFACE_STYLES, FONT_FAMILIES } from "./types"
 import type {
   Mode,
   AccentColor,
   BackgroundStyle,
   SurfaceStyle,
   FontFamily,
-  Density,
 } from "./types"
 import { accentColors } from "./palettes/accent-colors"
 import { surfaceStyles } from "./styles/surface-styles"
@@ -39,13 +33,11 @@ export function ThemeSwitcher() {
     surfaceStyle,
     backgroundStyle,
     fontFamily,
-    density,
     mode,
     setAccentColor,
     setSurfaceStyle,
     setBackgroundStyle,
     setFontFamily,
-    setDensity,
     setMode,
   } = useTheme()
 
@@ -193,27 +185,6 @@ export function ThemeSwitcher() {
                   </button>
                 )
               })}
-            </div>
-          </div>
-
-          <Separator />
-
-          <div>
-            <Label className="text-xs font-medium text-muted-foreground">
-              Density
-            </Label>
-            <div className="mt-1.5 flex gap-1">
-              {DENSITIES.map((d: Density) => (
-                <Button
-                  key={d}
-                  variant={density === d ? "default" : "outline"}
-                  size="sm"
-                  className="flex-1 capitalize"
-                  onClick={() => setDensity(d)}
-                >
-                  {d}
-                </Button>
-              ))}
             </div>
           </div>
         </div>

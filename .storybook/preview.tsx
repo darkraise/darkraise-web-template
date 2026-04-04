@@ -65,6 +65,7 @@ const preview: Preview = {
         surfaceStyle,
         mode,
         backgroundStyle: "solid",
+        fontFamily: "default",
       })
 
       for (const [key, value] of Object.entries(tokens)) {

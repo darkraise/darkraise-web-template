@@ -10,7 +10,6 @@ export {
   SURFACE_STYLES,
   BACKGROUND_STYLES,
   FONT_FAMILIES,
-  DENSITIES,
   MODES,
 } from "./types"
 export type {
@@ -18,7 +17,6 @@ export type {
   BackgroundStyle,
   SurfaceStyle,
   FontFamily,
-  Density,
   Mode,
   ResolvedMode,
   ColorScale,

@@ -130,10 +130,7 @@ export function SidebarLayout({ children, nav, headerSlot }: LayoutProps) {
         {/* Main area */}
         <div className="flex flex-1 flex-col overflow-hidden">
           {/* Global header */}
-          <header
-            className="theme-transition flex items-center gap-2 border-b border-border bg-surface-header px-4"
-            data-app-header
-          >
+          <header className="theme-transition flex h-14 items-center gap-2 border-b border-border bg-surface-header px-4">
             <MobileDrawer nav={nav} />
             <SearchCommand navItems={flatNavItems} />
             <div className="ml-auto flex items-center gap-1">
