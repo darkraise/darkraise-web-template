@@ -160,7 +160,7 @@ describe("generateTokens", () => {
     })
 
     expect(tokens["--backdrop-blur"]).toBe("12px")
-    expect(tokens["--surface-opacity"]).toBe("0.8")
+    expect(tokens["--surface-opacity"]).toBe("0.5")
   })
 
   it("destructive uses red-500 for light and red-600 for dark", () => {
