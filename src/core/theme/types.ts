@@ -74,7 +74,11 @@ export interface SurfaceStyleRecipe {
     surfaceOverlay: (scale: ColorScale, mode: ResolvedMode) => string
     surfaceSunken: (scale: ColorScale, mode: ResolvedMode) => string
     surfaceSidebar: (scale: ColorScale, mode: ResolvedMode) => string
-    surfaceHeader: (scale: ColorScale, mode: ResolvedMode) => string
+    surfaceHeader: (
+      scale: ColorScale,
+      mode: ResolvedMode,
+      accentScale?: ColorScale,
+    ) => string
     borderSubtle: (scale: ColorScale, mode: ResolvedMode) => string
     borderDefault: (scale: ColorScale, mode: ResolvedMode) => string
   }
