@@ -101,9 +101,8 @@ function resolveOpacity(
   return defaultOpacity
 }
 
-function isSidebarDark(style: SurfaceStyle, mode: ResolvedMode): boolean {
-  if (style === "flat") return mode === "dark"
-  return true
+function isSidebarDark(_style: SurfaceStyle, mode: ResolvedMode): boolean {
+  return mode === "dark"
 }
 
 export function generateTokens(

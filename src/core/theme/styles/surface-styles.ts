@@ -25,7 +25,7 @@ const defaultStyle: SurfaceStyleRecipe = {
     surfaceRaised: (_scale, mode) => (mode === "light" ? WHITE : _scale[900]),
     surfaceOverlay: (_scale, mode) => (mode === "light" ? WHITE : _scale[800]),
     surfaceSunken: (scale, mode) => lightDark(scale, mode, 100, 950),
-    surfaceSidebar: (scale, mode) => lightDark(scale, mode, 900, 950),
+    surfaceSidebar: (scale, mode) => lightDark(scale, mode, 50, 950),
     surfaceHeader: (_scale, mode) => (mode === "light" ? WHITE : _scale[900]),
     borderSubtle: (scale, mode) => lightDark(scale, mode, 100, 800),
     borderDefault: (scale, mode) => lightDark(scale, mode, 200, 700),
@@ -73,7 +73,7 @@ const glassmorphism: SurfaceStyleRecipe = {
     surfaceRaised: (_scale, mode) => (mode === "light" ? WHITE : _scale[900]),
     surfaceOverlay: (_scale, mode) => (mode === "light" ? WHITE : _scale[800]),
     surfaceSunken: (scale, mode) => lightDark(scale, mode, 100, 950),
-    surfaceSidebar: (scale, mode) => lightDark(scale, mode, 900, 950),
+    surfaceSidebar: (scale, mode) => lightDark(scale, mode, 50, 950),
     surfaceHeader: (_scale, mode) => (mode === "light" ? WHITE : _scale[900]),
     borderSubtle: (_scale, mode) =>
       mode === "light" ? "0 0% 100%" : "210 40% 60%",
@@ -105,7 +105,7 @@ const tinted: SurfaceStyleRecipe = {
           : _scale[900],
     surfaceOverlay: (_scale, mode) => (mode === "light" ? WHITE : _scale[800]),
     surfaceSunken: (scale, mode) => lightDark(scale, mode, 100, 950),
-    surfaceSidebar: (scale, mode) => lightDark(scale, mode, 900, 950),
+    surfaceSidebar: (scale, mode) => lightDark(scale, mode, 50, 950),
     surfaceHeader: (_scale, mode, accentScale) =>
       accentScale
         ? mode === "light"
