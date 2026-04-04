@@ -75,8 +75,10 @@ const glassmorphism: SurfaceStyleRecipe = {
     surfaceSunken: (scale, mode) => lightDark(scale, mode, 100, 950),
     surfaceSidebar: (scale, mode) => lightDark(scale, mode, 900, 950),
     surfaceHeader: (_scale, mode) => (mode === "light" ? WHITE : _scale[900]),
-    borderSubtle: (scale, mode) => lightDark(scale, mode, 200, 700),
-    borderDefault: (scale, mode) => lightDark(scale, mode, 200, 700),
+    borderSubtle: (_scale, mode) =>
+      mode === "light" ? "0 0% 100%" : "210 40% 60%",
+    borderDefault: (_scale, mode) =>
+      mode === "light" ? "0 0% 100%" : "210 40% 50%",
   },
   overrides: {
     radius: "0.5rem",
