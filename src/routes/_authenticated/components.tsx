@@ -276,7 +276,7 @@ function SectionHeading({
   children: React.ReactNode
 }) {
   return (
-    <h2 id={id} className="scroll-mt-52 text-xl font-semibold text-foreground">
+    <h2 id={id} className="scroll-mt-28 text-xl font-semibold text-foreground">
       {children}
     </h2>
   )
@@ -459,12 +459,12 @@ function ComponentShowcasePage() {
         description="All UI components with the current theme applied."
       />
 
-      <div className="sticky top-0 z-10 -mx-1 flex flex-wrap gap-2 rounded-lg border border-border bg-background/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="scrollbar-none sticky top-0 z-10 -mx-1 flex gap-2 overflow-x-auto rounded-lg border border-border bg-background/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         {SECTIONS.map((s) => (
           <a
             key={s.id}
             href={`#${s.id}`}
-            className="rounded-full border border-border bg-muted px-3 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+            className="shrink-0 rounded-full border border-border bg-muted px-3 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
           >
             {s.label}
           </a>
