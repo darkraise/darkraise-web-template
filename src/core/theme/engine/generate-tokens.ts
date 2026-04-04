@@ -218,10 +218,6 @@ export function generateTokens(
 
     "--font-sans": fontFamilies[fontFamily].sans,
     "--font-mono": fontFamilies[fontFamily].mono,
-
-    "--dialog-opacity": surfaceStyle === "glassmorphism" ? "0.75" : "1",
-    "--dialog-backdrop":
-      surfaceStyle === "glassmorphism" ? "blur(16px)" : "none",
   }
 
   return tokens

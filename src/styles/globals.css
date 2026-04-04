@@ -106,19 +106,6 @@
       box-shadow 150ms ease-in-out;
   }
 
-  .dialog-surface {
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-card);
-    background-color: hsl(var(--card) / var(--dialog-opacity, 1));
-    backdrop-filter: var(--dialog-backdrop, none);
-    -webkit-backdrop-filter: var(--dialog-backdrop, none);
-    transition:
-      background-color 150ms ease-in-out,
-      color 150ms ease-in-out,
-      border-color 150ms ease-in-out,
-      box-shadow 150ms ease-in-out;
-  }
-
   .overlay-surface {
     border-radius: var(--radius);
     box-shadow: var(--shadow-dropdown);
