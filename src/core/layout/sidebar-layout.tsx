@@ -30,7 +30,7 @@ export function SidebarLayout({ children, nav, headerSlot }: LayoutProps) {
         {/* Sidebar */}
         <aside
           className={cn(
-            "theme-transition hidden flex-col border-r border-border-default bg-surface-sidebar text-gray-300 transition-all duration-300 md:flex",
+            "sidebar-gradient-overlay theme-transition hidden flex-col border-r border-border-default bg-surface-sidebar text-gray-300 transition-all duration-300 md:flex",
             collapsed ? "w-16" : "w-64",
           )}
         >
@@ -130,7 +130,9 @@ export function SidebarLayout({ children, nav, headerSlot }: LayoutProps) {
           </header>
 
           {/* Content */}
-          <main className="flex-1 overflow-y-auto p-6">{children}</main>
+          <main className="flex-1 overflow-y-auto p-6" data-content>
+            {children}
+          </main>
         </div>
       </div>
     </TooltipProvider>

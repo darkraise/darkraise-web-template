@@ -97,7 +97,7 @@ export function generateTokens(
       : surface[800]
 
   if (surfaceStyle === "glassmorphism" && mode === "dark") {
-    border = surface[200]
+    border = surface[800]
   }
 
   const inputValue = recipe.overrides.input
@@ -180,6 +180,16 @@ export function generateTokens(
     "--bg-gradient":
       backgroundStyle === "gradient"
         ? generateGradient(accentColor, mode)
+        : "none",
+
+    "--sidebar-gradient":
+      backgroundStyle === "gradient"
+        ? `linear-gradient(180deg, hsl(${accent[mode === "light" ? 800 : 900]} / 0.95) 0%, hsl(${accent[mode === "light" ? 900 : 950]} / 0.98) 100%)`
+        : "none",
+
+    "--content-gradient-overlay":
+      backgroundStyle === "gradient" && surfaceStyle !== "glassmorphism"
+        ? `linear-gradient(135deg, hsl(${accent[mode === "light" ? 100 : 900]} / 0.4) 0%, transparent 60%)`
         : "none",
   }
 

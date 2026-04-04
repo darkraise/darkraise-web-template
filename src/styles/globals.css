@@ -115,6 +115,38 @@
       border-color 150ms ease-in-out;
   }
 
+  .sidebar-gradient-overlay {
+    position: relative;
+  }
+
+  .sidebar-gradient-overlay::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--sidebar-gradient, none);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .sidebar-gradient-overlay > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  main[data-content]::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 300px;
+    background: var(--content-gradient-overlay, none);
+    pointer-events: none;
+    z-index: 0;
+    mask-image: linear-gradient(to bottom, black, transparent);
+    -webkit-mask-image: linear-gradient(to bottom, black, transparent);
+  }
+
   /* Scrollbar styling */
   * {
     scrollbar-width: thin;
