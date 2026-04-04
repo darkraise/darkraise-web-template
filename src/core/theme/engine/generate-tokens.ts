@@ -60,9 +60,9 @@ function resolveOpacity(
 ): string {
   if (style === "glassmorphism") {
     if (bgStyle === "gradient") {
-      return mode === "light" ? "0.12" : "0.25"
+      return mode === "light" ? "0.3" : "0.4"
     }
-    return mode === "light" ? "0.35" : "0.35"
+    return mode === "light" ? "0.5" : "0.5"
   }
   return defaultOpacity
 }
