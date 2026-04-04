@@ -1041,55 +1041,83 @@ function ComponentShowcasePage() {
             <p className="mb-3 text-sm font-medium text-muted-foreground">
               Surface Elevations
             </p>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-              {[
-                {
-                  token: "bg-surface-base",
-                  label: "surface-base",
-                  dark: false,
-                },
-                {
-                  token: "bg-surface-raised",
-                  label: "surface-raised",
-                  dark: false,
-                },
-                {
-                  token: "bg-surface-overlay",
-                  label: "surface-overlay",
-                  dark: false,
-                },
-                {
-                  token: "bg-surface-sunken",
-                  label: "surface-sunken",
-                  dark: false,
-                },
-                {
-                  token: "bg-surface-sidebar",
-                  label: "surface-sidebar",
-                  dark: true,
-                },
-                {
-                  token: "bg-surface-header",
-                  label: "surface-header",
-                  dark: false,
-                },
-              ].map(({ token, label, dark }) => (
-                <div
-                  key={token}
-                  className={`${token} flex h-24 flex-col justify-end rounded-lg p-4 ring-1 ring-border`}
-                >
-                  <p
-                    className={`font-mono text-xs font-medium ${dark ? "text-white" : "text-foreground"}`}
+            <div className="flex items-center justify-center py-8">
+              <div
+                className="relative w-full max-w-lg"
+                style={{ perspective: "800px" }}
+              >
+                {[
+                  {
+                    token: "bg-surface-sunken",
+                    label: "sunken",
+                    desc: "Inset areas, wells",
+                    offset: 0,
+                    z: 0,
+                  },
+                  {
+                    token: "bg-surface-base",
+                    label: "base",
+                    desc: "Page background",
+                    offset: 1,
+                    z: 1,
+                  },
+                  {
+                    token: "bg-surface-raised",
+                    label: "raised",
+                    desc: "Cards, panels",
+                    offset: 2,
+                    z: 2,
+                  },
+                  {
+                    token: "bg-surface-overlay",
+                    label: "overlay",
+                    desc: "Dialogs, popovers",
+                    offset: 3,
+                    z: 3,
+                  },
+                ].map(({ token, label, desc, offset, z }) => (
+                  <div
+                    key={token}
+                    className={`${token} relative rounded-lg border border-border px-5 py-4 ring-1 ring-border/50`}
+                    style={{
+                      transform: `translateZ(${z * 12}px) translateY(${-offset * 8}px)`,
+                      boxShadow: `0 ${z * 4}px ${z * 8 + 4}px -${z * 2}px rgb(0 0 0 / ${0.03 + z * 0.04})`,
+                      marginTop: offset > 0 ? "-2rem" : "0",
+                      marginLeft: `${offset * 1.5}rem`,
+                      marginRight: `${offset * 1.5}rem`,
+                      zIndex: z,
+                    }}
                   >
-                    {label}
-                  </p>
-                  <p
-                    className={`font-mono text-[10px] ${dark ? "text-white/60" : "text-muted-foreground"}`}
-                  >
-                    var(--{label})
-                  </p>
-                </div>
-              ))}
+                    <div className="flex items-baseline justify-between">
+                      <p className="font-mono text-sm font-medium text-foreground">
+                        {label}
+                      </p>
+                      <p className="text-xs text-muted-foreground">{desc}</p>
+                    </div>
+                    <p className="mt-1 font-mono text-[10px] text-muted-foreground">
+                      var(--surface-{label})
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              <div className="flex h-20 flex-col justify-end rounded-lg bg-surface-sidebar p-4 ring-1 ring-border">
+                <p className="font-mono text-xs font-medium text-white">
+                  sidebar
+                </p>
+                <p className="font-mono text-[10px] text-white/60">
+                  var(--surface-sidebar)
+                </p>
+              </div>
+              <div className="flex h-20 flex-col justify-end rounded-lg bg-surface-header p-4 ring-1 ring-border">
+                <p className="font-mono text-xs font-medium text-foreground">
+                  header
+                </p>
+                <p className="font-mono text-[10px] text-muted-foreground">
+                  var(--surface-header)
+                </p>
+              </div>
             </div>
           </div>
           <div>
