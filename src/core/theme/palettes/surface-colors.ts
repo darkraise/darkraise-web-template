@@ -1,4 +1,4 @@
-import type { SurfaceColor, ColorScale } from "../types"
+import type { ColorScale } from "../types"
 
 const slate: ColorScale = {
   50: "210 40% 98%",
@@ -168,7 +168,7 @@ const sepia: ColorScale = {
   950: "16 26% 5%",
 }
 
-export const surfaceColors: Record<SurfaceColor, ColorScale> = {
+export const surfaceColors: Record<string, ColorScale> = {
   slate,
   gray,
   cool,

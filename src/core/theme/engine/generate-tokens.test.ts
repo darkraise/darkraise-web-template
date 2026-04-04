@@ -5,7 +5,6 @@ describe("generateTokens", () => {
   it("produces all expected token keys for the default combination", () => {
     const tokens = generateTokens({
       accentColor: "blue",
-      surfaceColor: "slate",
       surfaceStyle: "default",
       backgroundStyle: "solid",
       mode: "light",
@@ -60,14 +59,12 @@ describe("generateTokens", () => {
   it("uses shade 500 for primary in light mode and shade 400 in dark mode", () => {
     const light = generateTokens({
       accentColor: "blue",
-      surfaceColor: "slate",
       surfaceStyle: "default",
       backgroundStyle: "solid",
       mode: "light",
     })
     const dark = generateTokens({
       accentColor: "blue",
-      surfaceColor: "slate",
       surfaceStyle: "default",
       backgroundStyle: "solid",
       mode: "dark",
@@ -80,7 +77,6 @@ describe("generateTokens", () => {
   it("uses dark foreground for light accent colors (amber, yellow, lime)", () => {
     const amber = generateTokens({
       accentColor: "amber",
-      surfaceColor: "slate",
       surfaceStyle: "default",
       backgroundStyle: "solid",
       mode: "light",
@@ -89,7 +85,6 @@ describe("generateTokens", () => {
 
     const blue = generateTokens({
       accentColor: "blue",
-      surfaceColor: "slate",
       surfaceStyle: "default",
       backgroundStyle: "solid",
       mode: "light",
@@ -100,7 +95,6 @@ describe("generateTokens", () => {
   it("dark mode flips background to step 950 and foreground to step 50", () => {
     const tokens = generateTokens({
       accentColor: "blue",
-      surfaceColor: "slate",
       surfaceStyle: "default",
       backgroundStyle: "solid",
       mode: "dark",
@@ -113,7 +107,6 @@ describe("generateTokens", () => {
   it("tinted style uses accent palette for surface-raised", () => {
     const tokens = generateTokens({
       accentColor: "blue",
-      surfaceColor: "slate",
       surfaceStyle: "tinted",
       backgroundStyle: "solid",
       mode: "light",
@@ -125,7 +118,6 @@ describe("generateTokens", () => {
   it("tinted style uses accent palette for accent token", () => {
     const tokens = generateTokens({
       accentColor: "blue",
-      surfaceColor: "slate",
       surfaceStyle: "tinted",
       backgroundStyle: "solid",
       mode: "light",
@@ -138,7 +130,6 @@ describe("generateTokens", () => {
   it("derives chart colors from evenly spaced accent palettes", () => {
     const tokens = generateTokens({
       accentColor: "blue",
-      surfaceColor: "slate",
       surfaceStyle: "default",
       backgroundStyle: "solid",
       mode: "light",
@@ -160,42 +151,9 @@ describe("generateTokens", () => {
     expect(allDifferentOrValid.size).toBe(5)
   })
 
-  it("high-contrast style uses step 950 foreground in light mode", () => {
-    const tokens = generateTokens({
-      accentColor: "blue",
-      surfaceColor: "slate",
-      surfaceStyle: "high-contrast",
-      backgroundStyle: "solid",
-      mode: "light",
-    })
-
-    expect(tokens["--foreground"]).toBe("229 84% 5%")
-  })
-
-  it("bold style uses dark sidebar in both modes", () => {
-    const light = generateTokens({
-      accentColor: "blue",
-      surfaceColor: "slate",
-      surfaceStyle: "bold",
-      backgroundStyle: "solid",
-      mode: "light",
-    })
-    const dark = generateTokens({
-      accentColor: "blue",
-      surfaceColor: "slate",
-      surfaceStyle: "bold",
-      backgroundStyle: "solid",
-      mode: "dark",
-    })
-
-    expect(light["--surface-sidebar"]).toBe("222 47% 11%")
-    expect(dark["--surface-sidebar"]).toBe("222 47% 11%")
-  })
-
   it("glassmorphism style sets backdrop-blur and reduced opacity", () => {
     const tokens = generateTokens({
       accentColor: "blue",
-      surfaceColor: "slate",
       surfaceStyle: "glassmorphism",
       backgroundStyle: "solid",
       mode: "light",
@@ -208,14 +166,12 @@ describe("generateTokens", () => {
   it("destructive uses red-500 for light and red-600 for dark", () => {
     const light = generateTokens({
       accentColor: "blue",
-      surfaceColor: "slate",
       surfaceStyle: "default",
       backgroundStyle: "solid",
       mode: "light",
     })
     const dark = generateTokens({
       accentColor: "blue",
-      surfaceColor: "slate",
       surfaceStyle: "default",
       backgroundStyle: "solid",
       mode: "dark",

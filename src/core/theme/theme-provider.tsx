@@ -2,7 +2,6 @@ import { createContext, useCallback, useEffect, useMemo, useState } from "react"
 import type {
   AccentColor,
   BackgroundStyle,
-  SurfaceColor,
   SurfaceStyle,
   Mode,
   ResolvedMode,
@@ -13,7 +12,6 @@ import { generateTokens } from "./engine/generate-tokens"
 export const ThemeContext = createContext<ThemeContextValue | null>(null)
 
 const LS_ACCENT = "theme-accent"
-const LS_SURFACE = "theme-surface"
 const LS_STYLE = "theme-style"
 const LS_BG_STYLE = "theme-bg-style"
 const LS_MODE = "mode"
@@ -42,11 +40,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     return (stored as AccentColor) || "blue"
   })
 
-  const [surfaceColor, setSurfaceColorState] = useState<SurfaceColor>(() => {
-    const stored = localStorage.getItem(LS_SURFACE)
-    return (stored as SurfaceColor) || "slate"
-  })
-
   const [surfaceStyle, setSurfaceStyleState] = useState<SurfaceStyle>(() => {
     const stored = localStorage.getItem(LS_STYLE)
     return (stored as SurfaceStyle) || "default"
@@ -71,7 +64,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const applyTheme = useCallback(
     (
       accent: AccentColor,
-      surface: SurfaceColor,
       style: SurfaceStyle,
       bgStyle: BackgroundStyle,
       resolved: ResolvedMode,
@@ -79,7 +71,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       document.documentElement.setAttribute("data-mode", resolved)
       const tokens = generateTokens({
         accentColor: accent,
-        surfaceColor: surface,
         surfaceStyle: style,
         backgroundStyle: bgStyle,
         mode: resolved,
@@ -93,54 +84,27 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     (color: AccentColor) => {
       setAccentColorState(color)
       localStorage.setItem(LS_ACCENT, color)
-      applyTheme(
-        color,
-        surfaceColor,
-        surfaceStyle,
-        backgroundStyle,
-        resolvedMode,
-      )
+      applyTheme(color, surfaceStyle, backgroundStyle, resolvedMode)
     },
-    [applyTheme, surfaceColor, surfaceStyle, backgroundStyle, resolvedMode],
-  )
-
-  const setSurfaceColor = useCallback(
-    (color: SurfaceColor) => {
-      setSurfaceColorState(color)
-      localStorage.setItem(LS_SURFACE, color)
-      applyTheme(
-        accentColor,
-        color,
-        surfaceStyle,
-        backgroundStyle,
-        resolvedMode,
-      )
-    },
-    [applyTheme, accentColor, surfaceStyle, backgroundStyle, resolvedMode],
+    [applyTheme, surfaceStyle, backgroundStyle, resolvedMode],
   )
 
   const setSurfaceStyle = useCallback(
     (style: SurfaceStyle) => {
       setSurfaceStyleState(style)
       localStorage.setItem(LS_STYLE, style)
-      applyTheme(
-        accentColor,
-        surfaceColor,
-        style,
-        backgroundStyle,
-        resolvedMode,
-      )
+      applyTheme(accentColor, style, backgroundStyle, resolvedMode)
     },
-    [applyTheme, accentColor, surfaceColor, backgroundStyle, resolvedMode],
+    [applyTheme, accentColor, backgroundStyle, resolvedMode],
   )
 
   const setBackgroundStyle = useCallback(
     (bgStyle: BackgroundStyle) => {
       setBackgroundStyleState(bgStyle)
       localStorage.setItem(LS_BG_STYLE, bgStyle)
-      applyTheme(accentColor, surfaceColor, surfaceStyle, bgStyle, resolvedMode)
+      applyTheme(accentColor, surfaceStyle, bgStyle, resolvedMode)
     },
-    [applyTheme, accentColor, surfaceColor, surfaceStyle, resolvedMode],
+    [applyTheme, accentColor, surfaceStyle, resolvedMode],
   )
 
   const setMode = useCallback(
@@ -149,33 +113,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       setModeState(m)
       setResolvedMode(resolved)
       localStorage.setItem(LS_MODE, m)
-      applyTheme(
-        accentColor,
-        surfaceColor,
-        surfaceStyle,
-        backgroundStyle,
-        resolved,
-      )
+      applyTheme(accentColor, surfaceStyle, backgroundStyle, resolved)
     },
-    [applyTheme, accentColor, surfaceColor, surfaceStyle, backgroundStyle],
+    [applyTheme, accentColor, surfaceStyle, backgroundStyle],
   )
 
   useEffect(() => {
-    applyTheme(
-      accentColor,
-      surfaceColor,
-      surfaceStyle,
-      backgroundStyle,
-      resolvedMode,
-    )
-  }, [
-    applyTheme,
-    accentColor,
-    surfaceColor,
-    surfaceStyle,
-    backgroundStyle,
-    resolvedMode,
-  ])
+    applyTheme(accentColor, surfaceStyle, backgroundStyle, resolvedMode)
+  }, [applyTheme, accentColor, surfaceStyle, backgroundStyle, resolvedMode])
 
   useEffect(() => {
     if (mode !== "system") return
@@ -183,48 +128,31 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const handler = () => {
       const resolved = getSystemMode()
       setResolvedMode(resolved)
-      applyTheme(
-        accentColor,
-        surfaceColor,
-        surfaceStyle,
-        backgroundStyle,
-        resolved,
-      )
+      applyTheme(accentColor, surfaceStyle, backgroundStyle, resolved)
     }
     mq.addEventListener("change", handler)
     return () => mq.removeEventListener("change", handler)
-  }, [
-    mode,
-    accentColor,
-    surfaceColor,
-    surfaceStyle,
-    backgroundStyle,
-    applyTheme,
-  ])
+  }, [mode, accentColor, surfaceStyle, backgroundStyle, applyTheme])
 
   const value = useMemo<ThemeContextValue>(
     () => ({
       accentColor,
-      surfaceColor,
       surfaceStyle,
       backgroundStyle,
       mode,
       resolvedMode,
       setAccentColor,
-      setSurfaceColor,
       setSurfaceStyle,
       setBackgroundStyle,
       setMode,
     }),
     [
       accentColor,
-      surfaceColor,
       surfaceStyle,
       backgroundStyle,
       mode,
       resolvedMode,
       setAccentColor,
-      setSurfaceColor,
       setSurfaceStyle,
       setBackgroundStyle,
       setMode,

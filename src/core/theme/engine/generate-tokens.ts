@@ -1,7 +1,6 @@
 import type {
   AccentColor,
   BackgroundStyle,
-  SurfaceColor,
   SurfaceStyle,
   ResolvedMode,
   ColorScale,
@@ -13,7 +12,6 @@ import { ACCENT_COLORS } from "../types"
 
 export interface GenerateTokensInput {
   accentColor: AccentColor
-  surfaceColor: SurfaceColor
   surfaceStyle: SurfaceStyle
   backgroundStyle: BackgroundStyle
   mode: ResolvedMode
@@ -57,11 +55,10 @@ function generateGradient(
 export function generateTokens(
   input: GenerateTokensInput,
 ): Record<string, string> {
-  const { accentColor, surfaceColor, surfaceStyle, backgroundStyle, mode } =
-    input
+  const { accentColor, surfaceStyle, backgroundStyle, mode } = input
 
   const accent: ColorScale = accentColors[accentColor]
-  const surface: ColorScale = surfaceColors[surfaceColor]
+  const surface: ColorScale = surfaceColors.slate as ColorScale
   const recipe = surfaceStyles[surfaceStyle]
 
   const isLightAccent = LIGHT_ACCENT_COLORS.has(accentColor)

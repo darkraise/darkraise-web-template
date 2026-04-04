@@ -51,7 +51,6 @@ describe("useTheme", () => {
   it("returns default axis values", () => {
     const { result } = renderHook(() => useTheme(), { wrapper })
     expect(result.current.accentColor).toBe("blue")
-    expect(result.current.surfaceColor).toBe("slate")
     expect(result.current.surfaceStyle).toBe("default")
     expect(result.current.mode).toBe("system")
   })
@@ -63,18 +62,11 @@ describe("useTheme", () => {
     expect(localStorage.getItem("theme-accent")).toBe("rose")
   })
 
-  it("setSurfaceColor updates surface and persists to localStorage", () => {
-    const { result } = renderHook(() => useTheme(), { wrapper })
-    act(() => result.current.setSurfaceColor("zinc"))
-    expect(result.current.surfaceColor).toBe("zinc")
-    expect(localStorage.getItem("theme-surface")).toBe("zinc")
-  })
-
   it("setSurfaceStyle updates style and persists to localStorage", () => {
     const { result } = renderHook(() => useTheme(), { wrapper })
-    act(() => result.current.setSurfaceStyle("elevated"))
-    expect(result.current.surfaceStyle).toBe("elevated")
-    expect(localStorage.getItem("theme-style")).toBe("elevated")
+    act(() => result.current.setSurfaceStyle("glassmorphism"))
+    expect(result.current.surfaceStyle).toBe("glassmorphism")
+    expect(localStorage.getItem("theme-style")).toBe("glassmorphism")
   })
 
   it("setMode updates mode and applies data-mode attribute", () => {
@@ -101,13 +93,11 @@ describe("useTheme", () => {
 
   it("reads persisted values from localStorage on mount", () => {
     storageMock.setItem("theme-accent", "emerald")
-    storageMock.setItem("theme-surface", "neutral")
     storageMock.setItem("theme-style", "flat")
     storageMock.setItem("mode", "dark")
 
     const { result } = renderHook(() => useTheme(), { wrapper })
     expect(result.current.accentColor).toBe("emerald")
-    expect(result.current.surfaceColor).toBe("neutral")
     expect(result.current.surfaceStyle).toBe("flat")
     expect(result.current.mode).toBe("dark")
   })

@@ -9,16 +9,9 @@ import { Label } from "@/core/components/ui/label"
 import { Separator } from "@/core/components/ui/separator"
 import { cn } from "@/core/lib/utils"
 import { useTheme } from "./use-theme"
-import { ACCENT_COLORS, SURFACE_COLORS, SURFACE_STYLES } from "./types"
-import type {
-  Mode,
-  AccentColor,
-  BackgroundStyle,
-  SurfaceColor,
-  SurfaceStyle,
-} from "./types"
+import { ACCENT_COLORS, SURFACE_STYLES } from "./types"
+import type { Mode, AccentColor, BackgroundStyle, SurfaceStyle } from "./types"
 import { accentColors } from "./palettes/accent-colors"
-import { surfaceColors } from "./palettes/surface-colors"
 import { surfaceStyles } from "./styles/surface-styles"
 
 const modeOptions: { value: Mode; icon: typeof Sun; label: string }[] = [
@@ -30,12 +23,10 @@ const modeOptions: { value: Mode; icon: typeof Sun; label: string }[] = [
 export function ThemeSwitcher() {
   const {
     accentColor,
-    surfaceColor,
     surfaceStyle,
     backgroundStyle,
     mode,
     setAccentColor,
-    setSurfaceColor,
     setSurfaceStyle,
     setBackgroundStyle,
     setMode,
@@ -124,33 +115,6 @@ export function ThemeSwitcher() {
                     backgroundColor: `hsl(${accentColors[color][500]})`,
                   }}
                   onClick={() => setAccentColor(color)}
-                />
-              ))}
-            </div>
-          </div>
-
-          <Separator />
-
-          <div>
-            <Label className="text-xs font-medium text-muted-foreground">
-              Surface Color
-            </Label>
-            <div className="mt-1.5 grid grid-cols-6 gap-1.5">
-              {SURFACE_COLORS.map((color: SurfaceColor) => (
-                <button
-                  key={color}
-                  type="button"
-                  title={color}
-                  className={cn(
-                    "h-6 w-6 rounded-full border-2 transition-transform hover:scale-110",
-                    surfaceColor === color
-                      ? "scale-110 border-foreground"
-                      : "border-transparent",
-                  )}
-                  style={{
-                    backgroundColor: `hsl(${surfaceColors[color][500]})`,
-                  }}
-                  onClick={() => setSurfaceColor(color)}
                 />
               ))}
             </div>

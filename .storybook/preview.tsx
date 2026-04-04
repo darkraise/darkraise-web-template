@@ -1,14 +1,9 @@
 import type { Preview } from "@storybook/react"
 import "../src/styles/globals.css"
 import { generateTokens } from "../src/core/theme/engine/generate-tokens"
-import {
-  ACCENT_COLORS,
-  SURFACE_COLORS,
-  SURFACE_STYLES,
-} from "../src/core/theme/types"
+import { ACCENT_COLORS, SURFACE_STYLES } from "../src/core/theme/types"
 import type {
   AccentColor,
-  SurfaceColor,
   SurfaceStyle,
   ResolvedMode,
 } from "../src/core/theme/types"
@@ -29,15 +24,6 @@ const preview: Preview = {
         title: "Accent",
         icon: "paintbrush",
         items: [...ACCENT_COLORS],
-        dynamicTitle: true,
-      },
-    },
-    surfaceColor: {
-      description: "Surface color",
-      toolbar: {
-        title: "Surface",
-        icon: "photo",
-        items: [...SURFACE_COLORS],
         dynamicTitle: true,
       },
     },
@@ -62,15 +48,12 @@ const preview: Preview = {
   },
   initialGlobals: {
     accentColor: "blue",
-    surfaceColor: "slate",
     surfaceStyle: "default",
     mode: "light",
   },
   decorators: [
     (Story, context) => {
       const accentColor = (context.globals.accentColor || "blue") as AccentColor
-      const surfaceColor = (context.globals.surfaceColor ||
-        "slate") as SurfaceColor
       const surfaceStyle = (context.globals.surfaceStyle ||
         "default") as SurfaceStyle
       const mode = (context.globals.mode || "light") as ResolvedMode
@@ -79,9 +62,9 @@ const preview: Preview = {
 
       const tokens = generateTokens({
         accentColor,
-        surfaceColor,
         surfaceStyle,
         mode,
+        backgroundStyle: "solid",
       })
 
       for (const [key, value] of Object.entries(tokens)) {

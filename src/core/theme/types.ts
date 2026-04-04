@@ -19,35 +19,11 @@ export const ACCENT_COLORS = [
 ] as const
 export type AccentColor = (typeof ACCENT_COLORS)[number]
 
-export const SURFACE_COLORS = [
-  "slate",
-  "gray",
-  "cool",
-  "zinc",
-  "neutral",
-  "iron",
-  "mauve",
-  "graphite",
-  "stone",
-  "sand",
-  "olive",
-  "sepia",
-] as const
-export type SurfaceColor = (typeof SURFACE_COLORS)[number]
-
 export const SURFACE_STYLES = [
   "default",
   "flat",
-  "bordered",
-  "elevated",
-  "layered",
   "glassmorphism",
-  "high-contrast",
-  "muted",
-  "compact",
-  "translucent",
   "tinted",
-  "bold",
 ] as const
 export type SurfaceStyle = (typeof SURFACE_STYLES)[number]
 
@@ -110,13 +86,11 @@ export interface SurfaceStyleRecipe {
 
 export interface ThemeContextValue {
   accentColor: AccentColor
-  surfaceColor: SurfaceColor
   surfaceStyle: SurfaceStyle
   backgroundStyle: BackgroundStyle
   mode: Mode
   resolvedMode: ResolvedMode
   setAccentColor: (color: AccentColor) => void
-  setSurfaceColor: (color: SurfaceColor) => void
   setSurfaceStyle: (style: SurfaceStyle) => void
   setBackgroundStyle: (style: BackgroundStyle) => void
   setMode: (mode: Mode) => void
