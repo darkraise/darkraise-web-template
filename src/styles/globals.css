@@ -122,6 +122,22 @@
       box-shadow 150ms ease-in-out;
   }
 
+  /* Sidebar adaptive colors */
+  .sidebar-nav-item {
+    color: hsl(var(--sidebar-foreground));
+  }
+
+  .sidebar-nav-item:hover {
+    background-color: hsl(var(--sidebar-hover-bg));
+    color: hsl(var(--sidebar-foreground-hover));
+  }
+
+  .sidebar-nav-item.active,
+  .sidebar-nav-item[data-status="active"] {
+    background-color: hsl(var(--sidebar-hover-bg));
+    color: hsl(var(--sidebar-foreground-hover));
+  }
+
   .theme-transition {
     transition:
       background-color 150ms ease-in-out,

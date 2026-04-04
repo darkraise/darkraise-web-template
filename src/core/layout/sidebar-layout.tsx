@@ -30,21 +30,27 @@ export function SidebarLayout({ children, nav, headerSlot }: LayoutProps) {
         {/* Sidebar */}
         <aside
           className={cn(
-            "sidebar-gradient-overlay theme-transition hidden flex-col border-r border-border-default bg-surface-sidebar text-gray-300 transition-all duration-300 md:flex",
+            "sidebar-gradient-overlay theme-transition hidden flex-col border-r border-border-default bg-surface-sidebar transition-all duration-300 md:flex",
             collapsed ? "w-16" : "w-64",
           )}
         >
           {/* Logo */}
           <div
             className={cn(
-              "flex h-14 items-center border-b border-white/10 px-4",
+              "flex h-14 items-center border-b px-4",
               collapsed && "justify-center px-0",
             )}
+            style={{ borderColor: "hsl(var(--sidebar-border))" }}
           >
             {collapsed ? (
               <div className="h-8 w-8 rounded-md bg-primary" />
             ) : (
-              <span className="text-lg font-medium text-white">App</span>
+              <span
+                className="text-lg font-medium"
+                style={{ color: "hsl(var(--sidebar-foreground-hover))" }}
+              >
+                App
+              </span>
             )}
           </div>
 
@@ -54,7 +60,10 @@ export function SidebarLayout({ children, nav, headerSlot }: LayoutProps) {
               {nav.map((group, gi) => (
                 <div key={gi} className={gi > 0 ? "mt-4" : ""}>
                   {group.label && !collapsed && (
-                    <p className="mb-1 px-3 text-xs font-medium uppercase tracking-wider text-gray-500">
+                    <p
+                      className="mb-1 px-3 text-xs font-medium uppercase tracking-wider"
+                      style={{ color: "hsl(var(--sidebar-foreground-muted))" }}
+                    >
                       {group.label}
                     </p>
                   )}
@@ -64,7 +73,7 @@ export function SidebarLayout({ children, nav, headerSlot }: LayoutProps) {
                         key={item.href}
                         to={item.href}
                         className={cn(
-                          "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors duration-150 hover:bg-white/10 hover:text-white [&.active]:bg-white/10 [&.active]:text-white",
+                          "sidebar-nav-item flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors duration-150",
                           collapsed && "justify-center px-0",
                         )}
                         activeProps={{ className: "active" }}
@@ -99,11 +108,14 @@ export function SidebarLayout({ children, nav, headerSlot }: LayoutProps) {
           </ScrollArea>
 
           {/* Collapse toggle */}
-          <div className="border-t border-white/10 p-2">
+          <div
+            className="border-t p-2"
+            style={{ borderColor: "hsl(var(--sidebar-border))" }}
+          >
             <Button
               variant="ghost"
               size="icon"
-              className="w-full text-gray-400 hover:bg-white/10 hover:text-white"
+              className="sidebar-nav-item w-full"
               onClick={() => setCollapsed(!collapsed)}
             >
               {collapsed ? (

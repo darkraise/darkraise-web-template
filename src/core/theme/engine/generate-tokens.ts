@@ -101,6 +101,11 @@ function resolveOpacity(
   return defaultOpacity
 }
 
+function isSidebarDark(style: SurfaceStyle, mode: ResolvedMode): boolean {
+  if (style === "flat") return mode === "dark"
+  return true
+}
+
 export function generateTokens(
   input: GenerateTokensInput,
 ): Record<string, string> {
@@ -197,6 +202,21 @@ export function generateTokens(
     "--surface-overlay": recipe.tokens.surfaceOverlay(surface, mode),
     "--surface-sunken": recipe.tokens.surfaceSunken(surface, mode),
     "--surface-sidebar": recipe.tokens.surfaceSidebar(surface, mode),
+    "--sidebar-foreground": isSidebarDark(surfaceStyle, mode)
+      ? surface[300]
+      : surface[600],
+    "--sidebar-foreground-hover": isSidebarDark(surfaceStyle, mode)
+      ? "0 0% 100%"
+      : surface[900],
+    "--sidebar-foreground-muted": isSidebarDark(surfaceStyle, mode)
+      ? surface[500]
+      : surface[400],
+    "--sidebar-border": isSidebarDark(surfaceStyle, mode)
+      ? "0 0% 100% / 0.1"
+      : surface[200],
+    "--sidebar-hover-bg": isSidebarDark(surfaceStyle, mode)
+      ? "0 0% 100% / 0.1"
+      : surface[100],
     "--surface-header": recipe.tokens.surfaceHeader(surface, mode, accent),
 
     "--border-subtle": recipe.tokens.borderSubtle(surface, mode),
