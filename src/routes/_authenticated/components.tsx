@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import { useForm } from "@tanstack/react-form"
 import { z } from "zod"
 import type { ColumnDef } from "@tanstack/react-table"
@@ -301,6 +301,55 @@ function Section({
   )
 }
 
+function ShowcaseExample({
+  title,
+  code,
+  children,
+}: {
+  title: string
+  code: string
+  children: React.ReactNode
+}) {
+  const [copied, setCopied] = useState(false)
+
+  const handleCopy = useCallback(() => {
+    void navigator.clipboard.writeText(code).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }, [code])
+
+  return (
+    <div className="space-y-3">
+      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+        {title}
+      </p>
+      <div className="rounded-md border border-border p-4">{children}</div>
+      <Accordion type="single" collapsible>
+        <AccordionItem value="code" className="border-none">
+          <div className="flex items-center justify-between">
+            <AccordionTrigger className="py-1 text-xs text-muted-foreground hover:no-underline">
+              View code
+            </AccordionTrigger>
+            <button
+              type="button"
+              onClick={handleCopy}
+              className="rounded px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            >
+              {copied ? "Copied!" : "Copy"}
+            </button>
+          </div>
+          <AccordionContent className="pt-1">
+            <pre className="overflow-x-auto rounded-md bg-muted p-4">
+              <code className="font-mono text-xs">{code}</code>
+            </pre>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </div>
+  )
+}
+
 function ShowcaseFormFields() {
   const form = useForm({
     defaultValues: {
@@ -472,95 +521,160 @@ function ComponentShowcasePage() {
       </div>
 
       <Section id="buttons" title="Buttons">
-        <div className="space-y-4">
-          <div className="flex flex-wrap gap-3">
-            <Button variant="default">Default</Button>
-            <Button variant="destructive">Destructive</Button>
-            <Button variant="outline">Outline</Button>
-            <Button variant="secondary">Secondary</Button>
-            <Button variant="ghost">Ghost</Button>
-            <Button variant="link">Link</Button>
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <Button size="lg">Large</Button>
-            <Button size="default">Default</Button>
-            <Button size="sm">Small</Button>
-            <Button size="icon">
-              <TrendingUp className="h-4 w-4" />
-            </Button>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <Button disabled>Disabled Default</Button>
-            <Button variant="outline" disabled>
-              Disabled Outline
-            </Button>
-            <Button variant="destructive" disabled>
-              Disabled Destructive
-            </Button>
-          </div>
+        <div className="space-y-6">
+          <ShowcaseExample
+            title="Variants"
+            code={`<Button variant="default">Default</Button>
+<Button variant="destructive">Destructive</Button>
+<Button variant="outline">Outline</Button>
+<Button variant="secondary">Secondary</Button>
+<Button variant="ghost">Ghost</Button>
+<Button variant="link">Link</Button>`}
+          >
+            <div className="flex flex-wrap gap-3">
+              <Button variant="default">Default</Button>
+              <Button variant="destructive">Destructive</Button>
+              <Button variant="outline">Outline</Button>
+              <Button variant="secondary">Secondary</Button>
+              <Button variant="ghost">Ghost</Button>
+              <Button variant="link">Link</Button>
+            </div>
+          </ShowcaseExample>
+          <ShowcaseExample
+            title="Sizes"
+            code={`<Button size="lg">Large</Button>
+<Button size="default">Default</Button>
+<Button size="sm">Small</Button>
+<Button size="icon"><TrendingUp className="h-4 w-4" /></Button>`}
+          >
+            <div className="flex flex-wrap items-center gap-3">
+              <Button size="lg">Large</Button>
+              <Button size="default">Default</Button>
+              <Button size="sm">Small</Button>
+              <Button size="icon">
+                <TrendingUp className="h-4 w-4" />
+              </Button>
+            </div>
+          </ShowcaseExample>
+          <ShowcaseExample
+            title="Disabled state"
+            code={`<Button disabled>Disabled Default</Button>
+<Button variant="outline" disabled>Disabled Outline</Button>
+<Button variant="destructive" disabled>Disabled Destructive</Button>`}
+          >
+            <div className="flex flex-wrap gap-3">
+              <Button disabled>Disabled Default</Button>
+              <Button variant="outline" disabled>
+                Disabled Outline
+              </Button>
+              <Button variant="destructive" disabled>
+                Disabled Destructive
+              </Button>
+            </div>
+          </ShowcaseExample>
         </div>
       </Section>
 
       <Section id="inputs" title="Inputs & Form Controls">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="demo-text">Text Input</Label>
-            <Input id="demo-text" placeholder="Type something..." />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="demo-disabled">Disabled Input</Label>
-            <Input id="demo-disabled" placeholder="Disabled" disabled />
-          </div>
-          <div className="space-y-2 sm:col-span-2">
-            <Label htmlFor="demo-textarea">Textarea</Label>
-            <Textarea
-              id="demo-textarea"
-              placeholder="Enter a longer message..."
-              rows={3}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="demo-select">Select</Label>
-            <Select value={selectValue} onValueChange={setSelectValue}>
-              <SelectTrigger id="demo-select">
-                <SelectValue placeholder="Pick an option" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="alpha">Alpha</SelectItem>
-                <SelectItem value="beta">Beta</SelectItem>
-                <SelectItem value="gamma">Gamma</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center gap-3 pt-6">
-            <Checkbox
-              id="demo-checkbox"
-              checked={checkboxChecked}
-              onCheckedChange={(v) => setCheckboxChecked(v === true)}
-            />
-            <Label htmlFor="demo-checkbox">Accept terms and conditions</Label>
-          </div>
-          <div className="flex items-center gap-3">
-            <Switch
-              id="demo-switch"
-              checked={switchChecked}
-              onCheckedChange={setSwitchChecked}
-            />
-            <Label htmlFor="demo-switch">Enable notifications</Label>
-          </div>
-          <div className="space-y-2">
-            <Label>Radio Group</Label>
-            <RadioGroup value={radioValue} onValueChange={setRadioValue}>
-              {["option-a", "option-b", "option-c"].map((v) => (
-                <div key={v} className="flex items-center gap-2">
-                  <RadioGroupItem value={v} id={`demo-radio-${v}`} />
-                  <Label htmlFor={`demo-radio-${v}`}>
-                    {v.replace("option-", "Option ")}
-                  </Label>
-                </div>
-              ))}
-            </RadioGroup>
-          </div>
+        <div className="space-y-6">
+          <ShowcaseExample
+            title="Text inputs"
+            code={`<Label htmlFor="name">Name</Label>
+<Input id="name" placeholder="Type something..." />
+
+<Label htmlFor="disabled">Disabled</Label>
+<Input id="disabled" placeholder="Disabled" disabled />
+
+<Label htmlFor="bio">Bio</Label>
+<Textarea id="bio" placeholder="Enter a longer message..." rows={3} />`}
+          >
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="demo-text">Text Input</Label>
+                <Input id="demo-text" placeholder="Type something..." />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="demo-disabled">Disabled Input</Label>
+                <Input id="demo-disabled" placeholder="Disabled" disabled />
+              </div>
+              <div className="space-y-2 sm:col-span-2">
+                <Label htmlFor="demo-textarea">Textarea</Label>
+                <Textarea
+                  id="demo-textarea"
+                  placeholder="Enter a longer message..."
+                  rows={3}
+                />
+              </div>
+            </div>
+          </ShowcaseExample>
+          <ShowcaseExample
+            title="Select, Checkbox, Switch, RadioGroup"
+            code={`<Select value={value} onValueChange={setValue}>
+  <SelectTrigger>
+    <SelectValue placeholder="Pick an option" />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectItem value="alpha">Alpha</SelectItem>
+  </SelectContent>
+</Select>
+
+<Checkbox id="terms" checked={checked} onCheckedChange={setChecked} />
+<Label htmlFor="terms">Accept terms</Label>
+
+<Switch checked={enabled} onCheckedChange={setEnabled} />
+
+<RadioGroup value={radio} onValueChange={setRadio}>
+  <RadioGroupItem value="a" id="a" />
+  <Label htmlFor="a">Option A</Label>
+</RadioGroup>`}
+          >
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="demo-select">Select</Label>
+                <Select value={selectValue} onValueChange={setSelectValue}>
+                  <SelectTrigger id="demo-select">
+                    <SelectValue placeholder="Pick an option" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="alpha">Alpha</SelectItem>
+                    <SelectItem value="beta">Beta</SelectItem>
+                    <SelectItem value="gamma">Gamma</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-center gap-3 pt-6">
+                <Checkbox
+                  id="demo-checkbox"
+                  checked={checkboxChecked}
+                  onCheckedChange={(v) => setCheckboxChecked(v === true)}
+                />
+                <Label htmlFor="demo-checkbox">
+                  Accept terms and conditions
+                </Label>
+              </div>
+              <div className="flex items-center gap-3">
+                <Switch
+                  id="demo-switch"
+                  checked={switchChecked}
+                  onCheckedChange={setSwitchChecked}
+                />
+                <Label htmlFor="demo-switch">Enable notifications</Label>
+              </div>
+              <div className="space-y-2">
+                <Label>Radio Group</Label>
+                <RadioGroup value={radioValue} onValueChange={setRadioValue}>
+                  {["option-a", "option-b", "option-c"].map((v) => (
+                    <div key={v} className="flex items-center gap-2">
+                      <RadioGroupItem value={v} id={`demo-radio-${v}`} />
+                      <Label htmlFor={`demo-radio-${v}`}>
+                        {v.replace("option-", "Option ")}
+                      </Label>
+                    </div>
+                  ))}
+                </RadioGroup>
+              </div>
+            </div>
+          </ShowcaseExample>
         </div>
       </Section>
 
@@ -614,204 +728,339 @@ function ComponentShowcasePage() {
       </Section>
 
       <Section id="badges" title="Badges">
-        <div className="flex flex-wrap gap-3">
-          <Badge variant="default">Default</Badge>
-          <Badge variant="secondary">Secondary</Badge>
-          <Badge variant="destructive">Destructive</Badge>
-          <Badge variant="outline">Outline</Badge>
-        </div>
+        <ShowcaseExample
+          title="Badge variants"
+          code={`<Badge variant="default">Default</Badge>
+<Badge variant="secondary">Secondary</Badge>
+<Badge variant="destructive">Destructive</Badge>
+<Badge variant="outline">Outline</Badge>`}
+        >
+          <div className="flex flex-wrap gap-3">
+            <Badge variant="default">Default</Badge>
+            <Badge variant="secondary">Secondary</Badge>
+            <Badge variant="destructive">Destructive</Badge>
+            <Badge variant="outline">Outline</Badge>
+          </div>
+        </ShowcaseExample>
       </Section>
 
       <Section id="dialogs" title="Dialogs & Overlays">
-        <div className="flex flex-wrap gap-3">
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="outline">Open Dialog</Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Dialog Title</DialogTitle>
-                <DialogDescription>
-                  This is the dialog description. Use it to give context about
-                  what the user is confirming or interacting with.
-                </DialogDescription>
-              </DialogHeader>
-              <p className="text-sm text-muted-foreground">
-                Dialog body content goes here. This can include forms, info, or
-                any other content.
-              </p>
-              <DialogFooter>
-                <Button variant="outline">Cancel</Button>
-                <Button>Confirm</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+        <ShowcaseExample
+          title="Dialog, Sheet, Popover, Tooltip"
+          code={`// Dialog — modal confirmation or form
+<Dialog>
+  <DialogTrigger asChild>
+    <Button variant="outline">Open Dialog</Button>
+  </DialogTrigger>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>Dialog Title</DialogTitle>
+      <DialogDescription>Description here.</DialogDescription>
+    </DialogHeader>
+    <DialogFooter>
+      <Button variant="outline">Cancel</Button>
+      <Button>Confirm</Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
 
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="outline">Open Sheet</Button>
-            </SheetTrigger>
-            <SheetContent>
-              <SheetHeader>
-                <SheetTitle>Sheet Panel</SheetTitle>
-                <SheetDescription>
-                  A side panel for contextual actions or detailed views.
-                </SheetDescription>
-              </SheetHeader>
-              <p className="mt-4 text-sm text-muted-foreground">
-                Sheet content appears here. Typically used for filters, detail
-                views, or settings panels.
-              </p>
-              <SheetFooter className="mt-4">
-                <Button>Apply</Button>
-              </SheetFooter>
-            </SheetContent>
-          </Sheet>
+// Sheet — side panel for filters, detail views
+<Sheet>
+  <SheetTrigger asChild>
+    <Button variant="outline">Open Sheet</Button>
+  </SheetTrigger>
+  <SheetContent>
+    <SheetHeader>
+      <SheetTitle>Sheet Panel</SheetTitle>
+    </SheetHeader>
+  </SheetContent>
+</Sheet>
 
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline">Open Popover</Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-64">
-              <div className="space-y-2">
-                <p className="text-sm font-medium">Popover Title</p>
-                <p className="text-xs text-muted-foreground">
-                  Popovers appear anchored to their trigger element and float
-                  above the page content.
+// Popover — anchored floating panel
+<Popover>
+  <PopoverTrigger asChild>
+    <Button variant="outline">Open Popover</Button>
+  </PopoverTrigger>
+  <PopoverContent className="w-64">
+    <p className="text-sm font-medium">Popover Title</p>
+  </PopoverContent>
+</Popover>
+
+// Tooltip — hover label
+<TooltipProvider>
+  <Tooltip>
+    <TooltipTrigger asChild>
+      <Button variant="outline">Hover me</Button>
+    </TooltipTrigger>
+    <TooltipContent>This is a tooltip</TooltipContent>
+  </Tooltip>
+</TooltipProvider>`}
+        >
+          <div className="flex flex-wrap gap-3">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline">Open Dialog</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Dialog Title</DialogTitle>
+                  <DialogDescription>
+                    This is the dialog description. Use it to give context about
+                    what the user is confirming or interacting with.
+                  </DialogDescription>
+                </DialogHeader>
+                <p className="text-sm text-muted-foreground">
+                  Dialog body content goes here. This can include forms, info,
+                  or any other content.
                 </p>
-              </div>
-            </PopoverContent>
-          </Popover>
+                <DialogFooter>
+                  <Button variant="outline">Cancel</Button>
+                  <Button>Confirm</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
 
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline">Hover for Tooltip</Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>This is a tooltip</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="outline">Open Sheet</Button>
+              </SheetTrigger>
+              <SheetContent>
+                <SheetHeader>
+                  <SheetTitle>Sheet Panel</SheetTitle>
+                  <SheetDescription>
+                    A side panel for contextual actions or detailed views.
+                  </SheetDescription>
+                </SheetHeader>
+                <p className="mt-4 text-sm text-muted-foreground">
+                  Sheet content appears here. Typically used for filters, detail
+                  views, or settings panels.
+                </p>
+                <SheetFooter className="mt-4">
+                  <Button>Apply</Button>
+                </SheetFooter>
+              </SheetContent>
+            </Sheet>
+
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline">Open Popover</Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-64">
+                <div className="space-y-2">
+                  <p className="text-sm font-medium">Popover Title</p>
+                  <p className="text-xs text-muted-foreground">
+                    Popovers appear anchored to their trigger element and float
+                    above the page content.
+                  </p>
+                </div>
+              </PopoverContent>
+            </Popover>
+
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="outline">Hover for Tooltip</Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>This is a tooltip</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+        </ShowcaseExample>
       </Section>
 
       <Section id="dropdown" title="Dropdown Menu">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline">Open Menu</Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Profile</DropdownMenuItem>
-            <DropdownMenuItem>Billing</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuCheckboxItem
-              checked={dropdownChecked}
-              onCheckedChange={setDropdownChecked}
-            >
-              Show Notifications
-            </DropdownMenuCheckboxItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuRadioGroup
-              value={dropdownRadio}
-              onValueChange={setDropdownRadio}
-            >
-              <DropdownMenuRadioItem value="option-a">
-                Option A
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="option-b">
-                Option B
-              </DropdownMenuRadioItem>
-            </DropdownMenuRadioGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuSub>
-              <DropdownMenuSubTrigger>More Options</DropdownMenuSubTrigger>
-              <DropdownMenuSubContent>
-                <DropdownMenuItem>Sub Item 1</DropdownMenuItem>
-                <DropdownMenuItem>Sub Item 2</DropdownMenuItem>
-              </DropdownMenuSubContent>
-            </DropdownMenuSub>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive">
-              Sign Out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <ShowcaseExample
+          title="Dropdown with checkbox, radio, and submenu items"
+          code={`<DropdownMenu>
+  <DropdownMenuTrigger asChild>
+    <Button variant="outline">Open Menu</Button>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent className="w-56">
+    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+    <DropdownMenuSeparator />
+    <DropdownMenuItem>Profile</DropdownMenuItem>
+    <DropdownMenuSeparator />
+    <DropdownMenuCheckboxItem checked={checked} onCheckedChange={setChecked}>
+      Show Notifications
+    </DropdownMenuCheckboxItem>
+    <DropdownMenuSeparator />
+    <DropdownMenuRadioGroup value={radio} onValueChange={setRadio}>
+      <DropdownMenuRadioItem value="a">Option A</DropdownMenuRadioItem>
+      <DropdownMenuRadioItem value="b">Option B</DropdownMenuRadioItem>
+    </DropdownMenuRadioGroup>
+    <DropdownMenuSeparator />
+    <DropdownMenuSub>
+      <DropdownMenuSubTrigger>More Options</DropdownMenuSubTrigger>
+      <DropdownMenuSubContent>
+        <DropdownMenuItem>Sub Item 1</DropdownMenuItem>
+      </DropdownMenuSubContent>
+    </DropdownMenuSub>
+    <DropdownMenuSeparator />
+    <DropdownMenuItem className="text-destructive">Sign Out</DropdownMenuItem>
+  </DropdownMenuContent>
+</DropdownMenu>`}
+        >
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">Open Menu</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Profile</DropdownMenuItem>
+              <DropdownMenuItem>Billing</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuCheckboxItem
+                checked={dropdownChecked}
+                onCheckedChange={setDropdownChecked}
+              >
+                Show Notifications
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuRadioGroup
+                value={dropdownRadio}
+                onValueChange={setDropdownRadio}
+              >
+                <DropdownMenuRadioItem value="option-a">
+                  Option A
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="option-b">
+                  Option B
+                </DropdownMenuRadioItem>
+              </DropdownMenuRadioGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>More Options</DropdownMenuSubTrigger>
+                <DropdownMenuSubContent>
+                  <DropdownMenuItem>Sub Item 1</DropdownMenuItem>
+                  <DropdownMenuItem>Sub Item 2</DropdownMenuItem>
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="text-destructive">
+                Sign Out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </ShowcaseExample>
       </Section>
 
       <Section id="accordion" title="Accordion">
-        <Accordion type="single" collapsible className="w-full">
-          <AccordionItem value="item-1">
-            <AccordionTrigger>What is this component?</AccordionTrigger>
-            <AccordionContent>
-              An Accordion lets users show and hide sections of related content
-              on a page. Click any item to expand or collapse its content.
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-2">
-            <AccordionTrigger>When should I use it?</AccordionTrigger>
-            <AccordionContent>
-              Use accordions for FAQs, settings panels, or anywhere you want to
-              progressively disclose information without requiring navigation.
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-3">
-            <AccordionTrigger>Can multiple items be open?</AccordionTrigger>
-            <AccordionContent>
-              With <code className="font-mono text-xs">type="multiple"</code>,
-              yes. This showcase uses{" "}
-              <code className="font-mono text-xs">type="single"</code> so only
-              one item is open at a time.
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+        <ShowcaseExample
+          title="Single-open accordion"
+          code={`<Accordion type="single" collapsible className="w-full">
+  <AccordionItem value="item-1">
+    <AccordionTrigger>What is this component?</AccordionTrigger>
+    <AccordionContent>
+      An Accordion lets users show and hide sections of related content.
+    </AccordionContent>
+  </AccordionItem>
+</Accordion>
+
+// Allow multiple open at once:
+<Accordion type="multiple">...</Accordion>`}
+        >
+          <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="item-1">
+              <AccordionTrigger>What is this component?</AccordionTrigger>
+              <AccordionContent>
+                An Accordion lets users show and hide sections of related
+                content on a page. Click any item to expand or collapse its
+                content.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-2">
+              <AccordionTrigger>When should I use it?</AccordionTrigger>
+              <AccordionContent>
+                Use accordions for FAQs, settings panels, or anywhere you want
+                to progressively disclose information without requiring
+                navigation.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-3">
+              <AccordionTrigger>Can multiple items be open?</AccordionTrigger>
+              <AccordionContent>
+                With <code className="font-mono text-xs">type="multiple"</code>,
+                yes. This showcase uses{" "}
+                <code className="font-mono text-xs">type="single"</code> so only
+                one item is open at a time.
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </ShowcaseExample>
       </Section>
 
       <Section id="tabs" title="Tabs">
-        <Tabs defaultValue="overview">
-          <TabsList>
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="details">Details</TabsTrigger>
-            <TabsTrigger value="settings">Settings</TabsTrigger>
-          </TabsList>
-          <TabsContent value="overview" className="mt-4">
-            <p className="text-sm text-muted-foreground">
-              This is the Overview tab. Tabs are used to organize content into
-              distinct sections within the same page context.
-            </p>
-          </TabsContent>
-          <TabsContent value="details" className="mt-4">
-            <p className="text-sm text-muted-foreground">
-              This is the Details tab. Each panel is only rendered when its tab
-              is active, keeping the initial render lightweight.
-            </p>
-          </TabsContent>
-          <TabsContent value="settings" className="mt-4">
-            <p className="text-sm text-muted-foreground">
-              This is the Settings tab. You can place forms, data, or any other
-              components inside a tab panel.
-            </p>
-          </TabsContent>
-        </Tabs>
+        <ShowcaseExample
+          title="Tabs with multiple panels"
+          code={`<Tabs defaultValue="overview">
+  <TabsList>
+    <TabsTrigger value="overview">Overview</TabsTrigger>
+    <TabsTrigger value="details">Details</TabsTrigger>
+    <TabsTrigger value="settings">Settings</TabsTrigger>
+  </TabsList>
+  <TabsContent value="overview" className="mt-4">
+    Overview content...
+  </TabsContent>
+  <TabsContent value="details" className="mt-4">
+    Details content...
+  </TabsContent>
+</Tabs>`}
+        >
+          <Tabs defaultValue="overview">
+            <TabsList>
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="details">Details</TabsTrigger>
+              <TabsTrigger value="settings">Settings</TabsTrigger>
+            </TabsList>
+            <TabsContent value="overview" className="mt-4">
+              <p className="text-sm text-muted-foreground">
+                This is the Overview tab. Tabs are used to organize content into
+                distinct sections within the same page context.
+              </p>
+            </TabsContent>
+            <TabsContent value="details" className="mt-4">
+              <p className="text-sm text-muted-foreground">
+                This is the Details tab. Each panel is only rendered when its
+                tab is active, keeping the initial render lightweight.
+              </p>
+            </TabsContent>
+            <TabsContent value="settings" className="mt-4">
+              <p className="text-sm text-muted-foreground">
+                This is the Settings tab. You can place forms, data, or any
+                other components inside a tab panel.
+              </p>
+            </TabsContent>
+          </Tabs>
+        </ShowcaseExample>
       </Section>
 
       <Section id="avatar" title="Avatar">
-        <div className="flex items-end gap-4">
-          <Avatar className="h-16 w-16">
-            <AvatarFallback className="text-lg">AJ</AvatarFallback>
-          </Avatar>
-          <Avatar className="h-12 w-12">
-            <AvatarFallback>BS</AvatarFallback>
-          </Avatar>
-          <Avatar className="h-8 w-8">
-            <AvatarFallback className="text-xs">CW</AvatarFallback>
-          </Avatar>
-          <Avatar className="h-6 w-6">
-            <AvatarFallback className="text-[10px]">DX</AvatarFallback>
-          </Avatar>
-        </div>
+        <ShowcaseExample
+          title="Avatar sizes with initials fallback"
+          code={`// AvatarImage loads a photo; AvatarFallback shows when image is missing
+<Avatar className="h-12 w-12">
+  <AvatarImage src="/avatar.jpg" alt="Alice" />
+  <AvatarFallback>AJ</AvatarFallback>
+</Avatar>`}
+        >
+          <div className="flex items-end gap-4">
+            <Avatar className="h-16 w-16">
+              <AvatarFallback className="text-lg">AJ</AvatarFallback>
+            </Avatar>
+            <Avatar className="h-12 w-12">
+              <AvatarFallback>BS</AvatarFallback>
+            </Avatar>
+            <Avatar className="h-8 w-8">
+              <AvatarFallback className="text-xs">CW</AvatarFallback>
+            </Avatar>
+            <Avatar className="h-6 w-6">
+              <AvatarFallback className="text-[10px]">DX</AvatarFallback>
+            </Avatar>
+          </div>
+        </ShowcaseExample>
       </Section>
 
       <Section id="separator" title="Separator">
@@ -830,19 +1079,32 @@ function ComponentShowcasePage() {
       </Section>
 
       <Section id="skeleton" title="Skeleton">
-        <div className="space-y-4">
-          <div className="flex items-center gap-4">
-            <Skeleton className="h-12 w-12 rounded-full" />
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-48" />
-              <Skeleton className="h-4 w-32" />
+        <ShowcaseExample
+          title="Loading placeholder skeletons"
+          code={`// Skeleton matches the shape of the content it replaces
+<div className="flex items-center gap-4">
+  <Skeleton className="h-12 w-12 rounded-full" />
+  <div className="space-y-2">
+    <Skeleton className="h-4 w-48" />
+    <Skeleton className="h-4 w-32" />
+  </div>
+</div>
+<Skeleton className="h-32 w-full rounded-lg" />`}
+        >
+          <div className="space-y-4">
+            <div className="flex items-center gap-4">
+              <Skeleton className="h-12 w-12 rounded-full" />
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-48" />
+                <Skeleton className="h-4 w-32" />
+              </div>
             </div>
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-5/6" />
+            <Skeleton className="h-4 w-4/6" />
+            <Skeleton className="h-32 w-full rounded-lg" />
           </div>
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-5/6" />
-          <Skeleton className="h-4 w-4/6" />
-          <Skeleton className="h-32 w-full rounded-lg" />
-        </div>
+        </ShowcaseExample>
       </Section>
 
       <Section id="table" title="Table">
@@ -880,135 +1142,283 @@ function ComponentShowcasePage() {
       </Section>
 
       <Section id="scroll-area" title="Scroll Area">
-        <ScrollArea className="h-48 rounded-md border border-border">
-          <div className="space-y-2 p-4">
-            {Array.from({ length: 20 }, (_, i) => (
-              <div key={i} className="rounded-md bg-muted px-3 py-2 text-sm">
-                List item {i + 1} — scroll to see more content below
-              </div>
-            ))}
-          </div>
-        </ScrollArea>
+        <ShowcaseExample
+          title="Scrollable container with custom scrollbar"
+          code={`<ScrollArea className="h-48 rounded-md border border-border">
+  <div className="space-y-2 p-4">
+    {items.map((item, i) => (
+      <div key={i} className="rounded-md bg-muted px-3 py-2 text-sm">
+        {item}
+      </div>
+    ))}
+  </div>
+</ScrollArea>`}
+        >
+          <ScrollArea className="h-48 rounded-md border border-border">
+            <div className="space-y-2 p-4">
+              {Array.from({ length: 20 }, (_, i) => (
+                <div key={i} className="rounded-md bg-muted px-3 py-2 text-sm">
+                  List item {i + 1} — scroll to see more content below
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+        </ShowcaseExample>
       </Section>
 
       <Section id="command" title="Command Palette">
-        <Command className="rounded-lg border border-border shadow-sm">
-          <CommandInput placeholder="Type a command or search..." />
-          <CommandList>
-            <CommandEmpty>No results found.</CommandEmpty>
-            <CommandGroup heading="Pages">
-              <CommandItem>Dashboard</CommandItem>
-              <CommandItem>Analytics</CommandItem>
-              <CommandItem>Products</CommandItem>
-              <CommandItem>Orders</CommandItem>
-            </CommandGroup>
-            <CommandSeparator />
-            <CommandGroup heading="Actions">
-              <CommandItem>Create Product</CommandItem>
-              <CommandItem>Export CSV</CommandItem>
-              <CommandItem>Invite Team Member</CommandItem>
-            </CommandGroup>
-          </CommandList>
-        </Command>
+        <ShowcaseExample
+          title="Searchable command palette"
+          code={`<Command className="rounded-lg border border-border shadow-sm">
+  <CommandInput placeholder="Type a command or search..." />
+  <CommandList>
+    <CommandEmpty>No results found.</CommandEmpty>
+    <CommandGroup heading="Pages">
+      <CommandItem>Dashboard</CommandItem>
+      <CommandItem>Analytics</CommandItem>
+    </CommandGroup>
+    <CommandSeparator />
+    <CommandGroup heading="Actions">
+      <CommandItem>Create Product</CommandItem>
+    </CommandGroup>
+  </CommandList>
+</Command>`}
+        >
+          <Command className="rounded-lg border border-border shadow-sm">
+            <CommandInput placeholder="Type a command or search..." />
+            <CommandList>
+              <CommandEmpty>No results found.</CommandEmpty>
+              <CommandGroup heading="Pages">
+                <CommandItem>Dashboard</CommandItem>
+                <CommandItem>Analytics</CommandItem>
+                <CommandItem>Products</CommandItem>
+                <CommandItem>Orders</CommandItem>
+              </CommandGroup>
+              <CommandSeparator />
+              <CommandGroup heading="Actions">
+                <CommandItem>Create Product</CommandItem>
+                <CommandItem>Export CSV</CommandItem>
+                <CommandItem>Invite Team Member</CommandItem>
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </ShowcaseExample>
       </Section>
 
       <Section id="dashboard" title="Dashboard Components">
-        <div className="space-y-6">
-          <MetricGrid columns={4}>
-            <StatCard
-              label="Total Revenue"
-              value="$34,200"
-              icon={DollarSign}
-              trend={{ value: 12.5, isPositive: true }}
-            />
-            <StatCard
-              label="Orders"
-              value="1,240"
-              icon={ShoppingCart}
-              trend={{ value: 3.2, isPositive: false }}
-            />
-            <StatCard
-              label="Customers"
-              value="8,340"
-              icon={Users}
-              trend={{ value: 8.1, isPositive: true }}
-            />
-            <StatCard
-              label="Growth"
-              value="+22%"
-              icon={TrendingUp}
-              trend={{ value: 4.7, isPositive: true }}
-            />
-          </MetricGrid>
+        <ShowcaseExample
+          title="StatCard, KPICard, ProgressCard, ActivityFeed"
+          code={`// StatCard — metric with icon and trend
+<MetricGrid columns={4}>
+  <StatCard
+    label="Total Revenue"
+    value="$34,200"
+    icon={DollarSign}
+    trend={{ value: 12.5, isPositive: true }}
+  />
+</MetricGrid>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <KPICard
-              label="Monthly Revenue"
-              value="$7,200"
-              comparison="vs $6,100 last month"
-              sparklineData={[4200, 5800, 4900, 6700, 7200, 6100]}
-            />
-            <ProgressCard
-              label="Sales Target"
-              value={72000}
-              target={100000}
-              unit="$"
-            />
+// KPICard — value with sparkline and comparison
+<KPICard
+  label="Monthly Revenue"
+  value="$7,200"
+  comparison="vs $6,100 last month"
+  sparklineData={[4200, 5800, 4900, 6700, 7200, 6100]}
+/>
+
+// ProgressCard — value vs target
+<ProgressCard label="Sales Target" value={72000} target={100000} unit="$" />
+
+// ActivityFeed — timestamped event list
+<ActivityFeed items={activityItems} title="Recent Activity" />`}
+        >
+          <div className="space-y-6">
+            <MetricGrid columns={4}>
+              <StatCard
+                label="Total Revenue"
+                value="$34,200"
+                icon={DollarSign}
+                trend={{ value: 12.5, isPositive: true }}
+              />
+              <StatCard
+                label="Orders"
+                value="1,240"
+                icon={ShoppingCart}
+                trend={{ value: 3.2, isPositive: false }}
+              />
+              <StatCard
+                label="Customers"
+                value="8,340"
+                icon={Users}
+                trend={{ value: 8.1, isPositive: true }}
+              />
+              <StatCard
+                label="Growth"
+                value="+22%"
+                icon={TrendingUp}
+                trend={{ value: 4.7, isPositive: true }}
+              />
+            </MetricGrid>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <KPICard
+                label="Monthly Revenue"
+                value="$7,200"
+                comparison="vs $6,100 last month"
+                sparklineData={[4200, 5800, 4900, 6700, 7200, 6100]}
+              />
+              <ProgressCard
+                label="Sales Target"
+                value={72000}
+                target={100000}
+                unit="$"
+              />
+            </div>
+
+            <ActivityFeed items={activityItems} title="Recent Activity" />
           </div>
-
-          <ActivityFeed items={activityItems} title="Recent Activity" />
-        </div>
+        </ShowcaseExample>
       </Section>
 
       <Section id="charts" title="Charts">
-        <div className="grid gap-6 sm:grid-cols-2">
-          <ChartCard title="Revenue" description="Monthly revenue trend">
-            <AreaChart
-              data={monthlyData}
-              xKey="month"
-              yKeys={["revenue"]}
-              height={200}
-            />
-          </ChartCard>
-          <ChartCard title="Orders" description="Monthly order volume">
-            <BarChart
-              data={monthlyData}
-              xKey="month"
-              yKeys={["orders"]}
-              height={200}
-            />
-          </ChartCard>
-          <ChartCard
-            title="Revenue vs Orders"
-            description="Dual-axis line comparison"
-          >
-            <LineChart
-              data={monthlyData}
-              xKey="month"
-              yKeys={["revenue", "orders"]}
-              height={200}
-            />
-          </ChartCard>
-          <ChartCard
-            title="Category Breakdown"
-            description="Revenue by category"
-          >
-            <PieChart data={pieData} height={200} innerRadius={40} />
-          </ChartCard>
-        </div>
+        <ShowcaseExample
+          title="AreaChart, BarChart, LineChart, PieChart inside ChartCard"
+          code={`const data = [
+  { month: "Jan", revenue: 4200, orders: 120 },
+  { month: "Feb", revenue: 5800, orders: 165 },
+]
+
+// Wrap any chart in ChartCard for a titled container
+<ChartCard title="Revenue" description="Monthly revenue trend">
+  <AreaChart data={data} xKey="month" yKeys={["revenue"]} height={200} />
+</ChartCard>
+
+<ChartCard title="Orders" description="Monthly order volume">
+  <BarChart data={data} xKey="month" yKeys={["orders"]} height={200} />
+</ChartCard>
+
+// Multiple yKeys renders multiple series
+<ChartCard title="Revenue vs Orders">
+  <LineChart data={data} xKey="month" yKeys={["revenue", "orders"]} height={200} />
+</ChartCard>
+
+// Donut chart via innerRadius
+<ChartCard title="Category Breakdown">
+  <PieChart data={pieData} height={200} innerRadius={40} />
+</ChartCard>`}
+        >
+          <div className="grid gap-6 sm:grid-cols-2">
+            <ChartCard title="Revenue" description="Monthly revenue trend">
+              <AreaChart
+                data={monthlyData}
+                xKey="month"
+                yKeys={["revenue"]}
+                height={200}
+              />
+            </ChartCard>
+            <ChartCard title="Orders" description="Monthly order volume">
+              <BarChart
+                data={monthlyData}
+                xKey="month"
+                yKeys={["orders"]}
+                height={200}
+              />
+            </ChartCard>
+            <ChartCard
+              title="Revenue vs Orders"
+              description="Dual-axis line comparison"
+            >
+              <LineChart
+                data={monthlyData}
+                xKey="month"
+                yKeys={["revenue", "orders"]}
+                height={200}
+              />
+            </ChartCard>
+            <ChartCard
+              title="Category Breakdown"
+              description="Revenue by category"
+            >
+              <PieChart data={pieData} height={200} innerRadius={40} />
+            </ChartCard>
+          </div>
+        </ShowcaseExample>
       </Section>
 
       <Section id="data-table" title="Data Table">
-        <DataTable
-          columns={tableColumns}
-          data={tableData}
-          searchKey="name"
-          searchPlaceholder="Search products..."
-        />
+        <ShowcaseExample
+          title="DataTable with sortable columns and search"
+          code={`const columns: ColumnDef<Product>[] = [
+  {
+    accessorKey: "name",
+    header: ({ column }) => <ColumnHeader column={column} title="Name" />,
+  },
+  {
+    accessorKey: "price",
+    header: ({ column }) => <ColumnHeader column={column} title="Price" />,
+    cell: ({ row }) => \`$\${(row.getValue("price") as number).toFixed(2)}\`,
+  },
+]
+
+<DataTable
+  columns={columns}
+  data={products}
+  searchKey="name"
+  searchPlaceholder="Search products..."
+/>`}
+        >
+          <DataTable
+            columns={tableColumns}
+            data={tableData}
+            searchKey="name"
+            searchPlaceholder="Search products..."
+          />
+        </ShowcaseExample>
       </Section>
 
       <Section id="form-fields" title="Form Fields">
-        <ShowcaseFormFields />
+        <ShowcaseExample
+          title="TextField, TextareaField, NumberField, SelectField, SwitchField, RadioGroupField, CheckboxField"
+          code={`// Integrate with TanStack Form via form.Field
+const form = useForm({
+  defaultValues: { name: "", role: "", agree: false },
+  validators: { onChange: schema },
+  onSubmit: ({ value }) => console.log(value),
+})
+
+<form onSubmit={(e) => { e.preventDefault(); void form.handleSubmit() }}>
+  <FormSection title="Basic Info" description="Personal details">
+    <form.Field name="name" validators={{ onBlur: schema.shape.name }}>
+      {(field) => <TextField field={field} label="Full Name" placeholder="Jane Doe" />}
+    </form.Field>
+    <form.Field name="role">
+      {(field) => (
+        <SelectField
+          field={field}
+          label="Role"
+          placeholder="Select a role"
+          options={[
+            { label: "Admin", value: "admin" },
+            { label: "Editor", value: "editor" },
+          ]}
+        />
+      )}
+    </form.Field>
+  </FormSection>
+  <form.Subscribe selector={(s) => [s.canSubmit, s.isSubmitting]}>
+    {([canSubmit, isSubmitting]) => (
+      <FormActions
+        canSubmit={canSubmit as boolean}
+        isSubmitting={isSubmitting as boolean}
+        submitLabel="Submit"
+        onCancel={() => form.reset()}
+      />
+    )}
+  </form.Subscribe>
+</form>`}
+        >
+          <ShowcaseFormFields />
+        </ShowcaseExample>
       </Section>
 
       <Section id="typography" title="Typography">
