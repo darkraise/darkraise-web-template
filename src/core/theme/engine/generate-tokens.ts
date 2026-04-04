@@ -28,7 +28,7 @@ function getChartColors(
 
   return Array.from({ length: 5 }, (_, i) => {
     const colorIndex = (index + i * step) % count
-    const colorName = ACCENT_COLORS[colorIndex]
+    const colorName = ACCENT_COLORS[colorIndex] ?? accentColor
     return accentColors[colorName][shade]
   })
 }
@@ -83,11 +83,11 @@ export function generateTokens(
     "--primary-foreground": primaryForeground,
     "--ring": ringValue,
 
-    "--chart-1": chartColors[0],
-    "--chart-2": chartColors[1],
-    "--chart-3": chartColors[2],
-    "--chart-4": chartColors[3],
-    "--chart-5": chartColors[4],
+    "--chart-1": chartColors[0] ?? "",
+    "--chart-2": chartColors[1] ?? "",
+    "--chart-3": chartColors[2] ?? "",
+    "--chart-4": chartColors[3] ?? "",
+    "--chart-5": chartColors[4] ?? "",
 
     "--background": mode === "light" ? surface[50] : surface[950],
     "--foreground": foreground,
