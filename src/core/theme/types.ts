@@ -1,15 +1,114 @@
-export const THEMES = ["default", "emerald", "rose", "amber", "violet"] as const
-export type Theme = (typeof THEMES)[number]
+export const ACCENT_COLORS = [
+  "red",
+  "orange",
+  "amber",
+  "yellow",
+  "lime",
+  "green",
+  "emerald",
+  "teal",
+  "cyan",
+  "sky",
+  "blue",
+  "indigo",
+  "violet",
+  "purple",
+  "fuchsia",
+  "pink",
+  "rose",
+] as const
+export type AccentColor = (typeof ACCENT_COLORS)[number]
+
+export const SURFACE_COLORS = [
+  "slate",
+  "gray",
+  "cool",
+  "zinc",
+  "neutral",
+  "iron",
+  "mauve",
+  "graphite",
+  "stone",
+  "sand",
+  "olive",
+  "sepia",
+] as const
+export type SurfaceColor = (typeof SURFACE_COLORS)[number]
+
+export const SURFACE_STYLES = [
+  "default",
+  "flat",
+  "bordered",
+  "elevated",
+  "layered",
+  "glassmorphism",
+  "high-contrast",
+  "muted",
+  "compact",
+  "translucent",
+  "tinted",
+  "bold",
+] as const
+export type SurfaceStyle = (typeof SURFACE_STYLES)[number]
 
 export const MODES = ["light", "dark", "system"] as const
 export type Mode = (typeof MODES)[number]
 
 export type ResolvedMode = "light" | "dark"
 
+export type ColorScale = Record<
+  50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | 950,
+  string
+>
+
+export interface SurfaceStyleRecipe {
+  name: SurfaceStyle
+  label: string
+  description: string
+  tokens: {
+    surfaceRaised: (
+      scale: ColorScale,
+      mode: ResolvedMode,
+      accentScale?: ColorScale,
+    ) => string
+    surfaceOverlay: (scale: ColorScale, mode: ResolvedMode) => string
+    surfaceSunken: (scale: ColorScale, mode: ResolvedMode) => string
+    surfaceSidebar: (scale: ColorScale, mode: ResolvedMode) => string
+    surfaceHeader: (scale: ColorScale, mode: ResolvedMode) => string
+    borderSubtle: (scale: ColorScale, mode: ResolvedMode) => string
+    borderDefault: (scale: ColorScale, mode: ResolvedMode) => string
+  }
+  overrides: {
+    radius: string
+    shadowCard: string
+    shadowDropdown: string
+    backdropBlur: string
+    surfaceOpacity: string
+    borderWidth?: string
+    foreground?: (scale: ColorScale, mode: ResolvedMode) => string
+    border?: (scale: ColorScale, mode: ResolvedMode) => string
+    input?: (scale: ColorScale, mode: ResolvedMode) => string
+    accent?: (
+      scale: ColorScale,
+      mode: ResolvedMode,
+      accentScale?: ColorScale,
+    ) => string
+    accentForeground?: (
+      scale: ColorScale,
+      mode: ResolvedMode,
+      accentScale?: ColorScale,
+    ) => string
+  }
+}
+
 export interface ThemeContextValue {
-  theme: Theme
+  accentColor: AccentColor
+  surfaceColor: SurfaceColor
+  surfaceStyle: SurfaceStyle
   mode: Mode
   resolvedMode: ResolvedMode
-  setTheme: (theme: Theme) => void
+  setAccentColor: (color: AccentColor) => void
+  setSurfaceColor: (color: SurfaceColor) => void
+  setSurfaceStyle: (style: SurfaceStyle) => void
   setMode: (mode: Mode) => void
 }
