@@ -42,13 +42,16 @@ function generateGradient(
   const accent = accentColors[accentColor]
   const index = ACCENT_COLORS.indexOf(accentColor)
   const complementIndex = (index + 5) % ACCENT_COLORS.length
+  const secondIndex = (index + 8) % ACCENT_COLORS.length
   const complementName = ACCENT_COLORS[complementIndex] ?? accentColor
+  const secondName = ACCENT_COLORS[secondIndex] ?? accentColor
   const complement = accentColors[complementName]
+  const second = accentColors[secondName]
 
   if (mode === "light") {
-    return `linear-gradient(135deg, hsl(${accent[400]}) 0%, hsl(${accent[600]}) 40%, hsl(${complement[500]}) 100%)`
+    return `linear-gradient(135deg, hsl(${accent[300]} / 0.8) 0%, hsl(${complement[400]} / 0.7) 50%, hsl(${second[300]} / 0.6) 100%)`
   }
-  return `linear-gradient(135deg, hsl(${accent[800]}) 0%, hsl(${accent[900]}) 40%, hsl(${complement[900]}) 100%)`
+  return `linear-gradient(135deg, hsl(${accent[700]}) 0%, hsl(${complement[800]}) 50%, hsl(${second[800]}) 100%)`
 }
 
 export function generateTokens(
