@@ -218,6 +218,13 @@ export function generateTokens(
 
     "--font-sans": fontFamilies[fontFamily].sans,
     "--font-mono": fontFamilies[fontFamily].mono,
+
+    "--overlay-bg":
+      surfaceStyle === "glassmorphism" && mode === "light"
+        ? "0 0% 0%"
+        : "0 0% 0%",
+    "--overlay-opacity":
+      surfaceStyle === "glassmorphism" && mode === "light" ? "0.3" : "0.8",
   }
 
   return tokens

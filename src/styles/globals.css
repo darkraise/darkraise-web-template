@@ -90,6 +90,13 @@
       color 150ms ease-in-out;
   }
 
+  /* Dialog/sheet overlay — adapts to glassmorphism */
+  .dialog-overlay {
+    background-color: hsl(
+      var(--overlay-bg, 0 0% 0%) / var(--overlay-opacity, 0.8)
+    );
+  }
+
   /* Surface style tokens applied to cards, popovers, dialogs.
      Background transparency is handled by Tailwind color definitions
      (bg-card, bg-popover include --surface-opacity in their alpha channel),
