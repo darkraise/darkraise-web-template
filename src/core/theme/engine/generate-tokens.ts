@@ -52,6 +52,21 @@ function generateGradient(
   return `linear-gradient(135deg, hsl(${accent[900]}) 0%, hsl(${next[900]}) 50%, hsl(${third[950]}) 100%)`
 }
 
+function resolveOpacity(
+  style: SurfaceStyle,
+  bgStyle: BackgroundStyle,
+  mode: ResolvedMode,
+  defaultOpacity: string,
+): string {
+  if (style === "glassmorphism") {
+    if (bgStyle === "gradient") {
+      return mode === "light" ? "0.12" : "0.25"
+    }
+    return mode === "light" ? "0.35" : "0.35"
+  }
+  return defaultOpacity
+}
+
 export function generateTokens(
   input: GenerateTokensInput,
 ): Record<string, string> {
@@ -150,7 +165,12 @@ export function generateTokens(
       recipe.overrides.backdropBlur === "none"
         ? "none"
         : `blur(${recipe.overrides.backdropBlur})`,
-    "--surface-opacity": recipe.overrides.surfaceOpacity,
+    "--surface-opacity": resolveOpacity(
+      surfaceStyle,
+      backgroundStyle,
+      mode,
+      recipe.overrides.surfaceOpacity,
+    ),
 
     "--bg-style": backgroundStyle,
     "--bg-gradient":
