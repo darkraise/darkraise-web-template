@@ -49,9 +49,9 @@ function generateGradient(
   const third = accentColors[thirdName]
 
   if (mode === "light") {
-    return `linear-gradient(135deg, hsl(${accent[400]} / 0.55) 0%, hsl(${next[500]} / 0.45) 50%, hsl(${third[400]} / 0.4) 100%)`
+    return `linear-gradient(135deg, hsl(${accent[300]} / 0.5) 0%, hsl(${next[400]} / 0.4) 50%, hsl(${third[300]} / 0.35) 100%)`
   }
-  return `linear-gradient(135deg, hsl(${accent[600]} / 0.55) 0%, hsl(${next[700]} / 0.45) 50%, hsl(${third[600]} / 0.4) 100%)`
+  return `linear-gradient(135deg, hsl(${accent[600]} / 0.4) 0%, hsl(${next[700]} / 0.35) 50%, hsl(${third[600]} / 0.3) 100%)`
 }
 
 export function generateTokens(
