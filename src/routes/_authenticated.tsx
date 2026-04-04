@@ -8,6 +8,7 @@ import {
   Users,
   Inbox,
   Settings,
+  Palette,
 } from "lucide-react"
 import { SidebarLayout } from "@/core/layout"
 import { useAuthStore } from "@/features/auth"
@@ -38,6 +39,10 @@ const nav: NavGroup[] = [
   {
     label: "Messaging",
     items: [{ label: "Inbox", href: "/inbox", icon: Inbox }],
+  },
+  {
+    label: "Developer",
+    items: [{ label: "Components", href: "/components", icon: Palette }],
   },
   {
     label: "System",
