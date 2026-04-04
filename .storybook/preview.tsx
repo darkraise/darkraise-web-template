@@ -1,5 +1,17 @@
 import type { Preview } from "@storybook/react"
 import "../src/styles/globals.css"
+import { generateTokens } from "../src/core/theme/engine/generate-tokens"
+import {
+  ACCENT_COLORS,
+  SURFACE_COLORS,
+  SURFACE_STYLES,
+} from "../src/core/theme/types"
+import type {
+  AccentColor,
+  SurfaceColor,
+  SurfaceStyle,
+  ResolvedMode,
+} from "../src/core/theme/types"
 
 const preview: Preview = {
   parameters: {
@@ -11,12 +23,30 @@ const preview: Preview = {
     },
   },
   globalTypes: {
-    theme: {
-      description: "Color theme",
+    accentColor: {
+      description: "Accent color",
       toolbar: {
-        title: "Theme",
+        title: "Accent",
         icon: "paintbrush",
-        items: ["default", "emerald", "rose", "amber", "violet"],
+        items: [...ACCENT_COLORS],
+        dynamicTitle: true,
+      },
+    },
+    surfaceColor: {
+      description: "Surface color",
+      toolbar: {
+        title: "Surface",
+        icon: "photo",
+        items: [...SURFACE_COLORS],
+        dynamicTitle: true,
+      },
+    },
+    surfaceStyle: {
+      description: "Surface style",
+      toolbar: {
+        title: "Style",
+        icon: "component",
+        items: [...SURFACE_STYLES],
         dynamicTitle: true,
       },
     },
@@ -31,15 +61,33 @@ const preview: Preview = {
     },
   },
   initialGlobals: {
-    theme: "default",
+    accentColor: "blue",
+    surfaceColor: "slate",
+    surfaceStyle: "default",
     mode: "light",
   },
   decorators: [
     (Story, context) => {
-      const theme = context.globals.theme || "default"
-      const mode = context.globals.mode || "light"
-      document.documentElement.setAttribute("data-theme", theme)
+      const accentColor = (context.globals.accentColor || "blue") as AccentColor
+      const surfaceColor = (context.globals.surfaceColor ||
+        "slate") as SurfaceColor
+      const surfaceStyle = (context.globals.surfaceStyle ||
+        "default") as SurfaceStyle
+      const mode = (context.globals.mode || "light") as ResolvedMode
+
       document.documentElement.setAttribute("data-mode", mode)
+
+      const tokens = generateTokens({
+        accentColor,
+        surfaceColor,
+        surfaceStyle,
+        mode,
+      })
+
+      for (const [key, value] of Object.entries(tokens)) {
+        document.documentElement.style.setProperty(key, value)
+      }
+
       return <Story />
     },
   ],

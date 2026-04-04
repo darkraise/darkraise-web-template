@@ -1,5 +1,18 @@
 export { ThemeProvider } from "./theme-provider"
 export { ThemeSwitcher } from "./theme-switcher"
 export { useTheme } from "./use-theme"
-export { THEMES, MODES } from "./types"
-export type { Theme, Mode, ResolvedMode, ThemeContextValue } from "./types"
+export { generateTokens } from "./engine/generate-tokens"
+export { accentColors } from "./palettes/accent-colors"
+export { surfaceColors } from "./palettes/surface-colors"
+export { surfaceStyles } from "./styles/surface-styles"
+export { ACCENT_COLORS, SURFACE_COLORS, SURFACE_STYLES, MODES } from "./types"
+export type {
+  AccentColor,
+  SurfaceColor,
+  SurfaceStyle,
+  Mode,
+  ResolvedMode,
+  ColorScale,
+  SurfaceStyleRecipe,
+  ThemeContextValue,
+} from "./types"

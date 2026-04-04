@@ -7,17 +7,21 @@
     <title>Web Template</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
     <script>
-      (function () {
-        const theme = localStorage.getItem("theme") || "default";
-        const mode = localStorage.getItem("mode") || "system";
-        const resolved = mode === "system"
-          ? window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
-          : mode;
-        document.documentElement.setAttribute("data-theme", theme);
-        document.documentElement.setAttribute("data-mode", resolved);
-      })();
+      ;(function () {
+        var mode = localStorage.getItem("mode") || "system"
+        var resolved =
+          mode === "system"
+            ? window.matchMedia("(prefers-color-scheme: dark)").matches
+              ? "dark"
+              : "light"
+            : mode
+        document.documentElement.setAttribute("data-mode", resolved)
+      })()
     </script>
   </head>
   <body>
