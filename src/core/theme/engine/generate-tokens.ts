@@ -244,7 +244,7 @@ export function generateTokens(
 
     "--sidebar-gradient":
       backgroundStyle === "gradient"
-        ? `linear-gradient(180deg, hsl(${accent[mode === "light" ? 800 : 900]} / 0.95) 0%, hsl(${accent[mode === "light" ? 900 : 950]} / 0.98) 100%)`
+        ? generateGradient(accentColor, mode)
         : "none",
 
     "--content-gradient-overlay":
