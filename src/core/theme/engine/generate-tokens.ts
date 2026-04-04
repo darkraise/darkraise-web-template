@@ -97,7 +97,7 @@ export function generateTokens(
       : surface[800]
 
   if (surfaceStyle === "glassmorphism" && mode === "dark") {
-    border = backgroundStyle === "gradient" ? surface[500] : surface[600]
+    border = backgroundStyle === "gradient" ? surface[700] : surface[600]
   }
 
   const inputValue = recipe.overrides.input
