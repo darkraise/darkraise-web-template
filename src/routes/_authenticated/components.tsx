@@ -276,7 +276,7 @@ function SectionHeading({
   children: React.ReactNode
 }) {
   return (
-    <h2 id={id} className="scroll-mt-20 text-xl font-semibold text-foreground">
+    <h2 id={id} className="scroll-mt-52 text-xl font-semibold text-foreground">
       {children}
     </h2>
   )
@@ -1043,19 +1043,50 @@ function ComponentShowcasePage() {
             </p>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
               {[
-                { token: "bg-surface-base", label: "surface-base" },
-                { token: "bg-surface-raised", label: "surface-raised" },
-                { token: "bg-surface-overlay", label: "surface-overlay" },
-                { token: "bg-surface-sunken", label: "surface-sunken" },
-                { token: "bg-surface-sidebar", label: "surface-sidebar" },
-                { token: "bg-surface-header", label: "surface-header" },
-              ].map(({ token, label }) => (
+                {
+                  token: "bg-surface-base",
+                  label: "surface-base",
+                  dark: false,
+                },
+                {
+                  token: "bg-surface-raised",
+                  label: "surface-raised",
+                  dark: false,
+                },
+                {
+                  token: "bg-surface-overlay",
+                  label: "surface-overlay",
+                  dark: false,
+                },
+                {
+                  token: "bg-surface-sunken",
+                  label: "surface-sunken",
+                  dark: false,
+                },
+                {
+                  token: "bg-surface-sidebar",
+                  label: "surface-sidebar",
+                  dark: true,
+                },
+                {
+                  token: "bg-surface-header",
+                  label: "surface-header",
+                  dark: false,
+                },
+              ].map(({ token, label, dark }) => (
                 <div
                   key={token}
-                  className={`${token} rounded-lg p-4 ring-1 ring-border`}
+                  className={`${token} flex h-24 flex-col justify-end rounded-lg p-4 ring-1 ring-border`}
                 >
-                  <p className="font-mono text-xs text-muted-foreground">
+                  <p
+                    className={`font-mono text-xs font-medium ${dark ? "text-white" : "text-foreground"}`}
+                  >
                     {label}
+                  </p>
+                  <p
+                    className={`font-mono text-[10px] ${dark ? "text-white/60" : "text-muted-foreground"}`}
+                  >
+                    var(--{label})
                   </p>
                 </div>
               ))}

@@ -6,6 +6,12 @@ dist-ssr
 .env.*
 !.env.example
 *.tsbuildinfo
+*.config.d.ts
+vite.config.js
+tailwind.config.js
+vitest.config.js
+playwright.config.js
+commitlint.config.js
 coverage
 test-results
 playwright-report
