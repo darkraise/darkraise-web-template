@@ -7,6 +7,7 @@ export { surfaceStyles } from "./styles/surface-styles"
 export { fontFamilies } from "./palettes/font-families"
 export {
   ACCENT_COLORS,
+  SURFACE_COLORS,
   SURFACE_STYLES,
   BACKGROUND_STYLES,
   FONT_FAMILIES,
@@ -14,6 +15,7 @@ export {
 } from "./types"
 export type {
   AccentColor,
+  SurfaceColor,
   BackgroundStyle,
   SurfaceStyle,
   FontFamily,

@@ -78,7 +78,7 @@
   h1,
   h2,
   h3 {
-    @apply tracking-tight;
+    @apply font-heading tracking-tight;
   }
 
   /* Background style: gradient applies to main content area */

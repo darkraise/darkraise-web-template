@@ -1,6 +1,7 @@
 import type {
   AccentColor,
   BackgroundStyle,
+  SurfaceColor,
   SurfaceStyle,
   ResolvedMode,
   ColorScale,
@@ -14,6 +15,7 @@ import { fontFamilies } from "../palettes/font-families"
 
 export interface GenerateTokensInput {
   accentColor: AccentColor
+  surfaceColor: SurfaceColor
   surfaceStyle: SurfaceStyle
   backgroundStyle: BackgroundStyle
   fontFamily: FontFamily
@@ -70,6 +72,26 @@ function resolveOpacity(
   return defaultOpacity
 }
 
+function tintScale(
+  scale: ColorScale,
+  neutral: ColorScale,
+  satFactor: number,
+  useNeutralLightness: boolean,
+): ColorScale {
+  const steps = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950] as const
+  const result = {} as Record<number, string>
+  for (const step of steps) {
+    const parts = scale[step].split(" ")
+    const h = parts[0] ?? "0"
+    const s = parseFloat(parts[1] ?? "0")
+    const l = useNeutralLightness
+      ? (neutral[step].split(" ")[2] ?? "0%")
+      : (parts[2] ?? "0%")
+    result[step] = `${h} ${(s * satFactor).toFixed(0)}% ${l}`
+  }
+  return result as ColorScale
+}
+
 function isSidebarDark(_style: SurfaceStyle, mode: ResolvedMode): boolean {
   return mode === "dark"
 }
@@ -77,13 +99,31 @@ function isSidebarDark(_style: SurfaceStyle, mode: ResolvedMode): boolean {
 export function generateTokens(
   input: GenerateTokensInput,
 ): Record<string, string> {
-  const { accentColor, surfaceStyle, backgroundStyle, fontFamily, mode } = input
+  const {
+    accentColor,
+    surfaceColor,
+    surfaceStyle,
+    backgroundStyle,
+    fontFamily,
+    mode,
+  } = input
 
   const accent: ColorScale = accentColors[accentColor]
-  const surface: ColorScale = surfaceColors.slate as ColorScale
+  const neutral: ColorScale = surfaceColors.slate as ColorScale
+  const surface: ColorScale =
+    surfaceColor === "slate"
+      ? neutral
+      : tintScale(
+          accentColors[surfaceColor],
+          neutral,
+          mode === "light" ? 0.4 : 0.35,
+          mode === "dark",
+        )
   const recipe = surfaceStyles[surfaceStyle]
 
   const isLightAccent = LIGHT_ACCENT_COLORS.has(accentColor)
+  const isRedishAccent =
+    accentColor === "red" || accentColor === "rose" || accentColor === "pink"
 
   const primaryShade = mode === "light" ? 500 : 400
   const primaryForeground = isLightAccent ? accent[950] : "0 0% 100%"
@@ -92,10 +132,10 @@ export function generateTokens(
   const chartColors = getChartColors(accentColor, mode)
 
   const foreground = recipe.overrides.foreground
-    ? recipe.overrides.foreground(surface, mode)
+    ? recipe.overrides.foreground(neutral, mode)
     : mode === "light"
-      ? surface[900]
-      : surface[50]
+      ? neutral[900]
+      : neutral[50]
 
   let border = recipe.overrides.border
     ? recipe.overrides.border(surface, mode)
@@ -113,18 +153,6 @@ export function generateTokens(
     ? recipe.overrides.input(surface, mode)
     : border
 
-  const accentToken = recipe.overrides.accent
-    ? recipe.overrides.accent(surface, mode, accent)
-    : mode === "light"
-      ? surface[100]
-      : surface[800]
-
-  const accentForeground = recipe.overrides.accentForeground
-    ? recipe.overrides.accentForeground(surface, mode, accent)
-    : mode === "light"
-      ? surface[900]
-      : surface[50]
-
   const tokens: Record<string, string> = {
     "--primary": accent[primaryShade],
     "--primary-foreground": primaryForeground,
@@ -140,47 +168,53 @@ export function generateTokens(
     "--foreground": foreground,
 
     "--card": mode === "light" ? "0 0% 100%" : surface[900],
-    "--card-foreground": mode === "light" ? surface[900] : surface[50],
+    "--card-foreground": mode === "light" ? neutral[900] : neutral[50],
 
     "--popover": mode === "light" ? "0 0% 100%" : surface[900],
-    "--popover-foreground": mode === "light" ? surface[900] : surface[50],
+    "--popover-foreground": mode === "light" ? neutral[900] : neutral[50],
 
     "--secondary": mode === "light" ? surface[100] : surface[800],
-    "--secondary-foreground": mode === "light" ? surface[900] : surface[50],
+    "--secondary-foreground": mode === "light" ? neutral[900] : neutral[50],
 
     "--muted": mode === "light" ? surface[100] : surface[800],
-    "--muted-foreground": mode === "light" ? surface[500] : surface[400],
+    "--muted-foreground": mode === "light" ? neutral[500] : neutral[400],
 
-    "--accent": accentToken,
-    "--accent-foreground": accentForeground,
+    "--accent": mode === "light" ? surface[100] : surface[800],
+    "--accent-foreground": mode === "light" ? neutral[900] : neutral[50],
 
-    "--destructive": mode === "light" ? "0 84% 60%" : "0 72% 51%",
+    "--destructive": isRedishAccent
+      ? mode === "light"
+        ? "25 95% 53%"
+        : "21 90% 48%"
+      : mode === "light"
+        ? "0 84% 60%"
+        : "0 72% 51%",
     "--destructive-foreground": "0 0% 100%",
 
     "--border": border,
     "--input": inputValue,
 
     "--surface-base": mode === "light" ? surface[50] : surface[950],
-    "--surface-raised": recipe.tokens.surfaceRaised(surface, mode, accent),
+    "--surface-raised": recipe.tokens.surfaceRaised(surface, mode),
     "--surface-overlay": recipe.tokens.surfaceOverlay(surface, mode),
     "--surface-sunken": recipe.tokens.surfaceSunken(surface, mode),
     "--surface-sidebar": recipe.tokens.surfaceSidebar(surface, mode),
     "--sidebar-foreground": isSidebarDark(surfaceStyle, mode)
-      ? surface[300]
-      : surface[600],
+      ? neutral[300]
+      : neutral[600],
     "--sidebar-foreground-hover": isSidebarDark(surfaceStyle, mode)
       ? "0 0% 100%"
-      : surface[900],
+      : neutral[900],
     "--sidebar-foreground-muted": isSidebarDark(surfaceStyle, mode)
-      ? surface[500]
-      : surface[400],
+      ? neutral[500]
+      : neutral[400],
     "--sidebar-border": isSidebarDark(surfaceStyle, mode)
       ? "0 0% 100% / 0.1"
       : surface[200],
     "--sidebar-hover-bg": isSidebarDark(surfaceStyle, mode)
-      ? "0 0% 100% / 0.1"
-      : surface[100],
-    "--surface-header": recipe.tokens.surfaceHeader(surface, mode, accent),
+      ? `${accent[500]} / 0.15`
+      : accent[100],
+    "--surface-header": recipe.tokens.surfaceHeader(surface, mode),
 
     "--border-subtle": recipe.tokens.borderSubtle(surface, mode),
     "--border-default": recipe.tokens.borderDefault(surface, mode),
@@ -214,9 +248,12 @@ export function generateTokens(
     "--content-gradient-overlay":
       backgroundStyle === "gradient" && surfaceStyle !== "glassmorphism"
         ? `linear-gradient(135deg, hsl(${accent[mode === "light" ? 100 : 900]} / 0.4) 0%, transparent 60%)`
-        : "none",
+        : surfaceStyle === "glassmorphism" && backgroundStyle === "solid"
+          ? `linear-gradient(135deg, hsl(${accent[mode === "light" ? 200 : 800]} / 0.2) 0%, transparent 70%)`
+          : "none",
 
     "--font-sans": fontFamilies[fontFamily].sans,
+    "--font-heading": fontFamilies[fontFamily].heading,
     "--font-mono": fontFamilies[fontFamily].mono,
   }
 

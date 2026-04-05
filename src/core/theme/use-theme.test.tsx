@@ -51,6 +51,7 @@ describe("useTheme", () => {
   it("returns default axis values", () => {
     const { result } = renderHook(() => useTheme(), { wrapper })
     expect(result.current.accentColor).toBe("blue")
+    expect(result.current.surfaceColor).toBe("slate")
     expect(result.current.surfaceStyle).toBe("default")
     expect(result.current.mode).toBe("system")
   })
@@ -93,12 +94,21 @@ describe("useTheme", () => {
 
   it("reads persisted values from localStorage on mount", () => {
     storageMock.setItem("theme-accent", "emerald")
-    storageMock.setItem("theme-style", "flat")
+    storageMock.setItem("theme-surface-color", "teal")
+    storageMock.setItem("theme-style", "glassmorphism")
     storageMock.setItem("mode", "dark")
 
     const { result } = renderHook(() => useTheme(), { wrapper })
     expect(result.current.accentColor).toBe("emerald")
-    expect(result.current.surfaceStyle).toBe("flat")
+    expect(result.current.surfaceColor).toBe("teal")
+    expect(result.current.surfaceStyle).toBe("glassmorphism")
     expect(result.current.mode).toBe("dark")
+  })
+
+  it("setSurfaceColor updates surfaceColor and persists to localStorage", () => {
+    const { result } = renderHook(() => useTheme(), { wrapper })
+    act(() => result.current.setSurfaceColor("emerald"))
+    expect(result.current.surfaceColor).toBe("emerald")
+    expect(localStorage.getItem("theme-surface-color")).toBe("emerald")
   })
 })

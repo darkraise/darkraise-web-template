@@ -23,5 +23,6 @@ export function applyFontFamily(family: FontFamily): void {
   const definition = fontFamilies[family]
   const style = document.documentElement.style
   style.setProperty("--font-sans", definition.sans)
+  style.setProperty("--font-heading", definition.heading)
   style.setProperty("--font-mono", definition.mono)
 }

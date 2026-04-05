@@ -9,6 +9,10 @@ const config: Config = {
     extend: {
       fontFamily: {
         sans: ["var(--font-sans, Inter)", ...defaultTheme.fontFamily.sans],
+        heading: [
+          "var(--font-heading, Inter)",
+          ...defaultTheme.fontFamily.sans,
+        ],
         mono: [
           "var(--font-mono, JetBrains Mono)",
           ...defaultTheme.fontFamily.mono,

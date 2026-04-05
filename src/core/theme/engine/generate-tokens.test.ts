@@ -5,6 +5,7 @@ describe("generateTokens", () => {
   it("produces all expected token keys for the default combination", () => {
     const tokens = generateTokens({
       accentColor: "blue",
+      surfaceColor: "slate",
       surfaceStyle: "default",
       backgroundStyle: "solid",
       fontFamily: "default",
@@ -49,6 +50,7 @@ describe("generateTokens", () => {
       "--shadow-dropdown",
       "--backdrop-blur",
       "--surface-opacity",
+      "--font-heading",
     ]
 
     for (const key of expectedKeys) {
@@ -60,6 +62,7 @@ describe("generateTokens", () => {
   it("uses shade 500 for primary in light mode and shade 400 in dark mode", () => {
     const light = generateTokens({
       accentColor: "blue",
+      surfaceColor: "slate",
       surfaceStyle: "default",
       backgroundStyle: "solid",
       fontFamily: "default",
@@ -67,6 +70,7 @@ describe("generateTokens", () => {
     })
     const dark = generateTokens({
       accentColor: "blue",
+      surfaceColor: "slate",
       surfaceStyle: "default",
       backgroundStyle: "solid",
       fontFamily: "default",
@@ -80,6 +84,7 @@ describe("generateTokens", () => {
   it("uses dark foreground for light accent colors (amber, yellow, lime)", () => {
     const amber = generateTokens({
       accentColor: "amber",
+      surfaceColor: "slate",
       surfaceStyle: "default",
       backgroundStyle: "solid",
       fontFamily: "default",
@@ -89,6 +94,7 @@ describe("generateTokens", () => {
 
     const blue = generateTokens({
       accentColor: "blue",
+      surfaceColor: "slate",
       surfaceStyle: "default",
       backgroundStyle: "solid",
       fontFamily: "default",
@@ -100,6 +106,7 @@ describe("generateTokens", () => {
   it("dark mode flips background to step 950 and foreground to step 50", () => {
     const tokens = generateTokens({
       accentColor: "blue",
+      surfaceColor: "slate",
       surfaceStyle: "default",
       backgroundStyle: "solid",
       fontFamily: "default",
@@ -110,34 +117,10 @@ describe("generateTokens", () => {
     expect(tokens["--foreground"]).toBe("210 40% 98%")
   })
 
-  it("tinted style uses accent palette for surface-raised", () => {
-    const tokens = generateTokens({
-      accentColor: "blue",
-      surfaceStyle: "tinted",
-      backgroundStyle: "solid",
-      fontFamily: "default",
-      mode: "light",
-    })
-
-    expect(tokens["--surface-raised"]).toBe("214 100% 97%")
-  })
-
-  it("tinted style uses accent palette for accent token", () => {
-    const tokens = generateTokens({
-      accentColor: "blue",
-      surfaceStyle: "tinted",
-      backgroundStyle: "solid",
-      fontFamily: "default",
-      mode: "light",
-    })
-
-    expect(tokens["--accent"]).toBe("214 95% 93%")
-    expect(tokens["--accent-foreground"]).toBe("224 64% 33%")
-  })
-
   it("derives chart colors from evenly spaced accent palettes", () => {
     const tokens = generateTokens({
       accentColor: "blue",
+      surfaceColor: "slate",
       surfaceStyle: "default",
       backgroundStyle: "solid",
       fontFamily: "default",
@@ -163,6 +146,7 @@ describe("generateTokens", () => {
   it("glassmorphism style sets backdrop-blur and reduced opacity", () => {
     const tokens = generateTokens({
       accentColor: "blue",
+      surfaceColor: "slate",
       surfaceStyle: "glassmorphism",
       backgroundStyle: "solid",
       fontFamily: "default",
@@ -176,6 +160,7 @@ describe("generateTokens", () => {
   it("destructive uses red-500 for light and red-600 for dark", () => {
     const light = generateTokens({
       accentColor: "blue",
+      surfaceColor: "slate",
       surfaceStyle: "default",
       backgroundStyle: "solid",
       fontFamily: "default",
@@ -183,6 +168,7 @@ describe("generateTokens", () => {
     })
     const dark = generateTokens({
       accentColor: "blue",
+      surfaceColor: "slate",
       surfaceStyle: "default",
       backgroundStyle: "solid",
       fontFamily: "default",
@@ -196,6 +182,7 @@ describe("generateTokens", () => {
   it("emits font tokens for the selected font family", () => {
     const tokens = generateTokens({
       accentColor: "blue",
+      surfaceColor: "slate",
       surfaceStyle: "default",
       backgroundStyle: "solid",
       fontFamily: "humanist",
@@ -203,6 +190,49 @@ describe("generateTokens", () => {
     })
 
     expect(tokens["--font-sans"]).toBe("DM Sans")
+    expect(tokens["--font-heading"]).toBe("DM Sans")
     expect(tokens["--font-mono"]).toBe("DM Mono")
+  })
+
+  it("uses desaturated accent color scale as surface when surfaceColor is set", () => {
+    const tokens = generateTokens({
+      accentColor: "blue",
+      surfaceColor: "red",
+      surfaceStyle: "default",
+      backgroundStyle: "solid",
+      fontFamily: "default",
+      mode: "light",
+    })
+
+    expect(tokens["--background"]).toBe("0 34% 97%")
+    expect(tokens["--foreground"]).toBe("222 47% 11%")
+  })
+
+  it("surfaceColor slate produces identical tokens to the original behavior", () => {
+    const tokens = generateTokens({
+      accentColor: "blue",
+      surfaceColor: "slate",
+      surfaceStyle: "default",
+      backgroundStyle: "solid",
+      fontFamily: "default",
+      mode: "light",
+    })
+
+    expect(tokens["--background"]).toBe("210 40% 98%")
+    expect(tokens["--foreground"]).toBe("222 47% 11%")
+  })
+
+  it("dark mode with accent surface color uses shade 950 for background", () => {
+    const tokens = generateTokens({
+      accentColor: "blue",
+      surfaceColor: "emerald",
+      surfaceStyle: "default",
+      backgroundStyle: "solid",
+      fontFamily: "default",
+      mode: "dark",
+    })
+
+    expect(tokens["--background"]).toBe("166 32% 5%")
+    expect(tokens["--foreground"]).toBe("210 40% 98%")
   })
 })

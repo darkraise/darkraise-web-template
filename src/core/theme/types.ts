@@ -19,12 +19,10 @@ export const ACCENT_COLORS = [
 ] as const
 export type AccentColor = (typeof ACCENT_COLORS)[number]
 
-export const SURFACE_STYLES = [
-  "default",
-  "flat",
-  "glassmorphism",
-  "tinted",
-] as const
+export const SURFACE_COLORS = ["slate", ...ACCENT_COLORS] as const
+export type SurfaceColor = (typeof SURFACE_COLORS)[number]
+
+export const SURFACE_STYLES = ["default", "glassmorphism"] as const
 export type SurfaceStyle = (typeof SURFACE_STYLES)[number]
 
 export const BACKGROUND_STYLES = ["solid", "gradient"] as const
@@ -54,19 +52,11 @@ export interface SurfaceStyleRecipe {
   label: string
   description: string
   tokens: {
-    surfaceRaised: (
-      scale: ColorScale,
-      mode: ResolvedMode,
-      accentScale?: ColorScale,
-    ) => string
+    surfaceRaised: (scale: ColorScale, mode: ResolvedMode) => string
     surfaceOverlay: (scale: ColorScale, mode: ResolvedMode) => string
     surfaceSunken: (scale: ColorScale, mode: ResolvedMode) => string
     surfaceSidebar: (scale: ColorScale, mode: ResolvedMode) => string
-    surfaceHeader: (
-      scale: ColorScale,
-      mode: ResolvedMode,
-      accentScale?: ColorScale,
-    ) => string
+    surfaceHeader: (scale: ColorScale, mode: ResolvedMode) => string
     borderSubtle: (scale: ColorScale, mode: ResolvedMode) => string
     borderDefault: (scale: ColorScale, mode: ResolvedMode) => string
   }
@@ -76,31 +66,22 @@ export interface SurfaceStyleRecipe {
     shadowDropdown: string
     backdropBlur: string
     surfaceOpacity: string
-    borderWidth?: string
     foreground?: (scale: ColorScale, mode: ResolvedMode) => string
     border?: (scale: ColorScale, mode: ResolvedMode) => string
     input?: (scale: ColorScale, mode: ResolvedMode) => string
-    accent?: (
-      scale: ColorScale,
-      mode: ResolvedMode,
-      accentScale?: ColorScale,
-    ) => string
-    accentForeground?: (
-      scale: ColorScale,
-      mode: ResolvedMode,
-      accentScale?: ColorScale,
-    ) => string
   }
 }
 
 export interface ThemeContextValue {
   accentColor: AccentColor
+  surfaceColor: SurfaceColor
   surfaceStyle: SurfaceStyle
   backgroundStyle: BackgroundStyle
   fontFamily: FontFamily
   mode: Mode
   resolvedMode: ResolvedMode
   setAccentColor: (color: AccentColor) => void
+  setSurfaceColor: (color: SurfaceColor) => void
   setSurfaceStyle: (style: SurfaceStyle) => void
   setBackgroundStyle: (style: BackgroundStyle) => void
   setFontFamily: (font: FontFamily) => void

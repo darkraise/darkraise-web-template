@@ -9,10 +9,16 @@ import { Label } from "@/core/components/ui/label"
 import { Separator } from "@/core/components/ui/separator"
 import { cn } from "@/core/lib/utils"
 import { useTheme } from "./use-theme"
-import { ACCENT_COLORS, SURFACE_STYLES, FONT_FAMILIES } from "./types"
+import {
+  ACCENT_COLORS,
+  SURFACE_COLORS,
+  SURFACE_STYLES,
+  FONT_FAMILIES,
+} from "./types"
 import type {
   Mode,
   AccentColor,
+  SurfaceColor,
   BackgroundStyle,
   SurfaceStyle,
   FontFamily,
@@ -30,11 +36,13 @@ const modeOptions: { value: Mode; icon: typeof Sun; label: string }[] = [
 export function ThemeSwitcher() {
   const {
     accentColor,
+    surfaceColor,
     surfaceStyle,
     backgroundStyle,
     fontFamily,
     mode,
     setAccentColor,
+    setSurfaceColor,
     setSurfaceStyle,
     setBackgroundStyle,
     setFontFamily,
@@ -128,6 +136,42 @@ export function ThemeSwitcher() {
               ))}
             </div>
           </div>
+
+          {backgroundStyle === "solid" && (
+            <>
+              <Separator />
+              <div>
+                <Label className="text-xs font-medium text-muted-foreground">
+                  Surface Color
+                </Label>
+                <div className="mt-1.5 grid grid-cols-9 gap-1.5">
+                  {SURFACE_COLORS.map((color: SurfaceColor) => {
+                    const previewHsl =
+                      color === "slate"
+                        ? "215 16% 47%"
+                        : accentColors[color][500]
+                    return (
+                      <button
+                        key={color}
+                        type="button"
+                        title={color}
+                        className={cn(
+                          "h-6 w-6 rounded-full border-2 transition-transform hover:scale-110",
+                          surfaceColor === color
+                            ? "scale-110 border-foreground"
+                            : "border-transparent",
+                        )}
+                        style={{
+                          backgroundColor: `hsl(${previewHsl})`,
+                        }}
+                        onClick={() => setSurfaceColor(color)}
+                      />
+                    )
+                  })}
+                </div>
+              </div>
+            </>
+          )}
 
           <Separator />
 
