@@ -72,11 +72,26 @@ const removeDirs = [
   "src/features/data-table",
   "src/features/products",
   "create-app",
+  "docs",
+  ".tanstack",
   "e2e",
   "playwright-report",
   "test-results",
   "dist",
 ]
+
+const removeFiles = [
+  "playwright.config.ts",
+  "components.json",
+]
+
+for (const file of removeFiles) {
+  const fullPath = resolve(projectDir, file)
+  if (existsSync(fullPath)) {
+    rmSync(fullPath)
+    console.log(`  Removed ${file}`)
+  }
+}
 
 if (!config.auth) {
   removeDirs.push("src/features/auth")
