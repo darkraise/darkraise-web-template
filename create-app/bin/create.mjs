@@ -29,6 +29,7 @@ const argv = minimist(process.argv.slice(2), {
   string: [
     "layout", "accent", "surface-color", "surface-style",
     "background", "font", "mode", "theme-axes",
+    "host", "port",
   ],
   alias: { y: "yes" },
 })
@@ -227,6 +228,31 @@ async function main() {
     )
   }
 
+  // --- Server ---
+  const host = argv.host || (skipPrompts ? "localhost" : cancelled(
+    await p.text({
+      message: "Dev server host",
+      placeholder: "localhost",
+      initialValue: "localhost",
+    }),
+  ))
+
+  const port = argv.port
+    ? Number(argv.port)
+    : skipPrompts
+      ? 5173
+      : Number(cancelled(
+          await p.text({
+            message: "Dev server port",
+            placeholder: "5173",
+            initialValue: "5173",
+            validate: (v) => {
+              const n = Number(v)
+              if (!Number.isInteger(n) || n < 1 || n > 65535) return "Must be a valid port (1-65535)"
+            },
+          }),
+        ))
+
   // --- Scaffold ---
   const config = {
     layout,
@@ -247,6 +273,7 @@ async function main() {
       },
     },
     auth: includeAuth,
+    server: { host, port },
   }
 
   p.log.step("Cloning template...")

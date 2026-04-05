@@ -49,6 +49,7 @@ const defaultConfig = {
     },
   },
   auth: true,
+  server: { host: "localhost", port: 5173 },
 }
 
 let config = defaultConfig
@@ -234,7 +235,28 @@ html = html.replace("<title>Web Template</title>", `<title>${projectName}</title
 writeFileSync(htmlPath, html)
 console.log("  Updated index.html title")
 
-// 7. Clean up init script and scripts dir
+// 7. Generate vite.config.ts
+const viteConfig = `import { defineConfig } from "vite"
+import react from "@vitejs/plugin-react-swc"
+import path from "node:path"
+
+export default defineConfig({
+  plugins: [react()],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
+  server: {
+    host: "${config.server.host}",
+    port: ${config.server.port},
+  },
+})
+`
+writeFileSync(resolve(projectDir, "vite.config.ts"), viteConfig)
+console.log("  Generated vite.config.ts")
+
+// 8. Clean up init script and scripts dir
 rmSync(resolve(projectDir, "scripts"), { recursive: true })
 console.log("  Removed scripts/")
 

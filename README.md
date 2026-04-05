@@ -27,7 +27,9 @@ npm create darkraise-web-template my-app \
   --mode system \
   --theme-switcher \
   --theme-axes mode,accentColor,surfaceColor,surfaceStyle,backgroundStyle,fontFamily \
-  --no-auth
+  --no-auth \
+  --host localhost \
+  --port 5173
 ```
 
 | Flag                                       | Values                                                    | Default       |
@@ -42,6 +44,8 @@ npm create darkraise-web-template my-app \
 | `--theme-switcher` / `--no-theme-switcher` | boolean                                                   | enabled       |
 | `--theme-axes`                             | comma-separated axis names                                | all axes      |
 | `--no-auth`                                | boolean                                                   | auth included |
+| `--host`                                   | hostname or IP                                            | `localhost`   |
+| `--port`                                   | `1`-`65535`                                               | `5173`        |
 | `-y`                                       | skip all prompts, use defaults                            |               |
 
 ## What's Included
