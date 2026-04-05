@@ -7,6 +7,24 @@ const projectDir = resolve(import.meta.dirname, "..")
 const args = process.argv.slice(2)
 const projectName = args[0] || basename(projectDir)
 
+function deepMerge(target, source) {
+  const result = { ...target }
+  for (const key of Object.keys(source)) {
+    if (
+      source[key] !== null &&
+      typeof source[key] === "object" &&
+      !Array.isArray(source[key]) &&
+      typeof target[key] === "object" &&
+      target[key] !== null
+    ) {
+      result[key] = deepMerge(target[key], source[key])
+    } else {
+      result[key] = source[key]
+    }
+  }
+  return result
+}
+
 const defaultConfig = {
   layout: "sidebar",
   theme: {
@@ -36,7 +54,7 @@ const defaultConfig = {
 let config = defaultConfig
 if (args[1]) {
   try {
-    config = { ...defaultConfig, ...JSON.parse(args[1]) }
+    config = deepMerge(defaultConfig, JSON.parse(args[1]))
   } catch {
     console.error("Warning: could not parse config JSON, using defaults.")
   }
@@ -137,15 +155,18 @@ const layoutMap = {
 }
 
 const layoutInfo = layoutMap[config.layout] || layoutMap.sidebar
-const themeSwitcherImport = config.theme.switcher.enabled
-  ? `import { ThemeSwitcher } from "@/core/theme"\n`
-  : ""
+
+const imports = [`import { ThemeProvider } from "@/core/theme"`]
+if (config.theme.switcher.enabled) {
+  imports.push(`import { ThemeSwitcher } from "@/core/theme"`)
+}
+imports.push(`import { ${layoutInfo.import} } from "@/core/layout"`)
+
 const themeSwitcherJsx = config.theme.switcher.enabled
   ? "\n          <ThemeSwitcher />"
   : ""
 
-const appTsx = `import { ThemeProvider } from "@/core/theme"
-${themeSwitcherImport}import { ${layoutInfo.import} } from "@/core/layout"
+const appTsx = `${imports.join("\n")}
 
 export function App() {
   return (
