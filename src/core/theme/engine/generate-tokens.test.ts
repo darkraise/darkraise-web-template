@@ -50,7 +50,7 @@ describe("generateTokens", () => {
       "--shadow-dropdown",
       "--backdrop-blur",
       "--surface-opacity",
-      "--font-heading",
+      "--theme-font-heading",
     ]
 
     for (const key of expectedKeys) {
@@ -189,9 +189,9 @@ describe("generateTokens", () => {
       mode: "light",
     })
 
-    expect(tokens["--font-sans"]).toBe("DM Sans")
-    expect(tokens["--font-heading"]).toBe("DM Sans")
-    expect(tokens["--font-mono"]).toBe("DM Mono")
+    expect(tokens["--theme-font-sans"]).toBe("DM Sans")
+    expect(tokens["--theme-font-heading"]).toBe("DM Sans")
+    expect(tokens["--theme-font-mono"]).toBe("DM Mono")
   })
 
   it("uses desaturated accent color scale as surface when surfaceColor is set", () => {

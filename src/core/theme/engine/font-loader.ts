@@ -22,7 +22,7 @@ export function loadFont(family: FontFamily): void {
 export function applyFontFamily(family: FontFamily): void {
   const definition = fontFamilies[family]
   const style = document.documentElement.style
-  style.setProperty("--font-sans", definition.sans)
-  style.setProperty("--font-heading", definition.heading)
-  style.setProperty("--font-mono", definition.mono)
+  style.setProperty("--theme-font-sans", definition.sans)
+  style.setProperty("--theme-font-heading", definition.heading)
+  style.setProperty("--theme-font-mono", definition.mono)
 }

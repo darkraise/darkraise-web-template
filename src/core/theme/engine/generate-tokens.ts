@@ -257,9 +257,9 @@ export function generateTokens(
           ? `linear-gradient(135deg, hsl(${accent[mode === "light" ? 200 : 800]} / 0.2) 0%, transparent 70%)`
           : "none",
 
-    "--font-sans": fontFamilies[fontFamily].sans,
-    "--font-heading": fontFamilies[fontFamily].heading,
-    "--font-mono": fontFamilies[fontFamily].mono,
+    "--theme-font-sans": fontFamilies[fontFamily].sans,
+    "--theme-font-heading": fontFamilies[fontFamily].heading,
+    "--theme-font-mono": fontFamilies[fontFamily].mono,
   }
 
   return tokens
