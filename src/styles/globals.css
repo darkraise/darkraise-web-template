@@ -194,7 +194,7 @@
   /* Scrollbar styling */
   * {
     scrollbar-width: thin;
-    scrollbar-color: hsl(var(--border)) transparent;
+    scrollbar-color: hsl(var(--primary) / 0.6) transparent;
   }
 
   *::-webkit-scrollbar {
@@ -207,14 +207,14 @@
   }
 
   *::-webkit-scrollbar-thumb {
-    background-color: hsl(var(--border));
+    background-color: hsl(var(--primary) / 0.6);
     border-radius: 9999px;
     border: 2px solid transparent;
     background-clip: content-box;
   }
 
   *::-webkit-scrollbar-thumb:hover {
-    background-color: hsl(var(--muted-foreground));
+    background-color: hsl(var(--primary) / 0.9);
   }
 
   *::-webkit-scrollbar-corner {
