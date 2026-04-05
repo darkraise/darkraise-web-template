@@ -30,9 +30,10 @@ export function SidebarLayout({ children, nav, headerSlot }: LayoutProps) {
         {/* Sidebar */}
         <aside
           className={cn(
-            "sidebar-gradient-overlay theme-transition hidden flex-col border-r border-border-default bg-surface-sidebar transition-all duration-300 md:flex",
+            "sidebar-gradient-overlay theme-transition hidden flex-col border-r bg-surface-sidebar transition-all duration-300 md:flex",
             collapsed ? "w-16" : "w-64",
           )}
+          style={{ borderColor: "hsl(var(--sidebar-border))" }}
         >
           {/* Logo */}
           <div
