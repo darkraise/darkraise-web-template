@@ -1,50 +1,98 @@
-# React + TypeScript + Vite
+# darkraise-web-template
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React + TypeScript starter with a themed UI kit, multiple layout variants, and an interactive scaffolding CLI.
 
-Currently, two official plugins are available:
+## Quick Start
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+npm create darkraise-web-template my-app
+cd my-app
+npm run dev
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+The CLI walks you through choosing a layout, theme defaults, theme switcher visibility, and whether to include the auth flow. Pass `-y` to accept all defaults.
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+### CLI Flags
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+All options can also be passed as flags to skip prompts:
+
+```bash
+npm create darkraise-web-template my-app \
+  --layout sidebar \
+  --accent blue \
+  --surface-color slate \
+  --surface-style default \
+  --background solid \
+  --font default \
+  --mode system \
+  --theme-switcher \
+  --theme-axes mode,accentColor,surfaceColor,surfaceStyle,backgroundStyle,fontFamily \
+  --no-auth
 ```
+
+| Flag                                       | Values                                                    | Default       |
+| ------------------------------------------ | --------------------------------------------------------- | ------------- |
+| `--layout`                                 | `sidebar`, `stacked`, `top-nav`, `split-panel`            | `sidebar`     |
+| `--accent`                                 | 17 colors (`red` through `rose`)                          | `blue`        |
+| `--surface-color`                          | `slate` + 17 colors                                       | `slate`       |
+| `--surface-style`                          | `default`, `glassmorphism`                                | `default`     |
+| `--background`                             | `solid`, `gradient`                                       | `solid`       |
+| `--font`                                   | `default`, `editorial`, `modern`, `humanist`, `technical` | `default`     |
+| `--mode`                                   | `light`, `dark`, `system`                                 | `system`      |
+| `--theme-switcher` / `--no-theme-switcher` | boolean                                                   | enabled       |
+| `--theme-axes`                             | comma-separated axis names                                | all axes      |
+| `--no-auth`                                | boolean                                                   | auth included |
+| `-y`                                       | skip all prompts, use defaults                            |               |
+
+## What's Included
+
+### UI Primitives
+
+24 components in `src/core/components/ui/` built on Radix UI and styled with Tailwind CSS:
+
+Accordion, Avatar, Badge, Button, Card, Checkbox, Command, Dialog, Dropdown Menu, Input, Label, Popover, Radio Group, Scroll Area, Select, Separator, Sheet, Skeleton, Sonner (toast), Switch, Table, Tabs, Textarea, Tooltip.
+
+### Theming
+
+A 6-axis theming system controlled by `src/core/theme/theme.config.ts`:
+
+- **Accent color** -- 17 color options
+- **Surface color** -- neutral slate or tinted surfaces
+- **Surface style** -- default or glassmorphism
+- **Background** -- solid or gradient
+- **Font** -- 5 font stacks (Inter, Playfair Display, Geist, DM Sans, JetBrains Mono)
+- **Mode** -- light, dark, or system
+
+The `ThemeSwitcher` component renders controls for whichever axes are enabled in the config. Theme defaults and axis visibility are set at scaffold time and can be changed later by editing `theme.config.ts`.
+
+### Layouts
+
+4 layout variants in `src/core/layout/`:
+
+- **Sidebar** -- collapsible sidebar with nav groups
+- **Stacked** -- full-width header with stacked content
+- **Top Nav** -- horizontal navigation bar
+- **Split Panel** -- two-pane layout
+
+### Auth (optional)
+
+An auth feature module in `src/features/auth/` with login, register, forgot password, and reset password forms, a Zustand store, and an adapter pattern for plugging in your auth backend.
+
+## Development
+
+```bash
+npm run dev          # Start dev server
+npm run storybook    # Browse component library
+npm run test         # Run tests
+npm run build        # Production build
+npm run lint         # ESLint
+npm run typecheck    # TypeScript check
+```
+
+## Tech Stack
+
+React 18, TypeScript, Vite, Tailwind CSS, Radix UI, Storybook, Vitest, ESLint, Prettier, Husky, commitlint.
+
+## License
+
+MIT
