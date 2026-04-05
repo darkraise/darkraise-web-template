@@ -76,6 +76,7 @@ export function SidebarLayout({ children, nav, headerSlot }: LayoutProps) {
                           "sidebar-nav-item flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors duration-150",
                           collapsed && "justify-center px-0",
                         )}
+                        activeOptions={{ exact: true }}
                         activeProps={{ className: "active" }}
                       >
                         {item.icon && (
