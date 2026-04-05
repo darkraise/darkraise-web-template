@@ -1,6 +1,6 @@
 {
   "name": "create-darkraise-web-template",
-  "version": "0.1.0",
+  "version": "1.0.1",
   "description": "Scaffold a new project from the darkraise web-template UI kit",
   "type": "module",
   "bin": {
