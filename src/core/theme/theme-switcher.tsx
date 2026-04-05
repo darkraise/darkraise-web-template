@@ -219,6 +219,8 @@ export function ThemeSwitcher() {
     ),
   ].filter(Boolean)
 
+  if (visibleSections.length === 0) return null
+
   return (
     <Popover>
       <PopoverTrigger asChild>
