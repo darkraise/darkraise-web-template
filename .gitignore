@@ -18,3 +18,4 @@ playwright-report
 storybook-static
 src/routeTree.gen.ts
 .superpowers
+.claude/**
