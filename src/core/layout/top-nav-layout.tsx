@@ -1,10 +1,8 @@
 import { Link } from "@tanstack/react-router"
 import { cn } from "@/core/lib/utils"
-import { ThemeSwitcher } from "@/core/theme"
 import { SearchCommand } from "./search-command"
-import { UserMenu } from "./user-menu"
-import { NotificationBell } from "./notification-bell"
-import { MobileDrawer } from "./mobile-drawer"
+import { BrandLogo } from "./brand-logo"
+import { LayoutHeader } from "./layout-header"
 import type { LayoutProps } from "./types"
 
 export function TopNavLayout({ children, nav, headerSlot }: LayoutProps) {
@@ -14,12 +12,17 @@ export function TopNavLayout({ children, nav, headerSlot }: LayoutProps) {
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
-      <header className="flex h-14 items-center gap-4 border-b border-border bg-surface-header px-4">
-        <MobileDrawer nav={nav} />
-        <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary">
-          <span className="text-sm font-medium text-primary-foreground">A</span>
-        </div>
-
+      <LayoutHeader
+        nav={nav}
+        className="gap-4"
+        headerSlot={
+          <>
+            <SearchCommand navItems={flatNavItems} />
+            {headerSlot}
+          </>
+        }
+      >
+        <BrandLogo />
         <nav className="hidden items-center gap-1 md:flex">
           {nav.flatMap((group) =>
             group.items.map((item) => (
@@ -37,15 +40,7 @@ export function TopNavLayout({ children, nav, headerSlot }: LayoutProps) {
             )),
           )}
         </nav>
-
-        <div className="ml-auto flex items-center gap-2">
-          <SearchCommand navItems={flatNavItems} />
-          {headerSlot}
-          <ThemeSwitcher />
-          <NotificationBell />
-          <UserMenu />
-        </div>
-      </header>
+      </LayoutHeader>
 
       <main className="flex-1 overflow-y-auto p-6">{children}</main>
     </div>

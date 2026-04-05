@@ -1,10 +1,8 @@
 import { useState, useCallback } from "react"
 import { cn } from "@/core/lib/utils"
-import { ThemeSwitcher } from "@/core/theme"
 import { SearchCommand } from "./search-command"
-import { UserMenu } from "./user-menu"
-import { NotificationBell } from "./notification-bell"
-import { MobileDrawer } from "./mobile-drawer"
+import { BrandLogo } from "./brand-logo"
+import { LayoutHeader } from "./layout-header"
 import type { LayoutProps } from "./types"
 import type { ReactNode } from "react"
 
@@ -27,10 +25,6 @@ export function SplitPanelLayout({
   const [panelWidth, setPanelWidth] = useState(defaultPanelWidth)
   const [isDragging, setIsDragging] = useState(false)
 
-  const flatNavItems = nav.flatMap((g) =>
-    g.items.map((i) => ({ label: i.label, href: i.href })),
-  )
-
   const handleMouseDown = useCallback(() => {
     setIsDragging(true)
     const handleMouseMove = (e: MouseEvent) => {
@@ -48,19 +42,14 @@ export function SplitPanelLayout({
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
-      <header className="flex h-14 items-center gap-4 border-b border-border bg-surface-header px-4">
-        <MobileDrawer nav={nav} />
-        <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary">
-          <span className="text-sm font-medium text-primary-foreground">A</span>
-        </div>
-        <SearchCommand navItems={flatNavItems} />
-        <div className="ml-auto flex items-center gap-1">
-          {headerSlot}
-          <ThemeSwitcher />
-          <NotificationBell />
-          <UserMenu />
-        </div>
-      </header>
+      <LayoutHeader nav={nav} headerSlot={headerSlot} className="gap-4">
+        <BrandLogo />
+        <SearchCommand
+          navItems={nav.flatMap((g) =>
+            g.items.map((i) => ({ label: i.label, href: i.href })),
+          )}
+        />
+      </LayoutHeader>
 
       <div className="flex flex-1 overflow-hidden">
         {/* List panel */}

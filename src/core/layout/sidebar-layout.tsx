@@ -10,19 +10,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/core/components/ui/tooltip"
-import { ThemeSwitcher } from "@/core/theme"
-import { SearchCommand } from "./search-command"
-import { UserMenu } from "./user-menu"
-import { NotificationBell } from "./notification-bell"
-import { MobileDrawer } from "./mobile-drawer"
+import { BrandLogo } from "./brand-logo"
+import { LayoutHeader } from "./layout-header"
 import type { LayoutProps } from "./types"
 
 export function SidebarLayout({ children, nav, headerSlot }: LayoutProps) {
   const [collapsed, setCollapsed] = useState(false)
-
-  const flatNavItems = nav.flatMap((g) =>
-    g.items.map((i) => ({ label: i.label, href: i.href })),
-  )
 
   return (
     <TooltipProvider delayDuration={0}>
@@ -44,7 +37,7 @@ export function SidebarLayout({ children, nav, headerSlot }: LayoutProps) {
             style={{ borderColor: "hsl(var(--sidebar-border))" }}
           >
             {collapsed ? (
-              <div className="h-8 w-8 rounded-md bg-primary" />
+              <BrandLogo />
             ) : (
               <span
                 className="text-lg font-medium"
@@ -132,16 +125,11 @@ export function SidebarLayout({ children, nav, headerSlot }: LayoutProps) {
         {/* Main area */}
         <div className="flex flex-1 flex-col overflow-hidden">
           {/* Global header */}
-          <header className="header-gradient-overlay theme-transition flex h-14 items-center gap-2 border-b border-border bg-surface-header px-4">
-            <MobileDrawer nav={nav} />
-            <SearchCommand navItems={flatNavItems} />
-            <div className="ml-auto flex items-center gap-1">
-              {headerSlot}
-              <ThemeSwitcher />
-              <NotificationBell />
-              <UserMenu />
-            </div>
-          </header>
+          <LayoutHeader
+            nav={nav}
+            headerSlot={headerSlot}
+            className="header-gradient-overlay theme-transition"
+          />
 
           {/* Content */}
           <main className="flex-1 overflow-y-auto p-6" data-content>
