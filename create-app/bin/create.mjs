@@ -268,7 +268,7 @@ async function main() {
   p.log.step("Initializing git repository...")
   execFileSync("git", ["init"], { cwd: targetDir, stdio: "inherit", shell: true })
   execFileSync("git", ["add", "-A"], { cwd: targetDir, stdio: "inherit", shell: true })
-  execFileSync("git", ["commit", "-m", `"chore: scaffold from web-template"`], {
+  execFileSync("git", ["commit", "-m", `"chore: initialize project"`], {
     cwd: targetDir,
     stdio: "inherit",
     shell: true,
