@@ -14,14 +14,17 @@ export function CheckboxField({
   description,
 }: CheckboxFieldProps) {
   return (
-    <div className="flex items-start gap-3">
+    <div
+      className={`flex gap-3 ${description ? "items-start" : "items-center"}`}
+    >
       <Checkbox
         id={field.name}
         checked={field.state.value as boolean}
         onCheckedChange={(checked) => field.handleChange(checked)}
         onBlur={field.handleBlur}
+        className={description ? "mt-0.5" : ""}
       />
-      <div className="space-y-1">
+      <div className={description ? "space-y-1" : ""}>
         <Label htmlFor={field.name}>{label}</Label>
         {description && (
           <p className="text-xs text-muted-foreground">{description}</p>
