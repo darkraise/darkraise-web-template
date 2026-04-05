@@ -137,41 +137,35 @@ export function ThemeSwitcher() {
             </div>
           </div>
 
-          {backgroundStyle === "solid" && (
-            <>
-              <Separator />
-              <div>
-                <Label className="text-xs font-medium text-muted-foreground">
-                  Surface Color
-                </Label>
-                <div className="mt-1.5 grid grid-cols-9 gap-1.5">
-                  {SURFACE_COLORS.map((color: SurfaceColor) => {
-                    const previewHsl =
-                      color === "slate"
-                        ? "215 16% 47%"
-                        : accentColors[color][500]
-                    return (
-                      <button
-                        key={color}
-                        type="button"
-                        title={color}
-                        className={cn(
-                          "h-6 w-6 rounded-full border-2 transition-transform hover:scale-110",
-                          surfaceColor === color
-                            ? "scale-110 border-foreground"
-                            : "border-transparent",
-                        )}
-                        style={{
-                          backgroundColor: `hsl(${previewHsl})`,
-                        }}
-                        onClick={() => setSurfaceColor(color)}
-                      />
-                    )
-                  })}
-                </div>
-              </div>
-            </>
-          )}
+          <Separator />
+          <div>
+            <Label className="text-xs font-medium text-muted-foreground">
+              Surface Color
+            </Label>
+            <div className="mt-1.5 grid grid-cols-9 gap-1.5">
+              {SURFACE_COLORS.map((color: SurfaceColor) => {
+                const previewHsl =
+                  color === "slate" ? "215 16% 47%" : accentColors[color][500]
+                return (
+                  <button
+                    key={color}
+                    type="button"
+                    title={color}
+                    className={cn(
+                      "h-6 w-6 rounded-full border-2 transition-transform hover:scale-110",
+                      surfaceColor === color
+                        ? "scale-110 border-foreground"
+                        : "border-transparent",
+                    )}
+                    style={{
+                      backgroundColor: `hsl(${previewHsl})`,
+                    }}
+                    onClick={() => setSurfaceColor(color)}
+                  />
+                )
+              })}
+            </div>
+          </div>
 
           <Separator />
 

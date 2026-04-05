@@ -15,13 +15,15 @@ export function StatCard({ label, value, icon: Icon, trend }: StatCardProps) {
         {trend && (
           <div className="mt-1 flex items-center gap-1 text-xs">
             {trend.isPositive ? (
-              <TrendingUp className="h-3 w-3 text-green-500" />
+              <TrendingUp className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
             ) : (
-              <TrendingDown className="h-3 w-3 text-red-500" />
+              <TrendingDown className="h-3 w-3 text-red-600 dark:text-red-400" />
             )}
             <span
               className={cn(
-                trend.isPositive ? "text-green-500" : "text-red-500",
+                trend.isPositive
+                  ? "text-emerald-600 dark:text-emerald-400"
+                  : "text-red-600 dark:text-red-400",
               )}
             >
               {trend.value}%

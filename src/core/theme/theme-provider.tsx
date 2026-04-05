@@ -1,4 +1,4 @@
-import { createContext, useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import type {
   AccentColor,
   BackgroundStyle,
@@ -12,8 +12,7 @@ import type {
 import { SURFACE_COLORS, SURFACE_STYLES } from "./types"
 import { generateTokens } from "./engine/generate-tokens"
 import { loadFont, applyFontFamily } from "./engine/font-loader"
-
-export const ThemeContext = createContext<ThemeContextValue | null>(null)
+import { ThemeContext } from "./theme-context"
 
 const LS_ACCENT = "theme-accent"
 const LS_SURFACE_COLOR = "theme-surface-color"
@@ -92,15 +91,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       font: FontFamily,
       resolved: ResolvedMode,
     ) => {
-      const effectiveSurfaceColor: SurfaceColor =
-        bgStyle === "solid" ? surfColor : "slate"
-
       document.documentElement.setAttribute("data-mode", resolved)
       loadFont(font)
       applyFontFamily(font)
       const tokens = generateTokens({
         accentColor: accent,
-        surfaceColor: effectiveSurfaceColor,
+        surfaceColor: surfColor,
         surfaceStyle: style,
         backgroundStyle: bgStyle,
         fontFamily: font,

@@ -39,22 +39,27 @@ function getChartColors(
 }
 
 function generateGradient(
-  accentColor: AccentColor,
+  surfaceColor: SurfaceColor,
   mode: ResolvedMode,
 ): string {
-  const accent = accentColors[accentColor]
-  const index = ACCENT_COLORS.indexOf(accentColor)
-  const nextIndex = (index + 2) % ACCENT_COLORS.length
-  const thirdIndex = (index + 4) % ACCENT_COLORS.length
-  const nextName = ACCENT_COLORS[nextIndex] ?? accentColor
-  const thirdName = ACCENT_COLORS[thirdIndex] ?? accentColor
-  const next = accentColors[nextName]
-  const third = accentColors[thirdName]
+  if (surfaceColor === "slate") {
+    const slate = surfaceColors.slate as ColorScale
+    if (mode === "light") {
+      return `linear-gradient(135deg, hsl(${slate[300]} / 0.3) 0%, hsl(${slate[200]} / 0.1) 100%)`
+    }
+    return `linear-gradient(135deg, hsl(${slate[950]} / 0.4) 0%, hsl(${slate[900]} / 0.1) 100%)`
+  }
+
+  const color = accentColors[surfaceColor]
+  const index = ACCENT_COLORS.indexOf(surfaceColor)
+  const neighborIndex = (index + 3) % ACCENT_COLORS.length
+  const neighborName = ACCENT_COLORS[neighborIndex] ?? surfaceColor
+  const neighbor = accentColors[neighborName]
 
   if (mode === "light") {
-    return `linear-gradient(135deg, hsl(${accent[200]}) 0%, hsl(${next[200]}) 50%, hsl(${third[100]}) 100%)`
+    return `linear-gradient(135deg, hsl(${color[400]} / 0.3) 0%, hsl(${neighbor[600]} / 0.1) 100%)`
   }
-  return `linear-gradient(135deg, hsl(${accent[900]}) 0%, hsl(${next[900]}) 50%, hsl(${third[950]}) 100%)`
+  return `linear-gradient(135deg, hsl(${color[950]} / 0.4) 0%, hsl(${neighbor[950]} / 0.1) 100%)`
 }
 
 function resolveOpacity(
@@ -237,12 +242,12 @@ export function generateTokens(
     "--bg-style": backgroundStyle,
     "--bg-gradient":
       backgroundStyle === "gradient"
-        ? generateGradient(accentColor, mode)
+        ? generateGradient(surfaceColor, mode)
         : "none",
 
     "--sidebar-gradient":
       backgroundStyle === "gradient"
-        ? generateGradient(accentColor, mode)
+        ? generateGradient(surfaceColor, mode)
         : "none",
 
     "--content-gradient-overlay":

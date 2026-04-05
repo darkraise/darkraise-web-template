@@ -7,11 +7,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/core/components/ui/tooltip"
-import { ThemeSwitcher } from "@/core/theme"
-import { SearchCommand } from "./search-command"
-import { UserMenu } from "./user-menu"
-import { NotificationBell } from "./notification-bell"
-import { MobileDrawer } from "./mobile-drawer"
+import { LayoutHeader } from "./layout-header"
 import type { LayoutProps } from "./types"
 
 export function StackedLayout({ children, nav, headerSlot }: LayoutProps) {
@@ -22,10 +18,6 @@ export function StackedLayout({ children, nav, headerSlot }: LayoutProps) {
     group.items.some((item) => currentPath.startsWith(item.href)),
   )
   const activeGroup = nav[activeGroupIndex >= 0 ? activeGroupIndex : 0]
-
-  const flatNavItems = nav.flatMap((g) =>
-    g.items.map((i) => ({ label: i.label, href: i.href })),
-  )
 
   return (
     <TooltipProvider delayDuration={0}>
@@ -46,8 +38,8 @@ export function StackedLayout({ children, nav, headerSlot }: LayoutProps) {
                     <Link
                       to={firstItem.href}
                       className={cn(
-                        "flex h-10 w-10 items-center justify-center rounded-md text-gray-400 transition-colors duration-150 hover:bg-white/10 hover:text-white",
-                        isActive && "bg-white/10 text-white",
+                        "sidebar-nav-item flex h-10 w-10 items-center justify-center rounded-md transition-colors duration-150",
+                        isActive && "active",
                       )}
                     >
                       {Icon && <Icon className="h-5 w-5" />}
@@ -92,16 +84,7 @@ export function StackedLayout({ children, nav, headerSlot }: LayoutProps) {
 
         {/* Main area */}
         <div className="flex flex-1 flex-col overflow-hidden">
-          <header className="flex h-14 items-center gap-2 border-b border-border bg-surface-header px-4">
-            <MobileDrawer nav={nav} />
-            <SearchCommand navItems={flatNavItems} />
-            <div className="ml-auto flex items-center gap-1">
-              {headerSlot}
-              <ThemeSwitcher />
-              <NotificationBell />
-              <UserMenu />
-            </div>
-          </header>
+          <LayoutHeader nav={nav} headerSlot={headerSlot} />
 
           <main className="flex-1 overflow-y-auto p-6">{children}</main>
         </div>
