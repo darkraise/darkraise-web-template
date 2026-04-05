@@ -25,19 +25,25 @@ const THEME_AXIS_KEYS = [
 ]
 
 const argv = minimist(process.argv.slice(2), {
-  boolean: ["y", "theme-switcher", "auth"],
+  boolean: ["y"],
   string: [
     "layout", "accent", "surface-color", "surface-style",
     "background", "font", "mode", "theme-axes",
   ],
-  default: {
-    "theme-switcher": undefined,
-    auth: undefined,
-  },
   alias: { y: "yes" },
 })
 
 const skipPrompts = argv.y || argv.yes
+
+function resolveBoolFlag(argv, name) {
+  if (argv[name] === true || argv[name] === "true") return true
+  if (argv[name] === false || argv[name] === "false") return false
+  if (argv[`no-${name}`] === true || argv[`no-${name}`] === "true") return false
+  return undefined
+}
+
+const themeSwitcherFlag = resolveBoolFlag(argv, "theme-switcher")
+const authFlag = resolveBoolFlag(argv, "auth")
 
 function validate(value, allowed, label) {
   if (value !== undefined && !allowed.includes(value)) {
@@ -167,8 +173,8 @@ async function main() {
 
   // --- Theme switcher ---
   let themeSwitcherEnabled
-  if (argv["theme-switcher"] !== undefined) {
-    themeSwitcherEnabled = argv["theme-switcher"]
+  if (themeSwitcherFlag !== undefined) {
+    themeSwitcherEnabled = themeSwitcherFlag
   } else if (skipPrompts) {
     themeSwitcherEnabled = true
   } else {
@@ -202,10 +208,14 @@ async function main() {
     }
   }
 
+  if (argv["theme-axes"] !== undefined && !themeSwitcherEnabled) {
+    p.log.warn("--theme-axes is ignored when theme switcher is disabled.")
+  }
+
   // --- Auth ---
   let includeAuth
-  if (argv.auth !== undefined) {
-    includeAuth = argv.auth
+  if (authFlag !== undefined) {
+    includeAuth = authFlag
   } else if (skipPrompts) {
     includeAuth = true
   } else {
@@ -250,7 +260,6 @@ async function main() {
   execFileSync("node", ["scripts/init.mjs", projectName, JSON.stringify(config)], {
     cwd: targetDir,
     stdio: "inherit",
-    shell: true,
   })
 
   p.log.step("Installing dependencies...")
