@@ -218,7 +218,6 @@ delete pkg.homepage
 const demoDeps = [
   "@tanstack/react-form",
   "@tanstack/react-query",
-  "@tanstack/react-router",
   "@tanstack/react-table",
   "recharts",
   "zustand",
