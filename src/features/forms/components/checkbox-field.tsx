@@ -15,7 +15,7 @@ export function CheckboxField({
 }: CheckboxFieldProps) {
   return (
     <div
-      className={`flex gap-3 ${description ? "items-start" : "items-center"}`}
+      className={`flex gap-2 ${description ? "items-start" : "items-center"}`}
     >
       <Checkbox
         id={field.name}
