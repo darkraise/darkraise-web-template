@@ -1,3 +1,4 @@
+import type { ReactNode } from "react"
 import { Label } from "@/core/components/ui/label"
 import type { AnyFieldApi } from "@tanstack/react-form"
 
@@ -5,20 +6,29 @@ interface FieldWrapperProps {
   field: AnyFieldApi
   label: string
   description?: string
-  children: React.ReactNode
+  labelExtra?: ReactNode
+  children: ReactNode
 }
 
 export function FieldWrapper({
   field,
   label,
   description,
+  labelExtra,
   children,
 }: FieldWrapperProps) {
   const errors = field.state.meta.isTouched ? field.state.meta.errors : []
 
   return (
     <div className="space-y-2">
-      <Label htmlFor={field.name}>{label}</Label>
+      {labelExtra ? (
+        <div className="flex items-center justify-between">
+          <Label htmlFor={field.name}>{label}</Label>
+          {labelExtra}
+        </div>
+      ) : (
+        <Label htmlFor={field.name}>{label}</Label>
+      )}
       {description && (
         <p className="text-xs text-muted-foreground">{description}</p>
       )}
