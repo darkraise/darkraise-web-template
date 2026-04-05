@@ -25,3 +25,5 @@ export type {
   SurfaceStyleRecipe,
   ThemeContextValue,
 } from "./types"
+export { themeConfig } from "./theme.config"
+export type { ThemeConfig } from "./theme.config"
