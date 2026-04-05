@@ -510,13 +510,19 @@ function ComponentShowcasePage() {
 
       <div className="scrollbar-none sticky top-0 z-10 -mx-1 flex gap-2 overflow-x-auto rounded-lg border border-border bg-background/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         {SECTIONS.map((s) => (
-          <a
+          <button
             key={s.id}
-            href={`#${s.id}`}
+            type="button"
+            onClick={() => {
+              const el = document.getElementById(s.id)
+              if (el) {
+                el.scrollIntoView({ behavior: "smooth", block: "start" })
+              }
+            }}
             className="shrink-0 rounded-full border border-border bg-muted px-3 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
           >
             {s.label}
-          </a>
+          </button>
         ))}
       </div>
 
