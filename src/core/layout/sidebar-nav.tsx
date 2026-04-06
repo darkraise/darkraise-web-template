@@ -51,7 +51,7 @@ function SidebarGroup({
   className,
 }: SidebarGroupProps) {
   return (
-    <div className={cn("space-y-0.5", className)}>
+    <div className={cn("flex flex-col gap-0.5", className)}>
       {group.label && !collapsed && (
         <p
           className="px-3 py-1 text-xs font-medium tracking-wider uppercase"
@@ -181,7 +181,7 @@ function CollapsibleSidebarItem({
         />
       </CollapsibleTrigger>
       <CollapsibleContent>
-        <div className="space-y-0.5">
+        <div className="flex flex-col gap-0.5">
           {item.children?.map((child) => (
             <SidebarItem key={child.href} item={child} depth={depth + 1} />
           ))}
