@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import { PageHeader } from "@/core/layout"
 import { Button } from "@/core/components/ui/button"
 import { Input } from "@/core/components/ui/input"
-import { Label } from "@/core/components/ui/label"
+import { FieldWrapper } from "@/features/forms"
 import {
   Dialog,
   DialogContent,
@@ -100,17 +100,15 @@ function MultiStepDialogExample() {
         <div className="space-y-4 py-2">
           {step === 1 && (
             <>
-              <div className="space-y-2">
-                <Label htmlFor="ms-name">Name</Label>
+              <FieldWrapper label="Name" htmlFor="ms-name">
                 <Input
                   id="ms-name"
                   placeholder="Jane Doe"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="ms-email">Email</Label>
+              </FieldWrapper>
+              <FieldWrapper label="Email" htmlFor="ms-email">
                 <Input
                   id="ms-email"
                   type="email"
@@ -118,13 +116,12 @@ function MultiStepDialogExample() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
-              </div>
+              </FieldWrapper>
             </>
           )}
 
           {step === 2 && (
-            <div className="space-y-2">
-              <Label>Role</Label>
+            <FieldWrapper label="Role">
               <div className="flex gap-2">
                 {["Developer", "Designer", "Manager"].map((r) => (
                   <Button
@@ -138,7 +135,7 @@ function MultiStepDialogExample() {
                   </Button>
                 ))}
               </div>
-            </div>
+            </FieldWrapper>
           )}
 
           {step === 3 && (
@@ -327,18 +324,16 @@ function DialogsPage() {
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="dialog-name">Name</Label>
+                  <FieldWrapper label="Name" htmlFor="dialog-name">
                     <Input id="dialog-name" defaultValue="Jane Doe" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="dialog-email">Email</Label>
+                  </FieldWrapper>
+                  <FieldWrapper label="Email" htmlFor="dialog-email">
                     <Input
                       id="dialog-email"
                       type="email"
                       defaultValue="jane@example.com"
                     />
-                  </div>
+                  </FieldWrapper>
                 </div>
                 <DialogFooter>
                   <Button variant="outline">Cancel</Button>
@@ -450,10 +445,9 @@ function DialogsPage() {
               <PopoverContent className="w-72">
                 <div className="space-y-3">
                   <p className="text-sm font-medium">Quick Update</p>
-                  <div className="space-y-2">
-                    <Label htmlFor="pop-name">Name</Label>
+                  <FieldWrapper label="Name" htmlFor="pop-name">
                     <Input id="pop-name" placeholder="Enter name..." />
-                  </div>
+                  </FieldWrapper>
                   <Button size="sm" className="w-full">
                     Save
                   </Button>
@@ -670,18 +664,15 @@ function DialogsPage() {
       <SheetTitle>Edit Profile</SheetTitle>
     </SheetHeader>
     <div className="space-y-4 py-4">
-      <div className="space-y-2">
-        <Label htmlFor="sp-name">Name</Label>
+      <FieldWrapper label="Name" htmlFor="sp-name">
         <Input id="sp-name" defaultValue="Jane Doe" />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="sp-email">Email</Label>
+      </FieldWrapper>
+      <FieldWrapper label="Email" htmlFor="sp-email">
         <Input id="sp-email" type="email" defaultValue="jane@example.com" />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="sp-bio">Bio</Label>
+      </FieldWrapper>
+      <FieldWrapper label="Bio" htmlFor="sp-bio">
         <Input id="sp-bio" placeholder="Tell us about yourself..." />
-      </div>
+      </FieldWrapper>
     </div>
     <SheetFooter>
       <Button variant="outline">Cancel</Button>
@@ -702,22 +693,19 @@ function DialogsPage() {
                 </SheetDescription>
               </SheetHeader>
               <div className="space-y-4 py-4">
-                <div className="space-y-2">
-                  <Label htmlFor="sp-name">Name</Label>
+                <FieldWrapper label="Name" htmlFor="sp-name">
                   <Input id="sp-name" defaultValue="Jane Doe" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="sp-email">Email</Label>
+                </FieldWrapper>
+                <FieldWrapper label="Email" htmlFor="sp-email">
                   <Input
                     id="sp-email"
                     type="email"
                     defaultValue="jane@example.com"
                   />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="sp-bio">Bio</Label>
+                </FieldWrapper>
+                <FieldWrapper label="Bio" htmlFor="sp-bio">
                   <Input id="sp-bio" placeholder="Tell us about yourself..." />
-                </div>
+                </FieldWrapper>
               </div>
               <SheetFooter>
                 <Button variant="outline">Cancel</Button>

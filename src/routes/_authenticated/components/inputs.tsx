@@ -16,6 +16,7 @@ import { Checkbox } from "@/core/components/ui/checkbox"
 import { Switch } from "@/core/components/ui/switch"
 import { Label } from "@/core/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/core/components/ui/radio-group"
+import { FieldWrapper } from "@/features/forms"
 import { ShowcaseExample } from "./_components/-showcase-example"
 
 export const Route = createFileRoute("/_authenticated/components/inputs")({
@@ -111,94 +112,96 @@ function InputsPage() {
       <div className="space-y-6">
         <ShowcaseExample
           title="Text input states"
-          code={`<Label htmlFor="default">Default</Label>
-<Input id="default" placeholder="Type something..." />
+          code={`<FieldWrapper label="Default" htmlFor="default">
+  <Input id="default" placeholder="Type something..." />
+</FieldWrapper>
 
-<Label htmlFor="disabled">Disabled</Label>
-<Input id="disabled" placeholder="Cannot be edited" disabled />
+<FieldWrapper label="Disabled" htmlFor="disabled">
+  <Input id="disabled" placeholder="Cannot be edited" disabled />
+</FieldWrapper>
 
-<Label htmlFor="with-value">With value</Label>
-<Input id="with-value" defaultValue="Existing content" />`}
+<FieldWrapper label="With value" htmlFor="with-value">
+  <Input id="with-value" defaultValue="Existing content" />
+</FieldWrapper>`}
         >
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-3">
-              <Label htmlFor="demo-default">Default</Label>
+            <FieldWrapper label="Default" htmlFor="demo-default">
               <Input id="demo-default" placeholder="Type something..." />
-            </div>
-            <div className="space-y-3">
-              <Label htmlFor="demo-disabled">Disabled</Label>
+            </FieldWrapper>
+            <FieldWrapper label="Disabled" htmlFor="demo-disabled">
               <Input
                 id="demo-disabled"
                 placeholder="Cannot be edited"
                 disabled
               />
-            </div>
-            <div className="space-y-3">
-              <Label htmlFor="demo-value">With value</Label>
+            </FieldWrapper>
+            <FieldWrapper label="With value" htmlFor="demo-value">
               <Input id="demo-value" defaultValue="Existing content" />
-            </div>
-            <div className="space-y-3">
-              <Label htmlFor="demo-password">Password</Label>
+            </FieldWrapper>
+            <FieldWrapper label="Password" htmlFor="demo-password">
               <Input
                 id="demo-password"
                 type="password"
                 defaultValue="secret123"
               />
-            </div>
+            </FieldWrapper>
           </div>
         </ShowcaseExample>
 
         <ShowcaseExample
           title="Textarea"
-          code={`<Label htmlFor="bio">Bio</Label>
-<Textarea id="bio" placeholder="Tell us about yourself..." rows={3} />
+          code={`<FieldWrapper label="Bio" htmlFor="bio">
+  <Textarea id="bio" placeholder="Tell us about yourself..." rows={3} />
+</FieldWrapper>
 
-<Label htmlFor="disabled-ta">Disabled</Label>
-<Textarea id="disabled-ta" placeholder="Disabled" disabled rows={2} />`}
+<FieldWrapper label="Disabled" htmlFor="disabled-ta">
+  <Textarea id="disabled-ta" placeholder="Disabled" disabled rows={2} />
+</FieldWrapper>`}
         >
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-3">
-              <Label htmlFor="demo-textarea">Bio</Label>
+            <FieldWrapper label="Bio" htmlFor="demo-textarea">
               <Textarea
                 id="demo-textarea"
                 placeholder="Tell us about yourself..."
                 rows={3}
               />
-            </div>
-            <div className="space-y-3">
-              <Label htmlFor="demo-textarea-disabled">Disabled</Label>
+            </FieldWrapper>
+            <FieldWrapper label="Disabled" htmlFor="demo-textarea-disabled">
               <Textarea
                 id="demo-textarea-disabled"
                 placeholder="Disabled"
                 disabled
                 rows={3}
               />
-            </div>
+            </FieldWrapper>
           </div>
         </ShowcaseExample>
 
         <ShowcaseExample
           title="Select"
-          code={`<Select value={value} onValueChange={setValue}>
-  <SelectTrigger>
-    <SelectValue placeholder="Pick an option" />
-  </SelectTrigger>
-  <SelectContent>
-    <SelectItem value="alpha">Alpha</SelectItem>
-    <SelectItem value="beta">Beta</SelectItem>
-    <SelectItem value="gamma">Gamma</SelectItem>
-  </SelectContent>
-</Select>
+          code={`<FieldWrapper label="Select" htmlFor="select">
+  <Select value={value} onValueChange={setValue}>
+    <SelectTrigger id="select">
+      <SelectValue placeholder="Pick an option" />
+    </SelectTrigger>
+    <SelectContent>
+      <SelectItem value="alpha">Alpha</SelectItem>
+      <SelectItem value="beta">Beta</SelectItem>
+      <SelectItem value="gamma">Gamma</SelectItem>
+    </SelectContent>
+  </Select>
+</FieldWrapper>
 
-<Select disabled>
-  <SelectTrigger>
-    <SelectValue placeholder="Disabled" />
-  </SelectTrigger>
-</Select>`}
+<FieldWrapper label="Disabled select">
+  <Select disabled>
+    <SelectTrigger>
+      <SelectValue placeholder="Disabled" />
+    </SelectTrigger>
+  </Select>
+</FieldWrapper>`}
         >
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-3">
-              <Label htmlFor="demo-select">Select</Label>
+            <FieldWrapper label="Select" htmlFor="demo-select">
               <Select value={selectValue} onValueChange={setSelectValue}>
                 <SelectTrigger id="demo-select">
                   <SelectValue placeholder="Pick an option" />
@@ -209,15 +212,14 @@ function InputsPage() {
                   <SelectItem value="gamma">Gamma</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-            <div className="space-y-3">
-              <Label>Disabled select</Label>
+            </FieldWrapper>
+            <FieldWrapper label="Disabled select">
               <Select disabled>
                 <SelectTrigger>
                   <SelectValue placeholder="Disabled" />
                 </SelectTrigger>
               </Select>
-            </div>
+            </FieldWrapper>
           </div>
         </ShowcaseExample>
 
@@ -236,7 +238,7 @@ function InputsPage() {
 <Checkbox id="checked-disabled" checked disabled />
 <Label htmlFor="checked-disabled">Checked disabled</Label>`}
         >
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             <div className="flex items-center gap-2">
               <Checkbox
                 id="demo-checkbox"
@@ -275,7 +277,7 @@ function InputsPage() {
 <Switch id="disabled-sw" disabled />
 <Label htmlFor="disabled-sw">Disabled</Label>`}
         >
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             <div className="flex items-center gap-3">
               <Switch
                 id="demo-switch"
@@ -299,20 +301,21 @@ function InputsPage() {
 
         <ShowcaseExample
           title="Radio Group"
-          code={`<RadioGroup value={value} onValueChange={setValue}>
-  <div className="flex items-center gap-2">
-    <RadioGroupItem value="option-a" id="a" />
-    <Label htmlFor="a">Option A</Label>
-  </div>
-  <div className="flex items-center gap-2">
-    <RadioGroupItem value="option-b" id="b" />
-    <Label htmlFor="b">Option B</Label>
-  </div>
-</RadioGroup>`}
+          code={`<FieldWrapper label="Vertical group">
+  <RadioGroup value={value} onValueChange={setValue}>
+    <div className="flex items-center gap-2">
+      <RadioGroupItem value="option-a" id="a" />
+      <Label htmlFor="a">Option A</Label>
+    </div>
+    <div className="flex items-center gap-2">
+      <RadioGroupItem value="option-b" id="b" />
+      <Label htmlFor="b">Option B</Label>
+    </div>
+  </RadioGroup>
+</FieldWrapper>`}
         >
           <div className="grid gap-6 sm:grid-cols-2">
-            <div className="space-y-3">
-              <Label>Vertical group</Label>
+            <FieldWrapper label="Vertical group">
               <RadioGroup value={radioValue} onValueChange={setRadioValue}>
                 {["option-a", "option-b", "option-c"].map((v) => (
                   <div key={v} className="flex items-center gap-2">
@@ -323,9 +326,8 @@ function InputsPage() {
                   </div>
                 ))}
               </RadioGroup>
-            </div>
-            <div className="space-y-3">
-              <Label>Disabled group</Label>
+            </FieldWrapper>
+            <FieldWrapper label="Disabled group">
               <RadioGroup defaultValue="option-a" disabled>
                 {["option-a", "option-b"].map((v) => (
                   <div key={v} className="flex items-center gap-2">
@@ -339,7 +341,7 @@ function InputsPage() {
                   </div>
                 ))}
               </RadioGroup>
-            </div>
+            </FieldWrapper>
           </div>
         </ShowcaseExample>
 
@@ -359,23 +361,26 @@ function InputsPage() {
         <ShowcaseExample
           title="Prefix / suffix input"
           code={`{/* URL prefix */}
-<div className="flex rounded-md border border-input overflow-hidden">
-  <span className="bg-muted px-3 flex items-center text-sm text-muted-foreground border-r border-input">
-    https://
-  </span>
-  <Input className="border-0 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" placeholder="example.com" />
-</div>
+<FieldWrapper label="URL">
+  <div className="flex rounded-md border border-input overflow-hidden">
+    <span className="bg-muted px-3 flex items-center text-sm text-muted-foreground border-r border-input">
+      https://
+    </span>
+    <Input className="border-0 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" placeholder="example.com" />
+  </div>
+</FieldWrapper>
 
 {/* Currency prefix + suffix */}
-<div className="flex rounded-md border border-input overflow-hidden">
-  <span className="bg-muted px-3 flex items-center text-sm text-muted-foreground border-r border-input">$</span>
-  <Input className="border-0 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" placeholder="0.00" />
-  <span className="bg-muted px-3 flex items-center text-sm text-muted-foreground border-l border-input">.00</span>
-</div>`}
+<FieldWrapper label="Currency">
+  <div className="flex rounded-md border border-input overflow-hidden">
+    <span className="bg-muted px-3 flex items-center text-sm text-muted-foreground border-r border-input">$</span>
+    <Input className="border-0 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" placeholder="0.00" />
+    <span className="bg-muted px-3 flex items-center text-sm text-muted-foreground border-l border-input">.00</span>
+  </div>
+</FieldWrapper>`}
         >
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-3">
-              <Label>URL</Label>
+            <FieldWrapper label="URL">
               <div className="border-input flex overflow-hidden rounded-md border">
                 <span className="border-input bg-muted text-muted-foreground flex items-center border-r px-3 text-sm">
                   https://
@@ -385,9 +390,8 @@ function InputsPage() {
                   placeholder="example.com"
                 />
               </div>
-            </div>
-            <div className="space-y-3">
-              <Label>Currency</Label>
+            </FieldWrapper>
+            <FieldWrapper label="Currency">
               <div className="border-input flex overflow-hidden rounded-md border">
                 <span className="border-input bg-muted text-muted-foreground flex items-center border-r px-3 text-sm">
                   $
@@ -400,7 +404,7 @@ function InputsPage() {
                   .00
                 </span>
               </div>
-            </div>
+            </FieldWrapper>
           </div>
         </ShowcaseExample>
 
