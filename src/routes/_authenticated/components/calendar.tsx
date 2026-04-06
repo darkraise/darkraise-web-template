@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import type { DateRange } from "react-day-picker"
 import { PageHeader } from "@/core/layout"
 import { Calendar } from "@/core/components/ui/calendar"
+import { DatePicker } from "@/core/components/ui/date-picker"
 import { ShowcaseExample } from "./_components/-showcase-example"
 
 export const Route = createFileRoute("/_authenticated/components/calendar")({
@@ -12,6 +13,7 @@ export const Route = createFileRoute("/_authenticated/components/calendar")({
 function CalendarPage() {
   const [selected, setSelected] = useState<Date | undefined>(new Date())
   const [range, setRange] = useState<DateRange | undefined>()
+  const [pickerDate, setPickerDate] = useState<Date | undefined>(new Date())
 
   const today = new Date()
   const disabledDays = [
@@ -96,6 +98,22 @@ function CalendarPage() {
               <p className="text-muted-foreground text-sm">
                 From: {range.from.toLocaleDateString()}
                 {range.to ? ` — To: ${range.to.toLocaleDateString()}` : ""}
+              </p>
+            )}
+          </div>
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Multi-view date picker — click header to switch between day, month, and year views"
+          code={`const [date, setDate] = useState<Date | undefined>(new Date())
+
+<DatePicker value={date} onChange={setDate} />`}
+        >
+          <div className="space-y-3">
+            <DatePicker value={pickerDate} onChange={setPickerDate} />
+            {pickerDate && (
+              <p className="text-muted-foreground text-sm">
+                Selected: {pickerDate.toLocaleDateString()}
               </p>
             )}
           </div>
