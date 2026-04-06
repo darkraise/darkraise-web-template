@@ -29,16 +29,7 @@ export function SidebarLayout({ children, nav, headerSlot }: LayoutProps) {
             )}
             style={{ borderColor: "hsl(var(--sidebar-border))" }}
           >
-            {collapsed ? (
-              <BrandLogo />
-            ) : (
-              <span
-                className="text-lg font-medium"
-                style={{ color: "hsl(var(--sidebar-foreground-hover))" }}
-              >
-                App
-              </span>
-            )}
+            <BrandLogo collapsed={collapsed} />
           </div>
 
           <ScrollArea className="flex-1 py-4">
