@@ -2,7 +2,7 @@ import { z } from "zod"
 import { useForm } from "@tanstack/react-form"
 import { Button } from "@/core/components/ui/button"
 import { Input } from "@/core/components/ui/input"
-import { FieldWrapper } from "@/features/forms"
+import { Field, FieldLabel, FieldError } from "@/core/components/ui/field"
 import { useAuth } from "../hooks/use-auth"
 
 const schema = z
@@ -34,7 +34,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
     <>
       <div className="space-y-2 text-center">
         <h1 className="text-2xl font-medium">Reset password</h1>
-        <p className="text-sm text-muted-foreground">Enter your new password</p>
+        <p className="text-muted-foreground text-sm">Enter your new password</p>
       </div>
 
       <form
@@ -46,33 +46,47 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
       >
         <form.Field
           name="password"
-          children={(field) => (
-            <FieldWrapper field={field} label="New password">
-              <Input
-                id={field.name}
-                type="password"
-                placeholder="At least 8 characters"
-                value={field.state.value}
-                onBlur={field.handleBlur}
-                onChange={(e) => field.handleChange(e.target.value)}
-              />
-            </FieldWrapper>
-          )}
+          children={(field) => {
+            const isInvalid =
+              field.state.meta.isTouched && !field.state.meta.isValid
+            return (
+              <Field data-invalid={isInvalid}>
+                <FieldLabel htmlFor={field.name}>New password</FieldLabel>
+                <Input
+                  id={field.name}
+                  type="password"
+                  placeholder="At least 8 characters"
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  aria-invalid={isInvalid}
+                />
+                {isInvalid && <FieldError errors={field.state.meta.errors} />}
+              </Field>
+            )
+          }}
         />
 
         <form.Field
           name="confirmPassword"
-          children={(field) => (
-            <FieldWrapper field={field} label="Confirm password">
-              <Input
-                id={field.name}
-                type="password"
-                value={field.state.value}
-                onBlur={field.handleBlur}
-                onChange={(e) => field.handleChange(e.target.value)}
-              />
-            </FieldWrapper>
-          )}
+          children={(field) => {
+            const isInvalid =
+              field.state.meta.isTouched && !field.state.meta.isValid
+            return (
+              <Field data-invalid={isInvalid}>
+                <FieldLabel htmlFor={field.name}>Confirm password</FieldLabel>
+                <Input
+                  id={field.name}
+                  type="password"
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  aria-invalid={isInvalid}
+                />
+                {isInvalid && <FieldError errors={field.state.meta.errors} />}
+              </Field>
+            )
+          }}
         />
 
         <form.Subscribe

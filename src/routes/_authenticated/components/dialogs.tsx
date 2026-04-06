@@ -1,8 +1,9 @@
+import { useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import { PageHeader } from "@/core/layout"
 import { Button } from "@/core/components/ui/button"
 import { Input } from "@/core/components/ui/input"
-import { Label } from "@/core/components/ui/label"
+import { Field, FieldLabel } from "@/core/components/ui/field"
 import {
   Dialog,
   DialogContent,
@@ -37,6 +38,203 @@ import { ShowcaseExample } from "./_components/-showcase-example"
 export const Route = createFileRoute("/_authenticated/components/dialogs")({
   component: DialogsPage,
 })
+
+function MultiStepDialogExample() {
+  const [step, setStep] = useState(1)
+  const [name, setName] = useState("")
+  const [email, setEmail] = useState("")
+  const [role, setRole] = useState("Developer")
+  const [open, setOpen] = useState(false)
+
+  const totalSteps = 3
+
+  function reset() {
+    setStep(1)
+    setName("")
+    setEmail("")
+    setRole("Developer")
+  }
+
+  function handleOpenChange(val: boolean) {
+    setOpen(val)
+    if (!val) reset()
+  }
+
+  const stepCircle = (n: number) => {
+    const active = step === n
+    const done = step > n
+    const cls =
+      active || done
+        ? "bg-primary text-primary-foreground"
+        : "bg-muted text-muted-foreground"
+    return (
+      <div
+        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-medium ${cls}`}
+      >
+        {n}
+      </div>
+    )
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogTrigger asChild>
+        <Button variant="outline">Open Multi-step Dialog</Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Create Account</DialogTitle>
+          <DialogDescription>
+            Step {step} of {totalSteps}
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="flex items-center justify-center gap-0 py-2">
+          {stepCircle(1)}
+          <div className="bg-border h-0.5 w-12" />
+          {stepCircle(2)}
+          <div className="bg-border h-0.5 w-12" />
+          {stepCircle(3)}
+        </div>
+
+        <div className="space-y-4 py-2">
+          {step === 1 && (
+            <>
+              <Field>
+                <FieldLabel htmlFor="ms-name">Name</FieldLabel>
+                <Input
+                  id="ms-name"
+                  placeholder="Jane Doe"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="ms-email">Email</FieldLabel>
+                <Input
+                  id="ms-email"
+                  type="email"
+                  placeholder="jane@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </Field>
+            </>
+          )}
+
+          {step === 2 && (
+            <Field>
+              <FieldLabel>Role</FieldLabel>
+              <div className="flex gap-2">
+                {["Developer", "Designer", "Manager"].map((r) => (
+                  <Button
+                    key={r}
+                    type="button"
+                    variant={role === r ? "default" : "outline"}
+                    className="flex-1"
+                    onClick={() => setRole(r)}
+                  >
+                    {r}
+                  </Button>
+                ))}
+              </div>
+            </Field>
+          )}
+
+          {step === 3 && (
+            <div className="space-y-3 rounded-md border p-4 text-sm">
+              <p className="font-medium">Review your details</p>
+              <div className="text-muted-foreground space-y-1">
+                <p>
+                  <span className="text-foreground font-medium">Name:</span>{" "}
+                  {name || "—"}
+                </p>
+                <p>
+                  <span className="text-foreground font-medium">Email:</span>{" "}
+                  {email || "—"}
+                </p>
+                <p>
+                  <span className="text-foreground font-medium">Role:</span>{" "}
+                  {role}
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <DialogFooter>
+          <Button
+            variant="outline"
+            disabled={step === 1}
+            onClick={() => setStep((s) => s - 1)}
+          >
+            Back
+          </Button>
+          {step < totalSteps ? (
+            <Button onClick={() => setStep((s) => s + 1)}>Next</Button>
+          ) : (
+            <Button onClick={() => handleOpenChange(false)}>Finish</Button>
+          )}
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+function TypeToConfirmExample() {
+  const [value, setValue] = useState("")
+  const [open, setOpen] = useState(false)
+  const target = "my-project"
+
+  function handleOpenChange(val: boolean) {
+    setOpen(val)
+    if (!val) setValue("")
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogTrigger asChild>
+        <Button variant="destructive">Delete Project</Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Delete project?</DialogTitle>
+          <DialogDescription>
+            This action is permanent. All repositories, pipelines, and data
+            associated with this project will be destroyed and cannot be
+            recovered.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-2">
+          <Input
+            placeholder={target}
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+          />
+          <p className="text-muted-foreground text-xs">
+            Type{" "}
+            <span className="text-foreground font-mono font-medium">
+              {target}
+            </span>{" "}
+            to confirm.
+          </p>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => handleOpenChange(false)}>
+            Cancel
+          </Button>
+          <Button
+            variant="destructive"
+            disabled={value !== target}
+            onClick={() => handleOpenChange(false)}
+          >
+            Delete
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
 
 function DialogsPage() {
   return (
@@ -87,7 +285,7 @@ function DialogsPage() {
                     what the user is confirming or interacting with.
                   </DialogDescription>
                 </DialogHeader>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   Dialog body content goes here. This can include forms, info,
                   or any other content.
                 </p>
@@ -129,18 +327,18 @@ function DialogsPage() {
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="dialog-name">Name</Label>
+                  <Field>
+                    <FieldLabel htmlFor="dialog-name">Name</FieldLabel>
                     <Input id="dialog-name" defaultValue="Jane Doe" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="dialog-email">Email</Label>
+                  </Field>
+                  <Field>
+                    <FieldLabel htmlFor="dialog-email">Email</FieldLabel>
                     <Input
                       id="dialog-email"
                       type="email"
                       defaultValue="jane@example.com"
                     />
-                  </div>
+                  </Field>
                 </div>
                 <DialogFooter>
                   <Button variant="outline">Cancel</Button>
@@ -186,7 +384,7 @@ function DialogsPage() {
                     A side panel for contextual actions or detailed views.
                   </SheetDescription>
                 </SheetHeader>
-                <p className="mt-4 text-sm text-muted-foreground">
+                <p className="text-muted-foreground mt-4 text-sm">
                   Sheet content appears here. Typically used for filters, detail
                   views, or settings panels.
                 </p>
@@ -207,7 +405,7 @@ function DialogsPage() {
                     This panel slides in from the left.
                   </SheetDescription>
                 </SheetHeader>
-                <p className="mt-4 text-sm text-muted-foreground">
+                <p className="text-muted-foreground mt-4 text-sm">
                   Use side="left" for navigation drawers or secondary menus.
                 </p>
               </SheetContent>
@@ -237,7 +435,7 @@ function DialogsPage() {
               <PopoverContent className="w-64">
                 <div className="space-y-2">
                   <p className="text-sm font-medium">Popover Title</p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-muted-foreground text-xs">
                     Popovers appear anchored to their trigger element and float
                     above the page content.
                   </p>
@@ -252,10 +450,10 @@ function DialogsPage() {
               <PopoverContent className="w-72">
                 <div className="space-y-3">
                   <p className="text-sm font-medium">Quick Update</p>
-                  <div className="space-y-2">
-                    <Label htmlFor="pop-name">Name</Label>
+                  <Field>
+                    <FieldLabel htmlFor="pop-name">Name</FieldLabel>
                     <Input id="pop-name" placeholder="Enter name..." />
-                  </div>
+                  </Field>
                   <Button size="sm" className="w-full">
                     Save
                   </Button>
@@ -312,6 +510,221 @@ function DialogsPage() {
               </Tooltip>
             </div>
           </TooltipProvider>
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Dialog — multi-step wizard"
+          code={`function MultiStepDialogExample() {
+  const [step, setStep] = useState(1)
+  // ... state for name, email, role
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline">Open Multi-step Dialog</Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Create Account</DialogTitle>
+          <DialogDescription>Step {step} of 3</DialogDescription>
+        </DialogHeader>
+        {/* Step indicator */}
+        {/* Step content */}
+        <DialogFooter>
+          <Button variant="outline" disabled={step === 1}>Back</Button>
+          {step < 3 ? <Button>Next</Button> : <Button>Finish</Button>}
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}`}
+        >
+          <MultiStepDialogExample />
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Dialog — type-to-confirm deletion"
+          code={`function TypeToConfirmExample() {
+  const [value, setValue] = useState("")
+  const target = "my-project"
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="destructive">Delete Project</Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Delete project?</DialogTitle>
+          <DialogDescription>This action is permanent...</DialogDescription>
+        </DialogHeader>
+        <div className="space-y-2">
+          <Input value={value} onChange={(e) => setValue(e.target.value)} />
+          <p className="text-xs text-muted-foreground">
+            Type <span className="font-mono">{target}</span> to confirm.
+          </p>
+        </div>
+        <DialogFooter>
+          <Button variant="outline">Cancel</Button>
+          <Button variant="destructive" disabled={value !== target}>Delete</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}`}
+        >
+          <TypeToConfirmExample />
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Dialog — full-screen scrollable"
+          code={`<Dialog>
+  <DialogTrigger asChild>
+    <Button variant="outline">Open Full Dialog</Button>
+  </DialogTrigger>
+  <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+    <DialogHeader>
+      <DialogTitle>Terms of Service</DialogTitle>
+      <DialogDescription>Last updated January 1, 2025</DialogDescription>
+    </DialogHeader>
+    {/* Long content */}
+    <DialogFooter>
+      <Button variant="outline">Decline</Button>
+      <Button>Accept</Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>`}
+        >
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="outline">Open Full Dialog</Button>
+            </DialogTrigger>
+            <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Terms of Service</DialogTitle>
+                <DialogDescription>
+                  Last updated January 1, 2025
+                </DialogDescription>
+              </DialogHeader>
+              <div className="text-muted-foreground space-y-4 text-sm">
+                <p>
+                  By accessing or using this platform, you agree to be bound by
+                  these Terms of Service and all applicable laws and
+                  regulations. If you do not agree with any of these terms, you
+                  are prohibited from using or accessing this site. The
+                  materials contained herein are protected by applicable
+                  copyright and trademark law.
+                </p>
+                <p>
+                  We reserve the right to modify or replace these Terms at any
+                  time at our sole discretion. We will provide at least 30 days
+                  notice prior to any new terms taking effect. What constitutes
+                  a material change will be determined at our sole discretion.
+                  By continuing to access or use our service after those
+                  revisions become effective, you agree to be bound by the
+                  revised terms.
+                </p>
+                <p>
+                  Your use of the service is also governed by our Privacy
+                  Policy, which is incorporated into these Terms by reference.
+                  Our Privacy Policy describes how we collect, use, and share
+                  information about you when you use our services. You
+                  acknowledge that you have read and understood our Privacy
+                  Policy.
+                </p>
+                <p>
+                  You may not use our service for any illegal or unauthorized
+                  purpose nor may you, in the use of the service, violate any
+                  laws in your jurisdiction. You must not transmit any worms or
+                  viruses or any code of a destructive nature. A breach or
+                  violation of any of the Terms will result in an immediate
+                  termination of your account and access to our services without
+                  notice or liability.
+                </p>
+                <p>
+                  In no event shall we, our directors, employees, partners,
+                  agents, suppliers, or affiliates, be liable for any indirect,
+                  incidental, special, consequential, or punitive damages,
+                  including without limitation, loss of profits, data, use,
+                  goodwill, or other intangible losses, resulting from your
+                  access to or use of (or inability to access or use) the
+                  service.
+                </p>
+              </div>
+              <DialogFooter>
+                <Button variant="outline">Decline</Button>
+                <Button>Accept</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Sheet — edit profile form"
+          code={`<Sheet>
+  <SheetTrigger asChild>
+    <Button variant="outline">Edit Profile</Button>
+  </SheetTrigger>
+  <SheetContent side="right">
+    <SheetHeader>
+      <SheetTitle>Edit Profile</SheetTitle>
+    </SheetHeader>
+    <div className="space-y-4 py-4">
+      <Field>
+        <FieldLabel htmlFor="sp-name">Name</FieldLabel>
+        <Input id="sp-name" defaultValue="Jane Doe" />
+      </Field>
+      <Field>
+        <FieldLabel htmlFor="sp-email">Email</FieldLabel>
+        <Input id="sp-email" type="email" defaultValue="jane@example.com" />
+      </Field>
+      <Field>
+        <FieldLabel htmlFor="sp-bio">Bio</FieldLabel>
+        <Input id="sp-bio" placeholder="Tell us about yourself..." />
+      </Field>
+    </div>
+    <SheetFooter>
+      <Button variant="outline">Cancel</Button>
+      <Button>Save Changes</Button>
+    </SheetFooter>
+  </SheetContent>
+</Sheet>`}
+        >
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="outline">Edit Profile</Button>
+            </SheetTrigger>
+            <SheetContent side="right">
+              <SheetHeader>
+                <SheetTitle>Edit Profile</SheetTitle>
+                <SheetDescription>
+                  Update your public profile information.
+                </SheetDescription>
+              </SheetHeader>
+              <div className="space-y-4 py-4">
+                <Field>
+                  <FieldLabel htmlFor="sp-name">Name</FieldLabel>
+                  <Input id="sp-name" defaultValue="Jane Doe" />
+                </Field>
+                <Field>
+                  <FieldLabel htmlFor="sp-email">Email</FieldLabel>
+                  <Input
+                    id="sp-email"
+                    type="email"
+                    defaultValue="jane@example.com"
+                  />
+                </Field>
+                <Field>
+                  <FieldLabel htmlFor="sp-bio">Bio</FieldLabel>
+                  <Input id="sp-bio" placeholder="Tell us about yourself..." />
+                </Field>
+              </div>
+              <SheetFooter>
+                <Button variant="outline">Cancel</Button>
+                <Button>Save Changes</Button>
+              </SheetFooter>
+            </SheetContent>
+          </Sheet>
         </ShowcaseExample>
       </div>
     </div>

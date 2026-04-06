@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
+import { useState, useEffect } from "react"
 import {
   Home,
   Package,
@@ -10,10 +11,14 @@ import {
   UserPlus,
   Settings,
   Search,
+  Clock,
+  Star,
+  Loader2,
 } from "lucide-react"
 import { PageHeader } from "@/core/layout"
 import {
   Command,
+  CommandDialog,
   CommandEmpty,
   CommandGroup,
   CommandInput,
@@ -22,6 +27,7 @@ import {
   CommandSeparator,
   CommandShortcut,
 } from "@/core/components/ui/command"
+import { Button } from "@/core/components/ui/button"
 import { ShowcaseExample } from "./_components/-showcase-example"
 
 export const Route = createFileRoute("/_authenticated/components/command")({
@@ -58,7 +64,7 @@ function CommandPage() {
   </CommandList>
 </Command>`}
         >
-          <Command className="rounded-lg border border-border shadow-sm">
+          <Command className="border-border rounded-lg border shadow-sm">
             <CommandInput placeholder="Type a command or search..." />
             <CommandList>
               <CommandEmpty>No results found.</CommandEmpty>
@@ -121,7 +127,7 @@ function CommandPage() {
   <CommandShortcut>⌘K</CommandShortcut>
 </CommandItem>`}
         >
-          <Command className="rounded-lg border border-border shadow-sm">
+          <Command className="border-border rounded-lg border shadow-sm">
             <CommandInput placeholder="Search commands..." />
             <CommandList>
               <CommandEmpty>No results found.</CommandEmpty>
@@ -158,7 +164,178 @@ function CommandPage() {
             </CommandList>
           </Command>
         </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Recent searches dialog"
+          code={`function RecentSearchesDemo() {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>Open recent searches</Button>
+      <CommandDialog open={open} onOpenChange={setOpen}>
+        <CommandInput placeholder="Search..." />
+        <CommandList>
+          <CommandGroup heading="Recent">
+            <CommandItem><Clock className="mr-2 h-4 w-4" />Dashboard settings</CommandItem>
+            <CommandItem><Clock className="mr-2 h-4 w-4" />User management</CommandItem>
+            <CommandItem><Clock className="mr-2 h-4 w-4" />API documentation</CommandItem>
+          </CommandGroup>
+          <CommandSeparator />
+          <CommandGroup heading="Suggestions">
+            <CommandItem><Star className="mr-2 h-4 w-4" />Create new project</CommandItem>
+            <CommandItem><Star className="mr-2 h-4 w-4" />Invite team members</CommandItem>
+            <CommandItem><Star className="mr-2 h-4 w-4" />View analytics</CommandItem>
+          </CommandGroup>
+        </CommandList>
+      </CommandDialog>
+    </>
+  )
+}`}
+        >
+          <RecentSearchesDemo />
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Async search results"
+          code={`function AsyncSearchDemo() {
+  const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [query, setQuery] = useState("")
+
+  useEffect(() => {
+    if (!query) { setLoading(false); return }
+    setLoading(true)
+    const t = setTimeout(() => setLoading(false), 500)
+    return () => clearTimeout(t)
+  }, [query])
+
+  const results = ["Dashboard overview", "User settings", "API keys"].filter(r =>
+    r.toLowerCase().includes(query.toLowerCase())
+  )
+
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>Search with loading</Button>
+      <CommandDialog open={open} onOpenChange={setOpen}>
+        <CommandInput placeholder="Search..." value={query} onValueChange={setQuery} />
+        <CommandList>
+          {loading ? (
+            <CommandItem disabled>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Searching...
+            </CommandItem>
+          ) : query && results.length > 0 ? (
+            <CommandGroup heading="Results">
+              {results.map(r => <CommandItem key={r}>{r}</CommandItem>)}
+            </CommandGroup>
+          ) : (
+            <CommandEmpty>{query ? "No results found." : "Start typing to search."}</CommandEmpty>
+          )}
+        </CommandList>
+      </CommandDialog>
+    </>
+  )
+}`}
+        >
+          <AsyncSearchDemo />
+        </ShowcaseExample>
       </div>
     </div>
+  )
+}
+
+function RecentSearchesDemo() {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>Open recent searches</Button>
+      <CommandDialog open={open} onOpenChange={setOpen}>
+        <CommandInput placeholder="Search..." />
+        <CommandList>
+          <CommandEmpty>No results found.</CommandEmpty>
+          <CommandGroup heading="Recent">
+            <CommandItem>
+              <Clock className="mr-2 h-4 w-4" />
+              Dashboard settings
+            </CommandItem>
+            <CommandItem>
+              <Clock className="mr-2 h-4 w-4" />
+              User management
+            </CommandItem>
+            <CommandItem>
+              <Clock className="mr-2 h-4 w-4" />
+              API documentation
+            </CommandItem>
+          </CommandGroup>
+          <CommandSeparator />
+          <CommandGroup heading="Suggestions">
+            <CommandItem>
+              <Star className="mr-2 h-4 w-4" />
+              Create new project
+            </CommandItem>
+            <CommandItem>
+              <Star className="mr-2 h-4 w-4" />
+              Invite team members
+            </CommandItem>
+            <CommandItem>
+              <Star className="mr-2 h-4 w-4" />
+              View analytics
+            </CommandItem>
+          </CommandGroup>
+        </CommandList>
+      </CommandDialog>
+    </>
+  )
+}
+
+function AsyncSearchDemo() {
+  const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [query, setQuery] = useState("")
+
+  useEffect(() => {
+    if (!query) {
+      setLoading(false)
+      return
+    }
+    setLoading(true)
+    const t = setTimeout(() => setLoading(false), 500)
+    return () => clearTimeout(t)
+  }, [query])
+
+  const allResults = ["Dashboard overview", "User settings", "API keys"]
+  const results = allResults.filter((r) =>
+    r.toLowerCase().includes(query.toLowerCase()),
+  )
+
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>Search with loading</Button>
+      <CommandDialog open={open} onOpenChange={setOpen}>
+        <CommandInput
+          placeholder="Search..."
+          value={query}
+          onValueChange={setQuery}
+        />
+        <CommandList>
+          {loading ? (
+            <CommandItem disabled>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Searching...
+            </CommandItem>
+          ) : query && results.length > 0 ? (
+            <CommandGroup heading="Results">
+              {results.map((r) => (
+                <CommandItem key={r}>{r}</CommandItem>
+              ))}
+            </CommandGroup>
+          ) : (
+            <CommandEmpty>
+              {query ? "No results found." : "Start typing to search."}
+            </CommandEmpty>
+          )}
+        </CommandList>
+      </CommandDialog>
+    </>
   )
 }

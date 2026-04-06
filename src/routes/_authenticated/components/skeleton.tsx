@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { PageHeader } from "@/core/layout"
 import { Skeleton } from "@/core/components/ui/skeleton"
+import { Card, CardContent } from "@/core/components/ui/card"
+import { Separator } from "@/core/components/ui/separator"
 import { ShowcaseExample } from "./_components/-showcase-example"
 
 export const Route = createFileRoute("/_authenticated/components/skeleton")({
@@ -107,7 +109,7 @@ function SkeletonPage() {
   </div>
 ))}`}
         >
-          <div className="divide-y divide-border">
+          <div className="divide-border divide-y">
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="flex items-center gap-3 py-3">
                 <Skeleton className="h-8 w-8 rounded-full" />
@@ -118,6 +120,100 @@ function SkeletonPage() {
                 <Skeleton className="h-3.5 w-16 rounded-full" />
               </div>
             ))}
+          </div>
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Data-table skeleton"
+          code={`<Card>
+  <CardContent className="p-0">
+    <div className="flex items-center gap-2 p-4">
+      <Skeleton className="h-9 w-64" />
+      <Skeleton className="h-9 w-24" />
+    </div>
+    <Separator />
+    {Array.from({ length: 6 }).map((_, i) => (
+      <div key={i} className="flex items-center gap-4 px-4 py-3">
+        <Skeleton className="h-4 w-32" />
+        <Skeleton className="h-4 w-24" />
+        <Skeleton className="h-4 w-16" />
+        <Skeleton className="h-4 w-20" />
+      </div>
+    ))}
+    <Separator />
+    <div className="flex items-center justify-between px-4 py-3">
+      <Skeleton className="h-4 w-32" />
+      <div className="flex gap-1">
+        <Skeleton className="h-8 w-8" />
+        <Skeleton className="h-8 w-8" />
+        <Skeleton className="h-8 w-8" />
+      </div>
+    </div>
+  </CardContent>
+</Card>`}
+        >
+          <Card>
+            <CardContent className="p-0">
+              <div className="flex items-center gap-2 p-4">
+                <Skeleton className="h-9 w-64" />
+                <Skeleton className="h-9 w-24" />
+              </div>
+              <Separator />
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="flex items-center gap-4 px-4 py-3">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-4 w-16" />
+                  <Skeleton className="h-4 w-20" />
+                </div>
+              ))}
+              <Separator />
+              <div className="flex items-center justify-between px-4 py-3">
+                <Skeleton className="h-4 w-32" />
+                <div className="flex gap-1">
+                  <Skeleton className="h-8 w-8" />
+                  <Skeleton className="h-8 w-8" />
+                  <Skeleton className="h-8 w-8" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Dashboard skeleton"
+          code={`<div className="space-y-4">
+  <div className="grid grid-cols-4 gap-4">
+    {Array.from({ length: 4 }).map((_, i) => (
+      <Skeleton key={i} className="h-24 rounded-lg" />
+    ))}
+  </div>
+  <div className="grid grid-cols-2 gap-4">
+    {Array.from({ length: 2 }).map((_, i) => (
+      <Skeleton key={i} className="h-64 rounded-lg" />
+    ))}
+  </div>
+  <div className="grid grid-cols-3 gap-4">
+    <Skeleton className="col-span-2 h-40 rounded-lg" />
+    <Skeleton className="h-40 rounded-lg" />
+  </div>
+</div>`}
+        >
+          <div className="space-y-4">
+            <div className="grid grid-cols-4 gap-4">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <Skeleton key={i} className="h-24 rounded-lg" />
+              ))}
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              {Array.from({ length: 2 }).map((_, i) => (
+                <Skeleton key={i} className="h-64 rounded-lg" />
+              ))}
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+              <Skeleton className="col-span-2 h-40 rounded-lg" />
+              <Skeleton className="h-40 rounded-lg" />
+            </div>
           </div>
         </ShowcaseExample>
       </div>

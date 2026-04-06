@@ -1,4 +1,5 @@
 import { Card, CardContent } from "@/core/components/ui/card"
+import { Progress } from "@/core/components/ui/progress"
 import type { ProgressCardProps } from "../types"
 
 export function ProgressCard({
@@ -13,19 +14,14 @@ export function ProgressCard({
     <Card>
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">{label}</p>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-muted-foreground text-sm">{label}</p>
+          <p className="text-muted-foreground text-xs">
             {value}
             {unit} / {target}
             {unit}
           </p>
         </div>
-        <div className="mt-3 h-2 w-full rounded-full bg-secondary">
-          <div
-            className="h-2 rounded-full bg-primary transition-all duration-300"
-            style={{ width: `${percentage}%` }}
-          />
-        </div>
+        <Progress value={percentage} className="mt-3 h-2" />
       </CardContent>
     </Card>
   )

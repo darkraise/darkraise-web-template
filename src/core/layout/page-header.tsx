@@ -1,6 +1,14 @@
+import React from "react"
 import { Link } from "@tanstack/react-router"
-import { ChevronRight } from "lucide-react"
 import type { PageHeaderProps } from "./types"
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/core/components/ui/breadcrumb"
 
 export function PageHeader({
   breadcrumbs,
@@ -12,40 +20,41 @@ export function PageHeader({
   return (
     <div className="space-y-4 pb-4">
       {breadcrumbs && breadcrumbs.length > 0 && (
-        <nav className="flex items-center gap-1 text-sm text-muted-foreground">
-          {breadcrumbs.map((crumb, i) => (
-            <span key={crumb.label} className="flex items-center gap-1">
-              {i > 0 && <ChevronRight className="h-3.5 w-3.5" />}
-              {crumb.href ? (
-                <Link
-                  to={crumb.href}
-                  className="transition-colors duration-150 hover:text-foreground"
-                >
-                  {crumb.label}
-                </Link>
-              ) : (
-                <span className="text-foreground">{crumb.label}</span>
-              )}
-            </span>
-          ))}
-        </nav>
+        <Breadcrumb>
+          <BreadcrumbList>
+            {breadcrumbs.map((crumb, i) => (
+              <React.Fragment key={crumb.label}>
+                {i > 0 && <BreadcrumbSeparator />}
+                <BreadcrumbItem>
+                  {crumb.href ? (
+                    <BreadcrumbLink asChild>
+                      <Link to={crumb.href}>{crumb.label}</Link>
+                    </BreadcrumbLink>
+                  ) : (
+                    <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
+                  )}
+                </BreadcrumbItem>
+              </React.Fragment>
+            ))}
+          </BreadcrumbList>
+        </Breadcrumb>
       )}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-medium">{title}</h1>
           {description && (
-            <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+            <p className="text-muted-foreground mt-1 text-sm">{description}</p>
           )}
         </div>
         {actions && <div className="flex items-center gap-2">{actions}</div>}
       </div>
       {tabs && tabs.length > 0 && (
-        <nav className="flex gap-4 border-b border-border">
+        <nav className="border-border flex gap-4 border-b">
           {tabs.map((tab) => (
             <Link
               key={tab.value}
               to={tab.href}
-              className="border-b-2 border-transparent px-1 pb-2 text-sm text-muted-foreground transition-colors duration-150 hover:text-foreground [&.active]:border-primary [&.active]:text-foreground"
+              className="text-muted-foreground hover:text-foreground [&.active]:border-primary [&.active]:text-foreground border-b-2 border-transparent px-1 pb-2 text-sm transition-colors duration-150"
               activeProps={{ className: "active" }}
             >
               {tab.label}

@@ -23,7 +23,7 @@ export function SidebarLayout({ children, nav, headerSlot }: LayoutProps) {
         {/* Sidebar */}
         <aside
           className={cn(
-            "sidebar-gradient-overlay theme-transition hidden flex-col border-r bg-surface-sidebar transition-all duration-300 md:flex",
+            "sidebar-gradient-overlay theme-transition bg-surface-sidebar hidden flex-col border-r transition-all duration-300 md:flex",
             collapsed ? "w-16" : "w-64",
           )}
           style={{ borderColor: "hsl(var(--sidebar-border))" }}
@@ -52,10 +52,10 @@ export function SidebarLayout({ children, nav, headerSlot }: LayoutProps) {
           <ScrollArea className="flex-1 py-4">
             <nav className="flex flex-col gap-1 px-2">
               {nav.map((group, gi) => (
-                <div key={gi} className={gi > 0 ? "mt-4" : ""}>
+                <div key={gi} className={cn("space-y-0.5", gi > 0 && "mt-4")}>
                   {group.label && !collapsed && (
                     <p
-                      className="mb-1 px-3 text-xs font-medium uppercase tracking-wider"
+                      className="mb-1 px-3 text-xs font-medium tracking-wider uppercase"
                       style={{ color: "hsl(var(--sidebar-foreground-muted))" }}
                     >
                       {group.label}
@@ -78,7 +78,7 @@ export function SidebarLayout({ children, nav, headerSlot }: LayoutProps) {
                         )}
                         {!collapsed && <span>{item.label}</span>}
                         {!collapsed && item.badge && (
-                          <span className="ml-auto rounded-full bg-primary/20 px-2 py-0.5 text-xs text-primary">
+                          <span className="bg-primary/20 text-primary ml-auto rounded-full px-2 py-0.5 text-xs">
                             {item.badge}
                           </span>
                         )}

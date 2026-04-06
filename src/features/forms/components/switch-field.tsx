@@ -1,5 +1,10 @@
 import { Switch } from "@/core/components/ui/switch"
-import { Label } from "@/core/components/ui/label"
+import {
+  Field,
+  FieldLabel,
+  FieldDescription,
+  FieldError,
+} from "@/core/components/ui/field"
 import type { AnyFieldApi } from "@tanstack/react-form"
 
 interface SwitchFieldProps {
@@ -9,20 +14,25 @@ interface SwitchFieldProps {
 }
 
 export function SwitchField({ field, label, description }: SwitchFieldProps) {
+  const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
   return (
-    <div className="flex items-start justify-between rounded-lg border border-border p-4">
+    <Field
+      orientation="horizontal"
+      data-invalid={isInvalid}
+      className="border-border justify-between rounded-lg border p-4"
+    >
       <div className="space-y-0.5">
-        <Label htmlFor={field.name}>{label}</Label>
-        {description && (
-          <p className="text-xs text-muted-foreground">{description}</p>
-        )}
+        <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
+        {description && <FieldDescription>{description}</FieldDescription>}
       </div>
       <Switch
         id={field.name}
         checked={field.state.value as boolean}
         onCheckedChange={(checked) => field.handleChange(checked)}
         onBlur={field.handleBlur}
+        aria-invalid={isInvalid}
       />
-    </div>
+      {isInvalid && <FieldError errors={field.state.meta.errors} />}
+    </Field>
   )
 }

@@ -3,7 +3,7 @@ import { z } from "zod"
 import { useForm } from "@tanstack/react-form"
 import { Button } from "@/core/components/ui/button"
 import { Input } from "@/core/components/ui/input"
-import { FieldWrapper } from "@/features/forms"
+import { Field, FieldLabel, FieldError } from "@/core/components/ui/field"
 import { useAuth } from "../hooks/use-auth"
 
 const registerSchema = z.object({
@@ -27,7 +27,7 @@ export function RegisterForm() {
     <>
       <div className="space-y-2 text-center">
         <h1 className="text-2xl font-medium">Create an account</h1>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
           Enter your details to get started
         </p>
       </div>
@@ -41,49 +41,70 @@ export function RegisterForm() {
       >
         <form.Field
           name="name"
-          children={(field) => (
-            <FieldWrapper field={field} label="Name">
-              <Input
-                id={field.name}
-                placeholder="Your name"
-                value={field.state.value}
-                onBlur={field.handleBlur}
-                onChange={(e) => field.handleChange(e.target.value)}
-              />
-            </FieldWrapper>
-          )}
+          children={(field) => {
+            const isInvalid =
+              field.state.meta.isTouched && !field.state.meta.isValid
+            return (
+              <Field data-invalid={isInvalid}>
+                <FieldLabel htmlFor={field.name}>Name</FieldLabel>
+                <Input
+                  id={field.name}
+                  placeholder="Your name"
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  aria-invalid={isInvalid}
+                />
+                {isInvalid && <FieldError errors={field.state.meta.errors} />}
+              </Field>
+            )
+          }}
         />
 
         <form.Field
           name="email"
-          children={(field) => (
-            <FieldWrapper field={field} label="Email">
-              <Input
-                id={field.name}
-                type="email"
-                placeholder="name@example.com"
-                value={field.state.value}
-                onBlur={field.handleBlur}
-                onChange={(e) => field.handleChange(e.target.value)}
-              />
-            </FieldWrapper>
-          )}
+          children={(field) => {
+            const isInvalid =
+              field.state.meta.isTouched && !field.state.meta.isValid
+            return (
+              <Field data-invalid={isInvalid}>
+                <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+                <Input
+                  id={field.name}
+                  type="email"
+                  placeholder="name@example.com"
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  aria-invalid={isInvalid}
+                />
+                {isInvalid && <FieldError errors={field.state.meta.errors} />}
+              </Field>
+            )
+          }}
         />
 
         <form.Field
           name="password"
-          children={(field) => (
-            <FieldWrapper field={field} label="Password">
-              <Input
-                id={field.name}
-                type="password"
-                placeholder="At least 8 characters"
-                value={field.state.value}
-                onBlur={field.handleBlur}
-                onChange={(e) => field.handleChange(e.target.value)}
-              />
-            </FieldWrapper>
-          )}
+          children={(field) => {
+            const isInvalid =
+              field.state.meta.isTouched && !field.state.meta.isValid
+            return (
+              <Field data-invalid={isInvalid}>
+                <FieldLabel htmlFor={field.name}>Password</FieldLabel>
+                <Input
+                  id={field.name}
+                  type="password"
+                  placeholder="At least 8 characters"
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  aria-invalid={isInvalid}
+                />
+                {isInvalid && <FieldError errors={field.state.meta.errors} />}
+              </Field>
+            )
+          }}
         />
 
         <form.Subscribe
@@ -100,7 +121,7 @@ export function RegisterForm() {
         />
       </form>
 
-      <p className="text-center text-sm text-muted-foreground">
+      <p className="text-muted-foreground text-center text-sm">
         Already have an account?{" "}
         <Link to="/login" className="text-primary hover:underline">
           Sign in

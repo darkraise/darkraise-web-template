@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { useState } from "react"
+import { Eye, EyeOff, X } from "lucide-react"
 import { PageHeader } from "@/core/layout"
 import { Button } from "@/core/components/ui/button"
 import { Input } from "@/core/components/ui/input"
@@ -15,11 +16,81 @@ import { Checkbox } from "@/core/components/ui/checkbox"
 import { Switch } from "@/core/components/ui/switch"
 import { Label } from "@/core/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/core/components/ui/radio-group"
+import { Field, FieldLabel } from "@/core/components/ui/field"
 import { ShowcaseExample } from "./_components/-showcase-example"
 
 export const Route = createFileRoute("/_authenticated/components/inputs")({
   component: InputsPage,
 })
+
+function ClearableInputExample() {
+  const [value, setValue] = useState("")
+  return (
+    <div className="relative">
+      <Input
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        placeholder="Type to search..."
+        className="pr-8"
+      />
+      {value && (
+        <X
+          className="text-muted-foreground hover:text-foreground absolute top-1/2 right-2 h-4 w-4 -translate-y-1/2 cursor-pointer"
+          onClick={() => setValue("")}
+        />
+      )}
+    </div>
+  )
+}
+
+function PasswordInputExample() {
+  const [showPassword, setShowPassword] = useState(false)
+  return (
+    <div className="relative">
+      <Input
+        type={showPassword ? "text" : "password"}
+        defaultValue="supersecret123"
+        className="pr-10"
+      />
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        onClick={() => setShowPassword((p) => !p)}
+        className="absolute top-1/2 right-1 h-7 w-7 -translate-y-1/2"
+      >
+        {showPassword ? (
+          <EyeOff className="h-4 w-4" />
+        ) : (
+          <Eye className="h-4 w-4" />
+        )}
+      </Button>
+    </div>
+  )
+}
+
+function CharCountTextareaExample() {
+  const [value, setValue] = useState(
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore.",
+  )
+  const countColor =
+    value.length > 270
+      ? "text-destructive"
+      : value.length > 240
+        ? "text-amber-500"
+        : "text-muted-foreground"
+  return (
+    <div className="space-y-1">
+      <Textarea
+        maxLength={280}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        rows={4}
+      />
+      <p className={`text-right text-xs ${countColor}`}>{value.length} / 280</p>
+    </div>
+  )
+}
 
 function InputsPage() {
   const [selectValue, setSelectValue] = useState("")
@@ -41,94 +112,110 @@ function InputsPage() {
       <div className="space-y-6">
         <ShowcaseExample
           title="Text input states"
-          code={`<Label htmlFor="default">Default</Label>
-<Input id="default" placeholder="Type something..." />
+          code={`<Field>
+  <FieldLabel htmlFor="default">Default</FieldLabel>
+  <Input id="default" placeholder="Type something..." />
+</Field>
 
-<Label htmlFor="disabled">Disabled</Label>
-<Input id="disabled" placeholder="Cannot be edited" disabled />
+<Field>
+  <FieldLabel htmlFor="disabled">Disabled</FieldLabel>
+  <Input id="disabled" placeholder="Cannot be edited" disabled />
+</Field>
 
-<Label htmlFor="with-value">With value</Label>
-<Input id="with-value" defaultValue="Existing content" />`}
+<Field>
+  <FieldLabel htmlFor="with-value">With value</FieldLabel>
+  <Input id="with-value" defaultValue="Existing content" />
+</Field>`}
         >
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="demo-default">Default</Label>
+            <Field>
+              <FieldLabel htmlFor="demo-default">Default</FieldLabel>
               <Input id="demo-default" placeholder="Type something..." />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="demo-disabled">Disabled</Label>
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="demo-disabled">Disabled</FieldLabel>
               <Input
                 id="demo-disabled"
                 placeholder="Cannot be edited"
                 disabled
               />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="demo-value">With value</Label>
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="demo-value">With value</FieldLabel>
               <Input id="demo-value" defaultValue="Existing content" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="demo-password">Password</Label>
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="demo-password">Password</FieldLabel>
               <Input
                 id="demo-password"
                 type="password"
                 defaultValue="secret123"
               />
-            </div>
+            </Field>
           </div>
         </ShowcaseExample>
 
         <ShowcaseExample
           title="Textarea"
-          code={`<Label htmlFor="bio">Bio</Label>
-<Textarea id="bio" placeholder="Tell us about yourself..." rows={3} />
+          code={`<Field>
+  <FieldLabel htmlFor="bio">Bio</FieldLabel>
+  <Textarea id="bio" placeholder="Tell us about yourself..." rows={3} />
+</Field>
 
-<Label htmlFor="disabled-ta">Disabled</Label>
-<Textarea id="disabled-ta" placeholder="Disabled" disabled rows={2} />`}
+<Field>
+  <FieldLabel htmlFor="disabled-ta">Disabled</FieldLabel>
+  <Textarea id="disabled-ta" placeholder="Disabled" disabled rows={2} />
+</Field>`}
         >
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="demo-textarea">Bio</Label>
+            <Field>
+              <FieldLabel htmlFor="demo-textarea">Bio</FieldLabel>
               <Textarea
                 id="demo-textarea"
                 placeholder="Tell us about yourself..."
                 rows={3}
               />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="demo-textarea-disabled">Disabled</Label>
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="demo-textarea-disabled">Disabled</FieldLabel>
               <Textarea
                 id="demo-textarea-disabled"
                 placeholder="Disabled"
                 disabled
                 rows={3}
               />
-            </div>
+            </Field>
           </div>
         </ShowcaseExample>
 
         <ShowcaseExample
           title="Select"
-          code={`<Select value={value} onValueChange={setValue}>
-  <SelectTrigger>
-    <SelectValue placeholder="Pick an option" />
-  </SelectTrigger>
-  <SelectContent>
-    <SelectItem value="alpha">Alpha</SelectItem>
-    <SelectItem value="beta">Beta</SelectItem>
-    <SelectItem value="gamma">Gamma</SelectItem>
-  </SelectContent>
-</Select>
+          code={`<Field>
+  <FieldLabel htmlFor="select">Select</FieldLabel>
+  <Select value={value} onValueChange={setValue}>
+    <SelectTrigger id="select">
+      <SelectValue placeholder="Pick an option" />
+    </SelectTrigger>
+    <SelectContent>
+      <SelectItem value="alpha">Alpha</SelectItem>
+      <SelectItem value="beta">Beta</SelectItem>
+      <SelectItem value="gamma">Gamma</SelectItem>
+    </SelectContent>
+  </Select>
+</Field>
 
-<Select disabled>
-  <SelectTrigger>
-    <SelectValue placeholder="Disabled" />
-  </SelectTrigger>
-</Select>`}
+<Field>
+  <FieldLabel>Disabled select</FieldLabel>
+  <Select disabled>
+    <SelectTrigger>
+      <SelectValue placeholder="Disabled" />
+    </SelectTrigger>
+  </Select>
+</Field>`}
         >
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="demo-select">Select</Label>
+            <Field>
+              <FieldLabel htmlFor="demo-select">Select</FieldLabel>
               <Select value={selectValue} onValueChange={setSelectValue}>
                 <SelectTrigger id="demo-select">
                   <SelectValue placeholder="Pick an option" />
@@ -139,15 +226,15 @@ function InputsPage() {
                   <SelectItem value="gamma">Gamma</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-            <div className="space-y-2">
-              <Label>Disabled select</Label>
+            </Field>
+            <Field>
+              <FieldLabel>Disabled select</FieldLabel>
               <Select disabled>
                 <SelectTrigger>
                   <SelectValue placeholder="Disabled" />
                 </SelectTrigger>
               </Select>
-            </div>
+            </Field>
           </div>
         </ShowcaseExample>
 
@@ -166,7 +253,7 @@ function InputsPage() {
 <Checkbox id="checked-disabled" checked disabled />
 <Label htmlFor="checked-disabled">Checked disabled</Label>`}
         >
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             <div className="flex items-center gap-2">
               <Checkbox
                 id="demo-checkbox"
@@ -205,7 +292,7 @@ function InputsPage() {
 <Switch id="disabled-sw" disabled />
 <Label htmlFor="disabled-sw">Disabled</Label>`}
         >
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             <div className="flex items-center gap-3">
               <Switch
                 id="demo-switch"
@@ -229,20 +316,23 @@ function InputsPage() {
 
         <ShowcaseExample
           title="Radio Group"
-          code={`<RadioGroup value={value} onValueChange={setValue}>
-  <div className="flex items-center gap-2">
-    <RadioGroupItem value="option-a" id="a" />
-    <Label htmlFor="a">Option A</Label>
-  </div>
-  <div className="flex items-center gap-2">
-    <RadioGroupItem value="option-b" id="b" />
-    <Label htmlFor="b">Option B</Label>
-  </div>
-</RadioGroup>`}
+          code={`<Field>
+  <FieldLabel>Vertical group</FieldLabel>
+  <RadioGroup value={value} onValueChange={setValue}>
+    <div className="flex items-center gap-2">
+      <RadioGroupItem value="option-a" id="a" />
+      <Label htmlFor="a">Option A</Label>
+    </div>
+    <div className="flex items-center gap-2">
+      <RadioGroupItem value="option-b" id="b" />
+      <Label htmlFor="b">Option B</Label>
+    </div>
+  </RadioGroup>
+</Field>`}
         >
           <div className="grid gap-6 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label>Vertical group</Label>
+            <Field>
+              <FieldLabel>Vertical group</FieldLabel>
               <RadioGroup value={radioValue} onValueChange={setRadioValue}>
                 {["option-a", "option-b", "option-c"].map((v) => (
                   <div key={v} className="flex items-center gap-2">
@@ -253,9 +343,9 @@ function InputsPage() {
                   </div>
                 ))}
               </RadioGroup>
-            </div>
-            <div className="space-y-2">
-              <Label>Disabled group</Label>
+            </Field>
+            <Field>
+              <FieldLabel>Disabled group</FieldLabel>
               <RadioGroup defaultValue="option-a" disabled>
                 {["option-a", "option-b"].map((v) => (
                   <div key={v} className="flex items-center gap-2">
@@ -269,7 +359,7 @@ function InputsPage() {
                   </div>
                 ))}
               </RadioGroup>
-            </div>
+            </Field>
           </div>
         </ShowcaseExample>
 
@@ -283,6 +373,137 @@ function InputsPage() {
           <div className="flex max-w-sm gap-2">
             <Input placeholder="Enter email address..." />
             <Button>Subscribe</Button>
+          </div>
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Prefix / suffix input"
+          code={`{/* URL prefix */}
+<Field>
+  <FieldLabel>URL</FieldLabel>
+  <div className="flex rounded-md border border-input overflow-hidden">
+    <span className="bg-muted px-3 flex items-center text-sm text-muted-foreground border-r border-input">
+      https://
+    </span>
+    <Input className="border-0 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" placeholder="example.com" />
+  </div>
+</Field>
+
+{/* Currency prefix + suffix */}
+<Field>
+  <FieldLabel>Currency</FieldLabel>
+  <div className="flex rounded-md border border-input overflow-hidden">
+    <span className="bg-muted px-3 flex items-center text-sm text-muted-foreground border-r border-input">$</span>
+    <Input className="border-0 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" placeholder="0.00" />
+    <span className="bg-muted px-3 flex items-center text-sm text-muted-foreground border-l border-input">.00</span>
+  </div>
+</Field>`}
+        >
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field>
+              <FieldLabel>URL</FieldLabel>
+              <div className="border-input flex overflow-hidden rounded-md border">
+                <span className="border-input bg-muted text-muted-foreground flex items-center border-r px-3 text-sm">
+                  https://
+                </span>
+                <Input
+                  className="rounded-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                  placeholder="example.com"
+                />
+              </div>
+            </Field>
+            <Field>
+              <FieldLabel>Currency</FieldLabel>
+              <div className="border-input flex overflow-hidden rounded-md border">
+                <span className="border-input bg-muted text-muted-foreground flex items-center border-r px-3 text-sm">
+                  $
+                </span>
+                <Input
+                  className="rounded-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                  placeholder="0.00"
+                />
+                <span className="border-input bg-muted text-muted-foreground flex items-center border-l px-3 text-sm">
+                  .00
+                </span>
+              </div>
+            </Field>
+          </div>
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Clearable input"
+          code={`function ClearableInputExample() {
+  const [value, setValue] = useState("")
+  return (
+    <div className="relative">
+      <Input
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        placeholder="Type to search..."
+        className="pr-8"
+      />
+      {value && (
+        <X
+          className="absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 cursor-pointer text-muted-foreground hover:text-foreground"
+          onClick={() => setValue("")}
+        />
+      )}
+    </div>
+  )
+}`}
+        >
+          <div className="max-w-sm">
+            <ClearableInputExample />
+          </div>
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Password visibility toggle"
+          code={`function PasswordInputExample() {
+  const [showPassword, setShowPassword] = useState(false)
+  return (
+    <div className="relative">
+      <Input
+        type={showPassword ? "text" : "password"}
+        defaultValue="supersecret123"
+        className="pr-10"
+      />
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        onClick={() => setShowPassword((p) => !p)}
+        className="absolute top-1/2 right-1 h-7 w-7 -translate-y-1/2"
+      >
+        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+      </Button>
+    </div>
+  )
+}`}
+        >
+          <div className="max-w-sm">
+            <PasswordInputExample />
+          </div>
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Character count textarea"
+          code={`function CharCountTextareaExample() {
+  const [value, setValue] = useState("Lorem ipsum...")
+  const countColor =
+    value.length > 270 ? "text-destructive"
+    : value.length > 240 ? "text-amber-500"
+    : "text-muted-foreground"
+  return (
+    <div className="space-y-1">
+      <Textarea maxLength={280} value={value} onChange={(e) => setValue(e.target.value)} rows={4} />
+      <p className={\`text-right text-xs \${countColor}\`}>{value.length} / 280</p>
+    </div>
+  )
+}`}
+        >
+          <div className="max-w-sm">
+            <CharCountTextareaExample />
           </div>
         </ShowcaseExample>
       </div>

@@ -1,5 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { DollarSign, ShoppingCart, Users, TrendingUp } from "lucide-react"
+import { Badge } from "@/core/components/ui/badge"
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/core/components/ui/card"
+import { Separator } from "@/core/components/ui/separator"
 import { PageHeader } from "@/core/layout"
 import {
   StatCard,
@@ -178,6 +186,148 @@ function DashboardPage() {
 />`}
         >
           <ActivityFeed items={activityItems} title="Recent Activity" />
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Metric comparison — period-over-period with badges"
+          code={`<Card>
+  <CardHeader>
+    <CardTitle>Period Comparison</CardTitle>
+  </CardHeader>
+  <CardContent>
+    <div className="flex items-center justify-between py-3">
+      <div>
+        <p className="text-xs text-muted-foreground">This Month</p>
+        <p className="text-xl font-semibold">$12,450</p>
+      </div>
+      <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 border-0">
+        <TrendingUp className="mr-1 h-3 w-3" />
+        +22%
+      </Badge>
+      <div className="text-right">
+        <p className="text-xs text-muted-foreground">Last Month</p>
+        <p className="text-xl font-semibold">$10,200</p>
+      </div>
+    </div>
+    <Separator />
+    <div className="flex items-center justify-between py-3">
+      <div>
+        <p className="text-xs text-muted-foreground">Orders</p>
+        <p className="text-xl font-semibold">342</p>
+      </div>
+      <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 border-0">
+        <TrendingUp className="mr-1 h-3 w-3" />
+        +14.7%
+      </Badge>
+      <div className="text-right">
+        <p className="text-xs text-muted-foreground">Last Month</p>
+        <p className="text-xl font-semibold">298</p>
+      </div>
+    </div>
+  </CardContent>
+</Card>`}
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle>Period Comparison</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between py-3">
+                <div>
+                  <p className="text-muted-foreground text-xs">This Month</p>
+                  <p className="text-xl font-semibold">$12,450</p>
+                </div>
+                <Badge className="border-0 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                  <TrendingUp className="mr-1 h-3 w-3" />
+                  +22%
+                </Badge>
+                <div className="text-right">
+                  <p className="text-muted-foreground text-xs">Last Month</p>
+                  <p className="text-xl font-semibold">$10,200</p>
+                </div>
+              </div>
+              <Separator />
+              <div className="flex items-center justify-between py-3">
+                <div>
+                  <p className="text-muted-foreground text-xs">Orders</p>
+                  <p className="text-xl font-semibold">342</p>
+                </div>
+                <Badge className="border-0 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                  <TrendingUp className="mr-1 h-3 w-3" />
+                  +14.7%
+                </Badge>
+                <div className="text-right">
+                  <p className="text-muted-foreground text-xs">Last Month</p>
+                  <p className="text-xl font-semibold">298</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Compact stat row — inline metrics in a single card"
+          code={`<Card>
+  <CardContent className="flex items-center divide-x py-4">
+    <div className="px-4 first:pl-0 last:pr-0">
+      <p className="text-xs text-muted-foreground">Revenue</p>
+      <p className="text-sm font-medium">$12.4k</p>
+    </div>
+    {/* ... */}
+  </CardContent>
+</Card>`}
+        >
+          <Card>
+            <CardContent className="flex items-center divide-x py-4">
+              {[
+                { label: "Revenue", value: "$12.4k" },
+                { label: "Orders", value: "342" },
+                { label: "Customers", value: "89" },
+                { label: "AOV", value: "$36.20" },
+                { label: "Conversion", value: "3.2%" },
+              ].map((metric) => (
+                <div key={metric.label} className="px-4 first:pl-0 last:pr-0">
+                  <p className="text-muted-foreground text-xs">
+                    {metric.label}
+                  </p>
+                  <p className="text-sm font-medium">{metric.value}</p>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Grid layout variations — 2, 3, and 4 column MetricGrid"
+          code={`<MetricGrid columns={2}>
+  <StatCard label="Revenue" value="$34,200" icon={DollarSign} />
+  <StatCard label="Orders" value="1,240" icon={ShoppingCart} />
+</MetricGrid>
+<MetricGrid columns={3}>...</MetricGrid>
+<MetricGrid columns={4}>...</MetricGrid>`}
+        >
+          <div className="space-y-4">
+            <p className="text-muted-foreground text-xs">2 columns</p>
+            <MetricGrid columns={2}>
+              <StatCard label="Revenue" value="$34,200" icon={DollarSign} />
+              <StatCard label="Orders" value="1,240" icon={ShoppingCart} />
+            </MetricGrid>
+
+            <p className="text-muted-foreground text-xs">3 columns</p>
+            <MetricGrid columns={3}>
+              <StatCard label="Revenue" value="$34,200" icon={DollarSign} />
+              <StatCard label="Orders" value="1,240" icon={ShoppingCart} />
+              <StatCard label="Customers" value="8,340" icon={Users} />
+            </MetricGrid>
+
+            <p className="text-muted-foreground text-xs">4 columns</p>
+            <MetricGrid columns={4}>
+              <StatCard label="Revenue" value="$34,200" icon={DollarSign} />
+              <StatCard label="Orders" value="1,240" icon={ShoppingCart} />
+              <StatCard label="Customers" value="8,340" icon={Users} />
+              <StatCard label="Growth" value="+22%" icon={TrendingUp} />
+            </MetricGrid>
+          </div>
         </ShowcaseExample>
       </div>
     </div>
