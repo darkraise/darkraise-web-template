@@ -72,18 +72,12 @@ function FullShowcaseForm() {
         title="Basic Info"
         description="Personal details with inline validation."
       >
-        <form.Field
-          name="name"
-          validators={{ onBlur: showcaseSchema.shape.name }}
-        >
+        <form.Field name="name">
           {(field) => (
             <TextField field={field} label="Full Name" placeholder="Jane Doe" />
           )}
         </form.Field>
-        <form.Field
-          name="bio"
-          validators={{ onBlur: showcaseSchema.shape.bio }}
-        >
+        <form.Field name="bio">
           {(field) => (
             <TextareaField
               field={field}
@@ -93,10 +87,7 @@ function FullShowcaseForm() {
             />
           )}
         </form.Field>
-        <form.Field
-          name="age"
-          validators={{ onBlur: showcaseSchema.shape.age }}
-        >
+        <form.Field name="age">
           {(field) => (
             <NumberField
               field={field}
@@ -107,10 +98,7 @@ function FullShowcaseForm() {
             />
           )}
         </form.Field>
-        <form.Field
-          name="role"
-          validators={{ onBlur: showcaseSchema.shape.role }}
-        >
+        <form.Field name="role">
           {(field) => (
             <SelectField
               field={field}
@@ -129,10 +117,7 @@ function FullShowcaseForm() {
         title="Preferences"
         description="Toggle and choice controls."
       >
-        <form.Field
-          name="notifications"
-          validators={{ onBlur: showcaseSchema.shape.notifications }}
-        >
+        <form.Field name="notifications">
           {(field) => (
             <SwitchField
               field={field}
@@ -141,10 +126,7 @@ function FullShowcaseForm() {
             />
           )}
         </form.Field>
-        <form.Field
-          name="plan"
-          validators={{ onBlur: showcaseSchema.shape.plan }}
-        >
+        <form.Field name="plan">
           {(field) => (
             <RadioGroupField
               field={field}
@@ -157,10 +139,7 @@ function FullShowcaseForm() {
             />
           )}
         </form.Field>
-        <form.Field
-          name="agree"
-          validators={{ onBlur: showcaseSchema.shape.agree }}
-        >
+        <form.Field name="agree">
           {(field) => (
             <CheckboxField
               field={field}
