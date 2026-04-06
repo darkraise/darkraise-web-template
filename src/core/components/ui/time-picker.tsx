@@ -23,10 +23,12 @@ function TimeColumn({
   items,
   value,
   onChange,
+  showInput = true,
 }: {
   items: string[]
   value: string
   onChange: (val: string) => void
+  showInput?: boolean
 }) {
   const containerRef = useRef<HTMLDivElement>(null)
   const itemRefs = useRef<Map<string, HTMLButtonElement>>(new Map())
@@ -69,18 +71,20 @@ function TimeColumn({
 
   return (
     <div className="flex flex-col">
-      <input
-        type="text"
-        inputMode="numeric"
-        value={inputValue}
-        onChange={handleInputChange}
-        onBlur={handleInputBlur}
-        onKeyDown={handleInputKeyDown}
-        onFocus={(e) => e.target.select()}
-        className="bg-muted/50 focus:bg-accent w-10 border-b py-2 text-center text-sm font-medium outline-none"
-      />
+      {showInput && (
+        <input
+          type="text"
+          inputMode="numeric"
+          value={inputValue}
+          onChange={handleInputChange}
+          onBlur={handleInputBlur}
+          onKeyDown={handleInputKeyDown}
+          onFocus={(e) => e.target.select()}
+          className="bg-muted/50 focus:bg-accent w-14 py-2 text-center text-sm font-medium outline-none"
+        />
+      )}
       <ScrollArea className="h-48" ref={containerRef}>
-        <div className="flex flex-col py-1 pr-2">
+        <div className="flex flex-col py-1">
           {items.map((item) => (
             <button
               key={item}
@@ -221,6 +225,7 @@ function TimePicker({
                 onChange={(p) =>
                   onChange?.(to24(parsed.hour, parsed.minute, p))
                 }
+                showInput={false}
               />
             </>
           )}
