@@ -32,6 +32,15 @@ import {
   Wrench,
   CookingPot,
   MessageSquareMore,
+  ToggleLeft,
+  AlertTriangle,
+  PanelBottom,
+  ChevronsUpDown,
+  SquareMousePointer,
+  SlidersHorizontal,
+  CalendarDays,
+  ArrowLeftRight,
+  MoreHorizontal,
 } from "lucide-react"
 import { SidebarLayout } from "@/core/layout"
 import { useAuthStore } from "@/features/auth"
@@ -117,6 +126,39 @@ const nav: NavGroup[] = [
         label: "Feedback",
         href: "/components/feedback",
         icon: MessageSquareMore,
+      },
+      { label: "Toggle", href: "/components/toggle", icon: ToggleLeft },
+      {
+        label: "Alert Dialog",
+        href: "/components/alert-dialog",
+        icon: AlertTriangle,
+      },
+      { label: "Drawer", href: "/components/drawer", icon: PanelBottom },
+      {
+        label: "Collapsible",
+        href: "/components/collapsible",
+        icon: ChevronsUpDown,
+      },
+      {
+        label: "Hover Card",
+        href: "/components/hover-card",
+        icon: SquareMousePointer,
+      },
+      {
+        label: "Slider",
+        href: "/components/slider",
+        icon: SlidersHorizontal,
+      },
+      { label: "Calendar", href: "/components/calendar", icon: CalendarDays },
+      {
+        label: "Pagination",
+        href: "/components/pagination",
+        icon: ArrowLeftRight,
+      },
+      {
+        label: "More",
+        href: "/components/more-components",
+        icon: MoreHorizontal,
       },
     ],
   },

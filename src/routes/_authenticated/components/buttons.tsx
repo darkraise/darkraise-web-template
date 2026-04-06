@@ -29,6 +29,7 @@ import {
   DropdownMenuTrigger,
 } from "@/core/components/ui/dropdown-menu"
 import { Separator } from "@/core/components/ui/separator"
+import { ToggleGroup, ToggleGroupItem } from "@/core/components/ui/toggle-group"
 import { ShowcaseExample } from "./_components/-showcase-example"
 
 export const Route = createFileRoute("/_authenticated/components/buttons")({
@@ -299,52 +300,26 @@ function ButtonsPage() {
         <ShowcaseExample
           title="Toggle button bar"
           code={`const [period, setPeriod] = useState("1M")
-const periods = ["1D", "1W", "1M", "1Y"]
 
-<div className="inline-flex">
-  {periods.map((p, i) => (
-    <Button
-      key={p}
-      variant="outline"
-      className={[
-        i === 0 ? "rounded-r-none" : i === periods.length - 1 ? "rounded-l-none" : "rounded-none",
-        i > 0 ? "border-l-0" : "",
-        period === p ? "bg-primary text-primary-foreground hover:bg-primary/90" : "",
-      ].join(" ")}
-      onClick={() => setPeriod(p)}
-    >
-      {p}
-    </Button>
-  ))}
-</div>`}
+<ToggleGroup type="single" value={period} onValueChange={(v) => { if (v) setPeriod(v as typeof period) }}>
+  <ToggleGroupItem value="1D">1D</ToggleGroupItem>
+  <ToggleGroupItem value="1W">1W</ToggleGroupItem>
+  <ToggleGroupItem value="1M">1M</ToggleGroupItem>
+  <ToggleGroupItem value="1Y">1Y</ToggleGroupItem>
+</ToggleGroup>`}
         >
-          {(() => {
-            const periods = ["1D", "1W", "1M", "1Y"] as const
-            return (
-              <div className="inline-flex">
-                {periods.map((p, i) => (
-                  <Button
-                    key={p}
-                    variant="outline"
-                    className={[
-                      i === 0
-                        ? "rounded-r-none"
-                        : i === periods.length - 1
-                          ? "rounded-l-none"
-                          : "rounded-none",
-                      i > 0 ? "border-l-0" : "",
-                      period === p
-                        ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                        : "",
-                    ].join(" ")}
-                    onClick={() => setPeriod(p)}
-                  >
-                    {p}
-                  </Button>
-                ))}
-              </div>
-            )
-          })()}
+          <ToggleGroup
+            type="single"
+            value={period}
+            onValueChange={(v) => {
+              if (v) setPeriod(v as typeof period)
+            }}
+          >
+            <ToggleGroupItem value="1D">1D</ToggleGroupItem>
+            <ToggleGroupItem value="1W">1W</ToggleGroupItem>
+            <ToggleGroupItem value="1M">1M</ToggleGroupItem>
+            <ToggleGroupItem value="1Y">1Y</ToggleGroupItem>
+          </ToggleGroup>
         </ShowcaseExample>
       </div>
     </div>

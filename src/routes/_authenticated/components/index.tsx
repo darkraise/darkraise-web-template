@@ -23,6 +23,15 @@ import {
   Wrench,
   CookingPot,
   MessageSquareMore,
+  ToggleLeft,
+  AlertTriangle,
+  PanelBottom,
+  ChevronsUpDown,
+  SquareMousePointer,
+  SlidersHorizontal,
+  CalendarDays,
+  ArrowLeftRight,
+  MoreHorizontal,
 } from "lucide-react"
 import { PageHeader } from "@/core/layout"
 
@@ -164,6 +173,61 @@ const COMPONENTS = [
     label: "Feedback",
     description: "Toast notifications, inline alerts, and progress indicators",
     icon: MessageSquareMore,
+  },
+  {
+    href: "/components/toggle",
+    label: "Toggle",
+    description: "Stateful toggle buttons and grouped single/multi-select bars",
+    icon: ToggleLeft,
+  },
+  {
+    href: "/components/alert-dialog",
+    label: "Alert Dialog",
+    description: "Blocking modal dialogs requiring explicit confirmation",
+    icon: AlertTriangle,
+  },
+  {
+    href: "/components/drawer",
+    label: "Drawer",
+    description: "Bottom sheet panel built on Vaul with drag-to-close",
+    icon: PanelBottom,
+  },
+  {
+    href: "/components/collapsible",
+    label: "Collapsible",
+    description: "Show and hide content sections on demand",
+    icon: ChevronsUpDown,
+  },
+  {
+    href: "/components/hover-card",
+    label: "Hover Card",
+    description: "Non-interactive preview cards triggered by hover",
+    icon: SquareMousePointer,
+  },
+  {
+    href: "/components/slider",
+    label: "Slider",
+    description: "Numeric range input with step and disabled support",
+    icon: SlidersHorizontal,
+  },
+  {
+    href: "/components/calendar",
+    label: "Calendar",
+    description: "Date and date-range picker built on react-day-picker",
+    icon: CalendarDays,
+  },
+  {
+    href: "/components/pagination",
+    label: "Pagination",
+    description: "Page navigation with numbered links and ellipsis",
+    icon: ArrowLeftRight,
+  },
+  {
+    href: "/components/more-components",
+    label: "More Components",
+    description:
+      "AspectRatio, Carousel, InputOTP, Menubar, NavigationMenu, Resizable",
+    icon: MoreHorizontal,
   },
 ]
 
