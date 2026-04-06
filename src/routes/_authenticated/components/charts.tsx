@@ -1,3 +1,5 @@
+import { useState } from "react"
+import { BarChart3 as BarChartIcon } from "lucide-react"
 import { createFileRoute } from "@tanstack/react-router"
 import { PageHeader } from "@/core/layout"
 import {
@@ -7,6 +9,8 @@ import {
   PieChart,
   ChartCard,
 } from "@/features/charts"
+import { Button } from "@/core/components/ui/button"
+import { Skeleton } from "@/core/components/ui/skeleton"
 import { ShowcaseExample } from "./_components/-showcase-example"
 
 export const Route = createFileRoute("/_authenticated/components/charts")({
@@ -38,6 +42,67 @@ const weeklyData = [
   { day: "Sat", visitors: 280, conversions: 38 },
   { day: "Sun", visitors: 200, conversions: 27 },
 ]
+
+const periodData = {
+  "7D": [
+    { date: "Mon", revenue: 1200 },
+    { date: "Tue", revenue: 1850 },
+    { date: "Wed", revenue: 1400 },
+    { date: "Thu", revenue: 2100 },
+    { date: "Fri", revenue: 1750 },
+    { date: "Sat", revenue: 900 },
+    { date: "Sun", revenue: 650 },
+  ],
+  "30D": [
+    { date: "W1", revenue: 8200 },
+    { date: "W2", revenue: 9400 },
+    { date: "W3", revenue: 7800 },
+    { date: "W4", revenue: 11200 },
+    { date: "W5", revenue: 10500 },
+    { date: "W6", revenue: 9100 },
+    { date: "W7", revenue: 12300 },
+    { date: "W8", revenue: 11800 },
+    { date: "W9", revenue: 10200 },
+    { date: "W10", revenue: 13500 },
+  ],
+  "90D": [
+    { date: "Jan", revenue: 32000 },
+    { date: "Feb", revenue: 41000 },
+    { date: "Mar", revenue: 38000 },
+    { date: "Apr", revenue: 52000 },
+    { date: "May", revenue: 47000 },
+    { date: "Jun", revenue: 61000 },
+  ],
+}
+
+type Period = keyof typeof periodData
+
+function PeriodToggleChartExample() {
+  const [period, setPeriod] = useState<Period>("30D")
+
+  return (
+    <ChartCard title="Revenue by Period">
+      <div className="mb-4 flex gap-2">
+        {(["7D", "30D", "90D"] as Period[]).map((p) => (
+          <Button
+            key={p}
+            size="sm"
+            variant={period === p ? "default" : "outline"}
+            onClick={() => setPeriod(p)}
+          >
+            {p}
+          </Button>
+        ))}
+      </div>
+      <LineChart
+        data={periodData[period]}
+        xKey="date"
+        yKeys={["revenue"]}
+        height={200}
+      />
+    </ChartCard>
+  )
+}
 
 function ChartsPage() {
   return (
@@ -199,6 +264,79 @@ function ChartsPage() {
               <PieChart data={pieData} height={200} innerRadius={40} />
             </ChartCard>
           </div>
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Period toggle — interactive date range selector"
+          code={`function PeriodToggleChartExample() {
+  const [period, setPeriod] = useState<"7D" | "30D" | "90D">("30D")
+
+  return (
+    <ChartCard title="Revenue by Period">
+      <div className="mb-4 flex gap-2">
+        {(["7D", "30D", "90D"] as const).map((p) => (
+          <Button
+            key={p}
+            size="sm"
+            variant={period === p ? "default" : "outline"}
+            onClick={() => setPeriod(p)}
+          >
+            {p}
+          </Button>
+        ))}
+      </div>
+      <LineChart data={periodData[period]} xKey="date" yKeys={["revenue"]} height={200} />
+    </ChartCard>
+  )
+}`}
+        >
+          <PeriodToggleChartExample />
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Chart loading skeleton"
+          code={`<ChartCard title="Loading Chart">
+  <Skeleton className="h-4 w-32 mb-4" />
+  <Skeleton className="h-[250px] w-full" />
+  <div className="mt-4 flex gap-3">
+    <Skeleton className="h-3 w-16" />
+    <Skeleton className="h-3 w-16" />
+    <Skeleton className="h-3 w-16" />
+  </div>
+</ChartCard>`}
+        >
+          <ChartCard title="Loading Chart">
+            <Skeleton className="mb-4 h-4 w-32" />
+            <Skeleton className="h-[250px] w-full" />
+            <div className="mt-4 flex gap-3">
+              <Skeleton className="h-3 w-16" />
+              <Skeleton className="h-3 w-16" />
+              <Skeleton className="h-3 w-16" />
+            </div>
+          </ChartCard>
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Chart empty state"
+          code={`<ChartCard title="Sales Overview">
+  <div className="flex min-h-[250px] flex-col items-center justify-center">
+    <BarChart3 className="h-12 w-12 text-muted-foreground" />
+    <p className="mt-4 text-base font-medium">No data available</p>
+    <p className="mt-1 text-sm text-muted-foreground">
+      Try adjusting your filters or date range.
+    </p>
+  </div>
+</ChartCard>`}
+        >
+          <ChartCard title="Sales Overview">
+            <div className="flex min-h-[250px] flex-col items-center justify-center">
+              <BarChartIcon className="text-muted-foreground h-12 w-12" />
+              <p className="mt-4 text-base font-medium">No data available</p>
+              <p className="text-muted-foreground mt-1 text-sm">
+                Try adjusting your filters or date range.
+              </p>
+            </div>
+          </ChartCard>
         </ShowcaseExample>
       </div>
     </div>
