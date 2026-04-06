@@ -1,6 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { useState } from "react"
 import { User, Settings, CreditCard, LogOut, ChevronDown } from "lucide-react"
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "@/core/components/ui/context-menu"
 import { PageHeader } from "@/core/layout"
 import { Button } from "@/core/components/ui/button"
 import { Input } from "@/core/components/ui/input"
@@ -28,30 +35,22 @@ export const Route = createFileRoute(
 })
 
 function ContextMenuExample() {
-  const [open, setOpen] = useState(false)
-
   return (
-    <DropdownMenu open={open} onOpenChange={setOpen}>
-      <DropdownMenuTrigger asChild>
-        <div
-          className="text-muted-foreground flex min-h-[150px] cursor-default items-center justify-center rounded-lg border border-dashed text-sm select-none"
-          onContextMenu={(e) => {
-            e.preventDefault()
-            setOpen(true)
-          }}
-        >
-          Right-click anywhere in this area
+    <ContextMenu>
+      <ContextMenuTrigger asChild>
+        <div className="text-muted-foreground flex min-h-[150px] items-center justify-center rounded-lg border border-dashed text-sm">
+          Right-click here
         </div>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-48">
-        <DropdownMenuItem>Copy</DropdownMenuItem>
-        <DropdownMenuItem>Paste</DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>Select All</DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+      </ContextMenuTrigger>
+      <ContextMenuContent>
+        <ContextMenuItem>Copy</ContextMenuItem>
+        <ContextMenuItem>Paste</ContextMenuItem>
+        <ContextMenuSeparator />
+        <ContextMenuItem>Select All</ContextMenuItem>
+        <ContextMenuSeparator />
+        <ContextMenuItem className="text-destructive">Delete</ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
   )
 }
 
@@ -315,33 +314,29 @@ function DropdownMenuPage() {
 
         <ShowcaseExample
           title="Context menu (right-click)"
-          code={`function ContextMenuExample() {
-  const [open, setOpen] = useState(false)
+          code={`import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "@/core/components/ui/context-menu"
 
-  return (
-    <DropdownMenu open={open} onOpenChange={setOpen}>
-      <DropdownMenuTrigger asChild>
-        <div
-          className="min-h-[150px] rounded-lg border border-dashed flex items-center justify-center text-sm text-muted-foreground cursor-default select-none"
-          onContextMenu={(e) => {
-            e.preventDefault()
-            setOpen(true)
-          }}
-        >
-          Right-click anywhere in this area
-        </div>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-48">
-        <DropdownMenuItem>Copy</DropdownMenuItem>
-        <DropdownMenuItem>Paste</DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>Select All</DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  )
-}`}
+<ContextMenu>
+  <ContextMenuTrigger asChild>
+    <div className="flex min-h-[150px] items-center justify-center rounded-lg border border-dashed text-sm text-muted-foreground">
+      Right-click here
+    </div>
+  </ContextMenuTrigger>
+  <ContextMenuContent>
+    <ContextMenuItem>Copy</ContextMenuItem>
+    <ContextMenuItem>Paste</ContextMenuItem>
+    <ContextMenuSeparator />
+    <ContextMenuItem>Select All</ContextMenuItem>
+    <ContextMenuSeparator />
+    <ContextMenuItem className="text-destructive">Delete</ContextMenuItem>
+  </ContextMenuContent>
+</ContextMenu>`}
         >
           <ContextMenuExample />
         </ShowcaseExample>

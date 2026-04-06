@@ -5,6 +5,8 @@ import { Info, CircleCheck, TriangleAlert, OctagonX, X } from "lucide-react"
 import { PageHeader } from "@/core/layout"
 import { Button } from "@/core/components/ui/button"
 import { Card, CardContent } from "@/core/components/ui/card"
+import { Alert, AlertDescription, AlertTitle } from "@/core/components/ui/alert"
+import { Progress } from "@/core/components/ui/progress"
 import { ShowcaseExample } from "./_components/-showcase-example"
 
 export const Route = createFileRoute("/_authenticated/components/feedback")({
@@ -15,31 +17,23 @@ type AlertVariant = "info" | "success" | "warning" | "error"
 
 const alertConfig: Record<
   AlertVariant,
-  { icon: React.ReactNode; borderColor: string; bg: string; titleColor: string }
+  { icon: React.ElementType; className: string }
 > = {
   info: {
-    icon: <Info className="h-4 w-4 text-blue-500" />,
-    borderColor: "border-l-blue-500",
-    bg: "bg-blue-50 dark:bg-blue-950/30",
-    titleColor: "text-blue-900 dark:text-blue-100",
+    icon: Info,
+    className: "border-l-4 border-l-blue-500 bg-blue-50 dark:bg-blue-950/30",
   },
   success: {
-    icon: <CircleCheck className="h-4 w-4 text-green-500" />,
-    borderColor: "border-l-green-500",
-    bg: "bg-green-50 dark:bg-green-950/30",
-    titleColor: "text-green-900 dark:text-green-100",
+    icon: CircleCheck,
+    className: "border-l-4 border-l-green-500 bg-green-50 dark:bg-green-950/30",
   },
   warning: {
-    icon: <TriangleAlert className="h-4 w-4 text-amber-500" />,
-    borderColor: "border-l-amber-500",
-    bg: "bg-amber-50 dark:bg-amber-950/30",
-    titleColor: "text-amber-900 dark:text-amber-100",
+    icon: TriangleAlert,
+    className: "border-l-4 border-l-amber-500 bg-amber-50 dark:bg-amber-950/30",
   },
   error: {
-    icon: <OctagonX className="h-4 w-4 text-red-500" />,
-    borderColor: "border-l-red-500",
-    bg: "bg-red-50 dark:bg-red-950/30",
-    titleColor: "text-red-900 dark:text-red-100",
+    icon: OctagonX,
+    className: "border-l-4 border-l-red-500 bg-red-50 dark:bg-red-950/30",
   },
 }
 
@@ -52,23 +46,19 @@ function AlertBanner({
   title: string
   description: string
 }) {
-  const config = alertConfig[variant]
+  const { icon: Icon, className } = alertConfig[variant]
   return (
-    <div
-      className={`flex gap-3 rounded-md border-l-4 p-4 ${config.borderColor} ${config.bg}`}
-    >
-      <div className="mt-0.5 shrink-0">{config.icon}</div>
-      <div className="space-y-1">
-        <p className={`text-sm font-medium ${config.titleColor}`}>{title}</p>
-        <p className="text-muted-foreground text-sm">{description}</p>
-      </div>
-    </div>
+    <Alert className={className}>
+      <Icon className="h-4 w-4" />
+      <AlertTitle>{title}</AlertTitle>
+      <AlertDescription>{description}</AlertDescription>
+    </Alert>
   )
 }
 
 function DismissibleAlert() {
   const [visible, setVisible] = useState(true)
-  const config = alertConfig.info
+  const { icon: Icon, className } = alertConfig.info
 
   if (!visible) {
     return (
@@ -79,29 +69,23 @@ function DismissibleAlert() {
   }
 
   return (
-    <div
-      className={`flex items-start gap-3 rounded-md border-l-4 p-4 ${config.borderColor} ${config.bg}`}
-    >
-      <div className="mt-0.5 shrink-0">{config.icon}</div>
-      <div className="flex-1 space-y-1">
-        <p className={`text-sm font-medium ${config.titleColor}`}>
-          New feature available
-        </p>
-        <p className="text-muted-foreground text-sm">
-          You can now export your data as CSV from the settings page.
-        </p>
-      </div>
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        onClick={() => setVisible(false)}
-        className="mt-0.5 h-6 w-6 shrink-0"
-        aria-label="Dismiss"
-      >
-        <X className="h-4 w-4" />
-      </Button>
-    </div>
+    <Alert className={className}>
+      <Icon className="h-4 w-4" />
+      <AlertTitle>New feature available</AlertTitle>
+      <AlertDescription className="flex items-start justify-between gap-2">
+        <span>You can now export your data as CSV from the settings page.</span>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={() => setVisible(false)}
+          className="mt-0.5 h-6 w-6 shrink-0"
+          aria-label="Dismiss"
+        >
+          <X className="h-4 w-4" />
+        </Button>
+      </AlertDescription>
+    </Alert>
   )
 }
 
@@ -151,12 +135,7 @@ function ProgressDemo() {
           <span className="font-medium">{label}</span>
           <span className="text-muted-foreground">{progress}%</span>
         </div>
-        <div className="bg-muted h-2 w-full overflow-hidden rounded-full">
-          <div
-            className="bg-primary h-2 rounded-full transition-all duration-300"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
+        <Progress value={progress} className="h-2" />
         <Button
           size="sm"
           onClick={start}
@@ -325,18 +304,13 @@ toast("Extended notice", { duration: 8000 })`}
 
         <ShowcaseExample
           title="Inline alert banner"
-          code={`function AlertBanner({ variant, title, description }) {
-  // variant: "info" | "success" | "warning" | "error"
-  return (
-    <div className={\`flex gap-3 rounded-md border-l-4 p-4 \${borderColor} \${bg}\`}>
-      <Icon className="h-4 w-4" />
-      <div>
-        <p className="text-sm font-medium">{title}</p>
-        <p className="text-sm text-muted-foreground">{description}</p>
-      </div>
-    </div>
-  )
-}`}
+          code={`import { Alert, AlertTitle, AlertDescription } from "@/core/components/ui/alert"
+
+<Alert className="border-l-4 border-l-blue-500 bg-blue-50 dark:bg-blue-950/30">
+  <Info className="h-4 w-4" />
+  <AlertTitle>Scheduled maintenance</AlertTitle>
+  <AlertDescription>The system will be unavailable on Sunday from 2–4 AM UTC.</AlertDescription>
+</Alert>`}
         >
           <div className="space-y-3">
             <AlertBanner
@@ -367,16 +341,16 @@ toast("Extended notice", { duration: 8000 })`}
           code={`const [visible, setVisible] = useState(true)
 
 {visible ? (
-  <div className="flex items-start gap-3 rounded-md border-l-4 p-4 ...">
-    <Icon />
-    <div className="flex-1">
-      <p className="text-sm font-medium">New feature available</p>
-      <p className="text-sm text-muted-foreground">...</p>
-    </div>
-    <Button variant="ghost" size="icon" className="mt-0.5 h-6 w-6 shrink-0" onClick={() => setVisible(false)}>
-      <X className="h-4 w-4" />
-    </Button>
-  </div>
+  <Alert className="border-l-4 border-l-blue-500 bg-blue-50 dark:bg-blue-950/30">
+    <Info className="h-4 w-4" />
+    <AlertTitle>New feature available</AlertTitle>
+    <AlertDescription className="flex items-start justify-between gap-2">
+      <span>You can now export your data as CSV from the settings page.</span>
+      <Button variant="ghost" size="icon" className="mt-0.5 h-6 w-6 shrink-0" onClick={() => setVisible(false)}>
+        <X className="h-4 w-4" />
+      </Button>
+    </AlertDescription>
+  </Alert>
 ) : (
   <Button onClick={() => setVisible(true)}>Show alert again</Button>
 )}`}
@@ -386,7 +360,9 @@ toast("Extended notice", { duration: 8000 })`}
 
         <ShowcaseExample
           title="Progress feedback"
-          code={`const [progress, setProgress] = useState(0)
+          code={`import { Progress } from "@/core/components/ui/progress"
+
+const [progress, setProgress] = useState(0)
 const [running, setRunning] = useState(false)
 
 useEffect(() => {
@@ -401,12 +377,7 @@ useEffect(() => {
   return () => clearInterval(id)
 }, [running])
 
-<div className="h-2 w-full rounded-full bg-muted">
-  <div
-    className="h-2 rounded-full bg-primary transition-all duration-300"
-    style={{ width: \`\${progress}%\` }}
-  />
-</div>`}
+<Progress value={progress} className="h-2" />`}
         >
           <ProgressDemo />
         </ShowcaseExample>

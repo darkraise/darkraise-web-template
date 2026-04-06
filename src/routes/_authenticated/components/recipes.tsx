@@ -21,6 +21,7 @@ import {
   Mail,
   UserPlus,
 } from "lucide-react"
+import { Alert, AlertTitle } from "@/core/components/ui/alert"
 import { PageHeader } from "@/core/layout"
 import { Button } from "@/core/components/ui/button"
 import { Badge } from "@/core/components/ui/badge"
@@ -56,37 +57,33 @@ const bannerConfig: Record<
   BannerVariant,
   {
     icon: React.ElementType
-    borderColor: string
-    bg: string
+    className: string
     title: string
     description: string
   }
 > = {
   info: {
     icon: Info,
-    borderColor: "border-blue-500",
-    bg: "bg-blue-50 dark:bg-blue-950/30",
+    className: "border-l-4 border-l-blue-500 bg-blue-50 dark:bg-blue-950/30",
     title: "New update available",
     description: "Version 2.1.0 is ready to install.",
   },
   success: {
     icon: CircleCheck,
-    borderColor: "border-green-500",
-    bg: "bg-green-50 dark:bg-green-950/30",
+    className: "border-l-4 border-l-green-500 bg-green-50 dark:bg-green-950/30",
     title: "Deployment complete",
     description: "All services are running normally.",
   },
   warning: {
     icon: TriangleAlert,
-    borderColor: "border-yellow-500",
-    bg: "bg-yellow-50 dark:bg-yellow-950/30",
+    className:
+      "border-l-4 border-l-yellow-500 bg-yellow-50 dark:bg-yellow-950/30",
     title: "Storage almost full",
     description: "You have used 90% of your quota.",
   },
   error: {
     icon: OctagonX,
-    borderColor: "border-red-500",
-    bg: "bg-red-50 dark:bg-red-950/30",
+    className: "border-l-4 border-l-red-500 bg-red-50 dark:bg-red-950/30",
     title: "Payment failed",
     description: "Please update your billing details.",
   },
@@ -103,36 +100,36 @@ function NotificationBanners() {
         .map((variant) => {
           const {
             icon: Icon,
-            borderColor,
-            bg,
+            className,
             title,
             description,
           } = bannerConfig[variant]
           return (
-            <div
-              key={variant}
-              className={`flex items-center gap-3 rounded border-l-4 px-4 py-3 ${borderColor} ${bg}`}
-            >
-              <Icon className="h-5 w-5 shrink-0" />
-              <div className="flex-1 text-sm">
-                <span className="font-medium">{title}</span>
-                <span className="text-muted-foreground ml-2">
-                  {description}
+            <Alert key={variant} className={className}>
+              <Icon className="h-5 w-5" />
+              <AlertTitle className="flex items-center justify-between">
+                <span>
+                  {title}
+                  <span className="text-muted-foreground ml-2 text-xs font-normal">
+                    {description}
+                  </span>
                 </span>
-              </div>
-              <Button variant="outline" size="sm">
-                View details
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                onClick={() => setDismissed((d) => [...d, variant])}
-                className="h-7 w-7"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" size="sm">
+                    View details
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setDismissed((d) => [...d, variant])}
+                    className="h-7 w-7"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              </AlertTitle>
+            </Alert>
           )
         })}
       {dismissed.length === variants.length && (
@@ -414,20 +411,26 @@ function RecipesPage() {
       <div className="space-y-6">
         <ShowcaseExample
           title="Notification banners"
-          code={`const [dismissed, setDismissed] = useState([])
+          code={`import { Alert, AlertTitle } from "@/core/components/ui/alert"
+
+const [dismissed, setDismissed] = useState([])
 
 {["info", "success", "warning", "error"].map((variant) => (
-  <div className={\`flex items-center gap-3 rounded border-l-4 px-4 py-3 \${borderColor} \${bg}\`}>
-    <Icon className="h-5 w-5 shrink-0" />
-    <div className="flex-1 text-sm">
-      <span className="font-medium">{title}</span>
-      <span className="ml-2 text-muted-foreground">{description}</span>
-    </div>
-    <Button variant="outline" size="sm">View details</Button>
-    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setDismissed((d) => [...d, variant])}>
-      <X className="h-4 w-4" />
-    </Button>
-  </div>
+  <Alert key={variant} className="border-l-4 border-l-blue-500 bg-blue-50 dark:bg-blue-950/30">
+    <Icon className="h-5 w-5" />
+    <AlertTitle className="flex items-center justify-between">
+      <span>
+        {title}
+        <span className="ml-2 text-xs font-normal text-muted-foreground">{description}</span>
+      </span>
+      <div className="flex items-center gap-2">
+        <Button variant="outline" size="sm">View details</Button>
+        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setDismissed((d) => [...d, variant])}>
+          <X className="h-4 w-4" />
+        </Button>
+      </div>
+    </AlertTitle>
+  </Alert>
 ))}`}
         >
           <NotificationBanners />

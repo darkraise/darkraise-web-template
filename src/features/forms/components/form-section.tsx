@@ -1,4 +1,5 @@
 import type { ReactNode } from "react"
+import { FieldSet, FieldLegend, FieldGroup } from "@/core/components/ui/field"
 
 interface FormSectionProps {
   title: string
@@ -12,14 +13,12 @@ export function FormSection({
   children,
 }: FormSectionProps) {
   return (
-    <div className="space-y-4">
-      <div>
-        <h3 className="text-lg font-medium">{title}</h3>
-        {description && (
-          <p className="text-sm text-muted-foreground">{description}</p>
-        )}
-      </div>
-      <div className="space-y-4">{children}</div>
-    </div>
+    <FieldSet>
+      <FieldLegend>{title}</FieldLegend>
+      {description && (
+        <p className="text-muted-foreground -mt-1.5 text-sm">{description}</p>
+      )}
+      <FieldGroup>{children}</FieldGroup>
+    </FieldSet>
   )
 }
