@@ -203,7 +203,7 @@ function TimePicker({
           {value ? displayValue : placeholder}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="start">
+      <PopoverContent className="w-auto overflow-hidden p-0" align="start">
         <div className="flex border-b">
           <TimeColumn
             items={hours}
