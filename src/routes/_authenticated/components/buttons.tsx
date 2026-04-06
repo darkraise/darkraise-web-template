@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import {
   Mail,
@@ -6,9 +7,28 @@ import {
   Trash2,
   TrendingUp,
   ChevronRight,
+  List,
+  LayoutGrid,
+  Kanban,
+  ChevronDown,
+  Bold,
+  Italic,
+  Underline,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  Undo,
+  Redo,
 } from "lucide-react"
 import { PageHeader } from "@/core/layout"
 import { Button } from "@/core/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/core/components/ui/dropdown-menu"
+import { Separator } from "@/core/components/ui/separator"
 import { ShowcaseExample } from "./_components/-showcase-example"
 
 export const Route = createFileRoute("/_authenticated/components/buttons")({
@@ -16,6 +36,9 @@ export const Route = createFileRoute("/_authenticated/components/buttons")({
 })
 
 function ButtonsPage() {
+  const [viewMode, setViewMode] = useState<"list" | "grid" | "board">("list")
+  const [period, setPeriod] = useState<"1D" | "1W" | "1M" | "1Y">("1M")
+
   return (
     <div className="space-y-8">
       <PageHeader
@@ -137,6 +160,191 @@ function ButtonsPage() {
               Disabled Ghost
             </Button>
           </div>
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Button group"
+          code={`const [viewMode, setViewMode] = useState("list")
+
+<div className="inline-flex">
+  <Button
+    variant={viewMode === "list" ? "secondary" : "outline"}
+    className="rounded-r-none"
+    onClick={() => setViewMode("list")}
+  >
+    <List className="mr-2 h-4 w-4" />List
+  </Button>
+  <Button
+    variant={viewMode === "grid" ? "secondary" : "outline"}
+    className="rounded-none border-x-0"
+    onClick={() => setViewMode("grid")}
+  >
+    <LayoutGrid className="mr-2 h-4 w-4" />Grid
+  </Button>
+  <Button
+    variant={viewMode === "board" ? "secondary" : "outline"}
+    className="rounded-l-none"
+    onClick={() => setViewMode("board")}
+  >
+    <Kanban className="mr-2 h-4 w-4" />Board
+  </Button>
+</div>`}
+        >
+          <div className="inline-flex">
+            <Button
+              variant={viewMode === "list" ? "secondary" : "outline"}
+              className="rounded-r-none"
+              onClick={() => setViewMode("list")}
+            >
+              <List className="mr-2 h-4 w-4" />
+              List
+            </Button>
+            <Button
+              variant={viewMode === "grid" ? "secondary" : "outline"}
+              className="rounded-none border-x-0"
+              onClick={() => setViewMode("grid")}
+            >
+              <LayoutGrid className="mr-2 h-4 w-4" />
+              Grid
+            </Button>
+            <Button
+              variant={viewMode === "board" ? "secondary" : "outline"}
+              className="rounded-l-none"
+              onClick={() => setViewMode("board")}
+            >
+              <Kanban className="mr-2 h-4 w-4" />
+              Board
+            </Button>
+          </div>
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Split button"
+          code={`<div className="inline-flex">
+  <Button className="rounded-r-none">Save</Button>
+  <DropdownMenu>
+    <DropdownMenuTrigger asChild>
+      <Button className="rounded-l-none border-l-0 px-2">
+        <ChevronDown className="h-4 w-4" />
+      </Button>
+    </DropdownMenuTrigger>
+    <DropdownMenuContent align="end">
+      <DropdownMenuItem>Save as Draft</DropdownMenuItem>
+      <DropdownMenuItem>Save &amp; Publish</DropdownMenuItem>
+    </DropdownMenuContent>
+  </DropdownMenu>
+</div>`}
+        >
+          <div className="inline-flex">
+            <Button className="rounded-r-none">Save</Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button className="rounded-l-none border-l-0 px-2">
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem>Save as Draft</DropdownMenuItem>
+                <DropdownMenuItem>Save &amp; Publish</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Icon toolbar"
+          code={`<div className="inline-flex items-center gap-1">
+  <Button variant="ghost" size="icon"><Bold className="h-4 w-4" /></Button>
+  <Button variant="ghost" size="icon"><Italic className="h-4 w-4" /></Button>
+  <Button variant="ghost" size="icon"><Underline className="h-4 w-4" /></Button>
+  <Separator orientation="vertical" className="h-6" />
+  <Button variant="ghost" size="icon"><AlignLeft className="h-4 w-4" /></Button>
+  <Button variant="ghost" size="icon"><AlignCenter className="h-4 w-4" /></Button>
+  <Button variant="ghost" size="icon"><AlignRight className="h-4 w-4" /></Button>
+  <Separator orientation="vertical" className="h-6" />
+  <Button variant="ghost" size="icon"><Undo className="h-4 w-4" /></Button>
+  <Button variant="ghost" size="icon"><Redo className="h-4 w-4" /></Button>
+</div>`}
+        >
+          <div className="inline-flex items-center gap-1">
+            <Button variant="ghost" size="icon">
+              <Bold className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="icon">
+              <Italic className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="icon">
+              <Underline className="h-4 w-4" />
+            </Button>
+            <Separator orientation="vertical" className="h-6" />
+            <Button variant="ghost" size="icon">
+              <AlignLeft className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="icon">
+              <AlignCenter className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="icon">
+              <AlignRight className="h-4 w-4" />
+            </Button>
+            <Separator orientation="vertical" className="h-6" />
+            <Button variant="ghost" size="icon">
+              <Undo className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="icon">
+              <Redo className="h-4 w-4" />
+            </Button>
+          </div>
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Toggle button bar"
+          code={`const [period, setPeriod] = useState("1M")
+const periods = ["1D", "1W", "1M", "1Y"]
+
+<div className="inline-flex">
+  {periods.map((p, i) => (
+    <Button
+      key={p}
+      variant="outline"
+      className={[
+        i === 0 ? "rounded-r-none" : i === periods.length - 1 ? "rounded-l-none" : "rounded-none",
+        i > 0 ? "border-l-0" : "",
+        period === p ? "bg-primary text-primary-foreground hover:bg-primary/90" : "",
+      ].join(" ")}
+      onClick={() => setPeriod(p)}
+    >
+      {p}
+    </Button>
+  ))}
+</div>`}
+        >
+          {(() => {
+            const periods = ["1D", "1W", "1M", "1Y"] as const
+            return (
+              <div className="inline-flex">
+                {periods.map((p, i) => (
+                  <Button
+                    key={p}
+                    variant="outline"
+                    className={[
+                      i === 0
+                        ? "rounded-r-none"
+                        : i === periods.length - 1
+                          ? "rounded-l-none"
+                          : "rounded-none",
+                      i > 0 ? "border-l-0" : "",
+                      period === p
+                        ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                        : "",
+                    ].join(" ")}
+                    onClick={() => setPeriod(p)}
+                  >
+                    {p}
+                  </Button>
+                ))}
+              </div>
+            )
+          })()}
         </ShowcaseExample>
       </div>
     </div>
