@@ -41,7 +41,7 @@ function CalendarWithPresets() {
   }
 
   return (
-    <div className="flex rounded-md border">
+    <div className="w-fit rounded-md border">
       <Calendar
         mode="single"
         selected={date}
@@ -49,13 +49,12 @@ function CalendarWithPresets() {
         month={date}
         className="border-0"
       />
-      <div className="flex flex-col gap-1 border-l p-3">
+      <div className="flex flex-wrap gap-1 border-t p-3">
         {presets.map((preset) => (
           <Button
             key={preset.label}
             variant={isPresetSelected(preset.days) ? "default" : "ghost"}
             size="sm"
-            className="justify-start"
             onClick={() => setDate(addDays(new Date(), preset.days))}
           >
             {preset.label}
@@ -72,7 +71,7 @@ function DateTimePicker() {
   const [endTime, setEndTime] = useState("17:00")
 
   return (
-    <div className="rounded-md border">
+    <div className="w-fit rounded-md border">
       <Calendar
         mode="single"
         selected={date}
@@ -312,7 +311,7 @@ function CalendarPage() {
   ]
 
   return (
-    <div className="flex rounded-md border">
+    <div className="w-fit rounded-md border">
       <Calendar
         mode="single"
         selected={date}
@@ -320,13 +319,12 @@ function CalendarPage() {
         month={date}
         className="border-0"
       />
-      <div className="flex flex-col gap-1 border-l p-3">
+      <div className="flex flex-wrap gap-1 border-t p-3">
         {presets.map((preset) => (
           <Button
             key={preset.label}
             variant="ghost"
             size="sm"
-            className="justify-start"
             onClick={() => setDate(addDays(new Date(), preset.days))}
           >
             {preset.label}
@@ -348,7 +346,7 @@ function CalendarPage() {
   const [endTime, setEndTime] = useState("17:00")
 
   return (
-    <div className="rounded-md border">
+    <div className="w-fit rounded-md border">
       <Calendar mode="single" selected={date} onSelect={setDate} className="border-0" />
       <div className="border-t p-3 space-y-2">
         <div className="flex items-center gap-2">
