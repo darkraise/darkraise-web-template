@@ -48,10 +48,10 @@ const pieData = [
 ]
 
 const pieColors = [
-  "var(--chart-1))",
-  "var(--chart-2))",
-  "var(--chart-3))",
-  "var(--chart-4))",
+  "var(--chart-1)",
+  "var(--chart-2)",
+  "var(--chart-3)",
+  "var(--chart-4)",
 ]
 
 const weeklyData = [
@@ -99,28 +99,28 @@ const periodData = {
 type Period = keyof typeof periodData
 
 const revenueConfig = {
-  revenue: { label: "Revenue", color: "var(--chart-1))" },
+  revenue: { label: "Revenue", color: "var(--chart-1)" },
 } satisfies ChartConfig
 
 const ordersConfig = {
-  orders: { label: "Orders", color: "var(--chart-2))" },
+  orders: { label: "Orders", color: "var(--chart-2)" },
 } satisfies ChartConfig
 
 const revenueOrdersConfig = {
-  revenue: { label: "Revenue", color: "var(--chart-1))" },
-  orders: { label: "Orders", color: "var(--chart-2))" },
+  revenue: { label: "Revenue", color: "var(--chart-1)" },
+  orders: { label: "Orders", color: "var(--chart-2)" },
 } satisfies ChartConfig
 
 const pieConfig = {
-  Electronics: { label: "Electronics", color: "var(--chart-1))" },
-  Clothing: { label: "Clothing", color: "var(--chart-2))" },
-  Food: { label: "Food", color: "var(--chart-3))" },
-  Books: { label: "Books", color: "var(--chart-4))" },
+  Electronics: { label: "Electronics", color: "var(--chart-1)" },
+  Clothing: { label: "Clothing", color: "var(--chart-2)" },
+  Food: { label: "Food", color: "var(--chart-3)" },
+  Books: { label: "Books", color: "var(--chart-4)" },
 } satisfies ChartConfig
 
 const visitorsConversionsConfig = {
-  visitors: { label: "Visitors", color: "var(--chart-1))" },
-  conversions: { label: "Conversions", color: "var(--chart-2))" },
+  visitors: { label: "Visitors", color: "var(--chart-1)" },
+  conversions: { label: "Conversions", color: "var(--chart-2)" },
 } satisfies ChartConfig
 
 function PeriodToggleChartExample() {
@@ -183,7 +183,7 @@ function ChartsPage() {
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/features/charts"
 
 const revenueConfig = {
-  revenue: { label: "Revenue", color: "var(--chart-1))" },
+  revenue: { label: "Revenue", color: "var(--chart-1)" },
 } satisfies ChartConfig
 
 <ChartCard title="Revenue" description="Monthly revenue trend">
@@ -231,7 +231,7 @@ const revenueConfig = {
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/features/charts"
 
 const ordersConfig = {
-  orders: { label: "Orders", color: "var(--chart-2))" },
+  orders: { label: "Orders", color: "var(--chart-2)" },
 } satisfies ChartConfig
 
 <ChartCard title="Orders" description="Monthly order volume">
@@ -278,8 +278,8 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts"
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/features/charts"
 
 const revenueOrdersConfig = {
-  revenue: { label: "Revenue", color: "var(--chart-1))" },
-  orders: { label: "Orders", color: "var(--chart-2))" },
+  revenue: { label: "Revenue", color: "var(--chart-1)" },
+  orders: { label: "Orders", color: "var(--chart-2)" },
 } satisfies ChartConfig
 
 <ChartCard title="Revenue vs Orders" description="Dual-series line comparison">
@@ -339,13 +339,13 @@ import { PieChart, Pie, Cell } from "recharts"
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/features/charts"
 
 const pieConfig = {
-  Electronics: { label: "Electronics", color: "var(--chart-1))" },
-  Clothing: { label: "Clothing", color: "var(--chart-2))" },
-  Food: { label: "Food", color: "var(--chart-3))" },
-  Books: { label: "Books", color: "var(--chart-4))" },
+  Electronics: { label: "Electronics", color: "var(--chart-1)" },
+  Clothing: { label: "Clothing", color: "var(--chart-2)" },
+  Food: { label: "Food", color: "var(--chart-3)" },
+  Books: { label: "Books", color: "var(--chart-4)" },
 } satisfies ChartConfig
 
-const pieColors = ["var(--chart-1))", "var(--chart-2))", "var(--chart-3))", "var(--chart-4))"]
+const pieColors = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--chart-4)"]
 
 <ChartCard title="Category Breakdown" description="Revenue by category">
   <ChartContainer config={pieConfig} className="min-h-[200px] w-full">
@@ -626,7 +626,7 @@ const pieColors = ["var(--chart-1))", "var(--chart-2))", "var(--chart-3))", "var
   const [period, setPeriod] = useState<"7D" | "30D" | "90D">("30D")
 
   const revenueConfig = {
-    revenue: { label: "Revenue", color: "var(--chart-1))" },
+    revenue: { label: "Revenue", color: "var(--chart-1)" },
   } satisfies ChartConfig
 
   return (

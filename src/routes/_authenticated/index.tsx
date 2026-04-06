@@ -32,11 +32,11 @@ export const Route = createFileRoute("/_authenticated/")({
 })
 
 const revenueConfig = {
-  revenue: { label: "Revenue", color: "var(--chart-1))" },
+  revenue: { label: "Revenue", color: "var(--chart-1)" },
 } satisfies ChartConfig
 
 const topProductsConfig = {
-  count: { label: "Count", color: "var(--chart-2))" },
+  count: { label: "Count", color: "var(--chart-2)" },
 } satisfies ChartConfig
 
 function DashboardPage() {
