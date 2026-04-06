@@ -1,6 +1,8 @@
+import { useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import { useForm } from "@tanstack/react-form"
 import { z } from "zod"
+import { Pencil } from "lucide-react"
 import { PageHeader } from "@/core/layout"
 import {
   TextField,
@@ -13,6 +15,16 @@ import {
   FormSection,
   FormActions,
 } from "@/features/forms"
+import { Button } from "@/core/components/ui/button"
+import { Input } from "@/core/components/ui/input"
+import { Label } from "@/core/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/core/components/ui/select"
 import { ShowcaseExample } from "./_components/-showcase-example"
 
 export const Route = createFileRoute("/_authenticated/components/form-fields")({
@@ -172,6 +184,133 @@ function FullShowcaseForm() {
   )
 }
 
+const CITY_OPTIONS: Record<string, string[]> = {
+  USA: ["New York", "Los Angeles", "Chicago"],
+  Canada: ["Toronto", "Vancouver", "Montreal"],
+  UK: ["London", "Manchester", "Edinburgh"],
+}
+
+function ConditionalFieldsExample() {
+  const [accountType, setAccountType] = useState<"personal" | "business">(
+    "personal",
+  )
+
+  return (
+    <div className="space-y-4">
+      <div className="space-y-1.5">
+        <Label>Account Type</Label>
+        <Select
+          value={accountType}
+          onValueChange={(v) => setAccountType(v as "personal" | "business")}
+        >
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="personal">Personal</SelectItem>
+            <SelectItem value="business">Business</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      {accountType === "business" && (
+        <>
+          <div className="space-y-1.5">
+            <Label>Company Name</Label>
+            <Input placeholder="Acme Corp" />
+          </div>
+          <div className="space-y-1.5">
+            <Label>Tax ID</Label>
+            <Input placeholder="12-3456789" />
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
+function InlineEditExample() {
+  const [editing, setEditing] = useState(false)
+  const [value, setValue] = useState("Jane Doe")
+
+  return editing ? (
+    <div className="flex items-center gap-2">
+      <Input defaultValue={value} id="inline-edit-input" className="h-8 w-48" />
+      <Button
+        size="sm"
+        onClick={() => {
+          const input = document.getElementById(
+            "inline-edit-input",
+          ) as HTMLInputElement
+          setValue(input.value)
+          setEditing(false)
+        }}
+      >
+        Save
+      </Button>
+      <Button size="sm" variant="outline" onClick={() => setEditing(false)}>
+        Cancel
+      </Button>
+    </div>
+  ) : (
+    <div className="flex items-center gap-2">
+      <span className="text-sm font-medium">{value}</span>
+      <Button
+        size="icon"
+        variant="ghost"
+        className="h-6 w-6"
+        onClick={() => setEditing(true)}
+      >
+        <Pencil className="h-3.5 w-3.5" />
+      </Button>
+    </div>
+  )
+}
+
+function DependentSelectsExample() {
+  const [country, setCountry] = useState("")
+  const [city, setCity] = useState("")
+
+  function handleCountryChange(v: string) {
+    setCountry(v)
+    setCity("")
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="space-y-1.5">
+        <Label>Country</Label>
+        <Select value={country} onValueChange={handleCountryChange}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select country" />
+          </SelectTrigger>
+          <SelectContent>
+            {Object.keys(CITY_OPTIONS).map((c) => (
+              <SelectItem key={c} value={c}>
+                {c}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="space-y-1.5">
+        <Label>City</Label>
+        <Select value={city} onValueChange={setCity} disabled={!country}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select city" />
+          </SelectTrigger>
+          <SelectContent>
+            {(CITY_OPTIONS[country] ?? []).map((c) => (
+              <SelectItem key={c} value={c}>
+                {c}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+    </div>
+  )
+}
+
 function FormFieldsPage() {
   return (
     <div className="space-y-8">
@@ -226,6 +365,119 @@ const form = useForm({
 </form>`}
         >
           <FullShowcaseForm />
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Conditional Fields"
+          code={`function ConditionalFieldsExample() {
+  const [accountType, setAccountType] = useState<"personal" | "business">("personal")
+
+  return (
+    <div className="space-y-4">
+      <div className="space-y-1.5">
+        <Label>Account Type</Label>
+        <Select value={accountType} onValueChange={(v) => setAccountType(v as "personal" | "business")}>
+          <SelectTrigger><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="personal">Personal</SelectItem>
+            <SelectItem value="business">Business</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      {accountType === "business" && (
+        <>
+          <div className="space-y-1.5">
+            <Label>Company Name</Label>
+            <Input placeholder="Acme Corp" />
+          </div>
+          <div className="space-y-1.5">
+            <Label>Tax ID</Label>
+            <Input placeholder="12-3456789" />
+          </div>
+        </>
+      )}
+    </div>
+  )
+}`}
+        >
+          <ConditionalFieldsExample />
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Inline Edit"
+          code={`function InlineEditExample() {
+  const [editing, setEditing] = useState(false)
+  const [value, setValue] = useState("Jane Doe")
+
+  return editing ? (
+    <div className="flex items-center gap-2">
+      <Input defaultValue={value} id="inline-edit-input" className="h-8 w-48" />
+      <Button size="sm" onClick={() => {
+        const input = document.getElementById("inline-edit-input") as HTMLInputElement
+        setValue(input.value)
+        setEditing(false)
+      }}>Save</Button>
+      <Button size="sm" variant="outline" onClick={() => setEditing(false)}>Cancel</Button>
+    </div>
+  ) : (
+    <div className="flex items-center gap-2">
+      <span className="text-sm font-medium">{value}</span>
+      <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => setEditing(true)}>
+        <Pencil className="h-3.5 w-3.5" />
+      </Button>
+    </div>
+  )
+}`}
+        >
+          <InlineEditExample />
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Dependent Selects"
+          code={`const CITY_OPTIONS = {
+  USA: ["New York", "Los Angeles", "Chicago"],
+  Canada: ["Toronto", "Vancouver", "Montreal"],
+  UK: ["London", "Manchester", "Edinburgh"],
+}
+
+function DependentSelectsExample() {
+  const [country, setCountry] = useState("")
+  const [city, setCity] = useState("")
+
+  function handleCountryChange(v: string) {
+    setCountry(v)
+    setCity("")
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="space-y-1.5">
+        <Label>Country</Label>
+        <Select value={country} onValueChange={handleCountryChange}>
+          <SelectTrigger><SelectValue placeholder="Select country" /></SelectTrigger>
+          <SelectContent>
+            {Object.keys(CITY_OPTIONS).map((c) => (
+              <SelectItem key={c} value={c}>{c}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="space-y-1.5">
+        <Label>City</Label>
+        <Select value={city} onValueChange={setCity} disabled={!country}>
+          <SelectTrigger><SelectValue placeholder="Select city" /></SelectTrigger>
+          <SelectContent>
+            {(CITY_OPTIONS[country] ?? []).map((c) => (
+              <SelectItem key={c} value={c}>{c}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+    </div>
+  )
+}`}
+        >
+          <DependentSelectsExample />
         </ShowcaseExample>
       </div>
     </div>
