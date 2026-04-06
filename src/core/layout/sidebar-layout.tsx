@@ -1,8 +1,13 @@
 import { useState } from "react"
 import { Link } from "@tanstack/react-router"
-import { PanelLeftClose, PanelLeft } from "lucide-react"
+import { PanelLeftClose, PanelLeft, ChevronRight } from "lucide-react"
 import { cn } from "@/core/lib/utils"
 import { Button } from "@/core/components/ui/button"
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/core/components/ui/collapsible"
 import { ScrollArea } from "@/core/components/ui/scroll-area"
 import {
   Tooltip,
@@ -51,54 +56,71 @@ export function SidebarLayout({ children, nav, headerSlot }: LayoutProps) {
           {/* Nav */}
           <ScrollArea className="flex-1 py-4">
             <nav className="flex flex-col gap-1 px-2">
-              {nav.map((group, gi) => (
-                <div key={gi} className={cn("space-y-0.5", gi > 0 && "mt-4")}>
-                  {group.label && !collapsed && (
-                    <p
-                      className="mb-1 px-3 text-xs font-medium tracking-wider uppercase"
-                      style={{ color: "hsl(var(--sidebar-foreground-muted))" }}
+              {nav.map((group, gi) => {
+                const navItems = group.items.map((item) => {
+                  const linkContent = (
+                    <Link
+                      key={item.href}
+                      to={item.href}
+                      className={cn(
+                        "sidebar-nav-item flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors duration-150",
+                        collapsed && "justify-center px-0",
+                      )}
+                      activeOptions={{ exact: true }}
+                      activeProps={{ className: "active" }}
                     >
-                      {group.label}
-                    </p>
-                  )}
-                  {group.items.map((item) => {
-                    const linkContent = (
-                      <Link
-                        key={item.href}
-                        to={item.href}
-                        className={cn(
-                          "sidebar-nav-item flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors duration-150",
-                          collapsed && "justify-center px-0",
-                        )}
-                        activeOptions={{ exact: true }}
-                        activeProps={{ className: "active" }}
-                      >
-                        {item.icon && (
-                          <item.icon className="h-4 w-4 shrink-0" />
-                        )}
-                        {!collapsed && <span>{item.label}</span>}
-                        {!collapsed && item.badge && (
-                          <span className="bg-primary/20 text-primary ml-auto rounded-full px-2 py-0.5 text-xs">
-                            {item.badge}
-                          </span>
-                        )}
-                      </Link>
-                    )
+                      {item.icon && <item.icon className="h-4 w-4 shrink-0" />}
+                      {!collapsed && <span>{item.label}</span>}
+                      {!collapsed && item.badge && (
+                        <span className="bg-primary/20 text-primary ml-auto rounded-full px-2 py-0.5 text-xs">
+                          {item.badge}
+                        </span>
+                      )}
+                    </Link>
+                  )
 
-                    if (collapsed) {
-                      return (
-                        <Tooltip key={item.href}>
-                          <TooltipTrigger asChild>{linkContent}</TooltipTrigger>
-                          <TooltipContent side="right">
-                            {item.label}
-                          </TooltipContent>
-                        </Tooltip>
-                      )
-                    }
-                    return linkContent
-                  })}
-                </div>
-              ))}
+                  if (collapsed) {
+                    return (
+                      <Tooltip key={item.href}>
+                        <TooltipTrigger asChild>{linkContent}</TooltipTrigger>
+                        <TooltipContent side="right">
+                          {item.label}
+                        </TooltipContent>
+                      </Tooltip>
+                    )
+                  }
+                  return linkContent
+                })
+
+                if (group.label && !collapsed) {
+                  return (
+                    <Collapsible
+                      key={gi}
+                      defaultOpen
+                      className={cn(gi > 0 && "mt-4")}
+                    >
+                      <CollapsibleTrigger
+                        className="group/trigger flex w-full cursor-pointer items-center gap-1 px-3 py-1 text-xs font-medium tracking-wider uppercase"
+                        style={{
+                          color: "hsl(var(--sidebar-foreground-muted))",
+                        }}
+                      >
+                        <ChevronRight className="h-3 w-3 transition-transform group-data-[state=open]/trigger:rotate-90" />
+                        {group.label}
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        <div className="mt-0.5 space-y-0.5">{navItems}</div>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  )
+                }
+
+                return (
+                  <div key={gi} className={cn("space-y-0.5", gi > 0 && "mt-4")}>
+                    {navItems}
+                  </div>
+                )
+              })}
             </nav>
           </ScrollArea>
 
