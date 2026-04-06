@@ -77,7 +77,7 @@ function TimeColumn({
         onBlur={handleInputBlur}
         onKeyDown={handleInputKeyDown}
         onFocus={(e) => e.target.select()}
-        className="bg-muted/50 focus:bg-accent w-full border-b py-2 text-center text-sm font-medium outline-none"
+        className="bg-muted/50 focus:bg-accent w-10 border-b py-2 text-center text-sm font-medium outline-none"
       />
       <ScrollArea className="h-48" ref={containerRef}>
         <div className="flex flex-col py-1 pr-2">
