@@ -30,18 +30,8 @@ function CalendarWithPresets() {
     { label: "In 2 weeks", days: 14 },
   ]
 
-  const isPresetSelected = (days: number) => {
-    if (!date) return false
-    const preset = addDays(new Date(), days)
-    return (
-      date.getFullYear() === preset.getFullYear() &&
-      date.getMonth() === preset.getMonth() &&
-      date.getDate() === preset.getDate()
-    )
-  }
-
   return (
-    <div className="w-fit rounded-md border">
+    <div className="inline-flex flex-col rounded-md border">
       <Calendar
         mode="single"
         selected={date}
@@ -49,12 +39,13 @@ function CalendarWithPresets() {
         month={date}
         className="border-0"
       />
-      <div className="flex flex-wrap gap-1 border-t p-3">
+      <div className="flex flex-wrap gap-1.5 border-t p-3">
         {presets.map((preset) => (
           <Button
             key={preset.label}
-            variant={isPresetSelected(preset.days) ? "default" : "ghost"}
+            variant="secondary"
             size="sm"
+            className="h-7 text-xs"
             onClick={() => setDate(addDays(new Date(), preset.days))}
           >
             {preset.label}
@@ -311,7 +302,7 @@ function CalendarPage() {
   ]
 
   return (
-    <div className="w-fit rounded-md border">
+    <div className="inline-flex flex-col rounded-md border">
       <Calendar
         mode="single"
         selected={date}
@@ -319,12 +310,13 @@ function CalendarPage() {
         month={date}
         className="border-0"
       />
-      <div className="flex flex-wrap gap-1 border-t p-3">
+      <div className="flex flex-wrap gap-1.5 border-t p-3">
         {presets.map((preset) => (
           <Button
             key={preset.label}
-            variant="ghost"
+            variant="secondary"
             size="sm"
+            className="h-7 text-xs"
             onClick={() => setDate(addDays(new Date(), preset.days))}
           >
             {preset.label}
