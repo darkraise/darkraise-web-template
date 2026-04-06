@@ -5,7 +5,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/core/components/ui/select"
-import { FieldWrapper } from "./field-wrapper"
+import {
+  Field,
+  FieldLabel,
+  FieldDescription,
+  FieldError,
+} from "@/core/components/ui/field"
 import type { AnyFieldApi } from "@tanstack/react-form"
 
 interface SelectFieldProps {
@@ -23,13 +28,19 @@ export function SelectField({
   placeholder,
   options,
 }: SelectFieldProps) {
+  const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
   return (
-    <FieldWrapper field={field} label={label} description={description}>
+    <Field data-invalid={isInvalid}>
+      <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
       <Select
         value={field.state.value as string}
         onValueChange={(v) => field.handleChange(v)}
       >
-        <SelectTrigger id={field.name} onBlur={field.handleBlur}>
+        <SelectTrigger
+          id={field.name}
+          onBlur={field.handleBlur}
+          aria-invalid={isInvalid}
+        >
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>
@@ -40,6 +51,8 @@ export function SelectField({
           ))}
         </SelectContent>
       </Select>
-    </FieldWrapper>
+      {description && <FieldDescription>{description}</FieldDescription>}
+      {isInvalid && <FieldError errors={field.state.meta.errors} />}
+    </Field>
   )
 }

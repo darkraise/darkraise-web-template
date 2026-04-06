@@ -1,6 +1,11 @@
 import { RadioGroup, RadioGroupItem } from "@/core/components/ui/radio-group"
 import { Label } from "@/core/components/ui/label"
-import { FieldWrapper } from "./field-wrapper"
+import {
+  Field,
+  FieldLabel,
+  FieldDescription,
+  FieldError,
+} from "@/core/components/ui/field"
 import type { AnyFieldApi } from "@tanstack/react-form"
 
 interface RadioGroupFieldProps {
@@ -16,11 +21,14 @@ export function RadioGroupField({
   description,
   options,
 }: RadioGroupFieldProps) {
+  const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
   return (
-    <FieldWrapper field={field} label={label} description={description}>
+    <Field data-invalid={isInvalid}>
+      <FieldLabel>{label}</FieldLabel>
       <RadioGroup
         value={field.state.value as string}
         onValueChange={(v) => field.handleChange(v)}
+        aria-invalid={isInvalid}
       >
         {options.map((opt) => (
           <div key={opt.value} className="flex items-center gap-2 py-0.5">
@@ -32,6 +40,8 @@ export function RadioGroupField({
           </div>
         ))}
       </RadioGroup>
-    </FieldWrapper>
+      {description && <FieldDescription>{description}</FieldDescription>}
+      {isInvalid && <FieldError errors={field.state.meta.errors} />}
+    </Field>
   )
 }

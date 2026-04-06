@@ -1,5 +1,10 @@
 import { Textarea } from "@/core/components/ui/textarea"
-import { FieldWrapper } from "./field-wrapper"
+import {
+  Field,
+  FieldLabel,
+  FieldDescription,
+  FieldError,
+} from "@/core/components/ui/field"
 import type { AnyFieldApi } from "@tanstack/react-form"
 
 interface TextareaFieldProps {
@@ -17,8 +22,10 @@ export function TextareaField({
   placeholder,
   rows = 3,
 }: TextareaFieldProps) {
+  const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
   return (
-    <FieldWrapper field={field} label={label} description={description}>
+    <Field data-invalid={isInvalid}>
+      <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
       <Textarea
         id={field.name}
         placeholder={placeholder}
@@ -26,7 +33,10 @@ export function TextareaField({
         value={field.state.value as string}
         onBlur={field.handleBlur}
         onChange={(e) => field.handleChange(e.target.value)}
+        aria-invalid={isInvalid}
       />
-    </FieldWrapper>
+      {description && <FieldDescription>{description}</FieldDescription>}
+      {isInvalid && <FieldError errors={field.state.meta.errors} />}
+    </Field>
   )
 }

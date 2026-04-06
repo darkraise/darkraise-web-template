@@ -14,8 +14,8 @@ import {
   RadioGroupField,
   FormSection,
   FormActions,
-  FieldWrapper,
 } from "@/features/forms"
+import { Field, FieldLabel } from "@/core/components/ui/field"
 import { Button } from "@/core/components/ui/button"
 import { Input } from "@/core/components/ui/input"
 import {
@@ -197,7 +197,8 @@ function ConditionalFieldsExample() {
 
   return (
     <div className="space-y-4">
-      <FieldWrapper label="Account Type">
+      <Field>
+        <FieldLabel>Account Type</FieldLabel>
         <Select
           value={accountType}
           onValueChange={(v) => setAccountType(v as "personal" | "business")}
@@ -210,15 +211,17 @@ function ConditionalFieldsExample() {
             <SelectItem value="business">Business</SelectItem>
           </SelectContent>
         </Select>
-      </FieldWrapper>
+      </Field>
       {accountType === "business" && (
         <>
-          <FieldWrapper label="Company Name">
+          <Field>
+            <FieldLabel>Company Name</FieldLabel>
             <Input placeholder="Acme Corp" />
-          </FieldWrapper>
-          <FieldWrapper label="Tax ID">
+          </Field>
+          <Field>
+            <FieldLabel>Tax ID</FieldLabel>
             <Input placeholder="12-3456789" />
-          </FieldWrapper>
+          </Field>
         </>
       )}
     </div>
@@ -274,7 +277,8 @@ function DependentSelectsExample() {
 
   return (
     <div className="space-y-4">
-      <FieldWrapper label="Country">
+      <Field>
+        <FieldLabel>Country</FieldLabel>
         <Select value={country} onValueChange={handleCountryChange}>
           <SelectTrigger>
             <SelectValue placeholder="Select country" />
@@ -287,8 +291,9 @@ function DependentSelectsExample() {
             ))}
           </SelectContent>
         </Select>
-      </FieldWrapper>
-      <FieldWrapper label="City">
+      </Field>
+      <Field>
+        <FieldLabel>City</FieldLabel>
         <Select value={city} onValueChange={setCity} disabled={!country}>
           <SelectTrigger>
             <SelectValue placeholder="Select city" />
@@ -301,7 +306,7 @@ function DependentSelectsExample() {
             ))}
           </SelectContent>
         </Select>
-      </FieldWrapper>
+      </Field>
     </div>
   )
 }
@@ -369,7 +374,8 @@ const form = useForm({
 
   return (
     <div className="space-y-4">
-      <FieldWrapper label="Account Type">
+      <Field>
+        <FieldLabel>Account Type</FieldLabel>
         <Select value={accountType} onValueChange={(v) => setAccountType(v as "personal" | "business")}>
           <SelectTrigger><SelectValue /></SelectTrigger>
           <SelectContent>
@@ -377,15 +383,17 @@ const form = useForm({
             <SelectItem value="business">Business</SelectItem>
           </SelectContent>
         </Select>
-      </FieldWrapper>
+      </Field>
       {accountType === "business" && (
         <>
-          <FieldWrapper label="Company Name">
+          <Field>
+            <FieldLabel>Company Name</FieldLabel>
             <Input placeholder="Acme Corp" />
-          </FieldWrapper>
-          <FieldWrapper label="Tax ID">
+          </Field>
+          <Field>
+            <FieldLabel>Tax ID</FieldLabel>
             <Input placeholder="12-3456789" />
-          </FieldWrapper>
+          </Field>
         </>
       )}
     </div>
@@ -443,7 +451,8 @@ function DependentSelectsExample() {
 
   return (
     <div className="space-y-4">
-      <FieldWrapper label="Country">
+      <Field>
+        <FieldLabel>Country</FieldLabel>
         <Select value={country} onValueChange={handleCountryChange}>
           <SelectTrigger><SelectValue placeholder="Select country" /></SelectTrigger>
           <SelectContent>
@@ -452,8 +461,9 @@ function DependentSelectsExample() {
             ))}
           </SelectContent>
         </Select>
-      </FieldWrapper>
-      <FieldWrapper label="City">
+      </Field>
+      <Field>
+        <FieldLabel>City</FieldLabel>
         <Select value={city} onValueChange={setCity} disabled={!country}>
           <SelectTrigger><SelectValue placeholder="Select city" /></SelectTrigger>
           <SelectContent>
@@ -462,7 +472,7 @@ function DependentSelectsExample() {
             ))}
           </SelectContent>
         </Select>
-      </FieldWrapper>
+      </Field>
     </div>
   )
 }`}

@@ -1,5 +1,10 @@
 import { Input } from "@/core/components/ui/input"
-import { FieldWrapper } from "./field-wrapper"
+import {
+  Field,
+  FieldLabel,
+  FieldDescription,
+  FieldError,
+} from "@/core/components/ui/field"
 import type { AnyFieldApi } from "@tanstack/react-form"
 
 interface NumberFieldProps {
@@ -21,8 +26,10 @@ export function NumberField({
   max,
   step,
 }: NumberFieldProps) {
+  const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
   return (
-    <FieldWrapper field={field} label={label} description={description}>
+    <Field data-invalid={isInvalid}>
+      <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
       <Input
         id={field.name}
         type="number"
@@ -33,7 +40,10 @@ export function NumberField({
         value={field.state.value as number}
         onBlur={field.handleBlur}
         onChange={(e) => field.handleChange(Number(e.target.value))}
+        aria-invalid={isInvalid}
       />
-    </FieldWrapper>
+      {description && <FieldDescription>{description}</FieldDescription>}
+      {isInvalid && <FieldError errors={field.state.meta.errors} />}
+    </Field>
   )
 }

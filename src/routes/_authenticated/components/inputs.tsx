@@ -16,7 +16,7 @@ import { Checkbox } from "@/core/components/ui/checkbox"
 import { Switch } from "@/core/components/ui/switch"
 import { Label } from "@/core/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/core/components/ui/radio-group"
-import { FieldWrapper } from "@/features/forms"
+import { Field, FieldLabel } from "@/core/components/ui/field"
 import { ShowcaseExample } from "./_components/-showcase-example"
 
 export const Route = createFileRoute("/_authenticated/components/inputs")({
@@ -112,74 +112,86 @@ function InputsPage() {
       <div className="space-y-6">
         <ShowcaseExample
           title="Text input states"
-          code={`<FieldWrapper label="Default" htmlFor="default">
+          code={`<Field>
+  <FieldLabel htmlFor="default">Default</FieldLabel>
   <Input id="default" placeholder="Type something..." />
-</FieldWrapper>
+</Field>
 
-<FieldWrapper label="Disabled" htmlFor="disabled">
+<Field>
+  <FieldLabel htmlFor="disabled">Disabled</FieldLabel>
   <Input id="disabled" placeholder="Cannot be edited" disabled />
-</FieldWrapper>
+</Field>
 
-<FieldWrapper label="With value" htmlFor="with-value">
+<Field>
+  <FieldLabel htmlFor="with-value">With value</FieldLabel>
   <Input id="with-value" defaultValue="Existing content" />
-</FieldWrapper>`}
+</Field>`}
         >
           <div className="grid gap-4 sm:grid-cols-2">
-            <FieldWrapper label="Default" htmlFor="demo-default">
+            <Field>
+              <FieldLabel htmlFor="demo-default">Default</FieldLabel>
               <Input id="demo-default" placeholder="Type something..." />
-            </FieldWrapper>
-            <FieldWrapper label="Disabled" htmlFor="demo-disabled">
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="demo-disabled">Disabled</FieldLabel>
               <Input
                 id="demo-disabled"
                 placeholder="Cannot be edited"
                 disabled
               />
-            </FieldWrapper>
-            <FieldWrapper label="With value" htmlFor="demo-value">
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="demo-value">With value</FieldLabel>
               <Input id="demo-value" defaultValue="Existing content" />
-            </FieldWrapper>
-            <FieldWrapper label="Password" htmlFor="demo-password">
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="demo-password">Password</FieldLabel>
               <Input
                 id="demo-password"
                 type="password"
                 defaultValue="secret123"
               />
-            </FieldWrapper>
+            </Field>
           </div>
         </ShowcaseExample>
 
         <ShowcaseExample
           title="Textarea"
-          code={`<FieldWrapper label="Bio" htmlFor="bio">
+          code={`<Field>
+  <FieldLabel htmlFor="bio">Bio</FieldLabel>
   <Textarea id="bio" placeholder="Tell us about yourself..." rows={3} />
-</FieldWrapper>
+</Field>
 
-<FieldWrapper label="Disabled" htmlFor="disabled-ta">
+<Field>
+  <FieldLabel htmlFor="disabled-ta">Disabled</FieldLabel>
   <Textarea id="disabled-ta" placeholder="Disabled" disabled rows={2} />
-</FieldWrapper>`}
+</Field>`}
         >
           <div className="grid gap-4 sm:grid-cols-2">
-            <FieldWrapper label="Bio" htmlFor="demo-textarea">
+            <Field>
+              <FieldLabel htmlFor="demo-textarea">Bio</FieldLabel>
               <Textarea
                 id="demo-textarea"
                 placeholder="Tell us about yourself..."
                 rows={3}
               />
-            </FieldWrapper>
-            <FieldWrapper label="Disabled" htmlFor="demo-textarea-disabled">
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="demo-textarea-disabled">Disabled</FieldLabel>
               <Textarea
                 id="demo-textarea-disabled"
                 placeholder="Disabled"
                 disabled
                 rows={3}
               />
-            </FieldWrapper>
+            </Field>
           </div>
         </ShowcaseExample>
 
         <ShowcaseExample
           title="Select"
-          code={`<FieldWrapper label="Select" htmlFor="select">
+          code={`<Field>
+  <FieldLabel htmlFor="select">Select</FieldLabel>
   <Select value={value} onValueChange={setValue}>
     <SelectTrigger id="select">
       <SelectValue placeholder="Pick an option" />
@@ -190,18 +202,20 @@ function InputsPage() {
       <SelectItem value="gamma">Gamma</SelectItem>
     </SelectContent>
   </Select>
-</FieldWrapper>
+</Field>
 
-<FieldWrapper label="Disabled select">
+<Field>
+  <FieldLabel>Disabled select</FieldLabel>
   <Select disabled>
     <SelectTrigger>
       <SelectValue placeholder="Disabled" />
     </SelectTrigger>
   </Select>
-</FieldWrapper>`}
+</Field>`}
         >
           <div className="grid gap-4 sm:grid-cols-2">
-            <FieldWrapper label="Select" htmlFor="demo-select">
+            <Field>
+              <FieldLabel htmlFor="demo-select">Select</FieldLabel>
               <Select value={selectValue} onValueChange={setSelectValue}>
                 <SelectTrigger id="demo-select">
                   <SelectValue placeholder="Pick an option" />
@@ -212,14 +226,15 @@ function InputsPage() {
                   <SelectItem value="gamma">Gamma</SelectItem>
                 </SelectContent>
               </Select>
-            </FieldWrapper>
-            <FieldWrapper label="Disabled select">
+            </Field>
+            <Field>
+              <FieldLabel>Disabled select</FieldLabel>
               <Select disabled>
                 <SelectTrigger>
                   <SelectValue placeholder="Disabled" />
                 </SelectTrigger>
               </Select>
-            </FieldWrapper>
+            </Field>
           </div>
         </ShowcaseExample>
 
@@ -301,7 +316,8 @@ function InputsPage() {
 
         <ShowcaseExample
           title="Radio Group"
-          code={`<FieldWrapper label="Vertical group">
+          code={`<Field>
+  <FieldLabel>Vertical group</FieldLabel>
   <RadioGroup value={value} onValueChange={setValue}>
     <div className="flex items-center gap-2">
       <RadioGroupItem value="option-a" id="a" />
@@ -312,10 +328,11 @@ function InputsPage() {
       <Label htmlFor="b">Option B</Label>
     </div>
   </RadioGroup>
-</FieldWrapper>`}
+</Field>`}
         >
           <div className="grid gap-6 sm:grid-cols-2">
-            <FieldWrapper label="Vertical group">
+            <Field>
+              <FieldLabel>Vertical group</FieldLabel>
               <RadioGroup value={radioValue} onValueChange={setRadioValue}>
                 {["option-a", "option-b", "option-c"].map((v) => (
                   <div key={v} className="flex items-center gap-2">
@@ -326,8 +343,9 @@ function InputsPage() {
                   </div>
                 ))}
               </RadioGroup>
-            </FieldWrapper>
-            <FieldWrapper label="Disabled group">
+            </Field>
+            <Field>
+              <FieldLabel>Disabled group</FieldLabel>
               <RadioGroup defaultValue="option-a" disabled>
                 {["option-a", "option-b"].map((v) => (
                   <div key={v} className="flex items-center gap-2">
@@ -341,7 +359,7 @@ function InputsPage() {
                   </div>
                 ))}
               </RadioGroup>
-            </FieldWrapper>
+            </Field>
           </div>
         </ShowcaseExample>
 
@@ -361,26 +379,29 @@ function InputsPage() {
         <ShowcaseExample
           title="Prefix / suffix input"
           code={`{/* URL prefix */}
-<FieldWrapper label="URL">
+<Field>
+  <FieldLabel>URL</FieldLabel>
   <div className="flex rounded-md border border-input overflow-hidden">
     <span className="bg-muted px-3 flex items-center text-sm text-muted-foreground border-r border-input">
       https://
     </span>
     <Input className="border-0 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" placeholder="example.com" />
   </div>
-</FieldWrapper>
+</Field>
 
 {/* Currency prefix + suffix */}
-<FieldWrapper label="Currency">
+<Field>
+  <FieldLabel>Currency</FieldLabel>
   <div className="flex rounded-md border border-input overflow-hidden">
     <span className="bg-muted px-3 flex items-center text-sm text-muted-foreground border-r border-input">$</span>
     <Input className="border-0 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" placeholder="0.00" />
     <span className="bg-muted px-3 flex items-center text-sm text-muted-foreground border-l border-input">.00</span>
   </div>
-</FieldWrapper>`}
+</Field>`}
         >
           <div className="grid gap-4 sm:grid-cols-2">
-            <FieldWrapper label="URL">
+            <Field>
+              <FieldLabel>URL</FieldLabel>
               <div className="border-input flex overflow-hidden rounded-md border">
                 <span className="border-input bg-muted text-muted-foreground flex items-center border-r px-3 text-sm">
                   https://
@@ -390,8 +411,9 @@ function InputsPage() {
                   placeholder="example.com"
                 />
               </div>
-            </FieldWrapper>
-            <FieldWrapper label="Currency">
+            </Field>
+            <Field>
+              <FieldLabel>Currency</FieldLabel>
               <div className="border-input flex overflow-hidden rounded-md border">
                 <span className="border-input bg-muted text-muted-foreground flex items-center border-r px-3 text-sm">
                   $
@@ -404,7 +426,7 @@ function InputsPage() {
                   .00
                 </span>
               </div>
-            </FieldWrapper>
+            </Field>
           </div>
         </ShowcaseExample>
 

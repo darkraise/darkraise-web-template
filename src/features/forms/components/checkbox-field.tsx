@@ -1,5 +1,10 @@
 import { Checkbox } from "@/core/components/ui/checkbox"
-import { Label } from "@/core/components/ui/label"
+import {
+  Field,
+  FieldLabel,
+  FieldDescription,
+  FieldError,
+} from "@/core/components/ui/field"
 import type { AnyFieldApi } from "@tanstack/react-form"
 
 interface CheckboxFieldProps {
@@ -13,23 +18,21 @@ export function CheckboxField({
   label,
   description,
 }: CheckboxFieldProps) {
+  const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
   return (
-    <div
-      className={`flex gap-2 ${description ? "items-start" : "items-center"}`}
-    >
+    <Field orientation="horizontal" data-invalid={isInvalid}>
       <Checkbox
         id={field.name}
         checked={field.state.value as boolean}
         onCheckedChange={(checked) => field.handleChange(checked)}
         onBlur={field.handleBlur}
-        className={description ? "mt-0.5" : ""}
+        aria-invalid={isInvalid}
       />
-      <div className={description ? "space-y-1" : ""}>
-        <Label htmlFor={field.name}>{label}</Label>
-        {description && (
-          <p className="text-xs text-muted-foreground">{description}</p>
-        )}
+      <div>
+        <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
+        {description && <FieldDescription>{description}</FieldDescription>}
       </div>
-    </div>
+      {isInvalid && <FieldError errors={field.state.meta.errors} />}
+    </Field>
   )
 }
