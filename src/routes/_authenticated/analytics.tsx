@@ -28,32 +28,32 @@ export const Route = createFileRoute("/_authenticated/analytics")({
 })
 
 const revenueConfig = {
-  revenue: { label: "Revenue", color: "var(--chart-1)" },
+  revenue: { label: "Revenue", color: "hsl(var(--chart-1))" },
 } satisfies ChartConfig
 
 const trafficConfig = {
-  "Organic Search": { label: "Organic Search", color: "var(--chart-1)" },
-  Direct: { label: "Direct", color: "var(--chart-2)" },
-  "Social Media": { label: "Social Media", color: "var(--chart-3)" },
-  Email: { label: "Email", color: "var(--chart-4)" },
-  Referral: { label: "Referral", color: "var(--chart-5)" },
+  "Organic Search": { label: "Organic Search", color: "hsl(var(--chart-1))" },
+  Direct: { label: "Direct", color: "hsl(var(--chart-2))" },
+  "Social Media": { label: "Social Media", color: "hsl(var(--chart-3))" },
+  Email: { label: "Email", color: "hsl(var(--chart-4))" },
+  Referral: { label: "Referral", color: "hsl(var(--chart-5))" },
 } satisfies ChartConfig
 
 const trafficColors = [
-  "var(--chart-1)",
-  "var(--chart-2)",
-  "var(--chart-3)",
-  "var(--chart-4)",
-  "var(--chart-5)",
+  "hsl(var(--chart-1))",
+  "hsl(var(--chart-2))",
+  "hsl(var(--chart-3))",
+  "hsl(var(--chart-4))",
+  "hsl(var(--chart-5))",
 ]
 
 const ordersVisitorsConfig = {
-  orders: { label: "Orders", color: "var(--chart-1)" },
-  visitors: { label: "Visitors", color: "var(--chart-2)" },
+  orders: { label: "Orders", color: "hsl(var(--chart-1))" },
+  visitors: { label: "Visitors", color: "hsl(var(--chart-2))" },
 } satisfies ChartConfig
 
 const productRevenueConfig = {
-  revenue: { label: "Revenue", color: "var(--chart-3)" },
+  revenue: { label: "Revenue", color: "hsl(var(--chart-3))" },
 } satisfies ChartConfig
 
 function AnalyticsPage() {
