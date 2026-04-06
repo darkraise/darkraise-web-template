@@ -1,12 +1,46 @@
+import { useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
-import { CheckCircle, Clock, XCircle, AlertTriangle } from "lucide-react"
+import { CheckCircle, Clock, XCircle, AlertTriangle, X } from "lucide-react"
 import { PageHeader } from "@/core/layout"
 import { Badge } from "@/core/components/ui/badge"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/core/components/ui/table"
 import { ShowcaseExample } from "./_components/-showcase-example"
 
 export const Route = createFileRoute("/_authenticated/components/badges")({
   component: BadgesPage,
 })
+
+function ClosableBadgesExample() {
+  const [tags, setTags] = useState([
+    "React",
+    "TypeScript",
+    "Tailwind",
+    "Vite",
+    "Radix",
+  ])
+  return (
+    <div className="flex flex-wrap gap-2">
+      {tags.map((tag) => (
+        <Badge key={tag} variant="secondary">
+          {tag}
+          <button
+            className="hover:text-foreground ml-1 h-3 w-3 cursor-pointer"
+            onClick={() => setTags((prev) => prev.filter((t) => t !== tag))}
+          >
+            <X className="h-3 w-3" />
+          </button>
+        </Badge>
+      ))}
+    </div>
+  )
+}
 
 function BadgesPage() {
   return (
@@ -139,6 +173,163 @@ function BadgesPage() {
               </div>
             ))}
           </div>
+        </ShowcaseExample>
+        <ShowcaseExample
+          title="Closable badges"
+          code={`const [tags, setTags] = useState(["React", "TypeScript", "Tailwind", "Vite", "Radix"])
+
+{tags.map((tag) => (
+  <Badge key={tag} variant="secondary">
+    {tag}
+    <button
+      className="ml-1 h-3 w-3 cursor-pointer hover:text-foreground"
+      onClick={() => setTags((prev) => prev.filter((t) => t !== tag))}
+    >
+      <X className="h-3 w-3" />
+    </button>
+  </Badge>
+))}`}
+        >
+          <ClosableBadgesExample />
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Animated pulse dot"
+          code={`<div className="flex items-center gap-2">
+  <div className="relative">
+    <span className="h-2 w-2 rounded-full bg-green-500 block" />
+    <span className="absolute inset-0 h-2 w-2 rounded-full bg-green-500 opacity-75 animate-ping" />
+  </div>
+  <span className="text-sm">Live</span>
+</div>
+<div className="flex items-center gap-2">
+  <span className="h-2 w-2 rounded-full bg-amber-500 block" />
+  <span className="text-sm">Away</span>
+</div>
+<div className="flex items-center gap-2">
+  <span className="h-2 w-2 rounded-full bg-gray-400 block" />
+  <span className="text-sm">Offline</span>
+</div>`}
+        >
+          <div className="flex flex-wrap gap-6">
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <span className="block h-2 w-2 rounded-full bg-green-500" />
+                <span className="absolute inset-0 h-2 w-2 animate-ping rounded-full bg-green-500 opacity-75" />
+              </div>
+              <span className="text-sm">Live</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="block h-2 w-2 rounded-full bg-amber-500" />
+              <span className="text-sm">Away</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="block h-2 w-2 rounded-full bg-gray-400" />
+              <span className="text-sm">Offline</span>
+            </div>
+          </div>
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Badge list (tag cloud)"
+          code={`<div className="flex flex-wrap gap-2">
+  <Badge variant="default">JavaScript</Badge>
+  <Badge variant="secondary">Design</Badge>
+  <Badge variant="outline">Testing</Badge>
+  <Badge variant="destructive">Security</Badge>
+  <Badge variant="default">React</Badge>
+  <Badge variant="secondary">Python</Badge>
+  <Badge variant="outline">Docker</Badge>
+  <Badge variant="secondary">CI/CD</Badge>
+  <Badge variant="default">APIs</Badge>
+  <Badge variant="outline">CSS</Badge>
+  <Badge variant="secondary">Node.js</Badge>
+  <Badge variant="default">SQL</Badge>
+</div>`}
+        >
+          <div className="flex flex-wrap gap-2">
+            <Badge variant="default">JavaScript</Badge>
+            <Badge variant="secondary">Design</Badge>
+            <Badge variant="outline">Testing</Badge>
+            <Badge variant="destructive">Security</Badge>
+            <Badge variant="default">React</Badge>
+            <Badge variant="secondary">Python</Badge>
+            <Badge variant="outline">Docker</Badge>
+            <Badge variant="secondary">CI/CD</Badge>
+            <Badge variant="default">APIs</Badge>
+            <Badge variant="outline">CSS</Badge>
+            <Badge variant="secondary">Node.js</Badge>
+            <Badge variant="default">SQL</Badge>
+          </div>
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Badge in table context"
+          code={`<Table>
+  <TableHeader>
+    <TableRow>
+      <TableHead>Task</TableHead>
+      <TableHead>Priority</TableHead>
+      <TableHead>Status</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    <TableRow>
+      <TableCell>Update API docs</TableCell>
+      <TableCell><Badge variant="destructive">High</Badge></TableCell>
+      <TableCell><Badge variant="outline">Done</Badge></TableCell>
+    </TableRow>
+    ...
+  </TableBody>
+</Table>`}
+        >
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Task</TableHead>
+                <TableHead>Priority</TableHead>
+                <TableHead>Status</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow>
+                <TableCell>Update API docs</TableCell>
+                <TableCell>
+                  <Badge variant="destructive">High</Badge>
+                </TableCell>
+                <TableCell>
+                  <Badge variant="outline">Done</Badge>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Design system audit</TableCell>
+                <TableCell>
+                  <Badge variant="default">Medium</Badge>
+                </TableCell>
+                <TableCell>
+                  <Badge variant="default">In Progress</Badge>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Write onboarding guide</TableCell>
+                <TableCell>
+                  <Badge variant="secondary">Low</Badge>
+                </TableCell>
+                <TableCell>
+                  <Badge variant="secondary">To Do</Badge>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Fix login redirect bug</TableCell>
+                <TableCell>
+                  <Badge variant="destructive">High</Badge>
+                </TableCell>
+                <TableCell>
+                  <Badge variant="outline">Done</Badge>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
         </ShowcaseExample>
       </div>
     </div>
