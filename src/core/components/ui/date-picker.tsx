@@ -86,7 +86,7 @@ function DatePicker({ value, onChange, className }: DatePickerProps) {
   return (
     <div
       className={cn(
-        "card-surface bg-card w-fit rounded-md border p-3",
+        "card-surface bg-card w-[272px] rounded-md border p-3",
         className,
       )}
     >
@@ -137,7 +137,7 @@ function DatePicker({ value, onChange, className }: DatePickerProps) {
       )}
 
       {view === "months" && (
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-4 gap-2 py-2">
           {MONTHS.map((month, i) => (
             <Button
               key={month}
@@ -146,8 +146,7 @@ function DatePicker({ value, onChange, className }: DatePickerProps) {
                   ? "default"
                   : "ghost"
               }
-              size="sm"
-              className="h-9"
+              className="aspect-square h-auto w-full rounded-lg text-sm"
               onClick={() => {
                 setViewDate(new Date(viewYear, i, 1))
                 setView("days")
@@ -160,7 +159,7 @@ function DatePicker({ value, onChange, className }: DatePickerProps) {
       )}
 
       {view === "years" && (
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-4 gap-2 py-2">
           {Array.from({ length: 12 }, (_, i) => {
             const year = decadeStart + i
             return (
@@ -169,8 +168,7 @@ function DatePicker({ value, onChange, className }: DatePickerProps) {
                 variant={
                   year === (value?.getFullYear() ?? -1) ? "default" : "ghost"
                 }
-                size="sm"
-                className="h-9"
+                className="aspect-square h-auto w-full rounded-lg text-sm"
                 onClick={() => {
                   setViewDate(new Date(year, viewMonth, 1))
                   setView("months")
