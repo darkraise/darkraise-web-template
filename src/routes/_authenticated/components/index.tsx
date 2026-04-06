@@ -20,6 +20,9 @@ import {
   ListChecks,
   Type,
   Palette,
+  Wrench,
+  CookingPot,
+  MessageSquareMore,
 } from "lucide-react"
 import { PageHeader } from "@/core/layout"
 
@@ -144,6 +147,24 @@ const COMPONENTS = [
     description: "Surface elevations and semantic color tokens",
     icon: Palette,
   },
+  {
+    href: "/components/customization",
+    label: "Customization",
+    description: "Extend components with new CVA variants and custom props",
+    icon: Wrench,
+  },
+  {
+    href: "/components/recipes",
+    label: "Recipes",
+    description: "Cross-component composition patterns for real-world UIs",
+    icon: CookingPot,
+  },
+  {
+    href: "/components/feedback",
+    label: "Feedback",
+    description: "Toast notifications, inline alerts, and progress indicators",
+    icon: MessageSquareMore,
+  },
 ]
 
 export const Route = createFileRoute("/_authenticated/components/")({
@@ -163,13 +184,13 @@ function ComponentsIndexPage() {
           <Link
             key={href}
             to={href}
-            className="group rounded-lg border border-border bg-card p-5 transition-colors hover:border-primary/50 hover:bg-accent"
+            className="group border-border bg-card hover:border-primary/50 hover:bg-accent rounded-lg border p-5 transition-colors"
           >
-            <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-md bg-muted text-muted-foreground transition-colors group-hover:bg-primary/10 group-hover:text-primary">
+            <div className="bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary mb-3 flex h-9 w-9 items-center justify-center rounded-md transition-colors">
               <Icon className="h-4 w-4" />
             </div>
-            <p className="font-medium text-foreground">{label}</p>
-            <p className="mt-1 text-xs text-muted-foreground">{description}</p>
+            <p className="text-foreground font-medium">{label}</p>
+            <p className="text-muted-foreground mt-1 text-xs">{description}</p>
           </Link>
         ))}
       </div>

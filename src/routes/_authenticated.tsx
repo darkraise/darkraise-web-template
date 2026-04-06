@@ -29,6 +29,9 @@ import {
   Type,
   Paintbrush,
   ListCollapse,
+  Wrench,
+  CookingPot,
+  MessageSquareMore,
 } from "lucide-react"
 import { SidebarLayout } from "@/core/layout"
 import { useAuthStore } from "@/features/auth"
@@ -104,6 +107,17 @@ const nav: NavGroup[] = [
       },
       { label: "Typography", href: "/components/typography", icon: Type },
       { label: "Colors", href: "/components/colors", icon: Paintbrush },
+      {
+        label: "Customization",
+        href: "/components/customization",
+        icon: Wrench,
+      },
+      { label: "Recipes", href: "/components/recipes", icon: CookingPot },
+      {
+        label: "Feedback",
+        href: "/components/feedback",
+        icon: MessageSquareMore,
+      },
     ],
   },
   {
