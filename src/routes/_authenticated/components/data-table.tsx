@@ -1,7 +1,19 @@
+import { useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import type { ColumnDef } from "@tanstack/react-table"
+import { ChevronDown, ChevronRight } from "lucide-react"
 import { PageHeader } from "@/core/layout"
 import { Badge } from "@/core/components/ui/badge"
+import { Button } from "@/core/components/ui/button"
+import { Checkbox } from "@/core/components/ui/checkbox"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/core/components/ui/table"
 import { DataTable, ColumnHeader } from "@/features/data-table"
 import { ShowcaseExample } from "./_components/-showcase-example"
 
@@ -149,6 +161,221 @@ const statusColumns: ColumnDef<Product, unknown>[] = [
   },
 ]
 
+function ExpandableTableExample() {
+  const [expandedId, setExpandedId] = useState<string | null>(null)
+
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Name</TableHead>
+          <TableHead>Category</TableHead>
+          <TableHead>Price</TableHead>
+          <TableHead>Stock</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {products.map((product) => (
+          <>
+            <TableRow
+              key={product.id}
+              className="cursor-pointer"
+              onClick={() =>
+                setExpandedId(expandedId === product.id ? null : product.id)
+              }
+            >
+              <TableCell className="flex items-center gap-2">
+                {expandedId === product.id ? (
+                  <ChevronDown className="h-4 w-4 shrink-0" />
+                ) : (
+                  <ChevronRight className="h-4 w-4 shrink-0" />
+                )}
+                {product.name}
+              </TableCell>
+              <TableCell>{product.category}</TableCell>
+              <TableCell>${product.price.toFixed(2)}</TableCell>
+              <TableCell>{product.stock}</TableCell>
+            </TableRow>
+            {expandedId === product.id && (
+              <TableRow key={`${product.id}-detail`}>
+                <TableCell colSpan={4} className="bg-muted/50 p-4">
+                  <span className="mr-6 text-sm">SKU: PROD-{product.id}</span>
+                  <span className="text-sm">
+                    Created: Jan {product.id}, 2024
+                  </span>
+                </TableCell>
+              </TableRow>
+            )}
+          </>
+        ))}
+      </TableBody>
+    </Table>
+  )
+}
+
+function BulkActionsTableExample() {
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+
+  const allSelected =
+    selectedIds.size === products.length && products.length > 0
+
+  function toggleAll() {
+    if (allSelected) {
+      setSelectedIds(new Set())
+    } else {
+      setSelectedIds(new Set(products.map((p) => p.id)))
+    }
+  }
+
+  function toggleOne(id: string) {
+    const next = new Set(selectedIds)
+    if (next.has(id)) {
+      next.delete(id)
+    } else {
+      next.add(id)
+    }
+    setSelectedIds(next)
+  }
+
+  return (
+    <div>
+      {selectedIds.size > 0 && (
+        <div className="bg-muted mb-2 flex items-center gap-2 rounded-md p-2">
+          <span className="text-sm">{selectedIds.size} selected</span>
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={() => setSelectedIds(new Set())}
+          >
+            Delete Selected
+          </Button>
+          <Button variant="outline" size="sm">
+            Export Selected
+          </Button>
+        </div>
+      )}
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-10">
+              <Checkbox
+                checked={allSelected}
+                onCheckedChange={toggleAll}
+                aria-label="Select all"
+              />
+            </TableHead>
+            <TableHead>Name</TableHead>
+            <TableHead>Category</TableHead>
+            <TableHead>Price</TableHead>
+            <TableHead>Stock</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {products.map((product) => (
+            <TableRow key={product.id}>
+              <TableCell>
+                <Checkbox
+                  checked={selectedIds.has(product.id)}
+                  onCheckedChange={() => toggleOne(product.id)}
+                  aria-label={`Select ${product.name}`}
+                />
+              </TableCell>
+              <TableCell>{product.name}</TableCell>
+              <TableCell>{product.category}</TableCell>
+              <TableCell>${product.price.toFixed(2)}</TableCell>
+              <TableCell>{product.stock}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  )
+}
+
+function FacetedFilterTableExample() {
+  const [categoryFilter, setCategoryFilter] = useState("all")
+  const [statusFilter, setStatusFilter] = useState("all")
+
+  const statusLabel: Record<Product["status"], string> = {
+    active: "In stock",
+    low: "Low stock",
+    out: "Out of stock",
+  }
+
+  const filtered = products.filter((p) => {
+    const categoryMatch =
+      categoryFilter === "all" || p.category === categoryFilter
+    const statusMatch =
+      statusFilter === "all" || statusLabel[p.status] === statusFilter
+    return categoryMatch && statusMatch
+  })
+
+  return (
+    <div className="space-y-3">
+      <div className="flex gap-3">
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-medium">Category</label>
+          <select
+            className="bg-background rounded-md border px-3 py-1.5 text-sm"
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+          >
+            <option value="all">All</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Clothing">Clothing</option>
+            <option value="Books">Books</option>
+            <option value="Food">Food</option>
+          </select>
+        </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-medium">Status</label>
+          <select
+            className="bg-background rounded-md border px-3 py-1.5 text-sm"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            <option value="all">All</option>
+            <option value="In stock">In stock</option>
+            <option value="Low stock">Low stock</option>
+            <option value="Out of stock">Out of stock</option>
+          </select>
+        </div>
+      </div>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Name</TableHead>
+            <TableHead>Category</TableHead>
+            <TableHead>Price</TableHead>
+            <TableHead>Status</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filtered.length === 0 ? (
+            <TableRow>
+              <TableCell
+                colSpan={4}
+                className="text-muted-foreground text-center"
+              >
+                No products match the selected filters.
+              </TableCell>
+            </TableRow>
+          ) : (
+            filtered.map((product) => (
+              <TableRow key={product.id}>
+                <TableCell>{product.name}</TableCell>
+                <TableCell>{product.category}</TableCell>
+                <TableCell>${product.price.toFixed(2)}</TableCell>
+                <TableCell>{statusLabel[product.status]}</TableCell>
+              </TableRow>
+            ))
+          )}
+        </TableBody>
+      </Table>
+    </div>
+  )
+}
+
 function DataTablePage() {
   return (
     <div className="space-y-8">
@@ -212,6 +439,112 @@ function DataTablePage() {
             searchKey="name"
             searchPlaceholder="Search by name..."
           />
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Expandable row detail"
+          code={`const [expandedId, setExpandedId] = useState<string | null>(null)
+
+<Table>
+  <TableHeader>…</TableHeader>
+  <TableBody>
+    {products.map((product) => (
+      <>
+        <TableRow
+          key={product.id}
+          className="cursor-pointer"
+          onClick={() => setExpandedId(expandedId === product.id ? null : product.id)}
+        >
+          <TableCell className="flex items-center gap-2">
+            {expandedId === product.id
+              ? <ChevronDown className="h-4 w-4 shrink-0" />
+              : <ChevronRight className="h-4 w-4 shrink-0" />}
+            {product.name}
+          </TableCell>
+          …
+        </TableRow>
+        {expandedId === product.id && (
+          <TableRow key={\`\${product.id}-detail\`}>
+            <TableCell colSpan={4} className="bg-muted/50 p-4">
+              SKU: PROD-{product.id} — Created: Jan {product.id}, 2024
+            </TableCell>
+          </TableRow>
+        )}
+      </>
+    ))}
+  </TableBody>
+</Table>`}
+        >
+          <ExpandableTableExample />
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Bulk actions toolbar"
+          code={`const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+
+{selectedIds.size > 0 && (
+  <div className="mb-2 flex items-center gap-2 rounded-md bg-muted p-2">
+    <span className="text-sm">{selectedIds.size} selected</span>
+    <Button variant="destructive" size="sm">Delete Selected</Button>
+    <Button variant="outline" size="sm">Export Selected</Button>
+  </div>
+)}
+<Table>
+  <TableHeader>
+    <TableRow>
+      <TableHead>
+        <Checkbox checked={allSelected} onCheckedChange={toggleAll} />
+      </TableHead>
+      …
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    {products.map((product) => (
+      <TableRow key={product.id}>
+        <TableCell>
+          <Checkbox
+            checked={selectedIds.has(product.id)}
+            onCheckedChange={() => toggleOne(product.id)}
+          />
+        </TableCell>
+        …
+      </TableRow>
+    ))}
+  </TableBody>
+</Table>`}
+        >
+          <BulkActionsTableExample />
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Faceted filters"
+          code={`const [categoryFilter, setCategoryFilter] = useState("all")
+const [statusFilter, setStatusFilter] = useState("all")
+
+const filtered = products.filter((p) => {
+  const categoryMatch = categoryFilter === "all" || p.category === categoryFilter
+  const statusMatch = statusFilter === "all" || statusLabel[p.status] === statusFilter
+  return categoryMatch && statusMatch
+})
+
+<div className="flex gap-3">
+  <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
+    <option value="all">All</option>
+    <option value="Electronics">Electronics</option>
+    <option value="Clothing">Clothing</option>
+    <option value="Books">Books</option>
+    <option value="Food">Food</option>
+  </select>
+  <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+    <option value="all">All</option>
+    <option value="In stock">In stock</option>
+    <option value="Low stock">Low stock</option>
+    <option value="Out of stock">Out of stock</option>
+  </select>
+</div>
+<Table>{/* filtered rows */}</Table>`}
+        >
+          <FacetedFilterTableExample />
         </ShowcaseExample>
       </div>
     </div>
