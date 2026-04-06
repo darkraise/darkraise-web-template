@@ -29,12 +29,19 @@ const Toaster = ({ ...props }: ToasterProps) => {
       toastOptions={{
         classNames: {
           toast:
-            "group toast group-[.toaster]:bg-card group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg [&[data-type=success]]:border-green-500/40 [&[data-type=success]]:text-green-600 dark:[&[data-type=success]]:text-green-400 [&[data-type=error]]:border-destructive/40 [&[data-type=error]]:text-destructive [&[data-type=warning]]:border-amber-500/40 [&[data-type=warning]]:text-amber-600 dark:[&[data-type=warning]]:text-amber-400 [&[data-type=info]]:border-blue-500/40 [&[data-type=info]]:text-blue-600 dark:[&[data-type=info]]:text-blue-400",
+            "group toast group-[.toaster]:bg-card group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg",
           description: "group-[.toast]:text-muted-foreground",
           actionButton:
             "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
           cancelButton:
             "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
+          success:
+            "!border-green-500/40 !text-green-600 dark:!text-green-400 [&_[data-description]]:!text-green-600/80 dark:[&_[data-description]]:!text-green-400/80",
+          error:
+            "!border-destructive/40 !text-destructive [&_[data-description]]:!text-destructive/80",
+          warning:
+            "!border-amber-500/40 !text-amber-600 dark:!text-amber-400 [&_[data-description]]:!text-amber-600/80 dark:[&_[data-description]]:!text-amber-400/80",
+          info: "!border-blue-500/40 !text-blue-600 dark:!text-blue-400 [&_[data-description]]:!text-blue-600/80 dark:[&_[data-description]]:!text-blue-400/80",
         },
       }}
       {...props}
