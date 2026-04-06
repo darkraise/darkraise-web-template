@@ -3,6 +3,8 @@ import { useState } from "react"
 import { User, Settings, CreditCard, LogOut, ChevronDown } from "lucide-react"
 import { PageHeader } from "@/core/layout"
 import { Button } from "@/core/components/ui/button"
+import { Input } from "@/core/components/ui/input"
+import { Avatar, AvatarFallback } from "@/core/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -24,6 +26,103 @@ export const Route = createFileRoute(
 )({
   component: DropdownMenuPage,
 })
+
+function ContextMenuExample() {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <DropdownMenu open={open} onOpenChange={setOpen}>
+      <DropdownMenuTrigger asChild>
+        <div
+          className="text-muted-foreground flex min-h-[150px] cursor-default items-center justify-center rounded-lg border border-dashed text-sm select-none"
+          onContextMenu={(e) => {
+            e.preventDefault()
+            setOpen(true)
+          }}
+        >
+          Right-click anywhere in this area
+        </div>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-48">
+        <DropdownMenuItem>Copy</DropdownMenuItem>
+        <DropdownMenuItem>Paste</DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem>Select All</DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
+
+function SearchableDropdownExample() {
+  const [search, setSearch] = useState("")
+
+  const teams = ["Design", "Engineering", "Marketing", "Sales", "Support"]
+  const filtered = teams.filter((t) =>
+    t.toLowerCase().includes(search.toLowerCase()),
+  )
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline">Select Team</Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-48">
+        <div
+          className="p-1"
+          onKeyDown={(e) => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Input
+            placeholder="Search…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="h-8"
+          />
+        </div>
+        <DropdownMenuSeparator />
+        {filtered.map((team) => (
+          <DropdownMenuItem key={team}>{team}</DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
+
+function AvatarTriggerDropdownExample() {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Avatar className="cursor-pointer">
+          <AvatarFallback>JD</AvatarFallback>
+        </Avatar>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-48">
+        <DropdownMenuLabel>
+          <p>Jane Doe</p>
+          <p className="text-muted-foreground text-xs font-normal">
+            jane@example.com
+          </p>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem>
+          <User className="mr-2 h-4 w-4" />
+          Profile
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <Settings className="mr-2 h-4 w-4" />
+          Settings
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem>
+          <LogOut className="mr-2 h-4 w-4" />
+          Sign out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
 
 function DropdownMenuPage() {
   const [checked, setChecked] = useState(true)
@@ -212,6 +311,113 @@ function DropdownMenuPage() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Context menu (right-click)"
+          code={`function ContextMenuExample() {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <DropdownMenu open={open} onOpenChange={setOpen}>
+      <DropdownMenuTrigger asChild>
+        <div
+          className="min-h-[150px] rounded-lg border border-dashed flex items-center justify-center text-sm text-muted-foreground cursor-default select-none"
+          onContextMenu={(e) => {
+            e.preventDefault()
+            setOpen(true)
+          }}
+        >
+          Right-click anywhere in this area
+        </div>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-48">
+        <DropdownMenuItem>Copy</DropdownMenuItem>
+        <DropdownMenuItem>Paste</DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem>Select All</DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}`}
+        >
+          <ContextMenuExample />
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Dropdown with search"
+          code={`function SearchableDropdownExample() {
+  const [search, setSearch] = useState("")
+  const teams = ["Design", "Engineering", "Marketing", "Sales", "Support"]
+  const filtered = teams.filter((t) =>
+    t.toLowerCase().includes(search.toLowerCase()),
+  )
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline">Select Team</Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-48">
+        <div
+          className="p-1"
+          onKeyDown={(e) => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Input
+            placeholder="Search…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="h-8"
+          />
+        </div>
+        <DropdownMenuSeparator />
+        {filtered.map((team) => (
+          <DropdownMenuItem key={team}>{team}</DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}`}
+        >
+          <SearchableDropdownExample />
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Avatar-trigger dropdown"
+          code={`<DropdownMenu>
+  <DropdownMenuTrigger asChild>
+    <Avatar className="cursor-pointer">
+      <AvatarFallback>JD</AvatarFallback>
+    </Avatar>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent className="w-48">
+    <DropdownMenuLabel>
+      <p>Jane Doe</p>
+      <p className="text-xs font-normal text-muted-foreground">
+        jane@example.com
+      </p>
+    </DropdownMenuLabel>
+    <DropdownMenuSeparator />
+    <DropdownMenuItem>
+      <User className="mr-2 h-4 w-4" />
+      Profile
+    </DropdownMenuItem>
+    <DropdownMenuItem>
+      <Settings className="mr-2 h-4 w-4" />
+      Settings
+    </DropdownMenuItem>
+    <DropdownMenuSeparator />
+    <DropdownMenuItem>
+      <LogOut className="mr-2 h-4 w-4" />
+      Sign out
+    </DropdownMenuItem>
+  </DropdownMenuContent>
+</DropdownMenu>`}
+        >
+          <AvatarTriggerDropdownExample />
         </ShowcaseExample>
       </div>
     </div>
