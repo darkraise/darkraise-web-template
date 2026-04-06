@@ -9,6 +9,8 @@ export { SidebarLayout } from "./sidebar-layout"
 export { TopNavLayout } from "./top-nav-layout"
 export { StackedLayout } from "./stacked-layout"
 export { SplitPanelLayout } from "./split-panel-layout"
+export { LayoutSwitcher } from "./layout-switcher"
+export { useLayoutStore, type LayoutVariant } from "./layout-store"
 export type {
   NavItem,
   NavGroup,

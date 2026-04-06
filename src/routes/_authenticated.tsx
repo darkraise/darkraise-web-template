@@ -43,7 +43,8 @@ import {
   MoreHorizontal,
   LayoutPanelLeft,
 } from "lucide-react"
-import { SidebarLayout } from "@/core/layout"
+import { SidebarLayout, TopNavLayout, StackedLayout } from "@/core/layout"
+import { useLayoutStore } from "@/core/layout/layout-store"
 import { useAuthStore } from "@/features/auth"
 import type { NavGroup } from "@/core/layout/types"
 
@@ -180,9 +181,29 @@ export const Route = createFileRoute("/_authenticated")({
       throw redirect({ to: "/login" })
     }
   },
-  component: () => (
-    <SidebarLayout nav={nav}>
-      <Outlet />
-    </SidebarLayout>
-  ),
+  component: function AuthenticatedLayout() {
+    const layout = useLayoutStore((s) => s.layout)
+
+    switch (layout) {
+      case "top-nav":
+        return (
+          <TopNavLayout nav={nav}>
+            <Outlet />
+          </TopNavLayout>
+        )
+      case "stacked":
+        return (
+          <StackedLayout nav={nav}>
+            <Outlet />
+          </StackedLayout>
+        )
+      case "sidebar":
+      default:
+        return (
+          <SidebarLayout nav={nav}>
+            <Outlet />
+          </SidebarLayout>
+        )
+    }
+  },
 })

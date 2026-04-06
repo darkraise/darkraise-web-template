@@ -5,6 +5,7 @@ import { SearchCommand } from "./search-command"
 import { UserMenu } from "./user-menu"
 import { NotificationBell } from "./notification-bell"
 import { MobileDrawer } from "./mobile-drawer"
+import { LayoutSwitcher } from "./layout-switcher"
 import type { NavGroup } from "./types"
 
 interface LayoutHeaderProps {
@@ -27,7 +28,7 @@ export function LayoutHeader({
   return (
     <header
       className={cn(
-        "flex h-14 items-center gap-2 border-b border-border bg-surface-header px-4",
+        "border-border bg-surface-header flex h-14 items-center gap-2 border-b px-4",
         className,
       )}
     >
@@ -35,6 +36,7 @@ export function LayoutHeader({
       {children ?? <SearchCommand navItems={flatNavItems} />}
       <div className="ml-auto flex items-center gap-1">
         {headerSlot}
+        <LayoutSwitcher />
         <ThemeSwitcher />
         <NotificationBell />
         <UserMenu />
