@@ -64,7 +64,7 @@ export function ThemeSwitcher() {
   const visibleSections = [
     axes.mode && (
       <div key="mode">
-        <Label className="text-xs font-medium text-muted-foreground">
+        <Label className="text-muted-foreground text-xs font-medium">
           Mode
         </Label>
         <div className="mt-1.5 flex gap-1">
@@ -85,7 +85,7 @@ export function ThemeSwitcher() {
     ),
     axes.backgroundStyle && (
       <div key="backgroundStyle">
-        <Label className="text-xs font-medium text-muted-foreground">
+        <Label className="text-muted-foreground text-xs font-medium">
           Background
         </Label>
         <div className="mt-1.5 flex gap-1">
@@ -106,7 +106,7 @@ export function ThemeSwitcher() {
     ),
     axes.accentColor && (
       <div key="accentColor">
-        <Label className="text-xs font-medium text-muted-foreground">
+        <Label className="text-muted-foreground text-xs font-medium">
           Accent Color
         </Label>
         <div className="mt-1.5 grid grid-cols-9 gap-1.5">
@@ -116,9 +116,9 @@ export function ThemeSwitcher() {
               type="button"
               title={color}
               className={cn(
-                "h-6 w-6 rounded-full border-2 transition-transform hover:scale-110",
+                "h-6 w-6 cursor-pointer rounded-full border-2 transition-transform hover:scale-110",
                 accentColor === color
-                  ? "scale-110 border-foreground"
+                  ? "border-foreground scale-110"
                   : "border-transparent",
               )}
               style={{
@@ -132,7 +132,7 @@ export function ThemeSwitcher() {
     ),
     axes.surfaceColor && (
       <div key="surfaceColor">
-        <Label className="text-xs font-medium text-muted-foreground">
+        <Label className="text-muted-foreground text-xs font-medium">
           Surface Color
         </Label>
         <div className="mt-1.5 grid grid-cols-9 gap-1.5">
@@ -145,9 +145,9 @@ export function ThemeSwitcher() {
                 type="button"
                 title={color}
                 className={cn(
-                  "h-6 w-6 rounded-full border-2 transition-transform hover:scale-110",
+                  "h-6 w-6 cursor-pointer rounded-full border-2 transition-transform hover:scale-110",
                   surfaceColor === color
-                    ? "scale-110 border-foreground"
+                    ? "border-foreground scale-110"
                     : "border-transparent",
                 )}
                 style={{
@@ -162,7 +162,7 @@ export function ThemeSwitcher() {
     ),
     axes.surfaceStyle && (
       <div key="surfaceStyle">
-        <Label className="text-xs font-medium text-muted-foreground">
+        <Label className="text-muted-foreground text-xs font-medium">
           Surface Style
         </Label>
         <div className="mt-1.5 grid grid-cols-2 gap-1">
@@ -173,7 +173,7 @@ export function ThemeSwitcher() {
                 key={style}
                 type="button"
                 className={cn(
-                  "rounded-md px-2 py-1.5 text-left text-xs transition-colors",
+                  "cursor-pointer rounded-md px-2 py-1.5 text-left text-xs transition-colors",
                   surfaceStyle === style
                     ? "bg-primary text-primary-foreground"
                     : "hover:bg-accent hover:text-accent-foreground",
@@ -189,7 +189,7 @@ export function ThemeSwitcher() {
     ),
     axes.fontFamily && (
       <div key="fontFamily">
-        <Label className="text-xs font-medium text-muted-foreground">
+        <Label className="text-muted-foreground text-xs font-medium">
           Font
         </Label>
         <div className="mt-1.5 grid grid-cols-1 gap-1">
@@ -200,7 +200,7 @@ export function ThemeSwitcher() {
                 key={font}
                 type="button"
                 className={cn(
-                  "rounded-md px-2 py-1.5 text-left text-xs transition-colors",
+                  "cursor-pointer rounded-md px-2 py-1.5 text-left text-xs transition-colors",
                   fontFamily === font
                     ? "bg-primary text-primary-foreground"
                     : "hover:bg-accent hover:text-accent-foreground",
