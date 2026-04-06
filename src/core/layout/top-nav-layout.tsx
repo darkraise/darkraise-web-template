@@ -23,14 +23,14 @@ export function TopNavLayout({ children, nav, headerSlot }: LayoutProps) {
         }
       >
         <BrandLogo />
-        <nav className="hidden items-center gap-1 md:flex">
+        <nav className="hidden min-w-0 flex-1 items-center gap-1 overflow-x-auto md:flex">
           {nav.flatMap((group) =>
             group.items.map((item) => (
               <Link
                 key={item.href}
                 to={item.href}
                 className={cn(
-                  "flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors duration-150 hover:text-foreground [&.active]:bg-accent [&.active]:text-accent-foreground",
+                  "text-muted-foreground hover:text-foreground [&.active]:bg-accent [&.active]:text-accent-foreground flex shrink-0 items-center gap-2 rounded-md px-3 py-1.5 text-sm transition-colors duration-150",
                 )}
                 activeProps={{ className: "active" }}
               >
