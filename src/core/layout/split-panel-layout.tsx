@@ -1,5 +1,6 @@
-import { useState, useCallback } from "react"
+import { useState, useCallback, useRef } from "react"
 import { cn } from "@/core/lib/utils"
+import { useEventListener } from "@/core/hooks"
 import { SearchCommand } from "./search-command"
 import { BrandLogo } from "./brand-logo"
 import { LayoutHeader } from "./layout-header"
@@ -24,21 +25,21 @@ export function SplitPanelLayout({
 }: SplitPanelLayoutProps) {
   const [panelWidth, setPanelWidth] = useState(defaultPanelWidth)
   const [isDragging, setIsDragging] = useState(false)
+  const docRef = useRef(typeof document !== "undefined" ? document : null)
+
+  useEventListener(docRef, "mousemove", (e: MouseEvent) => {
+    if (!isDragging) return
+    const width = Math.min(Math.max(e.clientX, minPanelWidth), maxPanelWidth)
+    setPanelWidth(width)
+  })
+
+  useEventListener(docRef, "mouseup", () => {
+    if (isDragging) setIsDragging(false)
+  })
 
   const handleMouseDown = useCallback(() => {
     setIsDragging(true)
-    const handleMouseMove = (e: MouseEvent) => {
-      const width = Math.min(Math.max(e.clientX, minPanelWidth), maxPanelWidth)
-      setPanelWidth(width)
-    }
-    const handleMouseUp = () => {
-      setIsDragging(false)
-      document.removeEventListener("mousemove", handleMouseMove)
-      document.removeEventListener("mouseup", handleMouseUp)
-    }
-    document.addEventListener("mousemove", handleMouseMove)
-    document.addEventListener("mouseup", handleMouseUp)
-  }, [minPanelWidth, maxPanelWidth])
+  }, [])
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
@@ -54,7 +55,7 @@ export function SplitPanelLayout({
       <div className="flex flex-1 overflow-hidden">
         {/* List panel */}
         <div
-          className="flex-shrink-0 overflow-y-auto border-r border-border"
+          className="border-border flex-shrink-0 overflow-y-auto border-r"
           style={{ width: panelWidth }}
         >
           {panel}
@@ -63,7 +64,7 @@ export function SplitPanelLayout({
         {/* Resize handle */}
         <div
           className={cn(
-            "w-1 cursor-col-resize bg-transparent transition-colors hover:bg-primary/20",
+            "hover:bg-primary/20 w-1 cursor-col-resize bg-transparent transition-colors",
             isDragging && "bg-primary/30",
           )}
           onMouseDown={handleMouseDown}

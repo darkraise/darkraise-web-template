@@ -11,5 +11,5 @@ const breakpoints = {
 type Breakpoint = keyof typeof breakpoints
 
 export function useBreakpoint(breakpoint: Breakpoint): boolean {
-  return useMediaQuery(`(min-width: ${breakpoints[breakpoint]})`)
+  return useMediaQuery(`(min-width: ${breakpoints[breakpoint]})`) ?? false
 }

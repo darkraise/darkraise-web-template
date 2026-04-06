@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useNavigate } from "@tanstack/react-router"
 import { Search } from "lucide-react"
+import { useKeyboardEvent } from "@/core/hooks"
 import {
   CommandDialog,
   CommandEmpty,
@@ -19,27 +20,28 @@ export function SearchCommand({ navItems = [] }: SearchCommandProps) {
   const [open, setOpen] = useState(false)
   const navigate = useNavigate()
 
-  useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+  useKeyboardEvent(
+    "k",
+    (e) => {
+      if (e.metaKey || e.ctrlKey) {
         e.preventDefault()
         setOpen((prev) => !prev)
       }
-    }
-    document.addEventListener("keydown", down)
-    return () => document.removeEventListener("keydown", down)
-  }, [])
+    },
+    [],
+    { eventOptions: { passive: false } },
+  )
 
   return (
     <>
       <Button
         variant="outline"
-        className="relative h-9 w-full justify-start gap-2 text-sm text-muted-foreground md:w-64"
+        className="text-muted-foreground relative h-9 w-full justify-start gap-2 text-sm md:w-64"
         onClick={() => setOpen(true)}
       >
         <Search className="h-4 w-4" />
         <span>Search...</span>
-        <kbd className="pointer-events-none ml-auto hidden rounded border bg-muted px-1.5 font-mono text-xs sm:inline-block">
+        <kbd className="bg-muted pointer-events-none ml-auto hidden rounded border px-1.5 font-mono text-xs sm:inline-block">
           ⌘K
         </kbd>
       </Button>
