@@ -70,7 +70,7 @@ function SheetContent({
         {...props}
       >
         {children}
-        <SheetPrimitive.Close className="ring-offset-background focus:ring-ring text-muted-foreground hover:bg-accent hover:text-foreground absolute top-4 right-4 flex h-7 w-7 items-center justify-center rounded-full transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:pointer-events-none">
+        <SheetPrimitive.Close className="ring-offset-background focus:ring-ring text-muted-foreground hover:bg-accent hover:text-foreground absolute top-4 right-4 flex h-7 w-7 items-center justify-center rounded-md transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:pointer-events-none">
           <X className="h-4 w-4" />
           <span className="sr-only">Close</span>
         </SheetPrimitive.Close>
