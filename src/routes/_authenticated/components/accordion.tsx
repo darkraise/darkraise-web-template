@@ -9,6 +9,13 @@ import {
 } from "@/core/components/ui/accordion"
 import { Badge } from "@/core/components/ui/badge"
 import { Label } from "@/core/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/core/components/ui/select"
 import { Switch } from "@/core/components/ui/switch"
 import { ShowcaseExample } from "./_components/-showcase-example"
 
@@ -284,6 +291,22 @@ function AccordionPage() {
       </div>
     </AccordionContent>
   </AccordionItem>
+  <AccordionItem value="display">
+    <AccordionTrigger>Display</AccordionTrigger>
+    <AccordionContent>
+      <Label htmlFor="theme-select">Theme</Label>
+      <Select>
+        <SelectTrigger id="theme-select">
+          <SelectValue placeholder="Select theme" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="light">Light</SelectItem>
+          <SelectItem value="dark">Dark</SelectItem>
+          <SelectItem value="system">System</SelectItem>
+        </SelectContent>
+      </Select>
+    </AccordionContent>
+  </AccordionItem>
 </Accordion>`}
         >
           <Accordion type="multiple" className="w-full">
@@ -307,14 +330,16 @@ function AccordionPage() {
               <AccordionContent>
                 <div className="space-y-2 py-1">
                   <Label htmlFor="theme-select">Theme</Label>
-                  <select
-                    id="theme-select"
-                    className="border-input bg-card w-full rounded-md border px-3 py-2 text-sm"
-                  >
-                    <option value="light">Light</option>
-                    <option value="dark">Dark</option>
-                    <option value="system">System</option>
-                  </select>
+                  <Select>
+                    <SelectTrigger id="theme-select">
+                      <SelectValue placeholder="Select theme" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="light">Light</SelectItem>
+                      <SelectItem value="dark">Dark</SelectItem>
+                      <SelectItem value="system">System</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </AccordionContent>
             </AccordionItem>

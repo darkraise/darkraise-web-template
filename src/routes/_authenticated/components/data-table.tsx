@@ -7,6 +7,13 @@ import { Badge } from "@/core/components/ui/badge"
 import { Button } from "@/core/components/ui/button"
 import { Checkbox } from "@/core/components/ui/checkbox"
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/core/components/ui/select"
+import {
   Table,
   TableBody,
   TableCell,
@@ -315,30 +322,32 @@ function FacetedFilterTableExample() {
       <div className="flex gap-3">
         <div className="flex flex-col gap-1">
           <label className="text-sm font-medium">Category</label>
-          <select
-            className="bg-background rounded-md border px-3 py-1.5 text-sm"
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
-          >
-            <option value="all">All</option>
-            <option value="Electronics">Electronics</option>
-            <option value="Clothing">Clothing</option>
-            <option value="Books">Books</option>
-            <option value="Food">Food</option>
-          </select>
+          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+            <SelectTrigger className="w-36">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All</SelectItem>
+              <SelectItem value="Electronics">Electronics</SelectItem>
+              <SelectItem value="Clothing">Clothing</SelectItem>
+              <SelectItem value="Books">Books</SelectItem>
+              <SelectItem value="Food">Food</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         <div className="flex flex-col gap-1">
           <label className="text-sm font-medium">Status</label>
-          <select
-            className="bg-background rounded-md border px-3 py-1.5 text-sm"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-          >
-            <option value="all">All</option>
-            <option value="In stock">In stock</option>
-            <option value="Low stock">Low stock</option>
-            <option value="Out of stock">Out of stock</option>
-          </select>
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-36">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All</SelectItem>
+              <SelectItem value="In stock">In stock</SelectItem>
+              <SelectItem value="Low stock">Low stock</SelectItem>
+              <SelectItem value="Out of stock">Out of stock</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
       <Table>
@@ -528,19 +537,25 @@ const filtered = products.filter((p) => {
 })
 
 <div className="flex gap-3">
-  <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
-    <option value="all">All</option>
-    <option value="Electronics">Electronics</option>
-    <option value="Clothing">Clothing</option>
-    <option value="Books">Books</option>
-    <option value="Food">Food</option>
-  </select>
-  <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-    <option value="all">All</option>
-    <option value="In stock">In stock</option>
-    <option value="Low stock">Low stock</option>
-    <option value="Out of stock">Out of stock</option>
-  </select>
+  <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+    <SelectTrigger className="w-36"><SelectValue /></SelectTrigger>
+    <SelectContent>
+      <SelectItem value="all">All</SelectItem>
+      <SelectItem value="Electronics">Electronics</SelectItem>
+      <SelectItem value="Clothing">Clothing</SelectItem>
+      <SelectItem value="Books">Books</SelectItem>
+      <SelectItem value="Food">Food</SelectItem>
+    </SelectContent>
+  </Select>
+  <Select value={statusFilter} onValueChange={setStatusFilter}>
+    <SelectTrigger className="w-36"><SelectValue /></SelectTrigger>
+    <SelectContent>
+      <SelectItem value="all">All</SelectItem>
+      <SelectItem value="In stock">In stock</SelectItem>
+      <SelectItem value="Low stock">Low stock</SelectItem>
+      <SelectItem value="Out of stock">Out of stock</SelectItem>
+    </SelectContent>
+  </Select>
 </div>
 <Table>{/* filtered rows */}</Table>`}
         >

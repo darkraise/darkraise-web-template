@@ -127,18 +127,15 @@ function MultiStepDialogExample() {
               <Label>Role</Label>
               <div className="flex gap-2">
                 {["Developer", "Designer", "Manager"].map((r) => (
-                  <button
+                  <Button
                     key={r}
                     type="button"
+                    variant={role === r ? "default" : "outline"}
+                    className="flex-1"
                     onClick={() => setRole(r)}
-                    className={`flex-1 rounded-md border px-3 py-2 text-sm transition-colors ${
-                      role === r
-                        ? "border-primary bg-primary text-primary-foreground"
-                        : "border-border bg-background hover:bg-muted"
-                    }`}
                   >
                     {r}
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>

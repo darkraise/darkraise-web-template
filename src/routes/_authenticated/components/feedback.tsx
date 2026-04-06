@@ -91,14 +91,16 @@ function DismissibleAlert() {
           You can now export your data as CSV from the settings page.
         </p>
       </div>
-      <button
+      <Button
         type="button"
+        variant="ghost"
+        size="icon"
         onClick={() => setVisible(false)}
-        className="text-muted-foreground hover:text-foreground mt-0.5 shrink-0 rounded p-0.5 transition-colors hover:bg-black/10 dark:hover:bg-white/10"
+        className="mt-0.5 h-6 w-6 shrink-0"
         aria-label="Dismiss"
       >
         <X className="h-4 w-4" />
-      </button>
+      </Button>
     </div>
   )
 }
@@ -371,9 +373,9 @@ toast("Extended notice", { duration: 8000 })`}
       <p className="text-sm font-medium">New feature available</p>
       <p className="text-sm text-muted-foreground">...</p>
     </div>
-    <button onClick={() => setVisible(false)}>
+    <Button variant="ghost" size="icon" className="mt-0.5 h-6 w-6 shrink-0" onClick={() => setVisible(false)}>
       <X className="h-4 w-4" />
-    </button>
+    </Button>
   </div>
 ) : (
   <Button onClick={() => setVisible(true)}>Show alert again</Button>

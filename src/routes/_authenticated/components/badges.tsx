@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import { CheckCircle, Clock, XCircle, AlertTriangle, X } from "lucide-react"
 import { PageHeader } from "@/core/layout"
 import { Badge } from "@/core/components/ui/badge"
+import { Button } from "@/core/components/ui/button"
 import {
   Table,
   TableBody,
@@ -30,12 +31,14 @@ function ClosableBadgesExample() {
       {tags.map((tag) => (
         <Badge key={tag} variant="secondary">
           {tag}
-          <button
-            className="hover:text-foreground ml-1 h-3 w-3 cursor-pointer"
+          <Button
+            variant="ghost"
+            size="icon"
+            className="ml-1 h-3 w-3"
             onClick={() => setTags((prev) => prev.filter((t) => t !== tag))}
           >
             <X className="h-3 w-3" />
-          </button>
+          </Button>
         </Badge>
       ))}
     </div>
@@ -181,12 +184,14 @@ function BadgesPage() {
 {tags.map((tag) => (
   <Badge key={tag} variant="secondary">
     {tag}
-    <button
-      className="ml-1 h-3 w-3 cursor-pointer hover:text-foreground"
+    <Button
+      variant="ghost"
+      size="icon"
+      className="ml-1 h-3 w-3"
       onClick={() => setTags((prev) => prev.filter((t) => t !== tag))}
     >
       <X className="h-3 w-3" />
-    </button>
+    </Button>
   </Badge>
 ))}`}
         >

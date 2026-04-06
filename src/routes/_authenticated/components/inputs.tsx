@@ -51,17 +51,19 @@ function PasswordInputExample() {
         defaultValue="supersecret123"
         className="pr-10"
       />
-      <button
+      <Button
         type="button"
+        variant="ghost"
+        size="icon"
         onClick={() => setShowPassword((p) => !p)}
-        className="text-muted-foreground hover:text-foreground absolute top-1/2 right-2 -translate-y-1/2"
+        className="absolute top-1/2 right-1 h-7 w-7 -translate-y-1/2"
       >
         {showPassword ? (
           <EyeOff className="h-4 w-4" />
         ) : (
           <Eye className="h-4 w-4" />
         )}
-      </button>
+      </Button>
     </div>
   )
 }
@@ -119,11 +121,11 @@ function InputsPage() {
 <Input id="with-value" defaultValue="Existing content" />`}
         >
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
+            <div className="space-y-3">
               <Label htmlFor="demo-default">Default</Label>
               <Input id="demo-default" placeholder="Type something..." />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-3">
               <Label htmlFor="demo-disabled">Disabled</Label>
               <Input
                 id="demo-disabled"
@@ -131,11 +133,11 @@ function InputsPage() {
                 disabled
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-3">
               <Label htmlFor="demo-value">With value</Label>
               <Input id="demo-value" defaultValue="Existing content" />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-3">
               <Label htmlFor="demo-password">Password</Label>
               <Input
                 id="demo-password"
@@ -155,7 +157,7 @@ function InputsPage() {
 <Textarea id="disabled-ta" placeholder="Disabled" disabled rows={2} />`}
         >
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
+            <div className="space-y-3">
               <Label htmlFor="demo-textarea">Bio</Label>
               <Textarea
                 id="demo-textarea"
@@ -163,7 +165,7 @@ function InputsPage() {
                 rows={3}
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-3">
               <Label htmlFor="demo-textarea-disabled">Disabled</Label>
               <Textarea
                 id="demo-textarea-disabled"
@@ -195,7 +197,7 @@ function InputsPage() {
 </Select>`}
         >
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
+            <div className="space-y-3">
               <Label htmlFor="demo-select">Select</Label>
               <Select value={selectValue} onValueChange={setSelectValue}>
                 <SelectTrigger id="demo-select">
@@ -208,7 +210,7 @@ function InputsPage() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-3">
               <Label>Disabled select</Label>
               <Select disabled>
                 <SelectTrigger>
@@ -309,7 +311,7 @@ function InputsPage() {
 </RadioGroup>`}
         >
           <div className="grid gap-6 sm:grid-cols-2">
-            <div className="space-y-2">
+            <div className="space-y-3">
               <Label>Vertical group</Label>
               <RadioGroup value={radioValue} onValueChange={setRadioValue}>
                 {["option-a", "option-b", "option-c"].map((v) => (
@@ -322,7 +324,7 @@ function InputsPage() {
                 ))}
               </RadioGroup>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-3">
               <Label>Disabled group</Label>
               <RadioGroup defaultValue="option-a" disabled>
                 {["option-a", "option-b"].map((v) => (
@@ -372,7 +374,7 @@ function InputsPage() {
 </div>`}
         >
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
+            <div className="space-y-3">
               <Label>URL</Label>
               <div className="border-input flex overflow-hidden rounded-md border">
                 <span className="border-input bg-muted text-muted-foreground flex items-center border-r px-3 text-sm">
@@ -384,7 +386,7 @@ function InputsPage() {
                 />
               </div>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-3">
               <Label>Currency</Label>
               <div className="border-input flex overflow-hidden rounded-md border">
                 <span className="border-input bg-muted text-muted-foreground flex items-center border-r px-3 text-sm">
@@ -440,13 +442,15 @@ function InputsPage() {
         defaultValue="supersecret123"
         className="pr-10"
       />
-      <button
+      <Button
         type="button"
+        variant="ghost"
+        size="icon"
         onClick={() => setShowPassword((p) => !p)}
-        className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+        className="absolute top-1/2 right-1 h-7 w-7 -translate-y-1/2"
       >
         {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-      </button>
+      </Button>
     </div>
   )
 }`}

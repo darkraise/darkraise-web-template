@@ -123,13 +123,15 @@ function NotificationBanners() {
               <Button variant="outline" size="sm">
                 View details
               </Button>
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="icon"
                 onClick={() => setDismissed((d) => [...d, variant])}
-                className="rounded p-1 hover:bg-black/10 dark:hover:bg-white/10"
+                className="h-7 w-7"
               >
                 <X className="h-4 w-4" />
-              </button>
+              </Button>
             </div>
           )
         })}
@@ -376,15 +378,17 @@ function FileUploadArea() {
               <File className="text-muted-foreground h-4 w-4 shrink-0" />
               <span className="flex-1 text-sm">{file.name}</span>
               <span className="text-muted-foreground text-xs">{file.size}</span>
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="icon"
                 onClick={() =>
                   setFiles((f) => f.filter((x) => x.id !== file.id))
                 }
-                className="text-muted-foreground hover:text-destructive rounded p-1"
+                className="text-muted-foreground hover:text-destructive h-7 w-7"
               >
                 <Trash2 className="h-4 w-4" />
-              </button>
+              </Button>
             </div>
           ))}
         </div>
@@ -420,9 +424,9 @@ function RecipesPage() {
       <span className="ml-2 text-muted-foreground">{description}</span>
     </div>
     <Button variant="outline" size="sm">View details</Button>
-    <button onClick={() => setDismissed((d) => [...d, variant])}>
+    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setDismissed((d) => [...d, variant])}>
       <X className="h-4 w-4" />
-    </button>
+    </Button>
   </div>
 ))}`}
         >
@@ -603,9 +607,9 @@ function RecipesPage() {
       <File className="h-4 w-4 shrink-0 text-muted-foreground" />
       <span className="flex-1 text-sm">{file.name}</span>
       <span className="text-xs text-muted-foreground">{file.size}</span>
-      <button onClick={() => setFiles((f) => f.filter((x) => x.id !== file.id))}>
+      <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive h-7 w-7" onClick={() => setFiles((f) => f.filter((x) => x.id !== file.id))}>
         <Trash2 className="h-4 w-4" />
-      </button>
+      </Button>
     </div>
   ))}
 </div>`}
