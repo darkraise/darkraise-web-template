@@ -150,10 +150,31 @@ function startAnimation() {
 
         <ShowcaseExample
           title="Indeterminate / loading"
-          code={`<Progress className="[&>div]:animate-pulse" />`}
+          code={`<div className="bg-secondary relative h-4 w-full overflow-hidden rounded-full">
+  <div className="bg-primary absolute h-full w-1/3 animate-[progress-slide_1.5s_ease-in-out_infinite] rounded-full" />
+</div>
+
+/* Add to your CSS/tailwind config:
+@keyframes progress-slide {
+  0% { left: -33%; }
+  100% { left: 100%; }
+} */`}
         >
           <div className="w-full max-w-sm">
-            <Progress value={45} className="[&>div]:animate-pulse" />
+            <div className="bg-secondary relative h-4 w-full overflow-hidden rounded-full">
+              <div
+                className="bg-primary absolute h-full w-1/3 rounded-full"
+                style={{
+                  animation: "progress-slide 1.5s ease-in-out infinite",
+                }}
+              />
+              <style>{`
+                @keyframes progress-slide {
+                  0% { left: -33%; }
+                  100% { left: 100%; }
+                }
+              `}</style>
+            </div>
           </div>
         </ShowcaseExample>
       </div>
