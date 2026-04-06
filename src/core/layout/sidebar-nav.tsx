@@ -124,7 +124,7 @@ function CollapsedParentItem({ item }: { item: NavItem }) {
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="sidebar-nav-item flex aspect-square w-full cursor-pointer items-center justify-center rounded-md transition-colors duration-150"
+          className="sidebar-nav-item flex w-full cursor-pointer items-center justify-center rounded-md px-0 py-2 transition-colors duration-150"
         >
           {item.icon && <item.icon className="h-4 w-4 shrink-0" />}
         </button>
