@@ -285,9 +285,11 @@ Done! Next steps:
   npm run dev
 
 The template includes:
-  - 24 UI primitives in src/core/components/ui/
+  - 48 UI components in src/core/components/ui/
+  - 39 hooks in src/core/hooks/ (async, storage, DOM sensors, state, lifecycle)
   - 6-axis theming system (accent, surface, style, background, font, mode)
   - 4 layout variants (sidebar, stacked, top-nav, split-panel)
+  - Error pages (404, 500, error boundary, maintenance) in src/core/errors/
   - Storybook with theme-aware decorators
   - TypeScript strict mode, ESLint, Prettier, Husky hooks
 ${authNote}`)

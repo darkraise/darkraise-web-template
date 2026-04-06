@@ -4,7 +4,7 @@
   "description": "Scaffold a new project from the darkraise web-template UI kit",
   "type": "module",
   "bin": {
-    "create-darkraise-web-template": "./bin/create.mjs"
+    "create-darkraise-web-template": "bin/create.mjs"
   },
   "files": [
     "bin"
