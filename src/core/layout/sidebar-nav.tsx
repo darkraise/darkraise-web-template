@@ -8,6 +8,11 @@ import {
   CollapsibleTrigger,
 } from "@/core/components/ui/collapsible"
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/core/components/ui/popover"
+import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
@@ -75,6 +80,10 @@ function SidebarItem({ item, collapsed = false, depth = 0 }: SidebarItemProps) {
     return <CollapsibleSidebarItem item={item} depth={depth} />
   }
 
+  if (hasChildren && collapsed) {
+    return <CollapsedParentItem item={item} />
+  }
+
   const linkContent = (
     <Link
       to={item.href}
@@ -107,6 +116,41 @@ function SidebarItem({ item, collapsed = false, depth = 0 }: SidebarItemProps) {
   }
 
   return linkContent
+}
+
+function CollapsedParentItem({ item }: { item: NavItem }) {
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          className="sidebar-nav-item flex w-full cursor-pointer items-center justify-center rounded-md py-2 transition-colors duration-150"
+        >
+          {item.icon && <item.icon className="h-4 w-4 shrink-0" />}
+        </button>
+      </PopoverTrigger>
+      <PopoverContent
+        side="right"
+        align="start"
+        className="w-48 p-1"
+        sideOffset={8}
+      >
+        <p className="text-muted-foreground px-2 py-1.5 text-xs font-medium">
+          {item.label}
+        </p>
+        {item.children?.map((child) => (
+          <Link
+            key={child.href}
+            to={child.href}
+            className="hover:bg-accent hover:text-accent-foreground flex items-center rounded-md px-2 py-1.5 text-sm transition-colors"
+            activeProps={{ className: "bg-accent text-accent-foreground" }}
+          >
+            {child.label}
+          </Link>
+        ))}
+      </PopoverContent>
+    </Popover>
+  )
 }
 
 function CollapsibleSidebarItem({
