@@ -1,5 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { DollarSign, ShoppingCart, Users, TrendingUp } from "lucide-react"
+import {
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+} from "recharts"
 import { PageHeader } from "@/core/layout"
 import { Button } from "@/core/components/ui/button"
 import {
@@ -9,12 +18,26 @@ import {
   ActivityFeed,
   MetricGrid,
 } from "@/features/dashboard"
-import { AreaChart, BarChart, ChartCard } from "@/features/charts"
+import {
+  ChartCard,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/features/charts"
 import { useOrders, useCustomers, useAnalytics } from "@/demo/hooks"
 
 export const Route = createFileRoute("/_authenticated/")({
   component: DashboardPage,
 })
+
+const revenueConfig = {
+  revenue: { label: "Revenue", color: "var(--chart-1)" },
+} satisfies ChartConfig
+
+const topProductsConfig = {
+  count: { label: "Count", color: "var(--chart-2)" },
+} satisfies ChartConfig
 
 function DashboardPage() {
   const { data: orders } = useOrders()
@@ -148,17 +171,55 @@ function DashboardPage() {
             title="Revenue Trend"
             description="Daily revenue over the last 30 days"
           >
-            <AreaChart
-              data={revenueChartData}
-              xKey="date"
-              yKeys={["revenue"]}
-            />
+            <ChartContainer
+              config={revenueConfig}
+              className="min-h-[300px] w-full"
+            >
+              <AreaChart data={revenueChartData}>
+                <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="date"
+                  tickLine={false}
+                  axisLine={false}
+                  className="text-xs"
+                />
+                <YAxis tickLine={false} axisLine={false} className="text-xs" />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Area
+                  type="monotone"
+                  dataKey="revenue"
+                  stroke="var(--color-revenue)"
+                  fill="var(--color-revenue)"
+                  fillOpacity={0.1}
+                />
+              </AreaChart>
+            </ChartContainer>
           </ChartCard>
           <ChartCard
             title="Top Products by Quantity"
             description="Most ordered products"
           >
-            <BarChart data={topProducts} xKey="name" yKeys={["count"]} />
+            <ChartContainer
+              config={topProductsConfig}
+              className="min-h-[300px] w-full"
+            >
+              <BarChart data={topProducts}>
+                <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="name"
+                  tickLine={false}
+                  axisLine={false}
+                  className="text-xs"
+                />
+                <YAxis tickLine={false} axisLine={false} className="text-xs" />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Bar
+                  dataKey="count"
+                  fill="var(--color-count)"
+                  radius={[4, 4, 0, 0]}
+                />
+              </BarChart>
+            </ChartContainer>
           </ChartCard>
         </div>
 
