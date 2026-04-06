@@ -1,6 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router"
 import { cn } from "@/core/lib/utils"
 import { ScrollArea } from "@/core/components/ui/scroll-area"
+import { SidebarItem } from "./sidebar-nav"
 import {
   Tooltip,
   TooltipContent,
@@ -23,8 +24,8 @@ export function StackedLayout({ children, nav, headerSlot }: LayoutProps) {
     <TooltipProvider delayDuration={0}>
       <div className="flex h-screen overflow-hidden">
         {/* Icon sidebar */}
-        <aside className="hidden w-16 flex-col items-center border-r border-border-default bg-surface-sidebar py-4 md:flex">
-          <div className="mb-6 h-8 w-8 rounded-md bg-primary" />
+        <aside className="border-border-default bg-surface-sidebar hidden w-16 flex-col items-center border-r py-4 md:flex">
+          <div className="bg-primary mb-6 h-8 w-8 rounded-md" />
           <nav className="flex flex-1 flex-col items-center gap-2">
             {nav.map((group, gi) => {
               const firstItem = group.items[0]
@@ -56,10 +57,10 @@ export function StackedLayout({ children, nav, headerSlot }: LayoutProps) {
 
         {/* Sub-nav panel */}
         {activeGroup && (
-          <aside className="hidden w-56 flex-col border-r border-border bg-background md:flex">
+          <aside className="border-border bg-background hidden w-56 flex-col border-r md:flex">
             {activeGroup.label && (
-              <div className="border-b border-border px-4 py-3">
-                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              <div className="border-border border-b px-4 py-3">
+                <p className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
                   {activeGroup.label}
                 </p>
               </div>
@@ -67,15 +68,7 @@ export function StackedLayout({ children, nav, headerSlot }: LayoutProps) {
             <ScrollArea className="flex-1 py-2">
               <nav className="flex flex-col gap-0.5 px-2">
                 {activeGroup.items.map((item) => (
-                  <Link
-                    key={item.href}
-                    to={item.href}
-                    className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors duration-150 hover:bg-accent hover:text-accent-foreground [&.active]:bg-accent [&.active]:text-accent-foreground"
-                    activeProps={{ className: "active" }}
-                  >
-                    {item.icon && <item.icon className="h-4 w-4" />}
-                    {item.label}
-                  </Link>
+                  <SidebarItem key={item.href} item={item} />
                 ))}
               </nav>
             </ScrollArea>
