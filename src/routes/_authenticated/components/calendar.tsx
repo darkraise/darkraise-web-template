@@ -6,8 +6,8 @@ import { CalendarDays } from "lucide-react"
 import { PageHeader } from "@/core/layout"
 import { Button } from "@/core/components/ui/button"
 import { Calendar } from "@/core/components/ui/calendar"
-import { Input } from "@/core/components/ui/input"
 import { Label } from "@/core/components/ui/label"
+import { TimePicker } from "@/core/components/ui/time-picker"
 import {
   Popover,
   PopoverContent,
@@ -69,30 +69,14 @@ function DateTimePicker() {
         onSelect={setDate}
         className="border-0"
       />
-      <div className="space-y-2 border-t p-3">
-        <div className="flex items-center gap-2">
-          <Label htmlFor="start" className="w-20 text-xs">
-            Start Time
-          </Label>
-          <Input
-            id="start"
-            type="time"
-            value={startTime}
-            onChange={(e) => setStartTime(e.target.value)}
-            className="h-8"
-          />
+      <div className="space-y-3 border-t p-3">
+        <div className="space-y-1.5">
+          <Label className="text-xs">Start Time</Label>
+          <TimePicker value={startTime} onChange={setStartTime} />
         </div>
-        <div className="flex items-center gap-2">
-          <Label htmlFor="end" className="w-20 text-xs">
-            End Time
-          </Label>
-          <Input
-            id="end"
-            type="time"
-            value={endTime}
-            onChange={(e) => setEndTime(e.target.value)}
-            className="h-8"
-          />
+        <div className="space-y-1.5">
+          <Label className="text-xs">End Time</Label>
+          <TimePicker value={endTime} onChange={setEndTime} />
         </div>
       </div>
     </div>
@@ -340,14 +324,14 @@ function CalendarPage() {
   return (
     <div className="w-fit rounded-md border">
       <Calendar mode="single" selected={date} onSelect={setDate} className="border-0" />
-      <div className="border-t p-3 space-y-2">
-        <div className="flex items-center gap-2">
-          <Label htmlFor="start" className="w-20 text-xs">Start Time</Label>
-          <Input id="start" type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} className="h-8" />
+      <div className="border-t p-3 space-y-3">
+        <div className="space-y-1.5">
+          <Label className="text-xs">Start Time</Label>
+          <TimePicker value={startTime} onChange={setStartTime} />
         </div>
-        <div className="flex items-center gap-2">
-          <Label htmlFor="end" className="w-20 text-xs">End Time</Label>
-          <Input id="end" type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} className="h-8" />
+        <div className="space-y-1.5">
+          <Label className="text-xs">End Time</Label>
+          <TimePicker value={endTime} onChange={setEndTime} />
         </div>
       </div>
     </div>
