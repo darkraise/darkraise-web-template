@@ -34,7 +34,7 @@ function getChartColors(
   return Array.from({ length: 5 }, (_, i) => {
     const colorIndex = (index + i * step) % count
     const colorName = ACCENT_COLORS[colorIndex] ?? accentColor
-    return accentColors[colorName][shade]
+    return `hsl(${accentColors[colorName][shade]})`
   })
 }
 
