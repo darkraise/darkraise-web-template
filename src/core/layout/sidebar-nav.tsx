@@ -180,7 +180,7 @@ function CollapsibleSidebarItem({
           style={{ color: "hsl(var(--sidebar-foreground-muted))" }}
         />
       </CollapsibleTrigger>
-      <CollapsibleContent>
+      <CollapsibleContent className="overflow-hidden data-[state=closed]:animate-[collapsible-up_150ms_ease-out] data-[state=open]:animate-[collapsible-down_150ms_ease-out]">
         <div className="flex flex-col gap-0.5">
           {item.children?.map((child) => (
             <SidebarItem key={child.href} item={child} depth={depth + 1} />
