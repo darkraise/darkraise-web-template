@@ -281,6 +281,32 @@ function InputsPage() {
         </ShowcaseExample>
 
         <ShowcaseExample
+          title="Checkbox sizes"
+          code={`<Checkbox size="sm" /> Small
+<Checkbox size="default" /> Default
+<Checkbox size="lg" /> Large`}
+        >
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2">
+              <Checkbox id="cb-sm" size="sm" defaultChecked />
+              <Label htmlFor="cb-sm" className="text-xs">
+                Small
+              </Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <Checkbox id="cb-default" size="default" defaultChecked />
+              <Label htmlFor="cb-default" className="text-sm">
+                Default
+              </Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <Checkbox id="cb-lg" size="lg" defaultChecked />
+              <Label htmlFor="cb-lg">Large</Label>
+            </div>
+          </div>
+        </ShowcaseExample>
+
+        <ShowcaseExample
           title="Switch"
           code={`<Switch
   id="notifications"
@@ -360,6 +386,40 @@ function InputsPage() {
                 ))}
               </RadioGroup>
             </Field>
+          </div>
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Radio group sizes"
+          code={`<RadioGroupItem value="a" size="sm" /> Small
+<RadioGroupItem value="b" size="default" /> Default
+<RadioGroupItem value="c" size="lg" /> Large`}
+        >
+          <div className="flex items-center gap-6">
+            <RadioGroup defaultValue="sm-a">
+              <div className="flex items-center gap-6">
+                <div className="flex items-center gap-2">
+                  <RadioGroupItem value="sm-a" id="radio-sm" size="sm" />
+                  <Label htmlFor="radio-sm" className="text-xs">
+                    Small
+                  </Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <RadioGroupItem
+                    value="sm-b"
+                    id="radio-default"
+                    size="default"
+                  />
+                  <Label htmlFor="radio-default" className="text-sm">
+                    Default
+                  </Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <RadioGroupItem value="sm-c" id="radio-lg" size="lg" />
+                  <Label htmlFor="radio-lg">Large</Label>
+                </div>
+              </div>
+            </RadioGroup>
           </div>
         </ShowcaseExample>
 
