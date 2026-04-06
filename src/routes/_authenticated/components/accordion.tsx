@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
+import { CreditCard, Bell, Shield } from "lucide-react"
 import { PageHeader } from "@/core/layout"
 import {
   Accordion,
@@ -6,6 +7,9 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/core/components/ui/accordion"
+import { Badge } from "@/core/components/ui/badge"
+import { Label } from "@/core/components/ui/label"
+import { Switch } from "@/core/components/ui/switch"
 import { ShowcaseExample } from "./_components/-showcase-example"
 
 export const Route = createFileRoute("/_authenticated/components/accordion")({
@@ -145,6 +149,184 @@ function AccordionPage() {
                 <AccordionContent>{a}</AccordionContent>
               </AccordionItem>
             ))}
+          </Accordion>
+        </ShowcaseExample>
+        <ShowcaseExample
+          title="Triggers with icons and badges"
+          code={`<Accordion type="single" collapsible className="w-full">
+  <AccordionItem value="billing">
+    <AccordionTrigger>
+      <span className="flex flex-1 items-center gap-2">
+        <CreditCard className="size-4 shrink-0" />
+        Billing
+      </span>
+      <Badge variant="destructive" className="mr-2">3 issues</Badge>
+    </AccordionTrigger>
+    <AccordionContent>...</AccordionContent>
+  </AccordionItem>
+</Accordion>`}
+        >
+          <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="billing">
+              <AccordionTrigger>
+                <span className="flex flex-1 items-center gap-2">
+                  <CreditCard className="size-4 shrink-0" />
+                  Billing
+                </span>
+                <Badge variant="destructive" className="mr-2">
+                  3 issues
+                </Badge>
+              </AccordionTrigger>
+              <AccordionContent>
+                Your payment method has 3 outstanding issues. Please review your
+                billing details and update your card information to avoid
+                service interruption.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="notifications">
+              <AccordionTrigger>
+                <span className="flex flex-1 items-center gap-2">
+                  <Bell className="size-4 shrink-0" />
+                  Notifications
+                </span>
+                <Badge variant="secondary" className="mr-2">
+                  12
+                </Badge>
+              </AccordionTrigger>
+              <AccordionContent>
+                You have 12 unread notifications. Configure your notification
+                preferences to control which events send alerts and through
+                which channels.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="security">
+              <AccordionTrigger>
+                <span className="flex flex-1 items-center gap-2">
+                  <Shield className="size-4 shrink-0" />
+                  Security
+                </span>
+              </AccordionTrigger>
+              <AccordionContent>
+                Your account security looks good. Two-factor authentication is
+                enabled and no suspicious login attempts have been detected in
+                the last 30 days.
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Nested accordion — hierarchical content"
+          code={`<Accordion type="single" collapsible>
+  <AccordionItem value="frontend">
+    <AccordionTrigger>Frontend</AccordionTrigger>
+    <AccordionContent>
+      <Accordion type="multiple">
+        <AccordionItem value="react">
+          <AccordionTrigger>React</AccordionTrigger>
+          <AccordionContent>A declarative UI library.</AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </AccordionContent>
+  </AccordionItem>
+</Accordion>`}
+        >
+          <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="frontend">
+              <AccordionTrigger>Frontend</AccordionTrigger>
+              <AccordionContent>
+                <Accordion type="multiple" className="w-full pl-4">
+                  <AccordionItem value="react">
+                    <AccordionTrigger>React</AccordionTrigger>
+                    <AccordionContent>
+                      A declarative, component-based library for building user
+                      interfaces. Maintained by Meta and a large open-source
+                      community.
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="vue">
+                    <AccordionTrigger>Vue</AccordionTrigger>
+                    <AccordionContent>
+                      A progressive framework for building UIs, designed to be
+                      incrementally adoptable with a gentle learning curve.
+                    </AccordionContent>
+                  </AccordionItem>
+                  <AccordionItem value="angular">
+                    <AccordionTrigger>Angular</AccordionTrigger>
+                    <AccordionContent>
+                      A full-featured, opinionated framework by Google offering
+                      built-in tooling for routing, forms, and HTTP.
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="backend">
+              <AccordionTrigger>Backend</AccordionTrigger>
+              <AccordionContent>
+                Backend services handle data persistence, authentication, and
+                business logic. Common choices include Node.js, Go, and Python
+                frameworks such as FastAPI or Django.
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Settings-style accordion with form controls"
+          code={`<Accordion type="multiple">
+  <AccordionItem value="notifications">
+    <AccordionTrigger>Notifications</AccordionTrigger>
+    <AccordionContent>
+      <div className="flex items-center justify-between">
+        <Label>Email notifications</Label>
+        <Switch />
+      </div>
+    </AccordionContent>
+  </AccordionItem>
+</Accordion>`}
+        >
+          <Accordion type="multiple" className="w-full">
+            <AccordionItem value="notifications">
+              <AccordionTrigger>Notifications</AccordionTrigger>
+              <AccordionContent>
+                <div className="space-y-3 py-1">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="email-notif">Email notifications</Label>
+                    <Switch id="email-notif" defaultChecked />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="push-notif">Push notifications</Label>
+                    <Switch id="push-notif" />
+                  </div>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="display">
+              <AccordionTrigger>Display</AccordionTrigger>
+              <AccordionContent>
+                <div className="space-y-2 py-1">
+                  <Label htmlFor="theme-select">Theme</Label>
+                  <select
+                    id="theme-select"
+                    className="border-input bg-card w-full rounded-md border px-3 py-2 text-sm"
+                  >
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
+                    <option value="system">System</option>
+                  </select>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="privacy">
+              <AccordionTrigger>Privacy</AccordionTrigger>
+              <AccordionContent>
+                <div className="flex items-center justify-between py-1">
+                  <Label htmlFor="public-profile">Public profile</Label>
+                  <Switch id="public-profile" defaultChecked />
+                </div>
+              </AccordionContent>
+            </AccordionItem>
           </Accordion>
         </ShowcaseExample>
       </div>
