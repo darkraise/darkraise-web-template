@@ -41,6 +41,7 @@ import {
   CalendarDays,
   ArrowLeftRight,
   MoreHorizontal,
+  LayoutPanelLeft,
 } from "lucide-react"
 import { SidebarLayout } from "@/core/layout"
 import { useAuthStore } from "@/features/auth"
@@ -159,6 +160,11 @@ const nav: NavGroup[] = [
         label: "More",
         href: "/components/more-components",
         icon: MoreHorizontal,
+      },
+      {
+        label: "Layouts",
+        href: "/components/layouts",
+        icon: LayoutPanelLeft,
       },
     ],
   },

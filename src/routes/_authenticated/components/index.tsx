@@ -32,6 +32,7 @@ import {
   CalendarDays,
   ArrowLeftRight,
   MoreHorizontal,
+  LayoutPanelLeft,
 } from "lucide-react"
 import { PageHeader } from "@/core/layout"
 
@@ -228,6 +229,12 @@ const COMPONENTS = [
     description:
       "AspectRatio, Carousel, InputOTP, Menubar, NavigationMenu, Resizable",
     icon: MoreHorizontal,
+  },
+  {
+    href: "/components/layouts",
+    label: "Layouts",
+    description: "Sidebar, top-nav, stacked, and split-panel layout shells",
+    icon: LayoutPanelLeft,
   },
 ]
 
