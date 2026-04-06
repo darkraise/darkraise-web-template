@@ -2,12 +2,12 @@ import { useState, useEffect, useRef } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import { toast } from "sonner"
 import { Info, CircleCheck, TriangleAlert, OctagonX, X } from "lucide-react"
-import { PageHeader } from "@/core/layout"
 import { Button } from "@/core/components/ui/button"
 import { Card, CardContent } from "@/core/components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/core/components/ui/alert"
 import { Progress } from "@/core/components/ui/progress"
 import { ShowcaseExample } from "./_components/-showcase-example"
+import { ShowcasePage } from "./_components/-showcase-page"
 
 export const Route = createFileRoute("/_authenticated/components/feedback")({
   component: FeedbackPage,
@@ -151,98 +151,91 @@ function ProgressDemo() {
 
 function FeedbackPage() {
   return (
-    <div className="space-y-8">
-      <PageHeader
-        breadcrumbs={[
-          { label: "Components", href: "/components" },
-          { label: "Feedback" },
-        ]}
-        title="Feedback"
-        description="Toast notifications and inline alert patterns for communicating status to users."
-      />
-
-      <div className="space-y-6">
-        <ShowcaseExample
-          title="Toast variants"
-          code={`toast.success("Changes saved successfully")
+    <ShowcasePage
+      title="Feedback"
+      description="Toast notifications and inline alert patterns for communicating status to users."
+    >
+      <ShowcaseExample
+        title="Toast variants"
+        code={`toast.success("Changes saved successfully")
 toast.error("Something went wrong")
 toast.warning("Storage is almost full")
 toast.info("A new version is available")`}
-        >
-          <div className="flex flex-wrap gap-3">
-            <Button
-              variant="outline"
-              onClick={() => toast.success("Changes saved successfully")}
-            >
-              Success
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => toast.error("Something went wrong")}
-            >
-              Error
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => toast.warning("Storage is almost full")}
-            >
-              Warning
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => toast.info("A new version is available")}
-            >
-              Info
-            </Button>
-          </div>
-        </ShowcaseExample>
+      >
+        <div className="flex flex-wrap gap-3">
+          <Button
+            variant="outline"
+            onClick={() => toast.success("Changes saved successfully")}
+          >
+            Success
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => toast.error("Something went wrong")}
+          >
+            Error
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => toast.warning("Storage is almost full")}
+          >
+            Warning
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => toast.info("A new version is available")}
+          >
+            Info
+          </Button>
+        </div>
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Toast with action"
-          code={`toast("Item deleted", {
+      <ShowcaseExample
+        title="Toast with action"
+        code={`toast("Item deleted", {
   action: {
     label: "Undo",
     onClick: () => toast.success("Item restored"),
   },
 })`}
+      >
+        <Button
+          variant="outline"
+          onClick={() =>
+            toast("Item deleted", {
+              action: {
+                label: "Undo",
+                onClick: () => toast.success("Item restored"),
+              },
+            })
+          }
         >
-          <Button
-            variant="outline"
-            onClick={() =>
-              toast("Item deleted", {
-                action: {
-                  label: "Undo",
-                  onClick: () => toast.success("Item restored"),
-                },
-              })
-            }
-          >
-            Delete item
-          </Button>
-        </ShowcaseExample>
+          Delete item
+        </Button>
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Toast with description"
-          code={`toast("Account updated", {
+      <ShowcaseExample
+        title="Toast with description"
+        code={`toast("Account updated", {
   description: "Your profile changes have been saved and will take effect immediately.",
 })`}
+      >
+        <Button
+          variant="outline"
+          onClick={() =>
+            toast("Account updated", {
+              description:
+                "Your profile changes have been saved and will take effect immediately.",
+            })
+          }
         >
-          <Button
-            variant="outline"
-            onClick={() =>
-              toast("Account updated", {
-                description:
-                  "Your profile changes have been saved and will take effect immediately.",
-              })
-            }
-          >
-            Update account
-          </Button>
-        </ShowcaseExample>
+          Update account
+        </Button>
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Promise toast"
-          code={`toast.promise(
+      <ShowcaseExample
+        title="Promise toast"
+        code={`toast.promise(
   new Promise((resolve) => setTimeout(resolve, 2000)),
   {
     loading: "Saving changes...",
@@ -250,95 +243,95 @@ toast.info("A new version is available")`}
     error: "Failed to save changes.",
   },
 )`}
+      >
+        <Button
+          variant="outline"
+          onClick={() =>
+            toast.promise(
+              new Promise<void>((resolve) => setTimeout(resolve, 2000)),
+              {
+                loading: "Saving changes...",
+                success: "Changes saved!",
+                error: "Failed to save changes.",
+              },
+            )
+          }
         >
+          Save with promise
+        </Button>
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Toast with custom duration"
+        code={`toast("Quick notice", { duration: 2000 })
+toast("Standard notice", { duration: 4000 })
+toast("Extended notice", { duration: 8000 })`}
+      >
+        <div className="flex flex-wrap gap-3">
           <Button
             variant="outline"
             onClick={() =>
-              toast.promise(
-                new Promise<void>((resolve) => setTimeout(resolve, 2000)),
-                {
-                  loading: "Saving changes...",
-                  success: "Changes saved!",
-                  error: "Failed to save changes.",
-                },
-              )
+              toast("Quick notice — disappears in 2s", { duration: 2000 })
             }
           >
-            Save with promise
+            2 seconds
           </Button>
-        </ShowcaseExample>
+          <Button
+            variant="outline"
+            onClick={() =>
+              toast("Standard notice — disappears in 4s", { duration: 4000 })
+            }
+          >
+            4 seconds
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() =>
+              toast("Extended notice — disappears in 8s", { duration: 8000 })
+            }
+          >
+            8 seconds
+          </Button>
+        </div>
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Toast with custom duration"
-          code={`toast("Quick notice", { duration: 2000 })
-toast("Standard notice", { duration: 4000 })
-toast("Extended notice", { duration: 8000 })`}
-        >
-          <div className="flex flex-wrap gap-3">
-            <Button
-              variant="outline"
-              onClick={() =>
-                toast("Quick notice — disappears in 2s", { duration: 2000 })
-              }
-            >
-              2 seconds
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() =>
-                toast("Standard notice — disappears in 4s", { duration: 4000 })
-              }
-            >
-              4 seconds
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() =>
-                toast("Extended notice — disappears in 8s", { duration: 8000 })
-              }
-            >
-              8 seconds
-            </Button>
-          </div>
-        </ShowcaseExample>
-
-        <ShowcaseExample
-          title="Inline alert banner"
-          code={`import { Alert, AlertTitle, AlertDescription } from "@/core/components/ui/alert"
+      <ShowcaseExample
+        title="Inline alert banner"
+        code={`import { Alert, AlertTitle, AlertDescription } from "@/core/components/ui/alert"
 
 <Alert className="border-l-4 border-l-blue-500 bg-blue-50 dark:bg-blue-950/30">
   <Info className="h-4 w-4" />
   <AlertTitle>Scheduled maintenance</AlertTitle>
   <AlertDescription>The system will be unavailable on Sunday from 2–4 AM UTC.</AlertDescription>
 </Alert>`}
-        >
-          <div className="space-y-3">
-            <AlertBanner
-              variant="info"
-              title="Scheduled maintenance"
-              description="The system will be unavailable on Sunday from 2–4 AM UTC."
-            />
-            <AlertBanner
-              variant="success"
-              title="Deployment successful"
-              description="Version 2.4.1 is now live in production."
-            />
-            <AlertBanner
-              variant="warning"
-              title="API rate limit approaching"
-              description="You have used 90% of your monthly API quota."
-            />
-            <AlertBanner
-              variant="error"
-              title="Payment failed"
-              description="Your last invoice could not be processed. Please update your billing details."
-            />
-          </div>
-        </ShowcaseExample>
+      >
+        <div className="space-y-3">
+          <AlertBanner
+            variant="info"
+            title="Scheduled maintenance"
+            description="The system will be unavailable on Sunday from 2–4 AM UTC."
+          />
+          <AlertBanner
+            variant="success"
+            title="Deployment successful"
+            description="Version 2.4.1 is now live in production."
+          />
+          <AlertBanner
+            variant="warning"
+            title="API rate limit approaching"
+            description="You have used 90% of your monthly API quota."
+          />
+          <AlertBanner
+            variant="error"
+            title="Payment failed"
+            description="Your last invoice could not be processed. Please update your billing details."
+          />
+        </div>
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Dismissible inline alert"
-          code={`const [visible, setVisible] = useState(true)
+      <ShowcaseExample
+        title="Dismissible inline alert"
+        code={`const [visible, setVisible] = useState(true)
 
 {visible ? (
   <Alert className="border-l-4 border-l-blue-500 bg-blue-50 dark:bg-blue-950/30">
@@ -354,13 +347,13 @@ toast("Extended notice", { duration: 8000 })`}
 ) : (
   <Button onClick={() => setVisible(true)}>Show alert again</Button>
 )}`}
-        >
-          <DismissibleAlert />
-        </ShowcaseExample>
+      >
+        <DismissibleAlert />
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Progress feedback"
-          code={`import { Progress } from "@/core/components/ui/progress"
+      <ShowcaseExample
+        title="Progress feedback"
+        code={`import { Progress } from "@/core/components/ui/progress"
 
 const [progress, setProgress] = useState(0)
 const [running, setRunning] = useState(false)
@@ -378,10 +371,9 @@ useEffect(() => {
 }, [running])
 
 <Progress value={progress} className="h-2" />`}
-        >
-          <ProgressDemo />
-        </ShowcaseExample>
-      </div>
-    </div>
+      >
+        <ProgressDemo />
+      </ShowcaseExample>
+    </ShowcasePage>
   )
 }

@@ -15,7 +15,6 @@ import {
   YAxis,
   CartesianGrid,
 } from "recharts"
-import { PageHeader } from "@/core/layout"
 import {
   ChartCard,
   ChartContainer,
@@ -26,6 +25,7 @@ import {
 import { Button } from "@/core/components/ui/button"
 import { Skeleton } from "@/core/components/ui/skeleton"
 import { ShowcaseExample } from "./_components/-showcase-example"
+import { ShowcasePage } from "./_components/-showcase-page"
 
 export const Route = createFileRoute("/_authenticated/components/charts")({
   component: ChartsPage,
@@ -166,20 +166,13 @@ function PeriodToggleChartExample() {
 
 function ChartsPage() {
   return (
-    <div className="space-y-8">
-      <PageHeader
-        breadcrumbs={[
-          { label: "Components", href: "/components" },
-          { label: "Charts" },
-        ]}
-        title="Charts"
-        description="Area, Bar, Line, and Pie charts built on Recharts via the shadcn chart system. Wrap any chart in ChartCard for a titled container."
-      />
-
-      <div className="space-y-6">
-        <ShowcaseExample
-          title="AreaChart — filled area under a line"
-          code={`import { AreaChart, Area, XAxis, YAxis, CartesianGrid } from "recharts"
+    <ShowcasePage
+      title="Charts"
+      description="Area, Bar, Line, and Pie charts built on Recharts via the shadcn chart system. Wrap any chart in ChartCard for a titled container."
+    >
+      <ShowcaseExample
+        title="AreaChart — filled area under a line"
+        code={`import { AreaChart, Area, XAxis, YAxis, CartesianGrid } from "recharts"
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/features/charts"
 
 const revenueConfig = {
@@ -197,37 +190,37 @@ const revenueConfig = {
     </AreaChart>
   </ChartContainer>
 </ChartCard>`}
-        >
-          <ChartCard title="Revenue" description="Monthly revenue trend">
-            <ChartContainer
-              config={revenueConfig}
-              className="min-h-[200px] w-full"
-            >
-              <AreaChart data={monthlyData}>
-                <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="month"
-                  tickLine={false}
-                  axisLine={false}
-                  className="text-xs"
-                />
-                <YAxis tickLine={false} axisLine={false} className="text-xs" />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Area
-                  type="monotone"
-                  dataKey="revenue"
-                  stroke="var(--color-revenue)"
-                  fill="var(--color-revenue)"
-                  fillOpacity={0.1}
-                />
-              </AreaChart>
-            </ChartContainer>
-          </ChartCard>
-        </ShowcaseExample>
+      >
+        <ChartCard title="Revenue" description="Monthly revenue trend">
+          <ChartContainer
+            config={revenueConfig}
+            className="min-h-[200px] w-full"
+          >
+            <AreaChart data={monthlyData}>
+              <CartesianGrid vertical={false} strokeDasharray="3 3" />
+              <XAxis
+                dataKey="month"
+                tickLine={false}
+                axisLine={false}
+                className="text-xs"
+              />
+              <YAxis tickLine={false} axisLine={false} className="text-xs" />
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <Area
+                type="monotone"
+                dataKey="revenue"
+                stroke="var(--color-revenue)"
+                fill="var(--color-revenue)"
+                fillOpacity={0.1}
+              />
+            </AreaChart>
+          </ChartContainer>
+        </ChartCard>
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="BarChart — discrete category comparison"
-          code={`import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts"
+      <ShowcaseExample
+        title="BarChart — discrete category comparison"
+        code={`import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts"
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/features/charts"
 
 const ordersConfig = {
@@ -245,35 +238,35 @@ const ordersConfig = {
     </BarChart>
   </ChartContainer>
 </ChartCard>`}
-        >
-          <ChartCard title="Orders" description="Monthly order volume">
-            <ChartContainer
-              config={ordersConfig}
-              className="min-h-[200px] w-full"
-            >
-              <BarChart data={monthlyData}>
-                <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="month"
-                  tickLine={false}
-                  axisLine={false}
-                  className="text-xs"
-                />
-                <YAxis tickLine={false} axisLine={false} className="text-xs" />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Bar
-                  dataKey="orders"
-                  fill="var(--color-orders)"
-                  radius={[4, 4, 0, 0]}
-                />
-              </BarChart>
-            </ChartContainer>
-          </ChartCard>
-        </ShowcaseExample>
+      >
+        <ChartCard title="Orders" description="Monthly order volume">
+          <ChartContainer
+            config={ordersConfig}
+            className="min-h-[200px] w-full"
+          >
+            <BarChart data={monthlyData}>
+              <CartesianGrid vertical={false} strokeDasharray="3 3" />
+              <XAxis
+                dataKey="month"
+                tickLine={false}
+                axisLine={false}
+                className="text-xs"
+              />
+              <YAxis tickLine={false} axisLine={false} className="text-xs" />
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <Bar
+                dataKey="orders"
+                fill="var(--color-orders)"
+                radius={[4, 4, 0, 0]}
+              />
+            </BarChart>
+          </ChartContainer>
+        </ChartCard>
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="LineChart — multiple series comparison"
-          code={`// Multiple dataKey Lines renders multiple series
+      <ShowcaseExample
+        title="LineChart — multiple series comparison"
+        code={`// Multiple dataKey Lines renders multiple series
 import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts"
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/features/charts"
 
@@ -294,47 +287,47 @@ const revenueOrdersConfig = {
     </LineChart>
   </ChartContainer>
 </ChartCard>`}
+      >
+        <ChartCard
+          title="Revenue vs Orders"
+          description="Dual-series line comparison"
         >
-          <ChartCard
-            title="Revenue vs Orders"
-            description="Dual-series line comparison"
+          <ChartContainer
+            config={revenueOrdersConfig}
+            className="min-h-[200px] w-full"
           >
-            <ChartContainer
-              config={revenueOrdersConfig}
-              className="min-h-[200px] w-full"
-            >
-              <LineChart data={monthlyData}>
-                <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="month"
-                  tickLine={false}
-                  axisLine={false}
-                  className="text-xs"
-                />
-                <YAxis tickLine={false} axisLine={false} className="text-xs" />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Line
-                  type="monotone"
-                  dataKey="revenue"
-                  stroke="var(--color-revenue)"
-                  strokeWidth={2}
-                  dot={false}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="orders"
-                  stroke="var(--color-orders)"
-                  strokeWidth={2}
-                  dot={false}
-                />
-              </LineChart>
-            </ChartContainer>
-          </ChartCard>
-        </ShowcaseExample>
+            <LineChart data={monthlyData}>
+              <CartesianGrid vertical={false} strokeDasharray="3 3" />
+              <XAxis
+                dataKey="month"
+                tickLine={false}
+                axisLine={false}
+                className="text-xs"
+              />
+              <YAxis tickLine={false} axisLine={false} className="text-xs" />
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <Line
+                type="monotone"
+                dataKey="revenue"
+                stroke="var(--color-revenue)"
+                strokeWidth={2}
+                dot={false}
+              />
+              <Line
+                type="monotone"
+                dataKey="orders"
+                stroke="var(--color-orders)"
+                strokeWidth={2}
+                dot={false}
+              />
+            </LineChart>
+          </ChartContainer>
+        </ChartCard>
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="PieChart — proportional distribution"
-          code={`// innerRadius > 0 renders a donut chart
+      <ShowcaseExample
+        title="PieChart — proportional distribution"
+        code={`// innerRadius > 0 renders a donut chart
 import { PieChart, Pie, Cell } from "recharts"
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/features/charts"
 
@@ -373,75 +366,69 @@ const pieColors = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--
     </PieChart>
   </ChartContainer>
 </ChartCard>`}
-        >
-          <div className="grid gap-6 sm:grid-cols-2">
-            <ChartCard
-              title="Category Breakdown (donut)"
-              description="Revenue by category"
-            >
-              <ChartContainer
-                config={pieConfig}
-                className="min-h-[200px] w-full"
-              >
-                <PieChart>
-                  <Pie
-                    data={pieData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={40}
-                    outerRadius={80}
-                    dataKey="value"
-                    nameKey="name"
-                  >
-                    {pieData.map((entry, i) => (
-                      <Cell
-                        key={entry.name}
-                        fill={pieColors[i % pieColors.length]}
-                      />
-                    ))}
-                  </Pie>
-                  <ChartTooltip
-                    content={<ChartTooltipContent nameKey="name" />}
-                  />
-                </PieChart>
-              </ChartContainer>
-            </ChartCard>
-            <ChartCard
-              title="Category Breakdown (filled)"
-              description="Revenue by category"
-            >
-              <ChartContainer
-                config={pieConfig}
-                className="min-h-[200px] w-full"
-              >
-                <PieChart>
-                  <Pie
-                    data={pieData}
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={80}
-                    dataKey="value"
-                    nameKey="name"
-                  >
-                    {pieData.map((entry, i) => (
-                      <Cell
-                        key={entry.name}
-                        fill={pieColors[i % pieColors.length]}
-                      />
-                    ))}
-                  </Pie>
-                  <ChartTooltip
-                    content={<ChartTooltipContent nameKey="name" />}
-                  />
-                </PieChart>
-              </ChartContainer>
-            </ChartCard>
-          </div>
-        </ShowcaseExample>
+      >
+        <div className="grid gap-6 sm:grid-cols-2">
+          <ChartCard
+            title="Category Breakdown (donut)"
+            description="Revenue by category"
+          >
+            <ChartContainer config={pieConfig} className="min-h-[200px] w-full">
+              <PieChart>
+                <Pie
+                  data={pieData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={40}
+                  outerRadius={80}
+                  dataKey="value"
+                  nameKey="name"
+                >
+                  {pieData.map((entry, i) => (
+                    <Cell
+                      key={entry.name}
+                      fill={pieColors[i % pieColors.length]}
+                    />
+                  ))}
+                </Pie>
+                <ChartTooltip
+                  content={<ChartTooltipContent nameKey="name" />}
+                />
+              </PieChart>
+            </ChartContainer>
+          </ChartCard>
+          <ChartCard
+            title="Category Breakdown (filled)"
+            description="Revenue by category"
+          >
+            <ChartContainer config={pieConfig} className="min-h-[200px] w-full">
+              <PieChart>
+                <Pie
+                  data={pieData}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  dataKey="value"
+                  nameKey="name"
+                >
+                  {pieData.map((entry, i) => (
+                    <Cell
+                      key={entry.name}
+                      fill={pieColors[i % pieColors.length]}
+                    />
+                  ))}
+                </Pie>
+                <ChartTooltip
+                  content={<ChartTooltipContent nameKey="name" />}
+                />
+              </PieChart>
+            </ChartContainer>
+          </ChartCard>
+        </div>
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="All four charts in a 2×2 grid"
-          code={`<div className="grid gap-6 sm:grid-cols-2">
+      <ShowcaseExample
+        title="All four charts in a 2×2 grid"
+        code={`<div className="grid gap-6 sm:grid-cols-2">
   <ChartCard title="Revenue">
     <ChartContainer config={revenueConfig} className="min-h-[200px] w-full">
       <AreaChart data={data}>
@@ -489,140 +476,125 @@ const pieColors = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--
     </ChartContainer>
   </ChartCard>
 </div>`}
-        >
-          <div className="grid gap-6 sm:grid-cols-2">
-            <ChartCard title="Revenue" description="Monthly revenue trend">
-              <ChartContainer
-                config={revenueConfig}
-                className="min-h-[200px] w-full"
-              >
-                <AreaChart data={monthlyData}>
-                  <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                  <XAxis
-                    dataKey="month"
-                    tickLine={false}
-                    axisLine={false}
-                    className="text-xs"
-                  />
-                  <YAxis
-                    tickLine={false}
-                    axisLine={false}
-                    className="text-xs"
-                  />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Area
-                    type="monotone"
-                    dataKey="revenue"
-                    stroke="var(--color-revenue)"
-                    fill="var(--color-revenue)"
-                    fillOpacity={0.1}
-                  />
-                </AreaChart>
-              </ChartContainer>
-            </ChartCard>
-            <ChartCard title="Orders" description="Monthly order volume">
-              <ChartContainer
-                config={ordersConfig}
-                className="min-h-[200px] w-full"
-              >
-                <BarChart data={monthlyData}>
-                  <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                  <XAxis
-                    dataKey="month"
-                    tickLine={false}
-                    axisLine={false}
-                    className="text-xs"
-                  />
-                  <YAxis
-                    tickLine={false}
-                    axisLine={false}
-                    className="text-xs"
-                  />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Bar
-                    dataKey="orders"
-                    fill="var(--color-orders)"
-                    radius={[4, 4, 0, 0]}
-                  />
-                </BarChart>
-              </ChartContainer>
-            </ChartCard>
-            <ChartCard
-              title="Visitors vs Conversions"
-              description="Weekly site traffic"
+      >
+        <div className="grid gap-6 sm:grid-cols-2">
+          <ChartCard title="Revenue" description="Monthly revenue trend">
+            <ChartContainer
+              config={revenueConfig}
+              className="min-h-[200px] w-full"
             >
-              <ChartContainer
-                config={visitorsConversionsConfig}
-                className="min-h-[200px] w-full"
-              >
-                <LineChart data={weeklyData}>
-                  <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                  <XAxis
-                    dataKey="day"
-                    tickLine={false}
-                    axisLine={false}
-                    className="text-xs"
-                  />
-                  <YAxis
-                    tickLine={false}
-                    axisLine={false}
-                    className="text-xs"
-                  />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Line
-                    type="monotone"
-                    dataKey="visitors"
-                    stroke="var(--color-visitors)"
-                    strokeWidth={2}
-                    dot={false}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="conversions"
-                    stroke="var(--color-conversions)"
-                    strokeWidth={2}
-                    dot={false}
-                  />
-                </LineChart>
-              </ChartContainer>
-            </ChartCard>
-            <ChartCard
-              title="Category Breakdown"
-              description="Revenue by category"
+              <AreaChart data={monthlyData}>
+                <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="month"
+                  tickLine={false}
+                  axisLine={false}
+                  className="text-xs"
+                />
+                <YAxis tickLine={false} axisLine={false} className="text-xs" />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Area
+                  type="monotone"
+                  dataKey="revenue"
+                  stroke="var(--color-revenue)"
+                  fill="var(--color-revenue)"
+                  fillOpacity={0.1}
+                />
+              </AreaChart>
+            </ChartContainer>
+          </ChartCard>
+          <ChartCard title="Orders" description="Monthly order volume">
+            <ChartContainer
+              config={ordersConfig}
+              className="min-h-[200px] w-full"
             >
-              <ChartContainer
-                config={pieConfig}
-                className="min-h-[200px] w-full"
-              >
-                <PieChart>
-                  <Pie
-                    data={pieData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={40}
-                    outerRadius={80}
-                    dataKey="value"
-                    nameKey="name"
-                  >
-                    {pieData.map((entry, i) => (
-                      <Cell
-                        key={entry.name}
-                        fill={pieColors[i % pieColors.length]}
-                      />
-                    ))}
-                  </Pie>
-                  <ChartTooltip
-                    content={<ChartTooltipContent nameKey="name" />}
-                  />
-                </PieChart>
-              </ChartContainer>
-            </ChartCard>
-          </div>
-        </ShowcaseExample>
+              <BarChart data={monthlyData}>
+                <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="month"
+                  tickLine={false}
+                  axisLine={false}
+                  className="text-xs"
+                />
+                <YAxis tickLine={false} axisLine={false} className="text-xs" />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Bar
+                  dataKey="orders"
+                  fill="var(--color-orders)"
+                  radius={[4, 4, 0, 0]}
+                />
+              </BarChart>
+            </ChartContainer>
+          </ChartCard>
+          <ChartCard
+            title="Visitors vs Conversions"
+            description="Weekly site traffic"
+          >
+            <ChartContainer
+              config={visitorsConversionsConfig}
+              className="min-h-[200px] w-full"
+            >
+              <LineChart data={weeklyData}>
+                <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="day"
+                  tickLine={false}
+                  axisLine={false}
+                  className="text-xs"
+                />
+                <YAxis tickLine={false} axisLine={false} className="text-xs" />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Line
+                  type="monotone"
+                  dataKey="visitors"
+                  stroke="var(--color-visitors)"
+                  strokeWidth={2}
+                  dot={false}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="conversions"
+                  stroke="var(--color-conversions)"
+                  strokeWidth={2}
+                  dot={false}
+                />
+              </LineChart>
+            </ChartContainer>
+          </ChartCard>
+          <ChartCard
+            title="Category Breakdown"
+            description="Revenue by category"
+          >
+            <ChartContainer config={pieConfig} className="min-h-[200px] w-full">
+              <PieChart>
+                <Pie
+                  data={pieData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={40}
+                  outerRadius={80}
+                  dataKey="value"
+                  nameKey="name"
+                >
+                  {pieData.map((entry, i) => (
+                    <Cell
+                      key={entry.name}
+                      fill={pieColors[i % pieColors.length]}
+                    />
+                  ))}
+                </Pie>
+                <ChartTooltip
+                  content={<ChartTooltipContent nameKey="name" />}
+                />
+              </PieChart>
+            </ChartContainer>
+          </ChartCard>
+        </div>
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Period toggle — interactive date range selector"
-          code={`function PeriodToggleChartExample() {
+      <ShowcaseExample
+        title="Period toggle — interactive date range selector"
+        code={`function PeriodToggleChartExample() {
   const [period, setPeriod] = useState<"7D" | "30D" | "90D">("30D")
 
   const revenueConfig = {
@@ -655,13 +627,13 @@ const pieColors = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--
     </ChartCard>
   )
 }`}
-        >
-          <PeriodToggleChartExample />
-        </ShowcaseExample>
+      >
+        <PeriodToggleChartExample />
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Chart loading skeleton"
-          code={`<ChartCard title="Loading Chart">
+      <ShowcaseExample
+        title="Chart loading skeleton"
+        code={`<ChartCard title="Loading Chart">
   <Skeleton className="h-4 w-32 mb-4" />
   <Skeleton className="h-[250px] w-full" />
   <div className="mt-4 flex gap-3">
@@ -670,21 +642,21 @@ const pieColors = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--
     <Skeleton className="h-3 w-16" />
   </div>
 </ChartCard>`}
-        >
-          <ChartCard title="Loading Chart">
-            <Skeleton className="mb-4 h-4 w-32" />
-            <Skeleton className="h-[250px] w-full" />
-            <div className="mt-4 flex gap-3">
-              <Skeleton className="h-3 w-16" />
-              <Skeleton className="h-3 w-16" />
-              <Skeleton className="h-3 w-16" />
-            </div>
-          </ChartCard>
-        </ShowcaseExample>
+      >
+        <ChartCard title="Loading Chart">
+          <Skeleton className="mb-4 h-4 w-32" />
+          <Skeleton className="h-[250px] w-full" />
+          <div className="mt-4 flex gap-3">
+            <Skeleton className="h-3 w-16" />
+            <Skeleton className="h-3 w-16" />
+            <Skeleton className="h-3 w-16" />
+          </div>
+        </ChartCard>
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Chart empty state"
-          code={`<ChartCard title="Sales Overview">
+      <ShowcaseExample
+        title="Chart empty state"
+        code={`<ChartCard title="Sales Overview">
   <div className="flex min-h-[250px] flex-col items-center justify-center">
     <BarChart3 className="h-12 w-12 text-muted-foreground" />
     <p className="mt-4 text-base font-medium">No data available</p>
@@ -693,18 +665,17 @@ const pieColors = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--
     </p>
   </div>
 </ChartCard>`}
-        >
-          <ChartCard title="Sales Overview">
-            <div className="flex min-h-[250px] flex-col items-center justify-center">
-              <BarChartIcon className="text-muted-foreground h-12 w-12" />
-              <p className="mt-4 text-base font-medium">No data available</p>
-              <p className="text-muted-foreground mt-1 text-sm">
-                Try adjusting your filters or date range.
-              </p>
-            </div>
-          </ChartCard>
-        </ShowcaseExample>
-      </div>
-    </div>
+      >
+        <ChartCard title="Sales Overview">
+          <div className="flex min-h-[250px] flex-col items-center justify-center">
+            <BarChartIcon className="text-muted-foreground h-12 w-12" />
+            <p className="mt-4 text-base font-medium">No data available</p>
+            <p className="text-muted-foreground mt-1 text-sm">
+              Try adjusting your filters or date range.
+            </p>
+          </div>
+        </ChartCard>
+      </ShowcaseExample>
+    </ShowcasePage>
   )
 }

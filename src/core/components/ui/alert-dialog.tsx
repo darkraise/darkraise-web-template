@@ -3,6 +3,12 @@ import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog"
 
 import { cn } from "@/core/lib/utils"
 import { buttonVariants } from "@/core/components/ui/button"
+import {
+  overlayBackdropClass,
+  overlayDescriptionClass,
+  overlayFooterClass,
+  overlayHeaderClass,
+} from "@/core/components/ui/overlay-primitives"
 
 const AlertDialog = AlertDialogPrimitive.Root
 
@@ -17,10 +23,7 @@ function AlertDialogOverlay({
 }: React.ComponentProps<typeof AlertDialogPrimitive.Overlay>) {
   return (
     <AlertDialogPrimitive.Overlay
-      className={cn(
-        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/80",
-        className,
-      )}
+      className={cn(overlayBackdropClass, className)}
       {...props}
       ref={ref}
     />
@@ -53,15 +56,7 @@ function AlertDialogHeader({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={cn(
-        "flex flex-col space-y-2 text-center sm:text-left",
-        className,
-      )}
-      {...props}
-    />
-  )
+  return <div className={cn(overlayHeaderClass, className)} {...props} />
 }
 AlertDialogHeader.displayName = "AlertDialogHeader"
 
@@ -69,15 +64,7 @@ function AlertDialogFooter({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={cn(
-        "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2",
-        className,
-      )}
-      {...props}
-    />
-  )
+  return <div className={cn(overlayFooterClass, className)} {...props} />
 }
 AlertDialogFooter.displayName = "AlertDialogFooter"
 
@@ -104,7 +91,7 @@ function AlertDialogDescription({
   return (
     <AlertDialogPrimitive.Description
       ref={ref}
-      className={cn("text-muted-foreground text-sm", className)}
+      className={cn(overlayDescriptionClass, className)}
       {...props}
     />
   )

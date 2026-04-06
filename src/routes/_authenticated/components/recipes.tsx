@@ -22,7 +22,6 @@ import {
   UserPlus,
 } from "lucide-react"
 import { Alert, AlertTitle } from "@/core/components/ui/alert"
-import { PageHeader } from "@/core/layout"
 import { Button } from "@/core/components/ui/button"
 import { Badge } from "@/core/components/ui/badge"
 import {
@@ -44,6 +43,7 @@ import {
 } from "@/core/components/ui/dropdown-menu"
 import { Separator } from "@/core/components/ui/separator"
 import { ShowcaseExample } from "./_components/-showcase-example"
+import { ShowcasePage } from "./_components/-showcase-page"
 
 export const Route = createFileRoute("/_authenticated/components/recipes")({
   component: RecipesPage,
@@ -398,20 +398,13 @@ function FileUploadArea() {
 
 function RecipesPage() {
   return (
-    <div className="space-y-8">
-      <PageHeader
-        breadcrumbs={[
-          { label: "Components", href: "/components" },
-          { label: "Recipes" },
-        ]}
-        title="Recipes"
-        description="Cross-component compositions showing how primitives combine in real-world UIs."
-      />
-
-      <div className="space-y-6">
-        <ShowcaseExample
-          title="Notification banners"
-          code={`import { Alert, AlertTitle } from "@/core/components/ui/alert"
+    <ShowcasePage
+      title="Recipes"
+      description="Cross-component compositions showing how primitives combine in real-world UIs."
+    >
+      <ShowcaseExample
+        title="Notification banners"
+        code={`import { Alert, AlertTitle } from "@/core/components/ui/alert"
 
 const [dismissed, setDismissed] = useState([])
 
@@ -432,13 +425,13 @@ const [dismissed, setDismissed] = useState([])
     </AlertTitle>
   </Alert>
 ))}`}
-        >
-          <NotificationBanners />
-        </ShowcaseExample>
+      >
+        <NotificationBanners />
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="User menu card"
-          code={`<Card className="max-w-sm">
+      <ShowcaseExample
+        title="User menu card"
+        code={`<Card className="max-w-sm">
   <CardContent className="flex flex-col items-center gap-3 pt-6">
     <Avatar className="h-16 w-16">
       <AvatarFallback className="text-lg">JD</AvatarFallback>
@@ -465,13 +458,13 @@ const [dismissed, setDismissed] = useState([])
     </DropdownMenu>
   </CardFooter>
 </Card>`}
-        >
-          <UserMenuCard />
-        </ShowcaseExample>
+      >
+        <UserMenuCard />
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Search + filter toolbar"
-          code={`const [activeView, setActiveView] = useState("grid")
+      <ShowcaseExample
+        title="Search + filter toolbar"
+        code={`const [activeView, setActiveView] = useState("grid")
 
 <div className="flex flex-wrap items-center gap-2">
   <div className="relative flex-1">
@@ -498,13 +491,13 @@ const [dismissed, setDismissed] = useState([])
     <List className="h-4 w-4" />
   </Button>
 </div>`}
-        >
-          <SearchFilterToolbar />
-        </ShowcaseExample>
+      >
+        <SearchFilterToolbar />
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Stat comparison row"
-          code={`<Card>
+      <ShowcaseExample
+        title="Stat comparison row"
+        code={`<Card>
   <CardContent className="pt-6 space-y-4">
     <div className="flex items-center gap-6">
       <div>
@@ -535,13 +528,13 @@ const [dismissed, setDismissed] = useState([])
     </div>
   </CardContent>
 </Card>`}
-        >
-          <StatComparisonRow />
-        </ShowcaseExample>
+      >
+        <StatComparisonRow />
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Empty state"
-          code={`<div className="flex min-h-[300px] flex-col items-center justify-center rounded-lg border border-dashed gap-3 p-8">
+      <ShowcaseExample
+        title="Empty state"
+        code={`<div className="flex min-h-[300px] flex-col items-center justify-center rounded-lg border border-dashed gap-3 p-8">
   <PackageOpen className="h-12 w-12 text-muted-foreground" />
   <p className="text-lg font-medium">No products yet</p>
   <p className="max-w-sm text-center text-sm text-muted-foreground">
@@ -549,13 +542,13 @@ const [dismissed, setDismissed] = useState([])
   </p>
   <Button>Add Product</Button>
 </div>`}
-        >
-          <EmptyState />
-        </ShowcaseExample>
+      >
+        <EmptyState />
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Error state"
-          code={`<div className="flex min-h-[300px] flex-col items-center justify-center rounded-lg border border-dashed gap-3 p-8">
+      <ShowcaseExample
+        title="Error state"
+        code={`<div className="flex min-h-[300px] flex-col items-center justify-center rounded-lg border border-dashed gap-3 p-8">
   <AlertTriangle className="h-12 w-12 text-destructive" />
   <p className="text-lg font-medium">Something went wrong</p>
   <p className="max-w-sm text-center text-sm text-muted-foreground">
@@ -565,13 +558,13 @@ const [dismissed, setDismissed] = useState([])
     <RefreshCw className="mr-2 h-4 w-4" /> Try Again
   </Button>
 </div>`}
-        >
-          <ErrorState />
-        </ShowcaseExample>
+      >
+        <ErrorState />
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Confirmation prompt"
-          code={`<Card className="max-w-md">
+      <ShowcaseExample
+        title="Confirmation prompt"
+        code={`<Card className="max-w-md">
   <CardHeader>
     <div className="flex items-center gap-3">
       <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0" />
@@ -587,13 +580,13 @@ const [dismissed, setDismissed] = useState([])
     <Button variant="destructive">Delete</Button>
   </CardFooter>
 </Card>`}
-        >
-          <ConfirmationPrompt />
-        </ShowcaseExample>
+      >
+        <ConfirmationPrompt />
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="File upload area"
-          code={`const [files, setFiles] = useState([
+      <ShowcaseExample
+        title="File upload area"
+        code={`const [files, setFiles] = useState([
   { id: 1, name: "design-mockup.png", size: "2.4 MB" },
   { id: 2, name: "proposal.pdf", size: "1.1 MB" },
   { id: 3, name: "photo.jpg", size: "3.8 MB" },
@@ -616,10 +609,9 @@ const [dismissed, setDismissed] = useState([])
     </div>
   ))}
 </div>`}
-        >
-          <FileUploadArea />
-        </ShowcaseExample>
-      </div>
-    </div>
+      >
+        <FileUploadArea />
+      </ShowcaseExample>
+    </ShowcasePage>
   )
 }

@@ -2,7 +2,6 @@ import { useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import type { ColumnDef } from "@tanstack/react-table"
 import { ChevronDown, ChevronRight } from "lucide-react"
-import { PageHeader } from "@/core/layout"
 import { Badge } from "@/core/components/ui/badge"
 import { Button } from "@/core/components/ui/button"
 import { Checkbox } from "@/core/components/ui/checkbox"
@@ -23,6 +22,7 @@ import {
 } from "@/core/components/ui/table"
 import { DataTable, ColumnHeader } from "@/features/data-table"
 import { ShowcaseExample } from "./_components/-showcase-example"
+import { ShowcasePage } from "./_components/-showcase-page"
 
 export const Route = createFileRoute("/_authenticated/components/data-table")({
   component: DataTablePage,
@@ -387,20 +387,13 @@ function FacetedFilterTableExample() {
 
 function DataTablePage() {
   return (
-    <div className="space-y-8">
-      <PageHeader
-        breadcrumbs={[
-          { label: "Components", href: "/components" },
-          { label: "Data Table" },
-        ]}
-        title="Data Table"
-        description="Feature-rich table built on TanStack Table with column sorting, text search, and pagination."
-      />
-
-      <div className="space-y-6">
-        <ShowcaseExample
-          title="DataTable with sortable columns and search"
-          code={`const columns: ColumnDef<Product>[] = [
+    <ShowcasePage
+      title="Data Table"
+      description="Feature-rich table built on TanStack Table with column sorting, text search, and pagination."
+    >
+      <ShowcaseExample
+        title="DataTable with sortable columns and search"
+        code={`const columns: ColumnDef<Product>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => <ColumnHeader column={column} title="Name" />,
@@ -418,18 +411,18 @@ function DataTablePage() {
   searchKey="name"
   searchPlaceholder="Search products..."
 />`}
-        >
-          <DataTable
-            columns={basicColumns}
-            data={products}
-            searchKey="name"
-            searchPlaceholder="Search products..."
-          />
-        </ShowcaseExample>
+      >
+        <DataTable
+          columns={basicColumns}
+          data={products}
+          searchKey="name"
+          searchPlaceholder="Search products..."
+        />
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="With custom cell renderer (status badge)"
-          code={`{
+      <ShowcaseExample
+        title="With custom cell renderer (status badge)"
+        code={`{
   accessorKey: "status",
   header: ({ column }) => <ColumnHeader column={column} title="Status" />,
   cell: ({ row }) => {
@@ -441,18 +434,18 @@ function DataTablePage() {
     )
   },
 }`}
-        >
-          <DataTable
-            columns={statusColumns}
-            data={products}
-            searchKey="name"
-            searchPlaceholder="Search by name..."
-          />
-        </ShowcaseExample>
+      >
+        <DataTable
+          columns={statusColumns}
+          data={products}
+          searchKey="name"
+          searchPlaceholder="Search by name..."
+        />
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Expandable row detail"
-          code={`const [expandedId, setExpandedId] = useState<string | null>(null)
+      <ShowcaseExample
+        title="Expandable row detail"
+        code={`const [expandedId, setExpandedId] = useState<string | null>(null)
 
 <Table>
   <TableHeader>…</TableHeader>
@@ -483,13 +476,13 @@ function DataTablePage() {
     ))}
   </TableBody>
 </Table>`}
-        >
-          <ExpandableTableExample />
-        </ShowcaseExample>
+      >
+        <ExpandableTableExample />
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Bulk actions toolbar"
-          code={`const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+      <ShowcaseExample
+        title="Bulk actions toolbar"
+        code={`const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
 
 {selectedIds.size > 0 && (
   <div className="mb-2 flex items-center gap-2 rounded-md bg-muted p-2">
@@ -521,13 +514,13 @@ function DataTablePage() {
     ))}
   </TableBody>
 </Table>`}
-        >
-          <BulkActionsTableExample />
-        </ShowcaseExample>
+      >
+        <BulkActionsTableExample />
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Faceted filters"
-          code={`const [categoryFilter, setCategoryFilter] = useState("all")
+      <ShowcaseExample
+        title="Faceted filters"
+        code={`const [categoryFilter, setCategoryFilter] = useState("all")
 const [statusFilter, setStatusFilter] = useState("all")
 
 const filtered = products.filter((p) => {
@@ -558,10 +551,9 @@ const filtered = products.filter((p) => {
   </Select>
 </div>
 <Table>{/* filtered rows */}</Table>`}
-        >
-          <FacetedFilterTableExample />
-        </ShowcaseExample>
-      </div>
-    </div>
+      >
+        <FacetedFilterTableExample />
+      </ShowcaseExample>
+    </ShowcasePage>
   )
 }

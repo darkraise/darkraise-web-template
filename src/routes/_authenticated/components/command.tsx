@@ -15,7 +15,6 @@ import {
   Star,
   Loader2,
 } from "lucide-react"
-import { PageHeader } from "@/core/layout"
 import {
   Command,
   CommandDialog,
@@ -29,6 +28,7 @@ import {
 } from "@/core/components/ui/command"
 import { Button } from "@/core/components/ui/button"
 import { ShowcaseExample } from "./_components/-showcase-example"
+import { ShowcasePage } from "./_components/-showcase-page"
 
 export const Route = createFileRoute("/_authenticated/components/command")({
   component: CommandPage,
@@ -36,20 +36,13 @@ export const Route = createFileRoute("/_authenticated/components/command")({
 
 function CommandPage() {
   return (
-    <div className="space-y-8">
-      <PageHeader
-        breadcrumbs={[
-          { label: "Components", href: "/components" },
-          { label: "Command" },
-        ]}
-        title="Command"
-        description="Searchable command palette with grouped results. Typically triggered with ⌘K."
-      />
-
-      <div className="space-y-6">
-        <ShowcaseExample
-          title="Basic command palette"
-          code={`<Command className="rounded-lg border border-border shadow-sm">
+    <ShowcasePage
+      title="Command"
+      description="Searchable command palette with grouped results. Typically triggered with ⌘K."
+    >
+      <ShowcaseExample
+        title="Basic command palette"
+        code={`<Command className="rounded-lg border border-border shadow-sm">
   <CommandInput placeholder="Type a command or search..." />
   <CommandList>
     <CommandEmpty>No results found.</CommandEmpty>
@@ -63,55 +56,55 @@ function CommandPage() {
     </CommandGroup>
   </CommandList>
 </Command>`}
-        >
-          <Command className="border-border rounded-lg border shadow-sm">
-            <CommandInput placeholder="Type a command or search..." />
-            <CommandList>
-              <CommandEmpty>No results found.</CommandEmpty>
-              <CommandGroup heading="Pages">
-                <CommandItem>
-                  <Home className="mr-2 h-4 w-4" />
-                  Dashboard
-                </CommandItem>
-                <CommandItem>
-                  <BarChart3 className="mr-2 h-4 w-4" />
-                  Analytics
-                </CommandItem>
-                <CommandItem>
-                  <Package className="mr-2 h-4 w-4" />
-                  Products
-                </CommandItem>
-                <CommandItem>
-                  <ShoppingCart className="mr-2 h-4 w-4" />
-                  Orders
-                </CommandItem>
-                <CommandItem>
-                  <Users className="mr-2 h-4 w-4" />
-                  Customers
-                </CommandItem>
-              </CommandGroup>
-              <CommandSeparator />
-              <CommandGroup heading="Actions">
-                <CommandItem>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Create Product
-                </CommandItem>
-                <CommandItem>
-                  <Download className="mr-2 h-4 w-4" />
-                  Export CSV
-                </CommandItem>
-                <CommandItem>
-                  <UserPlus className="mr-2 h-4 w-4" />
-                  Invite Team Member
-                </CommandItem>
-              </CommandGroup>
-            </CommandList>
-          </Command>
-        </ShowcaseExample>
+      >
+        <Command className="border-border rounded-lg border shadow-sm">
+          <CommandInput placeholder="Type a command or search..." />
+          <CommandList>
+            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandGroup heading="Pages">
+              <CommandItem>
+                <Home className="mr-2 h-4 w-4" />
+                Dashboard
+              </CommandItem>
+              <CommandItem>
+                <BarChart3 className="mr-2 h-4 w-4" />
+                Analytics
+              </CommandItem>
+              <CommandItem>
+                <Package className="mr-2 h-4 w-4" />
+                Products
+              </CommandItem>
+              <CommandItem>
+                <ShoppingCart className="mr-2 h-4 w-4" />
+                Orders
+              </CommandItem>
+              <CommandItem>
+                <Users className="mr-2 h-4 w-4" />
+                Customers
+              </CommandItem>
+            </CommandGroup>
+            <CommandSeparator />
+            <CommandGroup heading="Actions">
+              <CommandItem>
+                <Plus className="mr-2 h-4 w-4" />
+                Create Product
+              </CommandItem>
+              <CommandItem>
+                <Download className="mr-2 h-4 w-4" />
+                Export CSV
+              </CommandItem>
+              <CommandItem>
+                <UserPlus className="mr-2 h-4 w-4" />
+                Invite Team Member
+              </CommandItem>
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="With keyboard shortcuts"
-          code={`<CommandItem>
+      <ShowcaseExample
+        title="With keyboard shortcuts"
+        code={`<CommandItem>
   <Home className="mr-2 h-4 w-4" />
   Dashboard
   <CommandShortcut>⌘H</CommandShortcut>
@@ -126,48 +119,48 @@ function CommandPage() {
   Search
   <CommandShortcut>⌘K</CommandShortcut>
 </CommandItem>`}
-        >
-          <Command className="border-border rounded-lg border shadow-sm">
-            <CommandInput placeholder="Search commands..." />
-            <CommandList>
-              <CommandEmpty>No results found.</CommandEmpty>
-              <CommandGroup heading="Navigation">
-                <CommandItem>
-                  <Home className="mr-2 h-4 w-4" />
-                  Dashboard
-                  <CommandShortcut>⌘H</CommandShortcut>
-                </CommandItem>
-                <CommandItem>
-                  <Search className="mr-2 h-4 w-4" />
-                  Search
-                  <CommandShortcut>⌘K</CommandShortcut>
-                </CommandItem>
-                <CommandItem>
-                  <Settings className="mr-2 h-4 w-4" />
-                  Settings
-                  <CommandShortcut>⌘,</CommandShortcut>
-                </CommandItem>
-              </CommandGroup>
-              <CommandSeparator />
-              <CommandGroup heading="Quick actions">
-                <CommandItem>
-                  <Plus className="mr-2 h-4 w-4" />
-                  New document
-                  <CommandShortcut>⌘N</CommandShortcut>
-                </CommandItem>
-                <CommandItem>
-                  <Download className="mr-2 h-4 w-4" />
-                  Export
-                  <CommandShortcut>⌘E</CommandShortcut>
-                </CommandItem>
-              </CommandGroup>
-            </CommandList>
-          </Command>
-        </ShowcaseExample>
+      >
+        <Command className="border-border rounded-lg border shadow-sm">
+          <CommandInput placeholder="Search commands..." />
+          <CommandList>
+            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandGroup heading="Navigation">
+              <CommandItem>
+                <Home className="mr-2 h-4 w-4" />
+                Dashboard
+                <CommandShortcut>⌘H</CommandShortcut>
+              </CommandItem>
+              <CommandItem>
+                <Search className="mr-2 h-4 w-4" />
+                Search
+                <CommandShortcut>⌘K</CommandShortcut>
+              </CommandItem>
+              <CommandItem>
+                <Settings className="mr-2 h-4 w-4" />
+                Settings
+                <CommandShortcut>⌘,</CommandShortcut>
+              </CommandItem>
+            </CommandGroup>
+            <CommandSeparator />
+            <CommandGroup heading="Quick actions">
+              <CommandItem>
+                <Plus className="mr-2 h-4 w-4" />
+                New document
+                <CommandShortcut>⌘N</CommandShortcut>
+              </CommandItem>
+              <CommandItem>
+                <Download className="mr-2 h-4 w-4" />
+                Export
+                <CommandShortcut>⌘E</CommandShortcut>
+              </CommandItem>
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Recent searches dialog"
-          code={`function RecentSearchesDemo() {
+      <ShowcaseExample
+        title="Recent searches dialog"
+        code={`function RecentSearchesDemo() {
   const [open, setOpen] = useState(false)
   return (
     <>
@@ -191,13 +184,13 @@ function CommandPage() {
     </>
   )
 }`}
-        >
-          <RecentSearchesDemo />
-        </ShowcaseExample>
+      >
+        <RecentSearchesDemo />
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Async search results"
-          code={`function AsyncSearchDemo() {
+      <ShowcaseExample
+        title="Async search results"
+        code={`function AsyncSearchDemo() {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [query, setQuery] = useState("")
@@ -236,11 +229,10 @@ function CommandPage() {
     </>
   )
 }`}
-        >
-          <AsyncSearchDemo />
-        </ShowcaseExample>
-      </div>
-    </div>
+      >
+        <AsyncSearchDemo />
+      </ShowcaseExample>
+    </ShowcasePage>
   )
 }
 

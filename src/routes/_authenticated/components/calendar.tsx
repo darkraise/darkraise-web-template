@@ -3,7 +3,6 @@ import { createFileRoute } from "@tanstack/react-router"
 import { addDays, format } from "date-fns"
 import type { DateRange } from "react-day-picker"
 import { CalendarDays } from "lucide-react"
-import { PageHeader } from "@/core/layout"
 import { Button } from "@/core/components/ui/button"
 import { Calendar } from "@/core/components/ui/calendar"
 import { Label } from "@/core/components/ui/label"
@@ -14,6 +13,7 @@ import {
   PopoverTrigger,
 } from "@/core/components/ui/popover"
 import { ShowcaseExample } from "./_components/-showcase-example"
+import { ShowcasePage } from "./_components/-showcase-page"
 
 export const Route = createFileRoute("/_authenticated/components/calendar")({
   component: CalendarPage,
@@ -188,20 +188,13 @@ function CalendarPage() {
   const [range, setRange] = useState<DateRange | undefined>()
 
   return (
-    <div className="space-y-8">
-      <PageHeader
-        breadcrumbs={[
-          { label: "Components", href: "/components" },
-          { label: "Calendar" },
-        ]}
-        title="Calendar"
-        description="A date picker built on react-day-picker with full keyboard navigation."
-      />
-
-      <div className="space-y-6">
-        <ShowcaseExample
-          title="Basic calendar"
-          code={`const [selected, setSelected] = useState<Date | undefined>(new Date())
+    <ShowcasePage
+      title="Calendar"
+      description="A date picker built on react-day-picker with full keyboard navigation."
+    >
+      <ShowcaseExample
+        title="Basic calendar"
+        code={`const [selected, setSelected] = useState<Date | undefined>(new Date())
 
 <div className="space-y-3">
   <Calendar
@@ -216,25 +209,25 @@ function CalendarPage() {
     </p>
   )}
 </div>`}
-        >
-          <div className="space-y-3">
-            <Calendar
-              mode="single"
-              selected={selected}
-              onSelect={setSelected}
-              className="rounded-md border"
-            />
-            {selected && (
-              <p className="text-muted-foreground text-sm">
-                Selected: {format(selected, "PPP")}
-              </p>
-            )}
-          </div>
-        </ShowcaseExample>
+      >
+        <div className="space-y-3">
+          <Calendar
+            mode="single"
+            selected={selected}
+            onSelect={setSelected}
+            className="rounded-md border"
+          />
+          {selected && (
+            <p className="text-muted-foreground text-sm">
+              Selected: {format(selected, "PPP")}
+            </p>
+          )}
+        </div>
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Range calendar"
-          code={`const [range, setRange] = useState<DateRange | undefined>()
+      <ShowcaseExample
+        title="Range calendar"
+        code={`const [range, setRange] = useState<DateRange | undefined>()
 
 <Calendar
   mode="range"
@@ -243,38 +236,38 @@ function CalendarPage() {
   numberOfMonths={2}
   className="rounded-md border"
 />`}
-        >
-          <Calendar
-            mode="range"
-            selected={range}
-            onSelect={setRange}
-            numberOfMonths={2}
-            className="rounded-md border"
-          />
-        </ShowcaseExample>
+      >
+        <Calendar
+          mode="range"
+          selected={range}
+          onSelect={setRange}
+          numberOfMonths={2}
+          className="rounded-md border"
+        />
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Month and year selector"
-          code={`<Calendar
+      <ShowcaseExample
+        title="Month and year selector"
+        code={`<Calendar
   mode="single"
   captionLayout="dropdown"
   fromYear={2000}
   toYear={2030}
   className="rounded-md border"
 />`}
-        >
-          <Calendar
-            mode="single"
-            captionLayout="dropdown"
-            fromYear={2000}
-            toYear={2030}
-            className="rounded-md border"
-          />
-        </ShowcaseExample>
+      >
+        <Calendar
+          mode="single"
+          captionLayout="dropdown"
+          fromYear={2000}
+          toYear={2030}
+          className="rounded-md border"
+        />
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Presets"
-          code={`function CalendarWithPresets() {
+      <ShowcaseExample
+        title="Presets"
+        code={`function CalendarWithPresets() {
   const [date, setDate] = useState<Date | undefined>(new Date())
 
   const presets = [
@@ -310,13 +303,13 @@ function CalendarPage() {
     </div>
   )
 }`}
-        >
-          <CalendarWithPresets />
-        </ShowcaseExample>
+      >
+        <CalendarWithPresets />
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Date and time picker"
-          code={`function DateTimePicker() {
+      <ShowcaseExample
+        title="Date and time picker"
+        code={`function DateTimePicker() {
   const [date, setDate] = useState<Date | undefined>(new Date())
   const [startTime, setStartTime] = useState("09:00")
   const [endTime, setEndTime] = useState("17:00")
@@ -337,41 +330,37 @@ function CalendarPage() {
     </div>
   )
 }`}
-        >
-          <DateTimePicker />
-        </ShowcaseExample>
+      >
+        <DateTimePicker />
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Custom cell size"
-          code={`<Calendar
+      <ShowcaseExample
+        title="Custom cell size"
+        code={`<Calendar
   mode="single"
   className="rounded-md border [--cell-size:2.75rem]"
 />`}
-        >
-          <Calendar
-            mode="single"
-            className="rounded-md border [--cell-size:2.75rem]"
-          />
-        </ShowcaseExample>
+      >
+        <Calendar
+          mode="single"
+          className="rounded-md border [--cell-size:2.75rem]"
+        />
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Week numbers"
-          code={`<Calendar
+      <ShowcaseExample
+        title="Week numbers"
+        code={`<Calendar
   mode="single"
   showWeekNumber
   className="rounded-md border"
 />`}
-        >
-          <Calendar
-            mode="single"
-            showWeekNumber
-            className="rounded-md border"
-          />
-        </ShowcaseExample>
+      >
+        <Calendar mode="single" showWeekNumber className="rounded-md border" />
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Date picker in popover"
-          code={`function DatePickerPopover() {
+      <ShowcaseExample
+        title="Date picker in popover"
+        code={`function DatePickerPopover() {
   const [date, setDate] = useState<Date | undefined>()
   const [open, setOpen] = useState(false)
 
@@ -397,13 +386,13 @@ function CalendarPage() {
     </Popover>
   )
 }`}
-        >
-          <DatePickerPopover />
-        </ShowcaseExample>
+      >
+        <DatePickerPopover />
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Date range picker in popover"
-          code={`function DateRangePickerPopover() {
+      <ShowcaseExample
+        title="Date range picker in popover"
+        code={`function DateRangePickerPopover() {
   const [range, setRange] = useState<DateRange | undefined>()
   const [open, setOpen] = useState(false)
 
@@ -439,13 +428,13 @@ function CalendarPage() {
     </Popover>
   )
 }`}
-        >
-          <DateRangePickerPopover />
-        </ShowcaseExample>
+      >
+        <DateRangePickerPopover />
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Date of birth picker"
-          code={`function DateOfBirthPicker() {
+      <ShowcaseExample
+        title="Date of birth picker"
+        code={`function DateOfBirthPicker() {
   const [date, setDate] = useState<Date | undefined>()
   const [open, setOpen] = useState(false)
 
@@ -474,10 +463,9 @@ function CalendarPage() {
     </Popover>
   )
 }`}
-        >
-          <DateOfBirthPicker />
-        </ShowcaseExample>
-      </div>
-    </div>
+      >
+        <DateOfBirthPicker />
+      </ShowcaseExample>
+    </ShowcasePage>
   )
 }

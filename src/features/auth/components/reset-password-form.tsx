@@ -1,9 +1,8 @@
 import { z } from "zod"
 import { useForm } from "@tanstack/react-form"
 import { Button } from "@/core/components/ui/button"
-import { Input } from "@/core/components/ui/input"
-import { Field, FieldLabel, FieldError } from "@/core/components/ui/field"
 import { useAuth } from "../hooks/use-auth"
+import { AuthFormField } from "./auth-form-field"
 
 const schema = z
   .object({
@@ -44,50 +43,26 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
         }}
         className="space-y-4"
       >
-        <form.Field
-          name="password"
-          children={(field) => {
-            const isInvalid =
-              field.state.meta.isTouched && !field.state.meta.isValid
-            return (
-              <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name}>New password</FieldLabel>
-                <Input
-                  id={field.name}
-                  type="password"
-                  placeholder="At least 8 characters"
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  aria-invalid={isInvalid}
-                />
-                {isInvalid && <FieldError errors={field.state.meta.errors} />}
-              </Field>
-            )
-          }}
-        />
+        <form.Field name="password">
+          {(field) => (
+            <AuthFormField
+              field={field}
+              label="New password"
+              type="password"
+              placeholder="At least 8 characters"
+            />
+          )}
+        </form.Field>
 
-        <form.Field
-          name="confirmPassword"
-          children={(field) => {
-            const isInvalid =
-              field.state.meta.isTouched && !field.state.meta.isValid
-            return (
-              <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name}>Confirm password</FieldLabel>
-                <Input
-                  id={field.name}
-                  type="password"
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  aria-invalid={isInvalid}
-                />
-                {isInvalid && <FieldError errors={field.state.meta.errors} />}
-              </Field>
-            )
-          }}
-        />
+        <form.Field name="confirmPassword">
+          {(field) => (
+            <AuthFormField
+              field={field}
+              label="Confirm password"
+              type="password"
+            />
+          )}
+        </form.Field>
 
         <form.Subscribe
           selector={(s) => [s.canSubmit, s.isSubmitting]}

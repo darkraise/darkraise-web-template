@@ -3,7 +3,6 @@ import { createFileRoute } from "@tanstack/react-router"
 import { useForm } from "@tanstack/react-form"
 import { z } from "zod"
 import { Pencil } from "lucide-react"
-import { PageHeader } from "@/core/layout"
 import {
   TextField,
   TextareaField,
@@ -26,6 +25,7 @@ import {
   SelectValue,
 } from "@/core/components/ui/select"
 import { ShowcaseExample } from "./_components/-showcase-example"
+import { ShowcasePage } from "./_components/-showcase-page"
 
 export const Route = createFileRoute("/_authenticated/components/form-fields")({
   component: FormFieldsPage,
@@ -292,20 +292,13 @@ function DependentSelectsExample() {
 
 function FormFieldsPage() {
   return (
-    <div className="space-y-8">
-      <PageHeader
-        breadcrumbs={[
-          { label: "Components", href: "/components" },
-          { label: "Form Fields" },
-        ]}
-        title="Form Fields"
-        description="TanStack Form–integrated field components with built-in validation, labels, and error display."
-      />
-
-      <div className="space-y-6">
-        <ShowcaseExample
-          title="TextField, TextareaField, NumberField, SelectField, SwitchField, RadioGroupField, CheckboxField"
-          code={`// Each field component wraps a TanStack Form field instance
+    <ShowcasePage
+      title="Form Fields"
+      description="TanStack Form–integrated field components with built-in validation, labels, and error display."
+    >
+      <ShowcaseExample
+        title="TextField, TextareaField, NumberField, SelectField, SwitchField, RadioGroupField, CheckboxField"
+        code={`// Each field component wraps a TanStack Form field instance
 const form = useForm({
   defaultValues: { name: "", role: "", agree: false },
   validators: { onChange: schema },
@@ -342,13 +335,13 @@ const form = useForm({
     )}
   </form.Subscribe>
 </form>`}
-        >
-          <FullShowcaseForm />
-        </ShowcaseExample>
+      >
+        <FullShowcaseForm />
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Conditional Fields"
-          code={`function ConditionalFieldsExample() {
+      <ShowcaseExample
+        title="Conditional Fields"
+        code={`function ConditionalFieldsExample() {
   const [accountType, setAccountType] = useState<"personal" | "business">("personal")
 
   return (
@@ -378,13 +371,13 @@ const form = useForm({
     </div>
   )
 }`}
-        >
-          <ConditionalFieldsExample />
-        </ShowcaseExample>
+      >
+        <ConditionalFieldsExample />
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Inline Edit"
-          code={`function InlineEditExample() {
+      <ShowcaseExample
+        title="Inline Edit"
+        code={`function InlineEditExample() {
   const [editing, setEditing] = useState(false)
   const [value, setValue] = useState("Jane Doe")
 
@@ -407,13 +400,13 @@ const form = useForm({
     </div>
   )
 }`}
-        >
-          <InlineEditExample />
-        </ShowcaseExample>
+      >
+        <InlineEditExample />
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Dependent Selects"
-          code={`const CITY_OPTIONS = {
+      <ShowcaseExample
+        title="Dependent Selects"
+        code={`const CITY_OPTIONS = {
   USA: ["New York", "Los Angeles", "Chicago"],
   Canada: ["Toronto", "Vancouver", "Montreal"],
   UK: ["London", "Manchester", "Edinburgh"],
@@ -455,10 +448,9 @@ function DependentSelectsExample() {
     </div>
   )
 }`}
-        >
-          <DependentSelectsExample />
-        </ShowcaseExample>
-      </div>
-    </div>
+      >
+        <DependentSelectsExample />
+      </ShowcaseExample>
+    </ShowcasePage>
   )
 }

@@ -3,9 +3,8 @@ import { Link } from "@tanstack/react-router"
 import { z } from "zod"
 import { useForm } from "@tanstack/react-form"
 import { Button } from "@/core/components/ui/button"
-import { Input } from "@/core/components/ui/input"
-import { Field, FieldLabel, FieldError } from "@/core/components/ui/field"
 import { useAuth } from "../hooks/use-auth"
+import { AuthFormField } from "./auth-form-field"
 
 const schema = z.object({
   email: z.string().email("Enter a valid email"),
@@ -56,28 +55,16 @@ export function ForgotPasswordForm() {
         }}
         className="space-y-4"
       >
-        <form.Field
-          name="email"
-          children={(field) => {
-            const isInvalid =
-              field.state.meta.isTouched && !field.state.meta.isValid
-            return (
-              <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name}>Email</FieldLabel>
-                <Input
-                  id={field.name}
-                  type="email"
-                  placeholder="name@example.com"
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  aria-invalid={isInvalid}
-                />
-                {isInvalid && <FieldError errors={field.state.meta.errors} />}
-              </Field>
-            )
-          }}
-        />
+        <form.Field name="email">
+          {(field) => (
+            <AuthFormField
+              field={field}
+              label="Email"
+              type="email"
+              placeholder="name@example.com"
+            />
+          )}
+        </form.Field>
 
         <form.Subscribe
           selector={(s) => [s.canSubmit, s.isSubmitting]}

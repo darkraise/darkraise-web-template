@@ -1,9 +1,15 @@
 import * as React from "react"
 import * as SheetPrimitive from "@radix-ui/react-dialog"
 import { cva, type VariantProps } from "class-variance-authority"
-import { X } from "lucide-react"
 
 import { cn } from "@/core/lib/utils"
+import {
+  overlayBackdropClass,
+  overlayDescriptionClass,
+  overlayFooterClass,
+  overlayHeaderClass,
+  OverlayCloseButton,
+} from "@/core/components/ui/overlay-primitives"
 
 const Sheet = SheetPrimitive.Root
 
@@ -20,10 +26,7 @@ function SheetOverlay({
 }: React.ComponentProps<typeof SheetPrimitive.Overlay>) {
   return (
     <SheetPrimitive.Overlay
-      className={cn(
-        "data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/80",
-        className,
-      )}
+      className={cn(overlayBackdropClass, className)}
       {...props}
       ref={ref}
     />
@@ -70,10 +73,7 @@ function SheetContent({
         {...props}
       >
         {children}
-        <SheetPrimitive.Close className="ring-offset-background focus:ring-ring text-muted-foreground hover:bg-accent hover:text-foreground absolute top-4 right-4 flex h-7 w-7 items-center justify-center rounded-md transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:pointer-events-none">
-          <X className="h-4 w-4" />
-          <span className="sr-only">Close</span>
-        </SheetPrimitive.Close>
+        <OverlayCloseButton />
       </SheetPrimitive.Content>
     </SheetPortal>
   )
@@ -83,13 +83,7 @@ const SheetHeader = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cn(
-      "flex flex-col space-y-2 text-center sm:text-left",
-      className,
-    )}
-    {...props}
-  />
+  <div className={cn(overlayHeaderClass, className)} {...props} />
 )
 SheetHeader.displayName = "SheetHeader"
 
@@ -97,13 +91,7 @@ const SheetFooter = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cn(
-      "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2",
-      className,
-    )}
-    {...props}
-  />
+  <div className={cn(overlayFooterClass, className)} {...props} />
 )
 SheetFooter.displayName = "SheetFooter"
 
@@ -129,7 +117,7 @@ function SheetDescription({
   return (
     <SheetPrimitive.Description
       ref={ref}
-      className={cn("text-muted-foreground text-sm", className)}
+      className={cn(overlayDescriptionClass, className)}
       {...props}
     />
   )

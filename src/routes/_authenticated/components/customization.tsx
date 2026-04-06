@@ -2,9 +2,9 @@ import { useState, type ReactNode } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import { cva, type VariantProps } from "class-variance-authority"
 import { X } from "lucide-react"
-import { PageHeader } from "@/core/layout"
 import { cn } from "@/core/lib/utils"
 import { ShowcaseExample } from "./_components/-showcase-example"
+import { ShowcasePage } from "./_components/-showcase-page"
 
 export const Route = createFileRoute(
   "/_authenticated/components/customization",
@@ -442,111 +442,103 @@ function ClosableBadgeDemo() {
 
 function CustomizationPage() {
   return (
-    <div className="space-y-8">
-      <PageHeader
-        breadcrumbs={[
-          { label: "Components", href: "/components" },
-          { label: "Customization" },
-        ]}
-        title="Customization"
-        description="Extend shadcn/ui components with new CVA variants without touching the source."
-      />
+    <ShowcasePage
+      title="Customization"
+      description="Extend shadcn/ui components with new CVA variants without touching the source."
+    >
+      <ShowcaseExample
+        title="Success & warning button variants"
+        code={CUSTOM_BUTTON_CODE}
+      >
+        <div className="flex flex-wrap items-center gap-3">
+          <CustomButton variant="success" size="sm">
+            Saved
+          </CustomButton>
+          <CustomButton variant="success">Confirm</CustomButton>
+          <CustomButton variant="success" size="lg">
+            Approve
+          </CustomButton>
+          <CustomButton variant="warning" size="sm">
+            Caution
+          </CustomButton>
+          <CustomButton variant="warning">Warn</CustomButton>
+          <CustomButton variant="warning" size="lg">
+            Review
+          </CustomButton>
+        </div>
+      </ShowcaseExample>
 
-      <div className="space-y-6">
-        <ShowcaseExample
-          title="Success & warning button variants"
-          code={CUSTOM_BUTTON_CODE}
-        >
-          <div className="flex flex-wrap items-center gap-3">
-            <CustomButton variant="success" size="sm">
-              Saved
-            </CustomButton>
-            <CustomButton variant="success">Confirm</CustomButton>
-            <CustomButton variant="success" size="lg">
-              Approve
-            </CustomButton>
-            <CustomButton variant="warning" size="sm">
-              Caution
-            </CustomButton>
-            <CustomButton variant="warning">Warn</CustomButton>
-            <CustomButton variant="warning" size="lg">
-              Review
-            </CustomButton>
-          </div>
-        </ShowcaseExample>
+      <ShowcaseExample title="Compact card variant" code={COMPACT_CARD_CODE}>
+        <div className="grid grid-cols-2 gap-4">
+          <CustomCard size="default">
+            <h3 className="font-semibold">Default Padding</h3>
+            <p className="text-muted-foreground mt-1 text-sm">
+              Standard 24px padding for regular cards.
+            </p>
+          </CustomCard>
+          <CustomCard size="compact">
+            <h3 className="font-semibold">Compact Padding</h3>
+            <p className="text-muted-foreground mt-1 text-sm">
+              Tight 12px padding for dense UIs.
+            </p>
+          </CustomCard>
+        </div>
+      </ShowcaseExample>
 
-        <ShowcaseExample title="Compact card variant" code={COMPACT_CARD_CODE}>
-          <div className="grid grid-cols-2 gap-4">
-            <CustomCard size="default">
-              <h3 className="font-semibold">Default Padding</h3>
-              <p className="text-muted-foreground mt-1 text-sm">
-                Standard 24px padding for regular cards.
-              </p>
-            </CustomCard>
-            <CustomCard size="compact">
-              <h3 className="font-semibold">Compact Padding</h3>
-              <p className="text-muted-foreground mt-1 text-sm">
-                Tight 12px padding for dense UIs.
-              </p>
-            </CustomCard>
-          </div>
-        </ShowcaseExample>
+      <ShowcaseExample title="Closable badge" code={CLOSABLE_BADGE_CODE}>
+        <ClosableBadgeDemo />
+      </ShowcaseExample>
 
-        <ShowcaseExample title="Closable badge" code={CLOSABLE_BADGE_CODE}>
-          <ClosableBadgeDemo />
-        </ShowcaseExample>
+      <ShowcaseExample title="Gradient button" code={GRADIENT_BUTTON_CODE}>
+        <div className="flex flex-wrap gap-3">
+          <GradientButton variant="purple">Purple → Pink</GradientButton>
+          <GradientButton variant="blue">Blue → Cyan</GradientButton>
+          <GradientButton variant="green">Green → Emerald</GradientButton>
+        </div>
+      </ShowcaseExample>
 
-        <ShowcaseExample title="Gradient button" code={GRADIENT_BUTTON_CODE}>
-          <div className="flex flex-wrap gap-3">
-            <GradientButton variant="purple">Purple → Pink</GradientButton>
-            <GradientButton variant="blue">Blue → Cyan</GradientButton>
-            <GradientButton variant="green">Green → Emerald</GradientButton>
-          </div>
-        </ShowcaseExample>
+      <ShowcaseExample
+        title="Input with prefix/suffix slots"
+        code={SLOTTED_INPUT_CODE}
+      >
+        <div className="max-w-sm space-y-3">
+          <SlottedInput inputPrefix="https://" placeholder="example.com" />
+          <SlottedInput
+            inputPrefix="$"
+            inputSuffix=".00"
+            placeholder="0"
+            type="number"
+          />
+        </div>
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Input with prefix/suffix slots"
-          code={SLOTTED_INPUT_CODE}
-        >
-          <div className="max-w-sm space-y-3">
-            <SlottedInput inputPrefix="https://" placeholder="example.com" />
-            <SlottedInput
-              inputPrefix="$"
-              inputSuffix=".00"
-              placeholder="0"
-              type="number"
-            />
-          </div>
-        </ShowcaseExample>
-
-        <ShowcaseExample
-          title="The general extension pattern"
-          code={STATUS_DOT_CODE}
-        >
-          <div className="flex flex-wrap items-center gap-4">
-            <span className="flex items-center gap-2 text-sm">
-              <StatusDot color="green" />
-              Online
-            </span>
-            <span className="flex items-center gap-2 text-sm">
-              <StatusDot color="yellow" />
-              Degraded
-            </span>
-            <span className="flex items-center gap-2 text-sm">
-              <StatusDot color="red" />
-              Down
-            </span>
-            <span className="flex items-center gap-2 text-sm">
-              <StatusDot color="gray" />
-              Unknown
-            </span>
-            <span className="flex items-center gap-2 text-sm">
-              <StatusDot color="green" size="lg" />
-              Large
-            </span>
-          </div>
-        </ShowcaseExample>
-      </div>
-    </div>
+      <ShowcaseExample
+        title="The general extension pattern"
+        code={STATUS_DOT_CODE}
+      >
+        <div className="flex flex-wrap items-center gap-4">
+          <span className="flex items-center gap-2 text-sm">
+            <StatusDot color="green" />
+            Online
+          </span>
+          <span className="flex items-center gap-2 text-sm">
+            <StatusDot color="yellow" />
+            Degraded
+          </span>
+          <span className="flex items-center gap-2 text-sm">
+            <StatusDot color="red" />
+            Down
+          </span>
+          <span className="flex items-center gap-2 text-sm">
+            <StatusDot color="gray" />
+            Unknown
+          </span>
+          <span className="flex items-center gap-2 text-sm">
+            <StatusDot color="green" size="lg" />
+            Large
+          </span>
+        </div>
+      </ShowcaseExample>
+    </ShowcasePage>
   )
 }

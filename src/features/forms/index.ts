@@ -1,3 +1,4 @@
+export { FieldWrapper } from "./components/field-wrapper"
 export { TextField } from "./components/text-field"
 export { TextareaField } from "./components/textarea-field"
 export { NumberField } from "./components/number-field"

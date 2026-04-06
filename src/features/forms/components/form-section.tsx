@@ -1,11 +1,5 @@
-import type { ReactNode } from "react"
 import { FieldSet, FieldLegend, FieldGroup } from "@/core/components/ui/field"
-
-interface FormSectionProps {
-  title: string
-  description?: string
-  children: ReactNode
-}
+import type { FormSectionProps } from "../types"
 
 export function FormSection({
   title,

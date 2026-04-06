@@ -1,8 +1,14 @@
 import * as React from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
-import { X } from "lucide-react"
 
 import { cn } from "@/core/lib/utils"
+import {
+  overlayBackdropClass,
+  overlayDescriptionClass,
+  overlayFooterClass,
+  overlayHeaderClass,
+  OverlayCloseButton,
+} from "@/core/components/ui/overlay-primitives"
 
 const Dialog = DialogPrimitive.Root
 
@@ -20,10 +26,7 @@ function DialogOverlay({
   return (
     <DialogPrimitive.Overlay
       ref={ref}
-      className={cn(
-        "data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/80",
-        className,
-      )}
+      className={cn(overlayBackdropClass, className)}
       {...props}
     />
   )
@@ -47,10 +50,7 @@ function DialogContent({
         {...props}
       >
         {children}
-        <DialogPrimitive.Close className="ring-offset-background focus:ring-ring text-muted-foreground hover:bg-accent hover:text-foreground absolute top-4 right-4 flex h-7 w-7 items-center justify-center rounded-md transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:pointer-events-none">
-          <X className="h-4 w-4" />
-          <span className="sr-only">Close</span>
-        </DialogPrimitive.Close>
+        <OverlayCloseButton />
       </DialogPrimitive.Content>
     </DialogPortal>
   )
@@ -60,13 +60,7 @@ const DialogHeader = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cn(
-      "flex flex-col space-y-1.5 text-center sm:text-left",
-      className,
-    )}
-    {...props}
-  />
+  <div className={cn(overlayHeaderClass, className)} {...props} />
 )
 DialogHeader.displayName = "DialogHeader"
 
@@ -74,13 +68,7 @@ const DialogFooter = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cn(
-      "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2",
-      className,
-    )}
-    {...props}
-  />
+  <div className={cn(overlayFooterClass, className)} {...props} />
 )
 DialogFooter.displayName = "DialogFooter"
 
@@ -109,7 +97,7 @@ function DialogDescription({
   return (
     <DialogPrimitive.Description
       ref={ref}
-      className={cn("text-muted-foreground text-sm", className)}
+      className={cn(overlayDescriptionClass, className)}
       {...props}
     />
   )

@@ -5,18 +5,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/core/components/ui/select"
-import {
-  Field,
-  FieldLabel,
-  FieldDescription,
-  FieldError,
-} from "@/core/components/ui/field"
-import type { AnyFieldApi } from "@tanstack/react-form"
+import { FieldWrapper } from "./field-wrapper"
+import type { BaseFieldProps } from "../types"
 
-interface SelectFieldProps {
-  field: AnyFieldApi
-  label: string
-  description?: string
+interface SelectFieldProps extends BaseFieldProps {
   placeholder?: string
   options: Array<{ label: string; value: string }>
 }
@@ -28,31 +20,29 @@ export function SelectField({
   placeholder,
   options,
 }: SelectFieldProps) {
-  const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
   return (
-    <Field data-invalid={isInvalid}>
-      <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
-      <Select
-        value={field.state.value as string}
-        onValueChange={(v) => field.handleChange(v)}
-      >
-        <SelectTrigger
-          id={field.name}
-          onBlur={field.handleBlur}
-          aria-invalid={isInvalid}
+    <FieldWrapper field={field} label={label} description={description}>
+      {(isInvalid) => (
+        <Select
+          value={field.state.value as string}
+          onValueChange={(v) => field.handleChange(v)}
         >
-          <SelectValue placeholder={placeholder} />
-        </SelectTrigger>
-        <SelectContent>
-          {options.map((opt) => (
-            <SelectItem key={opt.value} value={opt.value}>
-              {opt.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      {description && <FieldDescription>{description}</FieldDescription>}
-      {isInvalid && <FieldError errors={field.state.meta.errors} />}
-    </Field>
+          <SelectTrigger
+            id={field.name}
+            onBlur={field.handleBlur}
+            aria-invalid={isInvalid}
+          >
+            <SelectValue placeholder={placeholder} />
+          </SelectTrigger>
+          <SelectContent>
+            {options.map((opt) => (
+              <SelectItem key={opt.value} value={opt.value}>
+                {opt.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
+    </FieldWrapper>
   )
 }

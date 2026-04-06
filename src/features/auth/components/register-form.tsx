@@ -2,9 +2,8 @@ import { Link } from "@tanstack/react-router"
 import { z } from "zod"
 import { useForm } from "@tanstack/react-form"
 import { Button } from "@/core/components/ui/button"
-import { Input } from "@/core/components/ui/input"
-import { Field, FieldLabel, FieldError } from "@/core/components/ui/field"
 import { useAuth } from "../hooks/use-auth"
+import { AuthFormField } from "./auth-form-field"
 
 const registerSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -39,73 +38,33 @@ export function RegisterForm() {
         }}
         className="space-y-4"
       >
-        <form.Field
-          name="name"
-          children={(field) => {
-            const isInvalid =
-              field.state.meta.isTouched && !field.state.meta.isValid
-            return (
-              <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name}>Name</FieldLabel>
-                <Input
-                  id={field.name}
-                  placeholder="Your name"
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  aria-invalid={isInvalid}
-                />
-                {isInvalid && <FieldError errors={field.state.meta.errors} />}
-              </Field>
-            )
-          }}
-        />
+        <form.Field name="name">
+          {(field) => (
+            <AuthFormField field={field} label="Name" placeholder="Your name" />
+          )}
+        </form.Field>
 
-        <form.Field
-          name="email"
-          children={(field) => {
-            const isInvalid =
-              field.state.meta.isTouched && !field.state.meta.isValid
-            return (
-              <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name}>Email</FieldLabel>
-                <Input
-                  id={field.name}
-                  type="email"
-                  placeholder="name@example.com"
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  aria-invalid={isInvalid}
-                />
-                {isInvalid && <FieldError errors={field.state.meta.errors} />}
-              </Field>
-            )
-          }}
-        />
+        <form.Field name="email">
+          {(field) => (
+            <AuthFormField
+              field={field}
+              label="Email"
+              type="email"
+              placeholder="name@example.com"
+            />
+          )}
+        </form.Field>
 
-        <form.Field
-          name="password"
-          children={(field) => {
-            const isInvalid =
-              field.state.meta.isTouched && !field.state.meta.isValid
-            return (
-              <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name}>Password</FieldLabel>
-                <Input
-                  id={field.name}
-                  type="password"
-                  placeholder="At least 8 characters"
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  aria-invalid={isInvalid}
-                />
-                {isInvalid && <FieldError errors={field.state.meta.errors} />}
-              </Field>
-            )
-          }}
-        />
+        <form.Field name="password">
+          {(field) => (
+            <AuthFormField
+              field={field}
+              label="Password"
+              type="password"
+              placeholder="At least 8 characters"
+            />
+          )}
+        </form.Field>
 
         <form.Subscribe
           selector={(s) => [s.canSubmit, s.isSubmitting]}

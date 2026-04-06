@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { useState } from "react"
-import { PageHeader } from "@/core/layout"
 import { Badge } from "@/core/components/ui/badge"
 import { Button } from "@/core/components/ui/button"
 import { Input } from "@/core/components/ui/input"
@@ -32,6 +31,7 @@ import {
   ArrowDown,
 } from "lucide-react"
 import { ShowcaseExample } from "./_components/-showcase-example"
+import { ShowcasePage } from "./_components/-showcase-page"
 
 export const Route = createFileRoute("/_authenticated/components/table")({
   component: TablePage,
@@ -156,7 +156,7 @@ function PaginatedTable() {
         </TableBody>
       </Table>
       <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
           Showing {page * pageSize + 1}-
           {Math.min((page + 1) * pageSize, manyProducts.length)} of{" "}
           {manyProducts.length}
@@ -330,7 +330,7 @@ function SelectableTable() {
 
   return (
     <div className="space-y-2">
-      <p className="text-sm text-muted-foreground">
+      <p className="text-muted-foreground text-sm">
         {selected.size} of {products.length} row(s) selected
       </p>
       <Table>
@@ -410,7 +410,7 @@ function FilterableTable() {
             <TableRow>
               <TableCell
                 colSpan={4}
-                className="h-24 text-center text-muted-foreground"
+                className="text-muted-foreground h-24 text-center"
               >
                 No results found.
               </TableCell>
@@ -424,20 +424,13 @@ function FilterableTable() {
 
 function TablePage() {
   return (
-    <div className="space-y-8">
-      <PageHeader
-        breadcrumbs={[
-          { label: "Components", href: "/components" },
-          { label: "Table" },
-        ]}
-        title="Table"
-        description="Semantic HTML table with various patterns: basic, scrollable, sticky headers, pagination, sorting, selection, and filtering."
-      />
-
-      <div className="space-y-6">
-        <ShowcaseExample
-          title="Basic table with footer"
-          code={`<Table>
+    <ShowcasePage
+      title="Table"
+      description="Semantic HTML table with various patterns: basic, scrollable, sticky headers, pagination, sorting, selection, and filtering."
+    >
+      <ShowcaseExample
+        title="Basic table with footer"
+        code={`<Table>
   <TableCaption>Product inventory.</TableCaption>
   <TableHeader>
     <TableRow>
@@ -464,87 +457,87 @@ function TablePage() {
     </TableRow>
   </TableFooter>
 </Table>`}
-        >
-          <Table>
-            <TableCaption>Product inventory.</TableCaption>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Product</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead className="text-right">Price</TableHead>
-                <TableHead className="text-right">Stock</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {products.map((row) => (
-                <TableRow key={row.id}>
-                  <TableCell className="font-medium">{row.name}</TableCell>
-                  <TableCell>{row.category}</TableCell>
-                  <TableCell className="text-right">
-                    ${row.price.toFixed(2)}
-                  </TableCell>
-                  <TableCell className="text-right">{row.stock}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-            <TableFooter>
-              <TableRow>
-                <TableCell colSpan={3}>Total Items</TableCell>
+      >
+        <Table>
+          <TableCaption>Product inventory.</TableCaption>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Product</TableHead>
+              <TableHead>Category</TableHead>
+              <TableHead className="text-right">Price</TableHead>
+              <TableHead className="text-right">Stock</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {products.map((row) => (
+              <TableRow key={row.id}>
+                <TableCell className="font-medium">{row.name}</TableCell>
+                <TableCell>{row.category}</TableCell>
                 <TableCell className="text-right">
-                  {products.reduce((sum, r) => sum + r.stock, 0)}
+                  ${row.price.toFixed(2)}
                 </TableCell>
+                <TableCell className="text-right">{row.stock}</TableCell>
               </TableRow>
-            </TableFooter>
-          </Table>
-        </ShowcaseExample>
+            ))}
+          </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TableCell colSpan={3}>Total Items</TableCell>
+              <TableCell className="text-right">
+                {products.reduce((sum, r) => sum + r.stock, 0)}
+              </TableCell>
+            </TableRow>
+          </TableFooter>
+        </Table>
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Table with status badges"
-          code={`<Badge variant={stock === 0 ? "destructive" : stock < 80 ? "outline" : "default"}>
+      <ShowcaseExample
+        title="Table with status badges"
+        code={`<Badge variant={stock === 0 ? "destructive" : stock < 80 ? "outline" : "default"}>
   {statusLabel}
 </Badge>`}
-        >
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Product</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Price</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {products.map((row) => (
-                <TableRow key={row.id}>
-                  <TableCell className="font-medium">{row.name}</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        row.stock === 0
-                          ? "destructive"
-                          : row.stock < 80
-                            ? "outline"
-                            : "default"
-                      }
-                    >
-                      {row.stock === 0
-                        ? "Out of stock"
+      >
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Product</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-right">Price</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {products.map((row) => (
+              <TableRow key={row.id}>
+                <TableCell className="font-medium">{row.name}</TableCell>
+                <TableCell>
+                  <Badge
+                    variant={
+                      row.stock === 0
+                        ? "destructive"
                         : row.stock < 80
-                          ? "Low stock"
-                          : "In stock"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    ${row.price.toFixed(2)}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </ShowcaseExample>
+                          ? "outline"
+                          : "default"
+                    }
+                  >
+                    {row.stock === 0
+                      ? "Out of stock"
+                      : row.stock < 80
+                        ? "Low stock"
+                        : "In stock"}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right">
+                  ${row.price.toFixed(2)}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Horizontal scroll with many columns"
-          code={`<Table>
+      <ShowcaseExample
+        title="Horizontal scroll with many columns"
+        code={`<Table>
   {/* Table wrapper has overflow-auto by default */}
   <TableHeader>
     <TableRow>
@@ -553,49 +546,49 @@ function TablePage() {
   </TableHeader>
   ...
 </Table>`}
-        >
-          <Table>
-            <TableHeader>
-              <TableRow>
-                {wideColumns.map((col) => (
-                  <TableHead key={col.key} className="whitespace-nowrap">
-                    {col.label}
-                  </TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {products.map((row) => (
-                <TableRow key={row.id}>
-                  <TableCell>#{row.id}</TableCell>
-                  <TableCell className="whitespace-nowrap font-medium">
-                    {row.name}
-                  </TableCell>
-                  <TableCell>{row.category}</TableCell>
-                  <TableCell>${row.price.toFixed(2)}</TableCell>
-                  <TableCell>{row.stock}</TableCell>
-                  <TableCell>
-                    <Badge variant="secondary">{row.status}</Badge>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    SKU-{row.id.padStart(5, "0")}
-                  </TableCell>
-                  <TableCell>0.{row.id}kg</TableCell>
-                  <TableCell className="whitespace-nowrap">
-                    10×5×{row.id}cm
-                  </TableCell>
-                  <TableCell>Acme Corp</TableCell>
-                  <TableCell>12 months</TableCell>
-                  <TableCell>4.{row.id}/5</TableCell>
-                </TableRow>
+      >
+        <Table>
+          <TableHeader>
+            <TableRow>
+              {wideColumns.map((col) => (
+                <TableHead key={col.key} className="whitespace-nowrap">
+                  {col.label}
+                </TableHead>
               ))}
-            </TableBody>
-          </Table>
-        </ShowcaseExample>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {products.map((row) => (
+              <TableRow key={row.id}>
+                <TableCell>#{row.id}</TableCell>
+                <TableCell className="font-medium whitespace-nowrap">
+                  {row.name}
+                </TableCell>
+                <TableCell>{row.category}</TableCell>
+                <TableCell>${row.price.toFixed(2)}</TableCell>
+                <TableCell>{row.stock}</TableCell>
+                <TableCell>
+                  <Badge variant="secondary">{row.status}</Badge>
+                </TableCell>
+                <TableCell className="text-muted-foreground">
+                  SKU-{row.id.padStart(5, "0")}
+                </TableCell>
+                <TableCell>0.{row.id}kg</TableCell>
+                <TableCell className="whitespace-nowrap">
+                  10×5×{row.id}cm
+                </TableCell>
+                <TableCell>Acme Corp</TableCell>
+                <TableCell>12 months</TableCell>
+                <TableCell>4.{row.id}/5</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Sticky header with vertical scroll"
-          code={`<div className="max-h-[300px] overflow-auto rounded-md border">
+      <ShowcaseExample
+        title="Sticky header with vertical scroll"
+        code={`<div className="max-h-[300px] overflow-auto rounded-md border">
   <table className="w-full text-sm">
     <thead className="sticky top-0 bg-background z-10">
       ...
@@ -603,165 +596,164 @@ function TablePage() {
     <tbody>...</tbody>
   </table>
 </div>`}
-        >
-          <div className="card-surface max-h-[300px] overflow-auto rounded-md border border-border">
-            <table className="w-full caption-bottom text-sm">
-              <thead className="sticky top-0 z-10 border-b bg-background">
-                <tr>
-                  <th className="h-12 px-4 text-left font-medium text-muted-foreground">
-                    ID
-                  </th>
-                  <th className="h-12 px-4 text-left font-medium text-muted-foreground">
-                    Product
-                  </th>
-                  <th className="h-12 px-4 text-left font-medium text-muted-foreground">
-                    Category
-                  </th>
-                  <th className="h-12 px-4 text-right font-medium text-muted-foreground">
-                    Price
-                  </th>
-                  <th className="h-12 px-4 text-right font-medium text-muted-foreground">
-                    Stock
-                  </th>
+      >
+        <div className="card-surface border-border max-h-[300px] overflow-auto rounded-md border">
+          <table className="w-full caption-bottom text-sm">
+            <thead className="bg-background sticky top-0 z-10 border-b">
+              <tr>
+                <th className="text-muted-foreground h-12 px-4 text-left font-medium">
+                  ID
+                </th>
+                <th className="text-muted-foreground h-12 px-4 text-left font-medium">
+                  Product
+                </th>
+                <th className="text-muted-foreground h-12 px-4 text-left font-medium">
+                  Category
+                </th>
+                <th className="text-muted-foreground h-12 px-4 text-right font-medium">
+                  Price
+                </th>
+                <th className="text-muted-foreground h-12 px-4 text-right font-medium">
+                  Stock
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {manyProducts.slice(0, 25).map((row) => (
+                <tr
+                  key={row.id}
+                  className="hover:bg-muted/50 border-b transition-colors"
+                >
+                  <td className="text-muted-foreground p-4">#{row.id}</td>
+                  <td className="p-4 font-medium">{row.name}</td>
+                  <td className="p-4">{row.category}</td>
+                  <td className="p-4 text-right">${row.price.toFixed(2)}</td>
+                  <td className="p-4 text-right">{row.stock}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {manyProducts.slice(0, 25).map((row) => (
-                  <tr
-                    key={row.id}
-                    className="border-b transition-colors hover:bg-muted/50"
-                  >
-                    <td className="p-4 text-muted-foreground">#{row.id}</td>
-                    <td className="p-4 font-medium">{row.name}</td>
-                    <td className="p-4">{row.category}</td>
-                    <td className="p-4 text-right">${row.price.toFixed(2)}</td>
-                    <td className="p-4 text-right">{row.stock}</td>
-                  </tr>
-                ))}
-              </tbody>
-              <tfoot className="sticky bottom-0 z-10 border-t bg-muted/50 font-medium">
-                <tr>
-                  <td className="p-4" colSpan={4}>
-                    Total Items
-                  </td>
-                  <td className="p-4 text-right">
-                    {manyProducts.slice(0, 25).reduce((s, r) => s + r.stock, 0)}
-                  </td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-        </ShowcaseExample>
+              ))}
+            </tbody>
+            <tfoot className="bg-muted/50 sticky bottom-0 z-10 border-t font-medium">
+              <tr>
+                <td className="p-4" colSpan={4}>
+                  Total Items
+                </td>
+                <td className="p-4 text-right">
+                  {manyProducts.slice(0, 25).reduce((s, r) => s + r.stock, 0)}
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Sortable columns"
-          code={`<Button variant="ghost" onClick={() => toggleSort("name")}>
+      <ShowcaseExample
+        title="Sortable columns"
+        code={`<Button variant="ghost" onClick={() => toggleSort("name")}>
   Product <ArrowUpDown className="ml-2 h-4 w-4" />
 </Button>`}
-        >
-          <SortableTable />
-        </ShowcaseExample>
+      >
+        <SortableTable />
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Row selection with checkbox"
-          code={`<TableRow data-state={selected ? "selected" : undefined}>
+      <ShowcaseExample
+        title="Row selection with checkbox"
+        code={`<TableRow data-state={selected ? "selected" : undefined}>
   <TableCell><Checkbox checked={selected} onCheckedChange={toggle} /></TableCell>
   ...
 </TableRow>`}
-        >
-          <SelectableTable />
-        </ShowcaseExample>
+      >
+        <SelectableTable />
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Filterable with search"
-          code={`const filtered = products.filter(p =>
+      <ShowcaseExample
+        title="Filterable with search"
+        code={`const filtered = products.filter(p =>
   p.name.toLowerCase().includes(search.toLowerCase())
 )
 // Empty state:
 <TableCell colSpan={4} className="h-24 text-center">No results.</TableCell>`}
-        >
-          <FilterableTable />
-        </ShowcaseExample>
+      >
+        <FilterableTable />
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Pagination"
-          code={`const paged = data.slice(page * pageSize, (page + 1) * pageSize)
+      <ShowcaseExample
+        title="Pagination"
+        code={`const paged = data.slice(page * pageSize, (page + 1) * pageSize)
 
 <Button onClick={() => setPage(page - 1)} disabled={page === 0}>
   <ChevronLeft />
 </Button>
 <span>Page {page + 1} of {totalPages}</span>`}
-        >
-          <PaginatedTable />
-        </ShowcaseExample>
+      >
+        <PaginatedTable />
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Striped rows"
-          code={`<TableRow className="even:bg-muted/30">...</TableRow>`}
-        >
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Product</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead className="text-right">Price</TableHead>
-                <TableHead className="text-right">Stock</TableHead>
+      <ShowcaseExample
+        title="Striped rows"
+        code={`<TableRow className="even:bg-muted/30">...</TableRow>`}
+      >
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Product</TableHead>
+              <TableHead>Category</TableHead>
+              <TableHead className="text-right">Price</TableHead>
+              <TableHead className="text-right">Stock</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {products.map((row) => (
+              <TableRow key={row.id} className="even:bg-muted/30">
+                <TableCell className="font-medium">{row.name}</TableCell>
+                <TableCell>{row.category}</TableCell>
+                <TableCell className="text-right">
+                  ${row.price.toFixed(2)}
+                </TableCell>
+                <TableCell className="text-right">{row.stock}</TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {products.map((row) => (
-                <TableRow key={row.id} className="even:bg-muted/30">
-                  <TableCell className="font-medium">{row.name}</TableCell>
-                  <TableCell>{row.category}</TableCell>
-                  <TableCell className="text-right">
-                    ${row.price.toFixed(2)}
-                  </TableCell>
-                  <TableCell className="text-right">{row.stock}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </ShowcaseExample>
+            ))}
+          </TableBody>
+        </Table>
+      </ShowcaseExample>
 
-        <ShowcaseExample
-          title="Compact / dense table"
-          code={`<TableHead className="h-8 px-2 text-xs">...</TableHead>
+      <ShowcaseExample
+        title="Compact / dense table"
+        code={`<TableHead className="h-8 px-2 text-xs">...</TableHead>
 <TableCell className="px-2 py-1 text-xs">...</TableCell>`}
-        >
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="h-8 px-2 text-xs">Product</TableHead>
-                <TableHead className="h-8 px-2 text-xs">Category</TableHead>
-                <TableHead className="h-8 px-2 text-right text-xs">
-                  Price
-                </TableHead>
-                <TableHead className="h-8 px-2 text-right text-xs">
-                  Stock
-                </TableHead>
+      >
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="h-8 px-2 text-xs">Product</TableHead>
+              <TableHead className="h-8 px-2 text-xs">Category</TableHead>
+              <TableHead className="h-8 px-2 text-right text-xs">
+                Price
+              </TableHead>
+              <TableHead className="h-8 px-2 text-right text-xs">
+                Stock
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {products.map((row) => (
+              <TableRow key={row.id}>
+                <TableCell className="px-2 py-1 text-xs font-medium">
+                  {row.name}
+                </TableCell>
+                <TableCell className="px-2 py-1 text-xs">
+                  {row.category}
+                </TableCell>
+                <TableCell className="px-2 py-1 text-right text-xs">
+                  ${row.price.toFixed(2)}
+                </TableCell>
+                <TableCell className="px-2 py-1 text-right text-xs">
+                  {row.stock}
+                </TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {products.map((row) => (
-                <TableRow key={row.id}>
-                  <TableCell className="px-2 py-1 text-xs font-medium">
-                    {row.name}
-                  </TableCell>
-                  <TableCell className="px-2 py-1 text-xs">
-                    {row.category}
-                  </TableCell>
-                  <TableCell className="px-2 py-1 text-right text-xs">
-                    ${row.price.toFixed(2)}
-                  </TableCell>
-                  <TableCell className="px-2 py-1 text-right text-xs">
-                    {row.stock}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </ShowcaseExample>
-      </div>
-    </div>
+            ))}
+          </TableBody>
+        </Table>
+      </ShowcaseExample>
+    </ShowcasePage>
   )
 }
