@@ -30,6 +30,11 @@ function TimeColumn({
 }) {
   const containerRef = useRef<HTMLDivElement>(null)
   const itemRefs = useRef<Map<string, HTMLButtonElement>>(new Map())
+  const [inputValue, setInputValue] = useState(value)
+
+  useEffect(() => {
+    setInputValue(value)
+  }, [value])
 
   useEffect(() => {
     const el = itemRefs.current.get(value)
@@ -38,29 +43,65 @@ function TimeColumn({
     }
   }, [value])
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/\D/g, "").slice(0, 2)
+    setInputValue(raw)
+    const padded = raw.padStart(2, "0")
+    if (raw.length > 0 && items.includes(padded)) {
+      onChange(padded)
+    }
+  }
+
+  const handleInputBlur = () => {
+    setInputValue(value)
+  }
+
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      const padded = inputValue.padStart(2, "0")
+      if (items.includes(padded)) {
+        onChange(padded)
+      }
+      setInputValue(value)
+      e.currentTarget.blur()
+    }
+  }
+
   return (
-    <ScrollArea className="h-52" ref={containerRef}>
-      <div className="flex flex-col py-1 pr-2">
-        {items.map((item) => (
-          <button
-            key={item}
-            ref={(el) => {
-              if (el) itemRefs.current.set(item, el)
-            }}
-            type="button"
-            onClick={() => onChange(item)}
-            className={cn(
-              "hover:bg-accent mx-1 rounded-md px-3 py-1.5 text-sm transition-colors",
-              value === item
-                ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                : "text-foreground",
-            )}
-          >
-            {item}
-          </button>
-        ))}
-      </div>
-    </ScrollArea>
+    <div className="flex flex-col">
+      <input
+        type="text"
+        inputMode="numeric"
+        value={inputValue}
+        onChange={handleInputChange}
+        onBlur={handleInputBlur}
+        onKeyDown={handleInputKeyDown}
+        onFocus={(e) => e.target.select()}
+        className="border-b bg-transparent px-3 py-2 text-center text-sm font-medium outline-none"
+      />
+      <ScrollArea className="h-48" ref={containerRef}>
+        <div className="flex flex-col py-1 pr-2">
+          {items.map((item) => (
+            <button
+              key={item}
+              ref={(el) => {
+                if (el) itemRefs.current.set(item, el)
+              }}
+              type="button"
+              onClick={() => onChange(item)}
+              className={cn(
+                "hover:bg-accent mx-1 rounded-md px-3 py-1.5 text-sm transition-colors",
+                value === item
+                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                  : "text-foreground",
+              )}
+            >
+              {item}
+            </button>
+          ))}
+        </div>
+      </ScrollArea>
+    </div>
   )
 }
 
