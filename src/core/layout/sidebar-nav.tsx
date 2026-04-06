@@ -52,12 +52,6 @@ function SidebarGroup({
 }: SidebarGroupProps) {
   return (
     <div className={cn("space-y-0.5", className)}>
-      {group.label && collapsed && (
-        <div
-          className="mx-3 my-2 h-px"
-          style={{ backgroundColor: "hsl(var(--sidebar-border))" }}
-        />
-      )}
       {group.label && !collapsed && (
         <p
           className="px-3 py-1 text-xs font-medium tracking-wider uppercase"
