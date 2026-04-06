@@ -31,7 +31,7 @@ function CalendarWithPresets() {
   ]
 
   return (
-    <div className="inline-flex flex-col rounded-md border">
+    <div className="inline-grid grid-rows-[min-content_auto] rounded-md border">
       <Calendar
         mode="single"
         selected={date}
@@ -302,7 +302,7 @@ function CalendarPage() {
   ]
 
   return (
-    <div className="inline-flex flex-col rounded-md border">
+    <div className="inline-grid grid-rows-[min-content_auto] rounded-md border">
       <Calendar
         mode="single"
         selected={date}
