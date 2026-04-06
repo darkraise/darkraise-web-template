@@ -24,6 +24,7 @@ export type {
   ColorScale,
   SurfaceStyleRecipe,
   ThemeContextValue,
+  ThemeSettings,
 } from "./types"
 export { themeConfig } from "./theme.config"
 export type { ThemeConfig } from "./theme.config"

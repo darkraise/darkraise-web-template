@@ -72,6 +72,15 @@ export interface SurfaceStyleRecipe {
   }
 }
 
+export interface ThemeSettings {
+  accentColor: AccentColor
+  surfaceColor: SurfaceColor
+  surfaceStyle: SurfaceStyle
+  backgroundStyle: BackgroundStyle
+  fontFamily: FontFamily
+  mode: Mode
+}
+
 export interface ThemeContextValue {
   accentColor: AccentColor
   surfaceColor: SurfaceColor

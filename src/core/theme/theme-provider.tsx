@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import type {
   AccentColor,
   BackgroundStyle,
@@ -8,6 +8,7 @@ import type {
   Mode,
   ResolvedMode,
   ThemeContextValue,
+  ThemeSettings,
 } from "./types"
 import { SURFACE_COLORS, SURFACE_STYLES } from "./types"
 import { generateTokens } from "./engine/generate-tokens"
@@ -40,7 +41,12 @@ function applyTokens(tokens: Record<string, string>) {
   }
 }
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
+interface ThemeProviderProps {
+  children: React.ReactNode
+  onChange?: (settings: ThemeSettings) => void
+}
+
+export function ThemeProvider({ children, onChange }: ThemeProviderProps) {
   const [accentColor, setAccentColorState] = useState<AccentColor>(() => {
     const stored = localStorage.getItem(LS_ACCENT)
     return (stored as AccentColor) || themeConfig.defaults.accentColor
@@ -83,6 +89,15 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     resolveMode(mode),
   )
 
+  const onChangeRef = useRef(onChange)
+  useEffect(() => {
+    onChangeRef.current = onChange
+  })
+
+  const notifyChange = useCallback((settings: ThemeSettings) => {
+    onChangeRef.current?.(settings)
+  }, [])
+
   const applyTheme = useCallback(
     (
       accent: AccentColor,
@@ -108,6 +123,26 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     [],
   )
 
+  const buildSettings = useCallback(
+    (overrides: Partial<ThemeSettings> = {}): ThemeSettings => ({
+      accentColor,
+      surfaceColor,
+      surfaceStyle,
+      backgroundStyle,
+      fontFamily,
+      mode,
+      ...overrides,
+    }),
+    [
+      accentColor,
+      surfaceColor,
+      surfaceStyle,
+      backgroundStyle,
+      fontFamily,
+      mode,
+    ],
+  )
+
   const setAccentColor = useCallback(
     (color: AccentColor) => {
       setAccentColorState(color)
@@ -120,9 +155,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         fontFamily,
         resolvedMode,
       )
+      notifyChange(buildSettings({ accentColor: color }))
     },
     [
       applyTheme,
+      notifyChange,
+      buildSettings,
       surfaceColor,
       surfaceStyle,
       backgroundStyle,
@@ -143,9 +181,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         fontFamily,
         resolvedMode,
       )
+      notifyChange(buildSettings({ surfaceColor: color }))
     },
     [
       applyTheme,
+      notifyChange,
+      buildSettings,
       accentColor,
       surfaceStyle,
       backgroundStyle,
@@ -166,9 +207,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         fontFamily,
         resolvedMode,
       )
+      notifyChange(buildSettings({ surfaceStyle: style }))
     },
     [
       applyTheme,
+      notifyChange,
+      buildSettings,
       accentColor,
       surfaceColor,
       backgroundStyle,
@@ -189,9 +233,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         fontFamily,
         resolvedMode,
       )
+      notifyChange(buildSettings({ backgroundStyle: bgStyle }))
     },
     [
       applyTheme,
+      notifyChange,
+      buildSettings,
       accentColor,
       surfaceColor,
       surfaceStyle,
@@ -212,9 +259,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         font,
         resolvedMode,
       )
+      notifyChange(buildSettings({ fontFamily: font }))
     },
     [
       applyTheme,
+      notifyChange,
+      buildSettings,
       accentColor,
       surfaceColor,
       surfaceStyle,
@@ -237,9 +287,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         fontFamily,
         resolved,
       )
+      notifyChange(buildSettings({ mode: m }))
     },
     [
       applyTheme,
+      notifyChange,
+      buildSettings,
       accentColor,
       surfaceColor,
       surfaceStyle,
