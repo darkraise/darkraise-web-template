@@ -180,6 +180,22 @@ function DatePicker({ value, onChange, className }: DatePickerProps) {
           })}
         </div>
       )}
+
+      <div className="mt-2 border-t pt-2">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="w-full text-xs"
+          onClick={() => {
+            const today = new Date()
+            setViewDate(today)
+            setView("days")
+            onChange?.(today)
+          }}
+        >
+          Today
+        </Button>
+      </div>
     </div>
   )
 }
