@@ -1,22 +1,12 @@
 import { useState } from "react"
-import { Link } from "@tanstack/react-router"
-import { PanelLeftClose, PanelLeft, ChevronRight } from "lucide-react"
+import { PanelLeftClose, PanelLeft } from "lucide-react"
 import { cn } from "@/core/lib/utils"
 import { Button } from "@/core/components/ui/button"
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/core/components/ui/collapsible"
 import { ScrollArea } from "@/core/components/ui/scroll-area"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/core/components/ui/tooltip"
+import { TooltipProvider } from "@/core/components/ui/tooltip"
 import { BrandLogo } from "./brand-logo"
 import { LayoutHeader } from "./layout-header"
+import { SidebarNav } from "./sidebar-nav"
 import type { LayoutProps } from "./types"
 
 export function SidebarLayout({ children, nav, headerSlot }: LayoutProps) {
@@ -25,7 +15,6 @@ export function SidebarLayout({ children, nav, headerSlot }: LayoutProps) {
   return (
     <TooltipProvider delayDuration={0}>
       <div className="flex h-screen overflow-hidden">
-        {/* Sidebar */}
         <aside
           className={cn(
             "sidebar-gradient-overlay theme-transition bg-surface-sidebar hidden flex-col border-r transition-all duration-300 md:flex",
@@ -33,7 +22,6 @@ export function SidebarLayout({ children, nav, headerSlot }: LayoutProps) {
           )}
           style={{ borderColor: "hsl(var(--sidebar-border))" }}
         >
-          {/* Logo */}
           <div
             className={cn(
               "flex h-14 items-center border-b px-4",
@@ -53,78 +41,10 @@ export function SidebarLayout({ children, nav, headerSlot }: LayoutProps) {
             )}
           </div>
 
-          {/* Nav */}
           <ScrollArea className="flex-1 py-4">
-            <nav className="flex flex-col gap-1 px-2">
-              {nav.map((group, gi) => {
-                const navItems = group.items.map((item) => {
-                  const linkContent = (
-                    <Link
-                      key={item.href}
-                      to={item.href}
-                      className={cn(
-                        "sidebar-nav-item flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors duration-150",
-                        collapsed && "justify-center px-0",
-                      )}
-                      activeOptions={{ exact: true }}
-                      activeProps={{ className: "active" }}
-                    >
-                      {item.icon && <item.icon className="h-4 w-4 shrink-0" />}
-                      {!collapsed && <span>{item.label}</span>}
-                      {!collapsed && item.badge && (
-                        <span className="bg-primary/20 text-primary ml-auto rounded-full px-2 py-0.5 text-xs">
-                          {item.badge}
-                        </span>
-                      )}
-                    </Link>
-                  )
-
-                  if (collapsed) {
-                    return (
-                      <Tooltip key={item.href}>
-                        <TooltipTrigger asChild>{linkContent}</TooltipTrigger>
-                        <TooltipContent side="right">
-                          {item.label}
-                        </TooltipContent>
-                      </Tooltip>
-                    )
-                  }
-                  return linkContent
-                })
-
-                if (group.label && !collapsed) {
-                  return (
-                    <Collapsible
-                      key={gi}
-                      defaultOpen
-                      className={cn(gi > 0 && "mt-4")}
-                    >
-                      <CollapsibleTrigger
-                        className="group/trigger flex w-full cursor-pointer items-center gap-1 px-3 py-1 text-xs font-medium tracking-wider uppercase"
-                        style={{
-                          color: "hsl(var(--sidebar-foreground-muted))",
-                        }}
-                      >
-                        <ChevronRight className="h-3 w-3 transition-transform group-data-[state=open]/trigger:rotate-90" />
-                        {group.label}
-                      </CollapsibleTrigger>
-                      <CollapsibleContent>
-                        <div className="mt-0.5 space-y-0.5">{navItems}</div>
-                      </CollapsibleContent>
-                    </Collapsible>
-                  )
-                }
-
-                return (
-                  <div key={gi} className={cn("space-y-0.5", gi > 0 && "mt-4")}>
-                    {navItems}
-                  </div>
-                )
-              })}
-            </nav>
+            <SidebarNav nav={nav} collapsed={collapsed} />
           </ScrollArea>
 
-          {/* Collapse toggle */}
           <div
             className="border-t p-2"
             style={{ borderColor: "hsl(var(--sidebar-border))" }}
@@ -144,16 +64,12 @@ export function SidebarLayout({ children, nav, headerSlot }: LayoutProps) {
           </div>
         </aside>
 
-        {/* Main area */}
         <div className="flex flex-1 flex-col overflow-hidden">
-          {/* Global header */}
           <LayoutHeader
             nav={nav}
             headerSlot={headerSlot}
             className="header-gradient-overlay theme-transition"
           />
-
-          {/* Content */}
           <main className="flex-1 overflow-y-auto p-6" data-content>
             {children}
           </main>
