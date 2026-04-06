@@ -31,7 +31,7 @@ function CalendarWithPresets() {
   ]
 
   return (
-    <div className="inline-grid grid-rows-[min-content_auto] rounded-md border">
+    <div className="w-fit rounded-md border">
       <Calendar
         mode="single"
         selected={date}
@@ -39,7 +39,7 @@ function CalendarWithPresets() {
         month={date}
         className="border-0"
       />
-      <div className="flex flex-wrap gap-1.5 border-t p-3">
+      <div className="flex w-0 min-w-full flex-wrap gap-1.5 border-t p-3">
         {presets.map((preset) => (
           <Button
             key={preset.label}
@@ -302,7 +302,7 @@ function CalendarPage() {
   ]
 
   return (
-    <div className="inline-grid grid-rows-[min-content_auto] rounded-md border">
+    <div className="w-fit rounded-md border">
       <Calendar
         mode="single"
         selected={date}
@@ -310,7 +310,7 @@ function CalendarPage() {
         month={date}
         className="border-0"
       />
-      <div className="flex flex-wrap gap-1.5 border-t p-3">
+      <div className="flex w-0 min-w-full flex-wrap gap-1.5 border-t p-3">
         {presets.map((preset) => (
           <Button
             key={preset.label}
