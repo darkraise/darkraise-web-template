@@ -40,7 +40,7 @@ function TimeColumn({
 
   return (
     <ScrollArea className="h-52" ref={containerRef}>
-      <div className="flex flex-col py-1">
+      <div className="flex flex-col py-1 pr-2">
         {items.map((item) => (
           <button
             key={item}
