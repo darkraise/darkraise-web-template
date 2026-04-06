@@ -123,6 +123,7 @@ const nav: NavGroup[] = [
         icon: Wrench,
         children: [
           { label: "Customization", href: "/components/customization" },
+          { label: "Error Pages", href: "/components/error-pages" },
           { label: "Recipes", href: "/components/recipes" },
           { label: "More", href: "/components/more-components" },
         ],
