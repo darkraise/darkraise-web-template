@@ -33,6 +33,7 @@ import {
   ArrowLeftRight,
   MoreHorizontal,
   LayoutPanelLeft,
+  Activity,
 } from "lucide-react"
 import { PageHeader } from "@/core/layout"
 
@@ -181,6 +182,12 @@ const COMPONENTS = [
     label: "Pagination",
     description: "Page navigation with numbered links and ellipsis",
     icon: ArrowLeftRight,
+  },
+  {
+    href: "/components/progress",
+    label: "Progress",
+    description: "Horizontal progress bar with value and animation support",
+    icon: Activity,
   },
   {
     href: "/components/recipes",

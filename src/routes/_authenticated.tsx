@@ -42,6 +42,7 @@ import {
   ArrowLeftRight,
   MoreHorizontal,
   LayoutPanelLeft,
+  Activity,
 } from "lucide-react"
 import { SidebarLayout, TopNavLayout, StackedLayout } from "@/core/layout"
 import { useLayoutStore } from "@/core/layout/layout-store"
@@ -146,6 +147,7 @@ const nav: NavGroup[] = [
         href: "/components/pagination",
         icon: ArrowLeftRight,
       },
+      { label: "Progress", href: "/components/progress", icon: Activity },
       { label: "Recipes", href: "/components/recipes", icon: CookingPot },
       {
         label: "Scroll Area",
