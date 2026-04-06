@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { useState } from "react"
+import { Eye, EyeOff, X } from "lucide-react"
 import { PageHeader } from "@/core/layout"
 import { Button } from "@/core/components/ui/button"
 import { Input } from "@/core/components/ui/input"
@@ -20,6 +21,73 @@ import { ShowcaseExample } from "./_components/-showcase-example"
 export const Route = createFileRoute("/_authenticated/components/inputs")({
   component: InputsPage,
 })
+
+function ClearableInputExample() {
+  const [value, setValue] = useState("")
+  return (
+    <div className="relative">
+      <Input
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        placeholder="Type to search..."
+        className="pr-8"
+      />
+      {value && (
+        <X
+          className="text-muted-foreground hover:text-foreground absolute top-1/2 right-2 h-4 w-4 -translate-y-1/2 cursor-pointer"
+          onClick={() => setValue("")}
+        />
+      )}
+    </div>
+  )
+}
+
+function PasswordInputExample() {
+  const [showPassword, setShowPassword] = useState(false)
+  return (
+    <div className="relative">
+      <Input
+        type={showPassword ? "text" : "password"}
+        defaultValue="supersecret123"
+        className="pr-10"
+      />
+      <button
+        type="button"
+        onClick={() => setShowPassword((p) => !p)}
+        className="text-muted-foreground hover:text-foreground absolute top-1/2 right-2 -translate-y-1/2"
+      >
+        {showPassword ? (
+          <EyeOff className="h-4 w-4" />
+        ) : (
+          <Eye className="h-4 w-4" />
+        )}
+      </button>
+    </div>
+  )
+}
+
+function CharCountTextareaExample() {
+  const [value, setValue] = useState(
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore.",
+  )
+  const countColor =
+    value.length > 270
+      ? "text-destructive"
+      : value.length > 240
+        ? "text-amber-500"
+        : "text-muted-foreground"
+  return (
+    <div className="space-y-1">
+      <Textarea
+        maxLength={280}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        rows={4}
+      />
+      <p className={`text-right text-xs ${countColor}`}>{value.length} / 280</p>
+    </div>
+  )
+}
 
 function InputsPage() {
   const [selectValue, setSelectValue] = useState("")
@@ -283,6 +351,129 @@ function InputsPage() {
           <div className="flex max-w-sm gap-2">
             <Input placeholder="Enter email address..." />
             <Button>Subscribe</Button>
+          </div>
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Prefix / suffix input"
+          code={`{/* URL prefix */}
+<div className="flex rounded-md border border-input overflow-hidden">
+  <span className="bg-muted px-3 flex items-center text-sm text-muted-foreground border-r border-input">
+    https://
+  </span>
+  <Input className="border-0 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" placeholder="example.com" />
+</div>
+
+{/* Currency prefix + suffix */}
+<div className="flex rounded-md border border-input overflow-hidden">
+  <span className="bg-muted px-3 flex items-center text-sm text-muted-foreground border-r border-input">$</span>
+  <Input className="border-0 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" placeholder="0.00" />
+  <span className="bg-muted px-3 flex items-center text-sm text-muted-foreground border-l border-input">.00</span>
+</div>`}
+        >
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label>URL</Label>
+              <div className="border-input flex overflow-hidden rounded-md border">
+                <span className="border-input bg-muted text-muted-foreground flex items-center border-r px-3 text-sm">
+                  https://
+                </span>
+                <Input
+                  className="rounded-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                  placeholder="example.com"
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Currency</Label>
+              <div className="border-input flex overflow-hidden rounded-md border">
+                <span className="border-input bg-muted text-muted-foreground flex items-center border-r px-3 text-sm">
+                  $
+                </span>
+                <Input
+                  className="rounded-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                  placeholder="0.00"
+                />
+                <span className="border-input bg-muted text-muted-foreground flex items-center border-l px-3 text-sm">
+                  .00
+                </span>
+              </div>
+            </div>
+          </div>
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Clearable input"
+          code={`function ClearableInputExample() {
+  const [value, setValue] = useState("")
+  return (
+    <div className="relative">
+      <Input
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        placeholder="Type to search..."
+        className="pr-8"
+      />
+      {value && (
+        <X
+          className="absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 cursor-pointer text-muted-foreground hover:text-foreground"
+          onClick={() => setValue("")}
+        />
+      )}
+    </div>
+  )
+}`}
+        >
+          <div className="max-w-sm">
+            <ClearableInputExample />
+          </div>
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Password visibility toggle"
+          code={`function PasswordInputExample() {
+  const [showPassword, setShowPassword] = useState(false)
+  return (
+    <div className="relative">
+      <Input
+        type={showPassword ? "text" : "password"}
+        defaultValue="supersecret123"
+        className="pr-10"
+      />
+      <button
+        type="button"
+        onClick={() => setShowPassword((p) => !p)}
+        className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+      >
+        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+      </button>
+    </div>
+  )
+}`}
+        >
+          <div className="max-w-sm">
+            <PasswordInputExample />
+          </div>
+        </ShowcaseExample>
+
+        <ShowcaseExample
+          title="Character count textarea"
+          code={`function CharCountTextareaExample() {
+  const [value, setValue] = useState("Lorem ipsum...")
+  const countColor =
+    value.length > 270 ? "text-destructive"
+    : value.length > 240 ? "text-amber-500"
+    : "text-muted-foreground"
+  return (
+    <div className="space-y-1">
+      <Textarea maxLength={280} value={value} onChange={(e) => setValue(e.target.value)} rows={4} />
+      <p className={\`text-right text-xs \${countColor}\`}>{value.length} / 280</p>
+    </div>
+  )
+}`}
+        >
+          <div className="max-w-sm">
+            <CharCountTextareaExample />
           </div>
         </ShowcaseExample>
       </div>
