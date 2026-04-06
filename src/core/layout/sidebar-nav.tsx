@@ -32,7 +32,7 @@ function SidebarNav({ nav, collapsed = false }: SidebarNavProps) {
           key={gi}
           group={group}
           collapsed={collapsed}
-          className={gi > 0 ? "mt-4" : undefined}
+          className={gi > 0 ? (collapsed ? "mt-1" : "mt-4") : undefined}
         />
       ))}
     </nav>
