@@ -194,13 +194,13 @@ function TimePicker({
           variant="outline"
           disabled={disabled}
           className={cn(
-            "justify-start text-left font-normal",
+            "h-8 justify-between text-left font-normal",
             !value && "text-muted-foreground",
             className,
           )}
         >
-          <Clock className="text-muted-foreground mr-2 h-4 w-4" />
           {value ? displayValue : placeholder}
+          <Clock className="text-muted-foreground ml-2 h-3.5 w-3.5" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto overflow-hidden p-0" align="start">

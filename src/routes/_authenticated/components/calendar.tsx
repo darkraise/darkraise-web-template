@@ -69,12 +69,12 @@ function DateTimePicker() {
         onSelect={setDate}
         className="border-0"
       />
-      <div className="space-y-3 border-t p-3">
-        <div className="space-y-1.5">
+      <div className="space-y-2 border-t p-3">
+        <div className="flex items-center justify-between gap-2">
           <Label className="text-xs">Start Time</Label>
           <TimePicker value={startTime} onChange={setStartTime} />
         </div>
-        <div className="space-y-1.5">
+        <div className="flex items-center justify-between gap-2">
           <Label className="text-xs">End Time</Label>
           <TimePicker value={endTime} onChange={setEndTime} />
         </div>
@@ -324,12 +324,12 @@ function CalendarPage() {
   return (
     <div className="w-fit rounded-md border">
       <Calendar mode="single" selected={date} onSelect={setDate} className="border-0" />
-      <div className="border-t p-3 space-y-3">
-        <div className="space-y-1.5">
+      <div className="border-t p-3 space-y-2">
+        <div className="flex items-center justify-between gap-2">
           <Label className="text-xs">Start Time</Label>
           <TimePicker value={startTime} onChange={setStartTime} />
         </div>
-        <div className="space-y-1.5">
+        <div className="flex items-center justify-between gap-2">
           <Label className="text-xs">End Time</Label>
           <TimePicker value={endTime} onChange={setEndTime} />
         </div>
