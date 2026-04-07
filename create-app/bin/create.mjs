@@ -478,28 +478,27 @@ export const themeConfig: ThemeConfig = {
 
   const imports = [
     `import { ThemeProvider } from "darkraise-ui/theme"`,
+    `import { ${layoutComponent} } from "darkraise-ui/layout"`,
+    `import { themeConfig } from "./theme.config"`,
   ]
-  if (config.theme.switcher.enabled) {
-    imports.push(`import { ThemeSwitcher } from "darkraise-ui/theme"`)
-  }
-  imports.push(`import { ${layoutComponent} } from "darkraise-ui/layout"`)
-  imports.push(`import { themeConfig } from "./theme.config"`)
 
-  const themeSwitcherJsx = config.theme.switcher.enabled
-    ? "\n          <ThemeSwitcher config={themeConfig} />"
-    : ""
+  const showThemeSwitcher = config.theme.switcher.enabled
 
   const appTsx = `${imports.join("\n")}
 
 export function App() {
   return (
     <ThemeProvider config={themeConfig}>
-      <${layoutComponent} nav={[]}>
+      <${layoutComponent}
+        nav={[]}
+        themeConfig={themeConfig}
+        showThemeSwitcher={${showThemeSwitcher}}
+      >
         <div className="flex flex-col items-center justify-center gap-4 py-16">
           <h1 className="text-4xl font-medium">Welcome</h1>
           <p className="text-muted-foreground">
             Your project is ready. Start building in src/app.tsx
-          </p>${themeSwitcherJsx}
+          </p>
         </div>
       </${layoutComponent}>
     </ThemeProvider>
