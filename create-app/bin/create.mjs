@@ -412,36 +412,7 @@ createRoot(document.getElementById("root")!).render(
   writeProjectFile(targetDir, "src/main.tsx", mainTsx)
 
   // --- src/theme.config.ts ---
-  const themeConfigContent = `import type {
-  AccentColor,
-  SurfaceColor,
-  SurfaceStyle,
-  BackgroundStyle,
-  FontFamily,
-  Mode,
-} from "darkraise-ui/theme"
-
-export interface ThemeConfig {
-  defaults: {
-    accentColor: AccentColor
-    surfaceColor: SurfaceColor
-    surfaceStyle: SurfaceStyle
-    backgroundStyle: BackgroundStyle
-    fontFamily: FontFamily
-    mode: Mode
-  }
-  switcher: {
-    enabled: boolean
-    axes: {
-      mode: boolean
-      accentColor: boolean
-      surfaceColor: boolean
-      surfaceStyle: boolean
-      backgroundStyle: boolean
-      fontFamily: boolean
-    }
-  }
-}
+  const themeConfigContent = `import type { ThemeConfig } from "darkraise-ui/theme"
 
 export const themeConfig: ThemeConfig = {
   defaults: {
@@ -491,7 +462,6 @@ export function App() {
     <ThemeProvider config={themeConfig}>
       <${layoutComponent}
         nav={[]}
-        themeConfig={themeConfig}
         showThemeSwitcher={${showThemeSwitcher}}
       >
         <div className="flex flex-col items-center justify-center gap-4 py-16">
