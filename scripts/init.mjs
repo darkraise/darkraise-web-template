@@ -1,6 +1,14 @@
 #!/usr/bin/env node
 
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs"
+/**
+ * Standalone initializer for projects that already have darkraise-ui installed.
+ * Generates theme.config.ts and app.tsx from a config JSON argument.
+ *
+ * Usage:
+ *   node scripts/init.mjs <project-name> [config-json]
+ */
+
+import { mkdirSync, writeFileSync } from "fs"
 import { basename, resolve } from "path"
 
 const projectDir = resolve(import.meta.dirname, "..")
@@ -63,49 +71,7 @@ if (args[1]) {
 
 console.log(`\nInitializing project: ${projectName}\n`)
 
-// 1. Remove demo-specific code
-const removeDirs = [
-  "src/demo",
-  "src/routes",
-  "src/features/charts",
-  "src/features/dashboard",
-  "src/features/data-table",
-  "src/features/products",
-  "create-app",
-  "docs",
-  ".tanstack",
-  "e2e",
-  "playwright-report",
-  "test-results",
-  "dist",
-]
-
-const removeFiles = [
-  "playwright.config.ts",
-  "components.json",
-]
-
-for (const file of removeFiles) {
-  const fullPath = resolve(projectDir, file)
-  if (existsSync(fullPath)) {
-    rmSync(fullPath)
-    console.log(`  Removed ${file}`)
-  }
-}
-
-if (!config.auth) {
-  removeDirs.push("src/features/auth")
-}
-
-for (const dir of removeDirs) {
-  const fullPath = resolve(projectDir, dir)
-  if (existsSync(fullPath)) {
-    rmSync(fullPath, { recursive: true })
-    console.log(`  Removed ${dir}/`)
-  }
-}
-
-// 2. Generate theme.config.ts
+// 1. Generate theme.config.ts
 const themeConfigContent = `import type {
   AccentColor,
   SurfaceColor,
@@ -113,7 +79,7 @@ const themeConfigContent = `import type {
   BackgroundStyle,
   FontFamily,
   Mode,
-} from "./types"
+} from "darkraise-ui/theme"
 
 export interface ThemeConfig {
   defaults: {
@@ -159,24 +125,25 @@ export const themeConfig: ThemeConfig = {
   },
 }
 `
-writeFileSync(resolve(projectDir, "src/core/theme/theme.config.ts"), themeConfigContent)
-console.log("  Generated src/core/theme/theme.config.ts")
+mkdirSync(resolve(projectDir, "src"), { recursive: true })
+writeFileSync(resolve(projectDir, "src/theme.config.ts"), themeConfigContent)
+console.log("  Generated src/theme.config.ts")
 
-// 3. Generate app.tsx with chosen layout
+// 2. Generate app.tsx with chosen layout
 const layoutMap = {
-  sidebar: { component: "SidebarLayout", import: "SidebarLayout" },
-  stacked: { component: "StackedLayout", import: "StackedLayout" },
-  "top-nav": { component: "TopNavLayout", import: "TopNavLayout" },
-  "split-panel": { component: "SplitPanelLayout", import: "SplitPanelLayout" },
+  sidebar: "SidebarLayout",
+  stacked: "StackedLayout",
+  "top-nav": "TopNavLayout",
+  "split-panel": "SplitPanelLayout",
 }
 
-const layoutInfo = layoutMap[config.layout] || layoutMap.sidebar
+const layoutComponent = layoutMap[config.layout] || layoutMap.sidebar
 
-const imports = [`import { ThemeProvider } from "@/core/theme"`]
+const imports = [`import { ThemeProvider } from "darkraise-ui/theme"`]
 if (config.theme.switcher.enabled) {
-  imports.push(`import { ThemeSwitcher } from "@/core/theme"`)
+  imports.push(`import { ThemeSwitcher } from "darkraise-ui/theme"`)
 }
-imports.push(`import { ${layoutInfo.import} } from "@/core/layout"`)
+imports.push(`import { ${layoutComponent} } from "darkraise-ui/layout"`)
 
 const themeSwitcherJsx = config.theme.switcher.enabled
   ? "\n          <ThemeSwitcher />"
@@ -187,14 +154,14 @@ const appTsx = `${imports.join("\n")}
 export function App() {
   return (
     <ThemeProvider>
-      <${layoutInfo.component} nav={[]}>
+      <${layoutComponent} nav={[]}>
         <div className="flex flex-col items-center justify-center gap-4 py-16">
           <h1 className="text-4xl font-medium">Welcome</h1>
           <p className="text-muted-foreground">
-            Your project is ready. Start building in src/App.tsx
+            Your project is ready. Start building in src/app.tsx
           </p>${themeSwitcherJsx}
         </div>
-      </${layoutInfo.component}>
+      </${layoutComponent}>
     </ThemeProvider>
   )
 }
@@ -202,60 +169,19 @@ export function App() {
 writeFileSync(resolve(projectDir, "src/app.tsx"), appTsx)
 console.log("  Created src/app.tsx")
 
-// 4. Create minimal routes directory with placeholder
-mkdirSync(resolve(projectDir, "src/routes"), { recursive: true })
-console.log("  Created src/routes/")
+// 3. Generate globals.css
+mkdirSync(resolve(projectDir, "src/styles"), { recursive: true })
+writeFileSync(resolve(projectDir, "src/styles/globals.css"), '@import "darkraise-ui/styles.css";\n')
+console.log("  Created src/styles/globals.css")
 
-// 5. Update package.json
-const pkgPath = resolve(projectDir, "package.json")
-const pkg = JSON.parse(readFileSync(pkgPath, "utf-8"))
-pkg.name = projectName
-pkg.version = "0.1.0"
-delete pkg.repository
-delete pkg.bugs
-delete pkg.homepage
-
-const demoDeps = [
-  "@tanstack/react-form",
-  "@tanstack/react-query",
-  "@tanstack/react-table",
-  "recharts",
-  "zustand",
-]
-for (const dep of demoDeps) {
-  delete pkg.dependencies[dep]
-}
-
-const demoDevDeps = [
-  "@tanstack/router-plugin",
-  "@playwright/test",
-  "@vitest/browser-playwright",
-  "playwright",
-]
-for (const dep of demoDevDeps) {
-  delete pkg.devDependencies[dep]
-}
-
-delete pkg.scripts["test:e2e"]
-delete pkg.scripts["build:analyze"]
-
-writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n")
-console.log("  Updated package.json")
-
-// 6. Update index.html title
-const htmlPath = resolve(projectDir, "index.html")
-let html = readFileSync(htmlPath, "utf-8")
-html = html.replace("<title>Web Template</title>", `<title>${projectName}</title>`)
-writeFileSync(htmlPath, html)
-console.log("  Updated index.html title")
-
-// 7. Generate vite.config.ts
+// 4. Generate vite.config.ts
 const viteConfig = `import { defineConfig } from "vite"
 import react from "@vitejs/plugin-react-swc"
+import tailwindcss from "@tailwindcss/vite"
 import path from "node:path"
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -270,26 +196,18 @@ export default defineConfig({
 writeFileSync(resolve(projectDir, "vite.config.ts"), viteConfig)
 console.log("  Generated vite.config.ts")
 
-// 8. Clean up init script and scripts dir
-rmSync(resolve(projectDir, "scripts"), { recursive: true })
-console.log("  Removed scripts/")
-
-const authNote = config.auth
-  ? "  - Auth flow in src/features/auth/"
-  : ""
-
 console.log(`
 Done! Next steps:
 
   npm install
   npm run dev
 
-The template includes:
-  - 48 UI components in src/core/components/ui/
-  - 39 hooks in src/core/hooks/ (async, storage, DOM sensors, state, lifecycle)
-  - 6-axis theming system (accent, surface, style, background, font, mode)
-  - 4 layout variants (sidebar, stacked, top-nav, split-panel)
-  - Error pages (404, 500, error boundary, maintenance) in src/core/errors/
-  - Storybook with theme-aware decorators
-  - TypeScript strict mode, ESLint, Prettier, Husky hooks
-${authNote}`)
+The project uses darkraise-ui which includes:
+  - 47 UI components (import from "darkraise-ui/components/*")
+  - 38 hooks (import from "darkraise-ui/hooks")
+  - 6-axis theming system (import from "darkraise-ui/theme")
+  - 4 layout variants (import from "darkraise-ui/layout")
+  - Error pages (import from "darkraise-ui/errors")
+  - Form helpers (import from "darkraise-ui/forms")
+  - Data table (import from "darkraise-ui/data-table")
+`)
