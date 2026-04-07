@@ -39,7 +39,7 @@ export const WithContent: Story = {
       <TabsContent value="account">
         <div className="rounded-md border p-4 text-sm">
           <p className="font-medium">Account</p>
-          <p className="mt-1 text-muted-foreground">
+          <p className="text-muted-foreground mt-1">
             Manage your account details and preferences here.
           </p>
         </div>
@@ -47,7 +47,7 @@ export const WithContent: Story = {
       <TabsContent value="password">
         <div className="rounded-md border p-4 text-sm">
           <p className="font-medium">Password</p>
-          <p className="mt-1 text-muted-foreground">
+          <p className="text-muted-foreground mt-1">
             Change your password and configure two-factor authentication.
           </p>
         </div>
@@ -55,7 +55,7 @@ export const WithContent: Story = {
       <TabsContent value="settings">
         <div className="rounded-md border p-4 text-sm">
           <p className="font-medium">Settings</p>
-          <p className="mt-1 text-muted-foreground">
+          <p className="text-muted-foreground mt-1">
             Adjust notifications, privacy, and display settings.
           </p>
         </div>
@@ -75,10 +75,10 @@ export const WithDisabledTab: Story = {
         <TabsTrigger value="other">Other</TabsTrigger>
       </TabsList>
       <TabsContent value="active">
-        <p className="p-2 text-sm text-muted-foreground">Active tab content.</p>
+        <p className="text-muted-foreground p-2 text-sm">Active tab content.</p>
       </TabsContent>
       <TabsContent value="other">
-        <p className="p-2 text-sm text-muted-foreground">Other tab content.</p>
+        <p className="text-muted-foreground p-2 text-sm">Other tab content.</p>
       </TabsContent>
     </Tabs>
   ),

@@ -17,7 +17,7 @@ export function NotificationBell({ count = 0 }: NotificationBellProps) {
         <Button variant="ghost" size="icon" className="relative">
           <Bell className="h-4 w-4" />
           {count > 0 && (
-            <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-medium text-destructive-foreground">
+            <span className="bg-destructive text-destructive-foreground absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-medium">
               {count > 9 ? "9+" : count}
             </span>
           )}
@@ -25,7 +25,7 @@ export function NotificationBell({ count = 0 }: NotificationBellProps) {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80" align="end">
-        <div className="py-6 text-center text-sm text-muted-foreground">
+        <div className="text-muted-foreground py-6 text-center text-sm">
           No new notifications
         </div>
       </PopoverContent>

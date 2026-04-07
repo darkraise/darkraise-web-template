@@ -38,7 +38,7 @@ export const WithHeaderAndFooter: Story = {
         <CardDescription>Card description goes here.</CardDescription>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
           The main body of the card. Add any content here.
         </p>
       </CardContent>

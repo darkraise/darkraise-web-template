@@ -34,7 +34,7 @@ export const Basic: Story = {
             This is the dialog description. It provides additional context.
           </DialogDescription>
         </DialogHeader>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
           Dialog body content goes here.
         </p>
         <DialogFooter>

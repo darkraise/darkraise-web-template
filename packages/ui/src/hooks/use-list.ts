@@ -23,9 +23,9 @@ export type ListActions<T> = {
     newItem: T,
   ) => void
   sort: (compareFn?: (a: T, b: T) => number) => void
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   filter: (
     callbackFn: (value: T, index?: number, array?: T[]) => boolean,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     thisArg?: any,
   ) => void
   removeAt: (index: number) => void
