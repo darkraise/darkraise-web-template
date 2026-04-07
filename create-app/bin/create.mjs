@@ -41,7 +41,6 @@ function resolveBoolFlag(argv, name) {
 }
 
 const themeSwitcherFlag = resolveBoolFlag(argv, "theme-switcher")
-const authFlag = resolveBoolFlag(argv, "auth")
 
 function validate(value, allowed, label) {
   if (value !== undefined && !allowed.includes(value)) {
@@ -216,21 +215,6 @@ async function main() {
     p.log.warn("--theme-axes is ignored when theme switcher is disabled.")
   }
 
-  // --- Auth ---
-  let includeAuth
-  if (authFlag !== undefined) {
-    includeAuth = authFlag
-  } else if (skipPrompts) {
-    includeAuth = true
-  } else {
-    includeAuth = cancelled(
-      await p.confirm({
-        message: "Include auth flow?",
-        initialValue: true,
-      }),
-    )
-  }
-
   // --- Server ---
   const host = argv.host || (skipPrompts ? "localhost" : cancelled(
     await p.text({
@@ -275,7 +259,6 @@ async function main() {
         ),
       },
     },
-    auth: includeAuth,
     server: { host, port },
   }
 
