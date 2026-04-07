@@ -4,19 +4,19 @@ import {
   ChevronsLeft,
   ChevronsRight,
 } from "lucide-react"
-import { Button } from "@/core/components/ui/button"
+import { Button } from "../../components/button"
 import {
   Pagination,
   PaginationContent,
   PaginationItem,
-} from "@/core/components/ui/pagination"
+} from "../../components/pagination"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/core/components/ui/select"
+} from "../../components/select"
 import type { DataTablePaginationProps } from "../types"
 
 export function DataTablePagination<TData>({

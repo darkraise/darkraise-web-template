@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef } from "react"
-import { cn } from "@/core/lib/utils"
-import { useEventListener } from "@/core/hooks"
+import { cn } from "../lib/utils"
+import { useEventListener } from "../hooks"
 import { SearchCommand } from "./search-command"
 import { BrandLogo } from "./brand-logo"
 import { LayoutHeader } from "./layout-header"

@@ -5,7 +5,7 @@ import {
   FieldLabel,
   FieldDescription,
   FieldError,
-} from "@/core/components/ui/field"
+} from "../../components/field"
 
 interface FieldWrapperProps extends Omit<
   ComponentPropsWithoutRef<typeof Field>,

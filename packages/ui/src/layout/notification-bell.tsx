@@ -1,10 +1,6 @@
 import { Bell } from "lucide-react"
-import { Button } from "@/core/components/ui/button"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/core/components/ui/popover"
+import { Button } from "../components/button"
+import { Popover, PopoverContent, PopoverTrigger } from "../components/popover"
 
 interface NotificationBellProps {
   count?: number

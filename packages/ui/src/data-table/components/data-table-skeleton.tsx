@@ -1,4 +1,4 @@
-import { Skeleton } from "@/core/components/ui/skeleton"
+import { Skeleton } from "../../components/skeleton"
 
 interface DataTableSkeletonProps {
   columnCount: number

@@ -1,12 +1,12 @@
 import { Menu } from "lucide-react"
-import { Button } from "@/core/components/ui/button"
+import { Button } from "../components/button"
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/core/components/ui/sheet"
+} from "../components/sheet"
 import { SidebarNav } from "./sidebar-nav"
 import type { NavGroup } from "./types"
 

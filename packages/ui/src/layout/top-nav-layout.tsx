@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router"
-import { cn } from "@/core/lib/utils"
+import { cn } from "../lib/utils"
 import { SearchCommand } from "./search-command"
 import { BrandLogo } from "./brand-logo"
 import { LayoutHeader } from "./layout-header"

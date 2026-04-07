@@ -1,14 +1,14 @@
 import * as React from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 
-import { cn } from "@/core/lib/utils"
+import { cn } from "../lib/utils"
 import {
   overlayBackdropClass,
   overlayDescriptionClass,
   overlayFooterClass,
   overlayHeaderClass,
   OverlayCloseButton,
-} from "@/core/components/ui/overlay-primitives"
+} from "./overlay-primitives"
 
 const Dialog = DialogPrimitive.Root
 

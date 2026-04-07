@@ -1,22 +1,14 @@
 import { useState } from "react"
 import { Link } from "@tanstack/react-router"
 import { ChevronRight } from "lucide-react"
-import { cn } from "@/core/lib/utils"
+import { cn } from "../lib/utils"
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/core/components/ui/collapsible"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/core/components/ui/popover"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/core/components/ui/tooltip"
+} from "../components/collapsible"
+import { Popover, PopoverContent, PopoverTrigger } from "../components/popover"
+import { Tooltip, TooltipContent, TooltipTrigger } from "../components/tooltip"
 import type { NavGroup, NavItem } from "./types"
 
 interface SidebarNavProps {

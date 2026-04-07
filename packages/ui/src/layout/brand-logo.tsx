@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { cn } from "@/core/lib/utils"
+import { cn } from "../lib/utils"
 import { useBrandStore } from "./brand-store"
 
 const LOGO_CANDIDATES = ["/logo.svg", "/logo.png", "/logo.webp", "/logo.jpg"]

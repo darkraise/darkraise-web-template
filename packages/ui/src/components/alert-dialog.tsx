@@ -1,14 +1,14 @@
 import * as React from "react"
 import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog"
 
-import { cn } from "@/core/lib/utils"
-import { buttonVariants } from "@/core/components/ui/button"
+import { cn } from "../lib/utils"
+import { buttonVariants } from "./button"
 import {
   overlayBackdropClass,
   overlayDescriptionClass,
   overlayFooterClass,
   overlayHeaderClass,
-} from "@/core/components/ui/overlay-primitives"
+} from "./overlay-primitives"
 
 const AlertDialog = AlertDialogPrimitive.Root
 

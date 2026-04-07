@@ -1,7 +1,7 @@
 import { useRouter } from "@tanstack/react-router"
 import type { ErrorComponentProps } from "@tanstack/react-router"
 import { TriangleAlert } from "lucide-react"
-import { Button } from "@/core/components/ui/button"
+import { Button } from "../components/button"
 import { ErrorLayout } from "./error-layout"
 
 export function ErrorPage({ error, reset }: ErrorComponentProps) {

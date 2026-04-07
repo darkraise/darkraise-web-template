@@ -1,13 +1,9 @@
 import { Moon, Sun, Monitor, Palette, Square, Blend } from "lucide-react"
-import { Button } from "@/core/components/ui/button"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/core/components/ui/popover"
-import { Label } from "@/core/components/ui/label"
-import { Separator } from "@/core/components/ui/separator"
-import { cn } from "@/core/lib/utils"
+import { Button } from "../components/button"
+import { Popover, PopoverContent, PopoverTrigger } from "../components/popover"
+import { Label } from "../components/label"
+import { Separator } from "../components/separator"
+import { cn } from "../lib/utils"
 import { useTheme } from "./use-theme"
 import {
   ACCENT_COLORS,

@@ -1,5 +1,5 @@
-import { RadioGroup, RadioGroupItem } from "@/core/components/ui/radio-group"
-import { Label } from "@/core/components/ui/label"
+import { RadioGroup, RadioGroupItem } from "../../components/radio-group"
+import { Label } from "../../components/label"
 import { FieldWrapper } from "./field-wrapper"
 import type { BaseFieldProps } from "../types"
 

@@ -6,9 +6,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/core/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback } from "@/core/components/ui/avatar"
-import { Button } from "@/core/components/ui/button"
+} from "../components/dropdown-menu"
+import { Avatar, AvatarFallback } from "../components/avatar"
+import { Button } from "../components/button"
 
 interface UserMenuProps {
   user?: { name: string; email: string }

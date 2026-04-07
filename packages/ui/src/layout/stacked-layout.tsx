@@ -1,13 +1,13 @@
 import { Link, useRouterState } from "@tanstack/react-router"
-import { cn } from "@/core/lib/utils"
-import { ScrollArea } from "@/core/components/ui/scroll-area"
+import { cn } from "../lib/utils"
+import { ScrollArea } from "../components/scroll-area"
 import { SidebarItem } from "./sidebar-nav"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/core/components/ui/tooltip"
+} from "../components/tooltip"
 import { LayoutHeader } from "./layout-header"
 import type { LayoutProps } from "./types"
 

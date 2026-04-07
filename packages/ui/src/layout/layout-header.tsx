@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
-import { cn } from "@/core/lib/utils"
-import { ThemeSwitcher } from "@/core/theme"
+import { cn } from "../lib/utils"
+import { ThemeSwitcher } from "../theme"
 import { SearchCommand } from "./search-command"
 import { UserMenu } from "./user-menu"
 import { NotificationBell } from "./notification-bell"

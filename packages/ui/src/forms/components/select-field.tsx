@@ -4,7 +4,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/core/components/ui/select"
+} from "../../components/select"
 import { FieldWrapper } from "./field-wrapper"
 import type { BaseFieldProps } from "../types"
 

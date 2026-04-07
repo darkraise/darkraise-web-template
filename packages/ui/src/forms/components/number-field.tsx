@@ -1,4 +1,4 @@
-import { Input } from "@/core/components/ui/input"
+import { Input } from "../../components/input"
 import { FieldWrapper } from "./field-wrapper"
 import type { BaseFieldProps } from "../types"
 

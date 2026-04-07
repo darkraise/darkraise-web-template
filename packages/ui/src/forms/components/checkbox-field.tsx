@@ -1,10 +1,10 @@
-import { Checkbox } from "@/core/components/ui/checkbox"
+import { Checkbox } from "../../components/checkbox"
 import {
   Field,
   FieldLabel,
   FieldDescription,
   FieldError,
-} from "@/core/components/ui/field"
+} from "../../components/field"
 import type { AnyFieldApi } from "@tanstack/react-form"
 
 interface CheckboxFieldProps {

@@ -1,4 +1,4 @@
-import { Textarea } from "@/core/components/ui/textarea"
+import { Textarea } from "../../components/textarea"
 import { FieldWrapper } from "./field-wrapper"
 import type { BaseFieldProps } from "../types"
 

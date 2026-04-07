@@ -1,13 +1,9 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react"
 import { Clock } from "lucide-react"
-import { cn } from "@/core/lib/utils"
-import { Button } from "@/core/components/ui/button"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/core/components/ui/popover"
-import { ScrollArea } from "@/core/components/ui/scroll-area"
+import { cn } from "../lib/utils"
+import { Button } from "./button"
+import { Popover, PopoverContent, PopoverTrigger } from "./popover"
+import { ScrollArea } from "./scroll-area"
 
 interface TimePickerProps {
   value?: string

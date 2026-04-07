@@ -1,4 +1,4 @@
-import { FieldSet, FieldLegend, FieldGroup } from "@/core/components/ui/field"
+import { FieldSet, FieldLegend, FieldGroup } from "../../components/field"
 import type { FormSectionProps } from "../types"
 
 export function FormSection({

@@ -8,7 +8,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/core/components/ui/breadcrumb"
+} from "../components/breadcrumb"
 
 export function PageHeader({
   breadcrumbs,

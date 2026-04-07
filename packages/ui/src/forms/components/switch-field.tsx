@@ -1,10 +1,10 @@
-import { Switch } from "@/core/components/ui/switch"
+import { Switch } from "../../components/switch"
 import {
   Field,
   FieldLabel,
   FieldDescription,
   FieldError,
-} from "@/core/components/ui/field"
+} from "../../components/field"
 import type { AnyFieldApi } from "@tanstack/react-form"
 
 interface SwitchFieldProps {

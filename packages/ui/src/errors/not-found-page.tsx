@@ -1,6 +1,6 @@
 import { useRouter } from "@tanstack/react-router"
 import { FileQuestion } from "lucide-react"
-import { Button } from "@/core/components/ui/button"
+import { Button } from "../components/button"
 import { ErrorLayout } from "./error-layout"
 
 export function NotFoundPage() {
