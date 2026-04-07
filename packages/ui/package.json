@@ -1,6 +1,6 @@
 {
   "name": "darkraise-ui",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "React 19 UI kit with 47 themed components, 38 hooks, 6-axis theming, and layout variants",
   "type": "module",
   "sideEffects": false,
