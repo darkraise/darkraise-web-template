@@ -35,10 +35,6 @@ export const useSessionStorageValue: UseSessionStorageValue =
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         _options?: UseStorageValueOptions<Type, Initialize>,
       ): UseStorageValueResult<Type, Default, Initialize> => {
-        if (isBrowser && process.env.NODE_ENV === "development") {
-          console.warn("SessionStorage is not available in this environment")
-        }
-
         return {
           value: undefined as Type,
           set: noop,

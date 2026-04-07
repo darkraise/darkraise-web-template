@@ -268,12 +268,6 @@ export function useStorageValue<
 
 const defaultStringify = (data: unknown): string | null => {
   if (data === null) {
-    if (process.env.NODE_ENV === "development") {
-      console.warn(
-        "'null' is not a valid data for useStorageValue hook, this operation will take no effect",
-      )
-    }
-
     return null
   }
 

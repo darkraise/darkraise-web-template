@@ -17,7 +17,7 @@ export type {
   NavItem,
   NavGroup,
   LayoutProps,
-  BreadcrumbItem,
+  BreadcrumbNavItem,
   TabItem,
   PageHeaderProps,
 } from "./types"

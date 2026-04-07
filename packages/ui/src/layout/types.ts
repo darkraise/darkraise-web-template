@@ -20,7 +20,7 @@ export interface LayoutProps {
   headerSlot?: ReactNode
 }
 
-export interface BreadcrumbItem {
+export interface BreadcrumbNavItem {
   label: string
   href?: string
 }
@@ -32,7 +32,7 @@ export interface TabItem {
 }
 
 export interface PageHeaderProps {
-  breadcrumbs?: BreadcrumbItem[]
+  breadcrumbs?: BreadcrumbNavItem[]
   title: string
   description?: string
   actions?: ReactNode
