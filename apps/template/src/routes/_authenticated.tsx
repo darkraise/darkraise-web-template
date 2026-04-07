@@ -148,20 +148,20 @@ export const Route = createFileRoute("/_authenticated")({
     switch (layout) {
       case "top-nav":
         return (
-          <TopNavLayout nav={nav}>
+          <TopNavLayout nav={nav} showLayoutSwitcher>
             <Outlet />
           </TopNavLayout>
         )
       case "stacked":
         return (
-          <StackedLayout nav={nav}>
+          <StackedLayout nav={nav} showLayoutSwitcher>
             <Outlet />
           </StackedLayout>
         )
       case "sidebar":
       default:
         return (
-          <SidebarLayout nav={nav}>
+          <SidebarLayout nav={nav} showLayoutSwitcher>
             <Outlet />
           </SidebarLayout>
         )

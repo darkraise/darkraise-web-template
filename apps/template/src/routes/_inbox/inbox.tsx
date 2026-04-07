@@ -90,7 +90,7 @@ function InboxPage() {
   )
 
   return (
-    <SplitPanelLayout nav={inboxNav} panel={panel}>
+    <SplitPanelLayout nav={inboxNav} panel={panel} showLayoutSwitcher>
       {selectedMessage ? (
         <div className="space-y-6">
           <div>
