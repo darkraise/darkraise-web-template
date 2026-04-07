@@ -279,9 +279,9 @@ async function main() {
       lint: "eslint src/",
     },
     dependencies: {
-      "darkraise-ui": "^1.0.0",
-      react: "^19.0.0",
-      "react-dom": "^19.0.0",
+      "darkraise-ui": "latest",
+      react: "latest",
+      "react-dom": "latest",
     },
     devDependencies: {
       "@tailwindcss/vite": "^4.0.0",
