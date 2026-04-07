@@ -1,5 +1,7 @@
 node_modules
-dist
+dist/
+packages/ui/dist/
+apps/template/dist/
 dist-ssr
 *.local
 .env

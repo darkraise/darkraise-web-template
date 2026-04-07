@@ -1,12 +1,12 @@
 import type { Preview } from "@storybook/react"
-import "../src/styles/globals.css"
-import { generateTokens } from "../src/core/theme/engine/generate-tokens"
-import { ACCENT_COLORS, SURFACE_STYLES } from "../src/core/theme/types"
+import "../src/styles/theme.css"
+import { generateTokens } from "../src/theme/engine/generate-tokens"
+import { ACCENT_COLORS, SURFACE_STYLES } from "../src/theme/types"
 import type {
   AccentColor,
   SurfaceStyle,
   ResolvedMode,
-} from "../src/core/theme/types"
+} from "../src/theme/types"
 
 const preview: Preview = {
   parameters: {
