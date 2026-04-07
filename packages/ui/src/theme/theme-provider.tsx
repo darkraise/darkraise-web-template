@@ -14,7 +14,7 @@ import { SURFACE_COLORS, SURFACE_STYLES } from "./types"
 import { generateTokens } from "./engine/generate-tokens"
 import { loadFont, applyFontFamily } from "./engine/font-loader"
 import { ThemeContext } from "./theme-context"
-import { themeConfig } from "./theme.config"
+import { themeConfig, type ThemeConfig } from "./theme.config"
 
 const LS_ACCENT = "theme-accent"
 const LS_SURFACE_COLOR = "theme-surface-color"
@@ -43,13 +43,19 @@ function applyTokens(tokens: Record<string, string>) {
 
 interface ThemeProviderProps {
   children: React.ReactNode
+  config?: ThemeConfig
   onChange?: (settings: ThemeSettings) => void
 }
 
-export function ThemeProvider({ children, onChange }: ThemeProviderProps) {
+export function ThemeProvider({
+  children,
+  config,
+  onChange,
+}: ThemeProviderProps) {
+  const cfg = config ?? themeConfig
   const [accentColor, setAccentColorState] = useState<AccentColor>(() => {
     const stored = localStorage.getItem(LS_ACCENT)
-    return (stored as AccentColor) || themeConfig.defaults.accentColor
+    return (stored as AccentColor) || cfg.defaults.accentColor
   })
 
   const [surfaceColor, setSurfaceColorState] = useState<SurfaceColor>(() => {
@@ -57,7 +63,7 @@ export function ThemeProvider({ children, onChange }: ThemeProviderProps) {
     if (stored && (SURFACE_COLORS as readonly string[]).includes(stored)) {
       return stored as SurfaceColor
     }
-    return themeConfig.defaults.surfaceColor
+    return cfg.defaults.surfaceColor
   })
 
   const [surfaceStyle, setSurfaceStyleState] = useState<SurfaceStyle>(() => {
@@ -65,24 +71,24 @@ export function ThemeProvider({ children, onChange }: ThemeProviderProps) {
     if (stored && (SURFACE_STYLES as readonly string[]).includes(stored)) {
       return stored as SurfaceStyle
     }
-    return themeConfig.defaults.surfaceStyle
+    return cfg.defaults.surfaceStyle
   })
 
   const [backgroundStyle, setBackgroundStyleState] = useState<BackgroundStyle>(
     () => {
       const stored = localStorage.getItem(LS_BG_STYLE)
-      return (stored as BackgroundStyle) || themeConfig.defaults.backgroundStyle
+      return (stored as BackgroundStyle) || cfg.defaults.backgroundStyle
     },
   )
 
   const [fontFamily, setFontFamilyState] = useState<FontFamily>(() => {
     const stored = localStorage.getItem(LS_FONT)
-    return (stored as FontFamily) || themeConfig.defaults.fontFamily
+    return (stored as FontFamily) || cfg.defaults.fontFamily
   })
 
   const [mode, setModeState] = useState<Mode>(() => {
     const stored = localStorage.getItem(LS_MODE)
-    return (stored as Mode) || themeConfig.defaults.mode
+    return (stored as Mode) || cfg.defaults.mode
   })
 
   const [resolvedMode, setResolvedMode] = useState<ResolvedMode>(() =>

@@ -477,21 +477,24 @@ export const themeConfig: ThemeConfig = {
   }
   const layoutComponent = layoutMap[config.layout] || layoutMap.sidebar
 
-  const imports = [`import { ThemeProvider } from "darkraise-ui/theme"`]
+  const imports = [
+    `import { ThemeProvider } from "darkraise-ui/theme"`,
+  ]
   if (config.theme.switcher.enabled) {
     imports.push(`import { ThemeSwitcher } from "darkraise-ui/theme"`)
   }
   imports.push(`import { ${layoutComponent} } from "darkraise-ui/layout"`)
+  imports.push(`import { themeConfig } from "./theme.config"`)
 
   const themeSwitcherJsx = config.theme.switcher.enabled
-    ? "\n          <ThemeSwitcher />"
+    ? "\n          <ThemeSwitcher config={themeConfig} />"
     : ""
 
   const appTsx = `${imports.join("\n")}
 
 export function App() {
   return (
-    <ThemeProvider>
+    <ThemeProvider config={themeConfig}>
       <${layoutComponent} nav={[]}>
         <div className="flex flex-col items-center justify-center gap-4 py-16">
           <h1 className="text-4xl font-medium">Welcome</h1>

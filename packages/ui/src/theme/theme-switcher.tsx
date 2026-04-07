@@ -22,7 +22,7 @@ import type {
 import { accentColors } from "./palettes/accent-colors"
 import { surfaceStyles } from "./styles/surface-styles"
 import { fontFamilies } from "./palettes/font-families"
-import { themeConfig } from "./theme.config"
+import { themeConfig, type ThemeConfig } from "./theme.config"
 
 const modeOptions: { value: Mode; icon: typeof Sun; label: string }[] = [
   { value: "light", icon: Sun, label: "Light" },
@@ -30,7 +30,11 @@ const modeOptions: { value: Mode; icon: typeof Sun; label: string }[] = [
   { value: "system", icon: Monitor, label: "System" },
 ]
 
-export function ThemeSwitcher() {
+interface ThemeSwitcherProps {
+  config?: ThemeConfig
+}
+
+export function ThemeSwitcher({ config }: ThemeSwitcherProps = {}) {
   const {
     accentColor,
     surfaceColor,
@@ -55,7 +59,7 @@ export function ThemeSwitcher() {
     { value: "gradient", icon: Blend, label: "Gradient" },
   ]
 
-  const { axes } = themeConfig.switcher
+  const { axes } = (config ?? themeConfig).switcher
 
   const visibleSections = [
     axes.mode && (
