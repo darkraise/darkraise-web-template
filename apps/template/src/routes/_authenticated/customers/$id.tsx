@@ -106,9 +106,9 @@ function CustomerDetailPage() {
             </Avatar>
             <div>
               <h2 className="text-xl font-medium">{customer.name}</h2>
-              <p className="text-sm text-muted-foreground">{customer.email}</p>
+              <p className="text-muted-foreground text-sm">{customer.email}</p>
               {customer.phone && (
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   {customer.phone}
                 </p>
               )}
@@ -149,19 +149,19 @@ function CustomerDetailPage() {
               <CardContent className="space-y-3">
                 <div>
                   <p className="text-sm font-medium">Email</p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-muted-foreground text-sm">
                     {customer.email}
                   </p>
                 </div>
                 <div>
                   <p className="text-sm font-medium">Phone</p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-muted-foreground text-sm">
                     {customer.phone ?? "Not provided"}
                   </p>
                 </div>
                 <div>
                   <p className="text-sm font-medium">Member Since</p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-muted-foreground text-sm">
                     {new Date(customer.createdAt).toLocaleDateString("en-US", {
                       year: "numeric",
                       month: "long",

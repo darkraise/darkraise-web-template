@@ -130,7 +130,7 @@ function OrderDetailPage() {
                 <span
                   className={`text-sm capitalize ${
                     i <= currentStepIndex
-                      ? "font-medium text-foreground"
+                      ? "text-foreground font-medium"
                       : "text-muted-foreground"
                   }`}
                 >
@@ -211,7 +211,7 @@ function OrderDetailPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-muted-foreground text-sm">
                       {order.shippingAddress}
                     </p>
                   </CardContent>
@@ -224,7 +224,7 @@ function OrderDetailPage() {
                     <CardTitle className="text-base">Order Notes</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-muted-foreground text-sm">
                       No notes for this order.
                     </p>
                   </CardContent>
@@ -253,14 +253,14 @@ function OrderDetailPage() {
               </CardHeader>
               <CardContent className="space-y-2">
                 <p className="text-sm font-medium">{order.customer.name}</p>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   {order.customer.email}
                 </p>
                 <Separator />
                 <Link
                   to="/customers/$id"
                   params={{ id: order.customer.id }}
-                  className="text-sm text-primary hover:underline"
+                  className="text-primary text-sm hover:underline"
                 >
                   View customer profile
                 </Link>

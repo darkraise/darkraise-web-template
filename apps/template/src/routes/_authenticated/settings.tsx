@@ -266,19 +266,19 @@ function BillingSettings() {
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">
+              <span className="text-muted-foreground text-sm">
                 Monthly price
               </span>
               <span className="text-sm font-medium">$49/month</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">
+              <span className="text-muted-foreground text-sm">
                 Billing cycle
               </span>
               <span className="text-sm font-medium">Monthly</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">
+              <span className="text-muted-foreground text-sm">
                 Next billing date
               </span>
               <span className="text-sm font-medium">May 1, 2026</span>
@@ -300,19 +300,19 @@ function BillingSettings() {
           <CardContent className="space-y-3 pt-6">
             <div>
               <p className="text-sm font-medium">Billing Email</p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 billing@example.com
               </p>
             </div>
             <div>
               <p className="text-sm font-medium">Payment Method</p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 Visa ending in 4242
               </p>
             </div>
             <div>
               <p className="text-sm font-medium">Billing Address</p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 123 Business Ave, Suite 100, San Francisco, CA 94102
               </p>
             </div>

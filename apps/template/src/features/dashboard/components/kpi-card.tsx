@@ -14,12 +14,12 @@ export function KPICard({
   return (
     <Card className="transition-all duration-200 hover:-translate-y-px hover:shadow-md">
       <CardContent className="p-6">
-        <p className="text-sm text-muted-foreground">{label}</p>
+        <p className="text-muted-foreground text-sm">{label}</p>
         <div className="mt-2 flex items-end justify-between">
           <div>
             <p className="text-2xl font-medium">{value}</p>
             {comparison && (
-              <p className="text-xs text-muted-foreground">{comparison}</p>
+              <p className="text-muted-foreground text-xs">{comparison}</p>
             )}
           </div>
           {sparklineData && sparklineData.length > 1 && (

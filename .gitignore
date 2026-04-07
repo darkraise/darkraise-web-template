@@ -16,7 +16,7 @@ coverage
 test-results
 playwright-report
 storybook-static
-src/routeTree.gen.ts
+apps/template/src/routeTree.gen.ts
 .superpowers
 .claude/**
 docs/superpowers/

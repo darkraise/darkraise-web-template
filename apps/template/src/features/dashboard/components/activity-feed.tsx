@@ -38,7 +38,7 @@ export function ActivityFeed({
                   <span className="font-medium">{item.user.name}</span>{" "}
                   {item.action}
                 </p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-muted-foreground text-xs">
                   {item.timestamp}
                 </p>
               </div>

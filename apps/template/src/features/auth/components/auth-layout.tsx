@@ -114,14 +114,14 @@ export function AuthLayout({ children }: { children: ReactNode }) {
               }}
             />
             <div
-              className="absolute -bottom-3 -right-3 h-20 w-20 rounded-xl"
+              className="absolute -right-3 -bottom-3 h-20 w-20 rounded-xl"
               style={{
                 background: `linear-gradient(135deg, hsl(var(--chart-2) / 0.15), hsl(var(--chart-3) / 0.15))`,
                 border: "1px solid hsl(var(--chart-2) / 0.1)",
               }}
             />
             <div
-              className="absolute -left-4 -top-4 h-12 w-12 rounded-lg"
+              className="absolute -top-4 -left-4 h-12 w-12 rounded-lg"
               style={{
                 background: `hsl(var(--primary) / 0.12)`,
                 border: "1px solid hsl(var(--primary) / 0.08)",

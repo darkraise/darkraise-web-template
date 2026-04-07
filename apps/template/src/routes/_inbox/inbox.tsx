@@ -28,13 +28,13 @@ function InboxPage() {
 
   const panel = (
     <ScrollArea className="h-full">
-      <div className="divide-y divide-border">
+      <div className="divide-border divide-y">
         {messages?.map((message) => (
           <button
             key={message.id}
             onClick={() => handleSelect(message.id)}
             className={cn(
-              "w-full px-4 py-3 text-left transition-colors hover:bg-accent",
+              "hover:bg-accent w-full px-4 py-3 text-left transition-colors",
               selectedId === message.id && "bg-accent",
               !message.isRead && "bg-accent/50",
             )}
@@ -58,7 +58,7 @@ function InboxPage() {
                   >
                     {message.from.name}
                   </span>
-                  <span className="shrink-0 text-xs text-muted-foreground">
+                  <span className="text-muted-foreground shrink-0 text-xs">
                     {new Date(message.createdAt).toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
@@ -69,18 +69,18 @@ function InboxPage() {
                   className={cn(
                     "truncate text-sm",
                     !message.isRead
-                      ? "font-medium text-foreground"
+                      ? "text-foreground font-medium"
                       : "text-muted-foreground",
                   )}
                 >
                   {message.subject}
                 </p>
-                <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                <p className="text-muted-foreground mt-0.5 truncate text-xs">
                   {message.body.slice(0, 80)}...
                 </p>
               </div>
               {!message.isRead && (
-                <div className="mt-2 h-2 w-2 shrink-0 rounded-full bg-primary" />
+                <div className="bg-primary mt-2 h-2 w-2 shrink-0 rounded-full" />
               )}
             </div>
           </button>
@@ -108,7 +108,7 @@ function InboxPage() {
                 <p className="text-sm font-medium">
                   {selectedMessage.from.name}
                 </p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-muted-foreground text-xs">
                   {selectedMessage.from.email} &middot;{" "}
                   {new Date(selectedMessage.createdAt).toLocaleDateString(
                     "en-US",
@@ -124,7 +124,7 @@ function InboxPage() {
               </div>
             </div>
           </div>
-          <div className="whitespace-pre-wrap text-sm leading-relaxed text-foreground">
+          <div className="text-foreground text-sm leading-relaxed whitespace-pre-wrap">
             {selectedMessage.body}
           </div>
         </div>

@@ -65,7 +65,7 @@ function CategoriesPage() {
       accessorKey: "slug",
       header: ({ column }) => <ColumnHeader column={column} title="Slug" />,
       cell: ({ row }) => (
-        <span className="font-mono text-sm text-muted-foreground">
+        <span className="text-muted-foreground font-mono text-sm">
           {row.original.slug}
         </span>
       ),

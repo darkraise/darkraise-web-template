@@ -8,8 +8,8 @@ export function StatCard({ label, value, icon: Icon, trend }: StatCardProps) {
     <Card className="transition-all duration-200 hover:-translate-y-px hover:shadow-md">
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">{label}</p>
-          {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
+          <p className="text-muted-foreground text-sm">{label}</p>
+          {Icon && <Icon className="text-muted-foreground h-4 w-4" />}
         </div>
         <p className="mt-2 text-2xl font-medium">{value}</p>
         {trend && (
