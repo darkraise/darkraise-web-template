@@ -5,7 +5,14 @@ import { BrandLogo } from "./brand-logo"
 import { LayoutHeader } from "./layout-header"
 import type { LayoutProps } from "./types"
 
-export function TopNavLayout({ children, nav, headerSlot }: LayoutProps) {
+export function TopNavLayout({
+  children,
+  nav,
+  headerSlot,
+  showLayoutSwitcher,
+  showThemeSwitcher,
+  themeConfig,
+}: LayoutProps) {
   const flatNavItems = nav.flatMap((g) =>
     g.items.map((i) => ({ label: i.label, href: i.href })),
   )
@@ -15,6 +22,9 @@ export function TopNavLayout({ children, nav, headerSlot }: LayoutProps) {
       <LayoutHeader
         nav={nav}
         className="gap-4"
+        showLayoutSwitcher={showLayoutSwitcher}
+        showThemeSwitcher={showThemeSwitcher}
+        themeConfig={themeConfig}
         headerSlot={
           <>
             <SearchCommand navItems={flatNavItems} />

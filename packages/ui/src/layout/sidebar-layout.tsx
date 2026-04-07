@@ -9,7 +9,14 @@ import { LayoutHeader } from "./layout-header"
 import { SidebarNav } from "./sidebar-nav"
 import type { LayoutProps } from "./types"
 
-export function SidebarLayout({ children, nav, headerSlot }: LayoutProps) {
+export function SidebarLayout({
+  children,
+  nav,
+  headerSlot,
+  showLayoutSwitcher,
+  showThemeSwitcher,
+  themeConfig,
+}: LayoutProps) {
   const [collapsed, setCollapsed] = useState(false)
 
   return (
@@ -60,6 +67,9 @@ export function SidebarLayout({ children, nav, headerSlot }: LayoutProps) {
             nav={nav}
             headerSlot={headerSlot}
             className="header-gradient-overlay theme-transition"
+            showLayoutSwitcher={showLayoutSwitcher}
+            showThemeSwitcher={showThemeSwitcher}
+            themeConfig={themeConfig}
           />
           <main className="flex-1 overflow-y-auto p-6" data-content>
             {children}

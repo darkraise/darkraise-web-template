@@ -11,7 +11,14 @@ import {
 import { LayoutHeader } from "./layout-header"
 import type { LayoutProps } from "./types"
 
-export function StackedLayout({ children, nav, headerSlot }: LayoutProps) {
+export function StackedLayout({
+  children,
+  nav,
+  headerSlot,
+  showLayoutSwitcher,
+  showThemeSwitcher,
+  themeConfig,
+}: LayoutProps) {
   const routerState = useRouterState()
   const currentPath = routerState.location.pathname
 
@@ -77,7 +84,13 @@ export function StackedLayout({ children, nav, headerSlot }: LayoutProps) {
 
         {/* Main area */}
         <div className="flex flex-1 flex-col overflow-hidden">
-          <LayoutHeader nav={nav} headerSlot={headerSlot} />
+          <LayoutHeader
+            nav={nav}
+            headerSlot={headerSlot}
+            showLayoutSwitcher={showLayoutSwitcher}
+            showThemeSwitcher={showThemeSwitcher}
+            themeConfig={themeConfig}
+          />
 
           <main className="flex-1 overflow-y-auto p-6">{children}</main>
         </div>

@@ -18,6 +18,9 @@ export function SplitPanelLayout({
   children,
   nav,
   headerSlot,
+  showLayoutSwitcher,
+  showThemeSwitcher,
+  themeConfig,
   panel,
   defaultPanelWidth = 320,
   minPanelWidth = 240,
@@ -43,7 +46,14 @@ export function SplitPanelLayout({
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
-      <LayoutHeader nav={nav} headerSlot={headerSlot} className="gap-4">
+      <LayoutHeader
+        nav={nav}
+        headerSlot={headerSlot}
+        className="gap-4"
+        showLayoutSwitcher={showLayoutSwitcher}
+        showThemeSwitcher={showThemeSwitcher}
+        themeConfig={themeConfig}
+      >
         <BrandLogo />
         <SearchCommand
           navItems={nav.flatMap((g) =>

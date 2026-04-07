@@ -1,6 +1,7 @@
 import type { ReactNode } from "react"
 import { cn } from "../lib/utils"
 import { ThemeSwitcher } from "../theme"
+import type { ThemeConfig } from "../theme/theme.config"
 import { SearchCommand } from "./search-command"
 import { UserMenu } from "./user-menu"
 import { NotificationBell } from "./notification-bell"
@@ -13,6 +14,9 @@ interface LayoutHeaderProps {
   headerSlot?: ReactNode
   className?: string
   children?: ReactNode
+  showLayoutSwitcher?: boolean
+  showThemeSwitcher?: boolean
+  themeConfig?: ThemeConfig
 }
 
 export function LayoutHeader({
@@ -20,6 +24,9 @@ export function LayoutHeader({
   headerSlot,
   className,
   children,
+  showLayoutSwitcher = false,
+  showThemeSwitcher = true,
+  themeConfig,
 }: LayoutHeaderProps) {
   const flatNavItems = nav.flatMap((g) =>
     g.items.map((i) => ({ label: i.label, href: i.href })),
@@ -36,8 +43,8 @@ export function LayoutHeader({
       {children ?? <SearchCommand navItems={flatNavItems} />}
       <div className="ml-auto flex items-center gap-1">
         {headerSlot}
-        <LayoutSwitcher />
-        <ThemeSwitcher />
+        {showLayoutSwitcher && <LayoutSwitcher />}
+        {showThemeSwitcher && <ThemeSwitcher config={themeConfig} />}
         <NotificationBell />
         <UserMenu />
       </div>
