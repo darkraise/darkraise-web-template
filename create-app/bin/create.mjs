@@ -525,12 +525,11 @@ dist
   execFileSync("npm", ["install"], { cwd: targetDir, stdio: "inherit", shell: true })
 
   p.log.step("Initializing git repository...")
-  execFileSync("git", ["init"], { cwd: targetDir, stdio: "inherit", shell: true })
-  execFileSync("git", ["add", "-A"], { cwd: targetDir, stdio: "inherit", shell: true })
+  execFileSync("git", ["init"], { cwd: targetDir, stdio: "inherit" })
+  execFileSync("git", ["add", "-A"], { cwd: targetDir, stdio: "inherit" })
   execFileSync("git", ["commit", "-m", "chore: initialize project"], {
     cwd: targetDir,
     stdio: "inherit",
-    shell: true,
   })
 
   p.outro(`Success! Created ${projectName} at ${targetDir}
