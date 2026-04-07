@@ -13,7 +13,7 @@ import {
   YAxis,
   CartesianGrid,
 } from "recharts"
-import { PageHeader } from "@/core/layout"
+import { PageHeader } from "darkraise-ui/layout"
 import {
   ChartCard,
   ChartContainer,

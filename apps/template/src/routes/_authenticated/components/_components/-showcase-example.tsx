@@ -4,7 +4,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/core/components/ui/accordion"
+} from "darkraise-ui/components/accordion"
 
 export function ShowcaseExample({
   title,

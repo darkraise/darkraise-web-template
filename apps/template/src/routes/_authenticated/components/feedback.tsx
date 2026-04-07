@@ -2,10 +2,14 @@ import { useState, useEffect, useRef } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import { toast } from "sonner"
 import { Info, CircleCheck, TriangleAlert, OctagonX, X } from "lucide-react"
-import { Button } from "@/core/components/ui/button"
-import { Card, CardContent } from "@/core/components/ui/card"
-import { Alert, AlertDescription, AlertTitle } from "@/core/components/ui/alert"
-import { Progress } from "@/core/components/ui/progress"
+import { Button } from "darkraise-ui/components/button"
+import { Card, CardContent } from "darkraise-ui/components/card"
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "darkraise-ui/components/alert"
+import { Progress } from "darkraise-ui/components/progress"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
@@ -297,7 +301,7 @@ toast("Extended notice", { duration: 8000 })`}
 
       <ShowcaseExample
         title="Inline alert banner"
-        code={`import { Alert, AlertTitle, AlertDescription } from "@/core/components/ui/alert"
+        code={`import { Alert, AlertTitle, AlertDescription } from "darkraise-ui/components/alert"
 
 <Alert className="border-l-4 border-l-blue-500 bg-blue-50 dark:bg-blue-950/30">
   <Info className="h-4 w-4" />
@@ -353,7 +357,7 @@ toast("Extended notice", { duration: 8000 })`}
 
       <ShowcaseExample
         title="Progress feedback"
-        code={`import { Progress } from "@/core/components/ui/progress"
+        code={`import { Progress } from "darkraise-ui/components/progress"
 
 const [progress, setProgress] = useState(0)
 const [running, setRunning] = useState(false)

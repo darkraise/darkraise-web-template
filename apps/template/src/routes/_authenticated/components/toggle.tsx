@@ -8,8 +8,11 @@ import {
   AlignCenter,
   AlignRight,
 } from "lucide-react"
-import { Toggle } from "@/core/components/ui/toggle"
-import { ToggleGroup, ToggleGroupItem } from "@/core/components/ui/toggle-group"
+import { Toggle } from "darkraise-ui/components/toggle"
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+} from "darkraise-ui/components/toggle-group"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 

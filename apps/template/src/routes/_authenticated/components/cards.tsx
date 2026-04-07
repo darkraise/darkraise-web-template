@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { Button } from "@/core/components/ui/button"
+import { Button } from "darkraise-ui/components/button"
 import {
   Card,
   CardContent,
@@ -7,10 +7,10 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/core/components/ui/card"
-import { Badge } from "@/core/components/ui/badge"
+} from "darkraise-ui/components/card"
+import { Badge } from "darkraise-ui/components/badge"
 import { TrendingUp, Image, MessageCircle, X, Bell } from "lucide-react"
-import { Avatar, AvatarFallback } from "@/core/components/ui/avatar"
+import { Avatar, AvatarFallback } from "darkraise-ui/components/avatar"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 

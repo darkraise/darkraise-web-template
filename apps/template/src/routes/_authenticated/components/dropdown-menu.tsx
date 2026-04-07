@@ -7,10 +7,10 @@ import {
   ContextMenuItem,
   ContextMenuSeparator,
   ContextMenuTrigger,
-} from "@/core/components/ui/context-menu"
-import { Button } from "@/core/components/ui/button"
-import { Input } from "@/core/components/ui/input"
-import { Avatar, AvatarFallback } from "@/core/components/ui/avatar"
+} from "darkraise-ui/components/context-menu"
+import { Button } from "darkraise-ui/components/button"
+import { Input } from "darkraise-ui/components/input"
+import { Avatar, AvatarFallback } from "darkraise-ui/components/avatar"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -24,7 +24,7 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "@/core/components/ui/dropdown-menu"
+} from "darkraise-ui/components/dropdown-menu"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
@@ -313,7 +313,7 @@ function DropdownMenuPage() {
   ContextMenuItem,
   ContextMenuSeparator,
   ContextMenuTrigger,
-} from "@/core/components/ui/context-menu"
+} from "darkraise-ui/components/context-menu"
 
 <ContextMenu>
   <ContextMenuTrigger asChild>

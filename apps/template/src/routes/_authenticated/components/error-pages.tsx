@@ -1,8 +1,8 @@
 import { useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import { FileQuestion, TriangleAlert, ServerCrash, Wrench } from "lucide-react"
-import { Button } from "@/core/components/ui/button"
-import { ErrorLayout } from "@/core/errors"
+import { Button } from "darkraise-ui/components/button"
+import { ErrorLayout } from "darkraise-ui/errors"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
@@ -143,7 +143,7 @@ function ErrorPagesShowcase() {
     >
       <ShowcaseExample
         title="404 — Not found"
-        code={`import { NotFoundPage } from "@/core/errors"
+        code={`import { NotFoundPage } from "darkraise-ui/errors"
 
 // Wired automatically via TanStack Router:
 // - createRouter({ defaultNotFoundComponent: NotFoundPage })
@@ -169,7 +169,7 @@ function ErrorPagesShowcase() {
 
       <ShowcaseExample
         title="Error boundary"
-        code={`import { ErrorPage } from "@/core/errors"
+        code={`import { ErrorPage } from "darkraise-ui/errors"
 
 // Wired automatically via TanStack Router:
 // - createRouter({ defaultErrorComponent: ErrorPage })
@@ -203,7 +203,7 @@ export function ErrorPage({ error, reset }: ErrorComponentProps) {
 
       <ShowcaseExample
         title="500 — Server error"
-        code={`import { ServerErrorPage } from "@/core/errors"
+        code={`import { ServerErrorPage } from "darkraise-ui/errors"
 
 // Use in route loaders when the API returns a server error:
 // loader: async () => {
@@ -230,7 +230,7 @@ export function ErrorPage({ error, reset }: ErrorComponentProps) {
 
       <ShowcaseExample
         title="Maintenance"
-        code={`import { MaintenancePage } from "@/core/errors"
+        code={`import { MaintenancePage } from "darkraise-ui/errors"
 
 // Render when a feature flag indicates maintenance mode:
 // if (isMaintenanceMode) return <MaintenancePage />

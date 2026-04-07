@@ -3,22 +3,22 @@ import { createFileRoute } from "@tanstack/react-router"
 import { useForm } from "@tanstack/react-form"
 import { z } from "zod"
 import type { ColumnDef } from "@tanstack/react-table"
-import { PageHeader } from "@/core/layout"
-import { Button } from "@/core/components/ui/button"
-import { Badge } from "@/core/components/ui/badge"
+import { PageHeader } from "darkraise-ui/layout"
+import { Button } from "darkraise-ui/components/button"
+import { Badge } from "darkraise-ui/components/badge"
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/core/components/ui/dialog"
-import { DataTable, ColumnHeader, RowActions } from "@/features/data-table"
+} from "darkraise-ui/components/dialog"
+import { DataTable, ColumnHeader, RowActions } from "darkraise-ui/data-table"
 import {
   TextField,
   NumberField,
   SelectField,
   FormActions,
-} from "@/features/forms"
+} from "darkraise-ui/forms"
 import {
   useCategories,
   useCreateCategory,

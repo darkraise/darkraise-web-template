@@ -1,6 +1,6 @@
 import { RouterProvider, createRouter } from "@tanstack/react-router"
 import { routeTree } from "./routeTree.gen"
-import { NotFoundPage, ErrorPage } from "@/core/errors"
+import { NotFoundPage, ErrorPage } from "darkraise-ui/errors"
 
 const router = createRouter({
   routeTree,

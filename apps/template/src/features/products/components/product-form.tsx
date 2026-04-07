@@ -8,7 +8,7 @@ import {
   SwitchField,
   FormSection,
   FormActions,
-} from "@/features/forms"
+} from "darkraise-ui/forms"
 
 export const productSchema = z.object({
   name: z.string().min(1, "Name is required"),

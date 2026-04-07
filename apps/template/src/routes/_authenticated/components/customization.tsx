@@ -2,7 +2,7 @@ import { useState, type ReactNode } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import { cva, type VariantProps } from "class-variance-authority"
 import { X } from "lucide-react"
-import { cn } from "@/core/lib/utils"
+import { cn } from "darkraise-ui/lib"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 

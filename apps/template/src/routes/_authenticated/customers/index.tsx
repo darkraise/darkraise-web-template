@@ -1,8 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import type { ColumnDef } from "@tanstack/react-table"
-import { PageHeader } from "@/core/layout"
-import { Avatar, AvatarFallback } from "@/core/components/ui/avatar"
-import { DataTable, ColumnHeader, RowActions } from "@/features/data-table"
+import { PageHeader } from "darkraise-ui/layout"
+import { Avatar, AvatarFallback } from "darkraise-ui/components/avatar"
+import { DataTable, ColumnHeader, RowActions } from "darkraise-ui/data-table"
 import { useCustomers } from "@/demo/hooks"
 import type { Customer } from "@/demo/types"
 

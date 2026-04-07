@@ -1,13 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import type { ColumnDef } from "@tanstack/react-table"
-import { PageHeader } from "@/core/layout"
-import { Button } from "@/core/components/ui/button"
+import { PageHeader } from "darkraise-ui/layout"
+import { Button } from "darkraise-ui/components/button"
 import {
   DataTable,
   ColumnHeader,
   RowActions,
   exportToCsv,
-} from "@/features/data-table"
+} from "darkraise-ui/data-table"
 import { useOrders } from "@/demo/hooks"
 import type { Order } from "@/demo/types"
 

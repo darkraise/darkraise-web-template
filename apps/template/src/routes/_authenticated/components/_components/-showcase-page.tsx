@@ -1,4 +1,4 @@
-import { PageHeader } from "@/core/layout"
+import { PageHeader } from "darkraise-ui/layout"
 
 interface ShowcasePageProps {
   title: string

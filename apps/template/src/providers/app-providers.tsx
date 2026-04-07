@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { ThemeProvider } from "@/core/theme"
-import { Toaster } from "@/core/components/ui/sonner"
+import { ThemeProvider } from "darkraise-ui/theme"
+import { Toaster } from "darkraise-ui/components/sonner"
 
 const queryClient = new QueryClient({
   defaultOptions: {

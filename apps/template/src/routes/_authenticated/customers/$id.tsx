@@ -1,21 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router"
 import type { ColumnDef } from "@tanstack/react-table"
-import { PageHeader } from "@/core/layout"
-import { Avatar, AvatarFallback } from "@/core/components/ui/avatar"
+import { PageHeader } from "darkraise-ui/layout"
+import { Avatar, AvatarFallback } from "darkraise-ui/components/avatar"
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/core/components/ui/card"
+} from "darkraise-ui/components/card"
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "@/core/components/ui/tabs"
+} from "darkraise-ui/components/tabs"
 import { KPICard } from "@/features/dashboard"
-import { DataTable, ColumnHeader } from "@/features/data-table"
+import { DataTable, ColumnHeader } from "darkraise-ui/data-table"
 import { useCustomer, useOrders } from "@/demo/hooks"
 import type { Order } from "@/demo/types"
 

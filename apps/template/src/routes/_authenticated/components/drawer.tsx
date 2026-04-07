@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { Button } from "@/core/components/ui/button"
+import { Button } from "darkraise-ui/components/button"
 import {
   Drawer,
   DrawerClose,
@@ -9,9 +9,9 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "@/core/components/ui/drawer"
-import { Input } from "@/core/components/ui/input"
-import { Label } from "@/core/components/ui/label"
+} from "darkraise-ui/components/drawer"
+import { Input } from "darkraise-ui/components/input"
+import { Label } from "darkraise-ui/components/label"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 

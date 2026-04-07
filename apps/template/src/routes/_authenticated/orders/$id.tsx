@@ -1,19 +1,19 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
-import { PageHeader } from "@/core/layout"
-import { Button } from "@/core/components/ui/button"
+import { PageHeader } from "darkraise-ui/layout"
+import { Button } from "darkraise-ui/components/button"
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/core/components/ui/card"
-import { Separator } from "@/core/components/ui/separator"
+} from "darkraise-ui/components/card"
+import { Separator } from "darkraise-ui/components/separator"
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "@/core/components/ui/tabs"
+} from "darkraise-ui/components/tabs"
 import {
   Table,
   TableBody,
@@ -21,7 +21,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/core/components/ui/table"
+} from "darkraise-ui/components/table"
 import { useOrder, useUpdateOrderStatus } from "@/demo/hooks"
 
 export const Route = createFileRoute("/_authenticated/orders/$id")({

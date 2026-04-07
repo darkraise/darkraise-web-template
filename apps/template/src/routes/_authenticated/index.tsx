@@ -9,8 +9,8 @@ import {
   YAxis,
   CartesianGrid,
 } from "recharts"
-import { PageHeader } from "@/core/layout"
-import { Button } from "@/core/components/ui/button"
+import { PageHeader } from "darkraise-ui/layout"
+import { Button } from "darkraise-ui/components/button"
 import {
   StatCard,
   KPICard,

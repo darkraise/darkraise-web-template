@@ -3,7 +3,7 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@/core/components/ui/avatar"
+} from "darkraise-ui/components/avatar"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 import {
@@ -11,7 +11,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/core/components/ui/tooltip"
+} from "darkraise-ui/components/tooltip"
 
 export const Route = createFileRoute("/_authenticated/components/avatar")({
   component: AvatarPage,

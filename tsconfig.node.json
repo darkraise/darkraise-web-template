@@ -12,10 +12,5 @@
     "strict": true,
     "types": ["node"]
   },
-  "include": [
-    "vite.config.ts",
-    "commitlint.config.ts",
-    "vitest.config.ts",
-    "playwright.config.ts"
-  ]
+  "include": ["commitlint.config.ts"]
 }

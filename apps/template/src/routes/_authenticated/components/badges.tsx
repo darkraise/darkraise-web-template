@@ -1,8 +1,8 @@
 import { useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import { CheckCircle, Clock, XCircle, AlertTriangle, X } from "lucide-react"
-import { Badge } from "@/core/components/ui/badge"
-import { Button } from "@/core/components/ui/button"
+import { Badge } from "darkraise-ui/components/badge"
+import { Button } from "darkraise-ui/components/button"
 import {
   Table,
   TableBody,
@@ -10,7 +10,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/core/components/ui/table"
+} from "darkraise-ui/components/table"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 

@@ -1,6 +1,6 @@
 import { z } from "zod"
 import { useForm } from "@tanstack/react-form"
-import { Button } from "@/core/components/ui/button"
+import { Button } from "darkraise-ui/components/button"
 import { useAuth } from "../hooks/use-auth"
 import { AuthFormField } from "./auth-form-field"
 

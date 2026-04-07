@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { Separator } from "@/core/components/ui/separator"
+import { Separator } from "darkraise-ui/components/separator"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 

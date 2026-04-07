@@ -14,7 +14,7 @@ function LayoutsPage() {
     >
       <ShowcaseExample
         title="Sidebar Layout"
-        code={`import { SidebarLayout } from "@/core/layout"
+        code={`import { SidebarLayout } from "darkraise-ui/layout"
 
 const nav: NavGroup[] = [
   { label: "Main", items: [
@@ -68,7 +68,7 @@ export const Route = createFileRoute("/_authenticated")({
 
       <ShowcaseExample
         title="Top Navigation Layout"
-        code={`import { TopNavLayout } from "@/core/layout"
+        code={`import { TopNavLayout } from "darkraise-ui/layout"
 
 export const Route = createFileRoute("/_authenticated")({
   component: () => (
@@ -107,7 +107,7 @@ export const Route = createFileRoute("/_authenticated")({
 
       <ShowcaseExample
         title="Stacked Layout"
-        code={`import { StackedLayout } from "@/core/layout"
+        code={`import { StackedLayout } from "darkraise-ui/layout"
 
 export const Route = createFileRoute("/_authenticated")({
   component: () => (
@@ -163,7 +163,7 @@ export const Route = createFileRoute("/_authenticated")({
 
       <ShowcaseExample
         title="Split Panel Layout"
-        code={`import { SplitPanelLayout } from "@/core/layout"
+        code={`import { SplitPanelLayout } from "darkraise-ui/layout"
 
 export const Route = createFileRoute("/_authenticated")({
   component: () => (

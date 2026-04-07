@@ -35,7 +35,7 @@ import {
   LayoutPanelLeft,
   Activity,
 } from "lucide-react"
-import { PageHeader } from "@/core/layout"
+import { PageHeader } from "darkraise-ui/layout"
 
 const COMPONENTS = [
   {

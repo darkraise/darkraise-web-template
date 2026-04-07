@@ -1,9 +1,9 @@
 import { useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
-import { SplitPanelLayout } from "@/core/layout"
-import { Avatar, AvatarFallback } from "@/core/components/ui/avatar"
-import { ScrollArea } from "@/core/components/ui/scroll-area"
-import { cn } from "@/core/lib/utils"
+import { SplitPanelLayout } from "darkraise-ui/layout"
+import { Avatar, AvatarFallback } from "darkraise-ui/components/avatar"
+import { ScrollArea } from "darkraise-ui/components/scroll-area"
+import { cn } from "darkraise-ui/lib"
 import { useMessages, useMarkMessageAsRead } from "@/demo/hooks"
 import { inboxNav } from "@/routes/_inbox"
 

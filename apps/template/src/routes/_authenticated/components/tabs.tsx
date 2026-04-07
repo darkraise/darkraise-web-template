@@ -1,22 +1,22 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { Inbox, FileText, Send, Plus } from "lucide-react"
-import { Badge } from "@/core/components/ui/badge"
-import { Button } from "@/core/components/ui/button"
-import { Input } from "@/core/components/ui/input"
-import { Label } from "@/core/components/ui/label"
+import { Badge } from "darkraise-ui/components/badge"
+import { Button } from "darkraise-ui/components/button"
+import { Input } from "darkraise-ui/components/input"
+import { Label } from "darkraise-ui/components/label"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/core/components/ui/card"
+} from "darkraise-ui/components/card"
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "@/core/components/ui/tabs"
+} from "darkraise-ui/components/tabs"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 

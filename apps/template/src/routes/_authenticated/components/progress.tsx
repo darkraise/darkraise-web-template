@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
-import { Progress } from "@/core/components/ui/progress"
-import { Button } from "@/core/components/ui/button"
+import { Progress } from "darkraise-ui/components/progress"
+import { Button } from "darkraise-ui/components/button"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 

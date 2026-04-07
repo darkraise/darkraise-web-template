@@ -5,17 +5,17 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/core/components/ui/accordion"
-import { Badge } from "@/core/components/ui/badge"
-import { Label } from "@/core/components/ui/label"
+} from "darkraise-ui/components/accordion"
+import { Badge } from "darkraise-ui/components/badge"
+import { Label } from "darkraise-ui/components/label"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/core/components/ui/select"
-import { Switch } from "@/core/components/ui/switch"
+} from "darkraise-ui/components/select"
+import { Switch } from "darkraise-ui/components/switch"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 

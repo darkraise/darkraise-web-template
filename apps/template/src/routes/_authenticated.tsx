@@ -16,10 +16,10 @@ import {
   Wrench,
   LayoutPanelLeft,
 } from "lucide-react"
-import { SidebarLayout, TopNavLayout, StackedLayout } from "@/core/layout"
-import { useLayoutStore } from "@/core/layout/layout-store"
+import { SidebarLayout, TopNavLayout, StackedLayout } from "darkraise-ui/layout"
+import { useLayoutStore } from "darkraise-ui/layout"
 import { useAuthStore } from "@/features/auth"
-import type { NavGroup } from "@/core/layout/types"
+import type { NavGroup } from "darkraise-ui/layout"
 
 const nav: NavGroup[] = [
   {

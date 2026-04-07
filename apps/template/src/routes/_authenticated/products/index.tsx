@@ -1,9 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import type { ColumnDef } from "@tanstack/react-table"
-import { PageHeader } from "@/core/layout"
-import { Button } from "@/core/components/ui/button"
-import { Badge } from "@/core/components/ui/badge"
-import { DataTable, ColumnHeader, RowActions } from "@/features/data-table"
+import { PageHeader } from "darkraise-ui/layout"
+import { Button } from "darkraise-ui/components/button"
+import { Badge } from "darkraise-ui/components/badge"
+import { DataTable, ColumnHeader, RowActions } from "darkraise-ui/data-table"
 import { useProducts, useDeleteProduct } from "@/demo/hooks"
 import type { Product } from "@/demo/types"
 

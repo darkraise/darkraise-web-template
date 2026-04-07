@@ -1,16 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { useState } from "react"
-import { Badge } from "@/core/components/ui/badge"
-import { Button } from "@/core/components/ui/button"
-import { Input } from "@/core/components/ui/input"
-import { Checkbox } from "@/core/components/ui/checkbox"
+import { Badge } from "darkraise-ui/components/badge"
+import { Button } from "darkraise-ui/components/button"
+import { Input } from "darkraise-ui/components/input"
+import { Checkbox } from "darkraise-ui/components/checkbox"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/core/components/ui/select"
+} from "darkraise-ui/components/select"
 import {
   Table,
   TableBody,
@@ -20,7 +20,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/core/components/ui/table"
+} from "darkraise-ui/components/table"
 import {
   ChevronLeft,
   ChevronRight,

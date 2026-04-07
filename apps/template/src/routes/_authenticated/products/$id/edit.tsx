@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
-import { PageHeader } from "@/core/layout"
+import { PageHeader } from "darkraise-ui/layout"
 import { useProduct, useUpdateProduct, useCategories } from "@/demo/hooks"
 import type { Product } from "@/demo/types"
 import { ProductForm } from "@/features/products"

@@ -1,13 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { DollarSign, ShoppingCart, Users, TrendingUp } from "lucide-react"
-import { Badge } from "@/core/components/ui/badge"
+import { Badge } from "darkraise-ui/components/badge"
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/core/components/ui/card"
-import { Separator } from "@/core/components/ui/separator"
+} from "darkraise-ui/components/card"
+import { Separator } from "darkraise-ui/components/separator"
 import {
   StatCard,
   KPICard,

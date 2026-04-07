@@ -13,17 +13,17 @@ import {
   RadioGroupField,
   FormSection,
   FormActions,
-} from "@/features/forms"
-import { Field, FieldLabel } from "@/core/components/ui/field"
-import { Button } from "@/core/components/ui/button"
-import { Input } from "@/core/components/ui/input"
+} from "darkraise-ui/forms"
+import { Field, FieldLabel } from "darkraise-ui/components/field"
+import { Button } from "darkraise-ui/components/button"
+import { Input } from "darkraise-ui/components/input"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/core/components/ui/select"
+} from "darkraise-ui/components/select"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 

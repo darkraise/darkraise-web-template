@@ -1,20 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { useForm } from "@tanstack/react-form"
 import { z } from "zod"
-import { PageHeader } from "@/core/layout"
+import { PageHeader } from "darkraise-ui/layout"
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/core/components/ui/card"
-import { Button } from "@/core/components/ui/button"
+} from "darkraise-ui/components/card"
+import { Button } from "darkraise-ui/components/button"
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "@/core/components/ui/tabs"
+} from "darkraise-ui/components/tabs"
 import {
   TextField,
   TextareaField,
@@ -24,7 +24,7 @@ import {
   RadioGroupField,
   FormSection,
   FormActions,
-} from "@/features/forms"
+} from "darkraise-ui/forms"
 
 export const Route = createFileRoute("/_authenticated/settings")({
   component: SettingsPage,

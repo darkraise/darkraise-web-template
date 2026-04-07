@@ -2,16 +2,16 @@ import { useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import type { ColumnDef } from "@tanstack/react-table"
 import { ChevronDown, ChevronRight } from "lucide-react"
-import { Badge } from "@/core/components/ui/badge"
-import { Button } from "@/core/components/ui/button"
-import { Checkbox } from "@/core/components/ui/checkbox"
+import { Badge } from "darkraise-ui/components/badge"
+import { Button } from "darkraise-ui/components/button"
+import { Checkbox } from "darkraise-ui/components/checkbox"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/core/components/ui/select"
+} from "darkraise-ui/components/select"
 import {
   Table,
   TableBody,
@@ -19,8 +19,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/core/components/ui/table"
-import { DataTable, ColumnHeader } from "@/features/data-table"
+} from "darkraise-ui/components/table"
+import { DataTable, ColumnHeader } from "darkraise-ui/data-table"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 

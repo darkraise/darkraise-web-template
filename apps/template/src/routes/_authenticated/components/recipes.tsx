@@ -21,9 +21,9 @@ import {
   Mail,
   UserPlus,
 } from "lucide-react"
-import { Alert, AlertTitle } from "@/core/components/ui/alert"
-import { Button } from "@/core/components/ui/button"
-import { Badge } from "@/core/components/ui/badge"
+import { Alert, AlertTitle } from "darkraise-ui/components/alert"
+import { Button } from "darkraise-ui/components/button"
+import { Badge } from "darkraise-ui/components/badge"
 import {
   Card,
   CardContent,
@@ -31,17 +31,17 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-} from "@/core/components/ui/card"
-import { Avatar, AvatarFallback } from "@/core/components/ui/avatar"
-import { Input } from "@/core/components/ui/input"
+} from "darkraise-ui/components/card"
+import { Avatar, AvatarFallback } from "darkraise-ui/components/avatar"
+import { Input } from "darkraise-ui/components/input"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/core/components/ui/dropdown-menu"
-import { Separator } from "@/core/components/ui/separator"
+} from "darkraise-ui/components/dropdown-menu"
+import { Separator } from "darkraise-ui/components/separator"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
@@ -404,7 +404,7 @@ function RecipesPage() {
     >
       <ShowcaseExample
         title="Notification banners"
-        code={`import { Alert, AlertTitle } from "@/core/components/ui/alert"
+        code={`import { Alert, AlertTitle } from "darkraise-ui/components/alert"
 
 const [dismissed, setDismissed] = useState([])
 

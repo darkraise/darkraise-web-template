@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router"
 import { z } from "zod"
 import { useForm } from "@tanstack/react-form"
-import { Button } from "@/core/components/ui/button"
-import { FieldLabel } from "@/core/components/ui/field"
+import { Button } from "darkraise-ui/components/button"
+import { FieldLabel } from "darkraise-ui/components/field"
 import { useAuth } from "../hooks/use-auth"
 import { AuthFormField } from "./auth-form-field"
 

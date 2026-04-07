@@ -20,15 +20,18 @@ import {
   Undo,
   Redo,
 } from "lucide-react"
-import { Button } from "@/core/components/ui/button"
+import { Button } from "darkraise-ui/components/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/core/components/ui/dropdown-menu"
-import { Separator } from "@/core/components/ui/separator"
-import { ToggleGroup, ToggleGroupItem } from "@/core/components/ui/toggle-group"
+} from "darkraise-ui/components/dropdown-menu"
+import { Separator } from "darkraise-ui/components/separator"
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+} from "darkraise-ui/components/toggle-group"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 

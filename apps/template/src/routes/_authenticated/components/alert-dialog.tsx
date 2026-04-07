@@ -10,8 +10,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/core/components/ui/alert-dialog"
-import { Button } from "@/core/components/ui/button"
+} from "darkraise-ui/components/alert-dialog"
+import { Button } from "darkraise-ui/components/button"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 

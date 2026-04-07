@@ -25,8 +25,8 @@ import {
   CommandList,
   CommandSeparator,
   CommandShortcut,
-} from "@/core/components/ui/command"
-import { Button } from "@/core/components/ui/button"
+} from "darkraise-ui/components/command"
+import { Button } from "darkraise-ui/components/button"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 

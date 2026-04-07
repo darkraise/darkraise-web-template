@@ -1,7 +1,7 @@
 import type { AnyFieldApi } from "@tanstack/react-form"
 import type { InputHTMLAttributes, ReactNode } from "react"
-import { Field, FieldLabel, FieldError } from "@/core/components/ui/field"
-import { Input } from "@/core/components/ui/input"
+import { Field, FieldLabel, FieldError } from "darkraise-ui/components/field"
+import { Input } from "darkraise-ui/components/input"
 
 interface AuthFormFieldProps extends Omit<
   InputHTMLAttributes<HTMLInputElement>,

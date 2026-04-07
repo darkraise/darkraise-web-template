@@ -1,19 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { AspectRatio } from "@/core/components/ui/aspect-ratio"
+import { AspectRatio } from "darkraise-ui/components/aspect-ratio"
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/core/components/ui/carousel"
-import { Card, CardContent } from "@/core/components/ui/card"
+} from "darkraise-ui/components/carousel"
+import { Card, CardContent } from "darkraise-ui/components/card"
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
-} from "@/core/components/ui/input-otp"
+} from "darkraise-ui/components/input-otp"
 import {
   Menubar,
   MenubarContent,
@@ -21,7 +21,7 @@ import {
   MenubarMenu,
   MenubarSeparator,
   MenubarTrigger,
-} from "@/core/components/ui/menubar"
+} from "darkraise-ui/components/menubar"
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -30,12 +30,12 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
-} from "@/core/components/ui/navigation-menu"
+} from "darkraise-ui/components/navigation-menu"
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-} from "@/core/components/ui/resizable"
+} from "darkraise-ui/components/resizable"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 

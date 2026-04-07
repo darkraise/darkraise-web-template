@@ -3,15 +3,15 @@ import { createFileRoute } from "@tanstack/react-router"
 import { addDays, format } from "date-fns"
 import type { DateRange } from "react-day-picker"
 import { CalendarDays } from "lucide-react"
-import { Button } from "@/core/components/ui/button"
-import { Calendar } from "@/core/components/ui/calendar"
-import { Label } from "@/core/components/ui/label"
-import { TimePicker } from "@/core/components/ui/time-picker"
+import { Button } from "darkraise-ui/components/button"
+import { Calendar } from "darkraise-ui/components/calendar"
+import { Label } from "darkraise-ui/components/label"
+import { TimePicker } from "darkraise-ui/components/time-picker"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/core/components/ui/popover"
+} from "darkraise-ui/components/popover"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 

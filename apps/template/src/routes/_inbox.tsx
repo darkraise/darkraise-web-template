@@ -10,7 +10,7 @@ import {
   Settings,
 } from "lucide-react"
 import { useAuthStore } from "@/features/auth"
-import type { NavGroup } from "@/core/layout/types"
+import type { NavGroup } from "darkraise-ui/layout"
 
 const nav: NavGroup[] = [
   {

@@ -1,8 +1,8 @@
 import { useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
-import { Button } from "@/core/components/ui/button"
-import { Input } from "@/core/components/ui/input"
-import { Field, FieldLabel } from "@/core/components/ui/field"
+import { Button } from "darkraise-ui/components/button"
+import { Input } from "darkraise-ui/components/input"
+import { Field, FieldLabel } from "darkraise-ui/components/field"
 import {
   Dialog,
   DialogContent,
@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/core/components/ui/dialog"
+} from "darkraise-ui/components/dialog"
 import {
   Sheet,
   SheetContent,
@@ -20,18 +20,18 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/core/components/ui/sheet"
+} from "darkraise-ui/components/sheet"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/core/components/ui/popover"
+} from "darkraise-ui/components/popover"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/core/components/ui/tooltip"
+} from "darkraise-ui/components/tooltip"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 

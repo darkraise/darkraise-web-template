@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { Skeleton } from "@/core/components/ui/skeleton"
-import { Card, CardContent } from "@/core/components/ui/card"
-import { Separator } from "@/core/components/ui/separator"
+import { Skeleton } from "darkraise-ui/components/skeleton"
+import { Card, CardContent } from "darkraise-ui/components/card"
+import { Separator } from "darkraise-ui/components/separator"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 

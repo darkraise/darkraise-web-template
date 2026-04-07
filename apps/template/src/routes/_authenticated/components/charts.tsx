@@ -22,8 +22,8 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/features/charts"
-import { Button } from "@/core/components/ui/button"
-import { Skeleton } from "@/core/components/ui/skeleton"
+import { Button } from "darkraise-ui/components/button"
+import { Skeleton } from "darkraise-ui/components/skeleton"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 

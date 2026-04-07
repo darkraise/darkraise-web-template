@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { ScrollArea } from "@/core/components/ui/scroll-area"
-import { Separator } from "@/core/components/ui/separator"
+import { ScrollArea } from "darkraise-ui/components/scroll-area"
+import { Separator } from "darkraise-ui/components/separator"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 

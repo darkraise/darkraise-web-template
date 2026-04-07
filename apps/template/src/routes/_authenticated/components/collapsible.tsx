@@ -1,12 +1,12 @@
 import { useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import { ChevronDown } from "lucide-react"
-import { Button } from "@/core/components/ui/button"
+import { Button } from "darkraise-ui/components/button"
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/core/components/ui/collapsible"
+} from "darkraise-ui/components/collapsible"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 

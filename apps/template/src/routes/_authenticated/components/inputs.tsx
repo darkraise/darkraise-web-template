@@ -1,21 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { useState } from "react"
 import { Eye, EyeOff, X } from "lucide-react"
-import { Button } from "@/core/components/ui/button"
-import { Input } from "@/core/components/ui/input"
-import { Textarea } from "@/core/components/ui/textarea"
+import { Button } from "darkraise-ui/components/button"
+import { Input } from "darkraise-ui/components/input"
+import { Textarea } from "darkraise-ui/components/textarea"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/core/components/ui/select"
-import { Checkbox } from "@/core/components/ui/checkbox"
-import { Switch } from "@/core/components/ui/switch"
-import { Label } from "@/core/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/core/components/ui/radio-group"
-import { Field, FieldLabel } from "@/core/components/ui/field"
+} from "darkraise-ui/components/select"
+import { Checkbox } from "darkraise-ui/components/checkbox"
+import { Switch } from "darkraise-ui/components/switch"
+import { Label } from "darkraise-ui/components/label"
+import { RadioGroup, RadioGroupItem } from "darkraise-ui/components/radio-group"
+import { Field, FieldLabel } from "darkraise-ui/components/field"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
