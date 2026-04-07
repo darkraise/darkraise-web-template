@@ -6,6 +6,16 @@ import { resolve } from "path"
 import * as p from "@clack/prompts"
 import minimist from "minimist"
 
+async function latestVersion(pkg) {
+  try {
+    const res = await fetch(`https://registry.npmjs.org/${pkg}/latest`)
+    const data = await res.json()
+    return `^${data.version}`
+  } catch {
+    return "latest"
+  }
+}
+
 const ACCENT_COLORS = [
   "red", "orange", "amber", "yellow", "lime", "green", "emerald",
   "teal", "cyan", "sky", "blue", "indigo", "violet", "purple",
@@ -262,6 +272,12 @@ async function main() {
     server: { host, port },
   }
 
+  p.log.step("Resolving latest package versions...")
+  const [darkraiseUiVersion, reactVersion] = await Promise.all([
+    latestVersion("darkraise-ui"),
+    latestVersion("react"),
+  ])
+
   p.log.step("Scaffolding project...")
   mkdirSync(targetDir, { recursive: true })
 
@@ -279,9 +295,9 @@ async function main() {
       lint: "eslint src/",
     },
     dependencies: {
-      "darkraise-ui": "latest",
-      react: "latest",
-      "react-dom": "latest",
+      "darkraise-ui": darkraiseUiVersion,
+      react: reactVersion,
+      "react-dom": reactVersion,
     },
     devDependencies: {
       "@tailwindcss/vite": "^4.0.0",
