@@ -4,3 +4,8 @@ export { RowActions } from "./components/row-actions"
 export { DataTableSkeleton } from "./components/data-table-skeleton"
 export { DataTableEmpty } from "./components/data-table-empty"
 export { exportToCsv } from "./export-csv"
+export type {
+  DataTableProps,
+  DataTableToolbarProps,
+  DataTablePaginationProps,
+} from "./types"

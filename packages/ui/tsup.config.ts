@@ -8,7 +8,8 @@ const componentFiles = readdirSync(join(import.meta.dirname, "src/components"))
     (f) =>
       !f.endsWith(".test.tsx") &&
       !f.endsWith(".test.ts") &&
-      !f.endsWith(".stories.tsx"),
+      !f.endsWith(".stories.tsx") &&
+      f !== "menu-primitives.ts",
   )
 
 const componentEntries = Object.fromEntries(
