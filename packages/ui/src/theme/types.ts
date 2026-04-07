@@ -81,6 +81,13 @@ export interface ThemeSettings {
   mode: Mode
 }
 
+export interface ThemePersistenceAdapter {
+  load(): Promise<ThemeSettings | null>
+  save(settings: ThemeSettings): Promise<void>
+}
+
+export type ThemeSyncStatus = "idle" | "loading" | "saving" | "error"
+
 export interface ThemeContextValue {
   accentColor: AccentColor
   surfaceColor: SurfaceColor
@@ -89,6 +96,8 @@ export interface ThemeContextValue {
   fontFamily: FontFamily
   mode: Mode
   resolvedMode: ResolvedMode
+  config: import("./theme.config").ThemeConfig
+  syncStatus: ThemeSyncStatus
   setAccentColor: (color: AccentColor) => void
   setSurfaceColor: (color: SurfaceColor) => void
   setSurfaceStyle: (style: SurfaceStyle) => void

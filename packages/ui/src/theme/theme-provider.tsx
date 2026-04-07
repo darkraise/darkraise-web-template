@@ -8,13 +8,16 @@ import type {
   Mode,
   ResolvedMode,
   ThemeContextValue,
+  ThemePersistenceAdapter,
   ThemeSettings,
+  ThemeSyncStatus,
 } from "./types"
 import { SURFACE_COLORS, SURFACE_STYLES } from "./types"
 import { generateTokens } from "./engine/generate-tokens"
 import { loadFont, applyFontFamily } from "./engine/font-loader"
 import { ThemeContext } from "./theme-context"
 import { themeConfig, type ThemeConfig } from "./theme.config"
+import { useDebouncedCallback } from "../hooks/use-debounced-callback"
 
 const LS_ACCENT = "theme-accent"
 const LS_SURFACE_COLOR = "theme-surface-color"
@@ -45,12 +48,16 @@ interface ThemeProviderProps {
   children: React.ReactNode
   config?: ThemeConfig
   onChange?: (settings: ThemeSettings) => void
+  persistence?: ThemePersistenceAdapter
+  persistenceDebounce?: number
 }
 
 export function ThemeProvider({
   children,
   config,
   onChange,
+  persistence,
+  persistenceDebounce = 500,
 }: ThemeProviderProps) {
   const cfg = config ?? themeConfig
   const [accentColor, setAccentColorState] = useState<AccentColor>(() => {
@@ -95,10 +102,19 @@ export function ThemeProvider({
     resolveMode(mode),
   )
 
+  const [syncStatus, setSyncStatus] = useState<ThemeSyncStatus>("idle")
+
   const onChangeRef = useRef(onChange)
   useEffect(() => {
     onChangeRef.current = onChange
   })
+
+  const persistenceRef = useRef(persistence)
+  useEffect(() => {
+    persistenceRef.current = persistence
+  })
+
+  const hasUserChanged = useRef(false)
 
   const notifyChange = useCallback((settings: ThemeSettings) => {
     onChangeRef.current?.(settings)
@@ -127,6 +143,50 @@ export function ThemeProvider({
       applyTokens(tokens)
     },
     [],
+  )
+
+  const applySettings = useCallback(
+    (settings: ThemeSettings) => {
+      const resolved = resolveMode(settings.mode)
+
+      setAccentColorState(settings.accentColor)
+      setSurfaceColorState(settings.surfaceColor)
+      setSurfaceStyleState(settings.surfaceStyle)
+      setBackgroundStyleState(settings.backgroundStyle)
+      setFontFamilyState(settings.fontFamily)
+      setModeState(settings.mode)
+      setResolvedMode(resolved)
+
+      localStorage.setItem(LS_ACCENT, settings.accentColor)
+      localStorage.setItem(LS_SURFACE_COLOR, settings.surfaceColor)
+      localStorage.setItem(LS_STYLE, settings.surfaceStyle)
+      localStorage.setItem(LS_BG_STYLE, settings.backgroundStyle)
+      localStorage.setItem(LS_FONT, settings.fontFamily)
+      localStorage.setItem(LS_MODE, settings.mode)
+
+      applyTheme(
+        settings.accentColor,
+        settings.surfaceColor,
+        settings.surfaceStyle,
+        settings.backgroundStyle,
+        settings.fontFamily,
+        resolved,
+      )
+    },
+    [applyTheme],
+  )
+
+  const debouncedSave = useDebouncedCallback(
+    (settings: ThemeSettings) => {
+      if (!persistenceRef.current) return
+      setSyncStatus("saving")
+      persistenceRef.current.save(settings).then(
+        () => setSyncStatus("idle"),
+        () => setSyncStatus("error"),
+      )
+    },
+    [persistence],
+    persistenceDebounce,
   )
 
   const buildSettings = useCallback(
@@ -161,12 +221,16 @@ export function ThemeProvider({
         fontFamily,
         resolvedMode,
       )
-      notifyChange(buildSettings({ accentColor: color }))
+      const settings = buildSettings({ accentColor: color })
+      notifyChange(settings)
+      hasUserChanged.current = true
+      debouncedSave(settings)
     },
     [
       applyTheme,
       notifyChange,
       buildSettings,
+      debouncedSave,
       surfaceColor,
       surfaceStyle,
       backgroundStyle,
@@ -187,12 +251,16 @@ export function ThemeProvider({
         fontFamily,
         resolvedMode,
       )
-      notifyChange(buildSettings({ surfaceColor: color }))
+      const settings = buildSettings({ surfaceColor: color })
+      notifyChange(settings)
+      hasUserChanged.current = true
+      debouncedSave(settings)
     },
     [
       applyTheme,
       notifyChange,
       buildSettings,
+      debouncedSave,
       accentColor,
       surfaceStyle,
       backgroundStyle,
@@ -213,12 +281,16 @@ export function ThemeProvider({
         fontFamily,
         resolvedMode,
       )
-      notifyChange(buildSettings({ surfaceStyle: style }))
+      const settings = buildSettings({ surfaceStyle: style })
+      notifyChange(settings)
+      hasUserChanged.current = true
+      debouncedSave(settings)
     },
     [
       applyTheme,
       notifyChange,
       buildSettings,
+      debouncedSave,
       accentColor,
       surfaceColor,
       backgroundStyle,
@@ -239,12 +311,16 @@ export function ThemeProvider({
         fontFamily,
         resolvedMode,
       )
-      notifyChange(buildSettings({ backgroundStyle: bgStyle }))
+      const settings = buildSettings({ backgroundStyle: bgStyle })
+      notifyChange(settings)
+      hasUserChanged.current = true
+      debouncedSave(settings)
     },
     [
       applyTheme,
       notifyChange,
       buildSettings,
+      debouncedSave,
       accentColor,
       surfaceColor,
       surfaceStyle,
@@ -265,12 +341,16 @@ export function ThemeProvider({
         font,
         resolvedMode,
       )
-      notifyChange(buildSettings({ fontFamily: font }))
+      const settings = buildSettings({ fontFamily: font })
+      notifyChange(settings)
+      hasUserChanged.current = true
+      debouncedSave(settings)
     },
     [
       applyTheme,
       notifyChange,
       buildSettings,
+      debouncedSave,
       accentColor,
       surfaceColor,
       surfaceStyle,
@@ -293,12 +373,16 @@ export function ThemeProvider({
         fontFamily,
         resolved,
       )
-      notifyChange(buildSettings({ mode: m }))
+      const settings = buildSettings({ mode: m })
+      notifyChange(settings)
+      hasUserChanged.current = true
+      debouncedSave(settings)
     },
     [
       applyTheme,
       notifyChange,
       buildSettings,
+      debouncedSave,
       accentColor,
       surfaceColor,
       surfaceStyle,
@@ -353,6 +437,33 @@ export function ThemeProvider({
     applyTheme,
   ])
 
+  // Load theme from persistence adapter on mount
+  useEffect(() => {
+    if (!persistenceRef.current) return
+
+    let cancelled = false
+    setSyncStatus("loading")
+
+    persistenceRef.current.load().then(
+      (settings) => {
+        if (cancelled) return
+        if (settings && !hasUserChanged.current) {
+          applySettings(settings)
+        }
+        setSyncStatus("idle")
+      },
+      () => {
+        if (cancelled) return
+        setSyncStatus("error")
+      },
+    )
+
+    return () => {
+      cancelled = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const value = useMemo<ThemeContextValue>(
     () => ({
       accentColor,
@@ -362,6 +473,8 @@ export function ThemeProvider({
       fontFamily,
       mode,
       resolvedMode,
+      config: cfg,
+      syncStatus,
       setAccentColor,
       setSurfaceColor,
       setSurfaceStyle,
@@ -377,6 +490,8 @@ export function ThemeProvider({
       fontFamily,
       mode,
       resolvedMode,
+      cfg,
+      syncStatus,
       setAccentColor,
       setSurfaceColor,
       setSurfaceStyle,

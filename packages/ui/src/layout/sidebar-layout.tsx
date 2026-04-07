@@ -15,7 +15,6 @@ export function SidebarLayout({
   headerSlot,
   showLayoutSwitcher,
   showThemeSwitcher,
-  themeConfig,
 }: LayoutProps) {
   const [collapsed, setCollapsed] = useState(false)
 
@@ -69,7 +68,6 @@ export function SidebarLayout({
             className="header-gradient-overlay theme-transition"
             showLayoutSwitcher={showLayoutSwitcher}
             showThemeSwitcher={showThemeSwitcher}
-            themeConfig={themeConfig}
           />
           <main className="flex-1 overflow-y-auto p-6" data-content>
             {children}

@@ -11,7 +11,6 @@ export function TopNavLayout({
   headerSlot,
   showLayoutSwitcher,
   showThemeSwitcher,
-  themeConfig,
 }: LayoutProps) {
   const flatNavItems = nav.flatMap((g) =>
     g.items.map((i) => ({ label: i.label, href: i.href })),
@@ -24,7 +23,6 @@ export function TopNavLayout({
         className="gap-4"
         showLayoutSwitcher={showLayoutSwitcher}
         showThemeSwitcher={showThemeSwitcher}
-        themeConfig={themeConfig}
         headerSlot={
           <>
             <SearchCommand navItems={flatNavItems} />

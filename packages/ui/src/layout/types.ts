@@ -1,6 +1,5 @@
 import type { ReactNode } from "react"
 import type { LucideIcon } from "lucide-react"
-import type { ThemeConfig } from "../theme/theme.config"
 
 export interface NavItem {
   label: string
@@ -21,7 +20,6 @@ export interface LayoutProps {
   headerSlot?: ReactNode
   showLayoutSwitcher?: boolean
   showThemeSwitcher?: boolean
-  themeConfig?: ThemeConfig
 }
 
 export interface BreadcrumbNavItem {
