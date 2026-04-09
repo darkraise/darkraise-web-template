@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { User, Settings, CreditCard, LogOut, ChevronDown } from "lucide-react"
 import {
   ContextMenu,
@@ -25,6 +25,12 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "darkraise-ui/components/dropdown-menu"
+import {
+  VirtualizedDropdownMenu,
+  VirtualizedDropdownMenuContent,
+  VirtualizedDropdownMenuItem,
+  VirtualizedDropdownMenuTrigger,
+} from "darkraise-ui/components/virtualized-dropdown-menu"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
@@ -120,6 +126,44 @@ function AvatarTriggerDropdownExample() {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+  )
+}
+
+function VirtualizedDropdownExample() {
+  const items = useMemo(
+    () => Array.from({ length: 10000 }, (_, i) => `Item ${i + 1}`),
+    [],
+  )
+  const [selected, setSelected] = useState<string | null>(null)
+
+  return (
+    <div className="flex items-center gap-4">
+      <VirtualizedDropdownMenu>
+        <VirtualizedDropdownMenuTrigger asChild>
+          <Button variant="outline">
+            {selected ?? "Pick an item"}{" "}
+            <ChevronDown className="ml-2 h-4 w-4" />
+          </Button>
+        </VirtualizedDropdownMenuTrigger>
+        <VirtualizedDropdownMenuContent
+          items={items}
+          estimateSize={32}
+          className="w-[220px]"
+          onItemSelect={(item) => setSelected(item)}
+        >
+          {(item, { isActive }) => (
+            <VirtualizedDropdownMenuItem isActive={isActive}>
+              {item}
+            </VirtualizedDropdownMenuItem>
+          )}
+        </VirtualizedDropdownMenuContent>
+      </VirtualizedDropdownMenu>
+      {selected && (
+        <span className="text-muted-foreground text-sm">
+          Selected: {selected}
+        </span>
+      )}
+    </div>
   )
 }
 
@@ -406,6 +450,34 @@ function DropdownMenuPage() {
 </DropdownMenu>`}
       >
         <AvatarTriggerDropdownExample />
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Virtualized dropdown (10,000 items)"
+        code={`const items = Array.from({ length: 10000 }, (_, i) => \`Item \${i + 1}\`)
+const [selected, setSelected] = useState<string | null>(null)
+
+<VirtualizedDropdownMenu>
+  <VirtualizedDropdownMenuTrigger asChild>
+    <Button variant="outline">
+      {selected ?? "Pick an item"} <ChevronDown />
+    </Button>
+  </VirtualizedDropdownMenuTrigger>
+  <VirtualizedDropdownMenuContent
+    items={items}
+    estimateSize={32}
+    className="w-[220px]"
+    onItemSelect={(item) => setSelected(item)}
+  >
+    {(item, { isActive }) => (
+      <VirtualizedDropdownMenuItem isActive={isActive}>
+        {item}
+      </VirtualizedDropdownMenuItem>
+    )}
+  </VirtualizedDropdownMenuContent>
+</VirtualizedDropdownMenu>`}
+      >
+        <VirtualizedDropdownExample />
       </ShowcaseExample>
     </ShowcasePage>
   )

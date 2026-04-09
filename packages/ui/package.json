@@ -1,6 +1,6 @@
 {
   "name": "darkraise-ui",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "React 19 UI kit with 47 themed components, 38 hooks, 6-axis theming, and layout variants",
   "type": "module",
   "sideEffects": false,
@@ -58,10 +58,10 @@
     "build:storybook": "storybook build"
   },
   "peerDependencies": {
+    "@tailwindcss/vite": "^4.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "tailwindcss": "^4.0.0",
-    "@tailwindcss/vite": "^4.0.0"
+    "tailwindcss": "^4.0.0"
   },
   "peerDependenciesMeta": {
     "@tailwindcss/vite": {
@@ -98,6 +98,7 @@
     "@tanstack/react-form": "^1.28.6",
     "@tanstack/react-router": "^1.168.10",
     "@tanstack/react-table": "^8.21.3",
+    "@tanstack/react-virtual": "^3.13.23",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",

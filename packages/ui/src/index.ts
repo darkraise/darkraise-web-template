@@ -45,6 +45,7 @@ export * from "./components/time-picker"
 export * from "./components/toggle"
 export * from "./components/toggle-group"
 export * from "./components/tooltip"
+export * from "./components/virtualized-dropdown-menu"
 
 export * from "./hooks/index"
 export * from "./theme/index"
