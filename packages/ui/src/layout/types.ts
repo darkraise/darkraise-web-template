@@ -20,6 +20,8 @@ export interface LayoutProps {
   headerSlot?: ReactNode
   showLayoutSwitcher?: boolean
   showThemeSwitcher?: boolean
+  user?: { name: string; email: string }
+  onLogout?: () => void
 }
 
 export interface BreadcrumbNavItem {

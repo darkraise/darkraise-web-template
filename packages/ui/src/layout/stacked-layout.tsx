@@ -17,6 +17,8 @@ export function StackedLayout({
   headerSlot,
   showLayoutSwitcher,
   showThemeSwitcher,
+  user,
+  onLogout,
 }: LayoutProps) {
   const routerState = useRouterState()
   const currentPath = routerState.location.pathname
@@ -88,6 +90,8 @@ export function StackedLayout({
             headerSlot={headerSlot}
             showLayoutSwitcher={showLayoutSwitcher}
             showThemeSwitcher={showThemeSwitcher}
+            user={user}
+            onLogout={onLogout}
           />
 
           <main className="flex-1 overflow-y-auto p-6">{children}</main>

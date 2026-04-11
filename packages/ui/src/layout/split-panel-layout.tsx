@@ -20,6 +20,8 @@ export function SplitPanelLayout({
   headerSlot,
   showLayoutSwitcher,
   showThemeSwitcher,
+  user,
+  onLogout,
   panel,
   defaultPanelWidth = 320,
   minPanelWidth = 240,
@@ -51,6 +53,8 @@ export function SplitPanelLayout({
         className="gap-4"
         showLayoutSwitcher={showLayoutSwitcher}
         showThemeSwitcher={showThemeSwitcher}
+        user={user}
+        onLogout={onLogout}
       >
         <BrandLogo />
         <SearchCommand

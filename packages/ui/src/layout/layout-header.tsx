@@ -15,6 +15,8 @@ interface LayoutHeaderProps {
   children?: ReactNode
   showLayoutSwitcher?: boolean
   showThemeSwitcher?: boolean
+  user?: { name: string; email: string }
+  onLogout?: () => void
 }
 
 export function LayoutHeader({
@@ -24,6 +26,8 @@ export function LayoutHeader({
   children,
   showLayoutSwitcher = false,
   showThemeSwitcher = true,
+  user,
+  onLogout,
 }: LayoutHeaderProps) {
   const flatNavItems = nav.flatMap((g) =>
     g.items.map((i) => ({ label: i.label, href: i.href })),
@@ -43,7 +47,7 @@ export function LayoutHeader({
         {showLayoutSwitcher && <LayoutSwitcher />}
         {showThemeSwitcher && <ThemeSwitcher />}
         <NotificationBell />
-        <UserMenu />
+        <UserMenu user={user} onLogout={onLogout} />
       </div>
     </header>
   )
