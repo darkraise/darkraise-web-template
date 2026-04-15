@@ -1,5 +1,5 @@
 import React from "react"
-import { Link } from "@tanstack/react-router"
+import { useRouterAdapter } from "../router"
 import type { PageHeaderProps } from "./types"
 import {
   Breadcrumb,
@@ -17,6 +17,7 @@ export function PageHeader({
   actions,
   tabs,
 }: PageHeaderProps) {
+  const { Link } = useRouterAdapter()
   return (
     <div className="space-y-4 pb-4">
       {breadcrumbs && breadcrumbs.length > 0 && (
@@ -55,7 +56,7 @@ export function PageHeader({
               key={tab.value}
               to={tab.href}
               className="text-muted-foreground hover:text-foreground [&.active]:border-primary [&.active]:text-foreground border-b-2 border-transparent px-1 pb-2 text-sm transition-colors duration-150"
-              activeProps={{ className: "active" }}
+              activeClassName="active"
             >
               {tab.label}
             </Link>
