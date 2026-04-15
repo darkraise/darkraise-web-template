@@ -6,39 +6,38 @@ import {
   SelectValue,
 } from "../../components/select"
 import { FieldWrapper } from "./field-wrapper"
-import type { BaseFieldProps } from "../types"
+import type { FieldPrimitiveProps } from "../types"
 
-interface SelectFieldProps extends BaseFieldProps {
+interface SelectFieldProps extends FieldPrimitiveProps<string> {
+  label: string
+  description?: string
   placeholder?: string
   options: Array<{ label: string; value: string }>
 }
 
 export function SelectField({
-  field,
+  name,
+  value,
+  onChange,
+  onBlur,
+  isInvalid,
+  errors,
   label,
   description,
   placeholder,
   options,
 }: SelectFieldProps) {
-  const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
   return (
     <FieldWrapper
-      name={field.name}
+      name={name}
       label={label}
       description={description}
       isInvalid={isInvalid}
-      errors={field.state.meta.errors}
+      errors={errors}
     >
-      {(isInvalid) => (
-        <Select
-          value={field.state.value as string}
-          onValueChange={(v) => field.handleChange(v)}
-        >
-          <SelectTrigger
-            id={field.name}
-            onBlur={field.handleBlur}
-            aria-invalid={isInvalid}
-          >
+      {(invalid) => (
+        <Select value={value} onValueChange={onChange}>
+          <SelectTrigger id={name} onBlur={onBlur} aria-invalid={invalid}>
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>
           <SelectContent>
