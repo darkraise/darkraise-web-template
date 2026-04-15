@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Link } from "@tanstack/react-router"
+import { useRouterAdapter } from "../router"
 import { ChevronRight } from "lucide-react"
 import { cn } from "../lib/utils"
 import {
@@ -66,6 +66,7 @@ interface SidebarItemProps {
 }
 
 function SidebarItem({ item, collapsed = false, depth = 0 }: SidebarItemProps) {
+  const { Link } = useRouterAdapter()
   const hasChildren = item.children && item.children.length > 0
 
   if (hasChildren && !collapsed) {
@@ -77,25 +78,28 @@ function SidebarItem({ item, collapsed = false, depth = 0 }: SidebarItemProps) {
   }
 
   const linkContent = (
-    <Link
-      to={item.href}
-      className={cn(
-        "sidebar-nav-item flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors duration-150",
-        collapsed && "mx-auto h-9 w-9 justify-center px-0",
-        depth > 0 && "py-1.5 text-[13px]",
-      )}
+    <div
       style={depth > 0 ? { paddingLeft: `${depth * 12 + 12}px` } : undefined}
-      activeOptions={{ exact: true }}
-      activeProps={{ className: "active" }}
     >
-      {item.icon && <item.icon className="h-4 w-4 shrink-0" />}
-      {!collapsed && <span>{item.label}</span>}
-      {!collapsed && item.badge && (
-        <span className="bg-primary/20 text-primary ml-auto rounded-full px-2 py-0.5 text-xs">
-          {item.badge}
-        </span>
-      )}
-    </Link>
+      <Link
+        to={item.href}
+        className={cn(
+          "sidebar-nav-item flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors duration-150",
+          collapsed && "mx-auto h-9 w-9 justify-center px-0",
+          depth > 0 && "py-1.5 text-[13px]",
+        )}
+        activeExact
+        activeClassName="active"
+      >
+        {item.icon && <item.icon className="h-4 w-4 shrink-0" />}
+        {!collapsed && <span>{item.label}</span>}
+        {!collapsed && item.badge && (
+          <span className="bg-primary/20 text-primary ml-auto rounded-full px-2 py-0.5 text-xs">
+            {item.badge}
+          </span>
+        )}
+      </Link>
+    </div>
   )
 
   if (collapsed) {
@@ -111,6 +115,7 @@ function SidebarItem({ item, collapsed = false, depth = 0 }: SidebarItemProps) {
 }
 
 function CollapsedParentItem({ item }: { item: NavItem }) {
+  const { Link } = useRouterAdapter()
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -135,7 +140,7 @@ function CollapsedParentItem({ item }: { item: NavItem }) {
             key={child.href}
             to={child.href}
             className="hover:bg-accent hover:text-accent-foreground flex items-center rounded-md px-2 py-1.5 text-sm transition-colors"
-            activeProps={{ className: "bg-accent text-accent-foreground" }}
+            activeClassName="bg-accent text-accent-foreground"
           >
             {child.label}
           </Link>
