@@ -1,5 +1,5 @@
 export { ErrorLayout } from "./error-layout"
 export { NotFoundPage } from "./not-found-page"
-export { ErrorPage } from "./error-page"
+export { ErrorPage, type ErrorPageProps } from "./error-page"
 export { ServerErrorPage } from "./server-error-page"
 export { MaintenancePage } from "./maintenance-page"

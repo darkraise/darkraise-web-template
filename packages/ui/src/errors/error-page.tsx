@@ -1,11 +1,17 @@
-import { useRouter } from "@tanstack/react-router"
-import type { ErrorComponentProps } from "@tanstack/react-router"
 import { TriangleAlert } from "lucide-react"
 import { Button } from "../components/button"
+import { useRouterAdapter } from "../router"
 import { ErrorLayout } from "./error-layout"
 
-export function ErrorPage({ error, reset }: ErrorComponentProps) {
-  const router = useRouter()
+export interface ErrorPageProps {
+  error: unknown
+  reset: () => void
+}
+
+export function ErrorPage({ error, reset }: ErrorPageProps) {
+  const { useNavigate, useInvalidate } = useRouterAdapter()
+  const navigate = useNavigate()
+  const invalidate = useInvalidate()
   const message =
     error instanceof Error ? error.message : "An unexpected error occurred."
 
@@ -19,12 +25,12 @@ export function ErrorPage({ error, reset }: ErrorComponentProps) {
         variant="outline"
         onClick={() => {
           reset()
-          router.invalidate()
+          invalidate()
         }}
       >
         Try again
       </Button>
-      <Button onClick={() => router.navigate({ to: "/" })}>Back to home</Button>
+      <Button onClick={() => navigate("/")}>Back to home</Button>
     </ErrorLayout>
   )
 }
