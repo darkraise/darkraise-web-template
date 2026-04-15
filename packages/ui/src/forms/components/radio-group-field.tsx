@@ -13,8 +13,15 @@ export function RadioGroupField({
   description,
   options,
 }: RadioGroupFieldProps) {
+  const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
   return (
-    <FieldWrapper field={field} label={label} description={description}>
+    <FieldWrapper
+      name={field.name}
+      label={label}
+      description={description}
+      isInvalid={isInvalid}
+      errors={field.state.meta.errors}
+    >
       {(isInvalid) => (
         <RadioGroup
           value={field.state.value as string}

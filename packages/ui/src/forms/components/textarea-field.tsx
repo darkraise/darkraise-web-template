@@ -14,8 +14,15 @@ export function TextareaField({
   placeholder,
   rows = 3,
 }: TextareaFieldProps) {
+  const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
   return (
-    <FieldWrapper field={field} label={label} description={description}>
+    <FieldWrapper
+      name={field.name}
+      label={label}
+      description={description}
+      isInvalid={isInvalid}
+      errors={field.state.meta.errors}
+    >
       {(isInvalid) => (
         <Textarea
           id={field.name}

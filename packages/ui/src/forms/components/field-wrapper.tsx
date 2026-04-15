@@ -1,5 +1,4 @@
-import type { AnyFieldApi } from "@tanstack/react-form"
-import type { ReactNode, ComponentPropsWithoutRef } from "react"
+import type { ComponentPropsWithoutRef, ReactNode } from "react"
 import {
   Field,
   FieldLabel,
@@ -11,26 +10,29 @@ interface FieldWrapperProps extends Omit<
   ComponentPropsWithoutRef<typeof Field>,
   "children"
 > {
-  field: AnyFieldApi
+  name: string
   label: string
   description?: string
+  isInvalid?: boolean
+  errors?: Array<{ message?: string } | undefined>
   children: (isInvalid: boolean) => ReactNode
 }
 
 export function FieldWrapper({
-  field,
+  name,
   label,
   description,
+  isInvalid = false,
+  errors,
   children,
   ...fieldProps
 }: FieldWrapperProps) {
-  const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
   return (
     <Field data-invalid={isInvalid} {...fieldProps}>
-      <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
+      <FieldLabel htmlFor={name}>{label}</FieldLabel>
       {children(isInvalid)}
       {description && <FieldDescription>{description}</FieldDescription>}
-      {isInvalid && <FieldError errors={field.state.meta.errors} />}
+      {isInvalid && <FieldError errors={errors} />}
     </Field>
   )
 }

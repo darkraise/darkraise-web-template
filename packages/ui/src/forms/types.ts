@@ -1,6 +1,16 @@
 import type { AnyFieldApi } from "@tanstack/react-form"
 import type { ReactNode } from "react"
 
+export interface FieldPrimitiveProps<T> {
+  name: string
+  value: T
+  onChange: (value: T) => void
+  onBlur?: () => void
+  isInvalid?: boolean
+  errors?: Array<{ message?: string } | undefined>
+}
+
+// Kept during migration; removed in Task 4 once no file consumes it.
 export interface BaseFieldProps {
   field: AnyFieldApi
   label: string

@@ -20,8 +20,15 @@ export function SelectField({
   placeholder,
   options,
 }: SelectFieldProps) {
+  const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
   return (
-    <FieldWrapper field={field} label={label} description={description}>
+    <FieldWrapper
+      name={field.name}
+      label={label}
+      description={description}
+      isInvalid={isInvalid}
+      errors={field.state.meta.errors}
+    >
       {(isInvalid) => (
         <Select
           value={field.state.value as string}
