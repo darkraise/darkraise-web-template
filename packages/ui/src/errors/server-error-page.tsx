@@ -1,10 +1,12 @@
-import { useRouter } from "@tanstack/react-router"
 import { ServerCrash } from "lucide-react"
 import { Button } from "../components/button"
+import { useRouterAdapter } from "../router"
 import { ErrorLayout } from "./error-layout"
 
 export function ServerErrorPage() {
-  const router = useRouter()
+  const { useNavigate, useInvalidate } = useRouterAdapter()
+  const navigate = useNavigate()
+  const invalidate = useInvalidate()
 
   return (
     <ErrorLayout
@@ -13,10 +15,10 @@ export function ServerErrorPage() {
       title="Server error"
       description="Something went wrong on our end. Please try again later."
     >
-      <Button variant="outline" onClick={() => router.invalidate()}>
+      <Button variant="outline" onClick={invalidate}>
         Retry
       </Button>
-      <Button onClick={() => router.navigate({ to: "/" })}>Back to home</Button>
+      <Button onClick={() => navigate("/")}>Back to home</Button>
     </ErrorLayout>
   )
 }
