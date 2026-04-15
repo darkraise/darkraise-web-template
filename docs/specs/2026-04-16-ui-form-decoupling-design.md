@@ -68,6 +68,12 @@ export interface FormActionsProps {
 
 Per-field value parameterization gives consumers sharper type checking than the previous `AnyFieldApi` opaque blob: `FieldPrimitiveProps<string>` for text/textarea/select/radio, `FieldPrimitiveProps<number>` for number, `FieldPrimitiveProps<boolean>` for checkbox/switch.
 
+**Controlled-only contract.** These fields are controlled React inputs. `onChange` receives the plain value, not a synthetic event. Consumers using libraries whose default mode is uncontrolled (notably react-hook-form's `register()`) must use the library's controlled entry point (`Controller` for RHF). `register()` returns event-based handlers that do not match this contract.
+
+**Error normalization is the adapter's job.** Each adapter helper is responsible for converting its library's native error shape into the `Array<{ message?: string } | undefined>` form. This keeps the ui package's error rendering library-agnostic. Tanstack-form with a zod validator already produces the matching shape; RHF's `FieldError` wraps as `[{ message: error.message }]`; formik's `string | string[]` wraps as `[{ message: str }]`.
+
+**Checkbox and switch indeterminate state.** Radix `Checkbox`'s `onCheckedChange` reports `boolean | "indeterminate"`. `FieldPrimitiveProps<boolean>` narrows this; the field component coerces with `onChange(checked === true)`. This matches the previous behavior (tanstack-form stored whatever it received) and drops the indeterminate tri-state. If a future use case needs tri-state checkboxes, that's a separate feature.
+
 ## Per-file migration
 
 Each field component rewrites to the primitive shape. All follow the same pattern: replace `field: AnyFieldApi, label, description` with `FieldPrimitiveProps<T> & { label, description?, ...specificProps }`, destructure the six primitive members, and wire them where `field.*` was used.
@@ -123,6 +129,75 @@ to:
   )}
 />
 ```
+
+## Cross-library support
+
+The primitive contract is designed so a consumer on any controlled form library can write a ~10-line adapter. These examples are not part of this spec's implementation — they exist to verify the `FieldPrimitiveProps` shape is library-agnostic.
+
+**react-hook-form** (use with `Controller`, not `register()`):
+
+```ts
+import type {
+  ControllerRenderProps,
+  ControllerFieldState,
+  FieldValues,
+  FieldPath,
+} from "react-hook-form"
+import type { FieldPrimitiveProps } from "darkraise-ui/forms"
+
+export function rhfFieldProps<
+  T,
+  TValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TValues> = FieldPath<TValues>,
+>(
+  field: ControllerRenderProps<TValues, TName>,
+  state: ControllerFieldState,
+): FieldPrimitiveProps<T> {
+  return {
+    name: field.name,
+    value: field.value as T,
+    onChange: field.onChange,
+    onBlur: field.onBlur,
+    isInvalid: state.invalid,
+    errors: state.error ? [{ message: state.error.message }] : undefined,
+  }
+}
+
+// Usage:
+<Controller
+  name="email"
+  control={control}
+  render={({ field, fieldState }) => (
+    <TextField {...rhfFieldProps<string>(field, fieldState)} label="Email" />
+  )}
+/>
+```
+
+**formik** (use `useField` helpers so `onChange` receives the plain value):
+
+```ts
+import { useField } from "formik"
+import type { FieldPrimitiveProps } from "darkraise-ui/forms"
+
+export function useFormikFieldProps<T>(name: string): FieldPrimitiveProps<T> {
+  const [field, meta, helpers] = useField<T>(name)
+  return {
+    name: field.name,
+    value: field.value,
+    onChange: (value: T) => void helpers.setValue(value),
+    onBlur: () => void helpers.setTouched(true),
+    isInvalid: meta.touched && Boolean(meta.error),
+    errors: meta.error ? [{ message: meta.error as string }] : undefined,
+  }
+}
+
+// Usage:
+function EmailField() {
+  return <TextField {...useFormikFieldProps<string>("email")} label="Email" />
+}
+```
+
+These two adapters share no code with the tanstack adapter and require zero changes to the ui package. That is the property this refactor exists to enable.
 
 ## Template call-site migration
 
