@@ -201,18 +201,16 @@ These two adapters share no code with the tanstack adapter and require zero chan
 
 ## Template call-site migration
 
-Eight files in `apps/template` render the darkraise field components and must switch from `field={field}` to `{...fieldProps(field)}`:
+Four files in `apps/template` render the darkraise field components and must switch from `field={field}` to `{...fieldProps(field)}`:
 
-- `apps/template/src/features/auth/components/forgot-password-form.tsx`
-- `apps/template/src/features/auth/components/login-form.tsx`
-- `apps/template/src/features/auth/components/register-form.tsx`
-- `apps/template/src/features/auth/components/reset-password-form.tsx`
 - `apps/template/src/features/products/components/product-form.tsx`
 - `apps/template/src/routes/_authenticated/categories.tsx`
 - `apps/template/src/routes/_authenticated/components/form-fields.tsx`
 - `apps/template/src/routes/_authenticated/settings.tsx`
 
 Each call-site also adds `import { fieldProps } from "@/lib/field-props"`.
+
+The auth forms (`login-form.tsx`, `register-form.tsx`, `forgot-password-form.tsx`, `reset-password-form.tsx`) render a template-local `AuthFormField` component that takes `AnyFieldApi` directly — they do not import from `darkraise-ui/forms` and are unaffected by this refactor. `AuthFormField` may adopt the primitive contract later for consistency, but that is a template-app cleanup, not a ui-package concern.
 
 ## Testing
 
@@ -240,5 +238,5 @@ The other field components are thin wrappers over their respective input primiti
 - `packages/ui/package.json` lists no `@tanstack/react-form` dependency.
 - `grep "@tanstack/react-form" packages/ui/src` returns no matches.
 - `pnpm --filter darkraise-ui typecheck`, `build`, and `test` all succeed.
-- The template app's login, register, forgot-password, reset-password, product, category, and settings forms render, validate, and submit with the same behavior as before the change.
+- The template app's product, categories, components-demo form-fields, and settings screens render, validate, and submit with the same behavior as before the change. The auth forms are untouched.
 - `FieldWrapper` unit test passes without importing from `@tanstack/react-form`.
