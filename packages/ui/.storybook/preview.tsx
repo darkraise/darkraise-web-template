@@ -1,4 +1,5 @@
 import type { Preview } from "@storybook/react"
+import { MockRouterAdapterProvider } from "../src/test/mock-router-adapter"
 import "../src/styles/theme.css"
 import { generateTokens } from "../src/theme/engine/generate-tokens"
 import { ACCENT_COLORS, SURFACE_STYLES } from "../src/theme/types"
@@ -74,6 +75,11 @@ const preview: Preview = {
 
       return <Story />
     },
+    (Story) => (
+      <MockRouterAdapterProvider>
+        <Story />
+      </MockRouterAdapterProvider>
+    ),
   ],
 }
 
