@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useNavigate } from "@tanstack/react-router"
+import { useRouterAdapter } from "../router"
 import { Search } from "lucide-react"
 import { useKeyboardEvent } from "../hooks"
 import {
@@ -18,7 +18,7 @@ interface SearchCommandProps {
 
 export function SearchCommand({ navItems = [] }: SearchCommandProps) {
   const [open, setOpen] = useState(false)
-  const navigate = useNavigate()
+  const navigate = useRouterAdapter().useNavigate()
 
   useKeyboardEvent(
     "k",
@@ -55,7 +55,7 @@ export function SearchCommand({ navItems = [] }: SearchCommandProps) {
                 <CommandItem
                   key={item.href}
                   onSelect={() => {
-                    navigate({ to: item.href })
+                    navigate(item.href)
                     setOpen(false)
                   }}
                 >
