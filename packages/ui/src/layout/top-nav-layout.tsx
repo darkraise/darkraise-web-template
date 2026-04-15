@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router"
+import { useRouterAdapter } from "../router"
 import { cn } from "../lib/utils"
 import { SearchCommand } from "./search-command"
 import { BrandLogo } from "./brand-logo"
@@ -17,6 +17,8 @@ export function TopNavLayout({
   const flatNavItems = nav.flatMap((g) =>
     g.items.map((i) => ({ label: i.label, href: i.href })),
   )
+
+  const { Link } = useRouterAdapter()
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
@@ -44,7 +46,7 @@ export function TopNavLayout({
                 className={cn(
                   "text-muted-foreground hover:text-foreground [&.active]:bg-accent [&.active]:text-accent-foreground flex shrink-0 items-center gap-2 rounded-md px-3 py-1.5 text-sm transition-colors duration-150",
                 )}
-                activeProps={{ className: "active" }}
+                activeClassName="active"
               >
                 {item.icon && <item.icon className="h-4 w-4" />}
                 {item.label}
