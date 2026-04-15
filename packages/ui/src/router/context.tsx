@@ -21,7 +21,7 @@ export function RouterAdapterProvider({
 
 export function useRouterAdapter(): RouterAdapter {
   const adapter = useContext(RouterAdapterContext)
-  if (!adapter) {
+  if (adapter === null) {
     throw new Error(
       "useRouterAdapter must be used inside a <RouterAdapterProvider>",
     )
