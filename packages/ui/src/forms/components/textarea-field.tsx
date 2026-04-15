@@ -1,37 +1,43 @@
 import { Textarea } from "../../components/textarea"
 import { FieldWrapper } from "./field-wrapper"
-import type { BaseFieldProps } from "../types"
+import type { FieldPrimitiveProps } from "../types"
 
-interface TextareaFieldProps extends BaseFieldProps {
+interface TextareaFieldProps extends FieldPrimitiveProps<string> {
+  label: string
+  description?: string
   placeholder?: string
   rows?: number
 }
 
 export function TextareaField({
-  field,
+  name,
+  value,
+  onChange,
+  onBlur,
+  isInvalid,
+  errors,
   label,
   description,
   placeholder,
   rows = 3,
 }: TextareaFieldProps) {
-  const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
   return (
     <FieldWrapper
-      name={field.name}
+      name={name}
       label={label}
       description={description}
       isInvalid={isInvalid}
-      errors={field.state.meta.errors}
+      errors={errors}
     >
-      {(isInvalid) => (
+      {(invalid) => (
         <Textarea
-          id={field.name}
+          id={name}
           placeholder={placeholder}
           rows={rows}
-          value={field.state.value as string}
-          onBlur={field.handleBlur}
-          onChange={(e) => field.handleChange(e.target.value)}
-          aria-invalid={isInvalid}
+          value={value}
+          onBlur={onBlur}
+          onChange={(e) => onChange(e.target.value)}
+          aria-invalid={invalid}
         />
       )}
     </FieldWrapper>

@@ -1,8 +1,10 @@
 import { Input } from "../../components/input"
 import { FieldWrapper } from "./field-wrapper"
-import type { BaseFieldProps } from "../types"
+import type { FieldPrimitiveProps } from "../types"
 
-interface NumberFieldProps extends BaseFieldProps {
+interface NumberFieldProps extends FieldPrimitiveProps<number> {
+  label: string
+  description?: string
   placeholder?: string
   min?: number
   max?: number
@@ -10,7 +12,12 @@ interface NumberFieldProps extends BaseFieldProps {
 }
 
 export function NumberField({
-  field,
+  name,
+  value,
+  onChange,
+  onBlur,
+  isInvalid,
+  errors,
   label,
   description,
   placeholder,
@@ -18,27 +25,26 @@ export function NumberField({
   max,
   step,
 }: NumberFieldProps) {
-  const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
   return (
     <FieldWrapper
-      name={field.name}
+      name={name}
       label={label}
       description={description}
       isInvalid={isInvalid}
-      errors={field.state.meta.errors}
+      errors={errors}
     >
-      {(isInvalid) => (
+      {(invalid) => (
         <Input
-          id={field.name}
+          id={name}
           type="number"
           placeholder={placeholder}
           min={min}
           max={max}
           step={step}
-          value={field.state.value as number}
-          onBlur={field.handleBlur}
-          onChange={(e) => field.handleChange(Number(e.target.value))}
-          aria-invalid={isInvalid}
+          value={value}
+          onBlur={onBlur}
+          onChange={(e) => onChange(Number(e.target.value))}
+          aria-invalid={invalid}
         />
       )}
     </FieldWrapper>

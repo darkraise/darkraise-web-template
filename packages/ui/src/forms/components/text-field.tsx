@@ -1,37 +1,43 @@
 import { Input } from "../../components/input"
 import { FieldWrapper } from "./field-wrapper"
-import type { BaseFieldProps } from "../types"
+import type { FieldPrimitiveProps } from "../types"
 
-interface TextFieldProps extends BaseFieldProps {
+interface TextFieldProps extends FieldPrimitiveProps<string> {
+  label: string
+  description?: string
   placeholder?: string
   type?: "text" | "email" | "password" | "url"
 }
 
 export function TextField({
-  field,
+  name,
+  value,
+  onChange,
+  onBlur,
+  isInvalid,
+  errors,
   label,
   description,
   placeholder,
   type = "text",
 }: TextFieldProps) {
-  const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
   return (
     <FieldWrapper
-      name={field.name}
+      name={name}
       label={label}
       description={description}
       isInvalid={isInvalid}
-      errors={field.state.meta.errors}
+      errors={errors}
     >
-      {(isInvalid) => (
+      {(invalid) => (
         <Input
-          id={field.name}
+          id={name}
           type={type}
           placeholder={placeholder}
-          value={field.state.value as string}
-          onBlur={field.handleBlur}
-          onChange={(e) => field.handleChange(e.target.value)}
-          aria-invalid={isInvalid}
+          value={value}
+          onBlur={onBlur}
+          onChange={(e) => onChange(e.target.value)}
+          aria-invalid={invalid}
         />
       )}
     </FieldWrapper>
