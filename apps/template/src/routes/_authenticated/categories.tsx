@@ -19,6 +19,7 @@ import {
   SelectField,
   FormActions,
 } from "darkraise-ui/forms"
+import { fieldProps } from "@/lib/field-props"
 import {
   useCategories,
   useCreateCategory,
@@ -189,7 +190,7 @@ function CategoryForm({
         name="name"
         children={(field) => (
           <TextField
-            field={field}
+            {...fieldProps<string>(field)}
             label="Name"
             placeholder="e.g. Electronics"
           />
@@ -199,7 +200,7 @@ function CategoryForm({
         name="slug"
         children={(field) => (
           <TextField
-            field={field}
+            {...fieldProps<string>(field)}
             label="Slug"
             placeholder="e.g. electronics"
           />
@@ -208,14 +209,19 @@ function CategoryForm({
       <form.Field
         name="productCount"
         children={(field) => (
-          <NumberField field={field} label="Product Count" min={0} step={1} />
+          <NumberField
+            {...fieldProps<number>(field)}
+            label="Product Count"
+            min={0}
+            step={1}
+          />
         )}
       />
       <form.Field
         name="status"
         children={(field) => (
           <SelectField
-            field={field}
+            {...fieldProps<string>(field)}
             label="Status"
             options={[
               { label: "Active", value: "active" },

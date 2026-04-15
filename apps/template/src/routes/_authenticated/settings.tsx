@@ -25,6 +25,7 @@ import {
   FormSection,
   FormActions,
 } from "darkraise-ui/forms"
+import { fieldProps } from "@/lib/field-props"
 
 export const Route = createFileRoute("/_authenticated/settings")({
   component: SettingsPage,
@@ -107,7 +108,7 @@ function GeneralSettings() {
           name="storeName"
           children={(field) => (
             <TextField
-              field={field}
+              {...fieldProps<string>(field)}
               label="Store Name"
               placeholder="Your store name"
             />
@@ -117,7 +118,7 @@ function GeneralSettings() {
           name="storeDescription"
           children={(field) => (
             <TextareaField
-              field={field}
+              {...fieldProps<string>(field)}
               label="Store Description"
               placeholder="Describe your store"
               rows={3}
@@ -128,7 +129,7 @@ function GeneralSettings() {
           name="currency"
           children={(field) => (
             <SelectField
-              field={field}
+              {...fieldProps<string>(field)}
               label="Currency"
               options={[
                 { label: "USD ($)", value: "usd" },
@@ -144,7 +145,7 @@ function GeneralSettings() {
           name="timezone"
           children={(field) => (
             <SelectField
-              field={field}
+              {...fieldProps<string>(field)}
               label="Timezone"
               options={[
                 { label: "Eastern Time (ET)", value: "america-new_york" },
@@ -199,7 +200,7 @@ function NotificationSettings() {
           name="emailNotifications"
           children={(field) => (
             <SwitchField
-              field={field}
+              {...fieldProps<boolean>(field)}
               label="Email Notifications"
               description="Receive email notifications for important events"
             />
@@ -209,7 +210,7 @@ function NotificationSettings() {
           name="orderAlerts"
           children={(field) => (
             <SwitchField
-              field={field}
+              {...fieldProps<boolean>(field)}
               label="Order Alerts"
               description="Get notified when new orders are placed"
             />
@@ -219,7 +220,7 @@ function NotificationSettings() {
           name="marketingEmails"
           children={(field) => (
             <CheckboxField
-              field={field}
+              {...fieldProps<boolean>(field)}
               label="Marketing Emails"
               description="Receive promotional emails and product updates"
             />
@@ -235,7 +236,7 @@ function NotificationSettings() {
           name="notificationFrequency"
           children={(field) => (
             <RadioGroupField
-              field={field}
+              {...fieldProps<string>(field)}
               label="Notification Frequency"
               options={[
                 { label: "Instant", value: "instant" },

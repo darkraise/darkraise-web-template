@@ -9,6 +9,7 @@ import {
   FormSection,
   FormActions,
 } from "darkraise-ui/forms"
+import { fieldProps } from "@/lib/field-props"
 
 export const productSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -71,7 +72,7 @@ export function ProductForm({
           name="name"
           children={(field) => (
             <TextField
-              field={field}
+              {...fieldProps<string>(field)}
               label="Product Name"
               placeholder="Enter product name"
             />
@@ -81,7 +82,7 @@ export function ProductForm({
           name="description"
           children={(field) => (
             <TextareaField
-              field={field}
+              {...fieldProps<string>(field)}
               label="Description"
               placeholder="Describe your product"
               rows={4}
@@ -92,7 +93,7 @@ export function ProductForm({
           name="category"
           children={(field) => (
             <SelectField
-              field={field}
+              {...fieldProps<string>(field)}
               label="Category"
               placeholder="Select a category"
               options={categoryOptions}
@@ -106,7 +107,7 @@ export function ProductForm({
           name="price"
           children={(field) => (
             <NumberField
-              field={field}
+              {...fieldProps<number>(field)}
               label="Price"
               placeholder="0.00"
               min={0}
@@ -118,7 +119,7 @@ export function ProductForm({
           name="compareAtPrice"
           children={(field) => (
             <NumberField
-              field={field}
+              {...fieldProps<number>(field)}
               label="Compare-at Price"
               placeholder="0.00"
               min={0}
@@ -133,7 +134,7 @@ export function ProductForm({
           name="sku"
           children={(field) => (
             <TextField
-              field={field}
+              {...fieldProps<string>(field)}
               label="SKU"
               placeholder="e.g. APL-IP15-256"
             />
@@ -143,7 +144,7 @@ export function ProductForm({
           name="stock"
           children={(field) => (
             <NumberField
-              field={field}
+              {...fieldProps<number>(field)}
               label="Stock Quantity"
               placeholder="0"
               min={0}
@@ -158,7 +159,7 @@ export function ProductForm({
           name="isActive"
           children={(field) => (
             <SwitchField
-              field={field}
+              {...fieldProps<boolean>(field)}
               label="Active"
               description="Make this product visible in the store"
             />

@@ -14,6 +14,7 @@ import {
   FormSection,
   FormActions,
 } from "darkraise-ui/forms"
+import { fieldProps } from "@/lib/field-props"
 import { Field, FieldLabel } from "darkraise-ui/components/field"
 import { Button } from "darkraise-ui/components/button"
 import { Input } from "darkraise-ui/components/input"
@@ -74,13 +75,17 @@ function FullShowcaseForm() {
       >
         <form.Field name="name">
           {(field) => (
-            <TextField field={field} label="Full Name" placeholder="Jane Doe" />
+            <TextField
+              {...fieldProps<string>(field)}
+              label="Full Name"
+              placeholder="Jane Doe"
+            />
           )}
         </form.Field>
         <form.Field name="bio">
           {(field) => (
             <TextareaField
-              field={field}
+              {...fieldProps<string>(field)}
               label="Bio"
               placeholder="Tell us about yourself..."
               rows={3}
@@ -90,7 +95,7 @@ function FullShowcaseForm() {
         <form.Field name="age">
           {(field) => (
             <NumberField
-              field={field}
+              {...fieldProps<number>(field)}
               label="Age"
               placeholder="25"
               min={0}
@@ -101,7 +106,7 @@ function FullShowcaseForm() {
         <form.Field name="role">
           {(field) => (
             <SelectField
-              field={field}
+              {...fieldProps<string>(field)}
               label="Role"
               placeholder="Select a role"
               options={[
@@ -120,7 +125,7 @@ function FullShowcaseForm() {
         <form.Field name="notifications">
           {(field) => (
             <SwitchField
-              field={field}
+              {...fieldProps<boolean>(field)}
               label="Email notifications"
               description="Receive updates about your account activity."
             />
@@ -129,7 +134,7 @@ function FullShowcaseForm() {
         <form.Field name="plan">
           {(field) => (
             <RadioGroupField
-              field={field}
+              {...fieldProps<string>(field)}
               label="Plan"
               options={[
                 { label: "Free", value: "free" },
@@ -142,7 +147,7 @@ function FullShowcaseForm() {
         <form.Field name="agree">
           {(field) => (
             <CheckboxField
-              field={field}
+              {...fieldProps<boolean>(field)}
               label="I agree to the terms and conditions"
             />
           )}
