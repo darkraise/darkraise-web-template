@@ -1,4 +1,4 @@
-import { Link, useRouterState } from "@tanstack/react-router"
+import { useRouterAdapter } from "../router"
 import { cn } from "../lib/utils"
 import { ScrollArea } from "../components/scroll-area"
 import { SidebarItem } from "./sidebar-nav"
@@ -20,8 +20,8 @@ export function StackedLayout({
   user,
   onLogout,
 }: LayoutProps) {
-  const routerState = useRouterState()
-  const currentPath = routerState.location.pathname
+  const { Link, usePathname } = useRouterAdapter()
+  const currentPath = usePathname()
 
   const activeGroupIndex = nav.findIndex((group) =>
     group.items.some((item) => currentPath.startsWith(item.href)),
