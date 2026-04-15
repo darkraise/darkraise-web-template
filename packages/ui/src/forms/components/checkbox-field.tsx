@@ -5,20 +5,23 @@ import {
   FieldDescription,
   FieldError,
 } from "../../components/field"
-import type { AnyFieldApi } from "@tanstack/react-form"
+import type { FieldPrimitiveProps } from "../types"
 
-interface CheckboxFieldProps {
-  field: AnyFieldApi
+interface CheckboxFieldProps extends FieldPrimitiveProps<boolean> {
   label: string
   description?: string
 }
 
 export function CheckboxField({
-  field,
+  name,
+  value,
+  onChange,
+  onBlur,
+  isInvalid = false,
+  errors,
   label,
   description,
 }: CheckboxFieldProps) {
-  const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
   return (
     <Field
       orientation="horizontal"
@@ -26,18 +29,18 @@ export function CheckboxField({
       className={description ? "items-start" : ""}
     >
       <Checkbox
-        id={field.name}
-        checked={field.state.value as boolean}
-        onCheckedChange={(checked) => field.handleChange(checked)}
-        onBlur={field.handleBlur}
+        id={name}
+        checked={value}
+        onCheckedChange={(checked) => onChange(checked === true)}
+        onBlur={onBlur}
         aria-invalid={isInvalid}
         className={description ? "mt-0.5" : ""}
       />
       <div>
-        <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
+        <FieldLabel htmlFor={name}>{label}</FieldLabel>
         {description && <FieldDescription>{description}</FieldDescription>}
       </div>
-      {isInvalid && <FieldError errors={field.state.meta.errors} />}
+      {isInvalid && <FieldError errors={errors} />}
     </Field>
   )
 }

@@ -8,8 +8,4 @@ export { SwitchField } from "./components/switch-field"
 export { RadioGroupField } from "./components/radio-group-field"
 export { FormSection } from "./components/form-section"
 export { FormActions } from "./components/form-actions"
-export type {
-  BaseFieldProps,
-  FormSectionProps,
-  FormActionsProps,
-} from "./types"
+export type { FormSectionProps, FormActionsProps } from "./types"

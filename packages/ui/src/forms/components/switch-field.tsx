@@ -5,16 +5,23 @@ import {
   FieldDescription,
   FieldError,
 } from "../../components/field"
-import type { AnyFieldApi } from "@tanstack/react-form"
+import type { FieldPrimitiveProps } from "../types"
 
-interface SwitchFieldProps {
-  field: AnyFieldApi
+interface SwitchFieldProps extends FieldPrimitiveProps<boolean> {
   label: string
   description?: string
 }
 
-export function SwitchField({ field, label, description }: SwitchFieldProps) {
-  const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
+export function SwitchField({
+  name,
+  value,
+  onChange,
+  onBlur,
+  isInvalid = false,
+  errors,
+  label,
+  description,
+}: SwitchFieldProps) {
   return (
     <Field
       orientation="horizontal"
@@ -22,17 +29,17 @@ export function SwitchField({ field, label, description }: SwitchFieldProps) {
       className="border-border justify-between rounded-lg border p-4"
     >
       <div className="space-y-0.5">
-        <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
+        <FieldLabel htmlFor={name}>{label}</FieldLabel>
         {description && <FieldDescription>{description}</FieldDescription>}
       </div>
       <Switch
-        id={field.name}
-        checked={field.state.value as boolean}
-        onCheckedChange={(checked) => field.handleChange(checked)}
-        onBlur={field.handleBlur}
+        id={name}
+        checked={value}
+        onCheckedChange={onChange}
+        onBlur={onBlur}
         aria-invalid={isInvalid}
       />
-      {isInvalid && <FieldError errors={field.state.meta.errors} />}
+      {isInvalid && <FieldError errors={errors} />}
     </Field>
   )
 }
