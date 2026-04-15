@@ -27,6 +27,7 @@ export function MockRouterAdapterProvider({
       className,
       activeClassName,
       activeExact,
+      style,
       children,
       onClick,
     }: RouterLinkProps) {
@@ -38,6 +39,7 @@ export function MockRouterAdapterProvider({
         <a
           href={to}
           className={classes || undefined}
+          style={style}
           onClick={(e) => {
             e.preventDefault()
             onClick?.(e)

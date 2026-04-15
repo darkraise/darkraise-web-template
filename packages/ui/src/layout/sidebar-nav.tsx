@@ -78,28 +78,25 @@ function SidebarItem({ item, collapsed = false, depth = 0 }: SidebarItemProps) {
   }
 
   const linkContent = (
-    <div
+    <Link
+      to={item.href}
+      className={cn(
+        "sidebar-nav-item flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors duration-150",
+        collapsed && "mx-auto h-9 w-9 justify-center px-0",
+        depth > 0 && "py-1.5 text-[13px]",
+      )}
       style={depth > 0 ? { paddingLeft: `${depth * 12 + 12}px` } : undefined}
+      activeExact
+      activeClassName="active"
     >
-      <Link
-        to={item.href}
-        className={cn(
-          "sidebar-nav-item flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors duration-150",
-          collapsed && "mx-auto h-9 w-9 justify-center px-0",
-          depth > 0 && "py-1.5 text-[13px]",
-        )}
-        activeExact
-        activeClassName="active"
-      >
-        {item.icon && <item.icon className="h-4 w-4 shrink-0" />}
-        {!collapsed && <span>{item.label}</span>}
-        {!collapsed && item.badge && (
-          <span className="bg-primary/20 text-primary ml-auto rounded-full px-2 py-0.5 text-xs">
-            {item.badge}
-          </span>
-        )}
-      </Link>
-    </div>
+      {item.icon && <item.icon className="h-4 w-4 shrink-0" />}
+      {!collapsed && <span>{item.label}</span>}
+      {!collapsed && item.badge && (
+        <span className="bg-primary/20 text-primary ml-auto rounded-full px-2 py-0.5 text-xs">
+          {item.badge}
+        </span>
+      )}
+    </Link>
   )
 
   if (collapsed) {

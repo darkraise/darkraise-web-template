@@ -1,10 +1,11 @@
-import type { ComponentType, MouseEvent, ReactNode } from "react"
+import type { ComponentType, CSSProperties, MouseEvent, ReactNode } from "react"
 
 export interface RouterLinkProps {
   to: string
   className?: string
   activeClassName?: string
   activeExact?: boolean
+  style?: CSSProperties
   children: ReactNode
   onClick?: (e: MouseEvent<HTMLAnchorElement>) => void
 }
