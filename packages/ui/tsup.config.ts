@@ -26,6 +26,7 @@ export default defineConfig({
     "theme/index": "src/theme/index.ts",
     "layout/index": "src/layout/index.ts",
     "errors/index": "src/errors/index.ts",
+    "router/index": "src/router/index.ts",
     "forms/index": "src/forms/index.ts",
     "data-table/index": "src/data-table/index.ts",
     "lib/index": "src/lib/index.ts",
