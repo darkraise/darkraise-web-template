@@ -58,12 +58,14 @@ export interface RouterAdapter {
   Link: React.ComponentType<RouterLinkProps>
   useNavigate: () => (to: string) => void
   usePathname: () => string
-  back: () => void
-  invalidate: () => void
+  useBack: () => () => void
+  useInvalidate: () => () => void
 }
 ```
 
-All five members are required. `back` and `invalidate` are promoted into the interface so consumer code in the error pages can call them unconditionally; implementers that lack a native refetch concept (e.g., plain react-router without a data router) supply a no-op `invalidate`, and `back` can fall back to `window.history.back()`.
+All five members are required. `useBack` and `useInvalidate` are hooks that return a callback, mirroring `useNavigate`. This shape is necessary because implementations typically need to call their router's own hooks (for example tanstack's `useRouter()`) during render to capture the router instance, then expose a stable callback the component can invoke from an event handler. Returning a plain function directly would force the implementation to call its router hooks outside of render, violating the rules of hooks.
+
+Implementers that lack a native refetch concept (for example plain react-router without a data router) supply a no-op callback from `useInvalidate`. `useBack` can fall back to returning `() => window.history.back()` when a router has no history API of its own.
 
 The `Link` component contract is anchor-like. Consumers implement active styling by mapping `activeClassName` and `activeExact` to their router's native active-matching mechanism (tanstack's `activeProps`/`activeOptions`, react-router's `NavLink` `className` callback, etc.).
 
@@ -76,9 +78,9 @@ Each of the following files stops importing from `@tanstack/react-router` and us
 - **`layout/page-header.tsx`** — `Link` replacement for breadcrumb links (no active styling) and tab links (`activeClassName="active"`).
 - **`layout/stacked-layout.tsx`** — `useRouterState().location.pathname` becomes `usePathname()`. `Link` replacement for the icon rail.
 - **`layout/search-command.tsx`** — `useNavigate()` comes from the adapter. Call site changes from `navigate({ to: item.href })` to `navigate(item.href)` because the adapter's `useNavigate` returns a string-taking function.
-- **`errors/error-page.tsx`** — drop `useRouter()`. Replace `ErrorComponentProps` with a locally defined `ErrorPageProps = { error: unknown; reset: () => void }`. "Try again" calls `reset()` followed by `invalidate()` from the adapter. "Back to home" calls `useNavigate()("/")`.
-- **`errors/not-found-page.tsx`** — `router.history.back()` becomes `back()` from the adapter. `router.navigate({ to: "/" })` becomes `useNavigate()("/")`.
-- **`errors/server-error-page.tsx`** — `router.invalidate()` becomes `invalidate()` from the adapter. Home navigation uses `useNavigate()("/")`.
+- **`errors/error-page.tsx`** — drop `useRouter()`. Replace `ErrorComponentProps` with a locally defined `ErrorPageProps = { error: unknown; reset: () => void }`. At render time the component captures `const navigate = useNavigate()` and `const invalidate = useInvalidate()`. "Try again" calls `reset()` followed by `invalidate()`. "Back to home" calls `navigate("/")`.
+- **`errors/not-found-page.tsx`** — captures `const navigate = useNavigate()` and `const back = useBack()` at render. `router.history.back()` becomes `back()`. `router.navigate({ to: "/" })` becomes `navigate("/")`.
+- **`errors/server-error-page.tsx`** — captures `const navigate = useNavigate()` and `const invalidate = useInvalidate()` at render. `router.invalidate()` becomes `invalidate()`. Home navigation uses `navigate("/")`.
 
 `ErrorPageProps` is exported from `packages/ui/src/errors/index.ts` so consumers wiring tanstack's `errorComponent` can cast their handler's props to the neutral shape.
 
@@ -113,9 +115,15 @@ export const tanstackRouterAdapter: RouterAdapter = {
     return (to: string) => navigate({ to })
   },
   usePathname: () => useRouterState().location.pathname,
-  back: () => useRouter().history.back(),
-  invalidate: () => {
-    void useRouter().invalidate()
+  useBack: () => {
+    const router = useRouter()
+    return () => router.history.back()
+  },
+  useInvalidate: () => {
+    const router = useRouter()
+    return () => {
+      void router.invalidate()
+    }
   },
 }
 ```
@@ -124,7 +132,7 @@ The app's root wraps its `<RouterProvider>` children in `<RouterAdapterProvider 
 
 ## Storybook
 
-Existing stories for `SidebarNav`, `StackedLayout`, `TopNavLayout`, `PageHeader`, `SearchCommand`, and the error pages currently render without a router provider and break once components require an adapter. Add `.storybook/router-adapter-decorator.tsx` that supplies an in-memory mock adapter: tracks pathname in component state, `Link` renders an `<a>` with `onClick` intercepting navigation to call `setPathname`, `useNavigate` updates the same state, `back` pops a small history stack, `invalidate` is a no-op. Apply the decorator globally in `.storybook/preview.ts`.
+The ui package's Storybook today only has stories for leaf components (`accordion`, `badge`, `button`, etc.), none of which use the router, so no existing stories break. However, the shared mock adapter defined for tests should also be wired into Storybook as a global decorator in `.storybook/preview.tsx` so that any future stories for `SidebarNav`, layouts, `PageHeader`, `SearchCommand`, or the error pages render out of the box. The mock adapter tracks pathname in component state, `Link` renders an `<a>` with `onClick` intercepting navigation to call `setPathname`, `useNavigate` updates the same state, `useBack` returns a callback that pops a small history stack, and `useInvalidate` returns a no-op callback.
 
 ## Testing
 
@@ -136,7 +144,7 @@ Existing stories for `SidebarNav`, `StackedLayout`, `TopNavLayout`, `PageHeader`
 
 1. Add `packages/ui/src/router/` module (types, context, provider, hook) and export via the `./router` subpath.
 2. Migrate all eight consumer files in a single changeset — they share the adapter, and a partial migration leaves the ui package in a mixed state.
-3. Add the shared mock adapter test helper and the Storybook decorator so stories and tests keep passing.
+3. Add the shared mock adapter test helper in `packages/ui/src/test/` and register the Storybook decorator in `.storybook/preview.tsx` so tests keep passing and future stories for router-consuming components work out of the box.
 4. Add `apps/template/src/lib/router-adapter.tsx` and wrap the app root in `<RouterAdapterProvider>`.
 5. Remove `@tanstack/react-router` from `packages/ui/package.json` dependencies. Run `pnpm install`, `pnpm --filter darkraise-ui typecheck`, `pnpm --filter darkraise-ui build`, and a full `pnpm test` to verify the ui package is router-dependency-free and the template app still renders and navigates.
 
