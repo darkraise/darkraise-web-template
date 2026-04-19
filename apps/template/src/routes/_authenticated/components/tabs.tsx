@@ -77,6 +77,84 @@ function TabsPage() {
       </ShowcaseExample>
 
       <ShowcaseExample
+        title="Outline variant — bordered active tab"
+        code={`<Tabs defaultValue="overview">
+  <TabsList variant="outline">
+    <TabsTrigger value="overview">Overview</TabsTrigger>
+    <TabsTrigger value="details">Details</TabsTrigger>
+    <TabsTrigger value="settings">Settings</TabsTrigger>
+  </TabsList>
+  <TabsContent value="overview" className="mt-4">
+    Overview content...
+  </TabsContent>
+</Tabs>`}
+      >
+        <Tabs defaultValue="overview">
+          <TabsList variant="outline">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="details">Details</TabsTrigger>
+            <TabsTrigger value="settings">Settings</TabsTrigger>
+          </TabsList>
+          <TabsContent value="overview" className="mt-4">
+            <p className="text-muted-foreground text-sm">
+              The outline variant uses individually bordered triggers; the
+              active tab switches its border and text to the primary colour
+              while staying transparent — matching the toggle outline style.
+            </p>
+          </TabsContent>
+          <TabsContent value="details" className="mt-4">
+            <p className="text-muted-foreground text-sm">
+              Details panel rendered only while its tab is active.
+            </p>
+          </TabsContent>
+          <TabsContent value="settings" className="mt-4">
+            <p className="text-muted-foreground text-sm">
+              Settings panel content.
+            </p>
+          </TabsContent>
+        </Tabs>
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Underline variant — underlined active tab"
+        code={`<Tabs defaultValue="overview">
+  <TabsList variant="underline">
+    <TabsTrigger value="overview">Overview</TabsTrigger>
+    <TabsTrigger value="details">Details</TabsTrigger>
+    <TabsTrigger value="settings">Settings</TabsTrigger>
+  </TabsList>
+  <TabsContent value="overview" className="mt-4">
+    Overview content...
+  </TabsContent>
+</Tabs>`}
+      >
+        <Tabs defaultValue="overview">
+          <TabsList variant="underline">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="details">Details</TabsTrigger>
+            <TabsTrigger value="settings">Settings</TabsTrigger>
+          </TabsList>
+          <TabsContent value="overview" className="mt-4">
+            <p className="text-muted-foreground text-sm">
+              The underline variant drops the track entirely and signals the
+              active tab with a primary-coloured bottom border — useful when
+              tabs sit directly on top of page content.
+            </p>
+          </TabsContent>
+          <TabsContent value="details" className="mt-4">
+            <p className="text-muted-foreground text-sm">
+              Details panel rendered only while its tab is active.
+            </p>
+          </TabsContent>
+          <TabsContent value="settings" className="mt-4">
+            <p className="text-muted-foreground text-sm">
+              Settings panel content.
+            </p>
+          </TabsContent>
+        </Tabs>
+      </ShowcaseExample>
+
+      <ShowcaseExample
         title="Tabs with card content"
         code={`<Tabs defaultValue="account">
   <TabsList>

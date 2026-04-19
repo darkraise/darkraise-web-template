@@ -4,14 +4,26 @@ import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react"
 import { cn } from "../lib/utils"
 import { type ButtonProps, buttonVariants } from "./button"
 
-function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
+type PaginationVariant = "filled" | "outlined"
+
+const PaginationContext = React.createContext<{ variant: PaginationVariant }>({
+  variant: "filled",
+})
+
+function Pagination({
+  className,
+  variant = "filled",
+  ...props
+}: React.ComponentProps<"nav"> & { variant?: PaginationVariant }) {
   return (
-    <nav
-      role="navigation"
-      aria-label="pagination"
-      className={cn("mx-auto flex w-full justify-center", className)}
-      {...props}
-    />
+    <PaginationContext.Provider value={{ variant }}>
+      <nav
+        role="navigation"
+        aria-label="pagination"
+        className={cn("mx-auto flex w-full justify-center", className)}
+        {...props}
+      />
+    </PaginationContext.Provider>
   )
 }
 Pagination.displayName = "Pagination"
@@ -51,16 +63,21 @@ function PaginationLink({
   size = "icon",
   ...props
 }: PaginationLinkProps) {
+  const { variant } = React.useContext(PaginationContext)
+
+  const resolvedClasses = isActive
+    ? variant === "filled"
+      ? buttonVariants({ variant: "default", size })
+      : cn(
+          buttonVariants({ variant: "ghost", size }),
+          "border border-primary bg-transparent text-primary hover:bg-primary/10 hover:text-primary",
+        )
+    : buttonVariants({ variant: "ghost", size })
+
   return (
     <a
       aria-current={isActive ? "page" : undefined}
-      className={cn(
-        buttonVariants({
-          variant: isActive ? "outline" : "ghost",
-          size,
-        }),
-        className,
-      )}
+      className={cn(resolvedClasses, className)}
       {...props}
     />
   )

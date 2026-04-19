@@ -85,6 +85,52 @@ function PaginationPage() {
       </ShowcaseExample>
 
       <ShowcaseExample
+        title="Outlined variant — bordered active page"
+        code={`<Pagination variant="outlined">
+  <PaginationContent>
+    <PaginationItem>
+      <PaginationPrevious href="#" />
+    </PaginationItem>
+    {[1, 2, 3, 4, 5].map((p) => (
+      <PaginationItem key={p}>
+        <PaginationLink href="#" isActive={p === 3}>
+          {p}
+        </PaginationLink>
+      </PaginationItem>
+    ))}
+    <PaginationItem>
+      <PaginationNext href="#" />
+    </PaginationItem>
+  </PaginationContent>
+</Pagination>`}
+      >
+        <Pagination variant="outlined">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                href="#"
+                onClick={(e) => e.preventDefault()}
+              />
+            </PaginationItem>
+            {[1, 2, 3, 4, 5].map((p) => (
+              <PaginationItem key={p}>
+                <PaginationLink
+                  href="#"
+                  isActive={p === 3}
+                  onClick={(e) => e.preventDefault()}
+                >
+                  {p}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            <PaginationItem>
+              <PaginationNext href="#" onClick={(e) => e.preventDefault()} />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      </ShowcaseExample>
+
+      <ShowcaseExample
         title="Pagination with ellipsis"
         code={`<Pagination>
   <PaginationContent>
