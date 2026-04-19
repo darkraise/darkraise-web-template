@@ -18,6 +18,8 @@ export interface LayoutProps {
   children: ReactNode
   nav: NavGroup[]
   headerSlot?: ReactNode
+  sidebarHeader?: ReactNode
+  sidebarFooter?: ReactNode
   showLayoutSwitcher?: boolean
   showThemeSwitcher?: boolean
   user?: { name: string; email: string }
