@@ -68,7 +68,6 @@ export function ThemeSwitcher() {
             <Button
               key={value}
               variant={mode === value ? "default" : "outline"}
-              size="sm"
               className="flex-1"
               onClick={() => setMode(value)}
             >
@@ -89,7 +88,6 @@ export function ThemeSwitcher() {
             <Button
               key={value}
               variant={backgroundStyle === value ? "default" : "outline"}
-              size="sm"
               className="flex-1"
               onClick={() => setBackgroundStyle(value)}
             >

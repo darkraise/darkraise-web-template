@@ -22,7 +22,7 @@ function RadioGroup({
 }
 
 const radioItemVariants = cva(
-  "border-primary text-primary ring-offset-background focus-visible:ring-ring aspect-square cursor-pointer rounded-full border focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+  "border-primary text-primary ring-offset-background focus-visible:ring-ring aspect-square cursor-pointer rounded-full border focus:outline-none focus-visible:ring-1 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
       size: {

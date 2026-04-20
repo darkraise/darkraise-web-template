@@ -18,7 +18,7 @@ export function OverlayCloseButton({ className }: { className?: string }) {
   return (
     <DialogPrimitive.Close
       className={cn(
-        "ring-offset-background focus:ring-ring text-muted-foreground hover:bg-accent hover:text-foreground absolute top-4 right-4 flex h-7 w-7 items-center justify-center rounded-md transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:pointer-events-none",
+        "ring-offset-background focus:ring-ring text-muted-foreground hover:bg-accent hover:text-foreground absolute top-4 right-4 flex h-7 w-7 items-center justify-center rounded-md transition-colors focus:ring-1 focus:ring-offset-2 focus:outline-none disabled:pointer-events-none",
         className,
       )}
     >

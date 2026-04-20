@@ -20,7 +20,7 @@ function Slider({
       <SliderPrimitive.Track className="bg-secondary relative h-2 w-full grow overflow-hidden rounded-full">
         <SliderPrimitive.Range className="bg-primary absolute h-full" />
       </SliderPrimitive.Track>
-      <SliderPrimitive.Thumb className="border-primary bg-primary-foreground ring-offset-background focus-visible:ring-ring block h-5 w-5 cursor-pointer rounded-full border-2 transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:cursor-default" />
+      <SliderPrimitive.Thumb className="border-primary bg-primary-foreground ring-offset-background focus-visible:ring-ring block h-5 w-5 cursor-pointer rounded-full border-2 transition-colors focus-visible:ring-1 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:cursor-default" />
     </SliderPrimitive.Root>
   )
 }

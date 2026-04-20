@@ -20,7 +20,7 @@ function SelectTrigger({
     <SelectPrimitive.Trigger
       ref={ref}
       className={cn(
-        "card-surface border-input bg-card text-card-foreground ring-offset-background focus:ring-ring data-[placeholder]:text-muted-foreground flex h-10 w-full cursor-pointer items-center justify-between border px-3 py-2 text-sm focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
+        "card-surface border-input bg-card text-card-foreground ring-offset-background focus:ring-ring data-[placeholder]:text-muted-foreground flex h-9 w-full cursor-pointer items-center justify-between border px-2.5 py-1.5 text-sm focus:ring-1 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
         className,
       )}
       {...props}
