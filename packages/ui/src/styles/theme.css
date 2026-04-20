@@ -151,6 +151,12 @@
   --backdrop-blur: none;
   --backdrop-filter: none;
   --surface-opacity: 1;
+  --fog-05: transparent;
+  --fog-10: transparent;
+  --fog-15: transparent;
+  --fog-20: transparent;
+  --fog-30: transparent;
+  --fog-50: transparent;
 }
 
 @layer base {

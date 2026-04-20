@@ -265,4 +265,78 @@ describe("generateTokens", () => {
     expect(tokens["--background"]).toBe("166 32% 5%")
     expect(tokens["--foreground"]).toBe("210 40% 98%")
   })
+
+  describe("fog ramp tokens", () => {
+    it("dark + glassmorphism emits the thin-white fog ramp", () => {
+      const tokens = generateTokens({
+        accentColor: "blue",
+        surfaceColor: "slate",
+        surfaceStyle: "glassmorphism",
+        backgroundStyle: "solid",
+        fontFamily: "default",
+        mode: "dark",
+      })
+
+      expect(tokens["--fog-05"]).toBe("rgba(255, 255, 255, 0.04)")
+      expect(tokens["--fog-10"]).toBe("rgba(255, 255, 255, 0.07)")
+      expect(tokens["--fog-15"]).toBe("rgba(255, 255, 255, 0.10)")
+      expect(tokens["--fog-20"]).toBe("rgba(255, 255, 255, 0.14)")
+      expect(tokens["--fog-30"]).toBe("rgba(255, 255, 255, 0.20)")
+      expect(tokens["--fog-50"]).toBe("rgba(255, 255, 255, 0.38)")
+    })
+
+    it("light + glassmorphism emits the paper-glass fog ramp", () => {
+      const tokens = generateTokens({
+        accentColor: "blue",
+        surfaceColor: "slate",
+        surfaceStyle: "glassmorphism",
+        backgroundStyle: "solid",
+        fontFamily: "default",
+        mode: "light",
+      })
+
+      expect(tokens["--fog-05"]).toBe("rgba(255, 255, 255, 0.55)")
+      expect(tokens["--fog-10"]).toBe("rgba(255, 255, 255, 0.65)")
+      expect(tokens["--fog-15"]).toBe("rgba(255, 255, 255, 0.72)")
+      expect(tokens["--fog-20"]).toBe("rgba(255, 255, 255, 0.82)")
+      expect(tokens["--fog-30"]).toBe("rgba(255, 255, 255, 0.90)")
+      expect(tokens["--fog-50"]).toBe("rgba(255, 255, 255, 0.96)")
+    })
+
+    it("dark + default surface style emits transparent for every fog token", () => {
+      const tokens = generateTokens({
+        accentColor: "blue",
+        surfaceColor: "slate",
+        surfaceStyle: "default",
+        backgroundStyle: "solid",
+        fontFamily: "default",
+        mode: "dark",
+      })
+
+      expect(tokens["--fog-05"]).toBe("transparent")
+      expect(tokens["--fog-10"]).toBe("transparent")
+      expect(tokens["--fog-15"]).toBe("transparent")
+      expect(tokens["--fog-20"]).toBe("transparent")
+      expect(tokens["--fog-30"]).toBe("transparent")
+      expect(tokens["--fog-50"]).toBe("transparent")
+    })
+
+    it("light + default surface style emits transparent for every fog token", () => {
+      const tokens = generateTokens({
+        accentColor: "blue",
+        surfaceColor: "slate",
+        surfaceStyle: "default",
+        backgroundStyle: "solid",
+        fontFamily: "default",
+        mode: "light",
+      })
+
+      expect(tokens["--fog-05"]).toBe("transparent")
+      expect(tokens["--fog-10"]).toBe("transparent")
+      expect(tokens["--fog-15"]).toBe("transparent")
+      expect(tokens["--fog-20"]).toBe("transparent")
+      expect(tokens["--fog-30"]).toBe("transparent")
+      expect(tokens["--fog-50"]).toBe("transparent")
+    })
+  })
 })

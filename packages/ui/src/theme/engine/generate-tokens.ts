@@ -131,6 +131,7 @@ export function generateTokens(
     accentColor === "red" || accentColor === "rose" || accentColor === "pink"
 
   const isLightGlass = mode === "light" && surfaceStyle === "glassmorphism"
+  const isDarkGlass = surfaceStyle === "glassmorphism" && mode === "dark"
   const primaryShade = isLightGlass ? 600 : mode === "light" ? 500 : 400
   const primaryForeground = isLightAccent ? accent[950] : "0 0% 100%"
   const ringValue = accent[primaryShade]
@@ -249,6 +250,37 @@ export function generateTokens(
       mode,
       recipe.overrides.surfaceOpacity,
     ),
+
+    "--fog-05": isDarkGlass
+      ? "rgba(255, 255, 255, 0.04)"
+      : isLightGlass
+        ? "rgba(255, 255, 255, 0.55)"
+        : "transparent",
+    "--fog-10": isDarkGlass
+      ? "rgba(255, 255, 255, 0.07)"
+      : isLightGlass
+        ? "rgba(255, 255, 255, 0.65)"
+        : "transparent",
+    "--fog-15": isDarkGlass
+      ? "rgba(255, 255, 255, 0.10)"
+      : isLightGlass
+        ? "rgba(255, 255, 255, 0.72)"
+        : "transparent",
+    "--fog-20": isDarkGlass
+      ? "rgba(255, 255, 255, 0.14)"
+      : isLightGlass
+        ? "rgba(255, 255, 255, 0.82)"
+        : "transparent",
+    "--fog-30": isDarkGlass
+      ? "rgba(255, 255, 255, 0.20)"
+      : isLightGlass
+        ? "rgba(255, 255, 255, 0.90)"
+        : "transparent",
+    "--fog-50": isDarkGlass
+      ? "rgba(255, 255, 255, 0.38)"
+      : isLightGlass
+        ? "rgba(255, 255, 255, 0.96)"
+        : "transparent",
 
     "--bg-style": backgroundStyle,
     "--bg-gradient":
