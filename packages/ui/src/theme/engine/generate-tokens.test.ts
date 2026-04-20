@@ -155,6 +155,36 @@ describe("generateTokens", () => {
 
     expect(tokens["--backdrop-blur"]).toBe("12px")
     expect(tokens["--surface-opacity"]).toBe("0.5")
+    expect(tokens["--backdrop-filter"]).toContain("saturate(140%)")
+  })
+
+  it("light + glassmorphism shifts primary from accent-500 to accent-600 for AA contrast", () => {
+    const tokens = generateTokens({
+      accentColor: "blue",
+      surfaceColor: "slate",
+      surfaceStyle: "glassmorphism",
+      backgroundStyle: "solid",
+      fontFamily: "default",
+      mode: "light",
+    })
+
+    expect(tokens["--primary"]).toBe("221 83% 53%")
+    expect(tokens["--ring"]).toBe("221 83% 53%")
+  })
+
+  it("light + glassmorphism tints card shadow drops with blue-black (16 24 40)", () => {
+    const tokens = generateTokens({
+      accentColor: "blue",
+      surfaceColor: "slate",
+      surfaceStyle: "glassmorphism",
+      backgroundStyle: "solid",
+      fontFamily: "default",
+      mode: "light",
+    })
+
+    expect(tokens["--shadow-card"]).toContain("rgb(16 24 40")
+    expect(tokens["--shadow-card"]).not.toContain("rgb(0 0 0")
+    expect(tokens["--shadow-dropdown"]).toContain("rgb(16 24 40")
   })
 
   it("destructive uses red-500 for light and red-600 for dark", () => {

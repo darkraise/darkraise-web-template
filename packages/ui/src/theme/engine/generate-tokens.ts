@@ -130,7 +130,8 @@ export function generateTokens(
   const isRedishAccent =
     accentColor === "red" || accentColor === "rose" || accentColor === "pink"
 
-  const primaryShade = mode === "light" ? 500 : 400
+  const isLightGlass = mode === "light" && surfaceStyle === "glassmorphism"
+  const primaryShade = isLightGlass ? 600 : mode === "light" ? 500 : 400
   const primaryForeground = isLightAccent ? accent[950] : "0 0% 100%"
   const ringValue = accent[primaryShade]
 
@@ -225,13 +226,23 @@ export function generateTokens(
     "--border-default": recipe.tokens.borderDefault(surface, mode),
 
     "--radius": recipe.overrides.radius,
-    "--shadow-card": recipe.overrides.shadowCard,
-    "--shadow-dropdown": recipe.overrides.shadowDropdown,
+    "--shadow-card": isLightGlass
+      ? recipe.overrides.shadowCard.replace(/rgb\(0 0 0 \//g, "rgb(16 24 40 /")
+      : recipe.overrides.shadowCard,
+    "--shadow-dropdown": isLightGlass
+      ? recipe.overrides.shadowDropdown.replace(
+          /rgb\(0 0 0 \//g,
+          "rgb(16 24 40 /",
+        )
+      : recipe.overrides.shadowDropdown,
     "--backdrop-blur": recipe.overrides.backdropBlur,
+    // Saturation boost applies to all glass (both modes) by design; do not consolidate with isLightGlass.
     "--backdrop-filter":
       recipe.overrides.backdropBlur === "none"
         ? "none"
-        : `blur(${recipe.overrides.backdropBlur})`,
+        : surfaceStyle === "glassmorphism"
+          ? `blur(${recipe.overrides.backdropBlur}) saturate(140%)`
+          : `blur(${recipe.overrides.backdropBlur})`,
     "--surface-opacity": resolveOpacity(
       surfaceStyle,
       backgroundStyle,
