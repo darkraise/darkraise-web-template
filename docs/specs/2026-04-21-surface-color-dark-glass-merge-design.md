@@ -143,6 +143,24 @@ Net effect: sidebar reads as a gentle top-to-bottom gradient tint with a warm ri
 
 ---
 
+## Header migration
+
+`theme.css` has a sibling `.header-gradient-overlay::before` rule that currently also reads `var(--sidebar-gradient)` (the top bar reuses the sidebar's gradient token). Deleting `--sidebar-gradient` without touching the header would leave the header's decorative gradient as `none`.
+
+Header composes the same four-layer canvas stack, gated on gradient mode:
+
+```css
+[data-background-style="gradient"] .header-gradient-overlay::before {
+  background:
+    var(--canvas-blob-a), var(--canvas-blob-b), var(--canvas-blob-c),
+    var(--canvas-ink);
+}
+```
+
+Header geometry is viewport-wide × ~60px tall. Similar cropping story to the sidebar — most of the blob composition paints above or below the strip, so the header reads as a thin slice of the canvas gradient. Visually consistent with the body below. Playwright verification confirms acceptability; fall back to ink-only if it looks off.
+
+---
+
 ## Content overlay migration
 
 `--content-gradient-overlay` serves different roles across four `(backgroundStyle × surfaceStyle)` permutations. Each needs specific handling:
@@ -164,6 +182,8 @@ Emission logic in `generate-tokens.ts`:
 ```
 
 Two of the four permutations keep their current output; two migrate to the blob recipe.
+
+Note on emission shape: the gradient+default branch emits a string that itself contains `var()` references (e.g. `"var(--canvas-blob-a), var(--canvas-blob-b), ..."`). CSS custom properties preserve `var()` references and substitute them lazily at consumer-time, so this works — but it's one extra indirection level. Test assertions should normalize whitespace when comparing emitted strings to avoid Prettier-induced brittleness (`.replace(/\s+/g, ' ').trim()`).
 
 ---
 
@@ -194,10 +214,15 @@ Placed next to the other two setters inside `applyTheme`. One-line change. Requi
 - Add `--canvas-blob-a/b/c` and `--canvas-ink` at `:root`, with `[data-mode="light"]` override.
 - Add body background rule gated on `[data-background-style="gradient"]` composing the four layers. Remove the existing body `background: var(--bg-gradient, none)` declaration.
 - Rewrite `.sidebar-gradient-overlay::before` to compose the four layers (gated on `[data-background-style="gradient"]`).
+- Rewrite `.header-gradient-overlay::before` identically — same four-layer composition under the same gate. Previously reused `--sidebar-gradient`; now composes `--canvas-blob-*` + `--canvas-ink` directly.
 - Update `main[data-content]::before` (content overlay) to keep its existing structure but change the `background` source from `var(--content-gradient-overlay)` to whatever `generate-tokens.ts` now emits (the gradient-string itself, so the consumer doesn't need to change — it reads the token as before).
-- Simplify `.dr-surface` rule: remove inline `--ink-0`…`--ink-6`, remove inline `--blob-a/b/c` color declarations, remove inline multi-layer background. Replace with `background: var(--canvas-blob-a), var(--canvas-blob-b), var(--canvas-blob-c), var(--canvas-ink);`.
+- Simplify `.dr-surface` rule: remove inline `--ink-0`…`--ink-6`, remove inline `--blob-a/b/c` color declarations, remove inline multi-layer background. Replace with `background: var(--canvas-blob-a), var(--canvas-blob-b), var(--canvas-blob-c), var(--canvas-ink);`. Before deleting `--ink-*` tokens, grep-verify they're not consumed outside `.dr-surface`'s own background.
 - Remove `--sf-hue: hsl(var(--primary))` default from `.dr-surface` base rule so global inherits.
-- `[data-mode="light"] .dr-surface` block can be deleted — the ink/blob mode-swapping is now handled by the root-level `[data-mode="light"]` override of `--canvas-*` tokens, which `.dr-surface` inherits automatically.
+- `.dr-surface--flat` rewrite: `background: var(--canvas-ink);` (just the ink anchor, no blobs) and keep `::before { display: none; }`. This preserves the flat variant's contract — tinted tokens still apply but the radial gradient and region noise are skipped. Replaces the current `background: var(--ink-1);` which disappears with the merge.
+- `[data-mode="light"] .dr-surface` block: **surgical edit, not full deletion**. Delete only the declarations that override the blob/ink gradient layers (now handled at root by `[data-mode="light"]` override of `--canvas-*` tokens). Preserve:
+  - The light-mode fog ramp override — `--fog-05: color-mix(in srgb, var(--sf-hue) 4%, rgba(255,255,255,0.55))` etc. Load-bearing for how `.dr-surface` tints child primitives in light mode.
+  - The light-mode noise override for `::before` — `background-image: url(…black-channel-SVG…); mix-blend-mode: multiply;`.
+  - Any `.dr-surface--flat` light-mode refinements (mirror the new flat recipe if needed).
 
 ### `packages/ui/src/theme/theme-provider.tsx`
 
@@ -216,7 +241,8 @@ Placed next to the other two setters inside `applyTheme`. One-line change. Requi
 
 - **Unit:** existing 116 vitest cases continue to pass. Add ~6 new assertions for the three hue anchors and the revised content-overlay branches. Expected final count ~122.
 - **Build:** `pnpm build` in `packages/ui`. Exit 0.
-- **Playwright:** sweep all 18 surface colors in `dark + glass + gradient`, confirm three distinct blobs paint with the selected hue. Repeat in `light + glass + gradient`, `dark + default + gradient`, and `light + default + gradient` for full coverage. Regression screenshots in both solid modes to confirm no visual drift from the canvas (solid body just shows `bg-background`).
+- **Playwright:** sweep all 18 surface colors in `dark + glass + gradient`, confirm three distinct blobs paint with the selected hue. Repeat in `light + glass + gradient`, `dark + default + gradient`, and `light + default + gradient` for full coverage. Regression screenshots in both solid modes to confirm no visual drift from the canvas (solid body just shows `bg-background`). Also regression-check the header and sidebar in gradient mode to confirm their blob compositions read acceptably in their narrow geometries.
+- **Performance:** the new body/sidebar/header/`.dr-surface` backgrounds each resolve 4 `color-mix(in oklab, ...)` calls for blobs plus 2 for the ink anchor. Modern browsers handle this efficiently but watch for repaint jank during Playwright runs, especially on sidebar hover/scroll where composite updates fire. If regressions appear, profile before optimizing.
 
 ---
 
@@ -236,6 +262,7 @@ Placed next to the other two setters inside `applyTheme`. One-line change. Requi
 | Risk                                              | Severity | Mitigation                                                                                                           |
 | ------------------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------- |
 | Sidebar composition looks wrong in narrow column  | Medium   | Playwright check during implementation; fall back to ink-only if needed.                                             |
+| Header composition looks wrong in short strip     | Medium   | Same mitigation as sidebar. Fall back to ink-only if the blob cropping reads poorly.                                 |
 | Content overlay branching complexity              | Medium   | Explicit four-permutation logic documented above. Unit tests cover each branch.                                      |
 | Dark-mode over-expression with shade-500 at 38%   | Low      | Percentages match Dark-Glass reference which has been visually validated. Adjustable if dashboards read as too loud. |
 | Plain `.dr-surface` in solid mode paints ink-only | Low      | Documented degraded case. Users apply semantic variant if they want color.                                           |
@@ -264,7 +291,7 @@ All changes ship together because they are mutually dependent:
 
 - `generate-tokens.ts`: delete `generateGradient`, delete `--bg-gradient` and `--sidebar-gradient` emissions, emit `--sf-hue*`, rewrite `--content-gradient-overlay`.
 - `theme-provider.tsx`: add `data-background-style` attribute setter.
-- `theme.css`: add `--canvas-*` tokens at root + light override; rewrite body, sidebar, content overlay, `.dr-surface` backgrounds; delete `[data-mode="light"] .dr-surface` override block; delete `--sf-hue: hsl(var(--primary))` default from `.dr-surface`.
+- `theme.css`: add `--canvas-*` tokens at root + light override; rewrite body, sidebar, header, content overlay, `.dr-surface`, and `.dr-surface--flat` backgrounds; surgically trim `[data-mode="light"] .dr-surface` (remove only gradient-swap declarations, keep fog ramp override, keep noise override); delete `--sf-hue: hsl(var(--primary))` default from `.dr-surface`.
 - `generate-tokens.test.ts`: remove stale assertions, add new ones per the Testing section.
 
 A two-commit split was considered (token emission first, consumers second) but rejected because deleting `--bg-gradient` emission without simultaneously rewriting the body rule that consumes it breaks the body canvas mid-commit. Atomic landing keeps the branch green commit-by-commit.
