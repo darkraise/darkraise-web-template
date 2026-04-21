@@ -62,7 +62,7 @@ function resolveSfHueTokens(
   const color = accentColors[surfaceColor]
   const index = ACCENT_COLORS.indexOf(surfaceColor)
   const neighborIndex = (index + 3) % ACCENT_COLORS.length
-  const neighborName = ACCENT_COLORS[neighborIndex] ?? surfaceColor
+  const neighborName = ACCENT_COLORS[neighborIndex] as AccentColor
   const neighbor = accentColors[neighborName]
 
   return {

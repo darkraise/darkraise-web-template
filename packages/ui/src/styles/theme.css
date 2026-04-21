@@ -343,6 +343,7 @@
     --fog-30: color-mix(in srgb, var(--sf-hue) 22%, rgba(255, 255, 255, 0.24));
     --fog-50: color-mix(in srgb, var(--sf-hue) 28%, rgba(255, 255, 255, 0.42));
 
+    /* shadows the theme --border for all descendants via the global `*` border-border rule */
     --border: var(--fog-15);
     --input: var(--fog-10);
     --ring: color-mix(in oklab, var(--sf-hue) 60%, transparent);
