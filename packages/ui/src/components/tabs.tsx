@@ -9,9 +9,9 @@ import { cn } from "../lib/utils"
 const tabsListVariants = cva("inline-flex items-center text-muted-foreground", {
   variants: {
     variant: {
-      default: "card-surface bg-muted h-9 justify-center p-1",
-      outline: "card-surface bg-muted h-9 justify-center p-1 gap-1",
-      underline: "h-9 gap-4 border-b border-border",
+      default: "card-surface bg-muted justify-center p-1",
+      outline: "card-surface bg-muted justify-center p-1 gap-1",
+      underline: "gap-4 border-b border-border",
     },
   },
   defaultVariants: {
