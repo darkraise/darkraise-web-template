@@ -12,27 +12,40 @@ describe("Button", () => {
 
   it("applies default variant class", () => {
     render(<Button>Default</Button>)
-    expect(screen.getByRole("button")).toHaveClass("bg-primary")
+    expect(screen.getByRole("button")).toHaveClass("btn-glass-hue")
   })
 
   it("applies destructive variant class", () => {
     render(<Button variant="destructive">Delete</Button>)
-    expect(screen.getByRole("button")).toHaveClass("bg-destructive")
+    expect(screen.getByRole("button")).toHaveClass("btn-glass-hue")
   })
 
   it("applies outline variant class", () => {
     render(<Button variant="outline">Outline</Button>)
-    expect(screen.getByRole("button")).toHaveClass("border")
+    const button = screen.getByRole("button")
+    expect(button).toHaveClass("border")
+    expect(button).toHaveClass("btn-glass-neutral")
   })
 
   it("applies secondary variant class", () => {
     render(<Button variant="secondary">Secondary</Button>)
-    expect(screen.getByRole("button")).toHaveClass("bg-secondary")
+    const button = screen.getByRole("button")
+    expect(button).toHaveClass("bg-secondary")
+    expect(button).toHaveClass("btn-glass-neutral")
   })
 
   it("applies ghost variant class", () => {
     render(<Button variant="ghost">Ghost</Button>)
-    expect(screen.getByRole("button")).toHaveClass("hover:bg-accent")
+    const button = screen.getByRole("button")
+    expect(button).toHaveClass("hover:bg-accent")
+    expect(button).toHaveClass("btn-ghost-glass")
+  })
+
+  it("ghost variant has no backdrop-filter utility class at idle", () => {
+    render(<Button variant="ghost">Ghost</Button>)
+    const button = screen.getByRole("button")
+    expect(button.className).not.toMatch(/\bbackdrop-blur\b/)
+    expect(button.className).not.toMatch(/\bbackdrop-filter\b/)
   })
 
   it("applies link variant class", () => {

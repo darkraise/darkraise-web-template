@@ -130,6 +130,7 @@ export function ThemeProvider({
       resolved: ResolvedMode,
     ) => {
       document.documentElement.setAttribute("data-mode", resolved)
+      document.documentElement.setAttribute("data-surface-style", style)
       loadFont(font)
       applyFontFamily(font)
       const tokens = generateTokens({

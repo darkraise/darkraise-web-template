@@ -447,6 +447,50 @@
     display: none;
   }
 
+  .btn-glass-hue {
+    background-image: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--hue) 55%, rgba(255, 255, 255, 0.18)),
+      color-mix(in srgb, var(--hue) 70%, rgba(255, 255, 255, 0.05))
+    );
+    border: 1px solid
+      color-mix(in srgb, var(--hue) 50%, rgba(255, 255, 255, 0.25));
+    box-shadow:
+      var(--inset-hi-button),
+      inset 0 -1px 0 color-mix(in srgb, var(--hue) 70%, #000),
+      0 0 0 1px color-mix(in oklab, var(--hue) 25%, transparent),
+      0 10px 32px color-mix(in oklab, var(--hue) 40%, transparent);
+  }
+
+  .btn-glass-hue:hover {
+    background-image: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--hue) 45%, rgba(255, 255, 255, 0.18)),
+      color-mix(in srgb, var(--hue) 65%, rgba(255, 255, 255, 0.05))
+    );
+  }
+
+  [data-surface-style="glassmorphism"] .btn-glass-neutral {
+    background-image: linear-gradient(180deg, var(--fog-15), var(--fog-05));
+    border-color: var(--fog-20);
+    box-shadow:
+      var(--inset-hi-button),
+      0 6px 20px rgba(0, 0, 0, 0.25);
+  }
+
+  [data-surface-style="glassmorphism"] .btn-glass-neutral:hover {
+    background-image: linear-gradient(180deg, var(--fog-20), var(--fog-10));
+  }
+
+  [data-surface-style="glassmorphism"] .btn-ghost-glass:hover {
+    background-color: var(--fog-10);
+    border: 1px solid var(--fog-15);
+    backdrop-filter: blur(10px) saturate(140%);
+    -webkit-backdrop-filter: blur(10px) saturate(140%);
+    box-shadow: var(--inset-hi-button);
+    color: hsl(var(--foreground));
+  }
+
   .sidebar-nav-item {
     color: hsl(var(--sidebar-foreground));
   }
