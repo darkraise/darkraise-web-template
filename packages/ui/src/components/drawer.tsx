@@ -49,7 +49,7 @@ function DrawerContent({
       <DrawerPrimitive.Content
         ref={ref}
         className={cn(
-          "bg-background fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border",
+          "glass-strong bg-background fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border",
           className,
         )}
         {...props}

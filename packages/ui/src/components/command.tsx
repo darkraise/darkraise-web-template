@@ -15,7 +15,7 @@ function Command({
     <CommandPrimitive
       ref={ref}
       className={cn(
-        "overlay-surface bg-popover text-popover-foreground flex h-full w-full flex-col overflow-hidden",
+        "glass-strong bg-popover text-popover-foreground flex h-full w-full flex-col overflow-hidden",
         className,
       )}
       {...props}

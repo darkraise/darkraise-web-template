@@ -34,7 +34,7 @@ function SheetOverlay({
 }
 
 const sheetVariants = cva(
-  "card-surface fixed z-50 gap-4 bg-background p-6 text-foreground transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
+  "glass-strong fixed z-50 gap-4 bg-background p-6 text-foreground transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
   {
     variants: {
       side: {

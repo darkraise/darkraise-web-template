@@ -19,7 +19,7 @@ function Calendar({
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
-      className={cn("card-surface bg-card p-3", className)}
+      className={cn("glass bg-card p-3", className)}
       captionLayout={captionLayout}
       classNames={{
         root: "w-fit",

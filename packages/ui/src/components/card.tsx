@@ -10,10 +10,7 @@ function Card({
   return (
     <div
       ref={ref}
-      className={cn(
-        "card-surface bg-card text-card-foreground border",
-        className,
-      )}
+      className={cn("glass bg-card text-card-foreground border", className)}
       {...props}
     />
   )

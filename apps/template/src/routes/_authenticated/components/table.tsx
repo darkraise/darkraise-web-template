@@ -597,7 +597,7 @@ function TablePage() {
   </table>
 </div>`}
       >
-        <div className="card-surface border-border max-h-[300px] overflow-auto rounded-md border">
+        <div className="glass border-border max-h-[300px] overflow-auto rounded-md border">
           <table className="w-full caption-bottom text-sm">
             <thead className="bg-background sticky top-0 z-10 border-b">
               <tr>

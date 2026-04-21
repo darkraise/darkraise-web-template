@@ -10,7 +10,7 @@ function Table({
   ref?: React.Ref<HTMLTableElement>
 }) {
   return (
-    <div className="card-surface border-border relative w-full overflow-auto border">
+    <div className="glass border-border relative w-full overflow-auto border">
       <table
         ref={ref}
         className={cn("w-full caption-bottom text-sm", className)}
