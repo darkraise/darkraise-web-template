@@ -91,6 +91,11 @@ const nav: NavGroup[] = [
         icon: AlertTriangle,
       },
       { label: "Avatar", href: "/components/avatar", icon: CircleUser },
+      {
+        label: "Accent Surfaces",
+        href: "/components/accent-surfaces",
+        icon: Paintbrush,
+      },
       { label: "Badges", href: "/components/badges", icon: Shield },
       {
         label: "Buttons",
