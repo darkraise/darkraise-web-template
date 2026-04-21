@@ -282,6 +282,22 @@ export function generateTokens(
         ? "rgba(255, 255, 255, 0.96)"
         : "transparent",
 
+    "--inset-hi": isDarkGlass
+      ? "inset 0 1px 0 rgba(255,255,255,0.14)"
+      : isLightGlass
+        ? "inset 0 1px 0 rgba(255,255,255,0.6)"
+        : "none",
+    "--inset-hi-strong": isDarkGlass
+      ? "inset 0 1px 0 rgba(255,255,255,0.22)"
+      : isLightGlass
+        ? "inset 0 1px 0 rgba(255,255,255,0.75)"
+        : "none",
+    "--inset-hi-button": isDarkGlass
+      ? "inset 0 1px 0 rgba(255,255,255,0.28)"
+      : isLightGlass
+        ? "inset 0 1px 0 rgba(255,255,255,0.6)"
+        : "none",
+
     "--bg-style": backgroundStyle,
     "--bg-gradient":
       backgroundStyle === "gradient"

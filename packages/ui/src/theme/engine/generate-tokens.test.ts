@@ -339,4 +339,74 @@ describe("generateTokens", () => {
       expect(tokens["--fog-50"]).toBe("transparent")
     })
   })
+
+  describe("inset rim tokens", () => {
+    it("dark + glassmorphism emits the dark-glass inset rim values", () => {
+      const tokens = generateTokens({
+        accentColor: "blue",
+        surfaceColor: "slate",
+        surfaceStyle: "glassmorphism",
+        backgroundStyle: "solid",
+        fontFamily: "default",
+        mode: "dark",
+      })
+
+      expect(tokens["--inset-hi"]).toBe("inset 0 1px 0 rgba(255,255,255,0.14)")
+      expect(tokens["--inset-hi-strong"]).toBe(
+        "inset 0 1px 0 rgba(255,255,255,0.22)",
+      )
+      expect(tokens["--inset-hi-button"]).toBe(
+        "inset 0 1px 0 rgba(255,255,255,0.28)",
+      )
+    })
+
+    it("light + glassmorphism emits the light-glass inset rim values", () => {
+      const tokens = generateTokens({
+        accentColor: "blue",
+        surfaceColor: "slate",
+        surfaceStyle: "glassmorphism",
+        backgroundStyle: "solid",
+        fontFamily: "default",
+        mode: "light",
+      })
+
+      expect(tokens["--inset-hi"]).toBe("inset 0 1px 0 rgba(255,255,255,0.6)")
+      expect(tokens["--inset-hi-strong"]).toBe(
+        "inset 0 1px 0 rgba(255,255,255,0.75)",
+      )
+      expect(tokens["--inset-hi-button"]).toBe(
+        "inset 0 1px 0 rgba(255,255,255,0.6)",
+      )
+    })
+
+    it("dark + default surface style emits none for every inset rim token", () => {
+      const tokens = generateTokens({
+        accentColor: "blue",
+        surfaceColor: "slate",
+        surfaceStyle: "default",
+        backgroundStyle: "solid",
+        fontFamily: "default",
+        mode: "dark",
+      })
+
+      expect(tokens["--inset-hi"]).toBe("none")
+      expect(tokens["--inset-hi-strong"]).toBe("none")
+      expect(tokens["--inset-hi-button"]).toBe("none")
+    })
+
+    it("light + default surface style emits none for every inset rim token", () => {
+      const tokens = generateTokens({
+        accentColor: "blue",
+        surfaceColor: "slate",
+        surfaceStyle: "default",
+        backgroundStyle: "solid",
+        fontFamily: "default",
+        mode: "light",
+      })
+
+      expect(tokens["--inset-hi"]).toBe("none")
+      expect(tokens["--inset-hi-strong"]).toBe("none")
+      expect(tokens["--inset-hi-button"]).toBe("none")
+    })
+  })
 })
