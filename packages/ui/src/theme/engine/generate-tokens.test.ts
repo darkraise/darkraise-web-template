@@ -1,5 +1,8 @@
 import { describe, it, expect } from "vitest"
 import { generateTokens } from "./generate-tokens"
+import { accentColors } from "../palettes/accent-colors"
+import { surfaceColors } from "../palettes/surface-colors"
+import type { ColorScale } from "../types"
 
 describe("generateTokens", () => {
   it("produces all expected token keys for the default combination", () => {
@@ -461,6 +464,106 @@ describe("generateTokens", () => {
       })
 
       expect(tokens["--noise-opacity"]).toBe("0")
+    })
+  })
+
+  describe("sf-hue tokens", () => {
+    const baseInput = {
+      accentColor: "blue" as const,
+      surfaceColor: "blue" as const,
+      surfaceStyle: "default" as const,
+      backgroundStyle: "gradient" as const,
+      fontFamily: "default" as const,
+      mode: "dark" as const,
+    }
+
+    it("emits hsl shade-500 for --sf-hue in gradient mode", () => {
+      const tokens = generateTokens(baseInput)
+      expect(tokens["--sf-hue"]).toBe(`hsl(${accentColors.blue[500]})`)
+    })
+
+    it("emits hsl neighbor shade-500 for --sf-hue-2 (wheel +3)", () => {
+      const tokens = generateTokens(baseInput)
+      expect(tokens["--sf-hue-2"]).toBe(`hsl(${accentColors.purple[500]})`)
+    })
+
+    it("emits hsl shade-300 for --sf-hue-3 (lighter pastel)", () => {
+      const tokens = generateTokens(baseInput)
+      expect(tokens["--sf-hue-3"]).toBe(`hsl(${accentColors.blue[300]})`)
+    })
+
+    it("emits transparent for all three hue anchors in solid mode", () => {
+      const tokens = generateTokens({ ...baseInput, backgroundStyle: "solid" })
+      expect(tokens["--sf-hue"]).toBe("transparent")
+      expect(tokens["--sf-hue-2"]).toBe("transparent")
+      expect(tokens["--sf-hue-3"]).toBe("transparent")
+    })
+
+    it("slate hard-branches to same-palette shades (no cross-palette neighbor)", () => {
+      const slate = surfaceColors.slate as ColorScale
+      const tokens = generateTokens({ ...baseInput, surfaceColor: "slate" })
+      expect(tokens["--sf-hue"]).toBe(`hsl(${slate[500]})`)
+      expect(tokens["--sf-hue-2"]).toBe(`hsl(${slate[400]})`)
+      expect(tokens["--sf-hue-3"]).toBe(`hsl(${slate[300]})`)
+    })
+
+    it("light mode uses the same hue values (ink anchor differentiates, not hue)", () => {
+      const tokens = generateTokens({ ...baseInput, mode: "light" })
+      expect(tokens["--sf-hue"]).toBe(`hsl(${accentColors.blue[500]})`)
+      expect(tokens["--sf-hue-2"]).toBe(`hsl(${accentColors.purple[500]})`)
+      expect(tokens["--sf-hue-3"]).toBe(`hsl(${accentColors.blue[300]})`)
+    })
+  })
+
+  describe("--content-gradient-overlay after merge", () => {
+    const baseInput = {
+      accentColor: "blue" as const,
+      surfaceColor: "blue" as const,
+      surfaceStyle: "default" as const,
+      backgroundStyle: "gradient" as const,
+      fontFamily: "default" as const,
+      mode: "dark" as const,
+    }
+
+    it("gradient + default → four-layer var() composition", () => {
+      const tokens = generateTokens(baseInput)
+      expect(
+        tokens["--content-gradient-overlay"].replace(/\s+/g, " ").trim(),
+      ).toBe(
+        "var(--canvas-blob-a), var(--canvas-blob-b), var(--canvas-blob-c), var(--canvas-ink)",
+      )
+    })
+
+    it("solid + glass → preserved linear accent fade", () => {
+      const tokens = generateTokens({
+        ...baseInput,
+        backgroundStyle: "solid",
+        surfaceStyle: "glassmorphism",
+      })
+      const out = tokens["--content-gradient-overlay"]
+        .replace(/\s+/g, " ")
+        .trim()
+      expect(out).toMatch(
+        /^linear-gradient\(135deg, hsl\([^)]+\) 0%, transparent 70%\)$/,
+      )
+    })
+
+    it("gradient + glass → none (body already paints blobs)", () => {
+      const tokens = generateTokens({
+        ...baseInput,
+        backgroundStyle: "gradient",
+        surfaceStyle: "glassmorphism",
+      })
+      expect(tokens["--content-gradient-overlay"]).toBe("none")
+    })
+
+    it("solid + default → none", () => {
+      const tokens = generateTokens({
+        ...baseInput,
+        backgroundStyle: "solid",
+        surfaceStyle: "default",
+      })
+      expect(tokens["--content-gradient-overlay"]).toBe("none")
     })
   })
 })

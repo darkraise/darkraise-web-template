@@ -161,6 +161,49 @@
   --inset-hi-strong: none;
   --inset-hi-button: none;
   --noise-opacity: 0;
+  --canvas-blob-a: radial-gradient(
+    1200px 800px at 15% 0%,
+    color-mix(in oklab, var(--sf-hue) 38%, transparent),
+    transparent 60%
+  );
+  --canvas-blob-b: radial-gradient(
+    900px 700px at 100% 20%,
+    color-mix(in oklab, var(--sf-hue-2) 28%, transparent),
+    transparent 60%
+  );
+  --canvas-blob-c: radial-gradient(
+    1000px 900px at 50% 120%,
+    color-mix(in oklab, var(--sf-hue-3) 22%, transparent),
+    transparent 60%
+  );
+  --canvas-ink: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--sf-hue) 18%, #05060a) 0%,
+    color-mix(in oklab, var(--sf-hue) 12%, #0a0c14) 100%
+  );
+}
+
+[data-mode="light"] {
+  --canvas-blob-a: radial-gradient(
+    1200px 800px at 15% 0%,
+    color-mix(in oklab, var(--sf-hue) 18%, transparent),
+    transparent 60%
+  );
+  --canvas-blob-b: radial-gradient(
+    900px 700px at 100% 20%,
+    color-mix(in oklab, var(--sf-hue-2) 12%, transparent),
+    transparent 60%
+  );
+  --canvas-blob-c: radial-gradient(
+    1000px 900px at 50% 120%,
+    color-mix(in oklab, var(--sf-hue-3) 8%, transparent),
+    transparent 60%
+  );
+  --canvas-ink: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--sf-hue) 4%, #ffffff) 0%,
+    color-mix(in oklab, var(--sf-hue) 6%, #f3f5fb) 100%
+  );
 }
 
 @layer base {
@@ -193,11 +236,17 @@
   }
 
   body {
-    background: var(--bg-gradient, none);
     background-color: hsl(var(--background));
     transition:
       background-color 150ms ease-in-out,
       color 150ms ease-in-out;
+  }
+
+  [data-background-style="gradient"] body {
+    background:
+      var(--canvas-blob-a), var(--canvas-blob-b), var(--canvas-blob-c),
+      var(--canvas-ink);
+    background-color: hsl(var(--background));
   }
 
   body::before {
@@ -287,18 +336,6 @@
   }
 
   .dr-surface {
-    --sf-hue: hsl(var(--primary));
-    --sf-hue-2: hsl(189 94% 43%);
-    --sf-hue-3: hsl(258 90% 76%);
-
-    --ink-0: color-mix(in oklab, var(--sf-hue) 18%, #05060a);
-    --ink-1: color-mix(in oklab, var(--sf-hue) 12%, #0a0c14);
-    --ink-2: color-mix(in oklab, var(--sf-hue) 16%, #10131c);
-    --ink-3: color-mix(in oklab, var(--sf-hue) 20%, #161a26);
-    --ink-4: color-mix(in oklab, var(--sf-hue) 24%, #1e2230);
-    --ink-5: color-mix(in oklab, var(--sf-hue) 28%, #262b3c);
-    --ink-6: color-mix(in oklab, var(--sf-hue) 32%, #353b50);
-
     --fog-05: color-mix(in srgb, var(--sf-hue) 8%, rgba(255, 255, 255, 0.04));
     --fog-10: color-mix(in srgb, var(--sf-hue) 10%, rgba(255, 255, 255, 0.08));
     --fog-15: color-mix(in srgb, var(--sf-hue) 14%, rgba(255, 255, 255, 0.12));
@@ -306,40 +343,22 @@
     --fog-30: color-mix(in srgb, var(--sf-hue) 22%, rgba(255, 255, 255, 0.24));
     --fog-50: color-mix(in srgb, var(--sf-hue) 28%, rgba(255, 255, 255, 0.42));
 
-    --background: var(--ink-1);
-    --card: var(--fog-05);
-    --card-border: var(--fog-15);
     --border: var(--fog-15);
     --input: var(--fog-10);
     --ring: color-mix(in oklab, var(--sf-hue) 60%, transparent);
-    --blob-a: var(--sf-hue);
-    --blob-b: var(--sf-hue-2);
-    --blob-c: var(--sf-hue-3);
-
+    --card: var(--fog-05);
+    --card-border: var(--fog-15);
     --glow-surface:
       0 0 0 1px color-mix(in oklab, var(--sf-hue) 40%, transparent),
       0 12px 40px color-mix(in oklab, var(--sf-hue) 32%, transparent);
 
-    position: relative;
     background:
-      radial-gradient(
-        1200px 800px at 15% 0%,
-        color-mix(in oklab, var(--sf-hue) 38%, transparent),
-        transparent 60%
-      ),
-      radial-gradient(
-        900px 700px at 100% 20%,
-        color-mix(in oklab, var(--sf-hue-2) 28%, transparent),
-        transparent 60%
-      ),
-      radial-gradient(
-        1000px 900px at 50% 120%,
-        color-mix(in oklab, var(--sf-hue-3) 22%, transparent),
-        transparent 60%
-      ),
-      linear-gradient(180deg, var(--ink-0) 0%, var(--ink-1) 100%);
-    color: hsl(var(--foreground));
+      var(--canvas-blob-a), var(--canvas-blob-b), var(--canvas-blob-c),
+      var(--canvas-ink);
+
+    position: relative;
     isolation: isolate;
+    color: hsl(var(--foreground));
   }
 
   .dr-surface::before {
@@ -359,7 +378,7 @@
   }
 
   .dr-surface.dr-surface--flat {
-    background: var(--ink-1);
+    background: var(--canvas-ink);
   }
 
   .dr-surface.dr-surface--flat::before {
@@ -403,53 +422,12 @@
   }
 
   [data-mode="light"] .dr-surface {
-    --ink-0: #ffffff;
-    --ink-1: color-mix(in oklab, var(--sf-hue) 4%, #f7f8fb);
-    --ink-2: color-mix(in oklab, var(--sf-hue) 6%, #eef0f6);
-    --ink-3: color-mix(in oklab, var(--sf-hue) 9%, #e4e7f0);
-    --ink-4: color-mix(in oklab, var(--sf-hue) 12%, #d6dae5);
-    --ink-5: color-mix(in oklab, var(--sf-hue) 18%, #c3c8d6);
-    --ink-6: color-mix(in oklab, var(--sf-hue) 26%, #a8aec0);
-
     --fog-05: color-mix(in srgb, var(--sf-hue) 4%, rgba(255, 255, 255, 0.55));
     --fog-10: color-mix(in srgb, var(--sf-hue) 6%, rgba(255, 255, 255, 0.65));
     --fog-15: color-mix(in srgb, var(--sf-hue) 8%, rgba(255, 255, 255, 0.72));
     --fog-20: color-mix(in srgb, var(--sf-hue) 10%, rgba(255, 255, 255, 0.82));
     --fog-30: color-mix(in srgb, var(--sf-hue) 14%, rgba(255, 255, 255, 0.9));
     --fog-50: color-mix(in srgb, var(--sf-hue) 18%, rgba(255, 255, 255, 0.96));
-
-    --card: var(--fog-15);
-    --card-border: color-mix(
-      in oklab,
-      var(--sf-hue) 20%,
-      rgba(10, 12, 20, 0.08)
-    );
-    --border: color-mix(in oklab, var(--sf-hue) 20%, rgba(10, 12, 20, 0.1));
-    --input: var(--fog-10);
-    --ring: color-mix(in oklab, var(--sf-hue) 50%, transparent);
-
-    color: hsl(var(--foreground));
-    background:
-      radial-gradient(
-        1200px 800px at 15% 0%,
-        color-mix(in oklab, var(--sf-hue) 22%, transparent),
-        transparent 60%
-      ),
-      radial-gradient(
-        900px 700px at 100% 20%,
-        color-mix(in oklab, var(--sf-hue-2) 16%, transparent),
-        transparent 60%
-      ),
-      radial-gradient(
-        1000px 900px at 50% 120%,
-        color-mix(in oklab, var(--sf-hue-3) 14%, transparent),
-        transparent 60%
-      ),
-      linear-gradient(
-        180deg,
-        #ffffff 0%,
-        color-mix(in oklab, var(--sf-hue) 4%, #f3f5fb) 100%
-      );
   }
 
   [data-mode="light"] .dr-surface::before {
@@ -459,7 +437,7 @@
   }
 
   [data-mode="light"] .dr-surface.dr-surface--flat {
-    background: var(--ink-1);
+    background: var(--canvas-ink);
   }
 
   [data-mode="light"] .dr-surface.dr-surface--flat::before {
@@ -540,9 +518,14 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: var(--sidebar-gradient, none);
     pointer-events: none;
     z-index: 0;
+  }
+
+  [data-background-style="gradient"] .sidebar-gradient-overlay::before {
+    background:
+      var(--canvas-blob-a), var(--canvas-blob-b), var(--canvas-blob-c),
+      var(--canvas-ink);
   }
 
   .sidebar-gradient-overlay > * {
@@ -558,9 +541,14 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: var(--sidebar-gradient, none);
     pointer-events: none;
     z-index: 0;
+  }
+
+  [data-background-style="gradient"] .header-gradient-overlay::before {
+    background:
+      var(--canvas-blob-a), var(--canvas-blob-b), var(--canvas-blob-c),
+      var(--canvas-ink);
   }
 
   .header-gradient-overlay > * {

@@ -38,21 +38,25 @@ function getChartColors(
   })
 }
 
-function generateGradient(
+function resolveSfHueTokens(
   surfaceColor: SurfaceColor,
-  mode: ResolvedMode,
-): string {
-  const inkAnchor =
-    mode === "light"
-      ? "linear-gradient(180deg, #FFFFFF 0%, #F3F5FB 100%)"
-      : "linear-gradient(180deg, #05060A 0%, #0A0C14 100%)"
+  backgroundStyle: BackgroundStyle,
+): { "--sf-hue": string; "--sf-hue-2": string; "--sf-hue-3": string } {
+  if (backgroundStyle !== "gradient") {
+    return {
+      "--sf-hue": "transparent",
+      "--sf-hue-2": "transparent",
+      "--sf-hue-3": "transparent",
+    }
+  }
 
   if (surfaceColor === "slate") {
     const slate = surfaceColors.slate as ColorScale
-    if (mode === "light") {
-      return `linear-gradient(135deg, hsl(${slate[300]} / 0.3) 0%, hsl(${slate[200]} / 0.1) 100%), ${inkAnchor}`
+    return {
+      "--sf-hue": `hsl(${slate[500]})`,
+      "--sf-hue-2": `hsl(${slate[400]})`,
+      "--sf-hue-3": `hsl(${slate[300]})`,
     }
-    return `linear-gradient(135deg, hsl(${slate[950]} / 0.4) 0%, hsl(${slate[900]} / 0.1) 100%), ${inkAnchor}`
   }
 
   const color = accentColors[surfaceColor]
@@ -61,10 +65,11 @@ function generateGradient(
   const neighborName = ACCENT_COLORS[neighborIndex] ?? surfaceColor
   const neighbor = accentColors[neighborName]
 
-  if (mode === "light") {
-    return `linear-gradient(135deg, hsl(${color[400]} / 0.3) 0%, hsl(${neighbor[600]} / 0.1) 100%), ${inkAnchor}`
+  return {
+    "--sf-hue": `hsl(${color[500]})`,
+    "--sf-hue-2": `hsl(${neighbor[500]})`,
+    "--sf-hue-3": `hsl(${color[300]})`,
   }
-  return `linear-gradient(135deg, hsl(${color[950]} / 0.4) 0%, hsl(${neighbor[950]} / 0.1) 100%), ${inkAnchor}`
 }
 
 function resolveOpacity(
@@ -117,6 +122,8 @@ export function generateTokens(
     fontFamily,
     mode,
   } = input
+
+  const sfHueTokens = resolveSfHueTokens(surfaceColor, backgroundStyle)
 
   const accent: ColorScale = accentColors[accentColor]
   const neutral: ColorScale = surfaceColors.slate as ColorScale
@@ -304,21 +311,12 @@ export function generateTokens(
         : "none",
 
     "--bg-style": backgroundStyle,
-    "--bg-gradient":
-      backgroundStyle === "gradient"
-        ? generateGradient(surfaceColor, mode)
-        : "none",
     "--noise-opacity":
       backgroundStyle === "gradient" ? (mode === "light" ? "0.6" : "0.5") : "0",
 
-    "--sidebar-gradient":
-      backgroundStyle === "gradient"
-        ? generateGradient(surfaceColor, mode)
-        : "none",
-
     "--content-gradient-overlay":
       backgroundStyle === "gradient" && surfaceStyle !== "glassmorphism"
-        ? `linear-gradient(135deg, hsl(${accent[mode === "light" ? 100 : 900]} / 0.4) 0%, transparent 60%)`
+        ? `var(--canvas-blob-a), var(--canvas-blob-b), var(--canvas-blob-c), var(--canvas-ink)`
         : surfaceStyle === "glassmorphism" && backgroundStyle === "solid"
           ? `linear-gradient(135deg, hsl(${accent[mode === "light" ? 200 : 800]} / 0.2) 0%, transparent 70%)`
           : "none",
@@ -326,6 +324,7 @@ export function generateTokens(
     "--theme-font-sans": fontFamilies[fontFamily].sans,
     "--theme-font-heading": fontFamilies[fontFamily].heading,
     "--theme-font-mono": fontFamilies[fontFamily].mono,
+    ...sfHueTokens,
   }
 
   return tokens

@@ -131,6 +131,7 @@ export function ThemeProvider({
     ) => {
       document.documentElement.setAttribute("data-mode", resolved)
       document.documentElement.setAttribute("data-surface-style", style)
+      document.documentElement.setAttribute("data-background-style", bgStyle)
       loadFont(font)
       applyFontFamily(font)
       const tokens = generateTokens({
