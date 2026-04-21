@@ -409,4 +409,58 @@ describe("generateTokens", () => {
       expect(tokens["--inset-hi-button"]).toBe("none")
     })
   })
+
+  describe("noise opacity token", () => {
+    it("dark + gradient background emits 0.5 noise opacity", () => {
+      const tokens = generateTokens({
+        accentColor: "blue",
+        surfaceColor: "slate",
+        surfaceStyle: "default",
+        backgroundStyle: "gradient",
+        fontFamily: "default",
+        mode: "dark",
+      })
+
+      expect(tokens["--noise-opacity"]).toBe("0.5")
+    })
+
+    it("light + gradient background emits 0.6 noise opacity", () => {
+      const tokens = generateTokens({
+        accentColor: "blue",
+        surfaceColor: "slate",
+        surfaceStyle: "default",
+        backgroundStyle: "gradient",
+        fontFamily: "default",
+        mode: "light",
+      })
+
+      expect(tokens["--noise-opacity"]).toBe("0.6")
+    })
+
+    it("dark + solid background emits 0 noise opacity", () => {
+      const tokens = generateTokens({
+        accentColor: "blue",
+        surfaceColor: "slate",
+        surfaceStyle: "default",
+        backgroundStyle: "solid",
+        fontFamily: "default",
+        mode: "dark",
+      })
+
+      expect(tokens["--noise-opacity"]).toBe("0")
+    })
+
+    it("light + solid background emits 0 noise opacity", () => {
+      const tokens = generateTokens({
+        accentColor: "blue",
+        surfaceColor: "slate",
+        surfaceStyle: "default",
+        backgroundStyle: "solid",
+        fontFamily: "default",
+        mode: "light",
+      })
+
+      expect(tokens["--noise-opacity"]).toBe("0")
+    })
+  })
 })

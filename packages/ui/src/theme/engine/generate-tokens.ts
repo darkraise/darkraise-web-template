@@ -42,12 +42,17 @@ function generateGradient(
   surfaceColor: SurfaceColor,
   mode: ResolvedMode,
 ): string {
+  const inkAnchor =
+    mode === "light"
+      ? "linear-gradient(180deg, #FFFFFF 0%, #F3F5FB 100%)"
+      : "linear-gradient(180deg, #05060A 0%, #0A0C14 100%)"
+
   if (surfaceColor === "slate") {
     const slate = surfaceColors.slate as ColorScale
     if (mode === "light") {
-      return `linear-gradient(135deg, hsl(${slate[300]} / 0.3) 0%, hsl(${slate[200]} / 0.1) 100%)`
+      return `linear-gradient(135deg, hsl(${slate[300]} / 0.3) 0%, hsl(${slate[200]} / 0.1) 100%), ${inkAnchor}`
     }
-    return `linear-gradient(135deg, hsl(${slate[950]} / 0.4) 0%, hsl(${slate[900]} / 0.1) 100%)`
+    return `linear-gradient(135deg, hsl(${slate[950]} / 0.4) 0%, hsl(${slate[900]} / 0.1) 100%), ${inkAnchor}`
   }
 
   const color = accentColors[surfaceColor]
@@ -57,9 +62,9 @@ function generateGradient(
   const neighbor = accentColors[neighborName]
 
   if (mode === "light") {
-    return `linear-gradient(135deg, hsl(${color[400]} / 0.3) 0%, hsl(${neighbor[600]} / 0.1) 100%)`
+    return `linear-gradient(135deg, hsl(${color[400]} / 0.3) 0%, hsl(${neighbor[600]} / 0.1) 100%), ${inkAnchor}`
   }
-  return `linear-gradient(135deg, hsl(${color[950]} / 0.4) 0%, hsl(${neighbor[950]} / 0.1) 100%)`
+  return `linear-gradient(135deg, hsl(${color[950]} / 0.4) 0%, hsl(${neighbor[950]} / 0.1) 100%), ${inkAnchor}`
 }
 
 function resolveOpacity(
@@ -303,6 +308,8 @@ export function generateTokens(
       backgroundStyle === "gradient"
         ? generateGradient(surfaceColor, mode)
         : "none",
+    "--noise-opacity":
+      backgroundStyle === "gradient" ? (mode === "light" ? "0.6" : "0.5") : "0",
 
     "--sidebar-gradient":
       backgroundStyle === "gradient"
