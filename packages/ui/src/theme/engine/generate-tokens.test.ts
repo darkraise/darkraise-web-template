@@ -84,7 +84,7 @@ describe("generateTokens", () => {
     expect(dark["--primary"]).toBe("213 94% 68%")
   })
 
-  it("uses dark foreground for light accent colors (amber, yellow, lime)", () => {
+  it("uses white primary-foreground for all accent colors", () => {
     const amber = generateTokens({
       accentColor: "amber",
       surfaceColor: "slate",
@@ -93,7 +93,7 @@ describe("generateTokens", () => {
       fontFamily: "default",
       mode: "light",
     })
-    expect(amber["--primary-foreground"]).toBe("21 92% 14%")
+    expect(amber["--primary-foreground"]).toBe("0 0% 100%")
 
     const blue = generateTokens({
       accentColor: "blue",

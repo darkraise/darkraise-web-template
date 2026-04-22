@@ -7,7 +7,7 @@ import type {
   ColorScale,
   FontFamily,
 } from "../types"
-import { accentColors, LIGHT_ACCENT_COLORS } from "../palettes/accent-colors"
+import { accentColors } from "../palettes/accent-colors"
 import { surfaceColors } from "../palettes/surface-colors"
 import { surfaceStyles } from "../styles/surface-styles"
 import { ACCENT_COLORS } from "../types"
@@ -138,14 +138,13 @@ export function generateTokens(
         )
   const recipe = surfaceStyles[surfaceStyle]
 
-  const isLightAccent = LIGHT_ACCENT_COLORS.has(accentColor)
   const isRedishAccent =
     accentColor === "red" || accentColor === "rose" || accentColor === "pink"
 
   const isLightGlass = mode === "light" && surfaceStyle === "glassmorphism"
   const isDarkGlass = surfaceStyle === "glassmorphism" && mode === "dark"
   const primaryShade = isLightGlass ? 600 : mode === "light" ? 500 : 400
-  const primaryForeground = isLightAccent ? accent[950] : "0 0% 100%"
+  const primaryForeground = "0 0% 100%"
   const ringValue = accent[primaryShade]
 
   const chartColors = getChartColors(accentColor, mode)
