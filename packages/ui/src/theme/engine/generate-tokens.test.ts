@@ -525,12 +525,12 @@ describe("generateTokens", () => {
       mode: "dark" as const,
     }
 
-    it("gradient + default → four-layer var() composition", () => {
+    it("gradient + default → five-layer var() composition", () => {
       const tokens = generateTokens(baseInput)
       expect(
         tokens["--content-gradient-overlay"].replace(/\s+/g, " ").trim(),
       ).toBe(
-        "var(--canvas-blob-a), var(--canvas-blob-b), var(--canvas-blob-c), var(--canvas-ink)",
+        "var(--canvas-blob-a), var(--canvas-blob-b), var(--canvas-blob-c), var(--canvas-blob-d), var(--canvas-ink)",
       )
     })
 

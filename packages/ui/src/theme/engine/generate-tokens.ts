@@ -314,7 +314,7 @@ export function generateTokens(
 
     "--content-gradient-overlay":
       backgroundStyle === "gradient" && surfaceStyle !== "glassmorphism"
-        ? `var(--canvas-blob-a), var(--canvas-blob-b), var(--canvas-blob-c), var(--canvas-ink)`
+        ? `var(--canvas-blob-a), var(--canvas-blob-b), var(--canvas-blob-c), var(--canvas-blob-d), var(--canvas-ink)`
         : surfaceStyle === "glassmorphism" && backgroundStyle === "solid"
           ? `linear-gradient(135deg, hsl(${accent[mode === "light" ? 200 : 800]} / 0.2) 0%, transparent 70%)`
           : "none",

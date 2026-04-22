@@ -162,19 +162,28 @@
   --inset-hi-button: none;
   --noise-opacity: 0;
   --canvas-blob-a: radial-gradient(
-    1200px 800px at 15% 0%,
-    color-mix(in oklab, var(--sf-hue) 18%, transparent),
-    transparent 90%
+    1400px 900px at 10% -5%,
+    color-mix(in oklab, var(--sf-hue) 22%, transparent) 0%,
+    color-mix(in oklab, var(--sf-hue) 10%, transparent) 55%,
+    transparent 100%
   );
   --canvas-blob-b: radial-gradient(
-    900px 700px at 100% 20%,
-    color-mix(in oklab, var(--sf-hue-2) 14%, transparent),
-    transparent 90%
+    1100px 800px at 100% 15%,
+    color-mix(in oklab, var(--sf-hue-2) 16%, transparent) 0%,
+    color-mix(in oklab, var(--sf-hue-2) 7%, transparent) 55%,
+    transparent 100%
   );
   --canvas-blob-c: radial-gradient(
-    1000px 900px at 50% 120%,
-    color-mix(in oklab, var(--sf-hue-3) 10%, transparent),
-    transparent 90%
+    1200px 900px at 55% 95%,
+    color-mix(in oklab, var(--sf-hue-3) 12%, transparent) 0%,
+    color-mix(in oklab, var(--sf-hue-3) 5%, transparent) 55%,
+    transparent 100%
+  );
+  --canvas-blob-d: radial-gradient(
+    900px 700px at 35% 55%,
+    color-mix(in oklab, var(--sf-hue-2) 10%, transparent) 0%,
+    color-mix(in oklab, var(--sf-hue-2) 4%, transparent) 55%,
+    transparent 100%
   );
   --canvas-ink: linear-gradient(
     180deg,
@@ -185,19 +194,28 @@
 
 [data-mode="light"] {
   --canvas-blob-a: radial-gradient(
-    1200px 800px at 15% 0%,
-    color-mix(in oklab, var(--sf-hue) 14%, transparent),
-    transparent 90%
+    1400px 900px at 10% -5%,
+    color-mix(in oklab, var(--sf-hue) 16%, transparent) 0%,
+    color-mix(in oklab, var(--sf-hue) 7%, transparent) 55%,
+    transparent 100%
   );
   --canvas-blob-b: radial-gradient(
-    900px 700px at 100% 20%,
-    color-mix(in oklab, var(--sf-hue-2) 10%, transparent),
-    transparent 90%
+    1100px 800px at 100% 15%,
+    color-mix(in oklab, var(--sf-hue-2) 12%, transparent) 0%,
+    color-mix(in oklab, var(--sf-hue-2) 5%, transparent) 55%,
+    transparent 100%
   );
   --canvas-blob-c: radial-gradient(
-    1000px 900px at 50% 120%,
-    color-mix(in oklab, var(--sf-hue-3) 7%, transparent),
-    transparent 90%
+    1200px 900px at 55% 95%,
+    color-mix(in oklab, var(--sf-hue-3) 9%, transparent) 0%,
+    color-mix(in oklab, var(--sf-hue-3) 4%, transparent) 55%,
+    transparent 100%
+  );
+  --canvas-blob-d: radial-gradient(
+    900px 700px at 35% 55%,
+    color-mix(in oklab, var(--sf-hue-2) 7%, transparent) 0%,
+    color-mix(in oklab, var(--sf-hue-2) 3%, transparent) 55%,
+    transparent 100%
   );
   --canvas-ink: linear-gradient(
     180deg,
@@ -245,7 +263,7 @@
   [data-background-style="gradient"] body {
     background:
       var(--canvas-blob-a), var(--canvas-blob-b), var(--canvas-blob-c),
-      var(--canvas-ink);
+      var(--canvas-blob-d), var(--canvas-ink);
     background-color: hsl(var(--background));
   }
 
@@ -355,7 +373,7 @@
 
     background:
       var(--canvas-blob-a), var(--canvas-blob-b), var(--canvas-blob-c),
-      var(--canvas-ink);
+      var(--canvas-blob-d), var(--canvas-ink);
 
     position: relative;
     isolation: isolate;
@@ -553,7 +571,7 @@
     .sidebar-gradient-overlay::before {
     background:
       var(--canvas-blob-a), var(--canvas-blob-b), var(--canvas-blob-c),
-      var(--canvas-ink);
+      var(--canvas-blob-d), var(--canvas-ink);
   }
 
   .sidebar-gradient-overlay > * {
@@ -577,7 +595,7 @@
     .header-gradient-overlay::before {
     background:
       var(--canvas-blob-a), var(--canvas-blob-b), var(--canvas-blob-c),
-      var(--canvas-ink);
+      var(--canvas-blob-d), var(--canvas-ink);
   }
 
   [data-mode="light"][data-background-style="gradient"][data-surface-style="default"]
