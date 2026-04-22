@@ -612,21 +612,45 @@
     --sidebar-border: 215 15% 30%;
   }
 
+  [data-background-style="gradient"][data-surface-style="default"]
+    .sidebar-gradient-overlay,
+  [data-background-style="gradient"][data-surface-style="default"]
+    .header-gradient-overlay {
+    background-color: transparent !important;
+  }
+
+  [data-mode="light"][data-background-style="gradient"][data-surface-style="default"]
+    main[data-content] {
+    --muted-foreground: 215 18% 32%;
+    --foreground: 222 47% 8%;
+  }
+
+  [data-mode="dark"][data-background-style="gradient"][data-surface-style="default"]
+    main[data-content] {
+    --muted-foreground: 215 16% 78%;
+    --foreground: 210 40% 98%;
+  }
+
   .header-gradient-overlay > * {
     position: relative;
     z-index: 1;
   }
 
+  main[data-content] {
+    position: relative;
+    isolation: isolate;
+  }
+
   main[data-content]::before {
     content: "";
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 300px;
     background: var(--content-gradient-overlay, none);
     pointer-events: none;
-    z-index: 0;
+    z-index: -1;
     mask-image: linear-gradient(to bottom, black, transparent);
     -webkit-mask-image: linear-gradient(to bottom, black, transparent);
   }

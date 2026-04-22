@@ -34,6 +34,7 @@ import {
   MoreHorizontal,
   LayoutPanelLeft,
   Activity,
+  Sparkles,
 } from "lucide-react"
 import { PageHeader } from "darkraise-ui/layout"
 
@@ -49,6 +50,12 @@ const COMPONENTS = [
     label: "Alert Dialog",
     description: "Blocking modal dialogs requiring explicit confirmation",
     icon: AlertTriangle,
+  },
+  {
+    href: "/components/animation",
+    label: "Animation",
+    description: "Motion utilities for loaders, transitions, and entrances",
+    icon: Sparkles,
   },
   {
     href: "/components/avatar",

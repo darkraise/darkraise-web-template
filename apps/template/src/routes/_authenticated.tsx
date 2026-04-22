@@ -44,6 +44,7 @@ import {
   AlertCircle,
   BookOpen,
   MoreHorizontal,
+  Sparkles,
 } from "lucide-react"
 import { SidebarLayout, TopNavLayout, StackedLayout } from "darkraise-ui/layout"
 import { useLayoutStore } from "darkraise-ui/layout"
@@ -90,6 +91,7 @@ const nav: NavGroup[] = [
         href: "/components/alert-dialog",
         icon: AlertTriangle,
       },
+      { label: "Animation", href: "/components/animation", icon: Sparkles },
       { label: "Avatar", href: "/components/avatar", icon: CircleUser },
       {
         label: "Accent Surfaces",

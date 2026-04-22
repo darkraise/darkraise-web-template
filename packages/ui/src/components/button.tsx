@@ -14,7 +14,7 @@ const buttonVariants = cva(
         destructive:
           "btn-glass-hue text-destructive-foreground [--hue:hsl(var(--destructive))]",
         outline:
-          "btn-glass-neutral border border-primary! bg-card text-card-foreground hover:bg-accent hover:text-accent-foreground",
+          "btn-glass-neutral border border-primary/60! bg-card text-card-foreground hover:bg-accent hover:text-accent-foreground",
         secondary:
           "btn-glass-neutral bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost:

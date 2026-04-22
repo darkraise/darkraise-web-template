@@ -266,6 +266,17 @@ function CalendarPage() {
       </ShowcaseExample>
 
       <ShowcaseExample
+        title="Year and decade zoom — click the caption to zoom out"
+        code={`<Calendar mode="single" className="rounded-md border" />
+
+// Click the "November 2026" caption → year view (12 months).
+// Click the year in year view → decade view (12 years).
+// Selecting drills back down: year → month → day.`}
+      >
+        <Calendar mode="single" className="rounded-md border" />
+      </ShowcaseExample>
+
+      <ShowcaseExample
         title="Presets"
         code={`function CalendarWithPresets() {
   const [date, setDate] = useState<Date | undefined>(new Date())
