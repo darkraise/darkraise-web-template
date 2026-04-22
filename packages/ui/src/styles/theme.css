@@ -522,6 +522,11 @@
     color: hsl(var(--foreground));
   }
 
+  [data-mode="dark"][data-surface-style="glassmorphism"]
+    .glass-strong.bg-background {
+    background-color: transparent !important;
+  }
+
   .sidebar-nav-item {
     color: hsl(var(--sidebar-foreground));
   }
