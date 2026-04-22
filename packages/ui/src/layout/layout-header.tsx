@@ -36,9 +36,10 @@ export function LayoutHeader({
   return (
     <header
       className={cn(
-        "border-border bg-surface-header flex h-14 items-center gap-2 border-b px-4",
+        "bg-surface-header flex h-14 items-center gap-2 border-b px-4",
         className,
       )}
+      style={{ borderColor: "hsl(var(--sidebar-border))" }}
     >
       <MobileDrawer nav={nav} />
       {children ?? <SearchCommand navItems={flatNavItems} />}

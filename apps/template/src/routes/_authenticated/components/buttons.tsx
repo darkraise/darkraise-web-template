@@ -163,50 +163,44 @@ function ButtonsPage() {
         title="Button group"
         code={`const [viewMode, setViewMode] = useState("list")
 
-<div className="inline-flex">
+<div className="inline-flex gap-1">
   <Button
-    variant={viewMode === "list" ? "secondary" : "outline"}
-    className="rounded-r-none"
+    variant={viewMode === "list" ? "default" : "secondary"}
     onClick={() => setViewMode("list")}
   >
     <List className="mr-2 h-4 w-4" />List
   </Button>
   <Button
-    variant={viewMode === "grid" ? "secondary" : "outline"}
-    className="rounded-none border-x-0"
+    variant={viewMode === "grid" ? "default" : "secondary"}
     onClick={() => setViewMode("grid")}
   >
     <LayoutGrid className="mr-2 h-4 w-4" />Grid
   </Button>
   <Button
-    variant={viewMode === "board" ? "secondary" : "outline"}
-    className="rounded-l-none"
+    variant={viewMode === "board" ? "default" : "secondary"}
     onClick={() => setViewMode("board")}
   >
     <Kanban className="mr-2 h-4 w-4" />Board
   </Button>
 </div>`}
       >
-        <div className="inline-flex">
+        <div className="inline-flex gap-1">
           <Button
-            variant={viewMode === "list" ? "secondary" : "outline"}
-            className="rounded-r-none"
+            variant={viewMode === "list" ? "default" : "secondary"}
             onClick={() => setViewMode("list")}
           >
             <List className="mr-2 h-4 w-4" />
             List
           </Button>
           <Button
-            variant={viewMode === "grid" ? "secondary" : "outline"}
-            className="rounded-none border-x-0"
+            variant={viewMode === "grid" ? "default" : "secondary"}
             onClick={() => setViewMode("grid")}
           >
             <LayoutGrid className="mr-2 h-4 w-4" />
             Grid
           </Button>
           <Button
-            variant={viewMode === "board" ? "secondary" : "outline"}
-            className="rounded-l-none"
+            variant={viewMode === "board" ? "default" : "secondary"}
             onClick={() => setViewMode("board")}
           >
             <Kanban className="mr-2 h-4 w-4" />

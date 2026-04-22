@@ -25,9 +25,9 @@ const tabsTriggerVariants = cva(
     variants: {
       variant: {
         default:
-          "rounded-sm px-2.5 py-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm",
+          "tab-glass-hue rounded-sm border border-transparent px-2.5 py-1.5 data-[state=active]:text-primary-foreground",
         outline:
-          "rounded-sm border border-transparent bg-transparent px-2.5 py-1.5 hover:text-foreground data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:border-primary data-[state=active]:shadow-sm",
+          "rounded-sm border border-transparent bg-transparent px-2.5 py-1.5 hover:text-foreground data-[state=active]:text-primary data-[state=active]:border-primary data-[state=active]:shadow-sm",
         underline:
           "-mb-px h-full border-b-2 border-transparent px-2.5 py-1.5 data-[state=active]:border-primary data-[state=active]:text-primary",
       },

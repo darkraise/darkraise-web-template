@@ -468,6 +468,21 @@
     );
   }
 
+  .tab-glass-hue[data-state="active"] {
+    background-image: linear-gradient(
+      180deg,
+      color-mix(in srgb, hsl(var(--primary)) 55%, rgba(255, 255, 255, 0.18)),
+      color-mix(in srgb, hsl(var(--primary)) 70%, rgba(255, 255, 255, 0.05))
+    );
+    border: 1px solid
+      color-mix(in srgb, hsl(var(--primary)) 50%, rgba(255, 255, 255, 0.25));
+    box-shadow:
+      var(--inset-hi-button),
+      inset 0 -1px 0 color-mix(in srgb, hsl(var(--primary)) 70%, #000),
+      0 0 0 1px color-mix(in oklab, hsl(var(--primary)) 25%, transparent),
+      0 10px 32px color-mix(in oklab, hsl(var(--primary)) 40%, transparent);
+  }
+
   [data-surface-style="glassmorphism"] .btn-glass-neutral {
     background-image: linear-gradient(180deg, var(--fog-15), var(--fog-05));
     border-color: var(--fog-20);
@@ -511,6 +526,17 @@
       border-color 150ms ease-in-out;
   }
 
+  [data-mode="dark"] input::-ms-reveal,
+  [data-mode="dark"] input::-ms-clear {
+    filter: invert(1);
+  }
+
+  [data-surface-style="default"] .glass-strong,
+  [data-surface-style="default"] .overlay-surface {
+    border-color: hsl(var(--border));
+    box-shadow: var(--shadow-dropdown);
+  }
+
   .sidebar-gradient-overlay {
     position: relative;
   }
@@ -523,7 +549,8 @@
     z-index: 0;
   }
 
-  [data-background-style="gradient"] .sidebar-gradient-overlay::before {
+  [data-background-style="gradient"][data-surface-style="glassmorphism"]
+    .sidebar-gradient-overlay::before {
     background:
       var(--canvas-blob-a), var(--canvas-blob-b), var(--canvas-blob-c),
       var(--canvas-ink);
@@ -546,10 +573,25 @@
     z-index: 0;
   }
 
-  [data-background-style="gradient"] .header-gradient-overlay::before {
+  [data-background-style="gradient"][data-surface-style="glassmorphism"]
+    .header-gradient-overlay::before {
     background:
       var(--canvas-blob-a), var(--canvas-blob-b), var(--canvas-blob-c),
       var(--canvas-ink);
+  }
+
+  [data-mode="light"][data-background-style="gradient"][data-surface-style="default"]
+    .sidebar-gradient-overlay,
+  [data-mode="light"][data-background-style="gradient"][data-surface-style="default"]
+    .header-gradient-overlay {
+    --sidebar-border: 215 20% 82%;
+  }
+
+  [data-mode="dark"][data-background-style="gradient"][data-surface-style="default"]
+    .sidebar-gradient-overlay,
+  [data-mode="dark"][data-background-style="gradient"][data-surface-style="default"]
+    .header-gradient-overlay {
+    --sidebar-border: 215 15% 30%;
   }
 
   .header-gradient-overlay > * {
