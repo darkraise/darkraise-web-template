@@ -186,17 +186,17 @@
 [data-mode="light"] {
   --canvas-blob-a: radial-gradient(
     1200px 800px at 15% 0%,
-    color-mix(in oklab, var(--sf-hue) 10%, transparent),
+    color-mix(in oklab, var(--sf-hue) 14%, transparent),
     transparent 90%
   );
   --canvas-blob-b: radial-gradient(
     900px 700px at 100% 20%,
-    color-mix(in oklab, var(--sf-hue-2) 8%, transparent),
+    color-mix(in oklab, var(--sf-hue-2) 10%, transparent),
     transparent 90%
   );
   --canvas-blob-c: radial-gradient(
     1000px 900px at 50% 120%,
-    color-mix(in oklab, var(--sf-hue-3) 5%, transparent),
+    color-mix(in oklab, var(--sf-hue-3) 7%, transparent),
     transparent 90%
   );
   --canvas-ink: linear-gradient(
