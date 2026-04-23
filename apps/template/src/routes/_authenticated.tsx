@@ -45,6 +45,7 @@ import {
   BookOpen,
   MoreHorizontal,
   Sparkles,
+  Shapes,
 } from "lucide-react"
 import { SidebarLayout, TopNavLayout, StackedLayout } from "darkraise-ui/layout"
 import { useLayoutStore } from "darkraise-ui/layout"
@@ -148,6 +149,7 @@ const nav: NavGroup[] = [
         href: "/components/hover-card",
         icon: MousePointerClick,
       },
+      { label: "Icons", href: "/components/icons", icon: Shapes },
       { label: "Inputs", href: "/components/inputs", icon: TextCursorInput },
       { label: "Layouts", href: "/components/layouts", icon: LayoutPanelLeft },
       {

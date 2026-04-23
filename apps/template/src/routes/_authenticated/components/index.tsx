@@ -35,6 +35,7 @@ import {
   LayoutPanelLeft,
   Activity,
   Sparkles,
+  Shapes,
 } from "lucide-react"
 import { PageHeader } from "darkraise-ui/layout"
 
@@ -164,6 +165,12 @@ const COMPONENTS = [
     label: "Hover Card",
     description: "Non-interactive preview cards triggered by hover",
     icon: SquareMousePointer,
+  },
+  {
+    href: "/components/icons",
+    label: "Icons",
+    description: "Searchable lucide-react catalog with usage conventions",
+    icon: Shapes,
   },
   {
     href: "/components/inputs",
