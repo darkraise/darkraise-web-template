@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@layer theme, base, components, utilities, overrides;
+
 @custom-variant dark (&:where([data-mode="dark"], [data-mode="dark"] *));
 
 @utility scrollbar-none {
@@ -163,32 +165,32 @@
   --noise-opacity: 0;
   --canvas-blob-a: radial-gradient(
     1400px 900px at 10% -5%,
-    color-mix(in oklab, var(--sf-hue) 22%, transparent) 0%,
-    color-mix(in oklab, var(--sf-hue) 10%, transparent) 55%,
+    color-mix(in oklab, var(--sf-hue) 8%, transparent) 0%,
+    color-mix(in oklab, var(--sf-hue) 3%, transparent) 55%,
     transparent 100%
   );
   --canvas-blob-b: radial-gradient(
     1100px 800px at 100% 15%,
-    color-mix(in oklab, var(--sf-hue-2) 16%, transparent) 0%,
-    color-mix(in oklab, var(--sf-hue-2) 7%, transparent) 55%,
+    color-mix(in oklab, var(--sf-hue-2) 6%, transparent) 0%,
+    color-mix(in oklab, var(--sf-hue-2) 2%, transparent) 55%,
     transparent 100%
   );
   --canvas-blob-c: radial-gradient(
     1200px 900px at 55% 95%,
-    color-mix(in oklab, var(--sf-hue-3) 12%, transparent) 0%,
-    color-mix(in oklab, var(--sf-hue-3) 5%, transparent) 55%,
+    color-mix(in oklab, var(--sf-hue-3) 4%, transparent) 0%,
+    color-mix(in oklab, var(--sf-hue-3) 2%, transparent) 55%,
     transparent 100%
   );
   --canvas-blob-d: radial-gradient(
     900px 700px at 35% 55%,
-    color-mix(in oklab, var(--sf-hue-2) 10%, transparent) 0%,
-    color-mix(in oklab, var(--sf-hue-2) 4%, transparent) 55%,
+    color-mix(in oklab, var(--sf-hue-2) 3%, transparent) 0%,
+    color-mix(in oklab, var(--sf-hue-2) 1%, transparent) 55%,
     transparent 100%
   );
   --canvas-ink: linear-gradient(
     180deg,
-    color-mix(in oklab, var(--sf-hue) 18%, #05060a) 0%,
-    color-mix(in oklab, var(--sf-hue) 12%, #0a0c14) 100%
+    color-mix(in oklab, var(--sf-hue) 7%, #05060a) 0%,
+    color-mix(in oklab, var(--sf-hue) 5%, #0a0c14) 100%
   );
 }
 
@@ -522,11 +524,6 @@
     color: hsl(var(--foreground));
   }
 
-  [data-mode="dark"][data-surface-style="glassmorphism"]
-    .glass-strong.bg-background {
-    background-color: transparent !important;
-  }
-
   .sidebar-nav-item {
     color: hsl(var(--sidebar-foreground));
   }
@@ -617,13 +614,6 @@
     --sidebar-border: 215 15% 30%;
   }
 
-  [data-background-style="gradient"][data-surface-style="default"]
-    .sidebar-gradient-overlay,
-  [data-background-style="gradient"][data-surface-style="default"]
-    .header-gradient-overlay {
-    background-color: transparent !important;
-  }
-
   [data-mode="light"][data-background-style="gradient"][data-surface-style="default"]
     main[data-content] {
     --muted-foreground: 215 18% 32%;
@@ -688,6 +678,112 @@
   *::-webkit-scrollbar-corner {
     background: transparent;
   }
+}
+
+@layer overrides {
+  [data-mode="dark"][data-surface-style="glassmorphism"]
+    .glass-strong.bg-background {
+    background-color: transparent;
+  }
+
+  [data-background-style="gradient"][data-surface-style="default"]
+    .sidebar-gradient-overlay,
+  [data-background-style="gradient"][data-surface-style="default"]
+    .header-gradient-overlay {
+    background-color: transparent;
+  }
+
+  .btn-glass-neutral--accent-border {
+    border-color: hsl(var(--primary) / 0.6);
+  }
+}
+
+/* Unlayered — must stay this way to defeat sonner's unlayered stylesheet.
+   @layer overrides cannot beat unlayered author CSS on layer precedence.
+   Every selector below is compounded to a specificity ≥ sonner's matching
+   rule, so the value wins on specificity alone, in the same cascade tier. */
+
+/* Untyped description colour: tie description text to the app's own
+   `--muted-foreground`, which is mode-aware (set by generate-tokens.ts).
+   Sonner ships hardcoded `#3f3f3f` in light mode and `hsl(0, 0%, 91%)` in
+   dark mode, both selected by sonner's own theme state — not the app's.
+   When `<Toaster theme="system" />` resolves against an OS preference that
+   differs from the app's `data-mode`, sonner's colour lands on the wrong
+   backdrop and disappears. The type-palette rules below beat this rule on
+   source order for typed toasts. */
+html [data-sonner-toast][data-styled="true"] [data-description] {
+  color: hsl(var(--muted-foreground));
+}
+
+/* Toast action button: primary surface, matching the rest of the button
+   system. Sonner's default `color: var(--normal-bg); background: var(--normal-text);`
+   renders as inverted toast colours, which in glass mode surfaces a
+   translucent `--normal-bg` on button text and reads as broken. */
+html [data-sonner-toast][data-styled="true"] [data-button] {
+  color: hsl(var(--primary-foreground));
+  background: hsl(var(--primary));
+}
+
+/* Toast cancel button: muted surface, matching `bg-muted` / `text-muted-foreground`.
+   The `html[data-mode]` prefix raises specificity to 0,0,4,1 so the rule
+   beats sonner's dark-mode cancel override
+   (`[data-sonner-toaster][data-sonner-theme='dark'] [data-sonner-toast][data-styled='true'] [data-cancel]`, 0,0,4,0)
+   which sonner applies when `<Toaster theme="system" />` resolves to dark
+   against the OS preference. This rule overrides the action-button rule
+   above on the cancel element because its specificity is higher. */
+html[data-mode] [data-sonner-toast][data-styled="true"] [data-cancel] {
+  color: hsl(var(--muted-foreground));
+  background: hsl(var(--muted));
+}
+
+html [data-sonner-toast][data-type="success"] {
+  border-color: color-mix(in oklab, var(--color-green-500) 40%, transparent);
+  color: var(--color-green-600);
+}
+html [data-sonner-toast][data-type="success"] [data-description] {
+  color: color-mix(in oklab, var(--color-green-600) 80%, transparent);
+}
+[data-mode="dark"] [data-sonner-toast][data-type="success"] {
+  color: var(--color-green-400);
+}
+[data-mode="dark"] [data-sonner-toast][data-type="success"] [data-description] {
+  color: color-mix(in oklab, var(--color-green-400) 80%, transparent);
+}
+
+html [data-sonner-toast][data-type="error"] {
+  border-color: color-mix(in oklab, var(--color-destructive) 40%, transparent);
+  color: var(--color-destructive);
+}
+html [data-sonner-toast][data-type="error"] [data-description] {
+  color: color-mix(in oklab, var(--color-destructive) 80%, transparent);
+}
+
+html [data-sonner-toast][data-type="warning"] {
+  border-color: color-mix(in oklab, var(--color-amber-500) 40%, transparent);
+  color: var(--color-amber-600);
+}
+html [data-sonner-toast][data-type="warning"] [data-description] {
+  color: color-mix(in oklab, var(--color-amber-600) 80%, transparent);
+}
+[data-mode="dark"] [data-sonner-toast][data-type="warning"] {
+  color: var(--color-amber-400);
+}
+[data-mode="dark"] [data-sonner-toast][data-type="warning"] [data-description] {
+  color: color-mix(in oklab, var(--color-amber-400) 80%, transparent);
+}
+
+html [data-sonner-toast][data-type="info"] {
+  border-color: color-mix(in oklab, var(--color-blue-500) 40%, transparent);
+  color: var(--color-blue-600);
+}
+html [data-sonner-toast][data-type="info"] [data-description] {
+  color: color-mix(in oklab, var(--color-blue-600) 80%, transparent);
+}
+[data-mode="dark"] [data-sonner-toast][data-type="info"] {
+  color: var(--color-blue-400);
+}
+[data-mode="dark"] [data-sonner-toast][data-type="info"] [data-description] {
+  color: color-mix(in oklab, var(--color-blue-400) 80%, transparent);
 }
 
 @source "..";
