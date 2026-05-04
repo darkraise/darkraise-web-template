@@ -59,6 +59,11 @@
               : "light"
             : mode
         document.documentElement.setAttribute("data-mode", resolved)
+
+        ;["density", "elevation", "button-elevation"].forEach(function (axis) {
+          var v = localStorage.getItem("theme-" + axis)
+          if (v) document.documentElement.setAttribute("data-" + axis, v)
+        })
       })()
     </script>
   </head>
