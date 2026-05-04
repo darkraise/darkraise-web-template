@@ -14,9 +14,10 @@ const toggleVariants = cva(
           "border border-input bg-transparent hover:bg-accent hover:text-accent-foreground data-[state=on]:bg-transparent data-[state=on]:text-primary data-[state=on]:border-primary data-[state=on]:shadow-none data-[state=on]:hover:bg-primary/10 data-[state=on]:hover:text-primary",
       },
       size: {
-        default: "h-8 px-2.5 min-w-8",
-        sm: "h-6 px-1.5 min-w-6",
-        lg: "h-10 px-4 min-w-10",
+        default:
+          "px-2.5 py-[var(--density-button-py)] aspect-auto min-w-[var(--density-cell)]",
+        sm: "px-1.5 py-[var(--density-button-py-sm)] min-w-[var(--density-cell-sm)]",
+        lg: "px-4 py-[var(--density-button-py-lg)] min-w-[var(--density-cell-lg)]",
       },
     },
     defaultVariants: {
