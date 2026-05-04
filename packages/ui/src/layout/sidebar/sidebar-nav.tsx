@@ -101,9 +101,10 @@ function SidebarItem({ item, depth = 0 }: SidebarItemProps) {
     <Link
       to={item.href}
       className={cn(
-        "sidebar-nav-item flex min-h-[var(--density-cell)] items-center gap-3 rounded-md px-3 py-[var(--density-row-py)] text-sm transition-colors duration-150",
-        collapsed &&
-          "mx-auto aspect-square w-[var(--density-cell)] justify-center px-0",
+        "sidebar-nav-item flex min-h-[var(--density-cell)] items-center gap-3 rounded-md py-[var(--density-row-py)] text-sm transition-colors duration-150",
+        collapsed
+          ? "mx-auto aspect-square w-[var(--density-cell)] justify-center"
+          : "px-3",
         depth > 0 && "py-1.5 text-[13px]",
       )}
       style={depth > 0 ? { paddingLeft: `${depth * 12 + 12}px` } : undefined}
