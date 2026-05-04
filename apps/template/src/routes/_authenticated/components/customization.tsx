@@ -2,6 +2,15 @@ import { useState, type ReactNode } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import { cva, type VariantProps } from "class-variance-authority"
 import { X } from "lucide-react"
+import { Button } from "darkraise-ui/components/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "darkraise-ui/components/card"
+import { Input } from "darkraise-ui/components/input"
 import { cn } from "darkraise-ui/lib"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
@@ -537,6 +546,63 @@ function CustomizationPage() {
             <StatusDot color="green" size="lg" />
             Large
           </span>
+        </div>
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Density and elevation axes"
+        code={`// Theme switcher exposes:
+// density:        compact | cozy | comfortable | spacious
+// elevation:      flat | low | medium | high
+// buttonElevation: flat | low | medium | high
+//
+// Tokens:
+//   --density-button-px / --density-button-py  (button padding)
+//   --density-input-px / --density-input-py    (input padding)
+//   --density-cell                              (icon-only cell size)
+//   --density-container-p                       (card / form padding)
+//   --density-row-py                            (table row, nav item)
+//   --density-stack-gap                         (vertical row gap)
+//   --elevation-flat/low/medium/high           (shadow ramp)
+//   --shadow-button                             (button shadow alias)
+//
+// Tailwind utilities: shadow-flat, shadow-low, shadow-medium, shadow-high, shadow-button`}
+      >
+        <div className="space-y-6">
+          <div className="flex flex-wrap items-center gap-3">
+            <Button>Default button</Button>
+            <Button size="sm">Small</Button>
+            <Button size="lg">Large</Button>
+            <Button variant="outline">Outline</Button>
+            <Button variant="ghost">Ghost</Button>
+            <Input placeholder="Input" className="w-48" />
+          </div>
+          <Card className="max-w-md">
+            <CardHeader>
+              <CardTitle>Sample card</CardTitle>
+              <CardDescription>
+                Padding tracks density; static cards have no drop shadow.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm">
+                Toggle density and elevation in the theme switcher to see the
+                difference.
+              </p>
+            </CardContent>
+          </Card>
+          <div className="flex flex-wrap gap-3">
+            <div className="bg-card shadow-flat rounded-md border p-4">
+              flat
+            </div>
+            <div className="bg-card shadow-low rounded-md border p-4">low</div>
+            <div className="bg-card shadow-medium rounded-md border p-4">
+              medium
+            </div>
+            <div className="bg-card shadow-high rounded-md border p-4">
+              high
+            </div>
+          </div>
         </div>
       </ShowcaseExample>
     </ShowcasePage>
