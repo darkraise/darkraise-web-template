@@ -9,7 +9,8 @@ import {
   ACCENT_COLORS,
   SURFACE_COLORS,
   SURFACE_STYLES,
-  FONT_FAMILIES,
+  DENSITIES,
+  ELEVATIONS,
 } from "./types"
 import type {
   Mode,
@@ -17,11 +18,11 @@ import type {
   SurfaceColor,
   BackgroundStyle,
   SurfaceStyle,
-  FontFamily,
+  Density,
+  Elevation,
 } from "./types"
 import { accentColors } from "./palettes/accent-colors"
 import { surfaceStyles } from "./styles/surface-styles"
-import { fontFamilies } from "./palettes/font-families"
 
 const modeOptions: { value: Mode; icon: typeof Sun; label: string }[] = [
   { value: "light", icon: Sun, label: "Light" },
@@ -35,15 +36,19 @@ export function ThemeSwitcher() {
     surfaceColor,
     surfaceStyle,
     backgroundStyle,
-    fontFamily,
     mode,
+    density,
+    elevation,
+    buttonElevation,
     config,
     setAccentColor,
     setSurfaceColor,
     setSurfaceStyle,
     setBackgroundStyle,
-    setFontFamily,
     setMode,
+    setDensity,
+    setElevation,
+    setButtonElevation,
   } = useTheme()
 
   const bgOptions: {
@@ -181,33 +186,75 @@ export function ThemeSwitcher() {
         </div>
       </div>
     ),
-    axes.fontFamily && (
-      <div key="fontFamily">
+    axes.density && (
+      <div key="density">
         <Label className="text-muted-foreground text-xs font-medium">
-          Font
+          Density
         </Label>
-        <div className="mt-1.5 grid grid-cols-1 gap-1">
-          {FONT_FAMILIES.map((font: FontFamily) => {
-            const def = fontFamilies[font]
-            return (
-              <button
-                key={font}
-                type="button"
-                className={cn(
-                  "cursor-pointer rounded-md px-2 py-1.5 text-left text-xs transition-colors",
-                  fontFamily === font
-                    ? "bg-primary text-primary-foreground"
-                    : "hover:bg-accent hover:text-accent-foreground",
-                )}
-                onClick={() => setFontFamily(font)}
-              >
-                <span className="font-medium">{def.label}</span>
-                <span className="ml-2 text-[10px] opacity-70">
-                  {def.description}
-                </span>
-              </button>
-            )
-          })}
+        <div className="mt-1.5 grid grid-cols-2 gap-1">
+          {DENSITIES.map((d: Density) => (
+            <button
+              key={d}
+              type="button"
+              className={cn(
+                "cursor-pointer rounded-md px-2 py-1.5 text-left text-xs capitalize transition-colors",
+                density === d
+                  ? "bg-primary text-primary-foreground"
+                  : "hover:bg-accent hover:text-accent-foreground",
+              )}
+              onClick={() => setDensity(d)}
+            >
+              {d}
+            </button>
+          ))}
+        </div>
+      </div>
+    ),
+    axes.elevation && (
+      <div key="elevation">
+        <Label className="text-muted-foreground text-xs font-medium">
+          Elevation
+        </Label>
+        <div className="mt-1.5 grid grid-cols-4 gap-1">
+          {ELEVATIONS.map((e: Elevation) => (
+            <button
+              key={e}
+              type="button"
+              className={cn(
+                "cursor-pointer rounded-md px-2 py-1.5 text-center text-xs capitalize transition-colors",
+                elevation === e
+                  ? "bg-primary text-primary-foreground"
+                  : "hover:bg-accent hover:text-accent-foreground",
+              )}
+              onClick={() => setElevation(e)}
+            >
+              {e}
+            </button>
+          ))}
+        </div>
+      </div>
+    ),
+    axes.buttonElevation && (
+      <div key="buttonElevation">
+        <Label className="text-muted-foreground text-xs font-medium">
+          Button Elevation
+        </Label>
+        <div className="mt-1.5 grid grid-cols-4 gap-1">
+          {ELEVATIONS.map((e: Elevation) => (
+            <button
+              key={e}
+              type="button"
+              className={cn(
+                "cursor-pointer rounded-md px-2 py-1.5 text-center text-xs capitalize transition-colors",
+                buttonElevation === e
+                  ? "bg-primary text-primary-foreground"
+                  : "hover:bg-accent hover:text-accent-foreground",
+              )}
+              onClick={() => setButtonElevation(e)}
+            >
+              {e}
+            </button>
+          ))}
         </div>
       </div>
     ),

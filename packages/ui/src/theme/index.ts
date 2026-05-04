@@ -4,13 +4,13 @@ export { useTheme } from "./use-theme"
 export { generateTokens } from "./engine/generate-tokens"
 export { accentColors } from "./palettes/accent-colors"
 export { surfaceStyles } from "./styles/surface-styles"
-export { fontFamilies } from "./palettes/font-families"
 export {
   ACCENT_COLORS,
   SURFACE_COLORS,
   SURFACE_STYLES,
   BACKGROUND_STYLES,
-  FONT_FAMILIES,
+  DENSITIES,
+  ELEVATIONS,
   MODES,
 } from "./types"
 export type {
@@ -18,7 +18,8 @@ export type {
   SurfaceColor,
   BackgroundStyle,
   SurfaceStyle,
-  FontFamily,
+  Density,
+  Elevation,
   Mode,
   ResolvedMode,
   ColorScale,

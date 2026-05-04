@@ -6,8 +6,10 @@ export const themeConfig: ThemeConfig = {
     surfaceColor: "slate",
     surfaceStyle: "default",
     backgroundStyle: "solid",
-    fontFamily: "default",
     mode: "system",
+    density: "cozy",
+    elevation: "medium",
+    buttonElevation: "flat",
   },
   switcher: {
     enabled: true,
@@ -17,7 +19,9 @@ export const themeConfig: ThemeConfig = {
       surfaceColor: true,
       surfaceStyle: true,
       backgroundStyle: true,
-      fontFamily: true,
+      density: true,
+      elevation: true,
+      buttonElevation: true,
     },
   },
 }

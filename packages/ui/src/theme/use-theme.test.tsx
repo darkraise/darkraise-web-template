@@ -113,6 +113,41 @@ describe("useTheme", () => {
     expect(localStorage.getItem("theme-surface-color")).toBe("emerald")
   })
 
+  it("setDensity updates density and sets data-density attribute", () => {
+    const { result } = renderHook(() => useTheme(), { wrapper })
+    act(() => result.current.setDensity("spacious"))
+    expect(result.current.density).toBe("spacious")
+    expect(localStorage.getItem("theme-density")).toBe("spacious")
+    expect(document.documentElement.getAttribute("data-density")).toBe(
+      "spacious",
+    )
+  })
+
+  it("setElevation updates elevation and sets data-elevation attribute", () => {
+    const { result } = renderHook(() => useTheme(), { wrapper })
+    act(() => result.current.setElevation("high"))
+    expect(result.current.elevation).toBe("high")
+    expect(localStorage.getItem("theme-elevation")).toBe("high")
+    expect(document.documentElement.getAttribute("data-elevation")).toBe("high")
+  })
+
+  it("setButtonElevation updates buttonElevation and sets data-button-elevation attribute", () => {
+    const { result } = renderHook(() => useTheme(), { wrapper })
+    act(() => result.current.setButtonElevation("medium"))
+    expect(result.current.buttonElevation).toBe("medium")
+    expect(localStorage.getItem("theme-button-elevation")).toBe("medium")
+    expect(document.documentElement.getAttribute("data-button-elevation")).toBe(
+      "medium",
+    )
+  })
+
+  it("returns config defaults for new axes when localStorage is empty", () => {
+    const { result } = renderHook(() => useTheme(), { wrapper })
+    expect(result.current.density).toBe("cozy")
+    expect(result.current.elevation).toBe("medium")
+    expect(result.current.buttonElevation).toBe("flat")
+  })
+
   it("syncStatus is idle when no persistence adapter is provided", () => {
     const { result } = renderHook(() => useTheme(), { wrapper })
     expect(result.current.syncStatus).toBe("idle")
@@ -138,8 +173,10 @@ describe("useTheme persistence", () => {
     surfaceColor: "emerald",
     surfaceStyle: "glassmorphism",
     backgroundStyle: "gradient",
-    fontFamily: "editorial",
     mode: "dark",
+    density: "spacious",
+    elevation: "high",
+    buttonElevation: "low",
   }
 
   function createAdapter(
@@ -175,8 +212,33 @@ describe("useTheme persistence", () => {
     expect(result.current.surfaceColor).toBe("emerald")
     expect(result.current.surfaceStyle).toBe("glassmorphism")
     expect(result.current.backgroundStyle).toBe("gradient")
-    expect(result.current.fontFamily).toBe("editorial")
     expect(result.current.mode).toBe("dark")
+  })
+
+  it("falls back to config defaults when load returns settings without new fields", async () => {
+    const partialSettings = {
+      accentColor: "violet",
+      surfaceColor: "slate",
+      surfaceStyle: "default",
+      backgroundStyle: "solid",
+      mode: "light",
+      // density / elevation / buttonElevation absent
+    } as ThemeSettings
+    const adapter = createAdapter({
+      load: vi.fn(() => Promise.resolve(partialSettings)),
+    })
+    const { result } = renderHook(() => useTheme(), {
+      wrapper: wrapperWith(adapter),
+    })
+
+    await act(async () => {
+      await vi.runAllTimersAsync()
+    })
+
+    expect(result.current.accentColor).toBe("violet")
+    expect(result.current.density).toBe("cozy")
+    expect(result.current.elevation).toBe("medium")
+    expect(result.current.buttonElevation).toBe("flat")
   })
 
   it("updates localStorage when loading from adapter", async () => {
@@ -191,7 +253,6 @@ describe("useTheme persistence", () => {
     expect(localStorage.getItem("theme-surface-color")).toBe("emerald")
     expect(localStorage.getItem("theme-style")).toBe("glassmorphism")
     expect(localStorage.getItem("theme-bg-style")).toBe("gradient")
-    expect(localStorage.getItem("theme-font")).toBe("editorial")
     expect(localStorage.getItem("mode")).toBe("dark")
   })
 

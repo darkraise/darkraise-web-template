@@ -28,14 +28,11 @@ export type SurfaceStyle = (typeof SURFACE_STYLES)[number]
 export const BACKGROUND_STYLES = ["solid", "gradient"] as const
 export type BackgroundStyle = (typeof BACKGROUND_STYLES)[number]
 
-export const FONT_FAMILIES = [
-  "default",
-  "editorial",
-  "modern",
-  "humanist",
-  "technical",
-] as const
-export type FontFamily = (typeof FONT_FAMILIES)[number]
+export const DENSITIES = ["compact", "cozy", "comfortable", "spacious"] as const
+export type Density = (typeof DENSITIES)[number]
+
+export const ELEVATIONS = ["flat", "low", "medium", "high"] as const
+export type Elevation = (typeof ELEVATIONS)[number]
 
 export const MODES = ["light", "dark", "system"] as const
 export type Mode = (typeof MODES)[number]
@@ -77,8 +74,10 @@ export interface ThemeSettings {
   surfaceColor: SurfaceColor
   surfaceStyle: SurfaceStyle
   backgroundStyle: BackgroundStyle
-  fontFamily: FontFamily
   mode: Mode
+  density: Density
+  elevation: Elevation
+  buttonElevation: Elevation
 }
 
 export interface ThemePersistenceAdapter {
@@ -93,8 +92,10 @@ export interface ThemeContextValue {
   surfaceColor: SurfaceColor
   surfaceStyle: SurfaceStyle
   backgroundStyle: BackgroundStyle
-  fontFamily: FontFamily
   mode: Mode
+  density: Density
+  elevation: Elevation
+  buttonElevation: Elevation
   resolvedMode: ResolvedMode
   config: import("./theme.config").ThemeConfig
   syncStatus: ThemeSyncStatus
@@ -102,6 +103,8 @@ export interface ThemeContextValue {
   setSurfaceColor: (color: SurfaceColor) => void
   setSurfaceStyle: (style: SurfaceStyle) => void
   setBackgroundStyle: (style: BackgroundStyle) => void
-  setFontFamily: (font: FontFamily) => void
   setMode: (mode: Mode) => void
+  setDensity: (density: Density) => void
+  setElevation: (elevation: Elevation) => void
+  setButtonElevation: (elevation: Elevation) => void
 }

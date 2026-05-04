@@ -4,7 +4,8 @@ import type {
   BackgroundStyle,
   SurfaceColor,
   SurfaceStyle,
-  FontFamily,
+  Density,
+  Elevation,
   Mode,
   ResolvedMode,
   ThemeContextValue,
@@ -12,9 +13,8 @@ import type {
   ThemeSettings,
   ThemeSyncStatus,
 } from "./types"
-import { SURFACE_COLORS, SURFACE_STYLES } from "./types"
-import { generateTokens } from "./engine/generate-tokens"
-import { loadFont, applyFontFamily } from "./engine/font-loader"
+import { SURFACE_COLORS, SURFACE_STYLES, DENSITIES, ELEVATIONS } from "./types"
+import { generateTokens, GLASS_ONLY_TOKEN_KEYS } from "./engine/generate-tokens"
 import { ThemeContext } from "./theme-context"
 import { themeConfig, type ThemeConfig } from "./theme.config"
 import { useDebouncedCallback } from "../hooks/use-debounced-callback"
@@ -23,8 +23,10 @@ const LS_ACCENT = "theme-accent"
 const LS_SURFACE_COLOR = "theme-surface-color"
 const LS_STYLE = "theme-style"
 const LS_BG_STYLE = "theme-bg-style"
-const LS_FONT = "theme-font"
 const LS_MODE = "mode"
+const LS_DENSITY = "theme-density"
+const LS_ELEVATION = "theme-elevation"
+const LS_BUTTON_ELEVATION = "theme-button-elevation"
 
 function getSystemMode(): ResolvedMode {
   if (typeof window === "undefined") return "light"
@@ -39,6 +41,11 @@ function resolveMode(mode: Mode): ResolvedMode {
 
 function applyTokens(tokens: Record<string, string>) {
   const style = document.documentElement.style
+  for (const key of GLASS_ONLY_TOKEN_KEYS) {
+    if (!(key in tokens)) {
+      style.removeProperty(key)
+    }
+  }
   for (const [key, value] of Object.entries(tokens)) {
     style.setProperty(key, value)
   }
@@ -88,14 +95,33 @@ export function ThemeProvider({
     },
   )
 
-  const [fontFamily, setFontFamilyState] = useState<FontFamily>(() => {
-    const stored = localStorage.getItem(LS_FONT)
-    return (stored as FontFamily) || cfg.defaults.fontFamily
-  })
-
   const [mode, setModeState] = useState<Mode>(() => {
     const stored = localStorage.getItem(LS_MODE)
     return (stored as Mode) || cfg.defaults.mode
+  })
+
+  const [density, setDensityState] = useState<Density>(() => {
+    const stored = localStorage.getItem(LS_DENSITY)
+    if (stored && (DENSITIES as readonly string[]).includes(stored)) {
+      return stored as Density
+    }
+    return cfg.defaults.density
+  })
+
+  const [elevation, setElevationState] = useState<Elevation>(() => {
+    const stored = localStorage.getItem(LS_ELEVATION)
+    if (stored && (ELEVATIONS as readonly string[]).includes(stored)) {
+      return stored as Elevation
+    }
+    return cfg.defaults.elevation
+  })
+
+  const [buttonElevation, setButtonElevationState] = useState<Elevation>(() => {
+    const stored = localStorage.getItem(LS_BUTTON_ELEVATION)
+    if (stored && (ELEVATIONS as readonly string[]).includes(stored)) {
+      return stored as Elevation
+    }
+    return cfg.defaults.buttonElevation
   })
 
   const [resolvedMode, setResolvedMode] = useState<ResolvedMode>(() =>
@@ -126,25 +152,27 @@ export function ThemeProvider({
       surfColor: SurfaceColor,
       style: SurfaceStyle,
       bgStyle: BackgroundStyle,
-      font: FontFamily,
       resolved: ResolvedMode,
     ) => {
       document.documentElement.setAttribute("data-mode", resolved)
       document.documentElement.setAttribute("data-surface-style", style)
       document.documentElement.setAttribute("data-background-style", bgStyle)
-      loadFont(font)
-      applyFontFamily(font)
+      document.documentElement.setAttribute("data-density", density)
+      document.documentElement.setAttribute("data-elevation", elevation)
+      document.documentElement.setAttribute(
+        "data-button-elevation",
+        buttonElevation,
+      )
       const tokens = generateTokens({
         accentColor: accent,
         surfaceColor: surfColor,
         surfaceStyle: style,
         backgroundStyle: bgStyle,
-        fontFamily: font,
         mode: resolved,
       })
       applyTokens(tokens)
     },
-    [],
+    [density, elevation, buttonElevation],
   )
 
   const applySettings = useCallback(
@@ -155,27 +183,38 @@ export function ThemeProvider({
       setSurfaceColorState(settings.surfaceColor)
       setSurfaceStyleState(settings.surfaceStyle)
       setBackgroundStyleState(settings.backgroundStyle)
-      setFontFamilyState(settings.fontFamily)
       setModeState(settings.mode)
       setResolvedMode(resolved)
+      setDensityState(settings.density ?? cfg.defaults.density)
+      setElevationState(settings.elevation ?? cfg.defaults.elevation)
+      setButtonElevationState(
+        settings.buttonElevation ?? cfg.defaults.buttonElevation,
+      )
 
       localStorage.setItem(LS_ACCENT, settings.accentColor)
       localStorage.setItem(LS_SURFACE_COLOR, settings.surfaceColor)
       localStorage.setItem(LS_STYLE, settings.surfaceStyle)
       localStorage.setItem(LS_BG_STYLE, settings.backgroundStyle)
-      localStorage.setItem(LS_FONT, settings.fontFamily)
       localStorage.setItem(LS_MODE, settings.mode)
+      localStorage.setItem(LS_DENSITY, settings.density ?? cfg.defaults.density)
+      localStorage.setItem(
+        LS_ELEVATION,
+        settings.elevation ?? cfg.defaults.elevation,
+      )
+      localStorage.setItem(
+        LS_BUTTON_ELEVATION,
+        settings.buttonElevation ?? cfg.defaults.buttonElevation,
+      )
 
       applyTheme(
         settings.accentColor,
         settings.surfaceColor,
         settings.surfaceStyle,
         settings.backgroundStyle,
-        settings.fontFamily,
         resolved,
       )
     },
-    [applyTheme],
+    [applyTheme, cfg],
   )
 
   const debouncedSave = useDebouncedCallback(
@@ -197,8 +236,10 @@ export function ThemeProvider({
       surfaceColor,
       surfaceStyle,
       backgroundStyle,
-      fontFamily,
       mode,
+      density,
+      elevation,
+      buttonElevation,
       ...overrides,
     }),
     [
@@ -206,8 +247,10 @@ export function ThemeProvider({
       surfaceColor,
       surfaceStyle,
       backgroundStyle,
-      fontFamily,
       mode,
+      density,
+      elevation,
+      buttonElevation,
     ],
   )
 
@@ -220,7 +263,6 @@ export function ThemeProvider({
         surfaceColor,
         surfaceStyle,
         backgroundStyle,
-        fontFamily,
         resolvedMode,
       )
       const settings = buildSettings({ accentColor: color })
@@ -236,7 +278,6 @@ export function ThemeProvider({
       surfaceColor,
       surfaceStyle,
       backgroundStyle,
-      fontFamily,
       resolvedMode,
     ],
   )
@@ -250,7 +291,6 @@ export function ThemeProvider({
         color,
         surfaceStyle,
         backgroundStyle,
-        fontFamily,
         resolvedMode,
       )
       const settings = buildSettings({ surfaceColor: color })
@@ -266,7 +306,6 @@ export function ThemeProvider({
       accentColor,
       surfaceStyle,
       backgroundStyle,
-      fontFamily,
       resolvedMode,
     ],
   )
@@ -280,7 +319,6 @@ export function ThemeProvider({
         surfaceColor,
         style,
         backgroundStyle,
-        fontFamily,
         resolvedMode,
       )
       const settings = buildSettings({ surfaceStyle: style })
@@ -296,7 +334,6 @@ export function ThemeProvider({
       accentColor,
       surfaceColor,
       backgroundStyle,
-      fontFamily,
       resolvedMode,
     ],
   )
@@ -305,14 +342,7 @@ export function ThemeProvider({
     (bgStyle: BackgroundStyle) => {
       setBackgroundStyleState(bgStyle)
       localStorage.setItem(LS_BG_STYLE, bgStyle)
-      applyTheme(
-        accentColor,
-        surfaceColor,
-        surfaceStyle,
-        bgStyle,
-        fontFamily,
-        resolvedMode,
-      )
+      applyTheme(accentColor, surfaceColor, surfaceStyle, bgStyle, resolvedMode)
       const settings = buildSettings({ backgroundStyle: bgStyle })
       notifyChange(settings)
       hasUserChanged.current = true
@@ -326,37 +356,6 @@ export function ThemeProvider({
       accentColor,
       surfaceColor,
       surfaceStyle,
-      fontFamily,
-      resolvedMode,
-    ],
-  )
-
-  const setFontFamily = useCallback(
-    (font: FontFamily) => {
-      setFontFamilyState(font)
-      localStorage.setItem(LS_FONT, font)
-      applyTheme(
-        accentColor,
-        surfaceColor,
-        surfaceStyle,
-        backgroundStyle,
-        font,
-        resolvedMode,
-      )
-      const settings = buildSettings({ fontFamily: font })
-      notifyChange(settings)
-      hasUserChanged.current = true
-      debouncedSave(settings)
-    },
-    [
-      applyTheme,
-      notifyChange,
-      buildSettings,
-      debouncedSave,
-      accentColor,
-      surfaceColor,
-      surfaceStyle,
-      backgroundStyle,
       resolvedMode,
     ],
   )
@@ -372,7 +371,6 @@ export function ThemeProvider({
         surfaceColor,
         surfaceStyle,
         backgroundStyle,
-        fontFamily,
         resolved,
       )
       const settings = buildSettings({ mode: m })
@@ -389,8 +387,46 @@ export function ThemeProvider({
       surfaceColor,
       surfaceStyle,
       backgroundStyle,
-      fontFamily,
     ],
+  )
+
+  const setDensity = useCallback(
+    (d: Density) => {
+      setDensityState(d)
+      localStorage.setItem(LS_DENSITY, d)
+      document.documentElement.setAttribute("data-density", d)
+      const settings = buildSettings({ density: d })
+      notifyChange(settings)
+      hasUserChanged.current = true
+      debouncedSave(settings)
+    },
+    [buildSettings, notifyChange, debouncedSave],
+  )
+
+  const setElevation = useCallback(
+    (e: Elevation) => {
+      setElevationState(e)
+      localStorage.setItem(LS_ELEVATION, e)
+      document.documentElement.setAttribute("data-elevation", e)
+      const settings = buildSettings({ elevation: e })
+      notifyChange(settings)
+      hasUserChanged.current = true
+      debouncedSave(settings)
+    },
+    [buildSettings, notifyChange, debouncedSave],
+  )
+
+  const setButtonElevation = useCallback(
+    (e: Elevation) => {
+      setButtonElevationState(e)
+      localStorage.setItem(LS_BUTTON_ELEVATION, e)
+      document.documentElement.setAttribute("data-button-elevation", e)
+      const settings = buildSettings({ buttonElevation: e })
+      notifyChange(settings)
+      hasUserChanged.current = true
+      debouncedSave(settings)
+    },
+    [buildSettings, notifyChange, debouncedSave],
   )
 
   useEffect(() => {
@@ -399,7 +435,6 @@ export function ThemeProvider({
       surfaceColor,
       surfaceStyle,
       backgroundStyle,
-      fontFamily,
       resolvedMode,
     )
   }, [
@@ -408,7 +443,6 @@ export function ThemeProvider({
     surfaceColor,
     surfaceStyle,
     backgroundStyle,
-    fontFamily,
     resolvedMode,
   ])
 
@@ -423,7 +457,6 @@ export function ThemeProvider({
         surfaceColor,
         surfaceStyle,
         backgroundStyle,
-        fontFamily,
         resolved,
       )
     }
@@ -435,7 +468,6 @@ export function ThemeProvider({
     surfaceColor,
     surfaceStyle,
     backgroundStyle,
-    fontFamily,
     applyTheme,
   ])
 
@@ -472,8 +504,10 @@ export function ThemeProvider({
       surfaceColor,
       surfaceStyle,
       backgroundStyle,
-      fontFamily,
       mode,
+      density,
+      elevation,
+      buttonElevation,
       resolvedMode,
       config: cfg,
       syncStatus,
@@ -481,16 +515,20 @@ export function ThemeProvider({
       setSurfaceColor,
       setSurfaceStyle,
       setBackgroundStyle,
-      setFontFamily,
       setMode,
+      setDensity,
+      setElevation,
+      setButtonElevation,
     }),
     [
       accentColor,
       surfaceColor,
       surfaceStyle,
       backgroundStyle,
-      fontFamily,
       mode,
+      density,
+      elevation,
+      buttonElevation,
       resolvedMode,
       cfg,
       syncStatus,
@@ -498,8 +536,10 @@ export function ThemeProvider({
       setSurfaceColor,
       setSurfaceStyle,
       setBackgroundStyle,
-      setFontFamily,
       setMode,
+      setDensity,
+      setElevation,
+      setButtonElevation,
     ],
   )
 

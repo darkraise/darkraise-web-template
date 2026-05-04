@@ -3,7 +3,8 @@ import type {
   SurfaceColor,
   SurfaceStyle,
   BackgroundStyle,
-  FontFamily,
+  Density,
+  Elevation,
   Mode,
 } from "./types"
 
@@ -13,8 +14,10 @@ export interface ThemeConfig {
     surfaceColor: SurfaceColor
     surfaceStyle: SurfaceStyle
     backgroundStyle: BackgroundStyle
-    fontFamily: FontFamily
     mode: Mode
+    density: Density
+    elevation: Elevation
+    buttonElevation: Elevation
   }
   switcher: {
     enabled: boolean
@@ -24,7 +27,9 @@ export interface ThemeConfig {
       surfaceColor: boolean
       surfaceStyle: boolean
       backgroundStyle: boolean
-      fontFamily: boolean
+      density: boolean
+      elevation: boolean
+      buttonElevation: boolean
     }
   }
 }
@@ -35,8 +40,10 @@ export const themeConfig: ThemeConfig = {
     surfaceColor: "slate",
     surfaceStyle: "default",
     backgroundStyle: "solid",
-    fontFamily: "default",
     mode: "system",
+    density: "cozy",
+    elevation: "medium",
+    buttonElevation: "flat",
   },
   switcher: {
     enabled: true,
@@ -46,7 +53,9 @@ export const themeConfig: ThemeConfig = {
       surfaceColor: true,
       surfaceStyle: true,
       backgroundStyle: true,
-      fontFamily: true,
+      density: true,
+      elevation: true,
+      buttonElevation: true,
     },
   },
 }
