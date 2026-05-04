@@ -138,7 +138,7 @@ The following components replace hardcoded Tailwind sizing classes (`h-8`, `px-3
 - `input.tsx`, `select.tsx`, `textarea.tsx` — heights drop; padding tokens drive natural height. Textarea keeps its `min-h-[72px]` floor.
 - `card.tsx` — `CardHeader`, `CardContent`, `CardFooter` padding switches from hardcoded `p-4` to `var(--density-container-p)`.
 - `field.tsx` — vertical spacing between label/input/description. The `h-5 text-sm` error/description slot is a fixed-height layout reservation (so the form doesn't shift when an error appears) and stays at `h-5`; only the spacing around it shifts with density.
-- `forms/form-section.tsx`, `forms/form-actions.tsx` — padding and row gap.
+- `forms/components/form-section.tsx`, `forms/components/form-actions.tsx` — padding and row gap.
 - `layout/sidebar-nav.tsx` — nav item vertical padding via `var(--density-row-py)`.
 - `layout/page-header.tsx` — vertical padding.
 - `table.tsx` — `TableCell` vertical padding via `var(--density-row-py)`; `TableHead` height collapses to padding-driven.
@@ -342,7 +342,7 @@ These are intentional changes from today, called out so reviewers can confirm th
 **Components consuming density tokens:**
 
 - `button.tsx`, `input.tsx`, `select.tsx`, `textarea.tsx`, `card.tsx`, `field.tsx`, `table.tsx`, `toggle.tsx`, `pagination.tsx`, `breadcrumb.tsx`, `input-otp.tsx`, `calendar.tsx`, `time-picker.tsx`, `menubar.tsx`, `navigation-menu.tsx`, `carousel.tsx`, `command.tsx`, `tabs.tsx`, `menu-primitives.ts`
-- `forms/form-section.tsx`, `forms/form-actions.tsx`
+- `forms/components/form-section.tsx`, `forms/components/form-actions.tsx`
 - `layout/sidebar-nav.tsx`, `layout/page-header.tsx`
 
 **Components adding `modal-surface` class:**
