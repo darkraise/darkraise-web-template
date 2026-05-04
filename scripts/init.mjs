@@ -42,6 +42,9 @@ const defaultConfig = {
       surfaceStyle: "default",
       backgroundStyle: "solid",
       mode: "system",
+      density: "cozy",
+      elevation: "medium",
+      buttonElevation: "flat",
     },
     switcher: {
       enabled: true,
@@ -51,6 +54,9 @@ const defaultConfig = {
         surfaceColor: true,
         surfaceStyle: true,
         backgroundStyle: true,
+        density: true,
+        elevation: true,
+        buttonElevation: true,
       },
     },
   },
@@ -75,6 +81,8 @@ const themeConfigContent = `import type {
   SurfaceColor,
   SurfaceStyle,
   BackgroundStyle,
+  Density,
+  Elevation,
   Mode,
 } from "darkraise-ui/theme"
 
@@ -85,6 +93,9 @@ export interface ThemeConfig {
     surfaceStyle: SurfaceStyle
     backgroundStyle: BackgroundStyle
     mode: Mode
+    density: Density
+    elevation: Elevation
+    buttonElevation: Elevation
   }
   switcher: {
     enabled: boolean
@@ -94,6 +105,9 @@ export interface ThemeConfig {
       surfaceColor: boolean
       surfaceStyle: boolean
       backgroundStyle: boolean
+      density: boolean
+      elevation: boolean
+      buttonElevation: boolean
     }
   }
 }
@@ -105,6 +119,9 @@ export const themeConfig: ThemeConfig = {
     surfaceStyle: "${config.theme.defaults.surfaceStyle}",
     backgroundStyle: "${config.theme.defaults.backgroundStyle}",
     mode: "${config.theme.defaults.mode}",
+    density: "${config.theme.defaults.density}",
+    elevation: "${config.theme.defaults.elevation}",
+    buttonElevation: "${config.theme.defaults.buttonElevation}",
   },
   switcher: {
     enabled: ${config.theme.switcher.enabled},
@@ -114,6 +131,9 @@ export const themeConfig: ThemeConfig = {
       surfaceColor: ${config.theme.switcher.axes.surfaceColor},
       surfaceStyle: ${config.theme.switcher.axes.surfaceStyle},
       backgroundStyle: ${config.theme.switcher.axes.backgroundStyle},
+      density: ${config.theme.switcher.axes.density},
+      elevation: ${config.theme.switcher.axes.elevation},
+      buttonElevation: ${config.theme.switcher.axes.buttonElevation},
     },
   },
 }
