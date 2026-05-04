@@ -693,6 +693,14 @@
       0 0 0 1px color-mix(in oklab, hsl(var(--primary)) 25%, transparent);
   }
 
+  /* Default surface style — outline and secondary buttons (both use
+     .btn-glass-neutral) pick up the buttonElevation shadow with no
+     extra decoration. Glass mode below adds the gradient, border, and
+     inset rim on top of the same --shadow-button. */
+  .btn-glass-neutral {
+    box-shadow: var(--shadow-button);
+  }
+
   [data-surface-style="glassmorphism"] .btn-glass-neutral {
     background-image: linear-gradient(180deg, var(--fog-15), var(--fog-05));
     border-color: var(--fog-20);
