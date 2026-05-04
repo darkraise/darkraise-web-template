@@ -97,11 +97,11 @@ function Calendar({
         nav: "pointer-events-none absolute inset-x-0 top-0 flex w-full items-center justify-between gap-1",
         button_previous: cn(
           buttonVariants({ variant: buttonVariant }),
-          "pointer-events-auto h-8 w-8 select-none p-0 aria-disabled:opacity-50",
+          "pointer-events-auto aspect-square w-[var(--density-cell)] select-none p-0 aria-disabled:opacity-50",
         ),
         button_next: cn(
           buttonVariants({ variant: buttonVariant }),
-          "pointer-events-auto h-8 w-8 select-none p-0 aria-disabled:opacity-50",
+          "pointer-events-auto aspect-square w-[var(--density-cell)] select-none p-0 aria-disabled:opacity-50",
         ),
         month_caption: "flex h-8 w-full items-center justify-center px-8",
         caption_label: cn(
@@ -120,7 +120,7 @@ function Calendar({
         week: "mt-2 flex w-full",
         week_number_header: "w-8 select-none",
         week_number: "text-muted-foreground select-none text-[0.8rem]",
-        day: "relative h-8 w-8 select-none p-0 text-center",
+        day: "relative aspect-square w-[var(--density-cell)] select-none p-0 text-center",
         range_start: "bg-accent rounded-l-md",
         range_middle: "rounded-none",
         range_end: "bg-accent rounded-r-md",
@@ -150,7 +150,7 @@ function Calendar({
         DayButton: CalendarDayButton,
         WeekNumber: ({ children, ...props }) => (
           <td {...props}>
-            <div className="flex size-8 items-center justify-center text-center">
+            <div className="flex aspect-square w-[var(--density-cell)] items-center justify-center text-center">
               {children}
             </div>
           </td>
@@ -274,7 +274,7 @@ function GridHeader({
         type="button"
         variant={buttonVariant}
         size="icon"
-        className="h-8 w-8 p-0"
+        className="aspect-square w-[var(--density-cell)] p-0"
         onClick={onPrev}
         aria-label={prevLabel}
       >
@@ -285,7 +285,7 @@ function GridHeader({
         type="button"
         variant={buttonVariant}
         size="icon"
-        className="h-8 w-8 p-0"
+        className="aspect-square w-[var(--density-cell)] p-0"
         onClick={onNext}
         aria-label={nextLabel}
       >

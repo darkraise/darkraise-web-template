@@ -51,7 +51,7 @@ function InputOTPSlot({
     <div
       ref={ref}
       className={cn(
-        "border-input relative flex h-9 w-9 items-center justify-center border-y border-r text-sm transition-all first:rounded-l-md first:border-l last:rounded-r-md",
+        "border-input relative flex aspect-square w-[var(--density-cell)] items-center justify-center border-y border-r text-sm transition-all first:rounded-l-md first:border-l last:rounded-r-md",
         isActive && "ring-ring ring-offset-background z-10 ring-1",
         className,
       )}
