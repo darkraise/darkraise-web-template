@@ -28,6 +28,7 @@ const MODES = ["light", "dark", "system"]
 const LAYOUTS = ["sidebar", "stacked", "top-nav", "split-panel"]
 const THEME_AXIS_KEYS = [
   "mode", "accentColor", "surfaceColor", "surfaceStyle", "backgroundStyle",
+  "density", "elevation", "buttonElevation",
 ]
 
 const argv = minimist(process.argv.slice(2), {
@@ -35,6 +36,7 @@ const argv = minimist(process.argv.slice(2), {
   string: [
     "layout", "accent", "surface-color", "surface-style",
     "background", "mode", "theme-axes",
+    "density", "elevation", "button-elevation",
     "host", "port",
   ],
   alias: { y: "yes" },
@@ -64,6 +66,9 @@ validate(argv["surface-color"], SURFACE_COLORS, "surface color")
 validate(argv["surface-style"], SURFACE_STYLES, "surface style")
 validate(argv.background, BACKGROUND_STYLES, "background")
 validate(argv.mode, MODES, "mode")
+validate(argv.density, ["compact", "cozy", "comfortable", "spacious"], "density")
+validate(argv.elevation, ["flat", "low", "medium", "high"], "elevation")
+validate(argv["button-elevation"], ["flat", "low", "medium", "high"], "button-elevation")
 
 if (argv["theme-axes"] !== undefined) {
   const axes = argv["theme-axes"].split(",")
@@ -174,6 +179,30 @@ async function main() {
     }),
   ))
 
+  const density = argv.density || (skipPrompts ? "cozy" : cancelled(
+    await p.select({
+      message: "Density",
+      options: ["compact", "cozy", "comfortable", "spacious"].map((d) => ({ value: d, label: d })),
+      initialValue: "cozy",
+    }),
+  ))
+
+  const elevation = argv.elevation || (skipPrompts ? "medium" : cancelled(
+    await p.select({
+      message: "Elevation",
+      options: ["flat", "low", "medium", "high"].map((e) => ({ value: e, label: e })),
+      initialValue: "medium",
+    }),
+  ))
+
+  const buttonElevation = argv["button-elevation"] || (skipPrompts ? "flat" : cancelled(
+    await p.select({
+      message: "Button elevation",
+      options: ["flat", "low", "medium", "high"].map((e) => ({ value: e, label: e })),
+      initialValue: "flat",
+    }),
+  ))
+
   // --- Theme switcher ---
   let themeSwitcherEnabled
   if (themeSwitcherFlag !== undefined) {
@@ -203,6 +232,9 @@ async function main() {
             { value: "surfaceColor", label: "Surface color" },
             { value: "surfaceStyle", label: "Surface style" },
             { value: "backgroundStyle", label: "Background" },
+            { value: "density", label: "Density" },
+            { value: "elevation", label: "Elevation" },
+            { value: "buttonElevation", label: "Button elevation" },
           ],
           initialValues: THEME_AXIS_KEYS,
         }),
@@ -249,6 +281,9 @@ async function main() {
         surfaceStyle: surfaceStyle,
         backgroundStyle: background,
         mode: mode,
+        density: density,
+        elevation: elevation,
+        buttonElevation: buttonElevation,
       },
       switcher: {
         enabled: themeSwitcherEnabled,
@@ -325,6 +360,11 @@ async function main() {
               : "light"
             : mode
         document.documentElement.setAttribute("data-mode", resolved)
+
+        ;["density", "elevation", "button-elevation"].forEach(function (axis) {
+          var v = localStorage.getItem("theme-" + axis)
+          if (v) document.documentElement.setAttribute("data-" + axis, v)
+        })
       })()
     </script>
   </head>
@@ -400,7 +440,41 @@ createRoot(document.getElementById("root")!).render(
   writeProjectFile(targetDir, "src/main.tsx", mainTsx)
 
   // --- src/theme.config.ts ---
-  const themeConfigContent = `import type { ThemeConfig } from "darkraise-ui/theme"
+  const themeConfigContent = `import type {
+  AccentColor,
+  SurfaceColor,
+  SurfaceStyle,
+  BackgroundStyle,
+  Density,
+  Elevation,
+  Mode,
+} from "darkraise-ui/theme"
+
+export interface ThemeConfig {
+  defaults: {
+    accentColor: AccentColor
+    surfaceColor: SurfaceColor
+    surfaceStyle: SurfaceStyle
+    backgroundStyle: BackgroundStyle
+    mode: Mode
+    density: Density
+    elevation: Elevation
+    buttonElevation: Elevation
+  }
+  switcher: {
+    enabled: boolean
+    axes: {
+      mode: boolean
+      accentColor: boolean
+      surfaceColor: boolean
+      surfaceStyle: boolean
+      backgroundStyle: boolean
+      density: boolean
+      elevation: boolean
+      buttonElevation: boolean
+    }
+  }
+}
 
 export const themeConfig: ThemeConfig = {
   defaults: {
@@ -409,6 +483,9 @@ export const themeConfig: ThemeConfig = {
     surfaceStyle: "${config.theme.defaults.surfaceStyle}",
     backgroundStyle: "${config.theme.defaults.backgroundStyle}",
     mode: "${config.theme.defaults.mode}",
+    density: "${config.theme.defaults.density}",
+    elevation: "${config.theme.defaults.elevation}",
+    buttonElevation: "${config.theme.defaults.buttonElevation}",
   },
   switcher: {
     enabled: ${config.theme.switcher.enabled},
@@ -418,6 +495,9 @@ export const themeConfig: ThemeConfig = {
       surfaceColor: ${config.theme.switcher.axes.surfaceColor},
       surfaceStyle: ${config.theme.switcher.axes.surfaceStyle},
       backgroundStyle: ${config.theme.switcher.axes.backgroundStyle},
+      density: ${config.theme.switcher.axes.density},
+      elevation: ${config.theme.switcher.axes.elevation},
+      buttonElevation: ${config.theme.switcher.axes.buttonElevation},
     },
   },
 }
