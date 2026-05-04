@@ -24,18 +24,17 @@ const ACCENT_COLORS = [
 const SURFACE_COLORS = ["slate", ...ACCENT_COLORS]
 const SURFACE_STYLES = ["default", "glassmorphism"]
 const BACKGROUND_STYLES = ["solid", "gradient"]
-const FONT_FAMILIES = ["default", "editorial", "modern", "humanist", "technical"]
 const MODES = ["light", "dark", "system"]
 const LAYOUTS = ["sidebar", "stacked", "top-nav", "split-panel"]
 const THEME_AXIS_KEYS = [
-  "mode", "accentColor", "surfaceColor", "surfaceStyle", "backgroundStyle", "fontFamily",
+  "mode", "accentColor", "surfaceColor", "surfaceStyle", "backgroundStyle",
 ]
 
 const argv = minimist(process.argv.slice(2), {
   boolean: ["y"],
   string: [
     "layout", "accent", "surface-color", "surface-style",
-    "background", "font", "mode", "theme-axes",
+    "background", "mode", "theme-axes",
     "host", "port",
   ],
   alias: { y: "yes" },
@@ -64,7 +63,6 @@ validate(argv.accent, ACCENT_COLORS, "accent color")
 validate(argv["surface-color"], SURFACE_COLORS, "surface color")
 validate(argv["surface-style"], SURFACE_STYLES, "surface style")
 validate(argv.background, BACKGROUND_STYLES, "background")
-validate(argv.font, FONT_FAMILIES, "font")
 validate(argv.mode, MODES, "mode")
 
 if (argv["theme-axes"] !== undefined) {
@@ -168,14 +166,6 @@ async function main() {
     }),
   ))
 
-  const font = argv.font || (skipPrompts ? "default" : cancelled(
-    await p.select({
-      message: "Font",
-      options: FONT_FAMILIES.map((f) => ({ value: f, label: f })),
-      initialValue: "default",
-    }),
-  ))
-
   const mode = argv.mode || (skipPrompts ? "system" : cancelled(
     await p.select({
       message: "Mode",
@@ -213,7 +203,6 @@ async function main() {
             { value: "surfaceColor", label: "Surface color" },
             { value: "surfaceStyle", label: "Surface style" },
             { value: "backgroundStyle", label: "Background" },
-            { value: "fontFamily", label: "Font" },
           ],
           initialValues: THEME_AXIS_KEYS,
         }),
@@ -259,7 +248,6 @@ async function main() {
         surfaceColor: surfaceColor,
         surfaceStyle: surfaceStyle,
         backgroundStyle: background,
-        fontFamily: font,
         mode: mode,
       },
       switcher: {
@@ -420,7 +408,6 @@ export const themeConfig: ThemeConfig = {
     surfaceColor: "${config.theme.defaults.surfaceColor}",
     surfaceStyle: "${config.theme.defaults.surfaceStyle}",
     backgroundStyle: "${config.theme.defaults.backgroundStyle}",
-    fontFamily: "${config.theme.defaults.fontFamily}",
     mode: "${config.theme.defaults.mode}",
   },
   switcher: {
@@ -431,7 +418,6 @@ export const themeConfig: ThemeConfig = {
       surfaceColor: ${config.theme.switcher.axes.surfaceColor},
       surfaceStyle: ${config.theme.switcher.axes.surfaceStyle},
       backgroundStyle: ${config.theme.switcher.axes.backgroundStyle},
-      fontFamily: ${config.theme.switcher.axes.fontFamily},
     },
   },
 }

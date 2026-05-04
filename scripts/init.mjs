@@ -41,7 +41,6 @@ const defaultConfig = {
       surfaceColor: "slate",
       surfaceStyle: "default",
       backgroundStyle: "solid",
-      fontFamily: "default",
       mode: "system",
     },
     switcher: {
@@ -52,7 +51,6 @@ const defaultConfig = {
         surfaceColor: true,
         surfaceStyle: true,
         backgroundStyle: true,
-        fontFamily: true,
       },
     },
   },
@@ -77,7 +75,6 @@ const themeConfigContent = `import type {
   SurfaceColor,
   SurfaceStyle,
   BackgroundStyle,
-  FontFamily,
   Mode,
 } from "darkraise-ui/theme"
 
@@ -87,7 +84,6 @@ export interface ThemeConfig {
     surfaceColor: SurfaceColor
     surfaceStyle: SurfaceStyle
     backgroundStyle: BackgroundStyle
-    fontFamily: FontFamily
     mode: Mode
   }
   switcher: {
@@ -98,7 +94,6 @@ export interface ThemeConfig {
       surfaceColor: boolean
       surfaceStyle: boolean
       backgroundStyle: boolean
-      fontFamily: boolean
     }
   }
 }
@@ -109,7 +104,6 @@ export const themeConfig: ThemeConfig = {
     surfaceColor: "${config.theme.defaults.surfaceColor}",
     surfaceStyle: "${config.theme.defaults.surfaceStyle}",
     backgroundStyle: "${config.theme.defaults.backgroundStyle}",
-    fontFamily: "${config.theme.defaults.fontFamily}",
     mode: "${config.theme.defaults.mode}",
   },
   switcher: {
@@ -120,7 +114,6 @@ export const themeConfig: ThemeConfig = {
       surfaceColor: ${config.theme.switcher.axes.surfaceColor},
       surfaceStyle: ${config.theme.switcher.axes.surfaceStyle},
       backgroundStyle: ${config.theme.switcher.axes.backgroundStyle},
-      fontFamily: ${config.theme.switcher.axes.fontFamily},
     },
   },
 }

@@ -63,10 +63,10 @@ const preview: Preview = {
 
       const tokens = generateTokens({
         accentColor,
+        surfaceColor: "slate",
         surfaceStyle,
-        mode,
         backgroundStyle: "solid",
-        fontFamily: "default",
+        mode,
       })
 
       for (const [key, value] of Object.entries(tokens)) {

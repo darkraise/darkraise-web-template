@@ -23,30 +23,28 @@ npm create darkraise-web-template my-app \
   --surface-color slate \
   --surface-style default \
   --background solid \
-  --font default \
   --mode system \
   --theme-switcher \
-  --theme-axes mode,accentColor,surfaceColor,surfaceStyle,backgroundStyle,fontFamily \
+  --theme-axes mode,accentColor,surfaceColor,surfaceStyle,backgroundStyle \
   --no-auth \
   --host localhost \
   --port 5173
 ```
 
-| Flag                                       | Values                                                    | Default       |
-| ------------------------------------------ | --------------------------------------------------------- | ------------- |
-| `--layout`                                 | `sidebar`, `stacked`, `top-nav`, `split-panel`            | `sidebar`     |
-| `--accent`                                 | 17 colors (`red` through `rose`)                          | `blue`        |
-| `--surface-color`                          | `slate` + 17 colors                                       | `slate`       |
-| `--surface-style`                          | `default`, `glassmorphism`                                | `default`     |
-| `--background`                             | `solid`, `gradient`                                       | `solid`       |
-| `--font`                                   | `default`, `editorial`, `modern`, `humanist`, `technical` | `default`     |
-| `--mode`                                   | `light`, `dark`, `system`                                 | `system`      |
-| `--theme-switcher` / `--no-theme-switcher` | boolean                                                   | enabled       |
-| `--theme-axes`                             | comma-separated axis names                                | all axes      |
-| `--no-auth`                                | boolean                                                   | auth included |
-| `--host`                                   | hostname or IP                                            | `localhost`   |
-| `--port`                                   | `1`-`65535`                                               | `5173`        |
-| `-y`                                       | skip all prompts, use defaults                            |               |
+| Flag                                       | Values                                         | Default       |
+| ------------------------------------------ | ---------------------------------------------- | ------------- |
+| `--layout`                                 | `sidebar`, `stacked`, `top-nav`, `split-panel` | `sidebar`     |
+| `--accent`                                 | 17 colors (`red` through `rose`)               | `blue`        |
+| `--surface-color`                          | `slate` + 17 colors                            | `slate`       |
+| `--surface-style`                          | `default`, `glassmorphism`                     | `default`     |
+| `--background`                             | `solid`, `gradient`                            | `solid`       |
+| `--mode`                                   | `light`, `dark`, `system`                      | `system`      |
+| `--theme-switcher` / `--no-theme-switcher` | boolean                                        | enabled       |
+| `--theme-axes`                             | comma-separated axis names                     | all axes      |
+| `--no-auth`                                | boolean                                        | auth included |
+| `--host`                                   | hostname or IP                                 | `localhost`   |
+| `--port`                                   | `1`-`65535`                                    | `5173`        |
+| `-y`                                       | skip all prompts, use defaults                 |               |
 
 ## What's Included
 
@@ -75,14 +73,15 @@ Ported from [react-hookz/web](https://github.com/react-hookz/web) and adapted fo
 
 ### Theming
 
-A 6-axis theming system controlled by `src/core/theme/theme.config.ts`:
+A 5-axis theming system controlled by `src/core/theme/theme.config.ts`:
 
 - **Accent color** -- 17 color options
 - **Surface color** -- neutral slate or tinted surfaces
 - **Surface style** -- default or glassmorphism
 - **Background** -- solid or gradient
-- **Font** -- 5 font stacks (Inter, Playfair Display, Geist, DM Sans, JetBrains Mono)
 - **Mode** -- light, dark, or system
+
+Typography is fixed: Inter for sans/heading, JetBrains Mono for monospace.
 
 The `ThemeSwitcher` component renders controls for whichever axes are enabled in the config. The `ThemeProvider` accepts an optional `onChange` callback for persisting theme settings to a backend. Theme defaults and axis visibility are set at scaffold time and can be changed later by editing `theme.config.ts`.
 
