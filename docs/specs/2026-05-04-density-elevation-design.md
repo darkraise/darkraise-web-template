@@ -96,8 +96,8 @@ Per-level values, with **cozy reproducing today's button (32px) and input (36px)
 
 Button `sm` and `lg` size variants and the `icon` variant derive from these tokens:
 
-- `sm` reduces both `py` and `px` by `0.125rem`.
-- `lg` adds `0.25rem` to `py` and `0.5rem` to `px`.
+- `sm` reduces both `py` and `px` by `0.25rem`. At cozy this gives `py = 0.125rem` and `px = 0.5rem`, producing a `2 + 2 + 20 = 24px` height — exactly today's `h-6` `sm` button.
+- `lg` adds `0.25rem` to `py` and `0.5rem` to `px`. At cozy this gives `py = 0.625rem` and `px = 1.25rem`, producing a `10 + 10 + 20 = 40px` height — exactly today's `h-10` `lg` button.
 - `icon` uses `aspect-square` with width fixed to `var(--density-cell)`.
 
 These derivations keep the size variants tracking density without needing their own tokens.
@@ -137,14 +137,14 @@ The following components replace hardcoded Tailwind sizing classes (`h-8`, `px-3
 - `button.tsx` — heights drop entirely; `default`, `sm`, `lg` variants use derived padding; `icon` variant uses `aspect-square w-[var(--density-cell)]`.
 - `input.tsx`, `select.tsx`, `textarea.tsx` — heights drop; padding tokens drive natural height. Textarea keeps its `min-h-[72px]` floor.
 - `card.tsx` — `CardHeader`, `CardContent`, `CardFooter` padding switches from hardcoded `p-4` to `var(--density-container-p)`.
-- `field.tsx` — vertical spacing between label/input/description.
+- `field.tsx` — vertical spacing between label/input/description. The `h-5 text-sm` error/description slot is a fixed-height layout reservation (so the form doesn't shift when an error appears) and stays at `h-5`; only the spacing around it shifts with density.
 - `forms/form-section.tsx`, `forms/form-actions.tsx` — padding and row gap.
 - `layout/sidebar-nav.tsx` — nav item vertical padding via `var(--density-row-py)`.
 - `layout/page-header.tsx` — vertical padding.
 - `table.tsx` — `TableCell` vertical padding via `var(--density-row-py)`; `TableHead` height collapses to padding-driven.
 - `menu-primitives.ts` — `MenuItem` vertical padding (covers DropdownMenu, ContextMenu, Menubar, Command items).
 - `pagination.tsx`, `breadcrumb.tsx`, `input-otp.tsx`, `calendar.tsx` (day cells, nav buttons), `carousel.tsx` (arrow buttons) — square cells use `var(--density-cell)`.
-- `toggle.tsx` — button-shaped control reuses button density tokens.
+- `toggle.tsx` — button-shaped control reuses `--density-button-py` for height-driving vertical padding, but keeps its own narrower horizontal padding values literal (today's `px-2.5` / `px-1.5` / `px-4` for default / sm / lg). Toggle holds icons rather than text labels, so its tighter horizontal rhythm is intentional and shouldn't inherit Button's wider px.
 - `time-picker.tsx`, `menubar.tsx`, `navigation-menu.tsx`, `command.tsx`, `tabs.tsx` — internal sizing replaced or simplified to derive from density tokens.
 
 Components excluded by design (have their own size variants or fixed visual roles):
@@ -270,9 +270,13 @@ document.documentElement.setAttribute("data-elevation", elevation)
 document.documentElement.setAttribute("data-button-elevation", buttonElevation)
 ```
 
-- `applySettings` (used by the persistence adapter load path) sets the same three attributes.
+- `applySettings` (used by the persistence adapter load path) sets the same three attributes. **Resilience:** when a remote `ThemePersistenceAdapter.load()` returns settings predating this change, the three new fields will be `undefined`. `applySettings` falls back to the active `ThemeConfig.defaults` (typically `cozy`/`medium`/`flat`) for any missing field rather than writing `undefined` to state or `data-*` attributes. The adapter's TypeScript surface treats the new fields as required when _saving_ but tolerates them being absent on _load_, mirroring how the existing system handles a brand-new persistence adapter on first run.
 
 `generate-tokens.ts` does not change for either new axis — both are CSS-attribute-driven.
+
+### Interaction between `elevation` and `buttonElevation`
+
+The two axes compose, but the global setting always wins. Because `--shadow-button` resolves to `var(--elevation-{level})` and the `--elevation-*` values are themselves scoped by `[data-elevation]`, picking `buttonElevation: medium` under `elevation: flat` resolves to `none` (since `data-elevation="flat"` zeroes all four `--elevation-*` tokens). This is intentional — when a user dials the global elevation to flat, every shadow in the system disappears, including buttons. Within any non-flat global setting, `buttonElevation` selects which level button shadows pull from. The full grid of meaningful combinations is `4 × 4 = 16`, of which the `data-elevation="flat"` row is uniformly flat regardless of the buttonElevation setting.
 
 ## Switcher panel
 
@@ -286,7 +290,7 @@ Each follows the existing Surface Style section's button layout (text labels, no
 
 ## Pre-render initialization
 
-`apps/template/index.html` already has an inline script that reads `theme-mode` from localStorage and sets `data-mode` before React hydrates. The script extends to set the three new attributes:
+`apps/template/index.html` already has an inline script that reads the `mode` localStorage key (note: existing key has no `theme-` prefix; that's a historical naming and is left untouched) and sets `data-mode` before React hydrates. A second block is added to handle the three new keys, all of which DO use the `theme-` prefix:
 
 ```js
 ;["density", "elevation", "button-elevation"].forEach((axis) => {
@@ -364,3 +368,4 @@ These are intentional changes from today, called out so reviewers can confirm th
 - **Dark-mode shadow tinting.** Future work could give `[data-mode="dark"]` softer or color-mixed shadows, since drop shadows barely register on dark backgrounds.
 - **Per-level pinning at the role-token level.** If experience shows components frequently need to pin a shadow value that ignores the user's elevation setting, a separate set of static-value tokens (e.g. `--elevation-fixed-high`) can be added. Today's escape hatch is hardcoding the literal shadow string.
 - **Possible second `--density-cell-lg` token.** If shrinking Pagination/Breadcrumb/OTP from 36px to 32px reads wrong in the demo, adding a larger square-cell token is a small follow-up.
+- **Storybook preview integration.** `packages/ui/.storybook/preview.tsx` currently exposes `accentColor`, `surfaceStyle`, and `mode` as toolbar globals and applies them via `documentElement.setAttribute`. To preview density and elevation in stories, the preview can gain three new toolbar globals (`density`, `elevation`, `buttonElevation`) that set the matching `data-*` attributes. Without this, all stories render at the defaults and design changes can't be verified per-story. Out of scope here, but cheap to add later in the same `preview.tsx` decorator.
