@@ -779,6 +779,17 @@
     border-color: hsl(var(--border));
   }
 
+  /* Sidebar collapsed-state utilities. The aside (in SidebarLayout) and the
+     nav (in SidebarNav) both carry data-collapsed attributes when the
+     sidebar is in icon-only mode. Consumers can mark elements with
+     data-when-collapsed="hidden" to automatically hide them when the
+     sidebar collapses, without re-implementing collapsed-state branching
+     in their own JSX. */
+  aside[data-collapsed] [data-when-collapsed="hidden"],
+  nav[data-collapsed] [data-when-collapsed="hidden"] {
+    display: none;
+  }
+
   .sidebar-gradient-overlay {
     position: relative;
   }

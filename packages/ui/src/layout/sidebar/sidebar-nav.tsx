@@ -43,7 +43,7 @@ function SidebarNav({ nav, collapsed: collapsedProp }: SidebarNavProps) {
           <SidebarGroup
             key={gi}
             group={group}
-            className={gi > 0 && !collapsed ? "mt-4" : undefined}
+            className={gi > 0 ? "mt-4" : undefined}
           />
         ))}
       </nav>
