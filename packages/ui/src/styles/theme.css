@@ -240,7 +240,7 @@
     0 8px 20px -2px rgb(0 0 0 / 0.18), 0 3px 8px -1px rgb(0 0 0 / 0.1);
   --elevation-high:
     0 32px 48px -8px rgb(0 0 0 / 0.32), 0 12px 24px -4px rgb(0 0 0 / 0.18);
-  --shadow-button: var(--elevation-flat);
+  --shadow-button: 0 0 transparent;
 }
 
 [data-density="compact"] {
@@ -329,17 +329,34 @@
     0 48px 72px -10px rgb(0 0 0 / 0.9), 0 20px 36px -6px rgb(0 0 0 / 0.6);
 }
 
+/* Button shadow ramp — intentionally independent from the --elevation-*
+   tokens so the buttonElevation axis works even when the global elevation
+   axis is set to flat. Geometry is tighter than --elevation-* because
+   buttons are small interactive controls, not floating panels. Light-mode
+   defaults below; dark-mode overrides come after. */
 [data-button-elevation="flat"] {
-  --shadow-button: var(--elevation-flat);
+  --shadow-button: 0 0 transparent;
 }
 [data-button-elevation="low"] {
-  --shadow-button: var(--elevation-low);
+  --shadow-button: 0 1px 2px 0 rgb(0 0 0 / 0.08);
 }
 [data-button-elevation="medium"] {
-  --shadow-button: var(--elevation-medium);
+  --shadow-button: 0 2px 4px 0 rgb(0 0 0 / 0.12), 0 1px 2px 0 rgb(0 0 0 / 0.08);
 }
 [data-button-elevation="high"] {
-  --shadow-button: var(--elevation-high);
+  --shadow-button:
+    0 6px 12px -2px rgb(0 0 0 / 0.2), 0 2px 4px 0 rgb(0 0 0 / 0.12);
+}
+
+[data-mode="dark"][data-button-elevation="low"] {
+  --shadow-button: 0 1px 2px 0 rgb(0 0 0 / 0.5);
+}
+[data-mode="dark"][data-button-elevation="medium"] {
+  --shadow-button: 0 2px 4px 0 rgb(0 0 0 / 0.6), 0 1px 2px 0 rgb(0 0 0 / 0.45);
+}
+[data-mode="dark"][data-button-elevation="high"] {
+  --shadow-button:
+    0 6px 12px -2px rgb(0 0 0 / 0.75), 0 2px 4px 0 rgb(0 0 0 / 0.55);
 }
 
 [data-mode="light"] {
