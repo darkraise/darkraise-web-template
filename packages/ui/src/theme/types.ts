@@ -75,9 +75,9 @@ export interface ThemeSettings {
   surfaceStyle: SurfaceStyle
   backgroundStyle: BackgroundStyle
   mode: Mode
-  density: Density
-  elevation: Elevation
-  buttonElevation: Elevation
+  density?: Density
+  elevation?: Elevation
+  buttonElevation?: Elevation
 }
 
 export interface ThemePersistenceAdapter {

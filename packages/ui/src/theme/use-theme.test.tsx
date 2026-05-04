@@ -213,17 +213,20 @@ describe("useTheme persistence", () => {
     expect(result.current.surfaceStyle).toBe("glassmorphism")
     expect(result.current.backgroundStyle).toBe("gradient")
     expect(result.current.mode).toBe("dark")
+    expect(result.current.density).toBe("spacious")
+    expect(result.current.elevation).toBe("high")
+    expect(result.current.buttonElevation).toBe("low")
   })
 
   it("falls back to config defaults when load returns settings without new fields", async () => {
-    const partialSettings = {
+    const partialSettings: ThemeSettings = {
       accentColor: "violet",
       surfaceColor: "slate",
       surfaceStyle: "default",
       backgroundStyle: "solid",
       mode: "light",
       // density / elevation / buttonElevation absent
-    } as ThemeSettings
+    }
     const adapter = createAdapter({
       load: vi.fn(() => Promise.resolve(partialSettings)),
     })
@@ -254,6 +257,9 @@ describe("useTheme persistence", () => {
     expect(localStorage.getItem("theme-style")).toBe("glassmorphism")
     expect(localStorage.getItem("theme-bg-style")).toBe("gradient")
     expect(localStorage.getItem("mode")).toBe("dark")
+    expect(localStorage.getItem("theme-density")).toBe("spacious")
+    expect(localStorage.getItem("theme-elevation")).toBe("high")
+    expect(localStorage.getItem("theme-button-elevation")).toBe("low")
   })
 
   it("keeps defaults when load returns null", async () => {

@@ -157,12 +157,6 @@ export function ThemeProvider({
       document.documentElement.setAttribute("data-mode", resolved)
       document.documentElement.setAttribute("data-surface-style", style)
       document.documentElement.setAttribute("data-background-style", bgStyle)
-      document.documentElement.setAttribute("data-density", density)
-      document.documentElement.setAttribute("data-elevation", elevation)
-      document.documentElement.setAttribute(
-        "data-button-elevation",
-        buttonElevation,
-      )
       const tokens = generateTokens({
         accentColor: accent,
         surfaceColor: surfColor,
@@ -172,7 +166,7 @@ export function ThemeProvider({
       })
       applyTokens(tokens)
     },
-    [density, elevation, buttonElevation],
+    [],
   )
 
   const applySettings = useCallback(
@@ -203,6 +197,19 @@ export function ThemeProvider({
       )
       localStorage.setItem(
         LS_BUTTON_ELEVATION,
+        settings.buttonElevation ?? cfg.defaults.buttonElevation,
+      )
+
+      document.documentElement.setAttribute(
+        "data-density",
+        settings.density ?? cfg.defaults.density,
+      )
+      document.documentElement.setAttribute(
+        "data-elevation",
+        settings.elevation ?? cfg.defaults.elevation,
+      )
+      document.documentElement.setAttribute(
+        "data-button-elevation",
         settings.buttonElevation ?? cfg.defaults.buttonElevation,
       )
 
@@ -445,6 +452,15 @@ export function ThemeProvider({
     backgroundStyle,
     resolvedMode,
   ])
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-density", density)
+    document.documentElement.setAttribute("data-elevation", elevation)
+    document.documentElement.setAttribute(
+      "data-button-elevation",
+      buttonElevation,
+    )
+  }, [density, elevation, buttonElevation])
 
   useEffect(() => {
     if (mode !== "system") return
