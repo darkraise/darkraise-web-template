@@ -1,16 +1,24 @@
 import { useState } from "react"
-import { useRouterAdapter } from "../router"
+import { useRouterAdapter } from "../../router"
 import { ChevronRight } from "lucide-react"
-import { cn } from "../lib/utils"
+import { cn } from "../../lib/utils"
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "../components/collapsible"
-import { Popover, PopoverContent, PopoverTrigger } from "../components/popover"
-import { Tooltip, TooltipContent, TooltipTrigger } from "../components/tooltip"
+} from "../../components/collapsible"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "../../components/popover"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "../../components/tooltip"
 import { SidebarProvider, useSidebar } from "./sidebar-context"
-import type { NavGroup, NavItem } from "./types"
+import type { NavGroup, NavItem } from "../types"
 
 interface SidebarNavProps {
   nav: NavGroup[]
@@ -93,8 +101,9 @@ function SidebarItem({ item, depth = 0 }: SidebarItemProps) {
     <Link
       to={item.href}
       className={cn(
-        "sidebar-nav-item flex items-center gap-3 rounded-md px-3 py-[var(--density-row-py)] text-sm transition-colors duration-150",
-        collapsed && "mx-auto h-9 w-9 justify-center px-0",
+        "sidebar-nav-item flex min-h-[var(--density-cell)] items-center gap-3 rounded-md px-3 py-[var(--density-row-py)] text-sm transition-colors duration-150",
+        collapsed &&
+          "mx-auto aspect-square w-[var(--density-cell)] justify-center px-0",
         depth > 0 && "py-1.5 text-[13px]",
       )}
       style={depth > 0 ? { paddingLeft: `${depth * 12 + 12}px` } : undefined}
@@ -130,7 +139,7 @@ function CollapsedParentItem({ item }: { item: NavItem }) {
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="sidebar-nav-item mx-auto flex h-9 w-9 cursor-pointer items-center justify-center rounded-md transition-colors duration-150"
+          className="sidebar-nav-item mx-auto flex aspect-square w-[var(--density-cell)] cursor-pointer items-center justify-center rounded-md transition-colors duration-150"
         >
           {item.icon && <item.icon className="h-4 w-4 shrink-0" />}
         </button>
@@ -172,7 +181,7 @@ function CollapsibleSidebarItem({
     <Collapsible open={open} onOpenChange={setOpen}>
       <CollapsibleTrigger
         className={cn(
-          "sidebar-nav-item flex w-full cursor-pointer items-center gap-3 rounded-md px-3 py-[var(--density-row-py)] text-sm transition-colors duration-150",
+          "sidebar-nav-item flex min-h-[var(--density-cell)] w-full cursor-pointer items-center gap-3 rounded-md px-3 py-[var(--density-row-py)] text-sm transition-colors duration-150",
         )}
         style={depth > 0 ? { paddingLeft: `${depth * 12 + 12}px` } : undefined}
       >

@@ -7,7 +7,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "../components/sheet"
-import { SidebarNav } from "./sidebar-nav"
+import { SidebarNav } from "./sidebar"
 import type { NavGroup } from "./types"
 
 interface MobileDrawerProps {

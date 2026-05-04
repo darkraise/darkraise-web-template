@@ -5,7 +5,7 @@
   "scripts": {
     "build": "pnpm --filter darkraise-ui build",
     "dev": "pnpm --filter darkraise-ui dev",
-    "dev:template": "pnpm --filter darkraise-web-template dev",
+    "dev:template": "pnpm --filter darkraise-ui build && pnpm --filter darkraise-web-template dev",
     "test": "pnpm --filter \"./packages/*\" test",
     "test:template": "pnpm --filter darkraise-web-template test",
     "lint": "eslint",

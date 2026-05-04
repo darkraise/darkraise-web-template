@@ -1,7 +1,7 @@
 import { useRouterAdapter } from "../router"
 import { cn } from "../lib/utils"
 import { ScrollArea } from "../components/scroll-area"
-import { SidebarItem } from "./sidebar-nav"
+import { SidebarItem } from "./sidebar"
 import {
   Tooltip,
   TooltipContent,
