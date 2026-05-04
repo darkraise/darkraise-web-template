@@ -31,7 +31,7 @@ export function SidebarLayout({
           <aside
             data-collapsed={collapsed || undefined}
             className={cn(
-              "sidebar-gradient-overlay theme-transition bg-surface-sidebar hidden flex-col border-r transition-all duration-300 md:flex",
+              "sidebar-gradient-overlay theme-transition bg-surface-sidebar hidden shrink-0 flex-col overflow-hidden border-r transition-all duration-300 md:flex",
               collapsed ? "w-16" : "w-64",
             )}
             style={sidebarBorder}
