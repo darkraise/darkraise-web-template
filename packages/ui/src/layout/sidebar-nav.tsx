@@ -44,10 +44,14 @@ function SidebarGroup({
 }: SidebarGroupProps) {
   return (
     <div className={cn("flex flex-col gap-0.5", className)}>
-      {group.label && !collapsed && (
+      {group.label && (
         <p
-          className="px-3 py-1 text-xs font-medium tracking-wider uppercase"
+          className={cn(
+            "truncate px-3 py-1 text-xs font-medium tracking-wider uppercase",
+            collapsed && "invisible",
+          )}
           style={{ color: "hsl(var(--sidebar-foreground-muted))" }}
+          aria-hidden={collapsed || undefined}
         >
           {group.label}
         </p>
