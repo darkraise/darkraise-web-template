@@ -81,7 +81,7 @@ function SidebarItem({ item, collapsed = false, depth = 0 }: SidebarItemProps) {
     <Link
       to={item.href}
       className={cn(
-        "sidebar-nav-item flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors duration-150",
+        "sidebar-nav-item flex items-center gap-3 rounded-md px-3 py-[var(--density-row-py)] text-sm transition-colors duration-150",
         collapsed && "mx-auto h-9 w-9 justify-center px-0",
         depth > 0 && "py-1.5 text-[13px]",
       )}
@@ -160,7 +160,7 @@ function CollapsibleSidebarItem({
     <Collapsible open={open} onOpenChange={setOpen}>
       <CollapsibleTrigger
         className={cn(
-          "sidebar-nav-item flex w-full cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors duration-150",
+          "sidebar-nav-item flex w-full cursor-pointer items-center gap-3 rounded-md px-3 py-[var(--density-row-py)] text-sm transition-colors duration-150",
         )}
         style={depth > 0 ? { paddingLeft: `${depth * 12 + 12}px` } : undefined}
       >

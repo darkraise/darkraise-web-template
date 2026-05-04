@@ -19,7 +19,7 @@ export function PageHeader({
 }: PageHeaderProps) {
   const { Link } = useRouterAdapter()
   return (
-    <div className="space-y-4 pb-4">
+    <div className="space-y-4 pb-[var(--density-container-p)]">
       {breadcrumbs && breadcrumbs.length > 0 && (
         <Breadcrumb>
           <BreadcrumbList>
