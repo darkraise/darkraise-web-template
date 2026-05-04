@@ -52,15 +52,15 @@
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
 
-  --font-sans:
-    var(--theme-font-sans, "Inter"), ui-sans-serif, system-ui, -apple-system,
-    sans-serif;
-  --font-heading:
-    var(--theme-font-heading, "Inter"), ui-sans-serif, system-ui, -apple-system,
-    sans-serif;
-  --font-mono:
-    var(--theme-font-mono, "JetBrains Mono"), ui-monospace, SFMono-Regular,
-    Menlo, monospace;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-heading: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --shadow-flat: var(--elevation-flat);
+  --shadow-low: var(--elevation-low);
+  --shadow-medium: var(--elevation-medium);
+  --shadow-high: var(--elevation-high);
+  --shadow-button: var(--shadow-button);
 
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
@@ -192,6 +192,104 @@
     color-mix(in oklab, var(--sf-hue) 7%, #05060a) 0%,
     color-mix(in oklab, var(--sf-hue) 5%, #0a0c14) 100%
   );
+
+  /* Density (cozy defaults) */
+  --density-button-px: 0.75rem;
+  --density-button-py: 0.375rem;
+  --density-input-px: 0.625rem;
+  --density-input-py: 0.5rem;
+  --density-cell: 2rem;
+  --density-container-p: 1rem;
+  --density-row-py: 0.375rem;
+  --density-stack-gap: 0.5rem;
+
+  /* Derived sm/lg variants — these reference the base tokens via calc(),
+     so they update automatically when [data-density] re-binds the base tokens.
+     Using derived tokens (rather than calc() inside Tailwind arbitrary values)
+     avoids the CSS-spec requirement for whitespace around calc() operators
+     and keeps consumer classes readable. */
+  --density-button-px-sm: calc(var(--density-button-px) - 0.25rem);
+  --density-button-py-sm: calc(var(--density-button-py) - 0.25rem);
+  --density-button-px-lg: calc(var(--density-button-px) + 0.5rem);
+  --density-button-py-lg: calc(var(--density-button-py) + 0.25rem);
+  --density-cell-sm: calc(var(--density-cell) - 0.25rem);
+  --density-cell-lg: calc(var(--density-cell) + 0.5rem);
+
+  /* Elevation (medium defaults) */
+  --elevation-flat: none;
+  --elevation-low: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --elevation-medium:
+    0 4px 12px -2px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.06);
+  --elevation-high:
+    0 16px 24px -8px rgb(0 0 0 / 0.16), 0 6px 10px -4px rgb(0 0 0 / 0.08);
+  --shadow-button: var(--elevation-flat);
+}
+
+[data-density="compact"] {
+  --density-button-px: 0.5rem;
+  --density-button-py: 0.25rem;
+  --density-input-px: 0.5rem;
+  --density-input-py: 0.375rem;
+  --density-cell: 1.75rem;
+  --density-container-p: 0.75rem;
+  --density-row-py: 0.25rem;
+  --density-stack-gap: 0.375rem;
+}
+
+[data-density="comfortable"] {
+  --density-button-px: 1rem;
+  --density-button-py: 0.5rem;
+  --density-input-px: 0.875rem;
+  --density-input-py: 0.625rem;
+  --density-cell: 2.25rem;
+  --density-container-p: 1.25rem;
+  --density-row-py: 0.5rem;
+  --density-stack-gap: 0.75rem;
+}
+
+[data-density="spacious"] {
+  --density-button-px: 1.25rem;
+  --density-button-py: 0.625rem;
+  --density-input-px: 1.125rem;
+  --density-input-py: 0.75rem;
+  --density-cell: 2.5rem;
+  --density-container-p: 1.5rem;
+  --density-row-py: 0.625rem;
+  --density-stack-gap: 1rem;
+}
+
+[data-elevation="flat"] {
+  --elevation-flat: none;
+  --elevation-low: none;
+  --elevation-medium: none;
+  --elevation-high: none;
+}
+
+[data-elevation="low"] {
+  --elevation-flat: none;
+  --elevation-low: 0 1px 1px 0 rgb(0 0 0 / 0.04);
+  --elevation-medium: 0 2px 6px -1px rgb(0 0 0 / 0.07);
+  --elevation-high: 0 8px 16px -2px rgb(0 0 0 / 0.1);
+}
+
+[data-elevation="high"] {
+  --elevation-flat: none;
+  --elevation-low: 0 2px 4px 0 rgb(0 0 0 / 0.08);
+  --elevation-medium: 0 8px 20px -2px rgb(0 0 0 / 0.14);
+  --elevation-high: 0 28px 48px -8px rgb(0 0 0 / 0.24);
+}
+
+[data-button-elevation="flat"] {
+  --shadow-button: var(--elevation-flat);
+}
+[data-button-elevation="low"] {
+  --shadow-button: var(--elevation-low);
+}
+[data-button-elevation="medium"] {
+  --shadow-button: var(--elevation-medium);
+}
+[data-button-elevation="high"] {
+  --shadow-button: var(--elevation-high);
 }
 
 [data-mode="light"] {
@@ -305,7 +403,7 @@
     -webkit-backdrop-filter: blur(20px) saturate(140%);
     border: 1px solid var(--fog-15);
     border-radius: var(--radius);
-    box-shadow: var(--shadow-md), var(--inset-hi);
+    box-shadow: var(--inset-hi);
     transition:
       background-color 150ms ease-in-out,
       color 150ms ease-in-out,
@@ -319,7 +417,7 @@
     -webkit-backdrop-filter: blur(32px) saturate(140%);
     border: 1px solid var(--fog-20);
     border-radius: var(--radius);
-    box-shadow: var(--shadow-lg), var(--inset-hi-strong);
+    box-shadow: var(--elevation-medium), var(--inset-hi-strong);
     transition:
       background-color 150ms ease-in-out,
       color 150ms ease-in-out,
@@ -333,7 +431,7 @@
     -webkit-backdrop-filter: blur(20px) saturate(140%);
     border: 1px solid var(--fog-15);
     border-radius: var(--radius);
-    box-shadow: var(--shadow-md), var(--inset-hi);
+    box-shadow: var(--inset-hi);
     transition:
       background-color 150ms ease-in-out,
       color 150ms ease-in-out,
@@ -347,12 +445,16 @@
     -webkit-backdrop-filter: blur(32px) saturate(140%);
     border: 1px solid var(--fog-20);
     border-radius: var(--radius);
-    box-shadow: var(--shadow-lg), var(--inset-hi-strong);
+    box-shadow: var(--elevation-medium), var(--inset-hi-strong);
     transition:
       background-color 150ms ease-in-out,
       color 150ms ease-in-out,
       border-color 150ms ease-in-out,
       box-shadow 150ms ease-in-out;
+  }
+
+  .modal-surface {
+    box-shadow: var(--elevation-high), var(--inset-hi-strong);
   }
 
   .dr-surface {
@@ -474,10 +576,10 @@
     border: 1px solid
       color-mix(in srgb, var(--hue) 50%, rgba(255, 255, 255, 0.25));
     box-shadow:
+      var(--shadow-button),
       var(--inset-hi-button),
       inset 0 -1px 0 color-mix(in srgb, var(--hue) 70%, #000),
-      0 0 0 1px color-mix(in oklab, var(--hue) 25%, transparent),
-      0 10px 32px color-mix(in oklab, var(--hue) 40%, transparent);
+      0 0 0 1px color-mix(in oklab, var(--hue) 25%, transparent);
   }
 
   .btn-glass-hue:hover {
@@ -497,18 +599,16 @@
     border: 1px solid
       color-mix(in srgb, hsl(var(--primary)) 50%, rgba(255, 255, 255, 0.25));
     box-shadow:
+      var(--shadow-button),
       var(--inset-hi-button),
       inset 0 -1px 0 color-mix(in srgb, hsl(var(--primary)) 70%, #000),
-      0 0 0 1px color-mix(in oklab, hsl(var(--primary)) 25%, transparent),
-      0 10px 32px color-mix(in oklab, hsl(var(--primary)) 40%, transparent);
+      0 0 0 1px color-mix(in oklab, hsl(var(--primary)) 25%, transparent);
   }
 
   [data-surface-style="glassmorphism"] .btn-glass-neutral {
     background-image: linear-gradient(180deg, var(--fog-15), var(--fog-05));
     border-color: var(--fog-20);
-    box-shadow:
-      var(--inset-hi-button),
-      0 1px 2px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow-button), var(--inset-hi-button);
   }
 
   [data-surface-style="glassmorphism"] .btn-glass-neutral:hover {
@@ -520,7 +620,7 @@
     border: 1px solid var(--fog-15);
     backdrop-filter: blur(10px) saturate(140%);
     -webkit-backdrop-filter: blur(10px) saturate(140%);
-    box-shadow: var(--inset-hi-button);
+    box-shadow: var(--shadow-button), var(--inset-hi-button);
     color: hsl(var(--foreground));
   }
 
@@ -554,7 +654,6 @@
   [data-surface-style="default"] .glass-strong,
   [data-surface-style="default"] .overlay-surface {
     border-color: hsl(var(--border));
-    box-shadow: var(--shadow-dropdown);
   }
 
   .sidebar-gradient-overlay {
