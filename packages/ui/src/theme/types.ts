@@ -34,6 +34,9 @@ export type Density = (typeof DENSITIES)[number]
 export const ELEVATIONS = ["flat", "low", "medium", "high"] as const
 export type Elevation = (typeof ELEVATIONS)[number]
 
+export const RADII = ["sharp", "subtle", "rounded", "pill"] as const
+export type Radius = (typeof RADII)[number]
+
 export const MODES = ["light", "dark", "system"] as const
 export type Mode = (typeof MODES)[number]
 
@@ -78,6 +81,7 @@ export interface ThemeSettings {
   density?: Density
   elevation?: Elevation
   buttonElevation?: Elevation
+  radius?: Radius
 }
 
 export interface ThemePersistenceAdapter {
@@ -96,6 +100,7 @@ export interface ThemeContextValue {
   density: Density
   elevation: Elevation
   buttonElevation: Elevation
+  radius: Radius
   resolvedMode: ResolvedMode
   config: import("./theme.config").ThemeConfig
   syncStatus: ThemeSyncStatus
@@ -107,4 +112,5 @@ export interface ThemeContextValue {
   setDensity: (density: Density) => void
   setElevation: (elevation: Elevation) => void
   setButtonElevation: (elevation: Elevation) => void
+  setRadius: (radius: Radius) => void
 }

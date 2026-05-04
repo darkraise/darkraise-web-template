@@ -6,6 +6,7 @@ import type {
   SurfaceStyle,
   Density,
   Elevation,
+  Radius,
   Mode,
   ResolvedMode,
   ThemeContextValue,
@@ -13,7 +14,13 @@ import type {
   ThemeSettings,
   ThemeSyncStatus,
 } from "./types"
-import { SURFACE_COLORS, SURFACE_STYLES, DENSITIES, ELEVATIONS } from "./types"
+import {
+  SURFACE_COLORS,
+  SURFACE_STYLES,
+  DENSITIES,
+  ELEVATIONS,
+  RADII,
+} from "./types"
 import { generateTokens, GLASS_ONLY_TOKEN_KEYS } from "./engine/generate-tokens"
 import { ThemeContext } from "./theme-context"
 import { themeConfig, type ThemeConfig } from "./theme.config"
@@ -27,6 +34,7 @@ const LS_MODE = "mode"
 const LS_DENSITY = "theme-density"
 const LS_ELEVATION = "theme-elevation"
 const LS_BUTTON_ELEVATION = "theme-button-elevation"
+const LS_RADIUS = "theme-radius"
 
 function getSystemMode(): ResolvedMode {
   if (typeof window === "undefined") return "light"
@@ -124,6 +132,14 @@ export function ThemeProvider({
     return cfg.defaults.buttonElevation
   })
 
+  const [radius, setRadiusState] = useState<Radius>(() => {
+    const stored = localStorage.getItem(LS_RADIUS)
+    if (stored && (RADII as readonly string[]).includes(stored)) {
+      return stored as Radius
+    }
+    return cfg.defaults.radius
+  })
+
   const [resolvedMode, setResolvedMode] = useState<ResolvedMode>(() =>
     resolveMode(mode),
   )
@@ -184,6 +200,7 @@ export function ThemeProvider({
       setButtonElevationState(
         settings.buttonElevation ?? cfg.defaults.buttonElevation,
       )
+      setRadiusState(settings.radius ?? cfg.defaults.radius)
 
       localStorage.setItem(LS_ACCENT, settings.accentColor)
       localStorage.setItem(LS_SURFACE_COLOR, settings.surfaceColor)
@@ -199,6 +216,7 @@ export function ThemeProvider({
         LS_BUTTON_ELEVATION,
         settings.buttonElevation ?? cfg.defaults.buttonElevation,
       )
+      localStorage.setItem(LS_RADIUS, settings.radius ?? cfg.defaults.radius)
 
       document.documentElement.setAttribute(
         "data-density",
@@ -211,6 +229,10 @@ export function ThemeProvider({
       document.documentElement.setAttribute(
         "data-button-elevation",
         settings.buttonElevation ?? cfg.defaults.buttonElevation,
+      )
+      document.documentElement.setAttribute(
+        "data-radius",
+        settings.radius ?? cfg.defaults.radius,
       )
 
       applyTheme(
@@ -247,6 +269,7 @@ export function ThemeProvider({
       density,
       elevation,
       buttonElevation,
+      radius,
       ...overrides,
     }),
     [
@@ -258,6 +281,7 @@ export function ThemeProvider({
       density,
       elevation,
       buttonElevation,
+      radius,
     ],
   )
 
@@ -436,6 +460,19 @@ export function ThemeProvider({
     [buildSettings, notifyChange, debouncedSave],
   )
 
+  const setRadius = useCallback(
+    (r: Radius) => {
+      setRadiusState(r)
+      localStorage.setItem(LS_RADIUS, r)
+      document.documentElement.setAttribute("data-radius", r)
+      const settings = buildSettings({ radius: r })
+      notifyChange(settings)
+      hasUserChanged.current = true
+      debouncedSave(settings)
+    },
+    [buildSettings, notifyChange, debouncedSave],
+  )
+
   useEffect(() => {
     applyTheme(
       accentColor,
@@ -460,7 +497,8 @@ export function ThemeProvider({
       "data-button-elevation",
       buttonElevation,
     )
-  }, [density, elevation, buttonElevation])
+    document.documentElement.setAttribute("data-radius", radius)
+  }, [density, elevation, buttonElevation, radius])
 
   useEffect(() => {
     if (mode !== "system") return
@@ -524,6 +562,7 @@ export function ThemeProvider({
       density,
       elevation,
       buttonElevation,
+      radius,
       resolvedMode,
       config: cfg,
       syncStatus,
@@ -535,6 +574,7 @@ export function ThemeProvider({
       setDensity,
       setElevation,
       setButtonElevation,
+      setRadius,
     }),
     [
       accentColor,
@@ -545,6 +585,7 @@ export function ThemeProvider({
       density,
       elevation,
       buttonElevation,
+      radius,
       resolvedMode,
       cfg,
       syncStatus,
@@ -556,6 +597,7 @@ export function ThemeProvider({
       setDensity,
       setElevation,
       setButtonElevation,
+      setRadius,
     ],
   )
 

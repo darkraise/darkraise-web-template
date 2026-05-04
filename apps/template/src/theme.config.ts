@@ -10,6 +10,7 @@ export const themeConfig: ThemeConfig = {
     density: "cozy",
     elevation: "medium",
     buttonElevation: "flat",
+    radius: "rounded",
   },
   switcher: {
     enabled: true,
@@ -22,6 +23,7 @@ export const themeConfig: ThemeConfig = {
       density: true,
       elevation: true,
       buttonElevation: true,
+      radius: true,
     },
   },
 }

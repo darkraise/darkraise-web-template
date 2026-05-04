@@ -84,7 +84,6 @@ describe("useTheme", () => {
     const style = document.documentElement.style
     expect(style.getPropertyValue("--primary")).toBeTruthy()
     expect(style.getPropertyValue("--background")).toBeTruthy()
-    expect(style.getPropertyValue("--radius")).toBeTruthy()
   })
 
   it("throws when used outside ThemeProvider", () => {
@@ -177,6 +176,7 @@ describe("useTheme persistence", () => {
     density: "spacious",
     elevation: "high",
     buttonElevation: "low",
+    radius: "pill",
   }
 
   function createAdapter(

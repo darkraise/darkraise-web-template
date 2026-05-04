@@ -236,7 +236,6 @@ export function generateTokens(
     "--border-subtle": recipe.tokens.borderSubtle(surface, mode),
     "--border-default": recipe.tokens.borderDefault(surface, mode),
 
-    "--radius": recipe.overrides.radius,
     "--shadow-card": isLightGlass
       ? recipe.overrides.shadowCard.replace(/rgb\(0 0 0 \//g, "rgb(16 24 40 /")
       : recipe.overrides.shadowCard,

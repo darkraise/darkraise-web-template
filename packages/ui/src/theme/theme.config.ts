@@ -5,6 +5,7 @@ import type {
   BackgroundStyle,
   Density,
   Elevation,
+  Radius,
   Mode,
 } from "./types"
 
@@ -18,6 +19,7 @@ export interface ThemeConfig {
     density: Density
     elevation: Elevation
     buttonElevation: Elevation
+    radius: Radius
   }
   switcher: {
     enabled: boolean
@@ -30,6 +32,7 @@ export interface ThemeConfig {
       density: boolean
       elevation: boolean
       buttonElevation: boolean
+      radius: boolean
     }
   }
 }
@@ -44,6 +47,7 @@ export const themeConfig: ThemeConfig = {
     density: "cozy",
     elevation: "medium",
     buttonElevation: "flat",
+    radius: "rounded",
   },
   switcher: {
     enabled: true,
@@ -56,6 +60,7 @@ export const themeConfig: ThemeConfig = {
       density: true,
       elevation: true,
       buttonElevation: true,
+      radius: true,
     },
   },
 }

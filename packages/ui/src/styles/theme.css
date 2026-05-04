@@ -133,7 +133,6 @@
   --border: 214 32% 91%;
   --input: 214 32% 91%;
   --ring: 217 91% 60%;
-  --radius: 0.5rem;
   --chart-1: hsl(217 91% 60%);
   --chart-2: hsl(142 71% 45%);
   --chart-3: hsl(350 89% 60%);
@@ -167,6 +166,14 @@
   --inset-hi: 0 0 transparent;
   --inset-hi-strong: 0 0 transparent;
   --inset-hi-button: 0 0 transparent;
+
+  /* Radius axis. --radius drives Tailwind's rounded-md/lg/sm utilities used
+     by cards, popovers, inputs, etc. --radius-button is read directly by
+     buttons so they can go fully pill-shaped at the highest level without
+     turning cards into circles. The values here match data-radius="rounded"
+     (today's default); the [data-radius] selectors below rebind them. */
+  --radius: 0.5rem;
+  --radius-button: 0.5rem;
   --noise-opacity: 0;
   --canvas-blob-a: radial-gradient(
     1400px 900px at 10% -5%,
@@ -357,6 +364,26 @@
 [data-mode="dark"][data-button-elevation="high"] {
   --shadow-button:
     0 6px 12px -2px rgb(0 0 0 / 0.75), 0 2px 4px 0 rgb(0 0 0 / 0.55);
+}
+
+/* Radius axis. --radius drives Tailwind's rounded-*. --radius-button is
+   read directly by Button so it can go fully pill-shaped at the highest
+   level without making cards circular. */
+[data-radius="sharp"] {
+  --radius: 0;
+  --radius-button: 0;
+}
+[data-radius="subtle"] {
+  --radius: 0.25rem;
+  --radius-button: 0.25rem;
+}
+[data-radius="rounded"] {
+  --radius: 0.5rem;
+  --radius-button: 0.5rem;
+}
+[data-radius="pill"] {
+  --radius: 1rem;
+  --radius-button: 9999px;
 }
 
 [data-mode="light"] {

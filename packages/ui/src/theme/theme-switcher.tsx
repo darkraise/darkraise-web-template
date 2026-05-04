@@ -11,6 +11,7 @@ import {
   SURFACE_STYLES,
   DENSITIES,
   ELEVATIONS,
+  RADII,
 } from "./types"
 import type {
   Mode,
@@ -20,6 +21,7 @@ import type {
   SurfaceStyle,
   Density,
   Elevation,
+  Radius,
 } from "./types"
 import { accentColors } from "./palettes/accent-colors"
 import { surfaceStyles } from "./styles/surface-styles"
@@ -40,6 +42,7 @@ export function ThemeSwitcher() {
     density,
     elevation,
     buttonElevation,
+    radius,
     config,
     setAccentColor,
     setSurfaceColor,
@@ -49,6 +52,7 @@ export function ThemeSwitcher() {
     setDensity,
     setElevation,
     setButtonElevation,
+    setRadius,
   } = useTheme()
 
   const bgOptions: {
@@ -253,6 +257,30 @@ export function ThemeSwitcher() {
               onClick={() => setButtonElevation(e)}
             >
               {e}
+            </button>
+          ))}
+        </div>
+      </div>
+    ),
+    axes.radius && (
+      <div key="radius">
+        <Label className="text-muted-foreground text-xs font-medium">
+          Radius
+        </Label>
+        <div className="mt-1.5 grid grid-cols-4 gap-1">
+          {RADII.map((r: Radius) => (
+            <button
+              key={r}
+              type="button"
+              className={cn(
+                "cursor-pointer rounded-md px-2 py-1.5 text-center text-xs capitalize transition-colors",
+                radius === r
+                  ? "bg-primary text-primary-foreground"
+                  : "hover:bg-accent hover:text-accent-foreground",
+              )}
+              onClick={() => setRadius(r)}
+            >
+              {r}
             </button>
           ))}
         </div>

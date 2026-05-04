@@ -47,7 +47,6 @@ describe("generateTokens", () => {
       "--surface-header",
       "--border-subtle",
       "--border-default",
-      "--radius",
       "--shadow-card",
       "--shadow-dropdown",
     ]
