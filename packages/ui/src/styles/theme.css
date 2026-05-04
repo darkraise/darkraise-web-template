@@ -235,11 +235,11 @@
      invalidating the entire declaration. The `none` keyword is only valid
      as a complete box-shadow value, never as a list item. */
   --elevation-flat: 0 0 transparent;
-  --elevation-low: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --elevation-low: 0 2px 4px 0 rgb(0 0 0 / 0.1);
   --elevation-medium:
-    0 4px 12px -2px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.06);
+    0 8px 20px -2px rgb(0 0 0 / 0.18), 0 3px 8px -1px rgb(0 0 0 / 0.1);
   --elevation-high:
-    0 16px 24px -8px rgb(0 0 0 / 0.16), 0 6px 10px -4px rgb(0 0 0 / 0.08);
+    0 32px 48px -8px rgb(0 0 0 / 0.32), 0 12px 24px -4px rgb(0 0 0 / 0.18);
   --shadow-button: var(--elevation-flat);
 }
 
@@ -285,44 +285,48 @@
 
 [data-elevation="low"] {
   --elevation-flat: 0 0 transparent;
-  --elevation-low: 0 1px 1px 0 rgb(0 0 0 / 0.04);
-  --elevation-medium: 0 2px 6px -1px rgb(0 0 0 / 0.07);
-  --elevation-high: 0 8px 16px -2px rgb(0 0 0 / 0.1);
+  --elevation-low: 0 1px 2px 0 rgb(0 0 0 / 0.07);
+  --elevation-medium: 0 4px 10px -1px rgb(0 0 0 / 0.13);
+  --elevation-high: 0 12px 24px -4px rgb(0 0 0 / 0.2);
 }
 
 [data-elevation="high"] {
   --elevation-flat: 0 0 transparent;
-  --elevation-low: 0 2px 4px 0 rgb(0 0 0 / 0.08);
-  --elevation-medium: 0 8px 20px -2px rgb(0 0 0 / 0.14);
-  --elevation-high: 0 28px 48px -8px rgb(0 0 0 / 0.24);
+  --elevation-low: 0 4px 8px 0 rgb(0 0 0 / 0.18);
+  --elevation-medium:
+    0 14px 32px -3px rgb(0 0 0 / 0.28), 0 5px 12px -2px rgb(0 0 0 / 0.16);
+  --elevation-high:
+    0 48px 72px -10px rgb(0 0 0 / 0.45), 0 20px 36px -6px rgb(0 0 0 / 0.28);
 }
 
-/* Dark-mode shadow boost — drop shadows tinted black at 5–25% alpha barely
-   register against dark surfaces. The dark-mode rebinds use roughly 4× the
-   light-mode alpha so the same shadow geometry reads as visibly elevated.
-   Compound selectors like `[data-mode="dark"][data-elevation="high"]` win
-   on specificity over the plain single-attribute selectors above. */
+/* Dark-mode shadow boost — drop shadows tinted black barely register
+   against dark surfaces, so opacity is pushed substantially higher and
+   blur radii match the light-mode geometry. Compound selectors like
+   `[data-mode="dark"][data-elevation="high"]` win on specificity over
+   the plain single-attribute selectors above. */
 
 [data-mode="dark"] {
-  --elevation-low: 0 1px 2px 0 rgb(0 0 0 / 0.35);
+  --elevation-low: 0 2px 4px 0 rgb(0 0 0 / 0.5);
   --elevation-medium:
-    0 4px 12px -2px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.35);
+    0 8px 20px -2px rgb(0 0 0 / 0.65), 0 3px 8px -1px rgb(0 0 0 / 0.5);
   --elevation-high:
-    0 16px 24px -8px rgb(0 0 0 / 0.6), 0 6px 10px -4px rgb(0 0 0 / 0.4);
+    0 32px 48px -8px rgb(0 0 0 / 0.8), 0 12px 24px -4px rgb(0 0 0 / 0.55);
 }
 
 [data-mode="dark"][data-elevation="low"] {
   --elevation-flat: 0 0 transparent;
-  --elevation-low: 0 1px 1px 0 rgb(0 0 0 / 0.25);
-  --elevation-medium: 0 2px 6px -1px rgb(0 0 0 / 0.35);
-  --elevation-high: 0 8px 16px -2px rgb(0 0 0 / 0.45);
+  --elevation-low: 0 1px 2px 0 rgb(0 0 0 / 0.4);
+  --elevation-medium: 0 4px 10px -1px rgb(0 0 0 / 0.55);
+  --elevation-high: 0 12px 24px -4px rgb(0 0 0 / 0.65);
 }
 
 [data-mode="dark"][data-elevation="high"] {
   --elevation-flat: 0 0 transparent;
-  --elevation-low: 0 2px 4px 0 rgb(0 0 0 / 0.45);
-  --elevation-medium: 0 8px 20px -2px rgb(0 0 0 / 0.6);
-  --elevation-high: 0 28px 48px -8px rgb(0 0 0 / 0.75);
+  --elevation-low: 0 4px 8px 0 rgb(0 0 0 / 0.6);
+  --elevation-medium:
+    0 14px 32px -3px rgb(0 0 0 / 0.75), 0 5px 12px -2px rgb(0 0 0 / 0.55);
+  --elevation-high:
+    0 48px 72px -10px rgb(0 0 0 / 0.9), 0 20px 36px -6px rgb(0 0 0 / 0.6);
 }
 
 [data-button-elevation="flat"] {
