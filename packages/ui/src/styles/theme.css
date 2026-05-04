@@ -297,6 +297,34 @@
   --elevation-high: 0 28px 48px -8px rgb(0 0 0 / 0.24);
 }
 
+/* Dark-mode shadow boost — drop shadows tinted black at 5–25% alpha barely
+   register against dark surfaces. The dark-mode rebinds use roughly 4× the
+   light-mode alpha so the same shadow geometry reads as visibly elevated.
+   Compound selectors like `[data-mode="dark"][data-elevation="high"]` win
+   on specificity over the plain single-attribute selectors above. */
+
+[data-mode="dark"] {
+  --elevation-low: 0 1px 2px 0 rgb(0 0 0 / 0.35);
+  --elevation-medium:
+    0 4px 12px -2px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.35);
+  --elevation-high:
+    0 16px 24px -8px rgb(0 0 0 / 0.6), 0 6px 10px -4px rgb(0 0 0 / 0.4);
+}
+
+[data-mode="dark"][data-elevation="low"] {
+  --elevation-flat: 0 0 transparent;
+  --elevation-low: 0 1px 1px 0 rgb(0 0 0 / 0.25);
+  --elevation-medium: 0 2px 6px -1px rgb(0 0 0 / 0.35);
+  --elevation-high: 0 8px 16px -2px rgb(0 0 0 / 0.45);
+}
+
+[data-mode="dark"][data-elevation="high"] {
+  --elevation-flat: 0 0 transparent;
+  --elevation-low: 0 2px 4px 0 rgb(0 0 0 / 0.45);
+  --elevation-medium: 0 8px 20px -2px rgb(0 0 0 / 0.6);
+  --elevation-high: 0 28px 48px -8px rgb(0 0 0 / 0.75);
+}
+
 [data-button-elevation="flat"] {
   --shadow-button: var(--elevation-flat);
 }
