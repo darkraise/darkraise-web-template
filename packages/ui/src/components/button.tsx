@@ -22,10 +22,10 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-8 px-3 py-1",
-        sm: "h-6 rounded-md px-2",
-        lg: "h-10 rounded-md px-6",
-        icon: "h-8 w-8",
+        default: "px-[var(--density-button-px)] py-[var(--density-button-py)]",
+        sm: "rounded-md px-[var(--density-button-px-sm)] py-[var(--density-button-py-sm)]",
+        lg: "rounded-md px-[var(--density-button-px-lg)] py-[var(--density-button-py-lg)]",
+        icon: "aspect-square w-[var(--density-cell)] p-0",
       },
     },
     defaultVariants: {
