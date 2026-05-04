@@ -43,7 +43,7 @@ function Menubar({
     <MenubarPrimitive.Root
       ref={ref}
       className={cn(
-        "bg-background flex h-10 items-center space-x-1 rounded-md border p-1",
+        "bg-background flex items-center space-x-1 rounded-md border p-1 py-[var(--density-button-py)]",
         className,
       )}
       {...props}

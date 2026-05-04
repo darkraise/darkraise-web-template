@@ -190,7 +190,7 @@ function TimePicker({
           variant="outline"
           disabled={disabled}
           className={cn(
-            "h-8 justify-between text-left font-normal",
+            "justify-between text-left font-normal",
             !value && "text-muted-foreground",
             className,
           )}
@@ -230,14 +230,14 @@ function TimePicker({
           <Button
             variant="link"
             size="sm"
-            className="h-7 px-2 text-xs"
+            className="px-2 text-xs"
             onClick={handleNow}
           >
             Now
           </Button>
           <Button
             size="sm"
-            className="h-7 px-3 text-xs"
+            className="px-3 text-xs"
             onClick={() => setOpen(false)}
           >
             OK
