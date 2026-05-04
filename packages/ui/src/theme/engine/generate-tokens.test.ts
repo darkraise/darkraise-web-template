@@ -11,7 +11,6 @@ describe("generateTokens", () => {
       surfaceColor: "slate",
       surfaceStyle: "default",
       backgroundStyle: "solid",
-      fontFamily: "default",
       mode: "light",
     })
 
@@ -51,14 +50,40 @@ describe("generateTokens", () => {
       "--radius",
       "--shadow-card",
       "--shadow-dropdown",
-      "--backdrop-blur",
-      "--surface-opacity",
-      "--theme-font-heading",
     ]
 
     for (const key of expectedKeys) {
       expect(tokens).toHaveProperty(key)
       expect(tokens[key]).toBeTruthy()
+    }
+  })
+
+  it("does not emit glass-only tokens for the default surface style", () => {
+    const tokens = generateTokens({
+      accentColor: "blue",
+      surfaceColor: "slate",
+      surfaceStyle: "default",
+      backgroundStyle: "solid",
+      mode: "light",
+    })
+
+    const glassOnlyKeys = [
+      "--fog-05",
+      "--fog-10",
+      "--fog-15",
+      "--fog-20",
+      "--fog-30",
+      "--fog-50",
+      "--inset-hi",
+      "--inset-hi-strong",
+      "--inset-hi-button",
+      "--backdrop-blur",
+      "--backdrop-filter",
+      "--surface-opacity",
+    ]
+
+    for (const key of glassOnlyKeys) {
+      expect(tokens).not.toHaveProperty(key)
     }
   })
 
@@ -68,7 +93,6 @@ describe("generateTokens", () => {
       surfaceColor: "slate",
       surfaceStyle: "default",
       backgroundStyle: "solid",
-      fontFamily: "default",
       mode: "light",
     })
     const dark = generateTokens({
@@ -76,7 +100,6 @@ describe("generateTokens", () => {
       surfaceColor: "slate",
       surfaceStyle: "default",
       backgroundStyle: "solid",
-      fontFamily: "default",
       mode: "dark",
     })
 
@@ -90,7 +113,6 @@ describe("generateTokens", () => {
       surfaceColor: "slate",
       surfaceStyle: "default",
       backgroundStyle: "solid",
-      fontFamily: "default",
       mode: "light",
     })
     expect(amber["--primary-foreground"]).toBe("0 0% 100%")
@@ -100,7 +122,6 @@ describe("generateTokens", () => {
       surfaceColor: "slate",
       surfaceStyle: "default",
       backgroundStyle: "solid",
-      fontFamily: "default",
       mode: "light",
     })
     expect(blue["--primary-foreground"]).toBe("0 0% 100%")
@@ -112,7 +133,6 @@ describe("generateTokens", () => {
       surfaceColor: "slate",
       surfaceStyle: "default",
       backgroundStyle: "solid",
-      fontFamily: "default",
       mode: "dark",
     })
 
@@ -126,7 +146,6 @@ describe("generateTokens", () => {
       surfaceColor: "slate",
       surfaceStyle: "default",
       backgroundStyle: "solid",
-      fontFamily: "default",
       mode: "light",
     })
 
@@ -152,7 +171,6 @@ describe("generateTokens", () => {
       surfaceColor: "slate",
       surfaceStyle: "glassmorphism",
       backgroundStyle: "solid",
-      fontFamily: "default",
       mode: "light",
     })
 
@@ -167,7 +185,6 @@ describe("generateTokens", () => {
       surfaceColor: "slate",
       surfaceStyle: "glassmorphism",
       backgroundStyle: "solid",
-      fontFamily: "default",
       mode: "light",
     })
 
@@ -181,7 +198,6 @@ describe("generateTokens", () => {
       surfaceColor: "slate",
       surfaceStyle: "glassmorphism",
       backgroundStyle: "solid",
-      fontFamily: "default",
       mode: "light",
     })
 
@@ -196,7 +212,6 @@ describe("generateTokens", () => {
       surfaceColor: "slate",
       surfaceStyle: "default",
       backgroundStyle: "solid",
-      fontFamily: "default",
       mode: "light",
     })
     const dark = generateTokens({
@@ -204,27 +219,11 @@ describe("generateTokens", () => {
       surfaceColor: "slate",
       surfaceStyle: "default",
       backgroundStyle: "solid",
-      fontFamily: "default",
       mode: "dark",
     })
 
     expect(light["--destructive"]).toBe("0 84% 60%")
     expect(dark["--destructive"]).toBe("0 72% 51%")
-  })
-
-  it("emits font tokens for the selected font family", () => {
-    const tokens = generateTokens({
-      accentColor: "blue",
-      surfaceColor: "slate",
-      surfaceStyle: "default",
-      backgroundStyle: "solid",
-      fontFamily: "humanist",
-      mode: "light",
-    })
-
-    expect(tokens["--theme-font-sans"]).toBe("DM Sans")
-    expect(tokens["--theme-font-heading"]).toBe("DM Sans")
-    expect(tokens["--theme-font-mono"]).toBe("DM Mono")
   })
 
   it("uses desaturated accent color scale as surface when surfaceColor is set", () => {
@@ -233,7 +232,6 @@ describe("generateTokens", () => {
       surfaceColor: "red",
       surfaceStyle: "default",
       backgroundStyle: "solid",
-      fontFamily: "default",
       mode: "light",
     })
 
@@ -247,7 +245,6 @@ describe("generateTokens", () => {
       surfaceColor: "slate",
       surfaceStyle: "default",
       backgroundStyle: "solid",
-      fontFamily: "default",
       mode: "light",
     })
 
@@ -261,7 +258,6 @@ describe("generateTokens", () => {
       surfaceColor: "emerald",
       surfaceStyle: "default",
       backgroundStyle: "solid",
-      fontFamily: "default",
       mode: "dark",
     })
 
@@ -276,7 +272,6 @@ describe("generateTokens", () => {
         surfaceColor: "slate",
         surfaceStyle: "glassmorphism",
         backgroundStyle: "solid",
-        fontFamily: "default",
         mode: "dark",
       })
 
@@ -294,7 +289,6 @@ describe("generateTokens", () => {
         surfaceColor: "slate",
         surfaceStyle: "glassmorphism",
         backgroundStyle: "solid",
-        fontFamily: "default",
         mode: "light",
       })
 
@@ -306,40 +300,34 @@ describe("generateTokens", () => {
       expect(tokens["--fog-50"]).toBe("rgba(255, 255, 255, 0.96)")
     })
 
-    it("dark + default surface style emits transparent for every fog token", () => {
-      const tokens = generateTokens({
+    it("default surface style does not emit any fog tokens", () => {
+      const dark = generateTokens({
         accentColor: "blue",
         surfaceColor: "slate",
         surfaceStyle: "default",
         backgroundStyle: "solid",
-        fontFamily: "default",
         mode: "dark",
       })
-
-      expect(tokens["--fog-05"]).toBe("transparent")
-      expect(tokens["--fog-10"]).toBe("transparent")
-      expect(tokens["--fog-15"]).toBe("transparent")
-      expect(tokens["--fog-20"]).toBe("transparent")
-      expect(tokens["--fog-30"]).toBe("transparent")
-      expect(tokens["--fog-50"]).toBe("transparent")
-    })
-
-    it("light + default surface style emits transparent for every fog token", () => {
-      const tokens = generateTokens({
+      const light = generateTokens({
         accentColor: "blue",
         surfaceColor: "slate",
         surfaceStyle: "default",
         backgroundStyle: "solid",
-        fontFamily: "default",
         mode: "light",
       })
 
-      expect(tokens["--fog-05"]).toBe("transparent")
-      expect(tokens["--fog-10"]).toBe("transparent")
-      expect(tokens["--fog-15"]).toBe("transparent")
-      expect(tokens["--fog-20"]).toBe("transparent")
-      expect(tokens["--fog-30"]).toBe("transparent")
-      expect(tokens["--fog-50"]).toBe("transparent")
+      const fogKeys = [
+        "--fog-05",
+        "--fog-10",
+        "--fog-15",
+        "--fog-20",
+        "--fog-30",
+        "--fog-50",
+      ]
+      for (const key of fogKeys) {
+        expect(dark).not.toHaveProperty(key)
+        expect(light).not.toHaveProperty(key)
+      }
     })
   })
 
@@ -350,7 +338,6 @@ describe("generateTokens", () => {
         surfaceColor: "slate",
         surfaceStyle: "glassmorphism",
         backgroundStyle: "solid",
-        fontFamily: "default",
         mode: "dark",
       })
 
@@ -369,7 +356,6 @@ describe("generateTokens", () => {
         surfaceColor: "slate",
         surfaceStyle: "glassmorphism",
         backgroundStyle: "solid",
-        fontFamily: "default",
         mode: "light",
       })
 
@@ -382,34 +368,27 @@ describe("generateTokens", () => {
       )
     })
 
-    it("dark + default surface style emits none for every inset rim token", () => {
-      const tokens = generateTokens({
+    it("default surface style does not emit any inset rim tokens", () => {
+      const dark = generateTokens({
         accentColor: "blue",
         surfaceColor: "slate",
         surfaceStyle: "default",
         backgroundStyle: "solid",
-        fontFamily: "default",
         mode: "dark",
       })
-
-      expect(tokens["--inset-hi"]).toBe("none")
-      expect(tokens["--inset-hi-strong"]).toBe("none")
-      expect(tokens["--inset-hi-button"]).toBe("none")
-    })
-
-    it("light + default surface style emits none for every inset rim token", () => {
-      const tokens = generateTokens({
+      const light = generateTokens({
         accentColor: "blue",
         surfaceColor: "slate",
         surfaceStyle: "default",
         backgroundStyle: "solid",
-        fontFamily: "default",
         mode: "light",
       })
 
-      expect(tokens["--inset-hi"]).toBe("none")
-      expect(tokens["--inset-hi-strong"]).toBe("none")
-      expect(tokens["--inset-hi-button"]).toBe("none")
+      const insetKeys = ["--inset-hi", "--inset-hi-strong", "--inset-hi-button"]
+      for (const key of insetKeys) {
+        expect(dark).not.toHaveProperty(key)
+        expect(light).not.toHaveProperty(key)
+      }
     })
   })
 
@@ -420,7 +399,6 @@ describe("generateTokens", () => {
         surfaceColor: "slate",
         surfaceStyle: "default",
         backgroundStyle: "gradient",
-        fontFamily: "default",
         mode: "dark",
       })
 
@@ -433,7 +411,6 @@ describe("generateTokens", () => {
         surfaceColor: "slate",
         surfaceStyle: "default",
         backgroundStyle: "gradient",
-        fontFamily: "default",
         mode: "light",
       })
 
@@ -446,7 +423,6 @@ describe("generateTokens", () => {
         surfaceColor: "slate",
         surfaceStyle: "default",
         backgroundStyle: "solid",
-        fontFamily: "default",
         mode: "dark",
       })
 
@@ -459,7 +435,6 @@ describe("generateTokens", () => {
         surfaceColor: "slate",
         surfaceStyle: "default",
         backgroundStyle: "solid",
-        fontFamily: "default",
         mode: "light",
       })
 
@@ -473,7 +448,6 @@ describe("generateTokens", () => {
       surfaceColor: "blue" as const,
       surfaceStyle: "default" as const,
       backgroundStyle: "gradient" as const,
-      fontFamily: "default" as const,
       mode: "dark" as const,
     }
 
@@ -521,7 +495,6 @@ describe("generateTokens", () => {
       surfaceColor: "blue" as const,
       surfaceStyle: "default" as const,
       backgroundStyle: "gradient" as const,
-      fontFamily: "default" as const,
       mode: "dark" as const,
     }
 

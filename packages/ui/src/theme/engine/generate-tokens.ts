@@ -5,20 +5,17 @@ import type {
   SurfaceStyle,
   ResolvedMode,
   ColorScale,
-  FontFamily,
 } from "../types"
 import { accentColors } from "../palettes/accent-colors"
 import { surfaceColors } from "../palettes/surface-colors"
 import { surfaceStyles } from "../styles/surface-styles"
 import { ACCENT_COLORS } from "../types"
-import { fontFamilies } from "../palettes/font-families"
 
 export interface GenerateTokensInput {
   accentColor: AccentColor
   surfaceColor: SurfaceColor
   surfaceStyle: SurfaceStyle
   backgroundStyle: BackgroundStyle
-  fontFamily: FontFamily
   mode: ResolvedMode
 }
 
@@ -72,19 +69,29 @@ function resolveSfHueTokens(
   }
 }
 
-function resolveOpacity(
-  style: SurfaceStyle,
+export const GLASS_ONLY_TOKEN_KEYS = [
+  "--fog-05",
+  "--fog-10",
+  "--fog-15",
+  "--fog-20",
+  "--fog-30",
+  "--fog-50",
+  "--inset-hi",
+  "--inset-hi-strong",
+  "--inset-hi-button",
+  "--backdrop-blur",
+  "--backdrop-filter",
+  "--surface-opacity",
+] as const
+
+function resolveGlassOpacity(
   bgStyle: BackgroundStyle,
   mode: ResolvedMode,
-  defaultOpacity: string,
 ): string {
-  if (style === "glassmorphism") {
-    if (bgStyle === "gradient") {
-      return mode === "light" ? "0.3" : "0.4"
-    }
-    return mode === "light" ? "0.5" : "0.5"
+  if (bgStyle === "gradient") {
+    return mode === "light" ? "0.3" : "0.4"
   }
-  return defaultOpacity
+  return "0.5"
 }
 
 function tintScale(
@@ -114,14 +121,8 @@ function isSidebarDark(_style: SurfaceStyle, mode: ResolvedMode): boolean {
 export function generateTokens(
   input: GenerateTokensInput,
 ): Record<string, string> {
-  const {
-    accentColor,
-    surfaceColor,
-    surfaceStyle,
-    backgroundStyle,
-    fontFamily,
-    mode,
-  } = input
+  const { accentColor, surfaceColor, surfaceStyle, backgroundStyle, mode } =
+    input
 
   const sfHueTokens = resolveSfHueTokens(surfaceColor, backgroundStyle)
 
@@ -245,67 +246,6 @@ export function generateTokens(
           "rgb(16 24 40 /",
         )
       : recipe.overrides.shadowDropdown,
-    "--backdrop-blur": recipe.overrides.backdropBlur,
-    // Saturation boost applies to all glass (both modes) by design; do not consolidate with isLightGlass.
-    "--backdrop-filter":
-      recipe.overrides.backdropBlur === "none"
-        ? "none"
-        : surfaceStyle === "glassmorphism"
-          ? `blur(${recipe.overrides.backdropBlur}) saturate(140%)`
-          : `blur(${recipe.overrides.backdropBlur})`,
-    "--surface-opacity": resolveOpacity(
-      surfaceStyle,
-      backgroundStyle,
-      mode,
-      recipe.overrides.surfaceOpacity,
-    ),
-
-    "--fog-05": isDarkGlass
-      ? "rgba(255, 255, 255, 0.04)"
-      : isLightGlass
-        ? "rgba(255, 255, 255, 0.55)"
-        : "transparent",
-    "--fog-10": isDarkGlass
-      ? "rgba(255, 255, 255, 0.07)"
-      : isLightGlass
-        ? "rgba(255, 255, 255, 0.65)"
-        : "transparent",
-    "--fog-15": isDarkGlass
-      ? "rgba(255, 255, 255, 0.10)"
-      : isLightGlass
-        ? "rgba(255, 255, 255, 0.72)"
-        : "transparent",
-    "--fog-20": isDarkGlass
-      ? "rgba(255, 255, 255, 0.14)"
-      : isLightGlass
-        ? "rgba(255, 255, 255, 0.82)"
-        : "transparent",
-    "--fog-30": isDarkGlass
-      ? "rgba(255, 255, 255, 0.20)"
-      : isLightGlass
-        ? "rgba(255, 255, 255, 0.90)"
-        : "transparent",
-    "--fog-50": isDarkGlass
-      ? "rgba(255, 255, 255, 0.38)"
-      : isLightGlass
-        ? "rgba(255, 255, 255, 0.96)"
-        : "transparent",
-
-    "--inset-hi": isDarkGlass
-      ? "inset 0 1px 0 rgba(255,255,255,0.14)"
-      : isLightGlass
-        ? "inset 0 1px 0 rgba(255,255,255,0.6)"
-        : "none",
-    "--inset-hi-strong": isDarkGlass
-      ? "inset 0 1px 0 rgba(255,255,255,0.22)"
-      : isLightGlass
-        ? "inset 0 1px 0 rgba(255,255,255,0.75)"
-        : "none",
-    "--inset-hi-button": isDarkGlass
-      ? "inset 0 1px 0 rgba(255,255,255,0.28)"
-      : isLightGlass
-        ? "inset 0 1px 0 rgba(255,255,255,0.6)"
-        : "none",
 
     "--bg-style": backgroundStyle,
     "--noise-opacity":
@@ -318,10 +258,43 @@ export function generateTokens(
           ? `linear-gradient(135deg, hsl(${accent[mode === "light" ? 200 : 800]} / 0.2) 0%, transparent 70%)`
           : "none",
 
-    "--theme-font-sans": fontFamilies[fontFamily].sans,
-    "--theme-font-heading": fontFamilies[fontFamily].heading,
-    "--theme-font-mono": fontFamilies[fontFamily].mono,
     ...sfHueTokens,
+  }
+
+  if (surfaceStyle === "glassmorphism") {
+    tokens["--backdrop-blur"] = recipe.overrides.backdropBlur
+    tokens["--backdrop-filter"] =
+      `blur(${recipe.overrides.backdropBlur}) saturate(140%)`
+    tokens["--surface-opacity"] = resolveGlassOpacity(backgroundStyle, mode)
+
+    tokens["--fog-05"] = isDarkGlass
+      ? "rgba(255, 255, 255, 0.04)"
+      : "rgba(255, 255, 255, 0.55)"
+    tokens["--fog-10"] = isDarkGlass
+      ? "rgba(255, 255, 255, 0.07)"
+      : "rgba(255, 255, 255, 0.65)"
+    tokens["--fog-15"] = isDarkGlass
+      ? "rgba(255, 255, 255, 0.10)"
+      : "rgba(255, 255, 255, 0.72)"
+    tokens["--fog-20"] = isDarkGlass
+      ? "rgba(255, 255, 255, 0.14)"
+      : "rgba(255, 255, 255, 0.82)"
+    tokens["--fog-30"] = isDarkGlass
+      ? "rgba(255, 255, 255, 0.20)"
+      : "rgba(255, 255, 255, 0.90)"
+    tokens["--fog-50"] = isDarkGlass
+      ? "rgba(255, 255, 255, 0.38)"
+      : "rgba(255, 255, 255, 0.96)"
+
+    tokens["--inset-hi"] = isDarkGlass
+      ? "inset 0 1px 0 rgba(255,255,255,0.14)"
+      : "inset 0 1px 0 rgba(255,255,255,0.6)"
+    tokens["--inset-hi-strong"] = isDarkGlass
+      ? "inset 0 1px 0 rgba(255,255,255,0.22)"
+      : "inset 0 1px 0 rgba(255,255,255,0.75)"
+    tokens["--inset-hi-button"] = isDarkGlass
+      ? "inset 0 1px 0 rgba(255,255,255,0.28)"
+      : "inset 0 1px 0 rgba(255,255,255,0.6)"
   }
 
   return tokens
