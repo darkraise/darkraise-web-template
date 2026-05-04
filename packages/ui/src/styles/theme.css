@@ -159,9 +159,14 @@
   --fog-20: transparent;
   --fog-30: transparent;
   --fog-50: transparent;
-  --inset-hi: none;
-  --inset-hi-strong: none;
-  --inset-hi-button: none;
+  /* No-op shadow values (must be syntactically valid <shadow>, not the
+     `none` keyword, because they get composed into multi-shadow lists like
+     `box-shadow: var(--elevation-medium), var(--inset-hi-strong)`. The `none`
+     keyword is only valid as a complete box-shadow value, never as a list
+     item — using it here invalidates the entire declaration. */
+  --inset-hi: 0 0 transparent;
+  --inset-hi-strong: 0 0 transparent;
+  --inset-hi-button: 0 0 transparent;
   --noise-opacity: 0;
   --canvas-blob-a: radial-gradient(
     1400px 900px at 10% -5%,
@@ -223,8 +228,13 @@
   --density-cell-sm: max(calc(var(--density-cell) - 0.25rem), 1.5rem);
   --density-cell-lg: calc(var(--density-cell) + 0.5rem);
 
-  /* Elevation (medium defaults) */
-  --elevation-flat: none;
+  /* Elevation (medium defaults).
+     `flat` uses `0 0 transparent` (a syntactically valid no-op shadow)
+     instead of `none`, so it can be composed into multi-shadow lists like
+     `box-shadow: var(--elevation-medium), var(--inset-hi-strong)` without
+     invalidating the entire declaration. The `none` keyword is only valid
+     as a complete box-shadow value, never as a list item. */
+  --elevation-flat: 0 0 transparent;
   --elevation-low: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --elevation-medium:
     0 4px 12px -2px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.06);
@@ -267,21 +277,21 @@
 }
 
 [data-elevation="flat"] {
-  --elevation-flat: none;
-  --elevation-low: none;
-  --elevation-medium: none;
-  --elevation-high: none;
+  --elevation-flat: 0 0 transparent;
+  --elevation-low: 0 0 transparent;
+  --elevation-medium: 0 0 transparent;
+  --elevation-high: 0 0 transparent;
 }
 
 [data-elevation="low"] {
-  --elevation-flat: none;
+  --elevation-flat: 0 0 transparent;
   --elevation-low: 0 1px 1px 0 rgb(0 0 0 / 0.04);
   --elevation-medium: 0 2px 6px -1px rgb(0 0 0 / 0.07);
   --elevation-high: 0 8px 16px -2px rgb(0 0 0 / 0.1);
 }
 
 [data-elevation="high"] {
-  --elevation-flat: none;
+  --elevation-flat: 0 0 transparent;
   --elevation-low: 0 2px 4px 0 rgb(0 0 0 / 0.08);
   --elevation-medium: 0 8px 20px -2px rgb(0 0 0 / 0.14);
   --elevation-high: 0 28px 48px -8px rgb(0 0 0 / 0.24);
