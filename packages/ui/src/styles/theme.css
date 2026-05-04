@@ -207,12 +207,20 @@
      so they update automatically when [data-density] re-binds the base tokens.
      Using derived tokens (rather than calc() inside Tailwind arbitrary values)
      avoids the CSS-spec requirement for whitespace around calc() operators
-     and keeps consumer classes readable. */
-  --density-button-px-sm: calc(var(--density-button-px) - 0.25rem);
-  --density-button-py-sm: calc(var(--density-button-py) - 0.25rem);
+     and keeps consumer classes readable.
+     The max() floors prevent compact-sm from collapsing padding to 0
+     (which would render a 20px-tall sm button with text touching its border). */
+  --density-button-px-sm: max(
+    calc(var(--density-button-px) - 0.25rem),
+    0.25rem
+  );
+  --density-button-py-sm: max(
+    calc(var(--density-button-py) - 0.25rem),
+    0.125rem
+  );
   --density-button-px-lg: calc(var(--density-button-px) + 0.5rem);
   --density-button-py-lg: calc(var(--density-button-py) + 0.25rem);
-  --density-cell-sm: calc(var(--density-cell) - 0.25rem);
+  --density-cell-sm: max(calc(var(--density-cell) - 0.25rem), 1.5rem);
   --density-cell-lg: calc(var(--density-cell) + 0.5rem);
 
   /* Elevation (medium defaults) */
