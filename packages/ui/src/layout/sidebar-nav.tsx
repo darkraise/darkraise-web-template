@@ -9,39 +9,47 @@ import {
 } from "../components/collapsible"
 import { Popover, PopoverContent, PopoverTrigger } from "../components/popover"
 import { Tooltip, TooltipContent, TooltipTrigger } from "../components/tooltip"
+import { SidebarProvider, useSidebar } from "./sidebar-context"
 import type { NavGroup, NavItem } from "./types"
 
 interface SidebarNavProps {
   nav: NavGroup[]
+  /**
+   * Optional explicit collapsed state. When provided, overrides any value from
+   * a parent `SidebarProvider`. When omitted, the value flows from context.
+   */
   collapsed?: boolean
 }
 
-function SidebarNav({ nav, collapsed = false }: SidebarNavProps) {
+function SidebarNav({ nav, collapsed: collapsedProp }: SidebarNavProps) {
+  const ctx = useSidebar()
+  const collapsed = collapsedProp ?? ctx.collapsed
+
   return (
-    <nav className="flex flex-col gap-1 px-2">
-      {nav.map((group, gi) => (
-        <SidebarGroup
-          key={gi}
-          group={group}
-          collapsed={collapsed}
-          className={gi > 0 && !collapsed ? "mt-4" : undefined}
-        />
-      ))}
-    </nav>
+    <SidebarProvider collapsed={collapsed}>
+      <nav
+        className="flex flex-col gap-1 px-2"
+        data-collapsed={collapsed || undefined}
+      >
+        {nav.map((group, gi) => (
+          <SidebarGroup
+            key={gi}
+            group={group}
+            className={gi > 0 && !collapsed ? "mt-4" : undefined}
+          />
+        ))}
+      </nav>
+    </SidebarProvider>
   )
 }
 
 interface SidebarGroupProps {
   group: NavGroup
-  collapsed?: boolean
   className?: string
 }
 
-function SidebarGroup({
-  group,
-  collapsed = false,
-  className,
-}: SidebarGroupProps) {
+function SidebarGroup({ group, className }: SidebarGroupProps) {
+  const { collapsed } = useSidebar()
   return (
     <div className={cn("flex flex-col gap-0.5", className)}>
       {group.label && (
@@ -57,7 +65,7 @@ function SidebarGroup({
         </p>
       )}
       {group.items.map((item) => (
-        <SidebarItem key={item.href} item={item} collapsed={collapsed} />
+        <SidebarItem key={item.href} item={item} />
       ))}
     </div>
   )
@@ -65,12 +73,12 @@ function SidebarGroup({
 
 interface SidebarItemProps {
   item: NavItem
-  collapsed?: boolean
   depth?: number
 }
 
-function SidebarItem({ item, collapsed = false, depth = 0 }: SidebarItemProps) {
+function SidebarItem({ item, depth = 0 }: SidebarItemProps) {
   const { Link } = useRouterAdapter()
+  const { collapsed } = useSidebar()
   const hasChildren = item.children && item.children.length > 0
 
   if (hasChildren && !collapsed) {
