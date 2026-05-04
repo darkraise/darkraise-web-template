@@ -61,7 +61,7 @@ function MenubarTrigger({
     <MenubarPrimitive.Trigger
       ref={ref}
       className={cn(
-        "focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex cursor-default items-center rounded-sm px-3 py-1.5 text-sm font-medium outline-none select-none",
+        "focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex cursor-default items-center rounded-sm px-[var(--density-button-px)] py-[var(--density-button-py)] text-sm font-medium outline-none select-none",
         className,
       )}
       {...props}
@@ -83,7 +83,7 @@ function MenubarSubTrigger({
     <MenubarPrimitive.SubTrigger
       ref={ref}
       className={cn(
-        "focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex cursor-default items-center rounded-sm px-2 py-1.5 text-sm outline-none select-none",
+        "focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex cursor-default items-center rounded-sm px-2 py-[var(--density-row-py)] text-sm outline-none select-none",
         inset && "pl-8",
         className,
       )}
@@ -152,7 +152,7 @@ function MenubarItem({
     <MenubarPrimitive.Item
       ref={ref}
       className={cn(
-        "focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center rounded-sm px-2 py-1.5 text-sm outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        "focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center rounded-sm px-2 py-[var(--density-row-py)] text-sm outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         inset && "pl-8",
         className,
       )}
@@ -173,7 +173,7 @@ function MenubarCheckboxItem({
     <MenubarPrimitive.CheckboxItem
       ref={ref}
       className={cn(
-        "focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center rounded-sm py-1.5 pr-2 pl-8 text-sm outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        "focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center rounded-sm py-[var(--density-row-py)] pr-2 pl-8 text-sm outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         className,
       )}
       checked={checked}
@@ -200,7 +200,7 @@ function MenubarRadioItem({
     <MenubarPrimitive.RadioItem
       ref={ref}
       className={cn(
-        "focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center rounded-sm py-1.5 pr-2 pl-8 text-sm outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        "focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center rounded-sm py-[var(--density-row-py)] pr-2 pl-8 text-sm outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         className,
       )}
       {...props}
@@ -228,7 +228,7 @@ function MenubarLabel({
     <MenubarPrimitive.Label
       ref={ref}
       className={cn(
-        "px-2 py-1.5 text-sm font-semibold",
+        "px-2 py-[var(--density-row-py)] text-sm font-semibold",
         inset && "pl-8",
         className,
       )}

@@ -115,7 +115,10 @@ function SelectLabel({
   return (
     <SelectPrimitive.Label
       ref={ref}
-      className={cn("py-1.5 pr-2 pl-8 text-sm font-semibold", className)}
+      className={cn(
+        "py-[var(--density-row-py)] pr-2 pl-8 text-sm font-semibold",
+        className,
+      )}
       {...props}
     />
   )
@@ -131,7 +134,7 @@ function SelectItem({
     <SelectPrimitive.Item
       ref={ref}
       className={cn(
-        "focus:bg-accent focus:text-accent-foreground relative flex w-full cursor-pointer items-center rounded-sm py-1.5 pr-2 pl-8 text-sm outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        "focus:bg-accent focus:text-accent-foreground relative flex w-full cursor-pointer items-center rounded-sm py-[var(--density-row-py)] pr-2 pl-8 text-sm outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         className,
       )}
       {...props}

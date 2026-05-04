@@ -116,9 +116,9 @@ function Calendar({
         table: "w-full border-collapse",
         weekdays: "flex",
         weekday:
-          "text-muted-foreground w-8 select-none rounded-md text-[0.8rem] font-normal text-center",
+          "text-muted-foreground w-[var(--density-cell)] select-none rounded-md text-[0.8rem] font-normal text-center",
         week: "mt-2 flex w-full",
-        week_number_header: "w-8 select-none",
+        week_number_header: "w-[var(--density-cell)] select-none",
         week_number: "text-muted-foreground select-none text-[0.8rem]",
         day: "relative aspect-square w-[var(--density-cell)] select-none p-0 text-center",
         range_start: "bg-accent rounded-l-md",

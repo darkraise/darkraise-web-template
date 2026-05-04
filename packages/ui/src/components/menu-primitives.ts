@@ -11,12 +11,13 @@ export const menuItemClass =
   "focus:bg-accent focus:text-accent-foreground relative flex cursor-pointer items-center gap-2 rounded-sm px-2 py-[var(--density-row-py)] text-sm transition-colors outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
 
 export const menuCheckboxItemClass =
-  "focus:bg-accent focus:text-accent-foreground relative flex cursor-pointer items-center rounded-sm py-1.5 pr-2 pl-8 text-sm transition-colors outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+  "focus:bg-accent focus:text-accent-foreground relative flex cursor-pointer items-center rounded-sm py-[var(--density-row-py)] pr-2 pl-8 text-sm transition-colors outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
 
 export const menuRadioItemClass =
-  "focus:bg-accent focus:text-accent-foreground relative flex cursor-pointer items-center rounded-sm py-1.5 pr-2 pl-8 text-sm transition-colors outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+  "focus:bg-accent focus:text-accent-foreground relative flex cursor-pointer items-center rounded-sm py-[var(--density-row-py)] pr-2 pl-8 text-sm transition-colors outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
 
-export const menuLabelClass = "px-2 py-1.5 text-sm font-semibold"
+export const menuLabelClass =
+  "px-2 py-[var(--density-row-py)] text-sm font-semibold"
 
 export const menuSeparatorClass = "bg-border -mx-1 my-1 h-px"
 

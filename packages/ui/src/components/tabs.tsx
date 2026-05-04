@@ -29,7 +29,7 @@ const tabsTriggerVariants = cva(
         outline:
           "rounded-sm border border-transparent bg-transparent px-[var(--density-button-px)] py-[var(--density-row-py)] hover:text-foreground data-[state=active]:text-primary data-[state=active]:border-primary",
         underline:
-          "-mb-px h-full border-b-2 border-transparent px-2.5 py-1.5 data-[state=active]:border-primary data-[state=active]:text-primary",
+          "-mb-px h-full border-b-2 border-transparent px-[var(--density-button-px)] py-[var(--density-row-py)] data-[state=active]:border-primary data-[state=active]:text-primary",
       },
     },
     defaultVariants: {
