@@ -3,6 +3,7 @@ import { OTPInput, OTPInputContext } from "input-otp"
 import { Dot } from "lucide-react"
 
 import { cn } from "../../lib/utils"
+import "./input-otp.css"
 
 function InputOTP({
   className,
@@ -13,11 +14,8 @@ function InputOTP({
   return (
     <OTPInput
       ref={ref}
-      containerClassName={cn(
-        "flex items-center gap-2 has-[:disabled]:opacity-50",
-        containerClassName,
-      )}
-      className={cn("disabled:cursor-not-allowed", className)}
+      containerClassName={cn("dr-input-otp-container", containerClassName)}
+      className={cn("dr-input-otp", className)}
       {...props}
     />
   )
@@ -30,7 +28,7 @@ function InputOTPGroup({
   ...props
 }: React.ComponentProps<"div">) {
   return (
-    <div ref={ref} className={cn("flex items-center", className)} {...props} />
+    <div ref={ref} className={cn("dr-input-otp-group", className)} {...props} />
   )
 }
 InputOTPGroup.displayName = "InputOTPGroup"
@@ -50,11 +48,8 @@ function InputOTPSlot({
   return (
     <div
       ref={ref}
-      className={cn(
-        "border-input relative flex aspect-square w-[var(--density-cell)] items-center justify-center border-y border-r text-sm transition-all first:rounded-l-md first:border-l last:rounded-r-md",
-        isActive && "ring-ring ring-offset-background z-10 ring-1",
-        className,
-      )}
+      className={cn("dr-input-otp-slot", className)}
+      data-active={isActive || undefined}
       {...props}
     >
       {char}
