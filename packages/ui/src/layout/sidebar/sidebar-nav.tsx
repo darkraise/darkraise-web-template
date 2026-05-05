@@ -36,7 +36,10 @@ function SidebarNav({ nav, collapsed: collapsedProp }: SidebarNavProps) {
   return (
     <SidebarProvider collapsed={collapsed}>
       <nav
-        className="flex flex-col gap-1 px-2"
+        className={cn(
+          "flex flex-col gap-1",
+          collapsed ? "items-center px-0" : "px-2",
+        )}
         data-collapsed={collapsed || undefined}
       >
         {nav.map((group, gi) => (
@@ -59,7 +62,13 @@ interface SidebarGroupProps {
 function SidebarGroup({ group, className }: SidebarGroupProps) {
   const { collapsed } = useSidebar()
   return (
-    <div className={cn("flex flex-col gap-0.5", className)}>
+    <div
+      className={cn(
+        "flex flex-col gap-0.5",
+        collapsed && "items-center",
+        className,
+      )}
+    >
       {group.label && (
         <p
           className={cn(
