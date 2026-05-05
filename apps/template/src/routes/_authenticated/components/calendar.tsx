@@ -143,6 +143,7 @@ function DateRangePickerPopover() {
             setRange(r)
             if (r?.from && r?.to) setOpen(false)
           }}
+          min={1}
           numberOfMonths={2}
         />
       </PopoverContent>
@@ -433,6 +434,7 @@ function CalendarPage() {
             setRange(r)
             if (r?.from && r?.to) setOpen(false)
           }}
+          min={1}
           numberOfMonths={2}
         />
       </PopoverContent>
