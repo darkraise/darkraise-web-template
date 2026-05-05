@@ -24,13 +24,13 @@ export { useLayoutStore, type LayoutVariant } from "./layout-store"
 // Use these instead of ad-hoc Tailwind utility soup for vertical/horizontal
 // stacking, max-width containers, grids, semantic sections, padded boxes,
 // and centering.
-export { Stack, type StackProps } from "./Stack"
-export { Inline, type InlineProps } from "./Inline"
-export { Container, type ContainerProps } from "./Container"
-export { Grid, type GridProps } from "./Grid"
-export { Section, type SectionProps } from "./Section"
-export { Box, type BoxProps } from "./Box"
-export { Center, type CenterProps } from "./Center"
+export { Stack, type StackProps } from "./stack"
+export { Inline, type InlineProps } from "./inline"
+export { Container, type ContainerProps } from "./container"
+export { Grid, type GridProps } from "./grid"
+export { Section, type SectionProps } from "./section"
+export { Box, type BoxProps } from "./box"
+export { Center, type CenterProps } from "./center"
 
 export type {
   NavItem,
