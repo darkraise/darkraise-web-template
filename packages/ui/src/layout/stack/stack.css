@@ -1,0 +1,77 @@
+@layer components {
+  .dr-stack {
+    @apply flex flex-col;
+  }
+
+  .dr-stack[data-gap="none"] {
+    @apply gap-0;
+  }
+
+  .dr-stack[data-gap="xs"] {
+    @apply gap-1;
+  }
+
+  .dr-stack[data-gap="sm"] {
+    @apply gap-2;
+  }
+
+  .dr-stack[data-gap="md"] {
+    @apply gap-4;
+  }
+
+  .dr-stack[data-gap="lg"] {
+    @apply gap-6;
+  }
+
+  .dr-stack[data-gap="xl"] {
+    @apply gap-8;
+  }
+
+  .dr-stack[data-gap="density"] {
+    gap: var(--density-stack-gap);
+  }
+
+  .dr-stack[data-align="start"] {
+    @apply items-start;
+  }
+
+  .dr-stack[data-align="center"] {
+    @apply items-center;
+  }
+
+  .dr-stack[data-align="end"] {
+    @apply items-end;
+  }
+
+  .dr-stack[data-align="stretch"] {
+    @apply items-stretch;
+  }
+
+  .dr-stack[data-justify="start"] {
+    @apply justify-start;
+  }
+
+  .dr-stack[data-justify="center"] {
+    @apply justify-center;
+  }
+
+  .dr-stack[data-justify="end"] {
+    @apply justify-end;
+  }
+
+  .dr-stack[data-justify="between"] {
+    @apply justify-between;
+  }
+
+  .dr-stack[data-justify="around"] {
+    @apply justify-around;
+  }
+
+  .dr-stack[data-wrap="true"] {
+    @apply flex-wrap;
+  }
+
+  .dr-stack[data-wrap="false"] {
+    @apply flex-nowrap;
+  }
+}

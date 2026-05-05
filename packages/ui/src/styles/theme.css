@@ -49,6 +49,15 @@
 /* Layout component imports (not picked up by generate:imports — layout/ is outside components/) */
 @import "../layout/sidebar/sidebar-nav.css";
 
+/* Layout primitive imports (manual; layout/ is outside the auto-scanner) */
+@import "../layout/box/box.css";
+@import "../layout/center/center.css";
+@import "../layout/container/container.css";
+@import "../layout/grid/grid.css";
+@import "../layout/inline/inline.css";
+@import "../layout/section/section.css";
+@import "../layout/stack/stack.css";
+
 @layer theme, base, components, utilities, overrides;
 
 @custom-variant dark (&:where([data-mode="dark"], [data-mode="dark"] *));

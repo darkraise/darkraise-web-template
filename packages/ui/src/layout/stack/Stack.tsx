@@ -1,52 +1,29 @@
 import { forwardRef, type HTMLAttributes } from "react"
-import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "../../lib/utils"
 
-const stackVariants = cva("flex flex-col", {
-  variants: {
-    gap: {
-      none: "gap-0",
-      xs: "gap-1",
-      sm: "gap-2",
-      md: "gap-4",
-      lg: "gap-6",
-      xl: "gap-8",
-      density: "gap-[var(--density-stack-gap)]",
-    },
-    align: {
-      start: "items-start",
-      center: "items-center",
-      end: "items-end",
-      stretch: "items-stretch",
-    },
-    justify: {
-      start: "justify-start",
-      center: "justify-center",
-      end: "justify-end",
-      between: "justify-between",
-      around: "justify-around",
-    },
-    wrap: {
-      true: "flex-wrap",
-      false: "flex-nowrap",
-    },
-  },
-  defaultVariants: {
-    gap: "md",
-  },
-})
+type StackGap = "none" | "xs" | "sm" | "md" | "lg" | "xl" | "density"
+type StackAlign = "start" | "center" | "end" | "stretch"
+type StackJustify = "start" | "center" | "end" | "between" | "around"
 
-export interface StackProps
-  extends HTMLAttributes<HTMLDivElement>, VariantProps<typeof stackVariants> {}
+export interface StackProps extends HTMLAttributes<HTMLDivElement> {
+  gap?: StackGap
+  align?: StackAlign
+  justify?: StackJustify
+  wrap?: boolean
+}
 
 export const Stack = forwardRef<HTMLDivElement, StackProps>(function Stack(
-  { className, gap, align, justify, wrap, ...props },
+  { className, gap = "md", align, justify, wrap, ...props },
   ref,
 ) {
   return (
     <div
       ref={ref}
-      className={cn(stackVariants({ gap, align, justify, wrap }), className)}
+      className={cn("dr-stack", className)}
+      data-gap={gap}
+      data-align={align}
+      data-justify={justify}
+      data-wrap={wrap !== undefined ? String(wrap) : undefined}
       {...props}
     />
   )
