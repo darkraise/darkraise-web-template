@@ -43,7 +43,7 @@ function SidebarNav({ nav, collapsed: collapsedProp }: SidebarNavProps) {
           <SidebarGroup
             key={gi}
             group={group}
-            className={gi > 0 && !collapsed ? "mt-4" : undefined}
+            className={gi > 0 ? "mt-4" : undefined}
           />
         ))}
       </nav>
@@ -60,10 +60,14 @@ function SidebarGroup({ group, className }: SidebarGroupProps) {
   const { collapsed } = useSidebar()
   return (
     <div className={cn("flex flex-col gap-0.5", className)}>
-      {group.label && !collapsed && (
+      {group.label && (
         <p
-          className="truncate px-3 py-1 text-xs font-medium tracking-wider uppercase"
+          className={cn(
+            "truncate px-3 py-1 text-xs font-medium tracking-wider uppercase",
+            collapsed && "invisible",
+          )}
           style={{ color: "hsl(var(--sidebar-foreground-muted))" }}
+          aria-hidden={collapsed || undefined}
         >
           {group.label}
         </p>
