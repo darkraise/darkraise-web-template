@@ -5,17 +5,7 @@ import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu"
 import { Check, ChevronRight, Circle } from "lucide-react"
 
 import { cn } from "../../lib/utils"
-import {
-  menuCheckboxItemClass,
-  menuContentClass,
-  menuItemClass,
-  menuLabelClass,
-  menuRadioItemClass,
-  menuSeparatorClass,
-  menuShortcutClass,
-  menuSubContentClass,
-  menuSubTriggerClass,
-} from "../menuPrimitives"
+import "../menuPrimitives.css"
 
 const DropdownMenu = DropdownMenuPrimitive.Root
 
@@ -41,7 +31,7 @@ function DropdownMenuSubTrigger({
   return (
     <DropdownMenuPrimitive.SubTrigger
       ref={ref}
-      className={cn(menuSubTriggerClass, inset && "pl-8", className)}
+      className={cn("dr-menu-sub-trigger", inset && "pl-8", className)}
       {...props}
     >
       {children}
@@ -59,7 +49,7 @@ function DropdownMenuSubContent({
     <DropdownMenuPrimitive.SubContent
       ref={ref}
       className={cn(
-        menuSubContentClass,
+        "dr-menu-sub-content",
         "origin-[--radix-dropdown-menu-content-transform-origin]",
         className,
       )}
@@ -80,7 +70,7 @@ function DropdownMenuContent({
         ref={ref}
         sideOffset={sideOffset}
         className={cn(
-          menuContentClass,
+          "dr-menu-content",
           "max-h-[var(--radix-dropdown-menu-content-available-height)] origin-[--radix-dropdown-menu-content-transform-origin]",
           className,
         )}
@@ -101,7 +91,7 @@ function DropdownMenuItem({
   return (
     <DropdownMenuPrimitive.Item
       ref={ref}
-      className={cn(menuItemClass, inset && "pl-8", className)}
+      className={cn("dr-menu-item", inset && "pl-8", className)}
       {...props}
     />
   )
@@ -117,7 +107,7 @@ function DropdownMenuCheckboxItem({
   return (
     <DropdownMenuPrimitive.CheckboxItem
       ref={ref}
-      className={cn(menuCheckboxItemClass, className)}
+      className={cn("dr-menu-checkbox-item", className)}
       checked={checked}
       {...props}
     >
@@ -140,7 +130,7 @@ function DropdownMenuRadioItem({
   return (
     <DropdownMenuPrimitive.RadioItem
       ref={ref}
-      className={cn(menuRadioItemClass, className)}
+      className={cn("dr-menu-radio-item", className)}
       {...props}
     >
       <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
@@ -164,7 +154,7 @@ function DropdownMenuLabel({
   return (
     <DropdownMenuPrimitive.Label
       ref={ref}
-      className={cn(menuLabelClass, inset && "pl-8", className)}
+      className={cn("dr-menu-label", inset && "pl-8", className)}
       {...props}
     />
   )
@@ -178,7 +168,7 @@ function DropdownMenuSeparator({
   return (
     <DropdownMenuPrimitive.Separator
       ref={ref}
-      className={cn(menuSeparatorClass, className)}
+      className={cn("dr-menu-separator", className)}
       {...props}
     />
   )
@@ -188,7 +178,7 @@ const DropdownMenuShortcut = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLSpanElement>) => {
-  return <span className={cn(menuShortcutClass, className)} {...props} />
+  return <span className={cn("dr-menu-shortcut", className)} {...props} />
 }
 DropdownMenuShortcut.displayName = "DropdownMenuShortcut"
 

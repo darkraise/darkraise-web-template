@@ -5,17 +5,7 @@ import * as ContextMenuPrimitive from "@radix-ui/react-context-menu"
 import { Check, ChevronRight, Circle } from "lucide-react"
 
 import { cn } from "../../lib/utils"
-import {
-  menuCheckboxItemClass,
-  menuContentClass,
-  menuItemClass,
-  menuLabelClass,
-  menuRadioItemClass,
-  menuSeparatorClass,
-  menuShortcutClass,
-  menuSubContentClass,
-  menuSubTriggerClass,
-} from "../menuPrimitives"
+import "../menuPrimitives.css"
 
 const ContextMenu = ContextMenuPrimitive.Root
 
@@ -41,7 +31,7 @@ function ContextMenuSubTrigger({
   return (
     <ContextMenuPrimitive.SubTrigger
       ref={ref}
-      className={cn(menuSubTriggerClass, inset && "pl-8", className)}
+      className={cn("dr-menu-sub-trigger", inset && "pl-8", className)}
       {...props}
     >
       {children}
@@ -59,7 +49,7 @@ function ContextMenuSubContent({
     <ContextMenuPrimitive.SubContent
       ref={ref}
       className={cn(
-        menuSubContentClass,
+        "dr-menu-sub-content",
         "origin-[--radix-context-menu-content-transform-origin]",
         className,
       )}
@@ -78,7 +68,7 @@ function ContextMenuContent({
       <ContextMenuPrimitive.Content
         ref={ref}
         className={cn(
-          menuContentClass,
+          "dr-menu-content",
           "max-h-[var(--radix-context-menu-content-available-height)] origin-[--radix-context-menu-content-transform-origin]",
           className,
         )}
@@ -99,7 +89,7 @@ function ContextMenuItem({
   return (
     <ContextMenuPrimitive.Item
       ref={ref}
-      className={cn(menuItemClass, inset && "pl-8", className)}
+      className={cn("dr-menu-item", inset && "pl-8", className)}
       {...props}
     />
   )
@@ -115,7 +105,7 @@ function ContextMenuCheckboxItem({
   return (
     <ContextMenuPrimitive.CheckboxItem
       ref={ref}
-      className={cn(menuCheckboxItemClass, className)}
+      className={cn("dr-menu-checkbox-item", className)}
       checked={checked}
       {...props}
     >
@@ -138,7 +128,7 @@ function ContextMenuRadioItem({
   return (
     <ContextMenuPrimitive.RadioItem
       ref={ref}
-      className={cn(menuRadioItemClass, className)}
+      className={cn("dr-menu-radio-item", className)}
       {...props}
     >
       <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
@@ -162,7 +152,7 @@ function ContextMenuLabel({
   return (
     <ContextMenuPrimitive.Label
       ref={ref}
-      className={cn(menuLabelClass, inset && "pl-8", className)}
+      className={cn("dr-menu-label", inset && "pl-8", className)}
       {...props}
     />
   )
@@ -176,7 +166,7 @@ function ContextMenuSeparator({
   return (
     <ContextMenuPrimitive.Separator
       ref={ref}
-      className={cn(menuSeparatorClass, className)}
+      className={cn("dr-menu-separator", className)}
       {...props}
     />
   )
@@ -186,7 +176,7 @@ function ContextMenuShortcut({
   className,
   ...props
 }: React.HTMLAttributes<HTMLSpanElement>) {
-  return <span className={cn(menuShortcutClass, className)} {...props} />
+  return <span className={cn("dr-menu-shortcut", className)} {...props} />
 }
 
 export {
