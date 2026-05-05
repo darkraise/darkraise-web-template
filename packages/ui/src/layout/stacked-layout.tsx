@@ -32,7 +32,7 @@ export function StackedLayout({
     <TooltipProvider delayDuration={0}>
       <div className="flex h-screen overflow-hidden">
         {/* Icon sidebar */}
-        <aside className="border-border-default bg-surface-sidebar hidden w-16 flex-col items-center border-r py-4 md:flex">
+        <aside className="border-border-default bg-surface-sidebar hidden w-16 shrink-0 flex-col items-center overflow-hidden border-r py-4 md:flex">
           <div className="bg-primary mb-6 h-8 w-8 rounded-md" />
           <nav className="flex flex-1 flex-col items-center gap-2">
             {nav.map((group, gi) => {
@@ -65,7 +65,7 @@ export function StackedLayout({
 
         {/* Sub-nav panel */}
         {activeGroup && (
-          <aside className="border-border bg-background hidden w-56 flex-col border-r md:flex">
+          <aside className="border-border bg-background hidden w-56 shrink-0 flex-col overflow-hidden border-r md:flex">
             {activeGroup.label && (
               <div className="border-border border-b px-4 py-3">
                 <p className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
