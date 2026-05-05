@@ -1,0 +1,25 @@
+@layer components {
+  .dr-toggle {
+    @apply ring-offset-background hover:bg-muted hover:text-muted-foreground focus-visible:ring-ring data-[state=on]:bg-primary data-[state=on]:text-primary-foreground data-[state=on]:hover:bg-primary data-[state=on]:hover:text-primary-foreground inline-flex cursor-pointer items-center justify-center gap-2 rounded-md text-sm font-medium transition-colors focus-visible:ring-1 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 data-[state=on]:shadow-sm [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0;
+  }
+
+  .dr-toggle[data-variant="default"] {
+    @apply bg-transparent;
+  }
+
+  .dr-toggle[data-variant="outline"] {
+    @apply border-input hover:bg-accent hover:text-accent-foreground data-[state=on]:text-primary data-[state=on]:border-primary data-[state=on]:hover:bg-primary/10 data-[state=on]:hover:text-primary border bg-transparent data-[state=on]:bg-transparent data-[state=on]:shadow-none;
+  }
+
+  .dr-toggle[data-size="default"] {
+    @apply aspect-auto min-w-[var(--density-cell)] px-2.5 py-[var(--density-button-py)];
+  }
+
+  .dr-toggle[data-size="sm"] {
+    @apply min-w-[var(--density-cell-sm)] px-1.5 py-[var(--density-button-py-sm)];
+  }
+
+  .dr-toggle[data-size="lg"] {
+    @apply min-w-[var(--density-cell-lg)] px-4 py-[var(--density-button-py-lg)];
+  }
+}
