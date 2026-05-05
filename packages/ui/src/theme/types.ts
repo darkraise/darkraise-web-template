@@ -102,7 +102,7 @@ export interface ThemeContextValue {
   buttonElevation: Elevation
   radius: Radius
   resolvedMode: ResolvedMode
-  config: import("./theme.config").ThemeConfig
+  config: import("./themeConfig").ThemeConfig
   syncStatus: ThemeSyncStatus
   setAccentColor: (color: AccentColor) => void
   setSurfaceColor: (color: SurfaceColor) => void

@@ -1,9 +1,9 @@
 export { ThemeProvider } from "./theme-provider"
 export { ThemeSwitcher } from "./theme-switcher"
 export { useTheme } from "./useTheme"
-export { generateTokens } from "./engine/generate-tokens"
-export { accentColors } from "./palettes/accent-colors"
-export { surfaceStyles } from "./styles/surface-styles"
+export { generateTokens } from "./engine/generateTokens"
+export { accentColors } from "./palettes/accentColors"
+export { surfaceStyles } from "./styles/surfaceStyles"
 export {
   ACCENT_COLORS,
   SURFACE_COLORS,
@@ -31,5 +31,5 @@ export type {
   ThemeSettings,
   ThemeSyncStatus,
 } from "./types"
-export { themeConfig } from "./theme.config"
-export type { ThemeConfig } from "./theme.config"
+export { themeConfig } from "./themeConfig"
+export type { ThemeConfig } from "./themeConfig"
