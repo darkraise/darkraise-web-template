@@ -4,6 +4,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "darkraise-ui/components/avatar"
+import { Stack } from "darkraise-ui/layout"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 import {
@@ -72,26 +73,26 @@ function AvatarPage() {
 </Avatar>`}
       >
         <div className="flex flex-wrap items-center gap-4">
-          <div className="flex flex-col items-center gap-2">
+          <Stack align="center" gap="sm">
             <Avatar className="h-12 w-12">
               <AvatarImage src="https://github.com/shadcn.png" alt="shadcn" />
               <AvatarFallback>SC</AvatarFallback>
             </Avatar>
             <p className="text-muted-foreground text-xs">With image</p>
-          </div>
-          <div className="flex flex-col items-center gap-2">
+          </Stack>
+          <Stack align="center" gap="sm">
             <Avatar className="h-12 w-12">
               <AvatarImage src="/broken-image.jpg" alt="Broken" />
               <AvatarFallback>FB</AvatarFallback>
             </Avatar>
             <p className="text-muted-foreground text-xs">Broken src</p>
-          </div>
-          <div className="flex flex-col items-center gap-2">
+          </Stack>
+          <Stack align="center" gap="sm">
             <Avatar className="h-12 w-12">
               <AvatarFallback>NI</AvatarFallback>
             </Avatar>
             <p className="text-muted-foreground text-xs">No image</p>
-          </div>
+          </Stack>
         </div>
       </ShowcaseExample>
 

@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
+import { Stack } from "darkraise-ui/layout"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
@@ -31,7 +32,7 @@ export const Route = createFileRoute("/_authenticated")({
   ),
 })`}
       >
-        <div className="flex flex-col gap-3">
+        <Stack gap="sm">
           <div className="flex h-[300px] overflow-hidden rounded-lg border">
             {/* Sidebar */}
             <div className="bg-surface-sidebar flex w-48 shrink-0 flex-col border-r">
@@ -63,7 +64,7 @@ export const Route = createFileRoute("/_authenticated")({
             Collapsible sidebar with grouped navigation, header bar with search
             and user menu. Best for complex apps with many navigation items.
           </p>
-        </div>
+        </Stack>
       </ShowcaseExample>
 
       <ShowcaseExample
@@ -78,7 +79,7 @@ export const Route = createFileRoute("/_authenticated")({
   ),
 })`}
       >
-        <div className="flex flex-col gap-3">
+        <Stack gap="sm">
           <div className="flex h-[300px] flex-col overflow-hidden rounded-lg border">
             {/* Top nav */}
             <div className="flex h-10 shrink-0 items-center gap-4 border-b px-3">
@@ -102,7 +103,7 @@ export const Route = createFileRoute("/_authenticated")({
             Horizontal navigation in the header bar. Simpler feel, suited for
             apps with fewer top-level sections.
           </p>
-        </div>
+        </Stack>
       </ShowcaseExample>
 
       <ShowcaseExample
@@ -117,7 +118,7 @@ export const Route = createFileRoute("/_authenticated")({
   ),
 })`}
       >
-        <div className="flex flex-col gap-3">
+        <Stack gap="sm">
           <div className="flex h-[300px] overflow-hidden rounded-lg border">
             {/* Icon sidebar */}
             <div className="bg-surface-sidebar flex w-12 shrink-0 flex-col items-center gap-2 border-r py-3">
@@ -158,7 +159,7 @@ export const Route = createFileRoute("/_authenticated")({
             Icon sidebar for top-level sections plus a text sub-navigation
             panel. Ideal for complex apps with deep navigation hierarchies.
           </p>
-        </div>
+        </Stack>
       </ShowcaseExample>
 
       <ShowcaseExample
@@ -173,7 +174,7 @@ export const Route = createFileRoute("/_authenticated")({
   ),
 })`}
       >
-        <div className="flex flex-col gap-3">
+        <Stack gap="sm">
           <div className="flex h-[300px] flex-col overflow-hidden rounded-lg border">
             {/* Header */}
             <div className="flex h-10 shrink-0 items-center gap-2 border-b px-3">
@@ -210,7 +211,7 @@ export const Route = createFileRoute("/_authenticated")({
             content on the right. Perfect for email, messaging, or
             record-browsing interfaces.
           </p>
-        </div>
+        </Stack>
       </ShowcaseExample>
     </ShowcasePage>
   )

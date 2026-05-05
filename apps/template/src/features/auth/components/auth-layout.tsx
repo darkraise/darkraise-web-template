@@ -1,4 +1,5 @@
 import type { ReactNode } from "react"
+import { Center } from "darkraise-ui/layout"
 
 function FloatingShape({
   className,
@@ -22,9 +23,9 @@ function FloatingShape({
 export function AuthLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen">
-      <div className="flex flex-1 flex-col items-center justify-center p-8">
+      <Center className="flex-1 p-8">
         <div className="w-full max-w-sm space-y-6">{children}</div>
-      </div>
+      </Center>
 
       <div className="relative hidden flex-1 overflow-hidden lg:block">
         {/* Gradient mesh background */}

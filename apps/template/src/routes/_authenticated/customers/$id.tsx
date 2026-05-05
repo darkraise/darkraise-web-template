@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router"
 import type { ColumnDef } from "@tanstack/react-table"
-import { PageHeader } from "darkraise-ui/layout"
+import { Center, PageHeader } from "darkraise-ui/layout"
 import { Avatar, AvatarFallback } from "darkraise-ui/components/avatar"
 import {
   Card,
@@ -32,17 +32,17 @@ function CustomerDetailPage() {
 
   if (customerLoading) {
     return (
-      <div className="flex items-center justify-center p-12">
+      <Center className="p-12">
         <p className="text-muted-foreground">Loading customer...</p>
-      </div>
+      </Center>
     )
   }
 
   if (!customer) {
     return (
-      <div className="flex items-center justify-center p-12">
+      <Center className="p-12">
         <p className="text-muted-foreground">Customer not found.</p>
-      </div>
+      </Center>
     )
   }
 

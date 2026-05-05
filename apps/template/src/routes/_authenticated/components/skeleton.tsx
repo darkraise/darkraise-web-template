@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import { Skeleton } from "darkraise-ui/components/skeleton"
 import { Card, CardContent } from "darkraise-ui/components/card"
 import { Separator } from "darkraise-ui/components/separator"
+import { Grid, Stack } from "darkraise-ui/layout"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
@@ -192,22 +193,22 @@ function SkeletonPage() {
   </div>
 </div>`}
       >
-        <div className="space-y-4">
-          <div className="grid grid-cols-4 gap-4">
+        <Stack gap="md">
+          <Grid cols={4} responsive={false} gap="md">
             {Array.from({ length: 4 }).map((_, i) => (
               <Skeleton key={i} className="h-24 rounded-lg" />
             ))}
-          </div>
-          <div className="grid grid-cols-2 gap-4">
+          </Grid>
+          <Grid cols={2} responsive={false} gap="md">
             {Array.from({ length: 2 }).map((_, i) => (
               <Skeleton key={i} className="h-64 rounded-lg" />
             ))}
-          </div>
-          <div className="grid grid-cols-3 gap-4">
+          </Grid>
+          <Grid cols={3} responsive={false} gap="md">
             <Skeleton className="col-span-2 h-40 rounded-lg" />
             <Skeleton className="h-40 rounded-lg" />
-          </div>
-        </div>
+          </Grid>
+        </Stack>
       </ShowcaseExample>
     </ShowcasePage>
   )
