@@ -41,9 +41,22 @@ export function NumberField({
           min={min}
           max={max}
           step={step}
-          value={value}
+          value={Number.isFinite(value) ? value : ""}
           onBlur={onBlur}
-          onChange={(e) => onChange(Number(e.target.value))}
+          onChange={(e) => {
+            const raw = e.target.value
+            if (raw === "") {
+              onChange(Number.NaN)
+              return
+            }
+            const parsed = Number(raw)
+            onChange(Number.isFinite(parsed) ? parsed : Number.NaN)
+          }}
+          onWheel={(e) => {
+            if (e.currentTarget === document.activeElement) {
+              e.currentTarget.blur()
+            }
+          }}
           aria-invalid={invalid}
         />
       )}
