@@ -1,0 +1,65 @@
+@layer components {
+  .dr-box {
+    @apply;
+  }
+
+  .dr-box[data-padding="none"] {
+    @apply p-0;
+  }
+
+  .dr-box[data-padding="sm"] {
+    @apply p-2;
+  }
+
+  .dr-box[data-padding="md"] {
+    @apply p-4;
+  }
+
+  .dr-box[data-padding="lg"] {
+    @apply p-6;
+  }
+
+  .dr-box[data-padding="xl"] {
+    @apply p-8;
+  }
+
+  .dr-box[data-padding="density"] {
+    padding: var(--density-container-p);
+  }
+
+  .dr-box[data-bordered="true"] {
+    @apply border;
+  }
+
+  .dr-box[data-surface="muted"] {
+    @apply bg-muted;
+  }
+
+  .dr-box[data-surface="card"] {
+    @apply bg-card text-card-foreground;
+  }
+
+  .dr-box[data-surface="accent"] {
+    @apply bg-accent text-accent-foreground;
+  }
+
+  .dr-box[data-rounded="none"] {
+    @apply rounded-none;
+  }
+
+  .dr-box[data-rounded="sm"] {
+    @apply rounded-sm;
+  }
+
+  .dr-box[data-rounded="md"] {
+    @apply rounded-md;
+  }
+
+  .dr-box[data-rounded="lg"] {
+    @apply rounded-lg;
+  }
+
+  .dr-box[data-rounded="full"] {
+    @apply rounded-full;
+  }
+}
