@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react"
 
 import { cn } from "../../lib/utils"
 import type { ButtonProps } from "../button"
+import "./pagination.css"
 
 type PaginationVariant = "filled" | "outlined"
 
@@ -20,7 +21,7 @@ function Pagination({
       <nav
         role="navigation"
         aria-label="pagination"
-        className={cn("mx-auto flex w-full justify-center", className)}
+        className={cn("dr-pagination", className)}
         {...props}
       />
     </PaginationContext.Provider>
@@ -36,7 +37,7 @@ function PaginationContent({
   return (
     <ul
       ref={ref}
-      className={cn("flex flex-row items-center gap-1", className)}
+      className={cn("dr-pagination-content", className)}
       {...props}
     />
   )
@@ -127,10 +128,7 @@ function PaginationEllipsis({
   return (
     <span
       aria-hidden
-      className={cn(
-        "flex aspect-square w-[var(--density-cell)] items-center justify-center",
-        className,
-      )}
+      className={cn("dr-pagination-ellipsis", className)}
       {...props}
     >
       <MoreHorizontal className="h-4 w-4" />

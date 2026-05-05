@@ -1,0 +1,13 @@
+@layer components {
+  .dr-pagination {
+    @apply mx-auto flex w-full justify-center;
+  }
+
+  .dr-pagination-content {
+    @apply flex flex-row items-center gap-1;
+  }
+
+  .dr-pagination-ellipsis {
+    @apply flex aspect-square w-[var(--density-cell)] items-center justify-center;
+  }
+}
