@@ -17,6 +17,7 @@
 @import "../components/command/command.css";
 @import "../components/drawer/drawer.css";
 @import "../components/field/field.css";
+@import "../components/hover-card/hover-card.css";
 @import "../components/input/input.css";
 @import "../components/input-otp/input-otp.css";
 @import "../components/label/label.css";
