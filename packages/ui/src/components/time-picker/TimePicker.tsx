@@ -4,6 +4,7 @@ import { cn } from "../../lib/utils"
 import { Button } from "../button"
 import { Popover, PopoverContent, PopoverTrigger } from "../popover"
 import { ScrollArea } from "../scroll-area"
+import "./time-picker.css"
 
 interface TimePickerProps {
   value?: string
@@ -66,7 +67,7 @@ function TimeColumn({
   }
 
   return (
-    <div className="flex flex-col">
+    <div className="dr-time-column">
       {showInput && (
         <input
           type="text"
@@ -76,7 +77,7 @@ function TimeColumn({
           onBlur={handleInputBlur}
           onKeyDown={handleInputKeyDown}
           onFocus={(e) => e.target.select()}
-          className="bg-muted/50 focus:bg-accent w-14 py-2 text-center text-sm font-medium outline-none"
+          className="dr-time-column-input"
         />
       )}
       <ScrollArea className="h-48" ref={containerRef}>
@@ -89,12 +90,8 @@ function TimeColumn({
               }}
               type="button"
               onClick={() => onChange(item)}
-              className={cn(
-                "hover:bg-accent mx-1 rounded-md px-3 py-1.5 text-sm transition-colors",
-                value === item
-                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                  : "text-foreground",
-              )}
+              data-selected={value === item}
+              className="dr-time-column-item"
             >
               {item}
             </button>
@@ -206,7 +203,7 @@ function TimePicker({
             value={parsed.hour}
             onChange={(h) => onChange?.(to24(h, parsed.minute, parsed.period))}
           />
-          <div className="bg-border w-px" />
+          <div className="dr-time-divider" />
           <TimeColumn
             items={minutes}
             value={parsed.minute}
@@ -214,7 +211,7 @@ function TimePicker({
           />
           {use12Hour && (
             <>
-              <div className="bg-border w-px" />
+              <div className="dr-time-divider" />
               <TimeColumn
                 items={["AM", "PM"]}
                 value={parsed.period}

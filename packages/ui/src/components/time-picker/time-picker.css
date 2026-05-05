@@ -1,0 +1,25 @@
+@layer components {
+  .dr-time-column {
+    @apply flex flex-col;
+  }
+
+  .dr-time-column-input {
+    @apply bg-muted/50 focus:bg-accent w-14 py-2 text-center text-sm font-medium outline-none;
+  }
+
+  .dr-time-column-item {
+    @apply hover:bg-accent mx-1 rounded-md px-3 py-1.5 text-sm transition-colors;
+  }
+
+  .dr-time-column-item[data-selected="true"] {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90;
+  }
+
+  .dr-time-column-item[data-selected="false"] {
+    @apply text-foreground;
+  }
+
+  .dr-time-divider {
+    @apply bg-border w-px;
+  }
+}
