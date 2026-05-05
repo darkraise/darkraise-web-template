@@ -1,0 +1,57 @@
+@layer components {
+  .dr-carousel {
+    @apply relative;
+  }
+
+  .dr-carousel-content-wrapper {
+    @apply overflow-hidden;
+  }
+
+  .dr-carousel-content {
+    @apply flex;
+  }
+
+  .dr-carousel-content[data-orientation="horizontal"] {
+    @apply -ml-4;
+  }
+
+  .dr-carousel-content[data-orientation="vertical"] {
+    @apply -mt-4 flex-col;
+  }
+
+  .dr-carousel-item {
+    @apply min-w-0 shrink-0 grow-0 basis-full;
+  }
+
+  .dr-carousel-item[data-orientation="horizontal"] {
+    @apply pl-4;
+  }
+
+  .dr-carousel-item[data-orientation="vertical"] {
+    @apply pt-4;
+  }
+
+  .dr-carousel-previous {
+    @apply absolute aspect-square w-[var(--density-cell)] rounded-full;
+  }
+
+  .dr-carousel-previous[data-orientation="horizontal"] {
+    @apply top-1/2 -left-12 -translate-y-1/2;
+  }
+
+  .dr-carousel-previous[data-orientation="vertical"] {
+    @apply -top-12 left-1/2 -translate-x-1/2 rotate-90;
+  }
+
+  .dr-carousel-next {
+    @apply absolute aspect-square w-[var(--density-cell)] rounded-full;
+  }
+
+  .dr-carousel-next[data-orientation="horizontal"] {
+    @apply top-1/2 -right-12 -translate-y-1/2;
+  }
+
+  .dr-carousel-next[data-orientation="vertical"] {
+    @apply -bottom-12 left-1/2 -translate-x-1/2 rotate-90;
+  }
+}
