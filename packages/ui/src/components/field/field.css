@@ -16,11 +16,11 @@
   }
 
   .dr-field-group {
-    @apply group/field-group @container/field-group flex w-full flex-col gap-[var(--density-stack-gap)] data-[slot=checkbox-group]:gap-3 *:data-[slot=field-group]:gap-[var(--density-stack-gap)];
+    @apply flex w-full flex-col gap-[var(--density-stack-gap)] data-[slot=checkbox-group]:gap-3 *:data-[slot=field-group]:gap-[var(--density-stack-gap)];
   }
 
   .dr-field {
-    @apply group/field data-[invalid=true]:text-destructive flex w-full gap-2;
+    @apply data-[invalid=true]:text-destructive flex w-full gap-2;
   }
 
   .dr-field[data-orientation="vertical"] {
@@ -36,7 +36,7 @@
   }
 
   .dr-field-content {
-    @apply group/field-content flex flex-1 flex-col gap-1 leading-snug;
+    @apply flex flex-1 flex-col gap-1 leading-snug;
   }
 
   .dr-field-title {

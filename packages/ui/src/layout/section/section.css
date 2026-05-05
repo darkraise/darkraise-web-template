@@ -1,8 +1,4 @@
 @layer components {
-  .dr-section {
-    @apply;
-  }
-
   .dr-section[data-spacing="none"] {
     @apply py-0;
   }

@@ -11,7 +11,7 @@ function Switch({
 }: React.ComponentProps<typeof SwitchPrimitives.Root>) {
   return (
     <SwitchPrimitives.Root
-      className={cn("dr-switch", className)}
+      className={cn("dr-switch peer", className)}
       {...props}
       ref={ref}
     >

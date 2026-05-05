@@ -36,7 +36,10 @@ function FieldGroup({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="field-group"
-      className={cn("dr-field-group", className)}
+      className={cn(
+        "dr-field-group group/field-group @container/field-group",
+        className,
+      )}
       {...props}
     />
   )
@@ -52,7 +55,7 @@ function Field({
       role="group"
       data-slot="field"
       data-orientation={orientation}
-      className={cn("dr-field", className)}
+      className={cn("dr-field group/field", className)}
       {...props}
     />
   )
@@ -62,7 +65,7 @@ function FieldContent({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="field-content"
-      className={cn("dr-field-content", className)}
+      className={cn("dr-field-content group/field-content", className)}
       {...props}
     />
   )

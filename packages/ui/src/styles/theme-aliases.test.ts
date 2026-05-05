@@ -9,8 +9,10 @@ const themeCss = readFileSync(themeCssPath, "utf8")
 
 function extractRuleBody(selector: string): string {
   const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-  const pattern = new RegExp(`${escaped}\\s*\\{([^}]*)\\}`)
-  const match = themeCss.match(pattern)
+  // Match either @utility name { ... } or .name { ... }
+  const utilityPattern = new RegExp(`@utility\\s+${escaped}\\s*\\{([^}]*)\\}`)
+  const classPattern = new RegExp(`${escaped}\\s*\\{([^}]*)\\}`)
+  const match = themeCss.match(utilityPattern) ?? themeCss.match(classPattern)
   if (!match || match[1] === undefined) {
     throw new Error(`Selector not found in theme.css: ${selector}`)
   }
@@ -23,22 +25,22 @@ function extractRuleBody(selector: string): string {
 
 describe("theme aliases", () => {
   it(".card-surface ruleset matches .glass verbatim", () => {
-    const glass = extractRuleBody(".glass")
-    const cardSurface = extractRuleBody(".card-surface")
+    const glass = extractRuleBody("glass")
+    const cardSurface = extractRuleBody("card-surface")
     expect(cardSurface).toBe(glass)
   })
 
   it(".overlay-surface ruleset matches .glass-strong verbatim", () => {
-    const glassStrong = extractRuleBody(".glass-strong")
+    const glassStrong = extractRuleBody("glass-strong")
     const overlaySurface = extractRuleBody(".overlay-surface")
     expect(overlaySurface).toBe(glassStrong)
   })
 
   it("all four tier classes are present in theme.css", () => {
-    expect(themeCss).toMatch(/\.glass-thin\s*\{/)
-    expect(themeCss).toMatch(/\.glass\s*\{/)
-    expect(themeCss).toMatch(/\.glass-strong\s*\{/)
-    expect(themeCss).toMatch(/\.card-surface\s*\{/)
+    expect(themeCss).toMatch(/@utility\s+glass-thin\s*\{/)
+    expect(themeCss).toMatch(/@utility\s+glass\s*\{/)
+    expect(themeCss).toMatch(/@utility\s+glass-strong\s*\{/)
+    expect(themeCss).toMatch(/@utility\s+card-surface\s*\{/)
     expect(themeCss).toMatch(/\.overlay-surface\s*\{/)
   })
 })

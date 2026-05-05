@@ -1,8 +1,4 @@
 @layer components {
-  .dr-box {
-    @apply;
-  }
-
   .dr-box[data-padding="none"] {
     @apply p-0;
   }

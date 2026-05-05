@@ -32,7 +32,7 @@ function NavigationMenuList({
   return (
     <NavigationMenuPrimitive.List
       ref={ref}
-      className={cn("dr-navigation-menu-list", className)}
+      className={cn("dr-navigation-menu-list group", className)}
       {...props}
     />
   )
