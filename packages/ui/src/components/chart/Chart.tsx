@@ -2,6 +2,7 @@ import * as React from "react"
 import * as RechartsPrimitive from "recharts"
 
 import { cn } from "../../lib/utils"
+import "./chart.css"
 
 export type ChartConfig = {
   [k in string]: {
@@ -87,10 +88,7 @@ function ChartContainer({
       <div
         data-slot="chart"
         data-chart={chartId}
-        className={cn(
-          "[&_.recharts-cartesian-axis-tick_text]:fill-muted-foreground [&_.recharts-cartesian-grid_line[stroke='#ccc']]:stroke-border/50 [&_.recharts-curve.recharts-tooltip-cursor]:stroke-border [&_.recharts-polar-grid_[stroke='#ccc']]:stroke-border [&_.recharts-radial-bar-background-sector]:fill-muted [&_.recharts-rectangle.recharts-tooltip-cursor]:fill-muted [&_.recharts-reference-line_[stroke='#ccc']]:stroke-border flex aspect-video justify-center text-xs [&_.recharts-dot[stroke='#fff']]:stroke-transparent [&_.recharts-layer]:outline-none [&_.recharts-sector]:outline-none [&_.recharts-sector[stroke='#fff']]:stroke-transparent [&_.recharts-surface]:outline-none",
-          className,
-        )}
+        className={cn("dr-chart", className)}
         {...props}
       >
         <ChartStyle id={chartId} config={config} />
@@ -193,12 +191,7 @@ function ChartTooltipContent({
   const nestLabel = payload.length === 1 && indicator !== "dot"
 
   return (
-    <div
-      className={cn(
-        "border-border/50 bg-background grid min-w-[8rem] items-start gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs shadow-xl",
-        className,
-      )}
-    >
+    <div className={cn("dr-chart-tooltip", className)}>
       {!nestLabel ? tooltipLabel : null}
       <div className="grid gap-1.5">
         {payload.map((item, index) => {
@@ -299,11 +292,8 @@ function ChartLegendContent({
 
   return (
     <div
-      className={cn(
-        "flex items-center justify-center gap-4",
-        verticalAlign === "top" ? "pb-3" : "pt-3",
-        className,
-      )}
+      data-valign={verticalAlign}
+      className={cn("dr-chart-legend", className)}
     >
       {payload.map((item) => {
         const key = `${nameKey ?? item.dataKey ?? "value"}`
