@@ -1,36 +1,25 @@
 import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "../../lib/utils"
+import "./alert.css"
 
-const alertVariants = cva(
-  "relative w-full rounded-lg border p-4 [&>svg~*]:pl-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground",
-  {
-    variants: {
-      variant: {
-        default: "bg-background text-foreground",
-        destructive:
-          "border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-    },
-  },
-)
+type AlertVariant = "default" | "destructive"
 
 function Alert({
   className,
-  variant,
+  variant = "default",
   ref,
   ...props
-}: React.HTMLAttributes<HTMLDivElement> &
-  VariantProps<typeof alertVariants> & { ref?: React.Ref<HTMLDivElement> }) {
+}: React.HTMLAttributes<HTMLDivElement> & {
+  variant?: AlertVariant
+  ref?: React.Ref<HTMLDivElement>
+}) {
   return (
     <div
       ref={ref}
       role="alert"
-      className={cn(alertVariants({ variant }), className)}
+      data-variant={variant}
+      className={cn("dr-alert", className)}
       {...props}
     />
   )
@@ -43,13 +32,7 @@ function AlertTitle({
 }: React.HTMLAttributes<HTMLHeadingElement> & {
   ref?: React.Ref<HTMLParagraphElement>
 }) {
-  return (
-    <h5
-      ref={ref}
-      className={cn("mb-1 leading-none font-medium tracking-tight", className)}
-      {...props}
-    />
-  )
+  return <h5 ref={ref} className={cn("dr-alert-title", className)} {...props} />
 }
 
 function AlertDescription({
@@ -62,7 +45,7 @@ function AlertDescription({
   return (
     <div
       ref={ref}
-      className={cn("text-sm [&_p]:leading-relaxed", className)}
+      className={cn("dr-alert-description", className)}
       {...props}
     />
   )

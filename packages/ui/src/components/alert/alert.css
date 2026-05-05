@@ -1,0 +1,21 @@
+@layer components {
+  .dr-alert {
+    @apply [&>svg]:text-foreground relative w-full rounded-lg border p-4 [&>svg]:absolute [&>svg]:top-4 [&>svg]:left-4 [&>svg+div]:translate-y-[-3px] [&>svg~*]:pl-7;
+  }
+
+  .dr-alert[data-variant="default"] {
+    @apply bg-background text-foreground;
+  }
+
+  .dr-alert[data-variant="destructive"] {
+    @apply border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive;
+  }
+
+  .dr-alert-title {
+    @apply mb-1 leading-none font-medium tracking-tight;
+  }
+
+  .dr-alert-description {
+    @apply text-sm [&_p]:leading-relaxed;
+  }
+}
