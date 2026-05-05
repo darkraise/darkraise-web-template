@@ -2,7 +2,7 @@ import { forwardRef, type HTMLAttributes } from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "../../lib/utils"
 
-const centerVariants = cva("flex items-center justify-center", {
+const centerVariants = cva("items-center justify-center", {
   variants: {
     inline: {
       true: "inline-flex",

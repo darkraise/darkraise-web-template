@@ -24,6 +24,11 @@ const stackVariants = cva("flex flex-col", {
       center: "justify-center",
       end: "justify-end",
       between: "justify-between",
+      around: "justify-around",
+    },
+    wrap: {
+      true: "flex-wrap",
+      false: "flex-nowrap",
     },
   },
   defaultVariants: {
@@ -35,13 +40,13 @@ export interface StackProps
   extends HTMLAttributes<HTMLDivElement>, VariantProps<typeof stackVariants> {}
 
 export const Stack = forwardRef<HTMLDivElement, StackProps>(function Stack(
-  { className, gap, align, justify, ...props },
+  { className, gap, align, justify, wrap, ...props },
   ref,
 ) {
   return (
     <div
       ref={ref}
-      className={cn(stackVariants({ gap, align, justify }), className)}
+      className={cn(stackVariants({ gap, align, justify, wrap }), className)}
       {...props}
     />
   )
