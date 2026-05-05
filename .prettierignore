@@ -4,3 +4,4 @@ src/routeTree.gen.ts
 coverage
 storybook-static
 pnpm-lock.yaml
+packages/ui/CONTRIBUTING.md

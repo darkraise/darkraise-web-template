@@ -21,19 +21,13 @@ src/components/<kebab-name>/
 
 ```css
 @layer components {
-  .dr-<kebab-name > {
+  .dr-<kebab-name> {
     @apply <base utilities>;
   }
 
-  .dr-<kebab-name > [data-variant="<value>"] {
-    @apply <variant utilities>;
-  }
-  .dr-<kebab-name > [data-size="<value>"] {
-    @apply <size utilities>;
-  }
-  .dr-<kebab-name > [data-<state>] {
-    @apply <state utilities>;
-  }
+  .dr-<kebab-name>[data-variant="<value>"] { @apply <variant utilities>; }
+  .dr-<kebab-name>[data-size="<value>"]    { @apply <size utilities>; }
+  .dr-<kebab-name>[data-<state>]           { @apply <state utilities>; }
 }
 ```
 
