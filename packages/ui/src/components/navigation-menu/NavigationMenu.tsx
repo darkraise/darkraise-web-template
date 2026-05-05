@@ -1,9 +1,9 @@
 import * as React from "react"
 import * as NavigationMenuPrimitive from "@radix-ui/react-navigation-menu"
-import { cva } from "class-variance-authority"
 import { ChevronDown } from "lucide-react"
 
 import { cn } from "../../lib/utils"
+import "./navigation-menu.css"
 
 function NavigationMenu({
   className,
@@ -14,10 +14,7 @@ function NavigationMenu({
   return (
     <NavigationMenuPrimitive.Root
       ref={ref}
-      className={cn(
-        "relative z-10 flex max-w-max flex-1 items-center justify-center",
-        className,
-      )}
+      className={cn("dr-navigation-menu", className)}
       {...props}
     >
       {children}
@@ -35,10 +32,7 @@ function NavigationMenuList({
   return (
     <NavigationMenuPrimitive.List
       ref={ref}
-      className={cn(
-        "group flex flex-1 list-none items-center justify-center space-x-1",
-        className,
-      )}
+      className={cn("dr-navigation-menu-list", className)}
       {...props}
     />
   )
@@ -47,9 +41,7 @@ NavigationMenuList.displayName = NavigationMenuPrimitive.List.displayName
 
 const NavigationMenuItem = NavigationMenuPrimitive.Item
 
-const navigationMenuTriggerStyle = cva(
-  "group inline-flex w-max items-center justify-center rounded-md bg-background px-[var(--density-button-px)] py-[var(--density-button-py)] text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[state=open]:text-accent-foreground data-[state=open]:bg-accent/50 data-[state=open]:hover:bg-accent data-[state=open]:focus:bg-accent",
-)
+const navigationMenuTriggerStyle = () => "dr-navigation-menu-trigger"
 
 function NavigationMenuTrigger({
   className,
@@ -60,7 +52,7 @@ function NavigationMenuTrigger({
   return (
     <NavigationMenuPrimitive.Trigger
       ref={ref}
-      className={cn(navigationMenuTriggerStyle(), "group", className)}
+      className={cn("dr-navigation-menu-trigger group", className)}
       {...props}
     >
       {children}{" "}
@@ -81,10 +73,7 @@ function NavigationMenuContent({
   return (
     <NavigationMenuPrimitive.Content
       ref={ref}
-      className={cn(
-        "data-[motion^=from-]:animate-in data-[motion^=to-]:animate-out data-[motion^=from-]:fade-in data-[motion^=to-]:fade-out data-[motion=from-end]:slide-in-from-right-52 data-[motion=from-start]:slide-in-from-left-52 data-[motion=to-end]:slide-out-to-right-52 data-[motion=to-start]:slide-out-to-left-52 top-0 left-0 w-full md:absolute md:w-auto",
-        className,
-      )}
+      className={cn("dr-navigation-menu-content", className)}
       {...props}
     />
   )
@@ -99,12 +88,9 @@ function NavigationMenuViewport({
   ...props
 }: React.ComponentProps<typeof NavigationMenuPrimitive.Viewport>) {
   return (
-    <div className={cn("absolute top-full left-0 flex justify-center")}>
+    <div className="dr-navigation-menu-viewport-wrapper">
       <NavigationMenuPrimitive.Viewport
-        className={cn(
-          "origin-top-center glass-strong bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-90 relative mt-1.5 h-[var(--radix-navigation-menu-viewport-height)] w-full overflow-hidden border md:w-[var(--radix-navigation-menu-viewport-width)]",
-          className,
-        )}
+        className={cn("dr-navigation-menu-viewport", className)}
         ref={ref}
         {...props}
       />
@@ -122,13 +108,10 @@ function NavigationMenuIndicator({
   return (
     <NavigationMenuPrimitive.Indicator
       ref={ref}
-      className={cn(
-        "data-[state=visible]:animate-in data-[state=hidden]:animate-out data-[state=hidden]:fade-out data-[state=visible]:fade-in top-full z-[1] flex h-1.5 items-end justify-center overflow-hidden",
-        className,
-      )}
+      className={cn("dr-navigation-menu-indicator", className)}
       {...props}
     >
-      <div className="bg-border relative top-[60%] h-2 w-2 rotate-45 rounded-tl-sm shadow-md" />
+      <div className="dr-navigation-menu-indicator-arrow" />
     </NavigationMenuPrimitive.Indicator>
   )
 }
