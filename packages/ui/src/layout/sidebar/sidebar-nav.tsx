@@ -36,17 +36,14 @@ function SidebarNav({ nav, collapsed: collapsedProp }: SidebarNavProps) {
   return (
     <SidebarProvider collapsed={collapsed}>
       <nav
-        className={cn(
-          "flex flex-col gap-1",
-          collapsed ? "items-center px-0" : "px-2",
-        )}
+        className="flex flex-col gap-1 px-2"
         data-collapsed={collapsed || undefined}
       >
         {nav.map((group, gi) => (
           <SidebarGroup
             key={gi}
             group={group}
-            className={gi > 0 ? "mt-4" : undefined}
+            className={gi > 0 && !collapsed ? "mt-4" : undefined}
           />
         ))}
       </nav>
@@ -62,21 +59,11 @@ interface SidebarGroupProps {
 function SidebarGroup({ group, className }: SidebarGroupProps) {
   const { collapsed } = useSidebar()
   return (
-    <div
-      className={cn(
-        "flex flex-col gap-0.5",
-        collapsed && "items-center",
-        className,
-      )}
-    >
-      {group.label && (
+    <div className={cn("flex flex-col gap-0.5", className)}>
+      {group.label && !collapsed && (
         <p
-          className={cn(
-            "truncate px-3 py-1 text-xs font-medium tracking-wider uppercase",
-            collapsed && "invisible",
-          )}
+          className="truncate px-3 py-1 text-xs font-medium tracking-wider uppercase"
           style={{ color: "hsl(var(--sidebar-foreground-muted))" }}
-          aria-hidden={collapsed || undefined}
         >
           {group.label}
         </p>
@@ -110,18 +97,20 @@ function SidebarItem({ item, depth = 0 }: SidebarItemProps) {
     <Link
       to={item.href}
       className={cn(
-        "sidebar-nav-item flex min-h-[var(--density-cell)] items-center gap-3 rounded-md py-[var(--density-row-py)] text-sm transition-colors duration-150",
-        collapsed
-          ? "h-[var(--density-cell)] w-[var(--density-cell)] shrink-0 justify-center self-center px-0"
-          : "px-3",
+        "sidebar-nav-item flex min-h-[var(--density-cell)] w-full items-center gap-3 rounded-md px-3 py-[var(--density-row-py)] text-sm transition-colors duration-150",
+        collapsed && "justify-center",
         depth > 0 && "py-1.5 text-[13px]",
       )}
       style={depth > 0 ? { paddingLeft: `${depth * 12 + 12}px` } : undefined}
       activeExact
       activeClassName="active"
     >
-      {item.icon && <item.icon className="h-4 w-4 shrink-0" />}
-      {!collapsed && <span>{item.label}</span>}
+      {item.icon && (
+        <span className="flex h-4 w-4 shrink-0 items-center justify-center">
+          <item.icon className="h-4 w-4 shrink-0" />
+        </span>
+      )}
+      {!collapsed && <span className="flex-1 truncate">{item.label}</span>}
       {!collapsed && item.badge && (
         <span className="bg-primary/20 text-primary ml-auto rounded-full px-2 py-0.5 text-xs">
           {item.badge}
@@ -149,9 +138,13 @@ function CollapsedParentItem({ item }: { item: NavItem }) {
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="sidebar-nav-item flex h-[var(--density-cell)] w-[var(--density-cell)] shrink-0 cursor-pointer items-center justify-center self-center rounded-md transition-colors duration-150"
+          className="sidebar-nav-item flex min-h-[var(--density-cell)] w-full cursor-pointer items-center justify-center gap-3 rounded-md px-3 py-[var(--density-row-py)] transition-colors duration-150"
         >
-          {item.icon && <item.icon className="h-4 w-4 shrink-0" />}
+          {item.icon && (
+            <span className="flex h-4 w-4 shrink-0 items-center justify-center">
+              <item.icon className="h-4 w-4 shrink-0" />
+            </span>
+          )}
         </button>
       </PopoverTrigger>
       <PopoverContent
