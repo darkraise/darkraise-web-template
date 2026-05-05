@@ -36,6 +36,10 @@
     ],
     "*.{json,css,md}": [
       "prettier --write"
+    ],
+    "packages/ui/src/components/**/*.css": [
+      "pnpm --filter darkraise-ui generate:imports",
+      "git add packages/ui/src/styles/theme.css"
     ]
   },
   "pnpm": {

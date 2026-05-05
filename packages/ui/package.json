@@ -53,8 +53,10 @@
     "./styles.css": "./dist/styles.css"
   },
   "scripts": {
-    "build": "tsup && cp src/styles/theme.css dist/styles.css",
-    "dev": "tsup --watch",
+    "generate:imports": "tsx scripts/generate-component-imports.ts",
+    "build:css": "tsx scripts/build-css.ts",
+    "build": "pnpm run generate:imports && tsup && pnpm run build:css",
+    "dev": "pnpm run generate:imports && tsup --watch",
     "prepublishOnly": "pnpm run build",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
@@ -141,6 +143,7 @@
     "storybook": "^10.3.4",
     "tailwindcss": "^4.2.2",
     "tsup": "^8.5.0",
+    "tsx": "^4.21.0",
     "typescript": "~6.0.2",
     "vite": "^8.0.3",
     "vitest": "^4.1.2"
