@@ -3,6 +3,7 @@ import * as SelectPrimitive from "@radix-ui/react-select"
 import { Check, ChevronDown, ChevronUp } from "lucide-react"
 
 import { cn } from "../../lib/utils"
+import "./select.css"
 
 const Select = SelectPrimitive.Root
 
@@ -19,10 +20,7 @@ function SelectTrigger({
   return (
     <SelectPrimitive.Trigger
       ref={ref}
-      className={cn(
-        "glass border-input bg-card text-card-foreground ring-offset-background focus:ring-ring data-[placeholder]:text-muted-foreground flex w-full cursor-pointer items-center justify-between border px-[var(--density-input-px)] py-[var(--density-input-py)] text-sm focus:ring-1 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
-        className,
-      )}
+      className={cn("dr-select-trigger", className)}
       {...props}
     >
       {children}
@@ -41,10 +39,7 @@ function SelectScrollUpButton({
   return (
     <SelectPrimitive.ScrollUpButton
       ref={ref}
-      className={cn(
-        "flex cursor-default items-center justify-center py-1",
-        className,
-      )}
+      className={cn("dr-select-scroll-btn", className)}
       {...props}
     >
       <ChevronUp className="h-4 w-4" />
@@ -60,10 +55,7 @@ function SelectScrollDownButton({
   return (
     <SelectPrimitive.ScrollDownButton
       ref={ref}
-      className={cn(
-        "flex cursor-default items-center justify-center py-1",
-        className,
-      )}
+      className={cn("dr-select-scroll-btn", className)}
       {...props}
     >
       <ChevronDown className="h-4 w-4" />
@@ -82,22 +74,15 @@ function SelectContent({
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
         ref={ref}
-        className={cn(
-          "glass-strong bg-popover text-popover-foreground data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 relative z-50 max-h-[--radix-select-content-available-height] min-w-[8rem] origin-[--radix-select-content-transform-origin] overflow-x-hidden overflow-y-auto border",
-          position === "popper" &&
-            "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
-          className,
-        )}
+        data-position={position}
+        className={cn("dr-select-content", className)}
         position={position}
         {...props}
       >
         <SelectScrollUpButton />
         <SelectPrimitive.Viewport
-          className={cn(
-            "p-1",
-            position === "popper" &&
-              "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]",
-          )}
+          data-position={position}
+          className="dr-select-viewport"
         >
           {children}
         </SelectPrimitive.Viewport>
@@ -115,10 +100,7 @@ function SelectLabel({
   return (
     <SelectPrimitive.Label
       ref={ref}
-      className={cn(
-        "py-[var(--density-row-py)] pr-2 pl-8 text-sm font-semibold",
-        className,
-      )}
+      className={cn("dr-select-label", className)}
       {...props}
     />
   )
@@ -133,10 +115,7 @@ function SelectItem({
   return (
     <SelectPrimitive.Item
       ref={ref}
-      className={cn(
-        "focus:bg-accent focus:text-accent-foreground relative flex w-full cursor-pointer items-center rounded-sm py-[var(--density-row-py)] pr-2 pl-8 text-sm outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-        className,
-      )}
+      className={cn("dr-select-item", className)}
       {...props}
     >
       <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
@@ -158,7 +137,7 @@ function SelectSeparator({
   return (
     <SelectPrimitive.Separator
       ref={ref}
-      className={cn("bg-muted -mx-1 my-1 h-px", className)}
+      className={cn("dr-select-separator", className)}
       {...props}
     />
   )
