@@ -1,7 +1,7 @@
 import { TrendingDown, TrendingUp } from "lucide-react"
 import { Card, CardContent } from "darkraise-ui/components/card"
 import { cn } from "darkraise-ui/lib"
-import type { StatCardProps } from "../types"
+import type { StatCardProps } from "../../types"
 
 export function StatCard({ label, value, icon: Icon, trend }: StatCardProps) {
   return (

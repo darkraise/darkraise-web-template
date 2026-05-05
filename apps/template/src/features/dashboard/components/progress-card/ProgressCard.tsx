@@ -1,6 +1,6 @@
 import { Card, CardContent } from "darkraise-ui/components/card"
 import { Progress } from "darkraise-ui/components/progress"
-import type { ProgressCardProps } from "../types"
+import type { ProgressCardProps } from "../../types"
 
 export function ProgressCard({
   label,

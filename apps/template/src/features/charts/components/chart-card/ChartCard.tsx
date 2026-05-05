@@ -4,7 +4,7 @@ import {
   CardHeader,
   CardTitle,
 } from "darkraise-ui/components/card"
-import type { ChartCardProps } from "../types"
+import type { ChartCardProps } from "../../types"
 
 export function ChartCard({
   title,

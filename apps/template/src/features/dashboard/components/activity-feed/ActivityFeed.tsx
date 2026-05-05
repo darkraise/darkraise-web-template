@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "darkraise-ui/components/card"
-import type { ActivityItem } from "../types"
+import type { ActivityItem } from "../../types"
 
 interface ActivityFeedProps {
   items: ActivityItem[]
