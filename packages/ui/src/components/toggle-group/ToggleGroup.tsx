@@ -1,13 +1,16 @@
 import * as React from "react"
 import * as ToggleGroupPrimitive from "@radix-ui/react-toggle-group"
-import { type VariantProps } from "class-variance-authority"
 
 import { cn } from "../../lib/utils"
-import { toggleVariants } from "../toggle"
+import type { ToggleVariant, ToggleSize } from "../toggle"
+import "./toggle-group.css"
 
-const ToggleGroupContext = React.createContext<
-  VariantProps<typeof toggleVariants>
->({
+interface ToggleGroupContextValue {
+  variant?: ToggleVariant
+  size?: ToggleSize
+}
+
+const ToggleGroupContext = React.createContext<ToggleGroupContextValue>({
   size: "default",
   variant: "default",
 })
@@ -19,12 +22,14 @@ function ToggleGroup({
   children,
   ref,
   ...props
-}: React.ComponentProps<typeof ToggleGroupPrimitive.Root> &
-  VariantProps<typeof toggleVariants>) {
+}: React.ComponentProps<typeof ToggleGroupPrimitive.Root> & {
+  variant?: ToggleVariant
+  size?: ToggleSize
+}) {
   return (
     <ToggleGroupPrimitive.Root
       ref={ref}
-      className={cn("flex items-center justify-center gap-1", className)}
+      className={cn("dr-toggle-group", className)}
       {...props}
     >
       <ToggleGroupContext.Provider value={{ variant, size }}>
@@ -42,20 +47,20 @@ function ToggleGroupItem({
   size,
   ref,
   ...props
-}: React.ComponentProps<typeof ToggleGroupPrimitive.Item> &
-  VariantProps<typeof toggleVariants>) {
+}: React.ComponentProps<typeof ToggleGroupPrimitive.Item> & {
+  variant?: ToggleVariant
+  size?: ToggleSize
+}) {
   const context = React.useContext(ToggleGroupContext)
+  const resolvedVariant = context.variant ?? variant ?? "default"
+  const resolvedSize = context.size ?? size ?? "default"
 
   return (
     <ToggleGroupPrimitive.Item
       ref={ref}
-      className={cn(
-        toggleVariants({
-          variant: context.variant || variant,
-          size: context.size || size,
-        }),
-        className,
-      )}
+      className={cn("dr-toggle", className)}
+      data-variant={resolvedVariant}
+      data-size={resolvedSize}
       {...props}
     >
       {children}

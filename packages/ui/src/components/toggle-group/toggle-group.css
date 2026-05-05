@@ -1,0 +1,5 @@
+@layer components {
+  .dr-toggle-group {
+    @apply flex items-center justify-center gap-1;
+  }
+}
