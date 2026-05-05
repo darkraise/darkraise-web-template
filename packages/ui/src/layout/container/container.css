@@ -1,0 +1,53 @@
+@layer components {
+  .dr-container {
+    @apply mx-auto w-full;
+  }
+
+  .dr-container[data-size="sm"] {
+    @apply max-w-screen-sm;
+  }
+
+  .dr-container[data-size="md"] {
+    @apply max-w-screen-md;
+  }
+
+  .dr-container[data-size="lg"] {
+    @apply max-w-screen-lg;
+  }
+
+  .dr-container[data-size="xl"] {
+    @apply max-w-screen-xl;
+  }
+
+  .dr-container[data-size="2xl"] {
+    @apply max-w-screen-2xl;
+  }
+
+  .dr-container[data-size="prose"] {
+    @apply max-w-prose;
+  }
+
+  .dr-container[data-size="full"] {
+    @apply max-w-full;
+  }
+
+  .dr-container[data-padding="none"] {
+    @apply px-0;
+  }
+
+  .dr-container[data-padding="sm"] {
+    @apply px-4;
+  }
+
+  .dr-container[data-padding="md"] {
+    @apply px-6;
+  }
+
+  .dr-container[data-padding="lg"] {
+    @apply px-8;
+  }
+
+  .dr-container[data-padding="density"] {
+    padding-inline: var(--density-container-p);
+  }
+}
