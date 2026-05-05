@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { cn } from "../../lib/utils"
+import "./table.css"
 
 function Table({
   className,
@@ -10,12 +11,8 @@ function Table({
   ref?: React.Ref<HTMLTableElement>
 }) {
   return (
-    <div className="glass border-border relative w-full overflow-auto border">
-      <table
-        ref={ref}
-        className={cn("w-full caption-bottom text-sm", className)}
-        {...props}
-      />
+    <div className="dr-table-wrapper">
+      <table ref={ref} className={cn("dr-table", className)} {...props} />
     </div>
   )
 }
@@ -28,11 +25,7 @@ function TableHeader({
   ref?: React.Ref<HTMLTableSectionElement>
 }) {
   return (
-    <thead
-      ref={ref}
-      className={cn("bg-muted/50 [&_tr]:border-b", className)}
-      {...props}
-    />
+    <thead ref={ref} className={cn("dr-table-header", className)} {...props} />
   )
 }
 
@@ -44,11 +37,7 @@ function TableBody({
   ref?: React.Ref<HTMLTableSectionElement>
 }) {
   return (
-    <tbody
-      ref={ref}
-      className={cn("[&_tr:last-child]:border-0", className)}
-      {...props}
-    />
+    <tbody ref={ref} className={cn("dr-table-body", className)} {...props} />
   )
 }
 
@@ -60,14 +49,7 @@ function TableFooter({
   ref?: React.Ref<HTMLTableSectionElement>
 }) {
   return (
-    <tfoot
-      ref={ref}
-      className={cn(
-        "bg-muted/50 border-t font-medium [&>tr]:last:border-b-0",
-        className,
-      )}
-      {...props}
-    />
+    <tfoot ref={ref} className={cn("dr-table-footer", className)} {...props} />
   )
 }
 
@@ -78,16 +60,7 @@ function TableRow({
 }: React.HTMLAttributes<HTMLTableRowElement> & {
   ref?: React.Ref<HTMLTableRowElement>
 }) {
-  return (
-    <tr
-      ref={ref}
-      className={cn(
-        "hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors",
-        className,
-      )}
-      {...props}
-    />
-  )
+  return <tr ref={ref} className={cn("dr-table-row", className)} {...props} />
 }
 
 function TableHead({
@@ -97,16 +70,7 @@ function TableHead({
 }: React.ThHTMLAttributes<HTMLTableCellElement> & {
   ref?: React.Ref<HTMLTableCellElement>
 }) {
-  return (
-    <th
-      ref={ref}
-      className={cn(
-        "text-muted-foreground px-[var(--density-container-p)] py-[var(--density-row-py)] text-left align-middle font-medium [&:has([role=checkbox])]:pr-0",
-        className,
-      )}
-      {...props}
-    />
-  )
+  return <th ref={ref} className={cn("dr-table-head", className)} {...props} />
 }
 
 function TableCell({
@@ -116,16 +80,7 @@ function TableCell({
 }: React.TdHTMLAttributes<HTMLTableCellElement> & {
   ref?: React.Ref<HTMLTableCellElement>
 }) {
-  return (
-    <td
-      ref={ref}
-      className={cn(
-        "px-[var(--density-container-p)] py-[var(--density-row-py)] align-middle [&:has([role=checkbox])]:pr-0",
-        className,
-      )}
-      {...props}
-    />
-  )
+  return <td ref={ref} className={cn("dr-table-cell", className)} {...props} />
 }
 
 function TableCaption({
@@ -138,7 +93,7 @@ function TableCaption({
   return (
     <caption
       ref={ref}
-      className={cn("text-muted-foreground mt-4 text-sm", className)}
+      className={cn("dr-table-caption", className)}
       {...props}
     />
   )
