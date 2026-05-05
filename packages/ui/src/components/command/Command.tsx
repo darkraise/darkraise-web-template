@@ -1,3 +1,5 @@
+"use client"
+
 import * as React from "react"
 import { type DialogProps } from "@radix-ui/react-dialog"
 import { Command as CommandPrimitive } from "cmdk"
@@ -10,6 +12,7 @@ import {
   DialogDescription,
   DialogTitle,
 } from "../dialog"
+import "./command.css"
 
 function Command({
   className,
@@ -19,10 +22,7 @@ function Command({
   return (
     <CommandPrimitive
       ref={ref}
-      className={cn(
-        "glass-strong bg-popover text-popover-foreground flex h-full w-full flex-col overflow-hidden",
-        className,
-      )}
+      className={cn("dr-command", className)}
       {...props}
     />
   )
@@ -58,14 +58,11 @@ function CommandInput({
   ...props
 }: React.ComponentProps<typeof CommandPrimitive.Input>) {
   return (
-    <div className="flex items-center border-b px-3" cmdk-input-wrapper="">
+    <div className="dr-command-input-wrapper" cmdk-input-wrapper="">
       <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
       <CommandPrimitive.Input
         ref={ref}
-        className={cn(
-          "placeholder:text-muted-foreground flex w-full rounded-md bg-transparent py-[var(--density-input-py)] text-sm outline-none disabled:cursor-not-allowed disabled:opacity-50",
-          className,
-        )}
+        className={cn("dr-command-input", className)}
         {...props}
       />
     </div>
@@ -80,10 +77,7 @@ function CommandList({
   return (
     <CommandPrimitive.List
       ref={ref}
-      className={cn(
-        "max-h-[300px] overflow-x-hidden overflow-y-auto",
-        className,
-      )}
+      className={cn("dr-command-list", className)}
       {...props}
     />
   )
@@ -94,11 +88,7 @@ function CommandEmpty({
   ...props
 }: React.ComponentProps<typeof CommandPrimitive.Empty>) {
   return (
-    <CommandPrimitive.Empty
-      ref={ref}
-      className="py-6 text-center text-sm"
-      {...props}
-    />
+    <CommandPrimitive.Empty ref={ref} className="dr-command-empty" {...props} />
   )
 }
 
@@ -110,10 +100,7 @@ function CommandGroup({
   return (
     <CommandPrimitive.Group
       ref={ref}
-      className={cn(
-        "text-foreground [&_[cmdk-group-heading]]:text-muted-foreground overflow-hidden p-1 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-[var(--density-row-py)] [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium",
-        className,
-      )}
+      className={cn("dr-command-group", className)}
       {...props}
     />
   )
@@ -127,7 +114,7 @@ function CommandSeparator({
   return (
     <CommandPrimitive.Separator
       ref={ref}
-      className={cn("bg-border -mx-1 h-px", className)}
+      className={cn("dr-command-separator", className)}
       {...props}
     />
   )
@@ -141,10 +128,7 @@ function CommandItem({
   return (
     <CommandPrimitive.Item
       ref={ref}
-      className={cn(
-        "data-[selected='true']:bg-accent data-[selected=true]:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-[var(--density-row-py)] text-sm outline-none select-none data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
-        className,
-      )}
+      className={cn("dr-command-item", className)}
       {...props}
     />
   )
@@ -154,15 +138,7 @@ const CommandShortcut = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLSpanElement>) => {
-  return (
-    <span
-      className={cn(
-        "text-muted-foreground ml-auto text-xs tracking-widest",
-        className,
-      )}
-      {...props}
-    />
-  )
+  return <span className={cn("dr-command-shortcut", className)} {...props} />
 }
 CommandShortcut.displayName = "CommandShortcut"
 
