@@ -1,0 +1,5 @@
+@layer components {
+  .dr-skeleton {
+    @apply bg-foreground/10 animate-pulse rounded-md;
+  }
+}
