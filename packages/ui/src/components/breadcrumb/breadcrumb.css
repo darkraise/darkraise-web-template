@@ -1,0 +1,25 @@
+@layer components {
+  .dr-breadcrumb-list {
+    @apply text-muted-foreground flex flex-wrap items-center gap-1.5 text-sm break-words sm:gap-2.5;
+  }
+
+  .dr-breadcrumb-item {
+    @apply inline-flex items-center gap-1.5;
+  }
+
+  .dr-breadcrumb-link {
+    @apply hover:text-foreground transition-colors;
+  }
+
+  .dr-breadcrumb-page {
+    @apply text-foreground font-normal;
+  }
+
+  .dr-breadcrumb-separator {
+    @apply [&>svg]:h-3.5 [&>svg]:w-3.5;
+  }
+
+  .dr-breadcrumb-ellipsis {
+    @apply flex aspect-square w-[var(--density-cell)] items-center justify-center;
+  }
+}
