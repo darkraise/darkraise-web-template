@@ -112,7 +112,7 @@ function SidebarItem({ item, depth = 0 }: SidebarItemProps) {
       className={cn(
         "sidebar-nav-item flex min-h-[var(--density-cell)] items-center gap-3 rounded-md py-[var(--density-row-py)] text-sm transition-colors duration-150",
         collapsed
-          ? "mx-auto aspect-square w-[var(--density-cell)] justify-center"
+          ? "h-[var(--density-cell)] w-[var(--density-cell)] shrink-0 justify-center self-center px-0"
           : "px-3",
         depth > 0 && "py-1.5 text-[13px]",
       )}
@@ -149,7 +149,7 @@ function CollapsedParentItem({ item }: { item: NavItem }) {
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="sidebar-nav-item mx-auto flex aspect-square w-[var(--density-cell)] cursor-pointer items-center justify-center rounded-md transition-colors duration-150"
+          className="sidebar-nav-item flex h-[var(--density-cell)] w-[var(--density-cell)] shrink-0 cursor-pointer items-center justify-center self-center rounded-md transition-colors duration-150"
         >
           {item.icon && <item.icon className="h-4 w-4 shrink-0" />}
         </button>
