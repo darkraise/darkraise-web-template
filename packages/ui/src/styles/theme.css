@@ -26,6 +26,9 @@
 @import "../components/overlay-primitives/overlay-primitives.css";
 @import "../components/pagination/pagination.css";
 @import "../components/popover/popover.css";
+@import "../components/progress/progress.css";
+@import "../components/radio-group/radio-group.css";
+@import "../components/resizable/resizable.css";
 @import "../components/separator/separator.css";
 @import "../components/skeleton/skeleton.css";
 @import "../components/switch/switch.css";

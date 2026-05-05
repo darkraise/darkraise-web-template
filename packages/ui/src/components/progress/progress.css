@@ -1,0 +1,9 @@
+@layer components {
+  .dr-progress {
+    @apply bg-secondary relative h-4 w-full overflow-hidden rounded-full;
+  }
+
+  .dr-progress-indicator {
+    @apply bg-primary h-full w-full flex-1 transition-all;
+  }
+}
