@@ -17,7 +17,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "../../components/tooltip"
-import { SidebarProvider, useSidebar } from "./sidebar-context"
+import { SidebarProvider, useSidebar } from "./SidebarContext"
 import type { NavGroup, NavItem } from "../types"
 
 interface SidebarNavProps {

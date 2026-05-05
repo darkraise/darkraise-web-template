@@ -1,14 +1,14 @@
-import { useRouterAdapter } from "../router"
-import { cn } from "../lib/utils"
-import { SidebarItem } from "./sidebar"
+import { useRouterAdapter } from "../../router"
+import { cn } from "../../lib/utils"
+import { SidebarItem } from "../sidebar"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "../components/tooltip"
-import { LayoutHeader } from "./layout-header"
-import type { LayoutProps } from "./types"
+} from "../../components/tooltip"
+import { LayoutHeader } from "../layout-header"
+import type { LayoutProps } from "../types"
 
 export function StackedLayout({
   children,

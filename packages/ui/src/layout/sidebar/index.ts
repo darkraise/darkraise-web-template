@@ -1,3 +1,3 @@
-export { SidebarLayout } from "./sidebar-layout"
-export { SidebarNav, SidebarGroup, SidebarItem } from "./sidebar-nav"
-export { SidebarProvider, useSidebar } from "./sidebar-context"
+export { SidebarLayout } from "./SidebarLayout"
+export { SidebarNav, SidebarGroup, SidebarItem } from "./SidebarNav"
+export { SidebarProvider, useSidebar } from "./SidebarContext"

@@ -1,9 +1,9 @@
-import { useRouterAdapter } from "../router"
-import { cn } from "../lib/utils"
-import { SearchCommand } from "./search-command"
-import { BrandLogo } from "./brand-logo"
-import { LayoutHeader } from "./layout-header"
-import type { LayoutProps } from "./types"
+import { useRouterAdapter } from "../../router"
+import { cn } from "../../lib/utils"
+import { SearchCommand } from "../search-command"
+import { BrandLogo } from "../brand-logo"
+import { LayoutHeader } from "../layout-header"
+import type { LayoutProps } from "../types"
 
 export function TopNavLayout({
   children,

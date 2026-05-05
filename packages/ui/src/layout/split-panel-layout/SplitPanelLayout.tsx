@@ -1,10 +1,10 @@
 import { useState, useCallback, useRef } from "react"
-import { cn } from "../lib/utils"
-import { useEventListener } from "../hooks"
-import { SearchCommand } from "./search-command"
-import { BrandLogo } from "./brand-logo"
-import { LayoutHeader } from "./layout-header"
-import type { LayoutProps } from "./types"
+import { cn } from "../../lib/utils"
+import { useEventListener } from "../../hooks"
+import { SearchCommand } from "../search-command"
+import { BrandLogo } from "../brand-logo"
+import { LayoutHeader } from "../layout-header"
+import type { LayoutProps } from "../types"
 import type { ReactNode } from "react"
 
 interface SplitPanelLayoutProps extends LayoutProps {

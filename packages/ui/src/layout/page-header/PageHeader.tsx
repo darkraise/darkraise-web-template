@@ -1,6 +1,6 @@
 import React from "react"
-import { useRouterAdapter } from "../router"
-import type { PageHeaderProps } from "./types"
+import { useRouterAdapter } from "../../router"
+import type { PageHeaderProps } from "../types"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -8,7 +8,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "../components/breadcrumb"
+} from "../../components/breadcrumb"
 
 export function PageHeader({
   breadcrumbs,

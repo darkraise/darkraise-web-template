@@ -4,7 +4,7 @@ export { UserMenu } from "./user-menu"
 export { NotificationBell } from "./notification-bell"
 export { MobileDrawer } from "./mobile-drawer"
 export { BrandLogo } from "./brand-logo"
-export { useBrandStore } from "./brand-store"
+export { useBrandStore } from "./brandStore"
 export { LayoutHeader } from "./layout-header"
 export {
   SidebarLayout,
@@ -18,7 +18,7 @@ export { TopNavLayout } from "./top-nav-layout"
 export { StackedLayout } from "./stacked-layout"
 export { SplitPanelLayout } from "./split-panel-layout"
 export { LayoutSwitcher } from "./layout-switcher"
-export { useLayoutStore, type LayoutVariant } from "./layout-store"
+export { useLayoutStore, type LayoutVariant } from "./layoutStore"
 
 // Layout primitives — composable building blocks for in-route layout.
 // Use these instead of ad-hoc Tailwind utility soup for vertical/horizontal

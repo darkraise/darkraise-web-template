@@ -1,13 +1,13 @@
 import { PanelLeft, PanelTop, Columns3 } from "lucide-react"
-import { Button } from "../components/button"
+import { Button } from "../../components/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../components/dropdown-menu"
-import { useLayoutStore, type LayoutVariant } from "./layout-store"
-import { cn } from "../lib/utils"
+} from "../../components/dropdown-menu"
+import { useLayoutStore, type LayoutVariant } from "../layoutStore"
+import { cn } from "../../lib/utils"
 
 type LayoutEntry = {
   value: LayoutVariant

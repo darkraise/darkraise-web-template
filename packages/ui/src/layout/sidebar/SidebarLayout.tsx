@@ -5,8 +5,8 @@ import { Button } from "../../components/button"
 import { TooltipProvider } from "../../components/tooltip"
 import { BrandLogo } from "../brand-logo"
 import { LayoutHeader } from "../layout-header"
-import { SidebarNav } from "./sidebar-nav"
-import { SidebarProvider } from "./sidebar-context"
+import { SidebarNav } from "./SidebarNav"
+import { SidebarProvider } from "./SidebarContext"
 import type { LayoutProps } from "../types"
 
 export function SidebarLayout({

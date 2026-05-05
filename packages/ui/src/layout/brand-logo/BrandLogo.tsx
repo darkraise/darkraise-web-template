@@ -1,6 +1,6 @@
 import { useState } from "react"
-import { cn } from "../lib/utils"
-import { useBrandStore } from "./brand-store"
+import { cn } from "../../lib/utils"
+import { useBrandStore } from "../brandStore"
 
 interface BrandLogoProps {
   collapsed?: boolean
