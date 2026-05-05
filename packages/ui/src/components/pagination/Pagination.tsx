@@ -2,7 +2,7 @@ import * as React from "react"
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react"
 
 import { cn } from "../../lib/utils"
-import { type ButtonProps, buttonVariants } from "../button"
+import type { ButtonProps } from "../button"
 
 type PaginationVariant = "filled" | "outlined"
 
@@ -65,19 +65,19 @@ function PaginationLink({
 }: PaginationLinkProps) {
   const { variant } = React.useContext(PaginationContext)
 
-  const resolvedClasses = isActive
-    ? variant === "filled"
-      ? buttonVariants({ variant: "default", size })
-      : cn(
-          buttonVariants({ variant: "ghost", size }),
-          "border border-primary bg-transparent text-primary hover:bg-primary/10 hover:text-primary",
-        )
-    : buttonVariants({ variant: "ghost", size })
+  const activeOutlinedExtras =
+    "border border-primary bg-transparent text-primary hover:bg-primary/10 hover:text-primary"
 
   return (
     <a
       aria-current={isActive ? "page" : undefined}
-      className={cn(resolvedClasses, className)}
+      className={cn(
+        "dr-btn",
+        isActive && variant === "outlined" ? activeOutlinedExtras : "",
+        className,
+      )}
+      data-variant={isActive && variant === "filled" ? "default" : "ghost"}
+      data-size={size}
       {...props}
     />
   )

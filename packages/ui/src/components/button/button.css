@@ -1,0 +1,106 @@
+@layer components {
+  .dr-btn {
+    @apply ring-offset-background focus-visible:ring-ring inline-flex cursor-pointer items-center justify-center gap-2 rounded-[var(--radius-button)] text-sm font-medium whitespace-nowrap transition-[background-image,background-color,border-color,color,text-decoration-color,box-shadow] duration-150 focus-visible:ring-1 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0;
+  }
+
+  /* default + destructive: hue-based filled variants (was .btn-glass-hue) */
+  .dr-btn[data-variant="default"] {
+    @apply text-primary-foreground;
+    --hue: hsl(var(--primary));
+    background-color: var(--hue);
+    box-shadow: var(--shadow-button);
+  }
+  .dr-btn[data-variant="default"]:hover {
+    background-color: color-mix(in srgb, var(--hue) 90%, black);
+  }
+  .dr-btn[data-variant="destructive"] {
+    @apply text-destructive-foreground;
+    --hue: hsl(var(--destructive));
+    background-color: var(--hue);
+    box-shadow: var(--shadow-button);
+  }
+  .dr-btn[data-variant="destructive"]:hover {
+    background-color: color-mix(in srgb, var(--hue) 90%, black);
+  }
+
+  /* outline + secondary: neutral filled variants (was .btn-glass-neutral) */
+  .dr-btn[data-variant="outline"] {
+    @apply text-foreground hover:bg-accent hover:text-accent-foreground border bg-transparent;
+    box-shadow: var(--shadow-button);
+    /* was .btn-glass-neutral--accent-border (theme.css line 932-934) */
+    border-color: hsl(var(--primary) / 0.6);
+  }
+  .dr-btn[data-variant="secondary"] {
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80;
+    box-shadow: var(--shadow-button);
+  }
+
+  /* ghost: hover-only glass treatment (was .btn-ghost-glass) */
+  .dr-btn[data-variant="ghost"] {
+    @apply text-muted-foreground hover:bg-accent hover:text-accent-foreground border border-transparent;
+  }
+
+  /* link */
+  .dr-btn[data-variant="link"] {
+    @apply text-primary underline-offset-4 hover:underline;
+  }
+
+  /* sizes */
+  .dr-btn[data-size="default"] {
+    @apply px-[var(--density-button-px)] py-[var(--density-button-py)];
+  }
+  .dr-btn[data-size="sm"] {
+    @apply px-[var(--density-button-px-sm)] py-[var(--density-button-py-sm)];
+  }
+  .dr-btn[data-size="lg"] {
+    @apply px-[var(--density-button-px-lg)] py-[var(--density-button-py-lg)];
+  }
+  .dr-btn[data-size="icon"] {
+    @apply aspect-square w-[var(--density-cell)] p-0;
+  }
+
+  /* Glassmorphism mode — was [data-surface-style="glassmorphism"] .btn-glass-* */
+  [data-surface-style="glassmorphism"] .dr-btn[data-variant="default"],
+  [data-surface-style="glassmorphism"] .dr-btn[data-variant="destructive"] {
+    background-color: transparent;
+    background-image: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--hue) 55%, rgba(255, 255, 255, 0.18)),
+      color-mix(in srgb, var(--hue) 70%, rgba(255, 255, 255, 0.05))
+    );
+    border: 1px solid
+      color-mix(in srgb, var(--hue) 50%, rgba(255, 255, 255, 0.25));
+    box-shadow:
+      var(--shadow-button),
+      var(--inset-hi-button),
+      inset 0 -1px 0 color-mix(in srgb, var(--hue) 70%, #000),
+      0 0 0 1px color-mix(in oklab, var(--hue) 25%, transparent);
+  }
+  [data-surface-style="glassmorphism"] .dr-btn[data-variant="default"]:hover,
+  [data-surface-style="glassmorphism"]
+    .dr-btn[data-variant="destructive"]:hover {
+    background-image: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--hue) 45%, rgba(255, 255, 255, 0.18)),
+      color-mix(in srgb, var(--hue) 65%, rgba(255, 255, 255, 0.05))
+    );
+  }
+  [data-surface-style="glassmorphism"] .dr-btn[data-variant="outline"],
+  [data-surface-style="glassmorphism"] .dr-btn[data-variant="secondary"] {
+    background-image: linear-gradient(180deg, var(--fog-15), var(--fog-05));
+    border-color: var(--fog-20);
+    box-shadow: var(--shadow-button), var(--inset-hi-button);
+  }
+  [data-surface-style="glassmorphism"] .dr-btn[data-variant="outline"]:hover,
+  [data-surface-style="glassmorphism"] .dr-btn[data-variant="secondary"]:hover {
+    background-image: linear-gradient(180deg, var(--fog-20), var(--fog-10));
+  }
+  [data-surface-style="glassmorphism"] .dr-btn[data-variant="ghost"]:hover {
+    background-color: var(--fog-10);
+    border: 1px solid var(--fog-15);
+    backdrop-filter: blur(10px) saturate(140%);
+    -webkit-backdrop-filter: blur(10px) saturate(140%);
+    box-shadow: var(--shadow-button), var(--inset-hi-button);
+    color: hsl(var(--foreground));
+  }
+}

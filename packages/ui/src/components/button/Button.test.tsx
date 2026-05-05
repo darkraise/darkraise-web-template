@@ -10,47 +10,68 @@ describe("Button", () => {
     expect(screen.getByRole("button", { name: "Click me" })).toBeInTheDocument()
   })
 
-  it("applies default variant class", () => {
+  it("renders dr-btn class by default", () => {
     render(<Button>Default</Button>)
-    expect(screen.getByRole("button")).toHaveClass("btn-glass-hue")
+    expect(screen.getByRole("button")).toHaveClass("dr-btn")
   })
 
-  it("applies destructive variant class", () => {
+  it("applies default variant and size data attributes by default", () => {
+    render(<Button>Default</Button>)
+    const button = screen.getByRole("button")
+    expect(button).toHaveAttribute("data-variant", "default")
+    expect(button).toHaveAttribute("data-size", "default")
+  })
+
+  it("applies destructive variant data attribute", () => {
     render(<Button variant="destructive">Delete</Button>)
-    expect(screen.getByRole("button")).toHaveClass("btn-glass-hue")
+    expect(screen.getByRole("button")).toHaveAttribute(
+      "data-variant",
+      "destructive",
+    )
   })
 
-  it("applies outline variant class", () => {
+  it("applies outline variant data attribute", () => {
     render(<Button variant="outline">Outline</Button>)
-    const button = screen.getByRole("button")
-    expect(button).toHaveClass("border")
-    expect(button).toHaveClass("btn-glass-neutral")
+    expect(screen.getByRole("button")).toHaveAttribute(
+      "data-variant",
+      "outline",
+    )
   })
 
-  it("applies secondary variant class", () => {
+  it("applies secondary variant data attribute", () => {
     render(<Button variant="secondary">Secondary</Button>)
-    const button = screen.getByRole("button")
-    expect(button).toHaveClass("bg-secondary")
-    expect(button).toHaveClass("btn-glass-neutral")
+    expect(screen.getByRole("button")).toHaveAttribute(
+      "data-variant",
+      "secondary",
+    )
   })
 
-  it("applies ghost variant class", () => {
+  it("applies ghost variant data attribute", () => {
     render(<Button variant="ghost">Ghost</Button>)
     const button = screen.getByRole("button")
-    expect(button).toHaveClass("hover:bg-accent")
-    expect(button).toHaveClass("btn-ghost-glass")
-  })
-
-  it("ghost variant has no backdrop-filter utility class at idle", () => {
-    render(<Button variant="ghost">Ghost</Button>)
-    const button = screen.getByRole("button")
+    expect(button).toHaveAttribute("data-variant", "ghost")
     expect(button.className).not.toMatch(/\bbackdrop-blur\b/)
     expect(button.className).not.toMatch(/\bbackdrop-filter\b/)
   })
 
-  it("applies link variant class", () => {
+  it("applies link variant data attribute", () => {
     render(<Button variant="link">Link</Button>)
-    expect(screen.getByRole("button")).toHaveClass("text-primary")
+    expect(screen.getByRole("button")).toHaveAttribute("data-variant", "link")
+  })
+
+  it("applies sm size data attribute", () => {
+    render(<Button size="sm">Small</Button>)
+    expect(screen.getByRole("button")).toHaveAttribute("data-size", "sm")
+  })
+
+  it("applies lg size data attribute", () => {
+    render(<Button size="lg">Large</Button>)
+    expect(screen.getByRole("button")).toHaveAttribute("data-size", "lg")
+  })
+
+  it("applies icon size data attribute", () => {
+    render(<Button size="icon">Icon</Button>)
+    expect(screen.getByRole("button")).toHaveAttribute("data-size", "icon")
   })
 
   it("calls onClick handler when clicked", async () => {
@@ -95,8 +116,10 @@ describe("Button", () => {
     expect(link.tagName).toBe("A")
   })
 
-  it("applies custom className", () => {
+  it("applies custom className alongside dr-btn", () => {
     render(<Button className="custom-class">Styled</Button>)
-    expect(screen.getByRole("button")).toHaveClass("custom-class")
+    const button = screen.getByRole("button")
+    expect(button).toHaveClass("custom-class")
+    expect(button).toHaveClass("dr-btn")
   })
 })

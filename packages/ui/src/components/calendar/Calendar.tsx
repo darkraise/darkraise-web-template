@@ -1,9 +1,14 @@
 import * as React from "react"
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
-import { DayButton, DayPicker } from "react-day-picker"
+import {
+  DayButton,
+  DayPicker,
+  type NextMonthButtonProps,
+  type PreviousMonthButtonProps,
+} from "react-day-picker"
 
 import { cn } from "../../lib/utils"
-import { Button, buttonVariants } from "../button"
+import { Button } from "../button"
 import {
   Select,
   SelectContent,
@@ -96,11 +101,11 @@ function Calendar({
         month: "flex w-full flex-col gap-4",
         nav: "pointer-events-none absolute inset-x-0 top-0 flex w-full items-center justify-between gap-1",
         button_previous: cn(
-          buttonVariants({ variant: buttonVariant }),
+          "dr-btn",
           "pointer-events-auto aspect-square w-[var(--density-cell)] select-none p-0 aria-disabled:opacity-50",
         ),
         button_next: cn(
-          buttonVariants({ variant: buttonVariant }),
+          "dr-btn",
           "pointer-events-auto aspect-square w-[var(--density-cell)] select-none p-0 aria-disabled:opacity-50",
         ),
         month_caption: "flex h-8 w-full items-center justify-center px-8",
@@ -147,6 +152,25 @@ function Calendar({
           return <Icon className={cn("size-4", className)} {...props} />
         },
         Dropdown: CalendarDropdown,
+        PreviousMonthButton: ({
+          className,
+          ...props
+        }: PreviousMonthButtonProps) => (
+          <button
+            {...props}
+            className={className}
+            data-variant={buttonVariant}
+            data-size="icon"
+          />
+        ),
+        NextMonthButton: ({ className, ...props }: NextMonthButtonProps) => (
+          <button
+            {...props}
+            className={className}
+            data-variant={buttonVariant}
+            data-size="icon"
+          />
+        ),
         DayButton: CalendarDayButton,
         WeekNumber: ({ children, ...props }) => (
           <td {...props}>
