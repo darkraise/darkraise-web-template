@@ -1,35 +1,23 @@
 import { forwardRef, type HTMLAttributes } from "react"
-import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "../../lib/utils"
 
-const centerVariants = cva("items-center justify-center", {
-  variants: {
-    inline: {
-      true: "inline-flex",
-      false: "flex",
-    },
-    minHeight: {
-      none: "",
-      screen: "min-h-screen",
-      full: "min-h-full",
-    },
-  },
-  defaultVariants: {
-    inline: false,
-  },
-})
+type CenterMinHeight = "none" | "screen" | "full"
 
-export interface CenterProps
-  extends HTMLAttributes<HTMLDivElement>, VariantProps<typeof centerVariants> {}
+export interface CenterProps extends HTMLAttributes<HTMLDivElement> {
+  inline?: boolean
+  minHeight?: CenterMinHeight
+}
 
 export const Center = forwardRef<HTMLDivElement, CenterProps>(function Center(
-  { className, inline, minHeight, ...props },
+  { className, inline = false, minHeight, ...props },
   ref,
 ) {
   return (
     <div
       ref={ref}
-      className={cn(centerVariants({ inline, minHeight }), className)}
+      className={cn("dr-center", className)}
+      data-inline={String(inline)}
+      data-min-height={minHeight}
       {...props}
     />
   )

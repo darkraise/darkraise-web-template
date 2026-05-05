@@ -1,0 +1,21 @@
+@layer components {
+  .dr-center {
+    @apply items-center justify-center;
+  }
+
+  .dr-center[data-inline="true"] {
+    @apply inline-flex;
+  }
+
+  .dr-center[data-inline="false"] {
+    @apply flex;
+  }
+
+  .dr-center[data-min-height="screen"] {
+    @apply min-h-screen;
+  }
+
+  .dr-center[data-min-height="full"] {
+    @apply min-h-full;
+  }
+}
