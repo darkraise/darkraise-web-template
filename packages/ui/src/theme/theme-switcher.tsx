@@ -4,7 +4,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "../components/popover"
 import { Label } from "../components/label"
 import { Separator } from "../components/separator"
 import { cn } from "../lib/utils"
-import { useTheme } from "./use-theme"
+import { useTheme } from "./useTheme"
 import {
   ACCENT_COLORS,
   SURFACE_COLORS,

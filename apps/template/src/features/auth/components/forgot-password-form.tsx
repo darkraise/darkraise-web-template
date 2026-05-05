@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router"
 import { z } from "zod"
 import { useForm } from "@tanstack/react-form"
 import { Button } from "darkraise-ui/components/button"
-import { useAuth } from "../hooks/use-auth"
+import { useAuth } from "../hooks/useAuth"
 import { AuthFormField } from "./auth-form-field"
 
 const schema = z.object({

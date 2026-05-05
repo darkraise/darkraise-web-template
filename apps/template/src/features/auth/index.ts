@@ -1,4 +1,4 @@
-export { useAuth } from "./hooks/use-auth"
+export { useAuth } from "./hooks/useAuth"
 export { useAuthStore } from "./store"
 export { authAdapter, setAuthAdapter, mockAuthAdapter } from "./adapter"
 export type {

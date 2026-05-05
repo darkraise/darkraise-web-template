@@ -24,7 +24,7 @@ import {
 import { generateTokens, GLASS_ONLY_TOKEN_KEYS } from "./engine/generate-tokens"
 import { ThemeContext } from "./theme-context"
 import { themeConfig, type ThemeConfig } from "./theme.config"
-import { useDebouncedCallback } from "../hooks/use-debounced-callback"
+import { useDebouncedCallback } from "../hooks/useDebouncedCallback"
 
 const LS_ACCENT = "theme-accent"
 const LS_SURFACE_COLOR = "theme-surface-color"

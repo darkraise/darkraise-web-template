@@ -1,6 +1,6 @@
 export { ThemeProvider } from "./theme-provider"
 export { ThemeSwitcher } from "./theme-switcher"
-export { useTheme } from "./use-theme"
+export { useTheme } from "./useTheme"
 export { generateTokens } from "./engine/generate-tokens"
 export { accentColors } from "./palettes/accent-colors"
 export { surfaceStyles } from "./styles/surface-styles"
