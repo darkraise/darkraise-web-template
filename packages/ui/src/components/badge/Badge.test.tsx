@@ -8,26 +8,41 @@ describe("Badge", () => {
     expect(screen.getByText("New")).toBeInTheDocument()
   })
 
-  it("applies default variant class", () => {
+  it("renders dr-badge class by default", () => {
     render(<Badge>Default</Badge>)
-    expect(screen.getByText("Default")).toHaveClass("bg-primary")
+    expect(screen.getByText("Default")).toHaveClass("dr-badge")
   })
 
-  it("applies secondary variant class", () => {
+  it("applies default variant data attribute", () => {
+    render(<Badge>Default</Badge>)
+    expect(screen.getByText("Default")).toHaveAttribute(
+      "data-variant",
+      "default",
+    )
+  })
+
+  it("applies secondary variant data attribute", () => {
     render(<Badge variant="secondary">Secondary</Badge>)
-    expect(screen.getByText("Secondary")).toHaveClass("bg-secondary")
+    expect(screen.getByText("Secondary")).toHaveAttribute(
+      "data-variant",
+      "secondary",
+    )
   })
 
-  it("applies destructive variant class", () => {
+  it("applies destructive variant data attribute", () => {
     render(<Badge variant="destructive">Error</Badge>)
-    expect(screen.getByText("Error")).toHaveClass("bg-destructive")
+    expect(screen.getByText("Error")).toHaveAttribute(
+      "data-variant",
+      "destructive",
+    )
   })
 
-  it("applies outline variant class", () => {
+  it("applies outline variant data attribute", () => {
     render(<Badge variant="outline">Outline</Badge>)
-    const badge = screen.getByText("Outline")
-    expect(badge).toHaveClass("text-foreground")
-    expect(badge).not.toHaveClass("bg-primary")
+    expect(screen.getByText("Outline")).toHaveAttribute(
+      "data-variant",
+      "outline",
+    )
   })
 
   it("applies custom className", () => {
