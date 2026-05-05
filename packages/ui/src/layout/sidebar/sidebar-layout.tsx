@@ -2,7 +2,6 @@ import { useState } from "react"
 import { PanelLeftClose, PanelLeft } from "lucide-react"
 import { cn } from "../../lib/utils"
 import { Button } from "../../components/button"
-import { ScrollArea } from "../../components/scroll-area"
 import { TooltipProvider } from "../../components/tooltip"
 import { BrandLogo } from "../brand-logo"
 import { LayoutHeader } from "../layout-header"
@@ -73,9 +72,9 @@ export function SidebarLayout({
               </div>
             )}
 
-            <ScrollArea className="flex-1 py-4">
+            <div className="flex-1 overflow-y-auto py-4">
               <SidebarNav nav={nav} />
-            </ScrollArea>
+            </div>
 
             {sidebarFooter && (
               <div

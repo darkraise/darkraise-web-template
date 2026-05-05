@@ -101,8 +101,8 @@ function SidebarItem({ item, depth = 0 }: SidebarItemProps) {
     <Link
       to={item.href}
       className={cn(
-        "sidebar-nav-item flex min-h-[var(--density-cell)] w-full items-center gap-3 rounded-md px-3 py-[var(--density-row-py)] text-sm transition-colors duration-150",
-        collapsed && "justify-center",
+        "sidebar-nav-item flex min-h-[var(--density-cell)] items-center gap-3 rounded-md p-[var(--density-row-py)] text-sm transition-colors duration-150",
+        collapsed ? "mx-auto w-[var(--density-cell)] justify-center" : "w-full",
         depth > 0 && "py-1.5 text-[13px]",
       )}
       style={depth > 0 ? { paddingLeft: `${depth * 12 + 12}px` } : undefined}
@@ -142,7 +142,7 @@ function CollapsedParentItem({ item }: { item: NavItem }) {
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="sidebar-nav-item flex min-h-[var(--density-cell)] w-full cursor-pointer items-center justify-center gap-3 rounded-md px-3 py-[var(--density-row-py)] transition-colors duration-150"
+          className="sidebar-nav-item mx-auto flex min-h-[var(--density-cell)] w-[var(--density-cell)] cursor-pointer items-center justify-center gap-3 rounded-md p-[var(--density-row-py)] transition-colors duration-150"
         >
           {item.icon && (
             <span className="flex h-4 w-4 shrink-0 items-center justify-center">
@@ -188,7 +188,7 @@ function CollapsibleSidebarItem({
     <Collapsible open={open} onOpenChange={setOpen}>
       <CollapsibleTrigger
         className={cn(
-          "sidebar-nav-item flex min-h-[var(--density-cell)] w-full cursor-pointer items-center gap-3 rounded-md px-3 py-[var(--density-row-py)] text-sm transition-colors duration-150",
+          "sidebar-nav-item flex min-h-[var(--density-cell)] w-full cursor-pointer items-center gap-3 rounded-md p-[var(--density-row-py)] text-sm transition-colors duration-150",
         )}
         style={depth > 0 ? { paddingLeft: `${depth * 12 + 12}px` } : undefined}
       >

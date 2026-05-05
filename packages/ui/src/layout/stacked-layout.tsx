@@ -1,6 +1,5 @@
 import { useRouterAdapter } from "../router"
 import { cn } from "../lib/utils"
-import { ScrollArea } from "../components/scroll-area"
 import { SidebarItem } from "./sidebar"
 import {
   Tooltip,
@@ -73,13 +72,13 @@ export function StackedLayout({
                 </p>
               </div>
             )}
-            <ScrollArea className="flex-1 py-2">
+            <div className="flex-1 overflow-y-auto py-2">
               <nav className="flex flex-col gap-0.5 px-2">
                 {activeGroup.items.map((item) => (
                   <SidebarItem key={item.href} item={item} />
                 ))}
               </nav>
-            </ScrollArea>
+            </div>
           </aside>
         )}
 
