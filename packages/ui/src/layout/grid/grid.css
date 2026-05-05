@@ -1,0 +1,79 @@
+@layer components {
+  .dr-grid {
+    @apply grid;
+  }
+
+  .dr-grid[data-gap="none"] {
+    @apply gap-0;
+  }
+
+  .dr-grid[data-gap="xs"] {
+    @apply gap-1;
+  }
+
+  .dr-grid[data-gap="sm"] {
+    @apply gap-2;
+  }
+
+  .dr-grid[data-gap="md"] {
+    @apply gap-4;
+  }
+
+  .dr-grid[data-gap="lg"] {
+    @apply gap-6;
+  }
+
+  .dr-grid[data-gap="xl"] {
+    @apply gap-8;
+  }
+
+  /* responsive=true compound variants */
+  .dr-grid[data-cols="1"][data-responsive="true"] {
+    @apply grid-cols-1;
+  }
+
+  .dr-grid[data-cols="2"][data-responsive="true"] {
+    @apply grid-cols-1 sm:grid-cols-2;
+  }
+
+  .dr-grid[data-cols="3"][data-responsive="true"] {
+    @apply grid-cols-1 sm:grid-cols-2 lg:grid-cols-3;
+  }
+
+  .dr-grid[data-cols="4"][data-responsive="true"] {
+    @apply grid-cols-1 sm:grid-cols-2 lg:grid-cols-4;
+  }
+
+  .dr-grid[data-cols="6"][data-responsive="true"] {
+    @apply grid-cols-2 sm:grid-cols-3 lg:grid-cols-6;
+  }
+
+  .dr-grid[data-cols="12"][data-responsive="true"] {
+    @apply grid-cols-12;
+  }
+
+  /* responsive=false compound variants */
+  .dr-grid[data-cols="1"][data-responsive="false"] {
+    @apply grid-cols-1;
+  }
+
+  .dr-grid[data-cols="2"][data-responsive="false"] {
+    @apply grid-cols-2;
+  }
+
+  .dr-grid[data-cols="3"][data-responsive="false"] {
+    @apply grid-cols-3;
+  }
+
+  .dr-grid[data-cols="4"][data-responsive="false"] {
+    @apply grid-cols-4;
+  }
+
+  .dr-grid[data-cols="6"][data-responsive="false"] {
+    @apply grid-cols-6;
+  }
+
+  .dr-grid[data-cols="12"][data-responsive="false"] {
+    @apply grid-cols-12;
+  }
+}
