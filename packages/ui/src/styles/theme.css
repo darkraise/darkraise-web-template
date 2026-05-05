@@ -937,7 +937,7 @@
    rule, so the value wins on specificity alone, in the same cascade tier. */
 
 /* Untyped description colour: tie description text to the app's own
-   `--muted-foreground`, which is mode-aware (set by generate-tokens.ts).
+   `--muted-foreground`, which is mode-aware (set by generateTokens.ts).
    Sonner ships hardcoded `#3f3f3f` in light mode and `hsl(0, 0%, 91%)` in
    dark mode, both selected by sonner's own theme state — not the app's.
    When `<Toaster theme="system" />` resolves against an OS preference that

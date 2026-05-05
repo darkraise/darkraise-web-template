@@ -1,7 +1,7 @@
 import type { Preview } from "@storybook/react"
 import { MockRouterAdapterProvider } from "../src/test/mock-router-adapter"
 import "../src/styles/theme.css"
-import { generateTokens } from "../src/theme/engine/generate-tokens"
+import { generateTokens } from "../src/theme/engine/generateTokens"
 import { ACCENT_COLORS, SURFACE_STYLES } from "../src/theme/types"
 import type {
   AccentColor,
