@@ -1,0 +1,33 @@
+@layer components {
+  .dr-section {
+    @apply;
+  }
+
+  .dr-section[data-spacing="none"] {
+    @apply py-0;
+  }
+
+  .dr-section[data-spacing="sm"] {
+    @apply py-4;
+  }
+
+  .dr-section[data-spacing="md"] {
+    @apply py-8;
+  }
+
+  .dr-section[data-spacing="lg"] {
+    @apply py-12;
+  }
+
+  .dr-section[data-spacing="xl"] {
+    @apply py-16;
+  }
+
+  .dr-section[data-spacing="density"] {
+    padding-block: var(--density-container-p);
+  }
+
+  .dr-section[data-bordered="true"] {
+    @apply border-b last:border-b-0;
+  }
+}
