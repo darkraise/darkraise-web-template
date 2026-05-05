@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useRouterAdapter } from "../../router"
 import { ChevronRight } from "lucide-react"
 import { cn } from "../../lib/utils"
+import "./sidebar-nav.css"
 import {
   Collapsible,
   CollapsibleContent,
@@ -101,7 +102,7 @@ function SidebarItem({ item, depth = 0 }: SidebarItemProps) {
     <Link
       to={item.href}
       className={cn(
-        "sidebar-nav-item flex min-h-[var(--density-cell)] items-center gap-3 rounded-md p-[var(--density-row-py)] text-sm transition-colors duration-150",
+        "dr-sidebar-nav-item flex min-h-[var(--density-cell)] items-center gap-3 rounded-md p-[var(--density-row-py)] text-sm transition-colors duration-150",
         collapsed ? "mx-auto w-[var(--density-cell)] justify-center" : "w-full",
         depth > 0 && "py-1.5 text-[13px]",
       )}
@@ -142,7 +143,7 @@ function CollapsedParentItem({ item }: { item: NavItem }) {
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="sidebar-nav-item mx-auto flex min-h-[var(--density-cell)] w-[var(--density-cell)] cursor-pointer items-center justify-center gap-3 rounded-md p-[var(--density-row-py)] transition-colors duration-150"
+          className="dr-sidebar-nav-item mx-auto flex min-h-[var(--density-cell)] w-[var(--density-cell)] cursor-pointer items-center justify-center gap-3 rounded-md p-[var(--density-row-py)] transition-colors duration-150"
         >
           {item.icon && (
             <span className="flex h-4 w-4 shrink-0 items-center justify-center">
@@ -164,8 +165,8 @@ function CollapsedParentItem({ item }: { item: NavItem }) {
           <Link
             key={child.href}
             to={child.href}
-            className="hover:bg-accent hover:text-accent-foreground flex items-center rounded-md px-2 py-1.5 text-sm transition-colors"
-            activeClassName="bg-accent text-accent-foreground"
+            className="dr-sidebar-popover-child"
+            activeClassName="active"
           >
             {child.label}
           </Link>
@@ -188,7 +189,7 @@ function CollapsibleSidebarItem({
     <Collapsible open={open} onOpenChange={setOpen}>
       <CollapsibleTrigger
         className={cn(
-          "sidebar-nav-item flex min-h-[var(--density-cell)] w-full cursor-pointer items-center gap-3 rounded-md p-[var(--density-row-py)] text-sm transition-colors duration-150",
+          "dr-sidebar-nav-item flex min-h-[var(--density-cell)] w-full cursor-pointer items-center gap-3 rounded-md p-[var(--density-row-py)] text-sm transition-colors duration-150",
         )}
         style={depth > 0 ? { paddingLeft: `${depth * 12 + 12}px` } : undefined}
       >

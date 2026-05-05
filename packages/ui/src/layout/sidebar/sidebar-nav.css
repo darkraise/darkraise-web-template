@@ -1,0 +1,24 @@
+@layer components {
+  .dr-sidebar-nav-item {
+    color: hsl(var(--sidebar-foreground));
+  }
+
+  .dr-sidebar-nav-item:hover {
+    background-color: hsl(var(--sidebar-hover-bg));
+    color: hsl(var(--sidebar-foreground-hover));
+  }
+
+  .dr-sidebar-nav-item.active,
+  .dr-sidebar-nav-item[data-status="active"] {
+    background-color: hsl(var(--sidebar-hover-bg));
+    color: hsl(var(--sidebar-foreground-hover));
+  }
+
+  .dr-sidebar-popover-child {
+    @apply hover:bg-accent hover:text-accent-foreground flex items-center rounded-md px-2 py-1.5 text-sm transition-colors;
+  }
+
+  .dr-sidebar-popover-child.active {
+    @apply bg-accent text-accent-foreground;
+  }
+}
