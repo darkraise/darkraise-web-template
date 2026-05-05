@@ -2,12 +2,7 @@ import * as React from "react"
 import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog"
 
 import { cn } from "../../lib/utils"
-import {
-  overlayBackdropClass,
-  overlayDescriptionClass,
-  overlayFooterClass,
-  overlayHeaderClass,
-} from "../overlay-primitives"
+import "../overlay-primitives/overlay-primitives.css"
 
 const AlertDialog = AlertDialogPrimitive.Root
 
@@ -22,7 +17,7 @@ function AlertDialogOverlay({
 }: React.ComponentProps<typeof AlertDialogPrimitive.Overlay>) {
   return (
     <AlertDialogPrimitive.Overlay
-      className={cn(overlayBackdropClass, className)}
+      className={cn("dr-overlay-backdrop", className)}
       {...props}
       ref={ref}
     />
@@ -55,7 +50,7 @@ function AlertDialogHeader({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn(overlayHeaderClass, className)} {...props} />
+  return <div className={cn("dr-overlay-header", className)} {...props} />
 }
 AlertDialogHeader.displayName = "AlertDialogHeader"
 
@@ -63,7 +58,7 @@ function AlertDialogFooter({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn(overlayFooterClass, className)} {...props} />
+  return <div className={cn("dr-overlay-footer", className)} {...props} />
 }
 AlertDialogFooter.displayName = "AlertDialogFooter"
 
@@ -90,7 +85,7 @@ function AlertDialogDescription({
   return (
     <AlertDialogPrimitive.Description
       ref={ref}
-      className={cn(overlayDescriptionClass, className)}
+      className={cn("dr-overlay-description", className)}
       {...props}
     />
   )
