@@ -1,19 +1,14 @@
 import * as React from "react"
 
 import { cn } from "../../lib/utils"
+import "./card.css"
 
 function Card({
   className,
   ref,
   ...props
 }: React.HTMLAttributes<HTMLDivElement> & { ref?: React.Ref<HTMLDivElement> }) {
-  return (
-    <div
-      ref={ref}
-      className={cn("glass bg-card text-card-foreground border", className)}
-      {...props}
-    />
-  )
+  return <div ref={ref} className={cn("dr-card", className)} {...props} />
 }
 
 function CardHeader({
@@ -22,14 +17,7 @@ function CardHeader({
   ...props
 }: React.HTMLAttributes<HTMLDivElement> & { ref?: React.Ref<HTMLDivElement> }) {
   return (
-    <div
-      ref={ref}
-      className={cn(
-        "flex flex-col space-y-1 p-[var(--density-container-p)]",
-        className,
-      )}
-      {...props}
-    />
+    <div ref={ref} className={cn("dr-card-header", className)} {...props} />
   )
 }
 
@@ -38,16 +26,7 @@ function CardTitle({
   ref,
   ...props
 }: React.HTMLAttributes<HTMLDivElement> & { ref?: React.Ref<HTMLDivElement> }) {
-  return (
-    <div
-      ref={ref}
-      className={cn(
-        "text-2xl leading-none font-semibold tracking-tight",
-        className,
-      )}
-      {...props}
-    />
-  )
+  return <div ref={ref} className={cn("dr-card-title", className)} {...props} />
 }
 
 function CardDescription({
@@ -58,7 +37,7 @@ function CardDescription({
   return (
     <div
       ref={ref}
-      className={cn("text-muted-foreground text-sm", className)}
+      className={cn("dr-card-description", className)}
       {...props}
     />
   )
@@ -70,11 +49,7 @@ function CardContent({
   ...props
 }: React.HTMLAttributes<HTMLDivElement> & { ref?: React.Ref<HTMLDivElement> }) {
   return (
-    <div
-      ref={ref}
-      className={cn("p-[var(--density-container-p)] pt-0", className)}
-      {...props}
-    />
+    <div ref={ref} className={cn("dr-card-content", className)} {...props} />
   )
 }
 
@@ -84,14 +59,7 @@ function CardFooter({
   ...props
 }: React.HTMLAttributes<HTMLDivElement> & { ref?: React.Ref<HTMLDivElement> }) {
   return (
-    <div
-      ref={ref}
-      className={cn(
-        "flex items-center p-[var(--density-container-p)] pt-0",
-        className,
-      )}
-      {...props}
-    />
+    <div ref={ref} className={cn("dr-card-footer", className)} {...props} />
   )
 }
 

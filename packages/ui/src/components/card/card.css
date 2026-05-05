@@ -1,0 +1,25 @@
+@layer components {
+  .dr-card {
+    @apply glass bg-card text-card-foreground border;
+  }
+
+  .dr-card-header {
+    @apply flex flex-col space-y-1 p-[var(--density-container-p)];
+  }
+
+  .dr-card-title {
+    @apply text-2xl leading-none font-semibold tracking-tight;
+  }
+
+  .dr-card-description {
+    @apply text-muted-foreground text-sm;
+  }
+
+  .dr-card-content {
+    @apply p-[var(--density-container-p)] pt-0;
+  }
+
+  .dr-card-footer {
+    @apply flex items-center p-[var(--density-container-p)] pt-0;
+  }
+}
