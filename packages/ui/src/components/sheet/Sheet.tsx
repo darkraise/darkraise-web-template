@@ -3,13 +3,7 @@ import * as SheetPrimitive from "@radix-ui/react-dialog"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "../../lib/utils"
-import {
-  overlayBackdropClass,
-  overlayDescriptionClass,
-  overlayFooterClass,
-  overlayHeaderClass,
-  OverlayCloseButton,
-} from "../overlay-primitives"
+import { OverlayCloseButton } from "../overlay-primitives"
 
 const Sheet = SheetPrimitive.Root
 
@@ -26,7 +20,7 @@ function SheetOverlay({
 }: React.ComponentProps<typeof SheetPrimitive.Overlay>) {
   return (
     <SheetPrimitive.Overlay
-      className={cn(overlayBackdropClass, className)}
+      className={cn("dr-overlay-backdrop", className)}
       {...props}
       ref={ref}
     />
@@ -83,7 +77,7 @@ const SheetHeader = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn(overlayHeaderClass, className)} {...props} />
+  <div className={cn("dr-overlay-header", className)} {...props} />
 )
 SheetHeader.displayName = "SheetHeader"
 
@@ -91,7 +85,7 @@ const SheetFooter = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn(overlayFooterClass, className)} {...props} />
+  <div className={cn("dr-overlay-footer", className)} {...props} />
 )
 SheetFooter.displayName = "SheetFooter"
 
@@ -117,7 +111,7 @@ function SheetDescription({
   return (
     <SheetPrimitive.Description
       ref={ref}
-      className={cn(overlayDescriptionClass, className)}
+      className={cn("dr-overlay-description", className)}
       {...props}
     />
   )

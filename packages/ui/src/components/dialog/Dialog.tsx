@@ -2,13 +2,7 @@ import * as React from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 
 import { cn } from "../../lib/utils"
-import {
-  overlayBackdropClass,
-  overlayDescriptionClass,
-  overlayFooterClass,
-  overlayHeaderClass,
-  OverlayCloseButton,
-} from "../overlay-primitives"
+import { OverlayCloseButton } from "../overlay-primitives"
 
 const Dialog = DialogPrimitive.Root
 
@@ -26,7 +20,7 @@ function DialogOverlay({
   return (
     <DialogPrimitive.Overlay
       ref={ref}
-      className={cn(overlayBackdropClass, className)}
+      className={cn("dr-overlay-backdrop", className)}
       {...props}
     />
   )
@@ -60,7 +54,7 @@ const DialogHeader = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn(overlayHeaderClass, className)} {...props} />
+  <div className={cn("dr-overlay-header", className)} {...props} />
 )
 DialogHeader.displayName = "DialogHeader"
 
@@ -68,7 +62,7 @@ const DialogFooter = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn(overlayFooterClass, className)} {...props} />
+  <div className={cn("dr-overlay-footer", className)} {...props} />
 )
 DialogFooter.displayName = "DialogFooter"
 
@@ -97,7 +91,7 @@ function DialogDescription({
   return (
     <DialogPrimitive.Description
       ref={ref}
-      className={cn(overlayDescriptionClass, className)}
+      className={cn("dr-overlay-description", className)}
       {...props}
     />
   )
