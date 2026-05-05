@@ -3,6 +3,7 @@ import * as MenubarPrimitive from "@radix-ui/react-menubar"
 import { Check, ChevronRight, Circle } from "lucide-react"
 
 import { cn } from "../../lib/utils"
+import "./menubar.css"
 
 function MenubarMenu({
   ...props
@@ -42,10 +43,7 @@ function Menubar({
   return (
     <MenubarPrimitive.Root
       ref={ref}
-      className={cn(
-        "bg-background flex items-center space-x-1 rounded-md border p-1 py-[var(--density-button-py)]",
-        className,
-      )}
+      className={cn("dr-menubar", className)}
       {...props}
     />
   )
@@ -60,10 +58,7 @@ function MenubarTrigger({
   return (
     <MenubarPrimitive.Trigger
       ref={ref}
-      className={cn(
-        "focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex cursor-default items-center rounded-sm px-[var(--density-button-px)] py-[var(--density-button-py)] text-sm font-medium outline-none select-none",
-        className,
-      )}
+      className={cn("dr-menubar-trigger", className)}
       {...props}
     />
   )
@@ -82,11 +77,7 @@ function MenubarSubTrigger({
   return (
     <MenubarPrimitive.SubTrigger
       ref={ref}
-      className={cn(
-        "focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex cursor-default items-center rounded-sm px-2 py-[var(--density-row-py)] text-sm outline-none select-none",
-        inset && "pl-8",
-        className,
-      )}
+      className={cn("dr-menubar-sub-trigger", inset && "pl-8", className)}
       {...props}
     >
       {children}
@@ -104,10 +95,7 @@ function MenubarSubContent({
   return (
     <MenubarPrimitive.SubContent
       ref={ref}
-      className={cn(
-        "glass-strong bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 min-w-[8rem] origin-[--radix-menubar-content-transform-origin] overflow-hidden border p-1",
-        className,
-      )}
+      className={cn("dr-menubar-sub-content", className)}
       {...props}
     />
   )
@@ -129,10 +117,7 @@ function MenubarContent({
         align={align}
         alignOffset={alignOffset}
         sideOffset={sideOffset}
-        className={cn(
-          "glass-strong bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 min-w-[12rem] origin-[--radix-menubar-content-transform-origin] overflow-hidden border p-1",
-          className,
-        )}
+        className={cn("dr-menubar-content", className)}
         {...props}
       />
     </MenubarPrimitive.Portal>
@@ -151,11 +136,7 @@ function MenubarItem({
   return (
     <MenubarPrimitive.Item
       ref={ref}
-      className={cn(
-        "focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center rounded-sm px-2 py-[var(--density-row-py)] text-sm outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-        inset && "pl-8",
-        className,
-      )}
+      className={cn("dr-menubar-item", inset && "pl-8", className)}
       {...props}
     />
   )
@@ -172,10 +153,7 @@ function MenubarCheckboxItem({
   return (
     <MenubarPrimitive.CheckboxItem
       ref={ref}
-      className={cn(
-        "focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center rounded-sm py-[var(--density-row-py)] pr-2 pl-8 text-sm outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-        className,
-      )}
+      className={cn("dr-menubar-checkbox-item", className)}
       checked={checked}
       {...props}
     >
@@ -199,10 +177,7 @@ function MenubarRadioItem({
   return (
     <MenubarPrimitive.RadioItem
       ref={ref}
-      className={cn(
-        "focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center rounded-sm py-[var(--density-row-py)] pr-2 pl-8 text-sm outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-        className,
-      )}
+      className={cn("dr-menubar-radio-item", className)}
       {...props}
     >
       <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
@@ -227,11 +202,7 @@ function MenubarLabel({
   return (
     <MenubarPrimitive.Label
       ref={ref}
-      className={cn(
-        "px-2 py-[var(--density-row-py)] text-sm font-semibold",
-        inset && "pl-8",
-        className,
-      )}
+      className={cn("dr-menubar-label", inset && "pl-8", className)}
       {...props}
     />
   )
@@ -246,7 +217,7 @@ function MenubarSeparator({
   return (
     <MenubarPrimitive.Separator
       ref={ref}
-      className={cn("bg-muted -mx-1 my-1 h-px", className)}
+      className={cn("dr-menubar-separator", className)}
       {...props}
     />
   )
@@ -257,15 +228,7 @@ function MenubarShortcut({
   className,
   ...props
 }: React.HTMLAttributes<HTMLSpanElement>) {
-  return (
-    <span
-      className={cn(
-        "text-muted-foreground ml-auto text-xs tracking-widest",
-        className,
-      )}
-      {...props}
-    />
-  )
+  return <span className={cn("dr-menubar-shortcut", className)} {...props} />
 }
 MenubarShortcut.displayName = "MenubarShortcut"
 
