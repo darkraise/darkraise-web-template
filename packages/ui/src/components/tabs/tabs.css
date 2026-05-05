@@ -34,28 +34,28 @@
   .dr-tabs-content {
     @apply ring-offset-background focus-visible:ring-ring mt-2 focus-visible:ring-1 focus-visible:ring-offset-2 focus-visible:outline-none;
   }
-}
 
-/* Default surface style — active tab gets the primary hue fill */
-.dr-tabs-trigger[data-variant="default"][data-state="active"] {
-  background-color: hsl(var(--primary));
-  box-shadow: var(--shadow-button);
-}
-
-/* Glassmorphism surface style — active tab gets the glass gradient */
-[data-surface-style="glassmorphism"]
+  /* Default surface style — active tab gets the primary hue fill */
   .dr-tabs-trigger[data-variant="default"][data-state="active"] {
-  background-color: transparent;
-  background-image: linear-gradient(
-    180deg,
-    color-mix(in srgb, hsl(var(--primary)) 55%, rgba(255, 255, 255, 0.18)),
-    color-mix(in srgb, hsl(var(--primary)) 70%, rgba(255, 255, 255, 0.05))
-  );
-  border: 1px solid
-    color-mix(in srgb, hsl(var(--primary)) 50%, rgba(255, 255, 255, 0.25));
-  box-shadow:
-    var(--shadow-button),
-    var(--inset-hi-button),
-    inset 0 -1px 0 color-mix(in srgb, hsl(var(--primary)) 70%, #000),
-    0 0 0 1px color-mix(in oklab, hsl(var(--primary)) 25%, transparent);
+    background-color: hsl(var(--primary));
+    box-shadow: var(--shadow-button);
+  }
+
+  /* Glassmorphism surface style — active tab gets the glass gradient */
+  [data-surface-style="glassmorphism"]
+    .dr-tabs-trigger[data-variant="default"][data-state="active"] {
+    background-color: transparent;
+    background-image: linear-gradient(
+      180deg,
+      color-mix(in srgb, hsl(var(--primary)) 55%, rgba(255, 255, 255, 0.18)),
+      color-mix(in srgb, hsl(var(--primary)) 70%, rgba(255, 255, 255, 0.05))
+    );
+    border: 1px solid
+      color-mix(in srgb, hsl(var(--primary)) 50%, rgba(255, 255, 255, 0.25));
+    box-shadow:
+      var(--shadow-button),
+      var(--inset-hi-button),
+      inset 0 -1px 0 color-mix(in srgb, hsl(var(--primary)) 70%, #000),
+      0 0 0 1px color-mix(in oklab, hsl(var(--primary)) 25%, transparent);
+  }
 }
