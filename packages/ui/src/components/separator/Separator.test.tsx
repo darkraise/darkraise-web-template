@@ -8,20 +8,20 @@ describe("Separator", () => {
     const { container } = render(<Separator />)
     const el = container.firstChild as HTMLElement
     expect(el).toBeInTheDocument()
-    expect(el).toHaveClass("h-[1px]", "w-full")
+    expect(el).toHaveClass("dr-separator")
+    expect(el).toHaveAttribute("data-orientation", "horizontal")
   })
 
   it("renders a vertical separator when orientation is vertical", () => {
     const { container } = render(<Separator orientation="vertical" />)
     const el = container.firstChild as HTMLElement
-    expect(el).toHaveClass("h-full", "w-[1px]")
+    expect(el).toHaveAttribute("data-orientation", "vertical")
   })
 
-  it("does not apply vertical classes to a horizontal separator", () => {
+  it("does not apply vertical orientation to a horizontal separator", () => {
     const { container } = render(<Separator orientation="horizontal" />)
     const el = container.firstChild as HTMLElement
-    expect(el).not.toHaveClass("h-full")
-    expect(el).not.toHaveClass("w-[1px]")
+    expect(el).not.toHaveAttribute("data-orientation", "vertical")
   })
 
   it("applies custom className", () => {

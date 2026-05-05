@@ -1,0 +1,13 @@
+@layer components {
+  .dr-separator {
+    @apply bg-border shrink-0;
+  }
+
+  .dr-separator[data-orientation="horizontal"] {
+    @apply h-[1px] w-full;
+  }
+
+  .dr-separator[data-orientation="vertical"] {
+    @apply h-full w-[1px];
+  }
+}
