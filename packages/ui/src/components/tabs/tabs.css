@@ -1,0 +1,61 @@
+@layer components {
+  .dr-tabs-list {
+    @apply text-muted-foreground inline-flex items-center;
+  }
+
+  .dr-tabs-list[data-variant="default"] {
+    @apply card-surface bg-muted justify-center p-1;
+  }
+
+  .dr-tabs-list[data-variant="outline"] {
+    @apply card-surface bg-muted justify-center gap-1 p-1;
+  }
+
+  .dr-tabs-list[data-variant="underline"] {
+    @apply border-border gap-4 border-b;
+  }
+
+  .dr-tabs-trigger {
+    @apply ring-offset-background focus-visible:ring-ring hover:text-foreground inline-flex cursor-pointer items-center justify-center text-sm font-medium whitespace-nowrap transition-all focus-visible:ring-1 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .dr-tabs-trigger[data-variant="default"] {
+    @apply data-[state=active]:text-primary-foreground rounded-sm border border-transparent px-[var(--density-button-px)] py-[var(--density-row-py)];
+  }
+
+  .dr-tabs-trigger[data-variant="outline"] {
+    @apply data-[state=active]:border-primary data-[state=active]:text-primary rounded-sm border border-transparent bg-transparent px-[var(--density-button-px)] py-[var(--density-row-py)];
+  }
+
+  .dr-tabs-trigger[data-variant="underline"] {
+    @apply data-[state=active]:border-primary data-[state=active]:text-primary -mb-px h-full border-b-2 border-transparent px-[var(--density-button-px)] py-[var(--density-row-py)];
+  }
+
+  .dr-tabs-content {
+    @apply ring-offset-background focus-visible:ring-ring mt-2 focus-visible:ring-1 focus-visible:ring-offset-2 focus-visible:outline-none;
+  }
+}
+
+/* Default surface style — active tab gets the primary hue fill */
+.dr-tabs-trigger[data-variant="default"][data-state="active"] {
+  background-color: hsl(var(--primary));
+  box-shadow: var(--shadow-button);
+}
+
+/* Glassmorphism surface style — active tab gets the glass gradient */
+[data-surface-style="glassmorphism"]
+  .dr-tabs-trigger[data-variant="default"][data-state="active"] {
+  background-color: transparent;
+  background-image: linear-gradient(
+    180deg,
+    color-mix(in srgb, hsl(var(--primary)) 55%, rgba(255, 255, 255, 0.18)),
+    color-mix(in srgb, hsl(var(--primary)) 70%, rgba(255, 255, 255, 0.05))
+  );
+  border: 1px solid
+    color-mix(in srgb, hsl(var(--primary)) 50%, rgba(255, 255, 255, 0.25));
+  box-shadow:
+    var(--shadow-button),
+    var(--inset-hi-button),
+    inset 0 -1px 0 color-mix(in srgb, hsl(var(--primary)) 70%, #000),
+    0 0 0 1px color-mix(in oklab, hsl(var(--primary)) 25%, transparent);
+}

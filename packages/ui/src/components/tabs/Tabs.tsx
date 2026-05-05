@@ -2,47 +2,13 @@
 
 import * as React from "react"
 import * as TabsPrimitive from "@radix-ui/react-tabs"
-import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "../../lib/utils"
+import "./tabs.css"
 
-const tabsListVariants = cva("inline-flex items-center text-muted-foreground", {
-  variants: {
-    variant: {
-      default: "card-surface bg-muted justify-center p-1",
-      outline: "card-surface bg-muted justify-center p-1 gap-1",
-      underline: "gap-4 border-b border-border",
-    },
-  },
-  defaultVariants: {
-    variant: "default",
-  },
-})
+type TabsVariant = "default" | "outline" | "underline"
 
-const tabsTriggerVariants = cva(
-  "ring-offset-background focus-visible:ring-ring inline-flex cursor-pointer items-center justify-center text-sm font-medium whitespace-nowrap transition-all hover:text-foreground focus-visible:ring-1 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50",
-  {
-    variants: {
-      variant: {
-        default:
-          "tab-glass-hue rounded-sm border border-transparent px-[var(--density-button-px)] py-[var(--density-row-py)] data-[state=active]:text-primary-foreground",
-        outline:
-          "rounded-sm border border-transparent bg-transparent px-[var(--density-button-px)] py-[var(--density-row-py)] hover:text-foreground data-[state=active]:text-primary data-[state=active]:border-primary",
-        underline:
-          "-mb-px h-full border-b-2 border-transparent px-[var(--density-button-px)] py-[var(--density-row-py)] data-[state=active]:border-primary data-[state=active]:text-primary",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-    },
-  },
-)
-
-type TabsListVariant = NonNullable<
-  VariantProps<typeof tabsListVariants>["variant"]
->
-
-const TabsContext = React.createContext<{ variant: TabsListVariant }>({
+const TabsContext = React.createContext<{ variant: TabsVariant }>({
   variant: "default",
 })
 
@@ -50,20 +16,21 @@ const Tabs = TabsPrimitive.Root
 
 function TabsList({
   className,
-  variant,
+  variant = "default",
   children,
   ref,
   ...props
-}: React.ComponentProps<typeof TabsPrimitive.List> &
-  VariantProps<typeof tabsListVariants>) {
-  const resolvedVariant: TabsListVariant = variant ?? "default"
+}: React.ComponentProps<typeof TabsPrimitive.List> & {
+  variant?: TabsVariant
+}) {
   return (
     <TabsPrimitive.List
       ref={ref}
-      className={cn(tabsListVariants({ variant: resolvedVariant }), className)}
+      data-variant={variant}
+      className={cn("dr-tabs-list", className)}
       {...props}
     >
-      <TabsContext.Provider value={{ variant: resolvedVariant }}>
+      <TabsContext.Provider value={{ variant }}>
         {children}
       </TabsContext.Provider>
     </TabsPrimitive.List>
@@ -79,7 +46,8 @@ function TabsTrigger({
   return (
     <TabsPrimitive.Trigger
       ref={ref}
-      className={cn(tabsTriggerVariants({ variant }), className)}
+      data-variant={variant}
+      className={cn("dr-tabs-trigger", className)}
       {...props}
     />
   )
@@ -93,10 +61,7 @@ function TabsContent({
   return (
     <TabsPrimitive.Content
       ref={ref}
-      className={cn(
-        "ring-offset-background focus-visible:ring-ring mt-2 focus-visible:ring-1 focus-visible:ring-offset-2 focus-visible:outline-none",
-        className,
-      )}
+      className={cn("dr-tabs-content", className)}
       {...props}
     />
   )
