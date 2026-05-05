@@ -1,0 +1,33 @@
+@layer components {
+  .dr-accordion-item {
+    @apply border-b;
+  }
+
+  .dr-accordion-trigger {
+    @apply flex flex-1 cursor-pointer items-center justify-between py-4 font-medium transition-all hover:underline;
+  }
+
+  .dr-accordion-trigger > svg {
+    @apply h-4 w-4 shrink-0 transition-transform duration-200;
+  }
+
+  .dr-accordion-trigger[data-state="open"] > svg {
+    @apply rotate-180;
+  }
+
+  .dr-accordion-content {
+    @apply overflow-hidden text-sm transition-all;
+  }
+
+  .dr-accordion-content[data-state="closed"] {
+    animation: accordion-up 0.2s ease-out;
+  }
+
+  .dr-accordion-content[data-state="open"] {
+    animation: accordion-down 0.2s ease-out;
+  }
+
+  .dr-accordion-content-inner {
+    @apply pt-0 pb-4;
+  }
+}

@@ -3,6 +3,7 @@ import * as AccordionPrimitive from "@radix-ui/react-accordion"
 import { ChevronDown } from "lucide-react"
 
 import { cn } from "../../lib/utils"
+import "./accordion.css"
 
 const Accordion = AccordionPrimitive.Root
 
@@ -14,7 +15,7 @@ function AccordionItem({
   return (
     <AccordionPrimitive.Item
       ref={ref}
-      className={cn("border-b", className)}
+      className={cn("dr-accordion-item", className)}
       {...props}
     />
   )
@@ -30,14 +31,11 @@ function AccordionTrigger({
     <AccordionPrimitive.Header className="flex">
       <AccordionPrimitive.Trigger
         ref={ref}
-        className={cn(
-          "flex flex-1 cursor-pointer items-center justify-between py-4 font-medium transition-all hover:underline [&[data-state=open]>svg]:rotate-180",
-          className,
-        )}
+        className={cn("dr-accordion-trigger", className)}
         {...props}
       >
         {children}
-        <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
+        <ChevronDown />
       </AccordionPrimitive.Trigger>
     </AccordionPrimitive.Header>
   )
@@ -52,10 +50,12 @@ function AccordionContent({
   return (
     <AccordionPrimitive.Content
       ref={ref}
-      className="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm transition-all"
+      className="dr-accordion-content"
       {...props}
     >
-      <div className={cn("pt-0 pb-4", className)}>{children}</div>
+      <div className={cn("dr-accordion-content-inner", className)}>
+        {children}
+      </div>
     </AccordionPrimitive.Content>
   )
 }
