@@ -25,6 +25,7 @@
 @import "../components/navigation-menu/navigation-menu.css";
 @import "../components/overlay-primitives/overlay-primitives.css";
 @import "../components/pagination/pagination.css";
+@import "../components/popover/popover.css";
 @import "../components/separator/separator.css";
 @import "../components/skeleton/skeleton.css";
 @import "../components/switch/switch.css";
