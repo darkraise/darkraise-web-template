@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../select"
+import "./calendar.css"
 
 type CalendarView = "day" | "year" | "decade"
 
@@ -91,7 +92,7 @@ function Calendar({
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
-      className={cn("glass bg-card p-3", className)}
+      className={cn("dr-calendar", className)}
       captionLayout={captionLayout}
       month={month}
       onMonthChange={setMonth}
@@ -185,7 +186,7 @@ function Calendar({
                 <button
                   type="button"
                   onClick={() => setView("year")}
-                  className="hover:text-primary cursor-pointer rounded-md text-sm font-medium transition-colors select-none"
+                  className="dr-calendar-caption-label-btn"
                 >
                   {children}
                 </button>
@@ -224,10 +225,7 @@ function CalendarDayButton({
       data-range-start={modifiers.range_start}
       data-range-end={modifiers.range_end}
       data-range-middle={modifiers.range_middle}
-      className={cn(
-        "data-[selected-single=true]:bg-primary data-[selected-single=true]:text-primary-foreground data-[range-middle=true]:bg-accent data-[range-middle=true]:text-accent-foreground data-[range-start=true]:bg-primary data-[range-start=true]:text-primary-foreground data-[range-end=true]:bg-primary data-[range-end=true]:text-primary-foreground group-data-[focused=true]/day:border-ring group-data-[focused=true]/day:ring-ring/50 flex aspect-square w-[var(--density-cell)] flex-col gap-1 leading-none font-normal group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:ring-[3px] data-[range-end=true]:rounded-md data-[range-middle=true]:rounded-none data-[range-start=true]:rounded-md [&>span]:text-xs [&>span]:opacity-70",
-        className,
-      )}
+      className={cn("dr-calendar-day-btn", className)}
       {...props}
     />
   )
@@ -293,7 +291,7 @@ function GridHeader({
   nextLabel,
 }: GridHeaderProps) {
   return (
-    <div className="mb-4 flex h-8 items-center justify-between">
+    <div className="dr-calendar-grid-header">
       <Button
         type="button"
         variant={buttonVariant}
@@ -346,7 +344,7 @@ function YearGrid({
   return (
     <div
       data-slot="calendar"
-      className={cn("glass bg-card w-[16rem] p-3", className)}
+      className={cn("dr-calendar-grid-container", className)}
     >
       <GridHeader
         buttonVariant={buttonVariant}
@@ -358,13 +356,13 @@ function YearGrid({
           <button
             type="button"
             onClick={onOpenDecade}
-            className="hover:text-primary cursor-pointer rounded-md text-sm font-medium transition-colors select-none"
+            className="dr-calendar-caption-label-btn"
           >
             {year}
           </button>
         }
       />
-      <div className="grid grid-cols-3 gap-2">
+      <div className="dr-calendar-grid">
         {Array.from({ length: 12 }, (_, i) => i).map((m) => {
           const cellDate = new Date(year, m, 1)
           const isCurrent =
@@ -376,7 +374,7 @@ function YearGrid({
               variant="ghost"
               onClick={() => onSelect(cellDate)}
               className={cn(
-                "h-12 w-full text-sm font-normal",
+                "dr-calendar-grid-cell",
                 isCurrent && "bg-accent text-accent-foreground",
               )}
             >
@@ -412,7 +410,7 @@ function DecadeGrid({
   return (
     <div
       data-slot="calendar"
-      className={cn("glass bg-card w-[16rem] p-3", className)}
+      className={cn("dr-calendar-grid-container", className)}
     >
       <GridHeader
         buttonVariant={buttonVariant}
@@ -426,7 +424,7 @@ function DecadeGrid({
           </span>
         }
       />
-      <div className="grid grid-cols-3 gap-2">
+      <div className="dr-calendar-grid">
         {years.map((y) => {
           const isOutside = y < decadeStart || y > decadeStart + 9
           const isCurrent = y === thisYear
@@ -437,7 +435,7 @@ function DecadeGrid({
               variant="ghost"
               onClick={() => onSelect(y)}
               className={cn(
-                "h-12 w-full text-sm font-normal",
+                "dr-calendar-grid-cell",
                 isOutside && "text-muted-foreground opacity-50",
                 isCurrent && "bg-accent text-accent-foreground",
               )}
