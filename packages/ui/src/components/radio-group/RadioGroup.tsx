@@ -3,9 +3,11 @@
 import * as React from "react"
 import * as RadioGroupPrimitive from "@radix-ui/react-radio-group"
 import { Circle } from "lucide-react"
-import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "../../lib/utils"
+import "./radio-group.css"
+
+type RadioSize = "sm" | "default" | "lg"
 
 function RadioGroup({
   className,
@@ -14,53 +16,39 @@ function RadioGroup({
 }: React.ComponentProps<typeof RadioGroupPrimitive.Root>) {
   return (
     <RadioGroupPrimitive.Root
-      className={cn("grid gap-2", className)}
+      className={cn("dr-radio-group", className)}
       {...props}
       ref={ref}
     />
   )
 }
 
-const radioItemVariants = cva(
-  "border-primary text-primary ring-offset-background focus-visible:ring-ring aspect-square cursor-pointer rounded-full border focus:outline-none focus-visible:ring-1 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
-  {
-    variants: {
-      size: {
-        sm: "h-3.5 w-3.5",
-        default: "h-4 w-4",
-        lg: "h-5 w-5",
-      },
-    },
-    defaultVariants: {
-      size: "default",
-    },
-  },
-)
-
-const radioIndicatorSize = {
-  sm: "h-2 w-2",
-  default: "h-2.5 w-2.5",
-  lg: "h-3 w-3",
+const radioIndicatorSizeClass: Record<RadioSize, string> = {
+  sm: "dr-radio-group-indicator-sm",
+  default: "dr-radio-group-indicator-default",
+  lg: "dr-radio-group-indicator-lg",
 }
 
 function RadioGroupItem({
   className,
-  size,
+  size = "default",
   ref,
   ...props
-}: React.ComponentProps<typeof RadioGroupPrimitive.Item> &
-  VariantProps<typeof radioItemVariants>) {
+}: React.ComponentProps<typeof RadioGroupPrimitive.Item> & {
+  size?: RadioSize
+}) {
   return (
     <RadioGroupPrimitive.Item
       ref={ref}
-      className={cn(radioItemVariants({ size }), className)}
+      data-size={size}
+      className={cn("dr-radio-group-item", className)}
       {...props}
     >
       <RadioGroupPrimitive.Indicator className="flex items-center justify-center">
         <Circle
           className={cn(
             "fill-current text-current",
-            radioIndicatorSize[size ?? "default"],
+            radioIndicatorSizeClass[size],
           )}
         />
       </RadioGroupPrimitive.Indicator>
@@ -68,4 +56,4 @@ function RadioGroupItem({
   )
 }
 
-export { RadioGroup, RadioGroupItem, radioItemVariants }
+export { RadioGroup, RadioGroupItem }
