@@ -4,6 +4,7 @@ import * as React from "react"
 import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area"
 
 import { cn } from "../../lib/utils"
+import "./scroll-area.css"
 
 function ScrollArea({
   className,
@@ -14,7 +15,7 @@ function ScrollArea({
   return (
     <ScrollAreaPrimitive.Root
       ref={ref}
-      className={cn("relative overflow-hidden", className)}
+      className={cn("dr-scroll-area", className)}
       {...props}
     >
       <ScrollAreaPrimitive.Viewport className="h-full w-full rounded-[inherit]">
@@ -36,17 +37,11 @@ function ScrollBar({
     <ScrollAreaPrimitive.ScrollAreaScrollbar
       ref={ref}
       orientation={orientation}
-      className={cn(
-        "flex touch-none transition-colors select-none",
-        orientation === "vertical" &&
-          "h-full w-2.5 border-l border-l-transparent p-[1px]",
-        orientation === "horizontal" &&
-          "h-2.5 flex-col border-t border-t-transparent p-[1px]",
-        className,
-      )}
+      data-orientation={orientation}
+      className={cn("dr-scroll-bar", className)}
       {...props}
     >
-      <ScrollAreaPrimitive.ScrollAreaThumb className="bg-primary/60 hover:bg-primary/90 relative flex-1 rounded-full" />
+      <ScrollAreaPrimitive.ScrollAreaThumb className="dr-scroll-thumb" />
     </ScrollAreaPrimitive.ScrollAreaScrollbar>
   )
 }

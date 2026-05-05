@@ -1,0 +1,21 @@
+@layer components {
+  .dr-scroll-area {
+    @apply relative overflow-hidden;
+  }
+
+  .dr-scroll-bar {
+    @apply flex touch-none transition-colors select-none;
+  }
+
+  .dr-scroll-bar[data-orientation="vertical"] {
+    @apply h-full w-2.5 border-l border-l-transparent p-[1px];
+  }
+
+  .dr-scroll-bar[data-orientation="horizontal"] {
+    @apply h-2.5 flex-col border-t border-t-transparent p-[1px];
+  }
+
+  .dr-scroll-thumb {
+    @apply bg-primary/60 hover:bg-primary/90 relative flex-1 rounded-full;
+  }
+}
