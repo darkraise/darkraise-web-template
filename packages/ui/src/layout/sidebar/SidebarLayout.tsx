@@ -48,7 +48,7 @@ export function SidebarLayout({
               <Button
                 variant="ghost"
                 size="icon"
-                className="sidebar-nav-item h-8 w-8"
+                className="dr-sidebar-nav-item h-8 w-8"
                 onClick={() => setCollapsed(!collapsed)}
                 aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
               >

@@ -708,107 +708,6 @@
     display: none;
   }
 
-  /* Default surface style — flat solid-color treatment. Modern primary
-     button: solid hue background, no decorative gradient or halo, shadow
-     comes from --shadow-button (none at flat buttonElevation). */
-  .btn-glass-hue {
-    background-color: var(--hue);
-    box-shadow: var(--shadow-button);
-  }
-
-  .btn-glass-hue:hover {
-    background-color: color-mix(in srgb, var(--hue) 90%, black);
-  }
-
-  .tab-glass-hue[data-state="active"] {
-    background-color: hsl(var(--primary));
-    box-shadow: var(--shadow-button);
-  }
-
-  /* Glassmorphism surface style — the rich glass-aesthetic treatment with
-     vertical gradient, white-blended border, dark inset, and outer ring. */
-  [data-surface-style="glassmorphism"] .btn-glass-hue {
-    background-color: transparent;
-    background-image: linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--hue) 55%, rgba(255, 255, 255, 0.18)),
-      color-mix(in srgb, var(--hue) 70%, rgba(255, 255, 255, 0.05))
-    );
-    border: 1px solid
-      color-mix(in srgb, var(--hue) 50%, rgba(255, 255, 255, 0.25));
-    box-shadow:
-      var(--shadow-button),
-      var(--inset-hi-button),
-      inset 0 -1px 0 color-mix(in srgb, var(--hue) 70%, #000),
-      0 0 0 1px color-mix(in oklab, var(--hue) 25%, transparent);
-  }
-
-  [data-surface-style="glassmorphism"] .btn-glass-hue:hover {
-    background-image: linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--hue) 45%, rgba(255, 255, 255, 0.18)),
-      color-mix(in srgb, var(--hue) 65%, rgba(255, 255, 255, 0.05))
-    );
-  }
-
-  [data-surface-style="glassmorphism"] .tab-glass-hue[data-state="active"] {
-    background-color: transparent;
-    background-image: linear-gradient(
-      180deg,
-      color-mix(in srgb, hsl(var(--primary)) 55%, rgba(255, 255, 255, 0.18)),
-      color-mix(in srgb, hsl(var(--primary)) 70%, rgba(255, 255, 255, 0.05))
-    );
-    border: 1px solid
-      color-mix(in srgb, hsl(var(--primary)) 50%, rgba(255, 255, 255, 0.25));
-    box-shadow:
-      var(--shadow-button),
-      var(--inset-hi-button),
-      inset 0 -1px 0 color-mix(in srgb, hsl(var(--primary)) 70%, #000),
-      0 0 0 1px color-mix(in oklab, hsl(var(--primary)) 25%, transparent);
-  }
-
-  /* Default surface style — outline and secondary buttons (both use
-     .btn-glass-neutral) pick up the buttonElevation shadow with no
-     extra decoration. Glass mode below adds the gradient, border, and
-     inset rim on top of the same --shadow-button. */
-  .btn-glass-neutral {
-    box-shadow: var(--shadow-button);
-  }
-
-  [data-surface-style="glassmorphism"] .btn-glass-neutral {
-    background-image: linear-gradient(180deg, var(--fog-15), var(--fog-05));
-    border-color: var(--fog-20);
-    box-shadow: var(--shadow-button), var(--inset-hi-button);
-  }
-
-  [data-surface-style="glassmorphism"] .btn-glass-neutral:hover {
-    background-image: linear-gradient(180deg, var(--fog-20), var(--fog-10));
-  }
-
-  [data-surface-style="glassmorphism"] .btn-ghost-glass:hover {
-    background-color: var(--fog-10);
-    border: 1px solid var(--fog-15);
-    backdrop-filter: blur(10px) saturate(140%);
-    -webkit-backdrop-filter: blur(10px) saturate(140%);
-    box-shadow: var(--shadow-button), var(--inset-hi-button);
-    color: hsl(var(--foreground));
-  }
-
-  .sidebar-nav-item {
-    color: hsl(var(--sidebar-foreground));
-  }
-
-  .sidebar-nav-item:hover {
-    background-color: hsl(var(--sidebar-hover-bg));
-    color: hsl(var(--sidebar-foreground-hover));
-  }
-
-  .sidebar-nav-item.active,
-  .sidebar-nav-item[data-status="active"] {
-    background-color: hsl(var(--sidebar-hover-bg));
-    color: hsl(var(--sidebar-foreground-hover));
-  }
-
   .theme-transition {
     transition:
       background-color 150ms ease-in-out,
@@ -971,10 +870,6 @@
   [data-background-style="gradient"][data-surface-style="default"]
     .header-gradient-overlay {
     background-color: transparent;
-  }
-
-  .btn-glass-neutral--accent-border {
-    border-color: hsl(var(--primary) / 0.6);
   }
 }
 

@@ -46,7 +46,7 @@ export function StackedLayout({
                     <Link
                       to={firstItem.href}
                       className={cn(
-                        "sidebar-nav-item flex h-10 w-10 items-center justify-center rounded-md transition-colors duration-150",
+                        "dr-sidebar-nav-item flex h-10 w-10 items-center justify-center rounded-md transition-colors duration-150",
                         isActive && "active",
                       )}
                     >
