@@ -177,6 +177,18 @@
   }
 }
 
+@utility focus-ring-input-wrapper {
+  &:focus-within {
+    border-color: hsl(var(--primary));
+    box-shadow: 0 0 0 1px hsl(var(--primary));
+  }
+
+  &:focus-within:where([data-invalid], [aria-invalid="true"]) {
+    border-color: hsl(var(--destructive));
+    box-shadow: 0 0 0 1px hsl(var(--destructive));
+  }
+}
+
 @theme inline {
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
