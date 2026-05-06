@@ -1,0 +1,18 @@
+@layer components {
+  .dr-swap {
+    @apply relative inline-grid items-center justify-items-center;
+  }
+
+  .dr-swap-indicator {
+    @apply inline-flex items-center justify-center transition-opacity duration-200;
+    grid-area: 1 / 1;
+  }
+
+  .dr-swap-indicator[data-active="true"] {
+    @apply opacity-100;
+  }
+
+  .dr-swap-indicator[data-active="false"] {
+    @apply pointer-events-none opacity-0;
+  }
+}
