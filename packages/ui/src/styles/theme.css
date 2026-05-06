@@ -134,10 +134,53 @@
   box-shadow: var(--elevation-high), var(--inset-hi-strong);
 }
 
+@utility focus-ring {
+  &:focus-visible {
+    outline: 2px solid hsl(var(--focus-ring));
+    outline-offset: 2px;
+  }
+}
+
+@utility focus-ring-inset {
+  &:focus-visible {
+    outline: 2px solid hsl(var(--focus-ring));
+    outline-offset: -1px;
+  }
+}
+
+@utility focus-ring-tight {
+  &:focus-visible {
+    outline: 2px solid hsl(var(--focus-ring));
+    outline-offset: -2px;
+  }
+}
+
+@utility focus-ring-input {
+  outline: none;
+
+  &:focus,
+  &:focus-visible {
+    border-color: hsl(var(--primary));
+    box-shadow: 0 0 0 1px hsl(var(--primary));
+    z-index: 1;
+  }
+
+  &:where([data-invalid], [aria-invalid="true"]) {
+    border-color: hsl(var(--destructive));
+  }
+
+  &:where([data-invalid], [aria-invalid="true"]):focus,
+  &:where([data-invalid], [aria-invalid="true"]):focus-visible {
+    border-color: hsl(var(--destructive));
+    box-shadow: 0 0 0 1px hsl(var(--destructive));
+  }
+}
+
 @theme inline {
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
+  --color-focus-ring: hsl(var(--focus-ring));
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
   --color-primary: hsl(var(--primary));
@@ -254,6 +297,7 @@
   --border: 214 32% 91%;
   --input: 214 32% 91%;
   --ring: 217 91% 60%;
+  --focus-ring: 217 91% 78%;
   --chart-1: hsl(217 91% 60%);
   --chart-2: hsl(142 71% 45%);
   --chart-3: hsl(350 89% 60%);
@@ -630,7 +674,6 @@
     /* shadows the theme --border for all descendants via the global `*` border-border rule */
     --border: var(--fog-15);
     --input: var(--fog-10);
-    --ring: color-mix(in oklab, var(--sf-hue) 60%, transparent);
     --card: var(--fog-05);
     --card-border: var(--fog-15);
     --glow-surface:

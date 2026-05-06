@@ -147,6 +147,8 @@ export function generateTokens(
   const primaryShade = isLightGlass ? 600 : mode === "light" ? 500 : 400
   const primaryForeground = "0 0% 100%"
   const ringValue = accent[primaryShade]
+  const focusRingShade = mode === "light" ? 300 : 200
+  const focusRingValue = accent[focusRingShade]
 
   const chartColors = getChartColors(accentColor, mode)
 
@@ -174,6 +176,7 @@ export function generateTokens(
     "--primary": accent[primaryShade],
     "--primary-foreground": primaryForeground,
     "--ring": ringValue,
+    "--focus-ring": focusRingValue,
 
     "--chart-1": chartColors[0] ?? "",
     "--chart-2": chartColors[1] ?? "",

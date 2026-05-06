@@ -106,6 +106,19 @@ describe("generateTokens", () => {
     expect(dark["--primary"]).toBe("213 94% 68%")
   })
 
+  it("emits --focus-ring as raw HSL channels lighter than --ring", () => {
+    const tokens = generateTokens({
+      accentColor: "blue",
+      surfaceColor: "slate",
+      surfaceStyle: "default",
+      backgroundStyle: "solid",
+      mode: "light",
+    })
+    expect(tokens["--focus-ring"]).toBeDefined()
+    expect(tokens["--focus-ring"]).toMatch(/^\d+\s+\d+%\s+\d+%$/)
+    expect(tokens["--focus-ring"]).not.toEqual(tokens["--ring"])
+  })
+
   it("uses white primary-foreground for all accent colors", () => {
     const amber = generateTokens({
       accentColor: "amber",
