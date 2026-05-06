@@ -1,0 +1,61 @@
+@layer components {
+  .dr-combobox {
+    @apply relative flex w-full flex-col gap-1.5;
+  }
+
+  .dr-combobox[data-disabled="true"] {
+    @apply pointer-events-none opacity-60;
+  }
+
+  .dr-combobox-label {
+    @apply text-foreground text-sm leading-none font-medium;
+  }
+
+  .dr-combobox-control {
+    @apply relative flex w-full items-center gap-1;
+  }
+
+  .dr-combobox-input {
+    @apply pr-16;
+  }
+
+  .dr-combobox-clear-trigger {
+    @apply text-muted-foreground hover:text-foreground focus-ring-tight absolute top-1/2 right-9 inline-flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-sm transition-colors;
+  }
+
+  .dr-combobox-trigger {
+    @apply text-muted-foreground hover:text-foreground focus-ring-tight absolute top-1/2 right-2 inline-flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-sm transition-colors;
+  }
+
+  .dr-combobox-content {
+    @apply glass-strong bg-popover text-popover-foreground absolute top-full right-0 left-0 z-50 mt-1 max-h-72 overflow-hidden border shadow-md outline-none;
+  }
+
+  .dr-combobox-list {
+    @apply m-0 flex max-h-72 list-none flex-col gap-0.5 overflow-y-auto p-1;
+  }
+
+  .dr-combobox-item {
+    @apply relative flex cursor-pointer items-center justify-between gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors outline-none select-none;
+  }
+
+  .dr-combobox-item[data-highlighted="true"] {
+    @apply bg-accent text-accent-foreground;
+  }
+
+  .dr-combobox-item[data-disabled="true"] {
+    @apply pointer-events-none opacity-50;
+  }
+
+  .dr-combobox-item-text {
+    @apply flex-1 truncate;
+  }
+
+  .dr-combobox-item-indicator {
+    @apply text-foreground inline-flex h-4 w-4 shrink-0 items-center justify-center;
+  }
+
+  .dr-combobox-empty {
+    @apply text-muted-foreground px-3 py-6 text-center text-sm;
+  }
+}
