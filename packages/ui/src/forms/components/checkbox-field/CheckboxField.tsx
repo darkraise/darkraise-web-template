@@ -22,11 +22,13 @@ export function CheckboxField({
   label,
   description,
 }: CheckboxFieldProps) {
+  const hasDescription = description ? "true" : undefined
   return (
     <Field
       orientation="horizontal"
       data-invalid={isInvalid}
-      className={description ? "items-start" : ""}
+      className="dr-checkbox-field"
+      data-has-description={hasDescription}
     >
       <Checkbox
         id={name}
@@ -34,7 +36,8 @@ export function CheckboxField({
         onCheckedChange={(checked) => onChange(checked === true)}
         onBlur={onBlur}
         aria-invalid={isInvalid}
-        className={description ? "mt-0.5" : ""}
+        className="dr-checkbox-field-control"
+        data-has-description={hasDescription}
       />
       <div>
         <FieldLabel htmlFor={name}>{label}</FieldLabel>

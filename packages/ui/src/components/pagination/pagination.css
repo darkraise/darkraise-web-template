@@ -10,4 +10,20 @@
   .dr-pagination-ellipsis {
     @apply flex aspect-square w-[var(--density-cell)] items-center justify-center;
   }
+
+  .dr-pagination-link[data-active="true"][data-variant="ghost"] {
+    @apply border-primary text-primary border bg-transparent;
+  }
+
+  .dr-pagination-link[data-active="true"][data-variant="ghost"]:hover {
+    @apply bg-primary/10 text-primary;
+  }
+
+  .dr-pagination-previous {
+    @apply gap-1 pl-2.5;
+  }
+
+  .dr-pagination-next {
+    @apply gap-1 pr-2.5;
+  }
 }

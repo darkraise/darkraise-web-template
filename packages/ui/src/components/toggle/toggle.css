@@ -1,14 +1,44 @@
 @layer components {
   .dr-toggle {
-    @apply hover:bg-muted hover:text-muted-foreground data-[state=on]:bg-primary data-[state=on]:text-primary-foreground data-[state=on]:hover:bg-primary data-[state=on]:hover:text-primary-foreground focus-ring-inset inline-flex cursor-pointer items-center justify-center gap-2 rounded-md text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 data-[state=on]:shadow-sm [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0;
+    @apply focus-ring-inset inline-flex cursor-pointer items-center justify-center gap-2 rounded-md text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0;
   }
 
+  /* Default variant — solid fill on active state.
+     Active styles must live on the same selector tier as the variant rule
+     itself; using the base rule's `data-[state=on]:` modifier ties at
+     specificity with `.dr-toggle[data-variant="..."]` and loses on source
+     order, leaving the active item unfilled. */
   .dr-toggle[data-variant="default"] {
     @apply bg-transparent;
   }
 
+  .dr-toggle[data-variant="default"]:hover {
+    @apply bg-muted text-muted-foreground;
+  }
+
+  .dr-toggle[data-variant="default"][data-state="on"] {
+    @apply bg-primary text-primary-foreground shadow-sm;
+  }
+
+  .dr-toggle[data-variant="default"][data-state="on"]:hover {
+    @apply bg-primary text-primary-foreground;
+  }
+
+  /* Outline variant — bordered, transparent on both states. */
   .dr-toggle[data-variant="outline"] {
-    @apply border-input hover:bg-accent hover:text-accent-foreground data-[state=on]:text-primary data-[state=on]:border-primary data-[state=on]:hover:bg-primary/10 data-[state=on]:hover:text-primary border bg-transparent data-[state=on]:bg-transparent data-[state=on]:shadow-none;
+    @apply border-input border bg-transparent;
+  }
+
+  .dr-toggle[data-variant="outline"]:hover {
+    @apply bg-accent text-accent-foreground;
+  }
+
+  .dr-toggle[data-variant="outline"][data-state="on"] {
+    @apply text-primary border-primary bg-transparent shadow-none;
+  }
+
+  .dr-toggle[data-variant="outline"][data-state="on"]:hover {
+    @apply bg-primary/10 text-primary;
   }
 
   .dr-toggle[data-size="default"] {

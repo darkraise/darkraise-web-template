@@ -1,5 +1,4 @@
 import { useRouterAdapter } from "../../router"
-import { cn } from "../../lib/utils"
 import { SearchCommand } from "../search-command"
 import { BrandLogo } from "../brand-logo"
 import { LayoutHeader } from "../layout-header"
@@ -21,7 +20,7 @@ export function TopNavLayout({
   const { Link } = useRouterAdapter()
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden">
+    <div className="dr-top-nav-layout">
       <LayoutHeader
         nav={nav}
         className="gap-4"
@@ -37,15 +36,13 @@ export function TopNavLayout({
         }
       >
         <BrandLogo />
-        <nav className="hidden min-w-0 flex-1 items-center gap-1 overflow-x-auto md:flex">
+        <nav className="dr-top-nav-layout-nav">
           {nav.flatMap((group) =>
             group.items.map((item) => (
               <Link
                 key={item.href}
                 to={item.href}
-                className={cn(
-                  "text-muted-foreground hover:text-foreground [&.active]:bg-accent [&.active]:text-accent-foreground flex shrink-0 items-center gap-2 rounded-md px-3 py-1.5 text-sm transition-colors duration-150",
-                )}
+                className="dr-top-nav-layout-nav-item"
                 activeClassName="active"
               >
                 {item.icon && <item.icon className="h-4 w-4" />}
@@ -56,7 +53,7 @@ export function TopNavLayout({
         </nav>
       </LayoutHeader>
 
-      <main className="flex-1 overflow-y-auto p-6">{children}</main>
+      <main className="dr-top-nav-layout-content">{children}</main>
     </div>
   )
 }

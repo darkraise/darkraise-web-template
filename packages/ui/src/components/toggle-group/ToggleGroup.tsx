@@ -52,8 +52,8 @@ function ToggleGroupItem({
   size?: ToggleSize
 }) {
   const context = React.useContext(ToggleGroupContext)
-  const resolvedVariant = context.variant ?? variant ?? "default"
-  const resolvedSize = context.size ?? size ?? "default"
+  const resolvedVariant = variant ?? context.variant ?? "default"
+  const resolvedSize = size ?? context.size ?? "default"
 
   return (
     <ToggleGroupPrimitive.Item

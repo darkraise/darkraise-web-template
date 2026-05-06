@@ -1,0 +1,22 @@
+@layer components {
+  .dr-top-nav-layout {
+    @apply flex h-screen flex-col overflow-hidden;
+  }
+
+  .dr-top-nav-layout-nav {
+    @apply hidden min-w-0 flex-1 items-center gap-1 overflow-x-auto md:flex;
+  }
+
+  .dr-top-nav-layout-nav-item {
+    @apply text-muted-foreground hover:text-foreground flex shrink-0 items-center gap-2 rounded-md px-3 py-1.5 text-sm transition-colors duration-150;
+  }
+
+  .dr-top-nav-layout-nav-item.active,
+  .dr-top-nav-layout-nav-item[data-active="true"] {
+    @apply bg-accent text-accent-foreground;
+  }
+
+  .dr-top-nav-layout-content {
+    @apply flex-1 overflow-y-auto p-6;
+  }
+}

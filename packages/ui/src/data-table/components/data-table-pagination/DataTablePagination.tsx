@@ -23,19 +23,19 @@ export function DataTablePagination<TData>({
   table,
 }: DataTablePaginationProps<TData>) {
   return (
-    <div className="flex items-center justify-between">
-      <div className="text-muted-foreground text-sm">
+    <div className="dr-data-table-pagination">
+      <div className="dr-data-table-pagination-summary">
         {table.getFilteredSelectedRowModel().rows.length} of{" "}
         {table.getFilteredRowModel().rows.length} row(s) selected
       </div>
-      <div className="flex items-center gap-6">
-        <div className="flex items-center gap-2">
-          <p className="text-sm">Rows per page</p>
+      <div className="dr-data-table-pagination-controls">
+        <div className="dr-data-table-pagination-page-size">
+          <p className="dr-data-table-pagination-page-info">Rows per page</p>
           <Select
             value={`${table.getState().pagination.pageSize}`}
             onValueChange={(v) => table.setPageSize(Number(v))}
           >
-            <SelectTrigger className="h-8 w-[70px]">
+            <SelectTrigger className="dr-data-table-pagination-page-size-trigger">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -47,7 +47,7 @@ export function DataTablePagination<TData>({
             </SelectContent>
           </Select>
         </div>
-        <div className="text-sm">
+        <div className="dr-data-table-pagination-page-info">
           Page {table.getState().pagination.pageIndex + 1} of{" "}
           {table.getPageCount()}
         </div>
@@ -57,7 +57,7 @@ export function DataTablePagination<TData>({
               <Button
                 variant="outline"
                 size="icon"
-                className="h-8 w-8"
+                className="dr-data-table-pagination-nav-btn"
                 onClick={() => table.setPageIndex(0)}
                 disabled={!table.getCanPreviousPage()}
               >
@@ -68,7 +68,7 @@ export function DataTablePagination<TData>({
               <Button
                 variant="outline"
                 size="icon"
-                className="h-8 w-8"
+                className="dr-data-table-pagination-nav-btn"
                 onClick={() => table.previousPage()}
                 disabled={!table.getCanPreviousPage()}
               >
@@ -79,7 +79,7 @@ export function DataTablePagination<TData>({
               <Button
                 variant="outline"
                 size="icon"
-                className="h-8 w-8"
+                className="dr-data-table-pagination-nav-btn"
                 onClick={() => table.nextPage()}
                 disabled={!table.getCanNextPage()}
               >
@@ -90,7 +90,7 @@ export function DataTablePagination<TData>({
               <Button
                 variant="outline"
                 size="icon"
-                className="h-8 w-8"
+                className="dr-data-table-pagination-nav-btn"
                 onClick={() => table.setPageIndex(table.getPageCount() - 1)}
                 disabled={!table.getCanNextPage()}
               >

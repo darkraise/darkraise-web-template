@@ -7,7 +7,7 @@ import {
 } from "../../components/popover"
 import { Label } from "../../components/label"
 import { Separator } from "../../components/separator"
-import { cn } from "../../lib/utils"
+import { ToggleGroup, ToggleGroupItem } from "../../components/toggle-group"
 import { useTheme } from "../useTheme"
 import {
   ACCENT_COLORS,
@@ -29,6 +29,7 @@ import type {
 } from "../types"
 import { accentColors } from "../palettes/accentColors"
 import { surfaceStyles } from "../styles/surfaceStyles"
+import "./theme-switcher.css"
 
 const modeOptions: { value: Mode; icon: typeof Sun; label: string }[] = [
   { value: "light", icon: Sun, label: "Light" },
@@ -73,61 +74,61 @@ export function ThemeSwitcher() {
   const visibleSections = [
     axes.mode && (
       <div key="mode">
-        <Label className="text-muted-foreground text-xs font-medium">
-          Mode
-        </Label>
-        <div className="mt-1.5 flex gap-1">
+        <Label className="dr-theme-switcher-section-label">Mode</Label>
+        <ToggleGroup
+          type="single"
+          value={mode}
+          onValueChange={(value) => {
+            if (value) setMode(value as Mode)
+          }}
+          variant="outline"
+          size="sm"
+          className="dr-theme-switcher-toggle-group"
+          data-cols="3"
+        >
           {modeOptions.map(({ value, icon: Icon, label }) => (
-            <Button
-              key={value}
-              variant={mode === value ? "default" : "outline"}
-              className="flex-1"
-              onClick={() => setMode(value)}
-            >
-              <Icon className="mr-1.5 h-3.5 w-3.5" />
+            <ToggleGroupItem key={value} value={value}>
+              <Icon className="dr-theme-switcher-row-icon" />
               {label}
-            </Button>
+            </ToggleGroupItem>
           ))}
-        </div>
+        </ToggleGroup>
       </div>
     ),
     axes.backgroundStyle && (
       <div key="backgroundStyle">
-        <Label className="text-muted-foreground text-xs font-medium">
-          Background
-        </Label>
-        <div className="mt-1.5 flex gap-1">
+        <Label className="dr-theme-switcher-section-label">Background</Label>
+        <ToggleGroup
+          type="single"
+          value={backgroundStyle}
+          onValueChange={(value) => {
+            if (value) setBackgroundStyle(value as BackgroundStyle)
+          }}
+          variant="outline"
+          size="sm"
+          className="dr-theme-switcher-toggle-group"
+          data-cols="2"
+        >
           {bgOptions.map(({ value, icon: Icon, label }) => (
-            <Button
-              key={value}
-              variant={backgroundStyle === value ? "default" : "outline"}
-              className="flex-1"
-              onClick={() => setBackgroundStyle(value)}
-            >
-              <Icon className="mr-1.5 h-3.5 w-3.5" />
+            <ToggleGroupItem key={value} value={value}>
+              <Icon className="dr-theme-switcher-row-icon" />
               {label}
-            </Button>
+            </ToggleGroupItem>
           ))}
-        </div>
+        </ToggleGroup>
       </div>
     ),
     axes.accentColor && (
       <div key="accentColor">
-        <Label className="text-muted-foreground text-xs font-medium">
-          Accent Color
-        </Label>
-        <div className="mt-1.5 grid grid-cols-9 gap-1.5">
+        <Label className="dr-theme-switcher-section-label">Accent Color</Label>
+        <div className="dr-theme-switcher-swatch-grid">
           {ACCENT_COLORS.map((color: AccentColor) => (
             <button
               key={color}
               type="button"
               title={color}
-              className={cn(
-                "h-6 w-6 cursor-pointer rounded-full border-2 transition-transform hover:scale-110",
-                accentColor === color
-                  ? "border-foreground scale-110"
-                  : "border-transparent",
-              )}
+              className="dr-theme-switcher-swatch"
+              data-active={accentColor === color ? "true" : undefined}
               style={{
                 backgroundColor: `hsl(${accentColors[color][500]})`,
               }}
@@ -139,10 +140,8 @@ export function ThemeSwitcher() {
     ),
     axes.surfaceColor && (
       <div key="surfaceColor">
-        <Label className="text-muted-foreground text-xs font-medium">
-          Surface Color
-        </Label>
-        <div className="mt-1.5 grid grid-cols-9 gap-1.5">
+        <Label className="dr-theme-switcher-section-label">Surface Color</Label>
+        <div className="dr-theme-switcher-swatch-grid">
           {SURFACE_COLORS.map((color: SurfaceColor) => {
             const previewHsl =
               color === "slate" ? "215 16% 47%" : accentColors[color][500]
@@ -151,12 +150,8 @@ export function ThemeSwitcher() {
                 key={color}
                 type="button"
                 title={color}
-                className={cn(
-                  "h-6 w-6 cursor-pointer rounded-full border-2 transition-transform hover:scale-110",
-                  surfaceColor === color
-                    ? "border-foreground scale-110"
-                    : "border-transparent",
-                )}
+                className="dr-theme-switcher-swatch"
+                data-active={surfaceColor === color ? "true" : undefined}
                 style={{
                   backgroundColor: `hsl(${previewHsl})`,
                 }}
@@ -169,125 +164,114 @@ export function ThemeSwitcher() {
     ),
     axes.surfaceStyle && (
       <div key="surfaceStyle">
-        <Label className="text-muted-foreground text-xs font-medium">
-          Surface Style
-        </Label>
-        <div className="mt-1.5 grid grid-cols-2 gap-1">
-          {SURFACE_STYLES.map((style: SurfaceStyle) => {
-            const recipe = surfaceStyles[style]
-            return (
-              <button
-                key={style}
-                type="button"
-                className={cn(
-                  "cursor-pointer rounded-md px-2 py-1.5 text-left text-xs transition-colors",
-                  surfaceStyle === style
-                    ? "bg-primary text-primary-foreground"
-                    : "hover:bg-accent hover:text-accent-foreground",
-                )}
-                onClick={() => setSurfaceStyle(style)}
-              >
-                {recipe.label}
-              </button>
-            )
-          })}
-        </div>
+        <Label className="dr-theme-switcher-section-label">Surface Style</Label>
+        <ToggleGroup
+          type="single"
+          value={surfaceStyle}
+          onValueChange={(value) => {
+            if (value) setSurfaceStyle(value as SurfaceStyle)
+          }}
+          variant="outline"
+          size="sm"
+          className="dr-theme-switcher-toggle-group"
+          data-cols="2"
+        >
+          {SURFACE_STYLES.map((style: SurfaceStyle) => (
+            <ToggleGroupItem key={style} value={style}>
+              {surfaceStyles[style].label}
+            </ToggleGroupItem>
+          ))}
+        </ToggleGroup>
       </div>
     ),
     axes.density && (
       <div key="density">
-        <Label className="text-muted-foreground text-xs font-medium">
-          Density
-        </Label>
-        <div className="mt-1.5 grid grid-cols-2 gap-1">
+        <Label className="dr-theme-switcher-section-label">Density</Label>
+        <ToggleGroup
+          type="single"
+          value={density}
+          onValueChange={(value) => {
+            if (value) setDensity(value as Density)
+          }}
+          variant="outline"
+          size="sm"
+          className="dr-theme-switcher-toggle-group"
+          data-cols="2"
+        >
           {DENSITIES.map((d: Density) => (
-            <button
-              key={d}
-              type="button"
-              className={cn(
-                "cursor-pointer rounded-md px-2 py-1.5 text-left text-xs capitalize transition-colors",
-                density === d
-                  ? "bg-primary text-primary-foreground"
-                  : "hover:bg-accent hover:text-accent-foreground",
-              )}
-              onClick={() => setDensity(d)}
-            >
+            <ToggleGroupItem key={d} value={d} className="capitalize">
               {d}
-            </button>
+            </ToggleGroupItem>
           ))}
-        </div>
+        </ToggleGroup>
       </div>
     ),
     axes.elevation && (
       <div key="elevation">
-        <Label className="text-muted-foreground text-xs font-medium">
-          Elevation
-        </Label>
-        <div className="mt-1.5 grid grid-cols-4 gap-1">
+        <Label className="dr-theme-switcher-section-label">Elevation</Label>
+        <ToggleGroup
+          type="single"
+          value={elevation}
+          onValueChange={(value) => {
+            if (value) setElevation(value as Elevation)
+          }}
+          variant="outline"
+          size="sm"
+          className="dr-theme-switcher-toggle-group"
+          data-cols="4"
+        >
           {ELEVATIONS.map((e: Elevation) => (
-            <button
-              key={e}
-              type="button"
-              className={cn(
-                "cursor-pointer rounded-md px-2 py-1.5 text-center text-xs capitalize transition-colors",
-                elevation === e
-                  ? "bg-primary text-primary-foreground"
-                  : "hover:bg-accent hover:text-accent-foreground",
-              )}
-              onClick={() => setElevation(e)}
-            >
+            <ToggleGroupItem key={e} value={e} className="capitalize">
               {e}
-            </button>
+            </ToggleGroupItem>
           ))}
-        </div>
+        </ToggleGroup>
       </div>
     ),
     axes.buttonElevation && (
       <div key="buttonElevation">
-        <Label className="text-muted-foreground text-xs font-medium">
+        <Label className="dr-theme-switcher-section-label">
           Button Elevation
         </Label>
-        <div className="mt-1.5 grid grid-cols-4 gap-1">
+        <ToggleGroup
+          type="single"
+          value={buttonElevation}
+          onValueChange={(value) => {
+            if (value) setButtonElevation(value as Elevation)
+          }}
+          variant="outline"
+          size="sm"
+          className="dr-theme-switcher-toggle-group"
+          data-cols="4"
+        >
           {ELEVATIONS.map((e: Elevation) => (
-            <button
-              key={e}
-              type="button"
-              className={cn(
-                "cursor-pointer rounded-md px-2 py-1.5 text-center text-xs capitalize transition-colors",
-                buttonElevation === e
-                  ? "bg-primary text-primary-foreground"
-                  : "hover:bg-accent hover:text-accent-foreground",
-              )}
-              onClick={() => setButtonElevation(e)}
-            >
+            <ToggleGroupItem key={e} value={e} className="capitalize">
               {e}
-            </button>
+            </ToggleGroupItem>
           ))}
-        </div>
+        </ToggleGroup>
       </div>
     ),
     axes.radius && (
       <div key="radius">
-        <Label className="text-muted-foreground text-xs font-medium">
-          Radius
-        </Label>
-        <div className="mt-1.5 grid grid-cols-4 gap-1">
+        <Label className="dr-theme-switcher-section-label">Radius</Label>
+        <ToggleGroup
+          type="single"
+          value={radius}
+          onValueChange={(value) => {
+            if (value) setRadius(value as Radius)
+          }}
+          variant="outline"
+          size="sm"
+          className="dr-theme-switcher-toggle-group"
+          data-cols="4"
+        >
           {RADII.map((r: Radius) => (
-            <button
-              key={r}
-              type="button"
-              className={cn(
-                "cursor-pointer rounded-md px-2 py-1.5 text-center text-xs capitalize transition-colors",
-                radius === r
-                  ? "bg-primary text-primary-foreground"
-                  : "hover:bg-accent hover:text-accent-foreground",
-              )}
-              onClick={() => setRadius(r)}
-            >
+            <ToggleGroupItem key={r} value={r} className="capitalize">
               {r}
-            </button>
+            </ToggleGroupItem>
           ))}
-        </div>
+        </ToggleGroup>
       </div>
     ),
   ].filter(Boolean)

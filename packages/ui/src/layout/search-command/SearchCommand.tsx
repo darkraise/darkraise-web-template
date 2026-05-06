@@ -36,14 +36,12 @@ export function SearchCommand({ navItems = [] }: SearchCommandProps) {
     <>
       <Button
         variant="outline"
-        className="text-muted-foreground relative h-9 w-full justify-start gap-2 text-sm md:w-64"
+        className="dr-search-command-trigger"
         onClick={() => setOpen(true)}
       >
         <Search className="h-4 w-4" />
         <span>Search...</span>
-        <kbd className="bg-muted pointer-events-none ml-auto hidden rounded border px-1.5 font-mono text-xs sm:inline-block">
-          ⌘K
-        </kbd>
+        <kbd className="dr-search-command-shortcut">⌘K</kbd>
       </Button>
       <CommandDialog open={open} onOpenChange={setOpen}>
         <CommandInput placeholder="Type a command or search..." />

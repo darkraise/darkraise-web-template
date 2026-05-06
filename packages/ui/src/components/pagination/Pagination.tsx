@@ -65,20 +65,15 @@ function PaginationLink({
   ...props
 }: PaginationLinkProps) {
   const { variant } = React.useContext(PaginationContext)
-
-  const activeOutlinedExtras =
-    "border border-primary bg-transparent text-primary hover:bg-primary/10 hover:text-primary"
+  const isOutlinedActive = isActive && variant === "outlined"
 
   return (
     <a
       aria-current={isActive ? "page" : undefined}
-      className={cn(
-        "dr-btn",
-        isActive && variant === "outlined" ? activeOutlinedExtras : "",
-        className,
-      )}
+      className={cn("dr-btn", "dr-pagination-link", className)}
       data-variant={isActive && variant === "filled" ? "default" : "ghost"}
       data-size={size}
+      data-active={isOutlinedActive ? "true" : undefined}
       {...props}
     />
   )
@@ -93,7 +88,7 @@ function PaginationPrevious({
     <PaginationLink
       aria-label="Go to previous page"
       size="default"
-      className={cn("gap-1 pl-2.5", className)}
+      className={cn("dr-pagination-previous", className)}
       {...props}
     >
       <ChevronLeft className="h-4 w-4" />
@@ -111,7 +106,7 @@ function PaginationNext({
     <PaginationLink
       aria-label="Go to next page"
       size="default"
-      className={cn("gap-1 pr-2.5", className)}
+      className={cn("dr-pagination-next", className)}
       {...props}
     >
       <span>Next</span>

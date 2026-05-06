@@ -1,0 +1,29 @@
+@layer components {
+  /* FormSection */
+  .dr-form-section-description {
+    @apply text-muted-foreground -mt-1.5 text-sm;
+  }
+
+  /* SwitchField — bordered card layout for the row */
+  .dr-switch-field {
+    @apply border-border justify-between rounded-lg border p-4;
+  }
+
+  .dr-switch-field-text {
+    @apply space-y-0.5;
+  }
+
+  /* CheckboxField — alignment changes when description is present */
+  .dr-checkbox-field[data-has-description="true"] {
+    @apply items-start;
+  }
+
+  .dr-checkbox-field-control[data-has-description="true"] {
+    @apply mt-0.5;
+  }
+
+  /* RadioGroupField — option row */
+  .dr-radio-group-field-option {
+    @apply flex items-center gap-2 py-0.5;
+  }
+}

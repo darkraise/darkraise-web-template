@@ -1,0 +1,9 @@
+@layer components {
+  .dr-layout-switcher-item-icon {
+    @apply mr-2 h-4 w-4;
+  }
+
+  .dr-layout-switcher-item[data-active="true"] {
+    @apply bg-accent;
+  }
+}

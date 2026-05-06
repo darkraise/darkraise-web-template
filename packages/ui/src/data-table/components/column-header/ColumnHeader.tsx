@@ -19,16 +19,16 @@ export function ColumnHeader<TData, TValue>({
     <Button
       variant="ghost"
       size="sm"
-      className="-ml-3 h-8"
+      className="dr-data-table-column-header-btn"
       onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
     >
       {title}
       {column.getIsSorted() === "asc" ? (
-        <ArrowUp className="ml-2 h-4 w-4" />
+        <ArrowUp className="dr-data-table-column-header-icon" />
       ) : column.getIsSorted() === "desc" ? (
-        <ArrowDown className="ml-2 h-4 w-4" />
+        <ArrowDown className="dr-data-table-column-header-icon" />
       ) : (
-        <ArrowUpDown className="ml-2 h-4 w-4" />
+        <ArrowUpDown className="dr-data-table-column-header-icon" />
       )}
     </Button>
   )

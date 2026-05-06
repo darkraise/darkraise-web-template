@@ -19,24 +19,13 @@ export function ErrorLayout({
   className,
 }: ErrorLayoutProps) {
   return (
-    <div
-      className={cn(
-        "bg-background text-foreground flex min-h-screen flex-col items-center justify-center px-6",
-        className,
-      )}
-    >
-      <div className="flex max-w-md flex-col items-center text-center">
-        <div className="text-muted-foreground mb-6">{icon}</div>
-        {code && (
-          <p className="text-muted-foreground mb-2 text-sm font-medium tracking-widest uppercase">
-            {code}
-          </p>
-        )}
-        <h1 className="mb-3 text-3xl font-semibold tracking-tight">{title}</h1>
-        <p className="text-muted-foreground mb-8 text-base leading-relaxed">
-          {description}
-        </p>
-        {children && <div className="flex flex-wrap gap-3">{children}</div>}
+    <div className={cn("dr-error-layout", className)}>
+      <div className="dr-error-layout-content">
+        <div className="dr-error-layout-icon">{icon}</div>
+        {code && <p className="dr-error-layout-code">{code}</p>}
+        <h1 className="dr-error-layout-title">{title}</h1>
+        <p className="dr-error-layout-description">{description}</p>
+        {children && <div className="dr-error-layout-actions">{children}</div>}
       </div>
     </div>
   )

@@ -34,16 +34,10 @@ export function LayoutHeader({
   )
 
   return (
-    <header
-      className={cn(
-        "bg-surface-header flex h-14 items-center gap-2 border-b px-4",
-        className,
-      )}
-      style={{ borderColor: "hsl(var(--sidebar-border))" }}
-    >
+    <header className={cn("dr-layout-header", className)}>
       <MobileDrawer nav={nav} />
       {children ?? <SearchCommand navItems={flatNavItems} />}
-      <div className="ml-auto flex items-center gap-1">
+      <div className="dr-layout-header-end">
         {headerSlot}
         {showLayoutSwitcher && <LayoutSwitcher />}
         {showThemeSwitcher && <ThemeSwitcher />}

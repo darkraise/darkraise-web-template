@@ -1,5 +1,4 @@
 import { useRouterAdapter } from "../../router"
-import { cn } from "../../lib/utils"
 import { SidebarItem } from "../sidebar"
 import {
   Tooltip,
@@ -29,11 +28,11 @@ export function StackedLayout({
 
   return (
     <TooltipProvider delayDuration={0}>
-      <div className="flex h-screen overflow-hidden">
+      <div className="dr-stacked-layout">
         {/* Icon sidebar */}
-        <aside className="border-border-default bg-surface-sidebar hidden w-16 shrink-0 flex-col items-center overflow-hidden border-r py-4 md:flex">
-          <div className="bg-primary mb-6 h-8 w-8 rounded-md" />
-          <nav className="flex flex-1 flex-col items-center gap-2">
+        <aside className="dr-stacked-layout-rail">
+          <div className="dr-stacked-layout-rail-logo" />
+          <nav className="dr-stacked-layout-rail-nav">
             {nav.map((group, gi) => {
               const firstItem = group.items[0]
               if (!firstItem) return null
@@ -45,10 +44,8 @@ export function StackedLayout({
                   <TooltipTrigger asChild>
                     <Link
                       to={firstItem.href}
-                      className={cn(
-                        "dr-sidebar-nav-item flex h-10 w-10 items-center justify-center rounded-md transition-colors duration-150",
-                        isActive && "active",
-                      )}
+                      className="dr-sidebar-nav-item dr-stacked-layout-rail-item"
+                      data-status={isActive ? "active" : undefined}
                     >
                       {Icon && <Icon className="h-5 w-5" />}
                     </Link>
@@ -64,16 +61,16 @@ export function StackedLayout({
 
         {/* Sub-nav panel */}
         {activeGroup && (
-          <aside className="border-border bg-background hidden w-56 shrink-0 flex-col overflow-hidden border-r md:flex">
+          <aside className="dr-stacked-layout-aside">
             {activeGroup.label && (
-              <div className="border-border border-b px-4 py-3">
-                <p className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
+              <div className="dr-stacked-layout-aside-header">
+                <p className="dr-stacked-layout-aside-label">
                   {activeGroup.label}
                 </p>
               </div>
             )}
-            <div className="flex-1 overflow-y-auto py-2">
-              <nav className="flex flex-col gap-0.5 px-2">
+            <div className="dr-stacked-layout-aside-scroll">
+              <nav className="dr-stacked-layout-aside-nav">
                 {activeGroup.items.map((item) => (
                   <SidebarItem key={item.href} item={item} />
                 ))}
@@ -83,7 +80,7 @@ export function StackedLayout({
         )}
 
         {/* Main area */}
-        <div className="flex flex-1 flex-col overflow-hidden">
+        <div className="dr-stacked-layout-main">
           <LayoutHeader
             nav={nav}
             headerSlot={headerSlot}
@@ -93,7 +90,7 @@ export function StackedLayout({
             onLogout={onLogout}
           />
 
-          <main className="flex-1 overflow-y-auto p-6">{children}</main>
+          <main className="dr-stacked-layout-content">{children}</main>
         </div>
       </div>
     </TooltipProvider>

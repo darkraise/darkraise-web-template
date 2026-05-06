@@ -1,0 +1,29 @@
+@layer components {
+  .dr-error-layout {
+    @apply bg-background text-foreground flex min-h-screen flex-col items-center justify-center px-6;
+  }
+
+  .dr-error-layout-content {
+    @apply flex max-w-md flex-col items-center text-center;
+  }
+
+  .dr-error-layout-icon {
+    @apply text-muted-foreground mb-6;
+  }
+
+  .dr-error-layout-code {
+    @apply text-muted-foreground mb-2 text-sm font-medium tracking-widest uppercase;
+  }
+
+  .dr-error-layout-title {
+    @apply mb-3 text-3xl font-semibold tracking-tight;
+  }
+
+  .dr-error-layout-description {
+    @apply text-muted-foreground mb-8 text-base leading-relaxed;
+  }
+
+  .dr-error-layout-actions {
+    @apply flex flex-wrap gap-3;
+  }
+}

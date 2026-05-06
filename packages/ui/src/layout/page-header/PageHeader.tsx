@@ -19,7 +19,7 @@ export function PageHeader({
 }: PageHeaderProps) {
   const { Link } = useRouterAdapter()
   return (
-    <div className="space-y-4 pb-[var(--density-container-p)]">
+    <div className="dr-page-header">
       {breadcrumbs && breadcrumbs.length > 0 && (
         <Breadcrumb>
           <BreadcrumbList>
@@ -40,22 +40,22 @@ export function PageHeader({
           </BreadcrumbList>
         </Breadcrumb>
       )}
-      <div className="flex items-center justify-between">
+      <div className="dr-page-header-row">
         <div>
-          <h1 className="text-3xl font-medium">{title}</h1>
+          <h1 className="dr-page-header-title">{title}</h1>
           {description && (
-            <p className="text-muted-foreground mt-1 text-sm">{description}</p>
+            <p className="dr-page-header-description">{description}</p>
           )}
         </div>
-        {actions && <div className="flex items-center gap-2">{actions}</div>}
+        {actions && <div className="dr-page-header-actions">{actions}</div>}
       </div>
       {tabs && tabs.length > 0 && (
-        <nav className="border-border flex gap-4 border-b">
+        <nav className="dr-page-header-tabs">
           {tabs.map((tab) => (
             <Link
               key={tab.value}
               to={tab.href}
-              className="text-muted-foreground hover:text-foreground [&.active]:border-primary [&.active]:text-foreground border-b-2 border-transparent px-1 pb-2 text-sm transition-colors duration-150"
+              className="dr-page-header-tab"
               activeClassName="active"
             >
               {tab.label}

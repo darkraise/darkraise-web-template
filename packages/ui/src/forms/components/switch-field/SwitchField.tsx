@@ -26,9 +26,9 @@ export function SwitchField({
     <Field
       orientation="horizontal"
       data-invalid={isInvalid}
-      className="border-border justify-between rounded-lg border p-4"
+      className="dr-switch-field"
     >
-      <div className="space-y-0.5">
+      <div className="dr-switch-field-text">
         <FieldLabel htmlFor={name}>{label}</FieldLabel>
         {description && <FieldDescription>{description}</FieldDescription>}
       </div>

@@ -1,0 +1,25 @@
+@layer components {
+  .dr-split-panel-layout {
+    @apply flex h-screen flex-col overflow-hidden;
+  }
+
+  .dr-split-panel-layout-body {
+    @apply flex flex-1 overflow-hidden;
+  }
+
+  .dr-split-panel-layout-aside {
+    @apply border-border flex-shrink-0 overflow-y-auto border-r;
+  }
+
+  .dr-split-panel-layout-handle {
+    @apply hover:bg-primary/20 w-1 cursor-col-resize bg-transparent transition-colors;
+  }
+
+  .dr-split-panel-layout-handle[data-dragging="true"] {
+    @apply bg-primary/30;
+  }
+
+  .dr-split-panel-layout-content {
+    @apply flex-1 overflow-y-auto p-6;
+  }
+}

@@ -27,35 +27,39 @@ export function UserMenu({ user, onLogout }: UserMenuProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-          <Avatar className="h-8 w-8">
+        <Button variant="ghost" className="dr-user-menu-trigger">
+          <Avatar className="dr-user-menu-avatar">
             <AvatarFallback>{initials}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="end" forceMount>
+      <DropdownMenuContent
+        className="dr-user-menu-content"
+        align="end"
+        forceMount
+      >
         {user && (
           <>
-            <DropdownMenuLabel className="font-normal">
-              <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium">{user.name}</p>
-                <p className="text-muted-foreground text-xs">{user.email}</p>
+            <DropdownMenuLabel className="dr-user-menu-label">
+              <div className="dr-user-menu-identity">
+                <p className="dr-user-menu-name">{user.name}</p>
+                <p className="dr-user-menu-email">{user.email}</p>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
           </>
         )}
         <DropdownMenuItem>
-          <User className="mr-2 h-4 w-4" />
+          <User className="dr-user-menu-item-icon" />
           Profile
         </DropdownMenuItem>
         <DropdownMenuItem>
-          <Settings className="mr-2 h-4 w-4" />
+          <Settings className="dr-user-menu-item-icon" />
           Settings
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={onLogout}>
-          <LogOut className="mr-2 h-4 w-4" />
+          <LogOut className="dr-user-menu-item-icon" />
           Log out
         </DropdownMenuItem>
       </DropdownMenuContent>

@@ -38,6 +38,10 @@ describe("generateTokens", () => {
       "--accent-foreground",
       "--destructive",
       "--destructive-foreground",
+      "--success",
+      "--success-foreground",
+      "--warning",
+      "--warning-foreground",
       "--border",
       "--input",
       "--surface-base",
@@ -258,6 +262,70 @@ describe("generateTokens", () => {
 
     expect(light["--destructive"]).toBe("0 84% 60%")
     expect(dark["--destructive"]).toBe("0 72% 51%")
+  })
+
+  it("success uses emerald-500 for light and emerald-400 for dark, white foreground", () => {
+    const light = generateTokens({
+      accentColor: "blue",
+      surfaceColor: "slate",
+      surfaceStyle: "default",
+      backgroundStyle: "solid",
+      mode: "light",
+    })
+    const dark = generateTokens({
+      accentColor: "blue",
+      surfaceColor: "slate",
+      surfaceStyle: "default",
+      backgroundStyle: "solid",
+      mode: "dark",
+    })
+
+    expect(light["--success"]).toBe(accentColors.emerald[500])
+    expect(dark["--success"]).toBe(accentColors.emerald[400])
+    expect(light["--success-foreground"]).toBe("0 0% 100%")
+    expect(dark["--success-foreground"]).toBe("0 0% 100%")
+  })
+
+  it("warning uses amber-500 for light and amber-400 for dark, dark foreground", () => {
+    const light = generateTokens({
+      accentColor: "blue",
+      surfaceColor: "slate",
+      surfaceStyle: "default",
+      backgroundStyle: "solid",
+      mode: "light",
+    })
+    const dark = generateTokens({
+      accentColor: "blue",
+      surfaceColor: "slate",
+      surfaceStyle: "default",
+      backgroundStyle: "solid",
+      mode: "dark",
+    })
+
+    expect(light["--warning"]).toBe(accentColors.amber[500])
+    expect(dark["--warning"]).toBe(accentColors.amber[400])
+    expect(light["--warning-foreground"]).toBe("222 47% 11%")
+    expect(dark["--warning-foreground"]).toBe("222 47% 11%")
+  })
+
+  it("success and warning are independent of accentColor", () => {
+    const blueAccent = generateTokens({
+      accentColor: "blue",
+      surfaceColor: "slate",
+      surfaceStyle: "default",
+      backgroundStyle: "solid",
+      mode: "light",
+    })
+    const redAccent = generateTokens({
+      accentColor: "red",
+      surfaceColor: "slate",
+      surfaceStyle: "default",
+      backgroundStyle: "solid",
+      mode: "light",
+    })
+
+    expect(blueAccent["--success"]).toBe(redAccent["--success"])
+    expect(blueAccent["--warning"]).toBe(redAccent["--warning"])
   })
 
   it("uses desaturated accent color scale as surface when surfaceColor is set", () => {

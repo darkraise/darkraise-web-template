@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { useRouterAdapter } from "../../router"
 import { ChevronRight } from "lucide-react"
-import { cn } from "../../lib/utils"
 import "./sidebar-nav.css"
 import {
   Collapsible,
@@ -36,15 +35,12 @@ function SidebarNav({ nav, collapsed: collapsedProp }: SidebarNavProps) {
 
   return (
     <SidebarProvider collapsed={collapsed}>
-      <nav
-        className="flex flex-col gap-1 px-2"
-        data-collapsed={collapsed || undefined}
-      >
+      <nav className="dr-sidebar-nav" data-collapsed={collapsed || undefined}>
         {nav.map((group, gi) => (
           <SidebarGroup
             key={gi}
             group={group}
-            className={gi > 0 ? "mt-4" : undefined}
+            position={gi > 0 ? "subsequent" : undefined}
           />
         ))}
       </nav>
@@ -54,20 +50,17 @@ function SidebarNav({ nav, collapsed: collapsedProp }: SidebarNavProps) {
 
 interface SidebarGroupProps {
   group: NavGroup
-  className?: string
+  position?: "subsequent"
 }
 
-function SidebarGroup({ group, className }: SidebarGroupProps) {
+function SidebarGroup({ group, position }: SidebarGroupProps) {
   const { collapsed } = useSidebar()
   return (
-    <div className={cn("flex flex-col gap-0.5", className)}>
+    <div className="dr-sidebar-nav-group" data-position={position}>
       {group.label && (
         <p
-          className={cn(
-            "truncate px-3 py-1 text-xs font-medium tracking-wider uppercase",
-            collapsed && "invisible",
-          )}
-          style={{ color: "hsl(var(--sidebar-foreground-muted))" }}
+          className="dr-sidebar-nav-group-label"
+          data-collapsed={collapsed ? "true" : undefined}
           aria-hidden={collapsed || undefined}
         >
           {group.label}
@@ -101,25 +94,21 @@ function SidebarItem({ item, depth = 0 }: SidebarItemProps) {
   const linkContent = (
     <Link
       to={item.href}
-      className={cn(
-        "dr-sidebar-nav-item flex min-h-[var(--density-cell)] items-center gap-3 rounded-md p-[var(--density-row-py)] text-sm transition-colors duration-150",
-        collapsed ? "mx-auto w-[var(--density-cell)] justify-center" : "w-full",
-        depth > 0 && "py-1.5 text-[13px]",
-      )}
+      className="dr-sidebar-nav-item dr-sidebar-nav-link"
+      data-collapsed={collapsed ? "true" : undefined}
+      data-depth={depth > 0 ? "nested" : undefined}
       style={depth > 0 ? { paddingLeft: `${depth * 12 + 12}px` } : undefined}
       activeExact
       activeClassName="active"
     >
       {item.icon && (
-        <span className="flex h-4 w-4 shrink-0 items-center justify-center">
-          <item.icon className="h-4 w-4 shrink-0" />
+        <span className="dr-sidebar-nav-icon">
+          <item.icon className="dr-sidebar-nav-icon-svg" />
         </span>
       )}
-      {!collapsed && <span className="flex-1 truncate">{item.label}</span>}
+      {!collapsed && <span className="dr-sidebar-nav-label">{item.label}</span>}
       {!collapsed && item.badge && (
-        <span className="bg-primary/20 text-primary ml-auto rounded-full px-2 py-0.5 text-xs">
-          {item.badge}
-        </span>
+        <span className="dr-sidebar-nav-badge">{item.badge}</span>
       )}
     </Link>
   )
@@ -143,11 +132,11 @@ function CollapsedParentItem({ item }: { item: NavItem }) {
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="dr-sidebar-nav-item mx-auto flex min-h-[var(--density-cell)] w-[var(--density-cell)] cursor-pointer items-center justify-center gap-3 rounded-md p-[var(--density-row-py)] transition-colors duration-150"
+          className="dr-sidebar-nav-item dr-sidebar-nav-popover-trigger"
         >
           {item.icon && (
-            <span className="flex h-4 w-4 shrink-0 items-center justify-center">
-              <item.icon className="h-4 w-4 shrink-0" />
+            <span className="dr-sidebar-nav-icon">
+              <item.icon className="dr-sidebar-nav-icon-svg" />
             </span>
           )}
         </button>
@@ -155,12 +144,10 @@ function CollapsedParentItem({ item }: { item: NavItem }) {
       <PopoverContent
         side="right"
         align="start"
-        className="w-48 p-1"
+        className="dr-sidebar-nav-popover-content"
         sideOffset={8}
       >
-        <p className="text-muted-foreground px-2 py-1.5 text-xs font-medium">
-          {item.label}
-        </p>
+        <p className="dr-sidebar-nav-popover-label">{item.label}</p>
         {item.children?.map((child) => (
           <Link
             key={child.href}
@@ -188,23 +175,18 @@ function CollapsibleSidebarItem({
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
       <CollapsibleTrigger
-        className={cn(
-          "dr-sidebar-nav-item flex min-h-[var(--density-cell)] w-full cursor-pointer items-center gap-3 rounded-md p-[var(--density-row-py)] text-sm transition-colors duration-150",
-        )}
+        className="dr-sidebar-nav-item dr-sidebar-nav-collapsible-trigger"
         style={depth > 0 ? { paddingLeft: `${depth * 12 + 12}px` } : undefined}
       >
-        {item.icon && <item.icon className="h-4 w-4 shrink-0" />}
+        {item.icon && <item.icon className="dr-sidebar-nav-icon-svg" />}
         <span>{item.label}</span>
         <ChevronRight
-          className={cn(
-            "ml-auto h-4 w-4 shrink-0 transition-transform duration-200",
-            open && "rotate-90",
-          )}
-          style={{ color: "hsl(var(--sidebar-foreground-muted))" }}
+          className="dr-sidebar-nav-collapsible-chevron"
+          data-open={open ? "true" : undefined}
         />
       </CollapsibleTrigger>
-      <CollapsibleContent className="overflow-hidden data-[state=closed]:animate-[collapsible-up_150ms_ease-out] data-[state=open]:animate-[collapsible-down_150ms_ease-out]">
-        <div className="flex flex-col gap-0.5">
+      <CollapsibleContent className="dr-sidebar-nav-collapsible-content">
+        <div className="dr-sidebar-nav-collapsible-children">
           {item.children?.map((child) => (
             <SidebarItem key={child.href} item={child} depth={depth + 1} />
           ))}

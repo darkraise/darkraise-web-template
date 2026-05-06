@@ -20,7 +20,11 @@ export function ColumnVisibility<TData>({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="h-9">
+        <Button
+          variant="outline"
+          size="sm"
+          className="dr-data-table-column-visibility-trigger"
+        >
           <SlidersHorizontal className="mr-2 h-4 w-4" />
           Columns
         </Button>

@@ -1,0 +1,33 @@
+@layer components {
+  .dr-user-menu-trigger {
+    @apply relative h-8 w-8 rounded-full;
+  }
+
+  .dr-user-menu-avatar {
+    @apply h-8 w-8;
+  }
+
+  .dr-user-menu-content {
+    @apply w-56;
+  }
+
+  .dr-user-menu-label {
+    @apply font-normal;
+  }
+
+  .dr-user-menu-identity {
+    @apply flex flex-col space-y-1;
+  }
+
+  .dr-user-menu-name {
+    @apply text-sm font-medium;
+  }
+
+  .dr-user-menu-email {
+    @apply text-muted-foreground text-xs;
+  }
+
+  .dr-user-menu-item-icon {
+    @apply mr-2 h-4 w-4;
+  }
+}

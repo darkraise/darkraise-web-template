@@ -1,4 +1,90 @@
 @layer components {
+  .dr-sidebar-nav {
+    @apply flex flex-col gap-1 px-2;
+  }
+
+  .dr-sidebar-nav-group {
+    @apply flex flex-col gap-0.5;
+  }
+
+  .dr-sidebar-nav-group[data-position="subsequent"] {
+    @apply mt-4;
+  }
+
+  .dr-sidebar-nav-group-label {
+    @apply truncate px-3 py-1 text-xs font-medium tracking-wider uppercase;
+    color: hsl(var(--sidebar-foreground-muted));
+  }
+
+  .dr-sidebar-nav-group-label[data-collapsed="true"] {
+    @apply invisible;
+  }
+
+  .dr-sidebar-nav-link {
+    @apply flex min-h-[var(--density-cell)] items-center gap-3 rounded-md p-[var(--density-row-py)] text-sm transition-colors duration-150;
+  }
+
+  .dr-sidebar-nav-link[data-collapsed="true"] {
+    @apply mx-auto w-[var(--density-cell)] justify-center;
+  }
+
+  .dr-sidebar-nav-link:not([data-collapsed="true"]) {
+    @apply w-full;
+  }
+
+  .dr-sidebar-nav-link[data-depth="nested"] {
+    @apply py-1.5 text-[13px];
+  }
+
+  .dr-sidebar-nav-icon {
+    @apply flex h-4 w-4 shrink-0 items-center justify-center;
+  }
+
+  .dr-sidebar-nav-icon-svg {
+    @apply h-4 w-4 shrink-0;
+  }
+
+  .dr-sidebar-nav-label {
+    @apply flex-1 truncate;
+  }
+
+  .dr-sidebar-nav-badge {
+    @apply bg-primary/20 text-primary ml-auto rounded-full px-2 py-0.5 text-xs;
+  }
+
+  .dr-sidebar-nav-popover-trigger {
+    @apply mx-auto flex min-h-[var(--density-cell)] w-[var(--density-cell)] cursor-pointer items-center justify-center gap-3 rounded-md p-[var(--density-row-py)] transition-colors duration-150;
+  }
+
+  .dr-sidebar-nav-popover-content {
+    @apply w-48 p-1;
+  }
+
+  .dr-sidebar-nav-popover-label {
+    @apply text-muted-foreground px-2 py-1.5 text-xs font-medium;
+  }
+
+  .dr-sidebar-nav-collapsible-trigger {
+    @apply flex min-h-[var(--density-cell)] w-full cursor-pointer items-center gap-3 rounded-md p-[var(--density-row-py)] text-sm transition-colors duration-150;
+  }
+
+  .dr-sidebar-nav-collapsible-chevron {
+    @apply ml-auto h-4 w-4 shrink-0 transition-transform duration-200;
+    color: hsl(var(--sidebar-foreground-muted));
+  }
+
+  .dr-sidebar-nav-collapsible-chevron[data-open="true"] {
+    @apply rotate-90;
+  }
+
+  .dr-sidebar-nav-collapsible-content {
+    @apply overflow-hidden data-[state=closed]:animate-[collapsible-up_150ms_ease-out] data-[state=open]:animate-[collapsible-down_150ms_ease-out];
+  }
+
+  .dr-sidebar-nav-collapsible-children {
+    @apply flex flex-col gap-0.5;
+  }
+
   .dr-sidebar-nav-item {
     color: hsl(var(--sidebar-foreground));
   }

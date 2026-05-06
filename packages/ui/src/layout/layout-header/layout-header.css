@@ -1,0 +1,10 @@
+@layer components {
+  .dr-layout-header {
+    @apply bg-surface-header flex h-14 items-center gap-2 border-b px-4;
+    border-color: hsl(var(--sidebar-border));
+  }
+
+  .dr-layout-header-end {
+    @apply ml-auto flex items-center gap-1;
+  }
+}

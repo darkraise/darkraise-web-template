@@ -1,0 +1,37 @@
+@layer components {
+  .dr-theme-switcher-section-label {
+    @apply text-muted-foreground text-xs font-medium;
+  }
+
+  .dr-theme-switcher-row-icon {
+    @apply mr-1.5 h-3.5 w-3.5;
+  }
+
+  .dr-theme-switcher-swatch-grid {
+    @apply mt-1.5 grid grid-cols-9 gap-1.5;
+  }
+
+  .dr-theme-switcher-swatch {
+    @apply h-6 w-6 cursor-pointer rounded-full border-2 border-transparent transition-transform hover:scale-110;
+  }
+
+  .dr-theme-switcher-swatch[data-active="true"] {
+    @apply border-foreground scale-110;
+  }
+
+  .dr-theme-switcher-toggle-group {
+    @apply mt-1.5 grid gap-1;
+  }
+
+  .dr-theme-switcher-toggle-group[data-cols="2"] {
+    @apply grid-cols-2;
+  }
+
+  .dr-theme-switcher-toggle-group[data-cols="3"] {
+    @apply grid-cols-3;
+  }
+
+  .dr-theme-switcher-toggle-group[data-cols="4"] {
+    @apply grid-cols-4;
+  }
+}

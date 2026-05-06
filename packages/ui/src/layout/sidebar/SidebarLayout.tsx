@@ -1,6 +1,5 @@
 import { useState } from "react"
 import { PanelLeftClose, PanelLeft } from "lucide-react"
-import { cn } from "../../lib/utils"
 import { Button } from "../../components/button"
 import { TooltipProvider } from "../../components/tooltip"
 import { BrandLogo } from "../brand-logo"
@@ -21,34 +20,21 @@ export function SidebarLayout({
   onLogout,
 }: LayoutProps) {
   const [collapsed, setCollapsed] = useState(false)
-  const sidebarBorder = { borderColor: "hsl(var(--sidebar-border))" }
 
   return (
     <TooltipProvider delayDuration={0}>
       <SidebarProvider collapsed={collapsed}>
-        <div className="flex h-screen overflow-hidden">
+        <div className="dr-sidebar-layout">
           <aside
-            data-collapsed={collapsed || undefined}
-            className={cn(
-              "sidebar-gradient-overlay theme-transition bg-surface-sidebar hidden shrink-0 flex-col overflow-hidden border-r transition-[width] duration-300 md:flex",
-            )}
-            style={{
-              ...sidebarBorder,
-              width: collapsed ? "4rem" : "16rem",
-            }}
+            className="dr-sidebar-layout-aside sidebar-gradient-overlay theme-transition bg-surface-sidebar"
+            data-collapsed={collapsed ? "true" : undefined}
           >
-            <div
-              className={cn(
-                "flex h-14 items-center border-b",
-                collapsed ? "justify-center px-2" : "justify-between px-4",
-              )}
-              style={sidebarBorder}
-            >
+            <div className="dr-sidebar-layout-aside-header">
               {!collapsed && <BrandLogo collapsed={false} />}
               <Button
                 variant="ghost"
                 size="icon"
-                className="dr-sidebar-nav-item h-8 w-8"
+                className="dr-sidebar-nav-item dr-sidebar-layout-toggle"
                 onClick={() => setCollapsed(!collapsed)}
                 aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
               >
@@ -61,35 +47,26 @@ export function SidebarLayout({
             </div>
 
             {sidebarHeader && (
-              <div
-                className={cn(
-                  "border-b",
-                  collapsed ? "px-2 py-2" : "px-3 py-3",
-                )}
-                style={sidebarBorder}
-              >
+              <div className="dr-sidebar-layout-aside-section">
                 {sidebarHeader}
               </div>
             )}
 
-            <div className="flex-1 overflow-y-auto py-4">
+            <div className="dr-sidebar-layout-nav-scroll">
               <SidebarNav nav={nav} />
             </div>
 
             {sidebarFooter && (
               <div
-                className={cn(
-                  "border-t",
-                  collapsed ? "px-2 py-2" : "px-3 py-3",
-                )}
-                style={sidebarBorder}
+                className="dr-sidebar-layout-aside-section"
+                data-position="footer"
               >
                 {sidebarFooter}
               </div>
             )}
           </aside>
 
-          <div className="flex flex-1 flex-col overflow-hidden">
+          <div className="dr-sidebar-layout-main">
             <LayoutHeader
               nav={nav}
               headerSlot={headerSlot}
@@ -99,7 +76,7 @@ export function SidebarLayout({
               user={user}
               onLogout={onLogout}
             />
-            <main className="flex-1 overflow-y-auto p-6" data-content>
+            <main className="dr-sidebar-layout-content" data-content>
               {children}
             </main>
           </div>

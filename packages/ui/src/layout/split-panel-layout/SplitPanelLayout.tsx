@@ -1,5 +1,4 @@
 import { useState, useCallback, useRef } from "react"
-import { cn } from "../../lib/utils"
 import { useEventListener } from "../../hooks"
 import { SearchCommand } from "../search-command"
 import { BrandLogo } from "../brand-logo"
@@ -46,7 +45,7 @@ export function SplitPanelLayout({
   }, [])
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden">
+    <div className="dr-split-panel-layout">
       <LayoutHeader
         nav={nav}
         headerSlot={headerSlot}
@@ -64,26 +63,21 @@ export function SplitPanelLayout({
         />
       </LayoutHeader>
 
-      <div className="flex flex-1 overflow-hidden">
-        {/* List panel */}
+      <div className="dr-split-panel-layout-body">
         <div
-          className="border-border flex-shrink-0 overflow-y-auto border-r"
+          className="dr-split-panel-layout-aside"
           style={{ width: panelWidth }}
         >
           {panel}
         </div>
 
-        {/* Resize handle */}
         <div
-          className={cn(
-            "hover:bg-primary/20 w-1 cursor-col-resize bg-transparent transition-colors",
-            isDragging && "bg-primary/30",
-          )}
+          className="dr-split-panel-layout-handle"
+          data-dragging={isDragging ? "true" : undefined}
           onMouseDown={handleMouseDown}
         />
 
-        {/* Content */}
-        <main className="flex-1 overflow-y-auto p-6">{children}</main>
+        <main className="dr-split-panel-layout-content">{children}</main>
       </div>
     </div>
   )

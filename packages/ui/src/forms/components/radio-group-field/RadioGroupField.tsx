@@ -34,7 +34,7 @@ export function RadioGroupField({
           aria-invalid={invalid}
         >
           {options.map((opt) => (
-            <div key={opt.value} className="flex items-center gap-2 py-0.5">
+            <div key={opt.value} className="dr-radio-group-field-option">
               <RadioGroupItem value={opt.value} id={`${name}-${opt.value}`} />
               <Label htmlFor={`${name}-${opt.value}`}>{opt.label}</Label>
             </div>

@@ -7,7 +7,6 @@ import {
   DropdownMenuTrigger,
 } from "../../components/dropdown-menu"
 import { useLayoutStore, type LayoutVariant } from "../layoutStore"
-import { cn } from "../../lib/utils"
 
 type LayoutEntry = {
   value: LayoutVariant
@@ -45,9 +44,10 @@ export function LayoutSwitcher() {
           <DropdownMenuItem
             key={value}
             onClick={() => setLayout(value)}
-            className={cn(layout === value && "bg-accent")}
+            className="dr-layout-switcher-item"
+            data-active={layout === value ? "true" : undefined}
           >
-            <Icon className="mr-2 h-4 w-4" />
+            <Icon className="dr-layout-switcher-item-icon" />
             {label}
           </DropdownMenuItem>
         ))}

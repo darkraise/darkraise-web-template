@@ -12,10 +12,13 @@ export function BrandLogo({ collapsed = false, className }: BrandLogoProps) {
   const [failed, setFailed] = useState(false)
 
   return (
-    <div className={cn("flex items-center gap-2", className)}>
+    <div
+      className={cn("dr-brand-logo", className)}
+      data-collapsed={collapsed ? "true" : undefined}
+    >
       {failed ? (
-        <div className="bg-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-md">
-          <span className="text-primary-foreground text-sm font-medium">
+        <div className="dr-brand-logo-mark">
+          <span className="dr-brand-logo-mark-text">
             {appName.charAt(0).toUpperCase()}
           </span>
         </div>
@@ -23,13 +26,11 @@ export function BrandLogo({ collapsed = false, className }: BrandLogoProps) {
         <img
           src="/logo.svg"
           alt={appName}
-          className="h-8 w-8 shrink-0 rounded-md object-contain"
+          className="dr-brand-logo-image"
           onError={() => setFailed(true)}
         />
       )}
-      {!collapsed && (
-        <span className="truncate text-lg font-medium">{appName}</span>
-      )}
+      {!collapsed && <span className="dr-brand-logo-label">{appName}</span>}
     </div>
   )
 }

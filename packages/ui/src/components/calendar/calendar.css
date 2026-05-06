@@ -36,4 +36,122 @@
   .dr-calendar-grid-cell {
     @apply h-12 w-full text-sm font-normal;
   }
+
+  .dr-calendar-grid-cell[data-current="true"] {
+    @apply bg-accent text-accent-foreground;
+  }
+
+  .dr-calendar-grid-cell[data-outside="true"] {
+    @apply text-muted-foreground opacity-50;
+  }
+
+  /* react-day-picker named slots — each value in the <DayPicker classNames>
+     object is a single dr-* class with all utilities applied here. */
+  .dr-calendar-root {
+    @apply w-fit;
+  }
+
+  .dr-calendar-months {
+    @apply relative flex flex-col gap-4 md:flex-row;
+  }
+
+  .dr-calendar-month {
+    @apply flex w-full flex-col gap-4;
+  }
+
+  .dr-calendar-nav {
+    @apply pointer-events-none absolute inset-x-0 top-0 flex w-full items-center justify-between gap-1;
+  }
+
+  .dr-calendar-nav-btn {
+    @apply pointer-events-auto aspect-square w-[var(--density-cell)] p-0 select-none aria-disabled:opacity-50;
+  }
+
+  .dr-calendar-month-caption {
+    @apply flex h-8 w-full items-center justify-center px-8;
+  }
+
+  .dr-calendar-caption-label {
+    @apply text-sm font-medium select-none;
+  }
+
+  .dr-calendar-caption-label--interactive {
+    @apply [&>svg]:text-muted-foreground flex h-8 items-center gap-1 rounded-md pr-1 pl-2 [&>svg]:size-3.5;
+  }
+
+  .dr-calendar-dropdowns {
+    @apply flex h-8 w-full items-center justify-center gap-1.5 text-sm font-medium;
+  }
+
+  .dr-calendar-dropdown-root {
+    @apply relative;
+  }
+
+  .dr-calendar-dropdown-trigger {
+    @apply h-7 w-auto gap-1 px-2 text-sm font-medium shadow-none;
+  }
+
+  .dr-calendar-dropdown-content {
+    @apply max-h-60;
+  }
+
+  .dr-calendar-table {
+    @apply w-full border-collapse;
+  }
+
+  .dr-calendar-weekdays {
+    @apply flex;
+  }
+
+  .dr-calendar-weekday {
+    @apply text-muted-foreground w-[var(--density-cell)] rounded-md text-center text-[0.8rem] font-normal select-none;
+  }
+
+  .dr-calendar-week {
+    @apply mt-2 flex w-full;
+  }
+
+  .dr-calendar-week-number-header {
+    @apply w-[var(--density-cell)] select-none;
+  }
+
+  .dr-calendar-week-number {
+    @apply text-muted-foreground text-[0.8rem] select-none;
+  }
+
+  .dr-calendar-week-number-cell {
+    @apply flex aspect-square w-[var(--density-cell)] items-center justify-center text-center;
+  }
+
+  .dr-calendar-day {
+    @apply relative aspect-square w-[var(--density-cell)] p-0 text-center select-none;
+  }
+
+  .dr-calendar-range-start {
+    @apply bg-accent rounded-l-md;
+  }
+
+  .dr-calendar-range-middle {
+    @apply rounded-none;
+  }
+
+  .dr-calendar-range-end {
+    @apply bg-accent rounded-r-md;
+  }
+
+  .dr-calendar-today {
+    @apply bg-accent text-accent-foreground rounded-md data-[selected=true]:rounded-none;
+  }
+
+  .dr-calendar-outside {
+    @apply text-muted-foreground aria-selected:text-muted-foreground opacity-50;
+  }
+
+  .dr-calendar-disabled {
+    @apply text-muted-foreground opacity-50;
+  }
+
+  .dr-calendar-hidden {
+    @apply invisible;
+  }
 }

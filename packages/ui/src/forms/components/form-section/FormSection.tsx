@@ -10,7 +10,7 @@ export function FormSection({
     <FieldSet>
       <FieldLegend>{title}</FieldLegend>
       {description && (
-        <p className="text-muted-foreground -mt-1.5 text-sm">{description}</p>
+        <p className="dr-form-section-description">{description}</p>
       )}
       <FieldGroup>{children}</FieldGroup>
     </FieldSet>

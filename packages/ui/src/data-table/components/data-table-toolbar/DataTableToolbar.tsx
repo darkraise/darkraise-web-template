@@ -12,8 +12,8 @@ export function DataTableToolbar<TData>({
   const isFiltered = table.getState().columnFilters.length > 0
 
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex flex-1 items-center gap-2">
+    <div className="dr-data-table-toolbar">
+      <div className="dr-data-table-toolbar-filters">
         {searchKey && (
           <Input
             placeholder={searchPlaceholder}
@@ -23,13 +23,13 @@ export function DataTableToolbar<TData>({
             onChange={(e) =>
               table.getColumn(searchKey)?.setFilterValue(e.target.value)
             }
-            className="h-9 w-64"
+            className="dr-data-table-toolbar-search"
           />
         )}
         {isFiltered && (
           <Button
             variant="ghost"
-            className="h-9 px-2"
+            className="dr-data-table-toolbar-reset"
             onClick={() => table.resetColumnFilters()}
           >
             Reset

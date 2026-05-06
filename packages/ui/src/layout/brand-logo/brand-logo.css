@@ -1,0 +1,21 @@
+@layer components {
+  .dr-brand-logo {
+    @apply flex items-center gap-2;
+  }
+
+  .dr-brand-logo-mark {
+    @apply bg-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-md;
+  }
+
+  .dr-brand-logo-mark-text {
+    @apply text-primary-foreground text-sm font-medium;
+  }
+
+  .dr-brand-logo-image {
+    @apply h-8 w-8 shrink-0 rounded-md object-contain;
+  }
+
+  .dr-brand-logo-label {
+    @apply truncate text-lg font-medium;
+  }
+}

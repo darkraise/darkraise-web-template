@@ -1,0 +1,13 @@
+@layer components {
+  .dr-mobile-drawer-trigger {
+    @apply md:hidden;
+  }
+
+  .dr-mobile-drawer-content {
+    @apply w-72;
+  }
+
+  .dr-mobile-drawer-body {
+    @apply mt-4;
+  }
+}

@@ -1,0 +1,116 @@
+@layer components {
+  /* Toolbar */
+  .dr-data-table-toolbar {
+    @apply flex items-center justify-between;
+  }
+
+  .dr-data-table-toolbar-filters {
+    @apply flex flex-1 items-center gap-2;
+  }
+
+  .dr-data-table-toolbar-search {
+    @apply h-9 w-64;
+  }
+
+  .dr-data-table-toolbar-reset {
+    @apply h-9 px-2;
+  }
+
+  /* Pagination */
+  .dr-data-table-pagination {
+    @apply flex items-center justify-between;
+  }
+
+  .dr-data-table-pagination-summary {
+    @apply text-muted-foreground text-sm;
+  }
+
+  .dr-data-table-pagination-controls {
+    @apply flex items-center gap-6;
+  }
+
+  .dr-data-table-pagination-page-size {
+    @apply flex items-center gap-2;
+  }
+
+  .dr-data-table-pagination-page-size-trigger {
+    @apply h-8 w-[70px];
+  }
+
+  .dr-data-table-pagination-page-info {
+    @apply text-sm;
+  }
+
+  .dr-data-table-pagination-nav-btn {
+    @apply h-8 w-8;
+  }
+
+  /* Empty state */
+  .dr-data-table-empty {
+    @apply text-muted-foreground flex flex-col items-center justify-center py-12;
+  }
+
+  .dr-data-table-empty-icon {
+    @apply mb-2 h-10 w-10;
+  }
+
+  .dr-data-table-empty-text {
+    @apply text-sm;
+  }
+
+  /* Skeleton */
+  .dr-data-table-skeleton {
+    @apply space-y-4;
+  }
+
+  .dr-data-table-skeleton-toolbar {
+    @apply flex items-center justify-between;
+  }
+
+  .dr-data-table-skeleton-toolbar-search {
+    @apply h-9 w-64;
+  }
+
+  .dr-data-table-skeleton-toolbar-action {
+    @apply h-9 w-24;
+  }
+
+  .dr-data-table-skeleton-frame {
+    @apply border-border rounded-md border;
+  }
+
+  .dr-data-table-skeleton-row {
+    @apply border-border border-b p-4 last:border-0;
+  }
+
+  .dr-data-table-skeleton-row-cells {
+    @apply flex gap-4;
+  }
+
+  .dr-data-table-skeleton-cell {
+    @apply h-4 flex-1;
+  }
+
+  /* Column header (sortable) */
+  .dr-data-table-column-header-btn {
+    @apply -ml-3 h-8;
+  }
+
+  .dr-data-table-column-header-icon {
+    @apply ml-2 h-4 w-4;
+  }
+
+  /* Row actions */
+  .dr-data-table-row-actions-trigger {
+    @apply h-8 w-8;
+  }
+
+  .dr-data-table-row-actions-item[data-variant="destructive"] {
+    @apply text-destructive;
+  }
+
+  /* Column visibility */
+  .dr-data-table-column-visibility-trigger {
+    @apply h-9;
+  }
+}

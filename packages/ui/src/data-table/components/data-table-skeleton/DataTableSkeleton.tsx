@@ -10,24 +10,24 @@ export function DataTableSkeleton({
   rowCount = 5,
 }: DataTableSkeletonProps) {
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <Skeleton className="h-9 w-64" />
-        <Skeleton className="h-9 w-24" />
+    <div className="dr-data-table-skeleton">
+      <div className="dr-data-table-skeleton-toolbar">
+        <Skeleton className="dr-data-table-skeleton-toolbar-search" />
+        <Skeleton className="dr-data-table-skeleton-toolbar-action" />
       </div>
-      <div className="border-border rounded-md border">
-        <div className="border-border border-b p-4">
-          <div className="flex gap-4">
+      <div className="dr-data-table-skeleton-frame">
+        <div className="dr-data-table-skeleton-row">
+          <div className="dr-data-table-skeleton-row-cells">
             {Array.from({ length: columnCount }).map((_, i) => (
-              <Skeleton key={i} className="h-4 flex-1" />
+              <Skeleton key={i} className="dr-data-table-skeleton-cell" />
             ))}
           </div>
         </div>
         {Array.from({ length: rowCount }).map((_, i) => (
-          <div key={i} className="border-border border-b p-4 last:border-0">
-            <div className="flex gap-4">
+          <div key={i} className="dr-data-table-skeleton-row">
+            <div className="dr-data-table-skeleton-row-cells">
               {Array.from({ length: columnCount }).map((_, j) => (
-                <Skeleton key={j} className="h-4 flex-1" />
+                <Skeleton key={j} className="dr-data-table-skeleton-cell" />
               ))}
             </div>
           </div>

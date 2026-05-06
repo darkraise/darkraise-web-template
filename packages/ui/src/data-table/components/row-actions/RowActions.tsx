@@ -21,7 +21,11 @@ export function RowActions({ actions }: RowActionsProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-8 w-8">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="dr-data-table-row-actions-trigger"
+        >
           <MoreHorizontal className="h-4 w-4" />
           <span className="sr-only">Actions</span>
         </Button>
@@ -31,9 +35,8 @@ export function RowActions({ actions }: RowActionsProps) {
           <DropdownMenuItem
             key={action.label}
             onClick={action.onClick}
-            className={
-              action.variant === "destructive" ? "text-destructive" : ""
-            }
+            className="dr-data-table-row-actions-item"
+            data-variant={action.variant}
           >
             {action.label}
           </DropdownMenuItem>

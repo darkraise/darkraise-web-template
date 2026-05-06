@@ -97,45 +97,34 @@ function Calendar({
       month={month}
       onMonthChange={setMonth}
       classNames={{
-        root: "w-fit",
-        months: "relative flex flex-col gap-4 md:flex-row",
-        month: "flex w-full flex-col gap-4",
-        nav: "pointer-events-none absolute inset-x-0 top-0 flex w-full items-center justify-between gap-1",
-        button_previous: cn(
-          "dr-btn",
-          "pointer-events-auto aspect-square w-[var(--density-cell)] select-none p-0 aria-disabled:opacity-50",
-        ),
-        button_next: cn(
-          "dr-btn",
-          "pointer-events-auto aspect-square w-[var(--density-cell)] select-none p-0 aria-disabled:opacity-50",
-        ),
-        month_caption: "flex h-8 w-full items-center justify-center px-8",
+        root: "dr-calendar-root",
+        months: "dr-calendar-months",
+        month: "dr-calendar-month",
+        nav: "dr-calendar-nav",
+        button_previous: "dr-btn dr-calendar-nav-btn",
+        button_next: "dr-btn dr-calendar-nav-btn",
+        month_caption: "dr-calendar-month-caption",
         caption_label: cn(
-          "select-none text-sm font-medium",
-          captionLayout !== "label" &&
-            "[&>svg]:text-muted-foreground flex h-8 items-center gap-1 rounded-md pl-2 pr-1 [&>svg]:size-3.5",
+          "dr-calendar-caption-label",
+          captionLayout !== "label" && "dr-calendar-caption-label--interactive",
         ),
-        dropdowns:
-          "flex h-8 w-full items-center justify-center gap-1.5 text-sm font-medium",
-        dropdown_root: "relative",
+        dropdowns: "dr-calendar-dropdowns",
+        dropdown_root: "dr-calendar-dropdown-root",
         dropdown: "",
-        table: "w-full border-collapse",
-        weekdays: "flex",
-        weekday:
-          "text-muted-foreground w-[var(--density-cell)] select-none rounded-md text-[0.8rem] font-normal text-center",
-        week: "mt-2 flex w-full",
-        week_number_header: "w-[var(--density-cell)] select-none",
-        week_number: "text-muted-foreground select-none text-[0.8rem]",
-        day: "relative aspect-square w-[var(--density-cell)] select-none p-0 text-center",
-        range_start: "bg-accent rounded-l-md",
-        range_middle: "rounded-none",
-        range_end: "bg-accent rounded-r-md",
-        today:
-          "bg-accent text-accent-foreground rounded-md data-[selected=true]:rounded-none",
-        outside:
-          "text-muted-foreground aria-selected:text-muted-foreground opacity-50",
-        disabled: "text-muted-foreground opacity-50",
-        hidden: "invisible",
+        table: "dr-calendar-table",
+        weekdays: "dr-calendar-weekdays",
+        weekday: "dr-calendar-weekday",
+        week: "dr-calendar-week",
+        week_number_header: "dr-calendar-week-number-header",
+        week_number: "dr-calendar-week-number",
+        day: "dr-calendar-day",
+        range_start: "dr-calendar-range-start",
+        range_middle: "dr-calendar-range-middle",
+        range_end: "dr-calendar-range-end",
+        today: "dr-calendar-today",
+        outside: "dr-calendar-outside",
+        disabled: "dr-calendar-disabled",
+        hidden: "dr-calendar-hidden",
         ...classNames,
       }}
       components={{
@@ -175,9 +164,7 @@ function Calendar({
         DayButton: CalendarDayButton,
         WeekNumber: ({ children, ...props }) => (
           <td {...props}>
-            <div className="flex aspect-square w-[var(--density-cell)] items-center justify-center text-center">
-              {children}
-            </div>
+            <div className="dr-calendar-week-number-cell">{children}</div>
           </td>
         ),
         CaptionLabel:
@@ -253,12 +240,12 @@ function CalendarDropdown({
       }}
     >
       <SelectTrigger
-        className="h-7 w-auto gap-1 px-2 text-sm font-medium shadow-none"
+        className="dr-calendar-dropdown-trigger"
         aria-label={ariaLabel}
       >
         <SelectValue />
       </SelectTrigger>
-      <SelectContent className="max-h-60">
+      <SelectContent className="dr-calendar-dropdown-content">
         {options.map((opt) => (
           <SelectItem
             key={opt.value}
@@ -296,7 +283,7 @@ function GridHeader({
         type="button"
         variant={buttonVariant}
         size="icon"
-        className="aspect-square w-[var(--density-cell)] p-0"
+        className="dr-calendar-nav-btn"
         onClick={onPrev}
         aria-label={prevLabel}
       >
@@ -307,7 +294,7 @@ function GridHeader({
         type="button"
         variant={buttonVariant}
         size="icon"
-        className="aspect-square w-[var(--density-cell)] p-0"
+        className="dr-calendar-nav-btn"
         onClick={onNext}
         aria-label={nextLabel}
       >
@@ -373,10 +360,8 @@ function YearGrid({
               type="button"
               variant="ghost"
               onClick={() => onSelect(cellDate)}
-              className={cn(
-                "dr-calendar-grid-cell",
-                isCurrent && "bg-accent text-accent-foreground",
-              )}
+              className="dr-calendar-grid-cell"
+              data-current={isCurrent ? "true" : undefined}
             >
               {monthFmt.format(cellDate)}
             </Button>
@@ -434,11 +419,9 @@ function DecadeGrid({
               type="button"
               variant="ghost"
               onClick={() => onSelect(y)}
-              className={cn(
-                "dr-calendar-grid-cell",
-                isOutside && "text-muted-foreground opacity-50",
-                isCurrent && "bg-accent text-accent-foreground",
-              )}
+              className="dr-calendar-grid-cell"
+              data-current={isCurrent ? "true" : undefined}
+              data-outside={isOutside ? "true" : undefined}
             >
               {y}
             </Button>

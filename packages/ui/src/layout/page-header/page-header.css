@@ -1,0 +1,34 @@
+@layer components {
+  .dr-page-header {
+    @apply space-y-4 pb-[var(--density-container-p)];
+  }
+
+  .dr-page-header-row {
+    @apply flex items-center justify-between;
+  }
+
+  .dr-page-header-title {
+    @apply text-3xl font-medium;
+  }
+
+  .dr-page-header-description {
+    @apply text-muted-foreground mt-1 text-sm;
+  }
+
+  .dr-page-header-actions {
+    @apply flex items-center gap-2;
+  }
+
+  .dr-page-header-tabs {
+    @apply border-border flex gap-4 border-b;
+  }
+
+  .dr-page-header-tab {
+    @apply text-muted-foreground hover:text-foreground border-b-2 border-transparent px-1 pb-2 text-sm transition-colors duration-150;
+  }
+
+  .dr-page-header-tab.active,
+  .dr-page-header-tab[data-active="true"] {
+    @apply border-primary text-foreground;
+  }
+}

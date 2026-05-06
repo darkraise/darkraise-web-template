@@ -1,0 +1,9 @@
+@layer components {
+  .dr-search-command-trigger {
+    @apply text-muted-foreground relative h-9 w-full justify-start gap-2 text-sm md:w-64;
+  }
+
+  .dr-search-command-shortcut {
+    @apply bg-muted pointer-events-none ml-auto hidden rounded border px-1.5 font-mono text-xs sm:inline-block;
+  }
+}
