@@ -1,0 +1,50 @@
+@layer components {
+  .dr-tags-input {
+    @apply relative flex w-full flex-col gap-1.5;
+  }
+
+  .dr-tags-input[data-disabled="true"] {
+    @apply pointer-events-none opacity-60;
+  }
+
+  .dr-tags-input-label {
+    @apply text-foreground text-sm leading-none font-medium;
+  }
+
+  .dr-tags-input-control {
+    @apply glass border-input focus-ring-input-wrapper bg-card text-card-foreground flex min-h-[var(--density-cell)] w-full flex-wrap items-center gap-1 rounded-md border px-[var(--density-input-px)] py-[var(--density-input-py)];
+  }
+
+  .dr-tags-input-item {
+    @apply contents;
+  }
+
+  .dr-tags-input-item-preview {
+    @apply bg-secondary text-secondary-foreground focus-ring-tight inline-flex items-center gap-1 rounded-sm px-2 py-0.5 text-xs font-medium transition-colors;
+  }
+
+  .dr-tags-input-item-preview[data-highlighted="true"] {
+    @apply bg-primary text-primary-foreground;
+  }
+
+  .dr-tags-input-item-preview[data-disabled="true"] {
+    @apply pointer-events-none opacity-50;
+  }
+
+  .dr-tags-input-item-text {
+    @apply truncate;
+  }
+
+  .dr-tags-input-item-delete-trigger {
+    @apply text-muted-foreground hover:text-foreground focus-ring-tight inline-flex h-4 w-4 items-center justify-center rounded-sm transition-colors;
+  }
+
+  .dr-tags-input-item-delete-trigger[data-disabled="true"] {
+    @apply pointer-events-none opacity-50;
+  }
+
+  .dr-tags-input-input {
+    @apply text-foreground placeholder:text-muted-foreground flex-1 border-0 bg-transparent text-sm outline-none focus:outline-none disabled:cursor-not-allowed disabled:opacity-50;
+    min-width: 8ch;
+  }
+}
