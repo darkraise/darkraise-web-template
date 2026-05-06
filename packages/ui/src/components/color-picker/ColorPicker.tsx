@@ -2,7 +2,7 @@ import * as React from "react"
 import * as PopoverPrimitive from "@radix-ui/react-popover"
 import { HexColorPicker } from "react-colorful"
 
-import { cn } from "../../lib/utils"
+import { cn } from "@lib/utils"
 import "./color-picker.css"
 
 declare global {

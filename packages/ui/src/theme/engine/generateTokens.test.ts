@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest"
 import { generateTokens } from "./generateTokens"
-import { accentColors } from "../palettes/accentColors"
-import { surfaceColors } from "../palettes/surfaceColors"
-import type { ColorScale } from "../types"
+import { accentColors } from "@theme/palettes/accentColors"
+import { surfaceColors } from "@theme/palettes/surfaceColors"
+import type { ColorScale } from "@theme/types"
 
 describe("generateTokens", () => {
   it("produces all expected token keys for the default combination", () => {

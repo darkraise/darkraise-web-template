@@ -13,18 +13,21 @@ import type {
   ThemePersistenceAdapter,
   ThemeSettings,
   ThemeSyncStatus,
-} from "../types"
+} from "@theme/types"
 import {
   SURFACE_COLORS,
   SURFACE_STYLES,
   DENSITIES,
   ELEVATIONS,
   RADII,
-} from "../types"
-import { generateTokens, GLASS_ONLY_TOKEN_KEYS } from "../engine/generateTokens"
-import { ThemeContext } from "../themeContext"
-import { themeConfig, type ThemeConfig } from "../themeConfig"
-import { useDebouncedCallback } from "../../hooks/useDebouncedCallback"
+} from "@theme/types"
+import {
+  generateTokens,
+  GLASS_ONLY_TOKEN_KEYS,
+} from "@theme/engine/generateTokens"
+import { ThemeContext } from "@theme/themeContext"
+import { themeConfig, type ThemeConfig } from "@theme/themeConfig"
+import { useDebouncedCallback } from "@hooks/useDebouncedCallback"
 
 const LS_ACCENT = "theme-accent"
 const LS_SURFACE_COLOR = "theme-surface-color"

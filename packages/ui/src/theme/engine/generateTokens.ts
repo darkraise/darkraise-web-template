@@ -5,11 +5,11 @@ import type {
   SurfaceStyle,
   ResolvedMode,
   ColorScale,
-} from "../types"
-import { accentColors } from "../palettes/accentColors"
-import { surfaceColors } from "../palettes/surfaceColors"
-import { surfaceStyles } from "../styles/surfaceStyles"
-import { ACCENT_COLORS } from "../types"
+} from "@theme/types"
+import { accentColors } from "@theme/palettes/accentColors"
+import { surfaceColors } from "@theme/palettes/surfaceColors"
+import { surfaceStyles } from "@theme/styles/surfaceStyles"
+import { ACCENT_COLORS } from "@theme/types"
 
 export interface GenerateTokensInput {
   accentColor: AccentColor

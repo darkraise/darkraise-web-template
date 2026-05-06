@@ -4,9 +4,9 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../../components/select"
-import { FieldWrapper } from "../field-wrapper"
-import type { FieldPrimitiveProps } from "../../types"
+} from "@components/select"
+import { FieldWrapper } from "@forms/components/field-wrapper"
+import type { FieldPrimitiveProps } from "@forms/types"
 
 interface SelectFieldProps extends FieldPrimitiveProps<string> {
   label: string

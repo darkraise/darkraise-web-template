@@ -1,6 +1,6 @@
-import { Textarea } from "../../../components/textarea"
-import { FieldWrapper } from "../field-wrapper"
-import type { FieldPrimitiveProps } from "../../types"
+import { Textarea } from "@components/textarea"
+import { FieldWrapper } from "@forms/components/field-wrapper"
+import type { FieldPrimitiveProps } from "@forms/types"
 
 interface TextareaFieldProps extends FieldPrimitiveProps<string> {
   label: string

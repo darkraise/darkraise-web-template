@@ -1,11 +1,11 @@
-import { Switch } from "../../../components/switch"
+import { Switch } from "@components/switch"
 import {
   Field,
   FieldLabel,
   FieldDescription,
   FieldError,
-} from "../../../components/field"
-import type { FieldPrimitiveProps } from "../../types"
+} from "@components/field"
+import type { FieldPrimitiveProps } from "@forms/types"
 
 interface SwitchFieldProps extends FieldPrimitiveProps<boolean> {
   label: string

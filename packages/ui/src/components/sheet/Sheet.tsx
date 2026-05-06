@@ -1,8 +1,8 @@
 import * as React from "react"
 import * as SheetPrimitive from "@radix-ui/react-dialog"
 
-import { cn } from "../../lib/utils"
-import { OverlayCloseButton } from "../overlay-primitives"
+import { cn } from "@lib/utils"
+import { OverlayCloseButton } from "@components/overlay-primitives"
 
 const Sheet = SheetPrimitive.Root
 

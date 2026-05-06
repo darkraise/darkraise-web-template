@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState, type ReactNode } from "react"
-import { RouterAdapterProvider } from "../router/context"
-import type { RouterAdapter, RouterLinkProps } from "../router/types"
+import { RouterAdapterProvider } from "@router/context"
+import type { RouterAdapter, RouterLinkProps } from "@router/types"
 
 interface MockRouterAdapterProviderProps {
   initialPath?: string

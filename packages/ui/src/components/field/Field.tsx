@@ -1,8 +1,8 @@
 import { useMemo } from "react"
 
-import { cn } from "../../lib/utils"
-import { Label } from "../label"
-import { Separator } from "../separator"
+import { cn } from "@lib/utils"
+import { Label } from "@components/label"
+import { Separator } from "@components/separator"
 import "./field.css"
 
 type FieldOrientation = "vertical" | "horizontal" | "responsive"

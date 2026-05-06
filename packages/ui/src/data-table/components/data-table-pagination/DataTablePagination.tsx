@@ -4,20 +4,20 @@ import {
   ChevronsLeft,
   ChevronsRight,
 } from "lucide-react"
-import { Button } from "../../../components/button"
+import { Button } from "@components/button"
 import {
   Pagination,
   PaginationContent,
   PaginationItem,
-} from "../../../components/pagination"
+} from "@components/pagination"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../../components/select"
-import type { DataTablePaginationProps } from "../../types"
+} from "@components/select"
+import type { DataTablePaginationProps } from "@data-table/types"
 
 export function DataTablePagination<TData>({
   table,

@@ -17,12 +17,12 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../../../components/table"
-import { DataTableToolbar } from "../data-table-toolbar"
-import { DataTablePagination } from "../data-table-pagination"
-import { DataTableSkeleton } from "../data-table-skeleton"
-import { DataTableEmpty } from "../data-table-empty"
-import type { DataTableProps } from "../../types"
+} from "@components/table"
+import { DataTableToolbar } from "@data-table/components/data-table-toolbar"
+import { DataTablePagination } from "@data-table/components/data-table-pagination"
+import { DataTableSkeleton } from "@data-table/components/data-table-skeleton"
+import { DataTableEmpty } from "@data-table/components/data-table-empty"
+import type { DataTableProps } from "@data-table/types"
 
 export function DataTable<TData, TValue>({
   columns,

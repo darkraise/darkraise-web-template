@@ -1,7 +1,7 @@
-import { RadioGroup, RadioGroupItem } from "../../../components/radio-group"
-import { Label } from "../../../components/label"
-import { FieldWrapper } from "../field-wrapper"
-import type { FieldPrimitiveProps } from "../../types"
+import { RadioGroup, RadioGroupItem } from "@components/radio-group"
+import { Label } from "@components/label"
+import { FieldWrapper } from "@forms/components/field-wrapper"
+import type { FieldPrimitiveProps } from "@forms/types"
 
 interface RadioGroupFieldProps extends FieldPrimitiveProps<string> {
   label: string

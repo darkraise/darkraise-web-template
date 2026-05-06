@@ -1,8 +1,8 @@
 import * as React from "react"
 import * as ToggleGroupPrimitive from "@radix-ui/react-toggle-group"
 
-import { cn } from "../../lib/utils"
-import type { ToggleVariant, ToggleSize } from "../toggle"
+import { cn } from "@lib/utils"
+import type { ToggleVariant, ToggleSize } from "@components/toggle"
 import "./toggle-group.css"
 
 interface ToggleGroupContextValue {

@@ -1,5 +1,5 @@
-import { Button } from "../../../components/button"
-import type { FormActionsProps } from "../../types"
+import { Button } from "@components/button"
+import type { FormActionsProps } from "@forms/types"
 
 export function FormActions({
   submitLabel = "Save",

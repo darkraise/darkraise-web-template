@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react"
 import { describe, it, expect, vi } from "vitest"
-import { FieldWrapper } from "../field-wrapper"
+import { FieldWrapper } from "@forms/components/field-wrapper"
 
 describe("FieldWrapper", () => {
   it("renders the label bound to the input id via name", () => {

@@ -1,5 +1,5 @@
 import { forwardRef, type HTMLAttributes } from "react"
-import { cn } from "../../lib/utils"
+import { cn } from "@lib/utils"
 
 type BoxPadding = "none" | "sm" | "md" | "lg" | "xl" | "density"
 type BoxSurface = "none" | "muted" | "card" | "accent"

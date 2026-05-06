@@ -1,7 +1,7 @@
 import { useState } from "react"
-import { useRouterAdapter } from "../../router"
+import { useRouterAdapter } from "@router"
 import { Search } from "lucide-react"
-import { useKeyboardEvent } from "../../hooks"
+import { useKeyboardEvent } from "@hooks"
 import {
   CommandDialog,
   CommandEmpty,
@@ -9,8 +9,8 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "../../components/command"
-import { Button } from "../../components/button"
+} from "@components/command"
+import { Button } from "@components/button"
 
 interface SearchCommandProps {
   navItems?: Array<{ label: string; href: string }>

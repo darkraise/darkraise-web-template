@@ -1,7 +1,7 @@
 import { FileQuestion } from "lucide-react"
-import { Button } from "../../components/button"
-import { useRouterAdapter } from "../../router"
-import { ErrorLayout } from "../error-layout"
+import { Button } from "@components/button"
+import { useRouterAdapter } from "@router"
+import { ErrorLayout } from "@errors/error-layout"
 
 export function NotFoundPage() {
   const { useNavigate, useBack } = useRouterAdapter()

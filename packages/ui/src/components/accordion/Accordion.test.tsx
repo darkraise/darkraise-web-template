@@ -6,7 +6,7 @@ import {
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
-} from "../accordion"
+} from "@components/accordion"
 
 function TestAccordion() {
   return (

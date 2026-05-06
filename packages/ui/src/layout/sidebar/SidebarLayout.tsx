@@ -1,12 +1,12 @@
 import { useState } from "react"
 import { PanelLeftClose, PanelLeft } from "lucide-react"
-import { Button } from "../../components/button"
-import { TooltipProvider } from "../../components/tooltip"
-import { BrandLogo } from "../brand-logo"
-import { LayoutHeader } from "../layout-header"
+import { Button } from "@components/button"
+import { TooltipProvider } from "@components/tooltip"
+import { BrandLogo } from "@layout/brand-logo"
+import { LayoutHeader } from "@layout/layout-header"
 import { SidebarNav } from "./SidebarNav"
 import { SidebarProvider } from "./SidebarContext"
-import type { LayoutProps } from "../types"
+import type { LayoutProps } from "@layout/types"
 
 export function SidebarLayout({
   children,

@@ -1,14 +1,10 @@
 import { Moon, Sun, Monitor, Palette, Square, Blend } from "lucide-react"
-import { Button } from "../../components/button"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "../../components/popover"
-import { Label } from "../../components/label"
-import { Separator } from "../../components/separator"
-import { ToggleGroup, ToggleGroupItem } from "../../components/toggle-group"
-import { useTheme } from "../useTheme"
+import { Button } from "@components/button"
+import { Popover, PopoverContent, PopoverTrigger } from "@components/popover"
+import { Label } from "@components/label"
+import { Separator } from "@components/separator"
+import { ToggleGroup, ToggleGroupItem } from "@components/toggle-group"
+import { useTheme } from "@theme/useTheme"
 import {
   ACCENT_COLORS,
   SURFACE_COLORS,
@@ -16,7 +12,7 @@ import {
   DENSITIES,
   ELEVATIONS,
   RADII,
-} from "../types"
+} from "@theme/types"
 import type {
   Mode,
   AccentColor,
@@ -26,9 +22,9 @@ import type {
   Density,
   Elevation,
   Radius,
-} from "../types"
-import { accentColors } from "../palettes/accentColors"
-import { surfaceStyles } from "../styles/surfaceStyles"
+} from "@theme/types"
+import { accentColors } from "@theme/palettes/accentColors"
+import { surfaceStyles } from "@theme/styles/surfaceStyles"
 import "./theme-switcher.css"
 
 const modeOptions: { value: Mode; icon: typeof Sun; label: string }[] = [

@@ -1,5 +1,5 @@
 import { Wrench } from "lucide-react"
-import { ErrorLayout } from "../error-layout"
+import { ErrorLayout } from "@errors/error-layout"
 
 export function MaintenancePage() {
   return (

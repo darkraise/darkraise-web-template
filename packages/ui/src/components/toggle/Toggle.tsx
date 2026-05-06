@@ -1,7 +1,7 @@
 import * as React from "react"
 import * as TogglePrimitive from "@radix-ui/react-toggle"
 
-import { cn } from "../../lib/utils"
+import { cn } from "@lib/utils"
 import "./toggle.css"
 
 export type ToggleVariant = "default" | "outline"

@@ -4,7 +4,7 @@ import * as React from "react"
 import * as PopoverPrimitive from "@radix-ui/react-popover"
 import { useVirtualizer } from "@tanstack/react-virtual"
 
-import { cn } from "../../lib/utils"
+import { cn } from "@lib/utils"
 import "./virtualized-dropdown-menu.css"
 
 const VirtualizedDropdownMenu = PopoverPrimitive.Root

@@ -7,15 +7,15 @@ import {
   type PreviousMonthButtonProps,
 } from "react-day-picker"
 
-import { cn } from "../../lib/utils"
-import { Button } from "../button"
+import { cn } from "@lib/utils"
+import { Button } from "@components/button"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../select"
+} from "@components/select"
 import "./calendar.css"
 
 type CalendarView = "day" | "year" | "decade"

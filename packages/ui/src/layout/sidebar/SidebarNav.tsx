@@ -1,24 +1,16 @@
 import { useState } from "react"
-import { useRouterAdapter } from "../../router"
+import { useRouterAdapter } from "@router"
 import { ChevronRight } from "lucide-react"
 import "./sidebar-nav.css"
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "../../components/collapsible"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "../../components/popover"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "../../components/tooltip"
+} from "@components/collapsible"
+import { Popover, PopoverContent, PopoverTrigger } from "@components/popover"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@components/tooltip"
 import { SidebarProvider, useSidebar } from "./SidebarContext"
-import type { NavGroup, NavItem } from "../types"
+import type { NavGroup, NavItem } from "@layout/types"
 
 interface SidebarNavProps {
   nav: NavGroup[]

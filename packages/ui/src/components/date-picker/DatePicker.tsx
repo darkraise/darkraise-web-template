@@ -5,8 +5,8 @@ import * as PopoverPrimitive from "@radix-ui/react-popover"
 import { format as dfFormat, isValid as dfIsValid } from "date-fns"
 import type { DateRange, Matcher } from "react-day-picker"
 
-import { cn } from "../../lib/utils"
-import { Calendar } from "../calendar"
+import { cn } from "@lib/utils"
+import { Calendar } from "@components/calendar"
 import "./date-picker.css"
 
 export type DatePickerSingleValue = Date | null

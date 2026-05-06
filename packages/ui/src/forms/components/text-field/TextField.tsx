@@ -1,6 +1,6 @@
-import { Input } from "../../../components/input"
-import { FieldWrapper } from "../field-wrapper"
-import type { FieldPrimitiveProps } from "../../types"
+import { Input } from "@components/input"
+import { FieldWrapper } from "@forms/components/field-wrapper"
+import type { FieldPrimitiveProps } from "@forms/types"
 
 interface TextFieldProps extends FieldPrimitiveProps<string> {
   label: string

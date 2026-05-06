@@ -2,8 +2,8 @@
 
 import * as React from "react"
 
-import { cn } from "../../lib/utils"
-import { useClickOutside } from "../../hooks/useClickOutside"
+import { cn } from "@lib/utils"
+import { useClickOutside } from "@hooks/useClickOutside"
 import {
   type ComboboxInputValueChangeDetails,
   type ComboboxItemData,

@@ -1,4 +1,4 @@
-import type { AccentColor, ColorScale } from "../types"
+import type { AccentColor, ColorScale } from "@theme/types"
 
 const red: ColorScale = {
   50: "0 86% 97%",

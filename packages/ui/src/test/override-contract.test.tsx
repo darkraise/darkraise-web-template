@@ -10,7 +10,7 @@ import { fileURLToPath } from "node:url"
 import { render } from "@testing-library/react"
 import { describe, expect, it } from "vitest"
 
-import { Button } from "../components/button"
+import { Button } from "@components/button"
 
 const thisDir = dirname(fileURLToPath(import.meta.url))
 const themeCssPath = resolve(thisDir, "../styles/theme.css")

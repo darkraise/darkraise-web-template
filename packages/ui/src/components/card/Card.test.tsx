@@ -8,7 +8,7 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-} from "../card"
+} from "@components/card"
 
 describe("Card", () => {
   it("renders Card with children", () => {

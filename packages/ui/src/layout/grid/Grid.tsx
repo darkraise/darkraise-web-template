@@ -1,5 +1,5 @@
 import { forwardRef, type HTMLAttributes } from "react"
-import { cn } from "../../lib/utils"
+import { cn } from "@lib/utils"
 
 type GridCols = 1 | 2 | 3 | 4 | 6 | 12
 type GridGap = "none" | "xs" | "sm" | "md" | "lg" | "xl"

@@ -1,4 +1,4 @@
-import type { ColorScale } from "../types"
+import type { ColorScale } from "@theme/types"
 
 const slate: ColorScale = {
   50: "210 40% 98%",

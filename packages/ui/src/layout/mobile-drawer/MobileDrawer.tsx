@@ -1,14 +1,14 @@
 import { Menu } from "lucide-react"
-import { Button } from "../../components/button"
+import { Button } from "@components/button"
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "../../components/sheet"
-import { SidebarNav } from "../sidebar"
-import type { NavGroup } from "../types"
+} from "@components/sheet"
+import { SidebarNav } from "@layout/sidebar"
+import type { NavGroup } from "@layout/types"
 
 interface MobileDrawerProps {
   nav: NavGroup[]

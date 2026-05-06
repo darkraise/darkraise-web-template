@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect } from "vitest"
 import { createRef } from "react"
-import { Input } from "../input"
+import { Input } from "@components/input"
 
 describe("Input", () => {
   it("renders with placeholder text", () => {

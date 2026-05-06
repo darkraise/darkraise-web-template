@@ -1,11 +1,11 @@
-import { Checkbox } from "../../../components/checkbox"
+import { Checkbox } from "@components/checkbox"
 import {
   Field,
   FieldLabel,
   FieldDescription,
   FieldError,
-} from "../../../components/field"
-import type { FieldPrimitiveProps } from "../../types"
+} from "@components/field"
+import type { FieldPrimitiveProps } from "@forms/types"
 
 interface CheckboxFieldProps extends FieldPrimitiveProps<boolean> {
   label: string

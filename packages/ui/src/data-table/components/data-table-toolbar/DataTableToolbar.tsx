@@ -1,8 +1,8 @@
 import { X } from "lucide-react"
-import { Input } from "../../../components/input"
-import { Button } from "../../../components/button"
-import { ColumnVisibility } from "../column-visibility"
-import type { DataTableToolbarProps } from "../../types"
+import { Input } from "@components/input"
+import { Button } from "@components/button"
+import { ColumnVisibility } from "@data-table/components/column-visibility"
+import type { DataTableToolbarProps } from "@data-table/types"
 
 export function DataTableToolbar<TData>({
   table,

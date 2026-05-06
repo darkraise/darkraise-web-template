@@ -3,7 +3,7 @@ import type {
   SurfaceStyleRecipe,
   ColorScale,
   ResolvedMode,
-} from "../types"
+} from "@theme/types"
 
 const WHITE = "0 0% 100%"
 

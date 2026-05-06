@@ -1,12 +1,12 @@
 import type { ReactNode } from "react"
-import { cn } from "../../lib/utils"
-import { ThemeSwitcher } from "../../theme"
-import { SearchCommand } from "../search-command"
-import { UserMenu } from "../user-menu"
-import { NotificationBell } from "../notification-bell"
-import { MobileDrawer } from "../mobile-drawer"
-import { LayoutSwitcher } from "../layout-switcher"
-import type { NavGroup } from "../types"
+import { cn } from "@lib/utils"
+import { ThemeSwitcher } from "@theme"
+import { SearchCommand } from "@layout/search-command"
+import { UserMenu } from "@layout/user-menu"
+import { NotificationBell } from "@layout/notification-bell"
+import { MobileDrawer } from "@layout/mobile-drawer"
+import { LayoutSwitcher } from "@layout/layout-switcher"
+import type { NavGroup } from "@layout/types"
 
 interface LayoutHeaderProps {
   nav: NavGroup[]

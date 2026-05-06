@@ -7,7 +7,7 @@ import {
   type SeparatorProps,
 } from "react-resizable-panels"
 
-import { cn } from "../../lib/utils"
+import { cn } from "@lib/utils"
 import "./resizable.css"
 
 function ResizablePanelGroup({ className, ...props }: GroupProps) {
