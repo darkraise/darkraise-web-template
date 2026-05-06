@@ -14,4 +14,9 @@
   .dr-qr-code-overlay {
     @apply pointer-events-none absolute inset-0 flex items-center justify-center;
   }
+
+  .dr-qr-code-overlay > * {
+    width: var(--dr-qr-overlay-size);
+    height: var(--dr-qr-overlay-size);
+  }
 }
