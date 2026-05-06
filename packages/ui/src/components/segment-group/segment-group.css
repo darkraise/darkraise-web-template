@@ -1,0 +1,38 @@
+@layer components {
+  .dr-segment-group {
+    @apply bg-muted relative inline-flex rounded-md p-1;
+  }
+
+  .dr-segment-group[data-orientation="vertical"] {
+    @apply flex-col;
+  }
+
+  .dr-segment-group[data-disabled="true"] {
+    @apply pointer-events-none opacity-50;
+  }
+
+  .dr-segment-group-item {
+    @apply text-muted-foreground relative z-10 cursor-pointer rounded-sm px-3 py-1.5 text-sm font-medium transition-colors;
+    user-select: none;
+  }
+
+  .dr-segment-group-item[data-state="checked"] {
+    @apply text-foreground;
+  }
+
+  .dr-segment-group-item[data-disabled] {
+    @apply cursor-not-allowed opacity-50;
+  }
+
+  .dr-segment-group-indicator {
+    @apply bg-background absolute z-0 rounded-sm shadow-sm;
+    transition:
+      transform 200ms ease-out,
+      width 200ms ease-out,
+      height 200ms ease-out;
+  }
+
+  .dr-segment-group[data-mounted="false"] .dr-segment-group-indicator {
+    transition-duration: 0ms;
+  }
+}
