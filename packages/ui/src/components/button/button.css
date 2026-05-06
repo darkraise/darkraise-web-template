@@ -1,6 +1,6 @@
 @layer components {
   .dr-btn {
-    @apply ring-offset-background focus-visible:ring-ring inline-flex cursor-pointer items-center justify-center gap-2 rounded-[var(--radius-button)] text-sm font-medium whitespace-nowrap transition-[background-image,background-color,border-color,color,text-decoration-color,box-shadow] duration-150 focus-visible:ring-1 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0;
+    @apply focus-ring-inset inline-flex cursor-pointer items-center justify-center gap-2 rounded-[var(--radius-button)] text-sm font-medium whitespace-nowrap transition-[background-image,background-color,border-color,color,text-decoration-color,box-shadow] duration-150 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0;
   }
 
   /* default + destructive: hue-based filled variants (was .btn-glass-hue) */
