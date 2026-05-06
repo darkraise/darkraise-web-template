@@ -217,6 +217,50 @@ describe("FileUpload", () => {
     expect(onFileChange).not.toHaveBeenCalled()
   })
 
+  it("drag counter returns to zero after consecutive enter/leave sequences", () => {
+    render(<Basic />)
+    const dropzone = screen.getByTestId("dropzone")
+    const fileTransfer = { files: [], types: ["Files"] }
+
+    fireEvent.dragEnter(dropzone, { dataTransfer: fileTransfer })
+    expect(dropzone.getAttribute("data-dragover")).toBe("true")
+    fireEvent.dragLeave(dropzone, { dataTransfer: fileTransfer })
+    expect(dropzone.getAttribute("data-dragover")).toBeNull()
+
+    fireEvent.dragEnter(dropzone, { dataTransfer: fileTransfer })
+    expect(dropzone.getAttribute("data-dragover")).toBe("true")
+    fireEvent.dragLeave(dropzone, { dataTransfer: fileTransfer })
+    expect(dropzone.getAttribute("data-dragover")).toBeNull()
+  })
+
+  it("non-file drag leave does not decrement the counter below zero", () => {
+    render(<Basic />)
+    const dropzone = screen.getByTestId("dropzone")
+    const textTransfer = { files: [], types: ["text/plain"] }
+    const fileTransfer = { files: [], types: ["Files"] }
+
+    fireEvent.dragLeave(dropzone, { dataTransfer: textTransfer })
+    fireEvent.dragLeave(dropzone, { dataTransfer: textTransfer })
+
+    fireEvent.dragEnter(dropzone, { dataTransfer: fileTransfer })
+    expect(dropzone.getAttribute("data-dragover")).toBe("true")
+    fireEvent.dragLeave(dropzone, { dataTransfer: fileTransfer })
+    expect(dropzone.getAttribute("data-dragover")).toBeNull()
+  })
+
+  it("disabled dropzone still tracks drag counter so dragover state clears", () => {
+    render(<Basic disabled />)
+    const dropzone = screen.getByTestId("dropzone")
+    const fileTransfer = { files: [], types: ["Files"] }
+
+    fireEvent.dragEnter(dropzone, { dataTransfer: fileTransfer })
+    fireEvent.dragLeave(dropzone, { dataTransfer: fileTransfer })
+    fireEvent.dragEnter(dropzone, { dataTransfer: fileTransfer })
+    fireEvent.dragLeave(dropzone, { dataTransfer: fileTransfer })
+
+    expect(dropzone.getAttribute("data-dragover")).toBeNull()
+  })
+
   it("revokes object URLs created for image previews on unmount", () => {
     const revokeSpy = vi.spyOn(URL, "revokeObjectURL")
     const file = makeFile("pic.png", 10, "image/png")

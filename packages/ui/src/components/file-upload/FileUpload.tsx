@@ -234,7 +234,7 @@ function FileUploadDropzone({
   const handleDragLeave = (event: React.DragEvent<HTMLDivElement>) => {
     onDragLeave?.(event)
     if (event.defaultPrevented) return
-    if (ctx.disabled) return
+    if (!hasFiles(event)) return
     drag?.onLeave()
   }
 
