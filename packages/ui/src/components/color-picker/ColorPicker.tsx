@@ -264,7 +264,7 @@ function ColorPickerInput({
   const display = draft ?? value
 
   const commitDraft = (next: string) => {
-    if (next === "") {
+    if (next.trim() === "") {
       setDraft(null)
       return
     }

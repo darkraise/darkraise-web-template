@@ -145,6 +145,17 @@ describe("ColorPicker", () => {
     expect(await screen.findByRole("dialog")).toBeInTheDocument()
   })
 
+  it("reverts empty input on blur to the last valid value", async () => {
+    const user = userEvent.setup()
+    const spy = vi.fn()
+    render(<Harness initial="#3b82f6" onChange={spy} />)
+    const input = screen.getByLabelText("Brand color") as HTMLInputElement
+    await user.clear(input)
+    await user.tab()
+    expect(spy).not.toHaveBeenCalled()
+    expect(input.value).toBe("#3b82f6")
+  })
+
   it("expands 3-digit hex to 6-digit on input blur", async () => {
     const user = userEvent.setup()
     const spy = vi.fn()
