@@ -1,0 +1,61 @@
+@layer components {
+  .dr-file-upload {
+    @apply relative flex w-full flex-col gap-3;
+  }
+
+  .dr-file-upload[data-disabled="true"] {
+    @apply pointer-events-none opacity-60;
+  }
+
+  .dr-file-upload-label {
+    @apply text-foreground text-sm leading-none font-medium;
+  }
+
+  .dr-file-upload-dropzone {
+    @apply border-input bg-card text-card-foreground hover:border-primary flex w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-md border-2 border-dashed px-6 py-10 text-center text-sm transition-colors;
+  }
+
+  .dr-file-upload-dropzone[data-dragover="true"] {
+    @apply bg-accent border-primary;
+  }
+
+  .dr-file-upload-dropzone[data-disabled="true"] {
+    @apply pointer-events-none opacity-60;
+  }
+
+  .dr-file-upload-trigger {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 focus-ring-tight inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-md px-3 text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .dr-file-upload-item-group {
+    @apply flex flex-col gap-2;
+  }
+
+  .dr-file-upload-item {
+    @apply border-border bg-card text-card-foreground flex items-center gap-3 rounded-md border p-2;
+  }
+
+  .dr-file-upload-item-preview {
+    @apply bg-muted flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-sm;
+  }
+
+  .dr-file-upload-item-preview-image {
+    @apply h-full w-full object-cover;
+  }
+
+  .dr-file-upload-item-name {
+    @apply text-foreground min-w-0 flex-1 truncate text-sm font-medium;
+  }
+
+  .dr-file-upload-item-size-text {
+    @apply text-muted-foreground shrink-0 text-xs;
+  }
+
+  .dr-file-upload-item-delete-trigger {
+    @apply text-muted-foreground hover:text-foreground focus-ring-tight inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-sm transition-colors disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .dr-file-upload-clear-trigger {
+    @apply text-muted-foreground hover:text-foreground focus-ring-tight inline-flex h-8 cursor-pointer items-center gap-1 self-start rounded-sm px-2 text-xs underline transition-colors disabled:pointer-events-none disabled:opacity-50;
+  }
+}
