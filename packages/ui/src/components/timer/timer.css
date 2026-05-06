@@ -30,7 +30,7 @@
   }
 
   .dr-timer-action-trigger {
-    @apply border-border bg-background text-foreground hover:bg-muted inline-flex items-center justify-center gap-1.5 rounded-md border px-3 py-1.5 text-sm font-medium transition-colors;
+    @apply focus-ring-inset border-border bg-background text-foreground hover:bg-muted inline-flex items-center justify-center gap-1.5 rounded-md border px-3 py-1.5 text-sm font-medium transition-colors;
   }
 
   .dr-timer-action-trigger[data-state="disabled"] {

@@ -208,4 +208,39 @@ describe("Timer", () => {
     expect(lastCall).toBeGreaterThanOrEqual(400)
     expect(lastCall).toBeLessThanOrEqual(600)
   })
+
+  it("starts ticking immediately when autoStart is true", () => {
+    vi.useFakeTimers()
+    render(
+      <Timer countdown targetMs={5000} autoStart interval={100}>
+        <TimerArea>
+          <TimerItem type="seconds" />
+        </TimerArea>
+      </Timer>,
+    )
+    // before any tick, display should still show targetMs (5000ms = 05 seconds)
+    expect(screen.getByText("05")).toBeInTheDocument()
+    act(() => {
+      vi.advanceTimersByTime(1000)
+    })
+    // after 1 second, display should show 04 seconds
+    expect(screen.getByText("04")).toBeInTheDocument()
+  })
+
+  it("fires onComplete immediately when countdown autoStarts with targetMs <= 0", () => {
+    vi.useFakeTimers()
+    const onComplete = vi.fn()
+    render(
+      <Timer countdown targetMs={0} autoStart onComplete={onComplete}>
+        <TimerArea>
+          <TimerItem type="seconds" />
+        </TimerArea>
+      </Timer>,
+    )
+    // onComplete should fire on mount via the useEffect; flush microtasks
+    act(() => {
+      vi.advanceTimersByTime(0)
+    })
+    expect(onComplete).toHaveBeenCalledTimes(1)
+  })
 })
