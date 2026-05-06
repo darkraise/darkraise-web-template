@@ -1,6 +1,6 @@
 @layer components {
   .dr-select-trigger {
-    @apply glass border-input bg-card text-card-foreground ring-offset-background focus:ring-ring data-[placeholder]:text-muted-foreground flex w-full cursor-pointer items-center justify-between border px-[var(--density-input-px)] py-[var(--density-input-py)] text-sm focus:ring-1 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1;
+    @apply glass border-input bg-card text-card-foreground focus-ring-input data-[placeholder]:text-muted-foreground flex w-full cursor-pointer items-center justify-between border px-[var(--density-input-px)] py-[var(--density-input-py)] text-sm disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1;
   }
 
   .dr-select-scroll-btn {
