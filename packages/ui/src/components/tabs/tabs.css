@@ -16,7 +16,7 @@
   }
 
   .dr-tabs-trigger {
-    @apply ring-offset-background focus-visible:ring-ring hover:text-foreground inline-flex cursor-pointer items-center justify-center text-sm font-medium whitespace-nowrap transition-all focus-visible:ring-1 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50;
+    @apply hover:text-foreground focus-ring inline-flex cursor-pointer items-center justify-center text-sm font-medium whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50;
   }
 
   .dr-tabs-trigger[data-variant="default"] {
@@ -32,7 +32,7 @@
   }
 
   .dr-tabs-content {
-    @apply ring-offset-background focus-visible:ring-ring mt-2 focus-visible:ring-1 focus-visible:ring-offset-2 focus-visible:outline-none;
+    @apply focus-ring-tight mt-2;
   }
 
   /* Default surface style — active tab gets the primary hue fill */
