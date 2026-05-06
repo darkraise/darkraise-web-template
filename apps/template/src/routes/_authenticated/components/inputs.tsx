@@ -431,7 +431,7 @@ function InputsPage() {
     <span className="bg-muted px-3 flex items-center text-sm text-muted-foreground border-r border-input">
       https://
     </span>
-    <Input className="border-0 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" placeholder="example.com" />
+    <Input className="border-0 rounded-none focus:border-input focus:shadow-none" placeholder="example.com" />
   </div>
 </Field>
 
@@ -440,7 +440,7 @@ function InputsPage() {
   <FieldLabel>Currency</FieldLabel>
   <div className="flex rounded-md border border-input overflow-hidden">
     <span className="bg-muted px-3 flex items-center text-sm text-muted-foreground border-r border-input">$</span>
-    <Input className="border-0 rounded-none focus-visible:ring-0 focus-visible:ring-offset-0" placeholder="0.00" />
+    <Input className="border-0 rounded-none focus:border-input focus:shadow-none" placeholder="0.00" />
     <span className="bg-muted px-3 flex items-center text-sm text-muted-foreground border-l border-input">.00</span>
   </div>
 </Field>`}
@@ -453,7 +453,7 @@ function InputsPage() {
                 https://
               </span>
               <Input
-                className="rounded-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                className="focus:border-input rounded-none border-0 focus:shadow-none"
                 placeholder="example.com"
               />
             </div>
@@ -465,7 +465,7 @@ function InputsPage() {
                 $
               </span>
               <Input
-                className="rounded-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                className="focus:border-input rounded-none border-0 focus:shadow-none"
                 placeholder="0.00"
               />
               <span className="border-input bg-muted text-muted-foreground flex items-center border-l px-3 text-sm">

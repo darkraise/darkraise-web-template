@@ -24,7 +24,7 @@ export const Route = createFileRoute(
 // ── Example 1: Success & warning button variants ──────────────────────────────
 
 const customButtonVariants = cva(
-  "inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-ring-inset disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
@@ -232,7 +232,7 @@ const [tags, setTags] = useState(["React", "TypeScript", "Tailwind", "Vite", "Ra
 // ── Example 4: Gradient button ────────────────────────────────────────────────
 
 const gradientButtonVariants = cva(
-  "inline-flex cursor-pointer items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium text-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex cursor-pointer items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium text-white transition-all focus-ring-inset disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
@@ -306,7 +306,7 @@ function SlottedInput({
   ...props
 }: SlottedInputProps) {
   return (
-    <div className="border-input bg-background ring-offset-background focus-within:ring-ring flex h-10 w-full overflow-hidden rounded-md border text-sm focus-within:ring-2 focus-within:ring-offset-2">
+    <div className="border-input bg-background focus-ring-input-wrapper flex h-10 w-full overflow-hidden rounded-md border text-sm">
       {inputPrefix && (
         <span className="bg-muted text-muted-foreground flex items-center px-3">
           {inputPrefix}
@@ -335,7 +335,7 @@ const SLOTTED_INPUT_CODE = `interface SlottedInputProps extends React.InputHTMLA
 
 function SlottedInput({ prefix, suffix, className, ...props }: SlottedInputProps) {
   return (
-    <div className="flex h-10 w-full overflow-hidden rounded-md border border-input bg-background text-sm ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+    <div className="flex h-10 w-full overflow-hidden rounded-md border border-input bg-background text-sm focus-ring-input-wrapper">
       {prefix && (
         <span className="flex items-center bg-muted px-3 text-muted-foreground">
           {prefix}

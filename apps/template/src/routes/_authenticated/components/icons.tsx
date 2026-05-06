@@ -363,7 +363,7 @@ function IconCatalog() {
                             key={name}
                             type="button"
                             onClick={() => handleCopy(name)}
-                            className="group border-border hover:border-primary/60 hover:bg-accent focus-visible:ring-ring focus-visible:ring-offset-background relative flex flex-col items-center justify-center gap-2 rounded-md border p-3 text-center transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                            className="group border-border hover:border-primary/60 hover:bg-accent focus-ring relative flex flex-col items-center justify-center gap-2 rounded-md border p-3 text-center transition-colors"
                             style={{ height: TILE_HEIGHT }}
                             title={`Click to copy: import { ${name} } from "lucide-react"`}
                             aria-label={`Copy import for ${name} icon`}
