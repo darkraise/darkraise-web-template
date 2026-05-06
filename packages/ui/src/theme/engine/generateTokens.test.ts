@@ -119,6 +119,27 @@ describe("generateTokens", () => {
     expect(tokens["--focus-ring"]).not.toEqual(tokens["--ring"])
   })
 
+  it("emits --focus-ring as accent shade 300 in light mode and 200 in dark mode", () => {
+    const lightTokens = generateTokens({
+      accentColor: "blue",
+      surfaceColor: "slate",
+      surfaceStyle: "default",
+      backgroundStyle: "solid",
+      mode: "light",
+    })
+    const darkTokens = generateTokens({
+      accentColor: "blue",
+      surfaceColor: "slate",
+      surfaceStyle: "default",
+      backgroundStyle: "solid",
+      mode: "dark",
+    })
+    expect(lightTokens["--focus-ring"]).toBe(accentColors.blue[300])
+    expect(darkTokens["--focus-ring"]).toBe(accentColors.blue[200])
+    expect(lightTokens["--focus-ring"]).not.toEqual(lightTokens["--ring"])
+    expect(darkTokens["--focus-ring"]).not.toEqual(darkTokens["--ring"])
+  })
+
   it("uses white primary-foreground for all accent colors", () => {
     const amber = generateTokens({
       accentColor: "amber",

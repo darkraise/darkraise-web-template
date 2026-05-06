@@ -155,6 +155,7 @@
   }
 }
 
+/* Inputs deliberately use --primary (not --focus-ring) — text fields want a sharp brand-color indicator, matching ark-ui's input pattern. */
 @utility focus-ring-input {
   outline: none;
 
