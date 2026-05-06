@@ -1,7 +1,7 @@
 import * as React from "react"
-import QRCode from "react-qr-code"
+import { QRCode } from "react-qr-code"
 
-import { cn } from "../../lib/utils"
+import { cn } from "@lib/utils"
 import "./qr-code.css"
 
 export type QrCodeLevel = "L" | "M" | "Q" | "H"
