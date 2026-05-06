@@ -189,8 +189,8 @@ export function useCombobox(options: UseComboboxOptions): UseComboboxReturn {
 
   const clearAll = React.useCallback(() => {
     setInputValue("")
-    if (!multiple) commitValues([])
-  }, [setInputValue, multiple, commitValues])
+    commitValues([])
+  }, [setInputValue, commitValues])
 
   const isSelected = React.useCallback(
     (value: string) => selectedValues.includes(value),

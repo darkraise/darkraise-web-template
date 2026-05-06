@@ -204,6 +204,32 @@ describe("Combobox", () => {
     expect(lastCall.value).toEqual(["ca"])
   })
 
+  it("clears all selections when clearAll is invoked in multi-select mode", async () => {
+    const user = userEvent.setup()
+    const spy = vi.fn()
+    const items: ComboboxItemData[] = [
+      { value: "a", label: "Apple" },
+      { value: "b", label: "Banana" },
+    ]
+    render(
+      <Combobox
+        items={items}
+        multiple
+        value={["a", "b"]}
+        defaultInputValue="x"
+        onValueChange={spy}
+      >
+        <ComboboxControl>
+          <ComboboxInput />
+          <ComboboxClearTrigger data-testid="clear">x</ComboboxClearTrigger>
+        </ComboboxControl>
+      </Combobox>,
+    )
+    await user.click(screen.getByTestId("clear"))
+    const lastCall = spy.mock.calls[spy.mock.calls.length - 1]?.[0]
+    expect(lastCall.value).toEqual([])
+  })
+
   it("closes on outside click", async () => {
     const user = userEvent.setup()
     render(
