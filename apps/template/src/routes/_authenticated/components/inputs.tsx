@@ -427,7 +427,7 @@ function InputsPage() {
         code={`{/* URL prefix */}
 <Field>
   <FieldLabel>URL</FieldLabel>
-  <div className="flex rounded-md border border-input overflow-hidden">
+  <div className="flex rounded-md border border-input overflow-hidden focus-ring-input-wrapper">
     <span className="bg-muted px-3 flex items-center text-sm text-muted-foreground border-r border-input">
       https://
     </span>
@@ -438,7 +438,7 @@ function InputsPage() {
 {/* Currency prefix + suffix */}
 <Field>
   <FieldLabel>Currency</FieldLabel>
-  <div className="flex rounded-md border border-input overflow-hidden">
+  <div className="flex rounded-md border border-input overflow-hidden focus-ring-input-wrapper">
     <span className="bg-muted px-3 flex items-center text-sm text-muted-foreground border-r border-input">$</span>
     <Input className="border-0 rounded-none focus:border-input focus:shadow-none" placeholder="0.00" />
     <span className="bg-muted px-3 flex items-center text-sm text-muted-foreground border-l border-input">.00</span>
@@ -448,7 +448,7 @@ function InputsPage() {
         <div className="grid gap-4 sm:grid-cols-2">
           <Field>
             <FieldLabel>URL</FieldLabel>
-            <div className="border-input flex overflow-hidden rounded-md border">
+            <div className="border-input focus-ring-input-wrapper flex overflow-hidden rounded-md border">
               <span className="border-input bg-muted text-muted-foreground flex items-center border-r px-3 text-sm">
                 https://
               </span>
@@ -460,7 +460,7 @@ function InputsPage() {
           </Field>
           <Field>
             <FieldLabel>Currency</FieldLabel>
-            <div className="border-input flex overflow-hidden rounded-md border">
+            <div className="border-input focus-ring-input-wrapper flex overflow-hidden rounded-md border">
               <span className="border-input bg-muted text-muted-foreground flex items-center border-r px-3 text-sm">
                 $
               </span>

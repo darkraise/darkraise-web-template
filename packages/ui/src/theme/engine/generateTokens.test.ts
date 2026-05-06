@@ -18,6 +18,7 @@ describe("generateTokens", () => {
       "--primary",
       "--primary-foreground",
       "--ring",
+      "--focus-ring",
       "--chart-1",
       "--chart-2",
       "--chart-3",
