@@ -1,0 +1,78 @@
+@layer components {
+  .dr-color-picker {
+    @apply relative flex w-full flex-col gap-1.5;
+  }
+
+  .dr-color-picker[data-disabled="true"] {
+    @apply pointer-events-none opacity-60;
+  }
+
+  .dr-color-picker-label {
+    @apply text-foreground text-sm leading-none font-medium;
+  }
+
+  .dr-color-picker-control {
+    @apply relative flex w-full items-center gap-2;
+  }
+
+  .dr-color-picker-swatch {
+    @apply border-border focus-ring-tight inline-block h-8 w-8 cursor-pointer rounded-md border transition-shadow;
+  }
+
+  .dr-color-picker-swatch[data-disabled="true"] {
+    @apply pointer-events-none opacity-50;
+  }
+
+  .dr-color-picker-input {
+    @apply flex-1 font-mono text-sm uppercase;
+  }
+
+  .dr-color-picker-trigger {
+    @apply text-muted-foreground hover:text-foreground border-border focus-ring-tight inline-flex h-9 w-9 items-center justify-center rounded-md border transition-colors;
+  }
+
+  .dr-color-picker-trigger[data-disabled="true"] {
+    @apply pointer-events-none opacity-50;
+  }
+
+  .dr-color-picker-content {
+    @apply glass-strong bg-popover text-popover-foreground data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 flex w-72 flex-col gap-3 border p-3 shadow-md outline-none;
+  }
+
+  .dr-color-picker-area {
+    @apply w-full overflow-hidden rounded-md;
+  }
+
+  .dr-color-picker-area .react-colorful {
+    width: 100%;
+    height: 11rem;
+  }
+
+  .dr-color-picker-area[data-disabled="true"] {
+    @apply pointer-events-none opacity-50;
+  }
+
+  .dr-color-picker-swatch-group {
+    @apply flex flex-wrap gap-2;
+  }
+
+  .dr-color-picker-swatch-item {
+    @apply ring-ring/0 inline-block h-6 w-6 cursor-pointer rounded ring-2 ring-offset-1 transition-shadow;
+  }
+
+  .dr-color-picker-swatch-item[data-active="true"] {
+    @apply ring-primary;
+  }
+
+  .dr-color-picker-swatch-item[data-disabled="true"] {
+    @apply pointer-events-none opacity-50;
+  }
+
+  .dr-color-picker-eye-dropper-trigger {
+    @apply text-muted-foreground hover:text-foreground border-border focus-ring-tight inline-flex h-8 w-8 items-center justify-center self-start rounded-md border transition-colors;
+  }
+
+  .dr-color-picker-eye-dropper-trigger[data-disabled="true"] {
+    @apply pointer-events-none opacity-50;
+  }
+}
