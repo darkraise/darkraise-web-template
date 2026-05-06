@@ -1,0 +1,38 @@
+@layer components {
+  .dr-clipboard {
+    @apply flex flex-col gap-2;
+  }
+
+  .dr-clipboard-label {
+    @apply text-foreground text-sm font-medium;
+  }
+
+  .dr-clipboard-control {
+    @apply flex items-stretch gap-2;
+  }
+
+  .dr-clipboard-input {
+    @apply text-muted-foreground rounded-md font-mono select-all;
+    cursor: text;
+  }
+
+  .dr-clipboard-input:focus {
+    @apply text-foreground;
+  }
+
+  .dr-clipboard-trigger {
+    @apply transition-colors duration-200;
+  }
+
+  .dr-clipboard-trigger[data-copied="true"] {
+    @apply border-success text-success;
+  }
+
+  .dr-clipboard-indicator {
+    @apply inline-flex items-center justify-center transition-colors duration-200;
+  }
+
+  .dr-clipboard-indicator[data-copied="true"] {
+    @apply text-success;
+  }
+}
