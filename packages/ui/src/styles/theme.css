@@ -39,6 +39,7 @@
 @import "../components/password-input/password-input.css";
 @import "../components/popover/popover.css";
 @import "../components/progress/progress.css";
+@import "../components/qr-code/qr-code.css";
 @import "../components/radio-group/radio-group.css";
 @import "../components/rating-group/rating-group.css";
 @import "../components/resizable/resizable.css";

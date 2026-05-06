@@ -1,0 +1,17 @@
+@layer components {
+  .dr-qr-code {
+    @apply text-foreground relative inline-block;
+  }
+
+  .dr-qr-code-frame {
+    @apply block h-full w-full;
+  }
+
+  .dr-qr-code-frame svg {
+    @apply block h-full w-full;
+  }
+
+  .dr-qr-code-overlay {
+    @apply pointer-events-none absolute inset-0 flex items-center justify-center;
+  }
+}
