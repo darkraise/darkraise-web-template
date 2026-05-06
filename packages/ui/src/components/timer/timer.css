@@ -1,0 +1,39 @@
+@layer components {
+  .dr-timer {
+    @apply inline-flex flex-col items-center gap-2;
+  }
+
+  .dr-timer-area {
+    @apply flex items-baseline gap-1 font-mono;
+  }
+
+  .dr-timer-item {
+    @apply text-foreground text-2xl font-semibold tabular-nums;
+    min-width: 2ch;
+    text-align: center;
+  }
+
+  .dr-timer-item[data-type="days"] {
+    min-width: 1ch;
+  }
+
+  .dr-timer-item[data-type="milliseconds"] {
+    min-width: 3ch;
+  }
+
+  .dr-timer-separator {
+    @apply text-muted-foreground text-2xl font-semibold;
+  }
+
+  .dr-timer-control {
+    @apply flex gap-2;
+  }
+
+  .dr-timer-action-trigger {
+    @apply border-border bg-background text-foreground hover:bg-muted inline-flex items-center justify-center gap-1.5 rounded-md border px-3 py-1.5 text-sm font-medium transition-colors;
+  }
+
+  .dr-timer-action-trigger[data-state="disabled"] {
+    @apply pointer-events-none cursor-not-allowed opacity-50;
+  }
+}
