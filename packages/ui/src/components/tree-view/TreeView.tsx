@@ -27,7 +27,6 @@ interface TreeViewContextValue extends UseTreeViewReturn {
   rowRefs: React.RefObject<Map<string, HTMLElement>>
   registerRow: (id: string, el: HTMLElement | null) => void
   focusRow: (id: string) => void
-  data_: TreeNode | undefined
 }
 
 const TreeViewContext = React.createContext<TreeViewContextValue | null>(null)
@@ -115,7 +114,6 @@ function TreeView({
       rowRefs,
       registerRow,
       focusRow,
-      data_: data,
     }),
     [state, data, registerRow, focusRow],
   )
@@ -374,7 +372,7 @@ function TreeViewBranchControl({
       "<TreeViewBranchControl> must be used within a <TreeViewBranch>",
     )
   }
-  const { disabled: treeDisabled, isFocused, isSelected, focused } = ctx
+  const { disabled: treeDisabled, isFocused, isSelected } = ctx
 
   const nodeInfo = ctx.getNodeInfo(branch.value)
   const nodeDisabled = nodeInfo?.disabled ?? false
@@ -392,7 +390,6 @@ function TreeViewBranchControl({
 
   const isCurrentlyFocused = isFocused(branch.value)
   const selected = isSelected(branch.value)
-  const tabIndex = isCurrentlyFocused || focused === null ? 0 : -1
   // Only one row should have tabIndex=0; default to currently focused row,
   // otherwise the tree itself takes the tabstop via the first visible node.
   const finalTabIndex = isCurrentlyFocused ? 0 : -1
@@ -411,9 +408,6 @@ function TreeViewBranchControl({
     if (event.defaultPrevented) return
     ctx.setFocused(branch.value)
   }
-
-  // Reference to keep tabIndex variable used (silences linter when both branches identical).
-  void tabIndex
 
   return (
     <div
