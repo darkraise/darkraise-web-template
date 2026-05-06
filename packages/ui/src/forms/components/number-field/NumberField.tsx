@@ -1,10 +1,12 @@
-import { ChevronDown, ChevronUp } from "lucide-react"
-
-import { cn } from "../../../lib/utils"
-import { Input } from "../../../components/input"
-import { FieldWrapper } from "../field-wrapper"
-import type { FieldPrimitiveProps } from "../../types"
-import "./number-field.css"
+import {
+  NumberInput,
+  NumberInputControl,
+  NumberInputDecrementTrigger,
+  NumberInputField,
+  NumberInputIncrementTrigger,
+} from "@components/number-input"
+import { FieldWrapper } from "@forms/components/field-wrapper"
+import type { FieldPrimitiveProps } from "@forms/types"
 
 interface NumberFieldProps extends FieldPrimitiveProps<number> {
   label: string
@@ -13,17 +15,9 @@ interface NumberFieldProps extends FieldPrimitiveProps<number> {
   min?: number
   max?: number
   step?: number
-}
-
-function decimalPlacesOf(n: number): number {
-  const s = n.toString()
-  const dotIdx = s.indexOf(".")
-  return dotIdx < 0 ? 0 : s.length - dotIdx - 1
-}
-
-function roundToStep(value: number, step: number): number {
-  const places = decimalPlacesOf(step)
-  return places === 0 ? value : Number(value.toFixed(places))
+  precision?: number
+  formatOptions?: Intl.NumberFormatOptions
+  locale?: string
 }
 
 export function NumberField({
@@ -39,18 +33,10 @@ export function NumberField({
   min,
   max,
   step,
+  precision,
+  formatOptions,
+  locale,
 }: NumberFieldProps) {
-  const stepValue = step ?? 1
-  const current = Number.isFinite(value) ? value : (min ?? 0)
-  const atMin = min != null && current <= min
-  const atMax = max != null && current >= max
-
-  const apply = (next: number) => {
-    const clampedHigh = max != null ? Math.min(next, max) : next
-    const clamped = min != null ? Math.max(clampedHigh, min) : clampedHigh
-    onChange(roundToStep(clamped, stepValue))
-  }
-
   return (
     <FieldWrapper
       name={name}
@@ -60,56 +46,27 @@ export function NumberField({
       errors={errors}
     >
       {(invalid) => (
-        <div className="dr-number-field">
-          <Input
-            id={name}
-            type="number"
-            placeholder={placeholder}
-            min={min}
-            max={max}
-            step={step}
-            value={Number.isFinite(value) ? value : ""}
-            onBlur={onBlur}
-            onChange={(e) => {
-              const raw = e.target.value
-              if (raw === "") {
-                onChange(Number.NaN)
-                return
-              }
-              const parsed = Number(raw)
-              onChange(Number.isFinite(parsed) ? parsed : Number.NaN)
-            }}
-            onWheel={(e) => {
-              if (e.currentTarget === document.activeElement) {
-                e.currentTarget.blur()
-              }
-            }}
-            aria-invalid={invalid}
-            className={cn("dr-number-field__input")}
-          />
-          <div className="dr-number-field__controls">
-            <button
-              type="button"
-              tabIndex={-1}
-              aria-label="Increment"
-              disabled={atMax}
-              onClick={() => apply(current + stepValue)}
-              className="dr-number-field__btn"
-            >
-              <ChevronUp />
-            </button>
-            <button
-              type="button"
-              tabIndex={-1}
-              aria-label="Decrement"
-              disabled={atMin}
-              onClick={() => apply(current - stepValue)}
-              className="dr-number-field__btn"
-            >
-              <ChevronDown />
-            </button>
-          </div>
-        </div>
+        <NumberInput
+          value={value}
+          onValueChange={(d) => onChange(d.valueAsNumber)}
+          min={min}
+          max={max}
+          step={step}
+          precision={precision}
+          formatOptions={formatOptions}
+          locale={locale}
+        >
+          <NumberInputControl>
+            <NumberInputField
+              id={name}
+              placeholder={placeholder}
+              onBlur={onBlur}
+              aria-invalid={invalid}
+            />
+            <NumberInputIncrementTrigger />
+            <NumberInputDecrementTrigger />
+          </NumberInputControl>
+        </NumberInput>
       )}
     </FieldWrapper>
   )

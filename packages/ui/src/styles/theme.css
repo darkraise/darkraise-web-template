@@ -91,7 +91,6 @@
 @import "../layout/stack/stack.css";
 
 /* Form-component imports (manual; forms/ is outside the auto-scanner) */
-@import "../forms/components/number-field/number-field.css";
 @import "../forms/components/form-fields.css";
 
 /* Data-table component imports (manual; data-table/ is outside the auto-scanner) */
