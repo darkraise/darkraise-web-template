@@ -30,6 +30,7 @@
 @import "../components/navigation-menu/navigation-menu.css";
 @import "../components/overlay-primitives/overlay-primitives.css";
 @import "../components/pagination/pagination.css";
+@import "../components/password-input/password-input.css";
 @import "../components/popover/popover.css";
 @import "../components/progress/progress.css";
 @import "../components/radio-group/radio-group.css";
