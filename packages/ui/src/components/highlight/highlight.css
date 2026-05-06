@@ -1,0 +1,9 @@
+@layer components {
+  .dr-highlight-match {
+    @apply bg-primary/20 text-primary rounded-sm px-0.5;
+  }
+
+  .dr-highlight-match-strong {
+    @apply bg-primary text-primary-foreground rounded-sm px-0.5 font-semibold;
+  }
+}
