@@ -131,7 +131,7 @@ function AvatarPage() {
   <Avatar className="h-10 w-10">
     <AvatarFallback>AC</AvatarFallback>
   </Avatar>
-  <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 ring-2 ring-background" />
+  <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-success ring-2 ring-background" />
 </div>`}
       >
         <div className="flex flex-wrap items-start gap-6">
@@ -140,7 +140,7 @@ function AvatarPage() {
               <Avatar className="h-10 w-10">
                 <AvatarFallback>AC</AvatarFallback>
               </Avatar>
-              <span className="ring-background absolute right-0 bottom-0 h-3 w-3 rounded-full bg-green-500 ring-2" />
+              <span className="ring-background bg-success absolute right-0 bottom-0 h-3 w-3 rounded-full ring-2" />
             </div>
             <p className="text-muted-foreground mt-1 text-center text-xs">
               Online
@@ -151,7 +151,7 @@ function AvatarPage() {
               <Avatar className="h-10 w-10">
                 <AvatarFallback>BP</AvatarFallback>
               </Avatar>
-              <span className="ring-background absolute right-0 bottom-0 h-3 w-3 rounded-full bg-amber-500 ring-2" />
+              <span className="ring-background bg-warning absolute right-0 bottom-0 h-3 w-3 rounded-full ring-2" />
             </div>
             <p className="text-muted-foreground mt-1 text-center text-xs">
               Away

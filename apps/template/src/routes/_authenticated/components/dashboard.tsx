@@ -193,7 +193,7 @@ function DashboardPage() {
         <p className="text-xs text-muted-foreground">This Month</p>
         <p className="text-xl font-semibold">$12,450</p>
       </div>
-      <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 border-0">
+      <Badge className="bg-success/15 text-success border-0">
         <TrendingUp className="mr-1 h-3 w-3" />
         +22%
       </Badge>
@@ -208,7 +208,7 @@ function DashboardPage() {
         <p className="text-xs text-muted-foreground">Orders</p>
         <p className="text-xl font-semibold">342</p>
       </div>
-      <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 border-0">
+      <Badge className="bg-success/15 text-success border-0">
         <TrendingUp className="mr-1 h-3 w-3" />
         +14.7%
       </Badge>
@@ -230,7 +230,7 @@ function DashboardPage() {
                 <p className="text-muted-foreground text-xs">This Month</p>
                 <p className="text-xl font-semibold">$12,450</p>
               </div>
-              <Badge className="border-0 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+              <Badge className="bg-success/15 text-success border-0">
                 <TrendingUp className="mr-1 h-3 w-3" />
                 +22%
               </Badge>
@@ -245,7 +245,7 @@ function DashboardPage() {
                 <p className="text-muted-foreground text-xs">Orders</p>
                 <p className="text-xl font-semibold">342</p>
               </div>
-              <Badge className="border-0 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+              <Badge className="bg-success/15 text-success border-0">
                 <TrendingUp className="mr-1 h-3 w-3" />
                 +14.7%
               </Badge>

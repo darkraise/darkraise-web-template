@@ -25,19 +25,19 @@ const alertConfig: Record<
 > = {
   info: {
     icon: Info,
-    className: "border-l-4 border-l-blue-500 bg-blue-50 dark:bg-blue-950/30",
+    className: "border-l-4 border-l-primary bg-primary/5",
   },
   success: {
     icon: CircleCheck,
-    className: "border-l-4 border-l-green-500 bg-green-50 dark:bg-green-950/30",
+    className: "border-l-4 border-l-success bg-success/5",
   },
   warning: {
     icon: TriangleAlert,
-    className: "border-l-4 border-l-amber-500 bg-amber-50 dark:bg-amber-950/30",
+    className: "border-l-4 border-l-warning bg-warning/5",
   },
   error: {
     icon: OctagonX,
-    className: "border-l-4 border-l-red-500 bg-red-50 dark:bg-red-950/30",
+    className: "border-l-4 border-l-destructive bg-destructive/5",
   },
 }
 
@@ -303,7 +303,7 @@ toast("Extended notice", { duration: 8000 })`}
         title="Inline alert banner"
         code={`import { Alert, AlertTitle, AlertDescription } from "darkraise-ui/components/alert"
 
-<Alert className="border-l-4 border-l-blue-500 bg-blue-50 dark:bg-blue-950/30">
+<Alert className="border-l-4 border-l-primary bg-primary/5">
   <Info className="h-4 w-4" />
   <AlertTitle>Scheduled maintenance</AlertTitle>
   <AlertDescription>The system will be unavailable on Sunday from 2–4 AM UTC.</AlertDescription>
@@ -338,7 +338,7 @@ toast("Extended notice", { duration: 8000 })`}
         code={`const [visible, setVisible] = useState(true)
 
 {visible ? (
-  <Alert className="border-l-4 border-l-blue-500 bg-blue-50 dark:bg-blue-950/30">
+  <Alert className="border-l-4 border-l-primary bg-primary/5">
     <Info className="h-4 w-4" />
     <AlertTitle>New feature available</AlertTitle>
     <AlertDescription className="flex items-start justify-between gap-2">

@@ -64,26 +64,25 @@ const bannerConfig: Record<
 > = {
   info: {
     icon: Info,
-    className: "border-l-4 border-l-blue-500 bg-blue-50 dark:bg-blue-950/30",
+    className: "border-l-4 border-l-primary bg-primary/5",
     title: "New update available",
     description: "Version 2.1.0 is ready to install.",
   },
   success: {
     icon: CircleCheck,
-    className: "border-l-4 border-l-green-500 bg-green-50 dark:bg-green-950/30",
+    className: "border-l-4 border-l-success bg-success/5",
     title: "Deployment complete",
     description: "All services are running normally.",
   },
   warning: {
     icon: TriangleAlert,
-    className:
-      "border-l-4 border-l-yellow-500 bg-yellow-50 dark:bg-yellow-950/30",
+    className: "border-l-4 border-l-warning bg-warning/5",
     title: "Storage almost full",
     description: "You have used 90% of your quota.",
   },
   error: {
     icon: OctagonX,
-    className: "border-l-4 border-l-red-500 bg-red-50 dark:bg-red-950/30",
+    className: "border-l-4 border-l-destructive bg-destructive/5",
     title: "Payment failed",
     description: "Please update your billing details.",
   },
@@ -249,7 +248,7 @@ function StatComparisonRow() {
             <p className="text-muted-foreground text-sm">This Month</p>
             <p className="text-2xl font-semibold">$12,450</p>
           </div>
-          <Badge className="bg-green-100 text-green-800 hover:bg-green-100 dark:bg-green-900 dark:text-green-200 dark:hover:bg-green-900">
+          <Badge className="bg-success/15 text-success hover:bg-success/25">
             <TrendingUp className="mr-1 h-3 w-3" />
             +22%
           </Badge>
@@ -265,7 +264,7 @@ function StatComparisonRow() {
             <p className="text-muted-foreground text-sm">This Month</p>
             <p className="text-2xl font-semibold">348</p>
           </div>
-          <Badge className="bg-red-100 text-red-800 hover:bg-red-100 dark:bg-red-900 dark:text-red-200 dark:hover:bg-red-900">
+          <Badge className="bg-destructive/15 text-destructive hover:bg-destructive/25">
             <TrendingDown className="mr-1 h-3 w-3" />
             -8%
           </Badge>
@@ -321,7 +320,7 @@ function ConfirmationPrompt() {
     <Card className="max-w-md">
       <CardHeader>
         <div className="flex items-center gap-3">
-          <AlertTriangle className="h-5 w-5 shrink-0 text-amber-500" />
+          <AlertTriangle className="text-warning h-5 w-5 shrink-0" />
           <CardTitle>Delete this project?</CardTitle>
         </div>
         <CardDescription>
@@ -504,7 +503,7 @@ const [dismissed, setDismissed] = useState([])
         <p className="text-sm text-muted-foreground">This Month</p>
         <p className="text-2xl font-semibold">$12,450</p>
       </div>
-      <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+      <Badge className="bg-success/15 text-success">
         <TrendingUp className="mr-1 h-3 w-3" /> +22%
       </Badge>
       <div>
@@ -518,7 +517,7 @@ const [dismissed, setDismissed] = useState([])
         <p className="text-sm text-muted-foreground">This Month</p>
         <p className="text-2xl font-semibold">348</p>
       </div>
-      <Badge className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+      <Badge className="bg-destructive/15 text-destructive">
         <TrendingDown className="mr-1 h-3 w-3" /> -8%
       </Badge>
       <div>
@@ -567,7 +566,7 @@ const [dismissed, setDismissed] = useState([])
         code={`<Card className="max-w-md">
   <CardHeader>
     <div className="flex items-center gap-3">
-      <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0" />
+      <AlertTriangle className="text-warning h-5 w-5 shrink-0" />
       <CardTitle>Delete this project?</CardTitle>
     </div>
     <CardDescription>

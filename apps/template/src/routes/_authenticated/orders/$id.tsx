@@ -29,14 +29,11 @@ export const Route = createFileRoute("/_authenticated/orders/$id")({
 })
 
 const statusColors: Record<string, string> = {
-  pending:
-    "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
-  processing: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-  shipped:
-    "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
-  delivered:
-    "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-  cancelled: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+  pending: "bg-warning/15 text-warning",
+  processing: "bg-primary/15 text-primary",
+  shipped: "bg-accent text-accent-foreground",
+  delivered: "bg-success/15 text-success",
+  cancelled: "bg-destructive/15 text-destructive",
 }
 
 const statusSteps = ["pending", "processing", "shipped", "delivered"] as const

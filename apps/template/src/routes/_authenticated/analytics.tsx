@@ -13,7 +13,7 @@ import {
   YAxis,
   CartesianGrid,
 } from "recharts"
-import { PageHeader } from "darkraise-ui/layout"
+import { Grid, PageHeader, Stack } from "darkraise-ui/layout"
 import {
   ChartCard,
   ChartContainer,
@@ -111,8 +111,8 @@ function AnalyticsPage() {
         description="Detailed performance metrics and trends"
       />
 
-      <div className="space-y-6">
-        <div className="grid gap-4 md:grid-cols-2">
+      <Stack gap="lg">
+        <Grid cols={2} gap="md" responsive>
           <ChartCard
             title="Revenue Trend"
             description="Daily revenue over the last 30 days"
@@ -172,9 +172,9 @@ function AnalyticsPage() {
               </PieChart>
             </ChartContainer>
           </ChartCard>
-        </div>
+        </Grid>
 
-        <div className="grid gap-4 md:grid-cols-2">
+        <Grid cols={2} gap="md" responsive>
           <ChartCard
             title="Orders & Visitors"
             description="Daily orders and scaled visitor count"
@@ -236,8 +236,8 @@ function AnalyticsPage() {
               </BarChart>
             </ChartContainer>
           </ChartCard>
-        </div>
-      </div>
+        </Grid>
+      </Stack>
     </>
   )
 }

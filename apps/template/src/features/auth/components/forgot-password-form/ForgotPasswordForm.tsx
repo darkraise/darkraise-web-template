@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router"
 import { z } from "zod"
 import { useForm } from "@tanstack/react-form"
 import { Button } from "darkraise-ui/components/button"
+import { Stack } from "darkraise-ui/layout"
 import { useAuth } from "../../hooks/useAuth"
 import { AuthFormField } from "../auth-form-field"
 
@@ -25,7 +26,7 @@ export function ForgotPasswordForm() {
 
   if (sent) {
     return (
-      <div className="space-y-4 text-center">
+      <Stack gap="md" className="text-center">
         <h1 className="text-2xl font-medium">Check your email</h1>
         <p className="text-muted-foreground text-sm">
           We sent a password reset link to your email address.
@@ -35,49 +36,50 @@ export function ForgotPasswordForm() {
             Back to sign in
           </Button>
         </Link>
-      </div>
+      </Stack>
     )
   }
 
   return (
     <>
-      <div className="space-y-2 text-center">
+      <Stack gap="xs" className="text-center">
         <h1 className="text-2xl font-medium">Forgot password?</h1>
         <p className="text-muted-foreground text-sm">
           Enter your email and we&apos;ll send a reset link
         </p>
-      </div>
+      </Stack>
 
       <form
         onSubmit={(e) => {
           e.preventDefault()
           form.handleSubmit()
         }}
-        className="space-y-4"
       >
-        <form.Field name="email">
-          {(field) => (
-            <AuthFormField
-              field={field}
-              label="Email"
-              type="email"
-              placeholder="name@example.com"
-            />
-          )}
-        </form.Field>
+        <Stack gap="md">
+          <form.Field name="email">
+            {(field) => (
+              <AuthFormField
+                field={field}
+                label="Email"
+                type="email"
+                placeholder="name@example.com"
+              />
+            )}
+          </form.Field>
 
-        <form.Subscribe
-          selector={(s) => [s.canSubmit, s.isSubmitting]}
-          children={([canSubmit, isSubmitting]) => (
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={!canSubmit || isSubmitting}
-            >
-              {isSubmitting ? "Sending..." : "Send reset link"}
-            </Button>
-          )}
-        />
+          <form.Subscribe
+            selector={(s) => [s.canSubmit, s.isSubmitting]}
+            children={([canSubmit, isSubmitting]) => (
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={!canSubmit || isSubmitting}
+              >
+                {isSubmitting ? "Sending..." : "Send reset link"}
+              </Button>
+            )}
+          />
+        </Stack>
       </form>
 
       <p className="text-muted-foreground text-center text-sm">

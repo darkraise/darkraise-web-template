@@ -77,7 +77,7 @@ function CharCountTextareaExample() {
     value.length > 270
       ? "text-destructive"
       : value.length > 240
-        ? "text-amber-500"
+        ? "text-warning"
         : "text-muted-foreground"
   return (
     <div className="space-y-1">
@@ -538,7 +538,7 @@ function InputsPage() {
   const [value, setValue] = useState("Lorem ipsum...")
   const countColor =
     value.length > 270 ? "text-destructive"
-    : value.length > 240 ? "text-amber-500"
+    : value.length > 240 ? "text-warning"
     : "text-muted-foreground"
   return (
     <div className="space-y-1">

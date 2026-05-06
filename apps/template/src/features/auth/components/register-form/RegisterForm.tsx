@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router"
 import { z } from "zod"
 import { useForm } from "@tanstack/react-form"
 import { Button } from "darkraise-ui/components/button"
+import { Stack } from "darkraise-ui/layout"
 import { useAuth } from "../../hooks/useAuth"
 import { AuthFormField } from "../auth-form-field"
 
@@ -24,60 +25,65 @@ export function RegisterForm() {
 
   return (
     <>
-      <div className="space-y-2 text-center">
+      <Stack gap="xs" className="text-center">
         <h1 className="text-2xl font-medium">Create an account</h1>
         <p className="text-muted-foreground text-sm">
           Enter your details to get started
         </p>
-      </div>
+      </Stack>
 
       <form
         onSubmit={(e) => {
           e.preventDefault()
           form.handleSubmit()
         }}
-        className="space-y-4"
       >
-        <form.Field name="name">
-          {(field) => (
-            <AuthFormField field={field} label="Name" placeholder="Your name" />
-          )}
-        </form.Field>
+        <Stack gap="md">
+          <form.Field name="name">
+            {(field) => (
+              <AuthFormField
+                field={field}
+                label="Name"
+                placeholder="Your name"
+              />
+            )}
+          </form.Field>
 
-        <form.Field name="email">
-          {(field) => (
-            <AuthFormField
-              field={field}
-              label="Email"
-              type="email"
-              placeholder="name@example.com"
-            />
-          )}
-        </form.Field>
+          <form.Field name="email">
+            {(field) => (
+              <AuthFormField
+                field={field}
+                label="Email"
+                type="email"
+                placeholder="name@example.com"
+              />
+            )}
+          </form.Field>
 
-        <form.Field name="password">
-          {(field) => (
-            <AuthFormField
-              field={field}
-              label="Password"
-              type="password"
-              placeholder="At least 8 characters"
-            />
-          )}
-        </form.Field>
+          <form.Field name="password">
+            {(field) => (
+              <AuthFormField
+                field={field}
+                label="Password"
+                type="password"
+                placeholder="At least 8 characters"
+              />
+            )}
+          </form.Field>
 
-        <form.Subscribe
-          selector={(s) => [s.canSubmit, s.isSubmitting]}
-          children={([canSubmit, isSubmitting]) => (
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={!canSubmit || isSubmitting}
-            >
-              {isSubmitting ? "Creating account..." : "Create account"}
-            </Button>
-          )}
-        />
+          <form.Subscribe
+            selector={(s) => [s.canSubmit, s.isSubmitting]}
+            children={([canSubmit, isSubmitting]) => (
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={!canSubmit || isSubmitting}
+              >
+                {isSubmitting ? "Creating account..." : "Create account"}
+              </Button>
+            )}
+          />
+        </Stack>
       </form>
 
       <p className="text-muted-foreground text-center text-sm">
