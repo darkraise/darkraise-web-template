@@ -117,4 +117,40 @@ describe("Clipboard", () => {
       expect.objectContaining({ copied: false, value: "abc" }),
     )
   })
+
+  it("fires onCopyStatusChange with error when writeText rejects", async () => {
+    const error = new Error("denied")
+    const onCopyStatusChange = vi.fn()
+    const user = userEvent.setup()
+    // userEvent.setup() installs its own clipboard mock; spy after to override.
+    const writeSpy = vi
+      .spyOn(navigator.clipboard, "writeText")
+      .mockRejectedValue(error)
+
+    render(
+      <Clipboard value="test" onCopyStatusChange={onCopyStatusChange}>
+        <ClipboardControl>
+          <ClipboardTrigger>
+            <ClipboardIndicator
+              copied={<span>copied</span>}
+              fallback={<span>copy</span>}
+            />
+          </ClipboardTrigger>
+        </ClipboardControl>
+      </Clipboard>,
+    )
+
+    await user.click(screen.getByRole("button"))
+
+    await waitFor(() => {
+      expect(onCopyStatusChange).toHaveBeenCalledWith({
+        copied: false,
+        value: "test",
+        error,
+      })
+    })
+    // state stays idle: no second call with copied=true
+    expect(onCopyStatusChange).toHaveBeenCalledTimes(1)
+    writeSpy.mockRestore()
+  })
 })

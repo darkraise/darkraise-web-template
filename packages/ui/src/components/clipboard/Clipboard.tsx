@@ -48,6 +48,7 @@ function Clipboard({
 }: ClipboardProps) {
   const [copied, setCopied] = React.useState(false)
   const timerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+  const mountedRef = React.useRef(true)
   const onStatusChangeRef = React.useRef(onCopyStatusChange)
 
   React.useEffect(() => {
@@ -56,23 +57,28 @@ function Clipboard({
 
   React.useEffect(
     () => () => {
+      mountedRef.current = false
       if (timerRef.current) clearTimeout(timerRef.current)
     },
     [],
   )
 
   const copy = React.useCallback(() => {
+    if (timerRef.current) clearTimeout(timerRef.current)
     void (async () => {
       try {
         await navigator.clipboard.writeText(value)
+        if (!mountedRef.current) return
         setCopied(true)
         onStatusChangeRef.current?.({ copied: true, value })
         if (timerRef.current) clearTimeout(timerRef.current)
         timerRef.current = setTimeout(() => {
+          if (!mountedRef.current) return
           setCopied(false)
           onStatusChangeRef.current?.({ copied: false, value })
         }, timeout)
       } catch (err) {
+        if (!mountedRef.current) return
         const error = err instanceof Error ? err : new Error(String(err))
         onStatusChangeRef.current?.({ copied: false, value, error })
       }
@@ -157,6 +163,9 @@ function ClipboardTrigger({
       {...props}
     >
       {children}
+      <span className="sr-only" role="status" aria-live="polite">
+        {copied ? "Copied" : ""}
+      </span>
     </Button>
   )
 }
@@ -183,7 +192,6 @@ function ClipboardIndicator({
     <span
       className={cn("dr-clipboard-indicator", className)}
       data-copied={copied ? "true" : "false"}
-      aria-hidden="true"
       {...props}
     >
       {copied ? copiedSlot : idleSlot}
