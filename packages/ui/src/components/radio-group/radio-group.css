@@ -4,7 +4,7 @@
   }
 
   .dr-radio-group-item {
-    @apply border-primary text-primary ring-offset-background focus-visible:ring-ring aspect-square cursor-pointer rounded-full border focus:outline-none focus-visible:ring-1 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply border-primary text-primary focus-ring aspect-square cursor-pointer rounded-full border disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   .dr-radio-group-item[data-size="sm"] {
