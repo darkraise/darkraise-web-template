@@ -59,6 +59,9 @@
 @import "../layout/section/section.css";
 @import "../layout/stack/stack.css";
 
+/* Form-component imports (manual; forms/ is outside the auto-scanner) */
+@import "../forms/components/number-field/number-field.css";
+
 @layer theme, base, components, utilities, overrides;
 
 @custom-variant dark (&:where([data-mode="dark"], [data-mode="dark"] *));
