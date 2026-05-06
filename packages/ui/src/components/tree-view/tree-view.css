@@ -1,0 +1,79 @@
+@layer components {
+  .dr-tree-view {
+    @apply flex flex-col gap-1;
+  }
+
+  .dr-tree-view-label {
+    @apply text-muted-foreground px-2 text-xs font-medium tracking-wide uppercase;
+  }
+
+  .dr-tree-view-tree {
+    @apply flex flex-col gap-0.5;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .dr-tree-view-branch {
+    @apply flex flex-col;
+    list-style: none;
+  }
+
+  .dr-tree-view-branch-content {
+    @apply flex flex-col gap-0.5;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .dr-tree-view-branch-control,
+  .dr-tree-view-item {
+    @apply flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors outline-none select-none;
+  }
+
+  .dr-tree-view-item {
+    list-style: none;
+  }
+
+  .dr-tree-view-branch-control:hover,
+  .dr-tree-view-item:hover {
+    @apply bg-accent text-accent-foreground;
+  }
+
+  .dr-tree-view-branch-control[data-focused="true"],
+  .dr-tree-view-item[data-focused="true"] {
+    @apply bg-accent text-accent-foreground;
+  }
+
+  .dr-tree-view-branch-control[data-selected="true"],
+  .dr-tree-view-item[data-selected="true"] {
+    @apply bg-primary text-primary-foreground;
+  }
+
+  .dr-tree-view-branch-control[data-selected="true"]:hover,
+  .dr-tree-view-item[data-selected="true"]:hover {
+    @apply bg-primary text-primary-foreground;
+  }
+
+  .dr-tree-view-branch-control[data-disabled="true"],
+  .dr-tree-view-item[data-disabled="true"] {
+    @apply pointer-events-none cursor-default opacity-50;
+  }
+
+  .dr-tree-view[data-disabled="true"] .dr-tree-view-branch-control,
+  .dr-tree-view[data-disabled="true"] .dr-tree-view-item {
+    @apply pointer-events-none cursor-default opacity-50;
+  }
+
+  .dr-tree-view-branch-indicator {
+    @apply inline-flex h-4 w-4 shrink-0 items-center justify-center transition-transform;
+  }
+
+  .dr-tree-view-branch-indicator[data-state="open"] {
+    @apply rotate-90;
+  }
+
+  .dr-tree-view-branch-text {
+    @apply inline-flex flex-1 items-center gap-2 truncate;
+  }
+}

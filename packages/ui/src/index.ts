@@ -58,6 +58,7 @@ export * from "./components/timer"
 export * from "./components/toggle"
 export * from "./components/toggle-group"
 export * from "./components/tooltip"
+export * from "./components/tree-view"
 export * from "./components/virtualized-dropdown-menu"
 
 export * from "./hooks/index"
