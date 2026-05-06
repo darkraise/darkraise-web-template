@@ -16,6 +16,8 @@
   }
 
   .dr-input-otp-slot[data-active] {
-    @apply ring-ring ring-offset-background z-10 ring-1;
+    z-index: 1;
+    border-color: hsl(var(--primary));
+    box-shadow: 0 0 0 1px hsl(var(--primary));
   }
 }
