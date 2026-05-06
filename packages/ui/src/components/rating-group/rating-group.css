@@ -1,0 +1,45 @@
+@layer components {
+  .dr-rating-group {
+    @apply inline-flex flex-col gap-1.5;
+  }
+
+  .dr-rating-group[data-disabled="true"] {
+    @apply pointer-events-none opacity-50;
+  }
+
+  .dr-rating-group-label {
+    @apply text-foreground text-sm leading-none font-medium;
+  }
+
+  .dr-rating-group-control {
+    @apply inline-flex items-center gap-1;
+  }
+
+  .dr-rating-group-item {
+    @apply relative inline-flex cursor-pointer items-center justify-center rounded-sm transition-transform;
+    user-select: none;
+    touch-action: manipulation;
+  }
+
+  .dr-rating-group-item:hover {
+    @apply scale-110;
+  }
+
+  .dr-rating-group-item[data-readonly="true"],
+  .dr-rating-group-item[data-disabled="true"] {
+    @apply cursor-default;
+  }
+
+  .dr-rating-group-item[data-readonly="true"]:hover,
+  .dr-rating-group-item[data-disabled="true"]:hover {
+    transform: none;
+  }
+
+  .dr-rating-group[data-readonly="true"] .dr-rating-group-item {
+    @apply cursor-default;
+  }
+
+  .dr-rating-group[data-readonly="true"] .dr-rating-group-item:hover {
+    transform: none;
+  }
+}
