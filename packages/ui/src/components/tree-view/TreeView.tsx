@@ -419,11 +419,7 @@ function TreeViewBranchControl({
       data-focused={isCurrentlyFocused ? "true" : undefined}
       data-disabled={isDisabled ? "true" : undefined}
       data-depth={branch.depth}
-      className={cn(
-        "dr-tree-view-branch-control",
-        "focus-ring-tight",
-        className,
-      )}
+      className={cn("dr-tree-view-branch-control", className)}
       style={{
         paddingInlineStart: `calc(${branch.depth} * var(--tree-view-indent, 1rem))`,
         ...style,
@@ -570,7 +566,7 @@ function TreeViewItem({
       data-focused={isCurrentlyFocused ? "true" : undefined}
       data-disabled={isDisabled ? "true" : undefined}
       data-depth={depth}
-      className={cn("dr-tree-view-item", "focus-ring-tight", className)}
+      className={cn("dr-tree-view-item", className)}
       style={{
         paddingInlineStart: `calc(${depth} * var(--tree-view-indent, 1rem))`,
         ...style,
