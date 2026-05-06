@@ -1,0 +1,45 @@
+@layer components {
+  .dr-date-picker {
+    @apply relative flex w-full flex-col gap-1.5;
+  }
+
+  .dr-date-picker[data-disabled="true"] {
+    @apply pointer-events-none opacity-60;
+  }
+
+  .dr-date-picker-label {
+    @apply text-foreground text-sm leading-none font-medium;
+  }
+
+  .dr-date-picker-control {
+    @apply relative flex w-full items-center gap-1;
+  }
+
+  .dr-date-picker-input {
+    @apply pr-10;
+  }
+
+  .dr-date-picker-trigger {
+    @apply text-muted-foreground hover:text-foreground focus-ring-tight absolute top-1/2 right-2 inline-flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-sm transition-colors;
+  }
+
+  .dr-date-picker-trigger[data-disabled="true"] {
+    @apply pointer-events-none opacity-50;
+  }
+
+  .dr-date-picker-content {
+    @apply glass-strong bg-popover text-popover-foreground data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 flex flex-col gap-2 border p-2 shadow-md outline-none;
+  }
+
+  .dr-date-picker-calendar {
+    @apply rounded-sm;
+  }
+
+  .dr-date-picker-presets {
+    @apply flex flex-wrap gap-1.5 border-t pt-2;
+  }
+
+  .dr-date-picker-preset {
+    @apply text-foreground hover:bg-accent hover:text-accent-foreground focus-ring-tight inline-flex items-center justify-center rounded-sm border px-2 py-1 text-xs transition-colors;
+  }
+}
