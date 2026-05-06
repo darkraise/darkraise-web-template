@@ -1,0 +1,57 @@
+@layer components {
+  .dr-editable {
+    @apply flex flex-col gap-2;
+  }
+
+  .dr-editable-label {
+    @apply text-foreground text-sm font-medium;
+  }
+
+  .dr-editable-area {
+    @apply relative inline-flex items-center;
+  }
+
+  .dr-editable-area[data-state="preview"] .dr-editable-input {
+    @apply hidden;
+  }
+
+  .dr-editable-area[data-state="edit"] .dr-editable-preview {
+    @apply hidden;
+  }
+
+  .dr-editable-input {
+    @apply w-auto;
+  }
+
+  .dr-editable-preview {
+    @apply text-foreground focus-ring inline-flex min-h-[var(--density-cell)] cursor-text items-center rounded-md px-[var(--density-input-px)] py-[var(--density-input-py)] text-sm;
+  }
+
+  .dr-editable-preview[data-empty="true"] {
+    @apply text-muted-foreground;
+  }
+
+  .dr-editable[data-disabled="true"] .dr-editable-preview,
+  .dr-editable[data-readonly="true"] .dr-editable-preview {
+    @apply cursor-not-allowed opacity-70;
+  }
+
+  .dr-editable-control {
+    @apply inline-flex items-center gap-1;
+  }
+
+  .dr-editable-control[data-state="preview"] .dr-editable-submit-trigger,
+  .dr-editable-control[data-state="preview"] .dr-editable-cancel-trigger {
+    @apply hidden;
+  }
+
+  .dr-editable-control[data-state="edit"] .dr-editable-edit-trigger {
+    @apply hidden;
+  }
+
+  .dr-editable-edit-trigger,
+  .dr-editable-submit-trigger,
+  .dr-editable-cancel-trigger {
+    @apply text-muted-foreground hover:text-foreground focus-ring inline-flex aspect-square h-[var(--density-cell)] cursor-pointer items-center justify-center rounded-md bg-transparent transition-colors disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0;
+  }
+}
