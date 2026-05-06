@@ -46,6 +46,22 @@ import {
   MoreHorizontal,
   Sparkles,
   Shapes,
+  ClipboardCopy,
+  Pipette,
+  Search,
+  CalendarRange,
+  Pencil,
+  Upload,
+  Highlighter,
+  Hash,
+  Lock,
+  QrCode as QrCodeIcon,
+  Star,
+  Rows3,
+  ListOrdered,
+  Repeat,
+  Timer as TimerIcon,
+  FolderTree,
 } from "lucide-react"
 import { SidebarLayout, TopNavLayout, StackedLayout } from "darkraise-ui/layout"
 import { useLayoutStore } from "darkraise-ui/layout"
@@ -109,11 +125,22 @@ const nav: NavGroup[] = [
       { label: "Cards", href: "/components/cards", icon: CreditCard },
       { label: "Charts", href: "/components/charts", icon: BarChart2 },
       {
+        label: "Clipboard",
+        href: "/components/clipboard",
+        icon: ClipboardCopy,
+      },
+      {
         label: "Collapsible",
         href: "/components/collapsible",
         icon: PanelTopClose,
       },
+      {
+        label: "Color Picker",
+        href: "/components/color-picker",
+        icon: Pipette,
+      },
       { label: "Colors", href: "/components/colors", icon: Paintbrush },
+      { label: "Combobox", href: "/components/combobox", icon: Search },
       { label: "Command", href: "/components/command", icon: Terminal },
       {
         label: "Customization",
@@ -126,6 +153,11 @@ const nav: NavGroup[] = [
         icon: LayoutDashboard,
       },
       { label: "Data Table", href: "/components/data-table", icon: Table2 },
+      {
+        label: "Date Picker",
+        href: "/components/date-picker",
+        icon: CalendarRange,
+      },
       { label: "Dialogs", href: "/components/dialogs", icon: MessageSquare },
       { label: "Drawer", href: "/components/drawer", icon: PanelRightOpen },
       {
@@ -133,6 +165,7 @@ const nav: NavGroup[] = [
         href: "/components/dropdown-menu",
         icon: ChevronDown,
       },
+      { label: "Editable", href: "/components/editable", icon: Pencil },
       {
         label: "Error Pages",
         href: "/components/error-pages",
@@ -140,9 +173,19 @@ const nav: NavGroup[] = [
       },
       { label: "Feedback", href: "/components/feedback", icon: Bell },
       {
+        label: "File Upload",
+        href: "/components/file-upload",
+        icon: Upload,
+      },
+      {
         label: "Form Fields",
         href: "/components/form-fields",
         icon: FormInput,
+      },
+      {
+        label: "Highlight",
+        href: "/components/highlight",
+        icon: Highlighter,
       },
       {
         label: "Hover Card",
@@ -158,16 +201,37 @@ const nav: NavGroup[] = [
         icon: MoreHorizontal,
       },
       {
+        label: "Number Input",
+        href: "/components/number-input",
+        icon: Hash,
+      },
+      {
         label: "Pagination",
         href: "/components/pagination",
         icon: ChevronsLeftRight,
       },
+      {
+        label: "Password Input",
+        href: "/components/password-input",
+        icon: Lock,
+      },
       { label: "Progress", href: "/components/progress", icon: Loader },
+      { label: "QR Code", href: "/components/qr-code", icon: QrCodeIcon },
+      {
+        label: "Rating Group",
+        href: "/components/rating-group",
+        icon: Star,
+      },
       { label: "Recipes", href: "/components/recipes", icon: BookOpen },
       {
         label: "Scroll Area",
         href: "/components/scroll-area",
         icon: ScrollText,
+      },
+      {
+        label: "Segment Group",
+        href: "/components/segment-group",
+        icon: Rows3,
       },
       {
         label: "Separator",
@@ -176,9 +240,18 @@ const nav: NavGroup[] = [
       },
       { label: "Skeleton", href: "/components/skeleton", icon: Bone },
       { label: "Slider", href: "/components/slider", icon: SlidersHorizontal },
+      { label: "Steps", href: "/components/steps", icon: ListOrdered },
+      { label: "Swap", href: "/components/swap", icon: Repeat },
       { label: "Table", href: "/components/table", icon: Table },
       { label: "Tabs", href: "/components/tabs", icon: PanelTop },
+      { label: "Tags Input", href: "/components/tags-input", icon: Tags },
+      { label: "Timer", href: "/components/timer", icon: TimerIcon },
       { label: "Toggle", href: "/components/toggle", icon: ToggleRight },
+      {
+        label: "Tree View",
+        href: "/components/tree-view",
+        icon: FolderTree,
+      },
       { label: "Typography", href: "/components/typography", icon: Type },
     ],
   },
