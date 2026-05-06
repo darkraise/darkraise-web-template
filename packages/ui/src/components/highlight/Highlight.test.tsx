@@ -76,6 +76,12 @@ describe("Highlight", () => {
     expect(marks[0].textContent).toBe("$5.00")
   })
 
+  it("prefers the longest matching term when terms overlap", () => {
+    render(<Highlight text="foobar" query={["foo", "foobar"]} />)
+    const marks = screen.getAllByText("foobar", { selector: "mark" })
+    expect(marks).toHaveLength(1)
+  })
+
   it("uses renderMatch override when provided", () => {
     render(
       <Highlight

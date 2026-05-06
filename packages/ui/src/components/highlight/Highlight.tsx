@@ -34,12 +34,15 @@ function Highlight({
     if (terms.length === 0) {
       return [{ text, match: false }] as Array<{ text: string; match: boolean }>
     }
+    const escapedSortedTerms = [...terms]
+      .map(escapeRegex)
+      .sort((a, b) => b.length - a.length)
     const splitter = new RegExp(
-      `(${terms.map(escapeRegex).join("|")})`,
+      `(${escapedSortedTerms.join("|")})`,
       ignoreCase ? "gi" : "g",
     )
     const matcher = new RegExp(
-      `^(?:${terms.map(escapeRegex).join("|")})$`,
+      `^(?:${escapedSortedTerms.join("|")})$`,
       ignoreCase ? "i" : "",
     )
     const result: Array<{ text: string; match: boolean }> = []
