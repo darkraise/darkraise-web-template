@@ -1,0 +1,29 @@
+@layer components {
+  .dr-number-input {
+    @apply flex flex-col gap-2;
+  }
+
+  .dr-number-input-label {
+    @apply text-foreground text-sm font-medium;
+  }
+
+  .dr-number-input-control {
+    @apply relative flex items-stretch;
+  }
+
+  .dr-number-input-field {
+    @apply pr-9 tabular-nums;
+  }
+
+  .dr-number-input-stepper {
+    @apply text-muted-foreground hover:text-foreground hover:bg-muted focus-ring-inset absolute right-0 inline-flex w-7 cursor-pointer items-center justify-center border-l border-l-transparent bg-transparent transition-colors disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-3 [&_svg]:shrink-0;
+  }
+
+  .dr-number-input-stepper-increment {
+    @apply top-0 h-1/2 rounded-tr-md;
+  }
+
+  .dr-number-input-stepper-decrement {
+    @apply bottom-0 h-1/2 rounded-br-md;
+  }
+}

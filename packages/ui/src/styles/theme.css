@@ -28,6 +28,7 @@
 @import "../components/menu-primitives/menu-primitives.css";
 @import "../components/menubar/menubar.css";
 @import "../components/navigation-menu/navigation-menu.css";
+@import "../components/number-input/number-input.css";
 @import "../components/overlay-primitives/overlay-primitives.css";
 @import "../components/pagination/pagination.css";
 @import "../components/password-input/password-input.css";
