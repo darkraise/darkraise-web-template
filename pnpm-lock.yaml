@@ -349,6 +349,9 @@ importers:
       '@vitest/coverage-v8':
         specifier: ^4.1.2
         version: 4.1.2(vitest@4.1.2(@types/node@25.5.2)(jsdom@29.0.2)(vite@8.0.5(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@25.5.2)(esbuild@0.27.7)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3)))
+      cross-env:
+        specifier: ^10.1.0
+        version: 10.1.0
       eslint-plugin-storybook:
         specifier: ^10.3.4
         version: 10.3.4(eslint@10.2.0(jiti@2.6.1))(storybook@10.3.4(@testing-library/dom@10.4.1)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(typescript@6.0.2)
@@ -634,6 +637,9 @@ packages:
 
   '@emnapi/wasi-threads@1.2.1':
     resolution: {integrity: sha512-uTII7OYF+/Mes/MrcIOYp5yOtSMLBWSIoLPpcgwipoiKbli6k322tcoFsxoIIxPDqW01SQGAgko4EzZi2BNv2w==}
+
+  '@epic-web/invariant@1.0.0':
+    resolution: {integrity: sha512-lrTPqgvfFQtR/eY/qkIzp98OGdNJu0m5ji3q/nJI8v3SXkRKEnWiOxMmbvcSoAIzv/cGiuvRy57k4suKQSAdwA==}
 
   '@esbuild/aix-ppc64@0.27.7':
     resolution: {integrity: sha512-EKX3Qwmhz1eMdEJokhALr0YiD0lhQNwDqkPYyPhiSwKrh7/4KRjQc04sZ8db+5DVVnZ1LmbNDI1uAMPEUBnQPg==}
@@ -2626,6 +2632,11 @@ packages:
     peerDependenciesMeta:
       typescript:
         optional: true
+
+  cross-env@10.1.0:
+    resolution: {integrity: sha512-GsYosgnACZTADcmEyJctkJIoqAhHjttw7RsFrVoJNXbsWWqaq6Ym+7kZjq6mS45O0jij6vtiReppKQEtqWy6Dw==}
+    engines: {node: '>=20'}
+    hasBin: true
 
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
@@ -4640,6 +4651,8 @@ snapshots:
       tslib: 2.8.1
     optional: true
 
+  '@epic-web/invariant@1.0.0': {}
+
   '@esbuild/aix-ppc64@0.27.7':
     optional: true
 
@@ -6493,6 +6506,11 @@ snapshots:
       parse-json: 5.2.0
     optionalDependencies:
       typescript: 6.0.2
+
+  cross-env@10.1.0:
+    dependencies:
+      '@epic-web/invariant': 1.0.0
+      cross-spawn: 7.0.6
 
   cross-spawn@7.0.6:
     dependencies:

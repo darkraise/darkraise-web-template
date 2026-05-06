@@ -55,7 +55,7 @@
   "scripts": {
     "generate:imports": "tsx scripts/generate-component-imports.ts",
     "build:css": "tsx scripts/build-css.ts",
-    "build": "pnpm run generate:imports && tsup && pnpm run build:css",
+    "build": "pnpm run generate:imports && cross-env NODE_OPTIONS=\"--max-old-space-size=8192\" tsup && pnpm run build:css",
     "dev": "pnpm run generate:imports && tsup --watch",
     "prepublishOnly": "pnpm run build",
     "typecheck": "tsc --noEmit",
@@ -137,6 +137,7 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
     "@vitest/coverage-v8": "^4.1.2",
+    "cross-env": "^10.1.0",
     "eslint-plugin-storybook": "^10.3.4",
     "jsdom": "^29.0.1",
     "react": "^19.2.4",
