@@ -35,6 +35,8 @@
       "@layout/*": ["./src/layout/*"],
       "@lib": ["./src/lib"],
       "@lib/*": ["./src/lib/*"],
+      "@primitives": ["./src/primitives"],
+      "@primitives/*": ["./src/primitives/*"],
       "@router": ["./src/router"],
       "@router/*": ["./src/router/*"],
       "@styles/*": ["./src/styles/*"],
