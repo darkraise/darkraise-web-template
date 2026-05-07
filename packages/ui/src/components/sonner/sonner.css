@@ -1,151 +1,192 @@
 @layer components {
+  /* Toaster container — fixed-position list with animated height. */
   .dr-toaster {
-    @apply pointer-events-none fixed z-[100] m-0 flex w-[24rem] max-w-[calc(100vw-2rem)] flex-col gap-2 p-4;
+    @apply pointer-events-none fixed z-[100] m-0 list-none p-0;
+    width: 24rem;
+    max-width: calc(100vw - 2rem);
+    height: var(--toaster-height, 0);
+    transition: height 0.4s cubic-bezier(0.21, 1.02, 0.73, 1);
   }
 
   .dr-toaster[data-position="top-left"] {
-    @apply top-0 left-0;
+    @apply top-4 left-4;
   }
-
   .dr-toaster[data-position="top-right"] {
-    @apply top-0 right-0;
+    @apply top-4 right-4;
   }
-
   .dr-toaster[data-position="top-center"] {
-    @apply top-0 left-1/2 -translate-x-1/2;
+    @apply top-4 left-1/2 -translate-x-1/2;
   }
-
   .dr-toaster[data-position="bottom-left"] {
-    @apply bottom-0 left-0 flex-col-reverse;
+    @apply bottom-4 left-4;
   }
-
   .dr-toaster[data-position="bottom-right"] {
-    @apply right-0 bottom-0 flex-col-reverse;
+    @apply right-4 bottom-4;
   }
-
   .dr-toaster[data-position="bottom-center"] {
-    @apply bottom-0 left-1/2 -translate-x-1/2 flex-col-reverse;
+    @apply bottom-4 left-1/2 -translate-x-1/2;
   }
 
+  /* Each toast — absolute positioned within the toaster, transformed by index. */
   .dr-toast {
-    @apply bg-popover text-popover-foreground border-border pointer-events-auto relative flex items-start gap-3 rounded-lg border p-4 pr-9 shadow-[0_4px_12px_rgba(0,0,0,0.12),0_2px_4px_rgba(0,0,0,0.08)];
+    @apply bg-popover text-popover-foreground border-border pointer-events-auto absolute flex w-full items-start gap-3 rounded-lg border p-4 pr-9 shadow-[0_4px_12px_rgba(0,0,0,0.12),0_2px_4px_rgba(0,0,0,0.08)];
     backdrop-filter: blur(8px) saturate(140%);
+
+    --toast-stack-gap: 12px;
+    --toast-scale: calc(1 - var(--toast-index, 0) * 0.06);
+    --toast-stack-y: calc(
+      var(--toast-index, 0) * var(--toast-stack-gap) * var(--toast-y-sign, -1)
+    );
+    --toast-stack-y-expanded: calc(
+      var(--toast-expanded-offset, 0px) * var(--toast-y-sign, -1)
+    );
+    --toast-swipe-x: 0px;
+    --toast-swipe-opacity: 1;
+
+    z-index: calc(100 - var(--toast-index, 0));
+    transform: translate3d(var(--toast-swipe-x, 0px), var(--toast-stack-y), 0)
+      scale(var(--toast-scale));
+    opacity: var(--toast-swipe-opacity, 1);
     transition:
-      transform 0.18s ease,
-      opacity 0.18s ease;
+      transform 0.4s cubic-bezier(0.21, 1.02, 0.73, 1),
+      opacity 0.4s cubic-bezier(0.21, 1.02, 0.73, 1);
+    transform-origin: center;
+    will-change: transform, opacity;
   }
 
-  /* Slide up from below for bottom-anchored toasters; slide down from above for top-anchored. */
-  .dr-toaster[data-position^="bottom"] .dr-toast[data-state="open"] {
-    animation: dr-toast-enter-bottom 0.22s cubic-bezier(0.21, 1.02, 0.73, 1);
+  /* Bottom-anchored: pin each toast to bottom; stack rises upward. */
+  .dr-toaster[data-position^="bottom"] .dr-toast {
+    bottom: 0;
+    transform-origin: center bottom;
+  }
+  /* Top-anchored: pin each toast to top; stack descends downward. */
+  .dr-toaster[data-position^="top"] .dr-toast {
+    top: 0;
+    transform-origin: center top;
   }
 
-  .dr-toaster[data-position^="top"] .dr-toast[data-state="open"] {
-    animation: dr-toast-enter-top 0.22s cubic-bezier(0.21, 1.02, 0.73, 1);
+  /* Out-of-stack-window toasts fade to invisible. They still occupy z-stack
+     for hit-testing into the toaster's hover region. */
+  .dr-toast[data-hidden] {
+    opacity: 0;
+    pointer-events: none;
   }
 
-  /* Closed-state target — animation-fill-mode: forwards (set in theme.css overrides) holds it. */
+  /* Expanded mode: position by accumulated heights, full scale. */
+  .dr-toaster[data-expanded] .dr-toast {
+    --toast-scale: 1;
+    --toast-stack-y: var(--toast-stack-y-expanded);
+  }
+  .dr-toaster[data-expanded] .dr-toast[data-hidden] {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Entry animation — only the new front toast plays it. */
+  .dr-toaster[data-position^="bottom"]
+    .dr-toast[data-state="open"][data-front] {
+    animation: dr-toast-enter-bottom 0.35s cubic-bezier(0.21, 1.02, 0.73, 1);
+  }
+  .dr-toaster[data-position^="top"] .dr-toast[data-state="open"][data-front] {
+    animation: dr-toast-enter-top 0.35s cubic-bezier(0.21, 1.02, 0.73, 1);
+  }
+
+  /* Exit animation — every closing toast plays it. */
   .dr-toaster[data-position^="bottom"] .dr-toast[data-state="closed"] {
-    animation: dr-toast-exit-bottom 0.18s ease-out;
+    animation: dr-toast-exit-bottom 0.25s cubic-bezier(0.5, 0, 0.75, 0);
+    animation-fill-mode: forwards;
   }
-
   .dr-toaster[data-position^="top"] .dr-toast[data-state="closed"] {
-    animation: dr-toast-exit-top 0.18s ease-out;
+    animation: dr-toast-exit-top 0.25s cubic-bezier(0.5, 0, 0.75, 0);
+    animation-fill-mode: forwards;
   }
 
   @keyframes dr-toast-enter-bottom {
     from {
-      transform: translateY(100%);
+      transform: translate3d(0, 100%, 0) scale(0.95);
       opacity: 0;
     }
     to {
-      transform: translateY(0);
+      transform: translate3d(0, var(--toast-stack-y), 0)
+        scale(var(--toast-scale));
       opacity: 1;
     }
   }
-
   @keyframes dr-toast-enter-top {
     from {
-      transform: translateY(-100%);
+      transform: translate3d(0, -100%, 0) scale(0.95);
       opacity: 0;
     }
     to {
-      transform: translateY(0);
+      transform: translate3d(0, var(--toast-stack-y), 0)
+        scale(var(--toast-scale));
       opacity: 1;
     }
   }
-
   @keyframes dr-toast-exit-bottom {
     from {
-      transform: translateY(0);
+      transform: translate3d(0, var(--toast-stack-y), 0)
+        scale(var(--toast-scale));
       opacity: 1;
     }
     to {
-      transform: translateY(100%);
+      transform: translate3d(0, 100%, 0) scale(0.95);
       opacity: 0;
     }
   }
-
   @keyframes dr-toast-exit-top {
     from {
-      transform: translateY(0);
+      transform: translate3d(0, var(--toast-stack-y), 0)
+        scale(var(--toast-scale));
       opacity: 1;
     }
     to {
-      transform: translateY(-100%);
+      transform: translate3d(0, -100%, 0) scale(0.95);
       opacity: 0;
     }
   }
 
+  /* Kind tints. */
   .dr-toast--success {
     @apply text-success;
   }
-
   .dr-toast--error {
     @apply text-destructive;
   }
-
   .dr-toast--warning {
     @apply text-warning;
   }
-
   .dr-toast--info {
     @apply text-primary;
   }
 
+  /* Body / content. */
   .dr-toast-icon {
     @apply mt-0.5 shrink-0;
   }
-
   .dr-toast-body {
-    @apply text-popover-foreground flex flex-1 flex-col gap-1;
+    @apply text-popover-foreground flex min-w-0 flex-1 flex-col gap-1;
   }
-
   .dr-toast-title {
     @apply text-sm leading-tight font-medium;
   }
-
   .dr-toast-description {
     @apply text-muted-foreground text-sm leading-snug;
   }
-
   .dr-toast-actions {
     @apply mt-2 flex justify-end gap-2;
   }
-
   .dr-toast-action {
     @apply bg-primary text-primary-foreground hover:bg-primary/90 rounded px-2 py-1 text-xs font-medium transition-colors;
   }
-
   .dr-toast-cancel {
     @apply bg-muted text-muted-foreground hover:bg-muted/70 rounded px-2 py-1 text-xs font-medium transition-colors;
   }
 
-  /* Hover-reveal close button — sonner default UX. */
+  /* Hover-reveal close button. */
   .dr-toast-close {
     @apply text-muted-foreground hover:text-foreground absolute top-2 right-2 rounded p-0.5 opacity-0 transition-opacity duration-150;
   }
-
   .dr-toast:hover .dr-toast-close,
   .dr-toast:focus-within .dr-toast-close,
   .dr-toast-close:focus-visible {

@@ -39,20 +39,26 @@ const ICONS: Record<ToastKind, React.ReactNode> = {
   loading: <LoaderCircle className="h-4 w-4 animate-spin" />,
 }
 
+type ToastPosition =
+  | "top-left"
+  | "top-right"
+  | "top-center"
+  | "bottom-left"
+  | "bottom-right"
+  | "bottom-center"
+
 interface ToasterProps {
-  position?:
-    | "top-left"
-    | "top-right"
-    | "top-center"
-    | "bottom-left"
-    | "bottom-right"
-    | "bottom-center"
+  position?: ToastPosition
   /** Sonner-compat placeholder; not implemented */
   theme?: "system" | "light" | "dark"
-  /** Sonner-compat slot accepted but unused */
   className?: string
   style?: React.CSSProperties
+  /** Sonner-compat slot accepted but unused */
   toastOptions?: unknown
+  /** Vertical gap between toasts in expanded mode (px). Default 14. */
+  gap?: number
+  /** Maximum number of toasts visible in collapsed stack. Default 3. */
+  visibleToasts?: number
 }
 
 function useToasts(): Toast[] {
@@ -67,18 +73,81 @@ function Toaster({
   position = "bottom-right",
   className,
   style,
+  gap = 14,
+  visibleToasts = 3,
 }: ToasterProps) {
   const toasts = useToasts()
-  if (toasts.length === 0 && typeof document === "undefined") return null
+  const [hoverExpanded, setHoverExpanded] = React.useState(false)
+  const [focusExpanded, setFocusExpanded] = React.useState(false)
+  const [heights, setHeights] = React.useState<Record<string, number>>({})
+
+  const isTop = position.startsWith("top")
+
+  // Newest toast at the END of the store array. Reverse so newest = index 0 = front.
+  const ordered = React.useMemo(() => [...toasts].reverse(), [toasts])
+
+  const reportHeight = React.useCallback((id: string, h: number) => {
+    setHeights((prev) => (prev[id] === h ? prev : { ...prev, [id]: h }))
+  }, [])
+
+  const expandedOffsets = React.useMemo(() => {
+    const map: Record<string, number> = {}
+    let acc = 0
+    for (const t of ordered) {
+      map[t.id] = acc
+      acc += (heights[t.id] ?? 0) + gap
+    }
+    return map
+  }, [ordered, heights, gap])
+
+  const totalExpandedHeight = ordered.reduce(
+    (sum, t, i) => sum + (heights[t.id] ?? 0) + (i > 0 ? gap : 0),
+    0,
+  )
+
+  const frontHeight =
+    ordered.length > 0 ? (heights[ordered[0]?.id ?? ""] ?? 0) : 0
+
+  const isExpanded = hoverExpanded || focusExpanded
+  const toasterHeight = isExpanded ? totalExpandedHeight : frontHeight
+
+  if (toasts.length === 0) {
+    return null
+  }
+
   return (
     <Portal>
       <ol
         className={cn("dr-toaster", className)}
         data-position={position}
-        style={style}
+        data-expanded={isExpanded ? "true" : undefined}
+        style={
+          {
+            "--toaster-gap": `${gap}px`,
+            "--toaster-height": `${toasterHeight}px`,
+            ...style,
+          } as React.CSSProperties
+        }
+        onPointerEnter={() => setHoverExpanded(true)}
+        onPointerLeave={() => setHoverExpanded(false)}
+        onFocusCapture={() => setFocusExpanded(true)}
+        onBlurCapture={(event) => {
+          const next = event.relatedTarget as Node | null
+          if (!next || !event.currentTarget.contains(next)) {
+            setFocusExpanded(false)
+          }
+        }}
       >
-        {toasts.map((toast) => (
-          <ToastItem key={toast.id} toast={toast} />
+        {ordered.map((t, i) => (
+          <ToastItem
+            key={t.id}
+            toast={t}
+            index={i}
+            visibleCount={visibleToasts}
+            expandedOffset={expandedOffsets[t.id] ?? 0}
+            onMeasureHeight={reportHeight}
+            isTop={isTop}
+          />
         ))}
       </ol>
     </Portal>
@@ -88,15 +157,27 @@ Toaster.displayName = "Toaster"
 
 interface ToastItemProps {
   toast: Toast
+  index: number
+  visibleCount: number
+  expandedOffset: number
+  onMeasureHeight: (id: string, h: number) => void
+  isTop: boolean
 }
 
-function ToastItem({ toast: t }: ToastItemProps) {
+function ToastItem({
+  toast: t,
+  index,
+  visibleCount,
+  expandedOffset,
+  onMeasureHeight,
+  isTop,
+}: ToastItemProps) {
   const [present, setPresent] = React.useState(true)
+  const containerRef = React.useRef<HTMLLIElement | null>(null)
 
   const close = useEvent(() => {
     setPresent(false)
-    // Let the exit animation play before removing from store.
-    window.setTimeout(() => toast.dismiss(t.id), 200)
+    window.setTimeout(() => toast.dismiss(t.id), 300)
   })
 
   const duration = t.duration ?? DEFAULT_DURATION_BY_KIND[t.kind] ?? 4000
@@ -107,7 +188,6 @@ function ToastItem({ toast: t }: ToastItemProps) {
     return () => window.clearTimeout(handle)
   }, [duration, close])
 
-  // Announce to screen readers when the toast first mounts.
   React.useEffect(() => {
     const text =
       typeof t.message === "string"
@@ -118,12 +198,25 @@ function ToastItem({ toast: t }: ToastItemProps) {
     if (text) announce(text, t.kind === "error" ? "assertive" : "polite")
   }, [t.id, t.message, t.description, t.kind])
 
-  // Swipe-to-dismiss on touch/pointer drag.
-  const containerRef = React.useRef<HTMLLIElement | null>(null)
+  // Measure height for stacking math.
+  React.useLayoutEffect(() => {
+    const node = containerRef.current
+    if (!node) return
+    onMeasureHeight(t.id, node.getBoundingClientRect().height)
+    if (typeof ResizeObserver === "undefined") return
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        onMeasureHeight(t.id, entry.contentRect.height)
+      }
+    })
+    ro.observe(node)
+    return () => ro.disconnect()
+  }, [t.id, onMeasureHeight])
+
+  // Swipe-to-dismiss.
   const dragRef = React.useRef<{ pointerId: number; startX: number } | null>(
     null,
   )
-
   const onPointerDown = (event: React.PointerEvent<HTMLLIElement>) => {
     const node = containerRef.current
     if (!node) return
@@ -136,8 +229,11 @@ function ToastItem({ toast: t }: ToastItemProps) {
     const node = containerRef.current
     if (!node) return
     const dx = event.clientX - drag.startX
-    node.style.transform = `translateX(${dx}px)`
-    node.style.opacity = String(Math.max(0, 1 - Math.abs(dx) / 200))
+    node.style.setProperty("--toast-swipe-x", `${dx}px`)
+    node.style.setProperty(
+      "--toast-swipe-opacity",
+      String(Math.max(0, 1 - Math.abs(dx) / 200)),
+    )
   }
   const onPointerUp = (event: React.PointerEvent<HTMLLIElement>) => {
     const drag = dragRef.current
@@ -155,9 +251,11 @@ function ToastItem({ toast: t }: ToastItemProps) {
       close()
       return
     }
-    node.style.transform = ""
-    node.style.opacity = ""
+    node.style.removeProperty("--toast-swipe-x")
+    node.style.removeProperty("--toast-swipe-opacity")
   }
+
+  const isHiddenInStack = index >= visibleCount
 
   return (
     <Presence present={present}>
@@ -167,6 +265,15 @@ function ToastItem({ toast: t }: ToastItemProps) {
         aria-live={t.kind === "error" ? "assertive" : "polite"}
         className={cn("dr-toast", `dr-toast--${t.kind}`)}
         data-kind={t.kind}
+        data-front={index === 0 ? "true" : undefined}
+        data-hidden={isHiddenInStack ? "true" : undefined}
+        style={
+          {
+            "--toast-index": index,
+            "--toast-expanded-offset": `${expandedOffset}px`,
+            "--toast-y-sign": isTop ? 1 : -1,
+          } as React.CSSProperties
+        }
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
