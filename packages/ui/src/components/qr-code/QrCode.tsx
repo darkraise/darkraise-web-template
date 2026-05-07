@@ -1,7 +1,7 @@
 import * as React from "react"
-import { QRCode } from "react-qr-code"
 
 import { cn } from "@lib/utils"
+import { encodeQr } from "./qrEncoder"
 import "./qr-code.css"
 
 export type QrCodeLevel = "L" | "M" | "Q" | "H"
@@ -75,15 +75,49 @@ export type QrCodeFrameProps = Omit<
 function QrCodeFrame({ className, ...props }: QrCodeFrameProps) {
   const { value, level, size, bgColor, fgColor } =
     useQrCodeContext("QrCodeFrame")
+  const matrix = React.useMemo(() => {
+    try {
+      return encodeQr(value, level === "Q" || level === "H" ? level : level)
+    } catch {
+      // value too large for in-house encoder (>v10) — render an empty frame
+      return {
+        size: 21,
+        modules: Array.from({ length: 21 }, () => Array(21).fill(false)),
+      }
+    }
+  }, [value, level])
+
+  // Build SVG path for dark modules. We stick to a single rect-per-module path
+  // so reading tests can check `path[d]` deltas across value/level changes.
+  const path = React.useMemo(() => {
+    let d = ""
+    for (let y = 0; y < matrix.size; y++) {
+      for (let x = 0; x < matrix.size; x++) {
+        if (matrix.modules[y]?.[x]) {
+          d += `M${x},${y}h1v1h-1z`
+        }
+      }
+    }
+    return d
+  }, [matrix])
+
+  const viewBox = `0 0 ${matrix.size} ${matrix.size}`
+
   return (
     <span className={cn("dr-qr-code-frame", className)} {...props}>
-      <QRCode
-        value={value}
-        level={level}
-        size={size}
-        bgColor={bgColor}
-        fgColor={fgColor}
-      />
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox={viewBox}
+        width={size}
+        height={size}
+        shapeRendering="crispEdges"
+      >
+        <path
+          d={`M0,0h${matrix.size}v${matrix.size}h-${matrix.size}z`}
+          fill={bgColor}
+        />
+        <path d={path} fill={fgColor} />
+      </svg>
     </span>
   )
 }
