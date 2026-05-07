@@ -25,13 +25,18 @@ function Button({
   variant = "default",
   size = "default",
   asChild = false,
+  type,
   ref,
   ...props
 }: ButtonProps) {
   const Comp = asChild ? Slot : "button"
+  // Default <button> elements to type="button"; the HTML default is "submit",
+  // which silently submits the parent form on click.
+  const resolvedType = asChild ? type : (type ?? "button")
   return (
     <Comp
       ref={ref}
+      type={resolvedType}
       className={cn("dr-btn", className)}
       data-variant={variant}
       data-size={size}

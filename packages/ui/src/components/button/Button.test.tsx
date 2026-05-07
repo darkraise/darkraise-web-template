@@ -116,6 +116,25 @@ describe("Button", () => {
     expect(link.tagName).toBe("A")
   })
 
+  it("defaults type to 'button' to avoid accidental form submission", () => {
+    render(<Button>Default</Button>)
+    expect(screen.getByRole("button")).toHaveAttribute("type", "button")
+  })
+
+  it("respects an explicit type prop", () => {
+    render(<Button type="submit">Submit</Button>)
+    expect(screen.getByRole("button")).toHaveAttribute("type", "submit")
+  })
+
+  it("does not inject a type attribute when asChild renders a non-button element", () => {
+    render(
+      <Button asChild>
+        <a href="/home">Home</a>
+      </Button>,
+    )
+    expect(screen.getByRole("link")).not.toHaveAttribute("type")
+  })
+
   it("applies custom className alongside dr-btn", () => {
     render(<Button className="custom-class">Styled</Button>)
     const button = screen.getByRole("button")
