@@ -97,11 +97,15 @@ function Checkbox({
         }}
         {...props}
       >
-        {(checked === true || isIndeterminate(checked)) && (
-          <span className="grid place-content-center text-current">
+        <span
+          aria-hidden
+          data-state={state}
+          className="dr-checkbox-indicator grid place-content-center text-current"
+        >
+          {(checked === true || isIndeterminate(checked)) && (
             <Check className={checkIconSize[size]} />
-          </span>
-        )}
+          )}
+        </span>
       </button>
       <input
         ref={inputRef}

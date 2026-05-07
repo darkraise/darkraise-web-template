@@ -1,6 +1,11 @@
 @layer components {
   .dr-toggle {
-    @apply focus-ring-inset inline-flex cursor-pointer items-center justify-center gap-2 rounded-md text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0;
+    @apply focus-ring-inset inline-flex cursor-pointer items-center justify-center gap-2 rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0;
+    transition:
+      background-color 150ms,
+      color 150ms,
+      border-color 150ms,
+      box-shadow 150ms;
   }
 
   /* Default variant — solid fill on active state.

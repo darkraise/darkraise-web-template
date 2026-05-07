@@ -160,17 +160,20 @@ function RadioGroupItem({
         }}
         {...props}
       >
-        {children ??
-          (isChecked && (
-            <span className="flex items-center justify-center">
-              <Circle
-                className={cn(
-                  "fill-current text-current",
-                  radioIndicatorSizeClass[size],
-                )}
-              />
-            </span>
-          ))}
+        {children ?? (
+          <span
+            aria-hidden
+            data-state={isChecked ? "checked" : "unchecked"}
+            className="dr-radio-group-indicator flex items-center justify-center"
+          >
+            <Circle
+              className={cn(
+                "fill-current text-current",
+                radioIndicatorSizeClass[size],
+              )}
+            />
+          </span>
+        )}
       </button>
       {ctx.name !== undefined && (
         <input
