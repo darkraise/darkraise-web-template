@@ -1,5 +1,5 @@
 import * as React from "react"
-import { render, screen, act } from "@testing-library/react"
+import { fireEvent, render, screen, act } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
 import {
@@ -135,9 +135,7 @@ describe("NumberInput", () => {
       const inc = screen.getByRole("button", { name: "Increment" })
 
       act(() => {
-        inc.dispatchEvent(
-          new MouseEvent("mousedown", { bubbles: true, cancelable: true }),
-        )
+        fireEvent.pointerDown(inc, { pointerId: 1 })
       })
       // Initial click increments immediately.
       expect(input.value).toBe("1")
@@ -154,7 +152,7 @@ describe("NumberInput", () => {
       })
       expect(input.value).toBe("5")
       act(() => {
-        inc.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }))
+        fireEvent.pointerUp(inc, { pointerId: 1 })
       })
       // After release, timer is cleared.
       act(() => {

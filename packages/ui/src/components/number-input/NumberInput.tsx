@@ -290,9 +290,10 @@ function useStepperPressHold(action: () => void, disabled: boolean) {
 
 function NumberInputIncrementTrigger({
   className,
-  onMouseDown,
-  onMouseUp,
-  onMouseLeave,
+  onPointerDown,
+  onPointerUp,
+  onPointerCancel,
+  onLostPointerCapture,
   onClick,
   disabled,
   type = "button",
@@ -317,19 +318,25 @@ function NumberInputIncrementTrigger({
       tabIndex={-1}
       aria-label={ariaLabel ?? "Increment"}
       disabled={isDisabled}
-      onMouseDown={(event) => {
-        onMouseDown?.(event)
+      onPointerDown={(event) => {
+        onPointerDown?.(event)
         if (event.defaultPrevented) return
-        // Prevent stealing focus from the field.
+        // Prevent stealing focus from the field, and capture the pointer so
+        // we get pointerup even if the finger drags off the button.
         event.preventDefault()
+        event.currentTarget.setPointerCapture?.(event.pointerId)
         start()
       }}
-      onMouseUp={(event) => {
-        onMouseUp?.(event)
+      onPointerUp={(event) => {
+        onPointerUp?.(event)
         stop()
       }}
-      onMouseLeave={(event) => {
-        onMouseLeave?.(event)
+      onPointerCancel={(event) => {
+        onPointerCancel?.(event)
+        stop()
+      }}
+      onLostPointerCapture={(event) => {
+        onLostPointerCapture?.(event)
         stop()
       }}
       onClick={(event) => {
@@ -344,9 +351,10 @@ function NumberInputIncrementTrigger({
 
 function NumberInputDecrementTrigger({
   className,
-  onMouseDown,
-  onMouseUp,
-  onMouseLeave,
+  onPointerDown,
+  onPointerUp,
+  onPointerCancel,
+  onLostPointerCapture,
   onClick,
   disabled,
   type = "button",
@@ -371,18 +379,23 @@ function NumberInputDecrementTrigger({
       tabIndex={-1}
       aria-label={ariaLabel ?? "Decrement"}
       disabled={isDisabled}
-      onMouseDown={(event) => {
-        onMouseDown?.(event)
+      onPointerDown={(event) => {
+        onPointerDown?.(event)
         if (event.defaultPrevented) return
         event.preventDefault()
+        event.currentTarget.setPointerCapture?.(event.pointerId)
         start()
       }}
-      onMouseUp={(event) => {
-        onMouseUp?.(event)
+      onPointerUp={(event) => {
+        onPointerUp?.(event)
         stop()
       }}
-      onMouseLeave={(event) => {
-        onMouseLeave?.(event)
+      onPointerCancel={(event) => {
+        onPointerCancel?.(event)
+        stop()
+      }}
+      onLostPointerCapture={(event) => {
+        onLostPointerCapture?.(event)
         stop()
       }}
       onClick={(event) => {
