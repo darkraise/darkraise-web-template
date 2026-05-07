@@ -40,11 +40,7 @@ export function UserMenu({
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent
-        className="dr-user-menu-content"
-        align="end"
-        forceMount
-      >
+      <DropdownMenuContent className="dr-user-menu-content" align="end">
         {user && (
           <>
             <DropdownMenuLabel className="dr-user-menu-label">
