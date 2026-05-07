@@ -222,20 +222,21 @@ function ToastItem({
     if (text) announce(text, t.kind === "error" ? "assertive" : "polite")
   }, [t.id, t.message, t.description, t.kind])
 
-  // Measure height for stacking math. Use offsetHeight (and contentRect for
-  // ResizeObserver updates) — both return UNSCALED box height. Avoid
-  // getBoundingClientRect, which returns the *scaled* visual height and
-  // would shrink behind-stack toasts (smaller than unscaled), causing
-  // overlapping offsets when expanded mode flips them all back to scale 1.
+  // Measure height for stacking math. Use offsetHeight in BOTH the initial
+  // sync read and the ResizeObserver callback so we always report the same
+  // border-box height. ResizeObserver's `entry.contentRect.height` is the
+  // content box (excludes padding + border); mixing it with offsetHeight
+  // would silently shrink heights ~32 px on resize and cause overlap when
+  // expanded mode positions toasts by accumulated offset.
   React.useLayoutEffect(() => {
     const node = containerRef.current
     if (!node) return
     onMeasureHeight(t.id, node.offsetHeight)
     if (typeof ResizeObserver === "undefined") return
-    const ro = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        onMeasureHeight(t.id, entry.contentRect.height)
-      }
+    const ro = new ResizeObserver(() => {
+      const current = containerRef.current
+      if (!current) return
+      onMeasureHeight(t.id, current.offsetHeight)
     })
     ro.observe(node)
     return () => ro.disconnect()
