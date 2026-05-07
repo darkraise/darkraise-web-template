@@ -34,8 +34,39 @@
       opacity 0.2s ease;
   }
 
+  .dr-toast[data-state="open"] {
+    animation: dr-toast-enter 0.2s ease-out;
+  }
+
   .dr-toast[data-state="closed"] {
     @apply translate-x-2 opacity-0;
+  }
+
+  @keyframes dr-toast-enter {
+    from {
+      transform: translateX(0.5rem);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  .dr-toaster[data-position^="top-left"] .dr-toast[data-state="open"],
+  .dr-toaster[data-position^="bottom-left"] .dr-toast[data-state="open"] {
+    animation: dr-toast-enter-left 0.2s ease-out;
+  }
+
+  @keyframes dr-toast-enter-left {
+    from {
+      transform: translateX(-0.5rem);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
   }
 
   .dr-toast--success {
