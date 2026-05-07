@@ -13,6 +13,7 @@ export function RadioGroupField({
   name,
   value,
   onChange,
+  onBlur,
   isInvalid,
   errors,
   label,
@@ -31,6 +32,16 @@ export function RadioGroupField({
         <RadioGroup
           value={value}
           onValueChange={onChange}
+          onBlur={(event) => {
+            // Only fire onBlur when focus leaves the group entirely; arrow-key
+            // navigation between radio items moves focus inside the group and
+            // should not mark the field as touched.
+            if (
+              !event.currentTarget.contains(event.relatedTarget as Node | null)
+            ) {
+              onBlur?.()
+            }
+          }}
           aria-invalid={invalid}
         >
           {options.map((opt) => (
