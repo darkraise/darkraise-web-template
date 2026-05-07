@@ -28,7 +28,11 @@
   }
 
   .dr-steps-indicator {
-    @apply flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium transition-colors;
+    @apply flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium;
+    transition:
+      background-color 250ms,
+      border-color 250ms,
+      color 250ms;
   }
 
   .dr-steps-indicator[data-status="complete"] {
@@ -61,6 +65,10 @@
 
   .dr-steps-separator {
     @apply bg-border h-px flex-1;
+    transition:
+      background-color 250ms,
+      border-color 250ms,
+      color 250ms;
   }
 
   .dr-steps-separator[data-orientation="vertical"] {

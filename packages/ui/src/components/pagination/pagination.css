@@ -11,6 +11,13 @@
     @apply flex aspect-square w-[var(--density-cell)] items-center justify-center;
   }
 
+  .dr-pagination-link {
+    transition:
+      background-color 150ms,
+      color 150ms,
+      border-color 150ms;
+  }
+
   .dr-pagination-link[data-active="true"][data-variant="ghost"] {
     @apply border-primary text-primary border bg-transparent;
   }

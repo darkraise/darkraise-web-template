@@ -16,7 +16,12 @@
   }
 
   .dr-tabs-trigger {
-    @apply hover:text-foreground focus-ring inline-flex cursor-pointer items-center justify-center text-sm font-medium whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50;
+    @apply hover:text-foreground focus-ring inline-flex cursor-pointer items-center justify-center text-sm font-medium whitespace-nowrap disabled:pointer-events-none disabled:opacity-50;
+    transition:
+      background-color 150ms,
+      color 150ms,
+      border-color 150ms,
+      box-shadow 150ms;
   }
 
   .dr-tabs-trigger[data-variant="default"] {
@@ -33,6 +38,7 @@
 
   .dr-tabs-content {
     @apply focus-ring-tight mt-2;
+    transition: opacity 150ms;
   }
 
   /* Default surface style — active tab gets the primary hue fill */
