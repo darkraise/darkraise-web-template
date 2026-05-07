@@ -1,5 +1,4 @@
 import * as React from "react"
-import { HexColorPicker } from "react-colorful"
 
 import { cn } from "@lib/utils"
 import {
@@ -8,27 +7,19 @@ import {
   PopoverPortal as PopoverPrimitivePortal,
   PopoverContent as PopoverPrimitiveContent,
 } from "@components/popover"
+import {
+  hexToHsv,
+  hsvToHex,
+  hsvToRgb,
+  normalizeHex,
+  type HSV,
+} from "./colorMath"
 import "./color-picker.css"
 
 declare global {
   interface Window {
     EyeDropper?: new () => { open(): Promise<{ sRGBHex: string }> }
   }
-}
-
-const HEX_PATTERN = /^#?([0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i
-
-function normalizeHex(input: string): string | null {
-  const match = HEX_PATTERN.exec(input.trim())
-  if (!match || !match[1]) return null
-  let hex = match[1].toLowerCase()
-  if (hex.length === 3 || hex.length === 4) {
-    hex = hex
-      .split("")
-      .map((c) => c + c)
-      .join("")
-  }
-  return `#${hex}`
 }
 
 export type ColorPickerFormat = "hex"
@@ -404,21 +395,194 @@ export type ColorPickerAreaProps = Omit<
   "onChange"
 >
 
-function ColorPickerArea({ className, ...props }: ColorPickerAreaProps) {
+function ColorPickerArea({ className, style, ...props }: ColorPickerAreaProps) {
   const { value, setValue, disabled } = useColorPickerContext("ColorPickerArea")
+  const hsv = React.useMemo<HSV>(
+    () => hexToHsv(value) ?? { h: 0, s: 0, v: 0 },
+    [value],
+  )
+
+  const setHsv = React.useCallback(
+    (partial: Partial<HSV>) => {
+      if (disabled) return
+      const next: HSV = { ...hsv, ...partial }
+      setValue(hsvToHex(next))
+    },
+    [hsv, setValue, disabled],
+  )
+
+  // Hue strip + saturation/value square. We avoid react-colorful entirely.
+  const svRef = React.useRef<HTMLDivElement | null>(null)
+  const hueRef = React.useRef<HTMLDivElement | null>(null)
+
+  const onSvPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (disabled) return
+    const target = svRef.current
+    if (!target) return
+    target.setPointerCapture(event.pointerId)
+    const update = (clientX: number, clientY: number) => {
+      const rect = target.getBoundingClientRect()
+      const x = Math.max(0, Math.min(rect.width, clientX - rect.left))
+      const y = Math.max(0, Math.min(rect.height, clientY - rect.top))
+      const s = (x / rect.width) * 100
+      const v = 100 - (y / rect.height) * 100
+      setHsv({ s, v })
+    }
+    update(event.clientX, event.clientY)
+    const move = (e: PointerEvent) => update(e.clientX, e.clientY)
+    const up = (e: PointerEvent) => {
+      try {
+        target.releasePointerCapture(e.pointerId)
+      } catch {
+        // ignore
+      }
+      window.removeEventListener("pointermove", move)
+      window.removeEventListener("pointerup", up)
+    }
+    window.addEventListener("pointermove", move)
+    window.addEventListener("pointerup", up)
+  }
+
+  const onHuePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (disabled) return
+    const target = hueRef.current
+    if (!target) return
+    target.setPointerCapture(event.pointerId)
+    const update = (clientX: number) => {
+      const rect = target.getBoundingClientRect()
+      const x = Math.max(0, Math.min(rect.width, clientX - rect.left))
+      setHsv({ h: (x / rect.width) * 360 })
+    }
+    update(event.clientX)
+    const move = (e: PointerEvent) => update(e.clientX)
+    const up = (e: PointerEvent) => {
+      try {
+        target.releasePointerCapture(e.pointerId)
+      } catch {
+        // ignore
+      }
+      window.removeEventListener("pointermove", move)
+      window.removeEventListener("pointerup", up)
+    }
+    window.addEventListener("pointermove", move)
+    window.addEventListener("pointerup", up)
+  }
+
+  const hueColor = hsvToHex({ h: hsv.h, s: 100, v: 100 })
+  const rgb = hsvToRgb(hsv)
+  const rgbDisplay = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`
+
   return (
     <div
       className={cn("dr-color-picker-area", className)}
       data-disabled={disabled ? "true" : undefined}
+      style={style}
       {...props}
     >
-      <HexColorPicker
-        color={value}
-        onChange={(next) => {
+      <div
+        ref={svRef}
+        role="application"
+        aria-label="Saturation and brightness"
+        tabIndex={disabled ? -1 : 0}
+        className="dr-color-picker-sv"
+        onPointerDown={onSvPointerDown}
+        onKeyDown={(event) => {
           if (disabled) return
-          setValue(next)
+          const step = event.shiftKey ? 10 : 1
+          if (event.key === "ArrowLeft") {
+            event.preventDefault()
+            setHsv({ s: Math.max(0, hsv.s - step) })
+          } else if (event.key === "ArrowRight") {
+            event.preventDefault()
+            setHsv({ s: Math.min(100, hsv.s + step) })
+          } else if (event.key === "ArrowUp") {
+            event.preventDefault()
+            setHsv({ v: Math.min(100, hsv.v + step) })
+          } else if (event.key === "ArrowDown") {
+            event.preventDefault()
+            setHsv({ v: Math.max(0, hsv.v - step) })
+          }
         }}
-      />
+        style={{
+          position: "relative",
+          width: "100%",
+          height: "10rem",
+          backgroundColor: hueColor,
+          backgroundImage:
+            "linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, transparent)",
+          touchAction: "none",
+          cursor: disabled ? "default" : "crosshair",
+        }}
+      >
+        <div
+          aria-hidden
+          className="dr-color-picker-sv-pointer"
+          style={{
+            position: "absolute",
+            left: `${hsv.s}%`,
+            top: `${100 - hsv.v}%`,
+            width: 14,
+            height: 14,
+            transform: "translate(-50%, -50%)",
+            borderRadius: "50%",
+            border: "2px solid white",
+            boxShadow: "0 0 0 1px rgba(0,0,0,0.4)",
+            backgroundColor: rgbDisplay,
+            pointerEvents: "none",
+          }}
+        />
+      </div>
+      <div
+        ref={hueRef}
+        role="slider"
+        aria-label="Hue"
+        aria-valuemin={0}
+        aria-valuemax={360}
+        aria-valuenow={Math.round(hsv.h)}
+        tabIndex={disabled ? -1 : 0}
+        className="dr-color-picker-hue"
+        onPointerDown={onHuePointerDown}
+        onKeyDown={(event) => {
+          if (disabled) return
+          const step = event.shiftKey ? 10 : 1
+          if (event.key === "ArrowLeft" || event.key === "ArrowDown") {
+            event.preventDefault()
+            setHsv({ h: (hsv.h - step + 360) % 360 })
+          } else if (event.key === "ArrowRight" || event.key === "ArrowUp") {
+            event.preventDefault()
+            setHsv({ h: (hsv.h + step) % 360 })
+          }
+        }}
+        style={{
+          position: "relative",
+          marginTop: 8,
+          width: "100%",
+          height: 12,
+          borderRadius: 9999,
+          background:
+            "linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)",
+          touchAction: "none",
+          cursor: disabled ? "default" : "ew-resize",
+        }}
+      >
+        <div
+          aria-hidden
+          className="dr-color-picker-hue-pointer"
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: `${(hsv.h / 360) * 100}%`,
+            width: 14,
+            height: 14,
+            transform: "translate(-50%, -50%)",
+            borderRadius: "50%",
+            border: "2px solid white",
+            boxShadow: "0 0 0 1px rgba(0,0,0,0.4)",
+            backgroundColor: hueColor,
+            pointerEvents: "none",
+          }}
+        />
+      </div>
     </div>
   )
 }
