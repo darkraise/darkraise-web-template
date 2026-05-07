@@ -77,7 +77,6 @@
   "dependencies": {
     "@floating-ui/react": "~0.27.19",
     "@radix-ui/react-scroll-area": "^1.2.10",
-    "@radix-ui/react-select": "^2.2.6",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.13.24",
     "clsx": "^2.1.1",
