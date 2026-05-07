@@ -1,10 +1,10 @@
 import { ServerCrash } from "lucide-react"
 import { Button } from "@components/button"
-import { useRouterAdapter } from "@router"
+import { useOptionalRouterAdapter } from "@router"
 import { ErrorLayout } from "@errors/error-layout"
 
 export function ServerErrorPage() {
-  const { useNavigate, useInvalidate } = useRouterAdapter()
+  const { useNavigate, useInvalidate } = useOptionalRouterAdapter()
   const navigate = useNavigate()
   const invalidate = useInvalidate()
 

@@ -1,6 +1,6 @@
 import { TriangleAlert } from "lucide-react"
 import { Button } from "@components/button"
-import { useRouterAdapter } from "@router"
+import { useOptionalRouterAdapter } from "@router"
 import { ErrorLayout } from "@errors/error-layout"
 
 export interface ErrorPageProps {
@@ -9,7 +9,7 @@ export interface ErrorPageProps {
 }
 
 export function ErrorPage({ error, reset }: ErrorPageProps) {
-  const { useNavigate, useInvalidate } = useRouterAdapter()
+  const { useNavigate, useInvalidate } = useOptionalRouterAdapter()
   const navigate = useNavigate()
   const invalidate = useInvalidate()
   const message =

@@ -1,6 +1,6 @@
 import { createRootRoute, Outlet } from "@tanstack/react-router"
 import { AppProviders } from "@/providers"
-import { NotFoundPage } from "darkraise-ui/errors"
+import { NotFoundPage, ErrorPage } from "darkraise-ui/errors"
 
 export const Route = createRootRoute({
   component: () => (
@@ -9,4 +9,5 @@ export const Route = createRootRoute({
     </AppProviders>
   ),
   notFoundComponent: NotFoundPage,
+  errorComponent: ErrorPage,
 })
