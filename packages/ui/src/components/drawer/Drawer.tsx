@@ -288,7 +288,7 @@ function DrawerContentImpl({
           onPointerDown={ctx.beginDrag}
         />
         {children}
-        <OverlayCloseButton />
+        <OverlayCloseButton onClick={() => ctx.setOpen(false)} />
       </div>
     </DismissableLayer>
   )
