@@ -21,8 +21,12 @@ export function StackedLayout({
   const { Link, usePathname } = useRouterAdapter()
   const currentPath = usePathname()
 
+  const isPathMatch = (href: string) =>
+    // Exact match, or a strict path-segment prefix — guards against
+    // /settings matching /settings-old.
+    currentPath === href || currentPath.startsWith(href + "/")
   const activeGroupIndex = nav.findIndex((group) =>
-    group.items.some((item) => currentPath.startsWith(item.href)),
+    group.items.some((item) => isPathMatch(item.href)),
   )
   const activeGroup = nav[activeGroupIndex >= 0 ? activeGroupIndex : 0]
 
