@@ -39,13 +39,22 @@
     { "pattern": "apps/*" }
   ],
   "eslint.useFlatConfig": true,
-  "tailwindCSS.experimental.configFile": null,
+  "tailwindCSS.experimental.configFile": "packages/ui/src/styles/theme.css",
   "tailwindCSS.includeLanguages": {
     "typescript": "javascript",
     "typescriptreact": "javascript"
   },
+  "tailwindCSS.files.exclude": [
+    "**/node_modules/**",
+    "**/.git/**",
+    "**/dist/**",
+    "**/storybook-static/**",
+    "**/coverage/**",
+    "**/.turbo/**",
+    "**/.pnpm-store/**",
+    "**/build/**"
+  ],
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "files.useExperimentalFileWatcher": true,
   "git.autoRefresh": false
 }
