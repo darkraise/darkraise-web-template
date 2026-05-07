@@ -1,5 +1,5 @@
 import * as React from "react"
-import { render, screen, within } from "@testing-library/react"
+import { render, screen, waitFor, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi } from "vitest"
 
@@ -134,7 +134,7 @@ describe("Combobox", () => {
     expect(input).toHaveAttribute("aria-expanded", "true")
     await user.keyboard("{Escape}")
     expect(input).toHaveAttribute("aria-expanded", "false")
-    expect(screen.queryByRole("listbox")).toBeNull()
+    await waitFor(() => expect(screen.queryByRole("listbox")).toBeNull())
   })
 
   it("ArrowDown highlights first item", async () => {

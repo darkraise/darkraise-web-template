@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react"
+import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi } from "vitest"
 import { useState } from "react"
@@ -60,7 +60,7 @@ describe("Dialog", () => {
     await screen.findByRole("dialog")
     await user.keyboard("{Escape}")
     expect(onOpenChange).toHaveBeenLastCalledWith(false)
-    expect(screen.queryByRole("dialog")).toBeNull()
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull())
   })
 
   it("DialogClose closes the dialog", async () => {
@@ -69,7 +69,7 @@ describe("Dialog", () => {
     await user.click(screen.getByRole("button", { name: "Open" }))
     await screen.findByRole("dialog")
     await user.click(screen.getByRole("button", { name: "Dismiss" }))
-    expect(screen.queryByRole("dialog")).toBeNull()
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull())
   })
 
   it("outside pointerdown closes the dialog", async () => {
@@ -82,7 +82,7 @@ describe("Dialog", () => {
     await user.click(screen.getByRole("button", { name: "Open" }))
     await screen.findByRole("dialog")
     await user.click(outside)
-    expect(screen.queryByRole("dialog")).toBeNull()
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull())
     root.remove()
     outside.remove()
   })
@@ -125,7 +125,7 @@ describe("Dialog", () => {
     await screen.findByRole("dialog")
     expect(document.body.style.overflow).toBe("hidden")
     await user.keyboard("{Escape}")
-    expect(document.body.style.overflow).toBe("")
+    await waitFor(() => expect(document.body.style.overflow).toBe(""))
   })
 
   it("trigger reflects data-state and aria-expanded", async () => {

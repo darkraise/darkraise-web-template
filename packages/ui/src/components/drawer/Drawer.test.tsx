@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react"
+import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi } from "vitest"
 import { useState } from "react"
@@ -68,7 +68,7 @@ describe("Drawer", () => {
     await screen.findByRole("dialog")
     await user.keyboard("{Escape}")
     expect(onChange).toHaveBeenLastCalledWith(false)
-    expect(screen.queryByRole("dialog")).toBeNull()
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull())
   })
 
   it("DrawerClose closes the drawer", async () => {
@@ -80,7 +80,7 @@ describe("Drawer", () => {
     const drawerClose = screen.getAllByRole("button", { name: "Close" })[0]
     if (!drawerClose) throw new Error("DrawerClose button not found")
     await user.click(drawerClose)
-    expect(screen.queryByRole("dialog")).toBeNull()
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull())
   })
 
   it("outside pointerdown closes the drawer", async () => {
@@ -93,7 +93,7 @@ describe("Drawer", () => {
     await user.click(screen.getByRole("button", { name: "Open drawer" }))
     await screen.findByRole("dialog")
     await user.click(outside)
-    expect(screen.queryByRole("dialog")).toBeNull()
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull())
     root.remove()
     outside.remove()
   })

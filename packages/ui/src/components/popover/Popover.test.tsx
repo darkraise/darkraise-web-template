@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react"
+import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi } from "vitest"
 import { useState } from "react"
@@ -49,7 +49,9 @@ describe("Popover", () => {
     await user.click(screen.getByRole("button", { name: "Toggle" }))
     await screen.findByText("Popover content")
     await user.keyboard("{Escape}")
-    expect(screen.queryByText("Popover content")).toBeNull()
+    await waitFor(() =>
+      expect(screen.queryByText("Popover content")).toBeNull(),
+    )
   })
 
   it("PopoverClose closes the popover", async () => {
@@ -58,7 +60,9 @@ describe("Popover", () => {
     await user.click(screen.getByRole("button", { name: "Toggle" }))
     await screen.findByText("Popover content")
     await user.click(screen.getByRole("button", { name: "Close" }))
-    expect(screen.queryByText("Popover content")).toBeNull()
+    await waitFor(() =>
+      expect(screen.queryByText("Popover content")).toBeNull(),
+    )
   })
 
   it("outside pointerdown closes the popover", async () => {
@@ -71,7 +75,9 @@ describe("Popover", () => {
     await user.click(screen.getByRole("button", { name: "Toggle" }))
     await screen.findByText("Popover content")
     await user.click(outside)
-    expect(screen.queryByText("Popover content")).toBeNull()
+    await waitFor(() =>
+      expect(screen.queryByText("Popover content")).toBeNull(),
+    )
     root.remove()
     outside.remove()
   })

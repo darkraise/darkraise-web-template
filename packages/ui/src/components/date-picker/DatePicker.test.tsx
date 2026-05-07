@@ -1,5 +1,5 @@
 import * as React from "react"
-import { render, screen, within } from "@testing-library/react"
+import { render, screen, waitFor, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi } from "vitest"
 
@@ -149,7 +149,7 @@ describe("DatePicker", () => {
     expect((last.value as Date).getFullYear()).toBe(2024)
     expect((last.value as Date).getMonth()).toBe(5)
     expect((last.value as Date).getDate()).toBe(15)
-    expect(screen.queryByRole("dialog")).toBeNull()
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull())
   })
 
   it("range mode: two clicks set from then to", async () => {
@@ -187,7 +187,7 @@ describe("DatePicker", () => {
     const last = spy.mock.calls[spy.mock.calls.length - 1]?.[0]
     expect(last.value).toBeInstanceOf(Date)
     expect((last.value as Date).getDate()).toBe(15)
-    expect(screen.queryByRole("dialog")).toBeNull()
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull())
   })
 
   it("min disables out-of-range days", async () => {

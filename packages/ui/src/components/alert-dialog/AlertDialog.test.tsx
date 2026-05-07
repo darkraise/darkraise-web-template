@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react"
+import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect } from "vitest"
 import {
@@ -52,7 +52,7 @@ describe("AlertDialog", () => {
     await user.click(screen.getByRole("button", { name: "Delete" }))
     await screen.findByRole("alertdialog")
     await user.keyboard("{Escape}")
-    expect(screen.queryByRole("alertdialog")).toBeNull()
+    await waitFor(() => expect(screen.queryByRole("alertdialog")).toBeNull())
   })
 
   it("outside pointerdown does NOT close the alert dialog", async () => {
@@ -76,7 +76,7 @@ describe("AlertDialog", () => {
     await user.click(screen.getByRole("button", { name: "Delete" }))
     await screen.findByRole("alertdialog")
     await user.click(screen.getByRole("button", { name: "Yep" }))
-    expect(screen.queryByRole("alertdialog")).toBeNull()
+    await waitFor(() => expect(screen.queryByRole("alertdialog")).toBeNull())
   })
 
   it("Cancel button closes the alert dialog", async () => {
@@ -85,7 +85,7 @@ describe("AlertDialog", () => {
     await user.click(screen.getByRole("button", { name: "Delete" }))
     await screen.findByRole("alertdialog")
     await user.click(screen.getByRole("button", { name: "Nope" }))
-    expect(screen.queryByRole("alertdialog")).toBeNull()
+    await waitFor(() => expect(screen.queryByRole("alertdialog")).toBeNull())
   })
 
   it("does NOT render the overlay X close button (alertdialog has no X)", async () => {

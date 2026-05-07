@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react"
+import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi } from "vitest"
 import {
@@ -57,7 +57,7 @@ describe("Select", () => {
     await screen.findByRole("listbox")
     await user.click(screen.getByRole("option", { name: "Banana" }))
     expect(onChange).toHaveBeenCalledWith("banana")
-    expect(screen.queryByRole("listbox")).toBeNull()
+    await waitFor(() => expect(screen.queryByRole("listbox")).toBeNull())
   })
 
   it("disabled item is marked aria-disabled", async () => {
@@ -74,7 +74,7 @@ describe("Select", () => {
     await user.click(screen.getByRole("combobox"))
     await screen.findByRole("listbox")
     await user.keyboard("{Escape}")
-    expect(screen.queryByRole("listbox")).toBeNull()
+    await waitFor(() => expect(screen.queryByRole("listbox")).toBeNull())
   })
 
   it("hidden form field receives the chosen value", async () => {

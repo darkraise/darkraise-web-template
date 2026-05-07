@@ -23,24 +23,28 @@ export function usePresence(
       return
     }
     setState("closed")
-    const node = ref.current
-    if (!node) {
-      setIsPresent(false)
-      return
-    }
-    const animations = node.getAnimations?.() ?? []
-    if (animations.length === 0) {
-      setIsPresent(false)
-      return
-    }
     let cancelled = false
-    Promise.all(animations.map((a) => a.finished.catch(() => undefined))).then(
-      () => {
+    const raf = requestAnimationFrame(() => {
+      if (cancelled) return
+      const node = ref.current
+      if (!node) {
+        setIsPresent(false)
+        return
+      }
+      const animations = node.getAnimations?.() ?? []
+      if (animations.length === 0) {
+        setIsPresent(false)
+        return
+      }
+      Promise.all(
+        animations.map((a) => a.finished.catch(() => undefined)),
+      ).then(() => {
         if (!cancelled) setIsPresent(false)
-      },
-    )
+      })
+    })
     return () => {
       cancelled = true
+      cancelAnimationFrame(raf)
     }
   }, [present, ref])
 

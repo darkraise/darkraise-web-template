@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react"
+import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi } from "vitest"
 import {
@@ -64,7 +64,7 @@ describe("Menubar", () => {
     await user.click(screen.getByRole("menuitem", { name: "File" }))
     await screen.findByRole("menu")
     await user.keyboard("{Escape}")
-    expect(screen.queryByRole("menu")).toBeNull()
+    await waitFor(() => expect(screen.queryByRole("menu")).toBeNull())
   })
 
   it("clicking item closes the menu and fires onSelect", async () => {

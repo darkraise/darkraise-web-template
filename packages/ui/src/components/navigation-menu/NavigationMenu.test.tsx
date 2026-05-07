@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react"
+import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect } from "vitest"
 import {
@@ -69,6 +69,10 @@ describe("NavigationMenu", () => {
       await screen.findByRole("link", { name: "Getting started" }),
     ).toBeInTheDocument()
     await user.click(trigger)
-    expect(screen.queryByRole("link", { name: "Getting started" })).toBeNull()
+    await waitFor(() =>
+      expect(
+        screen.queryByRole("link", { name: "Getting started" }),
+      ).toBeNull(),
+    )
   })
 })

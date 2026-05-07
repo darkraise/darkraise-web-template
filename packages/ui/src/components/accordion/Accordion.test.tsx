@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react"
+import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect } from "vitest"
 import {
@@ -50,9 +50,11 @@ describe("Accordion", () => {
     await user.click(screen.getByText("Section One"))
     expect(screen.getByText("Content for section one")).toBeInTheDocument()
     await user.click(screen.getByText("Section One"))
-    expect(
-      screen.queryByText("Content for section one"),
-    ).not.toBeInTheDocument()
+    await waitFor(() =>
+      expect(
+        screen.queryByText("Content for section one"),
+      ).not.toBeInTheDocument(),
+    )
   })
 
   it("only one item is open at a time in single mode", async () => {
@@ -60,9 +62,11 @@ describe("Accordion", () => {
     render(<TestAccordion />)
     await user.click(screen.getByText("Section One"))
     await user.click(screen.getByText("Section Two"))
-    expect(
-      screen.queryByText("Content for section one"),
-    ).not.toBeInTheDocument()
+    await waitFor(() =>
+      expect(
+        screen.queryByText("Content for section one"),
+      ).not.toBeInTheDocument(),
+    )
     expect(screen.getByText("Content for section two")).toBeInTheDocument()
   })
 })

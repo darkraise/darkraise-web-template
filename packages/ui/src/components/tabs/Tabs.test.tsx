@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react"
+import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect } from "vitest"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@components/tabs"
@@ -44,7 +44,9 @@ describe("Tabs", () => {
     const user = userEvent.setup()
     render(<TestTabs />)
     await user.click(screen.getByRole("tab", { name: "Tab Two" }))
-    expect(screen.queryByText("Panel One")).not.toBeInTheDocument()
+    await waitFor(() =>
+      expect(screen.queryByText("Panel One")).not.toBeInTheDocument(),
+    )
   })
 
   it("marks the active tab trigger with aria-selected", async () => {
