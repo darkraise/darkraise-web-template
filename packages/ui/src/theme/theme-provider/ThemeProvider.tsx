@@ -39,6 +39,31 @@ const LS_ELEVATION = "theme-elevation"
 const LS_BUTTON_ELEVATION = "theme-button-elevation"
 const LS_RADIUS = "theme-radius"
 
+const isBrowser = typeof window !== "undefined"
+
+// localStorage access guarded for SSR (window undefined) and for runtime
+// failures (private-browsing, quota exceeded, security errors). Reads return
+// null when storage is unavailable so the consumer falls back to the
+// configured default; writes silently no-op so the in-memory state still
+// updates for the current session.
+function readStorage(key: string): string | null {
+  if (!isBrowser) return null
+  try {
+    return globalThis.localStorage.getItem(key)
+  } catch {
+    return null
+  }
+}
+
+function writeStorage(key: string, value: string): void {
+  if (!isBrowser) return
+  try {
+    globalThis.localStorage.setItem(key, value)
+  } catch {
+    // ignore
+  }
+}
+
 function getSystemMode(): ResolvedMode {
   if (typeof window === "undefined") return "light"
   return window.matchMedia("(prefers-color-scheme: dark)").matches
@@ -79,12 +104,12 @@ export function ThemeProvider({
 }: ThemeProviderProps) {
   const cfg = config ?? themeConfig
   const [accentColor, setAccentColorState] = useState<AccentColor>(() => {
-    const stored = localStorage.getItem(LS_ACCENT)
+    const stored = readStorage(LS_ACCENT)
     return (stored as AccentColor) || cfg.defaults.accentColor
   })
 
   const [surfaceColor, setSurfaceColorState] = useState<SurfaceColor>(() => {
-    const stored = localStorage.getItem(LS_SURFACE_COLOR)
+    const stored = readStorage(LS_SURFACE_COLOR)
     if (stored && (SURFACE_COLORS as readonly string[]).includes(stored)) {
       return stored as SurfaceColor
     }
@@ -92,7 +117,7 @@ export function ThemeProvider({
   })
 
   const [surfaceStyle, setSurfaceStyleState] = useState<SurfaceStyle>(() => {
-    const stored = localStorage.getItem(LS_STYLE)
+    const stored = readStorage(LS_STYLE)
     if (stored && (SURFACE_STYLES as readonly string[]).includes(stored)) {
       return stored as SurfaceStyle
     }
@@ -101,18 +126,18 @@ export function ThemeProvider({
 
   const [backgroundStyle, setBackgroundStyleState] = useState<BackgroundStyle>(
     () => {
-      const stored = localStorage.getItem(LS_BG_STYLE)
+      const stored = readStorage(LS_BG_STYLE)
       return (stored as BackgroundStyle) || cfg.defaults.backgroundStyle
     },
   )
 
   const [mode, setModeState] = useState<Mode>(() => {
-    const stored = localStorage.getItem(LS_MODE)
+    const stored = readStorage(LS_MODE)
     return (stored as Mode) || cfg.defaults.mode
   })
 
   const [density, setDensityState] = useState<Density>(() => {
-    const stored = localStorage.getItem(LS_DENSITY)
+    const stored = readStorage(LS_DENSITY)
     if (stored && (DENSITIES as readonly string[]).includes(stored)) {
       return stored as Density
     }
@@ -120,7 +145,7 @@ export function ThemeProvider({
   })
 
   const [elevation, setElevationState] = useState<Elevation>(() => {
-    const stored = localStorage.getItem(LS_ELEVATION)
+    const stored = readStorage(LS_ELEVATION)
     if (stored && (ELEVATIONS as readonly string[]).includes(stored)) {
       return stored as Elevation
     }
@@ -128,7 +153,7 @@ export function ThemeProvider({
   })
 
   const [buttonElevation, setButtonElevationState] = useState<Elevation>(() => {
-    const stored = localStorage.getItem(LS_BUTTON_ELEVATION)
+    const stored = readStorage(LS_BUTTON_ELEVATION)
     if (stored && (ELEVATIONS as readonly string[]).includes(stored)) {
       return stored as Elevation
     }
@@ -136,7 +161,7 @@ export function ThemeProvider({
   })
 
   const [radius, setRadiusState] = useState<Radius>(() => {
-    const stored = localStorage.getItem(LS_RADIUS)
+    const stored = readStorage(LS_RADIUS)
     if (stored && (RADII as readonly string[]).includes(stored)) {
       return stored as Radius
     }
@@ -205,21 +230,18 @@ export function ThemeProvider({
       )
       setRadiusState(settings.radius ?? cfg.defaults.radius)
 
-      localStorage.setItem(LS_ACCENT, settings.accentColor)
-      localStorage.setItem(LS_SURFACE_COLOR, settings.surfaceColor)
-      localStorage.setItem(LS_STYLE, settings.surfaceStyle)
-      localStorage.setItem(LS_BG_STYLE, settings.backgroundStyle)
-      localStorage.setItem(LS_MODE, settings.mode)
-      localStorage.setItem(LS_DENSITY, settings.density ?? cfg.defaults.density)
-      localStorage.setItem(
-        LS_ELEVATION,
-        settings.elevation ?? cfg.defaults.elevation,
-      )
-      localStorage.setItem(
+      writeStorage(LS_ACCENT, settings.accentColor)
+      writeStorage(LS_SURFACE_COLOR, settings.surfaceColor)
+      writeStorage(LS_STYLE, settings.surfaceStyle)
+      writeStorage(LS_BG_STYLE, settings.backgroundStyle)
+      writeStorage(LS_MODE, settings.mode)
+      writeStorage(LS_DENSITY, settings.density ?? cfg.defaults.density)
+      writeStorage(LS_ELEVATION, settings.elevation ?? cfg.defaults.elevation)
+      writeStorage(
         LS_BUTTON_ELEVATION,
         settings.buttonElevation ?? cfg.defaults.buttonElevation,
       )
-      localStorage.setItem(LS_RADIUS, settings.radius ?? cfg.defaults.radius)
+      writeStorage(LS_RADIUS, settings.radius ?? cfg.defaults.radius)
 
       document.documentElement.setAttribute(
         "data-density",
@@ -258,7 +280,7 @@ export function ThemeProvider({
         () => setSyncStatus("error"),
       )
     },
-    [persistence],
+    [persistence, persistenceDebounce],
     persistenceDebounce,
   )
 
@@ -291,7 +313,7 @@ export function ThemeProvider({
   const setAccentColor = useCallback(
     (color: AccentColor) => {
       setAccentColorState(color)
-      localStorage.setItem(LS_ACCENT, color)
+      writeStorage(LS_ACCENT, color)
       applyTheme(
         color,
         surfaceColor,
@@ -319,7 +341,7 @@ export function ThemeProvider({
   const setSurfaceColor = useCallback(
     (color: SurfaceColor) => {
       setSurfaceColorState(color)
-      localStorage.setItem(LS_SURFACE_COLOR, color)
+      writeStorage(LS_SURFACE_COLOR, color)
       applyTheme(
         accentColor,
         color,
@@ -347,7 +369,7 @@ export function ThemeProvider({
   const setSurfaceStyle = useCallback(
     (style: SurfaceStyle) => {
       setSurfaceStyleState(style)
-      localStorage.setItem(LS_STYLE, style)
+      writeStorage(LS_STYLE, style)
       applyTheme(
         accentColor,
         surfaceColor,
@@ -375,7 +397,7 @@ export function ThemeProvider({
   const setBackgroundStyle = useCallback(
     (bgStyle: BackgroundStyle) => {
       setBackgroundStyleState(bgStyle)
-      localStorage.setItem(LS_BG_STYLE, bgStyle)
+      writeStorage(LS_BG_STYLE, bgStyle)
       applyTheme(accentColor, surfaceColor, surfaceStyle, bgStyle, resolvedMode)
       const settings = buildSettings({ backgroundStyle: bgStyle })
       notifyChange(settings)
@@ -399,7 +421,7 @@ export function ThemeProvider({
       const resolved = resolveMode(m)
       setModeState(m)
       setResolvedMode(resolved)
-      localStorage.setItem(LS_MODE, m)
+      writeStorage(LS_MODE, m)
       applyTheme(
         accentColor,
         surfaceColor,
@@ -427,7 +449,7 @@ export function ThemeProvider({
   const setDensity = useCallback(
     (d: Density) => {
       setDensityState(d)
-      localStorage.setItem(LS_DENSITY, d)
+      writeStorage(LS_DENSITY, d)
       document.documentElement.setAttribute("data-density", d)
       const settings = buildSettings({ density: d })
       notifyChange(settings)
@@ -440,7 +462,7 @@ export function ThemeProvider({
   const setElevation = useCallback(
     (e: Elevation) => {
       setElevationState(e)
-      localStorage.setItem(LS_ELEVATION, e)
+      writeStorage(LS_ELEVATION, e)
       document.documentElement.setAttribute("data-elevation", e)
       const settings = buildSettings({ elevation: e })
       notifyChange(settings)
@@ -453,7 +475,7 @@ export function ThemeProvider({
   const setButtonElevation = useCallback(
     (e: Elevation) => {
       setButtonElevationState(e)
-      localStorage.setItem(LS_BUTTON_ELEVATION, e)
+      writeStorage(LS_BUTTON_ELEVATION, e)
       document.documentElement.setAttribute("data-button-elevation", e)
       const settings = buildSettings({ buttonElevation: e })
       notifyChange(settings)
@@ -466,7 +488,7 @@ export function ThemeProvider({
   const setRadius = useCallback(
     (r: Radius) => {
       setRadiusState(r)
-      localStorage.setItem(LS_RADIUS, r)
+      writeStorage(LS_RADIUS, r)
       document.documentElement.setAttribute("data-radius", r)
       const settings = buildSettings({ radius: r })
       notifyChange(settings)
