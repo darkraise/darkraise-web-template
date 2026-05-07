@@ -997,6 +997,18 @@
     .header-gradient-overlay {
     background-color: transparent;
   }
+
+  /* Exit animations need fill-mode: forwards so the element holds its end
+     state (opacity 0, height 0, scale 0.95, etc.) for the one render tick
+     between `animation.finished` and Presence unmounting the node. Without
+     this, the element snaps back to its non-animated state for a frame and
+     flickers before disappearing. Affects every overlay's close transition
+     plus accordion/collapsible collapse. */
+  .animate-out,
+  .dr-accordion-content[data-state="closed"],
+  .dr-collapsible-content[data-state="closed"] {
+    animation-fill-mode: forwards;
+  }
 }
 
 @source "..";
