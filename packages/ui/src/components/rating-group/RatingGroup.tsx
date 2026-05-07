@@ -25,6 +25,7 @@ interface RatingGroupContextValue {
   readOnly: boolean
   disabled: boolean
   name?: string
+  labelId: string
   setHover: (value: number | null, half?: boolean) => void
   commit: (next: number) => void
   focusItem: (index: number) => void
@@ -161,6 +162,8 @@ function RatingGroup({
     el?.focus()
   }, [])
 
+  const labelId = React.useId()
+
   const ctx = React.useMemo<RatingGroupContextValue>(
     () => ({
       value,
@@ -171,6 +174,7 @@ function RatingGroup({
       readOnly,
       disabled,
       name,
+      labelId,
       setHover,
       commit,
       focusItem,
@@ -186,6 +190,7 @@ function RatingGroup({
       readOnly,
       disabled,
       name,
+      labelId,
       setHover,
       commit,
       focusItem,
@@ -209,9 +214,17 @@ function RatingGroup({
 
 function RatingGroupLabel({
   className,
+  id,
   ...props
 }: React.LabelHTMLAttributes<HTMLLabelElement>) {
-  return <label className={cn("dr-rating-group-label", className)} {...props} />
+  const { labelId } = useRatingGroupContext("RatingGroupLabel")
+  return (
+    <label
+      id={id ?? labelId}
+      className={cn("dr-rating-group-label", className)}
+      {...props}
+    />
+  )
 }
 
 export interface RatingGroupControlProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -226,7 +239,7 @@ function RatingGroupControl({
   children,
   ...props
 }: RatingGroupControlProps) {
-  const { setHover, max } = useRatingGroupContext("RatingGroupControl")
+  const { setHover, max, labelId } = useRatingGroupContext("RatingGroupControl")
 
   const handlePointerLeave = (event: React.PointerEvent<HTMLDivElement>) => {
     onPointerLeave?.(event)
@@ -262,6 +275,7 @@ function RatingGroupControl({
   return (
     <div
       role="radiogroup"
+      aria-labelledby={labelId}
       className={cn("dr-rating-group-control", className)}
       onPointerLeave={handlePointerLeave}
       onPointerCancel={handlePointerCancel}
