@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { DependencyList } from "react"
-import { useMemo, useRef } from "react"
+import { useEffect, useMemo, useRef } from "react"
 import { useUnmountEffect } from "./useUnmountEffect"
 
 export type ThrottledFunction<Fn extends (...args: any[]) => any> = (
@@ -19,6 +19,13 @@ export function useThrottledCallback<Fn extends (...args: any[]) => any>(
     args: Parameters<Fn>
     this: ThisParameterType<Fn>
   }>(undefined)
+  // Mirror the latest callback in a ref so the throttled wrapper always
+  // invokes the freshest closure, not the one captured when useMemo ran.
+  const cb = useRef(callback)
+  useEffect(() => {
+    cb.current = callback
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [callback, ...deps])
 
   useUnmountEffect(() => {
     if (timeout.current) {
@@ -30,7 +37,7 @@ export function useThrottledCallback<Fn extends (...args: any[]) => any>(
   return useMemo(() => {
     const execute = (context: ThisParameterType<Fn>, args: Parameters<Fn>) => {
       lastCall.current = undefined
-      callback.apply(context, args)
+      cb.current.apply(context, args)
 
       timeout.current = setTimeout(() => {
         timeout.current = undefined
