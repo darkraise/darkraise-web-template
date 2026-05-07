@@ -1,18 +1,25 @@
 import * as React from "react"
-import * as LabelPrimitive from "@radix-ui/react-label"
 
 import { cn } from "@lib/utils"
 import "./label.css"
 
-function Label({
-  className,
-  ref,
-  ...props
-}: React.ComponentProps<typeof LabelPrimitive.Root>) {
+interface LabelProps extends React.LabelHTMLAttributes<HTMLLabelElement> {
+  ref?: React.Ref<HTMLLabelElement>
+}
+
+function Label({ className, ref, onMouseDown, ...props }: LabelProps) {
   return (
-    <LabelPrimitive.Root
+    <label
       ref={ref}
       className={cn("dr-label", className)}
+      onMouseDown={(event) => {
+        const target = event.target as HTMLElement
+        if (target.closest("button, input, select, textarea")) return
+        onMouseDown?.(event)
+        if (!event.defaultPrevented && event.detail > 1) {
+          event.preventDefault()
+        }
+      }}
       {...props}
     />
   )
