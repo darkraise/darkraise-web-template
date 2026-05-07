@@ -336,11 +336,9 @@ function TreeViewBranch({
 
   return (
     <li
-      role="treeitem"
-      aria-expanded={isOpen}
-      aria-selected={ctx.selectionMode !== "none" ? selected : undefined}
-      aria-disabled={nodeDisabled || undefined}
-      aria-level={depth + 1}
+      // role="none" lets the focusable BranchControl carry the treeitem
+      // semantics; the <li> is just a layout container.
+      role="none"
       data-state={isOpen ? "open" : "closed"}
       data-selected={selected ? "true" : undefined}
       data-focused={focused ? "true" : undefined}
@@ -412,7 +410,11 @@ function TreeViewBranchControl({
   return (
     <div
       ref={setRef}
-      role="presentation"
+      role="treeitem"
+      aria-expanded={branch.isOpen}
+      aria-selected={ctx.selectionMode !== "none" ? selected : undefined}
+      aria-disabled={isDisabled || undefined}
+      aria-level={branch.depth + 1}
       tabIndex={isDisabled ? -1 : finalTabIndex}
       data-state={branch.isOpen ? "open" : "closed"}
       data-selected={selected ? "true" : undefined}
