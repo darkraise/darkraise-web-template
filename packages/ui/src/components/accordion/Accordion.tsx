@@ -1,62 +1,262 @@
+"use client"
+
 import * as React from "react"
-import * as AccordionPrimitive from "@radix-ui/react-accordion"
 import { ChevronDown } from "lucide-react"
 
+import { useId } from "@primitives/state"
+import { Presence } from "@primitives/presence"
+import { composeRefs } from "@primitives/slot"
 import { cn } from "@lib/utils"
 import "./accordion.css"
 
-const Accordion = AccordionPrimitive.Root
+import {
+  useAccordion,
+  type AccordionContextValue,
+  type UseAccordionOptions,
+} from "./useAccordion"
+
+const AccordionContext = React.createContext<AccordionContextValue | null>(null)
+
+function useAccordionContext(consumer: string): AccordionContextValue {
+  const ctx = React.useContext(AccordionContext)
+  if (!ctx) throw new Error(`${consumer} must be used within <Accordion>`)
+  return ctx
+}
+
+interface AccordionItemContextValue {
+  value: string
+  open: boolean
+  triggerId: string
+  contentId: string
+  disabled: boolean
+}
+
+const AccordionItemContext =
+  React.createContext<AccordionItemContextValue | null>(null)
+
+function useAccordionItemContext(consumer: string): AccordionItemContextValue {
+  const ctx = React.useContext(AccordionItemContext)
+  if (!ctx) throw new Error(`${consumer} must be used within <AccordionItem>`)
+  return ctx
+}
+
+type AccordionSingleProps = {
+  type: "single"
+  value?: string
+  defaultValue?: string
+  onValueChange?: (value: string) => void
+  collapsible?: boolean
+}
+
+type AccordionMultipleProps = {
+  type: "multiple"
+  value?: string[]
+  defaultValue?: string[]
+  onValueChange?: (value: string[]) => void
+}
+
+type AccordionCommonProps = {
+  disabled?: boolean
+  orientation?: "horizontal" | "vertical"
+  className?: string
+  children?: React.ReactNode
+  ref?: React.Ref<HTMLDivElement>
+} & Omit<React.HTMLAttributes<HTMLDivElement>, "defaultValue" | "onChange">
+
+type AccordionProps =
+  | (AccordionCommonProps & AccordionSingleProps)
+  | (AccordionCommonProps & AccordionMultipleProps)
+
+function Accordion(props: AccordionProps) {
+  const { className, ref, disabled, orientation, children, ...rest } = props
+
+  const opts: UseAccordionOptions =
+    props.type === "single"
+      ? {
+          type: "single",
+          value: props.value,
+          defaultValue: props.defaultValue,
+          onValueChange: props.onValueChange,
+          collapsible: props.collapsible,
+          disabled,
+          orientation,
+        }
+      : {
+          type: "multiple",
+          value: props.value,
+          defaultValue: props.defaultValue,
+          onValueChange: props.onValueChange,
+          disabled,
+          orientation,
+        }
+
+  const ctx = useAccordion(opts)
+
+  const {
+    type: _t,
+    value: _v,
+    defaultValue: _dv,
+    onValueChange: _ovc,
+    collapsible: _c,
+    ...domProps
+  } = rest as Record<string, unknown>
+  void _t
+  void _v
+  void _dv
+  void _ovc
+  void _c
+
+  return (
+    <div
+      ref={ref}
+      data-orientation={ctx.orientation}
+      className={className}
+      {...(domProps as React.HTMLAttributes<HTMLDivElement>)}
+    >
+      <AccordionContext.Provider value={ctx}>
+        {children}
+      </AccordionContext.Provider>
+    </div>
+  )
+}
+
+interface AccordionItemProps extends React.HTMLAttributes<HTMLDivElement> {
+  value: string
+  disabled?: boolean
+  ref?: React.Ref<HTMLDivElement>
+}
 
 function AccordionItem({
   className,
   ref,
+  value,
+  disabled = false,
+  children,
   ...props
-}: React.ComponentProps<typeof AccordionPrimitive.Item>) {
+}: AccordionItemProps) {
+  const ctx = useAccordionContext("AccordionItem")
+  const open = ctx.isOpen(value)
+  const triggerId = useId()
+  const contentId = useId()
+  const itemCtx = React.useMemo<AccordionItemContextValue>(
+    () => ({
+      value,
+      open,
+      triggerId,
+      contentId,
+      disabled: ctx.disabled || disabled,
+    }),
+    [value, open, triggerId, contentId, ctx.disabled, disabled],
+  )
+
   return (
-    <AccordionPrimitive.Item
+    <div
       ref={ref}
+      data-state={open ? "open" : "closed"}
+      data-disabled={itemCtx.disabled ? "" : undefined}
+      data-orientation={ctx.orientation}
       className={cn("dr-accordion-item", className)}
       {...props}
-    />
+    >
+      <AccordionItemContext.Provider value={itemCtx}>
+        {children}
+      </AccordionItemContext.Provider>
+    </div>
   )
+}
+
+interface AccordionTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  ref?: React.Ref<HTMLButtonElement>
 }
 
 function AccordionTrigger({
   className,
   children,
   ref,
+  onClick,
+  onKeyDown,
   ...props
-}: React.ComponentProps<typeof AccordionPrimitive.Trigger>) {
+}: AccordionTriggerProps) {
+  const ctx = useAccordionContext("AccordionTrigger")
+  const item = useAccordionItemContext("AccordionTrigger")
+  const buttonRef = React.useRef<HTMLButtonElement>(null)
+  const composedRef = composeRefs(ref, buttonRef)
+
+  const register = ctx.registerTrigger
+  React.useEffect(() => {
+    return register(item.value, buttonRef.current, item.disabled)
+  }, [register, item.value, item.disabled])
+
   return (
-    <AccordionPrimitive.Header className="flex">
-      <AccordionPrimitive.Trigger
-        ref={ref}
+    <h3 style={{ display: "flex", margin: 0 }}>
+      <button
+        ref={composedRef}
+        type="button"
+        id={item.triggerId}
+        aria-controls={item.contentId}
+        aria-expanded={item.open}
+        data-state={item.open ? "open" : "closed"}
+        data-disabled={item.disabled ? "" : undefined}
+        data-orientation={ctx.orientation}
+        disabled={item.disabled}
         className={cn("dr-accordion-trigger", className)}
+        onClick={(event) => {
+          onClick?.(event)
+          if (event.defaultPrevented) return
+          ctx.toggleItem(item.value, item.disabled)
+        }}
+        onKeyDown={(event) => {
+          onKeyDown?.(event)
+          if (event.defaultPrevented) return
+          ctx.handleTriggerKeyDown(event, item.value)
+        }}
         {...props}
       >
         {children}
         <ChevronDown aria-hidden="true" />
-      </AccordionPrimitive.Trigger>
-    </AccordionPrimitive.Header>
+      </button>
+    </h3>
   )
+}
+
+interface AccordionContentProps extends React.HTMLAttributes<HTMLDivElement> {
+  forceMount?: boolean
+  ref?: React.Ref<HTMLDivElement>
 }
 
 function AccordionContent({
   className,
   children,
   ref,
+  forceMount,
   ...props
-}: React.ComponentProps<typeof AccordionPrimitive.Content>) {
-  return (
-    <AccordionPrimitive.Content
+}: AccordionContentProps) {
+  const ctx = useAccordionContext("AccordionContent")
+  const item = useAccordionItemContext("AccordionContent")
+
+  const node = (
+    <div
       ref={ref}
+      role="region"
+      id={item.contentId}
+      aria-labelledby={item.triggerId}
+      data-state={item.open ? "open" : "closed"}
+      data-disabled={item.disabled ? "" : undefined}
+      data-orientation={ctx.orientation}
+      hidden={!item.open}
       className="dr-accordion-content"
       {...props}
     >
       <div className={cn("dr-accordion-content-inner", className)}>
         {children}
       </div>
-    </AccordionPrimitive.Content>
+    </div>
+  )
+
+  return (
+    <Presence present={item.open} forceMount={forceMount}>
+      {node}
+    </Presence>
   )
 }
 

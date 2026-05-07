@@ -99,7 +99,7 @@ export function useToggleGroup(
 
   const value = isSingle ? (singleState ? [singleState] : []) : multiState
 
-  const isPressed = useEvent((itemValue: string) => value.includes(itemValue))
+  const isPressed = (itemValue: string) => value.includes(itemValue)
 
   const toggleItem = useEvent((itemValue: string) => {
     if (disabled) return
@@ -154,11 +154,11 @@ export function useToggleGroup(
     item?.el.focus()
   })
 
-  const isFirstFocusable = useEvent((itemValue: string) => {
+  const isFirstFocusable = (itemValue: string) => {
     const list = orderedItems()
     const activeFocusable = list.find((i) => isPressed(i.value)) ?? list[0]
     return activeFocusable?.value === itemValue
-  })
+  }
 
   const handleItemKeyDown = useEvent(
     (event: React.KeyboardEvent, itemValue: string) => {

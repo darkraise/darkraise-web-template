@@ -91,12 +91,12 @@ export function useRadioGroup(
     return list.filter((i) => !i.disabled)
   })
 
-  const isFirstFocusable = useEvent((itemValue: string) => {
+  const isFirstFocusable = (itemValue: string) => {
     const list = orderedItems()
     const checked = list.find((i) => i.value === value)
     if (checked) return checked.value === itemValue
     return list[0]?.value === itemValue
-  })
+  }
 
   const handleItemKeyDown = useEvent(
     (event: React.KeyboardEvent, itemValue: string) => {
