@@ -1,11 +1,10 @@
 "use client"
 
 import * as React from "react"
-import { format as dfFormat, isValid as dfIsValid } from "date-fns"
-import type { DateRange, Matcher } from "react-day-picker"
 
 import { cn } from "@lib/utils"
-import { Calendar } from "@components/calendar"
+import { format as fmt, isValid as dateIsValid } from "@lib/date"
+import { Calendar, type DateRange, type Matcher } from "@components/calendar"
 import {
   Popover as PopoverPrimitiveRoot,
   PopoverTrigger as PopoverPrimitiveTrigger,
@@ -13,6 +12,8 @@ import {
   PopoverContent as PopoverPrimitiveContent,
 } from "@components/popover"
 import "./date-picker.css"
+
+export type { DateRange, Matcher }
 
 export type DatePickerSingleValue = Date | null
 export type DatePickerRangeValue = { from?: Date; to?: Date }
@@ -93,11 +94,11 @@ function useDatePickerContext(part: string): DatePickerContextValue {
   return ctx
 }
 
-const defaultFormatSingle = (d: Date) => dfFormat(d, "PPP")
+const defaultFormatSingle = (d: Date) => fmt(d, "PPP")
 const defaultFormatRange = (r: DatePickerRangeValue) => {
   if (!r.from) return ""
-  if (!r.to) return dfFormat(r.from, "LLL dd, y")
-  return `${dfFormat(r.from, "LLL dd, y")} – ${dfFormat(r.to, "LLL dd, y")}`
+  if (!r.to) return fmt(r.from, "LLL dd, y")
+  return `${fmt(r.from, "LLL dd, y")} – ${fmt(r.to, "LLL dd, y")}`
 }
 
 function DatePicker(props: DatePickerProps) {
@@ -323,7 +324,7 @@ function DatePickerInput({
     }
     if (parse) {
       const parsed = parse(draft)
-      if (parsed && dfIsValid(parsed)) {
+      if (parsed && dateIsValid(parsed)) {
         commitSingle(parsed)
       }
     }

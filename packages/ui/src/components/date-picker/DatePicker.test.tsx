@@ -2,7 +2,16 @@ import * as React from "react"
 import { render, screen, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi } from "vitest"
-import { format, parse as dfParse } from "date-fns"
+
+import { format } from "@lib/date"
+
+function parseIsoDate(input: string): Date | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(input.trim())
+  if (!m) return null
+  const [, y, mo, d] = m
+  const date = new Date(Number(y), Number(mo) - 1, Number(d))
+  return Number.isNaN(date.getTime()) ? null : date
+}
 
 import {
   DatePicker,
@@ -54,14 +63,7 @@ function SingleHarness({
       max={max}
       placeholder="Pick a date"
       format={(d) => format(d, "yyyy-MM-dd")}
-      parse={
-        parseInput
-          ? (input) => {
-              const parsed = dfParse(input, "yyyy-MM-dd", new Date())
-              return Number.isNaN(parsed.getTime()) ? null : parsed
-            }
-          : undefined
-      }
+      parse={parseInput ? parseIsoDate : undefined}
     >
       <DatePickerLabel>Date</DatePickerLabel>
       <DatePickerControl>

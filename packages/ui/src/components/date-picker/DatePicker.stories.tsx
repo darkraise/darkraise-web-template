@@ -1,7 +1,26 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 import * as React from "react"
 import { CalendarDays } from "lucide-react"
-import { addDays, format, parse, startOfMonth } from "date-fns"
+
+import { format } from "@lib/date"
+
+function addDays(d: Date, days: number): Date {
+  const next = new Date(d.getFullYear(), d.getMonth(), d.getDate())
+  next.setDate(next.getDate() + days)
+  return next
+}
+
+function startOfMonth(d: Date): Date {
+  return new Date(d.getFullYear(), d.getMonth(), 1)
+}
+
+function parseIsoDate(input: string): Date | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(input.trim())
+  if (!m) return null
+  const [, y, mo, dd] = m
+  const date = new Date(Number(y), Number(mo) - 1, Number(dd))
+  return Number.isNaN(date.getTime()) ? null : date
+}
 
 import {
   DatePicker,
@@ -90,10 +109,7 @@ export const WithPresets: Story = {
           onValueChange={(d) => setValue(d.value)}
           placeholder="Pick a date"
           format={(d) => format(d, "PPP")}
-          parse={(input) => {
-            const parsed = parse(input, "yyyy-MM-dd", new Date())
-            return Number.isNaN(parsed.getTime()) ? null : parsed
-          }}
+          parse={parseIsoDate}
         >
           <DatePickerLabel>Deadline</DatePickerLabel>
           <DatePickerControl>
