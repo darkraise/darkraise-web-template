@@ -1,4 +1,4 @@
-import { createStore } from "zustand/vanilla"
+import { createStore, type StoreApi } from "zustand/vanilla"
 
 export type ToastKind =
   | "default"
@@ -51,9 +51,27 @@ function generateId(): string {
   return `t${Date.now().toString(36)}-${nextId}`
 }
 
-export const toastStore = createStore<ToastStoreState>(() => ({
-  toasts: [],
-}))
+// Pin the Zustand store on globalThis. tsup compiles each `components/<name>`
+// entry as a separate bundle that inlines cross-component imports — without a
+// shared global, Clipboard's bundled copy of this module would keep its own
+// store and Toaster (from the sonner bundle) would read from a different one,
+// so the toast would never appear. Symbol.for guarantees we resolve to the
+// same instance across both bundles loaded into the same window.
+const TOAST_STORE_KEY = Symbol.for("darkraise-ui.toast-store-v1")
+
+type ToastStoreInstance = StoreApi<ToastStoreState>
+
+interface ToastStoreGlobal {
+  [TOAST_STORE_KEY]?: ToastStoreInstance
+}
+
+const globalScope = globalThis as unknown as ToastStoreGlobal
+
+export const toastStore: ToastStoreInstance =
+  globalScope[TOAST_STORE_KEY] ??
+  (globalScope[TOAST_STORE_KEY] = createStore<ToastStoreState>(() => ({
+    toasts: [],
+  })))
 
 const api: ToastStoreApi = {
   add(toast: Toast) {

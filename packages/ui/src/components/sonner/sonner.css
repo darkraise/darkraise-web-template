@@ -16,56 +16,84 @@
   }
 
   .dr-toaster[data-position="bottom-left"] {
-    @apply bottom-0 left-0;
+    @apply bottom-0 left-0 flex-col-reverse;
   }
 
   .dr-toaster[data-position="bottom-right"] {
-    @apply right-0 bottom-0;
+    @apply right-0 bottom-0 flex-col-reverse;
   }
 
   .dr-toaster[data-position="bottom-center"] {
-    @apply bottom-0 left-1/2 -translate-x-1/2;
+    @apply bottom-0 left-1/2 -translate-x-1/2 flex-col-reverse;
   }
 
   .dr-toast {
-    @apply bg-popover text-popover-foreground border-border glass-strong pointer-events-auto relative flex items-start gap-3 rounded-md border p-3 shadow-lg;
+    @apply bg-popover text-popover-foreground border-border pointer-events-auto relative flex items-start gap-3 rounded-lg border p-4 pr-9 shadow-[0_4px_12px_rgba(0,0,0,0.12),0_2px_4px_rgba(0,0,0,0.08)];
+    backdrop-filter: blur(8px) saturate(140%);
     transition:
-      transform 0.2s ease,
-      opacity 0.2s ease;
+      transform 0.18s ease,
+      opacity 0.18s ease;
   }
 
-  .dr-toast[data-state="open"] {
-    animation: dr-toast-enter 0.2s ease-out;
+  /* Slide up from below for bottom-anchored toasters; slide down from above for top-anchored. */
+  .dr-toaster[data-position^="bottom"] .dr-toast[data-state="open"] {
+    animation: dr-toast-enter-bottom 0.22s cubic-bezier(0.21, 1.02, 0.73, 1);
   }
 
-  .dr-toast[data-state="closed"] {
-    @apply translate-x-2 opacity-0;
+  .dr-toaster[data-position^="top"] .dr-toast[data-state="open"] {
+    animation: dr-toast-enter-top 0.22s cubic-bezier(0.21, 1.02, 0.73, 1);
   }
 
-  @keyframes dr-toast-enter {
+  /* Closed-state target — animation-fill-mode: forwards (set in theme.css overrides) holds it. */
+  .dr-toaster[data-position^="bottom"] .dr-toast[data-state="closed"] {
+    animation: dr-toast-exit-bottom 0.18s ease-out;
+  }
+
+  .dr-toaster[data-position^="top"] .dr-toast[data-state="closed"] {
+    animation: dr-toast-exit-top 0.18s ease-out;
+  }
+
+  @keyframes dr-toast-enter-bottom {
     from {
-      transform: translateX(0.5rem);
+      transform: translateY(100%);
       opacity: 0;
     }
     to {
-      transform: translateX(0);
+      transform: translateY(0);
       opacity: 1;
     }
   }
 
-  .dr-toaster[data-position^="top-left"] .dr-toast[data-state="open"],
-  .dr-toaster[data-position^="bottom-left"] .dr-toast[data-state="open"] {
-    animation: dr-toast-enter-left 0.2s ease-out;
-  }
-
-  @keyframes dr-toast-enter-left {
+  @keyframes dr-toast-enter-top {
     from {
-      transform: translateX(-0.5rem);
+      transform: translateY(-100%);
       opacity: 0;
     }
     to {
-      transform: translateX(0);
+      transform: translateY(0);
       opacity: 1;
+    }
+  }
+
+  @keyframes dr-toast-exit-bottom {
+    from {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+  }
+
+  @keyframes dr-toast-exit-top {
+    from {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateY(-100%);
+      opacity: 0;
     }
   }
 
@@ -94,26 +122,33 @@
   }
 
   .dr-toast-title {
-    @apply text-sm leading-none font-medium;
+    @apply text-sm leading-tight font-medium;
   }
 
   .dr-toast-description {
-    @apply text-muted-foreground text-sm;
+    @apply text-muted-foreground text-sm leading-snug;
   }
 
   .dr-toast-actions {
-    @apply mt-1 flex justify-end gap-2;
+    @apply mt-2 flex justify-end gap-2;
   }
 
   .dr-toast-action {
-    @apply bg-primary text-primary-foreground rounded px-2 py-1 text-xs font-medium;
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 rounded px-2 py-1 text-xs font-medium transition-colors;
   }
 
   .dr-toast-cancel {
-    @apply bg-muted text-muted-foreground rounded px-2 py-1 text-xs font-medium;
+    @apply bg-muted text-muted-foreground hover:bg-muted/70 rounded px-2 py-1 text-xs font-medium transition-colors;
   }
 
+  /* Hover-reveal close button — sonner default UX. */
   .dr-toast-close {
-    @apply text-muted-foreground hover:text-foreground absolute top-1.5 right-1.5 rounded p-0.5 transition-colors;
+    @apply text-muted-foreground hover:text-foreground absolute top-2 right-2 rounded p-0.5 opacity-0 transition-opacity duration-150;
+  }
+
+  .dr-toast:hover .dr-toast-close,
+  .dr-toast:focus-within .dr-toast-close,
+  .dr-toast-close:focus-visible {
+    @apply opacity-100;
   }
 }
