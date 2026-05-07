@@ -1,12 +1,23 @@
+import type { ReactNode } from "react"
 import { Bell } from "lucide-react"
 import { Button } from "@components/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@components/popover"
 
 interface NotificationBellProps {
   count?: number
+  /**
+   * Popover content. When omitted, the bell shows a default empty state.
+   * Supply your own list, link to a feed, etc.
+   */
+  children?: ReactNode
+  emptyMessage?: string
 }
 
-export function NotificationBell({ count = 0 }: NotificationBellProps) {
+export function NotificationBell({
+  count = 0,
+  children,
+  emptyMessage = "No new notifications",
+}: NotificationBellProps) {
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -25,7 +36,9 @@ export function NotificationBell({ count = 0 }: NotificationBellProps) {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="dr-notification-bell-content" align="end">
-        <div className="dr-notification-bell-empty">No new notifications</div>
+        {children ?? (
+          <div className="dr-notification-bell-empty">{emptyMessage}</div>
+        )}
       </PopoverContent>
     </Popover>
   )

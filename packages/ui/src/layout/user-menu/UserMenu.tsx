@@ -12,10 +12,17 @@ import { Button } from "@components/button"
 
 interface UserMenuProps {
   user?: { name: string; email: string }
+  onProfile?: () => void
+  onSettings?: () => void
   onLogout?: () => void
 }
 
-export function UserMenu({ user, onLogout }: UserMenuProps) {
+export function UserMenu({
+  user,
+  onProfile,
+  onSettings,
+  onLogout,
+}: UserMenuProps) {
   const initials = user?.name
     ? user.name
         .split(" ")
@@ -49,19 +56,25 @@ export function UserMenu({ user, onLogout }: UserMenuProps) {
             <DropdownMenuSeparator />
           </>
         )}
-        <DropdownMenuItem>
-          <User className="dr-user-menu-item-icon" />
-          Profile
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <Settings className="dr-user-menu-item-icon" />
-          Settings
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={onLogout}>
-          <LogOut className="dr-user-menu-item-icon" />
-          Log out
-        </DropdownMenuItem>
+        {onProfile && (
+          <DropdownMenuItem onClick={onProfile}>
+            <User className="dr-user-menu-item-icon" />
+            Profile
+          </DropdownMenuItem>
+        )}
+        {onSettings && (
+          <DropdownMenuItem onClick={onSettings}>
+            <Settings className="dr-user-menu-item-icon" />
+            Settings
+          </DropdownMenuItem>
+        )}
+        {(onProfile || onSettings) && onLogout && <DropdownMenuSeparator />}
+        {onLogout && (
+          <DropdownMenuItem onClick={onLogout}>
+            <LogOut className="dr-user-menu-item-icon" />
+            Log out
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   )

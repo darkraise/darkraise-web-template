@@ -1,4 +1,4 @@
-import React from "react"
+import { Fragment } from "react"
 import { useRouterAdapter } from "@router"
 import type { PageHeaderProps } from "@layout/types"
 import {
@@ -24,7 +24,7 @@ export function PageHeader({
         <Breadcrumb>
           <BreadcrumbList>
             {breadcrumbs.map((crumb, i) => (
-              <React.Fragment key={crumb.label}>
+              <Fragment key={crumb.label}>
                 {i > 0 && <BreadcrumbSeparator />}
                 <BreadcrumbItem>
                   {crumb.href ? (
@@ -35,7 +35,7 @@ export function PageHeader({
                     <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
                   )}
                 </BreadcrumbItem>
-              </React.Fragment>
+              </Fragment>
             ))}
           </BreadcrumbList>
         </Breadcrumb>

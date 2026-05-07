@@ -25,14 +25,24 @@ function Alert({
   )
 }
 
+type AlertTitleHeading = "h2" | "h3" | "h4" | "h5" | "h6"
+
 function AlertTitle({
   className,
+  as: Heading = "h5",
   ref,
   ...props
 }: React.HTMLAttributes<HTMLHeadingElement> & {
-  ref?: React.Ref<HTMLParagraphElement>
+  /**
+   * Heading level for the title. Defaults to `h5`; pick a level that fits the
+   * surrounding document outline (e.g. `h2` for a top-level alert region).
+   */
+  as?: AlertTitleHeading
+  ref?: React.Ref<HTMLHeadingElement>
 }) {
-  return <h5 ref={ref} className={cn("dr-alert-title", className)} {...props} />
+  return (
+    <Heading ref={ref} className={cn("dr-alert-title", className)} {...props} />
+  )
 }
 
 function AlertDescription({
