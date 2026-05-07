@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react"
 import { useDocumentVisibility } from "./useDocumentVisibility"
-import { useSyncedRef } from "./useSyncedRef"
 
 const ACTIVITY_EVENTS = [
   "mousemove",
@@ -16,9 +15,12 @@ export function useIdle(
   events: readonly string[] = ACTIVITY_EVENTS,
 ): boolean {
   const [idle, setIdle] = useState<boolean>(false)
-  const eventsRef = useSyncedRef(events)
   const isVisible = useDocumentVisibility()
   const resetRef = useRef<(() => void) | null>(null)
+  // Stable join of the events array so the effect re-subscribes when a
+  // caller passes a different list, even though the array identity changes
+  // on every render.
+  const eventsKey = events.join("|")
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | null = null
@@ -28,7 +30,7 @@ export function useIdle(
       timer = setTimeout(() => setIdle(true), ms)
     }
     resetRef.current = reset
-    const list = eventsRef.current
+    const list = eventsKey.split("|")
     for (const ev of list) {
       window.addEventListener(ev, reset, { passive: true })
     }
@@ -40,7 +42,7 @@ export function useIdle(
       }
       resetRef.current = null
     }
-  }, [ms, eventsRef])
+  }, [ms, eventsKey])
 
   useEffect(() => {
     if (isVisible === false) setIdle(true)
