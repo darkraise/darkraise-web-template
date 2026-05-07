@@ -12,6 +12,9 @@ export function useClickOutside<T extends HTMLElement>(
 ): void {
   const cbRef = useSyncedRef(callback)
   const refRef = useSyncedRef(ref)
+  // Stable serialization keeps the effect from re-binding listeners on every
+  // render when the caller passes an inline events array.
+  const eventsKey = events.join("|")
 
   useEffect(() => {
     function handler(this: HTMLElement, event: Event) {
@@ -31,15 +34,16 @@ export function useClickOutside<T extends HTMLElement>(
       }
     }
 
-    for (const name of events) {
+    const list = eventsKey.split("|")
+    for (const name of list) {
       on(document, name, handler, { passive: true })
     }
 
     return () => {
-      for (const name of events) {
+      for (const name of list) {
         off(document, name, handler, { passive: true })
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [...events])
+  }, [eventsKey])
 }

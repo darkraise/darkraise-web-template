@@ -35,6 +35,10 @@ export function useEventListener<T extends EventTarget>(
     [],
   )
 
+  // Serialize the addEventListener options (params[2..]) so the effect
+  // re-attaches the listener when capture/passive/once flags change.
+  const optionsKey = serializeOptions(params.slice(2))
+
   useEffect(() => {
     const tgt = isRefObject(target) ? target.current : target
     if (!tgt) {
@@ -49,7 +53,15 @@ export function useEventListener<T extends EventTarget>(
       off(tgt, params[0], eventListener, ...restParams)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [target, params[0]])
+  }, [target, params[0], optionsKey])
+}
+
+function serializeOptions(rest: unknown[]): string {
+  try {
+    return JSON.stringify(rest)
+  } catch {
+    return ""
+  }
 }
 
 function isRefObject<T>(

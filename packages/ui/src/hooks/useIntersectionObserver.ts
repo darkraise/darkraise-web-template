@@ -104,6 +104,9 @@ export function useIntersectionObserver<T extends Element>(
   }: UseIntersectionObserverOptions = {},
 ): IntersectionObserverEntry | undefined {
   const [state, setState] = useState<IntersectionObserverEntry>()
+  // Stable serialization avoids re-binding when the caller passes an inline
+  // threshold array whose identity changes on every render.
+  const thresholdKey = threshold.join("|")
 
   useEffect(() => {
     const tgt = target && "current" in target ? target.current : target
@@ -131,7 +134,7 @@ export function useIntersectionObserver<T extends Element>(
       observerEntry.unobserve(tgt, handler)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [target, r, rootMargin, ...threshold])
+  }, [target, r, rootMargin, thresholdKey])
 
   return state
 }
