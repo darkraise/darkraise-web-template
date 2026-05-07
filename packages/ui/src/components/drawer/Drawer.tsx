@@ -1,110 +1,392 @@
+"use client"
+
 import * as React from "react"
-import { Drawer as DrawerPrimitive } from "vaul"
 
 import { cn } from "@lib/utils"
+import { OverlayCloseButton } from "@components/overlay-primitives"
+import { DismissableLayer } from "@primitives/dismissable-layer"
+import { useFocusTrap } from "@primitives/focus-trap"
+import { Portal } from "@primitives/portal"
+import { Presence } from "@primitives/presence"
+import { Slot, composeRefs } from "@primitives/slot"
+import { useDialog, type UseDialogReturn } from "@components/dialog/useDialog"
+import { lockScroll, unlockScroll } from "@components/dialog/scrollLock"
 import "./drawer.css"
 
+export type DrawerDirection = "top" | "right" | "bottom" | "left"
+
+interface DrawerContextValue extends UseDialogReturn {
+  direction: DrawerDirection
+  /** lifted from content to handle: only the handle initiates close-by-drag */
+  beginDrag: (event: React.PointerEvent) => void
+}
+
+const DrawerContext = React.createContext<DrawerContextValue | null>(null)
+
+function useDrawerContext(consumer: string): DrawerContextValue {
+  const ctx = React.useContext(DrawerContext)
+  if (!ctx) throw new Error(`${consumer} must be used within <Drawer>`)
+  return ctx
+}
+
+interface DrawerProps {
+  open?: boolean
+  defaultOpen?: boolean
+  onOpenChange?: (open: boolean) => void
+  modal?: boolean
+  direction?: DrawerDirection
+  /** vaul-compatible no-op slot, accepted for API parity. */
+  shouldScaleBackground?: boolean
+  children?: React.ReactNode
+}
+
+const DRAG_DISMISS_THRESHOLD = 80
+const DRAG_VELOCITY_THRESHOLD = 0.3
+
 function Drawer({
-  shouldScaleBackground = true,
-  ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Root>) {
-  return (
-    <DrawerPrimitive.Root
-      shouldScaleBackground={shouldScaleBackground}
-      {...props}
-    />
+  open,
+  defaultOpen,
+  onOpenChange,
+  modal = true,
+  direction = "bottom",
+  children,
+}: DrawerProps) {
+  const dialog = useDialog({ open, defaultOpen, onOpenChange, modal })
+
+  const dragRef = React.useRef<{
+    pointerId: number
+    startX: number
+    startY: number
+    startTime: number
+  } | null>(null)
+
+  const beginDrag = React.useCallback(
+    (event: React.PointerEvent) => {
+      const root = (event.currentTarget as HTMLElement).closest(
+        "[data-drawer-content]",
+      ) as HTMLElement | null
+      if (!root) return
+      const startX = event.clientX
+      const startY = event.clientY
+      const startTime = performance.now()
+      dragRef.current = {
+        pointerId: event.pointerId,
+        startX,
+        startY,
+        startTime,
+      }
+      try {
+        ;(event.currentTarget as HTMLElement).setPointerCapture(event.pointerId)
+      } catch {
+        // ignore
+      }
+
+      const onMove = (e: PointerEvent) => {
+        if (e.pointerId !== dragRef.current?.pointerId) return
+        const dx = e.clientX - startX
+        const dy = e.clientY - startY
+        let translate = ""
+        switch (direction) {
+          case "bottom":
+            translate = `translateY(${Math.max(0, dy)}px)`
+            break
+          case "top":
+            translate = `translateY(${Math.min(0, dy)}px)`
+            break
+          case "right":
+            translate = `translateX(${Math.max(0, dx)}px)`
+            break
+          case "left":
+            translate = `translateX(${Math.min(0, dx)}px)`
+            break
+        }
+        root.style.transform = translate
+        root.style.transition = "none"
+      }
+
+      const onUp = (e: PointerEvent) => {
+        if (e.pointerId !== dragRef.current?.pointerId) return
+        const drag = dragRef.current
+        dragRef.current = null
+        try {
+          ;(event.currentTarget as HTMLElement).releasePointerCapture(
+            e.pointerId,
+          )
+        } catch {
+          // ignore
+        }
+        window.removeEventListener("pointermove", onMove)
+        window.removeEventListener("pointerup", onUp)
+        window.removeEventListener("pointercancel", onUp)
+
+        const elapsed = performance.now() - drag.startTime
+        const dx = e.clientX - drag.startX
+        const dy = e.clientY - drag.startY
+        const displacement =
+          direction === "bottom"
+            ? dy
+            : direction === "top"
+              ? -dy
+              : direction === "right"
+                ? dx
+                : -dx
+        const velocity = elapsed > 0 ? displacement / elapsed : 0
+        const shouldClose =
+          displacement > DRAG_DISMISS_THRESHOLD ||
+          velocity > DRAG_VELOCITY_THRESHOLD
+        root.style.transition = ""
+        root.style.transform = ""
+        if (shouldClose) dialog.setOpen(false)
+      }
+
+      window.addEventListener("pointermove", onMove)
+      window.addEventListener("pointerup", onUp)
+      window.addEventListener("pointercancel", onUp)
+    },
+    [dialog, direction],
   )
+
+  const ctx = React.useMemo<DrawerContextValue>(
+    () => ({ ...dialog, direction, beginDrag }),
+    [dialog, direction, beginDrag],
+  )
+
+  return <DrawerContext.Provider value={ctx}>{children}</DrawerContext.Provider>
 }
 Drawer.displayName = "Drawer"
 
-const DrawerTrigger: typeof DrawerPrimitive.Trigger = DrawerPrimitive.Trigger
+interface DrawerTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  asChild?: boolean
+  ref?: React.Ref<HTMLButtonElement>
+}
 
-const DrawerPortal = DrawerPrimitive.Portal
-
-const DrawerClose: typeof DrawerPrimitive.Close = DrawerPrimitive.Close
-
-function DrawerOverlay({
-  className,
+function DrawerTrigger({
   ref,
+  asChild,
+  type,
+  onClick,
   ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Overlay>) {
+}: DrawerTriggerProps) {
+  const ctx = useDrawerContext("DrawerTrigger")
+  const Comp = asChild ? Slot : "button"
+  const resolvedType = asChild ? type : (type ?? "button")
   return (
-    <DrawerPrimitive.Overlay
+    <Comp
       ref={ref}
-      className={cn("dr-drawer-overlay", className)}
+      type={resolvedType}
+      id={ctx.triggerId}
+      aria-haspopup="dialog"
+      aria-expanded={ctx.open}
+      aria-controls={ctx.open ? ctx.contentId : undefined}
+      data-state={ctx.state}
+      onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
+        onClick?.(event)
+        if (event.defaultPrevented) return
+        ctx.setOpen(!ctx.open)
+      }}
       {...props}
     />
   )
 }
-DrawerOverlay.displayName = DrawerPrimitive.Overlay.displayName
 
-function DrawerContent({
+interface DrawerPortalProps {
+  container?: Element | null
+  forceMount?: boolean
+  children?: React.ReactNode
+}
+
+function DrawerPortal({ container, forceMount, children }: DrawerPortalProps) {
+  const ctx = useDrawerContext("DrawerPortal")
+  if (!forceMount && !ctx.open) return null
+  return <Portal container={container}>{children}</Portal>
+}
+
+interface DrawerOverlayProps extends React.HTMLAttributes<HTMLDivElement> {
+  forceMount?: boolean
+  ref?: React.Ref<HTMLDivElement>
+}
+
+function DrawerOverlay({
   className,
-  children,
+  forceMount,
   ref,
   ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Content>) {
+}: DrawerOverlayProps) {
+  const ctx = useDrawerContext("DrawerOverlay")
   return (
-    <DrawerPortal>
-      <DrawerOverlay />
-      <DrawerPrimitive.Content
+    <Presence present={ctx.open} forceMount={forceMount}>
+      <div
         ref={ref}
-        className={cn("dr-drawer-content", className)}
+        aria-hidden="true"
+        className={cn("dr-drawer-overlay", className)}
         {...props}
+      />
+    </Presence>
+  )
+}
+
+interface DrawerContentProps extends React.HTMLAttributes<HTMLDivElement> {
+  forceMount?: boolean
+  onEscapeKeyDown?: (event: KeyboardEvent) => void
+  onPointerDownOutside?: (event: PointerEvent) => void
+  ref?: React.Ref<HTMLDivElement>
+}
+
+function DrawerContentImpl({
+  className,
+  children,
+  onEscapeKeyDown,
+  onPointerDownOutside,
+  ref,
+  ...rest
+}: Omit<DrawerContentProps, "forceMount">) {
+  const ctx = useDrawerContext("DrawerContent")
+  const localRef = React.useRef<HTMLDivElement | null>(null)
+
+  React.useEffect(() => {
+    if (!ctx.modal || !ctx.open) return
+    lockScroll()
+    return () => unlockScroll()
+  }, [ctx.modal, ctx.open])
+
+  useFocusTrap(localRef, {
+    disabled: !ctx.open,
+    loop: true,
+    restoreFocus: true,
+  })
+
+  return (
+    <DismissableLayer
+      onPointerDownOutside={(event) => {
+        onPointerDownOutside?.(event)
+        if (event.defaultPrevented) return
+        ctx.setOpen(false)
+      }}
+      onEscapeKeyDown={(event) => {
+        onEscapeKeyDown?.(event)
+        if (event.defaultPrevented) return
+        ctx.setOpen(false)
+      }}
+    >
+      <div
+        ref={composeRefs(localRef, ref)}
+        role="dialog"
+        id={ctx.contentId}
+        aria-modal={ctx.modal ? "true" : undefined}
+        aria-labelledby={ctx.titleId}
+        aria-describedby={ctx.descriptionId}
+        data-state={ctx.state}
+        data-drawer-content
+        data-direction={ctx.direction}
+        tabIndex={-1}
+        className={cn("dr-drawer-content", className)}
+        {...rest}
       >
-        <div className="dr-drawer-handle" />
+        <div
+          className="dr-drawer-handle"
+          aria-hidden="true"
+          onPointerDown={ctx.beginDrag}
+        />
         {children}
-      </DrawerPrimitive.Content>
+        <OverlayCloseButton />
+      </div>
+    </DismissableLayer>
+  )
+}
+
+function DrawerContent({ forceMount, ...props }: DrawerContentProps) {
+  const ctx = useDrawerContext("DrawerContent")
+  return (
+    <DrawerPortal forceMount={forceMount}>
+      <DrawerOverlay forceMount={forceMount} />
+      <Presence present={ctx.open} forceMount={forceMount}>
+        <DrawerContentImpl {...props} />
+      </Presence>
     </DrawerPortal>
   )
 }
-DrawerContent.displayName = "DrawerContent"
 
-function DrawerHeader({
+interface DrawerCloseProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  asChild?: boolean
+  ref?: React.Ref<HTMLButtonElement>
+}
+
+function DrawerClose({
+  ref,
+  asChild,
+  type,
+  onClick,
+  ...props
+}: DrawerCloseProps) {
+  const ctx = useDrawerContext("DrawerClose")
+  const Comp = asChild ? Slot : "button"
+  const resolvedType = asChild ? type : (type ?? "button")
+  return (
+    <Comp
+      ref={ref}
+      type={resolvedType}
+      onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
+        onClick?.(event)
+        if (event.defaultPrevented) return
+        ctx.setOpen(false)
+      }}
+      {...props}
+    />
+  )
+}
+
+const DrawerHeader = ({
   className,
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("dr-drawer-header", className)} {...props} />
-}
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div className={cn("dr-drawer-header", className)} {...props} />
+)
 DrawerHeader.displayName = "DrawerHeader"
 
-function DrawerFooter({
+const DrawerFooter = ({
   className,
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("dr-drawer-footer", className)} {...props} />
-}
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div className={cn("dr-drawer-footer", className)} {...props} />
+)
 DrawerFooter.displayName = "DrawerFooter"
 
-function DrawerTitle({
-  className,
-  ref,
-  ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Title>) {
+interface DrawerTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {
+  ref?: React.Ref<HTMLHeadingElement>
+}
+
+function DrawerTitle({ className, ref, id, ...props }: DrawerTitleProps) {
+  const ctx = useDrawerContext("DrawerTitle")
   return (
-    <DrawerPrimitive.Title
+    <h2
       ref={ref}
+      id={id ?? ctx.titleId}
       className={cn("dr-drawer-title", className)}
       {...props}
     />
   )
 }
-DrawerTitle.displayName = DrawerPrimitive.Title.displayName
+
+interface DrawerDescriptionProps extends React.HTMLAttributes<HTMLParagraphElement> {
+  ref?: React.Ref<HTMLParagraphElement>
+}
 
 function DrawerDescription({
   className,
   ref,
+  id,
   ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Description>) {
+}: DrawerDescriptionProps) {
+  const ctx = useDrawerContext("DrawerDescription")
   return (
-    <DrawerPrimitive.Description
+    <p
       ref={ref}
+      id={id ?? ctx.descriptionId}
       className={cn("dr-drawer-description", className)}
       {...props}
     />
   )
 }
-DrawerDescription.displayName = DrawerPrimitive.Description.displayName
 
 export {
   Drawer,
