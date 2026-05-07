@@ -16,11 +16,14 @@ export interface CookieReturn {
   refresh: () => void
 }
 
+const isBrowser = typeof document !== "undefined"
+
 export function useCookieValue(name: string): CookieReturn {
   const [value, setValue] = useState<string | undefined>(() => readCookie(name))
 
   const set = useCallback(
     (next: string, options?: CookieOptions): void => {
+      if (!isBrowser) return
       document.cookie = serializeCookie(name, next, options)
       setValue(next)
     },
@@ -29,6 +32,7 @@ export function useCookieValue(name: string): CookieReturn {
 
   const remove = useCallback(
     (options?: CookieOptions): void => {
+      if (!isBrowser) return
       document.cookie = serializeCookie(name, "", {
         ...options,
         expires: new Date(0),
@@ -46,6 +50,7 @@ export function useCookieValue(name: string): CookieReturn {
 }
 
 function readCookie(name: string): string | undefined {
+  if (!isBrowser) return undefined
   const target = `${encodeURIComponent(name)}=`
   for (const part of document.cookie.split(";")) {
     const trimmed = part.trim()
