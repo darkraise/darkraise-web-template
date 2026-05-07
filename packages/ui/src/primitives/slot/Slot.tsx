@@ -3,7 +3,7 @@ import { cn } from "@lib/utils"
 import { composeRefs } from "./composeRefs"
 
 export interface SlotProps extends React.HTMLAttributes<HTMLElement> {
-  children: React.ReactNode
+  children?: React.ReactNode
 }
 
 export function Slot({
