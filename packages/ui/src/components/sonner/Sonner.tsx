@@ -147,6 +147,7 @@ function Toaster({
             expandedOffset={expandedOffsets[t.id] ?? 0}
             onMeasureHeight={reportHeight}
             isTop={isTop}
+            paused={isExpanded}
           />
         ))}
       </ol>
@@ -162,6 +163,7 @@ interface ToastItemProps {
   expandedOffset: number
   onMeasureHeight: (id: string, h: number) => void
   isTop: boolean
+  paused: boolean
 }
 
 function ToastItem({
@@ -171,6 +173,7 @@ function ToastItem({
   expandedOffset,
   onMeasureHeight,
   isTop,
+  paused,
 }: ToastItemProps) {
   const [present, setPresent] = React.useState(true)
   const containerRef = React.useRef<HTMLLIElement | null>(null)
@@ -182,11 +185,32 @@ function ToastItem({
 
   const duration = t.duration ?? DEFAULT_DURATION_BY_KIND[t.kind] ?? 4000
 
+  // Pause-aware auto-dismiss timer. Keeps remaining duration in a ref so
+  // pausing (hover/focus expand) preserves the time already elapsed and
+  // resumes from where it left off — matches sonner's behavior.
+  const remainingRef = React.useRef(duration)
+  const startedAtRef = React.useRef<number | null>(null)
+
   React.useEffect(() => {
-    if (!Number.isFinite(duration)) return
-    const handle = window.setTimeout(close, duration)
-    return () => window.clearTimeout(handle)
-  }, [duration, close])
+    if (!Number.isFinite(remainingRef.current)) return
+    if (paused) {
+      if (startedAtRef.current !== null) {
+        const elapsed = Date.now() - startedAtRef.current
+        remainingRef.current = Math.max(0, remainingRef.current - elapsed)
+        startedAtRef.current = null
+      }
+      return
+    }
+    if (remainingRef.current <= 0) {
+      close()
+      return
+    }
+    startedAtRef.current = Date.now()
+    const handle = window.setTimeout(close, remainingRef.current)
+    return () => {
+      window.clearTimeout(handle)
+    }
+  }, [paused, close])
 
   React.useEffect(() => {
     const text =
@@ -198,11 +222,15 @@ function ToastItem({
     if (text) announce(text, t.kind === "error" ? "assertive" : "polite")
   }, [t.id, t.message, t.description, t.kind])
 
-  // Measure height for stacking math.
+  // Measure height for stacking math. Use offsetHeight (and contentRect for
+  // ResizeObserver updates) — both return UNSCALED box height. Avoid
+  // getBoundingClientRect, which returns the *scaled* visual height and
+  // would shrink behind-stack toasts (smaller than unscaled), causing
+  // overlapping offsets when expanded mode flips them all back to scale 1.
   React.useLayoutEffect(() => {
     const node = containerRef.current
     if (!node) return
-    onMeasureHeight(t.id, node.getBoundingClientRect().height)
+    onMeasureHeight(t.id, node.offsetHeight)
     if (typeof ResizeObserver === "undefined") return
     const ro = new ResizeObserver((entries) => {
       for (const entry of entries) {
