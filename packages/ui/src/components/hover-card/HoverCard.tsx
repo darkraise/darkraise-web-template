@@ -200,7 +200,6 @@ function HoverCardContentImpl({
 
 function HoverCardContent({ forceMount, ...props }: HoverCardContentProps) {
   const ctx = useHoverCardContext("HoverCardContent")
-  if (!forceMount && !ctx.open) return null
   return (
     <Portal>
       <Presence present={ctx.open} forceMount={forceMount}>

@@ -277,8 +277,8 @@ function MenubarPortal({
   forceMount,
   children,
 }: MenubarPortalProps) {
-  const ctx = useMenubarMenu("MenubarPortal")
-  if (!forceMount && !ctx.open) return null
+  void useMenubarMenu("MenubarPortal")
+  void forceMount
   return <Portal container={container}>{children}</Portal>
 }
 

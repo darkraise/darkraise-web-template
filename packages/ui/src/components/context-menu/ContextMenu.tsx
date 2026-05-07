@@ -200,8 +200,8 @@ function ContextMenuPortal({
   forceMount,
   children,
 }: ContextMenuPortalProps) {
-  const ctx = useContextMenuContext("ContextMenuPortal")
-  if (!forceMount && !ctx.open) return null
+  void useContextMenuContext("ContextMenuPortal")
+  void forceMount
   return <Portal container={container}>{children}</Portal>
 }
 

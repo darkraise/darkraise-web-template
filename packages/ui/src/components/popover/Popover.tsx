@@ -127,8 +127,8 @@ function PopoverPortal({
   forceMount,
   children,
 }: PopoverPortalProps) {
-  const ctx = usePopoverContext("PopoverPortal")
-  if (!forceMount && !ctx.open) return null
+  void usePopoverContext("PopoverPortal")
+  void forceMount
   return <Portal container={container}>{children}</Portal>
 }
 

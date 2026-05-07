@@ -104,8 +104,8 @@ interface DialogPortalProps {
 }
 
 function DialogPortal({ container, forceMount, children }: DialogPortalProps) {
-  const ctx = useDialogContext("DialogPortal")
-  if (!forceMount && !ctx.open) return null
+  void useDialogContext("DialogPortal")
+  void forceMount
   return <Portal container={container}>{children}</Portal>
 }
 

@@ -504,7 +504,6 @@ function SelectContentImpl({
 
 function SelectContent({ forceMount, ...props }: SelectContentProps) {
   const ctx = useSelectContext("SelectContent")
-  if (!forceMount && !ctx.open) return null
   return (
     <Portal>
       <Presence present={ctx.open} forceMount={forceMount}>

@@ -287,7 +287,6 @@ function TooltipContentImpl({
 
 function TooltipContent({ forceMount, ...props }: TooltipContentProps) {
   const ctx = useTooltipContext("TooltipContent")
-  if (!forceMount && !ctx.open) return null
   return (
     <Portal>
       <Presence present={ctx.open} forceMount={forceMount}>

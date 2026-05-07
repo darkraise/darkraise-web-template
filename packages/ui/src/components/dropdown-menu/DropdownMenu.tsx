@@ -151,8 +151,8 @@ function DropdownMenuPortal({
   forceMount,
   children,
 }: DropdownMenuPortalProps) {
-  const ctx = useDropdownContext("DropdownMenuPortal")
-  if (!forceMount && !ctx.open) return null
+  void useDropdownContext("DropdownMenuPortal")
+  void forceMount
   return <Portal container={container}>{children}</Portal>
 }
 

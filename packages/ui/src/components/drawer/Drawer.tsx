@@ -196,8 +196,8 @@ interface DrawerPortalProps {
 }
 
 function DrawerPortal({ container, forceMount, children }: DrawerPortalProps) {
-  const ctx = useDrawerContext("DrawerPortal")
-  if (!forceMount && !ctx.open) return null
+  void useDrawerContext("DrawerPortal")
+  void forceMount
   return <Portal container={container}>{children}</Portal>
 }
 
