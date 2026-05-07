@@ -5,6 +5,8 @@ import * as React from "react"
 import { useId } from "@primitives/state"
 import { Presence } from "@primitives/presence"
 import { Slot } from "@primitives/slot"
+import { cn } from "@lib/utils"
+import "./collapsible.css"
 import { useCollapsible, type UseCollapsibleOptions } from "./useCollapsible"
 
 interface CollapsibleContextValue {
@@ -126,9 +128,31 @@ function CollapsibleContent({
   ref,
   forceMount,
   children,
+  className,
+  style,
   ...props
 }: CollapsibleContentProps) {
   const ctx = useCollapsibleContext("CollapsibleContent")
+  const [innerNode, setInnerNode] = React.useState<HTMLDivElement | null>(null)
+  const [contentHeight, setContentHeight] = React.useState<number | null>(null)
+
+  React.useLayoutEffect(() => {
+    if (!innerNode) return
+    const measure = () => setContentHeight(innerNode.scrollHeight)
+    measure()
+    if (typeof ResizeObserver === "undefined") return
+    const ro = new ResizeObserver(measure)
+    ro.observe(innerNode)
+    return () => ro.disconnect()
+  }, [innerNode])
+
+  const heightStyle =
+    contentHeight != null
+      ? ({
+          "--collapsible-content-height": `${contentHeight}px`,
+        } as React.CSSProperties)
+      : undefined
+
   const content = (
     <div
       ref={ref}
@@ -136,10 +160,11 @@ function CollapsibleContent({
       role="region"
       aria-labelledby={ctx.triggerId}
       data-state={ctx.state}
-      hidden={!ctx.open}
+      className={cn("dr-collapsible-content", className)}
+      style={{ ...heightStyle, ...style }}
       {...props}
     >
-      {children}
+      <div ref={setInnerNode}>{children}</div>
     </div>
   )
   return (

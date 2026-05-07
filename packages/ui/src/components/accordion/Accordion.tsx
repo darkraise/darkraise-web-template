@@ -229,10 +229,30 @@ function AccordionContent({
   children,
   ref,
   forceMount,
+  style,
   ...props
 }: AccordionContentProps) {
   const ctx = useAccordionContext("AccordionContent")
   const item = useAccordionItemContext("AccordionContent")
+  const [innerNode, setInnerNode] = React.useState<HTMLDivElement | null>(null)
+  const [contentHeight, setContentHeight] = React.useState<number | null>(null)
+
+  React.useLayoutEffect(() => {
+    if (!innerNode) return
+    const measure = () => setContentHeight(innerNode.scrollHeight)
+    measure()
+    if (typeof ResizeObserver === "undefined") return
+    const ro = new ResizeObserver(measure)
+    ro.observe(innerNode)
+    return () => ro.disconnect()
+  }, [innerNode])
+
+  const heightStyle =
+    contentHeight != null
+      ? ({
+          "--radix-accordion-content-height": `${contentHeight}px`,
+        } as React.CSSProperties)
+      : undefined
 
   const node = (
     <div
@@ -243,11 +263,14 @@ function AccordionContent({
       data-state={item.open ? "open" : "closed"}
       data-disabled={item.disabled ? "" : undefined}
       data-orientation={ctx.orientation}
-      hidden={!item.open}
       className="dr-accordion-content"
+      style={{ ...heightStyle, ...style }}
       {...props}
     >
-      <div className={cn("dr-accordion-content-inner", className)}>
+      <div
+        ref={setInnerNode}
+        className={cn("dr-accordion-content-inner", className)}
+      >
         {children}
       </div>
     </div>
