@@ -4,6 +4,7 @@ import * as React from "react"
 
 import { useId } from "@primitives/state"
 import { Presence } from "@primitives/presence"
+import { Slot } from "@primitives/slot"
 import { useCollapsible, type UseCollapsibleOptions } from "./useCollapsible"
 
 interface CollapsibleContextValue {
@@ -82,6 +83,7 @@ function Collapsible({
 }
 
 interface CollapsibleTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  asChild?: boolean
   ref?: React.Ref<HTMLButtonElement>
 }
 
@@ -89,13 +91,16 @@ function CollapsibleTrigger({
   ref,
   onClick,
   type,
+  asChild,
   ...props
 }: CollapsibleTriggerProps) {
   const ctx = useCollapsibleContext("CollapsibleTrigger")
+  const Comp = asChild ? Slot : "button"
+  const resolvedType = asChild ? type : (type ?? "button")
   return (
-    <button
+    <Comp
       ref={ref}
-      type={type ?? "button"}
+      type={resolvedType}
       id={ctx.triggerId}
       aria-controls={ctx.contentId}
       aria-expanded={ctx.open}
