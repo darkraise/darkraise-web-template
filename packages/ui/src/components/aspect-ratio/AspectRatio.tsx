@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@lib/utils"
+import { useAspectRatio } from "./useAspectRatio"
 import "./aspect-ratio.css"
 
 interface AspectRatioProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -15,27 +16,14 @@ function AspectRatio({
   ref,
   ...props
 }: AspectRatioProps) {
+  const { wrapperStyle, contentStyle } = useAspectRatio({ ratio })
   return (
-    <div
-      style={{
-        position: "relative",
-        width: "100%",
-        paddingBottom: `${100 / ratio}%`,
-      }}
-      data-aspect-ratio-wrapper=""
-    >
+    <div style={wrapperStyle} data-aspect-ratio-wrapper="">
       <div
         ref={ref}
         className={cn("dr-aspect-ratio", className)}
         {...props}
-        style={{
-          ...style,
-          position: "absolute",
-          top: 0,
-          right: 0,
-          bottom: 0,
-          left: 0,
-        }}
+        style={{ ...style, ...contentStyle }}
       />
     </div>
   )

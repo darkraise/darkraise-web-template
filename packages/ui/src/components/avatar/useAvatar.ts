@@ -2,7 +2,7 @@ import * as React from "react"
 
 export type ImageLoadingStatus = "idle" | "loading" | "loaded" | "error"
 
-interface UseImageLoadingStatusOptions {
+export interface UseImageLoadingStatusOptions {
   referrerPolicy?: React.HTMLAttributeReferrerPolicy
   crossOrigin?: React.ImgHTMLAttributes<HTMLImageElement>["crossOrigin"]
 }
@@ -56,3 +56,6 @@ export function useImageLoadingStatus(
 
   return status
 }
+
+export { useImageLoadingStatus as useAvatar }
+export type { UseImageLoadingStatusOptions as UseAvatarOptions }
