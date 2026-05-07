@@ -25,19 +25,25 @@ function SidebarNav({ nav, collapsed: collapsedProp }: SidebarNavProps) {
   const ctx = useSidebar()
   const collapsed = collapsedProp ?? ctx.collapsed
 
-  return (
-    <SidebarProvider collapsed={collapsed}>
-      <nav className="dr-sidebar-nav" data-collapsed={collapsed || undefined}>
-        {nav.map((group, gi) => (
-          <SidebarGroup
-            key={gi}
-            group={group}
-            position={gi > 0 ? "subsequent" : undefined}
-          />
-        ))}
-      </nav>
-    </SidebarProvider>
+  const tree = (
+    <nav className="dr-sidebar-nav" data-collapsed={collapsed || undefined}>
+      {nav.map((group, gi) => (
+        <SidebarGroup
+          key={gi}
+          group={group}
+          position={gi > 0 ? "subsequent" : undefined}
+        />
+      ))}
+    </nav>
   )
+
+  // Only wrap in a SidebarProvider when the consumer explicitly overrides
+  // `collapsed`; otherwise we'd shadow the parent layout's provider with an
+  // identical value and break any future state it might expose.
+  if (collapsedProp === undefined) {
+    return tree
+  }
+  return <SidebarProvider collapsed={collapsedProp}>{tree}</SidebarProvider>
 }
 
 interface SidebarGroupProps {
