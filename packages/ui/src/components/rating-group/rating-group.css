@@ -16,7 +16,10 @@
   }
 
   .dr-rating-group-item {
-    @apply relative inline-flex cursor-pointer items-center justify-center rounded-sm transition-transform;
+    @apply relative inline-flex cursor-pointer items-center justify-center rounded-sm;
+    transition:
+      transform 150ms,
+      color 150ms;
     user-select: none;
     touch-action: manipulation;
   }
