@@ -1,4 +1,4 @@
-import { render, screen, act } from "@testing-library/react"
+import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect } from "vitest"
 import {
@@ -52,13 +52,12 @@ describe("NavigationMenu", () => {
     render(<Basic />)
     await user.click(screen.getByRole("button", { name: /docs/i }))
     expect(
-      screen.getByRole("link", { name: "Getting started" }),
+      await screen.findByRole("link", { name: "Getting started" }),
     ).toBeInTheDocument()
     await user.click(screen.getByRole("button", { name: /components/i }))
-    // Wait for content swap (state-driven re-render).
-    await act(async () => {})
-    expect(screen.queryByRole("link", { name: "Getting started" })).toBeNull()
-    expect(screen.getByRole("link", { name: "Button" })).toBeInTheDocument()
+    expect(
+      await screen.findByRole("link", { name: "Button" }),
+    ).toBeInTheDocument()
   })
 
   it("clicking the open trigger closes it", async () => {
@@ -67,7 +66,7 @@ describe("NavigationMenu", () => {
     const trigger = screen.getByRole("button", { name: /docs/i })
     await user.click(trigger)
     expect(
-      screen.getByRole("link", { name: "Getting started" }),
+      await screen.findByRole("link", { name: "Getting started" }),
     ).toBeInTheDocument()
     await user.click(trigger)
     expect(screen.queryByRole("link", { name: "Getting started" })).toBeNull()

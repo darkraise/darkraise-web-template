@@ -293,17 +293,18 @@ function NavigationMenuTrigger({
       onPointerEnter={(event: React.PointerEvent<HTMLButtonElement>) => {
         onPointerEnter?.(event)
         if (event.defaultPrevented) return
-        // Hover-to-open only when another menu is already open (fast switch).
-        // First-open intent is committed by click/keyboard to avoid racing
-        // with the click handler.
-        if (root.value !== "" && root.value !== item.itemId) {
-          root.scheduleOpen(item.itemId)
-        }
+        // Cancel any pending close. Hover-to-open is intentionally NOT
+        // implemented here — Radix's nav-menu opens on click for a11y, and
+        // doing it here would race with click in tests and on real touch
+        // devices. Fast-switching between open menus is handled in the
+        // click handler.
+        root.cancelSchedule()
       }}
       onPointerLeave={(event: React.PointerEvent<HTMLButtonElement>) => {
         onPointerLeave?.(event)
         if (event.defaultPrevented) return
-        root.scheduleClose()
+        // Trigger leave does not auto-close. Content owns the close behaviour
+        // so the user can move from trigger to its content without flicker.
       }}
       onFocus={(event: React.FocusEvent<HTMLButtonElement>) => {
         onFocus?.(event)
