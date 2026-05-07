@@ -1,37 +1,44 @@
+"use client"
+
 import * as React from "react"
-import * as SheetPrimitive from "@radix-ui/react-dialog"
 
 import { cn } from "@lib/utils"
-import { OverlayCloseButton } from "@components/overlay-primitives"
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle,
+  DialogTrigger,
+} from "@components/dialog"
 
-const Sheet = SheetPrimitive.Root
+const Sheet = Dialog
+const SheetTrigger = DialogTrigger
+const SheetClose = DialogClose
+const SheetPortal = DialogPortal
 
-const SheetTrigger = SheetPrimitive.Trigger
+type SheetOverlayProps = React.ComponentProps<typeof DialogOverlay>
 
-const SheetClose = SheetPrimitive.Close
-
-const SheetPortal = SheetPrimitive.Portal
-
-function SheetOverlay({
-  className,
-  ref,
-  ...props
-}: React.ComponentProps<typeof SheetPrimitive.Overlay>) {
+function SheetOverlay({ className, ref, ...props }: SheetOverlayProps) {
   return (
-    <SheetPrimitive.Overlay
+    <DialogOverlay
+      ref={ref}
       className={cn("dr-overlay-backdrop", className)}
       {...props}
-      ref={ref}
     />
   )
 }
 
 type SheetSide = "top" | "right" | "bottom" | "left"
 
-interface SheetContentProps extends React.ComponentProps<
-  typeof SheetPrimitive.Content
+interface SheetContentProps extends Omit<
+  React.ComponentProps<typeof DialogContent>,
+  "children"
 > {
   side?: SheetSide
+  children?: React.ReactNode
 }
 
 function SheetContent({
@@ -42,18 +49,14 @@ function SheetContent({
   ...props
 }: SheetContentProps) {
   return (
-    <SheetPortal>
-      <SheetOverlay />
-      <SheetPrimitive.Content
-        ref={ref}
-        className={cn("dr-sheet-content", className)}
-        data-side={side}
-        {...props}
-      >
-        {children}
-        <OverlayCloseButton />
-      </SheetPrimitive.Content>
-    </SheetPortal>
+    <DialogContent
+      ref={ref}
+      className={cn("dr-sheet-content", className)}
+      data-side={side}
+      {...props}
+    >
+      {children}
+    </DialogContent>
   )
 }
 
@@ -73,13 +76,11 @@ const SheetFooter = ({
 )
 SheetFooter.displayName = "SheetFooter"
 
-function SheetTitle({
-  className,
-  ref,
-  ...props
-}: React.ComponentProps<typeof SheetPrimitive.Title>) {
+type SheetTitleProps = React.ComponentProps<typeof DialogTitle>
+
+function SheetTitle({ className, ref, ...props }: SheetTitleProps) {
   return (
-    <SheetPrimitive.Title
+    <DialogTitle
       ref={ref}
       className={cn("text-foreground text-lg font-semibold", className)}
       {...props}
@@ -87,13 +88,11 @@ function SheetTitle({
   )
 }
 
-function SheetDescription({
-  className,
-  ref,
-  ...props
-}: React.ComponentProps<typeof SheetPrimitive.Description>) {
+type SheetDescriptionProps = React.ComponentProps<typeof DialogDescription>
+
+function SheetDescription({ className, ref, ...props }: SheetDescriptionProps) {
   return (
-    <SheetPrimitive.Description
+    <DialogDescription
       ref={ref}
       className={cn("dr-overlay-description", className)}
       {...props}

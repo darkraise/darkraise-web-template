@@ -1,47 +1,68 @@
+"use client"
+
 import * as React from "react"
-import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog"
 
 import { cn } from "@lib/utils"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose,
+} from "@components/dialog"
 import "@components/overlay-primitives/overlay-primitives.css"
 
-const AlertDialog = AlertDialogPrimitive.Root
+interface AlertDialogProps {
+  open?: boolean
+  defaultOpen?: boolean
+  onOpenChange?: (open: boolean) => void
+  children?: React.ReactNode
+}
 
-const AlertDialogTrigger = AlertDialogPrimitive.Trigger
-
-const AlertDialogPortal = AlertDialogPrimitive.Portal
-
-function AlertDialogOverlay({
-  className,
-  ref,
-  ...props
-}: React.ComponentProps<typeof AlertDialogPrimitive.Overlay>) {
+function AlertDialog({
+  open,
+  defaultOpen,
+  onOpenChange,
+  children,
+}: AlertDialogProps) {
   return (
-    <AlertDialogPrimitive.Overlay
-      className={cn("dr-overlay-backdrop", className)}
-      {...props}
-      ref={ref}
-    />
+    <Dialog
+      open={open}
+      defaultOpen={defaultOpen}
+      onOpenChange={onOpenChange}
+      role="alertdialog"
+      closeOnOutsidePointerDown={false}
+    >
+      {children}
+    </Dialog>
   )
 }
-AlertDialogOverlay.displayName = AlertDialogPrimitive.Overlay.displayName
+
+const AlertDialogTrigger = DialogTrigger
+const AlertDialogPortal = DialogPortal
+const AlertDialogOverlay = DialogOverlay
+
+type AlertDialogContentProps = React.ComponentProps<typeof DialogContent>
 
 function AlertDialogContent({
   className,
+  children,
   ref,
   ...props
-}: React.ComponentProps<typeof AlertDialogPrimitive.Content>) {
+}: AlertDialogContentProps) {
   return (
-    <AlertDialogPortal>
-      <AlertDialogOverlay />
-      <AlertDialogPrimitive.Content
-        ref={ref}
-        className={cn("dr-alert-dialog-content", className)}
-        {...props}
-      />
-    </AlertDialogPortal>
+    <DialogContent
+      ref={ref}
+      className={cn("dr-alert-dialog-content", className)}
+      {...props}
+    >
+      {children}
+    </DialogContent>
   )
 }
-AlertDialogContent.displayName = AlertDialogPrimitive.Content.displayName
 
 function AlertDialogHeader({
   className,
@@ -59,45 +80,50 @@ function AlertDialogFooter({
 }
 AlertDialogFooter.displayName = "AlertDialogFooter"
 
-function AlertDialogTitle({
-  className,
-  ref,
-  ...props
-}: React.ComponentProps<typeof AlertDialogPrimitive.Title>) {
+type AlertDialogTitleProps = React.ComponentProps<typeof DialogTitle>
+
+function AlertDialogTitle({ className, ref, ...props }: AlertDialogTitleProps) {
   return (
-    <AlertDialogPrimitive.Title
+    <DialogTitle
       ref={ref}
       className={cn("dr-alert-dialog-title", className)}
       {...props}
     />
   )
 }
-AlertDialogTitle.displayName = AlertDialogPrimitive.Title.displayName
+
+type AlertDialogDescriptionProps = React.ComponentProps<
+  typeof DialogDescription
+>
 
 function AlertDialogDescription({
   className,
   ref,
   ...props
-}: React.ComponentProps<typeof AlertDialogPrimitive.Description>) {
+}: AlertDialogDescriptionProps) {
   return (
-    <AlertDialogPrimitive.Description
+    <DialogDescription
       ref={ref}
       className={cn("dr-overlay-description", className)}
       {...props}
     />
   )
 }
-AlertDialogDescription.displayName =
-  AlertDialogPrimitive.Description.displayName
+
+interface AlertDialogActionProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  ref?: React.Ref<HTMLButtonElement>
+}
 
 function AlertDialogAction({
   className,
   ref,
+  type,
   ...props
-}: React.ComponentProps<typeof AlertDialogPrimitive.Action>) {
+}: AlertDialogActionProps) {
   return (
-    <AlertDialogPrimitive.Action
+    <DialogClose
       ref={ref}
+      type={type ?? "button"}
       className={cn("dr-btn", className)}
       data-variant="default"
       data-size="default"
@@ -105,16 +131,21 @@ function AlertDialogAction({
     />
   )
 }
-AlertDialogAction.displayName = AlertDialogPrimitive.Action.displayName
+
+interface AlertDialogCancelProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  ref?: React.Ref<HTMLButtonElement>
+}
 
 function AlertDialogCancel({
   className,
   ref,
+  type,
   ...props
-}: React.ComponentProps<typeof AlertDialogPrimitive.Cancel>) {
+}: AlertDialogCancelProps) {
   return (
-    <AlertDialogPrimitive.Cancel
+    <DialogClose
       ref={ref}
+      type={type ?? "button"}
       className={cn("dr-btn", "dr-alert-dialog-cancel", className)}
       data-variant="outline"
       data-size="default"
@@ -122,7 +153,6 @@ function AlertDialogCancel({
     />
   )
 }
-AlertDialogCancel.displayName = AlertDialogPrimitive.Cancel.displayName
 
 export {
   AlertDialog,
