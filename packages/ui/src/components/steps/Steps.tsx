@@ -26,6 +26,8 @@ interface StepsContextValue {
   focusTrigger: (index: number) => void
   listRef: React.RefObject<HTMLDivElement | null>
   triggersRef: React.RefObject<Map<number, HTMLElement>>
+  getTriggerId: (index: number) => string
+  getPanelId: (index: number) => string
 }
 
 const StepsContext = React.createContext<StepsContextValue | null>(null)
@@ -127,6 +129,16 @@ function Steps({
     el?.focus()
   }, [])
 
+  const baseId = React.useId()
+  const getTriggerId = React.useCallback(
+    (index: number) => `${baseId}-trigger-${index}`,
+    [baseId],
+  )
+  const getPanelId = React.useCallback(
+    (index: number) => `${baseId}-panel-${index}`,
+    [baseId],
+  )
+
   const ctx = React.useMemo<StepsContextValue>(
     () => ({
       step,
@@ -140,6 +152,8 @@ function Steps({
       focusTrigger,
       listRef,
       triggersRef,
+      getTriggerId,
+      getPanelId,
     }),
     [
       step,
@@ -151,6 +165,8 @@ function Steps({
       prev,
       registerTrigger,
       focusTrigger,
+      getTriggerId,
+      getPanelId,
     ],
   )
 
@@ -299,9 +315,11 @@ function StepsTrigger({
   type = "button",
   onClick,
   ref,
+  id,
+  "aria-controls": ariaControls,
   ...props
 }: StepsTriggerProps) {
-  const { step, linear, goToStep, registerTrigger } =
+  const { step, linear, goToStep, registerTrigger, getTriggerId, getPanelId } =
     useStepsContext("StepsTrigger")
   const { index, status } = useStepsItemContext("StepsTrigger")
 
@@ -328,6 +346,8 @@ function StepsTrigger({
       ref={setRef}
       type={type}
       role="tab"
+      id={id ?? getTriggerId(index)}
+      aria-controls={ariaControls ?? getPanelId(index)}
       aria-selected={isCurrent}
       aria-current={isCurrent ? "step" : undefined}
       tabIndex={tabIndex}
@@ -396,14 +416,18 @@ export interface StepsContentProps extends React.HTMLAttributes<HTMLDivElement> 
 function StepsContent({
   className,
   index,
+  id,
+  "aria-labelledby": ariaLabelledBy,
   children,
   ...props
 }: StepsContentProps) {
-  const { step } = useStepsContext("StepsContent")
+  const { step, getTriggerId, getPanelId } = useStepsContext("StepsContent")
   const isActive = index === step
   return (
     <div
       role="tabpanel"
+      id={id ?? getPanelId(index)}
+      aria-labelledby={ariaLabelledBy ?? getTriggerId(index)}
       data-status={isActive ? "active" : "inactive"}
       hidden={!isActive}
       className={cn("dr-steps-content", className)}
