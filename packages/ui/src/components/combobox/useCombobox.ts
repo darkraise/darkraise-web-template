@@ -27,6 +27,7 @@ export interface UseComboboxOptions {
   open?: boolean
   defaultOpen?: boolean
   openOnClick?: boolean
+  openOnFocus?: boolean
   closeOnSelect?: boolean
   loopFocus?: boolean
   disabled?: boolean
@@ -46,6 +47,7 @@ export interface UseComboboxReturn {
   closeOnSelect: boolean
   loopFocus: boolean
   openOnClick: boolean
+  openOnFocus: boolean
   baseId: string
   listId: string
   inputId: string
@@ -79,6 +81,7 @@ export function useCombobox(options: UseComboboxOptions): UseComboboxReturn {
     open: openProp,
     defaultOpen = false,
     openOnClick = true,
+    openOnFocus = false,
     closeOnSelect: closeOnSelectProp,
     loopFocus = true,
     disabled = false,
@@ -225,6 +228,7 @@ export function useCombobox(options: UseComboboxOptions): UseComboboxReturn {
     closeOnSelect,
     loopFocus,
     openOnClick,
+    openOnFocus,
     baseId,
     listId,
     inputId,

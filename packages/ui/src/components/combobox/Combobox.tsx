@@ -59,6 +59,7 @@ function Combobox({
   open,
   defaultOpen,
   openOnClick,
+  openOnFocus,
   closeOnSelect,
   loopFocus,
   disabled,
@@ -80,6 +81,7 @@ function Combobox({
     open,
     defaultOpen,
     openOnClick,
+    openOnFocus,
     closeOnSelect,
     loopFocus,
     disabled,
@@ -199,6 +201,7 @@ function ComboboxInput({
     disabled,
     loopFocus,
     openOnClick,
+    openOnFocus,
     selectedValues,
     placeholder,
   } = ctx
@@ -250,7 +253,7 @@ function ComboboxInput({
   const handleFocus = (event: React.FocusEvent<HTMLInputElement>) => {
     onFocus?.(event)
     if (event.defaultPrevented) return
-    if (!open) setOpen(true)
+    if (openOnFocus && !open) setOpen(true)
   }
 
   const handleClick = (event: React.MouseEvent<HTMLInputElement>) => {
