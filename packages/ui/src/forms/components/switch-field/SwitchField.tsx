@@ -22,11 +22,13 @@ export function SwitchField({
   label,
   description,
 }: SwitchFieldProps) {
+  const hasDescription = description ? "true" : undefined
   return (
     <Field
       orientation="horizontal"
       data-invalid={isInvalid}
       className="dr-switch-field"
+      data-has-description={hasDescription}
     >
       <div className="dr-switch-field-text">
         <FieldLabel htmlFor={name}>{label}</FieldLabel>
@@ -38,6 +40,7 @@ export function SwitchField({
         onCheckedChange={onChange}
         onBlur={onBlur}
         aria-invalid={isInvalid}
+        data-has-description={hasDescription}
       />
       {isInvalid && <FieldError errors={errors} />}
     </Field>

@@ -30,8 +30,8 @@ export function FieldWrapper({
   return (
     <Field data-invalid={isInvalid} {...fieldProps}>
       <FieldLabel htmlFor={name}>{label}</FieldLabel>
-      {children(isInvalid)}
       {description && <FieldDescription>{description}</FieldDescription>}
+      {children(isInvalid)}
       {isInvalid && <FieldError errors={errors} />}
     </Field>
   )

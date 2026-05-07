@@ -20,5 +20,9 @@ export function SidebarProvider({ collapsed, children }: SidebarProviderProps) {
 }
 
 export function useSidebar(): SidebarContextValue {
-  return useContext(SidebarContext) ?? { collapsed: false }
+  const ctx = useContext(SidebarContext)
+  if (!ctx) {
+    throw new Error("useSidebar must be used within a <SidebarProvider>")
+  }
+  return ctx
 }

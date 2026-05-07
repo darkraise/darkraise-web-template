@@ -3,6 +3,7 @@ import type { FormActionsProps } from "@forms/types"
 
 export function FormActions({
   submitLabel = "Save",
+  submittingLabel = "Saving...",
   cancelLabel = "Cancel",
   onCancel,
   isSubmitting = false,
@@ -16,7 +17,7 @@ export function FormActions({
         </Button>
       )}
       <Button type="submit" disabled={!canSubmit || isSubmitting}>
-        {isSubmitting ? "Saving..." : submitLabel}
+        {isSubmitting ? submittingLabel : submitLabel}
       </Button>
     </div>
   )

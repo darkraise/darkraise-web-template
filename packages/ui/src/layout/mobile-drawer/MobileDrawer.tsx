@@ -7,7 +7,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@components/sheet"
-import { SidebarNav } from "@layout/sidebar"
+import { SidebarNav, SidebarProvider } from "@layout/sidebar"
 import type { NavGroup } from "@layout/types"
 
 interface MobileDrawerProps {
@@ -32,7 +32,11 @@ export function MobileDrawer({ nav }: MobileDrawerProps) {
           <SheetTitle>Navigation</SheetTitle>
         </SheetHeader>
         <div className="dr-mobile-drawer-body">
-          <SidebarNav nav={nav} />
+          {/* MobileDrawer always renders the nav fully expanded, so wrap in
+              its own SidebarProvider rather than relying on a parent layout. */}
+          <SidebarProvider collapsed={false}>
+            <SidebarNav nav={nav} />
+          </SidebarProvider>
         </div>
       </SheetContent>
     </Sheet>

@@ -8,7 +8,9 @@ import {
 import { FieldWrapper } from "@forms/components/field-wrapper"
 import type { FieldPrimitiveProps } from "@forms/types"
 
-interface NumberFieldProps extends FieldPrimitiveProps<number> {
+type NumberFieldValue = number | undefined
+
+interface NumberFieldProps extends FieldPrimitiveProps<NumberFieldValue> {
   label: string
   description?: string
   placeholder?: string
@@ -47,8 +49,15 @@ export function NumberField({
     >
       {(invalid) => (
         <NumberInput
-          value={value}
-          onValueChange={(d) => onChange(d.valueAsNumber)}
+          value={value ?? Number.NaN}
+          onValueChange={(d) =>
+            // Surface a cleared field as undefined instead of NaN so the
+            // form sees a missing value rather than a non-serializable
+            // number that JSON-encodes to null.
+            onChange(
+              Number.isNaN(d.valueAsNumber) ? undefined : d.valueAsNumber,
+            )
+          }
           min={min}
           max={max}
           step={step}

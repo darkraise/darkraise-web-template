@@ -17,6 +17,7 @@ export interface FormSectionProps {
 
 export interface FormActionsProps {
   submitLabel?: string
+  submittingLabel?: string
   cancelLabel?: string
   onCancel?: () => void
   isSubmitting?: boolean
