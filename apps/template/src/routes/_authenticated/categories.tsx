@@ -210,7 +210,7 @@ function CategoryForm({
         name="productCount"
         children={(field) => (
           <NumberField
-            {...fieldProps<number>(field)}
+            {...fieldProps<number | undefined>(field)}
             label="Product Count"
             min={0}
             step={1}

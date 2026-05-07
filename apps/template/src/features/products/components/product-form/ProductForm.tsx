@@ -107,7 +107,7 @@ export function ProductForm({
           name="price"
           children={(field) => (
             <NumberField
-              {...fieldProps<number>(field)}
+              {...fieldProps<number | undefined>(field)}
               label="Price"
               placeholder="0.00"
               min={0}
@@ -119,7 +119,7 @@ export function ProductForm({
           name="compareAtPrice"
           children={(field) => (
             <NumberField
-              {...fieldProps<number>(field)}
+              {...fieldProps<number | undefined>(field)}
               label="Compare-at Price"
               placeholder="0.00"
               min={0}
@@ -144,7 +144,7 @@ export function ProductForm({
           name="stock"
           children={(field) => (
             <NumberField
-              {...fieldProps<number>(field)}
+              {...fieldProps<number | undefined>(field)}
               label="Stock Quantity"
               placeholder="0"
               min={0}

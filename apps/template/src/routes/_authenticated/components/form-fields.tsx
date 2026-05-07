@@ -95,7 +95,7 @@ function FullShowcaseForm() {
         <form.Field name="age">
           {(field) => (
             <NumberField
-              {...fieldProps<number>(field)}
+              {...fieldProps<number | undefined>(field)}
               label="Age"
               placeholder="25"
               min={0}
