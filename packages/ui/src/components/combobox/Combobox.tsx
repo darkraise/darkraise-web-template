@@ -4,6 +4,7 @@ import * as React from "react"
 
 import { cn } from "@lib/utils"
 import { useClickOutside } from "@hooks/useClickOutside"
+import { Presence } from "@primitives/presence"
 import {
   type ComboboxInputValueChangeDetails,
   type ComboboxItemData,
@@ -471,16 +472,16 @@ function ComboboxContent({
   ...props
 }: ComboboxContentProps) {
   const { open, contentId } = useComboboxContext("ComboboxContent")
-  if (!open) return null
   return (
-    <div
-      id={contentId}
-      data-state="open"
-      className={cn("dr-combobox-content", className)}
-      {...props}
-    >
-      {children}
-    </div>
+    <Presence present={open}>
+      <div
+        id={contentId}
+        className={cn("dr-combobox-content", className)}
+        {...props}
+      >
+        {children}
+      </div>
+    </Presence>
   )
 }
 
