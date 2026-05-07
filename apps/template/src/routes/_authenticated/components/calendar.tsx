@@ -1,10 +1,15 @@
 import { useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
-import { addDays, format } from "date-fns"
-import type { DateRange } from "react-day-picker"
 import { CalendarDays } from "lucide-react"
+import { format } from "darkraise-ui/lib"
 import { Button } from "darkraise-ui/components/button"
-import { Calendar } from "darkraise-ui/components/calendar"
+import { Calendar, type DateRange } from "darkraise-ui/components/calendar"
+
+function addDays(d: Date, days: number): Date {
+  const next = new Date(d.getFullYear(), d.getMonth(), d.getDate())
+  next.setDate(next.getDate() + days)
+  return next
+}
 import { Label } from "darkraise-ui/components/label"
 import { TimePicker } from "darkraise-ui/components/time-picker"
 import {

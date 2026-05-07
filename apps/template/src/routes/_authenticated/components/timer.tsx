@@ -7,7 +7,7 @@ import {
   TimerItem,
   TimerSeparator,
 } from "darkraise-ui/components/timer"
-import { toast } from "sonner"
+import { toast } from "darkraise-ui/components/sonner"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 

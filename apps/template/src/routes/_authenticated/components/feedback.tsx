@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react"
 import { createFileRoute } from "@tanstack/react-router"
-import { toast } from "sonner"
+import { toast } from "darkraise-ui/components/sonner"
 import { Info, CircleCheck, TriangleAlert, OctagonX, X } from "lucide-react"
 import { Button } from "darkraise-ui/components/button"
 import { Card, CardContent } from "darkraise-ui/components/card"

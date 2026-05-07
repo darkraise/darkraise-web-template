@@ -111,6 +111,25 @@ export function buildMonthMatrix(
   return weeks
 }
 
+export function getISOWeek(date: Date): number {
+  // ISO-8601: weeks start Monday; week 1 contains the first Thursday of the year.
+  const d = new Date(
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
+  )
+  const dayNum = (d.getUTCDay() + 6) % 7
+  d.setUTCDate(d.getUTCDate() - dayNum + 3)
+  const firstThursday = new Date(Date.UTC(d.getUTCFullYear(), 0, 4))
+  return (
+    1 +
+    Math.round(
+      ((d.getTime() - firstThursday.getTime()) / 86400000 -
+        3 +
+        ((firstThursday.getUTCDay() + 6) % 7)) /
+        7,
+    )
+  )
+}
+
 export function clampDate(
   date: Date,
   min: Date | undefined,

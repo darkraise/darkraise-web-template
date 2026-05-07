@@ -1,7 +1,29 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { useState } from "react"
 import { CalendarDays } from "lucide-react"
-import { addDays, format, parse, startOfMonth } from "date-fns"
+import { format } from "darkraise-ui/lib"
+
+function addDays(d: Date, days: number): Date {
+  const next = new Date(d.getFullYear(), d.getMonth(), d.getDate())
+  next.setDate(next.getDate() + days)
+  return next
+}
+
+function startOfMonth(d: Date): Date {
+  return new Date(d.getFullYear(), d.getMonth(), 1)
+}
+
+function parseIsoDate(input: string): Date | null {
+  const match = input.trim().match(/^(\d{4})-(\d{2})-(\d{2})$/)
+  if (!match) return null
+  const date = new Date(
+    Number(match[1]),
+    Number(match[2]) - 1,
+    Number(match[3]),
+  )
+  return Number.isNaN(date.getTime()) ? null : date
+}
+
 import {
   DatePicker,
   DatePickerCalendar,
@@ -31,10 +53,7 @@ function SingleWithMask() {
         onValueChange={(d) => setValue(d.value)}
         placeholder="yyyy-MM-dd"
         format={(d) => format(d, "yyyy-MM-dd")}
-        parse={(input) => {
-          const parsed = parse(input, "yyyy-MM-dd", new Date())
-          return Number.isNaN(parsed.getTime()) ? null : parsed
-        }}
+        parse={parseIsoDate}
       >
         <DatePickerLabel>Date</DatePickerLabel>
         <DatePickerControl>
@@ -156,10 +175,7 @@ function DatePickerPage() {
   onValueChange={(d) => setValue(d.value)}
   placeholder="yyyy-MM-dd"
   format={(d) => format(d, "yyyy-MM-dd")}
-  parse={(input) => {
-    const parsed = parse(input, "yyyy-MM-dd", new Date())
-    return Number.isNaN(parsed.getTime()) ? null : parsed
-  }}
+  parse={parseIsoDate}
 >
   <DatePickerLabel>Date</DatePickerLabel>
   <DatePickerControl>

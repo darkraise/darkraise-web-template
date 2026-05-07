@@ -18,6 +18,7 @@ import {
   addDays,
   addMonths,
   buildMonthMatrix,
+  getISOWeek,
   isSameDay,
   matchesAny,
   startOfDay,
@@ -37,6 +38,7 @@ interface BaseProps {
   className?: string
   classNames?: Partial<Record<string, string>>
   showOutsideDays?: boolean
+  showWeekNumber?: boolean
   captionLayout?: CaptionLayout
   buttonVariant?: React.ComponentProps<typeof Button>["variant"]
   components?: unknown
@@ -134,6 +136,7 @@ function Calendar(props: CalendarProps) {
     className,
     classNames,
     showOutsideDays = true,
+    showWeekNumber = false,
     captionLayout = "label",
     buttonVariant = "ghost",
     month: monthProp,
@@ -221,6 +224,7 @@ function Calendar(props: CalendarProps) {
       classNames={classNames}
       className={className}
       showOutsideDays={showOutsideDays}
+      showWeekNumber={showWeekNumber}
       captionLayout={captionLayout}
       buttonVariant={buttonVariant}
       numberOfMonths={numberOfMonths}
@@ -244,6 +248,7 @@ interface DayViewProps {
   className?: string
   classNames?: Partial<Record<string, string>>
   showOutsideDays: boolean
+  showWeekNumber: boolean
   captionLayout: CaptionLayout
   buttonVariant: React.ComponentProps<typeof Button>["variant"]
   numberOfMonths: number
@@ -303,6 +308,7 @@ function DayView({
   classNames,
   className,
   showOutsideDays,
+  showWeekNumber,
   captionLayout,
   buttonVariant,
   numberOfMonths,
@@ -526,6 +532,7 @@ function DayView({
             captionLayout={captionLayout}
             buttonVariant={buttonVariant}
             showOutsideDays={showOutsideDays}
+            showWeekNumber={showWeekNumber}
             weekStartsOn={weekStartsOn}
             weekdays={weekdays}
             monthFmt={monthFmt}
@@ -561,6 +568,7 @@ interface MonthBlockProps {
   captionLayout: CaptionLayout
   buttonVariant: React.ComponentProps<typeof Button>["variant"]
   showOutsideDays: boolean
+  showWeekNumber: boolean
   weekStartsOn: number
   weekdays: string[]
   monthFmt: Intl.DateTimeFormat
@@ -589,6 +597,7 @@ function MonthBlock({
   captionLayout,
   buttonVariant,
   showOutsideDays,
+  showWeekNumber,
   weekStartsOn,
   weekdays,
   monthFmt,
@@ -696,6 +705,16 @@ function MonthBlock({
 
       <div role="grid" className={cls("table", "dr-calendar-table")}>
         <div className={cls("weekdays", "dr-calendar-weekdays")} role="row">
+          {showWeekNumber && (
+            <div
+              role="columnheader"
+              aria-label="Week number"
+              className={cls(
+                "week_number_header",
+                "dr-calendar-week-number-header",
+              )}
+            />
+          )}
           {weekdays.map((label, idx) => (
             <div
               key={idx}
@@ -712,6 +731,16 @@ function MonthBlock({
             role="row"
             className={cls("week", "dr-calendar-week")}
           >
+            {showWeekNumber && week[0] && (
+              <div
+                role="rowheader"
+                className={cls("week_number", "dr-calendar-week-number")}
+              >
+                <div className="dr-calendar-week-number-cell">
+                  {getISOWeek(week[0])}
+                </div>
+              </div>
+            )}
             {week.map((date) => {
               const inMonth =
                 date.getMonth() === month.getMonth() &&
