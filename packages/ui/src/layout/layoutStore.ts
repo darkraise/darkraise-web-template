@@ -22,7 +22,12 @@ const getStoredLayout = (): LayoutVariant => {
 export const useLayoutStore = create<LayoutState>((set) => ({
   layout: getStoredLayout(),
   setLayout: (layout) => {
-    localStorage.setItem("layout-variant", layout)
+    try {
+      localStorage.setItem("layout-variant", layout)
+    } catch {
+      // localStorage unavailable (SSR or private browsing); state still
+      // updates in memory for the current session.
+    }
     set({ layout })
   },
 }))
