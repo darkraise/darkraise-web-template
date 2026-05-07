@@ -1,8 +1,8 @@
 "use client"
 
 import * as React from "react"
-import * as RadioGroupPrimitive from "@radix-ui/react-radio-group"
 
+import { RadioGroup, RadioGroupItem } from "@components/radio-group"
 import { cn } from "@lib/utils"
 import "./segment-group.css"
 
@@ -32,7 +32,7 @@ function useSegmentGroupContext(part: string): SegmentGroupContextValue {
 }
 
 export interface SegmentGroupProps extends Omit<
-  React.ComponentProps<typeof RadioGroupPrimitive.Root>,
+  React.ComponentProps<typeof RadioGroup>,
   "orientation"
 > {
   orientation?: SegmentGroupOrientation
@@ -92,9 +92,12 @@ function SegmentGroup({
   const registerItem = React.useCallback(
     (itemValue: string, el: HTMLElement | null) => {
       const map = itemsRef.current
+      const existing = map.get(itemValue)
       if (el) {
+        if (existing === el) return
         map.set(itemValue, el)
       } else {
+        if (!existing) return
         map.delete(itemValue)
       }
       notifyItemsChanged()
@@ -120,7 +123,7 @@ function SegmentGroup({
   void itemsVersion
 
   return (
-    <RadioGroupPrimitive.Root
+    <RadioGroup
       ref={setRootRef}
       value={currentValue ?? ""}
       onValueChange={handleValueChange}
@@ -134,12 +137,12 @@ function SegmentGroup({
       <SegmentGroupContext.Provider value={ctx}>
         {children}
       </SegmentGroupContext.Provider>
-    </RadioGroupPrimitive.Root>
+    </RadioGroup>
   )
 }
 
 export interface SegmentGroupItemProps extends Omit<
-  React.ComponentProps<typeof RadioGroupPrimitive.Item>,
+  React.ComponentProps<typeof RadioGroupItem>,
   "value"
 > {
   value: string
@@ -161,24 +164,22 @@ function SegmentGroupItem({
   const innerRef = React.useRef<HTMLButtonElement | null>(null)
   const isDisabled = disabled || groupDisabled
 
-  const setRef = React.useCallback(
-    (node: HTMLButtonElement | null) => {
-      innerRef.current = node
-      registerItem(value, node)
-      if (typeof ref === "function") {
-        ref(node)
-      } else if (ref) {
-        ref.current = node
-      }
-    },
-    [value, ref, registerItem],
-  )
+  React.useEffect(() => {
+    registerItem(value, innerRef.current)
+    return () => {
+      registerItem(value, null)
+    }
+  }, [registerItem, value])
 
   const isChecked = activeValue === value
 
   return (
-    <RadioGroupPrimitive.Item
-      ref={setRef}
+    <RadioGroupItem
+      ref={(node) => {
+        innerRef.current = node
+        if (typeof ref === "function") ref(node)
+        else if (ref) ref.current = node
+      }}
       value={value}
       disabled={isDisabled}
       data-state={isChecked ? "checked" : "unchecked"}
@@ -186,7 +187,7 @@ function SegmentGroupItem({
       {...props}
     >
       {children}
-    </RadioGroupPrimitive.Item>
+    </RadioGroupItem>
   )
 }
 
