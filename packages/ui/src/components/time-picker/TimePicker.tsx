@@ -21,11 +21,13 @@ function TimeColumn({
   value,
   onChange,
   showInput = true,
+  label,
 }: {
   items: string[]
   value: string
   onChange: (val: string) => void
   showInput?: boolean
+  label: string
 }) {
   const containerRef = useRef<HTMLDivElement>(null)
   const itemRefs = useRef<Map<string, HTMLButtonElement>>(new Map())
@@ -67,11 +69,12 @@ function TimeColumn({
   }
 
   return (
-    <div className="dr-time-column">
+    <div className="dr-time-column" role="group" aria-label={label}>
       {showInput && (
         <input
           type="text"
           inputMode="numeric"
+          aria-label={label}
           value={inputValue}
           onChange={handleInputChange}
           onBlur={handleInputBlur}
@@ -89,6 +92,7 @@ function TimeColumn({
                 if (el) itemRefs.current.set(item, el)
               }}
               type="button"
+              aria-label={`${label} ${item}`}
               onClick={() => onChange(item)}
               data-selected={value === item}
               className="dr-time-column-item"
@@ -199,12 +203,14 @@ function TimePicker({
       <PopoverContent className="w-auto overflow-hidden p-0" align="start">
         <div className="flex border-b">
           <TimeColumn
+            label="Hour"
             items={hours}
             value={parsed.hour}
             onChange={(h) => onChange?.(to24(h, parsed.minute, parsed.period))}
           />
           <div className="dr-time-divider" />
           <TimeColumn
+            label="Minute"
             items={minutes}
             value={parsed.minute}
             onChange={(m) => onChange?.(to24(parsed.hour, m, parsed.period))}
@@ -213,6 +219,7 @@ function TimePicker({
             <>
               <div className="dr-time-divider" />
               <TimeColumn
+                label="Period"
                 items={["AM", "PM"]}
                 value={parsed.period}
                 onChange={(p) =>

@@ -35,7 +35,7 @@ function AccordionTrigger({
         {...props}
       >
         {children}
-        <ChevronDown />
+        <ChevronDown aria-hidden="true" />
       </AccordionPrimitive.Trigger>
     </AccordionPrimitive.Header>
   )

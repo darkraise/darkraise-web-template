@@ -434,7 +434,7 @@ function ComboboxTrigger({
   ref,
   ...props
 }: ComboboxTriggerProps) {
-  const { open, setOpen, inputRef, disabled, listId, labelId } =
+  const { open, setOpen, inputRef, disabled, listId } =
     useComboboxContext("ComboboxTrigger")
 
   return (
@@ -446,7 +446,6 @@ function ComboboxTrigger({
       aria-haspopup="listbox"
       aria-expanded={open}
       aria-controls={listId}
-      aria-labelledby={labelId}
       disabled={disabled}
       data-state={open ? "open" : "closed"}
       data-disabled={disabled ? "true" : undefined}

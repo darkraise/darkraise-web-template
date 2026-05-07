@@ -36,7 +36,7 @@ export function TopNavLayout({
         }
       >
         <BrandLogo />
-        <nav className="dr-top-nav-layout-nav">
+        <nav aria-label="Primary" className="dr-top-nav-layout-nav">
           {nav.flatMap((group) =>
             group.items.map((item) => (
               <Link

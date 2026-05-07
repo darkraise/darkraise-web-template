@@ -50,9 +50,13 @@ function Field({
   orientation = "vertical",
   ...props
 }: React.ComponentProps<"div"> & { orientation?: FieldOrientation }) {
+  // No role="group" here: Field wraps a single labelled control, not a
+  // collection. The label-for / aria-labelledby on the inner control
+  // already provides the accessible name; an unnamed role="group"
+  // would only add noise. Use FieldSet (<fieldset> + <legend>) when
+  // grouping multiple controls.
   return (
     <div
-      role="group"
       data-slot="field"
       data-orientation={orientation}
       className={cn("dr-field group/field", className)}
@@ -90,7 +94,7 @@ function FieldLabel({
 function FieldTitle({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
-      data-slot="field-label"
+      data-slot="field-title"
       className={cn("dr-field-title", className)}
       {...props}
     />
