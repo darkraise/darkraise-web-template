@@ -78,7 +78,6 @@
     "@floating-ui/react": "~0.27.19",
     "@tanstack/react-table": "^8.21.3",
     "clsx": "^2.1.1",
-    "input-otp": "^1.4.2",
     "lucide-react": "^1.14.0",
     "recharts": "^3.8.1",
     "sonner": "^2.0.7",

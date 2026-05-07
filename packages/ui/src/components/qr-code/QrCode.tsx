@@ -77,7 +77,7 @@ function QrCodeFrame({ className, ...props }: QrCodeFrameProps) {
     useQrCodeContext("QrCodeFrame")
   const matrix = React.useMemo(() => {
     try {
-      return encodeQr(value, level === "Q" || level === "H" ? level : level)
+      return encodeQr(value, level)
     } catch {
       // value too large for in-house encoder (>v10) — render an empty frame
       return {
