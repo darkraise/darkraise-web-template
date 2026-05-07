@@ -2,6 +2,44 @@
 
 All notable changes to `darkraise-ui` are documented in this file. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] — 2026-05-07
+
+Major release. The zero-dep components initiative replaces every external runtime dependency that backed a component primitive with an in-house implementation. The public API of every component is preserved (anatomy parts, prop names, accessibility contract). Where we shipped additional anatomy parts (`PopoverArrow`, `PopoverAnchor`, `PopoverClose`, `TooltipArrow`), they are additive. Where minor behavior changed, it is documented below.
+
+### Added
+
+- `packages/ui/src/primitives/` — internal foundation utilities (`Slot`, `Presence`, `FocusTrap`, `DismissableLayer`, `Portal`, `useFloating` + `FloatingArrow`, `useControllableState`, `useId`, `useEvent`, `aria/announcer`, `useVirtualizer`).
+- `@floating-ui/react` is the only new runtime dependency; it replaces every internal use of Radix's positioning logic.
+
+### Changed
+
+- 26 `@radix-ui/react-*` packages removed. Internal hand-rolled equivalents replace each one.
+- `cmdk` removed; `Command` now composes the in-house `Combobox` and `Dialog` directly.
+- `embla-carousel-react`, `vaul`, `react-resizable-panels`, `react-colorful`, `react-day-picker`, `react-qr-code`, `input-otp`, `sonner`, `@tanstack/react-virtual`, `date-fns` all removed; in-house implementations replace them.
+- `useVirtualizer` is fixed-height only (`itemHeight: number`); the prior `@tanstack/react-virtual` callback shape is no longer supported. `VirtualizedDropdownMenu` was migrated.
+- `Carousel` API exposes `scrollPrev / scrollNext / scrollTo / canScrollPrev / canScrollNext / selectedScrollSnap / on / off`. Embla-specific handles are gone.
+- `Drawer` accepts `direction` (top/right/bottom/left); `shouldScaleBackground` is a no-op for source compatibility.
+- `Calendar` re-exports `Matcher` and `DateRange` types from its own module (not from `react-day-picker`).
+- `ScrollArea` Viewport renders user children directly; the inline `display:table` wrapper Radix shipped is gone (resolves the gotcha that broke `w-full` descendants in narrow ancestors).
+- `NavigationMenu` no longer hover-opens a closed menu; opening requires click or keyboard. Hover still fast-switches between already-open menus.
+
+### Removed
+
+- Direct dependencies removed: 37 packages (26 Radix primitives + `cmdk`, `embla-carousel-react`, `vaul`, `react-resizable-panels`, `react-colorful`, `react-day-picker`, `react-qr-code`, `input-otp`, `sonner`, `@tanstack/react-virtual`, `date-fns`).
+- Dead unlayered sonner overrides removed from `packages/ui/src/styles/theme.css`.
+
+### Migration
+
+- Consumers using only the public anatomy of replaced components need no changes.
+- Consumers using internal `XxxPrimitive.*` namespace imports (e.g. `import * as DialogPrimitive from "@radix-ui/react-dialog"`) must switch to the public exports from `darkraise-ui/components/<name>`.
+- Consumers using `embla-carousel-react`'s internal API directly via the old `setApi` hook need to switch to the slim `CarouselApi` shape; the old API isn't used by the template app and isn't exposed by the in-house `Carousel`.
+- Consumers using `@tanstack/react-virtual`'s `estimateSize` callback for variable-height virtualization must keep using `@tanstack/react-virtual` independently — the in-house `useVirtualizer` is fixed-height only.
+
+### Deferred (not part of this release)
+
+- `recharts` (charting). `@tanstack/react-table` (table state). Both retained as runtime deps; future spec/plan will address them.
+- `useVirtualizer` variable-height support.
+
 ## [2.1.1] — 2026-05-07
 
 Maintenance release. Phase 0 of the in-house primitives initiative: all runtime dependencies bumped to their latest stable versions before replacement work begins. No public API changes; no breakers surfaced.
