@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { Button } from "@components/button"
+import { toast } from "@components/sonner"
 import { cn } from "@lib/utils"
 import "./clipboard.css"
 
@@ -8,6 +9,34 @@ export interface ClipboardCopyDetails {
   copied: boolean
   value: string
   error?: Error
+}
+
+export type ClipboardToastOption =
+  | boolean
+  | {
+      success?: string | false
+      error?: string | false
+    }
+
+const DEFAULT_SUCCESS_MESSAGE = "Copied to clipboard"
+const DEFAULT_ERROR_MESSAGE = "Failed to copy"
+
+function resolveSuccessMessage(
+  option: ClipboardToastOption | undefined,
+): string | null {
+  if (!option) return null
+  if (option === true) return DEFAULT_SUCCESS_MESSAGE
+  if (option.success === false) return null
+  return option.success ?? DEFAULT_SUCCESS_MESSAGE
+}
+
+function resolveErrorMessage(
+  option: ClipboardToastOption | undefined,
+): string | null {
+  if (!option) return null
+  if (option === true) return DEFAULT_ERROR_MESSAGE
+  if (option.error === false) return null
+  return option.error ?? DEFAULT_ERROR_MESSAGE
 }
 
 interface ClipboardContextValue {
@@ -36,6 +65,13 @@ export interface ClipboardProps extends Omit<
   value: string
   timeout?: number
   onCopyStatusChange?: (details: ClipboardCopyDetails) => void
+  /**
+   * Show a toast on copy success/error. `true` uses defaults
+   * (`"Copied to clipboard"` / `"Failed to copy"`); pass an object to
+   * customise messages or set `success: false` / `error: false` to silence
+   * one direction. Requires a `<Toaster />` mounted in the app.
+   */
+  toast?: ClipboardToastOption
 }
 
 function Clipboard({
@@ -43,6 +79,7 @@ function Clipboard({
   value,
   timeout = 2000,
   onCopyStatusChange,
+  toast: toastOption,
   children,
   ...props
 }: ClipboardProps) {
@@ -50,10 +87,15 @@ function Clipboard({
   const timerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
   const mountedRef = React.useRef(true)
   const onStatusChangeRef = React.useRef(onCopyStatusChange)
+  const toastOptionRef = React.useRef(toastOption)
 
   React.useEffect(() => {
     onStatusChangeRef.current = onCopyStatusChange
   }, [onCopyStatusChange])
+
+  React.useEffect(() => {
+    toastOptionRef.current = toastOption
+  }, [toastOption])
 
   React.useEffect(
     () => () => {
@@ -71,6 +113,8 @@ function Clipboard({
         if (!mountedRef.current) return
         setCopied(true)
         onStatusChangeRef.current?.({ copied: true, value })
+        const successMessage = resolveSuccessMessage(toastOptionRef.current)
+        if (successMessage) toast.success(successMessage)
         if (timerRef.current) clearTimeout(timerRef.current)
         timerRef.current = setTimeout(() => {
           if (!mountedRef.current) return
@@ -81,6 +125,8 @@ function Clipboard({
         if (!mountedRef.current) return
         const error = err instanceof Error ? err : new Error(String(err))
         onStatusChangeRef.current?.({ copied: false, value, error })
+        const errorMessage = resolveErrorMessage(toastOptionRef.current)
+        if (errorMessage) toast.error(errorMessage)
       }
     })()
   }, [value, timeout])

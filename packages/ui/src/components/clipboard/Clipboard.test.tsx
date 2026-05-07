@@ -1,6 +1,17 @@
 import { render, screen, waitFor, act } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
+
+const toastSuccessMock = vi.fn()
+const toastErrorMock = vi.fn()
+
+vi.mock("@components/sonner", () => ({
+  toast: {
+    success: (msg: string) => toastSuccessMock(msg),
+    error: (msg: string) => toastErrorMock(msg),
+  },
+}))
+
 import {
   Clipboard,
   ClipboardControl,
@@ -43,6 +54,8 @@ function renderClipboard(
 describe("Clipboard", () => {
   beforeEach(() => {
     installClipboardMock()
+    toastSuccessMock.mockReset()
+    toastErrorMock.mockReset()
   })
 
   afterEach(() => {
@@ -152,5 +165,98 @@ describe("Clipboard", () => {
     // state stays idle: no second call with copied=true
     expect(onCopyStatusChange).toHaveBeenCalledTimes(1)
     writeSpy.mockRestore()
+  })
+
+  it("does not toast by default (toast prop omitted)", async () => {
+    const user = userEvent.setup()
+    installClipboardMock()
+    renderClipboard({ value: "x" })
+    await user.click(screen.getByRole("button", { name: "copy" }))
+    await waitFor(() => expect(writeTextMock).toHaveBeenCalled())
+    expect(toastSuccessMock).not.toHaveBeenCalled()
+    expect(toastErrorMock).not.toHaveBeenCalled()
+  })
+
+  it("toast={true} fires the default success message on copy", async () => {
+    const user = userEvent.setup()
+    installClipboardMock()
+    render(
+      <Clipboard value="hi" toast>
+        <ClipboardControl>
+          <ClipboardTrigger aria-label="copy">
+            <ClipboardIndicator
+              copied={<span>done</span>}
+              fallback={<span>copy</span>}
+            />
+          </ClipboardTrigger>
+        </ClipboardControl>
+      </Clipboard>,
+    )
+    await user.click(screen.getByRole("button", { name: "copy" }))
+    await waitFor(() =>
+      expect(toastSuccessMock).toHaveBeenCalledWith("Copied to clipboard"),
+    )
+    expect(toastErrorMock).not.toHaveBeenCalled()
+  })
+
+  it("toast={{ success, error }} uses custom messages on success and error", async () => {
+    const user = userEvent.setup()
+    installClipboardMock()
+    const { rerender } = render(
+      <Clipboard value="ok" toast={{ success: "Yay!", error: "Oops" }}>
+        <ClipboardControl>
+          <ClipboardTrigger aria-label="copy">
+            <ClipboardIndicator
+              copied={<span>done</span>}
+              fallback={<span>copy</span>}
+            />
+          </ClipboardTrigger>
+        </ClipboardControl>
+      </Clipboard>,
+    )
+    await user.click(screen.getByRole("button", { name: "copy" }))
+    await waitFor(() => expect(toastSuccessMock).toHaveBeenCalledWith("Yay!"))
+    expect(toastErrorMock).not.toHaveBeenCalled()
+
+    // Now make the next copy fail and assert the error message.
+    toastSuccessMock.mockReset()
+    const writeSpy = vi
+      .spyOn(navigator.clipboard, "writeText")
+      .mockRejectedValueOnce(new Error("denied"))
+    rerender(
+      <Clipboard value="ok" toast={{ success: "Yay!", error: "Oops" }}>
+        <ClipboardControl>
+          <ClipboardTrigger aria-label="copy">
+            <ClipboardIndicator
+              copied={<span>done</span>}
+              fallback={<span>copy</span>}
+            />
+          </ClipboardTrigger>
+        </ClipboardControl>
+      </Clipboard>,
+    )
+    await user.click(screen.getByRole("button", { name: "copy" }))
+    await waitFor(() => expect(toastErrorMock).toHaveBeenCalledWith("Oops"))
+    writeSpy.mockRestore()
+  })
+
+  it("toast={{ success: false }} silences only the success toast", async () => {
+    const user = userEvent.setup()
+    installClipboardMock()
+    render(
+      <Clipboard value="hi" toast={{ success: false }}>
+        <ClipboardControl>
+          <ClipboardTrigger aria-label="copy">
+            <ClipboardIndicator
+              copied={<span>done</span>}
+              fallback={<span>copy</span>}
+            />
+          </ClipboardTrigger>
+        </ClipboardControl>
+      </Clipboard>,
+    )
+    await user.click(screen.getByRole("button", { name: "copy" }))
+    await waitFor(() => expect(writeTextMock).toHaveBeenCalled())
+    expect(toastSuccessMock).not.toHaveBeenCalled()
   })
 })

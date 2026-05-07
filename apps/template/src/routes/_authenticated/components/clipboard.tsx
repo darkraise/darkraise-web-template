@@ -107,6 +107,73 @@ function ClipboardPage() {
           </ClipboardControl>
         </Clipboard>
       </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Show a toast on copy (default messages)"
+        code={`<Clipboard value="hello@example.com" toast>
+  <ClipboardLabel>Contact email</ClipboardLabel>
+  <ClipboardControl>
+    <ClipboardInput />
+    <ClipboardTrigger>
+      <ClipboardIndicator
+        copied={<Check className="h-4 w-4" />}
+        fallback={<Copy className="h-4 w-4" />}
+      />
+    </ClipboardTrigger>
+  </ClipboardControl>
+</Clipboard>`}
+      >
+        <Clipboard value="hello@example.com" toast>
+          <ClipboardLabel>Contact email</ClipboardLabel>
+          <ClipboardControl>
+            <ClipboardInput />
+            <ClipboardTrigger>
+              <ClipboardIndicator
+                copied={<Check className="h-4 w-4" />}
+                fallback={<Copy className="h-4 w-4" />}
+              />
+            </ClipboardTrigger>
+          </ClipboardControl>
+        </Clipboard>
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Custom toast messages"
+        code={`<Clipboard
+  value="ssh-rsa AAAAB3Nza... user@host"
+  toast={{ success: "SSH key copied!", error: "Could not copy SSH key" }}
+>
+  <ClipboardLabel>SSH public key</ClipboardLabel>
+  <ClipboardControl>
+    <ClipboardInput />
+    <ClipboardTrigger>
+      <ClipboardIndicator
+        copied={<Check className="h-4 w-4" />}
+        fallback={<Copy className="h-4 w-4" />}
+      />
+    </ClipboardTrigger>
+  </ClipboardControl>
+</Clipboard>`}
+      >
+        <Clipboard
+          value="ssh-rsa AAAAB3Nza... user@host"
+          toast={{
+            success: "SSH key copied!",
+            error: "Could not copy SSH key",
+          }}
+        >
+          <ClipboardLabel>SSH public key</ClipboardLabel>
+          <ClipboardControl>
+            <ClipboardInput />
+            <ClipboardTrigger>
+              <ClipboardIndicator
+                copied={<Check className="h-4 w-4" />}
+                fallback={<Copy className="h-4 w-4" />}
+              />
+            </ClipboardTrigger>
+          </ClipboardControl>
+        </Clipboard>
+      </ShowcaseExample>
     </ShowcasePage>
   )
 }
