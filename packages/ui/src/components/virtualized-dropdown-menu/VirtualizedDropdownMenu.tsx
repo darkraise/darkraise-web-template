@@ -1,9 +1,9 @@
 "use client"
 
 import * as React from "react"
-import { useVirtualizer } from "@tanstack/react-virtual"
 
 import { cn } from "@lib/utils"
+import { useVirtualizer } from "@primitives/virtualizer"
 import {
   Popover as PopoverPrimitiveRoot,
   PopoverTrigger as PopoverPrimitiveTrigger,
@@ -56,8 +56,8 @@ function VirtualizedDropdownMenuContent<T>({
 
   const virtualizer = useVirtualizer({
     count: items.length,
+    itemHeight: estimateSize,
     getScrollElement: () => scrollElement,
-    estimateSize: () => estimateSize,
     overscan,
   })
 
@@ -127,23 +127,23 @@ function VirtualizedDropdownMenuContent<T>({
         >
           <div
             style={{
-              height: virtualizer.getTotalSize(),
+              height: virtualizer.totalSize,
               width: "100%",
               position: "relative",
             }}
           >
-            {virtualizer.getVirtualItems().map((virtualRow) => {
+            {virtualizer.virtualItems.map((virtualRow) => {
               const item = items[virtualRow.index] as T
               return (
                 <div
                   key={virtualRow.key}
                   data-index={virtualRow.index}
-                  ref={virtualizer.measureElement}
                   style={{
                     position: "absolute",
                     top: 0,
                     left: 0,
                     width: "100%",
+                    height: virtualRow.size,
                     transform: `translateY(${virtualRow.start}px)`,
                   }}
                   onMouseEnter={() => setActiveIndex(virtualRow.index)}
