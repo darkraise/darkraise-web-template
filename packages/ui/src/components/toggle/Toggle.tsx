@@ -1,32 +1,55 @@
+"use client"
+
 import * as React from "react"
-import * as TogglePrimitive from "@radix-ui/react-toggle"
 
 import { cn } from "@lib/utils"
 import "./toggle.css"
 
+import { useToggle } from "./useToggle"
+
 export type ToggleVariant = "default" | "outline"
 export type ToggleSize = "default" | "sm" | "lg"
+
+interface ToggleProps extends Omit<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  "type" | "onChange"
+> {
+  pressed?: boolean
+  defaultPressed?: boolean
+  onPressedChange?: (pressed: boolean) => void
+  variant?: ToggleVariant
+  size?: ToggleSize
+  ref?: React.Ref<HTMLButtonElement>
+}
 
 function Toggle({
   className,
   variant = "default",
   size = "default",
   ref,
+  pressed: pressedProp,
+  defaultPressed,
+  onPressedChange,
+  disabled,
+  onClick,
   ...props
-}: React.ComponentProps<typeof TogglePrimitive.Root> & {
-  variant?: ToggleVariant
-  size?: ToggleSize
-}) {
+}: ToggleProps) {
+  const { getButtonProps } = useToggle({
+    pressed: pressedProp,
+    defaultPressed,
+    onPressedChange,
+    disabled,
+  })
+
   return (
-    <TogglePrimitive.Root
+    <button
       ref={ref}
       className={cn("dr-toggle", className)}
       data-variant={variant}
       data-size={size}
-      {...props}
+      {...getButtonProps({ onClick, ...props })}
     />
   )
 }
-Toggle.displayName = TogglePrimitive.Root.displayName
 
 export { Toggle }
