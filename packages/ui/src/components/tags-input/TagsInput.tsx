@@ -414,9 +414,9 @@ function TagsInputItemDeleteTrigger({
       data-disabled={item.itemDisabled ? "true" : undefined}
       className={cn("dr-tags-input-item-delete-trigger", className)}
       onClick={(event) => {
-        event.stopPropagation()
         onClick?.(event)
         if (event.defaultPrevented) return
+        event.stopPropagation()
         ctx.removeTag(item.index)
         ctx.focusInput()
       }}

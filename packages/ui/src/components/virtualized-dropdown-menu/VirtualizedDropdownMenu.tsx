@@ -38,6 +38,13 @@ function VirtualizedDropdownMenuContent<T>({
   align,
 }: VirtualizedDropdownMenuContentProps<T>) {
   const [activeIndex, setActiveIndex] = React.useState(-1)
+  // Mirror activeIndex in a ref so the Enter handler reads the freshest
+  // index even when several arrow-key dispatches arrive before React has
+  // committed the queued state updates.
+  const activeIndexRef = React.useRef(activeIndex)
+  React.useEffect(() => {
+    activeIndexRef.current = activeIndex
+  }, [activeIndex])
   const contentRef = React.useRef<HTMLDivElement>(null)
   const [scrollElement, setScrollElement] =
     React.useState<HTMLDivElement | null>(null)
@@ -63,9 +70,10 @@ function VirtualizedDropdownMenuContent<T>({
         case "Enter":
           e.preventDefault()
           {
-            const item = items[activeIndex]
-            if (activeIndex >= 0 && item !== undefined) {
-              onItemSelect?.(item, activeIndex)
+            const idx = activeIndexRef.current
+            const item = items[idx]
+            if (idx >= 0 && item !== undefined) {
+              onItemSelect?.(item, idx)
             }
           }
           break
@@ -79,7 +87,7 @@ function VirtualizedDropdownMenuContent<T>({
           break
       }
     },
-    [activeIndex, items, onItemSelect],
+    [items, onItemSelect],
   )
 
   React.useEffect(() => {

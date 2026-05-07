@@ -40,12 +40,21 @@ function Calendar({
   )
   const month = monthProp ?? internalMonth
 
+  // Keep internalMonth in sync with monthProp when the consumer is driving it,
+  // so a subsequent uncontrolled view (year/decade) starts from the latest
+  // controlled value instead of a stale snapshot.
+  React.useEffect(() => {
+    if (monthProp) setInternalMonth(monthProp)
+  }, [monthProp])
+
   const setMonth = React.useCallback(
     (d: Date) => {
-      setInternalMonth(d)
+      // Only update internal state when the consumer hasn't taken control;
+      // the controlled value flows through via the effect above.
+      if (!monthProp) setInternalMonth(d)
       onMonthChange?.(d)
     },
-    [onMonthChange],
+    [monthProp, onMonthChange],
   )
 
   if (view === "year") {

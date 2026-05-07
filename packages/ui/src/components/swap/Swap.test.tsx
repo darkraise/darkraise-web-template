@@ -104,7 +104,10 @@ describe("Swap", () => {
     errorSpy.mockRestore()
   })
 
-  it("calls onPressedChange when controlled pressed changes", () => {
+  it("does not echo controlled pressed changes back through onPressedChange", () => {
+    // Swap is presentational and has no internal trigger, so controlled
+    // callers should not receive a callback simply because they updated
+    // the prop themselves.
     const onPressedChange = vi.fn()
     const { rerender } = render(
       <Swap pressed={false} onPressedChange={onPressedChange}>
@@ -119,6 +122,6 @@ describe("Swap", () => {
         <SwapIndicator state="off">off</SwapIndicator>
       </Swap>,
     )
-    expect(onPressedChange).toHaveBeenCalledWith(true)
+    expect(onPressedChange).not.toHaveBeenCalled()
   })
 })

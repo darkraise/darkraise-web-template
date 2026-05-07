@@ -295,10 +295,10 @@ function FileUploadTrigger({
       data-disabled={disabled ? "true" : undefined}
       className={cn("dr-file-upload-trigger", className)}
       onClick={(event) => {
-        event.stopPropagation()
         onClick?.(event)
         if (event.defaultPrevented) return
         if (disabled) return
+        event.stopPropagation()
         ctx.openPicker()
       }}
       {...props}

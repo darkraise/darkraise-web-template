@@ -30,31 +30,19 @@ function Swap({
   className,
   pressed: pressedProp,
   defaultPressed = false,
+  // Swap is presentational and doesn't drive its own pressed state, so the
+  // callback is never invoked from inside the component. Keep it on the prop
+  // surface for forward compatibility but strip it from the rest props so it
+  // doesn't reach the underlying <div> as an unknown DOM attribute, and don't
+  // echo controlled prop changes back to the parent.
   onPressedChange,
   children,
   ...props
 }: SwapProps) {
+  void onPressedChange
   const isControlled = pressedProp !== undefined
-  const [internalPressed, setInternalPressed] = React.useState(defaultPressed)
+  const [internalPressed] = React.useState(defaultPressed)
   const pressed = isControlled ? pressedProp : internalPressed
-  const onPressedChangeRef = React.useRef(onPressedChange)
-
-  React.useEffect(() => {
-    onPressedChangeRef.current = onPressedChange
-  }, [onPressedChange])
-
-  const previousPressedRef = React.useRef(pressed)
-  React.useEffect(() => {
-    if (previousPressedRef.current !== pressed) {
-      previousPressedRef.current = pressed
-      onPressedChangeRef.current?.(pressed)
-    }
-  }, [pressed])
-
-  // setInternalPressed is exposed in case future iterations want a setter on
-  // context; current behaviour is purely presentational, so consumers update
-  // pressed externally.
-  void setInternalPressed
 
   const ctx = React.useMemo<SwapContextValue>(() => ({ pressed }), [pressed])
 
