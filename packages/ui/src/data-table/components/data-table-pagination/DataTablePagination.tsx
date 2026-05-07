@@ -22,12 +22,20 @@ import type { DataTablePaginationProps } from "@data-table/types"
 export function DataTablePagination<TData>({
   table,
 }: DataTablePaginationProps<TData>) {
+  const selectedCount = table.getFilteredSelectedRowModel().rows.length
+  const filteredCount = table.getFilteredRowModel().rows.length
   return (
     <div className="dr-data-table-pagination">
-      <div className="dr-data-table-pagination-summary">
-        {table.getFilteredSelectedRowModel().rows.length} of{" "}
-        {table.getFilteredRowModel().rows.length} row(s) selected
-      </div>
+      {/* Only render the selection summary when something is actually
+          selected; otherwise the empty "0 of N row(s) selected" string was
+          claiming valuable horizontal space and adding screen-reader noise
+          on tables without a selection column. aria-live="polite" announces
+          subsequent selection changes for AT users. */}
+      {selectedCount > 0 && (
+        <div className="dr-data-table-pagination-summary" aria-live="polite">
+          {selectedCount} of {filteredCount} row(s) selected
+        </div>
+      )}
       <div className="dr-data-table-pagination-controls">
         <div className="dr-data-table-pagination-page-size">
           <p className="dr-data-table-pagination-page-info">Rows per page</p>

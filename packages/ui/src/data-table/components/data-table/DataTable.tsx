@@ -64,16 +64,29 @@ export function DataTable<TData, TValue>({
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                  </TableHead>
-                ))}
+                {headerGroup.headers.map((header) => {
+                  const sortDir = header.column.getIsSorted()
+                  // aria-sort communicates the active sort direction to AT
+                  // independent of the visual indicator inside ColumnHeader.
+                  const ariaSort: React.AriaAttributes["aria-sort"] =
+                    sortDir === "asc"
+                      ? "ascending"
+                      : sortDir === "desc"
+                        ? "descending"
+                        : header.column.getCanSort()
+                          ? "none"
+                          : undefined
+                  return (
+                    <TableHead key={header.id} aria-sort={ariaSort}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                    </TableHead>
+                  )
+                })}
               </TableRow>
             ))}
           </TableHeader>

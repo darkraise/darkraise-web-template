@@ -35,16 +35,23 @@ export function ColumnVisibility<TData>({
         {table
           .getAllColumns()
           .filter((col) => col.getCanHide())
-          .map((col) => (
-            <DropdownMenuCheckboxItem
-              key={col.id}
-              className="capitalize"
-              checked={col.getIsVisible()}
-              onCheckedChange={(v) => col.toggleVisibility(!!v)}
-            >
-              {col.id}
-            </DropdownMenuCheckboxItem>
-          ))}
+          .map((col) => {
+            // Prefer the columnDef header when it's a string; fall back to
+            // the raw id (often a camelCase field key) only when the header
+            // is a render function or unset.
+            const header = col.columnDef.header
+            const label = typeof header === "string" ? header : col.id
+            return (
+              <DropdownMenuCheckboxItem
+                key={col.id}
+                className="capitalize"
+                checked={col.getIsVisible()}
+                onCheckedChange={(v) => col.toggleVisibility(!!v)}
+              >
+                {label}
+              </DropdownMenuCheckboxItem>
+            )
+          })}
       </DropdownMenuContent>
     </DropdownMenu>
   )
