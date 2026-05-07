@@ -25,9 +25,18 @@ export function Slot({
   const child = children as React.ReactElement<ChildProps>
   const childProps = child.props ?? {}
 
+  // Strip undefined values from childProps so they don't clobber valid
+  // parent props (e.g. <button onClick={undefined}> would otherwise
+  // wipe out the slot's onClick handler).
+  const definedChildProps: Record<string, unknown> = {}
+  for (const k of Object.keys(childProps)) {
+    const v = (childProps as Record<string, unknown>)[k]
+    if (v !== undefined) definedChildProps[k] = v
+  }
+
   const merged: ChildProps = {
     ...rest,
-    ...childProps,
+    ...(definedChildProps as ChildProps),
     className: cn(className, childProps.className),
     style: { ...style, ...childProps.style },
     ref: composeRefs<HTMLElement>(

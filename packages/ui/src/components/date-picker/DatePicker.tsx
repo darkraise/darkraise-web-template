@@ -1,12 +1,17 @@
 "use client"
 
 import * as React from "react"
-import * as PopoverPrimitive from "@radix-ui/react-popover"
 import { format as dfFormat, isValid as dfIsValid } from "date-fns"
 import type { DateRange, Matcher } from "react-day-picker"
 
 import { cn } from "@lib/utils"
 import { Calendar } from "@components/calendar"
+import {
+  Popover as PopoverPrimitiveRoot,
+  PopoverTrigger as PopoverPrimitiveTrigger,
+  PopoverPortal as PopoverPrimitivePortal,
+  PopoverContent as PopoverPrimitiveContent,
+} from "@components/popover"
 import "./date-picker.css"
 
 export type DatePickerSingleValue = Date | null
@@ -216,7 +221,7 @@ function DatePicker(props: DatePickerProps) {
   )
 
   return (
-    <PopoverPrimitive.Root open={open} onOpenChange={setOpen}>
+    <PopoverPrimitiveRoot open={open} onOpenChange={setOpen}>
       <DatePickerContext.Provider value={ctx}>
         <div
           className={cn("dr-date-picker", className)}
@@ -227,7 +232,7 @@ function DatePicker(props: DatePickerProps) {
           {children}
         </div>
       </DatePickerContext.Provider>
-    </PopoverPrimitive.Root>
+    </PopoverPrimitiveRoot>
   )
 }
 
@@ -381,7 +386,7 @@ function DatePickerTrigger({
   )
 
   return (
-    <PopoverPrimitive.Trigger asChild>
+    <PopoverPrimitiveTrigger asChild>
       <button
         ref={setRef}
         type={type}
@@ -398,12 +403,12 @@ function DatePickerTrigger({
       >
         {children}
       </button>
-    </PopoverPrimitive.Trigger>
+    </PopoverPrimitiveTrigger>
   )
 }
 
 export interface DatePickerContentProps extends React.ComponentProps<
-  typeof PopoverPrimitive.Content
+  typeof PopoverPrimitiveContent
 > {
   ref?: React.Ref<HTMLDivElement>
 }
@@ -418,8 +423,8 @@ function DatePickerContent({
 }: DatePickerContentProps) {
   const { contentId } = useDatePickerContext("DatePickerContent")
   return (
-    <PopoverPrimitive.Portal>
-      <PopoverPrimitive.Content
+    <PopoverPrimitivePortal>
+      <PopoverPrimitiveContent
         ref={ref}
         id={contentId}
         align={align}
@@ -429,8 +434,8 @@ function DatePickerContent({
         {...props}
       >
         {children}
-      </PopoverPrimitive.Content>
-    </PopoverPrimitive.Portal>
+      </PopoverPrimitiveContent>
+    </PopoverPrimitivePortal>
   )
 }
 

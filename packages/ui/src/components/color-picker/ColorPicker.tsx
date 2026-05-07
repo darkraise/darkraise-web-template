@@ -1,8 +1,13 @@
 import * as React from "react"
-import * as PopoverPrimitive from "@radix-ui/react-popover"
 import { HexColorPicker } from "react-colorful"
 
 import { cn } from "@lib/utils"
+import {
+  Popover as PopoverPrimitiveRoot,
+  PopoverTrigger as PopoverPrimitiveTrigger,
+  PopoverPortal as PopoverPrimitivePortal,
+  PopoverContent as PopoverPrimitiveContent,
+} from "@components/popover"
 import "./color-picker.css"
 
 declare global {
@@ -162,7 +167,7 @@ function ColorPicker({
   )
 
   return (
-    <PopoverPrimitive.Root open={open} onOpenChange={setOpen}>
+    <PopoverPrimitiveRoot open={open} onOpenChange={setOpen}>
       <ColorPickerContext.Provider value={ctx}>
         <div
           className={cn("dr-color-picker", className)}
@@ -173,7 +178,7 @@ function ColorPicker({
           {children}
         </div>
       </ColorPickerContext.Provider>
-    </PopoverPrimitive.Root>
+    </PopoverPrimitiveRoot>
   )
 }
 
@@ -223,7 +228,7 @@ function ColorPickerSwatch({
 }: ColorPickerSwatchProps) {
   const { value, disabled } = useColorPickerContext("ColorPickerSwatch")
   return (
-    <PopoverPrimitive.Trigger asChild>
+    <PopoverPrimitiveTrigger asChild>
       <button
         ref={ref}
         type={type}
@@ -237,7 +242,7 @@ function ColorPickerSwatch({
         onClick={onClick}
         {...props}
       />
-    </PopoverPrimitive.Trigger>
+    </PopoverPrimitiveTrigger>
   )
 }
 
@@ -344,7 +349,7 @@ function ColorPickerTrigger({
   )
 
   return (
-    <PopoverPrimitive.Trigger asChild>
+    <PopoverPrimitiveTrigger asChild>
       <button
         ref={setRef}
         type={type}
@@ -360,12 +365,12 @@ function ColorPickerTrigger({
       >
         {children}
       </button>
-    </PopoverPrimitive.Trigger>
+    </PopoverPrimitiveTrigger>
   )
 }
 
 export interface ColorPickerContentProps extends React.ComponentProps<
-  typeof PopoverPrimitive.Content
+  typeof PopoverPrimitiveContent
 > {
   ref?: React.Ref<HTMLDivElement>
 }
@@ -379,8 +384,8 @@ function ColorPickerContent({
   ...props
 }: ColorPickerContentProps) {
   return (
-    <PopoverPrimitive.Portal>
-      <PopoverPrimitive.Content
+    <PopoverPrimitivePortal>
+      <PopoverPrimitiveContent
         ref={ref}
         align={align}
         sideOffset={sideOffset}
@@ -389,8 +394,8 @@ function ColorPickerContent({
         {...props}
       >
         {children}
-      </PopoverPrimitive.Content>
-    </PopoverPrimitive.Portal>
+      </PopoverPrimitiveContent>
+    </PopoverPrimitivePortal>
   )
 }
 

@@ -1,15 +1,20 @@
 "use client"
 
 import * as React from "react"
-import * as PopoverPrimitive from "@radix-ui/react-popover"
 import { useVirtualizer } from "@tanstack/react-virtual"
 
 import { cn } from "@lib/utils"
+import {
+  Popover as PopoverPrimitiveRoot,
+  PopoverTrigger as PopoverPrimitiveTrigger,
+  PopoverPortal as PopoverPrimitivePortal,
+  PopoverContent as PopoverPrimitiveContent,
+} from "@components/popover"
 import "./virtualized-dropdown-menu.css"
 
-const VirtualizedDropdownMenu = PopoverPrimitive.Root
+const VirtualizedDropdownMenu = PopoverPrimitiveRoot
 
-const VirtualizedDropdownMenuTrigger = PopoverPrimitive.Trigger
+const VirtualizedDropdownMenuTrigger = PopoverPrimitiveTrigger
 
 interface VirtualizedDropdownMenuContentProps<T> {
   items: T[]
@@ -23,7 +28,7 @@ interface VirtualizedDropdownMenuContentProps<T> {
   onItemSelect?: (item: T, index: number) => void
   className?: string
   sideOffset?: number
-  align?: PopoverPrimitive.PopoverContentProps["align"]
+  align?: React.ComponentProps<typeof PopoverPrimitiveContent>["align"]
 }
 
 function VirtualizedDropdownMenuContent<T>({
@@ -97,8 +102,8 @@ function VirtualizedDropdownMenuContent<T>({
   }, [activeIndex, virtualizer])
 
   return (
-    <PopoverPrimitive.Portal>
-      <PopoverPrimitive.Content
+    <PopoverPrimitivePortal>
+      <PopoverPrimitiveContent
         ref={contentRef}
         role="menu"
         tabIndex={-1}
@@ -153,8 +158,8 @@ function VirtualizedDropdownMenuContent<T>({
             })}
           </div>
         </div>
-      </PopoverPrimitive.Content>
-    </PopoverPrimitive.Portal>
+      </PopoverPrimitiveContent>
+    </PopoverPrimitivePortal>
   )
 }
 
