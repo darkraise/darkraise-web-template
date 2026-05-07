@@ -29,20 +29,37 @@ export function SplitPanelLayout({
   const [panelWidth, setPanelWidth] = useState(defaultPanelWidth)
   const [isDragging, setIsDragging] = useState(false)
   const docRef = useRef(typeof document !== "undefined" ? document : null)
+  const bodyRef = useRef<HTMLDivElement | null>(null)
 
-  useEventListener(docRef, "mousemove", (e: MouseEvent) => {
+  useEventListener(docRef, "pointermove", (e: PointerEvent) => {
     if (!isDragging) return
-    const width = Math.min(Math.max(e.clientX, minPanelWidth), maxPanelWidth)
+    const body = bodyRef.current
+    if (!body) return
+    // Width is measured from the body container's left edge, not the
+    // viewport, so the drag works correctly when the layout is offset by
+    // a sidebar, padding, or any horizontally-scrolled ancestor.
+    const left = body.getBoundingClientRect().left
+    const width = Math.min(
+      Math.max(e.clientX - left, minPanelWidth),
+      maxPanelWidth,
+    )
     setPanelWidth(width)
   })
 
-  useEventListener(docRef, "mouseup", () => {
-    if (isDragging) setIsDragging(false)
-  })
-
-  const handleMouseDown = useCallback(() => {
-    setIsDragging(true)
+  const stopDragging = useCallback(() => {
+    setIsDragging((prev) => (prev ? false : prev))
   }, [])
+
+  useEventListener(docRef, "pointerup", stopDragging)
+  useEventListener(docRef, "pointercancel", stopDragging)
+
+  const handlePointerDown = useCallback(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      event.currentTarget.setPointerCapture?.(event.pointerId)
+      setIsDragging(true)
+    },
+    [],
+  )
 
   return (
     <div className="dr-split-panel-layout">
@@ -63,7 +80,7 @@ export function SplitPanelLayout({
         />
       </LayoutHeader>
 
-      <div className="dr-split-panel-layout-body">
+      <div ref={bodyRef} className="dr-split-panel-layout-body">
         <div
           className="dr-split-panel-layout-aside"
           style={{ width: panelWidth }}
@@ -74,7 +91,10 @@ export function SplitPanelLayout({
         <div
           className="dr-split-panel-layout-handle"
           data-dragging={isDragging ? "true" : undefined}
-          onMouseDown={handleMouseDown}
+          onPointerDown={handlePointerDown}
+          // touch-action: none keeps a touch drag on the handle from
+          // scrolling the page or triggering platform gestures.
+          style={{ touchAction: "none" }}
         />
 
         <main className="dr-split-panel-layout-content">{children}</main>
