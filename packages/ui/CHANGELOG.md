@@ -11,6 +11,61 @@ Major release. The zero-dep components initiative replaces every external runtim
 - `packages/ui/src/primitives/` — internal foundation utilities (`Slot`, `Presence`, `FocusTrap`, `DismissableLayer`, `Portal`, `useFloating` + `FloatingArrow`, `useControllableState`, `useId`, `useEvent`, `aria/announcer`, `useVirtualizer`).
 - `@floating-ui/react` is the only new runtime dependency; it replaces every internal use of Radix's positioning logic.
 
+### In-house replacements
+
+Each replaced primitive ships a colocated `use<Name>.ts` hook, full keyboard + ARIA test coverage, and Storybook stories. Anatomy parts retain their Radix names so consumer JSX is unchanged.
+
+#### Phase 2 — Trivial primitives
+
+- **Label** — replaces `@radix-ui/react-label`. Native `<label>` with double-click selection guard; pairs with the in-house `useLabel` hook.
+- **Separator** — replaces `@radix-ui/react-separator`. Decorative + non-decorative modes via `useSeparator` returning role/`aria-orientation`/`data-orientation`.
+- **AspectRatio** — replaces `@radix-ui/react-aspect-ratio`. Padding-bottom ratio strategy returned by `useAspectRatio`.
+- **Avatar** — replaces `@radix-ui/react-avatar`. Hand-rolled `useImageLoadingStatus` (re-exported as `useAvatar`) for image probe + fallback delay.
+- **Progress** — replaces `@radix-ui/react-progress`. `useProgress` derives `aria-valuenow/min/max`, `aria-valuetext`, indicator transform.
+- **Switch** — replaces `@radix-ui/react-switch`. `role="switch"`, controlled/uncontrolled `checked`, Space toggles, native form input mirror.
+- **Toggle** — replaces `@radix-ui/react-toggle`. `aria-pressed`, button-style variants; hook exposes `getButtonProps()`.
+- **ToggleGroup** — replaces `@radix-ui/react-toggle-group`. `single` and `multiple` selection, roving tabindex, Arrow/Home/End nav.
+- **Checkbox** — replaces `@radix-ui/react-checkbox`. Indeterminate state, `aria-checked="mixed"`, hidden form input parity.
+- **RadioGroup** — replaces `@radix-ui/react-radio-group`. Roving tabindex, Arrow/Home/End, hidden form inputs per item.
+- **SegmentGroup** — wraps in-house `RadioGroup`; ships `useSegmentGroup` re-export and the animated indicator pill.
+- **Slider** — replaces `@radix-ui/react-slider`. 1- and 2-thumb modes, Arrow/Shift+Arrow/Home/End/PageUp/PageDown, RTL aware.
+- **Collapsible** — replaces `@radix-ui/react-collapsible`. `data-state="open|closed"`, controllable, disabled state, animation hooks.
+- **Accordion** — replaces `@radix-ui/react-accordion`. Single + multiple modes, Arrow/Home/End between headers, region/heading semantics.
+- **Tabs** — replaces `@radix-ui/react-tabs`. Manual + automatic activation, Arrow/Home/End nav, `aria-controls` + `aria-selected` wiring.
+
+#### Phase 3 — Overlay primitives
+
+- **Dialog** — replaces `@radix-ui/react-dialog`. Adds in-house scroll lock with body padding compensation. Public anatomy preserved (`Dialog`, `DialogTrigger`, `DialogPortal`, `DialogOverlay`, `DialogContent`, `DialogTitle`, `DialogDescription`, `DialogClose`).
+- **AlertDialog** — replaces `@radix-ui/react-alert-dialog`. Composes `useDialog` with `role="alertdialog"`; preserves `AlertDialogAction`/`AlertDialogCancel`.
+- **Popover** — replaces `@radix-ui/react-popover`. Adds `useFloating` middleware preset; `PopoverArrow`, `PopoverAnchor`, `PopoverClose` are additive parts.
+- **Tooltip** — replaces `@radix-ui/react-tooltip`. Single `TooltipProvider` for delay coordination, focus delegation, hover intent; `TooltipArrow` is additive.
+- **HoverCard** — replaces `@radix-ui/react-hover-card`. Open/close delays, pointer + focus intent, dismissable layer stacking.
+- **Sheet** — repointed onto in-house `Dialog`; `side` (top/right/bottom/left) drives content anchor.
+- **OverlayPrimitives** — repointed onto in-house `Dialog`; `OverlayCloseButton` works with or without an enclosing dialog context.
+
+#### Phase 4 — Composite menus + listboxes
+
+- **DropdownMenu** — replaces `@radix-ui/react-dropdown-menu`. Radio/checkbox items, submenus, typeahead, Arrow/Enter/Escape; built on shared `_internal/useMenu`.
+- **ContextMenu** — replaces `@radix-ui/react-context-menu`. Point-anchored variant of DropdownMenu sharing the same `useMenu` core.
+- **Menubar** — replaces `@radix-ui/react-menubar`. Top-level horizontal nav with `useMenu` instances per menu and submenu Right/Left traversal.
+- **NavigationMenu** — replaces `@radix-ui/react-navigation-menu`. Click/keyboard opens a menu; hover only fast-switches between already-open menus (intentional change from upstream).
+- **Select** — replaces `@radix-ui/react-select`. Typeahead, keyboard scroll, position-anchored content, hidden form input parity.
+- **Command** — replaces `cmdk`. Composes in-house `Combobox` and `Dialog`; `useCommand` hook re-exports `useCombobox`.
+- **VirtualizedDropdownMenu** — replaces `@tanstack/react-virtual` (in this scope). Fixed-height virtualizer keeps `aria-activedescendant` math correct off-screen.
+- **ScrollArea** — replaces `@radix-ui/react-scroll-area`. Viewport renders children directly without the inline `display:table` wrapper that previously broke `w-full` descendants.
+
+#### Phase 5 — Behavior libs
+
+- **Carousel** — replaces `embla-carousel-react`. Slides + snap + autoplay + pointer drag + keyboard; new `CarouselApi` is the supported handle.
+- **Drawer** — replaces `vaul`. Reuses Dialog foundation; `direction` prop sets bottom/top/right/left; swipe-to-dismiss kept.
+- **Resizable** — replaces `react-resizable-panels`. Splitter primitive with `orientation`, multiple panels, keyboard resize via Arrow keys.
+- **ColorPicker** — replaces `react-colorful`. Saturation/hue/alpha surfaces and hex/rgb/hsl inputs; reuses in-house Combobox + Slider.
+- **Calendar** — replaces `react-day-picker`. Month grid, single/multi/range modes, locale + RTL via `Intl.DateTimeFormat`; the v9 first-click range gotcha is gone.
+- **DatePicker** — repointed onto new Calendar; drops `date-fns` for native helpers in `lib/date.ts`.
+- **QrCode** — replaces `react-qr-code`. In-house `qrEncoder` produces the matrix; `<svg>` is JSX-rendered with `currentColor`.
+- **InputOtp** — replaces `input-otp`. OTP grid with paste handling, pattern validation, controlled/uncontrolled value.
+- **Toast (Sonner)** — replaces `sonner`. Imperative `toast()` API parity (`success`/`error`/`warning`/`info`/`loading`/`promise`/`dismiss`/`custom`); uses `aria/announcer` + Presence + Portal. `useSonner` exposes the live toast list for custom UIs.
+
 ### Changed
 
 - 26 `@radix-ui/react-*` packages removed. Internal hand-rolled equivalents replace each one.
