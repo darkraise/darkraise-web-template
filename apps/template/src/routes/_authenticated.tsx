@@ -10,6 +10,7 @@ import {
   Settings,
   Palette,
   ChevronsUpDown,
+  ChevronsRight,
   CircleUser,
   Shield,
   RectangleHorizontal,
@@ -116,6 +117,11 @@ const nav: NavGroup[] = [
         icon: Paintbrush,
       },
       { label: "Badges", href: "/components/badges", icon: Shield },
+      {
+        label: "Breadcrumb",
+        href: "/components/breadcrumb",
+        icon: ChevronsRight,
+      },
       {
         label: "Buttons",
         href: "/components/buttons",
