@@ -43,9 +43,15 @@
     @apply w-full overflow-hidden rounded-md;
   }
 
-  .dr-color-picker-area .react-colorful {
-    width: 100%;
-    height: 11rem;
+  .dr-color-picker-sv,
+  .dr-color-picker-hue {
+    @apply outline-none;
+  }
+
+  .dr-color-picker-sv:focus-visible,
+  .dr-color-picker-hue:focus-visible {
+    outline: 2px solid hsl(var(--focus-ring));
+    outline-offset: 1px;
   }
 
   .dr-color-picker-area[data-disabled="true"] {
