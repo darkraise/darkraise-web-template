@@ -1,0 +1,51 @@
+// Workspace settings — pnpm monorepo. Watcher/search exclusions reduce VSCode process load on Windows.
+{
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/.git/**": true,
+    "**/dist/**": true,
+    "**/storybook-static/**": true,
+    "**/coverage/**": true,
+    "**/.turbo/**": true,
+    "**/.next/**": true,
+    "**/build/**": true,
+    "**/.pnpm-store/**": true,
+    "**/routeTree.gen.ts": true
+  },
+  "search.exclude": {
+    "**/node_modules/**": true,
+    "**/.git/**": true,
+    "**/dist/**": true,
+    "**/storybook-static/**": true,
+    "**/coverage/**": true,
+    "**/.turbo/**": true,
+    "**/.next/**": true,
+    "**/build/**": true,
+    "**/.pnpm-store/**": true,
+    "**/routeTree.gen.ts": true
+  },
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.tsserver.maxTsServerMemory": 4096,
+  "typescript.preferences.includePackageJsonAutoImports": "off",
+  "typescript.tsserver.watchOptions": {
+    "watchFile": "useFsEvents",
+    "watchDirectory": "useFsEvents",
+    "fallbackPolling": "dynamicPriority"
+  },
+  "typescript.tsserver.experimental.enableProjectDiagnostics": false,
+  "typescript.disableAutomaticTypeAcquisition": true,
+  "eslint.workingDirectories": [
+    { "pattern": "packages/*" },
+    { "pattern": "apps/*" }
+  ],
+  "eslint.useFlatConfig": true,
+  "tailwindCSS.experimental.configFile": null,
+  "tailwindCSS.includeLanguages": {
+    "typescript": "javascript",
+    "typescriptreact": "javascript"
+  },
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "files.useExperimentalFileWatcher": true,
+  "git.autoRefresh": false
+}
