@@ -1,5 +1,6 @@
-import { useEffect, useLayoutEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useFirstMountState } from "./useFirstMountState"
+import { useIsomorphicLayoutEffect } from "./useIsomorphicLayoutEffect"
 import { useSyncedRef } from "./useSyncedRef"
 import { useUpdateEffect } from "./useUpdateEffect"
 import { isBrowser, off, on } from "./util"
@@ -27,7 +28,9 @@ const invokeStorageKeyListeners = (
 }
 
 const storageEventHandler = (evt: StorageEvent) => {
-  if (evt.storageArea && evt.key && evt.newValue) {
+  // evt.newValue is null when the key is removed in another tab — still
+  // forward the change so listeners drop their cached value.
+  if (evt.storageArea && evt.key) {
     invokeStorageKeyListeners(evt.storageArea, evt.key, evt.newValue)
   }
 }
@@ -194,7 +197,7 @@ export function useStorageValue<
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const handler = stateActions.current.setRawVal
 
     addStorageListener(storage, key, handler)
@@ -202,7 +205,6 @@ export function useStorageValue<
     return () => {
       removeStorageListener(storage, key, handler)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storage, key])
 
   const actions = useSyncedRef({
