@@ -47,6 +47,7 @@ import {
   MoreHorizontal,
   Sparkles,
   Shapes,
+  PackageOpen,
   ClipboardCopy,
   Pipette,
   Search,
@@ -172,6 +173,11 @@ const nav: NavGroup[] = [
         icon: ChevronDown,
       },
       { label: "Editable", href: "/components/editable", icon: Pencil },
+      {
+        label: "Empty State",
+        href: "/components/empty-state",
+        icon: PackageOpen,
+      },
       {
         label: "Error Pages",
         href: "/components/error-pages",
