@@ -1,0 +1,17 @@
+@layer components {
+  .dr-empty-state {
+    @apply flex flex-col items-center justify-center gap-3 px-4 py-10 text-center;
+  }
+  .dr-empty-state-icon {
+    @apply text-muted-foreground bg-muted/40 flex h-12 w-12 items-center justify-center rounded-full [&_svg]:h-6 [&_svg]:w-6;
+  }
+  .dr-empty-state-title {
+    @apply text-base font-semibold;
+  }
+  .dr-empty-state-description {
+    @apply text-muted-foreground max-w-sm text-sm;
+  }
+  .dr-empty-state-action {
+    @apply mt-2;
+  }
+}
