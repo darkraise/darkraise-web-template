@@ -266,6 +266,38 @@ toast.info("A new version is available")`}
       </ShowcaseExample>
 
       <ShowcaseExample
+        title="Toast with persistent close button"
+        code={`toast("Important notice", { closeButton: true })
+
+// or set a Toaster-wide default:
+<Toaster closeButton />`}
+      >
+        <div className="flex flex-wrap gap-3">
+          <Button
+            variant="outline"
+            onClick={() =>
+              toast("Important notice with close button", {
+                closeButton: true,
+              })
+            }
+          >
+            With close button
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() =>
+              toast.success("Saved! (close button visible)", {
+                closeButton: true,
+                duration: 10000,
+              })
+            }
+          >
+            Long-lived success
+          </Button>
+        </div>
+      </ShowcaseExample>
+
+      <ShowcaseExample
         title="Toast with custom duration"
         code={`toast("Quick notice", { duration: 2000 })
 toast("Standard notice", { duration: 4000 })
