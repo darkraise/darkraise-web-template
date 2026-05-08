@@ -87,12 +87,16 @@
     pointer-events: auto;
   }
 
-  /* Entry animation — only the new front toast plays it. */
+  /* Entry animation — only a freshly mounted toast plays it. data-mount-anim
+     is set on first mount and cleared after the keyframe completes, so the
+     animation does not re-fire when an existing toast is promoted to front
+     after the previous front dismisses. */
   .dr-toaster[data-position^="bottom"]
-    .dr-toast[data-state="open"][data-front] {
+    .dr-toast[data-state="open"][data-front][data-mount-anim] {
     animation: dr-toast-enter-bottom 0.35s cubic-bezier(0.21, 1.02, 0.73, 1);
   }
-  .dr-toaster[data-position^="top"] .dr-toast[data-state="open"][data-front] {
+  .dr-toaster[data-position^="top"]
+    .dr-toast[data-state="open"][data-front][data-mount-anim] {
     animation: dr-toast-enter-top 0.35s cubic-bezier(0.21, 1.02, 0.73, 1);
   }
 

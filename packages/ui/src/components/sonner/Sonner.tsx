@@ -176,7 +176,21 @@ function ToastItem({
   paused,
 }: ToastItemProps) {
   const [present, setPresent] = React.useState(true)
+  // Mount-window flag for the entrance animation. Set true on initial mount,
+  // cleared shortly after so a *promotion* to front (when an older front
+  // dismisses) doesn't re-trigger the keyframe just because [data-front]
+  // newly matches the entrance selector.
+  const [mountAnim, setMountAnim] = React.useState(true)
   const containerRef = React.useRef<HTMLLIElement | null>(null)
+
+  React.useEffect(() => {
+    // Hold the flag past the 350 ms entrance keyframe duration, then drop it.
+    // animation-fill-mode: forwards on the keyframe means the element retains
+    // its end-state styles, and the static CSS rule resolves to the same
+    // transform values, so removing the flag mid-flight is invisible.
+    const handle = window.setTimeout(() => setMountAnim(false), 450)
+    return () => window.clearTimeout(handle)
+  }, [])
 
   const close = useEvent(() => {
     setPresent(false)
@@ -296,6 +310,7 @@ function ToastItem({
         data-kind={t.kind}
         data-front={index === 0 ? "true" : undefined}
         data-hidden={isHiddenInStack ? "true" : undefined}
+        data-mount-anim={mountAnim ? "true" : undefined}
         style={
           {
             "--toast-index": index,
