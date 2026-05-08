@@ -22,8 +22,13 @@ import {
   ToggleRight,
   Type,
   TextCursorInput,
+  CalendarDays,
   Calendar,
+  Compass,
   FormInput,
+  Layers,
+  List,
+  Map,
   SlidersHorizontal,
   BarChart2,
   LayoutDashboard,
@@ -110,6 +115,11 @@ const nav: NavGroup[] = [
         href: "/components/alert-dialog",
         icon: AlertTriangle,
       },
+      {
+        label: "Angle Slider",
+        href: "/components/angle-slider",
+        icon: Compass,
+      },
       { label: "Animation", href: "/components/animation", icon: Sparkles },
       { label: "Avatar", href: "/components/avatar", icon: CircleUser },
       {
@@ -130,6 +140,11 @@ const nav: NavGroup[] = [
       },
       { label: "Calendar", href: "/components/calendar", icon: Calendar },
       { label: "Cards", href: "/components/cards", icon: CreditCard },
+      {
+        label: "Cascade Select",
+        href: "/components/cascade-select",
+        icon: Layers,
+      },
       { label: "Charts", href: "/components/charts", icon: BarChart2 },
       {
         label: "Clipboard",
@@ -160,6 +175,11 @@ const nav: NavGroup[] = [
         icon: LayoutDashboard,
       },
       { label: "Data Table", href: "/components/data-table", icon: Table2 },
+      {
+        label: "Date Input",
+        href: "/components/date-input",
+        icon: CalendarDays,
+      },
       {
         label: "Date Picker",
         href: "/components/date-picker",
@@ -207,6 +227,7 @@ const nav: NavGroup[] = [
       { label: "Icons", href: "/components/icons", icon: Shapes },
       { label: "Inputs", href: "/components/inputs", icon: TextCursorInput },
       { label: "Layouts", href: "/components/layouts", icon: LayoutPanelLeft },
+      { label: "Listbox", href: "/components/listbox", icon: List },
       {
         label: "More",
         href: "/components/more-components",
@@ -259,6 +280,7 @@ const nav: NavGroup[] = [
       { label: "Tags Input", href: "/components/tags-input", icon: Tags },
       { label: "Timer", href: "/components/timer", icon: TimerIcon },
       { label: "Toggle", href: "/components/toggle", icon: ToggleRight },
+      { label: "Tour", href: "/components/tour", icon: Map },
       {
         label: "Tree View",
         href: "/components/tree-view",
