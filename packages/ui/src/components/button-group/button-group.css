@@ -1,0 +1,36 @@
+@layer components {
+  .dr-button-group {
+    @apply isolate inline-flex;
+  }
+  .dr-button-group[data-orientation="horizontal"] > * + * {
+    margin-left: -1px;
+  }
+  .dr-button-group[data-orientation="vertical"] {
+    @apply flex-col;
+  }
+  .dr-button-group[data-orientation="vertical"] > * + * {
+    margin-top: -1px;
+  }
+  /* Round outer corners only */
+  .dr-button-group[data-orientation="horizontal"] > *:not(:first-child) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+  .dr-button-group[data-orientation="horizontal"] > *:not(:last-child) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  .dr-button-group[data-orientation="vertical"] > *:not(:first-child) {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+  .dr-button-group[data-orientation="vertical"] > *:not(:last-child) {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  /* Z-index lift on focus so adjacent borders don't clip */
+  .dr-button-group > *:focus,
+  .dr-button-group > *:focus-visible {
+    @apply z-10;
+  }
+}
