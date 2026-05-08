@@ -484,30 +484,32 @@
   --density-cell-sm: max(calc(var(--density-cell) - 0.25rem), 1.5rem);
   --density-cell-lg: calc(var(--density-cell) + 0.5rem);
 
-  /* Elevation (medium defaults).
-     `flat` uses `0 0 transparent` (a syntactically valid no-op shadow)
-     instead of `none`, so it can be composed into multi-shadow lists like
-     `box-shadow: var(--elevation-medium), var(--inset-hi-strong)` without
-     invalidating the entire declaration. The `none` keyword is only valid
-     as a complete box-shadow value, never as a list item. */
-  --elevation-flat: 0 0 transparent;
-  --elevation-low: 0 2px 4px 0 rgb(0 0 0 / 0.1);
-  --elevation-medium:
-    0 8px 20px -2px rgb(0 0 0 / 0.18), 0 3px 8px -1px rgb(0 0 0 / 0.1);
-  --elevation-high:
-    0 32px 48px -8px rgb(0 0 0 / 0.32), 0 12px 24px -4px rgb(0 0 0 / 0.18);
+  /* Elevation ramp.
+     `--card-elevation-*` are the theme-axis-immune base values: components
+     that opt into an explicit level (e.g. `<Card elevation="medium">`)
+     consume these and render the same shadow regardless of the
+     `[data-elevation="..."]` theme picker. Dark-mode variants are defined
+     on `[data-mode="dark"]` only.
 
-  /* Theme-axis-immune shadow ramp for components that opt into an explicit
-     level via prop (e.g. `<Card elevation="medium">`). Mirrors the default
-     `--elevation-*` values but the `[data-elevation="..."]` blocks below
-     never override these, so an explicit level renders the same shadow
-     regardless of the theme picker. Dark-mode variants live under the
-     `[data-mode="dark"]` block. */
+     `--elevation-*` are the theme-axis-tracking aliases. On `:root` they
+     point at `--card-elevation-*`, but each `[data-elevation="..."]` block
+     redefines them with a scaled ramp so theme-aware utilities like
+     `glass-strong` (`box-shadow: var(--elevation-medium)`) and the Card's
+     `auto` mode (`var(--elevation-current)`) follow the picker.
+
+     `flat` uses `0 0 transparent` (a syntactically valid no-op shadow)
+     instead of `none`, so it composes cleanly into multi-shadow lists
+     like `box-shadow: var(--elevation-medium), var(--inset-hi-strong)`.
+     The `none` keyword is only valid as a complete box-shadow value. */
   --card-elevation-low: 0 2px 4px 0 rgb(0 0 0 / 0.1);
   --card-elevation-medium:
     0 8px 20px -2px rgb(0 0 0 / 0.18), 0 3px 8px -1px rgb(0 0 0 / 0.1);
   --card-elevation-high:
     0 32px 48px -8px rgb(0 0 0 / 0.32), 0 12px 24px -4px rgb(0 0 0 / 0.18);
+  --elevation-flat: 0 0 transparent;
+  --elevation-low: var(--card-elevation-low);
+  --elevation-medium: var(--card-elevation-medium);
+  --elevation-high: var(--card-elevation-high);
   --shadow-button: 0 0 transparent;
 }
 
@@ -567,7 +569,7 @@
   --elevation-flat: 0 0 transparent;
   --elevation-low: 0 4px 8px 0 rgb(0 0 0 / 0.18);
   --elevation-medium:
-    0 24px 44px -6px rgb(0 0 0 / 0.34), 0 8px 16px -3px rgb(0 0 0 / 0.2);
+    0 14px 32px -3px rgb(0 0 0 / 0.28), 0 5px 12px -2px rgb(0 0 0 / 0.16);
   --elevation-high:
     0 48px 72px -10px rgb(0 0 0 / 0.45), 0 20px 36px -6px rgb(0 0 0 / 0.28);
   --elevation-current: var(--elevation-high);
@@ -580,11 +582,8 @@
    the plain single-attribute selectors above. */
 
 [data-mode="dark"] {
-  --elevation-low: 0 2px 4px 0 rgb(0 0 0 / 0.5);
-  --elevation-medium:
-    0 8px 20px -2px rgb(0 0 0 / 0.65), 0 3px 8px -1px rgb(0 0 0 / 0.5);
-  --elevation-high:
-    0 32px 48px -8px rgb(0 0 0 / 0.8), 0 12px 24px -4px rgb(0 0 0 / 0.55);
+  /* `--elevation-*` aliases on `:root` point to `--card-elevation-*`, so
+     overriding only the card constants here propagates to both ramps. */
   --card-elevation-low: 0 2px 4px 0 rgb(0 0 0 / 0.5);
   --card-elevation-medium:
     0 8px 20px -2px rgb(0 0 0 / 0.65), 0 3px 8px -1px rgb(0 0 0 / 0.5);
@@ -610,7 +609,7 @@
   --elevation-flat: 0 0 transparent;
   --elevation-low: 0 4px 8px 0 rgb(0 0 0 / 0.6);
   --elevation-medium:
-    0 24px 44px -6px rgb(0 0 0 / 0.85), 0 8px 16px -3px rgb(0 0 0 / 0.55);
+    0 14px 32px -3px rgb(0 0 0 / 0.75), 0 5px 12px -2px rgb(0 0 0 / 0.55);
   --elevation-high:
     0 48px 72px -10px rgb(0 0 0 / 0.9), 0 20px 36px -6px rgb(0 0 0 / 0.6);
 }
