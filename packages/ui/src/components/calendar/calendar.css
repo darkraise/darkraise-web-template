@@ -33,6 +33,18 @@
     @apply bg-accent text-accent-foreground;
   }
 
+  /* Range hover-preview — shown after the user picks the start date but
+     before they pick the end. Treated like a real range visually, but
+     muted (lower opacity on endpoints, dashed bottom edge on the middle)
+     so the user understands the range is provisional. */
+  .dr-calendar-day-btn[data-range-preview="true"][data-range-start="true"],
+  .dr-calendar-day-btn[data-range-preview="true"][data-range-end="true"] {
+    @apply bg-primary/70 text-primary-foreground;
+  }
+  .dr-calendar-day-btn[data-range-preview="true"][data-range-middle="true"] {
+    @apply bg-accent/60 text-accent-foreground;
+  }
+
   .dr-calendar-day-btn:where(
     [data-focused="true"],
     .group[data-focused="true"] *

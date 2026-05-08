@@ -337,6 +337,7 @@ function DayView({
 
   const [focusedDate, setFocusedDate] = React.useState<Date>(initialFocus)
   const [hasUserFocus, setHasUserFocus] = React.useState(false)
+  const [hoveredDate, setHoveredDate] = React.useState<Date | null>(null)
   const tableRef = React.useRef<HTMLDivElement | null>(null)
 
   // Keep focused date in view: if selected month moves, snap focused date.
@@ -519,6 +520,7 @@ function DayView({
       ref={tableRef}
       dir={dir}
       onKeyDown={onKeyDown}
+      onMouseLeave={() => setHoveredDate(null)}
       className={cn("dr-calendar", cls("root", "dr-calendar-root"), className)}
     >
       <div className={cls("months", "dr-calendar-months")}>
@@ -542,6 +544,8 @@ function DayView({
             today={today}
             focusedDate={focusedDate}
             hasUserFocus={hasUserFocus}
+            hoveredDate={hoveredDate}
+            onDayHover={setHoveredDate}
             onDayClick={handleDayClick}
             onPrev={() => setMonth(addMonths(month, -1))}
             onNext={() => setMonth(addMonths(month, 1))}
@@ -578,6 +582,8 @@ interface MonthBlockProps {
   today: Date
   focusedDate: Date
   hasUserFocus: boolean
+  hoveredDate: Date | null
+  onDayHover: (date: Date | null) => void
   onDayClick: (date: Date) => void
   onPrev: () => void
   onNext: () => void
@@ -607,6 +613,8 @@ function MonthBlock({
   today,
   focusedDate,
   hasUserFocus,
+  hoveredDate,
+  onDayHover,
   onDayClick,
   onPrev,
   onNext,
@@ -633,6 +641,23 @@ function MonthBlock({
 
   const range =
     mode === "range" ? ((value as DateRange) ?? undefined) : undefined
+
+  // Hover preview: when the user has picked a start date but not yet an end
+  // date, treat the currently hovered day as the provisional end so the
+  // range cells visually fill from `from` → hoveredDate. Click commits.
+  const previewRange: DateRange | undefined = React.useMemo(() => {
+    if (mode !== "range") return undefined
+    if (!range || !range.from || range.to) return range
+    if (!hoveredDate) return range
+    const fromT = startOfDay(range.from).getTime()
+    const hoverT = startOfDay(hoveredDate).getTime()
+    if (hoverT === fromT) return range
+    return hoverT < fromT
+      ? { from: hoveredDate, to: range.from }
+      : { from: range.from, to: hoveredDate }
+  }, [mode, range, hoveredDate])
+
+  const isPreviewing = previewRange !== range
 
   return (
     <div className={cls("month", "dr-calendar-month")}>
@@ -749,7 +774,7 @@ function MonthBlock({
               const isToday = isSameDay(date, today)
               const focused = hasUserFocus && isSameDay(date, focusedDate)
               const selected = isDateSelectedInValue(date, mode, value)
-              const rangeRole = getRangeRole(date, range)
+              const rangeRole = getRangeRole(date, previewRange)
               if (!inMonth && !showOutsideDays) {
                 return (
                   <div
@@ -798,8 +823,14 @@ function MonthBlock({
                       rangeRole === "middle" ? "true" : undefined
                     }
                     data-range-end={rangeRole === "end" ? "true" : undefined}
+                    data-range-preview={
+                      isPreviewing && rangeRole !== null ? "true" : undefined
+                    }
                     data-focused={focused ? "true" : undefined}
                     onClick={() => onDayClick(date)}
+                    onMouseEnter={
+                      mode === "range" ? () => onDayHover(date) : undefined
+                    }
                     className="dr-calendar-day-btn"
                   >
                     {date.getDate()}
