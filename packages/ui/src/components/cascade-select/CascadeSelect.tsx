@@ -91,7 +91,8 @@ function CascadeSelect({
     setHoverPath([...hoverPath.slice(0, depth), option.value])
   }
 
-  const label = path.length ? findLabelByPath(options, path) : placeholder
+  const label =
+    (path.length > 0 && findLabelByPath(options, path)) || placeholder
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
