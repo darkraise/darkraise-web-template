@@ -1,0 +1,33 @@
+@layer components {
+  .dr-banner {
+    @apply flex items-center gap-3 border px-4 py-2 text-sm;
+  }
+  .dr-banner[data-variant="default"] {
+    @apply bg-muted text-foreground border-border;
+  }
+  .dr-banner[data-variant="info"] {
+    @apply bg-info/10 text-info-foreground border-info/30;
+  }
+  .dr-banner[data-variant="success"] {
+    @apply bg-success/10 text-success-foreground border-success/30;
+  }
+  .dr-banner[data-variant="warning"] {
+    @apply bg-warning/10 text-warning-foreground border-warning/30;
+  }
+  .dr-banner[data-variant="destructive"] {
+    @apply bg-destructive/10 text-destructive-foreground border-destructive/30;
+  }
+  .dr-banner-icon {
+    @apply shrink-0 [&_svg]:h-4 [&_svg]:w-4;
+  }
+  .dr-banner-content {
+    @apply min-w-0 flex-1;
+  }
+  .dr-banner-action,
+  .dr-banner-close {
+    @apply shrink-0;
+  }
+  .dr-banner-close {
+    @apply text-muted-foreground hover:text-foreground rounded p-0.5 transition-colors;
+  }
+}
