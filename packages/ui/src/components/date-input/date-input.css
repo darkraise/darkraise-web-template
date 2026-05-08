@@ -1,0 +1,15 @@
+@layer components {
+  .dr-date-input {
+    @apply border-input bg-background inline-flex items-center gap-0.5 rounded-md border px-2 py-1.5;
+  }
+  .dr-date-input:focus-within {
+    @apply ring-ring ring-2;
+  }
+  .dr-date-input-sep {
+    @apply text-muted-foreground;
+  }
+  .dr-date-input-segment {
+    @apply bg-transparent text-center font-mono text-sm tabular-nums focus:outline-none disabled:opacity-50;
+    width: auto;
+  }
+}
