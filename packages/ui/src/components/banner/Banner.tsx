@@ -18,6 +18,10 @@ export interface BannerProps extends React.HTMLAttributes<HTMLDivElement> {
   action?: React.ReactNode
 }
 
+// Non-destructive variants render `role="region"`, which only surfaces in
+// screen-reader landmark navigation when paired with `aria-label` /
+// `aria-labelledby`. Provide one when the banner conveys a discrete section.
+
 function Banner({
   className,
   variant = "default",
