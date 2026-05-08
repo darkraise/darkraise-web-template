@@ -69,6 +69,11 @@ import {
   Repeat,
   Timer as TimerIcon,
   FolderTree,
+  Square,
+  PenTool,
+  Crop,
+  Monitor,
+  Braces,
 } from "lucide-react"
 import { SidebarLayout, TopNavLayout, StackedLayout } from "darkraise-ui/layout"
 import { useLayoutStore } from "darkraise-ui/layout"
@@ -210,10 +215,16 @@ const nav: NavGroup[] = [
         icon: Upload,
       },
       {
+        label: "Floating Panel",
+        href: "/components/floating-panel",
+        icon: Square,
+      },
+      {
         label: "Form Fields",
         href: "/components/form-fields",
         icon: FormInput,
       },
+      { label: "Frame", href: "/components/frame", icon: Monitor },
       {
         label: "Highlight",
         href: "/components/highlight",
@@ -225,7 +236,17 @@ const nav: NavGroup[] = [
         icon: MousePointerClick,
       },
       { label: "Icons", href: "/components/icons", icon: Shapes },
+      {
+        label: "Image Cropper",
+        href: "/components/image-cropper",
+        icon: Crop,
+      },
       { label: "Inputs", href: "/components/inputs", icon: TextCursorInput },
+      {
+        label: "JSON Tree View",
+        href: "/components/json-tree-view",
+        icon: Braces,
+      },
       { label: "Layouts", href: "/components/layouts", icon: LayoutPanelLeft },
       { label: "Listbox", href: "/components/listbox", icon: List },
       {
@@ -270,6 +291,11 @@ const nav: NavGroup[] = [
         label: "Separator",
         href: "/components/separator",
         icon: SeparatorHorizontal,
+      },
+      {
+        label: "Signature Pad",
+        href: "/components/signature-pad",
+        icon: PenTool,
       },
       { label: "Skeleton", href: "/components/skeleton", icon: Bone },
       { label: "Slider", href: "/components/slider", icon: SlidersHorizontal },
