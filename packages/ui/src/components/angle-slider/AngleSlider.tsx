@@ -52,12 +52,13 @@ function AngleSlider({
 
   return (
     <div
+      {...rest}
       ref={ref}
       role="slider"
       tabIndex={disabled ? -1 : 0}
       aria-valuenow={angle}
       aria-valuemin={0}
-      aria-valuemax={360}
+      aria-valuemax={359}
       aria-disabled={disabled || undefined}
       data-disabled={disabled || undefined}
       className={cn("dr-angle-slider", className)}
@@ -66,7 +67,6 @@ function AngleSlider({
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
       onPointerCancel={onPointerUp}
-      {...rest}
     >
       <div
         className="dr-angle-slider-thumb"

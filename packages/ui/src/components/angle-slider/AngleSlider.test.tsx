@@ -10,7 +10,7 @@ describe("AngleSlider", () => {
     const slider = screen.getByRole("slider", { name: "Hue" })
     expect(slider).toHaveAttribute("aria-valuenow", "45")
     expect(slider).toHaveAttribute("aria-valuemin", "0")
-    expect(slider).toHaveAttribute("aria-valuemax", "360")
+    expect(slider).toHaveAttribute("aria-valuemax", "359")
   })
 
   it("ArrowRight increments by 1, ArrowLeft decrements by 1", async () => {
