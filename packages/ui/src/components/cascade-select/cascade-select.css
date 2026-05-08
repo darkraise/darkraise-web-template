@@ -2,8 +2,11 @@
   .dr-cascade-trigger {
     @apply min-w-48 justify-start gap-2;
   }
-  .dr-cascade-popover {
-    @apply p-0;
+  /* Compound selector outranks the base `.dr-popover-content` rule
+     (`w-72`, `p-4`) regardless of @import order, so the popover sizes
+     to its column grid instead of the popover default. */
+  .dr-popover-content.dr-cascade-popover {
+    padding: 0;
     width: auto;
   }
   .dr-cascade-grid {
