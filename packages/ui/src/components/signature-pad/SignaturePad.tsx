@@ -128,6 +128,7 @@ function SignaturePad({
 
   return (
     <canvas
+      {...rest}
       ref={canvasRef}
       width={width}
       height={height}
@@ -136,7 +137,6 @@ function SignaturePad({
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
       onPointerCancel={onPointerUp}
-      {...rest}
     />
   )
 }
