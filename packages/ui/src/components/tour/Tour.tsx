@@ -1,7 +1,7 @@
 import * as React from "react"
 import { Button } from "@components/button"
 import { Portal } from "@primitives/portal"
-import { Presence } from "@primitives/presence"
+import { useId } from "@primitives/state"
 import { cn } from "@lib/utils"
 import "./tour.css"
 
@@ -39,6 +39,7 @@ function Tour({
   className,
 }: TourProps) {
   const [rect, setRect] = React.useState<Rect | null>(null)
+  const titleId = useId()
   const step = steps[current]
 
   React.useEffect(() => {
@@ -95,56 +96,52 @@ function Tour({
 
   return (
     <Portal>
-      <Presence present>
-        <div
-          className={cn("dr-tour-backdrop", className)}
-          style={{ clipPath, WebkitClipPath: clipPath } as React.CSSProperties}
-          onClick={onClose}
-        />
-      </Presence>
-      <Presence present>
-        <div
-          role="dialog"
-          aria-modal="false"
-          aria-labelledby="dr-tour-title"
-          className="dr-tour-popover"
-          style={popoverStyle}
-        >
-          <h3 id="dr-tour-title" className="dr-tour-title">
-            {step.title}
-          </h3>
-          {step.description ? (
-            <p className="dr-tour-description">{step.description}</p>
-          ) : null}
-          <div className="dr-tour-footer">
-            <span className="dr-tour-progress">
-              {current + 1} / {steps.length}
-            </span>
-            <div className="dr-tour-actions">
-              <Button variant="ghost" size="sm" onClick={onClose}>
-                Skip
+      <div
+        className={cn("dr-tour-backdrop", className)}
+        style={{ clipPath, WebkitClipPath: clipPath } as React.CSSProperties}
+        onClick={onClose}
+      />
+      <div
+        role="dialog"
+        aria-modal="false"
+        aria-labelledby={titleId}
+        className="dr-tour-popover"
+        style={popoverStyle}
+      >
+        <h3 id={titleId} className="dr-tour-title">
+          {step.title}
+        </h3>
+        {step.description ? (
+          <p className="dr-tour-description">{step.description}</p>
+        ) : null}
+        <div className="dr-tour-footer">
+          <span className="dr-tour-progress">
+            {current + 1} / {steps.length}
+          </span>
+          <div className="dr-tour-actions">
+            <Button variant="ghost" size="sm" onClick={onClose}>
+              Skip
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onChange(current - 1)}
+              disabled={current === 0}
+            >
+              Previous
+            </Button>
+            {current === steps.length - 1 ? (
+              <Button size="sm" onClick={onClose}>
+                Done
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => onChange(current - 1)}
-                disabled={current === 0}
-              >
-                Previous
+            ) : (
+              <Button size="sm" onClick={() => onChange(current + 1)}>
+                Next
               </Button>
-              {current === steps.length - 1 ? (
-                <Button size="sm" onClick={onClose}>
-                  Done
-                </Button>
-              ) : (
-                <Button size="sm" onClick={() => onChange(current + 1)}>
-                  Next
-                </Button>
-              )}
-            </div>
+            )}
           </div>
         </div>
-      </Presence>
+      </div>
     </Portal>
   )
 }
