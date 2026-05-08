@@ -46,7 +46,6 @@ import {
   Bell,
   Paintbrush,
   LayoutPanelLeft,
-  Wrench,
   AlertCircle,
   BookOpen,
   MoreHorizontal,
@@ -169,11 +168,6 @@ const nav: NavGroup[] = [
       { label: "Colors", href: "/components/colors", icon: Paintbrush },
       { label: "Combobox", href: "/components/combobox", icon: Search },
       { label: "Command", href: "/components/command", icon: Terminal },
-      {
-        label: "Customization",
-        href: "/components/customization",
-        icon: Wrench,
-      },
       {
         label: "Dashboard",
         href: "/components/dashboard",

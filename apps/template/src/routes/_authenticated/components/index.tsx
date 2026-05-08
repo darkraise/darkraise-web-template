@@ -20,7 +20,6 @@ import {
   ListChecks,
   Type,
   Palette,
-  Wrench,
   CookingPot,
   MessageSquareMore,
   ToggleLeft,
@@ -146,12 +145,6 @@ const COMPONENTS = [
     label: "Command",
     description: "Searchable command palette with grouped results",
     icon: Terminal,
-  },
-  {
-    href: "/components/customization",
-    label: "Customization",
-    description: "Extend components with new CVA variants and custom props",
-    icon: Wrench,
   },
   {
     href: "/components/dashboard",
