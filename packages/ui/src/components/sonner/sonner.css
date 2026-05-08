@@ -166,7 +166,7 @@
     @apply text-warning;
   }
   .dr-toast--info {
-    @apply text-primary;
+    @apply text-info;
   }
 
   /* Body / content. */

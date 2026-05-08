@@ -219,6 +219,10 @@ export function generateTokens(
       mode === "light" ? accentColors.amber[500] : accentColors.amber[400],
     "--warning-foreground": "222 47% 11%",
 
+    "--info":
+      mode === "light" ? accentColors.blue[500] : accentColors.blue[400],
+    "--info-foreground": "0 0% 100%",
+
     "--border": border,
     "--input": inputValue,
 
