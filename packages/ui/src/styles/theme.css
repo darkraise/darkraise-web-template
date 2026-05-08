@@ -555,7 +555,7 @@
   --elevation-flat: 0 0 transparent;
   --elevation-low: 0 4px 8px 0 rgb(0 0 0 / 0.18);
   --elevation-medium:
-    0 14px 32px -3px rgb(0 0 0 / 0.28), 0 5px 12px -2px rgb(0 0 0 / 0.16);
+    0 24px 44px -6px rgb(0 0 0 / 0.34), 0 8px 16px -3px rgb(0 0 0 / 0.2);
   --elevation-high:
     0 48px 72px -10px rgb(0 0 0 / 0.45), 0 20px 36px -6px rgb(0 0 0 / 0.28);
   --elevation-current: var(--elevation-high);
@@ -593,7 +593,7 @@
   --elevation-flat: 0 0 transparent;
   --elevation-low: 0 4px 8px 0 rgb(0 0 0 / 0.6);
   --elevation-medium:
-    0 14px 32px -3px rgb(0 0 0 / 0.75), 0 5px 12px -2px rgb(0 0 0 / 0.55);
+    0 24px 44px -6px rgb(0 0 0 / 0.85), 0 8px 16px -3px rgb(0 0 0 / 0.55);
   --elevation-high:
     0 48px 72px -10px rgb(0 0 0 / 0.9), 0 20px 36px -6px rgb(0 0 0 / 0.6);
 }
