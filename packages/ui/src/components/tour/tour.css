@@ -1,0 +1,23 @@
+@layer components {
+  .dr-tour-backdrop {
+    @apply fixed inset-0 z-[80] bg-black/60;
+  }
+  .dr-tour-popover {
+    @apply bg-popover text-popover-foreground border-border z-[81] w-80 max-w-[calc(100vw-2rem)] rounded-lg border p-4 shadow-lg;
+  }
+  .dr-tour-title {
+    @apply text-base font-semibold;
+  }
+  .dr-tour-description {
+    @apply text-muted-foreground mt-1 text-sm;
+  }
+  .dr-tour-footer {
+    @apply mt-3 flex items-center justify-between gap-2;
+  }
+  .dr-tour-progress {
+    @apply text-muted-foreground text-xs;
+  }
+  .dr-tour-actions {
+    @apply flex items-center gap-2;
+  }
+}
