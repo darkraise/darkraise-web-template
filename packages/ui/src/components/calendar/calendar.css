@@ -22,6 +22,17 @@
       color 120ms;
   }
 
+  /* Hold the selected-state colors on hover so the underlying Button ghost
+     variant's `hover:bg-accent` does not override the primary fill. */
+  .dr-calendar-day-btn[data-selected-single="true"]:hover,
+  .dr-calendar-day-btn[data-range-start="true"]:hover,
+  .dr-calendar-day-btn[data-range-end="true"]:hover {
+    @apply bg-primary text-primary-foreground;
+  }
+  .dr-calendar-day-btn[data-range-middle="true"]:hover {
+    @apply bg-accent text-accent-foreground;
+  }
+
   .dr-calendar-day-btn:where(
     [data-focused="true"],
     .group[data-focused="true"] *
