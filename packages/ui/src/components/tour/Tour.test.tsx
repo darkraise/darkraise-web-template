@@ -148,4 +148,42 @@ describe("Tour", () => {
     await userEvent.click(screen.getByRole("button", { name: /next/i }))
     await waitFor(() => expect(scrollIntoView).toHaveBeenCalled())
   })
+
+  it("focuses the popover on open and restores focus on close", async () => {
+    function Wrapper() {
+      const [open, setOpen] = React.useState(false)
+      return (
+        <>
+          <Targets />
+          <button
+            data-testid="opener"
+            type="button"
+            onClick={() => setOpen(true)}
+          >
+            Open
+          </button>
+          <Tour
+            open={open}
+            steps={STEPS}
+            current={0}
+            onChange={() => {}}
+            onClose={() => setOpen(false)}
+          />
+        </>
+      )
+    }
+    render(<Wrapper />)
+    const opener = screen.getByTestId("opener")
+    opener.focus()
+    expect(opener).toHaveFocus()
+
+    await userEvent.click(opener)
+
+    const popover = screen.getByRole("dialog")
+    await waitFor(() => expect(popover).toHaveFocus())
+
+    await userEvent.click(screen.getByRole("button", { name: /skip/i }))
+
+    await waitFor(() => expect(opener).toHaveFocus())
+  })
 })

@@ -39,6 +39,8 @@ function Tour({
   className,
 }: TourProps) {
   const [rect, setRect] = React.useState<Rect | null>(null)
+  const popoverRef = React.useRef<HTMLDivElement | null>(null)
+  const previousFocusRef = React.useRef<HTMLElement | null>(null)
   const titleId = useId()
   const step = steps[current]
 
@@ -67,6 +69,24 @@ function Tour({
       window.removeEventListener("scroll", update, true)
     }
   }, [open, step, spotlightPadding])
+
+  // Move focus to the popover on open so keyboard users can interact with the
+  // controls; restore focus to the previously-focused element on close.
+  // The focus is deferred because the in-house `Portal` defers its content
+  // mount by one effect tick — the popover ref isn't populated synchronously.
+  React.useEffect(() => {
+    if (!open) return
+    previousFocusRef.current =
+      (document.activeElement as HTMLElement | null) ?? null
+    const id = window.setTimeout(() => {
+      popoverRef.current?.focus()
+    }, 0)
+    return () => {
+      window.clearTimeout(id)
+      previousFocusRef.current?.focus?.()
+      previousFocusRef.current = null
+    }
+  }, [open])
 
   if (!open || !step) return null
 
@@ -102,9 +122,11 @@ function Tour({
         onClick={onClose}
       />
       <div
+        ref={popoverRef}
         role="dialog"
         aria-modal="false"
         aria-labelledby={titleId}
+        tabIndex={-1}
         className="dr-tour-popover"
         style={popoverStyle}
       >
