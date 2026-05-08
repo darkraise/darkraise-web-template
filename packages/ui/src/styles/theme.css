@@ -1006,11 +1006,16 @@
      state (opacity 0, height 0, scale 0.95, etc.) for the one render tick
      between `animation.finished` and Presence unmounting the node. Without
      this, the element snaps back to its non-animated state for a frame and
-     flickers before disappearing. Affects every overlay's close transition
-     plus accordion/collapsible collapse. */
-  .animate-out,
-  .dr-accordion-content[data-state="closed"],
-  .dr-collapsible-content[data-state="closed"] {
+     flickers before disappearing.
+
+     Targets the `data-state="closed"` attribute directly because overlay
+     primitives use Tailwind v4's `data-[state=closed]:animate-out` variant,
+     which compiles to a per-element rule rather than putting a literal
+     `.animate-out` class on the node — a class-name selector would not
+     match. Covers Dialog, AlertDialog, Sheet, Drawer, Popover, Tooltip,
+     HoverCard, DropdownMenu, ContextMenu, Menubar, NavigationMenu, Select,
+     plus Accordion / Collapsible content height keyframes. */
+  [data-state="closed"] {
     animation-fill-mode: forwards;
   }
 }
