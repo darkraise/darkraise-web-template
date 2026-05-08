@@ -72,7 +72,12 @@
     pointer-events: none;
   }
 
-  /* Expanded mode: position by accumulated heights, full scale. */
+  /* Expanded mode: position by accumulated heights, full scale. The toaster
+     catches pointer events in expanded mode so gaps between toasts don't
+     register as "left the hover region" and prematurely collapse the stack. */
+  .dr-toaster[data-expanded] {
+    pointer-events: auto;
+  }
   .dr-toaster[data-expanded] .dr-toast {
     --toast-scale: 1;
     --toast-stack-y: var(--toast-stack-y-expanded);
