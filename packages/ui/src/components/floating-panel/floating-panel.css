@@ -1,0 +1,22 @@
+@layer components {
+  .dr-floating-panel {
+    @apply bg-popover text-popover-foreground border-border absolute z-50 flex flex-col overflow-hidden rounded-md border shadow-lg;
+  }
+  .dr-floating-panel-header {
+    @apply bg-muted text-muted-foreground cursor-move border-b px-3 py-2 text-sm font-medium select-none;
+  }
+  .dr-floating-panel-content {
+    @apply flex-1 overflow-auto p-3;
+  }
+  .dr-floating-panel-resize {
+    @apply text-muted-foreground absolute right-0 bottom-0 h-3 w-3 cursor-nwse-resize;
+    background: linear-gradient(
+      135deg,
+      transparent 0,
+      transparent 6px,
+      currentColor 6px,
+      currentColor 7px,
+      transparent 7px
+    );
+  }
+}
