@@ -18,9 +18,6 @@ import {
   BarChart3,
   TableProperties,
   ListChecks,
-  Type,
-  Palette,
-  CookingPot,
   MessageSquareMore,
   ToggleLeft,
   AlertTriangle,
@@ -34,8 +31,6 @@ import {
   MoreHorizontal,
   LayoutPanelLeft,
   Activity,
-  Sparkles,
-  Shapes,
   ClipboardCopy,
   Pipette,
   Search,
@@ -67,12 +62,6 @@ const COMPONENTS = [
     label: "Alert Dialog",
     description: "Blocking modal dialogs requiring explicit confirmation",
     icon: AlertTriangle,
-  },
-  {
-    href: "/components/animation",
-    label: "Animation",
-    description: "Motion utilities for loaders, transitions, and entrances",
-    icon: Sparkles,
   },
   {
     href: "/components/avatar",
@@ -127,12 +116,6 @@ const COMPONENTS = [
     label: "Color Picker",
     description: "Hex color picker with swatch presets and eyedropper",
     icon: Pipette,
-  },
-  {
-    href: "/components/colors",
-    label: "Colors",
-    description: "Surface elevations and semantic color tokens",
-    icon: Palette,
   },
   {
     href: "/components/combobox",
@@ -219,12 +202,6 @@ const COMPONENTS = [
     icon: SquareMousePointer,
   },
   {
-    href: "/components/icons",
-    label: "Icons",
-    description: "Searchable lucide-react catalog with usage conventions",
-    icon: Shapes,
-  },
-  {
     href: "/components/inputs",
     label: "Inputs",
     description: "Text, textarea, select, checkbox, switch, radio group",
@@ -278,12 +255,6 @@ const COMPONENTS = [
     label: "Rating Group",
     description: "Star ratings with hover preview and half-star support",
     icon: Star,
-  },
-  {
-    href: "/components/recipes",
-    label: "Recipes",
-    description: "Cross-component composition patterns for real-world UIs",
-    icon: CookingPot,
   },
   {
     href: "/components/scroll-area",
@@ -362,12 +333,6 @@ const COMPONENTS = [
     label: "Tree View",
     description: "Recursive nav tree with selection, expand, and keyboard nav",
     icon: FolderTree,
-  },
-  {
-    href: "/components/typography",
-    label: "Typography",
-    description: "Headings, body text, muted, mono, and size scale",
-    icon: Type,
   },
 ]
 

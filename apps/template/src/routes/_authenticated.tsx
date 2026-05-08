@@ -20,7 +20,6 @@ import {
   SeparatorHorizontal,
   Bone,
   ToggleRight,
-  Type,
   TextCursorInput,
   CalendarDays,
   Calendar,
@@ -44,13 +43,9 @@ import {
   MousePointerClick,
   PanelTop,
   Bell,
-  Paintbrush,
   LayoutPanelLeft,
   AlertCircle,
-  BookOpen,
   MoreHorizontal,
-  Sparkles,
-  Shapes,
   PackageOpen,
   ClipboardCopy,
   Pipette,
@@ -124,13 +119,7 @@ const nav: NavGroup[] = [
         href: "/components/angle-slider",
         icon: Compass,
       },
-      { label: "Animation", href: "/components/animation", icon: Sparkles },
       { label: "Avatar", href: "/components/avatar", icon: CircleUser },
-      {
-        label: "Accent Surfaces",
-        href: "/components/accent-surfaces",
-        icon: Paintbrush,
-      },
       { label: "Badges", href: "/components/badges", icon: Shield },
       {
         label: "Breadcrumb",
@@ -165,7 +154,6 @@ const nav: NavGroup[] = [
         href: "/components/color-picker",
         icon: Pipette,
       },
-      { label: "Colors", href: "/components/colors", icon: Paintbrush },
       { label: "Combobox", href: "/components/combobox", icon: Search },
       { label: "Command", href: "/components/command", icon: Terminal },
       {
@@ -229,7 +217,6 @@ const nav: NavGroup[] = [
         href: "/components/hover-card",
         icon: MousePointerClick,
       },
-      { label: "Icons", href: "/components/icons", icon: Shapes },
       {
         label: "Image Cropper",
         href: "/components/image-cropper",
@@ -270,7 +257,6 @@ const nav: NavGroup[] = [
         href: "/components/rating-group",
         icon: Star,
       },
-      { label: "Recipes", href: "/components/recipes", icon: BookOpen },
       {
         label: "Scroll Area",
         href: "/components/scroll-area",
@@ -306,7 +292,6 @@ const nav: NavGroup[] = [
         href: "/components/tree-view",
         icon: FolderTree,
       },
-      { label: "Typography", href: "/components/typography", icon: Type },
     ],
   },
   {
