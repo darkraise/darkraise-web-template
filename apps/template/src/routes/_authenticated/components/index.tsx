@@ -18,6 +18,8 @@ import {
   BarChart3,
   TableProperties,
   ListChecks,
+  Sparkles,
+  Shapes,
   MessageSquareMore,
   ToggleLeft,
   AlertTriangle,
@@ -62,6 +64,12 @@ const COMPONENTS = [
     label: "Alert Dialog",
     description: "Blocking modal dialogs requiring explicit confirmation",
     icon: AlertTriangle,
+  },
+  {
+    href: "/components/animation",
+    label: "Animation",
+    description: "Motion utilities for loaders, transitions, and entrances",
+    icon: Sparkles,
   },
   {
     href: "/components/avatar",
@@ -200,6 +208,12 @@ const COMPONENTS = [
     label: "Hover Card",
     description: "Non-interactive preview cards triggered by hover",
     icon: SquareMousePointer,
+  },
+  {
+    href: "/components/icons",
+    label: "Icons",
+    description: "Searchable lucide-react catalog with usage conventions",
+    icon: Shapes,
   },
   {
     href: "/components/inputs",

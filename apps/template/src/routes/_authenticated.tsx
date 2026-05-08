@@ -46,6 +46,8 @@ import {
   LayoutPanelLeft,
   AlertCircle,
   MoreHorizontal,
+  Sparkles,
+  Shapes,
   PackageOpen,
   ClipboardCopy,
   Pipette,
@@ -119,6 +121,7 @@ const nav: NavGroup[] = [
         href: "/components/angle-slider",
         icon: Compass,
       },
+      { label: "Animation", href: "/components/animation", icon: Sparkles },
       { label: "Avatar", href: "/components/avatar", icon: CircleUser },
       { label: "Badges", href: "/components/badges", icon: Shield },
       {
@@ -217,6 +220,7 @@ const nav: NavGroup[] = [
         href: "/components/hover-card",
         icon: MousePointerClick,
       },
+      { label: "Icons", href: "/components/icons", icon: Shapes },
       {
         label: "Image Cropper",
         href: "/components/image-cropper",
