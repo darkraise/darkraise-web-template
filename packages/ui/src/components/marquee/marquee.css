@@ -1,0 +1,31 @@
+@layer components {
+  .dr-marquee {
+    @apply relative flex overflow-hidden;
+  }
+  .dr-marquee-track {
+    @apply flex w-max gap-8;
+    animation: dr-marquee-scroll var(--marquee-duration, 18s) linear infinite;
+  }
+  .dr-marquee[data-reverse="true"] .dr-marquee-track {
+    animation-direction: reverse;
+  }
+  .dr-marquee[data-pause-on-hover="true"]:hover .dr-marquee-track {
+    animation-play-state: paused;
+  }
+  .dr-marquee-group {
+    @apply flex shrink-0 items-center gap-8;
+  }
+  @keyframes dr-marquee-scroll {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .dr-marquee-track {
+      animation: none;
+    }
+  }
+}
