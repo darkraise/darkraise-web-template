@@ -62,6 +62,37 @@ function CardsPage() {
       </ShowcaseExample>
 
       <ShowcaseExample
+        title="Elevated cards (respects theme elevation axis)"
+        code={`<Card elevated>...</Card>            // shorthand for "medium"
+<Card elevated="low">...</Card>
+<Card elevated="medium">...</Card>
+<Card elevated="high">...</Card>
+
+// Switching the theme's elevation axis (flat / low / high) flattens or
+// strengthens these shadows automatically — no per-card overrides needed.`}
+      >
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          {(["low", "medium", "high"] as const).map((level) => (
+            <Card key={level} elevated={level}>
+              <CardHeader>
+                <CardTitle className="text-base capitalize">
+                  {level} elevation
+                </CardTitle>
+                <CardDescription>
+                  Shadow scales with the active theme elevation.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground text-sm">
+                  Try switching the elevation axis in the theme switcher.
+                </p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </ShowcaseExample>
+
+      <ShowcaseExample
         title="Card with badge"
         code={`<Card>
   <CardHeader>
