@@ -1,0 +1,17 @@
+@layer components {
+  .dr-toolbar {
+    @apply bg-card flex items-center gap-1 rounded-md border p-1;
+  }
+  .dr-toolbar[data-orientation="vertical"] {
+    @apply flex-col items-stretch;
+  }
+  .dr-toolbar-separator {
+    @apply bg-border;
+  }
+  .dr-toolbar-separator[data-orientation="vertical"] {
+    @apply mx-0.5 h-5 w-px;
+  }
+  .dr-toolbar-separator[data-orientation="horizontal"] {
+    @apply my-0.5 h-px w-5;
+  }
+}

@@ -69,6 +69,7 @@
 @import "../components/timer/timer.css";
 @import "../components/toggle/toggle.css";
 @import "../components/toggle-group/toggle-group.css";
+@import "../components/toolbar/toolbar.css";
 @import "../components/tooltip/tooltip.css";
 @import "../components/tree-view/tree-view.css";
 @import "../components/virtualized-dropdown-menu/virtualized-dropdown-menu.css";
