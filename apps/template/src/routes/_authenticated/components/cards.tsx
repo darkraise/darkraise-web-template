@@ -62,29 +62,42 @@ function CardsPage() {
       </ShowcaseExample>
 
       <ShowcaseExample
-        title="Elevated cards (respects theme elevation axis)"
-        code={`<Card elevated>...</Card>            // shorthand for "medium"
-<Card elevated="low">...</Card>
-<Card elevated="medium">...</Card>
-<Card elevated="high">...</Card>
+        title="Elevation prop"
+        code={`<Card elevation>...</Card>             // follow active theme axis
+<Card elevation="flat">...</Card>
+<Card elevation="low">...</Card>
+<Card elevation="medium">...</Card>
+<Card elevation="high">...</Card>
 
-// Switching the theme's elevation axis (flat / low / high) flattens or
-// strengthens these shadows automatically — no per-card overrides needed.`}
+// "auto" (boolean true) tracks the active theme elevation: switching the
+// axis to "low" flattens the card's shadow, "high" deepens it. Explicit
+// levels override the axis (still go flat under data-elevation="flat").`}
       >
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <Card elevation>
+            <CardHeader>
+              <CardTitle className="text-base">Auto (theme)</CardTitle>
+              <CardDescription>
+                Tracks the active elevation axis.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground text-sm">
+                Toggle the elevation axis in the theme switcher.
+              </p>
+            </CardContent>
+          </Card>
           {(["low", "medium", "high"] as const).map((level) => (
-            <Card key={level} elevated={level}>
+            <Card key={level} elevation={level}>
               <CardHeader>
                 <CardTitle className="text-base capitalize">
-                  {level} elevation
+                  {level} (explicit)
                 </CardTitle>
-                <CardDescription>
-                  Shadow scales with the active theme elevation.
-                </CardDescription>
+                <CardDescription>Pinned regardless of axis.</CardDescription>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground text-sm">
-                  Try switching the elevation axis in the theme switcher.
+                  Always uses the {level} shadow.
                 </p>
               </CardContent>
             </Card>

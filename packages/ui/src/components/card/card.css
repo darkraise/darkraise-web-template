@@ -5,15 +5,23 @@
   }
 
   /* Elevation prop — opt-in shadow that resolves through the theme's
-     `data-elevation` axis. When the active theme is `data-elevation="flat"`,
-     these tokens collapse to `0 0 transparent` and the card looks flush. */
-  .dr-card[data-elevated="low"] {
+     `data-elevation` axis. `auto` follows the active theme level via
+     `--elevation-current` (mapped per axis in theme.css). Explicit levels
+     still flatten under `data-elevation="flat"` because the underlying
+     `--elevation-*` tokens collapse to `0 0 transparent` there. */
+  .dr-card[data-elevation="auto"] {
+    box-shadow: var(--elevation-current);
+  }
+  .dr-card[data-elevation="flat"] {
+    box-shadow: var(--elevation-flat);
+  }
+  .dr-card[data-elevation="low"] {
     box-shadow: var(--elevation-low);
   }
-  .dr-card[data-elevated="medium"] {
+  .dr-card[data-elevation="medium"] {
     box-shadow: var(--elevation-medium);
   }
-  .dr-card[data-elevated="high"] {
+  .dr-card[data-elevation="high"] {
     box-shadow: var(--elevation-high);
   }
 

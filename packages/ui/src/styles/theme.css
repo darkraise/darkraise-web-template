@@ -526,6 +526,11 @@
   --elevation-low: 0 1px 2px 0 rgb(0 0 0 / 0.07);
   --elevation-medium: 0 4px 10px -1px rgb(0 0 0 / 0.13);
   --elevation-high: 0 12px 24px -4px rgb(0 0 0 / 0.2);
+  --elevation-current: var(--elevation-low);
+}
+
+[data-elevation="medium"] {
+  --elevation-current: var(--elevation-medium);
 }
 
 [data-elevation="high"] {
@@ -535,6 +540,7 @@
     0 14px 32px -3px rgb(0 0 0 / 0.28), 0 5px 12px -2px rgb(0 0 0 / 0.16);
   --elevation-high:
     0 48px 72px -10px rgb(0 0 0 / 0.45), 0 20px 36px -6px rgb(0 0 0 / 0.28);
+  --elevation-current: var(--elevation-high);
 }
 
 /* Dark-mode shadow boost — drop shadows tinted black barely register

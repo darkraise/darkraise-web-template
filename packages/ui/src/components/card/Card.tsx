@@ -3,27 +3,30 @@ import * as React from "react"
 import { cn } from "@lib/utils"
 import "./card.css"
 
-export type CardElevation = "low" | "medium" | "high"
+export type CardElevation = "flat" | "low" | "medium" | "high"
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   /**
-   * Apply a drop shadow that respects the active `data-elevation` theme axis.
-   * `true` is shorthand for `"medium"`. Pass `"low"`, `"medium"`, or `"high"`
-   * for explicit intent. The actual shadow strength comes from
-   * `--elevation-{low|medium|high}`, so when the user picks a flatter
-   * elevation theme the card flattens with the rest of the surface.
+   * Apply a drop shadow.
+   *
+   * - omitted or `false`: no shadow.
+   * - `true`: follow the active `data-elevation` theme axis — flat / low /
+   *   medium / high all map to the same-named shadow on the card.
+   * - `"flat" | "low" | "medium" | "high"`: explicit shadow level
+   *   regardless of the theme axis (still flattens to transparent under
+   *   `data-elevation="flat"`).
    */
-  elevated?: boolean | CardElevation
+  elevation?: boolean | CardElevation
   ref?: React.Ref<HTMLDivElement>
 }
 
-function Card({ className, elevated = false, ref, ...props }: CardProps) {
-  const level: CardElevation | undefined =
-    elevated === true ? "medium" : elevated || undefined
+function Card({ className, elevation = false, ref, ...props }: CardProps) {
+  const value: CardElevation | "auto" | undefined =
+    elevation === true ? "auto" : elevation || undefined
   return (
     <div
       ref={ref}
-      data-elevated={level}
+      data-elevation={value}
       className={cn("dr-card", className)}
       {...props}
     />
