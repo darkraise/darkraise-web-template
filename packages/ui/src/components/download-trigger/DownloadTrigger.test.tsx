@@ -50,4 +50,25 @@ describe("DownloadTrigger", () => {
     expect(onDownload).toHaveBeenCalledTimes(1)
     click.mockRestore()
   })
+
+  it("wires fileName onto the anchor's download attribute and href to the object URL", async () => {
+    const blob = new Blob(["hello"], { type: "text/plain" })
+    const click = vi
+      .spyOn(HTMLAnchorElement.prototype, "click")
+      .mockImplementation(() => {})
+    render(
+      <DownloadTrigger fileName="report.csv" data={blob}>
+        Download
+      </DownloadTrigger>,
+    )
+    await userEvent.click(screen.getByRole("button", { name: "Download" }))
+
+    expect(click).toHaveBeenCalledTimes(1)
+    const anchor = click.mock.contexts[0] as HTMLAnchorElement
+    expect(anchor.download).toBe("report.csv")
+    expect(anchor.getAttribute("href")).toBe("blob:fake")
+    expect(anchor.rel).toBe("noopener")
+
+    click.mockRestore()
+  })
 })
