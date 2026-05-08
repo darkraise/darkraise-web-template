@@ -59,6 +59,12 @@ interface ToasterProps {
   gap?: number
   /** Maximum number of toasts visible in collapsed stack. Default 3. */
   visibleToasts?: number
+  /**
+   * When true, every toast renders a persistent close (×) button. Defaults
+   * to false (close button is hover-revealed). Per-toast override via
+   * `toast(message, { closeButton: true })`.
+   */
+  closeButton?: boolean
 }
 
 function useToasts(): Toast[] {
@@ -75,6 +81,7 @@ function Toaster({
   style,
   gap = 14,
   visibleToasts = 3,
+  closeButton = false,
 }: ToasterProps) {
   const toasts = useToasts()
   const [hoverExpanded, setHoverExpanded] = React.useState(false)
@@ -148,6 +155,7 @@ function Toaster({
             onMeasureHeight={reportHeight}
             isTop={isTop}
             paused={isExpanded}
+            closeButton={t.closeButton ?? closeButton}
           />
         ))}
       </ol>
@@ -164,6 +172,7 @@ interface ToastItemProps {
   onMeasureHeight: (id: string, h: number) => void
   isTop: boolean
   paused: boolean
+  closeButton: boolean
 }
 
 function ToastItem({
@@ -174,6 +183,7 @@ function ToastItem({
   onMeasureHeight,
   isTop,
   paused,
+  closeButton,
 }: ToastItemProps) {
   const [present, setPresent] = React.useState(true)
   // Mount-window flag for the entrance animation. Set true on initial mount,
@@ -311,6 +321,7 @@ function ToastItem({
         data-front={index === 0 ? "true" : undefined}
         data-hidden={isHiddenInStack ? "true" : undefined}
         data-mount-anim={mountAnim ? "true" : undefined}
+        data-close-button={closeButton ? "true" : undefined}
         style={
           {
             "--toast-index": index,

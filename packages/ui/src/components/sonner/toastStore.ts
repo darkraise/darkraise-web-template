@@ -23,6 +23,8 @@ export interface Toast {
   cancel?: ToastAction
   /** for toast.custom — render arbitrary JSX */
   custom?: React.ReactNode
+  /** Per-toast override of the Toaster's `closeButton` prop. */
+  closeButton?: boolean
 }
 
 export interface ToastOptions {
@@ -31,6 +33,11 @@ export interface ToastOptions {
   duration?: number
   action?: ToastAction
   cancel?: ToastAction
+  /**
+   * Show a persistent close (×) button on this toast. Defaults to the
+   * Toaster's `closeButton` prop; set explicitly here to override per call.
+   */
+  closeButton?: boolean
 }
 
 interface ToastStoreState {
@@ -106,6 +113,7 @@ function emit(
     duration: options.duration,
     action: options.action,
     cancel: options.cancel,
+    closeButton: options.closeButton,
   })
   return id
 }
@@ -150,6 +158,7 @@ baseToast.custom = (jsx, options) => {
     description: options?.description,
     action: options?.action,
     cancel: options?.cancel,
+    closeButton: options?.closeButton,
   })
   return id
 }
