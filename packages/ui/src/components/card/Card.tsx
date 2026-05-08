@@ -12,9 +12,9 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
    * - omitted or `false`: no shadow.
    * - `true`: follow the active `data-elevation` theme axis — flat / low /
    *   medium / high all map to the same-named shadow on the card.
-   * - `"flat" | "low" | "medium" | "high"`: explicit shadow level
-   *   regardless of the theme axis (still flattens to transparent under
-   *   `data-elevation="flat"`).
+   * - `"flat" | "low" | "medium" | "high"`: explicit shadow level that is
+   *   immune to the theme axis. The card renders the same shadow whether
+   *   the theme is set to flat, low, medium, or high.
    */
   elevation?: boolean | CardElevation
   ref?: React.Ref<HTMLDivElement>

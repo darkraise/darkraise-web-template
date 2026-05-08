@@ -4,25 +4,26 @@
     transition: box-shadow 200ms ease;
   }
 
-  /* Elevation prop — opt-in shadow that resolves through the theme's
-     `data-elevation` axis. `auto` follows the active theme level via
-     `--elevation-current` (mapped per axis in theme.css). Explicit levels
-     still flatten under `data-elevation="flat"` because the underlying
-     `--elevation-*` tokens collapse to `0 0 transparent` there. */
+  /* Elevation prop — opt-in shadow. `auto` follows the active theme axis
+     via `--elevation-current` (mapped per axis in theme.css). Explicit
+     levels (`flat | low | medium | high`) consume `--card-elevation-*`
+     constants that the theme axis never overrides, so a `<Card
+     elevation="medium">` renders the same shadow regardless of the theme
+     picker. `flat` is hard-zeroed so theme=high can't accidentally lift it. */
   .dr-card[data-elevation="auto"] {
     box-shadow: var(--elevation-current);
   }
   .dr-card[data-elevation="flat"] {
-    box-shadow: var(--elevation-flat);
+    box-shadow: 0 0 transparent;
   }
   .dr-card[data-elevation="low"] {
-    box-shadow: var(--elevation-low);
+    box-shadow: var(--card-elevation-low);
   }
   .dr-card[data-elevation="medium"] {
-    box-shadow: var(--elevation-medium);
+    box-shadow: var(--card-elevation-medium);
   }
   .dr-card[data-elevation="high"] {
-    box-shadow: var(--elevation-high);
+    box-shadow: var(--card-elevation-high);
   }
 
   .dr-card-header {

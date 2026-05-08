@@ -496,6 +496,18 @@
     0 8px 20px -2px rgb(0 0 0 / 0.18), 0 3px 8px -1px rgb(0 0 0 / 0.1);
   --elevation-high:
     0 32px 48px -8px rgb(0 0 0 / 0.32), 0 12px 24px -4px rgb(0 0 0 / 0.18);
+
+  /* Theme-axis-immune shadow ramp for components that opt into an explicit
+     level via prop (e.g. `<Card elevation="medium">`). Mirrors the default
+     `--elevation-*` values but the `[data-elevation="..."]` blocks below
+     never override these, so an explicit level renders the same shadow
+     regardless of the theme picker. Dark-mode variants live under the
+     `[data-mode="dark"]` block. */
+  --card-elevation-low: 0 2px 4px 0 rgb(0 0 0 / 0.1);
+  --card-elevation-medium:
+    0 8px 20px -2px rgb(0 0 0 / 0.18), 0 3px 8px -1px rgb(0 0 0 / 0.1);
+  --card-elevation-high:
+    0 32px 48px -8px rgb(0 0 0 / 0.32), 0 12px 24px -4px rgb(0 0 0 / 0.18);
   --shadow-button: 0 0 transparent;
 }
 
@@ -572,6 +584,11 @@
   --elevation-medium:
     0 8px 20px -2px rgb(0 0 0 / 0.65), 0 3px 8px -1px rgb(0 0 0 / 0.5);
   --elevation-high:
+    0 32px 48px -8px rgb(0 0 0 / 0.8), 0 12px 24px -4px rgb(0 0 0 / 0.55);
+  --card-elevation-low: 0 2px 4px 0 rgb(0 0 0 / 0.5);
+  --card-elevation-medium:
+    0 8px 20px -2px rgb(0 0 0 / 0.65), 0 3px 8px -1px rgb(0 0 0 / 0.5);
+  --card-elevation-high:
     0 32px 48px -8px rgb(0 0 0 / 0.8), 0 12px 24px -4px rgb(0 0 0 / 0.55);
 }
 
