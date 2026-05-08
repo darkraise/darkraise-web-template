@@ -1,21 +1,85 @@
 @layer components {
   .dr-badge {
-    @apply glass-thin inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors;
+    @apply glass-thin inline-flex items-center rounded-full border font-semibold transition-colors;
   }
 
+  /* Sizes */
+  .dr-badge[data-size="sm"] {
+    @apply px-2 py-0 text-[10px] leading-4;
+  }
+  .dr-badge[data-size="md"] {
+    @apply px-2.5 py-0.5 text-xs;
+  }
+  .dr-badge[data-size="lg"] {
+    @apply px-3 py-1 text-sm;
+  }
+
+  /* Theme-aware variants */
   .dr-badge[data-variant="default"] {
     @apply bg-primary text-primary-foreground hover:bg-primary/80 border-transparent;
   }
-
   .dr-badge[data-variant="secondary"] {
     @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 border-transparent;
   }
-
   .dr-badge[data-variant="destructive"] {
     @apply bg-destructive text-destructive-foreground hover:bg-destructive/80 border-transparent;
   }
-
   .dr-badge[data-variant="outline"] {
     @apply text-foreground;
+  }
+
+  /* Fixed accent-color variants — independent of the active theme accent.
+     Light-luminance accents (amber, yellow, lime) use a dark on-color text
+     for contrast; the rest use white. */
+  .dr-badge[data-variant="red"] {
+    @apply border-transparent bg-red-500 text-white hover:bg-red-500/80;
+  }
+  .dr-badge[data-variant="orange"] {
+    @apply border-transparent bg-orange-500 text-white hover:bg-orange-500/80;
+  }
+  .dr-badge[data-variant="amber"] {
+    @apply border-transparent bg-amber-500 text-amber-950 hover:bg-amber-500/80;
+  }
+  .dr-badge[data-variant="yellow"] {
+    @apply border-transparent bg-yellow-500 text-yellow-950 hover:bg-yellow-500/80;
+  }
+  .dr-badge[data-variant="lime"] {
+    @apply border-transparent bg-lime-500 text-lime-950 hover:bg-lime-500/80;
+  }
+  .dr-badge[data-variant="green"] {
+    @apply border-transparent bg-green-500 text-white hover:bg-green-500/80;
+  }
+  .dr-badge[data-variant="emerald"] {
+    @apply border-transparent bg-emerald-500 text-white hover:bg-emerald-500/80;
+  }
+  .dr-badge[data-variant="teal"] {
+    @apply border-transparent bg-teal-500 text-white hover:bg-teal-500/80;
+  }
+  .dr-badge[data-variant="cyan"] {
+    @apply border-transparent bg-cyan-500 text-white hover:bg-cyan-500/80;
+  }
+  .dr-badge[data-variant="sky"] {
+    @apply border-transparent bg-sky-500 text-white hover:bg-sky-500/80;
+  }
+  .dr-badge[data-variant="blue"] {
+    @apply border-transparent bg-blue-500 text-white hover:bg-blue-500/80;
+  }
+  .dr-badge[data-variant="indigo"] {
+    @apply border-transparent bg-indigo-500 text-white hover:bg-indigo-500/80;
+  }
+  .dr-badge[data-variant="violet"] {
+    @apply border-transparent bg-violet-500 text-white hover:bg-violet-500/80;
+  }
+  .dr-badge[data-variant="purple"] {
+    @apply border-transparent bg-purple-500 text-white hover:bg-purple-500/80;
+  }
+  .dr-badge[data-variant="fuchsia"] {
+    @apply border-transparent bg-fuchsia-500 text-white hover:bg-fuchsia-500/80;
+  }
+  .dr-badge[data-variant="pink"] {
+    @apply border-transparent bg-pink-500 text-white hover:bg-pink-500/80;
+  }
+  .dr-badge[data-variant="rose"] {
+    @apply border-transparent bg-rose-500 text-white hover:bg-rose-500/80;
   }
 }

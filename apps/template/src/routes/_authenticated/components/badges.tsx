@@ -67,6 +67,62 @@ function BadgesPage() {
       </ShowcaseExample>
 
       <ShowcaseExample
+        title="Sizes"
+        code={`<Badge size="sm">Small</Badge>
+<Badge size="md">Medium</Badge>
+<Badge size="lg">Large</Badge>`}
+      >
+        <div className="flex flex-wrap items-center gap-3">
+          <Badge size="sm">Small</Badge>
+          <Badge size="md">Medium</Badge>
+          <Badge size="lg">Large</Badge>
+          <Badge variant="secondary" size="sm">
+            sm
+          </Badge>
+          <Badge variant="destructive" size="lg">
+            lg
+          </Badge>
+        </div>
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Accent color variants"
+        code={`<Badge variant="red">Red</Badge>
+<Badge variant="blue">Blue</Badge>
+<Badge variant="emerald">Emerald</Badge>
+// ... 17 accent colors total, independent of the theme accent
+`}
+      >
+        <div className="flex flex-wrap gap-2">
+          {(
+            [
+              "red",
+              "orange",
+              "amber",
+              "yellow",
+              "lime",
+              "green",
+              "emerald",
+              "teal",
+              "cyan",
+              "sky",
+              "blue",
+              "indigo",
+              "violet",
+              "purple",
+              "fuchsia",
+              "pink",
+              "rose",
+            ] as const
+          ).map((color) => (
+            <Badge key={color} variant={color}>
+              {color}
+            </Badge>
+          ))}
+        </div>
+      </ShowcaseExample>
+
+      <ShowcaseExample
         title="With icons"
         code={`<Badge variant="default">
   <CheckCircle className="mr-1 h-3 w-3" /> Active
