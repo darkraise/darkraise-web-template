@@ -3,8 +3,8 @@ import { cn } from "@lib/utils"
 import "./marquee.css"
 
 export interface MarqueeProps extends React.HTMLAttributes<HTMLDivElement> {
-  /** Animation duration in ms. Default 18 000. */
-  speed?: number
+  /** Time in milliseconds for one full scroll loop. Larger values scroll slower. Default 18000. */
+  duration?: number
   /** Pause animation on hover. */
   pauseOnHover?: boolean
   /** Reverse direction. */
@@ -13,7 +13,7 @@ export interface MarqueeProps extends React.HTMLAttributes<HTMLDivElement> {
 
 function Marquee({
   className,
-  speed = 18000,
+  duration = 18000,
   pauseOnHover = false,
   reverse = false,
   children,
@@ -25,7 +25,10 @@ function Marquee({
       data-pause-on-hover={pauseOnHover ? "true" : undefined}
       data-reverse={reverse ? "true" : undefined}
       style={
-        { ...style, "--marquee-duration": `${speed}ms` } as React.CSSProperties
+        {
+          ...style,
+          "--marquee-duration": `${duration}ms`,
+        } as React.CSSProperties
       }
       className={cn("dr-marquee", className)}
       {...rest}
