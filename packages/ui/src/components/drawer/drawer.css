@@ -1,14 +1,34 @@
 @layer components {
   .dr-drawer-overlay {
-    @apply fixed inset-0 z-50 bg-black/80;
+    @apply data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 fixed inset-0 z-50 bg-black/80 data-[state=closed]:duration-300 data-[state=open]:duration-500;
   }
 
   .dr-drawer-content {
-    @apply modal-surface glass-strong bg-background fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border;
+    @apply modal-surface glass-strong bg-background data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 flex flex-col border transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500;
+  }
+
+  .dr-drawer-content[data-direction="bottom"] {
+    @apply data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom inset-x-0 bottom-0 mt-24 h-auto rounded-t-[10px];
+  }
+
+  .dr-drawer-content[data-direction="top"] {
+    @apply data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top inset-x-0 top-0 mb-24 h-auto rounded-b-[10px];
+  }
+
+  .dr-drawer-content[data-direction="left"] {
+    @apply data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left inset-y-0 left-0 h-full w-3/4 rounded-r-[10px] sm:max-w-sm;
+  }
+
+  .dr-drawer-content[data-direction="right"] {
+    @apply data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-3/4 rounded-l-[10px] sm:max-w-sm;
   }
 
   .dr-drawer-handle {
     @apply bg-muted mx-auto mt-4 h-2 w-[100px] rounded-full;
+  }
+
+  .dr-drawer-content[data-direction="top"] .dr-drawer-handle {
+    @apply mt-0 mb-4;
   }
 
   .dr-drawer-header {
