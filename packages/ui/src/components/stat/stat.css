@@ -1,0 +1,23 @@
+@layer components {
+  .dr-stat {
+    @apply flex flex-col gap-1;
+  }
+  .dr-stat-label {
+    @apply text-muted-foreground text-xs font-medium;
+  }
+  .dr-stat-value {
+    @apply text-2xl font-semibold tabular-nums;
+  }
+  .dr-stat-change {
+    @apply inline-flex items-center gap-1 text-xs font-medium;
+  }
+  .dr-stat-change[data-direction="up"] {
+    @apply text-success;
+  }
+  .dr-stat-change[data-direction="down"] {
+    @apply text-destructive;
+  }
+  .dr-stat-change[data-direction="flat"] {
+    @apply text-muted-foreground;
+  }
+}
