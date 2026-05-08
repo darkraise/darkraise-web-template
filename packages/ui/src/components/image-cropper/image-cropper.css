@@ -1,0 +1,21 @@
+@layer components {
+  .dr-image-cropper {
+    @apply flex flex-col gap-2;
+  }
+  .dr-image-cropper-stage {
+    @apply bg-muted relative aspect-square overflow-hidden rounded-md;
+  }
+  .dr-image-cropper-image {
+    @apply absolute inset-0 m-auto block h-full w-full object-contain;
+    transform-origin: center;
+  }
+  .dr-image-cropper-controls {
+    @apply flex items-center gap-3;
+  }
+  .dr-image-cropper-zoom {
+    @apply flex flex-1 items-center gap-2;
+  }
+  .dr-image-cropper-rotate {
+    @apply text-muted-foreground hover:text-foreground rounded p-1.5 transition-colors;
+  }
+}
