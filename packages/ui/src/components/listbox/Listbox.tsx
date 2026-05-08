@@ -38,12 +38,14 @@ function Listbox({
   ...rest
 }: ListboxProps) {
   const ctx = useListbox({ mode, value, defaultValue, onValueChange })
+  const focusedItem = ctx.items()[ctx.focusedIndex]
   return (
     <ListboxContext.Provider value={ctx}>
       <div
         role="listbox"
         tabIndex={disabled ? -1 : 0}
         aria-multiselectable={ctx.mode === "multi" || undefined}
+        aria-activedescendant={focusedItem?.id}
         aria-disabled={disabled || undefined}
         data-disabled={disabled || undefined}
         className={cn("dr-listbox", className)}
@@ -78,12 +80,14 @@ function ListboxItem({
   const id = useId()
   const localRef = React.useRef<HTMLDivElement | null>(null)
   const descriptorRef = React.useRef({
+    id,
     value,
     disabled,
     textValue: textValue ?? "",
   })
 
   // Keep descriptor fields fresh.
+  descriptorRef.current.id = id
   descriptorRef.current.disabled = disabled
   descriptorRef.current.value = value
   if (textValue !== undefined) descriptorRef.current.textValue = textValue

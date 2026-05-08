@@ -4,6 +4,7 @@ import { useControllableState } from "@primitives/state"
 export type ListboxMode = "single" | "multi"
 
 export interface ListboxItemDescriptor {
+  id: string
   value: string
   disabled: boolean
   textValue: string
