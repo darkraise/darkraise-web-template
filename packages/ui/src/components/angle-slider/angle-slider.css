@@ -1,0 +1,19 @@
+@layer components {
+  .dr-angle-slider {
+    @apply bg-muted relative inline-flex h-16 w-16 cursor-pointer items-center justify-center rounded-full border;
+    touch-action: none;
+  }
+  .dr-angle-slider:focus-visible {
+    @apply ring-ring ring-2 ring-offset-2;
+    outline: none;
+  }
+  .dr-angle-slider[data-disabled] {
+    @apply pointer-events-none opacity-50;
+  }
+  .dr-angle-slider-thumb {
+    @apply absolute inset-0 origin-center;
+  }
+  .dr-angle-slider-pointer {
+    @apply bg-primary absolute top-1 left-1/2 h-3 w-1 -translate-x-1/2 rounded-full;
+  }
+}
