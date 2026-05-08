@@ -4,12 +4,13 @@
   }
   .dr-floating-panel-header {
     @apply bg-muted text-muted-foreground cursor-move border-b px-3 py-2 text-sm font-medium select-none;
+    touch-action: none;
   }
   .dr-floating-panel-content {
     @apply flex-1 overflow-auto p-3;
   }
   .dr-floating-panel-resize {
-    @apply text-muted-foreground absolute right-0 bottom-0 h-3 w-3 cursor-nwse-resize;
+    @apply text-muted-foreground absolute right-0 bottom-0 h-3 w-3 cursor-nwse-resize border-0 bg-transparent p-0;
     background: linear-gradient(
       135deg,
       transparent 0,
@@ -18,5 +19,6 @@
       currentColor 7px,
       transparent 7px
     );
+    touch-action: none;
   }
 }

@@ -88,6 +88,7 @@ function FloatingPanelHeader({
       onPointerDown={(event) => {
         onPointerDown?.(event)
         if (event.defaultPrevented) return
+        event.currentTarget.setPointerCapture?.(event.pointerId)
         ctx.beginDrag(event.nativeEvent)
       }}
       {...rest}
@@ -104,20 +105,25 @@ function FloatingPanelContent({
   )
 }
 
+type FloatingPanelResizeHandleProps =
+  React.ButtonHTMLAttributes<HTMLButtonElement>
+
 function FloatingPanelResizeHandle({
   className,
   onPointerDown,
+  "aria-label": ariaLabel = "Resize panel",
   ...rest
-}: React.HTMLAttributes<HTMLDivElement>) {
+}: FloatingPanelResizeHandleProps) {
   const ctx = useCtx("FloatingPanelResizeHandle")
   return (
-    <div
-      role="separator"
-      aria-orientation="horizontal"
+    <button
+      type="button"
+      aria-label={ariaLabel}
       className={cn("dr-floating-panel-resize", className)}
       onPointerDown={(event) => {
         onPointerDown?.(event)
         if (event.defaultPrevented) return
+        event.currentTarget.setPointerCapture?.(event.pointerId)
         ctx.beginResize(event.nativeEvent)
       }}
       {...rest}
