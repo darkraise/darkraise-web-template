@@ -1,0 +1,20 @@
+@layer components {
+  .dr-listbox {
+    @apply border-border max-h-72 min-w-32 overflow-auto rounded-md border p-1 outline-none;
+  }
+  .dr-listbox:focus-visible {
+    @apply ring-ring ring-2;
+  }
+  .dr-listbox-item {
+    @apply cursor-pointer rounded-sm px-2 py-1.5 text-sm transition-colors select-none;
+  }
+  .dr-listbox-item[data-focused="true"] {
+    @apply bg-accent text-accent-foreground;
+  }
+  .dr-listbox-item[data-selected="true"] {
+    @apply font-medium;
+  }
+  .dr-listbox-item[data-disabled] {
+    @apply pointer-events-none opacity-50;
+  }
+}
