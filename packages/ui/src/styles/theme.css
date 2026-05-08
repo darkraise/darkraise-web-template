@@ -28,6 +28,7 @@
 @import "../components/editable/editable.css";
 @import "../components/empty-state/empty-state.css";
 @import "../components/field/field.css";
+@import "../components/fieldset/fieldset.css";
 @import "../components/file-upload/file-upload.css";
 @import "../components/highlight/highlight.css";
 @import "../components/hover-card/hover-card.css";

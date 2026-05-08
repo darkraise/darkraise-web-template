@@ -1,0 +1,12 @@
+@layer components {
+  .dr-fieldset {
+    @apply rounded-md border p-4;
+  }
+  .dr-fieldset-legend {
+    @apply px-2 text-sm font-medium;
+  }
+  .dr-fieldset:disabled,
+  .dr-fieldset[disabled] {
+    @apply opacity-60;
+  }
+}
