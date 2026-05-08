@@ -12,12 +12,13 @@ export interface JsonTreeViewProps extends React.HTMLAttributes<HTMLDivElement> 
 type JsonType = "object" | "array" | "string" | "number" | "boolean" | "null"
 
 function typeOf(v: unknown): JsonType {
-  if (v === null) return "null"
+  if (v === null || v === undefined) return "null"
   if (Array.isArray(v)) return "array"
   if (typeof v === "object") return "object"
   if (typeof v === "string") return "string"
   if (typeof v === "number") return "number"
-  return "boolean"
+  if (typeof v === "boolean") return "boolean"
+  return "null"
 }
 
 function summary(v: unknown): string {
@@ -87,7 +88,7 @@ function Node({
         {isContainer ? (
           <button
             type="button"
-            aria-label={keyName ? `Toggle ${keyName}` : "Toggle root"}
+            aria-label={keyName !== null ? `Toggle ${keyName}` : "Toggle root"}
             aria-expanded={expanded}
             onClick={() => setExpanded((v) => !v)}
             className="dr-json-chevron"
