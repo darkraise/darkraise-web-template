@@ -100,4 +100,31 @@ describe("DateInput", () => {
     const inputs = screen.getAllByRole("spinbutton")
     inputs.forEach((i) => expect(i).toBeDisabled())
   })
+
+  it("external value=null clears all segments even when parts hold a complete date", async () => {
+    function Wrapper() {
+      const [d, setD] = React.useState<Date | null>(new Date(2024, 5, 9))
+      return (
+        <>
+          <DateInput value={d} onValueChange={setD} aria-label="dob" />
+          <button data-testid="clear" type="button" onClick={() => setD(null)}>
+            Clear
+          </button>
+        </>
+      )
+    }
+    render(<Wrapper />)
+    const [year, month, day] = screen.getAllByRole(
+      "spinbutton",
+    ) as HTMLInputElement[]
+    expect(year.value).toBe("2024")
+    expect(month.value).toBe("06")
+    expect(day.value).toBe("09")
+
+    await userEvent.click(screen.getByTestId("clear"))
+
+    expect(year.value).toBe("")
+    expect(month.value).toBe("")
+    expect(day.value).toBe("")
+  })
 })

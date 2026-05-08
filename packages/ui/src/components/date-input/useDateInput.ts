@@ -75,16 +75,21 @@ export function useDateInput(options: UseDateInputOptions) {
   )
 
   // Mirror controlled value into local parts when the value reflects a
-  // different state than what the user is typing. Skip resyncing when the
-  // value is null but parts hold in-progress input, otherwise our own
-  // intermediate `null` commits (parts not yet a valid date) would wipe the
-  // typed segments.
+  // different state than what the user is typing. Echoed-null from our own
+  // intermediate commits (parts that don't yet form a valid date) must not
+  // wipe in-progress input — but an external null (parent calling
+  // `setD(null)` on a previously complete date) must still propagate.
+  // Distinguish them: the partial-input case has `partsToDate(prev) === null`,
+  // while a complete-but-being-cleared case has `partsToDate(prev) !== null`.
   React.useEffect(() => {
     setParts((prev) => {
       if (partsEqualDate(prev, value ?? null)) return prev
       const partsEmpty =
         prev.year === "" && prev.month === "" && prev.day === ""
-      if ((value ?? null) === null && !partsEmpty) return prev
+      const partsAreComplete = partsToDate(prev) !== null
+      if ((value ?? null) === null && !partsEmpty && !partsAreComplete) {
+        return prev
+      }
       return partsFromDate(value ?? null)
     })
   }, [value])
