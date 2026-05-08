@@ -1,0 +1,29 @@
+@layer components {
+  .dr-spinner {
+    @apply inline-flex items-center justify-center;
+  }
+
+  .dr-spinner-circle {
+    @apply block animate-spin rounded-full border-2 border-current border-t-transparent;
+  }
+
+  .dr-spinner[data-size="sm"] .dr-spinner-circle {
+    @apply h-3 w-3;
+  }
+  .dr-spinner[data-size="md"] .dr-spinner-circle {
+    @apply h-4 w-4;
+  }
+  .dr-spinner[data-size="lg"] .dr-spinner-circle {
+    @apply h-6 w-6 border-[3px];
+  }
+
+  .dr-spinner[data-variant="default"] {
+    @apply text-foreground;
+  }
+  .dr-spinner[data-variant="primary"] {
+    @apply text-primary;
+  }
+  .dr-spinner[data-variant="muted"] {
+    @apply text-muted-foreground;
+  }
+}
