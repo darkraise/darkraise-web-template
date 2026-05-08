@@ -484,32 +484,40 @@
   --density-cell-sm: max(calc(var(--density-cell) - 0.25rem), 1.5rem);
   --density-cell-lg: calc(var(--density-cell) + 0.5rem);
 
-  /* Elevation ramp.
-     `--card-elevation-*` are the theme-axis-immune base values: components
-     that opt into an explicit level (e.g. `<Card elevation="medium">`)
-     consume these and render the same shadow regardless of the
-     `[data-elevation="..."]` theme picker. Dark-mode variants are defined
-     on `[data-mode="dark"]` only.
+  /* Two parallel shadow ramps.
 
-     `--elevation-*` are the theme-axis-tracking aliases. On `:root` they
-     point at `--card-elevation-*`, but each `[data-elevation="..."]` block
-     redefines them with a scaled ramp so theme-aware utilities like
-     `glass-strong` (`box-shadow: var(--elevation-medium)`) and the Card's
-     `auto` mode (`var(--elevation-current)`) follow the picker.
+     `--elevation-{low,medium,high}` is theme-axis-tracking. The :root
+     values represent the default (theme=medium-equivalent) intensity, and
+     each `[data-elevation="..."]` block overrides them with a scaled ramp
+     so theme-aware utilities like `glass-strong`
+     (`box-shadow: var(--elevation-medium)`) and the Card's `auto` mode
+     (`var(--elevation-current)`) follow the picker.
+
+     `--card-elevation-{low,medium,high}` is theme-axis-immune. Components
+     that opt into an explicit level (e.g. `<Card elevation="medium">`)
+     consume these. Each level is calibrated to match the
+     `[data-elevation="<level>"]` ramp's same-named token in the same
+     mode — `<Card elevation="low">` looks like an auto card under
+     theme=low, `medium` matches theme=medium, `high` matches theme=high.
+     Light and dark are deliberately NOT unified (dark surfaces need
+     higher opacity to register the shadow); dark-mode variants live on
+     `[data-mode="dark"]`.
 
      `flat` uses `0 0 transparent` (a syntactically valid no-op shadow)
      instead of `none`, so it composes cleanly into multi-shadow lists
      like `box-shadow: var(--elevation-medium), var(--inset-hi-strong)`.
      The `none` keyword is only valid as a complete box-shadow value. */
-  --card-elevation-low: 0 2px 4px 0 rgb(0 0 0 / 0.1);
+  --elevation-flat: 0 0 transparent;
+  --elevation-low: 0 2px 4px 0 rgb(0 0 0 / 0.1);
+  --elevation-medium:
+    0 8px 20px -2px rgb(0 0 0 / 0.18), 0 3px 8px -1px rgb(0 0 0 / 0.1);
+  --elevation-high:
+    0 32px 48px -8px rgb(0 0 0 / 0.32), 0 12px 24px -4px rgb(0 0 0 / 0.18);
+  --card-elevation-low: 0 1px 2px 0 rgb(0 0 0 / 0.07);
   --card-elevation-medium:
     0 8px 20px -2px rgb(0 0 0 / 0.18), 0 3px 8px -1px rgb(0 0 0 / 0.1);
   --card-elevation-high:
-    0 32px 48px -8px rgb(0 0 0 / 0.32), 0 12px 24px -4px rgb(0 0 0 / 0.18);
-  --elevation-flat: 0 0 transparent;
-  --elevation-low: var(--card-elevation-low);
-  --elevation-medium: var(--card-elevation-medium);
-  --elevation-high: var(--card-elevation-high);
+    0 48px 72px -10px rgb(0 0 0 / 0.45), 0 20px 36px -6px rgb(0 0 0 / 0.28);
   --shadow-button: 0 0 transparent;
 }
 
@@ -582,13 +590,18 @@
    the plain single-attribute selectors above. */
 
 [data-mode="dark"] {
-  /* `--elevation-*` aliases on `:root` point to `--card-elevation-*`, so
-     overriding only the card constants here propagates to both ramps. */
-  --card-elevation-low: 0 2px 4px 0 rgb(0 0 0 / 0.5);
+  --elevation-low: 0 2px 4px 0 rgb(0 0 0 / 0.5);
+  --elevation-medium:
+    0 8px 20px -2px rgb(0 0 0 / 0.65), 0 3px 8px -1px rgb(0 0 0 / 0.5);
+  --elevation-high:
+    0 32px 48px -8px rgb(0 0 0 / 0.8), 0 12px 24px -4px rgb(0 0 0 / 0.55);
+  /* Card-elevation ramp matches the dark theme axis: low = dark theme=low's
+     low, medium = dark default medium, high = dark theme=high's high. */
+  --card-elevation-low: 0 1px 2px 0 rgb(0 0 0 / 0.4);
   --card-elevation-medium:
     0 8px 20px -2px rgb(0 0 0 / 0.65), 0 3px 8px -1px rgb(0 0 0 / 0.5);
   --card-elevation-high:
-    0 32px 48px -8px rgb(0 0 0 / 0.8), 0 12px 24px -4px rgb(0 0 0 / 0.55);
+    0 48px 72px -10px rgb(0 0 0 / 0.9), 0 20px 36px -6px rgb(0 0 0 / 0.6);
 }
 
 [data-mode="dark"][data-elevation="flat"] {
