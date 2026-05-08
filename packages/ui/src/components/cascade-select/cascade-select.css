@@ -1,0 +1,22 @@
+@layer components {
+  .dr-cascade-trigger {
+    @apply min-w-48 justify-start gap-2;
+  }
+  .dr-cascade-popover {
+    @apply p-0;
+    width: auto;
+  }
+  .dr-cascade-grid {
+    @apply flex divide-x;
+  }
+  .dr-cascade-column {
+    @apply m-0 max-h-72 min-w-44 list-none overflow-auto p-1;
+  }
+  .dr-cascade-item {
+    @apply flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors;
+  }
+  .dr-cascade-item:hover,
+  .dr-cascade-item[data-active="true"] {
+    @apply bg-accent text-accent-foreground;
+  }
+}
