@@ -101,12 +101,21 @@ function Tour({
       )`
     : "none"
 
+  // Flip the popover above the target when there isn't enough room below it,
+  // so it doesn't render off-screen for steps near the viewport bottom. The
+  // 200px estimate covers a typical title + description + footer.
   const popoverStyle: React.CSSProperties = rect
-    ? {
-        position: "fixed",
-        top: rect.top + rect.height + 12,
-        left: rect.left,
-      }
+    ? window.innerHeight - (rect.top + rect.height) >= 200
+      ? {
+          position: "fixed",
+          top: rect.top + rect.height + 12,
+          left: rect.left,
+        }
+      : {
+          position: "fixed",
+          bottom: window.innerHeight - rect.top + 12,
+          left: rect.left,
+        }
     : {
         position: "fixed",
         top: "50%",
