@@ -97,13 +97,17 @@ function Clipboard({
     toastOptionRef.current = toastOption
   }, [toastOption])
 
-  React.useEffect(
-    () => () => {
+  React.useEffect(() => {
+    // Reset on every effect setup, not just on first mount: under React 19
+    // StrictMode the setup → cleanup → setup cycle leaves a cleanup-only ref
+    // permanently `false`, which would short-circuit every subsequent
+    // `copy()` (no toast, no copied state, etc.).
+    mountedRef.current = true
+    return () => {
       mountedRef.current = false
       if (timerRef.current) clearTimeout(timerRef.current)
-    },
-    [],
-  )
+    }
+  }, [])
 
   const copy = React.useCallback(() => {
     if (timerRef.current) clearTimeout(timerRef.current)

@@ -1,6 +1,7 @@
 import { render, screen, waitFor, act } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
+import { StrictMode } from "react"
 
 const toastSuccessMock = vi.fn()
 const toastErrorMock = vi.fn()
@@ -258,5 +259,32 @@ describe("Clipboard", () => {
     await user.click(screen.getByRole("button", { name: "copy" }))
     await waitFor(() => expect(writeTextMock).toHaveBeenCalled())
     expect(toastSuccessMock).not.toHaveBeenCalled()
+  })
+
+  it("toast still fires when rendered under React.StrictMode", async () => {
+    // Regression: the cleanup-only mountedRef pattern left the ref permanently
+    // false after StrictMode's setup → cleanup → setup cycle, so every copy()
+    // bailed at `if (!mountedRef.current) return` before ever calling
+    // toast.success.
+    const user = userEvent.setup()
+    installClipboardMock()
+    render(
+      <StrictMode>
+        <Clipboard value="hi" toast>
+          <ClipboardControl>
+            <ClipboardTrigger aria-label="copy">
+              <ClipboardIndicator
+                copied={<span>done</span>}
+                fallback={<span>copy</span>}
+              />
+            </ClipboardTrigger>
+          </ClipboardControl>
+        </Clipboard>
+      </StrictMode>,
+    )
+    await user.click(screen.getByRole("button", { name: "copy" }))
+    await waitFor(() =>
+      expect(toastSuccessMock).toHaveBeenCalledWith("Copied to clipboard"),
+    )
   })
 })
