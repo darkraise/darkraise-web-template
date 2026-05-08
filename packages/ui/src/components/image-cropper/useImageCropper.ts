@@ -26,10 +26,11 @@ export function useImageCropper(options: UseImageCropperOptions) {
   const minZoom = options.minZoom ?? 0.5
   const maxZoom = options.maxZoom ?? 4
 
-  const clampZoom = (z: number) => Math.min(maxZoom, Math.max(minZoom, z))
+  const clampZoom = (z: number) =>
+    Number.isFinite(z) ? Math.min(maxZoom, Math.max(minZoom, z)) : zoom
 
   const setZoomClamped = (z: number) => setZoom(clampZoom(z))
-  const rotate90 = () => setRotation((rotation + 90) % 360)
+  const rotate90 = () => setRotation((prev) => (prev + 90) % 360)
 
   return { zoom, setZoom: setZoomClamped, rotation, setRotation, rotate90 }
 }
