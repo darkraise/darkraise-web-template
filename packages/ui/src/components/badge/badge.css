@@ -82,4 +82,130 @@
   .dr-badge[data-variant="rose"] {
     @apply border-transparent bg-rose-500 text-white hover:bg-rose-500/80;
   }
+
+  /* Material-style anchored indicator. The wrapper sits inline-flex around
+     its child; the indicator is absolutely positioned at one of four corners
+     and translated halfway out so it overlaps the wrapped element edge. */
+  .dr-badge-anchor {
+    @apply relative inline-flex;
+  }
+
+  .dr-badge-anchor-indicator,
+  .dr-badge-anchor-dot {
+    @apply pointer-events-none absolute z-10 transition-opacity transition-transform duration-150;
+    /* Inline style may set --badge-anchor-offset-{x,y} for fine-tuning. */
+  }
+
+  .dr-badge-anchor-indicator[data-position="top-right"],
+  .dr-badge-anchor-dot[data-position="top-right"] {
+    top: 0;
+    right: 0;
+    transform: translate(
+      calc(50% + var(--badge-anchor-offset-x, 0px)),
+      calc(-50% + var(--badge-anchor-offset-y, 0px))
+    );
+  }
+  .dr-badge-anchor-indicator[data-position="top-left"],
+  .dr-badge-anchor-dot[data-position="top-left"] {
+    top: 0;
+    left: 0;
+    transform: translate(
+      calc(-50% + var(--badge-anchor-offset-x, 0px)),
+      calc(-50% + var(--badge-anchor-offset-y, 0px))
+    );
+  }
+  .dr-badge-anchor-indicator[data-position="bottom-right"],
+  .dr-badge-anchor-dot[data-position="bottom-right"] {
+    bottom: 0;
+    right: 0;
+    transform: translate(
+      calc(50% + var(--badge-anchor-offset-x, 0px)),
+      calc(50% + var(--badge-anchor-offset-y, 0px))
+    );
+  }
+  .dr-badge-anchor-indicator[data-position="bottom-left"],
+  .dr-badge-anchor-dot[data-position="bottom-left"] {
+    bottom: 0;
+    left: 0;
+    transform: translate(
+      calc(-50% + var(--badge-anchor-offset-x, 0px)),
+      calc(50% + var(--badge-anchor-offset-y, 0px))
+    );
+  }
+
+  /* Dot mode — minimal indicator with a ring matching the page background
+     so it visually detaches from the wrapped element. */
+  .dr-badge-anchor-dot {
+    @apply ring-background h-2.5 w-2.5 rounded-full ring-2;
+  }
+  .dr-badge-anchor-dot[data-variant="default"] {
+    @apply bg-primary;
+  }
+  .dr-badge-anchor-dot[data-variant="secondary"] {
+    @apply bg-secondary;
+  }
+  .dr-badge-anchor-dot[data-variant="destructive"] {
+    @apply bg-destructive;
+  }
+  .dr-badge-anchor-dot[data-variant="outline"] {
+    @apply bg-background border-foreground border;
+  }
+  .dr-badge-anchor-dot[data-variant="red"] {
+    @apply bg-red-500;
+  }
+  .dr-badge-anchor-dot[data-variant="orange"] {
+    @apply bg-orange-500;
+  }
+  .dr-badge-anchor-dot[data-variant="amber"] {
+    @apply bg-amber-500;
+  }
+  .dr-badge-anchor-dot[data-variant="yellow"] {
+    @apply bg-yellow-500;
+  }
+  .dr-badge-anchor-dot[data-variant="lime"] {
+    @apply bg-lime-500;
+  }
+  .dr-badge-anchor-dot[data-variant="green"] {
+    @apply bg-green-500;
+  }
+  .dr-badge-anchor-dot[data-variant="emerald"] {
+    @apply bg-emerald-500;
+  }
+  .dr-badge-anchor-dot[data-variant="teal"] {
+    @apply bg-teal-500;
+  }
+  .dr-badge-anchor-dot[data-variant="cyan"] {
+    @apply bg-cyan-500;
+  }
+  .dr-badge-anchor-dot[data-variant="sky"] {
+    @apply bg-sky-500;
+  }
+  .dr-badge-anchor-dot[data-variant="blue"] {
+    @apply bg-blue-500;
+  }
+  .dr-badge-anchor-dot[data-variant="indigo"] {
+    @apply bg-indigo-500;
+  }
+  .dr-badge-anchor-dot[data-variant="violet"] {
+    @apply bg-violet-500;
+  }
+  .dr-badge-anchor-dot[data-variant="purple"] {
+    @apply bg-purple-500;
+  }
+  .dr-badge-anchor-dot[data-variant="fuchsia"] {
+    @apply bg-fuchsia-500;
+  }
+  .dr-badge-anchor-dot[data-variant="pink"] {
+    @apply bg-pink-500;
+  }
+  .dr-badge-anchor-dot[data-variant="rose"] {
+    @apply bg-rose-500;
+  }
+
+  /* Hidden state — keeps the indicator in the DOM and animates its
+     scale + opacity so layout doesn't jump when the count drops to 0. */
+  .dr-badge-anchor-indicator--hidden,
+  .dr-badge-anchor-dot[data-hidden="true"] {
+    @apply scale-0 opacity-0;
+  }
 }

@@ -1,7 +1,16 @@
 import { useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
-import { CheckCircle, Clock, XCircle, AlertTriangle, X } from "lucide-react"
-import { Badge } from "darkraise-ui/components/badge"
+import {
+  Bell,
+  CheckCircle,
+  Clock,
+  Mail,
+  ShoppingCart,
+  XCircle,
+  AlertTriangle,
+  X,
+} from "lucide-react"
+import { Badge, BadgeAnchor } from "darkraise-ui/components/badge"
 import { Button } from "darkraise-ui/components/button"
 import {
   Table,
@@ -310,6 +319,72 @@ function BadgesPage() {
           <Badge variant="outline">CSS</Badge>
           <Badge variant="secondary">Node.js</Badge>
           <Badge variant="default">SQL</Badge>
+        </div>
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Anchored over a parent (Material-style)"
+        code={`<BadgeAnchor content="4" variant="destructive" position="top-right">
+  <Button variant="outline" size="icon"><Bell /></Button>
+</BadgeAnchor>
+
+<BadgeAnchor dot variant="success" position="bottom-right">
+  <Button variant="outline" size="icon"><Mail /></Button>
+</BadgeAnchor>
+
+<BadgeAnchor content="99+" variant="blue" size="sm" position="top-right" hidden={count === 0}>
+  <Button variant="outline" size="icon"><ShoppingCart /></Button>
+</BadgeAnchor>`}
+      >
+        <div className="flex flex-wrap items-center gap-6">
+          <BadgeAnchor
+            content="4"
+            variant="destructive"
+            position="top-right"
+            aria-label="4 unread notifications"
+          >
+            <Button variant="outline" size="icon">
+              <Bell />
+            </Button>
+          </BadgeAnchor>
+
+          <BadgeAnchor
+            dot
+            variant="emerald"
+            position="bottom-right"
+            aria-label="online"
+          >
+            <Button variant="outline" size="icon">
+              <Mail />
+            </Button>
+          </BadgeAnchor>
+
+          <BadgeAnchor
+            content="99+"
+            variant="blue"
+            size="sm"
+            position="top-right"
+          >
+            <Button variant="outline" size="icon">
+              <ShoppingCart />
+            </Button>
+          </BadgeAnchor>
+
+          <BadgeAnchor
+            content="2"
+            variant="rose"
+            size="lg"
+            position="top-left"
+            offset={{ x: -2, y: 2 }}
+          >
+            <Button variant="outline">Inbox</Button>
+          </BadgeAnchor>
+
+          <BadgeAnchor dot variant="amber" position="top-right">
+            <Button variant="ghost" size="icon">
+              <AlertTriangle />
+            </Button>
+          </BadgeAnchor>
         </div>
       </ShowcaseExample>
 
