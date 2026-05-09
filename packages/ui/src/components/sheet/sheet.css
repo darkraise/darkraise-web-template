@@ -4,14 +4,23 @@
   }
 
   /* SheetContent reuses DialogContent under the hood, so the rendered div
-     receives both `dr-dialog-content` and `dr-sheet-content`. The dialog
-     base centers itself with `top: 50%; left: 50%; translate: -50% -50%`
-     and caps width with `max-width: 32rem`. None of the per-side sheet
-     rules reset `transform` / `translate` / `max-width`, so a side-anchored
-     sheet ended up shifted half its width inward (visibly centered).
-     The compound selector below outranks `.dr-dialog-content` on
-     specificity (0,2,0 vs 0,1,0) and uses literal CSS values to bypass
-     any utility-recognition gaps in Tailwind v4's setup. */
+     receives both `dr-dialog-content` and `dr-sheet-content`. Two sets of
+     overrides need to win against the dialog base:
+       1) Static positioning — clear the dialog's `top: 50%; left: 50%;
+          translate: -50% -50%` centering and its `max-width: 32rem` cap.
+       2) Animation custom properties — the dialog's
+          `slide-in-from-left-1/2 slide-in-from-top-[48%] zoom-in-95
+          fade-in-0` classes set `--tw-enter-translate-y`, `--tw-enter-scale`,
+          and `--tw-enter-opacity` on this element. The sheet's
+          `slide-in-from-{side}` only overrides `--tw-enter-translate-x`,
+          so the leftover y/scale/opacity bleed into the shared `enter`
+          keyframe and a "right sheet" actually flies in diagonally with
+          a zoom + fade. Reset all enter/exit vars here; the per-side
+          rules below then set just the one axis they care about, giving
+          a clean horizontal fly-in/out for left/right sheets and a clean
+          vertical one for top/bottom.
+     Compound selector specificity (0,2,0) outranks the dialog base
+     (0,1,0), so this wins regardless of import order. */
   .dr-dialog-content.dr-sheet-content {
     top: auto;
     left: auto;
@@ -20,6 +29,16 @@
     transform: none;
     translate: none;
     max-width: none;
+    --tw-enter-translate-x: 0;
+    --tw-enter-translate-y: 0;
+    --tw-enter-scale: 1;
+    --tw-enter-opacity: 1;
+    --tw-enter-rotate: 0;
+    --tw-exit-translate-x: 0;
+    --tw-exit-translate-y: 0;
+    --tw-exit-scale: 1;
+    --tw-exit-opacity: 1;
+    --tw-exit-rotate: 0;
   }
 
   .dr-sheet-content[data-side="top"] {
