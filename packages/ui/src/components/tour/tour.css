@@ -1,6 +1,6 @@
 @layer components {
   .dr-tour-backdrop {
-    @apply fixed inset-0 z-[80] bg-black/60;
+    @apply fixed inset-0 z-[80] bg-black/40 backdrop-blur-sm;
   }
   .dr-tour-popover {
     @apply bg-popover text-popover-foreground border-border z-[81] w-80 max-w-[calc(100vw-2rem)] rounded-lg border p-4 shadow-lg;
