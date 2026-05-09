@@ -1,6 +1,12 @@
 @layer components {
+  /* SheetContent reuses DialogContent under the hood, so the rendered div
+     receives both `dr-dialog-content` and `dr-sheet-content`. The dialog
+     base centers itself with `translate-x-[-50%] translate-y-[-50%]`,
+     which would shift a side-anchored sheet half its width inward.
+     `translate-none` and `transform-none` clear the inherited transforms
+     so the per-side `inset-y-0 right-0 / left-0` positioning is respected. */
   .dr-sheet-content {
-    @apply modal-surface glass-strong bg-background text-foreground data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 gap-4 p-6 transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500;
+    @apply modal-surface glass-strong bg-background text-foreground data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 max-w-none translate-none transform-none gap-4 p-6 transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500;
   }
 
   .dr-sheet-content[data-side="top"] {
