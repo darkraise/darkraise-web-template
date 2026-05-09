@@ -819,6 +819,75 @@ function DialogsPage() {
           </SheetContent>
         </Sheet>
       </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Sheet — scrollable content"
+        code={`// SheetContent is a flex column. Wrap the middle region in a
+// flex-1 overflow-y-auto div so it scrolls while header and footer
+// stay pinned. Negative margin + matching padding lets the scroll
+// area reach the sheet edges visually without losing inner padding.
+
+<Sheet>
+  <SheetTrigger asChild>
+    <Button variant="outline">Read terms</Button>
+  </SheetTrigger>
+  <SheetContent>
+    <SheetHeader>
+      <SheetTitle>Terms of Service</SheetTitle>
+      <SheetDescription>Scroll through the agreement.</SheetDescription>
+    </SheetHeader>
+    <div className="-mx-6 flex-1 overflow-y-auto px-6">
+      {/* long content */}
+    </div>
+    <SheetFooter>
+      <SheetClose asChild>
+        <Button variant="outline">Decline</Button>
+      </SheetClose>
+      <Button>Accept</Button>
+    </SheetFooter>
+  </SheetContent>
+</Sheet>`}
+      >
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="outline">Read terms</Button>
+          </SheetTrigger>
+          <SheetContent>
+            <SheetHeader>
+              <SheetTitle>Terms of Service</SheetTitle>
+              <SheetDescription>
+                Scroll through the agreement. Header and footer stay pinned.
+              </SheetDescription>
+            </SheetHeader>
+            <div className="-mx-6 flex-1 overflow-y-auto px-6">
+              <div className="space-y-4 py-4">
+                {Array.from({ length: 14 }, (_, i) => (
+                  <p
+                    key={i}
+                    className="text-muted-foreground text-sm leading-relaxed"
+                  >
+                    <span className="text-foreground font-medium">
+                      §{i + 1}.
+                    </span>{" "}
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
+                    do eiusmod tempor incididunt ut labore et dolore magna
+                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                    ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                    Duis aute irure dolor in reprehenderit in voluptate velit
+                    esse cillum dolore eu fugiat nulla pariatur.
+                  </p>
+                ))}
+              </div>
+            </div>
+            <SheetFooter>
+              <SheetClose asChild>
+                <Button variant="outline">Decline</Button>
+              </SheetClose>
+              <Button>Accept</Button>
+            </SheetFooter>
+          </SheetContent>
+        </Sheet>
+      </ShowcaseExample>
     </ShowcasePage>
   )
 }

@@ -29,6 +29,13 @@
     transform: none;
     translate: none;
     max-width: none;
+    /* Layout: flex column instead of the dialog's grid, with overflow
+       clipped at the sheet edge. Children of <SheetContent> can then use
+       `flex-1 overflow-y-auto` to create a scrollable middle region while
+       header / footer stay pinned. */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
     --tw-enter-translate-x: 0;
     --tw-enter-translate-y: 0;
     --tw-enter-scale: 1;
