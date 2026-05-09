@@ -5,31 +5,42 @@ import "./editable.css"
 
 export type EditableState = "preview" | "edit"
 
-export interface EditableValueChangeDetails {
-  value: string
+export interface EditableValueChangeDetails<T = string> {
+  value: T
 }
 
-export interface EditableValueCommitDetails {
-  value: string
+export interface EditableValueCommitDetails<T = string> {
+  value: T
 }
 
 export interface EditableEditChangeDetails {
   edit: boolean
 }
 
-interface EditableContextValue {
+/**
+ * Generic over the value type `T` so consumers can wire `Editable` to a
+ * custom widget (e.g. NumberInput, DatePicker, color picker, tags input).
+ * The state machine (preview ↔ edit, draft / value, submit / cancel) is
+ * value-type agnostic; the bundled `EditableInput` is specialised for
+ * `T = string`. For other types, build a custom slot that reads
+ * `useEditableContext<T>()` and writes through `setDraft`.
+ */
+export interface EditableContextValue<T = unknown> {
   state: EditableState
-  value: string
-  draft: string
+  value: T
+  draft: T
   placeholder: string
-  setDraft: (next: string) => void
+  setDraft: (next: T) => void
   startEdit: () => void
   submit: () => void
   cancel: () => void
   disabled: boolean
   readOnly: boolean
   fieldId: string
-  inputRef: React.RefObject<HTMLInputElement | null>
+  /** Ref to the FIRST focusable element produced by `EditableInput` or a
+   *  custom slot. Loosened to `HTMLElement` so consumers can plug in
+   *  textareas, buttons, or composite widgets. */
+  inputRef: React.RefObject<HTMLElement | null>
   selectOnFocus: boolean
   submitOnBlur: boolean
   submitOnEnter: boolean
@@ -38,26 +49,36 @@ interface EditableContextValue {
   cancelledRef: React.RefObject<boolean>
 }
 
-const EditableContext = React.createContext<EditableContextValue | null>(null)
+const EditableContext =
+  React.createContext<EditableContextValue<unknown> | null>(null)
 
-function useEditableContext(part: string): EditableContextValue {
+/**
+ * Read the current Editable context. Pass a generic `T` matching the
+ * `Editable<T>` parent so `value`, `draft`, and `setDraft` are typed
+ * correctly inside custom widgets.
+ */
+function useEditableContext<T = unknown>(
+  part: string,
+): EditableContextValue<T> {
   const ctx = React.useContext(EditableContext)
   if (!ctx) {
     throw new Error(
       `<${part}> must be used within an <Editable> root component`,
     )
   }
-  return ctx
+  // Double cast through unknown — `setDraft` is contravariant in T, so
+  // a single cast from `unknown` to `T` is rejected by TS strict mode.
+  return ctx as unknown as EditableContextValue<T>
 }
 
-export interface EditableProps extends Omit<
+export interface EditableProps<T = string> extends Omit<
   React.HTMLAttributes<HTMLDivElement>,
   "onChange" | "defaultValue"
 > {
-  value?: string
-  defaultValue?: string
-  onValueChange?: (details: EditableValueChangeDetails) => void
-  onValueCommit?: (details: EditableValueCommitDetails) => void
+  value?: T
+  defaultValue?: T
+  onValueChange?: (details: EditableValueChangeDetails<T>) => void
+  onValueCommit?: (details: EditableValueCommitDetails<T>) => void
   edit?: boolean
   defaultEdit?: boolean
   onEditChange?: (details: EditableEditChangeDetails) => void
@@ -71,10 +92,10 @@ export interface EditableProps extends Omit<
   maxLength?: number
 }
 
-function Editable({
+function Editable<T = string>({
   className,
   value: valueProp,
-  defaultValue = "",
+  defaultValue,
   onValueChange,
   onValueCommit,
   edit: editProp,
@@ -90,19 +111,25 @@ function Editable({
   maxLength,
   children,
   ...props
-}: EditableProps) {
+}: EditableProps<T>) {
   const isValueControlled = valueProp !== undefined
   const isEditControlled = editProp !== undefined
 
-  const [internalValue, setInternalValue] = React.useState(defaultValue)
+  // For the default `T = string` case, fall back to "" so existing consumers
+  // don't need to pass `defaultValue`. For non-string `T`, consumers must
+  // either pass `defaultValue` or use controlled `value`.
+  const initialValue =
+    defaultValue !== undefined ? defaultValue : ("" as unknown as T)
+
+  const [internalValue, setInternalValue] = React.useState<T>(initialValue)
   const [internalEdit, setInternalEdit] = React.useState(defaultEdit)
 
-  const value = isValueControlled ? valueProp : internalValue
+  const value = isValueControlled ? (valueProp as T) : internalValue
   const edit = isEditControlled ? editProp : internalEdit
   const state: EditableState = edit ? "edit" : "preview"
 
-  const [draft, setDraftState] = React.useState(value)
-  const inputRef = React.useRef<HTMLInputElement | null>(null)
+  const [draft, setDraftState] = React.useState<T>(value)
+  const inputRef = React.useRef<HTMLElement | null>(null)
   const cancelledRef = React.useRef(false)
   const fieldId = React.useId()
 
@@ -139,7 +166,7 @@ function Editable({
     [isEditControlled],
   )
 
-  const setDraft = React.useCallback((next: string) => {
+  const setDraft = React.useCallback((next: T) => {
     setDraftState(next)
     onValueChangeRef.current?.({ value: next })
   }, [])
@@ -165,18 +192,17 @@ function Editable({
     setEdit(false)
   }, [value, setEdit])
 
-  // Focus + select-on-focus when entering edit mode.
+  // Focus the input on edit-enter. Text-selection is handled by the
+  // bundled `EditableInput` (which knows it has a real <input>); custom
+  // slots that wrap richer widgets opt in/out of selection on their own.
   React.useEffect(() => {
     if (!edit) return
-    const input = inputRef.current
-    if (!input) return
-    input.focus()
-    if (selectOnFocus) {
-      input.select()
-    }
-  }, [edit, selectOnFocus])
+    const node = inputRef.current
+    if (!node) return
+    node.focus()
+  }, [edit])
 
-  const ctx = React.useMemo<EditableContextValue>(
+  const ctx = React.useMemo<EditableContextValue<T>>(
     () => ({
       state,
       value,
@@ -225,7 +251,11 @@ function Editable({
       data-readonly={readOnly ? "true" : undefined}
       {...props}
     >
-      <EditableContext.Provider value={ctx}>
+      {/* Same variance reason as in `useEditableContext`: TS rejects the
+          implicit T→unknown widening on the contravariant `setDraft`. */}
+      <EditableContext.Provider
+        value={ctx as unknown as EditableContextValue<unknown>}
+      >
         {children}
       </EditableContext.Provider>
     </div>
@@ -237,7 +267,7 @@ function EditableLabel({
   htmlFor,
   ...props
 }: React.LabelHTMLAttributes<HTMLLabelElement>) {
-  const { fieldId } = useEditableContext("EditableLabel")
+  const { fieldId } = useEditableContext<unknown>("EditableLabel")
   return (
     <label
       htmlFor={htmlFor ?? fieldId}
@@ -251,7 +281,7 @@ function EditableArea({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
-  const { state } = useEditableContext("EditableArea")
+  const { state } = useEditableContext<unknown>("EditableArea")
   return (
     <div
       className={cn("dr-editable-area", className)}
@@ -286,12 +316,13 @@ function EditableInput({
     readOnly,
     fieldId,
     inputRef,
+    selectOnFocus,
     submitOnBlur,
     submitOnEnter,
     cancelOnEscape,
     maxLength,
     cancelledRef,
-  } = useEditableContext("EditableInput")
+  } = useEditableContext<string>("EditableInput")
 
   const composedRef = React.useCallback(
     (node: HTMLInputElement | null) => {
@@ -304,6 +335,18 @@ function EditableInput({
     },
     [ref, inputRef],
   )
+
+  // EditableInput is the string-typed variant — selection on focus only
+  // makes sense for plain text, so it lives here rather than in the
+  // generic Editable parent. Runs whenever the input mounts via the
+  // composed ref while in edit mode.
+  React.useEffect(() => {
+    if (state !== "edit") return
+    const input = inputRef.current
+    if (!input || !(input instanceof HTMLInputElement)) return
+    if (selectOnFocus) input.select()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state])
 
   const safeSize = Math.max(draft.length, placeholder.length, 4)
 
@@ -358,15 +401,22 @@ function EditablePreview({
   className,
   onClick,
   onKeyDown,
+  children,
   ref,
   ...props
-}: Omit<React.HTMLAttributes<HTMLDivElement>, "children"> & {
+}: React.HTMLAttributes<HTMLDivElement> & {
   ref?: React.Ref<HTMLDivElement>
 }) {
   const { state, value, placeholder, startEdit, disabled, readOnly } =
-    useEditableContext("EditablePreview")
+    useEditableContext<unknown>("EditablePreview")
 
-  const isEmpty = value.length === 0
+  const stringValue =
+    typeof value === "string"
+      ? value
+      : value === undefined || value === null
+        ? ""
+        : String(value)
+  const isEmpty = stringValue.length === 0
   const interactive = !disabled && !readOnly
   const tabIndex = interactive ? 0 : -1
 
@@ -396,7 +446,7 @@ function EditablePreview({
       }}
       {...props}
     >
-      {isEmpty ? placeholder : value}
+      {children !== undefined ? children : isEmpty ? placeholder : stringValue}
     </div>
   )
 }
@@ -405,7 +455,7 @@ function EditableControl({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
-  const { state } = useEditableContext("EditableControl")
+  const { state } = useEditableContext<unknown>("EditableControl")
   return (
     <div
       className={cn("dr-editable-control", className)}
@@ -425,7 +475,7 @@ function EditableEditTrigger({
 }: React.ButtonHTMLAttributes<HTMLButtonElement> & {
   ref?: React.Ref<HTMLButtonElement>
 }) {
-  const { state, startEdit, disabled, readOnly } = useEditableContext(
+  const { state, startEdit, disabled, readOnly } = useEditableContext<unknown>(
     "EditableEditTrigger",
   )
   const isDisabled = disabledProp ?? (disabled || readOnly)
@@ -455,7 +505,7 @@ function EditableSubmitTrigger({
 }: React.ButtonHTMLAttributes<HTMLButtonElement> & {
   ref?: React.Ref<HTMLButtonElement>
 }) {
-  const { state, submit } = useEditableContext("EditableSubmitTrigger")
+  const { state, submit } = useEditableContext<unknown>("EditableSubmitTrigger")
   return (
     <button
       ref={ref}
@@ -487,7 +537,7 @@ function EditableCancelTrigger({
 }: React.ButtonHTMLAttributes<HTMLButtonElement> & {
   ref?: React.Ref<HTMLButtonElement>
 }) {
-  const { state, cancel } = useEditableContext("EditableCancelTrigger")
+  const { state, cancel } = useEditableContext<unknown>("EditableCancelTrigger")
   return (
     <button
       ref={ref}
@@ -517,4 +567,5 @@ export {
   EditableEditTrigger,
   EditableSubmitTrigger,
   EditableCancelTrigger,
+  useEditableContext,
 }
