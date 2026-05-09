@@ -364,4 +364,5 @@ export {
   PopoverArrow,
   PopoverAnchor,
   PopoverClose,
+  usePopoverContext,
 }

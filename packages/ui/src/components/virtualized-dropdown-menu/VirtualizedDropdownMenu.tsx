@@ -9,6 +9,7 @@ import {
   PopoverTrigger as PopoverPrimitiveTrigger,
   PopoverPortal as PopoverPrimitivePortal,
   PopoverContent as PopoverPrimitiveContent,
+  usePopoverContext,
 } from "@components/popover"
 import "./virtualized-dropdown-menu.css"
 
@@ -42,6 +43,7 @@ function VirtualizedDropdownMenuContent<T>({
   sideOffset = 4,
   align,
 }: VirtualizedDropdownMenuContentProps<T>) {
+  const popover = usePopoverContext("VirtualizedDropdownMenuContent")
   const [activeIndex, setActiveIndex] = React.useState(-1)
   // Mirror activeIndex in a ref so the Enter handler reads the freshest
   // index even when several arrow-key dispatches arrive before React has
@@ -53,6 +55,14 @@ function VirtualizedDropdownMenuContent<T>({
   const contentRef = React.useRef<HTMLDivElement>(null)
   const [scrollElement, setScrollElement] =
     React.useState<HTMLDivElement | null>(null)
+
+  const selectItem = React.useCallback(
+    (item: T, index: number) => {
+      onItemSelect?.(item, index)
+      popover.setOpen(false)
+    },
+    [onItemSelect, popover],
+  )
 
   const virtualizer = useVirtualizer({
     count: items.length,
@@ -78,7 +88,7 @@ function VirtualizedDropdownMenuContent<T>({
             const idx = activeIndexRef.current
             const item = items[idx]
             if (idx >= 0 && item !== undefined) {
-              onItemSelect?.(item, idx)
+              selectItem(item, idx)
             }
           }
           break
@@ -92,7 +102,7 @@ function VirtualizedDropdownMenuContent<T>({
           break
       }
     },
-    [items, onItemSelect],
+    [items, selectItem],
   )
 
   React.useEffect(() => {
@@ -147,7 +157,7 @@ function VirtualizedDropdownMenuContent<T>({
                     transform: `translateY(${virtualRow.start}px)`,
                   }}
                   onMouseEnter={() => setActiveIndex(virtualRow.index)}
-                  onClick={() => onItemSelect?.(item, virtualRow.index)}
+                  onClick={() => selectItem(item, virtualRow.index)}
                 >
                   {renderItem(item, {
                     index: virtualRow.index,
