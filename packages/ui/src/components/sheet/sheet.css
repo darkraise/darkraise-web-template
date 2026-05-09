@@ -1,12 +1,25 @@
 @layer components {
+  .dr-sheet-content {
+    @apply modal-surface glass-strong bg-background text-foreground data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 gap-4 p-6 transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500;
+  }
+
   /* SheetContent reuses DialogContent under the hood, so the rendered div
      receives both `dr-dialog-content` and `dr-sheet-content`. The dialog
-     base centers itself with `translate-x-[-50%] translate-y-[-50%]`,
-     which would shift a side-anchored sheet half its width inward.
-     `translate-none` and `transform-none` clear the inherited transforms
-     so the per-side `inset-y-0 right-0 / left-0` positioning is respected. */
-  .dr-sheet-content {
-    @apply modal-surface glass-strong bg-background text-foreground data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 max-w-none translate-none transform-none gap-4 p-6 transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500;
+     base centers itself with `top: 50%; left: 50%; translate: -50% -50%`
+     and caps width with `max-width: 32rem`. None of the per-side sheet
+     rules reset `transform` / `translate` / `max-width`, so a side-anchored
+     sheet ended up shifted half its width inward (visibly centered).
+     The compound selector below outranks `.dr-dialog-content` on
+     specificity (0,2,0 vs 0,1,0) and uses literal CSS values to bypass
+     any utility-recognition gaps in Tailwind v4's setup. */
+  .dr-dialog-content.dr-sheet-content {
+    top: auto;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    transform: none;
+    translate: none;
+    max-width: none;
   }
 
   .dr-sheet-content[data-side="top"] {
