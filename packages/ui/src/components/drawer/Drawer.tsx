@@ -19,6 +19,8 @@ interface DrawerContextValue extends UseDialogReturn {
   direction: DrawerDirection
   /** lifted from content to handle: only the handle initiates close-by-drag */
   beginDrag: (event: React.PointerEvent) => void
+  closeOnOutsidePointerDown: boolean
+  closeOnEscape: boolean
 }
 
 const DrawerContext = React.createContext<DrawerContextValue | null>(null)
@@ -35,6 +37,11 @@ interface DrawerProps {
   onOpenChange?: (open: boolean) => void
   modal?: boolean
   direction?: DrawerDirection
+  /** Close the drawer when the user clicks/taps the backdrop (anywhere
+   *  outside the content). Defaults to `true`. */
+  closeOnOutsidePointerDown?: boolean
+  /** Close the drawer when the Escape key is pressed. Defaults to `true`. */
+  closeOnEscape?: boolean
   /** vaul-compatible no-op slot, accepted for API parity. */
   shouldScaleBackground?: boolean
   children?: React.ReactNode
@@ -49,6 +56,8 @@ function Drawer({
   onOpenChange,
   modal = true,
   direction = "bottom",
+  closeOnOutsidePointerDown = true,
+  closeOnEscape = true,
   children,
 }: DrawerProps) {
   const dialog = useDialog({ open, defaultOpen, onOpenChange, modal })
@@ -147,8 +156,14 @@ function Drawer({
   )
 
   const ctx = React.useMemo<DrawerContextValue>(
-    () => ({ ...dialog, direction, beginDrag }),
-    [dialog, direction, beginDrag],
+    () => ({
+      ...dialog,
+      direction,
+      beginDrag,
+      closeOnOutsidePointerDown,
+      closeOnEscape,
+    }),
+    [dialog, direction, beginDrag, closeOnOutsidePointerDown, closeOnEscape],
   )
 
   return <DrawerContext.Provider value={ctx}>{children}</DrawerContext.Provider>
@@ -260,11 +275,13 @@ function DrawerContentImpl({
       onPointerDownOutside={(event) => {
         onPointerDownOutside?.(event)
         if (event.defaultPrevented) return
+        if (!ctx.closeOnOutsidePointerDown) return
         ctx.setOpen(false)
       }}
       onEscapeKeyDown={(event) => {
         onEscapeKeyDown?.(event)
         if (event.defaultPrevented) return
+        if (!ctx.closeOnEscape) return
         ctx.setOpen(false)
       }}
     >
