@@ -4,7 +4,7 @@
   }
 
   .dr-drawer-content {
-    @apply modal-surface glass-strong bg-background data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 flex flex-col border transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500;
+    @apply modal-surface glass-strong bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 flex flex-col border transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500;
   }
 
   .dr-drawer-content[data-direction="bottom"] {
