@@ -146,7 +146,14 @@ function DrawerPage() {
 
       <ShowcaseExample
         title="Scrollable drawer"
-        code={`<Drawer>
+        code={`// DrawerContent is a flex column. Wrap the middle region in
+// flex-1 min-h-0 overflow-y-auto so the body can shrink inside the
+// max-h cap and scroll independently while header + footer stay
+// pinned. Without flex-1 (and min-h-0 to override flex's default
+// min-height: auto), the body grows to its content size and the
+// overflow never triggers.
+
+<Drawer>
   <DrawerTrigger asChild>
     <Button variant="outline">View Terms</Button>
   </DrawerTrigger>
@@ -155,7 +162,7 @@ function DrawerPage() {
       <DrawerTitle>Terms of Service</DrawerTitle>
       <DrawerDescription>Please read and accept the terms below.</DrawerDescription>
     </DrawerHeader>
-    <div className="overflow-y-auto p-4">
+    <div className="flex-1 min-h-0 overflow-y-auto p-4">
       {/* long content */}
     </div>
     <DrawerFooter>
@@ -178,9 +185,10 @@ function DrawerPage() {
                 Please read and accept the terms below.
               </DrawerDescription>
             </DrawerHeader>
-            <div className="overflow-y-auto p-4">
-              {Array.from({ length: 8 }, (_, i) => (
+            <div className="min-h-0 flex-1 overflow-y-auto p-4">
+              {Array.from({ length: 16 }, (_, i) => (
                 <p key={i} className="text-muted-foreground mb-4 text-sm">
+                  <span className="text-foreground font-medium">§{i + 1}.</span>{" "}
                   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
                   do eiusmod tempor incididunt ut labore et dolore magna aliqua.
                   Ut enim ad minim veniam, quis nostrud exercitation ullamco
