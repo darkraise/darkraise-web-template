@@ -199,6 +199,56 @@ function DrawerPage() {
           </DrawerContent>
         </Drawer>
       </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Locked backdrop (no accidental dismiss)"
+        code={`// closeOnOutsidePointerDown={false} stops the drawer from closing
+// when the user taps the backdrop. closeOnEscape={false} does the same
+// for the Escape key. Useful for in-progress operations the user must
+// explicitly cancel — uploads, payment confirmations, destructive flows.
+// The drag-down handle still works; only the backdrop / Escape paths
+// are gated.
+
+<Drawer closeOnOutsidePointerDown={false} closeOnEscape={false}>
+  <DrawerTrigger asChild>
+    <Button variant="destructive">Delete project</Button>
+  </DrawerTrigger>
+  <DrawerContent>
+    <DrawerHeader>
+      <DrawerTitle>Confirm deletion</DrawerTitle>
+      <DrawerDescription>
+        Backdrop and Escape are disabled. Use the buttons below.
+      </DrawerDescription>
+    </DrawerHeader>
+    <DrawerFooter className="flex-row justify-end gap-2">
+      <DrawerClose asChild>
+        <Button variant="outline">Keep it</Button>
+      </DrawerClose>
+      <Button variant="destructive">Delete forever</Button>
+    </DrawerFooter>
+  </DrawerContent>
+</Drawer>`}
+      >
+        <Drawer closeOnOutsidePointerDown={false} closeOnEscape={false}>
+          <DrawerTrigger asChild>
+            <Button variant="destructive">Delete project</Button>
+          </DrawerTrigger>
+          <DrawerContent>
+            <DrawerHeader>
+              <DrawerTitle>Confirm deletion</DrawerTitle>
+              <DrawerDescription>
+                Backdrop and Escape are disabled. Use the buttons below.
+              </DrawerDescription>
+            </DrawerHeader>
+            <DrawerFooter className="flex-row justify-end gap-2">
+              <DrawerClose asChild>
+                <Button variant="outline">Keep it</Button>
+              </DrawerClose>
+              <Button variant="destructive">Delete forever</Button>
+            </DrawerFooter>
+          </DrawerContent>
+        </Drawer>
+      </ShowcaseExample>
     </ShowcasePage>
   )
 }

@@ -5,6 +5,7 @@ import { Input } from "darkraise-ui/components/input"
 import { Field, FieldLabel } from "darkraise-ui/components/field"
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -14,6 +15,7 @@ import {
 } from "darkraise-ui/components/dialog"
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetDescription,
   SheetFooter,
@@ -648,6 +650,55 @@ function DialogsPage() {
       </ShowcaseExample>
 
       <ShowcaseExample
+        title="Dialog — locked backdrop (no accidental dismiss)"
+        code={`// closeOnOutsidePointerDown={false} stops backdrop clicks from
+// dismissing the dialog. closeOnEscape={false} does the same for the
+// Escape key. Combine both for flows where the user must explicitly
+// confirm or cancel — payment confirmations, destructive actions,
+// in-progress uploads, etc.
+
+<Dialog closeOnOutsidePointerDown={false} closeOnEscape={false}>
+  <DialogTrigger asChild>
+    <Button variant="destructive">Wipe account</Button>
+  </DialogTrigger>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>Confirm account deletion</DialogTitle>
+      <DialogDescription>
+        Backdrop and Escape are disabled — use the buttons below.
+      </DialogDescription>
+    </DialogHeader>
+    <DialogFooter>
+      <DialogClose asChild>
+        <Button variant="outline">Keep account</Button>
+      </DialogClose>
+      <Button variant="destructive">Delete forever</Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>`}
+      >
+        <Dialog closeOnOutsidePointerDown={false} closeOnEscape={false}>
+          <DialogTrigger asChild>
+            <Button variant="destructive">Wipe account</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Confirm account deletion</DialogTitle>
+              <DialogDescription>
+                Backdrop and Escape are disabled — use the buttons below.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button variant="outline">Keep account</Button>
+              </DialogClose>
+              <Button variant="destructive">Delete forever</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </ShowcaseExample>
+
+      <ShowcaseExample
         title="Sheet — edit profile form"
         code={`<Sheet>
   <SheetTrigger asChild>
@@ -710,6 +761,60 @@ function DialogsPage() {
             <SheetFooter>
               <Button variant="outline">Cancel</Button>
               <Button>Save Changes</Button>
+            </SheetFooter>
+          </SheetContent>
+        </Sheet>
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Sheet — locked backdrop while editing"
+        code={`// Pass closeOnOutsidePointerDown={false} so the user can't lose
+// in-progress edits by tapping outside the sheet. Use closeOnEscape to
+// gate the keyboard path the same way. Common pattern for forms with
+// unsaved changes — pair it with a "Discard changes" confirmation.
+
+<Sheet closeOnOutsidePointerDown={false}>
+  <SheetTrigger asChild>
+    <Button variant="outline">Edit form</Button>
+  </SheetTrigger>
+  <SheetContent>
+    <SheetHeader>
+      <SheetTitle>Unsaved changes safeguard</SheetTitle>
+      <SheetDescription>
+        Backdrop click is disabled. Save or close explicitly.
+      </SheetDescription>
+    </SheetHeader>
+    <SheetFooter>
+      <SheetClose asChild>
+        <Button variant="outline">Discard</Button>
+      </SheetClose>
+      <Button>Save</Button>
+    </SheetFooter>
+  </SheetContent>
+</Sheet>`}
+      >
+        <Sheet closeOnOutsidePointerDown={false}>
+          <SheetTrigger asChild>
+            <Button variant="outline">Edit form</Button>
+          </SheetTrigger>
+          <SheetContent>
+            <SheetHeader>
+              <SheetTitle>Unsaved changes safeguard</SheetTitle>
+              <SheetDescription>
+                Backdrop click is disabled. Save or close explicitly.
+              </SheetDescription>
+            </SheetHeader>
+            <div className="space-y-4 p-4">
+              <Field>
+                <FieldLabel htmlFor="locked-sheet-name">Name</FieldLabel>
+                <Input id="locked-sheet-name" defaultValue="Jane Doe" />
+              </Field>
+            </div>
+            <SheetFooter>
+              <SheetClose asChild>
+                <Button variant="outline">Discard</Button>
+              </SheetClose>
+              <Button>Save</Button>
             </SheetFooter>
           </SheetContent>
         </Sheet>
