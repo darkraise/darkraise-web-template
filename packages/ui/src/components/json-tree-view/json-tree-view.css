@@ -1,25 +1,112 @@
 @layer components {
   .dr-json-tree {
-    @apply font-mono text-sm;
+    @apply flex flex-col gap-2 font-mono text-sm;
   }
+
+  .dr-json-tree-body {
+    @apply outline-none;
+  }
+  .dr-json-tree-body:focus-visible {
+    @apply ring-primary rounded ring-2 ring-offset-1;
+  }
+
+  /* Toolbar — integrated bar with bare search input and an icon-button
+   * action group. Bordered card surface with subtle shadow; inner
+   * elements are flush so the whole bar reads as one control. */
+  .dr-json-toolbar {
+    @apply bg-card flex items-center gap-1 rounded-md border px-1.5 py-1 font-sans text-sm shadow-sm;
+    border-color: hsl(var(--border));
+  }
+  .dr-json-toolbar:focus-within {
+    border-color: hsl(var(--primary));
+    box-shadow: 0 0 0 1px hsl(var(--primary));
+  }
+  .dr-json-toolbar-search {
+    @apply flex flex-1 items-center gap-1.5 px-1;
+    min-width: 0;
+  }
+  .dr-json-toolbar-search-icon {
+    @apply text-muted-foreground h-4 w-4 shrink-0;
+  }
+  .dr-json-toolbar-search-input {
+    @apply text-foreground placeholder:text-muted-foreground min-w-0 flex-1 bg-transparent text-sm outline-none;
+    height: 1.75rem;
+    border: 0;
+  }
+  .dr-json-toolbar-match-count {
+    @apply text-muted-foreground text-xs whitespace-nowrap tabular-nums;
+  }
+  .dr-json-toolbar-clear,
+  .dr-json-toolbar-action {
+    height: 1.75rem !important;
+    width: 1.75rem !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    border-radius: calc(var(--radius-button) - 2px);
+  }
+  .dr-json-toolbar-divider {
+    @apply inline-block;
+    width: 1px;
+    height: 1.25rem;
+    background: hsl(var(--border));
+  }
+  .dr-json-toolbar-actions {
+    @apply flex items-center gap-0.5;
+  }
+
+  /* Row container. The padding-left is set inline as a function of depth
+   * so the tree indent compounds linearly without a per-level utility. */
   .dr-json-row {
-    @apply leading-tight;
+    @apply leading-tight outline-none;
   }
+  .dr-json-row:focus-visible,
+  .dr-json-row[data-focused="true"] > .dr-json-line {
+    @apply bg-primary/10 rounded-sm;
+  }
+  /* Matching rows in a filtered result get a subtle accent stripe. */
+  .dr-json-row[data-matching="true"] > .dr-json-line {
+    box-shadow: inset 2px 0 0 0 hsl(var(--primary));
+  }
+
   .dr-json-line {
-    @apply flex items-center gap-1;
+    @apply flex items-center gap-1 rounded-sm py-0.5;
   }
+  .dr-json-line:hover .dr-json-row-actions {
+    opacity: 1;
+  }
+  .dr-json-row[data-focused="true"] .dr-json-row-actions {
+    opacity: 1;
+  }
+
   .dr-json-chevron {
-    @apply text-muted-foreground hover:text-foreground inline-flex items-center justify-center rounded transition-colors;
+    @apply text-muted-foreground hover:text-foreground inline-flex h-4 w-4 cursor-pointer items-center justify-center rounded transition-colors;
   }
   .dr-json-chevron-spacer {
-    @apply inline-block w-3;
+    @apply inline-block h-4 w-4 shrink-0;
   }
+
   .dr-json-key {
     @apply text-foreground font-medium;
   }
+  .dr-json-punct {
+    @apply text-muted-foreground;
+  }
+
+  /* Container summary (Array(3), {2}) and the inline preview shown next
+   * to it while the container is collapsed. */
   .dr-json-summary {
     @apply text-muted-foreground;
   }
+  .dr-json-preview {
+    @apply text-muted-foreground/70 ml-2 truncate;
+    max-width: 32rem;
+  }
+
+  /* Inline empty marker for {} and [] — no chevron, no children area. */
+  .dr-json-empty {
+    @apply text-muted-foreground;
+  }
+
   .dr-json-string {
     @apply text-success;
   }
@@ -32,6 +119,51 @@
   .dr-json-null {
     @apply text-muted-foreground italic;
   }
+
+  /* Smart string renderings — URL, color swatch, long-string truncation. */
+  .dr-json-url {
+    @apply underline decoration-dotted underline-offset-2;
+  }
+  .dr-json-color-swatch {
+    @apply inline-block h-3 w-3 align-middle;
+    margin-right: 0.25rem;
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.125rem;
+  }
+  .dr-json-show-more {
+    @apply text-primary ml-1 cursor-pointer text-[10px] tracking-wide uppercase;
+    background: transparent;
+    border: 0;
+    padding: 0;
+  }
+  .dr-json-show-more:hover {
+    @apply underline;
+  }
+
+  /* Inline match highlight — same primary tint as the focused row. */
+  .dr-json-mark {
+    @apply bg-primary/30 text-foreground rounded-sm;
+    padding-inline: 1px;
+  }
+
+  /* Row action toolbar (Copy path / Copy value). Hidden by default;
+   * revealed on hover or when the row is focused. */
+  .dr-json-row-actions {
+    @apply ml-auto inline-flex items-center gap-0.5 opacity-0 transition-opacity;
+  }
+  .dr-json-row-action {
+    height: 1.25rem !important;
+    width: 1.25rem !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+  }
+  .dr-json-row-action[data-state="copied"] {
+    @apply text-success;
+  }
+
+  /* Backwards-compatible: legacy `.dr-json-copy` button used by older
+   * consumers that called the component before this expansion. Mirrors
+   * .dr-json-row-action's hover-reveal behaviour. */
   .dr-json-copy {
     @apply text-muted-foreground hover:text-foreground ml-1 opacity-0 transition-opacity;
   }

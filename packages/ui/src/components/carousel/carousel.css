@@ -54,4 +54,34 @@
   .dr-carousel-next[data-orientation="vertical"] {
     @apply -bottom-12 left-1/2 -translate-x-1/2 rotate-90;
   }
+
+  .dr-carousel-indicator-group {
+    @apply mt-3 flex items-center justify-center gap-2;
+  }
+
+  .dr-carousel-indicator-group[data-orientation="vertical"] {
+    @apply mt-0 ml-3 flex-col;
+  }
+
+  .dr-carousel-indicator {
+    @apply bg-muted hover:bg-muted-foreground/40 inline-block h-2 w-2 cursor-pointer rounded-full border-0 p-0 transition-[background-color,width,height] duration-200;
+  }
+
+  .dr-carousel-indicator[data-current="true"] {
+    /* Active dot widens into a pill so the current slide reads at a glance.
+     * Vertical override below swaps to a vertical pill. */
+    @apply bg-primary w-5;
+  }
+
+  .dr-carousel-indicator[data-current="true"][data-orientation="vertical"] {
+    @apply h-5 w-2;
+  }
+
+  .dr-carousel-indicator[data-readonly="true"] {
+    @apply pointer-events-none cursor-default;
+  }
+
+  .dr-carousel-indicator:focus-visible {
+    @apply ring-ring ring-2 ring-offset-2 outline-none;
+  }
 }

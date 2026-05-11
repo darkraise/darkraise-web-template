@@ -1,0 +1,327 @@
+@layer components {
+  .dr-image-editor {
+    /* The editor inherits the .dr-image-cropper layout from the wrapped
+     * cropper RootProvider; this class only carries editor-specific data
+     * attributes (e.g. data-tool) and is otherwise a no-op visual layer. */
+  }
+
+  .dr-image-editor-image {
+    /* CSS filter is applied via inline style by ImageEditorImage. The class
+     * is kept as a styling hook for consumers who want to layer additional
+     * effects (e.g. mix-blend-mode) without overriding the filter property. */
+    transition: filter 80ms linear;
+  }
+
+  /* Photoshop / Pixlr-style panel chrome — a bordered card with a muted
+   * header bar. Use ImageEditorPanel as a wrapper around tool sections to
+   * get the title + icon + action layout for a consistent sidebar look. */
+  .dr-image-editor-panel {
+    @apply bg-card overflow-hidden rounded-md border shadow-sm;
+    border-color: hsl(var(--border));
+  }
+  .dr-image-editor-panel-header {
+    @apply flex items-center justify-between gap-2 border-b px-3 py-2;
+    border-color: hsl(var(--border));
+    background: hsl(var(--muted) / 0.4);
+  }
+  .dr-image-editor-panel-title {
+    @apply text-foreground inline-flex items-center gap-2 text-[11px] font-semibold uppercase;
+    letter-spacing: 0.06em;
+  }
+  .dr-image-editor-panel-icon {
+    @apply text-muted-foreground inline-flex items-center;
+  }
+  .dr-image-editor-panel-action {
+    @apply inline-flex items-center;
+  }
+  .dr-image-editor-panel-body {
+    @apply p-3;
+  }
+  /* Strip the inner card chrome from compounds that have their own,
+   * so wrapping them in an ImageEditorPanel doesn't produce a card-in-card. */
+  .dr-image-editor-panel .dr-image-editor-adjust-panel,
+  .dr-image-editor-panel .dr-image-editor-annotation-toolbar {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .dr-image-editor-adjust-panel {
+    @apply flex flex-col gap-2 rounded-md border p-3;
+    border-color: hsl(var(--border));
+    background: hsl(var(--card));
+  }
+
+  .dr-image-editor-adjust {
+    @apply grid items-center gap-2 text-xs;
+    grid-template-columns: 6rem 1fr 3rem;
+  }
+  .dr-image-editor-adjust-label {
+    @apply text-muted-foreground font-medium;
+  }
+  .dr-image-editor-adjust input[type="range"] {
+    @apply w-full;
+    accent-color: hsl(var(--primary));
+  }
+  .dr-image-editor-adjust-value {
+    @apply text-right tabular-nums;
+    color: hsl(var(--foreground));
+  }
+
+  .dr-image-editor-presets {
+    @apply flex flex-wrap gap-2;
+  }
+  .dr-image-editor-preset {
+    @apply rounded-md border px-3 py-1.5 text-xs font-medium transition-colors;
+    border-color: hsl(var(--border));
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+  .dr-image-editor-preset:hover {
+    border-color: hsl(var(--primary));
+    color: hsl(var(--primary));
+  }
+  .dr-image-editor-preset:focus-visible {
+    @apply ring-primary ring-2 outline-none;
+  }
+
+  /* Tool palette — Photoshop / Pixlr style. A bordered card with a
+   * subtle background and tight inner padding hosts a row (or column) of
+   * icon-only tool buttons. Each tool button is a square; the active
+   * tool gets a primary fill and the others sit transparent until hover. */
+  .dr-image-editor-tools {
+    @apply inline-flex items-center gap-0.5 rounded-md border p-1 shadow-sm;
+    border-color: hsl(var(--border));
+    background: hsl(var(--card));
+  }
+  .dr-image-editor-tool {
+    height: 2rem !important;
+    width: 2rem !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    border-radius: calc(var(--radius-button) - 2px);
+  }
+  .dr-image-editor-tool[data-state="active"] {
+    box-shadow: inset 0 0 0 1px hsl(var(--primary));
+  }
+
+  .dr-image-editor-rotation {
+    @apply grid items-center gap-2 text-xs;
+    grid-template-columns: 6rem 1fr 3rem;
+  }
+  .dr-image-editor-rotation-label {
+    @apply text-muted-foreground font-medium;
+  }
+  .dr-image-editor-rotation input[type="range"] {
+    @apply w-full;
+    accent-color: hsl(var(--primary));
+  }
+  .dr-image-editor-rotation-value {
+    @apply text-right tabular-nums;
+    color: hsl(var(--foreground));
+  }
+
+  .dr-image-editor-history-trigger {
+    @apply rounded-md border px-3 py-1.5 text-xs font-medium transition-colors;
+    border-color: hsl(var(--border));
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+  .dr-image-editor-history-trigger:hover:not(:disabled) {
+    border-color: hsl(var(--primary));
+    color: hsl(var(--primary));
+  }
+  .dr-image-editor-history-trigger:disabled {
+    @apply opacity-50;
+    cursor: not-allowed;
+  }
+  .dr-image-editor-history-trigger:focus-visible {
+    @apply ring-primary ring-2 outline-none;
+  }
+
+  /* Annotation canvas overlay sits inside the cropper viewport, above the
+   * image but transparent to events unless the editor's tool is annotate.
+   * The crop selection lives in the same stacking context; when annotate
+   * is active, the canvas claims pointer events first because of the
+   * z-index. */
+  .dr-image-editor-annotation-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    touch-action: none;
+  }
+  .dr-image-editor[data-tool="annotate"] .dr-image-editor-annotation-layer {
+    pointer-events: auto;
+    z-index: 5;
+    cursor: crosshair;
+  }
+  .dr-image-editor[data-tool="annotate"] .dr-image-cropper-selection {
+    pointer-events: none;
+  }
+
+  /* Annotation toolbar — also tool-palette styled. Kinds group on the
+   * left (a row of square icon toggles), separator, then colour swatch,
+   * width slider, and finally the clear button on the right. */
+  .dr-image-editor-annotation-toolbar {
+    @apply flex flex-wrap items-center gap-1.5 rounded-md border p-1 shadow-sm;
+    border-color: hsl(var(--border));
+    background: hsl(var(--card));
+  }
+  .dr-image-editor-annotation-kinds {
+    @apply inline-flex items-center gap-0.5;
+  }
+  .dr-image-editor-annotation-kind {
+    height: 2rem !important;
+    width: 2rem !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    border-radius: calc(var(--radius-button) - 2px);
+  }
+  .dr-image-editor-annotation-kind[data-state="active"] {
+    box-shadow: inset 0 0 0 1px hsl(var(--primary));
+  }
+  .dr-image-editor-annotation-toolbar-divider {
+    @apply inline-block;
+    width: 1px;
+    height: 1.5rem;
+    background: hsl(var(--border));
+    margin-inline: 0.25rem;
+  }
+  .dr-image-editor-annotation-toolbar-width {
+    @apply inline-flex items-center;
+    min-width: 8rem;
+    padding-inline: 0.5rem;
+  }
+  .dr-image-editor-annotation-toolbar-spacer {
+    @apply flex-1;
+  }
+
+  /* Color input swapped to the project's <ColorPicker>; the trigger
+   * inherits dr-color-picker-trigger styling. The dr-image-editor-
+   * annotation-color class is kept on the wrapper as a styling hook for
+   * consumers who want to tweak layout. */
+  .dr-image-editor-annotation-color {
+    display: inline-flex;
+  }
+
+  .dr-image-editor-annotation-width {
+    @apply w-32;
+    accent-color: hsl(var(--primary));
+  }
+
+  .dr-image-editor-annotation-clear {
+    @apply rounded-md border px-3 py-1 text-xs font-medium transition-colors;
+    border-color: hsl(var(--border));
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+  .dr-image-editor-annotation-clear:hover {
+    border-color: hsl(var(--destructive));
+    color: hsl(var(--destructive));
+  }
+  .dr-image-editor-annotation-clear:focus-visible {
+    @apply ring-primary ring-2 outline-none;
+  }
+
+  /* Text annotation input — anchored at the click point inside the
+   * viewport. Transparent background so the user sees the underlying
+   * image while typing; the colour matches the active annotation colour
+   * via inline style so the input mirrors what the committed text will
+   * look like. */
+  .dr-image-editor-annotation-text-input {
+    @apply rounded border border-dashed border-current bg-transparent px-1 py-0;
+    line-height: 1.2;
+    font-family: system-ui, sans-serif;
+    outline: none;
+    z-index: 6;
+  }
+  .dr-image-editor-annotation-text-input:focus {
+    border-style: solid;
+  }
+
+  /* Freeform selection overlay — same gating pattern as annotation but on
+   * its own data-tool. */
+  .dr-image-editor-freeform {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    touch-action: none;
+  }
+  .dr-image-editor[data-tool="freeform"] .dr-image-editor-freeform {
+    pointer-events: auto;
+    z-index: 5;
+    cursor: crosshair;
+  }
+  .dr-image-editor[data-tool="freeform"] .dr-image-cropper-selection {
+    pointer-events: none;
+  }
+
+  /* Perspective overlay — handles draggable when active. */
+  .dr-image-editor-perspective {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .dr-image-editor[data-tool="perspective"] .dr-image-editor-perspective {
+    pointer-events: auto;
+    z-index: 5;
+  }
+  .dr-image-editor[data-tool="perspective"] .dr-image-cropper-selection {
+    pointer-events: none;
+  }
+  .dr-image-editor-perspective-handle {
+    fill: hsl(var(--primary));
+    stroke: white;
+    stroke-width: 2;
+    cursor: grab;
+  }
+  .dr-image-editor-perspective-handle:active {
+    cursor: grabbing;
+  }
+
+  /* Status bar — compact bordered strip showing image size, type, zoom,
+   * etc. Inline-flex with subtle dividers between items. Sits in the
+   * editor surface and is consumer-placed (typically below the viewport
+   * or below the toolbar). */
+  .dr-image-editor-status-bar {
+    @apply text-muted-foreground bg-card flex w-full items-center gap-3 rounded-md border px-2.5 py-1 text-xs;
+    border-color: hsl(var(--border));
+  }
+  .dr-image-editor-status-item {
+    @apply inline-flex items-baseline gap-1;
+  }
+  .dr-image-editor-status-item + .dr-image-editor-status-item {
+    border-left: 1px solid hsl(var(--border));
+    padding-left: 0.75rem;
+  }
+  .dr-image-editor-status-item-label {
+    @apply text-muted-foreground tracking-wide uppercase;
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+  .dr-image-editor-status-item-value {
+    @apply text-foreground tabular-nums;
+    font-weight: 500;
+  }
+
+  .dr-image-editor-extension {
+    @apply rounded-md border px-3 py-1.5 text-xs font-medium transition-colors;
+    border-color: hsl(var(--border));
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+  .dr-image-editor-extension:hover:not(:disabled) {
+    border-color: hsl(var(--primary));
+    color: hsl(var(--primary));
+  }
+  .dr-image-editor-extension:disabled {
+    @apply opacity-50;
+    cursor: not-allowed;
+  }
+  .dr-image-editor-extension[data-running="true"] {
+    @apply opacity-70;
+    cursor: progress;
+  }
+}

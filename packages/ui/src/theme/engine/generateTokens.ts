@@ -162,11 +162,19 @@ export function generateTokens(
     ? recipe.overrides.border(surface, mode)
     : mode === "light"
       ? surface[200]
-      : surface[800]
+      : surface[700]
 
   if (surfaceStyle === "glassmorphism" && mode === "dark") {
-    border = backgroundStyle === "gradient" ? "0 0% 100% / 0.1" : surface[800]
+    border = backgroundStyle === "gradient" ? "0 0% 100% / 0.1" : surface[700]
   }
+  // Dark `--border` deliberately lighter than `--muted`/`--secondary`/
+  // `--accent` (all `surface[800]`) and `--border-subtle` (also 800). The
+  // earlier value of `surface[800]` collapsed the standard border into the
+  // subtle tier, so any outline drawn next to a muted surface (e.g. the
+  // FloatingPanel header sitting on its own popover body) became invisible
+  // in dark mode. Surface[700] also matches the `borderDefault` recipe step
+  // already published as `--border-default`, keeping the two tokens
+  // semantically aligned.
 
   const inputValue = recipe.overrides.input
     ? recipe.overrides.input(surface, mode)

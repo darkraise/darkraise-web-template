@@ -1,22 +1,45 @@
 @layer components {
   .dr-banner {
-    @apply flex items-center gap-3 border px-4 py-2 text-sm;
+    /* `rounded-lg` matches Alert and tracks the theme picker's radius axis
+     * via --radius-lg → --radius. */
+    @apply flex items-center gap-3 rounded-lg border px-4 py-2 text-sm;
   }
   .dr-banner[data-variant="default"] {
     @apply bg-muted text-foreground border-border;
   }
+
+  /* Tinted variants follow Alert's --alert-accent pattern: one var per
+   * variant drives bg, border, and icon. Body text stays on --foreground
+   * because the --{variant}-foreground tokens are tuned for *solid* fills,
+   * and reading dark-slate text against a 10% tint kills the variant signal
+   * in light mode and becomes unreadable on dark surfaces. */
   .dr-banner[data-variant="info"] {
-    @apply bg-info/10 text-info-foreground border-info/30;
+    --banner-accent: var(--info);
   }
   .dr-banner[data-variant="success"] {
-    @apply bg-success/10 text-success-foreground border-success/30;
+    --banner-accent: var(--success);
   }
   .dr-banner[data-variant="warning"] {
-    @apply bg-warning/10 text-warning-foreground border-warning/30;
+    --banner-accent: var(--warning);
   }
   .dr-banner[data-variant="destructive"] {
-    @apply bg-destructive/10 text-destructive-foreground border-destructive/30;
+    --banner-accent: var(--destructive);
   }
+  .dr-banner[data-variant="info"],
+  .dr-banner[data-variant="success"],
+  .dr-banner[data-variant="warning"],
+  .dr-banner[data-variant="destructive"] {
+    @apply text-foreground;
+    background-color: hsl(var(--banner-accent) / 0.1);
+    border-color: hsl(var(--banner-accent) / 0.3);
+  }
+  .dr-banner[data-variant="info"] .dr-banner-icon,
+  .dr-banner[data-variant="success"] .dr-banner-icon,
+  .dr-banner[data-variant="warning"] .dr-banner-icon,
+  .dr-banner[data-variant="destructive"] .dr-banner-icon {
+    color: hsl(var(--banner-accent));
+  }
+
   .dr-banner-icon {
     @apply shrink-0 [&_svg]:h-4 [&_svg]:w-4;
   }

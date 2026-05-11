@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { useState } from "react"
-import { Eye, EyeOff, X } from "lucide-react"
+import { AtSign, Eye, EyeOff, Search, X } from "lucide-react"
 import { Button } from "darkraise-ui/components/button"
 import { Input } from "darkraise-ui/components/input"
 import { Textarea } from "darkraise-ui/components/textarea"
@@ -26,46 +26,72 @@ export const Route = createFileRoute("/_authenticated/components/inputs")({
 function ClearableInputExample() {
   const [value, setValue] = useState("")
   return (
-    <div className="relative">
-      <Input
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        placeholder="Type to search..."
-        className="pr-8"
-      />
-      {value && (
-        <X
-          className="text-muted-foreground hover:text-foreground absolute top-1/2 right-2 h-4 w-4 -translate-y-1/2 cursor-pointer"
-          onClick={() => setValue("")}
-        />
-      )}
-    </div>
+    <Input
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      placeholder="Type to search…"
+      prefix={<Search className="h-4 w-4" />}
+      trailingAction={
+        value ? (
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Clear"
+            onClick={() => setValue("")}
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        ) : null
+      }
+    />
   )
 }
 
 function PasswordInputExample() {
   const [showPassword, setShowPassword] = useState(false)
   return (
-    <div className="relative">
-      <Input
-        type={showPassword ? "text" : "password"}
-        defaultValue="supersecret123"
-        className="pr-10"
-      />
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        onClick={() => setShowPassword((p) => !p)}
-        className="absolute top-1/2 right-1 h-7 w-7 -translate-y-1/2"
-      >
-        {showPassword ? (
-          <EyeOff className="h-4 w-4" />
-        ) : (
-          <Eye className="h-4 w-4" />
-        )}
-      </Button>
-    </div>
+    <Input
+      type={showPassword ? "text" : "password"}
+      defaultValue="supersecret123"
+      trailingAction={
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label={showPassword ? "Hide password" : "Show password"}
+          onClick={() => setShowPassword((p) => !p)}
+        >
+          {showPassword ? (
+            <EyeOff className="h-4 w-4" />
+          ) : (
+            <Eye className="h-4 w-4" />
+          )}
+        </Button>
+      }
+    />
+  )
+}
+
+function ClearableTextareaExample() {
+  const [value, setValue] = useState("This textarea has a clear button.")
+  return (
+    <Textarea
+      rows={4}
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      placeholder="Type something…"
+      trailingAction={
+        value ? (
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Clear"
+            onClick={() => setValue("")}
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        ) : null
+      }
+    />
   )
 }
 
@@ -423,78 +449,79 @@ function InputsPage() {
       </ShowcaseExample>
 
       <ShowcaseExample
-        title="Prefix / suffix input"
-        code={`{/* URL prefix */}
+        title="Prefix / suffix"
+        code={`{/* String addons — render in a muted slot with a divider. */}
 <Field>
   <FieldLabel>URL</FieldLabel>
-  <div className="flex rounded-md border border-input overflow-hidden focus-ring-input-wrapper">
-    <span className="bg-muted px-3 flex items-center text-sm text-muted-foreground border-r border-input">
-      https://
-    </span>
-    <Input className="border-0 rounded-none focus:border-input focus:shadow-none" placeholder="example.com" />
-  </div>
+  <Input prefix="https://" placeholder="example.com" />
 </Field>
 
-{/* Currency prefix + suffix */}
 <Field>
-  <FieldLabel>Currency</FieldLabel>
-  <div className="flex rounded-md border border-input overflow-hidden focus-ring-input-wrapper">
-    <span className="bg-muted px-3 flex items-center text-sm text-muted-foreground border-r border-input">$</span>
-    <Input className="border-0 rounded-none focus:border-input focus:shadow-none" placeholder="0.00" />
-    <span className="bg-muted px-3 flex items-center text-sm text-muted-foreground border-l border-input">.00</span>
-  </div>
+  <FieldLabel>Price</FieldLabel>
+  <Input prefix="$" suffix=".00" placeholder="0.00" inputMode="decimal" />
+</Field>
+
+{/* ReactNode addons — pass an icon or any JSX. */}
+<Field>
+  <FieldLabel>Search</FieldLabel>
+  <Input prefix={<Search className="h-4 w-4" />} placeholder="Search…" />
+</Field>
+
+<Field>
+  <FieldLabel>Email</FieldLabel>
+  <Input prefix={<AtSign className="h-4 w-4" />} suffix="@acme.com" placeholder="jane.doe" />
 </Field>`}
       >
         <div className="grid gap-4 sm:grid-cols-2">
           <Field>
             <FieldLabel>URL</FieldLabel>
-            <div className="border-input focus-ring-input-wrapper flex overflow-hidden rounded-md border">
-              <span className="border-input bg-muted text-muted-foreground flex items-center border-r px-3 text-sm">
-                https://
-              </span>
-              <Input
-                className="focus:border-input rounded-none border-0 focus:shadow-none"
-                placeholder="example.com"
-              />
-            </div>
+            <Input prefix="https://" placeholder="example.com" />
           </Field>
           <Field>
-            <FieldLabel>Currency</FieldLabel>
-            <div className="border-input focus-ring-input-wrapper flex overflow-hidden rounded-md border">
-              <span className="border-input bg-muted text-muted-foreground flex items-center border-r px-3 text-sm">
-                $
-              </span>
-              <Input
-                className="focus:border-input rounded-none border-0 focus:shadow-none"
-                placeholder="0.00"
-              />
-              <span className="border-input bg-muted text-muted-foreground flex items-center border-l px-3 text-sm">
-                .00
-              </span>
-            </div>
+            <FieldLabel>Price</FieldLabel>
+            <Input
+              prefix="$"
+              suffix=".00"
+              placeholder="0.00"
+              inputMode="decimal"
+            />
+          </Field>
+          <Field>
+            <FieldLabel>Search</FieldLabel>
+            <Input
+              prefix={<Search className="h-4 w-4" />}
+              placeholder="Search…"
+            />
+          </Field>
+          <Field>
+            <FieldLabel>Email</FieldLabel>
+            <Input
+              prefix={<AtSign className="h-4 w-4" />}
+              suffix="@acme.com"
+              placeholder="jane.doe"
+            />
           </Field>
         </div>
       </ShowcaseExample>
 
       <ShowcaseExample
-        title="Clearable input"
+        title="Clearable input (trailingAction)"
         code={`function ClearableInputExample() {
   const [value, setValue] = useState("")
   return (
-    <div className="relative">
-      <Input
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        placeholder="Type to search..."
-        className="pr-8"
-      />
-      {value && (
-        <X
-          className="absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 cursor-pointer text-muted-foreground hover:text-foreground"
-          onClick={() => setValue("")}
-        />
-      )}
-    </div>
+    <Input
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      placeholder="Type to search…"
+      prefix={<Search className="h-4 w-4" />}
+      trailingAction={
+        value ? (
+          <Button variant="ghost" size="icon" aria-label="Clear" onClick={() => setValue("")}>
+            <X className="h-4 w-4" />
+          </Button>
+        ) : null
+      }
+    />
   )
 }`}
       >
@@ -504,31 +531,55 @@ function InputsPage() {
       </ShowcaseExample>
 
       <ShowcaseExample
-        title="Password visibility toggle"
+        title="Password visibility toggle (trailingAction)"
         code={`function PasswordInputExample() {
   const [showPassword, setShowPassword] = useState(false)
   return (
-    <div className="relative">
-      <Input
-        type={showPassword ? "text" : "password"}
-        defaultValue="supersecret123"
-        className="pr-10"
-      />
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        onClick={() => setShowPassword((p) => !p)}
-        className="absolute top-1/2 right-1 h-7 w-7 -translate-y-1/2"
-      >
-        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-      </Button>
-    </div>
+    <Input
+      type={showPassword ? "text" : "password"}
+      defaultValue="supersecret123"
+      trailingAction={
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label={showPassword ? "Hide password" : "Show password"}
+          onClick={() => setShowPassword((p) => !p)}
+        >
+          {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+        </Button>
+      }
+    />
   )
 }`}
       >
         <div className="max-w-sm">
           <PasswordInputExample />
+        </div>
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Clearable textarea (trailingAction)"
+        code={`function ClearableTextareaExample() {
+  const [value, setValue] = useState("…")
+  return (
+    <Textarea
+      rows={4}
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      placeholder="Type something…"
+      trailingAction={
+        value ? (
+          <Button variant="ghost" size="icon" aria-label="Clear" onClick={() => setValue("")}>
+            <X className="h-4 w-4" />
+          </Button>
+        ) : null
+      }
+    />
+  )
+}`}
+      >
+        <div className="max-w-sm">
+          <ClearableTextareaExample />
         </div>
       </ShowcaseExample>
 

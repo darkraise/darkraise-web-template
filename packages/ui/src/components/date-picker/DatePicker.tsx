@@ -32,6 +32,8 @@ interface DatePickerCommonProps {
   open?: boolean
   defaultOpen?: boolean
   onOpenChange?: (open: boolean) => void
+  /** Open the calendar when the input receives focus. Defaults to false. */
+  openOnFocus?: boolean
   className?: string
   children?: React.ReactNode
 }
@@ -74,6 +76,7 @@ interface DatePickerContextValue {
   parse?: (input: string) => Date | null
   min?: Date
   max?: Date
+  openOnFocus: boolean
   inputId: string
   labelId: string
   contentId: string
@@ -111,6 +114,7 @@ function DatePicker(props: DatePickerProps) {
     open: openProp,
     defaultOpen,
     onOpenChange,
+    openOnFocus = false,
     className,
     children,
   } = props
@@ -195,6 +199,7 @@ function DatePicker(props: DatePickerProps) {
       parse,
       min,
       max,
+      openOnFocus,
       inputId,
       labelId,
       contentId,
@@ -215,6 +220,7 @@ function DatePicker(props: DatePickerProps) {
       parse,
       min,
       max,
+      openOnFocus,
       inputId,
       labelId,
       contentId,
@@ -277,6 +283,7 @@ function DatePickerInput({
   onChange,
   onBlur,
   onKeyDown,
+  onFocus,
   ref,
   placeholder: placeholderProp,
   "aria-label": ariaLabelProp,
@@ -292,6 +299,9 @@ function DatePickerInput({
     parse,
     placeholder,
     disabled,
+    openOnFocus,
+    open,
+    setOpen,
     inputId,
     labelId,
   } = useDatePickerContext("DatePickerInput")
@@ -339,6 +349,14 @@ function DatePickerInput({
     }
   }
 
+  const handleFocus = (event: React.FocusEvent<HTMLInputElement>) => {
+    onFocus?.(event)
+    if (event.defaultPrevented) return
+    if (openOnFocus && !open && !disabled) {
+      setOpen(true)
+    }
+  }
+
   return (
     <input
       ref={ref}
@@ -355,6 +373,7 @@ function DatePickerInput({
       onChange={handleChange}
       onBlur={handleBlur}
       onKeyDown={handleKeyDown}
+      onFocus={handleFocus}
       {...props}
     />
   )

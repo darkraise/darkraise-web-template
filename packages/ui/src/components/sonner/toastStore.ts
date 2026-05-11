@@ -8,6 +8,14 @@ export type ToastKind =
   | "info"
   | "loading"
 
+export type ToastPosition =
+  | "top-left"
+  | "top-right"
+  | "top-center"
+  | "bottom-left"
+  | "bottom-right"
+  | "bottom-center"
+
 export interface ToastAction {
   label: string
   onClick: () => void
@@ -25,6 +33,12 @@ export interface Toast {
   custom?: React.ReactNode
   /** Per-toast override of the Toaster's `closeButton` prop. */
   closeButton?: boolean
+  /**
+   * Per-toast override of the Toaster's `position` prop. The Toaster
+   * renders one stack per position, so toasts with different positions
+   * stack independently in their respective corners.
+   */
+  position?: ToastPosition
 }
 
 export interface ToastOptions {
@@ -38,6 +52,11 @@ export interface ToastOptions {
    * Toaster's `closeButton` prop; set explicitly here to override per call.
    */
   closeButton?: boolean
+  /**
+   * Render this toast in a specific corner. Falls back to the Toaster's
+   * `position` prop (default `bottom-right`) when omitted.
+   */
+  position?: ToastPosition
 }
 
 interface ToastStoreState {
@@ -114,6 +133,7 @@ function emit(
     action: options.action,
     cancel: options.cancel,
     closeButton: options.closeButton,
+    position: options.position,
   })
   return id
 }
@@ -124,6 +144,7 @@ interface PromiseMessages<T> {
   error: React.ReactNode | ((error: unknown) => React.ReactNode)
   description?: React.ReactNode
   duration?: number
+  position?: ToastPosition
 }
 
 interface ToastFn {
@@ -159,6 +180,7 @@ baseToast.custom = (jsx, options) => {
     action: options?.action,
     cancel: options?.cancel,
     closeButton: options?.closeButton,
+    position: options?.position,
   })
   return id
 }
@@ -174,6 +196,7 @@ baseToast.promise = function promise<T>(
     message: messages.loading,
     description: messages.description,
     duration: messages.duration,
+    position: messages.position,
   })
   return promise
     .then((value) => {

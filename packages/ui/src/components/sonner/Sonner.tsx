@@ -15,11 +15,17 @@ import { announce } from "@primitives/aria"
 import { Portal } from "@primitives/portal"
 import { Presence } from "@primitives/presence"
 import { useEvent } from "@primitives/state"
-import { toast, toastStore, type Toast, type ToastKind } from "./toastStore"
+import {
+  toast,
+  toastStore,
+  type Toast,
+  type ToastKind,
+  type ToastPosition,
+} from "./toastStore"
 import "./sonner.css"
 
 export { toast }
-export type { Toast, ToastKind } from "./toastStore"
+export type { Toast, ToastKind, ToastPosition } from "./toastStore"
 
 const DEFAULT_DURATION_BY_KIND: Record<ToastKind, number> = {
   default: 4000,
@@ -39,15 +45,12 @@ const ICONS: Record<ToastKind, React.ReactNode> = {
   loading: <LoaderCircle className="h-4 w-4 animate-spin" />,
 }
 
-type ToastPosition =
-  | "top-left"
-  | "top-right"
-  | "top-center"
-  | "bottom-left"
-  | "bottom-right"
-  | "bottom-center"
-
 interface ToasterProps {
+  /**
+   * Default position for toasts that do not specify their own. Per-toast
+   * override via `toast(message, { position: "top-left" })`. Defaults to
+   * `bottom-right`.
+   */
   position?: ToastPosition
   /** Sonner-compat placeholder; not implemented */
   theme?: "system" | "light" | "dark"
@@ -84,6 +87,62 @@ function Toaster({
   closeButton = false,
 }: ToasterProps) {
   const toasts = useToasts()
+
+  // Group by effective position: toast-level override falls back to the
+  // Toaster's default. Each group renders an independent stack so toasts
+  // bound to different corners don't interfere with each other's height
+  // animations or hover-expand state.
+  const grouped = React.useMemo(() => {
+    const groups = new Map<ToastPosition, Toast[]>()
+    for (const t of toasts) {
+      const pos = t.position ?? position
+      const list = groups.get(pos)
+      if (list) list.push(t)
+      else groups.set(pos, [t])
+    }
+    return groups
+  }, [toasts, position])
+
+  if (toasts.length === 0) return null
+
+  return (
+    <Portal>
+      {Array.from(grouped.entries()).map(([pos, list]) => (
+        <PositionedStack
+          key={pos}
+          position={pos}
+          toasts={list}
+          className={className}
+          style={style}
+          gap={gap}
+          visibleToasts={visibleToasts}
+          closeButton={closeButton}
+        />
+      ))}
+    </Portal>
+  )
+}
+Toaster.displayName = "Toaster"
+
+interface PositionedStackProps {
+  position: ToastPosition
+  toasts: Toast[]
+  className?: string
+  style?: React.CSSProperties
+  gap: number
+  visibleToasts: number
+  closeButton: boolean
+}
+
+function PositionedStack({
+  position,
+  toasts,
+  className,
+  style,
+  gap,
+  visibleToasts,
+  closeButton,
+}: PositionedStackProps) {
   const [hoverExpanded, setHoverExpanded] = React.useState(false)
   const [focusExpanded, setFocusExpanded] = React.useState(false)
   const [heights, setHeights] = React.useState<Record<string, number>>({})
@@ -118,51 +177,44 @@ function Toaster({
   const isExpanded = hoverExpanded || focusExpanded
   const toasterHeight = isExpanded ? totalExpandedHeight : frontHeight
 
-  if (toasts.length === 0) {
-    return null
-  }
-
   return (
-    <Portal>
-      <ol
-        className={cn("dr-toaster", className)}
-        data-position={position}
-        data-expanded={isExpanded ? "true" : undefined}
-        style={
-          {
-            "--toaster-gap": `${gap}px`,
-            "--toaster-height": `${toasterHeight}px`,
-            ...style,
-          } as React.CSSProperties
+    <ol
+      className={cn("dr-toaster", className)}
+      data-position={position}
+      data-expanded={isExpanded ? "true" : undefined}
+      style={
+        {
+          "--toaster-gap": `${gap}px`,
+          "--toaster-height": `${toasterHeight}px`,
+          ...style,
+        } as React.CSSProperties
+      }
+      onPointerEnter={() => setHoverExpanded(true)}
+      onPointerLeave={() => setHoverExpanded(false)}
+      onFocusCapture={() => setFocusExpanded(true)}
+      onBlurCapture={(event) => {
+        const next = event.relatedTarget as Node | null
+        if (!next || !event.currentTarget.contains(next)) {
+          setFocusExpanded(false)
         }
-        onPointerEnter={() => setHoverExpanded(true)}
-        onPointerLeave={() => setHoverExpanded(false)}
-        onFocusCapture={() => setFocusExpanded(true)}
-        onBlurCapture={(event) => {
-          const next = event.relatedTarget as Node | null
-          if (!next || !event.currentTarget.contains(next)) {
-            setFocusExpanded(false)
-          }
-        }}
-      >
-        {ordered.map((t, i) => (
-          <ToastItem
-            key={t.id}
-            toast={t}
-            index={i}
-            visibleCount={visibleToasts}
-            expandedOffset={expandedOffsets[t.id] ?? 0}
-            onMeasureHeight={reportHeight}
-            isTop={isTop}
-            paused={isExpanded}
-            closeButton={t.closeButton ?? closeButton}
-          />
-        ))}
-      </ol>
-    </Portal>
+      }}
+    >
+      {ordered.map((t, i) => (
+        <ToastItem
+          key={t.id}
+          toast={t}
+          index={i}
+          visibleCount={visibleToasts}
+          expandedOffset={expandedOffsets[t.id] ?? 0}
+          onMeasureHeight={reportHeight}
+          isTop={isTop}
+          paused={isExpanded}
+          closeButton={t.closeButton ?? closeButton}
+        />
+      ))}
+    </ol>
   )
 }
-Toaster.displayName = "Toaster"
 
 interface ToastItemProps {
   toast: Toast
@@ -214,8 +266,18 @@ function ToastItem({
   // resumes from where it left off — matches sonner's behavior.
   const remainingRef = React.useRef(duration)
   const startedAtRef = React.useRef<number | null>(null)
+  // Track the toast's morph key so promise toasts that update from
+  // loading → success/error reset their budget and start a fresh timer
+  // (loading defaults to Infinity, success/error to a finite duration).
+  const morphKeyRef = React.useRef<string | null>(null)
 
   React.useEffect(() => {
+    const morphKey = `${t.kind}|${t.duration ?? ""}`
+    if (morphKeyRef.current !== morphKey) {
+      morphKeyRef.current = morphKey
+      remainingRef.current = duration
+      startedAtRef.current = null
+    }
     if (!Number.isFinite(remainingRef.current)) return
     if (paused) {
       if (startedAtRef.current !== null) {
@@ -234,7 +296,7 @@ function ToastItem({
     return () => {
       window.clearTimeout(handle)
     }
-  }, [paused, close])
+  }, [paused, close, t.kind, t.duration, duration])
 
   React.useEffect(() => {
     const text =
@@ -273,6 +335,16 @@ function ToastItem({
   const onPointerDown = (event: React.PointerEvent<HTMLLIElement>) => {
     const node = containerRef.current
     if (!node) return
+    // Skip capture when the press starts on an interactive descendant
+    // (close button, action, cancel). Capturing on the <li> would redirect
+    // the resulting click event to the <li> per the pointer-events spec,
+    // so the inner button's onClick would never fire.
+    if (
+      event.target instanceof Element &&
+      event.target.closest("button, a, input, textarea, select, [role=button]")
+    ) {
+      return
+    }
     dragRef.current = { pointerId: event.pointerId, startX: event.clientX }
     node.setPointerCapture(event.pointerId)
   }
@@ -385,7 +457,7 @@ function ToastItem({
               className="dr-toast-close"
               onClick={close}
             >
-              <X className="h-3.5 w-3.5" />
+              <X />
             </button>
           </>
         )}

@@ -219,10 +219,72 @@ function CarouselNext({
   )
 }
 
+function CarouselIndicatorGroup({
+  className,
+  ref,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement> & {
+  ref?: React.Ref<HTMLDivElement>
+}) {
+  const ctx = useCarouselContext()
+
+  return (
+    <div
+      ref={ref}
+      role="group"
+      aria-label="Carousel pagination"
+      data-orientation={ctx.orientation}
+      className={cn("dr-carousel-indicator-group", className)}
+      {...props}
+    />
+  )
+}
+
+interface CarouselIndicatorProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  index: number
+  readOnly?: boolean
+  ref?: React.Ref<HTMLButtonElement>
+}
+
+function CarouselIndicator({
+  className,
+  index,
+  readOnly,
+  ref,
+  onClick,
+  "aria-label": ariaLabel,
+  ...props
+}: CarouselIndicatorProps) {
+  const ctx = useCarouselContext()
+  const isCurrent = ctx.selectedIndex === index
+
+  return (
+    <button
+      ref={ref}
+      type="button"
+      aria-label={ariaLabel ?? `Go to slide ${index + 1}`}
+      aria-current={isCurrent ? "true" : undefined}
+      data-current={isCurrent ? "true" : undefined}
+      data-readonly={readOnly ? "true" : undefined}
+      data-orientation={ctx.orientation}
+      tabIndex={readOnly ? -1 : 0}
+      className={cn("dr-carousel-indicator", className)}
+      onClick={(event) => {
+        if (!readOnly) ctx.scrollTo(index)
+        onClick?.(event)
+      }}
+      {...props}
+    />
+  )
+}
+
 export {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselPrevious,
   CarouselNext,
+  CarouselIndicatorGroup,
+  CarouselIndicator,
 }
+export type { CarouselIndicatorProps }

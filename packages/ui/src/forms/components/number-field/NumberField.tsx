@@ -4,6 +4,7 @@ import {
   NumberInputDecrementTrigger,
   NumberInputField,
   NumberInputIncrementTrigger,
+  NumberInputTriggerGroup,
 } from "@components/number-input"
 import { FieldWrapper } from "@forms/components/field-wrapper"
 import type { FieldPrimitiveProps } from "@forms/types"
@@ -72,8 +73,10 @@ export function NumberField({
               onBlur={onBlur}
               aria-invalid={invalid}
             />
-            <NumberInputIncrementTrigger />
-            <NumberInputDecrementTrigger />
+            <NumberInputTriggerGroup>
+              <NumberInputIncrementTrigger />
+              <NumberInputDecrementTrigger />
+            </NumberInputTriggerGroup>
           </NumberInputControl>
         </NumberInput>
       )}

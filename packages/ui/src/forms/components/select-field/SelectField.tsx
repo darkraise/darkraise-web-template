@@ -12,6 +12,7 @@ interface SelectFieldProps extends FieldPrimitiveProps<string> {
   label: string
   description?: string
   placeholder?: string
+  disabled?: boolean
   options: Array<{ label: string; value: string }>
 }
 
@@ -25,6 +26,7 @@ export function SelectField({
   label,
   description,
   placeholder,
+  disabled,
   options,
 }: SelectFieldProps) {
   return (
@@ -36,7 +38,7 @@ export function SelectField({
       errors={errors}
     >
       {(invalid) => (
-        <Select value={value} onValueChange={onChange}>
+        <Select value={value} onValueChange={onChange} disabled={disabled}>
           <SelectTrigger id={name} onBlur={onBlur} aria-invalid={invalid}>
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>

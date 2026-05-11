@@ -1,18 +1,48 @@
 @layer components {
   .dr-alert {
-    @apply [&>svg]:text-foreground relative w-full rounded-lg border p-4 [&>svg]:absolute [&>svg]:top-4 [&>svg]:left-4 [&>svg+div]:translate-y-[-3px] [&>svg~*]:pl-7;
+    @apply bg-background text-foreground [&>svg]:text-foreground relative w-full rounded-lg border p-4 [&>svg]:absolute [&>svg]:top-4 [&>svg]:left-4 [&>svg+div]:translate-y-[-3px] [&>svg~*]:pl-7;
   }
 
-  .dr-alert[data-variant="default"] {
-    @apply bg-background text-foreground;
-  }
-
+  /* Tinted variants share a left-accent + low-alpha bg pattern, driven by
+     --alert-accent so a single var swap retones bg / border-left / icon /
+     title. Default stays on the neutral popover/background base above. */
   .dr-alert[data-variant="destructive"] {
-    @apply border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive;
+    --alert-accent: var(--destructive);
+  }
+  .dr-alert[data-variant="success"] {
+    --alert-accent: var(--success);
+  }
+  .dr-alert[data-variant="warning"] {
+    --alert-accent: var(--warning);
+  }
+  .dr-alert[data-variant="info"] {
+    --alert-accent: var(--info);
+  }
+
+  .dr-alert[data-variant="destructive"],
+  .dr-alert[data-variant="success"],
+  .dr-alert[data-variant="warning"],
+  .dr-alert[data-variant="info"] {
+    @apply border-l-4;
+    background-color: hsl(var(--alert-accent) / 0.06);
+    border-left-color: hsl(var(--alert-accent));
+  }
+
+  .dr-alert[data-variant="destructive"] > svg,
+  .dr-alert[data-variant="success"] > svg,
+  .dr-alert[data-variant="warning"] > svg,
+  .dr-alert[data-variant="info"] > svg {
+    color: hsl(var(--alert-accent));
   }
 
   .dr-alert-title {
     @apply mb-1 leading-none font-medium tracking-tight;
+  }
+  .dr-alert[data-variant="destructive"] .dr-alert-title,
+  .dr-alert[data-variant="success"] .dr-alert-title,
+  .dr-alert[data-variant="warning"] .dr-alert-title,
+  .dr-alert[data-variant="info"] .dr-alert-title {
+    color: hsl(var(--alert-accent));
   }
 
   .dr-alert-description {

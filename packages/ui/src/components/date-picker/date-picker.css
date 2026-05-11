@@ -20,7 +20,7 @@
   }
 
   .dr-date-picker-trigger {
-    @apply text-muted-foreground hover:text-foreground focus-ring-tight absolute top-1/2 right-2 inline-flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-sm transition-colors;
+    @apply text-muted-foreground hover:text-foreground focus-ring-tight absolute top-1/2 right-2 inline-flex h-6 w-6 -translate-y-1/2 cursor-pointer items-center justify-center rounded-sm transition-colors;
   }
 
   .dr-date-picker-trigger[data-disabled="true"] {

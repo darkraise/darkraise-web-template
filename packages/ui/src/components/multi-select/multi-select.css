@@ -1,0 +1,73 @@
+@layer components {
+  .dr-multi-select {
+    @apply relative w-full;
+  }
+
+  .dr-multi-select-control {
+    @apply bg-background border-input flex min-h-9 w-full items-center gap-1 rounded-md border px-2 py-1 text-sm shadow-xs transition-colors;
+  }
+
+  .dr-multi-select-control[data-state="open"] {
+    @apply ring-ring ring-2 ring-offset-2;
+  }
+
+  .dr-multi-select-control[data-disabled="true"] {
+    @apply cursor-not-allowed opacity-50;
+  }
+
+  .dr-multi-select-chips {
+    @apply flex min-w-0 flex-1 flex-wrap items-center gap-1;
+  }
+
+  .dr-multi-select-chip {
+    @apply bg-muted text-foreground inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs;
+  }
+
+  .dr-multi-select-chip-label {
+    @apply max-w-[12rem] truncate;
+  }
+
+  .dr-multi-select-chip-remove {
+    @apply text-muted-foreground hover:text-foreground -mr-1 inline-flex h-4 w-4 cursor-pointer items-center justify-center rounded-sm border-0 bg-transparent p-0;
+  }
+
+  .dr-multi-select-chip-remove:disabled {
+    @apply cursor-not-allowed opacity-50;
+  }
+
+  /* Bare input — drop the dr-input chrome so the typeahead reads as part of
+   * the chip row, not a nested input. Compound selector raises specificity
+   * above the single-class dr-input rule. */
+  .dr-multi-select .dr-multi-select-input {
+    background-color: transparent;
+    border: 0;
+    padding: 0;
+    box-shadow: none;
+    outline: 0;
+    height: auto;
+    min-width: 4rem;
+    flex: 1 1 4rem;
+  }
+
+  .dr-multi-select .dr-multi-select-input:focus-visible {
+    box-shadow: none;
+    outline: 0;
+  }
+
+  .dr-multi-select-end {
+    @apply flex shrink-0 items-center gap-1;
+  }
+
+  .dr-multi-select-clear,
+  .dr-multi-select-toggle {
+    @apply text-muted-foreground hover:text-foreground inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded-sm border-0 bg-transparent p-0;
+  }
+
+  .dr-multi-select-toggle[data-state="open"] {
+    @apply rotate-180;
+  }
+
+  .dr-multi-select-empty {
+    @apply text-muted-foreground px-3 py-2 text-sm;
+  }
+}

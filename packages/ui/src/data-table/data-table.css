@@ -26,7 +26,11 @@
   }
 
   .dr-data-table-pagination-controls {
-    @apply flex items-center gap-6;
+    /* `ml-auto` keeps the controls anchored to the right edge whether or not
+     * the selection summary renders. Without it, a lone controls child in a
+     * `justify-between` parent hugs the start edge when no rows are
+     * selected. */
+    @apply ml-auto flex items-center gap-6;
   }
 
   .dr-data-table-pagination-page-size {
@@ -38,7 +42,11 @@
   }
 
   .dr-data-table-pagination-page-info {
-    @apply text-sm;
+    /* `whitespace-nowrap` prevents the label from breaking onto multiple
+     * lines when the surrounding flex container is narrow — without it the
+     * `<p>` shrinks below its content width and the browser word-wraps
+     * "Rows per page" to one word per line. */
+    @apply text-sm whitespace-nowrap;
   }
 
   .dr-data-table-pagination-nav-btn {

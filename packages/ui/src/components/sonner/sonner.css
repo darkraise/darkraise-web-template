@@ -155,23 +155,38 @@
     }
   }
 
-  /* Kind tints. */
+  /* Variant tints. Each kind gets its own --toast-accent var driving a tinted
+     background, a stronger border, and the icon + title color. The body's
+     description stays on muted-foreground so long copy remains readable on
+     the tinted surface. Default + loading inherit the popover/border base. */
   .dr-toast--success {
-    @apply text-success;
+    --toast-accent: var(--success);
+    background-color: hsl(var(--toast-accent) / 0.1);
+    border-color: hsl(var(--toast-accent) / 0.4);
   }
   .dr-toast--error {
-    @apply text-destructive;
+    --toast-accent: var(--destructive);
+    background-color: hsl(var(--toast-accent) / 0.1);
+    border-color: hsl(var(--toast-accent) / 0.45);
   }
   .dr-toast--warning {
-    @apply text-warning;
+    --toast-accent: var(--warning);
+    background-color: hsl(var(--toast-accent) / 0.12);
+    border-color: hsl(var(--toast-accent) / 0.5);
   }
   .dr-toast--info {
-    @apply text-info;
+    --toast-accent: var(--info);
+    background-color: hsl(var(--toast-accent) / 0.1);
+    border-color: hsl(var(--toast-accent) / 0.4);
+  }
+  .dr-toast--loading {
+    --toast-accent: var(--muted-foreground);
   }
 
   /* Body / content. */
   .dr-toast-icon {
     @apply mt-0.5 shrink-0;
+    color: hsl(var(--toast-accent, var(--popover-foreground)));
   }
   .dr-toast-body {
     @apply text-popover-foreground flex min-w-0 flex-1 flex-col gap-1;
@@ -179,22 +194,52 @@
   .dr-toast-title {
     @apply text-sm leading-tight font-medium;
   }
+  .dr-toast--success .dr-toast-title,
+  .dr-toast--error .dr-toast-title,
+  .dr-toast--warning .dr-toast-title,
+  .dr-toast--info .dr-toast-title {
+    color: hsl(var(--toast-accent));
+  }
   .dr-toast-description {
     @apply text-muted-foreground text-sm leading-snug;
   }
   .dr-toast-actions {
     @apply mt-2 flex justify-end gap-2;
   }
+  /* Action button. On tinted variants it borrows the variant accent so the
+     CTA matches the toast tone; on default/loading it falls back to primary. */
   .dr-toast-action {
-    @apply bg-primary text-primary-foreground hover:bg-primary/90 rounded px-2 py-1 text-xs font-medium transition-colors;
+    @apply cursor-pointer rounded px-2 py-1 text-xs font-medium transition-colors;
+    background-color: hsl(var(--toast-accent, var(--primary)));
+    color: hsl(var(--primary-foreground));
+  }
+  .dr-toast-action:hover {
+    background-color: color-mix(
+      in srgb,
+      hsl(var(--toast-accent, var(--primary))) 88%,
+      black
+    );
+  }
+  .dr-toast--warning .dr-toast-action {
+    /* Warning yellow needs a dark foreground for legibility. */
+    color: hsl(var(--warning-foreground));
   }
   .dr-toast-cancel {
-    @apply bg-muted text-muted-foreground hover:bg-muted/70 rounded px-2 py-1 text-xs font-medium transition-colors;
+    @apply bg-muted text-muted-foreground hover:bg-muted/70 cursor-pointer rounded px-2 py-1 text-xs font-medium transition-colors;
   }
 
-  /* Hover-reveal close button (default). */
+  /* Custom close button — stays in the toast's stylistic family by reading
+     from --toast-accent (set by the variant block; falls back to the muted
+     foreground for default + loading). Colors and hover-bg use alpha mixes
+     of the accent so the button reads as part of the toast surface rather
+     than a generic ghost button. */
   .dr-toast-close {
-    @apply text-muted-foreground hover:text-foreground absolute top-2 right-2 rounded p-0.5 opacity-0 transition-opacity duration-150;
+    @apply focus-ring absolute top-1.5 right-1.5 inline-flex size-6 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent p-0 opacity-0 transition-[opacity,background-color,color] duration-150 [&_svg]:size-3.5;
+    color: hsl(var(--toast-accent, var(--muted-foreground)) / 0.7);
+  }
+  .dr-toast-close:hover {
+    background-color: hsl(var(--toast-accent, var(--muted-foreground)) / 0.12);
+    color: hsl(var(--toast-accent, var(--foreground)));
   }
   .dr-toast:hover .dr-toast-close,
   .dr-toast:focus-within .dr-toast-close,

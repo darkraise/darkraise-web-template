@@ -1,5 +1,5 @@
 import { useRouterAdapter } from "@router"
-import { SidebarItem } from "@layout/sidebar"
+import { SidebarItem, SidebarProvider } from "@layout/sidebar"
 import {
   Tooltip,
   TooltipContent,
@@ -32,71 +32,77 @@ export function StackedLayout({
 
   return (
     <TooltipProvider delayDuration={0}>
-      <div className="dr-stacked-layout">
-        {/* Icon sidebar */}
-        <aside className="dr-stacked-layout-rail">
-          <div className="dr-stacked-layout-rail-logo" />
-          <nav className="dr-stacked-layout-rail-nav">
-            {nav.map((group, gi) => {
-              const firstItem = group.items[0]
-              if (!firstItem) return null
-              const Icon = firstItem.icon
-              const isActive = gi === activeGroupIndex
+      {/* SidebarItem reads `collapsed` from SidebarContext via useSidebar();
+       * the stacked layout's sub-nav is always shown fully expanded, so
+       * we wrap with collapsed={false}. Without this, mounting the layout
+       * throws "useSidebar must be used within a <SidebarProvider>". */}
+      <SidebarProvider collapsed={false}>
+        <div className="dr-stacked-layout">
+          {/* Icon sidebar */}
+          <aside className="dr-stacked-layout-rail">
+            <div className="dr-stacked-layout-rail-logo" />
+            <nav className="dr-stacked-layout-rail-nav">
+              {nav.map((group, gi) => {
+                const firstItem = group.items[0]
+                if (!firstItem) return null
+                const Icon = firstItem.icon
+                const isActive = gi === activeGroupIndex
 
-              return (
-                <Tooltip key={gi}>
-                  <TooltipTrigger asChild>
-                    <Link
-                      to={firstItem.href}
-                      className="dr-sidebar-nav-item dr-stacked-layout-rail-item"
-                      data-status={isActive ? "active" : undefined}
-                    >
-                      {Icon && <Icon className="h-5 w-5" />}
-                    </Link>
-                  </TooltipTrigger>
-                  <TooltipContent side="right">
-                    {group.label || firstItem.label}
-                  </TooltipContent>
-                </Tooltip>
-              )
-            })}
-          </nav>
-        </aside>
-
-        {/* Sub-nav panel */}
-        {activeGroup && (
-          <aside className="dr-stacked-layout-aside">
-            {activeGroup.label && (
-              <div className="dr-stacked-layout-aside-header">
-                <p className="dr-stacked-layout-aside-label">
-                  {activeGroup.label}
-                </p>
-              </div>
-            )}
-            <div className="dr-stacked-layout-aside-scroll">
-              <nav className="dr-stacked-layout-aside-nav">
-                {activeGroup.items.map((item) => (
-                  <SidebarItem key={item.href} item={item} />
-                ))}
-              </nav>
-            </div>
+                return (
+                  <Tooltip key={gi}>
+                    <TooltipTrigger asChild>
+                      <Link
+                        to={firstItem.href}
+                        className="dr-sidebar-nav-item dr-stacked-layout-rail-item"
+                        data-status={isActive ? "active" : undefined}
+                      >
+                        {Icon && <Icon className="h-5 w-5" />}
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">
+                      {group.label || firstItem.label}
+                    </TooltipContent>
+                  </Tooltip>
+                )
+              })}
+            </nav>
           </aside>
-        )}
 
-        {/* Main area */}
-        <div className="dr-stacked-layout-main">
-          <LayoutHeader
-            nav={nav}
-            headerSlot={headerSlot}
-            showLayoutSwitcher={showLayoutSwitcher}
-            showThemeSwitcher={showThemeSwitcher}
-            user={user}
-            onLogout={onLogout}
-          />
+          {/* Sub-nav panel */}
+          {activeGroup && (
+            <aside className="dr-stacked-layout-aside">
+              {activeGroup.label && (
+                <div className="dr-stacked-layout-aside-header">
+                  <p className="dr-stacked-layout-aside-label">
+                    {activeGroup.label}
+                  </p>
+                </div>
+              )}
+              <div className="dr-stacked-layout-aside-scroll">
+                <nav className="dr-stacked-layout-aside-nav">
+                  {activeGroup.items.map((item) => (
+                    <SidebarItem key={item.href} item={item} />
+                  ))}
+                </nav>
+              </div>
+            </aside>
+          )}
 
-          <main className="dr-stacked-layout-content">{children}</main>
+          {/* Main area */}
+          <div className="dr-stacked-layout-main">
+            <LayoutHeader
+              nav={nav}
+              headerSlot={headerSlot}
+              showLayoutSwitcher={showLayoutSwitcher}
+              showThemeSwitcher={showThemeSwitcher}
+              user={user}
+              onLogout={onLogout}
+            />
+
+            <main className="dr-stacked-layout-content">{children}</main>
+          </div>
         </div>
-      </div>
+      </SidebarProvider>
     </TooltipProvider>
   )
 }

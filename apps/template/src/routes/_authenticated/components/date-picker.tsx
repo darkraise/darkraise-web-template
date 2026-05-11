@@ -159,6 +159,32 @@ function ConstrainedRange() {
   )
 }
 
+function OpenOnFocusExample() {
+  const [value, setValue] = useState<Date | null>(null)
+  return (
+    <div className="w-72">
+      <DatePicker
+        mode="single"
+        value={value}
+        onValueChange={(d) => setValue(d.value)}
+        placeholder="Click here…"
+        openOnFocus
+      >
+        <DatePickerLabel>Auto-open on focus</DatePickerLabel>
+        <DatePickerControl>
+          <DatePickerInput />
+          <DatePickerTrigger>
+            <CalendarDays className="h-4 w-4" />
+          </DatePickerTrigger>
+        </DatePickerControl>
+        <DatePickerContent>
+          <DatePickerCalendar />
+        </DatePickerContent>
+      </DatePicker>
+    </div>
+  )
+}
+
 function DatePickerPage() {
   return (
     <ShowcasePage
@@ -242,6 +268,25 @@ function DatePickerPage() {
 </DatePicker>`}
       >
         <ConstrainedRange />
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Open on focus"
+        code={`// Pass openOnFocus to pop the calendar as soon as the input gains focus.
+// Tabbing into the field or clicking it both open the panel — useful when
+// the icon-only trigger feels too hidden.
+<DatePicker mode="single" openOnFocus value={value} onValueChange={(d) => setValue(d.value)}>
+  <DatePickerLabel>Auto-open on focus</DatePickerLabel>
+  <DatePickerControl>
+    <DatePickerInput />
+    <DatePickerTrigger><CalendarDays className="h-4 w-4" /></DatePickerTrigger>
+  </DatePickerControl>
+  <DatePickerContent>
+    <DatePickerCalendar />
+  </DatePickerContent>
+</DatePicker>`}
+      >
+        <OpenOnFocusExample />
       </ShowcaseExample>
     </ShowcasePage>
   )

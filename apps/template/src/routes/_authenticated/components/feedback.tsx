@@ -17,28 +17,13 @@ export const Route = createFileRoute("/_authenticated/components/feedback")({
   component: FeedbackPage,
 })
 
-type AlertVariant = "info" | "success" | "warning" | "error"
+type AlertBannerVariant = "info" | "success" | "warning" | "destructive"
 
-const alertConfig: Record<
-  AlertVariant,
-  { icon: React.ElementType; className: string }
-> = {
-  info: {
-    icon: Info,
-    className: "border-l-4 border-l-primary bg-primary/5",
-  },
-  success: {
-    icon: CircleCheck,
-    className: "border-l-4 border-l-success bg-success/5",
-  },
-  warning: {
-    icon: TriangleAlert,
-    className: "border-l-4 border-l-warning bg-warning/5",
-  },
-  error: {
-    icon: OctagonX,
-    className: "border-l-4 border-l-destructive bg-destructive/5",
-  },
+const alertIconByVariant: Record<AlertBannerVariant, React.ElementType> = {
+  info: Info,
+  success: CircleCheck,
+  warning: TriangleAlert,
+  destructive: OctagonX,
 }
 
 function AlertBanner({
@@ -46,13 +31,13 @@ function AlertBanner({
   title,
   description,
 }: {
-  variant: AlertVariant
+  variant: AlertBannerVariant
   title: string
   description: string
 }) {
-  const { icon: Icon, className } = alertConfig[variant]
+  const Icon = alertIconByVariant[variant]
   return (
-    <Alert className={className}>
+    <Alert variant={variant}>
       <Icon className="h-4 w-4" />
       <AlertTitle>{title}</AlertTitle>
       <AlertDescription>{description}</AlertDescription>
@@ -62,7 +47,6 @@ function AlertBanner({
 
 function DismissibleAlert() {
   const [visible, setVisible] = useState(true)
-  const { icon: Icon, className } = alertConfig.info
 
   if (!visible) {
     return (
@@ -73,22 +57,22 @@ function DismissibleAlert() {
   }
 
   return (
-    <Alert className={className}>
-      <Icon className="h-4 w-4" />
+    <Alert variant="info" className="pr-10">
+      <Info className="h-4 w-4" />
       <AlertTitle>New feature available</AlertTitle>
-      <AlertDescription className="flex items-start justify-between gap-2">
-        <span>You can now export your data as CSV from the settings page.</span>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          onClick={() => setVisible(false)}
-          className="mt-0.5 h-6 w-6 shrink-0"
-          aria-label="Dismiss"
-        >
-          <X className="h-4 w-4" />
-        </Button>
+      <AlertDescription>
+        You can now export your data as CSV from the settings page.
       </AlertDescription>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        onClick={() => setVisible(false)}
+        className="absolute top-1 right-1 shrink-0"
+        aria-label="Dismiss"
+      >
+        <X />
+      </Button>
     </Alert>
   )
 }
@@ -190,6 +174,98 @@ toast.info("A new version is available")`}
             onClick={() => toast.info("A new version is available")}
           >
             Info
+          </Button>
+        </div>
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Rich content (title + description + actions + close)"
+        code={`// Every toast kind accepts a description, an action button, a cancel
+// button, and an opt-in persistent close (×). Combine them for high-stakes
+// notifications like deletions, deploy failures, or quota warnings.
+
+toast.error("Deploy failed", {
+  description: "Build #4271 exited with code 1 in the lint step.",
+  action: { label: "Retry", onClick: () => deploy() },
+  cancel: { label: "View log", onClick: () => openLog() },
+  closeButton: true,
+  duration: 12000,
+})`}
+      >
+        <div className="flex flex-wrap gap-3">
+          <Button
+            variant="outline"
+            onClick={() =>
+              toast.success("Backup completed", {
+                description:
+                  "12.4 GB across 3,210 files were uploaded to cold storage.",
+                action: {
+                  label: "View report",
+                  onClick: () => toast.info("Opening report…"),
+                },
+                closeButton: true,
+                duration: 8000,
+              })
+            }
+          >
+            Success — rich
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() =>
+              toast.error("Deploy failed", {
+                description: "Build #4271 exited with code 1 in the lint step.",
+                action: {
+                  label: "Retry",
+                  onClick: () => toast.loading("Re-running build…"),
+                },
+                cancel: {
+                  label: "View log",
+                  onClick: () => toast.info("Opening build log…"),
+                },
+                closeButton: true,
+                duration: 12000,
+              })
+            }
+          >
+            Error — rich
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() =>
+              toast.warning("Storage almost full", {
+                description:
+                  "You are using 92% of the 50 GB plan. Upgrade or remove old assets to avoid interruptions.",
+                action: {
+                  label: "Upgrade",
+                  onClick: () => toast.info("Opening billing…"),
+                },
+                closeButton: true,
+                duration: 10000,
+              })
+            }
+          >
+            Warning — rich
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() =>
+              toast.info("New version available", {
+                description: "v2.4.0 includes the diff viewer and audit log.",
+                action: {
+                  label: "Reload",
+                  onClick: () => toast.success("Reloading…"),
+                },
+                cancel: {
+                  label: "Later",
+                  onClick: () => {},
+                },
+                closeButton: true,
+                duration: 10000,
+              })
+            }
+          >
+            Info — rich
           </Button>
         </div>
       </ShowcaseExample>
@@ -298,6 +374,54 @@ toast.info("A new version is available")`}
       </ShowcaseExample>
 
       <ShowcaseExample
+        title="Toast position (per-toast or default)"
+        code={`// Default position is set on the Toaster — usually mounted once at
+// the app root. Each toast can override via options.position.
+
+// Default for the whole app (defaults to "bottom-right" when omitted):
+<Toaster position="bottom-right" />
+
+// Per-message override:
+toast.success("Saved", { position: "top-right" })
+toast.error("Quota exceeded", { position: "top-left" })`}
+      >
+        <div className="flex flex-wrap gap-3">
+          <Button
+            variant="outline"
+            onClick={() =>
+              toast.info("Top-left toast", { position: "top-left" })
+            }
+          >
+            Top-left
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() =>
+              toast.success("Top-right toast", { position: "top-right" })
+            }
+          >
+            Top-right
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() =>
+              toast.warning("Bottom-left toast", { position: "bottom-left" })
+            }
+          >
+            Bottom-left
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() =>
+              toast.error("Bottom-right toast", { position: "bottom-right" })
+            }
+          >
+            Bottom-right
+          </Button>
+        </div>
+      </ShowcaseExample>
+
+      <ShowcaseExample
         title="Toast with custom duration"
         code={`toast("Quick notice", { duration: 2000 })
 toast("Standard notice", { duration: 4000 })
@@ -335,7 +459,12 @@ toast("Extended notice", { duration: 8000 })`}
         title="Inline alert banner"
         code={`import { Alert, AlertTitle, AlertDescription } from "darkraise-ui/components/alert"
 
-<Alert className="border-l-4 border-l-primary bg-primary/5">
+// Variants: "default" | "destructive" | "success" | "warning" | "info".
+// Each tinted variant paints a left-accent border, low-alpha background,
+// and a coloured icon + title; the description stays on text-foreground
+// for readability.
+
+<Alert variant="info">
   <Info className="h-4 w-4" />
   <AlertTitle>Scheduled maintenance</AlertTitle>
   <AlertDescription>The system will be unavailable on Sunday from 2–4 AM UTC.</AlertDescription>
@@ -358,7 +487,7 @@ toast("Extended notice", { duration: 8000 })`}
             description="You have used 90% of your monthly API quota."
           />
           <AlertBanner
-            variant="error"
+            variant="destructive"
             title="Payment failed"
             description="Your last invoice could not be processed. Please update your billing details."
           />
@@ -370,15 +499,25 @@ toast("Extended notice", { duration: 8000 })`}
         code={`const [visible, setVisible] = useState(true)
 
 {visible ? (
-  <Alert className="border-l-4 border-l-primary bg-primary/5">
+  // Alert is position:relative; absolute-positioning the close button at
+  // top-right keeps it aligned with the title row instead of falling to
+  // the end of the description. pr-10 reserves space so long descriptions
+  // don't run under the button.
+  <Alert variant="info" className="pr-10">
     <Info className="h-4 w-4" />
     <AlertTitle>New feature available</AlertTitle>
-    <AlertDescription className="flex items-start justify-between gap-2">
-      <span>You can now export your data as CSV from the settings page.</span>
-      <Button variant="ghost" size="icon" className="mt-0.5 h-6 w-6 shrink-0" onClick={() => setVisible(false)}>
-        <X className="h-4 w-4" />
-      </Button>
+    <AlertDescription>
+      You can now export your data as CSV from the settings page.
     </AlertDescription>
+    <Button
+      variant="ghost"
+      size="icon"
+      className="absolute top-1 right-1 shrink-0"
+      aria-label="Dismiss"
+      onClick={() => setVisible(false)}
+    >
+      <X />
+    </Button>
   </Alert>
 ) : (
   <Button onClick={() => setVisible(true)}>Show alert again</Button>

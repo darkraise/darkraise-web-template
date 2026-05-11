@@ -7,6 +7,7 @@ import {
   NumberInputField,
   NumberInputIncrementTrigger,
   NumberInputLabel,
+  NumberInputTriggerGroup,
 } from "./NumberInput"
 
 const meta: Meta<typeof NumberInput> = {
@@ -33,8 +34,10 @@ export const Default: Story = {
           <NumberInputLabel>Quantity</NumberInputLabel>
           <NumberInputControl>
             <NumberInputField placeholder="0" />
-            <NumberInputIncrementTrigger />
-            <NumberInputDecrementTrigger />
+            <NumberInputTriggerGroup>
+              <NumberInputIncrementTrigger />
+              <NumberInputDecrementTrigger />
+            </NumberInputTriggerGroup>
           </NumberInputControl>
         </NumberInput>
       </div>
@@ -57,8 +60,10 @@ export const Currency: Story = {
           <NumberInputLabel>Price</NumberInputLabel>
           <NumberInputControl>
             <NumberInputField />
-            <NumberInputIncrementTrigger />
-            <NumberInputDecrementTrigger />
+            <NumberInputTriggerGroup>
+              <NumberInputIncrementTrigger />
+              <NumberInputDecrementTrigger />
+            </NumberInputTriggerGroup>
           </NumberInputControl>
         </NumberInput>
       </div>
@@ -84,8 +89,10 @@ export const Percent: Story = {
           <NumberInputLabel>Discount</NumberInputLabel>
           <NumberInputControl>
             <NumberInputField />
-            <NumberInputIncrementTrigger />
-            <NumberInputDecrementTrigger />
+            <NumberInputTriggerGroup>
+              <NumberInputIncrementTrigger />
+              <NumberInputDecrementTrigger />
+            </NumberInputTriggerGroup>
           </NumberInputControl>
         </NumberInput>
       </div>
@@ -108,8 +115,10 @@ export const MinMax: Story = {
           <NumberInputLabel>Volume (0-100)</NumberInputLabel>
           <NumberInputControl>
             <NumberInputField />
-            <NumberInputIncrementTrigger />
-            <NumberInputDecrementTrigger />
+            <NumberInputTriggerGroup>
+              <NumberInputIncrementTrigger />
+              <NumberInputDecrementTrigger />
+            </NumberInputTriggerGroup>
           </NumberInputControl>
         </NumberInput>
       </div>

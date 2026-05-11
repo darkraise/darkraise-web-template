@@ -1,21 +1,128 @@
 @layer components {
   .dr-image-cropper {
-    @apply flex flex-col gap-2;
+    @apply flex flex-col gap-3;
+    --dr-image-cropper-handle-size: 12px;
   }
-  .dr-image-cropper-stage {
-    @apply bg-muted relative aspect-square overflow-hidden rounded-md;
+
+  .dr-image-cropper-viewport {
+    @apply bg-muted relative aspect-square w-full overflow-hidden rounded-md select-none;
+    touch-action: none;
   }
+
   .dr-image-cropper-image {
     @apply absolute inset-0 m-auto block h-full w-full object-contain;
-    transform-origin: center;
+    transform-origin: center center;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
   }
-  .dr-image-cropper-controls {
-    @apply flex items-center gap-3;
+
+  .dr-image-cropper-selection {
+    @apply ring-primary box-border cursor-move shadow-[0_0_0_9999px_rgba(0,0,0,0.45)] ring-2;
   }
-  .dr-image-cropper-zoom {
-    @apply flex flex-1 items-center gap-2;
+  .dr-image-cropper-selection[data-shape="circle"] {
+    @apply rounded-full;
   }
-  .dr-image-cropper-rotate {
-    @apply text-muted-foreground hover:text-foreground rounded p-1.5 transition-colors;
+  .dr-image-cropper-selection[data-fixed="true"] {
+    @apply cursor-default;
   }
+
+  .dr-image-cropper-handle {
+    @apply bg-primary border-background absolute box-border rounded-full border-2;
+    width: var(--dr-image-cropper-handle-size);
+    height: var(--dr-image-cropper-handle-size);
+  }
+  .dr-image-cropper-handle[data-fixed="true"] {
+    @apply pointer-events-none opacity-0;
+  }
+
+  .dr-image-cropper-handle[data-position="top-left"] {
+    top: 0;
+    left: 0;
+    transform: translate(-50%, -50%);
+    cursor: nwse-resize;
+  }
+  .dr-image-cropper-handle[data-position="top"] {
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    cursor: ns-resize;
+  }
+  .dr-image-cropper-handle[data-position="top-right"] {
+    top: 0;
+    right: 0;
+    transform: translate(50%, -50%);
+    cursor: nesw-resize;
+  }
+  .dr-image-cropper-handle[data-position="right"] {
+    top: 50%;
+    right: 0;
+    transform: translate(50%, -50%);
+    cursor: ew-resize;
+  }
+  .dr-image-cropper-handle[data-position="bottom-right"] {
+    bottom: 0;
+    right: 0;
+    transform: translate(50%, 50%);
+    cursor: nwse-resize;
+  }
+  .dr-image-cropper-handle[data-position="bottom"] {
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, 50%);
+    cursor: ns-resize;
+  }
+  .dr-image-cropper-handle[data-position="bottom-left"] {
+    bottom: 0;
+    left: 0;
+    transform: translate(-50%, 50%);
+    cursor: nesw-resize;
+  }
+  .dr-image-cropper-handle[data-position="left"] {
+    top: 50%;
+    left: 0;
+    transform: translate(-50%, -50%);
+    cursor: ew-resize;
+  }
+
+  .dr-image-cropper-grid {
+    @apply pointer-events-none absolute inset-0;
+  }
+  .dr-image-cropper-grid::before,
+  .dr-image-cropper-grid::after {
+    content: "";
+    position: absolute;
+    background: rgba(255, 255, 255, 0.5);
+  }
+  .dr-image-cropper-grid[data-axis="horizontal"]::before,
+  .dr-image-cropper-grid[data-axis="horizontal"]::after {
+    left: 0;
+    right: 0;
+    height: 1px;
+  }
+  .dr-image-cropper-grid[data-axis="horizontal"]::before {
+    top: 33.3333%;
+  }
+  .dr-image-cropper-grid[data-axis="horizontal"]::after {
+    top: 66.6666%;
+  }
+  .dr-image-cropper-grid[data-axis="vertical"]::before,
+  .dr-image-cropper-grid[data-axis="vertical"]::after {
+    top: 0;
+    bottom: 0;
+    width: 1px;
+  }
+  .dr-image-cropper-grid[data-axis="vertical"]::before {
+    left: 33.3333%;
+  }
+  .dr-image-cropper-grid[data-axis="vertical"]::after {
+    left: 66.6666%;
+  }
+
+  .dr-image-cropper-dimensions {
+    @apply bg-foreground text-background absolute -top-7 left-1/2 -translate-x-1/2 rounded px-2 py-0.5 text-xs font-medium tabular-nums shadow-sm;
+    pointer-events: none;
+  }
+
+  /* Dropzone styles moved to image-common.css under .dr-image-dropzone. */
 }

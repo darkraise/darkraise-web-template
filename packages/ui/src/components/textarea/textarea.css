@@ -2,4 +2,27 @@
   .dr-textarea {
     @apply glass border-input bg-card text-card-foreground focus-ring-input placeholder:text-muted-foreground flex min-h-[72px] w-full border px-[var(--density-input-px)] py-[var(--density-input-py)] text-base disabled:cursor-not-allowed disabled:opacity-50 md:text-sm;
   }
+
+  /* Grouped form — relative wrapper hosts an absolute action button. The
+   * textarea inside keeps its own border / focus chrome; the wrapper is
+   * purely positioning. (Unlike Input, which moves the border to the
+   * wrapper for prefix/suffix slot integration, the textarea action is a
+   * lightweight corner overlay that doesn't share the border surface.) */
+  .dr-textarea-group {
+    position: relative;
+    width: 100%;
+  }
+  .dr-textarea-grouped {
+    /* Reserve corner space so wrapped text doesn't slide under the
+     * action. 2.5rem accommodates a size="icon" ghost button. */
+    padding-right: 2.5rem;
+  }
+  .dr-textarea-action {
+    position: absolute;
+    top: 0.25rem;
+    right: 0.25rem;
+    display: inline-flex;
+    align-items: center;
+    z-index: 1;
+  }
 }

@@ -2,7 +2,7 @@ import { useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import { useForm } from "@tanstack/react-form"
 import { z } from "zod"
-import { Pencil } from "lucide-react"
+import { Check, Pencil, X } from "lucide-react"
 import {
   TextField,
   TextareaField,
@@ -15,16 +15,17 @@ import {
   FormActions,
 } from "darkraise-ui/forms"
 import { fieldProps } from "@/lib/field-props"
-import { Field, FieldLabel } from "darkraise-ui/components/field"
-import { Button } from "darkraise-ui/components/button"
-import { Input } from "darkraise-ui/components/input"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "darkraise-ui/components/select"
+  Editable,
+  EditableArea,
+  EditableCancelTrigger,
+  EditableControl,
+  EditableEditTrigger,
+  EditableInput,
+  EditableLabel,
+  EditablePreview,
+  EditableSubmitTrigger,
+} from "darkraise-ui/components/editable"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
@@ -178,34 +179,37 @@ function ConditionalFieldsExample() {
   const [accountType, setAccountType] = useState<"personal" | "business">(
     "personal",
   )
+  const [companyName, setCompanyName] = useState("")
+  const [taxId, setTaxId] = useState("")
 
   return (
     <div className="space-y-4">
-      <Field>
-        <FieldLabel>Account Type</FieldLabel>
-        <Select
-          value={accountType}
-          onValueChange={(v) => setAccountType(v as "personal" | "business")}
-        >
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="personal">Personal</SelectItem>
-            <SelectItem value="business">Business</SelectItem>
-          </SelectContent>
-        </Select>
-      </Field>
+      <SelectField
+        name="accountType"
+        label="Account Type"
+        value={accountType}
+        onChange={(v) => setAccountType(v as "personal" | "business")}
+        options={[
+          { label: "Personal", value: "personal" },
+          { label: "Business", value: "business" },
+        ]}
+      />
       {accountType === "business" && (
         <>
-          <Field>
-            <FieldLabel>Company Name</FieldLabel>
-            <Input placeholder="Acme Corp" />
-          </Field>
-          <Field>
-            <FieldLabel>Tax ID</FieldLabel>
-            <Input placeholder="12-3456789" />
-          </Field>
+          <TextField
+            name="companyName"
+            label="Company Name"
+            placeholder="Acme Corp"
+            value={companyName}
+            onChange={setCompanyName}
+          />
+          <TextField
+            name="taxId"
+            label="Tax ID"
+            placeholder="12-3456789"
+            value={taxId}
+            onChange={setTaxId}
+          />
         </>
       )}
     </div>
@@ -213,40 +217,31 @@ function ConditionalFieldsExample() {
 }
 
 function InlineEditExample() {
-  const [editing, setEditing] = useState(false)
   const [value, setValue] = useState("Jane Doe")
 
-  return editing ? (
-    <div className="flex items-center gap-2">
-      <Input defaultValue={value} id="inline-edit-input" className="h-8 w-48" />
-      <Button
-        size="sm"
-        onClick={() => {
-          const input = document.getElementById(
-            "inline-edit-input",
-          ) as HTMLInputElement
-          setValue(input.value)
-          setEditing(false)
-        }}
-      >
-        Save
-      </Button>
-      <Button size="sm" variant="outline" onClick={() => setEditing(false)}>
-        Cancel
-      </Button>
-    </div>
-  ) : (
-    <div className="flex items-center gap-2">
-      <span className="text-sm font-medium">{value}</span>
-      <Button
-        size="icon"
-        variant="ghost"
-        className="h-6 w-6"
-        onClick={() => setEditing(true)}
-      >
-        <Pencil className="h-3.5 w-3.5" />
-      </Button>
-    </div>
+  return (
+    <Editable
+      value={value}
+      onValueCommit={(d) => setValue(d.value)}
+      submitOnBlur={false}
+    >
+      <EditableLabel>Display name</EditableLabel>
+      <EditableArea>
+        <EditableInput />
+        <EditablePreview />
+      </EditableArea>
+      <EditableControl>
+        <EditableEditTrigger aria-label="Edit name">
+          <Pencil />
+        </EditableEditTrigger>
+        <EditableSubmitTrigger aria-label="Save name">
+          <Check />
+        </EditableSubmitTrigger>
+        <EditableCancelTrigger aria-label="Cancel edit">
+          <X />
+        </EditableCancelTrigger>
+      </EditableControl>
+    </Editable>
   )
 }
 
@@ -259,38 +254,34 @@ function DependentSelectsExample() {
     setCity("")
   }
 
+  const countryOptions = Object.keys(CITY_OPTIONS).map((c) => ({
+    label: c,
+    value: c,
+  }))
+  const cityOptions = (CITY_OPTIONS[country] ?? []).map((c) => ({
+    label: c,
+    value: c,
+  }))
+
   return (
     <div className="space-y-4">
-      <Field>
-        <FieldLabel>Country</FieldLabel>
-        <Select value={country} onValueChange={handleCountryChange}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select country" />
-          </SelectTrigger>
-          <SelectContent>
-            {Object.keys(CITY_OPTIONS).map((c) => (
-              <SelectItem key={c} value={c}>
-                {c}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </Field>
-      <Field>
-        <FieldLabel>City</FieldLabel>
-        <Select value={city} onValueChange={setCity} disabled={!country}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select city" />
-          </SelectTrigger>
-          <SelectContent>
-            {(CITY_OPTIONS[country] ?? []).map((c) => (
-              <SelectItem key={c} value={c}>
-                {c}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </Field>
+      <SelectField
+        name="country"
+        label="Country"
+        placeholder="Select country"
+        value={country}
+        onChange={handleCountryChange}
+        options={countryOptions}
+      />
+      <SelectField
+        name="city"
+        label="City"
+        placeholder="Select city"
+        value={city}
+        onChange={setCity}
+        disabled={!country}
+        options={cityOptions}
+      />
     </div>
   )
 }
@@ -348,29 +339,37 @@ const form = useForm({
         title="Conditional Fields"
         code={`function ConditionalFieldsExample() {
   const [accountType, setAccountType] = useState<"personal" | "business">("personal")
+  const [companyName, setCompanyName] = useState("")
+  const [taxId, setTaxId] = useState("")
 
   return (
     <div className="space-y-4">
-      <Field>
-        <FieldLabel>Account Type</FieldLabel>
-        <Select value={accountType} onValueChange={(v) => setAccountType(v as "personal" | "business")}>
-          <SelectTrigger><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="personal">Personal</SelectItem>
-            <SelectItem value="business">Business</SelectItem>
-          </SelectContent>
-        </Select>
-      </Field>
+      <SelectField
+        name="accountType"
+        label="Account Type"
+        value={accountType}
+        onChange={(v) => setAccountType(v as "personal" | "business")}
+        options={[
+          { label: "Personal", value: "personal" },
+          { label: "Business", value: "business" },
+        ]}
+      />
       {accountType === "business" && (
         <>
-          <Field>
-            <FieldLabel>Company Name</FieldLabel>
-            <Input placeholder="Acme Corp" />
-          </Field>
-          <Field>
-            <FieldLabel>Tax ID</FieldLabel>
-            <Input placeholder="12-3456789" />
-          </Field>
+          <TextField
+            name="companyName"
+            label="Company Name"
+            placeholder="Acme Corp"
+            value={companyName}
+            onChange={setCompanyName}
+          />
+          <TextField
+            name="taxId"
+            label="Tax ID"
+            placeholder="12-3456789"
+            value={taxId}
+            onChange={setTaxId}
+          />
         </>
       )}
     </div>
@@ -383,26 +382,25 @@ const form = useForm({
       <ShowcaseExample
         title="Inline Edit"
         code={`function InlineEditExample() {
-  const [editing, setEditing] = useState(false)
   const [value, setValue] = useState("Jane Doe")
 
-  return editing ? (
-    <div className="flex items-center gap-2">
-      <Input defaultValue={value} id="inline-edit-input" className="h-8 w-48" />
-      <Button size="sm" onClick={() => {
-        const input = document.getElementById("inline-edit-input") as HTMLInputElement
-        setValue(input.value)
-        setEditing(false)
-      }}>Save</Button>
-      <Button size="sm" variant="outline" onClick={() => setEditing(false)}>Cancel</Button>
-    </div>
-  ) : (
-    <div className="flex items-center gap-2">
-      <span className="text-sm font-medium">{value}</span>
-      <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => setEditing(true)}>
-        <Pencil className="h-3.5 w-3.5" />
-      </Button>
-    </div>
+  return (
+    <Editable
+      value={value}
+      onValueCommit={(d) => setValue(d.value)}
+      submitOnBlur={false}
+    >
+      <EditableLabel>Display name</EditableLabel>
+      <EditableArea>
+        <EditableInput />
+        <EditablePreview />
+      </EditableArea>
+      <EditableControl>
+        <EditableEditTrigger aria-label="Edit name"><Pencil /></EditableEditTrigger>
+        <EditableSubmitTrigger aria-label="Save name"><Check /></EditableSubmitTrigger>
+        <EditableCancelTrigger aria-label="Cancel edit"><X /></EditableCancelTrigger>
+      </EditableControl>
+    </Editable>
   )
 }`}
       >
@@ -426,30 +424,28 @@ function DependentSelectsExample() {
     setCity("")
   }
 
+  const countryOptions = Object.keys(CITY_OPTIONS).map((c) => ({ label: c, value: c }))
+  const cityOptions = (CITY_OPTIONS[country] ?? []).map((c) => ({ label: c, value: c }))
+
   return (
     <div className="space-y-4">
-      <Field>
-        <FieldLabel>Country</FieldLabel>
-        <Select value={country} onValueChange={handleCountryChange}>
-          <SelectTrigger><SelectValue placeholder="Select country" /></SelectTrigger>
-          <SelectContent>
-            {Object.keys(CITY_OPTIONS).map((c) => (
-              <SelectItem key={c} value={c}>{c}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </Field>
-      <Field>
-        <FieldLabel>City</FieldLabel>
-        <Select value={city} onValueChange={setCity} disabled={!country}>
-          <SelectTrigger><SelectValue placeholder="Select city" /></SelectTrigger>
-          <SelectContent>
-            {(CITY_OPTIONS[country] ?? []).map((c) => (
-              <SelectItem key={c} value={c}>{c}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </Field>
+      <SelectField
+        name="country"
+        label="Country"
+        placeholder="Select country"
+        value={country}
+        onChange={handleCountryChange}
+        options={countryOptions}
+      />
+      <SelectField
+        name="city"
+        label="City"
+        placeholder="Select city"
+        value={city}
+        onChange={setCity}
+        disabled={!country}
+        options={cityOptions}
+      />
     </div>
   )
 }`}

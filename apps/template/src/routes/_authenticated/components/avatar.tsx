@@ -100,7 +100,10 @@ function AvatarPage() {
         title="Avatar group (stacked)"
         code={`<div className="flex -space-x-3">
   {users.map((user) => (
-    <Avatar key={user.initials} className="h-8 w-8 ring-2 ring-background">
+    // ring-card carves a halo between overlapping avatars using the
+    // surrounding panel tone. Swap to ring-background if the group sits
+    // directly on the page surface rather than on a Card.
+    <Avatar key={user.initials} className="h-8 w-8 ring-2 ring-card">
       <AvatarFallback className="text-xs">{user.initials}</AvatarFallback>
     </Avatar>
   ))}
@@ -109,19 +112,19 @@ function AvatarPage() {
         <div className="space-y-4">
           <div className="flex -space-x-3">
             {["AJ", "BS", "CW", "DX", "EY"].map((initials) => (
-              <Avatar key={initials} className="ring-background h-8 w-8 ring-2">
+              <Avatar key={initials} className="ring-card h-8 w-8 ring-2">
                 <AvatarFallback className="text-xs">{initials}</AvatarFallback>
               </Avatar>
             ))}
-            <div className="bg-muted ring-background flex h-8 w-8 items-center justify-center rounded-full text-xs font-medium ring-2">
+            <div className="bg-muted ring-card flex h-8 w-8 items-center justify-center rounded-full text-xs font-medium ring-2">
               +3
             </div>
           </div>
           <p className="text-muted-foreground text-xs">
             Stacked avatar group — use{" "}
             <code className="font-mono">-space-x-3</code> and{" "}
-            <code className="font-mono">ring-2 ring-background</code> on each
-            avatar.
+            <code className="font-mono">ring-2 ring-card</code> (or{" "}
+            <code className="font-mono">ring-background</code> on a flat page).
           </p>
         </div>
       </ShowcaseExample>
@@ -131,7 +134,8 @@ function AvatarPage() {
   <Avatar className="h-10 w-10">
     <AvatarFallback>AC</AvatarFallback>
   </Avatar>
-  <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-success ring-2 ring-background" />
+  // ring-card cuts the status dot away from the avatar fill behind it.
+  <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-success ring-2 ring-card" />
 </div>`}
       >
         <div className="flex flex-wrap items-start gap-6">
@@ -140,7 +144,7 @@ function AvatarPage() {
               <Avatar className="h-10 w-10">
                 <AvatarFallback>AC</AvatarFallback>
               </Avatar>
-              <span className="ring-background bg-success absolute right-0 bottom-0 h-3 w-3 rounded-full ring-2" />
+              <span className="ring-card bg-success absolute right-0 bottom-0 h-3 w-3 rounded-full ring-2" />
             </div>
             <p className="text-muted-foreground mt-1 text-center text-xs">
               Online
@@ -151,7 +155,7 @@ function AvatarPage() {
               <Avatar className="h-10 w-10">
                 <AvatarFallback>BP</AvatarFallback>
               </Avatar>
-              <span className="ring-background bg-warning absolute right-0 bottom-0 h-3 w-3 rounded-full ring-2" />
+              <span className="ring-card bg-warning absolute right-0 bottom-0 h-3 w-3 rounded-full ring-2" />
             </div>
             <p className="text-muted-foreground mt-1 text-center text-xs">
               Away
@@ -162,7 +166,7 @@ function AvatarPage() {
               <Avatar className="h-10 w-10">
                 <AvatarFallback>CJ</AvatarFallback>
               </Avatar>
-              <span className="ring-background absolute right-0 bottom-0 h-3 w-3 rounded-full bg-gray-400 ring-2" />
+              <span className="ring-card absolute right-0 bottom-0 h-3 w-3 rounded-full bg-gray-400 ring-2" />
             </div>
             <p className="text-muted-foreground mt-1 text-center text-xs">
               Offline
@@ -174,32 +178,32 @@ function AvatarPage() {
       <ShowcaseExample
         title="Group with +N overflow"
         code={`<div className="flex items-center">
-  <Avatar className="h-10 w-10 ring-2 ring-background">
+  <Avatar className="h-10 w-10 ring-2 ring-card">
     <AvatarFallback>AC</AvatarFallback>
   </Avatar>
-  <Avatar className="h-10 w-10 -ml-3 ring-2 ring-background">
+  <Avatar className="h-10 w-10 -ml-3 ring-2 ring-card">
     <AvatarFallback>BP</AvatarFallback>
   </Avatar>
   {/* …more avatars… */}
-  <div className="h-10 w-10 -ml-3 rounded-full bg-muted flex items-center justify-center text-xs font-medium ring-2 ring-background">
+  <div className="h-10 w-10 -ml-3 rounded-full bg-muted flex items-center justify-center text-xs font-medium ring-2 ring-card">
     +5
   </div>
 </div>`}
       >
         <div className="flex items-center">
-          <Avatar className="ring-background h-10 w-10 ring-2">
+          <Avatar className="ring-card h-10 w-10 ring-2">
             <AvatarFallback>AC</AvatarFallback>
           </Avatar>
-          <Avatar className="ring-background -ml-3 h-10 w-10 ring-2">
+          <Avatar className="ring-card -ml-3 h-10 w-10 ring-2">
             <AvatarFallback>BP</AvatarFallback>
           </Avatar>
-          <Avatar className="ring-background -ml-3 h-10 w-10 ring-2">
+          <Avatar className="ring-card -ml-3 h-10 w-10 ring-2">
             <AvatarFallback>CJ</AvatarFallback>
           </Avatar>
-          <Avatar className="ring-background -ml-3 h-10 w-10 ring-2">
+          <Avatar className="ring-card -ml-3 h-10 w-10 ring-2">
             <AvatarFallback>DK</AvatarFallback>
           </Avatar>
-          <div className="bg-muted ring-background -ml-3 flex h-10 w-10 items-center justify-center rounded-full text-xs font-medium ring-2">
+          <div className="bg-muted ring-card -ml-3 flex h-10 w-10 items-center justify-center rounded-full text-xs font-medium ring-2">
             +5
           </div>
         </div>

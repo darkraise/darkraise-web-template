@@ -1,14 +1,106 @@
 @layer components {
   .dr-floating-panel {
-    @apply bg-popover text-popover-foreground border-border absolute z-50 flex flex-col overflow-hidden rounded-md border shadow-lg;
+    @apply bg-popover text-popover-foreground border-border flex flex-col overflow-hidden rounded-md border shadow-lg;
+    /* Default: parent-scoped. Switched to `fixed` for global scope below.
+       Spelled out as a literal declaration (not `@apply absolute`) so the
+       overriding rule beats it without any Tailwind layer/cascade quirks.
+       Note: z-index is set inline by the component as the panel's
+       activation slot — see `FloatingPanel.tsx`. Both local and global
+       panels share a single activation counter, so a panel opened or
+       clicked later always stacks above earlier ones regardless of
+       scope. Stacking ladder: page chrome (auto) < panels (1+) <
+       modal-tier overlays (50) < tour (80) < toasts (100). Modals
+       continue to win until ~49 panels are open in a session, which is
+       fine in practice.
+       The dark-mode `--border == --muted` collision was fixed at the
+       token level in `generateTokens.ts` (dark border is now surface[700],
+       muted stays at 800), so `border-border` reads correctly against the
+       header here in both modes. */
+    position: absolute;
   }
+
+  /* Global scope — anchor to the viewport (initial containing block) rather
+     than the nearest positioned ancestor. Useful for app-level floating
+     tools that should stay put as the page scrolls. Note: any ancestor
+     with `transform`, `filter`, `backdrop-filter`, `perspective`, or
+     `contain: paint/layout` will form the containing block instead — so
+     panels mounted inside a card with backdrop-filter will still be
+     trapped by that ancestor. */
+  .dr-floating-panel[data-scope="global"] {
+    position: fixed;
+  }
+
+  /* Maximised — fill the positioned ancestor (or the viewport when scoped
+     globally). The component skips inline position / size while maximised
+     so this rule wins without !important. */
+  .dr-floating-panel[data-maximized="true"] {
+    inset: 0;
+    border-radius: 0;
+  }
+
+  /* Minimised — content + resize hide; the component skips the `height`
+     inline style while minimised so the panel naturally shrinks to its
+     header height (no !important needed to beat an inline value). */
+  .dr-floating-panel[data-minimized="true"] .dr-floating-panel-content,
+  .dr-floating-panel[data-minimized="true"] .dr-floating-panel-resize,
+  .dr-floating-panel[data-maximized="true"] .dr-floating-panel-resize {
+    display: none;
+  }
+
+  /* Pinned — drag handle stops looking grabbable; resize handle is
+     hidden (the component also returns null from FloatingPanelResizeHandle
+     when pinned). The header keeps its bg so the panel still reads as a
+     panel; only the cursor and grip glyph signal "not draggable." */
+  .dr-floating-panel[data-pinned="true"] .dr-floating-panel-header {
+    cursor: default;
+  }
+  .dr-floating-panel[data-pinned="true"] .dr-floating-panel-drag-handle {
+    cursor: default;
+    opacity: 0.45;
+  }
+  .dr-floating-panel[data-pinned="true"] .dr-floating-panel-resize {
+    display: none;
+  }
+  /* Active state on the pin trigger — same accent fill as
+     minimize/maximize when toggled on. */
+  .dr-floating-panel-trigger[data-active="true"] {
+    @apply bg-accent text-accent-foreground;
+    border-color: hsl(var(--primary));
+  }
+
   .dr-floating-panel-header {
-    @apply bg-muted text-muted-foreground cursor-move border-b px-3 py-2 text-sm font-medium select-none;
+    @apply bg-muted text-muted-foreground flex cursor-move items-center gap-2 border-b px-2 py-1.5 text-sm font-medium select-none;
     touch-action: none;
   }
+
+  .dr-floating-panel-drag-handle {
+    @apply text-muted-foreground inline-flex shrink-0 cursor-move items-center justify-center [&_svg]:size-4;
+  }
+
+  .dr-floating-panel-title {
+    @apply text-foreground min-w-0 flex-1 truncate text-sm font-semibold;
+  }
+
+  /* Outlined trigger — primary-tinted 1px border at rest (matches the
+     Button compound's `variant="outline"` styling so all outlined buttons
+     in the system read the same), accent fill + lighter text on hover.
+     `border-border` was tried previously but is too low-contrast against
+     `bg-popover` and reads as "no border". Switching to `--primary / 0.5`
+     for the resting border, with the hover state shifting bg to `accent`
+     and the text to the full foreground colour for emphasis. */
+  .dr-floating-panel-trigger {
+    @apply focus-ring text-muted-foreground inline-flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-md border bg-transparent p-0 transition-colors [&_svg]:size-3.5;
+    border-color: hsl(var(--primary) / 0.5);
+  }
+  .dr-floating-panel-trigger:hover {
+    @apply bg-accent text-accent-foreground;
+    border-color: hsl(var(--primary) / 0.7);
+  }
+
   .dr-floating-panel-content {
     @apply flex-1 overflow-auto p-3;
   }
+
   .dr-floating-panel-resize {
     @apply text-muted-foreground absolute right-0 bottom-0 h-3 w-3 cursor-nwse-resize border-0 bg-transparent p-0;
     background: linear-gradient(

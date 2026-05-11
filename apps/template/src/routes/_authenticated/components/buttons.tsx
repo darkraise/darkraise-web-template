@@ -7,9 +7,6 @@ import {
   Trash2,
   TrendingUp,
   ChevronRight,
-  List,
-  LayoutGrid,
-  Kanban,
   ChevronDown,
   Bold,
   Italic,
@@ -40,7 +37,6 @@ export const Route = createFileRoute("/_authenticated/components/buttons")({
 })
 
 function ButtonsPage() {
-  const [viewMode, setViewMode] = useState<"list" | "grid" | "board">("list")
   const [period, setPeriod] = useState<"1D" | "1W" | "1M" | "1Y">("1M")
 
   return (
@@ -86,27 +82,28 @@ function ButtonsPage() {
 
       <ShowcaseExample
         title="With icons"
-        code={`<Button><Mail className="mr-2 h-4 w-4" />Email</Button>
-<Button variant="outline"><Plus className="mr-2 h-4 w-4" />New Item</Button>
-<Button variant="destructive"><Trash2 className="mr-2 h-4 w-4" />Delete</Button>
-<Button variant="secondary">Continue<ChevronRight className="ml-2 h-4 w-4" /></Button>`}
+        code={`// Button applies gap-2 between flex children, so icons don't need mr-2 / ml-2.
+<Button><Mail className="h-4 w-4" />Email</Button>
+<Button variant="outline"><Plus className="h-4 w-4" />New Item</Button>
+<Button variant="destructive"><Trash2 className="h-4 w-4" />Delete</Button>
+<Button variant="secondary">Continue<ChevronRight className="h-4 w-4" /></Button>`}
       >
         <div className="flex flex-wrap gap-3">
           <Button>
-            <Mail className="mr-2 h-4 w-4" />
+            <Mail className="h-4 w-4" />
             Email
           </Button>
           <Button variant="outline">
-            <Plus className="mr-2 h-4 w-4" />
+            <Plus className="h-4 w-4" />
             New Item
           </Button>
           <Button variant="destructive">
-            <Trash2 className="mr-2 h-4 w-4" />
+            <Trash2 className="h-4 w-4" />
             Delete
           </Button>
           <Button variant="secondary">
             Continue
-            <ChevronRight className="ml-2 h-4 w-4" />
+            <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
       </ShowcaseExample>
@@ -114,21 +111,21 @@ function ButtonsPage() {
       <ShowcaseExample
         title="Loading state"
         code={`<Button disabled>
-  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+  <Loader2 className="h-4 w-4 animate-spin" />
   Saving...
 </Button>
 <Button variant="outline" disabled>
-  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+  <Loader2 className="h-4 w-4 animate-spin" />
   Loading
 </Button>`}
       >
         <div className="flex flex-wrap gap-3">
           <Button disabled>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <Loader2 className="h-4 w-4 animate-spin" />
             Saving...
           </Button>
           <Button variant="outline" disabled>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <Loader2 className="h-4 w-4 animate-spin" />
             Loading
           </Button>
         </div>
@@ -155,56 +152,6 @@ function ButtonsPage() {
           </Button>
           <Button variant="ghost" disabled>
             Disabled Ghost
-          </Button>
-        </div>
-      </ShowcaseExample>
-
-      <ShowcaseExample
-        title="Button group"
-        code={`const [viewMode, setViewMode] = useState("list")
-
-<div className="inline-flex gap-1">
-  <Button
-    variant={viewMode === "list" ? "default" : "secondary"}
-    onClick={() => setViewMode("list")}
-  >
-    <List className="mr-2 h-4 w-4" />List
-  </Button>
-  <Button
-    variant={viewMode === "grid" ? "default" : "secondary"}
-    onClick={() => setViewMode("grid")}
-  >
-    <LayoutGrid className="mr-2 h-4 w-4" />Grid
-  </Button>
-  <Button
-    variant={viewMode === "board" ? "default" : "secondary"}
-    onClick={() => setViewMode("board")}
-  >
-    <Kanban className="mr-2 h-4 w-4" />Board
-  </Button>
-</div>`}
-      >
-        <div className="inline-flex gap-1">
-          <Button
-            variant={viewMode === "list" ? "default" : "secondary"}
-            onClick={() => setViewMode("list")}
-          >
-            <List className="mr-2 h-4 w-4" />
-            List
-          </Button>
-          <Button
-            variant={viewMode === "grid" ? "default" : "secondary"}
-            onClick={() => setViewMode("grid")}
-          >
-            <LayoutGrid className="mr-2 h-4 w-4" />
-            Grid
-          </Button>
-          <Button
-            variant={viewMode === "board" ? "default" : "secondary"}
-            onClick={() => setViewMode("board")}
-          >
-            <Kanban className="mr-2 h-4 w-4" />
-            Board
           </Button>
         </div>
       </ShowcaseExample>

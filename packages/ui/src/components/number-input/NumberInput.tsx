@@ -170,6 +170,85 @@ function NumberInputControl({
   return <div className={cn("dr-number-input-control", className)} {...props} />
 }
 
+/**
+ * Optional content rendered to the left of the field inside the control.
+ * Shares the wrapper's border and focus ring. Use for units, currency
+ * symbols, icons, etc. Place between `<NumberInputControl>` and
+ * `<NumberInputField>`:
+ *
+ *   <NumberInputControl>
+ *     <NumberInputPrefix>$</NumberInputPrefix>
+ *     <NumberInputField />
+ *     <NumberInputTriggerGroup>...</NumberInputTriggerGroup>
+ *   </NumberInputControl>
+ */
+function NumberInputPrefix({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={cn("dr-number-input-addon", className)}
+      data-side="prefix"
+      {...props}
+    />
+  )
+}
+
+/**
+ * Optional content rendered to the right of the field, before the trigger
+ * group. Mirrors NumberInputPrefix. Useful for unit suffixes like "px",
+ * "%", or currency codes.
+ */
+function NumberInputSuffix({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={cn("dr-number-input-addon", className)}
+      data-side="suffix"
+      {...props}
+    />
+  )
+}
+
+/**
+ * Transparent slot for an action button (clear, reset, formula toggle,
+ * unit swap, etc.) placed between the field and the trigger group. Wrap
+ * a `<Button variant="ghost" size="icon">` or any clickable element. No
+ * divider so it reads as an in-field control rather than a static addon.
+ */
+function NumberInputAction({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLSpanElement>) {
+  return <span className={cn("dr-number-input-action", className)} {...props} />
+}
+
+/**
+ * Wrapper around the increment + decrement triggers. Recommended layout:
+ * place this inside `<NumberInputControl>` after `<NumberInputField>` and
+ * put both triggers inside. The group owns the absolute positioning, the
+ * vertical divider against the text area, the rounded right corners, and
+ * the corner clipping; each trigger inside becomes `flex: 1`. Mirrors
+ * Ark UI's `number-input` anatomy.
+ *
+ * Triggers can still be used as direct children of `<NumberInputControl>`
+ * for backwards compatibility (the CSS includes a fallback rule).
+ */
+function NumberInputTriggerGroup({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cn("dr-number-input-trigger-group", className)}
+      {...props}
+    />
+  )
+}
+
 function NumberInputField({
   className,
   id,
@@ -413,6 +492,10 @@ export {
   NumberInputLabel,
   NumberInputControl,
   NumberInputField,
+  NumberInputPrefix,
+  NumberInputSuffix,
+  NumberInputAction,
+  NumberInputTriggerGroup,
   NumberInputIncrementTrigger,
   NumberInputDecrementTrigger,
 }

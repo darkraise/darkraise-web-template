@@ -178,6 +178,26 @@ describe("generateTokens", () => {
     expect(tokens["--foreground"]).toBe("210 40% 98%")
   })
 
+  it("dark mode `--border` is distinct from `--muted` / `--secondary` / `--accent`", () => {
+    // Regression for the collision where `--border` defaulted to
+    // `surface[800]` — the same value used by --muted, --secondary,
+    // --accent in dark mode. `border-border` outlines next to muted
+    // surfaces (e.g. FloatingPanel header on its popover body) became
+    // invisible. The standard border now sits one tier lighter
+    // (surface[700]), matching the `borderDefault` recipe step.
+    const tokens = generateTokens({
+      accentColor: "blue",
+      surfaceColor: "slate",
+      surfaceStyle: "default",
+      backgroundStyle: "solid",
+      mode: "dark",
+    })
+    expect(tokens["--border"]).not.toEqual(tokens["--muted"])
+    expect(tokens["--border"]).not.toEqual(tokens["--secondary"])
+    expect(tokens["--border"]).not.toEqual(tokens["--accent"])
+    expect(tokens["--border"]).toEqual(tokens["--border-default"])
+  })
+
   it("derives chart colors from evenly spaced accent palettes", () => {
     const tokens = generateTokens({
       accentColor: "blue",

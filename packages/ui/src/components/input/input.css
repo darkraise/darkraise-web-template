@@ -5,4 +5,70 @@
       border-color 150ms,
       box-shadow 150ms;
   }
+
+  /* Group wrapper used when the consumer passes `prefix` or `suffix` to
+   * `<Input>`. The wrapper owns the border, background, and focus-within
+   * ring; the inner <input> renders transparent so prefix / suffix and
+   * the input share a single bordered surface. */
+  .dr-input-group {
+    @apply glass border-input focus-ring-input-wrapper bg-card text-card-foreground flex w-full overflow-hidden border;
+    border-radius: var(--radius-button);
+    transition:
+      border-color 150ms,
+      box-shadow 150ms;
+  }
+
+  /* Addon slot: shared visual for prefix and suffix. A muted block with a
+   * 1px divider against the input on the relevant side. The `data-side`
+   * attribute decides which side the divider lives on. */
+  .dr-input-addon {
+    @apply bg-muted text-muted-foreground flex shrink-0 items-center px-3 text-sm;
+  }
+  .dr-input-addon[data-side="prefix"] {
+    border-right: 1px solid hsl(var(--border));
+  }
+  .dr-input-addon[data-side="suffix"] {
+    border-left: 1px solid hsl(var(--border));
+  }
+
+  /* The input inside a group strips its own chrome — border, focus ring,
+   * radius, glass — so the group's chrome shows through unobstructed.
+   * `dr-input` is still applied for typography, placeholder, density
+   * padding, and disabled handling. */
+  .dr-input-grouped {
+    @apply border-0 bg-transparent shadow-none;
+    border-radius: 0;
+  }
+  .dr-input-grouped:focus,
+  .dr-input-grouped:focus-visible {
+    border: 0;
+    box-shadow: none;
+    outline: none;
+  }
+
+  /* Action slot: transparent slot for interactive elements (buttons,
+   * clickable icons) sitting flush against the input. No background, no
+   * divider — visually distinct from .dr-input-addon (muted bg, divider)
+   * so consumers can tell static content from interactive controls at a
+   * glance. Padding is asymmetric so the button hugs the input edge but
+   * leaves a small breath against the outer border. */
+  .dr-input-action {
+    @apply inline-flex shrink-0 items-center;
+  }
+  .dr-input-action[data-side="leading"] {
+    padding-left: 0.25rem;
+  }
+  .dr-input-action[data-side="trailing"] {
+    padding-right: 0.25rem;
+  }
+  /* Tighten compact icon buttons inside the slot so the button doesn't
+   * push the input height up. The Button component's size="icon" renders
+   * a 36px square by default; this constrains it to fit the input's
+   * effective height. */
+  .dr-input-action .dr-btn[data-size="icon"] {
+    height: calc(100% - 4px);
+    width: auto;
+    min-width: 1.75rem;
+    padding-inline: 0.375rem;
+  }
 }

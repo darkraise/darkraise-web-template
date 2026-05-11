@@ -1,0 +1,23 @@
+@layer components {
+  .dr-image-dropzone {
+    @apply text-muted-foreground hover:text-foreground hover:border-primary flex cursor-pointer items-center justify-center rounded-md border-2 border-dashed p-6 text-sm transition-colors select-none;
+    position: relative;
+  }
+  .dr-image-dropzone:focus-visible {
+    @apply ring-primary ring-2 outline-none;
+  }
+  .dr-image-dropzone[data-state="active"] {
+    @apply border-primary text-foreground bg-primary/5;
+  }
+  .dr-image-dropzone-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}

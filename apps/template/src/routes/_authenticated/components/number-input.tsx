@@ -1,13 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { useState } from "react"
+import { RotateCcw, X } from "lucide-react"
 import {
   NumberInput,
+  NumberInputAction,
   NumberInputControl,
   NumberInputDecrementTrigger,
   NumberInputField,
   NumberInputIncrementTrigger,
   NumberInputLabel,
+  NumberInputPrefix,
+  NumberInputSuffix,
+  NumberInputTriggerGroup,
 } from "darkraise-ui/components/number-input"
+import { Button } from "darkraise-ui/components/button"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
@@ -31,8 +37,10 @@ function IntegerExample() {
       <NumberInputLabel>Quantity</NumberInputLabel>
       <NumberInputControl>
         <NumberInputField placeholder="0" />
-        <NumberInputIncrementTrigger />
-        <NumberInputDecrementTrigger />
+        <NumberInputTriggerGroup>
+          <NumberInputIncrementTrigger />
+          <NumberInputDecrementTrigger />
+        </NumberInputTriggerGroup>
       </NumberInputControl>
     </NumberInput>
   )
@@ -50,8 +58,10 @@ function PrecisionExample() {
       <NumberInputLabel>Decimal value</NumberInputLabel>
       <NumberInputControl>
         <NumberInputField />
-        <NumberInputIncrementTrigger />
-        <NumberInputDecrementTrigger />
+        <NumberInputTriggerGroup>
+          <NumberInputIncrementTrigger />
+          <NumberInputDecrementTrigger />
+        </NumberInputTriggerGroup>
       </NumberInputControl>
     </NumberInput>
   )
@@ -70,8 +80,10 @@ function CurrencyExample() {
       <NumberInputLabel>Price</NumberInputLabel>
       <NumberInputControl>
         <NumberInputField />
-        <NumberInputIncrementTrigger />
-        <NumberInputDecrementTrigger />
+        <NumberInputTriggerGroup>
+          <NumberInputIncrementTrigger />
+          <NumberInputDecrementTrigger />
+        </NumberInputTriggerGroup>
       </NumberInputControl>
     </NumberInput>
   )
@@ -90,8 +102,128 @@ function MinMaxExample() {
       <NumberInputLabel>Volume (0-100, clamps on blur)</NumberInputLabel>
       <NumberInputControl>
         <NumberInputField />
-        <NumberInputIncrementTrigger />
-        <NumberInputDecrementTrigger />
+        <NumberInputTriggerGroup>
+          <NumberInputIncrementTrigger />
+          <NumberInputDecrementTrigger />
+        </NumberInputTriggerGroup>
+      </NumberInputControl>
+    </NumberInput>
+  )
+}
+
+function PrefixExample() {
+  const [value, setValue] = useState(19.99)
+  return (
+    <NumberInput
+      value={value}
+      onValueChange={(d) => setValue(d.valueAsNumber)}
+      step={0.5}
+      precision={2}
+      min={0}
+    >
+      <NumberInputLabel>Price</NumberInputLabel>
+      <NumberInputControl>
+        <NumberInputPrefix>$</NumberInputPrefix>
+        <NumberInputField />
+        <NumberInputTriggerGroup>
+          <NumberInputIncrementTrigger />
+          <NumberInputDecrementTrigger />
+        </NumberInputTriggerGroup>
+      </NumberInputControl>
+    </NumberInput>
+  )
+}
+
+function SuffixExample() {
+  const [value, setValue] = useState(75)
+  return (
+    <NumberInput
+      value={value}
+      onValueChange={(d) => setValue(d.valueAsNumber)}
+      min={0}
+      max={100}
+      step={1}
+      precision={0}
+    >
+      <NumberInputLabel>Opacity</NumberInputLabel>
+      <NumberInputControl>
+        <NumberInputField />
+        <NumberInputSuffix>%</NumberInputSuffix>
+        <NumberInputTriggerGroup>
+          <NumberInputIncrementTrigger />
+          <NumberInputDecrementTrigger />
+        </NumberInputTriggerGroup>
+      </NumberInputControl>
+    </NumberInput>
+  )
+}
+
+function PrefixAndSuffixExample() {
+  const [value, setValue] = useState(1250)
+  return (
+    <NumberInput
+      value={value}
+      onValueChange={(d) => setValue(d.valueAsNumber)}
+      step={50}
+      precision={0}
+    >
+      <NumberInputLabel>Currency with code</NumberInputLabel>
+      <NumberInputControl>
+        <NumberInputPrefix>$</NumberInputPrefix>
+        <NumberInputField />
+        <NumberInputSuffix>USD</NumberInputSuffix>
+        <NumberInputTriggerGroup>
+          <NumberInputIncrementTrigger />
+          <NumberInputDecrementTrigger />
+        </NumberInputTriggerGroup>
+      </NumberInputControl>
+    </NumberInput>
+  )
+}
+
+function ActionExample() {
+  const initial = 42
+  const [value, setValue] = useState(initial)
+  return (
+    <NumberInput
+      value={value}
+      onValueChange={(d) => setValue(d.valueAsNumber)}
+      min={0}
+      max={999}
+      step={1}
+      precision={0}
+    >
+      <NumberInputLabel>Servings (clear / reset)</NumberInputLabel>
+      <NumberInputControl>
+        <NumberInputField />
+        {value !== 0 && (
+          <NumberInputAction>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Clear"
+              onClick={() => setValue(0)}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </NumberInputAction>
+        )}
+        {value !== initial && (
+          <NumberInputAction>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Reset to default"
+              onClick={() => setValue(initial)}
+            >
+              <RotateCcw className="h-4 w-4" />
+            </Button>
+          </NumberInputAction>
+        )}
+        <NumberInputTriggerGroup>
+          <NumberInputIncrementTrigger />
+          <NumberInputDecrementTrigger />
+        </NumberInputTriggerGroup>
       </NumberInputControl>
     </NumberInput>
   )
@@ -118,8 +250,10 @@ function NumberInputPage() {
   <NumberInputLabel>Quantity</NumberInputLabel>
   <NumberInputControl>
     <NumberInputField placeholder="0" />
-    <NumberInputIncrementTrigger />
-    <NumberInputDecrementTrigger />
+    <NumberInputTriggerGroup>
+      <NumberInputIncrementTrigger />
+      <NumberInputDecrementTrigger />
+    </NumberInputTriggerGroup>
   </NumberInputControl>
 </NumberInput>`}
       >
@@ -139,8 +273,10 @@ function NumberInputPage() {
   <NumberInputLabel>Decimal value</NumberInputLabel>
   <NumberInputControl>
     <NumberInputField />
-    <NumberInputIncrementTrigger />
-    <NumberInputDecrementTrigger />
+    <NumberInputTriggerGroup>
+      <NumberInputIncrementTrigger />
+      <NumberInputDecrementTrigger />
+    </NumberInputTriggerGroup>
   </NumberInputControl>
 </NumberInput>`}
       >
@@ -161,8 +297,10 @@ function NumberInputPage() {
   <NumberInputLabel>Price</NumberInputLabel>
   <NumberInputControl>
     <NumberInputField />
-    <NumberInputIncrementTrigger />
-    <NumberInputDecrementTrigger />
+    <NumberInputTriggerGroup>
+      <NumberInputIncrementTrigger />
+      <NumberInputDecrementTrigger />
+    </NumberInputTriggerGroup>
   </NumberInputControl>
 </NumberInput>`}
       >
@@ -183,12 +321,99 @@ function NumberInputPage() {
   <NumberInputLabel>Volume (0-100, clamps on blur)</NumberInputLabel>
   <NumberInputControl>
     <NumberInputField />
-    <NumberInputIncrementTrigger />
-    <NumberInputDecrementTrigger />
+    <NumberInputTriggerGroup>
+      <NumberInputIncrementTrigger />
+      <NumberInputDecrementTrigger />
+    </NumberInputTriggerGroup>
   </NumberInputControl>
 </NumberInput>`}
       >
         <MinMaxExample />
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Prefix"
+        code={`<NumberInput value={value} onValueChange={(d) => setValue(d.valueAsNumber)} step={0.5} precision={2} min={0}>
+  <NumberInputLabel>Price</NumberInputLabel>
+  <NumberInputControl>
+    <NumberInputPrefix>$</NumberInputPrefix>
+    <NumberInputField />
+    <NumberInputTriggerGroup>
+      <NumberInputIncrementTrigger />
+      <NumberInputDecrementTrigger />
+    </NumberInputTriggerGroup>
+  </NumberInputControl>
+</NumberInput>`}
+      >
+        <PrefixExample />
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Suffix"
+        code={`<NumberInput value={value} onValueChange={(d) => setValue(d.valueAsNumber)} min={0} max={100} step={1} precision={0}>
+  <NumberInputLabel>Opacity</NumberInputLabel>
+  <NumberInputControl>
+    <NumberInputField />
+    <NumberInputSuffix>%</NumberInputSuffix>
+    <NumberInputTriggerGroup>
+      <NumberInputIncrementTrigger />
+      <NumberInputDecrementTrigger />
+    </NumberInputTriggerGroup>
+  </NumberInputControl>
+</NumberInput>`}
+      >
+        <SuffixExample />
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Prefix and suffix"
+        code={`<NumberInput value={value} onValueChange={(d) => setValue(d.valueAsNumber)} step={50} precision={0}>
+  <NumberInputLabel>Currency with code</NumberInputLabel>
+  <NumberInputControl>
+    <NumberInputPrefix>$</NumberInputPrefix>
+    <NumberInputField />
+    <NumberInputSuffix>USD</NumberInputSuffix>
+    <NumberInputTriggerGroup>
+      <NumberInputIncrementTrigger />
+      <NumberInputDecrementTrigger />
+    </NumberInputTriggerGroup>
+  </NumberInputControl>
+</NumberInput>`}
+      >
+        <PrefixAndSuffixExample />
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Action buttons (clear / reset)"
+        code={`const initial = 42
+const [value, setValue] = useState(initial)
+
+<NumberInput value={value} onValueChange={(d) => setValue(d.valueAsNumber)} min={0} max={999} step={1} precision={0}>
+  <NumberInputLabel>Servings (clear / reset)</NumberInputLabel>
+  <NumberInputControl>
+    <NumberInputField />
+    {value !== 0 && (
+      <NumberInputAction>
+        <Button variant="ghost" size="icon" aria-label="Clear" onClick={() => setValue(0)}>
+          <X className="h-4 w-4" />
+        </Button>
+      </NumberInputAction>
+    )}
+    {value !== initial && (
+      <NumberInputAction>
+        <Button variant="ghost" size="icon" aria-label="Reset to default" onClick={() => setValue(initial)}>
+          <RotateCcw className="h-4 w-4" />
+        </Button>
+      </NumberInputAction>
+    )}
+    <NumberInputTriggerGroup>
+      <NumberInputIncrementTrigger />
+      <NumberInputDecrementTrigger />
+    </NumberInputTriggerGroup>
+  </NumberInputControl>
+</NumberInput>`}
+      >
+        <ActionExample />
       </ShowcaseExample>
     </ShowcasePage>
   )

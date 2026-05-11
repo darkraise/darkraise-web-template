@@ -9,6 +9,7 @@ import {
   NumberInputField,
   NumberInputIncrementTrigger,
   NumberInputLabel,
+  NumberInputTriggerGroup,
 } from "./NumberInput"
 
 function renderBasic(
@@ -19,8 +20,10 @@ function renderBasic(
       <NumberInputLabel>Quantity</NumberInputLabel>
       <NumberInputControl>
         <NumberInputField aria-label="quantity" placeholder="0" />
-        <NumberInputIncrementTrigger />
-        <NumberInputDecrementTrigger />
+        <NumberInputTriggerGroup>
+          <NumberInputIncrementTrigger />
+          <NumberInputDecrementTrigger />
+        </NumberInputTriggerGroup>
       </NumberInputControl>
     </NumberInput>,
   )
@@ -104,8 +107,10 @@ describe("NumberInput", () => {
       >
         <NumberInputControl>
           <NumberInputField aria-label="price" />
-          <NumberInputIncrementTrigger />
-          <NumberInputDecrementTrigger />
+          <NumberInputTriggerGroup>
+            <NumberInputIncrementTrigger />
+            <NumberInputDecrementTrigger />
+          </NumberInputTriggerGroup>
         </NumberInputControl>
       </NumberInput>,
     )
