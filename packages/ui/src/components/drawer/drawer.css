@@ -24,7 +24,15 @@
   }
 
   .dr-drawer-handle {
-    @apply bg-muted mx-auto mt-4 h-2 w-[100px] rounded-full;
+    @apply bg-muted relative mx-auto mt-4 h-2 w-[100px] cursor-grab touch-none rounded-full active:cursor-grabbing;
+  }
+
+  /* Expand the touch/click target around the thin visual stripe so fingers
+     and quick mouse moves reliably initiate the drag-to-dismiss gesture. */
+  .dr-drawer-handle::before {
+    content: "";
+    position: absolute;
+    inset: -10px -8px;
   }
 
   .dr-drawer-content[data-direction="top"] .dr-drawer-handle {
