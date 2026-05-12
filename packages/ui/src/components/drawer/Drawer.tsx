@@ -144,8 +144,14 @@ function Drawer({
           displacement > DRAG_DISMISS_THRESHOLD ||
           velocity > DRAG_VELOCITY_THRESHOLD
         root.style.transition = ""
-        root.style.transform = ""
-        if (shouldClose) dialog.setOpen(false)
+        if (shouldClose) {
+          // Keep the inline transform so the close animation's implicit
+          // `from` picks up the dragged position. Wiping it first triggers a
+          // visible snap-back to translateY(0) before the slide-out runs.
+          dialog.setOpen(false)
+        } else {
+          root.style.transform = ""
+        }
       }
 
       window.addEventListener("pointermove", onMove)
