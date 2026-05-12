@@ -165,12 +165,9 @@ export function createFloatingPanelStore(
     open(id, componentProps) {
       const existing = entries[id]
       if (!existing) {
-        if (process.env.NODE_ENV !== "production") {
-          throw new Error(
-            `[FloatingPanel] scope="app" id="${id}" was never registered. Render <FloatingPanel scope="app" id="${id}" component={...}/> somewhere first.`,
-          )
-        }
-        return
+        throw new Error(
+          `[FloatingPanel] scope="app" id="${id}" was never registered. Render <FloatingPanel scope="app" id="${id}" component={...}/> somewhere first.`,
+        )
       }
       const next: AppPanelEntry = {
         ...existing,
@@ -184,12 +181,9 @@ export function createFloatingPanelStore(
     close(id) {
       const existing = entries[id]
       if (!existing) {
-        if (process.env.NODE_ENV !== "production") {
-          throw new Error(
-            `[FloatingPanel] scope="app" id="${id}" was never registered.`,
-          )
-        }
-        return
+        throw new Error(
+          `[FloatingPanel] scope="app" id="${id}" was never registered.`,
+        )
       }
       const next: AppPanelEntry = { ...existing, open: false }
       entries = { ...entries, [id]: next }
@@ -199,12 +193,9 @@ export function createFloatingPanelStore(
     toggle(id) {
       const existing = entries[id]
       if (!existing) {
-        if (process.env.NODE_ENV !== "production") {
-          throw new Error(
-            `[FloatingPanel] scope="app" id="${id}" was never registered.`,
-          )
-        }
-        return
+        throw new Error(
+          `[FloatingPanel] scope="app" id="${id}" was never registered.`,
+        )
       }
       const next: AppPanelEntry = { ...existing, open: !existing.open }
       entries = { ...entries, [id]: next }
