@@ -155,3 +155,22 @@ describe("open / close / toggle", () => {
     expect(() => store.toggle("missing")).toThrow(/floatingpanel/i)
   })
 })
+
+describe("getIdsSnapshot", () => {
+  it("returns the same array reference when no ids change", () => {
+    const store = createFloatingPanelStore()
+    store.register("a", { component: () => null, componentProps: {} })
+    const first = store.getIdsSnapshot()
+    store.update("a", { position: { x: 1, y: 1 } })
+    expect(store.getIdsSnapshot()).toBe(first)
+  })
+
+  it("returns a new array reference when an id is added or removed", () => {
+    const store = createFloatingPanelStore()
+    store.register("a", { component: () => null, componentProps: {} })
+    const first = store.getIdsSnapshot()
+    store.register("b", { component: () => null, componentProps: {} })
+    expect(store.getIdsSnapshot()).not.toBe(first)
+    expect(store.getIdsSnapshot()).toEqual(["a", "b"])
+  })
+})
