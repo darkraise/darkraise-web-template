@@ -67,3 +67,42 @@ describe("register — idempotent re-registration", () => {
     warn.mockRestore()
   })
 })
+
+describe("update", () => {
+  it("merges a partial patch into the entry and notifies subscribers", () => {
+    const store = createFloatingPanelStore()
+    const listener = vi.fn()
+    store.register("x", { component: () => null, componentProps: {} })
+    store.subscribe(listener)
+    store.update("x", { position: { x: 42, y: 7 } })
+    const entry = store.getEntry("x")
+    expect(entry?.position).toEqual({ x: 42, y: 7 })
+    expect(listener).toHaveBeenCalledTimes(1)
+  })
+
+  it("returns a new entry object reference so per-id selectors detect the change", () => {
+    const store = createFloatingPanelStore()
+    store.register("x", { component: () => null, componentProps: {} })
+    const before = store.getEntry("x")
+    store.update("x", { open: false })
+    const after = store.getEntry("x")
+    expect(after).not.toBe(before)
+  })
+
+  it("preserves other entries' references when one entry is updated", () => {
+    const store = createFloatingPanelStore()
+    store.register("a", { component: () => null, componentProps: {} })
+    store.register("b", { component: () => null, componentProps: {} })
+    const beforeB = store.getEntry("b")
+    store.update("a", { position: { x: 1, y: 1 } })
+    expect(store.getEntry("b")).toBe(beforeB) // ref equality
+  })
+
+  it("no-ops when called with an unknown id", () => {
+    const store = createFloatingPanelStore()
+    const listener = vi.fn()
+    store.subscribe(listener)
+    store.update("nope", { open: false })
+    expect(listener).not.toHaveBeenCalled()
+  })
+})

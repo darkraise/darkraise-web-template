@@ -111,8 +111,11 @@ export function createFloatingPanelStore(): FloatingPanelStore {
       recomputeIdsSnapshot()
       notify()
     },
-    update() {
-      // Implemented in Task 4.
+    update(id, patch) {
+      const existing = entries[id]
+      if (!existing) return
+      entries = { ...entries, [id]: { ...existing, ...patch } }
+      notify()
     },
     open() {
       // Implemented in Task 5.
