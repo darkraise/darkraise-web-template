@@ -67,6 +67,27 @@ describe("Calendar", () => {
     expect(range.to).toBeUndefined()
   })
 
+  it("range mode: from-only state marks the anchor day with data-range-single", async () => {
+    const user = userEvent.setup()
+    function ControlledRange() {
+      const [range, setRange] = useState<DateRange | undefined>(undefined)
+      return (
+        <Calendar
+          mode="range"
+          defaultMonth={FIXED_MONTH}
+          min={1}
+          selected={range}
+          onSelect={setRange}
+        />
+      )
+    }
+    render(<ControlledRange />)
+    const anchor = screen.getByRole("button", { name: /june 12/i })
+    await user.click(anchor)
+    expect(anchor).toHaveAttribute("data-range-single", "true")
+    expect(anchor).toHaveAttribute("aria-pressed", "true")
+  })
+
   it("range mode: two different clicks completes the range", async () => {
     const user = userEvent.setup()
     function ControlledRange() {

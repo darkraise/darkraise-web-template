@@ -823,6 +823,9 @@ function MonthBlock({
                       rangeRole === "middle" ? "true" : undefined
                     }
                     data-range-end={rangeRole === "end" ? "true" : undefined}
+                    data-range-single={
+                      rangeRole === "single" ? "true" : undefined
+                    }
                     data-range-preview={
                       isPreviewing && rangeRole !== null ? "true" : undefined
                     }

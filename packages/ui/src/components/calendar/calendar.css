@@ -16,7 +16,7 @@
   }
 
   .dr-calendar-day-btn {
-    @apply data-[selected-single=true]:bg-primary data-[selected-single=true]:text-primary-foreground data-[range-middle=true]:bg-accent data-[range-middle=true]:text-accent-foreground data-[range-start=true]:bg-primary data-[range-start=true]:text-primary-foreground data-[range-end=true]:bg-primary data-[range-end=true]:text-primary-foreground flex aspect-square w-[var(--density-cell)] flex-col gap-1 leading-none font-normal data-[range-end=true]:rounded-md data-[range-middle=true]:rounded-none data-[range-start=true]:rounded-md [&>span]:text-xs [&>span]:opacity-70;
+    @apply data-[selected-single=true]:bg-primary data-[selected-single=true]:text-primary-foreground data-[range-middle=true]:bg-accent data-[range-middle=true]:text-accent-foreground data-[range-start=true]:bg-primary data-[range-start=true]:text-primary-foreground data-[range-end=true]:bg-primary data-[range-end=true]:text-primary-foreground data-[range-single=true]:bg-primary data-[range-single=true]:text-primary-foreground flex aspect-square w-[var(--density-cell)] flex-col gap-1 leading-none font-normal data-[range-end=true]:rounded-md data-[range-middle=true]:rounded-none data-[range-single=true]:rounded-md data-[range-start=true]:rounded-md [&>span]:text-xs [&>span]:opacity-70;
     transition:
       background-color 120ms,
       color 120ms;
@@ -26,7 +26,8 @@
      variant's `hover:bg-accent` does not override the primary fill. */
   .dr-calendar-day-btn[data-selected-single="true"]:hover,
   .dr-calendar-day-btn[data-range-start="true"]:hover,
-  .dr-calendar-day-btn[data-range-end="true"]:hover {
+  .dr-calendar-day-btn[data-range-end="true"]:hover,
+  .dr-calendar-day-btn[data-range-single="true"]:hover {
     @apply bg-primary text-primary-foreground;
   }
   .dr-calendar-day-btn[data-range-middle="true"]:hover {
