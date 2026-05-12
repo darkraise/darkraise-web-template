@@ -157,6 +157,25 @@ describe("open / close / toggle", () => {
   })
 })
 
+describe("close then reopen", () => {
+  it("retains position and size across a close/reopen cycle", () => {
+    const store = createFloatingPanelStore()
+    store.register("x", { component: () => null, componentProps: {} })
+    store.update("x", {
+      position: { x: 200, y: 150 },
+      size: { width: 400, height: 300 },
+    })
+    store.close("x")
+    expect(store.getEntry("x")?.open).toBe(false)
+    expect(store.getEntry("x")?.position).toEqual({ x: 200, y: 150 })
+    expect(store.getEntry("x")?.size).toEqual({ width: 400, height: 300 })
+    store.open("x")
+    expect(store.getEntry("x")?.open).toBe(true)
+    expect(store.getEntry("x")?.position).toEqual({ x: 200, y: 150 })
+    expect(store.getEntry("x")?.size).toEqual({ width: 400, height: 300 })
+  })
+})
+
 describe("getIdsSnapshot", () => {
   it("returns the same array reference when no ids change", () => {
     const store = createFloatingPanelStore()

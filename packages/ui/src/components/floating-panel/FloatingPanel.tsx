@@ -252,9 +252,7 @@ function FloatingPanelImpl({
 }
 
 function FloatingPanel<P extends Record<string, unknown>>(
-  props:
-    | FloatingPanelProps
-    | (FloatingPanelAppProps<P> & React.HTMLAttributes<HTMLDivElement>),
+  props: FloatingPanelProps | FloatingPanelAppProps<P>,
 ) {
   if ((props as { scope?: string }).scope === "app") {
     return (

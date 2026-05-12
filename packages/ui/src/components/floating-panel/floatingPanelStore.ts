@@ -5,6 +5,8 @@ import {
   type PersistedPanelState,
 } from "./floatingPanelStorage"
 
+declare const process: { env: { NODE_ENV?: string } }
+
 export interface CreateStoreOptions {
   storage?: Storage | null
   persistDebounceMs?: number
@@ -130,7 +132,6 @@ export function createFloatingPanelStore(
         }
         entries = { ...entries, [id]: merged }
         notify()
-        scheduleWrite(merged)
         return
       }
       const persistKey = input.persistKey ?? null
@@ -165,9 +166,12 @@ export function createFloatingPanelStore(
     open(id, componentProps) {
       const existing = entries[id]
       if (!existing) {
-        throw new Error(
-          `[FloatingPanel] scope="app" id="${id}" was never registered. Render <FloatingPanel scope="app" id="${id}" component={...}/> somewhere first.`,
-        )
+        if (process.env.NODE_ENV !== "production") {
+          throw new Error(
+            `[FloatingPanel] scope="app" id="${id}" was never registered. Render <FloatingPanel scope="app" id="${id}" component={...}/> somewhere first.`,
+          )
+        }
+        return
       }
       const next: AppPanelEntry = {
         ...existing,
@@ -176,31 +180,34 @@ export function createFloatingPanelStore(
       }
       entries = { ...entries, [id]: next }
       notify()
-      scheduleWrite(next)
     },
     close(id) {
       const existing = entries[id]
       if (!existing) {
-        throw new Error(
-          `[FloatingPanel] scope="app" id="${id}" was never registered.`,
-        )
+        if (process.env.NODE_ENV !== "production") {
+          throw new Error(
+            `[FloatingPanel] scope="app" id="${id}" was never registered.`,
+          )
+        }
+        return
       }
       const next: AppPanelEntry = { ...existing, open: false }
       entries = { ...entries, [id]: next }
       notify()
-      scheduleWrite(next)
     },
     toggle(id) {
       const existing = entries[id]
       if (!existing) {
-        throw new Error(
-          `[FloatingPanel] scope="app" id="${id}" was never registered.`,
-        )
+        if (process.env.NODE_ENV !== "production") {
+          throw new Error(
+            `[FloatingPanel] scope="app" id="${id}" was never registered.`,
+          )
+        }
+        return
       }
       const next: AppPanelEntry = { ...existing, open: !existing.open }
       entries = { ...entries, [id]: next }
       notify()
-      scheduleWrite(next)
     },
   }
 }
