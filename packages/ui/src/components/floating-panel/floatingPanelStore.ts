@@ -1,4 +1,14 @@
 import type * as React from "react"
+import {
+  loadPersistedState,
+  savePersistedState,
+  type PersistedPanelState,
+} from "./floatingPanelStorage"
+
+export interface CreateStoreOptions {
+  storage?: Storage | null
+  persistDebounceMs?: number
+}
 
 export interface AppPanelEntry {
   id: string
@@ -44,10 +54,16 @@ export interface FloatingPanelStore {
 const DEFAULT_POSITION = { x: 0, y: 0 } as const
 const DEFAULT_SIZE = { width: 320, height: 240 } as const
 
-export function createFloatingPanelStore(): FloatingPanelStore {
+export function createFloatingPanelStore(
+  options: CreateStoreOptions = {},
+): FloatingPanelStore {
+  const storage = options.storage ?? null
+  const debounceMs = options.persistDebounceMs ?? 150
+
   let entries: Record<string, AppPanelEntry> = {}
   let idsSnapshot: readonly string[] = []
   const listeners = new Set<() => void>()
+  const pendingWrites = new Map<string, ReturnType<typeof setTimeout>>()
 
   const notify = () => {
     for (const fn of listeners) fn()
@@ -62,6 +78,29 @@ export function createFloatingPanelStore(): FloatingPanelStore {
       return
     }
     idsSnapshot = next
+  }
+
+  const scheduleWrite = (entry: AppPanelEntry) => {
+    if (!entry.persistKey || !storage) return
+    const key = entry.persistKey
+    const existing = pendingWrites.get(key)
+    if (existing) clearTimeout(existing)
+    const run = () => {
+      pendingWrites.delete(key)
+      const fresh = entries[entry.id]
+      if (!fresh || !fresh.persistKey) return
+      const payload: PersistedPanelState = {
+        position: fresh.position,
+        size: fresh.size,
+        minimized: fresh.minimized,
+        maximized: fresh.maximized,
+        pinned: fresh.pinned,
+      }
+      savePersistedState(fresh.persistKey, payload, storage)
+    }
+    const delay = debounceMs <= 0 ? 0 : debounceMs
+    const handle = setTimeout(run, delay)
+    pendingWrites.set(key, handle)
   }
 
   return {
@@ -83,29 +122,33 @@ export function createFloatingPanelStore(): FloatingPanelStore {
             `[FloatingPanel] scope="app" id="${id}" was re-registered with a different component reference. Keeping the new one (last-write-wins). Make sure two routes aren't declaring the same id with different components.`,
           )
         }
-        entries = {
-          ...entries,
-          [id]: {
-            ...existing,
-            component: input.component,
-            componentProps: input.componentProps,
-            persistKey: input.persistKey ?? existing.persistKey,
-          },
+        const merged: AppPanelEntry = {
+          ...existing,
+          component: input.component,
+          componentProps: input.componentProps,
+          persistKey: input.persistKey ?? existing.persistKey,
         }
+        entries = { ...entries, [id]: merged }
         notify()
+        scheduleWrite(merged)
         return
       }
+      const persistKey = input.persistKey ?? null
+      const persisted = persistKey
+        ? loadPersistedState(persistKey, storage)
+        : null
       const next: AppPanelEntry = {
         id,
         component: input.component,
         componentProps: input.componentProps,
         open: input.defaultOpen ?? true,
-        position: input.defaultPosition ?? { ...DEFAULT_POSITION },
-        size: input.defaultSize ?? { ...DEFAULT_SIZE },
-        minimized: input.defaultMinimized ?? false,
-        maximized: input.defaultMaximized ?? false,
-        pinned: input.defaultPinned ?? false,
-        persistKey: input.persistKey ?? null,
+        position: persisted?.position ??
+          input.defaultPosition ?? { ...DEFAULT_POSITION },
+        size: persisted?.size ?? input.defaultSize ?? { ...DEFAULT_SIZE },
+        minimized: persisted?.minimized ?? input.defaultMinimized ?? false,
+        maximized: persisted?.maximized ?? input.defaultMaximized ?? false,
+        pinned: persisted?.pinned ?? input.defaultPinned ?? false,
+        persistKey,
       }
       entries = { ...entries, [id]: next }
       recomputeIdsSnapshot()
@@ -114,8 +157,10 @@ export function createFloatingPanelStore(): FloatingPanelStore {
     update(id, patch) {
       const existing = entries[id]
       if (!existing) return
-      entries = { ...entries, [id]: { ...existing, ...patch } }
+      const next = { ...existing, ...patch }
+      entries = { ...entries, [id]: next }
       notify()
+      scheduleWrite(next)
     },
     open(id, componentProps) {
       const existing = entries[id]
@@ -127,15 +172,14 @@ export function createFloatingPanelStore(): FloatingPanelStore {
         }
         return
       }
-      entries = {
-        ...entries,
-        [id]: {
-          ...existing,
-          open: true,
-          componentProps: componentProps ?? existing.componentProps,
-        },
+      const next: AppPanelEntry = {
+        ...existing,
+        open: true,
+        componentProps: componentProps ?? existing.componentProps,
       }
+      entries = { ...entries, [id]: next }
       notify()
+      scheduleWrite(next)
     },
     close(id) {
       const existing = entries[id]
@@ -147,8 +191,10 @@ export function createFloatingPanelStore(): FloatingPanelStore {
         }
         return
       }
-      entries = { ...entries, [id]: { ...existing, open: false } }
+      const next: AppPanelEntry = { ...existing, open: false }
+      entries = { ...entries, [id]: next }
       notify()
+      scheduleWrite(next)
     },
     toggle(id) {
       const existing = entries[id]
@@ -160,8 +206,10 @@ export function createFloatingPanelStore(): FloatingPanelStore {
         }
         return
       }
-      entries = { ...entries, [id]: { ...existing, open: !existing.open } }
+      const next: AppPanelEntry = { ...existing, open: !existing.open }
+      entries = { ...entries, [id]: next }
       notify()
+      scheduleWrite(next)
     },
   }
 }

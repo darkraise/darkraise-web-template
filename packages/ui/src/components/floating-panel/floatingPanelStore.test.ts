@@ -1,5 +1,6 @@
-import { describe, it, expect, vi } from "vitest"
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
 import { createFloatingPanelStore } from "./floatingPanelStore"
+import { savePersistedState } from "./floatingPanelStorage"
 
 describe("createFloatingPanelStore", () => {
   it("starts with an empty entry registry", () => {
@@ -172,5 +173,95 @@ describe("getIdsSnapshot", () => {
     store.register("b", { component: () => null, componentProps: {} })
     expect(store.getIdsSnapshot()).not.toBe(first)
     expect(store.getIdsSnapshot()).toEqual(["a", "b"])
+  })
+})
+
+describe("createFloatingPanelStore — persistence", () => {
+  let storage: Storage
+  beforeEach(() => {
+    const data = new Map<string, string>()
+    storage = {
+      getItem: (k) => data.get(k) ?? null,
+      setItem: (k, v) => void data.set(k, v),
+      removeItem: (k) => void data.delete(k),
+      clear: () => data.clear(),
+      key: (i) => Array.from(data.keys())[i] ?? null,
+      get length() {
+        return data.size
+      },
+    }
+    vi.stubGlobal("localStorage", storage)
+    vi.useFakeTimers()
+  })
+  afterEach(() => {
+    vi.useRealTimers()
+    vi.unstubAllGlobals()
+  })
+
+  it("hydrates an entry with persisted geometry when the key exists at init time", () => {
+    savePersistedState(
+      "dr-floating-panel:inspector",
+      {
+        position: { x: 100, y: 200 },
+        size: { width: 400, height: 300 },
+        minimized: false,
+        maximized: false,
+        pinned: true,
+      },
+      storage,
+    )
+    const store = createFloatingPanelStore({ storage })
+    store.register("inspector", {
+      component: () => null,
+      componentProps: {},
+      defaultPosition: { x: 0, y: 0 },
+      defaultSize: { width: 320, height: 240 },
+      persistKey: "dr-floating-panel:inspector",
+    })
+    expect(store.getEntry("inspector")?.position).toEqual({ x: 100, y: 200 })
+    expect(store.getEntry("inspector")?.pinned).toBe(true)
+  })
+
+  it("writes persisted state on update when persistKey is set, debounced to one write per window", () => {
+    const store = createFloatingPanelStore({ storage, persistDebounceMs: 150 })
+    store.register("inspector", {
+      component: () => null,
+      componentProps: {},
+      persistKey: "dr-floating-panel:inspector",
+    })
+    store.update("inspector", { position: { x: 1, y: 1 } })
+    store.update("inspector", { position: { x: 2, y: 2 } })
+    store.update("inspector", { position: { x: 3, y: 3 } })
+    expect(storage.getItem("dr-floating-panel:inspector")).toBeNull()
+    vi.advanceTimersByTime(160)
+    const stored = JSON.parse(
+      storage.getItem("dr-floating-panel:inspector") ?? "{}",
+    )
+    expect(stored.position).toEqual({ x: 3, y: 3 })
+  })
+
+  it("never persists `open` or `componentProps`", () => {
+    const store = createFloatingPanelStore({ storage, persistDebounceMs: 0 })
+    store.register("inspector", {
+      component: () => null,
+      componentProps: { v: 1 },
+      persistKey: "dr-floating-panel:inspector",
+    })
+    store.update("inspector", { componentProps: { v: 99 } })
+    store.close("inspector")
+    vi.advanceTimersByTime(1)
+    const stored = JSON.parse(
+      storage.getItem("dr-floating-panel:inspector") ?? "{}",
+    )
+    expect(stored).not.toHaveProperty("open")
+    expect(stored).not.toHaveProperty("componentProps")
+  })
+
+  it("does not write when persistKey is null", () => {
+    const store = createFloatingPanelStore({ storage, persistDebounceMs: 0 })
+    store.register("x", { component: () => null, componentProps: {} })
+    store.update("x", { position: { x: 1, y: 1 } })
+    vi.advanceTimersByTime(1)
+    expect(storage.length).toBe(0)
   })
 })
