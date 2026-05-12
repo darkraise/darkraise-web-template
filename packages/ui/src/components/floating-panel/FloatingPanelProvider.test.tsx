@@ -1,7 +1,15 @@
 import { describe, it, expect } from "vitest"
-import { render, renderHook } from "@testing-library/react"
+import { act, fireEvent, render, renderHook } from "@testing-library/react"
+import { useState } from "react"
 import { FloatingPanelProvider } from "./FloatingPanelProvider"
 import { useAppFloatingPanels } from "./useAppFloatingPanels"
+import {
+  FloatingPanel,
+  FloatingPanelContent,
+  FloatingPanelHeader,
+  FloatingPanelTitle,
+} from "./FloatingPanel"
+import { FloatingPanelHost } from "./FloatingPanelHost"
 
 describe("FloatingPanelProvider + useAppFloatingPanels", () => {
   it("renders children", () => {
@@ -39,5 +47,59 @@ describe("FloatingPanelProvider + useAppFloatingPanels", () => {
     )
     const { result } = renderHook(() => useAppFloatingPanels(), { wrapper })
     expect(() => result.current.open("nope")).toThrow(/was never registered/i)
+  })
+})
+
+function Inspector() {
+  return (
+    <>
+      <FloatingPanelHeader>
+        <FloatingPanelTitle>Inspector</FloatingPanelTitle>
+      </FloatingPanelHeader>
+      <FloatingPanelContent>
+        <div data-testid="inspector-content">stays mounted</div>
+      </FloatingPanelContent>
+    </>
+  )
+}
+
+function RouteA() {
+  return (
+    <FloatingPanel
+      scope="app"
+      id="inspector"
+      component={Inspector}
+      componentProps={{}}
+      defaultPosition={{ x: 60, y: 90 }}
+    />
+  )
+}
+
+function RouteB() {
+  return <div data-testid="route-b">route B (no panel declaration here)</div>
+}
+
+function FakeRouter() {
+  const [route, setRoute] = useState<"a" | "b">("a")
+  return (
+    <FloatingPanelProvider>
+      <button data-testid="go-b" onClick={() => setRoute("b")}>
+        go b
+      </button>
+      {route === "a" ? <RouteA /> : <RouteB />}
+      <FloatingPanelHost />
+    </FloatingPanelProvider>
+  )
+}
+
+describe('scope="app" route survival', () => {
+  it("keeps the panel rendered after the declaring route unmounts", () => {
+    const { getByTestId, queryByTestId } = render(<FakeRouter />)
+    expect(getByTestId("inspector-content")).toBeInTheDocument()
+    act(() => {
+      fireEvent.click(getByTestId("go-b"))
+    })
+    expect(queryByTestId("inspector-content")).toBeInTheDocument()
+    expect(queryByTestId("route-b")).toBeInTheDocument()
   })
 })
