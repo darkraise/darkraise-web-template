@@ -2,6 +2,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ThemeProvider } from "darkraise-ui/theme"
 import { Toaster } from "darkraise-ui/components/sonner"
 import { RouterAdapterProvider } from "darkraise-ui/router"
+import {
+  FloatingPanelProvider,
+  FloatingPanelHost,
+} from "darkraise-ui/components/floating-panel"
 import { tanstackRouterAdapter } from "@/lib/router-adapter"
 import { themeConfig } from "@/theme.config"
 
@@ -19,8 +23,11 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider config={themeConfig}>
         <RouterAdapterProvider value={tanstackRouterAdapter}>
-          {children}
-          <Toaster />
+          <FloatingPanelProvider>
+            {children}
+            <FloatingPanelHost />
+            <Toaster />
+          </FloatingPanelProvider>
         </RouterAdapterProvider>
       </ThemeProvider>
     </QueryClientProvider>
