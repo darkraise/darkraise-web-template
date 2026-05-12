@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest"
 import { render, screen, act } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import * as React from "react"
+import { useSyncExternalStore } from "react"
 import {
   FloatingPanel,
   FloatingPanelCloseTrigger,
@@ -14,6 +15,10 @@ import {
   FloatingPanelResizeHandle,
   FloatingPanelTitle,
 } from "./FloatingPanel"
+import {
+  FloatingPanelProvider,
+  useFloatingPanelStore,
+} from "./FloatingPanelProvider"
 
 describe("FloatingPanel", () => {
   it("renders with the default position and size", () => {
@@ -617,5 +622,96 @@ describe("FloatingPanel", () => {
     )
     expect(panel.style.left).toBe("50px")
     expect(panel.style.top).toBe("50px")
+  })
+})
+
+describe('FloatingPanel scope="app"', () => {
+  it("renders null (no visible markup) when scope is app", () => {
+    const Inner = () => <div data-testid="inner">inner</div>
+    const { container } = render(
+      <FloatingPanelProvider>
+        <FloatingPanel
+          scope="app"
+          id="x"
+          component={Inner}
+          componentProps={{}}
+        />
+      </FloatingPanelProvider>,
+    )
+    expect(container.querySelector(".dr-floating-panel")).toBeNull()
+  })
+
+  it("registers the panel in the store on mount", () => {
+    const Inner = () => null
+    function Probe() {
+      const store = useFloatingPanelStore()
+      const ids = useSyncExternalStore(
+        store.subscribe,
+        () => store.getIdsSnapshot(),
+        () => store.getIdsSnapshot(),
+      )
+      return <span data-testid="ids">{ids.join(",")}</span>
+    }
+    const { getByTestId } = render(
+      <FloatingPanelProvider>
+        <FloatingPanel
+          scope="app"
+          id="inspector"
+          component={Inner}
+          componentProps={{}}
+        />
+        <Probe />
+      </FloatingPanelProvider>,
+    )
+    expect(getByTestId("ids").textContent).toBe("inspector")
+  })
+
+  it('throws a clear error when scope="app" is rendered without a provider', () => {
+    const Inner = () => null
+    // React error boundary suppression: spy on console.error to keep noise out of test output.
+    const err = vi.spyOn(console, "error").mockImplementation(() => {})
+    const renderWithoutProvider = () =>
+      render(
+        <FloatingPanel
+          scope="app"
+          id="x"
+          component={Inner}
+          componentProps={{}}
+        />,
+      )
+    expect(renderWithoutProvider).toThrow(/FloatingPanelProvider/i)
+    err.mockRestore()
+  })
+
+  it("updates componentProps when the JSX prop changes", () => {
+    const Inner = (props: { v: number }) => <div>{props.v}</div>
+    function Probe({ id }: { id: string }) {
+      const store = useFloatingPanelStore()
+      const entry = useSyncExternalStore(
+        store.subscribe,
+        () => store.getEntry(id),
+        () => store.getEntry(id),
+      )
+      return (
+        <span data-testid="props">{JSON.stringify(entry?.componentProps)}</span>
+      )
+    }
+    function Host({ v }: { v: number }) {
+      return (
+        <FloatingPanelProvider>
+          <FloatingPanel
+            scope="app"
+            id="x"
+            component={Inner}
+            componentProps={{ v }}
+          />
+          <Probe id="x" />
+        </FloatingPanelProvider>
+      )
+    }
+    const { getByTestId, rerender } = render(<Host v={1} />)
+    expect(getByTestId("props").textContent).toBe(JSON.stringify({ v: 1 }))
+    rerender(<Host v={42} />)
+    expect(getByTestId("props").textContent).toBe(JSON.stringify({ v: 42 }))
   })
 })

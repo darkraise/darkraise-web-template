@@ -11,6 +11,7 @@ import {
 } from "lucide-react"
 import { cn } from "@lib/utils"
 import { Portal } from "@primitives/portal"
+import { useFloatingPanelStore } from "./FloatingPanelProvider"
 import {
   useFloatingPanel,
   type UseFloatingPanelOptions,
@@ -53,6 +54,21 @@ export interface FloatingPanelProps
   scope?: "local" | "global"
 }
 
+export interface FloatingPanelAppProps<P extends Record<string, unknown>> {
+  scope: "app"
+  id: string
+  component: React.ComponentType<P>
+  componentProps: P
+  persist?: boolean
+  persistKey?: string
+  defaultOpen?: boolean
+  defaultPosition?: { x: number; y: number }
+  defaultSize?: { width: number; height: number }
+  defaultMinimized?: boolean
+  defaultMaximized?: boolean
+  defaultPinned?: boolean
+}
+
 // All panels — local and global — share a single z-index pool driven
 // purely by activation order. A scope-aware Z_BASE was tried earlier
 // (local at 50, global at 40) but the 10-unit tier offset dominated the
@@ -67,7 +83,7 @@ export interface FloatingPanelProps
 // been opened in a session — fine in practice.
 const Z_BASE = 0
 
-function FloatingPanel({
+function FloatingPanelImpl({
   className,
   position,
   defaultPosition,
@@ -233,6 +249,71 @@ function FloatingPanel({
   // stay in place because their `position: absolute` is meant to anchor to
   // the parent card.
   return scope === "global" ? <Portal>{tree}</Portal> : tree
+}
+
+function FloatingPanel<P extends Record<string, unknown>>(
+  props:
+    | FloatingPanelProps
+    | (FloatingPanelAppProps<P> & React.HTMLAttributes<HTMLDivElement>),
+) {
+  if ((props as { scope?: string }).scope === "app") {
+    return (
+      <FloatingPanelAppRegistration {...(props as FloatingPanelAppProps<P>)} />
+    )
+  }
+  return <FloatingPanelImpl {...(props as FloatingPanelProps)} />
+}
+
+function FloatingPanelAppRegistration<P extends Record<string, unknown>>(
+  props: FloatingPanelAppProps<P>,
+) {
+  const store = useFloatingPanelStore()
+  const {
+    id,
+    component,
+    componentProps,
+    persist,
+    persistKey,
+    defaultOpen,
+    defaultPosition,
+    defaultSize,
+    defaultMinimized,
+    defaultMaximized,
+    defaultPinned,
+  } = props
+
+  const resolvedPersistKey =
+    persistKey ?? (persist ? `dr-floating-panel:${id}` : undefined)
+
+  React.useEffect(() => {
+    store.register(id, {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      component: component as React.ComponentType<any>,
+      componentProps: componentProps as Record<string, unknown>,
+      defaultOpen,
+      defaultPosition,
+      defaultSize,
+      defaultMinimized,
+      defaultMaximized,
+      defaultPinned,
+      persistKey: resolvedPersistKey ?? null,
+    })
+    // No cleanup — the panel survives unmount.
+  }, [
+    store,
+    id,
+    component,
+    componentProps,
+    defaultOpen,
+    defaultPosition,
+    defaultSize,
+    defaultMinimized,
+    defaultMaximized,
+    defaultPinned,
+    resolvedPersistKey,
+  ])
+
+  return null
 }
 
 function FloatingPanelHeader({
