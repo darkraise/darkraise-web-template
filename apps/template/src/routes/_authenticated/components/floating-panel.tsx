@@ -11,6 +11,7 @@ import {
   FloatingPanelPinTrigger,
   FloatingPanelResizeHandle,
   FloatingPanelTitle,
+  useAppFloatingPanels,
 } from "darkraise-ui/components/floating-panel"
 import { Button } from "darkraise-ui/components/button"
 import { ShowcaseExample } from "./_components/-showcase-example"
@@ -21,6 +22,27 @@ export const Route = createFileRoute(
 )({
   component: FloatingPanelPage,
 })
+
+function InspectorContent({ label }: { label: string }) {
+  return (
+    <>
+      <FloatingPanelHeader>
+        <FloatingPanelDragHandle />
+        <FloatingPanelTitle>{label}</FloatingPanelTitle>
+        <FloatingPanelMinimizeTrigger />
+        <FloatingPanelMaximizeTrigger />
+        <FloatingPanelCloseTrigger />
+      </FloatingPanelHeader>
+      <FloatingPanelContent>
+        <p className="text-sm">
+          I survive route changes. Navigate away and back — my position stays
+          put.
+        </p>
+      </FloatingPanelContent>
+      <FloatingPanelResizeHandle />
+    </>
+  )
+}
 
 function FloatingPanelPage() {
   const [position, setPosition] = useState({ x: 40, y: 40 })
@@ -198,6 +220,39 @@ const nextId = useRef(1)
       </ShowcaseExample>
 
       <ShowcaseExample
+        title="Scope: app (survives route changes)"
+        code={`function InspectorContent({ label }: { label: string }) {
+  return (
+    <>
+      <FloatingPanelHeader>
+        <FloatingPanelDragHandle />
+        <FloatingPanelTitle>{label}</FloatingPanelTitle>
+        <FloatingPanelCloseTrigger />
+      </FloatingPanelHeader>
+      <FloatingPanelContent>...</FloatingPanelContent>
+    </>
+  )
+}
+
+// Mount the provider + host once in the app shell (see app-providers.tsx).
+// Then declare the panel in any route — it keeps living after navigation.
+<FloatingPanel
+  scope="app"
+  id="inspector"
+  component={InspectorContent}
+  componentProps={{ label: "Inspector" }}
+  defaultPosition={{ x: 80, y: 80 }}
+  persist // optional: position/size persist across full reloads
+/>
+
+// Open from anywhere via the imperative hook:
+const panels = useAppFloatingPanels()
+panels.open("inspector", { label: "Updated label" })`}
+      >
+        <AppScopeDemo />
+      </ShowcaseExample>
+
+      <ShowcaseExample
         title="Header-only (minimal)"
         code={`<FloatingPanel
   defaultPosition={{ x: 50, y: 50 }}
@@ -310,5 +365,42 @@ const nextId = useRef(1)
         </div>
       </ShowcaseExample>
     </ShowcasePage>
+  )
+}
+
+function AppScopeDemo() {
+  const panels = useAppFloatingPanels()
+  return (
+    <div className="space-y-2">
+      <FloatingPanel
+        scope="app"
+        id="demo-inspector"
+        component={InspectorContent}
+        componentProps={{ label: "App-scope inspector" }}
+        defaultPosition={{ x: 120, y: 120 }}
+        defaultSize={{ width: 280, height: 200 }}
+      />
+      <p className="text-muted-foreground text-xs">
+        The panel above is rendered by the app-shell host. Navigate to another
+        components page and back — it stays open at the same coordinates.
+      </p>
+      <div className="flex gap-2">
+        <Button variant="outline" onClick={() => panels.open("demo-inspector")}>
+          Open
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => panels.close("demo-inspector")}
+        >
+          Close
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => panels.toggle("demo-inspector")}
+        >
+          Toggle
+        </Button>
+      </div>
+    </div>
   )
 }
