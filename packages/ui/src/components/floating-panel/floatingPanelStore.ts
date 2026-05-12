@@ -76,6 +76,25 @@ export function createFloatingPanelStore(): FloatingPanelStore {
       }
     },
     register(id, input) {
+      const existing = entries[id]
+      if (existing) {
+        if (existing.component && existing.component !== input.component) {
+          console.warn(
+            `[FloatingPanel] scope="app" id="${id}" was re-registered with a different component reference. Keeping the new one (last-write-wins). Make sure two routes aren't declaring the same id with different components.`,
+          )
+        }
+        entries = {
+          ...entries,
+          [id]: {
+            ...existing,
+            component: input.component,
+            componentProps: input.componentProps,
+            persistKey: input.persistKey ?? existing.persistKey,
+          },
+        }
+        notify()
+        return
+      }
       const next: AppPanelEntry = {
         id,
         component: input.component,
