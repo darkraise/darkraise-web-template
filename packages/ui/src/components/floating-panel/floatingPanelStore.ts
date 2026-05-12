@@ -117,14 +117,51 @@ export function createFloatingPanelStore(): FloatingPanelStore {
       entries = { ...entries, [id]: { ...existing, ...patch } }
       notify()
     },
-    open() {
-      // Implemented in Task 5.
+    open(id, componentProps) {
+      const existing = entries[id]
+      if (!existing) {
+        if (process.env.NODE_ENV !== "production") {
+          throw new Error(
+            `[FloatingPanel] scope="app" id="${id}" was never registered. Render <FloatingPanel scope="app" id="${id}" component={...}/> somewhere first.`,
+          )
+        }
+        return
+      }
+      entries = {
+        ...entries,
+        [id]: {
+          ...existing,
+          open: true,
+          componentProps: componentProps ?? existing.componentProps,
+        },
+      }
+      notify()
     },
-    close() {
-      // Implemented in Task 5.
+    close(id) {
+      const existing = entries[id]
+      if (!existing) {
+        if (process.env.NODE_ENV !== "production") {
+          throw new Error(
+            `[FloatingPanel] scope="app" id="${id}" was never registered.`,
+          )
+        }
+        return
+      }
+      entries = { ...entries, [id]: { ...existing, open: false } }
+      notify()
     },
-    toggle() {
-      // Implemented in Task 5.
+    toggle(id) {
+      const existing = entries[id]
+      if (!existing) {
+        if (process.env.NODE_ENV !== "production") {
+          throw new Error(
+            `[FloatingPanel] scope="app" id="${id}" was never registered.`,
+          )
+        }
+        return
+      }
+      entries = { ...entries, [id]: { ...existing, open: !existing.open } }
+      notify()
     },
   }
 }

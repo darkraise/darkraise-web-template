@@ -106,3 +106,52 @@ describe("update", () => {
     expect(listener).not.toHaveBeenCalled()
   })
 })
+
+describe("open / close / toggle", () => {
+  it("open(id) sets entry.open to true", () => {
+    const store = createFloatingPanelStore()
+    store.register("x", {
+      component: () => null,
+      componentProps: {},
+      defaultOpen: false,
+    })
+    expect(store.getEntry("x")?.open).toBe(false)
+    store.open("x")
+    expect(store.getEntry("x")?.open).toBe(true)
+  })
+
+  it("open(id, props) merges new componentProps", () => {
+    const store = createFloatingPanelStore()
+    store.register("x", { component: () => null, componentProps: { a: 1 } })
+    store.open("x", { a: 2, b: 3 })
+    expect(store.getEntry("x")?.componentProps).toEqual({ a: 2, b: 3 })
+  })
+
+  it("close(id) sets entry.open to false but keeps the entry registered", () => {
+    const store = createFloatingPanelStore()
+    store.register("x", { component: () => null, componentProps: {} })
+    store.close("x")
+    expect(store.getEntry("x")?.open).toBe(false)
+    expect(store.getIdsSnapshot()).toEqual(["x"])
+  })
+
+  it("toggle(id) flips entry.open", () => {
+    const store = createFloatingPanelStore()
+    store.register("x", {
+      component: () => null,
+      componentProps: {},
+      defaultOpen: false,
+    })
+    store.toggle("x")
+    expect(store.getEntry("x")?.open).toBe(true)
+    store.toggle("x")
+    expect(store.getEntry("x")?.open).toBe(false)
+  })
+
+  it("open / close / toggle on an unknown id throw in dev mode", () => {
+    const store = createFloatingPanelStore()
+    expect(() => store.open("missing")).toThrow(/floatingpanel/i)
+    expect(() => store.close("missing")).toThrow(/floatingpanel/i)
+    expect(() => store.toggle("missing")).toThrow(/floatingpanel/i)
+  })
+})
