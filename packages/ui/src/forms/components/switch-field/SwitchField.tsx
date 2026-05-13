@@ -24,24 +24,21 @@ export function SwitchField({
 }: SwitchFieldProps) {
   const hasDescription = description ? "true" : undefined
   return (
-    <Field
-      orientation="horizontal"
-      data-invalid={isInvalid}
-      className="dr-switch-field"
-      data-has-description={hasDescription}
-    >
-      <div className="dr-switch-field-text">
-        <FieldLabel htmlFor={name}>{label}</FieldLabel>
-        {description && <FieldDescription>{description}</FieldDescription>}
+    <Field orientation="vertical" data-invalid={isInvalid}>
+      <div className="dr-switch-field" data-has-description={hasDescription}>
+        <div className="dr-switch-field-text">
+          <FieldLabel htmlFor={name}>{label}</FieldLabel>
+          {description && <FieldDescription>{description}</FieldDescription>}
+        </div>
+        <Switch
+          id={name}
+          checked={value}
+          onCheckedChange={onChange}
+          onBlur={onBlur}
+          aria-invalid={isInvalid}
+          data-has-description={hasDescription}
+        />
       </div>
-      <Switch
-        id={name}
-        checked={value}
-        onCheckedChange={onChange}
-        onBlur={onBlur}
-        aria-invalid={isInvalid}
-        data-has-description={hasDescription}
-      />
       {isInvalid && <FieldError errors={errors} />}
     </Field>
   )

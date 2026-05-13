@@ -6,14 +6,18 @@
 
   /* SwitchField — bordered card layout for the row */
   .dr-switch-field {
-    @apply border-border justify-between rounded-lg border p-4;
+    @apply border-border flex items-center justify-between gap-2 rounded-lg border p-4;
   }
 
   .dr-switch-field-text {
     @apply space-y-0.5;
   }
 
-  /* CheckboxField — alignment changes when description is present */
+  /* CheckboxField — horizontal row, alignment shifts when description is present */
+  .dr-checkbox-field {
+    @apply flex items-center gap-2;
+  }
+
   .dr-checkbox-field[data-has-description="true"] {
     @apply items-start;
   }
