@@ -9,7 +9,6 @@ import {
   FloatingPanelMaximizeTrigger,
   FloatingPanelMinimizeTrigger,
   FloatingPanelPinTrigger,
-  FloatingPanelResizeHandle,
   FloatingPanelTitle,
   useAppFloatingPanels,
 } from "darkraise-ui/components/floating-panel"
@@ -39,7 +38,6 @@ function InspectorContent({ label }: { label: string }) {
           put.
         </p>
       </FloatingPanelContent>
-      <FloatingPanelResizeHandle />
     </>
   )
 }
@@ -62,7 +60,7 @@ function FloatingPanelPage() {
   return (
     <ShowcasePage
       title="Floating Panel"
-      description="An absolutely positioned panel you can drag from its header and resize from a corner handle. Optional drag handle, title, minimize / maximize / close triggers compose into a familiar window-chrome layout."
+      description="An absolutely positioned panel you can drag from its header and resize from any border edge or corner. Optional drag handle, title, minimize / maximize / close triggers compose into a familiar window-chrome layout."
     >
       <ShowcaseExample
         title="With chrome (drag handle, title, triggers)"
@@ -78,7 +76,6 @@ function FloatingPanelPage() {
     <FloatingPanelCloseTrigger />
   </FloatingPanelHeader>
   <FloatingPanelContent>Drag me around</FloatingPanelContent>
-  <FloatingPanelResizeHandle />
 </FloatingPanel>`}
       >
         <div className="border-border relative h-96 overflow-hidden rounded-md border">
@@ -99,7 +96,6 @@ function FloatingPanelPage() {
               <FloatingPanelContent>
                 <p className="text-sm">Drag me around</p>
               </FloatingPanelContent>
-              <FloatingPanelResizeHandle />
             </FloatingPanel>
           ) : (
             <div className="absolute inset-0 flex items-center justify-center">
@@ -139,7 +135,6 @@ function FloatingPanelPage() {
                 Confined to this card. Maximise fills the card.
               </p>
             </FloatingPanelContent>
-            <FloatingPanelResizeHandle />
           </FloatingPanel>
         </div>
       </ShowcaseExample>
@@ -213,7 +208,6 @@ const nextId = useRef(1)
                   demo card. Open another to see them cascade.
                 </p>
               </FloatingPanelContent>
-              <FloatingPanelResizeHandle />
             </FloatingPanel>
           ))}
         </div>
@@ -260,7 +254,6 @@ panels.open("inspector", { label: "Updated label" })`}
 >
   <FloatingPanelHeader>Drag me</FloatingPanelHeader>
   <FloatingPanelContent>Some content</FloatingPanelContent>
-  <FloatingPanelResizeHandle />
 </FloatingPanel>`}
       >
         <div className="border-border relative h-80 overflow-hidden rounded-md border">
@@ -271,10 +264,10 @@ panels.open("inspector", { label: "Updated label" })`}
             <FloatingPanelHeader>Drag me</FloatingPanelHeader>
             <FloatingPanelContent>
               <p className="text-sm">
-                Drag the header to reposition, or pull the corner to resize.
+                Drag the header to reposition, or pull any border edge or corner
+                to resize.
               </p>
             </FloatingPanelContent>
-            <FloatingPanelResizeHandle />
           </FloatingPanel>
         </div>
       </ShowcaseExample>
@@ -292,7 +285,6 @@ panels.open("inspector", { label: "Updated label" })`}
   <FloatingPanelContent>
     Position: {position.x}, {position.y}
   </FloatingPanelContent>
-  <FloatingPanelResizeHandle />
 </FloatingPanel>`}
       >
         <div className="space-y-3">
@@ -308,7 +300,6 @@ panels.open("inspector", { label: "Updated label" })`}
                   Position: {Math.round(position.x)}, {Math.round(position.y)}
                 </p>
               </FloatingPanelContent>
-              <FloatingPanelResizeHandle />
             </FloatingPanel>
           </div>
           <p className="text-muted-foreground text-xs">
@@ -321,9 +312,9 @@ panels.open("inspector", { label: "Updated label" })`}
       <ShowcaseExample
         title="Pin in place"
         code={`{/* Clicking the pin icon locks the panel at its current
-   location and hides the resize handle. The drag handle dims and the
-   header cursor reverts to the default arrow so it's clear the panel
-   can't be moved. Click pin again to unpin. */}
+   location and disables the border-resize regions. The drag handle
+   dims and the header cursor reverts to the default arrow so it's
+   clear the panel can't be moved. Click pin again to unpin. */}
 <FloatingPanel
   defaultPosition={{ x: 40, y: 40 }}
   defaultSize={{ width: 240, height: 160 }}
@@ -337,7 +328,6 @@ panels.open("inspector", { label: "Updated label" })`}
     <FloatingPanelCloseTrigger />
   </FloatingPanelHeader>
   <FloatingPanelContent>...</FloatingPanelContent>
-  <FloatingPanelResizeHandle />
 </FloatingPanel>`}
       >
         <div className="border-border relative h-80 overflow-hidden rounded-md border">
@@ -356,11 +346,10 @@ panels.open("inspector", { label: "Updated label" })`}
             <FloatingPanelContent>
               <p className="text-sm">
                 Click the pin icon to lock this panel where it sits. While
-                pinned the drag and resize handles are inert; minimise and
+                pinned the drag and resize affordances are inert; minimise and
                 maximise still work.
               </p>
             </FloatingPanelContent>
-            <FloatingPanelResizeHandle />
           </FloatingPanel>
         </div>
       </ShowcaseExample>

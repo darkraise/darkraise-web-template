@@ -63,12 +63,17 @@ export interface UseFloatingPanelOptions {
   onPinnedChange?: (pinned: boolean) => void
 }
 
+export type ResizeDirection = "n" | "ne" | "e" | "se" | "s" | "sw" | "w" | "nw"
+
 interface DragState {
   type: "drag" | "resize"
   startPointer: Position
   startPosition: Position
   startSize: Size
   pointerId: number
+  // Only set when `type === "resize"`. Tells the move handler which edges
+  // of the box are anchored vs. tracking the pointer.
+  direction?: ResizeDirection
 }
 
 // Monotonic counter shared across all FloatingPanel instances. Each panel
@@ -157,10 +162,57 @@ export function useFloatingPanel(options: UseFloatingPanelOptions) {
         }
         setPosition({ x: nextX, y: nextY })
       } else {
-        setSize({
-          width: Math.min(maxW, Math.max(minW, drag.startSize.width + dx)),
-          height: Math.min(maxH, Math.max(minH, drag.startSize.height + dy)),
-        })
+        const dir = drag.direction ?? "se"
+        const bounds = options.getBounds?.()
+        const horizontal = dir.includes("e")
+          ? "e"
+          : dir.includes("w")
+            ? "w"
+            : null
+        const vertical = dir.includes("n")
+          ? "n"
+          : dir.includes("s")
+            ? "s"
+            : null
+
+        let nextX = drag.startPosition.x
+        let nextY = drag.startPosition.y
+        let nextW = drag.startSize.width
+        let nextH = drag.startSize.height
+
+        if (horizontal === "e") {
+          // Right edge tracks the pointer; left edge stays put. Cap width
+          // so the right edge can't pass the bounds.
+          const upper = bounds
+            ? Math.min(maxW, bounds.width - drag.startPosition.x)
+            : maxW
+          nextW = Math.min(upper, Math.max(minW, drag.startSize.width + dx))
+        } else if (horizontal === "w") {
+          // Left edge tracks the pointer; the right edge (startX + startW)
+          // is the anchor. Compute width first, then derive x so the right
+          // edge stays fixed.
+          const right = drag.startPosition.x + drag.startSize.width
+          const upper = Math.min(maxW, right)
+          nextW = Math.min(upper, Math.max(minW, drag.startSize.width - dx))
+          nextX = right - nextW
+        }
+
+        if (vertical === "s") {
+          const upper = bounds
+            ? Math.min(maxH, bounds.height - drag.startPosition.y)
+            : maxH
+          nextH = Math.min(upper, Math.max(minH, drag.startSize.height + dy))
+        } else if (vertical === "n") {
+          const bottom = drag.startPosition.y + drag.startSize.height
+          const upper = Math.min(maxH, bottom)
+          nextH = Math.min(upper, Math.max(minH, drag.startSize.height - dy))
+          nextY = bottom - nextH
+        }
+
+        if (nextX !== drag.startPosition.x || nextY !== drag.startPosition.y) {
+          setPosition({ x: nextX, y: nextY })
+        }
+        setSize({ width: nextW, height: nextH })
       }
     })
   })
@@ -205,19 +257,22 @@ export function useFloatingPanel(options: UseFloatingPanelOptions) {
     attach()
   })
 
-  const beginResize = useEvent((event: PointerEvent) => {
-    // Pin also blocks user resizing — the resize handle still mounts so
-    // CSS can hide it visually, but a stray press doesn't start a gesture.
-    if (pinned) return
-    dragRef.current = {
-      type: "resize",
-      startPointer: { x: event.clientX, y: event.clientY },
-      startPosition: position,
-      startSize: size,
-      pointerId: event.pointerId,
-    }
-    attach()
-  })
+  const beginResize = useEvent(
+    (event: PointerEvent, direction: ResizeDirection = "se") => {
+      // Pin also blocks user resizing — the resize regions still mount so
+      // CSS can hide them visually, but a stray press doesn't start a gesture.
+      if (pinned) return
+      dragRef.current = {
+        type: "resize",
+        startPointer: { x: event.clientX, y: event.clientY },
+        startPosition: position,
+        startSize: size,
+        pointerId: event.pointerId,
+        direction,
+      }
+      attach()
+    },
+  )
 
   React.useEffect(() => detach, [detach])
 

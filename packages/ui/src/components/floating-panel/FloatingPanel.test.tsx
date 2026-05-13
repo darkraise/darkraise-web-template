@@ -12,7 +12,6 @@ import {
   FloatingPanelMaximizeTrigger,
   FloatingPanelMinimizeTrigger,
   FloatingPanelPinTrigger,
-  FloatingPanelResizeHandle,
   FloatingPanelTitle,
 } from "./FloatingPanel"
 import {
@@ -85,7 +84,7 @@ describe("FloatingPanel", () => {
     expect(panel.style.top).toBe("40px")
   })
 
-  it("resize handle adjusts size", () => {
+  it("se corner resize adjusts width and height, anchoring the top-left", () => {
     function Wrapper() {
       const [size, setSize] = React.useState({ width: 100, height: 100 })
       return (
@@ -97,12 +96,12 @@ describe("FloatingPanel", () => {
         >
           <FloatingPanelHeader>H</FloatingPanelHeader>
           <FloatingPanelContent>x</FloatingPanelContent>
-          <FloatingPanelResizeHandle data-testid="rh" />
         </FloatingPanel>
       )
     }
     render(<Wrapper />)
-    const handle = screen.getByTestId("rh")
+    const panel = screen.getByTestId("p")
+    const handle = panel.querySelector('[data-edge="se"]') as HTMLElement
     handle.dispatchEvent(
       new PointerEvent("pointerdown", {
         clientX: 100,
@@ -127,9 +126,114 @@ describe("FloatingPanel", () => {
         bubbles: true,
       }),
     )
-    const panel = screen.getByTestId("p")
     expect(panel.style.width).toBe("250px")
     expect(panel.style.height).toBe("220px")
+    expect(panel.style.left).toBe("0px")
+    expect(panel.style.top).toBe("0px")
+  })
+
+  it("west edge resize keeps the right edge fixed", () => {
+    function Wrapper() {
+      const [pos, setPos] = React.useState({ x: 200, y: 100 })
+      const [size, setSize] = React.useState({ width: 200, height: 150 })
+      return (
+        <FloatingPanel
+          position={pos}
+          onPositionChange={setPos}
+          size={size}
+          onSizeChange={setSize}
+          data-testid="p"
+        >
+          <FloatingPanelHeader>H</FloatingPanelHeader>
+          <FloatingPanelContent>x</FloatingPanelContent>
+        </FloatingPanel>
+      )
+    }
+    render(<Wrapper />)
+    const panel = screen.getByTestId("p")
+    const handle = panel.querySelector('[data-edge="w"]') as HTMLElement
+    handle.dispatchEvent(
+      new PointerEvent("pointerdown", {
+        clientX: 200,
+        clientY: 175,
+        pointerId: 1,
+        bubbles: true,
+      }),
+    )
+    // Drag the left edge right by 60px → width shrinks by 60, left moves
+    // right by 60. Right edge (400) stays put.
+    window.dispatchEvent(
+      new PointerEvent("pointermove", {
+        clientX: 260,
+        clientY: 175,
+        pointerId: 1,
+        bubbles: true,
+      }),
+    )
+    window.dispatchEvent(
+      new PointerEvent("pointerup", {
+        clientX: 260,
+        clientY: 175,
+        pointerId: 1,
+        bubbles: true,
+      }),
+    )
+    expect(panel.style.left).toBe("260px")
+    expect(panel.style.width).toBe("140px")
+    // Right edge unchanged: 260 + 140 = 400, same as the original 200 + 200.
+    expect(panel.style.top).toBe("100px")
+    expect(panel.style.height).toBe("150px")
+  })
+
+  it("north edge resize keeps the bottom edge fixed", () => {
+    function Wrapper() {
+      const [pos, setPos] = React.useState({ x: 100, y: 200 })
+      const [size, setSize] = React.useState({ width: 200, height: 150 })
+      return (
+        <FloatingPanel
+          position={pos}
+          onPositionChange={setPos}
+          size={size}
+          onSizeChange={setSize}
+          data-testid="p"
+        >
+          <FloatingPanelHeader>H</FloatingPanelHeader>
+          <FloatingPanelContent>x</FloatingPanelContent>
+        </FloatingPanel>
+      )
+    }
+    render(<Wrapper />)
+    const panel = screen.getByTestId("p")
+    const handle = panel.querySelector('[data-edge="n"]') as HTMLElement
+    handle.dispatchEvent(
+      new PointerEvent("pointerdown", {
+        clientX: 200,
+        clientY: 200,
+        pointerId: 1,
+        bubbles: true,
+      }),
+    )
+    window.dispatchEvent(
+      new PointerEvent("pointermove", {
+        clientX: 200,
+        clientY: 240,
+        pointerId: 1,
+        bubbles: true,
+      }),
+    )
+    window.dispatchEvent(
+      new PointerEvent("pointerup", {
+        clientX: 200,
+        clientY: 240,
+        pointerId: 1,
+        bubbles: true,
+      }),
+    )
+    expect(panel.style.top).toBe("240px")
+    expect(panel.style.height).toBe("110px")
+    // Bottom edge unchanged: 240 + 110 = 350 = original 200 + 150.
+    expect(panel.style.left).toBe("100px")
+    expect(panel.style.width).toBe("200px")
   })
 
   it("close trigger hides the panel", async () => {
@@ -513,12 +617,12 @@ describe("FloatingPanel", () => {
         >
           <FloatingPanelHeader>H</FloatingPanelHeader>
           <FloatingPanelContent>x</FloatingPanelContent>
-          <FloatingPanelResizeHandle data-testid="rh" />
         </FloatingPanel>
       )
     }
     render(<Wrapper />)
-    const handle = screen.getByTestId("rh")
+    const panel = screen.getByTestId("p")
+    const handle = panel.querySelector('[data-edge="se"]') as HTMLElement
     handle.dispatchEvent(
       new PointerEvent("pointerdown", {
         clientX: 100,
@@ -543,7 +647,6 @@ describe("FloatingPanel", () => {
         bubbles: true,
       }),
     )
-    const panel = screen.getByTestId("p")
     expect(panel.style.width).toBe("120px")
     expect(panel.style.height).toBe("120px")
   })
@@ -574,7 +677,7 @@ describe("FloatingPanel", () => {
     expect(panel.getAttribute("data-pinned")).toBeNull()
   })
 
-  it("pinned panel ignores header drag and hides the resize handle", () => {
+  it("pinned panel ignores header drag and hides the resize edges", () => {
     render(
       <FloatingPanel
         defaultPosition={{ x: 50, y: 50 }}
@@ -586,13 +689,14 @@ describe("FloatingPanel", () => {
           <FloatingPanelTitle>Pinned</FloatingPanelTitle>
         </FloatingPanelHeader>
         <FloatingPanelContent>x</FloatingPanelContent>
-        <FloatingPanelResizeHandle data-testid="rh" />
       </FloatingPanel>,
     )
     const panel = screen.getByTestId("p")
     expect(panel.getAttribute("data-pinned")).toBe("true")
-    // Resize handle is not rendered when pinned.
-    expect(screen.queryByTestId("rh")).toBeNull()
+    // No resize edge regions are rendered when pinned.
+    expect(
+      panel.querySelectorAll('[data-slot="floating-panel-edge"]').length,
+    ).toBe(0)
     // Header pointerdown does not start a drag — pointermove should not
     // change the position.
     const header = screen.getByTestId("header")

@@ -14,13 +14,14 @@ import { Portal } from "@primitives/portal"
 import { useFloatingPanelStore } from "./FloatingPanelProvider"
 import {
   useFloatingPanel,
+  type ResizeDirection,
   type UseFloatingPanelOptions,
 } from "./useFloatingPanel"
 import "./floating-panel.css"
 
 interface FloatingPanelContextValue {
   beginDrag: (event: PointerEvent) => void
-  beginResize: (event: PointerEvent) => void
+  beginResize: (event: PointerEvent, direction: ResizeDirection) => void
   minimized: boolean
   maximized: boolean
   pinned: boolean
@@ -29,6 +30,22 @@ interface FloatingPanelContextValue {
   togglePinned: () => void
   close: () => void
 }
+
+// Eight resize regions are rendered on every panel that isn't maximised,
+// minimised, or pinned — four edges and four corners. The cursor on each
+// region (set in CSS via [data-edge]) tells the user which way the drag
+// will grow. Corners overlap the edge ends by a few pixels so the visible
+// corner cursor wins where the user actually aims.
+const RESIZE_DIRECTIONS: readonly ResizeDirection[] = [
+  "n",
+  "e",
+  "s",
+  "w",
+  "ne",
+  "se",
+  "sw",
+  "nw",
+]
 
 const Ctx = React.createContext<FloatingPanelContextValue | null>(null)
 function useCtx(consumer: string) {
@@ -235,6 +252,23 @@ function FloatingPanelImpl({
         {...rest}
       >
         {children}
+        {!machine.maximized && !machine.minimized && !machine.pinned
+          ? RESIZE_DIRECTIONS.map((dir) => (
+              <span
+                key={dir}
+                role="presentation"
+                aria-hidden="true"
+                data-slot="floating-panel-edge"
+                data-edge={dir}
+                className="dr-floating-panel-edge"
+                onPointerDown={(event) => {
+                  if (event.defaultPrevented) return
+                  event.currentTarget.setPointerCapture?.(event.pointerId)
+                  machine.beginResize(event.nativeEvent, dir)
+                }}
+              />
+            ))
+          : null}
       </div>
     </Ctx.Provider>
   )
@@ -523,35 +557,6 @@ function FloatingPanelContent({
   )
 }
 
-type FloatingPanelResizeHandleProps =
-  React.ButtonHTMLAttributes<HTMLButtonElement>
-
-function FloatingPanelResizeHandle({
-  className,
-  onPointerDown,
-  "aria-label": ariaLabel = "Resize panel",
-  ...rest
-}: FloatingPanelResizeHandleProps) {
-  const ctx = useCtx("FloatingPanelResizeHandle")
-  // Pinned panels hide the resize handle entirely (via CSS) and ignore
-  // any stray pointerdown, so the panel can't be resized while pinned.
-  if (ctx.pinned) return null
-  return (
-    <button
-      type="button"
-      aria-label={ariaLabel}
-      className={cn("dr-floating-panel-resize", className)}
-      onPointerDown={(event) => {
-        onPointerDown?.(event)
-        if (event.defaultPrevented) return
-        event.currentTarget.setPointerCapture?.(event.pointerId)
-        ctx.beginResize(event.nativeEvent)
-      }}
-      {...rest}
-    />
-  )
-}
-
 export {
   FloatingPanel,
   FloatingPanelHeader,
@@ -562,5 +567,4 @@ export {
   FloatingPanelMaximizeTrigger,
   FloatingPanelPinTrigger,
   FloatingPanelCloseTrigger,
-  FloatingPanelResizeHandle,
 }

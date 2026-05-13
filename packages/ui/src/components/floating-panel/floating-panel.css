@@ -38,28 +38,24 @@
     border-radius: 0;
   }
 
-  /* Minimised — content + resize hide; the component skips the `height`
-     inline style while minimised so the panel naturally shrinks to its
-     header height (no !important needed to beat an inline value). */
-  .dr-floating-panel[data-minimized="true"] .dr-floating-panel-content,
-  .dr-floating-panel[data-minimized="true"] .dr-floating-panel-resize,
-  .dr-floating-panel[data-maximized="true"] .dr-floating-panel-resize {
+  /* Minimised — content hides; the component skips the `height` inline
+     style while minimised so the panel naturally shrinks to its header
+     height (no !important needed to beat an inline value). Edge resize
+     regions are skipped by the component itself when minimised, maximised,
+     or pinned — no display rule needed here. */
+  .dr-floating-panel[data-minimized="true"] .dr-floating-panel-content {
     display: none;
   }
 
-  /* Pinned — drag handle stops looking grabbable; resize handle is
-     hidden (the component also returns null from FloatingPanelResizeHandle
-     when pinned). The header keeps its bg so the panel still reads as a
-     panel; only the cursor and grip glyph signal "not draggable." */
+  /* Pinned — drag handle stops looking grabbable. The header keeps its bg
+     so the panel still reads as a panel; only the cursor and grip glyph
+     signal "not draggable." Resize edges are skipped at render time. */
   .dr-floating-panel[data-pinned="true"] .dr-floating-panel-header {
     cursor: default;
   }
   .dr-floating-panel[data-pinned="true"] .dr-floating-panel-drag-handle {
     cursor: default;
     opacity: 0.45;
-  }
-  .dr-floating-panel[data-pinned="true"] .dr-floating-panel-resize {
-    display: none;
   }
   /* Active state on the pin trigger — same accent fill as
      minimize/maximize when toggled on. */
@@ -101,16 +97,39 @@
     @apply flex-1 overflow-auto p-3;
   }
 
-  .dr-floating-panel-resize {
-    @apply text-muted-foreground absolute right-0 bottom-0 h-3 w-3 cursor-nwse-resize border-0 bg-transparent p-0;
-    background: linear-gradient(
-      135deg,
-      transparent 0,
-      transparent 6px,
-      currentColor 6px,
-      currentColor 7px,
-      transparent 7px
-    );
+  /* Border-resize regions. Eight invisible spans sit on the panel's edges
+     and corners; the cursor in each tells the user which way the drag
+     will grow. Corners overlap the adjoining edge ends so the corner
+     cursor wins in the overlap. Edge regions are 6px thick; corners are
+     14×14px. Z-index 1 keeps them above the header's drag area so the
+     very top and bottom rows of the header surface a resize cursor (this
+     mirrors how OS title bars also resize from their top edge). */
+  .dr-floating-panel-edge {
+    @apply absolute z-[1];
     touch-action: none;
+  }
+  .dr-floating-panel-edge[data-edge="n"] {
+    @apply inset-x-0 top-0 h-1.5 cursor-ns-resize;
+  }
+  .dr-floating-panel-edge[data-edge="s"] {
+    @apply inset-x-0 bottom-0 h-1.5 cursor-ns-resize;
+  }
+  .dr-floating-panel-edge[data-edge="e"] {
+    @apply inset-y-0 right-0 w-1.5 cursor-ew-resize;
+  }
+  .dr-floating-panel-edge[data-edge="w"] {
+    @apply inset-y-0 left-0 w-1.5 cursor-ew-resize;
+  }
+  .dr-floating-panel-edge[data-edge="nw"] {
+    @apply top-0 left-0 size-3.5 cursor-nwse-resize;
+  }
+  .dr-floating-panel-edge[data-edge="ne"] {
+    @apply top-0 right-0 size-3.5 cursor-nesw-resize;
+  }
+  .dr-floating-panel-edge[data-edge="sw"] {
+    @apply bottom-0 left-0 size-3.5 cursor-nesw-resize;
+  }
+  .dr-floating-panel-edge[data-edge="se"] {
+    @apply right-0 bottom-0 size-3.5 cursor-nwse-resize;
   }
 }
