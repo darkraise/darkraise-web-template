@@ -102,4 +102,20 @@ describe("Resizable", () => {
     const grip = document.querySelector(".dr-resizable-handle-grip")
     expect(grip).toBeInTheDocument()
   })
+
+  it("drag delta is computed against the panel group, not the handle itself", () => {
+    // Regression guard for the "jump on drag start" bug: the panel group,
+    // each panel, AND the handle all carry `data-panel-group-direction`, so
+    // an attribute-based `closest()` from the handle would resolve to the
+    // 1px-wide handle and turn every pixel of pointer movement into a 100%
+    // delta. Drag startup uses the `.dr-resizable-panel-group` class
+    // instead, which only the group root has.
+    render(<Basic />)
+    const handle = screen.getByRole("separator")
+    const group = handle.closest(".dr-resizable-panel-group")
+    expect(group).not.toBeNull()
+    expect(group).not.toBe(handle)
+    // The handle itself must not have the group's class.
+    expect(handle.classList.contains("dr-resizable-panel-group")).toBe(false)
+  })
 })

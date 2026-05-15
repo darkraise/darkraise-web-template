@@ -363,8 +363,13 @@ function ResizableHandle({
         onPointerDown?.(event)
         if (event.defaultPrevented) return
         if (disabled) return
+        // Target the group root specifically. Earlier this used
+        // `[data-panel-group-direction]`, but the panel group, every panel,
+        // AND this handle all carry that attribute — `closest` would match
+        // the handle itself, leaving `totalSize` ≈ 1px and turning every
+        // pixel of pointer movement into a 100% size shift.
         const root = (event.currentTarget as HTMLElement).closest(
-          "[data-panel-group-direction]",
+          ".dr-resizable-panel-group",
         ) as HTMLElement | null
         if (!root) return
         ;(event.currentTarget as HTMLElement).setPointerCapture(event.pointerId)
