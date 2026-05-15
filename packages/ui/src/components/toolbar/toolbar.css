@@ -14,4 +14,10 @@
   .dr-toolbar-separator[data-orientation="horizontal"] {
     @apply my-0.5 h-px w-5;
   }
+  /* In a vertical toolbar the horizontal separator must span the full
+     toolbar width; the base w-5 would block items-stretch from filling. */
+  .dr-toolbar[data-orientation="vertical"]
+    .dr-toolbar-separator[data-orientation="horizontal"] {
+    @apply w-auto;
+  }
 }
