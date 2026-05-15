@@ -230,7 +230,7 @@ function NavigationMenuItem({
 
   return (
     <NavigationMenuItemContext.Provider value={ctx}>
-      <li ref={ref} className={cn(className)} {...rest}>
+      <li ref={ref} className={cn("relative", className)} {...rest}>
         {children}
       </li>
     </NavigationMenuItemContext.Provider>
