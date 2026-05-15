@@ -132,10 +132,13 @@ function RatingGroup({
 
   const setHover = React.useCallback(
     (next: number | null, half: boolean = false) => {
-      if (disabled) return
+      // Read-only and disabled modes are both static — surface no hover
+      // preview at all so the painted highlight reflects the committed
+      // value only, not where the cursor is.
+      if (disabled || readOnly) return
       setHoverState({ value: next, half })
     },
-    [disabled],
+    [disabled, readOnly],
   )
 
   const commit = React.useCallback(

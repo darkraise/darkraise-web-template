@@ -147,7 +147,7 @@ describe("RatingGroup", () => {
     expect(onValueChange).toHaveBeenLastCalledWith({ value: 2 })
   })
 
-  it("blocks click commits while readOnly but still previews on hover", async () => {
+  it("blocks click commits while readOnly and shows no hover preview", async () => {
     const user = userEvent.setup()
     const onValueChange = vi.fn<(d: RatingGroupValueChangeDetails) => void>()
     render(
@@ -156,8 +156,15 @@ describe("RatingGroup", () => {
     const items = screen.getAllByRole("radio")
     await user.click(items[4])
     expect(onValueChange).not.toHaveBeenCalled()
+    // Hovering star 4 must NOT light it up — read-only is static, so the
+    // painted highlight reflects the committed value (2) only.
     fireEvent.pointerEnter(items[3])
     expect(screen.getByTestId("star-4")).toHaveAttribute(
+      "data-highlighted",
+      "false",
+    )
+    // The committed value is still painted.
+    expect(screen.getByTestId("star-2")).toHaveAttribute(
       "data-highlighted",
       "true",
     )
