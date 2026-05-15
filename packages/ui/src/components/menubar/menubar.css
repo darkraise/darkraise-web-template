@@ -4,11 +4,11 @@
   }
 
   .dr-menubar-trigger {
-    @apply focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex cursor-default items-center rounded-sm px-[var(--density-button-px)] py-[var(--density-button-py)] text-sm font-medium outline-none select-none;
+    @apply hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex cursor-pointer items-center rounded-sm px-[var(--density-button-px)] py-[var(--density-button-py)] text-sm font-medium transition-colors outline-none select-none;
   }
 
   .dr-menubar-sub-trigger {
-    @apply focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex cursor-default items-center rounded-sm px-2 py-[var(--density-row-py)] text-sm outline-none select-none;
+    @apply hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex cursor-pointer items-center rounded-sm px-2 py-[var(--density-row-py)] text-sm transition-colors outline-none select-none;
   }
 
   .dr-menubar-sub-content {
@@ -20,15 +20,15 @@
   }
 
   .dr-menubar-item {
-    @apply focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center rounded-sm px-2 py-[var(--density-row-py)] text-sm outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50;
+    @apply hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground relative flex cursor-pointer items-center rounded-sm px-2 py-[var(--density-row-py)] text-sm transition-colors outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:cursor-default data-[disabled]:opacity-50;
   }
 
   .dr-menubar-checkbox-item {
-    @apply focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center rounded-sm py-[var(--density-row-py)] pr-2 pl-8 text-sm outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50;
+    @apply hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground relative flex cursor-pointer items-center rounded-sm py-[var(--density-row-py)] pr-2 pl-8 text-sm transition-colors outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:cursor-default data-[disabled]:opacity-50;
   }
 
   .dr-menubar-radio-item {
-    @apply focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center rounded-sm py-[var(--density-row-py)] pr-2 pl-8 text-sm outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50;
+    @apply hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground relative flex cursor-pointer items-center rounded-sm py-[var(--density-row-py)] pr-2 pl-8 text-sm transition-colors outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:cursor-default data-[disabled]:opacity-50;
   }
 
   .dr-menubar-label {
