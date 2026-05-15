@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Check, ChevronDown, ChevronUp } from "lucide-react"
+import { Check, ChevronDown } from "lucide-react"
 
 import { cn } from "@lib/utils"
 import { DismissableLayer } from "@primitives/dismissable-layer"
@@ -297,44 +297,6 @@ function SelectTrigger({
   )
 }
 
-interface SelectScrollButtonProps extends React.HTMLAttributes<HTMLDivElement> {
-  ref?: React.Ref<HTMLDivElement>
-}
-
-function SelectScrollUpButton({
-  className,
-  ref,
-  ...rest
-}: SelectScrollButtonProps) {
-  return (
-    <div
-      ref={ref}
-      aria-hidden="true"
-      className={cn("dr-select-scroll-btn", className)}
-      {...rest}
-    >
-      <ChevronUp className="h-4 w-4" />
-    </div>
-  )
-}
-
-function SelectScrollDownButton({
-  className,
-  ref,
-  ...rest
-}: SelectScrollButtonProps) {
-  return (
-    <div
-      ref={ref}
-      aria-hidden="true"
-      className={cn("dr-select-scroll-btn", className)}
-      {...rest}
-    >
-      <ChevronDown className="h-4 w-4" />
-    </div>
-  )
-}
-
 interface SelectContentProps extends React.HTMLAttributes<HTMLDivElement> {
   position?: Position
   side?: Side
@@ -492,11 +454,9 @@ function SelectContentImpl({
           handleKeyDown(event)
         }}
       >
-        <SelectScrollUpButton />
         <div data-position={position} className="dr-select-viewport">
           {children}
         </div>
-        <SelectScrollDownButton />
       </div>
     </DismissableLayer>
   )
@@ -668,6 +628,4 @@ export {
   SelectLabel,
   SelectItem,
   SelectSeparator,
-  SelectScrollUpButton,
-  SelectScrollDownButton,
 }

@@ -3,12 +3,13 @@
     @apply glass border-input bg-card text-card-foreground focus-ring-input data-[placeholder]:text-muted-foreground flex w-full cursor-pointer items-center justify-between border px-[var(--density-input-px)] py-[var(--density-input-py)] text-sm disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1;
   }
 
-  .dr-select-scroll-btn {
-    @apply flex cursor-default items-center justify-center py-1;
-  }
-
   .dr-select-content {
-    @apply glass-strong bg-popover text-popover-foreground data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 relative z-50 max-h-[--radix-select-content-available-height] min-w-[8rem] origin-[--radix-select-content-transform-origin] overflow-x-hidden overflow-y-auto border;
+    /* `max-h-80` caps long lists at 20rem and lets `overflow-y: auto`
+       turn into a real scroll surface. The old `max-h-[--radix-select-
+       content-available-height]` referenced a Radix CSS var that nothing
+       in this in-house port ever set, so the constraint silently fell
+       back to "no max" and the dropdown would just grow off-screen. */
+    @apply glass-strong bg-popover text-popover-foreground data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 relative z-50 max-h-80 min-w-[8rem] overflow-x-hidden overflow-y-auto border;
   }
 
   .dr-select-content[data-position="popper"] {
