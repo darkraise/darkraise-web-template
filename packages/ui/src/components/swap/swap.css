@@ -4,8 +4,11 @@
   }
 
   .dr-swap-indicator {
-    @apply inline-flex items-center justify-center transition-opacity duration-200;
+    @apply inline-flex items-center justify-center;
     grid-area: 1 / 1;
+    transition:
+      opacity 200ms ease,
+      transform 200ms ease;
   }
 
   .dr-swap-indicator[data-active="true"] {
@@ -14,5 +17,49 @@
 
   .dr-swap-indicator[data-active="false"] {
     @apply pointer-events-none opacity-0;
+  }
+
+  /* rotate: daisyUI-style asymmetric rotation around center */
+  .dr-swap[data-animation="rotate"]
+    .dr-swap-indicator[data-state="on"][data-active="false"] {
+    transform: rotate(-45deg);
+  }
+  .dr-swap[data-animation="rotate"]
+    .dr-swap-indicator[data-state="off"][data-active="false"] {
+    transform: rotate(45deg);
+  }
+
+  /* flip: 3D rotateY card flip */
+  .dr-swap[data-animation="flip"] {
+    perspective: 200px;
+  }
+  .dr-swap[data-animation="flip"] .dr-swap-indicator {
+    backface-visibility: hidden;
+  }
+  .dr-swap[data-animation="flip"]
+    .dr-swap-indicator[data-state="on"][data-active="false"] {
+    transform: rotateY(180deg);
+  }
+  .dr-swap[data-animation="flip"]
+    .dr-swap-indicator[data-state="off"][data-active="false"] {
+    transform: rotateY(-180deg);
+  }
+
+  /* scale: zoom in from / out to half size */
+  .dr-swap[data-animation="scale"] .dr-swap-indicator[data-active="false"] {
+    transform: scale(0.5);
+  }
+
+  /* slide: vertical slide; on enters from below, off leaves up */
+  .dr-swap[data-animation="slide"] {
+    overflow: hidden;
+  }
+  .dr-swap[data-animation="slide"]
+    .dr-swap-indicator[data-state="on"][data-active="false"] {
+    transform: translateY(100%);
+  }
+  .dr-swap[data-animation="slide"]
+    .dr-swap-indicator[data-state="off"][data-active="false"] {
+    transform: translateY(-100%);
   }
 }

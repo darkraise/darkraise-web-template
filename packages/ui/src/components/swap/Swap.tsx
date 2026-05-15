@@ -17,6 +17,8 @@ function useSwapContext(part: string): SwapContextValue {
   return ctx
 }
 
+export type SwapAnimation = "fade" | "rotate" | "flip" | "scale" | "slide"
+
 export interface SwapProps extends Omit<
   React.HTMLAttributes<HTMLDivElement>,
   "onChange"
@@ -24,6 +26,11 @@ export interface SwapProps extends Omit<
   pressed?: boolean
   defaultPressed?: boolean
   onPressedChange?: (pressed: boolean) => void
+  /**
+   * Transition style applied when swapping between indicators. Defaults to
+   * `"fade"` (opacity crossfade).
+   */
+  animation?: SwapAnimation
 }
 
 function Swap({
@@ -36,6 +43,7 @@ function Swap({
   // doesn't reach the underlying <div> as an unknown DOM attribute, and don't
   // echo controlled prop changes back to the parent.
   onPressedChange,
+  animation = "fade",
   children,
   ...props
 }: SwapProps) {
@@ -50,6 +58,7 @@ function Swap({
     <div
       className={cn("dr-swap", className)}
       data-pressed={pressed ? "true" : "false"}
+      data-animation={animation}
       {...props}
     >
       <SwapContext.Provider value={ctx}>{children}</SwapContext.Provider>

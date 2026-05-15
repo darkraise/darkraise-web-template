@@ -1,6 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { Button } from "darkraise-ui/components/button"
-import { Swap, SwapIndicator } from "darkraise-ui/components/swap"
+import {
+  Swap,
+  SwapIndicator,
+  type SwapAnimation,
+} from "darkraise-ui/components/swap"
 import { Menu, Moon, Pause, Play, Sun, X } from "lucide-react"
 import { useState } from "react"
 import { ShowcaseExample } from "./_components/-showcase-example"
@@ -10,10 +14,13 @@ export const Route = createFileRoute("/_authenticated/components/swap")({
   component: SwapPage,
 })
 
+const ANIMATIONS: SwapAnimation[] = ["fade", "rotate", "flip", "scale", "slide"]
+
 function SwapPage() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [isDark, setIsDark] = useState(false)
   const [playing, setPlaying] = useState(false)
+  const [animDemo, setAnimDemo] = useState(false)
 
   return (
     <ShowcasePage
@@ -100,6 +107,45 @@ function SwapPage() {
             </SwapIndicator>
           </Swap>
         </Button>
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Transition animations"
+        code={`const animations = ["fade", "rotate", "flip", "scale", "slide"] as const
+
+<Swap pressed={pressed} animation="rotate">
+  <SwapIndicator state="on">
+    <Moon className="h-5 w-5" />
+  </SwapIndicator>
+  <SwapIndicator state="off">
+    <Sun className="h-5 w-5" />
+  </SwapIndicator>
+</Swap>`}
+      >
+        <div className="flex flex-wrap items-end gap-4">
+          {ANIMATIONS.map((anim) => (
+            <div key={anim} className="flex flex-col items-center gap-1">
+              <Button
+                variant="outline"
+                size="icon"
+                aria-label={`Toggle ${anim} animation demo`}
+                onClick={() => setAnimDemo((v) => !v)}
+              >
+                <Swap pressed={animDemo} animation={anim}>
+                  <SwapIndicator state="on">
+                    <Moon className="h-5 w-5" />
+                  </SwapIndicator>
+                  <SwapIndicator state="off">
+                    <Sun className="h-5 w-5" />
+                  </SwapIndicator>
+                </Swap>
+              </Button>
+              <span className="text-muted-foreground text-xs capitalize">
+                {anim}
+              </span>
+            </div>
+          ))}
+        </div>
       </ShowcaseExample>
     </ShowcasePage>
   )

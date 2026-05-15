@@ -96,6 +96,29 @@ describe("Swap", () => {
     expect(container.querySelectorAll(".dr-swap-indicator")).toHaveLength(2)
   })
 
+  it("defaults animation to fade and forwards the prop as data-animation", () => {
+    const { container, rerender } = render(
+      <Swap pressed>
+        <SwapIndicator state="on">on</SwapIndicator>
+        <SwapIndicator state="off">off</SwapIndicator>
+      </Swap>,
+    )
+    expect(container.querySelector(".dr-swap")).toHaveAttribute(
+      "data-animation",
+      "fade",
+    )
+    rerender(
+      <Swap pressed animation="rotate">
+        <SwapIndicator state="on">on</SwapIndicator>
+        <SwapIndicator state="off">off</SwapIndicator>
+      </Swap>,
+    )
+    expect(container.querySelector(".dr-swap")).toHaveAttribute(
+      "data-animation",
+      "rotate",
+    )
+  })
+
   it("throws if SwapIndicator is rendered outside Swap", () => {
     const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {})
     expect(() =>
