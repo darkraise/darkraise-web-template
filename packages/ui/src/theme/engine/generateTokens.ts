@@ -144,7 +144,16 @@ export function generateTokens(
 
   const isLightGlass = mode === "light" && surfaceStyle === "glassmorphism"
   const isDarkGlass = surfaceStyle === "glassmorphism" && mode === "dark"
-  const primaryShade = isLightGlass ? 600 : mode === "light" ? 500 : 400
+  // Dark non-glass picks shade 500 (same as light) rather than the brighter
+  // shade 400 it used previously. The earlier `accent[400]` value sat at
+  // L:68u201376% S:92u201395% for high-saturation pastels (blue/violet/rose),
+  // which read as glaring on every `bg-primary` surface in dark mode
+  // (default Button fill, Checkbox/Switch checked, Calendar selected day,
+  // Tabs underline, Progress track, etc.). Shade 500 keeps WCAG-fine
+  // contrast against the dark background while toning down the brightness.
+  // Glass branches stay on their original shades because translucent
+  // surfaces need the extra weight to read at all.
+  const primaryShade = isLightGlass ? 600 : isDarkGlass ? 400 : 500
   const primaryForeground = "0 0% 100%"
   const ringValue = accent[primaryShade]
   const focusRingShade = mode === "light" ? 300 : 200

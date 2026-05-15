@@ -91,7 +91,12 @@ describe("generateTokens", () => {
     }
   })
 
-  it("uses shade 500 for primary in light mode and shade 400 in dark mode", () => {
+  it("uses shade 500 for primary in both light and dark modes (non-glass)", () => {
+    // Dark mode used to brighten primary to shade 400, but that read as
+    // glaring on every `bg-primary` surface (Button default, Checkbox,
+    // Switch, Calendar selected, etc.). Both modes now share shade 500 of
+    // the active accent palette so the brand color stays calm across
+    // themes while the dark background still provides plenty of contrast.
     const light = generateTokens({
       accentColor: "blue",
       surfaceColor: "slate",
@@ -108,7 +113,7 @@ describe("generateTokens", () => {
     })
 
     expect(light["--primary"]).toBe("217 91% 60%")
-    expect(dark["--primary"]).toBe("213 94% 68%")
+    expect(dark["--primary"]).toBe("217 91% 60%")
   })
 
   it("emits --focus-ring as raw HSL channels lighter than --ring", () => {
