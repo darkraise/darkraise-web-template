@@ -25,7 +25,9 @@ beforeAll(() => {
     beginPath: vi.fn(),
     moveTo: vi.fn(),
     lineTo: vi.fn(),
+    quadraticCurveTo: vi.fn(),
     stroke: vi.fn(),
+    setTransform: vi.fn(),
     fillStyle: "",
     strokeStyle: "",
     lineWidth: 0,
@@ -60,6 +62,20 @@ describe("SignaturePad", () => {
       <SignaturePad ref={ref} width={100} height={100} data-testid="pad" />,
     )
     const canvas = screen.getByTestId("pad")
+    canvas.getBoundingClientRect = vi.fn(
+      () =>
+        ({
+          x: 0,
+          y: 0,
+          left: 0,
+          top: 0,
+          right: 100,
+          bottom: 100,
+          width: 100,
+          height: 100,
+          toJSON: () => ({}),
+        }) as DOMRect,
+    )
     canvas.dispatchEvent(
       new PointerEvent("pointerdown", {
         clientX: 10,

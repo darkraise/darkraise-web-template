@@ -1,5 +1,5 @@
 @layer components {
   .dr-signature-pad {
-    @apply border-input bg-background block touch-none rounded-md border;
+    @apply border-input bg-background text-foreground block touch-none rounded-md border;
   }
 }

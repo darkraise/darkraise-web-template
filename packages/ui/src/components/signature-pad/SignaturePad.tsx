@@ -11,7 +11,7 @@ export interface SignaturePadHandle {
 
 export interface SignaturePadProps extends Omit<
   React.CanvasHTMLAttributes<HTMLCanvasElement>,
-  "onChange"
+  "onChange" | "width" | "height"
 > {
   width: number
   height: number
@@ -24,10 +24,12 @@ export interface SignaturePadProps extends Omit<
   ref?: React.Ref<SignaturePadHandle>
 }
 
+type Point = { x: number; y: number }
+
 function SignaturePad({
   width,
   height,
-  strokeColor = "#000",
+  strokeColor,
   strokeWidth = 2,
   backgroundColor,
   onStrokeStart,
@@ -39,7 +41,8 @@ function SignaturePad({
   const canvasRef = React.useRef<HTMLCanvasElement | null>(null)
   const dirtyRef = React.useRef(false)
   const drawingRef = React.useRef(false)
-  const lastPtRef = React.useRef<{ x: number; y: number } | null>(null)
+  const lastPtRef = React.useRef<Point | null>(null)
+  const lastMidRef = React.useRef<Point | null>(null)
 
   const getCtx = () => canvasRef.current?.getContext("2d") ?? null
 
@@ -55,8 +58,17 @@ function SignaturePad({
   }, [backgroundColor, width, height])
 
   React.useEffect(() => {
+    const node = canvasRef.current
+    const ctx = getCtx()
+    if (!node || !ctx) return
+    const dpr = typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1
+    node.width = Math.round(width * dpr)
+    node.height = Math.round(height * dpr)
+    node.style.width = `${width}px`
+    node.style.height = `${height}px`
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
     paintBackground()
-  }, [paintBackground])
+  }, [width, height, paintBackground])
 
   React.useImperativeHandle(
     ref,
@@ -75,10 +87,13 @@ function SignaturePad({
     [paintBackground],
   )
 
-  const localPoint = (event: React.PointerEvent<HTMLCanvasElement>) => {
+  const localPoint = (
+    event: React.PointerEvent<HTMLCanvasElement>,
+  ): Point | null => {
     const node = canvasRef.current
     if (!node) return null
     const rect = node.getBoundingClientRect()
+    if (rect.width === 0 || rect.height === 0) return null
     return {
       x: (event.clientX - rect.left) * (width / rect.width),
       y: (event.clientY - rect.top) * (height / rect.height),
@@ -93,13 +108,12 @@ function SignaturePad({
     if (!pt) return
     drawingRef.current = true
     lastPtRef.current = pt
+    lastMidRef.current = pt
     node.setPointerCapture(event.pointerId)
     ctx.lineCap = "round"
     ctx.lineJoin = "round"
     ctx.lineWidth = strokeWidth
-    ctx.strokeStyle = strokeColor
-    ctx.beginPath()
-    ctx.moveTo(pt.x, pt.y)
+    ctx.strokeStyle = strokeColor ?? getComputedStyle(node).color
     onStrokeStart?.()
   }
 
@@ -107,16 +121,36 @@ function SignaturePad({
     if (!drawingRef.current) return
     const ctx = getCtx()
     const pt = localPoint(event)
-    if (!ctx || !pt) return
-    ctx.lineTo(pt.x, pt.y)
+    const lastPt = lastPtRef.current
+    const lastMid = lastMidRef.current
+    if (!ctx || !pt || !lastPt || !lastMid) return
+    const mid: Point = {
+      x: (lastPt.x + pt.x) / 2,
+      y: (lastPt.y + pt.y) / 2,
+    }
+    ctx.beginPath()
+    ctx.moveTo(lastMid.x, lastMid.y)
+    ctx.quadraticCurveTo(lastPt.x, lastPt.y, mid.x, mid.y)
     ctx.stroke()
     lastPtRef.current = pt
+    lastMidRef.current = mid
     dirtyRef.current = true
   }
 
   const onPointerUp = (event: React.PointerEvent<HTMLCanvasElement>) => {
     if (!drawingRef.current) return
     drawingRef.current = false
+    const ctx = getCtx()
+    const lastPt = lastPtRef.current
+    const lastMid = lastMidRef.current
+    if (ctx && lastPt && lastMid) {
+      ctx.beginPath()
+      ctx.moveTo(lastMid.x, lastMid.y)
+      ctx.lineTo(lastPt.x, lastPt.y)
+      ctx.stroke()
+    }
+    lastPtRef.current = null
+    lastMidRef.current = null
     const node = canvasRef.current
     try {
       node?.releasePointerCapture(event.pointerId)
@@ -130,8 +164,6 @@ function SignaturePad({
     <canvas
       {...rest}
       ref={canvasRef}
-      width={width}
-      height={height}
       className={cn("dr-signature-pad", className)}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}

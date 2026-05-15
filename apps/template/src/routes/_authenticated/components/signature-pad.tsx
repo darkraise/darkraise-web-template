@@ -5,6 +5,8 @@ import {
   SignaturePad,
   type SignaturePadHandle,
 } from "darkraise-ui/components/signature-pad"
+import { Slider } from "darkraise-ui/components/slider"
+import { Label } from "darkraise-ui/components/label"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
@@ -18,6 +20,7 @@ function SignaturePadPage() {
   const defaultRef = useRef<SignaturePadHandle>(null)
   const customRef = useRef<SignaturePadHandle>(null)
   const [exportedUrl, setExportedUrl] = useState<string | null>(null)
+  const [strokeWidth, setStrokeWidth] = useState(2)
 
   const handleClear = () => {
     defaultRef.current?.clear()
@@ -38,8 +41,21 @@ function SignaturePadPage() {
         title="Default"
         code={`const ref = useRef<SignaturePadHandle>(null)
 const [exportedUrl, setExportedUrl] = useState<string | null>(null)
+const [strokeWidth, setStrokeWidth] = useState(2)
 
-<SignaturePad ref={ref} width={400} height={150} />
+<SignaturePad
+  ref={ref}
+  width={400}
+  height={150}
+  strokeWidth={strokeWidth}
+/>
+<Slider
+  value={[strokeWidth]}
+  onValueChange={(v) => setStrokeWidth(v[0] ?? 2)}
+  min={1}
+  max={10}
+  step={0.5}
+/>
 <Button onClick={() => ref.current?.clear()}>Clear</Button>
 <Button onClick={() => {
   const url = ref.current?.toDataURL("image/png")
@@ -50,7 +66,25 @@ const [exportedUrl, setExportedUrl] = useState<string | null>(null)
       >
         <div className="space-y-3">
           <div className="border-border inline-block rounded-md border">
-            <SignaturePad ref={defaultRef} width={400} height={150} />
+            <SignaturePad
+              ref={defaultRef}
+              width={400}
+              height={150}
+              strokeWidth={strokeWidth}
+            />
+          </div>
+          <div className="flex max-w-md items-center gap-3">
+            <Label className="text-xs whitespace-nowrap">Stroke width</Label>
+            <Slider
+              value={[strokeWidth]}
+              onValueChange={(v) => setStrokeWidth(v[0] ?? 2)}
+              min={1}
+              max={10}
+              step={0.5}
+            />
+            <span className="text-muted-foreground w-10 text-right text-xs tabular-nums">
+              {strokeWidth.toFixed(1)}
+            </span>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" onClick={handleClear}>
