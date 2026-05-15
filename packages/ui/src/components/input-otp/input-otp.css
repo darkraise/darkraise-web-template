@@ -4,7 +4,13 @@
   }
 
   .dr-input-otp-container {
-    @apply flex items-center gap-2 has-[:disabled]:opacity-50;
+    /* `relative` anchors the absolutely-positioned hidden input to the
+       widget itself. Without it the input stretches to the nearest
+       positioned ancestor (or the viewport) and intercepts clicks across
+       the whole page — and because pointer-events stay enabled so iOS
+       one-time-code autofill keeps working, the input always wins the
+       hit-test. */
+    @apply relative flex items-center gap-2 has-[:disabled]:opacity-50;
   }
 
   .dr-input-otp-group {
@@ -19,5 +25,36 @@
     z-index: 1;
     border-color: hsl(var(--primary));
     box-shadow: 0 0 0 1px hsl(var(--primary));
+  }
+
+  /* Separate variant — each slot IS the input. Strip native input chrome so
+     the cell reads the same as the overlay variant, and use :focus instead
+     of data-active for the highlighted state (the slot owns its own focus
+     now, so there's no shared overlay input to mirror). */
+  .dr-input-otp-slot-separate {
+    @apply bg-transparent p-0 text-center font-medium outline-none;
+    /* `appearance: none` strips Safari's inner shadow + iOS rounded corners
+       so the slot border stays the visible boundary. */
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  .dr-input-otp-slot-separate:focus,
+  .dr-input-otp-slot-separate:focus-visible {
+    z-index: 1;
+    border-color: hsl(var(--primary));
+    box-shadow: 0 0 0 1px hsl(var(--primary));
+  }
+  .dr-input-otp-slot-separate:disabled {
+    @apply cursor-not-allowed opacity-50;
+  }
+
+  /* Separate variant lets each slot stand on its own — give them a small
+     gap and full per-slot rounded corners instead of the grouped pill
+     look that the overlay variant uses. */
+  .dr-input-otp-container[data-variant="separate"] .dr-input-otp-group {
+    @apply gap-2;
+  }
+  .dr-input-otp-container[data-variant="separate"] .dr-input-otp-slot {
+    @apply rounded-md border;
   }
 }

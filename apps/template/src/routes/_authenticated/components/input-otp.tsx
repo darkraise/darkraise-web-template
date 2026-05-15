@@ -69,6 +69,34 @@ function InputOTPPage() {
           </InputOTPGroup>
         </InputOTP>
       </ShowcaseExample>
+
+      <ShowcaseExample
+        title='Separate inputs (variant="separate")'
+        code={`// Each slot is its own <input maxLength={1}>. Typing auto-advances
+// to the next slot, Backspace on an empty slot jumps back, arrow keys
+// navigate, and paste fans out across slots starting at the focused one.
+<InputOTP maxLength={6} variant="separate">
+  <InputOTPGroup>
+    <InputOTPSlot index={0} />
+    <InputOTPSlot index={1} />
+    <InputOTPSlot index={2} />
+    <InputOTPSlot index={3} />
+    <InputOTPSlot index={4} />
+    <InputOTPSlot index={5} />
+  </InputOTPGroup>
+</InputOTP>`}
+      >
+        <InputOTP maxLength={6} variant="separate">
+          <InputOTPGroup>
+            <InputOTPSlot index={0} />
+            <InputOTPSlot index={1} />
+            <InputOTPSlot index={2} />
+            <InputOTPSlot index={3} />
+            <InputOTPSlot index={4} />
+            <InputOTPSlot index={5} />
+          </InputOTPGroup>
+        </InputOTP>
+      </ShowcaseExample>
     </ShowcasePage>
   )
 }
