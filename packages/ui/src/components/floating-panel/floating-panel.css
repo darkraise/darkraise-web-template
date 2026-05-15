@@ -85,7 +85,7 @@
      for the resting border, with the hover state shifting bg to `accent`
      and the text to the full foreground colour for emphasis. */
   .dr-floating-panel-trigger {
-    @apply focus-ring text-muted-foreground inline-flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-md border bg-transparent p-0 transition-colors [&_svg]:size-3.5;
+    @apply focus-ring text-muted-foreground inline-flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-md border bg-transparent p-0 transition-colors [&_svg]:size-3;
     border-color: hsl(var(--primary) / 0.5);
   }
   .dr-floating-panel-trigger:hover {
