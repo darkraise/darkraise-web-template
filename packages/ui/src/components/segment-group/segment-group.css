@@ -11,21 +11,37 @@
     @apply pointer-events-none opacity-50;
   }
 
-  .dr-segment-group-item {
-    @apply text-muted-foreground relative z-10 cursor-pointer rounded-sm px-3 py-1.5 text-sm font-medium transition-colors;
+  /* SegmentGroupItem renders a `RadioGroupItem`, which carries
+     `.dr-radio-group-item[data-size="default"]` (specificity 0,2,0) with
+     `aspect-square`, `h-4 w-4`, `rounded-full`, and `border-primary`. To
+     override those without `!important`, the segment rule has to match or
+     exceed that specificity — chaining `.dr-segment-group` parent class
+     brings us to (0,2,0) and the later source order wins. */
+  .dr-segment-group .dr-segment-group-item {
+    @apply text-muted-foreground relative z-10 inline-flex cursor-pointer items-center justify-center rounded-sm border-0 bg-transparent px-3 py-1.5 text-sm font-medium transition-colors;
+    height: auto;
+    width: auto;
+    aspect-ratio: auto;
     user-select: none;
   }
 
-  .dr-segment-group-item[data-state="checked"] {
+  .dr-segment-group .dr-segment-group-item[data-state="checked"] {
     @apply text-foreground;
   }
 
-  .dr-segment-group-item[data-disabled] {
+  .dr-segment-group .dr-segment-group-item[data-disabled] {
     @apply cursor-not-allowed opacity-50;
   }
 
   .dr-segment-group-indicator {
-    @apply bg-background absolute z-0 rounded-sm shadow-sm;
+    /* Light mode: pure white (`bg-card`) — clearly raised above the muted
+       container (`surface[100]`).
+       Dark mode: `bg-border` (`surface[700]`) — the only token in this
+       theme that's *lighter* than `bg-muted` (`surface[800]`), so the pill
+       still reads as raised instead of recessed. Using `bg-background`
+       previously gave `surface[950]` in dark mode, which inverted the
+       elevation and looked black. */
+    @apply bg-card dark:bg-border absolute z-0 rounded-sm shadow-sm;
     transition:
       transform 200ms ease-out,
       width 200ms ease-out,

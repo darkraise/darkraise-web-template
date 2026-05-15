@@ -201,8 +201,10 @@ function SegmentGroupIndicator({
   const { value, orientation, itemsRef, rootRef, notifyItemsChanged } =
     useSegmentGroupContext("SegmentGroupIndicator")
   const [rect, setRect] = React.useState<{
-    top: number
-    left: number
+    topDirect: number
+    topTransform: number
+    leftDirect: number
+    leftTransform: number
     width: number
     height: number
   } | null>(null)
@@ -220,13 +222,32 @@ function SegmentGroupIndicator({
       setRect(null)
       return
     }
-    const rootRect = root.getBoundingClientRect()
-    const itemRect = item.getBoundingClientRect()
+    // Two different reference frames are at play here:
+    //
+    // - Parallel axis (the one the indicator slides along): the indicator
+    //   uses `transform: translate` from its CSS *static position*, which
+    //   for a sibling of the items in a flex container lands at the
+    //   padding edge. To move to the item's offset, subtract the padding
+    //   (otherwise the pill is offset by the root's padding amount).
+    //
+    // - Perpendicular axis (where the indicator just lines up with the
+    //   items): the indicator uses `top:` or `left:` directly, which on
+    //   an absolutely-positioned element references the offsetParent's
+    //   PADDING BOX. With no border, padding-box top = border top, so
+    //   `top: 0` would stick the pill to the container's border edge
+    //   instead of the padding edge where the items sit. Use the raw
+    //   `offsetTop`/`offsetLeft` (which equal the padding) so direct
+    //   positioning lands on the item's edge.
+    const cs = getComputedStyle(root)
+    const paddingLeft = parseFloat(cs.paddingLeft) || 0
+    const paddingTop = parseFloat(cs.paddingTop) || 0
     setRect({
-      top: itemRect.top - rootRect.top,
-      left: itemRect.left - rootRect.left,
-      width: itemRect.width,
-      height: itemRect.height,
+      topDirect: item.offsetTop,
+      topTransform: item.offsetTop - paddingTop,
+      leftDirect: item.offsetLeft,
+      leftTransform: item.offsetLeft - paddingLeft,
+      width: item.offsetWidth,
+      height: item.offsetHeight,
     })
   }, [value, rootRef, itemsRef])
 
@@ -291,14 +312,16 @@ function SegmentGroupIndicator({
 
   if (rect) {
     if (orientation === "vertical") {
-      computedStyle.transform = `translateY(${rect.top}px)`
+      // Parallel axis: translateY uses the transform offset.
+      computedStyle.transform = `translateY(${rect.topTransform}px)`
       computedStyle.height = `${rect.height}px`
-      computedStyle.left = `${rect.left}px`
+      // Perpendicular axis: `left:` is padding-box-relative, use direct.
+      computedStyle.left = `${rect.leftDirect}px`
       computedStyle.width = `${rect.width}px`
     } else {
-      computedStyle.transform = `translateX(${rect.left}px)`
+      computedStyle.transform = `translateX(${rect.leftTransform}px)`
       computedStyle.width = `${rect.width}px`
-      computedStyle.top = `${rect.top}px`
+      computedStyle.top = `${rect.topDirect}px`
       computedStyle.height = `${rect.height}px`
     }
   } else {
