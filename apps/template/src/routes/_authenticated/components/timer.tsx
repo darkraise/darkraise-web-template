@@ -106,7 +106,7 @@ function TimerPage() {
     <TimerItem type="seconds" />
   </TimerArea>
   <TimerControl>
-    <TimerActionTrigger action="reset">Restart</TimerActionTrigger>
+    <TimerActionTrigger action="restart">Restart</TimerActionTrigger>
   </TimerControl>
 </Timer>`}
       >
@@ -120,7 +120,7 @@ function TimerPage() {
             <TimerItem type="seconds" />
           </TimerArea>
           <TimerControl>
-            <TimerActionTrigger action="reset">Restart</TimerActionTrigger>
+            <TimerActionTrigger action="restart">Restart</TimerActionTrigger>
           </TimerControl>
         </Timer>
       </ShowcaseExample>

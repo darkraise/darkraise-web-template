@@ -1,5 +1,6 @@
 import { render, screen, act } from "@testing-library/react"
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
+import { StrictMode } from "react"
 import {
   Timer,
   TimerActionTrigger,
@@ -225,6 +226,104 @@ describe("Timer", () => {
     })
     // after 1 second, display should show 04 seconds
     expect(screen.getByText("04")).toBeInTheDocument()
+  })
+
+  it("pause/resume is idempotent under StrictMode (no double-counted elapsed time)", () => {
+    // StrictMode invokes setState updater functions twice in dev so they
+    // surface side-effect-during-render bugs. Pause must not double-add
+    // elapsed time when its updater runs twice.
+    render(
+      <StrictMode>
+        <Timer interval={100}>
+          <TimerArea>
+            <TimerItem type="minutes" data-testid="minutes" />
+            <TimerSeparator>:</TimerSeparator>
+            <TimerItem type="seconds" data-testid="seconds" />
+          </TimerArea>
+          <TimerControl>
+            <TimerActionTrigger action="start">Start</TimerActionTrigger>
+            <TimerActionTrigger action="pause">Pause</TimerActionTrigger>
+            <TimerActionTrigger action="resume">Resume</TimerActionTrigger>
+            <TimerActionTrigger action="reset">Reset</TimerActionTrigger>
+          </TimerControl>
+        </Timer>
+      </StrictMode>,
+    )
+    act(() => {
+      getButton("Start").click()
+    })
+    act(() => {
+      vi.advanceTimersByTime(2_000)
+    })
+    expect(screen.getByTestId("seconds").textContent).toBe("02")
+
+    act(() => {
+      getButton("Pause").click()
+    })
+    // Display must stay at 02s after pause — ref math must not double-fire.
+    expect(screen.getByTestId("seconds").textContent).toBe("02")
+    expect(screen.getByTestId("minutes").textContent).toBe("00")
+
+    act(() => {
+      vi.advanceTimersByTime(5_000)
+    })
+    expect(screen.getByTestId("seconds").textContent).toBe("02")
+
+    act(() => {
+      getButton("Resume").click()
+    })
+    act(() => {
+      vi.advanceTimersByTime(3_000)
+    })
+    // 2s before pause + 3s after resume = 5s. Anything else means pause's
+    // ref mutation ran twice and corrupted the accumulated total.
+    expect(screen.getByTestId("seconds").textContent).toBe("05")
+    expect(screen.getByTestId("minutes").textContent).toBe("00")
+  })
+
+  it("restart resets and immediately runs again (works after completion)", () => {
+    const onComplete = vi.fn()
+    render(
+      <Timer
+        countdown
+        autoStart
+        targetMs={1_000}
+        interval={100}
+        onComplete={onComplete}
+      >
+        <TimerArea>
+          <TimerItem type="seconds" data-testid="seconds" />
+        </TimerArea>
+        <TimerControl>
+          <TimerActionTrigger action="restart">Restart</TimerActionTrigger>
+        </TimerControl>
+      </Timer>,
+    )
+
+    // Let the auto-started countdown complete.
+    act(() => {
+      vi.advanceTimersByTime(1_500)
+    })
+    expect(onComplete).toHaveBeenCalledTimes(1)
+    expect(screen.getByTestId("seconds").textContent).toBe("00")
+
+    // Click Restart — should reset to targetMs AND start running.
+    act(() => {
+      getButton("Restart").click()
+    })
+    expect(screen.getByTestId("seconds").textContent).toBe("01")
+
+    // Advance to verify it's actually ticking again.
+    act(() => {
+      vi.advanceTimersByTime(500)
+    })
+    expect(screen.getByTestId("seconds").textContent).toBe("00")
+
+    // And completes a second time.
+    act(() => {
+      vi.advanceTimersByTime(700)
+    })
+    expect(onComplete).toHaveBeenCalledTimes(2)
   })
 
   it("fires onComplete immediately when countdown autoStarts with targetMs <= 0", () => {

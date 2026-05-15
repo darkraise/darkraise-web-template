@@ -4,7 +4,7 @@ import { cn } from "@lib/utils"
 import "./timer.css"
 
 export type TimerState = "idle" | "running" | "paused" | "completed"
-export type TimerAction = "start" | "pause" | "resume" | "reset"
+export type TimerAction = "start" | "pause" | "resume" | "reset" | "restart"
 export type TimerItemType =
   | "days"
   | "hours"
@@ -63,6 +63,8 @@ function isEnabled(state: TimerState, action: TimerAction): boolean {
     case "resume":
       return state === "paused"
     case "reset":
+      return true
+    case "restart":
       return true
   }
 }
@@ -179,8 +181,14 @@ function Timer({
           return "running"
         }
         case "pause": {
-          accumulatedMsRef.current += current - startedAtMsRef.current
-          startedAtMsRef.current = 0
+          // StrictMode dev-mode invokes setState updaters twice. The math
+          // here is non-idempotent on its own (it depends on the prior
+          // `startedAtMsRef` and then zeroes it), so gate it on the ref's
+          // sentinel value: only apply when we're still mid-run.
+          if (startedAtMsRef.current !== 0) {
+            accumulatedMsRef.current += current - startedAtMsRef.current
+            startedAtMsRef.current = 0
+          }
           setNow(current)
           return "paused"
         }
@@ -195,6 +203,13 @@ function Timer({
           completedFiredRef.current = false
           setNow(current)
           return "idle"
+        }
+        case "restart": {
+          accumulatedMsRef.current = 0
+          startedAtMsRef.current = current
+          completedFiredRef.current = false
+          setNow(current)
+          return "running"
         }
       }
     })
