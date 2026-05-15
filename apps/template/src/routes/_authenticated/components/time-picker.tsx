@@ -12,6 +12,7 @@ export const Route = createFileRoute("/_authenticated/components/time-picker")({
 function TimePickerPage() {
   const [start, setStart] = useState("09:00")
   const [end, setEnd] = useState("17:00")
+  const [militaryTime, setMilitaryTime] = useState("17:30")
 
   return (
     <ShowcasePage
@@ -19,13 +20,28 @@ function TimePickerPage() {
       description="HH:MM time input. Pair with a DatePicker / Calendar when both date and time are needed."
     >
       <ShowcaseExample
-        title="Single value"
+        title="Single value (12-hour, default)"
         code={`const [time, setTime] = useState("09:00")
 
 <TimePicker value={time} onChange={setTime} />`}
       >
         <div className="max-w-xs">
           <TimePicker value={start} onChange={setStart} />
+        </div>
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="24-hour format"
+        code={`const [time, setTime] = useState("17:30")
+
+<TimePicker value={time} onChange={setTime} format="24h" />`}
+      >
+        <div className="max-w-xs">
+          <TimePicker
+            value={militaryTime}
+            onChange={setMilitaryTime}
+            format="24h"
+          />
         </div>
       </ShowcaseExample>
 

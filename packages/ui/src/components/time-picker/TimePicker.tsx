@@ -6,10 +6,17 @@ import { Popover, PopoverContent, PopoverTrigger } from "@components/popover"
 import { ScrollArea } from "@components/scroll-area"
 import "./time-picker.css"
 
+type TimePickerFormat = "12h" | "24h"
+
 interface TimePickerProps {
   value?: string
   onChange?: (value: string) => void
-  use12Hour?: boolean
+  /**
+   * Display format for the picker. `"12h"` shows an AM/PM column and a
+   * 12-hour clock; `"24h"` hides the period column and uses a 24-hour clock.
+   * Defaults to `"12h"`.
+   */
+  format?: TimePickerFormat
   minuteStep?: number
   disabled?: boolean
   placeholder?: string
@@ -109,20 +116,21 @@ function TimeColumn({
 function TimePicker({
   value = "12:00",
   onChange,
-  use12Hour = true,
+  format = "12h",
   minuteStep = 1,
   disabled = false,
   placeholder = "Select time",
   className,
 }: TimePickerProps) {
   const [open, setOpen] = useState(false)
+  const is12Hour = format === "12h"
 
   const parsed = useMemo(() => {
     const [h, m] = value.split(":").map(Number)
     const hour24 = h ?? 12
     const minute = m ?? 0
 
-    if (!use12Hour) {
+    if (!is12Hour) {
       return {
         hour: String(hour24).padStart(2, "0"),
         minute: String(minute).padStart(2, "0"),
@@ -137,17 +145,17 @@ function TimePicker({
       minute: String(minute).padStart(2, "0"),
       period,
     }
-  }, [value, use12Hour])
+  }, [value, is12Hour])
 
   const hours = useMemo(() => {
-    if (use12Hour) {
+    if (is12Hour) {
       return Array.from({ length: 12 }, (_, i) => {
         const h = i === 0 ? 12 : i
         return String(h).padStart(2, "0")
       })
     }
     return Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0"))
-  }, [use12Hour])
+  }, [is12Hour])
 
   const minutes = useMemo(
     () =>
@@ -161,21 +169,21 @@ function TimePicker({
     (hour: string, minute: string, period: string) => {
       let h = Number(hour)
       const m = Number(minute)
-      if (use12Hour) {
+      if (is12Hour) {
         if (period === "AM" && h === 12) h = 0
         else if (period === "PM" && h !== 12) h += 12
       }
       return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`
     },
-    [use12Hour],
+    [is12Hour],
   )
 
   const displayValue = useMemo(() => {
-    if (use12Hour) {
+    if (is12Hour) {
       return `${parsed.hour}:${parsed.minute} ${parsed.period}`
     }
     return `${parsed.hour}:${parsed.minute}`
-  }, [parsed, use12Hour])
+  }, [parsed, is12Hour])
 
   const handleNow = () => {
     const now = new Date()
@@ -215,7 +223,7 @@ function TimePicker({
             value={parsed.minute}
             onChange={(m) => onChange?.(to24(parsed.hour, m, parsed.period))}
           />
-          {use12Hour && (
+          {is12Hour && (
             <>
               <div className="dr-time-divider" />
               <TimeColumn
@@ -253,4 +261,4 @@ function TimePicker({
 }
 
 export { TimePicker }
-export type { TimePickerProps }
+export type { TimePickerProps, TimePickerFormat }
