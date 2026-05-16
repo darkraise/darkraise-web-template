@@ -34,6 +34,14 @@
     @apply bg-secondary text-secondary-foreground hover:bg-secondary/80;
     box-shadow: var(--shadow-button);
   }
+  /* In dark mode `--secondary` (217 33% 17%) shares the hue family of the
+   * page background. Without a border the button dissolves into the page
+   * when placed outside a card. A 1px `--border` outline keeps the shape
+   * legible at rest. Light mode keeps the borderless look — the white page
+   * gives slate-100 enough contrast on its own. */
+  [data-mode="dark"] .dr-btn[data-variant="secondary"] {
+    @apply border-border border;
+  }
 
   /* ghost: hover-only glass treatment (was .btn-ghost-glass) */
   .dr-btn[data-variant="ghost"] {
