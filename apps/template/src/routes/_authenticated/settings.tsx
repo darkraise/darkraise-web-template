@@ -98,71 +98,78 @@ function GeneralSettings() {
         e.stopPropagation()
         form.handleSubmit()
       }}
-      className="max-w-2xl space-y-8"
+      className="max-w-2xl space-y-6"
     >
-      <FormSection
-        title="Store Information"
-        description="Basic details about your store"
-      >
-        <form.Field
-          name="storeName"
-          children={(field) => (
-            <TextField
-              {...fieldProps<string>(field)}
-              label="Store Name"
-              placeholder="Your store name"
+      <Card>
+        <CardContent className="space-y-6 pt-6">
+          <FormSection
+            title="Store Information"
+            description="Basic details about your store"
+          >
+            <form.Field
+              name="storeName"
+              children={(field) => (
+                <TextField
+                  {...fieldProps<string>(field)}
+                  label="Store Name"
+                  placeholder="Your store name"
+                />
+              )}
             />
-          )}
-        />
-        <form.Field
-          name="storeDescription"
-          children={(field) => (
-            <TextareaField
-              {...fieldProps<string>(field)}
-              label="Store Description"
-              placeholder="Describe your store"
-              rows={3}
+            <form.Field
+              name="storeDescription"
+              children={(field) => (
+                <TextareaField
+                  {...fieldProps<string>(field)}
+                  label="Store Description"
+                  placeholder="Describe your store"
+                  rows={3}
+                />
+              )}
             />
-          )}
-        />
-        <form.Field
-          name="currency"
-          children={(field) => (
-            <SelectField
-              {...fieldProps<string>(field)}
-              label="Currency"
-              options={[
-                { label: "USD ($)", value: "usd" },
-                { label: "EUR (\u20ac)", value: "eur" },
-                { label: "GBP (\u00a3)", value: "gbp" },
-                { label: "CAD (C$)", value: "cad" },
-                { label: "AUD (A$)", value: "aud" },
-              ]}
+            <form.Field
+              name="currency"
+              children={(field) => (
+                <SelectField
+                  {...fieldProps<string>(field)}
+                  label="Currency"
+                  options={[
+                    { label: "USD ($)", value: "usd" },
+                    { label: "EUR (\u20ac)", value: "eur" },
+                    { label: "GBP (\u00a3)", value: "gbp" },
+                    { label: "CAD (C$)", value: "cad" },
+                    { label: "AUD (A$)", value: "aud" },
+                  ]}
+                />
+              )}
             />
-          )}
-        />
-        <form.Field
-          name="timezone"
-          children={(field) => (
-            <SelectField
-              {...fieldProps<string>(field)}
-              label="Timezone"
-              options={[
-                { label: "Eastern Time (ET)", value: "america-new_york" },
-                { label: "Central Time (CT)", value: "america-chicago" },
-                { label: "Mountain Time (MT)", value: "america-denver" },
-                { label: "Pacific Time (PT)", value: "america-los_angeles" },
-                { label: "UTC", value: "utc" },
-              ]}
+            <form.Field
+              name="timezone"
+              children={(field) => (
+                <SelectField
+                  {...fieldProps<string>(field)}
+                  label="Timezone"
+                  options={[
+                    { label: "Eastern Time (ET)", value: "america-new_york" },
+                    { label: "Central Time (CT)", value: "america-chicago" },
+                    { label: "Mountain Time (MT)", value: "america-denver" },
+                    {
+                      label: "Pacific Time (PT)",
+                      value: "america-los_angeles",
+                    },
+                    { label: "UTC", value: "utc" },
+                  ]}
+                />
+              )}
             />
-          )}
-        />
-      </FormSection>
-      <FormActions
-        submitLabel="Save Changes"
-        isSubmitting={form.state.isSubmitting}
-        canSubmit={form.state.canSubmit}
-      />
+          </FormSection>
+          <FormActions
+            submitLabel="Save Changes"
+            isSubmitting={form.state.isSubmitting}
+            canSubmit={form.state.canSubmit}
+          />
+        </CardContent>
+      </Card>
     </form>
   )
 }
@@ -190,69 +197,73 @@ function NotificationSettings() {
         e.stopPropagation()
         form.handleSubmit()
       }}
-      className="max-w-2xl space-y-8"
+      className="max-w-2xl space-y-6"
     >
-      <FormSection
-        title="Email Preferences"
-        description="Control what emails you receive"
-      >
-        <form.Field
-          name="emailNotifications"
-          children={(field) => (
-            <SwitchField
-              {...fieldProps<boolean>(field)}
-              label="Email Notifications"
-              description="Receive email notifications for important events"
+      <Card>
+        <CardContent className="space-y-8 pt-6">
+          <FormSection
+            title="Email Preferences"
+            description="Control what emails you receive"
+          >
+            <form.Field
+              name="emailNotifications"
+              children={(field) => (
+                <SwitchField
+                  {...fieldProps<boolean>(field)}
+                  label="Email Notifications"
+                  description="Receive email notifications for important events"
+                />
+              )}
             />
-          )}
-        />
-        <form.Field
-          name="orderAlerts"
-          children={(field) => (
-            <SwitchField
-              {...fieldProps<boolean>(field)}
-              label="Order Alerts"
-              description="Get notified when new orders are placed"
+            <form.Field
+              name="orderAlerts"
+              children={(field) => (
+                <SwitchField
+                  {...fieldProps<boolean>(field)}
+                  label="Order Alerts"
+                  description="Get notified when new orders are placed"
+                />
+              )}
             />
-          )}
-        />
-        <form.Field
-          name="marketingEmails"
-          children={(field) => (
-            <CheckboxField
-              {...fieldProps<boolean>(field)}
-              label="Marketing Emails"
-              description="Receive promotional emails and product updates"
+            <form.Field
+              name="marketingEmails"
+              children={(field) => (
+                <CheckboxField
+                  {...fieldProps<boolean>(field)}
+                  label="Marketing Emails"
+                  description="Receive promotional emails and product updates"
+                />
+              )}
             />
-          )}
-        />
-      </FormSection>
+          </FormSection>
 
-      <FormSection
-        title="Frequency"
-        description="How often you want to receive notifications"
-      >
-        <form.Field
-          name="notificationFrequency"
-          children={(field) => (
-            <RadioGroupField
-              {...fieldProps<string>(field)}
-              label="Notification Frequency"
-              options={[
-                { label: "Instant", value: "instant" },
-                { label: "Daily digest", value: "daily" },
-                { label: "Weekly summary", value: "weekly" },
-              ]}
+          <FormSection
+            title="Frequency"
+            description="How often you want to receive notifications"
+          >
+            <form.Field
+              name="notificationFrequency"
+              children={(field) => (
+                <RadioGroupField
+                  {...fieldProps<string>(field)}
+                  label="Notification Frequency"
+                  options={[
+                    { label: "Instant", value: "instant" },
+                    { label: "Daily digest", value: "daily" },
+                    { label: "Weekly summary", value: "weekly" },
+                  ]}
+                />
+              )}
             />
-          )}
-        />
-      </FormSection>
+          </FormSection>
 
-      <FormActions
-        submitLabel="Save Preferences"
-        isSubmitting={form.state.isSubmitting}
-        canSubmit={form.state.canSubmit}
-      />
+          <FormActions
+            submitLabel="Save Preferences"
+            isSubmitting={form.state.isSubmitting}
+            canSubmit={form.state.canSubmit}
+          />
+        </CardContent>
+      </Card>
     </form>
   )
 }
