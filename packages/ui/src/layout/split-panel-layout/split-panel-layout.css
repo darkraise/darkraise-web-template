@@ -8,7 +8,11 @@
   }
 
   .dr-split-panel-layout-aside {
-    @apply border-border flex-shrink-0 overflow-y-auto border-r;
+    /* `bg-card` lifts the panel one tier above the page background so the
+     * list and the reading pane read as two distinct surfaces, especially
+     * in dark mode where the page and an untreated aside would otherwise
+     * sit at the same near-black lightness. */
+    @apply bg-card border-border flex-shrink-0 overflow-y-auto border-r;
   }
 
   .dr-split-panel-layout-handle {
