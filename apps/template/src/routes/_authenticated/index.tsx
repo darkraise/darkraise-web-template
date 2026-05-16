@@ -36,7 +36,7 @@ const revenueConfig = {
 } satisfies ChartConfig
 
 const topProductsConfig = {
-  count: { label: "Count", color: "var(--chart-2)" },
+  count: { label: "Count", color: "var(--chart-1)" },
 } satisfies ChartConfig
 
 function DashboardPage() {
