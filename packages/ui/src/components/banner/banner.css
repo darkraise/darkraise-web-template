@@ -9,10 +9,11 @@
   }
 
   /* Tinted variants follow Alert's --alert-accent pattern: one var per
-   * variant drives bg, border, and icon. Body text stays on --foreground
-   * because the --{variant}-foreground tokens are tuned for *solid* fills,
-   * and reading dark-slate text against a 10% tint kills the variant signal
-   * in light mode and becomes unreadable on dark surfaces. */
+   * variant drives the wash, the frame, the left rail, the icon, and (in
+   * dark mode) the content text. Destructive must share this shape — UI
+   * convention requires every severity band to read parallel; the danger
+   * signal comes from the saturated 4px left rail and accent icon, not
+   * from a solid red fill. */
   .dr-banner[data-variant="info"] {
     --banner-accent: var(--info);
   }
@@ -25,18 +26,45 @@
   .dr-banner[data-variant="destructive"] {
     --banner-accent: var(--destructive);
   }
+  /* All four severity variants share the same shape: a 4px left rail at
+   * full accent saturation (Alert's convention), a 1px frame at low alpha
+   * on the remaining sides, and a faint accent wash. The thick saturated
+   * left bar is what gives destructive its red — and warning its amber,
+   * success its green, info its blue — without flooding the banner with
+   * the variant colour. */
   .dr-banner[data-variant="info"],
   .dr-banner[data-variant="success"],
   .dr-banner[data-variant="warning"],
   .dr-banner[data-variant="destructive"] {
-    @apply text-foreground;
-    background-color: hsl(var(--banner-accent) / 0.1);
+    @apply text-foreground border-l-4;
+    background-color: hsl(var(--banner-accent) / 0.12);
     border-color: hsl(var(--banner-accent) / 0.3);
+    border-left-color: hsl(var(--banner-accent));
   }
   .dr-banner[data-variant="info"] .dr-banner-icon,
   .dr-banner[data-variant="success"] .dr-banner-icon,
   .dr-banner[data-variant="warning"] .dr-banner-icon,
   .dr-banner[data-variant="destructive"] .dr-banner-icon {
+    color: hsl(var(--banner-accent));
+  }
+
+  /* Dark-mode emphasis: dark page background needs more signal than the
+   * 12% wash provides, so lift the bg + (non-left) border alpha. Content
+   * text picks up the accent colour because the dark accent tokens are
+   * already tuned brighter (e.g. info: 213 94% 68%, success: 158 64% 52%)
+   * and read cleanly on the lifted wash. */
+  [data-mode="dark"] .dr-banner[data-variant="info"],
+  [data-mode="dark"] .dr-banner[data-variant="success"],
+  [data-mode="dark"] .dr-banner[data-variant="warning"],
+  [data-mode="dark"] .dr-banner[data-variant="destructive"] {
+    background-color: hsl(var(--banner-accent) / 0.18);
+    border-color: hsl(var(--banner-accent) / 0.55);
+    border-left-color: hsl(var(--banner-accent));
+  }
+  [data-mode="dark"] .dr-banner[data-variant="info"] .dr-banner-content,
+  [data-mode="dark"] .dr-banner[data-variant="success"] .dr-banner-content,
+  [data-mode="dark"] .dr-banner[data-variant="warning"] .dr-banner-content,
+  [data-mode="dark"] .dr-banner[data-variant="destructive"] .dr-banner-content {
     color: hsl(var(--banner-accent));
   }
 
