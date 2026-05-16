@@ -25,11 +25,18 @@
   }
 
   .dr-sidebar-nav-link[data-collapsed="true"] {
+    /* Keep the base symmetric `p-[var(--density-row-py)]`. Combined with
+     * `w-[var(--density-cell)]` and `min-h-[var(--density-cell)]`, this
+     * keeps icon-only items perfectly square at every density level. */
     @apply mx-auto w-[var(--density-cell)] justify-center;
   }
 
   .dr-sidebar-nav-link:not([data-collapsed="true"]) {
-    @apply w-full;
+    /* Expanded rows breathe more vertically than dense table rows do — the
+     * +2px lift on the Y padding (X still tracks density) gives the icon +
+     * label + optional badge enough room without disturbing the collapsed
+     * square. */
+    @apply w-full py-[calc(var(--density-row-py)+0.125rem)];
   }
 
   .dr-sidebar-nav-link[data-depth="nested"] {
@@ -53,6 +60,8 @@
   }
 
   .dr-sidebar-nav-popover-trigger {
+    /* Icon-only popover trigger keeps symmetric `p-[var(--density-row-py)]`
+     * so it stays square — same reasoning as the collapsed nav link. */
     @apply mx-auto flex min-h-[var(--density-cell)] w-[var(--density-cell)] cursor-pointer items-center justify-center gap-3 rounded-md p-[var(--density-row-py)] transition-colors duration-150;
   }
 
@@ -65,7 +74,7 @@
   }
 
   .dr-sidebar-nav-collapsible-trigger {
-    @apply flex min-h-[var(--density-cell)] w-full cursor-pointer items-center gap-3 rounded-md p-[var(--density-row-py)] text-sm transition-colors duration-150;
+    @apply flex min-h-[var(--density-cell)] w-full cursor-pointer items-center gap-3 rounded-md px-[var(--density-row-py)] py-[calc(var(--density-row-py)+0.125rem)] text-sm transition-colors duration-150;
   }
 
   .dr-sidebar-nav-collapsible-chevron {
@@ -94,10 +103,22 @@
     color: hsl(var(--sidebar-foreground-hover));
   }
 
+  /* Active uses the same fill so a hovered active link still reads as
+   * active, but adds an inset left-edge primary bar, a primary icon glyph,
+   * and a bolder label so it stays distinguishable from a hovered idle
+   * item. Without this, hover and active are visually identical and a
+   * cursor parked on any link makes that link look like the current page. */
   .dr-sidebar-nav-item.active,
   .dr-sidebar-nav-item[data-status="active"] {
     background-color: hsl(var(--sidebar-hover-bg));
     color: hsl(var(--sidebar-foreground-hover));
+    font-weight: 600;
+    box-shadow: inset 3px 0 0 0 hsl(var(--primary));
+  }
+
+  .dr-sidebar-nav-item.active .dr-sidebar-nav-icon-svg,
+  .dr-sidebar-nav-item[data-status="active"] .dr-sidebar-nav-icon-svg {
+    color: hsl(var(--primary));
   }
 
   .dr-sidebar-popover-child {
