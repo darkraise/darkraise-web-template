@@ -17,11 +17,22 @@ interface SearchCommandProps {
 }
 
 // Detect Mac so the keyboard shortcut hint matches the actual modifier.
-// Falls back to Ctrl on the server / unknown platforms where navigator
-// is unavailable or doesn't expose a recognizable platform string.
-const isMac =
-  typeof navigator !== "undefined" &&
-  /(Mac|iPhone|iPad|iPod)/i.test(navigator.platform || "")
+// `navigator.platform` is deprecated and returns "" in modern Chrome; prefer
+// `userAgentData.platform`, then a userAgent regex, then the legacy
+// `platform` string as a last resort. Falls back to Ctrl on the server or
+// when no platform can be identified.
+const detectMac = (): boolean => {
+  if (typeof navigator === "undefined") return false
+  const uaData = (
+    navigator as Navigator & { userAgentData?: { platform?: string } }
+  ).userAgentData
+  if (uaData?.platform) return /mac/i.test(uaData.platform)
+  if (typeof navigator.userAgent === "string") {
+    if (/(Mac|iPhone|iPad|iPod)/i.test(navigator.userAgent)) return true
+  }
+  return /(Mac|iPhone|iPad|iPod)/i.test(navigator.platform || "")
+}
+const isMac = detectMac()
 const SHORTCUT_LABEL = isMac ? "⌘K" : "Ctrl K"
 
 export function SearchCommand({ navItems = [] }: SearchCommandProps) {

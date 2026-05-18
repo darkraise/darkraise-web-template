@@ -3,11 +3,31 @@ import type { HotkeyEntry } from "./hotkeyRegistry"
 import { registerHotkey, unregisterHotkey } from "./hotkeyRegistry"
 import { useSyncedRef } from "./useSyncedRef"
 
-const MOD_KEY: "meta" | "control" =
-  typeof navigator !== "undefined" &&
-  navigator.platform.toLowerCase().includes("mac")
-    ? "meta"
-    : "control"
+// `navigator.platform` is deprecated and returns "" in some contexts
+// (including Electron and certain WebView2 builds). Prefer the modern
+// `userAgentData.platform` when available, then a userAgent regex, and
+// fall back to the legacy platform string only as a last resort.
+let cachedModKey: "meta" | "control" | null = null
+const getModKey = (): "meta" | "control" => {
+  if (cachedModKey !== null) return cachedModKey
+  if (typeof navigator === "undefined") {
+    cachedModKey = "control"
+    return cachedModKey
+  }
+  const uaData = (
+    navigator as Navigator & { userAgentData?: { platform?: string } }
+  ).userAgentData
+  const platform =
+    uaData?.platform ||
+    (typeof navigator.userAgent === "string" &&
+    /Mac|iPhone|iPad|iPod/i.test(navigator.userAgent)
+      ? "macOS"
+      : "") ||
+    navigator.platform ||
+    ""
+  cachedModKey = platform.toLowerCase().includes("mac") ? "meta" : "control"
+  return cachedModKey
+}
 
 export type UseHotkeyOptions = {
   description: string
@@ -68,11 +88,11 @@ function matches(e: KeyboardEvent, combo: string): boolean {
   if (!matchesKey) return false
   const expectMod = expectedMods.has("mod")
   const expectCtrl =
-    expectedMods.has("ctrl") || (expectMod && MOD_KEY === "control")
+    expectedMods.has("ctrl") || (expectMod && getModKey() === "control")
   const expectMeta =
     expectedMods.has("meta") ||
     expectedMods.has("cmd") ||
-    (expectMod && MOD_KEY === "meta")
+    (expectMod && getModKey() === "meta")
   const expectShift = expectedMods.has("shift")
   const expectAlt = expectedMods.has("alt") || expectedMods.has("option")
   return (
