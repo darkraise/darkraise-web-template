@@ -30,5 +30,11 @@ export default defineConfig({
   dts: true,
   sourcemap: true,
   clean: true,
-  external: ["react", "react-dom", "react/jsx-runtime", "tailwindcss"],
+  external: [
+    "react",
+    "react-dom",
+    "react/jsx-runtime",
+    "tailwindcss",
+    "recharts",
+  ],
 })

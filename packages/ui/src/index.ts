@@ -13,7 +13,10 @@ export * from "./components/calendar"
 export * from "./components/card"
 export * from "./components/carousel"
 export * from "./components/cascade-select"
-export * from "./components/chart"
+// `./components/chart` is intentionally not re-exported from the root barrel.
+// `recharts` is an optional peer dependency; importing the chart bundle from
+// the root would force every consumer to resolve recharts even if they only
+// use Button. Consumers reach Chart via `darkraise-ui/components/chart`.
 export * from "./components/checkbox"
 export * from "./components/clipboard"
 export * from "./components/collapsible"
