@@ -28,7 +28,11 @@ export function StackedLayout({
   const activeGroupIndex = nav.findIndex((group) =>
     group.items.some((item) => isPathMatch(item.href)),
   )
-  const activeGroup = nav[activeGroupIndex >= 0 ? activeGroupIndex : 0]
+  // When the current route does not match any nav group, don't fall back
+  // to nav[0] — that surfaces the first group's items in the sub-nav
+  // panel and marks its rail icon as active, which lies to the user
+  // about where they are. Render nothing instead.
+  const activeGroup = activeGroupIndex >= 0 ? nav[activeGroupIndex] : undefined
 
   return (
     <TooltipProvider delayDuration={0}>
