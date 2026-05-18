@@ -36,12 +36,14 @@
   .dr-json-toolbar-match-count {
     @apply text-muted-foreground text-xs whitespace-nowrap tabular-nums;
   }
-  .dr-json-toolbar-clear,
-  .dr-json-toolbar-action {
-    height: 1.75rem !important;
-    width: 1.75rem !important;
-    min-width: 0 !important;
-    padding: 0 !important;
+  /* Compound selector beats `.dr-btn[data-size="icon"]` on source order
+   * (json-tree-view.css is imported after button.css). */
+  .dr-json-toolbar .dr-json-toolbar-clear,
+  .dr-json-toolbar .dr-json-toolbar-action {
+    height: 1.75rem;
+    width: 1.75rem;
+    min-width: 0;
+    padding: 0;
     border-radius: calc(var(--radius-button) - 2px);
   }
   .dr-json-toolbar-divider {
@@ -151,11 +153,11 @@
   .dr-json-row-actions {
     @apply ml-auto inline-flex items-center gap-0.5 opacity-0 transition-opacity;
   }
-  .dr-json-row-action {
-    height: 1.25rem !important;
-    width: 1.25rem !important;
-    min-width: 0 !important;
-    padding: 0 !important;
+  .dr-json-row-actions .dr-json-row-action {
+    height: 1.25rem;
+    width: 1.25rem;
+    min-width: 0;
+    padding: 0;
   }
   .dr-json-row-action[data-state="copied"] {
     @apply text-success;

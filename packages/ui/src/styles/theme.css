@@ -522,6 +522,14 @@
   --card-elevation-high:
     0 48px 72px -10px rgb(0 0 0 / 0.45), 0 20px 36px -6px rgb(0 0 0 / 0.28);
   --shadow-button: 0 0 transparent;
+
+  /* Default elevation-current so `<Card elevation="auto">` and other
+     consumers reading `var(--elevation-current)` resolve to a real shadow
+     when no `[data-elevation]` attribute is set on any ancestor. Themes
+     that opt into the axis override this via the `[data-elevation="..."]`
+     selectors below. Mirrors the medium-equivalent ramp that the same root
+     `--elevation-medium` defines. */
+  --elevation-current: var(--elevation-medium);
 }
 
 [data-density="compact"] {
@@ -562,6 +570,7 @@
   --elevation-low: 0 0 transparent;
   --elevation-medium: 0 0 transparent;
   --elevation-high: 0 0 transparent;
+  --elevation-current: 0 0 transparent;
 }
 
 [data-elevation="low"] {
@@ -612,6 +621,7 @@
   --elevation-low: 0 0 transparent;
   --elevation-medium: 0 0 transparent;
   --elevation-high: 0 0 transparent;
+  --elevation-current: 0 0 transparent;
 }
 
 [data-mode="dark"][data-elevation="low"] {
@@ -619,6 +629,7 @@
   --elevation-low: 0 1px 2px 0 rgb(0 0 0 / 0.4);
   --elevation-medium: 0 4px 10px -1px rgb(0 0 0 / 0.55);
   --elevation-high: 0 12px 24px -4px rgb(0 0 0 / 0.65);
+  --elevation-current: var(--elevation-low);
 }
 
 [data-mode="dark"][data-elevation="high"] {
@@ -628,6 +639,7 @@
     0 14px 32px -3px rgb(0 0 0 / 0.75), 0 5px 12px -2px rgb(0 0 0 / 0.55);
   --elevation-high:
     0 48px 72px -10px rgb(0 0 0 / 0.9), 0 20px 36px -6px rgb(0 0 0 / 0.6);
+  --elevation-current: var(--elevation-high);
 }
 
 /* Button shadow ramp — intentionally independent from the --elevation-*
