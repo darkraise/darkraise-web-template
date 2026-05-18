@@ -280,16 +280,28 @@ function DropdownMenuContentImpl({
     onCloseAutoFocusRef.current = onCloseAutoFocus
   })
 
+  // Track the live trigger reference in a ref so the unmount cleanup
+  // restores focus to whatever element is the trigger *at close time*,
+  // not the one captured when this effect first ran. Without this,
+  // dynamic triggers (conditionally rendered, virtualized lists) leave a
+  // stale, possibly-detached node in closure — `.focus()` on a detached
+  // element is a silent no-op.
+  const referenceRef = React.useRef(ctx.reference)
+  React.useEffect(() => {
+    referenceRef.current = ctx.reference
+  })
+
   React.useEffect(() => {
     return () => {
       const event = new Event("closeAutoFocus", { cancelable: true })
       onCloseAutoFocusRef.current?.(event)
       if (event.defaultPrevented) return
-      const ref = ctx.reference
-      if (ref instanceof HTMLElement) ref.focus({ preventScroll: true })
+      const ref = referenceRef.current
+      if (ref instanceof HTMLElement && ref.isConnected) {
+        ref.focus({ preventScroll: true })
+      }
     }
     // We only want this on unmount of the *content* element. Empty deps suffice.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {

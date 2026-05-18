@@ -186,6 +186,10 @@ function PopoverContentImpl({
 
   const onOpenAutoFocusHandler = useEventLike(onOpenAutoFocus)
   const onCloseAutoFocusHandler = useEventLike(onCloseAutoFocus)
+  const onCloseAutoFocusRef = React.useRef(onCloseAutoFocusHandler)
+  React.useEffect(() => {
+    onCloseAutoFocusRef.current = onCloseAutoFocusHandler
+  })
 
   // open auto focus
   React.useEffect(() => {
@@ -198,13 +202,15 @@ function PopoverContentImpl({
     })
   }, [ctx.open, onOpenAutoFocusHandler])
 
-  // close auto focus
+  // close auto focus — read the latest handler from a ref so the cleanup
+  // only fires on actual unmount, not whenever the caller re-renders with
+  // an inline arrow that gives `onCloseAutoFocus` a new identity.
   React.useEffect(() => {
     return () => {
       const event = new Event("closeAutoFocus", { cancelable: true })
-      onCloseAutoFocusHandler?.(event)
+      onCloseAutoFocusRef.current?.(event)
     }
-  }, [onCloseAutoFocusHandler])
+  }, [])
 
   useFocusTrap(localRef, {
     disabled: !ctx.open || !ctx.modal,
