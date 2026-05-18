@@ -99,8 +99,10 @@ export function DataTablePagination<TData>({
                 variant="outline"
                 size="icon"
                 className="dr-data-table-pagination-nav-btn"
-                onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-                disabled={!table.getCanNextPage()}
+                onClick={() =>
+                  table.setPageIndex(Math.max(0, table.getPageCount() - 1))
+                }
+                disabled={!table.getCanNextPage() || table.getPageCount() === 0}
               >
                 <ChevronsRight className="h-4 w-4" />
               </Button>
