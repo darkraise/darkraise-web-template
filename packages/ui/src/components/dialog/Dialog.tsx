@@ -155,8 +155,8 @@ function DialogContentImpl({
 
   React.useEffect(() => {
     if (!ctx.modal || !ctx.open) return
-    lockScroll()
-    return () => unlockScroll()
+    const token = lockScroll()
+    return () => unlockScroll(token)
   }, [ctx.modal, ctx.open])
 
   useFocusTrap(localRef, {

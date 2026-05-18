@@ -71,6 +71,19 @@ function Drawer({
 
   const beginDrag = React.useCallback(
     (event: React.PointerEvent) => {
+      // Bail if the pointerdown originated on (or inside) an interactive
+      // child. The handle's `::before` pseudo-element expands the touch
+      // target by 10px in every direction, so a tap near — but not on —
+      // the close button can be caught here. Calling setPointerCapture on
+      // the handle redirects the resulting click to the handle per the
+      // pointer-capture spec, suppressing the button's click.
+      if (
+        event.target instanceof Element &&
+        event.target !== event.currentTarget &&
+        event.target.closest("button, a, [role='button']")
+      ) {
+        return
+      }
       const root = (event.currentTarget as HTMLElement).closest(
         "[data-drawer-content]",
       ) as HTMLElement | null
@@ -266,8 +279,8 @@ function DrawerContentImpl({
 
   React.useEffect(() => {
     if (!ctx.modal || !ctx.open) return
-    lockScroll()
-    return () => unlockScroll()
+    const token = lockScroll()
+    return () => unlockScroll(token)
   }, [ctx.modal, ctx.open])
 
   useFocusTrap(localRef, {
