@@ -22,6 +22,13 @@ export function FloatingPanelProvider({
   const [store] = React.useState<FloatingPanelStore>(() =>
     createFloatingPanelStore({ storage, persistDebounceMs }),
   )
+  // Cancel pending debounced persistence writes when the provider
+  // unmounts so timers don't fire against a torn-down storage reference.
+  React.useEffect(() => {
+    return () => {
+      store.dispose()
+    }
+  }, [store])
   return (
     <FloatingPanelStoreContext.Provider value={store}>
       {children}

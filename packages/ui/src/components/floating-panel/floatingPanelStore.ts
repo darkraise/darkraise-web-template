@@ -51,6 +51,10 @@ export interface FloatingPanelStore {
   open(id: string, componentProps?: Record<string, unknown>): void
   close(id: string): void
   toggle(id: string): void
+  /** Cancel any in-flight debounced persistence writes and drop all
+   *  listeners. Call this when the store owner unmounts so pending
+   *  timers don't fire against a torn-down storage reference. */
+  dispose(): void
 }
 
 const DEFAULT_POSITION = { x: 0, y: 0 } as const
@@ -208,6 +212,13 @@ export function createFloatingPanelStore(
       const next: AppPanelEntry = { ...existing, open: !existing.open }
       entries = { ...entries, [id]: next }
       notify()
+    },
+    dispose() {
+      for (const handle of pendingWrites.values()) {
+        clearTimeout(handle)
+      }
+      pendingWrites.clear()
+      listeners.clear()
     },
   }
 }
