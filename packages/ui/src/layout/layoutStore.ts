@@ -8,13 +8,18 @@ interface LayoutState {
 }
 
 const getStoredLayout = (): LayoutVariant => {
+  // SSR-safe: `localStorage` is undefined on the server. Returning the
+  // static default here keeps the server's first render in sync with the
+  // client's hydration render. After hydration, consumer code can call
+  // `useLayoutStore.setState({ layout: ... })` from an effect to switch.
+  if (typeof window === "undefined") return "sidebar"
   try {
     const stored = localStorage.getItem("layout-variant")
     if (stored === "sidebar" || stored === "top-nav" || stored === "stacked") {
       return stored
     }
   } catch {
-    // localStorage unavailable (SSR or private browsing)
+    // localStorage unavailable (private browsing, sandboxed iframe).
   }
   return "sidebar"
 }

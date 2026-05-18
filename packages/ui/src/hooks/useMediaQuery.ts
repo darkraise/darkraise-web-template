@@ -78,13 +78,15 @@ export function useMediaQuery(
 
   const [state, setState] = useState<boolean | undefined>(() => {
     if (initializeWithValue) {
-      let entry = queriesMap.get(query)
-      if (!entry) {
-        entry = createQueryEntry(query)
-        queriesMap.set(query, entry)
-      }
-
-      return entry.mql.matches
+      // Snapshot the current match value synchronously without attaching a
+      // listener here. The effect below calls `querySubscribe`, which
+      // creates the queriesMap entry and registers the global `change`
+      // listener exactly once per query. Registering inside this
+      // initializer would leak a listener (and a queriesMap entry without
+      // a dispatcher) if the component unmounts before the effect runs —
+      // e.g. under Concurrent rendering or Suspense bailouts.
+      const existing = queriesMap.get(query)
+      return existing ? existing.mql.matches : matchMedia(query).matches
     }
   })
 

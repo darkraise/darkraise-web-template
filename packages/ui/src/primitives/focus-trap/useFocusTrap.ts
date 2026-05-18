@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useSyncedRef } from "@hooks/useSyncedRef"
 import { getTabbables } from "./tabbable"
 
 export interface UseFocusTrapOptions {
@@ -22,6 +23,15 @@ export function useFocusTrap(
     restoreFocus = true,
   } = options
 
+  // Stash live values for `loop`, `initialFocus`, and `restoreFocus` so
+  // the activation effect can read the latest without re-running.
+  // Re-running the effect on those changes would re-snapshot
+  // `previousActive` and re-steal focus mid-session, breaking the
+  // restore-focus contract when the modal stays open across renders.
+  const initialFocusRef = useSyncedRef(initialFocus)
+  const loopRef = useSyncedRef(loop)
+  const restoreFocusRef = useSyncedRef(restoreFocus)
+
   React.useEffect(() => {
     if (disabled) return
     const container = containerRef.current
@@ -32,9 +42,9 @@ export function useFocusTrap(
 
     const focusFirst = () => {
       const initial =
-        typeof initialFocus === "function"
-          ? initialFocus()
-          : (initialFocus?.current ?? null)
+        typeof initialFocusRef.current === "function"
+          ? initialFocusRef.current()
+          : (initialFocusRef.current?.current ?? null)
       if (initial && container.contains(initial)) {
         initial.focus()
         return
@@ -56,12 +66,12 @@ export function useFocusTrap(
       const last = tabbables[tabbables.length - 1]
       const active = document.activeElement as HTMLElement | null
       if (event.shiftKey && active === first) {
-        if (loop) {
+        if (loopRef.current) {
           event.preventDefault()
           last?.focus()
         }
       } else if (!event.shiftKey && active === last) {
-        if (loop) {
+        if (loopRef.current) {
           event.preventDefault()
           first?.focus()
         }
@@ -72,9 +82,13 @@ export function useFocusTrap(
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown, true)
-      if (restoreFocus && previousActive && document.contains(previousActive)) {
+      if (
+        restoreFocusRef.current &&
+        previousActive &&
+        document.contains(previousActive)
+      ) {
         previousActive.focus()
       }
     }
-  }, [containerRef, loop, disabled, initialFocus, restoreFocus])
+  }, [containerRef, disabled])
 }

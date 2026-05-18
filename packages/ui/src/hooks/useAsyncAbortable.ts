@@ -1,6 +1,7 @@
 import { useMemo, useRef } from "react"
 import type { AsyncState, UseAsyncActions, UseAsyncMeta } from "./useAsync"
 import { useAsync } from "./useAsync"
+import { useSyncedRef } from "./useSyncedRef"
 
 export type UseAsyncAbortableActions<
   Result,
@@ -48,6 +49,12 @@ export function useAsyncAbortable<Result, Args extends unknown[] = unknown[]>(
   UseAsyncAbortableMeta<Result, Args>,
 ] {
   const abortController = useRef<AbortController>(undefined)
+  // Sync the caller's `asyncFn` into a ref so each invocation uses the
+  // latest version. Without this, `useAsync` captures `fn` once (via its
+  // own internal ref) at first render and never picks up later prop
+  // changes to `asyncFn`. Callers passing inline async functions would
+  // otherwise see the first render's closure invoked forever.
+  const asyncFnRef = useSyncedRef(asyncFn)
 
   const fn = async (...args: Args): Promise<Result> => {
     abortController.current?.abort()
@@ -55,7 +62,7 @@ export function useAsyncAbortable<Result, Args extends unknown[] = unknown[]>(
     const ac = new AbortController()
     abortController.current = ac
 
-    return asyncFn(ac.signal, ...args).finally(() => {
+    return asyncFnRef.current(ac.signal, ...args).finally(() => {
       if (abortController.current === ac) {
         abortController.current = undefined
       }
