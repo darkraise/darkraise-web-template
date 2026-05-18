@@ -39,6 +39,8 @@ export function NumberField({
   precision,
   formatOptions,
   locale,
+  disabled,
+  readOnly,
 }: NumberFieldProps) {
   return (
     <FieldWrapper
@@ -48,7 +50,7 @@ export function NumberField({
       isInvalid={isInvalid}
       errors={errors}
     >
-      {(invalid) => (
+      {(invalid, ariaDescribedBy) => (
         <NumberInput
           value={value ?? Number.NaN}
           onValueChange={(d) =>
@@ -65,6 +67,8 @@ export function NumberField({
           precision={precision}
           formatOptions={formatOptions}
           locale={locale}
+          disabled={disabled}
+          readOnly={readOnly}
         >
           <NumberInputControl>
             <NumberInputField
@@ -72,6 +76,7 @@ export function NumberField({
               placeholder={placeholder}
               onBlur={onBlur}
               aria-invalid={invalid}
+              aria-describedby={ariaDescribedBy}
             />
             <NumberInputTriggerGroup>
               <NumberInputIncrementTrigger />

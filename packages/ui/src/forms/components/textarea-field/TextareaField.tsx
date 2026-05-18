@@ -20,6 +20,8 @@ export function TextareaField({
   description,
   placeholder,
   rows = 3,
+  disabled,
+  readOnly,
 }: TextareaFieldProps) {
   return (
     <FieldWrapper
@@ -29,7 +31,7 @@ export function TextareaField({
       isInvalid={isInvalid}
       errors={errors}
     >
-      {(invalid) => (
+      {(invalid, ariaDescribedBy) => (
         <Textarea
           id={name}
           placeholder={placeholder}
@@ -38,6 +40,9 @@ export function TextareaField({
           onBlur={onBlur}
           onChange={(e) => onChange(e.target.value)}
           aria-invalid={invalid}
+          aria-describedby={ariaDescribedBy}
+          disabled={disabled}
+          readOnly={readOnly}
         />
       )}
     </FieldWrapper>

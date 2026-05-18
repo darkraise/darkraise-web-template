@@ -15,7 +15,13 @@ interface FieldWrapperProps extends Omit<
   description?: string
   isInvalid?: boolean
   errors?: Array<{ message?: string } | undefined>
-  children: (isInvalid: boolean) => ReactNode
+  // Second positional argument is the composed `aria-describedby` value
+  // for the control. Existing adapters that only consume the first arg
+  // keep working — JavaScript ignores extra args.
+  children: (
+    isInvalid: boolean,
+    ariaDescribedBy: string | undefined,
+  ) => ReactNode
 }
 
 export function FieldWrapper({
@@ -27,12 +33,18 @@ export function FieldWrapper({
   children,
   ...fieldProps
 }: FieldWrapperProps) {
+  const descriptionId = description ? `${name}-description` : undefined
+  const errorId = isInvalid ? `${name}-error` : undefined
+  const ariaDescribedBy =
+    [descriptionId, errorId].filter(Boolean).join(" ") || undefined
   return (
     <Field data-invalid={isInvalid} {...fieldProps}>
       <FieldLabel htmlFor={name}>{label}</FieldLabel>
-      {description && <FieldDescription>{description}</FieldDescription>}
-      {children(isInvalid)}
-      {isInvalid && <FieldError errors={errors} />}
+      {description && (
+        <FieldDescription id={descriptionId}>{description}</FieldDescription>
+      )}
+      {children(isInvalid, ariaDescribedBy)}
+      {isInvalid && <FieldError id={errorId} errors={errors} />}
     </Field>
   )
 }

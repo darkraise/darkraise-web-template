@@ -7,6 +7,8 @@ export interface FieldPrimitiveProps<T> {
   onBlur?: () => void
   isInvalid?: boolean
   errors?: Array<{ message?: string } | undefined>
+  disabled?: boolean
+  readOnly?: boolean
 }
 
 export interface FormSectionProps {

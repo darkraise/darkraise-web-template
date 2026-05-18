@@ -19,6 +19,7 @@ export function RadioGroupField({
   label,
   description,
   options,
+  disabled,
 }: RadioGroupFieldProps) {
   return (
     <FieldWrapper
@@ -28,10 +29,11 @@ export function RadioGroupField({
       isInvalid={isInvalid}
       errors={errors}
     >
-      {(invalid) => (
+      {(invalid, ariaDescribedBy) => (
         <RadioGroup
           value={value}
           onValueChange={onChange}
+          disabled={disabled}
           onBlur={(event) => {
             // Only fire onBlur when focus leaves the group entirely; arrow-key
             // navigation between radio items moves focus inside the group and
@@ -43,6 +45,7 @@ export function RadioGroupField({
             }
           }}
           aria-invalid={invalid}
+          aria-describedby={ariaDescribedBy}
         >
           {options.map((opt) => (
             <div key={opt.value} className="dr-radio-group-field-option">
