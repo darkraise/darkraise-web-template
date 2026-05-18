@@ -82,6 +82,11 @@ function HoverCardTrigger({
     <Comp
       ref={composeRefs(ctx.setReference as React.Ref<HTMLAnchorElement>, ref)}
       id={ctx.triggerId}
+      // Wire `aria-describedby` only while the card is open so screen
+      // readers do not chase a not-yet-mounted node when the card is
+      // closed. Mirrors the Tooltip pattern used elsewhere in this
+      // package.
+      aria-describedby={ctx.state === "open" ? ctx.contentId : undefined}
       data-state={ctx.state}
       onPointerEnter={(event: React.PointerEvent<HTMLAnchorElement>) => {
         onPointerEnter?.(event)
@@ -172,6 +177,8 @@ function HoverCardContentImpl({
     <div
       ref={composeRefs(localRef, floating.refs.setFloating, ref)}
       id={ctx.contentId}
+      role="dialog"
+      aria-labelledby={ctx.triggerId}
       data-state={ctx.state}
       data-side={resolvedSide}
       data-align={resolvedAlign}

@@ -1,6 +1,7 @@
 import * as React from "react"
 import { Button } from "@components/button"
 import { Portal } from "@primitives/portal"
+import { useFocusTrap } from "@primitives/focus-trap"
 import { useId } from "@primitives/state"
 import { cn } from "@lib/utils"
 import "./tour.css"
@@ -42,7 +43,17 @@ function Tour({
   const popoverRef = React.useRef<HTMLDivElement | null>(null)
   const previousFocusRef = React.useRef<HTMLElement | null>(null)
   const titleId = useId()
+  const descriptionId = useId()
   const step = steps[current]
+
+  // Tour popover is modal in intent — the backdrop blocks pointer events
+  // on the page beneath, but without a focus trap a keyboard user can Tab
+  // straight out of the popover into the (visually-blocked) page chrome.
+  useFocusTrap(popoverRef, {
+    disabled: !open,
+    loop: true,
+    restoreFocus: true,
+  })
 
   React.useEffect(() => {
     if (!open || !step) return
@@ -135,6 +146,7 @@ function Tour({
         role="dialog"
         aria-modal="false"
         aria-labelledby={titleId}
+        aria-describedby={step.description ? descriptionId : undefined}
         tabIndex={-1}
         className="dr-tour-popover"
         style={popoverStyle}
@@ -143,7 +155,9 @@ function Tour({
           {step.title}
         </h3>
         {step.description ? (
-          <p className="dr-tour-description">{step.description}</p>
+          <p id={descriptionId} className="dr-tour-description">
+            {step.description}
+          </p>
         ) : null}
         <div className="dr-tour-footer">
           <span className="dr-tour-progress">

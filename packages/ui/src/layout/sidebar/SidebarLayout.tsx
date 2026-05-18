@@ -27,6 +27,7 @@ export function SidebarLayout({
         <div className="dr-sidebar-layout">
           <aside
             aria-label="Primary"
+            aria-expanded={!collapsed}
             className="dr-sidebar-layout-aside sidebar-gradient-overlay theme-transition bg-surface-sidebar"
             data-collapsed={collapsed ? "true" : undefined}
           >

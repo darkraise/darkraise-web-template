@@ -437,6 +437,7 @@ function SelectContentImpl({
         )}
         role="listbox"
         id={ctx.contentId}
+        aria-labelledby={ctx.triggerId}
         data-state={ctx.open ? "open" : "closed"}
         data-side={resolvedSide}
         data-position={position}
