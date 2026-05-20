@@ -1,6 +1,6 @@
 @layer components {
   .dr-floating-panel {
-    @apply bg-popover text-popover-foreground border-border flex flex-col overflow-hidden rounded-md border shadow-lg;
+    @apply bg-popover text-popover-foreground border-border flex flex-col overflow-hidden rounded-md border shadow-[var(--elevation-medium)];
     /* Default: parent-scoped. Switched to `fixed` for global scope below.
        Spelled out as a literal declaration (not `@apply absolute`) so the
        overriding rule beats it without any Tailwind layer/cascade quirks.

@@ -4,7 +4,7 @@
   }
 
   .dr-multi-select-control {
-    @apply bg-background border-input flex min-h-9 w-full items-center gap-1 rounded-md border px-2 py-1 text-sm shadow-xs transition-colors;
+    @apply bg-background border-input flex min-h-9 w-full items-center gap-1 rounded-md border px-2 py-1 text-sm shadow-[var(--shadow-button)] transition-colors;
   }
 
   .dr-multi-select-control[data-state="open"] {

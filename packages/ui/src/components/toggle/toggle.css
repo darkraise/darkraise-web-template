@@ -22,7 +22,7 @@
   }
 
   .dr-toggle[data-variant="default"][data-state="on"] {
-    @apply bg-primary text-primary-foreground shadow-sm;
+    @apply bg-primary text-primary-foreground shadow-[var(--shadow-button)];
   }
 
   .dr-toggle[data-variant="default"][data-state="on"]:hover {

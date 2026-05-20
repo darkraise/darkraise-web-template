@@ -14,7 +14,7 @@
    * action group. Bordered card surface with subtle shadow; inner
    * elements are flush so the whole bar reads as one control. */
   .dr-json-toolbar {
-    @apply bg-card flex items-center gap-1 rounded-md border px-1.5 py-1 font-sans text-sm shadow-sm;
+    @apply bg-card flex items-center gap-1 rounded-md border px-1.5 py-1 font-sans text-sm shadow-[var(--card-elevation-low)];
     border-color: hsl(var(--border));
   }
   .dr-json-toolbar:focus-within {

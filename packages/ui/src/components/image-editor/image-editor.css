@@ -16,7 +16,7 @@
    * header bar. Use ImageEditorPanel as a wrapper around tool sections to
    * get the title + icon + action layout for a consistent sidebar look. */
   .dr-image-editor-panel {
-    @apply bg-card overflow-hidden rounded-md border shadow-sm;
+    @apply bg-card overflow-hidden rounded-md border shadow-[var(--card-elevation-low)];
     border-color: hsl(var(--border));
   }
   .dr-image-editor-panel-header {
@@ -91,7 +91,7 @@
    * icon-only tool buttons. Each tool button is a square; the active
    * tool gets a primary fill and the others sit transparent until hover. */
   .dr-image-editor-tools {
-    @apply inline-flex items-center gap-0.5 rounded-md border p-1 shadow-sm;
+    @apply inline-flex items-center gap-0.5 rounded-md border p-1 shadow-[var(--card-elevation-low)];
     border-color: hsl(var(--border));
     background: hsl(var(--card));
   }
@@ -167,7 +167,7 @@
    * left (a row of square icon toggles), separator, then colour swatch,
    * width slider, and finally the clear button on the right. */
   .dr-image-editor-annotation-toolbar {
-    @apply flex flex-wrap items-center gap-1.5 rounded-md border p-1 shadow-sm;
+    @apply flex flex-wrap items-center gap-1.5 rounded-md border p-1 shadow-[var(--card-elevation-low)];
     border-color: hsl(var(--border));
     background: hsl(var(--card));
   }

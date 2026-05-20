@@ -18,7 +18,7 @@
      `position: relative`), so the panel anchors directly under its trigger
      instead of floating to the nav root's origin. */
   .dr-navigation-menu-content {
-    @apply glass-strong bg-popover text-popover-foreground data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=open]:slide-in-from-top-2 data-[state=closed]:slide-out-to-top-2 absolute top-full left-0 z-50 mt-1.5 min-w-[8rem] rounded-md border shadow-md outline-none;
+    @apply glass-strong bg-popover text-popover-foreground data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=open]:slide-in-from-top-2 data-[state=closed]:slide-out-to-top-2 absolute top-full left-0 z-50 mt-1.5 min-w-[8rem] rounded-md border outline-none;
   }
 
   /* Viewport machinery is kept for back-compat — it's a no-op visual when
@@ -38,6 +38,6 @@
   }
 
   .dr-navigation-menu-indicator-arrow {
-    @apply bg-border relative top-[60%] h-2 w-2 rotate-45 rounded-tl-sm shadow-md;
+    @apply bg-border relative top-[60%] h-2 w-2 rotate-45 rounded-tl-sm;
   }
 }

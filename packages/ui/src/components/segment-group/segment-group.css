@@ -41,7 +41,7 @@
        still reads as raised instead of recessed. Using `bg-background`
        previously gave `surface[950]` in dark mode, which inverted the
        elevation and looked black. */
-    @apply bg-card dark:bg-border absolute z-0 rounded-sm shadow-sm;
+    @apply bg-card dark:bg-border absolute z-0 rounded-sm shadow-[var(--shadow-button)];
     transition:
       transform 200ms ease-out,
       width 200ms ease-out,
