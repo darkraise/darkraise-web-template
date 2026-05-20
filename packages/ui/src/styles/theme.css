@@ -436,29 +436,74 @@
      3/2/2/1% to 4/3/3/2%) so picking a saturated surfaceColor in
      dark+gradient produces a more legible color shift. Light-mode
      blobs in the [data-mode="light"] block stay at their original
-     intensities. */
+     intensities.
+
+     All peak/mid percentages multiply by --canvas-blob-scale so the
+     `backgroundIntensity` axis (subtle/balanced/vivid) can dial the
+     blob loudness in one place. Default 1 = balanced. */
+  --canvas-blob-scale: 1;
   --canvas-blob-a: radial-gradient(
     1400px 900px at 10% -5%,
-    color-mix(in oklab, var(--sf-hue) 10%, transparent) 0%,
-    color-mix(in oklab, var(--sf-hue) 4%, transparent) 55%,
+    color-mix(
+        in oklab,
+        var(--sf-hue) calc(10% * var(--canvas-blob-scale)),
+        transparent
+      )
+      0%,
+    color-mix(
+        in oklab,
+        var(--sf-hue) calc(4% * var(--canvas-blob-scale)),
+        transparent
+      )
+      55%,
     transparent 100%
   );
   --canvas-blob-b: radial-gradient(
     1100px 800px at 100% 15%,
-    color-mix(in oklab, var(--sf-hue-2) 8%, transparent) 0%,
-    color-mix(in oklab, var(--sf-hue-2) 3%, transparent) 55%,
+    color-mix(
+        in oklab,
+        var(--sf-hue-2) calc(8% * var(--canvas-blob-scale)),
+        transparent
+      )
+      0%,
+    color-mix(
+        in oklab,
+        var(--sf-hue-2) calc(3% * var(--canvas-blob-scale)),
+        transparent
+      )
+      55%,
     transparent 100%
   );
   --canvas-blob-c: radial-gradient(
     1200px 900px at 55% 95%,
-    color-mix(in oklab, var(--sf-hue-3) 6%, transparent) 0%,
-    color-mix(in oklab, var(--sf-hue-3) 3%, transparent) 55%,
+    color-mix(
+        in oklab,
+        var(--sf-hue-3) calc(6% * var(--canvas-blob-scale)),
+        transparent
+      )
+      0%,
+    color-mix(
+        in oklab,
+        var(--sf-hue-3) calc(3% * var(--canvas-blob-scale)),
+        transparent
+      )
+      55%,
     transparent 100%
   );
   --canvas-blob-d: radial-gradient(
     900px 700px at 35% 55%,
-    color-mix(in oklab, var(--sf-hue-2) 5%, transparent) 0%,
-    color-mix(in oklab, var(--sf-hue-2) 2%, transparent) 55%,
+    color-mix(
+        in oklab,
+        var(--sf-hue-2) calc(5% * var(--canvas-blob-scale)),
+        transparent
+      )
+      0%,
+    color-mix(
+        in oklab,
+        var(--sf-hue-2) calc(2% * var(--canvas-blob-scale)),
+        transparent
+      )
+      55%,
     transparent 100%
   );
   /* Gradient-mode floor/ceiling. Both wire to --background so the page
@@ -711,29 +756,86 @@
   --radius-button: 9999px;
 }
 
+/* Background intensity axis — scales the blob recipes via --canvas-blob-scale.
+   Only meaningful when [data-background-style="gradient"] is also set (the
+   selector below the @layer base block gates the actual gradient overlay).
+   Default 1 = balanced; 0.5 = subtle; 1.5 = vivid. */
+[data-background-intensity="subtle"] {
+  --canvas-blob-scale: 0.5;
+}
+[data-background-intensity="balanced"] {
+  --canvas-blob-scale: 1;
+}
+[data-background-intensity="vivid"] {
+  --canvas-blob-scale: 1.5;
+}
+
 [data-mode="light"] {
+  /* Light-mode blob recipes; same --canvas-blob-scale mechanism as
+     the dark defaults so the backgroundIntensity axis affects both
+     modes through one knob. */
   --canvas-blob-a: radial-gradient(
     1400px 900px at 10% -5%,
-    color-mix(in oklab, var(--sf-hue) 16%, transparent) 0%,
-    color-mix(in oklab, var(--sf-hue) 7%, transparent) 55%,
+    color-mix(
+        in oklab,
+        var(--sf-hue) calc(16% * var(--canvas-blob-scale)),
+        transparent
+      )
+      0%,
+    color-mix(
+        in oklab,
+        var(--sf-hue) calc(7% * var(--canvas-blob-scale)),
+        transparent
+      )
+      55%,
     transparent 100%
   );
   --canvas-blob-b: radial-gradient(
     1100px 800px at 100% 15%,
-    color-mix(in oklab, var(--sf-hue-2) 12%, transparent) 0%,
-    color-mix(in oklab, var(--sf-hue-2) 5%, transparent) 55%,
+    color-mix(
+        in oklab,
+        var(--sf-hue-2) calc(12% * var(--canvas-blob-scale)),
+        transparent
+      )
+      0%,
+    color-mix(
+        in oklab,
+        var(--sf-hue-2) calc(5% * var(--canvas-blob-scale)),
+        transparent
+      )
+      55%,
     transparent 100%
   );
   --canvas-blob-c: radial-gradient(
     1200px 900px at 55% 95%,
-    color-mix(in oklab, var(--sf-hue-3) 9%, transparent) 0%,
-    color-mix(in oklab, var(--sf-hue-3) 4%, transparent) 55%,
+    color-mix(
+        in oklab,
+        var(--sf-hue-3) calc(9% * var(--canvas-blob-scale)),
+        transparent
+      )
+      0%,
+    color-mix(
+        in oklab,
+        var(--sf-hue-3) calc(4% * var(--canvas-blob-scale)),
+        transparent
+      )
+      55%,
     transparent 100%
   );
   --canvas-blob-d: radial-gradient(
     900px 700px at 35% 55%,
-    color-mix(in oklab, var(--sf-hue-2) 7%, transparent) 0%,
-    color-mix(in oklab, var(--sf-hue-2) 3%, transparent) 55%,
+    color-mix(
+        in oklab,
+        var(--sf-hue-2) calc(7% * var(--canvas-blob-scale)),
+        transparent
+      )
+      0%,
+    color-mix(
+        in oklab,
+        var(--sf-hue-2) calc(3% * var(--canvas-blob-scale)),
+        transparent
+      )
+      55%,
     transparent 100%
   );
   /* Light-mode floor/ceiling. Floor is the page background; ceiling

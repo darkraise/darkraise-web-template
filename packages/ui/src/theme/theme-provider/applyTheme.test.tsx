@@ -165,4 +165,34 @@ describe("ThemeProvider preset orchestration", () => {
     ).toBe("medium")
     warn.mockRestore()
   })
+
+  it("writes data-background-intensity='balanced' on mount", () => {
+    renderHook(() => useTheme(), { wrapper: wrap })
+    expect(
+      document.documentElement.getAttribute("data-background-intensity"),
+    ).toBe("balanced")
+  })
+
+  it("setBackgroundIntensity updates attribute and persists", () => {
+    const { result } = renderHook(() => useTheme(), { wrapper: wrap })
+    act(() => result.current.setBackgroundIntensity("vivid"))
+    expect(
+      document.documentElement.getAttribute("data-background-intensity"),
+    ).toBe("vivid")
+    expect(localStorage.getItem("theme-bg-intensity")).toBe("vivid")
+    expect(result.current.backgroundIntensity).toBe("vivid")
+  })
+
+  it("background intensity survives provider remount via LocalStorage", () => {
+    {
+      const { result } = renderHook(() => useTheme(), { wrapper: wrap })
+      act(() => result.current.setBackgroundIntensity("subtle"))
+    }
+    // Fresh provider; should rehydrate from LocalStorage.
+    const { result } = renderHook(() => useTheme(), { wrapper: wrap })
+    expect(result.current.backgroundIntensity).toBe("subtle")
+    expect(
+      document.documentElement.getAttribute("data-background-intensity"),
+    ).toBe("subtle")
+  })
 })

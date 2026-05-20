@@ -105,4 +105,43 @@ describe("ThemeSwitcher preset section", () => {
       document.documentElement.getAttribute("data-glassmorphism-opacity"),
     ).toBe("strong")
   })
+
+  it("does NOT render Background Intensity when backgroundStyle is solid", () => {
+    render(
+      <ThemeProvider>
+        <ThemeSwitcher />
+      </ThemeProvider>,
+    )
+    openSwitcher()
+    expect(screen.queryByText("Background Intensity")).not.toBeInTheDocument()
+  })
+
+  it("renders Background Intensity when backgroundStyle is gradient", () => {
+    render(
+      <ThemeProvider>
+        <ThemeSwitcher />
+      </ThemeProvider>,
+    )
+    openSwitcher()
+    fireEvent.click(screen.getByRole("radio", { name: /gradient/i }))
+    expect(screen.getByText("Background Intensity")).toBeInTheDocument()
+    // Should default to balanced.
+    expect(
+      document.documentElement.getAttribute("data-background-intensity"),
+    ).toBe("balanced")
+  })
+
+  it("clicking a Background Intensity value updates the data attribute", () => {
+    render(
+      <ThemeProvider>
+        <ThemeSwitcher />
+      </ThemeProvider>,
+    )
+    openSwitcher()
+    fireEvent.click(screen.getByRole("radio", { name: /gradient/i }))
+    fireEvent.click(screen.getByRole("radio", { name: /^vivid$/i }))
+    expect(
+      document.documentElement.getAttribute("data-background-intensity"),
+    ).toBe("vivid")
+  })
 })

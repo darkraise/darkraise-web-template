@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import type {
   AccentColor,
   BackgroundStyle,
+  BackgroundIntensity,
   SurfaceColor,
   Density,
   Elevation,
@@ -13,7 +14,13 @@ import type {
   ThemeSettings,
   ThemeSyncStatus,
 } from "@theme/types"
-import { SURFACE_COLORS, DENSITIES, ELEVATIONS, RADII } from "@theme/types"
+import {
+  SURFACE_COLORS,
+  BACKGROUND_INTENSITIES,
+  DENSITIES,
+  ELEVATIONS,
+  RADII,
+} from "@theme/types"
 import {
   generateTokens,
   resolveSurfaceScale,
@@ -38,6 +45,7 @@ const LS_PRESET = "theme-preset"
 const LS_PRESET_AXIS_PREFIX = (presetName: string, axisName: string) =>
   `theme-${presetName}-${axisName}`
 const LS_BG_STYLE = "theme-bg-style"
+const LS_BG_INTENSITY = "theme-bg-intensity"
 const LS_MODE = "mode"
 const LS_DENSITY = "theme-density"
 const LS_ELEVATION = "theme-elevation"
@@ -159,6 +167,18 @@ export function ThemeProvider({
       return (stored as BackgroundStyle) || cfg.defaults.backgroundStyle
     },
   )
+
+  const [backgroundIntensity, setBackgroundIntensityState] =
+    useState<BackgroundIntensity>(() => {
+      const stored = readStorage(LS_BG_INTENSITY)
+      if (
+        stored &&
+        (BACKGROUND_INTENSITIES as readonly string[]).includes(stored)
+      ) {
+        return stored as BackgroundIntensity
+      }
+      return cfg.defaults.backgroundIntensity
+    })
 
   const [mode, setModeState] = useState<Mode>(() => {
     const stored = readStorage(LS_MODE)
@@ -307,6 +327,7 @@ export function ThemeProvider({
       surfaceColor,
       preset,
       backgroundStyle,
+      backgroundIntensity,
       mode,
       density,
       elevation,
@@ -320,6 +341,7 @@ export function ThemeProvider({
       surfaceColor,
       preset,
       backgroundStyle,
+      backgroundIntensity,
       mode,
       density,
       elevation,
@@ -340,10 +362,14 @@ export function ThemeProvider({
       ) as PresetName
       const newAxisValues = settings.presetAxisValues ?? presetAxisValues
 
+      const newBgIntensity =
+        settings.backgroundIntensity ?? cfg.defaults.backgroundIntensity
+
       setAccentColorState(settings.accentColor)
       setSurfaceColorState(settings.surfaceColor)
       setPresetState(newPreset)
       setBackgroundStyleState(settings.backgroundStyle)
+      setBackgroundIntensityState(newBgIntensity)
       setModeState(settings.mode)
       setResolvedMode(resolved)
       setDensityState(settings.density ?? cfg.defaults.density)
@@ -358,6 +384,7 @@ export function ThemeProvider({
       writeStorage(LS_SURFACE_COLOR, settings.surfaceColor)
       writeStorage(LS_PRESET, newPreset)
       writeStorage(LS_BG_STYLE, settings.backgroundStyle)
+      writeStorage(LS_BG_INTENSITY, newBgIntensity)
       writeStorage(LS_MODE, settings.mode)
       writeStorage(LS_DENSITY, settings.density ?? cfg.defaults.density)
       writeStorage(LS_ELEVATION, settings.elevation ?? cfg.defaults.elevation)
@@ -387,6 +414,10 @@ export function ThemeProvider({
       document.documentElement.setAttribute(
         "data-radius",
         settings.radius ?? cfg.defaults.radius,
+      )
+      document.documentElement.setAttribute(
+        "data-background-intensity",
+        newBgIntensity,
       )
 
       applyTheme(
@@ -594,6 +625,22 @@ export function ThemeProvider({
     ],
   )
 
+  const setBackgroundIntensity = useCallback(
+    (intensity: BackgroundIntensity) => {
+      setBackgroundIntensityState(intensity)
+      writeStorage(LS_BG_INTENSITY, intensity)
+      document.documentElement.setAttribute(
+        "data-background-intensity",
+        intensity,
+      )
+      const settings = buildSettings({ backgroundIntensity: intensity })
+      notifyChange(settings)
+      hasUserChanged.current = true
+      debouncedSave(settings)
+    },
+    [buildSettings, notifyChange, debouncedSave],
+  )
+
   const setMode = useCallback(
     (m: Mode) => {
       const resolved = resolveMode(m)
@@ -705,7 +752,11 @@ export function ThemeProvider({
       buttonElevation,
     )
     document.documentElement.setAttribute("data-radius", radius)
-  }, [density, elevation, buttonElevation, radius])
+    document.documentElement.setAttribute(
+      "data-background-intensity",
+      backgroundIntensity,
+    )
+  }, [density, elevation, buttonElevation, radius, backgroundIntensity])
 
   useEffect(() => {
     if (mode !== "system") return
@@ -767,6 +818,7 @@ export function ThemeProvider({
       surfaceColor,
       preset,
       backgroundStyle,
+      backgroundIntensity,
       mode,
       density,
       elevation,
@@ -781,6 +833,7 @@ export function ThemeProvider({
       setSurfaceColor,
       setPreset,
       setBackgroundStyle,
+      setBackgroundIntensity,
       setMode,
       setDensity,
       setElevation,
@@ -793,6 +846,7 @@ export function ThemeProvider({
       surfaceColor,
       preset,
       backgroundStyle,
+      backgroundIntensity,
       mode,
       density,
       elevation,
@@ -806,6 +860,7 @@ export function ThemeProvider({
       setSurfaceColor,
       setPreset,
       setBackgroundStyle,
+      setBackgroundIntensity,
       setMode,
       setDensity,
       setElevation,

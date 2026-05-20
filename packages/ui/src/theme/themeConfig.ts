@@ -2,6 +2,7 @@ import type {
   AccentColor,
   SurfaceColor,
   BackgroundStyle,
+  BackgroundIntensity,
   Density,
   Elevation,
   Radius,
@@ -15,6 +16,7 @@ export interface ThemeConfig {
     surfaceColor: SurfaceColor
     preset: PresetName
     backgroundStyle: BackgroundStyle
+    backgroundIntensity: BackgroundIntensity
     mode: Mode
     density: Density
     elevation: Elevation
@@ -29,6 +31,7 @@ export interface ThemeConfig {
       surfaceColor: boolean
       preset: boolean
       backgroundStyle: boolean
+      backgroundIntensity: boolean
       density: boolean
       elevation: boolean
       buttonElevation: boolean
@@ -45,6 +48,7 @@ export const themeConfig: ThemeConfig = {
     surfaceColor: "slate",
     preset: "default",
     backgroundStyle: "solid",
+    backgroundIntensity: "balanced",
     mode: "system",
     density: "cozy",
     elevation: "medium",
@@ -59,6 +63,7 @@ export const themeConfig: ThemeConfig = {
       surfaceColor: true,
       preset: true,
       backgroundStyle: true,
+      backgroundIntensity: true,
       density: true,
       elevation: true,
       buttonElevation: true,

@@ -8,6 +8,7 @@ import { useTheme } from "@theme/useTheme"
 import {
   ACCENT_COLORS,
   SURFACE_COLORS,
+  BACKGROUND_INTENSITIES,
   DENSITIES,
   ELEVATIONS,
   RADII,
@@ -17,6 +18,7 @@ import type {
   AccentColor,
   SurfaceColor,
   BackgroundStyle,
+  BackgroundIntensity,
   Density,
   Elevation,
   Radius,
@@ -42,6 +44,7 @@ export function ThemeSwitcher() {
     surfaceColor,
     preset,
     backgroundStyle,
+    backgroundIntensity,
     mode,
     density,
     elevation,
@@ -54,6 +57,7 @@ export function ThemeSwitcher() {
     setSurfaceColor,
     setPreset,
     setBackgroundStyle,
+    setBackgroundIntensity,
     setMode,
     setDensity,
     setElevation,
@@ -115,6 +119,30 @@ export function ThemeSwitcher() {
             <ToggleGroupItem key={value} value={value}>
               <Icon className="dr-theme-switcher-row-icon" />
               {label}
+            </ToggleGroupItem>
+          ))}
+        </ToggleGroup>
+      </div>
+    ),
+    axes.backgroundIntensity && backgroundStyle === "gradient" && (
+      <div key="backgroundIntensity">
+        <Label className="dr-theme-switcher-section-label">
+          Background Intensity
+        </Label>
+        <ToggleGroup
+          type="single"
+          value={backgroundIntensity}
+          onValueChange={(value) => {
+            if (value) setBackgroundIntensity(value as BackgroundIntensity)
+          }}
+          variant="outline"
+          size="sm"
+          className="dr-theme-switcher-toggle-group"
+          data-cols={BACKGROUND_INTENSITIES.length}
+        >
+          {BACKGROUND_INTENSITIES.map((value) => (
+            <ToggleGroupItem key={value} value={value} className="capitalize">
+              {value}
             </ToggleGroupItem>
           ))}
         </ToggleGroup>

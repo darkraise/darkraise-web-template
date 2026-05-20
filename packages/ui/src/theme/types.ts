@@ -27,6 +27,9 @@ export type SurfaceColor = (typeof SURFACE_COLORS)[number]
 export const BACKGROUND_STYLES = ["solid", "gradient"] as const
 export type BackgroundStyle = (typeof BACKGROUND_STYLES)[number]
 
+export const BACKGROUND_INTENSITIES = ["subtle", "balanced", "vivid"] as const
+export type BackgroundIntensity = (typeof BACKGROUND_INTENSITIES)[number]
+
 export const DENSITIES = ["compact", "cozy", "comfortable", "spacious"] as const
 export type Density = (typeof DENSITIES)[number]
 
@@ -51,6 +54,9 @@ export interface ThemeSettings {
   surfaceColor: SurfaceColor
   preset: PresetName
   backgroundStyle: BackgroundStyle
+  /** How loud the gradient blob overlays are; only meaningful when
+   *  backgroundStyle === "gradient". Defaults to "balanced". */
+  backgroundIntensity?: BackgroundIntensity
   mode: Mode
   density?: Density
   elevation?: Elevation
@@ -72,6 +78,7 @@ export interface ThemeContextValue {
   surfaceColor: SurfaceColor
   preset: PresetName
   backgroundStyle: BackgroundStyle
+  backgroundIntensity: BackgroundIntensity
   mode: Mode
   density: Density
   elevation: Elevation
@@ -88,6 +95,7 @@ export interface ThemeContextValue {
   setSurfaceColor: (color: SurfaceColor) => void
   setPreset: (preset: PresetName) => void
   setBackgroundStyle: (style: BackgroundStyle) => void
+  setBackgroundIntensity: (intensity: BackgroundIntensity) => void
   setMode: (mode: Mode) => void
   setDensity: (density: Density) => void
   setElevation: (elevation: Elevation) => void
