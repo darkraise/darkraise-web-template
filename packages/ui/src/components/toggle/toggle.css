@@ -46,15 +46,19 @@
     @apply bg-primary/10 text-primary;
   }
 
+  /* X and Y both use --density-button-py* so padding stays symmetric and
+     tracks the density axis. The min-width via --density-cell* keeps
+     icon-only toggles square; text labels get whatever extra width the
+     content requires. */
   .dr-toggle[data-size="default"] {
-    @apply aspect-auto min-w-[var(--density-cell)] px-2.5 py-[var(--density-button-py)];
+    @apply aspect-auto min-w-[var(--density-cell)] px-[var(--density-button-py)] py-[var(--density-button-py)];
   }
 
   .dr-toggle[data-size="sm"] {
-    @apply min-w-[var(--density-cell-sm)] px-1.5 py-[var(--density-button-py-sm)];
+    @apply min-w-[var(--density-cell-sm)] px-[var(--density-button-py-sm)] py-[var(--density-button-py-sm)];
   }
 
   .dr-toggle[data-size="lg"] {
-    @apply min-w-[var(--density-cell-lg)] px-4 py-[var(--density-button-py-lg)];
+    @apply min-w-[var(--density-cell-lg)] px-[var(--density-button-py-lg)] py-[var(--density-button-py-lg)];
   }
 }
