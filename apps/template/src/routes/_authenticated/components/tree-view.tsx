@@ -120,6 +120,48 @@ function FileExplorerExample() {
   )
 }
 
+function VariantsExample() {
+  return (
+    <div className="grid gap-6 sm:grid-cols-2">
+      <div className="space-y-2">
+        <p className="text-muted-foreground text-xs font-medium">
+          variant=&quot;filled&quot; (default)
+        </p>
+        <TreeView
+          data={fileTree}
+          defaultExpanded={["src", "components"]}
+          defaultSelected={["Button.tsx"]}
+          selectionMode="single"
+        >
+          <TreeViewTree>
+            {fileTree.children?.map((node) => (
+              <TreeViewNode key={node.id} node={node} />
+            ))}
+          </TreeViewTree>
+        </TreeView>
+      </div>
+      <div className="space-y-2">
+        <p className="text-muted-foreground text-xs font-medium">
+          variant=&quot;outlined&quot;
+        </p>
+        <TreeView
+          data={fileTree}
+          variant="outlined"
+          defaultExpanded={["src", "components"]}
+          defaultSelected={["Button.tsx"]}
+          selectionMode="single"
+        >
+          <TreeViewTree>
+            {fileTree.children?.map((node) => (
+              <TreeViewNode key={node.id} node={node} />
+            ))}
+          </TreeViewTree>
+        </TreeView>
+      </div>
+    </div>
+  )
+}
+
 function MultiSelectExample() {
   const [selected, setSelected] = useState<string[]>([])
   return (
@@ -336,6 +378,19 @@ function TreeViewPage() {
 </TreeView>`}
       >
         <FileExplorerExample />
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Variants: filled vs outlined"
+        code={`<TreeView variant="filled" defaultSelected={["Button.tsx"]}>
+  {/* solid primary background on the selected row (default) */}
+</TreeView>
+
+<TreeView variant="outlined" defaultSelected={["Button.tsx"]}>
+  {/* transparent surface with a 1px primary inset ring */}
+</TreeView>`}
+      >
+        <VariantsExample />
       </ShowcaseExample>
 
       <ShowcaseExample
