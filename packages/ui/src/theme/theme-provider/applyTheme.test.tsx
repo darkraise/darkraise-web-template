@@ -165,19 +165,4 @@ describe("ThemeProvider preset orchestration", () => {
     ).toBe("medium")
     warn.mockRestore()
   })
-
-  it("migrates legacy theme-style → theme-preset on first mount", () => {
-    localStorage.setItem("theme-style", "glassmorphism")
-    renderHook(() => useTheme(), { wrapper: wrap })
-    expect(localStorage.getItem("theme-preset")).toBe("glassmorphism")
-    expect(localStorage.getItem("theme-style")).toBe(null)
-  })
-
-  it("does NOT overwrite theme-preset if both legacy and new keys exist", () => {
-    localStorage.setItem("theme-style", "default")
-    localStorage.setItem("theme-preset", "glassmorphism")
-    renderHook(() => useTheme(), { wrapper: wrap })
-    expect(localStorage.getItem("theme-preset")).toBe("glassmorphism")
-    expect(localStorage.getItem("theme-style")).toBe(null)
-  })
 })

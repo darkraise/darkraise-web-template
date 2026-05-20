@@ -431,6 +431,7 @@
   --radius: 0.5rem;
   --radius-button: 0.5rem;
   --noise-opacity: 0;
+  --cropper-grid-line: rgba(255, 255, 255, 0.5);
   --canvas-blob-a: radial-gradient(
     1400px 900px at 10% -5%,
     color-mix(in oklab, var(--sf-hue) 8%, transparent) 0%,
@@ -606,6 +607,7 @@
    the plain single-attribute selectors above. */
 
 [data-mode="dark"] {
+  --cropper-grid-line: rgba(255, 255, 255, 0.45);
   --elevation-low: 0 2px 4px 0 rgb(0 0 0 / 0.5);
   --elevation-medium:
     0 8px 20px -2px rgb(0 0 0 / 0.65), 0 3px 8px -1px rgb(0 0 0 / 0.5);

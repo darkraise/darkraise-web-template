@@ -6,7 +6,6 @@ import type {
   Elevation,
   Radius,
   Mode,
-  SurfaceStyle,
 } from "./types"
 import type { PresetName } from "./presets"
 
@@ -15,8 +14,6 @@ export interface ThemeConfig {
     accentColor: AccentColor
     surfaceColor: SurfaceColor
     preset: PresetName
-    /** @deprecated use `preset`. Read by the migration shim. */
-    surfaceStyle?: SurfaceStyle
     backgroundStyle: BackgroundStyle
     mode: Mode
     density: Density
@@ -31,8 +28,6 @@ export interface ThemeConfig {
       accentColor: boolean
       surfaceColor: boolean
       preset: boolean
-      /** @deprecated use `preset`. */
-      surfaceStyle?: boolean
       backgroundStyle: boolean
       density: boolean
       elevation: boolean

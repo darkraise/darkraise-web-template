@@ -92,7 +92,7 @@
   .dr-image-cropper-grid::after {
     content: "";
     position: absolute;
-    background: rgba(255, 255, 255, 0.5);
+    background: var(--cropper-grid-line);
   }
   .dr-image-cropper-grid[data-axis="horizontal"]::before,
   .dr-image-cropper-grid[data-axis="horizontal"]::after {

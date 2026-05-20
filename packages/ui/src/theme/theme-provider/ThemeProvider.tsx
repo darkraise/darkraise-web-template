@@ -31,7 +31,6 @@ declare const process: { env: { NODE_ENV?: string } }
 
 const LS_ACCENT = "theme-accent"
 const LS_SURFACE_COLOR = "theme-surface-color"
-const LS_STYLE = "theme-style"
 const LS_PRESET = "theme-preset"
 const LS_PRESET_AXIS_PREFIX = (presetName: string, axisName: string) =>
   `theme-${presetName}-${axisName}`
@@ -110,30 +109,7 @@ export function ThemeProvider({
 }: ThemeProviderProps) {
   const cfg = config ?? themeConfig
 
-  // Dev-only warning for legacy themeConfig keys.
-  useEffect(() => {
-    if (process.env.NODE_ENV === "production") return
-    const legacyDefault = (cfg.defaults as { surfaceStyle?: string })
-      .surfaceStyle
-    const legacyAxis = (cfg.switcher.axes as { surfaceStyle?: boolean })
-      .surfaceStyle
-    if (legacyDefault !== undefined) {
-      console.warn(
-        "[ThemeProvider] themeConfig.defaults.surfaceStyle is deprecated; use `preset` instead.",
-      )
-    }
-    if (legacyAxis !== undefined) {
-      console.warn(
-        "[ThemeProvider] themeConfig.switcher.axes.surfaceStyle is deprecated; use `preset` instead.",
-      )
-    }
-  }, [cfg])
-
-  const legacyConfigDefault = (cfg.defaults as { surfaceStyle?: PresetName })
-    .surfaceStyle
-  const cfgDefaultPreset = (cfg.defaults.preset ??
-    legacyConfigDefault ??
-    "default") as PresetName
+  const cfgDefaultPreset = cfg.defaults.preset
 
   const [accentColor, setAccentColorState] = useState<AccentColor>(() => {
     const stored = readStorage(LS_ACCENT)
@@ -149,19 +125,6 @@ export function ThemeProvider({
   })
 
   const [preset, setPresetState] = useState<PresetName>(() => {
-    const legacy = readStorage(LS_STYLE)
-    const current = readStorage(LS_PRESET)
-    // One-shot migration: copy theme-style → theme-preset if missing.
-    if (legacy !== null && current === null) {
-      writeStorage(LS_PRESET, legacy)
-    }
-    if (legacy !== null) {
-      try {
-        globalThis.localStorage.removeItem(LS_STYLE)
-      } catch {
-        // ignore
-      }
-    }
     const stored = readStorage(LS_PRESET)
     if (stored && (PRESET_NAMES as readonly string[]).includes(stored)) {
       return stored as PresetName
@@ -370,13 +333,7 @@ export function ThemeProvider({
   const applySettings = useCallback(
     (settings: ThemeSettings) => {
       const resolved = resolveMode(settings.mode)
-      // Read preset; fall back to legacy surfaceStyle for migration.
-      // Guard: if the resolved name isn't registered (e.g. "glassmorphism"
-      // before Phase 3 lands), fall back to the config default rather than
-      // crashing with `presets[name].axes` undefined.
-      const rawPreset = (settings.preset ??
-        settings.surfaceStyle ??
-        cfgDefaultPreset) as string
+      const rawPreset = (settings.preset ?? cfgDefaultPreset) as string
       const newPreset = (
         (PRESET_NAMES as readonly string[]).includes(rawPreset)
           ? rawPreset
@@ -810,7 +767,6 @@ export function ThemeProvider({
       accentColor,
       surfaceColor,
       preset,
-      surfaceStyle: preset, // legacy alias
       backgroundStyle,
       mode,
       density,
@@ -825,7 +781,6 @@ export function ThemeProvider({
       setAccentColor,
       setSurfaceColor,
       setPreset,
-      setSurfaceStyle: setPreset, // legacy alias
       setBackgroundStyle,
       setMode,
       setDensity,

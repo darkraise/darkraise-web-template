@@ -24,11 +24,6 @@ export type AccentColor = (typeof ACCENT_COLORS)[number]
 export const SURFACE_COLORS = ["slate", ...ACCENT_COLORS] as const
 export type SurfaceColor = (typeof SURFACE_COLORS)[number]
 
-/** @deprecated use preset names from `@theme/presets`. */
-export const SURFACE_STYLES = ["default", "glassmorphism"] as const
-/** @deprecated use `PresetName` from `@theme/presets`. */
-export type SurfaceStyle = (typeof SURFACE_STYLES)[number]
-
 export const BACKGROUND_STYLES = ["solid", "gradient"] as const
 export type BackgroundStyle = (typeof BACKGROUND_STYLES)[number]
 
@@ -51,38 +46,10 @@ export type ColorScale = Record<
   string
 >
 
-/** @deprecated use `PresetSurfaceRecipe` from `@theme/presets`. */
-export interface SurfaceStyleRecipe {
-  name: SurfaceStyle
-  label: string
-  description: string
-  tokens: {
-    surfaceRaised: (scale: ColorScale, mode: ResolvedMode) => string
-    surfaceOverlay: (scale: ColorScale, mode: ResolvedMode) => string
-    surfaceSunken: (scale: ColorScale, mode: ResolvedMode) => string
-    surfaceSidebar: (scale: ColorScale, mode: ResolvedMode) => string
-    surfaceHeader: (scale: ColorScale, mode: ResolvedMode) => string
-    borderSubtle: (scale: ColorScale, mode: ResolvedMode) => string
-    borderDefault: (scale: ColorScale, mode: ResolvedMode) => string
-  }
-  overrides: {
-    radius: string
-    shadowCard: string
-    shadowDropdown: string
-    backdropBlur: string
-    surfaceOpacity: string
-    foreground?: (scale: ColorScale, mode: ResolvedMode) => string
-    border?: (scale: ColorScale, mode: ResolvedMode) => string
-    input?: (scale: ColorScale, mode: ResolvedMode) => string
-  }
-}
-
 export interface ThemeSettings {
   accentColor: AccentColor
   surfaceColor: SurfaceColor
   preset: PresetName
-  /** @deprecated use `preset`. Read by the migration shim in ThemeProvider. */
-  surfaceStyle?: SurfaceStyle
   backgroundStyle: BackgroundStyle
   mode: Mode
   density?: Density
@@ -104,8 +71,6 @@ export interface ThemeContextValue {
   accentColor: AccentColor
   surfaceColor: SurfaceColor
   preset: PresetName
-  /** @deprecated use `preset`. */
-  surfaceStyle: PresetName
   backgroundStyle: BackgroundStyle
   mode: Mode
   density: Density
@@ -122,8 +87,6 @@ export interface ThemeContextValue {
   setAccentColor: (color: AccentColor) => void
   setSurfaceColor: (color: SurfaceColor) => void
   setPreset: (preset: PresetName) => void
-  /** @deprecated use `setPreset`. */
-  setSurfaceStyle: (style: PresetName) => void
   setBackgroundStyle: (style: BackgroundStyle) => void
   setMode: (mode: Mode) => void
   setDensity: (density: Density) => void

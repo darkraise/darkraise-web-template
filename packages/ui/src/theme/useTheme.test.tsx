@@ -53,7 +53,7 @@ describe("useTheme", () => {
     const { result } = renderHook(() => useTheme(), { wrapper })
     expect(result.current.accentColor).toBe("blue")
     expect(result.current.surfaceColor).toBe("slate")
-    expect(result.current.surfaceStyle).toBe("default")
+    expect(result.current.preset).toBe("default")
     expect(result.current.mode).toBe("system")
   })
 
@@ -69,7 +69,6 @@ describe("useTheme", () => {
     const { result } = renderHook(() => useTheme(), { wrapper })
     act(() => result.current.setPreset("glassmorphism"))
     expect(result.current.preset).toBe("glassmorphism")
-    expect(result.current.surfaceStyle).toBe("glassmorphism")
     expect(localStorage.getItem("theme-preset")).toBe("glassmorphism")
   })
 
@@ -94,11 +93,10 @@ describe("useTheme", () => {
     }).toThrow("useTheme must be used within a ThemeProvider")
   })
 
-  // Re-enabled in Phase 3 with the glass preset registered
-  it("reads persisted values from localStorage on mount and migrates theme-style", () => {
+  it("reads persisted values from localStorage on mount", () => {
     storageMock.setItem("theme-accent", "emerald")
     storageMock.setItem("theme-surface-color", "teal")
-    storageMock.setItem("theme-style", "glassmorphism")
+    storageMock.setItem("theme-preset", "glassmorphism")
     storageMock.setItem("mode", "dark")
 
     const { result } = renderHook(() => useTheme(), { wrapper })
@@ -106,9 +104,6 @@ describe("useTheme", () => {
     expect(result.current.surfaceColor).toBe("teal")
     expect(result.current.preset).toBe("glassmorphism")
     expect(result.current.mode).toBe("dark")
-    // Migration shim: legacy key deleted, new key written.
-    expect(localStorage.getItem("theme-style")).toBe(null)
-    expect(localStorage.getItem("theme-preset")).toBe("glassmorphism")
   })
 
   it("setSurfaceColor updates surfaceColor and persists to localStorage", () => {
@@ -217,7 +212,7 @@ describe("useTheme persistence", () => {
     expect(adapter.load).toHaveBeenCalledOnce()
     expect(result.current.accentColor).toBe("rose")
     expect(result.current.surfaceColor).toBe("emerald")
-    expect(result.current.surfaceStyle).toBe("glassmorphism")
+    expect(result.current.preset).toBe("glassmorphism")
     expect(result.current.backgroundStyle).toBe("gradient")
     expect(result.current.mode).toBe("dark")
     expect(result.current.density).toBe("spacious")

@@ -1,48 +1,69 @@
 import { describe, it, expect } from "vitest"
 import { defaultPreset } from "./default"
-import { surfaceStyles } from "@theme/styles/surfaceStyles"
 import { surfaceColors } from "@theme/palettes/surfaceColors"
-import type { ColorScale, ResolvedMode } from "@theme/types"
+import type { ColorScale } from "@theme/types"
 
 describe("defaultPreset.surfaceRecipe", () => {
   const slate = surfaceColors.slate as ColorScale
-  const modes: ResolvedMode[] = ["light", "dark"]
-  const tokens = [
-    "surfaceRaised",
-    "surfaceOverlay",
-    "surfaceSunken",
-    "surfaceSidebar",
-    "surfaceHeader",
-    "borderSubtle",
-    "borderDefault",
-  ] as const
 
-  it.each(modes)("%s: matches surfaceStyles.default output exactly", (mode) => {
-    for (const token of tokens) {
-      const newValue = defaultPreset.surfaceRecipe[token](slate, mode)
-      const legacyValue = surfaceStyles.default.tokens[token](slate, mode)
-      expect(newValue, `${token} (${mode})`).toBe(legacyValue)
-    }
+  it("light mode: surface tokens", () => {
+    expect(defaultPreset.surfaceRecipe.surfaceRaised(slate, "light")).toBe(
+      "0 0% 100%",
+    )
+    expect(defaultPreset.surfaceRecipe.surfaceOverlay(slate, "light")).toBe(
+      "0 0% 100%",
+    )
+    expect(defaultPreset.surfaceRecipe.surfaceSunken(slate, "light")).toBe(
+      slate[100],
+    )
+    expect(defaultPreset.surfaceRecipe.surfaceSidebar(slate, "light")).toBe(
+      slate[50],
+    )
+    expect(defaultPreset.surfaceRecipe.surfaceHeader(slate, "light")).toBe(
+      "0 0% 100%",
+    )
+    expect(defaultPreset.surfaceRecipe.borderSubtle(slate, "light")).toBe(
+      slate[100],
+    )
+    expect(defaultPreset.surfaceRecipe.borderDefault(slate, "light")).toBe(
+      slate[200],
+    )
   })
 
-  it("overrides match the legacy default", () => {
-    expect(defaultPreset.surfaceRecipe.overrides.shadowCard).toBe(
-      surfaceStyles.default.overrides.shadowCard,
+  it("dark mode: surface tokens", () => {
+    expect(defaultPreset.surfaceRecipe.surfaceRaised(slate, "dark")).toBe(
+      slate[900],
     )
+    expect(defaultPreset.surfaceRecipe.surfaceOverlay(slate, "dark")).toBe(
+      slate[800],
+    )
+    expect(defaultPreset.surfaceRecipe.surfaceSunken(slate, "dark")).toBe(
+      slate[950],
+    )
+    expect(defaultPreset.surfaceRecipe.surfaceSidebar(slate, "dark")).toBe(
+      slate[950],
+    )
+    expect(defaultPreset.surfaceRecipe.surfaceHeader(slate, "dark")).toBe(
+      slate[900],
+    )
+    expect(defaultPreset.surfaceRecipe.borderSubtle(slate, "dark")).toBe(
+      slate[800],
+    )
+    expect(defaultPreset.surfaceRecipe.borderDefault(slate, "dark")).toBe(
+      slate[700],
+    )
+  })
+
+  it("overrides", () => {
+    expect(defaultPreset.surfaceRecipe.overrides.shadowCard).toBe("none")
     expect(defaultPreset.surfaceRecipe.overrides.shadowDropdown).toBe(
-      surfaceStyles.default.overrides.shadowDropdown,
+      "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
     )
   })
 
-  it("declares no axes", () => {
+  it("declares no axes, no generateTokens, no ownedTokenKeys", () => {
     expect(Object.keys(defaultPreset.axes)).toHaveLength(0)
-  })
-
-  it("has no generateTokens function (no cross-axis math needed)", () => {
     expect(defaultPreset.generateTokens).toBeUndefined()
-  })
-
-  it("has no ownedTokenKeys (nothing to clean up on leaving)", () => {
     expect(defaultPreset.ownedTokenKeys).toBeUndefined()
   })
 })

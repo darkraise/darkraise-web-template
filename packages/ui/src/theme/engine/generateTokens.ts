@@ -268,9 +268,3 @@ export function generateTokens(
 
   return tokens
 }
-
-/**
- * @deprecated Replaced by per-preset `ownedTokenKeys`. Kept as an empty
- * array so existing imports compile; remove in Phase 5.
- */
-export const GLASS_ONLY_TOKEN_KEYS: readonly string[] = []
