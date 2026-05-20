@@ -115,12 +115,8 @@ export function generateTokens(
   const isRedishAccent =
     accentColor === "red" || accentColor === "rose" || accentColor === "pink"
 
-  // Cast: "glassmorphism" isn't yet in the PresetName union (Phase 1 only
-  // registers `default`). Phase 3 adds it, after which this cast is redundant
-  // but harmless. The string comparison is intentional forward-compat.
-  const presetName = preset as string
-  const isLightGlass = mode === "light" && presetName === "glassmorphism"
-  const isDarkGlass = presetName === "glassmorphism" && mode === "dark"
+  const isLightGlass = mode === "light" && preset === "glassmorphism"
+  const isDarkGlass = preset === "glassmorphism" && mode === "dark"
   // Dark non-glass picks shade 500 (same as light) rather than the brighter
   // shade 400 it used previously. The earlier `accent[400]` value sat at
   // L:68u201376% S:92u201395% for high-saturation pastels (blue/violet/rose),
@@ -257,9 +253,9 @@ export function generateTokens(
       backgroundStyle === "gradient" ? (mode === "light" ? "0.6" : "0.5") : "0",
 
     "--content-gradient-overlay":
-      backgroundStyle === "gradient" && presetName !== "glassmorphism"
+      backgroundStyle === "gradient" && preset !== "glassmorphism"
         ? `var(--canvas-blob-a), var(--canvas-blob-b), var(--canvas-blob-c), var(--canvas-blob-d), var(--canvas-ink)`
-        : presetName === "glassmorphism" && backgroundStyle === "solid"
+        : preset === "glassmorphism" && backgroundStyle === "solid"
           ? `linear-gradient(135deg, hsl(${accent[mode === "light" ? 200 : 800]} / 0.2) 0%, transparent 70%)`
           : "none",
 

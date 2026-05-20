@@ -2,12 +2,10 @@ import type { Preview } from "@storybook/react"
 import { MockRouterAdapterProvider } from "../src/test/mock-router-adapter"
 import "../src/styles/theme.css"
 import { generateTokens } from "../src/theme/engine/generateTokens"
-import { ACCENT_COLORS, SURFACE_STYLES } from "../src/theme/types"
-import type {
-  AccentColor,
-  SurfaceStyle,
-  ResolvedMode,
-} from "../src/theme/types"
+import { ACCENT_COLORS } from "../src/theme/types"
+import { PRESET_NAMES } from "../src/theme/presets"
+import type { AccentColor, ResolvedMode } from "../src/theme/types"
+import type { PresetName } from "../src/theme/presets"
 
 const preview: Preview = {
   parameters: {
@@ -33,7 +31,7 @@ const preview: Preview = {
       toolbar: {
         title: "Style",
         icon: "component",
-        items: [...SURFACE_STYLES],
+        items: [...PRESET_NAMES],
         dynamicTitle: true,
       },
     },
@@ -55,8 +53,7 @@ const preview: Preview = {
   decorators: [
     (Story, context) => {
       const accentColor = (context.globals.accentColor || "blue") as AccentColor
-      const surfaceStyle = (context.globals.surfaceStyle ||
-        "default") as SurfaceStyle
+      const preset = (context.globals.surfaceStyle || "default") as PresetName
       const mode = (context.globals.mode || "light") as ResolvedMode
 
       document.documentElement.setAttribute("data-mode", mode)
@@ -64,7 +61,7 @@ const preview: Preview = {
       const tokens = generateTokens({
         accentColor,
         surfaceColor: "slate",
-        surfaceStyle,
+        preset,
         backgroundStyle: "solid",
         mode,
       })
