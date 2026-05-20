@@ -53,15 +53,22 @@
     @apply text-primary underline-offset-4 hover:underline;
   }
 
-  /* sizes */
+  /* sizes
+   * Each non-icon size gets a min-height floor at --density-cell* so
+   * adjacent buttons in a ButtonGroup (and any single button bearing
+   * short content like "OK" or an icon at the default text size) align
+   * to a consistent height across the design system. Text buttons at
+   * cozy default land at exactly --density-cell tall by content, so
+   * the floor is a no-op there; sm/lg may add a few px to short content.
+   * size="icon" keeps its explicit aspect-square w=cell behaviour. */
   .dr-btn[data-size="default"] {
-    @apply px-[var(--density-button-px)] py-[var(--density-button-py)];
+    @apply min-h-[var(--density-cell)] px-[var(--density-button-px)] py-[var(--density-button-py)];
   }
   .dr-btn[data-size="sm"] {
-    @apply px-[var(--density-button-px-sm)] py-[var(--density-button-py-sm)];
+    @apply min-h-[var(--density-cell-sm)] px-[var(--density-button-px-sm)] py-[var(--density-button-py-sm)];
   }
   .dr-btn[data-size="lg"] {
-    @apply px-[var(--density-button-px-lg)] py-[var(--density-button-py-lg)];
+    @apply min-h-[var(--density-cell-lg)] px-[var(--density-button-px-lg)] py-[var(--density-button-py-lg)];
   }
   .dr-btn[data-size="icon"] {
     @apply aspect-square w-[var(--density-cell)] p-0;
