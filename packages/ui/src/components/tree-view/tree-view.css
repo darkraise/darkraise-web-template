@@ -48,6 +48,7 @@
     @apply bg-accent text-accent-foreground;
   }
 
+  /* Selected — filled variant (default): solid primary background. */
   .dr-tree-view-branch-control[data-selected="true"],
   .dr-tree-view-item[data-selected="true"] {
     @apply bg-primary text-primary-foreground;
@@ -56,6 +57,26 @@
   .dr-tree-view-branch-control[data-selected="true"]:hover,
   .dr-tree-view-item[data-selected="true"]:hover {
     @apply bg-primary text-primary-foreground;
+  }
+
+  /* Selected — outlined variant: transparent surface with a 1px primary
+     ring drawn as inset box-shadow (no layout shift vs the filled variant
+     since the ring lives inside the element's box). Hover keeps the same
+     ring but adds a low-alpha primary fill for a subtle pressed feel. */
+  .dr-tree-view[data-variant="outlined"]
+    .dr-tree-view-branch-control[data-selected="true"],
+  .dr-tree-view[data-variant="outlined"]
+    .dr-tree-view-item[data-selected="true"] {
+    @apply text-primary bg-transparent;
+    box-shadow: inset 0 0 0 1px hsl(var(--primary));
+  }
+
+  .dr-tree-view[data-variant="outlined"]
+    .dr-tree-view-branch-control[data-selected="true"]:hover,
+  .dr-tree-view[data-variant="outlined"]
+    .dr-tree-view-item[data-selected="true"]:hover {
+    @apply bg-primary/10 text-primary;
+    box-shadow: inset 0 0 0 1px hsl(var(--primary));
   }
 
   .dr-tree-view-branch-control[data-disabled="true"],

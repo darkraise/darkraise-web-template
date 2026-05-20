@@ -107,6 +107,24 @@ export const ManualComposition: Story = {
   ),
 }
 
+export const OutlinedVariant: Story = {
+  render: () => (
+    <TreeView
+      data={fileTree}
+      variant="outlined"
+      defaultExpanded={["components", "hooks"]}
+      defaultSelected={["Button.tsx"]}
+    >
+      <TreeViewLabel>Project (outlined)</TreeViewLabel>
+      <TreeViewTree>
+        {fileTree.children?.map((node) => (
+          <TreeViewNode key={node.id} node={node} />
+        ))}
+      </TreeViewTree>
+    </TreeView>
+  ),
+}
+
 function ChevronRight() {
   return (
     <svg

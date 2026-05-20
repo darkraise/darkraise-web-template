@@ -211,4 +211,24 @@ describe("TreeView", () => {
     await user.keyboard("{Enter}")
     expect(resume).toHaveAttribute("aria-selected", "true")
   })
+
+  it("defaults variant to filled (writes data-variant='filled' on root)", () => {
+    const { container } = render(<Basic />)
+    const root = container.querySelector(".dr-tree-view")
+    expect(root).toHaveAttribute("data-variant", "filled")
+  })
+
+  it("variant='outlined' writes data-variant='outlined' on root", () => {
+    const { container } = render(
+      <TreeView data={tree} variant="outlined">
+        <TreeViewTree>
+          {tree.children?.map((node) => (
+            <TreeViewNode key={node.id} node={node} />
+          ))}
+        </TreeViewTree>
+      </TreeView>,
+    )
+    const root = container.querySelector(".dr-tree-view")
+    expect(root).toHaveAttribute("data-variant", "outlined")
+  })
 })

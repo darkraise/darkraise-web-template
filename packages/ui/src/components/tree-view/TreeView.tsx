@@ -21,6 +21,8 @@ export type {
   TreeViewSelectionChangeDetails,
 }
 
+export type TreeViewVariant = "filled" | "outlined"
+
 interface TreeViewContextValue extends UseTreeViewReturn {
   data?: TreeNode
   treeRef: React.RefObject<HTMLUListElement | null>
@@ -58,6 +60,12 @@ export interface TreeViewProps
     Omit<React.HTMLAttributes<HTMLDivElement>, "onChange" | "defaultValue"> {
   data?: TreeNode
   children?: React.ReactNode
+  /**
+   * Visual treatment for selected items.
+   * - `filled` (default): solid primary background on the selected row
+   * - `outlined`: transparent background with a 1px inset ring in primary
+   */
+  variant?: TreeViewVariant
 }
 
 function TreeView({
@@ -69,6 +77,7 @@ function TreeView({
   defaultSelected,
   selectionMode = "single",
   disabled = false,
+  variant = "filled",
   onExpandedChange,
   onSelectedChange,
   children,
@@ -121,6 +130,7 @@ function TreeView({
   return (
     <div
       className={cn("dr-tree-view", className)}
+      data-variant={variant}
       data-disabled={disabled ? "true" : undefined}
       {...rest}
     >
