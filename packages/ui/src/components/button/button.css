@@ -106,8 +106,8 @@
   [data-surface-style="glassmorphism"] .dr-btn[data-variant="ghost"]:hover {
     background-color: var(--fog-10);
     border: 1px solid var(--fog-15);
-    backdrop-filter: blur(10px) saturate(140%);
-    -webkit-backdrop-filter: blur(10px) saturate(140%);
+    backdrop-filter: var(--backdrop-filter);
+    -webkit-backdrop-filter: var(--backdrop-filter);
     box-shadow: var(--shadow-button), var(--inset-hi-button);
     color: hsl(var(--foreground));
   }

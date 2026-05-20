@@ -30,7 +30,8 @@
   /* Each toast — absolute positioned within the toaster, transformed by index. */
   .dr-toast {
     @apply bg-popover text-popover-foreground border-border pointer-events-auto absolute flex w-full items-start gap-3 rounded-lg border p-4 pr-9 shadow-[var(--shadow-dropdown)];
-    backdrop-filter: blur(8px) saturate(140%);
+    backdrop-filter: var(--backdrop-filter);
+    -webkit-backdrop-filter: var(--backdrop-filter);
 
     --toast-stack-gap: 12px;
     --toast-scale: calc(1 - var(--toast-index, 0) * 0.06);
