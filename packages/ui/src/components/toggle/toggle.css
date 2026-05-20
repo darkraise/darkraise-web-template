@@ -47,18 +47,19 @@
   }
 
   /* X and Y both use --density-button-py* so padding stays symmetric and
-     tracks the density axis. The min-width via --density-cell* keeps
-     icon-only toggles square; text labels get whatever extra width the
-     content requires. */
+     tracks the density axis. Both min-width AND min-height use
+     --density-cell* so icon-only toggles land on a square floor
+     (e.g. 32×32 at cozy default); text labels grow horizontally past
+     the floor as their content requires. */
   .dr-toggle[data-size="default"] {
-    @apply aspect-auto min-w-[var(--density-cell)] px-[var(--density-button-py)] py-[var(--density-button-py)];
+    @apply aspect-auto min-h-[var(--density-cell)] min-w-[var(--density-cell)] px-[var(--density-button-py)] py-[var(--density-button-py)];
   }
 
   .dr-toggle[data-size="sm"] {
-    @apply min-w-[var(--density-cell-sm)] px-[var(--density-button-py-sm)] py-[var(--density-button-py-sm)];
+    @apply min-h-[var(--density-cell-sm)] min-w-[var(--density-cell-sm)] px-[var(--density-button-py-sm)] py-[var(--density-button-py-sm)];
   }
 
   .dr-toggle[data-size="lg"] {
-    @apply min-w-[var(--density-cell-lg)] px-[var(--density-button-py-lg)] py-[var(--density-button-py-lg)];
+    @apply min-h-[var(--density-cell-lg)] min-w-[var(--density-cell-lg)] px-[var(--density-button-py-lg)] py-[var(--density-button-py-lg)];
   }
 }
