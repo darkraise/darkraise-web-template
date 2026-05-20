@@ -8,7 +8,6 @@ import { useTheme } from "@theme/useTheme"
 import {
   ACCENT_COLORS,
   SURFACE_COLORS,
-  SURFACE_STYLES,
   DENSITIES,
   ELEVATIONS,
   RADII,
@@ -18,13 +17,17 @@ import type {
   AccentColor,
   SurfaceColor,
   BackgroundStyle,
-  SurfaceStyle,
   Density,
   Elevation,
   Radius,
 } from "@theme/types"
+import {
+  presets,
+  PRESET_NAMES,
+  type PresetName,
+  type ThemePreset,
+} from "@theme/presets"
 import { accentColors } from "@theme/palettes/accentColors"
-import { surfaceStyles } from "@theme/styles/surfaceStyles"
 import "./theme-switcher.css"
 
 const modeOptions: { value: Mode; icon: typeof Sun; label: string }[] = [
@@ -37,7 +40,7 @@ export function ThemeSwitcher() {
   const {
     accentColor,
     surfaceColor,
-    surfaceStyle,
+    preset,
     backgroundStyle,
     mode,
     density,
@@ -45,15 +48,18 @@ export function ThemeSwitcher() {
     buttonElevation,
     radius,
     config,
+    activePreset,
+    presetAxisValues,
     setAccentColor,
     setSurfaceColor,
-    setSurfaceStyle,
+    setPreset,
     setBackgroundStyle,
     setMode,
     setDensity,
     setElevation,
     setButtonElevation,
     setRadius,
+    setPresetAxis,
   } = useTheme()
 
   const bgOptions: {
@@ -158,27 +164,61 @@ export function ThemeSwitcher() {
         </div>
       </div>
     ),
-    axes.surfaceStyle && (
-      <div key="surfaceStyle">
-        <Label className="dr-theme-switcher-section-label">Surface Style</Label>
+    axes.preset && (
+      <div key="preset">
+        <Label className="dr-theme-switcher-section-label">Preset</Label>
         <ToggleGroup
           type="single"
-          value={surfaceStyle}
+          value={preset}
           onValueChange={(value) => {
-            if (value)
-              setSurfaceStyle(value as Parameters<typeof setSurfaceStyle>[0])
+            if (value) setPreset(value as PresetName)
           }}
           variant="outline"
           size="sm"
           className="dr-theme-switcher-toggle-group"
-          data-cols="2"
+          data-cols={PRESET_NAMES.length}
         >
-          {SURFACE_STYLES.map((style: SurfaceStyle) => (
-            <ToggleGroupItem key={style} value={style}>
-              {surfaceStyles[style].label}
+          {PRESET_NAMES.map((name) => (
+            <ToggleGroupItem key={name} value={name}>
+              {presets[name].label}
             </ToggleGroupItem>
           ))}
         </ToggleGroup>
+      </div>
+    ),
+    axes.presetAxes && Object.keys(activePreset.axes).length > 0 && (
+      <div key="preset-axes" className="dr-theme-switcher-preset-axes-group">
+        {Object.entries(
+          (activePreset as ThemePreset<Record<string, readonly string[]>>).axes,
+        )
+          .sort(([, a], [, b]) => (a.order ?? 99) - (b.order ?? 99))
+          .map(([axisName, axisDef]) => (
+            <div
+              key={`preset-axis-${axisName}`}
+              className="dr-theme-switcher-preset-axis"
+            >
+              <Label className="dr-theme-switcher-section-label">
+                {axisDef.label}
+              </Label>
+              <ToggleGroup
+                type="single"
+                value={presetAxisValues[preset]?.[axisName] ?? axisDef.default}
+                onValueChange={(value) => {
+                  if (value) setPresetAxis(axisName, value)
+                }}
+                variant="outline"
+                size="sm"
+                className="dr-theme-switcher-toggle-group"
+                data-cols={axisDef.values.length}
+              >
+                {axisDef.values.map((v) => (
+                  <ToggleGroupItem key={v} value={v} className="capitalize">
+                    {v}
+                  </ToggleGroupItem>
+                ))}
+              </ToggleGroup>
+            </div>
+          ))}
       </div>
     ),
     axes.density && (

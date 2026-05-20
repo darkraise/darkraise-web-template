@@ -34,4 +34,18 @@
   .dr-theme-switcher-toggle-group[data-cols="4"] {
     @apply grid-cols-4;
   }
+
+  .dr-theme-switcher-preset-axes-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-left: 0.75rem;
+    padding-left: 0.75rem;
+    border-left: 2px solid hsl(var(--border));
+  }
+
+  .dr-theme-switcher-preset-axes-group > .dr-theme-switcher-preset-axis {
+    /* Reset any default child spacing — the parent gap handles it. */
+    margin: 0;
+  }
 }
