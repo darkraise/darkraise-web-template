@@ -432,34 +432,47 @@
   --radius-button: 0.5rem;
   --noise-opacity: 0;
   --cropper-grid-line: rgba(255, 255, 255, 0.5);
+  /* Dark blob peaks bumped from 8/6/4/3% to 10/8/6/5% (mid values from
+     3/2/2/1% to 4/3/3/2%) so picking a saturated surfaceColor in
+     dark+gradient produces a more legible color shift. Light-mode
+     blobs in the [data-mode="light"] block stay at their original
+     intensities. */
   --canvas-blob-a: radial-gradient(
     1400px 900px at 10% -5%,
-    color-mix(in oklab, var(--sf-hue) 8%, transparent) 0%,
-    color-mix(in oklab, var(--sf-hue) 3%, transparent) 55%,
+    color-mix(in oklab, var(--sf-hue) 10%, transparent) 0%,
+    color-mix(in oklab, var(--sf-hue) 4%, transparent) 55%,
     transparent 100%
   );
   --canvas-blob-b: radial-gradient(
     1100px 800px at 100% 15%,
-    color-mix(in oklab, var(--sf-hue-2) 6%, transparent) 0%,
-    color-mix(in oklab, var(--sf-hue-2) 2%, transparent) 55%,
+    color-mix(in oklab, var(--sf-hue-2) 8%, transparent) 0%,
+    color-mix(in oklab, var(--sf-hue-2) 3%, transparent) 55%,
     transparent 100%
   );
   --canvas-blob-c: radial-gradient(
     1200px 900px at 55% 95%,
-    color-mix(in oklab, var(--sf-hue-3) 4%, transparent) 0%,
-    color-mix(in oklab, var(--sf-hue-3) 2%, transparent) 55%,
+    color-mix(in oklab, var(--sf-hue-3) 6%, transparent) 0%,
+    color-mix(in oklab, var(--sf-hue-3) 3%, transparent) 55%,
     transparent 100%
   );
   --canvas-blob-d: radial-gradient(
     900px 700px at 35% 55%,
-    color-mix(in oklab, var(--sf-hue-2) 3%, transparent) 0%,
-    color-mix(in oklab, var(--sf-hue-2) 1%, transparent) 55%,
+    color-mix(in oklab, var(--sf-hue-2) 5%, transparent) 0%,
+    color-mix(in oklab, var(--sf-hue-2) 2%, transparent) 55%,
     transparent 100%
   );
+  /* Gradient-mode floor/ceiling. Both wire to --background so the page
+     darkness agrees with the solid-mode body color; the dark default
+     keeps a small ceiling deepening (mixed 20% with black) so the
+     vertical "weighted top, fade to deeper" feel survives. The
+     [data-mode="light"] block sets its own floor/ceiling values for
+     the light recipe. */
+  --canvas-ink-floor: hsl(var(--background));
+  --canvas-ink-ceiling: color-mix(in oklab, hsl(var(--background)) 80%, black);
   --canvas-ink: linear-gradient(
     180deg,
-    color-mix(in oklab, var(--sf-hue) 7%, #05060a) 0%,
-    color-mix(in oklab, var(--sf-hue) 5%, #0a0c14) 100%
+    color-mix(in oklab, var(--sf-hue) 7%, var(--canvas-ink-floor)) 0%,
+    color-mix(in oklab, var(--sf-hue) 5%, var(--canvas-ink-ceiling)) 100%
   );
 
   /* Density (cozy defaults) */
@@ -723,10 +736,20 @@
     color-mix(in oklab, var(--sf-hue-2) 3%, transparent) 55%,
     transparent 100%
   );
+  /* Light-mode floor/ceiling. Floor is the page background; ceiling
+     mixes in a small cool grey so the vertical depth that the original
+     #f3f5fb literal provided survives without diverging from
+     --background. */
+  --canvas-ink-floor: hsl(var(--background));
+  --canvas-ink-ceiling: color-mix(
+    in oklab,
+    hsl(var(--background)) 95%,
+    hsl(220 30% 88%)
+  );
   --canvas-ink: linear-gradient(
     180deg,
-    color-mix(in oklab, var(--sf-hue) 4%, #ffffff) 0%,
-    color-mix(in oklab, var(--sf-hue) 6%, #f3f5fb) 100%
+    color-mix(in oklab, var(--sf-hue) 4%, var(--canvas-ink-floor)) 0%,
+    color-mix(in oklab, var(--sf-hue) 6%, var(--canvas-ink-ceiling)) 100%
   );
 }
 
@@ -997,17 +1020,16 @@
     --sidebar-border: 215 15% 30%;
   }
 
-  [data-mode="light"][data-background-style="gradient"][data-preset="default"]
-    main[data-content] {
-    --muted-foreground: 215 18% 32%;
-    --foreground: 222 47% 8%;
-  }
-
-  [data-mode="dark"][data-background-style="gradient"][data-preset="default"]
-    main[data-content] {
-    --muted-foreground: 215 16% 78%;
-    --foreground: 210 40% 98%;
-  }
+  /* Previously this block bumped --foreground and --muted-foreground
+     for gradient+default to compensate for the page ink running darker
+     (or lighter) than --background due to the hardcoded #05060a /
+     #ffffff literals in --canvas-ink. With the floor now tokenized and
+     wired to hsl(var(--background)), solid and gradient modes share
+     the same floor color, and the default foreground tokens already
+     have the correct contrast against it. The override is no longer
+     needed; re-add a smaller bump here if the gradient blobs sit
+     directly under a long passage of muted body text and the contrast
+     feels weak. */
 
   .header-gradient-overlay > * {
     position: relative;
