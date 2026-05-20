@@ -68,7 +68,7 @@ function resolveSfHueTokens(
   }
 }
 
-function tintScale(
+export function tintScale(
   scale: ColorScale,
   neutral: ColorScale,
   satFactor: number,
@@ -88,7 +88,27 @@ function tintScale(
   return result as ColorScale
 }
 
-function isSidebarDark(_preset: PresetName, mode: ResolvedMode): boolean {
+/**
+ * Resolves the surface color palette for the given input. Used internally
+ * by generateTokens AND by ThemeProvider when building the CommonAxisInput
+ * for a preset's optional generateTokens callback. Centralizing here ensures
+ * common-axis tokens and preset-owned tokens see the same surface scale.
+ */
+export function resolveSurfaceScale(
+  surfaceColor: SurfaceColor,
+  mode: ResolvedMode,
+): ColorScale {
+  const neutral = surfaceColors.slate as ColorScale
+  if (surfaceColor === "slate") return neutral
+  return tintScale(
+    accentColors[surfaceColor],
+    neutral,
+    mode === "light" ? 0.4 : 0.35,
+    mode === "dark",
+  )
+}
+
+function isSidebarDark(mode: ResolvedMode): boolean {
   return mode === "dark"
 }
 
@@ -100,16 +120,8 @@ export function generateTokens(
   const sfHueTokens = resolveSfHueTokens(surfaceColor, backgroundStyle)
 
   const accent: ColorScale = accentColors[accentColor]
+  const surface: ColorScale = resolveSurfaceScale(surfaceColor, mode)
   const neutral: ColorScale = surfaceColors.slate as ColorScale
-  const surface: ColorScale =
-    surfaceColor === "slate"
-      ? neutral
-      : tintScale(
-          accentColors[surfaceColor],
-          neutral,
-          mode === "light" ? 0.4 : 0.35,
-          mode === "dark",
-        )
   const recipe = presets[preset].surfaceRecipe
 
   const isRedishAccent =
@@ -218,19 +230,15 @@ export function generateTokens(
     "--surface-overlay": recipe.surfaceOverlay(surface, mode),
     "--surface-sunken": recipe.surfaceSunken(surface, mode),
     "--surface-sidebar": recipe.surfaceSidebar(surface, mode),
-    "--sidebar-foreground": isSidebarDark(preset, mode)
-      ? neutral[300]
-      : neutral[600],
-    "--sidebar-foreground-hover": isSidebarDark(preset, mode)
+    "--sidebar-foreground": isSidebarDark(mode) ? neutral[300] : neutral[600],
+    "--sidebar-foreground-hover": isSidebarDark(mode)
       ? "0 0% 100%"
       : neutral[900],
-    "--sidebar-foreground-muted": isSidebarDark(preset, mode)
+    "--sidebar-foreground-muted": isSidebarDark(mode)
       ? neutral[500]
       : neutral[400],
-    "--sidebar-border": isSidebarDark(preset, mode)
-      ? "0 0% 100% / 0.1"
-      : surface[200],
-    "--sidebar-hover-bg": isSidebarDark(preset, mode)
+    "--sidebar-border": isSidebarDark(mode) ? "0 0% 100% / 0.1" : surface[200],
+    "--sidebar-hover-bg": isSidebarDark(mode)
       ? `${accent[500]} / 0.15`
       : accent[100],
     "--surface-header": recipe.surfaceHeader(surface, mode),

@@ -14,7 +14,10 @@ import type {
   ThemeSyncStatus,
 } from "@theme/types"
 import { SURFACE_COLORS, DENSITIES, ELEVATIONS, RADII } from "@theme/types"
-import { generateTokens } from "@theme/engine/generateTokens"
+import {
+  generateTokens,
+  resolveSurfaceScale,
+} from "@theme/engine/generateTokens"
 import {
   presets,
   PRESET_NAMES,
@@ -269,11 +272,7 @@ export function ThemeProvider({
         const accentScale = accentColors[accent]
         const neutralScale =
           surfaceColors.slate as import("@theme/types").ColorScale
-        const surfaceScale =
-          surfColor === "slate"
-            ? neutralScale
-            : (accentColors[surfColor as keyof typeof accentColors] ??
-              neutralScale)
+        const surfaceScale = resolveSurfaceScale(surfColor, resolved)
         presetTokens = activePreset.generateTokens(
           {
             accentColor: accent,
