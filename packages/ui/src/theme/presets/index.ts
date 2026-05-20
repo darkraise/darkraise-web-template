@@ -1,7 +1,9 @@
 import { defaultPreset } from "./default/default"
+import { glassmorphism } from "./glassmorphism/glassmorphism"
 
 export const presets = {
   default: defaultPreset,
+  glassmorphism,
 } as const
 
 export type PresetName = keyof typeof presets

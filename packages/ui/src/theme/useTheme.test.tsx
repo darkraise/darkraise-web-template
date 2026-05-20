@@ -65,11 +65,12 @@ describe("useTheme", () => {
   })
 
   // Re-enabled in Phase 3 with the glass preset registered
-  it.skip("setSurfaceStyle updates style and persists to localStorage", () => {
+  it("setPreset updates preset and persists to theme-preset key", () => {
     const { result } = renderHook(() => useTheme(), { wrapper })
-    act(() => result.current.setSurfaceStyle("glassmorphism"))
+    act(() => result.current.setPreset("glassmorphism"))
+    expect(result.current.preset).toBe("glassmorphism")
     expect(result.current.surfaceStyle).toBe("glassmorphism")
-    expect(localStorage.getItem("theme-style")).toBe("glassmorphism")
+    expect(localStorage.getItem("theme-preset")).toBe("glassmorphism")
   })
 
   it("setMode updates mode and applies data-mode attribute", () => {
@@ -94,7 +95,7 @@ describe("useTheme", () => {
   })
 
   // Re-enabled in Phase 3 with the glass preset registered
-  it.skip("reads persisted values from localStorage on mount", () => {
+  it("reads persisted values from localStorage on mount and migrates theme-style", () => {
     storageMock.setItem("theme-accent", "emerald")
     storageMock.setItem("theme-surface-color", "teal")
     storageMock.setItem("theme-style", "glassmorphism")
@@ -103,8 +104,11 @@ describe("useTheme", () => {
     const { result } = renderHook(() => useTheme(), { wrapper })
     expect(result.current.accentColor).toBe("emerald")
     expect(result.current.surfaceColor).toBe("teal")
-    expect(result.current.surfaceStyle).toBe("glassmorphism")
+    expect(result.current.preset).toBe("glassmorphism")
     expect(result.current.mode).toBe("dark")
+    // Migration shim: legacy key deleted, new key written.
+    expect(localStorage.getItem("theme-style")).toBe(null)
+    expect(localStorage.getItem("theme-preset")).toBe("glassmorphism")
   })
 
   it("setSurfaceColor updates surfaceColor and persists to localStorage", () => {
@@ -200,7 +204,7 @@ describe("useTheme persistence", () => {
   }
 
   // Re-enabled in Phase 3 with the glass preset registered
-  it.skip("loads settings from adapter on mount", async () => {
+  it("loads settings from adapter on mount", async () => {
     const adapter = createAdapter()
     const { result } = renderHook(() => useTheme(), {
       wrapper: wrapperWith(adapter),
@@ -248,7 +252,7 @@ describe("useTheme persistence", () => {
   })
 
   // Re-enabled in Phase 3 with the glass preset registered
-  it.skip("updates localStorage when loading from adapter", async () => {
+  it("updates localStorage when loading from adapter", async () => {
     const adapter = createAdapter()
     renderHook(() => useTheme(), { wrapper: wrapperWith(adapter) })
 
@@ -258,7 +262,7 @@ describe("useTheme persistence", () => {
 
     expect(localStorage.getItem("theme-accent")).toBe("rose")
     expect(localStorage.getItem("theme-surface-color")).toBe("emerald")
-    expect(localStorage.getItem("theme-style")).toBe("glassmorphism")
+    expect(localStorage.getItem("theme-preset")).toBe("glassmorphism")
     expect(localStorage.getItem("theme-bg-style")).toBe("gradient")
     expect(localStorage.getItem("mode")).toBe("dark")
     expect(localStorage.getItem("theme-density")).toBe("spacious")

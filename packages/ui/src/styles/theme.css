@@ -125,6 +125,10 @@
 /* Theme switcher (manual; theme/ is outside the auto-scanner) */
 @import "../theme/theme-switcher/theme-switcher.css";
 
+/* Preset-specific CSS (manual; presets/ is outside the auto-scanner) */
+@import "../theme/presets/default/default.css";
+@import "../theme/presets/glassmorphism/glassmorphism.css";
+
 @layer theme, base, components, utilities, overrides;
 
 @custom-variant dark (&:where([data-mode="dark"], [data-mode="dark"] *));

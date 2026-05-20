@@ -228,8 +228,7 @@ describe("generateTokens", () => {
     expect(allDifferentOrValid.size).toBe(5)
   })
 
-  // Re-enabled in Phase 3 with the glass preset registered
-  it.skip("glassmorphism style sets backdrop-blur and reduced opacity", () => {
+  it("glass preset no longer emits scalar opacity/blur tokens (CSS-driven)", () => {
     const tokens = generateTokens({
       accentColor: "blue",
       surfaceColor: "slate",
@@ -238,13 +237,20 @@ describe("generateTokens", () => {
       mode: "light",
     })
 
-    expect(tokens["--backdrop-blur"]).toBe("12px")
-    expect(tokens["--surface-opacity"]).toBe("0.5")
-    expect(tokens["--backdrop-filter"]).toContain("saturate(140%)")
+    // These tokens are now bound by glassmorphism.css attribute selectors.
+    expect(tokens["--backdrop-blur"]).toBeUndefined()
+    expect(tokens["--surface-opacity"]).toBeUndefined()
+    expect(tokens["--backdrop-filter"]).toBeUndefined()
+
+    // Fog and inset tokens are computed by glass.generateTokens (the preset's
+    // own generator), not by common generateTokens — so they should also be
+    // undefined here.
+    expect(tokens["--fog-05"]).toBeUndefined()
+    expect(tokens["--inset-hi"]).toBeUndefined()
   })
 
   // Re-enabled in Phase 3 with the glass preset registered
-  it.skip("light + glassmorphism shifts primary from accent-500 to accent-600 for AA contrast", () => {
+  it("light + glassmorphism shifts primary from accent-500 to accent-600 for AA contrast", () => {
     const tokens = generateTokens({
       accentColor: "blue",
       surfaceColor: "slate",
@@ -258,7 +264,7 @@ describe("generateTokens", () => {
   })
 
   // Re-enabled in Phase 3 with the glass preset registered
-  it.skip("light + glassmorphism tints card shadow drops with blue-black (16 24 40)", () => {
+  it("light + glassmorphism tints card shadow drops with blue-black (16 24 40)", () => {
     const tokens = generateTokens({
       accentColor: "blue",
       surfaceColor: "slate",
@@ -396,8 +402,7 @@ describe("generateTokens", () => {
   })
 
   describe("fog ramp tokens", () => {
-    // Re-enabled in Phase 3 with the glass preset registered
-    it.skip("dark + glassmorphism emits the thin-white fog ramp", () => {
+    it("dark + glassmorphism does not emit fog tokens from common generateTokens", () => {
       const tokens = generateTokens({
         accentColor: "blue",
         surfaceColor: "slate",
@@ -406,16 +411,17 @@ describe("generateTokens", () => {
         mode: "dark",
       })
 
-      expect(tokens["--fog-05"]).toBe("rgba(255, 255, 255, 0.04)")
-      expect(tokens["--fog-10"]).toBe("rgba(255, 255, 255, 0.07)")
-      expect(tokens["--fog-15"]).toBe("rgba(255, 255, 255, 0.10)")
-      expect(tokens["--fog-20"]).toBe("rgba(255, 255, 255, 0.14)")
-      expect(tokens["--fog-30"]).toBe("rgba(255, 255, 255, 0.20)")
-      expect(tokens["--fog-50"]).toBe("rgba(255, 255, 255, 0.38)")
+      // Fog tokens are now computed by glassmorphism.generateTokens (the preset's
+      // own generator), not by the shared generateTokens path.
+      expect(tokens["--fog-05"]).toBeUndefined()
+      expect(tokens["--fog-10"]).toBeUndefined()
+      expect(tokens["--fog-15"]).toBeUndefined()
+      expect(tokens["--fog-20"]).toBeUndefined()
+      expect(tokens["--fog-30"]).toBeUndefined()
+      expect(tokens["--fog-50"]).toBeUndefined()
     })
 
-    // Re-enabled in Phase 3 with the glass preset registered
-    it.skip("light + glassmorphism emits the paper-glass fog ramp", () => {
+    it("light + glassmorphism does not emit fog tokens from common generateTokens", () => {
       const tokens = generateTokens({
         accentColor: "blue",
         surfaceColor: "slate",
@@ -424,12 +430,12 @@ describe("generateTokens", () => {
         mode: "light",
       })
 
-      expect(tokens["--fog-05"]).toBe("rgba(255, 255, 255, 0.55)")
-      expect(tokens["--fog-10"]).toBe("rgba(255, 255, 255, 0.65)")
-      expect(tokens["--fog-15"]).toBe("rgba(255, 255, 255, 0.72)")
-      expect(tokens["--fog-20"]).toBe("rgba(255, 255, 255, 0.82)")
-      expect(tokens["--fog-30"]).toBe("rgba(255, 255, 255, 0.90)")
-      expect(tokens["--fog-50"]).toBe("rgba(255, 255, 255, 0.96)")
+      expect(tokens["--fog-05"]).toBeUndefined()
+      expect(tokens["--fog-10"]).toBeUndefined()
+      expect(tokens["--fog-15"]).toBeUndefined()
+      expect(tokens["--fog-20"]).toBeUndefined()
+      expect(tokens["--fog-30"]).toBeUndefined()
+      expect(tokens["--fog-50"]).toBeUndefined()
     })
 
     it("default surface style does not emit any fog tokens", () => {
@@ -464,8 +470,7 @@ describe("generateTokens", () => {
   })
 
   describe("inset rim tokens", () => {
-    // Re-enabled in Phase 3 with the glass preset registered
-    it.skip("dark + glassmorphism emits the dark-glass inset rim values", () => {
+    it("dark + glassmorphism does not emit inset rim tokens from common generateTokens", () => {
       const tokens = generateTokens({
         accentColor: "blue",
         surfaceColor: "slate",
@@ -474,17 +479,14 @@ describe("generateTokens", () => {
         mode: "dark",
       })
 
-      expect(tokens["--inset-hi"]).toBe("inset 0 1px 0 rgba(255,255,255,0.14)")
-      expect(tokens["--inset-hi-strong"]).toBe(
-        "inset 0 1px 0 rgba(255,255,255,0.22)",
-      )
-      expect(tokens["--inset-hi-button"]).toBe(
-        "inset 0 1px 0 rgba(255,255,255,0.28)",
-      )
+      // Inset tokens are now computed by glassmorphism.generateTokens (the preset's
+      // own generator), not by the shared generateTokens path.
+      expect(tokens["--inset-hi"]).toBeUndefined()
+      expect(tokens["--inset-hi-strong"]).toBeUndefined()
+      expect(tokens["--inset-hi-button"]).toBeUndefined()
     })
 
-    // Re-enabled in Phase 3 with the glass preset registered
-    it.skip("light + glassmorphism emits the light-glass inset rim values", () => {
+    it("light + glassmorphism does not emit inset rim tokens from common generateTokens", () => {
       const tokens = generateTokens({
         accentColor: "blue",
         surfaceColor: "slate",
@@ -493,13 +495,9 @@ describe("generateTokens", () => {
         mode: "light",
       })
 
-      expect(tokens["--inset-hi"]).toBe("inset 0 1px 0 rgba(255,255,255,0.6)")
-      expect(tokens["--inset-hi-strong"]).toBe(
-        "inset 0 1px 0 rgba(255,255,255,0.75)",
-      )
-      expect(tokens["--inset-hi-button"]).toBe(
-        "inset 0 1px 0 rgba(255,255,255,0.6)",
-      )
+      expect(tokens["--inset-hi"]).toBeUndefined()
+      expect(tokens["--inset-hi-strong"]).toBeUndefined()
+      expect(tokens["--inset-hi-button"]).toBeUndefined()
     })
 
     it("default surface style does not emit any inset rim tokens", () => {
@@ -642,7 +640,7 @@ describe("generateTokens", () => {
     })
 
     // Re-enabled in Phase 3 with the glass preset registered
-    it.skip("solid + glass → preserved linear accent fade", () => {
+    it("solid + glass → preserved linear accent fade", () => {
       const tokens = generateTokens({
         ...baseInput,
         backgroundStyle: "solid",
@@ -657,7 +655,7 @@ describe("generateTokens", () => {
     })
 
     // Re-enabled in Phase 3 with the glass preset registered
-    it.skip("gradient + glass → none (body already paints blobs)", () => {
+    it("gradient + glass → none (body already paints blobs)", () => {
       const tokens = generateTokens({
         ...baseInput,
         backgroundStyle: "gradient",

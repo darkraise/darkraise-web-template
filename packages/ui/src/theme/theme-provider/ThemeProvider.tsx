@@ -15,7 +15,12 @@ import type {
 } from "@theme/types"
 import { SURFACE_COLORS, DENSITIES, ELEVATIONS, RADII } from "@theme/types"
 import { generateTokens } from "@theme/engine/generateTokens"
-import { presets, PRESET_NAMES, type PresetName } from "@theme/presets"
+import {
+  presets,
+  PRESET_NAMES,
+  type PresetName,
+  type ThemePreset,
+} from "@theme/presets"
 import { accentColors } from "@theme/palettes/accentColors"
 import { surfaceColors } from "@theme/palettes/surfaceColors"
 import { ThemeContext } from "@theme/themeContext"
@@ -815,7 +820,7 @@ export function ThemeProvider({
       resolvedMode,
       config: cfg,
       syncStatus,
-      activePreset: presets[preset],
+      activePreset: presets[preset] as ThemePreset,
       presetAxisValues,
       setAccentColor,
       setSurfaceColor,

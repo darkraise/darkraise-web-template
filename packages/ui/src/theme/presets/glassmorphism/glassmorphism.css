@@ -1,0 +1,42 @@
+/* packages/ui/src/theme/presets/glassmorphism/glassmorphism.css
+ * Scalar tokens for the Glass preset's two axes. Cross-axis color math
+ * (fog tiers, inset highlights, dark-gradient border) lives in
+ * glassmorphism.ts; this file is the no-JS bedrock for the simple values.
+ */
+
+/* Surface opacity. Consumed via `var(--surface-opacity, 1)` in @theme inline.
+   subtle = subtle glass effect = high opacity = card almost-solid.
+   strong = strong glass effect = low opacity = card very see-through.
+   medium matches today's `--surface-opacity: 0.5` (the solid branch of the
+   removed resolveGlassOpacity function). */
+[data-preset="glassmorphism"][data-glassmorphism-opacity="subtle"] {
+  --surface-opacity: 0.78;
+}
+[data-preset="glassmorphism"][data-glassmorphism-opacity="medium"] {
+  --surface-opacity: 0.5;
+}
+[data-preset="glassmorphism"][data-glassmorphism-opacity="strong"] {
+  --surface-opacity: 0.3;
+}
+
+/* Backdrop blur. Consumed by .glass, .glass-strong, .card-surface utilities
+   and by overlay scrims (after the Phase 0 audit fixes routed scrim
+   backdrop-filter through this var).
+   medium = 12px matches today's surfaceStyles.glassmorphism.overrides
+   .backdropBlur byte-for-byte. */
+[data-preset="glassmorphism"][data-glassmorphism-blur="none"] {
+  --backdrop-blur: 0;
+  --backdrop-filter: none;
+}
+[data-preset="glassmorphism"][data-glassmorphism-blur="low"] {
+  --backdrop-blur: 6px;
+  --backdrop-filter: blur(6px) saturate(140%);
+}
+[data-preset="glassmorphism"][data-glassmorphism-blur="medium"] {
+  --backdrop-blur: 12px;
+  --backdrop-filter: blur(12px) saturate(140%);
+}
+[data-preset="glassmorphism"][data-glassmorphism-blur="high"] {
+  --backdrop-blur: 24px;
+  --backdrop-filter: blur(24px) saturate(140%);
+}
