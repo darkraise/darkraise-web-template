@@ -2,19 +2,18 @@ import type {
   AccentColor,
   BackgroundStyle,
   SurfaceColor,
-  SurfaceStyle,
   ResolvedMode,
   ColorScale,
 } from "@theme/types"
 import { accentColors } from "@theme/palettes/accentColors"
 import { surfaceColors } from "@theme/palettes/surfaceColors"
-import { surfaceStyles } from "@theme/styles/surfaceStyles"
+import { presets, type PresetName } from "@theme/presets"
 import { ACCENT_COLORS } from "@theme/types"
 
 export interface GenerateTokensInput {
   accentColor: AccentColor
   surfaceColor: SurfaceColor
-  surfaceStyle: SurfaceStyle
+  preset: PresetName
   backgroundStyle: BackgroundStyle
   mode: ResolvedMode
 }
@@ -69,31 +68,6 @@ function resolveSfHueTokens(
   }
 }
 
-export const GLASS_ONLY_TOKEN_KEYS = [
-  "--fog-05",
-  "--fog-10",
-  "--fog-15",
-  "--fog-20",
-  "--fog-30",
-  "--fog-50",
-  "--inset-hi",
-  "--inset-hi-strong",
-  "--inset-hi-button",
-  "--backdrop-blur",
-  "--backdrop-filter",
-  "--surface-opacity",
-] as const
-
-function resolveGlassOpacity(
-  bgStyle: BackgroundStyle,
-  mode: ResolvedMode,
-): string {
-  if (bgStyle === "gradient") {
-    return mode === "light" ? "0.3" : "0.4"
-  }
-  return "0.5"
-}
-
 function tintScale(
   scale: ColorScale,
   neutral: ColorScale,
@@ -114,15 +88,14 @@ function tintScale(
   return result as ColorScale
 }
 
-function isSidebarDark(_style: SurfaceStyle, mode: ResolvedMode): boolean {
+function isSidebarDark(_preset: PresetName, mode: ResolvedMode): boolean {
   return mode === "dark"
 }
 
 export function generateTokens(
   input: GenerateTokensInput,
 ): Record<string, string> {
-  const { accentColor, surfaceColor, surfaceStyle, backgroundStyle, mode } =
-    input
+  const { accentColor, surfaceColor, preset, backgroundStyle, mode } = input
 
   const sfHueTokens = resolveSfHueTokens(surfaceColor, backgroundStyle)
 
@@ -137,13 +110,17 @@ export function generateTokens(
           mode === "light" ? 0.4 : 0.35,
           mode === "dark",
         )
-  const recipe = surfaceStyles[surfaceStyle]
+  const recipe = presets[preset].surfaceRecipe
 
   const isRedishAccent =
     accentColor === "red" || accentColor === "rose" || accentColor === "pink"
 
-  const isLightGlass = mode === "light" && surfaceStyle === "glassmorphism"
-  const isDarkGlass = surfaceStyle === "glassmorphism" && mode === "dark"
+  // Cast: "glassmorphism" isn't yet in the PresetName union (Phase 1 only
+  // registers `default`). Phase 3 adds it, after which this cast is redundant
+  // but harmless. The string comparison is intentional forward-compat.
+  const presetName = preset as string
+  const isLightGlass = mode === "light" && presetName === "glassmorphism"
+  const isDarkGlass = presetName === "glassmorphism" && mode === "dark"
   // Dark non-glass picks shade 500 (same as light) rather than the brighter
   // shade 400 it used previously. The earlier `accent[400]` value sat at
   // L:68u201376% S:92u201395% for high-saturation pastels (blue/violet/rose),
@@ -167,15 +144,12 @@ export function generateTokens(
       ? neutral[900]
       : neutral[50]
 
-  let border = recipe.overrides.border
+  const border = recipe.overrides.border
     ? recipe.overrides.border(surface, mode)
     : mode === "light"
       ? surface[200]
       : surface[700]
 
-  if (surfaceStyle === "glassmorphism" && mode === "dark") {
-    border = backgroundStyle === "gradient" ? "0 0% 100% / 0.1" : surface[700]
-  }
   // Dark `--border` deliberately lighter than `--muted`/`--secondary`/
   // `--accent` (all `surface[800]`) and `--border-subtle` (also 800). The
   // earlier value of `surface[800]` collapsed the standard border into the
@@ -244,29 +218,29 @@ export function generateTokens(
     "--input": inputValue,
 
     "--surface-base": mode === "light" ? surface[50] : surface[950],
-    "--surface-raised": recipe.tokens.surfaceRaised(surface, mode),
-    "--surface-overlay": recipe.tokens.surfaceOverlay(surface, mode),
-    "--surface-sunken": recipe.tokens.surfaceSunken(surface, mode),
-    "--surface-sidebar": recipe.tokens.surfaceSidebar(surface, mode),
-    "--sidebar-foreground": isSidebarDark(surfaceStyle, mode)
+    "--surface-raised": recipe.surfaceRaised(surface, mode),
+    "--surface-overlay": recipe.surfaceOverlay(surface, mode),
+    "--surface-sunken": recipe.surfaceSunken(surface, mode),
+    "--surface-sidebar": recipe.surfaceSidebar(surface, mode),
+    "--sidebar-foreground": isSidebarDark(preset, mode)
       ? neutral[300]
       : neutral[600],
-    "--sidebar-foreground-hover": isSidebarDark(surfaceStyle, mode)
+    "--sidebar-foreground-hover": isSidebarDark(preset, mode)
       ? "0 0% 100%"
       : neutral[900],
-    "--sidebar-foreground-muted": isSidebarDark(surfaceStyle, mode)
+    "--sidebar-foreground-muted": isSidebarDark(preset, mode)
       ? neutral[500]
       : neutral[400],
-    "--sidebar-border": isSidebarDark(surfaceStyle, mode)
+    "--sidebar-border": isSidebarDark(preset, mode)
       ? "0 0% 100% / 0.1"
       : surface[200],
-    "--sidebar-hover-bg": isSidebarDark(surfaceStyle, mode)
+    "--sidebar-hover-bg": isSidebarDark(preset, mode)
       ? `${accent[500]} / 0.15`
       : accent[100],
-    "--surface-header": recipe.tokens.surfaceHeader(surface, mode),
+    "--surface-header": recipe.surfaceHeader(surface, mode),
 
-    "--border-subtle": recipe.tokens.borderSubtle(surface, mode),
-    "--border-default": recipe.tokens.borderDefault(surface, mode),
+    "--border-subtle": recipe.borderSubtle(surface, mode),
+    "--border-default": recipe.borderDefault(surface, mode),
 
     "--shadow-card": isLightGlass
       ? recipe.overrides.shadowCard.replace(/rgb\(0 0 0 \//g, "rgb(16 24 40 /")
@@ -283,50 +257,20 @@ export function generateTokens(
       backgroundStyle === "gradient" ? (mode === "light" ? "0.6" : "0.5") : "0",
 
     "--content-gradient-overlay":
-      backgroundStyle === "gradient" && surfaceStyle !== "glassmorphism"
+      backgroundStyle === "gradient" && presetName !== "glassmorphism"
         ? `var(--canvas-blob-a), var(--canvas-blob-b), var(--canvas-blob-c), var(--canvas-blob-d), var(--canvas-ink)`
-        : surfaceStyle === "glassmorphism" && backgroundStyle === "solid"
+        : presetName === "glassmorphism" && backgroundStyle === "solid"
           ? `linear-gradient(135deg, hsl(${accent[mode === "light" ? 200 : 800]} / 0.2) 0%, transparent 70%)`
           : "none",
 
     ...sfHueTokens,
   }
 
-  if (surfaceStyle === "glassmorphism") {
-    tokens["--backdrop-blur"] = recipe.overrides.backdropBlur
-    tokens["--backdrop-filter"] =
-      `blur(${recipe.overrides.backdropBlur}) saturate(140%)`
-    tokens["--surface-opacity"] = resolveGlassOpacity(backgroundStyle, mode)
-
-    tokens["--fog-05"] = isDarkGlass
-      ? "rgba(255, 255, 255, 0.04)"
-      : "rgba(255, 255, 255, 0.55)"
-    tokens["--fog-10"] = isDarkGlass
-      ? "rgba(255, 255, 255, 0.07)"
-      : "rgba(255, 255, 255, 0.65)"
-    tokens["--fog-15"] = isDarkGlass
-      ? "rgba(255, 255, 255, 0.10)"
-      : "rgba(255, 255, 255, 0.72)"
-    tokens["--fog-20"] = isDarkGlass
-      ? "rgba(255, 255, 255, 0.14)"
-      : "rgba(255, 255, 255, 0.82)"
-    tokens["--fog-30"] = isDarkGlass
-      ? "rgba(255, 255, 255, 0.20)"
-      : "rgba(255, 255, 255, 0.90)"
-    tokens["--fog-50"] = isDarkGlass
-      ? "rgba(255, 255, 255, 0.38)"
-      : "rgba(255, 255, 255, 0.96)"
-
-    tokens["--inset-hi"] = isDarkGlass
-      ? "inset 0 1px 0 rgba(255,255,255,0.14)"
-      : "inset 0 1px 0 rgba(255,255,255,0.6)"
-    tokens["--inset-hi-strong"] = isDarkGlass
-      ? "inset 0 1px 0 rgba(255,255,255,0.22)"
-      : "inset 0 1px 0 rgba(255,255,255,0.75)"
-    tokens["--inset-hi-button"] = isDarkGlass
-      ? "inset 0 1px 0 rgba(255,255,255,0.28)"
-      : "inset 0 1px 0 rgba(255,255,255,0.6)"
-  }
-
   return tokens
 }
+
+/**
+ * @deprecated Replaced by per-preset `ownedTokenKeys`. Kept as an empty
+ * array so existing imports compile; remove in Phase 5.
+ */
+export const GLASS_ONLY_TOKEN_KEYS: readonly string[] = []

@@ -1,19 +1,22 @@
 import type {
   AccentColor,
   SurfaceColor,
-  SurfaceStyle,
   BackgroundStyle,
   Density,
   Elevation,
   Radius,
   Mode,
+  SurfaceStyle,
 } from "./types"
+import type { PresetName } from "./presets"
 
 export interface ThemeConfig {
   defaults: {
     accentColor: AccentColor
     surfaceColor: SurfaceColor
-    surfaceStyle: SurfaceStyle
+    preset: PresetName
+    /** @deprecated use `preset`. Read by the migration shim. */
+    surfaceStyle?: SurfaceStyle
     backgroundStyle: BackgroundStyle
     mode: Mode
     density: Density
@@ -27,12 +30,16 @@ export interface ThemeConfig {
       mode: boolean
       accentColor: boolean
       surfaceColor: boolean
-      surfaceStyle: boolean
+      preset: boolean
+      /** @deprecated use `preset`. */
+      surfaceStyle?: boolean
       backgroundStyle: boolean
       density: boolean
       elevation: boolean
       buttonElevation: boolean
       radius: boolean
+      /** Master toggle for all preset-specific axis controls. */
+      presetAxes: boolean
     }
   }
 }
@@ -41,7 +48,7 @@ export const themeConfig: ThemeConfig = {
   defaults: {
     accentColor: "blue",
     surfaceColor: "slate",
-    surfaceStyle: "default",
+    preset: "default",
     backgroundStyle: "solid",
     mode: "system",
     density: "cozy",
@@ -55,12 +62,13 @@ export const themeConfig: ThemeConfig = {
       mode: true,
       accentColor: true,
       surfaceColor: true,
-      surfaceStyle: true,
+      preset: true,
       backgroundStyle: true,
       density: true,
       elevation: true,
       buttonElevation: true,
       radius: true,
+      presetAxes: true,
     },
   },
 }

@@ -4,7 +4,7 @@ export const themeConfig: ThemeConfig = {
   defaults: {
     accentColor: "blue",
     surfaceColor: "slate",
-    surfaceStyle: "default",
+    preset: "default",
     backgroundStyle: "solid",
     mode: "system",
     density: "cozy",
@@ -18,12 +18,13 @@ export const themeConfig: ThemeConfig = {
       mode: true,
       accentColor: true,
       surfaceColor: true,
-      surfaceStyle: true,
+      preset: true,
       backgroundStyle: true,
       density: true,
       elevation: true,
       buttonElevation: true,
       radius: true,
+      presetAxes: true,
     },
   },
 }

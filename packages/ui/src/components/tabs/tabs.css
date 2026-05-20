@@ -59,7 +59,7 @@
   }
 
   /* Glassmorphism surface style — active tab gets the glass gradient */
-  [data-surface-style="glassmorphism"]
+  [data-preset="glassmorphism"]
     .dr-tabs-trigger[data-variant="default"][data-state="active"] {
     background-color: transparent;
     background-image: linear-gradient(

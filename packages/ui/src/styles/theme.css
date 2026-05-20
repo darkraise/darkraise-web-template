@@ -918,8 +918,8 @@
     filter: invert(1);
   }
 
-  [data-surface-style="default"] .glass-strong,
-  [data-surface-style="default"] .overlay-surface {
+  [data-preset="default"] .glass-strong,
+  [data-preset="default"] .overlay-surface {
     border-color: hsl(var(--border));
   }
 
@@ -946,7 +946,7 @@
     z-index: 0;
   }
 
-  [data-background-style="gradient"][data-surface-style="glassmorphism"]
+  [data-background-style="gradient"][data-preset="glassmorphism"]
     .sidebar-gradient-overlay::before {
     background:
       var(--canvas-blob-a), var(--canvas-blob-b), var(--canvas-blob-c),
@@ -970,34 +970,34 @@
     z-index: 0;
   }
 
-  [data-background-style="gradient"][data-surface-style="glassmorphism"]
+  [data-background-style="gradient"][data-preset="glassmorphism"]
     .header-gradient-overlay::before {
     background:
       var(--canvas-blob-a), var(--canvas-blob-b), var(--canvas-blob-c),
       var(--canvas-blob-d), var(--canvas-ink);
   }
 
-  [data-mode="light"][data-background-style="gradient"][data-surface-style="default"]
+  [data-mode="light"][data-background-style="gradient"][data-preset="default"]
     .sidebar-gradient-overlay,
-  [data-mode="light"][data-background-style="gradient"][data-surface-style="default"]
+  [data-mode="light"][data-background-style="gradient"][data-preset="default"]
     .header-gradient-overlay {
     --sidebar-border: 215 20% 82%;
   }
 
-  [data-mode="dark"][data-background-style="gradient"][data-surface-style="default"]
+  [data-mode="dark"][data-background-style="gradient"][data-preset="default"]
     .sidebar-gradient-overlay,
-  [data-mode="dark"][data-background-style="gradient"][data-surface-style="default"]
+  [data-mode="dark"][data-background-style="gradient"][data-preset="default"]
     .header-gradient-overlay {
     --sidebar-border: 215 15% 30%;
   }
 
-  [data-mode="light"][data-background-style="gradient"][data-surface-style="default"]
+  [data-mode="light"][data-background-style="gradient"][data-preset="default"]
     main[data-content] {
     --muted-foreground: 215 18% 32%;
     --foreground: 222 47% 8%;
   }
 
-  [data-mode="dark"][data-background-style="gradient"][data-surface-style="default"]
+  [data-mode="dark"][data-background-style="gradient"][data-preset="default"]
     main[data-content] {
     --muted-foreground: 215 16% 78%;
     --foreground: 210 40% 98%;
@@ -1058,14 +1058,13 @@
 }
 
 @layer overrides {
-  [data-mode="dark"][data-surface-style="glassmorphism"]
-    .glass-strong.bg-background {
+  [data-mode="dark"][data-preset="glassmorphism"] .glass-strong.bg-background {
     background-color: transparent;
   }
 
-  [data-background-style="gradient"][data-surface-style="default"]
+  [data-background-style="gradient"][data-preset="default"]
     .sidebar-gradient-overlay,
-  [data-background-style="gradient"][data-surface-style="default"]
+  [data-background-style="gradient"][data-preset="default"]
     .header-gradient-overlay {
     background-color: transparent;
   }

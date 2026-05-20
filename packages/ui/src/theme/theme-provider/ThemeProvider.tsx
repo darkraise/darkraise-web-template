@@ -3,7 +3,6 @@ import type {
   AccentColor,
   BackgroundStyle,
   SurfaceColor,
-  SurfaceStyle,
   Density,
   Elevation,
   Radius,
@@ -14,24 +13,23 @@ import type {
   ThemeSettings,
   ThemeSyncStatus,
 } from "@theme/types"
-import {
-  SURFACE_COLORS,
-  SURFACE_STYLES,
-  DENSITIES,
-  ELEVATIONS,
-  RADII,
-} from "@theme/types"
-import {
-  generateTokens,
-  GLASS_ONLY_TOKEN_KEYS,
-} from "@theme/engine/generateTokens"
+import { SURFACE_COLORS, DENSITIES, ELEVATIONS, RADII } from "@theme/types"
+import { generateTokens } from "@theme/engine/generateTokens"
+import { presets, PRESET_NAMES, type PresetName } from "@theme/presets"
+import { accentColors } from "@theme/palettes/accentColors"
+import { surfaceColors } from "@theme/palettes/surfaceColors"
 import { ThemeContext } from "@theme/themeContext"
 import { themeConfig, type ThemeConfig } from "@theme/themeConfig"
 import { useDebouncedCallback } from "@hooks/useDebouncedCallback"
 
+declare const process: { env: { NODE_ENV?: string } }
+
 const LS_ACCENT = "theme-accent"
 const LS_SURFACE_COLOR = "theme-surface-color"
 const LS_STYLE = "theme-style"
+const LS_PRESET = "theme-preset"
+const LS_PRESET_AXIS_PREFIX = (presetName: string, axisName: string) =>
+  `theme-${presetName}-${axisName}`
 const LS_BG_STYLE = "theme-bg-style"
 const LS_MODE = "mode"
 const LS_DENSITY = "theme-density"
@@ -75,9 +73,12 @@ function resolveMode(mode: Mode): ResolvedMode {
   return mode === "system" ? getSystemMode() : mode
 }
 
-function applyTokens(tokens: Record<string, string>) {
+function applyTokens(
+  tokens: Record<string, string>,
+  keysToClear: readonly string[],
+) {
   const style = document.documentElement.style
-  for (const key of GLASS_ONLY_TOKEN_KEYS) {
+  for (const key of keysToClear) {
     if (!(key in tokens)) {
       style.removeProperty(key)
     }
@@ -103,6 +104,32 @@ export function ThemeProvider({
   persistenceDebounce = 500,
 }: ThemeProviderProps) {
   const cfg = config ?? themeConfig
+
+  // Dev-only warning for legacy themeConfig keys.
+  useEffect(() => {
+    if (process.env.NODE_ENV === "production") return
+    const legacyDefault = (cfg.defaults as { surfaceStyle?: string })
+      .surfaceStyle
+    const legacyAxis = (cfg.switcher.axes as { surfaceStyle?: boolean })
+      .surfaceStyle
+    if (legacyDefault !== undefined) {
+      console.warn(
+        "[ThemeProvider] themeConfig.defaults.surfaceStyle is deprecated; use `preset` instead.",
+      )
+    }
+    if (legacyAxis !== undefined) {
+      console.warn(
+        "[ThemeProvider] themeConfig.switcher.axes.surfaceStyle is deprecated; use `preset` instead.",
+      )
+    }
+  }, [cfg])
+
+  const legacyConfigDefault = (cfg.defaults as { surfaceStyle?: PresetName })
+    .surfaceStyle
+  const cfgDefaultPreset = (cfg.defaults.preset ??
+    legacyConfigDefault ??
+    "default") as PresetName
+
   const [accentColor, setAccentColorState] = useState<AccentColor>(() => {
     const stored = readStorage(LS_ACCENT)
     return (stored as AccentColor) || cfg.defaults.accentColor
@@ -116,12 +143,43 @@ export function ThemeProvider({
     return cfg.defaults.surfaceColor
   })
 
-  const [surfaceStyle, setSurfaceStyleState] = useState<SurfaceStyle>(() => {
-    const stored = readStorage(LS_STYLE)
-    if (stored && (SURFACE_STYLES as readonly string[]).includes(stored)) {
-      return stored as SurfaceStyle
+  const [preset, setPresetState] = useState<PresetName>(() => {
+    const legacy = readStorage(LS_STYLE)
+    const current = readStorage(LS_PRESET)
+    // One-shot migration: copy theme-style → theme-preset if missing.
+    if (legacy !== null && current === null) {
+      writeStorage(LS_PRESET, legacy)
     }
-    return cfg.defaults.surfaceStyle
+    if (legacy !== null) {
+      try {
+        globalThis.localStorage.removeItem(LS_STYLE)
+      } catch {
+        // ignore
+      }
+    }
+    const stored = readStorage(LS_PRESET)
+    if (stored && (PRESET_NAMES as readonly string[]).includes(stored)) {
+      return stored as PresetName
+    }
+    return cfgDefaultPreset
+  })
+
+  const [presetAxisValues, setPresetAxisValuesState] = useState<
+    Record<string, Record<string, string>>
+  >(() => {
+    const result: Record<string, Record<string, string>> = {}
+    for (const [presetName, p] of Object.entries(presets)) {
+      const axes: Record<string, string> = {}
+      for (const [axisName, axisDef] of Object.entries(p.axes)) {
+        const stored = readStorage(LS_PRESET_AXIS_PREFIX(presetName, axisName))
+        const valid = (axisDef.values as readonly string[]).includes(
+          stored ?? "",
+        )
+        axes[axisName] = valid ? (stored as string) : axisDef.default
+      }
+      result[presetName] = axes
+    }
+    return result
   })
 
   const [backgroundStyle, setBackgroundStyleState] = useState<BackgroundStyle>(
@@ -194,32 +252,136 @@ export function ThemeProvider({
     (
       accent: AccentColor,
       surfColor: SurfaceColor,
-      style: SurfaceStyle,
+      presetName: PresetName,
       bgStyle: BackgroundStyle,
       resolved: ResolvedMode,
+      axisValues: Record<string, Record<string, string>>,
     ) => {
+      const activePreset = presets[presetName]
+
       document.documentElement.setAttribute("data-mode", resolved)
-      document.documentElement.setAttribute("data-surface-style", style)
+      document.documentElement.setAttribute("data-preset", presetName)
       document.documentElement.setAttribute("data-background-style", bgStyle)
-      const tokens = generateTokens({
+
+      type AnyPreset = {
+        axes: Record<string, unknown>
+        ownedTokenKeys?: readonly string[]
+      }
+      const presetsAny = presets as Record<string, AnyPreset>
+
+      // Clear all preset-axis attributes that don't belong to the active preset.
+      for (const otherName of PRESET_NAMES) {
+        if (otherName === presetName) continue
+        for (const axisName of Object.keys(presetsAny[otherName]?.axes ?? {})) {
+          document.documentElement.removeAttribute(
+            `data-${otherName}-${axisName}`,
+          )
+        }
+      }
+      // Write active preset's axis attributes.
+      for (const axisName of Object.keys(activePreset.axes)) {
+        document.documentElement.setAttribute(
+          `data-${presetName}-${axisName}`,
+          axisValues[presetName]?.[axisName] ?? "",
+        )
+      }
+
+      // Common-axis tokens.
+      const commonTokens = generateTokens({
         accentColor: accent,
         surfaceColor: surfColor,
-        surfaceStyle: style,
+        preset: presetName,
         backgroundStyle: bgStyle,
         mode: resolved,
       })
-      applyTokens(tokens)
+
+      // Preset-owned tokens (if the preset declares any cross-axis math).
+      let presetTokens: Record<string, string> = {}
+      if (activePreset.generateTokens) {
+        const accentScale = accentColors[accent]
+        const neutralScale =
+          surfaceColors.slate as import("@theme/types").ColorScale
+        const surfaceScale =
+          surfColor === "slate"
+            ? neutralScale
+            : (accentColors[surfColor as keyof typeof accentColors] ??
+              neutralScale)
+        presetTokens = activePreset.generateTokens(
+          {
+            accentColor: accent,
+            surfaceColor: surfColor,
+            backgroundStyle: bgStyle,
+            mode: resolved,
+            accent: accentScale,
+            surface: surfaceScale,
+            neutral: neutralScale,
+          },
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (axisValues[presetName] ?? {}) as any,
+        )
+      }
+
+      // Keys to clear: every ownedTokenKey from every OTHER preset.
+      const otherOwnedKeys = PRESET_NAMES.filter(
+        (n) => n !== presetName,
+      ).flatMap((n) => presetsAny[n]?.ownedTokenKeys ?? [])
+      const mergedTokens = { ...commonTokens, ...presetTokens }
+      applyTokens(
+        mergedTokens,
+        otherOwnedKeys.filter((k) => !(k in mergedTokens)),
+      )
     },
     [],
+  )
+
+  const buildSettings = useCallback(
+    (overrides: Partial<ThemeSettings> = {}): ThemeSettings => ({
+      accentColor,
+      surfaceColor,
+      preset,
+      backgroundStyle,
+      mode,
+      density,
+      elevation,
+      buttonElevation,
+      radius,
+      presetAxisValues,
+      ...overrides,
+    }),
+    [
+      accentColor,
+      surfaceColor,
+      preset,
+      backgroundStyle,
+      mode,
+      density,
+      elevation,
+      buttonElevation,
+      radius,
+      presetAxisValues,
+    ],
   )
 
   const applySettings = useCallback(
     (settings: ThemeSettings) => {
       const resolved = resolveMode(settings.mode)
+      // Read preset; fall back to legacy surfaceStyle for migration.
+      // Guard: if the resolved name isn't registered (e.g. "glassmorphism"
+      // before Phase 3 lands), fall back to the config default rather than
+      // crashing with `presets[name].axes` undefined.
+      const rawPreset = (settings.preset ??
+        settings.surfaceStyle ??
+        cfgDefaultPreset) as string
+      const newPreset = (
+        (PRESET_NAMES as readonly string[]).includes(rawPreset)
+          ? rawPreset
+          : cfgDefaultPreset
+      ) as PresetName
+      const newAxisValues = settings.presetAxisValues ?? presetAxisValues
 
       setAccentColorState(settings.accentColor)
       setSurfaceColorState(settings.surfaceColor)
-      setSurfaceStyleState(settings.surfaceStyle)
+      setPresetState(newPreset)
       setBackgroundStyleState(settings.backgroundStyle)
       setModeState(settings.mode)
       setResolvedMode(resolved)
@@ -229,10 +391,11 @@ export function ThemeProvider({
         settings.buttonElevation ?? cfg.defaults.buttonElevation,
       )
       setRadiusState(settings.radius ?? cfg.defaults.radius)
+      setPresetAxisValuesState(newAxisValues)
 
       writeStorage(LS_ACCENT, settings.accentColor)
       writeStorage(LS_SURFACE_COLOR, settings.surfaceColor)
-      writeStorage(LS_STYLE, settings.surfaceStyle)
+      writeStorage(LS_PRESET, newPreset)
       writeStorage(LS_BG_STYLE, settings.backgroundStyle)
       writeStorage(LS_MODE, settings.mode)
       writeStorage(LS_DENSITY, settings.density ?? cfg.defaults.density)
@@ -242,6 +405,11 @@ export function ThemeProvider({
         settings.buttonElevation ?? cfg.defaults.buttonElevation,
       )
       writeStorage(LS_RADIUS, settings.radius ?? cfg.defaults.radius)
+      for (const [presetName, axes] of Object.entries(newAxisValues)) {
+        for (const [axisName, value] of Object.entries(axes)) {
+          writeStorage(LS_PRESET_AXIS_PREFIX(presetName, axisName), value)
+        }
+      }
 
       document.documentElement.setAttribute(
         "data-density",
@@ -263,12 +431,13 @@ export function ThemeProvider({
       applyTheme(
         settings.accentColor,
         settings.surfaceColor,
-        settings.surfaceStyle,
+        newPreset,
         settings.backgroundStyle,
         resolved,
+        newAxisValues,
       )
     },
-    [applyTheme, cfg],
+    [applyTheme, cfg, cfgDefaultPreset, presetAxisValues],
   )
 
   const debouncedSave = useDebouncedCallback(
@@ -284,32 +453,6 @@ export function ThemeProvider({
     persistenceDebounce,
   )
 
-  const buildSettings = useCallback(
-    (overrides: Partial<ThemeSettings> = {}): ThemeSettings => ({
-      accentColor,
-      surfaceColor,
-      surfaceStyle,
-      backgroundStyle,
-      mode,
-      density,
-      elevation,
-      buttonElevation,
-      radius,
-      ...overrides,
-    }),
-    [
-      accentColor,
-      surfaceColor,
-      surfaceStyle,
-      backgroundStyle,
-      mode,
-      density,
-      elevation,
-      buttonElevation,
-      radius,
-    ],
-  )
-
   const setAccentColor = useCallback(
     (color: AccentColor) => {
       setAccentColorState(color)
@@ -317,9 +460,10 @@ export function ThemeProvider({
       applyTheme(
         color,
         surfaceColor,
-        surfaceStyle,
+        preset,
         backgroundStyle,
         resolvedMode,
+        presetAxisValues,
       )
       const settings = buildSettings({ accentColor: color })
       notifyChange(settings)
@@ -332,9 +476,10 @@ export function ThemeProvider({
       buildSettings,
       debouncedSave,
       surfaceColor,
-      surfaceStyle,
+      preset,
       backgroundStyle,
       resolvedMode,
+      presetAxisValues,
     ],
   )
 
@@ -345,9 +490,10 @@ export function ThemeProvider({
       applyTheme(
         accentColor,
         color,
-        surfaceStyle,
+        preset,
         backgroundStyle,
         resolvedMode,
+        presetAxisValues,
       )
       const settings = buildSettings({ surfaceColor: color })
       notifyChange(settings)
@@ -360,24 +506,26 @@ export function ThemeProvider({
       buildSettings,
       debouncedSave,
       accentColor,
-      surfaceStyle,
+      preset,
       backgroundStyle,
       resolvedMode,
+      presetAxisValues,
     ],
   )
 
-  const setSurfaceStyle = useCallback(
-    (style: SurfaceStyle) => {
-      setSurfaceStyleState(style)
-      writeStorage(LS_STYLE, style)
+  const setPreset = useCallback(
+    (p: PresetName) => {
+      setPresetState(p)
+      writeStorage(LS_PRESET, p)
       applyTheme(
         accentColor,
         surfaceColor,
-        style,
+        p,
         backgroundStyle,
         resolvedMode,
+        presetAxisValues,
       )
-      const settings = buildSettings({ surfaceStyle: style })
+      const settings = buildSettings({ preset: p })
       notifyChange(settings)
       hasUserChanged.current = true
       debouncedSave(settings)
@@ -391,6 +539,67 @@ export function ThemeProvider({
       surfaceColor,
       backgroundStyle,
       resolvedMode,
+      presetAxisValues,
+    ],
+  )
+
+  const setPresetAxis = useCallback(
+    (axisName: string, value: string) => {
+      const activePreset = presets[preset]
+      const axisDef = (
+        activePreset.axes as Record<string, { values: readonly string[] }>
+      )[axisName]
+      if (!axisDef) {
+        if (process.env.NODE_ENV !== "production") {
+          console.warn(
+            `[ThemeProvider] setPresetAxis: axis "${axisName}" is not defined on the active preset "${preset}".`,
+          )
+        }
+        return
+      }
+      if (!axisDef.values.includes(value)) {
+        if (process.env.NODE_ENV !== "production") {
+          console.warn(
+            `[ThemeProvider] setPresetAxis: value "${value}" is not valid for axis "${axisName}" on preset "${preset}" (expected one of: ${axisDef.values.join(", ")}).`,
+          )
+        }
+        return
+      }
+      // Pure computation of the next state.
+      const next = {
+        ...presetAxisValues,
+        [preset]: { ...presetAxisValues[preset], [axisName]: value },
+      }
+
+      // State update — no updater function, no side effects in it.
+      setPresetAxisValuesState(next)
+
+      // Side effects after.
+      writeStorage(LS_PRESET_AXIS_PREFIX(preset, axisName), value)
+      applyTheme(
+        accentColor,
+        surfaceColor,
+        preset,
+        backgroundStyle,
+        resolvedMode,
+        next,
+      )
+      const settings = buildSettings({ presetAxisValues: next })
+      notifyChange(settings)
+      hasUserChanged.current = true
+      debouncedSave(settings)
+    },
+    [
+      preset,
+      presetAxisValues,
+      accentColor,
+      surfaceColor,
+      backgroundStyle,
+      resolvedMode,
+      applyTheme,
+      notifyChange,
+      buildSettings,
+      debouncedSave,
     ],
   )
 
@@ -398,7 +607,14 @@ export function ThemeProvider({
     (bgStyle: BackgroundStyle) => {
       setBackgroundStyleState(bgStyle)
       writeStorage(LS_BG_STYLE, bgStyle)
-      applyTheme(accentColor, surfaceColor, surfaceStyle, bgStyle, resolvedMode)
+      applyTheme(
+        accentColor,
+        surfaceColor,
+        preset,
+        bgStyle,
+        resolvedMode,
+        presetAxisValues,
+      )
       const settings = buildSettings({ backgroundStyle: bgStyle })
       notifyChange(settings)
       hasUserChanged.current = true
@@ -411,8 +627,9 @@ export function ThemeProvider({
       debouncedSave,
       accentColor,
       surfaceColor,
-      surfaceStyle,
+      preset,
       resolvedMode,
+      presetAxisValues,
     ],
   )
 
@@ -425,9 +642,10 @@ export function ThemeProvider({
       applyTheme(
         accentColor,
         surfaceColor,
-        surfaceStyle,
+        preset,
         backgroundStyle,
         resolved,
+        presetAxisValues,
       )
       const settings = buildSettings({ mode: m })
       notifyChange(settings)
@@ -441,8 +659,9 @@ export function ThemeProvider({
       debouncedSave,
       accentColor,
       surfaceColor,
-      surfaceStyle,
+      preset,
       backgroundStyle,
+      presetAxisValues,
     ],
   )
 
@@ -502,17 +721,19 @@ export function ThemeProvider({
     applyTheme(
       accentColor,
       surfaceColor,
-      surfaceStyle,
+      preset,
       backgroundStyle,
       resolvedMode,
+      presetAxisValues,
     )
   }, [
     applyTheme,
     accentColor,
     surfaceColor,
-    surfaceStyle,
+    preset,
     backgroundStyle,
     resolvedMode,
+    presetAxisValues,
   ])
 
   useEffect(() => {
@@ -534,9 +755,10 @@ export function ThemeProvider({
       applyTheme(
         accentColor,
         surfaceColor,
-        surfaceStyle,
+        preset,
         backgroundStyle,
         resolved,
+        presetAxisValues,
       )
     }
     mq.addEventListener("change", handler)
@@ -545,8 +767,9 @@ export function ThemeProvider({
     mode,
     accentColor,
     surfaceColor,
-    surfaceStyle,
+    preset,
     backgroundStyle,
+    presetAxisValues,
     applyTheme,
   ])
 
@@ -581,7 +804,8 @@ export function ThemeProvider({
     () => ({
       accentColor,
       surfaceColor,
-      surfaceStyle,
+      preset,
+      surfaceStyle: preset, // legacy alias
       backgroundStyle,
       mode,
       density,
@@ -591,20 +815,24 @@ export function ThemeProvider({
       resolvedMode,
       config: cfg,
       syncStatus,
+      activePreset: presets[preset],
+      presetAxisValues,
       setAccentColor,
       setSurfaceColor,
-      setSurfaceStyle,
+      setPreset,
+      setSurfaceStyle: setPreset, // legacy alias
       setBackgroundStyle,
       setMode,
       setDensity,
       setElevation,
       setButtonElevation,
       setRadius,
+      setPresetAxis,
     }),
     [
       accentColor,
       surfaceColor,
-      surfaceStyle,
+      preset,
       backgroundStyle,
       mode,
       density,
@@ -614,15 +842,17 @@ export function ThemeProvider({
       resolvedMode,
       cfg,
       syncStatus,
+      presetAxisValues,
       setAccentColor,
       setSurfaceColor,
-      setSurfaceStyle,
+      setPreset,
       setBackgroundStyle,
       setMode,
       setDensity,
       setElevation,
       setButtonElevation,
       setRadius,
+      setPresetAxis,
     ],
   )
 

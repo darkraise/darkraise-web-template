@@ -165,7 +165,8 @@ export function ThemeSwitcher() {
           type="single"
           value={surfaceStyle}
           onValueChange={(value) => {
-            if (value) setSurfaceStyle(value as SurfaceStyle)
+            if (value)
+              setSurfaceStyle(value as Parameters<typeof setSurfaceStyle>[0])
           }}
           variant="outline"
           size="sm"

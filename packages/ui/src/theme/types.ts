@@ -1,3 +1,5 @@
+import type { PresetName, ThemePreset } from "@theme/presets"
+
 export const ACCENT_COLORS = [
   "red",
   "orange",
@@ -22,7 +24,9 @@ export type AccentColor = (typeof ACCENT_COLORS)[number]
 export const SURFACE_COLORS = ["slate", ...ACCENT_COLORS] as const
 export type SurfaceColor = (typeof SURFACE_COLORS)[number]
 
+/** @deprecated use preset names from `@theme/presets`. */
 export const SURFACE_STYLES = ["default", "glassmorphism"] as const
+/** @deprecated use `PresetName` from `@theme/presets`. */
 export type SurfaceStyle = (typeof SURFACE_STYLES)[number]
 
 export const BACKGROUND_STYLES = ["solid", "gradient"] as const
@@ -47,6 +51,7 @@ export type ColorScale = Record<
   string
 >
 
+/** @deprecated use `PresetSurfaceRecipe` from `@theme/presets`. */
 export interface SurfaceStyleRecipe {
   name: SurfaceStyle
   label: string
@@ -75,13 +80,17 @@ export interface SurfaceStyleRecipe {
 export interface ThemeSettings {
   accentColor: AccentColor
   surfaceColor: SurfaceColor
-  surfaceStyle: SurfaceStyle
+  preset: PresetName
+  /** @deprecated use `preset`. Read by the migration shim in ThemeProvider. */
+  surfaceStyle?: SurfaceStyle
   backgroundStyle: BackgroundStyle
   mode: Mode
   density?: Density
   elevation?: Elevation
   buttonElevation?: Elevation
   radius?: Radius
+  /** Per-preset axis values; outer key = preset name, inner key = axis name. */
+  presetAxisValues?: Record<string, Record<string, string>>
 }
 
 export interface ThemePersistenceAdapter {
@@ -94,7 +103,9 @@ export type ThemeSyncStatus = "idle" | "loading" | "saving" | "error"
 export interface ThemeContextValue {
   accentColor: AccentColor
   surfaceColor: SurfaceColor
-  surfaceStyle: SurfaceStyle
+  preset: PresetName
+  /** @deprecated use `preset`. */
+  surfaceStyle: PresetName
   backgroundStyle: BackgroundStyle
   mode: Mode
   density: Density
@@ -104,13 +115,24 @@ export interface ThemeContextValue {
   resolvedMode: ResolvedMode
   config: import("./themeConfig").ThemeConfig
   syncStatus: ThemeSyncStatus
+  /** Active preset object (config metadata + axes). */
+  activePreset: ThemePreset
+  /** All preset-axis values, keyed by preset name → axis name → enum value. */
+  presetAxisValues: Record<string, Record<string, string>>
   setAccentColor: (color: AccentColor) => void
   setSurfaceColor: (color: SurfaceColor) => void
-  setSurfaceStyle: (style: SurfaceStyle) => void
+  setPreset: (preset: PresetName) => void
+  /** @deprecated use `setPreset`. */
+  setSurfaceStyle: (style: PresetName) => void
   setBackgroundStyle: (style: BackgroundStyle) => void
   setMode: (mode: Mode) => void
   setDensity: (density: Density) => void
   setElevation: (elevation: Elevation) => void
   setButtonElevation: (elevation: Elevation) => void
   setRadius: (radius: Radius) => void
+  /**
+   * Update one preset-specific axis on the active preset. No-ops with a
+   * console.warn (dev-only) when the axis is not valid for the active preset.
+   */
+  setPresetAxis: (axisName: string, value: string) => void
 }
