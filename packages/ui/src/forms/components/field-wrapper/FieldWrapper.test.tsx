@@ -20,7 +20,7 @@ describe("FieldWrapper", () => {
         {renderSpy}
       </FieldWrapper>,
     )
-    expect(renderSpy).toHaveBeenCalledWith(false)
+    expect(renderSpy).toHaveBeenCalledWith(false, undefined)
   })
 
   it("renders description when provided", () => {
