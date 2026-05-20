@@ -1,0 +1,4 @@
+/* Placeholder. The Default preset has no preset-specific axes in v1,
+ * so it ships no attribute-selector rules. Kept as a file so the import
+ * pattern in styles/theme.css is uniform across presets.
+ */
