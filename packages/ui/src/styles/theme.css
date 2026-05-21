@@ -363,77 +363,88 @@
   }
 }
 
-:root {
-  --background: 210 40% 98%;
-  --foreground: 222 47% 11%;
-  --card: 0 0% 100%;
-  --card-foreground: 222 47% 11%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 222 47% 11%;
-  --primary: 217 91% 60%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 210 40% 96%;
-  --secondary-foreground: 222 47% 11%;
-  --muted: 210 40% 96%;
-  --muted-foreground: 215 16% 47%;
-  --accent: 210 40% 96%;
-  --accent-foreground: 222 47% 11%;
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 0 0% 100%;
-  --success: 160 84% 39%;
-  --success-foreground: 0 0% 100%;
-  --warning: 38 92% 50%;
-  --warning-foreground: 222 47% 11%;
-  --info: 217 91% 60%;
-  --info-foreground: 0 0% 100%;
-  --border: 214 32% 91%;
-  --input: 214 32% 91%;
-  --ring: 217 91% 60%;
-  --focus-ring: 217 91% 78%;
-  --chart-1: hsl(217 91% 60%);
-  --chart-2: hsl(142 71% 45%);
-  --chart-3: hsl(350 89% 60%);
-  --chart-4: hsl(38 92% 50%);
-  --chart-5: hsl(258 90% 66%);
-  --surface-base: 210 40% 98%;
-  --surface-raised: 0 0% 100%;
-  --surface-overlay: 0 0% 100%;
-  --surface-sunken: 210 40% 96%;
-  --surface-sidebar: 222 47% 11%;
-  --surface-header: 0 0% 100%;
-  --border-subtle: 210 40% 96%;
-  --border-default: 214 32% 91%;
-  --shadow-card: none;
-  --shadow-dropdown:
-    0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --backdrop-blur: none;
-  --backdrop-filter: none;
-  --surface-opacity: 1;
-  --fog-05: transparent;
-  --fog-10: transparent;
-  --fog-15: transparent;
-  --fog-20: transparent;
-  --fog-30: transparent;
-  --fog-50: transparent;
-  /* No-op shadow values (must be syntactically valid <shadow>, not the
+/* :root token defaults live in @layer base so unlayered preset bindings
+   in neon.css / glass.css / @layer overrides win the cascade. Without
+   this wrapper, `:root` (specificity 0,1,0, unlayered, source-order
+   LATER than the preset @imports) was overriding every preset's CSS
+   token overrides at runtime — Neon's --affordance-glow, Neon's
+   --surface-overlay-bg, Neon's --card-elevation-* glow recipes, and
+   Glass's --surface-overlay-bg with frosted noise. Inline-style writes
+   from generateTokens (engine + Neon's accent rebind) were the only
+   preset overrides that worked, because they win regardless of
+   stylesheet layer. */
+@layer base {
+  :root {
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222 47% 11%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 160 84% 39%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 222 47% 11%;
+    --info: 217 91% 60%;
+    --info-foreground: 0 0% 100%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 217 91% 60%;
+    --focus-ring: 217 91% 78%;
+    --chart-1: hsl(217 91% 60%);
+    --chart-2: hsl(142 71% 45%);
+    --chart-3: hsl(350 89% 60%);
+    --chart-4: hsl(38 92% 50%);
+    --chart-5: hsl(258 90% 66%);
+    --surface-base: 210 40% 98%;
+    --surface-raised: 0 0% 100%;
+    --surface-overlay: 0 0% 100%;
+    --surface-sunken: 210 40% 96%;
+    --surface-sidebar: 222 47% 11%;
+    --surface-header: 0 0% 100%;
+    --border-subtle: 210 40% 96%;
+    --border-default: 214 32% 91%;
+    --shadow-card: none;
+    --shadow-dropdown:
+      0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --backdrop-blur: none;
+    --backdrop-filter: none;
+    --surface-opacity: 1;
+    --fog-05: transparent;
+    --fog-10: transparent;
+    --fog-15: transparent;
+    --fog-20: transparent;
+    --fog-30: transparent;
+    --fog-50: transparent;
+    /* No-op shadow values (must be syntactically valid <shadow>, not the
      `none` keyword, because they get composed into multi-shadow lists like
      `box-shadow: var(--elevation-medium), var(--inset-hi-strong)`. The `none`
      keyword is only valid as a complete box-shadow value, never as a list
      item — using it here invalidates the entire declaration. */
-  --inset-hi: 0 0 transparent;
-  --inset-hi-strong: 0 0 transparent;
-  --inset-hi-button: 0 0 transparent;
+    --inset-hi: 0 0 transparent;
+    --inset-hi-strong: 0 0 transparent;
+    --inset-hi-button: 0 0 transparent;
 
-  /* Radius axis. --radius drives Tailwind's rounded-md/lg/sm utilities used
+    /* Radius axis. --radius drives Tailwind's rounded-md/lg/sm utilities used
      by cards, popovers, inputs, etc. --radius-button is read directly by
      buttons so they can go fully pill-shaped at the highest level without
      turning cards into circles. The values here match data-radius="rounded"
      (today's default); the [data-radius] selectors below rebind them. */
-  --radius: 0.5rem;
-  --radius-button: 0.5rem;
-  --noise-opacity: 0;
-  --cropper-grid-line: rgba(255, 255, 255, 0.5);
-  /* Dark blob peaks bumped from 8/6/4/3% to 10/8/6/5% (mid values from
+    --radius: 0.5rem;
+    --radius-button: 0.5rem;
+    --noise-opacity: 0;
+    --cropper-grid-line: rgba(255, 255, 255, 0.5);
+    /* Dark blob peaks bumped from 8/6/4/3% to 10/8/6/5% (mid values from
      3/2/2/1% to 4/3/3/2%) so picking a saturated surfaceColor in
      dark+gradient produces a more legible color shift. Light-mode
      blobs in the [data-mode="light"] block stay at their original
@@ -442,116 +453,120 @@
      All peak/mid percentages multiply by --canvas-blob-scale so the
      `backgroundIntensity` axis (subtle/balanced/vivid) can dial the
      blob loudness in one place. Default 1 = balanced. */
-  --canvas-blob-scale: 1;
-  --canvas-blob-a: radial-gradient(
-    1400px 900px at 10% -5%,
-    color-mix(
-        in oklab,
-        var(--sf-hue) calc(10% * var(--canvas-blob-scale)),
-        transparent
-      )
-      0%,
-    color-mix(
-        in oklab,
-        var(--sf-hue) calc(4% * var(--canvas-blob-scale)),
-        transparent
-      )
-      55%,
-    transparent 100%
-  );
-  --canvas-blob-b: radial-gradient(
-    1100px 800px at 100% 15%,
-    color-mix(
-        in oklab,
-        var(--sf-hue-2) calc(8% * var(--canvas-blob-scale)),
-        transparent
-      )
-      0%,
-    color-mix(
-        in oklab,
-        var(--sf-hue-2) calc(3% * var(--canvas-blob-scale)),
-        transparent
-      )
-      55%,
-    transparent 100%
-  );
-  --canvas-blob-c: radial-gradient(
-    1200px 900px at 55% 95%,
-    color-mix(
-        in oklab,
-        var(--sf-hue-3) calc(6% * var(--canvas-blob-scale)),
-        transparent
-      )
-      0%,
-    color-mix(
-        in oklab,
-        var(--sf-hue-3) calc(3% * var(--canvas-blob-scale)),
-        transparent
-      )
-      55%,
-    transparent 100%
-  );
-  --canvas-blob-d: radial-gradient(
-    900px 700px at 35% 55%,
-    color-mix(
-        in oklab,
-        var(--sf-hue-2) calc(5% * var(--canvas-blob-scale)),
-        transparent
-      )
-      0%,
-    color-mix(
-        in oklab,
-        var(--sf-hue-2) calc(2% * var(--canvas-blob-scale)),
-        transparent
-      )
-      55%,
-    transparent 100%
-  );
-  /* Gradient-mode floor/ceiling. Both wire to --background so the page
+    --canvas-blob-scale: 1;
+    --canvas-blob-a: radial-gradient(
+      1400px 900px at 10% -5%,
+      color-mix(
+          in oklab,
+          var(--sf-hue) calc(10% * var(--canvas-blob-scale)),
+          transparent
+        )
+        0%,
+      color-mix(
+          in oklab,
+          var(--sf-hue) calc(4% * var(--canvas-blob-scale)),
+          transparent
+        )
+        55%,
+      transparent 100%
+    );
+    --canvas-blob-b: radial-gradient(
+      1100px 800px at 100% 15%,
+      color-mix(
+          in oklab,
+          var(--sf-hue-2) calc(8% * var(--canvas-blob-scale)),
+          transparent
+        )
+        0%,
+      color-mix(
+          in oklab,
+          var(--sf-hue-2) calc(3% * var(--canvas-blob-scale)),
+          transparent
+        )
+        55%,
+      transparent 100%
+    );
+    --canvas-blob-c: radial-gradient(
+      1200px 900px at 55% 95%,
+      color-mix(
+          in oklab,
+          var(--sf-hue-3) calc(6% * var(--canvas-blob-scale)),
+          transparent
+        )
+        0%,
+      color-mix(
+          in oklab,
+          var(--sf-hue-3) calc(3% * var(--canvas-blob-scale)),
+          transparent
+        )
+        55%,
+      transparent 100%
+    );
+    --canvas-blob-d: radial-gradient(
+      900px 700px at 35% 55%,
+      color-mix(
+          in oklab,
+          var(--sf-hue-2) calc(5% * var(--canvas-blob-scale)),
+          transparent
+        )
+        0%,
+      color-mix(
+          in oklab,
+          var(--sf-hue-2) calc(2% * var(--canvas-blob-scale)),
+          transparent
+        )
+        55%,
+      transparent 100%
+    );
+    /* Gradient-mode floor/ceiling. Both wire to --background so the page
      darkness agrees with the solid-mode body color; the dark default
      keeps a small ceiling deepening (mixed 20% with black) so the
      vertical "weighted top, fade to deeper" feel survives. The
      [data-mode="light"] block sets its own floor/ceiling values for
      the light recipe. */
-  --canvas-ink-floor: hsl(var(--background));
-  --canvas-ink-ceiling: color-mix(in oklab, hsl(var(--background)) 80%, black);
-  --canvas-ink: linear-gradient(
-    180deg,
-    color-mix(in oklab, var(--sf-hue) 7%, var(--canvas-ink-floor)) 0%,
-    color-mix(in oklab, var(--sf-hue) 5%, var(--canvas-ink-ceiling)) 100%
-  );
+    --canvas-ink-floor: hsl(var(--background));
+    --canvas-ink-ceiling: color-mix(
+      in oklab,
+      hsl(var(--background)) 80%,
+      black
+    );
+    --canvas-ink: linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--sf-hue) 7%, var(--canvas-ink-floor)) 0%,
+      color-mix(in oklab, var(--sf-hue) 5%, var(--canvas-ink-ceiling)) 100%
+    );
 
-  /* Density (cozy defaults) */
-  --density-button-px: 0.75rem;
-  --density-button-py: 0.375rem;
-  --density-input-px: 0.625rem;
-  --density-input-py: 0.5rem;
-  --density-cell: 2rem;
-  --density-container-p: 1rem;
-  --density-row-py: 0.375rem;
-  --density-stack-gap: 0.5rem;
+    /* Density (cozy defaults) */
+    --density-button-px: 0.75rem;
+    --density-button-py: 0.375rem;
+    --density-input-px: 0.625rem;
+    --density-input-py: 0.5rem;
+    --density-cell: 2rem;
+    --density-container-p: 1rem;
+    --density-row-py: 0.375rem;
+    --density-stack-gap: 0.5rem;
 
-  /* Derived sm/lg variants — these reference the base tokens via calc(),
+    /* Derived sm/lg variants — these reference the base tokens via calc(),
      so they update automatically when [data-density] re-binds the base tokens.
      Using derived tokens (rather than calc() inside Tailwind arbitrary values)
      avoids the CSS-spec requirement for whitespace around calc() operators
      and keeps consumer classes readable.
      The max() floors prevent compact-sm from collapsing padding to 0
      (which would render a 20px-tall sm button with text touching its border). */
-  --density-button-px-sm: max(
-    calc(var(--density-button-px) - 0.25rem),
-    0.25rem
-  );
-  --density-button-py-sm: max(
-    calc(var(--density-button-py) - 0.25rem),
-    0.125rem
-  );
-  --density-button-px-lg: calc(var(--density-button-px) + 0.5rem);
-  --density-button-py-lg: calc(var(--density-button-py) + 0.25rem);
-  --density-cell-sm: max(calc(var(--density-cell) - 0.25rem), 1.5rem);
-  --density-cell-lg: calc(var(--density-cell) + 0.5rem);
+    --density-button-px-sm: max(
+      calc(var(--density-button-px) - 0.25rem),
+      0.25rem
+    );
+    --density-button-py-sm: max(
+      calc(var(--density-button-py) - 0.25rem),
+      0.125rem
+    );
+    --density-button-px-lg: calc(var(--density-button-px) + 0.5rem);
+    --density-button-py-lg: calc(var(--density-button-py) + 0.25rem);
+    --density-cell-sm: max(calc(var(--density-cell) - 0.25rem), 1.5rem);
+    --density-cell-lg: calc(var(--density-cell) + 0.5rem);
 
-  /* Two parallel shadow ramps.
+    /* Two parallel shadow ramps.
 
      `--elevation-{low,medium,high}` is theme-axis-tracking. The :root
      values represent the default (theme=medium-equivalent) intensity, and
@@ -574,20 +589,20 @@
      instead of `none`, so it composes cleanly into multi-shadow lists
      like `box-shadow: var(--elevation-medium), var(--inset-hi-strong)`.
      The `none` keyword is only valid as a complete box-shadow value. */
-  --elevation-flat: 0 0 transparent;
-  --elevation-low: 0 2px 4px 0 rgb(0 0 0 / 0.1);
-  --elevation-medium:
-    0 8px 20px -2px rgb(0 0 0 / 0.18), 0 3px 8px -1px rgb(0 0 0 / 0.1);
-  --elevation-high:
-    0 32px 48px -8px rgb(0 0 0 / 0.32), 0 12px 24px -4px rgb(0 0 0 / 0.18);
-  --card-elevation-low: 0 1px 2px 0 rgb(0 0 0 / 0.07);
-  --card-elevation-medium:
-    0 8px 20px -2px rgb(0 0 0 / 0.18), 0 3px 8px -1px rgb(0 0 0 / 0.1);
-  --card-elevation-high:
-    0 48px 72px -10px rgb(0 0 0 / 0.45), 0 20px 36px -6px rgb(0 0 0 / 0.28);
-  --shadow-button: 0 0 transparent;
+    --elevation-flat: 0 0 transparent;
+    --elevation-low: 0 2px 4px 0 rgb(0 0 0 / 0.1);
+    --elevation-medium:
+      0 8px 20px -2px rgb(0 0 0 / 0.18), 0 3px 8px -1px rgb(0 0 0 / 0.1);
+    --elevation-high:
+      0 32px 48px -8px rgb(0 0 0 / 0.32), 0 12px 24px -4px rgb(0 0 0 / 0.18);
+    --card-elevation-low: 0 1px 2px 0 rgb(0 0 0 / 0.07);
+    --card-elevation-medium:
+      0 8px 20px -2px rgb(0 0 0 / 0.18), 0 3px 8px -1px rgb(0 0 0 / 0.1);
+    --card-elevation-high:
+      0 48px 72px -10px rgb(0 0 0 / 0.45), 0 20px 36px -6px rgb(0 0 0 / 0.28);
+    --shadow-button: 0 0 transparent;
 
-  /* Preset-driven affordance tokens. Each preset binds these once in
+    /* Preset-driven affordance tokens. Each preset binds these once in
      its own CSS file; components consume them as a single source of
      truth, so adding a new preset (Terminal, Cartoon, etc.) is a
      one-file change in that preset's CSS and every consumer
@@ -595,13 +610,13 @@
      behaviour for the Default preset. Tokenize the affordance, not
      the implementation. */
 
-  /* --affordance-glow — outer box-shadow on active/checked/selected
+    /* --affordance-glow — outer box-shadow on active/checked/selected
      states of small interactive controls (Switch, Toggle, Checkbox,
      Radio, Slider thumb, Tabs active indicator, current page in
      Pagination, etc.). */
-  --affordance-glow: 0 0 transparent;
+    --affordance-glow: 0 0 transparent;
 
-  /* --surface-overlay-* — chrome for floating overlay surfaces
+    /* --surface-overlay-* — chrome for floating overlay surfaces
      (Tooltip, Hover-card, Popover, Dropdown menu content, etc.).
      Components opt in by reading these instead of hard-coding
      bg-popover + border + shadow-dropdown. Default values
@@ -609,18 +624,19 @@
      presets (e.g. Glass) layer multiple background images with a
      specific blending recipe; defaults to `normal` (no-op for
      single-layer backgrounds). */
-  --surface-overlay-bg: hsl(var(--popover));
-  --surface-overlay-border: hsl(var(--border));
-  --surface-overlay-shadow: var(--shadow-dropdown);
-  --surface-overlay-blend-mode: normal;
+    --surface-overlay-bg: hsl(var(--popover));
+    --surface-overlay-border: hsl(var(--border));
+    --surface-overlay-shadow: var(--shadow-dropdown);
+    --surface-overlay-blend-mode: normal;
 
-  /* Default elevation-current so `<Card elevation="auto">` and other
+    /* Default elevation-current so `<Card elevation="auto">` and other
      consumers reading `var(--elevation-current)` resolve to a real shadow
      when no `[data-elevation]` attribute is set on any ancestor. Themes
      that opt into the axis override this via the `[data-elevation="..."]`
      selectors below. Mirrors the medium-equivalent ramp that the same root
      `--elevation-medium` defines. */
-  --elevation-current: var(--elevation-medium);
+    --elevation-current: var(--elevation-medium);
+  }
 }
 
 [data-density="compact"] {
