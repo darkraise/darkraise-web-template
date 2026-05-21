@@ -34,6 +34,17 @@
     @apply bg-accent text-accent-foreground;
   }
 
+  /* Affordance glow on the selected day cells — primary halo under Neon,
+     transparent under Default/Glass. Range start/end/single get the full
+     glow; range-middle gets none (it's between the endpoints, no glow
+     emphasis needed). */
+  .dr-calendar-day-btn[data-selected-single="true"],
+  .dr-calendar-day-btn[data-range-start="true"],
+  .dr-calendar-day-btn[data-range-end="true"],
+  .dr-calendar-day-btn[data-range-single="true"] {
+    box-shadow: var(--affordance-glow);
+  }
+
   /* Range hover-preview — shown after the user picks the start date but
      before they pick the end. Treated like a real range visually, but
      muted (lower opacity on endpoints, dashed bottom edge on the middle)

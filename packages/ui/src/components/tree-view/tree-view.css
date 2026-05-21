@@ -48,27 +48,35 @@
     @apply bg-accent text-accent-foreground;
   }
 
-  /* Selected — filled variant (default): solid primary background. */
+  /* Selected — filled variant (default): solid primary background.
+     Affordance glow composes on top so under Neon the selected row gains
+     a primary-color halo; transparent under Default/Glass. */
   .dr-tree-view-branch-control[data-selected="true"],
   .dr-tree-view-item[data-selected="true"] {
     @apply bg-primary text-primary-foreground;
+    box-shadow: var(--affordance-glow);
   }
 
   .dr-tree-view-branch-control[data-selected="true"]:hover,
   .dr-tree-view-item[data-selected="true"]:hover {
     @apply bg-primary text-primary-foreground;
+    box-shadow: var(--affordance-glow);
   }
 
   /* Selected — outlined variant: transparent surface with a 1px primary
      ring drawn as inset box-shadow (no layout shift vs the filled variant
      since the ring lives inside the element's box). Hover keeps the same
-     ring but adds a low-alpha primary fill for a subtle pressed feel. */
+     ring but adds a low-alpha primary fill for a subtle pressed feel.
+     Affordance glow composed as a second box-shadow layer so the outer
+     glow shows around the ring without losing the ring itself. */
   .dr-tree-view[data-variant="outlined"]
     .dr-tree-view-branch-control[data-selected="true"],
   .dr-tree-view[data-variant="outlined"]
     .dr-tree-view-item[data-selected="true"] {
     @apply text-primary bg-transparent;
-    box-shadow: inset 0 0 0 1px hsl(var(--primary));
+    box-shadow:
+      inset 0 0 0 1px hsl(var(--primary)),
+      var(--affordance-glow);
   }
 
   .dr-tree-view[data-variant="outlined"]
@@ -76,7 +84,9 @@
   .dr-tree-view[data-variant="outlined"]
     .dr-tree-view-item[data-selected="true"]:hover {
     @apply bg-primary/10 text-primary;
-    box-shadow: inset 0 0 0 1px hsl(var(--primary));
+    box-shadow:
+      inset 0 0 0 1px hsl(var(--primary)),
+      var(--affordance-glow);
   }
 
   .dr-tree-view-branch-control[data-disabled="true"],

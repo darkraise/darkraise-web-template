@@ -36,6 +36,15 @@
     @apply data-[state=active]:border-primary data-[state=active]:text-primary -mb-px h-full border-b-2 border-transparent px-[var(--density-button-px)] py-[var(--density-row-py)];
   }
 
+  /* Affordance glow on outline + underline active tabs (preset-driven —
+     transparent under Default/Glass; primary glow under Neon). Composed
+     as a single box-shadow declaration so the outer glow reads cleanly
+     around the tab outline / underline. */
+  .dr-tabs-trigger[data-variant="outline"][data-state="active"],
+  .dr-tabs-trigger[data-variant="underline"][data-state="active"] {
+    box-shadow: var(--affordance-glow);
+  }
+
   .dr-tabs-content {
     @apply focus-ring-tight mt-2;
     transition: opacity 150ms;

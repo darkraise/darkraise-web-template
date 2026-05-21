@@ -22,4 +22,11 @@
   .dr-cascade-item[data-active="true"] {
     @apply bg-accent text-accent-foreground;
   }
+
+  /* Affordance glow on the active cascade item (the one whose subtree is
+     showing in the next column). Transparent under Default/Glass; primary
+     glow under Neon — signals "this is the active drill-down path". */
+  .dr-cascade-item[data-active="true"] {
+    box-shadow: var(--affordance-glow);
+  }
 }
