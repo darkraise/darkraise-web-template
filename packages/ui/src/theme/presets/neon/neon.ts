@@ -36,17 +36,30 @@ export const neon: ThemePreset<Record<string, never>> = {
   axes: {},
   supportedModes: ["dark"],
 
-  // Neon override of the semantic --accent tokens. The values are
-  // CSS expressions that reference --primary at use time, so the
+  // Neon override of the semantic surface-tier tokens. Each value is
+  // a CSS expression that references --primary at use time, so the
   // accent picker (which updates --primary) automatically retunes
-  // every consumer of bg-accent / text-accent-foreground. Writing
-  // these via generateTokens (inline style) is required to win
-  // against the engine's surfaceRecipe-driven --accent defaults
-  // which are also written as inline style.
+  // every consumer simultaneously. Writing via generateTokens (inline
+  // style) is required to win against the engine's surfaceRecipe
+  // defaults, which are also inline-style writes.
+  //
+  // Token semantics under Neon (vs Default/Glass):
+  //   --accent           hover/focus/selected surface — primary 15%
+  //   --accent-foreground text/icon for same — saturated primary
+  //   --muted            passive low-emphasis surface — primary 6%
+  //   --secondary        secondary interactive surface — primary 12%
+  //   --secondary-fg     text on secondary — saturated primary
+  // --muted-foreground stays at its engine default (a muted gray)
+  // so `text-muted-foreground` keeps its "subdued text" semantic; if
+  // it became primary too, muted helper text would read louder than
+  // the body copy it's supposed to recede behind.
   generateTokens() {
     return {
       "--accent": "var(--primary) / 0.15",
       "--accent-foreground": "var(--primary)",
+      "--muted": "var(--primary) / 0.06",
+      "--secondary": "var(--primary) / 0.12",
+      "--secondary-foreground": "var(--primary)",
     }
   },
 
@@ -75,6 +88,9 @@ export const neon: ThemePreset<Record<string, never>> = {
   ownedTokenKeys: [
     "--accent",
     "--accent-foreground",
+    "--muted",
+    "--secondary",
+    "--secondary-foreground",
     "--elevation-flat",
     "--elevation-low",
     "--elevation-medium",

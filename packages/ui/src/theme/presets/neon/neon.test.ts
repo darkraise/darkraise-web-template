@@ -19,7 +19,7 @@ describe("neon preset", () => {
     expect(neon.supportedModes).toEqual(["dark"])
   })
 
-  it("generateTokens rebinds --accent and --accent-foreground to primary-tinted values", () => {
+  it("generateTokens rebinds accent/muted/secondary tokens to primary-tinted values", () => {
     const generateTokens = neon.generateTokens
     expect(generateTokens).toBeDefined()
     if (!generateTokens) return // narrowing for TS; expectation above asserts
@@ -33,12 +33,28 @@ describe("neon preset", () => {
     )
     expect(tokens["--accent"]).toBe("var(--primary) / 0.15")
     expect(tokens["--accent-foreground"]).toBe("var(--primary)")
+    expect(tokens["--muted"]).toBe("var(--primary) / 0.06")
+    expect(tokens["--secondary"]).toBe("var(--primary) / 0.12")
+    expect(tokens["--secondary-foreground"]).toBe("var(--primary)")
   })
 
-  it("ownedTokenKeys covers the rebound accent + elevation + shadow tokens", () => {
+  it("generateTokens does NOT rebind --muted-foreground (must stay a muted gray for text legibility)", () => {
+    const generateTokens = neon.generateTokens
+    if (!generateTokens) throw new Error("generateTokens missing")
+    const tokens = generateTokens(
+      {} as unknown as Parameters<typeof generateTokens>[0],
+      {},
+    )
+    expect(tokens["--muted-foreground"]).toBeUndefined()
+  })
+
+  it("ownedTokenKeys covers the rebound accent + muted + secondary + elevation + shadow tokens", () => {
     expect(neon.ownedTokenKeys).toEqual([
       "--accent",
       "--accent-foreground",
+      "--muted",
+      "--secondary",
+      "--secondary-foreground",
       "--elevation-flat",
       "--elevation-low",
       "--elevation-medium",
