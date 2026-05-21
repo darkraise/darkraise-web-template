@@ -56,6 +56,12 @@
   --shadow-card: none;
   --shadow-dropdown: none;
   --affordance-glow: 0 0 8px hsl(var(--primary) / 0.45);
+  /* Overlay-surface chrome: dark transparent body, primary-tinted
+     border, primary outer glow. Tooltip / Hover-card / future
+     Popover migrations all adopt this through the token. */
+  --surface-overlay-bg: hsl(var(--background) / 0.85);
+  --surface-overlay-border: hsl(var(--primary) / 0.4);
+  --surface-overlay-shadow: 0 0 16px hsl(var(--primary) / 0.5);
 }
 
 /* Button-elevation reinterpreted as button-specific glow. */

@@ -48,4 +48,25 @@
   .dr-alert-description {
     @apply text-sm [&_p]:leading-relaxed;
   }
+
+  /* Neon preset — alerts go transparent with a stronger primary-tinted
+     border on all sides plus a subtle outer glow. The thick saturated
+     left rail (the variant's color signal) stays, just composed over
+     transparent. The default-variant gets a primary border treatment
+     too, since under Neon "default alert" should still read as a
+     deliberate, glowing surface. */
+  [data-preset="neon"] .dr-alert {
+    background-color: transparent;
+    border-color: hsl(var(--primary) / 0.4);
+    box-shadow: 0 0 12px hsl(var(--primary) / 0.25);
+  }
+  [data-preset="neon"] .dr-alert[data-variant="destructive"],
+  [data-preset="neon"] .dr-alert[data-variant="success"],
+  [data-preset="neon"] .dr-alert[data-variant="warning"],
+  [data-preset="neon"] .dr-alert[data-variant="info"] {
+    background-color: hsl(var(--alert-accent) / 0.04);
+    border-color: hsl(var(--alert-accent) / 0.5);
+    border-left-color: hsl(var(--alert-accent));
+    box-shadow: 0 0 14px hsl(var(--alert-accent) / 0.3);
+  }
 }

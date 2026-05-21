@@ -40,3 +40,12 @@
   --backdrop-blur: 24px;
   --backdrop-filter: blur(24px) saturate(140%);
 }
+
+/* Overlay-surface chrome under Glass: gradient bg overlay (the same
+   recipe .glass-strong applies), fog-tier border, and a composite
+   shadow that combines drop shadow with the inset highlight. */
+[data-preset="glassmorphism"] {
+  --surface-overlay-bg: linear-gradient(135deg, var(--fog-20), var(--fog-10));
+  --surface-overlay-border: var(--fog-20);
+  --surface-overlay-shadow: var(--elevation-medium), var(--inset-hi-strong);
+}

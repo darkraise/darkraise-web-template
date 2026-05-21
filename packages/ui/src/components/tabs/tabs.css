@@ -78,4 +78,20 @@
       inset 0 -1px 0 color-mix(in srgb, hsl(var(--primary)) 70%, #000),
       0 0 0 1px color-mix(in oklab, hsl(var(--primary)) 25%, transparent);
   }
+
+  /* Neon preset — default-variant active tab swaps the solid primary
+     fill for a translucent-primary surface with a full primary border
+     and primary text color, so it reads as "outlined neon button" to
+     match Neon's overall aesthetic. The --affordance-glow inherited
+     from the prior commit composes on top via the base rule's
+     box-shadow chain. */
+  [data-preset="neon"]
+    .dr-tabs-trigger[data-variant="default"][data-state="active"] {
+    background-color: hsl(var(--primary) / 0.15);
+    color: hsl(var(--primary));
+    border-color: hsl(var(--primary));
+  }
+  /* And the outline/underline variants get their existing primary
+     border + text plus the same affordance glow from --shadow-button
+     composition — no extra rules needed. */
 }
