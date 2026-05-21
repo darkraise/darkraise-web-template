@@ -770,6 +770,165 @@
   --canvas-blob-scale: 1.5;
 }
 
+/* Gradient-pattern axis. The body composes 4 blob layers + the ink:
+     background: var(--canvas-blob-a), var(--canvas-blob-b),
+                 var(--canvas-blob-c), var(--canvas-blob-d), var(--canvas-ink);
+   Each pattern below redefines what those 4 vars paint. Patterns with fewer
+   conceptual layers use `linear-gradient(transparent, transparent)` for
+   unused slots (a valid no-op CSS image — `none` isn't valid inside a
+   background list).
+
+   The "blobs" pattern is the existing :root / [data-mode="light"] default;
+   no override needed for it.
+
+   All percentages still multiply by --canvas-blob-scale so the
+   backgroundIntensity axis dials every pattern through one knob. */
+
+/* Aurora — wide horizontal bands stacked vertically. (dark) */
+[data-gradient-pattern="aurora"] {
+  --canvas-blob-a: radial-gradient(
+    1600px 280px at 20% 22%,
+    color-mix(
+        in oklab,
+        var(--sf-hue) calc(12% * var(--canvas-blob-scale)),
+        transparent
+      )
+      0%,
+    color-mix(
+        in oklab,
+        var(--sf-hue) calc(4% * var(--canvas-blob-scale)),
+        transparent
+      )
+      60%,
+    transparent 100%
+  );
+  --canvas-blob-b: radial-gradient(
+    1800px 320px at 70% 52%,
+    color-mix(
+        in oklab,
+        var(--sf-hue-2) calc(10% * var(--canvas-blob-scale)),
+        transparent
+      )
+      0%,
+    color-mix(
+        in oklab,
+        var(--sf-hue-2) calc(3% * var(--canvas-blob-scale)),
+        transparent
+      )
+      60%,
+    transparent 100%
+  );
+  --canvas-blob-c: radial-gradient(
+    1500px 260px at 35% 82%,
+    color-mix(
+        in oklab,
+        var(--sf-hue-3) calc(8% * var(--canvas-blob-scale)),
+        transparent
+      )
+      0%,
+    color-mix(
+        in oklab,
+        var(--sf-hue-3) calc(3% * var(--canvas-blob-scale)),
+        transparent
+      )
+      60%,
+    transparent 100%
+  );
+  --canvas-blob-d: linear-gradient(transparent, transparent);
+}
+
+/* Spotlight — single large radial from top-center fading down. (dark) */
+[data-gradient-pattern="spotlight"] {
+  --canvas-blob-a: radial-gradient(
+    2000px 1200px at 50% -15%,
+    color-mix(
+        in oklab,
+        var(--sf-hue) calc(14% * var(--canvas-blob-scale)),
+        transparent
+      )
+      0%,
+    color-mix(
+        in oklab,
+        var(--sf-hue) calc(5% * var(--canvas-blob-scale)),
+        transparent
+      )
+      45%,
+    transparent 90%
+  );
+  --canvas-blob-b: linear-gradient(transparent, transparent);
+  --canvas-blob-c: linear-gradient(transparent, transparent);
+  --canvas-blob-d: linear-gradient(transparent, transparent);
+}
+
+/* Mesh — many smaller overlapping radials forming an irregular grid.
+   Packs 2 radials per blob var to fit six visible swirls in 3 used slots. (dark) */
+[data-gradient-pattern="mesh"] {
+  --canvas-blob-a:
+    radial-gradient(
+      700px 600px at 18% 18%,
+      color-mix(
+          in oklab,
+          var(--sf-hue) calc(12% * var(--canvas-blob-scale)),
+          transparent
+        )
+        0%,
+      transparent 65%
+    ),
+    radial-gradient(
+      700px 600px at 78% 25%,
+      color-mix(
+          in oklab,
+          var(--sf-hue-2) calc(10% * var(--canvas-blob-scale)),
+          transparent
+        )
+        0%,
+      transparent 65%
+    );
+  --canvas-blob-b:
+    radial-gradient(
+      700px 600px at 40% 55%,
+      color-mix(
+          in oklab,
+          var(--sf-hue-3) calc(9% * var(--canvas-blob-scale)),
+          transparent
+        )
+        0%,
+      transparent 65%
+    ),
+    radial-gradient(
+      700px 600px at 88% 62%,
+      color-mix(
+          in oklab,
+          var(--sf-hue) calc(8% * var(--canvas-blob-scale)),
+          transparent
+        )
+        0%,
+      transparent 65%
+    );
+  --canvas-blob-c:
+    radial-gradient(
+      700px 600px at 22% 88%,
+      color-mix(
+          in oklab,
+          var(--sf-hue-2) calc(10% * var(--canvas-blob-scale)),
+          transparent
+        )
+        0%,
+      transparent 65%
+    ),
+    radial-gradient(
+      700px 600px at 72% 92%,
+      color-mix(
+          in oklab,
+          var(--sf-hue-3) calc(8% * var(--canvas-blob-scale)),
+          transparent
+        )
+        0%,
+      transparent 65%
+    );
+  --canvas-blob-d: linear-gradient(transparent, transparent);
+}
+
 [data-mode="light"] {
   /* Light-mode blob recipes; same --canvas-blob-scale mechanism as
      the dark defaults so the backgroundIntensity axis affects both
@@ -853,6 +1012,150 @@
     color-mix(in oklab, var(--sf-hue) 4%, var(--canvas-ink-floor)) 0%,
     color-mix(in oklab, var(--sf-hue) 6%, var(--canvas-ink-ceiling)) 100%
   );
+}
+
+/* Light-mode counterparts for the three non-default gradient patterns.
+   Same shapes as their dark equivalents but with ~1.6x percentages
+   (matches the existing dark→light ratio used by the blobs pattern). */
+[data-mode="light"][data-gradient-pattern="aurora"] {
+  --canvas-blob-a: radial-gradient(
+    1600px 280px at 20% 22%,
+    color-mix(
+        in oklab,
+        var(--sf-hue) calc(20% * var(--canvas-blob-scale)),
+        transparent
+      )
+      0%,
+    color-mix(
+        in oklab,
+        var(--sf-hue) calc(7% * var(--canvas-blob-scale)),
+        transparent
+      )
+      60%,
+    transparent 100%
+  );
+  --canvas-blob-b: radial-gradient(
+    1800px 320px at 70% 52%,
+    color-mix(
+        in oklab,
+        var(--sf-hue-2) calc(16% * var(--canvas-blob-scale)),
+        transparent
+      )
+      0%,
+    color-mix(
+        in oklab,
+        var(--sf-hue-2) calc(5% * var(--canvas-blob-scale)),
+        transparent
+      )
+      60%,
+    transparent 100%
+  );
+  --canvas-blob-c: radial-gradient(
+    1500px 260px at 35% 82%,
+    color-mix(
+        in oklab,
+        var(--sf-hue-3) calc(13% * var(--canvas-blob-scale)),
+        transparent
+      )
+      0%,
+    color-mix(
+        in oklab,
+        var(--sf-hue-3) calc(5% * var(--canvas-blob-scale)),
+        transparent
+      )
+      60%,
+    transparent 100%
+  );
+  --canvas-blob-d: linear-gradient(transparent, transparent);
+}
+
+[data-mode="light"][data-gradient-pattern="spotlight"] {
+  --canvas-blob-a: radial-gradient(
+    2000px 1200px at 50% -15%,
+    color-mix(
+        in oklab,
+        var(--sf-hue) calc(22% * var(--canvas-blob-scale)),
+        transparent
+      )
+      0%,
+    color-mix(
+        in oklab,
+        var(--sf-hue) calc(8% * var(--canvas-blob-scale)),
+        transparent
+      )
+      45%,
+    transparent 90%
+  );
+  --canvas-blob-b: linear-gradient(transparent, transparent);
+  --canvas-blob-c: linear-gradient(transparent, transparent);
+  --canvas-blob-d: linear-gradient(transparent, transparent);
+}
+
+[data-mode="light"][data-gradient-pattern="mesh"] {
+  --canvas-blob-a:
+    radial-gradient(
+      700px 600px at 18% 18%,
+      color-mix(
+          in oklab,
+          var(--sf-hue) calc(19% * var(--canvas-blob-scale)),
+          transparent
+        )
+        0%,
+      transparent 65%
+    ),
+    radial-gradient(
+      700px 600px at 78% 25%,
+      color-mix(
+          in oklab,
+          var(--sf-hue-2) calc(16% * var(--canvas-blob-scale)),
+          transparent
+        )
+        0%,
+      transparent 65%
+    );
+  --canvas-blob-b:
+    radial-gradient(
+      700px 600px at 40% 55%,
+      color-mix(
+          in oklab,
+          var(--sf-hue-3) calc(14% * var(--canvas-blob-scale)),
+          transparent
+        )
+        0%,
+      transparent 65%
+    ),
+    radial-gradient(
+      700px 600px at 88% 62%,
+      color-mix(
+          in oklab,
+          var(--sf-hue) calc(13% * var(--canvas-blob-scale)),
+          transparent
+        )
+        0%,
+      transparent 65%
+    );
+  --canvas-blob-c:
+    radial-gradient(
+      700px 600px at 22% 88%,
+      color-mix(
+          in oklab,
+          var(--sf-hue-2) calc(16% * var(--canvas-blob-scale)),
+          transparent
+        )
+        0%,
+      transparent 65%
+    ),
+    radial-gradient(
+      700px 600px at 72% 92%,
+      color-mix(
+          in oklab,
+          var(--sf-hue-3) calc(13% * var(--canvas-blob-scale)),
+          transparent
+        )
+        0%,
+      transparent 65%
+    );
+  --canvas-blob-d: linear-gradient(transparent, transparent);
 }
 
 @layer base {

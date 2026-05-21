@@ -3,6 +3,7 @@ import type {
   SurfaceColor,
   BackgroundStyle,
   BackgroundIntensity,
+  GradientPattern,
   Density,
   Elevation,
   Radius,
@@ -17,6 +18,7 @@ export interface ThemeConfig {
     preset: PresetName
     backgroundStyle: BackgroundStyle
     backgroundIntensity: BackgroundIntensity
+    gradientPattern: GradientPattern
     mode: Mode
     density: Density
     elevation: Elevation
@@ -32,6 +34,7 @@ export interface ThemeConfig {
       preset: boolean
       backgroundStyle: boolean
       backgroundIntensity: boolean
+      gradientPattern: boolean
       density: boolean
       elevation: boolean
       buttonElevation: boolean
@@ -49,6 +52,7 @@ export const themeConfig: ThemeConfig = {
     preset: "default",
     backgroundStyle: "solid",
     backgroundIntensity: "balanced",
+    gradientPattern: "blobs",
     mode: "system",
     density: "cozy",
     elevation: "medium",
@@ -64,6 +68,7 @@ export const themeConfig: ThemeConfig = {
       preset: true,
       backgroundStyle: true,
       backgroundIntensity: true,
+      gradientPattern: true,
       density: true,
       elevation: true,
       buttonElevation: true,

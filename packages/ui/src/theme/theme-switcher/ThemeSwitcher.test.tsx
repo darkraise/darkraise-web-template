@@ -144,4 +144,42 @@ describe("ThemeSwitcher preset section", () => {
       document.documentElement.getAttribute("data-background-intensity"),
     ).toBe("vivid")
   })
+
+  it("does NOT render Gradient Pattern when backgroundStyle is solid", () => {
+    render(
+      <ThemeProvider>
+        <ThemeSwitcher />
+      </ThemeProvider>,
+    )
+    openSwitcher()
+    expect(screen.queryByText("Gradient Pattern")).not.toBeInTheDocument()
+  })
+
+  it("renders Gradient Pattern when backgroundStyle is gradient", () => {
+    render(
+      <ThemeProvider>
+        <ThemeSwitcher />
+      </ThemeProvider>,
+    )
+    openSwitcher()
+    fireEvent.click(screen.getByRole("radio", { name: /gradient/i }))
+    expect(screen.getByText("Gradient Pattern")).toBeInTheDocument()
+    expect(document.documentElement.getAttribute("data-gradient-pattern")).toBe(
+      "blobs",
+    )
+  })
+
+  it("clicking a Gradient Pattern value updates the data attribute", () => {
+    render(
+      <ThemeProvider>
+        <ThemeSwitcher />
+      </ThemeProvider>,
+    )
+    openSwitcher()
+    fireEvent.click(screen.getByRole("radio", { name: /gradient/i }))
+    fireEvent.click(screen.getByRole("radio", { name: /^aurora$/i }))
+    expect(document.documentElement.getAttribute("data-gradient-pattern")).toBe(
+      "aurora",
+    )
+  })
 })

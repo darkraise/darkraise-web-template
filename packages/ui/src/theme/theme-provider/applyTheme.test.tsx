@@ -195,4 +195,33 @@ describe("ThemeProvider preset orchestration", () => {
       document.documentElement.getAttribute("data-background-intensity"),
     ).toBe("subtle")
   })
+
+  it("writes data-gradient-pattern='blobs' on mount", () => {
+    renderHook(() => useTheme(), { wrapper: wrap })
+    expect(document.documentElement.getAttribute("data-gradient-pattern")).toBe(
+      "blobs",
+    )
+  })
+
+  it("setGradientPattern updates attribute and persists", () => {
+    const { result } = renderHook(() => useTheme(), { wrapper: wrap })
+    act(() => result.current.setGradientPattern("aurora"))
+    expect(document.documentElement.getAttribute("data-gradient-pattern")).toBe(
+      "aurora",
+    )
+    expect(localStorage.getItem("theme-gradient-pattern")).toBe("aurora")
+    expect(result.current.gradientPattern).toBe("aurora")
+  })
+
+  it("gradient pattern survives provider remount via LocalStorage", () => {
+    {
+      const { result } = renderHook(() => useTheme(), { wrapper: wrap })
+      act(() => result.current.setGradientPattern("mesh"))
+    }
+    const { result } = renderHook(() => useTheme(), { wrapper: wrap })
+    expect(result.current.gradientPattern).toBe("mesh")
+    expect(document.documentElement.getAttribute("data-gradient-pattern")).toBe(
+      "mesh",
+    )
+  })
 })

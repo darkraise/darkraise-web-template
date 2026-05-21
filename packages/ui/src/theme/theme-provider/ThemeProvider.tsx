@@ -3,6 +3,7 @@ import type {
   AccentColor,
   BackgroundStyle,
   BackgroundIntensity,
+  GradientPattern,
   SurfaceColor,
   Density,
   Elevation,
@@ -17,6 +18,7 @@ import type {
 import {
   SURFACE_COLORS,
   BACKGROUND_INTENSITIES,
+  GRADIENT_PATTERNS,
   DENSITIES,
   ELEVATIONS,
   RADII,
@@ -46,6 +48,7 @@ const LS_PRESET_AXIS_PREFIX = (presetName: string, axisName: string) =>
   `theme-${presetName}-${axisName}`
 const LS_BG_STYLE = "theme-bg-style"
 const LS_BG_INTENSITY = "theme-bg-intensity"
+const LS_GRADIENT_PATTERN = "theme-gradient-pattern"
 const LS_MODE = "mode"
 const LS_DENSITY = "theme-density"
 const LS_ELEVATION = "theme-elevation"
@@ -179,6 +182,16 @@ export function ThemeProvider({
       }
       return cfg.defaults.backgroundIntensity
     })
+
+  const [gradientPattern, setGradientPatternState] = useState<GradientPattern>(
+    () => {
+      const stored = readStorage(LS_GRADIENT_PATTERN)
+      if (stored && (GRADIENT_PATTERNS as readonly string[]).includes(stored)) {
+        return stored as GradientPattern
+      }
+      return cfg.defaults.gradientPattern
+    },
+  )
 
   const [mode, setModeState] = useState<Mode>(() => {
     const stored = readStorage(LS_MODE)
@@ -328,6 +341,7 @@ export function ThemeProvider({
       preset,
       backgroundStyle,
       backgroundIntensity,
+      gradientPattern,
       mode,
       density,
       elevation,
@@ -342,6 +356,7 @@ export function ThemeProvider({
       preset,
       backgroundStyle,
       backgroundIntensity,
+      gradientPattern,
       mode,
       density,
       elevation,
@@ -364,12 +379,15 @@ export function ThemeProvider({
 
       const newBgIntensity =
         settings.backgroundIntensity ?? cfg.defaults.backgroundIntensity
+      const newGradientPattern =
+        settings.gradientPattern ?? cfg.defaults.gradientPattern
 
       setAccentColorState(settings.accentColor)
       setSurfaceColorState(settings.surfaceColor)
       setPresetState(newPreset)
       setBackgroundStyleState(settings.backgroundStyle)
       setBackgroundIntensityState(newBgIntensity)
+      setGradientPatternState(newGradientPattern)
       setModeState(settings.mode)
       setResolvedMode(resolved)
       setDensityState(settings.density ?? cfg.defaults.density)
@@ -385,6 +403,7 @@ export function ThemeProvider({
       writeStorage(LS_PRESET, newPreset)
       writeStorage(LS_BG_STYLE, settings.backgroundStyle)
       writeStorage(LS_BG_INTENSITY, newBgIntensity)
+      writeStorage(LS_GRADIENT_PATTERN, newGradientPattern)
       writeStorage(LS_MODE, settings.mode)
       writeStorage(LS_DENSITY, settings.density ?? cfg.defaults.density)
       writeStorage(LS_ELEVATION, settings.elevation ?? cfg.defaults.elevation)
@@ -418,6 +437,10 @@ export function ThemeProvider({
       document.documentElement.setAttribute(
         "data-background-intensity",
         newBgIntensity,
+      )
+      document.documentElement.setAttribute(
+        "data-gradient-pattern",
+        newGradientPattern,
       )
 
       applyTheme(
@@ -641,6 +664,19 @@ export function ThemeProvider({
     [buildSettings, notifyChange, debouncedSave],
   )
 
+  const setGradientPattern = useCallback(
+    (pattern: GradientPattern) => {
+      setGradientPatternState(pattern)
+      writeStorage(LS_GRADIENT_PATTERN, pattern)
+      document.documentElement.setAttribute("data-gradient-pattern", pattern)
+      const settings = buildSettings({ gradientPattern: pattern })
+      notifyChange(settings)
+      hasUserChanged.current = true
+      debouncedSave(settings)
+    },
+    [buildSettings, notifyChange, debouncedSave],
+  )
+
   const setMode = useCallback(
     (m: Mode) => {
       const resolved = resolveMode(m)
@@ -756,7 +792,18 @@ export function ThemeProvider({
       "data-background-intensity",
       backgroundIntensity,
     )
-  }, [density, elevation, buttonElevation, radius, backgroundIntensity])
+    document.documentElement.setAttribute(
+      "data-gradient-pattern",
+      gradientPattern,
+    )
+  }, [
+    density,
+    elevation,
+    buttonElevation,
+    radius,
+    backgroundIntensity,
+    gradientPattern,
+  ])
 
   useEffect(() => {
     if (mode !== "system") return
@@ -819,6 +866,7 @@ export function ThemeProvider({
       preset,
       backgroundStyle,
       backgroundIntensity,
+      gradientPattern,
       mode,
       density,
       elevation,
@@ -834,6 +882,7 @@ export function ThemeProvider({
       setPreset,
       setBackgroundStyle,
       setBackgroundIntensity,
+      setGradientPattern,
       setMode,
       setDensity,
       setElevation,
@@ -847,6 +896,7 @@ export function ThemeProvider({
       preset,
       backgroundStyle,
       backgroundIntensity,
+      gradientPattern,
       mode,
       density,
       elevation,
@@ -861,6 +911,7 @@ export function ThemeProvider({
       setPreset,
       setBackgroundStyle,
       setBackgroundIntensity,
+      setGradientPattern,
       setMode,
       setDensity,
       setElevation,

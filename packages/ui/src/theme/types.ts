@@ -30,6 +30,14 @@ export type BackgroundStyle = (typeof BACKGROUND_STYLES)[number]
 export const BACKGROUND_INTENSITIES = ["subtle", "balanced", "vivid"] as const
 export type BackgroundIntensity = (typeof BACKGROUND_INTENSITIES)[number]
 
+export const GRADIENT_PATTERNS = [
+  "blobs",
+  "aurora",
+  "spotlight",
+  "mesh",
+] as const
+export type GradientPattern = (typeof GRADIENT_PATTERNS)[number]
+
 export const DENSITIES = ["compact", "cozy", "comfortable", "spacious"] as const
 export type Density = (typeof DENSITIES)[number]
 
@@ -57,6 +65,9 @@ export interface ThemeSettings {
   /** How loud the gradient blob overlays are; only meaningful when
    *  backgroundStyle === "gradient". Defaults to "balanced". */
   backgroundIntensity?: BackgroundIntensity
+  /** Which gradient shape the page paints; only meaningful when
+   *  backgroundStyle === "gradient". Defaults to "blobs". */
+  gradientPattern?: GradientPattern
   mode: Mode
   density?: Density
   elevation?: Elevation
@@ -79,6 +90,7 @@ export interface ThemeContextValue {
   preset: PresetName
   backgroundStyle: BackgroundStyle
   backgroundIntensity: BackgroundIntensity
+  gradientPattern: GradientPattern
   mode: Mode
   density: Density
   elevation: Elevation
@@ -96,6 +108,7 @@ export interface ThemeContextValue {
   setPreset: (preset: PresetName) => void
   setBackgroundStyle: (style: BackgroundStyle) => void
   setBackgroundIntensity: (intensity: BackgroundIntensity) => void
+  setGradientPattern: (pattern: GradientPattern) => void
   setMode: (mode: Mode) => void
   setDensity: (density: Density) => void
   setElevation: (elevation: Elevation) => void

@@ -9,6 +9,7 @@ import {
   ACCENT_COLORS,
   SURFACE_COLORS,
   BACKGROUND_INTENSITIES,
+  GRADIENT_PATTERNS,
   DENSITIES,
   ELEVATIONS,
   RADII,
@@ -19,6 +20,7 @@ import type {
   SurfaceColor,
   BackgroundStyle,
   BackgroundIntensity,
+  GradientPattern,
   Density,
   Elevation,
   Radius,
@@ -45,6 +47,7 @@ export function ThemeSwitcher() {
     preset,
     backgroundStyle,
     backgroundIntensity,
+    gradientPattern,
     mode,
     density,
     elevation,
@@ -58,6 +61,7 @@ export function ThemeSwitcher() {
     setPreset,
     setBackgroundStyle,
     setBackgroundIntensity,
+    setGradientPattern,
     setMode,
     setDensity,
     setElevation,
@@ -141,6 +145,30 @@ export function ThemeSwitcher() {
           data-cols={BACKGROUND_INTENSITIES.length}
         >
           {BACKGROUND_INTENSITIES.map((value) => (
+            <ToggleGroupItem key={value} value={value} className="capitalize">
+              {value}
+            </ToggleGroupItem>
+          ))}
+        </ToggleGroup>
+      </div>
+    ),
+    axes.gradientPattern && backgroundStyle === "gradient" && (
+      <div key="gradientPattern">
+        <Label className="dr-theme-switcher-section-label">
+          Gradient Pattern
+        </Label>
+        <ToggleGroup
+          type="single"
+          value={gradientPattern}
+          onValueChange={(value) => {
+            if (value) setGradientPattern(value as GradientPattern)
+          }}
+          variant="outline"
+          size="sm"
+          className="dr-theme-switcher-toggle-group"
+          data-cols={GRADIENT_PATTERNS.length}
+        >
+          {GRADIENT_PATTERNS.map((value) => (
             <ToggleGroupItem key={value} value={value} className="capitalize">
               {value}
             </ToggleGroupItem>
