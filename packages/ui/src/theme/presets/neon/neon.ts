@@ -9,14 +9,23 @@ import type { ThemePreset } from "../types"
  * light mode auto-switches to dark; switching to light while on Neon
  * auto-resets the preset to default).
  *
- * No generateTokens: glow color is expressed in CSS as
- * `hsl(var(--primary) / N)`, which is dynamic at the cascade level —
- * the accent picker updates the glow without any JS recomputation.
+ * Most of Neon is CSS-only: glow color comes from `hsl(var(--primary)
+ * / N)` directly so the accent picker updates everything at the CSS-
+ * cascade level. The one JS-computed override is the semantic
+ * rebinding of `--accent` / `--accent-foreground` (see generateTokens
+ * below): in Default/Glass these tokens drive a muted surface tier;
+ * under Neon they should drive a *primary-tinted* hover/selected
+ * state so every `bg-accent text-accent-foreground` consumer
+ * (menu items, combobox items, command items, select items,
+ * pagination hovers, tabs hovers, navigation-menu hovers, tree-view
+ * selected items, calendar selected days, etc.) reads as Neon-styled
+ * automatically without touching their CSS files. This is the same
+ * "tokenize the affordance" pattern as --surface-overlay-* and
+ * --affordance-glow.
+ *
  * Shadow tokens (--elevation-*, --card-elevation-*, --shadow-button,
  * --shadow-card, --shadow-dropdown) are rebound by neon.css attribute
- * selectors; they're listed in ownedTokenKeys so the provider's
- * clean-up logic doesn't need to remove style.cssText values (CSS
- * cascade handles it via specificity when leaving the preset).
+ * selectors; they're listed in ownedTokenKeys for documentation.
  */
 export const neon: ThemePreset<Record<string, never>> = {
   name: "neon",
@@ -26,6 +35,20 @@ export const neon: ThemePreset<Record<string, never>> = {
 
   axes: {},
   supportedModes: ["dark"],
+
+  // Neon override of the semantic --accent tokens. The values are
+  // CSS expressions that reference --primary at use time, so the
+  // accent picker (which updates --primary) automatically retunes
+  // every consumer of bg-accent / text-accent-foreground. Writing
+  // these via generateTokens (inline style) is required to win
+  // against the engine's surfaceRecipe-driven --accent defaults
+  // which are also written as inline style.
+  generateTokens() {
+    return {
+      "--accent": "var(--primary) / 0.15",
+      "--accent-foreground": "var(--primary)",
+    }
+  },
 
   surfaceRecipe: {
     // Dark, slightly lifted surfaces. Primary-colored glow does the
@@ -50,6 +73,8 @@ export const neon: ThemePreset<Record<string, never>> = {
   },
 
   ownedTokenKeys: [
+    "--accent",
+    "--accent-foreground",
     "--elevation-flat",
     "--elevation-low",
     "--elevation-medium",

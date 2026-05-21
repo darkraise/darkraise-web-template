@@ -19,12 +19,26 @@ describe("neon preset", () => {
     expect(neon.supportedModes).toEqual(["dark"])
   })
 
-  it("has no generateTokens (all dynamic via CSS attribute selectors)", () => {
-    expect(neon.generateTokens).toBeUndefined()
+  it("generateTokens rebinds --accent and --accent-foreground to primary-tinted values", () => {
+    const generateTokens = neon.generateTokens
+    expect(generateTokens).toBeDefined()
+    if (!generateTokens) return // narrowing for TS; expectation above asserts
+    // common fixture isn't used by Neon's generateTokens (values are
+    // pure CSS expressions referencing --primary at use time) — but
+    // the type contract requires a CommonAxisInput shape, so we pass
+    // a minimal stub through unknown to bypass strict ColorScale typing.
+    const tokens = generateTokens(
+      {} as unknown as Parameters<typeof generateTokens>[0],
+      {},
+    )
+    expect(tokens["--accent"]).toBe("var(--primary) / 0.15")
+    expect(tokens["--accent-foreground"]).toBe("var(--primary)")
   })
 
-  it("ownedTokenKeys covers the rebound elevation + shadow tokens", () => {
+  it("ownedTokenKeys covers the rebound accent + elevation + shadow tokens", () => {
     expect(neon.ownedTokenKeys).toEqual([
+      "--accent",
+      "--accent-foreground",
       "--elevation-flat",
       "--elevation-low",
       "--elevation-medium",
