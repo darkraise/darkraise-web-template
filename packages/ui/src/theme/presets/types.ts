@@ -102,4 +102,17 @@ export interface ThemePreset<
    * from this preset, so leftover tokens don't bleed into the next preset.
    */
   ownedTokenKeys?: readonly string[]
+
+  /**
+   * Which color modes this preset is designed to support. When set,
+   * ThemeProvider enforces compatibility:
+   *   - setPreset(p) while resolved mode is NOT in p.supportedModes
+   *     → also setMode(p.supportedModes[0])
+   *   - setMode(m) while current preset's supportedModes excludes
+   *     resolveMode(m) → also setPreset("default")
+   * Omit (or `undefined`) means "works in any mode" — no enforcement
+   * runs. Default and Glass don't declare this; Neon declares
+   * ["dark"] because its glow aesthetic doesn't read on light surfaces.
+   */
+  supportedModes?: readonly ResolvedMode[]
 }

@@ -128,6 +128,7 @@
 /* Preset-specific CSS (manual; presets/ is outside the auto-scanner) */
 @import "../theme/presets/default/default.css";
 @import "../theme/presets/glassmorphism/glassmorphism.css";
+@import "../theme/presets/neon/neon.css";
 
 @layer theme, base, components, utilities, overrides;
 

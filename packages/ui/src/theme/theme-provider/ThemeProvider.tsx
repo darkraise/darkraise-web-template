@@ -530,6 +530,35 @@ export function ThemeProvider({
 
   const setPreset = useCallback(
     (p: PresetName) => {
+      const target = presets[p]
+      // supportedModes enforcement: if the target preset doesn't work
+      // in the current resolved mode (e.g. Neon needs dark), force-
+      // switch mode to the preset's first supported value. The mode
+      // change is committed alongside the preset change so applyTheme
+      // sees both at once and the user gets one paint, not two.
+      let nextResolvedMode = resolvedMode
+      let nextMode = mode
+      if (
+        target.supportedModes &&
+        !target.supportedModes.includes(resolvedMode)
+      ) {
+        // Nullish coalescing for type-safety; supportedModes is a non-
+        // empty tuple by convention but TS doesn't model that, and an
+        // empty array would degenerate to "no enforcement" anyway.
+        const forced = target.supportedModes[0] ?? "dark"
+        nextResolvedMode = forced
+        nextMode = forced
+        setResolvedMode(forced)
+        setModeState(forced)
+        writeStorage(LS_MODE, forced)
+        document.documentElement.setAttribute("data-mode", forced)
+        if (process.env.NODE_ENV !== "production") {
+          console.warn(
+            `[ThemeProvider] Preset "${p}" requires mode "${forced}"; auto-switched from "${resolvedMode}".`,
+          )
+        }
+      }
+
       setPresetState(p)
       writeStorage(LS_PRESET, p)
       applyTheme(
@@ -537,10 +566,10 @@ export function ThemeProvider({
         surfaceColor,
         p,
         backgroundStyle,
-        resolvedMode,
+        nextResolvedMode,
         presetAxisValues,
       )
-      const settings = buildSettings({ preset: p })
+      const settings = buildSettings({ preset: p, mode: nextMode })
       notifyChange(settings)
       hasUserChanged.current = true
       debouncedSave(settings)
@@ -554,6 +583,7 @@ export function ThemeProvider({
       surfaceColor,
       backgroundStyle,
       resolvedMode,
+      mode,
       presetAxisValues,
     ],
   )
@@ -680,18 +710,38 @@ export function ThemeProvider({
   const setMode = useCallback(
     (m: Mode) => {
       const resolved = resolveMode(m)
+      // Inverse supportedModes enforcement: if the new mode isn't
+      // supported by the current preset, fall back to the default
+      // preset (which has no supportedModes constraint). Otherwise an
+      // active Neon would silently break the moment a user picks light.
+      const activePreset = presets[preset]
+      let nextPreset = preset
+      if (
+        activePreset.supportedModes &&
+        !activePreset.supportedModes.includes(resolved)
+      ) {
+        nextPreset = "default" as PresetName
+        setPresetState(nextPreset)
+        writeStorage(LS_PRESET, nextPreset)
+        if (process.env.NODE_ENV !== "production") {
+          console.warn(
+            `[ThemeProvider] Mode "${resolved}" isn't supported by preset "${preset}"; auto-reset to "default" preset.`,
+          )
+        }
+      }
+
       setModeState(m)
       setResolvedMode(resolved)
       writeStorage(LS_MODE, m)
       applyTheme(
         accentColor,
         surfaceColor,
-        preset,
+        nextPreset,
         backgroundStyle,
         resolved,
         presetAxisValues,
       )
-      const settings = buildSettings({ mode: m })
+      const settings = buildSettings({ mode: m, preset: nextPreset })
       notifyChange(settings)
       hasUserChanged.current = true
       debouncedSave(settings)

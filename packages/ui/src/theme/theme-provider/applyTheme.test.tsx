@@ -228,4 +228,41 @@ describe("ThemeProvider preset orchestration", () => {
       "mesh",
     )
   })
+
+  it("setPreset('neon') from light mode auto-switches to dark", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {})
+    const { result } = renderHook(() => useTheme(), { wrapper: wrap })
+    act(() => result.current.setMode("light"))
+    expect(result.current.resolvedMode).toBe("light")
+    act(() => result.current.setPreset("neon"))
+    expect(result.current.preset).toBe("neon")
+    expect(result.current.resolvedMode).toBe("dark")
+    expect(result.current.mode).toBe("dark")
+    expect(document.documentElement.getAttribute("data-mode")).toBe("dark")
+    expect(localStorage.getItem("mode")).toBe("dark")
+    expect(warn).toHaveBeenCalled()
+    warn.mockRestore()
+  })
+
+  it("setMode('light') while neon active resets preset to default", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {})
+    const { result } = renderHook(() => useTheme(), { wrapper: wrap })
+    act(() => result.current.setPreset("neon"))
+    expect(result.current.preset).toBe("neon")
+    act(() => result.current.setMode("light"))
+    expect(result.current.preset).toBe("default")
+    expect(result.current.resolvedMode).toBe("light")
+    expect(localStorage.getItem("theme-preset")).toBe("default")
+    expect(warn).toHaveBeenCalled()
+    warn.mockRestore()
+  })
+
+  it("setPreset to a preset WITHOUT supportedModes (glass) leaves mode alone", () => {
+    const { result } = renderHook(() => useTheme(), { wrapper: wrap })
+    act(() => result.current.setMode("light"))
+    expect(result.current.resolvedMode).toBe("light")
+    act(() => result.current.setPreset("glassmorphism"))
+    expect(result.current.preset).toBe("glassmorphism")
+    expect(result.current.resolvedMode).toBe("light")
+  })
 })
