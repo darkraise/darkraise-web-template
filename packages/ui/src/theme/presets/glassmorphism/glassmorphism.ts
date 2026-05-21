@@ -79,13 +79,30 @@ export const glassmorphism: ThemePreset<GlassAxes> = {
   generateTokens(common: CommonAxisInput, axes) {
     const alphas = FOG_ALPHA[axes.opacity][common.mode]
     const insetAlpha = INSET_HI[axes.opacity][common.mode]
+
+    // Accent-tinted fog base. Glass picks up a hint of the page's accent
+    // color so cards feel cohesive with the brand rather than reading as
+    // separate white panels. Light mode mixes 18% of accent[500] into
+    // white; dark mode mixes 14% of accent[400] into white (the brighter
+    // dark-mode shade carries the tint through low alphas better). A
+    // fuchsia-themed page gets faintly pink glass; a cyan-themed page
+    // gets faintly cyan glass.
+    const accentHSL =
+      common.mode === "dark" ? common.accent[400] : common.accent[500]
+    const tintMix = common.mode === "dark" ? 14 : 18
+    const fogBase = `color-mix(in srgb, hsl(${accentHSL}) ${tintMix}%, white)`
+    const fog = (alpha: number): string =>
+      `color-mix(in srgb, ${fogBase} ${(alpha * 100).toFixed(1)}%, transparent)`
+
     const tokens: Record<string, string> = {
-      "--fog-05": `rgba(255, 255, 255, ${alphas[0]})`,
-      "--fog-10": `rgba(255, 255, 255, ${alphas[1]})`,
-      "--fog-15": `rgba(255, 255, 255, ${alphas[2]})`,
-      "--fog-20": `rgba(255, 255, 255, ${alphas[3]})`,
-      "--fog-30": `rgba(255, 255, 255, ${alphas[4]})`,
-      "--fog-50": `rgba(255, 255, 255, ${alphas[5]})`,
+      "--fog-05": fog(alphas[0]),
+      "--fog-10": fog(alphas[1]),
+      "--fog-15": fog(alphas[2]),
+      "--fog-20": fog(alphas[3]),
+      "--fog-30": fog(alphas[4]),
+      "--fog-50": fog(alphas[5]),
+      // Inset highlights stay pure white. The "light catching the top
+      // rim" effect is conventionally specular white, not accent-tinted.
       "--inset-hi": `inset 0 1px 0 rgba(255, 255, 255, ${insetAlpha})`,
       "--inset-hi-strong": `inset 0 1px 0 rgba(255, 255, 255, ${(insetAlpha * 1.25).toFixed(2)})`,
       "--inset-hi-button": `inset 0 1px 0 rgba(255, 255, 255, ${(insetAlpha * 1.1).toFixed(2)})`,

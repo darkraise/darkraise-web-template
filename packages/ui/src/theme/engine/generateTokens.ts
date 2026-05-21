@@ -171,11 +171,22 @@ export function generateTokens(
     ? recipe.overrides.input(surface, mode)
     : border
 
+  // Saturated mid-tone of the chosen surface color, regardless of
+  // backgroundStyle. Drives the Glass preset's inner glow (and any
+  // future surface-color-following effects) so the rim hue matches the
+  // page's color story rather than the brand accent. For surfaceColor
+  // "slate" this resolves to a neutral grey (slate is the design
+  // system's no-brand baseline); for any accent color choice it's that
+  // color's 500 shade.
+  const surfaceTint =
+    surfaceColor === "slate" ? neutral[500] : accentColors[surfaceColor][500]
+
   const tokens: Record<string, string> = {
     "--primary": accent[primaryShade],
     "--primary-foreground": primaryForeground,
     "--ring": ringValue,
     "--focus-ring": focusRingValue,
+    "--surface-tint": surfaceTint,
 
     "--chart-1": chartColors[0] ?? "",
     "--chart-2": chartColors[1] ?? "",

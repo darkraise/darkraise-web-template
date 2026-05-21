@@ -130,8 +130,12 @@ describe("ThemeProvider preset orchestration", () => {
   it("writes preset-owned tokens to documentElement.style when glass active", () => {
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
     act(() => result.current.setPreset("glassmorphism"))
+    // After the accent-tint update, --fog-05 is a nested color-mix
+    // expression: outer color-mix sets alpha, inner color-mix builds an
+    // accent-tinted white base. Just assert the shape; the unit tests in
+    // glassmorphism.test.ts cover exact values per opacity × mode.
     expect(document.documentElement.style.getPropertyValue("--fog-05")).toMatch(
-      /^rgba\(255, 255, 255, 0\.\d+\)$/,
+      /^color-mix\(in srgb, color-mix\(in srgb, hsl\(.+\) \d+%, white\) [\d.]+%, transparent\)$/,
     )
   })
 

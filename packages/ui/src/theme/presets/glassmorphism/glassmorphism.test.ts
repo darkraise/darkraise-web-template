@@ -65,13 +65,24 @@ describe("glassmorphism preset", () => {
       typeof glassmorphism.generateTokens
     >
 
-    it("light + medium opacity = today's baseline fog alphas", () => {
+    // Fog tokens are accent-tinted color-mix expressions. Light mode uses
+    // 18% of accent[500] mixed into white as the base; dark mode uses 14%
+    // of accent[400]. Test fixture uses the blue accent palette
+    // (accent[500] = "217 91% 60%", accent[400] = "213 94% 68%").
+    const lightBase = "color-mix(in srgb, hsl(217 91% 60%) 18%, white)"
+    const darkBase = "color-mix(in srgb, hsl(213 94% 68%) 14%, white)"
+
+    it("light + medium opacity = today's baseline fog alphas (accent-tinted)", () => {
       const tokens = generateTokens(buildCommon(), {
         opacity: "medium",
         blur: "medium",
       })
-      expect(tokens["--fog-05"]).toBe("rgba(255, 255, 255, 0.55)")
-      expect(tokens["--fog-50"]).toBe("rgba(255, 255, 255, 0.96)")
+      expect(tokens["--fog-05"]).toBe(
+        `color-mix(in srgb, ${lightBase} 55.0%, transparent)`,
+      )
+      expect(tokens["--fog-50"]).toBe(
+        `color-mix(in srgb, ${lightBase} 96.0%, transparent)`,
+      )
     })
 
     it("light + subtle opacity = higher alphas (more solid)", () => {
@@ -79,8 +90,12 @@ describe("glassmorphism preset", () => {
         opacity: "subtle",
         blur: "medium",
       })
-      expect(tokens["--fog-05"]).toBe("rgba(255, 255, 255, 0.7)")
-      expect(tokens["--fog-50"]).toBe("rgba(255, 255, 255, 0.98)")
+      expect(tokens["--fog-05"]).toBe(
+        `color-mix(in srgb, ${lightBase} 70.0%, transparent)`,
+      )
+      expect(tokens["--fog-50"]).toBe(
+        `color-mix(in srgb, ${lightBase} 98.0%, transparent)`,
+      )
     })
 
     it("light + strong opacity = lower alphas (more transparent)", () => {
@@ -88,17 +103,25 @@ describe("glassmorphism preset", () => {
         opacity: "strong",
         blur: "medium",
       })
-      expect(tokens["--fog-05"]).toBe("rgba(255, 255, 255, 0.3)")
-      expect(tokens["--fog-50"]).toBe("rgba(255, 255, 255, 0.82)")
+      expect(tokens["--fog-05"]).toBe(
+        `color-mix(in srgb, ${lightBase} 30.0%, transparent)`,
+      )
+      expect(tokens["--fog-50"]).toBe(
+        `color-mix(in srgb, ${lightBase} 82.0%, transparent)`,
+      )
     })
 
-    it("dark + medium opacity = today's baseline dark alphas", () => {
+    it("dark + medium opacity = today's baseline dark alphas (accent-tinted)", () => {
       const tokens = generateTokens(buildCommon({ mode: "dark" }), {
         opacity: "medium",
         blur: "medium",
       })
-      expect(tokens["--fog-05"]).toBe("rgba(255, 255, 255, 0.04)")
-      expect(tokens["--fog-50"]).toBe("rgba(255, 255, 255, 0.38)")
+      expect(tokens["--fog-05"]).toBe(
+        `color-mix(in srgb, ${darkBase} 4.0%, transparent)`,
+      )
+      expect(tokens["--fog-50"]).toBe(
+        `color-mix(in srgb, ${darkBase} 38.0%, transparent)`,
+      )
     })
 
     it("inset-hi scales with opacity in light mode", () => {
