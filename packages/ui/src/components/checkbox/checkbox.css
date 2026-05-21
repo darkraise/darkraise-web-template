@@ -21,4 +21,11 @@
       opacity 150ms ease-out,
       transform 150ms ease-out;
   }
+
+  /* Preset-driven affordance glow on the checked/indeterminate state.
+     Transparent under Default/Glass; primary-color glow under Neon. */
+  .dr-checkbox[data-state="checked"],
+  .dr-checkbox[data-state="indeterminate"] {
+    box-shadow: var(--affordance-glow);
+  }
 }

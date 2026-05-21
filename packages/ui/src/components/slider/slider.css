@@ -13,6 +13,10 @@
 
   .dr-slider-thumb {
     @apply border-primary bg-primary-foreground block h-5 w-5 cursor-pointer rounded-full border-2 disabled:pointer-events-none disabled:cursor-default;
+    /* Preset-driven affordance glow at rest. Transparent under
+       Default/Glass; primary-color glow under Neon so the current
+       slider value reads as "the active one" without a focus event. */
+    box-shadow: var(--affordance-glow);
     transition:
       background-color 150ms,
       border-color 150ms,
@@ -20,6 +24,10 @@
   }
 
   .dr-slider-thumb:focus-visible {
-    box-shadow: 0 0 0 2px hsl(var(--focus-ring));
+    /* Compose the focus ring with the affordance glow so focused
+       thumbs in Neon keep both their ring and their glow. */
+    box-shadow:
+      0 0 0 2px hsl(var(--focus-ring)),
+      var(--affordance-glow);
   }
 }

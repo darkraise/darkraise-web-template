@@ -37,4 +37,10 @@
       opacity 150ms ease-out,
       transform 150ms ease-out;
   }
+
+  /* Preset-driven affordance glow on the selected radio. Transparent
+     under Default/Glass; primary-color glow under Neon. */
+  .dr-radio-group-item[data-state="checked"] {
+    box-shadow: var(--affordance-glow);
+  }
 }

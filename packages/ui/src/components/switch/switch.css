@@ -6,4 +6,12 @@
   .dr-switch-thumb {
     @apply bg-background pointer-events-none block h-4 w-4 rounded-full shadow-[var(--shadow-button)] ring-0 transition-transform data-[state=checked]:translate-x-4 data-[state=unchecked]:translate-x-0;
   }
+
+  /* Compose the preset-driven --affordance-glow on top of the thumb's
+     base shadow when the switch is checked. Transparent under Default
+     and Glass (no visual change); becomes a primary-color glow under
+     Neon. */
+  .dr-switch[data-state="checked"] .dr-switch-thumb {
+    box-shadow: var(--shadow-button), var(--affordance-glow);
+  }
 }

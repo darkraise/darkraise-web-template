@@ -20,6 +20,10 @@
 
   .dr-pagination-link[data-active="true"][data-variant="ghost"] {
     @apply border-primary text-primary border bg-transparent;
+    /* Preset-driven affordance glow on the current page indicator.
+       Transparent under Default/Glass; primary-color glow under Neon
+       so the active page reads independently of the border alone. */
+    box-shadow: var(--affordance-glow);
   }
 
   .dr-pagination-link[data-active="true"][data-variant="ghost"]:hover {

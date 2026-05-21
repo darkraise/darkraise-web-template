@@ -22,7 +22,11 @@
   }
 
   .dr-toggle[data-variant="default"][data-state="on"] {
-    @apply bg-primary text-primary-foreground shadow-[var(--shadow-button)];
+    @apply bg-primary text-primary-foreground;
+    /* Compose --shadow-button with the preset-driven --affordance-glow.
+       Transparent glow under Default/Glass (button shadow unchanged);
+       under Neon the active toggle gains a primary-color glow. */
+    box-shadow: var(--shadow-button), var(--affordance-glow);
   }
 
   .dr-toggle[data-variant="default"][data-state="on"]:hover {

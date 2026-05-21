@@ -587,6 +587,16 @@
     0 48px 72px -10px rgb(0 0 0 / 0.45), 0 20px 36px -6px rgb(0 0 0 / 0.28);
   --shadow-button: 0 0 transparent;
 
+  /* Affordance glow — outer box-shadow applied to active/checked/
+     selected states on small interactive controls (Switch, Toggle,
+     Checkbox, Radio, Slider thumb, Tabs active indicator, current
+     page in Pagination, etc.) to signal "this is the active one."
+     Each preset binds this token in its own CSS file. Default and
+     Glass leave it transparent (current behaviour preserved); Neon
+     overrides it with a primary-color glow so every consumer lights
+     up simultaneously without per-component preset rules. */
+  --affordance-glow: 0 0 transparent;
+
   /* Default elevation-current so `<Card elevation="auto">` and other
      consumers reading `var(--elevation-current)` resolve to a real shadow
      when no `[data-elevation]` attribute is set on any ancestor. Themes
