@@ -1,6 +1,6 @@
-// packages/ui/src/theme/presets/glassmorphism/glassmorphism.test.ts
+// packages/ui/src/theme/presets/glass/glass.test.ts
 import { describe, it, expect } from "vitest"
-import { glassmorphism } from "./glassmorphism"
+import { glass } from "./glass"
 import { accentColors } from "@theme/palettes/accentColors"
 import { surfaceColors } from "@theme/palettes/surfaceColors"
 import type { ColorScale } from "@theme/types"
@@ -10,7 +10,7 @@ const blue = accentColors.blue
 
 function buildCommon(
   overrides: Partial<
-    Parameters<NonNullable<typeof glassmorphism.generateTokens>>[0]
+    Parameters<NonNullable<typeof glass.generateTokens>>[0]
   > = {},
 ) {
   return {
@@ -25,25 +25,16 @@ function buildCommon(
   }
 }
 
-describe("glassmorphism preset", () => {
+describe("glass preset", () => {
   it("declares opacity and blur axes with the expected default and value sets", () => {
-    expect(glassmorphism.axes.opacity.values).toEqual([
-      "subtle",
-      "medium",
-      "strong",
-    ])
-    expect(glassmorphism.axes.opacity.default).toBe("medium")
-    expect(glassmorphism.axes.blur.values).toEqual([
-      "none",
-      "low",
-      "medium",
-      "high",
-    ])
-    expect(glassmorphism.axes.blur.default).toBe("medium")
+    expect(glass.axes.opacity.values).toEqual(["subtle", "medium", "strong"])
+    expect(glass.axes.opacity.default).toBe("medium")
+    expect(glass.axes.blur.values).toEqual(["none", "low", "medium", "high"])
+    expect(glass.axes.blur.default).toBe("medium")
   })
 
   it("ownedTokenKeys covers the per-preset token surface", () => {
-    expect(glassmorphism.ownedTokenKeys).toEqual([
+    expect(glass.ownedTokenKeys).toEqual([
       "--fog-05",
       "--fog-10",
       "--fog-15",
@@ -61,8 +52,8 @@ describe("glassmorphism preset", () => {
   })
 
   describe("generateTokens", () => {
-    const generateTokens = glassmorphism.generateTokens as NonNullable<
-      typeof glassmorphism.generateTokens
+    const generateTokens = glass.generateTokens as NonNullable<
+      typeof glass.generateTokens
     >
 
     // Fog tokens are accent-tinted color-mix expressions. Light mode uses
@@ -178,22 +169,14 @@ describe("glassmorphism preset", () => {
   })
 
   describe("surfaceRecipe", () => {
-    it("matches today's surfaceStyles.glassmorphism for dark borders", () => {
-      expect(glassmorphism.surfaceRecipe.borderSubtle(slate, "dark")).toBe(
-        slate[600],
-      )
-      expect(glassmorphism.surfaceRecipe.borderDefault(slate, "dark")).toBe(
-        slate[500],
-      )
+    it("matches today's surfaceStyles.glass for dark borders", () => {
+      expect(glass.surfaceRecipe.borderSubtle(slate, "dark")).toBe(slate[600])
+      expect(glass.surfaceRecipe.borderDefault(slate, "dark")).toBe(slate[500])
     })
 
-    it("matches today's surfaceStyles.glassmorphism for light borders", () => {
-      expect(glassmorphism.surfaceRecipe.borderSubtle(slate, "light")).toBe(
-        slate[100],
-      )
-      expect(glassmorphism.surfaceRecipe.borderDefault(slate, "light")).toBe(
-        slate[200],
-      )
+    it("matches today's surfaceStyles.glass for light borders", () => {
+      expect(glass.surfaceRecipe.borderSubtle(slate, "light")).toBe(slate[100])
+      expect(glass.surfaceRecipe.borderDefault(slate, "light")).toBe(slate[200])
     })
   })
 })

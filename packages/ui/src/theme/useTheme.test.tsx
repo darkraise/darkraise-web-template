@@ -67,9 +67,9 @@ describe("useTheme", () => {
   // Re-enabled in Phase 3 with the glass preset registered
   it("setPreset updates preset and persists to theme-preset key", () => {
     const { result } = renderHook(() => useTheme(), { wrapper })
-    act(() => result.current.setPreset("glassmorphism"))
-    expect(result.current.preset).toBe("glassmorphism")
-    expect(localStorage.getItem("theme-preset")).toBe("glassmorphism")
+    act(() => result.current.setPreset("glass"))
+    expect(result.current.preset).toBe("glass")
+    expect(localStorage.getItem("theme-preset")).toBe("glass")
   })
 
   it("setMode updates mode and applies data-mode attribute", () => {
@@ -96,13 +96,13 @@ describe("useTheme", () => {
   it("reads persisted values from localStorage on mount", () => {
     storageMock.setItem("theme-accent", "emerald")
     storageMock.setItem("theme-surface-color", "teal")
-    storageMock.setItem("theme-preset", "glassmorphism")
+    storageMock.setItem("theme-preset", "glass")
     storageMock.setItem("mode", "dark")
 
     const { result } = renderHook(() => useTheme(), { wrapper })
     expect(result.current.accentColor).toBe("emerald")
     expect(result.current.surfaceColor).toBe("teal")
-    expect(result.current.preset).toBe("glassmorphism")
+    expect(result.current.preset).toBe("glass")
     expect(result.current.mode).toBe("dark")
   })
 
@@ -171,7 +171,7 @@ describe("useTheme persistence", () => {
   const serverSettings: ThemeSettings = {
     accentColor: "rose",
     surfaceColor: "emerald",
-    preset: "glassmorphism",
+    preset: "glass",
     backgroundStyle: "gradient",
     mode: "dark",
     density: "spacious",
@@ -212,7 +212,7 @@ describe("useTheme persistence", () => {
     expect(adapter.load).toHaveBeenCalledOnce()
     expect(result.current.accentColor).toBe("rose")
     expect(result.current.surfaceColor).toBe("emerald")
-    expect(result.current.preset).toBe("glassmorphism")
+    expect(result.current.preset).toBe("glass")
     expect(result.current.backgroundStyle).toBe("gradient")
     expect(result.current.mode).toBe("dark")
     expect(result.current.density).toBe("spacious")
@@ -257,7 +257,7 @@ describe("useTheme persistence", () => {
 
     expect(localStorage.getItem("theme-accent")).toBe("rose")
     expect(localStorage.getItem("theme-surface-color")).toBe("emerald")
-    expect(localStorage.getItem("theme-preset")).toBe("glassmorphism")
+    expect(localStorage.getItem("theme-preset")).toBe("glass")
     expect(localStorage.getItem("theme-bg-style")).toBe("gradient")
     expect(localStorage.getItem("mode")).toBe("dark")
     expect(localStorage.getItem("theme-density")).toBe("spacious")

@@ -1,7 +1,7 @@
-/* packages/ui/src/theme/presets/glassmorphism/glassmorphism.css
+/* packages/ui/src/theme/presets/glass/glass.css
  * Scalar tokens for the Glass preset's two axes. Cross-axis color math
- * (fog tiers, inset highlights, dark-gradient border) lives in
- * glassmorphism.ts; this file is the no-JS bedrock for the simple values.
+ * (fog tiers, inset highlights, dark-gradient border) lives in glass.ts;
+ * this file is the no-JS bedrock for the simple values.
  */
 
 /* Surface opacity. Consumed via `var(--surface-opacity, 1)` in @theme inline.
@@ -9,34 +9,34 @@
    strong = strong glass effect = low opacity = card very see-through.
    medium matches today's `--surface-opacity: 0.5` (the solid branch of the
    removed resolveGlassOpacity function). */
-[data-preset="glassmorphism"][data-glassmorphism-opacity="subtle"] {
+[data-preset="glass"][data-glass-opacity="subtle"] {
   --surface-opacity: 0.78;
 }
-[data-preset="glassmorphism"][data-glassmorphism-opacity="medium"] {
+[data-preset="glass"][data-glass-opacity="medium"] {
   --surface-opacity: 0.5;
 }
-[data-preset="glassmorphism"][data-glassmorphism-opacity="strong"] {
+[data-preset="glass"][data-glass-opacity="strong"] {
   --surface-opacity: 0.3;
 }
 
 /* Backdrop blur. Consumed by .glass, .glass-strong, .card-surface utilities
    and by overlay scrims (after the Phase 0 audit fixes routed scrim
    backdrop-filter through this var).
-   medium = 12px matches today's surfaceStyles.glassmorphism.overrides
+   medium = 12px matches today's surfaceStyles.glass.overrides
    .backdropBlur byte-for-byte. */
-[data-preset="glassmorphism"][data-glassmorphism-blur="none"] {
+[data-preset="glass"][data-glass-blur="none"] {
   --backdrop-blur: 0;
   --backdrop-filter: none;
 }
-[data-preset="glassmorphism"][data-glassmorphism-blur="low"] {
+[data-preset="glass"][data-glass-blur="low"] {
   --backdrop-blur: 6px;
   --backdrop-filter: blur(6px) saturate(140%);
 }
-[data-preset="glassmorphism"][data-glassmorphism-blur="medium"] {
+[data-preset="glass"][data-glass-blur="medium"] {
   --backdrop-blur: 12px;
   --backdrop-filter: blur(12px) saturate(140%);
 }
-[data-preset="glassmorphism"][data-glassmorphism-blur="high"] {
+[data-preset="glass"][data-glass-blur="high"] {
   --backdrop-blur: 24px;
   --backdrop-filter: blur(24px) saturate(140%);
 }
@@ -48,18 +48,18 @@
    render with Glass's full chrome. These details used to live on
    per-`.glass-strong`-class overrides and were lost when those
    components moved to consume --surface-overlay-* directly. */
-[data-preset="glassmorphism"] {
+[data-preset="glass"] {
   --surface-overlay-bg:
     var(--glass-noise), linear-gradient(135deg, var(--fog-20), var(--fog-10));
   --surface-overlay-blend-mode: overlay, normal;
   --surface-overlay-border: var(--fog-20);
 }
-[data-mode="light"][data-preset="glassmorphism"] {
+[data-mode="light"][data-preset="glass"] {
   --surface-overlay-shadow:
     var(--elevation-medium), var(--inset-hi-strong),
     inset 0 0 32px color-mix(in oklab, hsl(var(--surface-tint)) 2%, transparent);
 }
-[data-mode="dark"][data-preset="glassmorphism"] {
+[data-mode="dark"][data-preset="glass"] {
   --surface-overlay-shadow:
     var(--elevation-medium), var(--inset-hi-strong),
     inset 0 0 40px

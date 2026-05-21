@@ -127,7 +127,7 @@
 
 /* Preset-specific CSS (manual; presets/ is outside the auto-scanner) */
 @import "../theme/presets/default/default.css";
-@import "../theme/presets/glassmorphism/glassmorphism.css";
+@import "../theme/presets/glass/glass.css";
 @import "../theme/presets/neon/neon.css";
 
 @layer theme, base, components, utilities, overrides;
@@ -1408,7 +1408,7 @@
     z-index: 0;
   }
 
-  [data-background-style="gradient"][data-preset="glassmorphism"]
+  [data-background-style="gradient"][data-preset="glass"]
     .sidebar-gradient-overlay::before {
     background:
       var(--canvas-blob-a), var(--canvas-blob-b), var(--canvas-blob-c),
@@ -1432,7 +1432,7 @@
     z-index: 0;
   }
 
-  [data-background-style="gradient"][data-preset="glassmorphism"]
+  [data-background-style="gradient"][data-preset="glass"]
     .header-gradient-overlay::before {
     background:
       var(--canvas-blob-a), var(--canvas-blob-b), var(--canvas-blob-c),
@@ -1519,32 +1519,32 @@
 }
 
 @layer overrides {
-  [data-mode="dark"][data-preset="glassmorphism"] .glass-strong.bg-background {
+  [data-mode="dark"][data-preset="glass"] .glass-strong.bg-background {
     background-color: transparent;
   }
 
-  /* Glass surfaces under the glassmorphism preset get two modern-glass
+  /* Glass surfaces under the glass preset gets two modern-glass
      touches that the plain @utility rules don't carry:
        (B) an inner accent glow simulating light bleeding through the
            glass from the page's brand color, and
        (C) a subtle noise overlay that adds a "physical frosted glass"
            grain on the surface itself (separate from the page-level
            --noise-opacity).
-     Both are scoped to [data-preset="glassmorphism"] so they're inert
+     Both are scoped to [data-preset="glass"] so they're inert
      under Default and future presets. The noise SVG is hoisted into
      --glass-noise so all three glass utilities share one definition. */
-  [data-preset="glassmorphism"] {
+  [data-preset="glass"] {
     --glass-noise: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.08 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
   }
 
-  [data-preset="glassmorphism"] .glass,
-  [data-preset="glassmorphism"] .card-surface {
+  [data-preset="glass"] .glass,
+  [data-preset="glass"] .card-surface {
     background-image:
       var(--glass-noise), linear-gradient(135deg, var(--fog-10), var(--fog-05));
     background-blend-mode: overlay, normal;
   }
 
-  [data-preset="glassmorphism"] .glass-strong {
+  [data-preset="glass"] .glass-strong {
     background-image:
       var(--glass-noise), linear-gradient(135deg, var(--fog-20), var(--fog-10));
     background-blend-mode: overlay, normal;
@@ -1561,28 +1561,28 @@
      Dark glass is mostly transparent (low fog alphas), so dark needs
      significantly more (~22-28%) plus wider blur to spread the glow
      visibly across the near-transparent surface. */
-  [data-mode="light"][data-preset="glassmorphism"] .glass,
-  [data-mode="light"][data-preset="glassmorphism"] .card-surface {
+  [data-mode="light"][data-preset="glass"] .glass,
+  [data-mode="light"][data-preset="glass"] .card-surface {
     box-shadow:
       var(--inset-hi),
       inset 0 0 16px
         color-mix(in oklab, hsl(var(--surface-tint)) 1.5%, transparent);
   }
-  [data-mode="light"][data-preset="glassmorphism"] .glass-strong {
+  [data-mode="light"][data-preset="glass"] .glass-strong {
     box-shadow:
       var(--elevation-medium),
       var(--inset-hi-strong),
       inset 0 0 32px
         color-mix(in oklab, hsl(var(--surface-tint)) 2%, transparent);
   }
-  [data-mode="dark"][data-preset="glassmorphism"] .glass,
-  [data-mode="dark"][data-preset="glassmorphism"] .card-surface {
+  [data-mode="dark"][data-preset="glass"] .glass,
+  [data-mode="dark"][data-preset="glass"] .card-surface {
     box-shadow:
       var(--inset-hi),
       inset 0 0 24px
         color-mix(in oklab, hsl(var(--surface-tint)) 22%, transparent);
   }
-  [data-mode="dark"][data-preset="glassmorphism"] .glass-strong {
+  [data-mode="dark"][data-preset="glass"] .glass-strong {
     box-shadow:
       var(--elevation-medium),
       var(--inset-hi-strong),

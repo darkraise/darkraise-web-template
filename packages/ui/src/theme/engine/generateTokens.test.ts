@@ -232,12 +232,12 @@ describe("generateTokens", () => {
     const tokens = generateTokens({
       accentColor: "blue",
       surfaceColor: "slate",
-      preset: "glassmorphism",
+      preset: "glass",
       backgroundStyle: "solid",
       mode: "light",
     })
 
-    // These tokens are now bound by glassmorphism.css attribute selectors.
+    // These tokens are now bound by glass.css attribute selectors.
     expect(tokens["--backdrop-blur"]).toBeUndefined()
     expect(tokens["--surface-opacity"]).toBeUndefined()
     expect(tokens["--backdrop-filter"]).toBeUndefined()
@@ -250,11 +250,11 @@ describe("generateTokens", () => {
   })
 
   // Re-enabled in Phase 3 with the glass preset registered
-  it("light + glassmorphism shifts primary from accent-500 to accent-600 for AA contrast", () => {
+  it("light + glass shifts primary from accent-500 to accent-600 for AA contrast", () => {
     const tokens = generateTokens({
       accentColor: "blue",
       surfaceColor: "slate",
-      preset: "glassmorphism",
+      preset: "glass",
       backgroundStyle: "solid",
       mode: "light",
     })
@@ -264,11 +264,11 @@ describe("generateTokens", () => {
   })
 
   // Re-enabled in Phase 3 with the glass preset registered
-  it("light + glassmorphism tints card shadow drops with blue-black (16 24 40)", () => {
+  it("light + glass tints card shadow drops with blue-black (16 24 40)", () => {
     const tokens = generateTokens({
       accentColor: "blue",
       surfaceColor: "slate",
-      preset: "glassmorphism",
+      preset: "glass",
       backgroundStyle: "solid",
       mode: "light",
     })
@@ -402,16 +402,16 @@ describe("generateTokens", () => {
   })
 
   describe("fog ramp tokens", () => {
-    it("dark + glassmorphism does not emit fog tokens from common generateTokens", () => {
+    it("dark + glass does not emit fog tokens from common generateTokens", () => {
       const tokens = generateTokens({
         accentColor: "blue",
         surfaceColor: "slate",
-        preset: "glassmorphism",
+        preset: "glass",
         backgroundStyle: "solid",
         mode: "dark",
       })
 
-      // Fog tokens are now computed by glassmorphism.generateTokens (the preset's
+      // Fog tokens are now computed by glass.generateTokens (the preset's
       // own generator), not by the shared generateTokens path.
       expect(tokens["--fog-05"]).toBeUndefined()
       expect(tokens["--fog-10"]).toBeUndefined()
@@ -421,11 +421,11 @@ describe("generateTokens", () => {
       expect(tokens["--fog-50"]).toBeUndefined()
     })
 
-    it("light + glassmorphism does not emit fog tokens from common generateTokens", () => {
+    it("light + glass does not emit fog tokens from common generateTokens", () => {
       const tokens = generateTokens({
         accentColor: "blue",
         surfaceColor: "slate",
-        preset: "glassmorphism",
+        preset: "glass",
         backgroundStyle: "solid",
         mode: "light",
       })
@@ -470,27 +470,27 @@ describe("generateTokens", () => {
   })
 
   describe("inset rim tokens", () => {
-    it("dark + glassmorphism does not emit inset rim tokens from common generateTokens", () => {
+    it("dark + glass does not emit inset rim tokens from common generateTokens", () => {
       const tokens = generateTokens({
         accentColor: "blue",
         surfaceColor: "slate",
-        preset: "glassmorphism",
+        preset: "glass",
         backgroundStyle: "solid",
         mode: "dark",
       })
 
-      // Inset tokens are now computed by glassmorphism.generateTokens (the preset's
+      // Inset tokens are now computed by glass.generateTokens (the preset's
       // own generator), not by the shared generateTokens path.
       expect(tokens["--inset-hi"]).toBeUndefined()
       expect(tokens["--inset-hi-strong"]).toBeUndefined()
       expect(tokens["--inset-hi-button"]).toBeUndefined()
     })
 
-    it("light + glassmorphism does not emit inset rim tokens from common generateTokens", () => {
+    it("light + glass does not emit inset rim tokens from common generateTokens", () => {
       const tokens = generateTokens({
         accentColor: "blue",
         surfaceColor: "slate",
-        preset: "glassmorphism",
+        preset: "glass",
         backgroundStyle: "solid",
         mode: "light",
       })
@@ -644,7 +644,7 @@ describe("generateTokens", () => {
       const tokens = generateTokens({
         ...baseInput,
         backgroundStyle: "solid",
-        preset: "glassmorphism",
+        preset: "glass",
       })
       const out = tokens["--content-gradient-overlay"]
         .replace(/\s+/g, " ")
@@ -659,7 +659,7 @@ describe("generateTokens", () => {
       const tokens = generateTokens({
         ...baseInput,
         backgroundStyle: "gradient",
-        preset: "glassmorphism",
+        preset: "glass",
       })
       expect(tokens["--content-gradient-overlay"]).toBe("none")
     })

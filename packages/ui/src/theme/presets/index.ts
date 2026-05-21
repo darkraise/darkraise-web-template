@@ -1,10 +1,10 @@
 import { defaultPreset } from "./default/default"
-import { glassmorphism } from "./glassmorphism/glassmorphism"
+import { glass } from "./glass/glass"
 import { neon } from "./neon/neon"
 
 export const presets = {
   default: defaultPreset,
-  glassmorphism,
+  glass,
   neon,
 } as const
 

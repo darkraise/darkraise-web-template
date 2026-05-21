@@ -46,8 +46,8 @@ describe("ThemeProvider preset orchestration", () => {
     storageMock.clear()
     mockMatchMedia()
     document.documentElement.removeAttribute("data-preset")
-    document.documentElement.removeAttribute("data-glassmorphism-opacity")
-    document.documentElement.removeAttribute("data-glassmorphism-blur")
+    document.documentElement.removeAttribute("data-glass-opacity")
+    document.documentElement.removeAttribute("data-glass-blur")
     document.documentElement.style.cssText = ""
   })
 
@@ -58,82 +58,76 @@ describe("ThemeProvider preset orchestration", () => {
 
   it("does NOT write glass axis attributes when default preset is active", () => {
     renderHook(() => useTheme(), { wrapper: wrap })
-    expect(
-      document.documentElement.getAttribute("data-glassmorphism-opacity"),
-    ).toBe(null)
-    expect(
-      document.documentElement.getAttribute("data-glassmorphism-blur"),
-    ).toBe(null)
+    expect(document.documentElement.getAttribute("data-glass-opacity")).toBe(
+      null,
+    )
+    expect(document.documentElement.getAttribute("data-glass-blur")).toBe(null)
   })
 
   it("writes glass axis attributes when switching to glass", () => {
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
-    act(() => result.current.setPreset("glassmorphism"))
-    expect(document.documentElement.getAttribute("data-preset")).toBe(
-      "glassmorphism",
+    act(() => result.current.setPreset("glass"))
+    expect(document.documentElement.getAttribute("data-preset")).toBe("glass")
+    expect(document.documentElement.getAttribute("data-glass-opacity")).toBe(
+      "medium",
     )
-    expect(
-      document.documentElement.getAttribute("data-glassmorphism-opacity"),
-    ).toBe("medium")
-    expect(
-      document.documentElement.getAttribute("data-glassmorphism-blur"),
-    ).toBe("medium")
+    expect(document.documentElement.getAttribute("data-glass-blur")).toBe(
+      "medium",
+    )
   })
 
   it("removes glass axis attributes when switching back to default", () => {
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
-    act(() => result.current.setPreset("glassmorphism"))
+    act(() => result.current.setPreset("glass"))
     act(() => result.current.setPreset("default"))
-    expect(
-      document.documentElement.getAttribute("data-glassmorphism-opacity"),
-    ).toBe(null)
-    expect(
-      document.documentElement.getAttribute("data-glassmorphism-blur"),
-    ).toBe(null)
+    expect(document.documentElement.getAttribute("data-glass-opacity")).toBe(
+      null,
+    )
+    expect(document.documentElement.getAttribute("data-glass-blur")).toBe(null)
   })
 
   it("sticky persistence: setting glass-opacity survives a round-trip through default", () => {
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
-    act(() => result.current.setPreset("glassmorphism"))
+    act(() => result.current.setPreset("glass"))
     act(() => result.current.setPresetAxis("opacity", "strong"))
-    expect(
-      document.documentElement.getAttribute("data-glassmorphism-opacity"),
-    ).toBe("strong")
+    expect(document.documentElement.getAttribute("data-glass-opacity")).toBe(
+      "strong",
+    )
 
     act(() => result.current.setPreset("default"))
-    expect(
-      document.documentElement.getAttribute("data-glassmorphism-opacity"),
-    ).toBe(null)
+    expect(document.documentElement.getAttribute("data-glass-opacity")).toBe(
+      null,
+    )
 
-    act(() => result.current.setPreset("glassmorphism"))
-    expect(
-      document.documentElement.getAttribute("data-glassmorphism-opacity"),
-    ).toBe("strong")
+    act(() => result.current.setPreset("glass"))
+    expect(document.documentElement.getAttribute("data-glass-opacity")).toBe(
+      "strong",
+    )
   })
 
   it("sticky persistence: glass axis values survive remount via LocalStorage", () => {
     {
       const { result } = renderHook(() => useTheme(), { wrapper: wrap })
-      act(() => result.current.setPreset("glassmorphism"))
+      act(() => result.current.setPreset("glass"))
       act(() => result.current.setPresetAxis("blur", "high"))
     }
-    expect(localStorage.getItem("theme-glassmorphism-blur")).toBe("high")
+    expect(localStorage.getItem("theme-glass-blur")).toBe("high")
 
     // Fresh provider; should rehydrate from LocalStorage.
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
-    act(() => result.current.setPreset("glassmorphism"))
-    expect(
-      document.documentElement.getAttribute("data-glassmorphism-blur"),
-    ).toBe("high")
+    act(() => result.current.setPreset("glass"))
+    expect(document.documentElement.getAttribute("data-glass-blur")).toBe(
+      "high",
+    )
   })
 
   it("writes preset-owned tokens to documentElement.style when glass active", () => {
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
-    act(() => result.current.setPreset("glassmorphism"))
+    act(() => result.current.setPreset("glass"))
     // After the accent-tint update, --fog-05 is a nested color-mix
     // expression: outer color-mix sets alpha, inner color-mix builds an
     // accent-tinted white base. Just assert the shape; the unit tests in
-    // glassmorphism.test.ts cover exact values per opacity × mode.
+    // glass.test.ts cover exact values per opacity × mode.
     expect(document.documentElement.style.getPropertyValue("--fog-05")).toMatch(
       /^color-mix\(in srgb, color-mix\(in srgb, hsl\(.+\) \d+%, white\) [\d.]+%, transparent\)$/,
     )
@@ -141,7 +135,7 @@ describe("ThemeProvider preset orchestration", () => {
 
   it("clears preset-owned tokens from documentElement.style when leaving glass", () => {
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
-    act(() => result.current.setPreset("glassmorphism"))
+    act(() => result.current.setPreset("glass"))
     expect(
       document.documentElement.style.getPropertyValue("--fog-05"),
     ).not.toBe("")
@@ -161,12 +155,12 @@ describe("ThemeProvider preset orchestration", () => {
   it("setPresetAxis on invalid value for known axis no-ops with dev warning", () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {})
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
-    act(() => result.current.setPreset("glassmorphism"))
+    act(() => result.current.setPreset("glass"))
     act(() => result.current.setPresetAxis("opacity", "extreme"))
     expect(warn).toHaveBeenCalled()
-    expect(
-      document.documentElement.getAttribute("data-glassmorphism-opacity"),
-    ).toBe("medium")
+    expect(document.documentElement.getAttribute("data-glass-opacity")).toBe(
+      "medium",
+    )
     warn.mockRestore()
   })
 
@@ -261,8 +255,8 @@ describe("ThemeProvider preset orchestration", () => {
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
     act(() => result.current.setMode("light"))
     expect(result.current.resolvedMode).toBe("light")
-    act(() => result.current.setPreset("glassmorphism"))
-    expect(result.current.preset).toBe("glassmorphism")
+    act(() => result.current.setPreset("glass"))
+    expect(result.current.preset).toBe("glass")
     expect(result.current.resolvedMode).toBe("light")
   })
 })

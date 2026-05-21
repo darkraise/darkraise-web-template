@@ -47,8 +47,8 @@ describe("ThemeSwitcher preset section", () => {
     vi.stubGlobal("localStorage", storageMock)
     mockMatchMedia()
     document.documentElement.removeAttribute("data-preset")
-    document.documentElement.removeAttribute("data-glassmorphism-opacity")
-    document.documentElement.removeAttribute("data-glassmorphism-blur")
+    document.documentElement.removeAttribute("data-glass-opacity")
+    document.documentElement.removeAttribute("data-glass-blur")
     document.documentElement.style.cssText = ""
   })
 
@@ -64,9 +64,7 @@ describe("ThemeSwitcher preset section", () => {
     )
     openSwitcher()
     expect(screen.getByRole("radio", { name: /default/i })).toBeInTheDocument()
-    expect(
-      screen.getByRole("radio", { name: /glassmorphism/i }),
-    ).toBeInTheDocument()
+    expect(screen.getByRole("radio", { name: /^glass$/i })).toBeInTheDocument()
   })
 
   it("does NOT render glass axis toggles when default preset is active", () => {
@@ -87,7 +85,7 @@ describe("ThemeSwitcher preset section", () => {
       </ThemeProvider>,
     )
     openSwitcher()
-    fireEvent.click(screen.getByRole("radio", { name: /glassmorphism/i }))
+    fireEvent.click(screen.getByRole("radio", { name: /^glass$/i }))
     expect(screen.getByText("Opacity")).toBeInTheDocument()
     expect(screen.getByText("Backdrop Blur")).toBeInTheDocument()
   })
@@ -99,11 +97,11 @@ describe("ThemeSwitcher preset section", () => {
       </ThemeProvider>,
     )
     openSwitcher()
-    fireEvent.click(screen.getByRole("radio", { name: /glassmorphism/i }))
+    fireEvent.click(screen.getByRole("radio", { name: /^glass$/i }))
     fireEvent.click(screen.getByRole("radio", { name: /^strong$/i }))
-    expect(
-      document.documentElement.getAttribute("data-glassmorphism-opacity"),
-    ).toBe("strong")
+    expect(document.documentElement.getAttribute("data-glass-opacity")).toBe(
+      "strong",
+    )
   })
 
   it("does NOT render Background Intensity when backgroundStyle is solid", () => {

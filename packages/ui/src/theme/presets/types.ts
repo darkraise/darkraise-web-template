@@ -44,7 +44,7 @@ export interface CommonAxisInput {
  * `backdropBlur`, and `surfaceOpacity` fields. `radius` is dead code
  * (theme.css [data-radius="…"] selectors own --radius, no one reads
  * the recipe field). `backdropBlur` and `surfaceOpacity` are moved to
- * per-axis CSS attribute selectors in glassmorphism.css. All three
+ * per-axis CSS attribute selectors in glass.css. All three
  * are intentionally dropped here.
  */
 export interface PresetSurfaceRecipe {

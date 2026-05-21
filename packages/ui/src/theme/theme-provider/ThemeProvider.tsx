@@ -91,6 +91,36 @@ function resolveMode(mode: Mode): ResolvedMode {
   return mode === "system" ? getSystemMode() : mode
 }
 
+// One-time migration: the Glass preset was renamed from "glassmorphism"
+// to "glass". Existing users have "glassmorphism" stored in their
+// theme-preset LocalStorage value and their axis settings under
+// theme-glassmorphism-{opacity,blur}. Rehydrate them under the new
+// keys on read so their saved configuration survives the rename.
+function migrateGlassPresetKeys(): void {
+  if (typeof window === "undefined") return
+  try {
+    const ls = globalThis.localStorage
+    if (ls.getItem("theme-preset") === "glassmorphism") {
+      ls.setItem("theme-preset", "glass")
+    }
+    for (const axis of ["opacity", "blur"] as const) {
+      const oldKey = `theme-glassmorphism-${axis}`
+      const newKey = `theme-glass-${axis}`
+      const oldVal = ls.getItem(oldKey)
+      if (oldVal !== null && ls.getItem(newKey) === null) {
+        ls.setItem(newKey, oldVal)
+      }
+      if (oldVal !== null) {
+        ls.removeItem(oldKey)
+      }
+    }
+  } catch {
+    // private mode / quota exceeded / security errors — fall through;
+    // worst case the user gets default settings on first load.
+  }
+}
+migrateGlassPresetKeys()
+
 function applyTokens(
   tokens: Record<string, string>,
   keysToClear: readonly string[],

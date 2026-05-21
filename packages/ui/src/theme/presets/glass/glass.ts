@@ -1,4 +1,4 @@
-// packages/ui/src/theme/presets/glassmorphism/glassmorphism.ts
+// packages/ui/src/theme/presets/glass/glass.ts
 import type { ThemePreset, CommonAxisInput } from "../types"
 
 type GlassAxes = {
@@ -40,9 +40,9 @@ const INSET_HI = {
   strong: { light: 0.4, dark: 0.08 },
 } as const
 
-export const glassmorphism: ThemePreset<GlassAxes> = {
-  name: "glassmorphism",
-  label: "Glassmorphism",
+export const glass: ThemePreset<GlassAxes> = {
+  name: "glass",
+  label: "Glass",
   description:
     "Frosted glass: backdrop-blur with semi-transparent surfaces and subtle highlight insets.",
 
