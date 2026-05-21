@@ -80,6 +80,22 @@ export const glass: ThemePreset<GlassAxes> = {
     const alphas = FOG_ALPHA[axes.opacity][common.mode]
     const insetAlpha = INSET_HI[axes.opacity][common.mode]
 
+    // Semantic surface-tier overrides. Same approach Neon uses (rebinding
+    // --accent / --muted / --secondary to primary-tinted CSS expressions
+    // so every bg-accent / bg-muted / bg-secondary consumer in the system
+    // automatically reads as preset-styled), but with conservative alphas
+    // that preserve Glass's "frosted subtle" aesthetic. Mode-aware
+    // because light glass surfaces are mostly white (low alpha reads
+    // cleanly as a tint) while dark glass surfaces are mostly
+    // transparent (need a touch more alpha to register visibly).
+    //
+    // --muted-foreground intentionally NOT rebound — it must stay a
+    // muted gray so `text-muted-foreground` keeps its "subdued text"
+    // semantic.
+    const accentAlpha = common.mode === "light" ? 0.1 : 0.14
+    const mutedAlpha = common.mode === "light" ? 0.04 : 0.06
+    const secondaryAlpha = common.mode === "light" ? 0.08 : 0.1
+
     // Accent-tinted fog base. Glass picks up a hint of the page's accent
     // color so cards feel cohesive with the brand rather than reading as
     // separate white panels. Light mode mixes 18% of accent[500] into
@@ -115,6 +131,12 @@ export const glass: ThemePreset<GlassAxes> = {
       tokens["--border"] = "0 0% 100% / 0.1"
     }
 
+    tokens["--accent"] = `var(--primary) / ${accentAlpha}`
+    tokens["--accent-foreground"] = "var(--primary)"
+    tokens["--muted"] = `var(--primary) / ${mutedAlpha}`
+    tokens["--secondary"] = `var(--primary) / ${secondaryAlpha}`
+    tokens["--secondary-foreground"] = "var(--primary)"
+
     return tokens
   },
 
@@ -132,5 +154,10 @@ export const glass: ThemePreset<GlassAxes> = {
     "--backdrop-filter",
     "--surface-opacity",
     "--border",
+    "--accent",
+    "--accent-foreground",
+    "--muted",
+    "--secondary",
+    "--secondary-foreground",
   ] as const,
 }

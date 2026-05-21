@@ -48,6 +48,11 @@ describe("glass preset", () => {
       "--backdrop-filter",
       "--surface-opacity",
       "--border",
+      "--accent",
+      "--accent-foreground",
+      "--muted",
+      "--secondary",
+      "--secondary-foreground",
     ])
   })
 
@@ -165,6 +170,34 @@ describe("glass preset", () => {
       )
       expect(solid["--border"]).toBeUndefined()
       expect(gradient["--border"]).toBeUndefined()
+    })
+
+    it("rebinds --accent + --muted + --secondary to primary-tinted CSS expressions (mode-aware)", () => {
+      const light = generateTokens(buildCommon(), {
+        opacity: "medium",
+        blur: "medium",
+      })
+      expect(light["--accent"]).toBe("var(--primary) / 0.1")
+      expect(light["--accent-foreground"]).toBe("var(--primary)")
+      expect(light["--muted"]).toBe("var(--primary) / 0.04")
+      expect(light["--secondary"]).toBe("var(--primary) / 0.08")
+      expect(light["--secondary-foreground"]).toBe("var(--primary)")
+
+      const dark = generateTokens(buildCommon({ mode: "dark" }), {
+        opacity: "medium",
+        blur: "medium",
+      })
+      expect(dark["--accent"]).toBe("var(--primary) / 0.14")
+      expect(dark["--muted"]).toBe("var(--primary) / 0.06")
+      expect(dark["--secondary"]).toBe("var(--primary) / 0.1")
+    })
+
+    it("does NOT rebind --muted-foreground (kept as muted gray for text legibility)", () => {
+      const tokens = generateTokens(buildCommon(), {
+        opacity: "medium",
+        blur: "medium",
+      })
+      expect(tokens["--muted-foreground"]).toBeUndefined()
     })
   })
 
