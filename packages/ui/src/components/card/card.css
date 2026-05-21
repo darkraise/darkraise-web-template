@@ -45,4 +45,15 @@
   .dr-card-footer {
     @apply flex items-center p-[var(--density-container-p)] pt-0;
   }
+
+  /* Neon preset — cards get a primary-tinted border so they visibly
+     outline in the accent color. Background stays near-black (set by
+     neon's surfaceRecipe → --card → bg-card); elevation shadows are
+     already rebound to primary-glow recipes in neon.css (--card-
+     elevation-* and --elevation-current), so a higher elevation
+     stacks a glow halo on top of the outlined card without any
+     additional rule here. */
+  [data-preset="neon"] .dr-card {
+    border-color: hsl(var(--primary) / 0.35);
+  }
 }

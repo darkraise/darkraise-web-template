@@ -117,4 +117,79 @@
     box-shadow: var(--shadow-button), var(--inset-hi-button);
     color: hsl(var(--foreground));
   }
+
+  /* Neon preset — buttons become outlined neon strips. All variants
+     drop their filled background and adopt a primary-color outline
+     with outer glow. Hover intensifies the glow and adds a faint
+     primary fill. Destructive uses --destructive instead of --primary
+     so error-state buttons stay semantically distinct. */
+  [data-preset="neon"] .dr-btn[data-variant="default"] {
+    background-color: transparent;
+    background-image: none;
+    color: hsl(var(--primary));
+    border: 1px solid hsl(var(--primary) / 0.9);
+    box-shadow:
+      0 0 8px hsl(var(--primary) / 0.4),
+      inset 0 0 6px hsl(var(--primary) / 0.08);
+  }
+  [data-preset="neon"] .dr-btn[data-variant="default"]:hover {
+    background-color: hsl(var(--primary) / 0.12);
+    border-color: hsl(var(--primary));
+    box-shadow:
+      0 0 14px hsl(var(--primary) / 0.6),
+      inset 0 0 10px hsl(var(--primary) / 0.15);
+  }
+  [data-preset="neon"] .dr-btn[data-variant="destructive"] {
+    background-color: transparent;
+    background-image: none;
+    color: hsl(var(--destructive));
+    border: 1px solid hsl(var(--destructive) / 0.9);
+    box-shadow:
+      0 0 8px hsl(var(--destructive) / 0.4),
+      inset 0 0 6px hsl(var(--destructive) / 0.08);
+  }
+  [data-preset="neon"] .dr-btn[data-variant="destructive"]:hover {
+    background-color: hsl(var(--destructive) / 0.12);
+    border-color: hsl(var(--destructive));
+    box-shadow:
+      0 0 14px hsl(var(--destructive) / 0.6),
+      inset 0 0 10px hsl(var(--destructive) / 0.15);
+  }
+  [data-preset="neon"] .dr-btn[data-variant="outline"] {
+    background-color: transparent;
+    color: hsl(var(--primary));
+    border: 1px solid hsl(var(--primary));
+    box-shadow:
+      0 0 10px hsl(var(--primary) / 0.5),
+      inset 0 0 8px hsl(var(--primary) / 0.12);
+  }
+  [data-preset="neon"] .dr-btn[data-variant="outline"]:hover {
+    background-color: hsl(var(--primary) / 0.15);
+    box-shadow:
+      0 0 18px hsl(var(--primary) / 0.7),
+      inset 0 0 12px hsl(var(--primary) / 0.2);
+  }
+  [data-preset="neon"] .dr-btn[data-variant="secondary"] {
+    background-color: transparent;
+    color: hsl(var(--foreground));
+    border: 1px solid hsl(var(--primary) / 0.4);
+    box-shadow: 0 0 6px hsl(var(--primary) / 0.2);
+  }
+  [data-preset="neon"] .dr-btn[data-variant="secondary"]:hover {
+    background-color: hsl(var(--primary) / 0.08);
+    border-color: hsl(var(--primary) / 0.7);
+    box-shadow: 0 0 10px hsl(var(--primary) / 0.35);
+  }
+  [data-preset="neon"] .dr-btn[data-variant="ghost"] {
+    background-color: transparent;
+    color: hsl(var(--primary));
+    border: 1px solid transparent;
+  }
+  [data-preset="neon"] .dr-btn[data-variant="ghost"]:hover {
+    background-color: hsl(var(--primary) / 0.1);
+    color: hsl(var(--primary));
+    box-shadow: 0 0 10px hsl(var(--primary) / 0.4);
+  }
+  /* Link stays minimal — primary-colored text with underline; no glow
+     so it doesn't fight with inline body text. */
 }

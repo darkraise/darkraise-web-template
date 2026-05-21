@@ -208,4 +208,45 @@
   .dr-badge-anchor-dot[data-hidden="true"] {
     @apply scale-0 opacity-0;
   }
+
+  /* Neon preset — the four theme-aware variants (default, secondary,
+     destructive, outline) become outlined neon chips. Fixed accent-
+     color variants (red/blue/cyan/etc.) intentionally keep their
+     filled treatment since they're meant to be context-stable
+     indicators independent of the active preset. */
+  [data-preset="neon"] .dr-badge[data-variant="default"] {
+    background-color: transparent;
+    color: hsl(var(--primary));
+    border-color: hsl(var(--primary));
+    box-shadow: 0 0 6px hsl(var(--primary) / 0.4);
+  }
+  [data-preset="neon"] .dr-badge[data-variant="default"]:hover {
+    background-color: hsl(var(--primary) / 0.12);
+    box-shadow: 0 0 10px hsl(var(--primary) / 0.55);
+  }
+  [data-preset="neon"] .dr-badge[data-variant="secondary"] {
+    background-color: transparent;
+    color: hsl(var(--foreground));
+    border-color: hsl(var(--primary) / 0.4);
+    box-shadow: 0 0 4px hsl(var(--primary) / 0.2);
+  }
+  [data-preset="neon"] .dr-badge[data-variant="secondary"]:hover {
+    background-color: hsl(var(--primary) / 0.08);
+    border-color: hsl(var(--primary) / 0.7);
+  }
+  [data-preset="neon"] .dr-badge[data-variant="destructive"] {
+    background-color: transparent;
+    color: hsl(var(--destructive));
+    border-color: hsl(var(--destructive));
+    box-shadow: 0 0 6px hsl(var(--destructive) / 0.4);
+  }
+  [data-preset="neon"] .dr-badge[data-variant="destructive"]:hover {
+    background-color: hsl(var(--destructive) / 0.12);
+    box-shadow: 0 0 10px hsl(var(--destructive) / 0.55);
+  }
+  [data-preset="neon"] .dr-badge[data-variant="outline"] {
+    color: hsl(var(--primary));
+    border-color: hsl(var(--primary));
+    box-shadow: 0 0 8px hsl(var(--primary) / 0.5);
+  }
 }
