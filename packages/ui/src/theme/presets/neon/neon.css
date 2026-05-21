@@ -56,6 +56,11 @@
   --shadow-card: none;
   --shadow-dropdown: none;
   --affordance-glow: 0 0 8px hsl(var(--primary) / 0.45);
+  /* Bottom-only directional glow for underline-style indicators.
+     Positive Y-offset pushes the halo below the element; negative
+     spread narrows the horizontal extent so the glow doesn't wrap
+     the element's sides. */
+  --affordance-glow-bottom: 0 6px 14px -4px hsl(var(--primary) / 0.55);
   /* Overlay-surface chrome: dark transparent body, primary-tinted
      border, primary outer glow. Tooltip / Hover-card / future
      Popover migrations all adopt this through the token. */

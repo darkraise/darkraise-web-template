@@ -36,13 +36,17 @@
     @apply data-[state=active]:border-primary data-[state=active]:text-primary -mb-px h-full border-b-2 border-transparent px-[var(--density-button-px)] py-[var(--density-row-py)];
   }
 
-  /* Affordance glow on outline + underline active tabs (preset-driven —
-     transparent under Default/Glass; primary glow under Neon). Composed
-     as a single box-shadow declaration so the outer glow reads cleanly
-     around the tab outline / underline. */
-  .dr-tabs-trigger[data-variant="outline"][data-state="active"],
-  .dr-tabs-trigger[data-variant="underline"][data-state="active"] {
+  /* Affordance glow on outline + underline active tabs (preset-driven
+     — transparent under Default/Glass; primary glow under Neon).
+     Outline gets the omni-directional glow because all four borders
+     are primary; underline gets the bottom-only directional glow so
+     the halo emanates downward from the bottom border instead of
+     wrapping all four edges. */
+  .dr-tabs-trigger[data-variant="outline"][data-state="active"] {
     box-shadow: var(--affordance-glow);
+  }
+  .dr-tabs-trigger[data-variant="underline"][data-state="active"] {
+    box-shadow: var(--affordance-glow-bottom);
   }
 
   .dr-tabs-content {

@@ -616,6 +616,14 @@
      Pagination, etc.). */
     --affordance-glow: 0 0 transparent;
 
+    /* --affordance-glow-bottom — directional bottom-only variant for
+     components whose active treatment is a bottom border (Tabs
+     underline variant, future stepper bottom-bar indicators, etc.).
+     Neon binds it to a primary glow with positive Y-offset and
+     negative spread so the halo emanates downward only without
+     wrapping the element's left/right/top edges. */
+    --affordance-glow-bottom: 0 0 transparent;
+
     /* --surface-overlay-* — chrome for floating overlay surfaces
      (Tooltip, Hover-card, Popover, Dropdown menu content, etc.).
      Components opt in by reading these instead of hard-coding
