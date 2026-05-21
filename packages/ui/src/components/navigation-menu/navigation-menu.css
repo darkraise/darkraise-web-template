@@ -20,6 +20,7 @@
   .dr-navigation-menu-content {
     @apply text-popover-foreground data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=open]:slide-in-from-top-2 data-[state=closed]:slide-out-to-top-2 absolute top-full left-0 z-50 mt-1.5 min-w-[8rem] rounded-md border outline-none;
     background: var(--surface-overlay-bg);
+    background-blend-mode: var(--surface-overlay-blend-mode);
     border-color: var(--surface-overlay-border);
     box-shadow: var(--surface-overlay-shadow);
     backdrop-filter: var(--backdrop-filter);

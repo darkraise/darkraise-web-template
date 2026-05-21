@@ -605,10 +605,14 @@
      (Tooltip, Hover-card, Popover, Dropdown menu content, etc.).
      Components opt in by reading these instead of hard-coding
      bg-popover + border + shadow-dropdown. Default values
-     reproduce the current overlay look. */
+     reproduce the current overlay look. The blend-mode token lets
+     presets (e.g. Glass) layer multiple background images with a
+     specific blending recipe; defaults to `normal` (no-op for
+     single-layer backgrounds). */
   --surface-overlay-bg: hsl(var(--popover));
   --surface-overlay-border: hsl(var(--border));
   --surface-overlay-shadow: var(--shadow-dropdown);
+  --surface-overlay-blend-mode: normal;
 
   /* Default elevation-current so `<Card elevation="auto">` and other
      consumers reading `var(--elevation-current)` resolve to a real shadow

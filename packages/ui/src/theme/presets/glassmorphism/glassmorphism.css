@@ -41,11 +41,27 @@
   --backdrop-filter: blur(24px) saturate(140%);
 }
 
-/* Overlay-surface chrome under Glass: gradient bg overlay (the same
-   recipe .glass-strong applies), fog-tier border, and a composite
-   shadow that combines drop shadow with the inset highlight. */
+/* Overlay-surface chrome under Glass. Includes the frosted noise
+   layer + blend-mode + mode-split inner accent glow so the migrated
+   popover-family components (Tooltip, Popover, Menu, Select,
+   Combobox, Date/Color-picker, Command, Dialog, Sheet, Drawer, etc.)
+   render with Glass's full chrome. These details used to live on
+   per-`.glass-strong`-class overrides and were lost when those
+   components moved to consume --surface-overlay-* directly. */
 [data-preset="glassmorphism"] {
-  --surface-overlay-bg: linear-gradient(135deg, var(--fog-20), var(--fog-10));
+  --surface-overlay-bg:
+    var(--glass-noise), linear-gradient(135deg, var(--fog-20), var(--fog-10));
+  --surface-overlay-blend-mode: overlay, normal;
   --surface-overlay-border: var(--fog-20);
-  --surface-overlay-shadow: var(--elevation-medium), var(--inset-hi-strong);
+}
+[data-mode="light"][data-preset="glassmorphism"] {
+  --surface-overlay-shadow:
+    var(--elevation-medium), var(--inset-hi-strong),
+    inset 0 0 32px color-mix(in oklab, hsl(var(--surface-tint)) 2%, transparent);
+}
+[data-mode="dark"][data-preset="glassmorphism"] {
+  --surface-overlay-shadow:
+    var(--elevation-medium), var(--inset-hi-strong),
+    inset 0 0 40px
+      color-mix(in oklab, hsl(var(--surface-tint)) 28%, transparent);
 }
