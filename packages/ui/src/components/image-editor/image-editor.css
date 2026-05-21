@@ -106,7 +106,9 @@
     border-radius: calc(var(--radius-button) - 2px);
   }
   .dr-image-editor-tools .dr-image-editor-tool[data-state="active"] {
-    box-shadow: inset 0 0 0 1px hsl(var(--primary));
+    box-shadow:
+      inset 0 0 0 1px hsl(var(--primary)),
+      var(--affordance-glow);
   }
 
   .dr-image-editor-rotation {
@@ -183,7 +185,9 @@
   }
   .dr-image-editor-annotation-kinds
     .dr-image-editor-annotation-kind[data-state="active"] {
-    box-shadow: inset 0 0 0 1px hsl(var(--primary));
+    box-shadow:
+      inset 0 0 0 1px hsl(var(--primary)),
+      var(--affordance-glow);
   }
   .dr-image-editor-annotation-toolbar-divider {
     @apply inline-block;

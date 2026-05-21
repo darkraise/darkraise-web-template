@@ -13,6 +13,7 @@
 
   .dr-time-column-item[data-selected="true"] {
     @apply bg-primary text-primary-foreground hover:bg-primary/90;
+    box-shadow: var(--affordance-glow);
   }
 
   .dr-time-column-item[data-selected="false"] {

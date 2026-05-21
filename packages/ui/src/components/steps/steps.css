@@ -37,10 +37,12 @@
 
   .dr-steps-indicator[data-status="complete"] {
     @apply bg-primary text-primary-foreground;
+    box-shadow: var(--affordance-glow);
   }
 
   .dr-steps-indicator[data-status="current"] {
     @apply border-primary bg-primary/20 text-primary border;
+    box-shadow: var(--affordance-glow);
   }
 
   .dr-steps-indicator[data-status="upcoming"] {

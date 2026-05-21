@@ -41,7 +41,11 @@
        still reads as raised instead of recessed. Using `bg-background`
        previously gave `surface[950]` in dark mode, which inverted the
        elevation and looked black. */
-    @apply bg-card dark:bg-border absolute z-0 rounded-sm shadow-[var(--shadow-button)];
+    @apply bg-card dark:bg-border absolute z-0 rounded-sm;
+    /* Compose --shadow-button with the preset-driven --affordance-glow so
+       the sliding indicator pill gains a primary halo under neon (and
+       stays visually unchanged under default/glass). */
+    box-shadow: var(--shadow-button), var(--affordance-glow);
     transition:
       transform 200ms ease-out,
       width 200ms ease-out,

@@ -107,13 +107,17 @@
    * active, but adds an inset left-edge primary bar, a primary icon glyph,
    * and a bolder label so it stays distinguishable from a hovered idle
    * item. Without this, hover and active are visually identical and a
-   * cursor parked on any link makes that link look like the current page. */
+   * cursor parked on any link makes that link look like the current page.
+   * Affordance glow composed as outer layer so neon adds a primary halo
+   * around the active item (transparent under default/glass). */
   .dr-sidebar-nav-item.active,
   .dr-sidebar-nav-item[data-status="active"] {
     background-color: hsl(var(--sidebar-hover-bg));
     color: hsl(var(--sidebar-foreground-hover));
     font-weight: 600;
-    box-shadow: inset 3px 0 0 0 hsl(var(--primary));
+    box-shadow:
+      inset 3px 0 0 0 hsl(var(--primary)),
+      var(--affordance-glow);
   }
 
   .dr-sidebar-nav-item.active .dr-sidebar-nav-icon-svg,

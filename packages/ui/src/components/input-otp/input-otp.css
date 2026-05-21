@@ -24,7 +24,9 @@
   .dr-input-otp-slot[data-active] {
     z-index: 1;
     border-color: hsl(var(--primary));
-    box-shadow: 0 0 0 1px hsl(var(--primary));
+    box-shadow:
+      0 0 0 1px hsl(var(--primary)),
+      var(--affordance-glow);
   }
 
   /* Separate variant — each slot IS the input. Strip native input chrome so
@@ -42,7 +44,9 @@
   .dr-input-otp-slot-separate:focus-visible {
     z-index: 1;
     border-color: hsl(var(--primary));
-    box-shadow: 0 0 0 1px hsl(var(--primary));
+    box-shadow:
+      0 0 0 1px hsl(var(--primary)),
+      var(--affordance-glow);
   }
   .dr-input-otp-slot-separate:disabled {
     @apply cursor-not-allowed opacity-50;

@@ -74,6 +74,7 @@
 
   .dr-color-picker-swatch-item[data-active="true"] {
     @apply ring-primary;
+    box-shadow: var(--affordance-glow);
   }
 
   .dr-color-picker-swatch-item[data-disabled="true"] {

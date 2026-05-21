@@ -62,6 +62,7 @@
   .dr-floating-panel-trigger[data-active="true"] {
     @apply bg-accent text-accent-foreground;
     border-color: hsl(var(--primary));
+    box-shadow: var(--affordance-glow);
   }
 
   .dr-floating-panel-header {
