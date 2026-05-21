@@ -9,7 +9,12 @@
        content-available-height]` referenced a Radix CSS var that nothing
        in this in-house port ever set, so the constraint silently fell
        back to "no max" and the dropdown would just grow off-screen. */
-    @apply glass-strong bg-popover text-popover-foreground data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 relative z-50 max-h-80 min-w-[8rem] overflow-x-hidden overflow-y-auto border;
+    @apply text-popover-foreground data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 relative z-50 max-h-80 min-w-[8rem] overflow-x-hidden overflow-y-auto rounded-md border;
+    background: var(--surface-overlay-bg);
+    border-color: var(--surface-overlay-border);
+    box-shadow: var(--surface-overlay-shadow);
+    backdrop-filter: var(--backdrop-filter);
+    -webkit-backdrop-filter: var(--backdrop-filter);
   }
 
   .dr-select-content[data-position="popper"] {

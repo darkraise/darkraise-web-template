@@ -1,6 +1,10 @@
 @layer components {
   .dr-command {
-    @apply glass-strong bg-popover text-popover-foreground flex h-full w-full flex-col overflow-hidden;
+    @apply text-popover-foreground flex h-full w-full flex-col overflow-hidden rounded-md;
+    background: var(--surface-overlay-bg);
+    box-shadow: var(--surface-overlay-shadow);
+    backdrop-filter: var(--backdrop-filter);
+    -webkit-backdrop-filter: var(--backdrop-filter);
   }
 
   .dr-command-input-wrapper {

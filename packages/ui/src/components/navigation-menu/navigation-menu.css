@@ -11,14 +11,19 @@
     @apply bg-background hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[state=open]:text-accent-foreground data-[state=open]:bg-accent/50 data-[state=open]:hover:bg-accent data-[state=open]:focus:bg-accent inline-flex w-max cursor-pointer items-center justify-center rounded-md px-[var(--density-button-px)] py-[var(--density-button-py)] text-sm font-medium transition-colors focus:outline-none disabled:pointer-events-none disabled:cursor-default disabled:opacity-50;
   }
 
-  /* Popover-style panel. Reuses the same `glass-strong bg-popover` chrome
-     as `.dr-popover-content` so the navigation dropdown reads as the rest
-     of the design system instead of a transparent overlay. Positioned
+  /* Popover-style panel. Reads the --surface-overlay-* tokens so the
+     navigation dropdown gets the same preset-driven chrome as every
+     other overlay (Tooltip, Popover, Menu, Select, etc.). Positioned
      `absolute top-full` relative to the menu item (which carries
-     `position: relative`), so the panel anchors directly under its trigger
-     instead of floating to the nav root's origin. */
+     `position: relative`), so the panel anchors directly under its
+     trigger instead of floating to the nav root's origin. */
   .dr-navigation-menu-content {
-    @apply glass-strong bg-popover text-popover-foreground data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=open]:slide-in-from-top-2 data-[state=closed]:slide-out-to-top-2 absolute top-full left-0 z-50 mt-1.5 min-w-[8rem] rounded-md border outline-none;
+    @apply text-popover-foreground data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=open]:slide-in-from-top-2 data-[state=closed]:slide-out-to-top-2 absolute top-full left-0 z-50 mt-1.5 min-w-[8rem] rounded-md border outline-none;
+    background: var(--surface-overlay-bg);
+    border-color: var(--surface-overlay-border);
+    box-shadow: var(--surface-overlay-shadow);
+    backdrop-filter: var(--backdrop-filter);
+    -webkit-backdrop-filter: var(--backdrop-filter);
   }
 
   /* Viewport machinery is kept for back-compat — it's a no-op visual when
