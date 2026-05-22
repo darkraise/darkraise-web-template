@@ -811,7 +811,7 @@
 /* Background intensity axis — scales the blob recipes via --canvas-blob-scale.
    Only meaningful when [data-background-style="gradient"] is also set (the
    selector below the @layer base block gates the actual gradient overlay).
-   Default 1 = balanced; 0.5 = subtle; 1.5 = vivid. */
+   Default 1 = balanced; 0.5 = subtle; 1.5 = vivid; 2 = intense. */
 [data-background-intensity="subtle"] {
   --canvas-blob-scale: 0.5;
 }
@@ -820,6 +820,9 @@
 }
 [data-background-intensity="vivid"] {
   --canvas-blob-scale: 1.5;
+}
+[data-background-intensity="intense"] {
+  --canvas-blob-scale: 2;
 }
 
 /* Gradient-pattern axis. The body composes 4 blob layers + the ink:

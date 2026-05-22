@@ -27,7 +27,12 @@ export type SurfaceColor = (typeof SURFACE_COLORS)[number]
 export const BACKGROUND_STYLES = ["solid", "gradient"] as const
 export type BackgroundStyle = (typeof BACKGROUND_STYLES)[number]
 
-export const BACKGROUND_INTENSITIES = ["subtle", "balanced", "vivid"] as const
+export const BACKGROUND_INTENSITIES = [
+  "subtle",
+  "balanced",
+  "vivid",
+  "intense",
+] as const
 export type BackgroundIntensity = (typeof BACKGROUND_INTENSITIES)[number]
 
 export const GRADIENT_PATTERNS = [
