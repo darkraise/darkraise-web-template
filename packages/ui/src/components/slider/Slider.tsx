@@ -26,8 +26,20 @@ interface SliderProps extends Omit<
   disabled?: boolean
   inverted?: boolean
   name?: string
+  /**
+   * When true, render a small anchor dot on the track at every step
+   * position so users can see the discrete stops the thumb will snap
+   * to. Only rendered when the total number of stops
+   * (`(max - min) / step + 1`) is below 20 — past that the dots become
+   * visual noise and the request is silently ignored. */
+  showSteps?: boolean
   ref?: React.Ref<HTMLSpanElement>
 }
+
+/** Inclusive cap on how many stop indicators we ever render. Past this
+ *  count the dots crowd into each other and hurt the track more than
+ *  they help; we silently drop them. */
+const MAX_VISIBLE_STEPS = 20
 
 function Slider({
   className,
@@ -43,6 +55,7 @@ function Slider({
   disabled,
   inverted,
   name,
+  showSteps,
   ...props
 }: SliderProps) {
   const opts: UseSliderOptions = {
@@ -111,6 +124,22 @@ function Slider({
 
   const horizontal = slider.orientation === "horizontal"
 
+  // Resolve step anchor positions. Bail when `showSteps` is off, when
+  // the math would diverge (non-positive step), or when the requested
+  // count exceeds MAX_VISIBLE_STEPS. We render fractional positions
+  // (0..1) so the same array works in both orientations via CSS.
+  const stepPositions: number[] = React.useMemo(() => {
+    if (!showSteps) return []
+    if (slider.step <= 0) return []
+    const stopCount = Math.floor((slider.max - slider.min) / slider.step) + 1
+    if (stopCount < 2 || stopCount > MAX_VISIBLE_STEPS) return []
+    const positions: number[] = []
+    for (let i = 0; i < stopCount; i++) {
+      positions.push(i / (stopCount - 1))
+    }
+    return positions
+  }, [showSteps, slider.min, slider.max, slider.step])
+
   // Range fills from 0 to first thumb (single thumb), or between two thumbs.
   const sortedPercents = slider.values
     .map((v) => slider.percent(v))
@@ -162,6 +191,31 @@ function Slider({
           className="dr-slider-range"
           style={rangeStyle}
         />
+        {stepPositions.map((pos, i) => {
+          const pct = pos * 100
+          const dotStyle: React.CSSProperties = horizontal
+            ? {
+                position: "absolute",
+                left: `${pct}%`,
+                top: "50%",
+                transform: "translate(-50%, -50%)",
+              }
+            : {
+                position: "absolute",
+                bottom: `${pct}%`,
+                left: "50%",
+                transform: "translate(-50%, 50%)",
+              }
+          return (
+            <span
+              key={`step-${i}`}
+              aria-hidden
+              data-orientation={slider.orientation}
+              className="dr-slider-step"
+              style={dotStyle}
+            />
+          )
+        })}
       </span>
       {slider.values.map((value, i) => {
         const pct = slider.percent(value) * 100

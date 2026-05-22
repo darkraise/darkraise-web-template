@@ -122,4 +122,44 @@ describe("Slider", () => {
     await user.keyboard("{ArrowUp}")
     expect(onChange).toHaveBeenLastCalledWith([51])
   })
+
+  describe("showSteps", () => {
+    it("renders no anchor dots by default", () => {
+      const { container } = render(
+        <Slider defaultValue={[1]} min={0} max={3} step={1} />,
+      )
+      expect(container.querySelectorAll(".dr-slider-step")).toHaveLength(0)
+    })
+
+    it("renders one anchor dot per stop when showSteps is true and count is under the cap", () => {
+      const { container } = render(
+        <Slider defaultValue={[1]} min={0} max={3} step={1} showSteps />,
+      )
+      // 4 stops: 0, 1, 2, 3.
+      expect(container.querySelectorAll(".dr-slider-step")).toHaveLength(4)
+    })
+
+    it("renders dots up to the cap (20 stops inclusive)", () => {
+      const { container } = render(
+        <Slider defaultValue={[0]} min={0} max={19} step={1} showSteps />,
+      )
+      // 20 stops total — still under the cap (cap is > 20).
+      expect(container.querySelectorAll(".dr-slider-step")).toHaveLength(20)
+    })
+
+    it("renders no dots when stop count exceeds the cap even with showSteps", () => {
+      const { container } = render(
+        <Slider defaultValue={[50]} min={0} max={100} step={1} showSteps />,
+      )
+      // 101 stops > MAX_VISIBLE_STEPS (20) — silently suppressed.
+      expect(container.querySelectorAll(".dr-slider-step")).toHaveLength(0)
+    })
+
+    it("renders no dots for invalid step", () => {
+      const { container } = render(
+        <Slider defaultValue={[50]} min={0} max={100} step={0} showSteps />,
+      )
+      expect(container.querySelectorAll(".dr-slider-step")).toHaveLength(0)
+    })
+  })
 })

@@ -60,6 +60,7 @@ function AxisControl<V extends string>({
           min={0}
           max={values.length - 1}
           step={1}
+          showSteps
           onValueChange={([i]) => {
             if (typeof i === "number" && values[i]) onChange(values[i])
           }}

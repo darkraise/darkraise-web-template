@@ -30,4 +30,16 @@
       0 0 0 2px hsl(var(--focus-ring)),
       var(--affordance-glow);
   }
+
+  /* Anchor dots rendered when Slider has showSteps and the stop count
+     is below the visibility cap. Sit inside the track; small enough
+     not to fight the thumb visually but visible on both filled (range)
+     and unfilled track sections. */
+  .dr-slider-step {
+    @apply bg-foreground/50 block h-1 w-1 rounded-full;
+    pointer-events: none;
+  }
+  .dr-slider-step[data-orientation="vertical"] {
+    @apply h-1 w-1;
+  }
 }
