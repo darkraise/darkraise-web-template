@@ -1,6 +1,11 @@
 @layer components {
   .dr-menubar {
     @apply bg-background flex items-center space-x-1 rounded-md border p-1 py-[var(--density-button-py)];
+    /* Glass-frost the menubar (no-op under Default/Neon). The dr-menu-content
+       and dr-menu-sub-content rules already consume backdrop-filter for the
+       popover surfaces. */
+    backdrop-filter: var(--backdrop-filter);
+    -webkit-backdrop-filter: var(--backdrop-filter);
   }
 
   .dr-menubar-trigger {

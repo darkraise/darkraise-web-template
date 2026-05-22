@@ -1,6 +1,9 @@
 @layer components {
   .dr-alert {
     @apply bg-background text-foreground [&>svg]:text-foreground relative w-full rounded-lg border p-4 [&>svg]:absolute [&>svg]:top-4 [&>svg]:left-4 [&>svg+div]:translate-y-[-3px] [&>svg~*]:pl-7;
+    /* Glass-frost the alert surface (no-op under Default/Neon). */
+    backdrop-filter: var(--backdrop-filter);
+    -webkit-backdrop-filter: var(--backdrop-filter);
   }
 
   /* Tinted variants share a left-accent + low-alpha bg pattern, driven by
