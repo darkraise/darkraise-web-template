@@ -137,8 +137,9 @@ function SliderPage() {
             showSteps
           />
           <p className="text-muted-foreground text-xs">
-            Value: {showStepsValue[0]} — anchor dots mark every 25-unit stop the
-            thumb snaps to (5 stops total).
+            Value: {showStepsValue[0]} — 5 stops total (0/25/50/75/100); 3 inner
+            dots mark 25, 50, 75. First and last are already implied by the
+            track edges.
           </p>
         </div>
       </ShowcaseExample>

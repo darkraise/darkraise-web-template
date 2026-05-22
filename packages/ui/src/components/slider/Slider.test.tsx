@@ -131,20 +131,21 @@ describe("Slider", () => {
       expect(container.querySelectorAll(".dr-slider-step")).toHaveLength(0)
     })
 
-    it("renders one anchor dot per stop when showSteps is true and count is under the cap", () => {
+    it("renders inner anchor dots only (excluding first and last stops)", () => {
       const { container } = render(
         <Slider defaultValue={[1]} min={0} max={3} step={1} showSteps />,
       )
-      // 4 stops: 0, 1, 2, 3.
-      expect(container.querySelectorAll(".dr-slider-step")).toHaveLength(4)
+      // 4 stops total (0, 1, 2, 3) → 2 inner dots (1, 2). First and
+      // last are already implied by the track edges.
+      expect(container.querySelectorAll(".dr-slider-step")).toHaveLength(2)
     })
 
-    it("renders dots up to the cap (20 stops inclusive)", () => {
+    it("renders inner dots up to the cap (20 stops total → 18 dots)", () => {
       const { container } = render(
         <Slider defaultValue={[0]} min={0} max={19} step={1} showSteps />,
       )
-      // 20 stops total — still under the cap (cap is > 20).
-      expect(container.querySelectorAll(".dr-slider-step")).toHaveLength(20)
+      // 20 stops total — under the cap. 18 inner dots (excludes ends).
+      expect(container.querySelectorAll(".dr-slider-step")).toHaveLength(18)
     })
 
     it("renders no dots when stop count exceeds the cap even with showSteps", () => {
@@ -159,6 +160,14 @@ describe("Slider", () => {
       const { container } = render(
         <Slider defaultValue={[50]} min={0} max={100} step={0} showSteps />,
       )
+      expect(container.querySelectorAll(".dr-slider-step")).toHaveLength(0)
+    })
+
+    it("renders no dots when there are fewer than 3 stops (no inner stops to mark)", () => {
+      const { container } = render(
+        <Slider defaultValue={[0]} min={0} max={1} step={1} showSteps />,
+      )
+      // 2 stops (0, 1) — both are endpoints; no inner stops exist.
       expect(container.querySelectorAll(".dr-slider-step")).toHaveLength(0)
     })
   })

@@ -128,13 +128,17 @@ function Slider({
   // the math would diverge (non-positive step), or when the requested
   // count exceeds MAX_VISIBLE_STEPS. We render fractional positions
   // (0..1) so the same array works in both orientations via CSS.
+  //
+  // The first and last stops are intentionally omitted — the track's
+  // own start/end edges already mark them visually, and rendering dots
+  // there competes with the thumb when it sits at min or max.
   const stepPositions: number[] = React.useMemo(() => {
     if (!showSteps) return []
     if (slider.step <= 0) return []
     const stopCount = Math.floor((slider.max - slider.min) / slider.step) + 1
-    if (stopCount < 2 || stopCount > MAX_VISIBLE_STEPS) return []
+    if (stopCount < 3 || stopCount > MAX_VISIBLE_STEPS) return []
     const positions: number[] = []
-    for (let i = 0; i < stopCount; i++) {
+    for (let i = 1; i < stopCount - 1; i++) {
       positions.push(i / (stopCount - 1))
     }
     return positions
