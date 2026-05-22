@@ -67,6 +67,26 @@
     @apply grid-cols-4;
   }
 
+  /* Slider control replaces a 4-cell toggle group for ordinal axes
+     (Density, Elevation, Button Elevation, Radius, Background Intensity,
+     Glass Backdrop Blur). The slider fills the row's flex area; the
+     current value name renders on the right as a small muted label so
+     the discrete position has a readable indicator. */
+  .dr-theme-switcher-slider-control {
+    @apply flex flex-1 items-center gap-3;
+    min-width: 0;
+  }
+  .dr-theme-switcher-slider-control > .dr-slider {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .dr-theme-switcher-slider-value {
+    @apply text-foreground text-xs font-medium capitalize;
+    flex: 0 0 auto;
+    min-width: 5rem;
+    text-align: right;
+  }
+
   /* Swatch-grid rows (Accent Color, Surface Color) can't fit beside a
      label at popover width — 17-18 swatches need full row width. Switch
      such rows back to stacked layout (label on top, grid below). */

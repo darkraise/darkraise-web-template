@@ -129,7 +129,7 @@ describe("ThemeSwitcher preset section", () => {
     ).toBe("balanced")
   })
 
-  it("clicking a Background Intensity value updates the data attribute", () => {
+  it("renders 4-value ordinal axes as sliders instead of toggle groups", () => {
     render(
       <ThemeProvider>
         <ThemeSwitcher />
@@ -137,10 +137,17 @@ describe("ThemeSwitcher preset section", () => {
     )
     openSwitcher()
     fireEvent.click(screen.getByRole("radio", { name: /gradient/i }))
-    fireEvent.click(screen.getByRole("radio", { name: /^vivid$/i }))
-    expect(
-      document.documentElement.getAttribute("data-background-intensity"),
-    ).toBe("vivid")
+    // 4-value ordinal axes (Background Intensity, Density, Elevation,
+    // Button Elevation, Radius) render as stepped sliders instead of
+    // 4-cell toggle groups. Default preset shows 5 of them (Density,
+    // Elevation, Button Elevation, Radius, Background Intensity once
+    // gradient bg is selected). Spot-check the count and that each
+    // axis's current-value label is rendered.
+    expect(screen.getAllByRole("slider").length).toBeGreaterThanOrEqual(5)
+    // Each slider has its current value name to the right.
+    expect(screen.getByText("balanced")).toBeInTheDocument() // BG intensity
+    expect(screen.getByText("cozy")).toBeInTheDocument() // density default
+    expect(screen.getByText("rounded")).toBeInTheDocument() // radius default
   })
 
   it("does NOT render Gradient Pattern when backgroundStyle is solid", () => {

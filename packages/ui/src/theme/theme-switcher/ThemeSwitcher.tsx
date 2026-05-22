@@ -3,6 +3,7 @@ import { Button } from "@components/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@components/popover"
 import { Label } from "@components/label"
 import { Separator } from "@components/separator"
+import { Slider } from "@components/slider"
 import { ToggleGroup, ToggleGroupItem } from "@components/toggle-group"
 import { useTheme } from "@theme/useTheme"
 import {
@@ -19,11 +20,7 @@ import type {
   AccentColor,
   SurfaceColor,
   BackgroundStyle,
-  BackgroundIntensity,
   GradientPattern,
-  Density,
-  Elevation,
-  Radius,
 } from "@theme/types"
 import {
   presets,
@@ -39,6 +36,58 @@ const modeOptions: { value: Mode; icon: typeof Sun; label: string }[] = [
   { value: "dark", icon: Moon, label: "Dark" },
   { value: "system", icon: Monitor, label: "System" },
 ]
+
+/** Render an ordinal 4-value axis as a stepped slider (cleaner than a
+ *  4-cell toggle group at the popover's compact width). Lower-arity or
+ *  categorical axes fall back to the original toggle group. The current
+ *  value name is shown to the right of the slider thumb so the discrete
+ *  position has a readable label. */
+function AxisControl<V extends string>({
+  values,
+  value,
+  onChange,
+}: {
+  values: readonly V[]
+  value: V
+  onChange: (v: V) => void
+}) {
+  if (values.length === 4) {
+    const index = Math.max(0, values.indexOf(value))
+    return (
+      <div className="dr-theme-switcher-slider-control">
+        <Slider
+          value={[index]}
+          min={0}
+          max={values.length - 1}
+          step={1}
+          onValueChange={([i]) => {
+            if (typeof i === "number" && values[i]) onChange(values[i])
+          }}
+        />
+        <span className="dr-theme-switcher-slider-value">{value}</span>
+      </div>
+    )
+  }
+  return (
+    <ToggleGroup
+      type="single"
+      value={value}
+      onValueChange={(v) => {
+        if (v) onChange(v as V)
+      }}
+      variant="outline"
+      size="sm"
+      className="dr-theme-switcher-toggle-group"
+      data-cols={values.length}
+    >
+      {values.map((v) => (
+        <ToggleGroupItem key={v} value={v} className="capitalize">
+          {v}
+        </ToggleGroupItem>
+      ))}
+    </ToggleGroup>
+  )
+}
 
 export function ThemeSwitcher() {
   const {
@@ -149,23 +198,11 @@ export function ThemeSwitcher() {
         <Label className="dr-theme-switcher-section-label">
           Background Intensity
         </Label>
-        <ToggleGroup
-          type="single"
+        <AxisControl
+          values={BACKGROUND_INTENSITIES}
           value={backgroundIntensity}
-          onValueChange={(value) => {
-            if (value) setBackgroundIntensity(value as BackgroundIntensity)
-          }}
-          variant="outline"
-          size="sm"
-          className="dr-theme-switcher-toggle-group"
-          data-cols={BACKGROUND_INTENSITIES.length}
-        >
-          {BACKGROUND_INTENSITIES.map((value) => (
-            <ToggleGroupItem key={value} value={value} className="capitalize">
-              {value}
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
+          onChange={setBackgroundIntensity}
+        />
       </div>
     ),
     axes.gradientPattern && backgroundStyle === "gradient" && (
@@ -272,23 +309,11 @@ export function ThemeSwitcher() {
               <Label className="dr-theme-switcher-section-label">
                 {axisDef.label}
               </Label>
-              <ToggleGroup
-                type="single"
+              <AxisControl
+                values={axisDef.values}
                 value={presetAxisValues[preset]?.[axisName] ?? axisDef.default}
-                onValueChange={(value) => {
-                  if (value) setPresetAxis(axisName, value)
-                }}
-                variant="outline"
-                size="sm"
-                className="dr-theme-switcher-toggle-group"
-                data-cols={axisDef.values.length}
-              >
-                {axisDef.values.map((v) => (
-                  <ToggleGroupItem key={v} value={v} className="capitalize">
-                    {v}
-                  </ToggleGroupItem>
-                ))}
-              </ToggleGroup>
+                onChange={(v) => setPresetAxis(axisName, v)}
+              />
             </div>
           ))}
       </div>
@@ -296,45 +321,17 @@ export function ThemeSwitcher() {
     axes.density && (
       <div key="density" className="dr-theme-switcher-row">
         <Label className="dr-theme-switcher-section-label">Density</Label>
-        <ToggleGroup
-          type="single"
-          value={density}
-          onValueChange={(value) => {
-            if (value) setDensity(value as Density)
-          }}
-          variant="outline"
-          size="sm"
-          className="dr-theme-switcher-toggle-group"
-          data-cols="2"
-        >
-          {DENSITIES.map((d: Density) => (
-            <ToggleGroupItem key={d} value={d} className="capitalize">
-              {d}
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
+        <AxisControl values={DENSITIES} value={density} onChange={setDensity} />
       </div>
     ),
     axes.elevation && !isCommonAxisHidden("elevation") && (
       <div key="elevation" className="dr-theme-switcher-row">
         <Label className="dr-theme-switcher-section-label">Elevation</Label>
-        <ToggleGroup
-          type="single"
+        <AxisControl
+          values={ELEVATIONS}
           value={elevation}
-          onValueChange={(value) => {
-            if (value) setElevation(value as Elevation)
-          }}
-          variant="outline"
-          size="sm"
-          className="dr-theme-switcher-toggle-group"
-          data-cols="4"
-        >
-          {ELEVATIONS.map((e: Elevation) => (
-            <ToggleGroupItem key={e} value={e} className="capitalize">
-              {e}
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
+          onChange={setElevation}
+        />
       </div>
     ),
     axes.buttonElevation && !isCommonAxisHidden("buttonElevation") && (
@@ -342,45 +339,17 @@ export function ThemeSwitcher() {
         <Label className="dr-theme-switcher-section-label">
           Button Elevation
         </Label>
-        <ToggleGroup
-          type="single"
+        <AxisControl
+          values={ELEVATIONS}
           value={buttonElevation}
-          onValueChange={(value) => {
-            if (value) setButtonElevation(value as Elevation)
-          }}
-          variant="outline"
-          size="sm"
-          className="dr-theme-switcher-toggle-group"
-          data-cols="4"
-        >
-          {ELEVATIONS.map((e: Elevation) => (
-            <ToggleGroupItem key={e} value={e} className="capitalize">
-              {e}
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
+          onChange={setButtonElevation}
+        />
       </div>
     ),
     axes.radius && (
       <div key="radius" className="dr-theme-switcher-row">
         <Label className="dr-theme-switcher-section-label">Radius</Label>
-        <ToggleGroup
-          type="single"
-          value={radius}
-          onValueChange={(value) => {
-            if (value) setRadius(value as Radius)
-          }}
-          variant="outline"
-          size="sm"
-          className="dr-theme-switcher-toggle-group"
-          data-cols="4"
-        >
-          {RADII.map((r: Radius) => (
-            <ToggleGroupItem key={r} value={r} className="capitalize">
-              {r}
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
+        <AxisControl values={RADII} value={radius} onChange={setRadius} />
       </div>
     ),
   ].filter(Boolean)
