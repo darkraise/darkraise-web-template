@@ -66,14 +66,20 @@
     0 0 12px hsl(var(--primary) / 0.55), 0 0 28px hsl(var(--primary) / 0.3);
 }
 
-/* Scanline overlay — repeating horizontal gradient on body. The lines
-   are dark rather than bright because CRT scanlines were the GAPS
-   between rows of lit phosphor, not the lit rows themselves. */
-[data-preset="terminal"][data-terminal-scanlines="subtle"] body::before {
+/* Scanline overlay — repeating horizontal gradient over the viewport.
+   The lines are dark rather than bright because CRT scanlines were
+   the GAPS between rows of lit phosphor, not the lit rows themselves.
+   Uses `body::after` rather than ::before to avoid colliding with the
+   theme-wide noise overlay that already owns `body::before` (the
+   noise rule sets opacity: var(--noise-opacity, 0) so anything else
+   piggybacking on ::before would inherit opacity 0 by default and
+   render invisible). */
+[data-preset="terminal"][data-terminal-scanlines="subtle"] body::after {
   content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
+  opacity: 1;
   z-index: 9999;
   background-image: repeating-linear-gradient(
     0deg,
@@ -83,11 +89,12 @@
     rgba(0, 0, 0, 0.1) 4px
   );
 }
-[data-preset="terminal"][data-terminal-scanlines="visible"] body::before {
+[data-preset="terminal"][data-terminal-scanlines="visible"] body::after {
   content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
+  opacity: 1;
   z-index: 9999;
   background-image: repeating-linear-gradient(
     0deg,
