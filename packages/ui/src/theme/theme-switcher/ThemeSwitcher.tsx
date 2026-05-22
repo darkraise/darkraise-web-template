@@ -183,7 +183,11 @@ export function ThemeSwitcher() {
           variant="outline"
           size="sm"
           className="dr-theme-switcher-toggle-group"
-          data-cols={PRESET_NAMES.length}
+          /* Cap at 3 cols so 6+ presets wrap to multiple rows instead
+             of cramming into a single horizontal strip too narrow to
+             show labels like "Brutalist" or "Playful". Each cell ends
+             up ~92px wide which fits the longest current label. */
+          data-cols={Math.min(PRESET_NAMES.length, 3)}
         >
           {PRESET_NAMES.map((name) => (
             <ToggleGroupItem key={name} value={name}>

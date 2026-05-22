@@ -129,6 +129,9 @@
 @import "../theme/presets/default/default.css";
 @import "../theme/presets/glass/glass.css";
 @import "../theme/presets/neon/neon.css";
+@import "../theme/presets/terminal/terminal.css";
+@import "../theme/presets/brutalist/brutalist.css";
+@import "../theme/presets/playful/playful.css";
 
 @layer theme, base, components, utilities, overrides;
 

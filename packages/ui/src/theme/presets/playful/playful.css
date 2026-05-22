@@ -1,0 +1,65 @@
+/* packages/ui/src/theme/presets/playful/playful.css
+ *
+ * Drives Playful's primary-tinted "cloud" shadows from the `pop`
+ * preset axis. Shadows are deliberately soft and asymmetric (negative
+ * spread + downward Y offset) so cards float above the page rather
+ * than projecting directly behind themselves. Color is primary at low
+ * alpha so the bloom retunes with the accent picker.
+ *
+ * Pop levels are roughly 1x / 2x / 3x in alpha + offset scale, with
+ * the affordance glow becoming a proper downward halo at the
+ * exuberant level.
+ */
+
+/* Subtle — small soft drops; for dense / data-heavy pages where the
+   playfulness should be present but not overwhelming. */
+[data-preset="playful"][data-playful-pop="subtle"] {
+  --card-elevation-low: 0 4px 12px -2px hsl(var(--primary) / 0.1);
+  --card-elevation-medium: 0 8px 20px -4px hsl(var(--primary) / 0.14);
+  --card-elevation-high: 0 16px 40px -8px hsl(var(--primary) / 0.2);
+  --shadow-button: 0 2px 6px -1px hsl(var(--primary) / 0.14);
+  --shadow-card: 0 4px 12px -2px hsl(var(--primary) / 0.12);
+  --shadow-dropdown: 0 8px 20px -4px hsl(var(--primary) / 0.18);
+  --affordance-glow: 0 2px 8px -1px hsl(var(--primary) / 0.22);
+  --affordance-glow-bottom: 0 3px 10px -1px hsl(var(--primary) / 0.32);
+  --surface-overlay-shadow: 0 8px 24px -4px hsl(var(--primary) / 0.22);
+}
+
+/* Lively — the default; rounded cards float with a visible primary
+   bloom. The "consumer app" sweet spot. */
+[data-preset="playful"][data-playful-pop="lively"] {
+  --card-elevation-low: 0 6px 18px -2px hsl(var(--primary) / 0.2);
+  --card-elevation-medium: 0 12px 28px -4px hsl(var(--primary) / 0.28);
+  --card-elevation-high: 0 22px 56px -8px hsl(var(--primary) / 0.35);
+  --shadow-button: 0 3px 10px -1px hsl(var(--primary) / 0.25);
+  --shadow-card: 0 6px 18px -2px hsl(var(--primary) / 0.22);
+  --shadow-dropdown: 0 12px 28px -4px hsl(var(--primary) / 0.3);
+  --affordance-glow:
+    0 0 4px hsl(var(--primary) / 0.3), 0 4px 14px -2px hsl(var(--primary) / 0.4);
+  --affordance-glow-bottom: 0 5px 14px -1px hsl(var(--primary) / 0.45);
+  --surface-overlay-shadow: 0 14px 36px -6px hsl(var(--primary) / 0.32);
+}
+
+/* Exuberant — maximum bloom. Cards practically lift off the page. For
+   hero pages, marketing, or showcase demos. */
+[data-preset="playful"][data-playful-pop="exuberant"] {
+  --card-elevation-low: 0 8px 24px -2px hsl(var(--primary) / 0.32);
+  --card-elevation-medium: 0 16px 40px -4px hsl(var(--primary) / 0.42);
+  --card-elevation-high: 0 28px 72px -8px hsl(var(--primary) / 0.52);
+  --shadow-button: 0 4px 14px -1px hsl(var(--primary) / 0.4);
+  --shadow-card: 0 8px 24px -2px hsl(var(--primary) / 0.34);
+  --shadow-dropdown: 0 16px 40px -4px hsl(var(--primary) / 0.42);
+  --affordance-glow:
+    0 0 6px hsl(var(--primary) / 0.45),
+    0 6px 18px -2px hsl(var(--primary) / 0.55);
+  --affordance-glow-bottom: 0 7px 20px -1px hsl(var(--primary) / 0.6);
+  --surface-overlay-shadow: 0 20px 52px -8px hsl(var(--primary) / 0.45);
+}
+
+/* Non-shadow tokens — same under every pop level. */
+[data-preset="playful"] {
+  /* Overlay surface chrome: solid bg, subtle border, primary-tinted
+     soft drop. */
+  --surface-overlay-bg: hsl(var(--popover));
+  --surface-overlay-border: hsl(var(--border));
+}

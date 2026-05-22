@@ -1,0 +1,69 @@
+/* packages/ui/src/theme/presets/brutalist/brutalist.css
+ *
+ * Drives Brutalist's hard offset shadows from the `offset` preset
+ * axis. Shadows use 0 blur radius — the offset is the entire effect,
+ * mimicking xerox-copy or print-misregistration aesthetics. Color is
+ * the page foreground (full black in light mode, full white in dark)
+ * so shadows read as solid structural marks rather than soft halos.
+ *
+ * Affordance glow stays transparent — brutalism rejects ambient
+ * decoration. Selected/active states show through bold borders +
+ * inverted color treatments at the component level.
+ */
+
+/* Subtle — 2px / 3px / 4px offsets. The tamest brutalist treatment;
+   still readable as offset rather than blur, but doesn't dominate. */
+[data-preset="brutalist"][data-brutalist-offset="subtle"] {
+  --card-elevation-low: 2px 2px 0 0 hsl(var(--foreground));
+  --card-elevation-medium: 3px 3px 0 0 hsl(var(--foreground));
+  --card-elevation-high: 4px 4px 0 0 hsl(var(--foreground));
+  --shadow-button: 2px 2px 0 0 hsl(var(--foreground));
+  --shadow-card: 2px 2px 0 0 hsl(var(--foreground));
+  --shadow-dropdown: 3px 3px 0 0 hsl(var(--foreground));
+  --surface-overlay-shadow: 3px 3px 0 0 hsl(var(--foreground));
+}
+
+/* Normal — 4px / 6px / 10px offsets. The classic brutalist look. */
+[data-preset="brutalist"][data-brutalist-offset="normal"] {
+  --card-elevation-low: 4px 4px 0 0 hsl(var(--foreground));
+  --card-elevation-medium: 6px 6px 0 0 hsl(var(--foreground));
+  --card-elevation-high: 10px 10px 0 0 hsl(var(--foreground));
+  --shadow-button: 3px 3px 0 0 hsl(var(--foreground));
+  --shadow-card: 4px 4px 0 0 hsl(var(--foreground));
+  --shadow-dropdown: 6px 6px 0 0 hsl(var(--foreground));
+  --surface-overlay-shadow: 6px 6px 0 0 hsl(var(--foreground));
+}
+
+/* Extreme — 8px / 12px / 16px offsets. Maximalist; shadows nearly
+   half the size of a button at small densities. For pages where the
+   brutalism is the message. */
+[data-preset="brutalist"][data-brutalist-offset="extreme"] {
+  --card-elevation-low: 8px 8px 0 0 hsl(var(--foreground));
+  --card-elevation-medium: 12px 12px 0 0 hsl(var(--foreground));
+  --card-elevation-high: 16px 16px 0 0 hsl(var(--foreground));
+  --shadow-button: 5px 5px 0 0 hsl(var(--foreground));
+  --shadow-card: 8px 8px 0 0 hsl(var(--foreground));
+  --shadow-dropdown: 10px 10px 0 0 hsl(var(--foreground));
+  --surface-overlay-shadow: 10px 10px 0 0 hsl(var(--foreground));
+}
+
+/* Non-shadow tokens — same under every offset level. */
+[data-preset="brutalist"] {
+  /* Affordance glow stays inert under brutalism — the bold border
+     does the active-state signaling. */
+  --affordance-glow: 0 0 transparent;
+  --affordance-glow-bottom: 0 0 transparent;
+  /* Overlay surface chrome: foreground border (matches the heavy
+     border-default token from surfaceRecipe) + offset shadow. */
+  --surface-overlay-bg: hsl(var(--background));
+  --surface-overlay-border: hsl(var(--foreground));
+}
+
+/* Disable all CSS transitions under Brutalist — the aesthetic rejects
+   easing/animation. Inputs snap between states immediately. */
+[data-preset="brutalist"] *,
+[data-preset="brutalist"] *::before,
+[data-preset="brutalist"] *::after {
+  transition-duration: 0ms !important;
+  animation-duration: 0ms !important;
+}

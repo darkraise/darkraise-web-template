@@ -1,0 +1,108 @@
+/* packages/ui/src/theme/presets/terminal/terminal.css
+ *
+ * Drives Terminal's phosphor glow (text-shadow + box-shadow stack)
+ * and optional scanline overlay from preset-specific axes. Sharp
+ * corners and monospace font are set in terminal.ts via
+ * generateTokens (inline-style precedence).
+ *
+ * Glow recipe: terminal phosphor was a single-layer emission (no
+ * inset bloom like neon) — the glass + phosphor backing produced a
+ * soft halo around lit glyphs but the tube itself wasn't "lit from
+ * within." So Terminal uses fewer layers per token than Neon.
+ */
+
+/* Phosphor axis — controls text glow intensity + box-shadow halos. */
+[data-preset="terminal"][data-terminal-phosphor="off"] {
+  --terminal-text-shadow: none;
+  --affordance-glow: 0 0 transparent;
+  --affordance-glow-bottom: 0 0 transparent;
+  --shadow-button: 0 0 transparent;
+  --card-elevation-low: 0 0 transparent;
+  --card-elevation-medium: 0 0 transparent;
+  --card-elevation-high: 0 0 transparent;
+  --surface-overlay-shadow: 0 0 transparent;
+}
+[data-preset="terminal"][data-terminal-phosphor="dim"] {
+  --terminal-text-shadow:
+    0 0 3px hsl(var(--primary) / 0.5), 0 0 8px hsl(var(--primary) / 0.25);
+  --affordance-glow:
+    0 0 3px hsl(var(--primary) / 0.55), 0 0 8px hsl(var(--primary) / 0.3);
+  --affordance-glow-bottom:
+    0 2px 6px -1px hsl(var(--primary) / 0.55),
+    0 6px 12px -3px hsl(var(--primary) / 0.25);
+  --shadow-button:
+    0 0 2px hsl(var(--primary) / 0.5), 0 0 6px hsl(var(--primary) / 0.25);
+  --card-elevation-low: 0 0 6px hsl(var(--primary) / 0.25);
+  --card-elevation-medium:
+    0 0 4px hsl(var(--primary) / 0.45), 0 0 12px hsl(var(--primary) / 0.22);
+  --card-elevation-high:
+    0 0 6px hsl(var(--primary) / 0.6), 0 0 16px hsl(var(--primary) / 0.32),
+    0 0 32px hsl(var(--primary) / 0.15);
+  --surface-overlay-shadow:
+    0 0 8px hsl(var(--primary) / 0.4), 0 0 20px hsl(var(--primary) / 0.18);
+}
+[data-preset="terminal"][data-terminal-phosphor="bright"] {
+  --terminal-text-shadow:
+    0 0 5px hsl(var(--primary) / 0.75), 0 0 12px hsl(var(--primary) / 0.45),
+    0 0 22px hsl(var(--primary) / 0.22);
+  --affordance-glow:
+    0 0 4px hsl(var(--primary) / 0.8), 0 0 12px hsl(var(--primary) / 0.5),
+    0 0 24px hsl(var(--primary) / 0.22);
+  --affordance-glow-bottom:
+    0 3px 8px -1px hsl(var(--primary) / 0.8),
+    0 8px 18px -4px hsl(var(--primary) / 0.45),
+    0 14px 32px -8px hsl(var(--primary) / 0.2);
+  --shadow-button:
+    0 0 4px hsl(var(--primary) / 0.65), 0 0 14px hsl(var(--primary) / 0.32);
+  --card-elevation-low:
+    0 0 5px hsl(var(--primary) / 0.55), 0 0 14px hsl(var(--primary) / 0.28);
+  --card-elevation-medium:
+    0 0 6px hsl(var(--primary) / 0.7), 0 0 18px hsl(var(--primary) / 0.45),
+    0 0 36px hsl(var(--primary) / 0.22);
+  --card-elevation-high:
+    0 0 10px hsl(var(--primary) / 0.85), 0 0 24px hsl(var(--primary) / 0.6),
+    0 0 48px hsl(var(--primary) / 0.3);
+  --surface-overlay-shadow:
+    0 0 12px hsl(var(--primary) / 0.55), 0 0 28px hsl(var(--primary) / 0.3);
+}
+
+/* Scanline overlay — repeating horizontal gradient on body. The lines
+   are dark rather than bright because CRT scanlines were the GAPS
+   between rows of lit phosphor, not the lit rows themselves. */
+[data-preset="terminal"][data-terminal-scanlines="subtle"] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 3px,
+    rgba(0, 0, 0, 0.1) 3px,
+    rgba(0, 0, 0, 0.1) 4px
+  );
+}
+[data-preset="terminal"][data-terminal-scanlines="visible"] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.22) 2px,
+    rgba(0, 0, 0, 0.22) 3px
+  );
+}
+
+/* Apply phosphor glow to all text. CRT phosphor emitted around the
+   entire glyph shape, not just primary-colored text. */
+[data-preset="terminal"] {
+  text-shadow: var(--terminal-text-shadow);
+  /* Overlay surface chrome: very dark transparent with primary border. */
+  --surface-overlay-bg: hsl(var(--background) / 0.92);
+  --surface-overlay-border: hsl(var(--primary) / 0.4);
+}
