@@ -28,7 +28,7 @@ import type { ThemePreset } from "../types"
  * selectors; they're listed in ownedTokenKeys for documentation.
  */
 type NeonAxes = {
-  glow: readonly ["dim", "normal", "bright"]
+  glow: readonly ["dim", "normal", "bright", "intense"]
 }
 
 export const neon: ThemePreset<NeonAxes> = {
@@ -39,7 +39,7 @@ export const neon: ThemePreset<NeonAxes> = {
 
   axes: {
     glow: {
-      values: ["dim", "normal", "bright"],
+      values: ["dim", "normal", "bright", "intense"],
       default: "normal",
       label: "Glow",
       order: 1,

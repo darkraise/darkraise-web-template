@@ -11,9 +11,14 @@ describe("neon preset", () => {
     expect(neon.description).toMatch(/glow/i)
   })
 
-  it("declares a single preset-specific axis: glow (dim | normal | bright)", () => {
+  it("declares a single preset-specific axis: glow (dim | normal | bright | intense)", () => {
     expect(Object.keys(neon.axes)).toEqual(["glow"])
-    expect(neon.axes.glow.values).toEqual(["dim", "normal", "bright"])
+    expect(neon.axes.glow.values).toEqual([
+      "dim",
+      "normal",
+      "bright",
+      "intense",
+    ])
     expect(neon.axes.glow.default).toBe("normal")
     expect(neon.axes.glow.label).toBe("Glow")
   })
