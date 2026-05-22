@@ -4,12 +4,22 @@
  * primary-color glow ramp, and overrides the card-elevation tokens so
  * an explicit <Card elevation="N"> glows instead of dropping a shadow.
  *
+ * Glow recipe philosophy: realistic neon has three optical layers
+ * stacked at the same origin —
+ *   1. tight bright core   (~4px blur, high alpha)
+ *   2. soft mid bloom      (~12px blur, mid alpha)
+ *   3. wide ambient halo   (~24-48px blur, low alpha)
+ * Plus an inset emission so the element itself reads as lit from
+ * within instead of just shadowing outward. The stack is what
+ * separates "convincing neon tube" from "flat colored shadow".
+ *
  * No preset-specific axes for Neon in v1; everything is driven via
  * existing data attributes and the --primary token. The accent picker
  * automatically updates glow colors at the CSS-cascade level.
  */
 
-/* Elevation axis reinterpreted as primary-color glow radius. */
+/* Elevation axis reinterpreted as primary-color glow radius. Each level
+   stacks core + mid + wide halos at progressively larger radii. */
 [data-preset="neon"][data-elevation="flat"] {
   --elevation-flat: 0 0 transparent;
   --elevation-low: 0 0 transparent;
@@ -19,25 +29,38 @@
 }
 [data-preset="neon"][data-elevation="low"] {
   --elevation-flat: 0 0 transparent;
-  --elevation-low: 0 0 6px hsl(var(--primary) / 0.3);
-  --elevation-medium: 0 0 10px hsl(var(--primary) / 0.4);
-  --elevation-high: 0 0 16px hsl(var(--primary) / 0.55);
+  --elevation-low:
+    0 0 3px hsl(var(--primary) / 0.55), 0 0 8px hsl(var(--primary) / 0.3);
+  --elevation-medium:
+    0 0 4px hsl(var(--primary) / 0.6), 0 0 12px hsl(var(--primary) / 0.4),
+    0 0 24px hsl(var(--primary) / 0.18);
+  --elevation-high:
+    0 0 6px hsl(var(--primary) / 0.7), 0 0 18px hsl(var(--primary) / 0.5),
+    0 0 36px hsl(var(--primary) / 0.25);
   --elevation-current: var(--elevation-low);
 }
 [data-preset="neon"][data-elevation="medium"] {
   --elevation-flat: 0 0 transparent;
-  --elevation-low: 0 0 6px hsl(var(--primary) / 0.35);
-  --elevation-medium: 0 0 14px hsl(var(--primary) / 0.5);
+  --elevation-low:
+    0 0 3px hsl(var(--primary) / 0.6), 0 0 10px hsl(var(--primary) / 0.35);
+  --elevation-medium:
+    0 0 5px hsl(var(--primary) / 0.7), 0 0 16px hsl(var(--primary) / 0.5),
+    0 0 32px hsl(var(--primary) / 0.22);
   --elevation-high:
-    0 0 24px hsl(var(--primary) / 0.7), 0 0 48px hsl(var(--primary) / 0.3);
+    0 0 8px hsl(var(--primary) / 0.8), 0 0 24px hsl(var(--primary) / 0.6),
+    0 0 48px hsl(var(--primary) / 0.3);
   --elevation-current: var(--elevation-medium);
 }
 [data-preset="neon"][data-elevation="high"] {
   --elevation-flat: 0 0 transparent;
-  --elevation-low: 0 0 10px hsl(var(--primary) / 0.45);
-  --elevation-medium: 0 0 20px hsl(var(--primary) / 0.65);
+  --elevation-low:
+    0 0 4px hsl(var(--primary) / 0.7), 0 0 12px hsl(var(--primary) / 0.45);
+  --elevation-medium:
+    0 0 6px hsl(var(--primary) / 0.8), 0 0 20px hsl(var(--primary) / 0.6),
+    0 0 40px hsl(var(--primary) / 0.3);
   --elevation-high:
-    0 0 32px hsl(var(--primary) / 0.8), 0 0 64px hsl(var(--primary) / 0.4);
+    0 0 10px hsl(var(--primary) / 0.9), 0 0 32px hsl(var(--primary) / 0.7),
+    0 0 64px hsl(var(--primary) / 0.4);
   --elevation-current: var(--elevation-high);
 }
 
@@ -47,39 +70,90 @@
    --affordance-glow lights up the active/checked state on every
    component that consumes it (Switch, Toggle, Checkbox, Radio, Slider
    thumb, Tabs active, Pagination current page, etc.); default and
-   Glass leave it `0 0 transparent` so consumers no-op under them. */
+   Glass leave it `0 0 transparent` so consumers no-op under them.
+
+   Each shadow stack composes: inset emission (lit-from-within) +
+   tight core (bright halo touching the element) + soft mid bloom +
+   wide ambient halo (color bleed into surrounding space). */
 [data-preset="neon"] {
-  --card-elevation-low: 0 0 8px hsl(var(--primary) / 0.3);
-  --card-elevation-medium: 0 0 16px hsl(var(--primary) / 0.5);
+  --card-elevation-low:
+    inset 0 0 6px hsl(var(--primary) / 0.18),
+    0 0 4px hsl(var(--primary) / 0.55), 0 0 12px hsl(var(--primary) / 0.3),
+    0 0 24px hsl(var(--primary) / 0.15);
+  --card-elevation-medium:
+    inset 0 0 8px hsl(var(--primary) / 0.22), 0 0 6px hsl(var(--primary) / 0.7),
+    0 0 16px hsl(var(--primary) / 0.45), 0 0 32px hsl(var(--primary) / 0.22);
   --card-elevation-high:
-    0 0 28px hsl(var(--primary) / 0.65), 0 0 56px hsl(var(--primary) / 0.3);
+    inset 0 0 10px hsl(var(--primary) / 0.28),
+    0 0 10px hsl(var(--primary) / 0.8), 0 0 24px hsl(var(--primary) / 0.55),
+    0 0 48px hsl(var(--primary) / 0.3), 0 0 80px hsl(var(--primary) / 0.15);
   --shadow-card: none;
   --shadow-dropdown: none;
-  --affordance-glow: 0 0 8px hsl(var(--primary) / 0.45);
+
+  /* Affordance glow: inset emission + tight core + soft mid +
+     ambient halo. Designed for small interactive controls where
+     the bloom should be present but not overwhelm adjacent items. */
+  --affordance-glow:
+    inset 0 0 6px hsl(var(--primary) / 0.22), 0 0 3px hsl(var(--primary) / 0.7),
+    0 0 8px hsl(var(--primary) / 0.5), 0 0 18px hsl(var(--primary) / 0.25);
+
   /* Bottom-only directional glow for underline-style indicators.
      Positive Y-offset pushes the halo below the element; negative
      spread narrows the horizontal extent so the glow doesn't wrap
-     the element's sides. */
-  --affordance-glow-bottom: 0 6px 14px -4px hsl(var(--primary) / 0.55);
+     the element's sides. Two-layer (close + far) for depth. */
+  --affordance-glow-bottom:
+    0 3px 6px -1px hsl(var(--primary) / 0.7),
+    0 8px 18px -4px hsl(var(--primary) / 0.45),
+    0 14px 32px -8px hsl(var(--primary) / 0.22);
+
   /* Overlay-surface chrome: dark transparent body, primary-tinted
-     border, primary outer glow. Tooltip / Hover-card / future
-     Popover migrations all adopt this through the token. */
+     border, primary outer + inset glow so the popover reads as a
+     glowing tube. Tooltip / Hover-card / Popover / Menu / Select /
+     Combobox / Dialog / Sheet / Drawer all adopt this through the
+     token. */
   --surface-overlay-bg: hsl(var(--background) / 0.85);
   --surface-overlay-border: hsl(var(--primary) / 0.4);
-  --surface-overlay-shadow: 0 0 16px hsl(var(--primary) / 0.5);
+  --surface-overlay-shadow:
+    inset 0 0 12px hsl(var(--primary) / 0.18),
+    0 0 8px hsl(var(--primary) / 0.55), 0 0 24px hsl(var(--primary) / 0.4),
+    0 0 48px hsl(var(--primary) / 0.2);
+
+  /* Text bloom for primary-colored text under Neon — applied below to
+     .text-primary so labels on active states glow alongside their
+     surrounding box-shadow halo. Tight core + soft mid keeps text
+     legible while still emitting. */
+  --neon-text-shadow:
+    0 0 4px hsl(var(--primary) / 0.6), 0 0 10px hsl(var(--primary) / 0.4);
 }
 
-/* Button-elevation reinterpreted as button-specific glow. */
+/* Apply text bloom to elements using Tailwind's `text-primary` utility
+   under Neon. This catches active tab labels, selected tree-view text,
+   pagination current-page text, outlined-active toggle text, primary
+   button variants, etc. — every place where text is already the
+   saturated primary color, it now also emits a halo. */
+[data-preset="neon"] .text-primary,
+[data-preset="neon"] [data-state="active"][data-variant="outline"],
+[data-preset="neon"] [data-state="active"][data-variant="underline"],
+[data-preset="neon"] [data-state="on"][data-variant="outline"] {
+  text-shadow: var(--neon-text-shadow);
+}
+
+/* Button-elevation reinterpreted as button-specific glow with the
+   same multi-layer stack philosophy. */
 [data-preset="neon"][data-button-elevation="flat"] {
   --shadow-button: 0 0 transparent;
 }
 [data-preset="neon"][data-button-elevation="low"] {
-  --shadow-button: 0 0 6px hsl(var(--primary) / 0.4);
+  --shadow-button:
+    0 0 3px hsl(var(--primary) / 0.55), 0 0 8px hsl(var(--primary) / 0.3);
 }
 [data-preset="neon"][data-button-elevation="medium"] {
-  --shadow-button: 0 0 10px hsl(var(--primary) / 0.55);
+  --shadow-button:
+    0 0 4px hsl(var(--primary) / 0.7), 0 0 12px hsl(var(--primary) / 0.45),
+    0 0 24px hsl(var(--primary) / 0.2);
 }
 [data-preset="neon"][data-button-elevation="high"] {
   --shadow-button:
-    0 0 16px hsl(var(--primary) / 0.7), 0 0 32px hsl(var(--primary) / 0.3);
+    0 0 6px hsl(var(--primary) / 0.8), 0 0 18px hsl(var(--primary) / 0.55),
+    0 0 36px hsl(var(--primary) / 0.28);
 }
