@@ -89,6 +89,14 @@ export function ThemeSwitcher() {
   const supportedModes = activePreset.supportedModes
   const modeLocked = !!supportedModes && supportedModes.length === 1
 
+  // Presets can declare `hiddenCommonAxes` to hide common-axis pickers
+  // they conceptually take over with their own preset-specific axes
+  // (e.g. neon hides Elevation + Button Elevation because its `glow`
+  // axis drives the same tokens with a different recipe shape).
+  const hiddenCommonAxes = activePreset.hiddenCommonAxes ?? []
+  const isCommonAxisHidden = (name: string): boolean =>
+    (hiddenCommonAxes as readonly string[]).includes(name)
+
   const visibleSections = [
     axes.mode && !modeLocked && (
       <div key="mode">
@@ -307,7 +315,7 @@ export function ThemeSwitcher() {
         </ToggleGroup>
       </div>
     ),
-    axes.elevation && (
+    axes.elevation && !isCommonAxisHidden("elevation") && (
       <div key="elevation">
         <Label className="dr-theme-switcher-section-label">Elevation</Label>
         <ToggleGroup
@@ -329,7 +337,7 @@ export function ThemeSwitcher() {
         </ToggleGroup>
       </div>
     ),
-    axes.buttonElevation && (
+    axes.buttonElevation && !isCommonAxisHidden("buttonElevation") && (
       <div key="buttonElevation">
         <Label className="dr-theme-switcher-section-label">
           Button Elevation

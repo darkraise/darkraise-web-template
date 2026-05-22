@@ -27,14 +27,26 @@ import type { ThemePreset } from "../types"
  * --shadow-card, --shadow-dropdown) are rebound by neon.css attribute
  * selectors; they're listed in ownedTokenKeys for documentation.
  */
-export const neon: ThemePreset<Record<string, never>> = {
+type NeonAxes = {
+  glow: readonly ["dim", "normal", "bright"]
+}
+
+export const neon: ThemePreset<NeonAxes> = {
   name: "neon",
   label: "Neon",
   description:
-    "Bright primary-color glow on dark surfaces. Elevation drives glow radius. Dark mode only.",
+    "Bright primary-color glow on dark surfaces. Glow axis controls bloom intensity. Dark mode only.",
 
-  axes: {},
+  axes: {
+    glow: {
+      values: ["dim", "normal", "bright"],
+      default: "normal",
+      label: "Glow",
+      order: 1,
+    },
+  },
   supportedModes: ["dark"],
+  hiddenCommonAxes: ["elevation", "buttonElevation"],
 
   // Neon override of the semantic surface-tier tokens. Each value is
   // a CSS expression that references --primary at use time, so the

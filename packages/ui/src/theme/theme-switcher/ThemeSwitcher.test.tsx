@@ -213,4 +213,23 @@ describe("ThemeSwitcher preset section", () => {
     expect(screen.getByRole("radio", { name: /^dark$/i })).toBeInTheDocument()
     expect(screen.getByRole("radio", { name: /^system$/i })).toBeInTheDocument()
   })
+
+  it("hides Elevation + Button Elevation when active preset declares hiddenCommonAxes (neon)", () => {
+    render(
+      <ThemeProvider>
+        <ThemeSwitcher />
+      </ThemeProvider>,
+    )
+    openSwitcher()
+    // Default preset on mount — both common axes visible.
+    expect(screen.getByText("Elevation")).toBeInTheDocument()
+    expect(screen.getByText("Button Elevation")).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole("radio", { name: /^neon$/i }))
+    // Neon hides both via hiddenCommonAxes; the preset's own Glow axis
+    // takes their place.
+    expect(screen.queryByText("Elevation")).not.toBeInTheDocument()
+    expect(screen.queryByText("Button Elevation")).not.toBeInTheDocument()
+    expect(screen.getByText("Glow")).toBeInTheDocument()
+  })
 })

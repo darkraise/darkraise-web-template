@@ -11,12 +11,19 @@ describe("neon preset", () => {
     expect(neon.description).toMatch(/glow/i)
   })
 
-  it("declares zero preset-specific axes", () => {
-    expect(Object.keys(neon.axes)).toHaveLength(0)
+  it("declares a single preset-specific axis: glow (dim | normal | bright)", () => {
+    expect(Object.keys(neon.axes)).toEqual(["glow"])
+    expect(neon.axes.glow.values).toEqual(["dim", "normal", "bright"])
+    expect(neon.axes.glow.default).toBe("normal")
+    expect(neon.axes.glow.label).toBe("Glow")
   })
 
   it("declares supportedModes: ['dark']", () => {
     expect(neon.supportedModes).toEqual(["dark"])
+  })
+
+  it("declares hiddenCommonAxes: ['elevation', 'buttonElevation']", () => {
+    expect(neon.hiddenCommonAxes).toEqual(["elevation", "buttonElevation"])
   })
 
   it("generateTokens rebinds accent/muted/secondary tokens to primary-tinted values", () => {

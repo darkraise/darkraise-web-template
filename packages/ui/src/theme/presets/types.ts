@@ -115,4 +115,32 @@ export interface ThemePreset<
    * ["dark"] because its glow aesthetic doesn't read on light surfaces.
    */
   supportedModes?: readonly ResolvedMode[]
+
+  /**
+   * Common axes that this preset conceptually takes over with its own
+   * preset-specific axes, and that should therefore be HIDDEN from the
+   * ThemeSwitcher UI while this preset is active. The underlying state
+   * + data-attribute still get set on the html element (so components
+   * that read them outside the preset's CSS continue to work), but the
+   * switcher doesn't render a picker for them — the user controls the
+   * affected tokens via the preset's own axes instead.
+   *
+   * Example: Neon declares ["elevation", "buttonElevation"] because
+   * its `glow` preset axis drives `--card-elevation-*` /
+   * `--shadow-button` directly with multi-layer bloom recipes that have
+   * nothing to do with the drop-shadow ramp the common axes were
+   * designed around. Exposing both would just be confusing.
+   */
+  hiddenCommonAxes?: readonly (
+    | "mode"
+    | "backgroundStyle"
+    | "backgroundIntensity"
+    | "gradientPattern"
+    | "accentColor"
+    | "surfaceColor"
+    | "density"
+    | "elevation"
+    | "buttonElevation"
+    | "radius"
+  )[]
 }
