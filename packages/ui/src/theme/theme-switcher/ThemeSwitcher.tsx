@@ -99,7 +99,7 @@ export function ThemeSwitcher() {
 
   const visibleSections = [
     axes.mode && !modeLocked && (
-      <div key="mode">
+      <div key="mode" className="dr-theme-switcher-row">
         <Label className="dr-theme-switcher-section-label">Mode</Label>
         <ToggleGroup
           type="single"
@@ -122,7 +122,7 @@ export function ThemeSwitcher() {
       </div>
     ),
     axes.backgroundStyle && (
-      <div key="backgroundStyle">
+      <div key="backgroundStyle" className="dr-theme-switcher-row">
         <Label className="dr-theme-switcher-section-label">Background</Label>
         <ToggleGroup
           type="single"
@@ -145,7 +145,7 @@ export function ThemeSwitcher() {
       </div>
     ),
     axes.backgroundIntensity && backgroundStyle === "gradient" && (
-      <div key="backgroundIntensity">
+      <div key="backgroundIntensity" className="dr-theme-switcher-row">
         <Label className="dr-theme-switcher-section-label">
           Background Intensity
         </Label>
@@ -169,7 +169,7 @@ export function ThemeSwitcher() {
       </div>
     ),
     axes.gradientPattern && backgroundStyle === "gradient" && (
-      <div key="gradientPattern">
+      <div key="gradientPattern" className="dr-theme-switcher-row">
         <Label className="dr-theme-switcher-section-label">
           Gradient Pattern
         </Label>
@@ -193,7 +193,7 @@ export function ThemeSwitcher() {
       </div>
     ),
     axes.accentColor && (
-      <div key="accentColor">
+      <div key="accentColor" className="dr-theme-switcher-row">
         <Label className="dr-theme-switcher-section-label">Accent Color</Label>
         <div className="dr-theme-switcher-swatch-grid">
           {ACCENT_COLORS.map((color: AccentColor) => (
@@ -213,7 +213,7 @@ export function ThemeSwitcher() {
       </div>
     ),
     axes.surfaceColor && (
-      <div key="surfaceColor">
+      <div key="surfaceColor" className="dr-theme-switcher-row">
         <Label className="dr-theme-switcher-section-label">Surface Color</Label>
         <div className="dr-theme-switcher-swatch-grid">
           {SURFACE_COLORS.map((color: SurfaceColor) => {
@@ -237,7 +237,7 @@ export function ThemeSwitcher() {
       </div>
     ),
     axes.preset && (
-      <div key="preset">
+      <div key="preset" className="dr-theme-switcher-row">
         <Label className="dr-theme-switcher-section-label">Preset</Label>
         <ToggleGroup
           type="single"
@@ -294,7 +294,7 @@ export function ThemeSwitcher() {
       </div>
     ),
     axes.density && (
-      <div key="density">
+      <div key="density" className="dr-theme-switcher-row">
         <Label className="dr-theme-switcher-section-label">Density</Label>
         <ToggleGroup
           type="single"
@@ -316,7 +316,7 @@ export function ThemeSwitcher() {
       </div>
     ),
     axes.elevation && !isCommonAxisHidden("elevation") && (
-      <div key="elevation">
+      <div key="elevation" className="dr-theme-switcher-row">
         <Label className="dr-theme-switcher-section-label">Elevation</Label>
         <ToggleGroup
           type="single"
@@ -338,7 +338,7 @@ export function ThemeSwitcher() {
       </div>
     ),
     axes.buttonElevation && !isCommonAxisHidden("buttonElevation") && (
-      <div key="buttonElevation">
+      <div key="buttonElevation" className="dr-theme-switcher-row">
         <Label className="dr-theme-switcher-section-label">
           Button Elevation
         </Label>
@@ -362,7 +362,7 @@ export function ThemeSwitcher() {
       </div>
     ),
     axes.radius && (
-      <div key="radius">
+      <div key="radius" className="dr-theme-switcher-row">
         <Label className="dr-theme-switcher-section-label">Radius</Label>
         <ToggleGroup
           type="single"
@@ -396,11 +396,11 @@ export function ThemeSwitcher() {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80" align="end">
-        <div className="space-y-4">
+        <div className="space-y-2">
           {visibleSections.map((section, i) => (
             <div key={i}>
               {section}
-              {i < visibleSections.length - 1 && <Separator className="mt-4" />}
+              {i < visibleSections.length - 1 && <Separator className="mt-2" />}
             </div>
           ))}
         </div>
