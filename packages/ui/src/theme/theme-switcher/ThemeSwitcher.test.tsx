@@ -180,4 +180,34 @@ describe("ThemeSwitcher preset section", () => {
       "aurora",
     )
   })
+
+  it("disables unsupported mode buttons when active preset restricts modes (neon = dark only)", () => {
+    render(
+      <ThemeProvider>
+        <ThemeSwitcher />
+      </ThemeProvider>,
+    )
+    openSwitcher()
+    fireEvent.click(screen.getByRole("radio", { name: /^neon$/i }))
+    // Neon's supportedModes is ["dark"]. Light and System are disabled;
+    // Dark stays enabled (and selected because the provider auto-switched).
+    expect(screen.getByRole("radio", { name: /^light$/i })).toBeDisabled()
+    expect(screen.getByRole("radio", { name: /^system$/i })).toBeDisabled()
+    expect(screen.getByRole("radio", { name: /^dark$/i })).not.toBeDisabled()
+    // Restriction note rendered next to the Mode label.
+    expect(screen.getByText(/Neon requires dark/i)).toBeInTheDocument()
+  })
+
+  it("leaves all mode buttons enabled when active preset has no supportedModes (default, glass)", () => {
+    render(
+      <ThemeProvider>
+        <ThemeSwitcher />
+      </ThemeProvider>,
+    )
+    openSwitcher()
+    // Default preset is active on mount — no restriction.
+    expect(screen.getByRole("radio", { name: /^light$/i })).not.toBeDisabled()
+    expect(screen.getByRole("radio", { name: /^dark$/i })).not.toBeDisabled()
+    expect(screen.getByRole("radio", { name: /^system$/i })).not.toBeDisabled()
+  })
 })

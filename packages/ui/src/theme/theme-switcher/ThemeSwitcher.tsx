@@ -81,10 +81,37 @@ export function ThemeSwitcher() {
 
   const { axes } = config.switcher
 
+  // When the active preset declares `supportedModes`, modes outside that
+  // list are disabled in the switcher (and `system` is disabled unless
+  // both light and dark are supported, since it can resolve to either).
+  // The ThemeProvider also enforces this at the data layer — selecting an
+  // unsupported preset/mode combo auto-switches to a supported value — but
+  // disabling the UI buttons makes the constraint visible up front.
+  const supportedModes = activePreset.supportedModes
+  const isModeSupported = (m: Mode): boolean => {
+    if (!supportedModes) return true
+    if (m === "system") {
+      return (
+        (supportedModes as readonly string[]).includes("light") &&
+        (supportedModes as readonly string[]).includes("dark")
+      )
+    }
+    return (supportedModes as readonly string[]).includes(m)
+  }
+  const modeRestricted = !!supportedModes
+
   const visibleSections = [
     axes.mode && (
       <div key="mode">
-        <Label className="dr-theme-switcher-section-label">Mode</Label>
+        <Label className="dr-theme-switcher-section-label">
+          Mode
+          {modeRestricted && (
+            <span className="text-muted-foreground ml-2 text-xs font-normal normal-case">
+              ({activePreset.label} requires{" "}
+              {(supportedModes as readonly string[]).join("/")})
+            </span>
+          )}
+        </Label>
         <ToggleGroup
           type="single"
           value={mode}
@@ -97,7 +124,11 @@ export function ThemeSwitcher() {
           data-cols="3"
         >
           {modeOptions.map(({ value, icon: Icon, label }) => (
-            <ToggleGroupItem key={value} value={value}>
+            <ToggleGroupItem
+              key={value}
+              value={value}
+              disabled={!isModeSupported(value)}
+            >
               <Icon className="dr-theme-switcher-row-icon" />
               {label}
             </ToggleGroupItem>
