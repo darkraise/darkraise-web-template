@@ -171,6 +171,51 @@ export function ThemeSwitcher() {
         </ToggleGroup>
       </div>
     ),
+    axes.preset && (
+      <div key="preset" className="dr-theme-switcher-row">
+        <Label className="dr-theme-switcher-section-label">Preset</Label>
+        <ToggleGroup
+          type="single"
+          value={preset}
+          onValueChange={(value) => {
+            if (value) setPreset(value as PresetName)
+          }}
+          variant="outline"
+          size="sm"
+          className="dr-theme-switcher-toggle-group"
+          data-cols={PRESET_NAMES.length}
+        >
+          {PRESET_NAMES.map((name) => (
+            <ToggleGroupItem key={name} value={name}>
+              {presets[name].label}
+            </ToggleGroupItem>
+          ))}
+        </ToggleGroup>
+      </div>
+    ),
+    axes.presetAxes && Object.keys(activePreset.axes).length > 0 && (
+      <div key="preset-axes" className="dr-theme-switcher-preset-axes-group">
+        {Object.entries(
+          (activePreset as ThemePreset<Record<string, readonly string[]>>).axes,
+        )
+          .sort(([, a], [, b]) => (a.order ?? 99) - (b.order ?? 99))
+          .map(([axisName, axisDef]) => (
+            <div
+              key={`preset-axis-${axisName}`}
+              className="dr-theme-switcher-preset-axis"
+            >
+              <Label className="dr-theme-switcher-section-label">
+                {axisDef.label}
+              </Label>
+              <AxisControl
+                values={axisDef.values}
+                value={presetAxisValues[preset]?.[axisName] ?? axisDef.default}
+                onChange={(v) => setPresetAxis(axisName, v)}
+              />
+            </div>
+          ))}
+      </div>
+    ),
     axes.backgroundStyle && (
       <div key="backgroundStyle" className="dr-theme-switcher-row">
         <Label className="dr-theme-switcher-section-label">Background</Label>
@@ -272,51 +317,6 @@ export function ThemeSwitcher() {
             )
           })}
         </div>
-      </div>
-    ),
-    axes.preset && (
-      <div key="preset" className="dr-theme-switcher-row">
-        <Label className="dr-theme-switcher-section-label">Preset</Label>
-        <ToggleGroup
-          type="single"
-          value={preset}
-          onValueChange={(value) => {
-            if (value) setPreset(value as PresetName)
-          }}
-          variant="outline"
-          size="sm"
-          className="dr-theme-switcher-toggle-group"
-          data-cols={PRESET_NAMES.length}
-        >
-          {PRESET_NAMES.map((name) => (
-            <ToggleGroupItem key={name} value={name}>
-              {presets[name].label}
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
-      </div>
-    ),
-    axes.presetAxes && Object.keys(activePreset.axes).length > 0 && (
-      <div key="preset-axes" className="dr-theme-switcher-preset-axes-group">
-        {Object.entries(
-          (activePreset as ThemePreset<Record<string, readonly string[]>>).axes,
-        )
-          .sort(([, a], [, b]) => (a.order ?? 99) - (b.order ?? 99))
-          .map(([axisName, axisDef]) => (
-            <div
-              key={`preset-axis-${axisName}`}
-              className="dr-theme-switcher-preset-axis"
-            >
-              <Label className="dr-theme-switcher-section-label">
-                {axisDef.label}
-              </Label>
-              <AxisControl
-                values={axisDef.values}
-                value={presetAxisValues[preset]?.[axisName] ?? axisDef.default}
-                onChange={(v) => setPresetAxis(axisName, v)}
-              />
-            </div>
-          ))}
       </div>
     ),
     axes.density && (
