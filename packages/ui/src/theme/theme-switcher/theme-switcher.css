@@ -16,13 +16,16 @@
   }
 
   /* Label column inside a horizontal row — fixed width so labels align
-     across rows. Reset any block-level margins (none today but defensive
+     across rows. Width sized for the longest label in the system
+     ("Background Intensity", "Button Elevation") so nothing wraps at
+     text-xs. Reset any block-level margins (none today but defensive
      so future Label tweaks don't break alignment). */
   .dr-theme-switcher-row > .dr-theme-switcher-section-label,
   .dr-theme-switcher-preset-axis > .dr-theme-switcher-section-label {
-    flex: 0 0 6rem;
-    min-width: 6rem;
+    flex: 0 0 8rem;
+    min-width: 8rem;
     margin: 0;
+    line-height: 1.3;
   }
 
   .dr-theme-switcher-row-icon {

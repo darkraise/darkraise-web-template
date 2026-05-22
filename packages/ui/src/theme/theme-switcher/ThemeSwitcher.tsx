@@ -395,7 +395,7 @@ export function ThemeSwitcher() {
           <span className="sr-only">Customize theme</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80" align="end">
+      <PopoverContent className="w-[28rem]" align="end">
         <div className="space-y-2">
           {visibleSections.map((section, i) => (
             <div key={i}>
