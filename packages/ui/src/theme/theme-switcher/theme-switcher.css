@@ -84,14 +84,13 @@
 
   /* Preset-axes-group wraps multiple preset-specific axis rows. The
      container stacks vertically; each child row uses the horizontal
-     layout above. */
+     layout above. No indent / border on the left — preset rows align
+     flush with the common axis rows so labels in the left column line
+     up regardless of which preset is active. */
   .dr-theme-switcher-preset-axes-group {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    margin-left: 0.75rem;
-    padding-left: 0.75rem;
-    border-left: 2px solid hsl(var(--border));
   }
 
   .dr-theme-switcher-preset-axes-group > .dr-theme-switcher-preset-axis {
