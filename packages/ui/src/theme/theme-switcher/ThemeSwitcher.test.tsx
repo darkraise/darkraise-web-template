@@ -181,33 +181,36 @@ describe("ThemeSwitcher preset section", () => {
     )
   })
 
-  it("disables unsupported mode buttons when active preset restricts modes (neon = dark only)", () => {
+  it("hides the Mode section when active preset locks to a single mode (neon = dark only)", () => {
     render(
       <ThemeProvider>
         <ThemeSwitcher />
       </ThemeProvider>,
     )
     openSwitcher()
+    // Default preset on mount — Mode section is visible.
+    expect(screen.getByText("Mode")).toBeInTheDocument()
+
     fireEvent.click(screen.getByRole("radio", { name: /^neon$/i }))
-    // Neon's supportedModes is ["dark"]. Light and System are disabled;
-    // Dark stays enabled (and selected because the provider auto-switched).
-    expect(screen.getByRole("radio", { name: /^light$/i })).toBeDisabled()
-    expect(screen.getByRole("radio", { name: /^system$/i })).toBeDisabled()
-    expect(screen.getByRole("radio", { name: /^dark$/i })).not.toBeDisabled()
-    // Restriction note rendered next to the Mode label.
-    expect(screen.getByText(/Neon requires dark/i)).toBeInTheDocument()
+    // After switching to Neon (supportedModes: ["dark"]), the Mode label
+    // and the three mode radios are removed from the DOM entirely.
+    expect(screen.queryByText("Mode")).not.toBeInTheDocument()
+    expect(screen.queryByRole("radio", { name: /^light$/i })).toBeNull()
+    expect(screen.queryByRole("radio", { name: /^system$/i })).toBeNull()
+    // ThemeProvider has already auto-switched mode to dark.
+    expect(document.documentElement.getAttribute("data-mode")).toBe("dark")
   })
 
-  it("leaves all mode buttons enabled when active preset has no supportedModes (default, glass)", () => {
+  it("keeps the Mode section visible when active preset has no supportedModes (default, glass)", () => {
     render(
       <ThemeProvider>
         <ThemeSwitcher />
       </ThemeProvider>,
     )
     openSwitcher()
-    // Default preset is active on mount — no restriction.
-    expect(screen.getByRole("radio", { name: /^light$/i })).not.toBeDisabled()
-    expect(screen.getByRole("radio", { name: /^dark$/i })).not.toBeDisabled()
-    expect(screen.getByRole("radio", { name: /^system$/i })).not.toBeDisabled()
+    expect(screen.getByText("Mode")).toBeInTheDocument()
+    expect(screen.getByRole("radio", { name: /^light$/i })).toBeInTheDocument()
+    expect(screen.getByRole("radio", { name: /^dark$/i })).toBeInTheDocument()
+    expect(screen.getByRole("radio", { name: /^system$/i })).toBeInTheDocument()
   })
 })
