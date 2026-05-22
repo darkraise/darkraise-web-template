@@ -34,6 +34,10 @@ describe("playful preset", () => {
       { pop: "lively" },
     )
     expect(tokens["--radius"]).toBe("1rem")
+    // --radius-button must also be forced so Buttons (which read it
+    // directly) inherit Playful's bubble radius rather than tracking
+    // the hidden data-radius axis.
+    expect(tokens["--radius-button"]).toBe("1rem")
     expect(tokens["--accent"]).toBe("var(--primary) / 0.18")
     expect(tokens["--accent-foreground"]).toBe("var(--primary)")
     expect(tokens["--muted"]).toBe("var(--primary) / 0.07")

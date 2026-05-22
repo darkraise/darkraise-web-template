@@ -64,8 +64,13 @@ export const terminal: ThemePreset<TerminalAxes> = {
       "--secondary": "var(--primary) / 0.08",
       "--secondary-foreground": "var(--primary)",
       // Sharp corners — overrides the [data-radius="..."] CSS selectors
-      // via inline style precedence.
+      // via inline style precedence. BOTH --radius (used by Tailwind's
+      // rounded-* utilities) AND --radius-button (read directly by
+      // .dr-btn via `rounded-[var(--radius-button)]`) must be forced
+      // to 0; otherwise Buttons (and Buttons inside ButtonGroup) keep
+      // whatever non-zero value the data-radius axis last left behind.
       "--radius": "0px",
+      "--radius-button": "0px",
       // Monospace stack — overrides the engine's default --font-sans
       // so all body text reads as terminal output.
       "--font-sans":
@@ -80,6 +85,7 @@ export const terminal: ThemePreset<TerminalAxes> = {
     "--secondary",
     "--secondary-foreground",
     "--radius",
+    "--radius-button",
     "--font-sans",
     "--terminal-text-shadow",
     "--card-elevation-low",

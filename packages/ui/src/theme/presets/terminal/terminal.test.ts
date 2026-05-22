@@ -39,6 +39,10 @@ describe("terminal preset", () => {
       { phosphor: "dim", scanlines: "off" },
     )
     expect(tokens["--radius"]).toBe("0px")
+    // Must also force --radius-button so Buttons (which read it directly
+    // via `rounded-[var(--radius-button)]`) go sharp under Terminal.
+    // Otherwise Buttons + ButtonGroup outer corners stay rounded.
+    expect(tokens["--radius-button"]).toBe("0px")
     expect(tokens["--font-sans"]).toMatch(/monospace/i)
     expect(tokens["--accent"]).toBe("var(--primary) / 0.12")
     expect(tokens["--accent-foreground"]).toBe("var(--primary)")

@@ -49,8 +49,12 @@ export const playful: ThemePreset<PlayfulAxes> = {
     return {
       // Generous radius — the rounded "bubble" feel is core to Playful.
       // Overrides the [data-radius="..."] CSS selectors via inline
-      // style precedence.
+      // style precedence. BOTH --radius (Tailwind's rounded-*) AND
+      // --radius-button (read directly by Buttons) are forced so
+      // Buttons + ButtonGroup outer corners match Playful's bubble
+      // aesthetic rather than tracking the hidden data-radius axis.
       "--radius": "1rem",
+      "--radius-button": "1rem",
       // Hover/selected states get a vibrant primary tint, slightly
       // stronger than Glass and Neon so the playful aesthetic reads
       // as energetic rather than restrained.
@@ -64,6 +68,7 @@ export const playful: ThemePreset<PlayfulAxes> = {
 
   ownedTokenKeys: [
     "--radius",
+    "--radius-button",
     "--accent",
     "--accent-foreground",
     "--muted",
