@@ -70,9 +70,18 @@ export const scifi: ThemePreset<ScifiAxes> = {
       // pseudo-elements instead of border-radius.
       "--radius": "0px",
       "--radius-button": "0px",
-      // Tech-y monospace stack for the data-readout feel.
+      // Geometric squared-sans stack. Orbitron (loaded by scifi.css via
+      // Google Fonts @import) is the signature sci-fi font; Rajdhani is
+      // Cyberpunk 2077's primary face; Eurostile is the classic. System
+      // stack falls back gracefully if none of those are installed. This
+      // is what gives the preset its "spaceship console" feel rather
+      // than the "terminal" feel of monospace.
       "--font-sans":
-        "ui-monospace, 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace",
+        "'Orbitron', 'Rajdhani', 'Eurostile', 'Bank Gothic', 'Microgramma', system-ui, sans-serif",
+      // Translucent panels so the tactical grid background bleeds through
+      // surfaces. Holographic HUD feel — every panel reads as projected
+      // light over the page chrome, not opaque cards.
+      "--surface-opacity": "0.82",
     }
   },
 

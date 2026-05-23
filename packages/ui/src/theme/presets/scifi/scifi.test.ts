@@ -38,7 +38,10 @@ describe("scifi preset", () => {
     )
     expect(tokens["--radius"]).toBe("0px")
     expect(tokens["--radius-button"]).toBe("0px")
-    expect(tokens["--font-sans"]).toMatch(/monospace/i)
+    // Geometric squared-sans stack (Orbitron / Rajdhani / Eurostile),
+    // not monospace — sci-fi HUDs use squared geometric sans, monospace
+    // is the Terminal preset's signature.
+    expect(tokens["--font-sans"]).toMatch(/orbitron/i)
     expect(tokens["--accent"]).toBe("var(--primary) / 0.14")
     expect(tokens["--accent-foreground"]).toBe("var(--primary)")
     expect(tokens["--muted"]).toBe("var(--primary) / 0.05")

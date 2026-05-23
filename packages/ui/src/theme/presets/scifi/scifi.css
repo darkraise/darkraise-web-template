@@ -1,5 +1,13 @@
 /* packages/ui/src/theme/presets/scifi/scifi.css
  *
+ * Google Fonts: Orbitron is the signature sci-fi face (Battlestar
+ * Galactica, Tron, and most modern HUD UI kits use it). Loaded here
+ * so consumers don't have to import it separately. Falls back through
+ * Rajdhani / Eurostile / system if the network's unavailable.
+ */
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&display=swap");
+
+/*
  * Drives the Sci-fi HUD aesthetic from two preset axes:
  *   - intensity (dim/normal/bright): glow strength on borders, text,
  *     active states. Same multi-layer recipe philosophy as Neon but
@@ -35,24 +43,25 @@
 
 [data-preset="scifi"][data-scifi-intensity="normal"] {
   --scifi-text-glow:
-    0 0 3px hsl(var(--primary) / 0.55), 0 0 10px hsl(var(--primary) / 0.25);
-  --scifi-edge-glow: 0 0 0 1px hsl(var(--primary) / 0.55);
+    0 0 4px hsl(var(--primary) / 0.65), 0 0 12px hsl(var(--primary) / 0.32);
+  --scifi-edge-glow: 0 0 0 1px hsl(var(--primary) / 0.7);
   --affordance-glow:
-    inset 0 0 0 1px hsl(var(--primary) / 0.7),
-    0 0 12px hsl(var(--primary) / 0.45);
+    inset 0 0 0 1px hsl(var(--primary) / 0.8),
+    0 0 4px hsl(var(--primary) / 0.6), 0 0 16px hsl(var(--primary) / 0.55);
   --affordance-glow-bottom:
-    0 2px 0 hsl(var(--primary) / 0.7),
-    0 6px 18px -2px hsl(var(--primary) / 0.45);
+    0 2px 0 hsl(var(--primary) / 0.85),
+    0 8px 22px -2px hsl(var(--primary) / 0.55);
   --shadow-button:
-    0 0 4px hsl(var(--primary) / 0.4), 0 0 12px hsl(var(--primary) / 0.22);
-  --card-elevation-low: 0 0 10px hsl(var(--primary) / 0.28);
+    0 0 4px hsl(var(--primary) / 0.5), 0 0 14px hsl(var(--primary) / 0.3);
+  --card-elevation-low:
+    0 0 4px hsl(var(--primary) / 0.45), 0 0 14px hsl(var(--primary) / 0.32);
   --card-elevation-medium:
-    0 0 4px hsl(var(--primary) / 0.5), 0 0 16px hsl(var(--primary) / 0.35);
+    0 0 6px hsl(var(--primary) / 0.6), 0 0 20px hsl(var(--primary) / 0.45);
   --card-elevation-high:
-    0 0 6px hsl(var(--primary) / 0.7), 0 0 24px hsl(var(--primary) / 0.45),
-    0 0 56px hsl(var(--primary) / 0.22);
+    0 0 8px hsl(var(--primary) / 0.8), 0 0 28px hsl(var(--primary) / 0.55),
+    0 0 64px hsl(var(--primary) / 0.28);
   --surface-overlay-shadow:
-    0 0 0 1px hsl(var(--primary) / 0.55), 0 0 18px hsl(var(--primary) / 0.45);
+    0 0 0 1px hsl(var(--primary) / 0.7), 0 0 22px hsl(var(--primary) / 0.55);
 }
 
 [data-preset="scifi"][data-scifi-intensity="bright"] {
@@ -574,4 +583,111 @@
   transform: rotate(45deg);
   pointer-events: none;
   filter: drop-shadow(0 0 4px hsl(var(--primary) / 0.5));
+}
+
+/* --- Revamp 2: Tactical grid, hex shapes, ambient HUD chrome ---- */
+
+/* Tactical grid background painted on body::after — two
+   repeating-linear-gradients (vertical + horizontal) create a 50px
+   primary-tinted grid. Radial mask fades the edges so the grid
+   reads as an "active scanning area" rather than a tiled
+   background. THE single biggest contributor to HUD feel. */
+[data-preset="scifi"] body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 1;
+  background-image:
+    linear-gradient(hsl(var(--primary) / 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--primary) / 0.07) 1px, transparent 1px);
+  background-size: 50px 50px;
+  mask-image: radial-gradient(ellipse at center, black 40%, transparent 95%);
+  -webkit-mask-image: radial-gradient(
+    ellipse at center,
+    black 40%,
+    transparent 95%
+  );
+}
+
+/* Center crosshair — barely-there ambient reticle in the viewport
+   center so the user feels "tracked" by the HUD. The theme-wide
+   noise overlay also uses body::before with opacity bound to
+   --noise-opacity (defaults to 0); force opacity 1 here so the
+   crosshair always shows. */
+[data-preset="scifi"] body::before {
+  content: "";
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 1;
+  background-image:
+    linear-gradient(hsl(var(--primary) / 0.5), hsl(var(--primary) / 0.5)),
+    linear-gradient(90deg, hsl(var(--primary) / 0.5), hsl(var(--primary) / 0.5));
+  background-position: center;
+  background-size:
+    1px 14px,
+    14px 1px;
+  background-repeat: no-repeat;
+  opacity: 1;
+}
+
+/* Ambient corner brackets on every card under frame=clean | notched.
+   Tiny tactical ID readouts in the top-right + bottom-right of every
+   card section — pure decoration but it's what makes plain cards
+   read as "monitoring panel" rather than just "card". */
+[data-preset="scifi"]:where(
+    [data-scifi-frame="clean"],
+    [data-scifi-frame="notched"]
+  )
+  .dr-card {
+  position: relative;
+}
+[data-preset="scifi"]:where(
+    [data-scifi-frame="clean"],
+    [data-scifi-frame="notched"]
+  )
+  .dr-card::before {
+  content: "◆ HUD//OK";
+  position: absolute;
+  top: 0.4rem;
+  right: 0.6rem;
+  font-size: 0.5rem;
+  letter-spacing: 0.18em;
+  font-weight: 700;
+  color: hsl(var(--primary) / 0.55);
+  pointer-events: none;
+  text-shadow: 0 0 3px hsl(var(--primary) / 0.45);
+  font-family: var(--font-sans);
+  z-index: 2;
+}
+
+/* Hex-shaped Avatar — Iron Man / Mass Effect armor display
+   convention. Flat-top hex via clip-path. */
+[data-preset="scifi"] .dr-avatar {
+  clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
+  border-radius: 0;
+}
+
+/* Hex Steps indicator — replaces the round counter with a flat-top
+   hexagon. Reads as "module N" in a tactical sequence. Hex clip
+   cuts borders so we emulate them via inset box-shadow. */
+[data-preset="scifi"] .dr-steps-indicator {
+  clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
+  border-radius: 0;
+  border: none;
+  box-shadow: inset 0 0 0 1px hsl(var(--primary) / 0.5);
+}
+[data-preset="scifi"] .dr-steps-indicator[data-status="current"] {
+  box-shadow:
+    inset 0 0 0 1.5px hsl(var(--primary)),
+    0 0 14px hsl(var(--primary) / 0.55);
+}
+[data-preset="scifi"] .dr-steps-indicator[data-status="complete"] {
+  box-shadow: inset 0 0 0 1px hsl(var(--primary));
 }
