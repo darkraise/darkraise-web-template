@@ -397,3 +397,181 @@
   letter-spacing: 0.08em;
   font-weight: 600;
 }
+
+/* --- Revamp: research-driven polish ------------------------------ */
+/* Patterns synthesized from Halo (diamond waypoints, bracket
+   reticles), Mass Effect (segmented cooldown bars), Cyberpunk 2077
+   (Rajdhani squared sans + tracked uppercase), Destiny (intensity
+   dial + chevron markers), and general FUI guidelines (blue/green/
+   red palette priority, tabular numerics for data, smaller palette
+   for memorability). */
+
+/* Tabular numerics globally so data columns align vertically and
+   numeric data reads as instruments rather than copy. */
+[data-preset="scifi"] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Headings: chevron prefix for "section header" data-readout feel. */
+[data-preset="scifi"] h1::before,
+[data-preset="scifi"] h2::before {
+  content: "› ";
+  color: hsl(var(--primary));
+  opacity: 0.75;
+  margin-right: 0.1em;
+}
+
+/* Idle scan-pulse on Card border — subtle slow pulse so the HUD
+   feels alive. Gated by reduced-motion. */
+@keyframes scifi-card-pulse {
+  0%,
+  100% {
+    border-color: hsl(var(--primary) / 0.35);
+  }
+  50% {
+    border-color: hsl(var(--primary) / 0.55);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-preset="scifi"] .dr-card {
+    animation: scifi-card-pulse 4s ease-in-out infinite;
+  }
+}
+
+/* Badges: skew into ID-tag parallelogram. Inner content unskewed so
+   text reads upright. Halo / Destiny status tags look like this. */
+[data-preset="scifi"] .dr-badge {
+  transform: skewX(-12deg);
+  padding-inline: 0.6em;
+}
+[data-preset="scifi"] .dr-badge > * {
+  display: inline-block;
+  transform: skewX(12deg);
+}
+
+/* Pagination active: leading diamond marker (Halo waypoint). */
+[data-preset="scifi"] .dr-pagination-link[data-active="true"]::before {
+  content: "◆ ";
+  color: hsl(var(--primary));
+  opacity: 0.85;
+}
+
+/* Breadcrumb: upgrade `//` separator to chevron, current page gets
+   a leading diamond. */
+[data-preset="scifi"] .dr-breadcrumb-separator::before {
+  content: "›";
+  letter-spacing: normal;
+  opacity: 0.5;
+}
+[data-preset="scifi"] .dr-breadcrumb-page::before {
+  content: "◆ ";
+  color: hsl(var(--primary));
+  opacity: 0.85;
+}
+
+/* Inputs on focus: 4 corner brackets via 8 background-image
+   linear-gradients (one stub per corner edge × 4 corners). Targeting-
+   reticle vibe whenever the user activates a field. */
+[data-preset="scifi"] .dr-input:focus-visible,
+[data-preset="scifi"] .dr-textarea:focus-visible {
+  background-image:
+    linear-gradient(hsl(var(--primary)) 0 0),
+    linear-gradient(hsl(var(--primary)) 0 0),
+    linear-gradient(hsl(var(--primary)) 0 0),
+    linear-gradient(hsl(var(--primary)) 0 0),
+    linear-gradient(hsl(var(--primary)) 0 0),
+    linear-gradient(hsl(var(--primary)) 0 0),
+    linear-gradient(hsl(var(--primary)) 0 0),
+    linear-gradient(hsl(var(--primary)) 0 0);
+  background-position:
+    top left,
+    top left,
+    top right,
+    top right,
+    bottom left,
+    bottom left,
+    bottom right,
+    bottom right;
+  background-size:
+    8px 2px,
+    2px 8px,
+    8px 2px,
+    2px 8px,
+    8px 2px,
+    2px 8px,
+    8px 2px,
+    2px 8px;
+  background-repeat: no-repeat;
+  background-color: hsl(var(--primary) / 0.05);
+}
+
+/* Switch thumb: parallelogram chevron so it reads as a "data slider"
+   rather than a generic round toggle. */
+[data-preset="scifi"] .dr-switch-thumb {
+  clip-path: polygon(0 0, 100% 0, calc(100% - 4px) 100%, -4px 100%);
+}
+
+/* Radio checked indicator: turn the inner dot into a diamond. */
+[data-preset="scifi"] .dr-radio-group-indicator {
+  transform: rotate(45deg);
+  border-radius: 0;
+}
+
+/* Progress: segmented bar (Mass Effect cooldown look). Punch 16
+   evenly-spaced background-colored gaps across the indicator via
+   repeating-linear-gradient. The scan-line ::after still animates
+   on top. */
+[data-preset="scifi"] .dr-progress-indicator {
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent 0 calc(100% / 16 - 2px),
+    hsl(var(--background)) calc(100% / 16 - 2px) calc(100% / 16)
+  );
+}
+
+/* Tree-view + Listbox selected: chevron prefix for "current target". */
+[data-preset="scifi"]
+  .dr-tree-view-branch-control[data-selected="true"]::before,
+[data-preset="scifi"] .dr-tree-view-item[data-selected="true"]::before,
+[data-preset="scifi"] .dr-listbox-item[data-focused="true"]::before {
+  content: "›";
+  color: hsl(var(--primary));
+  font-weight: 700;
+  margin-right: 0.4em;
+}
+
+/* Steps current indicator: ripple pulse so it reads as "you are here". */
+@keyframes scifi-steps-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 hsl(var(--primary) / 0.6);
+  }
+  50% {
+    box-shadow: 0 0 0 4px hsl(var(--primary) / 0);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-preset="scifi"] .dr-steps-indicator[data-status="current"] {
+    animation: scifi-steps-pulse 1.8s ease-out infinite;
+  }
+}
+
+/* Calendar selected day: diamond highlight via rotated pseudo behind
+   the day number. Halo waypoint convention applied to calendar. */
+[data-preset="scifi"] .dr-calendar-day-btn[data-selected-single="true"],
+[data-preset="scifi"] .dr-calendar-day-btn[data-range-single="true"] {
+  position: relative;
+  background-color: transparent;
+  color: hsl(var(--primary));
+  font-weight: 700;
+}
+[data-preset="scifi"] .dr-calendar-day-btn[data-selected-single="true"]::before,
+[data-preset="scifi"] .dr-calendar-day-btn[data-range-single="true"]::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 1px solid hsl(var(--primary));
+  transform: rotate(45deg);
+  pointer-events: none;
+  filter: drop-shadow(0 0 4px hsl(var(--primary) / 0.5));
+}
