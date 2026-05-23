@@ -184,8 +184,8 @@ function HoverCardContentImpl({
       data-align={resolvedAlign}
       style={{
         position: floating.strategy,
-        top: floating.y ?? 0,
-        left: floating.x ?? 0,
+        top: Math.round(floating.y ?? 0),
+        left: Math.round(floating.x ?? 0),
       }}
       className={cn("dr-hover-card-content", className)}
       onPointerEnter={(event) => {

@@ -527,8 +527,8 @@ function MenubarContentImpl({
         tabIndex={-1}
         style={{
           position: floating.strategy,
-          top: floating.y ?? 0,
-          left: floating.x ?? 0,
+          top: Math.round(floating.y ?? 0),
+          left: Math.round(floating.x ?? 0),
         }}
         className={cn(
           ctx.isSubmenu ? "dr-menubar-sub-content" : "dr-menubar-content",

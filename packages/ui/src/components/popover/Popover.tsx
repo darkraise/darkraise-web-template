@@ -255,8 +255,11 @@ function PopoverContentImpl({
         tabIndex={-1}
         style={{
           position: floating.strategy,
-          top: floating.y ?? 0,
-          left: floating.x ?? 0,
+          // Snap to integer pixels to avoid subpixel anti-aliasing on
+          // borders (especially border-bottom of any descendant) when
+          // Floating UI returns fractional coordinates.
+          top: Math.round(floating.y ?? 0),
+          left: Math.round(floating.x ?? 0),
         }}
         className={cn("dr-popover-content", className)}
         {...rest}
