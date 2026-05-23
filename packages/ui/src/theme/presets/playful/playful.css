@@ -354,3 +354,117 @@
 [data-preset="playful"] .dr-steps-indicator[data-status="complete"] {
   transform: scale(1.05);
 }
+
+/* --- Phase: Floating-surface + compound-input parity ------------- */
+
+/* Modal-tier shadow: Dialog/AlertDialog/Sheet/Drawer consume the
+   .modal-surface utility = var(--elevation-high), var(--inset-hi-
+   strong) — neutral theme shadows. Under Playful every other floating
+   surface uses the primary-tinted "cloud" --surface-overlay-shadow
+   chain (which playful.css rebinds per pop level above); modals were
+   the one tier not joining the cloud vocabulary. Replace their shadow
+   to match. */
+[data-preset="playful"] .dr-dialog-content,
+[data-preset="playful"] .dr-alert-dialog-content,
+[data-preset="playful"] .dr-sheet-content,
+[data-preset="playful"] .dr-drawer-content {
+  box-shadow: var(--surface-overlay-shadow);
+}
+
+/* Compound-input wrappers — NumberInput/DatePicker/ColorPicker/
+   Combobox/MultiSelect/TagsInput/InputOTP-slot own the visible
+   border, so they need the same Playful focus shadow that the rule
+   above gives to standalone .dr-input and .dr-textarea. Fires on
+   :focus-within because the wrapper itself can't be :focus-visible —
+   focus lives on the inner field. */
+[data-preset="playful"] .dr-number-input-control,
+[data-preset="playful"] .dr-date-picker-control,
+[data-preset="playful"] .dr-color-picker-control,
+[data-preset="playful"] .dr-combobox-control,
+[data-preset="playful"] .dr-multi-select-control,
+[data-preset="playful"] .dr-tags-input-control,
+[data-preset="playful"] .dr-input-otp-slot {
+  transition:
+    transform 200ms var(--playful-bounce),
+    box-shadow 200ms ease-out,
+    border-color 150ms;
+}
+[data-preset="playful"] .dr-number-input-control:focus-within,
+[data-preset="playful"] .dr-date-picker-control:focus-within,
+[data-preset="playful"] .dr-color-picker-control:focus-within,
+[data-preset="playful"] .dr-combobox-control:focus-within,
+[data-preset="playful"] .dr-multi-select-control:focus-within,
+[data-preset="playful"] .dr-tags-input-control:focus-within,
+[data-preset="playful"] .dr-input-otp-slot[data-active] {
+  box-shadow:
+    0 0 0 3px hsl(var(--primary) / 0.18),
+    var(--shadow-button);
+}
+
+/* Compound-input inner fields stay chromeless under Playful — same
+   specificity trap as the other presets: the inner <input> carries
+   `dr-input dr-{name}-field`, so the `[data-preset="playful"]
+   .dr-input:focus-visible` rule above (specificity 0,2,1) would beat
+   the chromeless base rule (0,1,0) and draw the 3px primary halo
+   INSIDE the wrapper on top of the wrapper's own focus halo. Scope
+   through the wrapper to reach (0,3,1) and re-assert chromelessness
+   on focus too. */
+[data-preset="playful"] .dr-number-input-control .dr-input,
+[data-preset="playful"] .dr-date-picker-control .dr-input,
+[data-preset="playful"] .dr-color-picker-control .dr-input,
+[data-preset="playful"] .dr-combobox-control .dr-input,
+[data-preset="playful"] .dr-multi-select-control .dr-input,
+[data-preset="playful"] .dr-tags-input-control .dr-input,
+[data-preset="playful"] .dr-input-group .dr-input,
+[data-preset="playful"] .dr-number-input-control .dr-input:focus-visible,
+[data-preset="playful"] .dr-date-picker-control .dr-input:focus-visible,
+[data-preset="playful"] .dr-color-picker-control .dr-input:focus-visible,
+[data-preset="playful"] .dr-combobox-control .dr-input:focus-visible,
+[data-preset="playful"] .dr-multi-select-control .dr-input:focus-visible,
+[data-preset="playful"] .dr-tags-input-control .dr-input:focus-visible,
+[data-preset="playful"] .dr-input-group .dr-input:focus-visible {
+  border: 0;
+  background-color: transparent;
+  background-image: none;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+/* NumberInput internal pieces — addon backgrounds, prefix/suffix
+   dividers, trigger-group divider, stepper-increment divider, and
+   stepper buttons default to neutral --border + bg-muted. Under
+   Playful's primary-tinted cloud vocabulary this reads OK at rest
+   but the steppers gain the universal .dr-btn bouncy hover scale
+   which looks odd attached to an input. Make the steppers transparent
+   and unify the divider tint with the wrapper. */
+[data-preset="playful"] .dr-number-input-addon {
+  background-color: transparent;
+}
+[data-preset="playful"] .dr-number-input-addon[data-side="prefix"] {
+  border-right-color: hsl(var(--primary) / 0.2);
+}
+[data-preset="playful"] .dr-number-input-addon[data-side="suffix"] {
+  border-left-color: hsl(var(--primary) / 0.2);
+}
+[data-preset="playful"] .dr-number-input-trigger-group {
+  border-left-color: hsl(var(--primary) / 0.2);
+}
+[data-preset="playful"]
+  .dr-number-input-trigger-group
+  .dr-number-input-stepper-increment {
+  border-bottom-color: hsl(var(--primary) / 0.2);
+}
+[data-preset="playful"]
+  .dr-number-input-trigger-group
+  .dr-number-input-stepper {
+  background-color: transparent;
+  border: 0;
+  box-shadow: none;
+  transform: none;
+}
+[data-preset="playful"]
+  .dr-number-input-trigger-group
+  .dr-number-input-stepper:hover:not(:disabled) {
+  background-color: hsl(var(--primary) / 0.1);
+  transform: none;
+}
