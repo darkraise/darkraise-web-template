@@ -120,10 +120,45 @@
 
 /* --- Frame axis: corner treatment on Card surfaces --------------- */
 
-/* `notched` — diagonal corner cuts via clip-path. Classic sci-fi
-   panel shape. 10px corner notch on top-left and bottom-right
-   (asymmetric, looks more "scanned-in" than full symmetry). */
-[data-preset="scifi"][data-scifi-frame="notched"] .dr-card {
+/* `notched` — diagonal corner cuts via clip-path on EVERY bordered
+   surface. Classic sci-fi panel shape. 10px corner notch on top-left
+   and bottom-right (asymmetric, looks more "scanned-in" than full
+   symmetry).
+
+   Tradeoff: clip-path clips the box-shadow too, so outer glow is
+   reduced where the notch cuts the corner. Inset glow and rest-glow
+   inner portion stay intact, so the hologram feel survives — just
+   the very tip of the bloom near notched corners is lost. Accept
+   this in exchange for the consistent panel shape language. */
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-card,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-popover-content,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-dialog-content,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-sheet-content,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-drawer-content,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-menu-content,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-menu-sub-content,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-menubar-content,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-menubar-sub-content,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-tooltip-content,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-hover-card-content,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-select-content,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-combobox-content,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-date-picker-content,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-color-picker-content,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-command,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-vdm-content,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-navigation-menu-content,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-floating-panel,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-calendar,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-alert,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-banner,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-toast,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-toolbar,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-menubar,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-tabs-list,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-listbox,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-segment-group,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-alert-dialog-content {
   clip-path: polygon(
     10px 0,
     100% 0,
@@ -133,6 +168,33 @@
     0 10px
   );
 }
+
+/* Smaller controls and inline elements get a tighter 6px notch so
+   the clip stays proportional to the element. Buttons get the same
+   6px notch via the existing rule below. */
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-input,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-textarea,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-select-trigger,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-badge,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-pagination-link,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-tabs-trigger,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-progress {
+  clip-path: polygon(
+    6px 0,
+    100% 0,
+    100% calc(100% - 6px),
+    calc(100% - 6px) 100%,
+    0 100%,
+    0 6px
+  );
+}
+
+/* NB: .dr-avatar, .dr-steps-indicator, .dr-switch-thumb, .dr-radio-
+   group-indicator, .dr-slider-thumb intentionally KEEP their hex /
+   skew / diamond clip-paths under notched. Those custom shapes are
+   the preset's signature for those specific controls; overriding
+   them with the notched-corner polygon would erase the shape
+   vocabulary the Revamp 2/3 commits established. */
 
 /* `bracketed` — full 4-corner targeting reticle. Each corner gets an
    L-bracket painted as 2 stroke segments. Painted directly on the
