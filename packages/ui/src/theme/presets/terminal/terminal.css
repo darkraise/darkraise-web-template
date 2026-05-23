@@ -367,3 +367,64 @@
   animation: terminal-spinner 800ms steps(1, end) infinite;
   color: hsl(var(--primary));
 }
+
+/* --- Phase 5: Data display --------------------------------------- */
+
+/* Table: monospace inherits; sharp 1px row separators; uppercase
+   header text for the CLI columnar feel. */
+[data-preset="terminal"] .dr-table thead th {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  border-bottom: 1px solid hsl(var(--primary) / 0.5);
+}
+[data-preset="terminal"] .dr-table tbody tr {
+  border-bottom: 1px solid hsl(var(--primary) / 0.15);
+}
+
+/* Tree-view: ASCII-style indent marks. Selected item gets the `> `
+   cursor prefix matching the rest of the preset. */
+[data-preset="terminal"]
+  .dr-tree-view-branch-control[data-selected="true"]::before,
+[data-preset="terminal"] .dr-tree-view-item[data-selected="true"]::before {
+  content: "> ";
+  font-weight: 700;
+  margin-right: 0.1em;
+}
+
+/* Listbox: monospace; uppercase items; focused item gets the cursor. */
+[data-preset="terminal"] .dr-listbox-item {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 500;
+  border-radius: 0;
+}
+[data-preset="terminal"] .dr-listbox-item[data-focused="true"]::before {
+  content: "> ";
+  font-weight: 700;
+}
+
+/* Calendar: sharp day cells, uppercase weekday labels. */
+[data-preset="terminal"] .dr-calendar-weekday {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
+[data-preset="terminal"] .dr-calendar-day-btn {
+  border-radius: 0;
+}
+
+/* Steps: indicator goes square; current step gets uppercase title +
+   the bracket prefix. */
+[data-preset="terminal"] .dr-steps-indicator {
+  border-radius: 0;
+}
+[data-preset="terminal"] .dr-steps-title {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+[data-preset="terminal"] .dr-steps-title[data-status="current"]::before {
+  content: "> ";
+  font-weight: 700;
+}

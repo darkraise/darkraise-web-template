@@ -285,3 +285,72 @@
   animation-duration: 700ms;
   color: hsl(var(--primary));
 }
+
+/* --- Phase 5: Data display --------------------------------------- */
+
+/* Table rows: gentle hover lift via background-color (cards already
+   handle the lift transform). */
+[data-preset="playful"] .dr-table tbody tr {
+  transition: background-color 200ms ease-out;
+}
+[data-preset="playful"] .dr-table tbody tr:hover {
+  background-color: hsl(var(--primary) / 0.06);
+}
+
+/* Tree-view items: bouncy expand + selected scale. */
+[data-preset="playful"] .dr-tree-view-branch-control,
+[data-preset="playful"] .dr-tree-view-item {
+  transition:
+    transform 200ms var(--playful-bounce),
+    background-color 150ms;
+}
+[data-preset="playful"] .dr-tree-view-branch-control:hover,
+[data-preset="playful"] .dr-tree-view-item:hover {
+  transform: translateX(2px);
+}
+[data-preset="playful"] .dr-tree-view-branch-control[data-selected="true"],
+[data-preset="playful"] .dr-tree-view-item[data-selected="true"] {
+  transform: translateX(3px);
+}
+
+/* Listbox items: bouncy hover. */
+[data-preset="playful"] .dr-listbox-item {
+  transition:
+    transform 200ms var(--playful-bounce),
+    background-color 150ms;
+}
+[data-preset="playful"] .dr-listbox-item[data-focused="true"] {
+  transform: translateX(3px);
+}
+
+/* Calendar day cells: bouncy selection + hover. */
+[data-preset="playful"] .dr-calendar-day-btn {
+  transition:
+    transform 200ms var(--playful-bounce),
+    background-color 150ms,
+    box-shadow 150ms;
+}
+[data-preset="playful"] .dr-calendar-day-btn:hover {
+  transform: scale(1.1);
+}
+[data-preset="playful"] .dr-calendar-day-btn[data-selected-single="true"],
+[data-preset="playful"] .dr-calendar-day-btn[data-range-start="true"],
+[data-preset="playful"] .dr-calendar-day-btn[data-range-end="true"],
+[data-preset="playful"] .dr-calendar-day-btn[data-range-single="true"] {
+  transform: scale(1.05);
+}
+
+/* Steps: indicator bounces when status changes. Current step pops
+   slightly to draw the eye. */
+[data-preset="playful"] .dr-steps-indicator {
+  transition:
+    transform 250ms var(--playful-bounce),
+    background-color 250ms,
+    border-color 250ms;
+}
+[data-preset="playful"] .dr-steps-indicator[data-status="current"] {
+  transform: scale(1.15);
+}
+[data-preset="playful"] .dr-steps-indicator[data-status="complete"] {
+  transform: scale(1.05);
+}

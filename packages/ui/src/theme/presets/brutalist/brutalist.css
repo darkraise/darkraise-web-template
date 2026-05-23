@@ -295,3 +295,63 @@
 [data-preset="brutalist"] .dr-progress-indicator {
   border-radius: 0;
 }
+
+/* --- Phase 5: Data display --------------------------------------- */
+
+/* Table: thick foreground row separators, uppercase block header. */
+[data-preset="brutalist"] .dr-table thead th {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 900;
+  border-bottom: 2px solid hsl(var(--foreground));
+}
+[data-preset="brutalist"] .dr-table tbody tr {
+  border-bottom: 1px solid hsl(var(--foreground));
+}
+
+/* Tree-view: thick foreground borders on selected items, sharp. */
+[data-preset="brutalist"] .dr-tree-view-branch-control[data-selected="true"],
+[data-preset="brutalist"] .dr-tree-view-item[data-selected="true"] {
+  border-radius: 0;
+  background-color: hsl(var(--foreground));
+  color: hsl(var(--background));
+}
+
+/* Listbox: sharp items, uppercase. */
+[data-preset="brutalist"] .dr-listbox {
+  border-radius: 0;
+  border-width: 2px;
+  border-color: hsl(var(--foreground));
+}
+[data-preset="brutalist"] .dr-listbox-item {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+  border-radius: 0;
+}
+
+/* Calendar: thick borders, sharp day cells, uppercase weekday block. */
+[data-preset="brutalist"] .dr-calendar {
+  border-radius: 0;
+  border: 2px solid hsl(var(--foreground));
+}
+[data-preset="brutalist"] .dr-calendar-weekday {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 900;
+}
+[data-preset="brutalist"] .dr-calendar-day-btn {
+  border-radius: 0;
+}
+
+/* Steps: square indicator + uppercase block titles. */
+[data-preset="brutalist"] .dr-steps-indicator {
+  border-radius: 0;
+  border-width: 2px;
+  border-color: hsl(var(--foreground));
+}
+[data-preset="brutalist"] .dr-steps-title {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 800;
+}
