@@ -33,7 +33,10 @@ describe("glass preset", () => {
     expect(glass.axes.blur.default).toBe("medium")
   })
 
-  it("ownedTokenKeys covers the per-preset token surface", () => {
+  it("ownedTokenKeys lists only what generateTokens actually writes", () => {
+    // --backdrop-blur / --backdrop-filter / --surface-opacity are set
+    // by glass.css attribute selectors (CSS-only), so they self-clean
+    // via the cascade and don't belong in this list.
     expect(glass.ownedTokenKeys).toEqual([
       "--fog-05",
       "--fog-10",
@@ -44,9 +47,6 @@ describe("glass preset", () => {
       "--inset-hi",
       "--inset-hi-strong",
       "--inset-hi-button",
-      "--backdrop-blur",
-      "--backdrop-filter",
-      "--surface-opacity",
       "--border",
       "--accent",
       "--accent-foreground",

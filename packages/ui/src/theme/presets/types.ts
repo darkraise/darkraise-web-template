@@ -97,9 +97,19 @@ export interface ThemePreset<
   ) => Record<string, string>
 
   /**
-   * Keys that `generateTokens` may write. Provider uses this list to call
-   * `removeProperty` on the documentElement when the user switches AWAY
-   * from this preset, so leftover tokens don't bleed into the next preset.
+   * Keys that `generateTokens` may write to documentElement.style. The
+   * provider calls `removeProperty` on each of these when the user
+   * switches AWAY from this preset, so leftover inline-style values
+   * don't bleed into the next preset.
+   *
+   * IMPORTANT: list only inline-style writes from `generateTokens`
+   * here. Tokens set by the preset's CSS attribute selectors (e.g.
+   * `[data-preset="..."] { --x: ... }` in <preset>.css) self-clean
+   * via the CSS cascade when the preset's data attribute changes —
+   * listing them here is harmless but misleading. Tokens written by
+   * the engine from `surfaceRecipe.overrides` (shadowCard /
+   * shadowDropdown) also don't need to be listed because the engine
+   * overwrites them on every applyTheme with the new preset's recipe.
    */
   ownedTokenKeys?: readonly string[]
 

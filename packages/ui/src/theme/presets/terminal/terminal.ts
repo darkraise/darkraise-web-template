@@ -78,6 +78,12 @@ export const terminal: ThemePreset<TerminalAxes> = {
     }
   },
 
+  // Only what generateTokens writes. The phosphor glow tokens
+  // (--terminal-text-shadow, --card-elevation-*, --shadow-button,
+  // --affordance-glow*, --surface-overlay-*) are set by terminal.css
+  // attribute selectors, which self-clean via the cascade. --shadow-
+  // card and --shadow-dropdown come from surfaceRecipe.overrides
+  // (engine inline-style writes) and are overwritten on switch-away.
   ownedTokenKeys: [
     "--accent",
     "--accent-foreground",
@@ -87,17 +93,5 @@ export const terminal: ThemePreset<TerminalAxes> = {
     "--radius",
     "--radius-button",
     "--font-sans",
-    "--terminal-text-shadow",
-    "--card-elevation-low",
-    "--card-elevation-medium",
-    "--card-elevation-high",
-    "--shadow-button",
-    "--shadow-card",
-    "--shadow-dropdown",
-    "--affordance-glow",
-    "--affordance-glow-bottom",
-    "--surface-overlay-shadow",
-    "--surface-overlay-bg",
-    "--surface-overlay-border",
   ] as const,
 }

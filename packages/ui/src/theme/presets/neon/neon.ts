@@ -97,22 +97,19 @@ export const neon: ThemePreset<NeonAxes> = {
     },
   },
 
+  // Only what generateTokens writes. Every glow-bearing token Neon
+  // owns (--elevation-*, --card-elevation-*, --shadow-button,
+  // --affordance-glow*, --neon-text-shadow, --surface-overlay-*) is
+  // set by neon.css attribute selectors, which self-clean via the
+  // cascade. --shadow-card and --shadow-dropdown come from
+  // surfaceRecipe.overrides (engine inline-style writes) and the
+  // engine overwrites them with the next preset's recipe values on
+  // switch-away — no manual cleanup needed.
   ownedTokenKeys: [
     "--accent",
     "--accent-foreground",
     "--muted",
     "--secondary",
     "--secondary-foreground",
-    "--elevation-flat",
-    "--elevation-low",
-    "--elevation-medium",
-    "--elevation-high",
-    "--elevation-current",
-    "--card-elevation-low",
-    "--card-elevation-medium",
-    "--card-elevation-high",
-    "--shadow-button",
-    "--shadow-card",
-    "--shadow-dropdown",
   ] as const,
 }

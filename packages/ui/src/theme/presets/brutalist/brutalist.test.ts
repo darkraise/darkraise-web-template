@@ -29,14 +29,33 @@ describe("brutalist preset", () => {
     expect(brutalist.hiddenCommonAxes).toEqual(["elevation", "buttonElevation"])
   })
 
-  it("generateTokens returns empty (no semantic token rebinds)", () => {
+  it("generateTokens writes hard-offset --shadow-card and --shadow-dropdown per offset level", () => {
     const generateTokens = brutalist.generateTokens
     if (!generateTokens) throw new Error("generateTokens missing")
-    const tokens = generateTokens(
-      {} as unknown as Parameters<typeof generateTokens>[0],
-      { offset: "normal" },
-    )
-    expect(tokens).toEqual({})
+    const common = {} as unknown as Parameters<typeof generateTokens>[0]
+
+    // Both keys must be written inline (rather than via brutalist.css)
+    // because surfaceRecipe.overrides also declares them — the engine
+    // writes those as inline style, which would beat any CSS selector.
+    expect(generateTokens(common, { offset: "subtle" })).toEqual({
+      "--shadow-card": "2px 2px 0 0 hsl(var(--foreground))",
+      "--shadow-dropdown": "3px 3px 0 0 hsl(var(--foreground))",
+    })
+    expect(generateTokens(common, { offset: "normal" })).toEqual({
+      "--shadow-card": "4px 4px 0 0 hsl(var(--foreground))",
+      "--shadow-dropdown": "6px 6px 0 0 hsl(var(--foreground))",
+    })
+    expect(generateTokens(common, { offset: "extreme" })).toEqual({
+      "--shadow-card": "8px 8px 0 0 hsl(var(--foreground))",
+      "--shadow-dropdown": "10px 10px 0 0 hsl(var(--foreground))",
+    })
+  })
+
+  it("ownedTokenKeys lists only the two generateTokens-written shadow keys", () => {
+    expect(brutalist.ownedTokenKeys).toEqual([
+      "--shadow-card",
+      "--shadow-dropdown",
+    ])
   })
 
   describe("surfaceRecipe", () => {

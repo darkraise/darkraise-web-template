@@ -60,24 +60,16 @@ describe("neon preset", () => {
     expect(tokens["--muted-foreground"]).toBeUndefined()
   })
 
-  it("ownedTokenKeys covers the rebound accent + muted + secondary + elevation + shadow tokens", () => {
+  it("ownedTokenKeys lists only what generateTokens actually writes", () => {
+    // All glow tokens are CSS-driven (self-clean via cascade) and the
+    // engine overwrites --shadow-card / --shadow-dropdown on switch.
+    // Only the 5 semantic-token rebinds need explicit cleanup.
     expect(neon.ownedTokenKeys).toEqual([
       "--accent",
       "--accent-foreground",
       "--muted",
       "--secondary",
       "--secondary-foreground",
-      "--elevation-flat",
-      "--elevation-low",
-      "--elevation-medium",
-      "--elevation-high",
-      "--elevation-current",
-      "--card-elevation-low",
-      "--card-elevation-medium",
-      "--card-elevation-high",
-      "--shadow-button",
-      "--shadow-card",
-      "--shadow-dropdown",
     ])
   })
 

@@ -22,27 +22,53 @@ describe("playful preset", () => {
     expect(playful.supportedModes).toBeUndefined()
   })
 
-  it("hides elevation + buttonElevation common axes", () => {
-    expect(playful.hiddenCommonAxes).toEqual(["elevation", "buttonElevation"])
+  it("hides elevation + buttonElevation + radius common axes", () => {
+    expect(playful.hiddenCommonAxes).toEqual([
+      "elevation",
+      "buttonElevation",
+      "radius",
+    ])
   })
 
-  it("generateTokens forces generous radius and rebinds accent/muted/secondary", () => {
+  it("generateTokens forces generous radius and mode-aware accent/muted/secondary", () => {
     const generateTokens = playful.generateTokens
     if (!generateTokens) throw new Error("generateTokens missing")
-    const tokens = generateTokens(
-      {} as unknown as Parameters<typeof generateTokens>[0],
+
+    const dark = generateTokens(
+      { mode: "dark" } as unknown as Parameters<typeof generateTokens>[0],
       { pop: "lively" },
     )
-    expect(tokens["--radius"]).toBe("1rem")
-    // --radius-button must also be forced so Buttons (which read it
-    // directly) inherit Playful's bubble radius rather than tracking
-    // the hidden data-radius axis.
-    expect(tokens["--radius-button"]).toBe("1rem")
-    expect(tokens["--accent"]).toBe("var(--primary) / 0.18")
-    expect(tokens["--accent-foreground"]).toBe("var(--primary)")
-    expect(tokens["--muted"]).toBe("var(--primary) / 0.07")
-    expect(tokens["--secondary"]).toBe("var(--primary) / 0.14")
-    expect(tokens["--secondary-foreground"]).toBe("var(--primary)")
+    expect(dark["--radius"]).toBe("1rem")
+    expect(dark["--radius-button"]).toBe("1rem")
+    expect(dark["--accent"]).toBe("var(--primary) / 0.2")
+    expect(dark["--accent-foreground"]).toBe("var(--primary)")
+    expect(dark["--muted"]).toBe("var(--primary) / 0.08")
+    expect(dark["--secondary"]).toBe("var(--primary) / 0.16")
+    expect(dark["--secondary-foreground"]).toBe("var(--primary)")
+
+    const light = generateTokens(
+      { mode: "light" } as unknown as Parameters<typeof generateTokens>[0],
+      { pop: "lively" },
+    )
+    // Light-mode alphas are lower (white surfaces register tint at
+    // smaller alpha values than near-black surfaces).
+    expect(light["--accent"]).toBe("var(--primary) / 0.14")
+    expect(light["--muted"]).toBe("var(--primary) / 0.06")
+    expect(light["--secondary"]).toBe("var(--primary) / 0.11")
+  })
+
+  it("ownedTokenKeys lists only what generateTokens actually writes", () => {
+    // No CSS-only tokens — those self-clean via the cascade. Just the
+    // 2 radius keys + 5 accent/muted/secondary keys.
+    expect(playful.ownedTokenKeys).toEqual([
+      "--radius",
+      "--radius-button",
+      "--accent",
+      "--accent-foreground",
+      "--muted",
+      "--secondary",
+      "--secondary-foreground",
+    ])
   })
 
   describe("surfaceRecipe", () => {

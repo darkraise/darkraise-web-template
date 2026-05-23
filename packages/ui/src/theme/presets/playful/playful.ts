@@ -1,5 +1,5 @@
 // packages/ui/src/theme/presets/playful/playful.ts
-import type { ThemePreset } from "../types"
+import type { ThemePreset, CommonAxisInput } from "../types"
 
 type PlayfulAxes = {
   pop: readonly ["subtle", "lively", "exuberant"]
@@ -29,7 +29,11 @@ export const playful: ThemePreset<PlayfulAxes> = {
     },
   },
 
-  hiddenCommonAxes: ["elevation", "buttonElevation"],
+  // Hides Elevation + ButtonElevation because the `pop` axis takes their
+  // place with primary-tinted shadow recipes. Also hides Radius because
+  // generateTokens forces --radius/--radius-button to 1rem unconditionally,
+  // so the Radius picker would have zero effect under Playful.
+  hiddenCommonAxes: ["elevation", "buttonElevation", "radius"],
 
   surfaceRecipe: {
     surfaceRaised: (s, m) => (m === "light" ? "0 0% 100%" : s[900]),
@@ -45,27 +49,42 @@ export const playful: ThemePreset<PlayfulAxes> = {
     },
   },
 
-  generateTokens() {
+  generateTokens(common: CommonAxisInput) {
+    // Mode-aware alpha treatment (same pattern as Glass). Light-mode
+    // surfaces are mostly white, so a low alpha reads cleanly as a
+    // primary tint; dark-mode surfaces are near-black and need a touch
+    // more alpha to register visibly. Single-value alphas would either
+    // look washed-out in dark or too saturated in light.
+    //
+    // Playful runs slightly bolder than Glass at every tier so the
+    // aesthetic reads as energetic rather than restrained.
+    const accentAlpha = common.mode === "light" ? 0.14 : 0.2
+    const mutedAlpha = common.mode === "light" ? 0.06 : 0.08
+    const secondaryAlpha = common.mode === "light" ? 0.11 : 0.16
+
     return {
       // Generous radius — the rounded "bubble" feel is core to Playful.
       // Overrides the [data-radius="..."] CSS selectors via inline
       // style precedence. BOTH --radius (Tailwind's rounded-*) AND
       // --radius-button (read directly by Buttons) are forced so
       // Buttons + ButtonGroup outer corners match Playful's bubble
-      // aesthetic rather than tracking the hidden data-radius axis.
+      // aesthetic.
       "--radius": "1rem",
       "--radius-button": "1rem",
-      // Hover/selected states get a vibrant primary tint, slightly
-      // stronger than Glass and Neon so the playful aesthetic reads
-      // as energetic rather than restrained.
-      "--accent": "var(--primary) / 0.18",
+      "--accent": `var(--primary) / ${accentAlpha}`,
       "--accent-foreground": "var(--primary)",
-      "--muted": "var(--primary) / 0.07",
-      "--secondary": "var(--primary) / 0.14",
+      "--muted": `var(--primary) / ${mutedAlpha}`,
+      "--secondary": `var(--primary) / ${secondaryAlpha}`,
       "--secondary-foreground": "var(--primary)",
     }
   },
 
+  // Only what generateTokens actually writes. CSS-set tokens
+  // (--card-elevation-*, --shadow-*, --affordance-glow*,
+  // --surface-overlay-shadow) self-clean via the CSS cascade when
+  // [data-preset="playful"] stops matching, so listing them here is
+  // misleading. Per the type docstring: "Keys that generateTokens
+  // may write."
   ownedTokenKeys: [
     "--radius",
     "--radius-button",
@@ -74,14 +93,5 @@ export const playful: ThemePreset<PlayfulAxes> = {
     "--muted",
     "--secondary",
     "--secondary-foreground",
-    "--card-elevation-low",
-    "--card-elevation-medium",
-    "--card-elevation-high",
-    "--shadow-button",
-    "--shadow-card",
-    "--shadow-dropdown",
-    "--affordance-glow",
-    "--affordance-glow-bottom",
-    "--surface-overlay-shadow",
   ] as const,
 }

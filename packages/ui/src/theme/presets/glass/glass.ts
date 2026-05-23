@@ -140,6 +140,10 @@ export const glass: ThemePreset<GlassAxes> = {
     return tokens
   },
 
+  // Only what generateTokens writes. --backdrop-blur, --backdrop-filter,
+  // and --surface-opacity are set by glass.css attribute selectors
+  // (CSS-only), so they self-clean via the cascade when the preset
+  // changes; listing them here is misleading per the docstring contract.
   ownedTokenKeys: [
     "--fog-05",
     "--fog-10",
@@ -150,9 +154,6 @@ export const glass: ThemePreset<GlassAxes> = {
     "--inset-hi",
     "--inset-hi-strong",
     "--inset-hi-button",
-    "--backdrop-blur",
-    "--backdrop-filter",
-    "--surface-opacity",
     "--border",
     "--accent",
     "--accent-foreground",

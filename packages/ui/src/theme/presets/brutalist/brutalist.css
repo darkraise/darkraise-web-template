@@ -13,13 +13,19 @@
 
 /* Subtle — 2px / 3px / 4px offsets. The tamest brutalist treatment;
    still readable as offset rather than blur, but doesn't dominate. */
+/* Note: --shadow-card and --shadow-dropdown live in brutalist.ts
+   generateTokens, NOT here. The engine writes both via inline-style
+   from surfaceRecipe.overrides (every preset must populate them in
+   the recipe). Inline style beats any CSS selector, so the CSS
+   would lose to "none" if it lived here. generateTokens writes
+   inline too, which wins. The other shadow tokens (card-elevation,
+   shadow-button, surface-overlay-shadow) aren't in surfaceRecipe.
+   overrides so CSS works for them. */
 [data-preset="brutalist"][data-brutalist-offset="subtle"] {
   --card-elevation-low: 2px 2px 0 0 hsl(var(--foreground));
   --card-elevation-medium: 3px 3px 0 0 hsl(var(--foreground));
   --card-elevation-high: 4px 4px 0 0 hsl(var(--foreground));
   --shadow-button: 2px 2px 0 0 hsl(var(--foreground));
-  --shadow-card: 2px 2px 0 0 hsl(var(--foreground));
-  --shadow-dropdown: 3px 3px 0 0 hsl(var(--foreground));
   --surface-overlay-shadow: 3px 3px 0 0 hsl(var(--foreground));
 }
 
@@ -29,8 +35,6 @@
   --card-elevation-medium: 6px 6px 0 0 hsl(var(--foreground));
   --card-elevation-high: 10px 10px 0 0 hsl(var(--foreground));
   --shadow-button: 3px 3px 0 0 hsl(var(--foreground));
-  --shadow-card: 4px 4px 0 0 hsl(var(--foreground));
-  --shadow-dropdown: 6px 6px 0 0 hsl(var(--foreground));
   --surface-overlay-shadow: 6px 6px 0 0 hsl(var(--foreground));
 }
 
@@ -42,8 +46,6 @@
   --card-elevation-medium: 12px 12px 0 0 hsl(var(--foreground));
   --card-elevation-high: 16px 16px 0 0 hsl(var(--foreground));
   --shadow-button: 5px 5px 0 0 hsl(var(--foreground));
-  --shadow-card: 8px 8px 0 0 hsl(var(--foreground));
-  --shadow-dropdown: 10px 10px 0 0 hsl(var(--foreground));
   --surface-overlay-shadow: 10px 10px 0 0 hsl(var(--foreground));
 }
 

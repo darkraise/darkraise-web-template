@@ -48,20 +48,40 @@ export const brutalist: ThemePreset<BrutalistAxes> = {
     },
   },
 
-  generateTokens() {
-    // Hover/selected tinting kept restrained — brutalism is high-
-    // contrast monochrome, not preset-tinted. Inherits Default's
-    // surface-tier behavior by NOT returning rebinds for --accent etc.
-    return {}
+  generateTokens(_common, axes) {
+    // Per-offset shadow recipe. We have to write --shadow-card and
+    // --shadow-dropdown HERE (inline style) rather than via CSS
+    // attribute selectors because surfaceRecipe.overrides above
+    // declares them too — the engine writes those overrides as
+    // inline style, which beats any CSS rule regardless of
+    // specificity. To get the hard-offset shadow to actually win we
+    // also have to write inline, which we do via generateTokens.
+    //
+    // The OTHER shadow tokens Brutalist sets (--card-elevation-*,
+    // --shadow-button, --surface-overlay-shadow, --affordance-glow*)
+    // can stay in brutalist.css because nothing in surfaceRecipe.
+    // overrides touches them — CSS wins for those by default.
+    //
+    // Hover/selected tinting is intentionally NOT rebound here —
+    // brutalism is high-contrast monochrome, not preset-tinted. The
+    // bold border + inverted-color treatments at the component level
+    // signal active state on their own.
+    const offsetPx = {
+      subtle: { card: 2, dropdown: 3 },
+      normal: { card: 4, dropdown: 6 },
+      extreme: { card: 8, dropdown: 10 },
+    } as const
+    const o = offsetPx[axes.offset]
+    const stroke = (n: number) => `${n}px ${n}px 0 0 hsl(var(--foreground))`
+    return {
+      "--shadow-card": stroke(o.card),
+      "--shadow-dropdown": stroke(o.dropdown),
+    }
   },
 
-  ownedTokenKeys: [
-    "--card-elevation-low",
-    "--card-elevation-medium",
-    "--card-elevation-high",
-    "--shadow-button",
-    "--shadow-card",
-    "--shadow-dropdown",
-    "--surface-overlay-shadow",
-  ] as const,
+  // Only what generateTokens actually writes. The remaining shadow
+  // tokens Brutalist binds via brutalist.css (--card-elevation-*,
+  // --shadow-button, --surface-overlay-shadow, --affordance-glow*)
+  // are CSS-only and self-clean via the cascade.
+  ownedTokenKeys: ["--shadow-card", "--shadow-dropdown"] as const,
 }
