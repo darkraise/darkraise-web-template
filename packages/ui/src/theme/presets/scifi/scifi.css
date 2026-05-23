@@ -374,7 +374,9 @@
 
 /* Buttons: 1px primary border, uppercase, monospace inherits. Glow
    intensifies on hover via the affordance token. Hover adds the
-   notched-corner clip if frame=notched (matches Card treatment). */
+   notched-corner clip if frame=notched (matches Card treatment).
+   This is the BASE — secondary/outline/ghost inherit it as-is, while
+   default and destructive get variant-specific overrides below. */
 [data-preset="scifi"] .dr-btn {
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -388,6 +390,41 @@
   border-color: hsl(var(--primary));
   background-color: hsl(var(--primary) / 0.12);
   box-shadow: var(--shadow-button);
+}
+
+/* Default variant — solid primary fill (the prominent CTA). This
+   swaps with secondary, which keeps the outlined/faint treatment
+   from the base rule above. Together they give an explicit
+   primary-action vs supporting-action visual hierarchy instead of
+   every button reading the same. */
+[data-preset="scifi"] .dr-btn[data-variant="default"] {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border-color: hsl(var(--primary));
+}
+[data-preset="scifi"] .dr-btn[data-variant="default"]:hover:not(:disabled) {
+  background-color: hsl(var(--primary) / 0.85);
+  border-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+/* Destructive variant — solid destructive fill so the danger signal
+   carries the destructive hue instead of the universal primary tint.
+   Hover glow is destructive-tinted too (overrides the universal
+   active-glow rule below which would otherwise paint a primary halo
+   on a red button). */
+[data-preset="scifi"] .dr-btn[data-variant="destructive"] {
+  background-color: hsl(var(--destructive));
+  color: hsl(var(--destructive-foreground));
+  border-color: hsl(var(--destructive));
+}
+[data-preset="scifi"] .dr-btn[data-variant="destructive"]:hover:not(:disabled) {
+  background-color: hsl(var(--destructive) / 0.85);
+  border-color: hsl(var(--destructive));
+  color: hsl(var(--destructive-foreground));
+  box-shadow:
+    0 0 4px hsl(var(--destructive) / 0.55),
+    0 0 14px hsl(var(--destructive) / 0.32);
 }
 [data-preset="scifi"][data-scifi-frame="notched"]
   .dr-btn:not([data-size="icon"]) {
