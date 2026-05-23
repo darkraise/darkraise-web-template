@@ -184,6 +184,46 @@
   );
 }
 
+/* Notched diagonal cuts vs. rectangular edges: the CSS `border` only
+   renders along the original rectangular box edges. clip-path masks
+   the box AFTER the border is rendered, so on the diagonal cuts the
+   border is clipped to nothing — leaving the diagonals with only the
+   outer box-shadow halo while the rectangular edges show border +
+   halo stacked. Visually that reads as "rectangular edges thicker,
+   diagonals thinner" — the user's exact complaint.
+
+   For overlay-tier surfaces (popover, dialog, dropdown, menu, etc.)
+   the surface-overlay-shadow / card-elevation-high token chain already
+   includes a `0 0 0 1px primary` halo that follows the clipped polygon
+   uniformly. Strip the CSS border on those so the halo alone draws
+   the perimeter, and every edge — rectangular or diagonal — ends up
+   the same thickness.
+
+   Not applied to .dr-card or to surfaces with their own non-halo
+   shadow chain (.dr-toast, .dr-banner, .dr-alert, .dr-tabs-list,
+   .dr-listbox, .dr-segment-group, .dr-floating-panel, etc.) — those
+   need a separate fix if the same inconsistency shows up. */
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-popover-content,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-dialog-content,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-alert-dialog-content,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-sheet-content,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-drawer-content,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-menu-content,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-menu-sub-content,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-menubar-content,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-menubar-sub-content,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-tooltip-content,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-hover-card-content,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-select-content,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-combobox-content,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-date-picker-content,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-color-picker-content,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-command,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-vdm-content,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-navigation-menu-content {
+  border-color: transparent;
+}
+
 /* Smaller controls and inline elements get a tighter 6px notch so
    the clip stays proportional to the element. Buttons get the same
    6px notch via the existing rule below.
