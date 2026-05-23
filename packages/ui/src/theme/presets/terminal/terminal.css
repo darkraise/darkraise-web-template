@@ -113,3 +113,81 @@
   --surface-overlay-bg: hsl(var(--background) / 0.92);
   --surface-overlay-border: hsl(var(--primary) / 0.4);
 }
+
+/* --- Component overhauls ------------------------------------------ */
+
+/* Headings: uppercase with extra letter-spacing for the terminal-banner
+   feel. h1-h6 sit on the body's monospace stack already (via the
+   --font-sans rebind in generateTokens). */
+[data-preset="terminal"] h1,
+[data-preset="terminal"] h2,
+[data-preset="terminal"] h3 {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Buttons: uppercase text wrapped in [brackets] so they read as
+   CLI command tokens. Icon-only buttons skip the brackets (they'd
+   look like empty `[]`). */
+[data-preset="terminal"] .dr-btn {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+  border-width: 1px;
+  border-style: solid;
+}
+[data-preset="terminal"] .dr-btn:not([data-size="icon"])::before {
+  content: "[";
+  margin-right: 0.2em;
+  opacity: 0.65;
+}
+[data-preset="terminal"] .dr-btn:not([data-size="icon"])::after {
+  content: "]";
+  margin-left: 0.2em;
+  opacity: 0.65;
+}
+
+/* Cards: 1px primary-tinted border (default border-color is too dim
+   in terminal's near-black surfaces; primary at 35% reads as the
+   CRT bezel). */
+[data-preset="terminal"] .dr-card {
+  border-width: 1px;
+  border-style: solid;
+  border-color: hsl(var(--primary) / 0.35);
+}
+
+/* Inputs: monospace inherits from --font-sans; thinner 1px primary
+   border at rest; primary border + primary caret on focus. */
+[data-preset="terminal"] .dr-input,
+[data-preset="terminal"] .dr-textarea {
+  border-width: 1px;
+  border-color: hsl(var(--primary) / 0.35);
+  background: transparent;
+}
+[data-preset="terminal"] .dr-input:focus-visible,
+[data-preset="terminal"] .dr-textarea:focus-visible {
+  border-color: hsl(var(--primary));
+  caret-color: hsl(var(--primary));
+}
+
+/* Badge: uppercase + monospace inherits; 1px border replaces fill so
+   badges read as CLI tags rather than chips. */
+[data-preset="terminal"] .dr-badge {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+  border-width: 1px;
+}
+
+/* Tabs: active tab gets a `> ` prompt prefix so the selected tab
+   reads as "the cursor is here." Underline variant adds the prefix
+   without disturbing the underline. */
+[data-preset="terminal"] .dr-tabs-trigger {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}
+[data-preset="terminal"] .dr-tabs-trigger[data-state="active"]::before {
+  content: "> ";
+  font-weight: 700;
+}

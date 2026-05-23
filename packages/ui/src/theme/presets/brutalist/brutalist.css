@@ -69,3 +69,85 @@
   transition-duration: 0ms !important;
   animation-duration: 0ms !important;
 }
+
+/* --- Component overhauls ------------------------------------------ */
+
+/* Headings: huge, all-caps, ultra-bold. Brutalism comes from
+   typographic weight as much as from borders + shadows. */
+[data-preset="brutalist"] h1,
+[data-preset="brutalist"] h2,
+[data-preset="brutalist"] h3 {
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  font-weight: 900;
+  line-height: 0.95;
+}
+
+/* Buttons: 2px foreground-colored borders, uppercase block-letter
+   text, no rounding regardless of the data-radius axis. Active state
+   uses the existing hard-offset shadow that lives on --shadow-button. */
+[data-preset="brutalist"] .dr-btn {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 800;
+  border-width: 2px;
+  border-style: solid;
+  border-color: hsl(var(--foreground));
+  border-radius: 0;
+}
+[data-preset="brutalist"] .dr-btn[data-variant="default"] {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+[data-preset="brutalist"] .dr-btn[data-variant="outline"] {
+  background-color: hsl(var(--background));
+}
+
+/* Cards: 3px foreground border, sharp corners, no border-radius. */
+[data-preset="brutalist"] .dr-card {
+  border-width: 3px;
+  border-style: solid;
+  border-color: hsl(var(--foreground));
+  border-radius: 0;
+}
+
+/* Inputs: 2px foreground border. Focus uses a doubled border via
+   box-shadow inset rather than the usual subtle ring. */
+[data-preset="brutalist"] .dr-input,
+[data-preset="brutalist"] .dr-textarea {
+  border-width: 2px;
+  border-style: solid;
+  border-color: hsl(var(--foreground));
+  border-radius: 0;
+  font-weight: 500;
+}
+[data-preset="brutalist"] .dr-input:focus-visible,
+[data-preset="brutalist"] .dr-textarea:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px hsl(var(--foreground));
+}
+
+/* Badge: block-letter caps, 2px border, no rounding. */
+[data-preset="brutalist"] .dr-badge {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 800;
+  border-width: 2px;
+  border-color: hsl(var(--foreground));
+  border-radius: 0;
+}
+
+/* Tabs: uppercase block-letter triggers. Default variant's active fill
+   stays primary so it reads as a hard-edged colored block sitting on
+   the foreground-bordered tab list. */
+[data-preset="brutalist"] .dr-tabs-trigger {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 800;
+  border-radius: 0;
+}
+[data-preset="brutalist"] .dr-tabs-list {
+  border-radius: 0;
+  border-width: 2px;
+  border-color: hsl(var(--foreground));
+}

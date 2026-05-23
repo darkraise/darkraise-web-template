@@ -63,3 +63,75 @@
   --surface-overlay-bg: hsl(var(--popover));
   --surface-overlay-border: hsl(var(--border));
 }
+
+/* --- Component overhauls ------------------------------------------ */
+
+/* Bouncy easing reused by every interactive transform below. */
+/* stylelint-disable-next-line declaration-block-no-duplicate-custom-properties */
+[data-preset="playful"] {
+  --playful-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Buttons: scale up on hover, scale down on press. The overshoot
+   easing makes the snap feel cheerful rather than mechanical. */
+[data-preset="playful"] .dr-btn {
+  transition:
+    transform 200ms var(--playful-bounce),
+    background-color 150ms,
+    box-shadow 200ms;
+}
+[data-preset="playful"] .dr-btn:hover:not(:disabled):not(:active) {
+  transform: scale(1.03);
+}
+[data-preset="playful"] .dr-btn:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+/* Cards: lift on hover with shadow growth. The 1rem radius (forced
+   in generateTokens) reads as friendly already; the hover lift adds
+   the "this card is clickable / inviting" cue. */
+[data-preset="playful"] .dr-card {
+  transition:
+    transform 250ms var(--playful-bounce),
+    box-shadow 250ms ease-out;
+}
+[data-preset="playful"] .dr-card:hover {
+  transform: translateY(-3px);
+}
+
+/* Inputs: focus pulses the shadow outward (uses the existing
+   --shadow-button which is primary-tinted under Playful). */
+[data-preset="playful"] .dr-input,
+[data-preset="playful"] .dr-textarea {
+  transition:
+    transform 200ms var(--playful-bounce),
+    box-shadow 200ms ease-out,
+    border-color 150ms;
+}
+[data-preset="playful"] .dr-input:focus-visible,
+[data-preset="playful"] .dr-textarea:focus-visible {
+  box-shadow:
+    0 0 0 3px hsl(var(--primary) / 0.18),
+    var(--shadow-button);
+}
+
+/* Badge: bouncy hover scale + slight rotation for personality. */
+[data-preset="playful"] .dr-badge {
+  transition: transform 200ms var(--playful-bounce);
+}
+[data-preset="playful"] .dr-badge:hover {
+  transform: scale(1.06) rotate(-1.5deg);
+}
+
+/* Tabs: active tab pops in with the bounce easing. The default-variant
+   underlying fill (primary) already handles color; this just makes
+   the swap feel springy. */
+[data-preset="playful"] .dr-tabs-trigger {
+  transition:
+    transform 200ms var(--playful-bounce),
+    background-color 200ms,
+    color 200ms;
+}
+[data-preset="playful"] .dr-tabs-trigger[data-state="active"] {
+  transform: scale(1.04);
+}
