@@ -46,9 +46,19 @@
   --card-elevation-low: 0 0 8px hsl(var(--primary) / 0.18);
   --card-elevation-medium: 0 0 12px hsl(var(--primary) / 0.28);
   --card-elevation-high:
-    0 0 16px hsl(var(--primary) / 0.4), 0 0 36px hsl(var(--primary) / 0.18);
+    inset 0 0 20px hsl(var(--primary) / 0.14),
+    0 0 8px hsl(var(--primary) / 0.45), 0 0 18px hsl(var(--primary) / 0.3),
+    0 0 38px hsl(var(--primary) / 0.15);
+  /* Overlay/modal screen glow — popover, dialog, sheet, drawer,
+     tooltip, menu, etc. The inset emission makes the panel look
+     LIT FROM WITHIN like an LCD/holographic projection; the outer
+     bloom is the projector throwing light into the surrounding
+     space. Without inset emission, overlays read as "dark cards
+     with a glowing border"; with it, they read as "screens." */
   --surface-overlay-shadow:
-    0 0 0 1px hsl(var(--primary) / 0.35), 0 0 12px hsl(var(--primary) / 0.3);
+    inset 0 0 18px hsl(var(--primary) / 0.12),
+    0 0 0 1px hsl(var(--primary) / 0.4), 0 0 6px hsl(var(--primary) / 0.4),
+    0 0 18px hsl(var(--primary) / 0.28), 0 0 40px hsl(var(--primary) / 0.12);
 }
 
 [data-preset="scifi"][data-scifi-intensity="normal"] {
@@ -73,10 +83,12 @@
   --card-elevation-medium:
     0 0 6px hsl(var(--primary) / 0.6), 0 0 20px hsl(var(--primary) / 0.45);
   --card-elevation-high:
-    0 0 8px hsl(var(--primary) / 0.8), 0 0 28px hsl(var(--primary) / 0.55),
-    0 0 64px hsl(var(--primary) / 0.28);
+    inset 0 0 26px hsl(var(--primary) / 0.2), 0 0 8px hsl(var(--primary) / 0.8),
+    0 0 28px hsl(var(--primary) / 0.55), 0 0 64px hsl(var(--primary) / 0.28);
   --surface-overlay-shadow:
-    0 0 0 1px hsl(var(--primary) / 0.7), 0 0 22px hsl(var(--primary) / 0.55);
+    inset 0 0 24px hsl(var(--primary) / 0.18),
+    0 0 0 1px hsl(var(--primary) / 0.7), 0 0 8px hsl(var(--primary) / 0.55),
+    0 0 28px hsl(var(--primary) / 0.45), 0 0 64px hsl(var(--primary) / 0.18);
 }
 
 [data-preset="scifi"][data-scifi-intensity="bright"] {
@@ -104,10 +116,13 @@
     0 0 6px hsl(var(--primary) / 0.7), 0 0 22px hsl(var(--primary) / 0.5),
     0 0 44px hsl(var(--primary) / 0.25);
   --card-elevation-high:
+    inset 0 0 32px hsl(var(--primary) / 0.28),
     0 0 10px hsl(var(--primary) / 0.85), 0 0 32px hsl(var(--primary) / 0.65),
     0 0 72px hsl(var(--primary) / 0.32);
   --surface-overlay-shadow:
-    0 0 0 1px hsl(var(--primary) / 0.7), 0 0 24px hsl(var(--primary) / 0.55);
+    inset 0 0 32px hsl(var(--primary) / 0.28),
+    0 0 0 1px hsl(var(--primary) / 0.85), 0 0 12px hsl(var(--primary) / 0.7),
+    0 0 36px hsl(var(--primary) / 0.55), 0 0 90px hsl(var(--primary) / 0.28);
 }
 
 /* --- Non-axis tokens --------------------------------------------- */
