@@ -350,6 +350,45 @@
   box-shadow: var(--scifi-edge-glow);
 }
 
+/* NumberInput internal pieces — without these overrides the field
+   reads as "two borders + two background layers" because the
+   addon strips and the stepper-group divider use the neutral
+   --border color and bg-muted background, both of which contrast
+   against the wrapper's primary-tinted border + bg.
+   Fix: unify the internal dividers to a subtle primary tint and
+   make the addon + stepper buttons transparent so the wrapper bg
+   shows through unbroken. */
+[data-preset="scifi"] .dr-number-input-addon {
+  background-color: transparent;
+}
+[data-preset="scifi"] .dr-number-input-addon[data-side="prefix"] {
+  border-right-color: hsl(var(--primary) / 0.25);
+}
+[data-preset="scifi"] .dr-number-input-addon[data-side="suffix"] {
+  border-left-color: hsl(var(--primary) / 0.25);
+}
+[data-preset="scifi"] .dr-number-input-trigger-group {
+  border-left-color: hsl(var(--primary) / 0.25);
+}
+[data-preset="scifi"]
+  .dr-number-input-trigger-group
+  .dr-number-input-stepper-increment {
+  border-bottom-color: hsl(var(--primary) / 0.25);
+}
+/* Stepper buttons themselves get the wrapper's tint, NOT the
+   sci-fi .dr-btn default of primary/0.05 background — they should
+   read as part of the input, not as separate buttons. */
+[data-preset="scifi"] .dr-number-input-trigger-group .dr-number-input-stepper {
+  background-color: transparent;
+  border: 0;
+  box-shadow: none;
+}
+[data-preset="scifi"]
+  .dr-number-input-trigger-group
+  .dr-number-input-stepper:hover:not(:disabled) {
+  background-color: hsl(var(--primary) / 0.12);
+}
+
 /* Badge: 1px primary border, uppercase tracked. Reads as a HUD
    status tag rather than a chip. */
 [data-preset="scifi"] .dr-badge {
