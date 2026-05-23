@@ -230,6 +230,25 @@
     var(--surface-overlay-shadow);
 }
 
+/* Sci-fi modal-tier glow (all frames). Modal surfaces (Dialog,
+   AlertDialog, Sheet, Drawer) consume the `.modal-surface` utility
+   which expands to neutral theme shadows (var(--elevation-high),
+   var(--inset-hi-strong)) — those are designed for crisp depth in
+   the default presets, but read as a flat grey drop-shadow under
+   sci-fi where every other floating surface emits a primary glow.
+   Override with the same surface-overlay-shadow chain that powers
+   popover/dropdown/menu/select/etc. so modals match the rest of the
+   floating-surface vocabulary. */
+[data-preset="scifi"] .dr-dialog-content,
+[data-preset="scifi"] .dr-alert-dialog-content,
+[data-preset="scifi"] .dr-sheet-content,
+[data-preset="scifi"] .dr-drawer-content {
+  box-shadow: var(--surface-overlay-shadow);
+}
+
+/* Notched-frame modal-tier override: also prepend the inset 1px
+   primary stroke that follows the clipped polygon (CSS border
+   doesn't — see comment block above). */
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-dialog-content,
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-alert-dialog-content,
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-sheet-content,
@@ -237,8 +256,7 @@
   border-color: transparent;
   box-shadow:
     inset 0 0 0 1px hsl(var(--primary) / 0.7),
-    var(--elevation-high),
-    var(--inset-hi-strong);
+    var(--surface-overlay-shadow);
 }
 
 /* Smaller controls and inline elements get a tighter 6px notch so
