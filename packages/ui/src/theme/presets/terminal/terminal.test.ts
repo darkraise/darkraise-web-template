@@ -23,11 +23,12 @@ describe("terminal preset", () => {
     expect(terminal.supportedModes).toEqual(["dark"])
   })
 
-  it("hides elevation, buttonElevation, and radius common axes", () => {
+  it("hides elevation, buttonElevation, radius, and density common axes", () => {
     expect(terminal.hiddenCommonAxes).toEqual([
       "elevation",
       "buttonElevation",
       "radius",
+      "density",
     ])
   })
 

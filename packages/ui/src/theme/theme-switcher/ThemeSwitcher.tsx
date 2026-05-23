@@ -323,7 +323,7 @@ export function ThemeSwitcher() {
         </div>
       </div>
     ),
-    axes.density && (
+    axes.density && !isCommonAxisHidden("density") && (
       <div key="density" className="dr-theme-switcher-row">
         <Label className="dr-theme-switcher-section-label">Density</Label>
         <AxisControl values={DENSITIES} value={density} onChange={setDensity} />
@@ -351,7 +351,7 @@ export function ThemeSwitcher() {
         />
       </div>
     ),
-    axes.radius && (
+    axes.radius && !isCommonAxisHidden("radius") && (
       <div key="radius" className="dr-theme-switcher-row">
         <Label className="dr-theme-switcher-section-label">Radius</Label>
         <AxisControl values={RADII} value={radius} onChange={setRadius} />

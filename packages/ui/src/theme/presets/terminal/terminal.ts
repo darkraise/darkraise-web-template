@@ -39,7 +39,7 @@ export const terminal: ThemePreset<TerminalAxes> = {
   },
 
   supportedModes: ["dark"],
-  hiddenCommonAxes: ["elevation", "buttonElevation", "radius"],
+  hiddenCommonAxes: ["elevation", "buttonElevation", "radius", "density"],
 
   surfaceRecipe: {
     surfaceRaised: (_s, m) => (m === "light" ? "0 0% 100%" : "0 0% 6%"),
