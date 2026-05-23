@@ -1,13 +1,11 @@
 /* packages/ui/src/theme/presets/scifi/scifi.css
  *
- * Google Fonts: Orbitron is the signature sci-fi face (Battlestar
- * Galactica, Tron, and most modern HUD UI kits use it). Loaded here
- * so consumers don't have to import it separately. Falls back through
- * Rajdhani / Eurostile / system if the network's unavailable.
- */
-@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&display=swap");
-
-/*
+ * Note: the Orbitron Google Fonts @import lives at the top of
+ * theme.css (CSS spec requires @import to precede every other rule;
+ * embedding it here would trip Vite/PostCSS since scifi.css itself is
+ * @imported into theme.css mid-file). The --font-sans rebind in
+ * scifi.ts references the Orbitron family loaded there.
+ *
  * Drives the Sci-fi HUD aesthetic from two preset axes:
  *   - intensity (dim/normal/bright): glow strength on borders, text,
  *     active states. Same multi-layer recipe philosophy as Neon but
