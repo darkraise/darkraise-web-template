@@ -134,9 +134,13 @@
   );
 }
 
-/* `bracketed` — adds corner-bracket overlays via ::before + ::after,
-   like a targeting reticle. The card stays rectangular; the brackets
-   sit on top of the corners. */
+/* `bracketed` — full 4-corner targeting reticle. Each corner gets an
+   L-bracket painted as 2 background-image strips (horizontal + vertical
+   stroke). 20px reach, 3px stroke weight, strong primary glow via
+   drop-shadow on the pseudo. ::before paints top-left + bottom-right,
+   ::after paints top-right + bottom-left.
+   Previous design used only 2 corners with 14×14 brackets — too small
+   to distinguish from `clean` at a glance. */
 [data-preset="scifi"][data-scifi-frame="bracketed"] .dr-card {
   position: relative;
 }
@@ -144,26 +148,40 @@
 [data-preset="scifi"][data-scifi-frame="bracketed"] .dr-card::after {
   content: "";
   position: absolute;
-  width: 14px;
-  height: 14px;
-  border-color: hsl(var(--primary));
-  border-style: solid;
-  border-width: 0;
+  inset: -2px;
   pointer-events: none;
+  background-image:
+    linear-gradient(hsl(var(--primary)) 0 0),
+    linear-gradient(hsl(var(--primary)) 0 0),
+    linear-gradient(hsl(var(--primary)) 0 0),
+    linear-gradient(hsl(var(--primary)) 0 0);
+  background-repeat: no-repeat;
+  background-size:
+    20px 3px,
+    3px 20px,
+    20px 3px,
+    3px 20px;
+  filter: drop-shadow(0 0 6px hsl(var(--primary) / 0.85));
+  /* Even though the card has rest-glow elsewhere, the brackets are
+     full-saturation primary — they need to win z-order over the
+     card's own background. */
+  z-index: 1;
 }
 [data-preset="scifi"][data-scifi-frame="bracketed"] .dr-card::before {
-  top: -1px;
-  left: -1px;
-  border-top-width: 2px;
-  border-left-width: 2px;
-  filter: drop-shadow(0 0 4px hsl(var(--primary) / 0.6));
+  /* Top-left + bottom-right corners. */
+  background-position:
+    top left,
+    top left,
+    bottom right,
+    bottom right;
 }
 [data-preset="scifi"][data-scifi-frame="bracketed"] .dr-card::after {
-  bottom: -1px;
-  right: -1px;
-  border-bottom-width: 2px;
-  border-right-width: 2px;
-  filter: drop-shadow(0 0 4px hsl(var(--primary) / 0.6));
+  /* Top-right + bottom-left corners. */
+  background-position:
+    top right,
+    top right,
+    bottom left,
+    bottom left;
 }
 
 /* --- Phase 1: Buttons / Card / Input / Badge / Tabs -------------- */
