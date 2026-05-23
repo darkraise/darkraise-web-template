@@ -186,10 +186,20 @@
 
 /* Smaller controls and inline elements get a tighter 6px notch so
    the clip stays proportional to the element. Buttons get the same
-   6px notch via the existing rule below. */
+   6px notch via the existing rule below.
+   Compound-input wrappers (.dr-number-input-control, .dr-date-picker-
+   control, etc.) are included here because they're the actual bordered
+   surface — the inner .dr-input field inside them is chromeless. */
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-input,
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-textarea,
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-select-trigger,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-number-input-control,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-date-picker-control,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-color-picker-control,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-combobox-control,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-multi-select-control,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-tags-input-control,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-input-otp-slot,
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-badge,
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-pagination-link,
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-tabs-trigger,
@@ -305,9 +315,21 @@
 }
 
 /* Inputs: tech-input look. Transparent fill, primary-tinted 1px
-   border, primary text glow inside, blinking primary caret. */
+   border, primary text glow inside, blinking primary caret. Compound
+   input wrappers (NumberInput, DatePicker, ColorPicker, Combobox,
+   MultiSelect, TagsInput) are included so all input-like surfaces
+   share the same border-color + fill, instead of NumberInput etc.
+   keeping their default --input border color which reads as off-tone
+   against the sci-fi primary tint. */
 [data-preset="scifi"] .dr-input,
-[data-preset="scifi"] .dr-textarea {
+[data-preset="scifi"] .dr-textarea,
+[data-preset="scifi"] .dr-number-input-control,
+[data-preset="scifi"] .dr-date-picker-control,
+[data-preset="scifi"] .dr-color-picker-control,
+[data-preset="scifi"] .dr-combobox-control,
+[data-preset="scifi"] .dr-multi-select-control,
+[data-preset="scifi"] .dr-tags-input-control,
+[data-preset="scifi"] .dr-input-otp-slot {
   border-width: 1px;
   border-color: hsl(var(--primary) / 0.4);
   background: hsl(var(--primary) / 0.04);
@@ -315,7 +337,14 @@
   letter-spacing: 0.04em;
 }
 [data-preset="scifi"] .dr-input:focus-visible,
-[data-preset="scifi"] .dr-textarea:focus-visible {
+[data-preset="scifi"] .dr-textarea:focus-visible,
+[data-preset="scifi"] .dr-number-input-control:focus-within,
+[data-preset="scifi"] .dr-date-picker-control:focus-within,
+[data-preset="scifi"] .dr-color-picker-control:focus-within,
+[data-preset="scifi"] .dr-combobox-control:focus-within,
+[data-preset="scifi"] .dr-multi-select-control:focus-within,
+[data-preset="scifi"] .dr-tags-input-control:focus-within,
+[data-preset="scifi"] .dr-input-otp-slot[data-active] {
   border-color: hsl(var(--primary));
   caret-color: hsl(var(--primary));
   box-shadow: var(--scifi-edge-glow);
@@ -811,6 +840,13 @@
 [data-preset="scifi"] .dr-card,
 [data-preset="scifi"] .dr-input,
 [data-preset="scifi"] .dr-textarea,
+[data-preset="scifi"] .dr-number-input-control,
+[data-preset="scifi"] .dr-date-picker-control,
+[data-preset="scifi"] .dr-color-picker-control,
+[data-preset="scifi"] .dr-combobox-control,
+[data-preset="scifi"] .dr-multi-select-control,
+[data-preset="scifi"] .dr-tags-input-control,
+[data-preset="scifi"] .dr-input-otp-slot,
 [data-preset="scifi"] .dr-badge,
 [data-preset="scifi"] .dr-tabs-list,
 [data-preset="scifi"] .dr-listbox,
