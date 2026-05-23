@@ -191,3 +191,44 @@
   content: "> ";
   font-weight: 700;
 }
+
+/* --- Phase 2: Form controls -------------------------------------- */
+
+/* Checkbox: sharp corners + primary border. The CSS check glyph
+   inside is kept as-is — `[x]` style would need to suppress the SVG. */
+[data-preset="terminal"] .dr-checkbox {
+  border-radius: 0;
+  border-color: hsl(var(--primary) / 0.6);
+}
+
+/* Radio: stay round (the only round element in Terminal — it's the
+   "indicator light" metaphor) but switch the resting border to
+   primary-tinted. */
+[data-preset="terminal"] .dr-radio-group-item {
+  border-color: hsl(var(--primary) / 0.6);
+}
+
+/* Switch: sharp corners on the track so it reads as a hardware
+   toggle rather than a soft pill. */
+[data-preset="terminal"] .dr-switch {
+  border-radius: 0;
+  border: 1px solid hsl(var(--primary) / 0.5);
+}
+[data-preset="terminal"] .dr-switch-thumb {
+  border-radius: 0;
+}
+
+/* Slider: sharp track + square thumb. */
+[data-preset="terminal"] .dr-slider-track,
+[data-preset="terminal"] .dr-slider-range {
+  border-radius: 0;
+}
+[data-preset="terminal"] .dr-slider-thumb {
+  border-radius: 0;
+}
+
+/* Select trigger: monospace inherits; sharp corners; primary border. */
+[data-preset="terminal"] .dr-select-trigger {
+  border-radius: 0;
+  border-color: hsl(var(--primary) / 0.4);
+}

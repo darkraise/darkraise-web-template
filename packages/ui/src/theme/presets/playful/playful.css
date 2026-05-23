@@ -135,3 +135,57 @@
 [data-preset="playful"] .dr-tabs-trigger[data-state="active"] {
   transform: scale(1.04);
 }
+
+/* --- Phase 2: Form controls -------------------------------------- */
+
+/* Checkbox: bounce on check via the wrapper's data-state transition. */
+[data-preset="playful"] .dr-checkbox {
+  transition:
+    transform 200ms var(--playful-bounce),
+    background-color 150ms,
+    box-shadow 150ms;
+}
+[data-preset="playful"] .dr-checkbox[data-state="checked"],
+[data-preset="playful"] .dr-checkbox[data-state="indeterminate"] {
+  transform: scale(1.1);
+}
+[data-preset="playful"] .dr-checkbox:active:not(:disabled) {
+  transform: scale(0.92);
+}
+
+/* Radio: same bouncy fill on check. */
+[data-preset="playful"] .dr-radio-group-item {
+  transition:
+    transform 200ms var(--playful-bounce),
+    border-color 150ms,
+    box-shadow 150ms;
+}
+[data-preset="playful"] .dr-radio-group-item[data-state="checked"] {
+  transform: scale(1.1);
+}
+
+/* Switch: spring-loaded thumb travel via the existing transform
+   transition; just swap the easing. */
+[data-preset="playful"] .dr-switch-thumb {
+  transition: transform 250ms var(--playful-bounce);
+}
+
+/* Slider thumb: bouncy on focus + drag. */
+[data-preset="playful"] .dr-slider-thumb {
+  transition: transform 150ms var(--playful-bounce);
+}
+[data-preset="playful"] .dr-slider-thumb:hover,
+[data-preset="playful"] .dr-slider-thumb:focus-visible {
+  transform: scale(1.2);
+}
+
+/* Select trigger: bouncy hover. */
+[data-preset="playful"] .dr-select-trigger {
+  transition:
+    transform 200ms var(--playful-bounce),
+    border-color 150ms,
+    box-shadow 150ms;
+}
+[data-preset="playful"] .dr-select-trigger:hover:not([data-disabled]) {
+  transform: scale(1.02);
+}

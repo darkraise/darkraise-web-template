@@ -151,3 +151,54 @@
   border-width: 2px;
   border-color: hsl(var(--foreground));
 }
+
+/* --- Phase 2: Form controls -------------------------------------- */
+
+/* Checkbox: thick foreground border, no rounding. */
+[data-preset="brutalist"] .dr-checkbox {
+  border-radius: 0;
+  border-width: 2px;
+  border-color: hsl(var(--foreground));
+}
+
+/* Radio: stays a circle (the only round shape under Brutalist —
+   it's the structural exception that proves the rule) but with the
+   same thick foreground border. */
+[data-preset="brutalist"] .dr-radio-group-item {
+  border-width: 2px;
+  border-color: hsl(var(--foreground));
+}
+
+/* Switch: rectangular hardware-toggle look. Thick border on track,
+   square thumb. */
+[data-preset="brutalist"] .dr-switch {
+  border-radius: 0;
+  border: 2px solid hsl(var(--foreground));
+}
+[data-preset="brutalist"] .dr-switch-thumb {
+  border-radius: 0;
+}
+
+/* Slider: thick track, square thumb with thick border. */
+[data-preset="brutalist"] .dr-slider-track {
+  border: 2px solid hsl(var(--foreground));
+  border-radius: 0;
+}
+[data-preset="brutalist"] .dr-slider-range {
+  border-radius: 0;
+}
+[data-preset="brutalist"] .dr-slider-thumb {
+  border-radius: 0;
+  border-width: 2px;
+  border-color: hsl(var(--foreground));
+}
+
+/* Select trigger: 2px border, sharp. */
+[data-preset="brutalist"] .dr-select-trigger {
+  border-radius: 0;
+  border-width: 2px;
+  border-color: hsl(var(--foreground));
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+}
