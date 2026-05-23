@@ -288,3 +288,82 @@
   content: "> ";
   font-weight: 700;
 }
+
+/* --- Phase 4: Feedback ------------------------------------------- */
+
+/* Alert: monospace inherits, sharp 1px primary border. Title gets
+   uppercase CLI-style. */
+[data-preset="terminal"] .dr-alert {
+  border-radius: 0;
+  border-width: 1px;
+  border-color: hsl(var(--primary) / 0.4);
+}
+[data-preset="terminal"] .dr-alert-title {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+}
+
+/* Banner: sharp corners, uppercase title. */
+[data-preset="terminal"] .dr-banner {
+  border-radius: 0;
+}
+[data-preset="terminal"] .dr-banner-content > :first-child {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+/* Toast: sharp corners, monospace inherits, uppercase title. */
+[data-preset="terminal"] .dr-toast {
+  border-radius: 0;
+  border-width: 1px;
+  border-color: hsl(var(--primary) / 0.4);
+}
+[data-preset="terminal"] .dr-toast-title {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+}
+
+/* Progress: sharp track + fill. CRT progress meters were
+   rectangular hard-edged blocks. */
+[data-preset="terminal"] .dr-progress {
+  border-radius: 0;
+  border: 1px solid hsl(var(--primary) / 0.4);
+}
+[data-preset="terminal"] .dr-progress-indicator {
+  border-radius: 0;
+}
+
+/* Spinner: hide the SVG and replace with rotating ASCII chars. The
+   pseudo content cycles | / - \ via a 4-step keyframe. */
+@keyframes terminal-spinner {
+  0%,
+  24% {
+    content: "|";
+  }
+  25%,
+  49% {
+    content: "/";
+  }
+  50%,
+  74% {
+    content: "-";
+  }
+  75%,
+  100% {
+    content: "\\";
+  }
+}
+[data-preset="terminal"] .dr-spinner > svg {
+  display: none;
+}
+[data-preset="terminal"] .dr-spinner::before {
+  content: "|";
+  font-family: var(--font-sans);
+  font-weight: 700;
+  display: inline-block;
+  animation: terminal-spinner 800ms steps(1, end) infinite;
+  color: hsl(var(--primary));
+}

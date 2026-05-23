@@ -248,3 +248,50 @@
   border-color: hsl(var(--foreground));
   border-radius: 0;
 }
+
+/* --- Phase 4: Feedback ------------------------------------------- */
+
+/* Alert: 3px foreground border, sharp corners, uppercase block title. */
+[data-preset="brutalist"] .dr-alert {
+  border-radius: 0;
+  border-width: 3px;
+  border-color: hsl(var(--foreground));
+}
+[data-preset="brutalist"] .dr-alert-title {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 900;
+}
+
+/* Banner: 2px foreground border. */
+[data-preset="brutalist"] .dr-banner {
+  border-radius: 0;
+  border-width: 2px;
+  border-color: hsl(var(--foreground));
+}
+[data-preset="brutalist"] .dr-banner-content > :first-child {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 900;
+}
+
+/* Toast: 2px foreground border, uppercase title. */
+[data-preset="brutalist"] .dr-toast {
+  border-radius: 0;
+  border-width: 2px;
+  border-color: hsl(var(--foreground));
+}
+[data-preset="brutalist"] .dr-toast-title {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 900;
+}
+
+/* Progress: thick track, sharp corners. */
+[data-preset="brutalist"] .dr-progress {
+  border-radius: 0;
+  border: 2px solid hsl(var(--foreground));
+}
+[data-preset="brutalist"] .dr-progress-indicator {
+  border-radius: 0;
+}
