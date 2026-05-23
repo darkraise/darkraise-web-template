@@ -428,3 +428,101 @@
   content: "> ";
   font-weight: 700;
 }
+
+/* --- Phase: Floating-surface + compound-input parity ------------- */
+
+/* Modal-tier glow: Dialog/AlertDialog/Sheet/Drawer consume the
+   .modal-surface utility = var(--elevation-high), var(--inset-hi-
+   strong) — neutral theme shadows. Terminal's --surface-overlay-shadow
+   carries the phosphor halo that popover/dropdown/tooltip/menu already
+   use; modals were the one tier not joining that vocabulary. Replace
+   their shadow chain to match. */
+[data-preset="terminal"] .dr-dialog-content,
+[data-preset="terminal"] .dr-alert-dialog-content,
+[data-preset="terminal"] .dr-sheet-content,
+[data-preset="terminal"] .dr-drawer-content {
+  box-shadow: var(--surface-overlay-shadow);
+}
+
+/* Compound-input wrappers — NumberInput/DatePicker/ColorPicker/
+   Combobox/MultiSelect/TagsInput/InputOTP-slot own the visible
+   border, so they need the same terminal treatment that the rule
+   above gives to .dr-input and .dr-textarea. Without this rule the
+   wrapper keeps its default --input border and reads as off-tone
+   against terminal's near-black surface palette. */
+[data-preset="terminal"] .dr-number-input-control,
+[data-preset="terminal"] .dr-date-picker-control,
+[data-preset="terminal"] .dr-color-picker-control,
+[data-preset="terminal"] .dr-combobox-control,
+[data-preset="terminal"] .dr-multi-select-control,
+[data-preset="terminal"] .dr-tags-input-control,
+[data-preset="terminal"] .dr-input-otp-slot {
+  border-width: 1px;
+  border-color: hsl(var(--primary) / 0.35);
+  background: transparent;
+}
+[data-preset="terminal"] .dr-number-input-control:focus-within,
+[data-preset="terminal"] .dr-date-picker-control:focus-within,
+[data-preset="terminal"] .dr-color-picker-control:focus-within,
+[data-preset="terminal"] .dr-combobox-control:focus-within,
+[data-preset="terminal"] .dr-multi-select-control:focus-within,
+[data-preset="terminal"] .dr-tags-input-control:focus-within,
+[data-preset="terminal"] .dr-input-otp-slot[data-active] {
+  border-color: hsl(var(--primary));
+}
+
+/* Compound-input inner fields stay chromeless under Terminal — same
+   specificity trap as sci-fi and Neon: the preset rules above target
+   the wrapper, but the inner <input> carries `dr-input dr-{name}-
+   field`, so the `[data-preset="terminal"] .dr-input` rule
+   (specificity 0,2,0) would beat the chromeless base rule (0,1,0) and
+   double the chrome inside the wrapper. Scope through the wrapper to
+   reach (0,3,0) and re-assert chromelessness. */
+[data-preset="terminal"] .dr-number-input-control .dr-input,
+[data-preset="terminal"] .dr-date-picker-control .dr-input,
+[data-preset="terminal"] .dr-color-picker-control .dr-input,
+[data-preset="terminal"] .dr-combobox-control .dr-input,
+[data-preset="terminal"] .dr-multi-select-control .dr-input,
+[data-preset="terminal"] .dr-tags-input-control .dr-input,
+[data-preset="terminal"] .dr-input-group .dr-input {
+  border: 0;
+  background-color: transparent;
+  background-image: none;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+/* NumberInput internal pieces — addons + dividers default to neutral
+   --border + bg-muted, which contrast against the wrapper's primary
+   border/transparent bg. Unify dividers to a primary tint and make
+   the addon + stepper buttons transparent so the wrapper bg shows
+   through unbroken. */
+[data-preset="terminal"] .dr-number-input-addon {
+  background-color: transparent;
+}
+[data-preset="terminal"] .dr-number-input-addon[data-side="prefix"] {
+  border-right-color: hsl(var(--primary) / 0.25);
+}
+[data-preset="terminal"] .dr-number-input-addon[data-side="suffix"] {
+  border-left-color: hsl(var(--primary) / 0.25);
+}
+[data-preset="terminal"] .dr-number-input-trigger-group {
+  border-left-color: hsl(var(--primary) / 0.25);
+}
+[data-preset="terminal"]
+  .dr-number-input-trigger-group
+  .dr-number-input-stepper-increment {
+  border-bottom-color: hsl(var(--primary) / 0.25);
+}
+[data-preset="terminal"]
+  .dr-number-input-trigger-group
+  .dr-number-input-stepper {
+  background-color: transparent;
+  border: 0;
+  box-shadow: none;
+}
+[data-preset="terminal"]
+  .dr-number-input-trigger-group
+  .dr-number-input-stepper:hover:not(:disabled) {
+  background-color: hsl(var(--primary) / 0.12);
+}

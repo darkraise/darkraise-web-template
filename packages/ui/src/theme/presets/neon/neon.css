@@ -208,3 +208,104 @@
 [data-preset="neon"] [data-state="on"][data-variant="outline"] {
   text-shadow: var(--neon-text-shadow);
 }
+
+/* --- Phase: Floating-surface + compound-input parity ------------- */
+
+/* Modal-tier glow: Dialog/AlertDialog/Sheet/Drawer consume the
+   .modal-surface utility = var(--elevation-high), var(--inset-hi-
+   strong) — neutral theme shadows. Under Neon every other floating
+   surface emits a primary glow via --surface-overlay-shadow (which
+   neon.css rebinds per glow level above); modals were the one tier
+   not joining that vocabulary. Replace their shadow chain to match. */
+[data-preset="neon"] .dr-dialog-content,
+[data-preset="neon"] .dr-alert-dialog-content,
+[data-preset="neon"] .dr-sheet-content,
+[data-preset="neon"] .dr-drawer-content {
+  box-shadow: var(--surface-overlay-shadow);
+}
+
+/* Compound-input wrappers — NumberInput/DatePicker/ColorPicker/
+   Combobox/MultiSelect/TagsInput/InputOTP-slot own the visible border,
+   so they need the same Neon treatment that input.css already gives
+   to .dr-input and .dr-input-group. Without this rule the wrapper
+   keeps its default --input border and reads as off-tone against the
+   surrounding primary glow. */
+[data-preset="neon"] .dr-number-input-control,
+[data-preset="neon"] .dr-date-picker-control,
+[data-preset="neon"] .dr-color-picker-control,
+[data-preset="neon"] .dr-combobox-control,
+[data-preset="neon"] .dr-multi-select-control,
+[data-preset="neon"] .dr-tags-input-control,
+[data-preset="neon"] .dr-input-otp-slot {
+  background-color: hsl(var(--background) / 0.4);
+  background-image: none;
+  border-color: hsl(var(--primary) / 0.4);
+  color: hsl(var(--foreground));
+}
+[data-preset="neon"] .dr-number-input-control:focus-within,
+[data-preset="neon"] .dr-date-picker-control:focus-within,
+[data-preset="neon"] .dr-color-picker-control:focus-within,
+[data-preset="neon"] .dr-combobox-control:focus-within,
+[data-preset="neon"] .dr-multi-select-control:focus-within,
+[data-preset="neon"] .dr-tags-input-control:focus-within,
+[data-preset="neon"] .dr-input-otp-slot[data-active] {
+  border-color: hsl(var(--primary));
+  box-shadow:
+    0 0 0 1px hsl(var(--primary)),
+    0 0 12px hsl(var(--primary) / 0.45);
+}
+
+/* Compound-input inner fields stay chromeless under Neon — same
+   specificity trap as sci-fi: the preset rules above target the
+   wrapper, but the inner <input> carries `dr-input dr-{name}-field`,
+   so the base-theme `[data-preset="neon"] .dr-input` rule
+   (specificity 0,2,0) would beat the chromeless base rule (0,1,0) and
+   double the chrome inside the wrapper. Scope through the wrapper to
+   reach (0,3,0) and re-assert chromelessness. Includes .dr-input-
+   group for plain Input prefix/suffix wrappers. */
+[data-preset="neon"] .dr-number-input-control .dr-input,
+[data-preset="neon"] .dr-date-picker-control .dr-input,
+[data-preset="neon"] .dr-color-picker-control .dr-input,
+[data-preset="neon"] .dr-combobox-control .dr-input,
+[data-preset="neon"] .dr-multi-select-control .dr-input,
+[data-preset="neon"] .dr-tags-input-control .dr-input,
+[data-preset="neon"] .dr-input-group .dr-input {
+  border: 0;
+  background-color: transparent;
+  background-image: none;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+/* NumberInput internal pieces — addons + dividers default to neutral
+   --border + bg-muted, which contrast against the wrapper's primary
+   border/bg. Unify dividers to a primary tint and make the addon +
+   stepper buttons transparent so the wrapper bg shows through
+   unbroken. */
+[data-preset="neon"] .dr-number-input-addon {
+  background-color: transparent;
+}
+[data-preset="neon"] .dr-number-input-addon[data-side="prefix"] {
+  border-right-color: hsl(var(--primary) / 0.3);
+}
+[data-preset="neon"] .dr-number-input-addon[data-side="suffix"] {
+  border-left-color: hsl(var(--primary) / 0.3);
+}
+[data-preset="neon"] .dr-number-input-trigger-group {
+  border-left-color: hsl(var(--primary) / 0.3);
+}
+[data-preset="neon"]
+  .dr-number-input-trigger-group
+  .dr-number-input-stepper-increment {
+  border-bottom-color: hsl(var(--primary) / 0.3);
+}
+[data-preset="neon"] .dr-number-input-trigger-group .dr-number-input-stepper {
+  background-color: transparent;
+  border: 0;
+  box-shadow: none;
+}
+[data-preset="neon"]
+  .dr-number-input-trigger-group
+  .dr-number-input-stepper:hover:not(:disabled) {
+  background-color: hsl(var(--primary) / 0.12);
+}
