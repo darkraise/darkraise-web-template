@@ -2,7 +2,7 @@ import { defaultPreset } from "./default/default"
 import { glass } from "./glass/glass"
 import { neon } from "./neon/neon"
 import { terminal } from "./terminal/terminal"
-import { brutalist } from "./brutalist/brutalist"
+import { scifi } from "./scifi/scifi"
 import { playful } from "./playful/playful"
 
 export const presets = {
@@ -10,7 +10,7 @@ export const presets = {
   glass,
   neon,
   terminal,
-  brutalist,
+  scifi,
   playful,
 } as const
 

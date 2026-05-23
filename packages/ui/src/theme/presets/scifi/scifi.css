@@ -1,0 +1,399 @@
+/* packages/ui/src/theme/presets/scifi/scifi.css
+ *
+ * Drives the Sci-fi HUD aesthetic from two preset axes:
+ *   - intensity (dim/normal/bright): glow strength on borders, text,
+ *     active states. Same multi-layer recipe philosophy as Neon but
+ *     tighter — HUD glow is "edge-lit panel" not "neon tube," so the
+ *     layers focus on the edge rather than ambient bleed.
+ *   - frame (clean/notched/bracketed): corner treatment on cards and
+ *     panels. clean = standard rectangle; notched = clip-path with
+ *     diagonal corner cuts (sci-fi panel); bracketed = corner-bracket
+ *     overlays (targeting reticle).
+ *
+ * Monospace, sharp corners, primary glow on text are forced via
+ * generateTokens / global rules below.
+ */
+
+/* --- Intensity axis: bind glow tokens per level ------------------ */
+
+[data-preset="scifi"][data-scifi-intensity="dim"] {
+  --scifi-text-glow:
+    0 0 2px hsl(var(--primary) / 0.4), 0 0 6px hsl(var(--primary) / 0.18);
+  --scifi-edge-glow: 0 0 0 1px hsl(var(--primary) / 0.4);
+  --affordance-glow:
+    inset 0 0 0 1px hsl(var(--primary) / 0.5), 0 0 8px hsl(var(--primary) / 0.3);
+  --affordance-glow-bottom:
+    0 2px 0 hsl(var(--primary) / 0.5), 0 4px 12px -2px hsl(var(--primary) / 0.3);
+  --shadow-button: 0 0 6px hsl(var(--primary) / 0.25);
+  --card-elevation-low: 0 0 8px hsl(var(--primary) / 0.18);
+  --card-elevation-medium: 0 0 12px hsl(var(--primary) / 0.28);
+  --card-elevation-high:
+    0 0 16px hsl(var(--primary) / 0.4), 0 0 36px hsl(var(--primary) / 0.18);
+  --surface-overlay-shadow:
+    0 0 0 1px hsl(var(--primary) / 0.35), 0 0 12px hsl(var(--primary) / 0.3);
+}
+
+[data-preset="scifi"][data-scifi-intensity="normal"] {
+  --scifi-text-glow:
+    0 0 3px hsl(var(--primary) / 0.55), 0 0 10px hsl(var(--primary) / 0.25);
+  --scifi-edge-glow: 0 0 0 1px hsl(var(--primary) / 0.55);
+  --affordance-glow:
+    inset 0 0 0 1px hsl(var(--primary) / 0.7),
+    0 0 12px hsl(var(--primary) / 0.45);
+  --affordance-glow-bottom:
+    0 2px 0 hsl(var(--primary) / 0.7),
+    0 6px 18px -2px hsl(var(--primary) / 0.45);
+  --shadow-button:
+    0 0 4px hsl(var(--primary) / 0.4), 0 0 12px hsl(var(--primary) / 0.22);
+  --card-elevation-low: 0 0 10px hsl(var(--primary) / 0.28);
+  --card-elevation-medium:
+    0 0 4px hsl(var(--primary) / 0.5), 0 0 16px hsl(var(--primary) / 0.35);
+  --card-elevation-high:
+    0 0 6px hsl(var(--primary) / 0.7), 0 0 24px hsl(var(--primary) / 0.45),
+    0 0 56px hsl(var(--primary) / 0.22);
+  --surface-overlay-shadow:
+    0 0 0 1px hsl(var(--primary) / 0.55), 0 0 18px hsl(var(--primary) / 0.45);
+}
+
+[data-preset="scifi"][data-scifi-intensity="bright"] {
+  --scifi-text-glow:
+    0 0 4px hsl(var(--primary) / 0.75), 0 0 14px hsl(var(--primary) / 0.4),
+    0 0 28px hsl(var(--primary) / 0.18);
+  --scifi-edge-glow: 0 0 0 1px hsl(var(--primary) / 0.75);
+  --affordance-glow:
+    inset 0 0 0 1px hsl(var(--primary) / 0.85),
+    0 0 18px hsl(var(--primary) / 0.65);
+  --affordance-glow-bottom:
+    0 2px 0 hsl(var(--primary) / 0.85),
+    0 8px 24px -2px hsl(var(--primary) / 0.6);
+  --shadow-button:
+    0 0 6px hsl(var(--primary) / 0.6), 0 0 18px hsl(var(--primary) / 0.32);
+  --card-elevation-low:
+    0 0 4px hsl(var(--primary) / 0.5), 0 0 14px hsl(var(--primary) / 0.3);
+  --card-elevation-medium:
+    0 0 6px hsl(var(--primary) / 0.7), 0 0 22px hsl(var(--primary) / 0.5),
+    0 0 44px hsl(var(--primary) / 0.25);
+  --card-elevation-high:
+    0 0 10px hsl(var(--primary) / 0.85), 0 0 32px hsl(var(--primary) / 0.65),
+    0 0 72px hsl(var(--primary) / 0.32);
+  --surface-overlay-shadow:
+    0 0 0 1px hsl(var(--primary) / 0.7), 0 0 24px hsl(var(--primary) / 0.55);
+}
+
+/* --- Non-axis tokens --------------------------------------------- */
+
+[data-preset="scifi"] {
+  /* Overlay surface chrome: deep dark + primary glow ring. */
+  --surface-overlay-bg: hsl(var(--background) / 0.95);
+  --surface-overlay-border: hsl(var(--primary) / 0.55);
+}
+
+/* --- Frame axis: corner treatment on Card surfaces --------------- */
+
+/* `notched` — diagonal corner cuts via clip-path. Classic sci-fi
+   panel shape. 10px corner notch on top-left and bottom-right
+   (asymmetric, looks more "scanned-in" than full symmetry). */
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-card {
+  clip-path: polygon(
+    10px 0,
+    100% 0,
+    100% calc(100% - 10px),
+    calc(100% - 10px) 100%,
+    0 100%,
+    0 10px
+  );
+}
+
+/* `bracketed` — adds corner-bracket overlays via ::before + ::after,
+   like a targeting reticle. The card stays rectangular; the brackets
+   sit on top of the corners. */
+[data-preset="scifi"][data-scifi-frame="bracketed"] .dr-card {
+  position: relative;
+}
+[data-preset="scifi"][data-scifi-frame="bracketed"] .dr-card::before,
+[data-preset="scifi"][data-scifi-frame="bracketed"] .dr-card::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-color: hsl(var(--primary));
+  border-style: solid;
+  border-width: 0;
+  pointer-events: none;
+}
+[data-preset="scifi"][data-scifi-frame="bracketed"] .dr-card::before {
+  top: -1px;
+  left: -1px;
+  border-top-width: 2px;
+  border-left-width: 2px;
+  filter: drop-shadow(0 0 4px hsl(var(--primary) / 0.6));
+}
+[data-preset="scifi"][data-scifi-frame="bracketed"] .dr-card::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom-width: 2px;
+  border-right-width: 2px;
+  filter: drop-shadow(0 0 4px hsl(var(--primary) / 0.6));
+}
+
+/* --- Phase 1: Buttons / Card / Input / Badge / Tabs -------------- */
+
+/* All text under sci-fi gets a subtle primary text glow + tracked
+   uppercase for the data-readout feel. */
+[data-preset="scifi"] {
+  text-shadow: var(--scifi-text-glow);
+}
+[data-preset="scifi"] h1,
+[data-preset="scifi"] h2,
+[data-preset="scifi"] h3 {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+
+/* Buttons: 1px primary border, uppercase, monospace inherits. Glow
+   intensifies on hover via the affordance token. Hover adds the
+   notched-corner clip if frame=notched (matches Card treatment). */
+[data-preset="scifi"] .dr-btn {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  border-width: 1px;
+  border-style: solid;
+  border-color: hsl(var(--primary) / 0.55);
+  background-color: hsl(var(--primary) / 0.05);
+}
+[data-preset="scifi"] .dr-btn:hover:not(:disabled) {
+  border-color: hsl(var(--primary));
+  background-color: hsl(var(--primary) / 0.12);
+  box-shadow: var(--shadow-button);
+}
+[data-preset="scifi"][data-scifi-frame="notched"]
+  .dr-btn:not([data-size="icon"]) {
+  clip-path: polygon(
+    6px 0,
+    100% 0,
+    100% calc(100% - 6px),
+    calc(100% - 6px) 100%,
+    0 100%,
+    0 6px
+  );
+}
+
+/* Card: 1px primary-tinted border + the existing glow elevation. */
+[data-preset="scifi"] .dr-card {
+  border-width: 1px;
+  border-style: solid;
+  border-color: hsl(var(--primary) / 0.35);
+}
+
+/* Inputs: tech-input look. Transparent fill, primary-tinted 1px
+   border, primary text glow inside, blinking primary caret. */
+[data-preset="scifi"] .dr-input,
+[data-preset="scifi"] .dr-textarea {
+  border-width: 1px;
+  border-color: hsl(var(--primary) / 0.4);
+  background: hsl(var(--primary) / 0.04);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+[data-preset="scifi"] .dr-input:focus-visible,
+[data-preset="scifi"] .dr-textarea:focus-visible {
+  border-color: hsl(var(--primary));
+  caret-color: hsl(var(--primary));
+  box-shadow: var(--scifi-edge-glow);
+}
+
+/* Badge: 1px primary border, uppercase tracked. Reads as a HUD
+   status tag rather than a chip. */
+[data-preset="scifi"] .dr-badge {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  border-width: 1px;
+  border-color: hsl(var(--primary) / 0.55);
+  background-color: hsl(var(--primary) / 0.1);
+}
+
+/* Tabs: uppercase tracked. Active tab gets the angled-corner
+   indicator + the affordance glow. */
+[data-preset="scifi"] .dr-tabs-trigger {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+
+/* --- Phase 2: Form controls -------------------------------------- */
+
+[data-preset="scifi"] .dr-checkbox,
+[data-preset="scifi"] .dr-radio-group-item {
+  border-radius: 0;
+  border-color: hsl(var(--primary) / 0.6);
+}
+
+[data-preset="scifi"] .dr-switch {
+  border-radius: 0;
+  border: 1px solid hsl(var(--primary) / 0.5);
+}
+[data-preset="scifi"] .dr-switch-thumb {
+  border-radius: 0;
+}
+
+[data-preset="scifi"] .dr-slider-track,
+[data-preset="scifi"] .dr-slider-range {
+  border-radius: 0;
+}
+[data-preset="scifi"] .dr-slider-thumb {
+  border-radius: 0;
+  border-color: hsl(var(--primary));
+}
+
+[data-preset="scifi"] .dr-select-trigger {
+  border-radius: 0;
+  border-color: hsl(var(--primary) / 0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* --- Phase 3: Navigation ----------------------------------------- */
+
+[data-preset="scifi"] .dr-pagination-link {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-radius: 0;
+  border-width: 1px;
+  border-color: hsl(var(--primary) / 0.4);
+}
+[data-preset="scifi"] .dr-pagination-link[data-active="true"] {
+  border-color: hsl(var(--primary));
+  background-color: hsl(var(--primary) / 0.15);
+}
+
+[data-preset="scifi"] .dr-breadcrumb-link,
+[data-preset="scifi"] .dr-breadcrumb-page {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+[data-preset="scifi"] .dr-breadcrumb-separator > svg {
+  display: none;
+}
+[data-preset="scifi"] .dr-breadcrumb-separator::before {
+  content: "//";
+  opacity: 0.55;
+  letter-spacing: -0.05em;
+}
+
+[data-preset="scifi"] .dr-navigation-menu-trigger,
+[data-preset="scifi"] .dr-menubar-trigger {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  border-radius: 0;
+}
+
+/* --- Phase 4: Feedback ------------------------------------------- */
+
+[data-preset="scifi"] .dr-alert,
+[data-preset="scifi"] .dr-toast,
+[data-preset="scifi"] .dr-banner {
+  border-radius: 0;
+  border-width: 1px;
+}
+[data-preset="scifi"] .dr-alert-title,
+[data-preset="scifi"] .dr-toast-title {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
+
+/* Progress: sharp track + animated scan-line over the indicator. */
+[data-preset="scifi"] .dr-progress {
+  border-radius: 0;
+  border: 1px solid hsl(var(--primary) / 0.4);
+  overflow: hidden;
+  position: relative;
+}
+[data-preset="scifi"] .dr-progress-indicator {
+  border-radius: 0;
+  position: relative;
+}
+@keyframes scifi-progress-scan {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-preset="scifi"] .dr-progress-indicator::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      hsl(var(--primary) / 0.6),
+      transparent
+    );
+    animation: scifi-progress-scan 1.8s ease-in-out infinite;
+  }
+}
+
+/* Spinner: ring rotates with notched cutouts via conic-gradient. */
+[data-preset="scifi"] .dr-spinner > svg {
+  color: hsl(var(--primary));
+  filter: drop-shadow(0 0 6px hsl(var(--primary) / 0.6));
+}
+
+/* --- Phase 5: Data display --------------------------------------- */
+
+[data-preset="scifi"] .dr-table thead th {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  border-bottom: 1px solid hsl(var(--primary) / 0.5);
+}
+[data-preset="scifi"] .dr-table tbody tr {
+  border-bottom: 1px solid hsl(var(--primary) / 0.12);
+}
+
+[data-preset="scifi"] .dr-tree-view-branch-control[data-selected="true"],
+[data-preset="scifi"] .dr-tree-view-item[data-selected="true"] {
+  border-radius: 0;
+  background-color: hsl(var(--primary) / 0.15);
+  border-left: 2px solid hsl(var(--primary));
+  box-shadow: inset 0 0 12px hsl(var(--primary) / 0.18);
+}
+
+[data-preset="scifi"] .dr-listbox {
+  border-radius: 0;
+}
+[data-preset="scifi"] .dr-listbox-item {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-radius: 0;
+}
+
+[data-preset="scifi"] .dr-calendar {
+  border-radius: 0;
+  border: 1px solid hsl(var(--primary) / 0.4);
+}
+[data-preset="scifi"] .dr-calendar-weekday {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+}
+[data-preset="scifi"] .dr-calendar-day-btn {
+  border-radius: 0;
+}
+
+[data-preset="scifi"] .dr-steps-indicator {
+  border-radius: 0;
+  border: 1px solid hsl(var(--primary) / 0.5);
+}
+[data-preset="scifi"] .dr-steps-title {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
