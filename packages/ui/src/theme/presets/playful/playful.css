@@ -189,3 +189,44 @@
 [data-preset="playful"] .dr-select-trigger:hover:not([data-disabled]) {
   transform: scale(1.02);
 }
+
+/* --- Phase 3: Navigation ----------------------------------------- */
+
+/* Pagination links: bouncy hover + active. */
+[data-preset="playful"] .dr-pagination-link {
+  transition:
+    transform 200ms var(--playful-bounce),
+    background-color 150ms,
+    border-color 150ms;
+}
+[data-preset="playful"] .dr-pagination-link:hover:not([data-disabled]) {
+  transform: scale(1.08);
+}
+[data-preset="playful"] .dr-pagination-link[data-active="true"] {
+  transform: scale(1.1);
+}
+
+/* Breadcrumb links: gentle scale on hover so navigation feels alive. */
+[data-preset="playful"] .dr-breadcrumb-link {
+  transition: transform 200ms var(--playful-bounce);
+  display: inline-block;
+}
+[data-preset="playful"] .dr-breadcrumb-link:hover {
+  transform: scale(1.05);
+}
+
+/* NavigationMenu + Menubar triggers: bouncy hover + open state. */
+[data-preset="playful"] .dr-navigation-menu-trigger,
+[data-preset="playful"] .dr-menubar-trigger {
+  transition:
+    transform 200ms var(--playful-bounce),
+    background-color 150ms;
+}
+[data-preset="playful"] .dr-navigation-menu-trigger:hover,
+[data-preset="playful"] .dr-menubar-trigger:hover {
+  transform: scale(1.05);
+}
+[data-preset="playful"] .dr-navigation-menu-trigger[data-state="open"],
+[data-preset="playful"] .dr-menubar-trigger[data-state="open"] {
+  transform: scale(1.06);
+}

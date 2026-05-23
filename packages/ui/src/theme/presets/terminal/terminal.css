@@ -232,3 +232,59 @@
   border-radius: 0;
   border-color: hsl(var(--primary) / 0.4);
 }
+
+/* --- Phase 3: Navigation ----------------------------------------- */
+
+/* Pagination: ghost active page wraps in [brackets] for CLI feel.
+   Previous / next arrows replaced with ASCII «  » via ::before. */
+[data-preset="terminal"] .dr-pagination-link {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}
+[data-preset="terminal"]
+  .dr-pagination-link[data-active="true"][data-variant="ghost"]::before {
+  content: "[";
+  margin-right: 0.2em;
+  opacity: 0.65;
+}
+[data-preset="terminal"]
+  .dr-pagination-link[data-active="true"][data-variant="ghost"]::after {
+  content: "]";
+  margin-left: 0.2em;
+  opacity: 0.65;
+}
+
+/* Breadcrumb: `>` separators replace the default chevrons, current
+   page reads as CLI cursor position. */
+[data-preset="terminal"] .dr-breadcrumb-separator > svg {
+  display: none;
+}
+[data-preset="terminal"] .dr-breadcrumb-separator::before {
+  content: ">";
+  opacity: 0.6;
+}
+[data-preset="terminal"] .dr-breadcrumb-page {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+}
+[data-preset="terminal"] .dr-breadcrumb-page::before {
+  content: "> ";
+  opacity: 0.8;
+}
+
+/* NavigationMenu + Menubar triggers: uppercase + monospace. Active /
+   open state gets the `> ` cursor mark. */
+[data-preset="terminal"] .dr-navigation-menu-trigger,
+[data-preset="terminal"] .dr-menubar-trigger {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+  border-radius: 0;
+}
+[data-preset="terminal"] .dr-navigation-menu-trigger[data-state="open"]::before,
+[data-preset="terminal"] .dr-menubar-trigger[data-state="open"]::before {
+  content: "> ";
+  font-weight: 700;
+}

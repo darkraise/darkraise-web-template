@@ -202,3 +202,49 @@
   letter-spacing: 0.04em;
   font-weight: 700;
 }
+
+/* --- Phase 3: Navigation ----------------------------------------- */
+
+/* Pagination: block-letter, 2px borders, sharp corners. Active page
+   inverts (foreground bg, background text). */
+[data-preset="brutalist"] .dr-pagination-link {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 800;
+  border-width: 2px;
+  border-color: hsl(var(--foreground));
+  border-radius: 0;
+}
+[data-preset="brutalist"] .dr-pagination-link[data-active="true"] {
+  background-color: hsl(var(--foreground));
+  color: hsl(var(--background));
+}
+
+/* Breadcrumb: bold block text, current page uses a foreground swatch
+   behind itself for emphasis. */
+[data-preset="brutalist"] .dr-breadcrumb-link,
+[data-preset="brutalist"] .dr-breadcrumb-page {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+}
+[data-preset="brutalist"] .dr-breadcrumb-page {
+  background-color: hsl(var(--foreground));
+  color: hsl(var(--background));
+  padding: 0 0.4rem;
+}
+
+/* NavigationMenu + Menubar triggers: block-letter uppercase, sharp. */
+[data-preset="brutalist"] .dr-navigation-menu-trigger,
+[data-preset="brutalist"] .dr-menubar-trigger {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 800;
+  border-radius: 0;
+}
+/* Menubar root: 2px foreground border. */
+[data-preset="brutalist"] .dr-menubar {
+  border-width: 2px;
+  border-color: hsl(var(--foreground));
+  border-radius: 0;
+}
