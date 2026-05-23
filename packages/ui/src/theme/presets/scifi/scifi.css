@@ -392,39 +392,66 @@
   box-shadow: var(--shadow-button);
 }
 
-/* Default variant — solid primary fill (the prominent CTA). This
-   swaps with secondary, which keeps the outlined/faint treatment
-   from the base rule above. Together they give an explicit
-   primary-action vs supporting-action visual hierarchy instead of
-   every button reading the same. */
+/* All sci-fi buttons stay outlined (border + faint screen-effect
+   background, never solid fill) — solid fills break the HUD vocab.
+   Default keeps the universal prominent treatment from the base
+   rule above (bright primary border + primary/0.05 fill). The
+   variants below differentiate within the outlined language:
+   secondary recedes to a dimmer primary outline with transparent
+   fill, destructive swaps the primary tint for the destructive
+   hue so the danger signal reads while staying outlined. */
+
+/* Default variant — only override the text color. Base CSS sets
+   `text-primary-foreground` (white) for use with solid bg-primary;
+   under sci-fi the bg becomes faint primary/0.05 so white text
+   ends up unreadable. Switch to primary-color text so it reads
+   against the new transparent-ish background and matches the
+   primary border for visual cohesion. */
 [data-preset="scifi"] .dr-btn[data-variant="default"] {
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-  border-color: hsl(var(--primary));
+  color: hsl(var(--primary));
 }
 [data-preset="scifi"] .dr-btn[data-variant="default"]:hover:not(:disabled) {
-  background-color: hsl(var(--primary) / 0.85);
-  border-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
+  color: hsl(var(--primary));
 }
 
-/* Destructive variant — solid destructive fill so the danger signal
-   carries the destructive hue instead of the universal primary tint.
-   Hover glow is destructive-tinted too (overrides the universal
-   active-glow rule below which would otherwise paint a primary halo
-   on a red button). */
+/* Secondary variant — same outlined language as default but dimmer
+   so the visual hierarchy reads primary-action vs supporting-action.
+   Border drops to primary/0.25, background goes fully transparent,
+   text dims to primary/0.85. Hover lifts it back toward the
+   universal level. */
+[data-preset="scifi"] .dr-btn[data-variant="secondary"] {
+  border-color: hsl(var(--primary) / 0.25);
+  background-color: transparent;
+  color: hsl(var(--primary) / 0.85);
+}
+[data-preset="scifi"] .dr-btn[data-variant="secondary"]:hover:not(:disabled) {
+  border-color: hsl(var(--primary) / 0.55);
+  background-color: hsl(var(--primary) / 0.05);
+  color: hsl(var(--primary));
+}
+
+/* Destructive variant — outlined in the destructive hue so the
+   danger signal carries the color while keeping the sci-fi
+   outlined vocabulary. The hover box-shadow is destructive-tinted
+   too; it overrides the universal active-glow rule further down
+   (which would otherwise paint a primary halo on a destructive
+   button) via higher specificity. */
 [data-preset="scifi"] .dr-btn[data-variant="destructive"] {
-  background-color: hsl(var(--destructive));
-  color: hsl(var(--destructive-foreground));
-  border-color: hsl(var(--destructive));
+  border-color: hsl(var(--destructive) / 0.55);
+  background-color: hsl(var(--destructive) / 0.05);
+  color: hsl(var(--destructive));
+  box-shadow:
+    inset 0 0 8px hsl(var(--destructive) / 0.14),
+    0 0 6px hsl(var(--destructive) / 0.2);
 }
 [data-preset="scifi"] .dr-btn[data-variant="destructive"]:hover:not(:disabled) {
-  background-color: hsl(var(--destructive) / 0.85);
   border-color: hsl(var(--destructive));
-  color: hsl(var(--destructive-foreground));
+  background-color: hsl(var(--destructive) / 0.12);
+  color: hsl(var(--destructive));
   box-shadow:
-    0 0 4px hsl(var(--destructive) / 0.55),
-    0 0 14px hsl(var(--destructive) / 0.32);
+    inset 0 0 10px hsl(var(--destructive) / 0.32),
+    0 0 6px hsl(var(--destructive) / 0.65),
+    0 0 18px hsl(var(--destructive) / 0.4);
 }
 [data-preset="scifi"][data-scifi-frame="notched"]
   .dr-btn:not([data-size="icon"]) {
