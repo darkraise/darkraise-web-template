@@ -22,50 +22,33 @@
 
 /* --- Intensity axis: bind glow tokens per level ------------------ */
 
-/* All glow + screen-emission tokens key off --surface-tint (the
-   Surface Color picker) rather than --primary (the Accent Color
-   picker). This decouples the holographic screen hue from button/
-   focus/selection signals: the surface color drives the ambient
-   light of the HUD, while the accent color stays available as the
-   distinct "highlight" hue for explicit UI states. Pick a saturated
-   surface color (e.g. teal, amber, cyan) to get vibrant screen glow;
-   pick slate to get a desaturated grey ambient. --surface-tint is
-   set by the engine in generateTokens.ts and is designed exactly
-   for this use case (see comment block there). */
-
 [data-preset="scifi"][data-scifi-intensity="dim"] {
   --scifi-text-glow:
-    0 0 2px hsl(var(--surface-tint) / 0.4),
-    0 0 6px hsl(var(--surface-tint) / 0.18);
-  --scifi-edge-glow: 0 0 0 1px hsl(var(--surface-tint) / 0.4);
+    0 0 2px hsl(var(--primary) / 0.4), 0 0 6px hsl(var(--primary) / 0.18);
+  --scifi-edge-glow: 0 0 0 1px hsl(var(--primary) / 0.4);
   /* Rest glow — present on EVERY bordered surface. Inset gives the
      "lit from within" hologram look; outer extends the projection
      into the page. Subtle so plain panels don't scream. */
   --scifi-rest-glow:
-    inset 0 0 6px hsl(var(--surface-tint) / 0.08),
-    0 0 4px hsl(var(--surface-tint) / 0.12);
+    inset 0 0 6px hsl(var(--primary) / 0.08), 0 0 4px hsl(var(--primary) / 0.12);
   /* Active glow — present on every focused/active/checked/selected
      state. Same inset+outer shape, stronger alpha + bigger spread.
      Communicates "this is the lit element" without losing the at-
      rest baseline. */
   --scifi-active-glow:
-    inset 0 0 8px hsl(var(--surface-tint) / 0.22),
-    0 0 4px hsl(var(--surface-tint) / 0.5),
-    0 0 12px hsl(var(--surface-tint) / 0.28);
+    inset 0 0 8px hsl(var(--primary) / 0.22), 0 0 4px hsl(var(--primary) / 0.5),
+    0 0 12px hsl(var(--primary) / 0.28);
   --affordance-glow:
-    inset 0 0 0 1px hsl(var(--surface-tint) / 0.5),
-    0 0 8px hsl(var(--surface-tint) / 0.3);
+    inset 0 0 0 1px hsl(var(--primary) / 0.5), 0 0 8px hsl(var(--primary) / 0.3);
   --affordance-glow-bottom:
-    0 2px 0 hsl(var(--surface-tint) / 0.5),
-    0 4px 12px -2px hsl(var(--surface-tint) / 0.3);
-  --shadow-button: 0 0 6px hsl(var(--surface-tint) / 0.25);
-  --card-elevation-low: 0 0 8px hsl(var(--surface-tint) / 0.18);
-  --card-elevation-medium: 0 0 12px hsl(var(--surface-tint) / 0.28);
+    0 2px 0 hsl(var(--primary) / 0.5), 0 4px 12px -2px hsl(var(--primary) / 0.3);
+  --shadow-button: 0 0 6px hsl(var(--primary) / 0.25);
+  --card-elevation-low: 0 0 8px hsl(var(--primary) / 0.18);
+  --card-elevation-medium: 0 0 12px hsl(var(--primary) / 0.28);
   --card-elevation-high:
-    inset 0 0 20px hsl(var(--surface-tint) / 0.14),
-    0 0 8px hsl(var(--surface-tint) / 0.45),
-    0 0 18px hsl(var(--surface-tint) / 0.3),
-    0 0 38px hsl(var(--surface-tint) / 0.15);
+    inset 0 0 20px hsl(var(--primary) / 0.14),
+    0 0 8px hsl(var(--primary) / 0.45), 0 0 18px hsl(var(--primary) / 0.3),
+    0 0 38px hsl(var(--primary) / 0.15);
   /* Overlay/modal screen glow — popover, dialog, sheet, drawer,
      tooltip, menu, etc. The inset emission makes the panel look
      LIT FROM WITHIN like an LCD/holographic projection; the outer
@@ -73,95 +56,73 @@
      space. Without inset emission, overlays read as "dark cards
      with a glowing border"; with it, they read as "screens." */
   --surface-overlay-shadow:
-    inset 0 0 18px hsl(var(--surface-tint) / 0.12),
-    0 0 0 1px hsl(var(--surface-tint) / 0.4),
-    0 0 6px hsl(var(--surface-tint) / 0.4),
-    0 0 18px hsl(var(--surface-tint) / 0.28),
-    0 0 40px hsl(var(--surface-tint) / 0.12);
+    inset 0 0 18px hsl(var(--primary) / 0.12),
+    0 0 0 1px hsl(var(--primary) / 0.4), 0 0 6px hsl(var(--primary) / 0.4),
+    0 0 18px hsl(var(--primary) / 0.28), 0 0 40px hsl(var(--primary) / 0.12);
 }
 
 [data-preset="scifi"][data-scifi-intensity="normal"] {
   --scifi-text-glow:
-    0 0 4px hsl(var(--surface-tint) / 0.65),
-    0 0 12px hsl(var(--surface-tint) / 0.32);
-  --scifi-edge-glow: 0 0 0 1px hsl(var(--surface-tint) / 0.7);
+    0 0 4px hsl(var(--primary) / 0.65), 0 0 12px hsl(var(--primary) / 0.32);
+  --scifi-edge-glow: 0 0 0 1px hsl(var(--primary) / 0.7);
   --scifi-rest-glow:
-    inset 0 0 8px hsl(var(--surface-tint) / 0.14),
-    0 0 6px hsl(var(--surface-tint) / 0.2);
+    inset 0 0 8px hsl(var(--primary) / 0.14), 0 0 6px hsl(var(--primary) / 0.2);
   --scifi-active-glow:
-    inset 0 0 10px hsl(var(--surface-tint) / 0.32),
-    0 0 6px hsl(var(--surface-tint) / 0.65),
-    0 0 18px hsl(var(--surface-tint) / 0.4);
+    inset 0 0 10px hsl(var(--primary) / 0.32),
+    0 0 6px hsl(var(--primary) / 0.65), 0 0 18px hsl(var(--primary) / 0.4);
   --affordance-glow:
-    inset 0 0 0 1px hsl(var(--surface-tint) / 0.8),
-    0 0 4px hsl(var(--surface-tint) / 0.6),
-    0 0 16px hsl(var(--surface-tint) / 0.55);
+    inset 0 0 0 1px hsl(var(--primary) / 0.8),
+    0 0 4px hsl(var(--primary) / 0.6), 0 0 16px hsl(var(--primary) / 0.55);
   --affordance-glow-bottom:
-    0 2px 0 hsl(var(--surface-tint) / 0.85),
-    0 8px 22px -2px hsl(var(--surface-tint) / 0.55);
+    0 2px 0 hsl(var(--primary) / 0.85),
+    0 8px 22px -2px hsl(var(--primary) / 0.55);
   --shadow-button:
-    0 0 4px hsl(var(--surface-tint) / 0.5),
-    0 0 14px hsl(var(--surface-tint) / 0.3);
+    0 0 4px hsl(var(--primary) / 0.5), 0 0 14px hsl(var(--primary) / 0.3);
   --card-elevation-low:
-    0 0 4px hsl(var(--surface-tint) / 0.45),
-    0 0 14px hsl(var(--surface-tint) / 0.32);
+    0 0 4px hsl(var(--primary) / 0.45), 0 0 14px hsl(var(--primary) / 0.32);
   --card-elevation-medium:
-    0 0 6px hsl(var(--surface-tint) / 0.6),
-    0 0 20px hsl(var(--surface-tint) / 0.45);
+    0 0 6px hsl(var(--primary) / 0.6), 0 0 20px hsl(var(--primary) / 0.45);
   --card-elevation-high:
-    inset 0 0 26px hsl(var(--surface-tint) / 0.2),
-    0 0 8px hsl(var(--surface-tint) / 0.8),
-    0 0 28px hsl(var(--surface-tint) / 0.55),
-    0 0 64px hsl(var(--surface-tint) / 0.28);
+    inset 0 0 26px hsl(var(--primary) / 0.2), 0 0 8px hsl(var(--primary) / 0.8),
+    0 0 28px hsl(var(--primary) / 0.55), 0 0 64px hsl(var(--primary) / 0.28);
   --surface-overlay-shadow:
-    inset 0 0 24px hsl(var(--surface-tint) / 0.18),
-    0 0 0 1px hsl(var(--surface-tint) / 0.7),
-    0 0 8px hsl(var(--surface-tint) / 0.55),
-    0 0 28px hsl(var(--surface-tint) / 0.45),
-    0 0 64px hsl(var(--surface-tint) / 0.18);
+    inset 0 0 24px hsl(var(--primary) / 0.18),
+    0 0 0 1px hsl(var(--primary) / 0.7), 0 0 8px hsl(var(--primary) / 0.55),
+    0 0 28px hsl(var(--primary) / 0.45), 0 0 64px hsl(var(--primary) / 0.18);
 }
 
 [data-preset="scifi"][data-scifi-intensity="bright"] {
   --scifi-text-glow:
-    0 0 4px hsl(var(--surface-tint) / 0.75),
-    0 0 14px hsl(var(--surface-tint) / 0.4),
-    0 0 28px hsl(var(--surface-tint) / 0.18);
-  --scifi-edge-glow: 0 0 0 1px hsl(var(--surface-tint) / 0.75);
+    0 0 4px hsl(var(--primary) / 0.75), 0 0 14px hsl(var(--primary) / 0.4),
+    0 0 28px hsl(var(--primary) / 0.18);
+  --scifi-edge-glow: 0 0 0 1px hsl(var(--primary) / 0.75);
   --scifi-rest-glow:
-    inset 0 0 10px hsl(var(--surface-tint) / 0.2),
-    0 0 8px hsl(var(--surface-tint) / 0.28);
+    inset 0 0 10px hsl(var(--primary) / 0.2), 0 0 8px hsl(var(--primary) / 0.28);
   --scifi-active-glow:
-    inset 0 0 14px hsl(var(--surface-tint) / 0.42),
-    0 0 8px hsl(var(--surface-tint) / 0.8),
-    0 0 24px hsl(var(--surface-tint) / 0.55),
-    0 0 48px hsl(var(--surface-tint) / 0.25);
+    inset 0 0 14px hsl(var(--primary) / 0.42),
+    0 0 8px hsl(var(--primary) / 0.8), 0 0 24px hsl(var(--primary) / 0.55),
+    0 0 48px hsl(var(--primary) / 0.25);
   --affordance-glow:
-    inset 0 0 0 1px hsl(var(--surface-tint) / 0.85),
-    0 0 18px hsl(var(--surface-tint) / 0.65);
+    inset 0 0 0 1px hsl(var(--primary) / 0.85),
+    0 0 18px hsl(var(--primary) / 0.65);
   --affordance-glow-bottom:
-    0 2px 0 hsl(var(--surface-tint) / 0.85),
-    0 8px 24px -2px hsl(var(--surface-tint) / 0.6);
+    0 2px 0 hsl(var(--primary) / 0.85),
+    0 8px 24px -2px hsl(var(--primary) / 0.6);
   --shadow-button:
-    0 0 6px hsl(var(--surface-tint) / 0.6),
-    0 0 18px hsl(var(--surface-tint) / 0.32);
+    0 0 6px hsl(var(--primary) / 0.6), 0 0 18px hsl(var(--primary) / 0.32);
   --card-elevation-low:
-    0 0 4px hsl(var(--surface-tint) / 0.5),
-    0 0 14px hsl(var(--surface-tint) / 0.3);
+    0 0 4px hsl(var(--primary) / 0.5), 0 0 14px hsl(var(--primary) / 0.3);
   --card-elevation-medium:
-    0 0 6px hsl(var(--surface-tint) / 0.7),
-    0 0 22px hsl(var(--surface-tint) / 0.5),
-    0 0 44px hsl(var(--surface-tint) / 0.25);
+    0 0 6px hsl(var(--primary) / 0.7), 0 0 22px hsl(var(--primary) / 0.5),
+    0 0 44px hsl(var(--primary) / 0.25);
   --card-elevation-high:
-    inset 0 0 32px hsl(var(--surface-tint) / 0.28),
-    0 0 10px hsl(var(--surface-tint) / 0.85),
-    0 0 32px hsl(var(--surface-tint) / 0.65),
-    0 0 72px hsl(var(--surface-tint) / 0.32);
+    inset 0 0 32px hsl(var(--primary) / 0.28),
+    0 0 10px hsl(var(--primary) / 0.85), 0 0 32px hsl(var(--primary) / 0.65),
+    0 0 72px hsl(var(--primary) / 0.32);
   --surface-overlay-shadow:
-    inset 0 0 32px hsl(var(--surface-tint) / 0.28),
-    0 0 0 1px hsl(var(--surface-tint) / 0.85),
-    0 0 12px hsl(var(--surface-tint) / 0.7),
-    0 0 36px hsl(var(--surface-tint) / 0.55),
-    0 0 90px hsl(var(--surface-tint) / 0.28);
+    inset 0 0 32px hsl(var(--primary) / 0.28),
+    0 0 0 1px hsl(var(--primary) / 0.85), 0 0 12px hsl(var(--primary) / 0.7),
+    0 0 36px hsl(var(--primary) / 0.55), 0 0 90px hsl(var(--primary) / 0.28);
 }
 
 /* --- Non-axis tokens --------------------------------------------- */
@@ -265,7 +226,7 @@
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-navigation-menu-content {
   border-color: transparent;
   box-shadow:
-    inset 0 0 0 1px hsl(var(--surface-tint) / 0.7),
+    inset 0 0 0 1px hsl(var(--primary) / 0.7),
     var(--surface-overlay-shadow);
 }
 
@@ -294,7 +255,7 @@
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-drawer-content {
   border-color: transparent;
   box-shadow:
-    inset 0 0 0 1px hsl(var(--surface-tint) / 0.7),
+    inset 0 0 0 1px hsl(var(--primary) / 0.7),
     var(--surface-overlay-shadow);
 }
 
@@ -933,8 +894,8 @@
   z-index: 0;
   opacity: 1;
   background-image:
-    linear-gradient(hsl(var(--surface-tint) / 0.07) 1px, transparent 1px),
-    linear-gradient(90deg, hsl(var(--surface-tint) / 0.07) 1px, transparent 1px);
+    linear-gradient(hsl(var(--primary) / 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--primary) / 0.07) 1px, transparent 1px);
   background-size: 50px 50px;
   mask-image: radial-gradient(ellipse at center, black 40%, transparent 95%);
   -webkit-mask-image: radial-gradient(
@@ -960,15 +921,8 @@
   pointer-events: none;
   z-index: 1;
   background-image:
-    linear-gradient(
-      hsl(var(--surface-tint) / 0.5),
-      hsl(var(--surface-tint) / 0.5)
-    ),
-    linear-gradient(
-      90deg,
-      hsl(var(--surface-tint) / 0.5),
-      hsl(var(--surface-tint) / 0.5)
-    );
+    linear-gradient(hsl(var(--primary) / 0.5), hsl(var(--primary) / 0.5)),
+    linear-gradient(90deg, hsl(var(--primary) / 0.5), hsl(var(--primary) / 0.5));
   background-position: center;
   background-size:
     1px 14px,
@@ -1000,9 +954,9 @@
   font-size: 0.5rem;
   letter-spacing: 0.18em;
   font-weight: 700;
-  color: hsl(var(--surface-tint) / 0.55);
+  color: hsl(var(--primary) / 0.55);
   pointer-events: none;
-  text-shadow: 0 0 3px hsl(var(--surface-tint) / 0.45);
+  text-shadow: 0 0 3px hsl(var(--primary) / 0.45);
   font-family: var(--font-sans);
   z-index: 2;
 }
