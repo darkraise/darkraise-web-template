@@ -278,7 +278,26 @@
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-badge,
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-pagination-link,
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-tabs-trigger,
-[data-preset="scifi"][data-scifi-frame="notched"] .dr-progress {
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-progress,
+/* Interactive items — toggle, sidebar nav, list items, menu items,
+   tree items, calendar day buttons, etc. The clip-path is applied
+   to the element itself, so any background fill it gains on hover
+   or selection inherits the notched polygon shape. That keeps the
+   hover and selected states consistent with the rest of the sci-fi
+   geometry instead of rendering as rectangular bars under notched. */
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-toggle,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-toggle-group,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-segment-group-item,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-sidebar-nav-link,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-listbox-item,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-menu-item,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-menubar-item,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-select-item,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-combobox-item,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-tree-view-item,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-tree-view-branch-control,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-calendar-day-btn,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-navigation-menu-trigger {
   clip-path: polygon(
     6px 0,
     100% 0,
