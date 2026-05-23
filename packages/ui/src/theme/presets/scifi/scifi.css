@@ -189,25 +189,28 @@
    the box AFTER the border is rendered, so on the diagonal cuts the
    border is clipped to nothing — leaving the diagonals with only the
    outer box-shadow halo while the rectangular edges show border +
-   halo stacked. Visually that reads as "rectangular edges thicker,
-   diagonals thinner" — the user's exact complaint.
+   halo stacked. Visually that reads as "rectangular edges look ~2px
+   thick, diagonals look ~1px thick" — the user's original complaint.
 
-   For overlay-tier surfaces (popover, dialog, dropdown, menu, etc.)
-   the surface-overlay-shadow / card-elevation-high token chain already
-   includes a `0 0 0 1px primary` halo that follows the clipped polygon
-   uniformly. Strip the CSS border on those so the halo alone draws
-   the perimeter, and every edge — rectangular or diagonal — ends up
-   the same thickness.
+   The 1px primary stroke is part of the sci-fi screen aesthetic, so
+   we can't just strip the border — we need a 1px stroke that follows
+   the clipped polygon uniformly on every edge. INSET box-shadows do
+   follow clip-path (the inset draws inside the clipped shape, hugging
+   its perimeter regardless of edge angle), while CSS `border` does not.
 
-   Not applied to .dr-card or to surfaces with their own non-halo
-   shadow chain (.dr-toast, .dr-banner, .dr-alert, .dr-tabs-list,
-   .dr-listbox, .dr-segment-group, .dr-floating-panel, etc.) — those
-   need a separate fix if the same inconsistency shows up. */
+   Fix: strip the CSS border (set transparent) and PREPEND an inset
+   `0 0 0 1px primary` stroke to the existing box-shadow chain. The
+   inset stroke replaces the border with a polygon-aware equivalent.
+
+   Two tiers because they use different shadow tokens:
+   - Overlay-tier surfaces consume `var(--surface-overlay-shadow)`
+     (popover, dropdown, menu, select, combobox, date-picker, color-
+     picker, command, navigation-menu, tooltip, hover-card, vdm,
+     menubar)
+   - Modal-tier surfaces consume `.modal-surface` utility =
+     `var(--elevation-high), var(--inset-hi-strong)` (dialog,
+     alert-dialog, sheet, drawer) */
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-popover-content,
-[data-preset="scifi"][data-scifi-frame="notched"] .dr-dialog-content,
-[data-preset="scifi"][data-scifi-frame="notched"] .dr-alert-dialog-content,
-[data-preset="scifi"][data-scifi-frame="notched"] .dr-sheet-content,
-[data-preset="scifi"][data-scifi-frame="notched"] .dr-drawer-content,
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-menu-content,
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-menu-sub-content,
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-menubar-content,
@@ -222,6 +225,20 @@
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-vdm-content,
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-navigation-menu-content {
   border-color: transparent;
+  box-shadow:
+    inset 0 0 0 1px hsl(var(--primary) / 0.7),
+    var(--surface-overlay-shadow);
+}
+
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-dialog-content,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-alert-dialog-content,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-sheet-content,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-drawer-content {
+  border-color: transparent;
+  box-shadow:
+    inset 0 0 0 1px hsl(var(--primary) / 0.7),
+    var(--elevation-high),
+    var(--inset-hi-strong);
 }
 
 /* Smaller controls and inline elements get a tighter 6px notch so
