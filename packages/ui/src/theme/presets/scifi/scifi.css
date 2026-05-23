@@ -350,6 +350,30 @@
   box-shadow: var(--scifi-edge-glow);
 }
 
+/* Compound-input inner fields are chromeless by design — the wrapper
+   owns the border, background, glow, and backdrop-filter. But the
+   sci-fi rules above target .dr-input (which inner fields ALSO carry,
+   e.g. NumberInput's input has class="dr-input dr-number-input-field")
+   at specificity (0,2,0), beating the base chromeless rules at (0,1,0)
+   — so the inner field grows its own border + bg + glow + blur on top
+   of the wrapper's, producing a doubled border and a doubled background
+   layer. Re-assert chromelessness at (0,3,0) by scoping through the
+   wrapper. Same gotcha applies to .dr-input-group (Input prefix/suffix
+   wrapper). */
+[data-preset="scifi"] .dr-number-input-control .dr-input,
+[data-preset="scifi"] .dr-date-picker-control .dr-input,
+[data-preset="scifi"] .dr-color-picker-control .dr-input,
+[data-preset="scifi"] .dr-combobox-control .dr-input,
+[data-preset="scifi"] .dr-multi-select-control .dr-input,
+[data-preset="scifi"] .dr-tags-input-control .dr-input,
+[data-preset="scifi"] .dr-input-group .dr-input {
+  border: 0;
+  background-color: transparent;
+  background-image: none;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
 /* NumberInput internal pieces — without these overrides the field
    reads as "two borders + two background layers" because the
    addon strips and the stepper-group divider use the neutral
