@@ -28,6 +28,18 @@
   --scifi-text-glow:
     0 0 2px hsl(var(--primary) / 0.4), 0 0 6px hsl(var(--primary) / 0.18);
   --scifi-edge-glow: 0 0 0 1px hsl(var(--primary) / 0.4);
+  /* Rest glow — present on EVERY bordered surface. Inset gives the
+     "lit from within" hologram look; outer extends the projection
+     into the page. Subtle so plain panels don't scream. */
+  --scifi-rest-glow:
+    inset 0 0 6px hsl(var(--primary) / 0.08), 0 0 4px hsl(var(--primary) / 0.12);
+  /* Active glow — present on every focused/active/checked/selected
+     state. Same inset+outer shape, stronger alpha + bigger spread.
+     Communicates "this is the lit element" without losing the at-
+     rest baseline. */
+  --scifi-active-glow:
+    inset 0 0 8px hsl(var(--primary) / 0.22), 0 0 4px hsl(var(--primary) / 0.5),
+    0 0 12px hsl(var(--primary) / 0.28);
   --affordance-glow:
     inset 0 0 0 1px hsl(var(--primary) / 0.5), 0 0 8px hsl(var(--primary) / 0.3);
   --affordance-glow-bottom:
@@ -45,6 +57,11 @@
   --scifi-text-glow:
     0 0 4px hsl(var(--primary) / 0.65), 0 0 12px hsl(var(--primary) / 0.32);
   --scifi-edge-glow: 0 0 0 1px hsl(var(--primary) / 0.7);
+  --scifi-rest-glow:
+    inset 0 0 8px hsl(var(--primary) / 0.14), 0 0 6px hsl(var(--primary) / 0.2);
+  --scifi-active-glow:
+    inset 0 0 10px hsl(var(--primary) / 0.32),
+    0 0 6px hsl(var(--primary) / 0.65), 0 0 18px hsl(var(--primary) / 0.4);
   --affordance-glow:
     inset 0 0 0 1px hsl(var(--primary) / 0.8),
     0 0 4px hsl(var(--primary) / 0.6), 0 0 16px hsl(var(--primary) / 0.55);
@@ -69,6 +86,12 @@
     0 0 4px hsl(var(--primary) / 0.75), 0 0 14px hsl(var(--primary) / 0.4),
     0 0 28px hsl(var(--primary) / 0.18);
   --scifi-edge-glow: 0 0 0 1px hsl(var(--primary) / 0.75);
+  --scifi-rest-glow:
+    inset 0 0 10px hsl(var(--primary) / 0.2), 0 0 8px hsl(var(--primary) / 0.28);
+  --scifi-active-glow:
+    inset 0 0 14px hsl(var(--primary) / 0.42),
+    0 0 8px hsl(var(--primary) / 0.8), 0 0 24px hsl(var(--primary) / 0.55),
+    0 0 48px hsl(var(--primary) / 0.25);
   --affordance-glow:
     inset 0 0 0 1px hsl(var(--primary) / 0.85),
     0 0 18px hsl(var(--primary) / 0.65);
@@ -690,4 +713,109 @@
 }
 [data-preset="scifi"] .dr-steps-indicator[data-status="complete"] {
   box-shadow: inset 0 0 0 1px hsl(var(--primary));
+}
+
+/* --- Revamp 3: Universal hologram glow on borders + selections --- */
+/* Real LCD/holographic HUDs project light — every surface emits
+   from within (inset) AND throws light onto adjacent space (outer).
+   Apply --scifi-rest-glow to every bordered/contained surface, and
+   --scifi-active-glow to every focused / active / checked / selected
+   state. This is what makes the preset feel like a working hologram
+   rather than "dark UI with bright borders." */
+
+[data-preset="scifi"] .dr-card,
+[data-preset="scifi"] .dr-input,
+[data-preset="scifi"] .dr-textarea,
+[data-preset="scifi"] .dr-badge,
+[data-preset="scifi"] .dr-tabs-list,
+[data-preset="scifi"] .dr-listbox,
+[data-preset="scifi"] .dr-calendar,
+[data-preset="scifi"] .dr-alert,
+[data-preset="scifi"] .dr-banner,
+[data-preset="scifi"] .dr-toast,
+[data-preset="scifi"] .dr-progress,
+[data-preset="scifi"] .dr-select-trigger,
+[data-preset="scifi"] .dr-pagination-link,
+[data-preset="scifi"] .dr-menubar,
+[data-preset="scifi"] .dr-checkbox,
+[data-preset="scifi"] .dr-radio-group-item,
+[data-preset="scifi"] .dr-switch,
+[data-preset="scifi"] .dr-toolbar,
+[data-preset="scifi"] .dr-floating-panel,
+[data-preset="scifi"] .dr-segment-group,
+[data-preset="scifi"] .dr-steps-indicator {
+  box-shadow: var(--scifi-rest-glow);
+}
+
+/* Buttons need the rest-glow on the resting state but lose it when
+   not interactive (icon-only buttons in toolbars otherwise look
+   over-decorated). Default + outline variants get it. */
+[data-preset="scifi"] .dr-btn[data-variant="default"],
+[data-preset="scifi"] .dr-btn[data-variant="outline"],
+[data-preset="scifi"] .dr-btn[data-variant="secondary"] {
+  box-shadow: var(--scifi-rest-glow);
+}
+
+/* Active / hover / focused / checked / selected — anywhere the user
+   has "lit up" an element gets the stronger composite glow. The
+   selectors deliberately overlap with state-specific rules earlier
+   in this file; the universal rule here wins for the box-shadow
+   property because it's source-ordered LAST. Text colors, borders,
+   transforms, and clip-paths all stay intact (different properties). */
+[data-preset="scifi"] .dr-btn:hover:not(:disabled),
+[data-preset="scifi"] .dr-input:focus-visible,
+[data-preset="scifi"] .dr-textarea:focus-visible,
+[data-preset="scifi"] .dr-select-trigger:focus-visible,
+[data-preset="scifi"] .dr-checkbox[data-state="checked"],
+[data-preset="scifi"] .dr-checkbox[data-state="indeterminate"],
+[data-preset="scifi"] .dr-radio-group-item[data-state="checked"],
+[data-preset="scifi"] .dr-switch[data-state="checked"],
+[data-preset="scifi"] .dr-tabs-trigger[data-state="active"],
+[data-preset="scifi"] .dr-pagination-link[data-active="true"],
+[data-preset="scifi"] .dr-tree-view-branch-control[data-selected="true"],
+[data-preset="scifi"] .dr-tree-view-item[data-selected="true"],
+[data-preset="scifi"] .dr-listbox-item[data-selected="true"],
+[data-preset="scifi"] .dr-calendar-day-btn[data-selected-single="true"],
+[data-preset="scifi"] .dr-calendar-day-btn[data-range-start="true"],
+[data-preset="scifi"] .dr-calendar-day-btn[data-range-end="true"],
+[data-preset="scifi"] .dr-calendar-day-btn[data-range-single="true"],
+[data-preset="scifi"] .dr-steps-indicator[data-status="current"],
+[data-preset="scifi"] .dr-steps-indicator[data-status="complete"],
+[data-preset="scifi"] .dr-menu-item[data-highlighted],
+[data-preset="scifi"] .dr-menu-item:focus,
+[data-preset="scifi"] .dr-toggle[data-state="on"] {
+  box-shadow: var(--scifi-active-glow);
+}
+
+/* Slider thumb deserves a focused/dragging hologram glow too. The
+   slider rest-glow on the track would over-decorate a thin bar, so
+   the track keeps its existing styling and only the thumb glows. */
+[data-preset="scifi"] .dr-slider-thumb {
+  box-shadow: var(--scifi-rest-glow);
+}
+[data-preset="scifi"] .dr-slider-thumb:hover,
+[data-preset="scifi"] .dr-slider-thumb:focus-visible {
+  box-shadow: var(--scifi-active-glow);
+}
+
+/* Hover-into-rest transition so the glow doesn't snap. */
+[data-preset="scifi"] .dr-btn,
+[data-preset="scifi"] .dr-input,
+[data-preset="scifi"] .dr-textarea,
+[data-preset="scifi"] .dr-select-trigger,
+[data-preset="scifi"] .dr-tabs-trigger,
+[data-preset="scifi"] .dr-pagination-link,
+[data-preset="scifi"] .dr-tree-view-branch-control,
+[data-preset="scifi"] .dr-tree-view-item,
+[data-preset="scifi"] .dr-listbox-item,
+[data-preset="scifi"] .dr-calendar-day-btn,
+[data-preset="scifi"] .dr-checkbox,
+[data-preset="scifi"] .dr-radio-group-item,
+[data-preset="scifi"] .dr-switch,
+[data-preset="scifi"] .dr-slider-thumb {
+  transition:
+    box-shadow 180ms ease-out,
+    border-color 150ms,
+    background-color 150ms,
+    color 150ms;
 }
