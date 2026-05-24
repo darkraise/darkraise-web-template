@@ -12,7 +12,8 @@
     "format": "prettier --write \"**/*.{ts,tsx,css,json,md}\"",
     "typecheck": "pnpm -r typecheck",
     "storybook": "pnpm --filter darkraise-ui storybook",
-    "publish:ui": "pnpm --filter darkraise-ui publish"
+    "publish:ui": "pnpm --filter darkraise-ui publish",
+    "publish:create-app": "pnpm --filter create-darkraise-web-template publish"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.5.0",
