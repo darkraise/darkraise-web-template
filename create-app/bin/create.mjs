@@ -22,21 +22,33 @@ const ACCENT_COLORS = [
   "fuchsia", "pink", "rose",
 ]
 const SURFACE_COLORS = ["slate", ...ACCENT_COLORS]
-const SURFACE_STYLES = ["default", "glassmorphism"]
+const PRESETS = ["default", "glass", "neon", "terminal", "scifi", "playful"]
 const BACKGROUND_STYLES = ["solid", "gradient"]
+const BACKGROUND_INTENSITIES = ["subtle", "balanced", "vivid", "intense"]
+const GRADIENT_PATTERNS = ["blobs", "aurora", "spotlight", "mesh"]
+const DENSITIES = ["compact", "cozy", "comfortable", "spacious"]
+const ELEVATIONS = ["flat", "low", "medium", "high"]
+const RADII = ["sharp", "subtle", "rounded", "pill"]
 const MODES = ["light", "dark", "system"]
 const LAYOUTS = ["sidebar", "stacked", "top-nav", "split-panel"]
+// Mirrors `ThemeConfig.switcher.axes` in
+// packages/ui/src/theme/themeConfig.ts. `presetAxes` is a master
+// toggle for whether the per-preset axis controls (e.g. neon glow,
+// scifi intensity/frame) appear in the switcher panel.
 const THEME_AXIS_KEYS = [
-  "mode", "accentColor", "surfaceColor", "surfaceStyle", "backgroundStyle",
-  "density", "elevation", "buttonElevation",
+  "mode", "accentColor", "surfaceColor", "preset",
+  "backgroundStyle", "backgroundIntensity", "gradientPattern",
+  "density", "elevation", "buttonElevation", "radius",
+  "presetAxes",
 ]
 
 const argv = minimist(process.argv.slice(2), {
   boolean: ["y"],
   string: [
-    "layout", "accent", "surface-color", "surface-style",
-    "background", "mode", "theme-axes",
-    "density", "elevation", "button-elevation",
+    "layout", "accent", "surface-color", "preset",
+    "background", "background-intensity", "gradient-pattern",
+    "mode", "theme-axes",
+    "density", "elevation", "button-elevation", "radius",
     "host", "port",
   ],
   alias: { y: "yes" },
@@ -63,12 +75,15 @@ function validate(value, allowed, label) {
 validate(argv.layout, LAYOUTS, "layout")
 validate(argv.accent, ACCENT_COLORS, "accent color")
 validate(argv["surface-color"], SURFACE_COLORS, "surface color")
-validate(argv["surface-style"], SURFACE_STYLES, "surface style")
+validate(argv.preset, PRESETS, "preset")
 validate(argv.background, BACKGROUND_STYLES, "background")
+validate(argv["background-intensity"], BACKGROUND_INTENSITIES, "background-intensity")
+validate(argv["gradient-pattern"], GRADIENT_PATTERNS, "gradient-pattern")
 validate(argv.mode, MODES, "mode")
-validate(argv.density, ["compact", "cozy", "comfortable", "spacious"], "density")
-validate(argv.elevation, ["flat", "low", "medium", "high"], "elevation")
-validate(argv["button-elevation"], ["flat", "low", "medium", "high"], "button-elevation")
+validate(argv.density, DENSITIES, "density")
+validate(argv.elevation, ELEVATIONS, "elevation")
+validate(argv["button-elevation"], ELEVATIONS, "button-elevation")
+validate(argv.radius, RADII, "radius")
 
 if (argv["theme-axes"] !== undefined) {
   const axes = argv["theme-axes"].split(",")
@@ -155,10 +170,10 @@ async function main() {
     }),
   ))
 
-  const surfaceStyle = argv["surface-style"] || (skipPrompts ? "default" : cancelled(
+  const preset = argv.preset || (skipPrompts ? "default" : cancelled(
     await p.select({
-      message: "Surface style",
-      options: SURFACE_STYLES.map((s) => ({ value: s, label: s })),
+      message: "Preset",
+      options: PRESETS.map((s) => ({ value: s, label: s })),
       initialValue: "default",
     }),
   ))
@@ -168,6 +183,22 @@ async function main() {
       message: "Background",
       options: BACKGROUND_STYLES.map((b) => ({ value: b, label: b })),
       initialValue: "solid",
+    }),
+  ))
+
+  const backgroundIntensity = argv["background-intensity"] || (skipPrompts ? "balanced" : cancelled(
+    await p.select({
+      message: "Background intensity",
+      options: BACKGROUND_INTENSITIES.map((i) => ({ value: i, label: i })),
+      initialValue: "balanced",
+    }),
+  ))
+
+  const gradientPattern = argv["gradient-pattern"] || (skipPrompts ? "blobs" : cancelled(
+    await p.select({
+      message: "Gradient pattern",
+      options: GRADIENT_PATTERNS.map((g) => ({ value: g, label: g })),
+      initialValue: "blobs",
     }),
   ))
 
@@ -182,7 +213,7 @@ async function main() {
   const density = argv.density || (skipPrompts ? "cozy" : cancelled(
     await p.select({
       message: "Density",
-      options: ["compact", "cozy", "comfortable", "spacious"].map((d) => ({ value: d, label: d })),
+      options: DENSITIES.map((d) => ({ value: d, label: d })),
       initialValue: "cozy",
     }),
   ))
@@ -190,7 +221,7 @@ async function main() {
   const elevation = argv.elevation || (skipPrompts ? "medium" : cancelled(
     await p.select({
       message: "Elevation",
-      options: ["flat", "low", "medium", "high"].map((e) => ({ value: e, label: e })),
+      options: ELEVATIONS.map((e) => ({ value: e, label: e })),
       initialValue: "medium",
     }),
   ))
@@ -198,8 +229,16 @@ async function main() {
   const buttonElevation = argv["button-elevation"] || (skipPrompts ? "flat" : cancelled(
     await p.select({
       message: "Button elevation",
-      options: ["flat", "low", "medium", "high"].map((e) => ({ value: e, label: e })),
+      options: ELEVATIONS.map((e) => ({ value: e, label: e })),
       initialValue: "flat",
+    }),
+  ))
+
+  const radius = argv.radius || (skipPrompts ? "rounded" : cancelled(
+    await p.select({
+      message: "Radius",
+      options: RADII.map((r) => ({ value: r, label: r })),
+      initialValue: "rounded",
     }),
   ))
 
@@ -230,11 +269,15 @@ async function main() {
             { value: "mode", label: "Mode (light/dark/system)" },
             { value: "accentColor", label: "Accent color" },
             { value: "surfaceColor", label: "Surface color" },
-            { value: "surfaceStyle", label: "Surface style" },
-            { value: "backgroundStyle", label: "Background" },
+            { value: "preset", label: "Preset (default/glass/neon/terminal/scifi/playful)" },
+            { value: "backgroundStyle", label: "Background style" },
+            { value: "backgroundIntensity", label: "Background intensity" },
+            { value: "gradientPattern", label: "Gradient pattern" },
             { value: "density", label: "Density" },
             { value: "elevation", label: "Elevation" },
             { value: "buttonElevation", label: "Button elevation" },
+            { value: "radius", label: "Radius" },
+            { value: "presetAxes", label: "Preset-specific axes (e.g. neon glow, scifi intensity/frame)" },
           ],
           initialValues: THEME_AXIS_KEYS,
         }),
@@ -278,12 +321,15 @@ async function main() {
       defaults: {
         accentColor: accent,
         surfaceColor: surfaceColor,
-        surfaceStyle: surfaceStyle,
+        preset: preset,
         backgroundStyle: background,
+        backgroundIntensity: backgroundIntensity,
+        gradientPattern: gradientPattern,
         mode: mode,
         density: density,
         elevation: elevation,
         buttonElevation: buttonElevation,
+        radius: radius,
       },
       switcher: {
         enabled: themeSwitcherEnabled,
@@ -361,8 +407,24 @@ async function main() {
             : mode
         document.documentElement.setAttribute("data-mode", resolved)
 
-        ;["density", "elevation", "button-elevation"].forEach(function (axis) {
-          var v = localStorage.getItem("theme-" + axis)
+        // Restore every attribute-driven theme axis before React mounts
+        // so the first paint matches the persisted theme. The
+        // attribute-name to localStorage-key map mirrors
+        // packages/ui/src/theme/theme-provider/ThemeProvider.tsx —
+        // note "theme-bg-style" / "theme-bg-intensity" are NOT just
+        // kebab-cased "background-*" keys.
+        var AXIS_LS_KEYS = {
+          "preset": "theme-preset",
+          "background-style": "theme-bg-style",
+          "background-intensity": "theme-bg-intensity",
+          "gradient-pattern": "theme-gradient-pattern",
+          "density": "theme-density",
+          "elevation": "theme-elevation",
+          "button-elevation": "theme-button-elevation",
+          "radius": "theme-radius",
+        }
+        Object.keys(AXIS_LS_KEYS).forEach(function (axis) {
+          var v = localStorage.getItem(AXIS_LS_KEYS[axis])
           if (v) document.documentElement.setAttribute("data-" + axis, v)
         })
       })()
@@ -440,52 +502,26 @@ createRoot(document.getElementById("root")!).render(
   writeProjectFile(targetDir, "src/main.tsx", mainTsx)
 
   // --- src/theme.config.ts ---
-  const themeConfigContent = `import type {
-  AccentColor,
-  SurfaceColor,
-  SurfaceStyle,
-  BackgroundStyle,
-  Density,
-  Elevation,
-  Mode,
-} from "darkraise-ui/theme"
-
-export interface ThemeConfig {
-  defaults: {
-    accentColor: AccentColor
-    surfaceColor: SurfaceColor
-    surfaceStyle: SurfaceStyle
-    backgroundStyle: BackgroundStyle
-    mode: Mode
-    density: Density
-    elevation: Elevation
-    buttonElevation: Elevation
-  }
-  switcher: {
-    enabled: boolean
-    axes: {
-      mode: boolean
-      accentColor: boolean
-      surfaceColor: boolean
-      surfaceStyle: boolean
-      backgroundStyle: boolean
-      density: boolean
-      elevation: boolean
-      buttonElevation: boolean
-    }
-  }
-}
+  // Matches ThemeConfig in packages/ui/src/theme/themeConfig.ts.
+  // The full type is re-exported by `darkraise-ui/theme` so consumers
+  // import it directly rather than restating it here — that keeps the
+  // scaffolded app schema-locked to whichever UI package version is
+  // installed (the create script's defaults are just initial values).
+  const themeConfigContent = `import type { ThemeConfig } from "darkraise-ui/theme"
 
 export const themeConfig: ThemeConfig = {
   defaults: {
     accentColor: "${config.theme.defaults.accentColor}",
     surfaceColor: "${config.theme.defaults.surfaceColor}",
-    surfaceStyle: "${config.theme.defaults.surfaceStyle}",
+    preset: "${config.theme.defaults.preset}",
     backgroundStyle: "${config.theme.defaults.backgroundStyle}",
+    backgroundIntensity: "${config.theme.defaults.backgroundIntensity}",
+    gradientPattern: "${config.theme.defaults.gradientPattern}",
     mode: "${config.theme.defaults.mode}",
     density: "${config.theme.defaults.density}",
     elevation: "${config.theme.defaults.elevation}",
     buttonElevation: "${config.theme.defaults.buttonElevation}",
+    radius: "${config.theme.defaults.radius}",
   },
   switcher: {
     enabled: ${config.theme.switcher.enabled},
@@ -493,11 +529,15 @@ export const themeConfig: ThemeConfig = {
       mode: ${config.theme.switcher.axes.mode},
       accentColor: ${config.theme.switcher.axes.accentColor},
       surfaceColor: ${config.theme.switcher.axes.surfaceColor},
-      surfaceStyle: ${config.theme.switcher.axes.surfaceStyle},
+      preset: ${config.theme.switcher.axes.preset},
       backgroundStyle: ${config.theme.switcher.axes.backgroundStyle},
+      backgroundIntensity: ${config.theme.switcher.axes.backgroundIntensity},
+      gradientPattern: ${config.theme.switcher.axes.gradientPattern},
       density: ${config.theme.switcher.axes.density},
       elevation: ${config.theme.switcher.axes.elevation},
       buttonElevation: ${config.theme.switcher.axes.buttonElevation},
+      radius: ${config.theme.switcher.axes.radius},
+      presetAxes: ${config.theme.switcher.axes.presetAxes},
     },
   },
 }
