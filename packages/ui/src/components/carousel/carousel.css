@@ -7,28 +7,24 @@
     @apply overflow-hidden;
   }
 
+  /* Each slide is full-width (basis-full + no shrink); slides are
+     separated by a 16px gap on the cross-axis end via flex `gap`.
+     Switched from the Embla-style `-ml-4` + `pl-4` trick because that
+     left every visible slide flush with the wrapper's leading edge
+     but recessed 16px from the trailing edge — looked like the
+     slide was clipped on the right. `gap` instead positions every
+     slide flush with both wrapper edges; the 16px appears only
+     BETWEEN slides during drag, which is what you actually want. */
   .dr-carousel-content {
-    @apply flex;
-  }
-
-  .dr-carousel-content[data-orientation="horizontal"] {
-    @apply -ml-4;
+    @apply flex gap-4;
   }
 
   .dr-carousel-content[data-orientation="vertical"] {
-    @apply -mt-4 flex-col;
+    @apply flex-col;
   }
 
   .dr-carousel-item {
     @apply min-w-0 shrink-0 grow-0 basis-full;
-  }
-
-  .dr-carousel-item[data-orientation="horizontal"] {
-    @apply pl-4;
-  }
-
-  .dr-carousel-item[data-orientation="vertical"] {
-    @apply pt-4;
   }
 
   .dr-carousel-previous {
