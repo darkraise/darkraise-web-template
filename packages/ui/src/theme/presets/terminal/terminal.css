@@ -136,12 +136,22 @@
   border-width: 1px;
   border-style: solid;
 }
-[data-preset="terminal"] .dr-btn:not([data-size="icon"])::before {
+/* CLI brackets around text buttons. Two carve-outs prevent the
+   `[`/`]` glyphs from rendering on conceptually-icon-only buttons
+   that happen to skip the `size="icon"` prop:
+   - :not([data-size="icon"])  — explicit opt-out
+   - :not(:has(> .dr-avatar))  — defensive: any button whose only
+     visible child is an Avatar (e.g. UserMenu trigger). Without
+     this, the brackets appear around the avatar and look like
+     strange UI elements adjacent to the avatar. */
+[data-preset="terminal"]
+  .dr-btn:not([data-size="icon"]):not(:has(> .dr-avatar))::before {
   content: "[";
   margin-right: 0.2em;
   opacity: 0.65;
 }
-[data-preset="terminal"] .dr-btn:not([data-size="icon"])::after {
+[data-preset="terminal"]
+  .dr-btn:not([data-size="icon"]):not(:has(> .dr-avatar))::after {
   content: "]";
   margin-left: 0.2em;
   opacity: 0.65;
