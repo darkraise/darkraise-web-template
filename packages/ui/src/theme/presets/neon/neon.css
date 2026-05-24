@@ -57,7 +57,29 @@
     0 0 22px hsl(var(--primary) / 0.18);
   --elevation-current: var(--elevation-medium);
   --neon-text-shadow:
-    0 0 3px hsl(var(--primary) / 0.45), 0 0 6px hsl(var(--primary) / 0.22);
+    0 0 2px hsl(var(--primary) / 0.6), 0 0 6px hsl(var(--primary) / 0.35),
+    0 0 14px hsl(var(--primary) / 0.18);
+  /* Real-neon-tube rest emission. Six layers to recreate the
+     full optical signature of a lit gas tube:
+       1. inset 1px tube wall  — the inside edge of the glass
+       2. inset gas glow       — the gas glowing inward
+       3. outer 1px tube wall  — the outside edge "hot core"
+       4. tight bloom          — the immediate halo into space
+       5. mid bloom            — close-range falloff
+       6. ambient bloom        — wide ambient cast
+     Applied universally to every bordered surface (rule at end of
+     file). At rest the tube reads as "on but not focused"; the
+     active variant below kicks the alphas up for focus/select states. */
+  --neon-rest-glow:
+    inset 0 0 0 1px hsl(var(--primary) / 0.35),
+    inset 0 0 6px hsl(var(--primary) / 0.16),
+    0 0 0 1px hsl(var(--primary) / 0.4), 0 0 3px hsl(var(--primary) / 0.45),
+    0 0 8px hsl(var(--primary) / 0.25), 0 0 18px hsl(var(--primary) / 0.12);
+  --neon-active-glow:
+    inset 0 0 0 1px hsl(var(--primary) / 0.7),
+    inset 0 0 8px hsl(var(--primary) / 0.28),
+    0 0 0 1px hsl(var(--primary) / 0.7), 0 0 5px hsl(var(--primary) / 0.7),
+    0 0 12px hsl(var(--primary) / 0.45), 0 0 28px hsl(var(--primary) / 0.22);
 }
 
 /* Normal — the default; matches the multi-layer baseline from the
@@ -98,7 +120,18 @@
     0 0 48px hsl(var(--primary) / 0.3);
   --elevation-current: var(--elevation-medium);
   --neon-text-shadow:
-    0 0 4px hsl(var(--primary) / 0.6), 0 0 10px hsl(var(--primary) / 0.4);
+    0 0 2px hsl(var(--primary) / 0.85), 0 0 8px hsl(var(--primary) / 0.55),
+    0 0 20px hsl(var(--primary) / 0.28);
+  --neon-rest-glow:
+    inset 0 0 0 1px hsl(var(--primary) / 0.5),
+    inset 0 0 8px hsl(var(--primary) / 0.22),
+    0 0 0 1px hsl(var(--primary) / 0.55), 0 0 4px hsl(var(--primary) / 0.6),
+    0 0 12px hsl(var(--primary) / 0.35), 0 0 28px hsl(var(--primary) / 0.18);
+  --neon-active-glow:
+    inset 0 0 0 1px hsl(var(--primary) / 0.85),
+    inset 0 0 10px hsl(var(--primary) / 0.4),
+    0 0 0 1px hsl(var(--primary) / 0.85), 0 0 6px hsl(var(--primary) / 0.85),
+    0 0 18px hsl(var(--primary) / 0.55), 0 0 44px hsl(var(--primary) / 0.3);
 }
 
 /* Bright — maximum bloom; for hero pages or showcases where the
@@ -139,8 +172,18 @@
     0 0 64px hsl(var(--primary) / 0.42);
   --elevation-current: var(--elevation-medium);
   --neon-text-shadow:
-    0 0 5px hsl(var(--primary) / 0.75), 0 0 14px hsl(var(--primary) / 0.5),
-    0 0 26px hsl(var(--primary) / 0.25);
+    0 0 2px hsl(var(--primary) / 1), 0 0 10px hsl(var(--primary) / 0.7),
+    0 0 24px hsl(var(--primary) / 0.4), 0 0 48px hsl(var(--primary) / 0.18);
+  --neon-rest-glow:
+    inset 0 0 0 1px hsl(var(--primary) / 0.65),
+    inset 0 0 10px hsl(var(--primary) / 0.28),
+    0 0 0 1px hsl(var(--primary) / 0.7), 0 0 5px hsl(var(--primary) / 0.7),
+    0 0 16px hsl(var(--primary) / 0.45), 0 0 38px hsl(var(--primary) / 0.22);
+  --neon-active-glow:
+    inset 0 0 0 1.5px hsl(var(--primary) / 0.95),
+    inset 0 0 14px hsl(var(--primary) / 0.5),
+    0 0 0 1px hsl(var(--primary) / 0.95), 0 0 8px hsl(var(--primary) / 0.95),
+    0 0 24px hsl(var(--primary) / 0.65), 0 0 56px hsl(var(--primary) / 0.36);
 }
 
 /* Intense — saturated maximum bloom for showcase pages or display
@@ -184,8 +227,18 @@
     0 0 84px hsl(var(--primary) / 0.55);
   --elevation-current: var(--elevation-medium);
   --neon-text-shadow:
-    0 0 6px hsl(var(--primary) / 0.9), 0 0 18px hsl(var(--primary) / 0.65),
-    0 0 36px hsl(var(--primary) / 0.35);
+    0 0 2px hsl(var(--primary) / 1), 0 0 12px hsl(var(--primary) / 0.85),
+    0 0 32px hsl(var(--primary) / 0.55), 0 0 64px hsl(var(--primary) / 0.28);
+  --neon-rest-glow:
+    inset 0 0 0 1px hsl(var(--primary) / 0.8),
+    inset 0 0 14px hsl(var(--primary) / 0.38),
+    0 0 0 1px hsl(var(--primary) / 0.85), 0 0 6px hsl(var(--primary) / 0.85),
+    0 0 20px hsl(var(--primary) / 0.6), 0 0 48px hsl(var(--primary) / 0.3);
+  --neon-active-glow:
+    inset 0 0 0 1.5px hsl(var(--primary) / 1),
+    inset 0 0 18px hsl(var(--primary) / 0.65),
+    0 0 0 1px hsl(var(--primary) / 1), 0 0 10px hsl(var(--primary) / 1),
+    0 0 32px hsl(var(--primary) / 0.8), 0 0 72px hsl(var(--primary) / 0.45);
 }
 
 /* Non-glow tokens: same under every glow level. */
@@ -308,4 +361,139 @@
   .dr-number-input-trigger-group
   .dr-number-input-stepper:hover:not(:disabled) {
   background-color: hsl(var(--primary) / 0.12);
+}
+
+/* --- Real neon tube emission ------------------------------------- */
+/* Apply the layered tube-wall recipe to EVERY bordered/contained
+   surface so the surface itself reads as lit-from-within neon, not
+   "dark UI with a faint glow shadow." Without this universal pass,
+   the old recipe only got applied via the auto-elevation tokens on
+   Cards — every other surface (inputs, badges, toggles, popovers,
+   menus, etc.) was relying on the much weaker base shadows and
+   ended up looking flat with only a faint outer halo. */
+
+[data-preset="neon"] .dr-card,
+[data-preset="neon"] .dr-input,
+[data-preset="neon"] .dr-textarea,
+[data-preset="neon"] .dr-input-group,
+[data-preset="neon"] .dr-number-input-control,
+[data-preset="neon"] .dr-date-picker-control,
+[data-preset="neon"] .dr-color-picker-control,
+[data-preset="neon"] .dr-combobox-control,
+[data-preset="neon"] .dr-multi-select-control,
+[data-preset="neon"] .dr-tags-input-control,
+[data-preset="neon"] .dr-input-otp-slot,
+[data-preset="neon"] .dr-badge,
+[data-preset="neon"] .dr-tabs-list,
+[data-preset="neon"] .dr-listbox,
+[data-preset="neon"] .dr-calendar,
+[data-preset="neon"] .dr-alert,
+[data-preset="neon"] .dr-banner,
+[data-preset="neon"] .dr-toast,
+[data-preset="neon"] .dr-progress,
+[data-preset="neon"] .dr-select-trigger,
+[data-preset="neon"] .dr-pagination-link,
+[data-preset="neon"] .dr-menubar,
+[data-preset="neon"] .dr-checkbox,
+[data-preset="neon"] .dr-radio-group-item,
+[data-preset="neon"] .dr-switch,
+[data-preset="neon"] .dr-toolbar,
+[data-preset="neon"] .dr-floating-panel,
+[data-preset="neon"] .dr-segment-group,
+[data-preset="neon"] .dr-steps-indicator {
+  box-shadow: var(--neon-rest-glow);
+}
+
+/* Buttons get the rest emission on default/outline/secondary
+   variants (the ones with visible chrome). Ghost/link skip it so
+   text-only buttons don't get a tube halo around their hit area. */
+[data-preset="neon"] .dr-btn[data-variant="default"],
+[data-preset="neon"] .dr-btn[data-variant="outline"],
+[data-preset="neon"] .dr-btn[data-variant="secondary"],
+[data-preset="neon"] .dr-btn[data-variant="destructive"] {
+  box-shadow: var(--neon-rest-glow);
+}
+
+/* Active/hover/focused/checked/selected — anywhere the user has
+   "lit up" an element, kick the tube to its full saturation. The
+   universal active-glow wins for box-shadow over the rest-glow
+   above via source order. */
+[data-preset="neon"] .dr-btn:hover:not(:disabled),
+[data-preset="neon"] .dr-input:focus-visible,
+[data-preset="neon"] .dr-textarea:focus-visible,
+[data-preset="neon"] .dr-input-group:focus-within,
+[data-preset="neon"] .dr-number-input-control:focus-within,
+[data-preset="neon"] .dr-date-picker-control:focus-within,
+[data-preset="neon"] .dr-color-picker-control:focus-within,
+[data-preset="neon"] .dr-combobox-control:focus-within,
+[data-preset="neon"] .dr-multi-select-control:focus-within,
+[data-preset="neon"] .dr-tags-input-control:focus-within,
+[data-preset="neon"] .dr-input-otp-slot[data-active],
+[data-preset="neon"] .dr-select-trigger:focus-visible,
+[data-preset="neon"] .dr-checkbox[data-state="checked"],
+[data-preset="neon"] .dr-checkbox[data-state="indeterminate"],
+[data-preset="neon"] .dr-radio-group-item[data-state="checked"],
+[data-preset="neon"] .dr-switch[data-state="checked"],
+[data-preset="neon"] .dr-tabs-trigger[data-state="active"],
+[data-preset="neon"] .dr-pagination-link[data-active="true"],
+[data-preset="neon"] .dr-tree-view-branch-control[data-selected="true"],
+[data-preset="neon"] .dr-tree-view-item[data-selected="true"],
+[data-preset="neon"] .dr-listbox-item[data-selected="true"],
+[data-preset="neon"] .dr-calendar-day-btn[data-selected-single="true"],
+[data-preset="neon"] .dr-calendar-day-btn[data-range-start="true"],
+[data-preset="neon"] .dr-calendar-day-btn[data-range-end="true"],
+[data-preset="neon"] .dr-calendar-day-btn[data-range-single="true"],
+[data-preset="neon"] .dr-steps-indicator[data-status="current"],
+[data-preset="neon"] .dr-menu-item[data-highlighted],
+[data-preset="neon"] .dr-menu-item:focus,
+[data-preset="neon"] .dr-toggle[data-state="on"] {
+  box-shadow: var(--neon-active-glow);
+}
+
+/* Slider thumb: rest + active glow so the draggable handle reads
+   as an isolated lit element instead of a flat circle. */
+[data-preset="neon"] .dr-slider-thumb {
+  box-shadow: var(--neon-rest-glow);
+}
+[data-preset="neon"] .dr-slider-thumb:hover,
+[data-preset="neon"] .dr-slider-thumb:focus-visible {
+  box-shadow: var(--neon-active-glow);
+}
+
+/* Hover/focus transition so the rest→active glow swap doesn't
+   snap. Matches the sci-fi pattern for consistency. */
+[data-preset="neon"] .dr-btn,
+[data-preset="neon"] .dr-input,
+[data-preset="neon"] .dr-textarea,
+[data-preset="neon"] .dr-select-trigger,
+[data-preset="neon"] .dr-tabs-trigger,
+[data-preset="neon"] .dr-pagination-link,
+[data-preset="neon"] .dr-tree-view-branch-control,
+[data-preset="neon"] .dr-tree-view-item,
+[data-preset="neon"] .dr-listbox-item,
+[data-preset="neon"] .dr-calendar-day-btn,
+[data-preset="neon"] .dr-checkbox,
+[data-preset="neon"] .dr-radio-group-item,
+[data-preset="neon"] .dr-switch,
+[data-preset="neon"] .dr-slider-thumb {
+  transition:
+    box-shadow 200ms ease-out,
+    border-color 150ms,
+    background-color 150ms,
+    color 150ms;
+}
+
+/* Broaden text bloom: headings + button labels + badge text should
+   all read as glowing neon letters, not just the few elements that
+   happened to use `text-primary`. Card titles too. */
+[data-preset="neon"] h1,
+[data-preset="neon"] h2,
+[data-preset="neon"] h3,
+[data-preset="neon"] .dr-card-title,
+[data-preset="neon"] .dr-badge,
+[data-preset="neon"] .dr-btn[data-variant="default"],
+[data-preset="neon"] .dr-btn[data-variant="outline"],
+[data-preset="neon"] .dr-tabs-trigger[data-state="active"],
+[data-preset="neon"] .dr-pagination-link[data-active="true"] {
+  text-shadow: var(--neon-text-shadow);
 }
