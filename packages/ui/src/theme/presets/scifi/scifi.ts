@@ -2,7 +2,7 @@
 import type { ThemePreset } from "../types"
 
 type ScifiAxes = {
-  intensity: readonly ["dim", "normal", "bright"]
+  intensity: readonly ["dim", "normal", "bright", "intense"]
   frame: readonly ["clean", "notched", "bracketed"]
 }
 
@@ -25,7 +25,12 @@ export const scifi: ThemePreset<ScifiAxes> = {
 
   axes: {
     intensity: {
-      values: ["dim", "normal", "bright"],
+      // 4 values so the ThemeSwitcher's AxisControl auto-renders this
+      // as a slider rather than a 4-cell ToggleGroup (the slider cutoff
+      // is values.length === 4). `intense` extends the ramp beyond
+      // `bright` with saturated multi-layer glow that bleeds noticeably
+      // into surrounding page chrome — for hero pages or showcase demos.
+      values: ["dim", "normal", "bright", "intense"],
       default: "normal",
       label: "Intensity",
       order: 1,

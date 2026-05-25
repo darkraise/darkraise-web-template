@@ -11,7 +11,12 @@ describe("scifi preset", () => {
 
   it("declares intensity + frame axes", () => {
     expect(Object.keys(scifi.axes).sort()).toEqual(["frame", "intensity"])
-    expect(scifi.axes.intensity.values).toEqual(["dim", "normal", "bright"])
+    expect(scifi.axes.intensity.values).toEqual([
+      "dim",
+      "normal",
+      "bright",
+      "intense",
+    ])
     expect(scifi.axes.intensity.default).toBe("normal")
     expect(scifi.axes.frame.values).toEqual(["clean", "notched", "bracketed"])
     expect(scifi.axes.frame.default).toBe("notched")
