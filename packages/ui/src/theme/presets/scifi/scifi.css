@@ -7,10 +7,11 @@
  * scifi.ts references the Orbitron family loaded there.
  *
  * Drives the Sci-fi HUD aesthetic from two preset axes:
- *   - intensity (dim/normal/bright): glow strength on borders, text,
- *     active states. Same multi-layer recipe philosophy as Neon but
- *     tighter — HUD glow is "edge-lit panel" not "neon tube," so the
- *     layers focus on the edge rather than ambient bleed.
+ *   - intensity (dim/normal/bright/intense): glow strength on borders,
+ *     text, active states. Same multi-layer recipe philosophy as Neon
+ *     but tighter — HUD glow is "edge-lit panel" not "neon tube," so
+ *     the layers focus on the edge rather than ambient bleed. 4 values
+ *     so the ThemeSwitcher's AxisControl auto-renders this as a slider.
  *   - frame (clean/notched/bracketed): corner treatment on cards and
  *     panels. clean = standard rectangle; notched = clip-path with
  *     diagonal corner cuts (sci-fi panel); bracketed = corner-bracket
