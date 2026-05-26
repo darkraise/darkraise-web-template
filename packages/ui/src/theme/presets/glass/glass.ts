@@ -167,13 +167,29 @@ export const glass: ThemePreset<GlassAxes> = {
     // OKLab mix for perceptual color blending. The accent palette uses
     // HSL with high saturation values, which srgb averaging desaturates
     // noticeably for blue/green accents. OKLab preserves perceptual
-    // chroma. Tint percentages bumped to make accent cohesion visible
-    // in light mode on solid backgrounds (previous 18% read as nearly
-    // white).
+    // chroma.
+    //
+    // Dilution base is mode-asymmetric:
+    //   - Light: mix into white. Light glass is "white-frosted surface
+    //     with accent tint coming through".
+    //   - Dark: mix into surface[950] (deepest dark surface). Mixing
+    //     accent into white in dark mode produced a near-white fog
+    //     that, at the very low dark-mode alphas (0.04-0.38), rendered
+    //     as a faint white haze on the dark canvas — the accent
+    //     contribution was overwhelmed by white's luminance and the
+    //     dialog read as "dim white" rather than "accent-tinted dark".
+    //     Mixing into a dark base keeps the fog dark so the accent
+    //     contribution actually registers.
+    //
+    // Tint percentages bumped in dark from 18% to 40% — the higher %
+    // is needed because the dark base has its own hue/luminance and
+    // the accent needs more weight in the mix to dominate visually.
     const accentHSL =
       common.mode === "dark" ? common.accent[400] : common.accent[500]
-    const tintMix = common.mode === "dark" ? 18 : 24
-    const fogBase = `color-mix(in oklab, hsl(${accentHSL}) ${tintMix}%, white)`
+    const fogBaseDilution =
+      common.mode === "dark" ? `hsl(${common.surface[950]})` : "white"
+    const tintMix = common.mode === "dark" ? 40 : 24
+    const fogBase = `color-mix(in oklab, hsl(${accentHSL}) ${tintMix}%, ${fogBaseDilution})`
     const fog = (alpha: number): string =>
       `color-mix(in oklab, ${fogBase} ${(alpha * 100).toFixed(1)}%, transparent)`
 

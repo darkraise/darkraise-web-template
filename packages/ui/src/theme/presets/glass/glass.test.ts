@@ -64,12 +64,22 @@ describe("glass preset", () => {
       typeof glass.generateTokens
     >
 
-    // Fog tokens are accent-tinted color-mix expressions. Light mode uses
-    // 24% of accent[500] mixed into white as the base; dark mode uses 18%
-    // of accent[400]. Test fixture uses the blue accent palette
-    // (accent[500] = "217 91% 60%", accent[400] = "213 94% 68%").
+    // Fog tokens are accent-tinted color-mix expressions. Dilution
+    // base differs by mode:
+    //   - Light: 24% accent[500] mixed into white. White-frosted
+    //     surface with accent tint coming through.
+    //   - Dark: 40% accent[400] mixed into surface[950]. Mixing into
+    //     white in dark mode produced near-white fog at low alphas,
+    //     overwhelming the accent. The deep dark base keeps the fog
+    //     dark so accent registers; the higher 40% is needed because
+    //     the dark base has its own hue and accent needs more weight
+    //     to dominate visually.
+    // Test fixture uses blue accent + slate surface palettes:
+    //   accent[500] = "217 91% 60%", accent[400] = "213 94% 68%",
+    //   slate[950] = "229 84% 5%".
     const lightBase = "color-mix(in oklab, hsl(217 91% 60%) 24%, white)"
-    const darkBase = "color-mix(in oklab, hsl(213 94% 68%) 18%, white)"
+    const darkBase =
+      "color-mix(in oklab, hsl(213 94% 68%) 40%, hsl(229 84% 5%))"
 
     it("light + medium opacity = today's baseline fog alphas (accent-tinted)", () => {
       const tokens = generateTokens(buildCommon(), {
