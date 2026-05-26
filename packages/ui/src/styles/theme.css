@@ -1632,6 +1632,11 @@
       var(--glass-halo-raised);
   }
 
+  [data-preset="glass"] .modal-surface {
+    box-shadow:
+      var(--elevation-high), var(--inset-hi-strong), var(--glass-halo-modal);
+  }
+
   [data-background-style="gradient"][data-preset="default"]
     .sidebar-gradient-overlay,
   [data-background-style="gradient"][data-preset="default"]
