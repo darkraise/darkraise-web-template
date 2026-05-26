@@ -4,6 +4,7 @@ import type { ThemePreset, CommonAxisInput } from "../types"
 type GlassAxes = {
   opacity: readonly ["subtle", "medium", "strong"]
   blur: readonly ["none", "low", "medium", "high"]
+  halo: readonly ["none", "soft", "pronounced"]
 }
 
 // Axis semantics: "subtle" means a SUBTLE GLASS EFFECT (less glassy, surface
@@ -58,6 +59,12 @@ export const glass: ThemePreset<GlassAxes> = {
       default: "medium",
       label: "Backdrop Blur",
       order: 2,
+    },
+    halo: {
+      values: ["none", "soft", "pronounced"],
+      default: "soft",
+      label: "Halo",
+      order: 3,
     },
   },
 

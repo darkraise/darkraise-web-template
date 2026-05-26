@@ -212,4 +212,13 @@ describe("glass preset", () => {
       expect(glass.surfaceRecipe.borderDefault(slate, "light")).toBe(slate[200])
     })
   })
+
+  describe("halo axis", () => {
+    it("declares 3 values and defaults to soft", () => {
+      expect(glass.axes.halo.values).toEqual(["none", "soft", "pronounced"])
+      expect(glass.axes.halo.default).toBe("soft")
+      expect(glass.axes.halo.label).toBe("Halo")
+      expect(glass.axes.halo.order).toBe(3)
+    })
+  })
 })
