@@ -88,4 +88,40 @@
   .dr-color-picker-eye-dropper-trigger[data-disabled="true"] {
     @apply pointer-events-none opacity-50;
   }
+
+  /* ColorPicker's swatch (current-color preview), trigger (icon button),
+     and eye-dropper trigger are all small bordered surfaces; give them
+     the standard glass treatment so the chrome holds the preset's
+     identity. Swatch keeps its inline background-color (the actual
+     hex value) — only border/halo are styled. */
+  [data-preset="glass"] .dr-color-picker-swatch {
+    border-color: var(--fog-20);
+    box-shadow: var(--inset-hi), var(--glass-halo-raised);
+  }
+
+  [data-preset="glass"] .dr-color-picker-swatch:hover {
+    box-shadow:
+      var(--inset-hi), var(--glass-halo-raised), var(--glass-state-hover-glow);
+  }
+
+  [data-preset="glass"] .dr-color-picker-trigger,
+  [data-preset="glass"] .dr-color-picker-eye-dropper-trigger {
+    background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
+    border-color: var(--fog-15);
+    backdrop-filter: var(--backdrop-filter);
+    -webkit-backdrop-filter: var(--backdrop-filter);
+    box-shadow: var(--inset-hi), var(--glass-halo-raised);
+  }
+
+  [data-preset="glass"] .dr-color-picker-trigger:hover,
+  [data-preset="glass"] .dr-color-picker-eye-dropper-trigger:hover {
+    box-shadow:
+      var(--inset-hi), var(--glass-halo-raised), var(--glass-state-hover-glow);
+  }
+
+  [data-preset="glass"] .dr-color-picker-trigger[data-state="open"] {
+    border-color: hsl(var(--primary) / 0.4);
+    box-shadow:
+      var(--inset-hi), var(--glass-halo-raised), var(--glass-state-active-inset);
+  }
 }
