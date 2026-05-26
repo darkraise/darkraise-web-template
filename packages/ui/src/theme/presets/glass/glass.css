@@ -58,6 +58,17 @@
   --surface-overlay-border: var(--fog-20);
 }
 [data-mode="light"][data-preset="glass"] {
+  /* Lower-tier fog gradient for light overlay surfaces. The default
+     fog-20/-10 (alphas 0.82/0.65 at medium opacity) reads as nearly-
+     opaque white frost over light canvases, hiding the backdrop-filter
+     effect — users couldn't perceive the difference between Blur=None
+     and Blur=Low/Medium/High because nothing was showing through to
+     blur. Drop to fog-15/-05 (0.72/0.55) so the surface stays visibly
+     translucent and the blur has canvas content to blur through. Dark
+     mode keeps the default fog-20/-10 because its alphas (0.14/0.07
+     at medium) are already very transparent. */
+  --surface-overlay-bg:
+    var(--glass-noise), linear-gradient(135deg, var(--fog-15), var(--fog-05));
   --surface-overlay-shadow:
     var(--elevation-medium), var(--inset-hi-strong),
     inset 0 0 32px color-mix(in oklab, hsl(var(--surface-tint)) 2%, transparent),
