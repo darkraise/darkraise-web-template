@@ -42,4 +42,30 @@
   .dr-slider-step[data-orientation="vertical"] {
     @apply h-1 w-1;
   }
+
+  [data-preset="glass"] .dr-slider-track {
+    background-color: transparent;
+    background-image: linear-gradient(90deg, var(--fog-20), var(--fog-10));
+    box-shadow: var(--inset-hi);
+  }
+
+  [data-preset="glass"] .dr-slider-range {
+    background-color: transparent;
+    background-image: linear-gradient(
+      90deg,
+      hsl(var(--primary) / 0.55),
+      hsl(var(--primary) / 0.35)
+    );
+  }
+
+  [data-preset="glass"] .dr-slider-thumb {
+    background-color: hsl(var(--primary));
+    border-color: hsl(0 0% 100% / 0.8);
+    box-shadow: var(--glass-halo-raised);
+  }
+
+  [data-preset="glass"] .dr-slider-thumb:hover,
+  [data-preset="glass"] .dr-slider-thumb:focus-visible {
+    box-shadow: var(--glass-halo-raised), var(--glass-state-hover-glow);
+  }
 }
