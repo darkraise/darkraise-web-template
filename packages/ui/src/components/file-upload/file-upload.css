@@ -64,4 +64,23 @@
   .dr-file-upload-clear-trigger {
     @apply text-muted-foreground hover:text-foreground focus-ring-tight inline-flex h-8 cursor-pointer items-center gap-1 self-start rounded-sm px-2 text-xs underline transition-colors disabled:pointer-events-none disabled:opacity-50;
   }
+
+  /* Glass-preset frosted FileUpload drop-zone. The drop-zone is the
+     bordered surface (.dr-file-upload root is layout-only). Dragover
+     and focus-within share the accent halo so the active drop target
+     is visually distinct. */
+  [data-preset="glass"] .dr-file-upload-dropzone {
+    background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
+    border: 1px solid var(--fog-15);
+    backdrop-filter: var(--backdrop-filter);
+    -webkit-backdrop-filter: var(--backdrop-filter);
+    box-shadow: var(--inset-hi), var(--glass-halo-raised);
+  }
+
+  [data-preset="glass"] .dr-file-upload-dropzone[data-dragover="true"],
+  [data-preset="glass"] .dr-file-upload-dropzone:focus-within {
+    border-color: hsl(var(--primary) / 0.4);
+    box-shadow:
+      var(--inset-hi), var(--glass-halo-raised), var(--glass-state-hover-glow);
+  }
 }
