@@ -65,3 +65,31 @@
     inset 0 0 40px
       color-mix(in oklab, hsl(var(--surface-tint)) 28%, transparent);
 }
+
+/* State-personality tokens. These compose into per-component
+   :hover, :active, [data-selected], etc. selectors. They use
+   var(--primary) directly because they don't need mode-aware
+   alpha curves like the halo tier tokens do — a single accent-
+   tinted value reads cleanly in both modes thanks to the
+   --primary token already being mode-tuned in generateTokens. */
+[data-preset="glass"] {
+  --glass-state-hover-glow: 0 0 24px hsl(var(--primary) / 0.18);
+  --glass-state-active-inset: inset 0 0 0 2px hsl(var(--primary) / 0.22);
+  --glass-state-selected-fill: linear-gradient(
+    135deg,
+    hsl(var(--primary) / 0.16),
+    hsl(var(--primary) / 0.08)
+  );
+}
+
+/* Halo=none zeros out the state tokens too — users who explicitly
+   dial halo off get a calm interaction language across states.
+   "0 0 transparent" is the no-op-shadow trick from --elevation-flat:
+   syntactically valid <shadow> that composes cleanly into multi-
+   shadow lists, unlike the `none` keyword which can only be the
+   sole value. */
+[data-preset="glass"][data-glass-halo="none"] {
+  --glass-state-hover-glow: 0 0 transparent;
+  --glass-state-active-inset: 0 0 transparent;
+  --glass-state-selected-fill: none;
+}
