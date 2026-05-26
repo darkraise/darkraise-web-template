@@ -80,42 +80,63 @@
     background-color: transparent;
     background-image: linear-gradient(
       180deg,
-      color-mix(in srgb, var(--hue) 55%, rgba(255, 255, 255, 0.18)),
-      color-mix(in srgb, var(--hue) 70%, rgba(255, 255, 255, 0.05))
+      color-mix(in oklab, var(--hue) 55%, rgba(255, 255, 255, 0.18)),
+      color-mix(in oklab, var(--hue) 70%, rgba(255, 255, 255, 0.05))
     );
     border: 1px solid
-      color-mix(in srgb, var(--hue) 50%, rgba(255, 255, 255, 0.25));
+      color-mix(in oklab, var(--hue) 50%, rgba(255, 255, 255, 0.25));
+    backdrop-filter: var(--backdrop-filter);
+    -webkit-backdrop-filter: var(--backdrop-filter);
     box-shadow:
       var(--shadow-button),
       var(--inset-hi-button),
-      inset 0 -1px 0 color-mix(in srgb, var(--hue) 70%, #000),
-      0 0 0 1px color-mix(in oklab, var(--hue) 25%, transparent);
+      inset 0 -1px 0 color-mix(in oklab, var(--hue) 70%, #000),
+      var(--glass-halo-raised);
   }
   [data-preset="glass"] .dr-btn[data-variant="default"]:hover,
   [data-preset="glass"] .dr-btn[data-variant="destructive"]:hover {
     background-image: linear-gradient(
       180deg,
-      color-mix(in srgb, var(--hue) 45%, rgba(255, 255, 255, 0.18)),
-      color-mix(in srgb, var(--hue) 65%, rgba(255, 255, 255, 0.05))
+      color-mix(in oklab, var(--hue) 45%, rgba(255, 255, 255, 0.18)),
+      color-mix(in oklab, var(--hue) 65%, rgba(255, 255, 255, 0.05))
     );
+    box-shadow:
+      var(--shadow-button),
+      var(--inset-hi-button),
+      inset 0 -1px 0 color-mix(in oklab, var(--hue) 70%, #000),
+      var(--glass-halo-raised),
+      var(--glass-state-hover-glow);
   }
   [data-preset="glass"] .dr-btn[data-variant="outline"],
   [data-preset="glass"] .dr-btn[data-variant="secondary"] {
-    background-image: linear-gradient(180deg, var(--fog-15), var(--fog-05));
-    border-color: var(--fog-20);
-    box-shadow: var(--shadow-button), var(--inset-hi-button);
+    background-image: linear-gradient(135deg, var(--fog-20), var(--fog-10));
+    border: 1px solid var(--fog-20);
+    backdrop-filter: var(--backdrop-filter);
+    -webkit-backdrop-filter: var(--backdrop-filter);
+    box-shadow:
+      var(--shadow-button), var(--inset-hi-button), var(--glass-halo-raised);
   }
   [data-preset="glass"] .dr-btn[data-variant="outline"]:hover,
   [data-preset="glass"] .dr-btn[data-variant="secondary"]:hover {
-    background-image: linear-gradient(180deg, var(--fog-20), var(--fog-10));
+    background-image: linear-gradient(135deg, var(--fog-30), var(--fog-15));
+    box-shadow:
+      var(--shadow-button), var(--inset-hi-button), var(--glass-halo-raised),
+      var(--glass-state-hover-glow);
   }
   [data-preset="glass"] .dr-btn[data-variant="ghost"]:hover {
-    background-color: var(--fog-10);
-    border: 1px solid var(--fog-15);
-    backdrop-filter: var(--backdrop-filter);
-    -webkit-backdrop-filter: var(--backdrop-filter);
-    box-shadow: var(--shadow-button), var(--inset-hi-button);
-    color: hsl(var(--foreground));
+    background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
+    border-color: var(--fog-15);
+    box-shadow: var(--glass-state-hover-glow);
+  }
+  [data-preset="glass"] .dr-btn:active {
+    box-shadow:
+      var(--shadow-button), var(--inset-hi-button),
+      var(--glass-state-active-inset), var(--glass-halo-raised);
+  }
+  [data-preset="glass"] .dr-btn:disabled {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
   }
 
   /* Neon preset — buttons become outlined neon strips. All variants
