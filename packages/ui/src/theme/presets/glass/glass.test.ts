@@ -53,6 +53,9 @@ describe("glass preset", () => {
       "--muted",
       "--secondary",
       "--secondary-foreground",
+      "--glass-halo-raised",
+      "--glass-halo-overlay",
+      "--glass-halo-modal",
     ])
   })
 

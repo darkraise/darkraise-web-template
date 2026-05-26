@@ -236,5 +236,8 @@ export const glass: ThemePreset<GlassAxes> = {
     "--muted",
     "--secondary",
     "--secondary-foreground",
+    "--glass-halo-raised",
+    "--glass-halo-overlay",
+    "--glass-halo-modal",
   ] as const,
 }
