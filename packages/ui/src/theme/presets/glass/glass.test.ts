@@ -72,6 +72,7 @@ describe("glass preset", () => {
       const tokens = generateTokens(buildCommon(), {
         opacity: "medium",
         blur: "medium",
+        halo: "soft",
       })
       expect(tokens["--fog-05"]).toBe(
         `color-mix(in srgb, ${lightBase} 55.0%, transparent)`,
@@ -85,6 +86,7 @@ describe("glass preset", () => {
       const tokens = generateTokens(buildCommon(), {
         opacity: "subtle",
         blur: "medium",
+        halo: "soft",
       })
       expect(tokens["--fog-05"]).toBe(
         `color-mix(in srgb, ${lightBase} 70.0%, transparent)`,
@@ -98,6 +100,7 @@ describe("glass preset", () => {
       const tokens = generateTokens(buildCommon(), {
         opacity: "strong",
         blur: "medium",
+        halo: "soft",
       })
       expect(tokens["--fog-05"]).toBe(
         `color-mix(in srgb, ${lightBase} 30.0%, transparent)`,
@@ -111,6 +114,7 @@ describe("glass preset", () => {
       const tokens = generateTokens(buildCommon({ mode: "dark" }), {
         opacity: "medium",
         blur: "medium",
+        halo: "soft",
       })
       expect(tokens["--fog-05"]).toBe(
         `color-mix(in srgb, ${darkBase} 4.0%, transparent)`,
@@ -124,10 +128,12 @@ describe("glass preset", () => {
       const subtle = generateTokens(buildCommon(), {
         opacity: "subtle",
         blur: "medium",
+        halo: "soft",
       })
       const strong = generateTokens(buildCommon(), {
         opacity: "strong",
         blur: "medium",
+        halo: "soft",
       })
       expect(subtle["--inset-hi"]).toBe(
         "inset 0 1px 0 rgba(255, 255, 255, 0.75)",
@@ -140,7 +146,7 @@ describe("glass preset", () => {
     it("dark + gradient bg → --border becomes translucent white", () => {
       const tokens = generateTokens(
         buildCommon({ mode: "dark", backgroundStyle: "gradient" }),
-        { opacity: "medium", blur: "medium" },
+        { opacity: "medium", blur: "medium", halo: "soft" },
       )
       expect(tokens["--border"]).toBe("0 0% 100% / 0.1")
     })
@@ -148,7 +154,7 @@ describe("glass preset", () => {
     it("dark + solid bg → --border NOT set (common-axis default applies)", () => {
       const tokens = generateTokens(
         buildCommon({ mode: "dark", backgroundStyle: "solid" }),
-        { opacity: "medium", blur: "medium" },
+        { opacity: "medium", blur: "medium", halo: "soft" },
       )
       expect(tokens["--border"]).toBeUndefined()
     })
@@ -159,6 +165,7 @@ describe("glass preset", () => {
         {
           opacity: "medium",
           blur: "medium",
+          halo: "soft",
         },
       )
       const gradient = generateTokens(
@@ -166,6 +173,7 @@ describe("glass preset", () => {
         {
           opacity: "medium",
           blur: "medium",
+          halo: "soft",
         },
       )
       expect(solid["--border"]).toBeUndefined()
@@ -176,6 +184,7 @@ describe("glass preset", () => {
       const light = generateTokens(buildCommon(), {
         opacity: "medium",
         blur: "medium",
+        halo: "soft",
       })
       expect(light["--accent"]).toBe("var(--primary) / 0.1")
       expect(light["--accent-foreground"]).toBe("var(--primary)")
@@ -186,6 +195,7 @@ describe("glass preset", () => {
       const dark = generateTokens(buildCommon({ mode: "dark" }), {
         opacity: "medium",
         blur: "medium",
+        halo: "soft",
       })
       expect(dark["--accent"]).toBe("var(--primary) / 0.14")
       expect(dark["--muted"]).toBe("var(--primary) / 0.06")
@@ -196,8 +206,22 @@ describe("glass preset", () => {
       const tokens = generateTokens(buildCommon(), {
         opacity: "medium",
         blur: "medium",
+        halo: "soft",
       })
       expect(tokens["--muted-foreground"]).toBeUndefined()
+    })
+
+    describe("halo tier tokens", () => {
+      it("emits --glass-halo-raised for halo=soft, light mode, with rim+tight+mid layers", () => {
+        const tokens = generateTokens(buildCommon(), {
+          opacity: "medium",
+          blur: "medium",
+          halo: "soft",
+        })
+        expect(tokens["--glass-halo-raised"]).toBe(
+          "0 0 0 1px hsl(var(--primary) / 0.06), 0 4px 12px -2px hsl(var(--primary) / 0.12), 0 12px 32px -8px hsl(var(--primary) / 0.06)",
+        )
+      })
     })
   })
 
