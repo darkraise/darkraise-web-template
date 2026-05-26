@@ -89,9 +89,33 @@
    "0 0 transparent" is the no-op-shadow trick from --elevation-flat:
    syntactically valid <shadow> that composes cleanly into multi-
    shadow lists, unlike the `none` keyword which can only be the
-   sole value. */
+   sole value. The selected-fill zero-out uses an empty
+   linear-gradient because `none` isn't a valid <image> inside a
+   multi-layer background-image list — same trap that's documented
+   for the gradient-pattern overlays elsewhere in theme.css. */
 [data-preset="glass"][data-glass-halo="none"] {
   --glass-state-hover-glow: 0 0 transparent;
   --glass-state-active-inset: 0 0 transparent;
-  --glass-state-selected-fill: none;
+  --glass-state-selected-fill: linear-gradient(transparent, transparent);
+}
+
+/* Glass-scoped dark-mode card elevation — lives here (unlayered)
+   rather than in theme.css's `@layer overrides` because the dark-mode
+   `--card-elevation-*` defaults at theme.css ~line 730 are themselves
+   unlayered. Unlayered rules beat any `@layer`-wrapped rule regardless
+   of specificity, so an `@layer overrides` attempt would be silently
+   defeated. Light-mode equivalent lives in theme.css's `@layer
+   overrides` block because the light defaults are inside `@layer base`
+   (the `:root` block).
+
+   Values duplicated from the `[data-mode="dark"]` block in theme.css —
+   update both if the base ramp changes. */
+[data-mode="dark"][data-preset="glass"] {
+  --card-elevation-low: 0 1px 2px 0 rgb(0 0 0 / 0.4), var(--glass-halo-raised);
+  --card-elevation-medium:
+    0 8px 20px -2px rgb(0 0 0 / 0.65), 0 3px 8px -1px rgb(0 0 0 / 0.5),
+    var(--glass-halo-raised);
+  --card-elevation-high:
+    0 48px 72px -10px rgb(0 0 0 / 0.9), 0 20px 36px -6px rgb(0 0 0 / 0.6),
+    var(--glass-halo-raised);
 }

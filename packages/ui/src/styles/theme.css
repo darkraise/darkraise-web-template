@@ -1637,15 +1637,22 @@
       var(--elevation-high), var(--inset-hi-strong), var(--glass-halo-modal);
   }
 
-  /* Glass-scoped card elevation: compose the existing drop-shadow
-     ramp with the halo so cards rendered via `elevation={"low" | "medium" | "high"}`
-     (the theme-axis-immune explicit-elevation API) still feel like Glass.
-     Theme-immunity is preserved at its semantic level: immune from
-     the theme's elevation axis, not from the preset's spatial
-     language. Neon follows the same pattern for its glow recipes.
-     Light + dark differ on the underlying ramp opacities, so each
-     mode gets its own override with the mode-specific defaults
-     preserved verbatim and `var(--glass-halo-raised)` appended. */
+  /* Glass-scoped card elevation (light only) — composes the existing
+     drop-shadow ramp with the halo so cards rendered via
+     `elevation={"low" | "medium" | "high"}` (the theme-axis-immune
+     explicit-elevation API) still feel like Glass. Theme-immunity is
+     preserved at its semantic level: immune from the theme's elevation
+     axis, not from the preset's spatial language. Neon follows the same
+     pattern for its glow recipes.
+
+     Dark mode lives in glass.css (unlayered) instead of here because
+     the dark-mode `--card-elevation-*` defaults at theme.css ~line 730
+     are themselves UNLAYERED and would defeat any `@layer overrides`
+     attempt regardless of specificity. The light-mode defaults live in
+     `:root` inside `@layer base`, so `@layer overrides` wins here.
+
+     Values duplicated from the `:root` defaults — update both if the
+     base ramp changes. */
   [data-mode="light"][data-preset="glass"] {
     --card-elevation-low:
       0 1px 2px 0 rgb(0 0 0 / 0.07), var(--glass-halo-raised);
@@ -1654,16 +1661,6 @@
       var(--glass-halo-raised);
     --card-elevation-high:
       0 48px 72px -10px rgb(0 0 0 / 0.45), 0 20px 36px -6px rgb(0 0 0 / 0.28),
-      var(--glass-halo-raised);
-  }
-  [data-mode="dark"][data-preset="glass"] {
-    --card-elevation-low:
-      0 1px 2px 0 rgb(0 0 0 / 0.4), var(--glass-halo-raised);
-    --card-elevation-medium:
-      0 8px 20px -2px rgb(0 0 0 / 0.65), 0 3px 8px -1px rgb(0 0 0 / 0.5),
-      var(--glass-halo-raised);
-    --card-elevation-high:
-      0 48px 72px -10px rgb(0 0 0 / 0.9), 0 20px 36px -6px rgb(0 0 0 / 0.6),
       var(--glass-halo-raised);
   }
 
