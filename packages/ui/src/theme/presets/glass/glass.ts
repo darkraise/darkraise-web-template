@@ -41,6 +41,67 @@ const INSET_HI = {
   strong: { light: 0.4, dark: 0.08 },
 } as const
 
+// Halo tier tokens — accent-tinted spatial signature applied per
+// elevation tier. Each layer uses hsl(var(--primary) / α) so the
+// halo automatically picks up the user's accent palette. Mode-aware
+// alpha curve: dark mode roughly doubles each light alpha because
+// the canvas is dark and lower alphas wouldn't register.
+const HALO_ALPHA = {
+  soft: {
+    light: {
+      raised: [0.06, 0.12, 0.06],
+      overlay: [0.08, 0.16, 0.08],
+      modal: [0.1, 0.2, 0.1],
+    },
+    dark: {
+      raised: [0.1, 0.2, 0.1],
+      overlay: [0.14, 0.28, 0.14],
+      modal: [0.18, 0.36, 0.18],
+    },
+  },
+  pronounced: {
+    light: {
+      raised: [0.1, 0.2, 0.1],
+      overlay: [0.13, 0.26, 0.13],
+      modal: [0.16, 0.32, 0.16],
+    },
+    dark: {
+      raised: [0.16, 0.32, 0.16],
+      overlay: [0.22, 0.44, 0.22],
+      modal: [0.28, 0.56, 0.28],
+    },
+  },
+  none: {
+    light: {
+      raised: [0, 0, 0],
+      overlay: [0, 0, 0],
+      modal: [0, 0, 0],
+    },
+    dark: {
+      raised: [0, 0, 0],
+      overlay: [0, 0, 0],
+      modal: [0, 0, 0],
+    },
+  },
+} as const
+
+function haloRecipe(
+  tier: "raised" | "overlay" | "modal",
+  alphas: readonly [number, number, number],
+): string {
+  const [rim, tight, mid] = alphas
+  if (rim === 0 && tight === 0 && mid === 0) return "0 0 transparent"
+  const tightSize = { raised: "12px", overlay: "16px", modal: "24px" }[tier]
+  const midSize = { raised: "32px", overlay: "40px", modal: "60px" }[tier]
+  const tightYOff = { raised: "4px", overlay: "4px", modal: "8px" }[tier]
+  const midYOff = { raised: "12px", overlay: "16px", modal: "24px" }[tier]
+  return [
+    `0 0 0 1px hsl(var(--primary) / ${rim})`,
+    `0 ${tightYOff} ${tightSize} -2px hsl(var(--primary) / ${tight})`,
+    `0 ${midYOff} ${midSize} -8px hsl(var(--primary) / ${mid})`,
+  ].join(", ")
+}
+
 export const glass: ThemePreset<GlassAxes> = {
   name: "glass",
   label: "Glass",
@@ -132,67 +193,6 @@ export const glass: ThemePreset<GlassAxes> = {
       "--inset-hi": `inset 0 1px 0 rgba(255, 255, 255, ${insetAlpha}), inset 1px 0 0 rgba(255, 255, 255, ${(insetAlpha * 0.6).toFixed(2)})`,
       "--inset-hi-strong": `inset 0 1px 0 rgba(255, 255, 255, ${(insetAlpha * 1.25).toFixed(2)}), inset 1px 0 0 rgba(255, 255, 255, ${(insetAlpha * 1.25 * 0.6).toFixed(2)})`,
       "--inset-hi-button": `inset 0 1px 0 rgba(255, 255, 255, ${(insetAlpha * 1.1).toFixed(2)}), inset 1px 0 0 rgba(255, 255, 255, ${(insetAlpha * 1.1 * 0.6).toFixed(2)})`,
-    }
-
-    // Halo tier tokens — accent-tinted spatial signature applied per
-    // elevation tier. Each layer uses hsl(var(--primary) / α) so the
-    // halo automatically picks up the user's accent palette. Mode-aware
-    // alpha curve: dark mode roughly doubles each light alpha because
-    // the canvas is dark and lower alphas wouldn't register.
-    const HALO_ALPHA = {
-      soft: {
-        light: {
-          raised: [0.06, 0.12, 0.06],
-          overlay: [0.08, 0.16, 0.08],
-          modal: [0.1, 0.2, 0.1],
-        },
-        dark: {
-          raised: [0.1, 0.2, 0.1],
-          overlay: [0.14, 0.28, 0.14],
-          modal: [0.18, 0.36, 0.18],
-        },
-      },
-      pronounced: {
-        light: {
-          raised: [0.1, 0.2, 0.1],
-          overlay: [0.13, 0.26, 0.13],
-          modal: [0.16, 0.32, 0.16],
-        },
-        dark: {
-          raised: [0.16, 0.32, 0.16],
-          overlay: [0.22, 0.44, 0.22],
-          modal: [0.28, 0.56, 0.28],
-        },
-      },
-      none: {
-        light: {
-          raised: [0, 0, 0],
-          overlay: [0, 0, 0],
-          modal: [0, 0, 0],
-        },
-        dark: {
-          raised: [0, 0, 0],
-          overlay: [0, 0, 0],
-          modal: [0, 0, 0],
-        },
-      },
-    } as const
-
-    function haloRecipe(
-      tier: "raised" | "overlay" | "modal",
-      alphas: readonly [number, number, number],
-    ): string {
-      const [rim, tight, mid] = alphas
-      if (rim === 0 && tight === 0 && mid === 0) return "0 0 transparent"
-      const tightSize = { raised: "12px", overlay: "16px", modal: "24px" }[tier]
-      const midSize = { raised: "32px", overlay: "40px", modal: "60px" }[tier]
-      const tightYOff = { raised: "4px", overlay: "4px", modal: "8px" }[tier]
-      const midYOff = { raised: "12px", overlay: "16px", modal: "24px" }[tier]
-      return [
-        `0 0 0 1px hsl(var(--primary) / ${rim})`,
-        `0 ${tightYOff} ${tightSize} -2px hsl(var(--primary) / ${tight})`,
-        `0 ${midYOff} ${midSize} -8px hsl(var(--primary) / ${mid})`,
-      ].join(", ")
     }
 
     const haloAlphas = HALO_ALPHA[axes.halo][common.mode]
