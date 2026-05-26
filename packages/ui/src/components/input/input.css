@@ -111,4 +111,55 @@
   [data-preset="neon"] .dr-input-addon[data-side="suffix"] {
     border-left-color: hsl(var(--primary) / 0.3);
   }
+
+  /* Glass-preset frosted input. Scoped to standalone inputs only via
+     :not() chain that excludes compound widgets — the
+     preset_input_rule_doubles_compound_inner_field memory documents
+     the bug that motivates this scoping: [data-preset] × .dr-input
+     at (0,2,0) beats compound inner-field resets at (0,1,0) and
+     re-paints chrome on top of NumberInput steppers, DatePicker
+     inputs, etc. Compound widgets get their own outer-wrapper rules
+     in their respective component CSS files. */
+  [data-preset="glass"]
+    .dr-input:not(.dr-number-input *):not(.dr-date-input *):not(
+      .dr-password-input *
+    ):not(.dr-input-otp *):not(.dr-file-upload *):not(.dr-combobox *):not(
+      .dr-cascade-select *
+    ) {
+    background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
+    border: 1px solid var(--fog-15);
+    backdrop-filter: var(--backdrop-filter);
+    -webkit-backdrop-filter: var(--backdrop-filter);
+    box-shadow: var(--inset-hi), var(--glass-halo-raised);
+  }
+
+  [data-preset="glass"]
+    .dr-input:not(.dr-number-input *):not(.dr-date-input *):not(
+      .dr-password-input *
+    ):not(.dr-input-otp *):not(.dr-file-upload *):not(.dr-combobox *):not(
+      .dr-cascade-select *
+    ):focus,
+  [data-preset="glass"]
+    .dr-input:not(.dr-number-input *):not(.dr-date-input *):not(
+      .dr-password-input *
+    ):not(.dr-input-otp *):not(.dr-file-upload *):not(.dr-combobox *):not(
+      .dr-cascade-select *
+    ):focus-visible {
+    background-image: linear-gradient(135deg, var(--fog-20), var(--fog-10));
+    border-color: hsl(var(--primary) / 0.4);
+    box-shadow:
+      var(--inset-hi), var(--glass-halo-raised), var(--glass-state-hover-glow);
+  }
+
+  [data-preset="glass"]
+    .dr-input:not(.dr-number-input *):not(.dr-date-input *):not(
+      .dr-password-input *
+    ):not(.dr-input-otp *):not(.dr-file-upload *):not(.dr-combobox *):not(
+      .dr-cascade-select *
+    ):disabled {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+    opacity: 0.5;
+  }
 }
