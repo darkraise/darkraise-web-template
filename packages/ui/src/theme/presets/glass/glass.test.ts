@@ -222,6 +222,72 @@ describe("glass preset", () => {
           "0 0 0 1px hsl(var(--primary) / 0.06), 0 4px 12px -2px hsl(var(--primary) / 0.12), 0 12px 32px -8px hsl(var(--primary) / 0.06)",
         )
       })
+
+      it("emits --glass-halo-overlay for halo=soft, light mode", () => {
+        const tokens = generateTokens(buildCommon(), {
+          opacity: "medium",
+          blur: "medium",
+          halo: "soft",
+        })
+        expect(tokens["--glass-halo-overlay"]).toBe(
+          "0 0 0 1px hsl(var(--primary) / 0.08), 0 4px 16px -2px hsl(var(--primary) / 0.16), 0 16px 40px -8px hsl(var(--primary) / 0.08)",
+        )
+      })
+
+      it("emits --glass-halo-modal for halo=soft, light mode", () => {
+        const tokens = generateTokens(buildCommon(), {
+          opacity: "medium",
+          blur: "medium",
+          halo: "soft",
+        })
+        expect(tokens["--glass-halo-modal"]).toBe(
+          "0 0 0 1px hsl(var(--primary) / 0.1), 0 8px 24px -2px hsl(var(--primary) / 0.2), 0 24px 60px -8px hsl(var(--primary) / 0.1)",
+        )
+      })
+
+      it("doubles alphas in dark mode for visibility against dark canvas", () => {
+        const tokens = generateTokens(buildCommon({ mode: "dark" }), {
+          opacity: "medium",
+          blur: "medium",
+          halo: "soft",
+        })
+        expect(tokens["--glass-halo-raised"]).toBe(
+          "0 0 0 1px hsl(var(--primary) / 0.1), 0 4px 12px -2px hsl(var(--primary) / 0.2), 0 12px 32px -8px hsl(var(--primary) / 0.1)",
+        )
+      })
+
+      it("halo=pronounced bumps alphas by ~1.6× over soft", () => {
+        const soft = generateTokens(buildCommon(), {
+          opacity: "medium",
+          blur: "medium",
+          halo: "soft",
+        })
+        const pronounced = generateTokens(buildCommon(), {
+          opacity: "medium",
+          blur: "medium",
+          halo: "pronounced",
+        })
+        expect(soft["--glass-halo-raised"]).not.toBe(
+          pronounced["--glass-halo-raised"],
+        )
+        expect(pronounced["--glass-halo-raised"]).toContain(
+          "hsl(var(--primary) / 0.1)",
+        )
+        expect(pronounced["--glass-halo-raised"]).toContain(
+          "hsl(var(--primary) / 0.2)",
+        )
+      })
+
+      it("halo=none resolves all tier tokens to no-op shadow", () => {
+        const tokens = generateTokens(buildCommon(), {
+          opacity: "medium",
+          blur: "medium",
+          halo: "none",
+        })
+        expect(tokens["--glass-halo-raised"]).toBe("0 0 transparent")
+        expect(tokens["--glass-halo-overlay"]).toBe("0 0 transparent")
+        expect(tokens["--glass-halo-modal"]).toBe("0 0 transparent")
+      })
     })
   })
 
