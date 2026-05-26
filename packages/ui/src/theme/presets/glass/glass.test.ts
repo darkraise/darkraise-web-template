@@ -317,6 +317,19 @@ describe("glass preset", () => {
           "inset 0 1px 0 rgba(255, 255, 255, 0.75), inset 1px 0 0 rgba(255, 255, 255, 0.45)",
         )
       })
+
+      it("--inset-hi-button scales top by 1.1× and left by 60% of that", () => {
+        const tokens = generateTokens(buildCommon(), {
+          opacity: "medium",
+          blur: "medium",
+          halo: "soft",
+        })
+        // Medium (light) insetAlpha = 0.6
+        // → top: 0.6 × 1.1 = 0.66, left: 0.66 × 0.6 = 0.396 → "0.40"
+        expect(tokens["--inset-hi-button"]).toBe(
+          "inset 0 1px 0 rgba(255, 255, 255, 0.66), inset 1px 0 0 rgba(255, 255, 255, 0.40)",
+        )
+      })
     })
   })
 
