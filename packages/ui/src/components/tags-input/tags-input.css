@@ -47,4 +47,23 @@
     @apply text-foreground placeholder:text-muted-foreground flex-1 border-0 bg-transparent text-sm outline-none focus:outline-none disabled:cursor-not-allowed disabled:opacity-50;
     min-width: 8ch;
   }
+
+  /* Glass preset — light-frost tag chips (no backdrop-filter; inherit blur
+     from the surrounding control per spec §6.6). Highlighted chips get an
+     accent tint so keyboard focus + selection state remains visible. */
+  [data-preset="glass"] .dr-tags-input-item-preview {
+    background-color: transparent;
+    background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
+    border: 1px solid var(--fog-20);
+    box-shadow: 0 0 0 1px hsl(var(--primary) / 0.04);
+  }
+
+  [data-preset="glass"] .dr-tags-input-item-preview[data-highlighted="true"] {
+    background-image: linear-gradient(
+      135deg,
+      hsl(var(--primary) / 0.45),
+      hsl(var(--primary) / 0.25)
+    );
+    border-color: hsl(var(--primary) / 0.3);
+  }
 }
