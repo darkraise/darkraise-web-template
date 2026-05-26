@@ -1604,28 +1604,32 @@
     box-shadow:
       var(--inset-hi),
       inset 0 0 16px
-        color-mix(in oklab, hsl(var(--surface-tint)) 1.5%, transparent);
+        color-mix(in oklab, hsl(var(--surface-tint)) 1.5%, transparent),
+      var(--glass-halo-raised);
   }
   [data-mode="light"][data-preset="glass"] .glass-strong {
     box-shadow:
       var(--elevation-medium),
       var(--inset-hi-strong),
       inset 0 0 32px
-        color-mix(in oklab, hsl(var(--surface-tint)) 2%, transparent);
+        color-mix(in oklab, hsl(var(--surface-tint)) 2%, transparent),
+      var(--glass-halo-raised);
   }
   [data-mode="dark"][data-preset="glass"] .glass,
   [data-mode="dark"][data-preset="glass"] .card-surface {
     box-shadow:
       var(--inset-hi),
       inset 0 0 24px
-        color-mix(in oklab, hsl(var(--surface-tint)) 22%, transparent);
+        color-mix(in oklab, hsl(var(--surface-tint)) 22%, transparent),
+      var(--glass-halo-raised);
   }
   [data-mode="dark"][data-preset="glass"] .glass-strong {
     box-shadow:
       var(--elevation-medium),
       var(--inset-hi-strong),
       inset 0 0 40px
-        color-mix(in oklab, hsl(var(--surface-tint)) 28%, transparent);
+        color-mix(in oklab, hsl(var(--surface-tint)) 28%, transparent),
+      var(--glass-halo-raised);
   }
 
   [data-background-style="gradient"][data-preset="default"]
