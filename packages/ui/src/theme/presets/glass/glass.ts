@@ -103,19 +103,18 @@ export const glass: ThemePreset<GlassAxes> = {
     const mutedAlpha = common.mode === "light" ? 0.04 : 0.06
     const secondaryAlpha = common.mode === "light" ? 0.08 : 0.1
 
-    // Accent-tinted fog base. Glass picks up a hint of the page's accent
-    // color so cards feel cohesive with the brand rather than reading as
-    // separate white panels. Light mode mixes 18% of accent[500] into
-    // white; dark mode mixes 14% of accent[400] into white (the brighter
-    // dark-mode shade carries the tint through low alphas better). A
-    // fuchsia-themed page gets faintly pink glass; a cyan-themed page
-    // gets faintly cyan glass.
+    // OKLab mix for perceptual color blending. The accent palette uses
+    // HSL with high saturation values, which srgb averaging desaturates
+    // noticeably for blue/green accents. OKLab preserves perceptual
+    // chroma. Tint percentages bumped to make accent cohesion visible
+    // in light mode on solid backgrounds (previous 18% read as nearly
+    // white).
     const accentHSL =
       common.mode === "dark" ? common.accent[400] : common.accent[500]
-    const tintMix = common.mode === "dark" ? 14 : 18
-    const fogBase = `color-mix(in srgb, hsl(${accentHSL}) ${tintMix}%, white)`
+    const tintMix = common.mode === "dark" ? 18 : 24
+    const fogBase = `color-mix(in oklab, hsl(${accentHSL}) ${tintMix}%, white)`
     const fog = (alpha: number): string =>
-      `color-mix(in srgb, ${fogBase} ${(alpha * 100).toFixed(1)}%, transparent)`
+      `color-mix(in oklab, ${fogBase} ${(alpha * 100).toFixed(1)}%, transparent)`
 
     const tokens: Record<string, string> = {
       "--fog-05": fog(alphas[0]),

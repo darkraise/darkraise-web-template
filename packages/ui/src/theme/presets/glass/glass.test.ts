@@ -65,8 +65,8 @@ describe("glass preset", () => {
     // 18% of accent[500] mixed into white as the base; dark mode uses 14%
     // of accent[400]. Test fixture uses the blue accent palette
     // (accent[500] = "217 91% 60%", accent[400] = "213 94% 68%").
-    const lightBase = "color-mix(in srgb, hsl(217 91% 60%) 18%, white)"
-    const darkBase = "color-mix(in srgb, hsl(213 94% 68%) 14%, white)"
+    const lightBase = "color-mix(in oklab, hsl(217 91% 60%) 24%, white)"
+    const darkBase = "color-mix(in oklab, hsl(213 94% 68%) 18%, white)"
 
     it("light + medium opacity = today's baseline fog alphas (accent-tinted)", () => {
       const tokens = generateTokens(buildCommon(), {
@@ -75,10 +75,10 @@ describe("glass preset", () => {
         halo: "soft",
       })
       expect(tokens["--fog-05"]).toBe(
-        `color-mix(in srgb, ${lightBase} 55.0%, transparent)`,
+        `color-mix(in oklab, ${lightBase} 55.0%, transparent)`,
       )
       expect(tokens["--fog-50"]).toBe(
-        `color-mix(in srgb, ${lightBase} 96.0%, transparent)`,
+        `color-mix(in oklab, ${lightBase} 96.0%, transparent)`,
       )
     })
 
@@ -89,10 +89,10 @@ describe("glass preset", () => {
         halo: "soft",
       })
       expect(tokens["--fog-05"]).toBe(
-        `color-mix(in srgb, ${lightBase} 70.0%, transparent)`,
+        `color-mix(in oklab, ${lightBase} 70.0%, transparent)`,
       )
       expect(tokens["--fog-50"]).toBe(
-        `color-mix(in srgb, ${lightBase} 98.0%, transparent)`,
+        `color-mix(in oklab, ${lightBase} 98.0%, transparent)`,
       )
     })
 
@@ -103,10 +103,10 @@ describe("glass preset", () => {
         halo: "soft",
       })
       expect(tokens["--fog-05"]).toBe(
-        `color-mix(in srgb, ${lightBase} 30.0%, transparent)`,
+        `color-mix(in oklab, ${lightBase} 30.0%, transparent)`,
       )
       expect(tokens["--fog-50"]).toBe(
-        `color-mix(in srgb, ${lightBase} 82.0%, transparent)`,
+        `color-mix(in oklab, ${lightBase} 82.0%, transparent)`,
       )
     })
 
@@ -117,10 +117,10 @@ describe("glass preset", () => {
         halo: "soft",
       })
       expect(tokens["--fog-05"]).toBe(
-        `color-mix(in srgb, ${darkBase} 4.0%, transparent)`,
+        `color-mix(in oklab, ${darkBase} 4.0%, transparent)`,
       )
       expect(tokens["--fog-50"]).toBe(
-        `color-mix(in srgb, ${darkBase} 38.0%, transparent)`,
+        `color-mix(in oklab, ${darkBase} 38.0%, transparent)`,
       )
     })
 
