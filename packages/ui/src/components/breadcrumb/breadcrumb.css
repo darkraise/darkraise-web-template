@@ -22,4 +22,12 @@
   .dr-breadcrumb-ellipsis {
     @apply flex aspect-square w-[var(--density-cell)] items-center justify-center;
   }
+
+  /* Breadcrumb links are inline text without padding or rounded chrome,
+     so the standard frosted pill would attach to bare glyphs and read
+     as visual noise. Use the hover-glow alone — primary-tinted soft
+     bloom under the text on hover, no surface fill. */
+  [data-preset="glass"] .dr-breadcrumb-link:hover {
+    box-shadow: var(--glass-state-hover-glow);
+  }
 }
