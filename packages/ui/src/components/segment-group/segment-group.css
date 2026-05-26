@@ -58,4 +58,44 @@
   .dr-segment-group[data-mounted="false"] .dr-segment-group-indicator {
     transition-duration: 0ms;
   }
+
+  /* Glass-preset SegmentGroup. The track gets the frosted treatment;
+     the sliding indicator gains the accent-tinted selected-fill from
+     --glass-state-selected-fill so the active segment reads as
+     "raised" under glass. Items themselves stay transparent — the
+     RadioGroup-Glass rule would otherwise paint them with fog tint,
+     which would compete with the indicator pill. The neutralizer
+     below overrides the radio-group Glass background and border for
+     segment-group items specifically. */
+  [data-preset="glass"] .dr-segment-group {
+    background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
+    border: 1px solid var(--fog-20);
+    backdrop-filter: var(--backdrop-filter);
+    -webkit-backdrop-filter: var(--backdrop-filter);
+    box-shadow: var(--inset-hi), var(--glass-halo-raised);
+  }
+
+  /* Neutralize the RadioGroup-Glass surface on segment-group items so
+     the indicator pill is the only selection chrome the user sees.
+     Specificity (0,3,0) beats [data-preset="glass"] .dr-radio-group-item
+     at (0,2,0) and its checked-state at (0,3,0) on source order. */
+  [data-preset="glass"] .dr-segment-group .dr-segment-group-item,
+  [data-preset="glass"]
+    .dr-segment-group
+    .dr-segment-group-item[data-state="checked"] {
+    background-image: linear-gradient(transparent, transparent);
+    border-color: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  [data-preset="glass"] .dr-segment-group-indicator {
+    background-image: var(--glass-state-selected-fill);
+    box-shadow: var(--glass-state-active-inset);
+  }
+
+  [data-preset="glass"] .dr-segment-group-item:hover {
+    box-shadow: var(--glass-state-hover-glow);
+  }
 }
