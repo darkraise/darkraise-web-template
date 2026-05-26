@@ -1,7 +1,10 @@
 /* packages/ui/src/theme/presets/glass/glass.css
- * Scalar tokens for the Glass preset's two axes. Cross-axis color math
- * (fog tiers, inset highlights, dark-gradient border) lives in glass.ts;
- * this file is the no-JS bedrock for the simple values.
+ * Scalar tokens for the Glass preset's three axes (opacity, blur, halo)
+ * plus state-personality tokens and mode-scoped composition into
+ * --surface-overlay-shadow / --card-elevation-*. Cross-axis color math
+ * (fog tiers, inset highlights, halo tier tokens, dark-gradient border)
+ * lives in glass.ts; this file is the no-JS bedrock for the simple
+ * values and the var(--primary)-driven state tokens.
  */
 
 /* Surface opacity. Consumed via `var(--surface-opacity, 1)` in @theme inline.
