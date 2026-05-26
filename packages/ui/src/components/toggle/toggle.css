@@ -70,4 +70,41 @@
   .dr-toggle[data-size="lg"] {
     @apply min-h-[var(--density-cell-lg)] min-w-[var(--density-cell-lg)] px-[var(--density-button-py-lg)] py-[var(--density-button-py-lg)];
   }
+
+  /* Glass-preset frosted Toggle. Variant-aware to preserve the design
+     distinction (default = filled-on-active, outline = bordered with
+     transparent fill on active). Specificity has to match the
+     variant-scoped base rules (0,3,0) so the Glass rule wins on
+     source order without flattening variants — see
+     preset_selected_state_must_be_variant_aware memory. */
+  [data-preset="glass"] .dr-toggle[data-variant="default"],
+  [data-preset="glass"] .dr-toggle[data-variant="outline"] {
+    background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
+    border: 1px solid var(--fog-15);
+    backdrop-filter: var(--backdrop-filter);
+    -webkit-backdrop-filter: var(--backdrop-filter);
+    box-shadow: var(--inset-hi), var(--glass-halo-raised);
+  }
+
+  [data-preset="glass"] .dr-toggle[data-variant="default"]:hover,
+  [data-preset="glass"] .dr-toggle[data-variant="outline"]:hover {
+    background-image: linear-gradient(135deg, var(--fog-20), var(--fog-10));
+    box-shadow:
+      var(--inset-hi), var(--glass-halo-raised), var(--glass-state-hover-glow);
+  }
+
+  [data-preset="glass"] .dr-toggle[data-variant="default"][data-state="on"],
+  [data-preset="glass"] .dr-toggle[data-variant="outline"][data-state="on"] {
+    background-image: var(--glass-state-selected-fill);
+    border-color: hsl(var(--primary) / 0.4);
+    box-shadow:
+      var(--inset-hi), var(--glass-halo-raised), var(--glass-state-active-inset);
+  }
+
+  [data-preset="glass"] .dr-toggle:disabled {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+    opacity: 0.5;
+  }
 }

@@ -2,4 +2,11 @@
   .dr-toggle-group {
     @apply flex items-center justify-center gap-1;
   }
+
+  /* Glass-preset ToggleGroup. The group itself is transparent — each
+     toggle item carries its own frosted surface (see toggle.css). */
+  [data-preset="glass"] .dr-toggle-group {
+    background: transparent;
+    box-shadow: none;
+  }
 }
