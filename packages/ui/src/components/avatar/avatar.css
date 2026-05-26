@@ -20,4 +20,11 @@
   .dr-avatar-fallback {
     @apply bg-muted flex h-full w-full items-center justify-center rounded-full;
   }
+
+  /* Glass preset — light-frost fallback fill (no backdrop-filter; inherits
+     blur from the container per spec §6.6). */
+  [data-preset="glass"] .dr-avatar-fallback {
+    background-color: transparent;
+    background-image: linear-gradient(135deg, var(--fog-20), var(--fog-10));
+  }
 }
