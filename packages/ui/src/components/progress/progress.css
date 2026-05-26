@@ -6,4 +6,21 @@
   .dr-progress-indicator {
     @apply bg-primary h-full w-full flex-1 transition-all;
   }
+
+  /* Glass preset — light-frost track + accent-tinted fill (no
+     backdrop-filter; inherits blur from the container per spec §6.6).
+     Linear gradients along the bar axis keep motion direction legible. */
+  [data-preset="glass"] .dr-progress {
+    background-color: transparent;
+    background-image: linear-gradient(90deg, var(--fog-20), var(--fog-10));
+  }
+
+  [data-preset="glass"] .dr-progress-indicator {
+    background-color: transparent;
+    background-image: linear-gradient(
+      90deg,
+      hsl(var(--primary) / 0.6),
+      hsl(var(--primary) / 0.4)
+    );
+  }
 }
