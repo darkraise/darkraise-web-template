@@ -365,7 +365,6 @@
    the one tier not joining the cloud vocabulary. Replace their shadow
    to match. */
 [data-preset="playful"] .dr-dialog-content,
-[data-preset="playful"] .dr-alert-dialog-content,
 [data-preset="playful"] .dr-sheet-content,
 [data-preset="playful"] .dr-drawer-content {
   box-shadow: var(--surface-overlay-shadow);

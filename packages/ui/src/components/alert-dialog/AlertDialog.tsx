@@ -5,15 +5,16 @@ import * as React from "react"
 import { cn } from "@lib/utils"
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
+  DialogFooter,
+  DialogHeader,
   DialogOverlay,
   DialogPortal,
   DialogTitle,
   DialogTrigger,
-  DialogClose,
 } from "@components/dialog"
-import "@components/overlay-primitives/overlay-primitives.css"
 
 interface AlertDialogProps {
   open?: boolean
@@ -22,6 +23,19 @@ interface AlertDialogProps {
   children?: React.ReactNode
 }
 
+/**
+ * AlertDialog is a thin behavior/a11y variant of Dialog:
+ *   - forces `role="alertdialog"` (consumers + screen readers see the
+ *     alertdialog semantics)
+ *   - disables outside-pointer-down close (a11y pattern: alert dialogs
+ *     must be dismissed by an explicit action/cancel button, never by
+ *     clicking away)
+ *
+ * Every visual + structural concern (content surface, title, header,
+ * footer, description, portal, overlay, close-button behavior) reuses
+ * Dialog directly. Style changes to Dialog flow into AlertDialog
+ * automatically.
+ */
 function AlertDialog({
   open,
   defaultOpen,
@@ -41,74 +55,18 @@ function AlertDialog({
   )
 }
 
+// Pure aliases — these render identically to their Dialog counterparts.
+// The `role="alertdialog"` on the content element (set by AlertDialog
+// root via the Dialog context) is what differentiates an alert dialog
+// from a regular dialog at the DOM + a11y level. No CSS divergence.
 const AlertDialogTrigger = DialogTrigger
 const AlertDialogPortal = DialogPortal
 const AlertDialogOverlay = DialogOverlay
-
-type AlertDialogContentProps = React.ComponentProps<typeof DialogContent>
-
-function AlertDialogContent({
-  className,
-  children,
-  ref,
-  ...props
-}: AlertDialogContentProps) {
-  return (
-    <DialogContent
-      ref={ref}
-      className={cn("dr-alert-dialog-content", className)}
-      {...props}
-    >
-      {children}
-    </DialogContent>
-  )
-}
-
-function AlertDialogHeader({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("dr-overlay-header", className)} {...props} />
-}
-AlertDialogHeader.displayName = "AlertDialogHeader"
-
-function AlertDialogFooter({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("dr-overlay-footer", className)} {...props} />
-}
-AlertDialogFooter.displayName = "AlertDialogFooter"
-
-type AlertDialogTitleProps = React.ComponentProps<typeof DialogTitle>
-
-function AlertDialogTitle({ className, ref, ...props }: AlertDialogTitleProps) {
-  return (
-    <DialogTitle
-      ref={ref}
-      className={cn("dr-alert-dialog-title", className)}
-      {...props}
-    />
-  )
-}
-
-type AlertDialogDescriptionProps = React.ComponentProps<
-  typeof DialogDescription
->
-
-function AlertDialogDescription({
-  className,
-  ref,
-  ...props
-}: AlertDialogDescriptionProps) {
-  return (
-    <DialogDescription
-      ref={ref}
-      className={cn("dr-overlay-description", className)}
-      {...props}
-    />
-  )
-}
+const AlertDialogContent = DialogContent
+const AlertDialogHeader = DialogHeader
+const AlertDialogFooter = DialogFooter
+const AlertDialogTitle = DialogTitle
+const AlertDialogDescription = DialogDescription
 
 interface AlertDialogActionProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   ref?: React.Ref<HTMLButtonElement>

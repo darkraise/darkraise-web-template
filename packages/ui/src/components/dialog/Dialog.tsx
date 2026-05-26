@@ -193,12 +193,7 @@ function DialogContentImpl({
         aria-describedby={ctx.descriptionId}
         data-state={ctx.state}
         tabIndex={-1}
-        className={cn(
-          ctx.role === "alertdialog"
-            ? "dr-alert-dialog-content"
-            : "dr-dialog-content",
-          className,
-        )}
+        className={cn("dr-dialog-content", className)}
         {...rest}
       >
         {children}

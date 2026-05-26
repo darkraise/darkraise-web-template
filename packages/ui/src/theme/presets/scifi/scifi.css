@@ -213,7 +213,8 @@
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-tabs-list,
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-listbox,
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-segment-group,
-[data-preset="scifi"][data-scifi-frame="notched"] .dr-alert-dialog-content {
+[data-preset="scifi"][data-scifi-frame="notched"]
+  .dr-dialog-content[role="alertdialog"] {
   clip-path: polygon(
     10px 0,
     100% 0,
@@ -280,7 +281,6 @@
    popover/dropdown/menu/select/etc. so modals match the rest of the
    floating-surface vocabulary. */
 [data-preset="scifi"] .dr-dialog-content,
-[data-preset="scifi"] .dr-alert-dialog-content,
 [data-preset="scifi"] .dr-sheet-content,
 [data-preset="scifi"] .dr-drawer-content {
   box-shadow: var(--surface-overlay-shadow);
@@ -290,7 +290,6 @@
    primary stroke that follows the clipped polygon (CSS border
    doesn't — see comment block above). */
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-dialog-content,
-[data-preset="scifi"][data-scifi-frame="notched"] .dr-alert-dialog-content,
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-sheet-content,
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-drawer-content {
   border-color: transparent;

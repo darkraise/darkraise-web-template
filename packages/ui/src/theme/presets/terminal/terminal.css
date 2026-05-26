@@ -448,7 +448,6 @@
    use; modals were the one tier not joining that vocabulary. Replace
    their shadow chain to match. */
 [data-preset="terminal"] .dr-dialog-content,
-[data-preset="terminal"] .dr-alert-dialog-content,
 [data-preset="terminal"] .dr-sheet-content,
 [data-preset="terminal"] .dr-drawer-content {
   box-shadow: var(--surface-overlay-shadow);

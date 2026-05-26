@@ -271,7 +271,6 @@
    neon.css rebinds per glow level above); modals were the one tier
    not joining that vocabulary. Replace their shadow chain to match. */
 [data-preset="neon"] .dr-dialog-content,
-[data-preset="neon"] .dr-alert-dialog-content,
 [data-preset="neon"] .dr-sheet-content,
 [data-preset="neon"] .dr-drawer-content {
   box-shadow: var(--surface-overlay-shadow);
