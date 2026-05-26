@@ -65,7 +65,7 @@ describe("glass preset", () => {
     >
 
     // Fog tokens are accent-tinted color-mix expressions. Light mode uses
-    // 18% of accent[500] mixed into white as the base; dark mode uses 14%
+    // 24% of accent[500] mixed into white as the base; dark mode uses 18%
     // of accent[400]. Test fixture uses the blue accent palette
     // (accent[500] = "217 91% 60%", accent[400] = "213 94% 68%").
     const lightBase = "color-mix(in oklab, hsl(217 91% 60%) 24%, white)"
