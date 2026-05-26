@@ -56,4 +56,19 @@
   .dr-date-picker-preset {
     @apply text-foreground hover:bg-accent hover:text-accent-foreground focus-ring-tight inline-flex items-center justify-center rounded-sm border px-2 py-1 text-xs transition-colors;
   }
+
+  /* The trigger is a small icon button overlaid on top of the
+     DatePickerInput (which already inherits the standalone .dr-input
+     glass frosting). Give it a subtle hover/open halo rather than the
+     full gradient + border treatment, which would visually conflict
+     with the already-frosted input chrome behind it. */
+  [data-preset="glass"] .dr-date-picker-trigger:hover {
+    background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
+    box-shadow: var(--glass-state-hover-glow);
+  }
+
+  [data-preset="glass"] .dr-date-picker-trigger[data-state="open"] {
+    background-image: var(--glass-state-selected-fill);
+    box-shadow: var(--glass-state-active-inset);
+  }
 }
