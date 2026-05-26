@@ -249,4 +249,35 @@
     border-color: hsl(var(--primary));
     box-shadow: 0 0 8px hsl(var(--primary) / 0.5);
   }
+
+  /* Glass preset — light-frost mini-surface (no backdrop-filter; inherits
+     blur from the container per spec §6.6). Theme-aware variants get a
+     soft tint pulled from --primary / --destructive; muted variants use
+     the neutral fog mix. Fixed accent-color variants keep their filled
+     treatment as context-stable indicators. */
+  [data-preset="glass"] .dr-badge[data-variant="default"] {
+    background-image: linear-gradient(
+      135deg,
+      hsl(var(--primary) / 0.45),
+      hsl(var(--primary) / 0.25)
+    );
+    border: 1px solid hsl(var(--primary) / 0.3);
+    box-shadow: 0 0 0 1px hsl(var(--primary) / 0.05);
+  }
+
+  [data-preset="glass"] .dr-badge[data-variant="secondary"],
+  [data-preset="glass"] .dr-badge[data-variant="outline"] {
+    background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
+    border: 1px solid var(--fog-20);
+    box-shadow: 0 0 0 1px hsl(var(--primary) / 0.04);
+  }
+
+  [data-preset="glass"] .dr-badge[data-variant="destructive"] {
+    background-image: linear-gradient(
+      135deg,
+      hsl(var(--destructive) / 0.45),
+      hsl(var(--destructive) / 0.25)
+    );
+    border: 1px solid hsl(var(--destructive) / 0.3);
+  }
 }
