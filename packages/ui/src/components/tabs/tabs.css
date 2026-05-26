@@ -74,7 +74,9 @@
     @apply text-primary;
   }
 
-  /* Glass surface style — active tab gets the glass gradient */
+  /* Glass surface style — active tab gets the glass gradient.
+     Composes the design-token halo + active-inset so the active tab
+     reads against the frosted list and the preset's identity holds. */
   [data-preset="glass"]
     .dr-tabs-trigger[data-variant="default"][data-state="active"] {
     background-color: transparent;
@@ -89,7 +91,34 @@
       var(--shadow-button),
       var(--inset-hi-button),
       inset 0 -1px 0 color-mix(in srgb, hsl(var(--primary)) 70%, #000),
-      0 0 0 1px color-mix(in oklab, hsl(var(--primary)) 25%, transparent);
+      var(--glass-halo-raised),
+      var(--glass-state-active-inset);
+  }
+
+  /* Outline + underline variants: frost the trigger at rest, add a
+     hover glow, and tint the active selected fill with the glass-state
+     token so all three variants share the preset identity. */
+  [data-preset="glass"] .dr-tabs-trigger[data-variant="outline"],
+  [data-preset="glass"] .dr-tabs-trigger[data-variant="underline"] {
+    backdrop-filter: var(--backdrop-filter);
+    -webkit-backdrop-filter: var(--backdrop-filter);
+  }
+
+  [data-preset="glass"] .dr-tabs-trigger[data-variant="outline"]:hover,
+  [data-preset="glass"] .dr-tabs-trigger[data-variant="underline"]:hover {
+    box-shadow: var(--glass-state-hover-glow);
+  }
+
+  [data-preset="glass"]
+    .dr-tabs-trigger[data-variant="outline"][data-state="active"] {
+    background-image: var(--glass-state-selected-fill);
+    box-shadow:
+      var(--inset-hi), var(--glass-halo-raised), var(--glass-state-active-inset);
+  }
+
+  [data-preset="glass"]
+    .dr-tabs-trigger[data-variant="underline"][data-state="active"] {
+    box-shadow: var(--affordance-glow-bottom), var(--glass-state-hover-glow);
   }
 
   /* Neon preset — default-variant active tab swaps the solid primary
