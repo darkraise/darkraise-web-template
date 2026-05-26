@@ -41,4 +41,30 @@
   .dr-select-separator {
     @apply bg-muted -mx-1 my-1 h-px;
   }
+
+  [data-preset="glass"] .dr-select-trigger {
+    background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
+    border: 1px solid var(--fog-15);
+    backdrop-filter: var(--backdrop-filter);
+    -webkit-backdrop-filter: var(--backdrop-filter);
+    box-shadow: var(--inset-hi), var(--glass-halo-raised);
+  }
+
+  [data-preset="glass"] .dr-select-trigger:hover {
+    box-shadow:
+      var(--inset-hi), var(--glass-halo-raised), var(--glass-state-hover-glow);
+  }
+
+  [data-preset="glass"] .dr-select-trigger[data-state="open"] {
+    border-color: hsl(var(--primary) / 0.4);
+    box-shadow:
+      var(--inset-hi), var(--glass-halo-raised), var(--glass-state-active-inset);
+  }
+
+  [data-preset="glass"] .dr-select-trigger:disabled {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+    opacity: 0.5;
+  }
 }
