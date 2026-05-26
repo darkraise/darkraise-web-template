@@ -62,4 +62,18 @@
   .dr-sidebar-layout-content {
     @apply flex-1 overflow-y-auto p-6;
   }
+
+  /* Glass preset — chrome surface (heavier blur than mini-surfaces per
+     spec §6.6; persistent halo + inset highlight establish the "fixed
+     panel" feel). Overrides the bg-surface-sidebar utility set on the
+     aside so the page content shows through. */
+  [data-preset="glass"] .dr-sidebar-layout-aside {
+    background-color: transparent;
+    background-image: linear-gradient(135deg, var(--fog-30), var(--fog-15));
+    border-right: 1px solid var(--fog-20);
+    backdrop-filter: blur(calc(var(--backdrop-blur, 12px) * 1.5)) saturate(140%);
+    -webkit-backdrop-filter: blur(calc(var(--backdrop-blur, 12px) * 1.5))
+      saturate(140%);
+    box-shadow: var(--inset-hi), var(--glass-halo-overlay);
+  }
 }
