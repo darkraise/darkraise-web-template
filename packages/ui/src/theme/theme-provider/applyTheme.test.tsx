@@ -129,7 +129,7 @@ describe("ThemeProvider preset orchestration", () => {
     // accent-tinted white base. Just assert the shape; the unit tests in
     // glass.test.ts cover exact values per opacity × mode.
     expect(document.documentElement.style.getPropertyValue("--fog-05")).toMatch(
-      /^color-mix\(in srgb, color-mix\(in srgb, hsl\(.+\) \d+%, white\) [\d.]+%, transparent\)$/,
+      /^color-mix\(in oklab, color-mix\(in oklab, hsl\(.+\) \d+%, white\) [\d.]+%, transparent\)$/,
     )
   })
 
