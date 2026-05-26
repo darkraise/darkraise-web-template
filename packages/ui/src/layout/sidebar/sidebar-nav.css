@@ -132,4 +132,25 @@
   .dr-sidebar-popover-child.active {
     @apply bg-accent text-accent-foreground;
   }
+
+  /* Glass-preset sidebar items: replace the solid hover-bg + active-bg
+     with frosted gradients so the chrome consistent with other Glass
+     surfaces, while keeping the active-state inset-left bar + bolder
+     label distinguishable from hover (per sidebar_hover_active_state
+     _collision memory). */
+  [data-preset="glass"] .dr-sidebar-nav-item:hover {
+    background-color: transparent;
+    background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
+    box-shadow: var(--glass-state-hover-glow);
+  }
+
+  [data-preset="glass"] .dr-sidebar-nav-item.active,
+  [data-preset="glass"] .dr-sidebar-nav-item[data-status="active"] {
+    background-color: transparent;
+    background-image: var(--glass-state-selected-fill);
+    box-shadow:
+      inset 3px 0 0 0 hsl(var(--primary)),
+      var(--glass-state-active-inset),
+      var(--glass-halo-raised);
+  }
 }
