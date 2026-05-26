@@ -61,4 +61,22 @@
   .dr-input-otp-container[data-variant="separate"] .dr-input-otp-slot {
     @apply rounded-md border;
   }
+
+  /* Glass-preset frosted InputOTP slots. Each slot is its own bordered
+     cell; the active slot (caret position in overlay mode, focused
+     input in separate mode) lights up with the focus halo. */
+  [data-preset="glass"] .dr-input-otp-slot {
+    background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
+    border: 1px solid var(--fog-15);
+    backdrop-filter: var(--backdrop-filter);
+    -webkit-backdrop-filter: var(--backdrop-filter);
+    box-shadow: var(--inset-hi), var(--glass-halo-raised);
+  }
+
+  [data-preset="glass"] .dr-input-otp-slot[data-active],
+  [data-preset="glass"] .dr-input-otp-slot:focus-within {
+    border-color: hsl(var(--primary) / 0.4);
+    box-shadow:
+      var(--inset-hi), var(--glass-halo-raised), var(--glass-state-hover-glow);
+  }
 }
