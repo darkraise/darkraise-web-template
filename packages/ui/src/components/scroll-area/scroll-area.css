@@ -23,4 +23,18 @@
   [data-darkraise-scroll-viewport]::-webkit-scrollbar {
     display: none;
   }
+
+  /* Glass preset — light-frost thumb (no backdrop-filter; inherits blur
+     from the container per spec §6.6). Hover thickens the fog so the
+     thumb remains a clear affordance while the viewport content shows
+     through. */
+  [data-preset="glass"] .dr-scroll-thumb {
+    background-color: transparent;
+    background-image: linear-gradient(135deg, var(--fog-30), var(--fog-15));
+    border-radius: var(--radius);
+  }
+
+  [data-preset="glass"] .dr-scroll-thumb:hover {
+    background-image: linear-gradient(135deg, var(--fog-50), var(--fog-20));
+  }
 }
