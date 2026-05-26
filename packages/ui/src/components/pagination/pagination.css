@@ -37,4 +37,18 @@
   .dr-pagination-next {
     @apply gap-1 pr-2.5;
   }
+
+  /* PaginationLink already carries .dr-btn, so the Phase 3 Glass button
+     rules frost the chrome at rest + hover. This rule swaps the active
+     (current-page) treatment from primary-border-only over to the
+     glass-selected fill so the active page reads against the frosted
+     row without losing the primary accent. */
+  [data-preset="glass"]
+    .dr-pagination-link[data-active="true"][data-variant="ghost"] {
+    background-color: transparent;
+    background-image: var(--glass-state-selected-fill);
+    border-color: hsl(var(--primary) / 0.4);
+    box-shadow:
+      var(--inset-hi), var(--glass-halo-raised), var(--glass-state-active-inset);
+  }
 }
