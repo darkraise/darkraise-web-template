@@ -123,11 +123,15 @@ export const glass: ThemePreset<GlassAxes> = {
       "--fog-20": fog(alphas[3]),
       "--fog-30": fog(alphas[4]),
       "--fog-50": fog(alphas[5]),
-      // Inset highlights stay pure white. The "light catching the top
-      // rim" effect is conventionally specular white, not accent-tinted.
-      "--inset-hi": `inset 0 1px 0 rgba(255, 255, 255, ${insetAlpha})`,
-      "--inset-hi-strong": `inset 0 1px 0 rgba(255, 255, 255, ${(insetAlpha * 1.25).toFixed(2)})`,
-      "--inset-hi-button": `inset 0 1px 0 rgba(255, 255, 255, ${(insetAlpha * 1.1).toFixed(2)})`,
+      // Two-edge inset specular: top-edge highlight + left-edge sliver at
+      // 60% of the top alpha. Reads as slight convex curvature without
+      // the full curved-sheen treatment we explicitly rejected in favor
+      // of the halo signature. The left-edge sliver also helps the card
+      // border read as crisp when the bottom or right edge lacks a strong
+      // rim source.
+      "--inset-hi": `inset 0 1px 0 rgba(255, 255, 255, ${insetAlpha}), inset 1px 0 0 rgba(255, 255, 255, ${(insetAlpha * 0.6).toFixed(2)})`,
+      "--inset-hi-strong": `inset 0 1px 0 rgba(255, 255, 255, ${(insetAlpha * 1.25).toFixed(2)}), inset 1px 0 0 rgba(255, 255, 255, ${(insetAlpha * 1.25 * 0.6).toFixed(2)})`,
+      "--inset-hi-button": `inset 0 1px 0 rgba(255, 255, 255, ${(insetAlpha * 1.1).toFixed(2)}), inset 1px 0 0 rgba(255, 255, 255, ${(insetAlpha * 1.1 * 0.6).toFixed(2)})`,
     }
 
     // Halo tier tokens — accent-tinted spatial signature applied per

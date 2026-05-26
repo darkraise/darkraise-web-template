@@ -136,10 +136,10 @@ describe("glass preset", () => {
         halo: "soft",
       })
       expect(subtle["--inset-hi"]).toBe(
-        "inset 0 1px 0 rgba(255, 255, 255, 0.75)",
+        "inset 0 1px 0 rgba(255, 255, 255, 0.75), inset 1px 0 0 rgba(255, 255, 255, 0.45)",
       )
       expect(strong["--inset-hi"]).toBe(
-        "inset 0 1px 0 rgba(255, 255, 255, 0.4)",
+        "inset 0 1px 0 rgba(255, 255, 255, 0.4), inset 1px 0 0 rgba(255, 255, 255, 0.24)",
       )
     })
 
@@ -287,6 +287,32 @@ describe("glass preset", () => {
         expect(tokens["--glass-halo-raised"]).toBe("0 0 transparent")
         expect(tokens["--glass-halo-overlay"]).toBe("0 0 transparent")
         expect(tokens["--glass-halo-modal"]).toBe("0 0 transparent")
+      })
+    })
+
+    describe("--inset-hi family extension", () => {
+      it("--inset-hi includes a left-edge sliver at 60% of the top alpha", () => {
+        const tokens = generateTokens(buildCommon(), {
+          opacity: "medium",
+          blur: "medium",
+          halo: "soft",
+        })
+        // Medium (light) insetAlpha = 0.6 from existing INSET_HI table
+        // → top: 0.6, left: 0.36 (60% of top)
+        expect(tokens["--inset-hi"]).toBe(
+          "inset 0 1px 0 rgba(255, 255, 255, 0.6), inset 1px 0 0 rgba(255, 255, 255, 0.36)",
+        )
+      })
+
+      it("--inset-hi-strong scales both edges proportionally", () => {
+        const tokens = generateTokens(buildCommon(), {
+          opacity: "medium",
+          blur: "medium",
+          halo: "soft",
+        })
+        expect(tokens["--inset-hi-strong"]).toBe(
+          "inset 0 1px 0 rgba(255, 255, 255, 0.75), inset 1px 0 0 rgba(255, 255, 255, 0.45)",
+        )
       })
     })
   })
