@@ -59,4 +59,19 @@
   .dr-menubar-shortcut {
     @apply text-muted-foreground ml-auto text-xs tracking-widest;
   }
+
+  [data-preset="glass"] .dr-menubar-trigger {
+    backdrop-filter: var(--backdrop-filter);
+    -webkit-backdrop-filter: var(--backdrop-filter);
+  }
+
+  [data-preset="glass"] .dr-menubar-trigger:hover {
+    background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
+    box-shadow: var(--glass-state-hover-glow);
+  }
+
+  [data-preset="glass"] .dr-menubar-trigger[data-state="open"] {
+    background-image: var(--glass-state-selected-fill);
+    box-shadow: var(--glass-halo-raised), var(--glass-state-active-inset);
+  }
 }
