@@ -12,4 +12,21 @@
     @apply bg-transparent text-center font-mono text-sm tabular-nums focus:outline-none disabled:opacity-50;
     width: auto;
   }
+
+  /* Glass-preset frosted DateInput. The .dr-date-input root is the
+     bordered surface (inline-flex container around the segment
+     inputs and separators); segments are transparent on their own. */
+  [data-preset="glass"] .dr-date-input {
+    background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
+    border: 1px solid var(--fog-15);
+    backdrop-filter: var(--backdrop-filter);
+    -webkit-backdrop-filter: var(--backdrop-filter);
+    box-shadow: var(--inset-hi), var(--glass-halo-raised);
+  }
+
+  [data-preset="glass"] .dr-date-input:focus-within {
+    border-color: hsl(var(--primary) / 0.4);
+    box-shadow:
+      var(--inset-hi), var(--glass-halo-raised), var(--glass-state-hover-glow);
+  }
 }
