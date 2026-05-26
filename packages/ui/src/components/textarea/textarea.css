@@ -25,4 +25,30 @@
     align-items: center;
     z-index: 1;
   }
+
+  /* Glass-preset frosted Textarea. Mirrors the standalone .dr-input
+     treatment — the textarea is its own bordered surface (the
+     .dr-textarea-group wrapper is layout-only). */
+  [data-preset="glass"] .dr-textarea {
+    background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
+    border: 1px solid var(--fog-15);
+    backdrop-filter: var(--backdrop-filter);
+    -webkit-backdrop-filter: var(--backdrop-filter);
+    box-shadow: var(--inset-hi), var(--glass-halo-raised);
+  }
+
+  [data-preset="glass"] .dr-textarea:focus,
+  [data-preset="glass"] .dr-textarea:focus-visible {
+    background-image: linear-gradient(135deg, var(--fog-20), var(--fog-10));
+    border-color: hsl(var(--primary) / 0.4);
+    box-shadow:
+      var(--inset-hi), var(--glass-halo-raised), var(--glass-state-hover-glow);
+  }
+
+  [data-preset="glass"] .dr-textarea:disabled {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+    opacity: 0.5;
+  }
 }
