@@ -9,10 +9,18 @@
   }
 
   /* Glass preset — chrome surface (heavier blur than mini-surfaces per
-     spec §6.6; persistent halo + inset highlight establish the "fixed
-     panel" feel). Overrides the bg-surface-header utility set on the
-     header so the page content shows through. Top-down gradient mirrors
-     the natural light fall on a horizontal bar. */
+     spec §6.6). Overrides the bg-surface-header utility set on the
+     header so the page content shows through. Top-down gradient
+     mirrors the natural light fall on a horizontal bar.
+
+     No --glass-halo-overlay here: the halo-overlay's 40px mid layer
+     would extend ~32px below the header's bottom edge as an accent-
+     tinted glow, bleeding into the top of main[data-content] as a
+     visible color band (most obvious on pages without dense Cards
+     covering the top area). Chrome's visual identity comes from the
+     heavy blur + fog gradient + edge specular; the halo axis stays
+     contained to floating-tier surfaces (Cards via --card-elevation-*,
+     and overlay-tier components via --surface-overlay-shadow). */
   [data-preset="glass"] .dr-layout-header {
     background-color: transparent;
     background-image: linear-gradient(180deg, var(--fog-30), var(--fog-15));
@@ -20,6 +28,6 @@
     backdrop-filter: blur(calc(var(--backdrop-blur, 12px) * 1.5)) saturate(140%);
     -webkit-backdrop-filter: blur(calc(var(--backdrop-blur, 12px) * 1.5))
       saturate(140%);
-    box-shadow: var(--inset-hi), var(--glass-halo-overlay);
+    box-shadow: var(--inset-hi);
   }
 }
