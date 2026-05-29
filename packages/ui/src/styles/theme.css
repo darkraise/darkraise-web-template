@@ -1637,6 +1637,26 @@
       var(--elevation-high), var(--inset-hi-strong), var(--glass-halo-modal);
   }
 
+  /* In-page content (main[data-content]) drops the wide-radius inset
+     accent glow that the .glass / .glass-strong / .card-surface
+     overrides above bake into their box-shadow. The glow can't be
+     suppressed via CSS variable inheritance because it's a hard-coded
+     inset shadow rather than a var() reference — so we re-declare the
+     box-shadow here, keeping just the subtle --inset-hi edge specular
+     (and --elevation-medium drop-shadow for .glass-strong) and
+     dropping the inset 0 0 NNpx accent glow + the halo. Pairs with
+     the halo + state token zero-out in glass.css that scopes to the
+     same main[data-content] subtree. Sidebar, Header, and portaled
+     overlays sit outside this scope and keep the full Glass shadow
+     recipe. */
+  [data-preset="glass"] main[data-content] .glass,
+  [data-preset="glass"] main[data-content] .card-surface {
+    box-shadow: var(--inset-hi);
+  }
+  [data-preset="glass"] main[data-content] .glass-strong {
+    box-shadow: var(--elevation-medium), var(--inset-hi-strong);
+  }
+
   /* Glass-scoped card elevation (light only) — composes the existing
      drop-shadow ramp with the halo so cards rendered via
      `elevation={"low" | "medium" | "high"}` (the theme-axis-immune
