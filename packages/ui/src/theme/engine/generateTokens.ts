@@ -271,12 +271,19 @@ export function generateTokens(
     "--noise-opacity":
       backgroundStyle === "gradient" ? (mode === "light" ? "0.6" : "0.5") : "0",
 
+    // Glass keeps the main-content overlay neutral regardless of
+    // backgroundStyle. The previous Glass+solid linear accent fade
+    // (accent[200]/accent[800] at 0.2 alpha over the top 300px) was
+    // bleeding through main[data-content] as a colored glow at the
+    // top of pages — most visible in dark mode on the Buttons demo
+    // page (and any other page without dense Cards covering the top
+    // area) where the gradient had nothing in front of it. Body bg
+    // (or whatever sits behind main) is the canonical source of
+    // page color under Glass; the overlay no longer adds its own.
     "--content-gradient-overlay":
       backgroundStyle === "gradient" && preset !== "glass"
         ? `var(--canvas-blob-a), var(--canvas-blob-b), var(--canvas-blob-c), var(--canvas-blob-d), var(--canvas-ink)`
-        : preset === "glass" && backgroundStyle === "solid"
-          ? `linear-gradient(135deg, hsl(${accent[mode === "light" ? 200 : 800]} / 0.2) 0%, transparent 70%)`
-          : "none",
+        : "none",
 
     ...sfHueTokens,
   }

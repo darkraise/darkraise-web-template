@@ -639,19 +639,19 @@ describe("generateTokens", () => {
       )
     })
 
-    // Re-enabled in Phase 3 with the glass preset registered
-    it("solid + glass → preserved linear accent fade", () => {
+    // Was a linear accent fade across the top 300px of main[data-
+    // content] under Glass + solid. Bled through as a colored glow
+    // at the top of pages without dense Cards (e.g. the Buttons
+    // demo), most visible in dark mode where accent[800] at 0.2
+    // alpha read as an obvious tint. Now neutral — body bg is the
+    // canonical page color source under Glass.
+    it("solid + glass → none (body bg is the page color under Glass)", () => {
       const tokens = generateTokens({
         ...baseInput,
         backgroundStyle: "solid",
         preset: "glass",
       })
-      const out = tokens["--content-gradient-overlay"]
-        .replace(/\s+/g, " ")
-        .trim()
-      expect(out).toMatch(
-        /^linear-gradient\(135deg, hsl\([^)]+\) 0%, transparent 70%\)$/,
-      )
+      expect(tokens["--content-gradient-overlay"]).toBe("none")
     })
 
     // Re-enabled in Phase 3 with the glass preset registered
