@@ -144,13 +144,23 @@
     box-shadow: var(--glass-state-hover-glow);
   }
 
+  /* Selected indicator stays visible at every halo setting. The
+     inset 3px primary bar (left edge) + inset 1px primary-tinted
+     ring around the whole item are hardcoded — they do NOT consume
+     --glass-state-active-inset because that token zeros out at
+     halo=none, which would make the "selected border" disappear on
+     the very setting where users want the chrome to stay calm but
+     still clearly identify the active route. Halo-axis-aware glow
+     is contained to var(--glass-halo-raised) on the outer layer,
+     which still vanishes at halo=none — the indicator persists,
+     the spatial signature dials. */
   [data-preset="glass"] .dr-sidebar-nav-item.active,
   [data-preset="glass"] .dr-sidebar-nav-item[data-status="active"] {
     background-color: transparent;
     background-image: var(--glass-state-selected-fill);
     box-shadow:
       inset 3px 0 0 0 hsl(var(--primary)),
-      var(--glass-state-active-inset),
+      inset 0 0 0 1px hsl(var(--primary) / 0.3),
       var(--glass-halo-raised);
   }
 }
