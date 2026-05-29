@@ -113,6 +113,28 @@
   --glass-state-selected-fill: linear-gradient(transparent, transparent);
 }
 
+/* Halo is a "chrome + overlay" signature under Glass — Sidebar,
+   LayoutHeader, and portaled overlays (Dialog, Sheet, Drawer,
+   Popover, Menu, Tooltip, etc.) carry it. In-page content (Cards,
+   Buttons, Inputs, etc. rendered inside main[data-content]) does
+   not, so dashboards with many surfaces don't read as visually
+   noisy and the halo axis doesn't flip the page's overall calm.
+   The main[data-content] scope is the right boundary: sidebar and
+   header sit outside it, and overlay-tier components portal to
+   body, so this reset only affects the page content that lives
+   directly inside <main>. Zero out both the halo tier tokens and
+   the state tokens so interactions inside the content area also
+   stay calm — visual feedback stays via the existing accent-tinted
+   backgrounds on hover/active/checked states, not via halo glow. */
+[data-preset="glass"] main[data-content] {
+  --glass-halo-raised: 0 0 transparent;
+  --glass-halo-overlay: 0 0 transparent;
+  --glass-halo-modal: 0 0 transparent;
+  --glass-state-hover-glow: 0 0 transparent;
+  --glass-state-active-inset: 0 0 transparent;
+  --glass-state-selected-fill: linear-gradient(transparent, transparent);
+}
+
 /* Glass-scoped dark-mode card elevation — lives here (unlayered)
    rather than in theme.css's `@layer overrides` because the dark-mode
    `--card-elevation-*` defaults at theme.css ~line 730 are themselves
