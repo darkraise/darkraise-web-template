@@ -7,11 +7,21 @@
  * values and the var(--primary)-driven state tokens.
  */
 
-/* Surface opacity. Consumed via `var(--surface-opacity, 1)` in @theme inline.
-   subtle = subtle glass effect = high opacity = card almost-solid.
-   strong = strong glass effect = low opacity = card very see-through.
-   medium matches today's `--surface-opacity: 0.5` (the solid branch of the
-   removed resolveGlassOpacity function). */
+/* Surface opacity. The data-glass-opacity axis is a SINGLE control that
+   drives THREE quantities, so keep them coherent on edits:
+     1. --surface-opacity here (consumed via `var(--surface-opacity, 1)` in
+        @theme inline → dilutes --color-card/-popover/-surface-raised/-overlay,
+        the Tailwind utility-color / "solidity" path);
+     2. the FOG_ALPHA tiers in glass.ts (→ --fog-05..--fog-50, the frosted
+        overlay/sunken glass path, --surface-overlay-bg, .glass utilities);
+     3. the INSET_HI tiers in glass.ts (→ --inset-hi*).
+   They never share a numeric value (a flat scalar here vs mode-asymmetric
+   curves in glass.ts) but move the same direction with the axis: subtle =
+   subtle glass effect = high opacity = card almost-solid; strong = strong
+   glass effect = low opacity = card very see-through. The medium
+   --surface-opacity 0.5 preserves the old resolveGlassOpacity solid branch
+   byte-for-byte (surface alpha only; the fog/inset curves are preserved
+   separately in glass.ts). */
 [data-preset="glass"][data-glass-opacity="subtle"] {
   --surface-opacity: 0.78;
 }
@@ -22,11 +32,17 @@
   --surface-opacity: 0.3;
 }
 
-/* Backdrop blur. Consumed by .glass, .glass-strong, .card-surface utilities
-   and by overlay scrims (after the Phase 0 audit fixes routed scrim
-   backdrop-filter through this var).
-   medium = 12px matches today's surfaceStyles.glass.overrides
-   .backdropBlur byte-for-byte. */
+/* Backdrop blur. --backdrop-filter is the self-cleaning value every glass
+   surface consumes via `backdrop-filter: var(--backdrop-filter)`: the base
+   .glass-thin/.glass/.glass-strong/.card-surface/.overlay-surface utilities,
+   the per-component glass rules (Input, Select, NumberInput, etc.), and the
+   overlay scrims. Using the keyword `none` at blur=none (and off-glass, via
+   the :root fallback) is important: a real `blur(0)` would still establish a
+   containing block for fixed descendants, whereas `none` does not. Layout
+   chrome (Sidebar/Header) instead scales --backdrop-blur via
+   blur(calc(var(--backdrop-blur) * 1.5)) so it can carry a stronger frost.
+   medium = 12px matches today's surfaceStyles.glass.overrides.backdropBlur
+   byte-for-byte. */
 [data-preset="glass"][data-glass-blur="none"] {
   --backdrop-blur: 0;
   --backdrop-filter: none;
@@ -42,6 +58,24 @@
 [data-preset="glass"][data-glass-blur="high"] {
   --backdrop-blur: 24px;
   --backdrop-filter: blur(24px) saturate(140%);
+}
+
+/* Accessibility accommodation. Users who request reduced transparency or
+   higher contrast at the OS level get opaque, unblurred Glass surfaces:
+   --surface-opacity:1 makes every @theme surface (card/popover/raised/
+   overlay) fully opaque — recovering the worst-case contrast headroom that
+   opacity=strong (0.3) can erode over a busy gradient canvas — and
+   --backdrop-filter:none (plus --backdrop-blur:0) removes the blur on every
+   surface that consumes those vars. Scoped to [data-preset="glass"] so it
+   only touches the Glass material and leaves the default look untouched for
+   everyone else. Mirrors the prefers-reduced-motion guards the other presets
+   already ship (scifi.css / playful.css). */
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  [data-preset="glass"] {
+    --surface-opacity: 1;
+    --backdrop-blur: 0;
+    --backdrop-filter: none;
+  }
 }
 
 /* Overlay-surface chrome under Glass. Includes the frosted noise
@@ -66,7 +100,11 @@
      blur. Drop to fog-15/-05 (0.72/0.55) so the surface stays visibly
      translucent and the blur has canvas content to blur through. Dark
      mode keeps the default fog-20/-10 because its alphas (0.14/0.07
-     at medium) are already very transparent. */
+     at MEDIUM opacity) are already very transparent. (The 0.14/0.07
+     figures are the medium-opacity anchor; opacity=subtle raises the
+     consumed fog-20/-10 to ~0.24/0.12 in dark — still clearly
+     translucent, just intentionally a touch frostier, so no analogous
+     dark reduction is needed.) */
   --surface-overlay-bg:
     var(--glass-noise), linear-gradient(135deg, var(--fog-15), var(--fog-05));
   --surface-overlay-shadow:
@@ -98,41 +136,49 @@
   );
 }
 
-/* Halo=none zeros out the state tokens too — users who explicitly
-   dial halo off get a calm interaction language across states.
+/* Halo=none zeros the GLOW tokens (hover-glow + active-inset) so users who
+   dial halo off get a calm interaction language — no accent glow or ring.
+   The selected-FILL is deliberately kept: it is the primary selection
+   affordance (a subtle low-alpha gradient, not a glow), and zeroing it left
+   selected items in fill-only consumers — listbox items, the SegmentGroup
+   indicator, open Date/Color-picker triggers — with no visible selected
+   state at all. Keeping the fill stays "calm" while preserving selection
+   legibility (1.4.1).
    "0 0 transparent" is the no-op-shadow trick from --elevation-flat:
-   syntactically valid <shadow> that composes cleanly into multi-
-   shadow lists, unlike the `none` keyword which can only be the
-   sole value. The selected-fill zero-out uses an empty
-   linear-gradient because `none` isn't a valid <image> inside a
-   multi-layer background-image list — same trap that's documented
-   for the gradient-pattern overlays elsewhere in theme.css. */
+   syntactically valid <shadow> that composes cleanly into multi-shadow
+   lists, unlike the `none` keyword which can only be the sole value. */
 [data-preset="glass"][data-glass-halo="none"] {
   --glass-state-hover-glow: 0 0 transparent;
   --glass-state-active-inset: 0 0 transparent;
-  --glass-state-selected-fill: linear-gradient(transparent, transparent);
 }
 
-/* Halo is a "chrome + overlay" signature under Glass — Sidebar,
-   LayoutHeader, and portaled overlays (Dialog, Sheet, Drawer,
-   Popover, Menu, Tooltip, etc.) carry it. In-page content (Cards,
-   Buttons, Inputs, etc. rendered inside main[data-content]) does
-   not, so dashboards with many surfaces don't read as visually
-   noisy and the halo axis doesn't flip the page's overall calm.
+/* Halo is a floating-surface signature under Glass. Portaled overlays
+   (Dialog, Sheet, Drawer, Popover, Menu, Tooltip, etc.) carry it via
+   --surface-overlay-shadow / .modal-surface, and floating in-flow Cards
+   carry it via --card-elevation-*. Chrome (Sidebar, LayoutHeader) is
+   deliberately halo-axis-INSENSITIVE since commit 58e3274 — it ends at
+   var(--inset-hi) edge specular and carries NO halo tier, so the ~32px
+   accent glow can't bleed into the page. In-page content (Cards, Buttons,
+   Inputs, etc. rendered inside main[data-content]) also drops the halo,
+   so dashboards with many surfaces don't read as visually noisy and the
+   halo axis doesn't flip the page's overall calm.
    The main[data-content] scope is the right boundary: sidebar and
    header sit outside it, and overlay-tier components portal to
    body, so this reset only affects the page content that lives
-   directly inside <main>. Zero out both the halo tier tokens and
-   the state tokens so interactions inside the content area also
-   stay calm — visual feedback stays via the existing accent-tinted
-   backgrounds on hover/active/checked states, not via halo glow. */
+   directly inside <main>. Zero the halo tiers and the GLOW state
+   tokens (hover-glow + active-inset) so interactions inside the
+   content area stay calm. The selected-FILL is kept (not zeroed):
+   it's the accent-tinted background that the comment promises carries
+   selected/checked feedback, and it's the ONLY selection cue on
+   fill-only consumers (listbox items, the SegmentGroup indicator,
+   open Date/Color-picker triggers) when they render in-content —
+   zeroing it would drop their selected state entirely (1.4.1). */
 [data-preset="glass"] main[data-content] {
   --glass-halo-raised: 0 0 transparent;
   --glass-halo-overlay: 0 0 transparent;
   --glass-halo-modal: 0 0 transparent;
   --glass-state-hover-glow: 0 0 transparent;
   --glass-state-active-inset: 0 0 transparent;
-  --glass-state-selected-fill: linear-gradient(transparent, transparent);
 }
 
 /* Glass-scoped dark-mode card elevation — lives here (unlayered)

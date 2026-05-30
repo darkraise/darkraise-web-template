@@ -111,4 +111,28 @@
     box-shadow:
       var(--inset-hi), var(--glass-halo-raised), var(--glass-state-hover-glow);
   }
+
+  /* Glass preset — addon chips and every interior divider (addon side
+     borders, the trigger-group divider, the increment/decrement split)
+     are retinted to the fog edge so they read as part of the frosted
+     control instead of leaking the neutral --border token. The control
+     wrapper owns the backdrop blur, so the addon adds no nested filter. */
+  [data-preset="glass"] .dr-number-input-addon {
+    background-color: transparent;
+    background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
+  }
+  [data-preset="glass"] .dr-number-input-addon[data-side="prefix"] {
+    border-right-color: var(--fog-15);
+  }
+  [data-preset="glass"] .dr-number-input-addon[data-side="suffix"] {
+    border-left-color: var(--fog-15);
+  }
+  [data-preset="glass"] .dr-number-input-trigger-group {
+    border-left-color: var(--fog-15);
+  }
+  [data-preset="glass"]
+    .dr-number-input-trigger-group
+    .dr-number-input-stepper-increment {
+    border-bottom-color: var(--fog-15);
+  }
 }

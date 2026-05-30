@@ -184,6 +184,16 @@ export const glass: ThemePreset<GlassAxes> = {
     // Tint percentages bumped in dark from 18% to 40% — the higher %
     // is needed because the dark base has its own hue/luminance and
     // the accent needs more weight in the mix to dominate visually.
+    // The fog fill bakes a concrete accent shade here, while the halo rim
+    // (haloRecipe) defers to hsl(var(--primary)). --primary is accent[primaryShade]
+    // where primaryShade is 600 for light glass and 400 for dark glass
+    // (generateTokens.ts). So in DARK both fog and halo resolve to accent[400]
+    // and agree; in LIGHT the fog uses accent[500] while the halo rim uses
+    // accent[600]. This is deliberate — the fog is a heavily white-diluted
+    // frosted FILL and the rim is an undiluted low-alpha edge, two different
+    // roles — so don't "align" them to one shade without intent. If they ever
+    // must match, change the light branch below to common.accent[600] (never
+    // touch --primary, which also drives bg-primary/--ring system-wide).
     const accentHSL =
       common.mode === "dark" ? common.accent[400] : common.accent[500]
     const fogBaseDilution =
@@ -211,6 +221,13 @@ export const glass: ThemePreset<GlassAxes> = {
       "--inset-hi-button": `inset 0 1px 0 rgba(255, 255, 255, ${(insetAlpha * 1.1).toFixed(2)}), inset 1px 0 0 rgba(255, 255, 255, ${(insetAlpha * 1.1 * 0.6).toFixed(2)})`,
     }
 
+    // Halo tier tokens. -raised lands on in-flow Cards via --card-elevation-*;
+    // -overlay and -modal are consumed INDIRECTLY (no direct component
+    // reference) — -overlay is composed into --surface-overlay-shadow
+    // (glass.css) which the portaled overlay components read, and -modal into
+    // [data-preset="glass"] .modal-surface (theme.css) for Dialog/Sheet/Drawer.
+    // A grep of component CSS finding no -overlay/-modal references is expected,
+    // not dead code.
     const haloAlphas = HALO_ALPHA[axes.halo][common.mode]
     tokens["--glass-halo-raised"] = haloRecipe("raised", haloAlphas.raised)
     tokens["--glass-halo-overlay"] = haloRecipe("overlay", haloAlphas.overlay)

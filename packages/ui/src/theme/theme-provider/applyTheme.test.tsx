@@ -4,6 +4,7 @@ import { renderHook, act } from "@testing-library/react"
 import type { ReactNode } from "react"
 import { ThemeProvider } from "./ThemeProvider"
 import { useTheme } from "../useTheme"
+import { glass } from "../presets/glass/glass"
 
 function wrap({ children }: { children: ReactNode }) {
   return <ThemeProvider>{children}</ThemeProvider>
@@ -142,6 +143,47 @@ describe("ThemeProvider preset orchestration", () => {
 
     act(() => result.current.setPreset("default"))
     expect(document.documentElement.style.getPropertyValue("--fog-05")).toBe("")
+  })
+
+  it("self-clean: ALL glass-specific owned tokens are removed when leaving glass", () => {
+    const { result } = renderHook(() => useTheme(), { wrapper: wrap })
+    act(() => result.current.setPreset("glass"))
+    // Glass-specific keys: the fog/inset/halo families. (--accent/--muted/
+    // --secondary/--border are also in ownedTokenKeys but the common engine
+    // re-writes them for every preset, so they're overwritten, not removed.)
+    const glassOnly = glass.ownedTokenKeys.filter(
+      (k) =>
+        k.startsWith("--fog-") ||
+        k.startsWith("--inset-hi") ||
+        k.startsWith("--glass-halo-"),
+    )
+    expect(glassOnly.length).toBeGreaterThan(0)
+    for (const key of glassOnly) {
+      expect(document.documentElement.style.getPropertyValue(key)).not.toBe("")
+    }
+    act(() => result.current.setPreset("default"))
+    for (const key of glassOnly) {
+      expect(document.documentElement.style.getPropertyValue(key)).toBe("")
+    }
+  })
+
+  it("CSS-only glass tokens are never written to inline style", () => {
+    const { result } = renderHook(() => useTheme(), { wrapper: wrap })
+    act(() => result.current.setPreset("glass"))
+    // These live in glass.css attribute selectors, not generateTokens, so
+    // they must never appear as inline documentElement styles (and thus are
+    // correctly excluded from ownedTokenKeys).
+    for (const key of [
+      "--surface-opacity",
+      "--backdrop-filter",
+      "--backdrop-blur",
+      "--glass-state-hover-glow",
+      "--glass-state-active-inset",
+      "--glass-state-selected-fill",
+    ]) {
+      // These live in glass.css attribute selectors, never in inline style.
+      expect(document.documentElement.style.getPropertyValue(key)).toBe("")
+    }
   })
 
   it("setPresetAxis on invalid axis name no-ops with dev warning", () => {
