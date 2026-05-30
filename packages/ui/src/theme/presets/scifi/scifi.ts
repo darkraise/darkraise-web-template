@@ -90,9 +90,15 @@ export const scifi: ThemePreset<ScifiAxes> = {
     }
   },
 
-  // Only what generateTokens writes. The HUD glow tokens
-  // (--scifi-glow-*, --card-elevation-*, --shadow-*,
-  // --surface-overlay-*, --affordance-glow*) are set by scifi.css
+  // Every key generateTokens writes MUST be listed here so the provider
+  // removeProperty's it when switching away from Sci-fi (the
+  // generateTokens-writes-it ⟹ ownedTokenKeys-lists-it contract in
+  // types.ts). --surface-opacity is included because generateTokens
+  // writes it as an inline style; omitting it left 0.82 stuck on every
+  // other preset after visiting Sci-fi (an inline value even outranks
+  // Glass's attribute-selector opacity). The HUD glow tokens
+  // (--scifi-glow-*, --card-elevation-*, --shadow-*, --surface-overlay-*,
+  // --affordance-glow*) are NOT listed: they're set by scifi.css
   // attribute selectors and self-clean via the cascade.
   ownedTokenKeys: [
     "--accent",
@@ -103,5 +109,6 @@ export const scifi: ThemePreset<ScifiAxes> = {
     "--radius",
     "--radius-button",
     "--font-sans",
+    "--surface-opacity",
   ] as const,
 }

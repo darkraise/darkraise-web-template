@@ -54,7 +54,11 @@ describe("scifi preset", () => {
     expect(tokens["--secondary-foreground"]).toBe("var(--primary)")
   })
 
-  it("ownedTokenKeys lists only what generateTokens actually writes", () => {
+  it("ownedTokenKeys lists every key generateTokens writes (incl. --surface-opacity)", () => {
+    // --surface-opacity MUST be listed: generateTokens writes it inline, so
+    // omitting it left 0.82 stuck on other presets after visiting Sci-fi. The
+    // generic write-set ⊆ ownedTokenKeys invariant in
+    // presets/ownedTokenKeys.test.ts guards this class for every preset.
     expect(scifi.ownedTokenKeys).toEqual([
       "--accent",
       "--accent-foreground",
@@ -64,6 +68,7 @@ describe("scifi preset", () => {
       "--radius",
       "--radius-button",
       "--font-sans",
+      "--surface-opacity",
     ])
   })
 
