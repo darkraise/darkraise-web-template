@@ -49,6 +49,7 @@ import {
   Tags,
   Timer as TimerIcon,
   FolderTree,
+  Wallpaper,
 } from "lucide-react"
 import { PageHeader } from "darkraise-ui/layout"
 
@@ -76,6 +77,12 @@ const COMPONENTS = [
     label: "Avatar",
     description: "User profile image with initials fallback",
     icon: CircleUser,
+  },
+  {
+    href: "/components/background-page",
+    label: "Background Page",
+    description: "Animated, interactive full-page backgrounds for auth screens",
+    icon: Wallpaper,
   },
   {
     href: "/components/badges",

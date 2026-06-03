@@ -12,6 +12,7 @@ import {
   ChevronsUpDown,
   ChevronsRight,
   CircleUser,
+  Wallpaper,
   Shield,
   RectangleHorizontal,
   CreditCard,
@@ -153,6 +154,11 @@ const nav: NavGroup[] = [
         icon: RectangleHorizontal,
       },
       { label: "Avatar", href: "/components/avatar", icon: CircleUser },
+      {
+        label: "Background Page",
+        href: "/components/background-page",
+        icon: Wallpaper,
+      },
       { label: "Badges", href: "/components/badges", icon: Shield },
       { label: "Banner", href: "/components/banner", icon: AlertCircle },
       {
