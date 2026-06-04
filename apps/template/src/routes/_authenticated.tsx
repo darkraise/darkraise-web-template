@@ -1,4 +1,9 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router"
+import {
+  createFileRoute,
+  Outlet,
+  redirect,
+  useNavigate,
+} from "@tanstack/react-router"
 import {
   Home,
   BarChart3,
@@ -98,10 +103,10 @@ import {
 } from "lucide-react"
 import { SidebarLayout, TopNavLayout, StackedLayout } from "darkraise-ui/layout"
 import { useLayoutStore } from "darkraise-ui/layout"
-import { useAuthStore } from "@/features/auth"
+import { useAuthStore, useAuth } from "@/features/auth"
 import type { NavGroup } from "darkraise-ui/layout"
 
-const nav: NavGroup[] = [
+export const nav: NavGroup[] = [
   {
     label: "Overview",
     items: [
@@ -438,24 +443,34 @@ export const Route = createFileRoute("/_authenticated")({
   },
   component: function AuthenticatedLayout() {
     const layout = useLayoutStore((s) => s.layout)
+    const { user, logout } = useAuth()
+    const navigate = useNavigate()
+
+    const chrome = {
+      nav,
+      showLayoutSwitcher: true,
+      user: user ? { name: user.name, email: user.email } : undefined,
+      onSettings: () => void navigate({ to: "/settings" }),
+      onLogout: () => void logout(),
+    }
 
     switch (layout) {
       case "top-nav":
         return (
-          <TopNavLayout nav={nav} showLayoutSwitcher>
+          <TopNavLayout {...chrome}>
             <Outlet />
           </TopNavLayout>
         )
       case "stacked":
         return (
-          <StackedLayout nav={nav} showLayoutSwitcher>
+          <StackedLayout {...chrome}>
             <Outlet />
           </StackedLayout>
         )
       case "sidebar":
       default:
         return (
-          <SidebarLayout nav={nav} showLayoutSwitcher>
+          <SidebarLayout {...chrome}>
             <Outlet />
           </SidebarLayout>
         )

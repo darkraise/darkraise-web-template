@@ -4,6 +4,7 @@ import { Button } from "@components/button"
 import { TooltipProvider } from "@components/tooltip"
 import { BrandLogo } from "@layout/brand-logo"
 import { LayoutHeader } from "@layout/layout-header"
+import { SkipLink } from "@layout/skip-link"
 import { SidebarNav } from "./SidebarNav"
 import { SidebarProvider } from "./SidebarContext"
 import type { LayoutProps } from "@layout/types"
@@ -17,6 +18,8 @@ export function SidebarLayout({
   showLayoutSwitcher,
   showThemeSwitcher,
   user,
+  onProfile,
+  onSettings,
   onLogout,
 }: LayoutProps) {
   const [collapsed, setCollapsed] = useState(false)
@@ -25,6 +28,7 @@ export function SidebarLayout({
     <TooltipProvider delayDuration={0}>
       <SidebarProvider collapsed={collapsed}>
         <div className="dr-sidebar-layout">
+          <SkipLink />
           <aside
             aria-label="Primary"
             aria-expanded={!collapsed}
@@ -76,9 +80,16 @@ export function SidebarLayout({
               showLayoutSwitcher={showLayoutSwitcher}
               showThemeSwitcher={showThemeSwitcher}
               user={user}
+              onProfile={onProfile}
+              onSettings={onSettings}
               onLogout={onLogout}
             />
-            <main className="dr-sidebar-layout-content" data-content>
+            <main
+              id="main-content"
+              tabIndex={-1}
+              className="dr-sidebar-layout-content"
+              data-content
+            >
               {children}
             </main>
           </div>

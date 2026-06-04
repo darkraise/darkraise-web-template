@@ -12,6 +12,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "darkraise-ui/components/dialog"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "darkraise-ui/components/alert-dialog"
 import { DataTable, ColumnHeader, RowActions } from "darkraise-ui/data-table"
 import {
   TextField,
@@ -46,6 +56,7 @@ function CategoriesPage() {
   const deleteCategory = useDeleteCategory()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingCategory, setEditingCategory] = useState<Category | null>(null)
+  const [pendingDelete, setPendingDelete] = useState<Category | null>(null)
 
   const openCreate = () => {
     setEditingCategory(null)
@@ -95,7 +106,7 @@ function CategoriesPage() {
             { label: "Edit", onClick: () => openEdit(row.original) },
             {
               label: "Delete",
-              onClick: () => deleteCategory.mutate(row.original.id),
+              onClick: () => setPendingDelete(row.original),
               variant: "destructive",
             },
           ]}
@@ -147,6 +158,36 @@ function CategoriesPage() {
           />
         </DialogContent>
       </Dialog>
+
+      <AlertDialog
+        open={pendingDelete !== null}
+        onOpenChange={(open) => {
+          if (!open) setPendingDelete(null)
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete category?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete &ldquo;{pendingDelete?.name}&rdquo;.
+              Products in this category will not be deleted. This action cannot
+              be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              data-variant="destructive"
+              onClick={() => {
+                if (pendingDelete) deleteCategory.mutate(pendingDelete.id)
+                setPendingDelete(null)
+              }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   )
 }

@@ -112,9 +112,9 @@ function OrderDetailPage() {
 
       <div className="space-y-6">
         {order.status !== "cancelled" && (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 overflow-x-auto pb-2">
             {statusSteps.map((step, i) => (
-              <div key={step} className="flex items-center gap-2">
+              <div key={step} className="flex shrink-0 items-center gap-2">
                 <div
                   className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-medium ${
                     i <= currentStepIndex
@@ -125,7 +125,7 @@ function OrderDetailPage() {
                   {i + 1}
                 </div>
                 <span
-                  className={`text-sm capitalize ${
+                  className={`text-sm whitespace-nowrap capitalize ${
                     i <= currentStepIndex
                       ? "text-foreground font-medium"
                       : "text-muted-foreground"

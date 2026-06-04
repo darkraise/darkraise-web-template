@@ -1,10 +1,11 @@
 import { useState } from "react"
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import { SplitPanelLayout } from "darkraise-ui/layout"
 import { Avatar, AvatarFallback } from "darkraise-ui/components/avatar"
 import { ScrollArea } from "darkraise-ui/components/scroll-area"
 import { cn } from "darkraise-ui/lib"
 import { useMessages, useMarkMessageAsRead } from "@/demo/hooks"
+import { useAuth } from "@/features/auth"
 import { inboxNav } from "@/routes/_inbox"
 
 export const Route = createFileRoute("/_inbox/inbox")({
@@ -14,6 +15,8 @@ export const Route = createFileRoute("/_inbox/inbox")({
 function InboxPage() {
   const { data: messages } = useMessages()
   const markAsRead = useMarkMessageAsRead()
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
   const [selectedId, setSelectedId] = useState<string | null>(null)
 
   const selectedMessage = messages?.find((m) => m.id === selectedId) ?? null
@@ -90,7 +93,14 @@ function InboxPage() {
   )
 
   return (
-    <SplitPanelLayout nav={inboxNav} panel={panel} showLayoutSwitcher>
+    <SplitPanelLayout
+      nav={inboxNav}
+      panel={panel}
+      showLayoutSwitcher
+      user={user ? { name: user.name, email: user.email } : undefined}
+      onSettings={() => void navigate({ to: "/settings" })}
+      onLogout={() => void logout()}
+    >
       {selectedMessage ? (
         <div className="space-y-6">
           <div>

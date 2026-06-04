@@ -3,24 +3,35 @@ import { Link } from "@tanstack/react-router"
 import { z } from "zod"
 import { useForm } from "@tanstack/react-form"
 import { Button } from "darkraise-ui/components/button"
+import { Alert, AlertDescription } from "darkraise-ui/components/alert"
 import { Stack } from "darkraise-ui/layout"
 import { useAuth } from "../../hooks/useAuth"
 import { AuthFormField } from "../auth-form-field"
 
 const schema = z.object({
-  email: z.string().email("Enter a valid email"),
+  email: z.email("Enter a valid email"),
 })
 
 export function ForgotPasswordForm() {
   const { forgotPassword } = useAuth()
   const [sent, setSent] = useState(false)
+  const [formError, setFormError] = useState<string | null>(null)
 
   const form = useForm({
     defaultValues: { email: "" },
     validators: { onChange: schema },
     onSubmit: async ({ value }) => {
-      await forgotPassword(value.email)
-      setSent(true)
+      setFormError(null)
+      try {
+        await forgotPassword(value.email)
+        setSent(true)
+      } catch (err) {
+        setFormError(
+          err instanceof Error
+            ? err.message
+            : "Unable to send the reset link. Please try again.",
+        )
+      }
     },
   })
 
@@ -56,12 +67,20 @@ export function ForgotPasswordForm() {
         }}
       >
         <Stack gap="md">
+          {formError && (
+            <Alert variant="destructive">
+              <AlertDescription>{formError}</AlertDescription>
+            </Alert>
+          )}
+
           <form.Field name="email">
             {(field) => (
               <AuthFormField
                 field={field}
                 label="Email"
                 type="email"
+                autoComplete="email"
+                autoFocus
                 placeholder="name@example.com"
               />
             )}

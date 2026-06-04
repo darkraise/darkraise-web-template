@@ -1,8 +1,19 @@
+import { useState } from "react"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import type { ColumnDef } from "@tanstack/react-table"
 import { PageHeader } from "darkraise-ui/layout"
 import { Button } from "darkraise-ui/components/button"
 import { Badge } from "darkraise-ui/components/badge"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "darkraise-ui/components/alert-dialog"
 import { DataTable, ColumnHeader, RowActions } from "darkraise-ui/data-table"
 import { useProducts, useDeleteProduct } from "@/demo/hooks"
 import type { Product } from "@/demo/types"
@@ -15,6 +26,7 @@ function ProductsPage() {
   const navigate = useNavigate()
   const { data: products, isLoading } = useProducts()
   const deleteProduct = useDeleteProduct()
+  const [pendingDelete, setPendingDelete] = useState<Product | null>(null)
 
   const columns: ColumnDef<Product>[] = [
     {
@@ -78,7 +90,7 @@ function ProductsPage() {
             },
             {
               label: "Delete",
-              onClick: () => deleteProduct.mutate(row.original.id),
+              onClick: () => setPendingDelete(row.original),
               variant: "destructive",
             },
           ]}
@@ -106,6 +118,35 @@ function ProductsPage() {
         searchKey="name"
         searchPlaceholder="Search products..."
       />
+
+      <AlertDialog
+        open={pendingDelete !== null}
+        onOpenChange={(open) => {
+          if (!open) setPendingDelete(null)
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete product?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete &ldquo;{pendingDelete?.name}&rdquo;.
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              data-variant="destructive"
+              onClick={() => {
+                if (pendingDelete) deleteProduct.mutate(pendingDelete.id)
+                setPendingDelete(null)
+              }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   )
 }

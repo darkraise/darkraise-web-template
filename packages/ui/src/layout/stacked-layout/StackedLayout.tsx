@@ -7,6 +7,7 @@ import {
   TooltipTrigger,
 } from "@components/tooltip"
 import { LayoutHeader } from "@layout/layout-header"
+import { SkipLink } from "@layout/skip-link"
 import type { LayoutProps } from "@layout/types"
 
 export function StackedLayout({
@@ -16,6 +17,8 @@ export function StackedLayout({
   showLayoutSwitcher,
   showThemeSwitcher,
   user,
+  onProfile,
+  onSettings,
   onLogout,
 }: LayoutProps) {
   const { Link, usePathname } = useRouterAdapter()
@@ -42,6 +45,7 @@ export function StackedLayout({
        * throws "useSidebar must be used within a <SidebarProvider>". */}
       <SidebarProvider collapsed={false}>
         <div className="dr-stacked-layout">
+          <SkipLink />
           {/* Icon sidebar */}
           <aside className="dr-stacked-layout-rail">
             <div className="dr-stacked-layout-rail-logo" />
@@ -100,10 +104,18 @@ export function StackedLayout({
               showLayoutSwitcher={showLayoutSwitcher}
               showThemeSwitcher={showThemeSwitcher}
               user={user}
+              onProfile={onProfile}
+              onSettings={onSettings}
               onLogout={onLogout}
             />
 
-            <main className="dr-stacked-layout-content">{children}</main>
+            <main
+              id="main-content"
+              tabIndex={-1}
+              className="dr-stacked-layout-content"
+            >
+              {children}
+            </main>
           </div>
         </div>
       </SidebarProvider>

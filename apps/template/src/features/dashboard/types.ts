@@ -26,4 +26,7 @@ export interface ProgressCardProps {
   value: number
   target: number
   unit?: string
+  /** Formats the value and target for display. Defaults to a locale-grouped
+   *  number with the optional `unit` appended (e.g. "1,250 GB"). */
+  formatValue?: (value: number) => string
 }

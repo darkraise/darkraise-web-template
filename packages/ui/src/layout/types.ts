@@ -23,6 +23,8 @@ export interface LayoutProps {
   showLayoutSwitcher?: boolean
   showThemeSwitcher?: boolean
   user?: { name: string; email: string }
+  onProfile?: () => void
+  onSettings?: () => void
   onLogout?: () => void
 }
 

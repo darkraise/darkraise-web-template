@@ -44,7 +44,12 @@ export function SelectField({
             aria-invalid={invalid}
             aria-describedby={ariaDescribedBy}
           >
-            <SelectValue placeholder={placeholder} />
+            {/* Resolve the label from `options` so a preset value renders its
+             *  label immediately — the Select only registers item text once
+             *  its content has been opened. */}
+            <SelectValue placeholder={placeholder}>
+              {options.find((opt) => opt.value === value)?.label}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             {options.map((opt) => (

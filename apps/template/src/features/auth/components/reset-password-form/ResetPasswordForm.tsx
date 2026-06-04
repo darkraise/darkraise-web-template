@@ -1,6 +1,9 @@
+import { useState } from "react"
 import { z } from "zod"
 import { useForm } from "@tanstack/react-form"
 import { Button } from "darkraise-ui/components/button"
+import { Alert, AlertDescription } from "darkraise-ui/components/alert"
+import { toast } from "darkraise-ui/components/sonner"
 import { Stack } from "darkraise-ui/layout"
 import { useAuth } from "../../hooks/useAuth"
 import { AuthFormField } from "../auth-form-field"
@@ -21,12 +24,23 @@ interface ResetPasswordFormProps {
 
 export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
   const { resetPassword } = useAuth()
+  const [formError, setFormError] = useState<string | null>(null)
 
   const form = useForm({
     defaultValues: { password: "", confirmPassword: "" },
     validators: { onChange: schema },
     onSubmit: async ({ value }) => {
-      await resetPassword(token, value.password)
+      setFormError(null)
+      try {
+        await resetPassword(token, value.password)
+        toast.success("Password reset. Please sign in with your new password.")
+      } catch (err) {
+        setFormError(
+          err instanceof Error
+            ? err.message
+            : "Unable to reset your password. The link may have expired.",
+        )
+      }
     },
   })
 
@@ -44,12 +58,20 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
         }}
       >
         <Stack gap="md">
+          {formError && (
+            <Alert variant="destructive">
+              <AlertDescription>{formError}</AlertDescription>
+            </Alert>
+          )}
+
           <form.Field name="password">
             {(field) => (
               <AuthFormField
                 field={field}
                 label="New password"
                 type="password"
+                autoComplete="new-password"
+                autoFocus
                 placeholder="At least 8 characters"
               />
             )}
@@ -61,6 +83,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
                 field={field}
                 label="Confirm password"
                 type="password"
+                autoComplete="new-password"
               />
             )}
           </form.Field>

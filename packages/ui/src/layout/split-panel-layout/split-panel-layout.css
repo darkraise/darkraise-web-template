@@ -4,7 +4,11 @@
   }
 
   .dr-split-panel-layout-body {
-    @apply flex flex-1 overflow-hidden;
+    /* Below md the panel and reading pane stack vertically so the reading
+     * pane is not crushed to a few pixels on phones; at md+ they sit
+     * side-by-side and the panel width is driven by the --panel-width
+     * custom property (set inline so the drag handle can update it). */
+    @apply flex flex-1 flex-col overflow-hidden md:flex-row;
   }
 
   .dr-split-panel-layout-aside {
@@ -12,11 +16,11 @@
      * list and the reading pane read as two distinct surfaces, especially
      * in dark mode where the page and an untreated aside would otherwise
      * sit at the same near-black lightness. */
-    @apply bg-card border-border flex-shrink-0 overflow-y-auto border-r;
+    @apply bg-card border-border max-h-[45vh] w-full flex-shrink-0 overflow-y-auto border-b md:max-h-none md:w-[var(--panel-width)] md:border-r md:border-b-0;
   }
 
   .dr-split-panel-layout-handle {
-    @apply hover:bg-primary/20 w-1 cursor-col-resize bg-transparent transition-colors;
+    @apply hover:bg-primary/20 hidden w-1 cursor-col-resize bg-transparent transition-colors md:block;
   }
 
   .dr-split-panel-layout-handle[data-dragging="true"] {

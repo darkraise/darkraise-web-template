@@ -39,10 +39,10 @@ export function Slot({
     ...(definedChildProps as ChildProps),
     className: cn(className, childProps.className),
     style: { ...style, ...childProps.style },
-    ref: composeRefs<HTMLElement>(
-      ref,
-      (child as unknown as { ref?: React.Ref<HTMLElement> }).ref,
-    ),
+    // In React 19 a child's ref is a regular prop (`child.props.ref`).
+    // Reading the legacy `child.ref` accessor logs a removal warning, so
+    // pull it from props instead.
+    ref: composeRefs<HTMLElement>(ref, childProps.ref),
   }
 
   // Compose event handlers — parent runs first; child runs unless parent preventDefaults.

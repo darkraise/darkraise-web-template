@@ -8,7 +8,6 @@ import {
   Bar,
   PieChart,
   Pie,
-  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -19,6 +18,8 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
   type ChartConfig,
 } from "@/features/charts"
 import { useAnalytics, useOrders } from "@/demo/hooks"
@@ -73,7 +74,10 @@ function AnalyticsPage() {
     { name: "Social Media", value: 18 },
     { name: "Email", value: 8 },
     { name: "Referral", value: 4 },
-  ]
+  ].map((entry, i) => ({
+    ...entry,
+    fill: trafficColors[i % trafficColors.length],
+  }))
 
   const ordersOverTime = analytics
     ? analytics.map((a) => ({
@@ -158,17 +162,11 @@ function AnalyticsPage() {
                   outerRadius={80}
                   dataKey="value"
                   nameKey="name"
-                >
-                  {trafficSources.map((entry, i) => (
-                    <Cell
-                      key={entry.name}
-                      fill={trafficColors[i % trafficColors.length]}
-                    />
-                  ))}
-                </Pie>
+                />
                 <ChartTooltip
                   content={<ChartTooltipContent nameKey="name" />}
                 />
+                <ChartLegend content={<ChartLegendContent nameKey="name" />} />
               </PieChart>
             </ChartContainer>
           </ChartCard>

@@ -2,6 +2,7 @@ import { useRouterAdapter } from "@router"
 import { SearchCommand } from "@layout/search-command"
 import { BrandLogo } from "@layout/brand-logo"
 import { LayoutHeader } from "@layout/layout-header"
+import { SkipLink } from "@layout/skip-link"
 import type { LayoutProps } from "@layout/types"
 
 export function TopNavLayout({
@@ -11,6 +12,8 @@ export function TopNavLayout({
   showLayoutSwitcher,
   showThemeSwitcher,
   user,
+  onProfile,
+  onSettings,
   onLogout,
 }: LayoutProps) {
   const flatNavItems = nav.flatMap((g) =>
@@ -21,12 +24,15 @@ export function TopNavLayout({
 
   return (
     <div className="dr-top-nav-layout">
+      <SkipLink />
       <LayoutHeader
         nav={nav}
         className="gap-4"
         showLayoutSwitcher={showLayoutSwitcher}
         showThemeSwitcher={showThemeSwitcher}
         user={user}
+        onProfile={onProfile}
+        onSettings={onSettings}
         onLogout={onLogout}
         headerSlot={
           <>
@@ -44,6 +50,7 @@ export function TopNavLayout({
                 to={item.href}
                 className="dr-top-nav-layout-nav-item"
                 activeClassName="active"
+                activeExact={item.href === "/"}
               >
                 {item.icon && <item.icon className="h-4 w-4" />}
                 {item.label}
@@ -53,7 +60,13 @@ export function TopNavLayout({
         </nav>
       </LayoutHeader>
 
-      <main className="dr-top-nav-layout-content">{children}</main>
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="dr-top-nav-layout-content"
+      >
+        {children}
+      </main>
     </div>
   )
 }

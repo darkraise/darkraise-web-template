@@ -1,7 +1,7 @@
 @layer components {
   /* Toolbar */
   .dr-data-table-toolbar {
-    @apply flex items-center justify-between;
+    @apply flex items-center justify-between gap-2;
   }
 
   .dr-data-table-toolbar-filters {
@@ -9,7 +9,9 @@
   }
 
   .dr-data-table-toolbar-search {
-    @apply h-9 w-64;
+    /* Full width on phones so it does not crowd the column-visibility
+     * control; caps at a comfortable width from `sm` up. */
+    @apply h-9 w-full sm:w-64;
   }
 
   .dr-data-table-toolbar-reset {
@@ -18,7 +20,9 @@
 
   /* Pagination */
   .dr-data-table-pagination {
-    @apply flex items-center justify-between;
+    /* Wrap on narrow screens so the page-size, page-info, and nav buttons
+     * drop to a second row instead of overflowing horizontally. */
+    @apply flex flex-wrap items-center justify-between gap-3;
   }
 
   .dr-data-table-pagination-summary {
@@ -30,7 +34,7 @@
      * the selection summary renders. Without it, a lone controls child in a
      * `justify-between` parent hugs the start edge when no rows are
      * selected. */
-    @apply ml-auto flex items-center gap-6;
+    @apply ml-auto flex items-center gap-3 sm:gap-6;
   }
 
   .dr-data-table-pagination-page-size {

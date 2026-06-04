@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "darkraise-ui/components/card"
 import { Button } from "darkraise-ui/components/button"
+import { toast } from "darkraise-ui/components/sonner"
 import {
   Tabs,
   TabsContent,
@@ -88,6 +89,7 @@ function GeneralSettings() {
     },
     onSubmit: async () => {
       await new Promise((r) => setTimeout(r, 500))
+      toast.success("Settings saved")
     },
   })
 
@@ -187,6 +189,7 @@ function NotificationSettings() {
     },
     onSubmit: async () => {
       await new Promise((r) => setTimeout(r, 500))
+      toast.success("Preferences saved")
     },
   })
 

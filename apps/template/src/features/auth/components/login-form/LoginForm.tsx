@@ -1,25 +1,37 @@
+import { useState } from "react"
 import { Link } from "@tanstack/react-router"
 import { z } from "zod"
 import { useForm } from "@tanstack/react-form"
 import { Button } from "darkraise-ui/components/button"
 import { FieldLabel } from "darkraise-ui/components/field"
+import { Alert, AlertDescription } from "darkraise-ui/components/alert"
 import { Stack } from "darkraise-ui/layout"
 import { useAuth } from "../../hooks/useAuth"
 import { AuthFormField } from "../auth-form-field"
 
 const loginSchema = z.object({
-  email: z.string().email("Enter a valid email"),
+  email: z.email("Enter a valid email"),
   password: z.string().min(1, "Password is required"),
 })
 
 export function LoginForm() {
   const { login } = useAuth()
+  const [formError, setFormError] = useState<string | null>(null)
 
   const form = useForm({
     defaultValues: { email: "", password: "" },
     validators: { onChange: loginSchema },
     onSubmit: async ({ value }) => {
-      await login(value)
+      setFormError(null)
+      try {
+        await login(value)
+      } catch (err) {
+        setFormError(
+          err instanceof Error
+            ? err.message
+            : "Unable to sign in. Please try again.",
+        )
+      }
     },
   })
 
@@ -39,12 +51,20 @@ export function LoginForm() {
         }}
       >
         <Stack gap="md">
+          {formError && (
+            <Alert variant="destructive">
+              <AlertDescription>{formError}</AlertDescription>
+            </Alert>
+          )}
+
           <form.Field name="email">
             {(field) => (
               <AuthFormField
                 field={field}
                 label="Email"
                 type="email"
+                autoComplete="email"
+                autoFocus
                 placeholder="name@example.com"
               />
             )}
@@ -56,6 +76,7 @@ export function LoginForm() {
                 field={field}
                 label="Password"
                 type="password"
+                autoComplete="current-password"
                 labelSlot={
                   <div className="flex items-center justify-between">
                     <FieldLabel htmlFor={field.name}>Password</FieldLabel>

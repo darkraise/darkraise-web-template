@@ -16,6 +16,8 @@ interface LayoutHeaderProps {
   showLayoutSwitcher?: boolean
   showThemeSwitcher?: boolean
   user?: { name: string; email: string }
+  onProfile?: () => void
+  onSettings?: () => void
   onLogout?: () => void
 }
 
@@ -27,6 +29,8 @@ export function LayoutHeader({
   showLayoutSwitcher = false,
   showThemeSwitcher = true,
   user,
+  onProfile,
+  onSettings,
   onLogout,
 }: LayoutHeaderProps) {
   const flatNavItems = nav.flatMap((g) =>
@@ -42,7 +46,12 @@ export function LayoutHeader({
         {showLayoutSwitcher && <LayoutSwitcher />}
         {showThemeSwitcher && <ThemeSwitcher />}
         <NotificationBell />
-        <UserMenu user={user} onLogout={onLogout} />
+        <UserMenu
+          user={user}
+          onProfile={onProfile}
+          onSettings={onSettings}
+          onLogout={onLogout}
+        />
       </div>
     </header>
   )

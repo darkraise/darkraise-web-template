@@ -1,5 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { DollarSign, ShoppingCart, Users, TrendingUp } from "lucide-react"
+import {
+  DollarSign,
+  ShoppingCart,
+  Users,
+  TrendingUp,
+  Download,
+} from "lucide-react"
 import {
   AreaChart,
   Area,
@@ -11,6 +17,8 @@ import {
 } from "recharts"
 import { PageHeader } from "darkraise-ui/layout"
 import { Button } from "darkraise-ui/components/button"
+import { Skeleton } from "darkraise-ui/components/skeleton"
+import { toast } from "darkraise-ui/components/sonner"
 import {
   StatCard,
   KPICard,
@@ -39,19 +47,37 @@ const topProductsConfig = {
   count: { label: "Count", color: "var(--chart-1)" },
 } satisfies ChartConfig
 
-function DashboardPage() {
-  const { data: orders } = useOrders()
-  const { data: customers } = useCustomers()
-  const { data: analytics } = useAnalytics(30)
+const currency = (n: number) => `$${Math.round(n).toLocaleString()}`
+const sumOf = (values: number[]) => values.reduce((acc, n) => acc + n, 0)
 
-  const totalRevenue = orders?.reduce((sum, o) => sum + o.total, 0) ?? 0
+// Period-over-period trend: compares the sum of the most recent half of a
+// daily series against the prior half. Returns undefined when there isn't
+// enough data, so cards can omit a trend rather than show a fabricated one.
+function seriesTrend(values: number[]) {
+  if (values.length < 4) return undefined
+  const mid = Math.floor(values.length / 2)
+  const prev = sumOf(values.slice(0, mid))
+  const curr = sumOf(values.slice(mid))
+  if (prev === 0) return undefined
+  const pct = ((curr - prev) / prev) * 100
+  return { value: Math.round(Math.abs(pct) * 10) / 10, isPositive: pct >= 0 }
+}
+
+function DashboardPage() {
+  const { data: orders, isLoading: ordersLoading } = useOrders()
+  const { data: customers, isLoading: customersLoading } = useCustomers()
+  const { data: analytics, isLoading: analyticsLoading } = useAnalytics(30)
+
+  const isLoading = ordersLoading || customersLoading || analyticsLoading
+
+  const totalRevenue = orders?.reduce((acc, o) => acc + o.total, 0) ?? 0
   const totalOrders = orders?.length ?? 0
   const totalCustomers = customers?.length ?? 0
   const conversionRate =
     analytics && analytics.length > 0
-      ? (
-          analytics.reduce((sum, a) => sum + a.conversion, 0) / analytics.length
-        ).toFixed(1)
+      ? (sumOf(analytics.map((a) => a.conversion)) / analytics.length).toFixed(
+          1,
+        )
       : "0"
 
   const avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0
@@ -63,12 +89,26 @@ function DashboardPage() {
       ? ((returningCustomers / totalCustomers) * 100).toFixed(0)
       : "0"
 
-  const revenueSparkline = analytics
-    ? analytics.slice(-14).map((a) => a.revenue)
+  // Trends are derived from the daily analytics series (recent half vs prior
+  // half) so the arrows reflect the actual data instead of static literals.
+  const revenueTrend = seriesTrend(analytics?.map((a) => a.revenue) ?? [])
+  const ordersTrend = seriesTrend(analytics?.map((a) => a.orders) ?? [])
+  const customersTrend = seriesTrend(analytics?.map((a) => a.visitors) ?? [])
+  const conversionTrend = seriesTrend(analytics?.map((a) => a.conversion) ?? [])
+
+  // Average-order-value sparkline and prior-period comparison, both from the
+  // same daily revenue/orders series so the mini-chart matches its label.
+  const aovSparkline = analytics
+    ? analytics.slice(-14).map((a) => (a.orders > 0 ? a.revenue / a.orders : 0))
     : []
-  const orderSparkline = analytics
-    ? analytics.slice(-14).map((a) => a.orders)
-    : []
+  const half = analytics ? Math.floor(analytics.length / 2) : 0
+  const priorOrders = analytics
+    ? sumOf(analytics.slice(0, half).map((a) => a.orders))
+    : 0
+  const priorAov =
+    analytics && priorOrders > 0
+      ? sumOf(analytics.slice(0, half).map((a) => a.revenue)) / priorOrders
+      : 0
 
   const revenueChartData = analytics
     ? analytics.map((a) => ({ date: a.date.slice(5), revenue: a.revenue }))
@@ -91,10 +131,34 @@ function DashboardPage() {
       count,
     }))
 
-  const monthlySalesTarget = 50000
+  const monthlySalesTarget = 150000
   const currentMonthRevenue = analytics
-    ? analytics.slice(-30).reduce((sum, a) => sum + a.revenue, 0)
+    ? sumOf(analytics.slice(-30).map((a) => a.revenue))
     : 0
+
+  const handleDownloadReport = () => {
+    const rows = [
+      ["Metric", "Value"],
+      ["Total Revenue", String(totalRevenue)],
+      ["Total Orders", String(totalOrders)],
+      ["Total Customers", String(totalCustomers)],
+      ["Conversion Rate", `${conversionRate}%`],
+      ["Average Order Value", avgOrderValue.toFixed(2)],
+      ["Returning Customers", `${returningPct}%`],
+    ]
+    const csv = rows.map((r) => r.join(",")).join("\n")
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }))
+    const link = document.createElement("a")
+    link.href = url
+    link.download = "dashboard-report.csv"
+    link.click()
+    URL.revokeObjectURL(url)
+    toast.success("Report downloaded")
+  }
+
+  if (isLoading) {
+    return <DashboardSkeleton />
+  }
 
   const recentActivity = orders
     ? orders.slice(0, 8).map((o) => ({
@@ -117,7 +181,8 @@ function DashboardPage() {
         title="Dashboard"
         description="Overview of your store performance"
         actions={
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={handleDownloadReport}>
+            <Download className="h-4 w-4" />
             Download Report
           </Button>
         }
@@ -129,25 +194,25 @@ function DashboardPage() {
             label="Total Revenue"
             value={`$${totalRevenue.toLocaleString()}`}
             icon={DollarSign}
-            trend={{ value: 12.5, isPositive: true }}
+            trend={revenueTrend}
           />
           <StatCard
             label="Total Orders"
             value={totalOrders}
             icon={ShoppingCart}
-            trend={{ value: 8.2, isPositive: true }}
+            trend={ordersTrend}
           />
           <StatCard
             label="Total Customers"
             value={totalCustomers}
             icon={Users}
-            trend={{ value: 4.1, isPositive: true }}
+            trend={customersTrend}
           />
           <StatCard
             label="Conversion Rate"
             value={`${conversionRate}%`}
             icon={TrendingUp}
-            trend={{ value: 1.3, isPositive: false }}
+            trend={conversionTrend}
           />
         </MetricGrid>
 
@@ -155,14 +220,17 @@ function DashboardPage() {
           <KPICard
             label="Average Order Value"
             value={`$${avgOrderValue.toFixed(2)}`}
-            comparison="vs $52.30 last month"
-            sparklineData={revenueSparkline}
+            comparison={
+              priorAov > 0
+                ? `vs $${priorAov.toFixed(2)} prior period`
+                : undefined
+            }
+            sparklineData={aovSparkline}
           />
           <KPICard
             label="Returning Customers"
             value={`${returningPct}%`}
             comparison={`${returningCustomers} of ${totalCustomers} customers`}
-            sparklineData={orderSparkline}
           />
         </div>
 
@@ -228,11 +296,38 @@ function DashboardPage() {
             label="Monthly Sales Target"
             value={currentMonthRevenue}
             target={monthlySalesTarget}
-            unit="$"
+            formatValue={currency}
           />
           <div className="md:col-span-2">
             <ActivityFeed items={recentActivity} title="Recent Orders" />
           </div>
+        </div>
+      </div>
+    </>
+  )
+}
+
+function DashboardSkeleton() {
+  return (
+    <>
+      <PageHeader
+        breadcrumbs={[{ label: "Dashboard" }]}
+        title="Dashboard"
+        description="Overview of your store performance"
+      />
+      <div className="space-y-6">
+        <MetricGrid columns={4}>
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className="h-[110px] w-full rounded-xl" />
+          ))}
+        </MetricGrid>
+        <div className="grid gap-4 md:grid-cols-2">
+          <Skeleton className="h-[104px] w-full rounded-xl" />
+          <Skeleton className="h-[104px] w-full rounded-xl" />
+        </div>
+        <div className="grid gap-4 md:grid-cols-2">
+          <Skeleton className="h-[360px] w-full rounded-xl" />
+          <Skeleton className="h-[360px] w-full rounded-xl" />
         </div>
       </div>
     </>

@@ -3,8 +3,9 @@ import { useEventListener } from "@hooks"
 import { SearchCommand } from "@layout/search-command"
 import { BrandLogo } from "@layout/brand-logo"
 import { LayoutHeader } from "@layout/layout-header"
+import { SkipLink } from "@layout/skip-link"
 import type { LayoutProps } from "@layout/types"
-import type { ReactNode } from "react"
+import type { CSSProperties, ReactNode } from "react"
 
 interface SplitPanelLayoutProps extends LayoutProps {
   panel: ReactNode
@@ -20,6 +21,8 @@ export function SplitPanelLayout({
   showLayoutSwitcher,
   showThemeSwitcher,
   user,
+  onProfile,
+  onSettings,
   onLogout,
   panel,
   defaultPanelWidth = 320,
@@ -62,7 +65,11 @@ export function SplitPanelLayout({
   )
 
   return (
-    <div className="dr-split-panel-layout">
+    <div
+      className="dr-split-panel-layout"
+      style={{ "--panel-width": `${panelWidth}px` } as CSSProperties}
+    >
+      <SkipLink />
       <LayoutHeader
         nav={nav}
         headerSlot={headerSlot}
@@ -70,6 +77,8 @@ export function SplitPanelLayout({
         showLayoutSwitcher={showLayoutSwitcher}
         showThemeSwitcher={showThemeSwitcher}
         user={user}
+        onProfile={onProfile}
+        onSettings={onSettings}
         onLogout={onLogout}
       >
         <BrandLogo />
@@ -81,12 +90,7 @@ export function SplitPanelLayout({
       </LayoutHeader>
 
       <div ref={bodyRef} className="dr-split-panel-layout-body">
-        <div
-          className="dr-split-panel-layout-aside"
-          style={{ width: panelWidth }}
-        >
-          {panel}
-        </div>
+        <div className="dr-split-panel-layout-aside">{panel}</div>
 
         <div
           className="dr-split-panel-layout-handle"
@@ -97,7 +101,13 @@ export function SplitPanelLayout({
           style={{ touchAction: "none" }}
         />
 
-        <main className="dr-split-panel-layout-content">{children}</main>
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="dr-split-panel-layout-content"
+        >
+          {children}
+        </main>
       </div>
     </div>
   )

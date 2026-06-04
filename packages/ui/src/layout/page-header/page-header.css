@@ -4,7 +4,9 @@
   }
 
   .dr-page-header-row {
-    @apply flex items-center justify-between;
+    /* flex-wrap + gap so the action buttons drop below a long title on
+     * narrow screens instead of colliding with it. */
+    @apply flex flex-wrap items-center justify-between gap-3;
   }
 
   .dr-page-header-title {

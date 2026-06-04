@@ -18,6 +18,7 @@ export { TopNavLayout } from "./top-nav-layout"
 export { StackedLayout } from "./stacked-layout"
 export { SplitPanelLayout } from "./split-panel-layout"
 export { LayoutSwitcher } from "./layout-switcher"
+export { SkipLink } from "./skip-link"
 export { useLayoutStore, type LayoutVariant } from "./layoutStore"
 
 // Layout primitives — composable building blocks for in-route layout.
