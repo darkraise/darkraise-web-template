@@ -452,7 +452,7 @@ function TagsInputItemInput({
       localRef.current = node
       if (typeof ref === "function") ref(node)
       else if (ref)
-        (ref as React.MutableRefObject<HTMLInputElement | null>).current = node
+        (ref as React.RefObject<HTMLInputElement | null>).current = node
     },
     [ref],
   )
@@ -554,7 +554,7 @@ function TagsInputInput({
       inputRef.current = node
       if (typeof ref === "function") ref(node)
       else if (ref)
-        (ref as React.MutableRefObject<HTMLInputElement | null>).current = node
+        (ref as React.RefObject<HTMLInputElement | null>).current = node
     },
     [inputRef, ref],
   )

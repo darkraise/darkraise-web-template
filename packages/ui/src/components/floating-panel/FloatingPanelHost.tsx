@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { FloatingPanel } from "./FloatingPanel"
-import { useFloatingPanelStore } from "./FloatingPanelProvider"
+import { useFloatingPanelStore } from "./floatingPanelStoreContext"
 import type { AppPanelEntry, FloatingPanelStore } from "./floatingPanelStore"
 
 function useEntry(

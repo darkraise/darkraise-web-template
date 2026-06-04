@@ -9,7 +9,6 @@ export {
   ImageCropperGrid,
   ImageCropperDimensions,
   ImageCropperDropzone,
-  useImageCropperContext,
   type ImageCropperProps,
   type ImageCropperRootProviderProps,
   type ImageCropperContextProps,
@@ -19,6 +18,7 @@ export {
   type ImageCropperDropzoneProps,
 } from "./ImageCropper"
 export { useImageCropper } from "./useImageCropper"
+export { useImageCropperContext } from "./useImageCropperContext"
 export type {
   UseImageCropperOptions,
   UseImageCropperReturn,

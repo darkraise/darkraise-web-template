@@ -14,7 +14,7 @@ function getOrCreateRegion(priority: Priority): HTMLElement {
   node.style.margin = "-1px"
   node.style.padding = "0"
   node.style.overflow = "hidden"
-  node.style.clip = "rect(0,0,0,0)"
+  node.style.clipPath = "inset(50%)"
   node.style.whiteSpace = "nowrap"
   node.style.border = "0"
   document.body.append(node)

@@ -177,8 +177,7 @@ function Command({
           rootRef.current = node
           if (typeof ref === "function") ref(node)
           else if (ref)
-            (ref as React.MutableRefObject<HTMLDivElement | null>).current =
-              node
+            (ref as React.RefObject<HTMLDivElement | null>).current = node
         }}
         cmdk-root=""
         className={cn("dr-command", className)}
@@ -281,8 +280,7 @@ function CommandInput({
           ctx.inputRef.current = node
           if (typeof ref === "function") ref(node)
           else if (ref)
-            (ref as React.MutableRefObject<HTMLInputElement | null>).current =
-              node
+            (ref as React.RefObject<HTMLInputElement | null>).current = node
         }}
         cmdk-input=""
         type="text"
@@ -491,7 +489,7 @@ function CommandItem({
         localRef.current = node
         if (typeof ref === "function") ref(node)
         else if (ref)
-          (ref as React.MutableRefObject<HTMLDivElement | null>).current = node
+          (ref as React.RefObject<HTMLDivElement | null>).current = node
       }}
       id={id}
       role="option"

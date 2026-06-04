@@ -56,7 +56,7 @@ afterAll(() => {
 })
 
 function attachImageStub(
-  ref: React.MutableRefObject<HTMLImageElement | null>,
+  ref: React.RefObject<HTMLImageElement | null>,
   natural = { naturalWidth: 1024, naturalHeight: 768 },
 ) {
   const img = document.createElement("img")
@@ -84,8 +84,7 @@ describe("useImageCropper.getCroppedImage", () => {
   it("returns null when the viewport hasn't been measured", async () => {
     const { result } = renderHook(() => useImageCropper())
     attachImageStub(
-      result.current
-        .imageRef as React.MutableRefObject<HTMLImageElement | null>,
+      result.current.imageRef as React.RefObject<HTMLImageElement | null>,
     )
     act(() =>
       result.current.registerImage({
@@ -104,8 +103,7 @@ describe("useImageCropper.getCroppedImage", () => {
     clipCalls = 0
     const { result } = renderHook(() => useImageCropper())
     attachImageStub(
-      result.current
-        .imageRef as React.MutableRefObject<HTMLImageElement | null>,
+      result.current.imageRef as React.RefObject<HTMLImageElement | null>,
     )
     act(() =>
       result.current.registerImage({
@@ -138,8 +136,7 @@ describe("useImageCropper.getCroppedImage", () => {
   it("returns a data URL string when output='dataUrl'", async () => {
     const { result } = renderHook(() => useImageCropper())
     attachImageStub(
-      result.current
-        .imageRef as React.MutableRefObject<HTMLImageElement | null>,
+      result.current.imageRef as React.RefObject<HTMLImageElement | null>,
     )
     act(() =>
       result.current.registerImage({
@@ -163,8 +160,7 @@ describe("useImageCropper.getCroppedImage", () => {
       useImageCropper({ cropShape: "circle" }),
     )
     attachImageStub(
-      result.current
-        .imageRef as React.MutableRefObject<HTMLImageElement | null>,
+      result.current.imageRef as React.RefObject<HTMLImageElement | null>,
     )
     act(() =>
       result.current.registerImage({
@@ -184,8 +180,7 @@ describe("useImageCropper.getCroppedImage", () => {
     stubCtx.filter = "none"
     const { result } = renderHook(() => useImageCropper())
     attachImageStub(
-      result.current
-        .imageRef as React.MutableRefObject<HTMLImageElement | null>,
+      result.current.imageRef as React.RefObject<HTMLImageElement | null>,
     )
     act(() =>
       result.current.registerImage({
@@ -207,8 +202,7 @@ describe("useImageCropper.getCroppedImage", () => {
     drawCalls = []
     const { result } = renderHook(() => useImageCropper())
     attachImageStub(
-      result.current
-        .imageRef as React.MutableRefObject<HTMLImageElement | null>,
+      result.current.imageRef as React.RefObject<HTMLImageElement | null>,
     )
     act(() =>
       result.current.registerImage({

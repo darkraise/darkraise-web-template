@@ -52,12 +52,7 @@ const queryUnsubscribe = (query: string, setState: QueryStateSetter): void => {
 
     if (dispatchers.size === 0) {
       queriesMap.delete(query)
-
-      if (mql.removeEventListener) {
-        mql.removeEventListener("change", listener)
-      } else {
-        mql.removeListener(listener)
-      }
+      mql.removeEventListener("change", listener)
     }
   }
 }

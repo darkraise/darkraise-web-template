@@ -14,23 +14,13 @@ import {
   placementFromSideAlign,
   type PopoverAlign,
   type PopoverSide,
-  type UsePopoverReturn,
 } from "./usePopover"
+import {
+  PopoverContext,
+  usePopoverContext,
+  type PopoverContextValue,
+} from "./Popover.context"
 import "./popover.css"
-
-interface PopoverContextValue extends UsePopoverReturn {
-  setReference: (node: HTMLElement | null) => void
-  setAnchor: (node: HTMLElement | null) => void
-  reference: HTMLElement | null
-}
-
-const PopoverContext = React.createContext<PopoverContextValue | null>(null)
-
-function usePopoverContext(consumer: string): PopoverContextValue {
-  const ctx = React.useContext(PopoverContext)
-  if (!ctx) throw new Error(`${consumer} must be used within <Popover>`)
-  return ctx
-}
 
 interface PopoverProps {
   open?: boolean
@@ -373,5 +363,4 @@ export {
   PopoverArrow,
   PopoverAnchor,
   PopoverClose,
-  usePopoverContext,
 }

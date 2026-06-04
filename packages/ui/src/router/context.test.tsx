@@ -1,7 +1,8 @@
 import { render, screen } from "@testing-library/react"
 import { describe, it, expect } from "vitest"
 import type { RouterAdapter } from "./types"
-import { RouterAdapterProvider, useRouterAdapter } from "./context"
+import { RouterAdapterProvider } from "./context"
+import { useRouterAdapter } from "./routerAdapterContext"
 
 function Probe() {
   const adapter = useRouterAdapter()

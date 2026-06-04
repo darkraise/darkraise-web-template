@@ -1,5 +1,6 @@
 export * from "./FloatingPanel"
 export * from "./useFloatingPanel"
 export * from "./FloatingPanelProvider"
+export * from "./floatingPanelStoreContext"
 export * from "./FloatingPanelHost"
 export * from "./useAppFloatingPanels"

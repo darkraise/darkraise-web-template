@@ -79,11 +79,10 @@ function Slider({
 
   const handleRef = React.useCallback(
     (node: HTMLSpanElement | null) => {
-      ;(rootRef as React.MutableRefObject<HTMLSpanElement | null>).current =
-        node
+      ;(rootRef as React.RefObject<HTMLSpanElement | null>).current = node
       if (typeof ref === "function") ref(node)
       else if (ref)
-        (ref as React.MutableRefObject<HTMLSpanElement | null>).current = node
+        (ref as React.RefObject<HTMLSpanElement | null>).current = node
     },
     [ref],
   )

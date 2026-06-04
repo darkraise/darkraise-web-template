@@ -104,6 +104,10 @@ const defaultFormatRange = (r: DatePickerRangeValue) => {
   return `${fmt(r.from, "LLL dd, y")} – ${fmt(r.to, "LLL dd, y")}`
 }
 
+// Stable fallback for single mode so `rangeValue` keeps a constant identity
+// and does not invalidate the context memo on every render.
+const EMPTY_RANGE: DatePickerRangeValue = {}
+
 function DatePicker(props: DatePickerProps) {
   const {
     mode = "single",
@@ -148,7 +152,7 @@ function DatePicker(props: DatePickerProps) {
     ? rangeProps?.value !== undefined
       ? (rangeProps.value as DatePickerRangeValue)
       : internalRange
-    : {}
+    : EMPTY_RANGE
 
   const commitSingle = React.useCallback(
     (date: Date | null) => {
@@ -400,7 +404,7 @@ function DatePickerTrigger({
       triggerRef.current = node
       if (typeof ref === "function") ref(node)
       else if (ref)
-        (ref as React.MutableRefObject<HTMLButtonElement | null>).current = node
+        (ref as React.RefObject<HTMLButtonElement | null>).current = node
     },
     [ref, triggerRef],
   )

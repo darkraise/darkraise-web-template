@@ -1,6 +1,6 @@
 export type { RouterAdapter, RouterLinkProps } from "./types"
+export { RouterAdapterProvider } from "./context"
 export {
-  RouterAdapterProvider,
   useRouterAdapter,
   useOptionalRouterAdapter,
-} from "./context"
+} from "./routerAdapterContext"

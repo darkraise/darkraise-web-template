@@ -82,13 +82,18 @@ export function useFocusTrap(
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown, true)
+      // Read the live `restoreFocus` at teardown so a value change while the
+      // trap was open is still honored. The synced ref is stable, so this is
+      // not the stale-DOM-ref hazard exhaustive-deps warns about here.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      const shouldRestoreFocus = restoreFocusRef.current
       if (
-        restoreFocusRef.current &&
+        shouldRestoreFocus &&
         previousActive &&
         document.contains(previousActive)
       ) {
         previousActive.focus()
       }
     }
-  }, [containerRef, disabled])
+  }, [containerRef, disabled, initialFocusRef, loopRef, restoreFocusRef])
 }

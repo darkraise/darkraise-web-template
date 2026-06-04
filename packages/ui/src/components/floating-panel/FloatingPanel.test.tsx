@@ -14,10 +14,8 @@ import {
   FloatingPanelPinTrigger,
   FloatingPanelTitle,
 } from "./FloatingPanel"
-import {
-  FloatingPanelProvider,
-  useFloatingPanelStore,
-} from "./FloatingPanelProvider"
+import { FloatingPanelProvider } from "./FloatingPanelProvider"
+import { useFloatingPanelStore } from "./floatingPanelStoreContext"
 
 describe("FloatingPanel", () => {
   it("renders with the default position and size", () => {

@@ -9,22 +9,12 @@ import {
   type UseImageCropperOptions,
   type UseImageCropperReturn,
 } from "./useImageCropper"
+import {
+  ImageCropperContext,
+  useImageCropperContext,
+} from "./useImageCropperContext"
 import type { CropRect, GridAxis, HandlePosition } from "./types"
 import "./image-cropper.css"
-
-const ImageCropperContext = React.createContext<UseImageCropperReturn | null>(
-  null,
-)
-
-function useImageCropperContext(consumer: string): UseImageCropperReturn {
-  const ctx = React.useContext(ImageCropperContext)
-  if (!ctx) {
-    throw new Error(
-      `<${consumer}> must be rendered inside <ImageCropper> or <ImageCropperRootProvider>`,
-    )
-  }
-  return ctx
-}
 
 // ── Resize math ─────────────────────────────────────────────────────────────
 //
@@ -885,5 +875,4 @@ export {
   ImageCropperGrid,
   ImageCropperDimensions,
   ImageCropperDropzone,
-  useImageCropperContext,
 }

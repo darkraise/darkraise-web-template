@@ -334,7 +334,7 @@ function ColorPickerTrigger({
       triggerRef.current = node
       if (typeof ref === "function") ref(node)
       else if (ref)
-        (ref as React.MutableRefObject<HTMLButtonElement | null>).current = node
+        (ref as React.RefObject<HTMLButtonElement | null>).current = node
     },
     [ref, triggerRef],
   )

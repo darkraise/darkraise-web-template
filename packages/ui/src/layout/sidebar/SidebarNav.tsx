@@ -9,7 +9,8 @@ import {
 } from "@components/collapsible"
 import { Popover, PopoverContent, PopoverTrigger } from "@components/popover"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/tooltip"
-import { SidebarProvider, useSidebar } from "./SidebarContext"
+import { SidebarProvider } from "./SidebarContext"
+import { useSidebar } from "./sidebar-context"
 import type { NavGroup, NavItem } from "@layout/types"
 
 interface SidebarNavProps {

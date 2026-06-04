@@ -10,7 +10,6 @@ import {
   Line,
   PieChart,
   Pie,
-  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -53,6 +52,11 @@ const pieColors = [
   "var(--chart-3)",
   "var(--chart-4)",
 ]
+
+const coloredPieData = pieData.map((entry, i) => ({
+  ...entry,
+  fill: pieColors[i % pieColors.length],
+}))
 
 const weeklyData = [
   { day: "Mon", visitors: 320, conversions: 45 },
@@ -328,7 +332,7 @@ const revenueOrdersConfig = {
       <ShowcaseExample
         title="PieChart — proportional distribution"
         code={`// innerRadius > 0 renders a donut chart
-import { PieChart, Pie, Cell } from "recharts"
+import { PieChart, Pie } from "recharts"
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/features/charts"
 
 const pieConfig = {
@@ -339,15 +343,12 @@ const pieConfig = {
 } satisfies ChartConfig
 
 const pieColors = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--chart-4)"]
+const coloredPieData = pieData.map((entry, i) => ({ ...entry, fill: pieColors[i % pieColors.length] }))
 
 <ChartCard title="Category Breakdown" description="Revenue by category">
   <ChartContainer config={pieConfig} className="min-h-[200px] w-full">
     <PieChart>
-      <Pie data={pieData} cx="50%" cy="50%" innerRadius={40} outerRadius={80} dataKey="value" nameKey="name">
-        {pieData.map((entry, i) => (
-          <Cell key={entry.name} fill={pieColors[i % pieColors.length]} />
-        ))}
-      </Pie>
+      <Pie data={coloredPieData} cx="50%" cy="50%" innerRadius={40} outerRadius={80} dataKey="value" nameKey="name" />
       <ChartTooltip content={<ChartTooltipContent nameKey="name" />} />
     </PieChart>
   </ChartContainer>
@@ -357,11 +358,7 @@ const pieColors = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--
 <ChartCard title="Category Breakdown">
   <ChartContainer config={pieConfig} className="min-h-[200px] w-full">
     <PieChart>
-      <Pie data={pieData} cx="50%" cy="50%" outerRadius={80} dataKey="value" nameKey="name">
-        {pieData.map((entry, i) => (
-          <Cell key={entry.name} fill={pieColors[i % pieColors.length]} />
-        ))}
-      </Pie>
+      <Pie data={coloredPieData} cx="50%" cy="50%" outerRadius={80} dataKey="value" nameKey="name" />
       <ChartTooltip content={<ChartTooltipContent nameKey="name" />} />
     </PieChart>
   </ChartContainer>
@@ -375,21 +372,14 @@ const pieColors = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--
             <ChartContainer config={pieConfig} className="min-h-[200px] w-full">
               <PieChart>
                 <Pie
-                  data={pieData}
+                  data={coloredPieData}
                   cx="50%"
                   cy="50%"
                   innerRadius={40}
                   outerRadius={80}
                   dataKey="value"
                   nameKey="name"
-                >
-                  {pieData.map((entry, i) => (
-                    <Cell
-                      key={entry.name}
-                      fill={pieColors[i % pieColors.length]}
-                    />
-                  ))}
-                </Pie>
+                />
                 <ChartTooltip
                   content={<ChartTooltipContent nameKey="name" />}
                 />
@@ -403,20 +393,13 @@ const pieColors = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--
             <ChartContainer config={pieConfig} className="min-h-[200px] w-full">
               <PieChart>
                 <Pie
-                  data={pieData}
+                  data={coloredPieData}
                   cx="50%"
                   cy="50%"
                   outerRadius={80}
                   dataKey="value"
                   nameKey="name"
-                >
-                  {pieData.map((entry, i) => (
-                    <Cell
-                      key={entry.name}
-                      fill={pieColors[i % pieColors.length]}
-                    />
-                  ))}
-                </Pie>
+                />
                 <ChartTooltip
                   content={<ChartTooltipContent nameKey="name" />}
                 />
@@ -466,11 +449,7 @@ const pieColors = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--
   <ChartCard title="Category Breakdown">
     <ChartContainer config={pieConfig} className="min-h-[200px] w-full">
       <PieChart>
-        <Pie data={pieData} cx="50%" cy="50%" innerRadius={40} outerRadius={80} dataKey="value" nameKey="name">
-          {pieData.map((entry, i) => (
-            <Cell key={entry.name} fill={pieColors[i % pieColors.length]} />
-          ))}
-        </Pie>
+        <Pie data={pieData.map((entry, i) => ({ ...entry, fill: pieColors[i % pieColors.length] }))} cx="50%" cy="50%" innerRadius={40} outerRadius={80} dataKey="value" nameKey="name" />
         <ChartTooltip content={<ChartTooltipContent nameKey="name" />} />
       </PieChart>
     </ChartContainer>
@@ -568,21 +547,14 @@ const pieColors = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--
             <ChartContainer config={pieConfig} className="min-h-[200px] w-full">
               <PieChart>
                 <Pie
-                  data={pieData}
+                  data={coloredPieData}
                   cx="50%"
                   cy="50%"
                   innerRadius={40}
                   outerRadius={80}
                   dataKey="value"
                   nameKey="name"
-                >
-                  {pieData.map((entry, i) => (
-                    <Cell
-                      key={entry.name}
-                      fill={pieColors[i % pieColors.length]}
-                    />
-                  ))}
-                </Pie>
+                />
                 <ChartTooltip
                   content={<ChartTooltipContent nameKey="name" />}
                 />

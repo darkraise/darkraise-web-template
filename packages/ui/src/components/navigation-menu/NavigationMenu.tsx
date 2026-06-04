@@ -237,8 +237,6 @@ function NavigationMenuItem({
   )
 }
 
-const navigationMenuTriggerStyle = () => "dr-navigation-menu-trigger"
-
 interface NavigationMenuTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   asChild?: boolean
   ref?: React.Ref<HTMLButtonElement>
@@ -471,7 +469,6 @@ function NavigationMenuIndicator({
 }
 
 export {
-  navigationMenuTriggerStyle,
   NavigationMenu,
   NavigationMenuList,
   NavigationMenuItem,

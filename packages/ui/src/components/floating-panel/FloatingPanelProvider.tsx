@@ -6,9 +6,7 @@ import {
   type CreateStoreOptions,
   type FloatingPanelStore,
 } from "./floatingPanelStore"
-
-const FloatingPanelStoreContext =
-  React.createContext<FloatingPanelStore | null>(null)
+import { FloatingPanelStoreContext } from "./floatingPanelStoreContext"
 
 export interface FloatingPanelProviderProps extends CreateStoreOptions {
   children?: React.ReactNode
@@ -34,14 +32,4 @@ export function FloatingPanelProvider({
       {children}
     </FloatingPanelStoreContext.Provider>
   )
-}
-
-export function useFloatingPanelStore(): FloatingPanelStore {
-  const store = React.useContext(FloatingPanelStoreContext)
-  if (!store) {
-    throw new Error(
-      `[FloatingPanel] useAppFloatingPanels / scope="app" requires <FloatingPanelProvider> upstream.`,
-    )
-  }
-  return store
 }

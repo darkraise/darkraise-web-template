@@ -49,6 +49,10 @@ import {
 } from "./useImageEditor"
 import { drawStroke } from "./annotationDraw"
 import {
+  ImageEditorContext,
+  useImageEditorContext,
+} from "./useImageEditorContext"
+import {
   FILTER_RANGES,
   type AnnotationKind,
   type AnnotationStroke,
@@ -60,20 +64,6 @@ import {
   type Point,
 } from "./types"
 import "./image-editor.css"
-
-const ImageEditorContext = React.createContext<UseImageEditorReturn | null>(
-  null,
-)
-
-function useImageEditorContext(consumer: string): UseImageEditorReturn {
-  const ctx = React.useContext(ImageEditorContext)
-  if (!ctx) {
-    throw new Error(
-      `<${consumer}> must be rendered inside <ImageEditor> or <ImageEditorRootProvider>`,
-    )
-  }
-  return ctx
-}
 
 export interface ImageEditorProps
   extends
@@ -1857,5 +1847,4 @@ export {
   ImageEditorStatusBar,
   ImageEditorUndo,
   ImageEditorRedo,
-  useImageEditorContext,
 }

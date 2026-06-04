@@ -24,7 +24,6 @@ import {
 } from "./toastStore"
 import "./sonner.css"
 
-export { toast }
 export type { Toast, ToastKind, ToastPosition } from "./toastStore"
 
 const DEFAULT_DURATION_BY_KIND: Record<ToastKind, number> = {

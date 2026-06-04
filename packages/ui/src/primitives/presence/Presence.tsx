@@ -23,7 +23,9 @@ export function Presence({
   }, [node])
   const { isPresent, state } = usePresence(present, nodeRef)
   if (!isPresent && !forceMount) return null
-  const childRef = (children as unknown as { ref?: React.Ref<HTMLElement> }).ref
+  // In React 19 a child's ref is a regular prop (`children.props.ref`).
+  // Reading the legacy `children.ref` accessor logs a removal warning.
+  const childRef = children.props.ref
   return React.cloneElement(children, {
     ref: composeRefs<HTMLElement>(setNode, childRef),
     "data-state": state,

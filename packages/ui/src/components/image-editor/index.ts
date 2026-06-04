@@ -30,7 +30,6 @@ export {
   ImageEditorStatusBar,
   ImageEditorUndo,
   ImageEditorRedo,
-  useImageEditorContext,
   type ImageEditorProps,
   type ImageEditorRootProviderProps,
   type ImageEditorContextProps,
@@ -58,6 +57,7 @@ export {
   type ImageEditorUndoProps,
   type ImageEditorRedoProps,
 } from "./ImageEditor"
+export { useImageEditorContext } from "./useImageEditorContext"
 export { drawStroke } from "./annotationDraw"
 export { computeAffine, drawPerspectiveQuad } from "./perspectiveDraw"
 
