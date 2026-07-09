@@ -10,6 +10,13 @@ import {
   DialogTrigger,
   DialogClose,
 } from "@components/dialog"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@components/select"
 
 function Basic({ onChange }: { onChange?: (open: boolean) => void } = {}) {
   return (
@@ -85,6 +92,36 @@ describe("Dialog", () => {
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull())
     root.remove()
     outside.remove()
+  })
+
+  it("selecting an option in a nested Select does not close the dialog", async () => {
+    const user = userEvent.setup()
+    const onDialogOpenChange = vi.fn()
+    const onValueChange = vi.fn()
+    render(
+      <Dialog defaultOpen onOpenChange={onDialogOpenChange}>
+        <DialogContent>
+          <DialogTitle>Edit</DialogTitle>
+          <Select onValueChange={onValueChange}>
+            <SelectTrigger>
+              <SelectValue placeholder="Pick one" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="apple">Apple</SelectItem>
+              <SelectItem value="banana">Banana</SelectItem>
+            </SelectContent>
+          </Select>
+        </DialogContent>
+      </Dialog>,
+    )
+    await user.click(screen.getByRole("combobox"))
+    await user.click(await screen.findByRole("option", { name: "Banana" }))
+
+    expect(onValueChange).toHaveBeenCalledWith("banana")
+    // Presence keeps the closed node mounted for its exit animation, so a
+    // disappeared dialog would not surface via queryByRole here; assert the
+    // real contract instead — the dialog's onOpenChange must never fire false.
+    expect(onDialogOpenChange).not.toHaveBeenCalledWith(false)
   })
 
   it("controlled open works", async () => {

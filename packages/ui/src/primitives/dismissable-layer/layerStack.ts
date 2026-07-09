@@ -16,6 +16,22 @@ export function popLayer(id: symbol): void {
   if (idx >= 0) stack.splice(idx, 1)
 }
 
+// A pointer/focus target counts as "inside" a layer when it lands within that
+// layer's own node OR within any layer stacked above it (opened later). Nested
+// floating layers — e.g. a Select opened inside a Dialog — portal their content
+// out of the DOM subtree, so `node.contains` alone cannot see them; consulting
+// the stack restores the nesting relationship and stops the lower layer from
+// treating a click on the higher layer as an outside dismissal.
+export function isTargetInLayerOrAbove(id: symbol, target: Node): boolean {
+  const idx = stack.findIndex((entry) => entry.id === id)
+  if (idx < 0) return false
+  for (const entry of stack.slice(idx)) {
+    const node = entry.getNode()
+    if (node && node.contains(target)) return true
+  }
+  return false
+}
+
 // The topmost layer is the deepest in the DOM tree — the layer whose node
 // is not contained by any other registered layer's node.
 export function isTopLayer(id: symbol): boolean {

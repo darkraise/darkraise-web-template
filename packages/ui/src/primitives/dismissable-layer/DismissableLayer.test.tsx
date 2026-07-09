@@ -50,6 +50,30 @@ describe("DismissableLayer", () => {
     expect(onOutside).toHaveBeenCalledTimes(0)
   })
 
+  it("does NOT treat a click inside a later-opened sibling layer as outside", async () => {
+    // Reproduces the "dropdown inside dialog closes the dialog" bug: a Select
+    // portals its content to document.body, so it is a DOM sibling of the
+    // dialog layer (not nested). Clicking an option must not fire the dialog
+    // layer's onPointerDownOutside.
+    const dialogOutside = vi.fn()
+    const selectOutside = vi.fn()
+    render(
+      <>
+        <DismissableLayer onPointerDownOutside={dialogOutside}>
+          <div data-testid="dialog-content">dialog</div>
+        </DismissableLayer>
+        <DismissableLayer onPointerDownOutside={selectOutside}>
+          <div data-testid="select-option">option</div>
+        </DismissableLayer>
+      </>,
+    )
+    await userEvent.pointer({
+      keys: "[MouseLeft>]",
+      target: screen.getByTestId("select-option"),
+    })
+    expect(dialogOutside).toHaveBeenCalledTimes(0)
+  })
+
   it("only the topmost layer responds to Escape", async () => {
     const outerEsc = vi.fn()
     const innerEsc = vi.fn()

@@ -1,6 +1,11 @@
 import * as React from "react"
 import { useEvent } from "../state/useEvent"
-import { isTopLayer, popLayer, pushLayer } from "./layerStack"
+import {
+  isTargetInLayerOrAbove,
+  isTopLayer,
+  popLayer,
+  pushLayer,
+} from "./layerStack"
 
 export interface DismissableLayerProps extends React.HTMLAttributes<HTMLDivElement> {
   onPointerDownOutside?: (event: PointerEvent) => void
@@ -26,9 +31,9 @@ export function DismissableLayer({
   React.useEffect(() => {
     const id = pushLayer(() => ref.current)
     const onPointerDown = (e: PointerEvent) => {
-      const node = ref.current
-      if (!node) return
-      if (e.target instanceof Node && node.contains(e.target)) return
+      if (!ref.current) return
+      if (e.target instanceof Node && isTargetInLayerOrAbove(id, e.target))
+        return
       stableOutside(e)
     }
     const onKeyDown = (e: KeyboardEvent) => {
@@ -37,9 +42,9 @@ export function DismissableLayer({
       stableEscape(e)
     }
     const onFocusIn = (e: FocusEvent) => {
-      const node = ref.current
-      if (!node) return
-      if (e.target instanceof Node && node.contains(e.target)) return
+      if (!ref.current) return
+      if (e.target instanceof Node && isTargetInLayerOrAbove(id, e.target))
+        return
       stableFocusOutside(e)
     }
     document.addEventListener("pointerdown", onPointerDown, true)
