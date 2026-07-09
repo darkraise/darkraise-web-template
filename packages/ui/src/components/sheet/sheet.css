@@ -43,6 +43,16 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    /* Neutralise the dialog base's centering translate by resetting the
+       Tailwind translate variables it reads (`translate: var(--tw-translate-x)
+       var(--tw-translate-y)`), not just the `translate` shorthand. Production
+       CSS minifiers (esbuild/Lightning) conflate the standalone `translate`
+       property with the legacy `transform: translate()` function and DROP a
+       bare `translate: none`, which lets the dialog's `-50% -50%` leak through
+       and pulls the sheet toward the viewport centre. Resetting the opaque
+       custom properties survives minification. */
+    --tw-translate-x: 0;
+    --tw-translate-y: 0;
     --tw-enter-translate-x: 0;
     --tw-enter-translate-y: 0;
     --tw-enter-scale: 1;
