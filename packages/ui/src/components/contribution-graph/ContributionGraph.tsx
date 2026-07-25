@@ -24,14 +24,15 @@ const WEEKDAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 const LABELLED_ROWS = [1, 3, 5]
 
 /**
- * Space, in px, the tooltip needs above a cell to render above it: its own
- * box (12px text on a 1.333 ratio, `py-1`, 1px border ≈ 26px) plus the
- * 0.375rem gap. Below that it flips underneath the cell. Showcase pages wrap
- * the graph in `overflow-x-auto`, which forces computed `overflow-y: auto`
- * and clips block-start overflow, so a top-row tooltip placed above renders
- * at zero visible height rather than merely being cropped.
+ * Fixed clearance, in px, between the tooltip box and the cell it points at
+ * — the `0.375rem` gap baked into the CSS `transform: translate()` on both
+ * `data-side` variants. Unlike the tooltip's own height, this gap does not
+ * scale with the `fontSize` theme axis (that axis only re-binds `--text-*`
+ * and the icon/control scales, never the root rem unit this gap is in), so
+ * a plain constant is safe here. The height it used to be bundled with is
+ * not: see the layout effect below.
  */
-const TOOLTIP_CLEARANCE_PX = 32
+const TOOLTIP_GAP_PX = 6
 
 function cellId(cell: ContributionGraphCell): string {
   return `${cell.weekIndex}:${cell.dayIndex}`
@@ -107,6 +108,10 @@ function ContributionGraph({
     top: number
     side: "top" | "bottom"
   } | null>(null)
+  const tooltipRef = React.useRef<HTMLDivElement | null>(null)
+  // Last measured tooltip height, reused only as the next hover's initial
+  // guess (see showTooltip below) — never the final answer.
+  const tooltipHeightRef = React.useRef(0)
 
   const firstCellId = React.useMemo(() => {
     const cell = calendar.weeks
@@ -210,9 +215,35 @@ function ContributionGraph({
       cell,
       left: element.offsetLeft,
       top,
-      side: top < TOOLTIP_CLEARANCE_PX ? "bottom" : "top",
+      // Provisional: guessed from the previous tooltip's measured height
+      // (0 before any tooltip has ever rendered). The layout effect below
+      // corrects this against the real box before the browser paints, so a
+      // wrong guess here never becomes visible.
+      side: top < tooltipHeightRef.current + TOOLTIP_GAP_PX ? "bottom" : "top",
     })
   }
+
+  // A fixed pixel threshold can't describe a box whose height depends on the
+  // `fontSize` theme axis (it scales the tooltip's own text). Measuring the
+  // rendered tooltip directly, in a layout effect that runs after the commit
+  // but before paint, lets the decision track the real geometry instead —
+  // and any correction it makes is invisible, since nothing has painted yet.
+  //
+  // Flipping only changes the tooltip's `transform`, never its height, so
+  // re-running this effect after a flip always reconfirms the same side.
+  // State is only written when the side actually needs to change, which
+  // both avoids an unnecessary re-render and guarantees this settles even if
+  // that height-is-transform-invariant assumption ever stops holding.
+  React.useLayoutEffect(() => {
+    if (!hovered || !tooltipRef.current) return
+    tooltipHeightRef.current = tooltipRef.current.offsetHeight
+    const side: "top" | "bottom" =
+      hovered.top < tooltipHeightRef.current + TOOLTIP_GAP_PX ? "bottom" : "top"
+    if (side === hovered.side) return
+    setHovered((prev) =>
+      prev && prev.side !== side ? { ...prev, side } : prev,
+    )
+  }, [hovered])
 
   return (
     <div className={cn("dr-contribution-graph", className)} {...props}>
@@ -322,6 +353,7 @@ function ContributionGraph({
 
         {hovered ? (
           <div
+            ref={tooltipRef}
             role="tooltip"
             className="dr-contribution-graph-tooltip"
             data-side={hovered.side}

@@ -1,6 +1,6 @@
 import * as React from "react"
 import { render, screen, fireEvent } from "@testing-library/react"
-import { describe, it, expect, vi } from "vitest"
+import { describe, it, expect, vi, afterEach } from "vitest"
 import {
   ContributionGraph,
   type ContributionGraphCell,
@@ -204,14 +204,63 @@ describe("ContributionGraph", () => {
   it("keeps the tooltip above a cell with room for it", () => {
     renderGraph()
     const saturday = cellFor("2026-08-01")
-    // jsdom performs no layout, so every offsetTop reads 0; stub the single
-    // measurement the side decision is made from.
+    // jsdom performs no layout, so every offset* reads 0; stub the cell
+    // measurement the side decision is made from (the tooltip's own
+    // offsetHeight defaults to 0, which only makes "top" easier to reach).
     Object.defineProperty(saturday, "offsetTop", {
       value: 120,
       configurable: true,
     })
     fireEvent.pointerEnter(saturday)
     expect(screen.getByRole("tooltip")).toHaveAttribute("data-side", "top")
+  })
+
+  // The side is decided from the tooltip's own rendered height, measured in a
+  // layout effect, rather than a fixed constant — a constant can't describe a
+  // box that grows with the `fontSize` theme axis. jsdom performs no layout,
+  // so it cannot demonstrate the actual clipping this fixes or produce a real
+  // offsetHeight; these tests stub HTMLElement.prototype.offsetHeight to
+  // prove the *decision logic* recomputes from the measured value and that
+  // both the "top" and "bottom" branches are reachable from it. They are not
+  // proof of the rendered geometry — that was, and remains, verified visually
+  // in the running showcase at each font-size step.
+  describe("tooltip side tracks the tooltip's measured height", () => {
+    afterEach(() => {
+      vi.restoreAllMocks()
+    })
+
+    it("flips to bottom once a taller measured box no longer clears the gap", () => {
+      // Reproduces the reported defect: at the extra-large font-size step the
+      // tooltip's box was measured at ~50px tall. A cell 37px from the top of
+      // its container cleared the old fixed 32px constant (so it used to stay
+      // "top" and clip in a scroll-clipping showcase wrapper), but does not
+      // clear a 50px-tall box plus the 6px gap.
+      vi.spyOn(HTMLElement.prototype, "offsetHeight", "get").mockReturnValue(50)
+      renderGraph()
+      const cell = cellFor("2026-07-27")
+      Object.defineProperty(cell, "offsetTop", {
+        value: 37,
+        configurable: true,
+      })
+      fireEvent.pointerEnter(cell)
+      expect(screen.getByRole("tooltip")).toHaveAttribute("data-side", "bottom")
+    })
+
+    it("stays on top when a shorter measured box clears the gap", () => {
+      // At the `small` font-size step the box is much shorter. A cell 25px
+      // from the top is under the old fixed 32px constant (which would have
+      // flipped it to "bottom" regardless of the box's real size), but
+      // comfortably clears a 10px-tall tooltip plus the 6px gap.
+      vi.spyOn(HTMLElement.prototype, "offsetHeight", "get").mockReturnValue(10)
+      renderGraph()
+      const cell = cellFor("2026-07-28")
+      Object.defineProperty(cell, "offsetTop", {
+        value: 25,
+        configurable: true,
+      })
+      fireEvent.pointerEnter(cell)
+      expect(screen.getByRole("tooltip")).toHaveAttribute("data-side", "top")
+    })
   })
 
   it("declares grid dimensions and one column index per week", () => {
