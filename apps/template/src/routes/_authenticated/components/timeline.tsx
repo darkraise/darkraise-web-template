@@ -65,6 +65,7 @@ const metaCode = `<Timeline>
     <TimelineConnector />
     <TimelineContent>
       <TimelineTitle>Order placed</TimelineTitle>
+      <TimelineDescription>2 items, paid by card</TimelineDescription>
     </TimelineContent>
   </TimelineItem>
 </Timeline>`
@@ -75,6 +76,7 @@ const alternatingCode = `<Timeline variant="alternating">
     <TimelineConnector />
     <TimelineContent>
       <TimelineTitle>Order placed</TimelineTitle>
+      <TimelineDescription>2 items, paid by card</TimelineDescription>
     </TimelineContent>
   </TimelineItem>
 </Timeline>`
