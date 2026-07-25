@@ -130,6 +130,8 @@ const DESCRIPTIONS: Record<string, string> = {
     "Chip-based tag entry with paste-split and validation",
   "/components/textarea": "Multi-line text input with auto-resize support",
   "/components/time-picker": "Hour, minute, and meridiem selection control",
+  "/components/timeline":
+    "Chronological event rail with status and alternating layout",
   "/components/timer":
     "Stopwatch and countdown with start, pause, resume, and reset",
   "/components/toggle": "Stateful toggle buttons for binary actions",
