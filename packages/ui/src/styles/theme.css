@@ -556,7 +556,12 @@
     /* Control height, split into a density-owned base and a font-size-owned
        multiplier. Both axes would otherwise re-bind --density-cell at equal
        specificity (0,1,0), and whichever block came last in source order
-       would simply win. Splitting them lets the two axes compose. */
+       would simply win. Splitting them lets the two axes compose.
+       Consequence: --density-cell itself now resolves once at :root, so
+       a `data-density` attribute on a subtree only re-binds
+       --density-cell-base there — it no longer overrides control heights
+       for that subtree the way it did pre-split. Nothing in this library,
+       the template app, or the docs relies on subtree-scoped density. */
     --density-cell-base: 2rem;
     --control-scale: 1;
     --density-cell: calc(var(--density-cell-base) * var(--control-scale));

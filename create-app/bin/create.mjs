@@ -287,7 +287,7 @@ async function main() {
             { value: "elevation", label: "Elevation" },
             { value: "buttonElevation", label: "Button elevation" },
             { value: "radius", label: "Radius" },
-            { value: "fontSize", label: "Font Size" },
+            { value: "fontSize", label: "Font size" },
             { value: "presetAxes", label: "Preset-specific axes (e.g. neon glow, scifi intensity/frame)" },
           ],
           initialValues: THEME_AXIS_KEYS,

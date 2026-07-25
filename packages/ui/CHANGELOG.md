@@ -4,7 +4,14 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 
 ## [Unreleased]
 
-Additive release. No breaking changes; existing theme configs are unaffected and render exactly as before under the new `fontSize: "medium"` default.
+Breaking: `ThemeConfig` gains two required properties, `defaults.fontSize` and `switcher.axes.fontSize`, matching the other eleven axes. Consumers passing their own `config` object must add both before upgrading:
+
+```ts
+defaults: { …, fontSize: "medium" },
+switcher: { axes: { …, fontSize: true } },
+```
+
+Once added, the new `fontSize: "medium"` default renders exactly as before.
 
 ### Added
 
