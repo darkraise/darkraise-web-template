@@ -692,6 +692,70 @@
   --density-stack-gap: 1rem;
 }
 
+/* Font-size axis. `medium` is Tailwind's default scale and deliberately
+   declares no block. Body sizes (xs–xl) take the full multiplier; display
+   sizes (2xl and up) take a damped one so a hero heading grows without
+   dominating the page.
+
+   Line heights are deliberately absent: Tailwind declares them as unitless
+   ratios (`--text-sm--line-height: calc(1.25 / 0.875)`), so they follow the
+   font size on their own. Declaring one here would freeze it. */
+[data-font-size="small"] {
+  --text-xs: 0.6875rem;
+  --text-sm: 0.75rem;
+  --text-base: 0.875rem;
+  --text-lg: 1rem;
+  --text-xl: 1.125rem;
+  --text-2xl: 1.4375rem;
+  --text-3xl: 1.75rem;
+  --text-4xl: 2.125rem;
+  --text-5xl: 2.8125rem;
+  --text-6xl: 3.5rem;
+  --text-7xl: 4.25rem;
+  --text-8xl: 5.625rem;
+  --text-9xl: 7.5rem;
+  --icon-scale: 0.875;
+  /* Controls deliberately do not shrink: dropping a touch target below
+     32px to save four pixels is a bad trade. */
+  --control-scale: 1;
+}
+
+[data-font-size="large"] {
+  --text-xs: 0.875rem;
+  --text-sm: 1rem;
+  --text-base: 1.125rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.4375rem;
+  --text-2xl: 1.625rem;
+  --text-3xl: 2rem;
+  --text-4xl: 2.375rem;
+  --text-5xl: 3.1875rem;
+  --text-6xl: 4rem;
+  --text-7xl: 4.8125rem;
+  --text-8xl: 6.375rem;
+  --text-9xl: 8.5rem;
+  --icon-scale: 1.125;
+  --control-scale: 1.0625;
+}
+
+[data-font-size="extra-large"] {
+  --text-xs: 0.9375rem;
+  --text-sm: 1.125rem;
+  --text-base: 1.25rem;
+  --text-lg: 1.4375rem;
+  --text-xl: 1.5625rem;
+  --text-2xl: 1.6875rem;
+  --text-3xl: 2.125rem;
+  --text-4xl: 2.5625rem;
+  --text-5xl: 3.375rem;
+  --text-6xl: 4.25rem;
+  --text-7xl: 5.0625rem;
+  --text-8xl: 6.75rem;
+  --text-9xl: 9rem;
+  --icon-scale: 1.25;
+  --control-scale: 1.125;
+}
+
 [data-elevation="flat"] {
   --elevation-flat: 0 0 transparent;
   --elevation-low: 0 0 transparent;
