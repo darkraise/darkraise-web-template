@@ -35,6 +35,17 @@
     margin-bottom: var(--contrib-cell-gap);
   }
 
+  /* Belt-and-braces: buildCalendar.ts guarantees label column ranges never
+     overlap, so this is redundant today. But each label's column placement
+     is still explicit (gridColumnStart/gridColumnEnd), and CSS Grid quietly
+     pushes an explicitly-placed item onto a new auto-row when its column
+     range collides with a sibling's — which previously turned one data bug
+     into a diagonal cascade of all twelve months instead of a visible
+     overlap. Pinning the row keeps a future regression visible and inert. */
+  .dr-contribution-graph-months > span {
+    grid-row: 1;
+  }
+
   .dr-contribution-graph-weekdays {
     @apply text-muted-foreground flex flex-col text-xs;
     grid-column: 1;

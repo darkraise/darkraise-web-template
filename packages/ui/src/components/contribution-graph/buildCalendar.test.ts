@@ -221,6 +221,22 @@ describe("buildCalendar", () => {
     expect(calendar.monthLabels).toEqual([])
   })
 
+  it("never produces overlapping month label column ranges", () => {
+    // A year-long range crosses every month boundary at least once,
+    // including several where the last days of one month and the first
+    // days of the next share a single week column — exactly the
+    // configuration that previously let consecutive labels claim the same
+    // column and get silently pushed onto their own grid rows.
+    const calendar = calendarFor("2025-07-25", "2026-07-24")
+    for (const [index, month] of calendar.monthLabels.entries()) {
+      const next = calendar.monthLabels[index + 1]
+      if (!next) continue
+      expect(next.weekIndex).toBeGreaterThanOrEqual(
+        month.weekIndex + month.span,
+      )
+    }
+  })
+
   it("honours explicit thresholds passed to buildCalendar", () => {
     const calendar = calendarFor(
       "2026-07-20",

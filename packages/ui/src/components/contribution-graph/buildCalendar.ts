@@ -54,6 +54,14 @@ const MONTH_NAMES = [
 ]
 
 /**
+ * Minimum week-columns a month must span to earn a label. A three-letter
+ * abbreviation ("Sep") needs roughly three cell-widths to render without
+ * touching its neighbour — the same rule GitHub's contribution graph uses
+ * to drop a crowded leading or trailing month.
+ */
+const MIN_LABEL_SPAN_WEEKS = 3
+
+/**
  * Parses `YYYY-MM-DD` as a LOCAL date. `new Date("2026-07-24")` parses as UTC
  * midnight, which renders as the previous day for every user west of
  * Greenwich — a silent off-by-one across the entire graph.
@@ -158,14 +166,11 @@ export function buildCalendar(options: BuildCalendarOptions): Calendar {
         })
 
         const monthKey = `${date.getFullYear()}-${date.getMonth()}`
-        const existing = months.get(monthKey)
-        if (existing) {
-          existing.span = weekIndex - existing.weekIndex + 1
-        } else {
+        if (!months.has(monthKey)) {
           months.set(monthKey, {
             label: MONTH_NAMES[date.getMonth()] ?? "",
             weekIndex,
-            span: 1,
+            span: 0, // resolved below, once every month's start week is known
           })
         }
       }
@@ -175,11 +180,24 @@ export function buildCalendar(options: BuildCalendarOptions): Calendar {
     weekIndex++
   }
 
+  // Each month's span runs from its own first week up to, but excluding,
+  // the next month's first week — the last month runs to the end of the
+  // grid. A single week column legitimately holds the last days of one
+  // month and the first days of the next, so measuring a span inclusively
+  // (through the shared column) let two labels claim the same column and
+  // CSS Grid silently pushed the second one onto its own row instead of
+  // rendering the overlap.
+  const monthList = [...months.values()]
+  for (const [index, month] of monthList.entries()) {
+    const next = monthList[index + 1]
+    month.span = (next ? next.weekIndex : weeks.length) - month.weekIndex
+  }
+
   return {
     weeks,
-    // A label narrower than two columns overlaps its neighbour, so months
-    // that never span a second week column go unlabelled.
-    monthLabels: [...months.values()].filter((month) => month.span > 1),
+    monthLabels: monthList.filter(
+      (month) => month.span >= MIN_LABEL_SPAN_WEEKS,
+    ),
     maxValue,
     thresholds,
   }
