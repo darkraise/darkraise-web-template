@@ -8,6 +8,7 @@ import type {
   Density,
   Elevation,
   Radius,
+  FontSize,
   Mode,
   ResolvedMode,
   ThemeContextValue,
@@ -22,6 +23,7 @@ import {
   DENSITIES,
   ELEVATIONS,
   RADII,
+  FONT_SIZES,
 } from "@theme/types"
 import {
   generateTokens,
@@ -55,6 +57,7 @@ const LS_DENSITY = "theme-density"
 const LS_ELEVATION = "theme-elevation"
 const LS_BUTTON_ELEVATION = "theme-button-elevation"
 const LS_RADIUS = "theme-radius"
+const LS_FONT_SIZE = "theme-font-size"
 
 const isBrowser = typeof window !== "undefined"
 
@@ -244,6 +247,14 @@ export function ThemeProvider({
     return cfg.defaults.radius
   })
 
+  const [fontSize, setFontSizeState] = useState<FontSize>(() => {
+    const stored = readStorage(LS_FONT_SIZE)
+    if (stored && (FONT_SIZES as readonly string[]).includes(stored)) {
+      return stored as FontSize
+    }
+    return cfg.defaults.fontSize
+  })
+
   const [resolvedMode, setResolvedMode] = useState<ResolvedMode>(() =>
     resolveMode(mode),
   )
@@ -361,6 +372,7 @@ export function ThemeProvider({
       elevation,
       buttonElevation,
       radius,
+      fontSize,
       presetAxisValues,
       ...overrides,
     }),
@@ -376,6 +388,7 @@ export function ThemeProvider({
       elevation,
       buttonElevation,
       radius,
+      fontSize,
       presetAxisValues,
     ],
   )
@@ -410,6 +423,7 @@ export function ThemeProvider({
         settings.buttonElevation ?? cfg.defaults.buttonElevation,
       )
       setRadiusState(settings.radius ?? cfg.defaults.radius)
+      setFontSizeState(settings.fontSize ?? cfg.defaults.fontSize)
       setPresetAxisValuesState(newAxisValues)
 
       writeStorage(LS_ACCENT, settings.accentColor)
@@ -426,6 +440,7 @@ export function ThemeProvider({
         settings.buttonElevation ?? cfg.defaults.buttonElevation,
       )
       writeStorage(LS_RADIUS, settings.radius ?? cfg.defaults.radius)
+      writeStorage(LS_FONT_SIZE, settings.fontSize ?? cfg.defaults.fontSize)
       for (const [presetName, axes] of Object.entries(newAxisValues)) {
         for (const [axisName, value] of Object.entries(axes)) {
           writeStorage(LS_PRESET_AXIS_PREFIX(presetName, axisName), value)
@@ -447,6 +462,10 @@ export function ThemeProvider({
       document.documentElement.setAttribute(
         "data-radius",
         settings.radius ?? cfg.defaults.radius,
+      )
+      document.documentElement.setAttribute(
+        "data-font-size",
+        settings.fontSize ?? cfg.defaults.fontSize,
       )
       document.documentElement.setAttribute(
         "data-background-intensity",
@@ -825,6 +844,19 @@ export function ThemeProvider({
     [buildSettings, notifyChange, debouncedSave],
   )
 
+  const setFontSize = useCallback(
+    (size: FontSize) => {
+      setFontSizeState(size)
+      writeStorage(LS_FONT_SIZE, size)
+      document.documentElement.setAttribute("data-font-size", size)
+      const settings = buildSettings({ fontSize: size })
+      notifyChange(settings)
+      hasUserChanged.current = true
+      debouncedSave(settings)
+    },
+    [buildSettings, notifyChange, debouncedSave],
+  )
+
   useEffect(() => {
     applyTheme(
       accentColor,
@@ -852,6 +884,7 @@ export function ThemeProvider({
       buttonElevation,
     )
     document.documentElement.setAttribute("data-radius", radius)
+    document.documentElement.setAttribute("data-font-size", fontSize)
     document.documentElement.setAttribute(
       "data-background-intensity",
       backgroundIntensity,
@@ -865,6 +898,7 @@ export function ThemeProvider({
     elevation,
     buttonElevation,
     radius,
+    fontSize,
     backgroundIntensity,
     gradientPattern,
   ])
@@ -936,6 +970,7 @@ export function ThemeProvider({
       elevation,
       buttonElevation,
       radius,
+      fontSize,
       resolvedMode,
       config: cfg,
       syncStatus,
@@ -952,6 +987,7 @@ export function ThemeProvider({
       setElevation,
       setButtonElevation,
       setRadius,
+      setFontSize,
       setPresetAxis,
     }),
     [
@@ -966,6 +1002,7 @@ export function ThemeProvider({
       elevation,
       buttonElevation,
       radius,
+      fontSize,
       resolvedMode,
       cfg,
       syncStatus,
@@ -981,6 +1018,7 @@ export function ThemeProvider({
       setElevation,
       setButtonElevation,
       setRadius,
+      setFontSize,
       setPresetAxis,
     ],
   )

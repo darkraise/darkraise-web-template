@@ -52,6 +52,9 @@ export type Elevation = (typeof ELEVATIONS)[number]
 export const RADII = ["sharp", "subtle", "rounded", "pill"] as const
 export type Radius = (typeof RADII)[number]
 
+export const FONT_SIZES = ["small", "medium", "large", "extra-large"] as const
+export type FontSize = (typeof FONT_SIZES)[number]
+
 export const MODES = ["light", "dark", "system"] as const
 export type Mode = (typeof MODES)[number]
 
@@ -78,6 +81,7 @@ export interface ThemeSettings {
   elevation?: Elevation
   buttonElevation?: Elevation
   radius?: Radius
+  fontSize?: FontSize
   /** Per-preset axis values; outer key = preset name, inner key = axis name. */
   presetAxisValues?: Record<string, Record<string, string>>
 }
@@ -101,6 +105,7 @@ export interface ThemeContextValue {
   elevation: Elevation
   buttonElevation: Elevation
   radius: Radius
+  fontSize: FontSize
   resolvedMode: ResolvedMode
   config: import("./themeConfig").ThemeConfig
   syncStatus: ThemeSyncStatus
@@ -119,6 +124,7 @@ export interface ThemeContextValue {
   setElevation: (elevation: Elevation) => void
   setButtonElevation: (elevation: Elevation) => void
   setRadius: (radius: Radius) => void
+  setFontSize: (size: FontSize) => void
   /**
    * Update one preset-specific axis on the active preset. No-ops with a
    * console.warn (dev-only) when the axis is not valid for the active preset.
