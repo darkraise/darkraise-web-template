@@ -25,6 +25,11 @@ export interface Calendar {
   /** `weeks[weekIndex][dayIndex]`; `null` marks a padding day outside the range. */
   weeks: (ContributionGraphCell | null)[][]
   monthLabels: ContributionGraphMonthLabel[]
+  /**
+   * The largest value among the RENDERED days, not among every entry in
+   * `values`. Scaling the ramp to a spike outside the range would flatten
+   * every visible day with nothing on screen to explain why.
+   */
   maxValue: number
   thresholds: number[]
 }
@@ -138,32 +143,53 @@ export function buildCalendar(options: BuildCalendarOptions): Calendar {
   const start = startOfDay(options.startDate)
   const end = startOfDay(options.endDate)
 
-  const maxValue = values.size === 0 ? 0 : Math.max(...values.values())
-  const thresholds = options.thresholds ?? defaultThresholds(maxValue, levels)
+  // Range membership is decided on the local `YYYY-MM-DD` key, never on the
+  // timestamp. Where daylight saving springs forward AT MIDNIGHT
+  // (America/Santiago, Asunción, Havana, Beirut, the Azores) local 00:00 does
+  // not exist on the transition day, ECMAScript resolves it with the
+  // pre-transition offset, and the cursor is bumped to 01:00 for the rest of
+  // the walk — enough for a timestamp comparison to declare the end date out
+  // of range and emit it as padding. Zero-padded ISO keys sort
+  // lexicographically in calendar order, so comparing them is both correct
+  // and immune to whatever offset a given day resolved to.
+  const startKey = toISODateKey(start)
+  const endKey = toISODateKey(end)
 
   const weeks: (ContributionGraphCell | null)[][] = []
   const months = new Map<string, ContributionGraphMonthLabel>()
+  // Levels cannot be assigned during the walk: the thresholds depend on the
+  // maximum, and the maximum is only known once every in-range day has been
+  // visited. Collecting the cells lets the level pass run over the rendered
+  // range rather than over the whole input map.
+  const cells: ContributionGraphCell[] = []
+  let maxValue = 0
 
   const cursor = startOfWeek(start, weekStartsOn)
   let weekIndex = 0
 
-  while (cursor <= end) {
+  while (toISODateKey(cursor) <= endKey) {
     const week: (ContributionGraphCell | null)[] = []
     for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
-      if (cursor < start || cursor > end) {
+      const key = toISODateKey(cursor)
+      if (key < startKey || key > endKey) {
         week.push(null)
       } else {
-        const date = new Date(cursor)
-        const key = toISODateKey(date)
+        // `startOfDay` rather than `new Date(cursor)`: once the cursor has
+        // been bumped off midnight by a transition it stays there, and the
+        // public `cell.date` should still read as the day's local midnight.
+        const date = startOfDay(cursor)
         const value = values.get(key) ?? 0
-        week.push({
+        const cell: ContributionGraphCell = {
           date,
           key,
           value,
-          level: levelFor(value, thresholds),
+          level: 0, // resolved below, once the in-range maximum is known
           weekIndex,
           dayIndex,
-        })
+        }
+        week.push(cell)
+        cells.push(cell)
+        if (value > maxValue) maxValue = value
 
         const monthKey = `${date.getFullYear()}-${date.getMonth()}`
         if (!months.has(monthKey)) {
@@ -178,6 +204,11 @@ export function buildCalendar(options: BuildCalendarOptions): Calendar {
     }
     weeks.push(week)
     weekIndex++
+  }
+
+  const thresholds = options.thresholds ?? defaultThresholds(maxValue, levels)
+  for (const cell of cells) {
+    cell.level = levelFor(cell.value, thresholds)
   }
 
   // Each month's span runs from its own first week up to, but excluding,

@@ -23,6 +23,16 @@ const WEEKDAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
  *  height, and every calendar heatmap in the wild labels alternate rows. */
 const LABELLED_ROWS = [1, 3, 5]
 
+/**
+ * Space, in px, the tooltip needs above a cell to render above it: its own
+ * box (12px text on a 1.333 ratio, `py-1`, 1px border ≈ 26px) plus the
+ * 0.375rem gap. Below that it flips underneath the cell. Showcase pages wrap
+ * the graph in `overflow-x-auto`, which forces computed `overflow-y: auto`
+ * and clips block-start overflow, so a top-row tooltip placed above renders
+ * at zero visible height rather than merely being cropped.
+ */
+const TOOLTIP_CLEARANCE_PX = 32
+
 function cellId(cell: ContributionGraphCell): string {
   return `${cell.weekIndex}:${cell.dayIndex}`
 }
@@ -49,7 +59,8 @@ export interface ContributionGraphProps extends React.HTMLAttributes<HTMLDivElem
   /** Number of non-empty intensity levels. Default 4. */
   levels?: number
   /** Ascending lower bounds for levels 1..levels. Defaults to quartiles of
-   *  the maximum value, with the first bound pinned at 1. */
+   *  the maximum value among the rendered days — data outside the range does
+   *  not move the ramp — with the first bound pinned at 1. */
   thresholds?: number[]
   showMonthLabels?: boolean
   showWeekdayLabels?: boolean
@@ -94,6 +105,7 @@ function ContributionGraph({
     cell: ContributionGraphCell
     left: number
     top: number
+    side: "top" | "bottom"
   } | null>(null)
 
   const firstCellId = React.useMemo(() => {
@@ -193,14 +205,22 @@ function ContributionGraph({
     element: HTMLDivElement,
     cell: ContributionGraphCell,
   ): void {
-    setHovered({ cell, left: element.offsetLeft, top: element.offsetTop })
+    const top = element.offsetTop
+    setHovered({
+      cell,
+      left: element.offsetLeft,
+      top,
+      side: top < TOOLTIP_CLEARANCE_PX ? "bottom" : "top",
+    })
   }
 
   return (
     <div className={cn("dr-contribution-graph", className)} {...props}>
       {/* Months, weekday gutter, and the grid share one 2×2 CSS grid, so the
-          month labels stay aligned with their week columns without any
-          magic offset — and a hidden section simply collapses its track. */}
+          month labels stay aligned with their week columns without any magic
+          offset. The spacing that separates an optional section from the grid
+          lives on that section as a margin, not on the grid's `gap` — see the
+          track note in contribution-graph.css. */}
       <div className="dr-contribution-graph-body">
         {showMonthLabels ? (
           <div
@@ -236,10 +256,17 @@ function ContributionGraph({
           </div>
         ) : null}
 
+        {/* Padding cells are `aria-hidden`, so rows expose different numbers
+            of cells and a screen reader's column navigation would drift out
+            of alignment between rows. Declaring the true column count and an
+            explicit `aria-colindex` per cell keeps each week column addressable
+            at the same index in every row. */}
         <div
           className="dr-contribution-graph-grid"
           role="grid"
           aria-label={ariaLabel}
+          aria-colcount={calendar.weeks.length}
+          aria-rowcount={7}
         >
           {Array.from({ length: 7 }, (_, dayIndex) => (
             <div
@@ -268,9 +295,11 @@ function ContributionGraph({
                       else cellRefs.current.delete(id)
                     }}
                     role="gridcell"
+                    aria-colindex={cell.weekIndex + 1}
                     tabIndex={id === activeId ? 0 : -1}
                     data-level={cell.level}
                     data-date={cell.key}
+                    data-clickable={onCellClick ? "true" : undefined}
                     aria-label={cellLabel(cell)}
                     className="dr-contribution-graph-cell focus-ring-tight"
                     onKeyDown={(event) => handleKeyDown(event, cell)}
@@ -295,6 +324,7 @@ function ContributionGraph({
           <div
             role="tooltip"
             className="dr-contribution-graph-tooltip"
+            data-side={hovered.side}
             style={{ left: hovered.left, top: hovered.top }}
           >
             {cellLabel(hovered.cell)}

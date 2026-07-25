@@ -193,6 +193,23 @@ describe("buildCalendar", () => {
     expect(calendar.maxValue).toBe(7)
   })
 
+  it("scales the ramp to the rendered range, ignoring data outside it", () => {
+    // `endDate` defaults to today, so passing a full history while rendering
+    // a trailing year is the natural usage. An old spike that is never drawn
+    // must not push every visible day down the ramp.
+    const calendar = calendarFor("2026-07-20", "2026-07-26", {
+      "2024-01-01": 500,
+      "2026-07-22": 4,
+    })
+    expect(calendar.maxValue).toBe(4)
+    expect(calendar.thresholds).toEqual([1, 2, 3, 4])
+    const busy = calendar.weeks
+      .flat()
+      .find((cell) => cell?.key === "2026-07-22") as ContributionGraphCell
+    // Scaled to 500 the same day would have landed on level 1.
+    expect(busy.level).toBe(4)
+  })
+
   it("handles an empty data set without dividing by zero", () => {
     const calendar = calendarFor("2026-07-20", "2026-07-26")
     expect(calendar.maxValue).toBe(0)

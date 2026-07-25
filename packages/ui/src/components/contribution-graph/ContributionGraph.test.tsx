@@ -192,6 +192,54 @@ describe("ContributionGraph", () => {
     expect(screen.queryAllByRole("tooltip")).toHaveLength(0)
   })
 
+  it("flips the tooltip below a cell that has no headroom above it", () => {
+    renderGraph()
+    // 2026-07-26 is a Sunday, the top weekday row. Consumers wrap the graph
+    // in `overflow-x-auto`, which clips block-start overflow, so a tooltip
+    // placed above a top-row cell would render at zero visible height.
+    fireEvent.pointerEnter(cellFor("2026-07-26"))
+    expect(screen.getByRole("tooltip")).toHaveAttribute("data-side", "bottom")
+  })
+
+  it("keeps the tooltip above a cell with room for it", () => {
+    renderGraph()
+    const saturday = cellFor("2026-08-01")
+    // jsdom performs no layout, so every offsetTop reads 0; stub the single
+    // measurement the side decision is made from.
+    Object.defineProperty(saturday, "offsetTop", {
+      value: 120,
+      configurable: true,
+    })
+    fireEvent.pointerEnter(saturday)
+    expect(screen.getByRole("tooltip")).toHaveAttribute("data-side", "top")
+  })
+
+  it("declares grid dimensions and one column index per week", () => {
+    renderGraph()
+    const grid = screen.getByRole("grid")
+    expect(grid).toHaveAttribute("aria-colcount", "3")
+    expect(grid).toHaveAttribute("aria-rowcount", "7")
+    // Row 0 opens with a padding cell (2026-07-19 is before the range) and
+    // row 1 does not, so without an explicit index the two rows' week-1 days
+    // would sit at different column positions for a screen reader.
+    expect(cellFor("2026-07-26")).toHaveAttribute("aria-colindex", "2")
+    expect(cellFor("2026-07-27")).toHaveAttribute("aria-colindex", "2")
+  })
+
+  it("marks cells clickable only when onCellClick is provided", () => {
+    const { rerender } = renderGraph()
+    expect(cellFor("2026-07-20")).not.toHaveAttribute("data-clickable")
+    rerender(
+      <ContributionGraph
+        startDate="2026-07-20"
+        endDate="2026-08-02"
+        data={data}
+        onCellClick={() => {}}
+      />,
+    )
+    expect(cellFor("2026-07-20")).toHaveAttribute("data-clickable", "true")
+  })
+
   it("clears the tooltip when the focused cell blurs", () => {
     renderGraph()
     const monday = cellFor("2026-07-20")
