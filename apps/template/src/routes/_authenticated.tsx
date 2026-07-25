@@ -219,6 +219,11 @@ export const nav: NavGroup[] = [
         icon: MousePointer,
       },
       {
+        label: "Contribution Graph",
+        href: "/components/contribution-graph",
+        icon: CalendarDays,
+      },
+      {
         label: "Dashboard",
         href: "/components/dashboard",
         icon: LayoutDashboard,

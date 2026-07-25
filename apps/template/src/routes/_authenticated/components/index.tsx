@@ -43,6 +43,8 @@ const DESCRIPTIONS: Record<string, string> = {
   "/components/command": "Searchable command palette with grouped results",
   "/components/context-menu":
     "Right-click menus with items, checkboxes, and submenus",
+  "/components/contribution-graph":
+    "Calendar heatmap of daily activity with tooltips and keyboard navigation",
   "/components/dashboard": "StatCard, KPICard, ProgressCard, and ActivityFeed",
   "/components/data-table":
     "Feature-rich table with sorting, filtering, and pagination",
