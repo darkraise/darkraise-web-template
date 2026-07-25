@@ -93,7 +93,7 @@ function BreadcrumbEllipsis({
       className={cn("dr-breadcrumb-ellipsis", className)}
       {...props}
     >
-      <MoreHorizontal className="h-4 w-4" />
+      <MoreHorizontal className="size-[var(--icon-size)]" />
       <span className="sr-only">More</span>
     </span>
   )

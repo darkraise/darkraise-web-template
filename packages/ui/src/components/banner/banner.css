@@ -74,7 +74,7 @@
   }
 
   .dr-banner-icon {
-    @apply shrink-0 [&_svg]:h-4 [&_svg]:w-4;
+    @apply shrink-0 [&_svg]:size-[var(--icon-size)];
   }
   .dr-banner-content {
     @apply min-w-0 flex-1;

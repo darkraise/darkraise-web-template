@@ -187,7 +187,7 @@ function CarouselPrevious({
       onClick={ctx.scrollPrev}
       {...props}
     >
-      <ArrowLeft className="h-4 w-4" />
+      <ArrowLeft className="size-[var(--icon-size)]" />
       <span className="sr-only">Previous slide</span>
     </Button>
   )
@@ -213,7 +213,7 @@ function CarouselNext({
       onClick={ctx.scrollNext}
       {...props}
     >
-      <ArrowRight className="h-4 w-4" />
+      <ArrowRight className="size-[var(--icon-size)]" />
       <span className="sr-only">Next slide</span>
     </Button>
   )

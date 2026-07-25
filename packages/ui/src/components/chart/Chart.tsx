@@ -203,7 +203,7 @@ function ChartTooltipContent({
             <div
               key={item.dataKey ?? index}
               className={cn(
-                "[&>svg]:text-muted-foreground flex w-full flex-wrap items-stretch gap-2 [&>svg]:h-2.5 [&>svg]:w-2.5",
+                "[&>svg]:text-muted-foreground flex w-full flex-wrap items-stretch gap-2 [&>svg]:size-[var(--icon-size-2xs)]",
                 indicator === "dot" && "items-center",
               )}
             >
@@ -303,7 +303,7 @@ function ChartLegendContent({
           <div
             key={item.value}
             className={cn(
-              "[&>svg]:text-muted-foreground flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3",
+              "[&>svg]:text-muted-foreground flex items-center gap-1.5 [&>svg]:size-[var(--icon-size-xs)]",
             )}
           >
             {itemConfig?.icon && !hideIcon ? (

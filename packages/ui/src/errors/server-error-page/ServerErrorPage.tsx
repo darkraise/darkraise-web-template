@@ -10,7 +10,12 @@ export function ServerErrorPage() {
 
   return (
     <ErrorLayout
-      icon={<ServerCrash className="h-16 w-16" strokeWidth={1.5} />}
+      icon={
+        <ServerCrash
+          className="size-[var(--icon-size-3xl)]"
+          strokeWidth={1.5}
+        />
+      }
       code="500"
       title="Server error"
       description="Something went wrong on our end. Please try again later."

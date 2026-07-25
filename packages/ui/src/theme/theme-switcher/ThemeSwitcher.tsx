@@ -365,7 +365,7 @@ export function ThemeSwitcher() {
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="ghost" size="icon">
-          <Palette className="h-4 w-4" />
+          <Palette className="size-[var(--icon-size)]" />
           <span className="sr-only">Customize theme</span>
         </Button>
       </PopoverTrigger>

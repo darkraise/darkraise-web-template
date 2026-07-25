@@ -3,7 +3,7 @@
     @apply flex flex-col items-center justify-center gap-3 px-4 py-10 text-center;
   }
   .dr-empty-state-icon {
-    @apply text-muted-foreground bg-muted/40 flex h-12 w-12 items-center justify-center rounded-full [&_svg]:h-6 [&_svg]:w-6;
+    @apply text-muted-foreground bg-muted/40 flex h-12 w-12 items-center justify-center rounded-full [&_svg]:size-[var(--icon-size-xl)];
   }
   .dr-empty-state-title {
     @apply text-base font-semibold;

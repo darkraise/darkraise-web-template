@@ -10,7 +10,12 @@ export function NotFoundPage() {
 
   return (
     <ErrorLayout
-      icon={<FileQuestion className="h-16 w-16" strokeWidth={1.5} />}
+      icon={
+        <FileQuestion
+          className="size-[var(--icon-size-3xl)]"
+          strokeWidth={1.5}
+        />
+      }
       code="404"
       title="Page not found"
       description="The page you're looking for doesn't exist or has been moved."

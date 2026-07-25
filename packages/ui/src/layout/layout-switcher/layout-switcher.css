@@ -1,6 +1,6 @@
 @layer components {
   .dr-layout-switcher-item-icon {
-    @apply mr-2 h-4 w-4;
+    @apply mr-2 size-[var(--icon-size)];
   }
 
   .dr-layout-switcher-item[data-active="true"] {

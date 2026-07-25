@@ -541,7 +541,7 @@ function Toolbar({
                     className="dr-json-toolbar-clear"
                     onClick={() => onQueryChange("")}
                   >
-                    <X className="h-3.5 w-3.5" />
+                    <X className="size-[var(--icon-size-sm)]" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">Clear search</TooltipContent>
@@ -562,7 +562,7 @@ function Toolbar({
                 className="dr-json-toolbar-action"
                 onClick={expandAll}
               >
-                <ChevronsUpDown className="h-4 w-4" />
+                <ChevronsUpDown className="size-[var(--icon-size)]" />
               </Button>
             </TooltipTrigger>
             <TooltipContent side="bottom">Expand all</TooltipContent>
@@ -576,7 +576,7 @@ function Toolbar({
                 className="dr-json-toolbar-action"
                 onClick={collapseAll}
               >
-                <ChevronsDownUp className="h-4 w-4" />
+                <ChevronsDownUp className="size-[var(--icon-size)]" />
               </Button>
             </TooltipTrigger>
             <TooltipContent side="bottom">Collapse all</TooltipContent>
@@ -785,6 +785,10 @@ function Node({ value, keyName, path, depth }: NodeProps) {
             }}
             className="dr-json-chevron"
           >
+            {/* Pinned literal: .dr-json-chevron (json-tree-view.css) is a
+                fixed h-4 w-4 slot that does not follow the font-size axis;
+                the token's growth leaves almost no margin at
+                large/extra-large. */}
             <ChevronRight
               className={cn(
                 "h-3 w-3 transition-transform",
@@ -826,7 +830,7 @@ function Node({ value, keyName, path, depth }: NodeProps) {
             <CopyButton
               value={path}
               label="Copy path"
-              icon={<Route className="h-3 w-3" />}
+              icon={<Route className="size-[var(--icon-size-xs)]" />}
             />
             <CopyButton
               value={
@@ -837,7 +841,7 @@ function Node({ value, keyName, path, depth }: NodeProps) {
                     : String(value)
               }
               label="Copy value"
-              icon={<Copy className="h-3 w-3" />}
+              icon={<Copy className="size-[var(--icon-size-xs)]" />}
             />
           </span>
         ) : null}

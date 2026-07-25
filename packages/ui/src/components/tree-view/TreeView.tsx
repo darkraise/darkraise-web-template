@@ -622,6 +622,10 @@ function TreeViewNode({ node }: TreeViewNodeProps) {
 }
 
 function DefaultChevron() {
+  // Pinned literal width/height, not --icon-size-sm: rendered inside
+  // .dr-tree-view-branch-indicator's fixed h-4 w-4 slot (tree-view.css),
+  // which does not follow the font-size axis. A scaling token would
+  // overflow the slot at large/extra-large.
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

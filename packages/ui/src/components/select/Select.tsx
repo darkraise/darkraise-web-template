@@ -292,7 +292,10 @@ function SelectTrigger({
       {...rest}
     >
       {children}
-      <ChevronDown className="h-4 w-4 opacity-50" aria-hidden="true" />
+      <ChevronDown
+        className="size-[var(--icon-size)] opacity-50"
+        aria-hidden="true"
+      />
     </Comp>
   )
 }
@@ -588,6 +591,9 @@ function SelectItem({
       {...rest}
     >
       <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+        {/* Pinned literal: bounded by this span's fixed h-3.5 w-3.5 slot,
+            which does not follow the font-size axis. A scaling token would
+            overflow the slot at large/extra-large. */}
         {selected ? <Check className="h-4 w-4" /> : null}
       </span>
       <SelectItemContext.Provider value={itemCtx}>

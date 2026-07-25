@@ -205,7 +205,7 @@ function TimePicker({
           )}
         >
           {value ? displayValue : placeholder}
-          <Clock className="text-muted-foreground ml-2 h-3.5 w-3.5" />
+          <Clock className="text-muted-foreground ml-2 size-[var(--icon-size-sm)]" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto overflow-hidden p-0" align="start">

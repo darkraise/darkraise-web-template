@@ -8,7 +8,7 @@
   }
 
   .dr-accordion-trigger > svg {
-    @apply h-4 w-4 shrink-0 transition-transform duration-200;
+    @apply size-[var(--icon-size)] shrink-0 transition-transform duration-200;
   }
 
   .dr-accordion-trigger[data-state="open"] > svg {

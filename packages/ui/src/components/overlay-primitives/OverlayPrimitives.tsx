@@ -22,14 +22,14 @@ export function OverlayCloseButton({
         className={cn("dr-overlay-close-btn", className)}
         onClick={onClick}
       >
-        <X className="h-4 w-4" />
+        <X className="size-[var(--icon-size)]" />
         <span className="sr-only">Close</span>
       </button>
     )
   }
   return (
     <DialogClose className={cn("dr-overlay-close-btn", className)}>
-      <X className="h-4 w-4" />
+      <X className="size-[var(--icon-size)]" />
       <span className="sr-only">Close</span>
     </DialogClose>
   )

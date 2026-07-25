@@ -235,7 +235,7 @@
      of the accent so the button reads as part of the toast surface rather
      than a generic ghost button. */
   .dr-toast-close {
-    @apply focus-ring absolute top-1.5 right-1.5 inline-flex size-6 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent p-0 opacity-0 transition-[opacity,background-color,color] duration-150 [&_svg]:size-3.5;
+    @apply focus-ring absolute top-1.5 right-1.5 inline-flex size-6 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent p-0 opacity-0 transition-[opacity,background-color,color] duration-150 [&_svg]:size-[var(--icon-size-sm)];
     color: hsl(var(--toast-accent, var(--muted-foreground)) / 0.7);
   }
   .dr-toast-close:hover {

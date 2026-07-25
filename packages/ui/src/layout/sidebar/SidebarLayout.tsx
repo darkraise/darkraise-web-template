@@ -45,9 +45,9 @@ export function SidebarLayout({
                 aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
               >
                 {collapsed ? (
-                  <PanelLeft className="h-4 w-4" />
+                  <PanelLeft className="size-[var(--icon-size)]" />
                 ) : (
-                  <PanelLeftClose className="h-4 w-4" />
+                  <PanelLeftClose className="size-[var(--icon-size)]" />
                 )}
               </Button>
             </div>
