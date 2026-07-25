@@ -1,9 +1,11 @@
 import { describe, it, expect } from "vitest"
 import {
+  addDays,
   buildCalendar,
   defaultThresholds,
   levelFor,
   parseISODate,
+  toDate,
   toISODateKey,
 } from "./buildCalendar"
 import type {
@@ -34,17 +36,63 @@ function calendarFor(
 describe("parseISODate", () => {
   it("parses as a local date, not UTC", () => {
     const date = parseISODate("2026-07-24")
+    // A UTC parse ("2026-07-24T00:00:00Z") and a local parse are the same
+    // instant only at UTC+0 — at every other offset they differ by exactly
+    // the offset, so getTime() is the assertion that can actually fail.
+    // getFullYear/getMonth/getDate can both read back "24" even from a
+    // UTC-parsed instant, depending on which side of Greenwich the runner
+    // is on, so they cannot be trusted alone to catch a regression here.
+    expect(date.getTime()).toBe(new Date(2026, 6, 24).getTime())
     expect(date.getFullYear()).toBe(2026)
     expect(date.getMonth()).toBe(6)
     expect(date.getDate()).toBe(24)
   })
 
   it("round-trips through toISODateKey", () => {
-    expect(toISODateKey(parseISODate("2026-01-05"))).toBe("2026-01-05")
+    const parsed = parseISODate("2026-01-05")
+    // Same reasoning as above: pin the parsed instant down first so this
+    // test cannot pass merely because the runner's offset happens to mask
+    // a UTC-parse regression.
+    expect(parsed.getTime()).toBe(new Date(2026, 0, 5).getTime())
+    expect(toISODateKey(parsed)).toBe("2026-01-05")
   })
 
   it("rejects a malformed date", () => {
     expect(() => parseISODate("24/07/2026")).toThrow(/YYYY-MM-DD/)
+  })
+})
+
+describe("toDate", () => {
+  it("parses a string input the same way parseISODate does", () => {
+    // Compared against a directly-constructed local date rather than
+    // parseISODate's own output, so this cannot pass by both sides sharing
+    // the same regression.
+    expect(toDate("2026-07-24").getTime()).toBe(new Date(2026, 6, 24).getTime())
+  })
+
+  it("normalizes a Date input to local midnight", () => {
+    const withTime = new Date(2026, 6, 24, 15, 30, 45)
+    const normalized = toDate(withTime)
+    expect(normalized.getFullYear()).toBe(2026)
+    expect(normalized.getMonth()).toBe(6)
+    expect(normalized.getDate()).toBe(24)
+    expect(normalized.getHours()).toBe(0)
+    expect(normalized.getMinutes()).toBe(0)
+    expect(normalized.getSeconds()).toBe(0)
+  })
+})
+
+describe("addDays", () => {
+  it("adds days and crosses a month boundary", () => {
+    const result = addDays(parseISODate("2026-01-31"), 1)
+    expect(toISODateKey(result)).toBe("2026-02-01")
+  })
+
+  it("does not mutate the input date", () => {
+    const original = parseISODate("2026-07-24")
+    const originalTime = original.getTime()
+    addDays(original, 5)
+    expect(original.getTime()).toBe(originalTime)
   })
 })
 
@@ -171,6 +219,25 @@ describe("buildCalendar", () => {
     // A four-day range at the end of July never spans two week columns.
     const calendar = calendarFor("2026-07-27", "2026-07-30")
     expect(calendar.monthLabels).toEqual([])
+  })
+
+  it("honours explicit thresholds passed to buildCalendar", () => {
+    const calendar = calendarFor(
+      "2026-07-20",
+      "2026-07-26",
+      { "2026-07-22": 3, "2026-07-23": 9 },
+      { thresholds: [1, 3, 6, 9] },
+    )
+    const cells = calendar.weeks.flat().filter(Boolean)
+    const first = cells.find(
+      (cell) => cell?.key === "2026-07-22",
+    ) as ContributionGraphCell
+    const second = cells.find(
+      (cell) => cell?.key === "2026-07-23",
+    ) as ContributionGraphCell
+    expect(calendar.thresholds).toEqual([1, 3, 6, 9])
+    expect(first.level).toBe(2)
+    expect(second.level).toBe(4)
   })
 
   it("sets weekIndex and dayIndex to the cell's grid position", () => {
