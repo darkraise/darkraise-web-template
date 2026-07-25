@@ -240,3 +240,21 @@ describe("ThemeSwitcher preset section", () => {
     expect(screen.getByText("Glow")).toBeInTheDocument()
   })
 })
+
+describe("ThemeSwitcher font size section", () => {
+  beforeEach(() => {
+    vi.stubGlobal("localStorage", storageMock)
+    storageMock.clear()
+    mockMatchMedia()
+  })
+
+  it("renders a Font Size section", () => {
+    render(
+      <ThemeProvider>
+        <ThemeSwitcher />
+      </ThemeProvider>,
+    )
+    fireEvent.click(screen.getByRole("button", { name: /customize theme/i }))
+    expect(screen.getByText("Font Size")).toBeInTheDocument()
+  })
+})

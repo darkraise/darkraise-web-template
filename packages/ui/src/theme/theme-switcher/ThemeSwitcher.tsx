@@ -14,6 +14,7 @@ import {
   DENSITIES,
   ELEVATIONS,
   RADII,
+  FONT_SIZES,
 } from "@theme/types"
 import type {
   Mode,
@@ -103,6 +104,7 @@ export function ThemeSwitcher() {
     elevation,
     buttonElevation,
     radius,
+    fontSize,
     config,
     activePreset,
     presetAxisValues,
@@ -117,6 +119,7 @@ export function ThemeSwitcher() {
     setElevation,
     setButtonElevation,
     setRadius,
+    setFontSize,
     setPresetAxis,
   } = useTheme()
 
@@ -327,6 +330,16 @@ export function ThemeSwitcher() {
       <div key="density" className="dr-theme-switcher-row">
         <Label className="dr-theme-switcher-section-label">Density</Label>
         <AxisControl values={DENSITIES} value={density} onChange={setDensity} />
+      </div>
+    ),
+    axes.fontSize && !isCommonAxisHidden("fontSize") && (
+      <div key="fontSize" className="dr-theme-switcher-row">
+        <Label className="dr-theme-switcher-section-label">Font Size</Label>
+        <AxisControl
+          values={FONT_SIZES}
+          value={fontSize}
+          onChange={setFontSize}
+        />
       </div>
     ),
     axes.elevation && !isCommonAxisHidden("elevation") && (
