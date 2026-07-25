@@ -127,3 +127,34 @@ describe("font-size axis", () => {
     }
   })
 })
+
+describe("density and font-size composition", () => {
+  function densityBlockBody(step: string): string {
+    const match = themeCss.match(
+      new RegExp(`\\[data-density="${step}"\\]\\s*\\{([^}]*)\\}`),
+    )
+    if (!match?.[1]) {
+      throw new Error(`No [data-density="${step}"] block found in theme.css`)
+    }
+    return match[1]
+  }
+
+  it("derives --density-cell from --density-cell-base and --control-scale", () => {
+    expect(themeCss).toMatch(
+      /--density-cell:\s*calc\(\s*var\(--density-cell-base\)\s*\*\s*var\(--control-scale\)\s*\)/,
+    )
+  })
+
+  it("declares a neutral --control-scale default on :root", () => {
+    expect(themeCss).toMatch(/--control-scale:\s*1;/)
+  })
+
+  it.each(["compact", "comfortable", "spacious"])(
+    "%s re-binds --density-cell-base, not --density-cell",
+    (step) => {
+      const body = densityBlockBody(step)
+      expect(body).toMatch(/--density-cell-base:/)
+      expect(body).not.toMatch(/--density-cell:/)
+    },
+  )
+})
