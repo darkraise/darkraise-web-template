@@ -19,6 +19,7 @@ Once added, the new `fontSize: "medium"` default renders exactly as before.
 - Icon-size token ladder (`--icon-size-2xs` through `--icon-size-3xl`), derived from `--icon-scale`, that every library-owned SVG glyph now reads so icons stay visually matched to the text beside them. Glyphs bound by fixed control geometry — the Checkbox check, the RadioGroup dot, menu-item indicators — deliberately stay pinned, since their containers don't grow.
 - Minimum control heights that grow at the two larger `fontSize` steps via a base/derived split (`--density-cell-base` × `--control-scale`), letting the density and font-size axes compose instead of overwriting each other.
 - `ThemeSwitcher` font-size control, first-paint restoration in the template app, and `create-app --font-size` scaffolding support.
+- `Timeline` compound component: vertical event rail with `complete`, `current`, and `upcoming` statuses, solid or dashed connectors, an opposite-side timestamp slot, and an alternating variant that collapses to a single rail below 640px.
 
 ## [3.0.0] — 2026-05-07
 
