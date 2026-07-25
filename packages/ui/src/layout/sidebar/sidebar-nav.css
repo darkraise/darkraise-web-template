@@ -24,19 +24,28 @@
     @apply flex min-h-[var(--density-cell)] items-center gap-3 rounded-md p-[var(--density-row-py)] text-sm transition-colors duration-150;
   }
 
-  .dr-sidebar-nav-link[data-collapsed="true"] {
-    /* Keep the base symmetric `p-[var(--density-row-py)]`. Combined with
-     * `w-[var(--density-cell)]` and `min-h-[var(--density-cell)]`, this
-     * keeps icon-only items perfectly square at every density level. */
-    @apply mx-auto w-[var(--density-cell)] justify-center;
-  }
-
   .dr-sidebar-nav-link:not([data-collapsed="true"]) {
     /* Expanded rows breathe more vertically than dense table rows do — the
      * +2px lift on the Y padding (X still tracks density) gives the icon +
      * label + optional badge enough room without disturbing the collapsed
      * square. */
     @apply w-full py-[calc(var(--density-row-py)+0.125rem)];
+  }
+
+  /* Icon-only square, keyed off the nav wrapper as well as the item. The
+   * item's own `data-collapsed` reaches the anchor only when the consumer's
+   * router adapter spreads its rest props: `data-*` is not part of
+   * `RouterLinkProps`, so a conforming Link (this package's StubLink
+   * included) may drop it, leaving the item on the expanded `w-full`
+   * branch above as a full-width pill. The nav wrapper is rendered by this
+   * package, so its attribute always lands. It must stay ordered after the
+   * expanded rule, which still matches whenever the item attribute went
+   * missing — hence the `py-` restatement of the base symmetric padding,
+   * which together with `min-h-[var(--density-cell)]` keeps the item square
+   * at every density level. */
+  .dr-sidebar-nav-link[data-collapsed="true"],
+  .dr-sidebar-nav[data-collapsed="true"] .dr-sidebar-nav-link {
+    @apply mx-auto w-[var(--density-cell)] justify-center py-[var(--density-row-py)];
   }
 
   .dr-sidebar-nav-link[data-depth="nested"] {
