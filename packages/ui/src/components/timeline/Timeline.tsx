@@ -33,6 +33,7 @@ function useTimelineContext(part: string): TimelineContextValue {
 
 interface TimelineItemContextValue {
   status?: TimelineItemStatus
+  side?: TimelineItemSide
 }
 
 const TimelineItemContext =
@@ -50,6 +51,7 @@ export interface TimelineProps extends React.HTMLAttributes<HTMLOListElement> {
   variant?: TimelineVariant
 }
 
+/** `TimelineItem` children must be direct children of this `<ol>` — the grid and `:has()` selectors in the component CSS are scoped with child combinators. */
 function Timeline({
   className,
   variant = "default",
@@ -82,6 +84,12 @@ export interface TimelineItemProps extends React.LiHTMLAttributes<HTMLLIElement>
   side?: TimelineItemSide
 }
 
+/**
+ * All timeline parts (`TimelineIndicator`, `TimelineConnector`, etc.) must be
+ * rendered as direct children of `TimelineItem` — the component CSS scopes
+ * every rule with child combinators, so an intermediate wrapper element
+ * silently drops the layout.
+ */
 function TimelineItem({
   className,
   status,
@@ -91,8 +99,8 @@ function TimelineItem({
 }: TimelineItemProps) {
   const { variant } = useTimelineContext("TimelineItem")
   const ctx = React.useMemo<TimelineItemContextValue>(
-    () => ({ status }),
-    [status],
+    () => ({ status, side }),
+    [status, side],
   )
   return (
     <li
@@ -193,6 +201,9 @@ function TimelineDescription({
 
 export type TimelineTimeProps = React.TimeHTMLAttributes<HTMLTimeElement>
 
+// Deliberately does not require the item context: it's a leaf formatting
+// element (a styled <time>) that is useful in a meta slot, in content, or on
+// its own, and it has no status of its own to reflect.
 function TimelineTime({ className, ...props }: TimelineTimeProps) {
   return <time className={cn("dr-timeline-time", className)} {...props} />
 }

@@ -16,7 +16,7 @@
      templates is a single rule change instead of one override per part. */
   .dr-timeline-item {
     @apply relative grid;
-    grid-template-columns: [meta] 0 [rail] auto [content] 1fr;
+    grid-template-columns: [meta rail] auto [content] 1fr;
     grid-template-rows: auto 1fr;
     column-gap: var(--timeline-column-gap);
   }
@@ -56,12 +56,12 @@
     height: var(--icon-size-sm, 0.875rem);
   }
 
-  .dr-timeline-indicator[data-status="complete"],
-  .dr-timeline-indicator[data-status="current"] {
+  .dr-timeline-indicator[data-status="complete"] {
     @apply bg-primary border-primary text-primary-foreground;
   }
 
   .dr-timeline-indicator[data-status="current"] {
+    @apply border-primary bg-primary/20 text-primary;
     box-shadow: var(--affordance-glow);
   }
 
@@ -79,7 +79,7 @@
   }
 
   .dr-timeline-connector[data-variant="dashed"] {
-    @apply bg-transparent;
+    @apply text-border bg-transparent;
     background-image: repeating-linear-gradient(
       to bottom,
       currentColor 0 0.25rem,
@@ -89,11 +89,6 @@
 
   .dr-timeline-connector[data-variant="dashed"][data-status="complete"] {
     @apply text-primary;
-  }
-
-  .dr-timeline-connector[data-variant="dashed"][data-status="current"],
-  .dr-timeline-connector[data-variant="dashed"][data-status="upcoming"] {
-    @apply text-border;
   }
 
   .dr-timeline-content {
@@ -222,7 +217,7 @@
      same specificity as the rules they override. */
   @media (width < 40rem) {
     .dr-timeline[data-variant="alternating"] > .dr-timeline-item {
-      grid-template-columns: [meta] 0 [rail] auto [content] 1fr;
+      grid-template-columns: [meta rail] auto [content] 1fr;
     }
 
     .dr-timeline[data-variant="alternating"]:has(

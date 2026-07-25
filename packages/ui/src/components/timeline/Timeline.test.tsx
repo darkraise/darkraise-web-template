@@ -47,8 +47,14 @@ function Basic({
 describe("Timeline", () => {
   it("renders an ordered list with one item per event", () => {
     render(<Basic />)
-    expect(screen.getByRole("list")).toHaveClass("dr-timeline")
-    expect(screen.getAllByRole("listitem")).toHaveLength(3)
+    const list = screen.getByRole("list")
+    expect(list).toHaveClass("dr-timeline")
+    expect(list.tagName).toBe("OL")
+    const items = screen.getAllByRole("listitem")
+    expect(items).toHaveLength(3)
+    for (const item of items) {
+      expect(item.tagName).toBe("LI")
+    }
   })
 
   it("reflects the variant on the root", () => {
