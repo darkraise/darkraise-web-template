@@ -22,8 +22,13 @@
   }
 
   /* One item using a meta slot widens the meta column for EVERY item, so
-     timestamps line up in their own column instead of ragging per item. */
-  .dr-timeline:has(.dr-timeline-meta) .dr-timeline-item {
+     timestamps line up in their own column instead of ragging per item.
+     Every combinator here is a child combinator, not descendant: a nested
+     <Timeline> inside a TimelineContent is a separate component instance
+     with its own <ol>/<li>/meta, and must not be pulled into this one's
+     :has() check or grid template just because it lives in the subtree. */
+  .dr-timeline:has(> .dr-timeline-item > .dr-timeline-meta)
+    > .dr-timeline-item {
     grid-template-columns:
       [meta] var(--timeline-meta-width)
       [rail] auto
@@ -99,12 +104,16 @@
   }
 
   /* The last event ends the rail; consumers render a connector in every
-     item and never have to write a length check. */
-  .dr-timeline-item:last-child .dr-timeline-connector {
+     item and never have to write a length check. Child combinator, not
+     descendant: TimelineConnector/TimelineContent are always a direct
+     child of their own <li>, so this must not reach into a nested
+     <Timeline>'s connectors/content when the outer item that contains it
+     happens to be last-child. */
+  .dr-timeline-item:last-child > .dr-timeline-connector {
     @apply hidden;
   }
 
-  .dr-timeline-item:last-child .dr-timeline-content {
+  .dr-timeline-item:last-child > .dr-timeline-content {
     padding-bottom: 0;
   }
 
@@ -131,35 +140,47 @@
 
   /* --- Alternating variant ------------------------------------------- */
 
-  .dr-timeline[data-variant="alternating"] .dr-timeline-item,
-  .dr-timeline[data-variant="alternating"]:has(.dr-timeline-meta)
-    .dr-timeline-item {
+  /* Every selector in this section uses a child combinator between
+     .dr-timeline-item and its part, and between .dr-timeline and the
+     item itself. A nested <Timeline> placed inside a TimelineContent is
+     a separate component instance: its <ol>/<li>/parts are descendants
+     of the outer .dr-timeline too, so a plain descendant combinator here
+     would reach past the nested timeline's own boundary and apply the
+     OUTER variant's grid template, column, and alignment rules to the
+     INNER timeline's items — even when the inner timeline uses a
+     different variant. Child combinators keep every rule scoped to the
+     timeline/item that actually owns the part. */
+  .dr-timeline[data-variant="alternating"] > .dr-timeline-item,
+  .dr-timeline[data-variant="alternating"]:has(
+      > .dr-timeline-item > .dr-timeline-meta
+    )
+    > .dr-timeline-item {
     grid-template-columns: [start] 1fr [rail] auto [end] 1fr;
   }
 
   .dr-timeline[data-variant="alternating"]
-    .dr-timeline-item:nth-child(odd)
-    .dr-timeline-content {
+    > .dr-timeline-item:nth-child(odd)
+    > .dr-timeline-content {
     grid-column: end;
   }
 
   .dr-timeline[data-variant="alternating"]
-    .dr-timeline-item:nth-child(odd)
-    .dr-timeline-meta {
+    > .dr-timeline-item:nth-child(odd)
+    > .dr-timeline-meta {
     @apply text-right;
     grid-column: start;
   }
 
   .dr-timeline[data-variant="alternating"]
-    .dr-timeline-item:nth-child(even)
-    .dr-timeline-content {
+    > .dr-timeline-item:nth-child(even)
+    > .dr-timeline-content {
     @apply items-end text-right;
     grid-column: start;
   }
 
   .dr-timeline[data-variant="alternating"]
-    .dr-timeline-item:nth-child(even)
-    .dr-timeline-meta {
+    > .dr-timeline-item:nth-child(even)
+    > .dr-timeline-meta {
     @apply text-left;
     grid-column: end;
   }
@@ -168,29 +189,29 @@
      (0,5,0) — these rules win on source order, so they must stay below
      the nth-child rules above. */
   .dr-timeline[data-variant="alternating"]
-    .dr-timeline-item[data-side="start"]
-    .dr-timeline-content {
+    > .dr-timeline-item[data-side="start"]
+    > .dr-timeline-content {
     @apply items-end text-right;
     grid-column: start;
   }
 
   .dr-timeline[data-variant="alternating"]
-    .dr-timeline-item[data-side="start"]
-    .dr-timeline-meta {
+    > .dr-timeline-item[data-side="start"]
+    > .dr-timeline-meta {
     @apply text-left;
     grid-column: end;
   }
 
   .dr-timeline[data-variant="alternating"]
-    .dr-timeline-item[data-side="end"]
-    .dr-timeline-content {
+    > .dr-timeline-item[data-side="end"]
+    > .dr-timeline-content {
     @apply items-start text-left;
     grid-column: end;
   }
 
   .dr-timeline[data-variant="alternating"]
-    .dr-timeline-item[data-side="end"]
-    .dr-timeline-meta {
+    > .dr-timeline-item[data-side="end"]
+    > .dr-timeline-meta {
     @apply text-right;
     grid-column: start;
   }
@@ -200,12 +221,14 @@
      matches every item and only exists to raise these selectors to the
      same specificity as the rules they override. */
   @media (width < 40rem) {
-    .dr-timeline[data-variant="alternating"] .dr-timeline-item {
+    .dr-timeline[data-variant="alternating"] > .dr-timeline-item {
       grid-template-columns: [meta] 0 [rail] auto [content] 1fr;
     }
 
-    .dr-timeline[data-variant="alternating"]:has(.dr-timeline-meta)
-      .dr-timeline-item {
+    .dr-timeline[data-variant="alternating"]:has(
+        > .dr-timeline-item > .dr-timeline-meta
+      )
+      > .dr-timeline-item {
       grid-template-columns:
         [meta] var(--timeline-meta-width)
         [rail] auto
@@ -213,21 +236,21 @@
     }
 
     .dr-timeline[data-variant="alternating"]
-      .dr-timeline-item:nth-child(n)
-      .dr-timeline-content,
+      > .dr-timeline-item:nth-child(n)
+      > .dr-timeline-content,
     .dr-timeline[data-variant="alternating"]
-      .dr-timeline-item[data-side]
-      .dr-timeline-content {
+      > .dr-timeline-item[data-side]
+      > .dr-timeline-content {
       @apply items-start text-left;
       grid-column: content;
     }
 
     .dr-timeline[data-variant="alternating"]
-      .dr-timeline-item:nth-child(n)
-      .dr-timeline-meta,
+      > .dr-timeline-item:nth-child(n)
+      > .dr-timeline-meta,
     .dr-timeline[data-variant="alternating"]
-      .dr-timeline-item[data-side]
-      .dr-timeline-meta {
+      > .dr-timeline-item[data-side]
+      > .dr-timeline-meta {
       @apply text-right;
       grid-column: meta;
     }

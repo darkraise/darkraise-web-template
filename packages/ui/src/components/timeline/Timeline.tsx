@@ -181,7 +181,14 @@ function TimelineDescription({
   className,
   ...props
 }: TimelineDescriptionProps) {
-  return <p className={cn("dr-timeline-description", className)} {...props} />
+  const { status } = useTimelineItemContext("TimelineDescription")
+  return (
+    <p
+      data-status={status}
+      className={cn("dr-timeline-description", className)}
+      {...props}
+    />
+  )
 }
 
 export type TimelineTimeProps = React.TimeHTMLAttributes<HTMLTimeElement>

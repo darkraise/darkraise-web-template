@@ -77,6 +77,10 @@ describe("Timeline", () => {
       "data-status",
       "complete",
     )
+    expect(first.querySelector(".dr-timeline-description")).toHaveAttribute(
+      "data-status",
+      "complete",
+    )
   })
 
   it("marks only the current item with aria-current", () => {
@@ -89,7 +93,9 @@ describe("Timeline", () => {
 
   it("exposes the status as text for screen readers", () => {
     render(<Basic />)
+    expect(screen.getByText("Completed")).toHaveClass("dr-timeline-status-text")
     expect(screen.getByText("Current")).toHaveClass("dr-timeline-status-text")
+    expect(screen.getByText("Upcoming")).toHaveClass("dr-timeline-status-text")
   })
 
   it("hides decorative parts from the accessibility tree", () => {
@@ -182,6 +188,75 @@ describe("Timeline", () => {
     expect(() => render(<TimelineIndicator />)).toThrow(
       /must be used within a <TimelineItem>/,
     )
+    expect(() => render(<TimelineConnector />)).toThrow(
+      /must be used within a <TimelineItem>/,
+    )
+    expect(() => render(<TimelineContent />)).toThrow(
+      /must be used within a <TimelineItem>/,
+    )
+    expect(() => render(<TimelineTitle />)).toThrow(
+      /must be used within a <TimelineItem>/,
+    )
+    expect(() => render(<TimelineDescription />)).toThrow(
+      /must be used within a <TimelineItem>/,
+    )
+    expect(() => render(<TimelineMeta />)).toThrow(
+      /must be used within a <TimelineItem>/,
+    )
     spy.mockRestore()
+  })
+
+  it("keeps a nested timeline's connector a direct child of its own item", () => {
+    // Regression test for a leak where the CSS hid a nested timeline's
+    // connectors: `.dr-timeline-item:last-child .dr-timeline-connector`
+    // used a descendant combinator, so when the outer item that happens to
+    // be last-child contains a nested <Timeline>, the rule reached past the
+    // nested timeline's own boundary and matched its connectors too. The
+    // fix (child combinator: `:last-child > .dr-timeline-connector`) relies
+    // on TimelineConnector always being a direct child of its own <li>; this
+    // test only proves that DOM invariant holds when a <Timeline> is nested
+    // inside another item's content. It cannot assert the CSS rule itself
+    // (jsdom does not load component CSS) — that was verified visually,
+    // via a real-browser check of both the buggy and fixed selectors.
+    render(
+      <Timeline>
+        <TimelineItem status="complete">
+          <TimelineIndicator />
+          <TimelineConnector />
+          <TimelineContent>
+            <TimelineTitle>Group</TimelineTitle>
+            <Timeline>
+              <TimelineItem status="complete">
+                <TimelineIndicator />
+                <TimelineConnector />
+                <TimelineContent>
+                  <TimelineTitle>Nested first</TimelineTitle>
+                </TimelineContent>
+              </TimelineItem>
+              <TimelineItem status="current">
+                <TimelineIndicator />
+                <TimelineConnector />
+                <TimelineContent>
+                  <TimelineTitle>Nested last</TimelineTitle>
+                </TimelineContent>
+              </TimelineItem>
+            </Timeline>
+          </TimelineContent>
+        </TimelineItem>
+      </Timeline>,
+    )
+
+    const lists = screen.getAllByRole("list")
+    expect(lists).toHaveLength(2)
+    const nestedList = lists[1] as HTMLElement
+    const nestedItems = Array.from(nestedList.children) as HTMLElement[]
+    expect(nestedItems).toHaveLength(2)
+
+    for (const item of nestedItems) {
+      const connector = item.querySelector(
+        ".dr-timeline-connector",
+      ) as HTMLElement
+      expect(connector.parentElement).toBe(item)
+    }
   })
 })
