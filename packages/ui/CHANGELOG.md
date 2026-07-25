@@ -20,6 +20,7 @@ Once added, the new `fontSize: "medium"` default renders exactly as before.
 - Minimum control heights that grow at the two larger `fontSize` steps via a base/derived split (`--density-cell-base` × `--control-scale`), letting the density and font-size axes compose instead of overwriting each other.
 - `ThemeSwitcher` font-size control, first-paint restoration in the template app, and `create-app --font-size` scaffolding support.
 - `Timeline` compound component: vertical event rail with `complete`, `current`, and `upcoming` statuses, solid or dashed connectors, an opposite-side timestamp slot, and an alternating variant that collapses to a single rail below 640px.
+- `ContributionGraph`: GitHub-style calendar heatmap with configurable date range, week start, and intensity thresholds. Ships month and weekday labels (crowded labels suppressed), a legend, a shared hover tooltip, click handling, and arrow-key navigation. Intensity colours derive from `--primary`, so the ramp follows the accent colour and every preset. Any non-zero value lands on at least level 1, so a single contribution never renders as empty.
 
 ## [3.0.0] — 2026-05-07
 
