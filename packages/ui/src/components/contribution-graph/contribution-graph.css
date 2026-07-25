@@ -12,14 +12,17 @@
     gap: var(--contrib-cell-gap);
   }
 
-  /* Two columns (weekday gutter | grid) by two rows (months | grid). A
-     hidden section collapses its own track, so nothing needs a hardcoded
-     offset to stay aligned. `relative` anchors the tooltip, which is
-     absolutely placed from a cell's offsetLeft/offsetTop. */
+  /* Two columns (weekday gutter | grid) by two rows (months | grid). An
+     empty track (no section rendered into it) auto-sizes to zero on its
+     own, but a `gap` on the grid itself applies between tracks regardless
+     of whether they hold content — so the spacing that separates the
+     months/weekdays sections from the grid lives on those sections
+     (margin) instead, and disappears along with them when hidden.
+     `relative` anchors the tooltip, which is absolutely placed from a
+     cell's offsetLeft/offsetTop. */
   .dr-contribution-graph-body {
     @apply relative grid;
     grid-template-columns: auto 1fr;
-    gap: var(--contrib-cell-gap);
   }
 
   .dr-contribution-graph-months {
@@ -29,6 +32,7 @@
     /* grid-template-columns is set inline: the track count is the number of
        week columns, which only the component knows. */
     column-gap: var(--contrib-cell-gap);
+    margin-bottom: var(--contrib-cell-gap);
   }
 
   .dr-contribution-graph-weekdays {
@@ -36,6 +40,7 @@
     grid-column: 1;
     grid-row: 2;
     gap: var(--contrib-cell-gap);
+    margin-right: var(--contrib-cell-gap);
   }
 
   .dr-contribution-graph-weekdays > span {

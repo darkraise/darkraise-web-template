@@ -74,9 +74,32 @@ describe("ContributionGraph", () => {
 
   it("makes exactly one cell tabbable at rest", () => {
     renderGraph()
-    expect(
-      cells().filter((c) => c.getAttribute("tabindex") === "0"),
-    ).toHaveLength(1)
+    const tabbable = cells().filter((c) => c.getAttribute("tabindex") === "0")
+    expect(tabbable).toHaveLength(1)
+    // The first in-range day is 2026-07-20 (2026-07-19 is padding), so it's
+    // the cell the roving tabindex should land on before any focus/arrow.
+    expect(tabbable[0]).toBe(cellFor("2026-07-20"))
+  })
+
+  it("keeps exactly one cell tabbable after the range changes while focused", () => {
+    const { rerender } = renderGraph()
+    const monday = cellFor("2026-07-20")
+    monday.focus()
+    expect(document.activeElement).toBe(monday)
+
+    // 2026-01-06 is a Tuesday and the range is a single day, so the new
+    // calendar has no cell at week 0 / weekday 1 (Monday) — the grid
+    // position the old focus pointed at no longer exists.
+    rerender(
+      <ContributionGraph
+        startDate="2026-01-06"
+        endDate="2026-01-06"
+        data={data}
+      />,
+    )
+    const tabbable = cells().filter((c) => c.getAttribute("tabindex") === "0")
+    expect(tabbable).toHaveLength(1)
+    expect(tabbable[0]).toBe(cellFor("2026-01-06"))
   })
 
   it("moves focus by a week with ArrowRight and by a day with ArrowDown", () => {
@@ -110,6 +133,43 @@ describe("ContributionGraph", () => {
     expect(document.activeElement).toHaveAttribute("data-date", "2026-07-20")
   })
 
+  it("does not move right past the last week column", () => {
+    renderGraph()
+    // 2026-08-02 is the sole cell in week 2, the last week column.
+    const lastDay = cellFor("2026-08-02")
+    lastDay.focus()
+    fireEvent.keyDown(lastDay, { key: "ArrowRight" })
+    expect(document.activeElement).toBe(lastDay)
+  })
+
+  it("does not move up past the top weekday row", () => {
+    renderGraph()
+    // 2026-07-26 is a Sunday, the top row (weekday index 0).
+    const sunday = cellFor("2026-07-26")
+    sunday.focus()
+    fireEvent.keyDown(sunday, { key: "ArrowUp" })
+    expect(document.activeElement).toBe(sunday)
+  })
+
+  it("does not move down past the bottom weekday row", () => {
+    renderGraph()
+    // 2026-08-01 is a Saturday, the bottom row (weekday index 6).
+    const saturday = cellFor("2026-08-01")
+    saturday.focus()
+    fireEvent.keyDown(saturday, { key: "ArrowDown" })
+    expect(document.activeElement).toBe(saturday)
+  })
+
+  it("Home skips a padding cell to reach the row's first real day", () => {
+    renderGraph()
+    // Weekday row 0 (Sunday) has a padding cell in week 0 (2026-07-19 is
+    // before the range) — its first real day is week 1's 2026-07-26.
+    const secondSunday = cellFor("2026-08-02")
+    secondSunday.focus()
+    fireEvent.keyDown(secondSunday, { key: "Home" })
+    expect(document.activeElement).toHaveAttribute("data-date", "2026-07-26")
+  })
+
   it("fires onCellClick for a click and for Enter", () => {
     const onCellClick = vi.fn()
     renderGraph({ onCellClick })
@@ -129,6 +189,15 @@ describe("ContributionGraph", () => {
     fireEvent.pointerEnter(monday)
     expect(screen.getAllByRole("tooltip")).toHaveLength(1)
     fireEvent.pointerLeave(monday)
+    expect(screen.queryAllByRole("tooltip")).toHaveLength(0)
+  })
+
+  it("clears the tooltip when the focused cell blurs", () => {
+    renderGraph()
+    const monday = cellFor("2026-07-20")
+    fireEvent.focus(monday)
+    expect(screen.getAllByRole("tooltip")).toHaveLength(1)
+    fireEvent.blur(monday)
     expect(screen.queryAllByRole("tooltip")).toHaveLength(0)
   })
 

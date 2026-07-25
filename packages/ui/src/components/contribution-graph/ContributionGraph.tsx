@@ -105,7 +105,24 @@ function ContributionGraph({
     return cell ? cellId(cell) : null
   }, [calendar])
 
-  const activeId = focusedId ?? firstCellId
+  // `calendar` is rebuilt whenever the date range or bucketing options
+  // change, so a previously focused week/day position may no longer exist.
+  // Validating against the current calendar (rather than trusting whatever
+  // `focusedId` was set to) keeps exactly one cell tabbable even after the
+  // grid reshapes out from under the focused cell.
+  const validCellIds = React.useMemo(
+    () =>
+      new Set(
+        calendar.weeks
+          .flat()
+          .filter((cell): cell is ContributionGraphCell => Boolean(cell))
+          .map(cellId),
+      ),
+    [calendar],
+  )
+
+  const activeId =
+    focusedId !== null && validCellIds.has(focusedId) ? focusedId : firstCellId
 
   const focusCell = React.useCallback((cell: ContributionGraphCell) => {
     const id = cellId(cell)
