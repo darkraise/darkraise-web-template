@@ -12,6 +12,7 @@ import { Checkbox } from "@components/checkbox"
 import { useControllableState, useId } from "@primitives/state"
 import { contentKey } from "./contentKey"
 import { formatBucketLabel, toBucketDate } from "./labels"
+import { mountedCellRange } from "./mountRange"
 import { useBucketItems } from "./useBucketItems"
 import { useBucketLayout } from "./useBucketLayout"
 import { useBucketWindow } from "./useBucketWindow"
@@ -223,28 +224,31 @@ export function VirtualizedTimeline<T>({
 
   // Spans loaded buckets only: an unloaded bucket's item ids are not knowable
   // from a count, so it contributes nothing to the flat ordered list.
-  const orderedIds = React.useMemo(() => {
-    const ids: string[] = []
-    for (const bucket of buckets) {
-      const items = bucketItems.get(bucket.id).items
-      if (!items) continue
-      items.forEach((item, index) => ids.push(getItemId(item, index, bucket)))
-    }
-    return ids
-  }, [buckets, bucketItems, getItemId])
+  const buildIdList = React.useCallback(
+    (skipBucket: (bucket: TimelineBucket<T>) => boolean) => {
+      const ids: string[] = []
+      for (const bucket of buckets) {
+        if (skipBucket(bucket)) continue
+        const items = bucketItems.get(bucket.id).items
+        if (!items) continue
+        items.forEach((item, index) => ids.push(getItemId(item, index, bucket)))
+      }
+      return ids
+    },
+    [buckets, bucketItems, getItemId],
+  )
+
+  const orderedIds = React.useMemo(
+    () => buildIdList(() => false),
+    [buildIdList],
+  )
 
   // Like `orderedIds`, but skipping collapsed buckets: a collapsed bucket's
   // cells never mount, so focus sent there could never land.
-  const navigableIds = React.useMemo(() => {
-    const ids: string[] = []
-    for (const bucket of buckets) {
-      if (collapsedIds.has(bucket.id)) continue
-      const items = bucketItems.get(bucket.id).items
-      if (!items) continue
-      items.forEach((item, index) => ids.push(getItemId(item, index, bucket)))
-    }
-    return ids
-  }, [buckets, bucketItems, collapsedIds, getItemId])
+  const navigableIds = React.useMemo(
+    () => buildIdList((bucket) => collapsedIds.has(bucket.id)),
+    [buildIdList, collapsedIds],
+  )
 
   const selection = useTimelineSelection({
     orderedIds,
@@ -307,17 +311,42 @@ export function VirtualizedTimeline<T>({
   // below focuses it once it is.
   const pendingFocus = React.useRef<PendingFocusTarget | null>(null)
 
-  const activeId =
-    activeItemId && navigableIds.includes(activeItemId)
-      ? activeItemId
-      : (navigableIds[0] ?? null)
+  const locateItem = React.useCallback(
+    (id: string): { bucketIndex: number; itemIndex: number } | null => {
+      for (
+        let bucketIndex = 0;
+        bucketIndex < buckets.length;
+        bucketIndex += 1
+      ) {
+        const bucket = buckets[bucketIndex]!
+        if (collapsedIds.has(bucket.id)) continue
+        const items = bucketItems.get(bucket.id).items
+        if (!items) continue
+        for (let itemIndex = 0; itemIndex < items.length; itemIndex += 1) {
+          if (getItemId(items[itemIndex]!, itemIndex, bucket) === id) {
+            return { bucketIndex, itemIndex }
+          }
+        }
+      }
+      return null
+    },
+    [buckets, bucketItems, collapsedIds, getItemId],
+  )
 
-  // The active item can scroll out of the mounted set; without a mounted
-  // fallback the whole timeline would drop out of the tab order until it
-  // scrolled back in.
+  const activeId =
+    activeItemId && navigableIds.includes(activeItemId) ? activeItemId : null
+
+  // Keeps the active cell renderable even when scrolled out of the window:
+  // unmounting the element holding DOM focus drops focus to <body>, and the
+  // next Tab would restart from the top of the page.
+  const pinned = activeId ? locateItem(activeId) : null
+
   const tabStopId = React.useMemo(() => {
-    if (activeId === null) return null
-    let fallback: string | null = null
+    // The active cell is always rendered — pinned into the mount set when it
+    // falls outside the window — so it can always hold the tab stop.
+    if (activeId) return activeId
+    // Before any keyboard interaction, the first mounted cell takes the tab
+    // stop so tabbing in lands on something visible.
     for (
       let index = timelineWindow.startIndex;
       index <= timelineWindow.endIndex;
@@ -328,18 +357,18 @@ export function VirtualizedTimeline<T>({
       const range = timelineWindow.rows.get(index)
       const items = bucketItems.get(bucket.id).items
       if (!range || !items) continue
-      const first = range.startRow * layout.columns
-      const last =
-        Math.min(bucket.count, (range.endRow + 1) * layout.columns) - 1
+      const { first, last } = mountedCellRange(
+        bucket.count,
+        layout.columns,
+        range,
+      )
       for (let itemIndex = first; itemIndex <= last; itemIndex += 1) {
         const item = items[itemIndex]
         if (item === undefined) continue
-        const id = getItemId(item, itemIndex, bucket)
-        if (id === activeId) return activeId
-        fallback ??= id
+        return getItemId(item, itemIndex, bucket)
       }
     }
-    return fallback
+    return null
   }, [
     activeId,
     bucketItems,
@@ -362,28 +391,6 @@ export function VirtualizedTimeline<T>({
     // the scrubber's onScrubTo.
     setScrollTop(element.scrollTop)
   }, [])
-
-  const locateItem = React.useCallback(
-    (id: string): { bucketIndex: number; itemIndex: number } | null => {
-      for (
-        let bucketIndex = 0;
-        bucketIndex < buckets.length;
-        bucketIndex += 1
-      ) {
-        const bucket = buckets[bucketIndex]!
-        if (collapsedIds.has(bucket.id)) continue
-        const items = bucketItems.get(bucket.id).items
-        if (!items) continue
-        for (let itemIndex = 0; itemIndex < items.length; itemIndex += 1) {
-          if (getItemId(items[itemIndex]!, itemIndex, bucket) === id) {
-            return { bucketIndex, itemIndex }
-          }
-        }
-      }
-      return null
-    },
-    [buckets, bucketItems, collapsedIds, getItemId],
-  )
 
   const focusItem = React.useCallback(
     (id: string) => {
@@ -495,10 +502,11 @@ export function VirtualizedTimeline<T>({
           (headerNode !== null && document.activeElement === headerNode) ||
           (pending?.kind === "header" && pending.bucketId === nextBucket.id)
         if (!stillOnHeader) return
-        pendingFocus.current = {
-          kind: "item",
-          id: getItemId(items[0]!, 0, nextBucket),
-        }
+        const firstId = getItemId(items[0]!, 0, nextBucket)
+        pendingFocus.current = { kind: "item", id: firstId }
+        // The roving tab stop must follow: without this the pend focuses the
+        // cell while the tab stop stays on the previous bucket's last cell.
+        setActiveItemId(firstId)
       })
     },
     [
@@ -600,14 +608,9 @@ export function VirtualizedTimeline<T>({
     }
   }, [buckets])
 
-  const mounted: React.ReactNode[] = []
-  for (
-    let index = timelineWindow.startIndex;
-    index <= timelineWindow.endIndex;
-    index += 1
-  ) {
+  const renderBucketAt = (index: number): React.ReactNode => {
     const bucket = buckets[index]
-    if (!bucket) continue
+    if (!bucket) return null
     const label = formatBucketLabel(bucket, granularity)
     const headerId = `${idBase}-header-${bucket.id}`
     const height = layout.heights[index]!
@@ -615,7 +618,7 @@ export function VirtualizedTimeline<T>({
     const bucketSelection = selectable
       ? selection.bucketState(bucketIdsFor(bucket))
       : "none"
-    mounted.push(
+    return (
       <VirtualizedTimelineBucket<T>
         key={bucket.id}
         bucket={bucket}
@@ -638,6 +641,9 @@ export function VirtualizedTimeline<T>({
         tileHeight={layout.tileHeight}
         gap={gap}
         rowRange={timelineWindow.rows.get(index)}
+        pinnedIndex={
+          pinned && pinned.bucketIndex === index ? pinned.itemIndex : undefined
+        }
         items={bucketItems.get(bucket.id).items}
         status={bucketItems.get(bucket.id).status}
         error={bucketItems.get(bucket.id).error}
@@ -710,8 +716,25 @@ export function VirtualizedTimeline<T>({
             )}
           </div>
         }
-      />,
+      />
     )
+  }
+
+  const mounted: React.ReactNode[] = []
+  // A pinned bucket above the window precedes it so DOM order matches
+  // visual order.
+  if (pinned && pinned.bucketIndex < timelineWindow.startIndex) {
+    mounted.push(renderBucketAt(pinned.bucketIndex))
+  }
+  for (
+    let index = timelineWindow.startIndex;
+    index <= timelineWindow.endIndex;
+    index += 1
+  ) {
+    mounted.push(renderBucketAt(index))
+  }
+  if (pinned && pinned.bucketIndex > timelineWindow.endIndex) {
+    mounted.push(renderBucketAt(pinned.bucketIndex))
   }
 
   return (

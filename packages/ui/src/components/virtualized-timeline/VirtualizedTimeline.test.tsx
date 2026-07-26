@@ -565,4 +565,85 @@ describe("VirtualizedTimeline", () => {
     await waitFor(() => expect(screen.getByTestId("z-0")).toBeInTheDocument())
     expect(document.activeElement).toBe(cells[0])
   })
+
+  it("keeps the focused cell mounted when it scrolls out of the window", () => {
+    renderTimeline()
+    const cells = screen.getAllByRole("gridcell")
+    cells[0]!.focus()
+    fireEvent.keyDown(cells[0]!, { key: "ArrowRight" })
+    expect(document.activeElement).toHaveAttribute("data-item-id", "2026-07-1")
+    // Pinning must not double-render the cell while it is still in the window.
+    expect(screen.getAllByRole("gridcell")).toHaveLength(11)
+    // ArrowDown on the scrubber rail scrolls to bucket 1's offset (252), which
+    // takes bucket 0 — and with it the focused cell — out of the window.
+    fireEvent.keyDown(screen.getByRole("slider"), { key: "ArrowDown" })
+    expect(document.activeElement).toHaveAttribute("data-item-id", "2026-07-1")
+    expect(document.activeElement).toHaveAttribute("tabindex", "0")
+    const after = screen.getAllByRole("gridcell")
+    expect(after.filter((cell) => cell.tabIndex === 0)).toHaveLength(1)
+  })
+
+  it("moves the roving tab stop with a load-resolve handoff", async () => {
+    let resolveItems: (items: Photo[]) => void = () => {}
+    renderTimeline({
+      buckets: [buckets[0]!, { id: "2026-06", date: "2026-06-01", count: 3 }],
+      loadBucket: () =>
+        new Promise<Photo[]>((resolve) => {
+          resolveItems = resolve
+        }),
+    })
+    const cells = screen.getAllByRole("gridcell")
+    cells[7]!.focus()
+    fireEvent.keyDown(cells[7]!, { key: "ArrowRight" })
+    resolveItems([{ id: "z-0" }, { id: "z-1" }, { id: "z-2" }])
+    await waitFor(() =>
+      expect(document.activeElement).toHaveAttribute("data-item-id", "z-0"),
+    )
+    expect(document.activeElement).toHaveAttribute("tabindex", "0")
+  })
+
+  it("skips a collapsed bucket's items when arrowing across it", () => {
+    renderTimeline({
+      collapsible: true,
+      defaultCollapsedIds: ["2026-06"],
+      buckets: [
+        makeBucket("2026-07", "2026-07-01", 4),
+        makeBucket("2026-06", "2026-06-01", 4),
+        makeBucket("2026-05", "2026-05-01", 4),
+      ],
+    })
+    const cells = screen.getAllByRole("gridcell")
+    expect(cells).toHaveLength(8)
+    cells[3]!.focus()
+    fireEvent.keyDown(cells[3]!, { key: "ArrowRight" })
+    expect(document.activeElement).toHaveAttribute("data-item-id", "2026-05-0")
+    fireEvent.keyDown(document.activeElement!, { key: "ArrowLeft" })
+    expect(document.activeElement).toHaveAttribute("data-item-id", "2026-07-3")
+  })
+
+  it("lands on the next unloaded bucket in the key's direction, not the first anywhere", () => {
+    renderTimeline({
+      buckets: [
+        { id: "2026-07", date: "2026-07-01", count: 4 },
+        makeBucket("2026-06", "2026-06-01", 4),
+        { id: "2026-05", date: "2026-05-01", count: 4 },
+      ],
+      loadBucket: () => new Promise<Photo[]>(() => {}),
+    })
+    const cells = screen.getAllByRole("gridcell")
+    expect(cells).toHaveLength(4)
+    cells[3]!.focus()
+    // Bucket 0 is also unloaded; a directionless search would land there.
+    fireEvent.keyDown(cells[3]!, { key: "ArrowRight" })
+    expect(document.activeElement).toHaveAttribute(
+      "id",
+      expect.stringContaining("header-2026-05"),
+    )
+    cells[0]!.focus()
+    fireEvent.keyDown(cells[0]!, { key: "ArrowLeft" })
+    expect(document.activeElement).toHaveAttribute(
+      "id",
+      expect.stringContaining("header-2026-07"),
+    )
+  })
 })

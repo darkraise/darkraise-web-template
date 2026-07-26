@@ -5,6 +5,7 @@ import * as React from "react"
 import { cn } from "@lib/utils"
 import { Button } from "@components/button"
 import { Skeleton } from "@components/skeleton"
+import { mountedCellRange } from "./mountRange"
 import type { TimelineSelection } from "./useTimelineSelection"
 import type { BucketRowRange, TimelineBucket, BucketStatus } from "./types"
 
@@ -49,6 +50,11 @@ export interface VirtualizedTimelineBucketProps<T> {
   selection: TimelineSelection
   /** The id holding the roving tab stop. */
   activeId: string | null
+  /**
+   * Renders this cell even when its row is outside `rowRange`, so the cell
+   * holding DOM focus survives being scrolled out of the window.
+   */
+  pinnedIndex?: number
   onItemKeyDown: (event: React.KeyboardEvent<HTMLElement>, id: string) => void
   onFocusItem: (id: string) => void
 }
@@ -79,14 +85,13 @@ export function VirtualizedTimelineBucket<T>({
   selectable,
   selection,
   activeId,
+  pinnedIndex,
   onItemKeyDown,
   onFocusItem,
 }: VirtualizedTimelineBucketProps<T>) {
   const cells: React.ReactNode[] = []
-  if (renderItem && rowRange) {
-    const first = rowRange.startRow * columns
-    const last = Math.min(bucket.count, (rowRange.endRow + 1) * columns) - 1
-    for (let itemIndex = first; itemIndex <= last; itemIndex += 1) {
+  if (renderItem) {
+    const renderCell = (itemIndex: number): React.ReactNode => {
       const row = Math.floor(itemIndex / columns)
       const column = itemIndex % columns
       // Computed once per index and shared by both branches below, so a real
@@ -100,7 +105,7 @@ export function VirtualizedTimelineBucket<T>({
       if (item) {
         const id = getItemId(item, itemIndex, bucket)
         const selected = selectable ? selection.isSelected(id) : false
-        cells.push(
+        return (
           <div
             key={id}
             role="gridcell"
@@ -147,15 +152,16 @@ export function VirtualizedTimelineBucket<T>({
             }}
           >
             {renderItem({ item, index: itemIndex, bucket, selected })}
-          </div>,
+          </div>
         )
-      } else if (status !== "error" && status !== "loaded") {
+      }
+      if (status !== "error" && status !== "loaded") {
         // A loader is free to resolve fewer items than `count` (server-side
         // filtering, a deletion between the count query and the fetch, an
         // off-by-one count). Once the bucket is `"loaded"` nothing will
         // retrigger a load, so a skeleton past the end of a short array
         // would spin forever; leave that slot empty instead.
-        cells.push(
+        return (
           <div
             key={`skeleton-${itemIndex}`}
             aria-hidden="true"
@@ -167,9 +173,29 @@ export function VirtualizedTimelineBucket<T>({
             ) : (
               <Skeleton className="h-full w-full" />
             )}
-          </div>,
+          </div>
         )
       }
+      return null
+    }
+
+    const range = rowRange
+      ? mountedCellRange(bucket.count, columns, rowRange)
+      : null
+    if (range) {
+      for (
+        let itemIndex = range.first;
+        itemIndex <= range.last;
+        itemIndex += 1
+      ) {
+        cells.push(renderCell(itemIndex))
+      }
+    }
+    if (
+      pinnedIndex !== undefined &&
+      (!range || pinnedIndex < range.first || pinnedIndex > range.last)
+    ) {
+      cells.push(renderCell(pinnedIndex))
     }
   }
 
