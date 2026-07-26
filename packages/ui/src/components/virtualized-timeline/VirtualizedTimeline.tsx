@@ -144,6 +144,26 @@ export function VirtualizedTimeline<T>({
   const [viewportHeight, setViewportHeight] = React.useState(0)
   const [scrollTop, setScrollTop] = React.useState(0)
 
+  // The cell holding the roving tab stop, with its owning bucket carried
+  // alongside: the bucket index must reach `windowIndices` (eviction
+  // protection) before `useBucketItems` runs, and deriving it from
+  // `bucketItems` there would be a dependency cycle.
+  const [activeItem, setActiveItem] = React.useState<{
+    id: string
+    bucketId: string
+  } | null>(null)
+
+  const setActive = React.useCallback((id: string, bucketId: string) => {
+    // Idempotent by content: focus events re-report the already-active cell
+    // (e.g. after the pending-focus effect), and a fresh object there would
+    // re-render for nothing.
+    setActiveItem((prev) =>
+      prev && prev.id === id && prev.bucketId === bucketId
+        ? prev
+        : { id, bucketId },
+    )
+  }, [])
+
   const geometry = React.useMemo<BucketGeometry>(
     () => ({ gap, minTileWidth, tileAspect, headerHeight, bucketSpacing }),
     [gap, minTileWidth, tileAspect, headerHeight, bucketSpacing],
@@ -202,6 +222,19 @@ export function VirtualizedTimeline<T>({
     geometry,
   })
 
+  const activeBucketIndex = activeItem
+    ? buckets.findIndex((bucket) => bucket.id === activeItem.bucketId)
+    : -1
+  // -1 whenever the active bucket sits inside the window, so arrowing around
+  // in view never changes the memo's inputs (a fresh `windowIndices` identity
+  // would churn the loader effect every render).
+  const pinnedLoadIndex =
+    activeBucketIndex >= 0 &&
+    (activeBucketIndex < timelineWindow.startIndex ||
+      activeBucketIndex > timelineWindow.endIndex)
+      ? activeBucketIndex
+      : -1
+
   const windowIndices = React.useMemo(() => {
     const indices: number[] = []
     for (
@@ -211,8 +244,13 @@ export function VirtualizedTimeline<T>({
     ) {
       indices.push(index)
     }
+    // The active bucket stays wanted while focus is parked there: eviction
+    // shields whatever `windowIndices` names, and evicting it would strip the
+    // pinned cell's item and drop focus. The render window is unaffected —
+    // it is driven by the row ranges, not this array.
+    if (pinnedLoadIndex >= 0) indices.push(pinnedLoadIndex)
     return indices
-  }, [timelineWindow.startIndex, timelineWindow.endIndex])
+  }, [timelineWindow.startIndex, timelineWindow.endIndex, pinnedLoadIndex])
 
   const bucketItems = useBucketItems<T>({
     buckets,
@@ -306,7 +344,6 @@ export function VirtualizedTimeline<T>({
     [bucketIdsFor, bucketItems, getItemId, markPending, selection],
   )
 
-  const [activeItemId, setActiveItemId] = React.useState<string | null>(null)
   // Set when the target of a keyboard move is not mounted yet; the effect
   // below focuses it once it is.
   const pendingFocus = React.useRef<PendingFocusTarget | null>(null)
@@ -334,7 +371,7 @@ export function VirtualizedTimeline<T>({
   )
 
   const activeId =
-    activeItemId && navigableIds.includes(activeItemId) ? activeItemId : null
+    activeItem && navigableIds.includes(activeItem.id) ? activeItem.id : null
 
   // Keeps the active cell renderable even when scrolled out of the window:
   // unmounting the element holding DOM focus drops focus to <body>, and the
@@ -394,18 +431,18 @@ export function VirtualizedTimeline<T>({
 
   const focusItem = React.useCallback(
     (id: string) => {
-      setActiveItemId(id)
+      const location = locateItem(id)
+      if (!location) {
+        pendingFocus.current = null
+        return
+      }
+      setActive(id, buckets[location.bucketIndex]!.id)
       const node = scrollRef.current?.querySelector<HTMLElement>(
         `[data-item-id="${CSS.escape(id)}"]`,
       )
       if (node) {
         pendingFocus.current = null
         node.focus()
-        return
-      }
-      const location = locateItem(id)
-      if (!location) {
-        pendingFocus.current = null
         return
       }
       const row = Math.floor(location.itemIndex / layout.columns)
@@ -417,6 +454,7 @@ export function VirtualizedTimeline<T>({
       pendingFocus.current = { kind: "item", id }
     },
     [
+      buckets,
       gap,
       headerHeight,
       layout.columns,
@@ -424,6 +462,7 @@ export function VirtualizedTimeline<T>({
       layout.tileHeight,
       locateItem,
       revealRange,
+      setActive,
     ],
   )
 
@@ -506,7 +545,7 @@ export function VirtualizedTimeline<T>({
         pendingFocus.current = { kind: "item", id: firstId }
         // The roving tab stop must follow: without this the pend focuses the
         // cell while the tab stop stays on the previous bucket's last cell.
-        setActiveItemId(firstId)
+        setActive(firstId, nextBucket.id)
       })
     },
     [
@@ -521,6 +560,7 @@ export function VirtualizedTimeline<T>({
       locateItem,
       navigableIds,
       revealRange,
+      setActive,
     ],
   )
 
@@ -660,6 +700,7 @@ export function VirtualizedTimeline<T>({
         activeId={tabStopId}
         onItemKeyDown={handleItemKeyDown}
         onFocusItem={focusItem}
+        onItemFocus={(id) => setActive(id, bucket.id)}
         header={
           <div
             id={headerId}

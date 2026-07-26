@@ -57,6 +57,8 @@ export interface VirtualizedTimelineBucketProps<T> {
   pinnedIndex?: number
   onItemKeyDown: (event: React.KeyboardEvent<HTMLElement>, id: string) => void
   onFocusItem: (id: string) => void
+  /** Reports that a cell received focus by any route (click, Tab, arrows). */
+  onItemFocus: (id: string) => void
 }
 
 export function VirtualizedTimelineBucket<T>({
@@ -88,6 +90,7 @@ export function VirtualizedTimelineBucket<T>({
   pinnedIndex,
   onItemKeyDown,
   onFocusItem,
+  onItemFocus,
 }: VirtualizedTimelineBucketProps<T>) {
   const cells: React.ReactNode[] = []
   if (renderItem) {
@@ -119,6 +122,10 @@ export function VirtualizedTimelineBucket<T>({
             tabIndex={id === activeId ? 0 : -1}
             className="dr-virtualized-timeline-tile"
             style={style}
+            // Fires for focus landing anywhere inside the cell (focusin
+            // bubbles), which is wanted: pinning must protect a focused
+            // child of the tile just as much as the tile itself.
+            onFocus={() => onItemFocus(id)}
             onClick={(event) => {
               if (!selectable) {
                 onItemClick?.(item, bucket)

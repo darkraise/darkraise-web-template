@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import * as React from "react"
-import { fireEvent, render, screen, waitFor } from "@testing-library/react"
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { beforeAll, describe, expect, it, vi } from "vitest"
 
 import { VirtualizedTimeline } from "./VirtualizedTimeline"
@@ -474,7 +474,7 @@ describe("VirtualizedTimeline", () => {
   it("moves focus one item with left and right", () => {
     renderTimeline()
     const cells = screen.getAllByRole("gridcell")
-    cells[0]!.focus()
+    act(() => cells[0]!.focus())
     fireEvent.keyDown(cells[0]!, { key: "ArrowRight" })
     expect(document.activeElement).toBe(cells[1])
     fireEvent.keyDown(cells[1]!, { key: "ArrowLeft" })
@@ -484,7 +484,7 @@ describe("VirtualizedTimeline", () => {
   it("moves focus a column with up and down", () => {
     renderTimeline()
     const cells = screen.getAllByRole("gridcell")
-    cells[0]!.focus()
+    act(() => cells[0]!.focus())
     // 412px content width at 100px minimum tile width gives four columns.
     fireEvent.keyDown(cells[0]!, { key: "ArrowDown" })
     expect(document.activeElement).toBe(cells[4])
@@ -493,7 +493,7 @@ describe("VirtualizedTimeline", () => {
   it("reaches the bucket edges with Home and End", () => {
     renderTimeline()
     const cells = screen.getAllByRole("gridcell")
-    cells[2]!.focus()
+    act(() => cells[2]!.focus())
     fireEvent.keyDown(cells[2]!, { key: "End" })
     expect(document.activeElement).toBe(cells[7])
     fireEvent.keyDown(cells[7]!, { key: "Home" })
@@ -503,7 +503,7 @@ describe("VirtualizedTimeline", () => {
   it("crosses a bucket boundary", () => {
     renderTimeline()
     const cells = screen.getAllByRole("gridcell")
-    cells[7]!.focus()
+    act(() => cells[7]!.focus())
     fireEvent.keyDown(cells[7]!, { key: "ArrowRight" })
     expect(document.activeElement).toHaveAttribute("data-item-id", "2026-06-0")
   })
@@ -514,7 +514,7 @@ describe("VirtualizedTimeline", () => {
       loadBucket: () => new Promise<Photo[]>(() => {}),
     })
     const cells = screen.getAllByRole("gridcell")
-    cells[7]!.focus()
+    act(() => cells[7]!.focus())
     fireEvent.keyDown(cells[7]!, { key: "ArrowRight" })
     expect(document.activeElement).toHaveAttribute(
       "id",
@@ -529,7 +529,7 @@ describe("VirtualizedTimeline", () => {
     renderTimeline({ buckets: [makeBucket("2026-07", "2026-07-01", 40)] })
     const cells = screen.getAllByRole("gridcell")
     expect(screen.queryByTestId("2026-07-39")).not.toBeInTheDocument()
-    cells[0]!.focus()
+    act(() => cells[0]!.focus())
     fireEvent.keyDown(cells[0]!, { key: "End" })
     expect(document.activeElement).toHaveAttribute("data-item-id", "2026-07-39")
   })
@@ -554,13 +554,13 @@ describe("VirtualizedTimeline", () => {
         }),
     })
     const cells = screen.getAllByRole("gridcell")
-    cells[7]!.focus()
+    act(() => cells[7]!.focus())
     fireEvent.keyDown(cells[7]!, { key: "ArrowRight" })
     expect(document.activeElement).toHaveAttribute(
       "id",
       expect.stringContaining("header-2026-06"),
     )
-    cells[0]!.focus()
+    act(() => cells[0]!.focus())
     resolveItems([{ id: "z-0" }, { id: "z-1" }, { id: "z-2" }])
     await waitFor(() => expect(screen.getByTestId("z-0")).toBeInTheDocument())
     expect(document.activeElement).toBe(cells[0])
@@ -569,7 +569,7 @@ describe("VirtualizedTimeline", () => {
   it("keeps the focused cell mounted when it scrolls out of the window", () => {
     renderTimeline()
     const cells = screen.getAllByRole("gridcell")
-    cells[0]!.focus()
+    act(() => cells[0]!.focus())
     fireEvent.keyDown(cells[0]!, { key: "ArrowRight" })
     expect(document.activeElement).toHaveAttribute("data-item-id", "2026-07-1")
     // Pinning must not double-render the cell while it is still in the window.
@@ -593,7 +593,7 @@ describe("VirtualizedTimeline", () => {
         }),
     })
     const cells = screen.getAllByRole("gridcell")
-    cells[7]!.focus()
+    act(() => cells[7]!.focus())
     fireEvent.keyDown(cells[7]!, { key: "ArrowRight" })
     resolveItems([{ id: "z-0" }, { id: "z-1" }, { id: "z-2" }])
     await waitFor(() =>
@@ -614,7 +614,7 @@ describe("VirtualizedTimeline", () => {
     })
     const cells = screen.getAllByRole("gridcell")
     expect(cells).toHaveLength(8)
-    cells[3]!.focus()
+    act(() => cells[3]!.focus())
     fireEvent.keyDown(cells[3]!, { key: "ArrowRight" })
     expect(document.activeElement).toHaveAttribute("data-item-id", "2026-05-0")
     fireEvent.keyDown(document.activeElement!, { key: "ArrowLeft" })
@@ -632,18 +632,64 @@ describe("VirtualizedTimeline", () => {
     })
     const cells = screen.getAllByRole("gridcell")
     expect(cells).toHaveLength(4)
-    cells[3]!.focus()
+    act(() => cells[3]!.focus())
     // Bucket 0 is also unloaded; a directionless search would land there.
     fireEvent.keyDown(cells[3]!, { key: "ArrowRight" })
     expect(document.activeElement).toHaveAttribute(
       "id",
       expect.stringContaining("header-2026-05"),
     )
-    cells[0]!.focus()
+    act(() => cells[0]!.focus())
     fireEvent.keyDown(cells[0]!, { key: "ArrowLeft" })
     expect(document.activeElement).toHaveAttribute(
       "id",
       expect.stringContaining("header-2026-07"),
     )
+  })
+
+  it("shields the active bucket's items from eviction while focus parks there", async () => {
+    // Two buckets of 12 items (3 rows, 356px each) so only one fits the
+    // 300px viewport at a time; maxLoadedBuckets 1 makes eviction claim the
+    // off-window bucket unless the active bucket is shielded.
+    renderTimeline({
+      maxLoadedBuckets: 1,
+      loadBucket: async (bucket) =>
+        Array.from({ length: bucket.count }, (_, index) => ({
+          id: `${bucket.id}-item-${index}`,
+        })),
+      buckets: [
+        { id: "2026-07", date: "2026-07-01", count: 12 },
+        { id: "2026-06", date: "2026-06-01", count: 12 },
+      ],
+    })
+    const first = await screen.findByTestId("2026-07-item-0")
+    const cell = first.closest<HTMLElement>("[data-item-id]")!
+    act(() => cell.focus())
+    // Establish the active item through the keyboard so this test does not
+    // depend on click-focus tracking.
+    fireEvent.keyDown(cell, { key: "ArrowRight" })
+    expect(document.activeElement).toHaveAttribute(
+      "data-item-id",
+      "2026-07-item-1",
+    )
+    fireEvent.keyDown(screen.getByRole("slider"), { key: "ArrowDown" })
+    await screen.findByTestId("2026-06-item-0")
+    expect(screen.getByTestId("2026-07-item-1")).toBeInTheDocument()
+    expect(document.activeElement).toHaveAttribute(
+      "data-item-id",
+      "2026-07-item-1",
+    )
+  })
+
+  it("pins a cell focused by click when it scrolls out of the window", () => {
+    renderTimeline()
+    const cells = screen.getAllByRole("gridcell")
+    // jsdom does not focus on click, so replicate a real browser's click as
+    // focus followed by the click event.
+    act(() => cells[1]!.focus())
+    fireEvent.click(cells[1]!)
+    fireEvent.keyDown(screen.getByRole("slider"), { key: "ArrowDown" })
+    expect(document.activeElement).toHaveAttribute("data-item-id", "2026-07-1")
+    expect(document.activeElement).toHaveAttribute("tabindex", "0")
   })
 })
