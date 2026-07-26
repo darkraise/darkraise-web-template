@@ -358,7 +358,12 @@ export function VirtualizedTimeline<T>({
   // `selection` it closed over resolves updates against the render that
   // created it — writing through that after the await would erase every
   // selection change committed during the wait. The ref always holds the
-  // latest committed selection instead.
+  // latest committed selection instead. It is not a complete fix: two
+  // bucket-select awaits resolving in the same microtask flush still
+  // clobber each other, because both read this same committed selection
+  // and `useControllableState` resolves updaters against that captured
+  // value. Closing that belongs to the primitive's own ref-backed rewrite,
+  // tracked separately.
   const selectionRef = React.useRef(selection)
   React.useLayoutEffect(() => {
     selectionRef.current = selection
