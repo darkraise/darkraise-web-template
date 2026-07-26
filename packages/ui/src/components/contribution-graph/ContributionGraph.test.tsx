@@ -331,4 +331,20 @@ describe("ContributionGraph", () => {
     render(<ContributionGraph data={[]} />)
     expect(screen.getAllByRole("gridcell").length).toBeGreaterThan(360)
   })
+
+  it("defaults to the medium size", () => {
+    const { container } = renderGraph()
+    expect(container.querySelector(".dr-contribution-graph")).toHaveAttribute(
+      "data-size",
+      "md",
+    )
+  })
+
+  it("mirrors the size prop onto the root", () => {
+    const { container } = renderGraph({ size: "lg" })
+    expect(container.querySelector(".dr-contribution-graph")).toHaveAttribute(
+      "data-size",
+      "lg",
+    )
+  })
 })

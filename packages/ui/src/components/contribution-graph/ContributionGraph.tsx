@@ -17,6 +17,8 @@ export type {
   ContributionGraphDatum,
 } from "./buildCalendar"
 
+export type ContributionGraphSize = "sm" | "md" | "lg"
+
 const WEEKDAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
 /** Rows 1, 3, and 5 only: a label on all seven rows does not fit the cell
@@ -51,6 +53,7 @@ function defaultCellLabel(cell: ContributionGraphCell): string {
 
 export interface ContributionGraphProps extends React.HTMLAttributes<HTMLDivElement> {
   data: ContributionGraphDatum[]
+  size?: ContributionGraphSize
   /** Defaults to `endDate` minus one year plus one day. */
   startDate?: Date | string
   /** Defaults to today. */
@@ -73,6 +76,7 @@ export interface ContributionGraphProps extends React.HTMLAttributes<HTMLDivElem
 function ContributionGraph({
   className,
   data,
+  size = "md",
   startDate,
   endDate,
   weekStartsOn = 0,
@@ -246,7 +250,11 @@ function ContributionGraph({
   }, [hovered])
 
   return (
-    <div className={cn("dr-contribution-graph", className)} {...props}>
+    <div
+      className={cn("dr-contribution-graph", className)}
+      data-size={size}
+      {...props}
+    >
       {/* Months, weekday gutter, and the grid share one 2×2 CSS grid, so the
           month labels stay aligned with their week columns without any magic
           offset. The spacing that separates an optional section from the grid

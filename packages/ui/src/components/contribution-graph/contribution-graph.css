@@ -12,6 +12,19 @@
     gap: var(--contrib-cell-gap);
   }
 
+  /* `md` is the geometry declared on the base block above, so it needs no
+     rule of its own — that also keeps the variables defined for anyone who
+     renders the class without the attribute. */
+  .dr-contribution-graph[data-size="sm"] {
+    --contrib-cell-size: 0.5625rem;
+    --contrib-cell-gap: 0.125rem;
+  }
+
+  .dr-contribution-graph[data-size="lg"] {
+    --contrib-cell-size: 0.875rem;
+    --contrib-cell-gap: 0.25rem;
+  }
+
   /* Two columns (weekday gutter | grid) by two rows (months | grid). An
      empty track (no section rendered into it) auto-sizes to zero on its
      own, but a `gap` on the grid itself applies between tracks regardless
