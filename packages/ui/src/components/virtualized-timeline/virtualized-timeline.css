@@ -88,13 +88,17 @@
     content: "";
   }
 
+  /* Deliberately unpositioned and unclipped: the segment is only as wide as
+     the 12px rail, so its label must escape it. The absolutely positioned
+     span resolves against the rail instead, and its auto top keeps it at
+     the segment's own static vertical position. */
   .dr-virtualized-timeline-scrubber-segment {
-    @apply text-muted-foreground relative flex min-h-0 items-start justify-end overflow-hidden text-[10px];
+    @apply text-muted-foreground flex min-h-0 items-start justify-end text-[10px];
   }
 
-  /* Only a segment tall enough to hold a line shows its label. */
+  /* Only the active segment shows its label, floating left of the rail. */
   .dr-virtualized-timeline-scrubber-segment > span {
-    @apply pointer-events-none hidden pr-3 whitespace-nowrap;
+    @apply bg-background/85 pointer-events-none absolute right-4 hidden rounded-[var(--radius-sm)] px-1 whitespace-nowrap backdrop-blur-sm;
   }
 
   .dr-virtualized-timeline-scrubber-segment[data-active="true"] > span {
