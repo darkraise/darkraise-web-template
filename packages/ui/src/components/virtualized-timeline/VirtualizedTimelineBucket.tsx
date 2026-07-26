@@ -40,6 +40,7 @@ export interface VirtualizedTimelineBucketProps<T> {
     items: T[] | undefined
     status: BucketStatus
     contentWidth: number
+    collapsed: boolean
   }) => React.ReactNode
   contentWidth: number
   header: React.ReactNode
@@ -221,7 +222,7 @@ export function VirtualizedTimelineBucket<T>({
         style={{ height: bodyHeight }}
       >
         {renderBucket ? (
-          renderBucket({ bucket, items, status, contentWidth })
+          renderBucket({ bucket, items, status, contentWidth, collapsed })
         ) : status === "error" ? (
           <div className="dr-virtualized-timeline-error" role="alert">
             <span>

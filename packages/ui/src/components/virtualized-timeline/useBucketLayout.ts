@@ -37,10 +37,13 @@ export function computeBucketLayout<T>({
   for (const bucket of buckets) {
     offsets.push(cursor)
     let height: number
-    if (getBucketHeight) {
-      height = getBucketHeight(bucket, contentWidth)
-    } else if (collapsedIds.has(bucket.id)) {
+    // Collapse is the more specific state, so it wins over a custom
+    // `getBucketHeight`: a collapsed bucket is its header, whoever owns the
+    // body's height when expanded.
+    if (collapsedIds.has(bucket.id)) {
       height = headerHeight
+    } else if (getBucketHeight) {
+      height = getBucketHeight(bucket, contentWidth)
     } else {
       // Zero rows before the first measurement: with tileHeight 0 a row count
       // derived from the count would reserve gap-only body height for nothing.

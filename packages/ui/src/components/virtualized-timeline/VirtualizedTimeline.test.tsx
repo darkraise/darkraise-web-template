@@ -512,6 +512,22 @@ describe("VirtualizedTimeline", () => {
     expect(screen.queryByTestId("2026-07-0")).not.toBeInTheDocument()
   })
 
+  it("collapses a custom bucket body to its header and tells the body", () => {
+    const { container } = renderTimeline({
+      collapsible: true,
+      defaultCollapsedIds: ["2026-07"],
+      getBucketHeight: (bucket) => 32 + bucket.count * 10 + 16,
+      renderBucket: ({ bucket, collapsed }) =>
+        collapsed ? null : <div data-testid={`body-${bucket.id}`} />,
+    })
+    const bucket = container.querySelector<HTMLElement>(
+      '.dr-virtualized-timeline-bucket[data-index="0"]',
+    )
+    expect(bucket?.style.height).toBe("32px")
+    expect(screen.queryByTestId("body-2026-07")).not.toBeInTheDocument()
+    expect(screen.getByTestId("body-2026-06")).toBeInTheDocument()
+  })
+
   it("toggles from the disclosure button and reports the change", () => {
     const onCollapsedChange = vi.fn()
     renderTimeline({ collapsible: true, onCollapsedChange })

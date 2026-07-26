@@ -89,6 +89,16 @@ describe("computeBucketLayout", () => {
     expect(result.totalSize).toBe(41)
   })
 
+  it("collapses a bucket to header height even when getBucketHeight owns the rest", () => {
+    const result = layout({
+      collapsedIds: new Set(["a"]),
+      getBucketHeight: (bucket) => 10 + bucket.count,
+    })
+    expect(result.heights).toEqual([32, 13, 10])
+    expect(result.offsets).toEqual([0, 32, 45])
+    expect(result.totalSize).toBe(55)
+  })
+
   it("handles an empty bucket list", () => {
     const result = layout({ buckets: [] })
     expect(result.heights).toEqual([])

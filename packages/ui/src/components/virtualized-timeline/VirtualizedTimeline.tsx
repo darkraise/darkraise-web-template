@@ -85,7 +85,15 @@ export interface VirtualizedTimelineProps<T> extends Omit<
     items: T[] | undefined
     status: BucketStatus
     contentWidth: number
+    /** The body's box is header-only while collapsed; render accordingly. */
+    collapsed: boolean
   }) => React.ReactNode
+  /**
+   * Must return the bucket's whole height: header (`headerHeight`) plus body
+   * plus the bucket's own inter-bucket spacing. A collapsed bucket is sized
+   * to `headerHeight` by the component and never reaches this callback.
+   * Memoize it — the layout recomputes whenever its identity changes.
+   */
   getBucketHeight?: (bucket: TimelineBucket<T>, contentWidth: number) => number
   renderBucketHeader?: (arg: {
     bucket: TimelineBucket<T>
