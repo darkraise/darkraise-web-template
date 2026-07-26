@@ -432,6 +432,38 @@ describe("VirtualizedTimeline", () => {
     await waitFor(() => expect(checkboxB).not.toBeDisabled())
   })
 
+  it("keeps selection changes committed while a bucket select awaits its load", async () => {
+    let resolveItems: (items: Photo[]) => void = () => {}
+    const onSelectionChange = vi.fn()
+    renderTimeline({
+      selectable: true,
+      onSelectionChange,
+      buckets: [
+        makeBucket("2026-07", "2026-07-01", 3),
+        { id: "2026-06", date: "2026-06-01", count: 2 },
+      ],
+      loadBucket: () =>
+        new Promise<Photo[]>((resolve) => {
+          resolveItems = resolve
+        }),
+    })
+    // Start a whole-bucket select that must await the lazy bucket's load.
+    fireEvent.click(screen.getAllByRole("checkbox")[1]!)
+    // While that load is in flight, toggle an item in the loaded bucket.
+    fireEvent.click(screen.getByTestId("2026-07-0"))
+    expect(onSelectionChange).toHaveBeenLastCalledWith(["2026-07-0"])
+    resolveItems([{ id: "x-0" }, { id: "x-1" }])
+    // A bucket select resolved against its click-time selection would report
+    // only its own ids, silently discarding the toggle above.
+    await waitFor(() =>
+      expect(onSelectionChange).toHaveBeenLastCalledWith([
+        "2026-07-0",
+        "x-0",
+        "x-1",
+      ]),
+    )
+  })
+
   it("shows the header checkbox as indeterminate for a partial bucket", () => {
     renderTimeline({ selectable: true, defaultSelectedIds: ["2026-07-0"] })
     expect(screen.getAllByRole("checkbox")[0]).toHaveAttribute(

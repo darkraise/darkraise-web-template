@@ -328,6 +328,16 @@ export function VirtualizedTimeline<T>({
     onSelectionChange,
   })
 
+  // `selectBucket` writes the selection after awaiting a load, and the
+  // `selection` it closed over resolves updates against the render that
+  // created it — writing through that after the await would erase every
+  // selection change committed during the wait. The ref always holds the
+  // latest committed selection instead.
+  const selectionRef = React.useRef(selection)
+  React.useLayoutEffect(() => {
+    selectionRef.current = selection
+  })
+
   const bucketIdsFor = React.useCallback(
     (bucket: TimelineBucket<T>) => {
       const items = bucketItems.get(bucket.id).items
@@ -372,9 +382,9 @@ export function VirtualizedTimeline<T>({
           markPending(bucket.id, false)
         }
       }
-      selection.setBucket(ids, next)
+      selectionRef.current.setBucket(ids, next)
     },
-    [bucketIdsFor, bucketItems, getItemId, markPending, selection],
+    [bucketIdsFor, bucketItems, getItemId, markPending],
   )
 
   // Set when the target of a keyboard move is not mounted yet; the effect
