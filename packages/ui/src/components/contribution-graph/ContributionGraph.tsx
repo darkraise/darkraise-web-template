@@ -3,6 +3,7 @@
 import * as React from "react"
 
 import { cn } from "@lib/utils"
+import type { AccentHue } from "@lib/accent-hues"
 import {
   addDays,
   buildCalendar,
@@ -18,6 +19,8 @@ export type {
 } from "./buildCalendar"
 
 export type ContributionGraphSize = "sm" | "md" | "lg"
+
+export type ContributionGraphVariant = "default" | AccentHue
 
 const WEEKDAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
@@ -54,6 +57,7 @@ function defaultCellLabel(cell: ContributionGraphCell): string {
 export interface ContributionGraphProps extends React.HTMLAttributes<HTMLDivElement> {
   data: ContributionGraphDatum[]
   size?: ContributionGraphSize
+  variant?: ContributionGraphVariant
   /** Defaults to `endDate` minus one year plus one day. */
   startDate?: Date | string
   /** Defaults to today. */
@@ -77,6 +81,7 @@ function ContributionGraph({
   className,
   data,
   size = "md",
+  variant = "default",
   startDate,
   endDate,
   weekStartsOn = 0,
@@ -253,6 +258,7 @@ function ContributionGraph({
     <div
       className={cn("dr-contribution-graph", className)}
       data-size={size}
+      data-variant={variant}
       {...props}
     >
       {/* Months, weekday gutter, and the grid share one 2×2 CSS grid, so the

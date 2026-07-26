@@ -1,10 +1,16 @@
 import * as React from "react"
 import { render, screen, fireEvent } from "@testing-library/react"
 import { describe, it, expect, vi, afterEach } from "vitest"
+import { readFileSync } from "node:fs"
+import { dirname, resolve } from "node:path"
+import { fileURLToPath } from "node:url"
 import {
   ContributionGraph,
   type ContributionGraphCell,
 } from "./ContributionGraph"
+import { ACCENT_HUES } from "@lib/accent-hues"
+
+const thisDir = dirname(fileURLToPath(import.meta.url))
 
 const data = [
   { date: "2026-07-20", value: 10 },
@@ -346,5 +352,34 @@ describe("ContributionGraph", () => {
       "data-size",
       "lg",
     )
+  })
+
+  it("defaults to the theme accent variant", () => {
+    const { container } = renderGraph()
+    expect(container.querySelector(".dr-contribution-graph")).toHaveAttribute(
+      "data-variant",
+      "default",
+    )
+  })
+
+  it("mirrors a hue variant onto the root", () => {
+    const { container } = renderGraph({ variant: "green" })
+    expect(container.querySelector(".dr-contribution-graph")).toHaveAttribute(
+      "data-variant",
+      "green",
+    )
+  })
+})
+
+describe("contribution-graph.css", () => {
+  it("declares a base-colour rule for every accent hue", () => {
+    const css = readFileSync(
+      resolve(thisDir, "./contribution-graph.css"),
+      "utf8",
+    )
+    for (const hue of ACCENT_HUES) {
+      expect(css).toContain(`.dr-contribution-graph[data-variant="${hue}"]`)
+      expect(css).toContain(`--contrib-base: var(--color-${hue}-500)`)
+    }
   })
 })
