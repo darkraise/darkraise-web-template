@@ -85,7 +85,10 @@
 
   /* touch-action: none, or the browser claims pointerdown for page panning and
      the drag never starts on touch. The ::before widens the hit area without
-     widening the visible rail. */
+     widening the visible rail. The full pointer target — rail plus ::before
+     extension — is mirrored by SCRUBBER_HIT_WIDTH in VirtualizedTimeline.tsx,
+     which reserves it out of the measured content width; changing either
+     width means changing both. */
   .dr-virtualized-timeline-scrubber {
     @apply absolute inset-y-0 right-0 z-20 flex w-3 cursor-ns-resize flex-col select-none;
     touch-action: none;

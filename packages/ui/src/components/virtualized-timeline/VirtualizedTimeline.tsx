@@ -30,8 +30,11 @@ import "./virtualized-timeline.css"
 
 declare const process: { env: { NODE_ENV?: string } }
 
-/** Must match the rail's `w-3` in virtualized-timeline.css. */
-const SCRUBBER_RAIL_WIDTH = 12
+/** Must match the scrubber's full pointer target in virtualized-timeline.css:
+ *  the rail's `w-3` (12px) PLUS its `::before`'s `-left-2` extension (8px).
+ *  Reserving only the rail leaves the extension hanging over the last tile
+ *  column on overlay-scrollbar platforms, silently stealing its clicks. */
+const SCRUBBER_HIT_WIDTH = 20
 
 /** Index of the last bucket whose offset is <= y, or 0. Mirrors the private
  *  helper in `useBucketWindow.ts`, which isn't exported. */
@@ -702,12 +705,12 @@ export function VirtualizedTimeline<T>({
           fraction: height > 0 ? (element.scrollTop - offset) / height : 0,
         }
       }
-      // The scrubber rail overlays the scroll area's right edge. Reserving
-      // its width out of the content keeps the last tile column from ending
-      // underneath the rail's hit band, which would silently swallow that
-      // column's clicks.
+      // The scrubber's pointer target overlays the scroll area's right
+      // edge. Reserving its full width out of the content keeps the last
+      // tile column from ending underneath any part of the hit band, which
+      // would silently swallow that column's clicks.
       setContentWidth(
-        element.clientWidth - (showScrubber ? SCRUBBER_RAIL_WIDTH : 0),
+        element.clientWidth - (showScrubber ? SCRUBBER_HIT_WIDTH : 0),
       )
       setViewportHeight(element.clientHeight)
     }
