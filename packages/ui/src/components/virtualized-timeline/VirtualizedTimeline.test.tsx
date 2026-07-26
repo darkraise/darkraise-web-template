@@ -142,8 +142,10 @@ function renderTimeline(
 
 describe("VirtualizedTimeline", () => {
   it("renders a header per mounted bucket, labelled from its date", () => {
-    // Scoped to the header elements: the scrubber also renders each
-    // bucket's label, so an unscoped text query would be ambiguous.
+    // Scoped to the header elements rather than an unscoped text query: at
+    // this fixture's 412px width the scrubber renders no label text at all
+    // (below the rail's label breakpoint), but the header elements are the
+    // right source of truth for this assertion regardless.
     const { container } = renderTimeline()
     const headers = container.querySelectorAll(
       ".dr-virtualized-timeline-bucket-header",
@@ -160,8 +162,10 @@ describe("VirtualizedTimeline", () => {
   })
 
   it("prefers an explicit bucket label", () => {
-    // Scoped to the header: the scrubber also renders the label, which
-    // would make an unscoped text query ambiguous.
+    // Scoped to the header rather than an unscoped text query: at this
+    // fixture's 412px width the scrubber renders no label text at all
+    // (below the rail's label breakpoint), but the header is the right
+    // source of truth for this assertion regardless.
     const { container } = renderTimeline({
       buckets: [{ ...buckets[0]!, label: "Last summer" }, buckets[1]!],
     })
@@ -234,6 +238,30 @@ describe("VirtualizedTimeline", () => {
     // only thing keeping the rail out.
     renderTimeline({ showScrubber: false })
     expect(screen.queryByRole("slider")).not.toBeInTheDocument()
+  })
+
+  it("shows tick labels once the scroll area crosses the label breakpoint", () => {
+    // Widens the shared clientWidth stub for this test alone, then restores
+    // it: the scroll-area ref this measures from is a plain HTMLElement, so
+    // it reads the same stub every other element in the file does, and
+    // leaving it widened would move the 412px column/tile fixtures other
+    // tests depend on.
+    const stub = stubResizableWidth()
+    try {
+      stub.setWidth(600)
+      renderTimeline()
+      expect(screen.getByText("2026")).toBeInTheDocument()
+    } finally {
+      stub.restore()
+    }
+  })
+
+  it("keeps tick labels off below the label breakpoint", () => {
+    // Counterpart of the test above: this fixture's default 412px stub sits
+    // below the rail's label breakpoint, so no tick label ever reaches the
+    // DOM through the real scroll-area measurement.
+    renderTimeline()
+    expect(screen.queryByText("2026")).not.toBeInTheDocument()
   })
 
   it("keeps the tile geometry variables under a consumer style prop", () => {
