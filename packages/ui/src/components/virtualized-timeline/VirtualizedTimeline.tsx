@@ -955,6 +955,16 @@ export function VirtualizedTimeline<T>({
     )
   }
 
+  // Load-bearing, not defensive: before the first measurement, viewportHeight
+  // is still 0 while useBucketLayout's unmeasured fallback already gives
+  // every bucket a header plus spacing, so maxScroll is positive on frame
+  // one for almost any dataset. Without this guard the rail mounts, then
+  // unmounts once contentWidth arrives, widening the flex-1 viewport and
+  // triggering a second ResizeObserver correction — a flash plus a reflow
+  // where "nothing to scrub" should render nothing at all. jsdom can't catch
+  // this: its clientWidth stub is a constant unaffected by DOM structure, so
+  // no unit test can stand in for the browser pass that verifies it.
+  const measured = contentWidth > 0
   const maxScroll = Math.max(0, layout.totalSize - viewportHeight)
 
   const mounted: React.ReactNode[] = []
@@ -1021,7 +1031,7 @@ export function VirtualizedTimeline<T>({
         </div>
         {/* A date index over a range of zero indexes nothing, and leaving it
             mounted leaves a focusable slider that cannot move. */}
-        {showScrubber && maxScroll > 0 ? (
+        {showScrubber && measured && maxScroll > 0 ? (
           <VirtualizedTimelineScrubber<T>
             buckets={buckets}
             layout={layout}

@@ -228,6 +228,14 @@ describe("VirtualizedTimeline", () => {
     ).toBeNull()
   })
 
+  it("renders no rail when showScrubber is false, even with room to scrub", () => {
+    // The two-bucket default fixture totals 400px against the 300px stubbed
+    // viewport, so maxScroll is clearly positive here; showScrubber is the
+    // only thing keeping the rail out.
+    renderTimeline({ showScrubber: false })
+    expect(screen.queryByRole("slider")).not.toBeInTheDocument()
+  })
+
   it("keeps the tile geometry variables under a consumer style prop", () => {
     const { container } = renderTimeline({ style: { height: 500 } })
     const root = container.querySelector<HTMLElement>(
@@ -985,12 +993,13 @@ describe("VirtualizedTimeline", () => {
   })
 
   it("keeps the scrubber's positioning parent from also holding the toolbar", () => {
-    // jsdom has no layout engine, so it cannot see the scrubber's absolute
-    // hit region visually overlapping the toolbar. What it can see is the
-    // DOM shape that causes it: the scrubber's containing block (its parent,
-    // since nothing sits between them) must not be an ancestor of the
-    // toolbar too, or both resolve their box against the same positioned
-    // element and the scrubber's rail can spread into the toolbar's band.
+    // jsdom has no layout engine, so it cannot see the scroll area's flex row
+    // (viewport plus rail) actually reflowing if the toolbar shared it. What
+    // it can see is the DOM shape that causes it: the scroll area (the
+    // scrubber's parent, since nothing sits between them) must not be an
+    // ancestor of the toolbar too, or the toolbar would compete with the
+    // rail for space in the same flex row instead of sitting in its own band
+    // above it.
     const { container } = renderTimeline({
       showScrubber: true,
       showJumpToDate: true,
