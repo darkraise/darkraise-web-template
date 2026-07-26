@@ -202,26 +202,44 @@ export function VirtualizedTimeline<T>({
     [bucketItems, getItemId],
   )
 
-  const [pendingBucketId, setPendingBucketId] = React.useState<string | null>(
-    null,
-  )
+  const [pendingBucketIds, setPendingBucketIds] = React.useState<
+    ReadonlySet<string>
+  >(() => new Set())
+
+  // A single shared value cannot track two buckets loading concurrently:
+  // resolving bucket A's load would clear bucket B's pending marker too,
+  // letting B's checkbox re-enable while its own load is still in flight.
+  const markPending = React.useCallback((id: string, pending: boolean) => {
+    setPendingBucketIds((prev) => {
+      if (prev.has(id) === pending) return prev
+      const next = new Set(prev)
+      if (pending) next.add(id)
+      else next.delete(id)
+      return next
+    })
+  }, [])
 
   const selectBucket = React.useCallback(
     async (bucket: TimelineBucket<T>, next: boolean) => {
       let ids = bucketIdsFor(bucket)
-      if (ids.length === 0) {
-        setPendingBucketId(bucket.id)
+      // An empty id list means "unloaded" only before a terminal status: a
+      // loader that legitimately resolved zero items also leaves `ids`
+      // empty, but is already `"loaded"` and must not be re-awaited on
+      // every click.
+      const status = bucketItems.get(bucket.id).status
+      if (ids.length === 0 && status !== "loaded" && status !== "error") {
+        markPending(bucket.id, true)
         try {
           const items = await bucketItems.ensure(bucket.id)
           if (!items) return
           ids = items.map((item, index) => getItemId(item, index, bucket))
         } finally {
-          setPendingBucketId(null)
+          markPending(bucket.id, false)
         }
       }
       selection.setBucket(ids, next)
     },
-    [bucketIdsFor, bucketItems, getItemId, selection],
+    [bucketIdsFor, bucketItems, getItemId, markPending, selection],
   )
 
   React.useEffect(() => {
@@ -334,9 +352,9 @@ export function VirtualizedTimeline<T>({
                 // An unloaded bucket has no ids to select, so the checkbox has
                 // to await its load; disabling it during that wait is what
                 // stops a second click from queueing a second load.
-                disabled={pendingBucketId === bucket.id}
+                disabled={pendingBucketIds.has(bucket.id)}
                 data-pending={
-                  pendingBucketId === bucket.id ? "true" : undefined
+                  pendingBucketIds.has(bucket.id) ? "true" : undefined
                 }
                 onCheckedChange={(next) => {
                   void selectBucket(bucket, next !== false)
@@ -347,8 +365,10 @@ export function VirtualizedTimeline<T>({
               renderBucketHeader({
                 bucket,
                 label,
+                // Collapse lands in a later task; this stays hard-coded until
+                // then.
                 collapsed: false,
-                selection: "none",
+                selection: bucketSelection,
               })
             ) : (
               <span>{label}</span>

@@ -140,7 +140,7 @@ describe("VirtualizedTimeline", () => {
   it("calls onItemClick with the item and its bucket", () => {
     const onItemClick = vi.fn()
     renderTimeline({ onItemClick })
-    screen.getByTestId("2026-07-0").click()
+    fireEvent.click(screen.getByTestId("2026-07-0"))
     expect(onItemClick).toHaveBeenCalledWith(
       { id: "2026-07-0" },
       expect.objectContaining({ id: "2026-07" }),
@@ -286,7 +286,7 @@ describe("VirtualizedTimeline", () => {
     const onItemClick = vi.fn()
     const onSelectionChange = vi.fn()
     renderTimeline({ selectable: true, onItemClick, onSelectionChange })
-    screen.getByTestId("2026-07-0").click()
+    fireEvent.click(screen.getByTestId("2026-07-0"))
     expect(onSelectionChange).toHaveBeenCalledWith(["2026-07-0"])
     expect(onItemClick).not.toHaveBeenCalled()
   })
@@ -332,6 +332,38 @@ describe("VirtualizedTimeline", () => {
       expect(onSelectionChange).toHaveBeenCalledWith(["x-0", "x-1"]),
     )
     expect(checkbox).not.toBeDisabled()
+  })
+
+  it("keeps a second bucket's checkbox disabled while only it is pending", async () => {
+    let resolveA: (items: Photo[]) => void = () => {}
+    let resolveB: (items: Photo[]) => void = () => {}
+    const onSelectionChange = vi.fn()
+    renderTimeline({
+      selectable: true,
+      onSelectionChange,
+      buckets: [
+        { id: "2026-07", date: "2026-07-01", count: 2 },
+        { id: "2026-06", date: "2026-06-01", count: 2 },
+      ],
+      loadBucket: (bucket) =>
+        new Promise<Photo[]>((resolve) => {
+          if (bucket.id === "2026-07") resolveA = resolve
+          else resolveB = resolve
+        }),
+    })
+    const [checkboxA, checkboxB] = screen.getAllByRole("checkbox")
+    fireEvent.click(checkboxA!)
+    fireEvent.click(checkboxB!)
+    expect(checkboxA).toBeDisabled()
+    expect(checkboxB).toBeDisabled()
+    resolveA([{ id: "a-0" }, { id: "a-1" }])
+    await waitFor(() =>
+      expect(onSelectionChange).toHaveBeenCalledWith(["a-0", "a-1"]),
+    )
+    expect(checkboxA).not.toBeDisabled()
+    expect(checkboxB).toBeDisabled()
+    resolveB([{ id: "b-0" }, { id: "b-1" }])
+    await waitFor(() => expect(checkboxB).not.toBeDisabled())
   })
 
   it("shows the header checkbox as indeterminate for a partial bucket", () => {
