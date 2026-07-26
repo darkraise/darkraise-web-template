@@ -85,6 +85,36 @@ describe("useBucketItems", () => {
     expect(result.current.get("a").status).toBe("idle")
   })
 
+  it("discards a resolution for a bucket evicted while its load was in flight", async () => {
+    let resolveA: ((items: Photo[]) => void) | undefined
+    const loadBucket = vi.fn((b: TimelineBucket<Photo>) => {
+      if (b.id === "a") {
+        return new Promise<Photo[]>((resolve) => {
+          resolveA = resolve
+        })
+      }
+      return Promise.resolve(itemsFor(b.id))
+    })
+    const { result, rerender } = renderHook(
+      ({ indices }: { indices: number[] }) =>
+        useBucketItems<Photo>({
+          buckets,
+          windowIndices: indices,
+          loadBucket,
+          maxLoadedBuckets: 1,
+        }),
+      { initialProps: { indices: [0] } },
+    )
+    await waitFor(() => expect(result.current.get("a").status).toBe("loading"))
+    rerender({ indices: [1] })
+    await waitFor(() => expect(result.current.get("b").status).toBe("loaded"))
+    expect(result.current.get("a").status).toBe("idle")
+    await act(async () => {
+      resolveA?.(itemsFor("a"))
+    })
+    expect(result.current.get("a").status).toBe("idle")
+  })
+
   it("surfaces a rejection and reports it", async () => {
     const error = new Error("offline")
     const onError = vi.fn()

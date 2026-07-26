@@ -63,6 +63,7 @@ export interface VirtualizedTimelineProps<T> extends Omit<
     bucket: TimelineBucket<T>
     index: number
   }) => React.ReactNode
+  /** Replaces the native DOM `onError` (omitted above); does not layer on it. */
   onError?: (error: unknown, bucket: TimelineBucket<T>) => void
 }
 

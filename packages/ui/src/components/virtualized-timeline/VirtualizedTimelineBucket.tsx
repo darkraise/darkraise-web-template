@@ -69,59 +69,52 @@ export function VirtualizedTimelineBucket<T>({
   onRetry,
 }: VirtualizedTimelineBucketProps<T>) {
   const cells: React.ReactNode[] = []
-  if (renderItem && rowRange && items) {
-    const first = rowRange.startRow * columns
-    const last = Math.min(bucket.count, (rowRange.endRow + 1) * columns) - 1
-    for (let itemIndex = first; itemIndex <= last; itemIndex += 1) {
-      const item = items[itemIndex]
-      if (!item) continue
-      const row = Math.floor(itemIndex / columns)
-      const column = itemIndex % columns
-      cells.push(
-        <div
-          key={getItemId(item, itemIndex, bucket)}
-          role="gridcell"
-          // Counted from the bucket's full grid, not the mounted subset, or a
-          // screen reader's reported position drifts as rows mount.
-          aria-rowindex={row + 1}
-          aria-colindex={column + 1}
-          className="dr-virtualized-timeline-tile"
-          style={{
-            top: row * (tileHeight + gap),
-            left: `calc(${column} * (var(--vtimeline-tile-width) + ${gap}px))`,
-          }}
-          onClick={() => onItemClick?.(item, bucket)}
-        >
-          {renderItem({ item, index: itemIndex, bucket, selected: false })}
-        </div>,
-      )
-    }
-  }
-
-  const showSkeletons = renderItem && rowRange && !items && status !== "error"
-  if (showSkeletons) {
+  if (renderItem && rowRange) {
     const first = rowRange.startRow * columns
     const last = Math.min(bucket.count, (rowRange.endRow + 1) * columns) - 1
     for (let itemIndex = first; itemIndex <= last; itemIndex += 1) {
       const row = Math.floor(itemIndex / columns)
       const column = itemIndex % columns
-      cells.push(
-        <div
-          key={`skeleton-${itemIndex}`}
-          aria-hidden="true"
-          className="dr-virtualized-timeline-tile"
-          style={{
-            top: row * (tileHeight + gap),
-            left: `calc(${column} * (var(--vtimeline-tile-width) + ${gap}px))`,
-          }}
-        >
-          {renderSkeleton ? (
-            renderSkeleton({ bucket, index: itemIndex })
-          ) : (
-            <Skeleton className="h-full w-full" />
-          )}
-        </div>,
-      )
+      // Computed once per index and shared by both branches below, so a real
+      // tile and the skeleton that preceded it can never land in different
+      // positions.
+      const style = {
+        top: row * (tileHeight + gap),
+        left: `calc(${column} * (var(--vtimeline-tile-width) + ${gap}px))`,
+      }
+      const item = items?.[itemIndex]
+      if (item) {
+        cells.push(
+          <div
+            key={getItemId(item, itemIndex, bucket)}
+            role="gridcell"
+            // Counted from the bucket's full grid, not the mounted subset, or a
+            // screen reader's reported position drifts as rows mount.
+            aria-rowindex={row + 1}
+            aria-colindex={column + 1}
+            className="dr-virtualized-timeline-tile"
+            style={style}
+            onClick={() => onItemClick?.(item, bucket)}
+          >
+            {renderItem({ item, index: itemIndex, bucket, selected: false })}
+          </div>,
+        )
+      } else if (status !== "error") {
+        cells.push(
+          <div
+            key={`skeleton-${itemIndex}`}
+            aria-hidden="true"
+            className="dr-virtualized-timeline-tile"
+            style={style}
+          >
+            {renderSkeleton ? (
+              renderSkeleton({ bucket, index: itemIndex })
+            ) : (
+              <Skeleton className="h-full w-full" />
+            )}
+          </div>,
+        )
+      }
     }
   }
 
@@ -143,7 +136,7 @@ export function VirtualizedTimelineBucket<T>({
         ) : status === "error" ? (
           <div className="dr-virtualized-timeline-error" role="alert">
             <span>
-              {(error as Error | undefined)?.message ?? "Could not load"}
+              {error instanceof Error ? error.message : String(error)}
             </span>
             <Button size="sm" variant="outline" onClick={onRetry}>
               Retry
