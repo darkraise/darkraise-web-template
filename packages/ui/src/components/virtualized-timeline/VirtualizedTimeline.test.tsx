@@ -231,6 +231,15 @@ describe("VirtualizedTimeline", () => {
     expect(group).toHaveAccessibleName("July 2026")
   })
 
+  it("keeps control labels out of the bucket group and grid names", () => {
+    // With the checkbox and disclosure button in the header, a name taken
+    // from the whole header div would read "Select July 2026 Collapse July
+    // 2026 July 2026" and mutate between Collapse and Expand.
+    renderTimeline({ selectable: true, collapsible: true })
+    expect(screen.getAllByRole("group")[0]).toHaveAccessibleName("July 2026")
+    expect(screen.getAllByRole("grid")[0]).toHaveAccessibleName("July 2026")
+  })
+
   it("renders inline items through renderItem", () => {
     renderTimeline()
     expect(screen.getByTestId("2026-07-0")).toBeInTheDocument()

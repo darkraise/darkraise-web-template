@@ -827,6 +827,11 @@ export function VirtualizedTimeline<T>({
     if (!bucket) return null
     const label = formatBucketLabel(bucket, granularity)
     const headerId = `${idBase}-header-${bucket.id}`
+    // Named from the label span alone, not the whole header: the header div
+    // also holds the checkbox and disclosure button, whose accessible names
+    // would otherwise be absorbed into the group name ("Select July 2026
+    // Collapse July 2026 July 2026") and mutate as they toggle.
+    const labelId = `${headerId}-label`
     const height = layout.heights[index]!
     const collapsed = collapsedIds.has(bucket.id)
     const bucketSelection = selectable
@@ -867,7 +872,7 @@ export function VirtualizedTimeline<T>({
         renderItem={renderItem}
         renderBucket={renderBucket}
         contentWidth={contentWidth}
-        headerId={headerId}
+        labelId={labelId}
         onItemClick={onItemClick}
         selectable={selectable}
         selection={selection}
@@ -919,16 +924,16 @@ export function VirtualizedTimeline<T>({
                 />
               </Button>
             ) : null}
-            {renderBucketHeader ? (
-              renderBucketHeader({
-                bucket,
-                label,
-                collapsed,
-                selection: bucketSelection,
-              })
-            ) : (
-              <span>{label}</span>
-            )}
+            <span id={labelId}>
+              {renderBucketHeader
+                ? renderBucketHeader({
+                    bucket,
+                    label,
+                    collapsed,
+                    selection: bucketSelection,
+                  })
+                : label}
+            </span>
           </div>
         }
       />

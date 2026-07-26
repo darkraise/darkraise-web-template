@@ -44,7 +44,8 @@ export interface VirtualizedTimelineBucketProps<T> {
   }) => React.ReactNode
   contentWidth: number
   header: React.ReactNode
-  headerId: string
+  /** Id of the header's label span; names both the group and its grid. */
+  labelId: string
   onItemClick?: (item: T, bucket: TimelineBucket<T>) => void
   onRetry?: () => void
   selectable?: boolean
@@ -82,7 +83,7 @@ export function VirtualizedTimelineBucket<T>({
   renderBucket,
   contentWidth,
   header,
-  headerId,
+  labelId,
   onItemClick,
   onRetry,
   selectable,
@@ -230,7 +231,7 @@ export function VirtualizedTimelineBucket<T>({
     <div
       className="dr-virtualized-timeline-bucket"
       role="group"
-      aria-labelledby={headerId}
+      aria-labelledby={labelId}
       data-index={index}
       data-collapsed={collapsed ? "true" : undefined}
       style={{ top, height }}
@@ -254,6 +255,7 @@ export function VirtualizedTimelineBucket<T>({
         ) : (
           <div
             role="grid"
+            aria-labelledby={labelId}
             aria-colcount={columns}
             aria-rowcount={Math.ceil(bucket.count / columns)}
             aria-multiselectable={selectable ? true : undefined}
