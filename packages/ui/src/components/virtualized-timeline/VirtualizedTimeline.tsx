@@ -129,6 +129,7 @@ function defaultItemId<T>(
 
 export function VirtualizedTimeline<T>({
   className,
+  style,
   buckets,
   granularity = "month",
   renderItem,
@@ -934,13 +935,15 @@ export function VirtualizedTimeline<T>({
   return (
     <div
       className={cn("dr-virtualized-timeline", className)}
+      // The consumer's style spreads after the variables, but must never
+      // replace the object wholesale: the tile CSS resolves its size from
+      // these variables, and a plain `style={{ height: 500 }}` would
+      // otherwise collapse every tile to 0x0.
       style={
         {
-          "--vtimeline-gap": `${gap}px`,
-          "--vtimeline-header-height": `${headerHeight}px`,
           "--vtimeline-tile-width": `${layout.tileWidth}px`,
           "--vtimeline-tile-height": `${layout.tileHeight}px`,
-          "--vtimeline-columns": layout.columns,
+          ...style,
         } as React.CSSProperties
       }
       {...props}

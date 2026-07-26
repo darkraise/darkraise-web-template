@@ -175,6 +175,16 @@ describe("VirtualizedTimeline", () => {
     expect(sizer?.style.height).toBe("400px")
   })
 
+  it("keeps the tile geometry variables under a consumer style prop", () => {
+    const { container } = renderTimeline({ style: { height: 500 } })
+    const root = container.querySelector<HTMLElement>(
+      ".dr-virtualized-timeline",
+    )!
+    expect(root.style.height).toBe("500px")
+    expect(root.style.getPropertyValue("--vtimeline-tile-width")).toBe("100px")
+    expect(root.style.getPropertyValue("--vtimeline-tile-height")).toBe("100px")
+  })
+
   it("gives every bucket grid its full row and column counts, not the mounted subset", () => {
     renderTimeline()
     const grid = screen.getAllByRole("grid")[0]!
