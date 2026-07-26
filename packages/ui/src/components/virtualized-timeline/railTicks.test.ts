@@ -40,7 +40,19 @@ describe("buildRailTicks", () => {
   })
 
   it("labels a year tick with its year and a sub tick with its short month", () => {
-    expect(ticks().map((t) => t.label)).toEqual(["2026", "Jun", "2025", "Nov"])
+    const result = ticks()
+    const june2026 = new Date(2026, 5, 1).toLocaleDateString(undefined, {
+      month: "short",
+    })
+    const nov2025 = new Date(2025, 10, 1).toLocaleDateString(undefined, {
+      month: "short",
+    })
+    expect(result.map((t) => t.label)).toEqual([
+      "2026",
+      june2026,
+      "2025",
+      nov2025,
+    ])
   })
 
   it("omits every label when labels are off, keeping the ticks", () => {
@@ -102,7 +114,9 @@ describe("buildRailTicks", () => {
 
   it("preserves the invariant: no two sub ticks closer than minTickGap", () => {
     // Build 40 buckets all in the same year, spaced 10px apart. With
-    // minTickGap=25, decimation should skip sub ticks to maintain spacing.
+    // minTickGap=25, decimation keeps every 30px: first at 0 (year), then subs
+    // at 30, 60, 90, …, 390. This exact sequence discriminates against the
+    // lookahead bug, which would produce only [390].
     const sameBuckets: TimelineBucket[] = Array.from(
       { length: 40 },
       (_, i) => ({
@@ -125,10 +139,14 @@ describe("buildRailTicks", () => {
     // Filter to sub ticks only (first is year, rest are subs).
     const subs = result.filter((t) => t.kind === "sub")
 
-    // Verify at least one sub tick survives.
-    expect(subs.length).toBeGreaterThan(0)
+    // Assert the exact sub tick sequence.
+    const expectedSubYs = [
+      30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360, 390,
+    ]
+    expect(subs.map((t) => t.y)).toEqual(expectedSubYs)
 
-    // Verify no two consecutive sub ticks violate the minimum gap.
+    // Verify no two consecutive sub ticks violate the minimum gap (already
+    // guaranteed by the sequence, but left as a safeguard).
     for (let i = 1; i < subs.length; i++) {
       const current = subs[i]
       const previous = subs[i - 1]

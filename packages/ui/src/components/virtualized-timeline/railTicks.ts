@@ -25,6 +25,7 @@ export interface RailTicksArgs<T> {
   minLabelGap?: number
 }
 
+/** Build ticks and labels for the scrubber rail. Assumes buckets are chronologically ordered. */
 export function buildRailTicks<T>({
   buckets,
   offsets,
