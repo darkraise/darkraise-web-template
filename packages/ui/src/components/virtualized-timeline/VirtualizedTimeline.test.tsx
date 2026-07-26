@@ -956,6 +956,60 @@ describe("VirtualizedTimeline", () => {
     }
   })
 
+  it("anchors against the pre-resize layout even when the DOM clamps scrollTop", () => {
+    // The two earlier anchoring tests pass with jsdom's plain, unclamped
+    // scrollTop. A real browser re-clamps scrollTop the moment the sizer
+    // shrinks — inside the very commit whose effects run next — so an anchor
+    // captured anywhere in that commit reads the clamped value and lands at
+    // roughly newTotal/oldTotal of the content. This stub reproduces the
+    // clamp by deriving the scroll range from the sizer's live height.
+    let scrollTopValue = 0
+    Object.defineProperty(HTMLElement.prototype, "scrollHeight", {
+      configurable: true,
+      get() {
+        const sizer = (this as HTMLElement).querySelector<HTMLElement>(
+          ".dr-virtualized-timeline-sizer",
+        )
+        return sizer ? parseFloat(sizer.style.height) || 0 : 0
+      },
+    })
+    Object.defineProperty(HTMLElement.prototype, "scrollTop", {
+      configurable: true,
+      get() {
+        const max = Math.max(0, this.scrollHeight - this.clientHeight)
+        return Math.min(scrollTopValue, max)
+      },
+      set(value: number) {
+        const max = Math.max(0, this.scrollHeight - this.clientHeight)
+        scrollTopValue = Math.min(Math.max(0, value), max)
+      },
+    })
+    const stub = stubResizableWidth()
+    try {
+      stub.setWidth(300)
+      const { container } = renderTimeline({ buckets: refBuckets })
+      const viewport = container.querySelector<HTMLElement>(
+        ".dr-virtualized-timeline-viewport",
+      )!
+      // 300px content width gives 2 columns: heights [652, 348, 3084],
+      // offsets [0, 652, 1000], total 4084. 2542 is halfway into "2026-05".
+      viewport.scrollTop = 2542
+      expect(viewport.scrollTop).toBe(2542)
+      stub.setWidth(412)
+      act(() => stub.resize())
+      // 412px regroups to 4 columns: offsets [0, 252, 400], heights
+      // [252, 148, 1084], total 1484. Halfway into "2026-05" is
+      // 400 + 0.5 * 1084 = 942. An anchor captured after the commit reads a
+      // scrollTop already clamped to the new 1184 max and restores near the
+      // top of "2026-05" instead.
+      expect(viewport.scrollTop).toBe(942)
+    } finally {
+      stub.restore()
+      Reflect.deleteProperty(HTMLElement.prototype, "scrollTop")
+      Reflect.deleteProperty(HTMLElement.prototype, "scrollHeight")
+    }
+  })
+
   it("jumps to today without a consumer ref, closing over the handle", async () => {
     // Fixture dates are pinned safely in the past so "today," whatever the
     // real system date is, is always closer to "2020-02" than "2020-01" —

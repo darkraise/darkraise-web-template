@@ -653,10 +653,40 @@ export function VirtualizedTimeline<T>({
     [gap, layout.columns, layout.tileHeight, moveFocus, viewportHeight],
   )
 
+  // The reading position to restore after a width change: which bucket is at
+  // the top and how far into it the reader is.
+  const anchorRef = React.useRef<{ index: number; fraction: number } | null>(
+    null,
+  )
+  const previousWidthRef = React.useRef(contentWidth)
+  // The layout currently committed to the DOM, for the measurement callback
+  // below: at callback time React has not re-rendered yet, so the
+  // render-scope `layout` of any later render must not be trusted there.
+  const layoutRef = React.useRef(layout)
+  React.useLayoutEffect(() => {
+    layoutRef.current = layout
+  }, [layout])
+
   React.useEffect(() => {
     const element = scrollRef.current
     if (!element) return
     const measure = () => {
+      // The anchor must be captured here, before setContentWidth: any later
+      // point — an effect, or an effect cleanup — runs inside the commit
+      // that already gave the sizer its new height, after the browser has
+      // clamped `element.scrollTop` into the new, possibly shorter range.
+      // Only here is the scrollTop still the one belonging to the committed
+      // layout in `layoutRef`.
+      const committed = layoutRef.current
+      if (committed.heights.length > 0) {
+        const index = findBucketAtOffset(committed.offsets, element.scrollTop)
+        const offset = committed.offsets[index] ?? 0
+        const height = committed.heights[index] ?? 1
+        anchorRef.current = {
+          index,
+          fraction: height > 0 ? (element.scrollTop - offset) / height : 0,
+        }
+      }
       setContentWidth(element.clientWidth)
       setViewportHeight(element.clientHeight)
     }
@@ -750,61 +780,25 @@ export function VirtualizedTimeline<T>({
 
   React.useImperativeHandle(ref, () => handle, [handle])
 
-  // Records which bucket is at the top and how far into it we are, so a
-  // later resize can restore the same reading position instead of the same
-  // pixel offset. Keyed on `layout` itself, not on `contentWidth`: `layout`
-  // is memoized on its own inputs (width, buckets, collapsedIds, geometry),
-  // so scrolling still never re-fires this — nothing about a scroll changes
-  // any of those inputs — but a collapse/expand, or buckets arriving after
-  // an empty mount, also refresh the recorded anchor. That matters because
-  // the capture happens in this effect's cleanup, which closes over the
-  // layout of the render that scheduled it, i.e. whichever layout was
-  // current immediately before the change that is about to replace it. A
-  // width-only dependency leaves that cleanup pinned to the layout as of the
-  // *last width change*, so a collapse in between goes unrecorded and the
-  // next resize restores against a layout that no longer exists — same bug
-  // for a bucket set that starts empty, where the cleanup is stuck holding
-  // an empty layout forever. Keying on `layout` means the cleanup is always
-  // one layout change behind, never more, so a stale record is overwritten
-  // at every layout change rather than surviving indefinitely. The bucket
-  // index itself is looked up fresh from the *live* scrollTop rather than
-  // read from `timelineWindow.startIndex`, since that memo is also keyed on
-  // scrollTop and would otherwise reintroduce the same staleness this
-  // effect exists to avoid. Restoring is still gated on the *width* having
-  // actually changed (tracked via `previousWidthRef`): a collapse should
-  // reflow in place, not reposition the viewport — only a width change
-  // should move `scrollTop`.
-  const anchorRef = React.useRef<{ index: number; fraction: number } | null>(
-    null,
-  )
-  const previousWidthRef = React.useRef(contentWidth)
-
+  // Restores the reading position recorded by the measurement callback
+  // above: which bucket was at the top and how far into it the reader was,
+  // rather than the raw pixel offset. Restoring is gated on the *width*
+  // having actually changed (tracked via `previousWidthRef`): a collapse
+  // should reflow in place, not reposition the viewport — only a width
+  // change should move `scrollTop`.
   React.useLayoutEffect(() => {
-    // Captured once and reused in the cleanup below: the scroll container
-    // itself is never remounted while this component is alive, so the same
-    // node is still correct whenever the cleanup later runs, and its
-    // `scrollTop` read there is still live.
     const element = scrollRef.current
     const anchor = anchorRef.current
     const widthChanged = previousWidthRef.current !== contentWidth
     previousWidthRef.current = contentWidth
-    if (element && anchor && widthChanged && layout.heights.length > 0) {
-      const offset = layout.offsets[anchor.index] ?? 0
-      const height = layout.heights[anchor.index] ?? 0
-      element.scrollTop = offset + anchor.fraction * height
-      setScrollTop(element.scrollTop)
-      anchorRef.current = null
+    if (!element || !anchor || !widthChanged || layout.heights.length === 0) {
+      return
     }
-    return () => {
-      if (!element || layout.heights.length === 0) return
-      const index = findBucketAtOffset(layout.offsets, element.scrollTop)
-      const offset = layout.offsets[index] ?? 0
-      const height = layout.heights[index] ?? 1
-      anchorRef.current = {
-        index,
-        fraction: height > 0 ? (element.scrollTop - offset) / height : 0,
-      }
-    }
+    const offset = layout.offsets[anchor.index] ?? 0
+    const height = layout.heights[anchor.index] ?? 0
+    element.scrollTop = offset + anchor.fraction * height
+    setScrollTop(element.scrollTop)
+    anchorRef.current = null
   }, [layout, contentWidth])
 
   React.useEffect(() => {
