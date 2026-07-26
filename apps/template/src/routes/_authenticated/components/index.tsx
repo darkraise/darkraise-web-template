@@ -145,6 +145,8 @@ const DESCRIPTIONS: Record<string, string> = {
     "Recursive nav tree with selection, expand, and keyboard nav",
   "/components/virtualized-dropdown-menu":
     "Dropdown that virtualizes very long option lists",
+  "/components/virtualized-timeline":
+    "Date-bucketed scroller with a scrubber, lazy loading, and selection",
 }
 
 const componentItems = (
