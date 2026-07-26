@@ -47,6 +47,10 @@ export interface VirtualizedTimelineBucketProps<T> {
   onRetry?: () => void
   selectable?: boolean
   selection: TimelineSelection
+  /** The id holding the roving tab stop. */
+  activeId: string | null
+  onItemKeyDown: (event: React.KeyboardEvent<HTMLElement>, id: string) => void
+  onFocusItem: (id: string) => void
 }
 
 export function VirtualizedTimelineBucket<T>({
@@ -74,6 +78,9 @@ export function VirtualizedTimelineBucket<T>({
   onRetry,
   selectable,
   selection,
+  activeId,
+  onItemKeyDown,
+  onFocusItem,
 }: VirtualizedTimelineBucketProps<T>) {
   const cells: React.ReactNode[] = []
   if (renderItem && rowRange) {
@@ -103,6 +110,8 @@ export function VirtualizedTimelineBucket<T>({
             aria-colindex={column + 1}
             aria-selected={selectable ? selected : undefined}
             data-selected={selectable && selected ? "true" : undefined}
+            data-item-id={id}
+            tabIndex={id === activeId ? 0 : -1}
             className="dr-virtualized-timeline-tile"
             style={style}
             onClick={(event) => {
@@ -117,10 +126,24 @@ export function VirtualizedTimelineBucket<T>({
               if (event.key === "Enter") {
                 event.preventDefault()
                 onItemClick?.(item, bucket)
-              } else if (event.key === " " && selectable) {
+                return
+              }
+              if (event.key === " " && selectable) {
                 event.preventDefault()
                 selection.toggle(id)
+                return
               }
+              if (event.key === "Home" || event.key === "End") {
+                event.preventDefault()
+                const ids = (items ?? []).map((entry, entryIndex) =>
+                  getItemId(entry, entryIndex, bucket),
+                )
+                const target =
+                  event.key === "Home" ? ids[0] : ids[ids.length - 1]
+                if (target) onFocusItem(target)
+                return
+              }
+              onItemKeyDown(event, id)
             }}
           >
             {renderItem({ item, index: itemIndex, bucket, selected })}

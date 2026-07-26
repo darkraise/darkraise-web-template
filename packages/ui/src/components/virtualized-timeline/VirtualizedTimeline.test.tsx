@@ -463,4 +463,106 @@ describe("VirtualizedTimeline", () => {
       "false:none",
     )
   })
+
+  it("keeps exactly one tab stop across every mounted item", () => {
+    renderTimeline()
+    const cells = screen.getAllByRole("gridcell")
+    expect(cells.filter((cell) => cell.tabIndex === 0)).toHaveLength(1)
+    expect(cells[0]).toHaveAttribute("tabindex", "0")
+  })
+
+  it("moves focus one item with left and right", () => {
+    renderTimeline()
+    const cells = screen.getAllByRole("gridcell")
+    cells[0]!.focus()
+    fireEvent.keyDown(cells[0]!, { key: "ArrowRight" })
+    expect(document.activeElement).toBe(cells[1])
+    fireEvent.keyDown(cells[1]!, { key: "ArrowLeft" })
+    expect(document.activeElement).toBe(cells[0])
+  })
+
+  it("moves focus a column with up and down", () => {
+    renderTimeline()
+    const cells = screen.getAllByRole("gridcell")
+    cells[0]!.focus()
+    // 412px content width at 100px minimum tile width gives four columns.
+    fireEvent.keyDown(cells[0]!, { key: "ArrowDown" })
+    expect(document.activeElement).toBe(cells[4])
+  })
+
+  it("reaches the bucket edges with Home and End", () => {
+    renderTimeline()
+    const cells = screen.getAllByRole("gridcell")
+    cells[2]!.focus()
+    fireEvent.keyDown(cells[2]!, { key: "End" })
+    expect(document.activeElement).toBe(cells[7])
+    fireEvent.keyDown(cells[7]!, { key: "Home" })
+    expect(document.activeElement).toBe(cells[0])
+  })
+
+  it("crosses a bucket boundary", () => {
+    renderTimeline()
+    const cells = screen.getAllByRole("gridcell")
+    cells[7]!.focus()
+    fireEvent.keyDown(cells[7]!, { key: "ArrowRight" })
+    expect(document.activeElement).toHaveAttribute("data-item-id", "2026-06-0")
+  })
+
+  it("focuses the bucket header when the destination bucket has not loaded", async () => {
+    renderTimeline({
+      buckets: [buckets[0]!, { id: "2026-06", date: "2026-06-01", count: 3 }],
+      loadBucket: () => new Promise<Photo[]>(() => {}),
+    })
+    const cells = screen.getAllByRole("gridcell")
+    cells[7]!.focus()
+    fireEvent.keyDown(cells[7]!, { key: "ArrowRight" })
+    expect(document.activeElement).toHaveAttribute(
+      "id",
+      expect.stringContaining("header-2026-06"),
+    )
+  })
+
+  it("scrolls an off-window End target into view before focusing it", () => {
+    // 40 items over 4 columns is 10 rows; a 300px viewport mounts only the
+    // first three, so End targets a cell that does not exist yet and must go
+    // through the scroll-then-focus handoff.
+    renderTimeline({ buckets: [makeBucket("2026-07", "2026-07-01", 40)] })
+    const cells = screen.getAllByRole("gridcell")
+    expect(screen.queryByTestId("2026-07-39")).not.toBeInTheDocument()
+    cells[0]!.focus()
+    fireEvent.keyDown(cells[0]!, { key: "End" })
+    expect(document.activeElement).toHaveAttribute("data-item-id", "2026-07-39")
+  })
+
+  it("keeps a mounted tab stop when the active item scrolls out of the window", () => {
+    renderTimeline()
+    // ArrowDown on the scrubber rail scrolls to bucket 1's offset (252),
+    // which unmounts bucket 0 and with it the cell holding the tab stop.
+    fireEvent.keyDown(screen.getByRole("slider"), { key: "ArrowDown" })
+    const cells = screen.getAllByRole("gridcell")
+    expect(cells.length).toBeGreaterThan(0)
+    expect(cells.filter((cell) => cell.tabIndex === 0)).toHaveLength(1)
+  })
+
+  it("does not steal focus to a late-loading bucket after the user moves on", async () => {
+    let resolveItems: (items: Photo[]) => void = () => {}
+    renderTimeline({
+      buckets: [buckets[0]!, { id: "2026-06", date: "2026-06-01", count: 3 }],
+      loadBucket: () =>
+        new Promise<Photo[]>((resolve) => {
+          resolveItems = resolve
+        }),
+    })
+    const cells = screen.getAllByRole("gridcell")
+    cells[7]!.focus()
+    fireEvent.keyDown(cells[7]!, { key: "ArrowRight" })
+    expect(document.activeElement).toHaveAttribute(
+      "id",
+      expect.stringContaining("header-2026-06"),
+    )
+    cells[0]!.focus()
+    resolveItems([{ id: "z-0" }, { id: "z-1" }, { id: "z-2" }])
+    await waitFor(() => expect(screen.getByTestId("z-0")).toBeInTheDocument())
+    expect(document.activeElement).toBe(cells[0])
+  })
 })

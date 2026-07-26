@@ -28,6 +28,10 @@ import "./virtualized-timeline.css"
 
 declare const process: { env: { NODE_ENV?: string } }
 
+type PendingFocusTarget =
+  | { kind: "item"; id: string }
+  | { kind: "header"; bucketId: string }
+
 export interface VirtualizedTimelineProps<T> extends Omit<
   React.HTMLAttributes<HTMLDivElement>,
   // `onError` is redeclared below with the bucket-loader signature, which
@@ -229,6 +233,19 @@ export function VirtualizedTimeline<T>({
     return ids
   }, [buckets, bucketItems, getItemId])
 
+  // Like `orderedIds`, but skipping collapsed buckets: a collapsed bucket's
+  // cells never mount, so focus sent there could never land.
+  const navigableIds = React.useMemo(() => {
+    const ids: string[] = []
+    for (const bucket of buckets) {
+      if (collapsedIds.has(bucket.id)) continue
+      const items = bucketItems.get(bucket.id).items
+      if (!items) continue
+      items.forEach((item, index) => ids.push(getItemId(item, index, bucket)))
+    }
+    return ids
+  }, [buckets, bucketItems, collapsedIds, getItemId])
+
   const selection = useTimelineSelection({
     orderedIds,
     selectedIds,
@@ -283,6 +300,258 @@ export function VirtualizedTimeline<T>({
       selection.setBucket(ids, next)
     },
     [bucketIdsFor, bucketItems, getItemId, markPending, selection],
+  )
+
+  const [activeItemId, setActiveItemId] = React.useState<string | null>(null)
+  // Set when the target of a keyboard move is not mounted yet; the effect
+  // below focuses it once it is.
+  const pendingFocus = React.useRef<PendingFocusTarget | null>(null)
+
+  const activeId =
+    activeItemId && navigableIds.includes(activeItemId)
+      ? activeItemId
+      : (navigableIds[0] ?? null)
+
+  // The active item can scroll out of the mounted set; without a mounted
+  // fallback the whole timeline would drop out of the tab order until it
+  // scrolled back in.
+  const tabStopId = React.useMemo(() => {
+    if (activeId === null) return null
+    let fallback: string | null = null
+    for (
+      let index = timelineWindow.startIndex;
+      index <= timelineWindow.endIndex;
+      index += 1
+    ) {
+      const bucket = buckets[index]
+      if (!bucket) continue
+      const range = timelineWindow.rows.get(index)
+      const items = bucketItems.get(bucket.id).items
+      if (!range || !items) continue
+      const first = range.startRow * layout.columns
+      const last =
+        Math.min(bucket.count, (range.endRow + 1) * layout.columns) - 1
+      for (let itemIndex = first; itemIndex <= last; itemIndex += 1) {
+        const item = items[itemIndex]
+        if (item === undefined) continue
+        const id = getItemId(item, itemIndex, bucket)
+        if (id === activeId) return activeId
+        fallback ??= id
+      }
+    }
+    return fallback
+  }, [
+    activeId,
+    bucketItems,
+    buckets,
+    getItemId,
+    layout.columns,
+    timelineWindow,
+  ])
+
+  const revealRange = React.useCallback((top: number, bottom: number) => {
+    const element = scrollRef.current
+    if (!element) return
+    let next = element.scrollTop
+    if (top < next) next = top
+    else if (bottom > next + element.clientHeight)
+      next = bottom - element.clientHeight
+    if (next === element.scrollTop) return
+    element.scrollTop = next
+    // Read back rather than trusting `next`, for the same clamping reason as
+    // the scrubber's onScrubTo.
+    setScrollTop(element.scrollTop)
+  }, [])
+
+  const locateItem = React.useCallback(
+    (id: string): { bucketIndex: number; itemIndex: number } | null => {
+      for (
+        let bucketIndex = 0;
+        bucketIndex < buckets.length;
+        bucketIndex += 1
+      ) {
+        const bucket = buckets[bucketIndex]!
+        if (collapsedIds.has(bucket.id)) continue
+        const items = bucketItems.get(bucket.id).items
+        if (!items) continue
+        for (let itemIndex = 0; itemIndex < items.length; itemIndex += 1) {
+          if (getItemId(items[itemIndex]!, itemIndex, bucket) === id) {
+            return { bucketIndex, itemIndex }
+          }
+        }
+      }
+      return null
+    },
+    [buckets, bucketItems, collapsedIds, getItemId],
+  )
+
+  const focusItem = React.useCallback(
+    (id: string) => {
+      setActiveItemId(id)
+      const node = scrollRef.current?.querySelector<HTMLElement>(
+        `[data-item-id="${CSS.escape(id)}"]`,
+      )
+      if (node) {
+        pendingFocus.current = null
+        node.focus()
+        return
+      }
+      const location = locateItem(id)
+      if (!location) {
+        pendingFocus.current = null
+        return
+      }
+      const row = Math.floor(location.itemIndex / layout.columns)
+      const tileTop =
+        layout.offsets[location.bucketIndex]! +
+        headerHeight +
+        row * (layout.tileHeight + gap)
+      revealRange(tileTop, tileTop + layout.tileHeight)
+      pendingFocus.current = { kind: "item", id }
+    },
+    [
+      gap,
+      headerHeight,
+      layout.columns,
+      layout.offsets,
+      layout.tileHeight,
+      locateItem,
+      revealRange,
+    ],
+  )
+
+  React.useLayoutEffect(() => {
+    const pending = pendingFocus.current
+    if (!pending) return
+    if (pending.kind === "item" && !navigableIds.includes(pending.id)) {
+      pendingFocus.current = null
+      return
+    }
+    if (
+      pending.kind === "header" &&
+      !buckets.some((bucket) => bucket.id === pending.bucketId)
+    ) {
+      pendingFocus.current = null
+      return
+    }
+    const node =
+      pending.kind === "item"
+        ? scrollRef.current?.querySelector<HTMLElement>(
+            `[data-item-id="${CSS.escape(pending.id)}"]`,
+          )
+        : document.getElementById(`${idBase}-header-${pending.bucketId}`)
+    if (!node) return
+    pendingFocus.current = null
+    node.focus()
+  })
+
+  const moveFocus = React.useCallback(
+    (fromId: string, delta: number) => {
+      const index = navigableIds.indexOf(fromId)
+      if (index < 0) return
+      const target = navigableIds[index + delta]
+      if (target) {
+        focusItem(target)
+        return
+      }
+      // Past the loaded range: the next bucket's ids are not knowable from its
+      // count, so land on its header and load it rather than losing focus.
+      const direction = delta > 0 ? 1 : -1
+      const from = locateItem(fromId)
+      if (!from) return
+      let nextIndex = -1
+      for (
+        let bucketIndex = from.bucketIndex + direction;
+        bucketIndex >= 0 && bucketIndex < buckets.length;
+        bucketIndex += direction
+      ) {
+        const bucket = buckets[bucketIndex]!
+        if (collapsedIds.has(bucket.id)) continue
+        if (bucketItems.get(bucket.id).items === undefined) {
+          nextIndex = bucketIndex
+          break
+        }
+      }
+      if (nextIndex < 0) return
+      const nextBucket = buckets[nextIndex]!
+      const headerDomId = `${idBase}-header-${nextBucket.id}`
+      const header = document.getElementById(headerDomId)
+      if (header) {
+        pendingFocus.current = null
+        header.focus()
+      } else {
+        const top = layout.offsets[nextIndex]!
+        revealRange(top, top + headerHeight)
+        pendingFocus.current = { kind: "header", bucketId: nextBucket.id }
+      }
+      void bucketItems.ensure(nextBucket.id).then((items) => {
+        if (!items || items.length === 0) return
+        // Only advance to the first item if focus is still parked where this
+        // move left it; anything else means the user moved on mid-load, and
+        // stealing focus back would be worse than staying put.
+        const headerNode = document.getElementById(headerDomId)
+        const pending = pendingFocus.current
+        const stillOnHeader =
+          (headerNode !== null && document.activeElement === headerNode) ||
+          (pending?.kind === "header" && pending.bucketId === nextBucket.id)
+        if (!stillOnHeader) return
+        pendingFocus.current = {
+          kind: "item",
+          id: getItemId(items[0]!, 0, nextBucket),
+        }
+      })
+    },
+    [
+      bucketItems,
+      buckets,
+      collapsedIds,
+      focusItem,
+      getItemId,
+      headerHeight,
+      idBase,
+      layout.offsets,
+      locateItem,
+      navigableIds,
+      revealRange,
+    ],
+  )
+
+  const handleItemKeyDown = React.useCallback(
+    (event: React.KeyboardEvent<HTMLElement>, id: string) => {
+      const rowsPerViewport = Math.max(
+        1,
+        Math.floor(viewportHeight / (layout.tileHeight + gap)),
+      )
+      switch (event.key) {
+        case "ArrowRight":
+          event.preventDefault()
+          moveFocus(id, 1)
+          return
+        case "ArrowLeft":
+          event.preventDefault()
+          moveFocus(id, -1)
+          return
+        case "ArrowDown":
+          event.preventDefault()
+          moveFocus(id, layout.columns)
+          return
+        case "ArrowUp":
+          event.preventDefault()
+          moveFocus(id, -layout.columns)
+          return
+        case "PageDown":
+          event.preventDefault()
+          moveFocus(id, layout.columns * rowsPerViewport)
+          return
+        case "PageUp":
+          event.preventDefault()
+          moveFocus(id, -layout.columns * rowsPerViewport)
+          return
+        default:
+          return
+      }
+    },
+    [gap, layout.columns, layout.tileHeight, moveFocus, viewportHeight],
   )
 
   React.useEffect(() => {
@@ -382,9 +651,15 @@ export function VirtualizedTimeline<T>({
         onItemClick={onItemClick}
         selectable={selectable}
         selection={selection}
+        activeId={tabStopId}
+        onItemKeyDown={handleItemKeyDown}
+        onFocusItem={focusItem}
         header={
           <div
             id={headerId}
+            // Focusable programmatically (keyboard moves land here while a
+            // bucket loads) without becoming a tab stop of its own.
+            tabIndex={-1}
             className="dr-virtualized-timeline-bucket-header"
             style={{ height: headerHeight }}
           >
