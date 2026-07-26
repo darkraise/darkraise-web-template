@@ -37,10 +37,10 @@ export function buildRailTicks<T>({
   if (buckets.length === 0 || totalSize <= 0 || railHeight <= 0) return []
 
   const scale = railHeight / totalSize
+  const kept: RailTick[] = []
   let previousYear: number | null = null
+  let lastTickY = Number.NEGATIVE_INFINITY
 
-  // First pass: identify candidate ticks (all buckets).
-  const candidates: RailTick[] = []
   buckets.forEach((bucket, index) => {
     const year = toBucketDate(bucket.date).getFullYear()
     const isYear = previousYear === null || year !== previousYear
@@ -48,25 +48,19 @@ export function buildRailTicks<T>({
 
     const y = (offsets[index] ?? 0) * scale
 
-    candidates.push({
+    // Year ticks are the rail's structure and always survive; only sub ticks
+    // thin. Thinning bounds the node count by the rail's height rather than
+    // by the collection size, which is what keeps a daily library over
+    // several years from emitting thousands of sub-pixel ticks.
+    if (!isYear && y - lastTickY < minTickGap) return
+
+    lastTickY = y
+    kept.push({
       index,
       bucketId: bucket.id,
       y,
       kind: isYear ? "year" : "sub",
     })
-  })
-
-  // Second pass: thin sub ticks that are surrounded by closer ticks.
-  const kept = candidates.filter((tick, idx) => {
-    if (tick.kind === "year") return true
-
-    const prev = candidates[idx - 1]
-    const next = candidates[idx + 1]
-
-    const tooCloseToPrev = prev && tick.y - prev.y < minTickGap
-    const tooCloseToNext = next && next.y - tick.y < minTickGap
-
-    return !(tooCloseToPrev && tooCloseToNext)
   })
 
   if (!showLabels) return kept

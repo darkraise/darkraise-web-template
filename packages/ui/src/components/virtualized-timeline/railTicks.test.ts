@@ -50,11 +50,12 @@ describe("buildRailTicks", () => {
   })
 
   it("thins sub ticks closer together than the minimum gap", () => {
-    // A 40px rail puts the ticks at 0/10/20/30. With minTickGap 15 the sub
-    // tick at 10 is dropped (too close to the year tick at 0) and the sub at
-    // 30 is kept (15 clear of the year tick at 20).
+    // A 40px rail puts the ticks at 0/10/20/30. Every gap is 10px. With
+    // minTickGap 15, the sub tick at 10 is dropped (10 < 15 from year at 0)
+    // and the sub at 30 is dropped (10 < 15 from year at 20). Only structural
+    // year ticks survive.
     const result = ticks({ railHeight: 40, minTickGap: 15 })
-    expect(result.map((t) => t.y)).toEqual([0, 20, 30])
+    expect(result.map((t) => t.y)).toEqual([0, 20])
   })
 
   it("never thins a year tick, however tight the spacing", () => {
@@ -97,5 +98,44 @@ describe("buildRailTicks", () => {
     const first = ticks()[0]
     expect(first?.index).toBe(0)
     expect(first?.bucketId).toBe("2026-07")
+  })
+
+  it("preserves the invariant: no two sub ticks closer than minTickGap", () => {
+    // Build 40 buckets all in the same year, spaced 10px apart. With
+    // minTickGap=25, decimation should skip sub ticks to maintain spacing.
+    const sameBuckets: TimelineBucket[] = Array.from(
+      { length: 40 },
+      (_, i) => ({
+        id: `bucket-${i}`,
+        date: "2026-01-01",
+        count: 1,
+      }),
+    )
+    const sameOffsets = Array.from({ length: 40 }, (_, i) => i * 10)
+
+    const result = buildRailTicks({
+      buckets: sameBuckets,
+      offsets: sameOffsets,
+      totalSize: 390,
+      railHeight: 390,
+      showLabels: false,
+      minTickGap: 25,
+    })
+
+    // Filter to sub ticks only (first is year, rest are subs).
+    const subs = result.filter((t) => t.kind === "sub")
+
+    // Verify at least one sub tick survives.
+    expect(subs.length).toBeGreaterThan(0)
+
+    // Verify no two consecutive sub ticks violate the minimum gap.
+    for (let i = 1; i < subs.length; i++) {
+      const current = subs[i]
+      const previous = subs[i - 1]
+      if (current && previous) {
+        const gap = current.y - previous.y
+        expect(gap).toBeGreaterThanOrEqual(25)
+      }
+    }
   })
 })
