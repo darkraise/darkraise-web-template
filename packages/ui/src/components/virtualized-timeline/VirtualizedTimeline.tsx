@@ -30,6 +30,10 @@ import "./virtualized-timeline.css"
 
 declare const process: { env: { NODE_ENV?: string } }
 
+/** Must match the container query in virtualized-timeline.css. Paired so the
+ *  JavaScript label decision and the CSS width decision cannot disagree. */
+const RAIL_LABEL_BREAKPOINT = 480
+
 /** Index of the last bucket whose offset is <= y, or 0. Mirrors the private
  *  helper in `useBucketWindow.ts`, which isn't exported. */
 function findBucketAtOffset(offsets: number[], y: number): number {
@@ -192,9 +196,11 @@ export function VirtualizedTimeline<T>({
   }
 
   const scrollRef = React.useRef<HTMLDivElement | null>(null)
+  const scrollAreaRef = React.useRef<HTMLDivElement | null>(null)
   const idBase = useId()
   const [contentWidth, setContentWidth] = React.useState(0)
   const [viewportHeight, setViewportHeight] = React.useState(0)
+  const [scrollAreaWidth, setScrollAreaWidth] = React.useState(0)
   const [scrollTop, setScrollTop] = React.useState(0)
 
   // The cell holding the roving tab stop, with its owning bucket carried
@@ -706,11 +712,18 @@ export function VirtualizedTimeline<T>({
       }
       setContentWidth(element.clientWidth)
       setViewportHeight(element.clientHeight)
+      // Read separately from `contentWidth`: the rail's own width is what the
+      // label breakpoint decides, so deriving the scroll area's width by
+      // adding it back would be circular.
+      const area = scrollAreaRef.current
+      if (area) setScrollAreaWidth(area.clientWidth)
     }
     measure()
     if (typeof ResizeObserver === "undefined") return
     const observer = new ResizeObserver(measure)
     observer.observe(element)
+    const area = scrollAreaRef.current
+    if (area) observer.observe(area)
     return () => observer.disconnect()
   }, [])
 
@@ -1010,7 +1023,7 @@ export function VirtualizedTimeline<T>({
       {/* Positions the scrubber against the scrollable area alone rather than
           the whole component, so the rail's flex row never competes with the
           toolbar's band above it. */}
-      <div className="dr-virtualized-timeline-scroll-area">
+      <div className="dr-virtualized-timeline-scroll-area" ref={scrollAreaRef}>
         {/* Must render unconditionally: the measurement effects above run
             once, right after the first commit, with an empty dependency
             array. If this element were absent on that first commit (e.g.
@@ -1039,6 +1052,7 @@ export function VirtualizedTimeline<T>({
             scrollTop={scrollTop}
             viewportHeight={viewportHeight}
             railHeight={viewportHeight}
+            showLabels={scrollAreaWidth >= RAIL_LABEL_BREAKPOINT}
             onScrubTo={scrollTo}
           />
         ) : null}

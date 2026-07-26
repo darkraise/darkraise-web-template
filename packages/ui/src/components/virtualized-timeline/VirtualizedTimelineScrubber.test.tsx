@@ -26,7 +26,13 @@ const layout = computeBucketLayout({
   geometry,
 })
 
-function renderScrubber(onScrubTo = vi.fn()) {
+function renderScrubber(
+  overrides: {
+    onScrubTo?: ReturnType<typeof vi.fn>
+    showLabels?: boolean
+  } = {},
+) {
+  const onScrubTo = overrides.onScrubTo ?? vi.fn()
   const utils = render(
     <VirtualizedTimelineScrubber
       buckets={buckets}
@@ -35,6 +41,7 @@ function renderScrubber(onScrubTo = vi.fn()) {
       scrollTop={0}
       viewportHeight={200}
       railHeight={400}
+      showLabels={overrides.showLabels ?? true}
       onScrubTo={onScrubTo}
     />,
   )
@@ -105,17 +112,74 @@ describe("VirtualizedTimelineScrubber", () => {
     expect(onScrubTo).toHaveBeenLastCalledWith(0)
   })
 
-  it("renders one labelled segment per bucket, sized to its share of total height", () => {
+  it("renders one absolutely positioned tick per bucket", () => {
     const { container } = renderScrubber()
-    expect(screen.getByText("July 2026")).toBeInTheDocument()
-    expect(screen.getByText("June 2026")).toBeInTheDocument()
-    const segments = container.querySelectorAll<HTMLElement>(
-      ".dr-virtualized-timeline-scrubber-segment",
+    const ticks = container.querySelectorAll(
+      ".dr-virtualized-timeline-scrubber-tick",
     )
-    // heights [252, 148] of a 400 total: each segment's flex-grow is its
-    // share, which is what makes the rail proportional to bucket size
-    // rather than to bucket count.
-    expect(segments[0]?.style.flexGrow).toBe(String(252 / 400))
-    expect(segments[1]?.style.flexGrow).toBe(String(148 / 400))
+    expect(ticks).toHaveLength(2)
+  })
+
+  it("places each tick at its proportional offset down the rail", () => {
+    const { container } = renderScrubber()
+    const ticks = container.querySelectorAll<HTMLElement>(
+      ".dr-virtualized-timeline-scrubber-tick",
+    )
+    // heights [252, 148] over a 400 total on a 400px rail: offsets 0 and 252.
+    expect(ticks[0]?.style.top).toBe("0px")
+    expect(ticks[1]?.style.top).toBe("252px")
+  })
+
+  it("marks the year boundary distinctly from a month", () => {
+    const { container } = renderScrubber()
+    const ticks = container.querySelectorAll<HTMLElement>(
+      ".dr-virtualized-timeline-scrubber-tick",
+    )
+    expect(ticks[0]?.dataset.tickKind).toBe("year")
+    expect(ticks[1]?.dataset.tickKind).toBe("sub")
+  })
+
+  it("shows the year on the year tick and the short month on the other", () => {
+    renderScrubber()
+    expect(screen.getByText("2026")).toBeInTheDocument()
+    expect(screen.getByText("Jun")).toBeInTheDocument()
+  })
+
+  it("keeps the ticks but drops every label when labels are off", () => {
+    const { container } = renderScrubber({ showLabels: false })
+    expect(
+      container.querySelectorAll(".dr-virtualized-timeline-scrubber-tick"),
+    ).toHaveLength(2)
+    expect(screen.queryByText("2026")).not.toBeInTheDocument()
+  })
+
+  // The rail's whole inner DOM is being replaced in this task, so its slider
+  // contract and the decorative status of everything inside it are exactly
+  // what a rewrite loses silently.
+  it("keeps its slider semantics through the rewrite", () => {
+    const { rail } = renderScrubber()
+    expect(rail).toHaveAttribute("role", "slider")
+    expect(rail).toHaveAttribute("aria-orientation", "vertical")
+    expect(rail).toHaveAttribute("aria-valuetext", "July 2026")
+    const now = Number(rail.getAttribute("aria-valuenow"))
+    const max = Number(rail.getAttribute("aria-valuemax"))
+    const min = Number(rail.getAttribute("aria-valuemin"))
+    // An earlier version of this scrubber rendered a valuenow above its own
+    // valuemax, and the invalid state never resynced.
+    expect(min).toBeLessThanOrEqual(now)
+    expect(now).toBeLessThanOrEqual(max)
+  })
+
+  it("exposes ticks and labels as decorative, not as content", () => {
+    const { container } = renderScrubber()
+    const ticks = container.querySelectorAll(
+      ".dr-virtualized-timeline-scrubber-tick",
+    )
+    // The dates already reach assistive technology through aria-valuetext;
+    // announcing every tick as well would be noise.
+    for (const tick of ticks) {
+      const label = tick.querySelector("span")
+      if (label) expect(label).toHaveAttribute("aria-hidden", "true")
+    }
   })
 })

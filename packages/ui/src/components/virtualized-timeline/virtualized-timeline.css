@@ -109,21 +109,37 @@
     }
   }
 
-  /* Deliberately unpositioned and unclipped: the segment is only as wide as
-     the 12px rail, so its label must escape it. The absolutely positioned
-     span resolves against the rail instead, and its auto top keeps it at
-     the segment's own static vertical position. */
-  .dr-virtualized-timeline-scrubber-segment {
-    @apply text-muted-foreground flex min-h-0 items-start justify-end text-[10px];
+  /* Positioned by the rail's own arithmetic, so `top` is inline. The tick
+     mark is the ::before; the label is the span beside it. */
+  .dr-virtualized-timeline-scrubber-tick {
+    @apply absolute right-0 flex items-center gap-1;
   }
 
-  /* Only the active segment shows its label, floating left of the rail. */
-  .dr-virtualized-timeline-scrubber-segment > span {
-    @apply bg-background/85 pointer-events-none absolute right-4 hidden rounded-[var(--radius-sm)] px-1 whitespace-nowrap backdrop-blur-sm;
+  .dr-virtualized-timeline-scrubber-tick::before {
+    @apply block shrink-0;
+    content: "";
   }
 
-  .dr-virtualized-timeline-scrubber-segment[data-active="true"] > span {
-    @apply text-foreground block;
+  .dr-virtualized-timeline-scrubber-tick[data-tick-kind="year"]::before {
+    @apply h-[1.5px] w-3;
+    background-color: hsl(var(--foreground));
+  }
+
+  .dr-virtualized-timeline-scrubber-tick[data-tick-kind="sub"]::before {
+    @apply h-px w-1.5;
+    background-color: hsl(var(--muted-foreground));
+  }
+
+  .dr-virtualized-timeline-scrubber-tick > span {
+    @apply pointer-events-none whitespace-nowrap;
+  }
+
+  .dr-virtualized-timeline-scrubber-tick[data-tick-kind="year"] > span {
+    @apply text-foreground text-[11px] font-medium;
+  }
+
+  .dr-virtualized-timeline-scrubber-tick[data-tick-kind="sub"] > span {
+    @apply text-muted-foreground text-[10px];
   }
 
   .dr-virtualized-timeline-scrubber-label {

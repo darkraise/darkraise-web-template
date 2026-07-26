@@ -6,6 +6,7 @@ import * as React from "react"
 
 import { cn } from "@lib/utils"
 import { formatBucketLabel, toBucketDate } from "./labels"
+import { buildRailTicks } from "./railTicks"
 import type { BucketLayout, TimelineBucket, TimelineGranularity } from "./types"
 
 export interface VirtualizedTimelineScrubberProps<T> {
@@ -15,6 +16,7 @@ export interface VirtualizedTimelineScrubberProps<T> {
   scrollTop: number
   viewportHeight: number
   railHeight: number
+  showLabels: boolean
   onScrubTo: (scrollTop: number) => void
   className?: string
 }
@@ -39,6 +41,7 @@ export function VirtualizedTimelineScrubber<T>({
   scrollTop,
   viewportHeight,
   railHeight,
+  showLabels,
   onScrubTo,
   className,
 }: VirtualizedTimelineScrubberProps<T>) {
@@ -54,6 +57,21 @@ export function VirtualizedTimelineScrubber<T>({
   const activeIndex = React.useMemo(
     () => indexAtOffset(layout.offsets, scrollTop),
     [layout.offsets, scrollTop],
+  )
+
+  const ticks = React.useMemo(
+    () =>
+      buildRailTicks({
+        buckets,
+        offsets: layout.offsets,
+        totalSize: layout.totalSize,
+        railHeight,
+        showLabels,
+      }),
+    // Deliberately not keyed on scrollTop: the index is fixed while you
+    // scroll, and only the caret moves. Re-deriving it per frame would
+    // reconcile every tick on every frame.
+    [buckets, layout.offsets, layout.totalSize, railHeight, showLabels],
   )
 
   const scrubToClientY = React.useCallback(
@@ -186,21 +204,16 @@ export function VirtualizedTimelineScrubber<T>({
       }}
       onKeyDown={handleKeyDown}
     >
-      {buckets.map((bucket, index) => {
-        const height = layout.heights[index] ?? 0
-        const share = layout.totalSize > 0 ? height / layout.totalSize : 0
-        const label = formatBucketLabel(bucket, granularity)
-        return (
-          <div
-            key={bucket.id}
-            className="dr-virtualized-timeline-scrubber-segment"
-            data-active={index === activeIndex ? "true" : undefined}
-            style={{ flexGrow: share }}
-          >
-            <span aria-hidden="true">{label}</span>
-          </div>
-        )
-      })}
+      {ticks.map((tick) => (
+        <div
+          key={tick.bucketId}
+          className="dr-virtualized-timeline-scrubber-tick"
+          data-tick-kind={tick.kind}
+          style={{ top: tick.y }}
+        >
+          {tick.label ? <span aria-hidden="true">{tick.label}</span> : null}
+        </div>
+      ))}
       {hoverLabel ? (
         <span
           aria-hidden="true"
