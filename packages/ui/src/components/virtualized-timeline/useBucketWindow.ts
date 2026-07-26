@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-
 "use client"
+
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import * as React from "react"
 
@@ -59,17 +59,13 @@ export function computeBucketWindow<T>({
 
   const top = scrollTop - overscanPx
   const bottom = scrollTop + viewportHeight + overscanPx
-  const { offsets, heights, columns, tileHeight } = layout
+  const { offsets, columns, tileHeight } = layout
 
-  let startIndex = findIndexAtOffset(offsets, top)
-  // The bucket containing `top` may end above it when `top` lands in a gap
-  // past the last bucket; step forward rather than mounting nothing.
-  while (
-    startIndex < buckets.length - 1 &&
-    offsets[startIndex]! + heights[startIndex]! <= top
-  ) {
-    startIndex += 1
-  }
+  // Offsets are prefix sums of heights: offsets[i+1] === offsets[i] + heights[i].
+  // The search returns the largest index whose offset is <= top, so the found
+  // bucket always ends below top. A scrollTop past the end clamps naturally to
+  // the last index.
+  const startIndex = findIndexAtOffset(offsets, top)
 
   let endIndex = startIndex
   while (endIndex + 1 < buckets.length && offsets[endIndex + 1]! < bottom) {
