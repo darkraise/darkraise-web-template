@@ -30,6 +30,9 @@ import "./virtualized-timeline.css"
 
 declare const process: { env: { NODE_ENV?: string } }
 
+/** Must match the rail's `w-3` in virtualized-timeline.css. */
+const SCRUBBER_RAIL_WIDTH = 12
+
 /** Index of the last bucket whose offset is <= y, or 0. Mirrors the private
  *  helper in `useBucketWindow.ts`, which isn't exported. */
 function findBucketAtOffset(offsets: number[], y: number): number {
@@ -689,7 +692,13 @@ export function VirtualizedTimeline<T>({
           fraction: height > 0 ? (element.scrollTop - offset) / height : 0,
         }
       }
-      setContentWidth(element.clientWidth)
+      // The scrubber rail overlays the scroll area's right edge. Reserving
+      // its width out of the content keeps the last tile column from ending
+      // underneath the rail's hit band, which would silently swallow that
+      // column's clicks.
+      setContentWidth(
+        element.clientWidth - (showScrubber ? SCRUBBER_RAIL_WIDTH : 0),
+      )
       setViewportHeight(element.clientHeight)
     }
     measure()
@@ -697,7 +706,7 @@ export function VirtualizedTimeline<T>({
     const observer = new ResizeObserver(measure)
     observer.observe(element)
     return () => observer.disconnect()
-  }, [])
+  }, [showScrubber])
 
   // One state update per frame, not per scroll event.
   React.useEffect(() => {
