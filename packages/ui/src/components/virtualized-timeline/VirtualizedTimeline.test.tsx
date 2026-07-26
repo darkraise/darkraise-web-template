@@ -1,7 +1,15 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import * as React from "react"
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
 import { beforeAll, describe, expect, it, vi } from "vitest"
 
 import { VirtualizedTimeline } from "./VirtualizedTimeline"
@@ -56,6 +64,53 @@ beforeAll(() => {
     },
   })
 })
+
+// The shared ResizeObserver stub above is inert (it never invokes its
+// callback), so exercising a real width change needs a local stub that
+// captures and can re-trigger it. Callers must invoke the returned
+// `restore()` in a `finally` so later tests see the fixture's fixed 412px
+// width again.
+function stubResizableWidth() {
+  let width = 412
+  let onResize: (() => void) | null = null
+  const inertResizeObserver = class {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  }
+  vi.stubGlobal(
+    "ResizeObserver",
+    class {
+      constructor(callback: () => void) {
+        onResize = callback
+      }
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    },
+  )
+  Object.defineProperty(HTMLElement.prototype, "clientWidth", {
+    configurable: true,
+    get() {
+      return width
+    },
+  })
+  return {
+    setWidth: (next: number) => {
+      width = next
+    },
+    resize: () => onResize?.(),
+    restore: () => {
+      Object.defineProperty(HTMLElement.prototype, "clientWidth", {
+        configurable: true,
+        get() {
+          return 412
+        },
+      })
+      vi.stubGlobal("ResizeObserver", inertResizeObserver)
+    },
+  }
+}
 
 function timelineElement(
   props: Partial<React.ComponentProps<typeof VirtualizedTimeline<Photo>>> = {},
@@ -776,35 +831,7 @@ describe("VirtualizedTimeline", () => {
   })
 
   it("restores reading position instead of the raw pixel offset after a resize", () => {
-    // The shared ResizeObserver stub in beforeAll is inert (it never invokes
-    // its callback), so exercising a real width change needs a local stub
-    // that captures and can re-trigger it; both this and the clientWidth
-    // override are restored in `finally` so later tests see the fixture's
-    // fixed 412px width again.
-    let width = 412
-    let onResize: (() => void) | null = null
-    const inertResizeObserver = class {
-      observe() {}
-      unobserve() {}
-      disconnect() {}
-    }
-    vi.stubGlobal(
-      "ResizeObserver",
-      class {
-        constructor(callback: () => void) {
-          onResize = callback
-        }
-        observe() {}
-        unobserve() {}
-        disconnect() {}
-      },
-    )
-    Object.defineProperty(HTMLElement.prototype, "clientWidth", {
-      configurable: true,
-      get() {
-        return width
-      },
-    })
+    const stub = stubResizableWidth()
     try {
       const ref = React.createRef<VirtualizedTimelineHandle>()
       const { container } = renderTimeline({ ref, buckets: refBuckets })
@@ -813,20 +840,72 @@ describe("VirtualizedTimeline", () => {
       )!
       act(() => ref.current?.scrollToBucket("2026-05"))
       expect(viewport.scrollTop).toBe(400)
-      width = 300
-      act(() => onResize?.())
+      stub.setWidth(300)
+      act(() => stub.resize())
       // 300px content width regroups to 2 columns; "2026-05" now starts at
       // 1000, and the reader should still be at its top edge rather than
       // still at 400, its old offset under the 4-column layout.
       expect(viewport.scrollTop).toBe(1000)
     } finally {
-      Object.defineProperty(HTMLElement.prototype, "clientWidth", {
-        configurable: true,
-        get() {
-          return 412
-        },
-      })
-      vi.stubGlobal("ResizeObserver", inertResizeObserver)
+      stub.restore()
     }
+  })
+
+  it("keeps the right bucket anchored across a collapse then a resize", () => {
+    const stub = stubResizableWidth()
+    try {
+      const ref = React.createRef<VirtualizedTimelineHandle>()
+      const { container } = renderTimeline({
+        ref,
+        buckets: refBuckets,
+        collapsible: true,
+      })
+      const viewport = container.querySelector<HTMLElement>(
+        ".dr-virtualized-timeline-viewport",
+      )!
+      // Collapsing "2026-07" (index 0) shrinks it from 252px to its 32px
+      // header, changing every later bucket's offset without changing
+      // width — an anchor keyed on width alone would never see this.
+      fireEvent.click(screen.getAllByRole("button", { name: /collapse/i })[0]!)
+      act(() => ref.current?.scrollToBucket("2026-05"))
+      expect(viewport.scrollTop).toBe(180)
+      stub.setWidth(300)
+      act(() => stub.resize())
+      // "2026-05" starts at 380 under the collapsed, 2-column layout. A
+      // stale anchor recorded against the pre-collapse layout would instead
+      // restore near the very top of the document, inside "2026-07"'s old,
+      // uncollapsed span.
+      expect(viewport.scrollTop).toBe(380)
+    } finally {
+      stub.restore()
+    }
+  })
+
+  it("jumps to today without a consumer ref, closing over the handle", async () => {
+    // Fixture dates are pinned safely in the past so "today," whatever the
+    // real system date is, is always closer to "2020-02" than "2020-01" —
+    // deterministic without mocking the clock.
+    const user = userEvent.setup()
+    const pastBuckets = [
+      makeBucket("2020-01", "2020-01-01", 3),
+      makeBucket("2020-02", "2020-02-01", 8),
+    ]
+    const { container } = renderTimeline({
+      showJumpToDate: true,
+      buckets: pastBuckets,
+    })
+    const viewport = container.querySelector<HTMLElement>(
+      ".dr-virtualized-timeline-viewport",
+    )!
+    viewport.scrollTop = 999
+    await user.click(screen.getByRole("button", { name: /open date picker/i }))
+    const dialog = await screen.findByRole("dialog")
+    const today = within(dialog).getByRole("button", { current: "date" })
+    await user.click(today)
+    // "2020-02" (the more recent fixture bucket) is always the nearer
+    // bucket to today on any real calendar date after February 2020; its
+    // offset is 148 (bucket "2020-01" is 3 items over 4 columns: one row,
+    // 148px tall).
+    await waitFor(() => expect(viewport.scrollTop).toBe(148))
   })
 })

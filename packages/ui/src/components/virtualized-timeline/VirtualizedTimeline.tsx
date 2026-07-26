@@ -731,21 +731,34 @@ export function VirtualizedTimeline<T>({
 
   React.useImperativeHandle(ref, () => handle, [handle])
 
-  // Records which bucket is at the top and how far into it we are, so the
-  // recomputed layout can restore the same reading position instead of the
-  // same pixel offset. The capture happens in this effect's cleanup rather
-  // than in the body: `layout` above is already recomputed for the *new*
-  // width by the time the body for that width runs, so only the cleanup —
-  // which closes over the render being torn down, i.e. the pre-resize
-  // width — still has the old layout to measure the scroll position
-  // against. The index is looked up fresh from the *live* scrollTop rather
-  // than read from `timelineWindow.startIndex`: that memo is keyed on
-  // scrollTop, so the closure's copy is only as fresh as the last render
-  // that actually changed the width, and can be scrolled-past-stale by the
-  // time a later resize's cleanup runs.
+  // Records which bucket is at the top and how far into it we are, so a
+  // later resize can restore the same reading position instead of the same
+  // pixel offset. Keyed on `layout` itself, not on `contentWidth`: `layout`
+  // is memoized on its own inputs (width, buckets, collapsedIds, geometry),
+  // so scrolling still never re-fires this — nothing about a scroll changes
+  // any of those inputs — but a collapse/expand, or buckets arriving after
+  // an empty mount, also refresh the recorded anchor. That matters because
+  // the capture happens in this effect's cleanup, which closes over the
+  // layout of the render that scheduled it, i.e. whichever layout was
+  // current immediately before the change that is about to replace it. A
+  // width-only dependency leaves that cleanup pinned to the layout as of the
+  // *last width change*, so a collapse in between goes unrecorded and the
+  // next resize restores against a layout that no longer exists — same bug
+  // for a bucket set that starts empty, where the cleanup is stuck holding
+  // an empty layout forever. Keying on `layout` means the cleanup is always
+  // one layout change behind, never more, so a stale record is overwritten
+  // at every layout change rather than surviving indefinitely. The bucket
+  // index itself is looked up fresh from the *live* scrollTop rather than
+  // read from `timelineWindow.startIndex`, since that memo is also keyed on
+  // scrollTop and would otherwise reintroduce the same staleness this
+  // effect exists to avoid. Restoring is still gated on the *width* having
+  // actually changed (tracked via `previousWidthRef`): a collapse should
+  // reflow in place, not reposition the viewport — only a width change
+  // should move `scrollTop`.
   const anchorRef = React.useRef<{ index: number; fraction: number } | null>(
     null,
   )
+  const previousWidthRef = React.useRef(contentWidth)
 
   React.useLayoutEffect(() => {
     // Captured once and reused in the cleanup below: the scroll container
@@ -754,7 +767,9 @@ export function VirtualizedTimeline<T>({
     // `scrollTop` read there is still live.
     const element = scrollRef.current
     const anchor = anchorRef.current
-    if (element && anchor && layout.heights.length > 0) {
+    const widthChanged = previousWidthRef.current !== contentWidth
+    previousWidthRef.current = contentWidth
+    if (element && anchor && widthChanged && layout.heights.length > 0) {
       const offset = layout.offsets[anchor.index] ?? 0
       const height = layout.heights[anchor.index] ?? 0
       element.scrollTop = offset + anchor.fraction * height
@@ -771,9 +786,7 @@ export function VirtualizedTimeline<T>({
         fraction: height > 0 ? (element.scrollTop - offset) / height : 0,
       }
     }
-    // Only a width change should re-anchor; scrolling must not.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [contentWidth])
+  }, [layout, contentWidth])
 
   React.useEffect(() => {
     if (process.env.NODE_ENV === "production") return
@@ -965,18 +978,7 @@ export function VirtualizedTimeline<T>({
           scrollTop={scrollTop}
           viewportHeight={viewportHeight}
           railHeight={viewportHeight}
-          onScrubTo={(next) => {
-            const element = scrollRef.current
-            if (!element) return
-            element.scrollTop = next
-            // Read back rather than `setScrollTop(next)`: the browser
-            // clamps the assignment above to the element's real scroll
-            // range, but a raw `next` (e.g. a trailing bucket's offset
-            // past maxScroll) would leave state holding the unclamped
-            // value forever, since a pinned scrollTop that doesn't move
-            // fires no native scroll event to correct it later.
-            setScrollTop(element.scrollTop)
-          }}
+          onScrubTo={scrollTo}
         />
       ) : null}
     </div>
