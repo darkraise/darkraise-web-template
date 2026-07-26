@@ -952,35 +952,40 @@ export function VirtualizedTimeline<T>({
           />
         </div>
       ) : null}
-      {/* Must render unconditionally: the measurement effects above run once,
-          right after the first commit, with an empty dependency array. If
-          this element were absent on that first commit (e.g. because
-          `buckets` started empty), `scrollRef` would stay null forever and
-          the component would never measure itself even after buckets
-          arrives on a later render. */}
-      <div ref={scrollRef} className="dr-virtualized-timeline-viewport">
-        {buckets.length === 0 ? (
-          emptyState
-        ) : (
-          <div
-            className="dr-virtualized-timeline-sizer"
-            style={{ height: layout.totalSize }}
-          >
-            {mounted}
-          </div>
-        )}
+      {/* Positions the scrubber against the scrollable area alone rather than
+          the whole component, so its absolutely-positioned hit region can
+          never spread into the toolbar's band above it. */}
+      <div className="dr-virtualized-timeline-scroll-area">
+        {/* Must render unconditionally: the measurement effects above run
+            once, right after the first commit, with an empty dependency
+            array. If this element were absent on that first commit (e.g.
+            because `buckets` started empty), `scrollRef` would stay null
+            forever and the component would never measure itself even after
+            buckets arrives on a later render. */}
+        <div ref={scrollRef} className="dr-virtualized-timeline-viewport">
+          {buckets.length === 0 ? (
+            emptyState
+          ) : (
+            <div
+              className="dr-virtualized-timeline-sizer"
+              style={{ height: layout.totalSize }}
+            >
+              {mounted}
+            </div>
+          )}
+        </div>
+        {showScrubber ? (
+          <VirtualizedTimelineScrubber<T>
+            buckets={buckets}
+            layout={layout}
+            granularity={granularity}
+            scrollTop={scrollTop}
+            viewportHeight={viewportHeight}
+            railHeight={viewportHeight}
+            onScrubTo={scrollTo}
+          />
+        ) : null}
       </div>
-      {showScrubber ? (
-        <VirtualizedTimelineScrubber<T>
-          buckets={buckets}
-          layout={layout}
-          granularity={granularity}
-          scrollTop={scrollTop}
-          viewportHeight={viewportHeight}
-          railHeight={viewportHeight}
-          onScrubTo={scrollTo}
-        />
-      ) : null}
     </div>
   )
 }

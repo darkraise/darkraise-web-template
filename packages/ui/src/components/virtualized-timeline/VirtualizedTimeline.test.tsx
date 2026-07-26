@@ -830,6 +830,23 @@ describe("VirtualizedTimeline", () => {
     expect(screen.getByLabelText("Jump to date")).toBeInTheDocument()
   })
 
+  it("keeps the scrubber's positioning parent from also holding the toolbar", () => {
+    // jsdom has no layout engine, so it cannot see the scrubber's absolute
+    // hit region visually overlapping the toolbar. What it can see is the
+    // DOM shape that causes it: the scrubber's containing block (its parent,
+    // since nothing sits between them) must not be an ancestor of the
+    // toolbar too, or both resolve their box against the same positioned
+    // element and the scrubber's rail can spread into the toolbar's band.
+    const { container } = renderTimeline({
+      showScrubber: true,
+      showJumpToDate: true,
+    })
+    const toolbar = container.querySelector(".dr-virtualized-timeline-toolbar")
+    const scrubber = screen.getByRole("slider")
+    expect(toolbar).toBeInTheDocument()
+    expect(scrubber.parentElement?.contains(toolbar)).toBe(false)
+  })
+
   it("restores reading position instead of the raw pixel offset after a resize", () => {
     const stub = stubResizableWidth()
     try {
