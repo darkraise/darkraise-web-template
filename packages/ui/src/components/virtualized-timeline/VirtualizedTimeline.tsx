@@ -4,9 +4,12 @@
 
 import * as React from "react"
 
+import { ChevronDown } from "lucide-react"
+
 import { cn } from "@lib/utils"
+import { Button } from "@components/button"
 import { Checkbox } from "@components/checkbox"
-import { useId } from "@primitives/state"
+import { useControllableState, useId } from "@primitives/state"
 import { formatBucketLabel, toBucketDate } from "./labels"
 import { useBucketItems } from "./useBucketItems"
 import { useBucketLayout } from "./useBucketLayout"
@@ -73,6 +76,10 @@ export interface VirtualizedTimelineProps<T> extends Omit<
   selectedIds?: Iterable<string>
   defaultSelectedIds?: Iterable<string>
   onSelectionChange?: (ids: string[]) => void
+  collapsible?: boolean
+  collapsedIds?: Iterable<string>
+  defaultCollapsedIds?: Iterable<string>
+  onCollapsedChange?: (ids: string[]) => void
 }
 
 function defaultItemId<T>(
@@ -110,6 +117,10 @@ export function VirtualizedTimeline<T>({
   selectedIds,
   defaultSelectedIds,
   onSelectionChange,
+  collapsible = false,
+  collapsedIds: collapsedIdsProp,
+  defaultCollapsedIds,
+  onCollapsedChange,
   ...props
 }: VirtualizedTimelineProps<T>) {
   if (
@@ -132,9 +143,40 @@ export function VirtualizedTimeline<T>({
     [gap, minTileWidth, tileAspect, headerHeight, bucketSpacing],
   )
 
-  // Collapse lands in a later task; an empty set keeps the layout signature
-  // stable until then.
-  const collapsedIds = React.useMemo(() => new Set<string>(), [])
+  // Same primitive-key memo as `useTimelineSelection`, for the same reason:
+  // an inline spread hands `useControllableState` a new array identity every
+  // render, and its mirroring effect then loops without end. See the comment
+  // in `useTimelineSelection.ts` for the full mechanism.
+  const collapsedKey = collapsedIdsProp
+    ? Array.from(collapsedIdsProp).join("\u0000")
+    : undefined
+  const stableCollapsedIds = React.useMemo(
+    () => (collapsedIdsProp ? Array.from(collapsedIdsProp) : undefined),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed on contents, not iterable identity
+    [collapsedKey],
+  )
+
+  const [collapsedList, setCollapsedList] = useControllableState<string[]>({
+    value: stableCollapsedIds,
+    defaultValue: defaultCollapsedIds ? [...defaultCollapsedIds] : [],
+    onChange: onCollapsedChange,
+  })
+  const collapsedIds = React.useMemo(
+    () => new Set(collapsedList ?? []),
+    [collapsedList],
+  )
+
+  const toggleCollapsed = React.useCallback(
+    (id: string) => {
+      setCollapsedList((prev) => {
+        const next = new Set(prev ?? [])
+        if (next.has(id)) next.delete(id)
+        else next.add(id)
+        return [...next]
+      })
+    },
+    [setCollapsedList],
+  )
 
   const layout = useBucketLayout({
     buckets,
@@ -299,6 +341,7 @@ export function VirtualizedTimeline<T>({
     const label = formatBucketLabel(bucket, granularity)
     const headerId = `${idBase}-header-${bucket.id}`
     const height = layout.heights[index]!
+    const collapsed = collapsedIds.has(bucket.id)
     const bucketSelection = selectable
       ? selection.bucketState(bucketIdsFor(bucket))
       : "none"
@@ -309,13 +352,18 @@ export function VirtualizedTimeline<T>({
         index={index}
         top={layout.offsets[index]!}
         height={height}
+        collapsed={collapsed}
         // The built-in path adds `bucketSpacing` below the body, so it comes
         // back off here. `getBucketHeight` returns the whole bucket height and
         // owns its own spacing, so only the header comes off there.
-        bodyHeight={Math.max(
-          0,
-          height - headerHeight - (getBucketHeight ? 0 : bucketSpacing),
-        )}
+        bodyHeight={
+          collapsed
+            ? 0
+            : Math.max(
+                0,
+                height - headerHeight - (getBucketHeight ? 0 : bucketSpacing),
+              )
+        }
         columns={layout.columns}
         tileHeight={layout.tileHeight}
         gap={gap}
@@ -361,13 +409,24 @@ export function VirtualizedTimeline<T>({
                 }}
               />
             ) : null}
+            {collapsible ? (
+              <Button
+                size="icon"
+                variant="ghost"
+                aria-label={collapsed ? `Expand ${label}` : `Collapse ${label}`}
+                onClick={() => toggleCollapsed(bucket.id)}
+              >
+                <ChevronDown
+                  className="dr-virtualized-timeline-disclosure"
+                  data-collapsed={collapsed ? "true" : undefined}
+                />
+              </Button>
+            ) : null}
             {renderBucketHeader ? (
               renderBucketHeader({
                 bucket,
                 label,
-                // Collapse lands in a later task; this stays hard-coded until
-                // then.
-                collapsed: false,
+                collapsed,
                 selection: bucketSelection,
               })
             ) : (

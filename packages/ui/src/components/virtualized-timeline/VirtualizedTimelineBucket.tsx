@@ -13,6 +13,7 @@ export interface VirtualizedTimelineBucketProps<T> {
   index: number
   top: number
   height: number
+  collapsed: boolean
   /** Already net of the header and, on the built-in path, the bucket spacing. */
   bodyHeight: number
   columns: number
@@ -53,6 +54,7 @@ export function VirtualizedTimelineBucket<T>({
   index,
   top,
   height,
+  collapsed,
   bodyHeight,
   columns,
   tileHeight,
@@ -154,6 +156,7 @@ export function VirtualizedTimelineBucket<T>({
       role="group"
       aria-labelledby={headerId}
       data-index={index}
+      data-collapsed={collapsed ? "true" : undefined}
       style={{ top, height }}
     >
       {header}

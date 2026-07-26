@@ -46,6 +46,14 @@
     @apply text-muted-foreground flex items-center gap-2 text-sm;
   }
 
+  .dr-virtualized-timeline-disclosure {
+    @apply transition-transform;
+  }
+
+  .dr-virtualized-timeline-disclosure[data-collapsed="true"] {
+    @apply -rotate-90;
+  }
+
   /* touch-action: none, or the browser claims pointerdown for page panning and
      the drag never starts on touch. The ::before widens the hit area without
      widening the visible rail. */

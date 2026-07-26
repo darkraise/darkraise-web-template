@@ -384,4 +384,40 @@ describe("VirtualizedTimeline", () => {
     fireEvent.keyDown(cell, { key: " " })
     expect(onSelectionChange).toHaveBeenCalledWith(["2026-07-0"])
   })
+
+  it("collapses a bucket to its header alone", () => {
+    const { container } = renderTimeline({
+      collapsible: true,
+      defaultCollapsedIds: ["2026-07"],
+    })
+    const bucket = container.querySelector<HTMLElement>(
+      '.dr-virtualized-timeline-bucket[data-index="0"]',
+    )
+    expect(bucket).toHaveAttribute("data-collapsed", "true")
+    expect(bucket?.style.height).toBe("32px")
+  })
+
+  it("shrinks the total scroll height when a bucket collapses", () => {
+    const { container } = renderTimeline({
+      collapsible: true,
+      defaultCollapsedIds: ["2026-07"],
+    })
+    // 252 + 148 becomes 32 + 148
+    expect(
+      container.querySelector<HTMLElement>(".dr-virtualized-timeline-sizer")
+        ?.style.height,
+    ).toBe("180px")
+  })
+
+  it("renders no items for a collapsed bucket", () => {
+    renderTimeline({ collapsible: true, defaultCollapsedIds: ["2026-07"] })
+    expect(screen.queryByTestId("2026-07-0")).not.toBeInTheDocument()
+  })
+
+  it("toggles from the disclosure button and reports the change", () => {
+    const onCollapsedChange = vi.fn()
+    renderTimeline({ collapsible: true, onCollapsedChange })
+    fireEvent.click(screen.getAllByRole("button", { name: /collapse/i })[0]!)
+    expect(onCollapsedChange).toHaveBeenCalledWith(["2026-07"])
+  })
 })
