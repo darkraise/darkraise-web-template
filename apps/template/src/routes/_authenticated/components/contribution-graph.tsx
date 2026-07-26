@@ -66,11 +66,31 @@ const clickableCode = `<ContributionGraph
   onCellClick={(cell) => setSelected(\`\${cell.key}: \${cell.value}\`)}
 />`
 
-const sizeCode = `<ContributionGraph size="sm" data={data} />
-<ContributionGraph size="md" data={data} />
-<ContributionGraph size="lg" data={data} />`
+const sizeCode = `<ContributionGraph
+  startDate="2025-07-25"
+  endDate="2026-07-24"
+  data={data}
+  size="sm"
+/>
+<ContributionGraph
+  startDate="2025-07-25"
+  endDate="2026-07-24"
+  data={data}
+  size="md"
+/>
+<ContributionGraph
+  startDate="2025-07-25"
+  endDate="2026-07-24"
+  data={data}
+  size="lg"
+/>`
 
-const hueCode = `<ContributionGraph variant="green" data={data} />`
+const hueCode = `<ContributionGraph
+  startDate="2025-07-25"
+  endDate="2026-07-24"
+  data={data}
+  variant="green"
+/>`
 
 function ContributionGraphPage() {
   const data = useMemo(() => sampleData(), [])
