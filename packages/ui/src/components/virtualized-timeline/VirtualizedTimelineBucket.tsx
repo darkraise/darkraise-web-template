@@ -99,7 +99,12 @@ export function VirtualizedTimelineBucket<T>({
             {renderItem({ item, index: itemIndex, bucket, selected: false })}
           </div>,
         )
-      } else if (status !== "error") {
+      } else if (status !== "error" && status !== "loaded") {
+        // A loader is free to resolve fewer items than `count` (server-side
+        // filtering, a deletion between the count query and the fetch, an
+        // off-by-one count). Once the bucket is `"loaded"` nothing will
+        // retrigger a load, so a skeleton past the end of a short array
+        // would spin forever; leave that slot empty instead.
         cells.push(
           <div
             key={`skeleton-${itemIndex}`}

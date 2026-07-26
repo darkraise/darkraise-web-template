@@ -198,6 +198,17 @@ describe("VirtualizedTimeline", () => {
     expect(await screen.findByTestId("x-0")).toBeInTheDocument()
   })
 
+  it("leaves short-array slots empty instead of spinning forever", async () => {
+    const { container } = renderTimeline({
+      buckets: [{ id: "2026-07", date: "2026-07-01", count: 8 }],
+      loadBucket: async () => [{ id: "y-0" }, { id: "y-1" }, { id: "y-2" }],
+    })
+    expect(await screen.findByTestId("y-0")).toBeInTheDocument()
+    expect(screen.getByTestId("y-1")).toBeInTheDocument()
+    expect(screen.getByTestId("y-2")).toBeInTheDocument()
+    expect(container.querySelector(".dr-skeleton")).not.toBeInTheDocument()
+  })
+
   it("offers a retry when a bucket fails to load", async () => {
     renderTimeline({
       buckets: [{ id: "2026-07", date: "2026-07-01", count: 2 }],
