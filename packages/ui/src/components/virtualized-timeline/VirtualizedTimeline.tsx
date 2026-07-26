@@ -172,14 +172,6 @@ export function VirtualizedTimeline<T>({
     }
   }, [buckets])
 
-  if (buckets.length === 0) {
-    return (
-      <div className={cn("dr-virtualized-timeline", className)} {...props}>
-        {emptyState}
-      </div>
-    )
-  }
-
   const mounted: React.ReactNode[] = []
   for (
     let index = timelineWindow.startIndex;
@@ -253,13 +245,23 @@ export function VirtualizedTimeline<T>({
       }
       {...props}
     >
+      {/* Must render unconditionally: the measurement effects above run once,
+          right after the first commit, with an empty dependency array. If
+          this element were absent on that first commit (e.g. because
+          `buckets` started empty), `scrollRef` would stay null forever and
+          the component would never measure itself even after buckets
+          arrives on a later render. */}
       <div ref={scrollRef} className="dr-virtualized-timeline-viewport">
-        <div
-          className="dr-virtualized-timeline-sizer"
-          style={{ height: layout.totalSize }}
-        >
-          {mounted}
-        </div>
+        {buckets.length === 0 ? (
+          emptyState
+        ) : (
+          <div
+            className="dr-virtualized-timeline-sizer"
+            style={{ height: layout.totalSize }}
+          >
+            {mounted}
+          </div>
+        )}
       </div>
     </div>
   )

@@ -56,10 +56,10 @@ beforeAll(() => {
   })
 })
 
-function renderTimeline(
+function timelineElement(
   props: Partial<React.ComponentProps<typeof VirtualizedTimeline<Photo>>> = {},
 ) {
-  return render(
+  return (
     <VirtualizedTimeline<Photo>
       buckets={buckets}
       minTileWidth={100}
@@ -69,8 +69,14 @@ function renderTimeline(
       overscanPx={0}
       renderItem={({ item }) => <span data-testid={item.id}>{item.id}</span>}
       {...props}
-    />,
+    />
   )
+}
+
+function renderTimeline(
+  props: Partial<React.ComponentProps<typeof VirtualizedTimeline<Photo>>> = {},
+) {
+  return render(timelineElement(props))
 }
 
 describe("VirtualizedTimeline", () => {
@@ -135,6 +141,22 @@ describe("VirtualizedTimeline", () => {
     renderTimeline({ buckets: [], emptyState: <p>Nothing here</p> })
     expect(screen.getByText("Nothing here")).toBeInTheDocument()
     expect(screen.queryByRole("grid")).not.toBeInTheDocument()
+  })
+
+  it("measures after buckets arrive following an initially empty mount", () => {
+    const { rerender, container } = render(
+      timelineElement({ buckets: [], emptyState: <p>Loading</p> }),
+    )
+    rerender(timelineElement({}))
+    const sizer = container.querySelector<HTMLElement>(
+      ".dr-virtualized-timeline-sizer",
+    )
+    // An unmeasured mount (contentWidth stuck at 0) collapses to a single
+    // column and a headers-only sizer height, so both a 400px sizer and a
+    // 4-column grid prove the resize effect actually ran on this mount.
+    expect(sizer?.style.height).toBe("400px")
+    const grid = screen.getAllByRole("grid")[0]!
+    expect(grid).toHaveAttribute("aria-colcount", "4")
   })
 
   it("throws when renderBucket is passed without getBucketHeight", () => {
