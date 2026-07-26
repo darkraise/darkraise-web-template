@@ -1,0 +1,39 @@
+@layer components {
+  .dr-virtualized-timeline {
+    @apply relative flex min-h-0 flex-col;
+  }
+
+  .dr-virtualized-timeline-viewport {
+    @apply min-h-0 flex-1 overflow-y-auto;
+  }
+
+  /* Holds the full computed scroll height so the native scrollbar is exact
+     from the first frame; buckets are placed inside it by offset. */
+  .dr-virtualized-timeline-sizer {
+    @apply relative w-full;
+  }
+
+  .dr-virtualized-timeline-bucket {
+    @apply absolute inset-x-0;
+  }
+
+  /* Sticky inside the bucket wrapper, so a header stays pinned for exactly as
+     long as its own bucket is on screen. */
+  .dr-virtualized-timeline-bucket-header {
+    @apply bg-background/85 text-foreground sticky top-0 z-10 flex items-center text-sm font-medium backdrop-blur-sm;
+  }
+
+  .dr-virtualized-timeline-bucket-body {
+    @apply relative w-full;
+  }
+
+  .dr-virtualized-timeline-grid {
+    @apply relative h-full w-full;
+  }
+
+  .dr-virtualized-timeline-tile {
+    @apply absolute overflow-hidden rounded-[var(--radius-sm)];
+    width: var(--vtimeline-tile-width);
+    height: var(--vtimeline-tile-height);
+  }
+}

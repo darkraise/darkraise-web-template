@@ -91,6 +91,7 @@ export * from "./components/tooltip"
 export * from "./components/tour"
 export * from "./components/tree-view"
 export * from "./components/virtualized-dropdown-menu"
+export * from "./components/virtualized-timeline"
 
 export * from "./hooks/index"
 export * from "./theme/index"
