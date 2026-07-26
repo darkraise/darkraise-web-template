@@ -30,38 +30,22 @@ export function useTimelineSelection({
   defaultSelectedIds,
   onSelectionChange,
 }: UseTimelineSelectionOptions): TimelineSelection {
-  const cachedSelectedIds = React.useRef<string[] | undefined>(undefined)
-  const cachedDefaultIds = React.useRef<string[]>([])
+  // Memoize based on content (as a space-separated string), not iterable
+  // identity. This ensures that new array literals with the same contents
+  // produce the same memoized value, avoiding loops in useControllableState's
+  // mirroring effect, which depends on the `value` prop's identity.
+  const selectedKey = selectedIds
+    ? Array.from(selectedIds).join(" ")
+    : undefined
+  const stableSelectedIds = React.useMemo(
+    () => (selectedIds ? Array.from(selectedIds) : undefined),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed on contents, not iterable identity
+    [selectedKey],
+  )
 
-  // Cache arrays by content to avoid creating new objects on each render.
-  // This is necessary for controlled mode where the Iterable might be a new
-  // array literal with the same contents on each render.
-  const selectedIdsToPass = React.useMemo(() => {
-    const next = selectedIds ? [...selectedIds] : undefined
-    // eslint-disable-next-line react-hooks/refs
-    if (!arrayContentsEqual(cachedSelectedIds.current, next)) {
-      // eslint-disable-next-line react-hooks/refs
-      cachedSelectedIds.current = next
-    }
-    // eslint-disable-next-line react-hooks/refs
-    return cachedSelectedIds.current
-  }, [selectedIds])
-
-  const defaultIdsToPass = React.useMemo(() => {
-    const next = defaultSelectedIds ? [...defaultSelectedIds] : []
-    // eslint-disable-next-line react-hooks/refs
-    if (!arrayContentsEqual(cachedDefaultIds.current, next)) {
-      // eslint-disable-next-line react-hooks/refs
-      cachedDefaultIds.current = next
-    }
-    // eslint-disable-next-line react-hooks/refs
-    return cachedDefaultIds.current
-  }, [defaultSelectedIds])
-
-  // eslint-disable-next-line react-hooks/refs
   const [ids, setIds] = useControllableState<string[]>({
-    value: selectedIdsToPass,
-    defaultValue: defaultIdsToPass,
+    value: stableSelectedIds,
+    defaultValue: defaultSelectedIds ? [...defaultSelectedIds] : [],
     onChange: onSelectionChange,
   })
 
@@ -135,17 +119,4 @@ export function useTimelineSelection({
     bucketState,
     clear,
   }
-}
-
-function arrayContentsEqual(
-  a: string[] | undefined,
-  b: string[] | undefined,
-): boolean {
-  if (a === b) return true
-  if (!a || !b) return a === b
-  if (a.length !== b.length) return false
-  for (let i = 0; i < a.length; i++) {
-    if (a[i] !== b[i]) return false
-  }
-  return true
 }
