@@ -957,9 +957,14 @@ describe("VirtualizedTimeline", () => {
     ).not.toBeInTheDocument()
   })
 
-  it("renders the jump-to-date control in a toolbar when enabled", () => {
+  it("renders the jump-to-date trigger in a toolbar when enabled", () => {
     renderTimeline({ showJumpToDate: true })
-    expect(screen.getByLabelText("Jump to date")).toBeInTheDocument()
+    expect(
+      screen.getByRole("button", { name: "Jump to date" }),
+    ).toBeInTheDocument()
+    // No text input: without a parser it would be read-only, silently
+    // refusing every keystroke — a broken affordance.
+    expect(screen.queryByRole("textbox")).not.toBeInTheDocument()
   })
 
   it("keeps the scrubber's positioning parent from also holding the toolbar", () => {
@@ -1101,7 +1106,7 @@ describe("VirtualizedTimeline", () => {
       ".dr-virtualized-timeline-viewport",
     )!
     viewport.scrollTop = 999
-    await user.click(screen.getByRole("button", { name: /open date picker/i }))
+    await user.click(screen.getByRole("button", { name: /jump to date/i }))
     const dialog = await screen.findByRole("dialog")
     const today = within(dialog).getByRole("button", { current: "date" })
     await user.click(today)

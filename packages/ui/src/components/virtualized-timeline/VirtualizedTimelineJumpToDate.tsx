@@ -7,8 +7,6 @@ import {
   DatePicker,
   DatePickerCalendar,
   DatePickerContent,
-  DatePickerControl,
-  DatePickerInput,
   DatePickerTrigger,
 } from "@components/date-picker"
 
@@ -30,18 +28,24 @@ export function VirtualizedTimelineJumpToDate({
       value={value}
       min={min}
       max={max}
-      placeholder="Jump to date"
       onValueChange={(next) => {
         setValue(next.value)
         if (next.value) onJump(next.value)
       }}
     >
-      <DatePickerControl>
-        <DatePickerInput aria-label="Jump to date" />
-        <DatePickerTrigger>
-          <CalendarDays />
-        </DatePickerTrigger>
-      </DatePickerControl>
+      {/* Trigger only, no DatePickerInput: without a `parse` the input is
+          read-only and silently swallows every keystroke — a broken
+          affordance, worse than no input. The dr-btn classes restyle the
+          trigger as a toolbar button (see virtualized-timeline.css). */}
+      <DatePickerTrigger
+        aria-label="Jump to date"
+        className="dr-btn"
+        data-variant="outline"
+        data-size="sm"
+      >
+        <CalendarDays />
+        Jump to date
+      </DatePickerTrigger>
       <DatePickerContent>
         <DatePickerCalendar />
       </DatePickerContent>
