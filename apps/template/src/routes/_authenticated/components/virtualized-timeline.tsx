@@ -22,6 +22,7 @@ const timelineCode = `<VirtualizedTimeline
   selectable
   collapsible
   showJumpToDate
+  scrubberSide={scrubberSide}
   selectedIds={selected}
   onSelectionChange={setSelected}
   renderItem={({ item }) => (
@@ -88,6 +89,7 @@ function VirtualizedTimelinePage() {
   const [selected, setSelected] = useState<string[]>([])
   const [minTileWidth, setMinTileWidth] = useState(140)
   const [narrow, setNarrow] = useState(false)
+  const [scrubberSide, setScrubberSide] = useState<"left" | "right">("right")
 
   return (
     <ShowcasePage
@@ -144,6 +146,19 @@ function VirtualizedTimelinePage() {
               Narrow
             </Button>
           </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-muted-foreground text-xs">Rail side:</span>
+            {(["left", "right"] as const).map((side) => (
+              <Button
+                key={side}
+                size="sm"
+                variant={scrubberSide === side ? "default" : "outline"}
+                onClick={() => setScrubberSide(side)}
+              >
+                {side}
+              </Button>
+            ))}
+          </div>
           <div className={narrow ? "max-w-sm" : "w-full"}>
             <VirtualizedTimeline<Shot>
               ref={timelineRef}
@@ -153,6 +168,7 @@ function VirtualizedTimelinePage() {
               selectable
               collapsible
               showJumpToDate
+              scrubberSide={scrubberSide}
               selectedIds={selected}
               onSelectionChange={setSelected}
               renderItem={({ item }) => (

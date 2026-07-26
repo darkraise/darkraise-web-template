@@ -132,3 +132,14 @@ export const CustomBucketBody: Story = {
     />
   ),
 }
+
+export const LeftRail: Story = {
+  render: () => (
+    <VirtualizedTimeline<Shot>
+      buckets={inline}
+      scrubberSide="left"
+      renderItem={({ item }) => <Tile item={item} />}
+      className="h-[32rem]"
+    />
+  ),
+}
