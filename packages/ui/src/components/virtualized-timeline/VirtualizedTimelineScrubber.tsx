@@ -15,6 +15,7 @@ export interface VirtualizedTimelineScrubberProps<T> {
   granularity: TimelineGranularity
   scrollTop: number
   viewportHeight: number
+  maxScroll: number
   railHeight: number
   showLabels: boolean
   onScrubTo: (scrollTop: number) => void
@@ -40,6 +41,7 @@ export function VirtualizedTimelineScrubber<T>({
   granularity,
   scrollTop,
   viewportHeight,
+  maxScroll,
   railHeight,
   showLabels,
   onScrubTo,
@@ -51,8 +53,6 @@ export function VirtualizedTimelineScrubber<T>({
   const [hoverLabel, setHoverLabel] = React.useState<string | null>(null)
   const frame = React.useRef(0)
   const pendingClientY = React.useRef<number | null>(null)
-
-  const maxScroll = Math.max(0, layout.totalSize - viewportHeight)
 
   const activeIndex = React.useMemo(
     () => indexAtOffset(layout.offsets, scrollTop),
@@ -176,6 +176,12 @@ export function VirtualizedTimelineScrubber<T>({
     [],
   )
 
+  const caretY =
+    layout.totalSize > 0 ? (scrollTop / layout.totalSize) * railHeight : 0
+  const caretLabel = buckets[activeIndex]
+    ? formatBucketLabel(buckets[activeIndex]!, granularity)
+    : null
+
   return (
     <div
       ref={railRef}
@@ -214,6 +220,13 @@ export function VirtualizedTimelineScrubber<T>({
           {tick.label ? <span aria-hidden="true">{tick.label}</span> : null}
         </div>
       ))}
+      <div
+        aria-hidden="true"
+        className="dr-virtualized-timeline-scrubber-caret"
+        style={{ top: caretY }}
+      >
+        {caretLabel}
+      </div>
       {hoverLabel ? (
         <span
           aria-hidden="true"

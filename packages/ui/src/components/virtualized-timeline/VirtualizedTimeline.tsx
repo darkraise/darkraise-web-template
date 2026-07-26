@@ -1051,6 +1051,7 @@ export function VirtualizedTimeline<T>({
             granularity={granularity}
             scrollTop={scrollTop}
             viewportHeight={viewportHeight}
+            maxScroll={maxScroll}
             railHeight={viewportHeight}
             showLabels={scrollAreaWidth >= RAIL_LABEL_BREAKPOINT}
             onScrubTo={scrollTo}

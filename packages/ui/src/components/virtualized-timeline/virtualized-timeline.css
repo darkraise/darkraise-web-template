@@ -148,4 +148,30 @@
     box-shadow: var(--surface-overlay-shadow);
     transform: translateY(-50%);
   }
+
+  /* A line across the rail rather than a proportional thumb: a thumb sized to
+     the viewport's share of the collection is the scrollbar shape this design
+     exists to escape, and on a large library it collapses to a few pixels. */
+  .dr-virtualized-timeline-scrubber-caret {
+    @apply pointer-events-none absolute inset-x-0 flex items-center justify-end gap-1 text-[10px];
+    color: hsl(var(--muted-foreground));
+    transform: translateY(-50%);
+  }
+
+  .dr-virtualized-timeline-scrubber-caret::before {
+    @apply block h-px flex-1;
+    content: "";
+    background-color: hsl(var(--primary));
+  }
+
+  .dr-virtualized-timeline-scrubber[data-dragging="true"] {
+    background-color: hsl(var(--muted) / 0.4);
+  }
+
+  /* While dragging the caret's date is the primary affordance, so it takes the
+     package's overlay treatment. */
+  .dr-virtualized-timeline-scrubber[data-dragging="true"]
+    .dr-virtualized-timeline-scrubber-caret {
+    @apply text-popover-foreground text-xs;
+  }
 }

@@ -30,16 +30,19 @@ function renderScrubber(
   overrides: {
     onScrubTo?: ReturnType<typeof vi.fn>
     showLabels?: boolean
+    scrollTop?: number
   } = {},
 ) {
   const onScrubTo = overrides.onScrubTo ?? vi.fn()
+  const viewportHeight = 200
   const utils = render(
     <VirtualizedTimelineScrubber
       buckets={buckets}
       layout={layout}
       granularity="month"
-      scrollTop={0}
-      viewportHeight={200}
+      scrollTop={overrides.scrollTop ?? 0}
+      viewportHeight={viewportHeight}
+      maxScroll={Math.max(0, layout.totalSize - viewportHeight)}
       railHeight={400}
       showLabels={overrides.showLabels ?? true}
       onScrubTo={onScrubTo}
@@ -181,5 +184,31 @@ describe("VirtualizedTimelineScrubber", () => {
       const label = tick.querySelector("span")
       if (label) expect(label).toHaveAttribute("aria-hidden", "true")
     }
+  })
+
+  it("places the caret at the current scroll position", () => {
+    const { container } = renderScrubber({ scrollTop: 100 })
+    const caret = container.querySelector<HTMLElement>(
+      ".dr-virtualized-timeline-scrubber-caret",
+    )
+    // scrollTop 100 of a 400 total on a 400px rail.
+    expect(caret?.style.top).toBe("100px")
+  })
+
+  it("names the current date on the caret", () => {
+    const { container } = renderScrubber({ scrollTop: 0 })
+    const caret = container.querySelector(
+      ".dr-virtualized-timeline-scrubber-caret",
+    )
+    expect(caret?.textContent).toBe("July 2026")
+  })
+
+  it("reflects the dragging state on the rail for styling", () => {
+    const { rail } = renderScrubber()
+    expect(rail.dataset.dragging).toBeUndefined()
+    fireEvent.pointerDown(rail, { clientY: 100 })
+    expect(rail.dataset.dragging).toBe("true")
+    fireEvent.pointerUp(rail, { clientY: 100 })
+    expect(rail.dataset.dragging).toBeUndefined()
   })
 })
