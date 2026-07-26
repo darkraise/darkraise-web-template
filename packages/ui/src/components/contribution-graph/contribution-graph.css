@@ -4,6 +4,7 @@
     --contrib-cell-gap: 0.1875rem;
     --contrib-base: hsl(var(--primary));
     --contrib-empty: hsl(var(--muted));
+    --contrib-cell-outline: hsl(var(--foreground) / 0.35);
     --contrib-level-1: color-mix(
       in oklab,
       var(--contrib-base) 25%,
@@ -187,6 +188,18 @@
      interaction that is not there. */
   .dr-contribution-graph-cell[data-clickable="true"] {
     @apply cursor-pointer;
+  }
+
+  /* Inset so the cell never grows: an outset outline would overlap the
+     neighbouring gap and get clipped on the outer rows and columns by the
+     `overflow-x-auto` wrapper consumers put around the graph. `[data-date]`
+     restricts this to real day cells — the padding cells and the legend
+     swatches share this class. The keyboard focus ring still wins, since
+     `focus-ring-tight` is a Tailwind utility and `@layer utilities` outranks
+     `@layer components`. */
+  .dr-contribution-graph-cell[data-date]:hover {
+    outline: 1px solid var(--contrib-cell-outline);
+    outline-offset: -1px;
   }
 
   .dr-contribution-graph-tooltip {

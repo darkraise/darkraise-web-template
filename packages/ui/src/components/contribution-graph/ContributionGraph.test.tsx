@@ -382,4 +382,16 @@ describe("contribution-graph.css", () => {
       expect(css).toContain(`--contrib-base: var(--color-${hue}-500)`)
     }
   })
+
+  it("scopes the hover outline to real day cells", () => {
+    const css = readFileSync(
+      resolve(thisDir, "./contribution-graph.css"),
+      "utf8",
+    )
+    // `[data-date]` is on day cells alone. Without it the rule would also
+    // fire on the aria-hidden padding cells and the legend swatches, which
+    // share the cell class.
+    expect(css).toContain(".dr-contribution-graph-cell[data-date]:hover")
+    expect(css).toContain("--contrib-cell-outline")
+  })
 })
