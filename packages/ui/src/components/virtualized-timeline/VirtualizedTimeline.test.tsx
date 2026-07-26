@@ -42,11 +42,12 @@ const buckets = [
 
 beforeAll(() => {
   // jsdom implements neither, and the component measures width through the
-  // former and viewport height through the latter. 432px of client width
-  // minus the scrubber's reserved 20px hit region (12px rail + 8px ::before
-  // extension) is the ledger's canonical 412px content width: 4 columns of
-  // 100px tiles, so the column count, tile size, and every expected value
-  // below are unchanged from before the gutter existed.
+  // former and viewport height through the latter. jsdom applies none of the
+  // component's CSS, so the rail's rendered width is fiction here — the
+  // component reads the stub directly, with no subtraction. 412px is the
+  // ledger's canonical content width: 4 columns of 100px tiles, so the
+  // column count, tile size, and every expected value below are pinned to
+  // this stub.
   vi.stubGlobal(
     "ResizeObserver",
     class {
@@ -58,7 +59,7 @@ beforeAll(() => {
   Object.defineProperty(HTMLElement.prototype, "clientWidth", {
     configurable: true,
     get() {
-      return 432
+      return 412
     },
   })
   Object.defineProperty(HTMLElement.prototype, "clientHeight", {
@@ -72,10 +73,10 @@ beforeAll(() => {
 // The shared ResizeObserver stub above is inert (it never invokes its
 // callback), so exercising a real width change needs a local stub that
 // captures and can re-trigger it. Callers must invoke the returned
-// `restore()` in a `finally` so later tests see the fixture's fixed 432px
+// `restore()` in a `finally` so later tests see the fixture's fixed 412px
 // width again.
 function stubResizableWidth() {
-  let width = 432
+  let width = 412
   let onResize: (() => void) | null = null
   const inertResizeObserver = class {
     observe() {}
@@ -108,7 +109,7 @@ function stubResizableWidth() {
       Object.defineProperty(HTMLElement.prototype, "clientWidth", {
         configurable: true,
         get() {
-          return 432
+          return 412
         },
       })
       vi.stubGlobal("ResizeObserver", inertResizeObserver)
@@ -193,29 +194,38 @@ describe("VirtualizedTimeline", () => {
     expect(sizer?.style.height).toBe("1484px")
   })
 
-  it("reserves the scrubber's full hit region out of the tile grid", () => {
-    // The reservation must cover the whole 20px pointer target — the 12px
-    // rail PLUS its ::before's 8px leftward extension — not the rail alone:
-    // on overlay-scrollbar platforms there is no scrollbar gutter for the
-    // extension to land on, so anything less leaves an invisible strip that
-    // scrubs the timeline instead of activating the last column's tiles.
-    // jsdom cannot read the stylesheet, so the 20 is pinned arithmetically:
-    // with the scrubber shown, the 432px client width nets to 412px of
-    // content (4 columns of 100px); without it the full width is content
-    // and the same 4 columns come out at (432 - 3 * 4) / 4 = 105px. The
-    // browser pass confirms the CSS side of the pairing.
-    const withScrubber = renderTimeline()
+  it("measures content width from the viewport, with no reserved subtraction", () => {
+    const { container } = renderTimeline()
+    const viewport = container.querySelector<HTMLElement>(
+      ".dr-virtualized-timeline-viewport",
+    )
+    const grid = screen.getAllByRole("grid")[0]
+    // With the subtraction gone, the stubbed clientWidth IS the content
+    // width, so the fixture stubs 412 directly: 4 columns, 100px tiles.
+    expect(viewport).not.toBeNull()
+    expect(grid).toHaveAttribute("aria-colcount", "4")
+  })
+
+  it("renders the rail as a sibling of the viewport, not inside it", () => {
+    const { container } = renderTimeline()
+    const viewport = container.querySelector(
+      ".dr-virtualized-timeline-viewport",
+    )
+    const rail = container.querySelector(".dr-virtualized-timeline-scrubber")
+    expect(rail).not.toBeNull()
+    expect(viewport?.contains(rail!)).toBe(false)
+    expect(rail?.parentElement).toBe(viewport?.parentElement)
+  })
+
+  it("renders no rail when there is nothing to scrub", () => {
+    const { container } = renderTimeline({
+      buckets: [makeBucket("2026-07", "2026-07-01", 1)],
+    })
+    // A single one-row bucket is shorter than the stubbed viewport, so
+    // maxScroll is 0 and a date index would have no range to index.
     expect(
-      withScrubber.container
-        .querySelector<HTMLElement>(".dr-virtualized-timeline")!
-        .style.getPropertyValue("--vtimeline-tile-width"),
-    ).toBe("100px")
-    const bare = render(timelineElement({ showScrubber: false }))
-    expect(
-      bare.container
-        .querySelector<HTMLElement>(".dr-virtualized-timeline")!
-        .style.getPropertyValue("--vtimeline-tile-width"),
-    ).toBe("105px")
+      container.querySelector(".dr-virtualized-timeline-scrubber"),
+    ).toBeNull()
   })
 
   it("keeps the tile geometry variables under a consumer style prop", () => {
@@ -1001,7 +1011,7 @@ describe("VirtualizedTimeline", () => {
       )!
       act(() => ref.current?.scrollToBucket("2026-05"))
       expect(viewport.scrollTop).toBe(400)
-      stub.setWidth(320)
+      stub.setWidth(300)
       act(() => stub.resize())
       // 300px content width regroups to 2 columns; "2026-05" now starts at
       // 1000, and the reader should still be at its top edge rather than
@@ -1030,7 +1040,7 @@ describe("VirtualizedTimeline", () => {
       fireEvent.click(screen.getAllByRole("button", { name: /collapse/i })[0]!)
       act(() => ref.current?.scrollToBucket("2026-05"))
       expect(viewport.scrollTop).toBe(180)
-      stub.setWidth(320)
+      stub.setWidth(300)
       act(() => stub.resize())
       // "2026-05" starts at 380 under the collapsed, 2-column layout. A
       // stale anchor recorded against the pre-collapse layout would instead
@@ -1072,7 +1082,7 @@ describe("VirtualizedTimeline", () => {
     })
     const stub = stubResizableWidth()
     try {
-      stub.setWidth(320)
+      stub.setWidth(300)
       const { container } = renderTimeline({ buckets: refBuckets })
       const viewport = container.querySelector<HTMLElement>(
         ".dr-virtualized-timeline-viewport",
@@ -1081,7 +1091,7 @@ describe("VirtualizedTimeline", () => {
       // offsets [0, 652, 1000], total 4084. 2542 is halfway into "2026-05".
       viewport.scrollTop = 2542
       expect(viewport.scrollTop).toBe(2542)
-      stub.setWidth(432)
+      stub.setWidth(412)
       act(() => stub.resize())
       // 412px regroups to 4 columns: offsets [0, 252, 400], heights
       // [252, 148, 1084], total 1484. Halfway into "2026-05" is

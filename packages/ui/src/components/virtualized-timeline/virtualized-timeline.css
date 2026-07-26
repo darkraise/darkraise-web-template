@@ -18,12 +18,18 @@
     @apply static h-auto w-auto translate-none self-start rounded-[var(--radius-button)];
   }
 
+  /* A row, not a stack: the rail is a sibling of the viewport rather than an
+     overlay, so its width is real layout space. That is what makes the
+     viewport's own clientWidth the content width with no arithmetic, and what
+     makes rail-over-content overlap structurally impossible rather than
+     avoided by a reserved gutter. */
   .dr-virtualized-timeline-scroll-area {
-    @apply relative flex min-h-0 flex-1 flex-col;
+    @apply relative flex min-h-0 flex-1 flex-row;
+    container-type: inline-size;
   }
 
   .dr-virtualized-timeline-viewport {
-    @apply min-h-0 flex-1 overflow-y-auto;
+    @apply min-h-0 min-w-0 flex-1 overflow-y-auto;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -86,20 +92,21 @@
     @apply -rotate-90;
   }
 
-  /* touch-action: none, or the browser claims pointerdown for page panning and
-     the drag never starts on touch. The ::before widens the hit area without
-     widening the visible rail. The full pointer target — rail plus ::before
-     extension — is mirrored by SCRUBBER_HIT_WIDTH in VirtualizedTimeline.tsx,
-     which reserves it out of the measured content width; changing either
-     width means changing both. */
+  /* touch-action: none, or the browser claims pointerdown for page panning
+     and the drag never starts on touch. */
   .dr-virtualized-timeline-scrubber {
-    @apply absolute inset-y-0 right-0 z-20 flex w-3 cursor-ns-resize flex-col select-none;
+    @apply relative flex w-12 shrink-0 cursor-ns-resize flex-col select-none;
     touch-action: none;
   }
 
-  .dr-virtualized-timeline-scrubber::before {
-    @apply absolute inset-y-0 right-0 -left-2;
-    content: "";
+  /* Below this width the labels cost more than they give: the rail keeps its
+     ticks and drops to a narrow strip, and the drag bubble still names the
+     date. The breakpoint reads the scroll area's width, which the rail does
+     not influence, so it cannot oscillate. */
+  @container (width < 480px) {
+    .dr-virtualized-timeline-scrubber {
+      @apply w-5;
+    }
   }
 
   /* Deliberately unpositioned and unclipped: the segment is only as wide as

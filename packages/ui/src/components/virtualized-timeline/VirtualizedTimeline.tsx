@@ -30,12 +30,6 @@ import "./virtualized-timeline.css"
 
 declare const process: { env: { NODE_ENV?: string } }
 
-/** Must match the scrubber's full pointer target in virtualized-timeline.css:
- *  the rail's `w-3` (12px) PLUS its `::before`'s `-left-2` extension (8px).
- *  Reserving only the rail leaves the extension hanging over the last tile
- *  column on overlay-scrollbar platforms, silently stealing its clicks. */
-const SCRUBBER_HIT_WIDTH = 20
-
 /** Index of the last bucket whose offset is <= y, or 0. Mirrors the private
  *  helper in `useBucketWindow.ts`, which isn't exported. */
 function findBucketAtOffset(offsets: number[], y: number): number {
@@ -710,13 +704,7 @@ export function VirtualizedTimeline<T>({
           fraction: height > 0 ? (element.scrollTop - offset) / height : 0,
         }
       }
-      // The scrubber's pointer target overlays the scroll area's right
-      // edge. Reserving its full width out of the content keeps the last
-      // tile column from ending underneath any part of the hit band, which
-      // would silently swallow that column's clicks.
-      setContentWidth(
-        element.clientWidth - (showScrubber ? SCRUBBER_HIT_WIDTH : 0),
-      )
+      setContentWidth(element.clientWidth)
       setViewportHeight(element.clientHeight)
     }
     measure()
@@ -724,7 +712,7 @@ export function VirtualizedTimeline<T>({
     const observer = new ResizeObserver(measure)
     observer.observe(element)
     return () => observer.disconnect()
-  }, [showScrubber])
+  }, [])
 
   // One state update per frame, not per scroll event.
   React.useEffect(() => {
@@ -967,6 +955,8 @@ export function VirtualizedTimeline<T>({
     )
   }
 
+  const maxScroll = Math.max(0, layout.totalSize - viewportHeight)
+
   const mounted: React.ReactNode[] = []
   // A pinned bucket above the window precedes it so DOM order matches
   // visual order.
@@ -1008,8 +998,8 @@ export function VirtualizedTimeline<T>({
         </div>
       ) : null}
       {/* Positions the scrubber against the scrollable area alone rather than
-          the whole component, so its absolutely-positioned hit region can
-          never spread into the toolbar's band above it. */}
+          the whole component, so the rail's flex row never competes with the
+          toolbar's band above it. */}
       <div className="dr-virtualized-timeline-scroll-area">
         {/* Must render unconditionally: the measurement effects above run
             once, right after the first commit, with an empty dependency
@@ -1029,7 +1019,9 @@ export function VirtualizedTimeline<T>({
             </div>
           )}
         </div>
-        {showScrubber ? (
+        {/* A date index over a range of zero indexes nothing, and leaving it
+            mounted leaves a focusable slider that cannot move. */}
+        {showScrubber && maxScroll > 0 ? (
           <VirtualizedTimelineScrubber<T>
             buckets={buckets}
             layout={layout}
