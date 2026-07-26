@@ -5,11 +5,13 @@
 import * as React from "react"
 
 import { cn } from "@lib/utils"
+import { Checkbox } from "@components/checkbox"
 import { useId } from "@primitives/state"
 import { formatBucketLabel, toBucketDate } from "./labels"
 import { useBucketItems } from "./useBucketItems"
 import { useBucketLayout } from "./useBucketLayout"
 import { useBucketWindow } from "./useBucketWindow"
+import { useTimelineSelection } from "./useTimelineSelection"
 import { VirtualizedTimelineBucket } from "./VirtualizedTimelineBucket"
 import { VirtualizedTimelineScrubber } from "./VirtualizedTimelineScrubber"
 import type {
@@ -67,6 +69,10 @@ export interface VirtualizedTimelineProps<T> extends Omit<
   /** Replaces the native DOM `onError` (omitted above); does not layer on it. */
   onError?: (error: unknown, bucket: TimelineBucket<T>) => void
   showScrubber?: boolean
+  selectable?: boolean
+  selectedIds?: Iterable<string>
+  defaultSelectedIds?: Iterable<string>
+  onSelectionChange?: (ids: string[]) => void
 }
 
 function defaultItemId<T>(
@@ -100,6 +106,10 @@ export function VirtualizedTimeline<T>({
   renderSkeleton,
   onError,
   showScrubber = true,
+  selectable = false,
+  selectedIds,
+  defaultSelectedIds,
+  onSelectionChange,
   ...props
 }: VirtualizedTimelineProps<T>) {
   if (
@@ -164,6 +174,56 @@ export function VirtualizedTimeline<T>({
     onError,
   })
 
+  // Spans loaded buckets only: an unloaded bucket's item ids are not knowable
+  // from a count, so it contributes nothing to the flat ordered list.
+  const orderedIds = React.useMemo(() => {
+    const ids: string[] = []
+    for (const bucket of buckets) {
+      const items = bucketItems.get(bucket.id).items
+      if (!items) continue
+      items.forEach((item, index) => ids.push(getItemId(item, index, bucket)))
+    }
+    return ids
+  }, [buckets, bucketItems, getItemId])
+
+  const selection = useTimelineSelection({
+    orderedIds,
+    selectedIds,
+    defaultSelectedIds,
+    onSelectionChange,
+  })
+
+  const bucketIdsFor = React.useCallback(
+    (bucket: TimelineBucket<T>) => {
+      const items = bucketItems.get(bucket.id).items
+      if (!items) return []
+      return items.map((item, index) => getItemId(item, index, bucket))
+    },
+    [bucketItems, getItemId],
+  )
+
+  const [pendingBucketId, setPendingBucketId] = React.useState<string | null>(
+    null,
+  )
+
+  const selectBucket = React.useCallback(
+    async (bucket: TimelineBucket<T>, next: boolean) => {
+      let ids = bucketIdsFor(bucket)
+      if (ids.length === 0) {
+        setPendingBucketId(bucket.id)
+        try {
+          const items = await bucketItems.ensure(bucket.id)
+          if (!items) return
+          ids = items.map((item, index) => getItemId(item, index, bucket))
+        } finally {
+          setPendingBucketId(null)
+        }
+      }
+      selection.setBucket(ids, next)
+    },
+    [bucketIdsFor, bucketItems, getItemId, selection],
+  )
+
   React.useEffect(() => {
     const element = scrollRef.current
     if (!element) return
@@ -221,6 +281,9 @@ export function VirtualizedTimeline<T>({
     const label = formatBucketLabel(bucket, granularity)
     const headerId = `${idBase}-header-${bucket.id}`
     const height = layout.heights[index]!
+    const bucketSelection = selectable
+      ? selection.bucketState(bucketIdsFor(bucket))
+      : "none"
     mounted.push(
       <VirtualizedTimelineBucket<T>
         key={bucket.id}
@@ -250,12 +313,36 @@ export function VirtualizedTimeline<T>({
         contentWidth={contentWidth}
         headerId={headerId}
         onItemClick={onItemClick}
+        selectable={selectable}
+        selection={selection}
         header={
           <div
             id={headerId}
             className="dr-virtualized-timeline-bucket-header"
             style={{ height: headerHeight }}
           >
+            {selectable ? (
+              <Checkbox
+                checked={
+                  bucketSelection === "all"
+                    ? true
+                    : bucketSelection === "some"
+                      ? "indeterminate"
+                      : false
+                }
+                aria-label={`Select ${label}`}
+                // An unloaded bucket has no ids to select, so the checkbox has
+                // to await its load; disabling it during that wait is what
+                // stops a second click from queueing a second load.
+                disabled={pendingBucketId === bucket.id}
+                data-pending={
+                  pendingBucketId === bucket.id ? "true" : undefined
+                }
+                onCheckedChange={(next) => {
+                  void selectBucket(bucket, next !== false)
+                }}
+              />
+            ) : null}
             {renderBucketHeader ? (
               renderBucketHeader({
                 bucket,

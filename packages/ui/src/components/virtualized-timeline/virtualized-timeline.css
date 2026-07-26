@@ -37,6 +37,11 @@
     height: var(--vtimeline-tile-height);
   }
 
+  .dr-virtualized-timeline-tile[data-selected="true"] {
+    @apply ring-primary ring-2 ring-offset-1;
+    --tw-ring-offset-color: hsl(var(--background));
+  }
+
   .dr-virtualized-timeline-error {
     @apply text-muted-foreground flex items-center gap-2 text-sm;
   }

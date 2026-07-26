@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import * as React from "react"
-import { fireEvent, render, screen } from "@testing-library/react"
+import { fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { beforeAll, describe, expect, it, vi } from "vitest"
 
 import { VirtualizedTimeline } from "./VirtualizedTimeline"
@@ -268,5 +268,88 @@ describe("VirtualizedTimeline", () => {
       Reflect.deleteProperty(HTMLElement.prototype, "scrollTop")
       Reflect.deleteProperty(HTMLElement.prototype, "scrollHeight")
     }
+  })
+
+  it("marks the grid multi-selectable and each cell unselected by default", () => {
+    renderTimeline({ selectable: true })
+    expect(screen.getAllByRole("grid")[0]).toHaveAttribute(
+      "aria-multiselectable",
+      "true",
+    )
+    expect(screen.getAllByRole("gridcell")[0]).toHaveAttribute(
+      "aria-selected",
+      "false",
+    )
+  })
+
+  it("selects on click instead of activating when selectable", () => {
+    const onItemClick = vi.fn()
+    const onSelectionChange = vi.fn()
+    renderTimeline({ selectable: true, onItemClick, onSelectionChange })
+    screen.getByTestId("2026-07-0").click()
+    expect(onSelectionChange).toHaveBeenCalledWith(["2026-07-0"])
+    expect(onItemClick).not.toHaveBeenCalled()
+  })
+
+  it("extends a range on shift-click", () => {
+    const onSelectionChange = vi.fn()
+    renderTimeline({ selectable: true, onSelectionChange })
+    fireEvent.click(screen.getByTestId("2026-07-0"))
+    fireEvent.click(screen.getByTestId("2026-07-2"), { shiftKey: true })
+    expect(onSelectionChange).toHaveBeenLastCalledWith([
+      "2026-07-0",
+      "2026-07-1",
+      "2026-07-2",
+    ])
+  })
+
+  it("selects a whole bucket from its header checkbox", () => {
+    const onSelectionChange = vi.fn()
+    renderTimeline({ selectable: true, onSelectionChange })
+    fireEvent.click(screen.getAllByRole("checkbox")[0]!)
+    expect(onSelectionChange).toHaveBeenLastCalledWith(
+      buckets[0]!.items!.map((item) => item.id),
+    )
+  })
+
+  it("awaits the load before selecting an unloaded bucket, blocking the checkbox meanwhile", async () => {
+    let resolveItems: (items: Photo[]) => void = () => {}
+    const onSelectionChange = vi.fn()
+    renderTimeline({
+      selectable: true,
+      onSelectionChange,
+      buckets: [{ id: "2026-07", date: "2026-07-01", count: 2 }],
+      loadBucket: () =>
+        new Promise<Photo[]>((resolve) => {
+          resolveItems = resolve
+        }),
+    })
+    const checkbox = screen.getAllByRole("checkbox")[0]!
+    fireEvent.click(checkbox)
+    expect(checkbox).toBeDisabled()
+    resolveItems([{ id: "x-0" }, { id: "x-1" }])
+    await waitFor(() =>
+      expect(onSelectionChange).toHaveBeenCalledWith(["x-0", "x-1"]),
+    )
+    expect(checkbox).not.toBeDisabled()
+  })
+
+  it("shows the header checkbox as indeterminate for a partial bucket", () => {
+    renderTimeline({ selectable: true, defaultSelectedIds: ["2026-07-0"] })
+    expect(screen.getAllByRole("checkbox")[0]).toHaveAttribute(
+      "aria-checked",
+      "mixed",
+    )
+  })
+
+  it("activates on Enter and toggles on Space", () => {
+    const onItemClick = vi.fn()
+    const onSelectionChange = vi.fn()
+    renderTimeline({ selectable: true, onItemClick, onSelectionChange })
+    const cell = screen.getAllByRole("gridcell")[0]!
+    fireEvent.keyDown(cell, { key: "Enter" })
+    expect(onItemClick).toHaveBeenCalledTimes(1)
+    fireEvent.keyDown(cell, { key: " " })
+    expect(onSelectionChange).toHaveBeenCalledWith(["2026-07-0"])
   })
 })

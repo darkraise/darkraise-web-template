@@ -5,6 +5,7 @@ import * as React from "react"
 import { cn } from "@lib/utils"
 import { Button } from "@components/button"
 import { Skeleton } from "@components/skeleton"
+import type { TimelineSelection } from "./useTimelineSelection"
 import type { BucketRowRange, TimelineBucket, BucketStatus } from "./types"
 
 export interface VirtualizedTimelineBucketProps<T> {
@@ -43,6 +44,8 @@ export interface VirtualizedTimelineBucketProps<T> {
   headerId: string
   onItemClick?: (item: T, bucket: TimelineBucket<T>) => void
   onRetry?: () => void
+  selectable?: boolean
+  selection: TimelineSelection
 }
 
 export function VirtualizedTimelineBucket<T>({
@@ -67,6 +70,8 @@ export function VirtualizedTimelineBucket<T>({
   headerId,
   onItemClick,
   onRetry,
+  selectable,
+  selection,
 }: VirtualizedTimelineBucketProps<T>) {
   const cells: React.ReactNode[] = []
   if (renderItem && rowRange) {
@@ -84,19 +89,39 @@ export function VirtualizedTimelineBucket<T>({
       }
       const item = items?.[itemIndex]
       if (item) {
+        const id = getItemId(item, itemIndex, bucket)
+        const selected = selectable ? selection.isSelected(id) : false
         cells.push(
           <div
-            key={getItemId(item, itemIndex, bucket)}
+            key={id}
             role="gridcell"
             // Counted from the bucket's full grid, not the mounted subset, or a
             // screen reader's reported position drifts as rows mount.
             aria-rowindex={row + 1}
             aria-colindex={column + 1}
+            aria-selected={selectable ? selected : undefined}
+            data-selected={selectable && selected ? "true" : undefined}
             className="dr-virtualized-timeline-tile"
             style={style}
-            onClick={() => onItemClick?.(item, bucket)}
+            onClick={(event) => {
+              if (!selectable) {
+                onItemClick?.(item, bucket)
+                return
+              }
+              if (event.shiftKey) selection.extendTo(id)
+              else selection.toggle(id)
+            }}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                event.preventDefault()
+                onItemClick?.(item, bucket)
+              } else if (event.key === " " && selectable) {
+                event.preventDefault()
+                selection.toggle(id)
+              }
+            }}
           >
-            {renderItem({ item, index: itemIndex, bucket, selected: false })}
+            {renderItem({ item, index: itemIndex, bucket, selected })}
           </div>,
         )
       } else if (status !== "error" && status !== "loaded") {
@@ -152,6 +177,7 @@ export function VirtualizedTimelineBucket<T>({
             role="grid"
             aria-colcount={columns}
             aria-rowcount={Math.ceil(bucket.count / columns)}
+            aria-multiselectable={selectable ? true : undefined}
             className={cn("dr-virtualized-timeline-grid")}
           >
             {cells}
