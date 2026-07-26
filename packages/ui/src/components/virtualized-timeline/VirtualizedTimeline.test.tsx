@@ -240,6 +240,54 @@ describe("VirtualizedTimeline", () => {
     expect(screen.queryByRole("slider")).not.toBeInTheDocument()
   })
 
+  it("defaults the rail to the right", () => {
+    const { container } = renderTimeline()
+    expect(container.querySelector(".dr-virtualized-timeline")).toHaveAttribute(
+      "data-scrubber-side",
+      "right",
+    )
+  })
+
+  it("mirrors the rail to the left on request", () => {
+    const { container } = renderTimeline({ scrubberSide: "left" })
+    expect(container.querySelector(".dr-virtualized-timeline")).toHaveAttribute(
+      "data-scrubber-side",
+      "left",
+    )
+  })
+
+  it("keeps the layout arithmetic identical whichever side the rail is on", () => {
+    // jsdom applies none of this package's CSS and performs no layout, so the
+    // rail has no rendered width here and contentWidth comes from the stubbed
+    // clientWidth regardless of side -- this does not prove the rail costs
+    // the same width in a real browser (Task 7 owns that). It proves only
+    // that the prop does not perturb the layout arithmetic itself.
+    const right = renderTimeline()
+    const rightCols = screen
+      .getAllByRole("grid")[0]
+      ?.getAttribute("aria-colcount")
+    right.unmount()
+    renderTimeline({ scrubberSide: "left" })
+    expect(screen.getAllByRole("grid")[0]).toHaveAttribute(
+      "aria-colcount",
+      rightCols!,
+    )
+  })
+
+  it("leaves the rail's ARIA contract untouched when mirrored to the left", () => {
+    renderTimeline({ scrubberSide: "left" })
+    const rail = screen.getByRole("slider")
+    expect(rail).toHaveAttribute("aria-orientation", "vertical")
+    const now = Number(rail.getAttribute("aria-valuenow"))
+    const min = Number(rail.getAttribute("aria-valuemin"))
+    const max = Number(rail.getAttribute("aria-valuemax"))
+    // An earlier version of this scrubber rendered a valuenow above its own
+    // valuemax, and the invalid state never resynced; any change touching the
+    // rail earns this check.
+    expect(min).toBeLessThanOrEqual(now)
+    expect(now).toBeLessThanOrEqual(max)
+  })
+
   it("shows tick labels once the scroll area crosses the label breakpoint", () => {
     // Widens the shared clientWidth stub for this test alone, then restores
     // it: the scroll-area ref this measures from is a plain HTMLElement, so

@@ -125,6 +125,10 @@ export interface VirtualizedTimelineProps<T> extends Omit<
   /** Replaces the native DOM `onError` (omitted above); does not layer on it. */
   onError?: (error: unknown, bucket: TimelineBucket<T>) => void
   showScrubber?: boolean
+  /** Which edge the scrubber rail occupies. Physical rather than logical:
+   *  the package has no RTL or `dir` handling anywhere, and `Tooltip`,
+   *  `Sheet`, `Select`, and `Menubar` all take a physical `side` too. */
+  scrubberSide?: "left" | "right"
   selectable?: boolean
   selectedIds?: Iterable<string>
   defaultSelectedIds?: Iterable<string>
@@ -174,6 +178,7 @@ export function VirtualizedTimeline<T>({
   renderSkeleton,
   onError,
   showScrubber = true,
+  scrubberSide = "right",
   selectable = false,
   selectedIds,
   defaultSelectedIds,
@@ -1000,6 +1005,7 @@ export function VirtualizedTimeline<T>({
   return (
     <div
       className={cn("dr-virtualized-timeline", className)}
+      data-scrubber-side={scrubberSide}
       // The consumer's style spreads after the variables, but must never
       // replace the object wholesale: the tile CSS resolves its size from
       // these variables, and a plain `style={{ height: 500 }}` would

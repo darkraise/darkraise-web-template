@@ -189,4 +189,47 @@
     .dr-virtualized-timeline-scrubber-caret {
     @apply text-popover-foreground text-xs;
   }
+
+  /* The rail flips by flex order, so none of the tick, caret, or bracket
+     arithmetic changes -- only which edge the row starts from. Flex order
+     does not reorder the DOM, so keyboard focus still reaches the viewport
+     before the rail on both sides; that is consistent with the rail being a
+     supplementary control, not a bug to fix here. */
+  .dr-virtualized-timeline[data-scrubber-side="left"]
+    .dr-virtualized-timeline-scroll-area {
+    @apply flex-row-reverse;
+  }
+
+  /* Tick stays on the content-facing edge, label stays outboard toward the
+     container edge: flex-row-reverse preserves that relationship once the
+     rail is on the left, so the mark never ends up between the label and
+     the content. */
+  .dr-virtualized-timeline[data-scrubber-side="left"]
+    .dr-virtualized-timeline-scrubber-tick {
+    @apply right-auto left-0 flex-row-reverse;
+  }
+
+  /* Same reasoning as the tick: the hairline is flex-1 and the date sits
+     beside it, so reversing keeps the line facing the content and the date
+     outboard. */
+  .dr-virtualized-timeline[data-scrubber-side="left"]
+    .dr-virtualized-timeline-scrubber-caret {
+    @apply flex-row-reverse;
+  }
+
+  /* The bracket sits on the rail's content-facing edge on purpose, so it
+     does not collide with the tick labels; on a left-hand rail that edge is
+     the right one. */
+  .dr-virtualized-timeline[data-scrubber-side="left"]
+    .dr-virtualized-timeline-scrubber-bracket {
+    @apply right-0 left-auto;
+  }
+
+  /* The drag bubble opens toward the content so it cannot run off screen; on
+     a left-hand rail an outboard bubble would overflow the container's left
+     edge instead. */
+  .dr-virtualized-timeline[data-scrubber-side="left"]
+    .dr-virtualized-timeline-scrubber-label {
+    @apply right-auto left-4;
+  }
 }
