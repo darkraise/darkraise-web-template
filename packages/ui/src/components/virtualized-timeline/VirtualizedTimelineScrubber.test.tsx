@@ -105,9 +105,17 @@ describe("VirtualizedTimelineScrubber", () => {
     expect(onScrubTo).toHaveBeenLastCalledWith(0)
   })
 
-  it("renders one labelled segment per bucket", () => {
-    renderScrubber()
+  it("renders one labelled segment per bucket, sized to its share of total height", () => {
+    const { container } = renderScrubber()
     expect(screen.getByText("July 2026")).toBeInTheDocument()
     expect(screen.getByText("June 2026")).toBeInTheDocument()
+    const segments = container.querySelectorAll<HTMLElement>(
+      ".dr-virtualized-timeline-scrubber-segment",
+    )
+    // heights [252, 148] of a 400 total: each segment's flex-grow is its
+    // share, which is what makes the rail proportional to bucket size
+    // rather than to bucket count.
+    expect(segments[0]?.style.flexGrow).toBe(String(252 / 400))
+    expect(segments[1]?.style.flexGrow).toBe(String(148 / 400))
   })
 })

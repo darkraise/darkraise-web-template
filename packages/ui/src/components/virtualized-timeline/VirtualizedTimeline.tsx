@@ -316,7 +316,13 @@ export function VirtualizedTimeline<T>({
             const element = scrollRef.current
             if (!element) return
             element.scrollTop = next
-            setScrollTop(next)
+            // Read back rather than `setScrollTop(next)`: the browser
+            // clamps the assignment above to the element's real scroll
+            // range, but a raw `next` (e.g. a trailing bucket's offset
+            // past maxScroll) would leave state holding the unclamped
+            // value forever, since a pinned scrollTop that doesn't move
+            // fires no native scroll event to correct it later.
+            setScrollTop(element.scrollTop)
           }}
         />
       ) : null}

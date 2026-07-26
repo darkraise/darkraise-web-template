@@ -23,6 +23,15 @@ function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value))
 }
 
+function indexAtOffset(offsets: readonly number[], target: number): number {
+  let index = 0
+  for (let i = 0; i < offsets.length; i += 1) {
+    if (offsets[i]! <= target) index = i
+    else break
+  }
+  return index
+}
+
 export function VirtualizedTimelineScrubber<T>({
   buckets,
   layout,
@@ -36,31 +45,32 @@ export function VirtualizedTimelineScrubber<T>({
   const railRef = React.useRef<HTMLDivElement | null>(null)
   const [dragging, setDragging] = React.useState(false)
   const [hoverY, setHoverY] = React.useState<number | null>(null)
+  const [hoverLabel, setHoverLabel] = React.useState<string | null>(null)
   const frame = React.useRef(0)
   const pendingClientY = React.useRef<number | null>(null)
 
   const maxScroll = Math.max(0, layout.totalSize - viewportHeight)
 
-  const activeIndex = React.useMemo(() => {
-    let index = 0
-    for (let i = 0; i < layout.offsets.length; i += 1) {
-      if (layout.offsets[i]! <= scrollTop) index = i
-      else break
-    }
-    return index
-  }, [layout.offsets, scrollTop])
+  const activeIndex = React.useMemo(
+    () => indexAtOffset(layout.offsets, scrollTop),
+    [layout.offsets, scrollTop],
+  )
 
   const scrubToClientY = React.useCallback(
     (clientY: number) => {
       const rail = railRef.current
       if (!rail || layout.totalSize <= 0) return
       const rect = rail.getBoundingClientRect()
-      const ratio = clamp((clientY - rect.top) / (rect.height || 1), 0, 1)
+      const ratio = clamp(
+        (clientY - rect.top) / (rect.height || railHeight || 1),
+        0,
+        1,
+      )
       onScrubTo(
         clamp(ratio * layout.totalSize - viewportHeight / 2, 0, maxScroll),
       )
     },
-    [layout.totalSize, maxScroll, onScrubTo, viewportHeight],
+    [layout.totalSize, maxScroll, onScrubTo, railHeight, viewportHeight],
   )
 
   function handlePointerDown(event: React.PointerEvent<HTMLDivElement>) {
@@ -70,7 +80,18 @@ export function VirtualizedTimelineScrubber<T>({
   }
 
   function handlePointerMove(event: React.PointerEvent<HTMLDivElement>) {
-    setHoverY(event.clientY - event.currentTarget.getBoundingClientRect().top)
+    // The rail's live rect is the same source scrubToClientY uses for its
+    // own ratio, so the hover label and the drag target can never disagree.
+    const rect = event.currentTarget.getBoundingClientRect()
+    const y = event.clientY - rect.top
+    setHoverY(y)
+    const target = (y / (rect.height || railHeight || 1)) * layout.totalSize
+    const hovered =
+      layout.totalSize > 0
+        ? buckets[indexAtOffset(layout.offsets, target)]
+        : undefined
+    setHoverLabel(hovered ? formatBucketLabel(hovered, granularity) : null)
+
     if (!dragging) return
     const { clientY } = event
     // Leading edge fires immediately so a single move responds without
@@ -91,7 +112,7 @@ export function VirtualizedTimelineScrubber<T>({
     })
   }
 
-  function handlePointerUp(event: React.PointerEvent<HTMLDivElement>) {
+  function endDrag(event: React.PointerEvent<HTMLDivElement>) {
     event.currentTarget.releasePointerCapture?.(event.pointerId)
     setDragging(false)
   }
@@ -137,31 +158,13 @@ export function VirtualizedTimelineScrubber<T>({
     [],
   )
 
-  const hoverLabel = React.useMemo(() => {
-    if (hoverY === null || layout.totalSize <= 0) return null
-    const target = (hoverY / (railHeight || 1)) * layout.totalSize
-    let index = 0
-    for (let i = 0; i < layout.offsets.length; i += 1) {
-      if (layout.offsets[i]! <= target) index = i
-      else break
-    }
-    const bucket = buckets[index]
-    return bucket ? formatBucketLabel(bucket, granularity) : null
-  }, [
-    buckets,
-    granularity,
-    hoverY,
-    layout.offsets,
-    layout.totalSize,
-    railHeight,
-  ])
-
   return (
     <div
       ref={railRef}
       role="slider"
       tabIndex={0}
       aria-label="Scroll through the timeline by date"
+      aria-orientation="vertical"
       aria-valuemin={0}
       aria-valuemax={Math.round(maxScroll)}
       aria-valuenow={Math.round(scrollTop)}
@@ -174,8 +177,13 @@ export function VirtualizedTimelineScrubber<T>({
       className={cn("dr-virtualized-timeline-scrubber", className)}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerUp}
-      onPointerLeave={() => setHoverY(null)}
+      onPointerUp={endDrag}
+      onPointerCancel={endDrag}
+      onLostPointerCapture={endDrag}
+      onPointerLeave={() => {
+        setHoverY(null)
+        setHoverLabel(null)
+      }}
       onKeyDown={handleKeyDown}
     >
       {buckets.map((bucket, index) => {

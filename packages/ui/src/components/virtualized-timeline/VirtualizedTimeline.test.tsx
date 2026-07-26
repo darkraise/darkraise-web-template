@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import * as React from "react"
-import { render, screen } from "@testing-library/react"
+import { fireEvent, render, screen } from "@testing-library/react"
 import { beforeAll, describe, expect, it, vi } from "vitest"
 
 import { VirtualizedTimeline } from "./VirtualizedTimeline"
@@ -228,5 +228,45 @@ describe("VirtualizedTimeline", () => {
     })
     expect(await screen.findByRole("alert")).toHaveTextContent("offline")
     expect(screen.getByRole("button", { name: "Retry" })).toBeInTheDocument()
+  })
+
+  it("keeps the scrubber's reported value within its max after scrubbing past the end", () => {
+    // jsdom performs no layout, so scrollTop is a plain, unclamped property
+    // by default. A real scroll container clamps the assignment to its
+    // scroll range; this stub reproduces that so the test can tell the
+    // difference between reading back the DOM (correct) and trusting the
+    // scrub target verbatim (stale, and never self-corrects here because
+    // jsdom also never fires a "scroll" event on a property write).
+    let scrollTopValue = 0
+    Object.defineProperty(HTMLElement.prototype, "scrollHeight", {
+      configurable: true,
+      get() {
+        return 400
+      },
+    })
+    Object.defineProperty(HTMLElement.prototype, "scrollTop", {
+      configurable: true,
+      get() {
+        return scrollTopValue
+      },
+      set(value: number) {
+        const max = Math.max(0, this.scrollHeight - this.clientHeight)
+        scrollTopValue = Math.min(Math.max(0, value), max)
+      },
+    })
+    try {
+      renderTimeline()
+      const rail = screen.getByRole("slider")
+      // Bucket 1's offset (252) exceeds maxScroll (400 total - 300
+      // viewport = 100), the same trailing-bucket-shorter-than-viewport
+      // case the scrubber's own step() test exercises.
+      fireEvent.keyDown(rail, { key: "ArrowDown" })
+      const valueNow = Number(rail.getAttribute("aria-valuenow"))
+      const valueMax = Number(rail.getAttribute("aria-valuemax"))
+      expect(valueNow).toBeLessThanOrEqual(valueMax)
+    } finally {
+      Reflect.deleteProperty(HTMLElement.prototype, "scrollTop")
+      Reflect.deleteProperty(HTMLElement.prototype, "scrollHeight")
+    }
   })
 })
