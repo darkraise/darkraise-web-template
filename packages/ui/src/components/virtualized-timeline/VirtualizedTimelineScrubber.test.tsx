@@ -211,4 +211,38 @@ describe("VirtualizedTimelineScrubber", () => {
     fireEvent.pointerUp(rail, { clientY: 100 })
     expect(rail.dataset.dragging).toBeUndefined()
   })
+
+  it("brackets the viewport's footprint on the rail from the caret down", () => {
+    const { container } = renderScrubber({ scrollTop: 0 })
+    const bracket = container.querySelector<HTMLElement>(
+      ".dr-virtualized-timeline-scrubber-bracket",
+    )
+    // 400 total, a 200px viewport (maxScroll 200), 400px rail: the viewport's
+    // footprint is half the rail, starting where the caret sits at scrollTop 0.
+    expect(bracket?.style.top).toBe("0px")
+    expect(bracket?.style.height).toBe("200px")
+  })
+
+  it("lands the bracket's bottom edge exactly on the rail's end at max scroll", () => {
+    const { container } = renderScrubber({ scrollTop: 200 })
+    const bracket = container.querySelector<HTMLElement>(
+      ".dr-virtualized-timeline-scrubber-bracket",
+    )
+    const top = Number.parseFloat(bracket?.style.top ?? "")
+    const height = Number.parseFloat(bracket?.style.height ?? "")
+    // scrollTop + viewportSize === totalSize at max scroll, so the ratio is
+    // exactly 1 and the bottom edge lands on railHeight (400) by construction
+    // -- not merely inside it, which would also pass for a clamped value.
+    expect(top + height).toBe(400)
+  })
+
+  it("keeps the caret's own position unrescaled at max scroll", () => {
+    const { container } = renderScrubber({ scrollTop: 200 })
+    const caret = container.querySelector<HTMLElement>(
+      ".dr-virtualized-timeline-scrubber-caret",
+    )
+    // Same scale as always: scrollTop 200 of 400 total on a 400px rail. The
+    // bracket addition must not change this.
+    expect(caret?.style.top).toBe("200px")
+  })
 })

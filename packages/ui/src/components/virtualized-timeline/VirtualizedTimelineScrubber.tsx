@@ -178,9 +178,23 @@ export function VirtualizedTimelineScrubber<T>({
 
   const caretY =
     layout.totalSize > 0 ? (scrollTop / layout.totalSize) * railHeight : 0
-  const caretLabel = buckets[activeIndex]
+  const activeLabel = buckets[activeIndex]
     ? formatBucketLabel(buckets[activeIndex]!, granularity)
     : null
+
+  // The viewport's footprint on the rail, from the caret down to where the
+  // viewport's far edge falls. Derived from maxScroll rather than
+  // viewportHeight or railHeight: those happen to agree with it today (the
+  // rail and the viewport are flex siblings of equal height), but the
+  // agreement is a coincidence of today's layout, not a guarantee. At
+  // scrollTop === maxScroll, scrollTop + viewportSize === layout.totalSize by
+  // construction, so bracketBottom lands on railHeight exactly -- no clamp.
+  const viewportSize = layout.totalSize - maxScroll
+  const bracketBottom =
+    layout.totalSize > 0
+      ? ((scrollTop + viewportSize) / layout.totalSize) * railHeight
+      : 0
+  const bracketHeight = bracketBottom - caretY
 
   return (
     <div
@@ -192,11 +206,7 @@ export function VirtualizedTimelineScrubber<T>({
       aria-valuemin={0}
       aria-valuemax={Math.round(maxScroll)}
       aria-valuenow={Math.round(scrollTop)}
-      aria-valuetext={
-        buckets[activeIndex]
-          ? formatBucketLabel(buckets[activeIndex]!, granularity)
-          : undefined
-      }
+      aria-valuetext={activeLabel ?? undefined}
       data-dragging={dragging ? "true" : undefined}
       className={cn("dr-virtualized-timeline-scrubber", className)}
       onPointerDown={handlePointerDown}
@@ -222,10 +232,15 @@ export function VirtualizedTimelineScrubber<T>({
       ))}
       <div
         aria-hidden="true"
+        className="dr-virtualized-timeline-scrubber-bracket"
+        style={{ top: caretY, height: bracketHeight }}
+      />
+      <div
+        aria-hidden="true"
         className="dr-virtualized-timeline-scrubber-caret"
         style={{ top: caretY }}
       >
-        {caretLabel}
+        {activeLabel}
       </div>
       {hoverLabel ? (
         <span

@@ -453,6 +453,23 @@ describe("VirtualizedTimeline", () => {
     }
   })
 
+  it("ties the scrubber's aria-valuemax to the root's own maxScroll", () => {
+    renderTimeline()
+    const rail = screen.getByRole("slider")
+    // Computed independently of the component's own maxScroll expression,
+    // from the fixture's declared counts and geometry alone: two buckets of
+    // 8 and 3 photos over the stubbed 412px content width (4 columns of
+    // 100px tiles) give heights 32 + 2*100 + 1*4 + 16 = 252 and
+    // 32 + 1*100 + 16 = 148, total 400 (see "sizes the scroll sizer to the
+    // computed total height" above). The stubbed clientHeight is 300.
+    const totalSize = 400
+    const viewportHeight = 300
+    expect(rail).toHaveAttribute(
+      "aria-valuemax",
+      String(totalSize - viewportHeight),
+    )
+  })
+
   it("marks the grid multi-selectable and each cell unselected by default", () => {
     renderTimeline({ selectable: true })
     expect(screen.getAllByRole("grid")[0]).toHaveAttribute(

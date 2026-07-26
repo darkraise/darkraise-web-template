@@ -164,12 +164,27 @@
     background-color: hsl(var(--primary));
   }
 
+  /* The viewport's footprint on the rail, from the caret down to the
+     viewport's far edge. A hairline, not a proportional thumb, for the same
+     reason as the caret above. min-height keeps a very large collection's
+     near-zero share visible; that can overflow the rail's end by at most two
+     pixels at that extreme, which is the right trade against an invisible
+     indicator, and it leaves the JavaScript arithmetic exact. */
+  .dr-virtualized-timeline-scrubber-bracket {
+    @apply pointer-events-none absolute left-0 w-0.5;
+    min-height: 2px;
+    background-color: hsl(var(--primary) / 0.3);
+  }
+
   .dr-virtualized-timeline-scrubber[data-dragging="true"] {
     background-color: hsl(var(--muted) / 0.4);
   }
 
-  /* While dragging the caret's date is the primary affordance, so it takes the
-     package's overlay treatment. */
+  /* While dragging, the caret's date becomes the primary affordance: it
+     swaps to the popover foreground color at a larger size. It does not gain
+     the hover label's full popover chrome (background, border, radius,
+     shadow) -- settling that belongs to the browser-verification pass, not
+     here. */
   .dr-virtualized-timeline-scrubber[data-dragging="true"]
     .dr-virtualized-timeline-scrubber-caret {
     @apply text-popover-foreground text-xs;
