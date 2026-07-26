@@ -10,9 +10,12 @@
   /* The toolbar renders DatePickerTrigger without a DatePickerControl, so
      the trigger's base styling — absolute, centered against the control's
      input — must not apply; the compound selector outweighs both singles
-     regardless of stylesheet import order, and dr-btn supplies the look. */
+     regardless of stylesheet import order, and dr-btn supplies the look.
+     self-start is load-bearing alongside w-auto: the .dr-date-picker root
+     is a flex column whose default stretch alignment overrides width: auto
+     and spans the trigger across the whole container. */
   .dr-virtualized-timeline-toolbar .dr-date-picker-trigger {
-    @apply static h-auto w-auto translate-none rounded-[var(--radius-button)];
+    @apply static h-auto w-auto translate-none self-start rounded-[var(--radius-button)];
   }
 
   .dr-virtualized-timeline-scroll-area {
