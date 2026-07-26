@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { Button } from "darkraise-ui/components/button"
-import { toast } from "darkraise-ui/components/sonner"
 import {
   VirtualizedTimeline,
   type VirtualizedTimelineHandle,
@@ -25,7 +24,6 @@ const timelineCode = `<VirtualizedTimeline
   showJumpToDate
   selectedIds={selected}
   onSelectionChange={setSelected}
-  onItemClick={(item) => toast.info(\`Opened \${item.id}\`)}
   renderItem={({ item }) => (
     <div
       className="h-full w-full"
@@ -157,7 +155,6 @@ function VirtualizedTimelinePage() {
               showJumpToDate
               selectedIds={selected}
               onSelectionChange={setSelected}
-              onItemClick={(item) => toast.info(`Opened ${item.id}`)}
               renderItem={({ item }) => (
                 <div
                   className="h-full w-full"
