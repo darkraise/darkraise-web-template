@@ -45,6 +45,13 @@
     @apply relative h-full w-full;
   }
 
+  /* The row wrappers exist for the grid's ARIA model alone. display:
+     contents keeps them from generating boxes, so the absolutely positioned
+     tiles keep resolving their offsets against the grid itself. */
+  .dr-virtualized-timeline-row {
+    @apply contents;
+  }
+
   .dr-virtualized-timeline-tile {
     @apply absolute overflow-hidden rounded-[var(--radius-sm)];
     width: var(--vtimeline-tile-width);

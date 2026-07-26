@@ -93,7 +93,11 @@ export function VirtualizedTimelineBucket<T>({
   onFocusItem,
   onItemFocus,
 }: VirtualizedTimelineBucketProps<T>) {
-  const cells: React.ReactNode[] = []
+  // Cells grouped by grid row, so each group can mount inside a `role="row"`
+  // wrapper: a grid whose gridcells sit directly under the grid element has
+  // no table model for the row and column counts to attach to, and axe
+  // reports it as a critical violation.
+  const rowGroups: { rowIndex: number; cells: React.ReactNode[] }[] = []
   if (renderItem) {
     const renderCell = (itemIndex: number): React.ReactNode => {
       const row = Math.floor(itemIndex / columns)
@@ -106,16 +110,13 @@ export function VirtualizedTimelineBucket<T>({
         left: `calc(${column} * (var(--vtimeline-tile-width) + ${gap}px))`,
       }
       const item = items?.[itemIndex]
-      if (item) {
+      if (item !== undefined) {
         const id = getItemId(item, itemIndex, bucket)
         const selected = selectable ? selection.isSelected(id) : false
         return (
           <div
             key={id}
             role="gridcell"
-            // Counted from the bucket's full grid, not the mounted subset, or a
-            // screen reader's reported position drifts as rows mount.
-            aria-rowindex={row + 1}
             aria-colindex={column + 1}
             aria-selected={selectable ? selected : undefined}
             data-selected={selectable && selected ? "true" : undefined}
@@ -191,19 +192,37 @@ export function VirtualizedTimelineBucket<T>({
       ? mountedCellRange(bucket.count, columns, rowRange)
       : null
     if (range) {
+      let current: { rowIndex: number; cells: React.ReactNode[] } | null = null
       for (
         let itemIndex = range.first;
         itemIndex <= range.last;
         itemIndex += 1
       ) {
-        cells.push(renderCell(itemIndex))
+        const cell = renderCell(itemIndex)
+        if (cell === null) continue
+        const rowIndex = Math.floor(itemIndex / columns)
+        if (!current || current.rowIndex !== rowIndex) {
+          current = { rowIndex, cells: [] }
+          rowGroups.push(current)
+        }
+        current.cells.push(cell)
       }
     }
     if (
       pinnedIndex !== undefined &&
       (!range || pinnedIndex < range.first || pinnedIndex > range.last)
     ) {
-      cells.push(renderCell(pinnedIndex))
+      const cell = renderCell(pinnedIndex)
+      if (cell !== null) {
+        // The mounted range is row-aligned at both ends, so an out-of-range
+        // pinned cell is always in a row of its own.
+        const pinnedRow = {
+          rowIndex: Math.floor(pinnedIndex / columns),
+          cells: [cell],
+        }
+        if (range && pinnedIndex < range.first) rowGroups.unshift(pinnedRow)
+        else rowGroups.push(pinnedRow)
+      }
     }
   }
 
@@ -240,7 +259,19 @@ export function VirtualizedTimelineBucket<T>({
             aria-multiselectable={selectable ? true : undefined}
             className={cn("dr-virtualized-timeline-grid")}
           >
-            {cells}
+            {rowGroups.map((group) => (
+              <div
+                key={group.rowIndex}
+                role="row"
+                // Counted from the bucket's full grid, not the mounted
+                // subset, or a screen reader's reported position drifts as
+                // rows mount.
+                aria-rowindex={group.rowIndex + 1}
+                className="dr-virtualized-timeline-row"
+              >
+                {group.cells}
+              </div>
+            ))}
           </div>
         )}
       </div>

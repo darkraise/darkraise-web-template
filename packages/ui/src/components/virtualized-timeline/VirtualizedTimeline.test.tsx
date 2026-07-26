@@ -206,6 +206,25 @@ describe("VirtualizedTimeline", () => {
     expect(grid).toHaveAttribute("aria-rowcount", "2")
   })
 
+  it("wraps every gridcell in a row numbered from the bucket's full grid", () => {
+    renderTimeline()
+    const grid = screen.getAllByRole("grid")[0]!
+    const rows = within(grid).getAllByRole("row")
+    // Bucket "2026-07" has 8 items over 4 columns: two full rows.
+    expect(rows).toHaveLength(2)
+    expect(rows[0]).toHaveAttribute("aria-rowindex", "1")
+    expect(rows[1]).toHaveAttribute("aria-rowindex", "2")
+    expect(within(rows[0]!).getAllByRole("gridcell")).toHaveLength(4)
+    // No gridcell may sit directly under the grid: aria-required-parent.
+    for (const cell of within(grid).getAllByRole("gridcell")) {
+      expect(cell.parentElement).toHaveAttribute("role", "row")
+    }
+    expect(within(grid).getAllByRole("gridcell")[0]).toHaveAttribute(
+      "aria-colindex",
+      "1",
+    )
+  })
+
   it("names each bucket group after its header", () => {
     renderTimeline()
     const group = screen.getAllByRole("group")[0]!
