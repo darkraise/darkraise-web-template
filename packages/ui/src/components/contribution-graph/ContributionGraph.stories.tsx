@@ -74,3 +74,43 @@ export const Clickable: Story = {
     />
   ),
 }
+
+export const Sizes: Story = {
+  render: () => (
+    <div className="flex flex-col gap-6">
+      {(["sm", "md", "lg"] as const).map((size) => (
+        <div key={size} className="flex flex-col gap-2">
+          <span className="text-muted-foreground text-xs">{size}</span>
+          <div className="overflow-x-auto">
+            <ContributionGraph
+              startDate={START}
+              endDate={END}
+              data={data}
+              size={size}
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+  ),
+}
+
+export const Hues: Story = {
+  render: () => (
+    <div className="flex flex-col gap-6">
+      {(["default", "green", "violet", "amber"] as const).map((variant) => (
+        <div key={variant} className="flex flex-col gap-2">
+          <span className="text-muted-foreground text-xs">{variant}</span>
+          <div className="overflow-x-auto">
+            <ContributionGraph
+              startDate={START}
+              endDate={END}
+              data={data}
+              variant={variant}
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+  ),
+}

@@ -1,5 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { ContributionGraph } from "darkraise-ui/components/contribution-graph"
+import { Button } from "darkraise-ui/components/button"
+import {
+  ContributionGraph,
+  type ContributionGraphVariant,
+} from "darkraise-ui/components/contribution-graph"
+import { ACCENT_HUES } from "darkraise-ui/lib"
 import { useMemo, useState } from "react"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
@@ -61,14 +66,21 @@ const clickableCode = `<ContributionGraph
   onCellClick={(cell) => setSelected(\`\${cell.key}: \${cell.value}\`)}
 />`
 
+const sizeCode = `<ContributionGraph size="sm" data={data} />
+<ContributionGraph size="md" data={data} />
+<ContributionGraph size="lg" data={data} />`
+
+const hueCode = `<ContributionGraph variant="green" data={data} />`
+
 function ContributionGraphPage() {
   const data = useMemo(() => sampleData(), [])
   const [selected, setSelected] = useState<string | null>(null)
+  const [hue, setHue] = useState<ContributionGraphVariant>("green")
 
   return (
     <ShowcasePage
       title="Contribution Graph"
-      description="Calendar heatmap of daily activity, with month labels, a legend, tooltips, and keyboard navigation."
+      description="Calendar heatmap of daily activity, with month labels, a legend, tooltips, keyboard navigation, three sizes, and seventeen colour variants."
     >
       <ShowcaseExample title="Default" code={defaultCode}>
         <div className="overflow-x-auto">
@@ -117,6 +129,49 @@ function ContributionGraphPage() {
           <p className="text-muted-foreground text-sm">
             {selected ?? "Click or focus a day and press Enter."}
           </p>
+        </div>
+      </ShowcaseExample>
+
+      <ShowcaseExample title="Sizes" code={sizeCode}>
+        <div className="space-y-4">
+          {(["sm", "md", "lg"] as const).map((size) => (
+            <div key={size} className="space-y-1">
+              <p className="text-muted-foreground text-xs">{size}</p>
+              <div className="overflow-x-auto">
+                <ContributionGraph
+                  startDate={START_DATE}
+                  endDate={END_DATE}
+                  data={data}
+                  size={size}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      </ShowcaseExample>
+
+      <ShowcaseExample title="Colour variants" code={hueCode}>
+        <div className="space-y-3">
+          <div className="flex flex-wrap gap-1">
+            {(["default", ...ACCENT_HUES] as const).map((option) => (
+              <Button
+                key={option}
+                size="sm"
+                variant={hue === option ? "default" : "outline"}
+                onClick={() => setHue(option)}
+              >
+                {option}
+              </Button>
+            ))}
+          </div>
+          <div className="overflow-x-auto">
+            <ContributionGraph
+              startDate={START_DATE}
+              endDate={END_DATE}
+              data={data}
+              variant={hue}
+            />
+          </div>
         </div>
       </ShowcaseExample>
     </ShowcasePage>
