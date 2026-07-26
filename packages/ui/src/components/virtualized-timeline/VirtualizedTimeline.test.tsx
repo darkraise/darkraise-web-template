@@ -175,6 +175,20 @@ describe("VirtualizedTimeline", () => {
     expect(sizer?.style.height).toBe("400px")
   })
 
+  it("sizes the sizer to every bucket, not just the mounted window", () => {
+    // The 300px viewport at overscan 0 mounts only the first two buckets;
+    // the third (1084px) must still be in the sizer's height.
+    const { container } = render(
+      timelineElement({
+        buckets: [...buckets, makeBucket("2026-05", "2026-05-01", 40)],
+      }),
+    )
+    const sizer = container.querySelector<HTMLElement>(
+      ".dr-virtualized-timeline-sizer",
+    )
+    expect(sizer?.style.height).toBe("1484px")
+  })
+
   it("keeps the tile geometry variables under a consumer style prop", () => {
     const { container } = renderTimeline({ style: { height: 500 } })
     const root = container.querySelector<HTMLElement>(
@@ -873,6 +887,16 @@ describe("VirtualizedTimeline", () => {
   it("reports the visible bucket ids", () => {
     const ref = React.createRef<VirtualizedTimelineHandle>()
     renderTimeline({ ref, buckets: refBuckets })
+    expect(ref.current?.getVisibleBucketIds()).toEqual(["2026-07", "2026-06"])
+  })
+
+  it("reports only intersecting buckets, not the overscanned mount window", () => {
+    const ref = React.createRef<VirtualizedTimelineHandle>()
+    renderTimeline({ ref, buckets: refBuckets, overscanPx: 600 })
+    // The mount window's bottom edge is 0 + 300 + 600 = 900, which mounts
+    // "2026-05" (offset 400) — but the 300px viewport ends at 300, so only
+    // the first two buckets are actually in view.
+    expect(screen.getByTestId("2026-05-0")).toBeInTheDocument()
     expect(ref.current?.getVisibleBucketIds()).toEqual(["2026-07", "2026-06"])
   })
 

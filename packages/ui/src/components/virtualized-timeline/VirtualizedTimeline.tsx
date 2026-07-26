@@ -58,6 +58,8 @@ export interface VirtualizedTimelineHandle {
     opts?: { align?: "start" | "center" },
   ) => void
   scrollToBucket: (id: string, opts?: { align?: "start" | "center" }) => void
+  /** Ids of the buckets genuinely intersecting the viewport — not the
+   *  overscanned mount window, which extends past what the reader can see. */
   getVisibleBucketIds: () => string[]
 }
 
@@ -764,18 +766,24 @@ export function VirtualizedTimeline<T>({
             : offset,
         )
       },
-      getVisibleBucketIds: () =>
-        buckets
-          .slice(timelineWindow.startIndex, timelineWindow.endIndex + 1)
-          .map((bucket) => bucket.id),
+      getVisibleBucketIds: () => {
+        // Read live from the DOM rather than from state: the state copies
+        // are rAF-throttled, and an imperative caller expects the answer as
+        // of the call, not as of the last committed frame.
+        const element = scrollRef.current
+        if (!element) return []
+        const top = element.scrollTop
+        const bottom = top + element.clientHeight
+        const ids: string[] = []
+        buckets.forEach((bucket, index) => {
+          const offset = layout.offsets[index]!
+          const height = layout.heights[index]!
+          if (offset < bottom && offset + height > top) ids.push(bucket.id)
+        })
+        return ids
+      },
     }),
-    [
-      buckets,
-      layout.offsets,
-      scrollTo,
-      timelineWindow.endIndex,
-      timelineWindow.startIndex,
-    ],
+    [buckets, layout.heights, layout.offsets, scrollTo],
   )
 
   React.useImperativeHandle(ref, () => handle, [handle])
