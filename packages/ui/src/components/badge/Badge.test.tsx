@@ -1,6 +1,12 @@
 import { render, screen } from "@testing-library/react"
 import { describe, it, expect } from "vitest"
+import { readFileSync } from "node:fs"
+import { dirname, resolve } from "node:path"
+import { fileURLToPath } from "node:url"
 import { Badge } from "@components/badge"
+import { ACCENT_HUES } from "@lib/accent-hues"
+
+const thisDir = dirname(fileURLToPath(import.meta.url))
 
 describe("Badge", () => {
   it("renders with text content", () => {
@@ -48,5 +54,16 @@ describe("Badge", () => {
   it("applies custom className", () => {
     render(<Badge className="custom-class">Styled</Badge>)
     expect(screen.getByText("Styled")).toHaveClass("custom-class")
+  })
+})
+
+describe("badge.css", () => {
+  // Guards that every accent hue in the shared list has a CSS rule, so a hue
+  // in the type with no rule does not silently render unstyled.
+  it("declares a rule for every accent hue", () => {
+    const css = readFileSync(resolve(thisDir, "./badge.css"), "utf8")
+    for (const hue of ACCENT_HUES) {
+      expect(css).toContain(`.dr-badge[data-variant="${hue}"]`)
+    }
   })
 })

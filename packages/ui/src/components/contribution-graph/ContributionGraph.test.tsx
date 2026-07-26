@@ -372,11 +372,9 @@ describe("ContributionGraph", () => {
 })
 
 describe("contribution-graph.css", () => {
+  const css = readFileSync(resolve(thisDir, "./contribution-graph.css"), "utf8")
+
   it("declares a base-colour rule for every accent hue", () => {
-    const css = readFileSync(
-      resolve(thisDir, "./contribution-graph.css"),
-      "utf8",
-    )
     for (const hue of ACCENT_HUES) {
       expect(css).toContain(`.dr-contribution-graph[data-variant="${hue}"]`)
       expect(css).toContain(`--contrib-base: var(--color-${hue}-500)`)
@@ -384,10 +382,6 @@ describe("contribution-graph.css", () => {
   })
 
   it("scopes the hover outline to real day cells", () => {
-    const css = readFileSync(
-      resolve(thisDir, "./contribution-graph.css"),
-      "utf8",
-    )
     // `[data-date]` is on day cells alone. Without it the rule would also
     // fire on the aria-hidden padding cells and the legend swatches, which
     // share the cell class.
