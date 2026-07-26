@@ -40,4 +40,37 @@
   .dr-virtualized-timeline-error {
     @apply text-muted-foreground flex items-center gap-2 text-sm;
   }
+
+  /* touch-action: none, or the browser claims pointerdown for page panning and
+     the drag never starts on touch. The ::before widens the hit area without
+     widening the visible rail. */
+  .dr-virtualized-timeline-scrubber {
+    @apply absolute inset-y-0 right-0 z-20 flex w-3 cursor-ns-resize flex-col select-none;
+    touch-action: none;
+  }
+
+  .dr-virtualized-timeline-scrubber::before {
+    @apply absolute inset-y-0 right-0 -left-2;
+    content: "";
+  }
+
+  .dr-virtualized-timeline-scrubber-segment {
+    @apply text-muted-foreground relative flex min-h-0 items-start justify-end overflow-hidden text-[10px];
+  }
+
+  /* Only a segment tall enough to hold a line shows its label. */
+  .dr-virtualized-timeline-scrubber-segment > span {
+    @apply pointer-events-none hidden pr-3 whitespace-nowrap;
+  }
+
+  .dr-virtualized-timeline-scrubber-segment[data-active="true"] > span {
+    @apply text-foreground block;
+  }
+
+  .dr-virtualized-timeline-scrubber-label {
+    @apply bg-popover text-popover-foreground pointer-events-none absolute right-4 w-max rounded-[var(--radius-sm)] border px-2 py-1 text-xs;
+    border-color: var(--surface-overlay-border);
+    box-shadow: var(--surface-overlay-shadow);
+    transform: translateY(-50%);
+  }
 }

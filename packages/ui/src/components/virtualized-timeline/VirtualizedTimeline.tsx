@@ -11,6 +11,7 @@ import { useBucketItems } from "./useBucketItems"
 import { useBucketLayout } from "./useBucketLayout"
 import { useBucketWindow } from "./useBucketWindow"
 import { VirtualizedTimelineBucket } from "./VirtualizedTimelineBucket"
+import { VirtualizedTimelineScrubber } from "./VirtualizedTimelineScrubber"
 import type {
   BucketGeometry,
   BucketStatus,
@@ -65,6 +66,7 @@ export interface VirtualizedTimelineProps<T> extends Omit<
   }) => React.ReactNode
   /** Replaces the native DOM `onError` (omitted above); does not layer on it. */
   onError?: (error: unknown, bucket: TimelineBucket<T>) => void
+  showScrubber?: boolean
 }
 
 function defaultItemId<T>(
@@ -97,6 +99,7 @@ export function VirtualizedTimeline<T>({
   maxLoadedBuckets = 12,
   renderSkeleton,
   onError,
+  showScrubber = true,
   ...props
 }: VirtualizedTimelineProps<T>) {
   if (
@@ -301,6 +304,22 @@ export function VirtualizedTimeline<T>({
           </div>
         )}
       </div>
+      {showScrubber ? (
+        <VirtualizedTimelineScrubber<T>
+          buckets={buckets}
+          layout={layout}
+          granularity={granularity}
+          scrollTop={scrollTop}
+          viewportHeight={viewportHeight}
+          railHeight={viewportHeight}
+          onScrubTo={(next) => {
+            const element = scrollRef.current
+            if (!element) return
+            element.scrollTop = next
+            setScrollTop(next)
+          }}
+        />
+      ) : null}
     </div>
   )
 }

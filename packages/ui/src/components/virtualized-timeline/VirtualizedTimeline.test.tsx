@@ -81,9 +81,14 @@ function renderTimeline(
 
 describe("VirtualizedTimeline", () => {
   it("renders a header per mounted bucket, labelled from its date", () => {
-    renderTimeline()
-    expect(screen.getByText("July 2026")).toBeInTheDocument()
-    expect(screen.getByText("June 2026")).toBeInTheDocument()
+    // Scoped to the header elements: the scrubber also renders each
+    // bucket's label, so an unscoped text query would be ambiguous.
+    const { container } = renderTimeline()
+    const headers = container.querySelectorAll(
+      ".dr-virtualized-timeline-bucket-header",
+    )
+    expect(headers[0]).toHaveTextContent("July 2026")
+    expect(headers[1]).toHaveTextContent("June 2026")
   })
 
   it("labels buckets by the requested granularity", () => {
@@ -94,10 +99,15 @@ describe("VirtualizedTimeline", () => {
   })
 
   it("prefers an explicit bucket label", () => {
-    renderTimeline({
+    // Scoped to the header: the scrubber also renders the label, which
+    // would make an unscoped text query ambiguous.
+    const { container } = renderTimeline({
       buckets: [{ ...buckets[0]!, label: "Last summer" }, buckets[1]!],
     })
-    expect(screen.getByText("Last summer")).toBeInTheDocument()
+    const header = container.querySelector(
+      ".dr-virtualized-timeline-bucket-header",
+    )
+    expect(header).toHaveTextContent("Last summer")
   })
 
   it("sizes the scroll sizer to the computed total height", () => {
