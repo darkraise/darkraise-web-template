@@ -420,4 +420,47 @@ describe("VirtualizedTimeline", () => {
     fireEvent.click(screen.getAllByRole("button", { name: /collapse/i })[0]!)
     expect(onCollapsedChange).toHaveBeenCalledWith(["2026-07"])
   })
+
+  // If this test ever hangs instead of failing, the cause is the controlled
+  // `collapsedIds` identity-key memo regressing back to an inline
+  // `Array.from(...).join(...)` (or similar) recomputed fresh every render:
+  // `useControllableState`'s value-mirroring effect then loops forever on
+  // the new array identity. That loop is a synchronous `act()` flush that
+  // never yields the thread, so nothing in-process — not vitest's default
+  // test timeout, not a `Promise.race`/`setTimeout` wrapper here — can ever
+  // preempt it; only the CI runner's own wall-clock limit will. Confirmed by
+  // deliberately reintroducing the bug and watching this exact test hang.
+  it("stays responsive when a controlled collapsedIds gets a fresh equal array", () => {
+    const { rerender } = renderTimeline({
+      collapsible: true,
+      collapsedIds: ["2026-07"],
+    })
+    expect(screen.queryByTestId("2026-07-0")).not.toBeInTheDocument()
+    // A fresh array literal with identical contents is exactly the input a
+    // naive `[...ids]` spread mishandles: its identity changes every render,
+    // which loops `useControllableState`'s value-mirroring effect forever.
+    rerender(timelineElement({ collapsible: true, collapsedIds: ["2026-07"] }))
+    expect(screen.queryByTestId("2026-07-0")).not.toBeInTheDocument()
+    fireEvent.click(screen.getAllByRole("button", { name: /expand/i })[0]!)
+  })
+
+  it("passes real collapsed and selection state to renderBucketHeader", () => {
+    renderTimeline({
+      collapsible: true,
+      defaultCollapsedIds: ["2026-07"],
+      selectable: true,
+      defaultSelectedIds: ["2026-07-0"],
+      renderBucketHeader: ({ bucket, collapsed, selection }) => (
+        <span data-testid={`header-state-${bucket.id}`}>
+          {String(collapsed)}:{selection}
+        </span>
+      ),
+    })
+    expect(screen.getByTestId("header-state-2026-07")).toHaveTextContent(
+      "true:some",
+    )
+    expect(screen.getByTestId("header-state-2026-06")).toHaveTextContent(
+      "false:none",
+    )
+  })
 })

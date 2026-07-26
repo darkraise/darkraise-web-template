@@ -3,6 +3,7 @@
 import * as React from "react"
 
 import { useControllableState } from "@primitives/state"
+import { contentKey } from "./contentKey"
 
 export type BucketSelectionState = "none" | "some" | "all"
 
@@ -30,16 +31,12 @@ export function useTimelineSelection({
   defaultSelectedIds,
   onSelectionChange,
 }: UseTimelineSelectionOptions): TimelineSelection {
-  // Memoize based on content (as a NUL-separated string), not iterable
-  // identity. This ensures that new array literals with the same contents
-  // produce the same memoized value, avoiding loops in useControllableState's
-  // mirroring effect, which depends on the `value` prop's identity.
-  // NUL is used as separator because ids are consumer-supplied and may contain
-  // spaces, making space-based separation unsafe (e.g., ["a b", "c"] and
-  // ["a", "b c"] would collide). NUL cannot appear in any practical identifier.
-  const selectedKey = selectedIds
-    ? Array.from(selectedIds).join("\u0000")
-    : undefined
+  // Memoize based on content, not iterable identity. This ensures that new
+  // array literals with the same contents produce the same memoized value,
+  // avoiding loops in useControllableState's mirroring effect, which depends
+  // on the `value` prop's identity. See `contentKey.ts` for why the key is
+  // built the way it is.
+  const selectedKey = selectedIds ? contentKey(selectedIds) : undefined
   const stableSelectedIds = React.useMemo(
     () => (selectedIds ? Array.from(selectedIds) : undefined),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed on contents, not iterable identity

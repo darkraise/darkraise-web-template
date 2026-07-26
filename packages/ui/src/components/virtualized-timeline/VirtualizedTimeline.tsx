@@ -10,6 +10,7 @@ import { cn } from "@lib/utils"
 import { Button } from "@components/button"
 import { Checkbox } from "@components/checkbox"
 import { useControllableState, useId } from "@primitives/state"
+import { contentKey } from "./contentKey"
 import { formatBucketLabel, toBucketDate } from "./labels"
 import { useBucketItems } from "./useBucketItems"
 import { useBucketLayout } from "./useBucketLayout"
@@ -145,10 +146,10 @@ export function VirtualizedTimeline<T>({
 
   // Same primitive-key memo as `useTimelineSelection`, for the same reason:
   // an inline spread hands `useControllableState` a new array identity every
-  // render, and its mirroring effect then loops without end. See the comment
-  // in `useTimelineSelection.ts` for the full mechanism.
+  // render, and its mirroring effect then loops without end. See
+  // `contentKey.ts` for why the key is built the way it is.
   const collapsedKey = collapsedIdsProp
-    ? Array.from(collapsedIdsProp).join("\u0000")
+    ? contentKey(collapsedIdsProp)
     : undefined
   const stableCollapsedIds = React.useMemo(
     () => (collapsedIdsProp ? Array.from(collapsedIdsProp) : undefined),
