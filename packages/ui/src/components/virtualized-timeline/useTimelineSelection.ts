@@ -30,12 +30,15 @@ export function useTimelineSelection({
   defaultSelectedIds,
   onSelectionChange,
 }: UseTimelineSelectionOptions): TimelineSelection {
-  // Memoize based on content (as a space-separated string), not iterable
+  // Memoize based on content (as a NUL-separated string), not iterable
   // identity. This ensures that new array literals with the same contents
   // produce the same memoized value, avoiding loops in useControllableState's
   // mirroring effect, which depends on the `value` prop's identity.
+  // NUL is used as separator because ids are consumer-supplied and may contain
+  // spaces, making space-based separation unsafe (e.g., ["a b", "c"] and
+  // ["a", "b c"] would collide). NUL cannot appear in any practical identifier.
   const selectedKey = selectedIds
-    ? Array.from(selectedIds).join(" ")
+    ? Array.from(selectedIds).join("\u0000")
     : undefined
   const stableSelectedIds = React.useMemo(
     () => (selectedIds ? Array.from(selectedIds) : undefined),

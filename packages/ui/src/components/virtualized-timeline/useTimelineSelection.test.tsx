@@ -89,4 +89,21 @@ describe("useTimelineSelection", () => {
     act(() => result.current.clear())
     expect(result.current.selected.size).toBe(0)
   })
+
+  it("distinguishes selections that would collide with a space separator", () => {
+    // Collision case: space separator makes ["a b", "c"] and ["a", "b c"] both key to "a b c"
+    // NUL separator avoids this since NUL cannot appear in ids
+    const idsWithSpaces = ["a b", "c", "a", "b c", "d"]
+    const { result, rerender } = renderHook(
+      ({ selectedIds }) =>
+        useTimelineSelection({
+          orderedIds: idsWithSpaces,
+          selectedIds,
+        }),
+      { initialProps: { selectedIds: ["a b", "c"] } },
+    )
+    expect([...result.current.selected].sort()).toEqual(["a b", "c"])
+    rerender({ selectedIds: ["a", "b c"] })
+    expect([...result.current.selected].sort()).toEqual(["a", "b c"])
+  })
 })
