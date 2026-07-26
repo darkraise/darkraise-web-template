@@ -18,6 +18,7 @@ import { useBucketLayout } from "./useBucketLayout"
 import { useBucketWindow } from "./useBucketWindow"
 import { useTimelineSelection } from "./useTimelineSelection"
 import { VirtualizedTimelineBucket } from "./VirtualizedTimelineBucket"
+import { VirtualizedTimelineJumpToDate } from "./VirtualizedTimelineJumpToDate"
 import { VirtualizedTimelineScrubber } from "./VirtualizedTimelineScrubber"
 import type {
   BucketGeometry,
@@ -29,9 +30,36 @@ import "./virtualized-timeline.css"
 
 declare const process: { env: { NODE_ENV?: string } }
 
+/** Index of the last bucket whose offset is <= y, or 0. Mirrors the private
+ *  helper in `useBucketWindow.ts`, which isn't exported. */
+function findBucketAtOffset(offsets: number[], y: number): number {
+  let low = 0
+  let high = offsets.length - 1
+  let found = 0
+  while (low <= high) {
+    const mid = (low + high) >> 1
+    if (offsets[mid]! <= y) {
+      found = mid
+      low = mid + 1
+    } else {
+      high = mid - 1
+    }
+  }
+  return found
+}
+
 type PendingFocusTarget =
   | { kind: "item"; id: string }
   | { kind: "header"; bucketId: string }
+
+export interface VirtualizedTimelineHandle {
+  scrollToDate: (
+    date: Date | string,
+    opts?: { align?: "start" | "center" },
+  ) => void
+  scrollToBucket: (id: string, opts?: { align?: "start" | "center" }) => void
+  getVisibleBucketIds: () => string[]
+}
 
 export interface VirtualizedTimelineProps<T> extends Omit<
   React.HTMLAttributes<HTMLDivElement>,
@@ -39,6 +67,7 @@ export interface VirtualizedTimelineProps<T> extends Omit<
   // collides with the native DOM error handler this omit removes.
   "children" | "onError"
 > {
+  ref?: React.Ref<VirtualizedTimelineHandle>
   buckets: TimelineBucket<T>[]
   granularity?: TimelineGranularity
   renderItem?: (arg: {
@@ -86,6 +115,7 @@ export interface VirtualizedTimelineProps<T> extends Omit<
   collapsedIds?: Iterable<string>
   defaultCollapsedIds?: Iterable<string>
   onCollapsedChange?: (ids: string[]) => void
+  showJumpToDate?: boolean
 }
 
 function defaultItemId<T>(
@@ -127,6 +157,8 @@ export function VirtualizedTimeline<T>({
   collapsedIds: collapsedIdsProp,
   defaultCollapsedIds,
   onCollapsedChange,
+  showJumpToDate = false,
+  ref,
   ...props
 }: VirtualizedTimelineProps<T>) {
   if (
@@ -635,6 +667,114 @@ export function VirtualizedTimeline<T>({
     }
   }, [])
 
+  const scrollTo = React.useCallback((offset: number) => {
+    const element = scrollRef.current
+    if (!element) return
+    // Assign, then read the value back. The browser is the single clamping
+    // authority: computing a JavaScript clamp here and storing that would be a
+    // second source of truth, which is exactly how the scrubber ended up
+    // rendering an aria-valuenow above its own aria-valuemax in Task 5. An
+    // out-of-range assignment is clamped by the DOM, and reading it back is
+    // the only way to know what actually happened.
+    element.scrollTop = offset
+    setScrollTop(element.scrollTop)
+  }, [])
+
+  // Built independently of `useImperativeHandle`'s factory below rather than
+  // inline inside it: that factory never runs when `ref` is null (React
+  // skips it entirely), so the jump-to-date toolbar — which has no `ref` of
+  // its own — closes over this instead, and works whether or not the
+  // consumer passed one.
+  const handle = React.useMemo<VirtualizedTimelineHandle>(
+    () => ({
+      scrollToDate: (date, opts) => {
+        const target = toBucketDate(date).getTime()
+        let best = 0
+        let bestDelta = Infinity
+        buckets.forEach((bucket, index) => {
+          const delta = Math.abs(toBucketDate(bucket.date).getTime() - target)
+          if (delta < bestDelta) {
+            bestDelta = delta
+            best = index
+          }
+        })
+        const offset = layout.offsets[best] ?? 0
+        scrollTo(
+          opts?.align === "center"
+            ? offset - (scrollRef.current?.clientHeight ?? 0) / 2
+            : offset,
+        )
+      },
+      scrollToBucket: (id, opts) => {
+        const index = buckets.findIndex((bucket) => bucket.id === id)
+        if (index < 0) return
+        const offset = layout.offsets[index] ?? 0
+        scrollTo(
+          opts?.align === "center"
+            ? offset - (scrollRef.current?.clientHeight ?? 0) / 2
+            : offset,
+        )
+      },
+      getVisibleBucketIds: () =>
+        buckets
+          .slice(timelineWindow.startIndex, timelineWindow.endIndex + 1)
+          .map((bucket) => bucket.id),
+    }),
+    [
+      buckets,
+      layout.offsets,
+      scrollTo,
+      timelineWindow.endIndex,
+      timelineWindow.startIndex,
+    ],
+  )
+
+  React.useImperativeHandle(ref, () => handle, [handle])
+
+  // Records which bucket is at the top and how far into it we are, so the
+  // recomputed layout can restore the same reading position instead of the
+  // same pixel offset. The capture happens in this effect's cleanup rather
+  // than in the body: `layout` above is already recomputed for the *new*
+  // width by the time the body for that width runs, so only the cleanup —
+  // which closes over the render being torn down, i.e. the pre-resize
+  // width — still has the old layout to measure the scroll position
+  // against. The index is looked up fresh from the *live* scrollTop rather
+  // than read from `timelineWindow.startIndex`: that memo is keyed on
+  // scrollTop, so the closure's copy is only as fresh as the last render
+  // that actually changed the width, and can be scrolled-past-stale by the
+  // time a later resize's cleanup runs.
+  const anchorRef = React.useRef<{ index: number; fraction: number } | null>(
+    null,
+  )
+
+  React.useLayoutEffect(() => {
+    // Captured once and reused in the cleanup below: the scroll container
+    // itself is never remounted while this component is alive, so the same
+    // node is still correct whenever the cleanup later runs, and its
+    // `scrollTop` read there is still live.
+    const element = scrollRef.current
+    const anchor = anchorRef.current
+    if (element && anchor && layout.heights.length > 0) {
+      const offset = layout.offsets[anchor.index] ?? 0
+      const height = layout.heights[anchor.index] ?? 0
+      element.scrollTop = offset + anchor.fraction * height
+      setScrollTop(element.scrollTop)
+      anchorRef.current = null
+    }
+    return () => {
+      if (!element || layout.heights.length === 0) return
+      const index = findBucketAtOffset(layout.offsets, element.scrollTop)
+      const offset = layout.offsets[index] ?? 0
+      const height = layout.heights[index] ?? 1
+      anchorRef.current = {
+        index,
+        fraction: height > 0 ? (element.scrollTop - offset) / height : 0,
+      }
+    }
+    // Only a width change should re-anchor; scrolling must not.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [contentWidth])
+
   React.useEffect(() => {
     if (process.env.NODE_ENV === "production") return
     if (buckets.length < 2) return
@@ -792,6 +932,13 @@ export function VirtualizedTimeline<T>({
       }
       {...props}
     >
+      {showJumpToDate ? (
+        <div className="dr-virtualized-timeline-toolbar">
+          <VirtualizedTimelineJumpToDate
+            onJump={(date) => handle.scrollToDate(date)}
+          />
+        </div>
+      ) : null}
       {/* Must render unconditionally: the measurement effects above run once,
           right after the first commit, with an empty dependency array. If
           this element were absent on that first commit (e.g. because

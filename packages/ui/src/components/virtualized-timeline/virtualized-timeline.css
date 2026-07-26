@@ -3,8 +3,18 @@
     @apply relative flex min-h-0 flex-col;
   }
 
+  .dr-virtualized-timeline-toolbar {
+    @apply flex shrink-0 items-center gap-2 pb-2;
+  }
+
   .dr-virtualized-timeline-viewport {
     @apply min-h-0 flex-1 overflow-y-auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dr-virtualized-timeline-viewport {
+      scroll-behavior: auto;
+    }
   }
 
   /* Holds the full computed scroll height so the native scrollbar is exact

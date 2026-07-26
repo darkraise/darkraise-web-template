@@ -5,6 +5,7 @@ import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { beforeAll, describe, expect, it, vi } from "vitest"
 
 import { VirtualizedTimeline } from "./VirtualizedTimeline"
+import type { VirtualizedTimelineHandle } from "./VirtualizedTimeline"
 import type { TimelineBucket } from "./types"
 
 interface Photo {
@@ -691,5 +692,141 @@ describe("VirtualizedTimeline", () => {
     fireEvent.keyDown(screen.getByRole("slider"), { key: "ArrowDown" })
     expect(document.activeElement).toHaveAttribute("data-item-id", "2026-07-1")
     expect(document.activeElement).toHaveAttribute("tabindex", "0")
+  })
+
+  // The two-bucket fixture totals 400px against a 300px viewport, so its whole
+  // scrollable range is 100px and every scroll target would clamp to it. A third,
+  // tall bucket gives the ref something to actually scroll to.
+  const refBuckets = [...buckets, makeBucket("2026-05", "2026-05-01", 40)]
+
+  it("scrolls to the bucket nearest a date through the ref", () => {
+    const ref = React.createRef<VirtualizedTimelineHandle>()
+    const { container } = renderTimeline({ ref, buckets: refBuckets })
+    act(() => ref.current?.scrollToDate("2026-06-15"))
+    const viewport = container.querySelector<HTMLElement>(
+      ".dr-virtualized-timeline-viewport",
+    )
+    expect(viewport?.scrollTop).toBe(252)
+  })
+
+  it("scrolls to a bucket by id", () => {
+    const ref = React.createRef<VirtualizedTimelineHandle>()
+    const { container } = renderTimeline({ ref, buckets: refBuckets })
+    act(() => ref.current?.scrollToBucket("2026-06"))
+    expect(
+      container.querySelector<HTMLElement>(".dr-virtualized-timeline-viewport")
+        ?.scrollTop,
+    ).toBe(252)
+  })
+
+  it("clamps a scroll target to the scrollable range", () => {
+    // jsdom's scrollTop is an unclamped plain property (see the identical
+    // stub in "keeps the scrubber's reported value within its max" above);
+    // this reproduces a real scroll container's clamping so the assertion
+    // can tell a clamped assignment from an unclamped one.
+    let scrollTopValue = 0
+    Object.defineProperty(HTMLElement.prototype, "scrollHeight", {
+      configurable: true,
+      get() {
+        return 400
+      },
+    })
+    Object.defineProperty(HTMLElement.prototype, "scrollTop", {
+      configurable: true,
+      get() {
+        return scrollTopValue
+      },
+      set(value: number) {
+        const max = Math.max(0, this.scrollHeight - this.clientHeight)
+        scrollTopValue = Math.min(Math.max(0, value), max)
+      },
+    })
+    try {
+      const ref = React.createRef<VirtualizedTimelineHandle>()
+      const { container } = renderTimeline({ ref })
+      act(() => ref.current?.scrollToBucket("2026-06"))
+      // Two buckets total 400px in a 300px viewport: 100px is the whole range.
+      expect(
+        container.querySelector<HTMLElement>(
+          ".dr-virtualized-timeline-viewport",
+        )?.scrollTop,
+      ).toBe(100)
+    } finally {
+      Reflect.deleteProperty(HTMLElement.prototype, "scrollTop")
+      Reflect.deleteProperty(HTMLElement.prototype, "scrollHeight")
+    }
+  })
+
+  it("reports the visible bucket ids", () => {
+    const ref = React.createRef<VirtualizedTimelineHandle>()
+    renderTimeline({ ref, buckets: refBuckets })
+    expect(ref.current?.getVisibleBucketIds()).toEqual(["2026-07", "2026-06"])
+  })
+
+  it("renders no toolbar unless jump-to-date is enabled", () => {
+    const { container } = renderTimeline()
+    expect(
+      container.querySelector(".dr-virtualized-timeline-toolbar"),
+    ).not.toBeInTheDocument()
+  })
+
+  it("renders the jump-to-date control in a toolbar when enabled", () => {
+    renderTimeline({ showJumpToDate: true })
+    expect(screen.getByLabelText("Jump to date")).toBeInTheDocument()
+  })
+
+  it("restores reading position instead of the raw pixel offset after a resize", () => {
+    // The shared ResizeObserver stub in beforeAll is inert (it never invokes
+    // its callback), so exercising a real width change needs a local stub
+    // that captures and can re-trigger it; both this and the clientWidth
+    // override are restored in `finally` so later tests see the fixture's
+    // fixed 412px width again.
+    let width = 412
+    let onResize: (() => void) | null = null
+    const inertResizeObserver = class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    }
+    vi.stubGlobal(
+      "ResizeObserver",
+      class {
+        constructor(callback: () => void) {
+          onResize = callback
+        }
+        observe() {}
+        unobserve() {}
+        disconnect() {}
+      },
+    )
+    Object.defineProperty(HTMLElement.prototype, "clientWidth", {
+      configurable: true,
+      get() {
+        return width
+      },
+    })
+    try {
+      const ref = React.createRef<VirtualizedTimelineHandle>()
+      const { container } = renderTimeline({ ref, buckets: refBuckets })
+      const viewport = container.querySelector<HTMLElement>(
+        ".dr-virtualized-timeline-viewport",
+      )!
+      act(() => ref.current?.scrollToBucket("2026-05"))
+      expect(viewport.scrollTop).toBe(400)
+      width = 300
+      act(() => onResize?.())
+      // 300px content width regroups to 2 columns; "2026-05" now starts at
+      // 1000, and the reader should still be at its top edge rather than
+      // still at 400, its old offset under the 4-column layout.
+      expect(viewport.scrollTop).toBe(1000)
+    } finally {
+      Object.defineProperty(HTMLElement.prototype, "clientWidth", {
+        configurable: true,
+        get() {
+          return 412
+        },
+      })
+      vi.stubGlobal("ResizeObserver", inertResizeObserver)
+    }
   })
 })
