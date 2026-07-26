@@ -179,4 +179,33 @@ describe("VirtualizedTimeline", () => {
     expect(warn).toHaveBeenCalledWith(expect.stringContaining("sorted by date"))
     warn.mockRestore()
   })
+
+  it("renders skeletons at final positions while a bucket loads", async () => {
+    const { container } = renderTimeline({
+      buckets: [{ id: "2026-07", date: "2026-07-01", count: 8 }],
+      loadBucket: () => new Promise<Photo[]>(() => {}),
+    })
+    const tiles = container.querySelectorAll(".dr-virtualized-timeline-tile")
+    expect(tiles.length).toBeGreaterThan(0)
+    expect(container.querySelector(".dr-skeleton")).toBeInTheDocument()
+  })
+
+  it("swaps skeletons for items once the load resolves", async () => {
+    renderTimeline({
+      buckets: [{ id: "2026-07", date: "2026-07-01", count: 2 }],
+      loadBucket: async () => [{ id: "x-0" }, { id: "x-1" }],
+    })
+    expect(await screen.findByTestId("x-0")).toBeInTheDocument()
+  })
+
+  it("offers a retry when a bucket fails to load", async () => {
+    renderTimeline({
+      buckets: [{ id: "2026-07", date: "2026-07-01", count: 2 }],
+      loadBucket: async () => {
+        throw new Error("offline")
+      },
+    })
+    expect(await screen.findByRole("alert")).toHaveTextContent("offline")
+    expect(screen.getByRole("button", { name: "Retry" })).toBeInTheDocument()
+  })
 })

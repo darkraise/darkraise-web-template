@@ -7,6 +7,7 @@ import * as React from "react"
 import { cn } from "@lib/utils"
 import { useId } from "@primitives/state"
 import { formatBucketLabel, toBucketDate } from "./labels"
+import { useBucketItems } from "./useBucketItems"
 import { useBucketLayout } from "./useBucketLayout"
 import { useBucketWindow } from "./useBucketWindow"
 import { VirtualizedTimelineBucket } from "./VirtualizedTimelineBucket"
@@ -22,7 +23,9 @@ declare const process: { env: { NODE_ENV?: string } }
 
 export interface VirtualizedTimelineProps<T> extends Omit<
   React.HTMLAttributes<HTMLDivElement>,
-  "children"
+  // `onError` is redeclared below with the bucket-loader signature, which
+  // collides with the native DOM error handler this omit removes.
+  "children" | "onError"
 > {
   buckets: TimelineBucket<T>[]
   granularity?: TimelineGranularity
@@ -54,6 +57,13 @@ export interface VirtualizedTimelineProps<T> extends Omit<
   overscanPx?: number
   onItemClick?: (item: T, bucket: TimelineBucket<T>) => void
   emptyState?: React.ReactNode
+  loadBucket?: (bucket: TimelineBucket<T>) => Promise<T[]>
+  maxLoadedBuckets?: number
+  renderSkeleton?: (arg: {
+    bucket: TimelineBucket<T>
+    index: number
+  }) => React.ReactNode
+  onError?: (error: unknown, bucket: TimelineBucket<T>) => void
 }
 
 function defaultItemId<T>(
@@ -82,6 +92,10 @@ export function VirtualizedTimeline<T>({
   overscanPx = 600,
   onItemClick,
   emptyState,
+  loadBucket,
+  maxLoadedBuckets = 12,
+  renderSkeleton,
+  onError,
   ...props
 }: VirtualizedTimelineProps<T>) {
   if (
@@ -124,6 +138,26 @@ export function VirtualizedTimeline<T>({
     viewportHeight,
     overscanPx,
     geometry,
+  })
+
+  const windowIndices = React.useMemo(() => {
+    const indices: number[] = []
+    for (
+      let index = timelineWindow.startIndex;
+      index <= timelineWindow.endIndex;
+      index += 1
+    ) {
+      indices.push(index)
+    }
+    return indices
+  }, [timelineWindow.startIndex, timelineWindow.endIndex])
+
+  const bucketItems = useBucketItems<T>({
+    buckets,
+    windowIndices,
+    loadBucket,
+    maxLoadedBuckets,
+    onError,
   })
 
   React.useEffect(() => {
@@ -201,8 +235,11 @@ export function VirtualizedTimeline<T>({
         tileHeight={layout.tileHeight}
         gap={gap}
         rowRange={timelineWindow.rows.get(index)}
-        items={bucket.items}
-        status={bucket.items ? "loaded" : "idle"}
+        items={bucketItems.get(bucket.id).items}
+        status={bucketItems.get(bucket.id).status}
+        error={bucketItems.get(bucket.id).error}
+        renderSkeleton={renderSkeleton}
+        onRetry={() => bucketItems.retry(bucket.id)}
         getItemId={getItemId}
         renderItem={renderItem}
         renderBucket={renderBucket}

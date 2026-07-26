@@ -36,4 +36,8 @@
     width: var(--vtimeline-tile-width);
     height: var(--vtimeline-tile-height);
   }
+
+  .dr-virtualized-timeline-error {
+    @apply text-muted-foreground flex items-center gap-2 text-sm;
+  }
 }
