@@ -18,7 +18,9 @@ interface Shot {
 }
 
 /** Seeded, so the stories render identically on every reload and in
- *  visual-regression runs. */
+ *  visual-regression runs. Walks back one calendar month per bucket; the
+ *  Date constructor normalises a negative month into the prior year, so the
+ *  sequence stays strictly chronological. */
 function makeBuckets(withItems: boolean): TimelineBucket<Shot>[] {
   let seed = 1337
   const next = () => {
@@ -26,12 +28,7 @@ function makeBuckets(withItems: boolean): TimelineBucket<Shot>[] {
     return seed / 2147483648
   }
   return Array.from({ length: 24 }, (_, index) => {
-    const month = 6 - (index % 12)
-    const date = new Date(
-      2026 - Math.floor(index / 12),
-      month < 0 ? month + 12 : month,
-      1,
-    )
+    const date = new Date(2026, 6 - index, 1)
     const count = 20 + Math.floor(next() * 380)
     const id = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`
     return {
