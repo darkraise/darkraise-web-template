@@ -81,6 +81,8 @@ export interface VirtualizedTimelineProps<T> extends Omit<
     bucket: TimelineBucket<T>
     selected: boolean
   }) => React.ReactNode
+  /** Ids must be unique across the whole timeline, not just within a bucket:
+   *  selection, focus, and keyboard navigation all key on them globally. */
   getItemId?: (item: T, index: number, bucket: TimelineBucket<T>) => string
   minTileWidth?: number
   tileAspect?: number
@@ -109,6 +111,8 @@ export interface VirtualizedTimelineProps<T> extends Omit<
   headerHeight?: number
   bucketSpacing?: number
   overscanPx?: number
+  /** Fires on click only while `selectable` is off — a click selects when it
+   *  is on. Enter activates the focused item in either mode. */
   onItemClick?: (item: T, bucket: TimelineBucket<T>) => void
   emptyState?: React.ReactNode
   loadBucket?: (bucket: TimelineBucket<T>) => Promise<T[]>
@@ -140,6 +144,12 @@ function defaultItemId<T>(
   return typeof candidate === "string" ? candidate : `${bucket.id}:${index}`
 }
 
+/**
+ * The component delegates its height to the consumer: give it a bounded
+ * height (a `h-*` class, or a flex parent with `min-h-0`). Unbounded, the
+ * scroll container grows to its content, every bucket mounts at once, and a
+ * large collection can hang the tab.
+ */
 export function VirtualizedTimeline<T>({
   className,
   style,
