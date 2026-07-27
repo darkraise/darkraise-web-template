@@ -9,6 +9,16 @@ const geometry: BucketGeometry = {
   tileAspect: 1,
   headerHeight: 32,
   bucketSpacing: 16,
+  layout: "grid",
+  rowHeight: 44,
+}
+
+// Every list-layout case below shares this: one column, 44px rows, and no
+// gutter between them, which is the list default the component applies.
+const listGeometry: BucketGeometry = {
+  ...geometry,
+  layout: "list",
+  gap: 0,
 }
 
 const buckets: TimelineBucket[] = [
@@ -97,6 +107,51 @@ describe("computeBucketLayout", () => {
     expect(result.heights).toEqual([32, 13, 10])
     expect(result.offsets).toEqual([0, 32, 45])
     expect(result.totalSize).toBe(55)
+  })
+
+  it("forces a single column in list layout", () => {
+    const result = layout({ geometry: listGeometry })
+    expect(result.columns).toBe(1)
+  })
+
+  it("takes the row height from the prop, not from the measured width", () => {
+    // minTileWidth and tileAspect would give 4 columns of 100px tiles in grid
+    // layout; list layout must ignore both.
+    const result = layout({ geometry: listGeometry })
+    expect(result.tileHeight).toBe(44)
+    expect(result.tileWidth).toBe(WIDTH)
+  })
+
+  it("computes list bucket heights from the row height", () => {
+    // a: 8 rows -> 32 + 8*44 + 16 = 400
+    // b: 3 rows -> 32 + 3*44 + 16 = 180
+    // c: 0 rows -> 32 + 0    + 16 = 48
+    const result = layout({ geometry: listGeometry })
+    expect(result.heights).toEqual([400, 180, 48])
+    expect(result.offsets).toEqual([0, 400, 580])
+    expect(result.totalSize).toBe(628)
+  })
+
+  it("keeps the inter-row gutter out of the leading and trailing edges", () => {
+    // 8 rows at 44px with a 6px gutter: 7 gutters, not 8.
+    const result = layout({ geometry: { ...listGeometry, gap: 6 } })
+    expect(result.heights[0]).toBe(32 + 8 * 44 + 7 * 6 + 16)
+  })
+
+  it("reserves list body height before the container has been measured", () => {
+    // The opposite of the grid's behaviour, and deliberate: a row's height does
+    // not depend on the width, so the scroll height is exact on frame one.
+    const result = layout({ contentWidth: 0, geometry: listGeometry })
+    expect(result.tileHeight).toBe(44)
+    expect(result.heights).toEqual([400, 180, 48])
+  })
+
+  it("collapses a list bucket to header height alone", () => {
+    const result = layout({
+      collapsedIds: new Set(["a"]),
+      geometry: listGeometry,
+    })
+    expect(result.heights).toEqual([32, 180, 48])
   })
 
   it("handles an empty bucket list", () => {

@@ -120,16 +120,25 @@ function stubResizableWidth() {
 function timelineElement(
   props: Partial<React.ComponentProps<typeof VirtualizedTimeline<Photo>>> = {},
 ) {
+  // minTileWidth and gap are resolved before the spread rather than passed as
+  // plain defaults, so a list-layout caller can pass `undefined` to remove
+  // minTileWidth entirely — leaving it set would trip the component's
+  // grid-only-prop warning in every list test.
+  const { minTileWidth, gap, ...rest } = {
+    minTileWidth: 100 as number | undefined,
+    gap: 4 as number | undefined,
+    ...props,
+  }
   return (
     <VirtualizedTimeline<Photo>
       buckets={buckets}
-      minTileWidth={100}
-      gap={4}
       headerHeight={32}
       bucketSpacing={16}
       overscanPx={0}
       renderItem={({ item }) => <span data-testid={item.id}>{item.id}</span>}
-      {...props}
+      {...(minTileWidth === undefined ? {} : { minTileWidth })}
+      {...(gap === undefined ? {} : { gap })}
+      {...rest}
     />
   )
 }
@@ -1234,5 +1243,60 @@ describe("VirtualizedTimeline", () => {
     // offset is 148 (bucket "2020-01" is 3 items over 4 columns: one row,
     // 148px tall).
     await waitFor(() => expect(viewport.scrollTop).toBe(148))
+  })
+})
+
+describe("VirtualizedTimeline list layout", () => {
+  // 40 items so the mounted subset is unambiguously a window rather than the
+  // whole bucket: at 44px rows in the fixture's 300px viewport only seven fit.
+  const listBuckets = [
+    makeBucket("2026-07", "2026-07-01", 40),
+    makeBucket("2026-06", "2026-06-01", 3),
+  ]
+
+  function renderList(
+    props: Partial<
+      React.ComponentProps<typeof VirtualizedTimeline<Photo>>
+    > = {},
+  ) {
+    return render(
+      timelineElement({
+        buckets: listBuckets,
+        layout: "list",
+        rowHeight: 44,
+        gap: 0,
+        minTileWidth: undefined,
+        ...props,
+      }),
+    )
+  }
+
+  it("sizes the sizer from the row height", () => {
+    const { container } = renderList()
+    // a: 32 + 40*44 + 16 = 1808, b: 32 + 3*44 + 16 = 180
+    const sizer = container.querySelector<HTMLElement>(
+      ".dr-virtualized-timeline-sizer",
+    )
+    expect(sizer?.style.height).toBe("1988px")
+  })
+
+  it("ignores the tile aspect ratio", () => {
+    const { container } = renderList({ tileAspect: 4 })
+    const sizer = container.querySelector<HTMLElement>(
+      ".dr-virtualized-timeline-sizer",
+    )
+    expect(sizer?.style.height).toBe("1988px")
+  })
+
+  it("warns when a grid-only prop is passed to a list", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {})
+    try {
+      renderList({ minTileWidth: 100 })
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining("minTileWidth and tileAspect"),
+      )
+    } finally {
+      warn.mockRestore()
+    }
   })
 })

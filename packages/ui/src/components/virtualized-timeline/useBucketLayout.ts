@@ -19,16 +19,31 @@ export function computeBucketLayout<T>({
   geometry,
   getBucketHeight,
 }: BucketLayoutArgs<T>): BucketLayout {
-  const { gap, minTileWidth, tileAspect, headerHeight, bucketSpacing } =
-    geometry
+  const {
+    gap,
+    minTileWidth,
+    tileAspect,
+    headerHeight,
+    bucketSpacing,
+    layout,
+    rowHeight,
+  } = geometry
 
-  const columns =
-    contentWidth > 0
+  const list = layout === "list"
+  const columns = list
+    ? 1
+    : contentWidth > 0
       ? Math.max(1, Math.floor((contentWidth + gap) / (minTileWidth + gap)))
       : 1
-  const tileWidth =
-    contentWidth > 0 ? (contentWidth - (columns - 1) * gap) / columns : 0
-  const tileHeight = tileWidth / tileAspect
+  const tileWidth = list
+    ? contentWidth
+    : contentWidth > 0
+      ? (contentWidth - (columns - 1) * gap) / columns
+      : 0
+  // A row's height is a prop rather than a ratio of the measured width, so the
+  // unmeasured-fallback guard further down never fires in list layout: the
+  // scroll height and the native scrollbar are exact on the first frame.
+  const tileHeight = list ? rowHeight : tileWidth / tileAspect
 
   const heights: number[] = []
   const offsets: number[] = []

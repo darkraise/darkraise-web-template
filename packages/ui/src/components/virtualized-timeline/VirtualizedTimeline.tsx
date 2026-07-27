@@ -25,6 +25,7 @@ import type {
   BucketStatus,
   TimelineBucket,
   TimelineGranularity,
+  TimelineLayout,
 } from "./types"
 import "./virtualized-timeline.css"
 
@@ -88,6 +89,10 @@ export interface VirtualizedTimelineProps<T> extends Omit<
   minTileWidth?: number
   tileAspect?: number
   gap?: number
+  /** Bucket body shape. Ignored when `renderBucket` is supplied. */
+  layout?: TimelineLayout
+  /** Row height in CSS pixels. List layout only. */
+  rowHeight?: number
   renderBucket?: (arg: {
     bucket: TimelineBucket<T>
     items: T[] | undefined
@@ -162,9 +167,11 @@ export function VirtualizedTimeline<T>({
   granularity = "month",
   renderItem,
   getItemId = defaultItemId,
-  minTileWidth = 140,
-  tileAspect = 1,
-  gap = 4,
+  minTileWidth: minTileWidthProp,
+  tileAspect: tileAspectProp,
+  gap: gapProp,
+  layout: layoutProp = "grid",
+  rowHeight = 44,
   renderBucket,
   getBucketHeight,
   renderBucketHeader,
@@ -200,6 +207,13 @@ export function VirtualizedTimeline<T>({
     )
   }
 
+  const list = layoutProp === "list"
+  const minTileWidth = minTileWidthProp ?? 140
+  const tileAspect = tileAspectProp ?? 1
+  // Adjacent full-bleed rows want a divider, not a gutter, so a list defaults
+  // to no gap; an explicit `gap` still wins in either layout.
+  const gap = gapProp ?? (list ? 0 : 4)
+
   const scrollRef = React.useRef<HTMLDivElement | null>(null)
   const scrollAreaRef = React.useRef<HTMLDivElement | null>(null)
   const idBase = useId()
@@ -229,8 +243,24 @@ export function VirtualizedTimeline<T>({
   }, [])
 
   const geometry = React.useMemo<BucketGeometry>(
-    () => ({ gap, minTileWidth, tileAspect, headerHeight, bucketSpacing }),
-    [gap, minTileWidth, tileAspect, headerHeight, bucketSpacing],
+    () => ({
+      gap,
+      minTileWidth,
+      tileAspect,
+      headerHeight,
+      bucketSpacing,
+      layout: layoutProp,
+      rowHeight,
+    }),
+    [
+      gap,
+      minTileWidth,
+      tileAspect,
+      headerHeight,
+      bucketSpacing,
+      layoutProp,
+      rowHeight,
+    ],
   )
 
   // Same primitive-key memo as `useTimelineSelection`, for the same reason:
@@ -854,6 +884,15 @@ export function VirtualizedTimeline<T>({
       )
     }
   }, [buckets])
+
+  React.useEffect(() => {
+    if (process.env.NODE_ENV === "production") return
+    if (!list) return
+    if (minTileWidthProp === undefined && tileAspectProp === undefined) return
+    console.warn(
+      '<VirtualizedTimeline> ignores minTileWidth and tileAspect when layout is "list". Set rowHeight instead.',
+    )
+  }, [list, minTileWidthProp, tileAspectProp])
 
   const renderBucketAt = (index: number): React.ReactNode => {
     const bucket = buckets[index]

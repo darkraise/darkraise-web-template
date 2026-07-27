@@ -13,6 +13,9 @@ export interface TimelineBucket<T = unknown> {
 
 export type TimelineGranularity = "day" | "month" | "year"
 
+/** Shape of a bucket's body. `renderBucket` overrides it entirely. */
+export type TimelineLayout = "grid" | "list"
+
 export type BucketStatus = "idle" | "loading" | "loaded" | "error"
 
 /** Every value is in CSS pixels except `tileAspect`, a width / height ratio. */
@@ -22,6 +25,9 @@ export interface BucketGeometry {
   tileAspect: number
   headerHeight: number
   bucketSpacing: number
+  layout: TimelineLayout
+  /** Read in list layout only; grid derives its row height from the width. */
+  rowHeight: number
 }
 
 export interface BucketLayout {
