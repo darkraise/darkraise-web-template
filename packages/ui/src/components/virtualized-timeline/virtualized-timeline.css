@@ -80,6 +80,27 @@
     --tw-ring-offset-color: hsl(var(--background));
   }
 
+  .dr-virtualized-timeline-list {
+    @apply relative h-full w-full;
+  }
+
+  /* inset-x-0 rather than the tile-width variable: a row spans the content
+     width by definition, so it must not inherit the grid's fractional column
+     arithmetic. Height reuses the tile variable, which holds `rowHeight` in
+     this layout. */
+  .dr-virtualized-timeline-list-item {
+    @apply absolute inset-x-0 overflow-hidden;
+    height: var(--vtimeline-tile-height);
+  }
+
+  /* A tinted band, not the grid's ring: a ring with an offset on a full-bleed
+     row draws a box the whole width of the container and collides with its
+     neighbours. Written as a direct hsl() slice rather than a `/10` utility
+     for the same reason as the rail's drag tint below — see that comment. */
+  .dr-virtualized-timeline-list-item[data-selected="true"] {
+    background-color: hsl(var(--primary) / 0.1);
+  }
+
   .dr-virtualized-timeline-error {
     @apply text-muted-foreground flex items-center gap-2 text-sm;
   }

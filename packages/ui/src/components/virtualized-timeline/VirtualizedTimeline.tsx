@@ -928,6 +928,7 @@ export function VirtualizedTimeline<T>({
                 height - headerHeight - (getBucketHeight ? 0 : bucketSpacing),
               )
         }
+        layout={layoutProp}
         columns={layout.columns}
         tileHeight={layout.tileHeight}
         gap={gap}

@@ -7,7 +7,12 @@ import { Button } from "@components/button"
 import { Skeleton } from "@components/skeleton"
 import { mountedCellRange } from "./mountRange"
 import type { TimelineSelection } from "./useTimelineSelection"
-import type { BucketRowRange, TimelineBucket, BucketStatus } from "./types"
+import type {
+  BucketRowRange,
+  TimelineBucket,
+  BucketStatus,
+  TimelineLayout,
+} from "./types"
 
 export interface VirtualizedTimelineBucketProps<T> {
   bucket: TimelineBucket<T>
@@ -17,6 +22,7 @@ export interface VirtualizedTimelineBucketProps<T> {
   collapsed: boolean
   /** Already net of the header and, on the built-in path, the bucket spacing. */
   bodyHeight: number
+  layout: TimelineLayout
   columns: number
   tileHeight: number
   gap: number
@@ -70,6 +76,7 @@ export function VirtualizedTimelineBucket<T>({
   height,
   collapsed,
   bodyHeight,
+  layout,
   columns,
   tileHeight,
   gap,
@@ -94,6 +101,7 @@ export function VirtualizedTimelineBucket<T>({
   onFocusItem,
   onItemFocus,
 }: VirtualizedTimelineBucketProps<T>) {
+  const list = layout === "list"
   // Cells grouped by grid row, so each group can mount inside a `role="row"`
   // wrapper: a grid whose gridcells sit directly under the grid element has
   // no table model for the row and column counts to attach to, and axe
@@ -106,10 +114,17 @@ export function VirtualizedTimelineBucket<T>({
       // Computed once per index and shared by both branches below, so a real
       // tile and the skeleton that preceded it can never land in different
       // positions.
-      const style = {
-        top: row * (tileHeight + gap),
-        left: `calc(${column} * (var(--vtimeline-tile-width) + ${gap}px))`,
-      }
+      const style = list
+        ? { top: row * (tileHeight + gap) }
+        : {
+            top: row * (tileHeight + gap),
+            left: `calc(${column} * (var(--vtimeline-tile-width) + ${gap}px))`,
+          }
+      // A row spans the content width from the stylesheet, so it needs neither
+      // the inline left offset above nor the tile-width variable.
+      const cellClass = list
+        ? "dr-virtualized-timeline-list-item"
+        : "dr-virtualized-timeline-tile"
       const item = items?.[itemIndex]
       if (item !== undefined) {
         const id = getItemId(item, itemIndex, bucket)
@@ -117,13 +132,18 @@ export function VirtualizedTimelineBucket<T>({
         return (
           <div
             key={id}
-            role="gridcell"
-            aria-colindex={column + 1}
+            role={list ? "option" : "gridcell"}
+            aria-colindex={list ? undefined : column + 1}
+            // Counted from the bucket's full item list, not the mounted
+            // subset, or a screen reader's reported position drifts as rows
+            // mount — the same reason aria-rowindex is absolute in the grid.
+            aria-setsize={list ? bucket.count : undefined}
+            aria-posinset={list ? itemIndex + 1 : undefined}
             aria-selected={selectable ? selected : undefined}
             data-selected={selectable && selected ? "true" : undefined}
             data-item-id={id}
             tabIndex={id === activeId ? 0 : -1}
-            className="dr-virtualized-timeline-tile"
+            className={cellClass}
             style={style}
             // Fires for focus landing anywhere inside the cell (focusin
             // bubbles), which is wanted: pinning must protect a focused
@@ -175,7 +195,7 @@ export function VirtualizedTimelineBucket<T>({
           <div
             key={`skeleton-${itemIndex}`}
             aria-hidden="true"
-            className="dr-virtualized-timeline-tile"
+            className={cellClass}
             style={style}
           >
             {renderSkeleton ? (
@@ -251,6 +271,19 @@ export function VirtualizedTimelineBucket<T>({
             <Button size="sm" variant="outline" onClick={onRetry}>
               Retry
             </Button>
+          </div>
+        ) : list ? (
+          <div
+            role="listbox"
+            aria-labelledby={labelId}
+            aria-multiselectable={selectable ? true : undefined}
+            className="dr-virtualized-timeline-list"
+          >
+            {/* Flattened: the row wrappers exist for the grid's table model,
+                which a listbox does not have — options are its direct
+                children. The grouping above still runs, and still keeps the
+                pinned cell in visual order. */}
+            {rowGroups.flatMap((group) => group.cells)}
           </div>
         ) : (
           <div

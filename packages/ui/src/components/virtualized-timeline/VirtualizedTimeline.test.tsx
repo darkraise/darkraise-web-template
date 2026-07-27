@@ -1299,4 +1299,68 @@ describe("VirtualizedTimeline list layout", () => {
       warn.mockRestore()
     }
   })
+
+  it("renders the bucket body as a listbox of options", () => {
+    renderList()
+    const listbox = screen.getAllByRole("listbox")[0]!
+    expect(listbox).toHaveAttribute(
+      "aria-labelledby",
+      expect.stringContaining("header-2026-07"),
+    )
+    expect(within(listbox).getAllByRole("option").length).toBeGreaterThan(0)
+    // A listbox has no table model, so neither role may appear.
+    expect(screen.queryAllByRole("grid")).toHaveLength(0)
+    expect(screen.queryAllByRole("gridcell")).toHaveLength(0)
+    expect(screen.queryAllByRole("row")).toHaveLength(0)
+  })
+
+  it("reports each option's position against the whole bucket", () => {
+    renderList()
+    const option = screen.getAllByRole("option")[0]!
+    expect(option).toHaveAttribute("aria-setsize", "40")
+    expect(option).toHaveAttribute("aria-posinset", "1")
+  })
+
+  it("mounts a window of rows rather than the whole bucket", () => {
+    renderList()
+    // 300px viewport, 32px header, 44px rows, no overscan: seven rows fit.
+    expect(screen.getAllByRole("option")).toHaveLength(7)
+  })
+
+  it("positions each option by the row height", () => {
+    renderList()
+    const options = screen.getAllByRole("option")
+    expect(options[0]).toHaveStyle({ top: "0px" })
+    expect(options[1]).toHaveStyle({ top: "44px" })
+    // A row spans the content width, so it carries no inline left offset.
+    expect(options[1]!.style.left).toBe("")
+  })
+
+  it("marks the listbox multi-selectable only when selectable", () => {
+    const plain = renderList()
+    expect(screen.getAllByRole("listbox")[0]).not.toHaveAttribute(
+      "aria-multiselectable",
+    )
+    expect(screen.getAllByRole("option")[0]).not.toHaveAttribute(
+      "aria-selected",
+    )
+    plain.unmount()
+
+    renderList({ selectable: true })
+    expect(screen.getAllByRole("listbox")[0]).toHaveAttribute(
+      "aria-multiselectable",
+      "true",
+    )
+    expect(screen.getAllByRole("option")[0]).toHaveAttribute(
+      "aria-selected",
+      "false",
+    )
+  })
+
+  it("marks a selected row for the stylesheet", () => {
+    renderList({ selectable: true, defaultSelectedIds: ["2026-07-0"] })
+    const option = screen.getAllByRole("option")[0]!
+    expect(option).toHaveAttribute("data-selected", "true")
+    expect(option).toHaveClass("dr-virtualized-timeline-list-item")
+  })
 })
