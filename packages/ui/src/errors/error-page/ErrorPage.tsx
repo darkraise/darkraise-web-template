@@ -17,7 +17,12 @@ export function ErrorPage({ error, reset }: ErrorPageProps) {
 
   return (
     <ErrorLayout
-      icon={<TriangleAlert className="h-16 w-16" strokeWidth={1.5} />}
+      icon={
+        <TriangleAlert
+          className="size-[var(--icon-size-3xl)]"
+          strokeWidth={1.5}
+        />
+      }
       title="Something went wrong"
       description={message}
     >

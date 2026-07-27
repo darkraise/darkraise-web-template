@@ -52,6 +52,6 @@
   .dr-editable-edit-trigger,
   .dr-editable-submit-trigger,
   .dr-editable-cancel-trigger {
-    @apply text-muted-foreground hover:text-foreground focus-ring inline-flex aspect-square h-[var(--density-cell)] cursor-pointer items-center justify-center rounded-md bg-transparent transition-colors disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0;
+    @apply text-muted-foreground hover:text-foreground focus-ring inline-flex aspect-square h-[var(--density-cell)] cursor-pointer items-center justify-center rounded-md bg-transparent transition-colors disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size)] [&_svg]:shrink-0;
   }
 }

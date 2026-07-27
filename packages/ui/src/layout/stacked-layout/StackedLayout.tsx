@@ -64,7 +64,9 @@ export function StackedLayout({
                         className="dr-sidebar-nav-item dr-stacked-layout-rail-item"
                         data-status={isActive ? "active" : undefined}
                       >
-                        {Icon && <Icon className="h-5 w-5" />}
+                        {Icon && (
+                          <Icon className="size-[var(--icon-size-lg)]" />
+                        )}
                       </Link>
                     </TooltipTrigger>
                     <TooltipContent side="right">

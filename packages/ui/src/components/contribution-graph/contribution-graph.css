@@ -1,0 +1,229 @@
+@layer components {
+  .dr-contribution-graph {
+    --contrib-cell-size: 0.6875rem;
+    --contrib-cell-gap: 0.1875rem;
+    --contrib-base: hsl(var(--primary));
+    --contrib-empty: hsl(var(--muted));
+    --contrib-cell-outline: hsl(var(--foreground) / 0.35);
+    --contrib-level-1: color-mix(
+      in oklab,
+      var(--contrib-base) 25%,
+      transparent
+    );
+    --contrib-level-2: color-mix(
+      in oklab,
+      var(--contrib-base) 45%,
+      transparent
+    );
+    --contrib-level-3: color-mix(
+      in oklab,
+      var(--contrib-base) 70%,
+      transparent
+    );
+    --contrib-level-4: var(--contrib-base);
+
+    @apply flex w-fit flex-col;
+    gap: var(--contrib-cell-gap);
+  }
+
+  /* `md` is the geometry declared on the base block above, so it needs no
+     rule of its own — that also keeps the variables defined for anyone who
+     renders the class without the attribute. */
+  .dr-contribution-graph[data-size="sm"] {
+    --contrib-cell-size: 0.5625rem;
+    --contrib-cell-gap: 0.125rem;
+  }
+
+  .dr-contribution-graph[data-size="lg"] {
+    --contrib-cell-size: 0.875rem;
+    --contrib-cell-gap: 0.25rem;
+  }
+
+  /* Fixed accent-colour ramps — independent of the active theme accent.
+     Tailwind emits a palette variable when it is referenced, so naming
+     `--color-<hue>-500` here is enough to make it exist even in an app that
+     imports no other component using that hue. */
+  .dr-contribution-graph[data-variant="red"] {
+    --contrib-base: var(--color-red-500);
+  }
+  .dr-contribution-graph[data-variant="orange"] {
+    --contrib-base: var(--color-orange-500);
+  }
+  .dr-contribution-graph[data-variant="amber"] {
+    --contrib-base: var(--color-amber-500);
+  }
+  .dr-contribution-graph[data-variant="yellow"] {
+    --contrib-base: var(--color-yellow-500);
+  }
+  .dr-contribution-graph[data-variant="lime"] {
+    --contrib-base: var(--color-lime-500);
+  }
+  .dr-contribution-graph[data-variant="green"] {
+    --contrib-base: var(--color-green-500);
+  }
+  .dr-contribution-graph[data-variant="emerald"] {
+    --contrib-base: var(--color-emerald-500);
+  }
+  .dr-contribution-graph[data-variant="teal"] {
+    --contrib-base: var(--color-teal-500);
+  }
+  .dr-contribution-graph[data-variant="cyan"] {
+    --contrib-base: var(--color-cyan-500);
+  }
+  .dr-contribution-graph[data-variant="sky"] {
+    --contrib-base: var(--color-sky-500);
+  }
+  .dr-contribution-graph[data-variant="blue"] {
+    --contrib-base: var(--color-blue-500);
+  }
+  .dr-contribution-graph[data-variant="indigo"] {
+    --contrib-base: var(--color-indigo-500);
+  }
+  .dr-contribution-graph[data-variant="violet"] {
+    --contrib-base: var(--color-violet-500);
+  }
+  .dr-contribution-graph[data-variant="purple"] {
+    --contrib-base: var(--color-purple-500);
+  }
+  .dr-contribution-graph[data-variant="fuchsia"] {
+    --contrib-base: var(--color-fuchsia-500);
+  }
+  .dr-contribution-graph[data-variant="pink"] {
+    --contrib-base: var(--color-pink-500);
+  }
+  .dr-contribution-graph[data-variant="rose"] {
+    --contrib-base: var(--color-rose-500);
+  }
+
+  /* Two columns (weekday gutter | grid) by two rows (months | grid). An
+     empty track (no section rendered into it) auto-sizes to zero on its
+     own, but a `gap` on the grid itself applies between tracks regardless
+     of whether they hold content — so the spacing that separates the
+     months/weekdays sections from the grid lives on those sections
+     (margin) instead, and disappears along with them when hidden.
+     `relative` anchors the tooltip, which is absolutely placed from a
+     cell's offsetLeft/offsetTop. */
+  .dr-contribution-graph-body {
+    @apply relative grid;
+    grid-template-columns: auto 1fr;
+  }
+
+  .dr-contribution-graph-months {
+    @apply text-muted-foreground grid text-xs;
+    grid-column: 2;
+    grid-row: 1;
+    /* grid-template-columns is set inline: the track count is the number of
+       week columns, which only the component knows. */
+    column-gap: var(--contrib-cell-gap);
+    margin-bottom: var(--contrib-cell-gap);
+  }
+
+  /* Belt-and-braces: buildCalendar.ts guarantees label column ranges never
+     overlap, so this is redundant today. But each label's column placement
+     is still explicit (gridColumnStart/gridColumnEnd), and CSS Grid quietly
+     pushes an explicitly-placed item onto a new auto-row when its column
+     range collides with a sibling's — which previously turned one data bug
+     into a diagonal cascade of all twelve months instead of a visible
+     overlap. Pinning the row keeps a future regression visible and inert. */
+  .dr-contribution-graph-months > span {
+    grid-row: 1;
+  }
+
+  .dr-contribution-graph-weekdays {
+    @apply text-muted-foreground flex flex-col text-xs;
+    grid-column: 1;
+    grid-row: 2;
+    gap: var(--contrib-cell-gap);
+    margin-right: var(--contrib-cell-gap);
+  }
+
+  .dr-contribution-graph-weekdays > span {
+    height: var(--contrib-cell-size);
+    line-height: var(--contrib-cell-size);
+  }
+
+  .dr-contribution-graph-grid {
+    @apply flex flex-col;
+    grid-column: 2;
+    grid-row: 2;
+    gap: var(--contrib-cell-gap);
+  }
+
+  .dr-contribution-graph-row {
+    @apply flex;
+    gap: var(--contrib-cell-gap);
+  }
+
+  /* Level 4 is the base so a caller who raises `levels` past 4 gets the
+     strongest colour rather than a cell with no background at all. */
+  .dr-contribution-graph-cell {
+    @apply shrink-0 rounded-[var(--radius-sm)];
+    width: var(--contrib-cell-size);
+    height: var(--contrib-cell-size);
+    background-color: var(--contrib-level-4);
+  }
+
+  .dr-contribution-graph-cell[data-level="0"] {
+    background-color: var(--contrib-empty);
+  }
+
+  .dr-contribution-graph-cell[data-level="1"] {
+    background-color: var(--contrib-level-1);
+  }
+
+  .dr-contribution-graph-cell[data-level="2"] {
+    background-color: var(--contrib-level-2);
+  }
+
+  .dr-contribution-graph-cell[data-level="3"] {
+    background-color: var(--contrib-level-3);
+  }
+
+  .dr-contribution-graph-cell[data-empty="true"] {
+    @apply bg-transparent;
+  }
+
+  /* Only when the consumer passed `onCellClick`: every cell is focusable and
+     readable, but a pointer cursor on a cell that does nothing promises an
+     interaction that is not there. */
+  .dr-contribution-graph-cell[data-clickable="true"] {
+    @apply cursor-pointer;
+  }
+
+  /* Inset so the cell never grows: an outset outline would overlap the
+     neighbouring gap and get clipped on the outer rows and columns by the
+     `overflow-x-auto` wrapper consumers put around the graph. `[data-date]`
+     restricts this to real day cells — the padding cells and the legend
+     swatches share this class. The keyboard focus ring still wins, since
+     `focus-ring-tight` is a Tailwind utility and `@layer utilities` outranks
+     `@layer components`. */
+  .dr-contribution-graph-cell[data-date]:hover {
+    outline: 1px solid var(--contrib-cell-outline);
+    outline-offset: -1px;
+  }
+
+  .dr-contribution-graph-tooltip {
+    @apply bg-popover text-popover-foreground pointer-events-none absolute z-10 w-max max-w-56 rounded-[var(--radius-sm)] border px-2 py-1 text-xs;
+    border-color: var(--surface-overlay-border);
+    box-shadow: var(--surface-overlay-shadow);
+    /* Sits above the cell it describes, horizontally centred on it. */
+    transform: translate(-50%, calc(-100% - 0.375rem));
+    margin-left: calc(var(--contrib-cell-size) / 2);
+  }
+
+  /* Flipped under the cell when there is not enough room above it. Consumers
+     routinely wrap the graph in `overflow-x-auto`, and a scroll value on one
+     axis forces the other to compute as `auto` — which clips block-start
+     overflow, leaving a top-row tooltip with zero visible height. The side is
+     chosen in JS from the cell's offsetTop and the tooltip's own measured
+     height (it scales with the fontSize theme axis); this rule only
+     re-anchors it. */
+  .dr-contribution-graph-tooltip[data-side="bottom"] {
+    transform: translate(-50%, calc(var(--contrib-cell-size) + 0.375rem));
+  }
+
+  .dr-contribution-graph-legend {
+    @apply text-muted-foreground flex items-center self-end text-xs;
+    gap: var(--contrib-cell-gap);
+  }
+}

@@ -28,8 +28,10 @@
     @apply justify-between px-4;
   }
 
+  /* Both dimensions must come from --density-cell so the toggle stays
+     square under every density and font-size step. */
   .dr-sidebar-layout-toggle {
-    @apply h-8 w-8;
+    @apply size-[var(--density-cell)];
   }
 
   .dr-sidebar-layout-aside-section {

@@ -67,6 +67,7 @@ import {
   Pipette,
   Search,
   CalendarRange,
+  GalleryVertical,
   Pencil,
   Upload,
   Highlighter,
@@ -77,6 +78,7 @@ import {
   Rows3,
   ListOrdered,
   Repeat,
+  History,
   Timer as TimerIcon,
   FolderTree,
   Square,
@@ -216,6 +218,11 @@ export const nav: NavGroup[] = [
         label: "Context Menu",
         href: "/components/context-menu",
         icon: MousePointer,
+      },
+      {
+        label: "Contribution Graph",
+        href: "/components/contribution-graph",
+        icon: CalendarDays,
       },
       {
         label: "Dashboard",
@@ -407,6 +414,7 @@ export const nav: NavGroup[] = [
       { label: "Tags Input", href: "/components/tags-input", icon: Tags },
       { label: "Textarea", href: "/components/textarea", icon: AlignLeft },
       { label: "Time Picker", href: "/components/time-picker", icon: Clock },
+      { label: "Timeline", href: "/components/timeline", icon: History },
       { label: "Timer", href: "/components/timer", icon: TimerIcon },
       { label: "Toggle", href: "/components/toggle", icon: ToggleRight },
       {
@@ -426,6 +434,11 @@ export const nav: NavGroup[] = [
         label: "Virtualized Dropdown Menu",
         href: "/components/virtualized-dropdown-menu",
         icon: ListFilter,
+      },
+      {
+        label: "Virtualized Timeline",
+        href: "/components/virtualized-timeline",
+        icon: GalleryVertical,
       },
     ],
   },

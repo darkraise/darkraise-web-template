@@ -602,7 +602,7 @@ function ImageEditorTool({
           }}
           {...rest}
         >
-          {children ?? <Icon className="h-4 w-4" aria-hidden />}
+          {children ?? <Icon className="size-[var(--icon-size)]" aria-hidden />}
         </Button>
       </TooltipTrigger>
       <TooltipContent side="bottom">{label}</TooltipContent>
@@ -1047,7 +1047,7 @@ function ImageEditorAnnotationKind({
           }}
           {...rest}
         >
-          {children ?? <Icon className="h-4 w-4" aria-hidden />}
+          {children ?? <Icon className="size-[var(--icon-size)]" aria-hidden />}
         </Button>
       </TooltipTrigger>
       <TooltipContent side="top">{label}</TooltipContent>

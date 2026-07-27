@@ -56,6 +56,9 @@
     @apply flex h-4 w-4 shrink-0 items-center justify-center;
   }
 
+  /* Pinned literal, not --icon-size: exactly matches .dr-sidebar-nav-icon's
+     fixed h-4 w-4 slot above, which does not follow the font-size axis. A
+     scaling token would overflow the slot at large/extra-large. */
   .dr-sidebar-nav-icon-svg {
     @apply h-4 w-4 shrink-0;
   }
@@ -87,7 +90,7 @@
   }
 
   .dr-sidebar-nav-collapsible-chevron {
-    @apply ml-auto h-4 w-4 shrink-0 transition-transform duration-200;
+    @apply ml-auto size-[var(--icon-size)] shrink-0 transition-transform duration-200;
     color: hsl(var(--sidebar-foreground-muted));
   }
 

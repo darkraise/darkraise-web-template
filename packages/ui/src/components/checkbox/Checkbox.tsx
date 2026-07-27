@@ -11,6 +11,12 @@ import { useCheckbox, isIndeterminate, type CheckedState } from "./useCheckbox"
 
 export type CheckboxSize = "sm" | "default" | "lg"
 
+// Pinned to literals, not the --icon-size tokens: .dr-checkbox's box
+// (checkbox.css, h-3.5/h-4/h-5 per size) is a fixed literal that does not
+// follow the font-size axis. This mark is bounded by that box, not by the
+// text beside it, so it must stay in lockstep with it — a token here would
+// match at `medium` (where the pixel values happen to line up) but overflow
+// the box at `large`/`extra-large`.
 const checkIconSize: Record<CheckboxSize, string> = {
   sm: "h-3 w-3",
   default: "h-4 w-4",

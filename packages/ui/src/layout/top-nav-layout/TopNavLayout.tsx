@@ -52,7 +52,7 @@ export function TopNavLayout({
                 activeClassName="active"
                 activeExact={item.href === "/"}
               >
-                {item.icon && <item.icon className="h-4 w-4" />}
+                {item.icon && <item.icon className="size-[var(--icon-size)]" />}
                 {item.label}
               </Link>
             )),

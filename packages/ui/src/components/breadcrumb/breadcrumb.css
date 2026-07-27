@@ -16,7 +16,7 @@
   }
 
   .dr-breadcrumb-separator {
-    @apply [&>svg]:h-3.5 [&>svg]:w-3.5;
+    @apply [&>svg]:size-[var(--icon-size-sm)];
   }
 
   .dr-breadcrumb-ellipsis {

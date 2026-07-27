@@ -91,7 +91,7 @@ function PaginationPrevious({
       className={cn("dr-pagination-previous", className)}
       {...props}
     >
-      <ChevronLeft className="h-4 w-4" />
+      <ChevronLeft className="size-[var(--icon-size)]" />
       <span>Previous</span>
     </PaginationLink>
   )
@@ -110,7 +110,7 @@ function PaginationNext({
       {...props}
     >
       <span>Next</span>
-      <ChevronRight className="h-4 w-4" />
+      <ChevronRight className="size-[var(--icon-size)]" />
     </PaginationLink>
   )
 }
@@ -126,7 +126,7 @@ function PaginationEllipsis({
       className={cn("dr-pagination-ellipsis", className)}
       {...props}
     >
-      <MoreHorizontal className="h-4 w-4" />
+      <MoreHorizontal className="size-[var(--icon-size)]" />
       <span className="sr-only">More pages</span>
     </span>
   )

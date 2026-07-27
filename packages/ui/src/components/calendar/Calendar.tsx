@@ -703,7 +703,7 @@ function MonthBlock({
               cls("button_previous", ""),
             )}
           >
-            <ChevronLeftIcon className="size-4" />
+            <ChevronLeftIcon className="size-[var(--icon-size)]" />
           </button>
         ) : (
           <span />
@@ -721,7 +721,7 @@ function MonthBlock({
               cls("button_next", ""),
             )}
           >
-            <ChevronRightIcon className="size-4" />
+            <ChevronRightIcon className="size-[var(--icon-size)]" />
           </button>
         ) : (
           <span />
@@ -959,7 +959,7 @@ function GridHeader({
         onClick={onPrev}
         aria-label={prevLabel}
       >
-        <ChevronLeftIcon className="size-4" />
+        <ChevronLeftIcon className="size-[var(--icon-size)]" />
       </Button>
       {label}
       <Button
@@ -970,7 +970,7 @@ function GridHeader({
         onClick={onNext}
         aria-label={nextLabel}
       >
-        <ChevronRightIcon className="size-4" />
+        <ChevronRightIcon className="size-[var(--icon-size)]" />
       </Button>
     </div>
   )

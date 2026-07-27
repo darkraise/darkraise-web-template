@@ -25,7 +25,7 @@ export function ColumnVisibility<TData>({
           size="sm"
           className="dr-data-table-column-visibility-trigger"
         >
-          <SlidersHorizontal className="mr-2 h-4 w-4" />
+          <SlidersHorizontal className="mr-2 size-[var(--icon-size)]" />
           Columns
         </Button>
       </DropdownMenuTrigger>

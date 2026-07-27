@@ -23,7 +23,7 @@ export function MobileDrawer({ nav }: MobileDrawerProps) {
           size="icon"
           className="dr-mobile-drawer-trigger"
         >
-          <Menu className="h-5 w-5" />
+          <Menu className="size-[var(--icon-size-lg)]" />
           <span className="sr-only">Open menu</span>
         </Button>
       </SheetTrigger>

@@ -488,7 +488,10 @@ InputOTPSlotSeparate.displayName = "InputOTPSlotSeparate"
 function InputOTPSeparator({ ref, ...props }: React.ComponentProps<"div">) {
   return (
     <div ref={ref} role="separator" {...props}>
-      <Dot />
+      {/* Previously unsized, so it fell back to lucide's own 24px default.
+          --icon-size-xl is that same 24px at scale 1, making the size
+          explicit without changing how it renders today. */}
+      <Dot className="size-[var(--icon-size-xl)]" />
     </div>
   )
 }

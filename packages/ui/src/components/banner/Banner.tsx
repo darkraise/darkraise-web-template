@@ -50,7 +50,7 @@ function Banner({
           className="dr-banner-close"
           onClick={onDismiss}
         >
-          <X className="h-4 w-4" />
+          <X className="size-[var(--icon-size)]" />
         </button>
       ) : null}
     </div>

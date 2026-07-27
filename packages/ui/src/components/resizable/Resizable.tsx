@@ -409,6 +409,10 @@ function ResizableHandle({
     >
       {withHandle && (
         <div className="dr-resizable-handle-grip">
+          {/* Pinned literal: .dr-resizable-handle-grip (resizable.css) is a
+              fixed, asymmetric h-4 w-3 slot hand-fitted to this glyph; it
+              does not follow the font-size axis and the token's growth
+              would exceed the slot's width at large/extra-large. */}
           <GripVertical className="h-2.5 w-2.5" />
         </div>
       )}

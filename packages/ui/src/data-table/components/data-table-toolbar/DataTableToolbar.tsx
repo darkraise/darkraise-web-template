@@ -33,7 +33,7 @@ export function DataTableToolbar<TData>({
             onClick={() => table.resetColumnFilters()}
           >
             Reset
-            <X className="ml-2 h-4 w-4" />
+            <X className="ml-2 size-[var(--icon-size)]" />
           </Button>
         )}
       </div>

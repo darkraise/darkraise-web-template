@@ -1,26 +1,10 @@
 import * as React from "react"
 
 import { cn } from "@lib/utils"
+import type { AccentHue } from "@lib/accent-hues"
 import "./badge.css"
 
-export type BadgeAccentVariant =
-  | "red"
-  | "orange"
-  | "amber"
-  | "yellow"
-  | "lime"
-  | "green"
-  | "emerald"
-  | "teal"
-  | "cyan"
-  | "sky"
-  | "blue"
-  | "indigo"
-  | "violet"
-  | "purple"
-  | "fuchsia"
-  | "pink"
-  | "rose"
+export type BadgeAccentVariant = AccentHue
 
 export type BadgeVariant =
   | "default"

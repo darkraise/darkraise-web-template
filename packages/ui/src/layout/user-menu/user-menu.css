@@ -28,6 +28,6 @@
   }
 
   .dr-user-menu-item-icon {
-    @apply mr-2 h-4 w-4;
+    @apply mr-2 size-[var(--icon-size)];
   }
 }

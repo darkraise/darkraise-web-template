@@ -14,6 +14,7 @@ import {
   DENSITIES,
   ELEVATIONS,
   RADII,
+  FONT_SIZES,
 } from "@theme/types"
 import type {
   Mode,
@@ -103,6 +104,7 @@ export function ThemeSwitcher() {
     elevation,
     buttonElevation,
     radius,
+    fontSize,
     config,
     activePreset,
     presetAxisValues,
@@ -117,6 +119,7 @@ export function ThemeSwitcher() {
     setElevation,
     setButtonElevation,
     setRadius,
+    setFontSize,
     setPresetAxis,
   } = useTheme()
 
@@ -329,6 +332,16 @@ export function ThemeSwitcher() {
         <AxisControl values={DENSITIES} value={density} onChange={setDensity} />
       </div>
     ),
+    axes.fontSize && !isCommonAxisHidden("fontSize") && (
+      <div key="fontSize" className="dr-theme-switcher-row">
+        <Label className="dr-theme-switcher-section-label">Font Size</Label>
+        <AxisControl
+          values={FONT_SIZES}
+          value={fontSize}
+          onChange={setFontSize}
+        />
+      </div>
+    ),
     axes.elevation && !isCommonAxisHidden("elevation") && (
       <div key="elevation" className="dr-theme-switcher-row">
         <Label className="dr-theme-switcher-section-label">Elevation</Label>
@@ -365,7 +378,7 @@ export function ThemeSwitcher() {
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="ghost" size="icon">
-          <Palette className="h-4 w-4" />
+          <Palette className="size-[var(--icon-size)]" />
           <span className="sr-only">Customize theme</span>
         </Button>
       </PopoverTrigger>

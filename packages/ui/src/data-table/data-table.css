@@ -63,7 +63,7 @@
   }
 
   .dr-data-table-empty-icon {
-    @apply mb-2 h-10 w-10;
+    @apply mb-2 size-[var(--icon-size-2xl)];
   }
 
   .dr-data-table-empty-text {
@@ -109,7 +109,7 @@
   }
 
   .dr-data-table-column-header-icon {
-    @apply ml-2 h-4 w-4;
+    @apply ml-2 size-[var(--icon-size)];
   }
 
   /* Row actions */

@@ -43,6 +43,8 @@ const DESCRIPTIONS: Record<string, string> = {
   "/components/command": "Searchable command palette with grouped results",
   "/components/context-menu":
     "Right-click menus with items, checkboxes, and submenus",
+  "/components/contribution-graph":
+    "Calendar heatmap with sizes, colour variants, tooltips, and keyboard navigation",
   "/components/dashboard": "StatCard, KPICard, ProgressCard, and ActivityFeed",
   "/components/data-table":
     "Feature-rich table with sorting, filtering, and pagination",
@@ -130,6 +132,8 @@ const DESCRIPTIONS: Record<string, string> = {
     "Chip-based tag entry with paste-split and validation",
   "/components/textarea": "Multi-line text input with auto-resize support",
   "/components/time-picker": "Hour, minute, and meridiem selection control",
+  "/components/timeline":
+    "Chronological event rail with status and alternating layout",
   "/components/timer":
     "Stopwatch and countdown with start, pause, resume, and reset",
   "/components/toggle": "Stateful toggle buttons for binary actions",
@@ -141,6 +145,8 @@ const DESCRIPTIONS: Record<string, string> = {
     "Recursive nav tree with selection, expand, and keyboard nav",
   "/components/virtualized-dropdown-menu":
     "Dropdown that virtualizes very long option lists",
+  "/components/virtualized-timeline":
+    "Date-bucketed scroller with a scrubber, lazy loading, and selection",
 }
 
 const componentItems = (

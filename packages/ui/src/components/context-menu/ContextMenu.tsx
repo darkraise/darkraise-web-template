@@ -552,6 +552,10 @@ function ContextMenuCheckboxItem({
       {...rest}
     >
       <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+        {/* Pinned literal: bounded by this span's fixed h-3.5 w-3.5 slot,
+            which does not follow the font-size axis. A scaling token would
+            overflow the slot at large/extra-large (same reasoning as the
+            Circle radio-dot mark below). */}
         {isChecked ? <Check className="h-4 w-4" /> : null}
       </span>
       {children}
@@ -613,6 +617,9 @@ function ContextMenuRadioItem({
       {...rest}
     >
       <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+        {/* Pinned literal: bounded by this span's fixed h-3.5 w-3.5 slot,
+            which does not follow the font-size axis. A scaling token would
+            overflow the slot at large/extra-large. */}
         {checked ? <Circle className="h-2 w-2 fill-current" /> : null}
       </span>
       {children}

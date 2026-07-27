@@ -2,6 +2,29 @@
 
 All notable changes to `darkraise-ui` are documented in this file. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+Breaking: `ThemeConfig` gains two required properties, `defaults.fontSize` and `switcher.axes.fontSize`, matching the other eleven axes. Consumers passing their own `config` object must add both before upgrading:
+
+```ts
+defaults: { …, fontSize: "medium" },
+switcher: { axes: { …, fontSize: true } },
+```
+
+Once added, the new `fontSize: "medium"` default renders exactly as before.
+
+### Added
+
+- `fontSize` theme axis with `small`, `medium`, `large`, and `extra-large` steps, defaulting to `medium`. Re-binds Tailwind's `--text-*` scale — body sizes take the full multiplier, display sizes a damped one — while line heights are untouched, since Tailwind already declares them as unitless ratios that scale on their own.
+- Icon-size token ladder (`--icon-size-2xs` through `--icon-size-3xl`), derived from `--icon-scale`, that every library-owned SVG glyph now reads so icons stay visually matched to the text beside them. Glyphs bound by fixed control geometry — the Checkbox check, the RadioGroup dot, menu-item indicators — deliberately stay pinned, since their containers don't grow.
+- Minimum control heights that grow at the two larger `fontSize` steps via a base/derived split (`--density-cell-base` × `--control-scale`), letting the density and font-size axes compose instead of overwriting each other.
+- `ThemeSwitcher` font-size control, first-paint restoration in the template app, and `create-app --font-size` scaffolding support.
+- `Timeline` compound component: vertical event rail with `complete`, `current`, and `upcoming` statuses, solid or dashed connectors, an opposite-side timestamp slot, and an alternating variant that collapses to a single rail below 640px.
+- `ContributionGraph`: GitHub-style calendar heatmap with configurable date range, week start, and intensity thresholds. Ships month and weekday labels (crowded labels suppressed), a legend, a shared hover tooltip, click handling, and arrow-key navigation. Intensity colours derive from `--primary`, so the ramp follows the accent colour and every preset. Any non-zero value lands on at least level 1, so a single contribution never renders as empty.
+- `ContributionGraph` gains a `size` prop (`sm`, `md`, `lg`; default `md`, which is the previous geometry) and a `variant` prop (`default` plus the seventeen fixed accent hues; default `default`, which keeps following `--primary`). The four intensity levels are now oklab mixes of a single `--contrib-base` variable, so a hue swap is one declaration, and level zero stays neutral on `--muted` for every hue. Cells also outline on hover via the overridable `--contrib-cell-outline` variable, inset so nothing shifts.
+- `AccentHue` and `ACCENT_HUES` are exported from the package root and `darkraise-ui/lib`. `BadgeAccentVariant` is now an alias of `AccentHue`; the type is unchanged for consumers.
+- `VirtualizedTimeline`: date-bucketed scroller for collections too large to render. Bucket heights derive from declared item counts rather than measurement, so the scrollbar and the scrubber are exact as soon as the container is measured; item sizes are never measured at all, so content arriving later shifts nothing and the scrollbar never jumps as buckets load. Windows both buckets and the rows inside them; loads items lazily per bucket with in-flight de-duplication, skeletons in final positions, retry on failure, and least-recently-seen eviction. Ships a draggable, keyboard-operable scrubber, sticky bucket headers, item and whole-bucket selection with shift-ranges, collapsible buckets, roving-tabindex keyboard navigation, an optional jump-to-date control, and a `scrollToDate` / `scrollToBucket` / `getVisibleBucketIds` imperative handle. A `renderBucket` plus `getBucketHeight` pair is the escape hatch for bucket bodies that are not tile grids. The jump-to-date control is off by default and unmounted while off, but its `DatePicker` and `Calendar` weight is imported statically all the same — deliberately, because lazy-loading it would hang a Suspense boundary and a loading state on a toolbar control. A consumer who needs that weight gone should mount the exported `VirtualizedTimelineJumpToDate` themselves instead of expecting the timeline to defer it. The scrubber is a date index rather than a scrollbar: year and month tick marks with labels that thin themselves to the space available, a caret marking the current position with a bracket showing how much of the collection is on screen, a bubble naming the date under the pointer while hovering or dragging, and a `scrubberSide` prop putting the rail on either edge. The rail is a sibling of the scroll viewport rather than an overlay, so it cannot cover content.
+
 ## [3.0.0] — 2026-05-07
 
 Major release. The zero-dep components initiative replaces every external runtime dependency that backed a component primitive with an in-house implementation. The public API of every component is preserved (anatomy parts, prop names, accessibility contract). Where we shipped additional anatomy parts (`PopoverArrow`, `PopoverAnchor`, `PopoverClose`, `TooltipArrow`), they are additive. Where minor behavior changed, it is documented below.

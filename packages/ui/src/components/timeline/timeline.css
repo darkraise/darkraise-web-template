@@ -1,0 +1,253 @@
+@layer components {
+  .dr-timeline {
+    /* Fallbacks keep the component correct whether or not the font-size
+       axis (which owns --icon-size) has landed. */
+    --timeline-dot-size: calc(var(--icon-size, 1rem) + 0.5rem);
+    --timeline-rail-width: 2px;
+    --timeline-gap: var(--density-stack-gap);
+    --timeline-column-gap: var(--density-stack-gap);
+    --timeline-meta-width: 4.5rem;
+
+    @apply flex list-none flex-col;
+  }
+
+  /* Named grid lines, not column numbers: the parts below each declare
+     their line once, so switching between the two- and three-column
+     templates is a single rule change instead of one override per part. */
+  .dr-timeline-item {
+    @apply relative grid;
+    grid-template-columns: [meta rail] auto [content] 1fr;
+    grid-template-rows: auto 1fr;
+    column-gap: var(--timeline-column-gap);
+  }
+
+  /* One item using a meta slot widens the meta column for EVERY item, so
+     timestamps line up in their own column instead of ragging per item.
+     Every combinator here is a child combinator, not descendant: a nested
+     <Timeline> inside a TimelineContent is a separate component instance
+     with its own <ol>/<li>/meta, and must not be pulled into this one's
+     :has() check or grid template just because it lives in the subtree. */
+  .dr-timeline:has(> .dr-timeline-item > .dr-timeline-meta)
+    > .dr-timeline-item {
+    grid-template-columns:
+      [meta] var(--timeline-meta-width)
+      [rail] auto
+      [content] 1fr;
+  }
+
+  .dr-timeline-meta {
+    @apply text-muted-foreground text-right text-xs;
+    grid-column: meta;
+    grid-row: 1;
+    line-height: var(--timeline-dot-size);
+  }
+
+  .dr-timeline-indicator {
+    @apply bg-background border-border text-muted-foreground flex shrink-0 items-center justify-center rounded-full border-2 text-xs font-medium;
+    grid-column: rail;
+    grid-row: 1;
+    align-self: start;
+    width: var(--timeline-dot-size);
+    height: var(--timeline-dot-size);
+  }
+
+  .dr-timeline-indicator svg {
+    width: var(--icon-size-sm, 0.875rem);
+    height: var(--icon-size-sm, 0.875rem);
+  }
+
+  .dr-timeline-indicator[data-status="complete"] {
+    @apply bg-primary border-primary text-primary-foreground;
+  }
+
+  .dr-timeline-indicator[data-status="current"] {
+    @apply border-primary bg-primary/20 text-primary;
+    box-shadow: var(--affordance-glow);
+  }
+
+  .dr-timeline-connector {
+    @apply bg-border;
+    grid-column: rail;
+    grid-row: 2;
+    justify-self: center;
+    width: var(--timeline-rail-width);
+    min-height: var(--timeline-gap);
+  }
+
+  .dr-timeline-connector[data-status="complete"] {
+    @apply bg-primary;
+  }
+
+  .dr-timeline-connector[data-variant="dashed"] {
+    @apply text-border bg-transparent;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      currentColor 0 0.25rem,
+      transparent 0.25rem 0.5rem
+    );
+  }
+
+  .dr-timeline-connector[data-variant="dashed"][data-status="complete"] {
+    @apply text-primary;
+  }
+
+  .dr-timeline-content {
+    @apply flex flex-col gap-1;
+    grid-column: content;
+    grid-row: 1 / span 2;
+    padding-bottom: var(--timeline-gap);
+  }
+
+  /* The last event ends the rail; consumers render a connector in every
+     item and never have to write a length check. Child combinator, not
+     descendant: TimelineConnector/TimelineContent are always a direct
+     child of their own <li>, so this must not reach into a nested
+     <Timeline>'s connectors/content when the outer item that contains it
+     happens to be last-child. */
+  .dr-timeline-item:last-child > .dr-timeline-connector {
+    @apply hidden;
+  }
+
+  .dr-timeline-item:last-child > .dr-timeline-content {
+    padding-bottom: 0;
+  }
+
+  .dr-timeline-title {
+    @apply text-foreground flex items-center text-sm font-medium;
+    min-height: var(--timeline-dot-size);
+  }
+
+  .dr-timeline-title[data-status="upcoming"] {
+    @apply text-muted-foreground;
+  }
+
+  .dr-timeline-description {
+    @apply text-muted-foreground text-sm;
+  }
+
+  .dr-timeline-time {
+    @apply text-muted-foreground text-xs;
+  }
+
+  .dr-timeline-status-text {
+    @apply sr-only;
+  }
+
+  /* --- Alternating variant ------------------------------------------- */
+
+  /* Every selector in this section uses a child combinator between
+     .dr-timeline-item and its part, and between .dr-timeline and the
+     item itself. A nested <Timeline> placed inside a TimelineContent is
+     a separate component instance: its <ol>/<li>/parts are descendants
+     of the outer .dr-timeline too, so a plain descendant combinator here
+     would reach past the nested timeline's own boundary and apply the
+     OUTER variant's grid template, column, and alignment rules to the
+     INNER timeline's items — even when the inner timeline uses a
+     different variant. Child combinators keep every rule scoped to the
+     timeline/item that actually owns the part. */
+  .dr-timeline[data-variant="alternating"] > .dr-timeline-item,
+  .dr-timeline[data-variant="alternating"]:has(
+      > .dr-timeline-item > .dr-timeline-meta
+    )
+    > .dr-timeline-item {
+    grid-template-columns: [start] 1fr [rail] auto [end] 1fr;
+  }
+
+  .dr-timeline[data-variant="alternating"]
+    > .dr-timeline-item:nth-child(odd)
+    > .dr-timeline-content {
+    grid-column: end;
+  }
+
+  .dr-timeline[data-variant="alternating"]
+    > .dr-timeline-item:nth-child(odd)
+    > .dr-timeline-meta {
+    @apply text-right;
+    grid-column: start;
+  }
+
+  .dr-timeline[data-variant="alternating"]
+    > .dr-timeline-item:nth-child(even)
+    > .dr-timeline-content {
+    @apply items-end text-right;
+    grid-column: start;
+  }
+
+  .dr-timeline[data-variant="alternating"]
+    > .dr-timeline-item:nth-child(even)
+    > .dr-timeline-meta {
+    @apply text-left;
+    grid-column: end;
+  }
+
+  /* Explicit side wins over the nth-child default. Equal specificity
+     (0,5,0) — these rules win on source order, so they must stay below
+     the nth-child rules above. */
+  .dr-timeline[data-variant="alternating"]
+    > .dr-timeline-item[data-side="start"]
+    > .dr-timeline-content {
+    @apply items-end text-right;
+    grid-column: start;
+  }
+
+  .dr-timeline[data-variant="alternating"]
+    > .dr-timeline-item[data-side="start"]
+    > .dr-timeline-meta {
+    @apply text-left;
+    grid-column: end;
+  }
+
+  .dr-timeline[data-variant="alternating"]
+    > .dr-timeline-item[data-side="end"]
+    > .dr-timeline-content {
+    @apply items-start text-left;
+    grid-column: end;
+  }
+
+  .dr-timeline[data-variant="alternating"]
+    > .dr-timeline-item[data-side="end"]
+    > .dr-timeline-meta {
+    @apply text-right;
+    grid-column: start;
+  }
+
+  /* Alternating text columns get too narrow to read on a phone, so the
+     variant collapses to the default single-rail layout. `:nth-child(n)`
+     matches every item and only exists to raise these selectors to the
+     same specificity as the rules they override. */
+  @media (width < 40rem) {
+    .dr-timeline[data-variant="alternating"] > .dr-timeline-item {
+      grid-template-columns: [meta rail] auto [content] 1fr;
+    }
+
+    .dr-timeline[data-variant="alternating"]:has(
+        > .dr-timeline-item > .dr-timeline-meta
+      )
+      > .dr-timeline-item {
+      grid-template-columns:
+        [meta] var(--timeline-meta-width)
+        [rail] auto
+        [content] 1fr;
+    }
+
+    .dr-timeline[data-variant="alternating"]
+      > .dr-timeline-item:nth-child(n)
+      > .dr-timeline-content,
+    .dr-timeline[data-variant="alternating"]
+      > .dr-timeline-item[data-side]
+      > .dr-timeline-content {
+      @apply items-start text-left;
+      grid-column: content;
+    }
+
+    .dr-timeline[data-variant="alternating"]
+      > .dr-timeline-item:nth-child(n)
+      > .dr-timeline-meta,
+    .dr-timeline[data-variant="alternating"]
+      > .dr-timeline-item[data-side]
+      > .dr-timeline-meta {
+      @apply text-right;
+      grid-column: meta;
+    }
+  }
+}

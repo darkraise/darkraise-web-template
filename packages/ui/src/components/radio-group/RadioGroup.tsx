@@ -89,6 +89,11 @@ function RadioGroup({
   )
 }
 
+// Pinned to literals (dr-radio-group-indicator-*, radio-group.css), not the
+// --icon-size tokens: .dr-radio-group-item's box (h-3.5/h-4/h-5 per size) is
+// a fixed literal that does not follow the font-size axis. This dot is
+// bounded by that box, not by the text beside it, so it must stay in
+// lockstep with it — same reasoning as Checkbox's checkIconSize.
 const radioIndicatorSizeClass: Record<RadioSize, string> = {
   sm: "dr-radio-group-indicator-sm",
   default: "dr-radio-group-indicator-default",

@@ -46,6 +46,7 @@ describe("useTheme", () => {
     storageMock.clear()
     mockMatchMedia()
     document.documentElement.removeAttribute("data-mode")
+    document.documentElement.removeAttribute("data-font-size")
     document.documentElement.style.cssText = ""
   })
 
@@ -151,6 +152,33 @@ describe("useTheme", () => {
   it("syncStatus is idle when no persistence adapter is provided", () => {
     const { result } = renderHook(() => useTheme(), { wrapper })
     expect(result.current.syncStatus).toBe("idle")
+  })
+
+  it("defaults fontSize to medium", () => {
+    const { result } = renderHook(() => useTheme(), { wrapper })
+    expect(result.current.fontSize).toBe("medium")
+  })
+
+  it("setFontSize updates state, applies the attribute, and persists", () => {
+    const { result } = renderHook(() => useTheme(), { wrapper })
+    act(() => result.current.setFontSize("large"))
+    expect(result.current.fontSize).toBe("large")
+    expect(document.documentElement.getAttribute("data-font-size")).toBe(
+      "large",
+    )
+    expect(localStorage.getItem("theme-font-size")).toBe("large")
+  })
+
+  it("restores a valid stored fontSize on mount", () => {
+    localStorage.setItem("theme-font-size", "extra-large")
+    const { result } = renderHook(() => useTheme(), { wrapper })
+    expect(result.current.fontSize).toBe("extra-large")
+  })
+
+  it("falls back to the default when the stored fontSize is invalid", () => {
+    localStorage.setItem("theme-font-size", "gigantic")
+    const { result } = renderHook(() => useTheme(), { wrapper })
+    expect(result.current.fontSize).toBe("medium")
   })
 })
 

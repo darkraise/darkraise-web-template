@@ -30,8 +30,9 @@ npm create darkraise-web-template my-app \
   --elevation medium \
   --button-elevation flat \
   --radius rounded \
+  --font-size medium \
   --theme-switcher \
-  --theme-axes mode,accentColor,surfaceColor,preset,backgroundStyle,density,elevation,radius \
+  --theme-axes mode,accentColor,surfaceColor,preset,backgroundStyle,density,elevation,radius,fontSize \
   --host localhost \
   --port 5173
 ```
@@ -50,6 +51,7 @@ npm create darkraise-web-template my-app \
 | `--elevation`                              | `flat`, `low`, `medium`, `high`                             | `medium`    |
 | `--button-elevation`                       | `flat`, `low`, `medium`, `high`                             | `flat`      |
 | `--radius`                                 | `sharp`, `subtle`, `rounded`, `pill`                        | `rounded`   |
+| `--font-size`                              | `small`, `medium`, `large`, `extra-large`                   | `medium`    |
 | `--theme-switcher` / `--no-theme-switcher` | boolean                                                     | enabled     |
 | `--theme-axes`                             | comma-separated axis names (see Theming for the valid keys) | all axes    |
 | `--host`                                   | hostname or IP                                              | `localhost` |
@@ -84,7 +86,7 @@ Several hooks are adapted from [react-hookz/web](https://github.com/react-hookz/
 
 ### Theming
 
-An 11-axis theming system. Scaffolded projects configure it through `src/theme.config.ts`, which imports the `ThemeConfig` type from `darkraise-ui/theme`; in this monorepo the type and defaults live in `packages/ui/src/theme/themeConfig.ts`. The axes are:
+A 12-axis theming system. Scaffolded projects configure it through `src/theme.config.ts`, which imports the `ThemeConfig` type from `darkraise-ui/theme`; in this monorepo the type and defaults live in `packages/ui/src/theme/themeConfig.ts`. The axes are:
 
 - **Mode** -- light, dark, or system
 - **Accent color** -- 17 color options
@@ -97,10 +99,11 @@ An 11-axis theming system. Scaffolded projects configure it through `src/theme.c
 - **Elevation** -- flat, low, medium, or high (surface shadows)
 - **Button elevation** -- flat, low, medium, or high (button-specific shadows)
 - **Radius** -- sharp, subtle, rounded, or pill
+- **Font size** -- small, medium, large, or extra-large (scales type, icons, and minimum control heights)
 
 The switcher config also exposes a `presetAxes` master toggle that controls whether preset-specific controls (for example neon glow or sci-fi intensity and frame) appear in the switcher panel.
 
-Typography is fixed: Inter for sans/heading, JetBrains Mono for monospace.
+Font family is fixed: Inter for sans/heading, JetBrains Mono for monospace. Font size is adjustable via the axis above.
 
 The `ThemeSwitcher` component renders controls for whichever axes are enabled in the config. The `ThemeProvider` accepts an optional `onChange` callback for persisting theme settings to a backend. Theme defaults and axis visibility are set at scaffold time and can be changed later by editing `theme.config.ts`.
 

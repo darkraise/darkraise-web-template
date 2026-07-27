@@ -26,7 +26,7 @@ export function RowActions({ actions }: RowActionsProps) {
           size="icon"
           className="dr-data-table-row-actions-trigger"
         >
-          <MoreHorizontal className="h-4 w-4" />
+          <MoreHorizontal className="size-[var(--icon-size)]" />
           <span className="sr-only">Actions</span>
         </Button>
       </DropdownMenuTrigger>

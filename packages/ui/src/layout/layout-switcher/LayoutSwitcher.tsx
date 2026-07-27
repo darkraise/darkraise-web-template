@@ -35,7 +35,7 @@ export function LayoutSwitcher() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon">
-          <CurrentIcon className="h-4 w-4" />
+          <CurrentIcon className="size-[var(--icon-size)]" />
           <span className="sr-only">Switch layout</span>
         </Button>
       </DropdownMenuTrigger>

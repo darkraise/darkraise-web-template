@@ -1,0 +1,231 @@
+@layer components {
+  .dr-virtualized-timeline {
+    @apply relative flex min-h-0 flex-col;
+  }
+
+  .dr-virtualized-timeline-toolbar {
+    @apply flex shrink-0 items-center gap-2 pb-2;
+  }
+
+  /* The toolbar renders DatePickerTrigger without a DatePickerControl, so
+     the trigger's base styling — absolute, centered against the control's
+     input — must not apply; the compound selector outweighs both singles
+     regardless of stylesheet import order, and dr-btn supplies the look.
+     self-start is load-bearing alongside w-auto: the .dr-date-picker root
+     is a flex column whose default stretch alignment overrides width: auto
+     and spans the trigger across the whole container. */
+  .dr-virtualized-timeline-toolbar .dr-date-picker-trigger {
+    @apply static h-auto w-auto translate-none self-start rounded-[var(--radius-button)];
+  }
+
+  /* A row, not a stack: the rail is a sibling of the viewport rather than an
+     overlay, so its width is real layout space. That is what makes the
+     viewport's own clientWidth the content width with no arithmetic, and what
+     makes rail-over-content overlap structurally impossible rather than
+     avoided by a reserved gutter. */
+  .dr-virtualized-timeline-scroll-area {
+    @apply relative flex min-h-0 flex-1 flex-row;
+    container-type: inline-size;
+  }
+
+  .dr-virtualized-timeline-viewport {
+    @apply min-h-0 min-w-0 flex-1 overflow-y-auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dr-virtualized-timeline-viewport {
+      scroll-behavior: auto;
+    }
+  }
+
+  /* Holds the full computed scroll height so the native scrollbar is exact
+     from the first frame; buckets are placed inside it by offset. */
+  .dr-virtualized-timeline-sizer {
+    @apply relative w-full;
+  }
+
+  .dr-virtualized-timeline-bucket {
+    @apply absolute inset-x-0;
+  }
+
+  /* Sticky inside the bucket wrapper, so a header stays pinned for exactly as
+     long as its own bucket is on screen. */
+  .dr-virtualized-timeline-bucket-header {
+    @apply bg-background/85 text-foreground sticky top-0 z-10 flex items-center text-sm font-medium backdrop-blur-sm;
+  }
+
+  .dr-virtualized-timeline-bucket-body {
+    @apply relative w-full;
+  }
+
+  .dr-virtualized-timeline-grid {
+    @apply relative h-full w-full;
+  }
+
+  /* The row wrappers exist for the grid's ARIA model alone. display:
+     contents keeps them from generating boxes, so the absolutely positioned
+     tiles keep resolving their offsets against the grid itself. */
+  .dr-virtualized-timeline-row {
+    @apply contents;
+  }
+
+  .dr-virtualized-timeline-tile {
+    @apply absolute overflow-hidden rounded-[var(--radius-sm)];
+    width: var(--vtimeline-tile-width);
+    height: var(--vtimeline-tile-height);
+  }
+
+  .dr-virtualized-timeline-tile[data-selected="true"] {
+    @apply ring-primary ring-2 ring-offset-1;
+    --tw-ring-offset-color: hsl(var(--background));
+  }
+
+  .dr-virtualized-timeline-error {
+    @apply text-muted-foreground flex items-center gap-2 text-sm;
+  }
+
+  .dr-virtualized-timeline-disclosure {
+    @apply transition-transform;
+  }
+
+  .dr-virtualized-timeline-disclosure[data-collapsed="true"] {
+    @apply -rotate-90;
+  }
+
+  /* touch-action: none, or the browser claims pointerdown for page panning
+     and the drag never starts on touch. */
+  .dr-virtualized-timeline-scrubber {
+    @apply relative flex w-12 shrink-0 cursor-ns-resize flex-col select-none;
+    touch-action: none;
+  }
+
+  /* Below this width the labels cost more than they give: the rail keeps its
+     ticks and drops to a narrow strip, and the drag bubble still names the
+     date. The breakpoint reads the scroll area's width, which the rail does
+     not influence, so it cannot oscillate. */
+  @container (width < 480px) {
+    .dr-virtualized-timeline-scrubber {
+      @apply w-5;
+    }
+  }
+
+  /* Positioned by the rail's own arithmetic, so `top` is inline. The tick
+     mark is the ::before; the label is the span beside it. */
+  .dr-virtualized-timeline-scrubber-tick {
+    @apply absolute right-0 flex items-center gap-1;
+  }
+
+  .dr-virtualized-timeline-scrubber-tick::before {
+    @apply block shrink-0;
+    content: "";
+  }
+
+  .dr-virtualized-timeline-scrubber-tick[data-tick-kind="year"]::before {
+    @apply h-[1.5px] w-3;
+    background-color: hsl(var(--foreground));
+  }
+
+  .dr-virtualized-timeline-scrubber-tick[data-tick-kind="sub"]::before {
+    @apply h-px w-1.5;
+    background-color: hsl(var(--muted-foreground));
+  }
+
+  .dr-virtualized-timeline-scrubber-tick > span {
+    @apply pointer-events-none whitespace-nowrap;
+  }
+
+  .dr-virtualized-timeline-scrubber-tick[data-tick-kind="year"] > span {
+    @apply text-foreground text-[11px] font-medium;
+  }
+
+  .dr-virtualized-timeline-scrubber-tick[data-tick-kind="sub"] > span {
+    @apply text-muted-foreground text-[10px];
+  }
+
+  .dr-virtualized-timeline-scrubber-label {
+    @apply bg-popover text-popover-foreground pointer-events-none absolute right-4 w-max rounded-[var(--radius-sm)] border px-2 py-1 text-xs;
+    border-color: var(--surface-overlay-border);
+    box-shadow: var(--surface-overlay-shadow);
+    transform: translateY(-50%);
+  }
+
+  /* A line across the rail rather than a proportional thumb: a thumb sized to
+     the viewport's share of the collection is the scrollbar shape this design
+     exists to escape, and on a large library it collapses to a few pixels.
+     Carries no label -- see the caret's JSX for why the rail's existing
+     hover label already covers that job, at rest and while dragging. */
+  .dr-virtualized-timeline-scrubber-caret {
+    @apply pointer-events-none absolute inset-x-0 flex items-center;
+    transform: translateY(-50%);
+  }
+
+  .dr-virtualized-timeline-scrubber-caret::before {
+    @apply block h-px flex-1;
+    content: "";
+    background-color: hsl(var(--primary));
+  }
+
+  /* The viewport's footprint on the rail, from the caret down to the
+     viewport's far edge. A hairline, not a proportional thumb, for the same
+     reason as the caret above. min-height keeps a very large collection's
+     near-zero share visible; that can overflow the rail's end by at most two
+     pixels at that extreme, which is the right trade against an invisible
+     indicator, and it leaves the JavaScript arithmetic exact. */
+  .dr-virtualized-timeline-scrubber-bracket {
+    @apply pointer-events-none absolute left-0 w-0.5;
+    min-height: 2px;
+    background-color: hsl(var(--primary) / 0.3);
+  }
+
+  /* --primary, not --muted: five of the six presets (Glass, Neon, Terminal,
+     Sci-fi, Playful) redefine --muted as a value that already carries its
+     own alpha (e.g. "var(--primary) / 0.04"), so slicing a second alpha onto
+     it here produced an invalid doubly-sliced hsl() that the browser
+     silently discarded, leaving the rail untinted while dragging in every
+     preset but Default. --primary is set in exactly one place
+     (generateTokens.ts) and no preset ever redefines it, so it is always a
+     plain HSL triplet and safe to slice -- and it matches the caret
+     hairline and bracket, which are already --primary. Do not change this
+     back to --muted; it looks idiomatic but reproduces the bug. */
+  .dr-virtualized-timeline-scrubber[data-dragging="true"] {
+    background-color: hsl(var(--primary) / 0.08);
+  }
+
+  /* The rail flips by flex order, so none of the tick, caret, or bracket
+     arithmetic changes -- only which edge the row starts from. Flex order
+     does not reorder the DOM, so keyboard focus still reaches the viewport
+     before the rail on both sides; that is consistent with the rail being a
+     supplementary control, not a bug to fix here. */
+  .dr-virtualized-timeline[data-scrubber-side="left"]
+    .dr-virtualized-timeline-scroll-area {
+    @apply flex-row-reverse;
+  }
+
+  /* Tick stays on the content-facing edge, label stays outboard toward the
+     container edge: flex-row-reverse preserves that relationship once the
+     rail is on the left, so the mark never ends up between the label and
+     the content. */
+  .dr-virtualized-timeline[data-scrubber-side="left"]
+    .dr-virtualized-timeline-scrubber-tick {
+    @apply right-auto left-0 flex-row-reverse;
+  }
+
+  /* The caret needs no mirror rule: its only child is the ::before hairline
+     at flex-1, spanning the rail's full width, so it is symmetric already. */
+
+  /* The bracket sits on the rail's content-facing edge on purpose, so it
+     does not collide with the tick labels; on a left-hand rail that edge is
+     the right one. */
+  .dr-virtualized-timeline[data-scrubber-side="left"]
+    .dr-virtualized-timeline-scrubber-bracket {
+    @apply right-0 left-auto;
+  }
+
+  /* The drag bubble opens toward the content so it cannot run off screen; on
+     a left-hand rail an outboard bubble would overflow the container's left
+     edge instead. */
+  .dr-virtualized-timeline[data-scrubber-side="left"]
+    .dr-virtualized-timeline-scrubber-label {
+    @apply right-auto left-4;
+  }
+}

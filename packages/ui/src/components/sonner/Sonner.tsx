@@ -37,11 +37,11 @@ const DEFAULT_DURATION_BY_KIND: Record<ToastKind, number> = {
 
 const ICONS: Record<ToastKind, React.ReactNode> = {
   default: null,
-  success: <CircleCheck className="h-4 w-4" />,
-  info: <Info className="h-4 w-4" />,
-  warning: <TriangleAlert className="h-4 w-4" />,
-  error: <OctagonX className="h-4 w-4" />,
-  loading: <LoaderCircle className="h-4 w-4 animate-spin" />,
+  success: <CircleCheck className="size-[var(--icon-size)]" />,
+  info: <Info className="size-[var(--icon-size)]" />,
+  warning: <TriangleAlert className="size-[var(--icon-size)]" />,
+  error: <OctagonX className="size-[var(--icon-size)]" />,
+  loading: <LoaderCircle className="size-[var(--icon-size)] animate-spin" />,
 }
 
 interface ToasterProps {

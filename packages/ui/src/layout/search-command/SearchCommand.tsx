@@ -58,7 +58,7 @@ export function SearchCommand({ navItems = [] }: SearchCommandProps) {
         className="dr-search-command-trigger"
         onClick={() => setOpen(true)}
       >
-        <Search className="h-4 w-4" />
+        <Search className="size-[var(--icon-size)]" />
         <span>Search...</span>
         <kbd className="dr-search-command-shortcut">{SHORTCUT_LABEL}</kbd>
       </Button>

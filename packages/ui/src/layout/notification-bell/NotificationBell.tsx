@@ -26,7 +26,7 @@ export function NotificationBell({
           size="icon"
           className="dr-notification-bell-trigger"
         >
-          <Bell className="h-4 w-4" />
+          <Bell className="size-[var(--icon-size)]" />
           {count > 0 && (
             <span className="dr-notification-bell-badge">
               {count > 9 ? "9+" : count}

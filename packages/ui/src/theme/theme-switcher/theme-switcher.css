@@ -29,7 +29,7 @@
   }
 
   .dr-theme-switcher-row-icon {
-    @apply mr-1.5 h-3.5 w-3.5;
+    @apply mr-1.5 size-[var(--icon-size-sm)];
   }
 
   .dr-theme-switcher-swatch-grid {

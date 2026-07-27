@@ -7,6 +7,7 @@ import type {
   Density,
   Elevation,
   Radius,
+  FontSize,
   Mode,
 } from "./types"
 import type { PresetName } from "./presets"
@@ -24,6 +25,7 @@ export interface ThemeConfig {
     elevation: Elevation
     buttonElevation: Elevation
     radius: Radius
+    fontSize: FontSize
   }
   switcher: {
     enabled: boolean
@@ -39,6 +41,7 @@ export interface ThemeConfig {
       elevation: boolean
       buttonElevation: boolean
       radius: boolean
+      fontSize: boolean
       /** Master toggle for all preset-specific axis controls. */
       presetAxes: boolean
     }
@@ -58,6 +61,7 @@ export const themeConfig: ThemeConfig = {
     elevation: "medium",
     buttonElevation: "flat",
     radius: "rounded",
+    fontSize: "medium",
   },
   switcher: {
     enabled: true,
@@ -73,6 +77,7 @@ export const themeConfig: ThemeConfig = {
       elevation: true,
       buttonElevation: true,
       radius: true,
+      fontSize: true,
       presetAxes: true,
     },
   },

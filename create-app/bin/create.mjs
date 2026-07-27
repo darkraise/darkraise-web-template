@@ -29,6 +29,7 @@ const GRADIENT_PATTERNS = ["blobs", "aurora", "spotlight", "mesh"]
 const DENSITIES = ["compact", "cozy", "comfortable", "spacious"]
 const ELEVATIONS = ["flat", "low", "medium", "high"]
 const RADII = ["sharp", "subtle", "rounded", "pill"]
+const FONT_SIZES = ["small", "medium", "large", "extra-large"]
 const MODES = ["light", "dark", "system"]
 const LAYOUTS = ["sidebar", "stacked", "top-nav", "split-panel"]
 // Mirrors `ThemeConfig.switcher.axes` in
@@ -38,7 +39,7 @@ const LAYOUTS = ["sidebar", "stacked", "top-nav", "split-panel"]
 const THEME_AXIS_KEYS = [
   "mode", "accentColor", "surfaceColor", "preset",
   "backgroundStyle", "backgroundIntensity", "gradientPattern",
-  "density", "elevation", "buttonElevation", "radius",
+  "density", "elevation", "buttonElevation", "radius", "fontSize",
   "presetAxes",
 ]
 
@@ -48,7 +49,7 @@ const argv = minimist(process.argv.slice(2), {
     "layout", "accent", "surface-color", "preset",
     "background", "background-intensity", "gradient-pattern",
     "mode", "theme-axes",
-    "density", "elevation", "button-elevation", "radius",
+    "density", "elevation", "button-elevation", "radius", "font-size",
     "host", "port",
   ],
   alias: { y: "yes" },
@@ -84,6 +85,7 @@ validate(argv.density, DENSITIES, "density")
 validate(argv.elevation, ELEVATIONS, "elevation")
 validate(argv["button-elevation"], ELEVATIONS, "button-elevation")
 validate(argv.radius, RADII, "radius")
+validate(argv["font-size"], FONT_SIZES, "font-size")
 
 if (argv["theme-axes"] !== undefined) {
   const axes = argv["theme-axes"].split(",")
@@ -242,6 +244,14 @@ async function main() {
     }),
   ))
 
+  const fontSize = argv["font-size"] || (skipPrompts ? "medium" : cancelled(
+    await p.select({
+      message: "Font size",
+      options: FONT_SIZES.map((f) => ({ value: f, label: f })),
+      initialValue: "medium",
+    }),
+  ))
+
   // --- Theme switcher ---
   let themeSwitcherEnabled
   if (themeSwitcherFlag !== undefined) {
@@ -277,6 +287,7 @@ async function main() {
             { value: "elevation", label: "Elevation" },
             { value: "buttonElevation", label: "Button elevation" },
             { value: "radius", label: "Radius" },
+            { value: "fontSize", label: "Font size" },
             { value: "presetAxes", label: "Preset-specific axes (e.g. neon glow, scifi intensity/frame)" },
           ],
           initialValues: THEME_AXIS_KEYS,
@@ -330,6 +341,7 @@ async function main() {
         elevation: elevation,
         buttonElevation: buttonElevation,
         radius: radius,
+        fontSize: fontSize,
       },
       switcher: {
         enabled: themeSwitcherEnabled,
@@ -422,6 +434,7 @@ async function main() {
           "elevation": "theme-elevation",
           "button-elevation": "theme-button-elevation",
           "radius": "theme-radius",
+          "font-size": "theme-font-size",
         }
         Object.keys(AXIS_LS_KEYS).forEach(function (axis) {
           var v = localStorage.getItem(AXIS_LS_KEYS[axis])
@@ -522,6 +535,7 @@ export const themeConfig: ThemeConfig = {
     elevation: "${config.theme.defaults.elevation}",
     buttonElevation: "${config.theme.defaults.buttonElevation}",
     radius: "${config.theme.defaults.radius}",
+    fontSize: "${config.theme.defaults.fontSize}",
   },
   switcher: {
     enabled: ${config.theme.switcher.enabled},
@@ -537,6 +551,7 @@ export const themeConfig: ThemeConfig = {
       elevation: ${config.theme.switcher.axes.elevation},
       buttonElevation: ${config.theme.switcher.axes.buttonElevation},
       radius: ${config.theme.switcher.axes.radius},
+      fontSize: ${config.theme.switcher.axes.fontSize},
       presetAxes: ${config.theme.switcher.axes.presetAxes},
     },
   },
