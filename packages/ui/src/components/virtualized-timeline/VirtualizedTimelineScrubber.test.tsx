@@ -195,12 +195,59 @@ describe("VirtualizedTimelineScrubber", () => {
     expect(caret?.style.top).toBe("100px")
   })
 
-  it("names the current date on the caret", () => {
+  it("renders no date text on the caret at rest", () => {
     const { container } = renderScrubber({ scrollTop: 0 })
     const caret = container.querySelector(
       ".dr-virtualized-timeline-scrubber-caret",
     )
-    expect(caret?.textContent).toBe("July 2026")
+    // The rail's tick labels already name every date and the caret sat on
+    // the same outboard edge as them, so a resting caret label duplicated
+    // and collided with the label beside it. Decided: the caret carries no
+    // text, ever -- see the "exactly one bubble" test below for what
+    // replaces it while dragging.
+    expect(caret?.textContent).toBe("")
+  })
+
+  it("renders no date text on the caret while dragging either", () => {
+    const { container, rail } = renderScrubber({ scrollTop: 0 })
+    fireEvent.pointerDown(rail, { clientY: 100 })
+    fireEvent.pointerMove(rail, { clientY: 150 })
+    const caret = container.querySelector(
+      ".dr-virtualized-timeline-scrubber-caret",
+    )
+    expect(caret?.textContent).toBe("")
+  })
+
+  it("exposes aria-valuetext with the full date while not dragging, independent of what is painted", () => {
+    // aria-valuetext is the accessibility channel for the caret's position
+    // and must keep working even though the caret itself paints no text --
+    // the guard that removing the caret's text did not quietly break the
+    // a11y contract.
+    const { rail } = renderScrubber({ scrollTop: 0 })
+    expect(rail).toHaveAttribute("aria-valuetext", "July 2026")
+    expect(rail.dataset.dragging).toBeUndefined()
+  })
+
+  it("shows exactly one date bubble while dragging -- the existing hover label, not a second one on the caret", () => {
+    const { container, rail } = renderScrubber({ scrollTop: 0 })
+    fireEvent.pointerDown(rail, { clientY: 100 })
+    fireEvent.pointerMove(rail, { clientY: 150 })
+    expect(rail.dataset.dragging).toBe("true")
+
+    // The rail captures the pointer on pointerdown, so pointermove keeps
+    // targeting the rail (and updating the hover label) for the rest of the
+    // drag -- confirmed empirically in a real browser, where the label
+    // stayed live even once the cursor left the rail's own bounding box.
+    // That makes the hover label the drag bubble already; the caret must
+    // not grow a second one.
+    const bubbles = container.querySelectorAll(
+      ".dr-virtualized-timeline-scrubber-label",
+    )
+    expect(bubbles).toHaveLength(1)
+    const caret = container.querySelector(
+      ".dr-virtualized-timeline-scrubber-caret",
+    )
+    expect(caret?.textContent).toBe("")
   })
 
   it("reflects the dragging state on the rail for styling", () => {

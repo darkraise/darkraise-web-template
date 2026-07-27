@@ -98,6 +98,31 @@ describe("buildRailTicks", () => {
     expect(result.find((t) => t.y === 20)?.label).toBeUndefined()
   })
 
+  it("applies the 18px default minLabelGap, not the old 14px value", () => {
+    // Two year ticks 16px apart: real rendered label line boxes measure
+    // 15-16.5px, so 16px of gap is a genuine collision, not synthetic. The
+    // old 14px default would have cleared it (16 >= 14) and kept both
+    // labels; the current 18px default must drop the second (16 < 18).
+    // Both ticks are year ticks, so tick decimation (minTickGap) never
+    // removes either one -- only the label pass is under test here, and the
+    // assertion is the exact label sequence rather than a property over a
+    // collection that could vacuously pass if it were empty.
+    const twoYears: TimelineBucket[] = [
+      { id: "2024-01", date: "2024-01-01", count: 1 },
+      { id: "2025-01", date: "2025-01-01", count: 1 },
+    ]
+    const result = buildRailTicks({
+      buckets: twoYears,
+      offsets: [0, 16],
+      totalSize: 16,
+      railHeight: 16,
+      showLabels: true,
+      // minLabelGap intentionally omitted so the default is under test.
+    })
+    expect(result.map((t) => t.kind)).toEqual(["year", "year"])
+    expect(result.map((t) => t.label)).toEqual(["2024", undefined])
+  })
+
   it("returns nothing for an empty bucket list", () => {
     expect(ticks({ buckets: [], offsets: [], totalSize: 0 })).toEqual([])
   })

@@ -21,7 +21,10 @@ export interface RailTicksArgs<T> {
   showLabels: boolean
   /** Minimum pixels between rendered sub ticks. Default 4. */
   minTickGap?: number
-  /** Minimum pixels between rendered labels — one label line box. Default 14. */
+  /** Minimum pixels between rendered labels — one label line box. Default 18:
+   *  a real browser measured rendered label line boxes at 15-16.5px (the bold
+   *  year label is the tallest), so 18 is that measurement plus clearance,
+   *  not a guess -- do not shave it back down without re-measuring. */
   minLabelGap?: number
 }
 
@@ -33,7 +36,7 @@ export function buildRailTicks<T>({
   railHeight,
   showLabels,
   minTickGap = 4,
-  minLabelGap = 14,
+  minLabelGap = 18,
 }: RailTicksArgs<T>): RailTick[] {
   if (buckets.length === 0 || totalSize <= 0 || railHeight <= 0) return []
 

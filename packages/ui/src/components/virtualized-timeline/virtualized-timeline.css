@@ -151,10 +151,11 @@
 
   /* A line across the rail rather than a proportional thumb: a thumb sized to
      the viewport's share of the collection is the scrollbar shape this design
-     exists to escape, and on a large library it collapses to a few pixels. */
+     exists to escape, and on a large library it collapses to a few pixels.
+     Carries no label -- see the caret's JSX for why the rail's existing
+     hover label already covers that job, at rest and while dragging. */
   .dr-virtualized-timeline-scrubber-caret {
-    @apply pointer-events-none absolute inset-x-0 flex items-center justify-end gap-1 text-[10px];
-    color: hsl(var(--muted-foreground));
+    @apply pointer-events-none absolute inset-x-0 flex items-center;
     transform: translateY(-50%);
   }
 
@@ -176,18 +177,18 @@
     background-color: hsl(var(--primary) / 0.3);
   }
 
+  /* --primary, not --muted: five of the six presets (Glass, Neon, Terminal,
+     Sci-fi, Playful) redefine --muted as a value that already carries its
+     own alpha (e.g. "var(--primary) / 0.04"), so slicing a second alpha onto
+     it here produced an invalid doubly-sliced hsl() that the browser
+     silently discarded, leaving the rail untinted while dragging in every
+     preset but Default. --primary is set in exactly one place
+     (generateTokens.ts) and no preset ever redefines it, so it is always a
+     plain HSL triplet and safe to slice -- and it matches the caret
+     hairline and bracket, which are already --primary. Do not change this
+     back to --muted; it looks idiomatic but reproduces the bug. */
   .dr-virtualized-timeline-scrubber[data-dragging="true"] {
-    background-color: hsl(var(--muted) / 0.4);
-  }
-
-  /* While dragging, the caret's date becomes the primary affordance: it
-     swaps to the popover foreground color at a larger size. It does not gain
-     the hover label's full popover chrome (background, border, radius,
-     shadow) -- settling that belongs to the browser-verification pass, not
-     here. */
-  .dr-virtualized-timeline-scrubber[data-dragging="true"]
-    .dr-virtualized-timeline-scrubber-caret {
-    @apply text-popover-foreground text-xs;
+    background-color: hsl(var(--primary) / 0.08);
   }
 
   /* The rail flips by flex order, so none of the tick, caret, or bracket

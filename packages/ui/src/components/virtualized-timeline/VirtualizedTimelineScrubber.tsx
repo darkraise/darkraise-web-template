@@ -239,9 +239,14 @@ export function VirtualizedTimelineScrubber<T>({
         aria-hidden="true"
         className="dr-virtualized-timeline-scrubber-caret"
         style={{ top: caretY }}
-      >
-        {activeLabel}
-      </div>
+      />
+      {/* This label already serves as the drag bubble: the rail captures
+          the pointer on pointerdown (below), so pointermove keeps firing
+          and targeting the rail -- and therefore keeps updating hoverY /
+          hoverLabel -- for the whole drag, even once the cursor leaves the
+          rail's own bounding box. Confirmed in a real browser, not assumed.
+          A second, caret-owned bubble would duplicate this one at nearly
+          the same date and y, so the caret renders no text at all. */}
       {hoverLabel ? (
         <span
           aria-hidden="true"
