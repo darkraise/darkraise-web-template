@@ -210,13 +210,8 @@
     @apply right-auto left-0 flex-row-reverse;
   }
 
-  /* Same reasoning as the tick: the hairline is flex-1 and the date sits
-     beside it, so reversing keeps the line facing the content and the date
-     outboard. */
-  .dr-virtualized-timeline[data-scrubber-side="left"]
-    .dr-virtualized-timeline-scrubber-caret {
-    @apply flex-row-reverse;
-  }
+  /* The caret needs no mirror rule: its only child is the ::before hairline
+     at flex-1, spanning the rail's full width, so it is symmetric already. */
 
   /* The bracket sits on the rail's content-facing edge on purpose, so it
      does not collide with the tick labels; on a left-hand rail that edge is

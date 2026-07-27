@@ -250,6 +250,21 @@ describe("VirtualizedTimelineScrubber", () => {
     expect(caret?.textContent).toBe("")
   })
 
+  it("names a date on a stationary press, with no move to follow", () => {
+    // A touch hold fires pointerdown and no pointermove at all. Since the
+    // caret carries no text, seeding the hover label on pointerdown is the
+    // only thing that keeps a drag from naming no date whatsoever.
+    const { container, rail } = renderScrubber({ scrollTop: 0 })
+    fireEvent.pointerDown(rail, { clientY: 100 })
+    expect(rail.dataset.dragging).toBe("true")
+
+    const bubbles = container.querySelectorAll(
+      ".dr-virtualized-timeline-scrubber-label",
+    )
+    expect(bubbles).toHaveLength(1)
+    expect(bubbles[0]?.textContent).toBeTruthy()
+  })
+
   it("reflects the dragging state on the rail for styling", () => {
     const { rail } = renderScrubber()
     expect(rail.dataset.dragging).toBeUndefined()

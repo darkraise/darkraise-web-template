@@ -91,17 +91,11 @@ export function VirtualizedTimelineScrubber<T>({
     [layout.totalSize, maxScroll, onScrubTo, railHeight, viewportHeight],
   )
 
-  function handlePointerDown(event: React.PointerEvent<HTMLDivElement>) {
-    event.currentTarget.setPointerCapture?.(event.pointerId)
-    setDragging(true)
-    scrubToClientY(event.clientY)
-  }
-
-  function handlePointerMove(event: React.PointerEvent<HTMLDivElement>) {
+  function showLabelAt(rail: HTMLDivElement, clientY: number) {
     // The rail's live rect is the same source scrubToClientY uses for its
     // own ratio, so the hover label and the drag target can never disagree.
-    const rect = event.currentTarget.getBoundingClientRect()
-    const y = event.clientY - rect.top
+    const rect = rail.getBoundingClientRect()
+    const y = clientY - rect.top
     setHoverY(y)
     const target = (y / (rect.height || railHeight || 1)) * layout.totalSize
     const hovered =
@@ -109,6 +103,20 @@ export function VirtualizedTimelineScrubber<T>({
         ? buckets[indexAtOffset(layout.offsets, target)]
         : undefined
     setHoverLabel(hovered ? formatBucketLabel(hovered, granularity) : null)
+  }
+
+  function handlePointerDown(event: React.PointerEvent<HTMLDivElement>) {
+    event.currentTarget.setPointerCapture?.(event.pointerId)
+    setDragging(true)
+    // Seeded here as well as on move: a stationary press -- a touch hold most
+    // often -- never fires a move, and the caret carries no text of its own,
+    // so without this the drag would name no date at all.
+    showLabelAt(event.currentTarget, event.clientY)
+    scrubToClientY(event.clientY)
+  }
+
+  function handlePointerMove(event: React.PointerEvent<HTMLDivElement>) {
+    showLabelAt(event.currentTarget, event.clientY)
 
     if (!dragging) return
     const { clientY } = event
