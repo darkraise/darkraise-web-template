@@ -681,10 +681,15 @@ export function VirtualizedTimeline<T>({
       )
       switch (event.key) {
         case "ArrowRight":
+          // A listbox reserves nothing for the horizontal axis, and with one
+          // column a horizontal step would just duplicate ArrowDown. Returning
+          // without preventDefault leaves horizontal scrolling to the browser.
+          if (list) return
           event.preventDefault()
           moveFocus(id, 1)
           return
         case "ArrowLeft":
+          if (list) return
           event.preventDefault()
           moveFocus(id, -1)
           return
@@ -708,7 +713,7 @@ export function VirtualizedTimeline<T>({
           return
       }
     },
-    [gap, layout.columns, layout.tileHeight, moveFocus, viewportHeight],
+    [gap, layout.columns, layout.tileHeight, list, moveFocus, viewportHeight],
   )
 
   // The reading position to restore after a width change: which bucket is at

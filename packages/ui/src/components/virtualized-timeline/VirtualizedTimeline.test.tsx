@@ -1363,4 +1363,42 @@ describe("VirtualizedTimeline list layout", () => {
     expect(option).toHaveAttribute("data-selected", "true")
     expect(option).toHaveClass("dr-virtualized-timeline-list-item")
   })
+
+  it("moves focus one row with up and down", () => {
+    renderList()
+    const options = screen.getAllByRole("option")
+    act(() => options[0]!.focus())
+    fireEvent.keyDown(options[0]!, { key: "ArrowDown" })
+    expect(document.activeElement).toBe(options[1])
+    fireEvent.keyDown(options[1]!, { key: "ArrowUp" })
+    expect(document.activeElement).toBe(options[0])
+  })
+
+  it("leaves the horizontal axis alone", () => {
+    renderList()
+    const options = screen.getAllByRole("option")
+    act(() => options[0]!.focus())
+    fireEvent.keyDown(options[0]!, { key: "ArrowRight" })
+    expect(document.activeElement).toBe(options[0])
+    fireEvent.keyDown(options[0]!, { key: "ArrowLeft" })
+    expect(document.activeElement).toBe(options[0])
+  })
+
+  it("does not swallow the horizontal key event", () => {
+    // Not preventing the default leaves any horizontal scrolling to the
+    // browser, which is what the listbox pattern expects.
+    renderList()
+    const options = screen.getAllByRole("option")
+    act(() => options[0]!.focus())
+    const prevented = !fireEvent.keyDown(options[0]!, { key: "ArrowRight" })
+    expect(prevented).toBe(false)
+  })
+
+  it("still reaches the bucket edges with Home and End", () => {
+    renderList()
+    const options = screen.getAllByRole("option")
+    act(() => options[2]!.focus())
+    fireEvent.keyDown(options[2]!, { key: "Home" })
+    expect(document.activeElement).toBe(options[0])
+  })
 })
