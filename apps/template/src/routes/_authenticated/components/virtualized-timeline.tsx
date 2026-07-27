@@ -36,6 +36,29 @@ const timelineCode = `<VirtualizedTimeline
   className="h-[32rem]"
 />`
 
+const listCode = `<VirtualizedTimeline
+  buckets={buckets}
+  loadBucket={loadBucket}
+  layout="list"
+  rowHeight={rowHeight}
+  selectable
+  selectedIds={listSelected}
+  onSelectionChange={setListSelected}
+  renderItem={({ item }) => (
+    <div className="flex h-full items-center gap-3 border-b px-3 text-sm">
+      <span
+        className="h-2.5 w-2.5 shrink-0 rounded-full"
+        style={{ background: \`hsl(\${item.hue} 70% 55%)\` }}
+      />
+      <span className="truncate">{item.id}</span>
+      <span className="text-muted-foreground ml-auto text-xs">
+        {item.hue}ms
+      </span>
+    </div>
+  )}
+  className="h-[32rem]"
+/>`
+
 interface Shot {
   id: string
   hue: number
@@ -90,6 +113,8 @@ function VirtualizedTimelinePage() {
   const [minTileWidth, setMinTileWidth] = useState(140)
   const [narrow, setNarrow] = useState(false)
   const [scrubberSide, setScrubberSide] = useState<"left" | "right">("right")
+  const [listSelected, setListSelected] = useState<string[]>([])
+  const [rowHeight, setRowHeight] = useState(36)
 
   return (
     <ShowcasePage
@@ -182,6 +207,51 @@ function VirtualizedTimelinePage() {
               className="h-[32rem]"
             />
           </div>
+        </div>
+      </ShowcaseExample>
+
+      <ShowcaseExample title="Activity list" code={listCode}>
+        <div className="space-y-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-muted-foreground text-sm">
+              {listSelected.length} selected
+            </span>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-muted-foreground text-xs">Row height:</span>
+            {([36, 56] as const).map((height) => (
+              <Button
+                key={height}
+                size="sm"
+                variant={rowHeight === height ? "default" : "outline"}
+                onClick={() => setRowHeight(height)}
+              >
+                {height}px
+              </Button>
+            ))}
+          </div>
+          <VirtualizedTimeline<Shot>
+            buckets={buckets}
+            loadBucket={loadBucket}
+            layout="list"
+            rowHeight={rowHeight}
+            selectable
+            selectedIds={listSelected}
+            onSelectionChange={setListSelected}
+            renderItem={({ item }) => (
+              <div className="flex h-full items-center gap-3 border-b px-3 text-sm">
+                <span
+                  className="h-2.5 w-2.5 shrink-0 rounded-full"
+                  style={{ background: `hsl(${item.hue} 70% 55%)` }}
+                />
+                <span className="truncate">{item.id}</span>
+                <span className="text-muted-foreground ml-auto text-xs">
+                  {item.hue}ms
+                </span>
+              </div>
+            )}
+            className="h-[32rem]"
+          />
         </div>
       </ShowcaseExample>
     </ShowcasePage>

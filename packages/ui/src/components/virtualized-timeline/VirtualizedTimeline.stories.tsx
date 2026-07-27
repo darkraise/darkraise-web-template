@@ -108,6 +108,29 @@ export const Selectable: Story = {
   ),
 }
 
+/** The second built-in body: full-width rows, virtualized the same way the
+ *  tile grid is, with listbox semantics. */
+export const ListLayout: Story = {
+  render: () => (
+    <VirtualizedTimeline<Shot>
+      buckets={inline}
+      layout="list"
+      rowHeight={44}
+      selectable
+      renderItem={({ item }) => (
+        <div className="flex h-full items-center gap-2 px-2 text-sm">
+          <span
+            className="h-3 w-3 shrink-0 rounded-full"
+            style={{ background: `hsl(${item.hue} 70% 55%)` }}
+          />
+          <span className="truncate">{item.id}</span>
+        </div>
+      )}
+      className="h-[32rem]"
+    />
+  ),
+}
+
 /** The escape hatch: a bucket body that is a list of rows, not a tile grid.
  *  `renderBucket` and `getBucketHeight` must agree, so they travel together. */
 export const CustomBucketBody: Story = {
