@@ -175,4 +175,70 @@ describe("Tabs", () => {
       expect(panel).toHaveAttribute("data-variant", "enclosed")
     }
   })
+
+  it("defaults data-color to default on list, trigger, and content", () => {
+    const { container } = render(<TestTabs />)
+    expect(container.querySelector(".dr-tabs-list")).toHaveAttribute(
+      "data-color",
+      "default",
+    )
+    expect(screen.getByRole("tab", { name: "Tab One" })).toHaveAttribute(
+      "data-color",
+      "default",
+    )
+    expect(screen.getByRole("tabpanel")).toHaveAttribute(
+      "data-color",
+      "default",
+    )
+  })
+
+  it("propagates the root color to list, trigger, and content", () => {
+    const { container } = render(
+      <Tabs variant="enclosed" color="accent" defaultValue="tab-1">
+        <TabsList>
+          <TabsTrigger value="tab-1">Tab One</TabsTrigger>
+          <TabsTrigger value="tab-2">Tab Two</TabsTrigger>
+        </TabsList>
+        <TabsContent value="tab-1">Panel One</TabsContent>
+      </Tabs>,
+    )
+    expect(container.querySelector(".dr-tabs-list")).toHaveAttribute(
+      "data-color",
+      "accent",
+    )
+    expect(screen.getByRole("tab", { name: "Tab One" })).toHaveAttribute(
+      "data-color",
+      "accent",
+    )
+    expect(screen.getByRole("tabpanel")).toHaveAttribute("data-color", "accent")
+  })
+
+  it("does not leak color onto the root as a legacy html attribute", () => {
+    const { container } = render(
+      <Tabs color="accent" defaultValue="tab-1">
+        <TabsList>
+          <TabsTrigger value="tab-1">Tab One</TabsTrigger>
+        </TabsList>
+        <TabsContent value="tab-1">Panel One</TabsContent>
+      </Tabs>,
+    )
+    expect(container.firstChild).not.toHaveAttribute("color")
+  })
+
+  it("keeps tab switching working under the accent color", async () => {
+    const user = userEvent.setup()
+    render(
+      <Tabs variant="enclosed" color="accent" defaultValue="tab-1">
+        <TabsList>
+          <TabsTrigger value="tab-1">Tab One</TabsTrigger>
+          <TabsTrigger value="tab-2">Tab Two</TabsTrigger>
+        </TabsList>
+        <TabsContent value="tab-1">Panel One</TabsContent>
+        <TabsContent value="tab-2">Panel Two</TabsContent>
+      </Tabs>,
+    )
+    await user.click(screen.getByRole("tab", { name: "Tab Two" }))
+    expect(screen.getByText("Panel Two")).toBeInTheDocument()
+    expect(screen.getByRole("tabpanel")).toHaveAttribute("data-color", "accent")
+  })
 })

@@ -16,6 +16,7 @@ import {
 } from "./useTabs"
 
 type TabsVariant = "default" | "outline" | "underline" | "enclosed"
+type TabsColor = "default" | "accent"
 
 const TabsContext = React.createContext<TabsContextValue | null>(null)
 
@@ -25,8 +26,12 @@ function useTabsContext(consumer: string): TabsContextValue {
   return ctx
 }
 
-const TabsVariantContext = React.createContext<{ variant: TabsVariant }>({
+const TabsStyleContext = React.createContext<{
+  variant: TabsVariant
+  color: TabsColor
+}>({
   variant: "default",
+  color: "default",
 })
 
 interface TabsContentIdContextValue {
@@ -45,13 +50,14 @@ function useTabsIdContext(): TabsContentIdContextValue {
 
 interface TabsProps extends Omit<
   React.HTMLAttributes<HTMLDivElement>,
-  "defaultValue" | "onChange" | "dir"
+  "defaultValue" | "onChange" | "dir" | "color"
 > {
   value?: string
   defaultValue?: string
   onValueChange?: (value: string) => void
   orientation?: TabsOrientation
   variant?: TabsVariant
+  color?: TabsColor
   activationMode?: TabsActivationMode
   dir?: "ltr" | "rtl"
   ref?: React.Ref<HTMLDivElement>
@@ -64,6 +70,7 @@ function Tabs({
   onValueChange,
   orientation,
   variant = "default",
+  color = "default",
   activationMode,
   dir,
   children,
@@ -87,15 +94,15 @@ function Tabs({
     [baseId],
   )
 
-  const variantCtx = React.useMemo(() => ({ variant }), [variant])
+  const styleCtx = React.useMemo(() => ({ variant, color }), [variant, color])
 
   return (
     <div ref={ref} data-orientation={ctx.orientation} dir={ctx.dir} {...props}>
       <TabsContext.Provider value={ctx}>
         <TabsIdContext.Provider value={idCtx}>
-          <TabsVariantContext.Provider value={variantCtx}>
+          <TabsStyleContext.Provider value={styleCtx}>
             {children}
-          </TabsVariantContext.Provider>
+          </TabsStyleContext.Provider>
         </TabsIdContext.Provider>
       </TabsContext.Provider>
     </div>
@@ -115,7 +122,7 @@ function TabsList({
   ...props
 }: TabsListProps) {
   const ctx = useTabsContext("TabsList")
-  const { variant } = React.useContext(TabsVariantContext)
+  const { variant, color } = React.useContext(TabsStyleContext)
   void _loop
   return (
     <div
@@ -124,6 +131,7 @@ function TabsList({
       aria-orientation={ctx.orientation}
       data-orientation={ctx.orientation}
       data-variant={variant}
+      data-color={color}
       className={cn("dr-tabs-list", className)}
       {...props}
     >
@@ -150,7 +158,7 @@ function TabsTrigger({
 }: TabsTriggerProps) {
   const ctx = useTabsContext("TabsTrigger")
   const ids = useTabsIdContext()
-  const { variant } = React.useContext(TabsVariantContext)
+  const { variant, color } = React.useContext(TabsStyleContext)
   const buttonRef = React.useRef<HTMLButtonElement>(null)
   const composedRef = composeRefs(ref, buttonRef)
 
@@ -174,6 +182,7 @@ function TabsTrigger({
       data-disabled={isDisabled ? "" : undefined}
       data-orientation={ctx.orientation}
       data-variant={variant}
+      data-color={color}
       disabled={isDisabled}
       tabIndex={isSelected ? 0 : -1}
       className={cn("dr-tabs-trigger", className)}
@@ -212,7 +221,7 @@ function TabsContent({
 }: TabsContentProps) {
   const ctx = useTabsContext("TabsContent")
   const ids = useTabsIdContext()
-  const { variant } = React.useContext(TabsVariantContext)
+  const { variant, color } = React.useContext(TabsStyleContext)
   const isSelected = ctx.value === value
 
   const node = (
@@ -224,6 +233,7 @@ function TabsContent({
       data-state={isSelected ? "active" : "inactive"}
       data-orientation={ctx.orientation}
       data-variant={variant}
+      data-color={color}
       hidden={!isSelected}
       tabIndex={0}
       className={cn("dr-tabs-content", className)}
