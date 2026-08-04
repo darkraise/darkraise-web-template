@@ -121,6 +121,28 @@
     background-color: hsl(var(--card));
   }
 
+  /* Accent colour on the folder variant — the three borders retint to
+     the brand hue and both fills stay hsl(var(--card)). The fills are
+     load-bearing: the active trigger's opaque fill is what erases the
+     strip's baseline to form the notch, so tinting it would break the
+     joint the variant exists to hide. */
+  .dr-tabs-list[data-variant="enclosed"][data-orientation="horizontal"][data-color="accent"] {
+    background-image: linear-gradient(hsl(var(--primary)), hsl(var(--primary)));
+  }
+
+  /* border-bottom-color must stay AFTER the border-primary shorthand:
+     @apply expands in place to a four-sided border-color, and the
+     transparent bottom edge is what lets the fill through to erase the
+     baseline. Reversed, this redraws the very line the seam removes. */
+  .dr-tabs-trigger[data-variant="enclosed"][data-orientation="horizontal"][data-color="accent"][data-state="active"] {
+    @apply border-primary;
+    border-bottom-color: transparent;
+  }
+
+  .dr-tabs-content[data-variant="enclosed"][data-orientation="horizontal"][data-color="accent"] {
+    @apply border-primary;
+  }
+
   .dr-tabs-content {
     @apply focus-ring-tight mt-2;
     transition: opacity 150ms;

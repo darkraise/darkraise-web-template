@@ -100,3 +100,20 @@ export const Enclosed: Story = {
     </Tabs>
   ),
 }
+
+export const EnclosedAccent: Story = {
+  render: () => (
+    <Tabs variant="enclosed" color="accent" defaultValue="overview">
+      <TabsList>
+        <TabsTrigger value="overview">Overview</TabsTrigger>
+        <TabsTrigger value="details">Details</TabsTrigger>
+        <TabsTrigger value="settings">Settings</TabsTrigger>
+      </TabsList>
+      <TabsContent value="overview">
+        The folder outline follows the theme accent.
+      </TabsContent>
+      <TabsContent value="details">Details panel.</TabsContent>
+      <TabsContent value="settings">Settings panel.</TabsContent>
+    </Tabs>
+  ),
+}

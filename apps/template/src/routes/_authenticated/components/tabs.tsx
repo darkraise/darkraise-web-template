@@ -194,6 +194,45 @@ function TabsPage() {
       </ShowcaseExample>
 
       <ShowcaseExample
+        title="Enclosed variant — accent colour"
+        code={`<Tabs variant="enclosed" color="accent" defaultValue="overview">
+  <TabsList>
+    <TabsTrigger value="overview">Overview</TabsTrigger>
+    <TabsTrigger value="details">Details</TabsTrigger>
+    <TabsTrigger value="settings">Settings</TabsTrigger>
+  </TabsList>
+  <TabsContent value="overview">
+    Overview content...
+  </TabsContent>
+</Tabs>`}
+      >
+        <Tabs variant="enclosed" color="accent" defaultValue="overview">
+          <TabsList>
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="details">Details</TabsTrigger>
+            <TabsTrigger value="settings">Settings</TabsTrigger>
+          </TabsList>
+          <TabsContent value="overview">
+            <p className="text-muted-foreground text-sm">
+              The active tab's border, the strip's baseline, and the panel
+              border all follow the theme accent. Both fills stay on the card
+              surface so the seam still reads as one continuous shape.
+            </p>
+          </TabsContent>
+          <TabsContent value="details">
+            <p className="text-muted-foreground text-sm">
+              Details panel rendered only while its tab is active.
+            </p>
+          </TabsContent>
+          <TabsContent value="settings">
+            <p className="text-muted-foreground text-sm">
+              Settings panel content.
+            </p>
+          </TabsContent>
+        </Tabs>
+      </ShowcaseExample>
+
+      <ShowcaseExample
         title="Tabs with card content"
         code={`<Tabs defaultValue="account">
   <TabsList>
