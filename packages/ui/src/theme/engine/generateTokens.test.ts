@@ -673,4 +673,36 @@ describe("generateTokens", () => {
       expect(tokens["--content-gradient-overlay"]).toBe("none")
     })
   })
+  describe("--sidebar-foreground-muted polarity", () => {
+    const slate = surfaceColors.slate as ColorScale
+    const base = {
+      accentColor: "blue",
+      surfaceColor: "slate",
+      preset: "default",
+      backgroundStyle: "solid",
+    } as const
+
+    // The branches were inverted, putting slate-400 on the near-white light
+    // rail (2.43:1) and slate-500 on the dark rail. Every other muted text
+    // token in the kit uses 500 in light and 400 in dark.
+    it("matches --muted-foreground's light/dark polarity", () => {
+      const light = generateTokens({ ...base, mode: "light" })
+      const dark = generateTokens({ ...base, mode: "dark" })
+      expect(light["--sidebar-foreground-muted"]).toBe(slate[500])
+      expect(dark["--sidebar-foreground-muted"]).toBe(slate[400])
+      expect(light["--sidebar-foreground-muted"]).toBe(
+        light["--muted-foreground"],
+      )
+      expect(dark["--sidebar-foreground-muted"]).toBe(
+        dark["--muted-foreground"],
+      )
+    })
+
+    it("stays lighter than --sidebar-foreground in both modes", () => {
+      const light = generateTokens({ ...base, mode: "light" })
+      const dark = generateTokens({ ...base, mode: "dark" })
+      expect(light["--sidebar-foreground"]).toBe(slate[600])
+      expect(dark["--sidebar-foreground"]).toBe(slate[300])
+    })
+  })
 })

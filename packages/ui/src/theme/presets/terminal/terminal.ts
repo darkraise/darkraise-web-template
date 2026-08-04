@@ -55,8 +55,16 @@ export const terminal: ThemePreset<TerminalAxes> = {
     },
   },
 
-  generateTokens() {
+  generateTokens(common) {
     return {
+      // Terminal's light rail is 0 0% 95% — several steps darker than the
+      // s[50] rail every other preset uses — so the engine's slate-500 muted
+      // lands at 4.22:1 there, just under AA for the 12px uppercase group
+      // labels. A grayscale muted at 40% lightness reads 5.14:1 on that rail
+      // and suits the monochrome CRT palette better than a slate tint.
+      ...(common.mode === "light"
+        ? { "--sidebar-foreground-muted": "0 0% 40%" }
+        : {}),
       // Hover/selected states tinted with primary at low alpha.
       "--accent": "var(--primary) / 0.12",
       "--accent-foreground": "var(--primary)",
@@ -85,6 +93,7 @@ export const terminal: ThemePreset<TerminalAxes> = {
   // card and --shadow-dropdown come from surfaceRecipe.overrides
   // (engine inline-style writes) and are overwritten on switch-away.
   ownedTokenKeys: [
+    "--sidebar-foreground-muted",
     "--accent",
     "--accent-foreground",
     "--muted",
