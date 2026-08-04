@@ -78,8 +78,8 @@ function TabsPage() {
 
       <ShowcaseExample
         title="Outline variant — bordered active tab"
-        code={`<Tabs defaultValue="overview">
-  <TabsList variant="outline">
+        code={`<Tabs variant="outline" defaultValue="overview">
+  <TabsList>
     <TabsTrigger value="overview">Overview</TabsTrigger>
     <TabsTrigger value="details">Details</TabsTrigger>
     <TabsTrigger value="settings">Settings</TabsTrigger>
@@ -89,8 +89,8 @@ function TabsPage() {
   </TabsContent>
 </Tabs>`}
       >
-        <Tabs defaultValue="overview">
-          <TabsList variant="outline">
+        <Tabs variant="outline" defaultValue="overview">
+          <TabsList>
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="details">Details</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
@@ -117,8 +117,8 @@ function TabsPage() {
 
       <ShowcaseExample
         title="Underline variant — underlined active tab"
-        code={`<Tabs defaultValue="overview">
-  <TabsList variant="underline">
+        code={`<Tabs variant="underline" defaultValue="overview">
+  <TabsList>
     <TabsTrigger value="overview">Overview</TabsTrigger>
     <TabsTrigger value="details">Details</TabsTrigger>
     <TabsTrigger value="settings">Settings</TabsTrigger>
@@ -128,8 +128,8 @@ function TabsPage() {
   </TabsContent>
 </Tabs>`}
       >
-        <Tabs defaultValue="overview">
-          <TabsList variant="underline">
+        <Tabs variant="underline" defaultValue="overview">
+          <TabsList>
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="details">Details</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
