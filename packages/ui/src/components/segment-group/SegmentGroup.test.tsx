@@ -210,6 +210,17 @@ describe("SegmentGroup", () => {
     ).toBe("unchecked")
   })
 
+  it("keeps arrow-key navigation working under the accent color", async () => {
+    const user = userEvent.setup()
+    render(<Basic defaultValue="day" color="accent" />)
+    const day = screen.getByRole("radio", { name: "Day" })
+    const week = screen.getByRole("radio", { name: "Week" })
+    day.focus()
+    await user.keyboard("{ArrowRight}")
+    expect(week).toHaveFocus()
+    expect(week.getAttribute("data-state")).toBe("checked")
+  })
+
   it("keeps the disabled state working under the accent color", async () => {
     const user = userEvent.setup()
     const onValueChange = vi.fn()

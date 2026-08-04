@@ -149,6 +149,28 @@ describe("Tabs", () => {
     )
   })
 
+  it("keeps arrow-key navigation working under the accent color", async () => {
+    const user = userEvent.setup()
+    render(
+      <Tabs variant="enclosed" color="accent" defaultValue="tab-1">
+        <TabsList>
+          <TabsTrigger value="tab-1">Tab One</TabsTrigger>
+          <TabsTrigger value="tab-2">Tab Two</TabsTrigger>
+        </TabsList>
+        <TabsContent value="tab-1">Panel One</TabsContent>
+        <TabsContent value="tab-2">Panel Two</TabsContent>
+      </Tabs>,
+    )
+    await user.tab()
+    expect(screen.getByRole("tab", { name: "Tab One" })).toHaveFocus()
+    await user.keyboard("{ArrowRight}")
+    expect(screen.getByRole("tab", { name: "Tab Two" })).toHaveFocus()
+    expect(screen.getByRole("tab", { name: "Tab Two" })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    )
+  })
+
   it("keeps force-mounted panels hidden under a non-default variant", () => {
     const { container } = render(
       <Tabs variant="enclosed" defaultValue="tab-1">
