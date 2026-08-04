@@ -132,7 +132,8 @@
     background-color 200ms,
     color 200ms;
 }
-[data-preset="playful"] .dr-tabs-trigger[data-state="active"] {
+[data-preset="playful"]
+  .dr-tabs-trigger[data-state="active"]:not([data-variant="enclosed"]) {
   transform: scale(1.04);
 }
 
