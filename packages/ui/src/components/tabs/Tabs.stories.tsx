@@ -83,3 +83,20 @@ export const WithDisabledTab: Story = {
     </Tabs>
   ),
 }
+
+export const Enclosed: Story = {
+  render: () => (
+    <Tabs variant="enclosed" defaultValue="overview">
+      <TabsList>
+        <TabsTrigger value="overview">Overview</TabsTrigger>
+        <TabsTrigger value="details">Details</TabsTrigger>
+        <TabsTrigger value="settings">Settings</TabsTrigger>
+      </TabsList>
+      <TabsContent value="overview">
+        The active tab drops its bottom border and joins the panel below.
+      </TabsContent>
+      <TabsContent value="details">Details panel.</TabsContent>
+      <TabsContent value="settings">Settings panel.</TabsContent>
+    </Tabs>
+  ),
+}
