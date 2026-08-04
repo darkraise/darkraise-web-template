@@ -388,7 +388,7 @@
 [data-preset="neon"] .dr-tags-input-control,
 [data-preset="neon"] .dr-input-otp-slot,
 [data-preset="neon"] .dr-badge,
-[data-preset="neon"] .dr-tabs-list,
+[data-preset="neon"] .dr-tabs-list:not([data-variant="enclosed"]),
 [data-preset="neon"] .dr-listbox,
 [data-preset="neon"] .dr-calendar,
 [data-preset="neon"] .dr-alert,
@@ -438,7 +438,8 @@
 [data-preset="neon"] .dr-checkbox[data-state="indeterminate"],
 [data-preset="neon"] .dr-radio-group-item[data-state="checked"],
 [data-preset="neon"] .dr-switch[data-state="checked"],
-[data-preset="neon"] .dr-tabs-trigger[data-state="active"],
+[data-preset="neon"]
+  .dr-tabs-trigger[data-state="active"]:not([data-variant="enclosed"]),
 [data-preset="neon"] .dr-pagination-link[data-active="true"],
 [data-preset="neon"] .dr-tree-view-branch-control[data-selected="true"],
 [data-preset="neon"] .dr-tree-view-item[data-selected="true"],

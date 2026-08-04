@@ -113,4 +113,51 @@ describe("SegmentGroup", () => {
     await user.click(week)
     expect(week.getAttribute("data-state")).toBe("checked")
   })
+
+  it("emits data-variant=default on root, item, and indicator by default", () => {
+    const { container } = render(<Basic />)
+    const root = container.querySelector(".dr-segment-group") as HTMLElement
+    const indicator = container.querySelector(
+      ".dr-segment-group-indicator",
+    ) as HTMLElement
+    expect(root).toHaveAttribute("data-variant", "default")
+    expect(indicator).toHaveAttribute("data-variant", "default")
+    expect(screen.getByRole("radio", { name: "Day" })).toHaveAttribute(
+      "data-variant",
+      "default",
+    )
+  })
+
+  it("propagates variant=outline to root, item, and indicator", () => {
+    const { container } = render(<Basic variant="outline" />)
+    const root = container.querySelector(".dr-segment-group") as HTMLElement
+    const indicator = container.querySelector(
+      ".dr-segment-group-indicator",
+    ) as HTMLElement
+    expect(root).toHaveAttribute("data-variant", "outline")
+    expect(indicator).toHaveAttribute("data-variant", "outline")
+    expect(screen.getByRole("radio", { name: "Week" })).toHaveAttribute(
+      "data-variant",
+      "outline",
+    )
+  })
+
+  it("keeps selection behaviour unchanged under the outline variant", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    render(
+      <Basic
+        defaultValue="day"
+        variant="outline"
+        onValueChange={onValueChange}
+      />,
+    )
+    const week = screen.getByRole("radio", { name: "Week" })
+    await user.click(week)
+    expect(onValueChange).toHaveBeenCalledWith("week")
+    expect(week.getAttribute("data-state")).toBe("checked")
+    expect(
+      screen.getByRole("radio", { name: "Day" }).getAttribute("data-state"),
+    ).toBe("unchecked")
+  })
 })

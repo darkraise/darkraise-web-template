@@ -7,10 +7,12 @@ import { cn } from "@lib/utils"
 import "./segment-group.css"
 
 type SegmentGroupOrientation = "horizontal" | "vertical"
+type SegmentGroupVariant = "default" | "outline"
 
 interface SegmentGroupContextValue {
   value: string | null | undefined
   orientation: SegmentGroupOrientation
+  variant: SegmentGroupVariant
   disabled: boolean
   registerItem: (value: string, el: HTMLElement | null) => void
   rootRef: React.RefObject<HTMLDivElement | null>
@@ -36,11 +38,13 @@ export interface SegmentGroupProps extends Omit<
   "orientation"
 > {
   orientation?: SegmentGroupOrientation
+  variant?: SegmentGroupVariant
 }
 
 function SegmentGroup({
   className,
   orientation = "horizontal",
+  variant = "default",
   disabled = false,
   value,
   defaultValue,
@@ -109,13 +113,21 @@ function SegmentGroup({
     () => ({
       value: currentValue,
       orientation,
+      variant,
       disabled,
       registerItem,
       rootRef,
       itemsRef,
       notifyItemsChanged,
     }),
-    [currentValue, orientation, disabled, registerItem, notifyItemsChanged],
+    [
+      currentValue,
+      orientation,
+      variant,
+      disabled,
+      registerItem,
+      notifyItemsChanged,
+    ],
   )
 
   // Keep itemsVersion referenced to satisfy the lint rule and ensure
@@ -130,6 +142,7 @@ function SegmentGroup({
       orientation={orientation}
       disabled={disabled}
       data-orientation={orientation}
+      data-variant={variant}
       data-disabled={disabled ? "true" : undefined}
       className={cn("dr-segment-group", className)}
       {...props}
@@ -159,6 +172,7 @@ function SegmentGroupItem({
   const {
     registerItem,
     value: activeValue,
+    variant,
     disabled: groupDisabled,
   } = useSegmentGroupContext("SegmentGroupItem")
   const innerRef = React.useRef<HTMLButtonElement | null>(null)
@@ -183,6 +197,7 @@ function SegmentGroupItem({
       value={value}
       disabled={isDisabled}
       data-state={isChecked ? "checked" : "unchecked"}
+      data-variant={variant}
       className={cn("dr-segment-group-item", className)}
       {...props}
     >
@@ -198,7 +213,7 @@ function SegmentGroupIndicator({
   style,
   ...props
 }: SegmentGroupIndicatorProps) {
-  const { value, orientation, itemsRef, rootRef, notifyItemsChanged } =
+  const { value, orientation, variant, itemsRef, rootRef, notifyItemsChanged } =
     useSegmentGroupContext("SegmentGroupIndicator")
   const [rect, setRect] = React.useState<{
     topDirect: number
@@ -333,6 +348,7 @@ function SegmentGroupIndicator({
     <div
       aria-hidden="true"
       data-orientation={orientation}
+      data-variant={variant}
       data-active={isActive ? "true" : "false"}
       className={cn("dr-segment-group-indicator", className)}
       style={computedStyle}

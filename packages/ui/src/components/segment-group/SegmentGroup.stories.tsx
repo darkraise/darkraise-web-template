@@ -81,3 +81,17 @@ export const Disabled: Story = {
     </SegmentGroup>
   ),
 }
+
+export const Outline: Story = {
+  render: () => {
+    const [value, setValue] = React.useState("week")
+    return (
+      <SegmentGroup variant="outline" value={value} onValueChange={setValue}>
+        <SegmentGroupIndicator />
+        <SegmentGroupItem value="day">Day</SegmentGroupItem>
+        <SegmentGroupItem value="week">Week</SegmentGroupItem>
+        <SegmentGroupItem value="month">Month</SegmentGroupItem>
+      </SegmentGroup>
+    )
+  },
+}

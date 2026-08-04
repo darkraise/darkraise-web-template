@@ -15,7 +15,7 @@ import {
   type TabsActivationMode,
 } from "./useTabs"
 
-type TabsVariant = "default" | "outline" | "underline"
+type TabsVariant = "default" | "outline" | "underline" | "enclosed"
 
 const TabsContext = React.createContext<TabsContextValue | null>(null)
 
@@ -25,7 +25,7 @@ function useTabsContext(consumer: string): TabsContextValue {
   return ctx
 }
 
-const TabsListVariantContext = React.createContext<{ variant: TabsVariant }>({
+const TabsVariantContext = React.createContext<{ variant: TabsVariant }>({
   variant: "default",
 })
 
@@ -51,6 +51,7 @@ interface TabsProps extends Omit<
   defaultValue?: string
   onValueChange?: (value: string) => void
   orientation?: TabsOrientation
+  variant?: TabsVariant
   activationMode?: TabsActivationMode
   dir?: "ltr" | "rtl"
   ref?: React.Ref<HTMLDivElement>
@@ -62,6 +63,7 @@ function Tabs({
   defaultValue,
   onValueChange,
   orientation,
+  variant = "default",
   activationMode,
   dir,
   children,
@@ -85,11 +87,15 @@ function Tabs({
     [baseId],
   )
 
+  const variantCtx = React.useMemo(() => ({ variant }), [variant])
+
   return (
     <div ref={ref} data-orientation={ctx.orientation} dir={ctx.dir} {...props}>
       <TabsContext.Provider value={ctx}>
         <TabsIdContext.Provider value={idCtx}>
-          {children}
+          <TabsVariantContext.Provider value={variantCtx}>
+            {children}
+          </TabsVariantContext.Provider>
         </TabsIdContext.Provider>
       </TabsContext.Provider>
     </div>
@@ -97,20 +103,19 @@ function Tabs({
 }
 
 interface TabsListProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: TabsVariant
   loop?: boolean
   ref?: React.Ref<HTMLDivElement>
 }
 
 function TabsList({
   className,
-  variant = "default",
   children,
   ref,
   loop: _loop,
   ...props
 }: TabsListProps) {
   const ctx = useTabsContext("TabsList")
+  const { variant } = React.useContext(TabsVariantContext)
   void _loop
   return (
     <div
@@ -122,9 +127,7 @@ function TabsList({
       className={cn("dr-tabs-list", className)}
       {...props}
     >
-      <TabsListVariantContext.Provider value={{ variant }}>
-        {children}
-      </TabsListVariantContext.Provider>
+      {children}
     </div>
   )
 }
@@ -147,7 +150,7 @@ function TabsTrigger({
 }: TabsTriggerProps) {
   const ctx = useTabsContext("TabsTrigger")
   const ids = useTabsIdContext()
-  const { variant } = React.useContext(TabsListVariantContext)
+  const { variant } = React.useContext(TabsVariantContext)
   const buttonRef = React.useRef<HTMLButtonElement>(null)
   const composedRef = composeRefs(ref, buttonRef)
 
@@ -209,6 +212,7 @@ function TabsContent({
 }: TabsContentProps) {
   const ctx = useTabsContext("TabsContent")
   const ids = useTabsIdContext()
+  const { variant } = React.useContext(TabsVariantContext)
   const isSelected = ctx.value === value
 
   const node = (
@@ -219,6 +223,7 @@ function TabsContent({
       aria-labelledby={ids.triggerId(value)}
       data-state={isSelected ? "active" : "inactive"}
       data-orientation={ctx.orientation}
+      data-variant={variant}
       hidden={!isSelected}
       tabIndex={0}
       className={cn("dr-tabs-content", className)}

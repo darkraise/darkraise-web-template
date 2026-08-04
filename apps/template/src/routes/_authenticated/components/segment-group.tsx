@@ -19,6 +19,7 @@ function SegmentGroupPage() {
   const [range, setRange] = useState("week")
   const [layout, setLayout] = useState("list")
   const [view, setView] = useState("calendar")
+  const [density, setDensity] = useState("comfortable")
 
   return (
     <ShowcasePage
@@ -107,6 +108,31 @@ function SegmentGroupPage() {
             <List className="mr-2 h-4 w-4" />
             List
           </SegmentGroupItem>
+        </SegmentGroup>
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Outline variant"
+        code={`<SegmentGroup
+  variant="outline"
+  value={density}
+  onValueChange={setDensity}
+>
+  <SegmentGroupIndicator />
+  <SegmentGroupItem value="compact">Compact</SegmentGroupItem>
+  <SegmentGroupItem value="comfortable">Comfortable</SegmentGroupItem>
+  <SegmentGroupItem value="spacious">Spacious</SegmentGroupItem>
+</SegmentGroup>`}
+      >
+        <SegmentGroup
+          variant="outline"
+          value={density}
+          onValueChange={setDensity}
+        >
+          <SegmentGroupIndicator />
+          <SegmentGroupItem value="compact">Compact</SegmentGroupItem>
+          <SegmentGroupItem value="comfortable">Comfortable</SegmentGroupItem>
+          <SegmentGroupItem value="spacious">Spacious</SegmentGroupItem>
         </SegmentGroup>
       </ShowcaseExample>
     </ShowcasePage>

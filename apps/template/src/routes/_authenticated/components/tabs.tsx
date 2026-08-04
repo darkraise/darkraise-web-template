@@ -78,8 +78,8 @@ function TabsPage() {
 
       <ShowcaseExample
         title="Outline variant — bordered active tab"
-        code={`<Tabs defaultValue="overview">
-  <TabsList variant="outline">
+        code={`<Tabs variant="outline" defaultValue="overview">
+  <TabsList>
     <TabsTrigger value="overview">Overview</TabsTrigger>
     <TabsTrigger value="details">Details</TabsTrigger>
     <TabsTrigger value="settings">Settings</TabsTrigger>
@@ -89,8 +89,8 @@ function TabsPage() {
   </TabsContent>
 </Tabs>`}
       >
-        <Tabs defaultValue="overview">
-          <TabsList variant="outline">
+        <Tabs variant="outline" defaultValue="overview">
+          <TabsList>
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="details">Details</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
@@ -117,8 +117,8 @@ function TabsPage() {
 
       <ShowcaseExample
         title="Underline variant — underlined active tab"
-        code={`<Tabs defaultValue="overview">
-  <TabsList variant="underline">
+        code={`<Tabs variant="underline" defaultValue="overview">
+  <TabsList>
     <TabsTrigger value="overview">Overview</TabsTrigger>
     <TabsTrigger value="details">Details</TabsTrigger>
     <TabsTrigger value="settings">Settings</TabsTrigger>
@@ -128,8 +128,8 @@ function TabsPage() {
   </TabsContent>
 </Tabs>`}
       >
-        <Tabs defaultValue="overview">
-          <TabsList variant="underline">
+        <Tabs variant="underline" defaultValue="overview">
+          <TabsList>
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="details">Details</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
@@ -147,6 +147,45 @@ function TabsPage() {
             </p>
           </TabsContent>
           <TabsContent value="settings" className="mt-4">
+            <p className="text-muted-foreground text-sm">
+              Settings panel content.
+            </p>
+          </TabsContent>
+        </Tabs>
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Enclosed variant — folder tab joined to the panel"
+        code={`<Tabs variant="enclosed" defaultValue="overview">
+  <TabsList>
+    <TabsTrigger value="overview">Overview</TabsTrigger>
+    <TabsTrigger value="details">Details</TabsTrigger>
+    <TabsTrigger value="settings">Settings</TabsTrigger>
+  </TabsList>
+  <TabsContent value="overview">
+    Overview content...
+  </TabsContent>
+</Tabs>`}
+      >
+        <Tabs variant="enclosed" defaultValue="overview">
+          <TabsList>
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="details">Details</TabsTrigger>
+            <TabsTrigger value="settings">Settings</TabsTrigger>
+          </TabsList>
+          <TabsContent value="overview">
+            <p className="text-muted-foreground text-sm">
+              The active tab drops its bottom border and its fill erases the
+              strip's baseline, so the tab and the panel below read as one
+              continuous surface.
+            </p>
+          </TabsContent>
+          <TabsContent value="details">
+            <p className="text-muted-foreground text-sm">
+              Details panel rendered only while its tab is active.
+            </p>
+          </TabsContent>
+          <TabsContent value="settings">
             <p className="text-muted-foreground text-sm">
               Settings panel content.
             </p>

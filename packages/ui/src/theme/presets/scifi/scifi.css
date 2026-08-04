@@ -210,7 +210,8 @@
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-toast,
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-toolbar,
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-menubar,
-[data-preset="scifi"][data-scifi-frame="notched"] .dr-tabs-list,
+[data-preset="scifi"][data-scifi-frame="notched"]
+  .dr-tabs-list:not([data-variant="enclosed"]),
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-listbox,
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-segment-group,
 [data-preset="scifi"][data-scifi-frame="notched"]
@@ -316,7 +317,7 @@
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-input-otp-slot,
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-badge,
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-pagination-link,
-[data-preset="scifi"][data-scifi-frame="notched"] .dr-tabs-trigger,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-tabs-trigger:not([data-variant="enclosed"]),
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-progress,
 /* Interactive items — toggle, sidebar nav, list items, menu items,
    tree items, calendar day buttons, etc. The clip-path is applied
@@ -1136,7 +1137,7 @@
 [data-preset="scifi"] .dr-tags-input-control,
 [data-preset="scifi"] .dr-input-otp-slot,
 [data-preset="scifi"] .dr-badge,
-[data-preset="scifi"] .dr-tabs-list,
+[data-preset="scifi"] .dr-tabs-list:not([data-variant="enclosed"]),
 [data-preset="scifi"] .dr-listbox,
 [data-preset="scifi"] .dr-calendar,
 [data-preset="scifi"] .dr-alert,
@@ -1179,7 +1180,8 @@
 [data-preset="scifi"] .dr-checkbox[data-state="indeterminate"],
 [data-preset="scifi"] .dr-radio-group-item[data-state="checked"],
 [data-preset="scifi"] .dr-switch[data-state="checked"],
-[data-preset="scifi"] .dr-tabs-trigger[data-state="active"],
+[data-preset="scifi"]
+  .dr-tabs-trigger[data-state="active"]:not([data-variant="enclosed"]),
 [data-preset="scifi"] .dr-pagination-link[data-active="true"],
 [data-preset="scifi"] .dr-tree-view-branch-control[data-selected="true"],
 [data-preset="scifi"] .dr-tree-view-item[data-selected="true"],
