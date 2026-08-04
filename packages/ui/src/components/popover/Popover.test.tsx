@@ -111,4 +111,36 @@ describe("Popover", () => {
     const content = await screen.findByText("Popover content")
     expect(content.parentElement).toHaveAttribute("data-state", "open")
   })
+  it("non-modal: returns focus to the trigger on close", async () => {
+    const user = userEvent.setup()
+    render(<Basic />)
+    const trigger = screen.getByRole("button", { name: "Toggle" })
+    await user.click(trigger)
+    await screen.findByText("Popover content")
+    await user.keyboard("{Escape}")
+    await waitFor(() => {
+      expect(screen.queryByText("Popover content")).toBeNull()
+    })
+    await waitFor(() => expect(document.activeElement).toBe(trigger))
+  })
+
+  it("non-modal: onCloseAutoFocus preventDefault opts out of the restore", async () => {
+    const user = userEvent.setup()
+    render(
+      <Popover>
+        <PopoverTrigger>Toggle</PopoverTrigger>
+        <PopoverContent onCloseAutoFocus={(event) => event.preventDefault()}>
+          <p>Popover content</p>
+        </PopoverContent>
+      </Popover>,
+    )
+    const trigger = screen.getByRole("button", { name: "Toggle" })
+    await user.click(trigger)
+    await screen.findByText("Popover content")
+    await user.keyboard("{Escape}")
+    await waitFor(() => {
+      expect(screen.queryByText("Popover content")).toBeNull()
+    })
+    expect(document.activeElement).not.toBe(trigger)
+  })
 })

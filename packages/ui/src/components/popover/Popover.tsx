@@ -181,6 +181,22 @@ function PopoverContentImpl({
     onCloseAutoFocusRef.current = onCloseAutoFocusHandler
   })
 
+  // Focus restoration is NOT a modality concern: a non-modal popover that
+  // took focus still owes it back, otherwise closing one drops the keyboard
+  // user at <body> and they have to tab from the top of the document again.
+  // The modal path is already covered by useFocusTrap's own restore, so only
+  // the non-modal case is handled here.
+  const previouslyFocusedRef = React.useRef<HTMLElement | null>(null)
+  const modalRef = React.useRef(ctx.modal)
+  React.useEffect(() => {
+    modalRef.current = ctx.modal
+  })
+  React.useEffect(() => {
+    if (!ctx.open) return
+    previouslyFocusedRef.current =
+      (document.activeElement as HTMLElement | null) ?? null
+  }, [ctx.open])
+
   // open auto focus
   React.useEffect(() => {
     if (!ctx.open) return
@@ -199,6 +215,18 @@ function PopoverContentImpl({
     return () => {
       const event = new Event("closeAutoFocus", { cancelable: true })
       onCloseAutoFocusRef.current?.(event)
+      if (event.defaultPrevented) return
+      if (modalRef.current) return
+      // Only reclaim focus that the popover itself dropped. Once the content
+      // unmounts, anything focused inside it leaves the document and the
+      // active element falls back to <body>; if it is anything else the user
+      // has deliberately moved on and yanking focus back would be wrong.
+      const active = document.activeElement
+      if (active && active !== document.body) return
+      const previous = previouslyFocusedRef.current
+      if (previous && document.contains(previous)) {
+        previous.focus({ preventScroll: true })
+      }
     }
   }, [])
 
