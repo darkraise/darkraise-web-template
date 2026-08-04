@@ -49,6 +49,56 @@
     box-shadow: var(--affordance-glow-bottom);
   }
 
+  /* Enclosed (folder) variant, horizontal only. Three cooperating rules:
+     the list carries a full-width baseline; the active trigger overlaps
+     that baseline and erases it across its own width with an opaque fill
+     under a transparent bottom border; the panel's top edge IS the
+     baseline, so the two meet with no seam. */
+  .dr-tabs-list[data-variant="enclosed"][data-orientation="horizontal"] {
+    @apply border-border flex w-full justify-start border-b bg-transparent p-0;
+    gap: 0.125rem;
+    /* The other variants are inline-flex and grow; this one is pinned to
+       100% so its baseline spans the panel, which means overflowing tabs
+       have to scroll rather than escape the border box. */
+    overflow-x: auto;
+  }
+
+  /* The negative margin belongs on EVERY trigger, not just the active
+     one. The list is items-center, so a single short margin box would be
+     centred half a pixel high, its bottom border would land on
+     [h-0.5, h+0.5] against a baseline at [h, h+1], and it would erase
+     only half the line — a ghost seam plus a label sitting 0.5px below
+     its neighbours. Uniform margins make every box equal and the
+     centring a no-op. */
+  .dr-tabs-trigger[data-variant="enclosed"][data-orientation="horizontal"] {
+    @apply border border-transparent px-[var(--density-button-px)] py-[var(--density-row-py)];
+    border-radius: var(--radius) var(--radius) 0 0;
+    margin-bottom: -1px;
+  }
+
+  /* focus-ring sits at outline-offset: 2px, which on a folder tab would
+     cross the seam into the panel and over the neighbouring tabs. Pull it
+     inside. */
+  .dr-tabs-trigger[data-variant="enclosed"][data-orientation="horizontal"]:focus-visible {
+    outline-offset: -2px;
+  }
+
+  /* hsl(var(--card)) deliberately, NOT the bg-card utility: that resolves
+     through --color-card, which multiplies in --surface-opacity — 0.78 to
+     0.3 under glass, 0.82 under sci-fi. A translucent fill cannot erase
+     the baseline and the seam would ghost through. */
+  .dr-tabs-trigger[data-variant="enclosed"][data-orientation="horizontal"][data-state="active"] {
+    @apply text-foreground border-border;
+    background-color: hsl(var(--card));
+    border-bottom-color: transparent;
+  }
+
+  .dr-tabs-content[data-variant="enclosed"][data-orientation="horizontal"] {
+    @apply border-border mt-0 border border-t-0 p-4;
+    border-radius: 0 0 var(--radius) var(--radius);
+    background-color: hsl(var(--card));
+  }
+
   .dr-tabs-content {
     @apply focus-ring-tight mt-2;
     transition: opacity 150ms;
