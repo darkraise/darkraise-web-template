@@ -14,6 +14,8 @@ export function StackedLayout({
   children,
   nav,
   headerSlot,
+  sidebarHeader,
+  sidebarFooter,
   showLayoutSwitcher,
   showThemeSwitcher,
   user,
@@ -102,6 +104,8 @@ export function StackedLayout({
           <div className="dr-stacked-layout-main">
             <LayoutHeader
               nav={nav}
+              sidebarHeader={sidebarHeader}
+              sidebarFooter={sidebarFooter}
               headerSlot={headerSlot}
               showLayoutSwitcher={showLayoutSwitcher}
               showThemeSwitcher={showThemeSwitcher}

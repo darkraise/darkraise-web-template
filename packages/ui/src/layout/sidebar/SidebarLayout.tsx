@@ -75,6 +75,8 @@ export function SidebarLayout({
           <div className="dr-sidebar-layout-main">
             <LayoutHeader
               nav={nav}
+              sidebarHeader={sidebarHeader}
+              sidebarFooter={sidebarFooter}
               headerSlot={headerSlot}
               className="header-gradient-overlay theme-transition"
               showLayoutSwitcher={showLayoutSwitcher}

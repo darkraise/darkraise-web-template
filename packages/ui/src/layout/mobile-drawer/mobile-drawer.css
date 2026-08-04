@@ -7,7 +7,19 @@
     @apply w-72;
   }
 
+  /* The sheet is a flex column with `overflow: hidden`, so the nav takes the
+     free space and scrolls while the optional header/footer sections stay
+     pinned — the same arrangement as the `aside` this drawer stands in for. */
   .dr-mobile-drawer-body {
-    @apply mt-4;
+    @apply mt-4 flex-1 overflow-y-auto;
+  }
+
+  .dr-mobile-drawer-section {
+    @apply border-y py-3;
+    border-color: hsl(var(--sidebar-border));
+  }
+
+  .dr-mobile-drawer-section[data-position="footer"] {
+    @apply border-y-0 border-t;
   }
 }

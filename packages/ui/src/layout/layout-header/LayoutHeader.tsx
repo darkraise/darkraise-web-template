@@ -11,6 +11,9 @@ import type { NavGroup } from "@layout/types"
 interface LayoutHeaderProps {
   nav: NavGroup[]
   headerSlot?: ReactNode
+  /** Forwarded to MobileDrawer so the drawer mirrors the sidebar rails. */
+  sidebarHeader?: ReactNode
+  sidebarFooter?: ReactNode
   className?: string
   children?: ReactNode
   showLayoutSwitcher?: boolean
@@ -24,6 +27,8 @@ interface LayoutHeaderProps {
 export function LayoutHeader({
   nav,
   headerSlot,
+  sidebarHeader,
+  sidebarFooter,
   className,
   children,
   showLayoutSwitcher = false,
@@ -39,7 +44,7 @@ export function LayoutHeader({
 
   return (
     <header className={cn("dr-layout-header", className)}>
-      <MobileDrawer nav={nav} />
+      <MobileDrawer nav={nav} header={sidebarHeader} footer={sidebarFooter} />
       {children ?? <SearchCommand navItems={flatNavItems} />}
       <div className="dr-layout-header-end">
         {headerSlot}

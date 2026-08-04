@@ -18,6 +18,8 @@ export function SplitPanelLayout({
   children,
   nav,
   headerSlot,
+  sidebarHeader,
+  sidebarFooter,
   showLayoutSwitcher,
   showThemeSwitcher,
   user,
@@ -72,6 +74,8 @@ export function SplitPanelLayout({
       <SkipLink />
       <LayoutHeader
         nav={nav}
+        sidebarHeader={sidebarHeader}
+        sidebarFooter={sidebarFooter}
         headerSlot={headerSlot}
         className="gap-4"
         showLayoutSwitcher={showLayoutSwitcher}

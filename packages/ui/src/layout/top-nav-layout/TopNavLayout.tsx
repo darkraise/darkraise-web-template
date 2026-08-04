@@ -9,6 +9,8 @@ export function TopNavLayout({
   children,
   nav,
   headerSlot,
+  sidebarHeader,
+  sidebarFooter,
   showLayoutSwitcher,
   showThemeSwitcher,
   user,
@@ -27,6 +29,8 @@ export function TopNavLayout({
       <SkipLink />
       <LayoutHeader
         nav={nav}
+        sidebarHeader={sidebarHeader}
+        sidebarFooter={sidebarFooter}
         className="gap-4"
         showLayoutSwitcher={showLayoutSwitcher}
         showThemeSwitcher={showThemeSwitcher}
