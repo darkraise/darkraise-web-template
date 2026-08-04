@@ -258,3 +258,66 @@ describe("ThemeSwitcher font size section", () => {
     expect(screen.getByText("Font Size")).toBeInTheDocument()
   })
 })
+
+describe("ThemeSwitcher popover props", () => {
+  beforeEach(() => {
+    storageMock.clear()
+    vi.stubGlobal("localStorage", storageMock)
+    mockMatchMedia()
+    document.documentElement.style.cssText = ""
+  })
+
+  it("gives the popover a role and a default accessible name", () => {
+    render(
+      <ThemeProvider>
+        <ThemeSwitcher />
+      </ThemeProvider>,
+    )
+    fireEvent.click(screen.getByRole("button", { name: /customize theme/i }))
+    expect(
+      screen.getByRole("dialog", { name: "Theme settings" }),
+    ).toBeInTheDocument()
+  })
+
+  it("forwards role, aria-label and triggerLabel overrides", () => {
+    render(
+      <ThemeProvider>
+        <ThemeSwitcher
+          role="region"
+          aria-label="Appearance"
+          triggerLabel="Open appearance settings"
+        />
+      </ThemeProvider>,
+    )
+    fireEvent.click(
+      screen.getByRole("button", { name: "Open appearance settings" }),
+    )
+    expect(
+      screen.getByRole("region", { name: "Appearance" }),
+    ).toBeInTheDocument()
+  })
+
+  it("forwards open state and onOpenChange", () => {
+    const onOpenChange = vi.fn()
+    render(
+      <ThemeProvider>
+        <ThemeSwitcher defaultOpen onOpenChange={onOpenChange} />
+      </ThemeProvider>,
+    )
+    expect(screen.getByRole("dialog")).toBeInTheDocument()
+    fireEvent.keyDown(document, { key: "Escape" })
+    expect(onOpenChange).toHaveBeenCalledWith(false)
+  })
+
+  it("labels every toggle group it renders", () => {
+    render(
+      <ThemeProvider>
+        <ThemeSwitcher />
+      </ThemeProvider>,
+    )
+    fireEvent.click(screen.getByRole("button", { name: /customize theme/i }))
+    for (const group of screen.getAllByRole("radiogroup")) {
+      expect(group).toHaveAccessibleName()
+    }
+  })
+})

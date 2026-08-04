@@ -1,4 +1,6 @@
+import type * as React from "react"
 import { Moon, Sun, Monitor, Palette, Square, Blend } from "lucide-react"
+import { cn } from "@lib/utils"
 import { Button } from "@components/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@components/popover"
 import { Label } from "@components/label"
@@ -47,10 +49,12 @@ function AxisControl<V extends string>({
   values,
   value,
   onChange,
+  label,
 }: {
   values: readonly V[]
   value: V
   onChange: (v: V) => void
+  label: string
 }) {
   if (values.length === 4) {
     const index = Math.max(0, values.indexOf(value))
@@ -62,6 +66,7 @@ function AxisControl<V extends string>({
           max={values.length - 1}
           step={1}
           showSteps
+          aria-label={label}
           onValueChange={([i]) => {
             if (typeof i === "number" && values[i]) onChange(values[i])
           }}
@@ -79,6 +84,7 @@ function AxisControl<V extends string>({
       }}
       variant="outline"
       size="sm"
+      aria-label={label}
       className="dr-theme-switcher-toggle-group"
       data-cols={values.length}
     >
@@ -91,7 +97,38 @@ function AxisControl<V extends string>({
   )
 }
 
-export function ThemeSwitcher() {
+export interface ThemeSwitcherProps {
+  /** Trap focus in the popover and restore it to the trigger on close. */
+  modal?: boolean
+  open?: boolean
+  defaultOpen?: boolean
+  onOpenChange?: (open: boolean) => void
+  onCloseAutoFocus?: (event: Event) => void
+  side?: React.ComponentProps<typeof PopoverContent>["side"]
+  align?: React.ComponentProps<typeof PopoverContent>["align"]
+  /** Applied to the popover content. */
+  className?: string
+  /** Role of the popover content. Defaults to `dialog`. */
+  role?: string
+  /** Accessible name of the popover content. */
+  "aria-label"?: string
+  /** Accessible name of the trigger button. */
+  triggerLabel?: string
+}
+
+export function ThemeSwitcher({
+  modal,
+  open,
+  defaultOpen,
+  onOpenChange,
+  onCloseAutoFocus,
+  side,
+  align = "end",
+  className,
+  role = "dialog",
+  "aria-label": ariaLabel = "Theme settings",
+  triggerLabel = "Customize theme",
+}: ThemeSwitcherProps = {}) {
   const {
     accentColor,
     surfaceColor,
@@ -162,6 +199,7 @@ export function ThemeSwitcher() {
           }}
           variant="outline"
           size="sm"
+          aria-label="Mode"
           className="dr-theme-switcher-toggle-group"
           data-cols="3"
         >
@@ -185,6 +223,7 @@ export function ThemeSwitcher() {
           }}
           variant="outline"
           size="sm"
+          aria-label="Preset"
           className="dr-theme-switcher-toggle-group"
           /* Cap at 3 cols so 6+ presets wrap to multiple rows instead
              of cramming into a single horizontal strip too narrow to
@@ -218,6 +257,7 @@ export function ThemeSwitcher() {
                 values={axisDef.values}
                 value={presetAxisValues[preset]?.[axisName] ?? axisDef.default}
                 onChange={(v) => setPresetAxis(axisName, v)}
+                label={axisDef.label}
               />
             </div>
           ))}
@@ -234,6 +274,7 @@ export function ThemeSwitcher() {
           }}
           variant="outline"
           size="sm"
+          aria-label="Background"
           className="dr-theme-switcher-toggle-group"
           data-cols="2"
         >
@@ -255,6 +296,7 @@ export function ThemeSwitcher() {
           values={BACKGROUND_INTENSITIES}
           value={backgroundIntensity}
           onChange={setBackgroundIntensity}
+          label="Background intensity"
         />
       </div>
     ),
@@ -271,6 +313,7 @@ export function ThemeSwitcher() {
           }}
           variant="outline"
           size="sm"
+          aria-label="Gradient pattern"
           className="dr-theme-switcher-toggle-group"
           data-cols={GRADIENT_PATTERNS.length}
         >
@@ -329,7 +372,12 @@ export function ThemeSwitcher() {
     axes.density && !isCommonAxisHidden("density") && (
       <div key="density" className="dr-theme-switcher-row">
         <Label className="dr-theme-switcher-section-label">Density</Label>
-        <AxisControl values={DENSITIES} value={density} onChange={setDensity} />
+        <AxisControl
+          values={DENSITIES}
+          value={density}
+          onChange={setDensity}
+          label="Density"
+        />
       </div>
     ),
     axes.fontSize && !isCommonAxisHidden("fontSize") && (
@@ -339,6 +387,7 @@ export function ThemeSwitcher() {
           values={FONT_SIZES}
           value={fontSize}
           onChange={setFontSize}
+          label="Font size"
         />
       </div>
     ),
@@ -349,6 +398,7 @@ export function ThemeSwitcher() {
           values={ELEVATIONS}
           value={elevation}
           onChange={setElevation}
+          label="Elevation"
         />
       </div>
     ),
@@ -361,13 +411,19 @@ export function ThemeSwitcher() {
           values={ELEVATIONS}
           value={buttonElevation}
           onChange={setButtonElevation}
+          label="Button elevation"
         />
       </div>
     ),
     axes.radius && !isCommonAxisHidden("radius") && (
       <div key="radius" className="dr-theme-switcher-row">
         <Label className="dr-theme-switcher-section-label">Radius</Label>
-        <AxisControl values={RADII} value={radius} onChange={setRadius} />
+        <AxisControl
+          values={RADII}
+          value={radius}
+          onChange={setRadius}
+          label="Radius"
+        />
       </div>
     ),
   ].filter(Boolean)
@@ -375,14 +431,26 @@ export function ThemeSwitcher() {
   if (visibleSections.length === 0) return null
 
   return (
-    <Popover>
+    <Popover
+      modal={modal}
+      open={open}
+      defaultOpen={defaultOpen}
+      onOpenChange={onOpenChange}
+    >
       <PopoverTrigger asChild>
         <Button variant="ghost" size="icon">
           <Palette className="size-[var(--icon-size)]" />
-          <span className="sr-only">Customize theme</span>
+          <span className="sr-only">{triggerLabel}</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[28rem]" align="end">
+      <PopoverContent
+        className={cn("w-[28rem]", className)}
+        side={side}
+        align={align}
+        role={role}
+        aria-label={ariaLabel}
+        onCloseAutoFocus={onCloseAutoFocus}
+      >
         <div className="space-y-2">
           {visibleSections.map((section, i) => (
             <div key={i}>

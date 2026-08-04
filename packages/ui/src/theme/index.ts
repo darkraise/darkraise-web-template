@@ -1,5 +1,5 @@
 export { ThemeProvider } from "./theme-provider"
-export { ThemeSwitcher } from "./theme-switcher"
+export { ThemeSwitcher, type ThemeSwitcherProps } from "./theme-switcher"
 export { useTheme } from "./useTheme"
 export { generateTokens } from "./engine/generateTokens"
 export { accentColors } from "./palettes/accentColors"
