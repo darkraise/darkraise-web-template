@@ -24,12 +24,15 @@
    separately in glass.ts). */
 [data-preset="glass"][data-glass-opacity="subtle"] {
   --surface-opacity: 0.78;
+  --glass-overlay-base-alpha: 0.88;
 }
 [data-preset="glass"][data-glass-opacity="medium"] {
   --surface-opacity: 0.5;
+  --glass-overlay-base-alpha: 0.76;
 }
 [data-preset="glass"][data-glass-opacity="strong"] {
   --surface-opacity: 0.3;
+  --glass-overlay-base-alpha: 0.62;
 }
 
 /* Backdrop blur. --backdrop-filter is the self-cleaning value every glass
@@ -73,6 +76,7 @@
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
   [data-preset="glass"] {
     --surface-opacity: 1;
+    --glass-overlay-base-alpha: 1;
     --backdrop-blur: 0;
     --backdrop-filter: none;
   }
@@ -86,8 +90,20 @@
    per-`.glass-strong`-class overrides and were lost when those
    components moved to consume --surface-overlay-* directly. */
 [data-preset="glass"] {
+  /* The fog gradient alone is only a background-IMAGE pair, so the shorthand
+     leaves background-color transparent. In dark mode the fog tiers bottom
+     out around alpha 0.14/0.07, which is see-through enough that page text
+     composites into the overlay and stays legible on top of it whenever the
+     backdrop blur is unavailable (browser without backdrop-filter support,
+     prefers-reduced-transparency, blur axis on "none", or a build pipeline
+     that dropped the declaration). The final layer therefore carries a real
+     popover-coloured base whose alpha tracks the opacity axis, so an overlay
+     is opaque enough to read against on its own and the blur becomes an
+     enhancement rather than the only thing separating the two layers. */
   --surface-overlay-bg:
-    var(--glass-noise), linear-gradient(135deg, var(--fog-20), var(--fog-10));
+    var(--glass-noise),
+    linear-gradient(135deg, var(--fog-20), var(--fog-10))
+      hsl(var(--popover) / var(--glass-overlay-base-alpha, 0.76));
   --surface-overlay-blend-mode: overlay, normal;
   --surface-overlay-border: var(--fog-20);
 }
@@ -106,7 +122,9 @@
      translucent, just intentionally a touch frostier, so no analogous
      dark reduction is needed.) */
   --surface-overlay-bg:
-    var(--glass-noise), linear-gradient(135deg, var(--fog-15), var(--fog-05));
+    var(--glass-noise),
+    linear-gradient(135deg, var(--fog-15), var(--fog-05))
+      hsl(var(--popover) / var(--glass-overlay-base-alpha, 0.76));
   --surface-overlay-shadow:
     var(--elevation-medium), var(--inset-hi-strong),
     inset 0 0 32px color-mix(in oklab, hsl(var(--surface-tint)) 2%, transparent),

@@ -2,8 +2,8 @@
   .dr-toolbar {
     @apply bg-card flex items-center gap-1 rounded-md border p-1;
     /* Glass-frost the toolbar surface (no-op under Default/Neon). */
-    backdrop-filter: var(--backdrop-filter);
     -webkit-backdrop-filter: var(--backdrop-filter);
+    backdrop-filter: var(--backdrop-filter);
   }
   .dr-toolbar[data-orientation="vertical"] {
     @apply flex-col items-stretch;

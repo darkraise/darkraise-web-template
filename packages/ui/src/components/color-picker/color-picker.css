@@ -41,8 +41,8 @@
     background-blend-mode: var(--surface-overlay-blend-mode);
     border-color: var(--surface-overlay-border);
     box-shadow: var(--surface-overlay-shadow);
-    backdrop-filter: var(--backdrop-filter);
     -webkit-backdrop-filter: var(--backdrop-filter);
+    backdrop-filter: var(--backdrop-filter);
   }
 
   .dr-color-picker-area {
@@ -108,8 +108,8 @@
   [data-preset="glass"] .dr-color-picker-eye-dropper-trigger {
     background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
     border-color: var(--fog-15);
-    backdrop-filter: var(--backdrop-filter);
     -webkit-backdrop-filter: var(--backdrop-filter);
+    backdrop-filter: var(--backdrop-filter);
     box-shadow: var(--inset-hi), var(--glass-halo-raised);
   }
 

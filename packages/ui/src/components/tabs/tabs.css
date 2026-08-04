@@ -100,8 +100,8 @@
      token so all three variants share the preset identity. */
   [data-preset="glass"] .dr-tabs-trigger[data-variant="outline"],
   [data-preset="glass"] .dr-tabs-trigger[data-variant="underline"] {
-    backdrop-filter: var(--backdrop-filter);
     -webkit-backdrop-filter: var(--backdrop-filter);
+    backdrop-filter: var(--backdrop-filter);
   }
 
   [data-preset="glass"] .dr-tabs-trigger[data-variant="outline"]:hover,

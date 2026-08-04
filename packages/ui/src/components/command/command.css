@@ -4,8 +4,8 @@
     background: var(--surface-overlay-bg);
     background-blend-mode: var(--surface-overlay-blend-mode);
     box-shadow: var(--surface-overlay-shadow);
-    backdrop-filter: var(--backdrop-filter);
     -webkit-backdrop-filter: var(--backdrop-filter);
+    backdrop-filter: var(--backdrop-filter);
   }
 
   .dr-command-input-wrapper {

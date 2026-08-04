@@ -426,6 +426,7 @@
   background-color: transparent;
   background-image: none;
   box-shadow: none;
+  -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
 

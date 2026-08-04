@@ -5,8 +5,8 @@
     background-blend-mode: var(--surface-overlay-blend-mode);
     border-color: var(--surface-overlay-border);
     box-shadow: var(--surface-overlay-shadow);
-    backdrop-filter: var(--backdrop-filter);
     -webkit-backdrop-filter: var(--backdrop-filter);
+    backdrop-filter: var(--backdrop-filter);
   }
 
   .dr-vdm-item {

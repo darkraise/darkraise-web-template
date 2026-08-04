@@ -127,3 +127,33 @@ describe("glass dark --card-elevation-* stays in sync with the base ramp", () =>
     })
   }
 })
+
+describe("glass.css overlay surfaces carry a real colour layer", () => {
+  // The fog gradient is a background-IMAGE pair, so it leaves
+  // background-color transparent. Without a colour in the final layer an
+  // overlay is only as opaque as the fog tiers (0.14/0.07 in dark), and page
+  // text composites straight into the dialog whenever the backdrop blur is
+  // unavailable.
+  it("maps opacity -> --glass-overlay-base-alpha", () => {
+    expect(glassCss).toMatch(/--glass-overlay-base-alpha:\s*0\.88/)
+    expect(glassCss).toMatch(/--glass-overlay-base-alpha:\s*0\.76/)
+    expect(glassCss).toMatch(/--glass-overlay-base-alpha:\s*0\.62/)
+  })
+
+  it("reduced transparency forces the base fully opaque", () => {
+    const block = glassCss.slice(
+      glassCss.indexOf("prefers-reduced-transparency"),
+    )
+    expect(block).toMatch(/--glass-overlay-base-alpha:\s*1\b/)
+  })
+
+  it("every --surface-overlay-bg ends in a popover-coloured final layer", () => {
+    const decls = glassCss.match(/--surface-overlay-bg:[^;]+;/g) ?? []
+    expect(decls.length).toBeGreaterThanOrEqual(2)
+    for (const decl of decls) {
+      expect(norm(decl)).toContain(
+        "hsl(var(--popover) / var(--glass-overlay-base-alpha, 0.76))",
+      )
+    }
+  })
+})

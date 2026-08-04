@@ -110,7 +110,7 @@
 [data-preset="terminal"] {
   text-shadow: var(--terminal-text-shadow);
   /* Overlay surface chrome: very dark transparent with primary border. */
-  --surface-overlay-bg: hsl(var(--background) / 0.92);
+  --surface-overlay-bg: hsl(var(--background) / 0.97);
   --surface-overlay-border: hsl(var(--primary) / 0.4);
 }
 
@@ -498,6 +498,7 @@
   background-color: transparent;
   background-image: none;
   box-shadow: none;
+  -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
 

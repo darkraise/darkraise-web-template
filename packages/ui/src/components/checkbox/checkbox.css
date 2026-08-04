@@ -36,8 +36,8 @@
   [data-preset="glass"] .dr-checkbox {
     background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
     border: 1px solid var(--fog-20);
-    backdrop-filter: var(--backdrop-filter);
     -webkit-backdrop-filter: var(--backdrop-filter);
+    backdrop-filter: var(--backdrop-filter);
     box-shadow: var(--inset-hi), var(--glass-halo-raised);
   }
 
@@ -58,8 +58,8 @@
   }
 
   [data-preset="glass"] .dr-checkbox:disabled {
-    backdrop-filter: none;
     -webkit-backdrop-filter: none;
+    backdrop-filter: none;
     box-shadow: none;
     opacity: 0.5;
   }

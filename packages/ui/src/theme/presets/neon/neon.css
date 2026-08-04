@@ -246,7 +246,11 @@
   --shadow-card: none;
   --shadow-dropdown: none;
   --elevation-flat: 0 0 transparent;
-  --surface-overlay-bg: hsl(var(--background) / 0.85);
+  /* Neon ships no --backdrop-filter, so an overlay's alpha is the only
+     thing separating it from the page. At 0.85 body text composited
+     through and stayed readable on top of popover content; 0.96 keeps a
+     hint of the canvas showing without the bleed-through. */
+  --surface-overlay-bg: hsl(var(--background) / 0.96);
   --surface-overlay-border: hsl(var(--primary) / 0.4);
 }
 
@@ -326,6 +330,7 @@
   background-color: transparent;
   background-image: none;
   box-shadow: none;
+  -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
 

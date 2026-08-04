@@ -159,8 +159,8 @@
 
 @utility glass-thin {
   background: var(--fog-05);
-  backdrop-filter: var(--backdrop-filter);
   -webkit-backdrop-filter: var(--backdrop-filter);
+  backdrop-filter: var(--backdrop-filter);
   border: 1px solid var(--fog-10);
   border-radius: var(--radius);
   box-shadow: var(--inset-hi);
@@ -173,8 +173,8 @@
 
 @utility glass {
   background: linear-gradient(135deg, var(--fog-10), var(--fog-05));
-  backdrop-filter: var(--backdrop-filter);
   -webkit-backdrop-filter: var(--backdrop-filter);
+  backdrop-filter: var(--backdrop-filter);
   border: 1px solid var(--fog-15);
   border-radius: var(--radius);
   box-shadow: var(--inset-hi);
@@ -187,8 +187,8 @@
 
 @utility glass-strong {
   background: linear-gradient(135deg, var(--fog-20), var(--fog-10));
-  backdrop-filter: var(--backdrop-filter);
   -webkit-backdrop-filter: var(--backdrop-filter);
+  backdrop-filter: var(--backdrop-filter);
   border: 1px solid var(--fog-20);
   border-radius: var(--radius);
   box-shadow: var(--elevation-medium), var(--inset-hi-strong);
@@ -201,8 +201,8 @@
 
 @utility card-surface {
   background: linear-gradient(135deg, var(--fog-10), var(--fog-05));
-  backdrop-filter: var(--backdrop-filter);
   -webkit-backdrop-filter: var(--backdrop-filter);
+  backdrop-filter: var(--backdrop-filter);
   border: 1px solid var(--fog-15);
   border-radius: var(--radius);
   box-shadow: var(--inset-hi);
@@ -1379,8 +1379,8 @@
 
   .overlay-surface {
     background: linear-gradient(135deg, var(--fog-20), var(--fog-10));
-    backdrop-filter: var(--backdrop-filter);
     -webkit-backdrop-filter: var(--backdrop-filter);
+    backdrop-filter: var(--backdrop-filter);
     border: 1px solid var(--fog-20);
     border-radius: var(--radius);
     box-shadow: var(--elevation-medium), var(--inset-hi-strong);

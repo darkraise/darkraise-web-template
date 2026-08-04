@@ -14,8 +14,8 @@
     background-blend-mode: var(--surface-overlay-blend-mode);
     border-color: var(--surface-overlay-border);
     box-shadow: var(--surface-overlay-shadow);
-    backdrop-filter: var(--backdrop-filter);
     -webkit-backdrop-filter: var(--backdrop-filter);
+    backdrop-filter: var(--backdrop-filter);
   }
 
   .dr-select-content[data-position="popper"] {
@@ -45,8 +45,8 @@
   [data-preset="glass"] .dr-select-trigger {
     background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
     border: 1px solid var(--fog-15);
-    backdrop-filter: var(--backdrop-filter);
     -webkit-backdrop-filter: var(--backdrop-filter);
+    backdrop-filter: var(--backdrop-filter);
     box-shadow: var(--inset-hi), var(--glass-halo-raised);
   }
 
@@ -62,8 +62,8 @@
   }
 
   [data-preset="glass"] .dr-select-trigger:disabled {
-    backdrop-filter: none;
     -webkit-backdrop-filter: none;
+    backdrop-filter: none;
     box-shadow: none;
     opacity: 0.5;
   }

@@ -85,8 +85,8 @@
     );
     border: 1px solid
       color-mix(in oklab, var(--hue) 50%, rgba(255, 255, 255, 0.25));
-    backdrop-filter: var(--backdrop-filter);
     -webkit-backdrop-filter: var(--backdrop-filter);
+    backdrop-filter: var(--backdrop-filter);
     box-shadow:
       var(--shadow-button),
       var(--inset-hi-button),
@@ -111,8 +111,8 @@
   [data-preset="glass"] .dr-btn[data-variant="secondary"] {
     background-image: linear-gradient(135deg, var(--fog-20), var(--fog-10));
     border: 1px solid var(--fog-20);
-    backdrop-filter: var(--backdrop-filter);
     -webkit-backdrop-filter: var(--backdrop-filter);
+    backdrop-filter: var(--backdrop-filter);
     box-shadow:
       var(--shadow-button), var(--inset-hi-button), var(--glass-halo-raised);
   }
@@ -134,8 +134,8 @@
       var(--glass-state-active-inset), var(--glass-halo-raised);
   }
   [data-preset="glass"] .dr-btn:disabled {
-    backdrop-filter: none;
     -webkit-backdrop-filter: none;
+    backdrop-filter: none;
     box-shadow: none;
   }
 

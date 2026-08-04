@@ -6,8 +6,8 @@
     /* No-op under Default/Neon (--backdrop-filter: none); under Glass the
      * banner picks up the preset's blur so the muted/tinted wash reads as
      * frosted instead of flat translucent. */
-    backdrop-filter: var(--backdrop-filter);
     -webkit-backdrop-filter: var(--backdrop-filter);
+    backdrop-filter: var(--backdrop-filter);
   }
   .dr-banner[data-variant="default"] {
     @apply bg-muted text-foreground border-border;

@@ -169,7 +169,7 @@
 
 [data-preset="scifi"] {
   /* Overlay surface chrome: deep dark + primary glow ring. */
-  --surface-overlay-bg: hsl(var(--background) / 0.95);
+  --surface-overlay-bg: hsl(var(--background) / 0.98);
   --surface-overlay-border: hsl(var(--primary) / 0.55);
 }
 
@@ -566,6 +566,7 @@
   background-color: transparent;
   background-image: none;
   box-shadow: none;
+  -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
 

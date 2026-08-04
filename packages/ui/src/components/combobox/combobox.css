@@ -33,8 +33,8 @@
     background-blend-mode: var(--surface-overlay-blend-mode);
     border-color: var(--surface-overlay-border);
     box-shadow: var(--surface-overlay-shadow);
-    backdrop-filter: var(--backdrop-filter);
     -webkit-backdrop-filter: var(--backdrop-filter);
+    backdrop-filter: var(--backdrop-filter);
   }
 
   .dr-combobox-list {
@@ -69,8 +69,8 @@
     background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
     border: 1px solid var(--fog-15);
     border-radius: var(--radius);
-    backdrop-filter: var(--backdrop-filter);
     -webkit-backdrop-filter: var(--backdrop-filter);
+    backdrop-filter: var(--backdrop-filter);
     box-shadow: var(--inset-hi), var(--glass-halo-raised);
   }
 

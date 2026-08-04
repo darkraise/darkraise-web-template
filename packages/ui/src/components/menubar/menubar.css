@@ -4,8 +4,8 @@
     /* Glass-frost the menubar (no-op under Default/Neon). The dr-menu-content
        and dr-menu-sub-content rules already consume backdrop-filter for the
        popover surfaces. */
-    backdrop-filter: var(--backdrop-filter);
     -webkit-backdrop-filter: var(--backdrop-filter);
+    backdrop-filter: var(--backdrop-filter);
   }
 
   .dr-menubar-trigger {
@@ -22,8 +22,8 @@
     background-blend-mode: var(--surface-overlay-blend-mode);
     border-color: var(--surface-overlay-border);
     box-shadow: var(--surface-overlay-shadow);
-    backdrop-filter: var(--backdrop-filter);
     -webkit-backdrop-filter: var(--backdrop-filter);
+    backdrop-filter: var(--backdrop-filter);
   }
 
   .dr-menubar-content {
@@ -32,8 +32,8 @@
     background-blend-mode: var(--surface-overlay-blend-mode);
     border-color: var(--surface-overlay-border);
     box-shadow: var(--surface-overlay-shadow);
-    backdrop-filter: var(--backdrop-filter);
     -webkit-backdrop-filter: var(--backdrop-filter);
+    backdrop-filter: var(--backdrop-filter);
   }
 
   .dr-menubar-item {
@@ -61,8 +61,8 @@
   }
 
   [data-preset="glass"] .dr-menubar-trigger {
-    backdrop-filter: var(--backdrop-filter);
     -webkit-backdrop-filter: var(--backdrop-filter);
+    backdrop-filter: var(--backdrop-filter);
   }
 
   [data-preset="glass"] .dr-menubar-trigger:hover {

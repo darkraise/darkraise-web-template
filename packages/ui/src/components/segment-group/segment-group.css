@@ -2,8 +2,8 @@
   .dr-segment-group {
     @apply bg-muted relative inline-flex rounded-md p-1;
     /* Glass-frost the segmented control container (no-op under Default/Neon). */
-    backdrop-filter: var(--backdrop-filter);
     -webkit-backdrop-filter: var(--backdrop-filter);
+    backdrop-filter: var(--backdrop-filter);
   }
 
   .dr-segment-group[data-orientation="vertical"] {
@@ -70,8 +70,8 @@
   [data-preset="glass"] .dr-segment-group {
     background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
     border: 1px solid var(--fog-20);
-    backdrop-filter: var(--backdrop-filter);
     -webkit-backdrop-filter: var(--backdrop-filter);
+    backdrop-filter: var(--backdrop-filter);
     box-shadow: var(--inset-hi), var(--glass-halo-raised);
   }
 
@@ -86,8 +86,8 @@
     background-image: linear-gradient(transparent, transparent);
     border-color: transparent;
     box-shadow: none;
-    backdrop-filter: none;
     -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 
   [data-preset="glass"] .dr-segment-group-indicator {
