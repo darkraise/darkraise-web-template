@@ -5,14 +5,51 @@ import { useState } from "react"
 import { ToggleGroup, ToggleGroupItem } from "@components/toggle-group"
 
 describe("ToggleGroup", () => {
-  it("renders a group with role=group", () => {
+  it("single: renders role=radiogroup so the radio items have an owning set", () => {
     render(
       <ToggleGroup type="single">
         <ToggleGroupItem value="a">A</ToggleGroupItem>
         <ToggleGroupItem value="b">B</ToggleGroupItem>
       </ToggleGroup>,
     )
+    expect(screen.getByRole("radiogroup")).toBeInTheDocument()
+  })
+
+  it("multiple: renders role=group", () => {
+    render(
+      <ToggleGroup type="multiple">
+        <ToggleGroupItem value="a">A</ToggleGroupItem>
+        <ToggleGroupItem value="b">B</ToggleGroupItem>
+      </ToggleGroup>,
+    )
     expect(screen.getByRole("group")).toBeInTheDocument()
+  })
+
+  it("accepts a consumer role and an accessible name", () => {
+    render(
+      <ToggleGroup type="single" role="toolbar" aria-label="Text alignment">
+        <ToggleGroupItem value="a">A</ToggleGroupItem>
+      </ToggleGroup>,
+    )
+    expect(
+      screen.getByRole("toolbar", { name: "Text alignment" }),
+    ).toBeInTheDocument()
+  })
+
+  it("carries a roving tabindex: one stop for the whole group", () => {
+    render(
+      <ToggleGroup type="single" defaultValue="b">
+        <ToggleGroupItem value="a">A</ToggleGroupItem>
+        <ToggleGroupItem value="b">B</ToggleGroupItem>
+        <ToggleGroupItem value="c">C</ToggleGroupItem>
+      </ToggleGroup>,
+    )
+    const radios = screen.getAllByRole("radio")
+    expect(radios.map((r) => r.getAttribute("tabindex"))).toEqual([
+      "-1",
+      "0",
+      "-1",
+    ])
   })
 
   it("single: items have role=radio + aria-checked", () => {

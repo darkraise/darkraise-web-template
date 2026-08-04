@@ -62,7 +62,7 @@ type ToggleGroupCommonProps = {
   dir?: "ltr" | "rtl"
 } & Omit<
   React.HTMLAttributes<HTMLDivElement>,
-  "defaultValue" | "onChange" | "dir" | "role"
+  "defaultValue" | "onChange" | "dir"
 >
 
 type ToggleGroupProps =
@@ -123,10 +123,16 @@ function ToggleGroup(props: ToggleGroupProps) {
   void _dv
   void _ovc
 
+  // `type="single"` renders its items as role="radio", and a radio's
+  // set semantics are only exposed when the owning container is a
+  // radiogroup — under a plain `group` assistive technology reports
+  // loose radios with no "n of m" relationship. `role` stays
+  // overridable so a consumer wrapping the group in its own
+  // radiogroup/toolbar can correct the nesting from outside.
   return (
     <div
       ref={ref}
-      role="group"
+      role={ctx.type === "single" ? "radiogroup" : "group"}
       dir={dir}
       data-orientation={ctx.orientation}
       className={cn("dr-toggle-group", className)}
