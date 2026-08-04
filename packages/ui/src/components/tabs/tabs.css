@@ -59,8 +59,16 @@
     gap: 0.125rem;
     /* The other variants are inline-flex and grow; this one is pinned to
        100% so its baseline spans the panel, which means overflowing tabs
-       have to scroll rather than escape the border box. */
+       have to scroll rather than escape the border box. A visible
+       scrollbar would consume row height from inside the list, pushing
+       the baseline below the triggers' -1px margin and tearing the seam,
+       so the bar itself is hidden while scrolling stays live. */
     overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .dr-tabs-list[data-variant="enclosed"][data-orientation="horizontal"]::-webkit-scrollbar {
+    display: none;
   }
 
   /* The negative margin belongs on EVERY trigger, not just the active
