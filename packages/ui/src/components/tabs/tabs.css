@@ -55,8 +55,22 @@
      under a transparent bottom border; the panel's top edge IS the
      baseline, so the two meet with no seam. */
   .dr-tabs-list[data-variant="enclosed"][data-orientation="horizontal"] {
-    @apply border-border flex w-full justify-start border-b bg-transparent p-0;
+    @apply flex w-full justify-start bg-transparent p-0;
     gap: 0.125rem;
+    /* The baseline is painted, not bordered. overflow-x: auto (below)
+       makes this element a scroll container, and a scroll container
+       clips descendant painting at its padding edge, one layer inside
+       its border. A real border-bottom would sit outside that edge,
+       where the active trigger's -1px overhang can never reach to erase
+       it, leaving a permanent hairline across the notch. Moving the line
+       into the padding box — via padding-bottom plus a bottom-anchored
+       fill instead of a border — puts it exactly where the overhang is
+       still visible. */
+    padding-bottom: 1px;
+    background-image: linear-gradient(hsl(var(--border)), hsl(var(--border)));
+    background-size: 100% 1px;
+    background-repeat: no-repeat;
+    background-position: bottom;
     /* The other variants are inline-flex and grow; this one is pinned to
        100% so its baseline spans the panel, which means overflowing tabs
        have to scroll rather than escape the border box. A visible
