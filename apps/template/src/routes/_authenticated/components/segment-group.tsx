@@ -20,6 +20,7 @@ function SegmentGroupPage() {
   const [layout, setLayout] = useState("list")
   const [view, setView] = useState("calendar")
   const [density, setDensity] = useState("comfortable")
+  const [period, setPeriod] = useState("monthly")
 
   return (
     <ShowcasePage
@@ -133,6 +134,27 @@ function SegmentGroupPage() {
           <SegmentGroupItem value="compact">Compact</SegmentGroupItem>
           <SegmentGroupItem value="comfortable">Comfortable</SegmentGroupItem>
           <SegmentGroupItem value="spacious">Spacious</SegmentGroupItem>
+        </SegmentGroup>
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Accent colour"
+        code={`<SegmentGroup
+  color="accent"
+  value={period}
+  onValueChange={setPeriod}
+>
+  <SegmentGroupIndicator />
+  <SegmentGroupItem value="weekly">Weekly</SegmentGroupItem>
+  <SegmentGroupItem value="monthly">Monthly</SegmentGroupItem>
+  <SegmentGroupItem value="yearly">Yearly</SegmentGroupItem>
+</SegmentGroup>`}
+      >
+        <SegmentGroup color="accent" value={period} onValueChange={setPeriod}>
+          <SegmentGroupIndicator />
+          <SegmentGroupItem value="weekly">Weekly</SegmentGroupItem>
+          <SegmentGroupItem value="monthly">Monthly</SegmentGroupItem>
+          <SegmentGroupItem value="yearly">Yearly</SegmentGroupItem>
         </SegmentGroup>
       </ShowcaseExample>
     </ShowcasePage>
