@@ -59,6 +59,24 @@
     transition-duration: 0ms;
   }
 
+  /* Outline variant — the track keeps its muted fill; only the sliding
+     indicator changes. --shadow-button is dropped because a drop shadow
+     cast by a hollow ring reads as a smudge rather than as elevation.
+     background-image is reset defensively: preset rules paint this pill
+     with a gradient rather than a colour, so clearing only
+     background-color would leave the pill fillable. */
+  .dr-segment-group-indicator[data-variant="outline"] {
+    background-color: transparent;
+    background-image: none;
+    border: 1px solid hsl(var(--primary));
+    box-shadow: var(--affordance-glow);
+  }
+
+  .dr-segment-group
+    .dr-segment-group-item[data-variant="outline"][data-state="checked"] {
+    @apply text-primary;
+  }
+
   /* Glass-preset SegmentGroup. The track gets the frosted treatment;
      the sliding indicator gains the accent-tinted selected-fill from
      --glass-state-selected-fill so the active segment reads as
@@ -90,7 +108,8 @@
     backdrop-filter: none;
   }
 
-  [data-preset="glass"] .dr-segment-group-indicator {
+  [data-preset="glass"]
+    .dr-segment-group-indicator:not([data-variant="outline"]) {
     background-image: var(--glass-state-selected-fill);
     box-shadow: var(--glass-state-active-inset);
   }
