@@ -24,6 +24,93 @@ export const Route = createFileRoute("/_authenticated/components/tabs")({
   component: TabsPage,
 })
 
+const VARIANTS = ["default", "outline", "underline", "enclosed"] as const
+const COLORS = ["default", "accent"] as const
+const ORIENTATIONS = ["horizontal", "vertical"] as const
+
+// `color="accent"` retints neutral chrome to the brand hue, so only the
+// enclosed variant has anywhere to take it. The other three already draw
+// their active tab in the primary colour at the default setting.
+const ACCENT_AWARE_VARIANTS = new Set<string>(["enclosed"])
+
+function MatrixCell({
+  variant,
+  color,
+  orientation,
+}: {
+  variant: (typeof VARIANTS)[number]
+  color: (typeof COLORS)[number]
+  orientation: (typeof ORIENTATIONS)[number]
+}) {
+  const redundant = color === "accent" && !ACCENT_AWARE_VARIANTS.has(variant)
+
+  return (
+    <div className="min-w-0 flex-1 space-y-2">
+      <p className="text-muted-foreground font-mono text-[11px]">
+        color=&quot;{color}&quot;
+      </p>
+      <Tabs
+        variant={variant}
+        color={color}
+        orientation={orientation}
+        defaultValue="one"
+      >
+        <TabsList>
+          <TabsTrigger value="one">One</TabsTrigger>
+          <TabsTrigger value="two">Two</TabsTrigger>
+          <TabsTrigger value="three">Three</TabsTrigger>
+        </TabsList>
+        <TabsContent value="one">
+          <p className="text-muted-foreground text-sm">First panel.</p>
+        </TabsContent>
+        <TabsContent value="two">
+          <p className="text-muted-foreground text-sm">Second panel.</p>
+        </TabsContent>
+        <TabsContent value="three">
+          <p className="text-muted-foreground text-sm">Third panel.</p>
+        </TabsContent>
+      </Tabs>
+      {redundant ? (
+        <p className="text-muted-foreground/70 text-[11px]">
+          Identical to the default colour — this variant already draws its
+          active tab in the primary hue.
+        </p>
+      ) : null}
+    </div>
+  )
+}
+
+function TabsMatrix() {
+  return (
+    <div className="space-y-10">
+      {ORIENTATIONS.map((orientation) => (
+        <div key={orientation} className="space-y-6">
+          <p className="text-foreground text-xs font-semibold tracking-wide uppercase">
+            {orientation}
+          </p>
+          {VARIANTS.map((variant) => (
+            <div key={variant} className="space-y-3">
+              <p className="text-muted-foreground font-mono text-[11px]">
+                variant=&quot;{variant}&quot;
+              </p>
+              <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">
+                {COLORS.map((color) => (
+                  <MatrixCell
+                    key={color}
+                    variant={variant}
+                    color={color}
+                    orientation={orientation}
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+  )
+}
+
 function TabsPage() {
   return (
     <ShowcasePage
@@ -194,42 +281,24 @@ function TabsPage() {
       </ShowcaseExample>
 
       <ShowcaseExample
-        title="Enclosed variant — accent colour"
-        code={`<Tabs variant="enclosed" color="accent" defaultValue="overview">
+        title="Variant × colour × orientation matrix"
+        code={`<Tabs
+  variant={variant}          // "default" | "outline" | "underline" | "enclosed"
+  color={color}              // "default" | "accent"
+  orientation={orientation}  // "horizontal" | "vertical"
+  defaultValue="one"
+>
   <TabsList>
-    <TabsTrigger value="overview">Overview</TabsTrigger>
-    <TabsTrigger value="details">Details</TabsTrigger>
-    <TabsTrigger value="settings">Settings</TabsTrigger>
+    <TabsTrigger value="one">One</TabsTrigger>
+    <TabsTrigger value="two">Two</TabsTrigger>
+    <TabsTrigger value="three">Three</TabsTrigger>
   </TabsList>
-  <TabsContent value="overview">
-    Overview content...
-  </TabsContent>
+  <TabsContent value="one">First panel.</TabsContent>
+  <TabsContent value="two">Second panel.</TabsContent>
+  <TabsContent value="three">Third panel.</TabsContent>
 </Tabs>`}
       >
-        <Tabs variant="enclosed" color="accent" defaultValue="overview">
-          <TabsList>
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="details">Details</TabsTrigger>
-            <TabsTrigger value="settings">Settings</TabsTrigger>
-          </TabsList>
-          <TabsContent value="overview">
-            <p className="text-muted-foreground text-sm">
-              The active tab's border, the strip's baseline, and the panel
-              border all follow the theme accent. Both fills stay on the card
-              surface so the seam still reads as one continuous shape.
-            </p>
-          </TabsContent>
-          <TabsContent value="details">
-            <p className="text-muted-foreground text-sm">
-              Details panel rendered only while its tab is active.
-            </p>
-          </TabsContent>
-          <TabsContent value="settings">
-            <p className="text-muted-foreground text-sm">
-              Settings panel content.
-            </p>
-          </TabsContent>
-        </Tabs>
+        <TabsMatrix />
       </ShowcaseExample>
 
       <ShowcaseExample
@@ -398,70 +467,58 @@ function TabsPage() {
       <ShowcaseExample
         title="Vertical tabs"
         code={`<Tabs defaultValue="profile" orientation="vertical">
-  <div className="flex gap-6">
-    <TabsList className="flex-col h-auto w-48">
-      <TabsTrigger value="profile">Profile</TabsTrigger>
-      <TabsTrigger value="account">Account</TabsTrigger>
-      <TabsTrigger value="appearance">Appearance</TabsTrigger>
-    </TabsList>
-    <TabsContent value="profile">
-      <Card>...</Card>
-    </TabsContent>
-  </div>
+  <TabsList className="w-48">
+    <TabsTrigger value="profile">Profile</TabsTrigger>
+    <TabsTrigger value="account">Account</TabsTrigger>
+    <TabsTrigger value="appearance">Appearance</TabsTrigger>
+  </TabsList>
+  <TabsContent value="profile">
+    <Card>...</Card>
+  </TabsContent>
 </Tabs>`}
       >
         <Tabs defaultValue="profile" orientation="vertical">
-          <div className="flex gap-6">
-            <TabsList className="h-auto w-48 flex-col">
-              <TabsTrigger value="profile" className="w-full justify-start">
-                Profile
-              </TabsTrigger>
-              <TabsTrigger value="account" className="w-full justify-start">
-                Account
-              </TabsTrigger>
-              <TabsTrigger value="appearance" className="w-full justify-start">
-                Appearance
-              </TabsTrigger>
-            </TabsList>
-            <div className="flex-1">
-              <TabsContent value="profile" className="mt-0">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Profile</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground text-sm">
-                      Manage your public profile information and avatar.
-                    </p>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              <TabsContent value="account" className="mt-0">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Account</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground text-sm">
-                      Update your account details and linked email address.
-                    </p>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              <TabsContent value="appearance" className="mt-0">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Appearance</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground text-sm">
-                      Choose your preferred theme and display settings.
-                    </p>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </div>
-          </div>
+          <TabsList className="w-48">
+            <TabsTrigger value="profile">Profile</TabsTrigger>
+            <TabsTrigger value="account">Account</TabsTrigger>
+            <TabsTrigger value="appearance">Appearance</TabsTrigger>
+          </TabsList>
+          <TabsContent value="profile">
+            <Card>
+              <CardHeader>
+                <CardTitle>Profile</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground text-sm">
+                  Manage your public profile information and avatar.
+                </p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="account">
+            <Card>
+              <CardHeader>
+                <CardTitle>Account</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground text-sm">
+                  Update your account details and linked email address.
+                </p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="appearance">
+            <Card>
+              <CardHeader>
+                <CardTitle>Appearance</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground text-sm">
+                  Choose your preferred theme and display settings.
+                </p>
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
       </ShowcaseExample>
 
