@@ -143,6 +143,120 @@
     @apply border-primary;
   }
 
+  /* --- Vertical orientation ------------------------------------------
+     The root itself becomes the row container, so a vertical Tabs no
+     longer requires the consumer to wrap the list and the panels in
+     their own flex box (which was the only way this worked before, and
+     left `orientation="vertical"` styling nothing on its own). */
+  .dr-tabs[data-orientation="vertical"] {
+    @apply flex items-start gap-4;
+  }
+
+  .dr-tabs-list[data-orientation="vertical"] {
+    @apply flex-col items-stretch;
+  }
+
+  /* No w-full: the list is items-stretch, so triggers already fill it.
+     A percentage width here would resolve against a container whose
+     own width is content-derived from these same triggers. */
+  .dr-tabs-trigger[data-orientation="vertical"] {
+    @apply justify-start;
+  }
+
+  .dr-tabs-content[data-orientation="vertical"] {
+    @apply mt-0 min-w-0 flex-1;
+  }
+
+  /* Underline runs down the list's right edge instead of across its
+     bottom. Widths and margins flip axis; the active border colour is
+     left to the orientation-agnostic base rule, which paints all four
+     sides. */
+  .dr-tabs-list[data-variant="underline"][data-orientation="vertical"] {
+    @apply gap-1 border-r border-b-0;
+  }
+
+  .dr-tabs-trigger[data-variant="underline"][data-orientation="vertical"] {
+    @apply -mr-px mb-0 h-auto border-r-2 border-b-0;
+  }
+
+  /* --affordance-glow-bottom is a bottom-only halo, which on a
+     right-hand border would emanate off the wrong edge. There is no
+     right-hand token, so the omni-directional glow stands in — it
+     still reads as a halo around the active tab under Neon/Sci-fi. */
+  .dr-tabs-trigger[data-variant="underline"][data-orientation="vertical"][data-state="active"] {
+    box-shadow: var(--affordance-glow);
+  }
+
+  /* Enclosed, vertical: the folder seam rotated a quarter turn. The
+     baseline runs down the list's right edge, the active trigger
+     overhangs it by 1px and erases it across its own height, and the
+     panel's left edge is that same line — so tab and panel read as one
+     surface. Root gap must be 0 and items stretched, or the two halves
+     of the seam never touch and the list is too short to carry the
+     line the full height of the panel. */
+  .dr-tabs[data-orientation="vertical"][data-variant="enclosed"] {
+    @apply items-stretch gap-0;
+  }
+
+  .dr-tabs-list[data-variant="enclosed"][data-orientation="vertical"] {
+    @apply flex flex-col justify-start bg-transparent p-0;
+    gap: 0.125rem;
+    /* Same reasoning as the horizontal variant: overflow makes this a
+       scroll container, which clips descendant painting at the padding
+       edge, so the line has to live inside the padding box (via
+       padding-right plus a right-anchored fill) to stay within reach of
+       the active trigger's overhang. */
+    padding-right: 1px;
+    background-image: linear-gradient(hsl(var(--border)), hsl(var(--border)));
+    background-size: 1px 100%;
+    background-repeat: no-repeat;
+    background-position: right;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+
+  .dr-tabs-list[data-variant="enclosed"][data-orientation="vertical"]::-webkit-scrollbar {
+    display: none;
+  }
+
+  .dr-tabs-trigger[data-variant="enclosed"][data-orientation="vertical"] {
+    @apply justify-start border border-transparent px-[var(--density-button-px)] py-[var(--density-row-py)];
+    border-radius: var(--radius) 0 0 var(--radius);
+    margin-right: -1px;
+  }
+
+  .dr-tabs-trigger[data-variant="enclosed"][data-orientation="vertical"]:focus-visible {
+    outline-offset: -2px;
+  }
+
+  .dr-tabs-trigger[data-variant="enclosed"][data-orientation="vertical"][data-state="active"] {
+    @apply text-foreground border-border;
+    background-color: hsl(var(--card));
+    border-right-color: transparent;
+  }
+
+  .dr-tabs-content[data-variant="enclosed"][data-orientation="vertical"] {
+    @apply border-border mt-0 border border-l-0 p-4;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    background-color: hsl(var(--card));
+  }
+
+  .dr-tabs-list[data-variant="enclosed"][data-orientation="vertical"][data-color="accent"] {
+    background-image: linear-gradient(hsl(var(--primary)), hsl(var(--primary)));
+  }
+
+  /* As with the horizontal rule, the transparent seam-side border must
+     stay after the border-primary shorthand or it redraws the line the
+     notch exists to remove. */
+  .dr-tabs-trigger[data-variant="enclosed"][data-orientation="vertical"][data-color="accent"][data-state="active"] {
+    @apply border-primary;
+    border-right-color: transparent;
+  }
+
+  .dr-tabs-content[data-variant="enclosed"][data-orientation="vertical"][data-color="accent"] {
+    @apply border-primary;
+  }
+
   .dr-tabs-content {
     @apply focus-ring-tight mt-2;
     transition: opacity 150ms;

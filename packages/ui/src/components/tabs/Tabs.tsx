@@ -65,6 +65,7 @@ interface TabsProps extends Omit<
 
 function Tabs({
   ref,
+  className,
   value,
   defaultValue,
   onValueChange,
@@ -97,7 +98,15 @@ function Tabs({
   const styleCtx = React.useMemo(() => ({ variant, color }), [variant, color])
 
   return (
-    <div ref={ref} data-orientation={ctx.orientation} dir={ctx.dir} {...props}>
+    <div
+      ref={ref}
+      data-orientation={ctx.orientation}
+      data-variant={variant}
+      data-color={color}
+      dir={ctx.dir}
+      className={cn("dr-tabs", className)}
+      {...props}
+    >
       <TabsContext.Provider value={ctx}>
         <TabsIdContext.Provider value={idCtx}>
           <TabsStyleContext.Provider value={styleCtx}>

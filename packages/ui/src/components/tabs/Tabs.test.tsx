@@ -263,4 +263,71 @@ describe("Tabs", () => {
     expect(screen.getByText("Panel Two")).toBeInTheDocument()
     expect(screen.getByRole("tabpanel")).toHaveAttribute("data-color", "accent")
   })
+
+  it("exposes variant and color on the root for layout rules", () => {
+    const { container } = render(
+      <Tabs variant="enclosed" color="accent" defaultValue="tab-1">
+        <TabsList>
+          <TabsTrigger value="tab-1">Tab One</TabsTrigger>
+        </TabsList>
+        <TabsContent value="tab-1">Panel One</TabsContent>
+      </Tabs>,
+    )
+    const root = container.querySelector(".dr-tabs")
+    expect(root).toHaveAttribute("data-variant", "enclosed")
+    expect(root).toHaveAttribute("data-color", "accent")
+    expect(root).toHaveAttribute("data-orientation", "horizontal")
+  })
+
+  it("merges a consumer className onto the root", () => {
+    const { container } = render(
+      <Tabs className="custom-root" defaultValue="tab-1">
+        <TabsList>
+          <TabsTrigger value="tab-1">Tab One</TabsTrigger>
+        </TabsList>
+        <TabsContent value="tab-1">Panel One</TabsContent>
+      </Tabs>,
+    )
+    expect(container.firstChild).toHaveClass("dr-tabs", "custom-root")
+  })
+
+  it("propagates the vertical orientation to root, list, trigger, and content", () => {
+    const { container } = render(
+      <Tabs orientation="vertical" variant="enclosed" defaultValue="tab-1">
+        <TabsList>
+          <TabsTrigger value="tab-1">Tab One</TabsTrigger>
+          <TabsTrigger value="tab-2">Tab Two</TabsTrigger>
+        </TabsList>
+        <TabsContent value="tab-1">Panel One</TabsContent>
+      </Tabs>,
+    )
+    for (const el of [
+      container.querySelector(".dr-tabs"),
+      container.querySelector(".dr-tabs-list"),
+      screen.getByRole("tab", { name: "Tab One" }),
+      screen.getByRole("tabpanel"),
+    ]) {
+      expect(el).toHaveAttribute("data-orientation", "vertical")
+    }
+  })
+
+  it("moves between vertical tabs with the up and down arrows", async () => {
+    const user = userEvent.setup()
+    render(
+      <Tabs orientation="vertical" variant="enclosed" defaultValue="tab-1">
+        <TabsList>
+          <TabsTrigger value="tab-1">Tab One</TabsTrigger>
+          <TabsTrigger value="tab-2">Tab Two</TabsTrigger>
+        </TabsList>
+        <TabsContent value="tab-1">Panel One</TabsContent>
+        <TabsContent value="tab-2">Panel Two</TabsContent>
+      </Tabs>,
+    )
+    screen.getByRole("tab", { name: "Tab One" }).focus()
+    await user.keyboard("{ArrowDown}")
+    expect(screen.getByRole("tab", { name: "Tab Two" })).toHaveFocus()
+    expect(screen.getByText("Panel Two")).toBeInTheDocument()
+    await user.keyboard("{ArrowUp}")
+    expect(screen.getByRole("tab", { name: "Tab One" })).toHaveFocus()
+  })
 })
