@@ -160,4 +160,82 @@ describe("SegmentGroup", () => {
       screen.getByRole("radio", { name: "Day" }).getAttribute("data-state"),
     ).toBe("unchecked")
   })
+
+  it("emits data-color=default on root, item, and indicator by default", () => {
+    const { container } = render(<Basic />)
+    const root = container.querySelector(".dr-segment-group") as HTMLElement
+    const indicator = container.querySelector(
+      ".dr-segment-group-indicator",
+    ) as HTMLElement
+    expect(root).toHaveAttribute("data-color", "default")
+    expect(indicator).toHaveAttribute("data-color", "default")
+    expect(screen.getByRole("radio", { name: "Day" })).toHaveAttribute(
+      "data-color",
+      "default",
+    )
+  })
+
+  it("propagates color=accent to root, item, and indicator", () => {
+    const { container } = render(<Basic color="accent" />)
+    const root = container.querySelector(".dr-segment-group") as HTMLElement
+    const indicator = container.querySelector(
+      ".dr-segment-group-indicator",
+    ) as HTMLElement
+    expect(root).toHaveAttribute("data-color", "accent")
+    expect(indicator).toHaveAttribute("data-color", "accent")
+    expect(screen.getByRole("radio", { name: "Week" })).toHaveAttribute(
+      "data-color",
+      "accent",
+    )
+  })
+
+  it("does not leak color onto the DOM as a legacy html attribute", () => {
+    const { container } = render(<Basic color="accent" />)
+    const root = container.querySelector(".dr-segment-group") as HTMLElement
+    expect(root).not.toHaveAttribute("color")
+  })
+
+  it("keeps selection behaviour unchanged under the accent color", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    render(
+      <Basic defaultValue="day" color="accent" onValueChange={onValueChange} />,
+    )
+    const week = screen.getByRole("radio", { name: "Week" })
+    await user.click(week)
+    expect(onValueChange).toHaveBeenCalledWith("week")
+    expect(week.getAttribute("data-state")).toBe("checked")
+    expect(
+      screen.getByRole("radio", { name: "Day" }).getAttribute("data-state"),
+    ).toBe("unchecked")
+  })
+
+  it("keeps arrow-key navigation working under the accent color", async () => {
+    const user = userEvent.setup()
+    render(<Basic defaultValue="day" color="accent" />)
+    const day = screen.getByRole("radio", { name: "Day" })
+    const week = screen.getByRole("radio", { name: "Week" })
+    day.focus()
+    await user.keyboard("{ArrowRight}")
+    expect(week).toHaveFocus()
+    expect(week.getAttribute("data-state")).toBe("checked")
+  })
+
+  it("keeps the disabled state working under the accent color", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    render(
+      <Basic
+        defaultValue="day"
+        color="accent"
+        disabled
+        onValueChange={onValueChange}
+      />,
+    )
+    const week = screen.getByRole("radio", { name: "Week" })
+    expect(week).toBeDisabled()
+    await user.click(week)
+    expect(onValueChange).not.toHaveBeenCalled()
+    expect(week.getAttribute("data-state")).toBe("unchecked")
+  })
 })

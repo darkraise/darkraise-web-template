@@ -1,6 +1,36 @@
 @layer components {
   .dr-tabs-list {
-    @apply text-muted-foreground inline-flex items-center;
+    @apply text-muted-foreground relative inline-flex items-center;
+  }
+
+  /* The active-state chrome for every variant lives on this one element
+     rather than on the active trigger, so switching tabs slides it into
+     place instead of repainting two triggers. Triggers keep only their
+     text colour, which cross-fades on its own. */
+  /* left/top are pinned so both axes share the padding-box frame that
+     offsetLeft/offsetTop report. Without them an absolutely positioned
+     flex child resolves to its static position, which these
+     justify-center strips place at the centre — the indicator would
+     travel from the middle of the strip instead of its leading edge. */
+  .dr-tabs-indicator {
+    @apply pointer-events-none absolute top-0 left-0 z-0;
+    transition:
+      translate 200ms ease-out,
+      width 200ms ease-out,
+      height 200ms ease-out,
+      top 200ms ease-out,
+      left 200ms ease-out;
+  }
+
+  /* Suppress the very first transition: on mount the indicator has no
+     measured rect yet, so animating from the strip's origin would read
+     as the pill flying in from the left. */
+  .dr-tabs-list[data-mounted="false"] .dr-tabs-indicator {
+    transition-duration: 0ms;
+  }
+
+  .dr-tabs-indicator[data-active="false"] {
+    @apply opacity-0;
   }
 
   .dr-tabs-list[data-variant="default"] {
@@ -15,8 +45,10 @@
     @apply border-border gap-4 border-b;
   }
 
+  /* z-10 keeps labels above the sliding indicator, which shares the
+     strip's stacking context at z-0. */
   .dr-tabs-trigger {
-    @apply hover:text-foreground focus-ring inline-flex cursor-pointer items-center justify-center text-sm font-medium whitespace-nowrap disabled:pointer-events-none disabled:opacity-50;
+    @apply hover:text-foreground focus-ring relative z-10 inline-flex cursor-pointer items-center justify-center text-sm font-medium whitespace-nowrap disabled:pointer-events-none disabled:opacity-50;
     transition:
       background-color 150ms,
       color 150ms,
@@ -29,24 +61,41 @@
   }
 
   .dr-tabs-trigger[data-variant="outline"] {
-    @apply data-[state=active]:border-primary data-[state=active]:text-primary rounded-sm border border-transparent bg-transparent px-[var(--density-button-px)] py-[var(--density-row-py)];
+    @apply data-[state=active]:text-primary rounded-sm border border-transparent bg-transparent px-[var(--density-button-px)] py-[var(--density-row-py)];
   }
 
+  /* The transparent bottom border stays for layout — it reserves the row
+     the indicator bar occupies, so the label does not shift by 2px when
+     the tab becomes active. The visible rule is drawn by the indicator. */
   .dr-tabs-trigger[data-variant="underline"] {
-    @apply data-[state=active]:border-primary data-[state=active]:text-primary -mb-px h-full border-b-2 border-transparent px-[var(--density-button-px)] py-[var(--density-row-py)];
+    @apply data-[state=active]:text-primary -mb-px h-full border-b-2 border-transparent px-[var(--density-button-px)] py-[var(--density-row-py)];
   }
 
-  /* Affordance glow on outline + underline active tabs (preset-driven
-     — transparent under Default/Glass; primary glow under Neon).
-     Outline gets the omni-directional glow because all four borders
-     are primary; underline gets the bottom-only directional glow so
-     the halo emanates downward from the bottom border instead of
-     wrapping all four edges. */
-  .dr-tabs-trigger[data-variant="outline"][data-state="active"] {
+  .dr-tabs-indicator[data-variant="default"] {
+    @apply bg-primary rounded-sm;
+    box-shadow: var(--shadow-button), var(--affordance-glow);
+  }
+
+  /* Affordance glow on outline + underline (preset-driven — transparent
+     under Default/Glass; primary glow under Neon). Outline gets the
+     omni-directional glow because all four borders are primary;
+     underline gets the bottom-only directional glow so the halo
+     emanates downward from the bar instead of wrapping all four edges. */
+  .dr-tabs-indicator[data-variant="outline"] {
+    @apply border-primary rounded-sm border;
     box-shadow: var(--affordance-glow);
   }
-  .dr-tabs-trigger[data-variant="underline"][data-state="active"] {
+
+  .dr-tabs-indicator[data-variant="underline"] {
+    @apply bg-primary;
     box-shadow: var(--affordance-glow-bottom);
+  }
+
+  /* Vertical underline runs down the right edge, so the halo has to come
+     off that edge instead of the bottom one. There is no right-hand
+     token, so the omni-directional glow stands in. */
+  .dr-tabs-indicator[data-variant="underline"][data-orientation="vertical"] {
+    box-shadow: var(--affordance-glow);
   }
 
   /* Enclosed (folder) variant, horizontal only. Three cooperating rules:
@@ -105,12 +154,20 @@
     outline-offset: -2px;
   }
 
-  /* hsl(var(--card)) deliberately, NOT the bg-card utility: that resolves
+  .dr-tabs-trigger[data-variant="enclosed"][data-orientation="horizontal"][data-state="active"] {
+    @apply text-foreground;
+  }
+
+  /* The folder chrome rides the indicator, so the notch slides with the
+     selection instead of jumping between tabs.
+
+     hsl(var(--card)) deliberately, NOT the bg-card utility: that resolves
      through --color-card, which multiplies in --surface-opacity — 0.78 to
      0.3 under glass, 0.82 under sci-fi. A translucent fill cannot erase
      the baseline and the seam would ghost through. */
-  .dr-tabs-trigger[data-variant="enclosed"][data-orientation="horizontal"][data-state="active"] {
-    @apply text-foreground border-border;
+  .dr-tabs-indicator[data-variant="enclosed"][data-orientation="horizontal"] {
+    @apply border-border border;
+    border-radius: var(--radius) var(--radius) 0 0;
     background-color: hsl(var(--card));
     border-bottom-color: transparent;
   }
@@ -121,18 +178,150 @@
     background-color: hsl(var(--card));
   }
 
+  /* Accent colour on the folder variant — the three borders retint to
+     the brand hue and both fills stay hsl(var(--card)). The fills are
+     load-bearing: the active trigger's opaque fill is what erases the
+     strip's baseline to form the notch, so tinting it would break the
+     joint the variant exists to hide. */
+  .dr-tabs-list[data-variant="enclosed"][data-orientation="horizontal"][data-color="accent"] {
+    background-image: linear-gradient(hsl(var(--primary)), hsl(var(--primary)));
+  }
+
+  /* border-bottom-color must stay AFTER the border-primary shorthand:
+     @apply expands in place to a four-sided border-color, and the
+     transparent bottom edge is what lets the fill through to erase the
+     baseline. Reversed, this redraws the very line the seam removes. */
+  .dr-tabs-indicator[data-variant="enclosed"][data-orientation="horizontal"][data-color="accent"] {
+    @apply border-primary;
+    border-bottom-color: transparent;
+  }
+
+  .dr-tabs-content[data-variant="enclosed"][data-orientation="horizontal"][data-color="accent"] {
+    @apply border-primary;
+  }
+
+  /* --- Vertical orientation ------------------------------------------
+     The root itself becomes the row container, so a vertical Tabs no
+     longer requires the consumer to wrap the list and the panels in
+     their own flex box (which was the only way this worked before, and
+     left `orientation="vertical"` styling nothing on its own). */
+  .dr-tabs[data-orientation="vertical"] {
+    @apply flex items-start gap-4;
+  }
+
+  .dr-tabs-list[data-orientation="vertical"] {
+    @apply flex-col items-stretch;
+  }
+
+  /* No w-full: the list is items-stretch, so triggers already fill it.
+     A percentage width here would resolve against a container whose
+     own width is content-derived from these same triggers. */
+  .dr-tabs-trigger[data-orientation="vertical"] {
+    @apply justify-start;
+  }
+
+  .dr-tabs-content[data-orientation="vertical"] {
+    @apply mt-0 min-w-0 flex-1;
+  }
+
+  /* Underline runs down the list's right edge instead of across its
+     bottom. Widths and margins flip axis; the active border colour is
+     left to the orientation-agnostic base rule, which paints all four
+     sides. */
+  .dr-tabs-list[data-variant="underline"][data-orientation="vertical"] {
+    @apply gap-1 border-r border-b-0;
+  }
+
+  .dr-tabs-trigger[data-variant="underline"][data-orientation="vertical"] {
+    @apply -mr-px mb-0 h-auto border-r-2 border-b-0;
+  }
+
+  /* --affordance-glow-bottom is a bottom-only halo, which on a
+     right-hand border would emanate off the wrong edge. There is no
+     right-hand token, so the omni-directional glow stands in — it
+     still reads as a halo around the active tab under Neon/Sci-fi. */
+  .dr-tabs-trigger[data-variant="underline"][data-orientation="vertical"][data-state="active"] {
+    box-shadow: var(--affordance-glow);
+  }
+
+  /* Enclosed, vertical: the folder seam rotated a quarter turn. The
+     baseline runs down the list's right edge, the active trigger
+     overhangs it by 1px and erases it across its own height, and the
+     panel's left edge is that same line — so tab and panel read as one
+     surface. Root gap must be 0 and items stretched, or the two halves
+     of the seam never touch and the list is too short to carry the
+     line the full height of the panel. */
+  .dr-tabs[data-orientation="vertical"][data-variant="enclosed"] {
+    @apply items-stretch gap-0;
+  }
+
+  .dr-tabs-list[data-variant="enclosed"][data-orientation="vertical"] {
+    @apply flex flex-col justify-start bg-transparent p-0;
+    gap: 0.125rem;
+    /* Same reasoning as the horizontal variant: overflow makes this a
+       scroll container, which clips descendant painting at the padding
+       edge, so the line has to live inside the padding box (via
+       padding-right plus a right-anchored fill) to stay within reach of
+       the active trigger's overhang. */
+    padding-right: 1px;
+    background-image: linear-gradient(hsl(var(--border)), hsl(var(--border)));
+    background-size: 1px 100%;
+    background-repeat: no-repeat;
+    background-position: right;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+
+  .dr-tabs-list[data-variant="enclosed"][data-orientation="vertical"]::-webkit-scrollbar {
+    display: none;
+  }
+
+  .dr-tabs-trigger[data-variant="enclosed"][data-orientation="vertical"] {
+    @apply justify-start border border-transparent px-[var(--density-button-px)] py-[var(--density-row-py)];
+    border-radius: var(--radius) 0 0 var(--radius);
+    margin-right: -1px;
+  }
+
+  .dr-tabs-trigger[data-variant="enclosed"][data-orientation="vertical"]:focus-visible {
+    outline-offset: -2px;
+  }
+
+  .dr-tabs-trigger[data-variant="enclosed"][data-orientation="vertical"][data-state="active"] {
+    @apply text-foreground;
+  }
+
+  .dr-tabs-indicator[data-variant="enclosed"][data-orientation="vertical"] {
+    @apply border-border border;
+    border-radius: var(--radius) 0 0 var(--radius);
+    background-color: hsl(var(--card));
+    border-right-color: transparent;
+  }
+
+  .dr-tabs-content[data-variant="enclosed"][data-orientation="vertical"] {
+    @apply border-border mt-0 border border-l-0 p-4;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    background-color: hsl(var(--card));
+  }
+
+  .dr-tabs-list[data-variant="enclosed"][data-orientation="vertical"][data-color="accent"] {
+    background-image: linear-gradient(hsl(var(--primary)), hsl(var(--primary)));
+  }
+
+  /* As with the horizontal rule, the transparent seam-side border must
+     stay after the border-primary shorthand or it redraws the line the
+     notch exists to remove. */
+  .dr-tabs-indicator[data-variant="enclosed"][data-orientation="vertical"][data-color="accent"] {
+    @apply border-primary;
+    border-right-color: transparent;
+  }
+
+  .dr-tabs-content[data-variant="enclosed"][data-orientation="vertical"][data-color="accent"] {
+    @apply border-primary;
+  }
+
   .dr-tabs-content {
     @apply focus-ring-tight mt-2;
     transition: opacity 150ms;
-  }
-
-  /* Default surface style — active tab gets the primary hue fill.
-     Composes --shadow-button with the preset-driven --affordance-glow
-     so the active tab gains a primary-color glow under Neon (and
-     stays visually unchanged under Default/Glass). */
-  .dr-tabs-trigger[data-variant="default"][data-state="active"] {
-    background-color: hsl(var(--primary));
-    box-shadow: var(--shadow-button), var(--affordance-glow);
   }
 
   /* Hold active-tab text color on hover so the base
@@ -146,11 +335,9 @@
     @apply text-primary;
   }
 
-  /* Glass surface style — active tab gets the glass gradient.
-     Composes the design-token halo + active-inset so the active tab
-     reads against the frosted list and the preset's identity holds. */
-  [data-preset="glass"]
-    .dr-tabs-trigger[data-variant="default"][data-state="active"] {
+  /* Glass surface style — the moving indicator carries the glass
+     gradient, so the preset identity travels with the selection. */
+  [data-preset="glass"] .dr-tabs-indicator[data-variant="default"] {
     background-color: transparent;
     background-image: linear-gradient(
       180deg,
@@ -167,9 +354,9 @@
       var(--glass-state-active-inset);
   }
 
-  /* Outline + underline variants: frost the trigger at rest, add a
-     hover glow, and tint the active selected fill with the glass-state
-     token so all three variants share the preset identity. */
+  /* Outline + underline variants: frost the trigger at rest and add a
+     hover glow, then tint the indicator's selected fill with the
+     glass-state token so all three variants share the preset identity. */
   [data-preset="glass"] .dr-tabs-trigger[data-variant="outline"],
   [data-preset="glass"] .dr-tabs-trigger[data-variant="underline"] {
     -webkit-backdrop-filter: var(--backdrop-filter);
@@ -181,29 +368,30 @@
     box-shadow: var(--glass-state-hover-glow);
   }
 
-  [data-preset="glass"]
-    .dr-tabs-trigger[data-variant="outline"][data-state="active"] {
+  [data-preset="glass"] .dr-tabs-indicator[data-variant="outline"] {
     background-image: var(--glass-state-selected-fill);
     box-shadow:
       var(--inset-hi), var(--glass-halo-raised), var(--glass-state-active-inset);
   }
 
-  [data-preset="glass"]
-    .dr-tabs-trigger[data-variant="underline"][data-state="active"] {
+  [data-preset="glass"] .dr-tabs-indicator[data-variant="underline"] {
     box-shadow: var(--affordance-glow-bottom), var(--glass-state-hover-glow);
   }
 
-  /* Neon preset — default-variant active tab swaps the solid primary
-     fill for a translucent-primary surface with a full primary border
-     and primary text color, so it reads as "outlined neon button" to
-     match Neon's overall aesthetic. The --affordance-glow inherited
-     from the prior commit composes on top via the base rule's
-     box-shadow chain. */
-  [data-preset="neon"]
-    .dr-tabs-trigger[data-variant="default"][data-state="active"] {
+  /* Neon preset — the default-variant indicator swaps the solid primary
+     fill for a translucent-primary surface with a full primary border,
+     so it reads as "outlined neon button" to match Neon's aesthetic.
+     The active label colour stays on the trigger. */
+  [data-preset="neon"] .dr-tabs-indicator[data-variant="default"] {
     background-color: hsl(var(--primary) / 0.15);
+    border: 1px solid hsl(var(--primary));
+  }
+
+  [data-preset="neon"]
+    .dr-tabs-trigger[data-variant="default"][data-state="active"],
+  [data-preset="neon"]
+    .dr-tabs-trigger[data-variant="default"][data-state="active"]:hover {
     color: hsl(var(--primary));
-    border-color: hsl(var(--primary));
   }
   /* And the outline/underline variants get their existing primary
      border + text plus the same affordance glow from --shadow-button

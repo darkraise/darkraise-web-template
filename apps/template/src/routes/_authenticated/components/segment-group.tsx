@@ -15,6 +15,83 @@ export const Route = createFileRoute(
   component: SegmentGroupPage,
 })
 
+const VARIANTS = ["default", "outline"] as const
+const COLORS = ["default", "accent"] as const
+const ORIENTATIONS = ["horizontal", "vertical"] as const
+
+// `color="accent"` retints neutral chrome to the brand hue, so it only
+// has somewhere to go on the default variant. The outline variant draws
+// its ring and its checked label in the primary colour already.
+const ACCENT_AWARE_VARIANTS = new Set<string>(["default"])
+
+function MatrixCell({
+  variant,
+  color,
+  orientation,
+}: {
+  variant: (typeof VARIANTS)[number]
+  color: (typeof COLORS)[number]
+  orientation: (typeof ORIENTATIONS)[number]
+}) {
+  const redundant = color === "accent" && !ACCENT_AWARE_VARIANTS.has(variant)
+
+  return (
+    <div className="space-y-2">
+      <p className="text-muted-foreground font-mono text-[11px]">
+        color=&quot;{color}&quot;
+      </p>
+      <SegmentGroup
+        variant={variant}
+        color={color}
+        orientation={orientation}
+        defaultValue="week"
+      >
+        <SegmentGroupIndicator />
+        <SegmentGroupItem value="day">Day</SegmentGroupItem>
+        <SegmentGroupItem value="week">Week</SegmentGroupItem>
+        <SegmentGroupItem value="month">Month</SegmentGroupItem>
+      </SegmentGroup>
+      {redundant ? (
+        <p className="text-muted-foreground/70 max-w-[22rem] text-[11px]">
+          Identical to the default colour — the outline variant already draws
+          its ring and checked label in the primary hue.
+        </p>
+      ) : null}
+    </div>
+  )
+}
+
+function SegmentGroupMatrix() {
+  return (
+    <div className="space-y-8">
+      {ORIENTATIONS.map((orientation) => (
+        <div key={orientation} className="space-y-5">
+          <p className="text-foreground text-xs font-semibold tracking-wide uppercase">
+            {orientation}
+          </p>
+          {VARIANTS.map((variant) => (
+            <div key={variant} className="space-y-3">
+              <p className="text-muted-foreground font-mono text-[11px]">
+                variant=&quot;{variant}&quot;
+              </p>
+              <div className="flex flex-wrap items-start gap-10">
+                {COLORS.map((color) => (
+                  <MatrixCell
+                    key={color}
+                    variant={variant}
+                    color={color}
+                    orientation={orientation}
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+  )
+}
+
 function SegmentGroupPage() {
   const [range, setRange] = useState("week")
   const [layout, setLayout] = useState("list")
@@ -134,6 +211,23 @@ function SegmentGroupPage() {
           <SegmentGroupItem value="comfortable">Comfortable</SegmentGroupItem>
           <SegmentGroupItem value="spacious">Spacious</SegmentGroupItem>
         </SegmentGroup>
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Variant × colour × orientation matrix"
+        code={`<SegmentGroup
+  variant={variant}          // "default" | "outline"
+  color={color}              // "default" | "accent"
+  orientation={orientation}  // "horizontal" | "vertical"
+  defaultValue="week"
+>
+  <SegmentGroupIndicator />
+  <SegmentGroupItem value="day">Day</SegmentGroupItem>
+  <SegmentGroupItem value="week">Week</SegmentGroupItem>
+  <SegmentGroupItem value="month">Month</SegmentGroupItem>
+</SegmentGroup>`}
+      >
+        <SegmentGroupMatrix />
       </ShowcaseExample>
     </ShowcasePage>
   )

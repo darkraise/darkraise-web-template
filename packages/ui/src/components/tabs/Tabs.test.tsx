@@ -149,6 +149,28 @@ describe("Tabs", () => {
     )
   })
 
+  it("keeps arrow-key navigation working under the accent color", async () => {
+    const user = userEvent.setup()
+    render(
+      <Tabs variant="enclosed" color="accent" defaultValue="tab-1">
+        <TabsList>
+          <TabsTrigger value="tab-1">Tab One</TabsTrigger>
+          <TabsTrigger value="tab-2">Tab Two</TabsTrigger>
+        </TabsList>
+        <TabsContent value="tab-1">Panel One</TabsContent>
+        <TabsContent value="tab-2">Panel Two</TabsContent>
+      </Tabs>,
+    )
+    await user.tab()
+    expect(screen.getByRole("tab", { name: "Tab One" })).toHaveFocus()
+    await user.keyboard("{ArrowRight}")
+    expect(screen.getByRole("tab", { name: "Tab Two" })).toHaveFocus()
+    expect(screen.getByRole("tab", { name: "Tab Two" })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    )
+  })
+
   it("keeps force-mounted panels hidden under a non-default variant", () => {
     const { container } = render(
       <Tabs variant="enclosed" defaultValue="tab-1">
@@ -174,5 +196,203 @@ describe("Tabs", () => {
     for (const panel of panels) {
       expect(panel).toHaveAttribute("data-variant", "enclosed")
     }
+  })
+
+  it("defaults data-color to default on list, trigger, and content", () => {
+    const { container } = render(<TestTabs />)
+    expect(container.querySelector(".dr-tabs-list")).toHaveAttribute(
+      "data-color",
+      "default",
+    )
+    expect(screen.getByRole("tab", { name: "Tab One" })).toHaveAttribute(
+      "data-color",
+      "default",
+    )
+    expect(screen.getByRole("tabpanel")).toHaveAttribute(
+      "data-color",
+      "default",
+    )
+  })
+
+  it("propagates the root color to list, trigger, and content", () => {
+    const { container } = render(
+      <Tabs variant="enclosed" color="accent" defaultValue="tab-1">
+        <TabsList>
+          <TabsTrigger value="tab-1">Tab One</TabsTrigger>
+          <TabsTrigger value="tab-2">Tab Two</TabsTrigger>
+        </TabsList>
+        <TabsContent value="tab-1">Panel One</TabsContent>
+      </Tabs>,
+    )
+    expect(container.querySelector(".dr-tabs-list")).toHaveAttribute(
+      "data-color",
+      "accent",
+    )
+    expect(screen.getByRole("tab", { name: "Tab One" })).toHaveAttribute(
+      "data-color",
+      "accent",
+    )
+    expect(screen.getByRole("tabpanel")).toHaveAttribute("data-color", "accent")
+  })
+
+  it("does not leak color onto the root as a legacy html attribute", () => {
+    const { container } = render(
+      <Tabs color="accent" defaultValue="tab-1">
+        <TabsList>
+          <TabsTrigger value="tab-1">Tab One</TabsTrigger>
+        </TabsList>
+        <TabsContent value="tab-1">Panel One</TabsContent>
+      </Tabs>,
+    )
+    expect(container.firstChild).not.toHaveAttribute("color")
+  })
+
+  it("keeps tab switching working under the accent color", async () => {
+    const user = userEvent.setup()
+    render(
+      <Tabs variant="enclosed" color="accent" defaultValue="tab-1">
+        <TabsList>
+          <TabsTrigger value="tab-1">Tab One</TabsTrigger>
+          <TabsTrigger value="tab-2">Tab Two</TabsTrigger>
+        </TabsList>
+        <TabsContent value="tab-1">Panel One</TabsContent>
+        <TabsContent value="tab-2">Panel Two</TabsContent>
+      </Tabs>,
+    )
+    await user.click(screen.getByRole("tab", { name: "Tab Two" }))
+    expect(screen.getByText("Panel Two")).toBeInTheDocument()
+    expect(screen.getByRole("tabpanel")).toHaveAttribute("data-color", "accent")
+  })
+
+  it("exposes variant and color on the root for layout rules", () => {
+    const { container } = render(
+      <Tabs variant="enclosed" color="accent" defaultValue="tab-1">
+        <TabsList>
+          <TabsTrigger value="tab-1">Tab One</TabsTrigger>
+        </TabsList>
+        <TabsContent value="tab-1">Panel One</TabsContent>
+      </Tabs>,
+    )
+    const root = container.querySelector(".dr-tabs")
+    expect(root).toHaveAttribute("data-variant", "enclosed")
+    expect(root).toHaveAttribute("data-color", "accent")
+    expect(root).toHaveAttribute("data-orientation", "horizontal")
+  })
+
+  it("merges a consumer className onto the root", () => {
+    const { container } = render(
+      <Tabs className="custom-root" defaultValue="tab-1">
+        <TabsList>
+          <TabsTrigger value="tab-1">Tab One</TabsTrigger>
+        </TabsList>
+        <TabsContent value="tab-1">Panel One</TabsContent>
+      </Tabs>,
+    )
+    expect(container.firstChild).toHaveClass("dr-tabs", "custom-root")
+  })
+
+  it("propagates the vertical orientation to root, list, trigger, and content", () => {
+    const { container } = render(
+      <Tabs orientation="vertical" variant="enclosed" defaultValue="tab-1">
+        <TabsList>
+          <TabsTrigger value="tab-1">Tab One</TabsTrigger>
+          <TabsTrigger value="tab-2">Tab Two</TabsTrigger>
+        </TabsList>
+        <TabsContent value="tab-1">Panel One</TabsContent>
+      </Tabs>,
+    )
+    for (const el of [
+      container.querySelector(".dr-tabs"),
+      container.querySelector(".dr-tabs-list"),
+      screen.getByRole("tab", { name: "Tab One" }),
+      screen.getByRole("tabpanel"),
+    ]) {
+      expect(el).toHaveAttribute("data-orientation", "vertical")
+    }
+  })
+
+  it("renders a decorative indicator inside the tablist", () => {
+    const { container } = render(<TestTabs />)
+    const indicator = container.querySelector(".dr-tabs-indicator")
+    expect(indicator).toBeInTheDocument()
+    expect(indicator?.parentElement).toHaveClass("dr-tabs-list")
+    expect(indicator).toHaveAttribute("aria-hidden", "true")
+    // It must not join the tablist's accessibility tree.
+    expect(screen.getAllByRole("tab")).toHaveLength(2)
+  })
+
+  it("mirrors variant, color, and orientation onto the indicator", () => {
+    const { container } = render(
+      <Tabs
+        variant="underline"
+        color="accent"
+        orientation="vertical"
+        defaultValue="tab-1"
+      >
+        <TabsList>
+          <TabsTrigger value="tab-1">Tab One</TabsTrigger>
+        </TabsList>
+        <TabsContent value="tab-1">Panel One</TabsContent>
+      </Tabs>,
+    )
+    const indicator = container.querySelector(".dr-tabs-indicator")
+    expect(indicator).toHaveAttribute("data-variant", "underline")
+    expect(indicator).toHaveAttribute("data-color", "accent")
+    expect(indicator).toHaveAttribute("data-orientation", "vertical")
+  })
+
+  it("marks the indicator inactive when no tab is selected", () => {
+    const { container } = render(
+      <Tabs defaultValue="">
+        <TabsList>
+          <TabsTrigger value="tab-1">Tab One</TabsTrigger>
+        </TabsList>
+        <TabsContent value="tab-1">Panel One</TabsContent>
+      </Tabs>,
+    )
+    expect(container.querySelector(".dr-tabs-indicator")).toHaveAttribute(
+      "data-active",
+      "false",
+    )
+  })
+
+  it("suppresses the indicator transition until after first paint", () => {
+    const { container } = render(<TestTabs />)
+    // data-mounted gates the CSS transition; it must start false so the
+    // indicator does not slide in from the strip's origin on mount.
+    expect(container.querySelector(".dr-tabs-list")).toHaveAttribute(
+      "data-mounted",
+      "false",
+    )
+  })
+
+  it("keeps the indicator tracking the active tab after a switch", async () => {
+    const user = userEvent.setup()
+    const { container } = render(<TestTabs />)
+    await user.click(screen.getByRole("tab", { name: "Tab Two" }))
+    expect(container.querySelector(".dr-tabs-indicator")).toHaveAttribute(
+      "data-active",
+      "true",
+    )
+  })
+
+  it("moves between vertical tabs with the up and down arrows", async () => {
+    const user = userEvent.setup()
+    render(
+      <Tabs orientation="vertical" variant="enclosed" defaultValue="tab-1">
+        <TabsList>
+          <TabsTrigger value="tab-1">Tab One</TabsTrigger>
+          <TabsTrigger value="tab-2">Tab Two</TabsTrigger>
+        </TabsList>
+        <TabsContent value="tab-1">Panel One</TabsContent>
+        <TabsContent value="tab-2">Panel Two</TabsContent>
+      </Tabs>,
+    )
+    screen.getByRole("tab", { name: "Tab One" }).focus()
+    await user.keyboard("{ArrowDown}")
+    expect(screen.getByRole("tab", { name: "Tab Two" })).toHaveFocus()
+    expect(screen.getByText("Panel Two")).toBeInTheDocument()
+    await user.keyboard("{ArrowUp}")
+    expect(screen.getByRole("tab", { name: "Tab One" })).toHaveFocus()
   })
 })

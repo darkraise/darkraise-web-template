@@ -324,10 +324,17 @@
    to the element itself, so any background fill it gains on hover
    or selection inherits the notched polygon shape. That keeps the
    hover and selected states consistent with the rest of the sci-fi
-   geometry instead of rendering as rectangular bars under notched. */
+   geometry instead of rendering as rectangular bars under notched.
+   The segment-group indicator is included for the same reason even
+   though its fill is persistent rather than state-driven: it's a
+   sibling overlay, not a state of the items it sits on, so it needs
+   its own clip to keep the notch instead of inheriting one. */
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-toggle,
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-toggle-group,
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-segment-group-item,
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-segment-group-indicator,
+[data-preset="scifi"][data-scifi-frame="notched"]
+  .dr-tabs-indicator:not([data-variant="enclosed"]),
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-sidebar-nav-link,
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-listbox-item,
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-menu-item,
@@ -1180,8 +1187,7 @@
 [data-preset="scifi"] .dr-checkbox[data-state="indeterminate"],
 [data-preset="scifi"] .dr-radio-group-item[data-state="checked"],
 [data-preset="scifi"] .dr-switch[data-state="checked"],
-[data-preset="scifi"]
-  .dr-tabs-trigger[data-state="active"]:not([data-variant="enclosed"]),
+[data-preset="scifi"] .dr-tabs-indicator:not([data-variant="enclosed"]),
 [data-preset="scifi"] .dr-pagination-link[data-active="true"],
 [data-preset="scifi"] .dr-tree-view-branch-control[data-selected="true"],
 [data-preset="scifi"] .dr-tree-view-item[data-selected="true"],

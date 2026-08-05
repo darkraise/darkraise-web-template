@@ -438,8 +438,7 @@
 [data-preset="neon"] .dr-checkbox[data-state="indeterminate"],
 [data-preset="neon"] .dr-radio-group-item[data-state="checked"],
 [data-preset="neon"] .dr-switch[data-state="checked"],
-[data-preset="neon"]
-  .dr-tabs-trigger[data-state="active"]:not([data-variant="enclosed"]),
+[data-preset="neon"] .dr-tabs-indicator:not([data-variant="enclosed"]),
 [data-preset="neon"] .dr-pagination-link[data-active="true"],
 [data-preset="neon"] .dr-tree-view-branch-control[data-selected="true"],
 [data-preset="neon"] .dr-tree-view-item[data-selected="true"],
@@ -501,4 +500,21 @@
 [data-preset="neon"] .dr-tabs-trigger[data-state="active"],
 [data-preset="neon"] .dr-pagination-link[data-active="true"] {
   text-shadow: var(--neon-text-shadow);
+}
+
+/* The accent segment pill would otherwise be the only solid primary
+   fill in this preset. It follows the same translucent-plus-border
+   treatment the active tab gets, so the selection reads as an outlined
+   neon element rather than a foreign solid chip. */
+[data-preset="neon"]
+  .dr-segment-group[data-color="accent"]
+  .dr-segment-group-indicator[data-variant="default"] {
+  background-color: hsl(var(--primary) / 0.15);
+  border: 1px solid hsl(var(--primary));
+}
+
+[data-preset="neon"]
+  .dr-segment-group[data-color="accent"]
+  .dr-segment-group-item[data-variant="default"][data-state="checked"] {
+  color: hsl(var(--primary));
 }

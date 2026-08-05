@@ -77,6 +77,29 @@
     @apply text-primary;
   }
 
+  /* Accent colour — the pill takes the brand hue and the checked label
+     flips to the on-primary colour. The track is untouched.
+
+     box-shadow is re-declared rather than left to the base rule: the
+     glass rule below also sets box-shadow, and at (0,3,0) it beats the
+     base indicator's (0,1,0). Without this line the accent pill under
+     glass gets a primary inset on a primary fill — invisible — or, where
+     that token is zeroed inside the page content area, no elevation at
+     all. background-image is reset for the same reason: glass paints a
+     gradient, so clearing only background-color leaves the pill
+     fillable. */
+  .dr-segment-group[data-color="accent"]
+    .dr-segment-group-indicator[data-variant="default"] {
+    background-color: hsl(var(--primary));
+    background-image: none;
+    box-shadow: var(--shadow-button), var(--affordance-glow);
+  }
+
+  .dr-segment-group[data-color="accent"]
+    .dr-segment-group-item[data-variant="default"][data-state="checked"] {
+    @apply text-primary-foreground;
+  }
+
   /* Glass-preset SegmentGroup. The track gets the frosted treatment;
      the sliding indicator gains the accent-tinted selected-fill from
      --glass-state-selected-fill so the active segment reads as
