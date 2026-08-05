@@ -311,6 +311,71 @@ describe("Tabs", () => {
     }
   })
 
+  it("renders a decorative indicator inside the tablist", () => {
+    const { container } = render(<TestTabs />)
+    const indicator = container.querySelector(".dr-tabs-indicator")
+    expect(indicator).toBeInTheDocument()
+    expect(indicator?.parentElement).toHaveClass("dr-tabs-list")
+    expect(indicator).toHaveAttribute("aria-hidden", "true")
+    // It must not join the tablist's accessibility tree.
+    expect(screen.getAllByRole("tab")).toHaveLength(2)
+  })
+
+  it("mirrors variant, color, and orientation onto the indicator", () => {
+    const { container } = render(
+      <Tabs
+        variant="underline"
+        color="accent"
+        orientation="vertical"
+        defaultValue="tab-1"
+      >
+        <TabsList>
+          <TabsTrigger value="tab-1">Tab One</TabsTrigger>
+        </TabsList>
+        <TabsContent value="tab-1">Panel One</TabsContent>
+      </Tabs>,
+    )
+    const indicator = container.querySelector(".dr-tabs-indicator")
+    expect(indicator).toHaveAttribute("data-variant", "underline")
+    expect(indicator).toHaveAttribute("data-color", "accent")
+    expect(indicator).toHaveAttribute("data-orientation", "vertical")
+  })
+
+  it("marks the indicator inactive when no tab is selected", () => {
+    const { container } = render(
+      <Tabs defaultValue="">
+        <TabsList>
+          <TabsTrigger value="tab-1">Tab One</TabsTrigger>
+        </TabsList>
+        <TabsContent value="tab-1">Panel One</TabsContent>
+      </Tabs>,
+    )
+    expect(container.querySelector(".dr-tabs-indicator")).toHaveAttribute(
+      "data-active",
+      "false",
+    )
+  })
+
+  it("suppresses the indicator transition until after first paint", () => {
+    const { container } = render(<TestTabs />)
+    // data-mounted gates the CSS transition; it must start false so the
+    // indicator does not slide in from the strip's origin on mount.
+    expect(container.querySelector(".dr-tabs-list")).toHaveAttribute(
+      "data-mounted",
+      "false",
+    )
+  })
+
+  it("keeps the indicator tracking the active tab after a switch", async () => {
+    const user = userEvent.setup()
+    const { container } = render(<TestTabs />)
+    await user.click(screen.getByRole("tab", { name: "Tab Two" }))
+    expect(container.querySelector(".dr-tabs-indicator")).toHaveAttribute(
+      "data-active",
+      "true",
+    )
+  })
+
   it("moves between vertical tabs with the up and down arrows", async () => {
     const user = userEvent.setup()
     render(

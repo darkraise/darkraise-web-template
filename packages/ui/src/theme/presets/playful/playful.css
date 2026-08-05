@@ -137,6 +137,30 @@
   transform: scale(1.04);
 }
 
+/* The indicator travels on the `translate` property, so its pop rides
+   the independent `scale` one. Both are restated here in full: this rule
+   outranks the component's, and dropping the travelling properties from
+   the list would make the pill teleport under this preset alone. */
+[data-preset="playful"] .dr-tabs-indicator {
+  transition:
+    translate 200ms var(--playful-bounce),
+    width 200ms var(--playful-bounce),
+    height 200ms var(--playful-bounce),
+    top 200ms var(--playful-bounce),
+    left 200ms var(--playful-bounce),
+    scale 200ms var(--playful-bounce);
+}
+
+/* Underline is excluded alongside enclosed: its indicator is a 2px rule,
+   and scaling a hairline by 4% is meaningless. The trigger keeps its own
+   pop, so the active label still springs; the bar simply stays put. */
+[data-preset="playful"]
+  .dr-tabs-indicator:not([data-variant="enclosed"]):not(
+    [data-variant="underline"]
+  ) {
+  scale: 1.04;
+}
+
 /* --- Phase 2: Form controls -------------------------------------- */
 
 /* Checkbox: bounce on check via the wrapper's data-state transition. */
