@@ -14,6 +14,15 @@ import { Button } from "@components/button"
 
 interface SearchCommandProps {
   navItems?: Array<{ label: string; href: string }>
+  /**
+   * Render as an icon-only square, for the collapsed sidebar rail. Passed
+   * explicitly rather than read from sidebar context: this component also
+   * renders in the header of the layouts that have no sidebar at all, where
+   * `useSidebar()` would throw.
+   *
+   * @default false
+   */
+  collapsed?: boolean
 }
 
 // Detect Mac so the keyboard shortcut hint matches the actual modifier.
@@ -35,7 +44,10 @@ const detectMac = (): boolean => {
 const isMac = detectMac()
 const SHORTCUT_LABEL = isMac ? "⌘K" : "Ctrl K"
 
-export function SearchCommand({ navItems = [] }: SearchCommandProps) {
+export function SearchCommand({
+  navItems = [],
+  collapsed = false,
+}: SearchCommandProps) {
   const [open, setOpen] = useState(false)
   const navigate = useRouterAdapter().useNavigate()
 
@@ -55,12 +67,20 @@ export function SearchCommand({ navItems = [] }: SearchCommandProps) {
     <>
       <Button
         variant="outline"
+        size={collapsed ? "icon" : undefined}
         className="dr-search-command-trigger"
+        data-collapsed={collapsed ? "true" : undefined}
         onClick={() => setOpen(true)}
+        aria-label={collapsed ? `Search (${SHORTCUT_LABEL})` : undefined}
+        title={collapsed ? `Search (${SHORTCUT_LABEL})` : undefined}
       >
         <Search className="size-[var(--icon-size)]" />
-        <span>Search...</span>
-        <kbd className="dr-search-command-shortcut">{SHORTCUT_LABEL}</kbd>
+        {!collapsed && (
+          <>
+            <span>Search...</span>
+            <kbd className="dr-search-command-shortcut">{SHORTCUT_LABEL}</kbd>
+          </>
+        )}
       </Button>
       <CommandDialog open={open} onOpenChange={setOpen}>
         <CommandInput placeholder="Type a command or search..." />

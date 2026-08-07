@@ -18,6 +18,14 @@ interface LayoutHeaderProps {
   children?: ReactNode
   showLayoutSwitcher?: boolean
   showThemeSwitcher?: boolean
+  /**
+   * Render the search trigger in the header. `SidebarLayout` sets this to
+   * `false` because it hosts search at the top of its rail instead; the
+   * layouts without a rail keep it here.
+   *
+   * @default true
+   */
+  showSearch?: boolean
   user?: { name: string; email: string }
   onProfile?: () => void
   onSettings?: () => void
@@ -33,6 +41,7 @@ export function LayoutHeader({
   children,
   showLayoutSwitcher = false,
   showThemeSwitcher = true,
+  showSearch = true,
   user,
   onProfile,
   onSettings,
@@ -45,7 +54,10 @@ export function LayoutHeader({
   return (
     <header className={cn("dr-layout-header", className)}>
       <MobileDrawer nav={nav} header={sidebarHeader} footer={sidebarFooter} />
-      {children ?? <SearchCommand navItems={flatNavItems} />}
+      {/* `.dr-layout-header-end` is `ml-auto`, so omitting search entirely
+          keeps the trailing cluster right-aligned without a spacer. */}
+      {children ??
+        (showSearch ? <SearchCommand navItems={flatNavItems} /> : null)}
       <div className="dr-layout-header-end">
         {headerSlot}
         {showLayoutSwitcher && <LayoutSwitcher />}
