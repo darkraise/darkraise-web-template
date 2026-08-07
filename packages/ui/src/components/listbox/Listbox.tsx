@@ -16,6 +16,13 @@ function useListboxContext(consumer: string): UseListboxReturn {
   return ctx
 }
 
+/**
+ * How a selected item is painted. `filled` is a solid primary surface;
+ * `outline` keeps the surface transparent and marks selection with a 1px
+ * primary ring, for denser lists where a run of solid fills is heavy.
+ */
+export type ListboxVariant = "filled" | "outline"
+
 export interface ListboxProps extends Omit<
   React.HTMLAttributes<HTMLDivElement>,
   "onChange"
@@ -25,6 +32,8 @@ export interface ListboxProps extends Omit<
   defaultValue?: string | string[]
   onValueChange?: (value: string | string[]) => void
   disabled?: boolean
+  /** @default "filled" */
+  variant?: ListboxVariant
 }
 
 function Listbox({
@@ -34,6 +43,7 @@ function Listbox({
   defaultValue,
   onValueChange,
   disabled,
+  variant = "filled",
   children,
   ...rest
 }: ListboxProps) {
@@ -48,6 +58,7 @@ function Listbox({
         aria-activedescendant={focusedItem?.id}
         aria-disabled={disabled || undefined}
         data-disabled={disabled || undefined}
+        data-variant={variant}
         className={cn("dr-listbox", className)}
         onKeyDown={disabled ? undefined : ctx.handleKeyDown}
         {...rest}

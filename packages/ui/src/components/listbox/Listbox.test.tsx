@@ -2,6 +2,9 @@ import { describe, expect, it, vi } from "vitest"
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import * as React from "react"
+import { readFileSync } from "node:fs"
+import { dirname, resolve } from "node:path"
+import { fileURLToPath } from "node:url"
 import { Listbox, ListboxItem } from "./Listbox"
 
 describe("Listbox single mode", () => {
@@ -139,5 +142,48 @@ describe("Listbox multi mode", () => {
     expect(onValueChange).toHaveBeenLastCalledWith(["a", "b"])
     await userEvent.click(screen.getByText("Apple"))
     expect(onValueChange).toHaveBeenLastCalledWith(["b"])
+  })
+})
+
+describe("Listbox variant", () => {
+  const listboxCss = readFileSync(
+    resolve(dirname(fileURLToPath(import.meta.url)), "listbox.css"),
+    "utf8",
+  )
+
+  function renderVariant(variant?: "filled" | "outline") {
+    render(
+      <Listbox
+        value="a"
+        onValueChange={() => {}}
+        aria-label="x"
+        variant={variant}
+      >
+        <ListboxItem value="a">Apple</ListboxItem>
+      </Listbox>,
+    )
+    return screen.getByRole("listbox")
+  }
+
+  it("defaults to the filled selected style", () => {
+    expect(renderVariant().getAttribute("data-variant")).toBe("filled")
+  })
+
+  it("reflects variant=outline on the root", () => {
+    expect(renderVariant("outline").getAttribute("data-variant")).toBe(
+      "outline",
+    )
+  })
+
+  it("styles the selected item from the root variant, not the item", () => {
+    // The rule has to be scoped by the root so a single prop drives every
+    // item; an item-level selector would need the prop threaded per item.
+    const rule = listboxCss.match(
+      /\.dr-listbox\[data-variant="outline"\][^{]*\[data-selected="true"\][^{]*\{([^}]*)\}/,
+    )
+    expect(rule?.[1], "no outline selected rule found").toBeDefined()
+    // Outlined means a ring and no solid fill.
+    expect(rule?.[1]).toMatch(/inset 0 0 0 1px/)
+    expect(rule?.[1]).toMatch(/bg-transparent/)
   })
 })
