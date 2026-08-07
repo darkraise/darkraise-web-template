@@ -80,3 +80,39 @@ describe("SidebarNav collapsed styling", () => {
     expect(renderNav(false).matches(collapsedSquareSelector())).toBe(false)
   })
 })
+
+describe("SidebarNav activeBar", () => {
+  function renderWithActiveBar(activeBar?: boolean) {
+    const { container } = render(
+      <RouterAdapterProvider value={strictAdapter}>
+        <SidebarProvider collapsed={false}>
+          <SidebarNav nav={nav} activeBar={activeBar} />
+        </SidebarProvider>
+      </RouterAdapterProvider>,
+    )
+    const el = container.querySelector(".dr-sidebar-nav")
+    if (!el) throw new Error("no sidebar nav rendered")
+    return el
+  }
+
+  it("defaults to the thick left rail (no opt-out attribute)", () => {
+    expect(renderWithActiveBar().getAttribute("data-active-bar")).toBeNull()
+  })
+
+  it("flags the nav when the rail is turned off", () => {
+    expect(renderWithActiveBar(false).getAttribute("data-active-bar")).toBe(
+      "false",
+    )
+  })
+
+  it("has a stylesheet rule that drops the 3px rail for that flag", () => {
+    const withoutComments = sidebarNavCss.replace(/\/\*[\s\S]*?\*\//g, "")
+    const rule = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)].find(
+      ([, selector]) => selector.includes('[data-active-bar="false"]'),
+    )
+    expect(rule, "no activeBar=false rule in sidebar-nav.css").toBeDefined()
+    // Uniform 1px ring, not the 3px left-edge bar.
+    expect(rule?.[2]).toMatch(/inset 0 0 0 1px/)
+    expect(rule?.[2]).not.toMatch(/inset 3px/)
+  })
+})

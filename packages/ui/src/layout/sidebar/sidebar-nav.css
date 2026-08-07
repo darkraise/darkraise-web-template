@@ -16,8 +16,12 @@
     color: hsl(var(--sidebar-foreground-muted));
   }
 
+  /* Collapsed rail has no room for the label text. `invisible` used to keep
+     the full label box in flow, so each group reserved a ~24px empty strip
+     on top of its own top margin — a lot of dead rail. Remove it from flow
+     entirely; the group's `mt-4` still separates the icon clusters. */
   .dr-sidebar-nav-group-label[data-collapsed="true"] {
-    @apply invisible;
+    @apply hidden;
   }
 
   .dr-sidebar-nav-link {
@@ -49,18 +53,17 @@
   }
 
   .dr-sidebar-nav-link[data-depth="nested"] {
-    @apply py-1.5 text-[13px];
+    @apply py-1.5 text-xs;
   }
 
   .dr-sidebar-nav-icon {
-    @apply flex h-4 w-4 shrink-0 items-center justify-center;
+    @apply flex size-[var(--icon-size)] shrink-0 items-center justify-center;
   }
 
-  /* Pinned literal, not --icon-size: exactly matches .dr-sidebar-nav-icon's
-     fixed h-4 w-4 slot above, which does not follow the font-size axis. A
-     scaling token would overflow the slot at large/extra-large. */
+  /* Same token as the slot above, so the glyph fills it exactly at every
+     font-size step instead of overflowing or floating inside it. */
   .dr-sidebar-nav-icon-svg {
-    @apply h-4 w-4 shrink-0;
+    @apply size-[var(--icon-size)] shrink-0;
   }
 
   .dr-sidebar-nav-label {
@@ -129,6 +132,16 @@
     font-weight: 600;
     box-shadow:
       inset 3px 0 0 0 hsl(var(--primary)),
+      var(--affordance-glow);
+  }
+
+  /* `activeBar={false}` — swap the 3px left rail for a uniform 1px ring so
+     the indicator has the same weight on every edge. */
+  .dr-sidebar-nav[data-active-bar="false"] .dr-sidebar-nav-item.active,
+  .dr-sidebar-nav[data-active-bar="false"]
+    .dr-sidebar-nav-item[data-status="active"] {
+    box-shadow:
+      inset 0 0 0 1px hsl(var(--primary)),
       var(--affordance-glow);
   }
 
