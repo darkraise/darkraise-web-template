@@ -11,9 +11,47 @@
   .dr-listbox-item[data-focused="true"] {
     @apply bg-accent text-accent-foreground;
   }
+  /* Selected — solid primary fill, matching TreeView's selected row. The
+     bare `font-medium` this used to carry was indistinguishable from an
+     idle item, so selection was effectively invisible outside Glass.
+     Ordered after the [data-focused] rule so a focused selected item
+     still reads as selected. */
   .dr-listbox-item[data-selected="true"] {
-    @apply font-medium;
+    @apply bg-primary text-primary-foreground font-medium;
+    box-shadow: var(--affordance-glow);
   }
+
+  .dr-listbox-item[data-selected="true"]:hover,
+  .dr-listbox-item[data-selected="true"][data-focused="true"] {
+    @apply bg-primary text-primary-foreground;
+  }
+
+  /* Selected — outline variant. Transparent surface with a 1px primary
+     ring drawn as an inset shadow, so it occupies the same box as the
+     filled variant and switching variants shifts no layout. Mirrors
+     TreeView's outlined selection.
+
+     Scoped from the root so one prop drives every item, and at (0,3,0)
+     it outranks the filled rules above — including the
+     `[data-selected][data-focused]` pair at (0,3,0), which it ties with
+     but wins on source order. */
+  .dr-listbox[data-variant="outline"] .dr-listbox-item[data-selected="true"] {
+    @apply text-primary bg-transparent;
+    box-shadow:
+      inset 0 0 0 1px hsl(var(--primary)),
+      var(--affordance-glow);
+  }
+
+  .dr-listbox[data-variant="outline"]
+    .dr-listbox-item[data-selected="true"]:hover,
+  .dr-listbox[data-variant="outline"]
+    .dr-listbox-item[data-selected="true"][data-focused="true"] {
+    @apply bg-primary/10 text-primary;
+    box-shadow:
+      inset 0 0 0 1px hsl(var(--primary)),
+      var(--affordance-glow);
+  }
+
   .dr-listbox-item[data-disabled] {
     @apply pointer-events-none opacity-50;
   }
@@ -29,5 +67,20 @@
   [data-preset="glass"] .dr-listbox-item[data-selected="true"] {
     background-image: var(--glass-state-selected-fill);
     box-shadow: var(--glass-state-active-inset);
+  }
+
+  /* Glass paints selection as a frosted fill, which is the one thing the
+     outline variant exists to avoid. Drop the fill and keep a primary
+     ring; the halo still comes from the glass token so the variant reads
+     as Glass rather than as the flat default. Needs (0,4,0) to clear the
+     preset rule directly above. */
+  [data-preset="glass"]
+    .dr-listbox[data-variant="outline"]
+    .dr-listbox-item[data-selected="true"] {
+    background-image: none;
+    background-color: transparent;
+    box-shadow:
+      inset 0 0 0 1px hsl(var(--primary)),
+      var(--glass-halo-raised);
   }
 }

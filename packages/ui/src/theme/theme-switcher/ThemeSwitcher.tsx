@@ -444,7 +444,13 @@ export function ThemeSwitcher({
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className={cn("w-[28rem]", className)}
+        /* Static width, sized for the worst case rather than the common one:
+           the panel does not resize as the user drags the font-size or
+           density sliders, which is what makes those axes feel stable to
+           adjust. 34rem clears the widest measured content (spacious +
+           extra-large, ~510px) with headroom; the viewport cap keeps it on
+           screen on narrow displays. */
+        className={cn("w-[34rem] max-w-[calc(100vw-2rem)]", className)}
         side={side}
         align={align}
         role={role}

@@ -85,10 +85,10 @@ export const Route = createFileRoute("/_authenticated")({
             <div className="flex h-10 shrink-0 items-center gap-4 border-b px-3">
               <div className="bg-primary h-6 w-6 shrink-0 rounded" />
               <div className="flex items-center gap-1">
-                <div className="bg-muted h-5 w-14 rounded px-2 text-[10px]" />
-                <div className="bg-muted h-5 w-16 rounded px-2 text-[10px]" />
-                <div className="bg-muted h-5 w-14 rounded px-2 text-[10px]" />
-                <div className="bg-muted h-5 w-18 rounded px-2 text-[10px]" />
+                <div className="bg-muted h-5 w-14 rounded px-2 text-[length:var(--text-2xs)]" />
+                <div className="bg-muted h-5 w-16 rounded px-2 text-[length:var(--text-2xs)]" />
+                <div className="bg-muted h-5 w-14 rounded px-2 text-[length:var(--text-2xs)]" />
+                <div className="bg-muted h-5 w-18 rounded px-2 text-[length:var(--text-2xs)]" />
               </div>
               <div className="flex-1" />
               <div className="bg-muted h-6 w-6 rounded-full" />
@@ -131,7 +131,7 @@ export const Route = createFileRoute("/_authenticated")({
             {/* Sub-nav */}
             <div className="flex w-40 shrink-0 flex-col border-r">
               <div className="flex h-10 items-center border-b px-3">
-                <span className="text-muted-foreground text-[10px] font-semibold tracking-wide uppercase">
+                <span className="text-muted-foreground text-[length:var(--text-2xs)] font-semibold tracking-wide uppercase">
                   Section
                 </span>
               </div>

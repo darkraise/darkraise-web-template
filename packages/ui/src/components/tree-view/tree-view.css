@@ -100,7 +100,7 @@
   }
 
   .dr-tree-view-branch-indicator {
-    @apply inline-flex h-4 w-4 shrink-0 items-center justify-center transition-transform;
+    @apply inline-flex size-[var(--icon-size)] shrink-0 items-center justify-center transition-transform;
   }
 
   .dr-tree-view-branch-indicator[data-state="open"] {

@@ -36,6 +36,11 @@ function ListboxPage() {
     "Spaghetti carbonara",
   )
   const [withDisabled, setWithDisabled] = useState<string | string[]>("Apple")
+  const [outlineFruit, setOutlineFruit] = useState<string | string[]>("Cherry")
+  const [outlineToppings, setOutlineToppings] = useState<string | string[]>([
+    "Cheese",
+    "Olives",
+  ])
 
   return (
     <ShowcasePage
@@ -63,6 +68,66 @@ function ListboxPage() {
           <p className="text-muted-foreground text-xs">
             Selected: <span className="font-medium">{String(fruit)}</span>
           </p>
+        </div>
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Outline variant"
+        code={`<Listbox
+  variant="outline"
+  value={fruit}
+  onValueChange={setFruit}
+  aria-label="Fruit"
+>
+  {FRUITS.map((f) => (
+    <ListboxItem key={f} value={f}>{f}</ListboxItem>
+  ))}
+</Listbox>`}
+      >
+        <div className="space-y-3">
+          <p className="text-muted-foreground text-sm">
+            Marks selection with a 1px primary ring instead of a solid fill. The
+            ring is drawn inside the item&apos;s box, so switching variants
+            shifts no layout — useful for dense lists where a run of filled rows
+            reads heavy.
+          </p>
+          <div className="flex flex-wrap gap-6">
+            <div className="space-y-2">
+              <p className="text-muted-foreground text-xs font-medium">
+                Single selection
+              </p>
+              <Listbox
+                variant="outline"
+                value={outlineFruit}
+                onValueChange={setOutlineFruit}
+                aria-label="Fruit (outline)"
+              >
+                {FRUITS.map((f) => (
+                  <ListboxItem key={f} value={f}>
+                    {f}
+                  </ListboxItem>
+                ))}
+              </Listbox>
+            </div>
+            <div className="space-y-2">
+              <p className="text-muted-foreground text-xs font-medium">
+                Multi selection
+              </p>
+              <Listbox
+                variant="outline"
+                mode="multi"
+                value={outlineToppings}
+                onValueChange={setOutlineToppings}
+                aria-label="Toppings (outline)"
+              >
+                {TOPPINGS.map((t) => (
+                  <ListboxItem key={t} value={t}>
+                    {t}
+                  </ListboxItem>
+                ))}
+              </Listbox>
+            </div>
+          </div>
         </div>
       </ShowcaseExample>
 

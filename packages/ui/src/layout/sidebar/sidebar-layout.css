@@ -34,6 +34,35 @@
     @apply size-[var(--density-cell)];
   }
 
+  /* Search sits directly under the brand row, above the nav scroller. It
+     owns its padding rather than reusing -aside-section so it does not
+     draw that section's top border immediately below the header rule. */
+  .dr-sidebar-layout-search {
+    @apply px-3 py-3;
+  }
+
+  /* The shared trigger carries `md:w-64` (256px) so it does not stretch
+     across a full-width header. The expanded rail is only 16rem wide, so
+     inside 12px padding that fixed width overruns its container by 24px
+     and the aside's `overflow-hidden` shears the right edge off. The rail
+     sizes its own children instead.
+
+     (0,3,0) is deliberate: it has to outrank both `md:w-64` (0,1,0) and
+     the collapsed square rule (0,2,0), which it must not fight — hence
+     also excluding the collapsed state rather than relying on order. */
+  .dr-sidebar-layout-search
+    .dr-search-command-trigger:not([data-collapsed="true"]) {
+    @apply w-full;
+  }
+
+  /* The container centres the trigger rather than the trigger centring
+     itself: Button renders `inline-flex`, and auto margins only centre
+     block-level boxes, so `mx-auto` on it silently computes to 0. The nav
+     links below are block-level `flex`, which is why they do centre. */
+  .dr-sidebar-layout-aside[data-collapsed="true"] .dr-sidebar-layout-search {
+    @apply flex justify-center px-2 py-2;
+  }
+
   .dr-sidebar-layout-aside-section {
     @apply border-y;
     border-color: hsl(var(--sidebar-border));

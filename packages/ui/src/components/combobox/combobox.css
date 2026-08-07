@@ -58,7 +58,7 @@
   }
 
   .dr-combobox-item-indicator {
-    @apply text-foreground inline-flex h-4 w-4 shrink-0 items-center justify-center;
+    @apply text-foreground inline-flex size-[var(--icon-size)] shrink-0 items-center justify-center;
   }
 
   .dr-combobox-empty {

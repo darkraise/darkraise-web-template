@@ -413,7 +413,7 @@ function ResizableHandle({
               fixed, asymmetric h-4 w-3 slot hand-fitted to this glyph; it
               does not follow the font-size axis and the token's growth
               would exceed the slot's width at large/extra-large. */}
-          <GripVertical className="h-2.5 w-2.5" />
+          <GripVertical className="size-[var(--icon-size-2xs)]" />
         </div>
       )}
     </div>

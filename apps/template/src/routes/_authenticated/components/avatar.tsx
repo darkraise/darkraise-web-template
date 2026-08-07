@@ -37,7 +37,7 @@ function AvatarPage() {
   <AvatarFallback className="text-xs">CW</AvatarFallback>
 </Avatar>
 <Avatar className="h-6 w-6">
-  <AvatarFallback className="text-[10px]">DX</AvatarFallback>
+  <AvatarFallback className="text-[length:var(--text-2xs)]">DX</AvatarFallback>
 </Avatar>`}
       >
         <div className="flex flex-wrap items-end gap-4">
@@ -54,7 +54,9 @@ function AvatarPage() {
             <AvatarFallback className="text-xs">DX</AvatarFallback>
           </Avatar>
           <Avatar className="h-6 w-6">
-            <AvatarFallback className="text-[10px]">EY</AvatarFallback>
+            <AvatarFallback className="text-[length:var(--text-2xs)]">
+              EY
+            </AvatarFallback>
           </Avatar>
         </div>
       </ShowcaseExample>

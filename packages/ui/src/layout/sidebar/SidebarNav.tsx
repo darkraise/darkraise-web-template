@@ -20,14 +20,30 @@ interface SidebarNavProps {
    * a parent `SidebarProvider`. When omitted, the value flows from context.
    */
   collapsed?: boolean
+  /**
+   * Whether the active item renders the thick inset bar down its left edge.
+   * Set `false` for a uniform 1px indicator instead — presets with their own
+   * selection language (Sci-fi) look overweighted with the bar.
+   *
+   * @default true
+   */
+  activeBar?: boolean
 }
 
-function SidebarNav({ nav, collapsed: collapsedProp }: SidebarNavProps) {
+function SidebarNav({
+  nav,
+  collapsed: collapsedProp,
+  activeBar = true,
+}: SidebarNavProps) {
   const ctx = useSidebar()
   const collapsed = collapsedProp ?? ctx.collapsed
 
   const tree = (
-    <nav className="dr-sidebar-nav" data-collapsed={collapsed || undefined}>
+    <nav
+      className="dr-sidebar-nav"
+      data-collapsed={collapsed || undefined}
+      data-active-bar={activeBar ? undefined : "false"}
+    >
       {nav.map((group, gi) => (
         <SidebarGroup
           key={gi}

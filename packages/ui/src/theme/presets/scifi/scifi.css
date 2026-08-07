@@ -355,6 +355,58 @@
   );
 }
 
+/* Selected sidebar item — uniform 1px ring rather than the 3px inset
+   rail the base sidebar draws. Under notched the rail also sat on a
+   clipped corner, so it read as a heavy wedge on one edge while the
+   other three stayed hairlines. The ring follows the clip polygon
+   (inset shadows do; CSS borders don't). */
+[data-preset="scifi"] .dr-sidebar-nav-item.active,
+[data-preset="scifi"] .dr-sidebar-nav-item[data-status="active"] {
+  box-shadow:
+    inset 0 0 0 1px hsl(var(--primary)),
+    var(--scifi-active-glow);
+}
+
+/* File upload — dropzone joins the notched panel family, and its
+   trigger adopts the outlined default-button treatment. The trigger
+   is not a .dr-btn (it carries its own class with a solid bg-primary
+   fill baked in), so none of the button rules above reach it. */
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-file-upload-dropzone {
+  clip-path: polygon(
+    10px 0,
+    100% 0,
+    100% calc(100% - 10px),
+    calc(100% - 10px) 100%,
+    0 100%,
+    0 10px
+  );
+}
+
+[data-preset="scifi"] .dr-file-upload-trigger {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  border: 1px solid hsl(var(--primary));
+  background-color: hsl(var(--primary) / 0.14);
+  color: hsl(var(--primary));
+  box-shadow: var(--scifi-rest-glow);
+}
+[data-preset="scifi"] .dr-file-upload-trigger:hover:not(:disabled) {
+  background-color: hsl(var(--primary) / 0.24);
+  border-color: hsl(var(--primary));
+  color: hsl(var(--primary));
+}
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-file-upload-trigger {
+  clip-path: polygon(
+    6px 0,
+    100% 0,
+    100% calc(100% - 6px),
+    calc(100% - 6px) 100%,
+    0 100%,
+    0 6px
+  );
+}
+
 /* NB: .dr-avatar, .dr-steps-indicator, .dr-switch-thumb, .dr-radio-
    group-indicator, .dr-slider-thumb intentionally KEEP their hex /
    skew / diamond clip-paths under notched. Those custom shapes are
@@ -428,15 +480,51 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-weight: 600;
+}
+
+/* Chrome is scoped to the variants that should carry it. `ghost` and
+   `link` are chromeless by definition — when the base rule painted a
+   border and fill on every .dr-btn they became indistinguishable from
+   outline buttons. */
+/* The exclusion sits inside :where() so it contributes NO specificity:
+   a bare `:not([data-variant=…])` would take its argument's weight and
+   push this base rule to (0,4,0), outranking the per-variant rules at
+   (0,3,0) below and collapsing default and secondary into one look. */
+[data-preset="scifi"]
+  .dr-btn:where(:not([data-variant="ghost"], [data-variant="link"])) {
   border-width: 1px;
   border-style: solid;
   border-color: hsl(var(--primary) / 0.55);
   background-color: hsl(var(--primary) / 0.05);
 }
-[data-preset="scifi"] .dr-btn:hover:not(:disabled) {
+[data-preset="scifi"]
+  .dr-btn:where(:not([data-variant="ghost"], [data-variant="link"])):hover:not(
+    :disabled
+  ) {
   border-color: hsl(var(--primary));
   background-color: hsl(var(--primary) / 0.12);
   box-shadow: var(--shadow-button);
+}
+
+/* Ghost / link — no border, no resting fill. Ghost still gets a faint
+   wash on hover so it remains discoverable; link stays pure text. */
+[data-preset="scifi"] .dr-btn[data-variant="ghost"],
+[data-preset="scifi"] .dr-btn[data-variant="link"] {
+  border: 0;
+  background-color: transparent;
+  box-shadow: none;
+  color: hsl(var(--primary) / 0.85);
+}
+[data-preset="scifi"] .dr-btn[data-variant="ghost"]:hover:not(:disabled) {
+  background-color: hsl(var(--primary) / 0.1);
+  color: hsl(var(--primary));
+  box-shadow: none;
+}
+[data-preset="scifi"] .dr-btn[data-variant="link"]:hover:not(:disabled) {
+  background-color: transparent;
+  color: hsl(var(--primary));
+  box-shadow: none;
+  text-decoration: underline;
 }
 
 /* All sci-fi buttons stay outlined (border + faint screen-effect
@@ -456,9 +544,17 @@
    primary border for visual cohesion. */
 [data-preset="scifi"] .dr-btn[data-variant="default"] {
   color: hsl(var(--primary));
+  /* Full-strength border + a brighter fill and an inset charge, so the
+     primary action reads as "energised" against secondary's bare
+     outline. Previously the two sat at 0.55 vs 0.25 border alpha with
+     otherwise identical treatment, which was too close to tell apart. */
+  border-color: hsl(var(--primary));
+  background-color: hsl(var(--primary) / 0.14);
 }
 [data-preset="scifi"] .dr-btn[data-variant="default"]:hover:not(:disabled) {
   color: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+  background-color: hsl(var(--primary) / 0.24);
 }
 
 /* Secondary variant — same outlined language as default but dimmer
@@ -467,9 +563,10 @@
    text dims to primary/0.85. Hover lifts it back toward the
    universal level. */
 [data-preset="scifi"] .dr-btn[data-variant="secondary"] {
-  border-color: hsl(var(--primary) / 0.25);
+  border-color: hsl(var(--primary) / 0.22);
   background-color: transparent;
-  color: hsl(var(--primary) / 0.85);
+  color: hsl(var(--primary) / 0.7);
+  font-weight: 500;
 }
 [data-preset="scifi"] .dr-btn[data-variant="secondary"]:hover:not(:disabled) {
   border-color: hsl(var(--primary) / 0.55);
@@ -500,8 +597,7 @@
     0 0 6px hsl(var(--destructive) / 0.65),
     0 0 18px hsl(var(--destructive) / 0.4);
 }
-[data-preset="scifi"][data-scifi-frame="notched"]
-  .dr-btn:not([data-size="icon"]) {
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-btn {
   clip-path: polygon(
     6px 0,
     100% 0,
@@ -510,6 +606,40 @@
     0 100%,
     0 6px
   );
+}
+
+/* Ghost and link carry no frame, so a corner cut would clip their label
+   and hover wash against an edge that isn't drawn. */
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-btn[data-variant="ghost"],
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-btn[data-variant="link"] {
+  clip-path: none;
+}
+
+/* Checkbox is ~16-20px square, so it takes a proportionally smaller
+   4px cut than the 6px used on buttons. Border is swapped for an inset
+   stroke for the same reason the panels are: a CSS border renders only
+   on the original rectangular edges and vanishes along the diagonals,
+   while an inset shadow follows the clipped polygon. */
+[data-preset="scifi"][data-scifi-frame="notched"] .dr-checkbox {
+  clip-path: polygon(
+    4px 0,
+    100% 0,
+    100% calc(100% - 4px),
+    calc(100% - 4px) 100%,
+    0 100%,
+    0 4px
+  );
+  border-color: transparent;
+  box-shadow: inset 0 0 0 1px hsl(var(--primary) / 0.6);
+}
+
+[data-preset="scifi"][data-scifi-frame="notched"]
+  .dr-checkbox[data-state="checked"],
+[data-preset="scifi"][data-scifi-frame="notched"]
+  .dr-checkbox[data-state="indeterminate"] {
+  box-shadow:
+    inset 0 0 0 1px hsl(var(--primary)),
+    var(--scifi-active-glow);
 }
 
 /* Card: 1px primary-tinted border + the existing glow elevation. */
@@ -619,13 +749,41 @@
 
 /* Badge: 1px primary border, uppercase tracked. Reads as a HUD
    status tag rather than a chip. */
+/* Typography/shape applies to every badge; colour does NOT. This rule
+   used to paint a primary border + fill unscoped, which outranked all 21
+   `[data-variant]` rules in badge.css (equal specificity, later import)
+   and rendered every badge — destructive, red, blue, the lot — in the
+   preset's primary hue. Colour now hangs off `--scifi-badge-accent`,
+   set per variant below, mirroring how Neon and Glass scope theirs. */
 [data-preset="scifi"] .dr-badge {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-weight: 600;
+}
+
+[data-preset="scifi"] .dr-badge[data-variant="default"],
+[data-preset="scifi"] .dr-badge[data-variant="secondary"],
+[data-preset="scifi"] .dr-badge[data-variant="outline"],
+[data-preset="scifi"] .dr-badge[data-variant="destructive"] {
+  --scifi-badge-accent: var(--primary);
   border-width: 1px;
-  border-color: hsl(var(--primary) / 0.55);
-  background-color: hsl(var(--primary) / 0.1);
+  border-color: hsl(var(--scifi-badge-accent) / 0.55);
+  background-color: hsl(var(--scifi-badge-accent) / 0.1);
+  color: hsl(var(--scifi-badge-accent));
+}
+
+[data-preset="scifi"] .dr-badge[data-variant="destructive"] {
+  --scifi-badge-accent: var(--destructive);
+}
+
+/* Secondary recedes; outline is the bare frame. */
+[data-preset="scifi"] .dr-badge[data-variant="secondary"] {
+  border-color: hsl(var(--scifi-badge-accent) / 0.3);
+  background-color: transparent;
+  color: hsl(var(--scifi-badge-accent) / 0.8);
+}
+[data-preset="scifi"] .dr-badge[data-variant="outline"] {
+  background-color: transparent;
 }
 
 /* Tabs: uppercase tracked. Active tab gets the angled-corner
@@ -1070,36 +1228,6 @@
   opacity: 1;
 }
 
-/* Ambient corner brackets on every card under frame=clean | notched.
-   Tiny tactical ID readouts in the top-right + bottom-right of every
-   card section — pure decoration but it's what makes plain cards
-   read as "monitoring panel" rather than just "card". */
-[data-preset="scifi"]:where(
-    [data-scifi-frame="clean"],
-    [data-scifi-frame="notched"]
-  )
-  .dr-card {
-  position: relative;
-}
-[data-preset="scifi"]:where(
-    [data-scifi-frame="clean"],
-    [data-scifi-frame="notched"]
-  )
-  .dr-card::before {
-  content: "◆ HUD//OK";
-  position: absolute;
-  top: 0.4rem;
-  right: 0.6rem;
-  font-size: 0.5rem;
-  letter-spacing: 0.18em;
-  font-weight: 700;
-  color: hsl(var(--primary) / 0.55);
-  pointer-events: none;
-  text-shadow: 0 0 3px hsl(var(--primary) / 0.45);
-  font-family: var(--font-sans);
-  z-index: 2;
-}
-
 /* Hex-shaped Avatar — Iron Man / Mass Effect armor display
    convention. Flat-top hex via clip-path. */
 [data-preset="scifi"] .dr-avatar {
@@ -1167,9 +1295,10 @@
 /* Buttons need the rest-glow on the resting state but lose it when
    not interactive (icon-only buttons in toolbars otherwise look
    over-decorated). Default + outline variants get it. */
+/* Secondary is deliberately absent: it is the recessive action, and the
+   resting glow was a large part of why it read the same as default. */
 [data-preset="scifi"] .dr-btn[data-variant="default"],
-[data-preset="scifi"] .dr-btn[data-variant="outline"],
-[data-preset="scifi"] .dr-btn[data-variant="secondary"] {
+[data-preset="scifi"] .dr-btn[data-variant="outline"] {
   box-shadow: var(--scifi-rest-glow);
 }
 

@@ -142,7 +142,7 @@
   }
 
   .dr-calendar-weekday {
-    @apply text-muted-foreground w-[var(--density-cell)] rounded-md text-center text-[0.8rem] font-normal select-none;
+    @apply text-muted-foreground w-[var(--density-cell)] rounded-md text-center text-xs font-normal select-none;
   }
 
   .dr-calendar-week {
@@ -154,7 +154,7 @@
   }
 
   .dr-calendar-week-number {
-    @apply text-muted-foreground text-[0.8rem] select-none;
+    @apply text-muted-foreground text-xs select-none;
   }
 
   .dr-calendar-week-number-cell {

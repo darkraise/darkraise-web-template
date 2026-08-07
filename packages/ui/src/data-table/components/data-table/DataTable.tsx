@@ -59,7 +59,7 @@ export function DataTable<TData, TValue>({
         searchKey={searchKey}
         searchPlaceholder={searchPlaceholder}
       />
-      <div className="border-border rounded-md border">
+      <div className="dr-data-table-frame">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

@@ -4,7 +4,7 @@
   }
 
   .dr-notification-bell-badge {
-    @apply bg-destructive text-destructive-foreground absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-medium;
+    @apply bg-destructive text-destructive-foreground absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full text-[length:var(--text-2xs)] font-medium;
   }
 
   .dr-notification-bell-content {

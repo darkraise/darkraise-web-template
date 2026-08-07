@@ -372,7 +372,7 @@ function IconCatalog() {
                               aria-hidden="true"
                               className="text-foreground size-6"
                             />
-                            <span className="text-muted-foreground w-full truncate font-mono text-[11px]">
+                            <span className="text-muted-foreground w-full truncate font-mono text-[length:var(--text-2xs)]">
                               {name}
                             </span>
                             <span

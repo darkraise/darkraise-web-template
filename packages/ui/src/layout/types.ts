@@ -22,6 +22,13 @@ export interface LayoutProps {
   sidebarFooter?: ReactNode
   showLayoutSwitcher?: boolean
   showThemeSwitcher?: boolean
+  /**
+   * Show a header toggle for the sidebar's active-item left bar.
+   * `SidebarLayout` only; the other layouts have no sidebar to drive.
+   *
+   * @default false
+   */
+  showActiveBarToggle?: boolean
   user?: { name: string; email: string }
   onProfile?: () => void
   onSettings?: () => void

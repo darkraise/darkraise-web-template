@@ -1,9 +1,11 @@
 import { useState } from "react"
-import { PanelLeftClose, PanelLeft } from "lucide-react"
+import { PanelLeftClose, PanelLeft, SeparatorVertical } from "lucide-react"
 import { Button } from "@components/button"
+import { Toggle } from "@components/toggle"
 import { TooltipProvider } from "@components/tooltip"
 import { BrandLogo } from "@layout/brand-logo"
 import { LayoutHeader } from "@layout/layout-header"
+import { SearchCommand } from "@layout/search-command"
 import { SkipLink } from "@layout/skip-link"
 import { SidebarNav } from "./SidebarNav"
 import { SidebarProvider } from "./SidebarContext"
@@ -17,12 +19,30 @@ export function SidebarLayout({
   sidebarFooter,
   showLayoutSwitcher,
   showThemeSwitcher,
+  showActiveBarToggle = false,
   user,
   onProfile,
   onSettings,
   onLogout,
 }: LayoutProps) {
   const [collapsed, setCollapsed] = useState(false)
+  const [activeBar, setActiveBar] = useState(true)
+
+  const flatNavItems = nav.flatMap((g) =>
+    g.items.map((i) => ({ label: i.label, href: i.href })),
+  )
+
+  const activeBarToggle = showActiveBarToggle ? (
+    <Toggle
+      size="sm"
+      pressed={activeBar}
+      onPressedChange={setActiveBar}
+      aria-label="Toggle sidebar active-item left bar"
+      title="Sidebar active-item left bar"
+    >
+      <SeparatorVertical className="size-[var(--icon-size)]" />
+    </Toggle>
+  ) : null
 
   return (
     <TooltipProvider delayDuration={0}>
@@ -52,6 +72,10 @@ export function SidebarLayout({
               </Button>
             </div>
 
+            <div className="dr-sidebar-layout-search">
+              <SearchCommand navItems={flatNavItems} collapsed={collapsed} />
+            </div>
+
             {sidebarHeader && (
               <div className="dr-sidebar-layout-aside-section">
                 {sidebarHeader}
@@ -59,7 +83,7 @@ export function SidebarLayout({
             )}
 
             <div className="dr-sidebar-layout-nav-scroll">
-              <SidebarNav nav={nav} />
+              <SidebarNav nav={nav} activeBar={activeBar} />
             </div>
 
             {sidebarFooter && (
@@ -77,10 +101,17 @@ export function SidebarLayout({
               nav={nav}
               sidebarHeader={sidebarHeader}
               sidebarFooter={sidebarFooter}
-              headerSlot={headerSlot}
+              headerSlot={
+                <>
+                  {activeBarToggle}
+                  {headerSlot}
+                </>
+              }
               className="header-gradient-overlay theme-transition"
               showLayoutSwitcher={showLayoutSwitcher}
               showThemeSwitcher={showThemeSwitcher}
+              /* Search lives in the rail for this layout. */
+              showSearch={false}
               user={user}
               onProfile={onProfile}
               onSettings={onSettings}

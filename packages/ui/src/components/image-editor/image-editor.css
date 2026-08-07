@@ -25,7 +25,7 @@
     background: hsl(var(--muted) / 0.4);
   }
   .dr-image-editor-panel-title {
-    @apply text-foreground inline-flex items-center gap-2 text-[11px] font-semibold uppercase;
+    @apply text-foreground inline-flex items-center gap-2 text-[length:var(--text-2xs)] font-semibold uppercase;
     letter-spacing: 0.06em;
   }
   .dr-image-editor-panel-icon {
@@ -305,7 +305,7 @@
   }
   .dr-image-editor-status-item-label {
     @apply text-muted-foreground tracking-wide uppercase;
-    font-size: 0.625rem;
+    font-size: var(--text-2xs);
     font-weight: 600;
     letter-spacing: 0.05em;
   }

@@ -40,6 +40,30 @@
     @apply text-muted-foreground ml-auto text-xs tracking-widest;
   }
 
+  /* CommandDialog drops DialogContent's `p-6`, so the search row starts at
+     the very top of the surface. DialogContent's close button is absolutely
+     positioned at `top-4` — an offset calibrated against that padding — which
+     leaves it sitting ~11px below the row's centre, straddling the row's
+     bottom border. Re-centre it on the row.
+
+     The row's height is .dr-command-input's line box plus its vertical
+     padding. `text-sm`'s line-height ratio is Tailwind's own `1.25 / 0.875`,
+     written out rather than pre-multiplied so it stays traceable to the
+     source. Both terms are live custom properties, so this tracks the
+     font-size and density axes without a fixed pixel offset. */
+  .dr-command-dialog-content {
+    --dr-command-row-h: calc(
+      var(--text-sm) * 1.25 / 0.875 + 2 * var(--density-input-py)
+    );
+  }
+
+  /* 1.75rem is the button's own h-7. Right inset matches the input
+     wrapper's px-3 so the glyph mirrors the search icon's left inset. */
+  .dr-command-dialog-content > .dr-overlay-close-btn {
+    top: calc((var(--dr-command-row-h) - 1.75rem) / 2);
+    right: 0.75rem;
+  }
+
   .dr-command-dialog {
     @apply [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group]]:px-2 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-input-wrapper]_svg]:size-[var(--icon-size-lg)] [&_[cmdk-input]]:py-[var(--density-input-py)] [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-[var(--density-row-py)] [&_[cmdk-item]_svg]:size-[var(--icon-size-lg)];
   }
