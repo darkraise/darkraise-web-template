@@ -46,7 +46,7 @@ function MatrixCell({
 
   return (
     <div className="min-w-0 flex-1 space-y-2">
-      <p className="text-muted-foreground font-mono text-[11px]">
+      <p className="text-muted-foreground font-mono text-[length:var(--text-2xs)]">
         color=&quot;{color}&quot;
       </p>
       <Tabs
@@ -71,7 +71,7 @@ function MatrixCell({
         </TabsContent>
       </Tabs>
       {redundant ? (
-        <p className="text-muted-foreground/70 text-[11px]">
+        <p className="text-muted-foreground/70 text-[length:var(--text-2xs)]">
           Identical to the default colour — this variant already draws its
           active tab in the primary hue.
         </p>
@@ -90,7 +90,7 @@ function TabsMatrix() {
           </p>
           {VARIANTS.map((variant) => (
             <div key={variant} className="space-y-3">
-              <p className="text-muted-foreground font-mono text-[11px]">
+              <p className="text-muted-foreground font-mono text-[length:var(--text-2xs)]">
                 variant=&quot;{variant}&quot;
               </p>
               <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">

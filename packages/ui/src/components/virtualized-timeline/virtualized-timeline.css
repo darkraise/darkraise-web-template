@@ -156,11 +156,11 @@
   }
 
   .dr-virtualized-timeline-scrubber-tick[data-tick-kind="year"] > span {
-    @apply text-foreground text-[11px] font-medium;
+    @apply text-foreground text-xs font-medium;
   }
 
   .dr-virtualized-timeline-scrubber-tick[data-tick-kind="sub"] > span {
-    @apply text-muted-foreground text-[10px];
+    @apply text-muted-foreground text-[length:var(--text-2xs)];
   }
 
   .dr-virtualized-timeline-scrubber-label {

@@ -572,12 +572,28 @@
     --density-row-py: 0.375rem;
     --density-stack-gap: 0.5rem;
 
+    /* Sub-`xs` type step for badges, kbd caps, scrubber ticks and other
+       micro-labels. Tailwind's scale stops at `xs`, so those sites used to
+       reach for a literal `text-[10px]` and froze at that size no matter the
+       font-size axis. This is the `medium` baseline; [data-font-size]
+       re-binds it alongside the Tailwind tokens. There is no `text-2xs`
+       utility — consume it as `text-[length:var(--text-2xs)]`. */
+    --text-2xs: 0.625rem;
+
     /* Icon sizing. Tracks the font-size axis so glyphs stay visually
-       matched to the labels beside them; --icon-scale is 1 at the
-       `medium` step and is re-bound by [data-font-size]. Components
-       size SVGs through these tokens, never through a literal
-       `size-4`, so the axis reaches every icon at once. */
-    --icon-scale: 1;
+       matched to the labels beside them; this :root value is the
+       `medium` step (which declares no block of its own) and is
+       re-bound by [data-font-size]. Components size SVGs through these
+       tokens, never through a literal `size-4`, so the axis reaches
+       every icon at once.
+
+       The scale is deliberately NOT 1 at medium: --icon-size runs
+       16/18/20/22px across small→extra-large, one step above the
+       glyph sizes Tailwind's `size-4` idiom implies. Keep the four
+       values monotonic — they are absolute per step, not relative, so
+       raising one in isolation can make a larger step render smaller
+       glyphs than the step below it. */
+    --icon-scale: 1.125;
     --icon-size-2xs: calc(0.625rem * var(--icon-scale));
     --icon-size-xs: calc(0.75rem * var(--icon-scale));
     --icon-size-sm: calc(0.875rem * var(--icon-scale));
@@ -730,6 +746,7 @@
    ratios (`--text-sm--line-height: calc(1.25 / 0.875)`), so they follow the
    font size on their own. Declaring one here would freeze it. */
 [data-font-size="small"] {
+  --text-2xs: 0.5625rem;
   --text-xs: 0.6875rem;
   --text-sm: 0.75rem;
   --text-base: 0.875rem;
@@ -743,13 +760,14 @@
   --text-7xl: 4.25rem;
   --text-8xl: 5.625rem;
   --text-9xl: 7.5rem;
-  --icon-scale: 0.875;
+  --icon-scale: 1;
   /* Controls deliberately do not shrink: dropping a touch target below
      32px to save four pixels is a bad trade. */
   --control-scale: 1;
 }
 
 [data-font-size="large"] {
+  --text-2xs: 0.6875rem;
   --text-xs: 0.875rem;
   --text-sm: 1rem;
   --text-base: 1.125rem;
@@ -763,11 +781,12 @@
   --text-7xl: 4.8125rem;
   --text-8xl: 6.375rem;
   --text-9xl: 8.5rem;
-  --icon-scale: 1.125;
+  --icon-scale: 1.25;
   --control-scale: 1.0625;
 }
 
 [data-font-size="extra-large"] {
+  --text-2xs: 0.75rem;
   --text-xs: 0.9375rem;
   --text-sm: 1.125rem;
   --text-base: 1.25rem;
@@ -781,7 +800,7 @@
   --text-7xl: 5.0625rem;
   --text-8xl: 6.75rem;
   --text-9xl: 9rem;
-  --icon-scale: 1.25;
+  --icon-scale: 1.375;
   --control-scale: 1.125;
 }
 

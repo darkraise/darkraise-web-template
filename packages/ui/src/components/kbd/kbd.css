@@ -3,7 +3,7 @@
     @apply bg-muted text-muted-foreground border-border inline-flex items-center justify-center rounded border px-1.5 font-mono font-medium;
   }
   .dr-kbd[data-size="sm"] {
-    @apply h-4 min-w-4 text-[10px];
+    @apply h-4 min-w-4 text-[length:var(--text-2xs)];
   }
   .dr-kbd[data-size="md"] {
     @apply h-5 min-w-5 text-xs;

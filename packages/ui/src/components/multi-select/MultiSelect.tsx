@@ -121,7 +121,7 @@ function MultiSelect({
                       (multi-select.css) is a fixed h-4 w-4 slot that does
                       not follow the font-size axis; the token's growth
                       leaves almost no margin at large/extra-large. */}
-                  <X className="h-3 w-3" />
+                  <X className="size-[var(--icon-size-xs)]" />
                 </button>
               </span>
             )
@@ -150,7 +150,7 @@ function MultiSelect({
                     is a fixed h-4 w-4 slot that does not follow the
                     font-size axis. A scaling token would overflow it at
                     large/extra-large. */}
-                <Check className="h-4 w-4" />
+                <Check className="size-[var(--icon-size)]" />
               </ComboboxItemIndicator>
             </ComboboxItem>
           ))}

@@ -37,7 +37,7 @@ function MatrixCell({
 
   return (
     <div className="space-y-2">
-      <p className="text-muted-foreground font-mono text-[11px]">
+      <p className="text-muted-foreground font-mono text-[length:var(--text-2xs)]">
         color=&quot;{color}&quot;
       </p>
       <SegmentGroup
@@ -52,7 +52,7 @@ function MatrixCell({
         <SegmentGroupItem value="month">Month</SegmentGroupItem>
       </SegmentGroup>
       {redundant ? (
-        <p className="text-muted-foreground/70 max-w-[22rem] text-[11px]">
+        <p className="text-muted-foreground/70 max-w-[22rem] text-[length:var(--text-2xs)]">
           Identical to the default colour — the outline variant already draws
           its ring and checked label in the primary hue.
         </p>
@@ -71,7 +71,7 @@ function SegmentGroupMatrix() {
           </p>
           {VARIANTS.map((variant) => (
             <div key={variant} className="space-y-3">
-              <p className="text-muted-foreground font-mono text-[11px]">
+              <p className="text-muted-foreground font-mono text-[length:var(--text-2xs)]">
                 variant=&quot;{variant}&quot;
               </p>
               <div className="flex flex-wrap items-start gap-10">

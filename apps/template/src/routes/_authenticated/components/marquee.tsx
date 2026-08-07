@@ -250,7 +250,7 @@ const LOGO_BRANDS = [
       <span>{t.price}</span>
       <Badge
         variant={t.up ? "secondary" : "destructive"}
-        className="gap-1 px-1.5 py-0 font-mono text-[11px]"
+        className="gap-1 px-1.5 py-0 font-mono text-[length:var(--text-2xs)]"
       >
         {t.up ? (
           <TrendingUp className="size-3" />
@@ -271,7 +271,7 @@ const LOGO_BRANDS = [
               <span>{t.price}</span>
               <Badge
                 variant={t.up ? "secondary" : "destructive"}
-                className="gap-1 px-1.5 py-0 font-mono text-[11px]"
+                className="gap-1 px-1.5 py-0 font-mono text-[length:var(--text-2xs)]"
               >
                 {t.up ? (
                   <TrendingUp className="size-3" />

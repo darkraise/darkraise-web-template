@@ -590,11 +590,8 @@ function SelectItem({
       className={cn("dr-select-item", className)}
       {...rest}
     >
-      <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
-        {/* Pinned literal: bounded by this span's fixed h-3.5 w-3.5 slot,
-            which does not follow the font-size axis. A scaling token would
-            overflow the slot at large/extra-large. */}
-        {selected ? <Check className="h-4 w-4" /> : null}
+      <span className="absolute left-2 flex size-[var(--icon-size-sm)] items-center justify-center">
+        {selected ? <Check className="size-[var(--icon-size)]" /> : null}
       </span>
       <SelectItemContext.Provider value={itemCtx}>
         <SelectItemText>{children}</SelectItemText>

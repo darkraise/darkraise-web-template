@@ -8,13 +8,13 @@
   }
 
   .dr-spinner[data-size="sm"] .dr-spinner-circle {
-    @apply h-3 w-3;
+    @apply size-[var(--icon-size-xs)];
   }
   .dr-spinner[data-size="md"] .dr-spinner-circle {
-    @apply h-4 w-4;
+    @apply size-[var(--icon-size)];
   }
   .dr-spinner[data-size="lg"] .dr-spinner-circle {
-    @apply h-6 w-6 border-[3px];
+    @apply size-[var(--icon-size-xl)] border-[3px];
   }
 
   .dr-spinner[data-variant="default"] {

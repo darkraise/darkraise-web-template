@@ -739,12 +739,8 @@ function MenubarCheckboxItem({
       className={cn("dr-menubar-checkbox-item", className)}
       {...rest}
     >
-      <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
-        {/* Pinned literal: bounded by this span's fixed h-3.5 w-3.5 slot,
-            which does not follow the font-size axis. A scaling token would
-            overflow the slot at large/extra-large (same reasoning as the
-            Circle radio-dot mark below). */}
-        {isChecked ? <Check className="h-4 w-4" /> : null}
+      <span className="absolute left-2 flex size-[var(--icon-size-sm)] items-center justify-center">
+        {isChecked ? <Check className="size-[var(--icon-size)]" /> : null}
       </span>
       {children}
     </MenubarItem>
@@ -801,11 +797,10 @@ function MenubarRadioItem({
       className={cn("dr-menubar-radio-item", className)}
       {...rest}
     >
-      <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
-        {/* Pinned literal: bounded by this span's fixed h-3.5 w-3.5 slot,
-            which does not follow the font-size axis. A scaling token would
-            overflow the slot at large/extra-large. */}
-        {checked ? <Circle className="h-2 w-2 fill-current" /> : null}
+      <span className="absolute left-2 flex size-[var(--icon-size-sm)] items-center justify-center">
+        {checked ? (
+          <Circle className="size-[calc(var(--icon-size)*0.5)] fill-current" />
+        ) : null}
       </span>
       {children}
     </MenubarItem>

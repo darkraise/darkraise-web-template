@@ -81,10 +81,10 @@
   }
 
   .dr-json-chevron {
-    @apply text-muted-foreground hover:text-foreground inline-flex h-4 w-4 cursor-pointer items-center justify-center rounded transition-colors;
+    @apply text-muted-foreground hover:text-foreground inline-flex size-[var(--icon-size)] cursor-pointer items-center justify-center rounded transition-colors;
   }
   .dr-json-chevron-spacer {
-    @apply inline-block h-4 w-4 shrink-0;
+    @apply inline-block size-[var(--icon-size)] shrink-0;
   }
 
   .dr-json-key {
@@ -127,13 +127,13 @@
     @apply underline decoration-dotted underline-offset-2;
   }
   .dr-json-color-swatch {
-    @apply inline-block h-3 w-3 align-middle;
+    @apply inline-block size-[var(--icon-size-xs)] align-middle;
     margin-right: 0.25rem;
     border: 1px solid hsl(var(--border));
     border-radius: 0.125rem;
   }
   .dr-json-show-more {
-    @apply text-primary ml-1 cursor-pointer text-[10px] tracking-wide uppercase;
+    @apply text-primary ml-1 cursor-pointer text-[length:var(--text-2xs)] tracking-wide uppercase;
     background: transparent;
     border: 0;
     padding: 0;
