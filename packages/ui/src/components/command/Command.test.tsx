@@ -1,8 +1,12 @@
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi } from "vitest"
+import { readFileSync } from "node:fs"
+import { fileURLToPath } from "node:url"
+import { dirname, resolve } from "node:path"
 import {
   Command,
+  CommandDialog,
   CommandInput,
   CommandList,
   CommandEmpty,
@@ -82,5 +86,48 @@ describe("Command", () => {
     await user.type(screen.getByRole("combobox"), "carrot")
     expect(screen.queryByText("Fruits")).toBeNull()
     expect(screen.getByText("Veggies")).toBeInTheDocument()
+  })
+})
+
+describe("CommandDialog close-button alignment", () => {
+  const commandCss = readFileSync(
+    resolve(dirname(fileURLToPath(import.meta.url)), "command.css"),
+    "utf8",
+  )
+
+  /** Body of the first rule matching `selector`, or "" when absent. */
+  function ruleBody(selector: RegExp): string {
+    return commandCss.match(selector)?.[1] ?? ""
+  }
+
+  it("tags the dialog surface so the close button can be re-aligned", () => {
+    render(
+      <CommandDialog open>
+        <CommandInput placeholder="Type..." aria-label="Search" />
+        <CommandList />
+      </CommandDialog>,
+    )
+    // The re-alignment is a child-combinator override, so the button has to
+    // be a direct child of the tagged surface for the `>` selector to match.
+    expect(
+      document.querySelector(
+        ".dr-command-dialog-content > .dr-overlay-close-btn",
+      ),
+    ).not.toBeNull()
+  })
+
+  it("re-centres the close button on the search row instead of top-4", () => {
+    const body = ruleBody(
+      /\.dr-command-dialog-content\s*>\s*\.dr-overlay-close-btn\s*\{([^}]*)\}/,
+    )
+    expect(body).toMatch(/top:\s*calc\([^;]*--dr-command-row-h/)
+  })
+
+  it("derives the search-row height from the font-size and density axes", () => {
+    const body = ruleBody(/\.dr-command-dialog-content\s*\{([^}]*)\}/)
+    // A fixed px height here would drift the moment either axis moves.
+    expect(body).toMatch(/--dr-command-row-h:/)
+    expect(body).toMatch(/--text-sm/)
+    expect(body).toMatch(/--density-input-py/)
   })
 })
