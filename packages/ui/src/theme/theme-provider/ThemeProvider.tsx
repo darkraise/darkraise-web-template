@@ -95,6 +95,33 @@ function resolveMode(mode: Mode): ResolvedMode {
   return mode === "system" ? getSystemMode() : mode
 }
 
+/** Clamp an already-resolved mode to the preset's `supportedModes`. */
+function clampResolvedMode(
+  presetName: PresetName,
+  resolved: ResolvedMode,
+): ResolvedMode {
+  const supported = presets[presetName].supportedModes
+  if (!supported || supported.includes(resolved)) return resolved
+  // Non-empty by convention; TS models it as a plain array.
+  return supported[0] ?? "dark"
+}
+
+/**
+ * Clamp a stored/configured mode to the preset's `supportedModes`. `setPreset`
+ * enforces this when the user switches presets, but the boot path reads the
+ * mode independently of the preset — without this, a dark-only preset stored
+ * or configured alongside `light` paints near-black recipes onto a light rail.
+ *
+ * `system` is deliberately left alone: it is not a conflicting choice, and
+ * rewriting it to a concrete mode would silently discard the user's
+ * follow-the-OS preference the moment they visited a dark-only preset. It is
+ * clamped at resolve time by `clampResolvedMode` instead.
+ */
+function clampModeToPreset(presetName: PresetName, mode: Mode): Mode {
+  if (mode === "system") return mode
+  return clampResolvedMode(presetName, mode)
+}
+
 // One-time Glass-preset rename migration (glassmorphism → glass). The pure,
 // testable helper lives in ./migrateGlassPresetKeys; run it once at module
 // load, guarded for SSR (no window) and runtime storage failures (private-
@@ -212,7 +239,7 @@ export function ThemeProvider({
 
   const [mode, setModeState] = useState<Mode>(() => {
     const stored = readStorage(LS_MODE)
-    return (stored as Mode) || cfg.defaults.mode
+    return clampModeToPreset(preset, (stored as Mode) || cfg.defaults.mode)
   })
 
   const [density, setDensityState] = useState<Density>(() => {
@@ -256,7 +283,7 @@ export function ThemeProvider({
   })
 
   const [resolvedMode, setResolvedMode] = useState<ResolvedMode>(() =>
-    resolveMode(mode),
+    clampResolvedMode(preset, resolveMode(mode)),
   )
 
   const [syncStatus, setSyncStatus] = useState<ThemeSyncStatus>("idle")
@@ -876,6 +903,21 @@ export function ThemeProvider({
     presetAxisValues,
   ])
 
+  // Mirror the boot-time mode clamp into storage. State was already clamped by
+  // the `mode` initializer; without persisting it, the unsupported mode would
+  // still be sitting in storage and would come back on the next reload.
+  useEffect(() => {
+    const requested = (readStorage(LS_MODE) as Mode) || cfg.defaults.mode
+    const effective = clampModeToPreset(preset, requested)
+    if (effective === requested) return
+    writeStorage(LS_MODE, effective)
+    if (process.env.NODE_ENV !== "production") {
+      console.warn(
+        `[ThemeProvider] Preset "${preset}" requires mode "${effective}"; auto-switched from "${requested}".`,
+      )
+    }
+  }, [preset, cfg.defaults.mode])
+
   useEffect(() => {
     document.documentElement.setAttribute("data-density", density)
     document.documentElement.setAttribute("data-elevation", elevation)
@@ -907,7 +949,7 @@ export function ThemeProvider({
     if (mode !== "system") return
     const mq = window.matchMedia("(prefers-color-scheme: dark)")
     const handler = () => {
-      const resolved = getSystemMode()
+      const resolved = clampResolvedMode(preset, getSystemMode())
       setResolvedMode(resolved)
       applyTheme(
         accentColor,
