@@ -54,8 +54,14 @@ describe("Menubar", () => {
     await user.click(screen.getByRole("menuitem", { name: "File" }))
     await screen.findByRole("menu")
     await user.click(screen.getByRole("menuitem", { name: "Edit" }))
-    const menus = await screen.findAllByRole("menu")
-    expect(menus.length).toBe(1)
+    // The outgoing menu stays mounted with data-state="closed" until Presence
+    // releases it on the next frame, so assert on the open one and wait for
+    // the other to leave rather than counting nodes synchronously.
+    await waitFor(() => {
+      const menus = screen.getAllByRole("menu")
+      expect(menus.length).toBe(1)
+      expect(menus[0]).toHaveAttribute("data-state", "open")
+    })
   })
 
   it("escape closes the open menu", async () => {

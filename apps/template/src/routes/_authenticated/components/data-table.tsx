@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { Fragment, useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import type { ColumnDef } from "@tanstack/react-table"
 import { ChevronDown, ChevronRight } from "lucide-react"
@@ -183,9 +183,8 @@ function ExpandableTableExample() {
       </TableHeader>
       <TableBody>
         {products.map((product) => (
-          <>
+          <Fragment key={product.id}>
             <TableRow
-              key={product.id}
               className="cursor-pointer"
               onClick={() =>
                 setExpandedId(expandedId === product.id ? null : product.id)
@@ -204,7 +203,7 @@ function ExpandableTableExample() {
               <TableCell>{product.stock}</TableCell>
             </TableRow>
             {expandedId === product.id && (
-              <TableRow key={`${product.id}-detail`}>
+              <TableRow>
                 <TableCell colSpan={4} className="bg-muted/50 p-4">
                   <span className="mr-6 text-sm">SKU: PROD-{product.id}</span>
                   <span className="text-sm">
@@ -213,7 +212,7 @@ function ExpandableTableExample() {
                 </TableCell>
               </TableRow>
             )}
-          </>
+          </Fragment>
         ))}
       </TableBody>
     </Table>

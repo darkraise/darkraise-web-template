@@ -33,6 +33,7 @@ Once added, the new `fontSize: "medium"` default renders exactly as before.
 - `SidebarLayout` gains `showActiveBarToggle` (default `false`), rendering a header toggle for the above.
 - `LayoutHeader` gains `showSearch` (default `true`). `SidebarLayout` now sets it `false` and hosts `SearchCommand` at the top of its rail instead; `TopNavLayout`, `StackedLayout`, and `SplitPanelLayout` keep search in the header.
 - `SearchCommand` gains `collapsed` (default `false`), rendering as an icon-only square sized to match the collapsed rail's nav icons.
+- `ChartContainer` gains `initialDimension`, the size `ResponsiveContainer` assumes for the single render before its `ResizeObserver` fires. Defaults to 320×180, matching the `aspect-video` on `.dr-chart`.
 
 ### Changed
 
@@ -47,6 +48,9 @@ Once added, the new `fontSize: "medium"` default renders exactly as before.
 - `DataTable` drew two stacked 1px borders — its own frame plus `.dr-table-wrapper`'s — which read as a doubled edge.
 - `ThemeSwitcher`'s panel clipped its axis rows at larger `fontSize` and `density` steps.
 - Collapsed sidebar group labels used `invisible` and kept their full box in flow, reserving a wide empty strip per group on the rail.
+- A preset declaring `supportedModes` only had it enforced when the user switched presets. The boot path read the mode from storage or `config.defaults` independently of the preset, so a dark-only preset stored or configured alongside `light` painted its near-black surface recipes onto a light rail — Neon booted with `--background` at `210 40% 98%`. A stored `system` is deliberately left alone and clamped at resolve time instead, so switching to a preset that supports both modes still follows the OS.
+- `ImageEditor`'s annotation colour control nested `ColorPickerSwatch`, which renders its own popover-trigger button, inside `ColorPickerTrigger`. The resulting button-inside-a-button is invalid HTML and React reported it on every render of the annotation toolbar.
+- Every chart logged recharts' `width(-1) and height(-1)` warning on mount. `ResponsiveContainer` defaults `initialDimension` to `-1 × -1` and warns during the render before its `ResizeObserver` fires, which no container CSS can prevent; `ChartContainer` now seeds a positive size.
 
 ## [3.0.0] — 2026-05-07
 

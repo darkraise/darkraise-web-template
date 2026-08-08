@@ -293,6 +293,49 @@ describe("ThemeProvider preset orchestration", () => {
     warn.mockRestore()
   })
 
+  it("boots a dark-only preset in dark mode when storage says light", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {})
+    localStorage.setItem("theme-preset", "neon")
+    localStorage.setItem("mode", "light")
+
+    const { result } = renderHook(() => useTheme(), { wrapper: wrap })
+
+    expect(result.current.preset).toBe("neon")
+    expect(result.current.mode).toBe("dark")
+    expect(result.current.resolvedMode).toBe("dark")
+    expect(document.documentElement.getAttribute("data-mode")).toBe("dark")
+    // The clamp is mirrored back so the next boot reads a consistent value.
+    expect(localStorage.getItem("mode")).toBe("dark")
+    expect(warn).toHaveBeenCalled()
+    warn.mockRestore()
+  })
+
+  it("resolves system to dark under a dark-only preset without discarding it", () => {
+    mockMatchMedia(false)
+    localStorage.setItem("theme-preset", "terminal")
+    localStorage.setItem("mode", "system")
+
+    const { result } = renderHook(() => useTheme(), { wrapper: wrap })
+
+    expect(result.current.resolvedMode).toBe("dark")
+    expect(document.documentElement.getAttribute("data-mode")).toBe("dark")
+    // "system" is not a conflicting choice, so it must survive for the next
+    // preset that supports both modes.
+    expect(result.current.mode).toBe("system")
+    expect(localStorage.getItem("mode")).toBe("system")
+  })
+
+  it("leaves a supported stored mode untouched at boot", () => {
+    localStorage.setItem("theme-preset", "glass")
+    localStorage.setItem("mode", "light")
+
+    const { result } = renderHook(() => useTheme(), { wrapper: wrap })
+
+    expect(result.current.mode).toBe("light")
+    expect(result.current.resolvedMode).toBe("light")
+    expect(localStorage.getItem("mode")).toBe("light")
+  })
+
   it("setPreset to a preset WITHOUT supportedModes (glass) leaves mode alone", () => {
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
     act(() => result.current.setMode("light"))

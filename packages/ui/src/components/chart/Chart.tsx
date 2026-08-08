@@ -71,13 +71,24 @@ interface ChartContainerProps extends React.ComponentProps<"div"> {
   children: React.ComponentProps<
     typeof RechartsPrimitive.ResponsiveContainer
   >["children"]
+  /** Size assumed for the single render before the container is measured. */
+  initialDimension?: { width: number; height: number }
 }
+
+/**
+ * ResponsiveContainer defaults to -1×-1 until its ResizeObserver fires, and
+ * recharts logs a "width(-1) and height(-1)" warning for that first render.
+ * Seeding a positive size silences it; 16:9 matches the `aspect-video` on
+ * `.dr-chart`, so the pre-measurement frame has the right shape.
+ */
+const DEFAULT_INITIAL_DIMENSION = { width: 320, height: 180 }
 
 function ChartContainer({
   id,
   className,
   children,
   config,
+  initialDimension = DEFAULT_INITIAL_DIMENSION,
   ...props
 }: ChartContainerProps) {
   const uniqueId = React.useId()
@@ -92,7 +103,9 @@ function ChartContainer({
         {...props}
       >
         <ChartStyle id={chartId} config={config} />
-        <RechartsPrimitive.ResponsiveContainer>
+        <RechartsPrimitive.ResponsiveContainer
+          initialDimension={initialDimension}
+        >
           {children}
         </RechartsPrimitive.ResponsiveContainer>
       </div>
