@@ -51,6 +51,19 @@ describe("VariantMatrix", () => {
     expect(screen.queryByRole("columnheader")).not.toBeInTheDocument()
   })
 
+  it("rejects a two-parameter render when cols is omitted", () => {
+    render(
+      // @ts-expect-error - single-axis render receives only the row value
+      <VariantMatrix
+        rows={{ label: "orientation", values: ["horizontal", "vertical"] }}
+        render={(row: string, col: string) => <span>{`${row}/${col}`}</span>}
+      />,
+    )
+    expect(
+      screen.getByRole("rowheader", { name: "horizontal" }),
+    ).toBeInTheDocument()
+  })
+
   it("keeps wide content inside a horizontally scrollable container", () => {
     const { container } = render(
       <VariantMatrix

@@ -3,21 +3,27 @@ interface Axis<T extends string> {
   values: readonly T[]
 }
 
-interface VariantMatrixProps<R extends string, C extends string> {
+interface SingleAxisProps<R extends string> {
   rows: Axis<R>
-  cols?: Axis<C>
+  cols?: undefined
+  render: (row: R) => React.ReactNode
+}
+
+interface DualAxisProps<R extends string, C extends string> {
+  rows: Axis<R>
+  cols: Axis<C>
   render: (row: R, col: C) => React.ReactNode
 }
 
-export function VariantMatrix<R extends string, C extends string>({
-  rows,
-  cols,
-  render,
-}: VariantMatrixProps<R, C>) {
+export function VariantMatrix<R extends string, C extends string = never>(
+  props: SingleAxisProps<R> | DualAxisProps<R, C>,
+) {
+  const { rows } = props
   const headerCell =
     "text-muted-foreground px-3 py-2 text-left text-xs font-medium whitespace-nowrap"
 
-  if (!cols) {
+  if (!props.cols) {
+    const { render } = props
     return (
       <div className="overflow-x-auto">
         <table className="w-full border-collapse">
@@ -27,9 +33,7 @@ export function VariantMatrix<R extends string, C extends string>({
                 <th scope="row" className={headerCell}>
                   {row}
                 </th>
-                <td className="px-3 py-2">
-                  {render(row, undefined as unknown as C)}
-                </td>
+                <td className="px-3 py-2 align-middle">{render(row)}</td>
               </tr>
             ))}
           </tbody>
@@ -37,6 +41,8 @@ export function VariantMatrix<R extends string, C extends string>({
       </div>
     )
   }
+
+  const { cols, render } = props
 
   return (
     <div className="overflow-x-auto">
