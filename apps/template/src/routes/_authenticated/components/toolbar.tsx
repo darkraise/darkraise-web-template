@@ -2,12 +2,19 @@ import { createFileRoute } from "@tanstack/react-router"
 import { Bold, Italic, Underline } from "lucide-react"
 import { Toggle } from "darkraise-ui/components/toggle"
 import { Toolbar, ToolbarSeparator } from "darkraise-ui/components/toolbar"
+import { allOf } from "./_components/-variant-axes"
+import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
 export const Route = createFileRoute("/_authenticated/components/toolbar")({
   component: ToolbarPage,
 })
+
+const TOOLBAR_ORIENTATIONS = allOf<"horizontal" | "vertical">()(
+  "horizontal",
+  "vertical",
+)
 
 function ToolbarPage() {
   return (
@@ -16,37 +23,9 @@ function ToolbarPage() {
       description="Compact strip of buttons and toggles with optional separators. Use for editor formatting bars, table-action rows, or inspector controls."
     >
       <ShowcaseExample
-        title="Formatting"
-        code={`<Toolbar>
-  <Toggle aria-label="Bold">
-    <Bold className="size-4" />
-  </Toggle>
-  <Toggle aria-label="Italic">
-    <Italic className="size-4" />
-  </Toggle>
-  <ToolbarSeparator />
-  <Toggle aria-label="Underline">
-    <Underline className="size-4" />
-  </Toggle>
-</Toolbar>`}
-      >
-        <Toolbar>
-          <Toggle aria-label="Bold">
-            <Bold className="size-4" />
-          </Toggle>
-          <Toggle aria-label="Italic">
-            <Italic className="size-4" />
-          </Toggle>
-          <ToolbarSeparator />
-          <Toggle aria-label="Underline">
-            <Underline className="size-4" />
-          </Toggle>
-        </Toolbar>
-      </ShowcaseExample>
-
-      <ShowcaseExample
-        title="Vertical"
-        code={`<Toolbar orientation="vertical">
+        title="Orientation"
+        code={`// One representative cell: every orientation renders above.
+<Toolbar orientation="vertical">
   <Toggle aria-label="Bold">
     <Bold className="size-4" />
   </Toggle>
@@ -59,18 +38,27 @@ function ToolbarPage() {
   </Toggle>
 </Toolbar>`}
       >
-        <Toolbar orientation="vertical">
-          <Toggle aria-label="Bold">
-            <Bold className="size-4" />
-          </Toggle>
-          <Toggle aria-label="Italic">
-            <Italic className="size-4" />
-          </Toggle>
-          <ToolbarSeparator orientation="horizontal" />
-          <Toggle aria-label="Underline">
-            <Underline className="size-4" />
-          </Toggle>
-        </Toolbar>
+        <VariantMatrix
+          rows={{ label: "orientation", values: TOOLBAR_ORIENTATIONS }}
+          render={(orientation) => (
+            <Toolbar orientation={orientation}>
+              <Toggle aria-label="Bold">
+                <Bold className="size-4" />
+              </Toggle>
+              <Toggle aria-label="Italic">
+                <Italic className="size-4" />
+              </Toggle>
+              <ToolbarSeparator
+                orientation={
+                  orientation === "horizontal" ? "vertical" : "horizontal"
+                }
+              />
+              <Toggle aria-label="Underline">
+                <Underline className="size-4" />
+              </Toggle>
+            </Toolbar>
+          )}
+        />
       </ShowcaseExample>
     </ShowcasePage>
   )

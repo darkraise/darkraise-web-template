@@ -1,12 +1,17 @@
 import { useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import { Slider } from "darkraise-ui/components/slider"
+import type { SliderOrientation } from "darkraise-ui/components/slider"
+import { allOf } from "./_components/-variant-axes"
+import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
 export const Route = createFileRoute("/_authenticated/components/slider")({
   component: SliderPage,
 })
+
+const SLIDER_ORIENTATIONS = allOf<SliderOrientation>()("horizontal", "vertical")
 
 function SliderPage() {
   const [value, setValue] = useState([50])
@@ -50,6 +55,50 @@ function SliderPage() {
           />
           <p className="text-muted-foreground text-sm">Value: {value[0]}</p>
         </div>
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Orientation"
+        code={`// One representative cell: every orientation renders above.
+<div className="flex h-40 justify-center">
+  <Slider
+    defaultValue={[50]}
+    min={0}
+    max={100}
+    step={1}
+    orientation="vertical"
+    className="h-full w-2 flex-col"
+  />
+</div>`}
+      >
+        <VariantMatrix
+          rows={{ label: "orientation", values: SLIDER_ORIENTATIONS }}
+          render={(orientation) =>
+            orientation === "horizontal" ? (
+              <div className="w-full max-w-sm">
+                <Slider
+                  defaultValue={[50]}
+                  min={0}
+                  max={100}
+                  step={1}
+                  orientation={orientation}
+                  className="w-full"
+                />
+              </div>
+            ) : (
+              <div className="flex h-40 justify-center">
+                <Slider
+                  defaultValue={[50]}
+                  min={0}
+                  max={100}
+                  step={1}
+                  orientation={orientation}
+                  className="h-full w-2 flex-col"
+                />
+              </div>
+            )
+          }
+        />
       </ShowcaseExample>
 
       <ShowcaseExample

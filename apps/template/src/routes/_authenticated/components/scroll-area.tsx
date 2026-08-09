@@ -1,12 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { ScrollArea } from "darkraise-ui/components/scroll-area"
+import type { ScrollAreaOrientation } from "darkraise-ui/components/scroll-area"
 import { Separator } from "darkraise-ui/components/separator"
+import { allOf } from "./_components/-variant-axes"
+import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
 export const Route = createFileRoute("/_authenticated/components/scroll-area")({
   component: ScrollAreaPage,
 })
+
+const SCROLL_AREA_ORIENTATIONS = allOf<ScrollAreaOrientation>()(
+  "vertical",
+  "horizontal",
+)
 
 const tags = [
   "Design",
@@ -30,26 +38,50 @@ function ScrollAreaPage() {
       description="A scrollable container with a consistently styled custom scrollbar across platforms."
     >
       <ShowcaseExample
-        title="Vertical scroll"
-        code={`<ScrollArea className="h-48 rounded-md border border-border">
-  <div className="space-y-2 p-4">
-    {items.map((item, i) => (
-      <div key={i} className="rounded-md bg-muted px-3 py-2 text-sm">
-        {item}
+        title="Orientation"
+        code={`// One representative cell: every orientation renders above.
+<ScrollArea className="w-full whitespace-nowrap rounded-md border">
+  <div className="flex gap-3 p-4">
+    {tags.map((tag) => (
+      <div key={tag} className="shrink-0 rounded-full bg-muted px-3 py-1 text-sm">
+        {tag}
       </div>
     ))}
   </div>
 </ScrollArea>`}
       >
-        <ScrollArea className="border-border h-48 rounded-md border">
-          <div className="space-y-2 p-4">
-            {Array.from({ length: 20 }, (_, i) => (
-              <div key={i} className="bg-muted rounded-md px-3 py-2 text-sm">
-                List item {i + 1} — scroll to see more content below
-              </div>
-            ))}
-          </div>
-        </ScrollArea>
+        <VariantMatrix
+          rows={{ label: "orientation", values: SCROLL_AREA_ORIENTATIONS }}
+          render={(orientation) =>
+            orientation === "vertical" ? (
+              <ScrollArea className="border-border h-48 rounded-md border">
+                <div className="space-y-2 p-4">
+                  {Array.from({ length: 20 }, (_, i) => (
+                    <div
+                      key={i}
+                      className="bg-muted rounded-md px-3 py-2 text-sm"
+                    >
+                      List item {i + 1} — scroll to see more content below
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+            ) : (
+              <ScrollArea className="border-border w-full rounded-md border whitespace-nowrap">
+                <div className="flex gap-3 p-4">
+                  {tags.map((tag) => (
+                    <div
+                      key={tag}
+                      className="bg-muted shrink-0 rounded-full px-3 py-1 text-sm font-medium"
+                    >
+                      {tag}
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+            )
+          }
+        />
       </ShowcaseExample>
 
       <ShowcaseExample
@@ -123,32 +155,6 @@ function ScrollAreaPage() {
                   </p>
                 </div>
                 <Separator />
-              </div>
-            ))}
-          </div>
-        </ScrollArea>
-      </ShowcaseExample>
-
-      <ShowcaseExample
-        title="Horizontal scroll"
-        code={`<ScrollArea className="w-full whitespace-nowrap rounded-md border">
-  <div className="flex gap-3 p-4">
-    {tags.map((tag) => (
-      <div key={tag} className="shrink-0 rounded-full bg-muted px-3 py-1 text-sm">
-        {tag}
-      </div>
-    ))}
-  </div>
-</ScrollArea>`}
-      >
-        <ScrollArea className="border-border w-full rounded-md border whitespace-nowrap">
-          <div className="flex gap-3 p-4">
-            {tags.map((tag) => (
-              <div
-                key={tag}
-                className="bg-muted shrink-0 rounded-full px-3 py-1 text-sm font-medium"
-              >
-                {tag}
               </div>
             ))}
           </div>
