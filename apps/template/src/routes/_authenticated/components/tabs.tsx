@@ -17,6 +17,13 @@ import {
   TabsList,
   TabsTrigger,
 } from "darkraise-ui/components/tabs"
+import type {
+  TabsColor,
+  TabsOrientation,
+  TabsVariant,
+} from "darkraise-ui/components/tabs"
+import { allOf } from "./_components/-variant-axes"
+import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
@@ -24,31 +31,33 @@ export const Route = createFileRoute("/_authenticated/components/tabs")({
   component: TabsPage,
 })
 
-const VARIANTS = ["default", "outline", "underline", "enclosed"] as const
-const COLORS = ["default", "accent"] as const
-const ORIENTATIONS = ["horizontal", "vertical"] as const
+const TABS_VARIANTS = allOf<TabsVariant>()(
+  "default",
+  "outline",
+  "underline",
+  "enclosed",
+)
+const TABS_COLORS = allOf<TabsColor>()("default", "accent")
+const TABS_ORIENTATIONS = allOf<TabsOrientation>()("horizontal", "vertical")
 
 // `color="accent"` retints neutral chrome to the brand hue, so only the
 // enclosed variant has anywhere to take it. The other three already draw
 // their active tab in the primary colour at the default setting.
-const ACCENT_AWARE_VARIANTS = new Set<string>(["enclosed"])
+const ACCENT_AWARE_VARIANTS = new Set<TabsVariant>(["enclosed"])
 
-function MatrixCell({
+function TabsMatrixCell({
   variant,
   color,
   orientation,
 }: {
-  variant: (typeof VARIANTS)[number]
-  color: (typeof COLORS)[number]
-  orientation: (typeof ORIENTATIONS)[number]
+  variant: TabsVariant
+  color: TabsColor
+  orientation: TabsOrientation
 }) {
   const redundant = color === "accent" && !ACCENT_AWARE_VARIANTS.has(variant)
 
   return (
-    <div className="min-w-0 flex-1 space-y-2">
-      <p className="text-muted-foreground font-mono text-[length:var(--text-2xs)]">
-        color=&quot;{color}&quot;
-      </p>
+    <div className="min-w-0 space-y-2">
       <Tabs
         variant={variant}
         color={color}
@@ -71,7 +80,7 @@ function MatrixCell({
         </TabsContent>
       </Tabs>
       {redundant ? (
-        <p className="text-muted-foreground/70 text-[length:var(--text-2xs)]">
+        <p className="text-muted-foreground/70 max-w-[20rem] text-[length:var(--text-2xs)]">
           Identical to the default colour — this variant already draws its
           active tab in the primary hue.
         </p>
@@ -83,28 +92,22 @@ function MatrixCell({
 function TabsMatrix() {
   return (
     <div className="space-y-10">
-      {ORIENTATIONS.map((orientation) => (
-        <div key={orientation} className="space-y-6">
+      {TABS_ORIENTATIONS.map((orientation) => (
+        <div key={orientation} className="space-y-3">
           <p className="text-foreground text-xs font-semibold tracking-wide uppercase">
             {orientation}
           </p>
-          {VARIANTS.map((variant) => (
-            <div key={variant} className="space-y-3">
-              <p className="text-muted-foreground font-mono text-[length:var(--text-2xs)]">
-                variant=&quot;{variant}&quot;
-              </p>
-              <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">
-                {COLORS.map((color) => (
-                  <MatrixCell
-                    key={color}
-                    variant={variant}
-                    color={color}
-                    orientation={orientation}
-                  />
-                ))}
-              </div>
-            </div>
-          ))}
+          <VariantMatrix
+            rows={{ label: "variant", values: TABS_VARIANTS }}
+            cols={{ label: "color", values: TABS_COLORS }}
+            render={(variant, color) => (
+              <TabsMatrixCell
+                variant={variant}
+                color={color}
+                orientation={orientation}
+              />
+            )}
+          />
         </div>
       ))}
     </div>
@@ -282,10 +285,12 @@ function TabsPage() {
 
       <ShowcaseExample
         title="Variant × colour × orientation matrix"
-        code={`<Tabs
-  variant={variant}          // "default" | "outline" | "underline" | "enclosed"
-  color={color}              // "default" | "accent"
-  orientation={orientation}  // "horizontal" | "vertical"
+        code={`// One representative cell: every variant x color combination renders
+// above, once per orientation.
+<Tabs
+  variant="enclosed"
+  color="accent"
+  orientation="horizontal"
   defaultValue="one"
 >
   <TabsList>

@@ -6,6 +6,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "darkraise-ui/components/accordion"
+import type { AccordionVariant } from "darkraise-ui/components/accordion"
 import { Badge } from "darkraise-ui/components/badge"
 import { Label } from "darkraise-ui/components/label"
 import {
@@ -16,12 +17,16 @@ import {
   SelectValue,
 } from "darkraise-ui/components/select"
 import { Switch } from "darkraise-ui/components/switch"
+import { allOf } from "./_components/-variant-axes"
+import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
 export const Route = createFileRoute("/_authenticated/components/accordion")({
   component: AccordionPage,
 })
+
+const ACCORDION_VARIANTS = allOf<AccordionVariant>()("default", "card")
 
 function AccordionPage() {
   return (
@@ -74,8 +79,9 @@ function AccordionPage() {
       </ShowcaseExample>
 
       <ShowcaseExample
-        title="Card variant"
-        code={`<Accordion type="single" collapsible variant="card" elevation="low">
+        title="Variant"
+        code={`// One representative cell: every variant renders above.
+<Accordion type="single" collapsible variant="card" elevation="low">
   <AccordionItem value="shipping">
     <AccordionTrigger>Shipping</AccordionTrigger>
     <AccordionContent>Free over $50.</AccordionContent>
@@ -86,16 +92,29 @@ function AccordionPage() {
   </AccordionItem>
 </Accordion>`}
       >
-        <Accordion type="single" collapsible variant="card" elevation="low">
-          <AccordionItem value="shipping">
-            <AccordionTrigger>Shipping</AccordionTrigger>
-            <AccordionContent>Free over $50.</AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="returns">
-            <AccordionTrigger>Returns</AccordionTrigger>
-            <AccordionContent>30 days, no questions asked.</AccordionContent>
-          </AccordionItem>
-        </Accordion>
+        <VariantMatrix
+          rows={{ label: "variant", values: ACCORDION_VARIANTS }}
+          render={(variant) => (
+            <Accordion
+              type="single"
+              collapsible
+              variant={variant}
+              elevation={variant === "card" ? "low" : undefined}
+              className="w-full max-w-sm"
+            >
+              <AccordionItem value="shipping">
+                <AccordionTrigger>Shipping</AccordionTrigger>
+                <AccordionContent>Free over $50.</AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="returns">
+                <AccordionTrigger>Returns</AccordionTrigger>
+                <AccordionContent>
+                  30 days, no questions asked.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          )}
+        />
       </ShowcaseExample>
 
       <ShowcaseExample

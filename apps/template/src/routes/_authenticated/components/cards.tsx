@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "darkraise-ui/components/card"
+import type { CardBorder, CardElevation } from "darkraise-ui/components/card"
 import { Badge } from "darkraise-ui/components/badge"
 import { Skeleton } from "darkraise-ui/components/skeleton"
 import {
@@ -20,12 +21,17 @@ import {
   X,
 } from "lucide-react"
 import { Avatar, AvatarFallback } from "darkraise-ui/components/avatar"
+import { allOf } from "./_components/-variant-axes"
+import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
 export const Route = createFileRoute("/_authenticated/components/cards")({
   component: CardsPage,
 })
+
+const CARD_BORDERS = allOf<CardBorder>()("default", "none", "strong", "accent")
+const CARD_ELEVATIONS = allOf<CardElevation>()("flat", "low", "medium", "high")
 
 function CardsPage() {
   return (
@@ -120,24 +126,22 @@ function CardsPage() {
       </ShowcaseExample>
 
       <ShowcaseExample
-        title="Border variants"
-        code={`<Card border="none">…</Card>
-<Card border="default">…</Card>
-<Card border="strong">…</Card>
-<Card border="accent">…</Card>`}
+        title="Border x elevation"
+        code={`// One representative cell: every border x elevation combination renders
+// above.
+<Card border="accent" elevation="high">...</Card>`}
       >
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {(["none", "default", "strong", "accent"] as const).map((variant) => (
-            <Card key={variant} border={variant}>
+        <VariantMatrix
+          rows={{ label: "border", values: CARD_BORDERS }}
+          cols={{ label: "elevation", values: CARD_ELEVATIONS }}
+          render={(border, elevation) => (
+            <Card border={border} elevation={elevation} className="w-44">
               <CardHeader>
-                <CardTitle className="text-base">{variant}</CardTitle>
+                <CardTitle className="text-sm">Card</CardTitle>
               </CardHeader>
-              <CardContent className="text-muted-foreground text-sm">
-                border=&quot;{variant}&quot;
-              </CardContent>
             </Card>
-          ))}
-        </div>
+          )}
+        />
       </ShowcaseExample>
 
       {/* ─── Elevation ────────────────────────────────────────────────────── */}

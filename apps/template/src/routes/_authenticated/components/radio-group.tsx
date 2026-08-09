@@ -3,12 +3,54 @@ import { createFileRoute } from "@tanstack/react-router"
 import { Field, FieldLabel } from "darkraise-ui/components/field"
 import { Label } from "darkraise-ui/components/label"
 import { RadioGroup, RadioGroupItem } from "darkraise-ui/components/radio-group"
+import type {
+  RadioGroupOrientation,
+  RadioSize,
+} from "darkraise-ui/components/radio-group"
+import { allOf } from "./_components/-variant-axes"
+import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
 export const Route = createFileRoute("/_authenticated/components/radio-group")({
   component: RadioGroupPage,
 })
+
+const RADIO_SIZES = allOf<RadioSize>()("sm", "default", "lg")
+const RADIO_ORIENTATIONS = allOf<RadioGroupOrientation>()(
+  "horizontal",
+  "vertical",
+)
+
+const RADIO_MATRIX_ITEMS = ["a", "b", "c"] as const
+
+function RadioMatrixCell({
+  size,
+  orientation,
+}: {
+  size: RadioSize
+  orientation: RadioGroupOrientation
+}) {
+  return (
+    <RadioGroup
+      defaultValue="a"
+      orientation={orientation}
+      className={
+        orientation === "horizontal" ? "flex items-center gap-4" : undefined
+      }
+    >
+      {RADIO_MATRIX_ITEMS.map((item) => {
+        const id = `radio-${size}-${orientation}-${item}`
+        return (
+          <div key={item} className="flex items-center gap-2">
+            <RadioGroupItem value={item} id={id} size={size} />
+            <Label htmlFor={id}>{item.toUpperCase()}</Label>
+          </div>
+        )
+      })}
+    </RadioGroup>
+  )
+}
 
 function RadioGroupPage() {
   const [value, setValue] = useState("option-a")
@@ -81,35 +123,35 @@ function RadioGroupPage() {
       </ShowcaseExample>
 
       <ShowcaseExample
-        title="Sizes"
-        code={`<RadioGroupItem value="a" size="sm" />     // Small
-<RadioGroupItem value="b" size="default" /> // Default
-<RadioGroupItem value="c" size="lg" />      // Large`}
+        title="Size x orientation"
+        code={`// One representative cell: every size x orientation combination renders
+// above.
+<RadioGroup
+  defaultValue="a"
+  orientation="horizontal"
+  className="flex items-center gap-4"
+>
+  <div className="flex items-center gap-2">
+    <RadioGroupItem value="a" id="a" size="lg" />
+    <Label htmlFor="a">A</Label>
+  </div>
+  <div className="flex items-center gap-2">
+    <RadioGroupItem value="b" id="b" size="lg" />
+    <Label htmlFor="b">B</Label>
+  </div>
+  <div className="flex items-center gap-2">
+    <RadioGroupItem value="c" id="c" size="lg" />
+    <Label htmlFor="c">C</Label>
+  </div>
+</RadioGroup>`}
       >
-        <RadioGroup defaultValue="size-a">
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2">
-              <RadioGroupItem value="size-a" id="radio-sm" size="sm" />
-              <Label htmlFor="radio-sm" className="text-xs">
-                Small
-              </Label>
-            </div>
-            <div className="flex items-center gap-2">
-              <RadioGroupItem
-                value="size-b"
-                id="radio-default"
-                size="default"
-              />
-              <Label htmlFor="radio-default" className="text-sm">
-                Default
-              </Label>
-            </div>
-            <div className="flex items-center gap-2">
-              <RadioGroupItem value="size-c" id="radio-lg" size="lg" />
-              <Label htmlFor="radio-lg">Large</Label>
-            </div>
-          </div>
-        </RadioGroup>
+        <VariantMatrix
+          rows={{ label: "size", values: RADIO_SIZES }}
+          cols={{ label: "orientation", values: RADIO_ORIENTATIONS }}
+          render={(size, orientation) => (
+            <RadioMatrixCell size={size} orientation={orientation} />
+          )}
+        />
       </ShowcaseExample>
     </ShowcasePage>
   )
