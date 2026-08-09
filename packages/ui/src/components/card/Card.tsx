@@ -25,6 +25,12 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   ref?: React.Ref<HTMLDivElement>
 }
 
+export function resolveCardElevation(
+  elevation: boolean | CardElevation,
+): CardElevation | "auto" | undefined {
+  return elevation === true ? "auto" : elevation || undefined
+}
+
 function Card({
   className,
   elevation = false,
@@ -33,8 +39,7 @@ function Card({
   ref,
   ...props
 }: CardProps) {
-  const value: CardElevation | "auto" | undefined =
-    elevation === true ? "auto" : elevation || undefined
+  const value = resolveCardElevation(elevation)
   return (
     <div
       ref={ref}
