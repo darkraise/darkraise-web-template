@@ -7,8 +7,8 @@ import { cn } from "@lib/utils"
 import "./segment-group.css"
 
 type SegmentGroupOrientation = "horizontal" | "vertical"
-type SegmentGroupVariant = "default" | "outline"
-type SegmentGroupColor = "default" | "accent"
+export type SegmentGroupVariant = "default" | "outline"
+export type SegmentGroupColor = "default" | "accent"
 
 interface SegmentGroupContextValue {
   value: string | null | undefined

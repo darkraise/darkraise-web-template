@@ -17,6 +17,12 @@ type Side = "top" | "right" | "bottom" | "left"
 type Align = "start" | "center" | "end"
 type Position = "item-aligned" | "popper"
 
+// Component-qualified public aliases. The bare names cannot be exported: the
+// package barrel re-exports every component and several declare their own.
+export type SelectSide = Side
+export type SelectAlign = Align
+export type SelectPosition = Position
+
 interface SelectItemRecord {
   value: string
   textValue: string

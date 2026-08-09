@@ -15,8 +15,8 @@ import {
   type TabsActivationMode,
 } from "./useTabs"
 
-type TabsVariant = "default" | "outline" | "underline" | "enclosed"
-type TabsColor = "default" | "accent"
+export type TabsVariant = "default" | "outline" | "underline" | "enclosed"
+export type TabsColor = "default" | "accent"
 
 const TabsContext = React.createContext<TabsContextValue | null>(null)
 
