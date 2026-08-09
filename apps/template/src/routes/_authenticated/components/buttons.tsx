@@ -60,7 +60,7 @@ function ButtonsPage() {
     >
       <ShowcaseExample
         title="Variant x size"
-        code={`// One representative cell — every variant x size combination renders above.
+        code={`// One representative cell: every variant x size combination renders above.
 <Button variant="outline" size="lg">Button</Button>`}
       >
         <VariantMatrix
