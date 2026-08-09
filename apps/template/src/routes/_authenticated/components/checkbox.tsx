@@ -1,13 +1,18 @@
 import { useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import { Checkbox } from "darkraise-ui/components/checkbox"
+import type { CheckboxSize } from "darkraise-ui/components/checkbox"
 import { Label } from "darkraise-ui/components/label"
+import { allOf } from "./_components/-variant-axes"
+import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
 export const Route = createFileRoute("/_authenticated/components/checkbox")({
   component: CheckboxPage,
 })
+
+const CHECKBOX_SIZES = allOf<CheckboxSize>()("sm", "default", "lg")
 
 function CheckboxPage() {
   const [checked, setChecked] = useState(false)
@@ -59,28 +64,13 @@ function CheckboxPage() {
 
       <ShowcaseExample
         title="Sizes"
-        code={`<Checkbox size="sm" />     // Small
-<Checkbox size="default" /> // Default
-<Checkbox size="lg" />      // Large`}
+        code={`// One representative cell: every size renders above.
+<Checkbox size="lg" defaultChecked />`}
       >
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2">
-            <Checkbox id="cb-sm" size="sm" defaultChecked />
-            <Label htmlFor="cb-sm" className="text-xs">
-              Small
-            </Label>
-          </div>
-          <div className="flex items-center gap-2">
-            <Checkbox id="cb-default" size="default" defaultChecked />
-            <Label htmlFor="cb-default" className="text-sm">
-              Default
-            </Label>
-          </div>
-          <div className="flex items-center gap-2">
-            <Checkbox id="cb-lg" size="lg" defaultChecked />
-            <Label htmlFor="cb-lg">Large</Label>
-          </div>
-        </div>
+        <VariantMatrix
+          rows={{ label: "size", values: CHECKBOX_SIZES }}
+          render={(size) => <Checkbox size={size} defaultChecked />}
+        />
       </ShowcaseExample>
     </ShowcasePage>
   )
