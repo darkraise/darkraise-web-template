@@ -643,7 +643,7 @@
 }
 
 /* Card: 1px primary-tinted border + the existing glow elevation. */
-[data-preset="scifi"] .dr-card {
+[data-preset="scifi"] .dr-card:not([data-border]) {
   border-width: 1px;
   border-style: solid;
   border-color: hsl(var(--primary) / 0.35);
@@ -1033,7 +1033,7 @@
   }
 }
 @media (prefers-reduced-motion: no-preference) {
-  [data-preset="scifi"] .dr-card {
+  [data-preset="scifi"] .dr-card:not([data-border]) {
     animation: scifi-card-pulse 4s ease-in-out infinite;
   }
 }

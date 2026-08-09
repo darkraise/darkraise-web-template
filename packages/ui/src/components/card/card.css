@@ -65,6 +65,21 @@
     padding-top: var(--density-container-p);
   }
 
+  /* Border variants. `none` clears only the colour so the 1px box is
+     preserved and a borderless card stays geometrically identical to a
+     bordered sibling in a grid. */
+  .dr-card[data-border="none"] {
+    border-color: transparent;
+  }
+
+  .dr-card[data-border="strong"] {
+    border-color: hsl(var(--foreground) / 0.28);
+  }
+
+  .dr-card[data-border="accent"] {
+    border-color: hsl(var(--primary) / 0.35);
+  }
+
   /* Neon preset — cards get a primary-tinted border so they visibly
      outline in the accent color. Background stays near-black (set by
      neon's surfaceRecipe → --card → bg-card); elevation shadows are
@@ -72,7 +87,7 @@
      elevation-* and --elevation-current), so a higher elevation
      stacks a glow halo on top of the outlined card without any
      additional rule here. */
-  [data-preset="neon"] .dr-card {
+  [data-preset="neon"] .dr-card:not([data-border]) {
     border-color: hsl(var(--primary) / 0.35);
   }
 }
