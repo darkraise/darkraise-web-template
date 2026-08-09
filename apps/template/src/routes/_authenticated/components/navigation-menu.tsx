@@ -183,35 +183,43 @@ function NavigationMenuPage() {
         <VariantMatrix
           rows={{ label: "orientation", values: NAVIGATION_MENU_ORIENTATIONS }}
           render={(orientation) => (
-            <NavigationMenu orientation={orientation}>
-              <NavigationMenuList>
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger>Products</NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <ul className="grid w-48 gap-1 p-2">
-                      <li>
-                        <NavigationMenuLink
-                          href="#"
-                          onClick={(e) => e.preventDefault()}
-                          className="hover:bg-accent block rounded px-3 py-1.5 text-sm"
-                        >
-                          Overview
-                        </NavigationMenuLink>
-                      </li>
-                    </ul>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <NavigationMenuLink
-                    className={navigationMenuTriggerStyle()}
-                    href="#"
-                    onClick={(e) => e.preventDefault()}
-                  >
-                    Docs
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-              </NavigationMenuList>
-            </NavigationMenu>
+            <div className="space-y-2">
+              <NavigationMenu orientation={orientation}>
+                <NavigationMenuList>
+                  <NavigationMenuItem>
+                    <NavigationMenuTrigger>Products</NavigationMenuTrigger>
+                    <NavigationMenuContent>
+                      <ul className="grid w-48 gap-1 p-2">
+                        <li>
+                          <NavigationMenuLink
+                            href="#"
+                            onClick={(e) => e.preventDefault()}
+                            className="hover:bg-accent block rounded px-3 py-1.5 text-sm"
+                          >
+                            Overview
+                          </NavigationMenuLink>
+                        </li>
+                      </ul>
+                    </NavigationMenuContent>
+                  </NavigationMenuItem>
+                  <NavigationMenuItem>
+                    <NavigationMenuLink
+                      className={navigationMenuTriggerStyle()}
+                      href="#"
+                      onClick={(e) => e.preventDefault()}
+                    >
+                      Docs
+                    </NavigationMenuLink>
+                  </NavigationMenuItem>
+                </NavigationMenuList>
+              </NavigationMenu>
+              {orientation === "vertical" ? (
+                <p className="text-muted-foreground/70 max-w-[20rem] text-[length:var(--text-2xs)]">
+                  Renders identical to horizontal - NavigationMenu does not yet
+                  wire up its orientation prop.
+                </p>
+              ) : null}
+            </div>
           )}
         />
       </ShowcaseExample>

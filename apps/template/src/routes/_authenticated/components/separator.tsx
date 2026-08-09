@@ -27,6 +27,8 @@ function SeparatorPage() {
 <div className="flex h-10 items-center gap-4">
   <span className="text-sm">Left</span>
   <Separator orientation="vertical" />
+  <span className="text-sm">Center</span>
+  <Separator orientation="vertical" />
   <span className="text-sm">Right</span>
 </div>`}
       >
@@ -42,6 +44,8 @@ function SeparatorPage() {
             ) : (
               <div className="flex h-10 items-center gap-4">
                 <span className="text-sm">Left</span>
+                <Separator orientation={orientation} />
+                <span className="text-sm">Center</span>
                 <Separator orientation={orientation} />
                 <span className="text-sm">Right</span>
               </div>
