@@ -48,7 +48,7 @@ const BUTTON_VARIANTS = allOf<ButtonVariant>()(
   "link",
 )
 
-const BUTTON_SIZES = allOf<ButtonSize>()("default", "sm", "lg", "icon")
+const BUTTON_SIZES = allOf<ButtonSize>()("sm", "default", "lg", "icon")
 
 function ButtonsPage() {
   const [period, setPeriod] = useState<"1D" | "1W" | "1M" | "1Y">("1M")
@@ -60,7 +60,8 @@ function ButtonsPage() {
     >
       <ShowcaseExample
         title="Variant x size"
-        code={`<Button variant="outline" size="lg">Button</Button>`}
+        code={`// One representative cell — every variant x size combination renders above.
+<Button variant="outline" size="lg">Button</Button>`}
       >
         <VariantMatrix
           rows={{ label: "variant", values: BUTTON_VARIANTS }}
