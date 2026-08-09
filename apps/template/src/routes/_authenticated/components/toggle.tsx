@@ -9,16 +9,22 @@ import {
   AlignRight,
 } from "lucide-react"
 import { Toggle } from "darkraise-ui/components/toggle"
+import type { ToggleSize, ToggleVariant } from "darkraise-ui/components/toggle"
 import {
   ToggleGroup,
   ToggleGroupItem,
 } from "darkraise-ui/components/toggle-group"
+import { allOf } from "./_components/-variant-axes"
+import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
 export const Route = createFileRoute("/_authenticated/components/toggle")({
   component: TogglePage,
 })
+
+const TOGGLE_VARIANTS = allOf<ToggleVariant>()("default", "outline")
+const TOGGLE_SIZES = allOf<ToggleSize>()("sm", "default", "lg")
 
 function TogglePage() {
   const [bold, setBold] = useState(false)
@@ -46,26 +52,23 @@ function TogglePage() {
       </ShowcaseExample>
 
       <ShowcaseExample
-        title="Toggle variants"
-        code={`<Toggle variant="default" aria-label="Italic">
-  <Italic className="h-4 w-4" />
-  Default
-</Toggle>
-<Toggle variant="outline" aria-label="Underline">
-  <Underline className="h-4 w-4" />
-  Outline
+        title="Variant x size"
+        code={`// One representative cell: every variant x size combination renders above.
+<Toggle variant="outline" size="lg" defaultPressed>
+  <Bold className="h-4 w-4" />
+  Toggle
 </Toggle>`}
       >
-        <div className="flex gap-3">
-          <Toggle variant="default" aria-label="Italic">
-            <Italic className="h-4 w-4" />
-            Default
-          </Toggle>
-          <Toggle variant="outline" aria-label="Underline">
-            <Underline className="h-4 w-4" />
-            Outline
-          </Toggle>
-        </div>
+        <VariantMatrix
+          rows={{ label: "variant", values: TOGGLE_VARIANTS }}
+          cols={{ label: "size", values: TOGGLE_SIZES }}
+          render={(variant, size) => (
+            <Toggle variant={variant} size={size} defaultPressed>
+              <Bold className="h-4 w-4" />
+              Toggle
+            </Toggle>
+          )}
+        />
       </ShowcaseExample>
 
       <ShowcaseExample
