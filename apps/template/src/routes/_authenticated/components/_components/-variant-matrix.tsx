@@ -24,6 +24,9 @@ export function VariantMatrix<R extends string, C extends string>({
           <tbody>
             {rows.values.map((row) => (
               <tr key={row}>
+                <th scope="row" className={headerCell}>
+                  {row}
+                </th>
                 <td className="px-3 py-2">
                   {render(row, undefined as unknown as C)}
                 </td>

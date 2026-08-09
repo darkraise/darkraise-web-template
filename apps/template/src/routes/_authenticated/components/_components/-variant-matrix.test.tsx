@@ -33,15 +33,21 @@ describe("VariantMatrix", () => {
     expect(screen.getByText("outline")).toBeInTheDocument()
   })
 
-  it("renders a single row when cols is omitted", () => {
+  it("renders a labelled single row when cols is omitted", () => {
     render(
       <VariantMatrix
         rows={{ label: "orientation", values: ["horizontal", "vertical"] }}
-        render={(orientation) => <span>{orientation}</span>}
+        render={(orientation) => <span>{`sample-${orientation}`}</span>}
       />,
     )
-    expect(screen.getByText("horizontal")).toBeInTheDocument()
-    expect(screen.getByText("vertical")).toBeInTheDocument()
+    expect(
+      screen.getByRole("rowheader", { name: "horizontal" }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole("rowheader", { name: "vertical" }),
+    ).toBeInTheDocument()
+    expect(screen.getByText("sample-horizontal")).toBeInTheDocument()
+    expect(screen.getByText("sample-vertical")).toBeInTheDocument()
     expect(screen.queryByRole("columnheader")).not.toBeInTheDocument()
   })
 
