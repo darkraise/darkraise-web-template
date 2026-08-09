@@ -103,6 +103,23 @@ for (const preset of PRESETS) {
         expect(accent).not.toBe(TRANSPARENT)
         expect(strong).not.toBe(accent)
 
+        // Color alone can't catch a regression that zeroes border-width; a
+        // computed color still resolves even on a 0px border.
+        expect(
+          await styleOf(
+            page,
+            ".dr-card[data-border='strong']",
+            "border-top-width",
+          ),
+        ).toBe("1px")
+        expect(
+          await styleOf(
+            page,
+            ".dr-card[data-border='strong']",
+            "border-top-style",
+          ),
+        ).toBe("solid")
+
         // `none` clears only the colour, so a borderless card must not be
         // narrower than a bordered sibling in the same grid.
         const widths = await page.evaluate(() =>

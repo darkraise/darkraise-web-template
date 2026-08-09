@@ -138,6 +138,21 @@ describe("Accordion card variant", () => {
     expect(item).not.toHaveAttribute("data-elevation")
   })
 
+  it("ignores border and elevation in the default variant", () => {
+    const { container } = render(
+      <Accordion type="single" collapsible border="accent" elevation="low">
+        <AccordionItem value="item-1">
+          <AccordionTrigger>Section One</AccordionTrigger>
+          <AccordionContent>Content for section one</AccordionContent>
+        </AccordionItem>
+      </Accordion>,
+    )
+    const item = container.querySelector(".dr-accordion-item")
+    expect(item).not.toHaveAttribute("data-border")
+    expect(item).not.toHaveAttribute("data-elevation")
+    expect(item).not.toHaveClass("dr-card")
+  })
+
   it("does not leak the variant into a nested default accordion", async () => {
     const user = userEvent.setup()
     const { container } = render(
