@@ -35,19 +35,23 @@
     @apply flex flex-col gap-[var(--density-stack-gap)];
   }
 
-  /* Scoped off the item, not the root: a default-variant Accordion nested
-     inside a card item's content would match a root-descendant selector
-     and inherit the card paddings and divider. */
-  .dr-accordion-item[data-variant="card"] .dr-accordion-trigger {
-    @apply p-[var(--density-container-p)];
-  }
-
-  .dr-accordion-item[data-variant="card"] .dr-accordion-content-inner {
+  /* Child combinators, not descendant: a default-variant Accordion nested
+     inside a card item's content is a descendant at unlimited depth and
+     would otherwise inherit these paddings and the divider. The `> * >`
+     step is the trigger's h3 wrapper. */
+  .dr-accordion-item[data-variant="card"] > * > .dr-accordion-trigger {
     @apply p-[var(--density-container-p)];
   }
 
   .dr-accordion-item[data-variant="card"]
-    .dr-accordion-trigger[data-state="open"] {
+    > .dr-accordion-content
+    > .dr-accordion-content-inner {
+    @apply p-[var(--density-container-p)];
+  }
+
+  .dr-accordion-item[data-variant="card"]
+    > *
+    > .dr-accordion-trigger[data-state="open"] {
     border-bottom: 1px solid hsl(var(--border));
   }
 }
