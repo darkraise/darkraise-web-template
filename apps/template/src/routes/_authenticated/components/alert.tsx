@@ -19,10 +19,10 @@ export const Route = createFileRoute("/_authenticated/components/alert")({
 
 const ALERT_VARIANTS = allOf<AlertVariant>()(
   "default",
-  "destructive",
+  "info",
   "success",
   "warning",
-  "info",
+  "destructive",
 )
 
 const alertIconByVariant: Record<AlertVariant, React.ElementType> = {
