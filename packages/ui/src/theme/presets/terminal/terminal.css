@@ -160,7 +160,7 @@
 /* Cards: 1px primary-tinted border (default border-color is too dim
    in terminal's near-black surfaces; primary at 35% reads as the
    CRT bezel). */
-[data-preset="terminal"] .dr-card {
+[data-preset="terminal"] .dr-card:not([data-border]) {
   border-width: 1px;
   border-style: solid;
   border-color: hsl(var(--primary) / 0.35);

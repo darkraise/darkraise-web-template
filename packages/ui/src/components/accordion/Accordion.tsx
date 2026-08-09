@@ -10,14 +10,29 @@ import { cn } from "@lib/utils"
 import "./accordion.css"
 
 import {
+  resolveCardElevation,
+  type CardBorder,
+  type CardElevation,
+} from "@components/card"
+
+import {
   useAccordion,
   type AccordionContextValue,
   type UseAccordionOptions,
 } from "./useAccordion"
 
-const AccordionContext = React.createContext<AccordionContextValue | null>(null)
+type AccordionVariant = "default" | "card"
 
-function useAccordionContext(consumer: string): AccordionContextValue {
+interface AccordionRenderContextValue extends AccordionContextValue {
+  variant: AccordionVariant
+  border?: CardBorder
+  elevation?: CardElevation | "auto"
+}
+
+const AccordionContext =
+  React.createContext<AccordionRenderContextValue | null>(null)
+
+function useAccordionContext(consumer: string): AccordionRenderContextValue {
   const ctx = React.useContext(AccordionContext)
   if (!ctx) throw new Error(`${consumer} must be used within <Accordion>`)
   return ctx
@@ -58,6 +73,9 @@ type AccordionMultipleProps = {
 type AccordionCommonProps = {
   disabled?: boolean
   orientation?: "horizontal" | "vertical"
+  variant?: AccordionVariant
+  border?: CardBorder
+  elevation?: boolean | CardElevation
   className?: string
   children?: React.ReactNode
   ref?: React.Ref<HTMLDivElement>
@@ -68,7 +86,17 @@ type AccordionProps =
   | (AccordionCommonProps & AccordionMultipleProps)
 
 function Accordion(props: AccordionProps) {
-  const { className, ref, disabled, orientation, children, ...rest } = props
+  const {
+    className,
+    ref,
+    disabled,
+    orientation,
+    variant = "default",
+    border,
+    elevation = false,
+    children,
+    ...rest
+  } = props
 
   const opts: UseAccordionOptions =
     props.type === "single"
@@ -106,14 +134,24 @@ function Accordion(props: AccordionProps) {
   void _ovc
   void _c
 
+  const resolvedElevation = resolveCardElevation(elevation)
+
   return (
     <div
       ref={ref}
       data-orientation={ctx.orientation}
-      className={className}
+      data-variant={variant === "card" ? "card" : undefined}
+      className={cn("dr-accordion", className)}
       {...(domProps as React.HTMLAttributes<HTMLDivElement>)}
     >
-      <AccordionContext.Provider value={ctx}>
+      <AccordionContext.Provider
+        value={{
+          ...ctx,
+          variant,
+          border,
+          elevation: resolvedElevation,
+        }}
+      >
         {children}
       </AccordionContext.Provider>
     </div>
@@ -149,13 +187,22 @@ function AccordionItem({
     [value, open, triggerId, contentId, ctx.disabled, disabled],
   )
 
+  const isCard = ctx.variant === "card"
+
   return (
     <div
       ref={ref}
       data-state={open ? "open" : "closed"}
       data-disabled={itemCtx.disabled ? "" : undefined}
       data-orientation={ctx.orientation}
-      className={cn("dr-accordion-item", className)}
+      data-variant={isCard ? "card" : undefined}
+      data-border={
+        isCard && ctx.border && ctx.border !== "default"
+          ? ctx.border
+          : undefined
+      }
+      data-elevation={isCard ? ctx.elevation : undefined}
+      className={cn("dr-accordion-item", isCard && "dr-card", className)}
       {...props}
     >
       <AccordionItemContext.Provider value={itemCtx}>

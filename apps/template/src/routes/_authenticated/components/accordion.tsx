@@ -74,6 +74,31 @@ function AccordionPage() {
       </ShowcaseExample>
 
       <ShowcaseExample
+        title="Card variant"
+        code={`<Accordion type="single" collapsible variant="card" elevation="low">
+  <AccordionItem value="shipping">
+    <AccordionTrigger>Shipping</AccordionTrigger>
+    <AccordionContent>Free over $50.</AccordionContent>
+  </AccordionItem>
+  <AccordionItem value="returns">
+    <AccordionTrigger>Returns</AccordionTrigger>
+    <AccordionContent>30 days, no questions asked.</AccordionContent>
+  </AccordionItem>
+</Accordion>`}
+      >
+        <Accordion type="single" collapsible variant="card" elevation="low">
+          <AccordionItem value="shipping">
+            <AccordionTrigger>Shipping</AccordionTrigger>
+            <AccordionContent>Free over $50.</AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="returns">
+            <AccordionTrigger>Returns</AccordionTrigger>
+            <AccordionContent>30 days, no questions asked.</AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </ShowcaseExample>
+
+      <ShowcaseExample
         title='type="multiple" — any number of items open simultaneously'
         code={`<Accordion type="multiple" className="w-full">
   <AccordionItem value="item-1">

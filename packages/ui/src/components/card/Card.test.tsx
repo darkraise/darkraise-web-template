@@ -70,6 +70,59 @@ describe("Card", () => {
     expect(container.firstChild).toHaveClass("custom-header")
   })
 
+  it("omits data-divided by default", () => {
+    const { container } = render(<Card>Content</Card>)
+    expect(container.firstChild).not.toHaveAttribute("data-divided")
+  })
+
+  it("sets data-divided when divided is true", () => {
+    const { container } = render(<Card divided>Content</Card>)
+    expect(container.firstChild).toHaveAttribute("data-divided", "true")
+  })
+
+  it("omits data-divided when divided is false", () => {
+    const { container } = render(<Card divided={false}>Content</Card>)
+    expect(container.firstChild).not.toHaveAttribute("data-divided")
+  })
+
+  it("omits data-border by default", () => {
+    const { container } = render(<Card>Content</Card>)
+    expect(container.firstChild).not.toHaveAttribute("data-border")
+  })
+
+  it("omits data-border for the default variant", () => {
+    const { container } = render(<Card border="default">Content</Card>)
+    expect(container.firstChild).not.toHaveAttribute("data-border")
+  })
+
+  it("sets data-border for non-default variants", () => {
+    const { container } = render(<Card border="accent">Content</Card>)
+    expect(container.firstChild).toHaveAttribute("data-border", "accent")
+  })
+
+  it("combines border and divided independently", () => {
+    const { container } = render(
+      <Card border="none" divided>
+        Content
+      </Card>,
+    )
+    expect(container.firstChild).toHaveAttribute("data-border", "none")
+    expect(container.firstChild).toHaveAttribute("data-divided", "true")
+  })
+
+  it("does not leak card attributes to a nested card", () => {
+    const { container } = render(
+      <Card border="strong" divided>
+        <CardContent>
+          <Card>Inner</Card>
+        </CardContent>
+      </Card>,
+    )
+    const inner = container.querySelectorAll(".dr-card")[1]
+    expect(inner).not.toHaveAttribute("data-border")
+    expect(inner).not.toHaveAttribute("data-divided")
+  })
+
   it("forwards ref to Card element", () => {
     const ref = createRef<HTMLDivElement>()
     render(<Card ref={ref}>Content</Card>)

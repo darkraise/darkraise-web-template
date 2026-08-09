@@ -3,7 +3,10 @@ import * as React from "react"
 import { cn } from "@lib/utils"
 import "./card.css"
 
-export type CardElevation = "flat" | "low" | "medium" | "high"
+import { resolveCardElevation, type CardElevation } from "./card-elevation"
+
+export type { CardElevation }
+export type CardBorder = "default" | "none" | "strong" | "accent"
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   /**
@@ -17,16 +20,28 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
    *   the theme is set to flat, low, medium, or high.
    */
   elevation?: boolean | CardElevation
+  /** Draw full-width rules between the header, content, and footer. */
+  divided?: boolean
+  /** Outer border treatment. `"default"` leaves the theme/preset border alone. */
+  border?: CardBorder
   ref?: React.Ref<HTMLDivElement>
 }
 
-function Card({ className, elevation = false, ref, ...props }: CardProps) {
-  const value: CardElevation | "auto" | undefined =
-    elevation === true ? "auto" : elevation || undefined
+function Card({
+  className,
+  elevation = false,
+  divided,
+  border,
+  ref,
+  ...props
+}: CardProps) {
+  const value = resolveCardElevation(elevation)
   return (
     <div
       ref={ref}
       data-elevation={value}
+      data-divided={divided ? "true" : undefined}
+      data-border={border && border !== "default" ? border : undefined}
       className={cn("dr-card", className)}
       {...props}
     />
