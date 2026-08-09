@@ -18,6 +18,7 @@ import {
   Redo,
 } from "lucide-react"
 import { Button } from "darkraise-ui/components/button"
+import type { ButtonVariant, ButtonSize } from "darkraise-ui/components/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,12 +30,25 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from "darkraise-ui/components/toggle-group"
+import { allOf } from "./_components/-variant-axes"
+import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
 export const Route = createFileRoute("/_authenticated/components/buttons")({
   component: ButtonsPage,
 })
+
+const BUTTON_VARIANTS = allOf<ButtonVariant>()(
+  "default",
+  "destructive",
+  "outline",
+  "secondary",
+  "ghost",
+  "link",
+)
+
+const BUTTON_SIZES = allOf<ButtonSize>()("default", "sm", "lg", "icon")
 
 function ButtonsPage() {
   const [period, setPeriod] = useState<"1D" | "1W" | "1M" | "1Y">("1M")
@@ -45,39 +59,18 @@ function ButtonsPage() {
       description="Interactive trigger elements with multiple visual variants, sizes, and states."
     >
       <ShowcaseExample
-        title="Variants"
-        code={`<Button variant="default">Default</Button>
-<Button variant="destructive">Destructive</Button>
-<Button variant="outline">Outline</Button>
-<Button variant="secondary">Secondary</Button>
-<Button variant="ghost">Ghost</Button>
-<Button variant="link">Link</Button>`}
+        title="Variant x size"
+        code={`<Button variant="outline" size="lg">Button</Button>`}
       >
-        <div className="flex flex-wrap gap-3">
-          <Button variant="default">Default</Button>
-          <Button variant="destructive">Destructive</Button>
-          <Button variant="outline">Outline</Button>
-          <Button variant="secondary">Secondary</Button>
-          <Button variant="ghost">Ghost</Button>
-          <Button variant="link">Link</Button>
-        </div>
-      </ShowcaseExample>
-
-      <ShowcaseExample
-        title="Sizes"
-        code={`<Button size="lg">Large</Button>
-<Button size="default">Default</Button>
-<Button size="sm">Small</Button>
-<Button size="icon"><TrendingUp className="h-4 w-4" /></Button>`}
-      >
-        <div className="flex flex-wrap items-center gap-3">
-          <Button size="lg">Large</Button>
-          <Button size="default">Default</Button>
-          <Button size="sm">Small</Button>
-          <Button size="icon">
-            <TrendingUp className="h-4 w-4" />
-          </Button>
-        </div>
+        <VariantMatrix
+          rows={{ label: "variant", values: BUTTON_VARIANTS }}
+          cols={{ label: "size", values: BUTTON_SIZES }}
+          render={(variant, size) => (
+            <Button variant={variant} size={size}>
+              {size === "icon" ? <TrendingUp className="h-4 w-4" /> : "Button"}
+            </Button>
+          )}
+        />
       </ShowcaseExample>
 
       <ShowcaseExample
