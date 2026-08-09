@@ -30,4 +30,24 @@
   .dr-accordion-content-inner {
     @apply pt-0 pb-4;
   }
+
+  .dr-accordion[data-variant="card"] {
+    @apply flex flex-col gap-[var(--density-stack-gap)];
+  }
+
+  /* Scoped off the item, not the root: a default-variant Accordion nested
+     inside a card item's content would match a root-descendant selector
+     and inherit the card paddings and divider. */
+  .dr-accordion-item[data-variant="card"] .dr-accordion-trigger {
+    @apply p-[var(--density-container-p)];
+  }
+
+  .dr-accordion-item[data-variant="card"] .dr-accordion-content-inner {
+    @apply p-[var(--density-container-p)];
+  }
+
+  .dr-accordion-item[data-variant="card"]
+    .dr-accordion-trigger[data-state="open"] {
+    border-bottom: 1px solid hsl(var(--border));
+  }
 }
