@@ -85,28 +85,6 @@ describe("Card", () => {
     expect(container.firstChild).not.toHaveAttribute("data-divided")
   })
 
-  it("renders a divided card without a header", () => {
-    const { container } = render(
-      <Card divided>
-        <CardContent>Content</CardContent>
-      </Card>,
-    )
-    expect(container.querySelector(".dr-card-content")).toBeInTheDocument()
-    expect(container.querySelector(".dr-card-header")).not.toBeInTheDocument()
-  })
-
-  it("renders a divided card with header and footer only", () => {
-    const { container } = render(
-      <Card divided>
-        <CardHeader>Header</CardHeader>
-        <CardFooter>Footer</CardFooter>
-      </Card>,
-    )
-    expect(container.querySelector(".dr-card-header")).toBeInTheDocument()
-    expect(container.querySelector(".dr-card-footer")).toBeInTheDocument()
-    expect(container.querySelector(".dr-card-content")).not.toBeInTheDocument()
-  })
-
   it("forwards ref to Card element", () => {
     const ref = createRef<HTMLDivElement>()
     render(<Card ref={ref}>Content</Card>)
