@@ -3,7 +3,9 @@ import * as React from "react"
 import { cn } from "@lib/utils"
 import "./card.css"
 
-export type CardElevation = "flat" | "low" | "medium" | "high"
+import { resolveCardElevation, type CardElevation } from "./card-elevation"
+
+export type { CardElevation }
 export type CardBorder = "default" | "none" | "strong" | "accent"
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -23,12 +25,6 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Outer border treatment. `"default"` leaves the theme/preset border alone. */
   border?: CardBorder
   ref?: React.Ref<HTMLDivElement>
-}
-
-export function resolveCardElevation(
-  elevation: boolean | CardElevation,
-): CardElevation | "auto" | undefined {
-  return elevation === true ? "auto" : elevation || undefined
 }
 
 function Card({
