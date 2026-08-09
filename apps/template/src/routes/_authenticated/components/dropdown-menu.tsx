@@ -25,14 +25,33 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "darkraise-ui/components/dropdown-menu"
+import type {
+  DropdownMenuSide,
+  DropdownMenuAlign,
+} from "darkraise-ui/components/dropdown-menu"
 import {
   VirtualizedDropdownMenu,
   VirtualizedDropdownMenuContent,
   VirtualizedDropdownMenuItem,
   VirtualizedDropdownMenuTrigger,
 } from "darkraise-ui/components/virtualized-dropdown-menu"
+import { allOf } from "./_components/-variant-axes"
+import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
+
+const DROPDOWN_MENU_SIDES = allOf<DropdownMenuSide>()(
+  "top",
+  "right",
+  "bottom",
+  "left",
+)
+
+const DROPDOWN_MENU_ALIGNS = allOf<DropdownMenuAlign>()(
+  "start",
+  "center",
+  "end",
+)
 
 export const Route = createFileRoute(
   "/_authenticated/components/dropdown-menu",
@@ -176,6 +195,39 @@ function DropdownMenuPage() {
       title="Dropdown Menu"
       description="Context menus with action items, checkboxes, radio groups, and nested submenus."
     >
+      <ShowcaseExample
+        title="Side x align"
+        code={`// One representative cell: every side x align combination renders above.
+// Each cell is a live DropdownMenu; click its trigger to see that placement.
+<DropdownMenu>
+  <DropdownMenuTrigger asChild>
+    <Button variant="outline" size="sm">right/end</Button>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent side="right" align="end">
+    <DropdownMenuItem>side=right align=end</DropdownMenuItem>
+  </DropdownMenuContent>
+</DropdownMenu>`}
+      >
+        <VariantMatrix
+          rows={{ label: "side", values: DROPDOWN_MENU_SIDES }}
+          cols={{ label: "align", values: DROPDOWN_MENU_ALIGNS }}
+          render={(side, align) => (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">
+                  {side}/{align}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent side={side} align={align}>
+                <DropdownMenuItem>
+                  side={side} align={align}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+        />
+      </ShowcaseExample>
+
       <ShowcaseExample
         title="Basic menu with sections"
         code={`<DropdownMenu>

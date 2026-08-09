@@ -5,11 +5,18 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "darkraise-ui/components/avatar"
+import { Button } from "darkraise-ui/components/button"
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "darkraise-ui/components/hover-card"
+import type {
+  HoverCardSide,
+  HoverCardAlign,
+} from "darkraise-ui/components/hover-card"
+import { allOf } from "./_components/-variant-axes"
+import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
@@ -17,12 +24,54 @@ export const Route = createFileRoute("/_authenticated/components/hover-card")({
   component: HoverCardPage,
 })
 
+const HOVER_CARD_SIDES = allOf<HoverCardSide>()(
+  "top",
+  "right",
+  "bottom",
+  "left",
+)
+
+const HOVER_CARD_ALIGNS = allOf<HoverCardAlign>()("start", "center", "end")
+
 function HoverCardPage() {
   return (
     <ShowcasePage
       title="Hover Card"
       description="A card that appears when hovering over a trigger element, for non-interactive preview content."
     >
+      <ShowcaseExample
+        title="Side x align"
+        code={`// One representative cell: every side x align combination renders above.
+// Each cell is a live HoverCard; hover its trigger to see that placement.
+<HoverCard>
+  <HoverCardTrigger asChild>
+    <Button variant="outline" size="sm">right/end</Button>
+  </HoverCardTrigger>
+  <HoverCardContent side="right" align="end" className="w-48">
+    side=right align=end
+  </HoverCardContent>
+</HoverCard>`}
+      >
+        <VariantMatrix
+          rows={{ label: "side", values: HOVER_CARD_SIDES }}
+          cols={{ label: "align", values: HOVER_CARD_ALIGNS }}
+          render={(side, align) => (
+            <HoverCard>
+              <HoverCardTrigger asChild>
+                <Button variant="outline" size="sm">
+                  {side}/{align}
+                </Button>
+              </HoverCardTrigger>
+              <HoverCardContent side={side} align={align} className="w-48">
+                <p className="text-sm">
+                  side={side} align={align}
+                </p>
+              </HoverCardContent>
+            </HoverCard>
+          )}
+        />
+      </ShowcaseExample>
+
       <ShowcaseExample
         title="User profile hover card"
         code={`<HoverCard>

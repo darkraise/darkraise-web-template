@@ -8,8 +8,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "darkraise-ui/components/select"
+import type {
+  SelectSide,
+  SelectAlign,
+  SelectPosition,
+} from "darkraise-ui/components/select"
+import { allOf } from "./_components/-variant-axes"
+import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
+
+const SELECT_SIDES = allOf<SelectSide>()("top", "right", "bottom", "left")
+
+const SELECT_ALIGNS = allOf<SelectAlign>()("start", "center", "end")
+
+const SELECT_POSITIONS = allOf<SelectPosition>()("item-aligned", "popper")
 
 export const Route = createFileRoute("/_authenticated/components/select")({
   component: SelectPage,
@@ -77,6 +90,69 @@ function SelectPage() {
       title="Select"
       description="Native-feeling single-select dropdown with keyboard navigation and search-by-letter. Use Combobox or VirtualizedDropdownMenu when the option list is large or filterable."
     >
+      <ShowcaseExample
+        title="Side x align"
+        code={`// One representative cell: every side x align combination renders above.
+// Each cell is a live Select; click its trigger to see that placement.
+<Select>
+  <SelectTrigger className="w-32">
+    <SelectValue placeholder="right/end" />
+  </SelectTrigger>
+  <SelectContent side="right" align="end" position="popper">
+    <SelectItem value="alpha">Alpha</SelectItem>
+    <SelectItem value="beta">Beta</SelectItem>
+  </SelectContent>
+</Select>`}
+      >
+        <VariantMatrix
+          rows={{ label: "side", values: SELECT_SIDES }}
+          cols={{ label: "align", values: SELECT_ALIGNS }}
+          render={(side, align) => (
+            <Select>
+              <SelectTrigger className="w-32">
+                <SelectValue placeholder={`${side}/${align}`} />
+              </SelectTrigger>
+              <SelectContent side={side} align={align} position="popper">
+                <SelectItem value="alpha">Alpha</SelectItem>
+                <SelectItem value="beta">Beta</SelectItem>
+                <SelectItem value="gamma">Gamma</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+        />
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Position"
+        code={`// One representative cell: every position value renders above.
+// item-aligned overlays the list on the trigger; popper anchors beside it.
+<Select>
+  <SelectTrigger className="w-40">
+    <SelectValue placeholder="popper" />
+  </SelectTrigger>
+  <SelectContent position="popper">
+    <SelectItem value="alpha">Alpha</SelectItem>
+    <SelectItem value="beta">Beta</SelectItem>
+  </SelectContent>
+</Select>`}
+      >
+        <VariantMatrix
+          rows={{ label: "position", values: SELECT_POSITIONS }}
+          render={(position) => (
+            <Select>
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder={position} />
+              </SelectTrigger>
+              <SelectContent position={position}>
+                <SelectItem value="alpha">Alpha</SelectItem>
+                <SelectItem value="beta">Beta</SelectItem>
+                <SelectItem value="gamma">Gamma</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+        />
+      </ShowcaseExample>
+
       <ShowcaseExample
         title="Single value"
         code={`const [value, setValue] = useState("")
