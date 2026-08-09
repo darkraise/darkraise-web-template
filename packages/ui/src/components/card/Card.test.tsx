@@ -70,6 +70,21 @@ describe("Card", () => {
     expect(container.firstChild).toHaveClass("custom-header")
   })
 
+  it("omits data-divided by default", () => {
+    const { container } = render(<Card>Content</Card>)
+    expect(container.firstChild).not.toHaveAttribute("data-divided")
+  })
+
+  it("sets data-divided when divided is true", () => {
+    const { container } = render(<Card divided>Content</Card>)
+    expect(container.firstChild).toHaveAttribute("data-divided", "true")
+  })
+
+  it("omits data-divided when divided is false", () => {
+    const { container } = render(<Card divided={false}>Content</Card>)
+    expect(container.firstChild).not.toHaveAttribute("data-divided")
+  })
+
   it("forwards ref to Card element", () => {
     const ref = createRef<HTMLDivElement>()
     render(<Card ref={ref}>Content</Card>)

@@ -17,16 +17,25 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
    *   the theme is set to flat, low, medium, or high.
    */
   elevation?: boolean | CardElevation
+  /** Draw full-width rules between the header, content, and footer. */
+  divided?: boolean
   ref?: React.Ref<HTMLDivElement>
 }
 
-function Card({ className, elevation = false, ref, ...props }: CardProps) {
+function Card({
+  className,
+  elevation = false,
+  divided,
+  ref,
+  ...props
+}: CardProps) {
   const value: CardElevation | "auto" | undefined =
     elevation === true ? "auto" : elevation || undefined
   return (
     <div
       ref={ref}
       data-elevation={value}
+      data-divided={divided ? "true" : undefined}
       className={cn("dr-card", className)}
       {...props}
     />

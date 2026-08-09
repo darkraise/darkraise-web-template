@@ -46,6 +46,23 @@
     @apply flex items-center p-[var(--density-container-p)] pt-0;
   }
 
+  /* Full-width rules between regions. Direct-child combinators keep a
+     nested Card inside a CardContent from inheriting its parent's
+     dividers. The `:not()` guards suppress a rule that would have
+     nothing on the other side of it. */
+  .dr-card[data-divided="true"] > .dr-card-header:not(:last-child) {
+    border-bottom: 1px solid hsl(var(--border));
+  }
+
+  .dr-card[data-divided="true"] > .dr-card-footer:not(:first-child) {
+    border-top: 1px solid hsl(var(--border));
+  }
+
+  .dr-card[data-divided="true"] > .dr-card-content,
+  .dr-card[data-divided="true"] > .dr-card-footer {
+    padding-top: var(--density-container-p);
+  }
+
   /* Neon preset — cards get a primary-tinted border so they visibly
      outline in the accent color. Background stays near-black (set by
      neon's surfaceRecipe → --card → bg-card); elevation shadows are
