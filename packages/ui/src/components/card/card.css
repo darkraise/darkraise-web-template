@@ -48,18 +48,20 @@
 
   /* Full-width rules between regions. Direct-child combinators keep a
      nested Card inside a CardContent from inheriting its parent's
-     dividers. The `:not()` guards suppress a rule that would have
-     nothing on the other side of it. */
+     dividers. Adjacent-sibling selectors keep padding and rules in
+     lockstep so only regions that actually have a divider above them
+     restore top padding. */
   .dr-card[data-divided="true"] > .dr-card-header:not(:last-child) {
     border-bottom: 1px solid hsl(var(--border));
   }
 
-  .dr-card[data-divided="true"] > .dr-card-footer:not(:first-child) {
+  .dr-card[data-divided="true"] > .dr-card-content + .dr-card-footer {
     border-top: 1px solid hsl(var(--border));
   }
 
-  .dr-card[data-divided="true"] > .dr-card-content,
-  .dr-card[data-divided="true"] > .dr-card-footer {
+  .dr-card[data-divided="true"] > .dr-card-header + .dr-card-content,
+  .dr-card[data-divided="true"] > .dr-card-header + .dr-card-footer,
+  .dr-card[data-divided="true"] > .dr-card-content + .dr-card-footer {
     padding-top: var(--density-container-p);
   }
 
