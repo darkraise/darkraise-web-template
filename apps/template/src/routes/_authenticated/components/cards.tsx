@@ -94,6 +94,52 @@ function CardsPage() {
         </div>
       </ShowcaseExample>
 
+      <ShowcaseExample
+        title="Divided card"
+        code={`<Card divided>
+  <CardHeader>
+    <CardTitle>Invoice #1042</CardTitle>
+    <CardDescription>Issued 9 August 2026</CardDescription>
+  </CardHeader>
+  <CardContent>Three items, billed monthly.</CardContent>
+  <CardFooter>
+    <Button size="sm">Download</Button>
+  </CardFooter>
+</Card>`}
+      >
+        <Card divided className="max-w-sm">
+          <CardHeader>
+            <CardTitle>Invoice #1042</CardTitle>
+            <CardDescription>Issued 9 August 2026</CardDescription>
+          </CardHeader>
+          <CardContent>Three items, billed monthly.</CardContent>
+          <CardFooter>
+            <Button size="sm">Download</Button>
+          </CardFooter>
+        </Card>
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Border variants"
+        code={`<Card border="none">…</Card>
+<Card border="default">…</Card>
+<Card border="strong">…</Card>
+<Card border="accent">…</Card>`}
+      >
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {(["none", "default", "strong", "accent"] as const).map((variant) => (
+            <Card key={variant} border={variant}>
+              <CardHeader>
+                <CardTitle className="text-base">{variant}</CardTitle>
+              </CardHeader>
+              <CardContent className="text-muted-foreground text-sm">
+                border=&quot;{variant}&quot;
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </ShowcaseExample>
+
       {/* ─── Elevation ────────────────────────────────────────────────────── */}
 
       <ShowcaseExample
