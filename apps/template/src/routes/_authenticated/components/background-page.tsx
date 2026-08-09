@@ -4,7 +4,6 @@ import {
   BackgroundPage,
   BACKGROUND_PAGE_VARIANTS,
 } from "darkraise-ui/components/background-page"
-import type { BackgroundPageVariant } from "darkraise-ui/components/background-page"
 import { Button } from "darkraise-ui/components/button"
 import { Input } from "darkraise-ui/components/input"
 import {
@@ -16,8 +15,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "darkraise-ui/components/carousel"
-import { allOf } from "./_components/-variant-axes"
-import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
@@ -26,21 +23,6 @@ export const Route = createFileRoute(
 )({
   component: BackgroundPagePage,
 })
-
-const BACKGROUND_PAGE_VARIANT_VALUES = allOf<BackgroundPageVariant>()(
-  "aurora",
-  "mesh",
-  "constellation",
-  "grid",
-  "orbs",
-  "waves",
-  "starfield",
-  "spotlight",
-  "ripple",
-  "dotgrid",
-  "flowfield",
-  "contour",
-)
 
 function AuthMock() {
   return (
@@ -157,31 +139,6 @@ function BackgroundPagePage() {
         >
           <AuthMock />
         </BackgroundPage>
-      </ShowcaseExample>
-
-      <ShowcaseExample
-        title="Variant"
-        code={`// One representative cell: every variant renders above.
-<BackgroundPage
-  variant="constellation"
-  className="grid h-56 place-items-center rounded-lg p-4"
->
-  <span>constellation</span>
-</BackgroundPage>`}
-      >
-        <VariantMatrix
-          rows={{ label: "variant", values: BACKGROUND_PAGE_VARIANT_VALUES }}
-          render={(variant) => (
-            <BackgroundPage
-              variant={variant}
-              className="grid h-56 place-items-center rounded-lg p-4"
-            >
-              <span className="bg-card/80 rounded-full px-3 py-1 text-xs font-medium backdrop-blur-sm">
-                {variant}
-              </span>
-            </BackgroundPage>
-          )}
-        />
       </ShowcaseExample>
 
       <ShowcaseExample
