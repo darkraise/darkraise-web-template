@@ -1,13 +1,14 @@
 import { useState } from "react"
-import { PanelLeftClose, PanelLeft, SeparatorVertical } from "lucide-react"
+import { PanelLeftClose, PanelLeft } from "lucide-react"
 import { Button } from "@components/button"
-import { Toggle } from "@components/toggle"
+import { ToggleGroup, ToggleGroupItem } from "@components/toggle-group"
 import { TooltipProvider } from "@components/tooltip"
 import { BrandLogo } from "@layout/brand-logo"
 import { LayoutHeader } from "@layout/layout-header"
 import { SearchCommand } from "@layout/search-command"
 import { SkipLink } from "@layout/skip-link"
 import { SidebarNav } from "./SidebarNav"
+import type { SidebarActiveBar } from "./SidebarNav"
 import { SidebarProvider } from "./SidebarContext"
 import type { LayoutProps } from "@layout/types"
 
@@ -26,22 +27,48 @@ export function SidebarLayout({
   onLogout,
 }: LayoutProps) {
   const [collapsed, setCollapsed] = useState(false)
-  const [activeBar, setActiveBar] = useState(true)
+  // Starts unset so nobody's sidebar changes appearance unless they ask:
+  // each preset renders its own default indicator until the control below
+  // is touched. A single-selection ToggleGroup can't hold `undefined`
+  // itself, so "unset" is represented on the wire as the "default" item
+  // and mapped back to `undefined` in onValueChange.
+  const [activeBar, setActiveBar] = useState<SidebarActiveBar | undefined>(
+    undefined,
+  )
 
   const flatNavItems = nav.flatMap((g) =>
     g.items.map((i) => ({ label: i.label, href: i.href })),
   )
 
   const activeBarToggle = showActiveBarToggle ? (
-    <Toggle
+    <ToggleGroup
+      type="single"
       size="sm"
-      pressed={activeBar}
-      onPressedChange={setActiveBar}
-      aria-label="Toggle sidebar active-item left bar"
-      title="Sidebar active-item left bar"
+      value={activeBar ?? "default"}
+      onValueChange={(value) => {
+        // A single-selection group emits "" on deselect; that must not
+        // reach state, or the control would end up with no active item.
+        if (!value) return
+        setActiveBar(
+          value === "default" ? undefined : (value as SidebarActiveBar),
+        )
+      }}
+      variant="outline"
+      aria-label="Sidebar active-item indicator"
     >
-      <SeparatorVertical className="size-[var(--icon-size)]" />
-    </Toggle>
+      <ToggleGroupItem value="default" aria-label="Each preset's own indicator">
+        Default
+      </ToggleGroupItem>
+      <ToggleGroupItem value="bar" aria-label="Left rail only">
+        Bar
+      </ToggleGroupItem>
+      <ToggleGroupItem value="ring" aria-label="Uniform ring only">
+        Ring
+      </ToggleGroupItem>
+      <ToggleGroupItem value="both" aria-label="Ring and left rail">
+        Both
+      </ToggleGroupItem>
+    </ToggleGroup>
   ) : null
 
   return (
