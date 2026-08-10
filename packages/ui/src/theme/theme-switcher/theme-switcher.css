@@ -1,39 +1,68 @@
 @layer components {
-  /* Horizontal axis row: label on the left at a fixed column width,
-     control fills the rest. Applied to every section in the switcher
-     panel (top-level common axes + nested preset axes) to keep the
-     panel compact vertically. Swatch grids opt out via the :has rule
-     below because their 17+ swatches need the full popover width. */
+  /* Axis row layout is driven by the width the row actually gets, not by
+     the viewport: the same rows render in a 34rem popover and in the
+     settings page's two-column grid, where each column is roughly 19rem.
+     The 26rem breakpoint used throughout this file is the narrowest a
+     row can be and still seat the label beside the control — 8rem label
+     + 0.75rem gap + the widest control (the 16.5rem swatch grid). Panels
+     that host rows declare themselves as the query container. */
+  .dr-theme-settings-group-body,
+  .dr-theme-settings[data-layout="compact"] {
+    container-type: inline-size;
+  }
+
+  /* Narrow container: label stacked above a full-width control. */
   .dr-theme-switcher-row,
   .dr-theme-switcher-preset-axis {
     display: flex;
-    align-items: center;
-    gap: 0.75rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.375rem;
   }
 
   .dr-theme-switcher-section-label {
     @apply text-muted-foreground text-xs font-medium;
   }
 
-  /* Label column inside a horizontal row — fixed width so labels align
-     across rows. Width sized for the longest label in the system
-     ("Background Intensity", "Button Elevation") so nothing wraps at
-     text-xs. Reset any block-level margins (none today but defensive
-     so future Label tweaks don't break alignment). */
   .dr-theme-switcher-row > .dr-theme-switcher-section-label,
   .dr-theme-switcher-preset-axis > .dr-theme-switcher-section-label {
-    flex: 0 0 8rem;
-    min-width: 8rem;
     margin: 0;
     line-height: 1.3;
+  }
+
+  @container (min-width: 26rem) {
+    /* Horizontal axis row: label on the left at a fixed column width,
+       control fills the rest. Keeps the panel compact vertically. */
+    .dr-theme-switcher-row,
+    .dr-theme-switcher-preset-axis {
+      flex-direction: row;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    /* Label column — fixed width so labels align across rows. Sized for
+       the longest label in the system ("Background Intensity", "Button
+       Elevation") so nothing wraps at text-xs. */
+    .dr-theme-switcher-row > .dr-theme-switcher-section-label,
+    .dr-theme-switcher-preset-axis > .dr-theme-switcher-section-label {
+      flex: 0 0 8rem;
+      min-width: 8rem;
+    }
   }
 
   .dr-theme-switcher-row-icon {
     @apply mr-1.5 size-[var(--icon-size-sm)];
   }
 
+  /* Nine swatches per row wherever nine fit, wrapping to fewer instead of
+     clipping the trailing columns when the control area is narrower. The
+     max-width caps the track count at 9 so wide containers keep the
+     established 9-per-row arrangement rather than stretching to 12+.
+     9 * 1.5rem + 8 * 0.375rem = 16.5rem. */
   .dr-theme-switcher-swatch-grid {
-    @apply grid grid-cols-9 gap-1.5;
+    @apply grid gap-1.5;
+    grid-template-columns: repeat(auto-fill, 1.5rem);
+    max-width: 16.5rem;
   }
 
   .dr-theme-switcher-swatch {
@@ -48,11 +77,27 @@
     @apply grid gap-1;
   }
 
+  /* Toggle cells are grid items in minmax(0, 1fr) tracks, but a button's
+     own min-width is its content, so a label wider than its track used to
+     paint outside the border box and over the neighbouring cell. Clipping
+     keeps a too-long label inside its own cell; the `[data-size]` bump
+     clears the `.dr-toggle[data-size]` min-width set in toggle.css. */
+  .dr-theme-switcher-toggle-group > .dr-toggle[data-size] {
+    min-width: 0;
+    overflow: hidden;
+  }
+
   /* Toggle group fills the remaining row width. */
   .dr-theme-switcher-row > .dr-theme-switcher-toggle-group,
   .dr-theme-switcher-preset-axis > .dr-theme-switcher-toggle-group {
-    flex: 1 1 0;
     min-width: 0;
+  }
+
+  @container (min-width: 26rem) {
+    .dr-theme-switcher-row > .dr-theme-switcher-toggle-group,
+    .dr-theme-switcher-preset-axis > .dr-theme-switcher-toggle-group {
+      flex: 1 1 0;
+    }
   }
 
   .dr-theme-switcher-toggle-group[data-cols="2"] {
@@ -73,7 +118,7 @@
      current value name renders on the right as a small muted label so
      the discrete position has a readable indicator. */
   .dr-theme-switcher-slider-control {
-    @apply flex flex-1 items-center gap-3;
+    @apply flex items-center gap-3;
     min-width: 0;
   }
   .dr-theme-switcher-slider-control > .dr-slider {
@@ -89,12 +134,21 @@
 
   /* Swatch-grid rows (Accent Color, Surface Color) share the same
      horizontal label-left / control-right layout as every other row.
-     The 9-col grid wraps to 2 rows for 17-18 swatches and fits
-     comfortably in the control column at the panel's current width.
-     The label is vertically centered against the wrapped grid. */
+     The grid wraps to 2 rows for 17-18 swatches. The label is vertically
+     centered against the wrapped grid. */
   .dr-theme-switcher-row > .dr-theme-switcher-swatch-grid {
-    flex: 1 1 0;
     min-width: 0;
+  }
+
+  /* Flex sizing only applies once the row is horizontal — in the stacked
+     layout the main axis is vertical, where a `flex: 1 1 0` basis would
+     be a height. */
+  @container (min-width: 26rem) {
+    .dr-theme-switcher-row > .dr-theme-switcher-swatch-grid,
+    .dr-theme-switcher-row > .dr-theme-switcher-slider-control,
+    .dr-theme-switcher-preset-axis > .dr-theme-switcher-slider-control {
+      flex: 1 1 0;
+    }
   }
 
   /* Preset-axes-group wraps multiple preset-specific axis rows. The
