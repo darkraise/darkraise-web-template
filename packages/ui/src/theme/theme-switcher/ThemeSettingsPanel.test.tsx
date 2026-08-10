@@ -88,4 +88,12 @@ describe("ThemeSettingsPanel", () => {
     expect(screen.getByRole("heading", { name: "Theme" })).toBeInTheDocument()
     expect(screen.getByRole("heading", { name: "Layout" })).toBeInTheDocument()
   })
+
+  it("names its axis sliders so they are reachable by role and name", () => {
+    renderPanel(<ThemeSettingsPanel layout="page" />)
+    // A four-value axis renders as a Slider. Before the Slider fix its
+    // aria-label landed on a wrapper span, leaving role="slider" unnamed.
+    expect(screen.getByRole("slider", { name: "Density" })).toBeInTheDocument()
+    expect(screen.getByRole("slider", { name: "Radius" })).toBeInTheDocument()
+  })
 })

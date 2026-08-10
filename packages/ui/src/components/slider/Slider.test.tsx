@@ -20,6 +20,39 @@ describe("Slider", () => {
     expect(thumbs).toHaveLength(2)
   })
 
+  it("names the thumb from aria-label", () => {
+    render(<Slider defaultValue={[40]} aria-label="Volume" />)
+    expect(screen.getByRole("slider", { name: "Volume" })).toBeInTheDocument()
+  })
+
+  it("names the thumb from aria-labelledby", () => {
+    render(
+      <>
+        <span id="brightness-label">Brightness</span>
+        <Slider defaultValue={[40]} aria-labelledby="brightness-label" />
+      </>,
+    )
+    expect(
+      screen.getByRole("slider", { name: "Brightness" }),
+    ).toBeInTheDocument()
+  })
+
+  it("names every thumb in range mode", () => {
+    render(<Slider defaultValue={[20, 80]} aria-label="Price range" />)
+    expect(screen.getAllByRole("slider", { name: "Price range" })).toHaveLength(
+      2,
+    )
+  })
+
+  it("does not leave the label on the wrapper", () => {
+    const { container } = render(
+      <Slider defaultValue={[40]} aria-label="Volume" />,
+    )
+    expect(container.querySelector(".dr-slider")).not.toHaveAttribute(
+      "aria-label",
+    )
+  })
+
   it("ArrowRight increments by step", async () => {
     const user = userEvent.setup()
     const onChange = vi.fn()

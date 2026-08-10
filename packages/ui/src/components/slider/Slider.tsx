@@ -56,6 +56,8 @@ function Slider({
   inverted,
   name,
   showSteps,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
   ...props
 }: SliderProps) {
   const opts: UseSliderOptions = {
@@ -240,6 +242,8 @@ function Slider({
             key={i}
             role="slider"
             tabIndex={slider.disabled ? -1 : 0}
+            aria-label={ariaLabel}
+            aria-labelledby={ariaLabelledBy}
             aria-orientation={slider.orientation}
             aria-valuemin={slider.min}
             aria-valuemax={slider.max}
