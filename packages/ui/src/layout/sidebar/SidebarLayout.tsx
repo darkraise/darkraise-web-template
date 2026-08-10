@@ -1,13 +1,14 @@
 import { useState } from "react"
-import { PanelLeftClose, PanelLeft, SeparatorVertical } from "lucide-react"
+import { PanelLeftClose, PanelLeft } from "lucide-react"
 import { Button } from "@components/button"
-import { Toggle } from "@components/toggle"
+import { ToggleGroup, ToggleGroupItem } from "@components/toggle-group"
 import { TooltipProvider } from "@components/tooltip"
 import { BrandLogo } from "@layout/brand-logo"
 import { LayoutHeader } from "@layout/layout-header"
 import { SearchCommand } from "@layout/search-command"
 import { SkipLink } from "@layout/skip-link"
 import { SidebarNav } from "./SidebarNav"
+import type { SidebarActiveBar } from "./SidebarNav"
 import { SidebarProvider } from "./SidebarContext"
 import type { LayoutProps } from "@layout/types"
 
@@ -26,22 +27,33 @@ export function SidebarLayout({
   onLogout,
 }: LayoutProps) {
   const [collapsed, setCollapsed] = useState(false)
-  const [activeBar, setActiveBar] = useState(true)
+  const [activeBar, setActiveBar] = useState<SidebarActiveBar>("bar")
 
   const flatNavItems = nav.flatMap((g) =>
     g.items.map((i) => ({ label: i.label, href: i.href })),
   )
 
   const activeBarToggle = showActiveBarToggle ? (
-    <Toggle
+    <ToggleGroup
+      type="single"
       size="sm"
-      pressed={activeBar}
-      onPressedChange={setActiveBar}
-      aria-label="Toggle sidebar active-item left bar"
-      title="Sidebar active-item left bar"
+      value={activeBar}
+      onValueChange={(value) => {
+        if (value) setActiveBar(value as SidebarActiveBar)
+      }}
+      variant="outline"
+      aria-label="Sidebar active-item indicator"
     >
-      <SeparatorVertical className="size-[var(--icon-size)]" />
-    </Toggle>
+      <ToggleGroupItem value="bar" aria-label="Left rail only">
+        Bar
+      </ToggleGroupItem>
+      <ToggleGroupItem value="ring" aria-label="Uniform ring only">
+        Ring
+      </ToggleGroupItem>
+      <ToggleGroupItem value="both" aria-label="Ring and left rail">
+        Both
+      </ToggleGroupItem>
+    </ToggleGroup>
   ) : null
 
   return (
