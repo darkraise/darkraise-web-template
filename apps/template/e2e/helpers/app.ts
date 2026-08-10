@@ -225,9 +225,10 @@ export async function setAxisSlider(
   label: string,
   targetIndex: number,
 ) {
-  const thumb = themeSwitcher(page)
-    .locator(`[aria-label="${label}"] [role="slider"]`)
-    .first()
+  // Query by accessible name. The axis label lives ON the role="slider"
+  // thumb; it used to sit on a wrapper span, which left the slider itself
+  // unnamed for assistive technology.
+  const thumb = themeSwitcher(page).getByRole("slider", { name: label }).first()
   await thumb.focus()
   const current = Number(await thumb.getAttribute("aria-valuenow"))
   const delta = targetIndex - current
