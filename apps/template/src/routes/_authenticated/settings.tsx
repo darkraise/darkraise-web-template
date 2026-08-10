@@ -29,7 +29,9 @@ import {
 import { fieldProps } from "@/lib/field-props"
 import { AppearanceSection } from "./_settings/-appearance-section"
 import { NotificationsSection } from "./_settings/-notifications-section"
+import { PreferencesSection } from "./_settings/-preferences-section"
 import { ProfileSection } from "./_settings/-profile-section"
+import { SecuritySection } from "./_settings/-security-section"
 
 export const Route = createFileRoute("/_authenticated/settings")({
   component: SettingsPage,
@@ -181,7 +183,9 @@ function GeneralSettings() {
           </CardContent>
         </Card>
       </form>
+      <PreferencesSection />
       <AppearanceSection />
+      <SecuritySection />
     </div>
   )
 }
