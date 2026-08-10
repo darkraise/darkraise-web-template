@@ -2,8 +2,10 @@ import * as React from "react"
 import { cn } from "@lib/utils"
 import "./button-group.css"
 
+export type ButtonGroupOrientation = "horizontal" | "vertical"
+
 export interface ButtonGroupProps extends React.HTMLAttributes<HTMLDivElement> {
-  orientation?: "horizontal" | "vertical"
+  orientation?: ButtonGroupOrientation
 }
 
 function ButtonGroup({

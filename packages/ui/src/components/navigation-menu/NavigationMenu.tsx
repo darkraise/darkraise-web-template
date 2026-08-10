@@ -39,6 +39,8 @@ function useNavigationMenuRoot(
   return ctx
 }
 
+export type NavigationMenuOrientation = "horizontal" | "vertical"
+
 interface NavigationMenuProps extends React.HTMLAttributes<HTMLElement> {
   value?: string
   defaultValue?: string
@@ -46,7 +48,7 @@ interface NavigationMenuProps extends React.HTMLAttributes<HTMLElement> {
   delayDuration?: number
   skipDelayDuration?: number
   dir?: "ltr" | "rtl"
-  orientation?: "horizontal" | "vertical"
+  orientation?: NavigationMenuOrientation
   ref?: React.Ref<HTMLElement>
 }
 

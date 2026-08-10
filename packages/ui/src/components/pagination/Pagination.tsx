@@ -5,7 +5,7 @@ import { cn } from "@lib/utils"
 import type { ButtonProps } from "@components/button"
 import "./pagination.css"
 
-type PaginationVariant = "filled" | "outlined"
+export type PaginationVariant = "filled" | "outlined"
 
 const PaginationContext = React.createContext<{ variant: PaginationVariant }>({
   variant: "filled",
