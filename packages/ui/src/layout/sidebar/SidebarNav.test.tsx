@@ -221,6 +221,24 @@ describe("SidebarNav activeBar", () => {
     }
   })
 
+  it("gives scifi both the rail and the ring, rail painted first", () => {
+    const withoutComments = scifiCss.replace(/\/\*[\s\S]*?\*\//g, "")
+    const rule = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)].find(
+      ([, selector]) =>
+        selector.includes(".dr-sidebar-nav-item") &&
+        selector.includes('[data-active-bar="both"]'),
+    )
+    expect(rule, "no scifi activeBar=both rule found").toBeDefined()
+    const body = rule?.[2] ?? ""
+    expect(body).toMatch(/inset 3px/)
+    expect(body).toMatch(/inset 0 0 0 1px/)
+    const railIndex = body.indexOf("inset 3px")
+    const ringIndex = body.indexOf("inset 0 0 0 1px")
+    expect(railIndex).toBeGreaterThanOrEqual(0)
+    expect(ringIndex).toBeGreaterThanOrEqual(0)
+    expect(railIndex).toBeLessThan(ringIndex)
+  })
+
   it("keeps the scifi default as a ring only", () => {
     const withoutComments = scifiCss.replace(/\/\*[\s\S]*?\*\//g, "")
     const base = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)].find(
