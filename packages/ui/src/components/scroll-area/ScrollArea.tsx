@@ -8,6 +8,10 @@ import "./scroll-area.css"
 
 type Orientation = "vertical" | "horizontal"
 
+// Component-qualified public alias. The bare name cannot be exported: the
+// package barrel re-exports every component and several declare their own.
+export type ScrollAreaOrientation = Orientation
+
 interface ScrollAreaContextValue {
   viewportRef: React.RefObject<HTMLDivElement | null>
   rootRef: React.RefObject<HTMLDivElement | null>

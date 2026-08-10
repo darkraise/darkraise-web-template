@@ -20,6 +20,11 @@ import "./menubar.css"
 type Side = "top" | "right" | "bottom" | "left"
 type Align = "start" | "center" | "end"
 
+// Component-qualified public aliases. The bare names cannot be exported: the
+// package barrel re-exports every component and several declare their own.
+export type MenubarSide = Side
+export type MenubarAlign = Align
+
 interface MenubarRootContextValue {
   /** id of the menu currently open ("" = none) */
   value: string

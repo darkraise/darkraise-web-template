@@ -8,6 +8,9 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "darkraise-ui/components/navigation-menu"
+import type { NavigationMenuOrientation } from "darkraise-ui/components/navigation-menu"
+import { allOf } from "./_components/-variant-axes"
+import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
@@ -16,6 +19,11 @@ export const Route = createFileRoute(
 )({
   component: NavigationMenuPage,
 })
+
+const NAVIGATION_MENU_ORIENTATIONS = allOf<NavigationMenuOrientation>()(
+  "horizontal",
+  "vertical",
+)
 
 function NavigationMenuPage() {
   return (
@@ -138,6 +146,83 @@ function NavigationMenuPage() {
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Orientation"
+        code={`// One representative cell: every orientation renders above.
+<NavigationMenu orientation="vertical">
+  <NavigationMenuList>
+    <NavigationMenuItem>
+      <NavigationMenuTrigger>Products</NavigationMenuTrigger>
+      <NavigationMenuContent>
+        <ul className="grid w-48 gap-1 p-2">
+          <li>
+            <NavigationMenuLink
+              href="#"
+              onClick={(e) => e.preventDefault()}
+              className="hover:bg-accent block rounded px-3 py-1.5 text-sm"
+            >
+              Overview
+            </NavigationMenuLink>
+          </li>
+        </ul>
+      </NavigationMenuContent>
+    </NavigationMenuItem>
+    <NavigationMenuItem>
+      <NavigationMenuLink
+        className={navigationMenuTriggerStyle()}
+        href="#"
+        onClick={(e) => e.preventDefault()}
+      >
+        Docs
+      </NavigationMenuLink>
+    </NavigationMenuItem>
+  </NavigationMenuList>
+</NavigationMenu>`}
+      >
+        <VariantMatrix
+          rows={{ label: "orientation", values: NAVIGATION_MENU_ORIENTATIONS }}
+          render={(orientation) => (
+            <div className="space-y-2">
+              <NavigationMenu orientation={orientation}>
+                <NavigationMenuList>
+                  <NavigationMenuItem>
+                    <NavigationMenuTrigger>Products</NavigationMenuTrigger>
+                    <NavigationMenuContent>
+                      <ul className="grid w-48 gap-1 p-2">
+                        <li>
+                          <NavigationMenuLink
+                            href="#"
+                            onClick={(e) => e.preventDefault()}
+                            className="hover:bg-accent block rounded px-3 py-1.5 text-sm"
+                          >
+                            Overview
+                          </NavigationMenuLink>
+                        </li>
+                      </ul>
+                    </NavigationMenuContent>
+                  </NavigationMenuItem>
+                  <NavigationMenuItem>
+                    <NavigationMenuLink
+                      className={navigationMenuTriggerStyle()}
+                      href="#"
+                      onClick={(e) => e.preventDefault()}
+                    >
+                      Docs
+                    </NavigationMenuLink>
+                  </NavigationMenuItem>
+                </NavigationMenuList>
+              </NavigationMenu>
+              {orientation === "vertical" ? (
+                <p className="text-muted-foreground/70 max-w-[20rem] text-[length:var(--text-2xs)]">
+                  Renders identical to horizontal - NavigationMenu does not yet
+                  wire up its orientation prop.
+                </p>
+              ) : null}
+            </div>
+          )}
+        />
       </ShowcaseExample>
     </ShowcasePage>
   )

@@ -12,6 +12,9 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from "darkraise-ui/components/toggle-group"
+import type { ToggleGroupOrientation } from "darkraise-ui/components/toggle-group"
+import { allOf } from "./_components/-variant-axes"
+import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
@@ -19,6 +22,11 @@ export const Route = createFileRoute("/_authenticated/components/toggle-group")(
   {
     component: ToggleGroupPage,
   },
+)
+
+const TOGGLE_GROUP_ORIENTATIONS = allOf<ToggleGroupOrientation>()(
+  "horizontal",
+  "vertical",
 )
 
 function ToggleGroupPage() {
@@ -65,6 +73,44 @@ function ToggleGroupPage() {
             <AlignRight className="h-4 w-4" />
           </ToggleGroupItem>
         </ToggleGroup>
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Orientation"
+        code={`// One representative cell: every orientation renders above.
+<ToggleGroup type="single" orientation="vertical" defaultValue="left">
+  <ToggleGroupItem value="left" aria-label="Align left">
+    <AlignLeft className="h-4 w-4" />
+  </ToggleGroupItem>
+  <ToggleGroupItem value="center" aria-label="Align center">
+    <AlignCenter className="h-4 w-4" />
+  </ToggleGroupItem>
+  <ToggleGroupItem value="right" aria-label="Align right">
+    <AlignRight className="h-4 w-4" />
+  </ToggleGroupItem>
+</ToggleGroup>`}
+      >
+        <VariantMatrix
+          rows={{ label: "orientation", values: TOGGLE_GROUP_ORIENTATIONS }}
+          render={(orientation) => (
+            <ToggleGroup
+              type="single"
+              orientation={orientation}
+              defaultValue="left"
+              className={orientation === "vertical" ? "flex-col" : undefined}
+            >
+              <ToggleGroupItem value="left" aria-label="Align left">
+                <AlignLeft className="h-4 w-4" />
+              </ToggleGroupItem>
+              <ToggleGroupItem value="center" aria-label="Align center">
+                <AlignCenter className="h-4 w-4" />
+              </ToggleGroupItem>
+              <ToggleGroupItem value="right" aria-label="Align right">
+                <AlignRight className="h-4 w-4" />
+              </ToggleGroupItem>
+            </ToggleGroup>
+          )}
+        />
       </ShowcaseExample>
 
       <ShowcaseExample

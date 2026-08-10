@@ -19,6 +19,11 @@ import "@components/menu-primitives/menu-primitives.css"
 type Side = "top" | "right" | "bottom" | "left"
 type Align = "start" | "center" | "end"
 
+// Component-qualified public aliases. The bare names cannot be exported: the
+// package barrel re-exports every component and several declare their own.
+export type DropdownMenuSide = Side
+export type DropdownMenuAlign = Align
+
 interface DropdownMenuContextValue extends UseMenuReturn {
   setReference: (node: HTMLElement | null) => void
   reference: HTMLElement | null

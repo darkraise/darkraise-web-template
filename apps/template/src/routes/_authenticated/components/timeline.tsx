@@ -10,13 +10,70 @@ import {
   TimelineTime,
   TimelineTitle,
 } from "darkraise-ui/components/timeline"
+import type {
+  TimelineItemSide,
+  TimelineItemStatus,
+  TimelineVariant,
+} from "darkraise-ui/components/timeline"
 import { Check, Package, Truck } from "lucide-react"
+import { allOf } from "./_components/-variant-axes"
+import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
 export const Route = createFileRoute("/_authenticated/components/timeline")({
   component: TimelinePage,
 })
+
+const TIMELINE_VARIANTS = allOf<TimelineVariant>()("default", "alternating")
+const TIMELINE_SIDES = allOf<TimelineItemSide>()("start", "end")
+const TIMELINE_STATUSES = allOf<TimelineItemStatus>()(
+  "complete",
+  "current",
+  "upcoming",
+)
+
+// `side` overrides the alternating placement; the default variant never
+// alternates, so it ignores the prop entirely.
+const SIDE_AWARE_VARIANTS = new Set<TimelineVariant>(["alternating"])
+
+const TIMELINE_STATUS_LABEL: Record<TimelineItemStatus, string> = {
+  complete: "Completed",
+  current: "In progress",
+  upcoming: "Not started",
+}
+
+function TimelineSideMatrixCell({
+  variant,
+  side,
+}: {
+  variant: TimelineVariant
+  side: TimelineItemSide
+}) {
+  const redundant = !SIDE_AWARE_VARIANTS.has(variant)
+
+  return (
+    <div className="w-56 space-y-2">
+      <Timeline variant={variant}>
+        <TimelineItem status="complete" side={side}>
+          <TimelineIndicator>
+            <Check />
+          </TimelineIndicator>
+          <TimelineContent>
+            <TimelineTitle>Order placed</TimelineTitle>
+            <TimelineDescription>2 items, paid by card</TimelineDescription>
+          </TimelineContent>
+        </TimelineItem>
+      </Timeline>
+      {redundant ? (
+        <p className="text-muted-foreground/70 text-[length:var(--text-2xs)]">
+          Ignored by the default variant — side only takes effect when
+          alternating.
+        </p>
+      ) : null}
+    </div>
+  )
+}
 
 const orderEvents = [
   {
@@ -104,6 +161,57 @@ function TimelinePage() {
             </TimelineItem>
           ))}
         </Timeline>
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Variant x side"
+        code={`// One representative cell: every variant x side combination renders above.
+<Timeline variant="alternating">
+  <TimelineItem status="complete" side="end">
+    <TimelineIndicator>
+      <Check />
+    </TimelineIndicator>
+    <TimelineContent>
+      <TimelineTitle>Order placed</TimelineTitle>
+      <TimelineDescription>2 items, paid by card</TimelineDescription>
+    </TimelineContent>
+  </TimelineItem>
+</Timeline>`}
+      >
+        <VariantMatrix
+          rows={{ label: "variant", values: TIMELINE_VARIANTS }}
+          cols={{ label: "side", values: TIMELINE_SIDES }}
+          render={(variant, side) => (
+            <TimelineSideMatrixCell variant={variant} side={side} />
+          )}
+        />
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Status"
+        code={`// One representative cell: every status renders above.
+<Timeline>
+  <TimelineItem status="current">
+    <TimelineIndicator />
+    <TimelineContent>
+      <TimelineTitle>In progress</TimelineTitle>
+    </TimelineContent>
+  </TimelineItem>
+</Timeline>`}
+      >
+        <VariantMatrix
+          rows={{ label: "status", values: TIMELINE_STATUSES }}
+          render={(status) => (
+            <Timeline>
+              <TimelineItem status={status}>
+                <TimelineIndicator />
+                <TimelineContent>
+                  <TimelineTitle>{TIMELINE_STATUS_LABEL[status]}</TimelineTitle>
+                </TimelineContent>
+              </TimelineItem>
+            </Timeline>
+          )}
+        />
       </ShowcaseExample>
 
       <ShowcaseExample title="With timestamps" code={metaCode}>

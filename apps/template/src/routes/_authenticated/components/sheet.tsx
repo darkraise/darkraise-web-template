@@ -12,12 +12,17 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "darkraise-ui/components/sheet"
+import type { SheetSide } from "darkraise-ui/components/sheet"
+import { allOf } from "./_components/-variant-axes"
+import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
 export const Route = createFileRoute("/_authenticated/components/sheet")({
   component: SheetPage,
 })
+
+const SHEET_SIDES = allOf<SheetSide>()("top", "right", "bottom", "left")
 
 function SheetPage() {
   return (
@@ -27,15 +32,16 @@ function SheetPage() {
     >
       <ShowcaseExample
         title="Sides"
-        code={`// Default side is "right". Other values: "left" | "top" | "bottom".
+        code={`// One representative cell: every side renders a trigger that opens a
+// sheet from that edge.
 <Sheet>
   <SheetTrigger asChild>
-    <Button variant="outline">Open Sheet (right)</Button>
+    <Button variant="outline">Open</Button>
   </SheetTrigger>
-  <SheetContent>
+  <SheetContent side="left">
     <SheetHeader>
-      <SheetTitle>Sheet Panel</SheetTitle>
-      <SheetDescription>A side panel for contextual content.</SheetDescription>
+      <SheetTitle>Left sheet</SheetTitle>
+      <SheetDescription>Slides in from the left.</SheetDescription>
     </SheetHeader>
     <p className="mt-4 text-sm text-muted-foreground">Sheet content appears here.</p>
     <SheetFooter className="mt-4">
@@ -44,40 +50,30 @@ function SheetPage() {
   </SheetContent>
 </Sheet>`}
       >
-        <div className="flex flex-wrap gap-3">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="outline">Right</Button>
-            </SheetTrigger>
-            <SheetContent>
-              <SheetHeader>
-                <SheetTitle>Sheet Panel</SheetTitle>
-                <SheetDescription>
-                  Slides in from the right by default.
-                </SheetDescription>
-              </SheetHeader>
-              <p className="text-muted-foreground mt-4 text-sm">
-                Sheet content appears here.
-              </p>
-              <SheetFooter className="mt-4">
-                <Button>Apply</Button>
-              </SheetFooter>
-            </SheetContent>
-          </Sheet>
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="outline">Left</Button>
-            </SheetTrigger>
-            <SheetContent side="left">
-              <SheetHeader>
-                <SheetTitle>Left Sheet</SheetTitle>
-                <SheetDescription>
-                  Use side="left" for navigation drawers.
-                </SheetDescription>
-              </SheetHeader>
-            </SheetContent>
-          </Sheet>
-        </div>
+        <VariantMatrix
+          rows={{ label: "side", values: SHEET_SIDES }}
+          render={(side) => (
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="outline">Open</Button>
+              </SheetTrigger>
+              <SheetContent side={side}>
+                <SheetHeader>
+                  <SheetTitle className="capitalize">{side} sheet</SheetTitle>
+                  <SheetDescription>
+                    Slides in from the {side}.
+                  </SheetDescription>
+                </SheetHeader>
+                <p className="text-muted-foreground mt-4 text-sm">
+                  Sheet content appears here.
+                </p>
+                <SheetFooter className="mt-4">
+                  <Button>Apply</Button>
+                </SheetFooter>
+              </SheetContent>
+            </Sheet>
+          )}
+        />
       </ShowcaseExample>
 
       <ShowcaseExample

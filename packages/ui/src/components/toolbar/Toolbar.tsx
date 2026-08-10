@@ -2,8 +2,10 @@ import * as React from "react"
 import { cn } from "@lib/utils"
 import "./toolbar.css"
 
+export type ToolbarOrientation = "horizontal" | "vertical"
+
 export interface ToolbarProps extends React.HTMLAttributes<HTMLDivElement> {
-  orientation?: "horizontal" | "vertical"
+  orientation?: ToolbarOrientation
 }
 
 function Toolbar({

@@ -114,9 +114,12 @@ function HoverCardTrigger({
   )
 }
 
+export type HoverCardSide = "top" | "right" | "bottom" | "left"
+export type HoverCardAlign = "start" | "center" | "end"
+
 interface HoverCardContentProps extends React.HTMLAttributes<HTMLDivElement> {
-  side?: "top" | "right" | "bottom" | "left"
-  align?: "start" | "center" | "end"
+  side?: HoverCardSide
+  align?: HoverCardAlign
   sideOffset?: number
   alignOffset?: number
   collisionPadding?: number

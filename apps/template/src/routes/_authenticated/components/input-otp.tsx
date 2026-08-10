@@ -5,12 +5,17 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "darkraise-ui/components/input-otp"
+import type { InputOTPVariant } from "darkraise-ui/components/input-otp"
+import { allOf } from "./_components/-variant-axes"
+import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
 export const Route = createFileRoute("/_authenticated/components/input-otp")({
   component: InputOTPPage,
 })
+
+const INPUT_OTP_VARIANTS = allOf<InputOTPVariant>()("overlay", "separate")
 
 function InputOTPPage() {
   return (
@@ -68,6 +73,33 @@ function InputOTPPage() {
             <InputOTPSlot index={3} />
           </InputOTPGroup>
         </InputOTP>
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Variant"
+        code={`// One representative cell: every variant renders above.
+<InputOTP maxLength={4} variant="separate">
+  <InputOTPGroup>
+    <InputOTPSlot index={0} />
+    <InputOTPSlot index={1} />
+    <InputOTPSlot index={2} />
+    <InputOTPSlot index={3} />
+  </InputOTPGroup>
+</InputOTP>`}
+      >
+        <VariantMatrix
+          rows={{ label: "variant", values: INPUT_OTP_VARIANTS }}
+          render={(variant) => (
+            <InputOTP maxLength={4} variant={variant} defaultValue="12">
+              <InputOTPGroup>
+                <InputOTPSlot index={0} />
+                <InputOTPSlot index={1} />
+                <InputOTPSlot index={2} />
+                <InputOTPSlot index={3} />
+              </InputOTPGroup>
+            </InputOTP>
+          )}
+        />
       </ShowcaseExample>
 
       <ShowcaseExample

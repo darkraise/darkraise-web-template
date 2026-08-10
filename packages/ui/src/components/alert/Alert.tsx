@@ -3,7 +3,12 @@ import * as React from "react"
 import { cn } from "@lib/utils"
 import "./alert.css"
 
-type AlertVariant = "default" | "destructive" | "success" | "warning" | "info"
+export type AlertVariant =
+  | "default"
+  | "destructive"
+  | "success"
+  | "warning"
+  | "info"
 
 function Alert({
   className,

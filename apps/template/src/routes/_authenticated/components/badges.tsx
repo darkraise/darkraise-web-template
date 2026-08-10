@@ -11,6 +11,12 @@ import {
   X,
 } from "lucide-react"
 import { Badge, BadgeAnchor } from "darkraise-ui/components/badge"
+import type {
+  BadgeVariant,
+  BadgeSize,
+  BadgeAnchorPosition,
+} from "darkraise-ui/components/badge"
+import { ACCENT_HUES } from "darkraise-ui"
 import { Button } from "darkraise-ui/components/button"
 import {
   Table,
@@ -20,12 +26,31 @@ import {
   TableHeader,
   TableRow,
 } from "darkraise-ui/components/table"
+import { allOf } from "./_components/-variant-axes"
+import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
 export const Route = createFileRoute("/_authenticated/components/badges")({
   component: BadgesPage,
 })
+
+const BADGE_VARIANTS = allOf<BadgeVariant>()(
+  "default",
+  "secondary",
+  "destructive",
+  "outline",
+  ...ACCENT_HUES,
+)
+
+const BADGE_SIZES = allOf<BadgeSize>()("sm", "md", "lg")
+
+const BADGE_ANCHOR_POSITIONS = allOf<BadgeAnchorPosition>()(
+  "top-left",
+  "top-right",
+  "bottom-left",
+  "bottom-right",
+)
 
 function ClosableBadgesExample() {
   const [tags, setTags] = useState([
@@ -61,74 +86,19 @@ function BadgesPage() {
       description="Compact inline labels for status, categories, and counts."
     >
       <ShowcaseExample
-        title="Variants"
-        code={`<Badge variant="default">Default</Badge>
-<Badge variant="secondary">Secondary</Badge>
-<Badge variant="destructive">Destructive</Badge>
-<Badge variant="outline">Outline</Badge>`}
+        title="Variant x size"
+        code={`// One representative cell: every variant x size combination renders above.
+<Badge variant="outline" size="lg">Badge</Badge>`}
       >
-        <div className="flex flex-wrap gap-3">
-          <Badge variant="default">Default</Badge>
-          <Badge variant="secondary">Secondary</Badge>
-          <Badge variant="destructive">Destructive</Badge>
-          <Badge variant="outline">Outline</Badge>
-        </div>
-      </ShowcaseExample>
-
-      <ShowcaseExample
-        title="Sizes"
-        code={`<Badge size="sm">Small</Badge>
-<Badge size="md">Medium</Badge>
-<Badge size="lg">Large</Badge>`}
-      >
-        <div className="flex flex-wrap items-center gap-3">
-          <Badge size="sm">Small</Badge>
-          <Badge size="md">Medium</Badge>
-          <Badge size="lg">Large</Badge>
-          <Badge variant="secondary" size="sm">
-            sm
-          </Badge>
-          <Badge variant="destructive" size="lg">
-            lg
-          </Badge>
-        </div>
-      </ShowcaseExample>
-
-      <ShowcaseExample
-        title="Accent color variants"
-        code={`<Badge variant="red">Red</Badge>
-<Badge variant="blue">Blue</Badge>
-<Badge variant="emerald">Emerald</Badge>
-// ... 17 accent colors total, independent of the theme accent
-`}
-      >
-        <div className="flex flex-wrap gap-2">
-          {(
-            [
-              "red",
-              "orange",
-              "amber",
-              "yellow",
-              "lime",
-              "green",
-              "emerald",
-              "teal",
-              "cyan",
-              "sky",
-              "blue",
-              "indigo",
-              "violet",
-              "purple",
-              "fuchsia",
-              "pink",
-              "rose",
-            ] as const
-          ).map((color) => (
-            <Badge key={color} variant={color}>
-              {color}
+        <VariantMatrix
+          rows={{ label: "variant", values: BADGE_VARIANTS }}
+          cols={{ label: "size", values: BADGE_SIZES }}
+          render={(variant, size) => (
+            <Badge variant={variant} size={size}>
+              Badge
             </Badge>
-          ))}
-        </div>
+          )}
+        />
       </ShowcaseExample>
 
       <ShowcaseExample
@@ -386,6 +356,30 @@ function BadgesPage() {
             </Button>
           </BadgeAnchor>
         </div>
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Anchor position"
+        code={`// One representative cell: every position renders above.
+<BadgeAnchor content="4" variant="destructive" position="bottom-right">
+  <Button variant="outline" size="icon"><Bell /></Button>
+</BadgeAnchor>`}
+      >
+        <VariantMatrix
+          rows={{ label: "position", values: BADGE_ANCHOR_POSITIONS }}
+          render={(position) => (
+            <BadgeAnchor
+              content="4"
+              variant="destructive"
+              position={position}
+              aria-label="4 unread notifications"
+            >
+              <Button variant="outline" size="icon">
+                <Bell />
+              </Button>
+            </BadgeAnchor>
+          )}
+        />
       </ShowcaseExample>
 
       <ShowcaseExample

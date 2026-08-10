@@ -1,12 +1,17 @@
 import { useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import { Listbox, ListboxItem } from "darkraise-ui/components/listbox"
+import type { ListboxVariant } from "darkraise-ui/components/listbox"
+import { allOf } from "./_components/-variant-axes"
+import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
 export const Route = createFileRoute("/_authenticated/components/listbox")({
   component: ListboxPage,
 })
+
+const LISTBOX_VARIANTS = allOf<ListboxVariant>()("filled", "outline")
 
 const FRUITS = ["Apple", "Banana", "Cherry", "Durian", "Elderberry"]
 const TOPPINGS = ["Cheese", "Pepperoni", "Mushrooms", "Olives", "Onions"]
@@ -69,6 +74,33 @@ function ListboxPage() {
             Selected: <span className="font-medium">{String(fruit)}</span>
           </p>
         </div>
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Variant"
+        code={`// One representative cell: every variant renders above.
+<Listbox variant="outline" defaultValue="Cherry" aria-label="Fruit">
+  <ListboxItem value="Apple">Apple</ListboxItem>
+  <ListboxItem value="Banana">Banana</ListboxItem>
+  <ListboxItem value="Cherry">Cherry</ListboxItem>
+</Listbox>`}
+      >
+        <VariantMatrix
+          rows={{ label: "variant", values: LISTBOX_VARIANTS }}
+          render={(variant) => (
+            <Listbox
+              variant={variant}
+              defaultValue="Cherry"
+              aria-label={`Fruit (${variant})`}
+            >
+              {FRUITS.map((f) => (
+                <ListboxItem key={f} value={f}>
+                  {f}
+                </ListboxItem>
+              ))}
+            </Listbox>
+          )}
+        />
       </ShowcaseExample>
 
       <ShowcaseExample

@@ -11,6 +11,7 @@ import {
   TreeViewNode,
   TreeViewTree,
   type TreeNode,
+  type TreeViewVariant,
 } from "darkraise-ui/components/tree-view"
 import {
   ChevronRight,
@@ -22,12 +23,16 @@ import {
   Loader2,
 } from "lucide-react"
 import { useCallback, useState } from "react"
+import { allOf } from "./_components/-variant-axes"
+import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
 export const Route = createFileRoute("/_authenticated/components/tree-view")({
   component: TreeViewPage,
 })
+
+const TREE_VIEW_VARIANTS = allOf<TreeViewVariant>()("filled", "outlined")
 
 const fileTree: TreeNode = {
   id: "root",
@@ -117,48 +122,6 @@ function FileExplorerExample() {
         {fileTree.children?.map((node) => renderNode(node))}
       </TreeViewTree>
     </TreeView>
-  )
-}
-
-function VariantsExample() {
-  return (
-    <div className="grid gap-6 sm:grid-cols-2">
-      <div className="space-y-2">
-        <p className="text-muted-foreground text-xs font-medium">
-          variant=&quot;filled&quot; (default)
-        </p>
-        <TreeView
-          data={fileTree}
-          defaultExpanded={["src", "components"]}
-          defaultSelected={["Button.tsx"]}
-          selectionMode="single"
-        >
-          <TreeViewTree>
-            {fileTree.children?.map((node) => (
-              <TreeViewNode key={node.id} node={node} />
-            ))}
-          </TreeViewTree>
-        </TreeView>
-      </div>
-      <div className="space-y-2">
-        <p className="text-muted-foreground text-xs font-medium">
-          variant=&quot;outlined&quot;
-        </p>
-        <TreeView
-          data={fileTree}
-          variant="outlined"
-          defaultExpanded={["src", "components"]}
-          defaultSelected={["Button.tsx"]}
-          selectionMode="single"
-        >
-          <TreeViewTree>
-            {fileTree.children?.map((node) => (
-              <TreeViewNode key={node.id} node={node} />
-            ))}
-          </TreeViewTree>
-        </TreeView>
-      </div>
-    </div>
   )
 }
 
@@ -381,16 +344,39 @@ function TreeViewPage() {
       </ShowcaseExample>
 
       <ShowcaseExample
-        title="Variants: filled vs outlined"
-        code={`<TreeView variant="filled" defaultSelected={["Button.tsx"]}>
-  {/* solid primary background on the selected row (default) */}
-</TreeView>
-
-<TreeView variant="outlined" defaultSelected={["Button.tsx"]}>
-  {/* transparent surface with a 1px primary inset ring */}
+        title="Variant"
+        code={`// One representative cell: every variant renders above.
+<TreeView
+  data={fileTree}
+  variant="outlined"
+  defaultSelected={["Button.tsx"]}
+  selectionMode="single"
+>
+  <TreeViewTree>
+    {fileTree.children?.map((node) => (
+      <TreeViewNode key={node.id} node={node} />
+    ))}
+  </TreeViewTree>
 </TreeView>`}
       >
-        <VariantsExample />
+        <VariantMatrix
+          rows={{ label: "variant", values: TREE_VIEW_VARIANTS }}
+          render={(variant) => (
+            <TreeView
+              data={fileTree}
+              variant={variant}
+              defaultExpanded={["src", "components"]}
+              defaultSelected={["Button.tsx"]}
+              selectionMode="single"
+            >
+              <TreeViewTree>
+                {fileTree.children?.map((node) => (
+                  <TreeViewNode key={node.id} node={node} />
+                ))}
+              </TreeViewTree>
+            </TreeView>
+          )}
+        />
       </ShowcaseExample>
 
       <ShowcaseExample

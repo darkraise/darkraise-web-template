@@ -6,12 +6,19 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "darkraise-ui/components/tooltip"
+import type { TooltipAlign, TooltipSide } from "darkraise-ui/components/tooltip"
+import { allOf } from "./_components/-variant-axes"
+import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
 export const Route = createFileRoute("/_authenticated/components/tooltip")({
   component: TooltipPage,
 })
+
+const TOOLTIP_SIDES = allOf<TooltipSide>()("top", "right", "bottom", "left")
+
+const TOOLTIP_ALIGNS = allOf<TooltipAlign>()("start", "center", "end")
 
 function TooltipPage() {
   return (
@@ -45,58 +52,33 @@ function TooltipPage() {
       </ShowcaseExample>
 
       <ShowcaseExample
-        title="Sides"
-        code={`<Tooltip>
-  <TooltipTrigger asChild>
-    <Button variant="ghost" size="icon">?</Button>
-  </TooltipTrigger>
-  <TooltipContent side="right">
-    <p>Help information on the right</p>
-  </TooltipContent>
-</Tooltip>
-
+        title="Side x align"
+        code={`// One representative cell: every side x align combination renders above.
+// Each cell is a live Tooltip; hover or focus its trigger to see that placement.
 <Tooltip>
   <TooltipTrigger asChild>
-    <Button variant="destructive" size="sm">Danger</Button>
+    <Button variant="outline" size="sm">right/end</Button>
   </TooltipTrigger>
-  <TooltipContent side="bottom">
-    <p>This action is irreversible</p>
-  </TooltipContent>
+  <TooltipContent side="right" align="end">side=right align=end</TooltipContent>
 </Tooltip>`}
       >
         <TooltipProvider>
-          <div className="flex flex-wrap items-center gap-3">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  ?
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="right">
-                <p>Help information on the right</p>
-              </TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="destructive" size="sm">
-                  Danger
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom">
-                <p>This action is irreversible</p>
-              </TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" size="sm">
-                  Top
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="top">
-                <p>Tooltip above</p>
-              </TooltipContent>
-            </Tooltip>
-          </div>
+          <VariantMatrix
+            rows={{ label: "side", values: TOOLTIP_SIDES }}
+            cols={{ label: "align", values: TOOLTIP_ALIGNS }}
+            render={(side, align) => (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    {side}/{align}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side={side} align={align}>
+                  side={side} align={align}
+                </TooltipContent>
+              </Tooltip>
+            )}
+          />
         </TooltipProvider>
       </ShowcaseExample>
     </ShowcasePage>

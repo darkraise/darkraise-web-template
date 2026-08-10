@@ -1,11 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { Separator } from "darkraise-ui/components/separator"
+import type { SeparatorOrientation } from "darkraise-ui/components/separator"
+import { allOf } from "./_components/-variant-axes"
+import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
 export const Route = createFileRoute("/_authenticated/components/separator")({
   component: SeparatorPage,
 })
+
+const SEPARATOR_ORIENTATIONS = allOf<SeparatorOrientation>()(
+  "horizontal",
+  "vertical",
+)
 
 function SeparatorPage() {
   return (
@@ -14,33 +22,36 @@ function SeparatorPage() {
       description="Horizontal and vertical visual dividers for separating content regions."
     >
       <ShowcaseExample
-        title="Horizontal separator"
-        code={`<p className="text-sm">Content above</p>
-<Separator className="my-3" />
-<p className="text-sm">Content below</p>`}
-      >
-        <div>
-          <p className="text-sm">Content above the separator</p>
-          <Separator className="my-3" />
-          <p className="text-sm">Content below the separator</p>
-        </div>
-      </ShowcaseExample>
-
-      <ShowcaseExample
-        title="Vertical separator"
-        code={`<div className="flex h-10 items-center gap-4">
+        title="Orientation"
+        code={`// One representative cell: every orientation renders above.
+<div className="flex h-10 items-center gap-4">
   <span className="text-sm">Left</span>
+  <Separator orientation="vertical" />
+  <span className="text-sm">Center</span>
   <Separator orientation="vertical" />
   <span className="text-sm">Right</span>
 </div>`}
       >
-        <div className="flex h-10 items-center gap-4">
-          <span className="text-sm">Left</span>
-          <Separator orientation="vertical" />
-          <span className="text-sm">Center</span>
-          <Separator orientation="vertical" />
-          <span className="text-sm">Right</span>
-        </div>
+        <VariantMatrix
+          rows={{ label: "orientation", values: SEPARATOR_ORIENTATIONS }}
+          render={(orientation) =>
+            orientation === "horizontal" ? (
+              <div>
+                <p className="text-sm">Content above the separator</p>
+                <Separator orientation={orientation} className="my-3" />
+                <p className="text-sm">Content below the separator</p>
+              </div>
+            ) : (
+              <div className="flex h-10 items-center gap-4">
+                <span className="text-sm">Left</span>
+                <Separator orientation={orientation} />
+                <span className="text-sm">Center</span>
+                <Separator orientation={orientation} />
+                <span className="text-sm">Right</span>
+              </div>
+            )
+          }
+        />
       </ShowcaseExample>
 
       <ShowcaseExample

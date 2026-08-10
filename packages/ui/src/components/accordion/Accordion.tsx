@@ -21,7 +21,7 @@ import {
   type UseAccordionOptions,
 } from "./useAccordion"
 
-type AccordionVariant = "default" | "card"
+export type AccordionVariant = "default" | "card"
 
 interface AccordionRenderContextValue extends AccordionContextValue {
   variant: AccordionVariant

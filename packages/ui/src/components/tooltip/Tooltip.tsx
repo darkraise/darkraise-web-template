@@ -194,9 +194,12 @@ function TooltipTrigger({
   )
 }
 
+export type TooltipSide = "top" | "right" | "bottom" | "left"
+export type TooltipAlign = "start" | "center" | "end"
+
 interface TooltipContentProps extends React.HTMLAttributes<HTMLDivElement> {
-  side?: "top" | "right" | "bottom" | "left"
-  align?: "start" | "center" | "end"
+  side?: TooltipSide
+  align?: TooltipAlign
   sideOffset?: number
   alignOffset?: number
   collisionPadding?: number

@@ -1,13 +1,24 @@
 import { useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import { Banner } from "darkraise-ui/components/banner"
+import type { BannerVariant } from "darkraise-ui/components/banner"
 import { Button } from "darkraise-ui/components/button"
+import { allOf } from "./_components/-variant-axes"
+import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
 export const Route = createFileRoute("/_authenticated/components/banner")({
   component: BannerPage,
 })
+
+const BANNER_VARIANTS = allOf<BannerVariant>()(
+  "default",
+  "info",
+  "success",
+  "warning",
+  "destructive",
+)
 
 function DismissibleBannerExample() {
   const [visible, setVisible] = useState(true)
@@ -34,21 +45,15 @@ function BannerPage() {
     >
       <ShowcaseExample
         title="Variants"
-        code={`<div className="flex flex-col gap-3">
-  <Banner variant="default">Default — neutral status message.</Banner>
-  <Banner variant="info">Info — informational notice.</Banner>
-  <Banner variant="success">Success — operation completed.</Banner>
-  <Banner variant="warning">Warning — review before continuing.</Banner>
-  <Banner variant="destructive">Destructive — action failed.</Banner>
-</div>`}
+        code={`// One representative cell: every variant renders above.
+<Banner variant="warning">Status message.</Banner>`}
       >
-        <div className="flex flex-col gap-3">
-          <Banner variant="default">Default — neutral status message.</Banner>
-          <Banner variant="info">Info — informational notice.</Banner>
-          <Banner variant="success">Success — operation completed.</Banner>
-          <Banner variant="warning">Warning — review before continuing.</Banner>
-          <Banner variant="destructive">Destructive — action failed.</Banner>
-        </div>
+        <VariantMatrix
+          rows={{ label: "variant", values: BANNER_VARIANTS }}
+          render={(variant) => (
+            <Banner variant={variant}>Status message.</Banner>
+          )}
+        />
       </ShowcaseExample>
 
       <ShowcaseExample

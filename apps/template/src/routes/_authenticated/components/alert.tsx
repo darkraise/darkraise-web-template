@@ -7,6 +7,9 @@ import {
   AlertDescription,
   AlertTitle,
 } from "darkraise-ui/components/alert"
+import type { AlertVariant } from "darkraise-ui/components/alert"
+import { allOf } from "./_components/-variant-axes"
+import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
@@ -14,9 +17,16 @@ export const Route = createFileRoute("/_authenticated/components/alert")({
   component: AlertPage,
 })
 
-type AlertBannerVariant = "info" | "success" | "warning" | "destructive"
+const ALERT_VARIANTS = allOf<AlertVariant>()(
+  "default",
+  "info",
+  "success",
+  "warning",
+  "destructive",
+)
 
-const alertIconByVariant: Record<AlertBannerVariant, React.ElementType> = {
+const alertIconByVariant: Record<AlertVariant, React.ElementType> = {
+  default: Info,
   info: Info,
   success: CircleCheck,
   warning: TriangleAlert,
@@ -28,7 +38,7 @@ function AlertBanner({
   title,
   description,
 }: {
-  variant: AlertBannerVariant
+  variant: AlertVariant
   title: string
   description: string
 }) {
@@ -82,38 +92,23 @@ function AlertPage() {
     >
       <ShowcaseExample
         title="Variants"
-        code={`// Variants: "default" | "destructive" | "success" | "warning" | "info".
-// Each tinted variant paints a left-accent border, low-alpha background,
-// and a coloured icon + title; the description stays on text-foreground.
-
-<Alert variant="info">
-  <Info className="h-4 w-4" />
-  <AlertTitle>Scheduled maintenance</AlertTitle>
-  <AlertDescription>The system will be unavailable on Sunday from 2–4 AM UTC.</AlertDescription>
+        code={`// One representative cell: every variant renders above.
+<Alert variant="warning">
+  <TriangleAlert className="h-4 w-4" />
+  <AlertTitle>Heads up</AlertTitle>
+  <AlertDescription>This is an example alert message.</AlertDescription>
 </Alert>`}
       >
-        <div className="space-y-3">
-          <AlertBanner
-            variant="info"
-            title="Scheduled maintenance"
-            description="The system will be unavailable on Sunday from 2–4 AM UTC."
-          />
-          <AlertBanner
-            variant="success"
-            title="Deployment successful"
-            description="Version 2.4.1 is now live in production."
-          />
-          <AlertBanner
-            variant="warning"
-            title="API rate limit approaching"
-            description="You have used 90% of your monthly API quota."
-          />
-          <AlertBanner
-            variant="destructive"
-            title="Payment failed"
-            description="Your last invoice could not be processed. Please update your billing details."
-          />
-        </div>
+        <VariantMatrix
+          rows={{ label: "variant", values: ALERT_VARIANTS }}
+          render={(variant) => (
+            <AlertBanner
+              variant={variant}
+              title="Heads up"
+              description="This is an example alert message."
+            />
+          )}
+        />
       </ShowcaseExample>
 
       <ShowcaseExample

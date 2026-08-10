@@ -13,13 +13,18 @@ import {
   StepsTitle,
   StepsTrigger,
 } from "darkraise-ui/components/steps"
+import type { StepsOrientation } from "darkraise-ui/components/steps"
 import { useState } from "react"
+import { allOf } from "./_components/-variant-axes"
+import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
 export const Route = createFileRoute("/_authenticated/components/steps")({
   component: StepsPage,
 })
+
+const STEPS_ORIENTATIONS = allOf<StepsOrientation>()("horizontal", "vertical")
 
 const signupItems = [
   { title: "Account", description: "Create your sign-in credentials." },
@@ -109,15 +114,13 @@ function ValidationGatedExample() {
   )
 }
 
-function VerticalExample() {
-  const [step, setStep] = useState(0)
+function OrientationExample({
+  orientation,
+}: {
+  orientation: StepsOrientation
+}) {
   return (
-    <Steps
-      orientation="vertical"
-      count={signupItems.length}
-      step={step}
-      onStepChange={(d) => setStep(d.step)}
-    >
+    <Steps orientation={orientation} count={signupItems.length} defaultStep={0}>
       <StepsList>
         {signupItems.map((item, index) => (
           <StepsItem key={index} index={index}>
@@ -193,12 +196,18 @@ function StepsPage() {
       </ShowcaseExample>
 
       <ShowcaseExample
-        title="Vertical orientation"
-        code={`<Steps orientation="vertical" count={3} step={step} onStepChange={(d) => setStep(d.step)}>
+        title="Orientation"
+        code={`// One representative cell: every orientation renders above.
+<Steps orientation="vertical" count={3} defaultStep={0}>
   {/* ... */}
 </Steps>`}
       >
-        <VerticalExample />
+        <VariantMatrix
+          rows={{ label: "orientation", values: STEPS_ORIENTATIONS }}
+          render={(orientation) => (
+            <OrientationExample orientation={orientation} />
+          )}
+        />
       </ShowcaseExample>
     </ShowcasePage>
   )

@@ -13,7 +13,7 @@ import {
   type RadioGroupOrientation,
 } from "./useRadioGroup"
 
-type RadioSize = "sm" | "default" | "lg"
+export type RadioSize = "sm" | "default" | "lg"
 
 interface RadioGroupCombinedContextValue extends RadioGroupContextValue {
   name?: string

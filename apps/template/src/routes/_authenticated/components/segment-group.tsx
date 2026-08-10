@@ -4,8 +4,15 @@ import {
   SegmentGroupIndicator,
   SegmentGroupItem,
 } from "darkraise-ui/components/segment-group"
+import type {
+  SegmentGroupColor,
+  SegmentGroupOrientation,
+  SegmentGroupVariant,
+} from "darkraise-ui/components/segment-group"
 import { CalendarDays, Grid3x3, Layers, List } from "lucide-react"
 import { useState } from "react"
+import { allOf } from "./_components/-variant-axes"
+import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
@@ -15,31 +22,31 @@ export const Route = createFileRoute(
   component: SegmentGroupPage,
 })
 
-const VARIANTS = ["default", "outline"] as const
-const COLORS = ["default", "accent"] as const
-const ORIENTATIONS = ["horizontal", "vertical"] as const
+const SEGMENT_VARIANTS = allOf<SegmentGroupVariant>()("default", "outline")
+const SEGMENT_COLORS = allOf<SegmentGroupColor>()("default", "accent")
+const SEGMENT_ORIENTATIONS = allOf<SegmentGroupOrientation>()(
+  "horizontal",
+  "vertical",
+)
 
 // `color="accent"` retints neutral chrome to the brand hue, so it only
 // has somewhere to go on the default variant. The outline variant draws
 // its ring and its checked label in the primary colour already.
-const ACCENT_AWARE_VARIANTS = new Set<string>(["default"])
+const ACCENT_AWARE_VARIANTS = new Set<SegmentGroupVariant>(["default"])
 
-function MatrixCell({
+function SegmentGroupMatrixCell({
   variant,
   color,
   orientation,
 }: {
-  variant: (typeof VARIANTS)[number]
-  color: (typeof COLORS)[number]
-  orientation: (typeof ORIENTATIONS)[number]
+  variant: SegmentGroupVariant
+  color: SegmentGroupColor
+  orientation: SegmentGroupOrientation
 }) {
   const redundant = color === "accent" && !ACCENT_AWARE_VARIANTS.has(variant)
 
   return (
     <div className="space-y-2">
-      <p className="text-muted-foreground font-mono text-[length:var(--text-2xs)]">
-        color=&quot;{color}&quot;
-      </p>
       <SegmentGroup
         variant={variant}
         color={color}
@@ -64,28 +71,22 @@ function MatrixCell({
 function SegmentGroupMatrix() {
   return (
     <div className="space-y-8">
-      {ORIENTATIONS.map((orientation) => (
-        <div key={orientation} className="space-y-5">
+      {SEGMENT_ORIENTATIONS.map((orientation) => (
+        <div key={orientation} className="space-y-3">
           <p className="text-foreground text-xs font-semibold tracking-wide uppercase">
             {orientation}
           </p>
-          {VARIANTS.map((variant) => (
-            <div key={variant} className="space-y-3">
-              <p className="text-muted-foreground font-mono text-[length:var(--text-2xs)]">
-                variant=&quot;{variant}&quot;
-              </p>
-              <div className="flex flex-wrap items-start gap-10">
-                {COLORS.map((color) => (
-                  <MatrixCell
-                    key={color}
-                    variant={variant}
-                    color={color}
-                    orientation={orientation}
-                  />
-                ))}
-              </div>
-            </div>
-          ))}
+          <VariantMatrix
+            rows={{ label: "variant", values: SEGMENT_VARIANTS }}
+            cols={{ label: "color", values: SEGMENT_COLORS }}
+            render={(variant, color) => (
+              <SegmentGroupMatrixCell
+                variant={variant}
+                color={color}
+                orientation={orientation}
+              />
+            )}
+          />
         </div>
       ))}
     </div>
@@ -215,10 +216,12 @@ function SegmentGroupPage() {
 
       <ShowcaseExample
         title="Variant × colour × orientation matrix"
-        code={`<SegmentGroup
-  variant={variant}          // "default" | "outline"
-  color={color}              // "default" | "accent"
-  orientation={orientation}  // "horizontal" | "vertical"
+        code={`// One representative cell: every variant x color combination renders
+// above, once per orientation.
+<SegmentGroup
+  variant="default"
+  color="accent"
+  orientation="horizontal"
   defaultValue="week"
 >
   <SegmentGroupIndicator />

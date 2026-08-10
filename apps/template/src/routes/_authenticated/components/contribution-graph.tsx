@@ -1,11 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { Button } from "darkraise-ui/components/button"
 import {
   ContributionGraph,
+  type ContributionGraphSize,
   type ContributionGraphVariant,
 } from "darkraise-ui/components/contribution-graph"
-import { ACCENT_HUES } from "darkraise-ui/lib"
+import { ACCENT_HUES } from "darkraise-ui"
 import { useMemo, useState } from "react"
+import { allOf } from "./_components/-variant-axes"
+import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
@@ -14,6 +16,12 @@ export const Route = createFileRoute(
 )({
   component: ContributionGraphPage,
 })
+
+const GRAPH_VARIANTS = allOf<ContributionGraphVariant>()(
+  "default",
+  ...ACCENT_HUES,
+)
+const GRAPH_SIZES = allOf<ContributionGraphSize>()("sm", "md", "lg")
 
 const END_DATE = "2026-07-24"
 const START_DATE = "2025-07-25"
@@ -66,18 +74,7 @@ const clickableCode = `<ContributionGraph
   onCellClick={(cell) => setSelected(\`\${cell.key}: \${cell.value}\`)}
 />`
 
-const sizeCode = `<ContributionGraph
-  startDate="2025-07-25"
-  endDate="2026-07-24"
-  data={data}
-  size="sm"
-/>
-<ContributionGraph
-  startDate="2025-07-25"
-  endDate="2026-07-24"
-  data={data}
-  size="md"
-/>
+const sizeCode = `// One representative cell: every size renders above, at the default variant.
 <ContributionGraph
   startDate="2025-07-25"
   endDate="2026-07-24"
@@ -85,7 +82,8 @@ const sizeCode = `<ContributionGraph
   size="lg"
 />`
 
-const hueCode = `<ContributionGraph
+const hueCode = `// One representative cell: every variant renders above, at size "md".
+<ContributionGraph
   startDate="2025-07-25"
   endDate="2026-07-24"
   data={data}
@@ -95,7 +93,6 @@ const hueCode = `<ContributionGraph
 function ContributionGraphPage() {
   const data = useMemo(() => sampleData(), [])
   const [selected, setSelected] = useState<string | null>(null)
-  const [hue, setHue] = useState<ContributionGraphVariant>("green")
 
   return (
     <ShowcasePage
@@ -153,46 +150,35 @@ function ContributionGraphPage() {
       </ShowcaseExample>
 
       <ShowcaseExample title="Sizes" code={sizeCode}>
-        <div className="space-y-4">
-          {(["sm", "md", "lg"] as const).map((size) => (
-            <div key={size} className="space-y-1">
-              <p className="text-muted-foreground text-xs">{size}</p>
-              <div className="overflow-x-auto">
-                <ContributionGraph
-                  startDate={START_DATE}
-                  endDate={END_DATE}
-                  data={data}
-                  size={size}
-                />
-              </div>
+        <VariantMatrix
+          rows={{ label: "size", values: GRAPH_SIZES }}
+          render={(size) => (
+            <div className="overflow-x-auto">
+              <ContributionGraph
+                startDate={START_DATE}
+                endDate={END_DATE}
+                data={data}
+                size={size}
+              />
             </div>
-          ))}
-        </div>
+          )}
+        />
       </ShowcaseExample>
 
       <ShowcaseExample title="Colour variants" code={hueCode}>
-        <div className="space-y-3">
-          <div className="flex flex-wrap gap-1">
-            {(["default", ...ACCENT_HUES] as const).map((option) => (
-              <Button
-                key={option}
-                size="sm"
-                variant={hue === option ? "default" : "outline"}
-                onClick={() => setHue(option)}
-              >
-                {option}
-              </Button>
-            ))}
-          </div>
-          <div className="overflow-x-auto">
-            <ContributionGraph
-              startDate={START_DATE}
-              endDate={END_DATE}
-              data={data}
-              variant={hue}
-            />
-          </div>
-        </div>
+        <VariantMatrix
+          rows={{ label: "variant", values: GRAPH_VARIANTS }}
+          render={(variant) => (
+            <div className="overflow-x-auto">
+              <ContributionGraph
+                startDate={START_DATE}
+                endDate={END_DATE}
+                data={data}
+                variant={variant}
+              />
+            </div>
+          )}
+        />
       </ShowcaseExample>
     </ShowcasePage>
   )

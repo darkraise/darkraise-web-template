@@ -6,7 +6,9 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "darkraise-ui/components/accordion"
+import type { AccordionVariant } from "darkraise-ui/components/accordion"
 import { Badge } from "darkraise-ui/components/badge"
+import type { CardBorder, CardElevation } from "darkraise-ui/components/card"
 import { Label } from "darkraise-ui/components/label"
 import {
   Select,
@@ -16,12 +18,73 @@ import {
   SelectValue,
 } from "darkraise-ui/components/select"
 import { Switch } from "darkraise-ui/components/switch"
+import { allOf } from "./_components/-variant-axes"
+import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
 export const Route = createFileRoute("/_authenticated/components/accordion")({
   component: AccordionPage,
 })
+
+const ACCORDION_VARIANTS = allOf<AccordionVariant>()("default", "card")
+
+const ACCORDION_ELEVATIONS = allOf<CardElevation>()(
+  "flat",
+  "low",
+  "medium",
+  "high",
+)
+
+const ACCORDION_BORDERS = allOf<CardBorder>()(
+  "default",
+  "none",
+  "strong",
+  "accent",
+)
+
+// The package declares `orientation` inline on AccordionCommonProps rather
+// than as a named export, so this list is a local copy: it catches a removed
+// value but not an added one.
+const ACCORDION_ORIENTATIONS = allOf<"horizontal" | "vertical">()(
+  "horizontal",
+  "vertical",
+)
+
+function AccordionMatrixCell({
+  variant,
+  elevation,
+}: {
+  variant: AccordionVariant
+  elevation: CardElevation
+}) {
+  return (
+    <div className="min-w-0 space-y-2">
+      <Accordion
+        type="single"
+        collapsible
+        variant={variant}
+        elevation={elevation}
+        className="w-full max-w-xs"
+      >
+        <AccordionItem value="shipping">
+          <AccordionTrigger>Shipping</AccordionTrigger>
+          <AccordionContent>Free over $50.</AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="returns">
+          <AccordionTrigger>Returns</AccordionTrigger>
+          <AccordionContent>30 days, no questions asked.</AccordionContent>
+        </AccordionItem>
+      </Accordion>
+      {variant === "default" ? (
+        <p className="text-muted-foreground/70 max-w-[20rem] text-[length:var(--text-2xs)]">
+          Identical across the row — the default variant paints no card surface,
+          so it has nothing to raise.
+        </p>
+      ) : null}
+    </div>
+  )
+}
 
 function AccordionPage() {
   return (
@@ -74,8 +137,9 @@ function AccordionPage() {
       </ShowcaseExample>
 
       <ShowcaseExample
-        title="Card variant"
-        code={`<Accordion type="single" collapsible variant="card" elevation="low">
+        title="Variant x elevation"
+        code={`// One representative cell: every variant x elevation combination renders above.
+<Accordion type="single" collapsible variant="card" elevation="low">
   <AccordionItem value="shipping">
     <AccordionTrigger>Shipping</AccordionTrigger>
     <AccordionContent>Free over $50.</AccordionContent>
@@ -86,16 +150,77 @@ function AccordionPage() {
   </AccordionItem>
 </Accordion>`}
       >
-        <Accordion type="single" collapsible variant="card" elevation="low">
-          <AccordionItem value="shipping">
-            <AccordionTrigger>Shipping</AccordionTrigger>
-            <AccordionContent>Free over $50.</AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="returns">
-            <AccordionTrigger>Returns</AccordionTrigger>
-            <AccordionContent>30 days, no questions asked.</AccordionContent>
-          </AccordionItem>
-        </Accordion>
+        <VariantMatrix
+          rows={{ label: "variant", values: ACCORDION_VARIANTS }}
+          cols={{ label: "elevation", values: ACCORDION_ELEVATIONS }}
+          render={(variant, elevation) => (
+            <AccordionMatrixCell variant={variant} elevation={elevation} />
+          )}
+        />
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Border"
+        code={`// One representative cell: every border renders above.
+<Accordion type="single" collapsible variant="card" border="accent">
+  <AccordionItem value="shipping">
+    <AccordionTrigger>Shipping</AccordionTrigger>
+    <AccordionContent>Free over $50.</AccordionContent>
+  </AccordionItem>
+</Accordion>`}
+      >
+        <VariantMatrix
+          rows={{ label: "border", values: ACCORDION_BORDERS }}
+          render={(border) => (
+            <Accordion
+              type="single"
+              collapsible
+              variant="card"
+              border={border}
+              className="w-full max-w-sm"
+            >
+              <AccordionItem value="shipping">
+                <AccordionTrigger>Shipping</AccordionTrigger>
+                <AccordionContent>Free over $50.</AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          )}
+        />
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Orientation"
+        code={`// One representative cell: every orientation renders above.
+// Orientation drives arrow-key navigation between triggers, not layout.
+<Accordion type="single" collapsible orientation="vertical">
+  <AccordionItem value="shipping">
+    <AccordionTrigger>Shipping</AccordionTrigger>
+    <AccordionContent>Free over $50.</AccordionContent>
+  </AccordionItem>
+</Accordion>`}
+      >
+        <VariantMatrix
+          rows={{ label: "orientation", values: ACCORDION_ORIENTATIONS }}
+          render={(orientation) => (
+            <Accordion
+              type="single"
+              collapsible
+              orientation={orientation}
+              className="w-full max-w-sm"
+            >
+              <AccordionItem value="shipping">
+                <AccordionTrigger>Shipping</AccordionTrigger>
+                <AccordionContent>Free over $50.</AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="returns">
+                <AccordionTrigger>Returns</AccordionTrigger>
+                <AccordionContent>
+                  30 days, no questions asked.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          )}
+        />
       </ShowcaseExample>
 
       <ShowcaseExample

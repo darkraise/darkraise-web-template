@@ -5,7 +5,8 @@ import { Label } from "@components/label"
 import { Separator } from "@components/separator"
 import "./field.css"
 
-type FieldOrientation = "vertical" | "horizontal" | "responsive"
+export type FieldOrientation = "vertical" | "horizontal" | "responsive"
+export type FieldLegendVariant = "legend" | "label"
 
 function FieldSet({ className, ...props }: React.ComponentProps<"fieldset">) {
   return (
@@ -21,7 +22,7 @@ function FieldLegend({
   className,
   variant = "legend",
   ...props
-}: React.ComponentProps<"legend"> & { variant?: "legend" | "label" }) {
+}: React.ComponentProps<"legend"> & { variant?: FieldLegendVariant }) {
   return (
     <legend
       data-slot="field-legend"
