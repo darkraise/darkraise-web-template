@@ -1,6 +1,9 @@
 import { cn } from "@lib/utils"
 import { Separator } from "@components/separator"
-import { useThemeSettingsSections } from "./useThemeSettingsSections"
+import {
+  useThemeSettingsSections,
+  type ThemeSettingsGroup,
+} from "./useThemeSettingsSections"
 import "./theme-switcher.css"
 
 export interface ThemeSettingsPanelProps {
@@ -9,6 +12,14 @@ export interface ThemeSettingsPanelProps {
   className?: string
 }
 
+const GROUP_ORDER: { group: ThemeSettingsGroup; label: string }[] = [
+  { group: "theme", label: "Theme" },
+  { group: "colour", label: "Colour" },
+  { group: "background", label: "Background" },
+  { group: "layout", label: "Layout" },
+  { group: "depth", label: "Depth" },
+]
+
 export function ThemeSettingsPanel({
   layout = "compact",
   className,
@@ -16,6 +27,31 @@ export function ThemeSettingsPanel({
   const sections = useThemeSettingsSections()
 
   if (sections.length === 0) return null
+
+  if (layout === "page") {
+    const groups = GROUP_ORDER.map((entry) => ({
+      ...entry,
+      sections: sections.filter((section) => section.group === entry.group),
+    })).filter((entry) => entry.sections.length > 0)
+
+    return (
+      <div
+        data-layout="page"
+        className={cn("dr-theme-settings", "dr-theme-settings-page", className)}
+      >
+        {groups.map((entry) => (
+          <section key={entry.group} className="dr-theme-settings-group">
+            <h3 className="dr-theme-settings-group-heading">{entry.label}</h3>
+            <div className="dr-theme-settings-group-body">
+              {entry.sections.map((section) => (
+                <div key={section.key}>{section.node}</div>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+    )
+  }
 
   return (
     <div
