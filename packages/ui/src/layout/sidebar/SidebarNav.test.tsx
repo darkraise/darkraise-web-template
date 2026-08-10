@@ -82,7 +82,7 @@ describe("SidebarNav collapsed styling", () => {
 })
 
 describe("SidebarNav activeBar", () => {
-  function renderWithActiveBar(activeBar?: boolean) {
+  function renderWithActiveBar(activeBar?: boolean | "bar" | "ring" | "both") {
     const { container } = render(
       <RouterAdapterProvider value={strictAdapter}>
         <SidebarProvider collapsed={false}>
@@ -95,24 +95,55 @@ describe("SidebarNav activeBar", () => {
     return el
   }
 
-  it("defaults to the thick left rail (no opt-out attribute)", () => {
+  it("emits no attribute when the prop is omitted", () => {
     expect(renderWithActiveBar().getAttribute("data-active-bar")).toBeNull()
   })
 
-  it("flags the nav when the rail is turned off", () => {
-    expect(renderWithActiveBar(false).getAttribute("data-active-bar")).toBe(
-      "false",
+  it("maps true to bar", () => {
+    expect(renderWithActiveBar(true).getAttribute("data-active-bar")).toBe(
+      "bar",
     )
   })
 
-  it("has a stylesheet rule that drops the 3px rail for that flag", () => {
+  it("maps false to ring", () => {
+    expect(renderWithActiveBar(false).getAttribute("data-active-bar")).toBe(
+      "ring",
+    )
+  })
+
+  it("passes through each explicit value", () => {
+    expect(renderWithActiveBar("bar").getAttribute("data-active-bar")).toBe(
+      "bar",
+    )
+    expect(renderWithActiveBar("ring").getAttribute("data-active-bar")).toBe(
+      "ring",
+    )
+    expect(renderWithActiveBar("both").getAttribute("data-active-bar")).toBe(
+      "both",
+    )
+  })
+
+  it("has a ring rule with no 3px rail", () => {
     const withoutComments = sidebarNavCss.replace(/\/\*[\s\S]*?\*\//g, "")
     const rule = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)].find(
-      ([, selector]) => selector.includes('[data-active-bar="false"]'),
+      ([, selector]) =>
+        selector.includes('[data-active-bar="ring"]') &&
+        !selector.includes("data-preset"),
     )
-    expect(rule, "no activeBar=false rule in sidebar-nav.css").toBeDefined()
-    // Uniform 1px ring, not the 3px left-edge bar.
+    expect(rule, "no activeBar=ring rule in sidebar-nav.css").toBeDefined()
     expect(rule?.[2]).toMatch(/inset 0 0 0 1px/)
     expect(rule?.[2]).not.toMatch(/inset 3px/)
+  })
+
+  it("has a both rule carrying the ring and the rail", () => {
+    const withoutComments = sidebarNavCss.replace(/\/\*[\s\S]*?\*\//g, "")
+    const rule = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)].find(
+      ([, selector]) =>
+        selector.includes('[data-active-bar="both"]') &&
+        !selector.includes("data-preset"),
+    )
+    expect(rule, "no activeBar=both rule in sidebar-nav.css").toBeDefined()
+    expect(rule?.[2]).toMatch(/inset 0 0 0 1px/)
+    expect(rule?.[2]).toMatch(/inset 3px/)
   })
 })

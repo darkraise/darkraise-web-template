@@ -13,6 +13,8 @@ import { SidebarProvider } from "./SidebarContext"
 import { useSidebar } from "./sidebar-context"
 import type { NavGroup, NavItem } from "@layout/types"
 
+export type SidebarActiveBar = "bar" | "ring" | "both"
+
 interface SidebarNavProps {
   nav: NavGroup[]
   /**
@@ -21,19 +23,24 @@ interface SidebarNavProps {
    */
   collapsed?: boolean
   /**
-   * Whether the active item renders the thick inset bar down its left edge.
-   * Set `false` for a uniform 1px indicator instead — presets with their own
-   * selection language (Sci-fi) look overweighted with the bar.
+   * Indicator style for the active item.
    *
-   * @default true
+   * - omitted: whatever the active preset renders today. Glass shows a ring
+   *   and a rail; Sci-fi shows a ring; everything else shows a rail.
+   * - `"bar"` / `true`: 3px left rail only.
+   * - `"ring"` / `false`: uniform 1px ring only.
+   * - `"both"`: 1px ring plus the 3px rail.
+   *
+   * Omitting the prop is NOT the same as passing `"bar"` — omitting leaves
+   * each preset's own look alone, while `"bar"` forces a rail everywhere.
    */
-  activeBar?: boolean
+  activeBar?: boolean | SidebarActiveBar
 }
 
 function SidebarNav({
   nav,
   collapsed: collapsedProp,
-  activeBar = true,
+  activeBar,
 }: SidebarNavProps) {
   const ctx = useSidebar()
   const collapsed = collapsedProp ?? ctx.collapsed
@@ -42,7 +49,15 @@ function SidebarNav({
     <nav
       className="dr-sidebar-nav"
       data-collapsed={collapsed || undefined}
-      data-active-bar={activeBar ? undefined : "false"}
+      data-active-bar={
+        activeBar === undefined
+          ? undefined
+          : activeBar === true
+            ? "bar"
+            : activeBar === false
+              ? "ring"
+              : activeBar
+      }
     >
       {nav.map((group, gi) => (
         <SidebarGroup
