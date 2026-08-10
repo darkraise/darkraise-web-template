@@ -160,6 +160,37 @@ describe("SidebarNav activeBar", () => {
     }
   })
 
+  it("gives glass a full-opacity standalone ring with no rail", () => {
+    const withoutComments = sidebarNavCss.replace(/\/\*[\s\S]*?\*\//g, "")
+    const rule = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)].find(
+      ([, selector]) =>
+        selector.includes('[data-preset="glass"]') &&
+        selector.includes('[data-active-bar="ring"]'),
+    )
+    expect(rule, "no glass activeBar=ring rule found").toBeDefined()
+    expect(rule?.[2]).toMatch(/inset 0 0 0 1px/)
+    expect(rule?.[2]).not.toMatch(/0\.3/)
+  })
+
+  it("gives glass both the rail and a tinted ring, rail painted first", () => {
+    const withoutComments = sidebarNavCss.replace(/\/\*[\s\S]*?\*\//g, "")
+    const rule = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)].find(
+      ([, selector]) =>
+        selector.includes('[data-preset="glass"]') &&
+        selector.includes('[data-active-bar="both"]'),
+    )
+    expect(rule, "no glass activeBar=both rule found").toBeDefined()
+    const body = rule?.[2] ?? ""
+    expect(body).toMatch(/inset 3px/)
+    expect(body).toMatch(/inset 0 0 0 1px/)
+    expect(body).toMatch(/0\.3/)
+    const railIndex = body.indexOf("inset 3px")
+    const ringIndex = body.indexOf("inset 0 0 0 1px")
+    expect(railIndex).toBeGreaterThanOrEqual(0)
+    expect(ringIndex).toBeGreaterThanOrEqual(0)
+    expect(railIndex).toBeLessThan(ringIndex)
+  })
+
   it("keeps the glass default carrying both layers", () => {
     const withoutComments = sidebarNavCss.replace(/\/\*[\s\S]*?\*\//g, "")
     const base = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)].find(
