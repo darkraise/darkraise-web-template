@@ -31,7 +31,7 @@ import { AxisControl } from "./AxisControl"
 
 export type ThemeSettingsGroup =
   | "theme"
-  | "colour"
+  | "color"
   | "background"
   | "layout"
   | "depth"
@@ -294,7 +294,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
       },
     axes.accentColor && {
       key: "accentColor",
-      group: "colour" as const,
+      group: "color" as const,
       node: (
         <div key="accentColor" className="dr-theme-switcher-row">
           <Label className="dr-theme-switcher-section-label">
@@ -320,7 +320,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
     },
     axes.surfaceColor && {
       key: "surfaceColor",
-      group: "colour" as const,
+      group: "color" as const,
       node: (
         <div key="surfaceColor" className="dr-theme-switcher-row">
           <Label className="dr-theme-switcher-section-label">

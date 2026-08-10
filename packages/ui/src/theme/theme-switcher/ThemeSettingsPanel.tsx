@@ -12,13 +12,20 @@ export interface ThemeSettingsPanelProps {
   className?: string
 }
 
-const GROUP_ORDER: { group: ThemeSettingsGroup; label: string }[] = [
-  { group: "theme", label: "Theme" },
-  { group: "colour", label: "Colour" },
-  { group: "background", label: "Background" },
-  { group: "layout", label: "Layout" },
-  { group: "depth", label: "Depth" },
-]
+/* Typed as a full Record so adding a group to ThemeSettingsGroup without a
+   label here is a compile error rather than a section silently dropped from
+   the page layout. Declaration order is the render order. */
+const GROUP_LABELS: Record<ThemeSettingsGroup, string> = {
+  theme: "Theme",
+  color: "Color",
+  background: "Background",
+  layout: "Layout",
+  depth: "Depth",
+}
+
+const GROUP_ORDER = (
+  Object.entries(GROUP_LABELS) as [ThemeSettingsGroup, string][]
+).map(([group, label]) => ({ group, label }))
 
 export function ThemeSettingsPanel({
   layout = "compact",

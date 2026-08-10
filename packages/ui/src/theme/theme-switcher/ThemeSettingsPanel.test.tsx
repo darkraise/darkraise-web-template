@@ -1,3 +1,4 @@
+import type * as React from "react"
 import { render, screen, fireEvent } from "@testing-library/react"
 import { describe, it, expect, beforeEach, vi } from "vitest"
 import { ThemeProvider } from "@theme/theme-provider"
@@ -51,7 +52,7 @@ describe("ThemeSettingsPanel", () => {
   it("groups axes under headings in the page layout", () => {
     renderPanel(<ThemeSettingsPanel layout="page" />)
     expect(screen.getByRole("heading", { name: "Theme" })).toBeInTheDocument()
-    expect(screen.getByRole("heading", { name: "Colour" })).toBeInTheDocument()
+    expect(screen.getByRole("heading", { name: "Color" })).toBeInTheDocument()
     expect(screen.getByRole("heading", { name: "Layout" })).toBeInTheDocument()
   })
 
