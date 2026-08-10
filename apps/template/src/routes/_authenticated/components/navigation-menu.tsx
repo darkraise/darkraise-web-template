@@ -8,6 +8,7 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "darkraise-ui/components/navigation-menu"
+import type { NavigationMenuOrientation } from "darkraise-ui/components/navigation-menu"
 import { allOf } from "./_components/-variant-axes"
 import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
@@ -19,7 +20,7 @@ export const Route = createFileRoute(
   component: NavigationMenuPage,
 })
 
-const NAVIGATION_MENU_ORIENTATIONS = allOf<"horizontal" | "vertical">()(
+const NAVIGATION_MENU_ORIENTATIONS = allOf<NavigationMenuOrientation>()(
   "horizontal",
   "vertical",
 )

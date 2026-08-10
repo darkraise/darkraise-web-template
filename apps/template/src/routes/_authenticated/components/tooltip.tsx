@@ -6,6 +6,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "darkraise-ui/components/tooltip"
+import type { TooltipAlign, TooltipSide } from "darkraise-ui/components/tooltip"
 import { allOf } from "./_components/-variant-axes"
 import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
@@ -15,18 +16,9 @@ export const Route = createFileRoute("/_authenticated/components/tooltip")({
   component: TooltipPage,
 })
 
-const TOOLTIP_SIDES = allOf<"top" | "right" | "bottom" | "left">()(
-  "top",
-  "right",
-  "bottom",
-  "left",
-)
+const TOOLTIP_SIDES = allOf<TooltipSide>()("top", "right", "bottom", "left")
 
-const TOOLTIP_ALIGNS = allOf<"start" | "center" | "end">()(
-  "start",
-  "center",
-  "end",
-)
+const TOOLTIP_ALIGNS = allOf<TooltipAlign>()("start", "center", "end")
 
 function TooltipPage() {
   return (

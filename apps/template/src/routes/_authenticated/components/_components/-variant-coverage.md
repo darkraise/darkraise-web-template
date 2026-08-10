@@ -26,6 +26,67 @@ This is the property the whole exercise buys: a new variant added to the UI
 package breaks the template's typecheck until the demo page is updated to
 show it, so coverage cannot silently decay.
 
+## 2026-08-10 fix wave
+
+A final whole-branch review found genuine coverage gaps. They were closed as
+follows.
+
+- **accordion** previously showed only a two-value `variant` row. It now has a
+  `variant` x `elevation` cross-product (`AccordionVariant` x `CardElevation`),
+  a single-axis `border` row (`CardBorder`), and a single-axis `orientation`
+  row. `border` and `elevation` only paint under `variant="card"` — the
+  component gates `data-border` / `data-elevation` on `isCard`
+  (`Accordion.tsx:199-204`) — so the `variant="default"` row carries the muted
+  footnote used elsewhere on this branch, and the `border` row is pinned to
+  `variant="card"`.
+- **field** covered only the `FieldLegend` `legend|label` variant. It now also
+  has an `orientation` row over all three of `vertical | horizontal |
+responsive`, which `field.css` styles individually.
+- **pagination** gained a real `allOf<PaginationVariant>()` matrix (see the
+  correction below).
+
+### Inline unions are now named exports
+
+Five pages were calling `allOf` with a **local copy** of a union, because the
+package declared the prop inline with no named export. A local copy enforces
+removals but not additions: widening the union in the package would leave the
+demo compiling, which is the exact decay this branch exists to prevent. The
+following aliases were added beside the inline declarations and the demo pages
+now import them:
+
+| Type                                     | Declared in                          | Used by               |
+| ---------------------------------------- | ------------------------------------ | --------------------- |
+| `TooltipSide`, `TooltipAlign`            | `tooltip/Tooltip.tsx`                | `tooltip.tsx`         |
+| `ToolbarOrientation`                     | `toolbar/Toolbar.tsx`                | `toolbar.tsx`         |
+| `ButtonGroupOrientation`                 | `button-group/ButtonGroup.tsx`       | `button-group.tsx`    |
+| `NavigationMenuOrientation`              | `navigation-menu/NavigationMenu.tsx` | `navigation-menu.tsx` |
+| `FieldLegendVariant`, `FieldOrientation` | `field/Field.tsx`                    | `field.tsx`           |
+| `PaginationVariant`                      | `pagination/Pagination.tsx`          | `pagination.tsx`      |
+
+Adding `export` to a type that is **also** declared elsewhere in the same
+component folder triggers `TS2308` through that folder's barrel, and because
+`tsup` runs with `clean: true` the DTS build aborts and leaves
+`packages/ui/dist` with no declaration files at all. Every name above was
+grepped across `packages/ui/src` first and confirmed to occur exactly once.
+
+### Still unenforced
+
+Enforcement is **not** blanket. These remain uncovered by `allOf`:
+
+- **accordion's `orientation`** is still a local copy. The package declares it
+  inline on `AccordionCommonProps` (`Accordion.tsx:75`) with no named export,
+  and unlike the six types above it was not in scope for the export pass. The
+  demo constant carries a comment saying so.
+- **`TimelineConnectorVariant`** (`"solid" | "dashed"`, exported at
+  `Timeline.tsx:11`) has both values rendering in `timeline.tsx`'s "Dashed
+  connectors" example, but there is no `allOf` call naming the type, so a third
+  connector variant would not break the build.
+- **`ToggleGroup`** accepts `ToggleVariant` / `ToggleSize` but its page covers
+  only `orientation`. Those two unions are shared with `Toggle`, whose page
+  carries the full enforced `variant` x `size` matrix, so enforcement exists
+  indirectly — a new toggle variant breaks `toggle.tsx`, not
+  `toggle-group.tsx`.
+
 ## Deliberate exceptions
 
 ### background-page — no matrix by design
@@ -63,7 +124,14 @@ slider). Every variant/size and every align/orientation value is rendered
 somewhere on the page; only the pairwise crossing is dropped for layout
 reasons, not coverage reasons.
 
-## Components with no enumerable presentational axis (56)
+## Components with no enumerable presentational axis (55)
+
+An earlier revision of this list wrongly included `pagination`. It has
+`PaginationVariant = "filled" | "outlined"`
+(`packages/ui/src/components/pagination/Pagination.tsx:8`); both values already
+rendered on the page, so there was never a visual gap, but the claim was false.
+The type is now exported and the page has a proper `allOf` matrix, so
+`pagination` has been removed from the list below.
 
 These components have no `variant`/`size`/`color`/`side`/`align`/`position`/
 `status`/`shape`/`tone`/`border`/`elevation`/`density`-shaped prop to cross —
@@ -108,7 +176,6 @@ reviewed individually during the sweep; no matrix applies to any of them.
 - `multi-select`
 - `number-input`
 - `overlay-primitives`
-- `pagination`
 - `password-input`
 - `progress`
 - `qr-code`

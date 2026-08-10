@@ -9,12 +9,17 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "darkraise-ui/components/pagination"
+import type { PaginationVariant } from "darkraise-ui/components/pagination"
+import { allOf } from "./_components/-variant-axes"
+import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
 export const Route = createFileRoute("/_authenticated/components/pagination")({
   component: PaginationPage,
 })
+
+const PAGINATION_VARIANTS = allOf<PaginationVariant>()("filled", "outlined")
 
 function PaginationPage() {
   const [page, setPage] = useState(3)
@@ -85,8 +90,9 @@ function PaginationPage() {
       </ShowcaseExample>
 
       <ShowcaseExample
-        title="Outlined variant — bordered active page"
-        code={`<Pagination variant="outlined">
+        title="Variant"
+        code={`// One representative cell: every variant renders above.
+<Pagination variant="outlined">
   <PaginationContent>
     <PaginationItem>
       <PaginationPrevious href="#" />
@@ -104,30 +110,38 @@ function PaginationPage() {
   </PaginationContent>
 </Pagination>`}
       >
-        <Pagination variant="outlined">
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                href="#"
-                onClick={(e) => e.preventDefault()}
-              />
-            </PaginationItem>
-            {[1, 2, 3, 4, 5].map((p) => (
-              <PaginationItem key={p}>
-                <PaginationLink
-                  href="#"
-                  isActive={p === 3}
-                  onClick={(e) => e.preventDefault()}
-                >
-                  {p}
-                </PaginationLink>
-              </PaginationItem>
-            ))}
-            <PaginationItem>
-              <PaginationNext href="#" onClick={(e) => e.preventDefault()} />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+        <VariantMatrix
+          rows={{ label: "variant", values: PAGINATION_VARIANTS }}
+          render={(variant) => (
+            <Pagination variant={variant}>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    href="#"
+                    onClick={(e) => e.preventDefault()}
+                  />
+                </PaginationItem>
+                {[1, 2, 3, 4, 5].map((p) => (
+                  <PaginationItem key={p}>
+                    <PaginationLink
+                      href="#"
+                      isActive={p === 3}
+                      onClick={(e) => e.preventDefault()}
+                    >
+                      {p}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                <PaginationItem>
+                  <PaginationNext
+                    href="#"
+                    onClick={(e) => e.preventDefault()}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          )}
+        />
       </ShowcaseExample>
 
       <ShowcaseExample

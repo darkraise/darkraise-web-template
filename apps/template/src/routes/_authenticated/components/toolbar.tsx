@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import { Bold, Italic, Underline } from "lucide-react"
 import { Toggle } from "darkraise-ui/components/toggle"
 import { Toolbar, ToolbarSeparator } from "darkraise-ui/components/toolbar"
+import type { ToolbarOrientation } from "darkraise-ui/components/toolbar"
 import { allOf } from "./_components/-variant-axes"
 import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
@@ -11,7 +12,7 @@ export const Route = createFileRoute("/_authenticated/components/toolbar")({
   component: ToolbarPage,
 })
 
-const TOOLBAR_ORIENTATIONS = allOf<"horizontal" | "vertical">()(
+const TOOLBAR_ORIENTATIONS = allOf<ToolbarOrientation>()(
   "horizontal",
   "vertical",
 )

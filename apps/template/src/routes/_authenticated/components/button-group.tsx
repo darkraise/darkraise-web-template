@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { Button } from "darkraise-ui/components/button"
 import { ButtonGroup } from "darkraise-ui/components/button-group"
+import type { ButtonGroupOrientation } from "darkraise-ui/components/button-group"
 import { allOf } from "./_components/-variant-axes"
 import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
@@ -12,7 +13,7 @@ export const Route = createFileRoute("/_authenticated/components/button-group")(
   },
 )
 
-const BUTTON_GROUP_ORIENTATIONS = allOf<"horizontal" | "vertical">()(
+const BUTTON_GROUP_ORIENTATIONS = allOf<ButtonGroupOrientation>()(
   "horizontal",
   "vertical",
 )
