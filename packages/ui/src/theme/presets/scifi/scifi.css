@@ -367,6 +367,44 @@
     var(--scifi-active-glow);
 }
 
+/* Sci-fi honours an explicit activeBar. Its unset default above stays the
+   uniform ring, which suits the preset's own selection language. These
+   rules must live here rather than in sidebar-nav.css: preset files are
+   unlayered and beat @layer components regardless of specificity. */
+[data-preset="scifi"]
+  .dr-sidebar-nav[data-active-bar="bar"]
+  .dr-sidebar-nav-item.active,
+[data-preset="scifi"]
+  .dr-sidebar-nav[data-active-bar="bar"]
+  .dr-sidebar-nav-item[data-status="active"] {
+  box-shadow:
+    inset 3px 0 0 0 hsl(var(--primary)),
+    var(--scifi-active-glow);
+}
+
+[data-preset="scifi"]
+  .dr-sidebar-nav[data-active-bar="ring"]
+  .dr-sidebar-nav-item.active,
+[data-preset="scifi"]
+  .dr-sidebar-nav[data-active-bar="ring"]
+  .dr-sidebar-nav-item[data-status="active"] {
+  box-shadow:
+    inset 0 0 0 1px hsl(var(--primary)),
+    var(--scifi-active-glow);
+}
+
+[data-preset="scifi"]
+  .dr-sidebar-nav[data-active-bar="both"]
+  .dr-sidebar-nav-item.active,
+[data-preset="scifi"]
+  .dr-sidebar-nav[data-active-bar="both"]
+  .dr-sidebar-nav-item[data-status="active"] {
+  box-shadow:
+    inset 3px 0 0 0 hsl(var(--primary)),
+    inset 0 0 0 1px hsl(var(--primary)),
+    var(--scifi-active-glow);
+}
+
 /* File upload — dropzone joins the notched panel family, and its
    trigger adopts the outlined default-button treatment. The trigger
    is not a .dr-btn (it carries its own class with a solid bg-primary
