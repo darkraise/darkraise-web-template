@@ -28,6 +28,8 @@ import {
 } from "darkraise-ui/forms"
 import { fieldProps } from "@/lib/field-props"
 import { AppearanceSection } from "./_settings/-appearance-section"
+import { NotificationsSection } from "./_settings/-notifications-section"
+import { ProfileSection } from "./_settings/-profile-section"
 
 export const Route = createFileRoute("/_authenticated/settings")({
   component: SettingsPage,
@@ -96,6 +98,7 @@ function GeneralSettings() {
 
   return (
     <div className="max-w-2xl space-y-6">
+      <ProfileSection />
       <form
         onSubmit={(e) => {
           e.preventDefault()
@@ -201,80 +204,83 @@ function NotificationSettings() {
   })
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault()
-        e.stopPropagation()
-        form.handleSubmit()
-      }}
-      className="max-w-2xl space-y-6"
-    >
-      <Card>
-        <CardContent className="space-y-8 pt-6">
-          <FormSection
-            title="Email Preferences"
-            description="Control what emails you receive"
-          >
-            <form.Field
-              name="emailNotifications"
-              children={(field) => (
-                <SwitchField
-                  {...fieldProps<boolean>(field)}
-                  label="Email Notifications"
-                  description="Receive email notifications for important events"
-                />
-              )}
-            />
-            <form.Field
-              name="orderAlerts"
-              children={(field) => (
-                <SwitchField
-                  {...fieldProps<boolean>(field)}
-                  label="Order Alerts"
-                  description="Get notified when new orders are placed"
-                />
-              )}
-            />
-            <form.Field
-              name="marketingEmails"
-              children={(field) => (
-                <CheckboxField
-                  {...fieldProps<boolean>(field)}
-                  label="Marketing Emails"
-                  description="Receive promotional emails and product updates"
-                />
-              )}
-            />
-          </FormSection>
+    <div className="max-w-2xl space-y-6">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          form.handleSubmit()
+        }}
+        className="space-y-6"
+      >
+        <Card>
+          <CardContent className="space-y-8 pt-6">
+            <FormSection
+              title="Email Preferences"
+              description="Control what emails you receive"
+            >
+              <form.Field
+                name="emailNotifications"
+                children={(field) => (
+                  <SwitchField
+                    {...fieldProps<boolean>(field)}
+                    label="Email Notifications"
+                    description="Receive email notifications for important events"
+                  />
+                )}
+              />
+              <form.Field
+                name="orderAlerts"
+                children={(field) => (
+                  <SwitchField
+                    {...fieldProps<boolean>(field)}
+                    label="Order Alerts"
+                    description="Get notified when new orders are placed"
+                  />
+                )}
+              />
+              <form.Field
+                name="marketingEmails"
+                children={(field) => (
+                  <CheckboxField
+                    {...fieldProps<boolean>(field)}
+                    label="Marketing Emails"
+                    description="Receive promotional emails and product updates"
+                  />
+                )}
+              />
+            </FormSection>
 
-          <FormSection
-            title="Frequency"
-            description="How often you want to receive notifications"
-          >
-            <form.Field
-              name="notificationFrequency"
-              children={(field) => (
-                <RadioGroupField
-                  {...fieldProps<string>(field)}
-                  label="Notification Frequency"
-                  options={[
-                    { label: "Instant", value: "instant" },
-                    { label: "Daily digest", value: "daily" },
-                    { label: "Weekly summary", value: "weekly" },
-                  ]}
-                />
-              )}
-            />
-          </FormSection>
+            <FormSection
+              title="Frequency"
+              description="How often you want to receive notifications"
+            >
+              <form.Field
+                name="notificationFrequency"
+                children={(field) => (
+                  <RadioGroupField
+                    {...fieldProps<string>(field)}
+                    label="Notification Frequency"
+                    options={[
+                      { label: "Instant", value: "instant" },
+                      { label: "Daily digest", value: "daily" },
+                      { label: "Weekly summary", value: "weekly" },
+                    ]}
+                  />
+                )}
+              />
+            </FormSection>
 
-          <FormActions
-            submitLabel="Save Preferences"
-            isSubmitting={form.state.isSubmitting}
-            canSubmit={form.state.canSubmit}
-          />
-        </CardContent>
-      </Card>
-    </form>
+            <FormActions
+              submitLabel="Save Preferences"
+              isSubmitting={form.state.isSubmitting}
+              canSubmit={form.state.canSubmit}
+            />
+          </CardContent>
+        </Card>
+      </form>
+      <NotificationsSection />
+    </div>
   )
 }
 
