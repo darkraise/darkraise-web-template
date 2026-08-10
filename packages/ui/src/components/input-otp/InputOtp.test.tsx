@@ -300,3 +300,40 @@ describe('InputOtp variant="separate"', () => {
     expect(lastCall).toBe("12")
   })
 })
+
+describe("InputOTP accessible name", () => {
+  it("lets an external label name the input", () => {
+    render(
+      <>
+        <label htmlFor="verification-code">Verification code</label>
+        <InputOTP id="verification-code" maxLength={4}>
+          <InputOTPGroup>
+            <InputOTPSlot index={0} />
+            <InputOTPSlot index={1} />
+            <InputOTPSlot index={2} />
+            <InputOTPSlot index={3} />
+          </InputOTPGroup>
+        </InputOTP>
+      </>,
+    )
+    expect(
+      screen.getByRole("textbox", { name: "Verification code" }),
+    ).toBeInTheDocument()
+  })
+
+  it("still defaults a name when nothing else labels it", () => {
+    render(
+      <InputOTP maxLength={4}>
+        <InputOTPGroup>
+          <InputOTPSlot index={0} />
+          <InputOTPSlot index={1} />
+          <InputOTPSlot index={2} />
+          <InputOTPSlot index={3} />
+        </InputOTPGroup>
+      </InputOTP>,
+    )
+    expect(
+      screen.getByRole("textbox", { name: "One-time password" }),
+    ).toBeInTheDocument()
+  })
+})

@@ -269,7 +269,12 @@ function InputOTP({
               setSelectionStart(target.selectionStart ?? 0)
               setSelectionEnd(target.selectionEnd ?? 0)
             }}
-            aria-label="One-time password"
+            /* Only a fallback. An aria-label outranks a <label for> in the
+               accessible-name computation, so emitting it unconditionally
+               would silently discard a caller's visible label. An `id` means
+               a label may point here, so we stand aside. A caller-supplied
+               aria-label or aria-labelledby still wins via {...rest}. */
+            aria-label={rest.id ? undefined : "One-time password"}
             className={cn(
               "dr-input-otp",
               "absolute inset-0 w-full opacity-0",
