@@ -27,6 +27,11 @@ import {
   FormActions,
 } from "darkraise-ui/forms"
 import { fieldProps } from "@/lib/field-props"
+import { AppearanceSection } from "./_settings/-appearance-section"
+import { NotificationsSection } from "./_settings/-notifications-section"
+import { PreferencesSection } from "./_settings/-preferences-section"
+import { ProfileSection } from "./_settings/-profile-section"
+import { SecuritySection } from "./_settings/-security-section"
 
 export const Route = createFileRoute("/_authenticated/settings")({
   component: SettingsPage,
@@ -94,85 +99,94 @@ function GeneralSettings() {
   })
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault()
-        e.stopPropagation()
-        form.handleSubmit()
-      }}
-      className="max-w-2xl space-y-6"
-    >
-      <Card>
-        <CardContent className="space-y-6 pt-6">
-          <FormSection
-            title="Store Information"
-            description="Basic details about your store"
-          >
-            <form.Field
-              name="storeName"
-              children={(field) => (
-                <TextField
-                  {...fieldProps<string>(field)}
-                  label="Store Name"
-                  placeholder="Your store name"
-                />
-              )}
+    <div className="max-w-2xl space-y-6">
+      <ProfileSection />
+      <form
+        onSubmit={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          form.handleSubmit()
+        }}
+        className="space-y-6"
+      >
+        <Card>
+          <CardContent className="space-y-6 pt-6">
+            <FormSection
+              title="Store Information"
+              description="Basic details about your store"
+            >
+              <form.Field
+                name="storeName"
+                children={(field) => (
+                  <TextField
+                    {...fieldProps<string>(field)}
+                    label="Store Name"
+                    placeholder="Your store name"
+                  />
+                )}
+              />
+              <form.Field
+                name="storeDescription"
+                children={(field) => (
+                  <TextareaField
+                    {...fieldProps<string>(field)}
+                    label="Store Description"
+                    placeholder="Describe your store"
+                    rows={3}
+                  />
+                )}
+              />
+              <form.Field
+                name="currency"
+                children={(field) => (
+                  <SelectField
+                    {...fieldProps<string>(field)}
+                    label="Currency"
+                    options={[
+                      { label: "USD ($)", value: "usd" },
+                      { label: "EUR (\u20ac)", value: "eur" },
+                      { label: "GBP (\u00a3)", value: "gbp" },
+                      { label: "CAD (C$)", value: "cad" },
+                      { label: "AUD (A$)", value: "aud" },
+                    ]}
+                  />
+                )}
+              />
+              <form.Field
+                name="timezone"
+                children={(field) => (
+                  <SelectField
+                    {...fieldProps<string>(field)}
+                    label="Timezone"
+                    options={[
+                      {
+                        label: "Eastern Time (ET)",
+                        value: "america-new_york",
+                      },
+                      { label: "Central Time (CT)", value: "america-chicago" },
+                      { label: "Mountain Time (MT)", value: "america-denver" },
+                      {
+                        label: "Pacific Time (PT)",
+                        value: "america-los_angeles",
+                      },
+                      { label: "UTC", value: "utc" },
+                    ]}
+                  />
+                )}
+              />
+            </FormSection>
+            <FormActions
+              submitLabel="Save Changes"
+              isSubmitting={form.state.isSubmitting}
+              canSubmit={form.state.canSubmit}
             />
-            <form.Field
-              name="storeDescription"
-              children={(field) => (
-                <TextareaField
-                  {...fieldProps<string>(field)}
-                  label="Store Description"
-                  placeholder="Describe your store"
-                  rows={3}
-                />
-              )}
-            />
-            <form.Field
-              name="currency"
-              children={(field) => (
-                <SelectField
-                  {...fieldProps<string>(field)}
-                  label="Currency"
-                  options={[
-                    { label: "USD ($)", value: "usd" },
-                    { label: "EUR (\u20ac)", value: "eur" },
-                    { label: "GBP (\u00a3)", value: "gbp" },
-                    { label: "CAD (C$)", value: "cad" },
-                    { label: "AUD (A$)", value: "aud" },
-                  ]}
-                />
-              )}
-            />
-            <form.Field
-              name="timezone"
-              children={(field) => (
-                <SelectField
-                  {...fieldProps<string>(field)}
-                  label="Timezone"
-                  options={[
-                    { label: "Eastern Time (ET)", value: "america-new_york" },
-                    { label: "Central Time (CT)", value: "america-chicago" },
-                    { label: "Mountain Time (MT)", value: "america-denver" },
-                    {
-                      label: "Pacific Time (PT)",
-                      value: "america-los_angeles",
-                    },
-                    { label: "UTC", value: "utc" },
-                  ]}
-                />
-              )}
-            />
-          </FormSection>
-          <FormActions
-            submitLabel="Save Changes"
-            isSubmitting={form.state.isSubmitting}
-            canSubmit={form.state.canSubmit}
-          />
-        </CardContent>
-      </Card>
-    </form>
+          </CardContent>
+        </Card>
+      </form>
+      <PreferencesSection />
+      <AppearanceSection />
+      <SecuritySection />
+    </div>
   )
 }
 
@@ -194,80 +208,83 @@ function NotificationSettings() {
   })
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault()
-        e.stopPropagation()
-        form.handleSubmit()
-      }}
-      className="max-w-2xl space-y-6"
-    >
-      <Card>
-        <CardContent className="space-y-8 pt-6">
-          <FormSection
-            title="Email Preferences"
-            description="Control what emails you receive"
-          >
-            <form.Field
-              name="emailNotifications"
-              children={(field) => (
-                <SwitchField
-                  {...fieldProps<boolean>(field)}
-                  label="Email Notifications"
-                  description="Receive email notifications for important events"
-                />
-              )}
-            />
-            <form.Field
-              name="orderAlerts"
-              children={(field) => (
-                <SwitchField
-                  {...fieldProps<boolean>(field)}
-                  label="Order Alerts"
-                  description="Get notified when new orders are placed"
-                />
-              )}
-            />
-            <form.Field
-              name="marketingEmails"
-              children={(field) => (
-                <CheckboxField
-                  {...fieldProps<boolean>(field)}
-                  label="Marketing Emails"
-                  description="Receive promotional emails and product updates"
-                />
-              )}
-            />
-          </FormSection>
+    <div className="max-w-2xl space-y-6">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          form.handleSubmit()
+        }}
+        className="space-y-6"
+      >
+        <Card>
+          <CardContent className="space-y-8 pt-6">
+            <FormSection
+              title="Email Preferences"
+              description="Control what emails you receive"
+            >
+              <form.Field
+                name="emailNotifications"
+                children={(field) => (
+                  <SwitchField
+                    {...fieldProps<boolean>(field)}
+                    label="Email Notifications"
+                    description="Receive email notifications for important events"
+                  />
+                )}
+              />
+              <form.Field
+                name="orderAlerts"
+                children={(field) => (
+                  <SwitchField
+                    {...fieldProps<boolean>(field)}
+                    label="Order Alerts"
+                    description="Get notified when new orders are placed"
+                  />
+                )}
+              />
+              <form.Field
+                name="marketingEmails"
+                children={(field) => (
+                  <CheckboxField
+                    {...fieldProps<boolean>(field)}
+                    label="Marketing Emails"
+                    description="Receive promotional emails and product updates"
+                  />
+                )}
+              />
+            </FormSection>
 
-          <FormSection
-            title="Frequency"
-            description="How often you want to receive notifications"
-          >
-            <form.Field
-              name="notificationFrequency"
-              children={(field) => (
-                <RadioGroupField
-                  {...fieldProps<string>(field)}
-                  label="Notification Frequency"
-                  options={[
-                    { label: "Instant", value: "instant" },
-                    { label: "Daily digest", value: "daily" },
-                    { label: "Weekly summary", value: "weekly" },
-                  ]}
-                />
-              )}
-            />
-          </FormSection>
+            <FormSection
+              title="Frequency"
+              description="How often you want to receive notifications"
+            >
+              <form.Field
+                name="notificationFrequency"
+                children={(field) => (
+                  <RadioGroupField
+                    {...fieldProps<string>(field)}
+                    label="Notification Frequency"
+                    options={[
+                      { label: "Instant", value: "instant" },
+                      { label: "Daily digest", value: "daily" },
+                      { label: "Weekly summary", value: "weekly" },
+                    ]}
+                  />
+                )}
+              />
+            </FormSection>
 
-          <FormActions
-            submitLabel="Save Preferences"
-            isSubmitting={form.state.isSubmitting}
-            canSubmit={form.state.canSubmit}
-          />
-        </CardContent>
-      </Card>
-    </form>
+            <FormActions
+              submitLabel="Save Preferences"
+              isSubmitting={form.state.isSubmitting}
+              canSubmit={form.state.canSubmit}
+            />
+          </CardContent>
+        </Card>
+      </form>
+      <NotificationsSection />
+    </div>
   )
 }
 

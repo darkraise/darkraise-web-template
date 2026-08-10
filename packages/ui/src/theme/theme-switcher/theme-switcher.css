@@ -112,4 +112,16 @@
     /* Reset any default child spacing — the parent gap handles it. */
     margin: 0;
   }
+
+  .dr-theme-settings-page {
+    @apply grid grid-cols-1 gap-6 md:grid-cols-2;
+  }
+
+  .dr-theme-settings-group-heading {
+    @apply text-foreground mb-3 text-sm font-semibold;
+  }
+
+  .dr-theme-settings-group-body {
+    @apply space-y-3;
+  }
 }
