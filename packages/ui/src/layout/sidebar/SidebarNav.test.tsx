@@ -146,4 +146,30 @@ describe("SidebarNav activeBar", () => {
     expect(rule?.[2]).toMatch(/inset 0 0 0 1px/)
     expect(rule?.[2]).toMatch(/inset 3px/)
   })
+
+  it("gives glass its own variant for each value", () => {
+    const withoutComments = sidebarNavCss.replace(/\/\*[\s\S]*?\*\//g, "")
+    const rules = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)]
+    for (const value of ["bar", "ring", "both"]) {
+      const rule = rules.find(
+        ([, selector]) =>
+          selector.includes('[data-preset="glass"]') &&
+          selector.includes(`[data-active-bar="${value}"]`),
+      )
+      expect(rule, `no glass rule for activeBar=${value}`).toBeDefined()
+    }
+  })
+
+  it("keeps the glass default carrying both layers", () => {
+    const withoutComments = sidebarNavCss.replace(/\/\*[\s\S]*?\*\//g, "")
+    const base = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)].find(
+      ([, selector]) =>
+        selector.includes('[data-preset="glass"]') &&
+        selector.includes(".dr-sidebar-nav-item.active") &&
+        !selector.includes("data-active-bar"),
+    )
+    expect(base, "glass base rule missing").toBeDefined()
+    expect(base?.[2]).toMatch(/inset 3px/)
+    expect(base?.[2]).toMatch(/inset 0 0 0 1px/)
+  })
 })
