@@ -34,6 +34,7 @@ import { FormSection } from "darkraise-ui/forms"
 
 export function SecuritySection() {
   const changePasswordHeadingId = useId()
+  const mismatchMessageId = useId()
   const [newPassword, setNewPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const mismatch = confirmPassword.length > 0 && newPassword !== confirmPassword
@@ -84,6 +85,7 @@ export function SecuritySection() {
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     autoComplete="new-password"
                     aria-invalid={mismatch || undefined}
+                    aria-describedby={mismatch ? mismatchMessageId : undefined}
                   />
                   <PasswordInputVisibilityTrigger>
                     <PasswordInputIndicator
@@ -95,6 +97,7 @@ export function SecuritySection() {
               </PasswordInput>
             </div>
             <p
+              id={mismatchMessageId}
               aria-live="polite"
               className="text-destructive text-xs"
               data-invalid={mismatch ? "true" : "false"}
