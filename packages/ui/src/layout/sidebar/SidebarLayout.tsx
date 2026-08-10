@@ -27,7 +27,14 @@ export function SidebarLayout({
   onLogout,
 }: LayoutProps) {
   const [collapsed, setCollapsed] = useState(false)
-  const [activeBar, setActiveBar] = useState<SidebarActiveBar>("bar")
+  // Starts unset so nobody's sidebar changes appearance unless they ask:
+  // each preset renders its own default indicator until the control below
+  // is touched. A single-selection ToggleGroup can't hold `undefined`
+  // itself, so "unset" is represented on the wire as the "default" item
+  // and mapped back to `undefined` in onValueChange.
+  const [activeBar, setActiveBar] = useState<SidebarActiveBar | undefined>(
+    undefined,
+  )
 
   const flatNavItems = nav.flatMap((g) =>
     g.items.map((i) => ({ label: i.label, href: i.href })),
@@ -37,13 +44,21 @@ export function SidebarLayout({
     <ToggleGroup
       type="single"
       size="sm"
-      value={activeBar}
+      value={activeBar ?? "default"}
       onValueChange={(value) => {
-        if (value) setActiveBar(value as SidebarActiveBar)
+        // A single-selection group emits "" on deselect; that must not
+        // reach state, or the control would end up with no active item.
+        if (!value) return
+        setActiveBar(
+          value === "default" ? undefined : (value as SidebarActiveBar),
+        )
       }}
       variant="outline"
       aria-label="Sidebar active-item indicator"
     >
+      <ToggleGroupItem value="default" aria-label="Each preset's own indicator">
+        Default
+      </ToggleGroupItem>
       <ToggleGroupItem value="bar" aria-label="Left rail only">
         Bar
       </ToggleGroupItem>
