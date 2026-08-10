@@ -3,7 +3,7 @@ import { Palette } from "lucide-react"
 import { cn } from "@lib/utils"
 import { Button } from "@components/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@components/popover"
-import { Separator } from "@components/separator"
+import { ThemeSettingsPanel } from "./ThemeSettingsPanel"
 import { useThemeSettingsSections } from "./useThemeSettingsSections"
 import "./theme-switcher.css"
 
@@ -70,14 +70,7 @@ export function ThemeSwitcher({
         aria-label={ariaLabel}
         onCloseAutoFocus={onCloseAutoFocus}
       >
-        <div className="space-y-2">
-          {visibleSections.map((section, i) => (
-            <div key={section.key}>
-              {section.node}
-              {i < visibleSections.length - 1 && <Separator className="mt-2" />}
-            </div>
-          ))}
-        </div>
+        <ThemeSettingsPanel />
       </PopoverContent>
     </Popover>
   )
