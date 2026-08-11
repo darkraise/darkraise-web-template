@@ -187,13 +187,16 @@ export const glass: ThemePreset<GlassAxes> = {
     // The fog fill bakes a concrete accent shade here, while the halo rim
     // (haloRecipe) defers to hsl(var(--primary)). --primary is accent[primaryShade]
     // where primaryShade is 600 for light glass and 400 for dark glass
-    // (generateTokens.ts). So in DARK both fog and halo resolve to accent[400]
-    // and agree; in LIGHT the fog uses accent[500] while the halo rim uses
-    // accent[600]. This is deliberate — the fog is a heavily white-diluted
-    // frosted FILL and the rim is an undiluted low-alpha edge, two different
-    // roles — so don't "align" them to one shade without intent. If they ever
-    // must match, change the light branch below to common.accent[600] (never
-    // touch --primary, which also drives bg-primary/--ring system-wide).
+    // (generateTokens.ts). So in DARK both start from accent[400], but the halo
+    // no longer matches exactly: dark --primary is chroma-capped, so on
+    // high-chroma accents the rim sits slightly less saturated than the fog's
+    // raw shade. In LIGHT the fog uses accent[500] while the halo rim uses
+    // accent[600]. Both divergences are tolerated — the fog is a heavily
+    // diluted frosted FILL and the rim is an undiluted low-alpha edge, two
+    // different roles — so don't "align" them to one shade without intent. If
+    // they ever must match, change the light branch below to
+    // common.accent[600] (never touch --primary, which also drives --ring and
+    // every accent border system-wide).
     const accentHSL =
       common.mode === "dark" ? common.accent[400] : common.accent[500]
     const fogBaseDilution =
