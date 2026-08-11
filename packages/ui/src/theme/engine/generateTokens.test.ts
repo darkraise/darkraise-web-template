@@ -717,14 +717,23 @@ describe("generateTokens", () => {
     // far tighter than the caps themselves, so it still catches a real breach.
     const CHROMA_TOLERANCE = 0.005
 
-    const build = (accentColor: AccentColor, mode: ResolvedMode) =>
+    const build = (
+      accentColor: AccentColor,
+      mode: ResolvedMode,
+      preset: PresetName = "default",
+    ) =>
       generateTokens({
         accentColor,
         surfaceColor: "slate",
-        preset: "default",
+        preset,
         backgroundStyle: "solid",
         mode,
       })
+
+    const FILL_PRESETS = ["default", "glass"] as const
+    const ACCENT_PRESET_PAIRS = FILL_PRESETS.flatMap((preset) =>
+      ACCENT_COLORS.map((accentColor) => [accentColor, preset] as const),
+    )
 
     it.each(ACCENT_COLORS)(
       "%s: dark fill lands on one perceptual lightness within the chroma cap",
@@ -740,10 +749,10 @@ describe("generateTokens", () => {
       },
     )
 
-    it.each(ACCENT_COLORS)(
-      "%s: dark label clears AA on the fill",
-      (accentColor) => {
-        const tokens = build(accentColor, "dark")
+    it.each(ACCENT_PRESET_PAIRS)(
+      "%s on %s: dark label clears AA on the fill",
+      (accentColor, preset) => {
+        const tokens = build(accentColor, "dark", preset)
         const ratio = contrastRatio(
           tokens["--primary-foreground"] as string,
           tokens["--primary-fill"] as string,
@@ -766,10 +775,10 @@ describe("generateTokens", () => {
       },
     )
 
-    it.each(ACCENT_COLORS)(
-      "%s: dark fill clears the UI-boundary floor against the card",
-      (accentColor) => {
-        const tokens = build(accentColor, "dark")
+    it.each(ACCENT_PRESET_PAIRS)(
+      "%s on %s: dark fill clears the UI-boundary floor against the card",
+      (accentColor, preset) => {
+        const tokens = build(accentColor, "dark", preset)
         const ratio = contrastRatio(
           tokens["--primary-fill"] as string,
           tokens["--card"] as string,
