@@ -8,7 +8,7 @@
   }
 
   .dr-stacked-layout-rail-logo {
-    @apply bg-primary mb-6 h-8 w-8 rounded-md;
+    @apply bg-primary-fill mb-6 h-8 w-8 rounded-md;
   }
 
   .dr-stacked-layout-rail-nav {

@@ -118,7 +118,7 @@ function OrderDetailPage() {
                 <div
                   className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-medium ${
                     i <= currentStepIndex
-                      ? "bg-primary text-primary-foreground"
+                      ? "bg-primary-fill text-primary-foreground"
                       : "bg-muted text-muted-foreground"
                   }`}
                 >
@@ -136,7 +136,7 @@ function OrderDetailPage() {
                 {i < statusSteps.length - 1 && (
                   <div
                     className={`h-0.5 w-8 ${
-                      i < currentStepIndex ? "bg-primary" : "bg-muted"
+                      i < currentStepIndex ? "bg-primary-fill" : "bg-muted"
                     }`}
                   />
                 )}

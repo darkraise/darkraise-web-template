@@ -1,6 +1,6 @@
 @layer components {
   .dr-checkbox {
-    @apply border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground focus-ring grid shrink-0 cursor-pointer place-content-center rounded-sm border disabled:cursor-not-allowed disabled:opacity-50;
+    @apply border-primary data-[state=checked]:bg-primary-fill data-[state=checked]:border-primary-fill data-[state=checked]:text-primary-foreground focus-ring grid shrink-0 cursor-pointer place-content-center rounded-sm border disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   .dr-checkbox[data-size="sm"] {

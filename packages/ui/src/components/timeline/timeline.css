@@ -57,7 +57,7 @@
   }
 
   .dr-timeline-indicator[data-status="complete"] {
-    @apply bg-primary border-primary text-primary-foreground;
+    @apply bg-primary-fill border-primary-fill text-primary-foreground;
   }
 
   .dr-timeline-indicator[data-status="current"] {
@@ -75,7 +75,7 @@
   }
 
   .dr-timeline-connector[data-status="complete"] {
-    @apply bg-primary;
+    @apply bg-primary-fill;
   }
 
   .dr-timeline-connector[data-variant="dashed"] {

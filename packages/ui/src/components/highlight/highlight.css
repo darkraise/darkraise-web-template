@@ -4,6 +4,6 @@
   }
 
   .dr-highlight-match-strong {
-    @apply bg-primary text-primary-foreground rounded-sm px-0.5 font-semibold;
+    @apply bg-primary-fill text-primary-foreground rounded-sm px-0.5 font-semibold;
   }
 }

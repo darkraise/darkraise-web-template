@@ -22,7 +22,7 @@
   }
 
   .dr-toggle[data-variant="default"][data-state="on"] {
-    @apply bg-primary text-primary-foreground;
+    @apply bg-primary-fill text-primary-foreground;
     /* Compose --shadow-button with the preset-driven --affordance-glow.
        Transparent glow under Default/Glass (button shadow unchanged);
        under Neon the active toggle gains a primary-color glow. */
@@ -30,7 +30,7 @@
   }
 
   .dr-toggle[data-variant="default"][data-state="on"]:hover {
-    @apply bg-primary text-primary-foreground;
+    @apply bg-primary-fill text-primary-foreground;
   }
 
   /* Outline variant — bordered, transparent on both states. */

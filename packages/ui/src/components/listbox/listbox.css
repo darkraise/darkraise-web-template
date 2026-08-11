@@ -17,13 +17,13 @@
      Ordered after the [data-focused] rule so a focused selected item
      still reads as selected. */
   .dr-listbox-item[data-selected="true"] {
-    @apply bg-primary text-primary-foreground font-medium;
+    @apply bg-primary-fill text-primary-foreground font-medium;
     box-shadow: var(--affordance-glow);
   }
 
   .dr-listbox-item[data-selected="true"]:hover,
   .dr-listbox-item[data-selected="true"][data-focused="true"] {
-    @apply bg-primary text-primary-foreground;
+    @apply bg-primary-fill text-primary-foreground;
   }
 
   /* Selected — outline variant. Transparent surface with a 1px primary

@@ -208,16 +208,18 @@
     @apply mt-2 flex justify-end gap-2;
   }
   /* Action button. On tinted variants it borrows the variant accent so the
-     CTA matches the toast tone; on default/loading it falls back to primary. */
+     CTA matches the toast tone; on default/loading it falls back to the calmed
+     fill token, since the label is --primary-foreground, whose contrast is
+     guaranteed against --primary-fill only. */
   .dr-toast-action {
     @apply cursor-pointer rounded px-2 py-1 text-xs font-medium transition-colors;
-    background-color: hsl(var(--toast-accent, var(--primary)));
+    background-color: hsl(var(--toast-accent, var(--primary-fill)));
     color: hsl(var(--primary-foreground));
   }
   .dr-toast-action:hover {
     background-color: color-mix(
       in srgb,
-      hsl(var(--toast-accent, var(--primary))) 88%,
+      hsl(var(--toast-accent, var(--primary-fill))) 88%,
       black
     );
   }

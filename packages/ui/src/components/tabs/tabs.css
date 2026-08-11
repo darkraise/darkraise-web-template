@@ -72,7 +72,7 @@
   }
 
   .dr-tabs-indicator[data-variant="default"] {
-    @apply bg-primary rounded-sm;
+    @apply bg-primary-fill rounded-sm;
     box-shadow: var(--shadow-button), var(--affordance-glow);
   }
 
@@ -87,7 +87,7 @@
   }
 
   .dr-tabs-indicator[data-variant="underline"] {
-    @apply bg-primary;
+    @apply bg-primary-fill;
     box-shadow: var(--affordance-glow-bottom);
   }
 
@@ -184,7 +184,10 @@
      strip's baseline to form the notch, so tinting it would break the
      joint the variant exists to hide. */
   .dr-tabs-list[data-variant="enclosed"][data-orientation="horizontal"][data-color="accent"] {
-    background-image: linear-gradient(hsl(var(--primary)), hsl(var(--primary)));
+    background-image: linear-gradient(
+      hsl(var(--primary-fill)),
+      hsl(var(--primary-fill))
+    );
   }
 
   /* border-bottom-color must stay AFTER the border-primary shorthand:
@@ -304,7 +307,10 @@
   }
 
   .dr-tabs-list[data-variant="enclosed"][data-orientation="vertical"][data-color="accent"] {
-    background-image: linear-gradient(hsl(var(--primary)), hsl(var(--primary)));
+    background-image: linear-gradient(
+      hsl(var(--primary-fill)),
+      hsl(var(--primary-fill))
+    );
   }
 
   /* As with the horizontal rule, the transparent seam-side border must

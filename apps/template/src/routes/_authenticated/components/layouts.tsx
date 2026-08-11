@@ -83,7 +83,7 @@ export const Route = createFileRoute("/_authenticated")({
           <div className="flex h-[300px] flex-col overflow-hidden rounded-lg border">
             {/* Top nav */}
             <div className="flex h-10 shrink-0 items-center gap-4 border-b px-3">
-              <div className="bg-primary h-6 w-6 shrink-0 rounded" />
+              <div className="bg-primary-fill h-6 w-6 shrink-0 rounded" />
               <div className="flex items-center gap-1">
                 <div className="bg-muted h-5 w-14 rounded px-2 text-[length:var(--text-2xs)]" />
                 <div className="bg-muted h-5 w-16 rounded px-2 text-[length:var(--text-2xs)]" />
@@ -122,7 +122,7 @@ export const Route = createFileRoute("/_authenticated")({
           <div className="flex h-[300px] overflow-hidden rounded-lg border">
             {/* Icon sidebar */}
             <div className="bg-surface-sidebar flex w-12 shrink-0 flex-col items-center gap-2 border-r py-3">
-              <div className="bg-primary h-6 w-6 rounded" />
+              <div className="bg-primary-fill h-6 w-6 rounded" />
               <div className="bg-primary/20 h-8 w-8 rounded" />
               <div className="bg-muted/30 h-8 w-8 rounded" />
               <div className="bg-muted/30 h-8 w-8 rounded" />
@@ -178,7 +178,7 @@ export const Route = createFileRoute("/_authenticated")({
           <div className="flex h-[300px] flex-col overflow-hidden rounded-lg border">
             {/* Header */}
             <div className="flex h-10 shrink-0 items-center gap-2 border-b px-3">
-              <div className="bg-primary h-6 w-6 shrink-0 rounded" />
+              <div className="bg-primary-fill h-6 w-6 shrink-0 rounded" />
               <div className="bg-muted h-5 w-32 rounded" />
               <div className="flex-1" />
               <div className="bg-muted h-6 w-6 rounded-full" />

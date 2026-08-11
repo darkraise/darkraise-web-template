@@ -407,8 +407,8 @@
 
 /* File upload — dropzone joins the notched panel family, and its
    trigger adopts the outlined default-button treatment. The trigger
-   is not a .dr-btn (it carries its own class with a solid bg-primary
-   fill baked in), so none of the button rules above reach it. */
+   is not a .dr-btn (it carries its own class with a solid bg-primary-fill
+   baked in), so none of the button rules above reach it. */
 [data-preset="scifi"][data-scifi-frame="notched"] .dr-file-upload-dropzone {
   clip-path: polygon(
     10px 0,
@@ -575,9 +575,11 @@
    hue so the danger signal reads while staying outlined. */
 
 /* Default variant — only override the text color. Base CSS sets
-   `text-primary-foreground` (white) for use with solid bg-primary;
-   under sci-fi the bg becomes faint primary/0.05 so white text
-   ends up unreadable. Switch to primary-color text so it reads
+   `text-primary-foreground` for use with the solid bg-primary-fill;
+   that foreground is picked for contrast against the fill, so it is
+   whichever of ink or white wins there — and under sci-fi the bg
+   becomes faint primary/0.05 instead, where neither choice is
+   guaranteed to read. Switch to primary-color text so it reads
    against the new transparent-ish background and matches the
    primary border for visual cohesion. */
 [data-preset="scifi"] .dr-btn[data-variant="default"] {

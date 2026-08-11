@@ -71,29 +71,29 @@ function AnimationPage() {
       <ShowcaseExample
         title="Bounce — vertical hop for attention dots"
         code={`<div className="flex items-center gap-2">
-  <div className="bg-primary h-3 w-3 animate-bounce rounded-full [animation-delay:-0.3s]" />
-  <div className="bg-primary h-3 w-3 animate-bounce rounded-full [animation-delay:-0.15s]" />
-  <div className="bg-primary h-3 w-3 animate-bounce rounded-full" />
+  <div className="bg-primary-fill h-3 w-3 animate-bounce rounded-full [animation-delay:-0.3s]" />
+  <div className="bg-primary-fill h-3 w-3 animate-bounce rounded-full [animation-delay:-0.15s]" />
+  <div className="bg-primary-fill h-3 w-3 animate-bounce rounded-full" />
 </div>`}
       >
         <div className="flex items-center gap-2">
-          <div className="bg-primary h-3 w-3 animate-bounce rounded-full [animation-delay:-0.3s]" />
-          <div className="bg-primary h-3 w-3 animate-bounce rounded-full [animation-delay:-0.15s]" />
-          <div className="bg-primary h-3 w-3 animate-bounce rounded-full" />
+          <div className="bg-primary-fill h-3 w-3 animate-bounce rounded-full [animation-delay:-0.3s]" />
+          <div className="bg-primary-fill h-3 w-3 animate-bounce rounded-full [animation-delay:-0.15s]" />
+          <div className="bg-primary-fill h-3 w-3 animate-bounce rounded-full" />
         </div>
       </ShowcaseExample>
 
       <ShowcaseExample
         title="Ping — radar pulse for live indicators"
         code={`<span className="relative flex h-3 w-3">
-  <span className="bg-primary absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" />
-  <span className="bg-primary relative inline-flex h-3 w-3 rounded-full" />
+  <span className="bg-primary-fill absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" />
+  <span className="bg-primary-fill relative inline-flex h-3 w-3 rounded-full" />
 </span>`}
       >
         <div className="flex items-center gap-8">
           <span className="relative flex h-3 w-3">
-            <span className="bg-primary absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" />
-            <span className="bg-primary relative inline-flex h-3 w-3 rounded-full" />
+            <span className="bg-primary-fill absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" />
+            <span className="bg-primary-fill relative inline-flex h-3 w-3 rounded-full" />
           </span>
           <Button variant="outline" size="sm" className="relative">
             <Bell className="mr-2 h-4 w-4" />

@@ -16,7 +16,7 @@
   }
 
   .dr-scroll-thumb {
-    @apply bg-primary/60 hover:bg-primary/90 relative flex-1 rounded-full;
+    @apply bg-primary-fill/60 hover:bg-primary-fill/90 relative flex-1 rounded-full;
   }
 
   /* Hide native scrollbar tracks inside the in-house ScrollArea viewport. */

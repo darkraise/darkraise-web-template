@@ -28,7 +28,7 @@
   }
 
   .dr-image-cropper-handle {
-    @apply bg-primary border-background absolute box-border rounded-full border-2;
+    @apply bg-primary-fill border-background absolute box-border rounded-full border-2;
     width: var(--dr-image-cropper-handle-size);
     height: var(--dr-image-cropper-handle-size);
   }

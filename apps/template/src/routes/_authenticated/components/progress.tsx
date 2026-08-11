@@ -142,7 +142,7 @@ function startAnimation() {
       <ShowcaseExample
         title="Indeterminate / loading"
         code={`<div className="bg-secondary relative h-4 w-full overflow-hidden rounded-full">
-  <div className="bg-primary absolute h-full w-1/3 animate-[progress-slide_1.5s_ease-in-out_infinite] rounded-full" />
+  <div className="bg-primary-fill absolute h-full w-1/3 animate-[progress-slide_1.5s_ease-in-out_infinite] rounded-full" />
 </div>
 
 /* Add to your CSS/tailwind config:
@@ -154,7 +154,7 @@ function startAnimation() {
         <div className="w-full max-w-sm">
           <div className="bg-secondary relative h-4 w-full overflow-hidden rounded-full">
             <div
-              className="bg-primary absolute h-full w-1/3 rounded-full"
+              className="bg-primary-fill absolute h-full w-1/3 rounded-full"
               style={{
                 animation: "progress-slide 1.5s ease-in-out infinite",
               }}
