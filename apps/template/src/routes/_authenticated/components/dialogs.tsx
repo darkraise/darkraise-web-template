@@ -67,7 +67,7 @@ function MultiStepDialogExample() {
     const done = step > n
     const cls =
       active || done
-        ? "bg-primary text-primary-foreground"
+        ? "bg-primary-fill text-primary-foreground"
         : "bg-muted text-muted-foreground"
     return (
       <div

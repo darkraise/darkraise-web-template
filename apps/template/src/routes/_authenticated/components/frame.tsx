@@ -282,7 +282,7 @@ function TailwindInFrameExample() {
           </p>
           <button
             type="button"
-            className="bg-primary text-primary-foreground hover:bg-primary/90 mt-4 rounded-md px-4 py-2 text-sm font-medium"
+            className="bg-primary-fill text-primary-foreground hover:bg-primary-fill/90 mt-4 rounded-md px-4 py-2 text-sm font-medium"
           >
             Action
           </button>
@@ -470,7 +470,7 @@ function TailwindInFrameExample() {
       <div className="bg-background text-foreground flex h-full items-center justify-center p-6">
         <div className="border-border bg-card rounded-lg border p-6 shadow-sm">
           <h3 className="font-semibold">Inside the Frame</h3>
-          <button className="bg-primary text-primary-foreground rounded-md px-4 py-2">Action</button>
+          <button className="bg-primary-fill text-primary-foreground rounded-md px-4 py-2">Action</button>
         </div>
       </div>
     </Frame>

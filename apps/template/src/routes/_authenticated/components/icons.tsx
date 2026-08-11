@@ -376,7 +376,7 @@ function IconCatalog() {
                               {name}
                             </span>
                             <span
-                              className={`bg-primary text-primary-foreground pointer-events-none absolute top-1 right-1 flex size-5 items-center justify-center rounded-full transition-opacity ${
+                              className={`bg-primary-fill text-primary-foreground pointer-events-none absolute top-1 right-1 flex size-5 items-center justify-center rounded-full transition-opacity ${
                                 isCopied ? "opacity-100" : "opacity-0"
                               }`}
                               aria-hidden="true"

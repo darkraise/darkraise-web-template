@@ -83,7 +83,7 @@ function InboxPage() {
                 </p>
               </div>
               {!message.isRead && (
-                <div className="bg-primary mt-2 h-2 w-2 shrink-0 rounded-full" />
+                <div className="bg-primary-fill mt-2 h-2 w-2 shrink-0 rounded-full" />
               )}
             </div>
           </button>
