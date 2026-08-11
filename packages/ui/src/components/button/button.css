@@ -6,7 +6,7 @@
   /* default + destructive: hue-based filled variants (was .btn-glass-hue) */
   .dr-btn[data-variant="default"] {
     @apply text-primary-foreground;
-    --hue: hsl(var(--primary));
+    --hue: hsl(var(--primary-fill));
     background-color: var(--hue);
     box-shadow: var(--shadow-button);
   }

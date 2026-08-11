@@ -16,7 +16,7 @@
 
   /* Theme-aware variants */
   .dr-badge[data-variant="default"] {
-    @apply bg-primary text-primary-foreground hover:bg-primary/80 border-transparent;
+    @apply bg-primary-fill text-primary-foreground hover:bg-primary-fill/80 border-transparent;
   }
   .dr-badge[data-variant="secondary"] {
     @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 border-transparent;
@@ -139,7 +139,7 @@
     @apply ring-background h-2.5 w-2.5 rounded-full ring-2;
   }
   .dr-badge-anchor-dot[data-variant="default"] {
-    @apply bg-primary;
+    @apply bg-primary-fill;
   }
   .dr-badge-anchor-dot[data-variant="secondary"] {
     @apply bg-secondary;
