@@ -2,7 +2,10 @@ import { describe, it, expect } from "vitest"
 import { generateTokens } from "./generateTokens"
 import { accentColors } from "@theme/palettes/accentColors"
 import { surfaceColors } from "@theme/palettes/surfaceColors"
-import type { ColorScale } from "@theme/types"
+import { contrastRatio, hslStringToOklch } from "@theme/engine/oklch"
+import { presets, type PresetName } from "@theme/presets"
+import { ACCENT_COLORS } from "@theme/types"
+import type { ColorScale, AccentColor, ResolvedMode } from "@theme/types"
 
 describe("generateTokens", () => {
   it("produces all expected token keys for the default combination", () => {
@@ -17,6 +20,7 @@ describe("generateTokens", () => {
     const expectedKeys = [
       "--primary",
       "--primary-foreground",
+      "--primary-fill",
       "--ring",
       "--focus-ring",
       "--chart-1",
@@ -150,24 +154,21 @@ describe("generateTokens", () => {
     expect(darkTokens["--focus-ring"]).not.toEqual(darkTokens["--ring"])
   })
 
-  it("uses white primary-foreground for all accent colors", () => {
-    const amber = generateTokens({
-      accentColor: "amber",
-      surfaceColor: "slate",
-      preset: "default",
-      backgroundStyle: "solid",
-      mode: "light",
-    })
-    expect(amber["--primary-foreground"]).toBe("0 0% 100%")
+  it("picks the primary foreground by contrast, not by assumption", () => {
+    const build = (accentColor: AccentColor, mode: ResolvedMode) =>
+      generateTokens({
+        accentColor,
+        surfaceColor: "slate",
+        preset: "default",
+        backgroundStyle: "solid",
+        mode,
+      })
 
-    const blue = generateTokens({
-      accentColor: "blue",
-      surfaceColor: "slate",
-      preset: "default",
-      backgroundStyle: "solid",
-      mode: "light",
-    })
-    expect(blue["--primary-foreground"]).toBe("0 0% 100%")
+    // White is unreadable on the light accents: it measures 2.14:1 on amber
+    // against a 3:1 floor, which is why this is computed rather than fixed.
+    expect(build("amber", "light")["--primary-foreground"]).toBe("222 47% 11%")
+    expect(build("blue", "light")["--primary-foreground"]).toBe("0 0% 100%")
+    expect(build("amber", "dark")["--primary-foreground"]).toBe("0 0% 100%")
   })
 
   it("dark mode flips background to step 950 and foreground to step 50", () => {
@@ -703,6 +704,152 @@ describe("generateTokens", () => {
       const dark = generateTokens({ ...base, mode: "dark" })
       expect(light["--sidebar-foreground"]).toBe(slate[600])
       expect(dark["--sidebar-foreground"]).toBe(slate[300])
+    })
+  })
+
+  describe("dark accent fill calming", () => {
+    const FILL_LIGHTNESS = 0.54
+    const FILL_CHROMA_MAX = 0.19
+    const PRIMARY_CHROMA_MAX = 0.2
+    // Integer-HSL storage rounds the emitted value, which can push measured
+    // chroma marginally past the cap — 0.0022 was the worst overshoot observed
+    // across the candidate lightnesses. This tolerance is wider than that and
+    // far tighter than the caps themselves, so it still catches a real breach.
+    const CHROMA_TOLERANCE = 0.005
+
+    const build = (accentColor: AccentColor, mode: ResolvedMode) =>
+      generateTokens({
+        accentColor,
+        surfaceColor: "slate",
+        preset: "default",
+        backgroundStyle: "solid",
+        mode,
+      })
+
+    it.each(ACCENT_COLORS)(
+      "%s: dark fill lands on one perceptual lightness within the chroma cap",
+      (accentColor) => {
+        const fill = build(accentColor, "dark")["--primary-fill"] as string
+        const { L, C } = hslStringToOklch(fill)
+
+        // 0.02, not toBeCloseTo(x, 2): tokens are stored as integer HSL, and one
+        // percent of HSL lightness costs up to 0.008 in OKLCH L near the gamut
+        // cusps. Tight enough to hold every accent to one visual weight.
+        expect(Math.abs(L - FILL_LIGHTNESS)).toBeLessThanOrEqual(0.02)
+        expect(C).toBeLessThanOrEqual(FILL_CHROMA_MAX + CHROMA_TOLERANCE)
+      },
+    )
+
+    it.each(ACCENT_COLORS)(
+      "%s: dark label clears AA on the fill",
+      (accentColor) => {
+        const tokens = build(accentColor, "dark")
+        const ratio = contrastRatio(
+          tokens["--primary-foreground"] as string,
+          tokens["--primary-fill"] as string,
+        )
+
+        expect(ratio).toBeGreaterThanOrEqual(4.5)
+      },
+    )
+
+    it.each(ACCENT_COLORS)(
+      "%s: light label clears the large-text floor on the fill",
+      (accentColor) => {
+        const tokens = build(accentColor, "light")
+        const ratio = contrastRatio(
+          tokens["--primary-foreground"] as string,
+          tokens["--primary-fill"] as string,
+        )
+
+        expect(ratio).toBeGreaterThanOrEqual(3)
+      },
+    )
+
+    it.each(ACCENT_COLORS)(
+      "%s: dark fill clears the UI-boundary floor against the card",
+      (accentColor) => {
+        const tokens = build(accentColor, "dark")
+        const ratio = contrastRatio(
+          tokens["--primary-fill"] as string,
+          tokens["--card"] as string,
+        )
+
+        expect(ratio).toBeGreaterThanOrEqual(3)
+      },
+    )
+
+    it.each(ACCENT_COLORS)(
+      "%s: dark accent chroma is capped without moving its lightness",
+      (accentColor) => {
+        const base = hslStringToOklch(accentColors[accentColor][500])
+        const capped = hslStringToOklch(
+          build(accentColor, "dark")["--primary"] as string,
+        )
+
+        expect(capped.C).toBeLessThanOrEqual(
+          PRIMARY_CHROMA_MAX + CHROMA_TOLERANCE,
+        )
+        expect(Math.abs(capped.L - base.L)).toBeLessThanOrEqual(0.02)
+      },
+    )
+
+    it.each(ACCENT_COLORS)(
+      "%s: light mode fills are untouched",
+      (accentColor) => {
+        const tokens = build(accentColor, "light")
+
+        expect(tokens["--primary"]).toBe(accentColors[accentColor][500])
+        expect(tokens["--primary-fill"]).toBe(accentColors[accentColor][500])
+      },
+    )
+
+    it.each(["amber", "yellow", "lime"] as const)(
+      "%s: takes the ink label in light mode instead of unreadable white",
+      (accentColor) => {
+        expect(build(accentColor, "light")["--primary-foreground"]).toBe(
+          "222 47% 11%",
+        )
+      },
+    )
+
+    it("keeps white labels on every accent in dark mode", () => {
+      for (const accentColor of ACCENT_COLORS) {
+        expect(build(accentColor, "dark")["--primary-foreground"]).toBe(
+          "0 0% 100%",
+        )
+      }
+    })
+
+    it("normalizes the glass preset's brighter shade to the same fill", () => {
+      const tokens = generateTokens({
+        accentColor: "blue",
+        surfaceColor: "slate",
+        preset: "glass",
+        backgroundStyle: "solid",
+        mode: "dark",
+      })
+
+      expect(
+        Math.abs(
+          hslStringToOklch(tokens["--primary-fill"] as string).L -
+            FILL_LIGHTNESS,
+        ),
+      ).toBeLessThanOrEqual(0.02)
+    })
+
+    it("emits a fill for every preset so none can go stale", () => {
+      for (const preset of Object.keys(presets) as PresetName[]) {
+        const tokens = generateTokens({
+          accentColor: "blue",
+          surfaceColor: "slate",
+          preset,
+          backgroundStyle: "solid",
+          mode: "dark",
+        })
+
+        expect(tokens["--primary-fill"], preset).toBeTruthy()
+      }
     })
   })
 })

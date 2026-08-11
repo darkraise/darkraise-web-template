@@ -9,6 +9,11 @@ import { accentColors } from "@theme/palettes/accentColors"
 import { surfaceColors } from "@theme/palettes/surfaceColors"
 import { presets, type PresetName } from "@theme/presets"
 import { ACCENT_COLORS } from "@theme/types"
+import {
+  contrastRatio,
+  hslStringToOklch,
+  oklchToHslString,
+} from "@theme/engine/oklch"
 
 export interface GenerateTokensInput {
   accentColor: AccentColor
@@ -112,6 +117,40 @@ function isSidebarDark(mode: ResolvedMode): boolean {
   return mode === "dark"
 }
 
+/**
+ * Dark fills land on one absolute perceptual lightness rather than a cap. The
+ * Tailwind palette spreads shade 500 across L 0.587–0.786, so capping alone
+ * would leave the darker hues at their original weight and the accents would
+ * still disagree with each other.
+ */
+const FILL_LIGHTNESS = 0.54
+const FILL_CHROMA_MAX = 0.19
+/** Trims halation on borders and rings without moving accent-text contrast. */
+const PRIMARY_CHROMA_MAX = 0.2
+/** WCAG floor for large text, which is what a filled control's label is. */
+const FOREGROUND_MIN_RATIO = 3
+const WHITE = "0 0% 100%"
+const INK = "222 47% 11%"
+
+function calmFill(hsl: string): string {
+  const { C, h } = hslStringToOklch(hsl)
+  return oklchToHslString({
+    L: FILL_LIGHTNESS,
+    C: Math.min(C, FILL_CHROMA_MAX),
+    h,
+  })
+}
+
+function capChroma(hsl: string, max: number): string {
+  const { L, C, h } = hslStringToOklch(hsl)
+  if (C <= max) return hsl
+  return oklchToHslString({ L, C: max, h })
+}
+
+function pickForeground(fill: string): string {
+  return contrastRatio(WHITE, fill) >= FOREGROUND_MIN_RATIO ? WHITE : INK
+}
+
 export function generateTokens(
   input: GenerateTokensInput,
 ): Record<string, string> {
@@ -139,8 +178,12 @@ export function generateTokens(
   // Glass branches stay on their original shades because translucent
   // surfaces need the extra weight to read at all.
   const primaryShade = isLightGlass ? 600 : isDarkGlass ? 400 : 500
-  const primaryForeground = "0 0% 100%"
-  const ringValue = accent[primaryShade]
+  const primaryBase = accent[primaryShade]
+  const primaryValue =
+    mode === "dark" ? capChroma(primaryBase, PRIMARY_CHROMA_MAX) : primaryBase
+  const primaryFill = mode === "dark" ? calmFill(primaryBase) : primaryBase
+  const primaryForeground = pickForeground(primaryFill)
+  const ringValue = primaryValue
   const focusRingShade = mode === "light" ? 300 : 200
   const focusRingValue = accent[focusRingShade]
 
@@ -182,7 +225,8 @@ export function generateTokens(
     surfaceColor === "slate" ? neutral[500] : accentColors[surfaceColor][500]
 
   const tokens: Record<string, string> = {
-    "--primary": accent[primaryShade],
+    "--primary": primaryValue,
+    "--primary-fill": primaryFill,
     "--primary-foreground": primaryForeground,
     "--ring": ringValue,
     "--focus-ring": focusRingValue,

@@ -257,9 +257,3 @@ export const accentColors: Record<AccentColor, ColorScale> = {
   pink,
   rose,
 }
-
-export const LIGHT_ACCENT_COLORS: ReadonlySet<AccentColor> = new Set([
-  "amber",
-  "yellow",
-  "lime",
-])
