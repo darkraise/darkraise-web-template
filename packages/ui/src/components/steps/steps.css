@@ -36,7 +36,7 @@
   }
 
   .dr-steps-indicator[data-status="complete"] {
-    @apply bg-primary text-primary-foreground;
+    @apply bg-primary-fill text-primary-foreground;
     box-shadow: var(--affordance-glow);
   }
 
@@ -78,7 +78,7 @@
   }
 
   .dr-steps-separator[data-status="complete"] {
-    @apply bg-primary;
+    @apply bg-primary-fill;
   }
 
   .dr-steps-content {

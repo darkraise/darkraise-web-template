@@ -24,7 +24,7 @@
   }
 
   .dr-tags-input-item-preview[data-highlighted="true"] {
-    @apply bg-primary text-primary-foreground;
+    @apply bg-primary-fill text-primary-foreground;
   }
 
   .dr-tags-input-item-preview[data-disabled="true"] {

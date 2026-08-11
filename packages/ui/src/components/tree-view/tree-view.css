@@ -53,13 +53,13 @@
      a primary-color halo; transparent under Default/Glass. */
   .dr-tree-view-branch-control[data-selected="true"],
   .dr-tree-view-item[data-selected="true"] {
-    @apply bg-primary text-primary-foreground;
+    @apply bg-primary-fill text-primary-foreground;
     box-shadow: var(--affordance-glow);
   }
 
   .dr-tree-view-branch-control[data-selected="true"]:hover,
   .dr-tree-view-item[data-selected="true"]:hover {
-    @apply bg-primary text-primary-foreground;
+    @apply bg-primary-fill text-primary-foreground;
     box-shadow: var(--affordance-glow);
   }
 

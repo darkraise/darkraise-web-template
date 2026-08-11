@@ -90,7 +90,7 @@
      fillable. */
   .dr-segment-group[data-color="accent"]
     .dr-segment-group-indicator[data-variant="default"] {
-    background-color: hsl(var(--primary));
+    background-color: hsl(var(--primary-fill));
     background-image: none;
     box-shadow: var(--shadow-button), var(--affordance-glow);
   }

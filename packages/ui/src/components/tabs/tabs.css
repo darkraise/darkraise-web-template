@@ -72,7 +72,7 @@
   }
 
   .dr-tabs-indicator[data-variant="default"] {
-    @apply bg-primary rounded-sm;
+    @apply bg-primary-fill rounded-sm;
     box-shadow: var(--shadow-button), var(--affordance-glow);
   }
 
@@ -87,7 +87,7 @@
   }
 
   .dr-tabs-indicator[data-variant="underline"] {
-    @apply bg-primary;
+    @apply bg-primary-fill;
     box-shadow: var(--affordance-glow-bottom);
   }
 

@@ -183,7 +183,7 @@
   .dr-virtualized-timeline-scrubber-caret::before {
     @apply block h-px flex-1;
     content: "";
-    background-color: hsl(var(--primary));
+    background-color: hsl(var(--primary-fill));
   }
 
   /* The viewport's footprint on the rail, from the caret down to the
