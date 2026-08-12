@@ -4,7 +4,7 @@ import { accentColors } from "@theme/palettes/accentColors"
 import { surfaceColors } from "@theme/palettes/surfaceColors"
 import { contrastRatio, hslStringToOklch } from "@theme/engine/oklch"
 import { themeConfig } from "@theme/themeConfig"
-import type { PresetName } from "@theme/presets"
+import { presets, type PresetName } from "@theme/presets"
 import { ACCENT_COLORS, SURFACE_COLORS } from "@theme/types"
 import type {
   ColorScale,
@@ -909,6 +909,21 @@ describe("generateTokens", () => {
       for (const step of VIBRANCIES) {
         const tokens = build("blue", "light", step, "glass")
         expect(tokens["--primary"]).toBe(accentColors.blue[600])
+      }
+    })
+
+    it("emits a fill for every preset so none can go stale", () => {
+      for (const preset of Object.keys(presets) as PresetName[]) {
+        const tokens = generateTokens({
+          accentColor: "blue",
+          surfaceColor: "slate",
+          preset,
+          backgroundStyle: "solid",
+          mode: "dark",
+          accentVibrancy: "balanced",
+        })
+
+        expect(tokens["--primary-fill"], preset).toBeTruthy()
       }
     })
   })
