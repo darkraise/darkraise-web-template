@@ -31,8 +31,9 @@ npm create darkraise-web-template my-app \
   --button-elevation flat \
   --radius rounded \
   --font-size medium \
+  --accent-vibrancy balanced \
   --theme-switcher \
-  --theme-axes mode,accentColor,surfaceColor,preset,backgroundStyle,density,elevation,radius,fontSize \
+  --theme-axes mode,accentColor,surfaceColor,preset,backgroundStyle,density,elevation,radius,fontSize,accentVibrancy \
   --host localhost \
   --port 5173
 ```
@@ -52,6 +53,7 @@ npm create darkraise-web-template my-app \
 | `--button-elevation`                       | `flat`, `low`, `medium`, `high`                             | `flat`      |
 | `--radius`                                 | `sharp`, `subtle`, `rounded`, `pill`                        | `rounded`   |
 | `--font-size`                              | `small`, `medium`, `large`, `extra-large`                   | `medium`    |
+| `--accent-vibrancy`                        | `calm`, `balanced`, `vivid`, `intense`                      | `balanced`  |
 | `--theme-switcher` / `--no-theme-switcher` | boolean                                                     | enabled     |
 | `--theme-axes`                             | comma-separated axis names (see Theming for the valid keys) | all axes    |
 | `--host`                                   | hostname or IP                                              | `localhost` |
@@ -86,7 +88,7 @@ Several hooks are adapted from [react-hookz/web](https://github.com/react-hookz/
 
 ### Theming
 
-A 12-axis theming system. Scaffolded projects configure it through `src/theme.config.ts`, which imports the `ThemeConfig` type from `darkraise-ui/theme`; in this monorepo the type and defaults live in `packages/ui/src/theme/themeConfig.ts`. The axes are:
+A 13-axis theming system. Scaffolded projects configure it through `src/theme.config.ts`, which imports the `ThemeConfig` type from `darkraise-ui/theme`; in this monorepo the type and defaults live in `packages/ui/src/theme/themeConfig.ts`. The axes are:
 
 - **Mode** -- light, dark, or system
 - **Accent color** -- 17 color options
@@ -100,6 +102,7 @@ A 12-axis theming system. Scaffolded projects configure it through `src/theme.co
 - **Button elevation** -- flat, low, medium, or high (button-specific shadows)
 - **Radius** -- sharp, subtle, rounded, or pill
 - **Font size** -- small, medium, large, or extra-large (scales type, icons, and minimum control heights)
+- **Accent vibrancy** -- calm, balanced, vivid, or intense (dark mode only; controls how loud the brand accent renders)
 
 The switcher config also exposes a `presetAxes` master toggle that controls whether preset-specific controls (for example neon glow or sci-fi intensity and frame) appear in the switcher panel.
 
