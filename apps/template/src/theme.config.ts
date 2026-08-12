@@ -14,6 +14,7 @@ export const themeConfig: ThemeConfig = {
     buttonElevation: "flat",
     radius: "rounded",
     fontSize: "medium",
+    accentVibrancy: "balanced",
   },
   switcher: {
     enabled: true,
@@ -30,6 +31,7 @@ export const themeConfig: ThemeConfig = {
       buttonElevation: true,
       radius: true,
       fontSize: true,
+      accentVibrancy: true,
       presetAxes: true,
     },
   },

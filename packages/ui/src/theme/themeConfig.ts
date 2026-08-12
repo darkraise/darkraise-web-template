@@ -8,6 +8,7 @@ import type {
   Elevation,
   Radius,
   FontSize,
+  AccentVibrancy,
   Mode,
 } from "./types"
 import type { PresetName } from "./presets"
@@ -26,6 +27,7 @@ export interface ThemeConfig {
     buttonElevation: Elevation
     radius: Radius
     fontSize: FontSize
+    accentVibrancy: AccentVibrancy
   }
   switcher: {
     enabled: boolean
@@ -42,6 +44,7 @@ export interface ThemeConfig {
       buttonElevation: boolean
       radius: boolean
       fontSize: boolean
+      accentVibrancy: boolean
       /** Master toggle for all preset-specific axis controls. */
       presetAxes: boolean
     }
@@ -62,6 +65,7 @@ export const themeConfig: ThemeConfig = {
     buttonElevation: "flat",
     radius: "rounded",
     fontSize: "medium",
+    accentVibrancy: "balanced",
   },
   switcher: {
     enabled: true,
@@ -78,6 +82,7 @@ export const themeConfig: ThemeConfig = {
       buttonElevation: true,
       radius: true,
       fontSize: true,
+      accentVibrancy: true,
       presetAxes: true,
     },
   },

@@ -3,6 +3,7 @@ import { generateTokens } from "./generateTokens"
 import { accentColors } from "@theme/palettes/accentColors"
 import { surfaceColors } from "@theme/palettes/surfaceColors"
 import { contrastRatio, hslStringToOklch } from "@theme/engine/oklch"
+import { themeConfig } from "@theme/themeConfig"
 import type { PresetName } from "@theme/presets"
 import { ACCENT_COLORS, SURFACE_COLORS } from "@theme/types"
 import type {
@@ -948,5 +949,18 @@ describe("generateTokens", () => {
       expect(tokens["--primary-fill"]).toBe(CALM_SNAPSHOT[accentColor].fill)
       expect(tokens["--primary"]).toBe(CALM_SNAPSHOT[accentColor].primary)
     })
+  })
+})
+
+describe("accent vibrancy default", () => {
+  // Pinned deliberately. The default ships filled-control labels at 4.10,
+  // below AA, which the spec records as an accepted risk — a silent change
+  // to this value would change that risk without review.
+  it("is balanced", () => {
+    expect(themeConfig.defaults.accentVibrancy).toBe("balanced")
+  })
+
+  it("is exposed in the switcher", () => {
+    expect(themeConfig.switcher.axes.accentVibrancy).toBe(true)
   })
 })
