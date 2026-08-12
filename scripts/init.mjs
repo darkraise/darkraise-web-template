@@ -39,12 +39,17 @@ const defaultConfig = {
     defaults: {
       accentColor: "blue",
       surfaceColor: "slate",
-      surfaceStyle: "default",
+      preset: "default",
       backgroundStyle: "solid",
+      backgroundIntensity: "balanced",
+      gradientPattern: "blobs",
       mode: "system",
       density: "cozy",
       elevation: "medium",
       buttonElevation: "flat",
+      radius: "rounded",
+      fontSize: "medium",
+      accentVibrancy: "balanced",
     },
     switcher: {
       enabled: true,
@@ -52,11 +57,17 @@ const defaultConfig = {
         mode: true,
         accentColor: true,
         surfaceColor: true,
-        surfaceStyle: true,
+        preset: true,
         backgroundStyle: true,
+        backgroundIntensity: true,
+        gradientPattern: true,
         density: true,
         elevation: true,
         buttonElevation: true,
+        radius: true,
+        fontSize: true,
+        accentVibrancy: true,
+        presetAxes: true,
       },
     },
   },
@@ -76,52 +87,25 @@ if (args[1]) {
 console.log(`\nInitializing project: ${projectName}\n`)
 
 // 1. Generate theme.config.ts
-const themeConfigContent = `import type {
-  AccentColor,
-  SurfaceColor,
-  SurfaceStyle,
-  BackgroundStyle,
-  Density,
-  Elevation,
-  Mode,
-} from "darkraise-ui/theme"
-
-export interface ThemeConfig {
-  defaults: {
-    accentColor: AccentColor
-    surfaceColor: SurfaceColor
-    surfaceStyle: SurfaceStyle
-    backgroundStyle: BackgroundStyle
-    mode: Mode
-    density: Density
-    elevation: Elevation
-    buttonElevation: Elevation
-  }
-  switcher: {
-    enabled: boolean
-    axes: {
-      mode: boolean
-      accentColor: boolean
-      surfaceColor: boolean
-      surfaceStyle: boolean
-      backgroundStyle: boolean
-      density: boolean
-      elevation: boolean
-      buttonElevation: boolean
-    }
-  }
-}
+// Imports the type rather than restating its shape, so this script can't
+// drift out of sync with packages/ui/src/theme/themeConfig.ts again.
+const themeConfigContent = `import type { ThemeConfig } from "darkraise-ui/theme"
 
 export const themeConfig: ThemeConfig = {
   defaults: {
     accentColor: "${config.theme.defaults.accentColor}",
     surfaceColor: "${config.theme.defaults.surfaceColor}",
-    surfaceStyle: "${config.theme.defaults.surfaceStyle}",
+    preset: "${config.theme.defaults.preset}",
     backgroundStyle: "${config.theme.defaults.backgroundStyle}",
+    backgroundIntensity: "${config.theme.defaults.backgroundIntensity}",
+    gradientPattern: "${config.theme.defaults.gradientPattern}",
     mode: "${config.theme.defaults.mode}",
     density: "${config.theme.defaults.density}",
     elevation: "${config.theme.defaults.elevation}",
     buttonElevation: "${config.theme.defaults.buttonElevation}",
+    radius: "${config.theme.defaults.radius}",
+    fontSize: "${config.theme.defaults.fontSize}",
+    accentVibrancy: "${config.theme.defaults.accentVibrancy}",
   },
   switcher: {
     enabled: ${config.theme.switcher.enabled},
@@ -129,11 +113,17 @@ export const themeConfig: ThemeConfig = {
       mode: ${config.theme.switcher.axes.mode},
       accentColor: ${config.theme.switcher.axes.accentColor},
       surfaceColor: ${config.theme.switcher.axes.surfaceColor},
-      surfaceStyle: ${config.theme.switcher.axes.surfaceStyle},
+      preset: ${config.theme.switcher.axes.preset},
       backgroundStyle: ${config.theme.switcher.axes.backgroundStyle},
+      backgroundIntensity: ${config.theme.switcher.axes.backgroundIntensity},
+      gradientPattern: ${config.theme.switcher.axes.gradientPattern},
       density: ${config.theme.switcher.axes.density},
       elevation: ${config.theme.switcher.axes.elevation},
       buttonElevation: ${config.theme.switcher.axes.buttonElevation},
+      radius: ${config.theme.switcher.axes.radius},
+      fontSize: ${config.theme.switcher.axes.fontSize},
+      accentVibrancy: ${config.theme.switcher.axes.accentVibrancy},
+      presetAxes: ${config.theme.switcher.axes.presetAxes},
     },
   },
 }
