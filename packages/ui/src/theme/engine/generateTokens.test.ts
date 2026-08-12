@@ -912,10 +912,10 @@ describe("generateTokens", () => {
     })
   })
 
-  describe("calm reproduces the pre-axis tokens", () => {
-    // Captured from the engine before the axis existed. This is the regression
-    // guard that lets a project restore its previous appearance exactly by
-    // selecting "calm"; it must never be regenerated to match new output.
+  describe("calm pins the quietest step", () => {
+    // Pinned expected values for the ladder's bottom rung. This is the
+    // regression guard that catches drift in "calm" — it must never be
+    // regenerated to match new output.
     const CALM_SNAPSHOT = {
       red: { fill: "355 79% 45%", primary: "1 81% 60%" },
       orange: { fill: "26 98% 35%", primary: "25 95% 53%" },
