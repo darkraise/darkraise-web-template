@@ -13,7 +13,7 @@ switcher: { axes: { …, fontSize: true } },
 
 Once added, the new `fontSize: "medium"` default renders exactly as before.
 
-Breaking: `ThemeConfig` gains two required properties, `defaults.accentVibrancy` and `switcher.axes.accentVibrancy`, matching the other twelve axes. `GenerateTokensInput` (re-exported via `darkraise-ui/theme`) gains a required `accentVibrancy` field as well, so a consumer calling `generateTokens` directly must also supply it. Consumers passing their own `config` object or calling `generateTokens` must add the field before upgrading:
+Breaking: `ThemeConfig` gains two required properties, `defaults.accentVibrancy` and `switcher.axes.accentVibrancy`, matching the other twelve axes. `GenerateTokensInput` gains a required `accentVibrancy` field as well, so a consumer calling `generateTokens` directly must also supply it. Consumers passing their own `config` object or calling `generateTokens` must add the field before upgrading:
 
 ```ts
 defaults: { …, accentVibrancy: "balanced" },
