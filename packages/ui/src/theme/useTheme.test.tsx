@@ -454,4 +454,25 @@ describe("useTheme persistence", () => {
       expect.objectContaining({ accentColor: "pink" }),
     )
   })
+
+  it("persists accent vibrancy and feeds it to the token engine", async () => {
+    const { result } = renderHook(() => useTheme(), { wrapper })
+
+    expect(result.current.accentVibrancy).toBe("balanced")
+
+    act(() => result.current.setAccentVibrancy("intense"))
+
+    expect(result.current.accentVibrancy).toBe("intense")
+    expect(localStorage.getItem("theme-accent-vibrancy")).toBe("intense")
+    // The axis is token-only: it must not leak a data attribute.
+    expect(
+      document.documentElement.getAttribute("data-accent-vibrancy"),
+    ).toBeNull()
+  })
+
+  it("falls back to the configured default for an unknown stored value", () => {
+    localStorage.setItem("theme-accent-vibrancy", "nonsense")
+    const { result } = renderHook(() => useTheme(), { wrapper })
+    expect(result.current.accentVibrancy).toBe("balanced")
+  })
 })

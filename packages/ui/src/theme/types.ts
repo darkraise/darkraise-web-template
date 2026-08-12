@@ -117,6 +117,7 @@ export interface ThemeContextValue {
   buttonElevation: Elevation
   radius: Radius
   fontSize: FontSize
+  accentVibrancy: AccentVibrancy
   resolvedMode: ResolvedMode
   config: import("./themeConfig").ThemeConfig
   syncStatus: ThemeSyncStatus
@@ -136,6 +137,7 @@ export interface ThemeContextValue {
   setButtonElevation: (elevation: Elevation) => void
   setRadius: (radius: Radius) => void
   setFontSize: (size: FontSize) => void
+  setAccentVibrancy: (vibrancy: AccentVibrancy) => void
   /**
    * Update one preset-specific axis on the active preset. No-ops with a
    * console.warn (dev-only) when the axis is not valid for the active preset.
