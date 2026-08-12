@@ -30,6 +30,7 @@ const DENSITIES = ["compact", "cozy", "comfortable", "spacious"]
 const ELEVATIONS = ["flat", "low", "medium", "high"]
 const RADII = ["sharp", "subtle", "rounded", "pill"]
 const FONT_SIZES = ["small", "medium", "large", "extra-large"]
+const ACCENT_VIBRANCIES = ["calm", "balanced", "vivid", "intense"]
 const MODES = ["light", "dark", "system"]
 const LAYOUTS = ["sidebar", "stacked", "top-nav", "split-panel"]
 // Mirrors `ThemeConfig.switcher.axes` in
@@ -40,7 +41,7 @@ const THEME_AXIS_KEYS = [
   "mode", "accentColor", "surfaceColor", "preset",
   "backgroundStyle", "backgroundIntensity", "gradientPattern",
   "density", "elevation", "buttonElevation", "radius", "fontSize",
-  "presetAxes",
+  "accentVibrancy", "presetAxes",
 ]
 
 const argv = minimist(process.argv.slice(2), {
@@ -50,6 +51,7 @@ const argv = minimist(process.argv.slice(2), {
     "background", "background-intensity", "gradient-pattern",
     "mode", "theme-axes",
     "density", "elevation", "button-elevation", "radius", "font-size",
+    "accent-vibrancy",
     "host", "port",
   ],
   alias: { y: "yes" },
@@ -86,6 +88,7 @@ validate(argv.elevation, ELEVATIONS, "elevation")
 validate(argv["button-elevation"], ELEVATIONS, "button-elevation")
 validate(argv.radius, RADII, "radius")
 validate(argv["font-size"], FONT_SIZES, "font-size")
+validate(argv["accent-vibrancy"], ACCENT_VIBRANCIES, "accent-vibrancy")
 
 if (argv["theme-axes"] !== undefined) {
   const axes = argv["theme-axes"].split(",")
@@ -252,6 +255,14 @@ async function main() {
     }),
   ))
 
+  const accentVibrancy = argv["accent-vibrancy"] || (skipPrompts ? "balanced" : cancelled(
+    await p.select({
+      message: "Accent vibrancy (dark mode only)",
+      options: ACCENT_VIBRANCIES.map((v) => ({ value: v, label: v })),
+      initialValue: "balanced",
+    }),
+  ))
+
   // --- Theme switcher ---
   let themeSwitcherEnabled
   if (themeSwitcherFlag !== undefined) {
@@ -288,6 +299,7 @@ async function main() {
             { value: "buttonElevation", label: "Button elevation" },
             { value: "radius", label: "Radius" },
             { value: "fontSize", label: "Font size" },
+            { value: "accentVibrancy", label: "Accent vibrancy" },
             { value: "presetAxes", label: "Preset-specific axes (e.g. neon glow, scifi intensity/frame)" },
           ],
           initialValues: THEME_AXIS_KEYS,
@@ -342,6 +354,7 @@ async function main() {
         buttonElevation: buttonElevation,
         radius: radius,
         fontSize: fontSize,
+        accentVibrancy: accentVibrancy,
       },
       switcher: {
         enabled: themeSwitcherEnabled,
@@ -536,6 +549,7 @@ export const themeConfig: ThemeConfig = {
     buttonElevation: "${config.theme.defaults.buttonElevation}",
     radius: "${config.theme.defaults.radius}",
     fontSize: "${config.theme.defaults.fontSize}",
+    accentVibrancy: "${config.theme.defaults.accentVibrancy}",
   },
   switcher: {
     enabled: ${config.theme.switcher.enabled},
@@ -552,6 +566,7 @@ export const themeConfig: ThemeConfig = {
       buttonElevation: ${config.theme.switcher.axes.buttonElevation},
       radius: ${config.theme.switcher.axes.radius},
       fontSize: ${config.theme.switcher.axes.fontSize},
+      accentVibrancy: ${config.theme.switcher.axes.accentVibrancy},
       presetAxes: ${config.theme.switcher.axes.presetAxes},
     },
   },

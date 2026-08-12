@@ -1,6 +1,6 @@
 // packages/ui/src/theme/theme-switcher/ThemeSwitcher.test.tsx
 import { describe, it, expect, beforeEach, vi } from "vitest"
-import { render, screen, fireEvent } from "@testing-library/react"
+import { render, screen, fireEvent, within } from "@testing-library/react"
 import { ThemeProvider } from "../theme-provider/ThemeProvider"
 import { ThemeSwitcher } from "./ThemeSwitcher"
 
@@ -144,10 +144,38 @@ describe("ThemeSwitcher preset section", () => {
     // gradient bg is selected). Spot-check the count and that each
     // axis's current-value label is rendered.
     expect(screen.getAllByRole("slider").length).toBeGreaterThanOrEqual(5)
-    // Each slider has its current value name to the right.
-    expect(screen.getByText("balanced")).toBeInTheDocument() // BG intensity
+    // Each slider has its current value name to the right. Scope the
+    // "balanced" check to the Background Intensity row since Accent
+    // Vibrancy also defaults to "balanced" and renders unconditionally.
+    const bgIntensityRow = screen
+      .getByText("Background Intensity")
+      .closest(".dr-theme-switcher-row") as HTMLElement
+    expect(within(bgIntensityRow).getByText("balanced")).toBeInTheDocument()
     expect(screen.getByText("cozy")).toBeInTheDocument() // density default
     expect(screen.getByText("rounded")).toBeInTheDocument() // radius default
+  })
+
+  it("renders the Accent Vibrancy slider reachable through all four steps", () => {
+    render(
+      <ThemeProvider>
+        <ThemeSwitcher />
+      </ThemeProvider>,
+    )
+    openSwitcher()
+    const slider = screen.getByRole("slider", { name: "Accent vibrancy" })
+    const row = screen
+      .getByText("Accent Vibrancy")
+      .closest(".dr-theme-switcher-row") as HTMLElement
+    expect(within(row).getByText("balanced")).toBeInTheDocument()
+
+    fireEvent.keyDown(slider, { key: "Home" })
+    expect(within(row).getByText("calm")).toBeInTheDocument()
+    fireEvent.keyDown(slider, { key: "ArrowRight" })
+    expect(within(row).getByText("balanced")).toBeInTheDocument()
+    fireEvent.keyDown(slider, { key: "ArrowRight" })
+    expect(within(row).getByText("vivid")).toBeInTheDocument()
+    fireEvent.keyDown(slider, { key: "End" })
+    expect(within(row).getByText("intense")).toBeInTheDocument()
   })
 
   it("does NOT render Gradient Pattern when backgroundStyle is solid", () => {

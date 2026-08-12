@@ -9,6 +9,7 @@ import type {
   Elevation,
   Radius,
   FontSize,
+  AccentVibrancy,
   Mode,
   ResolvedMode,
   ThemeContextValue,
@@ -24,6 +25,7 @@ import {
   ELEVATIONS,
   RADII,
   FONT_SIZES,
+  ACCENT_VIBRANCIES,
 } from "@theme/types"
 import {
   generateTokens,
@@ -58,6 +60,7 @@ const LS_ELEVATION = "theme-elevation"
 const LS_BUTTON_ELEVATION = "theme-button-elevation"
 const LS_RADIUS = "theme-radius"
 const LS_FONT_SIZE = "theme-font-size"
+const LS_ACCENT_VIBRANCY = "theme-accent-vibrancy"
 
 const isBrowser = typeof window !== "undefined"
 
@@ -282,6 +285,16 @@ export function ThemeProvider({
     return cfg.defaults.fontSize
   })
 
+  const [accentVibrancy, setAccentVibrancyState] = useState<AccentVibrancy>(
+    () => {
+      const stored = readStorage(LS_ACCENT_VIBRANCY)
+      if (stored && (ACCENT_VIBRANCIES as readonly string[]).includes(stored)) {
+        return stored as AccentVibrancy
+      }
+      return cfg.defaults.accentVibrancy
+    },
+  )
+
   const [resolvedMode, setResolvedMode] = useState<ResolvedMode>(() =>
     clampResolvedMode(preset, resolveMode(mode)),
   )
@@ -311,6 +324,7 @@ export function ThemeProvider({
       presetName: PresetName,
       bgStyle: BackgroundStyle,
       resolved: ResolvedMode,
+      vibrancy: AccentVibrancy,
       axisValues: Record<string, Record<string, string>>,
     ) => {
       const activePreset = presets[presetName]
@@ -349,6 +363,7 @@ export function ThemeProvider({
         preset: presetName,
         backgroundStyle: bgStyle,
         mode: resolved,
+        accentVibrancy: vibrancy,
       })
 
       // Preset-owned tokens (if the preset declares any cross-axis math).
@@ -400,6 +415,7 @@ export function ThemeProvider({
       buttonElevation,
       radius,
       fontSize,
+      accentVibrancy,
       presetAxisValues,
       ...overrides,
     }),
@@ -416,6 +432,7 @@ export function ThemeProvider({
       buttonElevation,
       radius,
       fontSize,
+      accentVibrancy,
       presetAxisValues,
     ],
   )
@@ -451,6 +468,9 @@ export function ThemeProvider({
       )
       setRadiusState(settings.radius ?? cfg.defaults.radius)
       setFontSizeState(settings.fontSize ?? cfg.defaults.fontSize)
+      setAccentVibrancyState(
+        settings.accentVibrancy ?? cfg.defaults.accentVibrancy,
+      )
       setPresetAxisValuesState(newAxisValues)
 
       writeStorage(LS_ACCENT, settings.accentColor)
@@ -468,6 +488,10 @@ export function ThemeProvider({
       )
       writeStorage(LS_RADIUS, settings.radius ?? cfg.defaults.radius)
       writeStorage(LS_FONT_SIZE, settings.fontSize ?? cfg.defaults.fontSize)
+      writeStorage(
+        LS_ACCENT_VIBRANCY,
+        settings.accentVibrancy ?? cfg.defaults.accentVibrancy,
+      )
       for (const [presetName, axes] of Object.entries(newAxisValues)) {
         for (const [axisName, value] of Object.entries(axes)) {
           writeStorage(LS_PRESET_AXIS_PREFIX(presetName, axisName), value)
@@ -509,6 +533,7 @@ export function ThemeProvider({
         newPreset,
         settings.backgroundStyle,
         resolved,
+        settings.accentVibrancy ?? cfg.defaults.accentVibrancy,
         newAxisValues,
       )
     },
@@ -538,6 +563,7 @@ export function ThemeProvider({
         preset,
         backgroundStyle,
         resolvedMode,
+        accentVibrancy,
         presetAxisValues,
       )
       const settings = buildSettings({ accentColor: color })
@@ -554,6 +580,7 @@ export function ThemeProvider({
       preset,
       backgroundStyle,
       resolvedMode,
+      accentVibrancy,
       presetAxisValues,
     ],
   )
@@ -568,6 +595,7 @@ export function ThemeProvider({
         preset,
         backgroundStyle,
         resolvedMode,
+        accentVibrancy,
         presetAxisValues,
       )
       const settings = buildSettings({ surfaceColor: color })
@@ -584,6 +612,7 @@ export function ThemeProvider({
       preset,
       backgroundStyle,
       resolvedMode,
+      accentVibrancy,
       presetAxisValues,
     ],
   )
@@ -627,6 +656,7 @@ export function ThemeProvider({
         p,
         backgroundStyle,
         nextResolvedMode,
+        accentVibrancy,
         presetAxisValues,
       )
       const settings = buildSettings({ preset: p, mode: nextMode })
@@ -644,6 +674,7 @@ export function ThemeProvider({
       backgroundStyle,
       resolvedMode,
       mode,
+      accentVibrancy,
       presetAxisValues,
     ],
   )
@@ -687,6 +718,7 @@ export function ThemeProvider({
         preset,
         backgroundStyle,
         resolvedMode,
+        accentVibrancy,
         next,
       )
       const settings = buildSettings({ presetAxisValues: next })
@@ -701,6 +733,7 @@ export function ThemeProvider({
       surfaceColor,
       backgroundStyle,
       resolvedMode,
+      accentVibrancy,
       applyTheme,
       notifyChange,
       buildSettings,
@@ -718,6 +751,7 @@ export function ThemeProvider({
         preset,
         bgStyle,
         resolvedMode,
+        accentVibrancy,
         presetAxisValues,
       )
       const settings = buildSettings({ backgroundStyle: bgStyle })
@@ -734,6 +768,7 @@ export function ThemeProvider({
       surfaceColor,
       preset,
       resolvedMode,
+      accentVibrancy,
       presetAxisValues,
     ],
   )
@@ -799,6 +834,7 @@ export function ThemeProvider({
         nextPreset,
         backgroundStyle,
         resolved,
+        accentVibrancy,
         presetAxisValues,
       )
       const settings = buildSettings({ mode: m, preset: nextPreset })
@@ -815,6 +851,7 @@ export function ThemeProvider({
       surfaceColor,
       preset,
       backgroundStyle,
+      accentVibrancy,
       presetAxisValues,
     ],
   )
@@ -884,6 +921,18 @@ export function ThemeProvider({
     [buildSettings, notifyChange, debouncedSave],
   )
 
+  const setAccentVibrancy = useCallback(
+    (vibrancy: AccentVibrancy) => {
+      setAccentVibrancyState(vibrancy)
+      writeStorage(LS_ACCENT_VIBRANCY, vibrancy)
+      const settings = buildSettings({ accentVibrancy: vibrancy })
+      notifyChange(settings)
+      hasUserChanged.current = true
+      debouncedSave(settings)
+    },
+    [buildSettings, notifyChange, debouncedSave],
+  )
+
   useEffect(() => {
     applyTheme(
       accentColor,
@@ -891,6 +940,7 @@ export function ThemeProvider({
       preset,
       backgroundStyle,
       resolvedMode,
+      accentVibrancy,
       presetAxisValues,
     )
   }, [
@@ -900,6 +950,7 @@ export function ThemeProvider({
     preset,
     backgroundStyle,
     resolvedMode,
+    accentVibrancy,
     presetAxisValues,
   ])
 
@@ -957,6 +1008,7 @@ export function ThemeProvider({
         preset,
         backgroundStyle,
         resolved,
+        accentVibrancy,
         presetAxisValues,
       )
     }
@@ -968,6 +1020,7 @@ export function ThemeProvider({
     surfaceColor,
     preset,
     backgroundStyle,
+    accentVibrancy,
     presetAxisValues,
     applyTheme,
   ])
@@ -1013,6 +1066,7 @@ export function ThemeProvider({
       buttonElevation,
       radius,
       fontSize,
+      accentVibrancy,
       resolvedMode,
       config: cfg,
       syncStatus,
@@ -1030,6 +1084,7 @@ export function ThemeProvider({
       setButtonElevation,
       setRadius,
       setFontSize,
+      setAccentVibrancy,
       setPresetAxis,
     }),
     [
@@ -1045,6 +1100,7 @@ export function ThemeProvider({
       buttonElevation,
       radius,
       fontSize,
+      accentVibrancy,
       resolvedMode,
       cfg,
       syncStatus,
@@ -1061,6 +1117,7 @@ export function ThemeProvider({
       setButtonElevation,
       setRadius,
       setFontSize,
+      setAccentVibrancy,
       setPresetAxis,
     ],
   )

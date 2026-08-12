@@ -180,6 +180,36 @@ describe("useTheme", () => {
     const { result } = renderHook(() => useTheme(), { wrapper })
     expect(result.current.fontSize).toBe("medium")
   })
+
+  // The vibrancy axis is a dark-mode-only lever, and the token it always moves
+  // is --primary-fill: --primary goes through capChroma, which only binds for
+  // high-chroma accents and is identical across all four steps for the default
+  // blue.
+  it("repaints accent tokens when the vibrancy axis changes in dark mode", () => {
+    const { result } = renderHook(() => useTheme(), { wrapper })
+    act(() => result.current.setMode("dark"))
+    const read = () =>
+      document.documentElement.style.getPropertyValue("--primary-fill")
+
+    const balanced = read()
+    act(() => result.current.setAccentVibrancy("intense"))
+    const intense = read()
+    act(() => result.current.setAccentVibrancy("calm"))
+    const calm = read()
+
+    expect(intense).not.toBe(balanced)
+    expect(calm).not.toBe(intense)
+  })
+
+  it("honours a stored vibrancy on first paint without a setter call", () => {
+    localStorage.setItem("mode", "dark")
+    localStorage.setItem("theme-accent-vibrancy", "calm")
+    const { result } = renderHook(() => useTheme(), { wrapper })
+    expect(result.current.accentVibrancy).toBe("calm")
+    expect(
+      document.documentElement.style.getPropertyValue("--primary-fill"),
+    ).toBe("217 74% 49%")
+  })
 })
 
 describe("useTheme persistence", () => {
@@ -453,5 +483,26 @@ describe("useTheme persistence", () => {
     expect(onChangeSpy).toHaveBeenCalledWith(
       expect.objectContaining({ accentColor: "pink" }),
     )
+  })
+
+  it("persists accent vibrancy and feeds it to the token engine", async () => {
+    const { result } = renderHook(() => useTheme(), { wrapper })
+
+    expect(result.current.accentVibrancy).toBe("balanced")
+
+    act(() => result.current.setAccentVibrancy("intense"))
+
+    expect(result.current.accentVibrancy).toBe("intense")
+    expect(localStorage.getItem("theme-accent-vibrancy")).toBe("intense")
+    // The axis is token-only: it must not leak a data attribute.
+    expect(
+      document.documentElement.getAttribute("data-accent-vibrancy"),
+    ).toBeNull()
+  })
+
+  it("falls back to the configured default for an unknown stored value", () => {
+    localStorage.setItem("theme-accent-vibrancy", "nonsense")
+    const { result } = renderHook(() => useTheme(), { wrapper })
+    expect(result.current.accentVibrancy).toBe("balanced")
   })
 })

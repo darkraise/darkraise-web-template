@@ -48,6 +48,12 @@ export const DENSITIES = ["compact", "cozy", "comfortable", "spacious"] as const
 export const ELEVATIONS = ["flat", "low", "medium", "high"] as const
 export const RADII = ["sharp", "subtle", "rounded", "pill"] as const
 export const FONT_SIZES = ["small", "medium", "large", "extra-large"] as const
+export const ACCENT_VIBRANCIES = [
+  "calm",
+  "balanced",
+  "vivid",
+  "intense",
+] as const
 
 /** Presets that force a single resolved mode regardless of the mode axis. */
 export const DARK_ONLY_PRESETS: Preset[] = ["neon", "terminal", "scifi"]
@@ -162,4 +168,5 @@ export const LS_KEYS = {
   buttonElevation: "theme-button-elevation",
   radius: "theme-radius",
   fontSize: "theme-font-size",
+  accentVibrancy: "theme-accent-vibrancy",
 } as const

@@ -55,6 +55,14 @@ export type Radius = (typeof RADII)[number]
 export const FONT_SIZES = ["small", "medium", "large", "extra-large"] as const
 export type FontSize = (typeof FONT_SIZES)[number]
 
+export const ACCENT_VIBRANCIES = [
+  "calm",
+  "balanced",
+  "vivid",
+  "intense",
+] as const
+export type AccentVibrancy = (typeof ACCENT_VIBRANCIES)[number]
+
 export const MODES = ["light", "dark", "system"] as const
 export type Mode = (typeof MODES)[number]
 
@@ -82,6 +90,9 @@ export interface ThemeSettings {
   buttonElevation?: Elevation
   radius?: Radius
   fontSize?: FontSize
+  /** How loud the accent reads in dark mode; ignored in light. Defaults to
+   *  "balanced". */
+  accentVibrancy?: AccentVibrancy
   /** Per-preset axis values; outer key = preset name, inner key = axis name. */
   presetAxisValues?: Record<string, Record<string, string>>
 }
@@ -106,6 +117,7 @@ export interface ThemeContextValue {
   buttonElevation: Elevation
   radius: Radius
   fontSize: FontSize
+  accentVibrancy: AccentVibrancy
   resolvedMode: ResolvedMode
   config: import("./themeConfig").ThemeConfig
   syncStatus: ThemeSyncStatus
@@ -125,6 +137,7 @@ export interface ThemeContextValue {
   setButtonElevation: (elevation: Elevation) => void
   setRadius: (radius: Radius) => void
   setFontSize: (size: FontSize) => void
+  setAccentVibrancy: (vibrancy: AccentVibrancy) => void
   /**
    * Update one preset-specific axis on the active preset. No-ops with a
    * console.warn (dev-only) when the axis is not valid for the active preset.

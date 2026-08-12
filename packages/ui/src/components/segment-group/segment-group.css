@@ -36,6 +36,23 @@
     @apply cursor-not-allowed opacity-50;
   }
 
+  /* Hover wash on unchecked, enabled segments. A `bg-accent` fill would
+     be invisible: --accent and --muted resolve to the same surface step,
+     which is what the track already paints. A foreground alpha reads
+     against any track in both modes and survives every preset, since
+     none of them redefine --foreground.
+
+     `[data-disabled]` has to be excluded explicitly — only the GROUP's
+     disabled rule sets pointer-events: none, so an individually disabled
+     segment still receives hover. */
+  .dr-segment-group
+    .dr-segment-group-item:not([data-state="checked"]):not(
+      [data-disabled]
+    ):hover {
+    @apply text-foreground;
+    background-color: hsl(var(--foreground) / 0.08);
+  }
+
   .dr-segment-group-indicator {
     /* Light mode: pure white (`bg-card`) — clearly raised above the muted
        container (`surface[100]`).

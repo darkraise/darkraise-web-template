@@ -330,6 +330,37 @@
     transition: opacity 150ms;
   }
 
+  /* Hover wash on inactive triggers. A `bg-accent` fill — the usual
+     hover token elsewhere in the package — would be invisible here:
+     --accent and --muted resolve to the same surface step
+     (surface[100] light / surface[800] dark), which is exactly what the
+     default/outline strips already paint. A foreground alpha reads
+     against any track in both modes and needs no per-preset override,
+     since no preset redefines --foreground. */
+  .dr-tabs-trigger:not([data-state="active"]):hover {
+    background-color: hsl(var(--foreground) / 0.08);
+  }
+
+  /* The underline trigger is the only variant with no radius of its own
+     (its chrome is a bottom border), so the wash needs one. Top corners
+     only, so the fill meets the indicator bar square. */
+  .dr-tabs-trigger[data-variant="underline"]:not([data-state="active"]):hover {
+    /* @apply, not `var(--radius-sm)`: the radius aliases live in
+       `@theme inline`, so they are folded into utilities at build time
+       and never emitted as custom properties to reference here. */
+    @apply rounded-t-sm;
+  }
+
+  /* The enclosed strip's baseline is painted by the list, and EVERY
+     trigger overhangs it by 1px so the active one can erase it into a
+     notch. An unclipped hover wash would erase it too, so hovering any
+     inactive tab would punch a false notch in the line. Clipping to the
+     padding box stops the fill at the inner edge of the trigger's 1px
+     transparent border — precisely where the overhang begins. */
+  .dr-tabs-trigger[data-variant="enclosed"]:not([data-state="active"]):hover {
+    background-clip: padding-box;
+  }
+
   /* Hold active-tab text color on hover so the base
      `.dr-tabs-trigger:hover { color: var(--foreground) }` does not
      override the variant's active text color. */
