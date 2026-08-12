@@ -13,6 +13,15 @@ switcher: { axes: { …, fontSize: true } },
 
 Once added, the new `fontSize: "medium"` default renders exactly as before.
 
+Breaking: `ThemeConfig` gains two required properties, `defaults.accentVibrancy` and `switcher.axes.accentVibrancy`, matching the other twelve axes. `GenerateTokensInput` (re-exported via `darkraise-ui/theme`) gains a required `accentVibrancy` field as well, so a consumer calling `generateTokens` directly must also supply it. Consumers passing their own `config` object or calling `generateTokens` must add the field before upgrading:
+
+```ts
+defaults: { …, accentVibrancy: "balanced" },
+switcher: { axes: { …, accentVibrancy: true } },
+```
+
+Once added, the new `accentVibrancy: "balanced"` default renders exactly as before. The axis controls how loud the brand accent renders in dark mode only — light mode ignores it entirely — with four steps (`calm`, `balanced`, `vivid`, `intense`) driving `--primary-fill`'s lightness and chroma cap and `--primary`'s chroma cap. At the default `balanced` step, filled-control labels (`--primary-foreground` on `--primary-fill`) measure roughly 4.10:1 contrast, below WCAG AA's 4.5:1 floor for normal text. This is a deliberate, accepted trade-off rather than a defect: selecting `calm` restores AA-clean labels (4.70:1). `ACCENT_VIBRANCIES` and the `AccentVibrancy` type are intentionally not re-exported from the theme barrel, consistent with `FONT_SIZES`.
+
 ### Added
 
 - `fontSize` theme axis with `small`, `medium`, `large`, and `extra-large` steps, defaulting to `medium`. Re-binds Tailwind's `--text-*` scale — body sizes take the full multiplier, display sizes a damped one — while line heights are untouched, since Tailwind already declares them as unitless ratios that scale on their own.
@@ -34,6 +43,7 @@ Once added, the new `fontSize: "medium"` default renders exactly as before.
 - `LayoutHeader` gains `showSearch` (default `true`). `SidebarLayout` now sets it `false` and hosts `SearchCommand` at the top of its rail instead; `TopNavLayout`, `StackedLayout`, and `SplitPanelLayout` keep search in the header.
 - `SearchCommand` gains `collapsed` (default `false`), rendering as an icon-only square sized to match the collapsed rail's nav icons.
 - `ChartContainer` gains `initialDimension`, the size `ResponsiveContainer` assumes for the single render before its `ResizeObserver` fires. Defaults to 320×180, matching the `aspect-video` on `.dr-chart`.
+- `accentVibrancy` theme axis with `calm`, `balanced`, `vivid`, and `intense` steps, defaulting to `balanced`. Governs how loud the brand accent renders in dark mode only — light mode is unaffected — by capping `--primary-fill`'s OKLCH lightness and chroma and `--primary`'s chroma. `ThemeSwitcher` accent-vibrancy control, `create-app --accent-vibrancy` scaffolding support. Unlike every other axis, it is verified by token value rather than a `data-*` attribute, since it has none to set.
 
 ### Changed
 
