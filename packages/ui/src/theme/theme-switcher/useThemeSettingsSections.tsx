@@ -12,6 +12,7 @@ import {
   ELEVATIONS,
   RADII,
   FONT_SIZES,
+  ACCENT_VIBRANCIES,
 } from "@theme/types"
 import type {
   Mode,
@@ -71,6 +72,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
     buttonElevation,
     radius,
     fontSize,
+    accentVibrancy,
     config,
     activePreset,
     presetAxisValues,
@@ -86,6 +88,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
     setButtonElevation,
     setRadius,
     setFontSize,
+    setAccentVibrancy,
     setPresetAxis,
   } = useTheme()
 
@@ -376,6 +379,24 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
               value={fontSize}
               onChange={setFontSize}
               label="Font size"
+            />
+          </div>
+        ),
+      },
+    axes.accentVibrancy &&
+      !isCommonAxisHidden("accentVibrancy") && {
+        key: "accentVibrancy",
+        group: "color" as const,
+        node: (
+          <div key="accentVibrancy" className="dr-theme-switcher-row">
+            <Label className="dr-theme-switcher-section-label">
+              Accent Vibrancy
+            </Label>
+            <AxisControl
+              values={ACCENT_VIBRANCIES}
+              value={accentVibrancy}
+              onChange={setAccentVibrancy}
+              label="Accent vibrancy"
             />
           </div>
         ),
