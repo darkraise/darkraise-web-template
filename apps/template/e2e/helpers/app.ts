@@ -42,6 +42,7 @@ export interface ThemeSeed {
   buttonElevation?: string
   radius?: string
   fontSize?: string
+  accentVibrancy?: string
   /** Preset-specific axes: { glass: { blur: "high" } } → key `theme-glass-blur`. */
   presetAxes?: Record<string, Record<string, string>>
 }
@@ -77,6 +78,7 @@ function storageEntries(theme: ThemeSeed, authenticated: boolean) {
     ["buttonElevation", LS_KEYS.buttonElevation],
     ["radius", LS_KEYS.radius],
     ["fontSize", LS_KEYS.fontSize],
+    ["accentVibrancy", LS_KEYS.accentVibrancy],
   ]
   for (const [field, key] of map) {
     const value = theme[field]

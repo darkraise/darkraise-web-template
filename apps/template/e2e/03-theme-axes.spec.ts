@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test"
 import {
   ACCENT_COLORS,
+  ACCENT_VIBRANCIES,
   BACKGROUND_INTENSITIES,
   DARK_ONLY_PRESETS,
   DENSITIES,
@@ -181,6 +182,51 @@ test.describe("accent color axis", () => {
       values.push(await readToken(page, "--primary"))
     }
     expect(new Set(values).size).toBe(ACCENT_COLORS.length)
+  })
+})
+
+test.describe("accent vibrancy axis", () => {
+  test("each step emits a distinct --primary-fill in dark mode", async ({
+    page,
+  }) => {
+    const consoleWatch = watchConsole(page)
+    // Fuchsia is the one accent whose --primary also moves across steps, so a
+    // single test covers both tokens. The axis is inert in light mode.
+    await seedApp(page, { accent: "fuchsia", mode: "dark" })
+    await gotoApp(page, PROBE)
+
+    const seen = new Set<string>()
+    for (const vibrancy of ACCENT_VIBRANCIES) {
+      await applyTheme(page, { accentVibrancy: vibrancy })
+      await page.reload()
+      const fill = await readToken(page, "--primary-fill")
+      expect(fill, `${vibrancy} must emit a fill`).not.toBe("")
+      seen.add(fill)
+    }
+    expect(seen.size).toBe(ACCENT_VIBRANCIES.length)
+
+    consoleWatch.assertClean()
+  })
+
+  test("the axis is inert in light mode", async ({ page }) => {
+    await seedApp(page, { accent: "fuchsia", mode: "light" })
+    await gotoApp(page, PROBE)
+
+    await applyTheme(page, { accentVibrancy: "calm" })
+    await page.reload()
+    const calm = await readToken(page, "--primary-fill")
+
+    await applyTheme(page, { accentVibrancy: "intense" })
+    await page.reload()
+    expect(await readToken(page, "--primary-fill")).toBe(calm)
+  })
+
+  test("no data attribute leaks for this axis", async ({ page }) => {
+    await seedApp(page, { accentVibrancy: "vivid", mode: "dark" })
+    await gotoApp(page, PROBE)
+
+    const attrs = await readThemeAttrs(page)
+    expect(attrs["data-accent-vibrancy"]).toBeUndefined()
   })
 })
 
