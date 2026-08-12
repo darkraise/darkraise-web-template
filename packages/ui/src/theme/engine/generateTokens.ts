@@ -1,5 +1,6 @@
 import type {
   AccentColor,
+  AccentVibrancy,
   BackgroundStyle,
   SurfaceColor,
   ResolvedMode,
@@ -21,6 +22,7 @@ export interface GenerateTokensInput {
   preset: PresetName
   backgroundStyle: BackgroundStyle
   mode: ResolvedMode
+  accentVibrancy: AccentVibrancy
 }
 
 function getChartColors(
@@ -118,30 +120,48 @@ function isSidebarDark(mode: ResolvedMode): boolean {
 }
 
 /**
- * Dark fills land on one absolute perceptual lightness rather than a cap. The
- * Tailwind palette spreads shade 500 across L 0.587–0.786, so capping alone
- * would leave the darker hues at their original weight and the accents would
- * still disagree with each other.
+ * How loud the dark-mode accent reads. The fill takes the step's lightness and
+ * chroma cap; `--primary` keeps its palette lightness and takes the cap only,
+ * which is what stops the bright warm accents from being dragged down.
+ *
+ * Neither end of the lightness band is arbitrary. Below ~0.535 the fill drops
+ * under 3:1 against `--card`; at ~0.645 accents start flipping to a dark label
+ * as `pickForeground` crosses its threshold, which would make label colour
+ * vary by accent. A chroma cap above ~0.26 never binds, because that is the
+ * sRGB gamut ceiling at these lightnesses — hence the nulls rather than
+ * decorative large numbers.
  */
-const FILL_LIGHTNESS = 0.54
-const FILL_CHROMA_MAX = 0.19
-/** Trims halation on borders and rings without moving accent-text contrast. */
-const PRIMARY_CHROMA_MAX = 0.2
+const VIBRANCY: Record<
+  AccentVibrancy,
+  {
+    fillLightness: number
+    fillChroma: number | null
+    primaryChroma: number | null
+  }
+> = {
+  calm: { fillLightness: 0.54, fillChroma: 0.24, primaryChroma: 0.2 },
+  balanced: { fillLightness: 0.57, fillChroma: null, primaryChroma: 0.24 },
+  vivid: { fillLightness: 0.6, fillChroma: null, primaryChroma: null },
+  intense: { fillLightness: 0.63, fillChroma: null, primaryChroma: null },
+}
+
 /** WCAG floor for large text, which is what a filled control's label is. */
 const FOREGROUND_MIN_RATIO = 3
 const WHITE = "0 0% 100%"
 const INK = "222 47% 11%"
 
-function calmFill(hsl: string): string {
+function vibrancyFill(hsl: string, vibrancy: AccentVibrancy): string {
   const { C, h } = hslStringToOklch(hsl)
+  const { fillLightness, fillChroma } = VIBRANCY[vibrancy]
   return oklchToHslString({
-    L: FILL_LIGHTNESS,
-    C: Math.min(C, FILL_CHROMA_MAX),
+    L: fillLightness,
+    C: fillChroma === null ? C : Math.min(C, fillChroma),
     h,
   })
 }
 
-function capChroma(hsl: string, max: number): string {
+function capChroma(hsl: string, max: number | null): string {
+  if (max === null) return hsl
   const { L, C, h } = hslStringToOklch(hsl)
   if (C <= max) return hsl
   return oklchToHslString({ L, C: max, h })
@@ -154,7 +174,14 @@ function pickForeground(fill: string): string {
 export function generateTokens(
   input: GenerateTokensInput,
 ): Record<string, string> {
-  const { accentColor, surfaceColor, preset, backgroundStyle, mode } = input
+  const {
+    accentColor,
+    surfaceColor,
+    preset,
+    backgroundStyle,
+    mode,
+    accentVibrancy,
+  } = input
 
   const sfHueTokens = resolveSfHueTokens(surfaceColor, backgroundStyle)
 
@@ -180,8 +207,11 @@ export function generateTokens(
   const primaryShade = isLightGlass ? 600 : isDarkGlass ? 400 : 500
   const primaryBase = accent[primaryShade]
   const primaryValue =
-    mode === "dark" ? capChroma(primaryBase, PRIMARY_CHROMA_MAX) : primaryBase
-  const primaryFill = mode === "dark" ? calmFill(primaryBase) : primaryBase
+    mode === "dark"
+      ? capChroma(primaryBase, VIBRANCY[accentVibrancy].primaryChroma)
+      : primaryBase
+  const primaryFill =
+    mode === "dark" ? vibrancyFill(primaryBase, accentVibrancy) : primaryBase
   const primaryForeground = pickForeground(primaryFill)
   const ringValue = primaryValue
   const focusRingShade = mode === "light" ? 300 : 200

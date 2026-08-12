@@ -3,9 +3,14 @@ import { generateTokens } from "./generateTokens"
 import { accentColors } from "@theme/palettes/accentColors"
 import { surfaceColors } from "@theme/palettes/surfaceColors"
 import { contrastRatio, hslStringToOklch } from "@theme/engine/oklch"
-import { presets, type PresetName } from "@theme/presets"
-import { ACCENT_COLORS } from "@theme/types"
-import type { ColorScale, AccentColor, ResolvedMode } from "@theme/types"
+import type { PresetName } from "@theme/presets"
+import { ACCENT_COLORS, SURFACE_COLORS } from "@theme/types"
+import type {
+  ColorScale,
+  AccentColor,
+  AccentVibrancy,
+  ResolvedMode,
+} from "@theme/types"
 
 describe("generateTokens", () => {
   it("produces all expected token keys for the default combination", () => {
@@ -15,6 +20,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
+      accentVibrancy: "balanced",
     })
 
     const expectedKeys = [
@@ -73,6 +79,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
+      accentVibrancy: "balanced",
     })
 
     const glassOnlyKeys = [
@@ -107,6 +114,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
+      accentVibrancy: "balanced",
     })
     const dark = generateTokens({
       accentColor: "blue",
@@ -114,6 +122,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "dark",
+      accentVibrancy: "balanced",
     })
 
     expect(light["--primary"]).toBe("217 91% 60%")
@@ -127,6 +136,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
+      accentVibrancy: "balanced",
     })
     expect(tokens["--focus-ring"]).toBeDefined()
     expect(tokens["--focus-ring"]).toMatch(/^\d+\s+\d+%\s+\d+%$/)
@@ -140,6 +150,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
+      accentVibrancy: "balanced",
     })
     const darkTokens = generateTokens({
       accentColor: "blue",
@@ -147,6 +158,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "dark",
+      accentVibrancy: "balanced",
     })
     expect(lightTokens["--focus-ring"]).toBe(accentColors.blue[300])
     expect(darkTokens["--focus-ring"]).toBe(accentColors.blue[200])
@@ -162,6 +174,7 @@ describe("generateTokens", () => {
         preset: "default",
         backgroundStyle: "solid",
         mode,
+        accentVibrancy: "balanced",
       })
 
     // White is unreadable on the light accents: it measures 2.14:1 on amber
@@ -178,6 +191,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "dark",
+      accentVibrancy: "balanced",
     })
 
     expect(tokens["--background"]).toBe("229 84% 5%")
@@ -197,6 +211,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "dark",
+      accentVibrancy: "balanced",
     })
     expect(tokens["--border"]).not.toEqual(tokens["--muted"])
     expect(tokens["--border"]).not.toEqual(tokens["--secondary"])
@@ -211,6 +226,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
+      accentVibrancy: "balanced",
     })
 
     expect(tokens["--chart-1"]).toBeTruthy()
@@ -236,6 +252,7 @@ describe("generateTokens", () => {
       preset: "glass",
       backgroundStyle: "solid",
       mode: "light",
+      accentVibrancy: "balanced",
     })
 
     // These tokens are now bound by glass.css attribute selectors.
@@ -258,6 +275,7 @@ describe("generateTokens", () => {
       preset: "glass",
       backgroundStyle: "solid",
       mode: "light",
+      accentVibrancy: "balanced",
     })
 
     expect(tokens["--primary"]).toBe("221 83% 53%")
@@ -272,6 +290,7 @@ describe("generateTokens", () => {
       preset: "glass",
       backgroundStyle: "solid",
       mode: "light",
+      accentVibrancy: "balanced",
     })
 
     expect(tokens["--shadow-card"]).toContain("rgb(16 24 40")
@@ -286,6 +305,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
+      accentVibrancy: "balanced",
     })
     const dark = generateTokens({
       accentColor: "blue",
@@ -293,6 +313,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "dark",
+      accentVibrancy: "balanced",
     })
 
     expect(light["--destructive"]).toBe("0 84% 60%")
@@ -306,6 +327,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
+      accentVibrancy: "balanced",
     })
     const dark = generateTokens({
       accentColor: "blue",
@@ -313,6 +335,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "dark",
+      accentVibrancy: "balanced",
     })
 
     expect(light["--success"]).toBe(accentColors.emerald[500])
@@ -328,6 +351,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
+      accentVibrancy: "balanced",
     })
     const dark = generateTokens({
       accentColor: "blue",
@@ -335,6 +359,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "dark",
+      accentVibrancy: "balanced",
     })
 
     expect(light["--warning"]).toBe(accentColors.amber[500])
@@ -350,6 +375,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
+      accentVibrancy: "balanced",
     })
     const redAccent = generateTokens({
       accentColor: "red",
@@ -357,6 +383,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
+      accentVibrancy: "balanced",
     })
 
     expect(blueAccent["--success"]).toBe(redAccent["--success"])
@@ -370,6 +397,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
+      accentVibrancy: "balanced",
     })
 
     expect(tokens["--background"]).toBe("0 34% 97%")
@@ -383,6 +411,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
+      accentVibrancy: "balanced",
     })
 
     expect(tokens["--background"]).toBe("210 40% 98%")
@@ -396,6 +425,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "dark",
+      accentVibrancy: "balanced",
     })
 
     expect(tokens["--background"]).toBe("166 32% 5%")
@@ -410,6 +440,7 @@ describe("generateTokens", () => {
         preset: "glass",
         backgroundStyle: "solid",
         mode: "dark",
+        accentVibrancy: "balanced",
       })
 
       // Fog tokens are now computed by glass.generateTokens (the preset's
@@ -429,6 +460,7 @@ describe("generateTokens", () => {
         preset: "glass",
         backgroundStyle: "solid",
         mode: "light",
+        accentVibrancy: "balanced",
       })
 
       expect(tokens["--fog-05"]).toBeUndefined()
@@ -446,6 +478,7 @@ describe("generateTokens", () => {
         preset: "default",
         backgroundStyle: "solid",
         mode: "dark",
+        accentVibrancy: "balanced",
       })
       const light = generateTokens({
         accentColor: "blue",
@@ -453,6 +486,7 @@ describe("generateTokens", () => {
         preset: "default",
         backgroundStyle: "solid",
         mode: "light",
+        accentVibrancy: "balanced",
       })
 
       const fogKeys = [
@@ -478,6 +512,7 @@ describe("generateTokens", () => {
         preset: "glass",
         backgroundStyle: "solid",
         mode: "dark",
+        accentVibrancy: "balanced",
       })
 
       // Inset tokens are now computed by glass.generateTokens (the preset's
@@ -494,6 +529,7 @@ describe("generateTokens", () => {
         preset: "glass",
         backgroundStyle: "solid",
         mode: "light",
+        accentVibrancy: "balanced",
       })
 
       expect(tokens["--inset-hi"]).toBeUndefined()
@@ -508,6 +544,7 @@ describe("generateTokens", () => {
         preset: "default",
         backgroundStyle: "solid",
         mode: "dark",
+        accentVibrancy: "balanced",
       })
       const light = generateTokens({
         accentColor: "blue",
@@ -515,6 +552,7 @@ describe("generateTokens", () => {
         preset: "default",
         backgroundStyle: "solid",
         mode: "light",
+        accentVibrancy: "balanced",
       })
 
       const insetKeys = ["--inset-hi", "--inset-hi-strong", "--inset-hi-button"]
@@ -533,6 +571,7 @@ describe("generateTokens", () => {
         preset: "default",
         backgroundStyle: "gradient",
         mode: "dark",
+        accentVibrancy: "balanced",
       })
 
       expect(tokens["--noise-opacity"]).toBe("0.5")
@@ -545,6 +584,7 @@ describe("generateTokens", () => {
         preset: "default",
         backgroundStyle: "gradient",
         mode: "light",
+        accentVibrancy: "balanced",
       })
 
       expect(tokens["--noise-opacity"]).toBe("0.6")
@@ -557,6 +597,7 @@ describe("generateTokens", () => {
         preset: "default",
         backgroundStyle: "solid",
         mode: "dark",
+        accentVibrancy: "balanced",
       })
 
       expect(tokens["--noise-opacity"]).toBe("0")
@@ -569,6 +610,7 @@ describe("generateTokens", () => {
         preset: "default",
         backgroundStyle: "solid",
         mode: "light",
+        accentVibrancy: "balanced",
       })
 
       expect(tokens["--noise-opacity"]).toBe("0")
@@ -582,6 +624,7 @@ describe("generateTokens", () => {
       preset: "default" as const,
       backgroundStyle: "gradient" as const,
       mode: "dark" as const,
+      accentVibrancy: "balanced" as const,
     }
 
     it("emits hsl shade-500 for --sf-hue in gradient mode", () => {
@@ -629,6 +672,7 @@ describe("generateTokens", () => {
       preset: "default" as const,
       backgroundStyle: "gradient" as const,
       mode: "dark" as const,
+      accentVibrancy: "balanced" as const,
     }
 
     it("gradient + default → five-layer var() composition", () => {
@@ -681,6 +725,7 @@ describe("generateTokens", () => {
       surfaceColor: "slate",
       preset: "default",
       backgroundStyle: "solid",
+      accentVibrancy: "balanced",
     } as const
 
     // The branches were inverted, putting slate-400 on the near-white light
@@ -707,19 +752,34 @@ describe("generateTokens", () => {
     })
   })
 
-  describe("dark accent fill calming", () => {
-    const FILL_LIGHTNESS = 0.54
-    const FILL_CHROMA_MAX = 0.19
-    const PRIMARY_CHROMA_MAX = 0.2
-    // Integer-HSL storage rounds the emitted value, which can push measured
-    // chroma marginally past the cap — 0.0022 was the worst overshoot observed
-    // across the candidate lightnesses. This tolerance is wider than that and
-    // far tighter than the caps themselves, so it still catches a real breach.
+  describe("accent vibrancy axis", () => {
     const CHROMA_TOLERANCE = 0.005
+    /** sRGB gamut ceiling across accents in the usable lightness band. */
+    const GAMUT_CHROMA_MAX = 0.26
+
+    const STEPS = {
+      calm: { L: 0.54, fillChroma: 0.24, primaryChroma: 0.2, labelFloor: 4.5 },
+      balanced: {
+        L: 0.57,
+        fillChroma: null,
+        primaryChroma: 0.24,
+        labelFloor: 4,
+      },
+      vivid: { L: 0.6, fillChroma: null, primaryChroma: null, labelFloor: 3.5 },
+      intense: {
+        L: 0.63,
+        fillChroma: null,
+        primaryChroma: null,
+        labelFloor: 3,
+      },
+    } as const
+
+    const VIBRANCIES = Object.keys(STEPS) as (keyof typeof STEPS)[]
 
     const build = (
       accentColor: AccentColor,
       mode: ResolvedMode,
+      accentVibrancy: AccentVibrancy = "balanced",
       preset: PresetName = "default",
     ) =>
       generateTokens({
@@ -728,137 +788,165 @@ describe("generateTokens", () => {
         preset,
         backgroundStyle: "solid",
         mode,
+        accentVibrancy,
       })
 
-    const FILL_PRESETS = ["default", "glass"] as const
-    const ACCENT_PRESET_PAIRS = FILL_PRESETS.flatMap((preset) =>
-      ACCENT_COLORS.map((accentColor) => [accentColor, preset] as const),
+    const PAIRS = (["default", "glass"] as const).flatMap((preset) =>
+      VIBRANCIES.flatMap((step) =>
+        ACCENT_COLORS.map((a) => [a, step, preset] as const),
+      ),
     )
 
-    it.each(ACCENT_COLORS)(
-      "%s: dark fill lands on one perceptual lightness within the chroma cap",
-      (accentColor) => {
-        const fill = build(accentColor, "dark")["--primary-fill"] as string
+    it.each(PAIRS)(
+      "%s at %s on %s: fill lands on the step lightness within its chroma cap",
+      (accentColor, step, preset) => {
+        const fill = build(accentColor, "dark", step, preset)[
+          "--primary-fill"
+        ] as string
         const { L, C } = hslStringToOklch(fill)
+        const cap = STEPS[step].fillChroma ?? GAMUT_CHROMA_MAX
 
-        // 0.02, not toBeCloseTo(x, 2): tokens are stored as integer HSL, and one
-        // percent of HSL lightness costs up to 0.008 in OKLCH L near the gamut
-        // cusps. Tight enough to hold every accent to one visual weight.
-        expect(Math.abs(L - FILL_LIGHTNESS)).toBeLessThanOrEqual(0.02)
-        expect(C).toBeLessThanOrEqual(FILL_CHROMA_MAX + CHROMA_TOLERANCE)
+        expect(Math.abs(L - STEPS[step].L)).toBeLessThanOrEqual(0.02)
+        expect(C).toBeLessThanOrEqual(cap + CHROMA_TOLERANCE)
       },
     )
 
-    it.each(ACCENT_PRESET_PAIRS)(
-      "%s on %s: dark label clears AA on the fill",
-      (accentColor, preset) => {
-        const tokens = build(accentColor, "dark", preset)
-        const ratio = contrastRatio(
-          tokens["--primary-foreground"] as string,
-          tokens["--primary-fill"] as string,
+    it.each(PAIRS)(
+      "%s at %s on %s: --primary keeps its palette lightness",
+      (accentColor, step, preset) => {
+        const shade = preset === "glass" ? 400 : 500
+        const base = hslStringToOklch(accentColors[accentColor][shade])
+        const got = hslStringToOklch(
+          build(accentColor, "dark", step, preset)["--primary"] as string,
         )
+        const cap = STEPS[step].primaryChroma ?? GAMUT_CHROMA_MAX
 
-        expect(ratio).toBeGreaterThanOrEqual(4.5)
+        expect(Math.abs(got.L - base.L)).toBeLessThanOrEqual(0.02)
+        expect(got.C).toBeLessThanOrEqual(cap + CHROMA_TOLERANCE)
       },
     )
 
+    it.each(PAIRS)(
+      "%s at %s on %s: label clears the step's floor and stays white",
+      (accentColor, step, preset) => {
+        const tokens = build(accentColor, "dark", step, preset)
+        expect(tokens["--primary-foreground"]).toBe("0 0% 100%")
+        expect(
+          contrastRatio(
+            tokens["--primary-foreground"] as string,
+            tokens["--primary-fill"] as string,
+          ),
+        ).toBeGreaterThanOrEqual(STEPS[step].labelFloor)
+      },
+    )
+
+    // Slate only, deliberately. Fuchsia on an emerald surface measures 2.76
+    // today, so widening this guard would fail on pre-existing behaviour.
+    it.each(PAIRS)(
+      "%s at %s on %s: fill clears the UI-boundary floor against the card",
+      (accentColor, step, preset) => {
+        const tokens = build(accentColor, "dark", step, preset)
+        expect(
+          contrastRatio(
+            tokens["--primary-fill"] as string,
+            tokens["--card"] as string,
+          ),
+        ).toBeGreaterThanOrEqual(3)
+      },
+    )
+
+    // Measured across every surface colour, not just slate. The worst case is
+    // indigo on an emerald surface, which sits at 4.32 — already 4.38 before
+    // this axis existed, so the floor holds the status quo rather than
+    // claiming AA cleanliness on every surface.
+    it.each(VIBRANCIES)(
+      "%s: accent text clears the floor on the worst surface colour",
+      (step) => {
+        for (const surfaceColor of SURFACE_COLORS) {
+          for (const accentColor of ACCENT_COLORS) {
+            const tokens = generateTokens({
+              accentColor,
+              surfaceColor,
+              preset: "default",
+              backgroundStyle: "solid",
+              mode: "dark",
+              accentVibrancy: step,
+            })
+            expect(
+              contrastRatio(
+                tokens["--primary"] as string,
+                tokens["--background"] as string,
+              ),
+              `${accentColor} on ${surfaceColor}`,
+            ).toBeGreaterThanOrEqual(4.3)
+          }
+        }
+      },
+    )
+
+    // The guard that would have caught a chroma-only ladder, which collapsed
+    // to identical fills for most accents because chroma is gamut-limited.
     it.each(ACCENT_COLORS)(
-      "%s: light label clears the large-text floor on the fill",
+      "%s: all four steps emit distinct fills",
       (accentColor) => {
-        const tokens = build(accentColor, "light")
-        const ratio = contrastRatio(
-          tokens["--primary-foreground"] as string,
-          tokens["--primary-fill"] as string,
+        const fills = VIBRANCIES.map(
+          (step) => build(accentColor, "dark", step)["--primary-fill"],
         )
-
-        expect(ratio).toBeGreaterThanOrEqual(3)
+        expect(new Set(fills).size).toBe(4)
       },
     )
 
-    it.each(ACCENT_PRESET_PAIRS)(
-      "%s on %s: dark fill clears the UI-boundary floor against the card",
-      (accentColor, preset) => {
-        const tokens = build(accentColor, "dark", preset)
-        const ratio = contrastRatio(
-          tokens["--primary-fill"] as string,
-          tokens["--card"] as string,
-        )
-
-        expect(ratio).toBeGreaterThanOrEqual(3)
-      },
-    )
-
-    it.each(ACCENT_COLORS)(
-      "%s: dark accent chroma is capped without moving its lightness",
-      (accentColor) => {
-        const base = hslStringToOklch(accentColors[accentColor][500])
-        const capped = hslStringToOklch(
-          build(accentColor, "dark")["--primary"] as string,
-        )
-
-        expect(capped.C).toBeLessThanOrEqual(
-          PRIMARY_CHROMA_MAX + CHROMA_TOLERANCE,
-        )
-        expect(Math.abs(capped.L - base.L)).toBeLessThanOrEqual(0.02)
-      },
-    )
-
-    it.each(ACCENT_COLORS)(
-      "%s: light mode fills are untouched",
-      (accentColor) => {
-        const tokens = build(accentColor, "light")
-
+    it.each(ACCENT_COLORS)("%s: light mode ignores the axis", (accentColor) => {
+      for (const step of VIBRANCIES) {
+        const tokens = build(accentColor, "light", step)
         expect(tokens["--primary"]).toBe(accentColors[accentColor][500])
         expect(tokens["--primary-fill"]).toBe(accentColors[accentColor][500])
-      },
-    )
-
-    it.each(["amber", "yellow", "lime"] as const)(
-      "%s: takes the ink label in light mode instead of unreadable white",
-      (accentColor) => {
-        expect(build(accentColor, "light")["--primary-foreground"]).toBe(
-          "222 47% 11%",
-        )
-      },
-    )
-
-    it("keeps white labels on every accent in dark mode", () => {
-      for (const accentColor of ACCENT_COLORS) {
-        expect(build(accentColor, "dark")["--primary-foreground"]).toBe(
-          "0 0% 100%",
-        )
       }
     })
 
-    it("normalizes the glass preset's brighter shade to the same fill", () => {
+    it("light glass keeps its own shade at every step", () => {
+      for (const step of VIBRANCIES) {
+        const tokens = build("blue", "light", step, "glass")
+        expect(tokens["--primary"]).toBe(accentColors.blue[600])
+      }
+    })
+  })
+
+  describe("calm reproduces the pre-axis tokens", () => {
+    // Captured from the engine before the axis existed. This is the regression
+    // guard that lets a project restore its previous appearance exactly by
+    // selecting "calm"; it must never be regenerated to match new output.
+    const CALM_SNAPSHOT = {
+      red: { fill: "355 79% 45%", primary: "1 81% 60%" },
+      orange: { fill: "26 98% 35%", primary: "25 95% 53%" },
+      amber: { fill: "38 100% 30%", primary: "38 92% 50%" },
+      yellow: { fill: "45 96% 28%", primary: "45 93% 47%" },
+      lime: { fill: "83 95% 25%", primary: "85 73% 46%" },
+      green: { fill: "146 98% 26%", primary: "142 71% 45%" },
+      emerald: { fill: "160 90% 27%", primary: "160 84% 39%" },
+      teal: { fill: "173 88% 27%", primary: "173 80% 40%" },
+      cyan: { fill: "189 89% 30%", primary: "189 94% 43%" },
+      sky: { fill: "199 92% 35%", primary: "199 89% 48%" },
+      blue: { fill: "217 74% 49%", primary: "217 91% 60%" },
+      indigo: { fill: "240 70% 61%", primary: "239 82% 67%" },
+      violet: { fill: "259 72% 58%", primary: "257 78% 65%" },
+      purple: { fill: "273 68% 53%", primary: "270 74% 64%" },
+      fuchsia: { fill: "292 74% 43%", primary: "292 63% 62%" },
+      pink: { fill: "326 82% 42%", primary: "331 76% 61%" },
+      rose: { fill: "342 99% 40%", primary: "351 82% 61%" },
+    } as const
+
+    it.each(ACCENT_COLORS)("%s", (accentColor) => {
       const tokens = generateTokens({
-        accentColor: "blue",
+        accentColor,
         surfaceColor: "slate",
-        preset: "glass",
+        preset: "default",
         backgroundStyle: "solid",
         mode: "dark",
+        accentVibrancy: "calm",
       })
-
-      expect(
-        Math.abs(
-          hslStringToOklch(tokens["--primary-fill"] as string).L -
-            FILL_LIGHTNESS,
-        ),
-      ).toBeLessThanOrEqual(0.02)
-    })
-
-    it("emits a fill for every preset so none can go stale", () => {
-      for (const preset of Object.keys(presets) as PresetName[]) {
-        const tokens = generateTokens({
-          accentColor: "blue",
-          surfaceColor: "slate",
-          preset,
-          backgroundStyle: "solid",
-          mode: "dark",
-        })
-
-        expect(tokens["--primary-fill"], preset).toBeTruthy()
-      }
+      expect(tokens["--primary-fill"]).toBe(CALM_SNAPSHOT[accentColor].fill)
+      expect(tokens["--primary"]).toBe(CALM_SNAPSHOT[accentColor].primary)
     })
   })
 })

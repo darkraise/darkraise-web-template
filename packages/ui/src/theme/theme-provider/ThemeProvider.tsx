@@ -349,6 +349,7 @@ export function ThemeProvider({
         preset: presetName,
         backgroundStyle: bgStyle,
         mode: resolved,
+        accentVibrancy: "balanced",
       })
 
       // Preset-owned tokens (if the preset declares any cross-axis math).
