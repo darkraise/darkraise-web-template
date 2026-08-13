@@ -32,7 +32,7 @@ const config: ThemeConfig = {
       backgroundStyle: false,
       backgroundIntensity: false,
       gradientPattern: false,
-      density: false,
+      density: true,
       elevation: false,
       buttonElevation: false,
       radius: false,
@@ -67,5 +67,21 @@ describe("ThemeSwitcher labels", () => {
     renderSwitcher({ theme: { axisLabels: { mode: "Chế độ" } } })
     await user.click(screen.getByRole("button"))
     expect(screen.getByText("Chế độ")).toBeInTheDocument()
+  })
+
+  it("wires the mode toggle group's accessible name to axisLabels.mode", async () => {
+    const user = userEvent.setup()
+    renderSwitcher({ theme: { axisLabels: { mode: "Chế độ" } } })
+    await user.click(screen.getByRole("button"))
+    expect(
+      screen.getByRole("radiogroup", { name: "Chế độ" }),
+    ).toBeInTheDocument()
+  })
+
+  it("wires the density axis control's accessible name to axisLabels.density", async () => {
+    const user = userEvent.setup()
+    renderSwitcher({ theme: { axisLabels: { density: "Mật độ" } } })
+    await user.click(screen.getByRole("button"))
+    expect(screen.getByRole("slider", { name: "Mật độ" })).toBeInTheDocument()
   })
 })

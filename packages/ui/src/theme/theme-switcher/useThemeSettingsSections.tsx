@@ -139,7 +139,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
               }}
               variant="outline"
               size="sm"
-              aria-label="Mode"
+              aria-label={labels.theme.axisLabels.mode}
               className="dr-theme-switcher-toggle-group"
               data-cols="3"
             >
@@ -169,7 +169,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
             }}
             variant="outline"
             size="sm"
-            aria-label="Preset"
+            aria-label={labels.theme.axisLabels.preset}
             className="dr-theme-switcher-toggle-group"
             /* Cap at 3 cols so 6+ presets wrap to multiple rows instead
                of cramming into a single horizontal strip too narrow to
@@ -237,7 +237,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
             }}
             variant="outline"
             size="sm"
-            aria-label="Background"
+            aria-label={labels.theme.axisLabels.backgroundStyle}
             className="dr-theme-switcher-toggle-group"
             data-cols="2"
           >
@@ -372,7 +372,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
               values={DENSITIES}
               value={density}
               onChange={setDensity}
-              label="Density"
+              label={labels.theme.axisLabels.density}
             />
           </div>
         ),
@@ -426,7 +426,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
               values={ELEVATIONS}
               value={elevation}
               onChange={setElevation}
-              label="Elevation"
+              label={labels.theme.axisLabels.elevation}
             />
           </div>
         ),
@@ -462,7 +462,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
               values={RADII}
               value={radius}
               onChange={setRadius}
-              label="Radius"
+              label={labels.theme.axisLabels.radius}
             />
           </div>
         ),
