@@ -63,6 +63,22 @@ Once added, the new `accentVibrancy: "balanced"` default renders exactly as befo
 - Every chart logged recharts' `width(-1) and height(-1)` warning on mount. `ResponsiveContainer` defaults `initialDimension` to `-1 × -1` and warns during the render before its `ResizeObserver` fires, which no container CSS can prevent; `ChartContainer` now seeds a positive size.
 - `ThemeSettingsPanel`'s `page` layout painted toggle labels outside their own cell and over the neighbouring one, and clipped the last column off both swatch grids. Its axis rows reserved a fixed 8rem label column beside the control, a budget sized for the 34rem popover; in the two-column page grid each column is roughly 19rem, leaving too little for a three- or four-cell toggle group or the 16.5rem swatch grid. Rows now stack the label above a full-width control below 26rem of available width, measured with a container query against the panel rather than the viewport, so the popover is unchanged. Swatch grids wrap to fewer than nine per row instead of clipping, and a toggle cell clips its own label rather than overlapping its neighbour.
 
+## [4.1.0] — 2026-08-14
+
+Additive release. No breaking changes; existing component APIs are unchanged.
+
+### Added
+
+- `darkraise-ui/labels` entry point exporting `UiLabels`, `defaultLabels`, `UiLabelsProvider`, and `useUiLabels()`. The data table, layout shell (including `SkipLink`), theme switcher, and error pages read their strings through it, defaulting to English with no provider mounted. Nested providers merge over the nearest ancestor, so a subtree can override a subset of keys. Some label values are functions (`pageInfo`, `rowsSelected`, `searchWithShortcut`) so a language that orders operands differently expresses that in its own function body. The package ships no translations and has no concept of a locale.
+
+### Changed
+
+- Five `aria-label` values on the theme switcher's axis controls, so translated apps do not strand screen-reader users on English strings when labels are overridden.
+
+### Removed
+
+- The Sci-fi preset's stylesheet no longer `@import`s Orbitron from Google Fonts. It renders Orbitron only when the host system or the consuming app already provides the font, falling through to Rajdhani and the generic families otherwise. This removes a third-party network request from every page load of every consuming app; a build guard now throws if any absolute `@import` reaches the bundle.
+
 ## [3.0.0] — 2026-05-07
 
 Major release. The zero-dep components initiative replaces every external runtime dependency that backed a component primitive with an in-house implementation. The public API of every component is preserved (anatomy parts, prop names, accessibility contract). Where we shipped additional anatomy parts (`PopoverArrow`, `PopoverAnchor`, `PopoverClose`, `TooltipArrow`), they are additive. Where minor behavior changed, it is documented below.
