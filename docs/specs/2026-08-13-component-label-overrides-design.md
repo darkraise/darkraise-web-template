@@ -131,7 +131,8 @@ interface UiLabels {
   theme: {
     title: string
     triggerLabel: string
-    sections: Record<ThemeSectionKey, string>
+    groupLabels: Record<ThemeSettingsGroup, string>
+    axisLabels: Record<keyof ThemeConfig["switcher"]["axes"], string>
     modes: { light: string; dark: string; system: string }
   }
   errors: {
@@ -155,10 +156,11 @@ that orders the operands differently, or needs a plural form, expresses that in
 its own function body. `pageInfo: (p, n) => \`Trang ${p} / ${n}\`` is the whole
 of the Vietnamese implementation.
 
-`ThemeSectionKey` is the existing union already used by
-`useThemeSettingsSections`; reusing it means adding a theme axis in a later
-version is a compile error in `defaultLabels` rather than a silently untranslated
-section.
+`ThemeSettingsGroup` and the axis-name union are both existing types —
+`useThemeSettingsSections` already declares the former, and the latter falls
+out of `ThemeConfig["switcher"]["axes"]`. Keying off them means adding a theme
+axis or group in a later version is a compile error in `defaultLabels` rather
+than a silently untranslated section.
 
 Theme _preset_ names (Brutalist, Playful, Glow, Sci-fi) are deliberately
 excluded — they are product names for the presets, not UI copy.
