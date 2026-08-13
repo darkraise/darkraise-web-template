@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useRouterAdapter } from "@router"
 import { Search } from "lucide-react"
 import { useKeyboardEvent } from "@hooks"
+import { useUiLabels } from "@labels"
 import {
   CommandDialog,
   CommandEmpty,
@@ -48,6 +49,7 @@ export function SearchCommand({
   navItems = [],
   collapsed = false,
 }: SearchCommandProps) {
+  const labels = useUiLabels()
   const [open, setOpen] = useState(false)
   const navigate = useRouterAdapter().useNavigate()
 
@@ -71,23 +73,27 @@ export function SearchCommand({
         className="dr-search-command-trigger"
         data-collapsed={collapsed ? "true" : undefined}
         onClick={() => setOpen(true)}
-        aria-label={collapsed ? `Search (${SHORTCUT_LABEL})` : undefined}
-        title={collapsed ? `Search (${SHORTCUT_LABEL})` : undefined}
+        aria-label={
+          collapsed ? labels.layout.searchWithShortcut(SHORTCUT_LABEL) : undefined
+        }
+        title={
+          collapsed ? labels.layout.searchWithShortcut(SHORTCUT_LABEL) : undefined
+        }
       >
         <Search className="size-[var(--icon-size)]" />
         {!collapsed && (
           <>
-            <span>Search...</span>
+            <span>{labels.layout.search}</span>
             <kbd className="dr-search-command-shortcut">{SHORTCUT_LABEL}</kbd>
           </>
         )}
       </Button>
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder="Type a command or search..." />
+        <CommandInput placeholder={labels.layout.searchDialogPlaceholder} />
         <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
+          <CommandEmpty>{labels.layout.searchEmpty}</CommandEmpty>
           {navItems.length > 0 && (
-            <CommandGroup heading="Navigation">
+            <CommandGroup heading={labels.layout.navigationHeading}>
               {navItems.map((item) => (
                 <CommandItem
                   key={item.href}

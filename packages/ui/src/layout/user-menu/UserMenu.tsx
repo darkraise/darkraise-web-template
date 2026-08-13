@@ -9,6 +9,7 @@ import {
 } from "@components/dropdown-menu"
 import { Avatar, AvatarFallback } from "@components/avatar"
 import { Button } from "@components/button"
+import { useUiLabels } from "@labels"
 
 interface UserMenuProps {
   user?: { name: string; email: string }
@@ -23,6 +24,7 @@ export function UserMenu({
   onSettings,
   onLogout,
 }: UserMenuProps) {
+  const labels = useUiLabels()
   const initials = user?.name
     ? user.name
         .split(" ")
@@ -55,20 +57,20 @@ export function UserMenu({
         {onProfile && (
           <DropdownMenuItem onClick={onProfile}>
             <User className="dr-user-menu-item-icon" />
-            Profile
+            {labels.userMenu.profile}
           </DropdownMenuItem>
         )}
         {onSettings && (
           <DropdownMenuItem onClick={onSettings}>
             <Settings className="dr-user-menu-item-icon" />
-            Settings
+            {labels.userMenu.settings}
           </DropdownMenuItem>
         )}
         {(onProfile || onSettings) && onLogout && <DropdownMenuSeparator />}
         {onLogout && (
           <DropdownMenuItem onClick={onLogout}>
             <LogOut className="dr-user-menu-item-icon" />
-            Log out
+            {labels.userMenu.logout}
           </DropdownMenuItem>
         )}
       </DropdownMenuContent>

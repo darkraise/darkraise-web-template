@@ -11,6 +11,7 @@ import { SidebarNav } from "./SidebarNav"
 import type { SidebarActiveBar } from "./SidebarNav"
 import { SidebarProvider } from "./SidebarContext"
 import type { LayoutProps } from "@layout/types"
+import { useUiLabels } from "@labels"
 
 export function SidebarLayout({
   children,
@@ -26,6 +27,7 @@ export function SidebarLayout({
   onSettings,
   onLogout,
 }: LayoutProps) {
+  const labels = useUiLabels()
   const [collapsed, setCollapsed] = useState(false)
   // Starts unset so nobody's sidebar changes appearance unless they ask:
   // each preset renders its own default indicator until the control below
@@ -75,7 +77,7 @@ export function SidebarLayout({
     <TooltipProvider delayDuration={0}>
       <SidebarProvider collapsed={collapsed}>
         <div className="dr-sidebar-layout">
-          <SkipLink />
+          <SkipLink>{labels.layout.skipToContent}</SkipLink>
           <aside
             aria-label="Primary"
             aria-expanded={!collapsed}
@@ -89,7 +91,11 @@ export function SidebarLayout({
                 size="icon"
                 className="dr-sidebar-nav-item dr-sidebar-layout-toggle"
                 onClick={() => setCollapsed(!collapsed)}
-                aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+                aria-label={
+                  collapsed
+                    ? labels.layout.expandSidebar
+                    : labels.layout.collapseSidebar
+                }
               >
                 {collapsed ? (
                   <PanelLeft className="size-[var(--icon-size)]" />
