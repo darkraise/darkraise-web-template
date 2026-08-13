@@ -11,6 +11,7 @@ export default defineConfig({
       "@errors": path.resolve(__dirname, "src/errors"),
       "@forms": path.resolve(__dirname, "src/forms"),
       "@hooks": path.resolve(__dirname, "src/hooks"),
+      "@labels": path.resolve(__dirname, "src/labels"),
       "@layout": path.resolve(__dirname, "src/layout"),
       "@lib": path.resolve(__dirname, "src/lib"),
       "@primitives": path.resolve(__dirname, "src/primitives"),

@@ -24,6 +24,7 @@ export default defineConfig({
     "forms/index": "src/forms/index.ts",
     "data-table/index": "src/data-table/index.ts",
     "lib/index": "src/lib/index.ts",
+    "labels/index": "src/labels/index.ts",
     ...componentEntries,
   },
   format: ["esm"],
