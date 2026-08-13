@@ -25,7 +25,7 @@ function inlineRelativeImports(
   })
 }
 
-const ABSOLUTE_IMPORT_RE = /@import\s+url\(\s*["']?https?:/
+const ABSOLUTE_IMPORT_RE = /@import\s+(?:url\(\s*)?["']?https?:/
 
 function main() {
   const theme = readFileSync(themePath, "utf8")

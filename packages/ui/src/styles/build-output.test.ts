@@ -10,6 +10,6 @@ describe("published stylesheet", () => {
       throw new Error("run `pnpm --filter darkraise-ui build` before this test")
     }
     const css = readFileSync(dist, "utf8")
-    expect(css).not.toMatch(/@import\s+url\(\s*["']?https?:/)
+    expect(css).not.toMatch(/@import\s+(?:url\(\s*)?["']?https?:/)
   })
 })
