@@ -1,11 +1,3 @@
-/* Orbitron — signature sci-fi face (Tron / BSG / modern HUD UI kits).
-   Used by the Sci-fi preset's --font-sans rebind. MUST be the very
-   first @import in this file: `@import "tailwindcss"` expands to
-   thousands of lines of CSS (including @property declarations), and
-   any @import that comes after those rules in source order ends up
-   after them in the bundle and trips PostCSS's "must precede all
-   other statements" check. */
-@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 

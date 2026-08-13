@@ -25,9 +25,19 @@ function inlineRelativeImports(
   })
 }
 
+const ABSOLUTE_IMPORT_RE = /@import\s+url\(\s*["']?https?:/
+
 function main() {
   const theme = readFileSync(themePath, "utf8")
   const flat = inlineRelativeImports(theme, themePath)
+
+  if (ABSOLUTE_IMPORT_RE.test(flat)) {
+    throw new Error(
+      "build-css: an absolute @import reached the bundle. Consumers must not " +
+        "make third-party requests at stylesheet load time.",
+    )
+  }
+
   mkdirSync(dirname(outPath), { recursive: true })
   writeFileSync(outPath, flat)
   console.log(`[build-css] wrote ${outPath} (${flat.length} bytes)`)

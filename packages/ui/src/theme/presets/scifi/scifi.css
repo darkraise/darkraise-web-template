@@ -1,10 +1,14 @@
 /* packages/ui/src/theme/presets/scifi/scifi.css
  *
- * Note: the Orbitron Google Fonts @import lives at the top of
- * theme.css (CSS spec requires @import to precede every other rule;
- * embedding it here would trip Vite/PostCSS since scifi.css itself is
- * @imported into theme.css mid-file). The --font-sans rebind in
- * scifi.ts references the Orbitron family loaded there.
+ * Note: Orbitron is NOT fetched from Google Fonts (a third-party
+ * @import in the published stylesheet would make every consumer's
+ * page issue an outbound request at load time, preset or no preset —
+ * see build-css.ts's absolute-@import guard). The --font-sans rebind
+ * in scifi.ts lists 'Orbitron' first and falls back through
+ * 'Rajdhani' / 'Eurostile' / 'Bank Gothic' / 'Microgramma' to
+ * system-ui, sans-serif; it renders as Orbitron only when the host
+ * system or the consuming app provides that family, and is applied
+ * as an inline style only while the Sci-fi preset is active.
  *
  * Drives the Sci-fi HUD aesthetic from two preset axes:
  *   - intensity (dim/normal/bright/intense): glow strength on borders,
