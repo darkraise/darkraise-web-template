@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@components/dropdown-menu"
 import type { Table } from "@tanstack/react-table"
+import { useUiLabels } from "@labels"
 
 interface ColumnVisibilityProps<TData> {
   table: Table<TData>
@@ -17,6 +18,7 @@ interface ColumnVisibilityProps<TData> {
 export function ColumnVisibility<TData>({
   table,
 }: ColumnVisibilityProps<TData>) {
+  const labels = useUiLabels()
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -26,11 +28,11 @@ export function ColumnVisibility<TData>({
           className="dr-data-table-column-visibility-trigger"
         >
           <SlidersHorizontal className="mr-2 size-[var(--icon-size)]" />
-          Columns
+          {labels.dataTable.columns}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
+        <DropdownMenuLabel>{labels.dataTable.toggleColumns}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {table
           .getAllColumns()

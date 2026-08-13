@@ -18,10 +18,12 @@ import {
   SelectValue,
 } from "@components/select"
 import type { DataTablePaginationProps } from "@data-table/types"
+import { useUiLabels } from "@labels"
 
 export function DataTablePagination<TData>({
   table,
 }: DataTablePaginationProps<TData>) {
+  const labels = useUiLabels()
   const selectedCount = table.getFilteredSelectedRowModel().rows.length
   const filteredCount = table.getFilteredRowModel().rows.length
   return (
@@ -33,12 +35,14 @@ export function DataTablePagination<TData>({
           subsequent selection changes for AT users. */}
       {selectedCount > 0 && (
         <div className="dr-data-table-pagination-summary" aria-live="polite">
-          {selectedCount} of {filteredCount} row(s) selected
+          {labels.dataTable.rowsSelected(selectedCount, filteredCount)}
         </div>
       )}
       <div className="dr-data-table-pagination-controls">
         <div className="dr-data-table-pagination-page-size">
-          <p className="dr-data-table-pagination-page-info">Rows per page</p>
+          <p className="dr-data-table-pagination-page-info">
+            {labels.dataTable.rowsPerPage}
+          </p>
           <Select
             value={`${table.getState().pagination.pageSize}`}
             onValueChange={(v) => table.setPageSize(Number(v))}
@@ -56,8 +60,10 @@ export function DataTablePagination<TData>({
           </Select>
         </div>
         <div className="dr-data-table-pagination-page-info">
-          Page {table.getState().pagination.pageIndex + 1} of{" "}
-          {table.getPageCount()}
+          {labels.dataTable.pageInfo(
+            table.getState().pagination.pageIndex + 1,
+            table.getPageCount(),
+          )}
         </div>
         <Pagination>
           <PaginationContent>

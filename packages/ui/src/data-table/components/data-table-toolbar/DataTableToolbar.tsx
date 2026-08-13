@@ -3,12 +3,14 @@ import { Input } from "@components/input"
 import { Button } from "@components/button"
 import { ColumnVisibility } from "@data-table/components/column-visibility"
 import type { DataTableToolbarProps } from "@data-table/types"
+import { useUiLabels } from "@labels"
 
 export function DataTableToolbar<TData>({
   table,
   searchKey,
-  searchPlaceholder = "Search...",
+  searchPlaceholder,
 }: DataTableToolbarProps<TData>) {
+  const labels = useUiLabels()
   const isFiltered = table.getState().columnFilters.length > 0
 
   return (
@@ -16,7 +18,7 @@ export function DataTableToolbar<TData>({
       <div className="dr-data-table-toolbar-filters">
         {searchKey && (
           <Input
-            placeholder={searchPlaceholder}
+            placeholder={searchPlaceholder ?? labels.dataTable.search}
             value={
               (table.getColumn(searchKey)?.getFilterValue() as string) ?? ""
             }
@@ -32,7 +34,7 @@ export function DataTableToolbar<TData>({
             className="dr-data-table-toolbar-reset"
             onClick={() => table.resetColumnFilters()}
           >
-            Reset
+            {labels.dataTable.reset}
             <X className="ml-2 size-[var(--icon-size)]" />
           </Button>
         )}
