@@ -2,11 +2,13 @@ import { FileQuestion } from "lucide-react"
 import { Button } from "@components/button"
 import { useOptionalRouterAdapter } from "@router"
 import { ErrorLayout } from "@errors/error-layout"
+import { useUiLabels } from "@labels"
 
 export function NotFoundPage() {
   const { useNavigate, useBack } = useOptionalRouterAdapter()
   const navigate = useNavigate()
   const back = useBack()
+  const labels = useUiLabels()
 
   return (
     <ErrorLayout
@@ -17,13 +19,13 @@ export function NotFoundPage() {
         />
       }
       code="404"
-      title="Page not found"
-      description="The page you're looking for doesn't exist or has been moved."
+      title={labels.errors.notFoundTitle}
+      description={labels.errors.notFoundDescription}
     >
       <Button variant="outline" onClick={back}>
-        Go back
+        {labels.errors.goBack}
       </Button>
-      <Button onClick={() => navigate("/")}>Back to home</Button>
+      <Button onClick={() => navigate("/")}>{labels.errors.backHome}</Button>
     </ErrorLayout>
   )
 }

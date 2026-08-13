@@ -2,11 +2,13 @@ import { ServerCrash } from "lucide-react"
 import { Button } from "@components/button"
 import { useOptionalRouterAdapter } from "@router"
 import { ErrorLayout } from "@errors/error-layout"
+import { useUiLabels } from "@labels"
 
 export function ServerErrorPage() {
   const { useNavigate, useInvalidate } = useOptionalRouterAdapter()
   const navigate = useNavigate()
   const invalidate = useInvalidate()
+  const labels = useUiLabels()
 
   return (
     <ErrorLayout
@@ -17,13 +19,13 @@ export function ServerErrorPage() {
         />
       }
       code="500"
-      title="Server error"
-      description="Something went wrong on our end. Please try again later."
+      title={labels.errors.serverErrorTitle}
+      description={labels.errors.serverErrorDescription}
     >
       <Button variant="outline" onClick={invalidate}>
-        Retry
+        {labels.errors.retry}
       </Button>
-      <Button onClick={() => navigate("/")}>Back to home</Button>
+      <Button onClick={() => navigate("/")}>{labels.errors.backHome}</Button>
     </ErrorLayout>
   )
 }

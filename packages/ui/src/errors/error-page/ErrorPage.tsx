@@ -2,6 +2,7 @@ import { TriangleAlert } from "lucide-react"
 import { Button } from "@components/button"
 import { useOptionalRouterAdapter } from "@router"
 import { ErrorLayout } from "@errors/error-layout"
+import { useUiLabels } from "@labels"
 
 export interface ErrorPageProps {
   error: unknown
@@ -12,8 +13,9 @@ export function ErrorPage({ error, reset }: ErrorPageProps) {
   const { useNavigate, useInvalidate } = useOptionalRouterAdapter()
   const navigate = useNavigate()
   const invalidate = useInvalidate()
+  const labels = useUiLabels()
   const message =
-    error instanceof Error ? error.message : "An unexpected error occurred."
+    error instanceof Error ? error.message : labels.errors.genericDescription
 
   return (
     <ErrorLayout
@@ -23,7 +25,7 @@ export function ErrorPage({ error, reset }: ErrorPageProps) {
           strokeWidth={1.5}
         />
       }
-      title="Something went wrong"
+      title={labels.errors.genericTitle}
       description={message}
     >
       <Button
@@ -33,9 +35,9 @@ export function ErrorPage({ error, reset }: ErrorPageProps) {
           invalidate()
         }}
       >
-        Try again
+        {labels.errors.tryAgain}
       </Button>
-      <Button onClick={() => navigate("/")}>Back to home</Button>
+      <Button onClick={() => navigate("/")}>{labels.errors.backHome}</Button>
     </ErrorLayout>
   )
 }
