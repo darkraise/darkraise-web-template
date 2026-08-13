@@ -3,6 +3,7 @@ import { Palette } from "lucide-react"
 import { cn } from "@lib/utils"
 import { Button } from "@components/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@components/popover"
+import { useUiLabels } from "@labels"
 import { ThemeSettingsPanel } from "./ThemeSettingsPanel"
 import { useThemeSettingsSections } from "./useThemeSettingsSections"
 import "./theme-switcher.css"
@@ -36,9 +37,12 @@ export function ThemeSwitcher({
   align = "end",
   className,
   role = "dialog",
-  "aria-label": ariaLabel = "Theme settings",
-  triggerLabel = "Customize theme",
+  "aria-label": ariaLabel,
+  triggerLabel,
 }: ThemeSwitcherProps = {}) {
+  const labels = useUiLabels()
+  const resolvedAriaLabel = ariaLabel ?? labels.theme.title
+  const resolvedTriggerLabel = triggerLabel ?? labels.theme.triggerLabel
   const visibleSections = useThemeSettingsSections()
 
   if (visibleSections.length === 0) return null
@@ -53,7 +57,7 @@ export function ThemeSwitcher({
       <PopoverTrigger asChild>
         <Button variant="ghost" size="icon">
           <Palette className="size-[var(--icon-size)]" />
-          <span className="sr-only">{triggerLabel}</span>
+          <span className="sr-only">{resolvedTriggerLabel}</span>
         </Button>
       </PopoverTrigger>
       <PopoverContent
@@ -67,7 +71,7 @@ export function ThemeSwitcher({
         side={side}
         align={align}
         role={role}
-        aria-label={ariaLabel}
+        aria-label={resolvedAriaLabel}
         onCloseAutoFocus={onCloseAutoFocus}
       >
         <ThemeSettingsPanel />

@@ -162,7 +162,7 @@ describe("ThemeSwitcher preset section", () => {
       </ThemeProvider>,
     )
     openSwitcher()
-    const slider = screen.getByRole("slider", { name: "Accent vibrancy" })
+    const slider = screen.getByRole("slider", { name: "Accent Vibrancy" })
     const row = screen
       .getByText("Accent Vibrancy")
       .closest(".dr-theme-switcher-row") as HTMLElement

@@ -28,6 +28,7 @@ import {
   type ThemePreset,
 } from "@theme/presets"
 import { accentColors } from "@theme/palettes/accentColors"
+import { useUiLabels } from "@labels"
 import { AxisControl } from "./AxisControl"
 
 export type ThemeSettingsGroup =
@@ -45,12 +46,6 @@ export interface ThemeSettingsSection {
   node: React.ReactNode
 }
 
-const modeOptions: { value: Mode; icon: typeof Sun; label: string }[] = [
-  { value: "light", icon: Sun, label: "Light" },
-  { value: "dark", icon: Moon, label: "Dark" },
-  { value: "system", icon: Monitor, label: "System" },
-]
-
 /**
  * Builds the visible theme axis controls.
  *
@@ -59,6 +54,7 @@ const modeOptions: { value: Mode; icon: typeof Sun; label: string }[] = [
  * entirely rather than offering a button that opens an empty panel.
  */
 export function useThemeSettingsSections(): ThemeSettingsSection[] {
+  const labels = useUiLabels()
   const {
     accentColor,
     surfaceColor,
@@ -91,6 +87,12 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
     setAccentVibrancy,
     setPresetAxis,
   } = useTheme()
+
+  const modeOptions: { value: Mode; icon: typeof Sun; label: string }[] = [
+    { value: "light", icon: Sun, label: labels.theme.modes.light },
+    { value: "dark", icon: Moon, label: labels.theme.modes.dark },
+    { value: "system", icon: Monitor, label: labels.theme.modes.system },
+  ]
 
   const bgOptions: {
     value: BackgroundStyle
@@ -126,7 +128,9 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
         group: "theme" as const,
         node: (
           <div key="mode" className="dr-theme-switcher-row">
-            <Label className="dr-theme-switcher-section-label">Mode</Label>
+            <Label className="dr-theme-switcher-section-label">
+              {labels.theme.axisLabels.mode}
+            </Label>
             <ToggleGroup
               type="single"
               value={mode}
@@ -154,7 +158,9 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
       group: "theme" as const,
       node: (
         <div key="preset" className="dr-theme-switcher-row">
-          <Label className="dr-theme-switcher-section-label">Preset</Label>
+          <Label className="dr-theme-switcher-section-label">
+            {labels.theme.axisLabels.preset}
+          </Label>
           <ToggleGroup
             type="single"
             value={preset}
@@ -220,7 +226,9 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
       group: "background" as const,
       node: (
         <div key="backgroundStyle" className="dr-theme-switcher-row">
-          <Label className="dr-theme-switcher-section-label">Background</Label>
+          <Label className="dr-theme-switcher-section-label">
+            {labels.theme.axisLabels.backgroundStyle}
+          </Label>
           <ToggleGroup
             type="single"
             value={backgroundStyle}
@@ -250,13 +258,13 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
         node: (
           <div key="backgroundIntensity" className="dr-theme-switcher-row">
             <Label className="dr-theme-switcher-section-label">
-              Background Intensity
+              {labels.theme.axisLabels.backgroundIntensity}
             </Label>
             <AxisControl
               values={BACKGROUND_INTENSITIES}
               value={backgroundIntensity}
               onChange={setBackgroundIntensity}
-              label="Background intensity"
+              label={labels.theme.axisLabels.backgroundIntensity}
             />
           </div>
         ),
@@ -268,7 +276,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
         node: (
           <div key="gradientPattern" className="dr-theme-switcher-row">
             <Label className="dr-theme-switcher-section-label">
-              Gradient Pattern
+              {labels.theme.axisLabels.gradientPattern}
             </Label>
             <ToggleGroup
               type="single"
@@ -278,7 +286,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
               }}
               variant="outline"
               size="sm"
-              aria-label="Gradient pattern"
+              aria-label={labels.theme.axisLabels.gradientPattern}
               className="dr-theme-switcher-toggle-group"
               data-cols={GRADIENT_PATTERNS.length}
             >
@@ -301,7 +309,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
       node: (
         <div key="accentColor" className="dr-theme-switcher-row">
           <Label className="dr-theme-switcher-section-label">
-            Accent Color
+            {labels.theme.axisLabels.accentColor}
           </Label>
           <div className="dr-theme-switcher-swatch-grid">
             {ACCENT_COLORS.map((color: AccentColor) => (
@@ -327,7 +335,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
       node: (
         <div key="surfaceColor" className="dr-theme-switcher-row">
           <Label className="dr-theme-switcher-section-label">
-            Surface Color
+            {labels.theme.axisLabels.surfaceColor}
           </Label>
           <div className="dr-theme-switcher-swatch-grid">
             {SURFACE_COLORS.map((color: SurfaceColor) => {
@@ -357,7 +365,9 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
         group: "layout" as const,
         node: (
           <div key="density" className="dr-theme-switcher-row">
-            <Label className="dr-theme-switcher-section-label">Density</Label>
+            <Label className="dr-theme-switcher-section-label">
+              {labels.theme.axisLabels.density}
+            </Label>
             <AxisControl
               values={DENSITIES}
               value={density}
@@ -373,12 +383,14 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
         group: "layout" as const,
         node: (
           <div key="fontSize" className="dr-theme-switcher-row">
-            <Label className="dr-theme-switcher-section-label">Font Size</Label>
+            <Label className="dr-theme-switcher-section-label">
+              {labels.theme.axisLabels.fontSize}
+            </Label>
             <AxisControl
               values={FONT_SIZES}
               value={fontSize}
               onChange={setFontSize}
-              label="Font size"
+              label={labels.theme.axisLabels.fontSize}
             />
           </div>
         ),
@@ -390,13 +402,13 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
         node: (
           <div key="accentVibrancy" className="dr-theme-switcher-row">
             <Label className="dr-theme-switcher-section-label">
-              Accent Vibrancy
+              {labels.theme.axisLabels.accentVibrancy}
             </Label>
             <AxisControl
               values={ACCENT_VIBRANCIES}
               value={accentVibrancy}
               onChange={setAccentVibrancy}
-              label="Accent vibrancy"
+              label={labels.theme.axisLabels.accentVibrancy}
             />
           </div>
         ),
@@ -407,7 +419,9 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
         group: "depth" as const,
         node: (
           <div key="elevation" className="dr-theme-switcher-row">
-            <Label className="dr-theme-switcher-section-label">Elevation</Label>
+            <Label className="dr-theme-switcher-section-label">
+              {labels.theme.axisLabels.elevation}
+            </Label>
             <AxisControl
               values={ELEVATIONS}
               value={elevation}
@@ -424,13 +438,13 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
         node: (
           <div key="buttonElevation" className="dr-theme-switcher-row">
             <Label className="dr-theme-switcher-section-label">
-              Button Elevation
+              {labels.theme.axisLabels.buttonElevation}
             </Label>
             <AxisControl
               values={ELEVATIONS}
               value={buttonElevation}
               onChange={setButtonElevation}
-              label="Button elevation"
+              label={labels.theme.axisLabels.buttonElevation}
             />
           </div>
         ),
@@ -441,7 +455,9 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
         group: "layout" as const,
         node: (
           <div key="radius" className="dr-theme-switcher-row">
-            <Label className="dr-theme-switcher-section-label">Radius</Label>
+            <Label className="dr-theme-switcher-section-label">
+              {labels.theme.axisLabels.radius}
+            </Label>
             <AxisControl
               values={RADII}
               value={radius}

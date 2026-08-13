@@ -1,5 +1,6 @@
 import { cn } from "@lib/utils"
 import { Separator } from "@components/separator"
+import { useUiLabels } from "@labels"
 import {
   useThemeSettingsSections,
   type ThemeSettingsGroup,
@@ -12,34 +13,33 @@ export interface ThemeSettingsPanelProps {
   className?: string
 }
 
-/* Typed as a full Record so adding a group to ThemeSettingsGroup without a
-   label here is a compile error rather than a section silently dropped from
-   the page layout. Declaration order is the render order. */
-const GROUP_LABELS: Record<ThemeSettingsGroup, string> = {
-  theme: "Theme",
-  color: "Color",
-  background: "Background",
-  layout: "Layout",
-  depth: "Depth",
-}
-
-const GROUP_ORDER = (
-  Object.entries(GROUP_LABELS) as [ThemeSettingsGroup, string][]
-).map(([group, label]) => ({ group, label }))
-
 export function ThemeSettingsPanel({
   layout = "compact",
   className,
 }: ThemeSettingsPanelProps = {}) {
+  const labels = useUiLabels()
   const sections = useThemeSettingsSections()
 
   if (sections.length === 0) return null
 
   if (layout === "page") {
-    const groups = GROUP_ORDER.map((entry) => ({
-      ...entry,
-      sections: sections.filter((section) => section.group === entry.group),
-    })).filter((entry) => entry.sections.length > 0)
+    /* labels.theme.groupLabels is typed as a full Record<ThemeSettingsGroup,
+       string> (see labels/types.ts), so adding a group to ThemeSettingsGroup
+       without a label there is a compile error rather than a section
+       silently dropped from the page layout. Object spread in mergeLabels
+       preserves the base's key order, so this stays theme/color/background/
+       layout/depth even after a partial override. */
+    const groupOrder = Object.entries(labels.theme.groupLabels) as [
+      ThemeSettingsGroup,
+      string,
+    ][]
+    const groups = groupOrder
+      .map(([group, label]) => ({
+        group,
+        label,
+        sections: sections.filter((section) => section.group === group),
+      }))
+      .filter((entry) => entry.sections.length > 0)
 
     return (
       <div
