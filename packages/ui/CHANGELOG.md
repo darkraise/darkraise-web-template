@@ -4,6 +4,22 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 
 ## [Unreleased]
 
+Breaking: `SidebarNav` rebuilds the markup of an item that has `children`, and two of its class names are gone. The expanded row is now a `.dr-sidebar-nav-collapsible-row` wrapping a `.dr-sidebar-nav-link` and a separate `.dr-sidebar-nav-chevron-button`, in place of the single full-row trigger, so `.dr-sidebar-nav-collapsible-trigger` no longer exists. In the collapsed popover the `<p class="dr-sidebar-nav-popover-label">` heading is replaced by a link carrying `.dr-sidebar-popover-child.dr-sidebar-nav-popover-parent`, followed by a `.dr-sidebar-nav-popover-separator`. Consumers styling either removed class must retarget; presets are unaffected, since they key off `.dr-sidebar-nav-item`, which every new element carries. A parent whose `href` was a placeholder such as `"#"` now renders a live link to it — `href` has always been required on `NavItem`, and every other layout already navigates to a parent's own href.
+
+### Changed
+
+- `SidebarNav` parent items are navigable. Expanded, the row pairs a link to the item's own `href` with a separate chevron button that owns the toggle; collapsed, the rail item's popover opens with a link to the parent's route ahead of its children. Previously the whole expanded row was the collapsible trigger and the collapsed popover listed only children under a static heading, so a parent's own route could not be reached in either state. The same fix reaches `StackedLayout`, which renders `SidebarItem` for its sub-navigation.
+- `SidebarNav` parent groups follow the route instead of all mounting expanded. A group opens when the current path is its own or any descendant's — matched exactly or on a path-segment boundary, so `/settings` never claims `/settings-old` — and it opens again if navigation later moves into it. It never closes on its own: a group the user collapsed by hand stays collapsed when the route leaves it. A sidebar of five parents therefore boots showing only the one you are in, where every group used to start open regardless of where you were.
+- `StackedLayout` picks its active rail group by walking each item's children as well as the item itself, so a group whose match is a nested child now highlights rather than leaving the rail blank.
+
+### Fixed
+
+- A collapsed `SidebarNav` parent item had no accessible name. Its rail trigger was a `<button>` containing only an icon — no text, no `aria-label`, and unlike leaf items no tooltip — leaving screen-reader users with an unlabelled button. It now takes the item's label as its accessible name. The expanded chevron toggle is named the same way rather than "Expand"/"Collapse", since it also labels the submenu region and a state-varying name would rename that region on every toggle; `aria-expanded` carries the state.
+- A collapsed `SidebarNav` parent item never showed as active. Its rail icon stands in for the whole group, but nothing marked it when one of its children was the current page, so the collapsed rail could show no active item at all. It now carries `data-status="active"` whenever it or a descendant covers the route, picking up the same indicator every other item uses.
+- A `SidebarNav` parent item silently dropped its `badge`, and its label was a bare `<span>` without `.dr-sidebar-nav-label`, so it neither truncated nor flexed like every leaf label.
+
+## [5.0.0] — 2026-08-14
+
 Breaking: `ThemeConfig` gains two required properties, `defaults.fontSize` and `switcher.axes.fontSize`, matching the other eleven axes. Consumers passing their own `config` object must add both before upgrading:
 
 ```ts
