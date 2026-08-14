@@ -115,7 +115,7 @@ function writeProjectFile(targetDir, relPath, content) {
 }
 
 async function main() {
-  p.intro("create-darkraise-web-template")
+  p.intro("create-darkraise-ui")
 
   // --- Project name ---
   let projectName = argv._[0]

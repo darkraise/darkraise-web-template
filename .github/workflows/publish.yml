@@ -1,14 +1,15 @@
-name: Publish darkraise-ui
+name: Publish
 
-# Shared release job. Callers decide the version: pass a `ui-vX.Y.Z` tag to
-# release exactly that, or omit it to derive the next one from the commits
-# since the last tag.
+# Shared release job for both published packages. They move in lockstep on a
+# single version line, so one tag releases both. Callers decide the version:
+# pass a `vX.Y.Z` tag to release exactly that, or omit it to derive the next
+# one from the commits since the last tag.
 
 on:
   workflow_call:
     inputs:
       tag:
-        description: Release tag (ui-vX.Y.Z). Empty derives the next version.
+        description: Release tag (vX.Y.Z). Empty derives the next version.
         type: string
         default: ""
       dry_run:
@@ -20,8 +21,9 @@ on:
         required: true
 
 env:
-  PACKAGE: darkraise-ui
-  TAG_PREFIX: ui-v
+  UI_PACKAGE: darkraise-ui
+  CLI_PACKAGE: create-darkraise-ui
+  TAG_PREFIX: v
 
 jobs:
   resolve:
@@ -91,15 +93,22 @@ jobs:
       - name: Refuse to republish an existing version
         run: |
           set -euo pipefail
-          if npm view "$PACKAGE@$VERSION" version >/dev/null 2>&1; then
-            echo "::error::$PACKAGE@$VERSION is already on npm"
-            exit 1
-          fi
-          echo "$PACKAGE@$VERSION is free"
+          for pkg in "$UI_PACKAGE" "$CLI_PACKAGE"; do
+            if npm view "$pkg@$VERSION" version >/dev/null 2>&1; then
+              echo "::error::$pkg@$VERSION is already on npm"
+              exit 1
+            fi
+            echo "$pkg@$VERSION is free"
+          done
 
+      # One version line across both packages, so a release always stamps and
+      # publishes the pair even when only one of them changed.
       - name: Stamp the version
-        run: npm version "$VERSION" --no-git-tag-version --allow-same-version
-        working-directory: packages/ui
+        run: |
+          set -euo pipefail
+          for dir in packages/ui create-app; do
+            (cd "$dir" && npm version "$VERSION" --no-git-tag-version --allow-same-version)
+          done
 
       - name: Typecheck
         run: pnpm -r typecheck
@@ -111,24 +120,25 @@ jobs:
         run: pnpm test
 
       - name: Build
-        run: pnpm --filter "$PACKAGE" build
+        run: pnpm --filter "$UI_PACKAGE" build
 
       - name: Publish to npm
-        working-directory: packages/ui
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           set -euo pipefail
           # The build already ran, so prepublishOnly would only repeat it.
           args="--provenance --access public --ignore-scripts"
-          if [ "$DRY_RUN" = "true" ]; then
-            echo "dry run: npm publish $args"
-            npm publish $args --dry-run
-          else
-            npm publish $args
-          fi
+          for dir in packages/ui create-app; do
+            if [ "$DRY_RUN" = "true" ]; then
+              echo "dry run: npm publish $args ($dir)"
+              (cd "$dir" && npm publish $args --dry-run)
+            else
+              (cd "$dir" && npm publish $args)
+            fi
+          done
 
-      # The CHANGELOG is not part of the published tarball, so it is rolled
+      # The CHANGELOG is not part of either published tarball, so it is rolled
       # after the publish, against master, in both modes.
       - name: Sync master
         id: sync
@@ -153,12 +163,15 @@ jobs:
               echo "synced=false" >> "$GITHUB_OUTPUT"
               exit 0
             fi
-            (cd packages/ui && npm version "$VERSION" --no-git-tag-version --allow-same-version)
+            for dir in packages/ui create-app; do
+              (cd "$dir" && npm version "$VERSION" --no-git-tag-version --allow-same-version)
+            done
           fi
 
           node .github/scripts/release-changelog.mjs "$VERSION"
-          git add packages/ui/package.json packages/ui/CHANGELOG.md
-          git commit -m "chore(release): $PACKAGE v$VERSION"
+          git add packages/ui/package.json packages/ui/CHANGELOG.md \
+                  create-app/package.json create-app/package-lock.json
+          git commit -m "chore(release): v$VERSION"
 
           if [ -z "${{ inputs.tag }}" ]; then
             git tag "${TAG_PREFIX}${VERSION}"
@@ -190,18 +203,19 @@ jobs:
             echo "See packages/ui/CHANGELOG.md." > "$notes"
           fi
           gh release create "${TAG_PREFIX}${VERSION}" \
-            --title "$PACKAGE v$VERSION" \
+            --title "v$VERSION" \
             --notes-file "$notes"
 
       - name: Summary
         run: |
           {
-            echo "### $PACKAGE v$VERSION"
+            echo "### v$VERSION"
             echo
             if [ "$DRY_RUN" = "true" ]; then
               echo "Dry run — npm and master were not touched."
             else
-              echo "- npm: https://www.npmjs.com/package/$PACKAGE/v/$VERSION"
+              echo "- https://www.npmjs.com/package/$UI_PACKAGE/v/$VERSION"
+              echo "- https://www.npmjs.com/package/$CLI_PACKAGE/v/$VERSION"
               echo "- tag: ${TAG_PREFIX}${VERSION}"
             fi
           } >> "$GITHUB_STEP_SUMMARY"

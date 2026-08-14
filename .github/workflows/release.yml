@@ -1,17 +1,19 @@
 name: Release on master
 
-# Publishes darkraise-ui whenever master changes the package. The version is
-# derived from the commits since the last ui-v* tag: a feat makes it a minor,
-# anything else a patch, and a breaking marker stops the run so the major can
-# be released deliberately with a tag.
+# Publishes darkraise-ui and create-darkraise-ui whenever master changes
+# either of them. The two share one version line, so a release always ships
+# both. The version comes from the commits since the last v* tag: a feat
+# makes it a minor, anything else a patch, and a breaking marker stops the
+# run so the major can be released deliberately with a tag.
 
 on:
   push:
     branches: [master]
-    # Only the package itself. A change to the pipeline is not a reason to
-    # cut a release — test those with the workflow_dispatch dry run below.
+    # Only the published packages. A change to the pipeline is not a reason
+    # to cut a release — test those with the workflow_dispatch dry run below.
     paths:
       - "packages/ui/**"
+      - "create-app/**"
   workflow_dispatch:
     inputs:
       dry_run:
@@ -21,7 +23,7 @@ on:
 
 # One release at a time; never cancel one halfway through a publish.
 concurrency:
-  group: publish-darkraise-ui
+  group: publish-darkraise
   cancel-in-progress: false
 
 jobs:
@@ -31,7 +33,7 @@ jobs:
     # so this is a second line of defence — one that still holds if the token
     # is ever swapped for a PAT to satisfy branch protection.
     if: ${{ !startsWith(github.event.head_commit.message, 'chore(release):') }}
-    uses: ./.github/workflows/publish-ui.yml
+    uses: ./.github/workflows/publish.yml
     with:
       dry_run: ${{ inputs.dry_run == true }}
     secrets:

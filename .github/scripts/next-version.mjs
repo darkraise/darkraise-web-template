@@ -1,6 +1,9 @@
 #!/usr/bin/env node
-// Derives the next darkraise-ui version from the commits since the last
-// ui-v* tag: any `feat` makes it a minor, anything else a patch.
+// Derives the next release version from the commits since the last v* tag:
+// any `feat` makes it a minor, anything else a patch.
+//
+// darkraise-ui and create-darkraise-ui share one version line, so commits to
+// either package count, and packages/ui carries the number for both.
 //
 // A breaking marker is a hard stop rather than a major bump. Breaking changes
 // in this package have historically been argued in the CHANGELOG rather than
@@ -15,8 +18,8 @@ import { execFileSync } from "node:child_process"
 import { appendFileSync, readFileSync } from "node:fs"
 
 const PKG = "packages/ui/package.json"
-const PKG_PATH = "packages/ui"
-const TAG_PREFIX = "ui-v"
+const PKG_PATHS = ["packages/ui", "create-app"]
+const TAG_PREFIX = "v"
 
 const log = (msg) => process.stderr.write(`${msg}\n`)
 
@@ -39,14 +42,19 @@ function git(...args) {
 }
 
 function lastTag() {
-  const tags = git("tag", "--list", `${TAG_PREFIX}*`, "--sort=-v:refname").trim()
+  const tags = git(
+    "tag",
+    "--list",
+    `${TAG_PREFIX}*`,
+    "--sort=-v:refname",
+  ).trim()
   return tags ? tags.split("\n")[0].trim() : null
 }
 
 function commitsSince(tag) {
   // NUL-separated so a multi-line body stays one commit.
   const range = tag ? `${tag}..HEAD` : "HEAD"
-  const out = git("log", range, "--format=%B%x00", "--", PKG_PATH)
+  const out = git("log", range, "--format=%B%x00", "--", ...PKG_PATHS)
   return out
     .split("\0")
     .map((c) => c.trim())
@@ -67,7 +75,9 @@ if (!tag) {
 
 const commits = commitsSince(tag)
 if (commits.length === 0) {
-  log(`no commits touch ${PKG_PATH} since ${tag ?? "the start of history"}`)
+  log(
+    `no commits touch ${PKG_PATHS.join(" or ")} since ${tag ?? "the start of history"}`,
+  )
   output({ skip: "true" })
   process.exit(0)
 }
@@ -95,7 +105,9 @@ const bump = commits.some((c) => FEATURE_SUBJECT.test(c.split("\n")[0]))
   ? "minor"
   : "patch"
 const version =
-  bump === "minor" ? `${major}.${minor + 1}.0` : `${major}.${minor}.${patch + 1}`
+  bump === "minor"
+    ? `${major}.${minor + 1}.0`
+    : `${major}.${minor}.${patch + 1}`
 
 log(
   `${commits.length} commit(s) since ${tag ?? "the start of history"} → ${bump}`,
