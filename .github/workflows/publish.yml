@@ -4,6 +4,10 @@ name: Publish
 # single version line, so one tag releases both. Callers decide the version:
 # pass a `vX.Y.Z` tag to release exactly that, or omit it to derive the next
 # one from the commits since the last tag.
+#
+# Callers must grant `contents: write` and `id-token: write`. A reusable
+# workflow can only narrow the caller's token, never widen it, and this
+# repository's default is read-only.
 
 on:
   workflow_call:
@@ -32,6 +36,10 @@ jobs:
     outputs:
       version: ${{ steps.resolve.outputs.version }}
       skip: ${{ steps.resolve.outputs.skip }}
+    env:
+      # Through the environment, never spliced into a run block: a tag name
+      # may legally contain quotes, `$` and `;`.
+      TAG: ${{ inputs.tag }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -46,18 +54,17 @@ jobs:
         id: resolve
         run: |
           set -euo pipefail
-          if [ -n "${{ inputs.tag }}" ]; then
-            version="${{ inputs.tag }}"
-            version="${version#${TAG_PREFIX}}"
+          if [ -n "$TAG" ]; then
+            version="${TAG#"$TAG_PREFIX"}"
             if ! printf '%s' "$version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
-              echo "::error::tag '${{ inputs.tag }}' does not carry a major.minor.patch version"
+              echo "::error::tag '$TAG' does not carry a major.minor.patch version"
               exit 1
             fi
             {
               echo "version=$version"
               echo "skip=false"
             } >> "$GITHUB_OUTPUT"
-            echo "releasing $version from tag ${{ inputs.tag }}"
+            echo "releasing $version from tag $TAG"
           else
             node .github/scripts/next-version.mjs
           fi
@@ -75,6 +82,7 @@ jobs:
     env:
       VERSION: ${{ needs.resolve.outputs.version }}
       DRY_RUN: ${{ inputs.dry_run }}
+      TAG: ${{ inputs.tag }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -147,22 +155,29 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          if [ -n "${{ inputs.tag }}" ]; then
+          if [ -n "$TAG" ]; then
             # A tag build sits on a detached HEAD at the tag, which may be
-            # behind master. Move to master before touching anything, and
-            # never walk its version backwards.
+            # behind master. Drop the stamped files first: they have been
+            # published, and carrying them across the switch would both make
+            # the checkout refuse when master differs and mask master's own
+            # version from the comparison below.
             git fetch origin master
+            git reset --hard
             git checkout -B master origin/master
+
             current=$(node -p "require('./packages/ui/package.json').version")
-            if ! node -e "
+            if node -e "
               const [a,b] = [process.argv[1], process.argv[2]].map(v => v.split('.').map(Number));
               const cmp = a[0]-b[0] || a[1]-b[1] || a[2]-b[2];
-              process.exit(cmp < 0 ? 0 : 1);
+              process.exit(cmp > 0 ? 0 : 1);
             " "$current" "$VERSION"; then
-              echo "::notice::master is at $current, which is not older than $VERSION — leaving it alone"
+              echo "::notice::master is at $current, ahead of $VERSION — leaving it alone"
               echo "synced=false" >> "$GITHUB_OUTPUT"
               exit 0
             fi
+
+            # Equal is not a reason to stop: the version may already match
+            # while the CHANGELOG still needs rolling.
             for dir in packages/ui create-app; do
               (cd "$dir" && npm version "$VERSION" --no-git-tag-version --allow-same-version)
             done
@@ -171,9 +186,15 @@ jobs:
           node .github/scripts/release-changelog.mjs "$VERSION"
           git add packages/ui/package.json packages/ui/CHANGELOG.md \
                   create-app/package.json create-app/package-lock.json
+
+          if git diff --cached --quiet; then
+            echo "::notice::master already carries $VERSION and a rolled CHANGELOG"
+            echo "synced=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           git commit -m "chore(release): v$VERSION"
 
-          if [ -z "${{ inputs.tag }}" ]; then
+          if [ -z "$TAG" ]; then
             git tag "${TAG_PREFIX}${VERSION}"
           fi
 
@@ -185,7 +206,7 @@ jobs:
           fi
 
           git push origin HEAD:master
-          if [ -z "${{ inputs.tag }}" ]; then
+          if [ -z "$TAG" ]; then
             git push origin "${TAG_PREFIX}${VERSION}"
           fi
           echo "synced=true" >> "$GITHUB_OUTPUT"

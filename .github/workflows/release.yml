@@ -28,6 +28,12 @@ concurrency:
 
 jobs:
   release:
+    # Granted here, not just in the called workflow: a reusable workflow can
+    # only narrow the caller's token, and this repository's default is
+    # read-only, which would 403 the push after the publish had happened.
+    permissions:
+      contents: write
+      id-token: write
     # The release commit this workflow pushes would otherwise trigger it
     # again. A push made with GITHUB_TOKEN does not start another workflow,
     # so this is a second line of defence — one that still holds if the token

@@ -67,9 +67,15 @@ const FEATURE_SUBJECT = /^feat(\([^)]*\))?:/
 
 const tag = lastTag()
 if (!tag) {
-  log(
-    `no ${TAG_PREFIX}* tag found — treating this as a patch. Tag the current ` +
-      `version once (git tag ${TAG_PREFIX}<version>) to give later runs a baseline.`,
+  // Without a baseline the range would be the whole history, which reaches
+  // breaking markers from releases that shipped long ago and trips the check
+  // below with advice that makes no sense. Ask for the baseline instead.
+  const current = JSON.parse(readFileSync(PKG, "utf8")).version
+  fail(
+    `no ${TAG_PREFIX}* tag exists, so there is no range to derive a version from.\n\n` +
+      `Tag the current release point once, then push it:\n` +
+      `  git tag ${TAG_PREFIX}${current} && git push origin ${TAG_PREFIX}${current}\n\n` +
+      `That releases ${current} and gives every later run a baseline.`,
   )
 }
 

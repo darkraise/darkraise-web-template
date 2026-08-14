@@ -177,8 +177,19 @@ git tag v7.0.0 && git push origin v7.0.0
 To rehearse either without touching npm, run the _Release on master_
 workflow manually — its `dry_run` input defaults to true.
 
-Requires an npm **Automation** access token in the `NPM_TOKEN` repository
-secret; a Classic token with 2FA-on-publish cannot publish unattended.
+### First-time setup
+
+An npm **Automation** access token in the `NPM_TOKEN` repository secret; a
+Classic token with 2FA-on-publish cannot publish unattended.
+
+A one-time baseline tag. The master flow derives its version from the range
+since the last `v*` tag, so until one exists there is no range and the run
+stops with the command to create it. Cutting that tag is itself the first
+release:
+
+```bash
+git tag v6.0.0 && git push origin v6.0.0
+```
 
 ## Tech Stack
 
