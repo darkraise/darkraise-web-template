@@ -93,8 +93,13 @@
     background-color: hsl(var(--border));
   }
 
+  /* The pill for a parent item. The hover fill and the active indicator live
+     here rather than on the link so they cover the chevron as well, which is
+     what makes a parent row read like every other row instead of like a link
+     with a button parked beside it. Its children paint no background of their
+     own. */
   .dr-sidebar-nav-collapsible-row {
-    @apply flex items-center gap-1;
+    @apply flex items-center gap-1 rounded-md transition-colors duration-150;
   }
 
   /* Compound with the base class on purpose: the expanded-width rule above is

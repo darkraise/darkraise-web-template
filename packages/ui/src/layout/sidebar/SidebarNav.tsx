@@ -219,7 +219,8 @@ function CollapsibleSidebarItem({
   depth: number
 }) {
   const { Link, usePathname } = useRouterAdapter()
-  const covered = coversPath(item, usePathname())
+  const currentPath = usePathname()
+  const covered = coversPath(item, currentPath)
   const [open, setOpen] = useState(covered)
 
   // Opens on the way in, but never closes on the way out: navigating into a
@@ -231,19 +232,25 @@ function CollapsibleSidebarItem({
 
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
-      <div className="dr-sidebar-nav-collapsible-row">
+      {/* The row, not the link, is the item: it owns the hover fill and the
+          active indicator so both span the toggle too, exactly as a leaf row
+          fills end to end. That puts the active state out of the router's
+          reach — `activeClassName` lands on the anchor — so it is resolved
+          here instead, matching the `activeExact` the leaf branch asks for. */}
+      <div
+        className="dr-sidebar-nav-item dr-sidebar-nav-collapsible-row"
+        data-status={currentPath === item.href ? "active" : undefined}
+      >
         {/* The depth indent sits on the link, not on the row: the link carries
             its own padding, so indenting the row would stack the two and push
             a nested parent past the nested leaves it sits above. */}
         <Link
           to={item.href}
-          className="dr-sidebar-nav-item dr-sidebar-nav-link dr-sidebar-nav-collapsible-link"
+          className="dr-sidebar-nav-link dr-sidebar-nav-collapsible-link"
           data-depth={depth > 0 ? "nested" : undefined}
           style={
             depth > 0 ? { paddingLeft: `${depth * 12 + 12}px` } : undefined
           }
-          activeExact
-          activeClassName="active"
         >
           {item.icon && (
             <span className="dr-sidebar-nav-icon">
@@ -260,7 +267,7 @@ function CollapsibleSidebarItem({
             state-varying name would rename the region on every toggle.
             `aria-expanded` already carries the state. */}
         <CollapsibleTrigger
-          className="dr-sidebar-nav-item dr-sidebar-nav-chevron-button"
+          className="dr-sidebar-nav-chevron-button"
           aria-label={item.label}
         >
           <ChevronRight

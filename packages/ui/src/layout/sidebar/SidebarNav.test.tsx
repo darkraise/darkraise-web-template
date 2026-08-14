@@ -210,6 +210,25 @@ describe("SidebarNav parent items follow the route", () => {
     expect(chevron).toHaveAttribute("aria-expanded", "false")
   })
 
+  it("marks the whole expanded row active on the parent's own route", () => {
+    const { container } = renderNested(false, "/products")
+    const row = container.querySelector(".dr-sidebar-nav-collapsible-row")
+    // The row, not the link, so the fill and the rail cover the toggle too.
+    expect(row).toHaveClass("dr-sidebar-nav-item")
+    expect(row).toHaveAttribute("data-status", "active")
+    expect(row?.querySelector(".dr-sidebar-nav-link")).not.toHaveClass(
+      "dr-sidebar-nav-item",
+    )
+    expect(row?.querySelector("button")).not.toHaveClass("dr-sidebar-nav-item")
+  })
+
+  it("leaves the row unmarked while a child route is the active one", () => {
+    const { container } = renderNested(false, "/products/drafts")
+    expect(
+      container.querySelector(".dr-sidebar-nav-collapsible-row"),
+    ).not.toHaveAttribute("data-status")
+  })
+
   it("marks the collapsed rail item active for a child route", () => {
     renderNested(true, "/products/drafts")
     expect(screen.getByRole("button", { name: "Products" })).toHaveAttribute(
