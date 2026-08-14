@@ -1,0 +1,207 @@
+name: Publish darkraise-ui
+
+# Shared release job. Callers decide the version: pass a `ui-vX.Y.Z` tag to
+# release exactly that, or omit it to derive the next one from the commits
+# since the last tag.
+
+on:
+  workflow_call:
+    inputs:
+      tag:
+        description: Release tag (ui-vX.Y.Z). Empty derives the next version.
+        type: string
+        default: ""
+      dry_run:
+        description: Run every gate and a publish dry-run, changing nothing.
+        type: boolean
+        default: false
+    secrets:
+      NPM_TOKEN:
+        required: true
+
+env:
+  PACKAGE: darkraise-ui
+  TAG_PREFIX: ui-v
+
+jobs:
+  resolve:
+    name: Resolve version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.resolve.outputs.version }}
+      skip: ${{ steps.resolve.outputs.skip }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Version derivation reads the tag list and the commits behind it.
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Resolve version
+        id: resolve
+        run: |
+          set -euo pipefail
+          if [ -n "${{ inputs.tag }}" ]; then
+            version="${{ inputs.tag }}"
+            version="${version#${TAG_PREFIX}}"
+            if ! printf '%s' "$version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+              echo "::error::tag '${{ inputs.tag }}' does not carry a major.minor.patch version"
+              exit 1
+            fi
+            {
+              echo "version=$version"
+              echo "skip=false"
+            } >> "$GITHUB_OUTPUT"
+            echo "releasing $version from tag ${{ inputs.tag }}"
+          else
+            node .github/scripts/next-version.mjs
+          fi
+
+  publish:
+    name: Publish
+    needs: resolve
+    if: needs.resolve.outputs.skip != 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      # Commit the version back, push the tag, and create the Release.
+      contents: write
+      # npm provenance.
+      id-token: write
+    env:
+      VERSION: ${{ needs.resolve.outputs.version }}
+      DRY_RUN: ${{ inputs.dry_run }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Refuse to republish an existing version
+        run: |
+          set -euo pipefail
+          if npm view "$PACKAGE@$VERSION" version >/dev/null 2>&1; then
+            echo "::error::$PACKAGE@$VERSION is already on npm"
+            exit 1
+          fi
+          echo "$PACKAGE@$VERSION is free"
+
+      - name: Stamp the version
+        run: npm version "$VERSION" --no-git-tag-version --allow-same-version
+        working-directory: packages/ui
+
+      - name: Typecheck
+        run: pnpm -r typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm --filter "$PACKAGE" build
+
+      - name: Publish to npm
+        working-directory: packages/ui
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set -euo pipefail
+          # The build already ran, so prepublishOnly would only repeat it.
+          args="--provenance --access public --ignore-scripts"
+          if [ "$DRY_RUN" = "true" ]; then
+            echo "dry run: npm publish $args"
+            npm publish $args --dry-run
+          else
+            npm publish $args
+          fi
+
+      # The CHANGELOG is not part of the published tarball, so it is rolled
+      # after the publish, against master, in both modes.
+      - name: Sync master
+        id: sync
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if [ -n "${{ inputs.tag }}" ]; then
+            # A tag build sits on a detached HEAD at the tag, which may be
+            # behind master. Move to master before touching anything, and
+            # never walk its version backwards.
+            git fetch origin master
+            git checkout -B master origin/master
+            current=$(node -p "require('./packages/ui/package.json').version")
+            if ! node -e "
+              const [a,b] = [process.argv[1], process.argv[2]].map(v => v.split('.').map(Number));
+              const cmp = a[0]-b[0] || a[1]-b[1] || a[2]-b[2];
+              process.exit(cmp < 0 ? 0 : 1);
+            " "$current" "$VERSION"; then
+              echo "::notice::master is at $current, which is not older than $VERSION — leaving it alone"
+              echo "synced=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            (cd packages/ui && npm version "$VERSION" --no-git-tag-version --allow-same-version)
+          fi
+
+          node .github/scripts/release-changelog.mjs "$VERSION"
+          git add packages/ui/package.json packages/ui/CHANGELOG.md
+          git commit -m "chore(release): $PACKAGE v$VERSION"
+
+          if [ -z "${{ inputs.tag }}" ]; then
+            git tag "${TAG_PREFIX}${VERSION}"
+          fi
+
+          if [ "$DRY_RUN" = "true" ]; then
+            echo "dry run: would push $(git rev-parse --short HEAD) to master"
+            git --no-pager show --stat --oneline HEAD
+            echo "synced=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git push origin HEAD:master
+          if [ -z "${{ inputs.tag }}" ]; then
+            git push origin "${TAG_PREFIX}${VERSION}"
+          fi
+          echo "synced=true" >> "$GITHUB_OUTPUT"
+
+      - name: Create the GitHub Release
+        if: inputs.dry_run != true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NOTES_FILE: ${{ steps.sync.outputs.notes-file }}
+        run: |
+          set -euo pipefail
+          notes="${NOTES_FILE:-}"
+          if [ -z "$notes" ] || [ ! -f "$notes" ]; then
+            notes=$(mktemp)
+            echo "See packages/ui/CHANGELOG.md." > "$notes"
+          fi
+          gh release create "${TAG_PREFIX}${VERSION}" \
+            --title "$PACKAGE v$VERSION" \
+            --notes-file "$notes"
+
+      - name: Summary
+        run: |
+          {
+            echo "### $PACKAGE v$VERSION"
+            echo
+            if [ "$DRY_RUN" = "true" ]; then
+              echo "Dry run — npm and master were not touched."
+            else
+              echo "- npm: https://www.npmjs.com/package/$PACKAGE/v/$VERSION"
+              echo "- tag: ${TAG_PREFIX}${VERSION}"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

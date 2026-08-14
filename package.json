@@ -2,6 +2,7 @@
   "name": "darkraise-web-template-monorepo",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@10.28.2",
   "scripts": {
     "build": "pnpm --filter darkraise-ui build",
     "dev": "pnpm --filter darkraise-ui dev",

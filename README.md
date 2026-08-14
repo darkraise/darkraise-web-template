@@ -151,6 +151,35 @@ npm run lint         # ESLint
 
 This monorepo additionally provides `pnpm storybook` (browse the component library), `pnpm test` (Vitest), and `pnpm typecheck`/`pnpm lint`/`pnpm format` across the workspace.
 
+## Releasing `darkraise-ui`
+
+Two GitHub Actions workflows publish the package. Both run the full gates —
+typecheck, lint, the Vitest suite, then the build — before anything reaches
+npm, and both close the CHANGELOG's `[Unreleased]` section under the new
+version and open a GitHub Release from it.
+
+**Push to `master`** — releases automatically when the push touches
+`packages/ui/**`. The version comes from the commits since the last `ui-v*`
+tag: a `feat` makes it a minor, anything else a patch. A commit marked
+breaking (`type!:` or a `BREAKING CHANGE:` footer) **fails the run** rather
+than guessing a major.
+
+**Push a `ui-vX.Y.Z` tag** — releases exactly that version, then writes it
+and the rolled CHANGELOG back to `master`. This is the path for a major, or
+any release whose number is a judgement call:
+
+```bash
+git tag ui-v7.0.0 && git push origin ui-v7.0.0
+```
+
+To rehearse either without touching npm, run the _Release on master_
+workflow manually — its `dry_run` input defaults to true.
+
+Requires an npm **Automation** access token in the `NPM_TOKEN` repository
+secret; a Classic token with 2FA-on-publish cannot publish unattended.
+`create-darkraise-web-template` is not covered and is still published by
+hand with `pnpm publish:create-app`.
+
 ## Tech Stack
 
 React 19, TypeScript 6, Vite 8, Tailwind CSS 4, TanStack Router, TanStack React Query, TanStack React Form, Zustand, Zod, Recharts. The `darkraise-ui` component library has no runtime UI dependencies (no Radix UI). Monorepo tooling includes Storybook, Vitest, Playwright, ESLint, Prettier, Husky, and commitlint.

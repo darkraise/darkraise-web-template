@@ -1,0 +1,23 @@
+name: Release from tag
+
+# Publishes the exact version named by a ui-vX.Y.Z tag, then writes that
+# version and the rolled CHANGELOG back to master so the repo and npm agree.
+# This is the path for a major, or for any release whose number is a
+# judgement call rather than something to infer from commit subjects.
+
+on:
+  push:
+    tags:
+      - "ui-v*"
+
+concurrency:
+  group: publish-darkraise-ui
+  cancel-in-progress: false
+
+jobs:
+  release:
+    uses: ./.github/workflows/publish-ui.yml
+    with:
+      tag: ${{ github.ref_name }}
+    secrets:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
