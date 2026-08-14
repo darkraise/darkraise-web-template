@@ -4,6 +4,8 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 
 ## [Unreleased]
 
+## [6.0.0] — 2026-08-14
+
 Breaking: `SidebarNav` rebuilds the markup of an item that has `children`, and two of its class names are gone. The expanded row is now a `.dr-sidebar-nav-collapsible-row` wrapping a `.dr-sidebar-nav-link` and a separate `.dr-sidebar-nav-chevron-button`, in place of the single full-row trigger, so `.dr-sidebar-nav-collapsible-trigger` no longer exists. The `Collapsible` around them carries `.dr-sidebar-nav-collapsible`, which spaces the row from its children by the same step that separates any two rows. In the collapsed popover the `<p class="dr-sidebar-nav-popover-label">` heading is replaced by a link carrying `.dr-sidebar-popover-child.dr-sidebar-nav-popover-parent`, followed by a `.dr-sidebar-nav-popover-separator`. `.dr-sidebar-nav-item` moves onto the row itself, so the hover fill and the active indicator span the toggle rather than stopping at the link, and the link and the chevron paint no background of their own. Because `activeClassName` can only land on the anchor, the row's active state is resolved from the current path and published as `data-status="active"` — the same mechanism `StackedLayout`'s rail already uses. Consumers styling either removed class must retarget; presets are unaffected, since they key off `.dr-sidebar-nav-item`, which the row carries. A parent whose `href` was a placeholder such as `"#"` now renders a live link to it — `href` has always been required on `NavItem`, and every other layout already navigates to a parent's own href.
 
 ### Changed
