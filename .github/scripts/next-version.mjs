@@ -69,14 +69,18 @@ const tag = lastTag()
 if (!tag) {
   // Without a baseline the range would be the whole history, which reaches
   // breaking markers from releases that shipped long ago and trips the check
-  // below with advice that makes no sense. Ask for the baseline instead.
+  // below with advice that makes no sense. Ask for the baseline instead —
+  // as a notice rather than a failure, so a repository that has not started
+  // its version line yet keeps a green master until someone opts in.
   const current = JSON.parse(readFileSync(PKG, "utf8")).version
-  fail(
-    `no ${TAG_PREFIX}* tag exists, so there is no range to derive a version from.\n\n` +
-      `Tag the current release point once, then push it:\n` +
-      `  git tag ${TAG_PREFIX}${current} && git push origin ${TAG_PREFIX}${current}\n\n` +
-      `That releases ${current} and gives every later run a baseline.`,
+  // Workflow commands are read from stdout; log() writes to stderr.
+  process.stdout.write(
+    `::notice::No ${TAG_PREFIX}* tag exists, so there is no range to derive a version from ` +
+      `and nothing was released. Start the version line with: ` +
+      `git tag ${TAG_PREFIX}${current} && git push origin ${TAG_PREFIX}${current}\n`,
   )
+  output({ skip: "true" })
+  process.exit(0)
 }
 
 const commits = commitsSince(tag)

@@ -206,9 +206,10 @@ _calling_ workflow's filename. That is why both triggers live in the single
 need one npm configuration per caller, and only one is allowed.
 
 **3. Cut a one-time baseline tag.** The master flow derives its version from
-the range since the last `v*` tag, so until one exists there is no range and
-the run stops with the command to create it. Cutting that tag is itself the
-first release:
+the range since the last `v*` tag, so until one exists there is no range.
+Runs before that point end green with a notice naming the command rather
+than failing, so master stays clean while the setup above is pending.
+Cutting the tag is itself the first release:
 
 ```bash
 git tag v6.0.0 && git push origin v6.0.0
