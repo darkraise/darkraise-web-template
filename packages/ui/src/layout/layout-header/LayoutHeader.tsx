@@ -6,6 +6,7 @@ import { UserMenu } from "@layout/user-menu"
 import { NotificationBell } from "@layout/notification-bell"
 import { MobileDrawer } from "@layout/mobile-drawer"
 import { LayoutSwitcher } from "@layout/layout-switcher"
+import { flattenNavItems } from "@layout/navTree"
 import type { NavGroup } from "@layout/types"
 
 interface LayoutHeaderProps {
@@ -47,9 +48,7 @@ export function LayoutHeader({
   onSettings,
   onLogout,
 }: LayoutHeaderProps) {
-  const flatNavItems = nav.flatMap((g) =>
-    g.items.map((i) => ({ label: i.label, href: i.href })),
-  )
+  const flatNavItems = flattenNavItems(nav)
 
   return (
     <header className={cn("dr-layout-header", className)}>

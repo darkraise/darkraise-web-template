@@ -3,6 +3,7 @@ import { SearchCommand } from "@layout/search-command"
 import { BrandLogo } from "@layout/brand-logo"
 import { LayoutHeader } from "@layout/layout-header"
 import { SkipLink } from "@layout/skip-link"
+import { flattenNavItems } from "@layout/navTree"
 import type { LayoutProps } from "@layout/types"
 
 export function TopNavLayout({
@@ -18,9 +19,7 @@ export function TopNavLayout({
   onSettings,
   onLogout,
 }: LayoutProps) {
-  const flatNavItems = nav.flatMap((g) =>
-    g.items.map((i) => ({ label: i.label, href: i.href })),
-  )
+  const flatNavItems = flattenNavItems(nav)
 
   const { Link } = useRouterAdapter()
 

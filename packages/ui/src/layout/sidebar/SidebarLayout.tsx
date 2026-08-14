@@ -7,6 +7,7 @@ import { BrandLogo } from "@layout/brand-logo"
 import { LayoutHeader } from "@layout/layout-header"
 import { SearchCommand } from "@layout/search-command"
 import { SkipLink } from "@layout/skip-link"
+import { flattenNavItems } from "@layout/navTree"
 import { SidebarNav } from "./SidebarNav"
 import type { SidebarActiveBar } from "./SidebarNav"
 import { SidebarProvider } from "./SidebarContext"
@@ -38,9 +39,7 @@ export function SidebarLayout({
     undefined,
   )
 
-  const flatNavItems = nav.flatMap((g) =>
-    g.items.map((i) => ({ label: i.label, href: i.href })),
-  )
+  const flatNavItems = flattenNavItems(nav)
 
   const activeBarToggle = showActiveBarToggle ? (
     <ToggleGroup

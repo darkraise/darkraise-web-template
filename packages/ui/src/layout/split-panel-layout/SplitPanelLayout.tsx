@@ -4,6 +4,7 @@ import { SearchCommand } from "@layout/search-command"
 import { BrandLogo } from "@layout/brand-logo"
 import { LayoutHeader } from "@layout/layout-header"
 import { SkipLink } from "@layout/skip-link"
+import { flattenNavItems } from "@layout/navTree"
 import type { LayoutProps } from "@layout/types"
 import type { CSSProperties, ReactNode } from "react"
 
@@ -86,11 +87,7 @@ export function SplitPanelLayout({
         onLogout={onLogout}
       >
         <BrandLogo />
-        <SearchCommand
-          navItems={nav.flatMap((g) =>
-            g.items.map((i) => ({ label: i.label, href: i.href })),
-          )}
-        />
+        <SearchCommand navItems={flattenNavItems(nav)} />
       </LayoutHeader>
 
       <div ref={bodyRef} className="dr-split-panel-layout-body">

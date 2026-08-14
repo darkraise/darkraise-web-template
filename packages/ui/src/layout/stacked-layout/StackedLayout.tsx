@@ -8,7 +8,7 @@ import {
 } from "@components/tooltip"
 import { LayoutHeader } from "@layout/layout-header"
 import { SkipLink } from "@layout/skip-link"
-import { coversPath } from "@layout/navMatch"
+import { coversPath } from "@layout/navTree"
 import type { LayoutProps } from "@layout/types"
 
 export function StackedLayout({
