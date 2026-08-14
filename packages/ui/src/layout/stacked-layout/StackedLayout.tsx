@@ -8,6 +8,7 @@ import {
 } from "@components/tooltip"
 import { LayoutHeader } from "@layout/layout-header"
 import { SkipLink } from "@layout/skip-link"
+import { coversPath } from "@layout/navMatch"
 import type { LayoutProps } from "@layout/types"
 
 export function StackedLayout({
@@ -26,12 +27,8 @@ export function StackedLayout({
   const { Link, usePathname } = useRouterAdapter()
   const currentPath = usePathname()
 
-  const isPathMatch = (href: string) =>
-    // Exact match, or a strict path-segment prefix — guards against
-    // /settings matching /settings-old.
-    currentPath === href || currentPath.startsWith(href + "/")
   const activeGroupIndex = nav.findIndex((group) =>
-    group.items.some((item) => isPathMatch(item.href)),
+    group.items.some((item) => coversPath(item, currentPath)),
   )
   // When the current route does not match any nav group, don't fall back
   // to nav[0] — that surfaces the first group's items in the sub-nav

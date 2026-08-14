@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouterAdapter } from "@router"
 import { ChevronRight } from "lucide-react"
 import "./sidebar-nav.css"
@@ -11,6 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@components/popover"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/tooltip"
 import { SidebarProvider } from "./SidebarContext"
 import { useSidebar } from "./sidebar-context"
+import { coversPath } from "@layout/navMatch"
 import type { NavGroup, NavItem } from "@layout/types"
 
 export type SidebarActiveBar = "bar" | "ring" | "both"
@@ -156,7 +157,10 @@ function SidebarItem({ item, depth = 0 }: SidebarItemProps) {
 }
 
 function CollapsedParentItem({ item }: { item: NavItem }) {
-  const { Link } = useRouterAdapter()
+  const { Link, usePathname } = useRouterAdapter()
+  // Collapsed, one icon stands in for the whole group, so it has to carry the
+  // active state on its children's behalf — nothing else on the rail can.
+  const active = coversPath(item, usePathname())
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -164,6 +168,7 @@ function CollapsedParentItem({ item }: { item: NavItem }) {
           type="button"
           className="dr-sidebar-nav-item dr-sidebar-nav-popover-trigger"
           aria-label={item.label}
+          data-status={active ? "active" : undefined}
         >
           {item.icon && (
             <span className="dr-sidebar-nav-icon">
@@ -213,8 +218,16 @@ function CollapsibleSidebarItem({
   item: NavItem
   depth: number
 }) {
-  const { Link } = useRouterAdapter()
-  const [open, setOpen] = useState(true)
+  const { Link, usePathname } = useRouterAdapter()
+  const covered = coversPath(item, usePathname())
+  const [open, setOpen] = useState(covered)
+
+  // Opens on the way in, but never closes on the way out: navigating into a
+  // group should reveal it, while navigating away must not undo a group the
+  // user opened by hand.
+  useEffect(() => {
+    if (covered) setOpen(true)
+  }, [covered])
 
   return (
     <Collapsible open={open} onOpenChange={setOpen}>

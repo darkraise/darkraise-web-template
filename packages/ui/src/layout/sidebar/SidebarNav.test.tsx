@@ -35,13 +35,17 @@ function StrictLink({ to, className, style, children }: RouterLinkProps) {
   )
 }
 
-const strictAdapter: RouterAdapter = {
-  Link: StrictLink,
-  useNavigate: () => () => {},
-  usePathname: () => "/",
-  useBack: () => () => {},
-  useInvalidate: () => () => {},
+function makeAdapter(pathname: string): RouterAdapter {
+  return {
+    Link: StrictLink,
+    useNavigate: () => () => {},
+    usePathname: () => pathname,
+    useBack: () => () => {},
+    useInvalidate: () => () => {},
+  }
 }
+
+const strictAdapter = makeAdapter("/")
 
 const nav: NavGroup[] = [
   { label: "Overview", items: [{ label: "Dashboard", href: "/" }] },
@@ -103,14 +107,16 @@ const nestedNav: NavGroup[] = [
   },
 ]
 
-function renderNested(collapsed: boolean) {
-  return render(
-    <RouterAdapterProvider value={strictAdapter}>
+function renderNested(collapsed: boolean, pathname = "/products/all") {
+  const tree = (path: string) => (
+    <RouterAdapterProvider value={makeAdapter(path)}>
       <SidebarProvider collapsed={collapsed}>
         <SidebarNav nav={nestedNav} />
       </SidebarProvider>
-    </RouterAdapterProvider>,
+    </RouterAdapterProvider>
   )
+  const result = render(tree(pathname))
+  return { ...result, navigate: (path: string) => result.rerender(tree(path)) }
 }
 
 describe("SidebarNav parent items", () => {
@@ -166,6 +172,57 @@ describe("SidebarNav parent items", () => {
       "href",
       "/products/drafts",
     )
+  })
+})
+
+describe("SidebarNav parent items follow the route", () => {
+  it("starts open when a child route is current", () => {
+    renderNested(false, "/products/drafts")
+    expect(screen.getByRole("button", { name: "Products" })).toHaveAttribute(
+      "aria-expanded",
+      "true",
+    )
+  })
+
+  it("starts closed when the route is elsewhere", () => {
+    renderNested(false, "/orders")
+    expect(screen.getByRole("button", { name: "Products" })).toHaveAttribute(
+      "aria-expanded",
+      "false",
+    )
+  })
+
+  it("opens when navigation enters the group", () => {
+    const { navigate } = renderNested(false, "/orders")
+    const chevron = screen.getByRole("button", { name: "Products" })
+    expect(chevron).toHaveAttribute("aria-expanded", "false")
+    navigate("/products/all")
+    expect(chevron).toHaveAttribute("aria-expanded", "true")
+  })
+
+  it("leaves a hand-collapsed group closed when navigation leaves it", async () => {
+    const user = userEvent.setup()
+    const { navigate } = renderNested(false, "/products/all")
+    const chevron = screen.getByRole("button", { name: "Products" })
+    await user.click(chevron)
+    expect(chevron).toHaveAttribute("aria-expanded", "false")
+    navigate("/orders")
+    expect(chevron).toHaveAttribute("aria-expanded", "false")
+  })
+
+  it("marks the collapsed rail item active for a child route", () => {
+    renderNested(true, "/products/drafts")
+    expect(screen.getByRole("button", { name: "Products" })).toHaveAttribute(
+      "data-status",
+      "active",
+    )
+  })
+
+  it("leaves the collapsed rail item unmarked elsewhere", () => {
+    renderNested(true, "/orders")
+    expect(
+      screen.getByRole("button", { name: "Products" }),
+    ).not.toHaveAttribute("data-status")
   })
 })
 
