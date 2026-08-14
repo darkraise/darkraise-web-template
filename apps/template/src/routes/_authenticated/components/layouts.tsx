@@ -1,11 +1,62 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { Stack } from "darkraise-ui/layout"
+import {
+  AlertOctagon,
+  BarChart3,
+  ChevronsUpDown,
+  Home,
+  Palette,
+  Settings,
+  ShoppingCart,
+  Users,
+} from "lucide-react"
+import { SidebarNav, SidebarProvider, Stack } from "darkraise-ui/layout"
+import type { NavGroup } from "darkraise-ui/layout"
+import { TooltipProvider } from "darkraise-ui/components/tooltip"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
 export const Route = createFileRoute("/_authenticated/components/layouts")({
   component: LayoutsPage,
 })
+
+// Real routes, so the example's links go somewhere. Two parents on purpose:
+// this page lives under /components, so that group is the one the sidebar
+// opens on its own while Reports stays closed.
+const nestedNav: NavGroup[] = [
+  {
+    label: "Overview",
+    items: [{ label: "Dashboard", href: "/", icon: Home }],
+  },
+  {
+    label: "Library",
+    items: [
+      {
+        label: "Components",
+        href: "/components",
+        icon: Palette,
+        badge: "2",
+        children: [
+          {
+            label: "Accordion",
+            href: "/components/accordion",
+            icon: ChevronsUpDown,
+          },
+          { label: "Alert", href: "/components/alert", icon: AlertOctagon },
+        ],
+      },
+      {
+        label: "Reports",
+        href: "/analytics",
+        icon: BarChart3,
+        children: [
+          { label: "Orders", href: "/orders", icon: ShoppingCart },
+          { label: "Customers", href: "/customers", icon: Users },
+        ],
+      },
+      { label: "Settings", href: "/settings", icon: Settings },
+    ],
+  },
+]
 
 function LayoutsPage() {
   return (
@@ -63,6 +114,58 @@ export const Route = createFileRoute("/_authenticated")({
           <p className="text-muted-foreground text-sm">
             Collapsible sidebar with grouped navigation, header bar with search
             and user menu. Best for complex apps with many navigation items.
+          </p>
+        </Stack>
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Nested Navigation"
+        code={`const nav: NavGroup[] = [
+  { label: "Library", items: [
+    {
+      label: "Components",
+      href: "/components",
+      icon: Palette,
+      badge: "2",
+      children: [
+        { label: "Accordion", href: "/components/accordion", icon: ChevronsUpDown },
+        { label: "Alert", href: "/components/alert", icon: AlertOctagon },
+      ],
+    },
+  ]},
+]
+
+// A parent item is a link in its own right. Expanded, the chevron beside it
+// toggles the children; collapsed, its icon opens a popover that leads with
+// the parent's own route. Groups covering the current route open themselves.
+<SidebarProvider collapsed={false}>
+  <SidebarNav nav={nav} />
+</SidebarProvider>`}
+      >
+        <Stack gap="sm">
+          <TooltipProvider delayDuration={0}>
+            <div className="flex gap-4">
+              <div className="bg-surface-sidebar w-56 shrink-0 rounded-lg border py-2">
+                <SidebarProvider collapsed={false}>
+                  <SidebarNav nav={nestedNav} />
+                </SidebarProvider>
+              </div>
+              <div className="bg-surface-sidebar w-16 shrink-0 rounded-lg border py-2">
+                <SidebarProvider collapsed>
+                  <SidebarNav nav={nestedNav} />
+                </SidebarProvider>
+              </div>
+            </div>
+          </TooltipProvider>
+          <p className="text-muted-foreground text-sm">
+            An item with <code>children</code> renders as a link plus a chevron
+            toggle, so the parent route stays reachable while its children
+            expand and collapse. A group opens itself when the current route
+            falls inside it — Components is open here because this page lives
+            under it, while Reports stays closed — and a group you collapse by
+            hand stays collapsed. On the collapsed rail the same item marks
+            itself active for its children and opens a popover that lists the
+            parent first, then the rest.
           </p>
         </Stack>
       </ShowcaseExample>
