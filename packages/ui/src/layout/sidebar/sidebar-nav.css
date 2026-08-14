@@ -84,16 +84,33 @@
     @apply w-48 p-1;
   }
 
-  .dr-sidebar-nav-popover-label {
-    @apply text-muted-foreground px-2 py-1.5 text-xs font-medium;
+  .dr-sidebar-nav-popover-parent {
+    @apply font-medium;
   }
 
-  .dr-sidebar-nav-collapsible-trigger {
-    @apply flex min-h-[var(--density-cell)] w-full cursor-pointer items-center gap-3 rounded-md px-[var(--density-row-py)] py-[calc(var(--density-row-py)+0.125rem)] text-sm transition-colors duration-150;
+  .dr-sidebar-nav-popover-separator {
+    @apply my-1 h-px;
+    background-color: hsl(var(--border));
+  }
+
+  .dr-sidebar-nav-collapsible-row {
+    @apply flex items-center gap-1;
+  }
+
+  /* Compound with the base class on purpose: the expanded-width rule above is
+   * `.dr-sidebar-nav-link:not([data-collapsed="true"])`, and `:not()` carries
+   * its argument's weight, so a single-class override at 0,1,0 would lose to
+   * its 0,2,0 and the link would push the chevron out of the row. */
+  .dr-sidebar-nav-link.dr-sidebar-nav-collapsible-link {
+    @apply w-auto min-w-0 flex-1;
+  }
+
+  .dr-sidebar-nav-chevron-button {
+    @apply flex size-[var(--density-cell)] shrink-0 cursor-pointer items-center justify-center rounded-md transition-colors duration-150;
   }
 
   .dr-sidebar-nav-collapsible-chevron {
-    @apply ml-auto size-[var(--icon-size)] shrink-0 transition-transform duration-200;
+    @apply size-[var(--icon-size)] shrink-0 transition-transform duration-200;
     color: hsl(var(--sidebar-foreground-muted));
   }
 

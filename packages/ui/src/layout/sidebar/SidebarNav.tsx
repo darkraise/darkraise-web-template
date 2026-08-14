@@ -163,6 +163,7 @@ function CollapsedParentItem({ item }: { item: NavItem }) {
         <button
           type="button"
           className="dr-sidebar-nav-item dr-sidebar-nav-popover-trigger"
+          aria-label={item.label}
         >
           {item.icon && (
             <span className="dr-sidebar-nav-icon">
@@ -177,7 +178,19 @@ function CollapsedParentItem({ item }: { item: NavItem }) {
         className="dr-sidebar-nav-popover-content"
         sideOffset={8}
       >
-        <p className="dr-sidebar-nav-popover-label">{item.label}</p>
+        {/* The parent's own route. Rendered as the first entry rather than a
+            static heading: the rail trigger opens the popover instead of
+            navigating, so this is the only way to reach the parent while
+            collapsed. */}
+        <Link
+          to={item.href}
+          className="dr-sidebar-popover-child dr-sidebar-nav-popover-parent"
+          activeExact
+          activeClassName="active"
+        >
+          {item.label}
+        </Link>
+        <div className="dr-sidebar-nav-popover-separator" />
         {item.children?.map((child) => (
           <Link
             key={child.href}
@@ -200,21 +213,49 @@ function CollapsibleSidebarItem({
   item: NavItem
   depth: number
 }) {
+  const { Link } = useRouterAdapter()
   const [open, setOpen] = useState(true)
 
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
-      <CollapsibleTrigger
-        className="dr-sidebar-nav-item dr-sidebar-nav-collapsible-trigger"
-        style={depth > 0 ? { paddingLeft: `${depth * 12 + 12}px` } : undefined}
-      >
-        {item.icon && <item.icon className="dr-sidebar-nav-icon-svg" />}
-        <span>{item.label}</span>
-        <ChevronRight
-          className="dr-sidebar-nav-collapsible-chevron"
-          data-open={open ? "true" : undefined}
-        />
-      </CollapsibleTrigger>
+      <div className="dr-sidebar-nav-collapsible-row">
+        {/* The depth indent sits on the link, not on the row: the link carries
+            its own padding, so indenting the row would stack the two and push
+            a nested parent past the nested leaves it sits above. */}
+        <Link
+          to={item.href}
+          className="dr-sidebar-nav-item dr-sidebar-nav-link dr-sidebar-nav-collapsible-link"
+          data-depth={depth > 0 ? "nested" : undefined}
+          style={
+            depth > 0 ? { paddingLeft: `${depth * 12 + 12}px` } : undefined
+          }
+          activeExact
+          activeClassName="active"
+        >
+          {item.icon && (
+            <span className="dr-sidebar-nav-icon">
+              <item.icon className="dr-sidebar-nav-icon-svg" />
+            </span>
+          )}
+          <span className="dr-sidebar-nav-label">{item.label}</span>
+          {item.badge && (
+            <span className="dr-sidebar-nav-badge">{item.badge}</span>
+          )}
+        </Link>
+        {/* Named for the item alone rather than "Expand X" / "Collapse X":
+            `CollapsibleContent` is a region labelled by this trigger, so a
+            state-varying name would rename the region on every toggle.
+            `aria-expanded` already carries the state. */}
+        <CollapsibleTrigger
+          className="dr-sidebar-nav-item dr-sidebar-nav-chevron-button"
+          aria-label={item.label}
+        >
+          <ChevronRight
+            className="dr-sidebar-nav-collapsible-chevron"
+            data-open={open ? "true" : undefined}
+          />
+        </CollapsibleTrigger>
+      </div>
       <CollapsibleContent className="dr-sidebar-nav-collapsible-content">
         <div className="dr-sidebar-nav-collapsible-children">
           {item.children?.map((child) => (

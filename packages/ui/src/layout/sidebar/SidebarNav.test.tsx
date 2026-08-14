@@ -7,7 +7,8 @@ import { readFileSync } from "node:fs"
 import { dirname, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 
-import { render } from "@testing-library/react"
+import { render, screen } from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
 import { describe, expect, it } from "vitest"
 
 import { RouterAdapterProvider } from "@router"
@@ -82,6 +83,89 @@ describe("SidebarNav collapsed styling", () => {
 
   it("does not match the collapsed square rule while expanded", () => {
     expect(renderNav(false).matches(collapsedSquareSelector())).toBe(false)
+  })
+})
+
+const nestedNav: NavGroup[] = [
+  {
+    label: "Catalog",
+    items: [
+      {
+        label: "Products",
+        href: "/products",
+        badge: "12",
+        children: [
+          { label: "All products", href: "/products/all" },
+          { label: "Drafts", href: "/products/drafts" },
+        ],
+      },
+    ],
+  },
+]
+
+function renderNested(collapsed: boolean) {
+  return render(
+    <RouterAdapterProvider value={strictAdapter}>
+      <SidebarProvider collapsed={collapsed}>
+        <SidebarNav nav={nestedNav} />
+      </SidebarProvider>
+    </RouterAdapterProvider>,
+  )
+}
+
+describe("SidebarNav parent items", () => {
+  it("links the expanded parent to its own href", () => {
+    const { container } = renderNested(false)
+    expect(container.querySelector('a[href="/products"]')).not.toBeNull()
+  })
+
+  it("renders the expanded parent's label and badge", () => {
+    const { container } = renderNested(false)
+    const link = container.querySelector('a[href="/products"]')
+    expect(link?.querySelector(".dr-sidebar-nav-label")?.textContent).toBe(
+      "Products",
+    )
+    expect(link?.querySelector(".dr-sidebar-nav-badge")?.textContent).toBe("12")
+  })
+
+  it("gives the expanded chevron a stable accessible name and toggles it", async () => {
+    const user = userEvent.setup()
+    renderNested(false)
+    const chevron = screen.getByRole("button", { name: "Products" })
+    expect(chevron).toHaveAttribute("aria-expanded", "true")
+    await user.click(chevron)
+    expect(chevron).toHaveAttribute("aria-expanded", "false")
+    // The name must not track the state: it also names the content region.
+    expect(screen.getByRole("button", { name: "Products" })).toBe(chevron)
+  })
+
+  it("keeps the expanded parent link out of the toggle's hit area", async () => {
+    const user = userEvent.setup()
+    const { container } = renderNested(false)
+    const link = container.querySelector('a[href="/products"]')
+    expect(link).not.toBeNull()
+    await user.click(link as Element)
+    expect(screen.getByRole("button", { name: "Products" })).toHaveAttribute(
+      "aria-expanded",
+      "true",
+    )
+  })
+
+  it("names the collapsed rail trigger", () => {
+    renderNested(true)
+    expect(screen.getByRole("button", { name: "Products" })).toBeInTheDocument()
+  })
+
+  it("reaches the parent route from the collapsed popover", async () => {
+    const user = userEvent.setup()
+    renderNested(true)
+    await user.click(screen.getByRole("button", { name: "Products" }))
+    const parentLink = await screen.findByRole("link", { name: "Products" })
+    expect(parentLink).toHaveAttribute("href", "/products")
+    expect(await screen.findByRole("link", { name: "Drafts" })).toHaveAttribute(
+      "href",
+      "/products/drafts",
+    )
   })
 })
 
