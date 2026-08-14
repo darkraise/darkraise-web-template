@@ -52,9 +52,9 @@
     @apply mx-auto w-[var(--density-cell)] justify-center py-[var(--density-row-py)];
   }
 
-  .dr-sidebar-nav-link[data-depth="nested"] {
-    @apply py-1.5 text-xs;
-  }
+  /* Nested items deliberately carry no size override: a child row is the same
+     row as a top-level one, set apart by its indent alone. `data-depth` stays
+     on the element as a hook for consumers who want more. */
 
   .dr-sidebar-nav-icon {
     @apply flex size-[var(--icon-size)] shrink-0 items-center justify-center;
