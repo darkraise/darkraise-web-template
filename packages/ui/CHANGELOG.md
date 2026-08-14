@@ -22,8 +22,22 @@ switcher: { axes: { …, accentVibrancy: true } },
 
 Once added, the new `accentVibrancy: "balanced"` default renders exactly as before. The axis controls how loud the brand accent renders in dark mode only — light mode ignores it entirely — with four steps (`calm`, `balanced`, `vivid`, `intense`) driving `--primary-fill`'s lightness and chroma cap and `--primary`'s chroma cap. At the default `balanced` step, filled-control labels (`--primary-foreground` on `--primary-fill`) measure roughly 4.10:1 contrast, below WCAG AA's 4.5:1 floor for normal text. This is a deliberate, accepted trade-off rather than a defect: selecting `calm` restores AA-clean labels (4.70:1). `ACCENT_VIBRANCIES` and the `AccentVibrancy` type are intentionally not re-exported from the theme barrel, consistent with `FONT_SIZES`.
 
+Breaking: `UiLabels` gains a required `passwordInput` group. Consumers passing a `DeepPartialLabels<UiLabels>` to `UiLabelsProvider` — the documented usage — are unaffected, and so is anyone spreading `defaultLabels`. Only code that declares a complete `UiLabels` object by hand must add the group before upgrading:
+
+```ts
+passwordInput: {
+  show: "Show password",
+  hide: "Hide password",
+  visible: "Password visible",
+  hidden: "Password hidden",
+},
+```
+
+Once added, the defaults render exactly the strings the component hardcoded before.
+
 ### Added
 
+- `passwordInput` labels group covering `PasswordInputVisibilityTrigger`'s accessible name (`show` / `hide`) and its `aria-live` status announcement (`visible` / `hidden`). An explicit `aria-label` on the trigger still wins over the label, so per-instance overrides are unchanged.
 - `fontSize` theme axis with `small`, `medium`, `large`, and `extra-large` steps, defaulting to `medium`. Re-binds Tailwind's `--text-*` scale — body sizes take the full multiplier, display sizes a damped one — while line heights are untouched, since Tailwind already declares them as unitless ratios that scale on their own.
 - Icon-size token ladder (`--icon-size-2xs` through `--icon-size-3xl`), derived from `--icon-scale`, that every library-owned SVG glyph now reads so icons stay visually matched to the text beside them. Glyphs bound by fixed control geometry — the Checkbox check, the RadioGroup dot, menu-item indicators — deliberately stay pinned, since their containers don't grow.
 - Minimum control heights that grow at the two larger `fontSize` steps via a base/derived split (`--density-cell-base` × `--control-scale`), letting the density and font-size axes compose instead of overwriting each other.
@@ -52,6 +66,8 @@ Once added, the new `accentVibrancy: "balanced"` default renders exactly as befo
 
 ### Fixed
 
+- `SelectValue` rendered the raw value instead of the selected item's label whenever the value was set programmatically rather than chosen from the menu. `SelectItem` registers its label only when `SelectContent` mounts, and that is gated on `open`, so before the first open there was nothing to resolve against and the fallback chain reached `value`. An app driving a `Select` from outside — a filter chip, a restored query string, a loaded record — therefore showed the API's own enum to the user. `Select` now also reads labels from its declared element tree, preferring an item's `textValue` and otherwise concatenating its text exactly as `textContent` would, so a tree-read label and a DOM-read label cannot disagree. Items produced by indirection the walk cannot see resolve on first open, as before.
+- `PasswordInputVisibilityTrigger`'s default `aria-label` and its `sr-only` `aria-live` status were hardcoded English. The label was overridable per instance, but the status text had no override at all, so a translated app could not localise what a screen reader announces on toggle. Both now read from the `passwordInput` labels group.
 - Sidebar nav icons stayed pinned at 16px while their labels grew with the `fontSize` axis.
 - `Listbox` selected items were styled with `font-medium` alone, making selection effectively invisible outside the Glass preset.
 - `CommandDialog`'s close button sat below its search row, straddling the row's bottom border: it used `DialogContent`'s `top-4` offset, which is calibrated against a `p-6` padding the dialog overrides to `p-0`.
