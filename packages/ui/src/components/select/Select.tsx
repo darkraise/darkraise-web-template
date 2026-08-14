@@ -80,6 +80,47 @@ interface SelectProps {
   children?: React.ReactNode
 }
 
+/** Concatenates the text a node would contribute to `textContent`, so a label
+ *  read from the element tree matches the one read from the mounted DOM. */
+function textOf(node: React.ReactNode): string {
+  let text = ""
+  React.Children.forEach(node, (child) => {
+    if (typeof child === "string" || typeof child === "number") {
+      text += child
+      return
+    }
+    if (!React.isValidElement(child)) return
+    text += textOf((child.props as { children?: React.ReactNode }).children)
+  })
+  return text
+}
+
+/** Reads item labels straight from the declared element tree.
+ *
+ *  Items register themselves only once `SelectContent` mounts, and that is gated
+ *  on `open` — so a value set programmatically has no label to resolve from until
+ *  the user opens the menu at least once, and the trigger would show the raw
+ *  value instead. Walking the tree covers items written declaratively; anything
+ *  produced by indirection the walk cannot see still resolves on first open. */
+function collectDeclaredLabels(
+  node: React.ReactNode,
+  out: Map<string, string>,
+): void {
+  React.Children.forEach(node, (child) => {
+    if (!React.isValidElement(child)) return
+    if (child.type === SelectItem) {
+      const props = child.props as SelectItemProps
+      const label = props.textValue ?? textOf(props.children)
+      if (label) out.set(props.value, label)
+      return
+    }
+    collectDeclaredLabels(
+      (child.props as { children?: React.ReactNode }).children,
+      out,
+    )
+  })
+}
+
 function Select({
   open: openProp,
   defaultOpen,
@@ -148,6 +189,12 @@ function Select({
     ],
   )
 
+  const declaredLabels = React.useMemo(() => {
+    const map = new Map<string, string>()
+    collectDeclaredLabels(children, map)
+    return map
+  }, [children])
+
   // Wire selectedLabel: track an item with matching value.
   const itemsAccessor = menu.items
   React.useEffect(() => {
@@ -157,8 +204,8 @@ function Select({
     }
     const list = itemsAccessor()
     const matched = list.find((it) => it.value === value)
-    setSelectedLabel(matched?.textValue ?? null)
-  }, [value, itemsAccessor, menu.open])
+    setSelectedLabel(matched?.textValue || declaredLabels.get(value) || null)
+  }, [value, itemsAccessor, menu.open, declaredLabels])
 
   return (
     <SelectContext.Provider value={ctx}>

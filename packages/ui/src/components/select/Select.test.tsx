@@ -96,4 +96,49 @@ describe("Select", () => {
     expect(select).toBeTruthy()
     expect((select as HTMLSelectElement).value).toBe("apple")
   })
+
+  it("shows the item's label for a controlled value before the menu is opened", () => {
+    render(
+      <Select value="banana">
+        <SelectTrigger>
+          <SelectValue placeholder="Pick" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="apple">Apple</SelectItem>
+          <SelectItem value="banana">Banana</SelectItem>
+        </SelectContent>
+      </Select>,
+    )
+    expect(screen.getByRole("combobox")).toHaveTextContent("Banana")
+  })
+
+  it("prefers an item's textValue over its rendered children", () => {
+    render(
+      <Select value="banana">
+        <SelectTrigger>
+          <SelectValue placeholder="Pick" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="banana" textValue="Chuối">
+            <span aria-hidden>🍌</span> Banana
+          </SelectItem>
+        </SelectContent>
+      </Select>,
+    )
+    expect(screen.getByRole("combobox")).toHaveTextContent("Chuối")
+  })
+
+  it("falls back to the placeholder when no item matches the value", () => {
+    render(
+      <Select value="durian">
+        <SelectTrigger>
+          <SelectValue placeholder="Pick" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="apple">Apple</SelectItem>
+        </SelectContent>
+      </Select>,
+    )
+    expect(screen.getByRole("combobox")).toHaveTextContent("durian")
+  })
 })
