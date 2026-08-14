@@ -161,11 +161,17 @@ jobs:
             (cd "$dir" && npm version "$VERSION" --no-git-tag-version --allow-same-version)
           done
 
-      # Before the gates, not after: the template resolves darkraise-ui's
-      # types from packages/ui/dist, which a fresh clone does not have, so
-      # `pnpm -r typecheck` cannot pass until this has run.
-      - name: Build
+      # Both builds run before the gates, not after, because a fresh clone is
+      # missing two things the typecheck needs and .gitignore excludes:
+      # packages/ui/dist, which is where the template resolves darkraise-ui's
+      # types from, and src/routeTree.gen.ts, which the TanStack router plugin
+      # only writes during a Vite run and without which every createFileRoute
+      # call loses its typing.
+      - name: Build the package
         run: pnpm --filter "$UI_PACKAGE" build
+
+      - name: Build the demo app
+        run: pnpm --filter darkraise-web-template exec vite build
 
       - name: Typecheck
         run: pnpm -r typecheck

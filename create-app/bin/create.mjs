@@ -383,7 +383,7 @@ async function main() {
     type: "module",
     scripts: {
       dev: "vite",
-      build: "tsc --noEmit && vite build",
+      build: "vite build && tsc --noEmit",
       preview: "vite preview",
       typecheck: "tsc --noEmit",
       lint: "eslint src/",
