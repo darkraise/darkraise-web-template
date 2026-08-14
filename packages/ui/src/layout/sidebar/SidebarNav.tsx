@@ -231,7 +231,11 @@ function CollapsibleSidebarItem({
   }, [covered])
 
   return (
-    <Collapsible open={open} onOpenChange={setOpen}>
+    <Collapsible
+      open={open}
+      onOpenChange={setOpen}
+      className="dr-sidebar-nav-collapsible"
+    >
       {/* The row, not the link, is the item: it owns the hover fill and the
           active indicator so both span the toggle too, exactly as a leaf row
           fills end to end. That puts the active state out of the router's

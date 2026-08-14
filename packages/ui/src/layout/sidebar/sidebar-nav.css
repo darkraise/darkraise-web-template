@@ -93,6 +93,13 @@
     background-color: hsl(var(--border));
   }
 
+  /* Same `gap-0.5` the group and the children stack use, so the step from a
+     parent to its first child is the step between any two rows. It costs
+     nothing while closed: the content unmounts, leaving one flex child. */
+  .dr-sidebar-nav-collapsible {
+    @apply flex flex-col gap-0.5;
+  }
+
   /* The pill for a parent item. The hover fill and the active indicator live
      here rather than on the link so they cover the chevron as well, which is
      what makes a parent row read like every other row instead of like a link
