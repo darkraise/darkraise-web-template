@@ -27,6 +27,12 @@ export const defaultLabels: UiLabels = {
     settings: "Settings",
     logout: "Log out",
   },
+  passwordInput: {
+    show: "Show password",
+    hide: "Hide password",
+    visible: "Password visible",
+    hidden: "Password hidden",
+  },
   theme: {
     title: "Theme settings",
     triggerLabel: "Customize theme",

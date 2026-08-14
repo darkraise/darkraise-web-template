@@ -10,6 +10,7 @@ import {
   PasswordInputLabel,
   PasswordInputVisibilityTrigger,
 } from "./PasswordInput"
+import { UiLabelsProvider } from "@labels"
 
 function renderBasic(
   props: Partial<React.ComponentProps<typeof PasswordInput>> = {},
@@ -130,6 +131,70 @@ describe("PasswordInput", () => {
           </PasswordInputVisibilityTrigger>
         </PasswordInputControl>
       </PasswordInput>,
+    )
+    expect(screen.getByRole("button", { name: "toggle" })).toBeInTheDocument()
+  })
+
+  it("takes the trigger's accessible name from the labels provider", async () => {
+    const user = userEvent.setup()
+    render(
+      <UiLabelsProvider
+        value={{
+          passwordInput: {
+            show: "Hiện mật khẩu",
+            hide: "Ẩn mật khẩu",
+          },
+        }}
+      >
+        <PasswordInput>
+          <PasswordInputControl>
+            <PasswordInputField aria-label="password" />
+            <PasswordInputVisibilityTrigger />
+          </PasswordInputControl>
+        </PasswordInput>
+      </UiLabelsProvider>,
+    )
+    const trigger = screen.getByRole("button", { name: "Hiện mật khẩu" })
+    await user.click(trigger)
+    expect(
+      screen.getByRole("button", { name: "Ẩn mật khẩu" }),
+    ).toBeInTheDocument()
+  })
+
+  it("takes the trigger's status announcement from the labels provider", async () => {
+    const user = userEvent.setup()
+    render(
+      <UiLabelsProvider
+        value={{
+          passwordInput: {
+            visible: "Mật khẩu đang hiện",
+            hidden: "Mật khẩu đang ẩn",
+          },
+        }}
+      >
+        <PasswordInput>
+          <PasswordInputControl>
+            <PasswordInputField aria-label="password" />
+            <PasswordInputVisibilityTrigger aria-label="toggle" />
+          </PasswordInputControl>
+        </PasswordInput>
+      </UiLabelsProvider>,
+    )
+    expect(screen.getByRole("status")).toHaveTextContent("Mật khẩu đang ẩn")
+    await user.click(screen.getByRole("button", { name: "toggle" }))
+    expect(screen.getByRole("status")).toHaveTextContent("Mật khẩu đang hiện")
+  })
+
+  it("keeps an explicit aria-label ahead of the labels provider", () => {
+    render(
+      <UiLabelsProvider value={{ passwordInput: { show: "Hiện mật khẩu" } }}>
+        <PasswordInput>
+          <PasswordInputControl>
+            <PasswordInputField aria-label="password" />
+            <PasswordInputVisibilityTrigger aria-label="toggle" />
+          </PasswordInputControl>
+        </PasswordInput>
+      </UiLabelsProvider>,
     )
     expect(screen.getByRole("button", { name: "toggle" })).toBeInTheDocument()
   })

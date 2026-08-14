@@ -32,6 +32,12 @@ export interface UiLabels {
     settings: string
     logout: string
   }
+  passwordInput: {
+    show: string
+    hide: string
+    visible: string
+    hidden: string
+  }
   theme: {
     title: string
     triggerLabel: string

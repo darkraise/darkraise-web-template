@@ -8,6 +8,7 @@ export function mergeLabels(
     dataTable: { ...base.dataTable, ...override.dataTable },
     layout: { ...base.layout, ...override.layout },
     userMenu: { ...base.userMenu, ...override.userMenu },
+    passwordInput: { ...base.passwordInput, ...override.passwordInput },
     theme: {
       ...base.theme,
       ...override.theme,

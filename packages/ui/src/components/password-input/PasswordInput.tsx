@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@lib/utils"
+import { useUiLabels } from "@labels"
 import "./password-input.css"
 
 interface PasswordInputContextValue {
@@ -139,7 +140,8 @@ function PasswordInputVisibilityTrigger({
   const { visible, toggle } = usePasswordInputContext(
     "PasswordInputVisibilityTrigger",
   )
-  const defaultLabel = visible ? "Hide password" : "Show password"
+  const labels = useUiLabels().passwordInput
+  const defaultLabel = visible ? labels.hide : labels.show
   return (
     <button
       ref={ref}
@@ -164,7 +166,7 @@ function PasswordInputVisibilityTrigger({
     >
       {children}
       <span className="sr-only" role="status" aria-live="polite">
-        {visible ? "Password visible" : "Password hidden"}
+        {visible ? labels.visible : labels.hidden}
       </span>
     </button>
   )
