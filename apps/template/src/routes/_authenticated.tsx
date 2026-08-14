@@ -119,8 +119,12 @@ export const nav: NavGroup[] = [
   {
     label: "Catalog",
     items: [
-      { label: "Products", href: "/products", icon: Package },
-      { label: "Categories", href: "/categories", icon: Tags },
+      {
+        label: "Products",
+        href: "/products",
+        icon: Package,
+        children: [{ label: "Categories", href: "/categories", icon: Tags }],
+      },
     ],
   },
   {
