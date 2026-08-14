@@ -3,28 +3,23 @@ name: Release
 # Publishes darkraise-ui and create-darkraise-ui to npm via trusted
 # publishing (OIDC) — no npm token is stored anywhere.
 #
-# The two packages are independent: each owns its version line and its tag
-# namespace (ui-v* and cli-v*), so a change to one never moves the other's
-# number and a release of one never republishes the other.
-#
 # Everything lives in this one file on purpose. npm allows a single trusted
 # publisher per package and validates it against the *calling* workflow's
 # filename, so splitting the triggers across a caller and a reusable workflow
 # would need a separate npm configuration per caller, and only one is
-# allowed. Registering `release.yml` covers every path below.
+# allowed. Registering `release.yml` covers both paths below.
 #
 # Two ways in:
-#   - a push to master: each package's version is derived from the commits
-#     that touched it since its own last tag — a feat makes it a minor,
-#     anything else a patch, and a breaking marker stops the run so the major
-#     is released deliberately. Packages with no new commits are left alone.
-#   - a push of a ui-vX.Y.Z or cli-vX.Y.Z tag: that one package is released at
-#     that exact version, then written back to master.
+#   - a push to master: the version is derived from the commits since the
+#     last v* tag — a feat makes it a minor, anything else a patch, and a
+#     breaking marker stops the run so the major is released deliberately.
+#   - a push of a vX.Y.Z tag: that exact version is released, then written
+#     back to master with the rolled CHANGELOG.
 
 on:
   push:
     branches: [master]
-    tags: ["ui-v*", "cli-v*"]
+    tags: ["v*"]
   workflow_dispatch:
     inputs:
       dry_run:
@@ -39,12 +34,14 @@ concurrency:
 
 env:
   UI_PACKAGE: darkraise-ui
+  CLI_PACKAGE: create-darkraise-ui
+  TAG_PREFIX: v
   # Trusted publishing needs npm 11.5.1 or newer.
   MIN_NPM: 11.5.1
 
 jobs:
   resolve:
-    name: Plan the release
+    name: Resolve version
     runs-on: ubuntu-latest
     # A tag may point at the release commit this workflow itself pushed, so
     # the guard applies to branch pushes only.
@@ -52,8 +49,8 @@ jobs:
       ${{ github.ref_type == 'tag' ||
       !startsWith(github.event.head_commit.message, 'chore(release):') }}
     outputs:
-      releases: ${{ steps.plan.outputs.releases }}
-      skip: ${{ steps.plan.outputs.skip }}
+      version: ${{ steps.resolve.outputs.version }}
+      skip: ${{ steps.resolve.outputs.skip }}
     env:
       # Through the environment, never spliced into a run block: a tag name
       # may legally contain quotes, `$` and `;`.
@@ -61,24 +58,33 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # Planning reads the tag list and the commits behind each tag.
+          # Version derivation reads the tag list and the commits behind it.
           fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
 
-      - name: Plan the release
-        id: plan
+      - name: Resolve version
+        id: resolve
         run: |
           set -euo pipefail
           if [ -n "$TAG" ]; then
-            node .github/scripts/plan-release.mjs --tag "$TAG"
+            version="${TAG#"$TAG_PREFIX"}"
+            if ! printf '%s' "$version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+              echo "::error::tag '$TAG' does not carry a major.minor.patch version"
+              exit 1
+            fi
+            {
+              echo "version=$version"
+              echo "skip=false"
+            } >> "$GITHUB_OUTPUT"
+            echo "releasing $version from tag $TAG"
           else
-            # Emits skip=true when no package has new commits, which is why
-            # this workflow needs no paths filter — one could not be shared
-            # with the tag trigger anyway.
-            node .github/scripts/plan-release.mjs
+            # Emits skip=true when nothing since the last tag touched either
+            # package, which is why this workflow needs no paths filter — one
+            # would not survive being shared with the tag trigger anyway.
+            node .github/scripts/next-version.mjs
           fi
 
   publish:
@@ -87,13 +93,13 @@ jobs:
     if: needs.resolve.outputs.skip != 'true'
     runs-on: ubuntu-latest
     permissions:
-      # Commit the versions back, push the tags, and create the Releases.
+      # Commit the version back, push the tag, and create the Release.
       contents: write
       # Trusted publishing: mints the OIDC token npm authenticates with, and
       # signs the provenance attestation.
       id-token: write
     env:
-      RELEASES: ${{ needs.resolve.outputs.releases }}
+      VERSION: ${{ needs.resolve.outputs.version }}
       DRY_RUN: ${{ inputs.dry_run }}
       TAG: ${{ github.ref_type == 'tag' && github.ref_name || '' }}
     steps:
@@ -124,23 +130,36 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Show the plan
+      # A version already on npm is "done", not an error: a package may have
+      # been published by hand to bootstrap its trusted publisher, or by an
+      # earlier run of this workflow that died before pushing. Recording it as
+      # already-done is what lets a half-finished release be completed by
+      # re-running rather than by hand.
+      - name: Check what is already on npm
+        id: registry
         run: |
           set -euo pipefail
-          node -e "
-            const rs = JSON.parse(process.env.RELEASES);
-            for (const r of rs) console.log(r.name + ' -> ' + r.version + ' (' + r.tag + ')');
-          "
+          pending=""
+          for entry in "packages/ui:$UI_PACKAGE" "create-app:$CLI_PACKAGE"; do
+            dir="${entry%%:*}"
+            name="${entry##*:}"
+            if npm view "$name@$VERSION" version >/dev/null 2>&1; then
+              echo "::notice::$name@$VERSION is already on npm and will not be republished"
+            else
+              echo "$name@$VERSION is free"
+              pending="$pending $dir"
+            fi
+          done
+          echo "pending=${pending# }" >> "$GITHUB_OUTPUT"
 
-      # Only the packages in the plan are stamped. A package left out keeps
-      # the version it already has, in the tree and on npm.
-      - name: Stamp the versions
+      # One version line across both packages, so a release always stamps the
+      # pair even when only one of them is left to publish.
+      - name: Stamp the version
         run: |
           set -euo pipefail
-          while read -r dir name version tag; do
-            [ -n "$dir" ] || continue
-            (cd "$dir" && npm version "$version" --no-git-tag-version --allow-same-version)
-          done < <(node .github/scripts/release-entries.mjs)
+          for dir in packages/ui create-app; do
+            (cd "$dir" && npm version "$VERSION" --no-git-tag-version --allow-same-version)
+          done
 
       # Before the gates, not after: the template resolves darkraise-ui's
       # types from packages/ui/dist, which a fresh clone does not have, so
@@ -158,32 +177,29 @@ jobs:
         run: pnpm test
 
       - name: Publish to npm
+        env:
+          PENDING: ${{ steps.registry.outputs.pending }}
         run: |
           set -euo pipefail
+          if [ -z "$PENDING" ]; then
+            echo "::notice::both packages are already on npm at $VERSION — nothing to publish"
+            exit 0
+          fi
           # No token: npm exchanges the job's OIDC identity for a short-lived
           # credential. Provenance is attached automatically, so --provenance
           # is not passed. The build already ran, so prepublishOnly would only
           # repeat it.
           args="--access public --ignore-scripts"
-          while read -r dir name version tag; do
-            [ -n "$dir" ] || continue
-            # Already on npm means done, not an error: a package may have been
-            # published by hand to bootstrap its trusted publisher, or by an
-            # earlier run that died before pushing. Skipping it is what lets a
-            # half-finished release be completed by re-running.
-            if npm view "$name@$version" version >/dev/null 2>&1; then
-              echo "::notice::$name@$version is already on npm — not republished"
-              continue
-            fi
+          for dir in $PENDING; do
             if [ "$DRY_RUN" = "true" ]; then
               echo "dry run: npm publish $args ($dir)"
               (cd "$dir" && npm publish $args --dry-run)
             else
               (cd "$dir" && npm publish $args)
             fi
-          done < <(node .github/scripts/release-entries.mjs)
+          done
 
-      # The CHANGELOG is not part of any published tarball, so it is rolled
+      # The CHANGELOG is not part of either published tarball, so it is rolled
       # after the publish, against master, in both modes.
       - name: Sync master
         id: sync
@@ -197,59 +213,42 @@ jobs:
             # behind master. Drop the stamped files first: they have been
             # published, and carrying them across the switch would both make
             # the checkout refuse when master differs and mask master's own
-            # versions from the comparisons below.
+            # version from the comparison below.
             git fetch origin master
             git reset --hard
             git checkout -B master origin/master
-          fi
 
-          rolled=""
-          while read -r dir name version tag; do
-            [ -n "$dir" ] || continue
-            current=$(node -p "require('./$dir/package.json').version")
+            current=$(node -p "require('./packages/ui/package.json').version")
             if node -e "
               const [a,b] = [process.argv[1], process.argv[2]].map(v => v.split('.').map(Number));
               const cmp = a[0]-b[0] || a[1]-b[1] || a[2]-b[2];
               process.exit(cmp > 0 ? 0 : 1);
-            " "$current" "$version"; then
-              echo "::notice::master has $name at $current, ahead of $version — leaving it alone"
-              continue
+            " "$current" "$VERSION"; then
+              echo "::notice::master is at $current, ahead of $VERSION — leaving it alone"
+              echo "synced=false" >> "$GITHUB_OUTPUT"
+              exit 0
             fi
+
             # Equal is not a reason to stop: the version may already match
             # while the CHANGELOG still needs rolling.
-            (cd "$dir" && npm version "$version" --no-git-tag-version --allow-same-version)
-            git add "$dir/package.json"
-            # Not `[ -f … ] && git add …`: under `set -e` a false test as the
-            # last command of the line would abort the step.
-            if [ -f "$dir/package-lock.json" ]; then
-              git add "$dir/package-lock.json"
-            fi
-            if [ "$dir" = "packages/ui" ]; then
-              node .github/scripts/release-changelog.mjs "$version"
-              git add packages/ui/CHANGELOG.md
-              rolled="yes"
-            fi
-          done < <(node .github/scripts/release-entries.mjs)
+            for dir in packages/ui create-app; do
+              (cd "$dir" && npm version "$VERSION" --no-git-tag-version --allow-same-version)
+            done
+          fi
+
+          node .github/scripts/release-changelog.mjs "$VERSION"
+          git add packages/ui/package.json packages/ui/CHANGELOG.md \
+                  create-app/package.json create-app/package-lock.json
 
           if git diff --cached --quiet; then
-            echo "::notice::master already carries these versions"
+            echo "::notice::master already carries $VERSION and a rolled CHANGELOG"
             echo "synced=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
+          git commit -m "chore(release): v$VERSION"
 
-          summary=$(node -e "
-            const rs = JSON.parse(process.env.RELEASES);
-            console.log(rs.map(r => r.name + ' v' + r.version).join(', '));
-          ")
-          git commit -m "chore(release): $summary"
-
-          # In tag mode the tag already exists; in master mode each released
-          # package gets its own.
           if [ -z "$TAG" ]; then
-            while read -r dir name version tag; do
-              [ -n "$dir" ] || continue
-              git tag "$tag"
-            done < <(node .github/scripts/release-entries.mjs)
+            git tag "${TAG_PREFIX}${VERSION}"
           fi
 
           if [ "$DRY_RUN" = "true" ]; then
@@ -260,44 +259,37 @@ jobs:
           fi
 
           git push origin HEAD:master
-          # Each planned tag by name, never --tags: that would push whatever
-          # else happens to be in the runner's tag list.
           if [ -z "$TAG" ]; then
-            while read -r dir name version tag; do
-              [ -n "$dir" ] || continue
-              git push origin "$tag"
-            done < <(node .github/scripts/release-entries.mjs)
+            git push origin "${TAG_PREFIX}${VERSION}"
           fi
           echo "synced=true" >> "$GITHUB_OUTPUT"
 
-      - name: Create the GitHub Releases
+      - name: Create the GitHub Release
         if: inputs.dry_run != true
         env:
           GH_TOKEN: ${{ github.token }}
           NOTES_FILE: ${{ steps.sync.outputs.notes-file }}
         run: |
           set -euo pipefail
-          while read -r dir name version tag; do
-            [ -n "$dir" ] || continue
-            notes="${NOTES_FILE:-}"
-            # Only darkraise-ui keeps a CHANGELOG; the CLI gets a plain note.
-            if [ "$dir" != "packages/ui" ] || [ -z "$notes" ] || [ ! -f "$notes" ]; then
-              notes=$(mktemp)
-              echo "$name v$version" > "$notes"
-            fi
-            gh release create "$tag" --title "$name v$version" --notes-file "$notes"
-          done < <(node .github/scripts/release-entries.mjs)
+          notes="${NOTES_FILE:-}"
+          if [ -z "$notes" ] || [ ! -f "$notes" ]; then
+            notes=$(mktemp)
+            echo "See packages/ui/CHANGELOG.md." > "$notes"
+          fi
+          gh release create "${TAG_PREFIX}${VERSION}" \
+            --title "v$VERSION" \
+            --notes-file "$notes"
 
       - name: Summary
         run: |
-          set -euo pipefail
           {
+            echo "### v$VERSION"
+            echo
             if [ "$DRY_RUN" = "true" ]; then
-              echo "### Dry run — npm and master were not touched"
-              echo
+              echo "Dry run — npm and master were not touched."
+            else
+              echo "- https://www.npmjs.com/package/$UI_PACKAGE/v/$VERSION"
+              echo "- https://www.npmjs.com/package/$CLI_PACKAGE/v/$VERSION"
+              echo "- tag: ${TAG_PREFIX}${VERSION}"
             fi
-            while read -r dir name version tag; do
-              [ -n "$dir" ] || continue
-              echo "- https://www.npmjs.com/package/$name/v/$version (tag \`$tag\`)"
-            done < <(node .github/scripts/release-entries.mjs)
           } >> "$GITHUB_STEP_SUMMARY"

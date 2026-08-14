@@ -153,41 +153,30 @@ This monorepo additionally provides `pnpm storybook` (browse the component libra
 
 ## Releasing
 
-Two packages are published, `darkraise-ui` and `create-darkraise-ui`. They
-are **independent**: each owns its version line and its tag namespace, so a
-change to one never moves the other's number and releasing one never
-republishes the other.
-
-| Package               | Directory     | Tags     |
-| --------------------- | ------------- | -------- |
-| `darkraise-ui`        | `packages/ui` | `ui-v*`  |
-| `create-darkraise-ui` | `create-app`  | `cli-v*` |
-
-One workflow, `.github/workflows/release.yml`, does both. It builds, then
-runs the full gates — typecheck, lint, the Vitest suite — before anything
-reaches npm, closes the CHANGELOG's `[Unreleased]` section under the new
-version when `darkraise-ui` is part of the release, and opens a GitHub
-Release per package.
+Two packages are published, `darkraise-ui` and `create-darkraise-ui`, and
+they share one version line — a release always ships both at the same
+number, whichever one changed. One workflow, `.github/workflows/release.yml`,
+does it. It runs the full gates — typecheck, lint, the Vitest suite, then the
+build — before anything reaches npm, closes the CHANGELOG's `[Unreleased]`
+section under the new version, and opens a GitHub Release from it.
 
 Publishing uses npm **trusted publishing** (OIDC), so no npm token is stored
 in this repository. The workflow proves its identity to npm with a
 short-lived GitHub token, and npm attaches a provenance attestation
 automatically.
 
-**Push to `master`** — each package is considered on its own. If commits
-since that package's last tag touched its directory, it is released; if not,
-it is left entirely alone. The version comes from those commits: a `feat`
-makes it a minor, anything else a patch. A commit marked breaking (`type!:`
-or a `BREAKING CHANGE:` footer) **fails the run** rather than guessing a
-major.
+**Push to `master`** — releases when commits since the last `v*` tag touched
+`packages/ui/**` or `create-app/**`; if none did, the run stops early. The
+version comes from those commits: a `feat` makes it a minor, anything else a
+patch. A commit marked breaking (`type!:` or a `BREAKING CHANGE:` footer)
+**fails the run** rather than guessing a major.
 
-**Push a `ui-vX.Y.Z` or `cli-vX.Y.Z` tag** — releases that one package at
-that exact version, then writes it back to `master`. This is the path for a
-major, or any release whose number is a judgement call:
+**Push a `vX.Y.Z` tag** — releases exactly that version, then writes it and
+the rolled CHANGELOG back to `master`. This is the path for a major, or any
+release whose number is a judgement call:
 
 ```bash
-git tag ui-v7.0.0 && git push origin ui-v7.0.0    # darkraise-ui only
-git tag cli-v6.1.0 && git push origin cli-v6.1.0  # the CLI only
+git tag v7.0.0 && git push origin v7.0.0
 ```
 
 To rehearse without touching npm, run the _Release_ workflow manually — its
@@ -216,16 +205,14 @@ _calling_ workflow's filename. That is why both triggers live in the single
 `release.yml` rather than a caller plus a reusable workflow — a split would
 need one npm configuration per caller, and only one is allowed.
 
-**3. Cut a one-time baseline tag per package.** The master flow derives a
-package's version from the range since that package's last tag, so until one
-exists there is no range. A package in that state is skipped with a notice
-naming the command rather than failing the run, so master stays green while
-the setup above is pending. Cutting the tag is itself that package's first
-release through the pipeline:
+**3. Cut a one-time baseline tag.** The master flow derives its version from
+the range since the last `v*` tag, so until one exists there is no range.
+Runs before that point end green with a notice naming the command rather
+than failing, so master stays clean while the setup above is pending.
+Cutting the tag is itself the first release:
 
 ```bash
-git tag ui-v6.0.0 && git push origin ui-v6.0.0     # publishes darkraise-ui 6.0.0
-git tag cli-v6.0.0 && git push origin cli-v6.0.0   # already on npm; marks the baseline
+git tag v6.0.0 && git push origin v6.0.0
 ```
 
 ## Tech Stack
