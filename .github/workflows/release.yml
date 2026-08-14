@@ -1,19 +1,25 @@
-name: Release on master
+name: Release
 
-# Publishes darkraise-ui and create-darkraise-ui whenever master changes
-# either of them. The two share one version line, so a release always ships
-# both. The version comes from the commits since the last v* tag: a feat
-# makes it a minor, anything else a patch, and a breaking marker stops the
-# run so the major can be released deliberately with a tag.
+# Publishes darkraise-ui and create-darkraise-ui to npm via trusted
+# publishing (OIDC) — no npm token is stored anywhere.
+#
+# Everything lives in this one file on purpose. npm allows a single trusted
+# publisher per package and validates it against the *calling* workflow's
+# filename, so splitting the triggers across a caller and a reusable workflow
+# would need a separate npm configuration per caller, and only one is
+# allowed. Registering `release.yml` covers both paths below.
+#
+# Two ways in:
+#   - a push to master: the version is derived from the commits since the
+#     last v* tag — a feat makes it a minor, anything else a patch, and a
+#     breaking marker stops the run so the major is released deliberately.
+#   - a push of a vX.Y.Z tag: that exact version is released, then written
+#     back to master with the rolled CHANGELOG.
 
 on:
   push:
     branches: [master]
-    # Only the published packages. A change to the pipeline is not a reason
-    # to cut a release — test those with the workflow_dispatch dry run below.
-    paths:
-      - "packages/ui/**"
-      - "create-app/**"
+    tags: ["v*"]
   workflow_dispatch:
     inputs:
       dry_run:
@@ -26,21 +32,244 @@ concurrency:
   group: publish-darkraise
   cancel-in-progress: false
 
+env:
+  UI_PACKAGE: darkraise-ui
+  CLI_PACKAGE: create-darkraise-ui
+  TAG_PREFIX: v
+  # Trusted publishing needs npm 11.5.1 or newer.
+  MIN_NPM: 11.5.1
+
 jobs:
-  release:
-    # Granted here, not just in the called workflow: a reusable workflow can
-    # only narrow the caller's token, and this repository's default is
-    # read-only, which would 403 the push after the publish had happened.
+  resolve:
+    name: Resolve version
+    runs-on: ubuntu-latest
+    # A tag may point at the release commit this workflow itself pushed, so
+    # the guard applies to branch pushes only.
+    if: >-
+      ${{ github.ref_type == 'tag' ||
+      !startsWith(github.event.head_commit.message, 'chore(release):') }}
+    outputs:
+      version: ${{ steps.resolve.outputs.version }}
+      skip: ${{ steps.resolve.outputs.skip }}
+    env:
+      # Through the environment, never spliced into a run block: a tag name
+      # may legally contain quotes, `$` and `;`.
+      TAG: ${{ github.ref_type == 'tag' && github.ref_name || '' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Version derivation reads the tag list and the commits behind it.
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Resolve version
+        id: resolve
+        run: |
+          set -euo pipefail
+          if [ -n "$TAG" ]; then
+            version="${TAG#"$TAG_PREFIX"}"
+            if ! printf '%s' "$version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+              echo "::error::tag '$TAG' does not carry a major.minor.patch version"
+              exit 1
+            fi
+            {
+              echo "version=$version"
+              echo "skip=false"
+            } >> "$GITHUB_OUTPUT"
+            echo "releasing $version from tag $TAG"
+          else
+            # Emits skip=true when nothing since the last tag touched either
+            # package, which is why this workflow needs no paths filter — one
+            # would not survive being shared with the tag trigger anyway.
+            node .github/scripts/next-version.mjs
+          fi
+
+  publish:
+    name: Publish
+    needs: resolve
+    if: needs.resolve.outputs.skip != 'true'
+    runs-on: ubuntu-latest
     permissions:
+      # Commit the version back, push the tag, and create the Release.
       contents: write
+      # Trusted publishing: mints the OIDC token npm authenticates with, and
+      # signs the provenance attestation.
       id-token: write
-    # The release commit this workflow pushes would otherwise trigger it
-    # again. A push made with GITHUB_TOKEN does not start another workflow,
-    # so this is a second line of defence — one that still holds if the token
-    # is ever swapped for a PAT to satisfy branch protection.
-    if: ${{ !startsWith(github.event.head_commit.message, 'chore(release):') }}
-    uses: ./.github/workflows/publish.yml
-    with:
-      dry_run: ${{ inputs.dry_run == true }}
-    secrets:
-      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+    env:
+      VERSION: ${{ needs.resolve.outputs.version }}
+      DRY_RUN: ${{ inputs.dry_run }}
+      TAG: ${{ github.ref_type == 'tag' && github.ref_name || '' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - name: Ensure npm can use trusted publishing
+        run: |
+          set -euo pipefail
+          have=$(npm --version)
+          if node -e "
+            const [a,b] = [process.argv[1], process.argv[2]].map(v => v.split('.').map(Number));
+            process.exit((a[0]-b[0] || a[1]-b[1] || a[2]-b[2]) < 0 ? 0 : 1);
+          " "$have" "$MIN_NPM"; then
+            echo "npm $have is older than $MIN_NPM — upgrading"
+            npm install -g npm@latest
+          fi
+          npm --version
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Refuse to republish an existing version
+        run: |
+          set -euo pipefail
+          for pkg in "$UI_PACKAGE" "$CLI_PACKAGE"; do
+            if npm view "$pkg@$VERSION" version >/dev/null 2>&1; then
+              echo "::error::$pkg@$VERSION is already on npm"
+              exit 1
+            fi
+            echo "$pkg@$VERSION is free"
+          done
+
+      # One version line across both packages, so a release always stamps and
+      # publishes the pair even when only one of them changed.
+      - name: Stamp the version
+        run: |
+          set -euo pipefail
+          for dir in packages/ui create-app; do
+            (cd "$dir" && npm version "$VERSION" --no-git-tag-version --allow-same-version)
+          done
+
+      - name: Typecheck
+        run: pnpm -r typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm --filter "$UI_PACKAGE" build
+
+      - name: Publish to npm
+        run: |
+          set -euo pipefail
+          # No token: npm exchanges the job's OIDC identity for a short-lived
+          # credential. Provenance is attached automatically, so --provenance
+          # is not passed. The build already ran, so prepublishOnly would only
+          # repeat it.
+          args="--access public --ignore-scripts"
+          for dir in packages/ui create-app; do
+            if [ "$DRY_RUN" = "true" ]; then
+              echo "dry run: npm publish $args ($dir)"
+              (cd "$dir" && npm publish $args --dry-run)
+            else
+              (cd "$dir" && npm publish $args)
+            fi
+          done
+
+      # The CHANGELOG is not part of either published tarball, so it is rolled
+      # after the publish, against master, in both modes.
+      - name: Sync master
+        id: sync
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if [ -n "$TAG" ]; then
+            # A tag build sits on a detached HEAD at the tag, which may be
+            # behind master. Drop the stamped files first: they have been
+            # published, and carrying them across the switch would both make
+            # the checkout refuse when master differs and mask master's own
+            # version from the comparison below.
+            git fetch origin master
+            git reset --hard
+            git checkout -B master origin/master
+
+            current=$(node -p "require('./packages/ui/package.json').version")
+            if node -e "
+              const [a,b] = [process.argv[1], process.argv[2]].map(v => v.split('.').map(Number));
+              const cmp = a[0]-b[0] || a[1]-b[1] || a[2]-b[2];
+              process.exit(cmp > 0 ? 0 : 1);
+            " "$current" "$VERSION"; then
+              echo "::notice::master is at $current, ahead of $VERSION — leaving it alone"
+              echo "synced=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+
+            # Equal is not a reason to stop: the version may already match
+            # while the CHANGELOG still needs rolling.
+            for dir in packages/ui create-app; do
+              (cd "$dir" && npm version "$VERSION" --no-git-tag-version --allow-same-version)
+            done
+          fi
+
+          node .github/scripts/release-changelog.mjs "$VERSION"
+          git add packages/ui/package.json packages/ui/CHANGELOG.md \
+                  create-app/package.json create-app/package-lock.json
+
+          if git diff --cached --quiet; then
+            echo "::notice::master already carries $VERSION and a rolled CHANGELOG"
+            echo "synced=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git commit -m "chore(release): v$VERSION"
+
+          if [ -z "$TAG" ]; then
+            git tag "${TAG_PREFIX}${VERSION}"
+          fi
+
+          if [ "$DRY_RUN" = "true" ]; then
+            echo "dry run: would push $(git rev-parse --short HEAD) to master"
+            git --no-pager show --stat --oneline HEAD
+            echo "synced=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git push origin HEAD:master
+          if [ -z "$TAG" ]; then
+            git push origin "${TAG_PREFIX}${VERSION}"
+          fi
+          echo "synced=true" >> "$GITHUB_OUTPUT"
+
+      - name: Create the GitHub Release
+        if: inputs.dry_run != true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NOTES_FILE: ${{ steps.sync.outputs.notes-file }}
+        run: |
+          set -euo pipefail
+          notes="${NOTES_FILE:-}"
+          if [ -z "$notes" ] || [ ! -f "$notes" ]; then
+            notes=$(mktemp)
+            echo "See packages/ui/CHANGELOG.md." > "$notes"
+          fi
+          gh release create "${TAG_PREFIX}${VERSION}" \
+            --title "v$VERSION" \
+            --notes-file "$notes"
+
+      - name: Summary
+        run: |
+          {
+            echo "### v$VERSION"
+            echo
+            if [ "$DRY_RUN" = "true" ]; then
+              echo "Dry run — npm and master were not touched."
+            else
+              echo "- https://www.npmjs.com/package/$UI_PACKAGE/v/$VERSION"
+              echo "- https://www.npmjs.com/package/$CLI_PACKAGE/v/$VERSION"
+              echo "- tag: ${TAG_PREFIX}${VERSION}"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

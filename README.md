@@ -155,16 +155,21 @@ This monorepo additionally provides `pnpm storybook` (browse the component libra
 
 Two packages are published, `darkraise-ui` and `create-darkraise-ui`, and
 they share one version line — a release always ships both at the same
-number, whichever one changed. Two GitHub Actions workflows do it. Both run
-the full gates — typecheck, lint, the Vitest suite, then the build — before
-anything reaches npm, and both close the CHANGELOG's `[Unreleased]` section
-under the new version and open a GitHub Release from it.
+number, whichever one changed. One workflow, `.github/workflows/release.yml`,
+does it. It runs the full gates — typecheck, lint, the Vitest suite, then the
+build — before anything reaches npm, closes the CHANGELOG's `[Unreleased]`
+section under the new version, and opens a GitHub Release from it.
 
-**Push to `master`** — releases automatically when the push touches
-`packages/ui/**` or `create-app/**`. The version comes from the commits
-since the last `v*` tag: a `feat` makes it a minor, anything else a patch. A
-commit marked breaking (`type!:` or a `BREAKING CHANGE:` footer) **fails the
-run** rather than guessing a major.
+Publishing uses npm **trusted publishing** (OIDC), so no npm token is stored
+in this repository. The workflow proves its identity to npm with a
+short-lived GitHub token, and npm attaches a provenance attestation
+automatically.
+
+**Push to `master`** — releases when commits since the last `v*` tag touched
+`packages/ui/**` or `create-app/**`; if none did, the run stops early. The
+version comes from those commits: a `feat` makes it a minor, anything else a
+patch. A commit marked breaking (`type!:` or a `BREAKING CHANGE:` footer)
+**fails the run** rather than guessing a major.
 
 **Push a `vX.Y.Z` tag** — releases exactly that version, then writes it and
 the rolled CHANGELOG back to `master`. This is the path for a major, or any
@@ -174,18 +179,36 @@ release whose number is a judgement call:
 git tag v7.0.0 && git push origin v7.0.0
 ```
 
-To rehearse either without touching npm, run the _Release on master_
-workflow manually — its `dry_run` input defaults to true.
+To rehearse without touching npm, run the _Release_ workflow manually — its
+`dry_run` input defaults to true.
 
 ### First-time setup
 
-An npm **Automation** access token in the `NPM_TOKEN` repository secret; a
-Classic token with 2FA-on-publish cannot publish unattended.
+**1. Both packages must exist on npm.** A trusted publisher is configured in
+a package's settings, so the package has to be there first — OIDC cannot make
+a package's very first publish. `darkraise-ui` already exists;
+`create-darkraise-ui` does not, so publish it once by hand from `create-app/`
+before wiring anything up.
 
-A one-time baseline tag. The master flow derives its version from the range
-since the last `v*` tag, so until one exists there is no range and the run
-stops with the command to create it. Cutting that tag is itself the first
-release:
+**2. Configure the trusted publisher** for each package at
+npmjs.com → the package → Settings → Trusted publishing, or with `npm trust`.
+Both get the same values:
+
+| Field    | Value                    |
+| -------- | ------------------------ |
+| Owner    | `darkraise`              |
+| Repo     | `darkraise-web-template` |
+| Workflow | `release.yml`            |
+
+npm allows one trusted publisher per package and matches it against the
+_calling_ workflow's filename. That is why both triggers live in the single
+`release.yml` rather than a caller plus a reusable workflow — a split would
+need one npm configuration per caller, and only one is allowed.
+
+**3. Cut a one-time baseline tag.** The master flow derives its version from
+the range since the last `v*` tag, so until one exists there is no range and
+the run stops with the command to create it. Cutting that tag is itself the
+first release:
 
 ```bash
 git tag v6.0.0 && git push origin v6.0.0
