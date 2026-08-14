@@ -130,25 +130,42 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Refuse to republish an existing version
+      # A version already on npm is "done", not an error: a package may have
+      # been published by hand to bootstrap its trusted publisher, or by an
+      # earlier run of this workflow that died before pushing. Recording it as
+      # already-done is what lets a half-finished release be completed by
+      # re-running rather than by hand.
+      - name: Check what is already on npm
+        id: registry
         run: |
           set -euo pipefail
-          for pkg in "$UI_PACKAGE" "$CLI_PACKAGE"; do
-            if npm view "$pkg@$VERSION" version >/dev/null 2>&1; then
-              echo "::error::$pkg@$VERSION is already on npm"
-              exit 1
+          pending=""
+          for entry in "packages/ui:$UI_PACKAGE" "create-app:$CLI_PACKAGE"; do
+            dir="${entry%%:*}"
+            name="${entry##*:}"
+            if npm view "$name@$VERSION" version >/dev/null 2>&1; then
+              echo "::notice::$name@$VERSION is already on npm and will not be republished"
+            else
+              echo "$name@$VERSION is free"
+              pending="$pending $dir"
             fi
-            echo "$pkg@$VERSION is free"
           done
+          echo "pending=${pending# }" >> "$GITHUB_OUTPUT"
 
-      # One version line across both packages, so a release always stamps and
-      # publishes the pair even when only one of them changed.
+      # One version line across both packages, so a release always stamps the
+      # pair even when only one of them is left to publish.
       - name: Stamp the version
         run: |
           set -euo pipefail
           for dir in packages/ui create-app; do
             (cd "$dir" && npm version "$VERSION" --no-git-tag-version --allow-same-version)
           done
+
+      # Before the gates, not after: the template resolves darkraise-ui's
+      # types from packages/ui/dist, which a fresh clone does not have, so
+      # `pnpm -r typecheck` cannot pass until this has run.
+      - name: Build
+        run: pnpm --filter "$UI_PACKAGE" build
 
       - name: Typecheck
         run: pnpm -r typecheck
@@ -159,18 +176,21 @@ jobs:
       - name: Test
         run: pnpm test
 
-      - name: Build
-        run: pnpm --filter "$UI_PACKAGE" build
-
       - name: Publish to npm
+        env:
+          PENDING: ${{ steps.registry.outputs.pending }}
         run: |
           set -euo pipefail
+          if [ -z "$PENDING" ]; then
+            echo "::notice::both packages are already on npm at $VERSION — nothing to publish"
+            exit 0
+          fi
           # No token: npm exchanges the job's OIDC identity for a short-lived
           # credential. Provenance is attached automatically, so --provenance
           # is not passed. The build already ran, so prepublishOnly would only
           # repeat it.
           args="--access public --ignore-scripts"
-          for dir in packages/ui create-app; do
+          for dir in $PENDING; do
             if [ "$DRY_RUN" = "true" ]; then
               echo "dry run: npm publish $args ($dir)"
               (cd "$dir" && npm publish $args --dry-run)
