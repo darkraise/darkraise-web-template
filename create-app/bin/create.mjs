@@ -31,6 +31,7 @@ const ELEVATIONS = ["flat", "low", "medium", "high"]
 const RADII = ["sharp", "subtle", "rounded", "pill"]
 const FONT_SIZES = ["small", "medium", "large", "extra-large"]
 const ACCENT_VIBRANCIES = ["calm", "balanced", "vivid", "intense"]
+const SURFACE_INTENSITIES = ["flat", "subtle", "balanced", "bold"]
 const MODES = ["light", "dark", "system"]
 const LAYOUTS = ["sidebar", "stacked", "top-nav", "split-panel"]
 // Mirrors `ThemeConfig.switcher.axes` in
@@ -40,7 +41,7 @@ const LAYOUTS = ["sidebar", "stacked", "top-nav", "split-panel"]
 const THEME_AXIS_KEYS = [
   "mode", "accentColor", "surfaceColor", "preset",
   "backgroundStyle", "backgroundIntensity", "gradientPattern",
-  "density", "elevation", "buttonElevation", "radius", "fontSize",
+  "density", "elevation", "buttonElevation", "surfaceIntensity", "radius", "fontSize",
   "accentVibrancy", "presetAxes",
 ]
 
@@ -50,7 +51,7 @@ const argv = minimist(process.argv.slice(2), {
     "layout", "accent", "surface-color", "preset",
     "background", "background-intensity", "gradient-pattern",
     "mode", "theme-axes",
-    "density", "elevation", "button-elevation", "radius", "font-size",
+    "density", "elevation", "button-elevation", "surface-intensity", "radius", "font-size",
     "accent-vibrancy",
     "host", "port",
   ],
@@ -86,6 +87,7 @@ validate(argv.mode, MODES, "mode")
 validate(argv.density, DENSITIES, "density")
 validate(argv.elevation, ELEVATIONS, "elevation")
 validate(argv["button-elevation"], ELEVATIONS, "button-elevation")
+validate(argv["surface-intensity"], SURFACE_INTENSITIES, "surface-intensity")
 validate(argv.radius, RADII, "radius")
 validate(argv["font-size"], FONT_SIZES, "font-size")
 validate(argv["accent-vibrancy"], ACCENT_VIBRANCIES, "accent-vibrancy")
@@ -239,6 +241,14 @@ async function main() {
     }),
   ))
 
+  const surfaceIntensity = argv["surface-intensity"] || (skipPrompts ? "balanced" : cancelled(
+    await p.select({
+      message: "Surface intensity",
+      options: SURFACE_INTENSITIES.map((s) => ({ value: s, label: s })),
+      initialValue: "balanced",
+    }),
+  ))
+
   const radius = argv.radius || (skipPrompts ? "rounded" : cancelled(
     await p.select({
       message: "Radius",
@@ -297,6 +307,7 @@ async function main() {
             { value: "density", label: "Density" },
             { value: "elevation", label: "Elevation" },
             { value: "buttonElevation", label: "Button elevation" },
+            { value: "surfaceIntensity", label: "Surface intensity" },
             { value: "radius", label: "Radius" },
             { value: "fontSize", label: "Font size" },
             { value: "accentVibrancy", label: "Accent vibrancy" },
@@ -352,6 +363,7 @@ async function main() {
         density: density,
         elevation: elevation,
         buttonElevation: buttonElevation,
+        surfaceIntensity: surfaceIntensity,
         radius: radius,
         fontSize: fontSize,
         accentVibrancy: accentVibrancy,
@@ -446,6 +458,7 @@ async function main() {
           "density": "theme-density",
           "elevation": "theme-elevation",
           "button-elevation": "theme-button-elevation",
+          "surface-intensity": "theme-surface-intensity",
           "radius": "theme-radius",
           "font-size": "theme-font-size",
         }
@@ -547,6 +560,7 @@ export const themeConfig: ThemeConfig = {
     density: "${config.theme.defaults.density}",
     elevation: "${config.theme.defaults.elevation}",
     buttonElevation: "${config.theme.defaults.buttonElevation}",
+    surfaceIntensity: "${config.theme.defaults.surfaceIntensity}",
     radius: "${config.theme.defaults.radius}",
     fontSize: "${config.theme.defaults.fontSize}",
     accentVibrancy: "${config.theme.defaults.accentVibrancy}",
@@ -564,6 +578,7 @@ export const themeConfig: ThemeConfig = {
       density: ${config.theme.switcher.axes.density},
       elevation: ${config.theme.switcher.axes.elevation},
       buttonElevation: ${config.theme.switcher.axes.buttonElevation},
+      surfaceIntensity: ${config.theme.switcher.axes.surfaceIntensity},
       radius: ${config.theme.switcher.axes.radius},
       fontSize: ${config.theme.switcher.axes.fontSize},
       accentVibrancy: ${config.theme.switcher.axes.accentVibrancy},
