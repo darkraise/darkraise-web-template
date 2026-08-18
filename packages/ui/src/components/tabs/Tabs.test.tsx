@@ -530,4 +530,81 @@ describe("Tabs", () => {
       "balanced",
     )
   })
+
+  it("puts data-surface-intensity on the root when set", () => {
+    const { container } = render(
+      <Tabs surfaceIntensity="bold" defaultValue="tab-1">
+        <TabsList>
+          <TabsTrigger value="tab-1">Tab One</TabsTrigger>
+        </TabsList>
+        <TabsContent value="tab-1">Panel One</TabsContent>
+      </Tabs>,
+    )
+    expect(container.querySelector(".dr-tabs")).toHaveAttribute(
+      "data-surface-intensity",
+      "bold",
+    )
+  })
+
+  it("omits data-surface-intensity from the root when unset", () => {
+    const { container } = render(<TestTabs />)
+    expect(container.querySelector(".dr-tabs")).not.toHaveAttribute(
+      "data-surface-intensity",
+    )
+  })
+
+  it("emits the root attribute for balanced, not filtered to undefined", () => {
+    const { container } = render(
+      <Tabs surfaceIntensity="balanced" defaultValue="tab-1">
+        <TabsList>
+          <TabsTrigger value="tab-1">Tab One</TabsTrigger>
+        </TabsList>
+        <TabsContent value="tab-1">Panel One</TabsContent>
+      </Tabs>,
+    )
+    expect(container.querySelector(".dr-tabs")).toHaveAttribute(
+      "data-surface-intensity",
+      "balanced",
+    )
+  })
+
+  // The enclosed indicator is a DOM sibling of the content panel, not a
+  // descendant of it, so a `surfaceIntensity` set on `TabsContent` alone
+  // cannot reach it. Both sit under the root, so a root-level value is what
+  // keeps the indicator and the active panel washed as one continuous
+  // surface. This asserts the enclosure that justifies the root prop.
+  it("encloses both the enclosed indicator and the content panel in the root", () => {
+    const { container } = render(
+      <Tabs surfaceIntensity="bold" variant="enclosed" defaultValue="tab-1">
+        <TabsList>
+          <TabsTrigger value="tab-1">Tab One</TabsTrigger>
+        </TabsList>
+        <TabsContent value="tab-1">Panel One</TabsContent>
+      </Tabs>,
+    )
+    const root = container.querySelector(".dr-tabs")
+    const indicator = container.querySelector(".dr-tabs-indicator")
+    const panel = screen.getByRole("tabpanel")
+    expect(root).toHaveAttribute("data-surface-intensity", "bold")
+    expect(indicator).not.toBeNull()
+    expect(root?.contains(indicator)).toBe(true)
+    expect(root?.contains(panel)).toBe(true)
+  })
+
+  it("lets a TabsContent-level value override the root for its own panel", () => {
+    render(
+      <Tabs surfaceIntensity="bold" defaultValue="tab-1">
+        <TabsList>
+          <TabsTrigger value="tab-1">Tab One</TabsTrigger>
+        </TabsList>
+        <TabsContent value="tab-1" surfaceIntensity="subtle">
+          Panel One
+        </TabsContent>
+      </Tabs>,
+    )
+    expect(screen.getByRole("tabpanel")).toHaveAttribute(
+      "data-surface-intensity",
+      "subtle",
+    )
+  })
 })

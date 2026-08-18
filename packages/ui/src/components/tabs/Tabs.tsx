@@ -78,6 +78,15 @@ interface TabsProps extends Omit<
   activationMode?: TabsActivationMode
   dir?: "ltr" | "rtl"
   ref?: React.Ref<HTMLDivElement>
+  /**
+   * How strongly this whole assembly's surfaces separate from the page,
+   * overriding the `surfaceIntensity` theme axis for both the content
+   * panels and, on the `enclosed` variant, the sliding indicator that reads
+   * as one continuous surface with the active panel. Nested non-portalled
+   * surfaces inherit it; a `TabsContent` may still set its own
+   * `surfaceIntensity` to override this root value for just its panel.
+   */
+  surfaceIntensity?: SurfaceIntensityProp
 }
 
 function Tabs({
@@ -92,6 +101,7 @@ function Tabs({
   border,
   activationMode,
   dir,
+  surfaceIntensity,
   children,
   ...props
 }: TabsProps) {
@@ -124,6 +134,7 @@ function Tabs({
       data-orientation={ctx.orientation}
       data-variant={variant}
       data-color={color}
+      data-surface-intensity={surfaceIntensity}
       dir={ctx.dir}
       className={cn("dr-tabs", className)}
       {...props}
