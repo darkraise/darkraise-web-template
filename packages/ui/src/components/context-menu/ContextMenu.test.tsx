@@ -70,4 +70,36 @@ describe("ContextMenu", () => {
     const del = await screen.findByRole("menuitem", { name: "Delete" })
     expect(del).toHaveAttribute("aria-disabled", "true")
   })
+
+  it("forwards surfaceIntensity to the content surface", async () => {
+    render(
+      <ContextMenu>
+        <ContextMenuTrigger>Right-click here</ContextMenuTrigger>
+        <ContextMenuContent surfaceIntensity="flat">
+          <ContextMenuItem>Edit</ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>,
+    )
+    fireEvent.contextMenu(screen.getByText("Right-click here"))
+    expect(await screen.findByRole("menu")).toHaveAttribute(
+      "data-surface-intensity",
+      "flat",
+    )
+  })
+
+  it("emits the attribute for balanced, so it overrides an ancestor", async () => {
+    render(
+      <ContextMenu>
+        <ContextMenuTrigger>Right-click here</ContextMenuTrigger>
+        <ContextMenuContent surfaceIntensity="balanced">
+          <ContextMenuItem>Edit</ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>,
+    )
+    fireEvent.contextMenu(screen.getByText("Right-click here"))
+    expect(await screen.findByRole("menu")).toHaveAttribute(
+      "data-surface-intensity",
+      "balanced",
+    )
+  })
 })

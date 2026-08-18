@@ -75,4 +75,45 @@ describe("NavigationMenu", () => {
       ).toBeNull(),
     )
   })
+
+  it("forwards surfaceIntensity to the content surface", async () => {
+    const user = userEvent.setup()
+    render(
+      <NavigationMenu delayDuration={0}>
+        <NavigationMenuList>
+          <NavigationMenuItem value="docs">
+            <NavigationMenuTrigger>Docs</NavigationMenuTrigger>
+            <NavigationMenuContent surfaceIntensity="flat">
+              <a href="#getting-started">Getting started</a>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+        </NavigationMenuList>
+      </NavigationMenu>,
+    )
+    await user.click(screen.getByRole("button", { name: /docs/i }))
+    const link = await screen.findByRole("link", { name: "Getting started" })
+    expect(link.parentElement).toHaveAttribute("data-surface-intensity", "flat")
+  })
+
+  it("emits the attribute for balanced, so it overrides an ancestor", async () => {
+    const user = userEvent.setup()
+    render(
+      <NavigationMenu delayDuration={0}>
+        <NavigationMenuList>
+          <NavigationMenuItem value="docs">
+            <NavigationMenuTrigger>Docs</NavigationMenuTrigger>
+            <NavigationMenuContent surfaceIntensity="balanced">
+              <a href="#getting-started">Getting started</a>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+        </NavigationMenuList>
+      </NavigationMenu>,
+    )
+    await user.click(screen.getByRole("button", { name: /docs/i }))
+    const link = await screen.findByRole("link", { name: "Getting started" })
+    expect(link.parentElement).toHaveAttribute(
+      "data-surface-intensity",
+      "balanced",
+    )
+  })
 })

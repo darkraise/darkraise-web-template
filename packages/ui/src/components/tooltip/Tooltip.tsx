@@ -3,6 +3,7 @@
 import * as React from "react"
 
 import { cn } from "@lib/utils"
+import type { SurfaceIntensityProp } from "@lib/surface-intensity"
 import { Portal } from "@primitives/portal"
 import { Presence } from "@primitives/presence"
 import { Slot, composeRefs } from "@primitives/slot"
@@ -206,6 +207,13 @@ interface TooltipContentProps extends React.HTMLAttributes<HTMLDivElement> {
   avoidCollisions?: boolean
   forceMount?: boolean
   ref?: React.Ref<HTMLDivElement>
+  /**
+   * How strongly this tooltip's surface separates from the page, overriding
+   * the `surfaceIntensity` theme axis. Nested non-portalled surfaces inherit
+   * it; portalled content does not, because custom properties inherit
+   * through the DOM tree rather than the React tree.
+   */
+  surfaceIntensity?: SurfaceIntensityProp
 }
 
 function TooltipContentImpl({
@@ -217,6 +225,7 @@ function TooltipContentImpl({
   alignOffset = 0,
   collisionPadding = 8,
   avoidCollisions = true,
+  surfaceIntensity,
   ref,
   onPointerEnter,
   onPointerLeave,
@@ -265,6 +274,7 @@ function TooltipContentImpl({
       data-state={ctx.state}
       data-side={resolvedSide}
       data-align={resolvedAlign}
+      data-surface-intensity={surfaceIntensity}
       style={{
         position: floating.strategy,
         top: Math.round(floating.y ?? 0),

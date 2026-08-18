@@ -91,4 +91,38 @@ describe("HoverCard", () => {
     )
     expect(screen.getByText("controlled")).toBeInTheDocument()
   })
+
+  it("forwards surfaceIntensity to the content surface", async () => {
+    const user = userEvent.setup()
+    render(
+      <HoverCard openDelay={0} closeDelay={0}>
+        <HoverCardTrigger href="#">trigger</HoverCardTrigger>
+        <HoverCardContent surfaceIntensity="flat">
+          card content
+        </HoverCardContent>
+      </HoverCard>,
+    )
+    await user.hover(screen.getByText("trigger"))
+    expect(await screen.findByRole("dialog")).toHaveAttribute(
+      "data-surface-intensity",
+      "flat",
+    )
+  })
+
+  it("emits the attribute for balanced, so it overrides an ancestor", async () => {
+    const user = userEvent.setup()
+    render(
+      <HoverCard openDelay={0} closeDelay={0}>
+        <HoverCardTrigger href="#">trigger</HoverCardTrigger>
+        <HoverCardContent surfaceIntensity="balanced">
+          card content
+        </HoverCardContent>
+      </HoverCard>,
+    )
+    await user.hover(screen.getByText("trigger"))
+    expect(await screen.findByRole("dialog")).toHaveAttribute(
+      "data-surface-intensity",
+      "balanced",
+    )
+  })
 })

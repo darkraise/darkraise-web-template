@@ -96,4 +96,34 @@ describe("Tooltip", () => {
     // No-op render assertion — the provider wraps without errors.
     expect(screen.getByRole("button", { name: "X" })).toBeInTheDocument()
   })
+
+  it("forwards surfaceIntensity to the content surface", async () => {
+    const user = userEvent.setup()
+    render(
+      <Tooltip delayDuration={0}>
+        <TooltipTrigger>Hover me</TooltipTrigger>
+        <TooltipContent surfaceIntensity="flat">Tip text</TooltipContent>
+      </Tooltip>,
+    )
+    await user.hover(screen.getByRole("button", { name: "Hover me" }))
+    expect(await screen.findByRole("tooltip")).toHaveAttribute(
+      "data-surface-intensity",
+      "flat",
+    )
+  })
+
+  it("emits the attribute for balanced, so it overrides an ancestor", async () => {
+    const user = userEvent.setup()
+    render(
+      <Tooltip delayDuration={0}>
+        <TooltipTrigger>Hover me</TooltipTrigger>
+        <TooltipContent surfaceIntensity="balanced">Tip text</TooltipContent>
+      </Tooltip>,
+    )
+    await user.hover(screen.getByRole("button", { name: "Hover me" }))
+    expect(await screen.findByRole("tooltip")).toHaveAttribute(
+      "data-surface-intensity",
+      "balanced",
+    )
+  })
 })

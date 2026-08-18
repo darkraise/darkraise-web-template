@@ -121,4 +121,34 @@ describe("DropdownMenu", () => {
     await user.click(screen.getByRole("menuitemradio", { name: "B" }))
     expect(onValueChange).toHaveBeenCalledWith("b")
   })
+
+  it("forwards surfaceIntensity to the content surface", async () => {
+    render(
+      <DropdownMenu defaultOpen>
+        <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+        <DropdownMenuContent surfaceIntensity="flat">
+          <DropdownMenuItem>Apple</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>,
+    )
+    expect(await screen.findByRole("menu")).toHaveAttribute(
+      "data-surface-intensity",
+      "flat",
+    )
+  })
+
+  it("emits the attribute for balanced, so it overrides an ancestor", async () => {
+    render(
+      <DropdownMenu defaultOpen>
+        <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+        <DropdownMenuContent surfaceIntensity="balanced">
+          <DropdownMenuItem>Apple</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>,
+    )
+    expect(await screen.findByRole("menu")).toHaveAttribute(
+      "data-surface-intensity",
+      "balanced",
+    )
+  })
 })

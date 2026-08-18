@@ -83,4 +83,42 @@ describe("Menubar", () => {
     await user.click(newItem)
     expect(onSelect).toHaveBeenCalled()
   })
+
+  it("forwards surfaceIntensity to the content surface", async () => {
+    const user = userEvent.setup()
+    render(
+      <Menubar>
+        <MenubarMenu value="file">
+          <MenubarTrigger>File</MenubarTrigger>
+          <MenubarContent surfaceIntensity="flat">
+            <MenubarItem>New</MenubarItem>
+          </MenubarContent>
+        </MenubarMenu>
+      </Menubar>,
+    )
+    await user.click(screen.getByRole("menuitem", { name: "File" }))
+    expect(await screen.findByRole("menu")).toHaveAttribute(
+      "data-surface-intensity",
+      "flat",
+    )
+  })
+
+  it("emits the attribute for balanced, so it overrides an ancestor", async () => {
+    const user = userEvent.setup()
+    render(
+      <Menubar>
+        <MenubarMenu value="file">
+          <MenubarTrigger>File</MenubarTrigger>
+          <MenubarContent surfaceIntensity="balanced">
+            <MenubarItem>New</MenubarItem>
+          </MenubarContent>
+        </MenubarMenu>
+      </Menubar>,
+    )
+    await user.click(screen.getByRole("menuitem", { name: "File" }))
+    expect(await screen.findByRole("menu")).toHaveAttribute(
+      "data-surface-intensity",
+      "balanced",
+    )
+  })
 })

@@ -141,4 +141,42 @@ describe("Select", () => {
     )
     expect(screen.getByRole("combobox")).toHaveTextContent("durian")
   })
+
+  it("forwards surfaceIntensity to the content surface", async () => {
+    const user = userEvent.setup()
+    render(
+      <Select>
+        <SelectTrigger>
+          <SelectValue placeholder="Pick one" />
+        </SelectTrigger>
+        <SelectContent surfaceIntensity="flat">
+          <SelectItem value="apple">Apple</SelectItem>
+        </SelectContent>
+      </Select>,
+    )
+    await user.click(screen.getByRole("combobox"))
+    expect(await screen.findByRole("listbox")).toHaveAttribute(
+      "data-surface-intensity",
+      "flat",
+    )
+  })
+
+  it("emits the attribute for balanced, so it overrides an ancestor", async () => {
+    const user = userEvent.setup()
+    render(
+      <Select>
+        <SelectTrigger>
+          <SelectValue placeholder="Pick one" />
+        </SelectTrigger>
+        <SelectContent surfaceIntensity="balanced">
+          <SelectItem value="apple">Apple</SelectItem>
+        </SelectContent>
+      </Select>,
+    )
+    await user.click(screen.getByRole("combobox"))
+    expect(await screen.findByRole("listbox")).toHaveAttribute(
+      "data-surface-intensity",
+      "balanced",
+    )
+  })
 })

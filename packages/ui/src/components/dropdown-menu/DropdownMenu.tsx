@@ -4,6 +4,7 @@ import * as React from "react"
 import { Check, ChevronRight, Circle } from "lucide-react"
 
 import { cn } from "@lib/utils"
+import type { SurfaceIntensityProp } from "@lib/surface-intensity"
 import { DismissableLayer } from "@primitives/dismissable-layer"
 import { Portal } from "@primitives/portal"
 import { Presence } from "@primitives/presence"
@@ -233,6 +234,13 @@ interface DropdownMenuContentProps extends React.HTMLAttributes<HTMLDivElement> 
   onPointerDownOutside?: (event: PointerEvent) => void
   onInteractOutside?: (event: PointerEvent | FocusEvent) => void
   ref?: React.Ref<HTMLDivElement>
+  /**
+   * How strongly this menu's surface separates from the page, overriding
+   * the `surfaceIntensity` theme axis. Nested non-portalled surfaces inherit
+   * it; portalled content does not, because custom properties inherit
+   * through the DOM tree rather than the React tree.
+   */
+  surfaceIntensity?: SurfaceIntensityProp
 }
 
 function placementOf(side: Side, align: Align) {
@@ -252,6 +260,7 @@ function DropdownMenuContentImpl({
   onEscapeKeyDown,
   onPointerDownOutside,
   onInteractOutside,
+  surfaceIntensity,
   ref,
   ...rest
 }: Omit<DropdownMenuContentProps, "forceMount" | "loop">) {
@@ -381,6 +390,7 @@ function DropdownMenuContentImpl({
         id={ctx.contentId}
         data-state={ctx.state}
         data-side={resolvedSide}
+        data-surface-intensity={surfaceIntensity}
         tabIndex={-1}
         style={{
           position: floating.strategy,

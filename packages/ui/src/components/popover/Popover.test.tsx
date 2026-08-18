@@ -143,4 +143,40 @@ describe("Popover", () => {
     })
     expect(document.activeElement).not.toBe(trigger)
   })
+
+  it("forwards surfaceIntensity to the content surface", async () => {
+    const user = userEvent.setup()
+    render(
+      <Popover>
+        <PopoverTrigger>Toggle</PopoverTrigger>
+        <PopoverContent surfaceIntensity="flat">
+          <p>Popover content</p>
+        </PopoverContent>
+      </Popover>,
+    )
+    await user.click(screen.getByRole("button", { name: "Toggle" }))
+    const content = await screen.findByText("Popover content")
+    expect(content.parentElement).toHaveAttribute(
+      "data-surface-intensity",
+      "flat",
+    )
+  })
+
+  it("emits the attribute for balanced, so it overrides an ancestor", async () => {
+    const user = userEvent.setup()
+    render(
+      <Popover>
+        <PopoverTrigger>Toggle</PopoverTrigger>
+        <PopoverContent surfaceIntensity="balanced">
+          <p>Popover content</p>
+        </PopoverContent>
+      </Popover>,
+    )
+    await user.click(screen.getByRole("button", { name: "Toggle" }))
+    const content = await screen.findByText("Popover content")
+    expect(content.parentElement).toHaveAttribute(
+      "data-surface-intensity",
+      "balanced",
+    )
+  })
 })

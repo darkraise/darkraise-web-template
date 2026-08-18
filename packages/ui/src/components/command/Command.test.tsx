@@ -87,6 +87,36 @@ describe("Command", () => {
     expect(screen.queryByText("Fruits")).toBeNull()
     expect(screen.getByText("Veggies")).toBeInTheDocument()
   })
+
+  it("forwards surfaceIntensity to the root surface", () => {
+    const { container } = render(
+      <Command surfaceIntensity="flat">
+        <CommandInput placeholder="Type..." aria-label="Search" />
+        <CommandList>
+          <CommandItem value="apple">Apple</CommandItem>
+        </CommandList>
+      </Command>,
+    )
+    expect(container.firstChild).toHaveAttribute(
+      "data-surface-intensity",
+      "flat",
+    )
+  })
+
+  it("emits the attribute for balanced, so it overrides an ancestor", () => {
+    const { container } = render(
+      <Command surfaceIntensity="balanced">
+        <CommandInput placeholder="Type..." aria-label="Search" />
+        <CommandList>
+          <CommandItem value="apple">Apple</CommandItem>
+        </CommandList>
+      </Command>,
+    )
+    expect(container.firstChild).toHaveAttribute(
+      "data-surface-intensity",
+      "balanced",
+    )
+  })
 })
 
 describe("CommandDialog close-button alignment", () => {
