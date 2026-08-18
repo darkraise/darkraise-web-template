@@ -54,6 +54,7 @@ export const defaultLabels: UiLabels = {
       density: "Density",
       elevation: "Elevation",
       buttonElevation: "Button Elevation",
+      surfaceIntensity: "Surface Intensity",
       radius: "Radius",
       fontSize: "Font Size",
       accentVibrancy: "Accent Vibrancy",

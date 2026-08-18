@@ -10,6 +10,7 @@ import {
   GRADIENT_PATTERNS,
   DENSITIES,
   ELEVATIONS,
+  SURFACE_INTENSITIES,
   RADII,
   FONT_SIZES,
   ACCENT_VIBRANCIES,
@@ -66,6 +67,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
     density,
     elevation,
     buttonElevation,
+    surfaceIntensity,
     radius,
     fontSize,
     accentVibrancy,
@@ -82,6 +84,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
     setDensity,
     setElevation,
     setButtonElevation,
+    setSurfaceIntensity,
     setRadius,
     setFontSize,
     setAccentVibrancy,
@@ -445,6 +448,24 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
               value={buttonElevation}
               onChange={setButtonElevation}
               label={labels.theme.axisLabels.buttonElevation}
+            />
+          </div>
+        ),
+      },
+    axes.surfaceIntensity &&
+      !isCommonAxisHidden("surfaceIntensity") && {
+        key: "surfaceIntensity",
+        group: "depth" as const,
+        node: (
+          <div key="surfaceIntensity" className="dr-theme-switcher-row">
+            <Label className="dr-theme-switcher-section-label">
+              {labels.theme.axisLabels.surfaceIntensity}
+            </Label>
+            <AxisControl
+              values={SURFACE_INTENSITIES}
+              value={surfaceIntensity}
+              onChange={setSurfaceIntensity}
+              label={labels.theme.axisLabels.surfaceIntensity}
             />
           </div>
         ),

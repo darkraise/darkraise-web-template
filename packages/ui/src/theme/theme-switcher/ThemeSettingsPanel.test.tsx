@@ -2,6 +2,7 @@ import type * as React from "react"
 import { render, screen, fireEvent } from "@testing-library/react"
 import { describe, it, expect, beforeEach, vi } from "vitest"
 import { ThemeProvider } from "@theme/theme-provider"
+import { themeConfig, type ThemeConfig } from "@theme/themeConfig"
 import { ThemeSettingsPanel } from "./ThemeSettingsPanel"
 
 // Match the matchMedia mocking pattern from ThemeSwitcher.test.tsx.
@@ -70,15 +71,44 @@ describe("ThemeSettingsPanel", () => {
     expect(screen.getByText("Radius")).toBeInTheDocument()
   })
 
-  it("omits a group heading entirely once its last axis is hidden", () => {
+  it("thins a group without hiding its heading when only some axes are hidden", () => {
     renderPanel(<ThemeSettingsPanel layout="page" />)
-    // Default preset — both Depth axes are visible, so the heading shows.
+    // Default preset — all three Depth axes are visible, so the heading shows.
     expect(screen.getByRole("heading", { name: "Depth" })).toBeInTheDocument()
 
-    // Neon declares hiddenCommonAxes: ["elevation", "buttonElevation"],
-    // which are the only two axes in the "depth" group — so switching to
-    // it empties that group completely rather than just thinning it.
+    // Neon declares hiddenCommonAxes: ["elevation", "buttonElevation"], but
+    // not "surfaceIntensity" — the Depth group keeps that one axis, so the
+    // heading stays even though two of its three sections are gone.
     fireEvent.click(screen.getByRole("radio", { name: /^neon$/i }))
+
+    expect(screen.getByRole("heading", { name: "Depth" })).toBeInTheDocument()
+    expect(screen.queryByText("Elevation")).not.toBeInTheDocument()
+    expect(screen.queryByText("Button Elevation")).not.toBeInTheDocument()
+    expect(screen.getByText("Surface Intensity")).toBeInTheDocument()
+  })
+
+  it("omits a group heading entirely once every axis in it is hidden", () => {
+    // Disable all three "depth" axes at the config level (elevation,
+    // buttonElevation, surfaceIntensity) rather than via a preset's
+    // hiddenCommonAxes, so this test doesn't depend on which axes a given
+    // preset happens to reinterpret.
+    const depthHiddenConfig: ThemeConfig = {
+      ...themeConfig,
+      switcher: {
+        ...themeConfig.switcher,
+        axes: {
+          ...themeConfig.switcher.axes,
+          elevation: false,
+          buttonElevation: false,
+          surfaceIntensity: false,
+        },
+      },
+    }
+    render(
+      <ThemeProvider config={depthHiddenConfig}>
+        <ThemeSettingsPanel layout="page" />
+      </ThemeProvider>,
+    )
 
     expect(
       screen.queryByRole("heading", { name: "Depth" }),

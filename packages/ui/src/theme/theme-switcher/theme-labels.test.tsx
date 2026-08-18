@@ -18,6 +18,7 @@ const config: ThemeConfig = {
     density: "cozy",
     elevation: "medium",
     buttonElevation: "flat",
+    surfaceIntensity: "balanced",
     radius: "rounded",
     fontSize: "medium",
     accentVibrancy: "balanced",
@@ -35,6 +36,7 @@ const config: ThemeConfig = {
       density: true,
       elevation: false,
       buttonElevation: false,
+      surfaceIntensity: true,
       radius: false,
       fontSize: false,
       accentVibrancy: false,
@@ -43,7 +45,9 @@ const config: ThemeConfig = {
   },
 }
 
-function renderSwitcher(labels?: Parameters<typeof UiLabelsProvider>[0]["value"]) {
+function renderSwitcher(
+  labels?: Parameters<typeof UiLabelsProvider>[0]["value"],
+) {
   const tree = (
     <ThemeProvider config={config}>
       <ThemeSwitcher />
@@ -83,5 +87,12 @@ describe("ThemeSwitcher labels", () => {
     renderSwitcher({ theme: { axisLabels: { density: "Mật độ" } } })
     await user.click(screen.getByRole("button"))
     expect(screen.getByRole("slider", { name: "Mật độ" })).toBeInTheDocument()
+  })
+
+  it("labels the surface intensity axis", async () => {
+    const user = userEvent.setup()
+    renderSwitcher()
+    await user.click(screen.getByRole("button"))
+    expect(screen.getByText("Surface Intensity")).toBeInTheDocument()
   })
 })
