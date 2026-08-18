@@ -9,10 +9,36 @@ import { SearchCommand } from "@layout/search-command"
 import { SkipLink } from "@layout/skip-link"
 import { flattenNavItems } from "@layout/navTree"
 import { SidebarNav } from "./SidebarNav"
+import { resolveActiveBar } from "./sidebar-active-bar"
 import type { SidebarActiveBar } from "./sidebar-active-bar"
 import { SidebarProvider } from "./SidebarContext"
 import type { LayoutProps } from "@layout/types"
 import { useUiLabels } from "@labels"
+
+export interface SidebarLayoutProps extends LayoutProps {
+  /**
+   * Indicator style for the active nav item, controlled. Passing this pins
+   * the style: the header toggle (if shown) reports its clicks through
+   * `onActiveBarChange` instead of changing anything on its own.
+   *
+   * Omitting it is NOT the same as passing a value — omitted leaves each
+   * preset's own look alone (glass shows a ring and a rail, sci-fi a ring,
+   * everything else a rail), while a value forces that look everywhere.
+   *
+   * `true` is shorthand for `"bar"`, `false` for `"ring"`.
+   */
+  activeBar?: boolean | SidebarActiveBar
+  /**
+   * Initial indicator style when `activeBar` is not supplied. Only useful
+   * alongside `showActiveBarToggle`, which is the one thing that can change
+   * the style afterwards.
+   *
+   * @default undefined — the active preset's own indicator
+   */
+  defaultActiveBar?: boolean | SidebarActiveBar
+  /** Fires when the header toggle picks a style. */
+  onActiveBarChange?: (activeBar: SidebarActiveBar | undefined) => void
+}
 
 export function SidebarLayout({
   children,
@@ -23,21 +49,29 @@ export function SidebarLayout({
   showLayoutSwitcher,
   showThemeSwitcher,
   showActiveBarToggle = false,
+  activeBar: activeBarProp,
+  defaultActiveBar,
+  onActiveBarChange,
   user,
   onProfile,
   onSettings,
   onLogout,
-}: LayoutProps) {
+}: SidebarLayoutProps) {
   const labels = useUiLabels()
   const [collapsed, setCollapsed] = useState(false)
-  // Starts unset so nobody's sidebar changes appearance unless they ask:
+  // Defaults to unset so nobody's sidebar changes appearance unless they ask:
   // each preset renders its own default indicator until the control below
   // is touched. A single-selection ToggleGroup can't hold `undefined`
   // itself, so "unset" is represented on the wire as the "default" item
   // and mapped back to `undefined` in onValueChange.
-  const [activeBar, setActiveBar] = useState<SidebarActiveBar | undefined>(
-    undefined,
-  )
+  const [uncontrolledActiveBar, setUncontrolledActiveBar] = useState<
+    SidebarActiveBar | undefined
+  >(() => resolveActiveBar(defaultActiveBar))
+
+  const activeBar =
+    activeBarProp === undefined
+      ? uncontrolledActiveBar
+      : resolveActiveBar(activeBarProp)
 
   const flatNavItems = flattenNavItems(nav)
 
@@ -50,9 +84,10 @@ export function SidebarLayout({
         // A single-selection group emits "" on deselect; that must not
         // reach state, or the control would end up with no active item.
         if (!value) return
-        setActiveBar(
-          value === "default" ? undefined : (value as SidebarActiveBar),
-        )
+        const next =
+          value === "default" ? undefined : (value as SidebarActiveBar)
+        if (activeBarProp === undefined) setUncontrolledActiveBar(next)
+        onActiveBarChange?.(next)
       }}
       variant="outline"
       aria-label="Sidebar active-item indicator"
@@ -106,8 +141,8 @@ export function SidebarLayout({
                 // One square is all the collapsed rail has, so the brand
                 // mark and the toggle share it: the mark carries the app's
                 // identity at rest and the toggle takes over on hover. The
-                // button stays mounted and focusable throughout â€” only its
-                // paint is deferred â€” because it is the only way back to
+                // button stays mounted and focusable throughout — only its
+                // paint is deferred — because it is the only way back to
                 // the expanded rail and a keyboard user has no hover.
                 <div className="dr-sidebar-layout-brand-slot">
                   <BrandLogo collapsed />

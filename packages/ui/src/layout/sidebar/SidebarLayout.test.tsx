@@ -1,7 +1,8 @@
 import { render, screen, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { describe, it, expect } from "vitest"
+import { describe, it, expect, vi } from "vitest"
 import { SidebarLayout } from "@layout/sidebar"
+import type { SidebarLayoutProps } from "@layout/sidebar"
 import { RouterAdapterProvider } from "@router"
 import type { RouterAdapter, RouterLinkProps } from "@router"
 import type { NavGroup } from "@layout/types"
@@ -26,13 +27,19 @@ const nav: NavGroup[] = [
   { label: "Overview", items: [{ label: "Dashboard", href: "/" }] },
 ]
 
-function renderLayout() {
+function renderLayout(props: Partial<SidebarLayoutProps> = {}) {
   return render(
     <RouterAdapterProvider value={adapter}>
-      <SidebarLayout nav={nav} showThemeSwitcher={false}>
+      <SidebarLayout nav={nav} showThemeSwitcher={false} {...props}>
         <div>Content</div>
       </SidebarLayout>
     </RouterAdapterProvider>,
+  )
+}
+
+function railNav(container: HTMLElement) {
+  return container.querySelector<HTMLElement>(
+    ".dr-sidebar-layout-nav-scroll .dr-sidebar-nav",
   )
 }
 
@@ -77,5 +84,71 @@ describe("SidebarLayout collapsed brand slot", () => {
       screen.getByRole("button", { name: "Collapse sidebar" }),
     ).toBeInTheDocument()
     expect(brandSlot(container)).toBeNull()
+  })
+})
+
+describe("SidebarLayout activeBar", () => {
+  it("leaves the preset's own indicator alone when unset", () => {
+    const { container } = renderLayout()
+    expect(railNav(container)?.dataset.activeBar).toBeUndefined()
+  })
+
+  it("applies an explicit style without the toggle being shown", () => {
+    const { container } = renderLayout({ activeBar: "ring" })
+    expect(railNav(container)?.dataset.activeBar).toBe("ring")
+  })
+
+  it.each([
+    [true, "bar"],
+    [false, "ring"],
+  ])("maps the %s shorthand to %s", (input, expected) => {
+    const { container } = renderLayout({ activeBar: input })
+    expect(railNav(container)?.dataset.activeBar).toBe(expected)
+  })
+
+  it("seeds the toggle from defaultActiveBar and lets it take over", async () => {
+    const user = userEvent.setup()
+    const { container } = renderLayout({
+      defaultActiveBar: "both",
+      showActiveBarToggle: true,
+    })
+    expect(railNav(container)?.dataset.activeBar).toBe("both")
+
+    await user.click(screen.getByRole("radio", { name: "Left rail only" }))
+    expect(railNav(container)?.dataset.activeBar).toBe("bar")
+  })
+
+  // Controlled means the prop wins: the toggle reports the click and waits
+  // for the consumer to feed a new value back, exactly like a controlled
+  // input. Without this the two sources of truth would fight.
+  it("keeps a controlled activeBar pinned and reports toggle clicks", async () => {
+    const user = userEvent.setup()
+    const onActiveBarChange = vi.fn()
+    const { container } = renderLayout({
+      activeBar: "ring",
+      showActiveBarToggle: true,
+      onActiveBarChange,
+    })
+
+    await user.click(screen.getByRole("radio", { name: "Left rail only" }))
+
+    expect(onActiveBarChange).toHaveBeenCalledWith("bar")
+    expect(railNav(container)?.dataset.activeBar).toBe("ring")
+  })
+
+  it("reports the default item as undefined", async () => {
+    const user = userEvent.setup()
+    const onActiveBarChange = vi.fn()
+    renderLayout({
+      defaultActiveBar: "bar",
+      showActiveBarToggle: true,
+      onActiveBarChange,
+    })
+
+    await user.click(
+      screen.getByRole("radio", { name: "Each preset's own indicator" }),
+    )
+
+    expect(onActiveBarChange).toHaveBeenCalledWith(undefined)
   })
 })

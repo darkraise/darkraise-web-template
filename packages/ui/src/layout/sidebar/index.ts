@@ -1,4 +1,5 @@
 export { SidebarLayout } from "./SidebarLayout"
+export type { SidebarLayoutProps } from "./SidebarLayout"
 export { SidebarNav, SidebarGroup, SidebarItem } from "./SidebarNav"
 export type { SidebarActiveBar } from "./sidebar-active-bar"
 export { SidebarProvider } from "./SidebarContext"

@@ -14,7 +14,7 @@ export {
   SidebarProvider,
   useSidebar,
 } from "./sidebar"
-export type { SidebarActiveBar } from "./sidebar"
+export type { SidebarActiveBar, SidebarLayoutProps } from "./sidebar"
 export { TopNavLayout } from "./top-nav-layout"
 export { StackedLayout } from "./stacked-layout"
 export { SplitPanelLayout } from "./split-panel-layout"
@@ -22,7 +22,7 @@ export { LayoutSwitcher } from "./layout-switcher"
 export { SkipLink } from "./skip-link"
 export { useLayoutStore, type LayoutVariant } from "./layoutStore"
 
-// Layout primitives â€” composable building blocks for in-route layout.
+// Layout primitives — composable building blocks for in-route layout.
 // Use these instead of ad-hoc Tailwind utility soup for vertical/horizontal
 // stacking, max-width containers, grids, semantic sections, padded boxes,
 // and centering.
