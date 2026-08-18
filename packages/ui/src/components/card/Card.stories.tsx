@@ -76,17 +76,21 @@ export const WithForm: Story = {
   ),
 }
 
-export const Intensity: Story = {
+export const SurfaceIntensity: Story = {
   render: () => (
     <div className="bg-background flex flex-wrap gap-4 p-6">
-      {(["none", "default", "soft", "strong"] as const).map((intensity) => (
-        <Card key={intensity} intensity={intensity} className="w-56">
-          <CardHeader>
-            <CardTitle className="text-base">{intensity}</CardTitle>
-            <CardDescription>Surface separation from the page.</CardDescription>
-          </CardHeader>
-        </Card>
-      ))}
+      {(["none", "flat", "subtle", "balanced", "bold"] as const).map(
+        (value) => (
+          <Card key={value} surfaceIntensity={value} className="w-56">
+            <CardHeader>
+              <CardTitle className="text-base">{value}</CardTitle>
+              <CardDescription>
+                Surface separation from the page.
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        ),
+      )}
     </div>
   ),
 }

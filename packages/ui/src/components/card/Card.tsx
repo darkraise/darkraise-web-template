@@ -1,13 +1,13 @@
 import * as React from "react"
 
 import { cn } from "@lib/utils"
+import type { SurfaceIntensityProp } from "@lib/surface-intensity"
 import "./card.css"
 
 import { resolveCardElevation, type CardElevation } from "./card-elevation"
 
 export type { CardElevation }
 export type CardBorder = "default" | "none" | "strong" | "accent"
-export type CardIntensity = "default" | "none" | "soft" | "strong"
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   /**
@@ -26,15 +26,12 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Outer border treatment. `"default"` leaves the theme/preset border alone. */
   border?: CardBorder
   /**
-   * How strongly the card's surface separates from the page behind it.
-   *
-   * - `"none"`: no fill, so the card takes the page background.
-   * - `"default"`: the theme/preset card fill, untouched.
-   * - `"soft"` / `"strong"`: a neutral wash over that fill. The wash reads
-   *   `--foreground`, so it darkens a light card and lightens a dark one —
-   *   both steps read as more separation in either mode.
+   * How strongly this card's surface separates from the page, overriding the
+   * `surfaceIntensity` theme axis. Nested non-portalled surfaces inherit it;
+   * portalled content does not, because custom properties inherit through the
+   * DOM tree rather than the React tree.
    */
-  intensity?: CardIntensity
+  surfaceIntensity?: SurfaceIntensityProp
   ref?: React.Ref<HTMLDivElement>
 }
 
@@ -43,7 +40,7 @@ function Card({
   elevation = false,
   divided,
   border,
-  intensity,
+  surfaceIntensity,
   ref,
   ...props
 }: CardProps) {
@@ -54,9 +51,7 @@ function Card({
       data-elevation={value}
       data-divided={divided ? "true" : undefined}
       data-border={border && border !== "default" ? border : undefined}
-      data-intensity={
-        intensity && intensity !== "default" ? intensity : undefined
-      }
+      data-surface-intensity={surfaceIntensity}
       className={cn("dr-card", className)}
       {...props}
     />

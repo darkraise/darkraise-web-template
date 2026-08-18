@@ -80,47 +80,6 @@
     border-color: hsl(var(--primary) / 0.35);
   }
 
-  /* Background intensity — how much the card's surface separates from the
-     page. The wash is a `::before` overlay tinted from `--foreground`, not a
-     mix against `--card`, because every other channel is already spoken for:
-     `background-image` carries the glass fog gradient and sci-fi's bracketed
-     corner frame, `box-shadow` carries the elevation ladder and neon's glow,
-     and `--card` itself is a bare `color-mix()` under Glass, where
-     `hsl(var(--card) / …)` is already invalid. `--muted` is no safer — four
-     presets redefine it as `var(--primary) / 0.0X`. Keying off `--foreground`
-     also self-inverts by mode: it darkens a light card and lightens a dark
-     one, so both steps read as more separation either way. */
-  .dr-card[data-intensity="none"] {
-    background-color: transparent;
-  }
-
-  /* Scoped to the washed steps so no existing card gains a containing block. */
-  .dr-card[data-intensity="soft"],
-  .dr-card[data-intensity="strong"] {
-    position: relative;
-  }
-
-  /* `z-index: -1` keeps the wash above the card's own background but below
-     the header and content, which are in-flow and would otherwise paint
-     under a positioned pseudo-element. */
-  .dr-card[data-intensity="soft"]::before,
-  .dr-card[data-intensity="strong"]::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: inherit;
-    pointer-events: none;
-  }
-
-  .dr-card[data-intensity="soft"]::before {
-    background-color: hsl(var(--foreground) / 0.03);
-  }
-
-  .dr-card[data-intensity="strong"]::before {
-    background-color: hsl(var(--foreground) / 0.06);
-  }
-
   /* Neon preset — cards get a primary-tinted border so they visibly
      outline in the accent color. Background stays near-black (set by
      neon's surfaceRecipe → --card → bg-card); elevation shadows are

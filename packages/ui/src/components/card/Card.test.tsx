@@ -123,45 +123,38 @@ describe("Card", () => {
     expect(inner).not.toHaveAttribute("data-divided")
   })
 
-  it("omits data-intensity by default", () => {
+  it("omits data-surface-intensity by default", () => {
     const { container } = render(<Card>Content</Card>)
-    expect(container.firstChild).not.toHaveAttribute("data-intensity")
+    expect(container.firstChild).not.toHaveAttribute("data-surface-intensity")
   })
 
-  it("omits data-intensity for the default variant", () => {
-    const { container } = render(<Card intensity="default">Content</Card>)
-    expect(container.firstChild).not.toHaveAttribute("data-intensity")
-  })
-
-  it.each(["none", "soft", "strong"] as const)(
-    "sets data-intensity for the %s variant",
-    (intensity) => {
-      const { container } = render(<Card intensity={intensity}>Content</Card>)
-      expect(container.firstChild).toHaveAttribute("data-intensity", intensity)
+  // balanced is emitted, not omitted: it carries its own CSS rule, so a card
+  // set to balanced inside a bold theme renders unwashed instead of inheriting.
+  it.each(["flat", "subtle", "balanced", "bold", "none"] as const)(
+    "sets data-surface-intensity for %s",
+    (value) => {
+      const { container } = render(
+        <Card surfaceIntensity={value}>Content</Card>,
+      )
+      expect(container.firstChild).toHaveAttribute(
+        "data-surface-intensity",
+        value,
+      )
     },
   )
 
-  it("combines intensity, border and divided independently", () => {
+  it("combines surfaceIntensity, border and divided independently", () => {
     const { container } = render(
-      <Card intensity="strong" border="none" divided>
+      <Card surfaceIntensity="bold" border="none" divided>
         Content
       </Card>,
     )
-    expect(container.firstChild).toHaveAttribute("data-intensity", "strong")
+    expect(container.firstChild).toHaveAttribute(
+      "data-surface-intensity",
+      "bold",
+    )
     expect(container.firstChild).toHaveAttribute("data-border", "none")
     expect(container.firstChild).toHaveAttribute("data-divided", "true")
-  })
-
-  it("does not leak data-intensity to a nested card", () => {
-    const { container } = render(
-      <Card intensity="strong">
-        <CardContent>
-          <Card>Inner</Card>
-        </CardContent>
-      </Card>,
-    )
-    const inner = container.querySelectorAll(".dr-card")[1]
-    expect(inner).not.toHaveAttribute("data-intensity")
   })
 
   it("forwards ref to Card element", () => {
