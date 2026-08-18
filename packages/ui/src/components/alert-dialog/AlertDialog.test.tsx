@@ -95,4 +95,36 @@ describe("AlertDialog", () => {
     await screen.findByRole("alertdialog")
     expect(screen.queryByRole("button", { name: "Close" })).toBeNull()
   })
+
+  it("inherits surfaceIntensity from its Dialog alias", async () => {
+    const user = userEvent.setup()
+    render(
+      <AlertDialog>
+        <AlertDialogTrigger>Delete</AlertDialogTrigger>
+        <AlertDialogContent surfaceIntensity="bold">Body</AlertDialogContent>
+      </AlertDialog>,
+    )
+    await user.click(screen.getByRole("button", { name: "Delete" }))
+    expect(await screen.findByRole("alertdialog")).toHaveAttribute(
+      "data-surface-intensity",
+      "bold",
+    )
+  })
+
+  it("emits the attribute for balanced, so it overrides an ancestor", async () => {
+    const user = userEvent.setup()
+    render(
+      <AlertDialog>
+        <AlertDialogTrigger>Delete</AlertDialogTrigger>
+        <AlertDialogContent surfaceIntensity="balanced">
+          Body
+        </AlertDialogContent>
+      </AlertDialog>,
+    )
+    await user.click(screen.getByRole("button", { name: "Delete" }))
+    expect(await screen.findByRole("alertdialog")).toHaveAttribute(
+      "data-surface-intensity",
+      "balanced",
+    )
+  })
 })

@@ -134,4 +134,34 @@ describe("Drawer", () => {
     const dialog = await screen.findByRole("dialog")
     expect(dialog).toHaveAttribute("data-direction", "right")
   })
+
+  it("forwards surfaceIntensity to the content surface", async () => {
+    const user = userEvent.setup()
+    render(
+      <Drawer>
+        <DrawerTrigger>Open drawer</DrawerTrigger>
+        <DrawerContent surfaceIntensity="bold">Body</DrawerContent>
+      </Drawer>,
+    )
+    await user.click(screen.getByRole("button", { name: "Open drawer" }))
+    expect(await screen.findByRole("dialog")).toHaveAttribute(
+      "data-surface-intensity",
+      "bold",
+    )
+  })
+
+  it("emits the attribute for balanced, so it overrides an ancestor", async () => {
+    const user = userEvent.setup()
+    render(
+      <Drawer>
+        <DrawerTrigger>Open drawer</DrawerTrigger>
+        <DrawerContent surfaceIntensity="balanced">Body</DrawerContent>
+      </Drawer>,
+    )
+    await user.click(screen.getByRole("button", { name: "Open drawer" }))
+    expect(await screen.findByRole("dialog")).toHaveAttribute(
+      "data-surface-intensity",
+      "balanced",
+    )
+  })
 })

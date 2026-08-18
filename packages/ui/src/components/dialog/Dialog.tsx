@@ -3,6 +3,7 @@
 import * as React from "react"
 
 import { cn } from "@lib/utils"
+import type { SurfaceIntensityProp } from "@lib/surface-intensity"
 import { OverlayCloseButton } from "@components/overlay-primitives"
 import { DismissableLayer } from "@primitives/dismissable-layer"
 import { useFocusTrap } from "@primitives/focus-trap"
@@ -138,6 +139,13 @@ interface DialogContentProps extends React.HTMLAttributes<HTMLDivElement> {
   onEscapeKeyDown?: (event: KeyboardEvent) => void
   onPointerDownOutside?: (event: PointerEvent) => void
   onInteractOutside?: (event: PointerEvent | FocusEvent) => void
+  /**
+   * How strongly this dialog's surface separates from the page, overriding
+   * the `surfaceIntensity` theme axis. Nested non-portalled surfaces inherit
+   * it; portalled content does not, because custom properties inherit
+   * through the DOM tree rather than the React tree.
+   */
+  surfaceIntensity?: SurfaceIntensityProp
   ref?: React.Ref<HTMLDivElement>
 }
 
@@ -147,6 +155,7 @@ function DialogContentImpl({
   onEscapeKeyDown,
   onPointerDownOutside,
   onInteractOutside,
+  surfaceIntensity,
   ref,
   ...rest
 }: Omit<DialogContentProps, "forceMount">) {
@@ -192,6 +201,7 @@ function DialogContentImpl({
         aria-labelledby={ctx.titleId}
         aria-describedby={ctx.descriptionId}
         data-state={ctx.state}
+        data-surface-intensity={surfaceIntensity}
         tabIndex={-1}
         className={cn("dr-dialog-content", className)}
         {...rest}

@@ -175,4 +175,28 @@ describe("Dialog", () => {
     expect(trigger).toHaveAttribute("aria-expanded", "true")
     expect(trigger).toHaveAttribute("data-state", "open")
   })
+
+  it("forwards surfaceIntensity to the content surface", () => {
+    render(
+      <Dialog defaultOpen>
+        <DialogContent surfaceIntensity="bold">Body</DialogContent>
+      </Dialog>,
+    )
+    expect(screen.getByRole("dialog")).toHaveAttribute(
+      "data-surface-intensity",
+      "bold",
+    )
+  })
+
+  it("emits the attribute for balanced, so it overrides an ancestor", () => {
+    render(
+      <Dialog defaultOpen>
+        <DialogContent surfaceIntensity="balanced">Body</DialogContent>
+      </Dialog>,
+    )
+    expect(screen.getByRole("dialog")).toHaveAttribute(
+      "data-surface-intensity",
+      "balanced",
+    )
+  })
 })

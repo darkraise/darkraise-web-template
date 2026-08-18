@@ -3,6 +3,7 @@
 import * as React from "react"
 
 import { cn } from "@lib/utils"
+import type { SurfaceIntensityProp } from "@lib/surface-intensity"
 import { OverlayCloseButton } from "@components/overlay-primitives"
 import { DismissableLayer } from "@primitives/dismissable-layer"
 import { useFocusTrap } from "@primitives/focus-trap"
@@ -263,6 +264,13 @@ interface DrawerContentProps extends React.HTMLAttributes<HTMLDivElement> {
   forceMount?: boolean
   onEscapeKeyDown?: (event: KeyboardEvent) => void
   onPointerDownOutside?: (event: PointerEvent) => void
+  /**
+   * How strongly this drawer's surface separates from the page, overriding
+   * the `surfaceIntensity` theme axis. Nested non-portalled surfaces inherit
+   * it; portalled content does not, because custom properties inherit
+   * through the DOM tree rather than the React tree.
+   */
+  surfaceIntensity?: SurfaceIntensityProp
   ref?: React.Ref<HTMLDivElement>
 }
 
@@ -271,6 +279,7 @@ function DrawerContentImpl({
   children,
   onEscapeKeyDown,
   onPointerDownOutside,
+  surfaceIntensity,
   ref,
   ...rest
 }: Omit<DrawerContentProps, "forceMount">) {
@@ -314,6 +323,7 @@ function DrawerContentImpl({
         data-state={ctx.state}
         data-drawer-content
         data-direction={ctx.direction}
+        data-surface-intensity={surfaceIntensity}
         tabIndex={-1}
         className={cn("dr-drawer-content", className)}
         {...rest}
