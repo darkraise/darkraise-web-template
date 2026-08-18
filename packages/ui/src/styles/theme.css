@@ -679,7 +679,11 @@
      presets (e.g. Glass) layer multiple background images with a
      specific blending recipe; defaults to `normal` (no-op for
      single-layer backgrounds). */
-    --surface-overlay-bg: hsl(var(--popover));
+    --surface-overlay-bg: color-mix(
+      in oklab,
+      hsl(var(--popover)),
+      var(--surface-overlay-wash) var(--surface-overlay-wash-amount)
+    );
     --surface-overlay-border: hsl(var(--border));
     --surface-overlay-shadow: var(--shadow-dropdown);
     --surface-overlay-blend-mode: normal;
@@ -716,6 +720,12 @@
        attribute straight from localStorage without validating it. */
     --surface-wash: 0%;
     --surface-wash-color: var(--card);
+
+    /* The colour a preset's overlay background is washed toward, already
+       carrying the step's mix percentage. Presets compose this rather than
+       repeating the color-mix, so a change to the ramp lands everywhere. */
+    --surface-overlay-wash: transparent;
+    --surface-overlay-wash-amount: 0%;
   }
 }
 
@@ -887,6 +897,8 @@
     hsl(var(--card)),
     hsl(var(--surface-wash-color)) var(--surface-wash)
   );
+  --surface-overlay-wash: hsl(var(--surface-wash-color));
+  --surface-overlay-wash-amount: var(--surface-wash);
 }
 
 /* The downward steps are large and the upward step is small on purpose.
@@ -924,6 +936,8 @@
     var(--surface-overlay) / var(--surface-opacity, 1)
   );
   --surface-card-fill-opaque: hsl(var(--card));
+  --surface-overlay-wash: transparent;
+  --surface-overlay-wash-amount: 0%;
 }
 
 [data-surface-intensity="none"] {
@@ -932,6 +946,7 @@
   --surface-raised-fill: transparent;
   --surface-overlay-fill: transparent;
   --surface-card-fill-opaque: transparent;
+  --surface-overlay-bg: transparent;
 }
 
 /* Dark-mode shadow boost — drop shadows tinted black barely register

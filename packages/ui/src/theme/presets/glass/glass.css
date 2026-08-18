@@ -103,7 +103,11 @@
   --surface-overlay-bg:
     var(--glass-noise),
     linear-gradient(135deg, var(--fog-20), var(--fog-10))
-      hsl(var(--popover) / var(--glass-overlay-base-alpha, 0.76));
+      color-mix(
+        in oklab,
+        hsl(var(--popover) / var(--glass-overlay-base-alpha, 0.76)),
+        var(--surface-overlay-wash) var(--surface-overlay-wash-amount)
+      );
   --surface-overlay-blend-mode: overlay, normal;
   --surface-overlay-border: var(--fog-20);
 }
@@ -124,7 +128,11 @@
   --surface-overlay-bg:
     var(--glass-noise),
     linear-gradient(135deg, var(--fog-15), var(--fog-05))
-      hsl(var(--popover) / var(--glass-overlay-base-alpha, 0.76));
+      color-mix(
+        in oklab,
+        hsl(var(--popover) / var(--glass-overlay-base-alpha, 0.76)),
+        var(--surface-overlay-wash) var(--surface-overlay-wash-amount)
+      );
   --surface-overlay-shadow:
     var(--elevation-medium), var(--inset-hi-strong),
     inset 0 0 32px color-mix(in oklab, hsl(var(--surface-tint)) 2%, transparent),

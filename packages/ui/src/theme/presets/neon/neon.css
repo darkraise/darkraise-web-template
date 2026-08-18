@@ -250,7 +250,11 @@
      thing separating it from the page. At 0.85 body text composited
      through and stayed readable on top of popover content; 0.96 keeps a
      hint of the canvas showing without the bleed-through. */
-  --surface-overlay-bg: hsl(var(--background) / 0.96);
+  --surface-overlay-bg: color-mix(
+    in oklab,
+    hsl(var(--background) / 0.96),
+    var(--surface-overlay-wash) var(--surface-overlay-wash-amount)
+  );
   --surface-overlay-border: hsl(var(--primary) / 0.4);
 }
 

@@ -60,7 +60,11 @@
 [data-preset="playful"] {
   /* Overlay surface chrome: solid bg, subtle border, primary-tinted
      soft drop. */
-  --surface-overlay-bg: hsl(var(--popover));
+  --surface-overlay-bg: color-mix(
+    in oklab,
+    hsl(var(--popover)),
+    var(--surface-overlay-wash) var(--surface-overlay-wash-amount)
+  );
   --surface-overlay-border: hsl(var(--border));
 }
 

@@ -147,12 +147,12 @@ describe("glass.css overlay surfaces carry a real colour layer", () => {
     expect(block).toMatch(/--glass-overlay-base-alpha:\s*1\b/)
   })
 
-  it("every --surface-overlay-bg ends in a popover-coloured final layer", () => {
+  it("every --surface-overlay-bg ends in a popover-coloured, wash-mixed final layer", () => {
     const decls = glassCss.match(/--surface-overlay-bg:[^;]+;/g) ?? []
     expect(decls.length).toBeGreaterThanOrEqual(2)
     for (const decl of decls) {
       expect(norm(decl)).toContain(
-        "hsl(var(--popover) / var(--glass-overlay-base-alpha, 0.76))",
+        "color-mix( in oklab, hsl(var(--popover) / var(--glass-overlay-base-alpha, 0.76)), var(--surface-overlay-wash) var(--surface-overlay-wash-amount) )",
       )
     }
   })

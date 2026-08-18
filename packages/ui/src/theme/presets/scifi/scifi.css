@@ -173,7 +173,11 @@
 
 [data-preset="scifi"] {
   /* Overlay surface chrome: deep dark + primary glow ring. */
-  --surface-overlay-bg: hsl(var(--background) / 0.98);
+  --surface-overlay-bg: color-mix(
+    in oklab,
+    hsl(var(--background) / 0.98),
+    var(--surface-overlay-wash) var(--surface-overlay-wash-amount)
+  );
   --surface-overlay-border: hsl(var(--primary) / 0.55);
 }
 
