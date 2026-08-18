@@ -287,18 +287,14 @@
   --color-muted-foreground: hsl(var(--muted-foreground));
   --color-accent: hsl(var(--accent));
   --color-accent-foreground: hsl(var(--accent-foreground));
-  --color-popover: hsl(var(--popover) / var(--surface-opacity, 1));
+  --color-popover: var(--surface-popover-fill);
   --color-popover-foreground: hsl(var(--popover-foreground));
-  --color-card: hsl(var(--card) / var(--surface-opacity, 1));
+  --color-card: var(--surface-card-fill);
   --color-card-foreground: hsl(var(--card-foreground));
   --color-sidebar: hsl(var(--surface-sidebar));
   --color-surface-base: hsl(var(--surface-base));
-  --color-surface-raised: hsl(
-    var(--surface-raised) / var(--surface-opacity, 1)
-  );
-  --color-surface-overlay: hsl(
-    var(--surface-overlay) / var(--surface-opacity, 1)
-  );
+  --color-surface-raised: var(--surface-raised-fill);
+  --color-surface-overlay: var(--surface-overlay-fill);
   --color-surface-sunken: hsl(var(--surface-sunken));
   --color-surface-sidebar: hsl(var(--surface-sidebar));
   --color-surface-header: hsl(var(--surface-header));
@@ -695,6 +691,27 @@
      selectors below. Mirrors the medium-equivalent ramp that the same root
      `--elevation-medium` defines. */
     --elevation-current: var(--elevation-medium);
+
+    /* Complete fill expressions, one per washed surface. A surface-intensity
+       step redefines these wholesale rather than feeding a value into them:
+       a custom property computes with its var()s already substituted, so a
+       token that composed a wash variable would bake in the root value and
+       ignore any subtree override. `balanced` and the unset case fall
+       through to these unwashed expressions and render as they always have. */
+    --surface-card-fill: hsl(var(--card) / var(--surface-opacity, 1));
+    --surface-popover-fill: hsl(var(--popover) / var(--surface-opacity, 1));
+    --surface-raised-fill: hsl(
+      var(--surface-raised) / var(--surface-opacity, 1)
+    );
+    --surface-overlay-fill: hsl(
+      var(--surface-overlay) / var(--surface-opacity, 1)
+    );
+
+    /* Fallback so a stale or hand-edited attribute value renders as
+       `balanced` instead of an invalid mix. The FOUC script writes the
+       attribute straight from localStorage without validating it. */
+    --surface-wash: 0%;
+    --surface-wash-color: var(--card);
   }
 }
 
@@ -826,6 +843,68 @@
   --elevation-high:
     0 48px 72px -10px rgb(0 0 0 / 0.45), 0 20px 36px -6px rgb(0 0 0 / 0.28);
   --elevation-current: var(--elevation-high);
+}
+
+/* Surface intensity axis. `balanced` matches no rule and inherits the
+   unwashed `:root` expressions, so the default theme is byte-identical to
+   the pre-axis build. `none` is excluded from the mix block as well —
+   without that exclusion the mix selector (0,3,0) would outrank
+   `[data-surface-intensity="none"]` (0,1,0) and the blanking would never
+   apply. */
+[data-surface-intensity]:not([data-surface-intensity="balanced"]):not(
+    [data-surface-intensity="none"]
+  ) {
+  --surface-card-fill: color-mix(
+    in oklab,
+    hsl(var(--card) / var(--surface-opacity, 1)),
+    hsl(var(--surface-wash-color) / var(--surface-opacity, 1))
+      var(--surface-wash)
+  );
+  --surface-popover-fill: color-mix(
+    in oklab,
+    hsl(var(--popover) / var(--surface-opacity, 1)),
+    hsl(var(--surface-wash-color) / var(--surface-opacity, 1))
+      var(--surface-wash)
+  );
+  --surface-raised-fill: color-mix(
+    in oklab,
+    hsl(var(--surface-raised) / var(--surface-opacity, 1)),
+    hsl(var(--surface-wash-color) / var(--surface-opacity, 1))
+      var(--surface-wash)
+  );
+  --surface-overlay-fill: color-mix(
+    in oklab,
+    hsl(var(--surface-overlay) / var(--surface-opacity, 1)),
+    hsl(var(--surface-wash-color) / var(--surface-opacity, 1))
+      var(--surface-wash)
+  );
+}
+
+/* The downward steps are large and the upward step is small on purpose.
+   `--card` is white and `--background` is surface[50] — about a point and a
+   half of lightness apart — so a small mix toward the page is invisible,
+   while `--foreground` sits at the far end of the range where 6% reads
+   clearly. Do not "correct" this into a symmetric ramp. */
+[data-surface-intensity="flat"] {
+  --surface-wash: 100%;
+  --surface-wash-color: var(--background);
+}
+
+[data-surface-intensity="subtle"] {
+  --surface-wash: 55%;
+  --surface-wash-color: var(--background);
+}
+
+[data-surface-intensity="bold"] {
+  --surface-wash: 6%;
+  --surface-wash-color: var(--foreground);
+}
+
+[data-surface-intensity="none"] {
+  --surface-card-fill: transparent;
+  --surface-popover-fill: transparent;
+  --surface-raised-fill: transparent;
+  --surface-overlay-fill: transparent;
 }
 
 /* Dark-mode shadow boost — drop shadows tinted black barely register
