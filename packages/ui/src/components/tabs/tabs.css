@@ -34,7 +34,7 @@
   }
 
   .dr-tabs-list[data-variant="default"] {
-    @apply card-surface bg-muted justify-center p-1;
+    @apply card-surface bg-muted justify-center gap-1 p-1;
   }
 
   .dr-tabs-list[data-variant="outline"] {
