@@ -254,4 +254,43 @@
   .dr-toast[data-close-button="true"] .dr-toast-close {
     @apply opacity-100;
   }
+
+  /* Countdown bar — hugs the bottom edge of auto-dismissing toasts and
+     drains over the toast's duration. Rendered only when the duration is
+     finite (see `showProgress` in Sonner.tsx), so loading toasts and
+     `duration: 0` toasts never get one. Absolute positioning resolves
+     against the padding box, so the bar sits flush inside the border. */
+  .dr-toast-progress {
+    @apply pointer-events-none absolute right-0 bottom-0 left-0 overflow-hidden;
+    height: 3px;
+    /* Only the bottom corners follow the toast's radius; presets that square
+       the toast off (scifi, terminal) flow through for free. */
+    border-end-start-radius: inherit;
+    border-end-end-radius: inherit;
+    background-color: hsl(var(--toast-accent, var(--muted-foreground)) / 0.15);
+  }
+  .dr-toast-progress-fill {
+    @apply block size-full origin-left;
+    background-color: hsl(var(--toast-accent, var(--muted-foreground)) / 0.6);
+    /* Longhands, not the `animation` shorthand: the shorthand would reset
+       animation-duration to 0s, and the per-toast duration arrives as an
+       inline style. */
+    animation-name: dr-toast-countdown;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+  }
+  /* The stack pauses its dismiss timers while hovered or focus-within; the
+     bar freezes with them so the two never drift apart. */
+  .dr-toast[data-paused] .dr-toast-progress-fill {
+    animation-play-state: paused;
+  }
+
+  @keyframes dr-toast-countdown {
+    from {
+      transform: scaleX(1);
+    }
+    to {
+      transform: scaleX(0);
+    }
+  }
 }

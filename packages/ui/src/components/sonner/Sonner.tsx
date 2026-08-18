@@ -269,9 +269,9 @@ function ToastItem({
   // loading → success/error reset their budget and start a fresh timer
   // (loading defaults to Infinity, success/error to a finite duration).
   const morphKeyRef = React.useRef<string | null>(null)
+  const morphKey = `${t.kind}|${t.duration ?? ""}`
 
   React.useEffect(() => {
-    const morphKey = `${t.kind}|${t.duration ?? ""}`
     if (morphKeyRef.current !== morphKey) {
       morphKeyRef.current = morphKey
       remainingRef.current = duration
@@ -295,7 +295,7 @@ function ToastItem({
     return () => {
       window.clearTimeout(handle)
     }
-  }, [paused, close, t.kind, t.duration, duration])
+  }, [paused, close, morphKey, duration])
 
   React.useEffect(() => {
     const text =
@@ -381,6 +381,10 @@ function ToastItem({
 
   const isHiddenInStack = index >= visibleCount
 
+  // Countdown bar only makes sense when the toast dismisses on its own.
+  // Loading toasts (Infinity) and explicit `duration: 0` never do.
+  const showProgress = Number.isFinite(duration) && duration > 0
+
   return (
     <Presence present={present}>
       <li
@@ -393,6 +397,7 @@ function ToastItem({
         data-hidden={isHiddenInStack ? "true" : undefined}
         data-mount-anim={mountAnim ? "true" : undefined}
         data-close-button={closeButton ? "true" : undefined}
+        data-paused={paused ? "true" : undefined}
         style={
           {
             "--toast-index": index,
@@ -459,6 +464,17 @@ function ToastItem({
               <X />
             </button>
           </>
+        )}
+        {showProgress && (
+          // Keyed by the morph key so a promise toast that updates
+          // loading → success remounts the bar and restarts its animation
+          // from full, in step with the timer budget reset above.
+          <span key={morphKey} className="dr-toast-progress" aria-hidden>
+            <span
+              className="dr-toast-progress-fill"
+              style={{ animationDuration: `${duration}ms` }}
+            />
+          </span>
         )}
       </li>
     </Presence>

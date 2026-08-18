@@ -155,6 +155,77 @@ describe("Sonner / Toaster", () => {
     expect(positions).toEqual(["bottom-right", "top-left"])
   })
 
+  it("auto-dismissing toasts render a countdown bar timed to their duration", async () => {
+    render(<Toaster />)
+    act(() => {
+      toast("Timed", { duration: 3000 })
+    })
+    const li = await screen.findByRole("status")
+    const fill = li.querySelector<HTMLElement>(".dr-toast-progress-fill")
+    expect(fill).not.toBeNull()
+    expect(fill?.style.animationDuration).toBe("3000ms")
+  })
+
+  it("toasts that never auto-dismiss render no countdown bar", async () => {
+    render(<Toaster />)
+    act(() => {
+      toast.loading("Working…")
+      toast("Sticky", { duration: Number.POSITIVE_INFINITY })
+    })
+    const items = await screen.findAllByRole("status")
+    expect(items).toHaveLength(2)
+    for (const li of items) {
+      expect(li.querySelector(".dr-toast-progress")).toBeNull()
+    }
+  })
+
+  it("hovering the stack marks toasts paused so the countdown freezes", async () => {
+    const user = userEvent.setup()
+    render(<Toaster />)
+    act(() => {
+      toast("Hover me", { duration: 10_000 })
+    })
+    const li = await screen.findByRole("status")
+    expect(li).not.toHaveAttribute("data-paused")
+    await user.hover(li)
+    await waitFor(() => expect(li).toHaveAttribute("data-paused", "true"))
+    await user.unhover(li)
+    await waitFor(() => expect(li).not.toHaveAttribute("data-paused"))
+  })
+
+  it("toast.promise mounts the countdown bar only once it morphs to success", async () => {
+    render(<Toaster />)
+
+    let resolveFn: (value: string) => void = () => {}
+    const deferred = new Promise<string>((resolve) => {
+      resolveFn = resolve
+    })
+
+    act(() => {
+      void toast.promise(deferred, {
+        loading: "Loading…",
+        success: "Done",
+        error: "Failed",
+      })
+    })
+
+    const loadingItem = await screen.findByRole("status")
+    expect(loadingItem.querySelector(".dr-toast-progress")).toBeNull()
+
+    await act(async () => {
+      resolveFn("data")
+      await deferred
+    })
+
+    const successItem = screen.getByRole("status")
+    const fill = successItem.querySelector<HTMLElement>(
+      ".dr-toast-progress-fill",
+    )
+    expect(fill).not.toBeNull()
+    // Success default duration, not the loading toast's Infinity.
+    expect(fill?.style.animationDuration).toBe("4000ms")
+  })
+
   it("toast.promise auto-dismisses after morphing to success", async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true })
     try {
