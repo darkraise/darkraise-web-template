@@ -6,6 +6,7 @@ import type {
   GradientPattern,
   Density,
   Elevation,
+  SurfaceIntensity,
   Radius,
   FontSize,
   AccentVibrancy,
@@ -25,6 +26,7 @@ export interface ThemeConfig {
     density: Density
     elevation: Elevation
     buttonElevation: Elevation
+    surfaceIntensity: SurfaceIntensity
     radius: Radius
     fontSize: FontSize
     accentVibrancy: AccentVibrancy
@@ -42,6 +44,7 @@ export interface ThemeConfig {
       density: boolean
       elevation: boolean
       buttonElevation: boolean
+      surfaceIntensity: boolean
       radius: boolean
       fontSize: boolean
       accentVibrancy: boolean
@@ -63,6 +66,7 @@ export const themeConfig: ThemeConfig = {
     density: "cozy",
     elevation: "medium",
     buttonElevation: "flat",
+    surfaceIntensity: "balanced",
     radius: "rounded",
     fontSize: "medium",
     accentVibrancy: "balanced",
@@ -80,6 +84,7 @@ export const themeConfig: ThemeConfig = {
       density: true,
       elevation: true,
       buttonElevation: true,
+      surfaceIntensity: true,
       radius: true,
       fontSize: true,
       accentVibrancy: true,

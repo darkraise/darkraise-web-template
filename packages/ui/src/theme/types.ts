@@ -49,6 +49,14 @@ export type Density = (typeof DENSITIES)[number]
 export const ELEVATIONS = ["flat", "low", "medium", "high"] as const
 export type Elevation = (typeof ELEVATIONS)[number]
 
+export const SURFACE_INTENSITIES = [
+  "flat",
+  "subtle",
+  "balanced",
+  "bold",
+] as const
+export type SurfaceIntensity = (typeof SURFACE_INTENSITIES)[number]
+
 export const RADII = ["sharp", "subtle", "rounded", "pill"] as const
 export type Radius = (typeof RADII)[number]
 
@@ -88,6 +96,7 @@ export interface ThemeSettings {
   density?: Density
   elevation?: Elevation
   buttonElevation?: Elevation
+  surfaceIntensity?: SurfaceIntensity
   radius?: Radius
   fontSize?: FontSize
   /** How loud the accent reads in dark mode; ignored in light. Defaults to
@@ -115,6 +124,7 @@ export interface ThemeContextValue {
   density: Density
   elevation: Elevation
   buttonElevation: Elevation
+  surfaceIntensity: SurfaceIntensity
   radius: Radius
   fontSize: FontSize
   accentVibrancy: AccentVibrancy
@@ -135,6 +145,7 @@ export interface ThemeContextValue {
   setDensity: (density: Density) => void
   setElevation: (elevation: Elevation) => void
   setButtonElevation: (elevation: Elevation) => void
+  setSurfaceIntensity: (intensity: SurfaceIntensity) => void
   setRadius: (radius: Radius) => void
   setFontSize: (size: FontSize) => void
   setAccentVibrancy: (vibrancy: AccentVibrancy) => void
