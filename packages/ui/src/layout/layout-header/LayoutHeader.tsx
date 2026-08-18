@@ -8,6 +8,7 @@ import { MobileDrawer } from "@layout/mobile-drawer"
 import { LayoutSwitcher } from "@layout/layout-switcher"
 import { flattenNavItems } from "@layout/navTree"
 import type { NavGroup } from "@layout/types"
+import type { SidebarActiveBar } from "@layout/sidebar"
 
 interface LayoutHeaderProps {
   nav: NavGroup[]
@@ -15,6 +16,11 @@ interface LayoutHeaderProps {
   /** Forwarded to MobileDrawer so the drawer mirrors the sidebar rails. */
   sidebarHeader?: ReactNode
   sidebarFooter?: ReactNode
+  /**
+   * Forwarded to MobileDrawer's nav so the drawer's active indicator matches
+   * the rail it stands in for below `md`.
+   */
+  sidebarActiveBar?: boolean | SidebarActiveBar
   className?: string
   children?: ReactNode
   showLayoutSwitcher?: boolean
@@ -38,6 +44,7 @@ export function LayoutHeader({
   headerSlot,
   sidebarHeader,
   sidebarFooter,
+  sidebarActiveBar,
   className,
   children,
   showLayoutSwitcher = false,
@@ -52,7 +59,12 @@ export function LayoutHeader({
 
   return (
     <header className={cn("dr-layout-header", className)}>
-      <MobileDrawer nav={nav} header={sidebarHeader} footer={sidebarFooter} />
+      <MobileDrawer
+        nav={nav}
+        header={sidebarHeader}
+        footer={sidebarFooter}
+        activeBar={sidebarActiveBar}
+      />
       {/* `.dr-layout-header-end` is `ml-auto`, so omitting search entirely
           keeps the trailing cluster right-aligned without a spacer. */}
       {children ??

@@ -12,9 +12,9 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@components/tooltip"
 import { SidebarProvider } from "./SidebarContext"
 import { useSidebar } from "./sidebar-context"
 import { coversPath } from "@layout/navTree"
+import { resolveActiveBar } from "./sidebar-active-bar"
+import type { SidebarActiveBar } from "./sidebar-active-bar"
 import type { NavGroup, NavItem } from "@layout/types"
-
-export type SidebarActiveBar = "bar" | "ring" | "both"
 
 interface SidebarNavProps {
   nav: NavGroup[]
@@ -50,15 +50,7 @@ function SidebarNav({
     <nav
       className="dr-sidebar-nav"
       data-collapsed={collapsed || undefined}
-      data-active-bar={
-        activeBar === undefined
-          ? undefined
-          : activeBar === true
-            ? "bar"
-            : activeBar === false
-              ? "ring"
-              : activeBar
-      }
+      data-active-bar={resolveActiveBar(activeBar)}
     >
       {nav.map((group, gi) => (
         <SidebarGroup

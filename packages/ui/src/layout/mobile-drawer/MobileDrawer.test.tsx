@@ -72,4 +72,22 @@ describe("MobileDrawer", () => {
     await user.click(screen.getByRole("button", { name: "Show navigation" }))
     expect(await screen.findByText("Main menu")).toBeInTheDocument()
   })
+
+  // The drawer replaces the rail below md, so an indicator style set on the
+  // layout has to reach here too or the two disagree at the breakpoint.
+  it("passes the active-item indicator through to the nav", async () => {
+    const user = userEvent.setup()
+    renderDrawer({ activeBar: "ring" })
+    await user.click(screen.getByRole("button", { name: /open menu/i }))
+    const nav = await screen.findByRole("navigation")
+    expect(nav.dataset.activeBar).toBe("ring")
+  })
+
+  it("leaves the indicator unset when no style is given", async () => {
+    const user = userEvent.setup()
+    renderDrawer({})
+    await user.click(screen.getByRole("button", { name: /open menu/i }))
+    const nav = await screen.findByRole("navigation")
+    expect(nav.dataset.activeBar).toBeUndefined()
+  })
 })

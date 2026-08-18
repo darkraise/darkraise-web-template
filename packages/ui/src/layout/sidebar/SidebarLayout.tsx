@@ -9,7 +9,7 @@ import { SearchCommand } from "@layout/search-command"
 import { SkipLink } from "@layout/skip-link"
 import { flattenNavItems } from "@layout/navTree"
 import { SidebarNav } from "./SidebarNav"
-import type { SidebarActiveBar } from "./SidebarNav"
+import type { SidebarActiveBar } from "./sidebar-active-bar"
 import { SidebarProvider } from "./SidebarContext"
 import type { LayoutProps } from "@layout/types"
 import { useUiLabels } from "@labels"
@@ -106,8 +106,8 @@ export function SidebarLayout({
                 // One square is all the collapsed rail has, so the brand
                 // mark and the toggle share it: the mark carries the app's
                 // identity at rest and the toggle takes over on hover. The
-                // button stays mounted and focusable throughout — only its
-                // paint is deferred — because it is the only way back to
+                // button stays mounted and focusable throughout â€” only its
+                // paint is deferred â€” because it is the only way back to
                 // the expanded rail and a keyboard user has no hover.
                 <div className="dr-sidebar-layout-brand-slot">
                   <BrandLogo collapsed />
@@ -150,6 +150,7 @@ export function SidebarLayout({
               nav={nav}
               sidebarHeader={sidebarHeader}
               sidebarFooter={sidebarFooter}
+              sidebarActiveBar={activeBar}
               headerSlot={
                 <>
                   {activeBarToggle}
