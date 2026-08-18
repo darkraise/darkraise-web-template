@@ -8,7 +8,11 @@ import {
   CardHeader,
   CardTitle,
 } from "darkraise-ui/components/card"
-import type { CardBorder, CardElevation } from "darkraise-ui/components/card"
+import type {
+  CardBorder,
+  CardElevation,
+  CardIntensity,
+} from "darkraise-ui/components/card"
 import { Badge } from "darkraise-ui/components/badge"
 import { Skeleton } from "darkraise-ui/components/skeleton"
 import {
@@ -32,6 +36,12 @@ export const Route = createFileRoute("/_authenticated/components/cards")({
 
 const CARD_BORDERS = allOf<CardBorder>()("default", "none", "strong", "accent")
 const CARD_ELEVATIONS = allOf<CardElevation>()("flat", "low", "medium", "high")
+const CARD_INTENSITIES = allOf<CardIntensity>()(
+  "none",
+  "default",
+  "soft",
+  "strong",
+)
 
 function CardsPage() {
   return (
@@ -142,6 +152,37 @@ function CardsPage() {
             </Card>
           )}
         />
+      </ShowcaseExample>
+
+      {/* ─── Intensity ────────────────────────────────────────────────────── */}
+
+      <ShowcaseExample
+        title="Background intensity"
+        code={`<Card intensity="none">...</Card>      // no fill, takes the page background
+<Card intensity="default">...</Card>   // the theme/preset card fill
+<Card intensity="soft">...</Card>
+<Card intensity="strong">...</Card>
+
+// The wash reads --foreground, so it darkens a light card and lightens a
+// dark one: both steps read as more separation from the page in either
+// mode, under every preset.`}
+      >
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {CARD_INTENSITIES.map((intensity) => (
+            <Card key={intensity} intensity={intensity}>
+              <CardHeader>
+                <CardTitle className="text-base">{intensity}</CardTitle>
+                <CardDescription>
+                  {intensity === "none"
+                    ? "Blends into the page behind it."
+                    : intensity === "default"
+                      ? "The card fill the theme ships."
+                      : "A neutral wash over the card fill."}
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          ))}
+        </div>
       </ShowcaseExample>
 
       {/* ─── Elevation ────────────────────────────────────────────────────── */}

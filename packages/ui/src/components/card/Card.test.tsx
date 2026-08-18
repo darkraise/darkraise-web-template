@@ -123,6 +123,47 @@ describe("Card", () => {
     expect(inner).not.toHaveAttribute("data-divided")
   })
 
+  it("omits data-intensity by default", () => {
+    const { container } = render(<Card>Content</Card>)
+    expect(container.firstChild).not.toHaveAttribute("data-intensity")
+  })
+
+  it("omits data-intensity for the default variant", () => {
+    const { container } = render(<Card intensity="default">Content</Card>)
+    expect(container.firstChild).not.toHaveAttribute("data-intensity")
+  })
+
+  it.each(["none", "soft", "strong"] as const)(
+    "sets data-intensity for the %s variant",
+    (intensity) => {
+      const { container } = render(<Card intensity={intensity}>Content</Card>)
+      expect(container.firstChild).toHaveAttribute("data-intensity", intensity)
+    },
+  )
+
+  it("combines intensity, border and divided independently", () => {
+    const { container } = render(
+      <Card intensity="strong" border="none" divided>
+        Content
+      </Card>,
+    )
+    expect(container.firstChild).toHaveAttribute("data-intensity", "strong")
+    expect(container.firstChild).toHaveAttribute("data-border", "none")
+    expect(container.firstChild).toHaveAttribute("data-divided", "true")
+  })
+
+  it("does not leak data-intensity to a nested card", () => {
+    const { container } = render(
+      <Card intensity="strong">
+        <CardContent>
+          <Card>Inner</Card>
+        </CardContent>
+      </Card>,
+    )
+    const inner = container.querySelectorAll(".dr-card")[1]
+    expect(inner).not.toHaveAttribute("data-intensity")
+  })
+
   it("forwards ref to Card element", () => {
     const ref = createRef<HTMLDivElement>()
     render(<Card ref={ref}>Content</Card>)
