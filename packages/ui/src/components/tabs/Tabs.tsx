@@ -6,6 +6,7 @@ import { useId } from "@primitives/state"
 import { Presence } from "@primitives/presence"
 import { composeRefs } from "@primitives/slot"
 import { cn } from "@lib/utils"
+import type { SurfaceIntensityProp } from "@lib/surface-intensity"
 import { type CardBorder } from "@components/card"
 import "./tabs.css"
 
@@ -387,6 +388,13 @@ interface TabsContentProps extends React.HTMLAttributes<HTMLDivElement> {
   value: string
   forceMount?: boolean
   ref?: React.Ref<HTMLDivElement>
+  /**
+   * How strongly this panel's surface separates from the page, overriding
+   * the `surfaceIntensity` theme axis. Nested non-portalled surfaces inherit
+   * it; portalled content does not, because custom properties inherit
+   * through the DOM tree rather than the React tree.
+   */
+  surfaceIntensity?: SurfaceIntensityProp
 }
 
 function TabsContent({
@@ -394,6 +402,7 @@ function TabsContent({
   ref,
   value,
   forceMount,
+  surfaceIntensity,
   children,
   ...props
 }: TabsContentProps) {
@@ -412,6 +421,7 @@ function TabsContent({
       data-orientation={ctx.orientation}
       data-variant={variant}
       data-color={color}
+      data-surface-intensity={surfaceIntensity}
       hidden={!isSelected}
       tabIndex={0}
       className={cn("dr-tabs-content", className)}

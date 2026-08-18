@@ -725,6 +725,42 @@ describe("FloatingPanel", () => {
     expect(panel.style.left).toBe("50px")
     expect(panel.style.top).toBe("50px")
   })
+
+  it("forwards surfaceIntensity to the root", () => {
+    render(
+      <FloatingPanel
+        defaultPosition={{ x: 0, y: 0 }}
+        defaultSize={{ width: 200, height: 150 }}
+        surfaceIntensity="bold"
+        data-testid="p"
+      >
+        <FloatingPanelHeader>H</FloatingPanelHeader>
+        <FloatingPanelContent>x</FloatingPanelContent>
+      </FloatingPanel>,
+    )
+    expect(screen.getByTestId("p")).toHaveAttribute(
+      "data-surface-intensity",
+      "bold",
+    )
+  })
+
+  it("emits the attribute for balanced, so it overrides an ancestor", () => {
+    render(
+      <FloatingPanel
+        defaultPosition={{ x: 0, y: 0 }}
+        defaultSize={{ width: 200, height: 150 }}
+        surfaceIntensity="balanced"
+        data-testid="p"
+      >
+        <FloatingPanelHeader>H</FloatingPanelHeader>
+        <FloatingPanelContent>x</FloatingPanelContent>
+      </FloatingPanel>,
+    )
+    expect(screen.getByTestId("p")).toHaveAttribute(
+      "data-surface-intensity",
+      "balanced",
+    )
+  })
 })
 
 describe('FloatingPanel scope="app"', () => {

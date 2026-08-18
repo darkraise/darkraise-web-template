@@ -496,4 +496,38 @@ describe("Tabs", () => {
       stub.mockRestore()
     }
   })
+
+  it("forwards surfaceIntensity to the content panel", () => {
+    render(
+      <Tabs defaultValue="tab-1">
+        <TabsList>
+          <TabsTrigger value="tab-1">Tab One</TabsTrigger>
+        </TabsList>
+        <TabsContent value="tab-1" surfaceIntensity="bold">
+          Panel One
+        </TabsContent>
+      </Tabs>,
+    )
+    expect(screen.getByRole("tabpanel")).toHaveAttribute(
+      "data-surface-intensity",
+      "bold",
+    )
+  })
+
+  it("emits the attribute for balanced, so it overrides an ancestor", () => {
+    render(
+      <Tabs defaultValue="tab-1">
+        <TabsList>
+          <TabsTrigger value="tab-1">Tab One</TabsTrigger>
+        </TabsList>
+        <TabsContent value="tab-1" surfaceIntensity="balanced">
+          Panel One
+        </TabsContent>
+      </Tabs>,
+    )
+    expect(screen.getByRole("tabpanel")).toHaveAttribute(
+      "data-surface-intensity",
+      "balanced",
+    )
+  })
 })
