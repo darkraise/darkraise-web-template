@@ -900,6 +900,22 @@
   --surface-wash-color: var(--foreground);
 }
 
+/* `balanced` redeclares the unwashed expressions rather than matching no rule.
+   At the root that is byte-identical — the same text as `:root` — and on a
+   component it makes `surfaceIntensity="balanced"` a true absolute override
+   that undoes an ancestor's wash. Without this rule, inheritance would make
+   `balanced` silently mean "inherit the axis", contradicting the spec, and no
+   value would restore an unwashed fill (`none` blanks it instead). It stays
+   mix-free, so the byte-identity guarantee is untouched. */
+[data-surface-intensity="balanced"] {
+  --surface-card-fill: hsl(var(--card) / var(--surface-opacity, 1));
+  --surface-popover-fill: hsl(var(--popover) / var(--surface-opacity, 1));
+  --surface-raised-fill: hsl(var(--surface-raised) / var(--surface-opacity, 1));
+  --surface-overlay-fill: hsl(
+    var(--surface-overlay) / var(--surface-opacity, 1)
+  );
+}
+
 [data-surface-intensity="none"] {
   --surface-card-fill: transparent;
   --surface-popover-fill: transparent;

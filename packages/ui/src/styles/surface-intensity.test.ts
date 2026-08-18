@@ -95,15 +95,35 @@ describe("surface intensity rules", () => {
     expect(body).toContain("--surface-wash-color:")
   })
 
-  it("never declares a rule for balanced", () => {
-    expect(
-      rules().some((r) => r.selector === '[data-surface-intensity="balanced"]'),
-    ).toBe(false)
+  // `balanced` gets a real rule so the prop is an absolute override: a
+  // component set to balanced inside a washed theme must render unwashed, not
+  // inherit the ancestor's wash. The rule must stay mix-free or the default
+  // theme stops being byte-identical to the pre-axis build.
+  it.each(FILLS)("redeclares %s for balanced without a mix", (fill) => {
+    const body = bodyOf('[data-surface-intensity="balanced"]')
+    expect(body).toContain(`${fill}: hsl(`)
+    expect(body).not.toContain("color-mix")
   })
 
+  // Guards every repointed token, not just two: reverting any one of them to
+  // an inline hsl() silently drops that surface out of the axis.
   it("routes the Tailwind colors through the fill variables", () => {
     const theme = css().replace(/\s+/g, " ")
     expect(theme).toContain("--color-card: var(--surface-card-fill)")
     expect(theme).toContain("--color-popover: var(--surface-popover-fill)")
+    expect(theme).toContain(
+      "--color-surface-raised: var(--surface-raised-fill)",
+    )
+    expect(theme).toContain(
+      "--color-surface-overlay: var(--surface-overlay-fill)",
+    )
+  })
+
+  // Without this, a mix block with hardcoded percentages passes every other
+  // assertion while making flat, subtle and bold render identically.
+  it.each(FILLS)("drives %s from the wash variables", (fill) => {
+    const decl = mixBody().split(`${fill}:`)[1].split(";")[0]
+    expect(decl).toContain("var(--surface-wash-color)")
+    expect(decl).toContain("var(--surface-wash)")
   })
 })
