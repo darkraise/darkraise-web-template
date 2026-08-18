@@ -437,7 +437,6 @@ describe("Tabs", () => {
   })
 
   // Every other variant keeps offsetWidth/offsetHeight: those report the
-  // Every other variant keeps offsetWidth/offsetHeight: those report the
   it("leaves the strip unframed when border is omitted", () => {
     const { container } = render(<TestTabs />)
     expect(container.querySelector(".dr-tabs-list")).not.toHaveAttribute(

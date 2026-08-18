@@ -6,6 +6,7 @@ import { useId } from "@primitives/state"
 import { Presence } from "@primitives/presence"
 import { composeRefs } from "@primitives/slot"
 import { cn } from "@lib/utils"
+import { type CardBorder } from "@components/card"
 import "./tabs.css"
 
 import {
@@ -17,6 +18,8 @@ import {
 
 export type TabsVariant = "default" | "outline" | "underline" | "enclosed"
 export type TabsColor = "default" | "accent"
+/** Frame around the tab strip. Same tiers as Card's `border`. */
+export type TabsBorder = CardBorder
 
 const TabsContext = React.createContext<TabsContextValue | null>(null)
 
@@ -29,6 +32,7 @@ function useTabsContext(consumer: string): TabsContextValue {
 const TabsStyleContext = React.createContext<{
   variant: TabsVariant
   color: TabsColor
+  border?: TabsBorder
 }>({
   variant: "default",
   color: "default",
@@ -58,6 +62,18 @@ interface TabsProps extends Omit<
   orientation?: TabsOrientation
   variant?: TabsVariant
   color?: TabsColor
+  /**
+   * Frame the tab strip. Omitted, each variant keeps the chrome it draws
+   * for itself; set, the strip takes a 1px frame in the tier's colour —
+   * `default` the standard hairline, `strong` a heavier rule, `accent` the
+   * brand hue, `none` a transparent one that holds the same geometry.
+   *
+   * Unlike Card's `border`, which only tunes a box that is always drawn,
+   * this prop is what turns the box on for the variants that have none.
+   * The enclosed variant keeps its seam edge open, so the frame there
+   * covers three sides and the folder joint stays intact.
+   */
+  border?: TabsBorder
   activationMode?: TabsActivationMode
   dir?: "ltr" | "rtl"
   ref?: React.Ref<HTMLDivElement>
@@ -72,6 +88,7 @@ function Tabs({
   orientation,
   variant = "default",
   color = "default",
+  border,
   activationMode,
   dir,
   children,
@@ -95,7 +112,10 @@ function Tabs({
     [baseId],
   )
 
-  const styleCtx = React.useMemo(() => ({ variant, color }), [variant, color])
+  const styleCtx = React.useMemo(
+    () => ({ variant, color, border }),
+    [variant, color, border],
+  )
 
   return (
     <div
@@ -143,7 +163,7 @@ function TabsList({
   ...props
 }: TabsListProps) {
   const ctx = useTabsContext("TabsList")
-  const { variant, color } = React.useContext(TabsStyleContext)
+  const { variant, color, border } = React.useContext(TabsStyleContext)
   const listRef = React.useRef<HTMLDivElement>(null)
   const composedRef = composeRefs(ref, listRef)
   const [rect, setRect] = React.useState<IndicatorRect | null>(null)
@@ -240,6 +260,7 @@ function TabsList({
       data-orientation={ctx.orientation}
       data-variant={variant}
       data-color={color}
+      data-border={border}
       data-mounted={mounted ? "true" : "false"}
       className={cn("dr-tabs-list", className)}
       {...props}

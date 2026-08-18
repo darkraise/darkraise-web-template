@@ -18,6 +18,7 @@ import {
   TabsTrigger,
 } from "darkraise-ui/components/tabs"
 import type {
+  TabsBorder,
   TabsColor,
   TabsOrientation,
   TabsVariant,
@@ -39,6 +40,7 @@ const TABS_VARIANTS = allOf<TabsVariant>()(
 )
 const TABS_COLORS = allOf<TabsColor>()("default", "accent")
 const TABS_ORIENTATIONS = allOf<TabsOrientation>()("horizontal", "vertical")
+const TABS_BORDERS = allOf<TabsBorder>()("default", "strong", "accent", "none")
 
 // `color="accent"` retints neutral chrome to the brand hue, so only the
 // enclosed variant has anywhere to take it. The other three already draw
@@ -281,6 +283,52 @@ function TabsPage() {
             </p>
           </TabsContent>
         </Tabs>
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Bordered strip — border prop"
+        code={`<Tabs variant="underline" border="default" defaultValue="overview">
+  <TabsList>
+    <TabsTrigger value="overview">Overview</TabsTrigger>
+    <TabsTrigger value="details">Details</TabsTrigger>
+  </TabsList>
+  <TabsContent value="overview">
+    Overview content...
+  </TabsContent>
+</Tabs>`}
+      >
+        <div className="space-y-4">
+          <p className="text-muted-foreground text-sm">
+            <code className="text-foreground">border</code> frames the tab
+            strip. The default and outline variants already draw a box, so the
+            tier only retints theirs; underline and enclosed gain one. On
+            enclosed the frame stops short of the seam edge, leaving the folder
+            joint with the panel intact.
+          </p>
+          <VariantMatrix
+            rows={{ label: "variant", values: TABS_VARIANTS }}
+            cols={{ label: "border", values: TABS_BORDERS }}
+            render={(variant, border) => (
+              <Tabs
+                variant={variant}
+                border={border}
+                defaultValue="one"
+                className="min-w-0"
+              >
+                <TabsList>
+                  <TabsTrigger value="one">One</TabsTrigger>
+                  <TabsTrigger value="two">Two</TabsTrigger>
+                </TabsList>
+                <TabsContent value="one">
+                  <p className="text-muted-foreground text-xs">Panel</p>
+                </TabsContent>
+                <TabsContent value="two">
+                  <p className="text-muted-foreground text-xs">Panel</p>
+                </TabsContent>
+              </Tabs>
+            )}
+          />
+        </div>
       </ShowcaseExample>
 
       <ShowcaseExample

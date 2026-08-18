@@ -325,6 +325,62 @@
     @apply border-primary;
   }
 
+  /* --- Strip frame (`border` prop) -----------------------------------
+     Placed after every variant rule so it wins the ties: it shares the
+     variants' (0,2,0) specificity, and the cascade falls to source order.
+
+     default + outline already carry a box from card-surface, so the tiers
+     only retint theirs. underline and enclosed have none, so they take the
+     width and radius here too. */
+  .dr-tabs-list[data-variant="underline"][data-border],
+  .dr-tabs-list[data-variant="enclosed"][data-border] {
+    border-width: 1px;
+    border-style: solid;
+    border-radius: var(--radius);
+  }
+
+  .dr-tabs-list[data-border] {
+    border-color: hsl(var(--border));
+  }
+
+  /* `none` clears only the colour, so a frameless strip keeps the same
+     geometry as a framed sibling and toggling the tier never reflows. */
+  .dr-tabs-list[data-border="none"] {
+    border-color: transparent;
+  }
+
+  .dr-tabs-list[data-border="strong"] {
+    border-color: hsl(var(--foreground) / 0.28);
+  }
+
+  .dr-tabs-list[data-border="accent"] {
+    border-color: hsl(var(--primary) / 0.35);
+  }
+
+  /* The enclosed strip's seam edge carries the painted baseline that the
+     active tab notches. A frame there would run a second line right beside
+     it and box in the joint the variant exists to hide, so the frame stops
+     at three sides and the corners on the seam side stay square. The
+     seam-axis padding is load-bearing for the same reason — it is the 1px
+     that each trigger's -1px margin spends landing on the painted line —
+     so only the other three sides take the frame's inset. */
+  .dr-tabs-list[data-variant="enclosed"][data-orientation="horizontal"][data-border] {
+    @apply px-1 pt-1;
+    border-bottom-width: 0;
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+
+  .dr-tabs-list[data-variant="enclosed"][data-orientation="vertical"][data-border] {
+    @apply py-1 pl-1;
+    border-right-width: 0;
+    border-radius: var(--radius) 0 0 var(--radius);
+  }
+
+  /* Underline's labels would otherwise sit flush against the frame. */
+  .dr-tabs-list[data-variant="underline"][data-border] {
+    @apply px-2;
+  }
+
   .dr-tabs-content {
     @apply focus-ring-tight mt-2;
     transition: opacity 150ms;

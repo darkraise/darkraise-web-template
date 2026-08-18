@@ -117,3 +117,30 @@ export const EnclosedAccent: Story = {
     </Tabs>
   ),
 }
+
+export const BorderedStrip: Story = {
+  render: () => (
+    <div className="flex flex-col gap-8">
+      {(["default", "strong", "accent", "none"] as const).map((border) => (
+        <Tabs
+          key={border}
+          variant="underline"
+          border={border}
+          defaultValue="tab1"
+          className="w-80"
+        >
+          <TabsList>
+            <TabsTrigger value="tab1">Tab One</TabsTrigger>
+            <TabsTrigger value="tab2">Tab Two</TabsTrigger>
+          </TabsList>
+          <TabsContent value="tab1">
+            <p className="text-muted-foreground text-sm">border={border}</p>
+          </TabsContent>
+          <TabsContent value="tab2">
+            <p className="text-muted-foreground text-sm">border={border}</p>
+          </TabsContent>
+        </Tabs>
+      ))}
+    </div>
+  ),
+}
