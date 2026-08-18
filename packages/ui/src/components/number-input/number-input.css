@@ -12,7 +12,11 @@
    * trigger group) renders inside this single surface and is therefore
    * borderless on its own. */
   .dr-number-input-control {
-    @apply glass border-input focus-ring-input-wrapper bg-card text-card-foreground flex w-full items-stretch overflow-hidden border;
+    @apply glass border-input focus-ring-input-wrapper text-card-foreground flex w-full items-stretch overflow-hidden border;
+    /* Pinned out of the surface-intensity axis on purpose: fields hold
+       still while panels move around them. This is the pre-axis value of
+       `bg-card`. */
+    background-color: hsl(var(--card) / var(--surface-opacity, 1));
     border-radius: var(--radius-button);
     transition:
       border-color 150ms,
