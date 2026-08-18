@@ -162,23 +162,38 @@
      the tinted surface. Default + loading inherit the popover/border base. */
   .dr-toast--success {
     --toast-accent: var(--success);
-    background-color: hsl(var(--toast-accent) / 0.1);
     border-color: hsl(var(--toast-accent) / 0.4);
   }
   .dr-toast--error {
     --toast-accent: var(--destructive);
-    background-color: hsl(var(--toast-accent) / 0.1);
     border-color: hsl(var(--toast-accent) / 0.45);
   }
   .dr-toast--warning {
     --toast-accent: var(--warning);
-    background-color: hsl(var(--toast-accent) / 0.12);
+    --toast-tint: 0.12;
     border-color: hsl(var(--toast-accent) / 0.5);
   }
   .dr-toast--info {
     --toast-accent: var(--info);
-    background-color: hsl(var(--toast-accent) / 0.1);
     border-color: hsl(var(--toast-accent) / 0.4);
+  }
+
+  /* The tint is a layer OVER the toast's surface, never a replacement for
+     it. Set as background-color it displaced the base `bg-popover`, which
+     left the whole card at the tint's own 10% alpha and let page content
+     read straight through it. background-image paints above
+     background-color, so the surface keeps exactly the opacity its preset
+     gives it — `--color-popover` is `hsl(var(--popover) / --surface-opacity)`,
+     opaque by default and frosted under glass/sci-fi — and the accent only
+     washes it. */
+  .dr-toast--success,
+  .dr-toast--error,
+  .dr-toast--warning,
+  .dr-toast--info {
+    background-image: linear-gradient(
+      hsl(var(--toast-accent) / var(--toast-tint, 0.1)),
+      hsl(var(--toast-accent) / var(--toast-tint, 0.1))
+    );
   }
   .dr-toast--loading {
     --toast-accent: var(--muted-foreground);
