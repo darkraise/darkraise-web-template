@@ -13,6 +13,7 @@ export {
   BACKGROUND_STYLES,
   DENSITIES,
   ELEVATIONS,
+  SURFACE_INTENSITIES,
   RADII,
   MODES,
 } from "./types"
@@ -22,6 +23,7 @@ export type {
   BackgroundStyle,
   Density,
   Elevation,
+  SurfaceIntensity,
   Radius,
   Mode,
   ResolvedMode,

@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "darkraise-ui/components/card"
 import type { CardBorder, CardElevation } from "darkraise-ui/components/card"
+import type { SurfaceIntensityProp } from "darkraise-ui/lib"
 import { Badge } from "darkraise-ui/components/badge"
 import { Skeleton } from "darkraise-ui/components/skeleton"
 import {
@@ -33,13 +34,7 @@ export const Route = createFileRoute("/_authenticated/components/cards")({
 const CARD_BORDERS = allOf<CardBorder>()("default", "none", "strong", "accent")
 const CARD_ELEVATIONS = allOf<CardElevation>()("flat", "low", "medium", "high")
 
-/**
- * Card's own `SurfaceIntensityProp` union (the axis steps plus the
- * prop-only `"none"`) isn't re-exported from `darkraise-ui/components/card`,
- * so it's mirrored here rather than imported.
- */
-type CardSurfaceIntensity = "none" | "flat" | "subtle" | "balanced" | "bold"
-const CARD_SURFACE_INTENSITIES = allOf<CardSurfaceIntensity>()(
+const CARD_SURFACE_INTENSITIES = allOf<SurfaceIntensityProp>()(
   "none",
   "flat",
   "subtle",
