@@ -29,29 +29,28 @@ function themeRuleBody(selector: string): string {
 }
 
 describe("preset overlay backgrounds", () => {
-  it.each(PRESETS)("%s composes the wash", (file) => {
-    const css = readFileSync(`src/theme/presets/${file}`, "utf8")
-      .replace(/\/\*[\s\S]*?\*\//g, "")
-      .replace(/\s+/g, " ")
-    const decls = css.match(/--surface-overlay-bg:[^;]*?;/g) ?? []
-    expect(decls.length).toBeGreaterThan(0)
-    for (const decl of decls) {
-      expect(decl).toContain("--surface-overlay-wash")
-    }
+  it.each(PRESETS)("%s declares a static overlay base", (file) => {
+    const css = readFileSync(`src/theme/presets/${file}`, "utf8").replace(
+      /\s+/g,
+      " ",
+    )
+    expect(css).toContain("--surface-overlay-base:")
+    expect(css).not.toContain("--surface-overlay-bg:")
   })
 
-  it("defines the shared wash fragment in the base theme", () => {
+  it("composes the overlay background only in the base theme", () => {
     const css = readFileSync("src/styles/theme.css", "utf8")
-    expect(css).toContain("--surface-overlay-wash:")
+    expect(css).toContain("--surface-overlay-bg:")
+    expect(css).not.toContain("--surface-overlay-wash")
   })
 
   // balanced and none must break inheritance for the overlay tier too, or the
   // per-component prop silently fails on dialogs, menus, tooltips and popovers
   // nested inside a washed ancestor.
-  it("resets the overlay wash for balanced", () => {
+  it("redeclares the unwashed overlay background for balanced", () => {
     const body = themeRuleBody('[data-surface-intensity="balanced"]')
-    expect(body).toContain("--surface-overlay-wash: transparent")
-    expect(body).toContain("--surface-overlay-wash-amount: 0%")
+    expect(body).toContain("--surface-overlay-bg:")
+    expect(body).not.toContain("color-mix")
   })
 
   it("blanks the overlay background for none", () => {

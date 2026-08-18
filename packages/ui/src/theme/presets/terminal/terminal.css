@@ -110,11 +110,7 @@
 [data-preset="terminal"] {
   text-shadow: var(--terminal-text-shadow);
   /* Overlay surface chrome: very dark transparent with primary border. */
-  --surface-overlay-bg: color-mix(
-    in oklab,
-    hsl(var(--background) / 0.97),
-    var(--surface-overlay-wash) var(--surface-overlay-wash-amount)
-  );
+  --surface-overlay-base: hsl(var(--background) / 0.97);
   --surface-overlay-border: hsl(var(--primary) / 0.4);
 }
 

@@ -100,14 +100,11 @@
      popover-coloured base whose alpha tracks the opacity axis, so an overlay
      is opaque enough to read against on its own and the blur becomes an
      enhancement rather than the only thing separating the two layers. */
-  --surface-overlay-bg:
-    var(--glass-noise),
-    linear-gradient(135deg, var(--fog-20), var(--fog-10))
-      color-mix(
-        in oklab,
-        hsl(var(--popover) / var(--glass-overlay-base-alpha, 0.76)),
-        var(--surface-overlay-wash) var(--surface-overlay-wash-amount)
-      );
+  --surface-overlay-layers:
+    var(--glass-noise), linear-gradient(135deg, var(--fog-20), var(--fog-10));
+  --surface-overlay-base: hsl(
+    var(--popover) / var(--glass-overlay-base-alpha, 0.76)
+  );
   --surface-overlay-blend-mode: overlay, normal;
   --surface-overlay-border: var(--fog-20);
 }
@@ -125,14 +122,11 @@
      consumed fog-20/-10 to ~0.24/0.12 in dark — still clearly
      translucent, just intentionally a touch frostier, so no analogous
      dark reduction is needed.) */
-  --surface-overlay-bg:
-    var(--glass-noise),
-    linear-gradient(135deg, var(--fog-15), var(--fog-05))
-      color-mix(
-        in oklab,
-        hsl(var(--popover) / var(--glass-overlay-base-alpha, 0.76)),
-        var(--surface-overlay-wash) var(--surface-overlay-wash-amount)
-      );
+  --surface-overlay-layers:
+    var(--glass-noise), linear-gradient(135deg, var(--fog-15), var(--fog-05));
+  --surface-overlay-base: hsl(
+    var(--popover) / var(--glass-overlay-base-alpha, 0.76)
+  );
   --surface-overlay-shadow:
     var(--elevation-medium), var(--inset-hi-strong),
     inset 0 0 32px color-mix(in oklab, hsl(var(--surface-tint)) 2%, transparent),

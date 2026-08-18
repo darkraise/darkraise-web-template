@@ -678,12 +678,21 @@
      reproduce the current overlay look. The blend-mode token lets
      presets (e.g. Glass) layer multiple background images with a
      specific blending recipe; defaults to `normal` (no-op for
-     single-layer backgrounds). */
-    --surface-overlay-bg: color-mix(
-      in oklab,
-      hsl(var(--popover)),
-      var(--surface-overlay-wash) var(--surface-overlay-wash-amount)
-    );
+     single-layer backgrounds).
+
+     --surface-overlay-base/-layers are the static pieces each preset
+     declares (base colour + alpha, decorative layers ahead of it).
+     They stay static so flattening them on <html> is harmless; the
+     axis composes them into --surface-overlay-bg itself, below, at
+     each of the same four sites the fills use — that keeps the
+     substitution on whichever element carries the attribute instead
+     of baking it in where the preset declares its colour. */
+    /* Empty by default: only Glass paints decorative layers behind its
+       overlay colour. An empty custom property substitutes to nothing. */
+    --surface-overlay-layers: ;
+    --surface-overlay-base: hsl(var(--popover));
+    --surface-overlay-bg: var(--surface-overlay-layers)
+      var(--surface-overlay-base);
     --surface-overlay-border: hsl(var(--border));
     --surface-overlay-shadow: var(--shadow-dropdown);
     --surface-overlay-blend-mode: normal;
@@ -720,12 +729,6 @@
        attribute straight from localStorage without validating it. */
     --surface-wash: 0%;
     --surface-wash-color: var(--card);
-
-    /* The colour a preset's overlay background is washed toward, already
-       carrying the step's mix percentage. Presets compose this rather than
-       repeating the color-mix, so a change to the ramp lands everywhere. */
-    --surface-overlay-wash: transparent;
-    --surface-overlay-wash-amount: 0%;
   }
 }
 
@@ -897,8 +900,12 @@
     hsl(var(--card)),
     hsl(var(--surface-wash-color)) var(--surface-wash)
   );
-  --surface-overlay-wash: hsl(var(--surface-wash-color));
-  --surface-overlay-wash-amount: var(--surface-wash);
+  --surface-overlay-bg: var(--surface-overlay-layers)
+    color-mix(
+      in oklab,
+      var(--surface-overlay-base),
+      hsl(var(--surface-wash-color)) var(--surface-wash)
+    );
 }
 
 /* The downward steps are large and the upward step is small on purpose.
@@ -936,10 +943,17 @@
     var(--surface-overlay) / var(--surface-opacity, 1)
   );
   --surface-card-fill-opaque: hsl(var(--card));
-  --surface-overlay-wash: transparent;
-  --surface-overlay-wash-amount: 0%;
+  --surface-overlay-bg: var(--surface-overlay-layers)
+    var(--surface-overlay-base);
 }
 
+/* Glass's light-mode override, [data-mode="light"][data-preset="glass"], is
+   specificity (0,2,0) and declares --surface-overlay-* — higher than an
+   <html>-level [data-surface-intensity="none"] (0,1,0) would be, so it would
+   outrank this blanking if `none` were ever added to the theme axis and
+   written on <html>. Unreachable today: SURFACE_INTENSITIES has no `none`,
+   the value is prop-only, and a prop lands on a component element where no
+   preset selector competes. */
 [data-surface-intensity="none"] {
   --surface-card-fill: transparent;
   --surface-popover-fill: transparent;

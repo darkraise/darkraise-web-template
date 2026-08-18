@@ -147,13 +147,35 @@ describe("glass.css overlay surfaces carry a real colour layer", () => {
     expect(block).toMatch(/--glass-overlay-base-alpha:\s*1\b/)
   })
 
-  it("every --surface-overlay-bg ends in a popover-coloured, wash-mixed final layer", () => {
-    const decls = glassCss.match(/--surface-overlay-bg:[^;]+;/g) ?? []
-    expect(decls.length).toBeGreaterThanOrEqual(2)
+  // --surface-overlay-bg composes from these two static pieces in
+  // theme.css now (base/layers split — see overlay-bg-axis.test.ts), so
+  // the axis reaches the overlay tier even when the attribute lands on a
+  // component element rather than <html>. Glass declares neither the mix
+  // nor --surface-overlay-bg itself; it only supplies the popover-coloured
+  // base and its own decorative layers.
+  it("declares a popover-coloured overlay base with the alpha axis", () => {
+    const decls = glassCss.match(/--surface-overlay-base:[^;]+;/g) ?? []
+    expect(decls.length).toBe(2)
     for (const decl of decls) {
-      expect(norm(decl)).toContain(
-        "color-mix( in oklab, hsl(var(--popover) / var(--glass-overlay-base-alpha, 0.76)), var(--surface-overlay-wash) var(--surface-overlay-wash-amount) )",
+      expect(norm(decl)).toBe(
+        "--surface-overlay-base: hsl( var(--popover) / var(--glass-overlay-base-alpha, 0.76) );",
       )
     }
+  })
+
+  it("keeps the noise + fog-gradient decorative layers, per mode", () => {
+    const decls = glassCss.match(/--surface-overlay-layers:[^;]+;/g) ?? []
+    expect(decls.length).toBe(2)
+    const normalized = decls.map(norm)
+    expect(normalized).toContain(
+      "--surface-overlay-layers: var(--glass-noise), linear-gradient(135deg, var(--fog-20), var(--fog-10));",
+    )
+    expect(normalized).toContain(
+      "--surface-overlay-layers: var(--glass-noise), linear-gradient(135deg, var(--fog-15), var(--fog-05));",
+    )
+  })
+
+  it("never declares --surface-overlay-bg itself", () => {
+    expect(glassCss).not.toContain("--surface-overlay-bg:")
   })
 })
