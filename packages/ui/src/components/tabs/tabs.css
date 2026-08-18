@@ -164,24 +164,25 @@
      hsl(var(--card)) deliberately, NOT the bg-card utility: that resolves
      through --color-card, which multiplies in --surface-opacity — 0.78 to
      0.3 under glass, 0.82 under sci-fi. A translucent fill cannot erase
-     the baseline and the seam would ghost through. */
+     the baseline and the seam would ghost through, so this tracks the axis
+     through the opaque fill variable rather than --color-card. */
   .dr-tabs-indicator[data-variant="enclosed"][data-orientation="horizontal"] {
     @apply border-border border;
     border-radius: var(--radius) var(--radius) 0 0;
-    background-color: hsl(var(--card));
+    background-color: var(--surface-card-fill-opaque);
     border-bottom-color: transparent;
   }
 
   .dr-tabs-content[data-variant="enclosed"][data-orientation="horizontal"] {
     @apply border-border mt-0 border border-t-0 p-4;
     border-radius: 0 0 var(--radius) var(--radius);
-    background-color: hsl(var(--card));
+    background-color: var(--surface-card-fill-opaque);
   }
 
   /* Accent colour on the folder variant — the three borders retint to
-     the brand hue and both fills stay hsl(var(--card)). The fills are
-     load-bearing: the active trigger's opaque fill is what erases the
-     strip's baseline to form the notch, so tinting it would break the
+     the brand hue and both fills stay on --surface-card-fill-opaque. The
+     fills are load-bearing: the active trigger's opaque fill is what erases
+     the strip's baseline to form the notch, so tinting it would break the
      joint the variant exists to hide. */
   .dr-tabs-list[data-variant="enclosed"][data-orientation="horizontal"][data-color="accent"] {
     background-image: linear-gradient(
@@ -296,14 +297,14 @@
   .dr-tabs-indicator[data-variant="enclosed"][data-orientation="vertical"] {
     @apply border-border border;
     border-radius: var(--radius) 0 0 var(--radius);
-    background-color: hsl(var(--card));
+    background-color: var(--surface-card-fill-opaque);
     border-right-color: transparent;
   }
 
   .dr-tabs-content[data-variant="enclosed"][data-orientation="vertical"] {
     @apply border-border mt-0 border border-l-0 p-4;
     border-radius: 0 var(--radius) var(--radius) 0;
-    background-color: hsl(var(--card));
+    background-color: var(--surface-card-fill-opaque);
   }
 
   .dr-tabs-list[data-variant="enclosed"][data-orientation="vertical"][data-color="accent"] {

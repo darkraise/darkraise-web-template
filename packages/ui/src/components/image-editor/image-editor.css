@@ -50,7 +50,7 @@
   .dr-image-editor-adjust-panel {
     @apply flex flex-col gap-2 rounded-md border p-3;
     border-color: hsl(var(--border));
-    background: hsl(var(--card));
+    background: var(--surface-card-fill-opaque);
   }
 
   .dr-image-editor-adjust {
@@ -93,7 +93,7 @@
   .dr-image-editor-tools {
     @apply inline-flex items-center gap-0.5 rounded-md border p-1 shadow-[var(--card-elevation-low)];
     border-color: hsl(var(--border));
-    background: hsl(var(--card));
+    background: var(--surface-card-fill-opaque);
   }
   /* Two-class selector wins specificity over `.dr-btn[data-size="icon"]`
    * (0,2,0 vs 0,2,0) on source order — image-editor.css is imported after
@@ -171,7 +171,7 @@
   .dr-image-editor-annotation-toolbar {
     @apply flex flex-wrap items-center gap-1.5 rounded-md border p-1 shadow-[var(--card-elevation-low)];
     border-color: hsl(var(--border));
-    background: hsl(var(--card));
+    background: var(--surface-card-fill-opaque);
   }
   .dr-image-editor-annotation-kinds {
     @apply inline-flex items-center gap-0.5;

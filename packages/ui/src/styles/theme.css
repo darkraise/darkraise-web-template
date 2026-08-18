@@ -707,6 +707,10 @@
       var(--surface-overlay) / var(--surface-opacity, 1)
     );
 
+    /* Opacity-free twin of --surface-card-fill, for surfaces that must stay
+       opaque to hide a seam behind them but should still track the axis. */
+    --surface-card-fill-opaque: hsl(var(--card));
+
     /* Fallback so a stale or hand-edited attribute value renders as
        `balanced` instead of an invalid mix. The FOUC script writes the
        attribute straight from localStorage without validating it. */
@@ -878,6 +882,11 @@
     hsl(var(--surface-wash-color) / var(--surface-opacity, 1))
       var(--surface-wash)
   );
+  --surface-card-fill-opaque: color-mix(
+    in oklab,
+    hsl(var(--card)),
+    hsl(var(--surface-wash-color)) var(--surface-wash)
+  );
 }
 
 /* The downward steps are large and the upward step is small on purpose.
@@ -914,6 +923,7 @@
   --surface-overlay-fill: hsl(
     var(--surface-overlay) / var(--surface-opacity, 1)
   );
+  --surface-card-fill-opaque: hsl(var(--card));
 }
 
 [data-surface-intensity="none"] {
@@ -921,6 +931,7 @@
   --surface-popover-fill: transparent;
   --surface-raised-fill: transparent;
   --surface-overlay-fill: transparent;
+  --surface-card-fill-opaque: transparent;
 }
 
 /* Dark-mode shadow boost — drop shadows tinted black barely register

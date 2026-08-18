@@ -10,6 +10,7 @@ const FILLS = [
   "--surface-popover-fill",
   "--surface-raised-fill",
   "--surface-overlay-fill",
+  "--surface-card-fill-opaque",
 ]
 
 function css(): string {
