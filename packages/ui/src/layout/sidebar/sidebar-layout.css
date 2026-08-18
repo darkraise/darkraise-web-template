@@ -34,6 +34,48 @@
     @apply size-[var(--density-cell)];
   }
 
+  /* Collapsed rail: the brand mark and the toggle stack in one cell and
+     cross-fade. Grid rather than absolute positioning so the slot is sized
+     by the cell itself, and the toggle comes last in the DOM so it wins
+     hit-testing over the mark beneath it. */
+  .dr-sidebar-layout-brand-slot {
+    @apply relative grid size-[var(--density-cell)] place-items-center;
+  }
+
+  .dr-sidebar-layout-brand-slot > * {
+    grid-area: 1 / 1;
+    transition: opacity 150ms ease-in-out;
+  }
+
+  /* The mark is decoration here — the toggle underneath owns every click
+     in this square, including the ones that land on the logo. */
+  .dr-sidebar-layout-brand-slot .dr-brand-logo {
+    @apply pointer-events-none;
+  }
+
+  /* The mark is a fixed 2rem elsewhere, which would outgrow the cell at
+     compact density; in this slot it tracks the cell instead. */
+  .dr-sidebar-layout-brand-slot .dr-brand-logo-image,
+  .dr-sidebar-layout-brand-slot .dr-brand-logo-mark {
+    @apply size-[var(--density-cell)];
+  }
+
+  .dr-sidebar-layout-brand-slot .dr-sidebar-layout-toggle {
+    @apply opacity-0;
+  }
+
+  /* focus-within, not just hover: the toggle is the only route back to the
+     expanded rail, so tabbing to it has to reveal it too. */
+  .dr-sidebar-layout-brand-slot:hover .dr-brand-logo,
+  .dr-sidebar-layout-brand-slot:focus-within .dr-brand-logo {
+    @apply opacity-0;
+  }
+
+  .dr-sidebar-layout-brand-slot:hover .dr-sidebar-layout-toggle,
+  .dr-sidebar-layout-brand-slot:focus-within .dr-sidebar-layout-toggle {
+    @apply opacity-100;
+  }
+
   /* Search sits directly under the brand row, above the nav scroller. It
      owns its padding rather than reusing -aside-section so it does not
      draw that section's top border immediately below the header rule. */

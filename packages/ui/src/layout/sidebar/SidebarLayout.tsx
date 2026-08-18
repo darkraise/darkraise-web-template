@@ -72,6 +72,24 @@ export function SidebarLayout({
     </ToggleGroup>
   ) : null
 
+  const toggleButton = (
+    <Button
+      variant="ghost"
+      size="icon"
+      className="dr-sidebar-nav-item dr-sidebar-layout-toggle"
+      onClick={() => setCollapsed(!collapsed)}
+      aria-label={
+        collapsed ? labels.layout.expandSidebar : labels.layout.collapseSidebar
+      }
+    >
+      {collapsed ? (
+        <PanelLeft className="size-[var(--icon-size)]" />
+      ) : (
+        <PanelLeftClose className="size-[var(--icon-size)]" />
+      )}
+    </Button>
+  )
+
   return (
     <TooltipProvider delayDuration={0}>
       <SidebarProvider collapsed={collapsed}>
@@ -84,24 +102,23 @@ export function SidebarLayout({
             data-collapsed={collapsed ? "true" : undefined}
           >
             <div className="dr-sidebar-layout-aside-header">
-              {!collapsed && <BrandLogo collapsed={false} />}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="dr-sidebar-nav-item dr-sidebar-layout-toggle"
-                onClick={() => setCollapsed(!collapsed)}
-                aria-label={
-                  collapsed
-                    ? labels.layout.expandSidebar
-                    : labels.layout.collapseSidebar
-                }
-              >
-                {collapsed ? (
-                  <PanelLeft className="size-[var(--icon-size)]" />
-                ) : (
-                  <PanelLeftClose className="size-[var(--icon-size)]" />
-                )}
-              </Button>
+              {collapsed ? (
+                // One square is all the collapsed rail has, so the brand
+                // mark and the toggle share it: the mark carries the app's
+                // identity at rest and the toggle takes over on hover. The
+                // button stays mounted and focusable throughout — only its
+                // paint is deferred — because it is the only way back to
+                // the expanded rail and a keyboard user has no hover.
+                <div className="dr-sidebar-layout-brand-slot">
+                  <BrandLogo collapsed />
+                  {toggleButton}
+                </div>
+              ) : (
+                <>
+                  <BrandLogo collapsed={false} />
+                  {toggleButton}
+                </>
+              )}
             </div>
 
             <div className="dr-sidebar-layout-search">
