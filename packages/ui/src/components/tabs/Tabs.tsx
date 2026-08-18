@@ -160,13 +160,47 @@ function TabsList({
       setRect(null)
       return
     }
+    // The enclosed indicator's fill is what erases the strip's painted seam
+    // line into a notch, so it has to cover the active trigger exactly.
+    // offset* round to whole pixels, and these triggers rarely land on one:
+    // a trigger 65.16px wide reports 65, leaving a fraction of the line
+    // exposed down the seam edge. At device scale 1 that fraction rasterises
+    // away, but at 125%/150% it survives as a hairline — loud under
+    // color="accent", where the line is the brand hue rather than --border.
+    //
+    // The other variants stay on offset*: those report the untransformed
+    // layout box, and Playful scales the active trigger. A rect would fold
+    // that scale into the indicator's measured size on top of the scale the
+    // indicator already carries for itself, compounding to ~8%.
+    if (variant === "enclosed") {
+      const listBox = list.getBoundingClientRect()
+      const activeBox = active.getBoundingClientRect()
+      // Client rects are in zoomed coordinates while the indicator's inline
+      // px are in its own (unzoomed) CSS px, which the same zoom scales
+      // again. Divide it back out so the two spaces agree; 1 when no
+      // ancestor sets `zoom`, and on engines without the property.
+      const zoom = (active as { currentCSSZoom?: number }).currentCSSZoom || 1
+      setRect({
+        left:
+          (activeBox.left - listBox.left) / zoom -
+          list.clientLeft +
+          list.scrollLeft,
+        top:
+          (activeBox.top - listBox.top) / zoom -
+          list.clientTop +
+          list.scrollTop,
+        width: activeBox.width / zoom,
+        height: activeBox.height / zoom,
+      })
+      return
+    }
     setRect({
       left: active.offsetLeft,
       top: active.offsetTop,
       width: active.offsetWidth,
       height: active.offsetHeight,
     })
-  }, [])
+  }, [variant])
 
   React.useLayoutEffect(() => {
     measure()

@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { describe, it, expect } from "vitest"
+import { describe, it, expect, vi } from "vitest"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@components/tabs"
 
 function TestTabs() {
@@ -394,5 +394,107 @@ describe("Tabs", () => {
     expect(screen.getByText("Panel Two")).toBeInTheDocument()
     await user.keyboard("{ArrowUp}")
     expect(screen.getByRole("tab", { name: "Tab One" })).toHaveFocus()
+  })
+
+  // The enclosed indicator's fill erases the strip's painted seam line into
+  // the folder notch, so a rounded measurement leaves a slice of that line
+  // showing down the active tab's seam edge — a visible hairline once the
+  // line carries the brand hue (color="accent") at fractional device scale.
+  it("sizes the enclosed indicator from sub-pixel geometry", () => {
+    const stub = vi
+      .spyOn(HTMLElement.prototype, "getBoundingClientRect")
+      .mockImplementation(function (this: HTMLElement) {
+        const width = this.classList.contains("dr-tabs-list") ? 65.15625 : 0
+        const isTab = this.getAttribute("role") === "tab"
+        return {
+          x: 0,
+          y: 0,
+          left: 0,
+          top: 0,
+          right: 0,
+          bottom: 0,
+          width: isTab ? 65.15625 : width,
+          height: isTab ? 33.5 : 0,
+          toJSON: () => ({}),
+        } as DOMRect
+      })
+    try {
+      const { container } = render(
+        <Tabs orientation="vertical" variant="enclosed" defaultValue="tab-1">
+          <TabsList>
+            <TabsTrigger value="tab-1">Tab One</TabsTrigger>
+          </TabsList>
+          <TabsContent value="tab-1">Panel One</TabsContent>
+        </Tabs>,
+      )
+      const indicator =
+        container.querySelector<HTMLElement>(".dr-tabs-indicator")
+      expect(indicator?.style.width).toBe("65.15625px")
+      expect(indicator?.style.height).toBe("33.5px")
+    } finally {
+      stub.mockRestore()
+    }
+  })
+
+  // Every other variant keeps offsetWidth/offsetHeight: those report the
+  // Every other variant keeps offsetWidth/offsetHeight: those report the
+  it("leaves the strip unframed when border is omitted", () => {
+    const { container } = render(<TestTabs />)
+    expect(container.querySelector(".dr-tabs-list")).not.toHaveAttribute(
+      "data-border",
+    )
+  })
+
+  it("mirrors every border tier onto the strip", () => {
+    for (const tier of ["default", "strong", "accent", "none"] as const) {
+      const { container, unmount } = render(
+        <Tabs variant="underline" border={tier} defaultValue="tab-1">
+          <TabsList>
+            <TabsTrigger value="tab-1">Tab One</TabsTrigger>
+          </TabsList>
+          <TabsContent value="tab-1">Panel One</TabsContent>
+        </Tabs>,
+      )
+      // The tier rides the strip, not the root: the frame is the list's
+      // chrome, and `default` still has to reach the DOM — unlike Card, it
+      // is what turns the box on for variants that draw none.
+      expect(container.querySelector(".dr-tabs-list")).toHaveAttribute(
+        "data-border",
+        tier,
+      )
+      unmount()
+    }
+  })
+
+  // untransformed layout box, and the Playful preset scales the active
+  // trigger. Measuring its client rect would fold that scale into the
+  // indicator's size on top of the scale the indicator carries itself.
+  it("keeps the non-enclosed indicator on untransformed offsets", () => {
+    const stub = vi
+      .spyOn(HTMLElement.prototype, "getBoundingClientRect")
+      .mockImplementation(
+        () =>
+          ({
+            x: 0,
+            y: 0,
+            left: 0,
+            top: 0,
+            right: 0,
+            bottom: 0,
+            width: 65.15625,
+            height: 33.5,
+            toJSON: () => ({}),
+          }) as DOMRect,
+      )
+    try {
+      const { container } = render(<TestTabs />)
+      const indicator =
+        container.querySelector<HTMLElement>(".dr-tabs-indicator")
+      // jsdom reports 0 for every offset*, so the absence of the stubbed
+      // fractional values is what proves the rect path was not taken.
+      expect(indicator?.style.width).toBe("0px")
+    } finally {
+      stub.mockRestore()
+    }
   })
 })
