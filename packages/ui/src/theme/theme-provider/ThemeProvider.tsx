@@ -7,6 +7,7 @@ import type {
   SurfaceColor,
   Density,
   Elevation,
+  SurfaceIntensity,
   Radius,
   FontSize,
   AccentVibrancy,
@@ -23,6 +24,7 @@ import {
   GRADIENT_PATTERNS,
   DENSITIES,
   ELEVATIONS,
+  SURFACE_INTENSITIES,
   RADII,
   FONT_SIZES,
   ACCENT_VIBRANCIES,
@@ -58,6 +60,7 @@ const LS_MODE = "mode"
 const LS_DENSITY = "theme-density"
 const LS_ELEVATION = "theme-elevation"
 const LS_BUTTON_ELEVATION = "theme-button-elevation"
+const LS_SURFACE_INTENSITY = "theme-surface-intensity"
 const LS_RADIUS = "theme-radius"
 const LS_FONT_SIZE = "theme-font-size"
 const LS_ACCENT_VIBRANCY = "theme-accent-vibrancy"
@@ -269,6 +272,18 @@ export function ThemeProvider({
     return cfg.defaults.buttonElevation
   })
 
+  const [surfaceIntensity, setSurfaceIntensityState] =
+    useState<SurfaceIntensity>(() => {
+      const stored = readStorage(LS_SURFACE_INTENSITY)
+      if (
+        stored &&
+        (SURFACE_INTENSITIES as readonly string[]).includes(stored)
+      ) {
+        return stored as SurfaceIntensity
+      }
+      return cfg.defaults.surfaceIntensity
+    })
+
   const [radius, setRadiusState] = useState<Radius>(() => {
     const stored = readStorage(LS_RADIUS)
     if (stored && (RADII as readonly string[]).includes(stored)) {
@@ -413,6 +428,7 @@ export function ThemeProvider({
       density,
       elevation,
       buttonElevation,
+      surfaceIntensity,
       radius,
       fontSize,
       accentVibrancy,
@@ -430,6 +446,7 @@ export function ThemeProvider({
       density,
       elevation,
       buttonElevation,
+      surfaceIntensity,
       radius,
       fontSize,
       accentVibrancy,
@@ -466,6 +483,9 @@ export function ThemeProvider({
       setButtonElevationState(
         settings.buttonElevation ?? cfg.defaults.buttonElevation,
       )
+      setSurfaceIntensityState(
+        settings.surfaceIntensity ?? cfg.defaults.surfaceIntensity,
+      )
       setRadiusState(settings.radius ?? cfg.defaults.radius)
       setFontSizeState(settings.fontSize ?? cfg.defaults.fontSize)
       setAccentVibrancyState(
@@ -485,6 +505,10 @@ export function ThemeProvider({
       writeStorage(
         LS_BUTTON_ELEVATION,
         settings.buttonElevation ?? cfg.defaults.buttonElevation,
+      )
+      writeStorage(
+        LS_SURFACE_INTENSITY,
+        settings.surfaceIntensity ?? cfg.defaults.surfaceIntensity,
       )
       writeStorage(LS_RADIUS, settings.radius ?? cfg.defaults.radius)
       writeStorage(LS_FONT_SIZE, settings.fontSize ?? cfg.defaults.fontSize)
@@ -509,6 +533,10 @@ export function ThemeProvider({
       document.documentElement.setAttribute(
         "data-button-elevation",
         settings.buttonElevation ?? cfg.defaults.buttonElevation,
+      )
+      document.documentElement.setAttribute(
+        "data-surface-intensity",
+        settings.surfaceIntensity ?? cfg.defaults.surfaceIntensity,
       )
       document.documentElement.setAttribute(
         "data-radius",
@@ -895,6 +923,19 @@ export function ThemeProvider({
     [buildSettings, notifyChange, debouncedSave],
   )
 
+  const setSurfaceIntensity = useCallback(
+    (i: SurfaceIntensity) => {
+      setSurfaceIntensityState(i)
+      writeStorage(LS_SURFACE_INTENSITY, i)
+      document.documentElement.setAttribute("data-surface-intensity", i)
+      const settings = buildSettings({ surfaceIntensity: i })
+      notifyChange(settings)
+      hasUserChanged.current = true
+      debouncedSave(settings)
+    },
+    [buildSettings, notifyChange, debouncedSave],
+  )
+
   const setRadius = useCallback(
     (r: Radius) => {
       setRadiusState(r)
@@ -976,6 +1017,10 @@ export function ThemeProvider({
       "data-button-elevation",
       buttonElevation,
     )
+    document.documentElement.setAttribute(
+      "data-surface-intensity",
+      surfaceIntensity,
+    )
     document.documentElement.setAttribute("data-radius", radius)
     document.documentElement.setAttribute("data-font-size", fontSize)
     document.documentElement.setAttribute(
@@ -990,6 +1035,7 @@ export function ThemeProvider({
     density,
     elevation,
     buttonElevation,
+    surfaceIntensity,
     radius,
     fontSize,
     backgroundIntensity,
@@ -1064,6 +1110,7 @@ export function ThemeProvider({
       density,
       elevation,
       buttonElevation,
+      surfaceIntensity,
       radius,
       fontSize,
       accentVibrancy,
@@ -1082,6 +1129,7 @@ export function ThemeProvider({
       setDensity,
       setElevation,
       setButtonElevation,
+      setSurfaceIntensity,
       setRadius,
       setFontSize,
       setAccentVibrancy,
@@ -1098,6 +1146,7 @@ export function ThemeProvider({
       density,
       elevation,
       buttonElevation,
+      surfaceIntensity,
       radius,
       fontSize,
       accentVibrancy,
@@ -1115,6 +1164,7 @@ export function ThemeProvider({
       setDensity,
       setElevation,
       setButtonElevation,
+      setSurfaceIntensity,
       setRadius,
       setFontSize,
       setAccentVibrancy,

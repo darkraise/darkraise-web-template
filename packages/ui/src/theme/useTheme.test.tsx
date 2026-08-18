@@ -142,6 +142,21 @@ describe("useTheme", () => {
     )
   })
 
+  it("defaults surfaceIntensity to balanced", () => {
+    const { result } = renderHook(() => useTheme(), { wrapper })
+    expect(result.current.surfaceIntensity).toBe("balanced")
+  })
+
+  it("writes the attribute and storage on change", () => {
+    const { result } = renderHook(() => useTheme(), { wrapper })
+    act(() => result.current.setSurfaceIntensity("bold"))
+    expect(result.current.surfaceIntensity).toBe("bold")
+    expect(
+      document.documentElement.getAttribute("data-surface-intensity"),
+    ).toBe("bold")
+    expect(localStorage.getItem("theme-surface-intensity")).toBe("bold")
+  })
+
   it("returns config defaults for new axes when localStorage is empty", () => {
     const { result } = renderHook(() => useTheme(), { wrapper })
     expect(result.current.density).toBe("cozy")
