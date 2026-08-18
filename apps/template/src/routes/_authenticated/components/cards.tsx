@@ -8,11 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "darkraise-ui/components/card"
-import type {
-  CardBorder,
-  CardElevation,
-  CardIntensity,
-} from "darkraise-ui/components/card"
+import type { CardBorder, CardElevation } from "darkraise-ui/components/card"
 import { Badge } from "darkraise-ui/components/badge"
 import { Skeleton } from "darkraise-ui/components/skeleton"
 import {
@@ -36,11 +32,19 @@ export const Route = createFileRoute("/_authenticated/components/cards")({
 
 const CARD_BORDERS = allOf<CardBorder>()("default", "none", "strong", "accent")
 const CARD_ELEVATIONS = allOf<CardElevation>()("flat", "low", "medium", "high")
-const CARD_INTENSITIES = allOf<CardIntensity>()(
+
+/**
+ * Card's own `SurfaceIntensityProp` union (the axis steps plus the
+ * prop-only `"none"`) isn't re-exported from `darkraise-ui/components/card`,
+ * so it's mirrored here rather than imported.
+ */
+type CardSurfaceIntensity = "none" | "flat" | "subtle" | "balanced" | "bold"
+const CARD_SURFACE_INTENSITIES = allOf<CardSurfaceIntensity>()(
   "none",
-  "default",
-  "soft",
-  "strong",
+  "flat",
+  "subtle",
+  "balanced",
+  "bold",
 )
 
 function CardsPage() {
@@ -154,30 +158,36 @@ function CardsPage() {
         />
       </ShowcaseExample>
 
-      {/* ─── Intensity ────────────────────────────────────────────────────── */}
+      {/* ─── Surface intensity ────────────────────────────────────────────── */}
 
       <ShowcaseExample
-        title="Background intensity"
-        code={`<Card intensity="none">...</Card>      // no fill, takes the page background
-<Card intensity="default">...</Card>   // the theme/preset card fill
-<Card intensity="soft">...</Card>
-<Card intensity="strong">...</Card>
+        title="Surface intensity"
+        code={`<Card surfaceIntensity="none">...</Card>      // fully transparent, shows the page
+<Card surfaceIntensity="flat">...</Card>      // washed 100% toward the page background
+<Card surfaceIntensity="subtle">...</Card>    // washed 55% toward the page background
+<Card surfaceIntensity="balanced">...</Card>  // the theme/preset card fill, unwashed
+<Card surfaceIntensity="bold">...</Card>      // a 6% wash toward --foreground
 
-// The wash reads --foreground, so it darkens a light card and lightens a
-// dark one: both steps read as more separation from the page in either
-// mode, under every preset.`}
+// flat/subtle recede toward the page background; bold's wash reads
+// --foreground instead, so it darkens a light card and lightens a dark
+// one — both directions read as more separation from the page, under
+// every preset.`}
       >
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {CARD_INTENSITIES.map((intensity) => (
-            <Card key={intensity} intensity={intensity}>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
+          {CARD_SURFACE_INTENSITIES.map((intensity) => (
+            <Card key={intensity} surfaceIntensity={intensity}>
               <CardHeader>
                 <CardTitle className="text-base">{intensity}</CardTitle>
                 <CardDescription>
                   {intensity === "none"
                     ? "Blends into the page behind it."
-                    : intensity === "default"
-                      ? "The card fill the theme ships."
-                      : "A neutral wash over the card fill."}
+                    : intensity === "flat"
+                      ? "Fully washed toward the page background."
+                      : intensity === "subtle"
+                        ? "A light step toward the page background."
+                        : intensity === "balanced"
+                          ? "The card fill the theme ships."
+                          : "A wash toward the foreground for firmer separation."}
                 </CardDescription>
               </CardHeader>
             </Card>
