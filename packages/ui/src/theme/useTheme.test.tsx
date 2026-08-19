@@ -238,6 +238,30 @@ describe("useTheme", () => {
     expect(localStorage.getItem("theme-canvas-tint")).toBe("neutral")
     expect(document.documentElement.getAttribute("data-canvas-tint")).toBeNull()
   })
+
+  // canvasTint caps how much of the surface hue's saturation the dark-mode
+  // canvas may carry (see CANVAS_TINT_CAPS in generateTokens.ts). --background
+  // and --surface-base share the exact same formula, so they must move
+  // together. Default settings resolve slate's surface[950] ("229 84% 5%");
+  // "balanced" caps saturation at 16%, "neutral" caps it at 0%.
+  it("moves --background and --surface-base when canvasTint changes in dark mode", () => {
+    const { result } = renderHook(() => useTheme(), { wrapper })
+    act(() => result.current.setMode("dark"))
+    const readBackground = () =>
+      document.documentElement.style.getPropertyValue("--background")
+    const readSurfaceBase = () =>
+      document.documentElement.style.getPropertyValue("--surface-base")
+
+    const balancedBackground = readBackground()
+    expect(balancedBackground).toBe("229 16% 5%")
+    expect(readSurfaceBase()).toBe(balancedBackground)
+
+    act(() => result.current.setCanvasTint("neutral"))
+
+    expect(readBackground()).toBe("229 0% 5%")
+    expect(readBackground()).not.toBe(balancedBackground)
+    expect(readSurfaceBase()).toBe(readBackground())
+  })
 })
 
 describe("useTheme persistence", () => {
