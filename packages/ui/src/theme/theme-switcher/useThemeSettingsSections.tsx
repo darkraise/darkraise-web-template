@@ -14,6 +14,7 @@ import {
   RADII,
   FONT_SIZES,
   ACCENT_VIBRANCIES,
+  CANVAS_TINTS,
 } from "@theme/types"
 import type {
   Mode,
@@ -71,6 +72,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
     radius,
     fontSize,
     accentVibrancy,
+    canvasTint,
     config,
     activePreset,
     presetAxisValues,
@@ -88,6 +90,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
     setRadius,
     setFontSize,
     setAccentVibrancy,
+    setCanvasTint,
     setPresetAxis,
   } = useTheme()
 
@@ -412,6 +415,24 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
               value={accentVibrancy}
               onChange={setAccentVibrancy}
               label={labels.theme.axisLabels.accentVibrancy}
+            />
+          </div>
+        ),
+      },
+    axes.canvasTint &&
+      !isCommonAxisHidden("canvasTint") && {
+        key: "canvasTint",
+        group: "color" as const,
+        node: (
+          <div key="canvasTint" className="dr-theme-switcher-row">
+            <Label className="dr-theme-switcher-section-label">
+              {labels.theme.axisLabels.canvasTint}
+            </Label>
+            <AxisControl
+              values={CANVAS_TINTS}
+              value={canvasTint}
+              onChange={setCanvasTint}
+              label={labels.theme.axisLabels.canvasTint}
             />
           </div>
         ),

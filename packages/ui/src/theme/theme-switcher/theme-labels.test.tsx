@@ -22,6 +22,7 @@ const config: ThemeConfig = {
     radius: "rounded",
     fontSize: "medium",
     accentVibrancy: "balanced",
+    canvasTint: "balanced",
   },
   switcher: {
     enabled: true,
@@ -40,6 +41,7 @@ const config: ThemeConfig = {
       radius: false,
       fontSize: false,
       accentVibrancy: false,
+      canvasTint: true,
       presetAxes: false,
     },
   },
@@ -94,5 +96,12 @@ describe("ThemeSwitcher labels", () => {
     renderSwitcher()
     await user.click(screen.getByRole("button"))
     expect(screen.getByText("Surface Intensity")).toBeInTheDocument()
+  })
+
+  it("labels the canvas tint axis", async () => {
+    const user = userEvent.setup()
+    renderSwitcher()
+    await user.click(screen.getByRole("button"))
+    expect(screen.getByText("Canvas Tint")).toBeInTheDocument()
   })
 })
