@@ -73,18 +73,20 @@ describe("ThemeSettingsPanel", () => {
 
   it("thins a group without hiding its heading when only some axes are hidden", () => {
     renderPanel(<ThemeSettingsPanel layout="page" />)
-    // Default preset — all three Depth axes are visible, so the heading shows.
+    // Default preset — every Depth axis is visible, so the heading shows.
     expect(screen.getByRole("heading", { name: "Depth" })).toBeInTheDocument()
 
-    // Neon declares hiddenCommonAxes: ["elevation", "buttonElevation"], but
-    // not "surfaceIntensity" — the Depth group keeps that one axis, so the
-    // heading stays even though two of its three sections are gone.
+    // Sci-fi hides elevation, buttonElevation and surfaceIntensity, but drives
+    // its glow from the shared axes rather than hiding them — so the Depth
+    // group thins to the two glow controls and keeps its heading.
     fireEvent.click(screen.getByRole("radio", { name: /^sci-fi$/i }))
 
     expect(screen.getByRole("heading", { name: "Depth" })).toBeInTheDocument()
     expect(screen.queryByText("Elevation")).not.toBeInTheDocument()
     expect(screen.queryByText("Button Elevation")).not.toBeInTheDocument()
-    expect(screen.getByText("Surface Intensity")).toBeInTheDocument()
+    expect(screen.queryByText("Surface Intensity")).not.toBeInTheDocument()
+    expect(screen.getByText("Outer Glow")).toBeInTheDocument()
+    expect(screen.getByText("Inner Glow")).toBeInTheDocument()
   })
 
   it("omits a group heading entirely once every axis in it is hidden", () => {

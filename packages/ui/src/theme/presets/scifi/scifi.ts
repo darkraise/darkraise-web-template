@@ -32,7 +32,13 @@ export const scifi: ThemePreset<ScifiAxes> = {
   },
 
   supportedModes: ["dark"],
-  hiddenCommonAxes: ["elevation", "buttonElevation", "radius"],
+  hiddenCommonAxes: [
+    "elevation",
+    "buttonElevation",
+    "radius",
+    "accentIntensity",
+    "surfaceIntensity",
+  ],
 
   // Sci-fi's glow rides the shared axes now; it asks for the step that
   // reproduces the `normal` ramp it shipped with.

@@ -21,11 +21,13 @@ describe("scifi preset", () => {
     expect(scifi.supportedModes).toEqual(["dark"])
   })
 
-  it("hides elevation, buttonElevation, and radius common axes", () => {
+  it("hides the common axes it reinterprets", () => {
     expect(scifi.hiddenCommonAxes).toEqual([
       "elevation",
       "buttonElevation",
       "radius",
+      "accentIntensity",
+      "surfaceIntensity",
     ])
   })
 

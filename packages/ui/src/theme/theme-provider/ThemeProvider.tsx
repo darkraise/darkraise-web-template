@@ -50,6 +50,7 @@ import { migrateGlassPresetKeys } from "./migrateGlassPresetKeys"
 import { migrateAccentIntensityKey } from "./migrateAccentIntensityKey"
 import { migrateCanvasTintKey } from "./migrateCanvasTintKey"
 import { migratePresetGlowAxes } from "./migratePresetGlowAxes"
+import { neutraliseIfHidden } from "./neutralisedAxes"
 
 declare const process: { env: { NODE_ENV?: string } }
 
@@ -422,7 +423,12 @@ export function ThemeProvider({
         preset: presetName,
         backgroundStyle: bgStyle,
         mode: resolved,
-        accentIntensity: vibrancy,
+        accentIntensity: neutraliseIfHidden(
+          "accentIntensity",
+          vibrancy,
+          cfg.defaults.accentIntensity,
+          activePreset.hiddenCommonAxes,
+        ),
         backgroundIntensity: bgIntensity,
       })
 
@@ -1053,13 +1059,27 @@ export function ThemeProvider({
     (i: SurfaceIntensity) => {
       setSurfaceIntensityState(i)
       writeStorage(LS_SURFACE_INTENSITY, i)
-      document.documentElement.setAttribute("data-surface-intensity", i)
+      document.documentElement.setAttribute(
+        "data-surface-intensity",
+        neutraliseIfHidden(
+          "surfaceIntensity",
+          i,
+          cfg.defaults.surfaceIntensity,
+          presets[preset].hiddenCommonAxes,
+        ),
+      )
       const settings = buildSettings({ surfaceIntensity: i })
       notifyChange(settings)
       hasUserChanged.current = true
       debouncedSave(settings)
     },
-    [buildSettings, notifyChange, debouncedSave],
+    [
+      buildSettings,
+      notifyChange,
+      debouncedSave,
+      preset,
+      cfg.defaults.surfaceIntensity,
+    ],
   )
 
   const setRadius = useCallback(
@@ -1147,7 +1167,12 @@ export function ThemeProvider({
     )
     document.documentElement.setAttribute(
       "data-surface-intensity",
-      surfaceIntensity,
+      neutraliseIfHidden(
+        "surfaceIntensity",
+        surfaceIntensity,
+        cfg.defaults.surfaceIntensity,
+        presets[preset].hiddenCommonAxes,
+      ),
     )
     document.documentElement.setAttribute("data-radius", radius)
     document.documentElement.setAttribute("data-font-size", fontSize)
@@ -1164,6 +1189,8 @@ export function ThemeProvider({
   }, [
     outerGlow,
     innerGlow,
+    preset,
+    cfg.defaults.surfaceIntensity,
     density,
     elevation,
     buttonElevation,

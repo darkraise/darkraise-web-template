@@ -484,7 +484,18 @@ async function main() {
           "outer-glow": "theme-outer-glow",
           "inner-glow": "theme-inner-glow",
         }
+        // Presets that reinterpret an axis neutralise it rather than merely
+        // hiding its control, so restoring a stored value here would flash the
+        // wrong surface treatment before hydration corrects it. Mirrors
+        // NEUTRALISED_WHEN_HIDDEN + hiddenCommonAxes in the library.
+        var NEUTRALISED_BY_PRESET = {
+          glass: ["surface-intensity"],
+          scifi: ["surface-intensity"],
+        }
+        var activePreset = localStorage.getItem("theme-preset") || ""
+        var neutralised = NEUTRALISED_BY_PRESET[activePreset] || []
         Object.keys(AXIS_LS_KEYS).forEach(function (axis) {
+          if (neutralised.indexOf(axis) !== -1) return
           var v = localStorage.getItem(AXIS_LS_KEYS[axis])
           if (v) document.documentElement.setAttribute("data-" + axis, v)
         })
