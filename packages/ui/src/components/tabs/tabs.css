@@ -350,8 +350,10 @@
     border-color: transparent;
   }
 
+  /* Same ladder as Card: `--border-strong` is surface-tinted, a
+     `--foreground` alpha is not. */
   .dr-tabs-list[data-border="strong"] {
-    border-color: hsl(var(--foreground) / 0.28);
+    border-color: hsl(var(--border-strong));
   }
 
   .dr-tabs-list[data-border="accent"] {
