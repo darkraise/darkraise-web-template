@@ -19,19 +19,24 @@
      elevation="medium">` renders the same shadow regardless of the theme
      picker. `flat` is hard-zeroed so theme=high can't accidentally lift it. */
   .dr-card[data-elevation="auto"] {
-    box-shadow: var(--elevation-current);
+    box-shadow: var(--elevation-current), var(--glow-outer), var(--glow-inner);
   }
   .dr-card[data-elevation="flat"] {
-    box-shadow: 0 0 transparent;
+    box-shadow:
+      0 0 transparent,
+      var(--glow-outer),
+      var(--glow-inner);
   }
   .dr-card[data-elevation="low"] {
-    box-shadow: var(--card-elevation-low);
+    box-shadow: var(--card-elevation-low), var(--glow-outer), var(--glow-inner);
   }
   .dr-card[data-elevation="medium"] {
-    box-shadow: var(--card-elevation-medium);
+    box-shadow:
+      var(--card-elevation-medium), var(--glow-outer), var(--glow-inner);
   }
   .dr-card[data-elevation="high"] {
-    box-shadow: var(--card-elevation-high);
+    box-shadow:
+      var(--card-elevation-high), var(--glow-outer), var(--glow-inner);
   }
 
   .dr-card-header {
@@ -90,6 +95,9 @@
 
   .dr-card[data-border="accent"] {
     border-color: hsl(var(--primary) / 0.35);
+    /* Contextual glow hue: this card's identity is already the brand colour,
+       so its halo follows --primary rather than the surface tint. */
+    --glow-hue: var(--primary);
   }
 
   /* Glass preset — the only preset that populates the fog scale, and its

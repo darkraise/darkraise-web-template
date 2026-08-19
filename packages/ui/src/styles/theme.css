@@ -203,7 +203,9 @@
 }
 
 @utility modal-surface {
-  box-shadow: var(--elevation-high), var(--inset-hi-strong);
+  box-shadow:
+    var(--elevation-high), var(--inset-hi-strong), var(--glow-outer),
+    var(--glow-inner);
 }
 
 @utility focus-ring {
@@ -429,6 +431,16 @@
      inset shadow. `currentColor` is resolved at the consuming element, so
      one pair of values covers every variant and both modes: it lightens a
      filled button (white label) and darkens a ghost button (dark label). */
+    /* Glow axes. `--glow-hue` is contextual: a surface glows in the surface
+     colour, while an element whose identity is already accent-coloured
+     overrides it to --primary. Both resolve to a no-op shadow at `none`, which
+     is the default, so the axes ship invisible on this preset. `none` uses a
+     transparent shadow rather than the `none` keyword, which is invalid as a
+     list item and would invalidate the whole declaration. */
+    --glow-hue: var(--surface-tint);
+    --glow-outer: 0 0 transparent;
+    --glow-inner: 0 0 transparent;
+
     --state-layer-hover: color-mix(in srgb, currentColor 8%, transparent);
     --state-layer-press: color-mix(in srgb, currentColor 16%, transparent);
     --fog-05: transparent;
@@ -700,7 +712,8 @@
     --surface-overlay-bg: var(--surface-overlay-layers)
       var(--surface-overlay-base);
     --surface-overlay-border: hsl(var(--border));
-    --surface-overlay-shadow: var(--shadow-dropdown);
+    --surface-overlay-shadow:
+      var(--shadow-dropdown), var(--glow-outer), var(--glow-inner);
     --surface-overlay-blend-mode: normal;
 
     /* Default elevation-current so `<Card elevation="auto">` and other
@@ -1074,6 +1087,29 @@
    `neutral` stays faint rather than 0 so a gradient background still reads as a
    gradient at the lowest step. The axis also caps the canvas saturation in the
    token engine, which is the half that applies under `solid` too. */
+/* Glow ramp. Alpha and blur both grow with the step; `none` is left to the
+   :root no-op above so the tokens are never absent. The two axes are
+   independent — an inner rim with no outer halo, or the reverse, are both
+   reachable. */
+[data-outer-glow="subtle"] {
+  --glow-outer: 0 0 12px hsl(var(--glow-hue) / 0.1);
+}
+[data-outer-glow="balanced"] {
+  --glow-outer: 0 0 20px hsl(var(--glow-hue) / 0.18);
+}
+[data-outer-glow="vivid"] {
+  --glow-outer: 0 0 32px hsl(var(--glow-hue) / 0.28);
+}
+[data-inner-glow="subtle"] {
+  --glow-inner: inset 0 0 12px hsl(var(--glow-hue) / 0.06);
+}
+[data-inner-glow="balanced"] {
+  --glow-inner: inset 0 0 20px hsl(var(--glow-hue) / 0.12);
+}
+[data-inner-glow="vivid"] {
+  --glow-inner: inset 0 0 32px hsl(var(--glow-hue) / 0.2);
+}
+
 [data-background-intensity="neutral"] {
   --canvas-blob-scale: 0.25;
 }
