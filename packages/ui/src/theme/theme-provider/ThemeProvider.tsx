@@ -479,6 +479,7 @@ export function ThemeProvider({
     [
       cfg.defaults.outerGlow,
       cfg.defaults.innerGlow,
+      cfg.defaults.accentIntensity,
       outerGlowRaw,
       innerGlowRaw,
     ],
