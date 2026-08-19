@@ -22,7 +22,7 @@ const ACCENT_COLORS = [
   "fuchsia", "pink", "rose",
 ]
 const SURFACE_COLORS = ["slate", ...ACCENT_COLORS]
-const PRESETS = ["default", "glass", "neon", "terminal", "scifi", "playful"]
+const PRESETS = ["default", "glass", "scifi"]
 const BACKGROUND_STYLES = ["solid", "gradient"]
 const BACKGROUND_INTENSITIES = ["subtle", "balanced", "vivid", "intense"]
 const GRADIENT_PATTERNS = ["blobs", "aurora", "spotlight", "mesh"]
@@ -37,7 +37,7 @@ const MODES = ["light", "dark", "system"]
 const LAYOUTS = ["sidebar", "stacked", "top-nav", "split-panel"]
 // Mirrors `ThemeConfig.switcher.axes` in
 // packages/ui/src/theme/themeConfig.ts. `presetAxes` is a master
-// toggle for whether the per-preset axis controls (e.g. neon glow,
+// toggle for whether the per-preset axis controls (e.g. glass blur,
 // scifi intensity/frame) appear in the switcher panel.
 const THEME_AXIS_KEYS = [
   "mode", "accentColor", "surfaceColor", "preset",
@@ -310,7 +310,7 @@ async function main() {
             { value: "mode", label: "Mode (light/dark/system)" },
             { value: "accentColor", label: "Accent color" },
             { value: "surfaceColor", label: "Surface color" },
-            { value: "preset", label: "Preset (default/glass/neon/terminal/scifi/playful)" },
+            { value: "preset", label: "Preset (default/glass/scifi)" },
             { value: "backgroundStyle", label: "Background style" },
             { value: "backgroundIntensity", label: "Background intensity" },
             { value: "gradientPattern", label: "Gradient pattern" },
@@ -322,7 +322,7 @@ async function main() {
             { value: "fontSize", label: "Font size" },
             { value: "accentVibrancy", label: "Accent vibrancy" },
             { value: "canvasTint", label: "Canvas tint" },
-            { value: "presetAxes", label: "Preset-specific axes (e.g. neon glow, scifi intensity/frame)" },
+            { value: "presetAxes", label: "Preset-specific axes (e.g. glass blur, scifi intensity/frame)" },
           ],
           initialValues: THEME_AXIS_KEYS,
         }),
