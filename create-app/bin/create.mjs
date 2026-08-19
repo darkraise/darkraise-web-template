@@ -269,7 +269,7 @@ async function main() {
 
   const accentIntensity = argv["accent-intensity"] || (skipPrompts ? "balanced" : cancelled(
     await p.select({
-      message: "Accent intensity (dark mode only)",
+      message: "Accent intensity",
       options: ACCENT_INTENSITIES.map((v) => ({ value: v, label: v })),
       initialValue: "balanced",
     }),

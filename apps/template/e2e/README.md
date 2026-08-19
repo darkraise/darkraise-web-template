@@ -77,24 +77,24 @@ mode` notice are allowlisted.
 Every value of every axis, seeded at boot and verified on `<html>` plus the
 token it drives:
 
-| Axis                 | Values                                            | Verified through                                                                              |
-| -------------------- | ------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| Preset               | default, glass, scifi                             | `data-preset`, own-axis attributes set, other presets' attributes cleared, reload persistence |
-| Preset axes          | glass opacity/blur/halo, scifi intensity/frame    | `data-<preset>-<axis>` for all 11 axis × value combinations                                   |
-| Mode                 | light, dark, system                               | `data-mode`; `system` checked against both emulated `prefers-color-scheme` values             |
-| Accent               | all 17                                            | `--primary` set, and all 17 distinct                                                          |
-| Surface              | all 18                                            | `--background` set, and all 18 distinct in dark mode                                          |
-| Background           | solid, gradient                                   | `data-background-style`                                                                       |
-| Background intensity | subtle → intense                                  | `data-background-intensity`, `--canvas-blob-scale` increases monotonically                    |
-| Gradient pattern     | blobs, aurora, spotlight, mesh                    | `data-gradient-pattern`                                                                       |
-| Density              | compact → spacious                                | `data-density`, `--density-button-px` increases monotonically                                 |
-| Font size            | small → extra-large                               | `data-font-size`, `--text-base` increases monotonically                                       |
-| Accent intensity     | calm, balanced, vivid, intense (dark mode only)   | `--primary-fill` / `--primary` token values, like Accent and Surface — no `data-*` attribute  |
-| Canvas tint          | neutral, subtle, balanced, vivid (dark mode only) | `--background` token values, like Accent Vibrancy — no `data-*` attribute                     |
-| Elevation            | flat → high                                       | `data-elevation`, `--elevation-current`                                                       |
-| Button elevation     | flat → high                                       | `data-button-elevation`, `--shadow-button` (flat ⇒ transparent)                               |
-| Surface intensity    | flat, subtle, balanced, bold                      | `data-surface-intensity`                                                                      |
-| Radius               | sharp, subtle, rounded, pill                      | `data-radius`, exact `--radius`, pill ⇒ `--radius-button: 9999px`                             |
+| Axis                 | Values                                            | Verified through                                                                                              |
+| -------------------- | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Preset               | default, glass, scifi                             | `data-preset`, own-axis attributes set, other presets' attributes cleared, reload persistence                 |
+| Preset axes          | glass opacity/blur/halo, scifi intensity/frame    | `data-<preset>-<axis>` for all 11 axis × value combinations                                                   |
+| Mode                 | light, dark, system                               | `data-mode`; `system` checked against both emulated `prefers-color-scheme` values                             |
+| Accent               | all 17                                            | `--primary` set, and all 17 distinct                                                                          |
+| Surface              | all 18                                            | `--background` set, and all 18 distinct in dark mode                                                          |
+| Background           | solid, gradient                                   | `data-background-style`                                                                                       |
+| Background intensity | subtle → intense                                  | `data-background-intensity`, `--canvas-blob-scale` increases monotonically                                    |
+| Gradient pattern     | blobs, aurora, spotlight, mesh                    | `data-gradient-pattern`                                                                                       |
+| Density              | compact → spacious                                | `data-density`, `--density-button-px` increases monotonically                                                 |
+| Font size            | small → extra-large                               | `data-font-size`, `--text-base` increases monotonically                                                       |
+| Accent intensity     | calm, balanced, vivid, intense                    | `--primary-fill` / `--primary` in dark; `--focus-ring` / `--sidebar-hover-bg` in both — no `data-*` attribute |
+| Canvas tint          | neutral, subtle, balanced, vivid (dark mode only) | `--background` token values, like Accent Intensity — no `data-*` attribute                                    |
+| Elevation            | flat → high                                       | `data-elevation`, `--elevation-current`                                                                       |
+| Button elevation     | flat → high                                       | `data-button-elevation`, `--shadow-button` (flat ⇒ transparent)                                               |
+| Surface intensity    | flat, subtle, balanced, bold                      | `data-surface-intensity`                                                                                      |
+| Radius               | sharp, subtle, rounded, pill                      | `data-radius`, exact `--radius`, pill ⇒ `--radius-button: 9999px`                                             |
 
 Plus five hand-built cross-axis combinations (one per non-default preset) and a
 full round-trip test that every axis survives reload and navigation.

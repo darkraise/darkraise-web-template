@@ -193,7 +193,8 @@ test.describe("accent intensity axis", () => {
   }) => {
     const consoleWatch = watchConsole(page)
     // Fuchsia is the one accent whose --primary also moves across steps, so a
-    // single test covers both tokens. The axis is inert in light mode.
+    // single test covers both tokens. --primary-fill is the dark-only half of
+    // the axis; the focus ring and sidebar hover move in both modes.
     await seedApp(page, { accent: "fuchsia", mode: "dark" })
     await gotoApp(page, PROBE)
 
@@ -210,7 +211,9 @@ test.describe("accent intensity axis", () => {
     consoleWatch.assertClean()
   })
 
-  test("the axis is inert in light mode", async ({ page }) => {
+  test("--primary-fill stays put in light mode", async ({ page }) => {
+    // The fill's OKLCH lightness forcing is deliberately dark-only: light mode
+    // reads the palette shade straight, so the axis must not move it there.
     await seedApp(page, { accent: "fuchsia", mode: "light" })
     await gotoApp(page, PROBE)
 
@@ -221,6 +224,26 @@ test.describe("accent intensity axis", () => {
     await applyTheme(page, { accentIntensity: "intense" })
     await page.reload()
     expect(await readToken(page, "--primary-fill")).toBe(calm)
+  })
+
+  test("each step emits a distinct --focus-ring in light mode", async ({
+    page,
+  }) => {
+    const consoleWatch = watchConsole(page)
+    await seedApp(page, { accent: "fuchsia", mode: "light" })
+    await gotoApp(page, PROBE)
+
+    const seen = new Set<string>()
+    for (const intensity of ACCENT_INTENSITIES) {
+      await applyTheme(page, { accentIntensity: intensity })
+      await page.reload()
+      const ring = await readToken(page, "--focus-ring")
+      expect(ring, `${intensity} must emit a focus ring`).not.toBe("")
+      seen.add(ring)
+    }
+    expect(seen.size).toBe(ACCENT_INTENSITIES.length)
+
+    consoleWatch.assertClean()
   })
 
   test("no data attribute leaks for this axis", async ({ page }) => {
