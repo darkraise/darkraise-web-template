@@ -9,7 +9,7 @@ import { ACCENT_COLORS, SURFACE_COLORS, CANVAS_TINTS } from "@theme/types"
 import type {
   ColorScale,
   AccentColor,
-  AccentVibrancy,
+  AccentIntensity,
   ResolvedMode,
   CanvasTint,
 } from "@theme/types"
@@ -22,7 +22,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
-      accentVibrancy: "balanced",
+      accentIntensity: "balanced",
     })
 
     const expectedKeys = [
@@ -82,7 +82,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
-      accentVibrancy: "balanced",
+      accentIntensity: "balanced",
     })
 
     const glassOnlyKeys = [
@@ -117,7 +117,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
-      accentVibrancy: "balanced",
+      accentIntensity: "balanced",
     })
     const dark = generateTokens({
       accentColor: "blue",
@@ -125,7 +125,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "dark",
-      accentVibrancy: "balanced",
+      accentIntensity: "balanced",
     })
 
     expect(light["--primary"]).toBe("217 91% 60%")
@@ -139,7 +139,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
-      accentVibrancy: "balanced",
+      accentIntensity: "balanced",
     })
     expect(tokens["--focus-ring"]).toBeDefined()
     expect(tokens["--focus-ring"]).toMatch(/^\d+\s+\d+%\s+\d+%$/)
@@ -153,7 +153,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
-      accentVibrancy: "balanced",
+      accentIntensity: "balanced",
     })
     const darkTokens = generateTokens({
       accentColor: "blue",
@@ -161,7 +161,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "dark",
-      accentVibrancy: "balanced",
+      accentIntensity: "balanced",
     })
     expect(lightTokens["--focus-ring"]).toBe(accentColors.blue[300])
     expect(darkTokens["--focus-ring"]).toBe(accentColors.blue[200])
@@ -177,7 +177,7 @@ describe("generateTokens", () => {
         preset: "default",
         backgroundStyle: "solid",
         mode,
-        accentVibrancy: "balanced",
+        accentIntensity: "balanced",
       })
 
     // White is unreadable on the light accents: it measures 2.14:1 on amber
@@ -194,7 +194,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "dark",
-      accentVibrancy: "balanced",
+      accentIntensity: "balanced",
     })
 
     expect(tokens["--background"]).toBe("229 16% 5%")
@@ -214,7 +214,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "dark",
-      accentVibrancy: "balanced",
+      accentIntensity: "balanced",
     })
     expect(tokens["--border"]).not.toEqual(tokens["--muted"])
     expect(tokens["--border"]).not.toEqual(tokens["--secondary"])
@@ -232,7 +232,7 @@ describe("generateTokens", () => {
       accentColor: "blue",
       preset: "default",
       backgroundStyle: "solid",
-      accentVibrancy: "balanced",
+      accentIntensity: "balanced",
     } as const
 
     for (const mode of ["light", "dark"] as const) {
@@ -246,6 +246,26 @@ describe("generateTokens", () => {
     }
   })
 
+  it("accepts the renamed accentIntensity input", () => {
+    const calm = generateTokens({
+      accentColor: "blue",
+      surfaceColor: "slate",
+      preset: "default",
+      backgroundStyle: "solid",
+      mode: "dark",
+      accentIntensity: "calm",
+    })
+    const vivid = generateTokens({
+      accentColor: "blue",
+      surfaceColor: "slate",
+      preset: "default",
+      backgroundStyle: "solid",
+      mode: "dark",
+      accentIntensity: "vivid",
+    })
+    expect(calm["--primary-fill"]).not.toEqual(vivid["--primary-fill"])
+  })
+
   it("derives chart colors from evenly spaced accent palettes", () => {
     const tokens = generateTokens({
       accentColor: "blue",
@@ -253,7 +273,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
-      accentVibrancy: "balanced",
+      accentIntensity: "balanced",
     })
 
     expect(tokens["--chart-1"]).toBeTruthy()
@@ -279,7 +299,7 @@ describe("generateTokens", () => {
       preset: "glass",
       backgroundStyle: "solid",
       mode: "light",
-      accentVibrancy: "balanced",
+      accentIntensity: "balanced",
     })
 
     // These tokens are now bound by glass.css attribute selectors.
@@ -302,7 +322,7 @@ describe("generateTokens", () => {
       preset: "glass",
       backgroundStyle: "solid",
       mode: "light",
-      accentVibrancy: "balanced",
+      accentIntensity: "balanced",
     })
 
     expect(tokens["--primary"]).toBe("221 83% 53%")
@@ -317,7 +337,7 @@ describe("generateTokens", () => {
       preset: "glass",
       backgroundStyle: "solid",
       mode: "light",
-      accentVibrancy: "balanced",
+      accentIntensity: "balanced",
     })
 
     expect(tokens["--shadow-card"]).toContain("rgb(16 24 40")
@@ -332,7 +352,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
-      accentVibrancy: "balanced",
+      accentIntensity: "balanced",
     })
     const dark = generateTokens({
       accentColor: "blue",
@@ -340,7 +360,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "dark",
-      accentVibrancy: "balanced",
+      accentIntensity: "balanced",
     })
 
     expect(light["--destructive"]).toBe("0 84% 60%")
@@ -354,7 +374,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
-      accentVibrancy: "balanced",
+      accentIntensity: "balanced",
     })
     const dark = generateTokens({
       accentColor: "blue",
@@ -362,7 +382,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "dark",
-      accentVibrancy: "balanced",
+      accentIntensity: "balanced",
     })
 
     expect(light["--success"]).toBe(accentColors.emerald[500])
@@ -378,7 +398,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
-      accentVibrancy: "balanced",
+      accentIntensity: "balanced",
     })
     const dark = generateTokens({
       accentColor: "blue",
@@ -386,7 +406,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "dark",
-      accentVibrancy: "balanced",
+      accentIntensity: "balanced",
     })
 
     expect(light["--warning"]).toBe(accentColors.amber[500])
@@ -402,7 +422,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
-      accentVibrancy: "balanced",
+      accentIntensity: "balanced",
     })
     const redAccent = generateTokens({
       accentColor: "red",
@@ -410,7 +430,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
-      accentVibrancy: "balanced",
+      accentIntensity: "balanced",
     })
 
     expect(blueAccent["--success"]).toBe(redAccent["--success"])
@@ -424,7 +444,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
-      accentVibrancy: "balanced",
+      accentIntensity: "balanced",
     })
 
     expect(tokens["--background"]).toBe("0 34% 97%")
@@ -438,7 +458,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
-      accentVibrancy: "balanced",
+      accentIntensity: "balanced",
     })
 
     expect(tokens["--background"]).toBe("210 40% 98%")
@@ -452,7 +472,7 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "dark",
-      accentVibrancy: "balanced",
+      accentIntensity: "balanced",
     })
 
     expect(tokens["--background"]).toBe("166 16% 5%")
@@ -467,7 +487,7 @@ describe("generateTokens", () => {
         preset: "glass",
         backgroundStyle: "solid",
         mode: "dark",
-        accentVibrancy: "balanced",
+        accentIntensity: "balanced",
       })
 
       // Fog tokens are now computed by glass.generateTokens (the preset's
@@ -487,7 +507,7 @@ describe("generateTokens", () => {
         preset: "glass",
         backgroundStyle: "solid",
         mode: "light",
-        accentVibrancy: "balanced",
+        accentIntensity: "balanced",
       })
 
       expect(tokens["--fog-05"]).toBeUndefined()
@@ -505,7 +525,7 @@ describe("generateTokens", () => {
         preset: "default",
         backgroundStyle: "solid",
         mode: "dark",
-        accentVibrancy: "balanced",
+        accentIntensity: "balanced",
       })
       const light = generateTokens({
         accentColor: "blue",
@@ -513,7 +533,7 @@ describe("generateTokens", () => {
         preset: "default",
         backgroundStyle: "solid",
         mode: "light",
-        accentVibrancy: "balanced",
+        accentIntensity: "balanced",
       })
 
       const fogKeys = [
@@ -539,7 +559,7 @@ describe("generateTokens", () => {
         preset: "glass",
         backgroundStyle: "solid",
         mode: "dark",
-        accentVibrancy: "balanced",
+        accentIntensity: "balanced",
       })
 
       // Inset tokens are now computed by glass.generateTokens (the preset's
@@ -556,7 +576,7 @@ describe("generateTokens", () => {
         preset: "glass",
         backgroundStyle: "solid",
         mode: "light",
-        accentVibrancy: "balanced",
+        accentIntensity: "balanced",
       })
 
       expect(tokens["--inset-hi"]).toBeUndefined()
@@ -571,7 +591,7 @@ describe("generateTokens", () => {
         preset: "default",
         backgroundStyle: "solid",
         mode: "dark",
-        accentVibrancy: "balanced",
+        accentIntensity: "balanced",
       })
       const light = generateTokens({
         accentColor: "blue",
@@ -579,7 +599,7 @@ describe("generateTokens", () => {
         preset: "default",
         backgroundStyle: "solid",
         mode: "light",
-        accentVibrancy: "balanced",
+        accentIntensity: "balanced",
       })
 
       const insetKeys = ["--inset-hi", "--inset-hi-strong", "--inset-hi-button"]
@@ -598,7 +618,7 @@ describe("generateTokens", () => {
         preset: "default",
         backgroundStyle: "gradient",
         mode: "dark",
-        accentVibrancy: "balanced",
+        accentIntensity: "balanced",
       })
 
       expect(tokens["--noise-opacity"]).toBe("0.5")
@@ -611,7 +631,7 @@ describe("generateTokens", () => {
         preset: "default",
         backgroundStyle: "gradient",
         mode: "light",
-        accentVibrancy: "balanced",
+        accentIntensity: "balanced",
       })
 
       expect(tokens["--noise-opacity"]).toBe("0.6")
@@ -624,7 +644,7 @@ describe("generateTokens", () => {
         preset: "default",
         backgroundStyle: "solid",
         mode: "dark",
-        accentVibrancy: "balanced",
+        accentIntensity: "balanced",
       })
 
       expect(tokens["--noise-opacity"]).toBe("0")
@@ -637,7 +657,7 @@ describe("generateTokens", () => {
         preset: "default",
         backgroundStyle: "solid",
         mode: "light",
-        accentVibrancy: "balanced",
+        accentIntensity: "balanced",
       })
 
       expect(tokens["--noise-opacity"]).toBe("0")
@@ -651,7 +671,7 @@ describe("generateTokens", () => {
       preset: "default" as const,
       backgroundStyle: "gradient" as const,
       mode: "dark" as const,
-      accentVibrancy: "balanced" as const,
+      accentIntensity: "balanced" as const,
     }
 
     it("emits hsl shade-500 for --sf-hue in gradient mode", () => {
@@ -699,7 +719,7 @@ describe("generateTokens", () => {
       preset: "default" as const,
       backgroundStyle: "gradient" as const,
       mode: "dark" as const,
-      accentVibrancy: "balanced" as const,
+      accentIntensity: "balanced" as const,
     }
 
     it("gradient + default → five-layer var() composition", () => {
@@ -752,7 +772,7 @@ describe("generateTokens", () => {
       surfaceColor: "slate",
       preset: "default",
       backgroundStyle: "solid",
-      accentVibrancy: "balanced",
+      accentIntensity: "balanced",
     } as const
 
     // The branches were inverted, putting slate-400 on the near-white light
@@ -806,7 +826,7 @@ describe("generateTokens", () => {
     const build = (
       accentColor: AccentColor,
       mode: ResolvedMode,
-      accentVibrancy: AccentVibrancy = "balanced",
+      accentIntensity: AccentIntensity = "balanced",
       preset: PresetName = "default",
     ) =>
       generateTokens({
@@ -815,7 +835,7 @@ describe("generateTokens", () => {
         preset,
         backgroundStyle: "solid",
         mode,
-        accentVibrancy,
+        accentIntensity,
       })
 
     const PAIRS = (["default", "glass"] as const).flatMap((preset) =>
@@ -897,7 +917,7 @@ describe("generateTokens", () => {
               preset: "default",
               backgroundStyle: "solid",
               mode: "dark",
-              accentVibrancy: step,
+              accentIntensity: step,
             })
             expect(
               contrastRatio(
@@ -946,7 +966,7 @@ describe("generateTokens", () => {
           preset,
           backgroundStyle: "solid",
           mode: "dark",
-          accentVibrancy: "balanced",
+          accentIntensity: "balanced",
         })
 
         expect(tokens["--primary-fill"], preset).toBeTruthy()
@@ -985,7 +1005,7 @@ describe("generateTokens", () => {
         preset: "default",
         backgroundStyle: "solid",
         mode: "dark",
-        accentVibrancy: "calm",
+        accentIntensity: "calm",
       })
       expect(tokens["--primary-fill"]).toBe(CALM_SNAPSHOT[accentColor].fill)
       expect(tokens["--primary"]).toBe(CALM_SNAPSHOT[accentColor].primary)
@@ -998,11 +1018,11 @@ describe("accent vibrancy default", () => {
   // below AA, which the spec records as an accepted risk — a silent change
   // to this value would change that risk without review.
   it("is balanced", () => {
-    expect(themeConfig.defaults.accentVibrancy).toBe("balanced")
+    expect(themeConfig.defaults.accentIntensity).toBe("balanced")
   })
 
   it("is exposed in the switcher", () => {
-    expect(themeConfig.switcher.axes.accentVibrancy).toBe(true)
+    expect(themeConfig.switcher.axes.accentIntensity).toBe(true)
   })
 })
 
@@ -1014,7 +1034,7 @@ describe("canvasTint", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "dark",
-      accentVibrancy: "balanced",
+      accentIntensity: "balanced",
       canvasTint,
     })
 
@@ -1062,7 +1082,7 @@ describe("canvasTint", () => {
         preset: "default",
         backgroundStyle: "solid",
         mode: "light",
-        accentVibrancy: "balanced",
+        accentIntensity: "balanced",
         canvasTint,
       })["--background"]
     expect(light("neutral")).toBe(light("vivid"))

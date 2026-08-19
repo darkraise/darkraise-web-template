@@ -21,7 +21,7 @@ const config: ThemeConfig = {
     surfaceIntensity: "balanced",
     radius: "rounded",
     fontSize: "medium",
-    accentVibrancy: "balanced",
+    accentIntensity: "balanced",
     canvasTint: "balanced",
   },
   switcher: {
@@ -40,7 +40,7 @@ const config: ThemeConfig = {
       surfaceIntensity: true,
       radius: false,
       fontSize: false,
-      accentVibrancy: false,
+      accentIntensity: false,
       canvasTint: true,
       presetAxes: false,
     },

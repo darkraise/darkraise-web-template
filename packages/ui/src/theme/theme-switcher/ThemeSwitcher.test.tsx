@@ -155,16 +155,16 @@ describe("ThemeSwitcher preset section", () => {
     expect(screen.getByText("rounded")).toBeInTheDocument() // radius default
   })
 
-  it("renders the Accent Vibrancy slider reachable through all four steps", () => {
+  it("renders the Accent Intensity slider reachable through all four steps", () => {
     render(
       <ThemeProvider>
         <ThemeSwitcher />
       </ThemeProvider>,
     )
     openSwitcher()
-    const slider = screen.getByRole("slider", { name: "Accent Vibrancy" })
+    const slider = screen.getByRole("slider", { name: "Accent Intensity" })
     const row = screen
-      .getByText("Accent Vibrancy")
+      .getByText("Accent Intensity")
       .closest(".dr-theme-switcher-row") as HTMLElement
     expect(within(row).getByText("balanced")).toBeInTheDocument()
 

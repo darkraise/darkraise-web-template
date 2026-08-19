@@ -63,13 +63,13 @@ export type Radius = (typeof RADII)[number]
 export const FONT_SIZES = ["small", "medium", "large", "extra-large"] as const
 export type FontSize = (typeof FONT_SIZES)[number]
 
-export const ACCENT_VIBRANCIES = [
+export const ACCENT_INTENSITIES = [
   "calm",
   "balanced",
   "vivid",
   "intense",
 ] as const
-export type AccentVibrancy = (typeof ACCENT_VIBRANCIES)[number]
+export type AccentIntensity = (typeof ACCENT_INTENSITIES)[number]
 
 export const CANVAS_TINTS = ["neutral", "subtle", "balanced", "vivid"] as const
 export type CanvasTint = (typeof CANVAS_TINTS)[number]
@@ -104,7 +104,7 @@ export interface ThemeSettings {
   fontSize?: FontSize
   /** How loud the accent reads in dark mode; ignored in light. Defaults to
    *  "balanced". */
-  accentVibrancy?: AccentVibrancy
+  accentIntensity?: AccentIntensity
   canvasTint?: CanvasTint
   /** Per-preset axis values; outer key = preset name, inner key = axis name. */
   presetAxisValues?: Record<string, Record<string, string>>
@@ -131,7 +131,7 @@ export interface ThemeContextValue {
   surfaceIntensity: SurfaceIntensity
   radius: Radius
   fontSize: FontSize
-  accentVibrancy: AccentVibrancy
+  accentIntensity: AccentIntensity
   canvasTint: CanvasTint
   resolvedMode: ResolvedMode
   config: import("./themeConfig").ThemeConfig
@@ -153,7 +153,7 @@ export interface ThemeContextValue {
   setSurfaceIntensity: (intensity: SurfaceIntensity) => void
   setRadius: (radius: Radius) => void
   setFontSize: (size: FontSize) => void
-  setAccentVibrancy: (vibrancy: AccentVibrancy) => void
+  setAccentIntensity: (intensity: AccentIntensity) => void
   setCanvasTint: (tint: CanvasTint) => void
   /**
    * Update one preset-specific axis on the active preset. No-ops with a

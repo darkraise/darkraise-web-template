@@ -1,6 +1,6 @@
 import type {
   AccentColor,
-  AccentVibrancy,
+  AccentIntensity,
   BackgroundStyle,
   CanvasTint,
   SurfaceColor,
@@ -23,7 +23,7 @@ export interface GenerateTokensInput {
   preset: PresetName
   backgroundStyle: BackgroundStyle
   mode: ResolvedMode
-  accentVibrancy: AccentVibrancy
+  accentIntensity: AccentIntensity
   canvasTint?: CanvasTint
 }
 
@@ -134,7 +134,7 @@ function isSidebarDark(mode: ResolvedMode): boolean {
  * decorative large numbers.
  */
 const VIBRANCY: Record<
-  AccentVibrancy,
+  AccentIntensity,
   {
     fillLightness: number
     fillChroma: number | null
@@ -176,7 +176,7 @@ const FOREGROUND_MIN_RATIO = 3
 const WHITE = "0 0% 100%"
 const INK = "222 47% 11%"
 
-function vibrancyFill(hsl: string, vibrancy: AccentVibrancy): string {
+function vibrancyFill(hsl: string, vibrancy: AccentIntensity): string {
   const { C, h } = hslStringToOklch(hsl)
   const { fillLightness, fillChroma } = VIBRANCY[vibrancy]
   return oklchToHslString({
@@ -206,7 +206,7 @@ export function generateTokens(
     preset,
     backgroundStyle,
     mode,
-    accentVibrancy,
+    accentIntensity,
     canvasTint = "balanced",
   } = input
 
@@ -235,10 +235,10 @@ export function generateTokens(
   const primaryBase = accent[primaryShade]
   const primaryValue =
     mode === "dark"
-      ? capChroma(primaryBase, VIBRANCY[accentVibrancy].primaryChroma)
+      ? capChroma(primaryBase, VIBRANCY[accentIntensity].primaryChroma)
       : primaryBase
   const primaryFill =
-    mode === "dark" ? vibrancyFill(primaryBase, accentVibrancy) : primaryBase
+    mode === "dark" ? vibrancyFill(primaryBase, accentIntensity) : primaryBase
   const primaryForeground = pickForeground(primaryFill)
   const ringValue = primaryValue
   const focusRingShade = mode === "light" ? 300 : 200

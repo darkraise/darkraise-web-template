@@ -207,9 +207,9 @@ describe("useTheme", () => {
       document.documentElement.style.getPropertyValue("--primary-fill")
 
     const balanced = read()
-    act(() => result.current.setAccentVibrancy("intense"))
+    act(() => result.current.setAccentIntensity("intense"))
     const intense = read()
-    act(() => result.current.setAccentVibrancy("calm"))
+    act(() => result.current.setAccentIntensity("calm"))
     const calm = read()
 
     expect(intense).not.toBe(balanced)
@@ -218,9 +218,9 @@ describe("useTheme", () => {
 
   it("honours a stored vibrancy on first paint without a setter call", () => {
     localStorage.setItem("mode", "dark")
-    localStorage.setItem("theme-accent-vibrancy", "calm")
+    localStorage.setItem("theme-accent-intensity", "calm")
     const { result } = renderHook(() => useTheme(), { wrapper })
-    expect(result.current.accentVibrancy).toBe("calm")
+    expect(result.current.accentIntensity).toBe("calm")
     expect(
       document.documentElement.style.getPropertyValue("--primary-fill"),
     ).toBe("217 74% 49%")
@@ -540,21 +540,21 @@ describe("useTheme persistence", () => {
   it("persists accent vibrancy and feeds it to the token engine", async () => {
     const { result } = renderHook(() => useTheme(), { wrapper })
 
-    expect(result.current.accentVibrancy).toBe("balanced")
+    expect(result.current.accentIntensity).toBe("balanced")
 
-    act(() => result.current.setAccentVibrancy("intense"))
+    act(() => result.current.setAccentIntensity("intense"))
 
-    expect(result.current.accentVibrancy).toBe("intense")
-    expect(localStorage.getItem("theme-accent-vibrancy")).toBe("intense")
+    expect(result.current.accentIntensity).toBe("intense")
+    expect(localStorage.getItem("theme-accent-intensity")).toBe("intense")
     // The axis is token-only: it must not leak a data attribute.
     expect(
-      document.documentElement.getAttribute("data-accent-vibrancy"),
+      document.documentElement.getAttribute("data-accent-intensity"),
     ).toBeNull()
   })
 
   it("falls back to the configured default for an unknown stored value", () => {
-    localStorage.setItem("theme-accent-vibrancy", "nonsense")
+    localStorage.setItem("theme-accent-intensity", "nonsense")
     const { result } = renderHook(() => useTheme(), { wrapper })
-    expect(result.current.accentVibrancy).toBe("balanced")
+    expect(result.current.accentIntensity).toBe("balanced")
   })
 })

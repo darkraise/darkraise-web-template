@@ -9,7 +9,7 @@ import type {
   SurfaceIntensity,
   Radius,
   FontSize,
-  AccentVibrancy,
+  AccentIntensity,
   CanvasTint,
   Mode,
 } from "./types"
@@ -30,7 +30,7 @@ export interface ThemeConfig {
     surfaceIntensity: SurfaceIntensity
     radius: Radius
     fontSize: FontSize
-    accentVibrancy: AccentVibrancy
+    accentIntensity: AccentIntensity
     canvasTint: CanvasTint
   }
   switcher: {
@@ -49,7 +49,7 @@ export interface ThemeConfig {
       surfaceIntensity: boolean
       radius: boolean
       fontSize: boolean
-      accentVibrancy: boolean
+      accentIntensity: boolean
       canvasTint: boolean
       /** Master toggle for all preset-specific axis controls. */
       presetAxes: boolean
@@ -72,7 +72,7 @@ export const themeConfig: ThemeConfig = {
     surfaceIntensity: "balanced",
     radius: "rounded",
     fontSize: "medium",
-    accentVibrancy: "balanced",
+    accentIntensity: "balanced",
     canvasTint: "balanced",
   },
   switcher: {
@@ -91,7 +91,7 @@ export const themeConfig: ThemeConfig = {
       surfaceIntensity: true,
       radius: true,
       fontSize: true,
-      accentVibrancy: true,
+      accentIntensity: true,
       canvasTint: true,
       presetAxes: true,
     },

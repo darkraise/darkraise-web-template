@@ -13,7 +13,7 @@ import {
   SURFACE_INTENSITIES,
   RADII,
   FONT_SIZES,
-  ACCENT_VIBRANCIES,
+  ACCENT_INTENSITIES,
   CANVAS_TINTS,
 } from "@theme/types"
 import type {
@@ -71,7 +71,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
     surfaceIntensity,
     radius,
     fontSize,
-    accentVibrancy,
+    accentIntensity,
     canvasTint,
     config,
     activePreset,
@@ -89,7 +89,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
     setSurfaceIntensity,
     setRadius,
     setFontSize,
-    setAccentVibrancy,
+    setAccentIntensity,
     setCanvasTint,
     setPresetAxis,
   } = useTheme()
@@ -401,20 +401,20 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
           </div>
         ),
       },
-    axes.accentVibrancy &&
-      !isCommonAxisHidden("accentVibrancy") && {
-        key: "accentVibrancy",
+    axes.accentIntensity &&
+      !isCommonAxisHidden("accentIntensity") && {
+        key: "accentIntensity",
         group: "color" as const,
         node: (
-          <div key="accentVibrancy" className="dr-theme-switcher-row">
+          <div key="accentIntensity" className="dr-theme-switcher-row">
             <Label className="dr-theme-switcher-section-label">
-              {labels.theme.axisLabels.accentVibrancy}
+              {labels.theme.axisLabels.accentIntensity}
             </Label>
             <AxisControl
-              values={ACCENT_VIBRANCIES}
-              value={accentVibrancy}
-              onChange={setAccentVibrancy}
-              label={labels.theme.axisLabels.accentVibrancy}
+              values={ACCENT_INTENSITIES}
+              value={accentIntensity}
+              onChange={setAccentIntensity}
+              label={labels.theme.axisLabels.accentIntensity}
             />
           </div>
         ),

@@ -10,7 +10,7 @@ import type {
   SurfaceIntensity,
   Radius,
   FontSize,
-  AccentVibrancy,
+  AccentIntensity,
   CanvasTint,
   Mode,
   ResolvedMode,
@@ -28,7 +28,7 @@ import {
   SURFACE_INTENSITIES,
   RADII,
   FONT_SIZES,
-  ACCENT_VIBRANCIES,
+  ACCENT_INTENSITIES,
   CANVAS_TINTS,
 } from "@theme/types"
 import {
@@ -65,7 +65,7 @@ const LS_BUTTON_ELEVATION = "theme-button-elevation"
 const LS_SURFACE_INTENSITY = "theme-surface-intensity"
 const LS_RADIUS = "theme-radius"
 const LS_FONT_SIZE = "theme-font-size"
-const LS_ACCENT_VIBRANCY = "theme-accent-vibrancy"
+const LS_ACCENT_INTENSITY = "theme-accent-intensity"
 const LS_CANVAS_TINT = "theme-canvas-tint"
 
 const isBrowser = typeof window !== "undefined"
@@ -303,13 +303,16 @@ export function ThemeProvider({
     return cfg.defaults.fontSize
   })
 
-  const [accentVibrancy, setAccentVibrancyState] = useState<AccentVibrancy>(
+  const [accentIntensity, setAccentIntensityState] = useState<AccentIntensity>(
     () => {
-      const stored = readStorage(LS_ACCENT_VIBRANCY)
-      if (stored && (ACCENT_VIBRANCIES as readonly string[]).includes(stored)) {
-        return stored as AccentVibrancy
+      const stored = readStorage(LS_ACCENT_INTENSITY)
+      if (
+        stored &&
+        (ACCENT_INTENSITIES as readonly string[]).includes(stored)
+      ) {
+        return stored as AccentIntensity
       }
-      return cfg.defaults.accentVibrancy
+      return cfg.defaults.accentIntensity
     },
   )
 
@@ -350,7 +353,7 @@ export function ThemeProvider({
       presetName: PresetName,
       bgStyle: BackgroundStyle,
       resolved: ResolvedMode,
-      vibrancy: AccentVibrancy,
+      vibrancy: AccentIntensity,
       tint: CanvasTint,
       axisValues: Record<string, Record<string, string>>,
     ) => {
@@ -390,7 +393,7 @@ export function ThemeProvider({
         preset: presetName,
         backgroundStyle: bgStyle,
         mode: resolved,
-        accentVibrancy: vibrancy,
+        accentIntensity: vibrancy,
         canvasTint: tint,
       })
 
@@ -444,7 +447,7 @@ export function ThemeProvider({
       surfaceIntensity,
       radius,
       fontSize,
-      accentVibrancy,
+      accentIntensity,
       canvasTint,
       presetAxisValues,
       ...overrides,
@@ -463,7 +466,7 @@ export function ThemeProvider({
       surfaceIntensity,
       radius,
       fontSize,
-      accentVibrancy,
+      accentIntensity,
       canvasTint,
       presetAxisValues,
     ],
@@ -503,8 +506,8 @@ export function ThemeProvider({
       )
       setRadiusState(settings.radius ?? cfg.defaults.radius)
       setFontSizeState(settings.fontSize ?? cfg.defaults.fontSize)
-      setAccentVibrancyState(
-        settings.accentVibrancy ?? cfg.defaults.accentVibrancy,
+      setAccentIntensityState(
+        settings.accentIntensity ?? cfg.defaults.accentIntensity,
       )
       setCanvasTintState(settings.canvasTint ?? cfg.defaults.canvasTint)
       setPresetAxisValuesState(newAxisValues)
@@ -529,8 +532,8 @@ export function ThemeProvider({
       writeStorage(LS_RADIUS, settings.radius ?? cfg.defaults.radius)
       writeStorage(LS_FONT_SIZE, settings.fontSize ?? cfg.defaults.fontSize)
       writeStorage(
-        LS_ACCENT_VIBRANCY,
-        settings.accentVibrancy ?? cfg.defaults.accentVibrancy,
+        LS_ACCENT_INTENSITY,
+        settings.accentIntensity ?? cfg.defaults.accentIntensity,
       )
       writeStorage(
         LS_CANVAS_TINT,
@@ -581,7 +584,7 @@ export function ThemeProvider({
         newPreset,
         settings.backgroundStyle,
         resolved,
-        settings.accentVibrancy ?? cfg.defaults.accentVibrancy,
+        settings.accentIntensity ?? cfg.defaults.accentIntensity,
         settings.canvasTint ?? cfg.defaults.canvasTint,
         newAxisValues,
       )
@@ -612,7 +615,7 @@ export function ThemeProvider({
         preset,
         backgroundStyle,
         resolvedMode,
-        accentVibrancy,
+        accentIntensity,
         canvasTint,
         presetAxisValues,
       )
@@ -630,7 +633,7 @@ export function ThemeProvider({
       preset,
       backgroundStyle,
       resolvedMode,
-      accentVibrancy,
+      accentIntensity,
       canvasTint,
       presetAxisValues,
     ],
@@ -646,7 +649,7 @@ export function ThemeProvider({
         preset,
         backgroundStyle,
         resolvedMode,
-        accentVibrancy,
+        accentIntensity,
         canvasTint,
         presetAxisValues,
       )
@@ -664,7 +667,7 @@ export function ThemeProvider({
       preset,
       backgroundStyle,
       resolvedMode,
-      accentVibrancy,
+      accentIntensity,
       canvasTint,
       presetAxisValues,
     ],
@@ -709,7 +712,7 @@ export function ThemeProvider({
         p,
         backgroundStyle,
         nextResolvedMode,
-        accentVibrancy,
+        accentIntensity,
         canvasTint,
         presetAxisValues,
       )
@@ -728,7 +731,7 @@ export function ThemeProvider({
       backgroundStyle,
       resolvedMode,
       mode,
-      accentVibrancy,
+      accentIntensity,
       canvasTint,
       presetAxisValues,
     ],
@@ -773,7 +776,7 @@ export function ThemeProvider({
         preset,
         backgroundStyle,
         resolvedMode,
-        accentVibrancy,
+        accentIntensity,
         canvasTint,
         next,
       )
@@ -789,7 +792,7 @@ export function ThemeProvider({
       surfaceColor,
       backgroundStyle,
       resolvedMode,
-      accentVibrancy,
+      accentIntensity,
       canvasTint,
       applyTheme,
       notifyChange,
@@ -808,7 +811,7 @@ export function ThemeProvider({
         preset,
         bgStyle,
         resolvedMode,
-        accentVibrancy,
+        accentIntensity,
         canvasTint,
         presetAxisValues,
       )
@@ -826,7 +829,7 @@ export function ThemeProvider({
       surfaceColor,
       preset,
       resolvedMode,
-      accentVibrancy,
+      accentIntensity,
       canvasTint,
       presetAxisValues,
     ],
@@ -893,7 +896,7 @@ export function ThemeProvider({
         nextPreset,
         backgroundStyle,
         resolved,
-        accentVibrancy,
+        accentIntensity,
         canvasTint,
         presetAxisValues,
       )
@@ -911,7 +914,7 @@ export function ThemeProvider({
       surfaceColor,
       preset,
       backgroundStyle,
-      accentVibrancy,
+      accentIntensity,
       canvasTint,
       presetAxisValues,
     ],
@@ -995,11 +998,11 @@ export function ThemeProvider({
     [buildSettings, notifyChange, debouncedSave],
   )
 
-  const setAccentVibrancy = useCallback(
-    (vibrancy: AccentVibrancy) => {
-      setAccentVibrancyState(vibrancy)
-      writeStorage(LS_ACCENT_VIBRANCY, vibrancy)
-      const settings = buildSettings({ accentVibrancy: vibrancy })
+  const setAccentIntensity = useCallback(
+    (vibrancy: AccentIntensity) => {
+      setAccentIntensityState(vibrancy)
+      writeStorage(LS_ACCENT_INTENSITY, vibrancy)
+      const settings = buildSettings({ accentIntensity: vibrancy })
       notifyChange(settings)
       hasUserChanged.current = true
       debouncedSave(settings)
@@ -1017,7 +1020,7 @@ export function ThemeProvider({
         preset,
         backgroundStyle,
         resolvedMode,
-        accentVibrancy,
+        accentIntensity,
         tint,
         presetAxisValues,
       )
@@ -1036,7 +1039,7 @@ export function ThemeProvider({
       preset,
       backgroundStyle,
       resolvedMode,
-      accentVibrancy,
+      accentIntensity,
       presetAxisValues,
     ],
   )
@@ -1048,7 +1051,7 @@ export function ThemeProvider({
       preset,
       backgroundStyle,
       resolvedMode,
-      accentVibrancy,
+      accentIntensity,
       canvasTint,
       presetAxisValues,
     )
@@ -1059,7 +1062,7 @@ export function ThemeProvider({
     preset,
     backgroundStyle,
     resolvedMode,
-    accentVibrancy,
+    accentIntensity,
     canvasTint,
     presetAxisValues,
   ])
@@ -1123,7 +1126,7 @@ export function ThemeProvider({
         preset,
         backgroundStyle,
         resolved,
-        accentVibrancy,
+        accentIntensity,
         canvasTint,
         presetAxisValues,
       )
@@ -1136,7 +1139,7 @@ export function ThemeProvider({
     surfaceColor,
     preset,
     backgroundStyle,
-    accentVibrancy,
+    accentIntensity,
     canvasTint,
     presetAxisValues,
     applyTheme,
@@ -1184,7 +1187,7 @@ export function ThemeProvider({
       surfaceIntensity,
       radius,
       fontSize,
-      accentVibrancy,
+      accentIntensity,
       canvasTint,
       resolvedMode,
       config: cfg,
@@ -1204,7 +1207,7 @@ export function ThemeProvider({
       setSurfaceIntensity,
       setRadius,
       setFontSize,
-      setAccentVibrancy,
+      setAccentIntensity,
       setCanvasTint,
       setPresetAxis,
     }),
@@ -1222,7 +1225,7 @@ export function ThemeProvider({
       surfaceIntensity,
       radius,
       fontSize,
-      accentVibrancy,
+      accentIntensity,
       canvasTint,
       resolvedMode,
       cfg,
@@ -1241,7 +1244,7 @@ export function ThemeProvider({
       setSurfaceIntensity,
       setRadius,
       setFontSize,
-      setAccentVibrancy,
+      setAccentIntensity,
       setCanvasTint,
       setPresetAxis,
     ],
