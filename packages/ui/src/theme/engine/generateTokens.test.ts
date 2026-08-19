@@ -5,7 +5,12 @@ import { surfaceColors } from "@theme/palettes/surfaceColors"
 import { contrastRatio, hslStringToOklch } from "@theme/engine/oklch"
 import { themeConfig } from "@theme/themeConfig"
 import { presets, type PresetName } from "@theme/presets"
-import { ACCENT_COLORS, SURFACE_COLORS, CANVAS_TINTS } from "@theme/types"
+import {
+  ACCENT_COLORS,
+  ACCENT_INTENSITIES,
+  SURFACE_COLORS,
+  CANVAS_TINTS,
+} from "@theme/types"
 import type {
   ColorScale,
   AccentColor,
@@ -1119,5 +1124,71 @@ describe("capCanvasSaturation", () => {
 
   it("leaves a saturation exactly at the cap unchanged", () => {
     expect(capCanvasSaturation("200 16% 5%", 16)).toBe("200 16% 5%")
+  })
+})
+
+// Chroma capping cannot drive these two tokens: accent[100..500] measure
+// 0.03-0.18 OKLCH chroma, below every cap the primary treatment applies, so
+// capChroma would return them unchanged at every step. They ramp by palette
+// shade instead. `balanced` reproducing today's values is pinned separately.
+describe("accentIntensity reach", () => {
+  const base = {
+    accentColor: "blue",
+    surfaceColor: "slate",
+    preset: "default",
+    backgroundStyle: "solid",
+  } as const
+
+  for (const mode of ["light", "dark"] as const) {
+    it(`moves --focus-ring across every step in ${mode} mode`, () => {
+      const seen = new Set(
+        ACCENT_INTENSITIES.map(
+          (accentIntensity) =>
+            generateTokens({ ...base, mode, accentIntensity })["--focus-ring"],
+        ),
+      )
+      expect(seen.size).toBe(ACCENT_INTENSITIES.length)
+    })
+
+    it(`moves --sidebar-hover-bg across every step in ${mode} mode`, () => {
+      const seen = new Set(
+        ACCENT_INTENSITIES.map(
+          (accentIntensity) =>
+            generateTokens({ ...base, mode, accentIntensity })[
+              "--sidebar-hover-bg"
+            ],
+        ),
+      )
+      expect(seen.size).toBe(ACCENT_INTENSITIES.length)
+    })
+  }
+
+  it("reproduces today's sidebar hover at balanced", () => {
+    const light = generateTokens({
+      ...base,
+      mode: "light",
+      accentIntensity: "balanced",
+    })
+    const dark = generateTokens({
+      ...base,
+      mode: "dark",
+      accentIntensity: "balanced",
+    })
+    expect(light["--sidebar-hover-bg"]).toBe(accentColors.blue[100])
+    expect(dark["--sidebar-hover-bg"]).toBe(`${accentColors.blue[500]} / 0.15`)
+  })
+
+  it("keeps chart colours out of the axis", () => {
+    const calm = generateTokens({
+      ...base,
+      mode: "dark",
+      accentIntensity: "calm",
+    })
+    const intense = generateTokens({
+      ...base,
+      mode: "dark",
+      accentIntensity: "intense",
+    })
+    expect(calm["--chart-1"]).toBe(intense["--chart-1"])
   })
 })

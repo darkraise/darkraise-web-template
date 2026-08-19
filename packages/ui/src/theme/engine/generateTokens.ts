@@ -121,6 +121,34 @@ function isSidebarDark(mode: ResolvedMode): boolean {
   return mode === "dark"
 }
 
+// `--focus-ring` reads accent[100..500] and `--sidebar-hover-bg` reads
+// accent[50..500]. Their OKLCH chroma runs 0.03-0.18, below every ceiling in
+// VIBRANCY, so the chroma treatment `--primary` receives would return these
+// shades unchanged at every step. The axis ramps the palette step instead.
+// `balanced` is today's value in both modes, so the default look is unchanged.
+const FOCUS_RING_SHADE: Record<
+  AccentIntensity,
+  { light: 200 | 300 | 400 | 500; dark: 100 | 200 | 300 | 400 }
+> = {
+  calm: { light: 200, dark: 100 },
+  balanced: { light: 300, dark: 200 },
+  vivid: { light: 400, dark: 300 },
+  intense: { light: 500, dark: 400 },
+}
+
+// Dark ramps alpha at a fixed shade rather than the shade itself: the token is
+// composed as `${accent[500]} / 0.15`, so the ramp has to be applied before the
+// alpha is appended, and moving both at once would double the step size.
+const SIDEBAR_HOVER: Record<
+  AccentIntensity,
+  { light: 50 | 100 | 200 | 300; darkAlpha: number }
+> = {
+  calm: { light: 50, darkAlpha: 0.1 },
+  balanced: { light: 100, darkAlpha: 0.15 },
+  vivid: { light: 200, darkAlpha: 0.22 },
+  intense: { light: 300, darkAlpha: 0.3 },
+}
+
 /**
  * How loud the dark-mode accent reads. The fill takes the step's lightness and
  * chroma cap; `--primary` keeps its palette lightness and takes the cap only,
@@ -241,7 +269,7 @@ export function generateTokens(
     mode === "dark" ? vibrancyFill(primaryBase, accentIntensity) : primaryBase
   const primaryForeground = pickForeground(primaryFill)
   const ringValue = primaryValue
-  const focusRingShade = mode === "light" ? 300 : 200
+  const focusRingShade = FOCUS_RING_SHADE[accentIntensity][mode]
   const focusRingValue = accent[focusRingShade]
 
   const chartColors = getChartColors(accentColor, mode)
@@ -361,8 +389,8 @@ export function generateTokens(
       : neutral[500],
     "--sidebar-border": isSidebarDark(mode) ? "0 0% 100% / 0.1" : surface[200],
     "--sidebar-hover-bg": isSidebarDark(mode)
-      ? `${accent[500]} / 0.15`
-      : accent[100],
+      ? `${accent[500]} / ${SIDEBAR_HOVER[accentIntensity].darkAlpha}`
+      : accent[SIDEBAR_HOVER[accentIntensity].light],
     "--surface-header": recipe.surfaceHeader(surface, mode),
 
     "--border-subtle": recipe.borderSubtle(surface, mode),
