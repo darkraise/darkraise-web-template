@@ -216,7 +216,7 @@ describe("ThemeSwitcher preset section", () => {
     )
   })
 
-  it("hides the Mode section when active preset locks to a single mode (neon = dark only)", () => {
+  it("hides the Mode section when active preset locks to a single mode (scifi = dark only)", () => {
     render(
       <ThemeProvider>
         <ThemeSwitcher />
@@ -226,7 +226,7 @@ describe("ThemeSwitcher preset section", () => {
     // Default preset on mount — Mode section is visible.
     expect(screen.getByText("Mode")).toBeInTheDocument()
 
-    fireEvent.click(screen.getByRole("radio", { name: /^neon$/i }))
+    fireEvent.click(screen.getByRole("radio", { name: /^sci-fi$/i }))
     // After switching to Neon (supportedModes: ["dark"]), the Mode label
     // and the three mode radios are removed from the DOM entirely.
     expect(screen.queryByText("Mode")).not.toBeInTheDocument()
@@ -249,7 +249,7 @@ describe("ThemeSwitcher preset section", () => {
     expect(screen.getByRole("radio", { name: /^system$/i })).toBeInTheDocument()
   })
 
-  it("hides Elevation + Button Elevation when active preset declares hiddenCommonAxes (neon)", () => {
+  it("hides Elevation + Button Elevation when active preset declares hiddenCommonAxes (scifi)", () => {
     render(
       <ThemeProvider>
         <ThemeSwitcher />
@@ -260,12 +260,12 @@ describe("ThemeSwitcher preset section", () => {
     expect(screen.getByText("Elevation")).toBeInTheDocument()
     expect(screen.getByText("Button Elevation")).toBeInTheDocument()
 
-    fireEvent.click(screen.getByRole("radio", { name: /^neon$/i }))
-    // Neon hides both via hiddenCommonAxes; the preset's own Glow axis
-    // takes their place.
+    fireEvent.click(screen.getByRole("radio", { name: /^sci-fi$/i }))
+    // Sci-fi hides both via hiddenCommonAxes; the preset's own Intensity
+    // axis takes their place.
     expect(screen.queryByText("Elevation")).not.toBeInTheDocument()
     expect(screen.queryByText("Button Elevation")).not.toBeInTheDocument()
-    expect(screen.getByText("Glow")).toBeInTheDocument()
+    expect(screen.getByText("Intensity")).toBeInTheDocument()
   })
 })
 

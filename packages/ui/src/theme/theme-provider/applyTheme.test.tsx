@@ -265,13 +265,13 @@ describe("ThemeProvider preset orchestration", () => {
     )
   })
 
-  it("setPreset('neon') from light mode auto-switches to dark", () => {
+  it("setPreset('scifi') from light mode auto-switches to dark", () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {})
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
     act(() => result.current.setMode("light"))
     expect(result.current.resolvedMode).toBe("light")
-    act(() => result.current.setPreset("neon"))
-    expect(result.current.preset).toBe("neon")
+    act(() => result.current.setPreset("scifi"))
+    expect(result.current.preset).toBe("scifi")
     expect(result.current.resolvedMode).toBe("dark")
     expect(result.current.mode).toBe("dark")
     expect(document.documentElement.getAttribute("data-mode")).toBe("dark")
@@ -280,11 +280,11 @@ describe("ThemeProvider preset orchestration", () => {
     warn.mockRestore()
   })
 
-  it("setMode('light') while neon active resets preset to default", () => {
+  it("setMode('light') while scifi active resets preset to default", () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {})
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
-    act(() => result.current.setPreset("neon"))
-    expect(result.current.preset).toBe("neon")
+    act(() => result.current.setPreset("scifi"))
+    expect(result.current.preset).toBe("scifi")
     act(() => result.current.setMode("light"))
     expect(result.current.preset).toBe("default")
     expect(result.current.resolvedMode).toBe("light")
@@ -295,12 +295,12 @@ describe("ThemeProvider preset orchestration", () => {
 
   it("boots a dark-only preset in dark mode when storage says light", () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {})
-    localStorage.setItem("theme-preset", "neon")
+    localStorage.setItem("theme-preset", "scifi")
     localStorage.setItem("mode", "light")
 
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
 
-    expect(result.current.preset).toBe("neon")
+    expect(result.current.preset).toBe("scifi")
     expect(result.current.mode).toBe("dark")
     expect(result.current.resolvedMode).toBe("dark")
     expect(document.documentElement.getAttribute("data-mode")).toBe("dark")
@@ -312,7 +312,7 @@ describe("ThemeProvider preset orchestration", () => {
 
   it("resolves system to dark under a dark-only preset without discarding it", () => {
     mockMatchMedia(false)
-    localStorage.setItem("theme-preset", "terminal")
+    localStorage.setItem("theme-preset", "scifi")
     localStorage.setItem("mode", "system")
 
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })

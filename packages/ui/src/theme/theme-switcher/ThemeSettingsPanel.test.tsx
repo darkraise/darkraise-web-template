@@ -79,7 +79,7 @@ describe("ThemeSettingsPanel", () => {
     // Neon declares hiddenCommonAxes: ["elevation", "buttonElevation"], but
     // not "surfaceIntensity" — the Depth group keeps that one axis, so the
     // heading stays even though two of its three sections are gone.
-    fireEvent.click(screen.getByRole("radio", { name: /^neon$/i }))
+    fireEvent.click(screen.getByRole("radio", { name: /^sci-fi$/i }))
 
     expect(screen.getByRole("heading", { name: "Depth" })).toBeInTheDocument()
     expect(screen.queryByText("Elevation")).not.toBeInTheDocument()
