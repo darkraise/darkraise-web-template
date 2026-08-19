@@ -473,22 +473,6 @@
   [data-preset="glass"] .dr-tabs-indicator[data-variant="underline"] {
     box-shadow: var(--affordance-glow-bottom), var(--glass-state-hover-glow);
   }
-
-  /* Neon preset — the default-variant indicator swaps the solid primary
-     fill for a translucent-primary surface with a full primary border,
-     so it reads as "outlined neon button" to match Neon's aesthetic.
-     The active label colour stays on the trigger. */
-  [data-preset="neon"] .dr-tabs-indicator[data-variant="default"] {
-    background-color: hsl(var(--primary) / 0.15);
-    border: 1px solid hsl(var(--primary));
-  }
-
-  [data-preset="neon"]
-    .dr-tabs-trigger[data-variant="default"][data-state="active"],
-  [data-preset="neon"]
-    .dr-tabs-trigger[data-variant="default"][data-state="active"]:hover {
-    color: hsl(var(--primary));
-  }
   /* And the outline/underline variants get their existing primary
      border + text plus the same affordance glow from --shadow-button
      composition — no extra rules needed. */
