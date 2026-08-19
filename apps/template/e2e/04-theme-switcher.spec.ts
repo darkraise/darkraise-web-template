@@ -111,7 +111,7 @@ test.describe("preset selection through the UI", () => {
         )
       }
       // Dark-only presets hide the Mode section entirely.
-      if (["neon", "terminal", "scifi"].includes(preset)) {
+      if (["scifi"].includes(preset)) {
         expect(sections).not.toContain("Mode")
       } else {
         expect(sections).toContain("Mode")
@@ -338,7 +338,7 @@ test.describe("preset-specific axis controls", () => {
       .poll(async () => (await readThemeAttrs(page))["data-glass-halo"])
       .toBe("pronounced")
 
-    await selectPreset(page, "playful")
+    await selectPreset(page, "scifi")
     await selectPreset(page, "glass")
 
     await expect

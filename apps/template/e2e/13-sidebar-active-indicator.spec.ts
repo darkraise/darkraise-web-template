@@ -77,10 +77,7 @@ async function selectActiveBar(
  *
  *   MASTER default light unset=1
  *   MASTER glass light unset=2
- *   MASTER neon dark unset=2
- *   MASTER terminal dark unset=1
  *   MASTER scifi dark unset=2
- *   MASTER playful light unset=1
  *
  * This branch's Task 4 regressed that: `SidebarLayout` started at the
  * literal `"bar"` value instead of `undefined`, which forced a rail
@@ -93,16 +90,13 @@ async function selectActiveBar(
 const UNSET_LAYERS: Record<Preset, number> = {
   default: 1,
   glass: 2,
-  neon: 2,
-  terminal: 1,
   scifi: 2,
-  playful: 1,
 }
 
 /**
  * Explicit "bar"/"ring" baseline inset-layer count per preset, measured in
- * a real browser on this branch. Neon and Sci-fi carry 2 rather than 1:
- * their own `--affordance-glow` / `--scifi-active-glow` tokens already
+ * a real browser on this branch. Sci-fi carries 2 rather than 1: its
+ * own `--scifi-active-glow` token already
  * embed one inset layer as part of their "lit from within" look, on top of
  * the explicit rail-or-ring inset the activeBar variant adds. Glass drops
  * to 1 here (below its own unset default of 2) because its dedicated
@@ -113,10 +107,7 @@ const UNSET_LAYERS: Record<Preset, number> = {
 const EXPLICIT_LAYERS: Record<Preset, number> = {
   default: 1,
   glass: 1,
-  neon: 2,
-  terminal: 1,
   scifi: 2,
-  playful: 1,
 }
 
 for (const preset of PRESETS) {

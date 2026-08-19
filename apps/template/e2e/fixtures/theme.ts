@@ -1,11 +1,4 @@
-export const PRESETS = [
-  "default",
-  "glass",
-  "neon",
-  "terminal",
-  "scifi",
-  "playful",
-] as const
+export const PRESETS = ["default", "glass", "scifi"] as const
 export type Preset = (typeof PRESETS)[number]
 
 export const ACCENT_COLORS = [
@@ -63,26 +56,20 @@ export const SURFACE_INTENSITIES = [
 export const CANVAS_TINTS = ["neutral", "subtle", "balanced", "vivid"] as const
 
 /** Presets that force a single resolved mode regardless of the mode axis. */
-export const DARK_ONLY_PRESETS: Preset[] = ["neon", "terminal", "scifi"]
+export const DARK_ONLY_PRESETS: Preset[] = ["scifi"]
 
 /** Labels the theme switcher renders for each preset. */
 export const PRESET_LABELS: Record<Preset, string> = {
   default: "Default",
   glass: "Glass",
-  neon: "Neon",
-  terminal: "Terminal",
   scifi: "Sci-fi",
-  playful: "Playful",
 }
 
 /** Common axes each preset hides from the switcher (and that its own axes replace). */
 export const HIDDEN_COMMON_AXES: Record<Preset, string[]> = {
   default: [],
   glass: [],
-  neon: ["elevation", "buttonElevation"],
-  terminal: ["elevation", "buttonElevation", "radius", "density"],
   scifi: ["elevation", "buttonElevation", "radius"],
-  playful: ["elevation", "buttonElevation", "radius"],
 }
 
 export interface PresetAxis {
@@ -115,28 +102,6 @@ export const PRESET_AXES: Record<Preset, PresetAxis[]> = {
       default: "soft",
     },
   ],
-  neon: [
-    {
-      name: "glow",
-      label: "Glow",
-      values: ["dim", "normal", "bright", "intense"],
-      default: "normal",
-    },
-  ],
-  terminal: [
-    {
-      name: "phosphor",
-      label: "Phosphor",
-      values: ["off", "dim", "bright"],
-      default: "dim",
-    },
-    {
-      name: "scanlines",
-      label: "Scanlines",
-      values: ["off", "subtle", "visible"],
-      default: "off",
-    },
-  ],
   scifi: [
     {
       name: "intensity",
@@ -149,14 +114,6 @@ export const PRESET_AXES: Record<Preset, PresetAxis[]> = {
       label: "Frame",
       values: ["clean", "notched", "bracketed"],
       default: "notched",
-    },
-  ],
-  playful: [
-    {
-      name: "pop",
-      label: "Pop",
-      values: ["subtle", "lively", "exuberant"],
-      default: "lively",
     },
   ],
 }

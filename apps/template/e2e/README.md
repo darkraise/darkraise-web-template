@@ -77,24 +77,24 @@ mode` notice are allowlisted.
 Every value of every axis, seeded at boot and verified on `<html>` plus the
 token it drives:
 
-| Axis                 | Values                                                                                              | Verified through                                                                              |
-| -------------------- | --------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| Preset               | default, glass, neon, terminal, scifi, playful                                                      | `data-preset`, own-axis attributes set, other presets' attributes cleared, reload persistence |
-| Preset axes          | glass opacity/blur/halo, neon glow, terminal phosphor/scanlines, scifi intensity/frame, playful pop | `data-<preset>-<axis>` for all 11 axis × value combinations                                   |
-| Mode                 | light, dark, system                                                                                 | `data-mode`; `system` checked against both emulated `prefers-color-scheme` values             |
-| Accent               | all 17                                                                                              | `--primary` set, and all 17 distinct                                                          |
-| Surface              | all 18                                                                                              | `--background` set, and all 18 distinct in dark mode                                          |
-| Background           | solid, gradient                                                                                     | `data-background-style`                                                                       |
-| Background intensity | subtle → intense                                                                                    | `data-background-intensity`, `--canvas-blob-scale` increases monotonically                    |
-| Gradient pattern     | blobs, aurora, spotlight, mesh                                                                      | `data-gradient-pattern`                                                                       |
-| Density              | compact → spacious                                                                                  | `data-density`, `--density-button-px` increases monotonically                                 |
-| Font size            | small → extra-large                                                                                 | `data-font-size`, `--text-base` increases monotonically                                       |
-| Accent vibrancy      | calm, balanced, vivid, intense (dark mode only)                                                     | `--primary-fill` / `--primary` token values, like Accent and Surface — no `data-*` attribute  |
-| Canvas tint          | neutral, subtle, balanced, vivid (dark mode only)                                                   | `--background` token values, like Accent Vibrancy — no `data-*` attribute                     |
-| Elevation            | flat → high                                                                                         | `data-elevation`, `--elevation-current`                                                       |
-| Button elevation     | flat → high                                                                                         | `data-button-elevation`, `--shadow-button` (flat ⇒ transparent)                               |
-| Surface intensity    | flat, subtle, balanced, bold                                                                        | `data-surface-intensity`                                                                      |
-| Radius               | sharp, subtle, rounded, pill                                                                        | `data-radius`, exact `--radius`, pill ⇒ `--radius-button: 9999px`                             |
+| Axis                 | Values                                            | Verified through                                                                              |
+| -------------------- | ------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Preset               | default, glass, scifi                             | `data-preset`, own-axis attributes set, other presets' attributes cleared, reload persistence |
+| Preset axes          | glass opacity/blur/halo, scifi intensity/frame    | `data-<preset>-<axis>` for all 11 axis × value combinations                                   |
+| Mode                 | light, dark, system                               | `data-mode`; `system` checked against both emulated `prefers-color-scheme` values             |
+| Accent               | all 17                                            | `--primary` set, and all 17 distinct                                                          |
+| Surface              | all 18                                            | `--background` set, and all 18 distinct in dark mode                                          |
+| Background           | solid, gradient                                   | `data-background-style`                                                                       |
+| Background intensity | subtle → intense                                  | `data-background-intensity`, `--canvas-blob-scale` increases monotonically                    |
+| Gradient pattern     | blobs, aurora, spotlight, mesh                    | `data-gradient-pattern`                                                                       |
+| Density              | compact → spacious                                | `data-density`, `--density-button-px` increases monotonically                                 |
+| Font size            | small → extra-large                               | `data-font-size`, `--text-base` increases monotonically                                       |
+| Accent vibrancy      | calm, balanced, vivid, intense (dark mode only)   | `--primary-fill` / `--primary` token values, like Accent and Surface — no `data-*` attribute  |
+| Canvas tint          | neutral, subtle, balanced, vivid (dark mode only) | `--background` token values, like Accent Vibrancy — no `data-*` attribute                     |
+| Elevation            | flat → high                                       | `data-elevation`, `--elevation-current`                                                       |
+| Button elevation     | flat → high                                       | `data-button-elevation`, `--shadow-button` (flat ⇒ transparent)                               |
+| Surface intensity    | flat, subtle, balanced, bold                      | `data-surface-intensity`                                                                      |
+| Radius               | sharp, subtle, rounded, pill                      | `data-radius`, exact `--radius`, pill ⇒ `--radius-button: 9999px`                             |
 
 Plus five hand-built cross-axis combinations (one per non-default preset) and a
 full round-trip test that every axis survives reload and navigation.
@@ -184,12 +184,12 @@ The suite is green. These four tests were written against real defects the first
 run surfaced; each now guards the fix, so treat a failure here as a regression
 rather than a flake.
 
-| Test                                                                          | Guards                                                                                                                                                       |
-| ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `02-routes` → `/components/data-table`                                        | The expandable-table example must key its rows via `<Fragment key>`; a bare `<>` makes React log a missing-`key` error on every render.                      |
-| `02-routes` → `/components/image-editor`                                      | `ImageEditorAnnotationColor` must not nest `ColorPickerSwatch` (a button) inside `ColorPickerTrigger` (also a button) — that is invalid HTML and ~58 errors. |
-| `03-theme-axes` → `preset "<neon\|terminal\|scifi>" forces dark mode at boot` | `supportedModes` must be enforced on the boot path too, not only in `setPreset`; otherwise a dark-only preset paints its recipes onto a near-white rail.     |
-| `08-data-display` → `dashboard charts size correctly`                         | `ChartContainer` must seed `ResponsiveContainer` with a positive `initialDimension`; the recharts default of `-1 × -1` warns once per chart on first render. |
+| Test                                                        | Guards                                                                                                                                                       |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `02-routes` → `/components/data-table`                      | The expandable-table example must key its rows via `<Fragment key>`; a bare `<>` makes React log a missing-`key` error on every render.                      |
+| `02-routes` → `/components/image-editor`                    | `ImageEditorAnnotationColor` must not nest `ColorPickerSwatch` (a button) inside `ColorPickerTrigger` (also a button) — that is invalid HTML and ~58 errors. |
+| `03-theme-axes` → `preset "scifi" forces dark mode at boot` | `supportedModes` must be enforced on the boot path too, not only in `setPreset`; otherwise a dark-only preset paints its recipes onto a near-white rail.     |
+| `08-data-display` → `dashboard charts size correctly`       | `ChartContainer` must seed `ResponsiveContainer` with a positive `initialDimension`; the recharts default of `-1 × -1` warns once per chart on first render. |
 
 If a future defect can't be fixed immediately, tag its test `@known-issue` so
 `pnpm test:e2e:baseline` stays green while `pnpm test:e2e` still reports it.

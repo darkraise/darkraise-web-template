@@ -509,24 +509,6 @@ test.describe("axis combinations", () => {
       },
     },
     {
-      name: "terminal · compact · sharp · small",
-      seed: {
-        preset: "terminal",
-        mode: "dark",
-        density: "compact",
-        radius: "sharp",
-        fontSize: "small",
-        accent: "green",
-        presetAxes: { terminal: { phosphor: "bright", scanlines: "visible" } },
-      },
-      expect: {
-        "data-preset": "terminal",
-        "data-mode": "dark",
-        "data-terminal-phosphor": "bright",
-        "data-terminal-scanlines": "visible",
-      },
-    },
-    {
       name: "scifi · intense · bracketed",
       seed: {
         preset: "scifi",
@@ -540,40 +522,6 @@ test.describe("axis combinations", () => {
         "data-mode": "dark",
         "data-scifi-intensity": "intense",
         "data-scifi-frame": "bracketed",
-      },
-    },
-    {
-      name: "playful · exuberant · comfortable",
-      seed: {
-        preset: "playful",
-        mode: "light",
-        density: "comfortable",
-        accent: "pink",
-        presetAxes: { playful: { pop: "exuberant" } },
-      },
-      expect: {
-        "data-preset": "playful",
-        "data-mode": "light",
-        "data-density": "comfortable",
-        "data-playful-pop": "exuberant",
-      },
-    },
-    {
-      name: "neon · intense glow · gradient aurora",
-      seed: {
-        preset: "neon",
-        mode: "dark",
-        accent: "fuchsia",
-        backgroundStyle: "gradient",
-        gradientPattern: "aurora",
-        backgroundIntensity: "vivid",
-        presetAxes: { neon: { glow: "intense" } },
-      },
-      expect: {
-        "data-preset": "neon",
-        "data-mode": "dark",
-        "data-neon-glow": "intense",
-        "data-gradient-pattern": "aurora",
       },
     },
   ]
