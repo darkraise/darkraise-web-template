@@ -13,6 +13,7 @@ import {
   PRESET_LABELS,
   RADII,
   SURFACE_COLORS,
+  SURFACE_INTENSITIES,
   type Preset,
 } from "./fixtures/theme"
 import {
@@ -390,6 +391,18 @@ test.describe("elevation axes", () => {
       } else {
         expect(shadow).not.toContain("transparent")
       }
+    })
+  }
+})
+
+test.describe("surface intensity axis", () => {
+  for (const surfaceIntensity of SURFACE_INTENSITIES) {
+    test(`surface intensity "${surfaceIntensity}"`, async ({ page }) => {
+      await seedApp(page, { surfaceIntensity, preset: "default" })
+      await gotoApp(page, PROBE)
+      expect((await readThemeAttrs(page))["data-surface-intensity"]).toBe(
+        surfaceIntensity,
+      )
     })
   }
 })

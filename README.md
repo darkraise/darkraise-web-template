@@ -88,7 +88,7 @@ Several hooks are adapted from [react-hookz/web](https://github.com/react-hookz/
 
 ### Theming
 
-A 13-axis theming system. Scaffolded projects configure it through `src/theme.config.ts`, which imports the `ThemeConfig` type from `darkraise-ui/theme`; in this monorepo the type and defaults live in `packages/ui/src/theme/themeConfig.ts`. The axes are:
+A 14-axis theming system. Scaffolded projects configure it through `src/theme.config.ts`, which imports the `ThemeConfig` type from `darkraise-ui/theme`; in this monorepo the type and defaults live in `packages/ui/src/theme/themeConfig.ts`. The axes are:
 
 - **Mode** -- light, dark, or system
 - **Accent color** -- 17 color options
@@ -100,6 +100,7 @@ A 13-axis theming system. Scaffolded projects configure it through `src/theme.co
 - **Density** -- compact, cozy, comfortable, or spacious
 - **Elevation** -- flat, low, medium, or high (surface shadows)
 - **Button elevation** -- flat, low, medium, or high (button-specific shadows)
+- **Surface intensity** -- flat, subtle, balanced, or bold (how strongly card, popover, and overlay fills wash toward the page or foreground)
 - **Radius** -- sharp, subtle, rounded, or pill
 - **Font size** -- small, medium, large, or extra-large (scales type, icons, and minimum control heights)
 - **Accent vibrancy** -- calm, balanced, vivid, or intense (dark mode only; controls how loud the brand accent renders)

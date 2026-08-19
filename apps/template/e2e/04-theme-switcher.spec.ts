@@ -11,6 +11,7 @@ import {
   PRESET_LABELS,
   RADII,
   SURFACE_COLORS,
+  SURFACE_INTENSITIES,
   type Preset,
 } from "./fixtures/theme"
 import {
@@ -66,6 +67,7 @@ test.describe("theme switcher popover", () => {
       "Accent Vibrancy",
       "Elevation",
       "Button Elevation",
+      "Surface Intensity",
       "Radius",
     ])
   })
@@ -100,6 +102,7 @@ test.describe("preset selection through the UI", () => {
         buttonElevation: "Button Elevation",
         radius: "Radius",
         density: "Density",
+        surfaceIntensity: "Surface Intensity",
       }
       for (const axis of HIDDEN_COMMON_AXES[preset]) {
         expect(sections, `${preset} must hide ${axis}`).not.toContain(
@@ -265,6 +268,11 @@ test.describe("stepped slider axes", () => {
       attr: "data-button-elevation",
     },
     { label: "Radius", values: RADII, attr: "data-radius" },
+    {
+      label: "Surface Intensity",
+      values: SURFACE_INTENSITIES,
+      attr: "data-surface-intensity",
+    },
   ]
 
   for (const axis of sliderAxes) {

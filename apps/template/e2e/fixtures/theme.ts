@@ -54,6 +54,12 @@ export const ACCENT_VIBRANCIES = [
   "vivid",
   "intense",
 ] as const
+export const SURFACE_INTENSITIES = [
+  "flat",
+  "subtle",
+  "balanced",
+  "bold",
+] as const
 
 /** Presets that force a single resolved mode regardless of the mode axis. */
 export const DARK_ONLY_PRESETS: Preset[] = ["neon", "terminal", "scifi"]
@@ -169,4 +175,5 @@ export const LS_KEYS = {
   radius: "theme-radius",
   fontSize: "theme-font-size",
   accentVibrancy: "theme-accent-vibrancy",
+  surfaceIntensity: "theme-surface-intensity",
 } as const

@@ -92,6 +92,7 @@ token it drives:
 | Accent vibrancy      | calm, balanced, vivid, intense (dark mode only)                                                     | `--primary-fill` / `--primary` token values, like Accent and Surface — no `data-*` attribute  |
 | Elevation            | flat → high                                                                                         | `data-elevation`, `--elevation-current`                                                       |
 | Button elevation     | flat → high                                                                                         | `data-button-elevation`, `--shadow-button` (flat ⇒ transparent)                               |
+| Surface intensity    | flat, subtle, balanced, bold                                                                        | `data-surface-intensity`                                                                      |
 | Radius               | sharp, subtle, rounded, pill                                                                        | `data-radius`, exact `--radius`, pill ⇒ `--radius-button: 9999px`                             |
 
 Plus five hand-built cross-axis combinations (one per non-default preset) and a
@@ -101,7 +102,7 @@ full round-trip test that every axis survives reload and navigation.
 
 Everything above again, this time through the popover a user actually operates:
 
-- Opens from the header, closes on Escape; the default preset shows all ten
+- Opens from the header, closes on Escape; the default preset shows all eleven
   common-axis sections in order.
 - Each of the 6 presets is selectable and persists across reload.
 - Each preset hides exactly the axes it takes over (`hiddenCommonAxes`) and the
@@ -111,7 +112,7 @@ Everything above again, this time through the popover a user actually operates:
   and each one produces a distinct token.
 - Background toggle reveals and hides the intensity and pattern controls; all
   four gradient patterns are selectable.
-- The five 4-value axes render as stepped sliders and are walked value by value
+- The six 4-value axes render as stepped sliders and are walked value by value
   **with the keyboard**, since a slider has no clickable cell.
 - Preset-specific axis controls for all 6 presets, plus a check that per-preset
   axis values are remembered when switching away and back.
