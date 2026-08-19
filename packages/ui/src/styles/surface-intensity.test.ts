@@ -84,6 +84,23 @@ describe("surface intensity rules", () => {
     expect(mixBody()).toContain(`${fill}: color-mix(`)
   })
 
+  // --surface-overlay-bg is excluded from FILLS on purpose: it composes
+  // --surface-overlay-base and --surface-overlay-layers rather than a
+  // --card/--popover token, so it needs its own assertion instead of riding
+  // the loop above. It is also the axis's ENTIRE reach into the overlay
+  // tier — Dialog, Drawer, Sheet, Popover, Tooltip, Select, Command and
+  // every menu across all six presets read it — yet nothing else in this
+  // repo pins its shape: overlay-bg-axis.test.ts only checks that presets
+  // declare --surface-overlay-base and that theme.css contains the string
+  // `--surface-overlay-bg:` ANYWHERE, which the unrelated :root declaration
+  // already satisfies even if this one is deleted.
+  it("mixes --surface-overlay-bg for the washed steps", () => {
+    const decl = mixBody().split("--surface-overlay-bg:")[1].split(";")[0]
+    expect(decl).toContain("color-mix(")
+    expect(decl).toContain("var(--surface-overlay-base)")
+    expect(decl).toContain("var(--surface-overlay-layers)")
+  })
+
   it.each(FILLS)("blanks %s for none", (fill) => {
     expect(bodyOf('[data-surface-intensity="none"]')).toContain(
       `${fill}: transparent`,
@@ -126,5 +143,23 @@ describe("surface intensity rules", () => {
     const decl = mixBody().split(`${fill}:`)[1].split(";")[0]
     expect(decl).toContain("var(--surface-wash-color)")
     expect(decl).toContain("var(--surface-wash)")
+  })
+
+  // --surface-card-fill-opaque exists specifically so the enclosed-tab
+  // indicator (tabs.css) can track the axis without ever going translucent —
+  // a translucent fill can't fully erase the baseline it sits on top of and
+  // the seam ghosts through. The assertions above only check that each of
+  // its three declarations starts with `hsl(` or `color-mix(`; reintroducing
+  // `/ var(--surface-opacity, 1)` into any of them would still pass those
+  // and quietly bring the seam back. tabs-fill.test.ts doesn't catch this
+  // either — it only checks which variable tabs.css reads, not what that
+  // variable resolves to.
+  it.each([
+    [":root", () => bodyOf(":root")],
+    ["the mix block", () => mixBody()],
+    ["balanced", () => bodyOf('[data-surface-intensity="balanced"]')],
+  ])("keeps --surface-card-fill-opaque opaque in %s", (_label, getBody) => {
+    const decl = getBody().split("--surface-card-fill-opaque:")[1].split(";")[0]
+    expect(decl).not.toContain("--surface-opacity")
   })
 })
