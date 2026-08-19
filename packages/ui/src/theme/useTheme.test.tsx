@@ -225,6 +225,19 @@ describe("useTheme", () => {
       document.documentElement.style.getPropertyValue("--primary-fill"),
     ).toBe("217 74% 49%")
   })
+
+  it("defaults canvasTint to balanced", () => {
+    const { result } = renderHook(() => useTheme(), { wrapper })
+    expect(result.current.canvasTint).toBe("balanced")
+  })
+
+  it("persists canvasTint without writing a data attribute", () => {
+    const { result } = renderHook(() => useTheme(), { wrapper })
+    act(() => result.current.setCanvasTint("neutral"))
+    expect(result.current.canvasTint).toBe("neutral")
+    expect(localStorage.getItem("theme-canvas-tint")).toBe("neutral")
+    expect(document.documentElement.getAttribute("data-canvas-tint")).toBeNull()
+  })
 })
 
 describe("useTheme persistence", () => {

@@ -351,6 +351,7 @@ export function ThemeProvider({
       bgStyle: BackgroundStyle,
       resolved: ResolvedMode,
       vibrancy: AccentVibrancy,
+      tint: CanvasTint,
       axisValues: Record<string, Record<string, string>>,
     ) => {
       const activePreset = presets[presetName]
@@ -390,6 +391,7 @@ export function ThemeProvider({
         backgroundStyle: bgStyle,
         mode: resolved,
         accentVibrancy: vibrancy,
+        canvasTint: tint,
       })
 
       // Preset-owned tokens (if the preset declares any cross-axis math).
@@ -580,6 +582,7 @@ export function ThemeProvider({
         settings.backgroundStyle,
         resolved,
         settings.accentVibrancy ?? cfg.defaults.accentVibrancy,
+        settings.canvasTint ?? cfg.defaults.canvasTint,
         newAxisValues,
       )
     },
@@ -610,6 +613,7 @@ export function ThemeProvider({
         backgroundStyle,
         resolvedMode,
         accentVibrancy,
+        canvasTint,
         presetAxisValues,
       )
       const settings = buildSettings({ accentColor: color })
@@ -627,6 +631,7 @@ export function ThemeProvider({
       backgroundStyle,
       resolvedMode,
       accentVibrancy,
+      canvasTint,
       presetAxisValues,
     ],
   )
@@ -642,6 +647,7 @@ export function ThemeProvider({
         backgroundStyle,
         resolvedMode,
         accentVibrancy,
+        canvasTint,
         presetAxisValues,
       )
       const settings = buildSettings({ surfaceColor: color })
@@ -659,6 +665,7 @@ export function ThemeProvider({
       backgroundStyle,
       resolvedMode,
       accentVibrancy,
+      canvasTint,
       presetAxisValues,
     ],
   )
@@ -703,6 +710,7 @@ export function ThemeProvider({
         backgroundStyle,
         nextResolvedMode,
         accentVibrancy,
+        canvasTint,
         presetAxisValues,
       )
       const settings = buildSettings({ preset: p, mode: nextMode })
@@ -721,6 +729,7 @@ export function ThemeProvider({
       resolvedMode,
       mode,
       accentVibrancy,
+      canvasTint,
       presetAxisValues,
     ],
   )
@@ -765,6 +774,7 @@ export function ThemeProvider({
         backgroundStyle,
         resolvedMode,
         accentVibrancy,
+        canvasTint,
         next,
       )
       const settings = buildSettings({ presetAxisValues: next })
@@ -780,6 +790,7 @@ export function ThemeProvider({
       backgroundStyle,
       resolvedMode,
       accentVibrancy,
+      canvasTint,
       applyTheme,
       notifyChange,
       buildSettings,
@@ -798,6 +809,7 @@ export function ThemeProvider({
         bgStyle,
         resolvedMode,
         accentVibrancy,
+        canvasTint,
         presetAxisValues,
       )
       const settings = buildSettings({ backgroundStyle: bgStyle })
@@ -815,6 +827,7 @@ export function ThemeProvider({
       preset,
       resolvedMode,
       accentVibrancy,
+      canvasTint,
       presetAxisValues,
     ],
   )
@@ -881,6 +894,7 @@ export function ThemeProvider({
         backgroundStyle,
         resolved,
         accentVibrancy,
+        canvasTint,
         presetAxisValues,
       )
       const settings = buildSettings({ mode: m, preset: nextPreset })
@@ -898,6 +912,7 @@ export function ThemeProvider({
       preset,
       backgroundStyle,
       accentVibrancy,
+      canvasTint,
       presetAxisValues,
     ],
   )
@@ -996,12 +1011,34 @@ export function ThemeProvider({
     (tint: CanvasTint) => {
       setCanvasTintState(tint)
       writeStorage(LS_CANVAS_TINT, tint)
+      applyTheme(
+        accentColor,
+        surfaceColor,
+        preset,
+        backgroundStyle,
+        resolvedMode,
+        accentVibrancy,
+        tint,
+        presetAxisValues,
+      )
       const settings = buildSettings({ canvasTint: tint })
       notifyChange(settings)
       hasUserChanged.current = true
       debouncedSave(settings)
     },
-    [buildSettings, notifyChange, debouncedSave],
+    [
+      applyTheme,
+      notifyChange,
+      buildSettings,
+      debouncedSave,
+      accentColor,
+      surfaceColor,
+      preset,
+      backgroundStyle,
+      resolvedMode,
+      accentVibrancy,
+      presetAxisValues,
+    ],
   )
 
   useEffect(() => {
@@ -1012,6 +1049,7 @@ export function ThemeProvider({
       backgroundStyle,
       resolvedMode,
       accentVibrancy,
+      canvasTint,
       presetAxisValues,
     )
   }, [
@@ -1022,6 +1060,7 @@ export function ThemeProvider({
     backgroundStyle,
     resolvedMode,
     accentVibrancy,
+    canvasTint,
     presetAxisValues,
   ])
 
@@ -1085,6 +1124,7 @@ export function ThemeProvider({
         backgroundStyle,
         resolved,
         accentVibrancy,
+        canvasTint,
         presetAxisValues,
       )
     }
@@ -1097,6 +1137,7 @@ export function ThemeProvider({
     preset,
     backgroundStyle,
     accentVibrancy,
+    canvasTint,
     presetAxisValues,
     applyTheme,
   ])
