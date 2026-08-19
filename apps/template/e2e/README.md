@@ -102,7 +102,7 @@ full round-trip test that every axis survives reload and navigation.
 
 Everything above again, this time through the popover a user actually operates:
 
-- Opens from the header, closes on Escape; the default preset shows all eleven
+- Opens from the header, closes on Escape; the default preset shows all twelve
   common-axis sections in order.
 - Each of the 6 presets is selectable and persists across reload.
 - Each preset hides exactly the axes it takes over (`hiddenCommonAxes`) and the

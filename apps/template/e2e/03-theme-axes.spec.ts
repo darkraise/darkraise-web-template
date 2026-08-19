@@ -565,6 +565,7 @@ test.describe("theme persistence", () => {
       density: "compact",
       elevation: "high",
       buttonElevation: "high",
+      surfaceIntensity: "bold",
       radius: "sharp",
       fontSize: "large",
     }

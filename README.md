@@ -51,6 +51,7 @@ npm create darkraise-ui my-app \
 | `--density`                                | `compact`, `cozy`, `comfortable`, `spacious`                | `cozy`      |
 | `--elevation`                              | `flat`, `low`, `medium`, `high`                             | `medium`    |
 | `--button-elevation`                       | `flat`, `low`, `medium`, `high`                             | `flat`      |
+| `--surface-intensity`                      | `flat`, `subtle`, `balanced`, `bold`                        | `balanced`  |
 | `--radius`                                 | `sharp`, `subtle`, `rounded`, `pill`                        | `rounded`   |
 | `--font-size`                              | `small`, `medium`, `large`, `extra-large`                   | `medium`    |
 | `--accent-vibrancy`                        | `calm`, `balanced`, `vivid`, `intense`                      | `balanced`  |
