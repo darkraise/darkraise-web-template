@@ -32,6 +32,7 @@ import {
 import { accentColors } from "@theme/palettes/accentColors"
 import { useUiLabels } from "@labels"
 import { AxisControl } from "./AxisControl"
+import { isAxisVisible, type AxisVisibilityInput } from "./axisVisibility"
 
 export type ThemeSettingsGroup =
   | "theme"
@@ -129,39 +130,48 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
   const isCommonAxisHidden = (name: string): boolean =>
     (hiddenCommonAxes as readonly string[]).includes(name)
 
+  const visibility: AxisVisibilityInput = {
+    axes,
+    backgroundStyle,
+    modeLocked,
+    isHiddenByPreset: isCommonAxisHidden,
+    presetAxisCount: Object.keys(activePreset.axes).length,
+  }
+  const show = (axis: Parameters<typeof isAxisVisible>[0]): boolean =>
+    isAxisVisible(axis, visibility)
+
   return [
-    axes.mode &&
-      !modeLocked && {
-        key: "mode",
-        group: "theme" as const,
-        node: (
-          <div key="mode" className="dr-theme-switcher-row">
-            <Label className="dr-theme-switcher-section-label">
-              {labels.theme.axisLabels.mode}
-            </Label>
-            <ToggleGroup
-              type="single"
-              value={mode}
-              onValueChange={(value) => {
-                if (value) setMode(value as Mode)
-              }}
-              variant="outline"
-              size="sm"
-              aria-label={labels.theme.axisLabels.mode}
-              className="dr-theme-switcher-toggle-group"
-              data-cols="3"
-            >
-              {modeOptions.map(({ value, icon: Icon, label }) => (
-                <ToggleGroupItem key={value} value={value}>
-                  <Icon className="dr-theme-switcher-row-icon" />
-                  {label}
-                </ToggleGroupItem>
-              ))}
-            </ToggleGroup>
-          </div>
-        ),
-      },
-    axes.preset && {
+    show("mode") && {
+      key: "mode",
+      group: "theme" as const,
+      node: (
+        <div key="mode" className="dr-theme-switcher-row">
+          <Label className="dr-theme-switcher-section-label">
+            {labels.theme.axisLabels.mode}
+          </Label>
+          <ToggleGroup
+            type="single"
+            value={mode}
+            onValueChange={(value) => {
+              if (value) setMode(value as Mode)
+            }}
+            variant="outline"
+            size="sm"
+            aria-label={labels.theme.axisLabels.mode}
+            className="dr-theme-switcher-toggle-group"
+            data-cols="3"
+          >
+            {modeOptions.map(({ value, icon: Icon, label }) => (
+              <ToggleGroupItem key={value} value={value}>
+                <Icon className="dr-theme-switcher-row-icon" />
+                {label}
+              </ToggleGroupItem>
+            ))}
+          </ToggleGroup>
+        </div>
+      ),
+    },
+    show("preset") && {
       key: "preset",
       group: "theme" as const,
       node: (
@@ -194,42 +204,38 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
         </div>
       ),
     },
-    axes.presetAxes &&
-      Object.keys(activePreset.axes).length > 0 && {
-        key: "preset-axes",
-        group: "theme" as const,
-        node: (
-          <div
-            key="preset-axes"
-            className="dr-theme-switcher-preset-axes-group"
-          >
-            {Object.entries(
-              (activePreset as ThemePreset<Record<string, readonly string[]>>)
-                .axes,
-            )
-              .sort(([, a], [, b]) => (a.order ?? 99) - (b.order ?? 99))
-              .map(([axisName, axisDef]) => (
-                <div
-                  key={`preset-axis-${axisName}`}
-                  className="dr-theme-switcher-preset-axis"
-                >
-                  <Label className="dr-theme-switcher-section-label">
-                    {axisDef.label}
-                  </Label>
-                  <AxisControl
-                    values={axisDef.values}
-                    value={
-                      presetAxisValues[preset]?.[axisName] ?? axisDef.default
-                    }
-                    onChange={(v) => setPresetAxis(axisName, v)}
-                    label={axisDef.label}
-                  />
-                </div>
-              ))}
-          </div>
-        ),
-      },
-    axes.backgroundStyle && {
+    show("presetAxes") && {
+      key: "preset-axes",
+      group: "theme" as const,
+      node: (
+        <div key="preset-axes" className="dr-theme-switcher-preset-axes-group">
+          {Object.entries(
+            (activePreset as ThemePreset<Record<string, readonly string[]>>)
+              .axes,
+          )
+            .sort(([, a], [, b]) => (a.order ?? 99) - (b.order ?? 99))
+            .map(([axisName, axisDef]) => (
+              <div
+                key={`preset-axis-${axisName}`}
+                className="dr-theme-switcher-preset-axis"
+              >
+                <Label className="dr-theme-switcher-section-label">
+                  {axisDef.label}
+                </Label>
+                <AxisControl
+                  values={axisDef.values}
+                  value={
+                    presetAxisValues[preset]?.[axisName] ?? axisDef.default
+                  }
+                  onChange={(v) => setPresetAxis(axisName, v)}
+                  label={axisDef.label}
+                />
+              </div>
+            ))}
+        </div>
+      ),
+    },
+    show("backgroundStyle") && {
       key: "backgroundStyle",
       group: "background" as const,
       node: (
@@ -262,7 +268,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
     // No gradient gate: the axis absorbed canvasTint, so under `solid` it still
     // drives the canvas saturation cap. Only the blob-scale half is
     // gradient-specific, and that half is inert rather than hidden.
-    axes.backgroundIntensity && {
+    show("backgroundIntensity") && {
       key: "backgroundIntensity",
       group: "background" as const,
       node: (
@@ -279,41 +285,36 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
         </div>
       ),
     },
-    axes.gradientPattern &&
-      backgroundStyle === "gradient" && {
-        key: "gradientPattern",
-        group: "background" as const,
-        node: (
-          <div key="gradientPattern" className="dr-theme-switcher-row">
-            <Label className="dr-theme-switcher-section-label">
-              {labels.theme.axisLabels.gradientPattern}
-            </Label>
-            <ToggleGroup
-              type="single"
-              value={gradientPattern}
-              onValueChange={(value) => {
-                if (value) setGradientPattern(value as GradientPattern)
-              }}
-              variant="outline"
-              size="sm"
-              aria-label={labels.theme.axisLabels.gradientPattern}
-              className="dr-theme-switcher-toggle-group"
-              data-cols={GRADIENT_PATTERNS.length}
-            >
-              {GRADIENT_PATTERNS.map((value) => (
-                <ToggleGroupItem
-                  key={value}
-                  value={value}
-                  className="capitalize"
-                >
-                  {value}
-                </ToggleGroupItem>
-              ))}
-            </ToggleGroup>
-          </div>
-        ),
-      },
-    axes.accentColor && {
+    show("gradientPattern") && {
+      key: "gradientPattern",
+      group: "background" as const,
+      node: (
+        <div key="gradientPattern" className="dr-theme-switcher-row">
+          <Label className="dr-theme-switcher-section-label">
+            {labels.theme.axisLabels.gradientPattern}
+          </Label>
+          <ToggleGroup
+            type="single"
+            value={gradientPattern}
+            onValueChange={(value) => {
+              if (value) setGradientPattern(value as GradientPattern)
+            }}
+            variant="outline"
+            size="sm"
+            aria-label={labels.theme.axisLabels.gradientPattern}
+            className="dr-theme-switcher-toggle-group"
+            data-cols={GRADIENT_PATTERNS.length}
+          >
+            {GRADIENT_PATTERNS.map((value) => (
+              <ToggleGroupItem key={value} value={value} className="capitalize">
+                {value}
+              </ToggleGroupItem>
+            ))}
+          </ToggleGroup>
+        </div>
+      ),
+    },
+    show("accentColor") && {
       key: "accentColor",
       group: "color" as const,
       node: (
@@ -339,7 +340,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
         </div>
       ),
     },
-    axes.surfaceColor && {
+    show("surfaceColor") && {
       key: "surfaceColor",
       group: "color" as const,
       node: (
@@ -369,167 +370,158 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
         </div>
       ),
     },
-    axes.density &&
-      !isCommonAxisHidden("density") && {
-        key: "density",
-        group: "layout" as const,
-        node: (
-          <div key="density" className="dr-theme-switcher-row">
-            <Label className="dr-theme-switcher-section-label">
-              {labels.theme.axisLabels.density}
-            </Label>
-            <AxisControl
-              values={DENSITIES}
-              value={density}
-              onChange={setDensity}
-              label={labels.theme.axisLabels.density}
-            />
-          </div>
-        ),
-      },
-    axes.fontSize &&
-      !isCommonAxisHidden("fontSize") && {
-        key: "fontSize",
-        group: "layout" as const,
-        node: (
-          <div key="fontSize" className="dr-theme-switcher-row">
-            <Label className="dr-theme-switcher-section-label">
-              {labels.theme.axisLabels.fontSize}
-            </Label>
-            <AxisControl
-              values={FONT_SIZES}
-              value={fontSize}
-              onChange={setFontSize}
-              label={labels.theme.axisLabels.fontSize}
-            />
-          </div>
-        ),
-      },
-    axes.accentIntensity &&
-      !isCommonAxisHidden("accentIntensity") && {
-        key: "accentIntensity",
-        group: "color" as const,
-        node: (
-          <div key="accentIntensity" className="dr-theme-switcher-row">
-            <Label className="dr-theme-switcher-section-label">
-              {labels.theme.axisLabels.accentIntensity}
-            </Label>
-            <AxisControl
-              values={ACCENT_INTENSITIES}
-              value={accentIntensity}
-              onChange={setAccentIntensity}
-              label={labels.theme.axisLabels.accentIntensity}
-            />
-          </div>
-        ),
-      },
-    axes.elevation &&
-      !isCommonAxisHidden("elevation") && {
-        key: "elevation",
-        group: "depth" as const,
-        node: (
-          <div key="elevation" className="dr-theme-switcher-row">
-            <Label className="dr-theme-switcher-section-label">
-              {labels.theme.axisLabels.elevation}
-            </Label>
-            <AxisControl
-              values={ELEVATIONS}
-              value={elevation}
-              onChange={setElevation}
-              label={labels.theme.axisLabels.elevation}
-            />
-          </div>
-        ),
-      },
-    axes.buttonElevation &&
-      !isCommonAxisHidden("buttonElevation") && {
-        key: "buttonElevation",
-        group: "depth" as const,
-        node: (
-          <div key="buttonElevation" className="dr-theme-switcher-row">
-            <Label className="dr-theme-switcher-section-label">
-              {labels.theme.axisLabels.buttonElevation}
-            </Label>
-            <AxisControl
-              values={ELEVATIONS}
-              value={buttonElevation}
-              onChange={setButtonElevation}
-              label={labels.theme.axisLabels.buttonElevation}
-            />
-          </div>
-        ),
-      },
-    axes.surfaceIntensity &&
-      !isCommonAxisHidden("surfaceIntensity") && {
-        key: "surfaceIntensity",
-        group: "depth" as const,
-        node: (
-          <div key="surfaceIntensity" className="dr-theme-switcher-row">
-            <Label className="dr-theme-switcher-section-label">
-              {labels.theme.axisLabels.surfaceIntensity}
-            </Label>
-            <AxisControl
-              values={SURFACE_INTENSITIES}
-              value={surfaceIntensity}
-              onChange={setSurfaceIntensity}
-              label={labels.theme.axisLabels.surfaceIntensity}
-            />
-          </div>
-        ),
-      },
-    axes.outerGlow &&
-      !isCommonAxisHidden("outerGlow") && {
-        key: "outerGlow",
-        group: "depth" as const,
-        node: (
-          <div key="outerGlow" className="dr-theme-switcher-row">
-            <Label className="dr-theme-switcher-section-label">
-              {labels.theme.axisLabels.outerGlow}
-            </Label>
-            <AxisControl
-              values={GLOW_LEVELS}
-              value={outerGlow}
-              onChange={setOuterGlow}
-              label={labels.theme.axisLabels.outerGlow}
-            />
-          </div>
-        ),
-      },
-    axes.innerGlow &&
-      !isCommonAxisHidden("innerGlow") && {
-        key: "innerGlow",
-        group: "depth" as const,
-        node: (
-          <div key="innerGlow" className="dr-theme-switcher-row">
-            <Label className="dr-theme-switcher-section-label">
-              {labels.theme.axisLabels.innerGlow}
-            </Label>
-            <AxisControl
-              values={GLOW_LEVELS}
-              value={innerGlow}
-              onChange={setInnerGlow}
-              label={labels.theme.axisLabels.innerGlow}
-            />
-          </div>
-        ),
-      },
-    axes.radius &&
-      !isCommonAxisHidden("radius") && {
-        key: "radius",
-        group: "layout" as const,
-        node: (
-          <div key="radius" className="dr-theme-switcher-row">
-            <Label className="dr-theme-switcher-section-label">
-              {labels.theme.axisLabels.radius}
-            </Label>
-            <AxisControl
-              values={RADII}
-              value={radius}
-              onChange={setRadius}
-              label={labels.theme.axisLabels.radius}
-            />
-          </div>
-        ),
-      },
+    show("density") && {
+      key: "density",
+      group: "layout" as const,
+      node: (
+        <div key="density" className="dr-theme-switcher-row">
+          <Label className="dr-theme-switcher-section-label">
+            {labels.theme.axisLabels.density}
+          </Label>
+          <AxisControl
+            values={DENSITIES}
+            value={density}
+            onChange={setDensity}
+            label={labels.theme.axisLabels.density}
+          />
+        </div>
+      ),
+    },
+    show("fontSize") && {
+      key: "fontSize",
+      group: "layout" as const,
+      node: (
+        <div key="fontSize" className="dr-theme-switcher-row">
+          <Label className="dr-theme-switcher-section-label">
+            {labels.theme.axisLabels.fontSize}
+          </Label>
+          <AxisControl
+            values={FONT_SIZES}
+            value={fontSize}
+            onChange={setFontSize}
+            label={labels.theme.axisLabels.fontSize}
+          />
+        </div>
+      ),
+    },
+    show("accentIntensity") && {
+      key: "accentIntensity",
+      group: "color" as const,
+      node: (
+        <div key="accentIntensity" className="dr-theme-switcher-row">
+          <Label className="dr-theme-switcher-section-label">
+            {labels.theme.axisLabels.accentIntensity}
+          </Label>
+          <AxisControl
+            values={ACCENT_INTENSITIES}
+            value={accentIntensity}
+            onChange={setAccentIntensity}
+            label={labels.theme.axisLabels.accentIntensity}
+          />
+        </div>
+      ),
+    },
+    show("elevation") && {
+      key: "elevation",
+      group: "depth" as const,
+      node: (
+        <div key="elevation" className="dr-theme-switcher-row">
+          <Label className="dr-theme-switcher-section-label">
+            {labels.theme.axisLabels.elevation}
+          </Label>
+          <AxisControl
+            values={ELEVATIONS}
+            value={elevation}
+            onChange={setElevation}
+            label={labels.theme.axisLabels.elevation}
+          />
+        </div>
+      ),
+    },
+    show("buttonElevation") && {
+      key: "buttonElevation",
+      group: "depth" as const,
+      node: (
+        <div key="buttonElevation" className="dr-theme-switcher-row">
+          <Label className="dr-theme-switcher-section-label">
+            {labels.theme.axisLabels.buttonElevation}
+          </Label>
+          <AxisControl
+            values={ELEVATIONS}
+            value={buttonElevation}
+            onChange={setButtonElevation}
+            label={labels.theme.axisLabels.buttonElevation}
+          />
+        </div>
+      ),
+    },
+    show("surfaceIntensity") && {
+      key: "surfaceIntensity",
+      group: "depth" as const,
+      node: (
+        <div key="surfaceIntensity" className="dr-theme-switcher-row">
+          <Label className="dr-theme-switcher-section-label">
+            {labels.theme.axisLabels.surfaceIntensity}
+          </Label>
+          <AxisControl
+            values={SURFACE_INTENSITIES}
+            value={surfaceIntensity}
+            onChange={setSurfaceIntensity}
+            label={labels.theme.axisLabels.surfaceIntensity}
+          />
+        </div>
+      ),
+    },
+    show("outerGlow") && {
+      key: "outerGlow",
+      group: "depth" as const,
+      node: (
+        <div key="outerGlow" className="dr-theme-switcher-row">
+          <Label className="dr-theme-switcher-section-label">
+            {labels.theme.axisLabels.outerGlow}
+          </Label>
+          <AxisControl
+            values={GLOW_LEVELS}
+            value={outerGlow}
+            onChange={setOuterGlow}
+            label={labels.theme.axisLabels.outerGlow}
+          />
+        </div>
+      ),
+    },
+    show("innerGlow") && {
+      key: "innerGlow",
+      group: "depth" as const,
+      node: (
+        <div key="innerGlow" className="dr-theme-switcher-row">
+          <Label className="dr-theme-switcher-section-label">
+            {labels.theme.axisLabels.innerGlow}
+          </Label>
+          <AxisControl
+            values={GLOW_LEVELS}
+            value={innerGlow}
+            onChange={setInnerGlow}
+            label={labels.theme.axisLabels.innerGlow}
+          />
+        </div>
+      ),
+    },
+    show("radius") && {
+      key: "radius",
+      group: "layout" as const,
+      node: (
+        <div key="radius" className="dr-theme-switcher-row">
+          <Label className="dr-theme-switcher-section-label">
+            {labels.theme.axisLabels.radius}
+          </Label>
+          <AxisControl
+            values={RADII}
+            value={radius}
+            onChange={setRadius}
+            label={labels.theme.axisLabels.radius}
+          />
+        </div>
+      ),
+    },
   ].filter(Boolean) as ThemeSettingsSection[]
 }
