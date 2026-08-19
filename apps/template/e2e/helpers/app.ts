@@ -44,7 +44,6 @@ export interface ThemeSeed {
   fontSize?: string
   accentIntensity?: string
   surfaceIntensity?: string
-  canvasTint?: string
   /** Preset-specific axes: { glass: { blur: "high" } } → key `theme-glass-blur`. */
   presetAxes?: Record<string, Record<string, string>>
 }
@@ -82,7 +81,6 @@ function storageEntries(theme: ThemeSeed, authenticated: boolean) {
     ["fontSize", LS_KEYS.fontSize],
     ["accentIntensity", LS_KEYS.accentIntensity],
     ["surfaceIntensity", LS_KEYS.surfaceIntensity],
-    ["canvasTint", LS_KEYS.canvasTint],
   ]
   for (const [field, key] of map) {
     const value = theme[field]

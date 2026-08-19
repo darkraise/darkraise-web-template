@@ -24,14 +24,19 @@ const ACCENT_COLORS = [
 const SURFACE_COLORS = ["slate", ...ACCENT_COLORS]
 const PRESETS = ["default", "glass", "scifi"]
 const BACKGROUND_STYLES = ["solid", "gradient"]
-const BACKGROUND_INTENSITIES = ["subtle", "balanced", "vivid", "intense"]
+const BACKGROUND_INTENSITIES = [
+  "neutral",
+  "subtle",
+  "balanced",
+  "vivid",
+  "intense",
+]
 const GRADIENT_PATTERNS = ["blobs", "aurora", "spotlight", "mesh"]
 const DENSITIES = ["compact", "cozy", "comfortable", "spacious"]
 const ELEVATIONS = ["flat", "low", "medium", "high"]
 const RADII = ["sharp", "subtle", "rounded", "pill"]
 const FONT_SIZES = ["small", "medium", "large", "extra-large"]
 const ACCENT_INTENSITIES = ["calm", "balanced", "vivid", "intense"]
-const CANVAS_TINTS = ["neutral", "subtle", "balanced", "vivid"]
 const SURFACE_INTENSITIES = ["flat", "subtle", "balanced", "bold"]
 const MODES = ["light", "dark", "system"]
 const LAYOUTS = ["sidebar", "stacked", "top-nav", "split-panel"]
@@ -43,7 +48,7 @@ const THEME_AXIS_KEYS = [
   "mode", "accentColor", "surfaceColor", "preset",
   "backgroundStyle", "backgroundIntensity", "gradientPattern",
   "density", "elevation", "buttonElevation", "surfaceIntensity", "radius", "fontSize",
-  "accentIntensity", "canvasTint", "presetAxes",
+  "accentIntensity", "presetAxes",
 ]
 
 const argv = minimist(process.argv.slice(2), {
@@ -53,7 +58,7 @@ const argv = minimist(process.argv.slice(2), {
     "background", "background-intensity", "gradient-pattern",
     "mode", "theme-axes",
     "density", "elevation", "button-elevation", "surface-intensity", "radius", "font-size",
-    "accent-intensity", "canvas-tint",
+    "accent-intensity",
     "host", "port",
   ],
   alias: { y: "yes" },
@@ -92,7 +97,6 @@ validate(argv["surface-intensity"], SURFACE_INTENSITIES, "surface-intensity")
 validate(argv.radius, RADII, "radius")
 validate(argv["font-size"], FONT_SIZES, "font-size")
 validate(argv["accent-intensity"], ACCENT_INTENSITIES, "accent-intensity")
-validate(argv["canvas-tint"], CANVAS_TINTS, "canvas-tint")
 
 if (argv["theme-axes"] !== undefined) {
   const axes = argv["theme-axes"].split(",")
@@ -275,13 +279,6 @@ async function main() {
     }),
   ))
 
-  const canvasTint = argv["canvas-tint"] || (skipPrompts ? "balanced" : cancelled(
-    await p.select({
-      message: "Canvas tint (dark mode only)",
-      options: CANVAS_TINTS.map((v) => ({ value: v, label: v })),
-      initialValue: "balanced",
-    }),
-  ))
 
   // --- Theme switcher ---
   let themeSwitcherEnabled
@@ -321,7 +318,6 @@ async function main() {
             { value: "radius", label: "Radius" },
             { value: "fontSize", label: "Font size" },
             { value: "accentIntensity", label: "Accent intensity" },
-            { value: "canvasTint", label: "Canvas tint" },
             { value: "presetAxes", label: "Preset-specific axes (e.g. glass blur, scifi intensity/frame)" },
           ],
           initialValues: THEME_AXIS_KEYS,
@@ -378,7 +374,6 @@ async function main() {
         radius: radius,
         fontSize: fontSize,
         accentIntensity: accentIntensity,
-        canvasTint: canvasTint,
       },
       switcher: {
         enabled: themeSwitcherEnabled,
@@ -576,7 +571,6 @@ export const themeConfig: ThemeConfig = {
     radius: "${config.theme.defaults.radius}",
     fontSize: "${config.theme.defaults.fontSize}",
     accentIntensity: "${config.theme.defaults.accentIntensity}",
-    canvasTint: "${config.theme.defaults.canvasTint}",
   },
   switcher: {
     enabled: ${config.theme.switcher.enabled},
@@ -595,7 +589,6 @@ export const themeConfig: ThemeConfig = {
       radius: ${config.theme.switcher.axes.radius},
       fontSize: ${config.theme.switcher.axes.fontSize},
       accentIntensity: ${config.theme.switcher.axes.accentIntensity},
-      canvasTint: ${config.theme.switcher.axes.canvasTint},
       presetAxes: ${config.theme.switcher.axes.presetAxes},
     },
   },

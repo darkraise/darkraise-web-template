@@ -3,7 +3,6 @@ import {
   ACCENT_COLORS,
   ACCENT_INTENSITIES,
   BACKGROUND_INTENSITIES,
-  CANVAS_TINTS,
   DARK_ONLY_PRESETS,
   DENSITIES,
   ELEVATIONS,
@@ -431,43 +430,46 @@ test.describe("surface intensity axis", () => {
   }
 })
 
-test.describe("canvas tint axis", () => {
-  test("each canvas tint step yields a distinct background", async ({
-    page,
-  }) => {
+test.describe("background intensity canvas cap", () => {
+  test("each step yields a distinct background", async ({ page }) => {
     await seedApp(page, { surface: "violet", mode: "dark" })
     await gotoApp(page, PROBE)
 
     const seen = new Set<string>()
-    for (const tint of CANVAS_TINTS) {
-      await applyTheme(page, { canvasTint: tint })
+    for (const step of BACKGROUND_INTENSITIES) {
+      await applyTheme(page, { backgroundIntensity: step })
       await page.reload()
       const bg = await readToken(page, "--background")
-      expect(bg, `${tint} must emit a background`).not.toBe("")
+      expect(bg, `${step} must emit a background`).not.toBe("")
       seen.add(bg)
     }
-    expect(seen.size).toBe(CANVAS_TINTS.length)
+    // vivid and intense are both uncapped, so five steps yield four canvases.
+    expect(seen.size).toBe(BACKGROUND_INTENSITIES.length - 1)
   })
 
-  test("the axis is inert in light mode", async ({ page }) => {
+  test("caps the canvas in light mode too", async ({ page }) => {
+    // The tint half of this axis used to be dark-only, which made it silently
+    // inert in half the themes.
     await seedApp(page, { surface: "violet", mode: "light" })
     await gotoApp(page, PROBE)
 
-    await applyTheme(page, { canvasTint: "neutral" })
+    await applyTheme(page, { backgroundIntensity: "neutral" })
     await page.reload()
     const neutral = await readToken(page, "--background")
 
-    await applyTheme(page, { canvasTint: "vivid" })
+    await applyTheme(page, { backgroundIntensity: "vivid" })
     await page.reload()
-    expect(await readToken(page, "--background")).toBe(neutral)
+    expect(await readToken(page, "--background")).not.toBe(neutral)
   })
 
-  test("no data attribute leaks for this axis", async ({ page }) => {
-    await seedApp(page, { canvasTint: "neutral", mode: "dark" })
+  test("writes its data attribute for the blob-scale half", async ({
+    page,
+  }) => {
+    await seedApp(page, { backgroundIntensity: "neutral", mode: "dark" })
     await gotoApp(page, PROBE)
 
     const attrs = await readThemeAttrs(page)
-    expect(attrs["data-canvas-tint"]).toBeUndefined()
+    expect(attrs["data-background-intensity"]).toBe("neutral")
   })
 })
 
@@ -565,11 +567,8 @@ test.describe("axis combinations", () => {
 })
 
 test.describe("theme persistence", () => {
-  // canvasTint is deliberately omitted from this seed: readThemeAttrs only
-  // collects data-* attributes, and canvasTint writes none, so it would add
-  // a seed value the before/after comparison can never fail on. Its
   // round-trip is instead covered by the per-step reload loop in the
-  // "canvas tint axis" describe block above, which compares --background.
+  // "background intensity canvas cap" describe block above.
   test("all axes round-trip through localStorage", async ({ page }) => {
     const seed = {
       preset: "glass" as Preset,

@@ -26,6 +26,7 @@ export const SURFACE_COLORS = ["slate", ...ACCENT_COLORS] as const
 export const MODES = ["light", "dark", "system"] as const
 export const BACKGROUND_STYLES = ["solid", "gradient"] as const
 export const BACKGROUND_INTENSITIES = [
+  "neutral",
   "subtle",
   "balanced",
   "vivid",
@@ -53,7 +54,6 @@ export const SURFACE_INTENSITIES = [
   "balanced",
   "bold",
 ] as const
-export const CANVAS_TINTS = ["neutral", "subtle", "balanced", "vivid"] as const
 
 /** Presets that force a single resolved mode regardless of the mode axis. */
 export const DARK_ONLY_PRESETS: Preset[] = ["scifi"]
@@ -134,5 +134,4 @@ export const LS_KEYS = {
   fontSize: "theme-font-size",
   accentIntensity: "theme-accent-intensity",
   surfaceIntensity: "theme-surface-intensity",
-  canvasTint: "theme-canvas-tint",
 } as const
