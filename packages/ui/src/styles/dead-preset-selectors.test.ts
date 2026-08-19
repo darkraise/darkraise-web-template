@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest"
-import { readFileSync, readdirSync } from "node:fs"
-import { join } from "node:path"
+import { existsSync, readFileSync, readdirSync } from "node:fs"
+import { dirname, join, resolve } from "node:path"
 import { PRESET_NAMES } from "@theme/presets"
 
 // A `[data-preset="x"]` selector naming a preset that no longer exists can
@@ -26,5 +26,22 @@ describe("preset-scoped selectors", () => {
       }
     }
     expect(offenders).toEqual([])
+  })
+
+  // Preset stylesheets are imported by hand, because `presets/` sits outside
+  // the component auto-scanner. Deleting a preset therefore leaves a dangling
+  // `@import` that no selector scan can see — it surfaces only as an ENOENT
+  // part-way through `tsup`, long after the unit suite has gone green.
+  it("imports only stylesheets that exist", () => {
+    const entry = "src/styles/theme.css"
+    const css = readFileSync(entry, "utf8")
+    const dangling: string[] = []
+    for (const match of css.matchAll(/@import\s+"([^"]+\.css)"/g)) {
+      const target = match[1]
+      if (!target) continue
+      const path = resolve(dirname(entry), target)
+      if (!existsSync(path)) dangling.push(target)
+    }
+    expect(dangling).toEqual([])
   })
 })

@@ -132,10 +132,7 @@
 /* Preset-specific CSS (manual; presets/ is outside the auto-scanner) */
 @import "../theme/presets/default/default.css";
 @import "../theme/presets/glass/glass.css";
-@import "../theme/presets/neon/neon.css";
-@import "../theme/presets/terminal/terminal.css";
 @import "../theme/presets/scifi/scifi.css";
-@import "../theme/presets/playful/playful.css";
 
 @layer theme, base, components, utilities, overrides;
 
