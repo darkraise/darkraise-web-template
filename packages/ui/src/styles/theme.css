@@ -427,6 +427,13 @@
     --backdrop-blur: none;
     --backdrop-filter: none;
     --surface-opacity: 1;
+    /* Interaction state layer — a Material-style translucent wash of the
+     element's own text colour, painted over a clickable surface as a flood
+     inset shadow. `currentColor` is resolved at the consuming element, so
+     one pair of values covers every variant and both modes: it lightens a
+     filled button (white label) and darkens a ghost button (dark label). */
+    --state-layer-hover: color-mix(in srgb, currentColor 8%, transparent);
+    --state-layer-press: color-mix(in srgb, currentColor 16%, transparent);
     --fog-05: transparent;
     --fog-10: transparent;
     --fog-15: transparent;

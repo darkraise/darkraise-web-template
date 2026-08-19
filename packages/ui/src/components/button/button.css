@@ -1,6 +1,19 @@
 @layer components {
   .dr-btn {
     @apply focus-ring-inset inline-flex cursor-pointer items-center justify-center gap-2 rounded-[var(--radius-button)] text-sm font-medium whitespace-nowrap transition-[background-image,background-color,border-color,color,text-decoration-color,box-shadow] duration-150 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size)] [&_svg]:shrink-0;
+    --state-layer: transparent;
+    box-shadow: inset 0 0 0 100vmax var(--state-layer);
+  }
+
+  /* One wash for every variant. An inset shadow paints above the background
+     (colour AND image, so it reads on the Glass gradients too) and below the
+     label, without the pseudo-element the presets already spend on bracket
+     decorations. */
+  .dr-btn:not([data-variant="link"]):hover {
+    --state-layer: var(--state-layer-hover);
+  }
+  .dr-btn:not([data-variant="link"]):active {
+    --state-layer: var(--state-layer-press);
   }
 
   /* default + destructive: hue-based filled variants (was .btn-glass-hue) */
@@ -8,31 +21,33 @@
     @apply text-primary-foreground;
     --hue: hsl(var(--primary-fill));
     background-color: var(--hue);
-    box-shadow: var(--shadow-button);
-  }
-  .dr-btn[data-variant="default"]:hover {
-    background-color: color-mix(in srgb, var(--hue) 90%, black);
+    box-shadow:
+      var(--shadow-button),
+      inset 0 0 0 100vmax var(--state-layer);
   }
   .dr-btn[data-variant="destructive"] {
     @apply text-destructive-foreground;
     --hue: hsl(var(--destructive));
     background-color: var(--hue);
-    box-shadow: var(--shadow-button);
-  }
-  .dr-btn[data-variant="destructive"]:hover {
-    background-color: color-mix(in srgb, var(--hue) 90%, black);
+    box-shadow:
+      var(--shadow-button),
+      inset 0 0 0 100vmax var(--state-layer);
   }
 
   /* outline + secondary: neutral filled variants (was .btn-glass-neutral) */
   .dr-btn[data-variant="outline"] {
-    @apply text-foreground hover:bg-accent hover:text-accent-foreground border bg-transparent;
-    box-shadow: var(--shadow-button);
+    @apply text-foreground border bg-transparent;
+    box-shadow:
+      var(--shadow-button),
+      inset 0 0 0 100vmax var(--state-layer);
     /* was .btn-glass-neutral--accent-border (theme.css line 932-934) */
     border-color: hsl(var(--primary) / 0.6);
   }
   .dr-btn[data-variant="secondary"] {
-    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80;
-    box-shadow: var(--shadow-button);
+    @apply bg-secondary text-secondary-foreground;
+    box-shadow:
+      var(--shadow-button),
+      inset 0 0 0 100vmax var(--state-layer);
   }
   /* In dark mode `--secondary` (217 33% 17%) shares the hue family of the
    * page background. Without a border the button dissolves into the page
@@ -45,7 +60,7 @@
 
   /* ghost: hover-only glass treatment (was .btn-ghost-glass) */
   .dr-btn[data-variant="ghost"] {
-    @apply text-muted-foreground hover:bg-accent hover:text-accent-foreground border border-transparent;
+    @apply text-muted-foreground hover:text-foreground border border-transparent;
   }
 
   /* link */

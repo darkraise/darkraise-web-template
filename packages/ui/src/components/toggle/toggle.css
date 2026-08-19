@@ -1,11 +1,17 @@
 @layer components {
   .dr-toggle {
+    --state-layer: transparent;
+    box-shadow: inset 0 0 0 100vmax var(--state-layer);
     @apply focus-ring-inset inline-flex cursor-pointer items-center justify-center gap-2 rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size)] [&_svg]:shrink-0;
     transition:
       background-color 150ms,
       color 150ms,
       border-color 150ms,
       box-shadow 150ms;
+  }
+
+  .dr-toggle:active {
+    --state-layer: var(--state-layer-press);
   }
 
   /* Default variant — solid fill on active state.

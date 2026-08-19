@@ -93,7 +93,17 @@
   /* Stepper visual chrome — text colour, hover background, focus ring,
    * disabled state. Used by both grouped and direct-children placements. */
   .dr-number-input-stepper {
+    --state-layer: transparent;
+    box-shadow: inset 0 0 0 100vmax var(--state-layer);
     @apply text-muted-foreground hover:text-foreground hover:bg-muted focus-ring-inset inline-flex cursor-pointer items-center justify-center bg-transparent transition-colors disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size-xs)] [&_svg]:shrink-0;
+  }
+
+  .dr-number-input-stepper:hover {
+    --state-layer: var(--state-layer-hover);
+  }
+
+  .dr-number-input-stepper:active {
+    --state-layer: var(--state-layer-press);
   }
 
   /* Glass-preset frosted NumberInput. The bordered surface is the
