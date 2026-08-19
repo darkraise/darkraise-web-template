@@ -2,6 +2,7 @@ import type {
   AccentColor,
   AccentVibrancy,
   BackgroundStyle,
+  CanvasTint,
   SurfaceColor,
   ResolvedMode,
   ColorScale,
@@ -23,6 +24,7 @@ export interface GenerateTokensInput {
   backgroundStyle: BackgroundStyle
   mode: ResolvedMode
   accentVibrancy: AccentVibrancy
+  canvasTint?: CanvasTint
 }
 
 function getChartColors(
@@ -145,6 +147,30 @@ const VIBRANCY: Record<
   intense: { fillLightness: 0.63, fillChroma: null, primaryChroma: null },
 }
 
+/**
+ * How much of the surface colour's hue the page canvas may carry, as a maximum
+ * saturation percentage. A cap rather than a multiplier so one step means the
+ * same thing for every surface colour: `slate` starts at 84% saturation while
+ * every tinted option is already damped to ~30% by `tintScale`, so a multiplier
+ * would leave slate visibly blue at the same setting that neutralises the rest.
+ * `null` means uncapped — the palette's own value, which is what preserving the
+ * pre-axis appearance requires.
+ */
+const CANVAS_TINT_CAPS: Record<CanvasTint, number | null> = {
+  neutral: 0,
+  subtle: 8,
+  balanced: 16,
+  vivid: null,
+}
+
+/** Clamps an `H S% L%` triplet's saturation. Hue and lightness pass through. */
+function capCanvasSaturation(hsl: string, cap: number | null): string {
+  if (cap === null) return hsl
+  const [h, s, l] = hsl.split(" ")
+  const saturation = Math.min(parseFloat(s ?? "0"), cap)
+  return `${h} ${saturation.toFixed(0)}% ${l}`
+}
+
 /** WCAG floor for large text, which is what a filled control's label is. */
 const FOREGROUND_MIN_RATIO = 3
 const WHITE = "0 0% 100%"
@@ -181,6 +207,7 @@ export function generateTokens(
     backgroundStyle,
     mode,
     accentVibrancy,
+    canvasTint = "balanced",
   } = input
 
   const sfHueTokens = resolveSfHueTokens(surfaceColor, backgroundStyle)
@@ -268,7 +295,10 @@ export function generateTokens(
     "--chart-4": chartColors[3] ?? "",
     "--chart-5": chartColors[4] ?? "",
 
-    "--background": mode === "light" ? surface[50] : surface[950],
+    "--background":
+      mode === "light"
+        ? surface[50]
+        : capCanvasSaturation(surface[950], CANVAS_TINT_CAPS[canvasTint]),
     "--foreground": foreground,
 
     "--card": mode === "light" ? "0 0% 100%" : surface[900],
@@ -310,7 +340,10 @@ export function generateTokens(
     "--border": border,
     "--input": inputValue,
 
-    "--surface-base": mode === "light" ? surface[50] : surface[950],
+    "--surface-base":
+      mode === "light"
+        ? surface[50]
+        : capCanvasSaturation(surface[950], CANVAS_TINT_CAPS[canvasTint]),
     "--surface-raised": recipe.surfaceRaised(surface, mode),
     "--surface-overlay": recipe.surfaceOverlay(surface, mode),
     "--surface-sunken": recipe.surfaceSunken(surface, mode),

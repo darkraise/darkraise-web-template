@@ -5,12 +5,13 @@ import { surfaceColors } from "@theme/palettes/surfaceColors"
 import { contrastRatio, hslStringToOklch } from "@theme/engine/oklch"
 import { themeConfig } from "@theme/themeConfig"
 import { presets, type PresetName } from "@theme/presets"
-import { ACCENT_COLORS, SURFACE_COLORS } from "@theme/types"
+import { ACCENT_COLORS, SURFACE_COLORS, CANVAS_TINTS } from "@theme/types"
 import type {
   ColorScale,
   AccentColor,
   AccentVibrancy,
   ResolvedMode,
+  CanvasTint,
 } from "@theme/types"
 
 describe("generateTokens", () => {
@@ -195,7 +196,7 @@ describe("generateTokens", () => {
       accentVibrancy: "balanced",
     })
 
-    expect(tokens["--background"]).toBe("229 84% 5%")
+    expect(tokens["--background"]).toBe("229 16% 5%")
     expect(tokens["--foreground"]).toBe("210 40% 98%")
   })
 
@@ -429,7 +430,7 @@ describe("generateTokens", () => {
       accentVibrancy: "balanced",
     })
 
-    expect(tokens["--background"]).toBe("166 32% 5%")
+    expect(tokens["--background"]).toBe("166 16% 5%")
     expect(tokens["--foreground"]).toBe("210 40% 98%")
   })
 
@@ -977,5 +978,78 @@ describe("accent vibrancy default", () => {
 
   it("is exposed in the switcher", () => {
     expect(themeConfig.switcher.axes.accentVibrancy).toBe(true)
+  })
+})
+
+describe("canvasTint", () => {
+  const dark = (canvasTint: CanvasTint, surfaceColor = "violet" as const) =>
+    generateTokens({
+      accentColor: "blue",
+      surfaceColor,
+      preset: "default",
+      backgroundStyle: "solid",
+      mode: "dark",
+      accentVibrancy: "balanced",
+      canvasTint,
+    })
+
+  it("caps canvas saturation at each step", () => {
+    expect(dark("neutral")["--background"]).toBe("261 0% 5%")
+    expect(dark("subtle")["--background"]).toBe("261 8% 5%")
+    expect(dark("balanced")["--background"]).toBe("261 16% 5%")
+  })
+
+  it("leaves vivid at the palette's own value", () => {
+    expect(dark("vivid")["--background"]).toBe("261 26% 5%")
+  })
+
+  it("clamps rather than sets, so a already-calm colour is untouched", () => {
+    // indigo's dark canvas is 16% saturation, exactly the balanced cap
+    const atCap = dark("balanced", "indigo")["--background"]
+    expect(dark("vivid", "indigo")["--background"]).toBe(atCap)
+  })
+
+  it("caps slate, whose palette value is the most saturated of all", () => {
+    expect(dark("vivid", "slate")["--background"]).toBe("229 84% 5%")
+    expect(dark("balanced", "slate")["--background"]).toBe("229 16% 5%")
+  })
+
+  it("never changes lightness or hue", () => {
+    for (const step of CANVAS_TINTS) {
+      const [h, , l] = dark(step)["--background"].split(" ")
+      expect(h).toBe("261")
+      expect(l).toBe("5%")
+    }
+  })
+
+  it("moves --surface-base in lockstep with --background", () => {
+    for (const step of CANVAS_TINTS) {
+      const t = dark(step)
+      expect(t["--surface-base"]).toBe(t["--background"])
+    }
+  })
+
+  it("is inert in light mode", () => {
+    const light = (canvasTint: CanvasTint) =>
+      generateTokens({
+        accentColor: "blue",
+        surfaceColor: "violet",
+        preset: "default",
+        backgroundStyle: "solid",
+        mode: "light",
+        accentVibrancy: "balanced",
+        canvasTint,
+      })["--background"]
+    expect(light("neutral")).toBe(light("vivid"))
+  })
+
+  it("leaves the palette scale itself untouched", () => {
+    // --surface-sunken and --surface-sidebar also derive from surface[950];
+    // capping the canvas must not follow them, or the change has been applied
+    // one level too deep.
+    const a = dark("neutral")
+    const b = dark("vivid")
+    expect(a["--surface-sunken"]).toBe(b["--surface-sunken"])
+    expect(a["--surface-sidebar"]).toBe(b["--surface-sidebar"])
   })
 })
