@@ -164,7 +164,7 @@ const CANVAS_TINT_CAPS: Record<CanvasTint, number | null> = {
 }
 
 /** Clamps an `H S% L%` triplet's saturation. Hue and lightness pass through. */
-function capCanvasSaturation(hsl: string, cap: number | null): string {
+export function capCanvasSaturation(hsl: string, cap: number | null): string {
   if (cap === null) return hsl
   const [h, s, l] = hsl.split(" ")
   const saturation = Math.min(parseFloat(s ?? "0"), cap)

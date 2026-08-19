@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { generateTokens } from "./generateTokens"
+import { generateTokens, capCanvasSaturation } from "./generateTokens"
 import { accentColors } from "@theme/palettes/accentColors"
 import { surfaceColors } from "@theme/palettes/surfaceColors"
 import { contrastRatio, hslStringToOklch } from "@theme/engine/oklch"
@@ -1003,7 +1003,7 @@ describe("canvasTint", () => {
     expect(dark("vivid")["--background"]).toBe("261 26% 5%")
   })
 
-  it("clamps rather than sets, so a already-calm colour is untouched", () => {
+  it("clamps rather than sets, so an already-calm colour is untouched", () => {
     // indigo's dark canvas is 16% saturation, exactly the balanced cap
     const atCap = dark("balanced", "indigo")["--background"]
     expect(dark("vivid", "indigo")["--background"]).toBe(atCap)
@@ -1051,5 +1051,28 @@ describe("canvasTint", () => {
     const b = dark("vivid")
     expect(a["--surface-sunken"]).toBe(b["--surface-sunken"])
     expect(a["--surface-sidebar"]).toBe(b["--surface-sidebar"])
+  })
+})
+
+describe("capCanvasSaturation", () => {
+  // Direct unit tests on the helper, not routed through a palette colour.
+  // Across all eighteen surface colours the dark canvas saturation ranges
+  // from 16 to 84, so no palette input ever sits strictly below a cap —
+  // the canvasTint suite above can't distinguish a clamp (Math.min) from a
+  // plain assignment. A synthetic below-cap triplet closes that gap.
+  it("leaves an already-below-cap saturation unchanged", () => {
+    expect(capCanvasSaturation("200 10% 5%", 16)).toBe("200 10% 5%")
+  })
+
+  it("clamps an above-cap saturation down to the cap", () => {
+    expect(capCanvasSaturation("200 40% 5%", 16)).toBe("200 16% 5%")
+  })
+
+  it("passes through unchanged when the cap is null", () => {
+    expect(capCanvasSaturation("200 40% 5%", null)).toBe("200 40% 5%")
+  })
+
+  it("leaves a saturation exactly at the cap unchanged", () => {
+    expect(capCanvasSaturation("200 16% 5%", 16)).toBe("200 16% 5%")
   })
 })
