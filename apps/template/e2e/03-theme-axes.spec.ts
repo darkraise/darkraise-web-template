@@ -3,6 +3,7 @@ import {
   ACCENT_COLORS,
   ACCENT_VIBRANCIES,
   BACKGROUND_INTENSITIES,
+  CANVAS_TINTS,
   DARK_ONLY_PRESETS,
   DENSITIES,
   ELEVATIONS,
@@ -407,6 +408,46 @@ test.describe("surface intensity axis", () => {
   }
 })
 
+test.describe("canvas tint axis", () => {
+  test("each canvas tint step yields a distinct background", async ({
+    page,
+  }) => {
+    await seedApp(page, { surface: "violet", mode: "dark" })
+    await gotoApp(page, PROBE)
+
+    const seen = new Set<string>()
+    for (const tint of CANVAS_TINTS) {
+      await applyTheme(page, { canvasTint: tint })
+      await page.reload()
+      const bg = await readToken(page, "--background")
+      expect(bg, `${tint} must emit a background`).not.toBe("")
+      seen.add(bg)
+    }
+    expect(seen.size).toBe(CANVAS_TINTS.length)
+  })
+
+  test("the axis is inert in light mode", async ({ page }) => {
+    await seedApp(page, { surface: "violet", mode: "light" })
+    await gotoApp(page, PROBE)
+
+    await applyTheme(page, { canvasTint: "neutral" })
+    await page.reload()
+    const neutral = await readToken(page, "--background")
+
+    await applyTheme(page, { canvasTint: "vivid" })
+    await page.reload()
+    expect(await readToken(page, "--background")).toBe(neutral)
+  })
+
+  test("no data attribute leaks for this axis", async ({ page }) => {
+    await seedApp(page, { canvasTint: "neutral", mode: "dark" })
+    await gotoApp(page, PROBE)
+
+    const attrs = await readThemeAttrs(page)
+    expect(attrs["data-canvas-tint"]).toBeUndefined()
+  })
+})
+
 test.describe("radius axis", () => {
   const expected: Record<string, string> = {
     sharp: "0",
@@ -568,6 +609,7 @@ test.describe("theme persistence", () => {
       surfaceIntensity: "bold",
       radius: "sharp",
       fontSize: "large",
+      canvasTint: "neutral",
     }
     await seedApp(page, seed)
     await gotoApp(page, PROBE)

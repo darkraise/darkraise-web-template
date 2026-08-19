@@ -65,6 +65,7 @@ test.describe("theme switcher popover", () => {
       "Density",
       "Font Size",
       "Accent Vibrancy",
+      "Canvas Tint",
       "Elevation",
       "Button Elevation",
       "Surface Intensity",

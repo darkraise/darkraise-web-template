@@ -90,6 +90,7 @@ token it drives:
 | Density              | compact → spacious                                                                                  | `data-density`, `--density-button-px` increases monotonically                                 |
 | Font size            | small → extra-large                                                                                 | `data-font-size`, `--text-base` increases monotonically                                       |
 | Accent vibrancy      | calm, balanced, vivid, intense (dark mode only)                                                     | `--primary-fill` / `--primary` token values, like Accent and Surface — no `data-*` attribute  |
+| Canvas tint          | neutral, subtle, balanced, vivid (dark mode only)                                                   | `--background` token values, like Accent Vibrancy — no `data-*` attribute                     |
 | Elevation            | flat → high                                                                                         | `data-elevation`, `--elevation-current`                                                       |
 | Button elevation     | flat → high                                                                                         | `data-button-elevation`, `--shadow-button` (flat ⇒ transparent)                               |
 | Surface intensity    | flat, subtle, balanced, bold                                                                        | `data-surface-intensity`                                                                      |
@@ -102,7 +103,7 @@ full round-trip test that every axis survives reload and navigation.
 
 Everything above again, this time through the popover a user actually operates:
 
-- Opens from the header, closes on Escape; the default preset shows all twelve
+- Opens from the header, closes on Escape; the default preset shows all thirteen
   common-axis sections in order.
 - Each of the 6 presets is selectable and persists across reload.
 - Each preset hides exactly the axes it takes over (`hiddenCommonAxes`) and the

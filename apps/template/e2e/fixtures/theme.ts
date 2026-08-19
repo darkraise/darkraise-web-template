@@ -60,6 +60,7 @@ export const SURFACE_INTENSITIES = [
   "balanced",
   "bold",
 ] as const
+export const CANVAS_TINTS = ["neutral", "subtle", "balanced", "vivid"] as const
 
 /** Presets that force a single resolved mode regardless of the mode axis. */
 export const DARK_ONLY_PRESETS: Preset[] = ["neon", "terminal", "scifi"]
@@ -176,4 +177,5 @@ export const LS_KEYS = {
   fontSize: "theme-font-size",
   accentVibrancy: "theme-accent-vibrancy",
   surfaceIntensity: "theme-surface-intensity",
+  canvasTint: "theme-canvas-tint",
 } as const
