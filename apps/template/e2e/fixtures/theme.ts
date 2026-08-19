@@ -41,7 +41,7 @@ export const DENSITIES = ["compact", "cozy", "comfortable", "spacious"] as const
 export const ELEVATIONS = ["flat", "low", "medium", "high"] as const
 export const RADII = ["sharp", "subtle", "rounded", "pill"] as const
 export const FONT_SIZES = ["small", "medium", "large", "extra-large"] as const
-export const ACCENT_VIBRANCIES = [
+export const ACCENT_INTENSITIES = [
   "calm",
   "balanced",
   "vivid",
@@ -132,7 +132,7 @@ export const LS_KEYS = {
   buttonElevation: "theme-button-elevation",
   radius: "theme-radius",
   fontSize: "theme-font-size",
-  accentVibrancy: "theme-accent-vibrancy",
+  accentIntensity: "theme-accent-intensity",
   surfaceIntensity: "theme-surface-intensity",
   canvasTint: "theme-canvas-tint",
 } as const

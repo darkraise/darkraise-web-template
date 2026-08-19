@@ -30,7 +30,7 @@ const DENSITIES = ["compact", "cozy", "comfortable", "spacious"]
 const ELEVATIONS = ["flat", "low", "medium", "high"]
 const RADII = ["sharp", "subtle", "rounded", "pill"]
 const FONT_SIZES = ["small", "medium", "large", "extra-large"]
-const ACCENT_VIBRANCIES = ["calm", "balanced", "vivid", "intense"]
+const ACCENT_INTENSITIES = ["calm", "balanced", "vivid", "intense"]
 const CANVAS_TINTS = ["neutral", "subtle", "balanced", "vivid"]
 const SURFACE_INTENSITIES = ["flat", "subtle", "balanced", "bold"]
 const MODES = ["light", "dark", "system"]
@@ -43,7 +43,7 @@ const THEME_AXIS_KEYS = [
   "mode", "accentColor", "surfaceColor", "preset",
   "backgroundStyle", "backgroundIntensity", "gradientPattern",
   "density", "elevation", "buttonElevation", "surfaceIntensity", "radius", "fontSize",
-  "accentVibrancy", "canvasTint", "presetAxes",
+  "accentIntensity", "canvasTint", "presetAxes",
 ]
 
 const argv = minimist(process.argv.slice(2), {
@@ -53,7 +53,7 @@ const argv = minimist(process.argv.slice(2), {
     "background", "background-intensity", "gradient-pattern",
     "mode", "theme-axes",
     "density", "elevation", "button-elevation", "surface-intensity", "radius", "font-size",
-    "accent-vibrancy", "canvas-tint",
+    "accent-intensity", "canvas-tint",
     "host", "port",
   ],
   alias: { y: "yes" },
@@ -91,7 +91,7 @@ validate(argv["button-elevation"], ELEVATIONS, "button-elevation")
 validate(argv["surface-intensity"], SURFACE_INTENSITIES, "surface-intensity")
 validate(argv.radius, RADII, "radius")
 validate(argv["font-size"], FONT_SIZES, "font-size")
-validate(argv["accent-vibrancy"], ACCENT_VIBRANCIES, "accent-vibrancy")
+validate(argv["accent-intensity"], ACCENT_INTENSITIES, "accent-intensity")
 validate(argv["canvas-tint"], CANVAS_TINTS, "canvas-tint")
 
 if (argv["theme-axes"] !== undefined) {
@@ -267,10 +267,10 @@ async function main() {
     }),
   ))
 
-  const accentVibrancy = argv["accent-vibrancy"] || (skipPrompts ? "balanced" : cancelled(
+  const accentIntensity = argv["accent-intensity"] || (skipPrompts ? "balanced" : cancelled(
     await p.select({
-      message: "Accent vibrancy (dark mode only)",
-      options: ACCENT_VIBRANCIES.map((v) => ({ value: v, label: v })),
+      message: "Accent intensity (dark mode only)",
+      options: ACCENT_INTENSITIES.map((v) => ({ value: v, label: v })),
       initialValue: "balanced",
     }),
   ))
@@ -320,7 +320,7 @@ async function main() {
             { value: "surfaceIntensity", label: "Surface intensity" },
             { value: "radius", label: "Radius" },
             { value: "fontSize", label: "Font size" },
-            { value: "accentVibrancy", label: "Accent vibrancy" },
+            { value: "accentIntensity", label: "Accent intensity" },
             { value: "canvasTint", label: "Canvas tint" },
             { value: "presetAxes", label: "Preset-specific axes (e.g. glass blur, scifi intensity/frame)" },
           ],
@@ -377,7 +377,7 @@ async function main() {
         surfaceIntensity: surfaceIntensity,
         radius: radius,
         fontSize: fontSize,
-        accentVibrancy: accentVibrancy,
+        accentIntensity: accentIntensity,
         canvasTint: canvasTint,
       },
       switcher: {
@@ -575,7 +575,7 @@ export const themeConfig: ThemeConfig = {
     surfaceIntensity: "${config.theme.defaults.surfaceIntensity}",
     radius: "${config.theme.defaults.radius}",
     fontSize: "${config.theme.defaults.fontSize}",
-    accentVibrancy: "${config.theme.defaults.accentVibrancy}",
+    accentIntensity: "${config.theme.defaults.accentIntensity}",
     canvasTint: "${config.theme.defaults.canvasTint}",
   },
   switcher: {
@@ -594,7 +594,7 @@ export const themeConfig: ThemeConfig = {
       surfaceIntensity: ${config.theme.switcher.axes.surfaceIntensity},
       radius: ${config.theme.switcher.axes.radius},
       fontSize: ${config.theme.switcher.axes.fontSize},
-      accentVibrancy: ${config.theme.switcher.axes.accentVibrancy},
+      accentIntensity: ${config.theme.switcher.axes.accentIntensity},
       canvasTint: ${config.theme.switcher.axes.canvasTint},
       presetAxes: ${config.theme.switcher.axes.presetAxes},
     },

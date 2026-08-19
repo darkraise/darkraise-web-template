@@ -15,7 +15,7 @@ export const themeConfig: ThemeConfig = {
     surfaceIntensity: "balanced",
     radius: "rounded",
     fontSize: "medium",
-    accentVibrancy: "balanced",
+    accentIntensity: "balanced",
     canvasTint: "balanced",
   },
   switcher: {
@@ -34,7 +34,7 @@ export const themeConfig: ThemeConfig = {
       surfaceIntensity: true,
       radius: true,
       fontSize: true,
-      accentVibrancy: true,
+      accentIntensity: true,
       canvasTint: true,
       presetAxes: true,
     },

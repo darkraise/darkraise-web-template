@@ -89,7 +89,7 @@ token it drives:
 | Gradient pattern     | blobs, aurora, spotlight, mesh                    | `data-gradient-pattern`                                                                       |
 | Density              | compact → spacious                                | `data-density`, `--density-button-px` increases monotonically                                 |
 | Font size            | small → extra-large                               | `data-font-size`, `--text-base` increases monotonically                                       |
-| Accent vibrancy      | calm, balanced, vivid, intense (dark mode only)   | `--primary-fill` / `--primary` token values, like Accent and Surface — no `data-*` attribute  |
+| Accent intensity     | calm, balanced, vivid, intense (dark mode only)   | `--primary-fill` / `--primary` token values, like Accent and Surface — no `data-*` attribute  |
 | Canvas tint          | neutral, subtle, balanced, vivid (dark mode only) | `--background` token values, like Accent Vibrancy — no `data-*` attribute                     |
 | Elevation            | flat → high                                       | `data-elevation`, `--elevation-current`                                                       |
 | Button elevation     | flat → high                                       | `data-button-elevation`, `--shadow-button` (flat ⇒ transparent)                               |

@@ -42,7 +42,7 @@ export interface ThemeSeed {
   buttonElevation?: string
   radius?: string
   fontSize?: string
-  accentVibrancy?: string
+  accentIntensity?: string
   surfaceIntensity?: string
   canvasTint?: string
   /** Preset-specific axes: { glass: { blur: "high" } } → key `theme-glass-blur`. */
@@ -80,7 +80,7 @@ function storageEntries(theme: ThemeSeed, authenticated: boolean) {
     ["buttonElevation", LS_KEYS.buttonElevation],
     ["radius", LS_KEYS.radius],
     ["fontSize", LS_KEYS.fontSize],
-    ["accentVibrancy", LS_KEYS.accentVibrancy],
+    ["accentIntensity", LS_KEYS.accentIntensity],
     ["surfaceIntensity", LS_KEYS.surfaceIntensity],
     ["canvasTint", LS_KEYS.canvasTint],
   ]

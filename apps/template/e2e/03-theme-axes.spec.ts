@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test"
 import {
   ACCENT_COLORS,
-  ACCENT_VIBRANCIES,
+  ACCENT_INTENSITIES,
   BACKGROUND_INTENSITIES,
   CANVAS_TINTS,
   DARK_ONLY_PRESETS,
@@ -187,7 +187,7 @@ test.describe("accent color axis", () => {
   })
 })
 
-test.describe("accent vibrancy axis", () => {
+test.describe("accent intensity axis", () => {
   test("each step emits a distinct --primary-fill in dark mode", async ({
     page,
   }) => {
@@ -198,14 +198,14 @@ test.describe("accent vibrancy axis", () => {
     await gotoApp(page, PROBE)
 
     const seen = new Set<string>()
-    for (const vibrancy of ACCENT_VIBRANCIES) {
-      await applyTheme(page, { accentVibrancy: vibrancy })
+    for (const intensity of ACCENT_INTENSITIES) {
+      await applyTheme(page, { accentIntensity: intensity })
       await page.reload()
       const fill = await readToken(page, "--primary-fill")
-      expect(fill, `${vibrancy} must emit a fill`).not.toBe("")
+      expect(fill, `${intensity} must emit a fill`).not.toBe("")
       seen.add(fill)
     }
-    expect(seen.size).toBe(ACCENT_VIBRANCIES.length)
+    expect(seen.size).toBe(ACCENT_INTENSITIES.length)
 
     consoleWatch.assertClean()
   })
@@ -214,21 +214,21 @@ test.describe("accent vibrancy axis", () => {
     await seedApp(page, { accent: "fuchsia", mode: "light" })
     await gotoApp(page, PROBE)
 
-    await applyTheme(page, { accentVibrancy: "calm" })
+    await applyTheme(page, { accentIntensity: "calm" })
     await page.reload()
     const calm = await readToken(page, "--primary-fill")
 
-    await applyTheme(page, { accentVibrancy: "intense" })
+    await applyTheme(page, { accentIntensity: "intense" })
     await page.reload()
     expect(await readToken(page, "--primary-fill")).toBe(calm)
   })
 
   test("no data attribute leaks for this axis", async ({ page }) => {
-    await seedApp(page, { accentVibrancy: "vivid", mode: "dark" })
+    await seedApp(page, { accentIntensity: "vivid", mode: "dark" })
     await gotoApp(page, PROBE)
 
     const attrs = await readThemeAttrs(page)
-    expect(attrs["data-accent-vibrancy"]).toBeUndefined()
+    expect(attrs["data-accent-intensity"]).toBeUndefined()
   })
 })
 
