@@ -2,7 +2,7 @@ import type {
   AccentColor,
   AccentIntensity,
   BackgroundStyle,
-  CanvasTint,
+  BackgroundIntensity,
   SurfaceColor,
   ResolvedMode,
   ColorScale,
@@ -24,7 +24,7 @@ export interface GenerateTokensInput {
   backgroundStyle: BackgroundStyle
   mode: ResolvedMode
   accentIntensity: AccentIntensity
-  canvasTint?: CanvasTint
+  backgroundIntensity?: BackgroundIntensity
 }
 
 function getChartColors(
@@ -184,11 +184,12 @@ const VIBRANCY: Record<
  * `null` means uncapped — the palette's own value, which is what preserving the
  * pre-axis appearance requires.
  */
-const CANVAS_TINT_CAPS: Record<CanvasTint, number | null> = {
+const CANVAS_SATURATION_CAP: Record<BackgroundIntensity, number | null> = {
   neutral: 0,
   subtle: 8,
   balanced: 16,
   vivid: null,
+  intense: null,
 }
 
 /** Clamps an `H S% L%` triplet's saturation. Hue and lightness pass through. */
@@ -235,7 +236,7 @@ export function generateTokens(
     backgroundStyle,
     mode,
     accentIntensity,
-    canvasTint = "balanced",
+    backgroundIntensity = "balanced",
   } = input
 
   const sfHueTokens = resolveSfHueTokens(surfaceColor, backgroundStyle)
@@ -323,10 +324,10 @@ export function generateTokens(
     "--chart-4": chartColors[3] ?? "",
     "--chart-5": chartColors[4] ?? "",
 
-    "--background":
-      mode === "light"
-        ? surface[50]
-        : capCanvasSaturation(surface[950], CANVAS_TINT_CAPS[canvasTint]),
+    "--background": capCanvasSaturation(
+      mode === "light" ? surface[50] : surface[950],
+      CANVAS_SATURATION_CAP[backgroundIntensity],
+    ),
     "--foreground": foreground,
 
     "--card": mode === "light" ? "0 0% 100%" : surface[900],
@@ -368,10 +369,10 @@ export function generateTokens(
     "--border": border,
     "--input": inputValue,
 
-    "--surface-base":
-      mode === "light"
-        ? surface[50]
-        : capCanvasSaturation(surface[950], CANVAS_TINT_CAPS[canvasTint]),
+    "--surface-base": capCanvasSaturation(
+      mode === "light" ? surface[50] : surface[950],
+      CANVAS_SATURATION_CAP[backgroundIntensity],
+    ),
     "--surface-raised": recipe.surfaceRaised(surface, mode),
     "--surface-overlay": recipe.surfaceOverlay(surface, mode),
     "--surface-sunken": recipe.surfaceSunken(surface, mode),

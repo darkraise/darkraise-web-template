@@ -58,7 +58,6 @@ export const defaultLabels: UiLabels = {
       radius: "Radius",
       fontSize: "Font Size",
       accentIntensity: "Accent Intensity",
-      canvasTint: "Canvas Tint",
       /* Currently unused: the "preset-axes" section has no fixed heading
          of its own — it renders only dynamic per-preset axisDef.label
          values from ThemePreset definitions, which live outside UiLabels.

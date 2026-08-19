@@ -104,14 +104,17 @@ describe("ThemeSwitcher preset section", () => {
     )
   })
 
-  it("does NOT render Background Intensity when backgroundStyle is solid", () => {
+  // The axis absorbed canvasTint, so under `solid` it still drives the canvas
+  // saturation cap. Only its blob-scale half is gradient-specific, and that
+  // half goes inert rather than hiding the whole control.
+  it("renders Background Intensity when backgroundStyle is solid", () => {
     render(
       <ThemeProvider>
         <ThemeSwitcher />
       </ThemeProvider>,
     )
     openSwitcher()
-    expect(screen.queryByText("Background Intensity")).not.toBeInTheDocument()
+    expect(screen.getByText("Background Intensity")).toBeInTheDocument()
   })
 
   it("renders Background Intensity when backgroundStyle is gradient", () => {

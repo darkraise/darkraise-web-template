@@ -1070,7 +1070,13 @@
 /* Background intensity axis — scales the blob recipes via --canvas-blob-scale.
    Only meaningful when [data-background-style="gradient"] is also set (the
    selector below the @layer base block gates the actual gradient overlay).
-   Default 1 = balanced; 0.5 = subtle; 1.5 = vivid; 2 = intense. */
+   Default 1 = balanced; 0.25 = neutral; 0.5 = subtle; 1.5 = vivid; 2 = intense.
+   `neutral` stays faint rather than 0 so a gradient background still reads as a
+   gradient at the lowest step. The axis also caps the canvas saturation in the
+   token engine, which is the half that applies under `solid` too. */
+[data-background-intensity="neutral"] {
+  --canvas-blob-scale: 0.25;
+}
 [data-background-intensity="subtle"] {
   --canvas-blob-scale: 0.5;
 }

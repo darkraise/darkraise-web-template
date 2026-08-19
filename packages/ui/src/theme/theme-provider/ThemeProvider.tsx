@@ -11,7 +11,6 @@ import type {
   Radius,
   FontSize,
   AccentIntensity,
-  CanvasTint,
   Mode,
   ResolvedMode,
   ThemeContextValue,
@@ -29,7 +28,6 @@ import {
   RADII,
   FONT_SIZES,
   ACCENT_INTENSITIES,
-  CANVAS_TINTS,
 } from "@theme/types"
 import {
   generateTokens,
@@ -48,6 +46,7 @@ import { themeConfig, type ThemeConfig } from "@theme/themeConfig"
 import { useDebouncedCallback } from "@hooks/useDebouncedCallback"
 import { migrateGlassPresetKeys } from "./migrateGlassPresetKeys"
 import { migrateAccentIntensityKey } from "./migrateAccentIntensityKey"
+import { migrateCanvasTintKey } from "./migrateCanvasTintKey"
 
 declare const process: { env: { NODE_ENV?: string } }
 
@@ -67,7 +66,6 @@ const LS_SURFACE_INTENSITY = "theme-surface-intensity"
 const LS_RADIUS = "theme-radius"
 const LS_FONT_SIZE = "theme-font-size"
 const LS_ACCENT_INTENSITY = "theme-accent-intensity"
-const LS_CANVAS_TINT = "theme-canvas-tint"
 
 const isBrowser = typeof window !== "undefined"
 
@@ -141,6 +139,7 @@ if (isBrowser) {
   try {
     migrateGlassPresetKeys(globalThis.localStorage)
     migrateAccentIntensityKey(globalThis.localStorage)
+    migrateCanvasTintKey(globalThis.localStorage)
   } catch {
     // ignore
   }
@@ -318,14 +317,6 @@ export function ThemeProvider({
     },
   )
 
-  const [canvasTint, setCanvasTintState] = useState<CanvasTint>(() => {
-    const stored = readStorage(LS_CANVAS_TINT)
-    if (stored && (CANVAS_TINTS as readonly string[]).includes(stored)) {
-      return stored as CanvasTint
-    }
-    return cfg.defaults.canvasTint
-  })
-
   const [resolvedMode, setResolvedMode] = useState<ResolvedMode>(() =>
     clampResolvedMode(preset, resolveMode(mode)),
   )
@@ -356,7 +347,7 @@ export function ThemeProvider({
       bgStyle: BackgroundStyle,
       resolved: ResolvedMode,
       vibrancy: AccentIntensity,
-      tint: CanvasTint,
+      bgIntensity: BackgroundIntensity,
       axisValues: Record<string, Record<string, string>>,
     ) => {
       const activePreset = presets[presetName]
@@ -396,7 +387,7 @@ export function ThemeProvider({
         backgroundStyle: bgStyle,
         mode: resolved,
         accentIntensity: vibrancy,
-        canvasTint: tint,
+        backgroundIntensity: bgIntensity,
       })
 
       // Preset-owned tokens (if the preset declares any cross-axis math).
@@ -450,7 +441,6 @@ export function ThemeProvider({
       radius,
       fontSize,
       accentIntensity,
-      canvasTint,
       presetAxisValues,
       ...overrides,
     }),
@@ -469,7 +459,6 @@ export function ThemeProvider({
       radius,
       fontSize,
       accentIntensity,
-      canvasTint,
       presetAxisValues,
     ],
   )
@@ -511,7 +500,6 @@ export function ThemeProvider({
       setAccentIntensityState(
         settings.accentIntensity ?? cfg.defaults.accentIntensity,
       )
-      setCanvasTintState(settings.canvasTint ?? cfg.defaults.canvasTint)
       setPresetAxisValuesState(newAxisValues)
 
       writeStorage(LS_ACCENT, settings.accentColor)
@@ -536,10 +524,6 @@ export function ThemeProvider({
       writeStorage(
         LS_ACCENT_INTENSITY,
         settings.accentIntensity ?? cfg.defaults.accentIntensity,
-      )
-      writeStorage(
-        LS_CANVAS_TINT,
-        settings.canvasTint ?? cfg.defaults.canvasTint,
       )
       for (const [presetName, axes] of Object.entries(newAxisValues)) {
         for (const [axisName, value] of Object.entries(axes)) {
@@ -587,7 +571,7 @@ export function ThemeProvider({
         settings.backgroundStyle,
         resolved,
         settings.accentIntensity ?? cfg.defaults.accentIntensity,
-        settings.canvasTint ?? cfg.defaults.canvasTint,
+        newBgIntensity,
         newAxisValues,
       )
     },
@@ -618,7 +602,7 @@ export function ThemeProvider({
         backgroundStyle,
         resolvedMode,
         accentIntensity,
-        canvasTint,
+        backgroundIntensity,
         presetAxisValues,
       )
       const settings = buildSettings({ accentColor: color })
@@ -636,7 +620,7 @@ export function ThemeProvider({
       backgroundStyle,
       resolvedMode,
       accentIntensity,
-      canvasTint,
+      backgroundIntensity,
       presetAxisValues,
     ],
   )
@@ -652,7 +636,7 @@ export function ThemeProvider({
         backgroundStyle,
         resolvedMode,
         accentIntensity,
-        canvasTint,
+        backgroundIntensity,
         presetAxisValues,
       )
       const settings = buildSettings({ surfaceColor: color })
@@ -670,7 +654,7 @@ export function ThemeProvider({
       backgroundStyle,
       resolvedMode,
       accentIntensity,
-      canvasTint,
+      backgroundIntensity,
       presetAxisValues,
     ],
   )
@@ -715,7 +699,7 @@ export function ThemeProvider({
         backgroundStyle,
         nextResolvedMode,
         accentIntensity,
-        canvasTint,
+        backgroundIntensity,
         presetAxisValues,
       )
       const settings = buildSettings({ preset: p, mode: nextMode })
@@ -734,7 +718,7 @@ export function ThemeProvider({
       resolvedMode,
       mode,
       accentIntensity,
-      canvasTint,
+      backgroundIntensity,
       presetAxisValues,
     ],
   )
@@ -779,7 +763,7 @@ export function ThemeProvider({
         backgroundStyle,
         resolvedMode,
         accentIntensity,
-        canvasTint,
+        backgroundIntensity,
         next,
       )
       const settings = buildSettings({ presetAxisValues: next })
@@ -795,7 +779,7 @@ export function ThemeProvider({
       backgroundStyle,
       resolvedMode,
       accentIntensity,
-      canvasTint,
+      backgroundIntensity,
       applyTheme,
       notifyChange,
       buildSettings,
@@ -814,7 +798,7 @@ export function ThemeProvider({
         bgStyle,
         resolvedMode,
         accentIntensity,
-        canvasTint,
+        backgroundIntensity,
         presetAxisValues,
       )
       const settings = buildSettings({ backgroundStyle: bgStyle })
@@ -832,7 +816,7 @@ export function ThemeProvider({
       preset,
       resolvedMode,
       accentIntensity,
-      canvasTint,
+      backgroundIntensity,
       presetAxisValues,
     ],
   )
@@ -845,12 +829,37 @@ export function ThemeProvider({
         "data-background-intensity",
         intensity,
       )
+      // The axis absorbed canvasTint, so it now drives a token-engine value
+      // (the canvas saturation cap) as well as the CSS blob scale. Setting the
+      // attribute alone would leave the page colour on the previous step.
+      applyTheme(
+        accentColor,
+        surfaceColor,
+        preset,
+        backgroundStyle,
+        resolvedMode,
+        accentIntensity,
+        intensity,
+        presetAxisValues,
+      )
       const settings = buildSettings({ backgroundIntensity: intensity })
       notifyChange(settings)
       hasUserChanged.current = true
       debouncedSave(settings)
     },
-    [buildSettings, notifyChange, debouncedSave],
+    [
+      applyTheme,
+      buildSettings,
+      notifyChange,
+      debouncedSave,
+      accentColor,
+      surfaceColor,
+      preset,
+      backgroundStyle,
+      resolvedMode,
+      accentIntensity,
+      presetAxisValues,
+    ],
   )
 
   const setGradientPattern = useCallback(
@@ -899,7 +908,7 @@ export function ThemeProvider({
         backgroundStyle,
         resolved,
         accentIntensity,
-        canvasTint,
+        backgroundIntensity,
         presetAxisValues,
       )
       const settings = buildSettings({ mode: m, preset: nextPreset })
@@ -917,7 +926,7 @@ export function ThemeProvider({
       preset,
       backgroundStyle,
       accentIntensity,
-      canvasTint,
+      backgroundIntensity,
       presetAxisValues,
     ],
   )
@@ -1012,40 +1021,6 @@ export function ThemeProvider({
     [buildSettings, notifyChange, debouncedSave],
   )
 
-  const setCanvasTint = useCallback(
-    (tint: CanvasTint) => {
-      setCanvasTintState(tint)
-      writeStorage(LS_CANVAS_TINT, tint)
-      applyTheme(
-        accentColor,
-        surfaceColor,
-        preset,
-        backgroundStyle,
-        resolvedMode,
-        accentIntensity,
-        tint,
-        presetAxisValues,
-      )
-      const settings = buildSettings({ canvasTint: tint })
-      notifyChange(settings)
-      hasUserChanged.current = true
-      debouncedSave(settings)
-    },
-    [
-      applyTheme,
-      notifyChange,
-      buildSettings,
-      debouncedSave,
-      accentColor,
-      surfaceColor,
-      preset,
-      backgroundStyle,
-      resolvedMode,
-      accentIntensity,
-      presetAxisValues,
-    ],
-  )
-
   useEffect(() => {
     applyTheme(
       accentColor,
@@ -1054,7 +1029,7 @@ export function ThemeProvider({
       backgroundStyle,
       resolvedMode,
       accentIntensity,
-      canvasTint,
+      backgroundIntensity,
       presetAxisValues,
     )
   }, [
@@ -1065,7 +1040,7 @@ export function ThemeProvider({
     backgroundStyle,
     resolvedMode,
     accentIntensity,
-    canvasTint,
+    backgroundIntensity,
     presetAxisValues,
   ])
 
@@ -1129,7 +1104,7 @@ export function ThemeProvider({
         backgroundStyle,
         resolved,
         accentIntensity,
-        canvasTint,
+        backgroundIntensity,
         presetAxisValues,
       )
     }
@@ -1142,7 +1117,7 @@ export function ThemeProvider({
     preset,
     backgroundStyle,
     accentIntensity,
-    canvasTint,
+    backgroundIntensity,
     presetAxisValues,
     applyTheme,
   ])
@@ -1190,7 +1165,6 @@ export function ThemeProvider({
       radius,
       fontSize,
       accentIntensity,
-      canvasTint,
       resolvedMode,
       config: cfg,
       syncStatus,
@@ -1210,7 +1184,6 @@ export function ThemeProvider({
       setRadius,
       setFontSize,
       setAccentIntensity,
-      setCanvasTint,
       setPresetAxis,
     }),
     [
@@ -1228,7 +1201,6 @@ export function ThemeProvider({
       radius,
       fontSize,
       accentIntensity,
-      canvasTint,
       resolvedMode,
       cfg,
       syncStatus,
@@ -1247,7 +1219,6 @@ export function ThemeProvider({
       setRadius,
       setFontSize,
       setAccentIntensity,
-      setCanvasTint,
       setPresetAxis,
     ],
   )

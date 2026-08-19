@@ -14,7 +14,6 @@ import {
   RADII,
   FONT_SIZES,
   ACCENT_INTENSITIES,
-  CANVAS_TINTS,
 } from "@theme/types"
 import type {
   Mode,
@@ -72,7 +71,6 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
     radius,
     fontSize,
     accentIntensity,
-    canvasTint,
     config,
     activePreset,
     presetAxisValues,
@@ -90,7 +88,6 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
     setRadius,
     setFontSize,
     setAccentIntensity,
-    setCanvasTint,
     setPresetAxis,
   } = useTheme()
 
@@ -257,24 +254,26 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
         </div>
       ),
     },
-    axes.backgroundIntensity &&
-      backgroundStyle === "gradient" && {
-        key: "backgroundIntensity",
-        group: "background" as const,
-        node: (
-          <div key="backgroundIntensity" className="dr-theme-switcher-row">
-            <Label className="dr-theme-switcher-section-label">
-              {labels.theme.axisLabels.backgroundIntensity}
-            </Label>
-            <AxisControl
-              values={BACKGROUND_INTENSITIES}
-              value={backgroundIntensity}
-              onChange={setBackgroundIntensity}
-              label={labels.theme.axisLabels.backgroundIntensity}
-            />
-          </div>
-        ),
-      },
+    // No gradient gate: the axis absorbed canvasTint, so under `solid` it still
+    // drives the canvas saturation cap. Only the blob-scale half is
+    // gradient-specific, and that half is inert rather than hidden.
+    axes.backgroundIntensity && {
+      key: "backgroundIntensity",
+      group: "background" as const,
+      node: (
+        <div key="backgroundIntensity" className="dr-theme-switcher-row">
+          <Label className="dr-theme-switcher-section-label">
+            {labels.theme.axisLabels.backgroundIntensity}
+          </Label>
+          <AxisControl
+            values={BACKGROUND_INTENSITIES}
+            value={backgroundIntensity}
+            onChange={setBackgroundIntensity}
+            label={labels.theme.axisLabels.backgroundIntensity}
+          />
+        </div>
+      ),
+    },
     axes.gradientPattern &&
       backgroundStyle === "gradient" && {
         key: "gradientPattern",
@@ -415,24 +414,6 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
               value={accentIntensity}
               onChange={setAccentIntensity}
               label={labels.theme.axisLabels.accentIntensity}
-            />
-          </div>
-        ),
-      },
-    axes.canvasTint &&
-      !isCommonAxisHidden("canvasTint") && {
-        key: "canvasTint",
-        group: "color" as const,
-        node: (
-          <div key="canvasTint" className="dr-theme-switcher-row">
-            <Label className="dr-theme-switcher-section-label">
-              {labels.theme.axisLabels.canvasTint}
-            </Label>
-            <AxisControl
-              values={CANVAS_TINTS}
-              value={canvasTint}
-              onChange={setCanvasTint}
-              label={labels.theme.axisLabels.canvasTint}
             />
           </div>
         ),

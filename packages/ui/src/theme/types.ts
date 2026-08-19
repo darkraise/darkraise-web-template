@@ -28,6 +28,7 @@ export const BACKGROUND_STYLES = ["solid", "gradient"] as const
 export type BackgroundStyle = (typeof BACKGROUND_STYLES)[number]
 
 export const BACKGROUND_INTENSITIES = [
+  "neutral",
   "subtle",
   "balanced",
   "vivid",
@@ -71,9 +72,6 @@ export const ACCENT_INTENSITIES = [
 ] as const
 export type AccentIntensity = (typeof ACCENT_INTENSITIES)[number]
 
-export const CANVAS_TINTS = ["neutral", "subtle", "balanced", "vivid"] as const
-export type CanvasTint = (typeof CANVAS_TINTS)[number]
-
 export const MODES = ["light", "dark", "system"] as const
 export type Mode = (typeof MODES)[number]
 
@@ -105,7 +103,6 @@ export interface ThemeSettings {
   /** How loud the accent reads in dark mode; ignored in light. Defaults to
    *  "balanced". */
   accentIntensity?: AccentIntensity
-  canvasTint?: CanvasTint
   /** Per-preset axis values; outer key = preset name, inner key = axis name. */
   presetAxisValues?: Record<string, Record<string, string>>
 }
@@ -132,7 +129,6 @@ export interface ThemeContextValue {
   radius: Radius
   fontSize: FontSize
   accentIntensity: AccentIntensity
-  canvasTint: CanvasTint
   resolvedMode: ResolvedMode
   config: import("./themeConfig").ThemeConfig
   syncStatus: ThemeSyncStatus
@@ -154,7 +150,6 @@ export interface ThemeContextValue {
   setRadius: (radius: Radius) => void
   setFontSize: (size: FontSize) => void
   setAccentIntensity: (intensity: AccentIntensity) => void
-  setCanvasTint: (tint: CanvasTint) => void
   /**
    * Update one preset-specific axis on the active preset. No-ops with a
    * console.warn (dev-only) when the axis is not valid for the active preset.

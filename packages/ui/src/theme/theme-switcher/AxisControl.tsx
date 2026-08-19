@@ -17,7 +17,10 @@ export function AxisControl<V extends string>({
   onChange: (v: V) => void
   label: string
 }) {
-  if (values.length === 4) {
+  // 4 and 5 render as a stepped slider; anything else is a ToggleGroup. Scoped
+  // to these two rather than `>= 4` so a future six-value axis does not
+  // silently become a slider too fine to aim at.
+  if (values.length === 4 || values.length === 5) {
     const index = Math.max(0, values.indexOf(value))
     return (
       <div className="dr-theme-switcher-slider-control">

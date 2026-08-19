@@ -9,14 +9,14 @@ import {
   ACCENT_COLORS,
   ACCENT_INTENSITIES,
   SURFACE_COLORS,
-  CANVAS_TINTS,
+  BACKGROUND_INTENSITIES,
 } from "@theme/types"
 import type {
   ColorScale,
   AccentColor,
   AccentIntensity,
   ResolvedMode,
-  CanvasTint,
+  BackgroundIntensity,
 } from "@theme/types"
 
 describe("generateTokens", () => {
@@ -452,7 +452,7 @@ describe("generateTokens", () => {
       accentIntensity: "balanced",
     })
 
-    expect(tokens["--background"]).toBe("0 34% 97%")
+    expect(tokens["--background"]).toBe("0 16% 97%")
     expect(tokens["--foreground"]).toBe("222 47% 11%")
   })
 
@@ -466,7 +466,7 @@ describe("generateTokens", () => {
       accentIntensity: "balanced",
     })
 
-    expect(tokens["--background"]).toBe("210 40% 98%")
+    expect(tokens["--background"]).toBe("210 16% 98%")
     expect(tokens["--foreground"]).toBe("222 47% 11%")
   })
 
@@ -1031,8 +1031,11 @@ describe("accent vibrancy default", () => {
   })
 })
 
-describe("canvasTint", () => {
-  const dark = (canvasTint: CanvasTint, surfaceColor = "violet" as const) =>
+describe("backgroundIntensity canvas cap", () => {
+  const dark = (
+    backgroundIntensity: BackgroundIntensity,
+    surfaceColor = "violet" as const,
+  ) =>
     generateTokens({
       accentColor: "blue",
       surfaceColor,
@@ -1040,7 +1043,7 @@ describe("canvasTint", () => {
       backgroundStyle: "solid",
       mode: "dark",
       accentIntensity: "balanced",
-      canvasTint,
+      backgroundIntensity,
     })
 
   it("caps canvas saturation at each step", () => {
@@ -1065,7 +1068,7 @@ describe("canvasTint", () => {
   })
 
   it("never changes lightness or hue", () => {
-    for (const step of CANVAS_TINTS) {
+    for (const step of BACKGROUND_INTENSITIES) {
       const [h, , l] = dark(step)["--background"].split(" ")
       expect(h).toBe("261")
       expect(l).toBe("5%")
@@ -1073,14 +1076,16 @@ describe("canvasTint", () => {
   })
 
   it("moves --surface-base in lockstep with --background", () => {
-    for (const step of CANVAS_TINTS) {
+    for (const step of BACKGROUND_INTENSITIES) {
       const t = dark(step)
       expect(t["--surface-base"]).toBe(t["--background"])
     }
   })
 
-  it("is inert in light mode", () => {
-    const light = (canvasTint: CanvasTint) =>
+  it("caps in light mode too", () => {
+    // The axis used to be dark-only, which made it silently inert in half the
+    // themes. slate[50] is `210 40% 98%`, so the cap genuinely binds in light.
+    const light = (backgroundIntensity: BackgroundIntensity) =>
       generateTokens({
         accentColor: "blue",
         surfaceColor: "violet",
@@ -1088,9 +1093,14 @@ describe("canvasTint", () => {
         backgroundStyle: "solid",
         mode: "light",
         accentIntensity: "balanced",
-        canvasTint,
+        backgroundIntensity,
       })["--background"]
-    expect(light("neutral")).toBe(light("vivid"))
+    expect(light("neutral").split(" ")[1]).toBe("0%")
+    expect(light("neutral")).not.toBe(light("vivid"))
+  })
+
+  it("treats intense as uncapped, like vivid", () => {
+    expect(dark("intense")["--background"]).toBe(dark("vivid")["--background"])
   })
 
   it("leaves the palette scale itself untouched", () => {

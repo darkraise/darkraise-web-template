@@ -226,25 +226,30 @@ describe("useTheme", () => {
     ).toBe("217 74% 49%")
   })
 
-  it("defaults canvasTint to balanced", () => {
+  it("defaults backgroundIntensity to balanced", () => {
     const { result } = renderHook(() => useTheme(), { wrapper })
-    expect(result.current.canvasTint).toBe("balanced")
+    expect(result.current.backgroundIntensity).toBe("balanced")
   })
 
-  it("persists canvasTint without writing a data attribute", () => {
+  it("persists backgroundIntensity and writes its data attribute", () => {
+    // Unlike the canvasTint axis it absorbed, this one drives CSS as well as
+    // the token engine, so it does carry an attribute.
     const { result } = renderHook(() => useTheme(), { wrapper })
-    act(() => result.current.setCanvasTint("neutral"))
-    expect(result.current.canvasTint).toBe("neutral")
-    expect(localStorage.getItem("theme-canvas-tint")).toBe("neutral")
-    expect(document.documentElement.getAttribute("data-canvas-tint")).toBeNull()
+    act(() => result.current.setBackgroundIntensity("neutral"))
+    expect(result.current.backgroundIntensity).toBe("neutral")
+    expect(localStorage.getItem("theme-bg-intensity")).toBe("neutral")
+    expect(
+      document.documentElement.getAttribute("data-background-intensity"),
+    ).toBe("neutral")
   })
 
-  // canvasTint caps how much of the surface hue's saturation the dark-mode
-  // canvas may carry (see CANVAS_TINT_CAPS in generateTokens.ts). --background
+  // backgroundIntensity caps how much of the surface hue's saturation the
+  // canvas may carry (see CANVAS_SATURATION_CAP in generateTokens.ts).
+  // --background
   // and --surface-base share the exact same formula, so they must move
   // together. Default settings resolve slate's surface[950] ("229 84% 5%");
   // "balanced" caps saturation at 16%, "neutral" caps it at 0%.
-  it("moves --background and --surface-base when canvasTint changes in dark mode", () => {
+  it("moves --background and --surface-base when backgroundIntensity changes in dark mode", () => {
     const { result } = renderHook(() => useTheme(), { wrapper })
     act(() => result.current.setMode("dark"))
     const readBackground = () =>
@@ -256,7 +261,7 @@ describe("useTheme", () => {
     expect(balancedBackground).toBe("229 16% 5%")
     expect(readSurfaceBase()).toBe(balancedBackground)
 
-    act(() => result.current.setCanvasTint("neutral"))
+    act(() => result.current.setBackgroundIntensity("neutral"))
 
     expect(readBackground()).toBe("229 0% 5%")
     expect(readBackground()).not.toBe(balancedBackground)

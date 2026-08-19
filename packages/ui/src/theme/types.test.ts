@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { SURFACE_INTENSITIES, CANVAS_TINTS } from "./types"
+import { SURFACE_INTENSITIES, BACKGROUND_INTENSITIES } from "./types"
 import { themeConfig } from "./themeConfig"
 
 describe("surfaceIntensity axis", () => {
@@ -16,16 +16,22 @@ describe("surfaceIntensity axis", () => {
   })
 })
 
-describe("canvasTint axis", () => {
-  it("has four steps from neutral to vivid", () => {
-    expect(CANVAS_TINTS).toEqual(["neutral", "subtle", "balanced", "vivid"])
+describe("backgroundIntensity axis", () => {
+  it("has five steps from neutral to intense", () => {
+    expect(BACKGROUND_INTENSITIES).toEqual([
+      "neutral",
+      "subtle",
+      "balanced",
+      "vivid",
+      "intense",
+    ])
   })
 
   it("defaults to the middle step", () => {
-    expect(themeConfig.defaults.canvasTint).toBe("balanced")
+    expect(themeConfig.defaults.backgroundIntensity).toBe("balanced")
   })
 
   it("is switchable by default", () => {
-    expect(themeConfig.switcher.axes.canvasTint).toBe(true)
+    expect(themeConfig.switcher.axes.backgroundIntensity).toBe(true)
   })
 })
