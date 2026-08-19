@@ -51,6 +51,7 @@ const defaultConfig = {
       radius: "rounded",
       fontSize: "medium",
       accentVibrancy: "balanced",
+      canvasTint: "balanced",
     },
     switcher: {
       enabled: true,
@@ -69,6 +70,7 @@ const defaultConfig = {
         radius: true,
         fontSize: true,
         accentVibrancy: true,
+        canvasTint: true,
         presetAxes: true,
       },
     },
@@ -109,6 +111,7 @@ export const themeConfig: ThemeConfig = {
     radius: "${config.theme.defaults.radius}",
     fontSize: "${config.theme.defaults.fontSize}",
     accentVibrancy: "${config.theme.defaults.accentVibrancy}",
+    canvasTint: "${config.theme.defaults.canvasTint}",
   },
   switcher: {
     enabled: ${config.theme.switcher.enabled},
@@ -127,6 +130,7 @@ export const themeConfig: ThemeConfig = {
       radius: ${config.theme.switcher.axes.radius},
       fontSize: ${config.theme.switcher.axes.fontSize},
       accentVibrancy: ${config.theme.switcher.axes.accentVibrancy},
+      canvasTint: ${config.theme.switcher.axes.canvasTint},
       presetAxes: ${config.theme.switcher.axes.presetAxes},
     },
   },

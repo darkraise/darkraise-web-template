@@ -16,6 +16,7 @@ export const themeConfig: ThemeConfig = {
     radius: "rounded",
     fontSize: "medium",
     accentVibrancy: "balanced",
+    canvasTint: "balanced",
   },
   switcher: {
     enabled: true,
@@ -34,6 +35,7 @@ export const themeConfig: ThemeConfig = {
       radius: true,
       fontSize: true,
       accentVibrancy: true,
+      canvasTint: true,
       presetAxes: true,
     },
   },

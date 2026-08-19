@@ -31,6 +31,7 @@ const ELEVATIONS = ["flat", "low", "medium", "high"]
 const RADII = ["sharp", "subtle", "rounded", "pill"]
 const FONT_SIZES = ["small", "medium", "large", "extra-large"]
 const ACCENT_VIBRANCIES = ["calm", "balanced", "vivid", "intense"]
+const CANVAS_TINTS = ["neutral", "subtle", "balanced", "vivid"]
 const SURFACE_INTENSITIES = ["flat", "subtle", "balanced", "bold"]
 const MODES = ["light", "dark", "system"]
 const LAYOUTS = ["sidebar", "stacked", "top-nav", "split-panel"]
@@ -42,7 +43,7 @@ const THEME_AXIS_KEYS = [
   "mode", "accentColor", "surfaceColor", "preset",
   "backgroundStyle", "backgroundIntensity", "gradientPattern",
   "density", "elevation", "buttonElevation", "surfaceIntensity", "radius", "fontSize",
-  "accentVibrancy", "presetAxes",
+  "accentVibrancy", "canvasTint", "presetAxes",
 ]
 
 const argv = minimist(process.argv.slice(2), {
@@ -52,7 +53,7 @@ const argv = minimist(process.argv.slice(2), {
     "background", "background-intensity", "gradient-pattern",
     "mode", "theme-axes",
     "density", "elevation", "button-elevation", "surface-intensity", "radius", "font-size",
-    "accent-vibrancy",
+    "accent-vibrancy", "canvas-tint",
     "host", "port",
   ],
   alias: { y: "yes" },
@@ -91,6 +92,7 @@ validate(argv["surface-intensity"], SURFACE_INTENSITIES, "surface-intensity")
 validate(argv.radius, RADII, "radius")
 validate(argv["font-size"], FONT_SIZES, "font-size")
 validate(argv["accent-vibrancy"], ACCENT_VIBRANCIES, "accent-vibrancy")
+validate(argv["canvas-tint"], CANVAS_TINTS, "canvas-tint")
 
 if (argv["theme-axes"] !== undefined) {
   const axes = argv["theme-axes"].split(",")
@@ -273,6 +275,14 @@ async function main() {
     }),
   ))
 
+  const canvasTint = argv["canvas-tint"] || (skipPrompts ? "balanced" : cancelled(
+    await p.select({
+      message: "Canvas tint",
+      options: CANVAS_TINTS.map((v) => ({ value: v, label: v })),
+      initialValue: "balanced",
+    }),
+  ))
+
   // --- Theme switcher ---
   let themeSwitcherEnabled
   if (themeSwitcherFlag !== undefined) {
@@ -311,6 +321,7 @@ async function main() {
             { value: "radius", label: "Radius" },
             { value: "fontSize", label: "Font size" },
             { value: "accentVibrancy", label: "Accent vibrancy" },
+            { value: "canvasTint", label: "Canvas tint" },
             { value: "presetAxes", label: "Preset-specific axes (e.g. neon glow, scifi intensity/frame)" },
           ],
           initialValues: THEME_AXIS_KEYS,
@@ -367,6 +378,7 @@ async function main() {
         radius: radius,
         fontSize: fontSize,
         accentVibrancy: accentVibrancy,
+        canvasTint: canvasTint,
       },
       switcher: {
         enabled: themeSwitcherEnabled,
@@ -564,6 +576,7 @@ export const themeConfig: ThemeConfig = {
     radius: "${config.theme.defaults.radius}",
     fontSize: "${config.theme.defaults.fontSize}",
     accentVibrancy: "${config.theme.defaults.accentVibrancy}",
+    canvasTint: "${config.theme.defaults.canvasTint}",
   },
   switcher: {
     enabled: ${config.theme.switcher.enabled},
@@ -582,6 +595,7 @@ export const themeConfig: ThemeConfig = {
       radius: ${config.theme.switcher.axes.radius},
       fontSize: ${config.theme.switcher.axes.fontSize},
       accentVibrancy: ${config.theme.switcher.axes.accentVibrancy},
+      canvasTint: ${config.theme.switcher.axes.canvasTint},
       presetAxes: ${config.theme.switcher.axes.presetAxes},
     },
   },
