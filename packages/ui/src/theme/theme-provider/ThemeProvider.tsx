@@ -572,10 +572,6 @@ export function ThemeProvider({
         "data-gradient-pattern",
         newGradientPattern,
       )
-      document.documentElement.setAttribute(
-        "data-canvas-tint",
-        settings.canvasTint ?? cfg.defaults.canvasTint,
-      )
 
       applyTheme(
         settings.accentColor,
@@ -1000,7 +996,6 @@ export function ThemeProvider({
     (tint: CanvasTint) => {
       setCanvasTintState(tint)
       writeStorage(LS_CANVAS_TINT, tint)
-      document.documentElement.setAttribute("data-canvas-tint", tint)
       const settings = buildSettings({ canvasTint: tint })
       notifyChange(settings)
       hasUserChanged.current = true
@@ -1066,7 +1061,6 @@ export function ThemeProvider({
       "data-gradient-pattern",
       gradientPattern,
     )
-    document.documentElement.setAttribute("data-canvas-tint", canvasTint)
   }, [
     density,
     elevation,
@@ -1076,7 +1070,6 @@ export function ThemeProvider({
     fontSize,
     backgroundIntensity,
     gradientPattern,
-    canvasTint,
   ])
 
   useEffect(() => {
