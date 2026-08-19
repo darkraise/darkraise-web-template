@@ -11,6 +11,7 @@ import type {
   Radius,
   FontSize,
   AccentVibrancy,
+  CanvasTint,
   Mode,
   ResolvedMode,
   ThemeContextValue,
@@ -28,6 +29,7 @@ import {
   RADII,
   FONT_SIZES,
   ACCENT_VIBRANCIES,
+  CANVAS_TINTS,
 } from "@theme/types"
 import {
   generateTokens,
@@ -64,6 +66,7 @@ const LS_SURFACE_INTENSITY = "theme-surface-intensity"
 const LS_RADIUS = "theme-radius"
 const LS_FONT_SIZE = "theme-font-size"
 const LS_ACCENT_VIBRANCY = "theme-accent-vibrancy"
+const LS_CANVAS_TINT = "theme-canvas-tint"
 
 const isBrowser = typeof window !== "undefined"
 
@@ -310,6 +313,14 @@ export function ThemeProvider({
     },
   )
 
+  const [canvasTint, setCanvasTintState] = useState<CanvasTint>(() => {
+    const stored = readStorage(LS_CANVAS_TINT)
+    if (stored && (CANVAS_TINTS as readonly string[]).includes(stored)) {
+      return stored as CanvasTint
+    }
+    return cfg.defaults.canvasTint
+  })
+
   const [resolvedMode, setResolvedMode] = useState<ResolvedMode>(() =>
     clampResolvedMode(preset, resolveMode(mode)),
   )
@@ -432,6 +443,7 @@ export function ThemeProvider({
       radius,
       fontSize,
       accentVibrancy,
+      canvasTint,
       presetAxisValues,
       ...overrides,
     }),
@@ -450,6 +462,7 @@ export function ThemeProvider({
       radius,
       fontSize,
       accentVibrancy,
+      canvasTint,
       presetAxisValues,
     ],
   )
@@ -491,6 +504,7 @@ export function ThemeProvider({
       setAccentVibrancyState(
         settings.accentVibrancy ?? cfg.defaults.accentVibrancy,
       )
+      setCanvasTintState(settings.canvasTint ?? cfg.defaults.canvasTint)
       setPresetAxisValuesState(newAxisValues)
 
       writeStorage(LS_ACCENT, settings.accentColor)
@@ -515,6 +529,10 @@ export function ThemeProvider({
       writeStorage(
         LS_ACCENT_VIBRANCY,
         settings.accentVibrancy ?? cfg.defaults.accentVibrancy,
+      )
+      writeStorage(
+        LS_CANVAS_TINT,
+        settings.canvasTint ?? cfg.defaults.canvasTint,
       )
       for (const [presetName, axes] of Object.entries(newAxisValues)) {
         for (const [axisName, value] of Object.entries(axes)) {
@@ -553,6 +571,10 @@ export function ThemeProvider({
       document.documentElement.setAttribute(
         "data-gradient-pattern",
         newGradientPattern,
+      )
+      document.documentElement.setAttribute(
+        "data-canvas-tint",
+        settings.canvasTint ?? cfg.defaults.canvasTint,
       )
 
       applyTheme(
@@ -974,6 +996,19 @@ export function ThemeProvider({
     [buildSettings, notifyChange, debouncedSave],
   )
 
+  const setCanvasTint = useCallback(
+    (tint: CanvasTint) => {
+      setCanvasTintState(tint)
+      writeStorage(LS_CANVAS_TINT, tint)
+      document.documentElement.setAttribute("data-canvas-tint", tint)
+      const settings = buildSettings({ canvasTint: tint })
+      notifyChange(settings)
+      hasUserChanged.current = true
+      debouncedSave(settings)
+    },
+    [buildSettings, notifyChange, debouncedSave],
+  )
+
   useEffect(() => {
     applyTheme(
       accentColor,
@@ -1031,6 +1066,7 @@ export function ThemeProvider({
       "data-gradient-pattern",
       gradientPattern,
     )
+    document.documentElement.setAttribute("data-canvas-tint", canvasTint)
   }, [
     density,
     elevation,
@@ -1040,6 +1076,7 @@ export function ThemeProvider({
     fontSize,
     backgroundIntensity,
     gradientPattern,
+    canvasTint,
   ])
 
   useEffect(() => {
@@ -1114,6 +1151,7 @@ export function ThemeProvider({
       radius,
       fontSize,
       accentVibrancy,
+      canvasTint,
       resolvedMode,
       config: cfg,
       syncStatus,
@@ -1133,6 +1171,7 @@ export function ThemeProvider({
       setRadius,
       setFontSize,
       setAccentVibrancy,
+      setCanvasTint,
       setPresetAxis,
     }),
     [
@@ -1150,6 +1189,7 @@ export function ThemeProvider({
       radius,
       fontSize,
       accentVibrancy,
+      canvasTint,
       resolvedMode,
       cfg,
       syncStatus,
@@ -1168,6 +1208,7 @@ export function ThemeProvider({
       setRadius,
       setFontSize,
       setAccentVibrancy,
+      setCanvasTint,
       setPresetAxis,
     ],
   )

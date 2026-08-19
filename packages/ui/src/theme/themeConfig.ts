@@ -10,6 +10,7 @@ import type {
   Radius,
   FontSize,
   AccentVibrancy,
+  CanvasTint,
   Mode,
 } from "./types"
 import type { PresetName } from "./presets"
@@ -30,6 +31,7 @@ export interface ThemeConfig {
     radius: Radius
     fontSize: FontSize
     accentVibrancy: AccentVibrancy
+    canvasTint: CanvasTint
   }
   switcher: {
     enabled: boolean
@@ -48,6 +50,7 @@ export interface ThemeConfig {
       radius: boolean
       fontSize: boolean
       accentVibrancy: boolean
+      canvasTint: boolean
       /** Master toggle for all preset-specific axis controls. */
       presetAxes: boolean
     }
@@ -70,6 +73,7 @@ export const themeConfig: ThemeConfig = {
     radius: "rounded",
     fontSize: "medium",
     accentVibrancy: "balanced",
+    canvasTint: "balanced",
   },
   switcher: {
     enabled: true,
@@ -88,6 +92,7 @@ export const themeConfig: ThemeConfig = {
       radius: true,
       fontSize: true,
       accentVibrancy: true,
+      canvasTint: true,
       presetAxes: true,
     },
   },
