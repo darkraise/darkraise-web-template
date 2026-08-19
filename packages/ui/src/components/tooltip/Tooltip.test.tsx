@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react"
+import { fireEvent, render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect } from "vitest"
 import {
@@ -17,6 +17,17 @@ function Basic({ delayDuration = 0 }: { delayDuration?: number } = {}) {
   )
 }
 
+// The trigger only raises a tooltip for KEYBOARD focus, so these tests have
+// to say which modality they mean. jsdom tracks input modality globally per
+// window and never resets it between tests in a file, so a single
+// `user.hover` earlier in the file leaves `:focus-visible` false for every
+// later `user.tab()`. Firing the Tab keydown ourselves before moving focus
+// states the intent directly instead of depending on that leaked state.
+async function keyboardFocus(element: HTMLElement): Promise<void> {
+  fireEvent.keyDown(document, { key: "Tab" })
+  element.focus()
+}
+
 describe("Tooltip", () => {
   it("does not render content initially", () => {
     render(<Basic />)
@@ -30,10 +41,9 @@ describe("Tooltip", () => {
     expect(await screen.findByRole("tooltip")).toHaveTextContent("Tip text")
   })
 
-  it("opens on focus", async () => {
-    const user = userEvent.setup()
+  it("opens on keyboard focus", async () => {
     render(<Basic delayDuration={0} />)
-    await user.tab()
+    await keyboardFocus(screen.getByRole("button", { name: "Hover me" }))
     expect(await screen.findByRole("tooltip")).toBeInTheDocument()
   })
 
@@ -48,11 +58,11 @@ describe("Tooltip", () => {
   })
 
   it("closes on blur", async () => {
-    const user = userEvent.setup()
     render(<Basic delayDuration={0} />)
-    await user.tab()
+    const trigger = screen.getByRole("button", { name: "Hover me" })
+    await keyboardFocus(trigger)
     await screen.findByRole("tooltip")
-    await user.tab()
+    trigger.blur()
     await waitFor(() => expect(screen.queryByRole("tooltip")).toBeNull())
   })
 
@@ -78,10 +88,52 @@ describe("Tooltip", () => {
   it("Escape closes the tooltip", async () => {
     const user = userEvent.setup()
     render(<Basic delayDuration={0} />)
-    await user.tab()
+    await keyboardFocus(screen.getByRole("button", { name: "Hover me" }))
     await screen.findByRole("tooltip")
     await user.keyboard("{Escape}")
     await waitFor(() => expect(screen.queryByRole("tooltip")).toBeNull())
+  })
+
+  // A tooltip opened by focus can never be dismissed by `pointerleave`,
+  // because the pointer never entered the trigger. So focus that did not come
+  // from the keyboard must not open one at all, or it strands an open tooltip
+  // the user cannot get rid of by moving the mouse.
+  it("does not reopen when the trigger is clicked", async () => {
+    const user = userEvent.setup()
+    render(<Basic delayDuration={0} />)
+    const trigger = screen.getByRole("button", { name: "Hover me" })
+
+    await user.hover(trigger)
+    await screen.findByRole("tooltip")
+
+    // pointerdown closes it; the focus the click leaves behind used to
+    // reopen it immediately via the provider's skip-delay window.
+    await user.click(trigger)
+    await waitFor(() => expect(screen.queryByRole("tooltip")).toBeNull())
+    expect(screen.queryByRole("tooltip")).toBeNull()
+  })
+
+  it("stays closed when focus is restored after a pointer interaction", async () => {
+    const user = userEvent.setup()
+    render(
+      <>
+        <Basic delayDuration={0} />
+        <button type="button">Elsewhere</button>
+      </>,
+    )
+    const trigger = screen.getByRole("button", { name: "Hover me" })
+
+    // Clicking the trigger is what opens a modal in practice.
+    await user.click(trigger)
+    // The modal traps focus...
+    screen.getByRole("button", { name: "Elsewhere" }).focus()
+    // ...and hands it back to the trigger on close (useFocusTrap
+    // restoreFocus). That programmatic focus must not raise a tooltip with
+    // the pointer nowhere near the trigger.
+    trigger.focus()
+
+    await waitFor(() => expect(trigger).toHaveFocus())
+    expect(screen.queryByRole("tooltip")).toBeNull()
   })
 
   it("Provider context propagates delayDuration default", () => {

@@ -183,6 +183,14 @@ function TooltipTrigger({
       onFocus={(event: React.FocusEvent<HTMLButtonElement>) => {
         onFocus?.(event)
         if (event.defaultPrevented) return
+        // Keyboard focus only. A tooltip raised by focus can never be
+        // dismissed by `pointerleave` — the pointer never entered the
+        // trigger — so pointer-driven focus would strand it on screen. Two
+        // paths hit this: the focus a click leaves behind (which the
+        // provider's skip-delay window reopens instantly), and a modal
+        // handing focus back here when it closes (useFocusTrap
+        // `restoreFocus`), long after the pointer has moved away.
+        if (!event.currentTarget.matches(":focus-visible")) return
         ctx.scheduleOpen()
       }}
       onBlur={(event: React.FocusEvent<HTMLButtonElement>) => {
