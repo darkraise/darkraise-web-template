@@ -37,7 +37,7 @@ export function StackedLayout({
   const activeGroup = activeGroupIndex >= 0 ? nav[activeGroupIndex] : undefined
 
   return (
-    <TooltipProvider delayDuration={0}>
+    <TooltipProvider>
       {/* SidebarItem reads `collapsed` from SidebarContext via useSidebar();
        * the stacked layout's sub-nav is always shown fully expanded, so
        * we wrap with collapsed={false}. Without this, mounting the layout

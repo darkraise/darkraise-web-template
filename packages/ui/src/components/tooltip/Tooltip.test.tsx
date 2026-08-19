@@ -6,6 +6,7 @@ import {
   TooltipTrigger,
   TooltipContent,
   TooltipProvider,
+  TOOLTIP_DEFAULT_DELAY,
 } from "@components/tooltip"
 
 function Basic({ delayDuration = 0 }: { delayDuration?: number } = {}) {
@@ -134,6 +135,26 @@ describe("Tooltip", () => {
 
     await waitFor(() => expect(trigger).toHaveFocus())
     expect(screen.queryByRole("tooltip")).toBeNull()
+  })
+
+  // The app-wide layouts used to mount `<TooltipProvider delayDuration={0}>`,
+  // so every page opened tooltips the instant the pointer crossed a trigger.
+  // The shipped default is a short hover-intent gate instead.
+  it("waits out the default delay before opening on hover", async () => {
+    const user = userEvent.setup()
+    render(
+      <Tooltip>
+        <TooltipTrigger>Hover me</TooltipTrigger>
+        <TooltipContent>Tip text</TooltipContent>
+      </Tooltip>,
+    )
+    await user.hover(screen.getByRole("button", { name: "Hover me" }))
+    expect(screen.queryByRole("tooltip")).toBeNull()
+    expect(await screen.findByRole("tooltip")).toBeInTheDocument()
+  })
+
+  it("defaults the provider to a 200ms hover-intent delay", () => {
+    expect(TOOLTIP_DEFAULT_DELAY).toBe(200)
   })
 
   it("Provider context propagates delayDuration default", () => {

@@ -126,7 +126,7 @@ export function SidebarLayout({
   )
 
   return (
-    <TooltipProvider delayDuration={0}>
+    <TooltipProvider>
       <SidebarProvider collapsed={collapsed}>
         <div className="dr-sidebar-layout">
           <SkipLink>{labels.layout.skipToContent}</SkipLink>

@@ -9,7 +9,11 @@ import { Presence } from "@primitives/presence"
 import { Slot, composeRefs } from "@primitives/slot"
 import { useFloating } from "@primitives/floating"
 import { useEvent } from "@primitives/state"
-import { useTooltip, type UseTooltipReturn } from "./useTooltip"
+import {
+  useTooltip,
+  TOOLTIP_DEFAULT_DELAY,
+  type UseTooltipReturn,
+} from "./useTooltip"
 import "./tooltip.css"
 
 interface ProviderState {
@@ -30,7 +34,7 @@ interface TooltipProviderProps {
 }
 
 function TooltipProvider({
-  delayDuration = 700,
+  delayDuration = TOOLTIP_DEFAULT_DELAY,
   skipDelayDuration = 300,
   disableHoverableContent = false,
   children,
@@ -66,7 +70,7 @@ function TooltipProvider({
 function useProviderState(): ProviderState {
   return (
     React.useContext(ProviderContext) ?? {
-      delayDuration: 700,
+      delayDuration: TOOLTIP_DEFAULT_DELAY,
       skipDelayDuration: 300,
       disableHoverableContent: false,
       lastClosedAt: { current: 0 },

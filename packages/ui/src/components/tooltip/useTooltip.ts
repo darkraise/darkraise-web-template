@@ -1,6 +1,13 @@
 import * as React from "react"
 import { useControllableState, useEvent, useId } from "@primitives/state"
 
+/**
+ * Hover-intent gate before a tooltip appears. Short enough that a deliberate
+ * hover feels immediate, long enough that sweeping the pointer across a
+ * toolbar does not pop every label on the way past.
+ */
+export const TOOLTIP_DEFAULT_DELAY = 200
+
 export interface UseTooltipOptions {
   open?: boolean
   defaultOpen?: boolean
@@ -29,7 +36,7 @@ export function useTooltip(options: UseTooltipOptions = {}): UseTooltipReturn {
     open: openProp,
     defaultOpen,
     onOpenChange,
-    delayDuration = 700,
+    delayDuration = TOOLTIP_DEFAULT_DELAY,
     skipDelayDuration = 300,
     lastClosedAtRef,
     notifyClosed,
