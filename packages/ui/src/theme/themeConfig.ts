@@ -10,6 +10,7 @@ import type {
   Radius,
   FontSize,
   AccentIntensity,
+  GlowLevel,
   Mode,
 } from "./types"
 import type { PresetName } from "./presets"
@@ -30,6 +31,8 @@ export interface ThemeConfig {
     radius: Radius
     fontSize: FontSize
     accentIntensity: AccentIntensity
+    outerGlow: GlowLevel
+    innerGlow: GlowLevel
   }
   switcher: {
     enabled: boolean
@@ -48,6 +51,8 @@ export interface ThemeConfig {
       radius: boolean
       fontSize: boolean
       accentIntensity: boolean
+      outerGlow: boolean
+      innerGlow: boolean
       /** Master toggle for all preset-specific axis controls. */
       presetAxes: boolean
     }
@@ -70,6 +75,8 @@ export const themeConfig: ThemeConfig = {
     radius: "rounded",
     fontSize: "medium",
     accentIntensity: "balanced",
+    outerGlow: "none",
+    innerGlow: "none",
   },
   switcher: {
     enabled: true,
@@ -88,6 +95,8 @@ export const themeConfig: ThemeConfig = {
       radius: true,
       fontSize: true,
       accentIntensity: true,
+      outerGlow: true,
+      innerGlow: true,
       presetAxes: true,
     },
   },

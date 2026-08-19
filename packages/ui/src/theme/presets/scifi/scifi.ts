@@ -2,7 +2,6 @@
 import type { ThemePreset } from "../types"
 
 type ScifiAxes = {
-  intensity: readonly ["dim", "normal", "bright", "intense"]
   frame: readonly ["clean", "notched", "bracketed"]
 }
 
@@ -13,7 +12,7 @@ type ScifiAxes = {
  * for numerics and labels. Dark mode only — the look depends on lit
  * elements over a deep background.
  *
- * Hides elevation + buttonElevation (intensity takes their place
+ * Hides elevation + buttonElevation (the glow axes take their place
  * with multi-layer glow recipes) and radius (frame axis chooses
  * between sharp/notched/bracketed).
  */
@@ -24,17 +23,6 @@ export const scifi: ThemePreset<ScifiAxes> = {
     "Angular HUD aesthetic. Glowing edges, clipped corners, data-readout typography. Dark only.",
 
   axes: {
-    intensity: {
-      // 4 values so the ThemeSwitcher's AxisControl auto-renders this
-      // as a slider rather than a 4-cell ToggleGroup (the slider cutoff
-      // is values.length === 4). `intense` extends the ramp beyond
-      // `bright` with saturated multi-layer glow that bleeds noticeably
-      // into surrounding page chrome — for hero pages or showcase demos.
-      values: ["dim", "normal", "bright", "intense"],
-      default: "normal",
-      label: "Intensity",
-      order: 1,
-    },
     frame: {
       values: ["clean", "notched", "bracketed"],
       default: "notched",
@@ -45,6 +33,10 @@ export const scifi: ThemePreset<ScifiAxes> = {
 
   supportedModes: ["dark"],
   hiddenCommonAxes: ["elevation", "buttonElevation", "radius"],
+
+  // Sci-fi's glow rides the shared axes now; it asks for the step that
+  // reproduces the `normal` ramp it shipped with.
+  commonAxisDefaults: { outerGlow: "balanced", innerGlow: "balanced" },
 
   surfaceRecipe: {
     // Near-black with a hint of blue-grey, so surfaces feel like cool

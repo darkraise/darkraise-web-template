@@ -88,10 +88,10 @@ describe("ThemeSettingsPanel", () => {
   })
 
   it("omits a group heading entirely once every axis in it is hidden", () => {
-    // Disable all three "depth" axes at the config level (elevation,
-    // buttonElevation, surfaceIntensity) rather than via a preset's
-    // hiddenCommonAxes, so this test doesn't depend on which axes a given
-    // preset happens to reinterpret.
+    // Disable every "depth" axis at the config level (elevation,
+    // buttonElevation, surfaceIntensity and the two glow axes) rather than via
+    // a preset's hiddenCommonAxes, so this test doesn't depend on which axes a
+    // given preset happens to reinterpret.
     const depthHiddenConfig: ThemeConfig = {
       ...themeConfig,
       switcher: {
@@ -101,6 +101,8 @@ describe("ThemeSettingsPanel", () => {
           elevation: false,
           buttonElevation: false,
           surfaceIntensity: false,
+          outerGlow: false,
+          innerGlow: false,
         },
       },
     }

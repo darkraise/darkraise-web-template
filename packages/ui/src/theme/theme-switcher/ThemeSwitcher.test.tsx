@@ -264,11 +264,11 @@ describe("ThemeSwitcher preset section", () => {
     expect(screen.getByText("Button Elevation")).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole("radio", { name: /^sci-fi$/i }))
-    // Sci-fi hides both via hiddenCommonAxes; the preset's own Intensity
-    // axis takes their place.
+    // Sci-fi hides both via hiddenCommonAxes; the shared glow axes take
+    // their place.
     expect(screen.queryByText("Elevation")).not.toBeInTheDocument()
     expect(screen.queryByText("Button Elevation")).not.toBeInTheDocument()
-    expect(screen.getByText("Intensity")).toBeInTheDocument()
+    expect(screen.getByText("Outer Glow")).toBeInTheDocument()
   })
 })
 

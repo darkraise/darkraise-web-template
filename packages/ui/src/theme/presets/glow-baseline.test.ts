@@ -49,11 +49,12 @@ const GLASS_HALO_BASELINE = {
 describe("glow baseline — Glass halo at its default step", () => {
   for (const mode of ["light", "dark"] as const) {
     it(`reproduces the ${mode} halo ramp`, () => {
-      const tokens = glass.generateTokens?.(common(mode), {
-        opacity: "medium",
-        blur: "medium",
-        halo: "soft",
-      })
+      // Reads the shared axis at the step Glass asks for via
+      // commonAxisDefaults, which must reproduce its old `soft` halo exactly.
+      const tokens = glass.generateTokens?.(
+        { ...common(mode), outerGlow: "balanced" },
+        { opacity: "medium", blur: "medium" },
+      )
       expect(tokens).toBeDefined()
       for (const [key, value] of Object.entries(GLASS_HALO_BASELINE[mode])) {
         expect(tokens?.[key], key).toBe(value)
@@ -62,42 +63,62 @@ describe("glow baseline — Glass halo at its default step", () => {
   }
 })
 
-// Sci-fi's ramp lives in CSS attribute blocks rather than the token engine, so
-// the baseline is the source text of its default step. Every one of these is
-// primary-driven, and four of them fuse an inset layer with an outer layer in
-// a single value — which is why innerGlow has to drive Sci-fi too, not just
-// outerGlow.
-describe("glow baseline — Sci-fi glow at its default step", () => {
+// Sci-fi's ramp lives in CSS rather than the token engine. It is now one set
+// of tokens carrying the old `normal` step's alphas, each multiplied by a
+// per-axis scale factor that is 1 at `balanced` — so both axes at balanced
+// reproduce what the preset shipped. Four of these fuse an inset layer with an
+// outer one, which is why innerGlow drives Sci-fi too, not just outerGlow.
+//
+// This asserts the base alphas and the scale wiring; the exact computed
+// equality with the captured baseline is proven in a browser, because calc()
+// inside hsl() is not resolvable from source text.
+describe("glow baseline — Sci-fi glow ramp", () => {
   const css = readFileSync("src/theme/presets/scifi/scifi.css", "utf8").replace(
     /\s+/g,
     " ",
   )
 
-  const normalBlock = (): string => {
-    const start = css.indexOf('[data-scifi-intensity="normal"] {')
-    expect(start, "the normal intensity block must exist").toBeGreaterThan(-1)
-    return css.slice(start, css.indexOf("}", start))
-  }
-
-  it("keeps the rest glow fusing an inset and an outer layer", () => {
-    expect(normalBlock()).toMatch(
-      /--scifi-rest-glow: inset 0 0 8px hsl\(var\(--primary\) \/ 0\.14\), 0 0 6px hsl\(var\(--primary\) \/ 0\.2\)/,
+  it("puts both axes at scale 1 for their balanced step", () => {
+    expect(css).toMatch(
+      /\[data-outer-glow="balanced"\] \{ --scifi-outer-scale: 1; \}/,
+    )
+    expect(css).toMatch(
+      /\[data-inner-glow="balanced"\] \{ --scifi-inner-scale: 1; \}/,
+    )
+    expect(css).toMatch(
+      /\[data-outer-glow="none"\] \{ --scifi-outer-scale: 0; \}/,
+    )
+    expect(css).toMatch(
+      /\[data-inner-glow="none"\] \{ --scifi-inner-scale: 0; \}/,
     )
   })
 
-  it("keeps the active glow fusing an inset and two outer layers", () => {
-    expect(normalBlock()).toMatch(
-      /--scifi-active-glow: inset 0 0 10px hsl\(var\(--primary\) \/ 0\.32\), 0 0 6px hsl\(var\(--primary\) \/ 0\.65\), 0 0 18px hsl\(var\(--primary\) \/ 0\.4\)/,
+  it("keeps the rest glow's inset on the inner axis and its outer on the outer", () => {
+    expect(css).toMatch(
+      /--scifi-rest-glow: inset 0 0 8px hsl\(var\(--primary\) \/ calc\(0\.14 \* var\(--scifi-inner-scale\)\)\), 0 0 6px hsl\(var\(--primary\) \/ calc\(0\.2 \* var\(--scifi-outer-scale\)\)\)/,
     )
   })
 
-  it("keeps the edge and text glows outer-only", () => {
-    const block = normalBlock()
-    expect(block).toMatch(
-      /--scifi-edge-glow: 0 0 0 1px hsl\(var\(--primary\) \/ 0\.7\)/,
+  it("splits the active glow across both axes", () => {
+    expect(css).toMatch(
+      /--scifi-active-glow: inset 0 0 10px hsl\(var\(--primary\) \/ calc\(0\.32 \* var\(--scifi-inner-scale\)\)\)/,
     )
-    expect(block).toMatch(
-      /--scifi-text-glow: 0 0 4px hsl\(var\(--primary\) \/ 0\.65\), 0 0 12px hsl\(var\(--primary\) \/ 0\.32\)/,
+    expect(css).toMatch(
+      /0 0 18px hsl\(var\(--primary\) \/ calc\(0\.4 \* var\(--scifi-outer-scale\)\)\)/,
     )
+  })
+
+  it("keeps the edge and text glows entirely on the outer axis", () => {
+    expect(css).toMatch(
+      /--scifi-edge-glow: 0 0 0 1px hsl\(var\(--primary\) \/ calc\(0\.7 \* var\(--scifi-outer-scale\)\)\)/,
+    )
+    expect(css).toMatch(
+      /--scifi-text-glow: 0 0 4px hsl\(var\(--primary\) \/ calc\(0\.65 \* var\(--scifi-outer-scale\)\)\)/,
+    )
+    expect(css).not.toMatch(/--scifi-text-glow:[^;]*inner-scale/)
+  })
+
+  it("no longer carries the retired intensity blocks", () => {
+    expect(css).not.toMatch(/data-scifi-intensity/)
   })
 })

@@ -11,6 +11,7 @@ import type {
   Radius,
   FontSize,
   AccentIntensity,
+  GlowLevel,
   Mode,
   ResolvedMode,
   ThemeContextValue,
@@ -28,6 +29,7 @@ import {
   RADII,
   FONT_SIZES,
   ACCENT_INTENSITIES,
+  GLOW_LEVELS,
 } from "@theme/types"
 import {
   generateTokens,
@@ -47,6 +49,7 @@ import { useDebouncedCallback } from "@hooks/useDebouncedCallback"
 import { migrateGlassPresetKeys } from "./migrateGlassPresetKeys"
 import { migrateAccentIntensityKey } from "./migrateAccentIntensityKey"
 import { migrateCanvasTintKey } from "./migrateCanvasTintKey"
+import { migratePresetGlowAxes } from "./migratePresetGlowAxes"
 
 declare const process: { env: { NODE_ENV?: string } }
 
@@ -66,6 +69,8 @@ const LS_SURFACE_INTENSITY = "theme-surface-intensity"
 const LS_RADIUS = "theme-radius"
 const LS_FONT_SIZE = "theme-font-size"
 const LS_ACCENT_INTENSITY = "theme-accent-intensity"
+const LS_OUTER_GLOW = "theme-outer-glow"
+const LS_INNER_GLOW = "theme-inner-glow"
 
 const isBrowser = typeof window !== "undefined"
 
@@ -140,6 +145,7 @@ if (isBrowser) {
     migrateGlassPresetKeys(globalThis.localStorage)
     migrateAccentIntensityKey(globalThis.localStorage)
     migrateCanvasTintKey(globalThis.localStorage)
+    migratePresetGlowAxes(globalThis.localStorage)
   } catch {
     // ignore
   }
@@ -236,6 +242,36 @@ export function ThemeProvider({
       }
       return cfg.defaults.backgroundIntensity
     })
+
+  // Stored as `null` when the user has never set the axis, so the active
+  // preset's `commonAxisDefaults` can supply a value. A concrete value here
+  // always wins, including when it equals the global default — that is a
+  // deliberate choice the user made.
+  const [outerGlowRaw, setOuterGlowState] = useState<GlowLevel | null>(() => {
+    const stored = readStorage(LS_OUTER_GLOW)
+    return stored && (GLOW_LEVELS as readonly string[]).includes(stored)
+      ? (stored as GlowLevel)
+      : null
+  })
+  const [innerGlowRaw, setInnerGlowState] = useState<GlowLevel | null>(() => {
+    const stored = readStorage(LS_INNER_GLOW)
+    return stored && (GLOW_LEVELS as readonly string[]).includes(stored)
+      ? (stored as GlowLevel)
+      : null
+  })
+
+  // A glow axis resolves to the user's value if they set one, else whatever the
+  // active preset asks for, else the global default. This is what lets the axes
+  // ship at `none` without stripping the glow from Glass and Sci-fi.
+  const presetGlowDefaults = presets[preset].commonAxisDefaults
+  const outerGlow: GlowLevel =
+    outerGlowRaw ??
+    (presetGlowDefaults?.outerGlow as GlowLevel | undefined) ??
+    cfg.defaults.outerGlow
+  const innerGlow: GlowLevel =
+    innerGlowRaw ??
+    (presetGlowDefaults?.innerGlow as GlowLevel | undefined) ??
+    cfg.defaults.innerGlow
 
   const [gradientPattern, setGradientPatternState] = useState<GradientPattern>(
     () => {
@@ -397,6 +433,10 @@ export function ThemeProvider({
         const neutralScale =
           surfaceColors.slate as import("@theme/types").ColorScale
         const surfaceScale = resolveSurfaceScale(surfColor, resolved)
+        // Resolved here rather than threaded through applyTheme's positional
+        // signature: the preset being painted is already an argument, and the
+        // glow default depends on it.
+        const glowDefaults = activePreset.commonAxisDefaults
         presetTokens = activePreset.generateTokens(
           {
             accentColor: accent,
@@ -406,6 +446,14 @@ export function ThemeProvider({
             accent: accentScale,
             surface: surfaceScale,
             neutral: neutralScale,
+            outerGlow:
+              outerGlowRaw ??
+              (glowDefaults?.outerGlow as GlowLevel | undefined) ??
+              cfg.defaults.outerGlow,
+            innerGlow:
+              innerGlowRaw ??
+              (glowDefaults?.innerGlow as GlowLevel | undefined) ??
+              cfg.defaults.innerGlow,
           },
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (axisValues[presetName] ?? {}) as any,
@@ -862,6 +910,32 @@ export function ThemeProvider({
     ],
   )
 
+  const setOuterGlow = useCallback(
+    (level: GlowLevel) => {
+      setOuterGlowState(level)
+      writeStorage(LS_OUTER_GLOW, level)
+      document.documentElement.setAttribute("data-outer-glow", level)
+      const settings = buildSettings({ outerGlow: level })
+      notifyChange(settings)
+      hasUserChanged.current = true
+      debouncedSave(settings)
+    },
+    [buildSettings, notifyChange, debouncedSave],
+  )
+
+  const setInnerGlow = useCallback(
+    (level: GlowLevel) => {
+      setInnerGlowState(level)
+      writeStorage(LS_INNER_GLOW, level)
+      document.documentElement.setAttribute("data-inner-glow", level)
+      const settings = buildSettings({ innerGlow: level })
+      notifyChange(settings)
+      hasUserChanged.current = true
+      debouncedSave(settings)
+    },
+    [buildSettings, notifyChange, debouncedSave],
+  )
+
   const setGradientPattern = useCallback(
     (pattern: GradientPattern) => {
       setGradientPatternState(pattern)
@@ -1076,6 +1150,8 @@ export function ThemeProvider({
       "data-background-intensity",
       backgroundIntensity,
     )
+    document.documentElement.setAttribute("data-outer-glow", outerGlow)
+    document.documentElement.setAttribute("data-inner-glow", innerGlow)
     document.documentElement.setAttribute(
       "data-gradient-pattern",
       gradientPattern,
@@ -1165,6 +1241,8 @@ export function ThemeProvider({
       radius,
       fontSize,
       accentIntensity,
+      outerGlow,
+      innerGlow,
       resolvedMode,
       config: cfg,
       syncStatus,
@@ -1184,6 +1262,8 @@ export function ThemeProvider({
       setRadius,
       setFontSize,
       setAccentIntensity,
+      setOuterGlow,
+      setInnerGlow,
       setPresetAxis,
     }),
     [
@@ -1219,6 +1299,8 @@ export function ThemeProvider({
       setRadius,
       setFontSize,
       setAccentIntensity,
+      setOuterGlow,
+      setInnerGlow,
       setPresetAxis,
     ],
   )

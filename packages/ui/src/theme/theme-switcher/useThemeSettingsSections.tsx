@@ -14,6 +14,7 @@ import {
   RADII,
   FONT_SIZES,
   ACCENT_INTENSITIES,
+  GLOW_LEVELS,
 } from "@theme/types"
 import type {
   Mode,
@@ -71,6 +72,8 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
     radius,
     fontSize,
     accentIntensity,
+    outerGlow,
+    innerGlow,
     config,
     activePreset,
     presetAxisValues,
@@ -88,6 +91,8 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
     setRadius,
     setFontSize,
     setAccentIntensity,
+    setOuterGlow,
+    setInnerGlow,
     setPresetAxis,
   } = useTheme()
 
@@ -468,6 +473,42 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
               value={surfaceIntensity}
               onChange={setSurfaceIntensity}
               label={labels.theme.axisLabels.surfaceIntensity}
+            />
+          </div>
+        ),
+      },
+    axes.outerGlow &&
+      !isCommonAxisHidden("outerGlow") && {
+        key: "outerGlow",
+        group: "depth" as const,
+        node: (
+          <div key="outerGlow" className="dr-theme-switcher-row">
+            <Label className="dr-theme-switcher-section-label">
+              {labels.theme.axisLabels.outerGlow}
+            </Label>
+            <AxisControl
+              values={GLOW_LEVELS}
+              value={outerGlow}
+              onChange={setOuterGlow}
+              label={labels.theme.axisLabels.outerGlow}
+            />
+          </div>
+        ),
+      },
+    axes.innerGlow &&
+      !isCommonAxisHidden("innerGlow") && {
+        key: "innerGlow",
+        group: "depth" as const,
+        node: (
+          <div key="innerGlow" className="dr-theme-switcher-row">
+            <Label className="dr-theme-switcher-section-label">
+              {labels.theme.axisLabels.innerGlow}
+            </Label>
+            <AxisControl
+              values={GLOW_LEVELS}
+              value={innerGlow}
+              onChange={setInnerGlow}
+              label={labels.theme.axisLabels.innerGlow}
             />
           </div>
         ),

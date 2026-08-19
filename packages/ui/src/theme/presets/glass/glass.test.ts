@@ -270,16 +270,14 @@ describe("glass preset", () => {
         )
       })
 
-      it("halo=pronounced bumps alphas by ~1.6× over soft", () => {
-        const soft = generateTokens(buildCommon(), {
+      it("outerGlow=vivid bumps alphas by ~1.6× over balanced", () => {
+        const soft = generateTokens(buildCommon({ outerGlow: "balanced" }), {
           opacity: "medium",
           blur: "medium",
-          halo: "soft",
         })
-        const pronounced = generateTokens(buildCommon(), {
+        const pronounced = generateTokens(buildCommon({ outerGlow: "vivid" }), {
           opacity: "medium",
           blur: "medium",
-          halo: "pronounced",
         })
         expect(soft["--glass-halo-raised"]).not.toBe(
           pronounced["--glass-halo-raised"],
@@ -292,11 +290,10 @@ describe("glass preset", () => {
         )
       })
 
-      it("halo=none resolves all tier tokens to no-op shadow", () => {
-        const tokens = generateTokens(buildCommon(), {
+      it("outerGlow=none resolves all tier tokens to no-op shadow", () => {
+        const tokens = generateTokens(buildCommon({ outerGlow: "none" }), {
           opacity: "medium",
           blur: "medium",
-          halo: "none",
         })
         expect(tokens["--glass-halo-raised"]).toBe("0 0 transparent")
         expect(tokens["--glass-halo-overlay"]).toBe("0 0 transparent")
@@ -357,11 +354,9 @@ describe("glass preset", () => {
   })
 
   describe("halo axis", () => {
-    it("declares 3 values and defaults to soft", () => {
-      expect(glass.axes.halo.values).toEqual(["none", "soft", "pronounced"])
-      expect(glass.axes.halo.default).toBe("soft")
-      expect(glass.axes.halo.label).toBe("Halo")
-      expect(glass.axes.halo.order).toBe(3)
+    it("no longer owns a halo axis, and asks the shared one for its default", () => {
+      expect("halo" in glass.axes).toBe(false)
+      expect(glass.commonAxisDefaults?.outerGlow).toBe("balanced")
     })
   })
 })

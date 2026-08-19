@@ -9,17 +9,12 @@ describe("scifi preset", () => {
     expect(scifi.description).toMatch(/hud|angular|glowing/i)
   })
 
-  it("declares intensity + frame axes", () => {
-    expect(Object.keys(scifi.axes).sort()).toEqual(["frame", "intensity"])
-    expect(scifi.axes.intensity.values).toEqual([
-      "dim",
-      "normal",
-      "bright",
-      "intense",
-    ])
-    expect(scifi.axes.intensity.default).toBe("normal")
+  it("declares only the frame axis, and asks the shared glow axes for its ramp", () => {
+    expect(Object.keys(scifi.axes).sort()).toEqual(["frame"])
     expect(scifi.axes.frame.values).toEqual(["clean", "notched", "bracketed"])
     expect(scifi.axes.frame.default).toBe("notched")
+    expect(scifi.commonAxisDefaults?.outerGlow).toBe("balanced")
+    expect(scifi.commonAxisDefaults?.innerGlow).toBe("balanced")
   })
 
   it("declares supportedModes: ['dark']", () => {

@@ -4,6 +4,7 @@ import type {
   BackgroundStyle,
   ResolvedMode,
   ColorScale,
+  GlowLevel,
 } from "@theme/types"
 
 /**
@@ -34,6 +35,14 @@ export interface CommonAxisInput {
   accent: ColorScale
   surface: ColorScale
   neutral: ColorScale
+  /**
+   * Shared glow axes, so a preset can drive its own glow recipe from them
+   * rather than owning a competing axis. Optional because the value is
+   * resolved through `commonAxisDefaults`, which a caller constructing this
+   * input by hand may not do; presets should fall back to their own default.
+   */
+  outerGlow?: GlowLevel
+  innerGlow?: GlowLevel
 }
 
 /**
@@ -142,6 +151,20 @@ export interface ThemePreset<
    * nothing to do with the drop-shadow ramp the common axes were
    * designed around. Exposing both would just be confusing.
    */
+  /**
+   * Default values this preset wants for common axes it participates in, used
+   * when the user has not set that axis themselves.
+   *
+   * The glow axes default to `none` globally so they ship invisible on the
+   * Default preset. Glass and Sci-fi drive their own long-standing glow from
+   * those axes, so without this they would boot glow-less — a visible
+   * regression for two presets that have already been through design review.
+   *
+   * Only consulted for axes the user has never touched. Once a value is
+   * user-set it wins, including when it equals the global default.
+   */
+  commonAxisDefaults?: Readonly<Record<string, string>>
+
   hiddenCommonAxes?: readonly (
     | "mode"
     | "backgroundStyle"
@@ -153,5 +176,10 @@ export interface ThemePreset<
     | "elevation"
     | "buttonElevation"
     | "radius"
+    | "accentIntensity"
+    | "surfaceIntensity"
+    | "fontSize"
+    | "outerGlow"
+    | "innerGlow"
   )[]
 }

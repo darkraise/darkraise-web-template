@@ -4,7 +4,6 @@ import type { ThemePreset, CommonAxisInput } from "../types"
 type GlassAxes = {
   opacity: readonly ["subtle", "medium", "strong"]
   blur: readonly ["none", "low", "medium", "high"]
-  halo: readonly ["none", "soft", "pronounced"]
 }
 
 // Axis semantics: "subtle" means a SUBTLE GLASS EFFECT (less glassy, surface
@@ -47,7 +46,22 @@ const INSET_HI = {
 // alpha curve: dark mode roughly doubles each light alpha because
 // the canvas is dark and lower alphas wouldn't register.
 const HALO_ALPHA = {
-  soft: {
+  // `balanced` is the old `soft` step verbatim — the glow baseline test pins
+  // it, because that is what Glass shipped as its default. `subtle` is new:
+  // half of balanced, filling the gap the old three-step axis did not have.
+  subtle: {
+    light: {
+      raised: [0.03, 0.06, 0.03],
+      overlay: [0.04, 0.08, 0.04],
+      modal: [0.05, 0.1, 0.05],
+    },
+    dark: {
+      raised: [0.05, 0.1, 0.05],
+      overlay: [0.07, 0.14, 0.07],
+      modal: [0.09, 0.18, 0.09],
+    },
+  },
+  balanced: {
     light: {
       raised: [0.06, 0.12, 0.06],
       overlay: [0.08, 0.16, 0.08],
@@ -59,7 +73,7 @@ const HALO_ALPHA = {
       modal: [0.18, 0.36, 0.18],
     },
   },
-  pronounced: {
+  vivid: {
     light: {
       raised: [0.1, 0.2, 0.1],
       overlay: [0.13, 0.26, 0.13],
@@ -121,13 +135,12 @@ export const glass: ThemePreset<GlassAxes> = {
       label: "Backdrop Blur",
       order: 2,
     },
-    halo: {
-      values: ["none", "soft", "pronounced"],
-      default: "soft",
-      label: "Halo",
-      order: 3,
-    },
   },
+
+  // The glow axes default to `none` so they ship invisible on Default. Glass's
+  // halo predates them and is part of its identity, so it asks for the step
+  // that reproduces what it already shipped.
+  commonAxisDefaults: { outerGlow: "balanced" },
 
   surfaceRecipe: {
     surfaceRaised: (s, m) => (m === "light" ? "0 0% 100%" : s[900]),
@@ -232,7 +245,7 @@ export const glass: ThemePreset<GlassAxes> = {
     // [data-preset="glass"] .modal-surface (theme.css) for Dialog/Sheet/Drawer.
     // A grep of component CSS finding no -overlay/-modal references is expected,
     // not dead code.
-    const haloAlphas = HALO_ALPHA[axes.halo][common.mode]
+    const haloAlphas = HALO_ALPHA[common.outerGlow ?? "balanced"][common.mode]
     tokens["--glass-halo-raised"] = haloRecipe("raised", haloAlphas.raised)
     tokens["--glass-halo-overlay"] = haloRecipe("overlay", haloAlphas.overlay)
     tokens["--glass-halo-modal"] = haloRecipe("modal", haloAlphas.modal)
