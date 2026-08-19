@@ -47,6 +47,7 @@ import { ThemeContext } from "@theme/themeContext"
 import { themeConfig, type ThemeConfig } from "@theme/themeConfig"
 import { useDebouncedCallback } from "@hooks/useDebouncedCallback"
 import { migrateGlassPresetKeys } from "./migrateGlassPresetKeys"
+import { migrateAccentIntensityKey } from "./migrateAccentIntensityKey"
 
 declare const process: { env: { NODE_ENV?: string } }
 
@@ -139,6 +140,7 @@ function clampModeToPreset(presetName: PresetName, mode: Mode): Mode {
 if (isBrowser) {
   try {
     migrateGlassPresetKeys(globalThis.localStorage)
+    migrateAccentIntensityKey(globalThis.localStorage)
   } catch {
     // ignore
   }
