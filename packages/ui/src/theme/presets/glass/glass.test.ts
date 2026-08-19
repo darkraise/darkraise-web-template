@@ -48,6 +48,7 @@ describe("glass preset", () => {
       "--inset-hi-strong",
       "--inset-hi-button",
       "--border",
+      "--border-strong",
       "--accent",
       "--accent-foreground",
       "--muted",

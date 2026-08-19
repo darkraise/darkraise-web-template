@@ -49,6 +49,7 @@ export const terminal: ThemePreset<TerminalAxes> = {
     surfaceHeader: (_s, m) => (m === "light" ? "0 0% 100%" : "0 0% 6%"),
     borderSubtle: (_s, m) => (m === "light" ? "0 0% 80%" : "0 0% 15%"),
     borderDefault: (_s, m) => (m === "light" ? "0 0% 0%" : "0 0% 25%"),
+    borderStrong: (_s, m) => (m === "light" ? "0 0% 0%" : "0 0% 45%"),
     overrides: {
       shadowCard: "none",
       shadowDropdown: "none",

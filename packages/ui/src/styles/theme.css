@@ -300,6 +300,7 @@
   --color-surface-header: hsl(var(--surface-header));
   --color-border-subtle: hsl(var(--border-subtle));
   --color-border-default: hsl(var(--border-default));
+  --color-border-strong: hsl(var(--border-strong));
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -419,6 +420,7 @@
     --surface-header: 0 0% 100%;
     --border-subtle: 210 40% 96%;
     --border-default: 214 32% 91%;
+    --border-strong: 215 20% 65%;
     --shadow-card: none;
     --shadow-dropdown:
       0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);

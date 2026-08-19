@@ -57,6 +57,7 @@ export const scifi: ThemePreset<ScifiAxes> = {
     surfaceHeader: (_s, m) => (m === "light" ? "0 0% 100%" : "215 28% 7%"),
     borderSubtle: (_s, m) => (m === "light" ? "0 0% 88%" : "215 25% 18%"),
     borderDefault: (_s, m) => (m === "light" ? "0 0% 75%" : "215 25% 28%"),
+    borderStrong: (_s, m) => (m === "light" ? "0 0% 52%" : "215 30% 46%"),
     overrides: {
       shadowCard: "none",
       shadowDropdown: "none",

@@ -16,6 +16,7 @@ export const defaultPreset: ThemePreset<Record<string, never>> = {
     surfaceHeader: (s, m) => (m === "light" ? WHITE : s[900]),
     borderSubtle: (s, m) => (m === "light" ? s[100] : s[800]),
     borderDefault: (s, m) => (m === "light" ? s[200] : s[700]),
+    borderStrong: (s, m) => (m === "light" ? s[400] : s[500]),
     overrides: {
       shadowCard: "none",
       shadowDropdown:

@@ -137,6 +137,7 @@ export const glass: ThemePreset<GlassAxes> = {
     surfaceHeader: (s, m) => (m === "light" ? "0 0% 100%" : s[900]),
     borderSubtle: (s, m) => (m === "light" ? s[100] : s[600]),
     borderDefault: (s, m) => (m === "light" ? s[200] : s[500]),
+    borderStrong: (s, m) => (m === "light" ? s[400] : s[400]),
     overrides: {
       shadowCard: "0 1px 3px 0 rgb(0 0 0 / 0.1)",
       shadowDropdown:
@@ -241,6 +242,10 @@ export const glass: ThemePreset<GlassAxes> = {
     // override signature (scale, mode) can't see backgroundStyle.
     if (common.mode === "dark" && common.backgroundStyle === "gradient") {
       tokens["--border"] = "0 0% 100% / 0.1"
+      // The strong tier has to stay in the same language as the border it
+      // intensifies; leaving it on the surface-tinted recipe value would put
+      // a solid grey line next to translucent white chrome.
+      tokens["--border-strong"] = "0 0% 100% / 0.28"
     }
 
     tokens["--accent"] = `var(--primary) / ${accentAlpha}`
@@ -267,6 +272,7 @@ export const glass: ThemePreset<GlassAxes> = {
     "--inset-hi-strong",
     "--inset-hi-button",
     "--border",
+    "--border-strong",
     "--accent",
     "--accent-foreground",
     "--muted",

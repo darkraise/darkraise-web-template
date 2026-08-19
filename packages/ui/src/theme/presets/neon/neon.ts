@@ -88,6 +88,7 @@ export const neon: ThemePreset<NeonAxes> = {
     surfaceHeader: (s, m) => (m === "light" ? "0 0% 100%" : s[950]),
     borderSubtle: (s, m) => (m === "light" ? s[100] : s[800]),
     borderDefault: (s, m) => (m === "light" ? s[200] : s[700]),
+    borderStrong: (s, m) => (m === "light" ? s[400] : s[500]),
     overrides: {
       // Drop-shadow tokens become inert under Neon. Depth comes from
       // the elevation glow tokens (rebound in neon.css), not from

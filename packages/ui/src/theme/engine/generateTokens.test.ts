@@ -64,6 +64,7 @@ describe("generateTokens", () => {
       "--surface-header",
       "--border-subtle",
       "--border-default",
+      "--border-strong",
       "--shadow-card",
       "--shadow-dropdown",
     ]
@@ -219,6 +220,30 @@ describe("generateTokens", () => {
     expect(tokens["--border"]).not.toEqual(tokens["--secondary"])
     expect(tokens["--border"]).not.toEqual(tokens["--accent"])
     expect(tokens["--border"]).toEqual(tokens["--border-default"])
+  })
+
+  it("`--border-strong` follows the surface palette and outranks `--border`", () => {
+    // Regression for the Card/Tabs `border="strong"` tier, which used to be
+    // `hsl(var(--foreground) / 0.28)`. `--foreground` is always the fixed
+    // slate neutral scale, so the strong tier painted a cold grey line on
+    // every non-slate surface colour while the default tier stayed
+    // surface-tinted — two borders on the same card in two different hues.
+    const common = {
+      accentColor: "blue",
+      preset: "default",
+      backgroundStyle: "solid",
+      accentVibrancy: "balanced",
+    } as const
+
+    for (const mode of ["light", "dark"] as const) {
+      const slate = generateTokens({ ...common, surfaceColor: "slate", mode })
+      const rose = generateTokens({ ...common, surfaceColor: "rose", mode })
+
+      expect(slate["--border-strong"]).toBeTruthy()
+      expect(rose["--border-strong"]).not.toEqual(slate["--border-strong"])
+      expect(slate["--border-strong"]).not.toEqual(slate["--border-default"])
+      expect(slate["--border-strong"]).not.toEqual(slate["--border-subtle"])
+    }
   })
 
   it("derives chart colors from evenly spaced accent palettes", () => {

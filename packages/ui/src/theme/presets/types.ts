@@ -55,6 +55,7 @@ export interface PresetSurfaceRecipe {
   surfaceHeader: (scale: ColorScale, mode: ResolvedMode) => string
   borderSubtle: (scale: ColorScale, mode: ResolvedMode) => string
   borderDefault: (scale: ColorScale, mode: ResolvedMode) => string
+  borderStrong: (scale: ColorScale, mode: ResolvedMode) => string
   overrides: {
     shadowCard: string
     shadowDropdown: string

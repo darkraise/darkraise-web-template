@@ -43,6 +43,7 @@ export const playful: ThemePreset<PlayfulAxes> = {
     surfaceHeader: (s, m) => (m === "light" ? "0 0% 100%" : s[900]),
     borderSubtle: (s, m) => (m === "light" ? s[100] : s[700]),
     borderDefault: (s, m) => (m === "light" ? s[200] : s[600]),
+    borderStrong: (s, m) => (m === "light" ? s[400] : s[400]),
     overrides: {
       shadowCard: "0 4px 12px -2px rgb(0 0 0 / 0.12)",
       shadowDropdown: "0 8px 24px -4px rgb(0 0 0 / 0.18)",
