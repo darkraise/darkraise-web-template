@@ -1,17 +1,13 @@
 @layer components {
   .dr-toggle {
-    --state-layer: transparent;
-    box-shadow: inset 0 0 0 100vmax var(--state-layer);
+    position: relative;
+    isolation: isolate;
     @apply focus-ring-inset inline-flex cursor-pointer items-center justify-center gap-2 rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size)] [&_svg]:shrink-0;
     transition:
       background-color 150ms,
       color 150ms,
       border-color 150ms,
       box-shadow 150ms;
-  }
-
-  .dr-toggle:active {
-    --state-layer: var(--state-layer-press);
   }
 
   /* Default variant — solid fill on active state.
@@ -112,5 +108,24 @@
     backdrop-filter: none;
     box-shadow: none;
     opacity: 0.5;
+  }
+
+  /* Interaction state layer — see theme.css. Painted by a pseudo-element so
+     the wash can apply instantly; `opacity` is composited, unlike the flood
+     inset shadow this replaced. */
+  .dr-toggle::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: currentColor;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--state-layer-out) ease-out;
+  }
+  .dr-toggle:active::before {
+    opacity: var(--state-layer-press);
+    transition-duration: var(--state-layer-in);
   }
 }

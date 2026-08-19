@@ -73,20 +73,12 @@
     @apply flex flex-wrap gap-2;
   }
   .dr-image-editor-preset {
-    --state-layer: transparent;
-    box-shadow: inset 0 0 0 100vmax var(--state-layer);
+    position: relative;
+    isolation: isolate;
     @apply rounded-md border px-3 py-1.5 text-xs font-medium transition-colors;
     border-color: hsl(var(--border));
     background: hsl(var(--background));
     color: hsl(var(--foreground));
-  }
-
-  .dr-image-editor-preset:hover {
-    --state-layer: var(--state-layer-hover);
-  }
-
-  .dr-image-editor-preset:active {
-    --state-layer: var(--state-layer-press);
   }
   .dr-image-editor-preset:hover {
     border-color: hsl(var(--primary));
@@ -138,21 +130,12 @@
   }
 
   .dr-image-editor-history-trigger {
-    --state-layer: transparent;
-
-    box-shadow: inset 0 0 0 100vmax var(--state-layer);
+    position: relative;
+    isolation: isolate;
     @apply rounded-md border px-3 py-1.5 text-xs font-medium transition-colors;
     border-color: hsl(var(--border));
     background: hsl(var(--background));
     color: hsl(var(--foreground));
-  }
-
-  .dr-image-editor-history-trigger:hover {
-    --state-layer: var(--state-layer-hover);
-  }
-
-  .dr-image-editor-history-trigger:active {
-    --state-layer: var(--state-layer-press);
   }
   .dr-image-editor-history-trigger:hover:not(:disabled) {
     border-color: hsl(var(--primary));
@@ -336,21 +319,12 @@
   }
 
   .dr-image-editor-extension {
-    --state-layer: transparent;
-
-    box-shadow: inset 0 0 0 100vmax var(--state-layer);
+    position: relative;
+    isolation: isolate;
     @apply rounded-md border px-3 py-1.5 text-xs font-medium transition-colors;
     border-color: hsl(var(--border));
     background: hsl(var(--background));
     color: hsl(var(--foreground));
-  }
-
-  .dr-image-editor-extension:hover {
-    --state-layer: var(--state-layer-hover);
-  }
-
-  .dr-image-editor-extension:active {
-    --state-layer: var(--state-layer-press);
   }
   .dr-image-editor-extension:hover:not(:disabled) {
     border-color: hsl(var(--primary));
@@ -363,5 +337,32 @@
   .dr-image-editor-extension[data-running="true"] {
     @apply opacity-70;
     cursor: progress;
+  }
+
+  /* Interaction state layer — see theme.css. */
+  .dr-image-editor-preset::before,
+  .dr-image-editor-history-trigger::before,
+  .dr-image-editor-extension::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: currentColor;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--state-layer-out) ease-out;
+  }
+  .dr-image-editor-preset:hover::before,
+  .dr-image-editor-history-trigger:hover::before,
+  .dr-image-editor-extension:hover::before {
+    opacity: var(--state-layer-hover);
+    transition-duration: var(--state-layer-in);
+  }
+  .dr-image-editor-preset:active::before,
+  .dr-image-editor-history-trigger:active::before,
+  .dr-image-editor-extension:active::before {
+    opacity: var(--state-layer-press);
+    transition-duration: var(--state-layer-in);
   }
 }

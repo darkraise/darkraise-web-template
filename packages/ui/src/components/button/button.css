@@ -1,22 +1,50 @@
 @layer components {
   .dr-btn {
     @apply focus-ring-inset inline-flex cursor-pointer items-center justify-center gap-2 rounded-[var(--radius-button)] text-sm font-medium whitespace-nowrap transition-[background-image,background-color,border-color,color,text-decoration-color,box-shadow] duration-150 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size)] [&_svg]:shrink-0;
-    --state-layer: transparent;
-    box-shadow:
-      inset 0 0 0 100vmax var(--state-layer),
-      var(--glow-outer),
-      var(--glow-inner);
+    position: relative;
+    isolation: isolate;
+    box-shadow: var(--glow-outer), var(--glow-inner);
   }
 
-  /* One wash for every variant. An inset shadow paints above the background
-     (colour AND image, so it reads on the Glass gradients too) and below the
-     label, without the pseudo-element the presets already spend on bracket
-     decorations. */
-  .dr-btn:not([data-variant="link"]):hover {
-    --state-layer: var(--state-layer-hover);
+  /* One wash for every variant, carried by a pseudo-element rather than a
+     flood inset shadow.
+     
+     `opacity` is composited, so the wash can snap on with no repaint; the
+     shadow version had to ride the 150ms box-shadow transition, which made an
+     8% wash read as "nothing happened" for most of a quick hover and wobble
+     when a click interrupted it mid-ramp.
+     
+     `z-index: -1` under the button's own stacking context paints it above the
+     background and below the label. `position: relative` is safe here: unlike
+     transform or filter it does not create a containing block for
+     `position: fixed`, so portalled content is unaffected. */
+  .dr-btn:not([data-variant="link"])::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: currentColor;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--state-layer-out) ease-out;
   }
-  .dr-btn:not([data-variant="link"]):active {
-    --state-layer: var(--state-layer-press);
+  .dr-btn:not([data-variant="link"]):hover::before {
+    opacity: var(--state-layer-hover);
+    transition-duration: var(--state-layer-in);
+  }
+  .dr-btn:not([data-variant="link"]):active::before {
+    opacity: var(--state-layer-press);
+    transition-duration: var(--state-layer-in);
+  }
+
+  /* Filled variants carry a saturated mid-tone, where the shared 8% wash is a
+     much smaller perceptual step than it is on a neutral surface — `default`
+     and `destructive` were hard to read at that value. */
+  .dr-btn[data-variant="default"],
+  .dr-btn[data-variant="destructive"] {
+    --state-layer-hover: 0.16;
+    --state-layer-press: 0.28;
   }
 
   /* default + destructive: hue-based filled variants (was .btn-glass-hue) */
@@ -24,33 +52,25 @@
     @apply text-primary-foreground;
     --hue: hsl(var(--primary-fill));
     background-color: var(--hue);
-    box-shadow:
-      var(--shadow-button),
-      inset 0 0 0 100vmax var(--state-layer);
+    box-shadow: var(--shadow-button), var(--glow-outer), var(--glow-inner);
   }
   .dr-btn[data-variant="destructive"] {
     @apply text-destructive-foreground;
     --hue: hsl(var(--destructive));
     background-color: var(--hue);
-    box-shadow:
-      var(--shadow-button),
-      inset 0 0 0 100vmax var(--state-layer);
+    box-shadow: var(--shadow-button), var(--glow-outer), var(--glow-inner);
   }
 
   /* outline + secondary: neutral filled variants (was .btn-glass-neutral) */
   .dr-btn[data-variant="outline"] {
     @apply text-foreground border bg-transparent;
-    box-shadow:
-      var(--shadow-button),
-      inset 0 0 0 100vmax var(--state-layer);
+    box-shadow: var(--shadow-button), var(--glow-outer), var(--glow-inner);
     /* was .btn-glass-neutral--accent-border (theme.css line 932-934) */
     border-color: hsl(var(--primary) / 0.6);
   }
   .dr-btn[data-variant="secondary"] {
     @apply bg-secondary text-secondary-foreground;
-    box-shadow:
-      var(--shadow-button),
-      inset 0 0 0 100vmax var(--state-layer);
+    box-shadow: var(--shadow-button), var(--glow-outer), var(--glow-inner);
   }
   /* In dark mode `--secondary` (217 33% 17%) shares the hue family of the
    * page background. Without a border the button dissolves into the page

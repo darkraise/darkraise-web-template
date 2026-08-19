@@ -3,27 +3,21 @@ import { readFileSync } from "node:fs"
 
 // jsdom never parses CSS, so the rules themselves are what this asserts.
 //
-// The state layer is a Material-style translucent wash of `currentColor` over
-// a clickable surface: 8% on hover, 16% while pressed. It is painted as a
-// flood inset shadow rather than a pseudo-element (which would collide with
-// the preset bracket decorations) or a transform (which would make every
-// button a containing block for `position: fixed`). Because the layer reads
-// `currentColor`, one pair of tokens covers every variant and both modes: it
-// lightens a filled button whose text is white and darkens a ghost button
-// whose text is dark.
+// The state layer is a translucent wash of `currentColor` over a clickable
+// surface, painted by a pseudo-element whose `opacity` carries the state.
+//
+// It started as a flood inset shadow, because the Terminal preset occupied the
+// button pseudo-elements. Terminal is gone, and the shadow had two costs the
+// pseudo-element does not: it rode the shared 150ms box-shadow transition, so
+// the wash ramped instead of appearing, and animating a 100vmax shadow
+// re-rasterised the whole button every frame. Opacity is composited, so the
+// wash can apply instantly.
+//
+// Timing is deliberately asymmetric: instant in, short fade out.
 function flat(path: string): string {
   return readFileSync(path, "utf8")
     .replace(/\/\*[\s\S]*?\*\//g, "")
     .replace(/\s+/g, " ")
-}
-
-function bodyOf(path: string, selector: string): string {
-  const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-  const match = flat(path).match(
-    new RegExp(`[{}]\\s*${escaped}\\s*\\{([^{}]*)\\}`),
-  )
-  if (!match?.[1]) throw new Error(`Rule not found in ${path}: ${selector}`)
-  return match[1].trim()
 }
 
 const THEME = "src/styles/theme.css"
@@ -56,67 +50,74 @@ const HAND_ROLLED: { path: string; selector: string }[] = [
 ]
 
 describe("interaction state layer", () => {
-  it("publishes the hover and press layers as theme tokens", () => {
-    const css = flat(THEME)
+  it("publishes strength as a number so variants can raise it", () => {
+    expect(flat(THEME)).toMatch(/--state-layer-hover: 0\.08/)
+    expect(flat(THEME)).toMatch(/--state-layer-press: 0\.16/)
+  })
+
+  it("applies instantly and fades out", () => {
+    // The reported bug: an 8% wash ramping over the shared 150ms box-shadow
+    // transition read as "nothing happened" for most of a quick hover, and
+    // wobbled when a click interrupted it mid-ramp.
+    expect(flat(THEME)).toMatch(/--state-layer-in: 0ms/)
+    expect(flat(THEME)).toMatch(/--state-layer-out: 120ms/)
+  })
+
+  it("paints the wash with a pseudo-element, not a flood shadow", () => {
+    const css = flat(BUTTON)
     expect(css).toMatch(
-      /--state-layer-hover: color-mix\(in srgb, currentColor 8%, transparent\)/,
+      /\.dr-btn:not\(\[data-variant="link"\]\)::before \{[^}]*background: currentColor/,
+    )
+    expect(css).toMatch(/transition: opacity var\(--state-layer-out\)/)
+    expect(css).not.toMatch(/100vmax/)
+  })
+
+  it("layers the wash above the background and below the label", () => {
+    expect(flat(BUTTON)).toMatch(
+      /\.dr-btn:not\(\[data-variant="link"\]\)::before \{[^}]*z-index: -1/,
+    )
+    expect(flat(BUTTON)).toMatch(/\.dr-btn \{[^}]*isolation: isolate/)
+  })
+
+  it("snaps on hover and press by overriding the duration", () => {
+    const css = flat(BUTTON)
+    expect(css).toMatch(
+      /:hover::before \{ opacity: var\(--state-layer-hover\); transition-duration: var\(--state-layer-in\)/,
     )
     expect(css).toMatch(
-      /--state-layer-press: color-mix\(in srgb, currentColor 16%, transparent\)/,
+      /:active::before \{ opacity: var\(--state-layer-press\); transition-duration: var\(--state-layer-in\)/,
     )
   })
 
-  it("gives the button a transparent layer at rest, composed into its shadow", () => {
-    const base = bodyOf(BUTTON, ".dr-btn")
-    expect(base).toMatch(/--state-layer: transparent/)
-    expect(base).toMatch(
-      /box-shadow:[^;]*inset 0 0 0 100vmax var\(--state-layer\)/,
+  it("raises the strength on the filled variants", () => {
+    // A saturated mid-tone washed 8% is a much smaller perceptual step than the
+    // same wash on a neutral surface, so default and destructive were hard to
+    // read at the shared value.
+    expect(flat(BUTTON)).toMatch(
+      /\.dr-btn\[data-variant="default"\], \.dr-btn\[data-variant="destructive"\] \{ --state-layer-hover: 0\.16; --state-layer-press: 0\.28/,
     )
-  })
-
-  it("raises the layer on hover and deepens it while pressed", () => {
-    expect(bodyOf(BUTTON, '.dr-btn:not([data-variant="link"]):hover')).toMatch(
-      /--state-layer: var\(--state-layer-hover\)/,
-    )
-    expect(bodyOf(BUTTON, '.dr-btn:not([data-variant="link"]):active')).toMatch(
-      /--state-layer: var\(--state-layer-press\)/,
-    )
-  })
-
-  it("drops the per-variant hover colour maths the layer replaces", () => {
-    // `color-mix(... 90%, black)` darkened only the two filled variants and
-    // did nothing for ghost/outline/secondary, which each grew their own
-    // hover rule instead. The layer covers all five uniformly.
-    expect(flat(BUTTON)).not.toMatch(/color-mix\(in srgb, var\(--hue\) 90%/)
   })
 
   it("never washes the link variant", () => {
-    // `link` renders as inline underlined text with no surface, so a
-    // full-bleed rectangular wash behind it reads as a stray highlight. It is
-    // also the one variant the Glass preset does not re-skin, so without this
-    // exclusion Glass buttons would wash on link and nowhere else.
-    const css = flat(BUTTON)
-    expect(css).toMatch(
-      /\.dr-btn:not\(\[data-variant="link"\]\):hover \{ --state-layer: var\(--state-layer-hover\)/,
-    )
-    expect(css).toMatch(
-      /\.dr-btn:not\(\[data-variant="link"\]\):active \{ --state-layer: var\(--state-layer-press\)/,
+    expect(flat(BUTTON)).not.toMatch(/\.dr-btn::before/)
+    expect(flat(BUTTON)).toMatch(
+      /\.dr-btn:not\(\[data-variant="link"\]\)::before/,
     )
   })
 
   it("gives toggles the press layer but not the hover layer", () => {
-    // A hover wash competes with `data-state=on`, which is itself a fill —
-    // a hovered-but-off toggle would read as selected.
     const css = flat(TOGGLE)
-    expect(css).toMatch(/--state-layer: var\(--state-layer-press\)/)
-    expect(css).not.toMatch(/--state-layer: var\(--state-layer-hover\)/)
+    expect(css).toMatch(
+      /:active::before \{ opacity: var\(--state-layer-press\)/,
+    )
+    expect(css).not.toMatch(
+      /:hover::before \{ opacity: var\(--state-layer-hover\)/,
+    )
   })
 
   for (const { path, selector } of HAND_ROLLED) {
     it(`${selector} opts into the shared layer`, () => {
-      expect(bodyOf(path, selector)).toMatch(
-        /box-shadow:[^;]*inset 0 0 0 100vmax var\(--state-layer\)/,
-      )
+      expect(flat(path)).toContain(`${selector}:hover::before`)
     })
   }
 })

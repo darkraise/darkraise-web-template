@@ -441,8 +441,23 @@
     --glow-outer: 0 0 transparent;
     --glow-inner: 0 0 transparent;
 
-    --state-layer-hover: color-mix(in srgb, currentColor 8%, transparent);
-    --state-layer-press: color-mix(in srgb, currentColor 16%, transparent);
+    /* Interaction state layer — a translucent wash of the element's own text
+     colour, painted by a pseudo-element whose `opacity` carries the state.
+     Opacity is composited rather than repainted, which is why this replaced a
+     flood inset shadow: animating a 100vmax shadow re-rasterised the whole
+     button every frame.
+
+     Strength is a plain number so it can be raised per variant. Filled
+     variants need more — their label colour is guaranteed high-contrast
+     against the fill, but a saturated mid-tone washed 8% is a far smaller
+     perceptual step than the same wash on a neutral surface. */
+    --state-layer-hover: 0.08;
+    --state-layer-press: 0.16;
+
+    /* Instant on the way in — immediate feedback is the whole point — and a
+     short fade on the way out so sweeping a toolbar does not strobe. */
+    --state-layer-in: 0ms;
+    --state-layer-out: 120ms;
     --fog-05: transparent;
     --fog-10: transparent;
     --fog-15: transparent;

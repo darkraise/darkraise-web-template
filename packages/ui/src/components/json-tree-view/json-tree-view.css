@@ -133,20 +133,12 @@
     border-radius: 0.125rem;
   }
   .dr-json-show-more {
-    --state-layer: transparent;
-    box-shadow: inset 0 0 0 100vmax var(--state-layer);
+    position: relative;
+    isolation: isolate;
     @apply text-primary ml-1 cursor-pointer text-[length:var(--text-2xs)] tracking-wide uppercase;
     background: transparent;
     border: 0;
     padding: 0;
-  }
-
-  .dr-json-show-more:hover {
-    --state-layer: var(--state-layer-hover);
-  }
-
-  .dr-json-show-more:active {
-    --state-layer: var(--state-layer-press);
   }
   .dr-json-show-more:hover {
     @apply underline;
@@ -182,5 +174,28 @@
   .dr-json-line:hover .dr-json-copy,
   .dr-json-copy:focus-visible {
     @apply opacity-100;
+  }
+
+  /* Interaction state layer — see theme.css. Painted by a pseudo-element so
+     the wash can apply instantly; `opacity` is composited, unlike the flood
+     inset shadow this replaced. */
+  .dr-json-show-more::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: currentColor;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--state-layer-out) ease-out;
+  }
+  .dr-json-show-more:hover::before {
+    opacity: var(--state-layer-hover);
+    transition-duration: var(--state-layer-in);
+  }
+  .dr-json-show-more:active::before {
+    opacity: var(--state-layer-press);
+    transition-duration: var(--state-layer-in);
   }
 }

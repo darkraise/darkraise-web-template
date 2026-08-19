@@ -93,17 +93,9 @@
   /* Stepper visual chrome — text colour, hover background, focus ring,
    * disabled state. Used by both grouped and direct-children placements. */
   .dr-number-input-stepper {
-    --state-layer: transparent;
-    box-shadow: inset 0 0 0 100vmax var(--state-layer);
+    position: relative;
+    isolation: isolate;
     @apply text-muted-foreground hover:text-foreground hover:bg-muted focus-ring-inset inline-flex cursor-pointer items-center justify-center bg-transparent transition-colors disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size-xs)] [&_svg]:shrink-0;
-  }
-
-  .dr-number-input-stepper:hover {
-    --state-layer: var(--state-layer-hover);
-  }
-
-  .dr-number-input-stepper:active {
-    --state-layer: var(--state-layer-press);
   }
 
   /* Glass-preset frosted NumberInput. The bordered surface is the
@@ -148,5 +140,28 @@
     .dr-number-input-trigger-group
     .dr-number-input-stepper-increment {
     border-bottom-color: var(--fog-15);
+  }
+
+  /* Interaction state layer — see theme.css. Painted by a pseudo-element so
+     the wash can apply instantly; `opacity` is composited, unlike the flood
+     inset shadow this replaced. */
+  .dr-number-input-stepper::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: currentColor;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--state-layer-out) ease-out;
+  }
+  .dr-number-input-stepper:hover::before {
+    opacity: var(--state-layer-hover);
+    transition-duration: var(--state-layer-in);
+  }
+  .dr-number-input-stepper:active::before {
+    opacity: var(--state-layer-press);
+    transition-duration: var(--state-layer-in);
   }
 }
