@@ -69,6 +69,8 @@ test.describe("theme switcher popover", () => {
       "Elevation",
       "Button Elevation",
       "Surface Intensity",
+      "Outer Glow",
+      "Inner Glow",
       "Radius",
     ])
   })
@@ -330,20 +332,23 @@ test.describe("preset-specific axis controls", () => {
     await gotoApp(page, PROBE)
     await openThemeSwitcher(page)
 
+    // Glass Opacity is still a genuine preset-owned axis — Halo moved to the
+    // shared glow axes, so this exercises per-preset memory with one that
+    // remains scoped to a single preset.
     await themeSwitcher(page)
-      .locator('[aria-label="Halo"]')
-      .getByRole("radio", { name: "pronounced", exact: true })
+      .locator('[aria-label="Opacity"]')
+      .getByRole("radio", { name: "strong", exact: true })
       .click()
     await expect
-      .poll(async () => (await readThemeAttrs(page))["data-glass-halo"])
-      .toBe("pronounced")
+      .poll(async () => (await readThemeAttrs(page))["data-glass-opacity"])
+      .toBe("strong")
 
     await selectPreset(page, "scifi")
     await selectPreset(page, "glass")
 
     await expect
-      .poll(async () => (await readThemeAttrs(page))["data-glass-halo"])
-      .toBe("pronounced")
+      .poll(async () => (await readThemeAttrs(page))["data-glass-opacity"])
+      .toBe("strong")
   })
 })
 

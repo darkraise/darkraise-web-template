@@ -95,20 +95,8 @@ export const PRESET_AXES: Record<Preset, PresetAxis[]> = {
       values: ["none", "low", "medium", "high"],
       default: "medium",
     },
-    {
-      name: "halo",
-      label: "Halo",
-      values: ["none", "soft", "pronounced"],
-      default: "soft",
-    },
   ],
   scifi: [
-    {
-      name: "intensity",
-      label: "Intensity",
-      values: ["dim", "normal", "bright", "intense"],
-      default: "normal",
-    },
     {
       name: "frame",
       label: "Frame",

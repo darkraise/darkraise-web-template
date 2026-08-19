@@ -37,18 +37,19 @@ const ELEVATIONS = ["flat", "low", "medium", "high"]
 const RADII = ["sharp", "subtle", "rounded", "pill"]
 const FONT_SIZES = ["small", "medium", "large", "extra-large"]
 const ACCENT_INTENSITIES = ["calm", "balanced", "vivid", "intense"]
+const GLOW_LEVELS = ["none", "subtle", "balanced", "vivid"]
 const SURFACE_INTENSITIES = ["flat", "subtle", "balanced", "bold"]
 const MODES = ["light", "dark", "system"]
 const LAYOUTS = ["sidebar", "stacked", "top-nav", "split-panel"]
 // Mirrors `ThemeConfig.switcher.axes` in
 // packages/ui/src/theme/themeConfig.ts. `presetAxes` is a master
 // toggle for whether the per-preset axis controls (e.g. glass blur,
-// scifi intensity/frame) appear in the switcher panel.
+// scifi frame) appear in the switcher panel.
 const THEME_AXIS_KEYS = [
   "mode", "accentColor", "surfaceColor", "preset",
   "backgroundStyle", "backgroundIntensity", "gradientPattern",
   "density", "elevation", "buttonElevation", "surfaceIntensity", "radius", "fontSize",
-  "accentIntensity", "presetAxes",
+  "accentIntensity", "outerGlow", "innerGlow", "presetAxes",
 ]
 
 const argv = minimist(process.argv.slice(2), {
@@ -58,7 +59,7 @@ const argv = minimist(process.argv.slice(2), {
     "background", "background-intensity", "gradient-pattern",
     "mode", "theme-axes",
     "density", "elevation", "button-elevation", "surface-intensity", "radius", "font-size",
-    "accent-intensity",
+    "accent-intensity", "outer-glow", "inner-glow",
     "host", "port",
   ],
   alias: { y: "yes" },
@@ -97,6 +98,8 @@ validate(argv["surface-intensity"], SURFACE_INTENSITIES, "surface-intensity")
 validate(argv.radius, RADII, "radius")
 validate(argv["font-size"], FONT_SIZES, "font-size")
 validate(argv["accent-intensity"], ACCENT_INTENSITIES, "accent-intensity")
+validate(argv["outer-glow"], GLOW_LEVELS, "outer-glow")
+validate(argv["inner-glow"], GLOW_LEVELS, "inner-glow")
 
 if (argv["theme-axes"] !== undefined) {
   const axes = argv["theme-axes"].split(",")
@@ -279,6 +282,12 @@ async function main() {
     }),
   ))
 
+  // Glow ships at "none" so a new project looks the same as before the axes
+  // existed; presets that own a glow supply their own default at runtime.
+  // Flag-only rather than prompted, to keep the interactive flow short.
+  const outerGlow = argv["outer-glow"] || "none"
+  const innerGlow = argv["inner-glow"] || "none"
+
 
   // --- Theme switcher ---
   let themeSwitcherEnabled
@@ -318,7 +327,9 @@ async function main() {
             { value: "radius", label: "Radius" },
             { value: "fontSize", label: "Font size" },
             { value: "accentIntensity", label: "Accent intensity" },
-            { value: "presetAxes", label: "Preset-specific axes (e.g. glass blur, scifi intensity/frame)" },
+            { value: "outerGlow", label: "Outer glow" },
+            { value: "innerGlow", label: "Inner glow" },
+            { value: "presetAxes", label: "Preset-specific axes (e.g. glass blur, scifi frame)" },
           ],
           initialValues: THEME_AXIS_KEYS,
         }),
@@ -374,6 +385,8 @@ async function main() {
         radius: radius,
         fontSize: fontSize,
         accentIntensity: accentIntensity,
+        outerGlow: outerGlow,
+        innerGlow: innerGlow,
       },
       switcher: {
         enabled: themeSwitcherEnabled,
@@ -468,6 +481,8 @@ async function main() {
           "surface-intensity": "theme-surface-intensity",
           "radius": "theme-radius",
           "font-size": "theme-font-size",
+          "outer-glow": "theme-outer-glow",
+          "inner-glow": "theme-inner-glow",
         }
         Object.keys(AXIS_LS_KEYS).forEach(function (axis) {
           var v = localStorage.getItem(AXIS_LS_KEYS[axis])
@@ -571,6 +586,8 @@ export const themeConfig: ThemeConfig = {
     radius: "${config.theme.defaults.radius}",
     fontSize: "${config.theme.defaults.fontSize}",
     accentIntensity: "${config.theme.defaults.accentIntensity}",
+    outerGlow: "${config.theme.defaults.outerGlow}",
+    innerGlow: "${config.theme.defaults.innerGlow}",
   },
   switcher: {
     enabled: ${config.theme.switcher.enabled},
@@ -589,6 +606,8 @@ export const themeConfig: ThemeConfig = {
       radius: ${config.theme.switcher.axes.radius},
       fontSize: ${config.theme.switcher.axes.fontSize},
       accentIntensity: ${config.theme.switcher.axes.accentIntensity},
+      outerGlow: ${config.theme.switcher.axes.outerGlow},
+      innerGlow: ${config.theme.switcher.axes.innerGlow},
       presetAxes: ${config.theme.switcher.axes.presetAxes},
     },
   },

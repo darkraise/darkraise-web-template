@@ -470,7 +470,12 @@ export function ThemeProvider({
         otherOwnedKeys.filter((k) => !(k in mergedTokens)),
       )
     },
-    [],
+    [
+      cfg.defaults.outerGlow,
+      cfg.defaults.innerGlow,
+      outerGlowRaw,
+      innerGlowRaw,
+    ],
   )
 
   const buildSettings = useCallback(
@@ -1157,6 +1162,8 @@ export function ThemeProvider({
       gradientPattern,
     )
   }, [
+    outerGlow,
+    innerGlow,
     density,
     elevation,
     buttonElevation,
@@ -1281,6 +1288,8 @@ export function ThemeProvider({
       radius,
       fontSize,
       accentIntensity,
+      outerGlow,
+      innerGlow,
       resolvedMode,
       cfg,
       syncStatus,

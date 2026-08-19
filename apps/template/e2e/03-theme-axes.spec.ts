@@ -516,7 +516,7 @@ test.describe("axis combinations", () => {
         accent: "violet",
         surface: "indigo",
         presetAxes: {
-          glass: { opacity: "strong", blur: "high", halo: "pronounced" },
+          glass: { opacity: "strong", blur: "high" },
         },
       },
       expect: {
@@ -530,22 +530,20 @@ test.describe("axis combinations", () => {
         "data-font-size": "extra-large",
         "data-glass-opacity": "strong",
         "data-glass-blur": "high",
-        "data-glass-halo": "pronounced",
       },
     },
     {
-      name: "scifi · intense · bracketed",
+      name: "scifi · bracketed",
       seed: {
         preset: "scifi",
         mode: "dark",
         accent: "cyan",
         surface: "slate",
-        presetAxes: { scifi: { intensity: "intense", frame: "bracketed" } },
+        presetAxes: { scifi: { frame: "bracketed" } },
       },
       expect: {
         "data-preset": "scifi",
         "data-mode": "dark",
-        "data-scifi-intensity": "intense",
         "data-scifi-frame": "bracketed",
       },
     },
