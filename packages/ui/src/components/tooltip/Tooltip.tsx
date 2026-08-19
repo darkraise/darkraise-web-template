@@ -12,12 +12,14 @@ import { useEvent } from "@primitives/state"
 import {
   useTooltip,
   TOOLTIP_DEFAULT_DELAY,
+  TOOLTIP_DEFAULT_CLOSE_DELAY,
   type UseTooltipReturn,
 } from "./useTooltip"
 import "./tooltip.css"
 
 interface ProviderState {
   delayDuration: number
+  closeDelay: number
   skipDelayDuration: number
   disableHoverableContent: boolean
   lastClosedAt: { current: number }
@@ -27,7 +29,10 @@ interface ProviderState {
 const ProviderContext = React.createContext<ProviderState | null>(null)
 
 interface TooltipProviderProps {
+  /** Hover-intent gate before the tooltip appears. */
   delayDuration?: number
+  /** Grace period before it closes; also the window for reaching the content. */
+  closeDelay?: number
   skipDelayDuration?: number
   disableHoverableContent?: boolean
   children?: React.ReactNode
@@ -35,6 +40,7 @@ interface TooltipProviderProps {
 
 function TooltipProvider({
   delayDuration = TOOLTIP_DEFAULT_DELAY,
+  closeDelay = TOOLTIP_DEFAULT_CLOSE_DELAY,
   skipDelayDuration = 300,
   disableHoverableContent = false,
   children,
@@ -47,6 +53,7 @@ function TooltipProvider({
   const value = React.useMemo<ProviderState>(
     () => ({
       delayDuration,
+      closeDelay,
       skipDelayDuration,
       disableHoverableContent,
       lastClosedAt,
@@ -54,6 +61,7 @@ function TooltipProvider({
     }),
     [
       delayDuration,
+      closeDelay,
       skipDelayDuration,
       disableHoverableContent,
       setLastClosedAt,
@@ -71,6 +79,7 @@ function useProviderState(): ProviderState {
   return (
     React.useContext(ProviderContext) ?? {
       delayDuration: TOOLTIP_DEFAULT_DELAY,
+      closeDelay: TOOLTIP_DEFAULT_CLOSE_DELAY,
       skipDelayDuration: 300,
       disableHoverableContent: false,
       lastClosedAt: { current: 0 },
@@ -97,7 +106,10 @@ interface TooltipProps {
   open?: boolean
   defaultOpen?: boolean
   onOpenChange?: (open: boolean) => void
+  /** Overrides the provider's hover-intent gate for this tooltip. */
   delayDuration?: number
+  /** Overrides the provider's close grace period for this tooltip. */
+  closeDelay?: number
   disableHoverableContent?: boolean
   children?: React.ReactNode
 }
@@ -107,11 +119,13 @@ function Tooltip({
   defaultOpen,
   onOpenChange,
   delayDuration,
+  closeDelay,
   disableHoverableContent,
   children,
 }: TooltipProps) {
   const provider = useProviderState()
   const effectiveDelay = delayDuration ?? provider.delayDuration
+  const effectiveCloseDelay = closeDelay ?? provider.closeDelay
   const effectiveDisableHover =
     disableHoverableContent ?? provider.disableHoverableContent
 
@@ -120,6 +134,7 @@ function Tooltip({
     defaultOpen,
     onOpenChange,
     delayDuration: effectiveDelay,
+    closeDelay: effectiveCloseDelay,
     skipDelayDuration: provider.skipDelayDuration,
     lastClosedAtRef: provider.lastClosedAt,
     notifyClosed: () => provider.setLastClosedAt(Date.now()),

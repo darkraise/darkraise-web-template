@@ -134,7 +134,9 @@ describe("Tooltip", () => {
     trigger.focus()
 
     await waitFor(() => expect(trigger).toHaveFocus())
-    expect(screen.queryByRole("tooltip")).toBeNull()
+    // Outlast the close grace period before asserting: a tooltip opened by the
+    // click's hover would still be mounted mid-close.
+    await waitFor(() => expect(screen.queryByRole("tooltip")).toBeNull())
   })
 
   // The app-wide layouts used to mount `<TooltipProvider delayDuration={0}>`,
@@ -153,8 +155,61 @@ describe("Tooltip", () => {
     expect(await screen.findByRole("tooltip")).toBeInTheDocument()
   })
 
-  it("defaults the provider to a 200ms hover-intent delay", () => {
-    expect(TOOLTIP_DEFAULT_DELAY).toBe(200)
+  it("defaults the provider to a 400ms hover-intent delay", () => {
+    expect(TOOLTIP_DEFAULT_DELAY).toBe(400)
+  })
+
+  // Closing has to be deferred, not immediate. The entry animation
+  // (slide-in-from-bottom-2) starts the content ~2px below its resting place,
+  // which briefly covers the trigger's top edge. With a synchronous close the
+  // trigger's pointerleave unmounted the content, the cursor landed back on the
+  // trigger, the skip-delay window reopened it instantly, and it flickered
+  // forever. A grace period lets the content's own pointerenter cancel it.
+  it("defers closing so a momentary pointerleave can be cancelled", async () => {
+    const user = userEvent.setup()
+    render(<Basic delayDuration={0} />)
+    const trigger = screen.getByRole("button", { name: "Hover me" })
+
+    await user.hover(trigger)
+    await screen.findByRole("tooltip")
+
+    await user.unhover(trigger)
+    // Still present: the close is pending, not done.
+    expect(screen.queryByRole("tooltip")).not.toBeNull()
+
+    await waitFor(() => expect(screen.queryByRole("tooltip")).toBeNull())
+  })
+
+  it("keeps the tooltip open when the pointer reaches the content", async () => {
+    const user = userEvent.setup()
+    render(<Basic delayDuration={0} />)
+    const trigger = screen.getByRole("button", { name: "Hover me" })
+
+    await user.hover(trigger)
+    const tip = await screen.findByRole("tooltip")
+
+    // Leaving the trigger for the content is exactly what the entry animation
+    // simulates, and what a hoverable tooltip needs to survive.
+    await user.unhover(trigger)
+    await user.hover(tip)
+
+    await new Promise((r) => setTimeout(r, 300))
+    expect(screen.queryByRole("tooltip")).not.toBeNull()
+  })
+
+  it("honours a closeDelay override", async () => {
+    const user = userEvent.setup()
+    render(
+      <Tooltip delayDuration={0} closeDelay={0}>
+        <TooltipTrigger>Hover me</TooltipTrigger>
+        <TooltipContent>Tip text</TooltipContent>
+      </Tooltip>,
+    )
+    const trigger = screen.getByRole("button", { name: "Hover me" })
+    await user.hover(trigger)
+    await screen.findByRole("tooltip")
+    await user.unhover(trigger)
+    await waitFor(() => expect(screen.queryByRole("tooltip")).toBeNull())
   })
 
   it("Provider context propagates delayDuration default", () => {
