@@ -277,7 +277,7 @@ async function main() {
 
   const canvasTint = argv["canvas-tint"] || (skipPrompts ? "balanced" : cancelled(
     await p.select({
-      message: "Canvas tint",
+      message: "Canvas tint (dark mode only)",
       options: CANVAS_TINTS.map((v) => ({ value: v, label: v })),
       initialValue: "balanced",
     }),

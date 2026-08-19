@@ -594,6 +594,11 @@ test.describe("axis combinations", () => {
 })
 
 test.describe("theme persistence", () => {
+  // canvasTint is deliberately omitted from this seed: readThemeAttrs only
+  // collects data-* attributes, and canvasTint writes none, so it would add
+  // a seed value the before/after comparison can never fail on. Its
+  // round-trip is instead covered by the per-step reload loop in the
+  // "canvas tint axis" describe block above, which compares --background.
   test("all axes round-trip through localStorage", async ({ page }) => {
     const seed = {
       preset: "glass" as Preset,
@@ -609,7 +614,6 @@ test.describe("theme persistence", () => {
       surfaceIntensity: "bold",
       radius: "sharp",
       fontSize: "large",
-      canvasTint: "neutral",
     }
     await seedApp(page, seed)
     await gotoApp(page, PROBE)
