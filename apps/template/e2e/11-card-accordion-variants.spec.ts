@@ -85,6 +85,15 @@ for (const preset of PRESETS) {
           await styleOf(page, ".dr-card[data-border='none']", "border-color"),
         ).toBe(TRANSPARENT)
 
+        // The default tier has to paint a real line. `.dr-card` composes
+        // `@apply glass`, whose `border: 1px solid var(--fog-15)` shorthand
+        // outranks the global `* { @apply border-border }`, and the fog scale
+        // is transparent under every preset but Glass — which left the default
+        // card indistinguishable from `border="none"`.
+        expect(
+          await styleOf(page, ".dr-card:not([data-border])", "border-color"),
+        ).not.toBe(TRANSPARENT)
+
         // The whole point of the `:not([data-border])` guards: an explicit
         // prop must win over the preset's own .dr-card border rules, which are
         // unlayered under Terminal and Sci-fi and therefore outrank

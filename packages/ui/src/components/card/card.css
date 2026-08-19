@@ -1,6 +1,14 @@
 @layer components {
   .dr-card {
     @apply glass bg-card text-card-foreground border;
+    /* `glass` writes the shorthand `border: 1px solid var(--fog-15)`, and the
+       fog scale is `transparent` outside a `.dr-surface` subtree. That
+       declaration sits at (0,1,0) and so outranks the global
+       `* { @apply border-border }`, which left the default card painting the
+       same invisible box as `border="none"`. Restating the theme border here
+       keeps the fog rim for glass surfaces (the preset rebinds `--border`
+       itself) without depending on the fog scale being populated. */
+    border-color: hsl(var(--border));
     transition: box-shadow 200ms ease;
   }
 
@@ -67,17 +75,30 @@
 
   /* Border variants. `none` clears only the colour so the 1px box is
      preserved and a borderless card stays geometrically identical to a
-     bordered sibling in a grid. */
+     bordered sibling in a grid. `strong` rides the `--border-strong` rung of
+     the subtle/default/strong ladder rather than a `--foreground` alpha:
+     `--foreground` is always the fixed slate neutral scale, so a
+     foreground-derived line reads as a cold grey against every non-slate
+     surface colour while the card's own default border stays surface-tinted. */
   .dr-card[data-border="none"] {
     border-color: transparent;
   }
 
   .dr-card[data-border="strong"] {
-    border-color: hsl(var(--foreground) / 0.28);
+    border-color: hsl(var(--border-strong));
   }
 
   .dr-card[data-border="accent"] {
     border-color: hsl(var(--primary) / 0.35);
+  }
+
+  /* Glass preset — the only preset that populates the fog scale, and its
+     card rim is meant to be a translucent tint of the surface rather than a
+     solid line. The base rule above restates `hsl(var(--border))` because fog
+     is `transparent` under every other preset; here the fog rim is real, so
+     hand it back. */
+  [data-preset="glass"] .dr-card:not([data-border]) {
+    border-color: var(--fog-15);
   }
 
   /* Neon preset — cards get a primary-tinted border so they visibly
