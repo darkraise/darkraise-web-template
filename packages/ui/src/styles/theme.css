@@ -805,6 +805,22 @@
   --control-well: var(--control-well-deep);
 }
 
+/* Every raised surface a form can live in redeclares the control rung, so a
+   field recesses into whatever contains it. `.dr-card` does the same in
+   card.css, colocated with the rest of the card's chrome.
+
+   Page chrome is deliberately absent. The header and the sidebar rail sit on
+   the raised rung too, but the reference design keeps their fields flush with
+   the chrome rather than cut into it, and a search box that reads as a hole in
+   the toolbar is a different look from one that reads as part of it. */
+.dr-dialog-content,
+.dr-sheet-content,
+.dr-drawer-content,
+.dr-popover-content,
+.dr-floating-panel {
+  --control-surface: var(--control-well);
+}
+
 [data-density="compact"] {
   --density-button-px: 0.5rem;
   --density-button-py: 0.25rem;

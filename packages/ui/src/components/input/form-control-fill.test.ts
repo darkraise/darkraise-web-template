@@ -41,6 +41,25 @@ describe("--control-surface rungs", () => {
     expect(read("styles/theme.css")).toContain("--control-surface: var(--card)")
   })
 
+  it("recesses inside every raised container a form can live in", () => {
+    const css = read("styles/theme.css")
+    for (const container of [
+      ".dr-dialog-content",
+      ".dr-sheet-content",
+      ".dr-drawer-content",
+      ".dr-popover-content",
+      ".dr-floating-panel",
+    ]) {
+      expect(css).toContain(container)
+    }
+    // One grouped rule, so the list above and the declaration cannot drift.
+    expect(css).toContain(
+      ".dr-dialog-content, .dr-sheet-content, .dr-drawer-content, " +
+        ".dr-popover-content, .dr-floating-panel { " +
+        "--control-surface: var(--control-well); }",
+    )
+  })
+
   it("recesses to the axis-chosen well inside a card", () => {
     expect(read("components/card/card.css")).toContain(
       "--control-surface: var(--control-well)",
