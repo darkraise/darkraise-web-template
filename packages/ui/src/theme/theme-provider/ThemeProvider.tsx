@@ -11,6 +11,7 @@ import type {
   Radius,
   FontSize,
   AccentIntensity,
+  ControlDepth,
   GlowLevel,
   Mode,
   ResolvedMode,
@@ -29,6 +30,7 @@ import {
   RADII,
   FONT_SIZES,
   ACCENT_INTENSITIES,
+  CONTROL_DEPTHS,
   GLOW_LEVELS,
 } from "@theme/types"
 import {
@@ -70,6 +72,7 @@ const LS_SURFACE_INTENSITY = "theme-surface-intensity"
 const LS_RADIUS = "theme-radius"
 const LS_FONT_SIZE = "theme-font-size"
 const LS_ACCENT_INTENSITY = "theme-accent-intensity"
+const LS_CONTROL_DEPTH = "theme-control-depth"
 const LS_OUTER_GLOW = "theme-outer-glow"
 const LS_INNER_GLOW = "theme-inner-glow"
 
@@ -354,6 +357,14 @@ export function ThemeProvider({
     },
   )
 
+  const [controlDepth, setControlDepthState] = useState<ControlDepth>(() => {
+    const stored = readStorage(LS_CONTROL_DEPTH)
+    if (stored && (CONTROL_DEPTHS as readonly string[]).includes(stored)) {
+      return stored as ControlDepth
+    }
+    return cfg.defaults.controlDepth
+  })
+
   const [resolvedMode, setResolvedMode] = useState<ResolvedMode>(() =>
     clampResolvedMode(preset, resolveMode(mode)),
   )
@@ -501,6 +512,7 @@ export function ThemeProvider({
       radius,
       fontSize,
       accentIntensity,
+      controlDepth,
       presetAxisValues,
       ...overrides,
     }),
@@ -519,6 +531,7 @@ export function ThemeProvider({
       radius,
       fontSize,
       accentIntensity,
+      controlDepth,
       presetAxisValues,
     ],
   )
@@ -560,6 +573,7 @@ export function ThemeProvider({
       setAccentIntensityState(
         settings.accentIntensity ?? cfg.defaults.accentIntensity,
       )
+      setControlDepthState(settings.controlDepth ?? cfg.defaults.controlDepth)
       setPresetAxisValuesState(newAxisValues)
 
       writeStorage(LS_ACCENT, settings.accentColor)
@@ -585,6 +599,10 @@ export function ThemeProvider({
         LS_ACCENT_INTENSITY,
         settings.accentIntensity ?? cfg.defaults.accentIntensity,
       )
+      writeStorage(
+        LS_CONTROL_DEPTH,
+        settings.controlDepth ?? cfg.defaults.controlDepth,
+      )
       for (const [presetName, axes] of Object.entries(newAxisValues)) {
         for (const [axisName, value] of Object.entries(axes)) {
           writeStorage(LS_PRESET_AXIS_PREFIX(presetName, axisName), value)
@@ -594,6 +612,10 @@ export function ThemeProvider({
       document.documentElement.setAttribute(
         "data-density",
         settings.density ?? cfg.defaults.density,
+      )
+      document.documentElement.setAttribute(
+        "data-control-depth",
+        settings.controlDepth ?? cfg.defaults.controlDepth,
       )
       document.documentElement.setAttribute(
         "data-elevation",
@@ -1030,6 +1052,19 @@ export function ThemeProvider({
     [buildSettings, notifyChange, debouncedSave],
   )
 
+  const setControlDepth = useCallback(
+    (depth: ControlDepth) => {
+      setControlDepthState(depth)
+      writeStorage(LS_CONTROL_DEPTH, depth)
+      document.documentElement.setAttribute("data-control-depth", depth)
+      const settings = buildSettings({ controlDepth: depth })
+      notifyChange(settings)
+      hasUserChanged.current = true
+      debouncedSave(settings)
+    },
+    [buildSettings, notifyChange, debouncedSave],
+  )
+
   const setElevation = useCallback(
     (e: Elevation) => {
       setElevationState(e)
@@ -1161,6 +1196,7 @@ export function ThemeProvider({
 
   useEffect(() => {
     document.documentElement.setAttribute("data-density", density)
+    document.documentElement.setAttribute("data-control-depth", controlDepth)
     document.documentElement.setAttribute("data-elevation", elevation)
     document.documentElement.setAttribute(
       "data-button-elevation",
@@ -1193,6 +1229,7 @@ export function ThemeProvider({
     preset,
     cfg.defaults.surfaceIntensity,
     density,
+    controlDepth,
     elevation,
     buttonElevation,
     surfaceIntensity,
@@ -1276,6 +1313,7 @@ export function ThemeProvider({
       radius,
       fontSize,
       accentIntensity,
+      controlDepth,
       outerGlow,
       innerGlow,
       resolvedMode,
@@ -1297,6 +1335,7 @@ export function ThemeProvider({
       setRadius,
       setFontSize,
       setAccentIntensity,
+      setControlDepth,
       setOuterGlow,
       setInnerGlow,
       setPresetAxis,
@@ -1316,6 +1355,7 @@ export function ThemeProvider({
       radius,
       fontSize,
       accentIntensity,
+      controlDepth,
       outerGlow,
       innerGlow,
       resolvedMode,
@@ -1336,6 +1376,7 @@ export function ThemeProvider({
       setRadius,
       setFontSize,
       setAccentIntensity,
+      setControlDepth,
       setOuterGlow,
       setInnerGlow,
       setPresetAxis,

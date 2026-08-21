@@ -50,6 +50,7 @@ export const defaultLabels: UiLabels = {
       preset: "Preset",
       backgroundStyle: "Background",
       backgroundIntensity: "Background Intensity",
+      controlDepth: "Control Depth",
       gradientPattern: "Gradient Pattern",
       density: "Density",
       elevation: "Elevation",

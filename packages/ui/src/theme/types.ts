@@ -64,6 +64,15 @@ export type Radius = (typeof RADII)[number]
 export const FONT_SIZES = ["small", "medium", "large", "extra-large"] as const
 export type FontSize = (typeof FONT_SIZES)[number]
 
+/**
+ * How far a form control recesses below the surface that contains it. Only
+ * meaningful inside a raised surface: a control sitting on the bare page
+ * canvas keeps the raised rung at every step, because recessing it there
+ * would sink it into the background rather than into a container.
+ */
+export const CONTROL_DEPTHS = ["flush", "subtle", "recessed", "deep"] as const
+export type ControlDepth = (typeof CONTROL_DEPTHS)[number]
+
 export const ACCENT_INTENSITIES = [
   "calm",
   "balanced",
@@ -112,6 +121,9 @@ export interface ThemeSettings {
   /** How loud the accent reads in dark mode; ignored in light. Defaults to
    *  "balanced". */
   accentIntensity?: AccentIntensity
+  /** How deep form controls sit inside a raised surface. Defaults to
+   *  "recessed". */
+  controlDepth?: ControlDepth
   outerGlow?: GlowLevel
   innerGlow?: GlowLevel
   /** Per-preset axis values; outer key = preset name, inner key = axis name. */
@@ -140,6 +152,7 @@ export interface ThemeContextValue {
   radius: Radius
   fontSize: FontSize
   accentIntensity: AccentIntensity
+  controlDepth: ControlDepth
   outerGlow: GlowLevel
   innerGlow: GlowLevel
   resolvedMode: ResolvedMode
@@ -163,6 +176,7 @@ export interface ThemeContextValue {
   setRadius: (radius: Radius) => void
   setFontSize: (size: FontSize) => void
   setAccentIntensity: (intensity: AccentIntensity) => void
+  setControlDepth: (depth: ControlDepth) => void
   setOuterGlow: (level: GlowLevel) => void
   setInnerGlow: (level: GlowLevel) => void
   /**

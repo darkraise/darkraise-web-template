@@ -415,6 +415,10 @@
     --surface-raised: 0 0% 100%;
     --surface-overlay: 0 0% 100%;
     --surface-sunken: 210 40% 96%;
+    /* Derived control rungs; the engine overwrites both. Light-mode values,
+       matching the rest of this fallback block. */
+    --control-well-subtle: 210 20% 98%;
+    --control-well-deep: 210 40% 92%;
     --surface-sidebar: 222 47% 11%;
     --surface-header: 0 0% 100%;
     --border-subtle: 210 40% 96%;
@@ -434,6 +438,8 @@
        read as wells cut into the surface they belong to, instead of as
        outlines drawn on top of it. */
     --control-surface: var(--card);
+    /* Which rung the recess lands on, chosen by the controlDepth axis. */
+    --control-well: var(--surface-sunken);
     /* Interaction state layer — a Material-style translucent wash of the
      element's own text colour, painted over a clickable surface as a flood
      inset shadow. `currentColor` is resolved at the consuming element, so
@@ -772,6 +778,31 @@
     --surface-wash: 0%;
     --surface-wash-color: var(--card);
   }
+}
+
+/* controlDepth — which rung a form control paints inside a raised surface.
+   `--control-surface` (see the :root block) picks this up only within a
+   container that redeclares it; on the bare page canvas a control stays on
+   the raised rung at every step, because there is nothing to recess into.
+
+   `recessed` is the default and needs no rule: --control-well is declared as
+   --surface-sunken alongside the other tokens. Listing it anyway keeps the
+   four steps readable as one table and makes an explicit attribute win over
+   a stale inherited one. */
+[data-control-depth="flush"] {
+  --control-well: var(--card);
+}
+
+[data-control-depth="subtle"] {
+  --control-well: var(--control-well-subtle);
+}
+
+[data-control-depth="recessed"] {
+  --control-well: var(--surface-sunken);
+}
+
+[data-control-depth="deep"] {
+  --control-well: var(--control-well-deep);
 }
 
 [data-density="compact"] {

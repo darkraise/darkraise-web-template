@@ -63,6 +63,8 @@ export const AXIS_VISIBILITY: Record<
     s.axes.accentIntensity && !s.isHiddenByPreset("accentIntensity"),
   surfaceIntensity: (s) =>
     s.axes.surfaceIntensity && !s.isHiddenByPreset("surfaceIntensity"),
+  controlDepth: (s) =>
+    s.axes.controlDepth && !s.isHiddenByPreset("controlDepth"),
 
   elevation: (s) => s.axes.elevation && !s.isHiddenByPreset("elevation"),
   buttonElevation: (s) =>

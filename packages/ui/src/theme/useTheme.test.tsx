@@ -231,6 +231,21 @@ describe("useTheme", () => {
     expect(result.current.backgroundIntensity).toBe("vivid")
   })
 
+  it("defaults controlDepth to recessed", () => {
+    const { result } = renderHook(() => useTheme(), { wrapper })
+    expect(result.current.controlDepth).toBe("recessed")
+  })
+
+  it("persists controlDepth and writes its data attribute", () => {
+    const { result } = renderHook(() => useTheme(), { wrapper })
+    act(() => result.current.setControlDepth("deep"))
+    expect(result.current.controlDepth).toBe("deep")
+    expect(localStorage.getItem("theme-control-depth")).toBe("deep")
+    expect(document.documentElement.getAttribute("data-control-depth")).toBe(
+      "deep",
+    )
+  })
+
   it("persists backgroundIntensity and writes its data attribute", () => {
     // Unlike the canvasTint axis it absorbed, this one drives CSS as well as
     // the token engine, so it does carry an attribute.

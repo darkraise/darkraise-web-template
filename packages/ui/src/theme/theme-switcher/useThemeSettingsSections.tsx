@@ -11,6 +11,7 @@ import {
   DENSITIES,
   ELEVATIONS,
   SURFACE_INTENSITIES,
+  CONTROL_DEPTHS,
   RADII,
   FONT_SIZES,
   ACCENT_INTENSITIES,
@@ -70,6 +71,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
     elevation,
     buttonElevation,
     surfaceIntensity,
+    controlDepth,
     radius,
     fontSize,
     accentIntensity,
@@ -89,6 +91,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
     setElevation,
     setButtonElevation,
     setSurfaceIntensity,
+    setControlDepth,
     setRadius,
     setFontSize,
     setAccentIntensity,
@@ -468,6 +471,23 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
             value={surfaceIntensity}
             onChange={setSurfaceIntensity}
             label={labels.theme.axisLabels.surfaceIntensity}
+          />
+        </div>
+      ),
+    },
+    show("controlDepth") && {
+      key: "controlDepth",
+      group: "depth" as const,
+      node: (
+        <div key="controlDepth" className="dr-theme-switcher-row">
+          <Label className="dr-theme-switcher-section-label">
+            {labels.theme.axisLabels.controlDepth}
+          </Label>
+          <AxisControl
+            values={CONTROL_DEPTHS}
+            value={controlDepth}
+            onChange={setControlDepth}
+            label={labels.theme.axisLabels.controlDepth}
           />
         </div>
       ),

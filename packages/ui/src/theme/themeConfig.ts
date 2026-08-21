@@ -10,6 +10,7 @@ import type {
   Radius,
   FontSize,
   AccentIntensity,
+  ControlDepth,
   GlowLevel,
   Mode,
 } from "./types"
@@ -31,6 +32,7 @@ export interface ThemeConfig {
     radius: Radius
     fontSize: FontSize
     accentIntensity: AccentIntensity
+    controlDepth: ControlDepth
     outerGlow: GlowLevel
     innerGlow: GlowLevel
   }
@@ -51,6 +53,7 @@ export interface ThemeConfig {
       radius: boolean
       fontSize: boolean
       accentIntensity: boolean
+      controlDepth: boolean
       outerGlow: boolean
       innerGlow: boolean
       /** Master toggle for all preset-specific axis controls. */
@@ -75,6 +78,7 @@ export const themeConfig: ThemeConfig = {
     radius: "rounded",
     fontSize: "medium",
     accentIntensity: "balanced",
+    controlDepth: "recessed",
     outerGlow: "none",
     innerGlow: "none",
   },
@@ -95,6 +99,7 @@ export const themeConfig: ThemeConfig = {
       radius: true,
       fontSize: true,
       accentIntensity: true,
+      controlDepth: true,
       outerGlow: true,
       innerGlow: true,
       presetAxes: true,
