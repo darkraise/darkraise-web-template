@@ -226,6 +226,62 @@ function pickForeground(fill: string): string {
   return contrastRatio(WHITE, fill) >= FOREGROUND_MIN_RATIO ? WHITE : INK
 }
 
+/**
+ * Linear blend of two `H S% L%` triplets. Hue is interpolated only when both
+ * ends are chromatic: white is stored as `0 0% 100%`, and interpolating from
+ * that hue would swing a light field's midpoint through red rather than
+ * keeping it on the surface colour.
+ */
+export function mixHsl(a: string, b: string, t: number): string {
+  const pa = a.split(" ")
+  const pb = b.split(" ")
+  const ha = parseFloat(pa[0] ?? "0")
+  const hb = parseFloat(pb[0] ?? "0")
+  const sa = parseFloat(pa[1] ?? "0")
+  const sb = parseFloat(pb[1] ?? "0")
+  const la = parseFloat(pa[2] ?? "0")
+  const lb = parseFloat(pb[2] ?? "0")
+  const hue = sa === 0 ? hb : sb === 0 ? ha : ha + (hb - ha) * t
+  const sat = sa + (sb - sa) * t
+  const lig = la + (lb - la) * t
+  return `${Math.round(hue)} ${Math.round(sat)}% ${round1(lig)}%`
+}
+
+function round1(n: number): number {
+  return Math.round(n * 10) / 10
+}
+
+/** Replaces a triplet's lightness, keeping its hue and saturation. */
+function withLightness(hsl: string, lightness: number): string {
+  const parts = hsl.split(" ")
+  return `${parts[0] ?? "0"} ${parts[1] ?? "0%"} ${round1(lightness)}%`
+}
+
+/**
+ * The rung a form control paints when it sits inside a raised surface, one
+ * step per `controlDepth`. `flush` is the container's own rung (no recess);
+ * `recessed` is the sunken rung, which is what the palette bottoms out at.
+ *
+ * `subtle` and `deep` have no palette step of their own, so both are derived
+ * from the two that do. `deep` continues past `sunken` by the same lightness
+ * distance that separates it from `raised`, which in light mode lands a rung
+ * below the sunken grey. In dark that subtraction goes negative — the palette
+ * has almost no headroom under surface[950] — so a floor at 40% of the sunken
+ * lightness keeps the well dark without collapsing it to a hueless black hole.
+ */
+export function controlWells(
+  raised: string,
+  sunken: string,
+): { subtle: string; deep: string } {
+  const raisedL = parseFloat(raised.split(" ")[2] ?? "0")
+  const sunkenL = parseFloat(sunken.split(" ")[2] ?? "0")
+  const deepL = Math.max(sunkenL - (raisedL - sunkenL), sunkenL * 0.4)
+  return {
+    subtle: mixHsl(raised, sunken, 0.5),
+    deep: withLightness(sunken, deepL),
+  }
+}
+
 export function generateTokens(
   input: GenerateTokensInput,
 ): Record<string, string> {
@@ -318,6 +374,11 @@ export function generateTokens(
   const surfaceTint =
     surfaceColor === "slate" ? neutral[500] : accentColors[surfaceColor][500]
 
+  const controlWell = controlWells(
+    recipe.surfaceRaised(surface, mode),
+    recipe.surfaceSunken(surface, mode),
+  )
+
   const tokens: Record<string, string> = {
     "--primary": primaryValue,
     "--primary-fill": primaryFill,
@@ -384,6 +445,11 @@ export function generateTokens(
     "--surface-raised": recipe.surfaceRaised(surface, mode),
     "--surface-overlay": recipe.surfaceOverlay(surface, mode),
     "--surface-sunken": recipe.surfaceSunken(surface, mode),
+    // Derived rungs for the controlDepth axis. Emitted unconditionally so the
+    // axis itself stays a pure data attribute -- CSS picks one of these, and
+    // nothing about the axis has to reach the token engine.
+    "--control-well-subtle": controlWell.subtle,
+    "--control-well-deep": controlWell.deep,
     "--surface-sidebar": recipe.surfaceSidebar(surface, mode),
     "--sidebar-foreground": isSidebarDark(mode) ? neutral[300] : neutral[600],
     "--sidebar-foreground-hover": isSidebarDark(mode)
