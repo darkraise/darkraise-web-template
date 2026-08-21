@@ -126,10 +126,10 @@ describe("ThemeSwitcher preset section", () => {
     openSwitcher()
     fireEvent.click(screen.getByRole("radio", { name: /gradient/i }))
     expect(screen.getByText("Background Intensity")).toBeInTheDocument()
-    // Should default to balanced.
+    // Should default to vivid.
     expect(
       document.documentElement.getAttribute("data-background-intensity"),
-    ).toBe("balanced")
+    ).toBe("vivid")
   })
 
   it("renders 4-value ordinal axes as sliders instead of toggle groups", () => {
@@ -148,12 +148,12 @@ describe("ThemeSwitcher preset section", () => {
     // axis's current-value label is rendered.
     expect(screen.getAllByRole("slider").length).toBeGreaterThanOrEqual(5)
     // Each slider has its current value name to the right. Scope the
-    // "balanced" check to the Background Intensity row since Accent
-    // Vibrancy also defaults to "balanced" and renders unconditionally.
+    // check to the Background Intensity row: Accent Vibrancy renders
+    // unconditionally and carries its own value label.
     const bgIntensityRow = screen
       .getByText("Background Intensity")
       .closest(".dr-theme-switcher-row") as HTMLElement
-    expect(within(bgIntensityRow).getByText("balanced")).toBeInTheDocument()
+    expect(within(bgIntensityRow).getByText("vivid")).toBeInTheDocument()
     expect(screen.getByText("cozy")).toBeInTheDocument() // density default
     expect(screen.getByText("rounded")).toBeInTheDocument() // radius default
   })

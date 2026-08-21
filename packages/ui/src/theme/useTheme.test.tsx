@@ -226,9 +226,9 @@ describe("useTheme", () => {
     ).toBe("217 74% 49%")
   })
 
-  it("defaults backgroundIntensity to balanced", () => {
+  it("defaults backgroundIntensity to vivid", () => {
     const { result } = renderHook(() => useTheme(), { wrapper })
-    expect(result.current.backgroundIntensity).toBe("balanced")
+    expect(result.current.backgroundIntensity).toBe("vivid")
   })
 
   it("persists backgroundIntensity and writes its data attribute", () => {
@@ -248,7 +248,7 @@ describe("useTheme", () => {
   // --background
   // and --surface-base share the exact same formula, so they must move
   // together. Default settings resolve slate's surface[950] ("229 84% 5%");
-  // "balanced" caps saturation at 16%, "neutral" caps it at 0%.
+  // the default "vivid" step is uncapped, "neutral" caps it at 0%.
   it("moves --background and --surface-base when backgroundIntensity changes in dark mode", () => {
     const { result } = renderHook(() => useTheme(), { wrapper })
     act(() => result.current.setMode("dark"))
@@ -257,14 +257,14 @@ describe("useTheme", () => {
     const readSurfaceBase = () =>
       document.documentElement.style.getPropertyValue("--surface-base")
 
-    const balancedBackground = readBackground()
-    expect(balancedBackground).toBe("229 16% 5%")
-    expect(readSurfaceBase()).toBe(balancedBackground)
+    const vividBackground = readBackground()
+    expect(vividBackground).toBe("229 84% 5%")
+    expect(readSurfaceBase()).toBe(vividBackground)
 
     act(() => result.current.setBackgroundIntensity("neutral"))
 
     expect(readBackground()).toBe("229 0% 5%")
-    expect(readBackground()).not.toBe(balancedBackground)
+    expect(readBackground()).not.toBe(vividBackground)
     expect(readSurfaceBase()).toBe(readBackground())
   })
 })

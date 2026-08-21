@@ -65,7 +65,7 @@ export const themeConfig: ThemeConfig = {
     surfaceColor: "slate",
     preset: "default",
     backgroundStyle: "solid",
-    backgroundIntensity: "balanced",
+    backgroundIntensity: "vivid",
     gradientPattern: "blobs",
     mode: "system",
     density: "cozy",

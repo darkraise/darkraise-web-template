@@ -27,8 +27,8 @@ describe("backgroundIntensity axis", () => {
     ])
   })
 
-  it("defaults to the middle step", () => {
-    expect(themeConfig.defaults.backgroundIntensity).toBe("balanced")
+  it("defaults to the uncapped step", () => {
+    expect(themeConfig.defaults.backgroundIntensity).toBe("vivid")
   })
 
   it("is switchable by default", () => {

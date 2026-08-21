@@ -206,11 +206,11 @@ describe("ThemeProvider preset orchestration", () => {
     warn.mockRestore()
   })
 
-  it("writes data-background-intensity='balanced' on mount", () => {
+  it("writes data-background-intensity='vivid' on mount", () => {
     renderHook(() => useTheme(), { wrapper: wrap })
     expect(
       document.documentElement.getAttribute("data-background-intensity"),
-    ).toBe("balanced")
+    ).toBe("vivid")
   })
 
   it("setBackgroundIntensity updates attribute and persists", () => {
