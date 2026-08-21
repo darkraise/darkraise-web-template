@@ -14,9 +14,9 @@
   .dr-number-input-control {
     @apply glass border-input focus-ring-input-wrapper text-card-foreground flex w-full items-stretch overflow-hidden border;
     /* Pinned out of the surface-intensity axis on purpose: fields hold
-       still while panels move around them. This is the pre-axis value of
-       `bg-card`. */
-    background-color: hsl(var(--card) / var(--surface-opacity, 1));
+       still while panels move around them. The rung is container-relative
+       -- see `--control-surface` in theme.css. */
+    background-color: hsl(var(--control-surface) / var(--surface-opacity, 1));
     border-radius: var(--radius-button);
     transition:
       border-color 150ms,

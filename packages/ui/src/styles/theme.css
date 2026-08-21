@@ -426,6 +426,14 @@
     --backdrop-blur: none;
     --backdrop-filter: none;
     --surface-opacity: 1;
+    /* Which surface a form control paints, resolved relative to whatever
+       contains it rather than fixed to one rung. On the page canvas a
+       control sits one rung UP (`--card`) so it stays legible against the
+       background; inside a raised surface it sits one rung DOWN, and the
+       container overrides this to `--surface-sunken`. Controls therefore
+       read as wells cut into the surface they belong to, instead of as
+       outlines drawn on top of it. */
+    --control-surface: var(--card);
     /* Interaction state layer — a Material-style translucent wash of the
      element's own text colour, painted over a clickable surface as a flood
      inset shadow. `currentColor` is resolved at the consuming element, so

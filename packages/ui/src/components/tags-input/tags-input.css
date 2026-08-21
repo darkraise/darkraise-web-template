@@ -14,9 +14,9 @@
   .dr-tags-input-control {
     @apply glass border-input focus-ring-input-wrapper text-card-foreground flex min-h-[var(--density-cell)] w-full flex-wrap items-center gap-1 rounded-md border px-[var(--density-input-px)] py-[var(--density-input-py)];
     /* Pinned out of the surface-intensity axis on purpose: fields hold
-       still while panels move around them. This is the pre-axis value of
-       `bg-card`. */
-    background-color: hsl(var(--card) / var(--surface-opacity, 1));
+       still while panels move around them. The rung is container-relative
+       -- see `--control-surface` in theme.css. */
+    background-color: hsl(var(--control-surface) / var(--surface-opacity, 1));
   }
 
   .dr-tags-input-item {

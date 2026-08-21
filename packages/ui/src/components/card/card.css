@@ -15,6 +15,10 @@
        the shape. `--border` sits two palette steps above the card fill and
        reads as a drawn outline rather than an edge. */
     border-color: hsl(var(--border-subtle));
+    /* Controls inside a card recess to the rung below it rather than
+       sitting flush. Inherited, so nested content picks it up without
+       every control needing to know it is in a card. */
+    --control-surface: var(--surface-sunken);
     transition: box-shadow 200ms ease;
   }
 
