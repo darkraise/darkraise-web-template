@@ -31,8 +31,10 @@ function bodyOf(selector: string): string {
 }
 
 describe("Card border tiers", () => {
-  it("paints the default tier with the theme border token", () => {
-    expect(bodyOf(".dr-card")).toMatch(/border-color: hsl\(var\(--border\)\)/)
+  it("paints the default tier with the subtle border token", () => {
+    expect(bodyOf(".dr-card")).toMatch(
+      /border-color: hsl\(var\(--border-subtle\)\)/,
+    )
   })
 
   it("keeps the default tier visually distinct from `none`", () => {
@@ -54,7 +56,7 @@ describe("Card border tiers", () => {
   it("hands the fog rim back to the glass preset", () => {
     // Glass is the only preset that populates the fog scale, and its card rim
     // is a translucent surface tint by design. The base rule's
-    // `hsl(var(--border))` would replace it with a solid line.
+    // `hsl(var(--border-subtle))` would replace it with a solid line.
     expect(bodyOf('[data-preset="glass"] .dr-card:not([data-border])')).toMatch(
       /border-color: var\(--fog-15\)/,
     )

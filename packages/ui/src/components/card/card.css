@@ -6,9 +6,15 @@
        declaration sits at (0,1,0) and so outranks the global
        `* { @apply border-border }`, which left the default card painting the
        same invisible box as `border="none"`. Restating the theme border here
-       keeps the fog rim for glass surfaces (the preset rebinds `--border`
-       itself) without depending on the fog scale being populated. */
-    border-color: hsl(var(--border));
+       keeps the fog rim for glass surfaces (the preset rebinds
+       `--border-subtle` itself) without depending on the fog scale being
+       populated.
+
+       The subtle rung rather than `--border`: the card's own background
+       already separates it from the canvas, so the edge only has to trace
+       the shape. `--border` sits two palette steps above the card fill and
+       reads as a drawn outline rather than an edge. */
+    border-color: hsl(var(--border-subtle));
     transition: box-shadow 200ms ease;
   }
 
@@ -65,11 +71,11 @@
      lockstep so only regions that actually have a divider above them
      restore top padding. */
   .dr-card[data-divided="true"] > .dr-card-header:not(:last-child) {
-    border-bottom: 1px solid hsl(var(--border));
+    border-bottom: 1px solid hsl(var(--border-subtle));
   }
 
   .dr-card[data-divided="true"] > .dr-card-content + .dr-card-footer {
-    border-top: 1px solid hsl(var(--border));
+    border-top: 1px solid hsl(var(--border-subtle));
   }
 
   .dr-card[data-divided="true"] > .dr-card-header + .dr-card-content,
