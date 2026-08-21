@@ -5,6 +5,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "darkraise-ui/components/accordion"
+import { Card } from "darkraise-ui/components/card"
 
 export function ShowcaseExample({
   title,
@@ -29,7 +30,11 @@ export function ShowcaseExample({
       <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
         {title}
       </p>
-      <div className="border-border rounded-md border p-4">{children}</div>
+      {/* A real surface, not a transparent outline: controls resolve their
+          rung from the surface that contains them, so an example floating on
+          the bare page canvas demoed them against a background no real screen
+          uses. */}
+      <Card className="p-4">{children}</Card>
       <Accordion type="single" collapsible>
         <AccordionItem value="code" className="border-none">
           <div className="flex items-center justify-between">
