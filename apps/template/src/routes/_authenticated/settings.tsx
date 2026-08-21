@@ -1,13 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { useForm } from "@tanstack/react-form"
 import { z } from "zod"
+import {
+  Bell,
+  CheckCircle2,
+  Clock,
+  CreditCard,
+  Info,
+  Store,
+  Wallet,
+} from "lucide-react"
 import { PageHeader } from "darkraise-ui/layout"
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "darkraise-ui/components/card"
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "darkraise-ui/components/alert"
 import { Button } from "darkraise-ui/components/button"
 import { toast } from "darkraise-ui/components/sonner"
 import {
@@ -24,7 +32,6 @@ import {
   CheckboxField,
   RadioGroupField,
   FormSection,
-  FormActions,
 } from "darkraise-ui/forms"
 import { fieldProps } from "@/lib/field-props"
 import { AppearanceSection } from "./_settings/-appearance-section"
@@ -32,6 +39,12 @@ import { NotificationsSection } from "./_settings/-notifications-section"
 import { PreferencesSection } from "./_settings/-preferences-section"
 import { ProfileSection } from "./_settings/-profile-section"
 import { SecuritySection } from "./_settings/-security-section"
+import {
+  SettingRow,
+  SettingsCard,
+  StatValue,
+  StatusPanel,
+} from "./_settings/-settings-primitives"
 
 export const Route = createFileRoute("/_authenticated/settings")({
   component: SettingsPage,
@@ -60,10 +73,16 @@ function SettingsPage() {
         description="Manage your store configuration"
       />
       <Tabs defaultValue="general">
-        <TabsList>
-          <TabsTrigger value="general">General</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          <TabsTrigger value="billing">Billing</TabsTrigger>
+        <TabsList className="w-full max-w-2xl">
+          <TabsTrigger value="general" className="flex-1">
+            General
+          </TabsTrigger>
+          <TabsTrigger value="notifications" className="flex-1">
+            Notifications
+          </TabsTrigger>
+          <TabsTrigger value="billing" className="flex-1">
+            Billing
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="general" className="mt-6">
@@ -107,81 +126,87 @@ function GeneralSettings() {
           e.stopPropagation()
           form.handleSubmit()
         }}
-        className="space-y-6"
       >
-        <Card>
-          <CardContent className="space-y-6 pt-6">
-            <FormSection
-              title="Store Information"
-              description="Basic details about your store"
+        <SettingsCard
+          icon={<Store />}
+          title="Store Information"
+          action={
+            <Button
+              type="submit"
+              size="sm"
+              disabled={!form.state.canSubmit || form.state.isSubmitting}
             >
-              <form.Field
-                name="storeName"
-                children={(field) => (
-                  <TextField
-                    {...fieldProps<string>(field)}
-                    label="Store Name"
-                    placeholder="Your store name"
-                  />
-                )}
+              {form.state.isSubmitting ? "Saving…" : "Save Changes"}
+            </Button>
+          }
+        >
+          <form.Field
+            name="storeName"
+            children={(field) => (
+              <TextField
+                {...fieldProps<string>(field)}
+                label="Store Name"
+                placeholder="Your store name"
               />
-              <form.Field
-                name="storeDescription"
-                children={(field) => (
-                  <TextareaField
-                    {...fieldProps<string>(field)}
-                    label="Store Description"
-                    placeholder="Describe your store"
-                    rows={3}
-                  />
-                )}
+            )}
+          />
+          <form.Field
+            name="storeDescription"
+            children={(field) => (
+              <TextareaField
+                {...fieldProps<string>(field)}
+                label="Store Description"
+                placeholder="Describe your store"
+                rows={3}
               />
-              <form.Field
-                name="currency"
-                children={(field) => (
-                  <SelectField
-                    {...fieldProps<string>(field)}
-                    label="Currency"
-                    options={[
-                      { label: "USD ($)", value: "usd" },
-                      { label: "EUR (\u20ac)", value: "eur" },
-                      { label: "GBP (\u00a3)", value: "gbp" },
-                      { label: "CAD (C$)", value: "cad" },
-                      { label: "AUD (A$)", value: "aud" },
-                    ]}
-                  />
-                )}
+            )}
+          />
+          <form.Field
+            name="currency"
+            children={(field) => (
+              <SelectField
+                {...fieldProps<string>(field)}
+                label="Currency"
+                options={[
+                  { label: "USD ($)", value: "usd" },
+                  { label: "EUR (€)", value: "eur" },
+                  { label: "GBP (£)", value: "gbp" },
+                  { label: "CAD (C$)", value: "cad" },
+                  { label: "AUD (A$)", value: "aud" },
+                ]}
               />
-              <form.Field
-                name="timezone"
-                children={(field) => (
-                  <SelectField
-                    {...fieldProps<string>(field)}
-                    label="Timezone"
-                    options={[
-                      {
-                        label: "Eastern Time (ET)",
-                        value: "america-new_york",
-                      },
-                      { label: "Central Time (CT)", value: "america-chicago" },
-                      { label: "Mountain Time (MT)", value: "america-denver" },
-                      {
-                        label: "Pacific Time (PT)",
-                        value: "america-los_angeles",
-                      },
-                      { label: "UTC", value: "utc" },
-                    ]}
-                  />
-                )}
+            )}
+          />
+          <form.Field
+            name="timezone"
+            children={(field) => (
+              <SelectField
+                {...fieldProps<string>(field)}
+                label="Timezone"
+                options={[
+                  { label: "Eastern Time (ET)", value: "america-new_york" },
+                  { label: "Central Time (CT)", value: "america-chicago" },
+                  { label: "Mountain Time (MT)", value: "america-denver" },
+                  { label: "Pacific Time (PT)", value: "america-los_angeles" },
+                  { label: "UTC", value: "utc" },
+                ]}
               />
-            </FormSection>
-            <FormActions
-              submitLabel="Save Changes"
-              isSubmitting={form.state.isSubmitting}
-              canSubmit={form.state.canSubmit}
-            />
-          </CardContent>
-        </Card>
+            )}
+          />
+          <StatusPanel
+            title="All settings are in sync"
+            meta={[
+              <>
+                <Clock />
+                Last saved 08/21/2026 09:57 PM
+              </>,
+              <>
+                <CheckCircle2 />
+                Applied across 3 storefronts
+              </>,
+            ]}
+          />
+        </SettingsCard>
       </form>
       <PreferencesSection />
       <AppearanceSection />
@@ -215,73 +240,80 @@ function NotificationSettings() {
           e.stopPropagation()
           form.handleSubmit()
         }}
-        className="space-y-6"
       >
-        <Card>
-          <CardContent className="space-y-8 pt-6">
-            <FormSection
-              title="Email Preferences"
-              description="Control what emails you receive"
+        <SettingsCard
+          icon={<Bell />}
+          title="Email Preferences"
+          action={
+            <Button
+              type="submit"
+              size="sm"
+              disabled={!form.state.canSubmit || form.state.isSubmitting}
             >
-              <form.Field
-                name="emailNotifications"
-                children={(field) => (
-                  <SwitchField
-                    {...fieldProps<boolean>(field)}
-                    label="Email Notifications"
-                    description="Receive email notifications for important events"
-                  />
-                )}
+              {form.state.isSubmitting ? "Saving…" : "Save Preferences"}
+            </Button>
+          }
+        >
+          <form.Field
+            name="emailNotifications"
+            children={(field) => (
+              <SwitchField
+                {...fieldProps<boolean>(field)}
+                label="Email Notifications"
+                description="Receive email notifications for important events"
               />
-              <form.Field
-                name="orderAlerts"
-                children={(field) => (
-                  <SwitchField
-                    {...fieldProps<boolean>(field)}
-                    label="Order Alerts"
-                    description="Get notified when new orders are placed"
-                  />
-                )}
+            )}
+          />
+          <form.Field
+            name="orderAlerts"
+            children={(field) => (
+              <SwitchField
+                {...fieldProps<boolean>(field)}
+                label="Order Alerts"
+                description="Get notified when new orders are placed"
               />
-              <form.Field
-                name="marketingEmails"
-                children={(field) => (
-                  <CheckboxField
-                    {...fieldProps<boolean>(field)}
-                    label="Marketing Emails"
-                    description="Receive promotional emails and product updates"
-                  />
-                )}
+            )}
+          />
+          <form.Field
+            name="marketingEmails"
+            children={(field) => (
+              <CheckboxField
+                {...fieldProps<boolean>(field)}
+                label="Marketing Emails"
+                description="Receive promotional emails and product updates"
               />
-            </FormSection>
+            )}
+          />
 
-            <FormSection
-              title="Frequency"
-              description="How often you want to receive notifications"
-            >
-              <form.Field
-                name="notificationFrequency"
-                children={(field) => (
-                  <RadioGroupField
-                    {...fieldProps<string>(field)}
-                    label="Notification Frequency"
-                    options={[
-                      { label: "Instant", value: "instant" },
-                      { label: "Daily digest", value: "daily" },
-                      { label: "Weekly summary", value: "weekly" },
-                    ]}
-                  />
-                )}
-              />
-            </FormSection>
-
-            <FormActions
-              submitLabel="Save Preferences"
-              isSubmitting={form.state.isSubmitting}
-              canSubmit={form.state.canSubmit}
+          <FormSection
+            title="Frequency"
+            description="How often you want to receive notifications"
+          >
+            <form.Field
+              name="notificationFrequency"
+              children={(field) => (
+                <RadioGroupField
+                  {...fieldProps<string>(field)}
+                  label="Notification Frequency"
+                  options={[
+                    { label: "Instant", value: "instant" },
+                    { label: "Daily digest", value: "daily" },
+                    { label: "Weekly summary", value: "weekly" },
+                  ]}
+                />
+              )}
             />
-          </CardContent>
-        </Card>
+          </FormSection>
+
+          <Alert variant="info">
+            <Info />
+            <AlertTitle>Digests are sent at 09:00 local time</AlertTitle>
+            <AlertDescription>
+              Daily and weekly summaries follow the timezone set under General.
+              Instant alerts ignore this schedule.
+            </AlertDescription>
+          </Alert>
+        </SettingsCard>
       </form>
       <NotificationsSection />
     </div>
@@ -291,66 +323,74 @@ function NotificationSettings() {
 function BillingSettings() {
   return (
     <div className="max-w-2xl space-y-6">
-      <FormSection title="Current Plan" description="Your active subscription">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Pro Plan</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground text-sm">
-                Monthly price
-              </span>
-              <span className="text-sm font-medium">$49/month</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground text-sm">
-                Billing cycle
-              </span>
-              <span className="text-sm font-medium">Monthly</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground text-sm">
-                Next billing date
-              </span>
-              <span className="text-sm font-medium">May 1, 2026</span>
-            </div>
-            <div className="pt-2">
-              <Button variant="outline" size="sm">
-                Upgrade Plan
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </FormSection>
-
-      <FormSection
-        title="Billing Information"
-        description="Manage your billing details"
+      <SettingsCard
+        icon={<CreditCard />}
+        title="Pro Plan"
+        action={
+          <Button variant="outline" size="sm">
+            Upgrade Plan
+          </Button>
+        }
       >
-        <Card>
-          <CardContent className="space-y-3 pt-6">
-            <div>
-              <p className="text-sm font-medium">Billing Email</p>
-              <p className="text-muted-foreground text-sm">
+        <StatValue
+          label="Monthly Price"
+          value="$49"
+          badge={<CheckCircle2 className="text-success size-5" />}
+        />
+        <div className="space-y-4">
+          <SettingRow
+            label="Billing cycle"
+            description="How often the subscription renews"
+            control={<span className="text-sm font-medium">Monthly</span>}
+          />
+          <SettingRow
+            label="Next billing date"
+            description="The card on file is charged on this date"
+            control={<span className="text-sm font-medium">May 1, 2026</span>}
+          />
+        </div>
+        <StatusPanel
+          title="Your subscription is active"
+          meta={[
+            <>
+              <Clock />
+              Renews in 12 days
+            </>,
+          ]}
+        />
+      </SettingsCard>
+
+      <SettingsCard icon={<Wallet />} title="Billing Information">
+        <div className="space-y-4">
+          <SettingRow
+            label="Billing Email"
+            description="Invoices and receipts are sent here"
+            control={
+              <span className="text-muted-foreground text-sm">
                 billing@example.com
-              </p>
-            </div>
-            <div>
-              <p className="text-sm font-medium">Payment Method</p>
-              <p className="text-muted-foreground text-sm">
+              </span>
+            }
+          />
+          <SettingRow
+            label="Payment Method"
+            description="Charged automatically each cycle"
+            control={
+              <span className="text-muted-foreground text-sm">
                 Visa ending in 4242
-              </p>
-            </div>
-            <div>
-              <p className="text-sm font-medium">Billing Address</p>
-              <p className="text-muted-foreground text-sm">
+              </span>
+            }
+          />
+          <SettingRow
+            label="Billing Address"
+            description="Used on every invoice"
+            control={
+              <span className="text-muted-foreground max-w-56 text-right text-sm">
                 123 Business Ave, Suite 100, San Francisco, CA 94102
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </FormSection>
+              </span>
+            }
+          />
+        </div>
+      </SettingsCard>
     </div>
   )
 }
