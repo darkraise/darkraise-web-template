@@ -296,9 +296,17 @@ export function generateTokens(
   // already published as `--border-default`, keeping the two tokens
   // semantically aligned.
 
+  // Dark fields ride the subtle rung. Their fill now sits a rung BELOW the
+  // card (see `--control-surface`), so the fill already separates the field
+  // from its container and the border only has to trace the edge; at
+  // `border` it read as an outline drawn on top. Light keeps `border`,
+  // because there the field is surface[100] on a white card and the border
+  // is the only thing carrying the shape.
   const inputValue = recipe.overrides.input
     ? recipe.overrides.input(surface, mode)
-    : border
+    : mode === "light"
+      ? border
+      : recipe.borderSubtle(surface, mode)
 
   // Saturated mid-tone of the chosen surface color, regardless of
   // backgroundStyle. Drives the Glass preset's inner glow (and any
