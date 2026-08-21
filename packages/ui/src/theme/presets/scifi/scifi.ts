@@ -38,6 +38,10 @@ export const scifi: ThemePreset<ScifiAxes> = {
     "radius",
     "accentIntensity",
     "surfaceIntensity",
+    // Every field is repainted as a flat primary tint (scifi.css:654), which
+    // replaces --control-surface outright. The axis would move a value nothing
+    // reads, so the control is hidden rather than left inert.
+    "controlDepth",
   ],
 
   // Sci-fi's glow rides the shared axes now; it asks for the step that

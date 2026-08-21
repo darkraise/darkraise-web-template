@@ -28,6 +28,7 @@ describe("scifi preset", () => {
       "radius",
       "accentIntensity",
       "surfaceIntensity",
+      "controlDepth",
     ])
   })
 
