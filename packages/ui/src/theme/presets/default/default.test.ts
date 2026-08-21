@@ -41,7 +41,7 @@ describe("defaultPreset.surfaceRecipe", () => {
       slate[950],
     )
     expect(defaultPreset.surfaceRecipe.surfaceSidebar(slate, "dark")).toBe(
-      slate[950],
+      slate[900],
     )
     expect(defaultPreset.surfaceRecipe.surfaceHeader(slate, "dark")).toBe(
       slate[900],

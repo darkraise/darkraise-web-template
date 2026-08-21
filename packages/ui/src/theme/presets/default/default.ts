@@ -12,7 +12,11 @@ export const defaultPreset: ThemePreset<Record<string, never>> = {
     surfaceRaised: (s, m) => (m === "light" ? WHITE : s[900]),
     surfaceOverlay: (s, m) => (m === "light" ? WHITE : s[800]),
     surfaceSunken: (s, m) => (m === "light" ? s[100] : s[950]),
-    surfaceSidebar: (s, m) => (m === "light" ? s[50] : s[950]),
+    // Dark rail shares the header's raised rung rather than the canvas's.
+    // At s[950] the sidebar and the page background resolved to the same
+    // palette step, so the chrome dissolved into the canvas while the header
+    // alone sat raised — three tones across two surfaces that are one piece.
+    surfaceSidebar: (s, m) => (m === "light" ? s[50] : s[900]),
     surfaceHeader: (s, m) => (m === "light" ? WHITE : s[900]),
     borderSubtle: (s, m) => (m === "light" ? s[100] : s[800]),
     borderDefault: (s, m) => (m === "light" ? s[200] : s[700]),
