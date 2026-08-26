@@ -51,6 +51,7 @@ describe("generateTokens", () => {
       "--secondary-foreground",
       "--muted",
       "--muted-foreground",
+      "--legend",
       "--accent",
       "--accent-foreground",
       "--destructive",
@@ -786,8 +787,21 @@ describe("generateTokens", () => {
     it("matches --muted-foreground's light/dark polarity", () => {
       const light = generateTokens({ ...base, mode: "light" })
       const dark = generateTokens({ ...base, mode: "dark" })
-      expect(light["--sidebar-foreground-muted"]).toBe(slate[500])
-      expect(dark["--sidebar-foreground-muted"]).toBe(slate[400])
+      // Pinned to the floor the inversion breached rather than to a ramp
+      // step: the tiers are computed against the background now, so a step
+      // number would pin the arithmetic instead of the requirement.
+      expect(
+        contrastRatio(
+          light["--sidebar-foreground-muted"] as string,
+          light["--surface-sidebar"] as string,
+        ),
+      ).toBeGreaterThanOrEqual(4.5)
+      expect(
+        contrastRatio(
+          dark["--sidebar-foreground-muted"] as string,
+          dark["--surface-sidebar"] as string,
+        ),
+      ).toBeGreaterThanOrEqual(4.5)
       expect(light["--sidebar-foreground-muted"]).toBe(
         light["--muted-foreground"],
       )

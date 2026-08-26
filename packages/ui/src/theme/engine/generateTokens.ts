@@ -139,6 +139,50 @@ export function resolveNeutralScale(surfaceColor: SurfaceColor): ColorScale {
   return (surfaceColors[surfaceColor] ?? surfaceColors.slate) as ColorScale
 }
 
+/** Body-text AA, with a shade of headroom so rounding cannot drop under it. */
+const LEGEND_TARGET_RATIO = 4.6
+/** Far enough above the legend tier that the two read as different ranks. */
+const MUTED_TARGET_RATIO = 7
+
+const tierCache = new Map<string, string>()
+
+/**
+ * The quietest colour on this ramp's hue that still clears `target` against the
+ * background.
+ *
+ * Computed rather than snapped to a ramp step, because the steps are too coarse
+ * to carry three tiers: measured across the twelve neutral ramps, light step 500
+ * lands at 4.31:1 and step 600 at 6.61:1, so a third tier below 500 has nowhere
+ * to sit above the 4.5:1 floor. Snapping also left `--muted-foreground` itself
+ * under AA on the warmer ramps.
+ */
+function tierClearing(
+  ramp: ColorScale,
+  background: string,
+  target: number,
+): string {
+  const base = ramp[500] ?? "0 0% 50%"
+  const key = `${base}|${background}|${target}`
+  const cached = tierCache.get(key)
+  if (cached !== undefined) return cached
+
+  const parts = base.split(" ")
+  const hue = parts[0] ?? "0"
+  const saturation = parts[1] ?? "0%"
+  let best = ramp[950] as string
+  let bestRatio = Infinity
+  for (let l = 0; l <= 100; l++) {
+    const candidate = `${hue} ${saturation} ${l}%`
+    const ratio = contrastRatio(candidate, background)
+    if (ratio >= target && ratio < bestRatio) {
+      bestRatio = ratio
+      best = candidate
+    }
+  }
+  tierCache.set(key, best)
+  return best
+}
+
 function isSidebarDark(mode: ResolvedMode): boolean {
   return mode === "dark"
 }
@@ -401,6 +445,16 @@ export function generateTokens(
     recipe.surfaceSunken(surface, mode),
   )
 
+  const background = capCanvasSaturation(
+    mode === "light" ? surface[50] : surface[950],
+    CANVAS_SATURATION_CAP[backgroundIntensity],
+  )
+  const mutedForeground = tierClearing(
+    neutral,
+    background,
+    MUTED_TARGET_RATIO,
+  )
+
   const tokens: Record<string, string> = {
     "--primary": primaryValue,
     "--primary-fill": primaryFill,
@@ -415,10 +469,7 @@ export function generateTokens(
     "--chart-4": chartColors[3] ?? "",
     "--chart-5": chartColors[4] ?? "",
 
-    "--background": capCanvasSaturation(
-      mode === "light" ? surface[50] : surface[950],
-      CANVAS_SATURATION_CAP[backgroundIntensity],
-    ),
+    "--background": background,
     "--foreground": foreground,
 
     "--card": mode === "light" ? "0 0% 100%" : surface[900],
@@ -431,7 +482,8 @@ export function generateTokens(
     "--secondary-foreground": mode === "light" ? neutral[900] : neutral[50],
 
     "--muted": mode === "light" ? surface[100] : surface[800],
-    "--muted-foreground": mode === "light" ? neutral[500] : neutral[400],
+    "--muted-foreground": mutedForeground,
+    "--legend": tierClearing(neutral, background, LEGEND_TARGET_RATIO),
 
     "--accent": mode === "light" ? surface[100] : surface[800],
     "--accent-foreground": mode === "light" ? neutral[900] : neutral[50],
@@ -481,9 +533,7 @@ export function generateTokens(
     // branches were the other way round, which put the lighter grey on the
     // near-white light rail: sidebar group labels measured 2.43:1 in light
     // (2.29:1 under Terminal) against a 4.5:1 requirement.
-    "--sidebar-foreground-muted": isSidebarDark(mode)
-      ? neutral[400]
-      : neutral[500],
+    "--sidebar-foreground-muted": mutedForeground,
     "--sidebar-border": isSidebarDark(mode) ? "0 0% 100% / 0.1" : surface[200],
     "--sidebar-hover-bg": isSidebarDark(mode)
       ? `${accent[500]} / ${SIDEBAR_HOVER[accentIntensity].darkAlpha}`
