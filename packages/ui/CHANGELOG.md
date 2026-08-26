@@ -8,10 +8,12 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 
 - All twelve neutral surface ramps are selectable. `SURFACE_COLORS` previously exposed `slate` plus the seventeen accents, leaving `gray`, `cool`, `zinc`, `neutral`, `iron`, `mauve`, `graphite`, `stone`, `sand`, `olive` and `sepia` built and registered but unreachable. Widening the constant alone was not enough: `resolveSurfaceScale`, `resolveSfHueTokens`, `--surface-tint` and the switcher's swatch preview each hardcoded `slate` as the only neutral and sent every other name to `accentColors`, where the new ramps do not exist. Each now dispatches on whether the name is a registered ramp.
 - `resolveNeutralScale` and `isAccentSurface` are exported from the theme engine. The first is the scale the text tiers and borders are measured against — a chosen neutral now carries its own hue there, so a warm ground is not paired with slate-derived text. The second is the predicate the accent branches narrow with.
+- A `coral` accent, `hsl(12, 75%, 59%)` at its mid-tone. It sits between `red` at hue 0 and `orange` at hue 25 and matched neither, so a consumer wanting it had to override `--ring`, `--focus-ring`, the destructive branch and the three `--primary*` tokens before touching the chart ramp. Lightness follows red's profile; saturation is red's scaled so the mid-tone lands on the brand value rather than the two-scale midpoint, which at 89% reads as a signal colour.
 
 ### Changed
 
 - Selecting one of the eleven newly exposed ramps changes `--foreground`, `--muted-foreground` and `--card-foreground` to that ramp's neutrals rather than slate's. No existing consumer is affected: `slate` and every accent surface resolve exactly as before, which the palette suite pins.
+- `ACCENT_COLORS` gains an eighteenth entry, inserted after `red` to keep the swatch grid hue-ordered. `resolveSfHueTokens` picks a gradient's second hue by stepping three places along that list and wrapping, so an accent surface under `backgroundStyle: "gradient"` may resolve a different `--sf-hue-2` than it did on 6.4.0. Only the decorative gradient hue moves; no semantic token does.
 
 ## [6.4.0] — 2026-08-21
 
