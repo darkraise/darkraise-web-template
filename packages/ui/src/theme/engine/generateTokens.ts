@@ -43,6 +43,15 @@ function getChartColors(
   })
 }
 
+/**
+ * A surface name is an accent exactly when it is not one of the neutral ramps
+ * registered in palettes/surfaceColors. Written as a predicate so the accent
+ * branches narrow to AccentColor instead of needing a cast.
+ */
+export function isAccentSurface(name: SurfaceColor): name is AccentColor {
+  return !(name in surfaceColors)
+}
+
 function resolveSfHueTokens(
   surfaceColor: SurfaceColor,
   backgroundStyle: BackgroundStyle,
@@ -55,12 +64,12 @@ function resolveSfHueTokens(
     }
   }
 
-  if (surfaceColor === "slate") {
-    const slate = surfaceColors.slate as ColorScale
+  if (!isAccentSurface(surfaceColor)) {
+    const registered = surfaceColors[surfaceColor] as ColorScale
     return {
-      "--sf-hue": `hsl(${slate[500]})`,
-      "--sf-hue-2": `hsl(${slate[400]})`,
-      "--sf-hue-3": `hsl(${slate[300]})`,
+      "--sf-hue": `hsl(${registered[500]})`,
+      "--sf-hue-2": `hsl(${registered[400]})`,
+      "--sf-hue-3": `hsl(${registered[300]})`,
     }
   }
 
@@ -107,14 +116,117 @@ export function resolveSurfaceScale(
   surfaceColor: SurfaceColor,
   mode: ResolvedMode,
 ): ColorScale {
-  const neutral = surfaceColors.slate as ColorScale
-  if (surfaceColor === "slate") return neutral
+  // A registered ramp is already neutral, so it is used as-is. Tinting one
+  // against slate would drag every warm ground back toward slate's hue, which
+  // is the whole reason the other eleven were unreachable.
+  if (!isAccentSurface(surfaceColor)) {
+    return surfaceColors[surfaceColor] as ColorScale
+  }
   return tintScale(
     accentColors[surfaceColor],
-    neutral,
+    surfaceColors.slate as ColorScale,
     mode === "light" ? 0.4 : 0.35,
     mode === "dark",
   )
+}
+
+/**
+ * The scale the text tiers and borders are measured against. A chosen neutral
+ * carries its own hue here too, so a warm ground does not end up under
+ * slate-derived text; an accent surface keeps slate, as it always has.
+ */
+export function resolveNeutralScale(surfaceColor: SurfaceColor): ColorScale {
+  return (surfaceColors[surfaceColor] ?? surfaceColors.slate) as ColorScale
+}
+
+/** Body-text AA, with a shade of headroom so rounding cannot drop under it. */
+/** A shape or boundary must be distinguishable from its ground. */
+const MARK_FLOOR = 3
+/** Text must be readable, whatever else the colour is also used for. */
+const TEXT_FLOOR = 4.5
+const LEGEND_TARGET_RATIO = 4.6
+/** Far enough above the legend tier that the two read as different ranks. */
+const MUTED_TARGET_RATIO = 7
+
+const tierCache = new Map<string, string>()
+
+/**
+ * The quietest colour on this ramp's hue that still clears `target` against the
+ * background.
+ *
+ * Computed rather than snapped to a ramp step, because the steps are too coarse
+ * to carry three tiers: measured across the twelve neutral ramps, light step 500
+ * lands at 4.31:1 and step 600 at 6.61:1, so a third tier below 500 has nowhere
+ * to sit above the 4.5:1 floor. Snapping also left `--muted-foreground` itself
+ * under AA on the warmer ramps.
+ */
+function tierClearing(
+  ramp: ColorScale,
+  background: string,
+  target: number,
+): string {
+  const base = ramp[500] ?? "0 0% 50%"
+  const key = `${base}|${background}|${target}`
+  const cached = tierCache.get(key)
+  if (cached !== undefined) return cached
+
+  const parts = base.split(" ")
+  const hue = parts[0] ?? "0"
+  const saturation = parts[1] ?? "0%"
+  let best = ramp[950] as string
+  let bestRatio = Infinity
+  for (let l = 0; l <= 100; l++) {
+    const candidate = `${hue} ${saturation} ${l}%`
+    const ratio = contrastRatio(candidate, background)
+    if (ratio >= target && ratio < bestRatio) {
+      bestRatio = ratio
+      best = candidate
+    }
+  }
+  tierCache.set(key, best)
+  return best
+}
+
+const contrastCache = new Map<string, string>()
+
+/**
+ * `value` unchanged when it already clears `target` against `background`,
+ * otherwise the nearest lightness on the same hue that does.
+ *
+ * A repair rather than a recomputation: a value that was already sound keeps
+ * its exact place on the accent ladder, so raising a floor moves only what was
+ * under it. Values carrying an alpha channel are returned untouched, because
+ * their effective contrast depends on what they are composited over.
+ */
+function ensureContrast(
+  value: string,
+  background: string,
+  target: number,
+): string {
+  if (value.includes("/")) return value
+  const key = `${value}|${background}|${target}`
+  const cached = contrastCache.get(key)
+  if (cached !== undefined) return cached
+
+  let result = value
+  if (contrastRatio(value, background) < target) {
+    const parts = value.split(" ")
+    const hue = parts[0] ?? "0"
+    const saturation = parts[1] ?? "0%"
+    const start = Math.round(parseFloat(parts[2] ?? "50"))
+    outer: for (let delta = 1; delta <= 100; delta++) {
+      for (const l of [start - delta, start + delta]) {
+        if (l < 0 || l > 100) continue
+        const candidate = `${hue} ${saturation} ${l}%`
+        if (contrastRatio(candidate, background) >= target) {
+          result = candidate
+          break outer
+        }
+      }
+    }
+  }
+  contrastCache.set(key, result)
+  return result
 }
 
 function isSidebarDark(mode: ResolvedMode): boolean {
@@ -299,7 +411,7 @@ export function generateTokens(
 
   const accent: ColorScale = accentColors[accentColor]
   const surface: ColorScale = resolveSurfaceScale(surfaceColor, mode)
-  const neutral: ColorScale = surfaceColors.slate as ColorScale
+  const neutral: ColorScale = resolveNeutralScale(surfaceColor)
   const recipe = presets[preset].surfaceRecipe
 
   const isRedishAccent =
@@ -367,24 +479,34 @@ export function generateTokens(
   // Saturated mid-tone of the chosen surface color, regardless of
   // backgroundStyle. Drives the Glass preset's inner glow (and any
   // future surface-color-following effects) so the rim hue matches the
-  // page's color story rather than the brand accent. For surfaceColor
-  // "slate" this resolves to a neutral grey (slate is the design
-  // system's no-brand baseline); for any accent color choice it's that
-  // color's 500 shade.
-  const surfaceTint =
-    surfaceColor === "slate" ? neutral[500] : accentColors[surfaceColor][500]
+  // page's color story rather than the brand accent. For any of the registered
+  // neutral ramps this resolves to that ramp's own mid-tone, keeping a warm
+  // ground warm; for an accent used as a surface it's that colour's 500 shade.
+  const surfaceTint = isAccentSurface(surfaceColor)
+    ? accentColors[surfaceColor][500]
+    : neutral[500]
 
   const controlWell = controlWells(
     recipe.surfaceRaised(surface, mode),
     recipe.surfaceSunken(surface, mode),
   )
 
+  const background = capCanvasSaturation(
+    mode === "light" ? surface[50] : surface[950],
+    CANVAS_SATURATION_CAP[backgroundIntensity],
+  )
+  const mutedForeground = tierClearing(
+    neutral,
+    background,
+    MUTED_TARGET_RATIO,
+  )
+
   const tokens: Record<string, string> = {
-    "--primary": primaryValue,
+    "--primary": ensureContrast(primaryValue, background, MARK_FLOOR),
     "--primary-fill": primaryFill,
     "--primary-foreground": primaryForeground,
     "--ring": ringValue,
-    "--focus-ring": focusRingValue,
+    "--focus-ring": ensureContrast(focusRingValue, background, MARK_FLOOR),
     "--surface-tint": surfaceTint,
 
     "--chart-1": chartColors[0] ?? "",
@@ -393,10 +515,7 @@ export function generateTokens(
     "--chart-4": chartColors[3] ?? "",
     "--chart-5": chartColors[4] ?? "",
 
-    "--background": capCanvasSaturation(
-      mode === "light" ? surface[50] : surface[950],
-      CANVAS_SATURATION_CAP[backgroundIntensity],
-    ),
+    "--background": background,
     "--foreground": foreground,
 
     "--card": mode === "light" ? "0 0% 100%" : surface[900],
@@ -409,26 +528,37 @@ export function generateTokens(
     "--secondary-foreground": mode === "light" ? neutral[900] : neutral[50],
 
     "--muted": mode === "light" ? surface[100] : surface[800],
-    "--muted-foreground": mode === "light" ? neutral[500] : neutral[400],
+    "--muted-foreground": mutedForeground,
+    "--legend": tierClearing(neutral, background, LEGEND_TARGET_RATIO),
 
     "--accent": mode === "light" ? surface[100] : surface[800],
     "--accent-foreground": mode === "light" ? neutral[900] : neutral[50],
 
-    "--destructive": isRedishAccent
-      ? mode === "light"
-        ? "25 95% 53%"
-        : "21 90% 48%"
-      : mode === "light"
-        ? "0 84% 60%"
-        : "0 72% 51%",
+    "--destructive": ensureContrast(
+      isRedishAccent
+        ? mode === "light"
+          ? "25 95% 53%"
+          : "21 90% 48%"
+        : mode === "light"
+          ? "0 84% 60%"
+          : "0 72% 51%",
+      background,
+      TEXT_FLOOR,
+    ),
     "--destructive-foreground": "0 0% 100%",
 
-    "--success":
+    "--success": ensureContrast(
       mode === "light" ? accentColors.emerald[500] : accentColors.emerald[400],
+      background,
+      MARK_FLOOR,
+    ),
     "--success-foreground": "0 0% 100%",
 
-    "--warning":
+    "--warning": ensureContrast(
       mode === "light" ? accentColors.amber[500] : accentColors.amber[400],
+      background,
+      MARK_FLOOR,
+    ),
     "--warning-foreground": "222 47% 11%",
 
     "--info":
@@ -459,9 +589,7 @@ export function generateTokens(
     // branches were the other way round, which put the lighter grey on the
     // near-white light rail: sidebar group labels measured 2.43:1 in light
     // (2.29:1 under Terminal) against a 4.5:1 requirement.
-    "--sidebar-foreground-muted": isSidebarDark(mode)
-      ? neutral[400]
-      : neutral[500],
+    "--sidebar-foreground-muted": mutedForeground,
     "--sidebar-border": isSidebarDark(mode) ? "0 0% 100% / 0.1" : surface[200],
     "--sidebar-hover-bg": isSidebarDark(mode)
       ? `${accent[500]} / ${SIDEBAR_HOVER[accentIntensity].darkAlpha}`

@@ -2,6 +2,7 @@ import { X } from "lucide-react"
 import { Input } from "@components/input"
 import { Button } from "@components/button"
 import { ColumnVisibility } from "@data-table/components/column-visibility"
+import { DataTableFacet } from "@data-table/components/data-table-facet"
 import type { DataTableToolbarProps } from "@data-table/types"
 import { useUiLabels } from "@labels"
 
@@ -9,6 +10,7 @@ export function DataTableToolbar<TData>({
   table,
   searchKey,
   searchPlaceholder,
+  facets,
 }: DataTableToolbarProps<TData>) {
   const labels = useUiLabels()
   const isFiltered = table.getState().columnFilters.length > 0
@@ -28,6 +30,10 @@ export function DataTableToolbar<TData>({
             className="dr-data-table-toolbar-search"
           />
         )}
+        {facets?.map((id) => {
+          const column = table.getColumn(id)
+          return column ? <DataTableFacet key={id} column={column} /> : null
+        })}
         {isFiltered && (
           <Button
             variant="ghost"

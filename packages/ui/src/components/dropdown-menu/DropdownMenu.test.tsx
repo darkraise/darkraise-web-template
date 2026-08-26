@@ -151,4 +151,29 @@ describe("DropdownMenu", () => {
       "balanced",
     )
   })
+
+  it("checks an item whose onSelect keeps the menu open", async () => {
+    // Preventing default is how a caller stops the menu dismissing, which is
+    // what a multi-select list needs. It must not also cancel the choice: the
+    // two are separate concerns and coupling them made the item unclickable.
+    const onCheckedChange = vi.fn()
+    const user = userEvent.setup()
+    render(
+      <DropdownMenu defaultOpen>
+        <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuCheckboxItem
+            checked={false}
+            onCheckedChange={onCheckedChange}
+            onSelect={(e) => e.preventDefault()}
+          >
+            Apple
+          </DropdownMenuCheckboxItem>
+        </DropdownMenuContent>
+      </DropdownMenu>,
+    )
+    await user.click(await screen.findByRole("menuitemcheckbox"))
+    expect(onCheckedChange).toHaveBeenCalledWith(true)
+    expect(screen.getByRole("menu")).toBeInTheDocument()
+  })
 })

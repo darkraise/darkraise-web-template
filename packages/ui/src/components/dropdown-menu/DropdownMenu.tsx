@@ -609,9 +609,10 @@ function DropdownMenuCheckboxItem({
       }
       disabled={disabled}
       onSelect={(event) => {
+        // preventDefault on the event controls whether the menu dismisses, not
+        // whether the item was chosen. A multi-select list needs to stay open
+        // and still register the toggle.
         onSelect?.(event)
-        if ((event as Event & { defaultPrevented?: boolean }).defaultPrevented)
-          return
         onCheckedChange?.(!isChecked)
       }}
       className={cn("dr-menu-checkbox-item", className)}

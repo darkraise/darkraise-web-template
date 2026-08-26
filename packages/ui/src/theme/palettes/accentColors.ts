@@ -14,6 +14,24 @@ const red: ColorScale = {
   950: "0 75% 15%",
 }
 
+// Hue 12, between red's 0 and orange's 25. Lightness follows red's ramp, which
+// is the nearer neighbour at the mid-tone; saturation is red's profile scaled
+// so 500 lands on the pinned brand value rather than the two-scale midpoint,
+// which at 89% reads as a signal colour instead of a brand one.
+const coral: ColorScale = {
+  50: "17 77% 97%",
+  100: "17 83% 94%",
+  200: "16 86% 89%",
+  300: "15 84% 82%",
+  400: "14 81% 71%",
+  500: "12 75% 59%",
+  600: "11 64% 51%",
+  700: "9 66% 42%",
+  800: "8 62% 35%",
+  900: "7 56% 31%",
+  950: "6 67% 15%",
+}
+
 const orange: ColorScale = {
   50: "33 100% 96%",
   100: "34 100% 92%",
@@ -240,6 +258,7 @@ const rose: ColorScale = {
 
 export const accentColors: Record<AccentColor, ColorScale> = {
   red,
+  coral,
   orange,
   amber,
   yellow,

@@ -137,4 +137,32 @@
   .dr-data-table-column-visibility-trigger {
     @apply h-9;
   }
+
+  /* Faceted filters */
+  .dr-data-table-facet-trigger {
+    @apply h-9 border-dashed;
+  }
+
+  .dr-data-table-facet-count {
+    @apply ml-2 rounded-sm bg-secondary px-1.5 text-xs;
+  }
+
+  .dr-data-table-facet-value {
+    @apply flex-1 capitalize;
+  }
+
+  .dr-data-table-facet-tally {
+    @apply ml-4 font-mono text-xs text-[hsl(var(--legend))];
+  }
+
+  /* Virtualized viewport. The header stays put while the body scrolls under
+     it, which is the whole reason the scroll container wraps the table rather
+     than the page. */
+  .dr-data-table-viewport {
+    @apply relative;
+  }
+
+  .dr-data-table-viewport thead {
+    @apply sticky top-0 z-10 bg-[hsl(var(--surface-header))];
+  }
 }

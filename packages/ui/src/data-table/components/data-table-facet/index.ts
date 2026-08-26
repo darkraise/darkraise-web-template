@@ -1,0 +1,1 @@
+export { DataTableFacet } from "./DataTableFacet"

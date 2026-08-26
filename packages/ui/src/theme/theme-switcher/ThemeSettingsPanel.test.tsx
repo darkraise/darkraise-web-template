@@ -29,6 +29,10 @@ function renderPanel(ui: React.ReactNode) {
 describe("ThemeSettingsPanel", () => {
   beforeEach(() => {
     mockMatchMedia()
+    // The provider persists the chosen preset, so a test that clicks a preset
+    // radio leaves every later test running under it. Sci-fi hides the radius
+    // axis, which is enough to make an unrelated assertion disappear.
+    globalThis.localStorage.clear()
   })
 
   it("renders the axis controls without a popover", () => {
@@ -126,8 +130,9 @@ describe("ThemeSettingsPanel", () => {
 
   it("names its axis sliders so they are reachable by role and name", () => {
     renderPanel(<ThemeSettingsPanel layout="page" />)
-    // A four-value axis renders as a Slider. Before the Slider fix its
-    // aria-label landed on a wrapper span, leaving role="slider" unnamed.
+    // A four-value axis renders as a Slider carrying the axis name. Radius is
+    // the one worth asserting: it is hidden by the sci-fi preset, so it also
+    // catches preset state leaking in from an earlier test.
     expect(screen.getByRole("slider", { name: "Density" })).toBeInTheDocument()
     expect(screen.getByRole("slider", { name: "Radius" })).toBeInTheDocument()
   })
