@@ -4,6 +4,8 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 
 ## [Unreleased]
 
+## [6.5.0] — 2026-08-26
+
 ### Added
 
 - All twelve neutral surface ramps are selectable. `SURFACE_COLORS` previously exposed `slate` plus the seventeen accents, leaving `gray`, `cool`, `zinc`, `neutral`, `iron`, `mauve`, `graphite`, `stone`, `sand`, `olive` and `sepia` built and registered but unreachable. Widening the constant alone was not enough: `resolveSurfaceScale`, `resolveSfHueTokens`, `--surface-tint` and the switcher's swatch preview each hardcoded `slate` as the only neutral and sent every other name to `accentColors`, where the new ramps do not exist. Each now dispatches on whether the name is a registered ramp.
