@@ -23,6 +23,19 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 - Four light-mode values that could not be seen against the page are raised to their floor. Measured before: `--focus-ring` 1.28–1.58:1, `--success` (emerald-500) 2.48:1 and `--warning` (amber-500) 2.03:1, all against a 3:1 requirement for a mark; `--destructive` under 4.5:1 as text, which is how it labels the action it describes. `--primary` is a fifth — at sky it measured 2.74:1, and `dist/styles.css` documents that form controls take their focus indicator from `--primary` rather than `--focus-ring`, so every text field, select and textarea in every consuming app had a sub-3:1 focus ring in light mode.
 - Each is repaired by moving to the nearest lightness on its own hue that clears the floor, so a value that already passed keeps its exact place on the accent ladder. Dark mode is covered by the same sweep and was already clean.
 
+### Known limitations
+
+- **Button labels are held to 3:1, not 4.5:1.** `pickForeground` picks white or ink for a `--primary-fill` label against `FOREGROUND_MIN_RATIO = 3`, and 77 accent/intensity/mode combinations sit under AA. Worst case per step, measured across all eighteen accents:
+
+  | Step | Light | Dark |
+  |---|---|---|
+  | calm | 3.29 | **4.75** |
+  | balanced | 3.29 | 4.10 |
+  | vivid | 3.29 | 3.59 |
+  | intense | 3.29 | 3.18 |
+
+  `dark` + `calm` is the only combination that clears AA, which is why a consumer needing accessible button labels should pin it. The floor is deliberately not raised here: doing so makes the label flip to ink on many accents, which the `VIBRANCY` notes call out as making label colour vary by accent, and it requires moving fills off the pinned OKLCH lightness ladder, which would make light mode vary across an axis documented as dark-mode-only. That is a design decision rather than a contrast repair, and it is left for a major.
+
 ## [6.4.0] — 2026-08-21
 
 ## [6.3.0] — 2026-08-20
