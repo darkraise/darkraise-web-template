@@ -18,6 +18,11 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 - **The text tiers are computed against the page background instead of snapped to ramp steps, which moves `--muted-foreground` for every consumer.** The steps are too coarse to carry three tiers: across the twelve neutral ramps, light step 500 measures 4.31:1 and step 600 measures 6.61:1, so nothing could sit below 500 and still clear the 4.5:1 AA floor. Snapping also left `--muted-foreground` itself *under* AA on the warmer ramps — worst case 4.31:1 in light. Each tier is now the quietest value on the ramp's hue that clears its target: `--muted-foreground` at 7:1, `--legend` at 4.6:1. Measured on slate, light `--muted-foreground` moves from `215 16% 47%` (4.51:1) to `215 16% 35%` (7.03:1), so muted text renders darker in light mode. Worst case across all twelve ramps is now 7.00:1 for muted and 4.64:1 for legend, in both modes.
 - `--sidebar-foreground-muted` is now exactly `--muted-foreground` rather than a parallel pair of ramp steps, and moves with it.
 
+### Fixed
+
+- Four light-mode values that could not be seen against the page are raised to their floor. Measured before: `--focus-ring` 1.28–1.58:1, `--success` (emerald-500) 2.48:1 and `--warning` (amber-500) 2.03:1, all against a 3:1 requirement for a mark; `--destructive` under 4.5:1 as text, which is how it labels the action it describes. `--primary` is a fifth — at sky it measured 2.74:1, and `dist/styles.css` documents that form controls take their focus indicator from `--primary` rather than `--focus-ring`, so every text field, select and textarea in every consuming app had a sub-3:1 focus ring in light mode.
+- Each is repaired by moving to the nearest lightness on its own hue that clears the floor, so a value that already passed keeps its exact place on the accent ladder. Dark mode is covered by the same sweep and was already clean.
+
 ## [6.4.0] — 2026-08-21
 
 ## [6.3.0] — 2026-08-20

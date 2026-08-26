@@ -169,8 +169,21 @@ describe("generateTokens", () => {
       mode: "dark",
       accentIntensity: "balanced",
     })
-    expect(lightTokens["--focus-ring"]).toBe(accentColors.blue[300])
-    expect(darkTokens["--focus-ring"]).toBe(accentColors.blue[200])
+    // Derived from those shades, then raised where the shade itself could not
+    // be seen: light blue-300 measured 1.58:1 against the page. The floor is
+    // the requirement; the shade was only ever the starting point.
+    expect(
+      contrastRatio(
+        lightTokens["--focus-ring"] as string,
+        lightTokens["--background"] as string,
+      ),
+    ).toBeGreaterThanOrEqual(3)
+    expect(
+      contrastRatio(
+        darkTokens["--focus-ring"] as string,
+        darkTokens["--background"] as string,
+      ),
+    ).toBeGreaterThanOrEqual(3)
     expect(lightTokens["--focus-ring"]).not.toEqual(lightTokens["--ring"])
     expect(darkTokens["--focus-ring"]).not.toEqual(darkTokens["--ring"])
   })
@@ -369,8 +382,22 @@ describe("generateTokens", () => {
       accentIntensity: "balanced",
     })
 
-    expect(light["--destructive"]).toBe("0 84% 60%")
-    expect(dark["--destructive"]).toBe("0 72% 51%")
+    // red-500 and red-600 are the base values; both are raised where they did
+    // not carry as text, which is what --destructive is used for.
+    expect(light["--destructive"]).toMatch(/^0 /)
+    expect(dark["--destructive"]).toMatch(/^0 /)
+    expect(
+      contrastRatio(
+        light["--destructive"] as string,
+        light["--background"] as string,
+      ),
+    ).toBeGreaterThanOrEqual(4.5)
+    expect(
+      contrastRatio(
+        dark["--destructive"] as string,
+        dark["--background"] as string,
+      ),
+    ).toBeGreaterThanOrEqual(4.5)
   })
 
   it("success uses emerald-500 for light and emerald-400 for dark, white foreground", () => {
@@ -391,8 +418,15 @@ describe("generateTokens", () => {
       accentIntensity: "balanced",
     })
 
-    expect(light["--success"]).toBe(accentColors.emerald[500])
+    // emerald-500 measured 2.48:1 in light, under the 3:1 a mark is held to.
+    expect(light["--success"]).toMatch(/^160 /)
     expect(dark["--success"]).toBe(accentColors.emerald[400])
+    expect(
+      contrastRatio(
+        light["--success"] as string,
+        light["--background"] as string,
+      ),
+    ).toBeGreaterThanOrEqual(3)
     expect(light["--success-foreground"]).toBe("0 0% 100%")
     expect(dark["--success-foreground"]).toBe("0 0% 100%")
   })
@@ -415,8 +449,15 @@ describe("generateTokens", () => {
       accentIntensity: "balanced",
     })
 
-    expect(light["--warning"]).toBe(accentColors.amber[500])
+    // amber-500 measured 2.03:1 in light, the worst of the state colours.
+    expect(light["--warning"]).toMatch(/^38 /)
     expect(dark["--warning"]).toBe(accentColors.amber[400])
+    expect(
+      contrastRatio(
+        light["--warning"] as string,
+        light["--background"] as string,
+      ),
+    ).toBeGreaterThanOrEqual(3)
     expect(light["--warning-foreground"]).toBe("222 47% 11%")
     expect(dark["--warning-foreground"]).toBe("222 47% 11%")
   })
@@ -963,11 +1004,18 @@ describe("generateTokens", () => {
     )
 
     it.each(ACCENT_COLORS)("%s: light mode ignores the axis", (accentColor) => {
-      for (const step of VIBRANCIES) {
-        const tokens = build(accentColor, "light", step)
-        expect(tokens["--primary"]).toBe(accentColors[accentColor][500])
-        expect(tokens["--primary-fill"]).toBe(accentColors[accentColor][500])
-      }
+      // The axis is a dark-mode ladder. Light must not vary across its steps --
+      // which is the invariant, not the palette value: --primary is raised off
+      // accent-500 wherever that shade could not be seen against the page.
+      const primaries = VIBRANCIES.map(
+        (step) => build(accentColor, "light", step)["--primary"],
+      )
+      const fills = VIBRANCIES.map(
+        (step) => build(accentColor, "light", step)["--primary-fill"],
+      )
+      expect(new Set(primaries).size).toBe(1)
+      expect(new Set(fills).size).toBe(1)
+      expect(fills[0]).toBe(accentColors[accentColor][500])
     })
 
     it("light glass keeps its own shade at every step", () => {

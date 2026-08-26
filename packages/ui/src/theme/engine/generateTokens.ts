@@ -140,6 +140,10 @@ export function resolveNeutralScale(surfaceColor: SurfaceColor): ColorScale {
 }
 
 /** Body-text AA, with a shade of headroom so rounding cannot drop under it. */
+/** A shape or boundary must be distinguishable from its ground. */
+const MARK_FLOOR = 3
+/** Text must be readable, whatever else the colour is also used for. */
+const TEXT_FLOOR = 4.5
 const LEGEND_TARGET_RATIO = 4.6
 /** Far enough above the legend tier that the two read as different ranks. */
 const MUTED_TARGET_RATIO = 7
@@ -181,6 +185,48 @@ function tierClearing(
   }
   tierCache.set(key, best)
   return best
+}
+
+const contrastCache = new Map<string, string>()
+
+/**
+ * `value` unchanged when it already clears `target` against `background`,
+ * otherwise the nearest lightness on the same hue that does.
+ *
+ * A repair rather than a recomputation: a value that was already sound keeps
+ * its exact place on the accent ladder, so raising a floor moves only what was
+ * under it. Values carrying an alpha channel are returned untouched, because
+ * their effective contrast depends on what they are composited over.
+ */
+function ensureContrast(
+  value: string,
+  background: string,
+  target: number,
+): string {
+  if (value.includes("/")) return value
+  const key = `${value}|${background}|${target}`
+  const cached = contrastCache.get(key)
+  if (cached !== undefined) return cached
+
+  let result = value
+  if (contrastRatio(value, background) < target) {
+    const parts = value.split(" ")
+    const hue = parts[0] ?? "0"
+    const saturation = parts[1] ?? "0%"
+    const start = Math.round(parseFloat(parts[2] ?? "50"))
+    outer: for (let delta = 1; delta <= 100; delta++) {
+      for (const l of [start - delta, start + delta]) {
+        if (l < 0 || l > 100) continue
+        const candidate = `${hue} ${saturation} ${l}%`
+        if (contrastRatio(candidate, background) >= target) {
+          result = candidate
+          break outer
+        }
+      }
+    }
+  }
+  contrastCache.set(key, result)
+  return result
 }
 
 function isSidebarDark(mode: ResolvedMode): boolean {
@@ -456,11 +502,11 @@ export function generateTokens(
   )
 
   const tokens: Record<string, string> = {
-    "--primary": primaryValue,
+    "--primary": ensureContrast(primaryValue, background, MARK_FLOOR),
     "--primary-fill": primaryFill,
     "--primary-foreground": primaryForeground,
     "--ring": ringValue,
-    "--focus-ring": focusRingValue,
+    "--focus-ring": ensureContrast(focusRingValue, background, MARK_FLOOR),
     "--surface-tint": surfaceTint,
 
     "--chart-1": chartColors[0] ?? "",
@@ -488,21 +534,31 @@ export function generateTokens(
     "--accent": mode === "light" ? surface[100] : surface[800],
     "--accent-foreground": mode === "light" ? neutral[900] : neutral[50],
 
-    "--destructive": isRedishAccent
-      ? mode === "light"
-        ? "25 95% 53%"
-        : "21 90% 48%"
-      : mode === "light"
-        ? "0 84% 60%"
-        : "0 72% 51%",
+    "--destructive": ensureContrast(
+      isRedishAccent
+        ? mode === "light"
+          ? "25 95% 53%"
+          : "21 90% 48%"
+        : mode === "light"
+          ? "0 84% 60%"
+          : "0 72% 51%",
+      background,
+      TEXT_FLOOR,
+    ),
     "--destructive-foreground": "0 0% 100%",
 
-    "--success":
+    "--success": ensureContrast(
       mode === "light" ? accentColors.emerald[500] : accentColors.emerald[400],
+      background,
+      MARK_FLOOR,
+    ),
     "--success-foreground": "0 0% 100%",
 
-    "--warning":
+    "--warning": ensureContrast(
       mode === "light" ? accentColors.amber[500] : accentColors.amber[400],
+      background,
+      MARK_FLOOR,
+    ),
     "--warning-foreground": "222 47% 11%",
 
     "--info":
