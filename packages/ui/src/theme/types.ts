@@ -2,6 +2,7 @@ import type { PresetName, ThemePreset } from "@theme/presets"
 
 export const ACCENT_COLORS = [
   "red",
+  "coral",
   "orange",
   "amber",
   "yellow",

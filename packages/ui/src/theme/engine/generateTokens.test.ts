@@ -985,6 +985,7 @@ describe("generateTokens", () => {
     // regenerated to match new output.
     const CALM_SNAPSHOT = {
       red: { fill: "355 79% 45%", primary: "1 81% 60%" },
+      coral: { fill: "12 70% 43%", primary: "12 75% 59%" },
       orange: { fill: "26 98% 35%", primary: "25 95% 53%" },
       amber: { fill: "38 100% 30%", primary: "38 92% 50%" },
       yellow: { fill: "45 96% 28%", primary: "45 93% 47%" },
