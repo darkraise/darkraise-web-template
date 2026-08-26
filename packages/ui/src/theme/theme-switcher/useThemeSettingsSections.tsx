@@ -23,7 +23,9 @@ import type {
   SurfaceColor,
   BackgroundStyle,
   GradientPattern,
+  ColorScale,
 } from "@theme/types"
+import { isAccentSurface } from "@theme/engine/generateTokens"
 import {
   presets,
   PRESET_NAMES,
@@ -31,6 +33,7 @@ import {
   type ThemePreset,
 } from "@theme/presets"
 import { accentColors } from "@theme/palettes/accentColors"
+import { surfaceColors } from "@theme/palettes/surfaceColors"
 import { useUiLabels } from "@labels"
 import { AxisControl } from "./AxisControl"
 import { isAxisVisible, type AxisVisibilityInput } from "./axisVisibility"
@@ -353,8 +356,11 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
           </Label>
           <div className="dr-theme-switcher-swatch-grid">
             {SURFACE_COLORS.map((color: SurfaceColor) => {
-              const previewHsl =
-                color === "slate" ? "215 16% 47%" : accentColors[color][500]
+              // A neutral ramp previews from its own registry entry; only an
+              // accent used as a surface falls through to the accent scale.
+              const previewHsl = isAccentSurface(color)
+                ? accentColors[color][500]
+                : (surfaceColors[color] as ColorScale)[500]
               return (
                 <button
                   key={color}

@@ -43,6 +43,15 @@ function getChartColors(
   })
 }
 
+/**
+ * A surface name is an accent exactly when it is not one of the neutral ramps
+ * registered in palettes/surfaceColors. Written as a predicate so the accent
+ * branches narrow to AccentColor instead of needing a cast.
+ */
+export function isAccentSurface(name: SurfaceColor): name is AccentColor {
+  return !(name in surfaceColors)
+}
+
 function resolveSfHueTokens(
   surfaceColor: SurfaceColor,
   backgroundStyle: BackgroundStyle,
@@ -55,12 +64,12 @@ function resolveSfHueTokens(
     }
   }
 
-  if (surfaceColor === "slate") {
-    const slate = surfaceColors.slate as ColorScale
+  if (!isAccentSurface(surfaceColor)) {
+    const registered = surfaceColors[surfaceColor] as ColorScale
     return {
-      "--sf-hue": `hsl(${slate[500]})`,
-      "--sf-hue-2": `hsl(${slate[400]})`,
-      "--sf-hue-3": `hsl(${slate[300]})`,
+      "--sf-hue": `hsl(${registered[500]})`,
+      "--sf-hue-2": `hsl(${registered[400]})`,
+      "--sf-hue-3": `hsl(${registered[300]})`,
     }
   }
 
@@ -107,14 +116,27 @@ export function resolveSurfaceScale(
   surfaceColor: SurfaceColor,
   mode: ResolvedMode,
 ): ColorScale {
-  const neutral = surfaceColors.slate as ColorScale
-  if (surfaceColor === "slate") return neutral
+  // A registered ramp is already neutral, so it is used as-is. Tinting one
+  // against slate would drag every warm ground back toward slate's hue, which
+  // is the whole reason the other eleven were unreachable.
+  if (!isAccentSurface(surfaceColor)) {
+    return surfaceColors[surfaceColor] as ColorScale
+  }
   return tintScale(
     accentColors[surfaceColor],
-    neutral,
+    surfaceColors.slate as ColorScale,
     mode === "light" ? 0.4 : 0.35,
     mode === "dark",
   )
+}
+
+/**
+ * The scale the text tiers and borders are measured against. A chosen neutral
+ * carries its own hue here too, so a warm ground does not end up under
+ * slate-derived text; an accent surface keeps slate, as it always has.
+ */
+export function resolveNeutralScale(surfaceColor: SurfaceColor): ColorScale {
+  return (surfaceColors[surfaceColor] ?? surfaceColors.slate) as ColorScale
 }
 
 function isSidebarDark(mode: ResolvedMode): boolean {
@@ -299,7 +321,7 @@ export function generateTokens(
 
   const accent: ColorScale = accentColors[accentColor]
   const surface: ColorScale = resolveSurfaceScale(surfaceColor, mode)
-  const neutral: ColorScale = surfaceColors.slate as ColorScale
+  const neutral: ColorScale = resolveNeutralScale(surfaceColor)
   const recipe = presets[preset].surfaceRecipe
 
   const isRedishAccent =
@@ -367,12 +389,12 @@ export function generateTokens(
   // Saturated mid-tone of the chosen surface color, regardless of
   // backgroundStyle. Drives the Glass preset's inner glow (and any
   // future surface-color-following effects) so the rim hue matches the
-  // page's color story rather than the brand accent. For surfaceColor
-  // "slate" this resolves to a neutral grey (slate is the design
-  // system's no-brand baseline); for any accent color choice it's that
-  // color's 500 shade.
-  const surfaceTint =
-    surfaceColor === "slate" ? neutral[500] : accentColors[surfaceColor][500]
+  // page's color story rather than the brand accent. For any of the registered
+  // neutral ramps this resolves to that ramp's own mid-tone, keeping a warm
+  // ground warm; for an accent used as a surface it's that colour's 500 shade.
+  const surfaceTint = isAccentSurface(surfaceColor)
+    ? accentColors[surfaceColor][500]
+    : neutral[500]
 
   const controlWell = controlWells(
     recipe.surfaceRaised(surface, mode),

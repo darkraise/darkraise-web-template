@@ -36,6 +36,7 @@ import {
 import {
   generateTokens,
   resolveSurfaceScale,
+  resolveNeutralScale,
 } from "@theme/engine/generateTokens"
 import {
   presets,
@@ -44,7 +45,6 @@ import {
   type ThemePreset,
 } from "@theme/presets"
 import { accentColors } from "@theme/palettes/accentColors"
-import { surfaceColors } from "@theme/palettes/surfaceColors"
 import { ThemeContext } from "@theme/themeContext"
 import { themeConfig, type ThemeConfig } from "@theme/themeConfig"
 import { useDebouncedCallback } from "@hooks/useDebouncedCallback"
@@ -447,8 +447,7 @@ export function ThemeProvider({
       let presetTokens: Record<string, string> = {}
       if (activePreset.generateTokens) {
         const accentScale = accentColors[accent]
-        const neutralScale =
-          surfaceColors.slate as import("@theme/types").ColorScale
+        const neutralScale = resolveNeutralScale(surfColor)
         const surfaceScale = resolveSurfaceScale(surfColor, resolved)
         // Resolved here rather than threaded through applyTheme's positional
         // signature: the preset being painted is already an argument, and the
