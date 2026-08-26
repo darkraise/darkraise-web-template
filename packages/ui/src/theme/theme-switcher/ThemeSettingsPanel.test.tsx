@@ -1,6 +1,6 @@
 import type * as React from "react"
 import { render, screen, fireEvent } from "@testing-library/react"
-import { describe, it, expect, beforeEach, vi } from "vitest"
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest"
 import { ThemeProvider } from "@theme/theme-provider"
 import { themeConfig, type ThemeConfig } from "@theme/themeConfig"
 import { ThemeSettingsPanel } from "./ThemeSettingsPanel"
@@ -26,13 +26,39 @@ function renderPanel(ui: React.ReactNode) {
   return render(<ThemeProvider>{ui}</ThemeProvider>)
 }
 
+// memoryStorage is a complete Storage, installed fresh for every test here.
+//
+// Reaching for whatever localStorage happens to be installed does not work:
+// sibling theme suites stub their own, vi.stubGlobal outlives the file that
+// called it, and not every stub implements the whole interface. Owning one
+// makes this suite independent of what ran before it.
+function memoryStorage(): Storage {
+  const data = new Map<string, string>()
+  return {
+    getItem: (k) => data.get(k) ?? null,
+    setItem: (k, v) => void data.set(k, String(v)),
+    removeItem: (k) => void data.delete(k),
+    clear: () => data.clear(),
+    key: (i) => Array.from(data.keys())[i] ?? null,
+    get length() {
+      return data.size
+    },
+  }
+}
+
 describe("ThemeSettingsPanel", () => {
   beforeEach(() => {
     mockMatchMedia()
     // The provider persists the chosen preset, so a test that clicks a preset
     // radio leaves every later test running under it. Sci-fi hides the radius
     // axis, which is enough to make an unrelated assertion disappear.
-    globalThis.localStorage.clear()
+    vi.stubGlobal("localStorage", memoryStorage())
+  })
+
+  afterEach(() => {
+    // Not left installed: this suite's storage must not become the next
+    // file's inherited surprise, which is the bug it exists to avoid.
+    vi.unstubAllGlobals()
   })
 
   it("renders the axis controls without a popover", () => {
