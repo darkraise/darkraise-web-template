@@ -16,6 +16,7 @@ export interface UiLabels {
     rowsPerPage: string
     pageInfo: (page: number, pageCount: number) => string
     rowsSelected: (selected: number, total: number) => string
+    filterBy: (column: string) => string
   }
   layout: {
     skipToContent: string

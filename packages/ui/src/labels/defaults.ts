@@ -11,6 +11,7 @@ export const defaultLabels: UiLabels = {
     pageInfo: (page, pageCount) => `Page ${page} of ${pageCount}`,
     rowsSelected: (selected, total) =>
       `${selected} of ${total} row(s) selected`,
+    filterBy: (column) => `Filter by ${column}`,
   },
   layout: {
     skipToContent: "Skip to content",

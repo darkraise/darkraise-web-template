@@ -10,6 +10,8 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 - `resolveNeutralScale` and `isAccentSurface` are exported from the theme engine. The first is the scale the text tiers and borders are measured against — a chosen neutral now carries its own hue there, so a warm ground is not paired with slate-derived text. The second is the predicate the accent branches narrow with.
 - A `coral` accent, `hsl(12, 75%, 59%)` at its mid-tone. It sits between `red` at hue 0 and `orange` at hue 25 and matched neither, so a consumer wanting it had to override `--ring`, `--focus-ring`, the destructive branch and the three `--primary*` tokens before touching the chart ramp. Lightness follows red's profile; saturation is red's scaled so the mid-tone lands on the brand value rather than the two-scale midpoint, which at 89% reads as a signal colour.
 - `--legend`, a third text tier below `--muted-foreground`, for column heads, captions and unit suffixes. Two tiers forced a caption either to compete with body text or to fail its contrast floor.
+- `DataTable` gains `facets` and `virtualize`, both opt-in and both defaulting off, so a table that does not pass them renders the markup it did on 6.4.0. `facets` takes column ids and renders a multi-select value filter per column, with each distinct value and its count; selecting two values within one facet is a union. `virtualize` takes `{ rowHeight, height, overscan? }` and windows the list instead of paginating it, keeping `aria-rowcount` at the full length and giving each mounted row its true `aria-rowindex`. Row height is declared rather than measured, because every row in this kit is one `density` cell tall and a declared height keeps the arithmetic deterministic.
+- `DataTableFacet` and the `DataTableVirtualization` type are exported, and `labels.dataTable.filterBy(column)` names the facet control.
 
 ### Changed
 
@@ -22,6 +24,7 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 
 - Four light-mode values that could not be seen against the page are raised to their floor. Measured before: `--focus-ring` 1.28–1.58:1, `--success` (emerald-500) 2.48:1 and `--warning` (amber-500) 2.03:1, all against a 3:1 requirement for a mark; `--destructive` under 4.5:1 as text, which is how it labels the action it describes. `--primary` is a fifth — at sky it measured 2.74:1, and `dist/styles.css` documents that form controls take their focus indicator from `--primary` rather than `--focus-ring`, so every text field, select and textarea in every consuming app had a sub-3:1 focus ring in light mode.
 - Each is repaired by moving to the nearest lightness on its own hue that clears the floor, so a value that already passed keeps its exact place on the accent ladder. Dark mode is covered by the same sweep and was already clean.
+- `DropdownMenuCheckboxItem` no longer cancels the toggle when `onSelect` prevents default. Preventing default is how a caller stops the menu dismissing, which is exactly what a multi-select list needs; coupling it to whether the item was chosen made such an item impossible to check. `ColumnVisibility` gets the same benefit.
 
 ### Known limitations
 
