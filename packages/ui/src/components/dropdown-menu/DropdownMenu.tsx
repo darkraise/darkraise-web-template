@@ -551,6 +551,10 @@ function DropdownMenuItem({
       aria-disabled={disabled || undefined}
       onPointerEnter={(event: React.PointerEvent<HTMLDivElement>) => {
         onPointerEnter?.(event)
+        // Moving onto any item collapses the submenu this menu was holding
+        // open. A sub-trigger re-registers itself in its own handler above,
+        // so its panel survives the pointer landing on it.
+        ctx.closeOpenSubmenu()
         if (disabled) return
         if (myIndex >= 0) ctx.setFocusedIndex(myIndex)
       }}
@@ -787,6 +791,16 @@ function DropdownMenuSubTrigger({
     setReference(localRef.current)
   }, [setReference])
 
+  const parent = ctx.parent
+  const openSelf = () => {
+    parent?.closeOpenSubmenu(localRef.current)
+    parent?.registerOpenSubmenu({
+      trigger: localRef.current,
+      close: ctx.closeSelf,
+    })
+    ctx.setOpen(true)
+  }
+
   return (
     <DropdownMenuItem
       ref={composeRefs(localRef, ref ?? undefined)}
@@ -796,12 +810,12 @@ function DropdownMenuSubTrigger({
       onPointerEnter={(event) => {
         onPointerEnter?.(event)
         if (event.defaultPrevented) return
-        if (!ctx.open) ctx.setOpen(true)
+        if (!ctx.open) openSelf()
       }}
       onClick={(event) => {
         onClick?.(event)
         if (event.defaultPrevented) return
-        if (!ctx.open) ctx.setOpen(true)
+        if (!ctx.open) openSelf()
       }}
       onKeyDown={(event) => {
         onKeyDown?.(event)
@@ -812,7 +826,7 @@ function DropdownMenuSubTrigger({
           event.key === " "
         ) {
           event.preventDefault()
-          ctx.setOpen(true)
+          openSelf()
           requestAnimationFrame(() => ctx.focusFirst())
         }
       }}

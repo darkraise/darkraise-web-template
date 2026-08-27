@@ -495,6 +495,10 @@ function ContextMenuItem({
       aria-disabled={disabled || undefined}
       onPointerEnter={(event: React.PointerEvent<HTMLDivElement>) => {
         onPointerEnter?.(event)
+        // Moving onto any item collapses the submenu this menu was holding
+        // open. A sub-trigger re-registers itself in its own handler above,
+        // so its panel survives the pointer landing on it.
+        ctx.closeOpenSubmenu()
         if (disabled) return
         if (myIndex >= 0) ctx.setFocusedIndex(myIndex)
       }}
@@ -728,6 +732,18 @@ function ContextMenuSubTrigger({
     ctx.setSubmenuReference(localRef.current)
   }, [ctx])
 
+  const parent = ctx.parent
+  const openSelf = () => {
+    const rect = localRef.current?.getBoundingClientRect()
+    if (rect) ctx.setPoint({ x: rect.right, y: rect.top })
+    parent?.closeOpenSubmenu(localRef.current)
+    parent?.registerOpenSubmenu({
+      trigger: localRef.current,
+      close: ctx.closeSelf,
+    })
+    ctx.setOpen(true)
+  }
+
   return (
     <ContextMenuItem
       ref={composeRefs(localRef, ref ?? undefined)}
@@ -737,20 +753,12 @@ function ContextMenuSubTrigger({
       onPointerEnter={(event) => {
         onPointerEnter?.(event)
         if (event.defaultPrevented) return
-        if (!ctx.open) {
-          const rect = localRef.current?.getBoundingClientRect()
-          if (rect) {
-            ctx.setPoint({ x: rect.right, y: rect.top })
-          }
-          ctx.setOpen(true)
-        }
+        if (!ctx.open) openSelf()
       }}
       onClick={(event) => {
         onClick?.(event)
         if (event.defaultPrevented) return
-        const rect = localRef.current?.getBoundingClientRect()
-        if (rect) ctx.setPoint({ x: rect.right, y: rect.top })
-        ctx.setOpen(true)
+        openSelf()
       }}
       onKeyDown={(event) => {
         onKeyDown?.(event)
@@ -761,9 +769,7 @@ function ContextMenuSubTrigger({
           event.key === " "
         ) {
           event.preventDefault()
-          const rect = localRef.current?.getBoundingClientRect()
-          if (rect) ctx.setPoint({ x: rect.right, y: rect.top })
-          ctx.setOpen(true)
+          openSelf()
           requestAnimationFrame(() => ctx.focusFirst())
         }
       }}

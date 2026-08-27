@@ -10,6 +10,12 @@ export interface MenuItemDescriptor {
   ref: React.RefObject<HTMLElement | null>
 }
 
+/** A submenu currently held open by one of this menu's sub-triggers. */
+export interface OpenSubmenuEntry {
+  trigger: HTMLElement | null
+  close: () => void
+}
+
 export interface UseMenuOptions {
   open?: boolean
   defaultOpen?: boolean
@@ -45,6 +51,14 @@ export interface UseMenuReturn {
   focusPrev: () => void
   /** Process a typeahead character; returns the matched index or -1. */
   typeahead: (char: string) => number
+  /** Record which submenu this menu currently holds open. */
+  registerOpenSubmenu: (entry: OpenSubmenuEntry) => void
+  /**
+   * Close the submenu this menu holds open, unless it belongs to
+   * `exceptTrigger`. Only one submenu of a given menu may be open at a time,
+   * so moving the pointer onto any other item collapses the previous one.
+   */
+  closeOpenSubmenu: (exceptTrigger?: HTMLElement | null) => void
 }
 
 function compareNodeOrder(a: Element, b: Element): number {
@@ -218,9 +232,34 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
     [focusedIndex, setFocusedIndex, sortItems, typeaheadDuration],
   )
 
-  // Reset focus when menu closes.
+  const openSubmenuRef = React.useRef<OpenSubmenuEntry | null>(null)
+
+  const registerOpenSubmenu = React.useCallback((entry: OpenSubmenuEntry) => {
+    openSubmenuRef.current = entry
+  }, [])
+
+  const closeOpenSubmenu = React.useCallback(
+    (exceptTrigger?: HTMLElement | null) => {
+      const entry = openSubmenuRef.current
+      if (!entry) return
+      if (exceptTrigger && entry.trigger === exceptTrigger) return
+      openSubmenuRef.current = null
+      entry.close()
+    },
+    [],
+  )
+
+  // Reset focus when menu closes, and take any submenu down with it —
+  // a submenu's content is portalled out of this menu's DOM subtree, so it
+  // would otherwise stay painted until this menu's exit animation finished
+  // unmounting the React tree that owns it. Each level closes the next.
   React.useEffect(() => {
-    if (!open) setFocusedIndexState(-1)
+    if (!open) {
+      setFocusedIndexState(-1)
+      const entry = openSubmenuRef.current
+      openSubmenuRef.current = null
+      entry?.close()
+    }
   }, [open])
 
   // Clear typeahead timer on unmount.
@@ -247,5 +286,7 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
     focusNext,
     focusPrev,
     typeahead,
+    registerOpenSubmenu,
+    closeOpenSubmenu,
   }
 }
