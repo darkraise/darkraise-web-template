@@ -1,6 +1,6 @@
-import { render, screen } from "@testing-library/react"
+import { act, fireEvent, render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { describe, it, expect } from "vitest"
+import { describe, it, expect, vi, beforeAll, afterAll } from "vitest"
 import {
   ResizablePanelGroup,
   ResizablePanel,
@@ -101,6 +101,69 @@ describe("Resizable", () => {
     )
     const grip = document.querySelector(".dr-resizable-handle-grip")
     expect(grip).toBeInTheDocument()
+  })
+
+  describe("drag state", () => {
+    const original = HTMLElement.prototype.setPointerCapture
+    beforeAll(() => {
+      // jsdom does not implement pointer capture.
+      HTMLElement.prototype.setPointerCapture = vi.fn()
+    })
+    afterAll(() => {
+      HTMLElement.prototype.setPointerCapture = original
+    })
+
+    it("marks the handle as dragging between pointerdown and pointerup", () => {
+      render(<Basic />)
+      const handle = screen.getByRole("separator")
+      expect(handle).not.toHaveAttribute("data-dragging")
+
+      fireEvent.pointerDown(handle, { pointerId: 1, clientX: 100, clientY: 0 })
+      expect(handle).toHaveAttribute("data-dragging", "true")
+
+      act(() => {
+        window.dispatchEvent(new PointerEvent("pointerup", { pointerId: 1 }))
+      })
+      expect(handle).not.toHaveAttribute("data-dragging")
+    })
+
+    it("clears the dragging state on pointercancel", () => {
+      render(<Basic />)
+      const handle = screen.getByRole("separator")
+      fireEvent.pointerDown(handle, { pointerId: 2, clientX: 100, clientY: 0 })
+      expect(handle).toHaveAttribute("data-dragging", "true")
+
+      act(() => {
+        window.dispatchEvent(
+          new PointerEvent("pointercancel", { pointerId: 2 }),
+        )
+      })
+      expect(handle).not.toHaveAttribute("data-dragging")
+    })
+
+    it("ignores a pointerup from an unrelated pointer", () => {
+      render(<Basic />)
+      const handle = screen.getByRole("separator")
+      fireEvent.pointerDown(handle, { pointerId: 3, clientX: 100, clientY: 0 })
+
+      act(() => {
+        window.dispatchEvent(new PointerEvent("pointerup", { pointerId: 99 }))
+      })
+      expect(handle).toHaveAttribute("data-dragging", "true")
+    })
+
+    it("a disabled handle never enters the dragging state", () => {
+      render(
+        <ResizablePanelGroup orientation="horizontal">
+          <ResizablePanel defaultSize={50}>A</ResizablePanel>
+          <ResizableHandle disabled />
+          <ResizablePanel defaultSize={50}>B</ResizablePanel>
+        </ResizablePanelGroup>,
+      )
+      const handle = screen.getByRole("separator")
+      fireEvent.pointerDown(handle, { pointerId: 4, clientX: 100, clientY: 0 })
+      expect(handle).not.toHaveAttribute("data-dragging")
+    })
   })
 
   it("drag delta is computed against the panel group, not the handle itself", () => {

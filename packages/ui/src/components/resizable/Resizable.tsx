@@ -329,6 +329,9 @@ function ResizableHandle({
   const ctx = usePanelGroup("ResizableHandle")
   const id = React.useId()
   const handleIndex = ctx.registerHandleIndex(id)
+  const [dragging, setDragging] = React.useState(false)
+  const endDragRef = React.useRef<(() => void) | null>(null)
+  React.useEffect(() => () => endDragRef.current?.(), [])
   const ariaOrientation =
     ctx.orientation === "horizontal" ? "vertical" : "horizontal"
 
@@ -350,6 +353,7 @@ function ResizableHandle({
       aria-valuemax={100}
       data-panel-group-direction={ctx.orientation}
       data-disabled={disabled ? "" : undefined}
+      data-dragging={dragging ? "true" : undefined}
       className={cn("dr-resizable-handle", className)}
       style={{
         cursor: disabled
@@ -373,6 +377,18 @@ function ResizableHandle({
         ) as HTMLElement | null
         if (!root) return
         ;(event.currentTarget as HTMLElement).setPointerCapture(event.pointerId)
+        const pointerId = event.pointerId
+        const endDrag = (pointerEvent?: PointerEvent) => {
+          if (pointerEvent && pointerEvent.pointerId !== pointerId) return
+          window.removeEventListener("pointerup", endDrag)
+          window.removeEventListener("pointercancel", endDrag)
+          endDragRef.current = null
+          setDragging(false)
+        }
+        endDragRef.current = endDrag
+        window.addEventListener("pointerup", endDrag)
+        window.addEventListener("pointercancel", endDrag)
+        setDragging(true)
         ctx.startResize(
           handleIndex,
           {
