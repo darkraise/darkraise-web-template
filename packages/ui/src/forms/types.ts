@@ -9,6 +9,7 @@ export interface FieldPrimitiveProps<T> {
   errors?: Array<{ message?: string } | undefined>
   disabled?: boolean
   readOnly?: boolean
+  required?: boolean
 }
 
 export interface FormSectionProps {

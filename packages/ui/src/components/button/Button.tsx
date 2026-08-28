@@ -1,4 +1,5 @@
 import * as React from "react"
+import { LoaderCircle } from "lucide-react"
 import { Slot } from "@primitives/slot"
 
 import { cn } from "@lib/utils"
@@ -17,6 +18,14 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   variant?: ButtonVariant
   size?: ButtonSize
   asChild?: boolean
+  /**
+   * Async work is in flight. Disables the button so the action cannot be
+   * fired twice, marks it `aria-busy`, and shows a spinner beside the label.
+   *
+   * Under `asChild` the spinner is not injected — Slot renders a single child
+   * and owns its own markup — but the disabled and busy semantics still apply.
+   */
+  loading?: boolean
   ref?: React.Ref<HTMLButtonElement>
 }
 
@@ -25,7 +34,10 @@ function Button({
   variant = "default",
   size = "default",
   asChild = false,
+  loading = false,
+  disabled,
   type,
+  children,
   ref,
   ...props
 }: ButtonProps) {
@@ -40,8 +52,26 @@ function Button({
       className={cn("dr-btn", className)}
       data-variant={variant}
       data-size={size}
+      data-loading={loading ? "" : undefined}
+      aria-busy={loading || undefined}
+      // Slot forwards to whatever element the consumer supplied, which may not
+      // accept `disabled` at all (an anchor, for instance), so the busy state
+      // is expressed through aria there instead.
+      disabled={asChild ? undefined : (disabled ?? loading)}
+      aria-disabled={asChild && (disabled || loading) ? true : undefined}
       {...props}
-    />
+    >
+      {asChild ? (
+        children
+      ) : (
+        <>
+          {loading && (
+            <LoaderCircle className="animate-spin" aria-hidden="true" />
+          )}
+          {children}
+        </>
+      )}
+    </Comp>
   )
 }
 

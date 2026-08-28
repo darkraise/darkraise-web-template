@@ -70,4 +70,8 @@
       background-color 150ms,
       border-color 150ms;
   }
+
+  .dr-field-required-mark {
+    @apply text-destructive ml-0.5;
+  }
 }

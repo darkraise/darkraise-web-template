@@ -41,16 +41,18 @@ export function NumberField({
   locale,
   disabled,
   readOnly,
+  required,
 }: NumberFieldProps) {
   return (
     <FieldWrapper
       name={name}
       label={label}
       description={description}
+      required={required}
       isInvalid={isInvalid}
       errors={errors}
     >
-      {(invalid, ariaDescribedBy) => (
+      {(invalid, ariaDescribedBy, isRequired) => (
         <NumberInput
           value={value ?? Number.NaN}
           onValueChange={(d) =>
@@ -76,6 +78,7 @@ export function NumberField({
               placeholder={placeholder}
               onBlur={onBlur}
               aria-invalid={invalid}
+              aria-required={isRequired || undefined}
               aria-describedby={ariaDescribedBy}
             />
             <NumberInputTriggerGroup>

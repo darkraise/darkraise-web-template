@@ -22,6 +22,7 @@ export function SwitchField({
   label,
   description,
   disabled,
+  required,
 }: SwitchFieldProps) {
   // `readOnly` is intentionally not threaded through here: a switch is a
   // boolean toggle, not a text field, so `readOnly` has no meaningful
@@ -36,7 +37,9 @@ export function SwitchField({
     <Field orientation="vertical" data-invalid={isInvalid}>
       <div className="dr-switch-field" data-has-description={hasDescription}>
         <div className="dr-switch-field-text">
-          <FieldLabel htmlFor={name}>{label}</FieldLabel>
+          <FieldLabel htmlFor={name} required={required}>
+            {label}
+          </FieldLabel>
           {description && (
             <FieldDescription id={descriptionId}>
               {description}
@@ -49,6 +52,7 @@ export function SwitchField({
           onCheckedChange={onChange}
           onBlur={onBlur}
           aria-invalid={isInvalid}
+          aria-required={required || undefined}
           aria-describedby={ariaDescribedBy}
           disabled={disabled}
           data-has-description={hasDescription}

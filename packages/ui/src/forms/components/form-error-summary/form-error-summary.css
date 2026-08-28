@@ -1,0 +1,24 @@
+@layer components {
+  .dr-form-error-summary {
+    @apply border-destructive bg-destructive/5 text-foreground flex flex-col gap-2 rounded-md border p-4;
+  }
+
+  /* The summary is a focus destination, so it needs a visible indicator of
+     its own — arriving somewhere with no outline reads as nothing happening. */
+  .dr-form-error-summary:focus-visible {
+    outline: 2px solid hsl(var(--focus-ring));
+    outline-offset: 2px;
+  }
+
+  .dr-form-error-summary-title {
+    @apply text-destructive text-base font-semibold;
+  }
+
+  .dr-form-error-summary-list {
+    @apply ml-4 flex list-disc flex-col gap-1 text-sm;
+  }
+
+  .dr-form-error-summary-list a {
+    @apply text-destructive underline underline-offset-4;
+  }
+}

@@ -26,6 +26,7 @@ export function SelectField({
   description,
   placeholder,
   disabled,
+  required,
   options,
 }: SelectFieldProps) {
   return (
@@ -33,15 +34,17 @@ export function SelectField({
       name={name}
       label={label}
       description={description}
+      required={required}
       isInvalid={isInvalid}
       errors={errors}
     >
-      {(invalid, ariaDescribedBy) => (
+      {(invalid, ariaDescribedBy, isRequired) => (
         <Select value={value} onValueChange={onChange} disabled={disabled}>
           <SelectTrigger
             id={name}
             onBlur={onBlur}
             aria-invalid={invalid}
+            aria-required={isRequired || undefined}
             aria-describedby={ariaDescribedBy}
           >
             {/* Resolve the label from `options` so a preset value renders its

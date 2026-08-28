@@ -20,7 +20,7 @@ describe("FieldWrapper", () => {
         {renderSpy}
       </FieldWrapper>,
     )
-    expect(renderSpy).toHaveBeenCalledWith(false, undefined)
+    expect(renderSpy).toHaveBeenCalledWith(false, undefined, false)
   })
 
   it("renders description when provided", () => {
@@ -58,5 +58,28 @@ describe("FieldWrapper", () => {
       </FieldWrapper>,
     )
     expect(screen.queryByText("Stale error")).not.toBeInTheDocument()
+  })
+})
+
+describe("FieldWrapper required marking", () => {
+  it("marks the label and hands `required` to the control", () => {
+    const renderSpy = vi.fn(() => <input id="name" />)
+    render(
+      <FieldWrapper name="name" label="Full name" required>
+        {renderSpy}
+      </FieldWrapper>,
+    )
+    // The asterisk is decorative; the word is what gets announced.
+    expect(screen.getByText("(required)")).toBeInTheDocument()
+    expect(renderSpy).toHaveBeenCalledWith(false, undefined, true)
+  })
+
+  it("adds no marker when the field is optional", () => {
+    render(
+      <FieldWrapper name="name" label="Full name">
+        {() => <input id="name" />}
+      </FieldWrapper>,
+    )
+    expect(screen.queryByText("(required)")).not.toBeInTheDocument()
   })
 })

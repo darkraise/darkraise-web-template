@@ -22,16 +22,18 @@ export function TextField({
   type = "text",
   disabled,
   readOnly,
+  required,
 }: TextFieldProps) {
   return (
     <FieldWrapper
       name={name}
       label={label}
       description={description}
+      required={required}
       isInvalid={isInvalid}
       errors={errors}
     >
-      {(invalid, ariaDescribedBy) => (
+      {(invalid, ariaDescribedBy, isRequired) => (
         <Input
           id={name}
           type={type}
@@ -40,6 +42,7 @@ export function TextField({
           onBlur={onBlur}
           onChange={(e) => onChange(e.target.value)}
           aria-invalid={invalid}
+          aria-required={isRequired || undefined}
           aria-describedby={ariaDescribedBy}
           disabled={disabled}
           readOnly={readOnly}

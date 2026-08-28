@@ -20,16 +20,18 @@ export function RadioGroupField({
   description,
   options,
   disabled,
+  required,
 }: RadioGroupFieldProps) {
   return (
     <FieldWrapper
       name={name}
       label={label}
       description={description}
+      required={required}
       isInvalid={isInvalid}
       errors={errors}
     >
-      {(invalid, ariaDescribedBy) => (
+      {(invalid, ariaDescribedBy, isRequired) => (
         <RadioGroup
           value={value}
           onValueChange={onChange}
@@ -45,6 +47,7 @@ export function RadioGroupField({
             }
           }}
           aria-invalid={invalid}
+          aria-required={isRequired || undefined}
           aria-describedby={ariaDescribedBy}
         >
           {options.map((opt) => (

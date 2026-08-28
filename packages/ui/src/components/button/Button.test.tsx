@@ -142,3 +142,46 @@ describe("Button", () => {
     expect(button).toHaveClass("dr-btn")
   })
 })
+
+describe("Button loading state", () => {
+  it("disables itself so the action cannot be fired twice", () => {
+    render(<Button loading>Save</Button>)
+    expect(screen.getByRole("button", { name: /save/i })).toBeDisabled()
+  })
+
+  it("announces itself as busy", () => {
+    render(<Button loading>Save</Button>)
+    expect(screen.getByRole("button", { name: /save/i })).toHaveAttribute(
+      "aria-busy",
+      "true",
+    )
+  })
+
+  it("keeps its label visible beside the spinner", () => {
+    render(<Button loading>Save</Button>)
+    expect(screen.getByRole("button", { name: /save/i })).toBeInTheDocument()
+  })
+
+  it("carries no busy state when idle", () => {
+    render(<Button>Save</Button>)
+    const button = screen.getByRole("button", { name: /save/i })
+    expect(button).not.toHaveAttribute("aria-busy")
+    expect(button).toBeEnabled()
+  })
+
+  it("stays disabled when disabled is passed explicitly", () => {
+    render(<Button disabled>Save</Button>)
+    expect(screen.getByRole("button", { name: /save/i })).toBeDisabled()
+  })
+
+  it("uses aria-disabled under asChild, where the child may take no disabled attribute", () => {
+    render(
+      <Button asChild loading>
+        <a href="/somewhere">Save</a>
+      </Button>,
+    )
+    const link = screen.getByRole("link", { name: /save/i })
+    expect(link).toHaveAttribute("aria-disabled", "true")
+    expect(link).toHaveAttribute("aria-busy", "true")
+  })
+})

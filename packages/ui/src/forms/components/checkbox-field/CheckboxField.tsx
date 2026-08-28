@@ -22,6 +22,7 @@ export function CheckboxField({
   label,
   description,
   disabled,
+  required,
 }: CheckboxFieldProps) {
   // `readOnly` is intentionally not threaded through here: a checkbox is a
   // boolean toggle, not a text field, so `readOnly` has no meaningful
@@ -41,13 +42,16 @@ export function CheckboxField({
           onCheckedChange={(checked) => onChange(checked === true)}
           onBlur={onBlur}
           aria-invalid={isInvalid}
+          aria-required={required || undefined}
           aria-describedby={ariaDescribedBy}
           disabled={disabled}
           className="dr-checkbox-field-control"
           data-has-description={hasDescription}
         />
         <div>
-          <FieldLabel htmlFor={name}>{label}</FieldLabel>
+          <FieldLabel htmlFor={name} required={required}>
+            {label}
+          </FieldLabel>
           {description && (
             <FieldDescription id={descriptionId}>
               {description}

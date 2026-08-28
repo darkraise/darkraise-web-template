@@ -78,17 +78,35 @@ function FieldContent({ className, ...props }: React.ComponentProps<"div">) {
 
 function FieldLabel({
   className,
+  required,
+  children,
   ...props
-}: React.ComponentProps<typeof Label>) {
+}: React.ComponentProps<typeof Label> & {
+  /** Marks the field as required, visually and for assistive technology. */
+  required?: boolean
+}) {
   return (
     <Label
       data-slot="field-label"
+      data-required={required ? "true" : undefined}
       className={cn(
         "dr-field-label group/field-label peer/field-label",
         className,
       )}
       {...props}
-    />
+    >
+      {children}
+      {required && (
+        <>
+          {/* The asterisk is decoration; screen readers get the word, since
+              "star" is not a requirement. */}
+          <span aria-hidden="true" className="dr-field-required-mark">
+            *
+          </span>
+          <span className="sr-only">(required)</span>
+        </>
+      )}
+    </Label>
   )
 }
 

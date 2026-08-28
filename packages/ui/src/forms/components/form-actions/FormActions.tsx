@@ -16,7 +16,10 @@ export function FormActions({
           {cancelLabel}
         </Button>
       )}
-      <Button type="submit" disabled={!canSubmit || isSubmitting}>
+      {/* `loading` rather than a bare `disabled`: swapping the label text was
+          the only signal before, and a label change on an unfocused button is
+          announced to nobody. */}
+      <Button type="submit" loading={isSubmitting} disabled={!canSubmit}>
         {isSubmitting ? submittingLabel : submitLabel}
       </Button>
     </div>

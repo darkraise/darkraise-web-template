@@ -119,6 +119,7 @@
 
 /* Form-component imports (manual; forms/ is outside the auto-scanner) */
 @import "../forms/components/form-fields.css";
+@import "../forms/components/form-error-summary/form-error-summary.css";
 
 /* Data-table component imports (manual; data-table/ is outside the auto-scanner) */
 @import "../data-table/data-table.css";
