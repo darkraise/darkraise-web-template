@@ -1,5 +1,6 @@
 import * as React from "react"
 import { useEvent } from "@primitives/state"
+import { useReducedMotion } from "@hooks/useReducedMotion"
 
 export type CarouselOrientation = "horizontal" | "vertical"
 export type CarouselAlign = "start" | "center" | "end"
@@ -21,7 +22,15 @@ export interface UseCarouselOptions {
   align?: CarouselAlign
   dragFree?: boolean
   startIndex?: number
-  autoplay?: { delay: number; pauseOnHover?: boolean }
+  autoplay?: {
+    delay: number
+    /**
+     * Pause while the pointer rests on the carousel. Defaults to `true`:
+     * content that advances out from under the reader is the failure mode,
+     * and opting out of that should be deliberate.
+     */
+    pauseOnHover?: boolean
+  }
 }
 
 export interface UseCarouselReturn {
@@ -36,6 +45,12 @@ export interface UseCarouselReturn {
   scrollTo: (index: number) => void
   api: CarouselApi
   registerHover: (hovered: boolean) => void
+  registerFocus: (focused: boolean) => void
+  /** Whether this carousel advances on a timer at all. */
+  hasAutoplay: boolean
+  /** Whether the user has explicitly stopped autoplay. */
+  autoplayStopped: boolean
+  toggleAutoplay: () => void
 }
 
 const DRAG_THRESHOLD_PX = 24
@@ -109,6 +124,10 @@ export function useCarousel(
   const [selectedIndex, setSelectedIndex] = React.useState(startIndex)
   const [slideCount, setSlideCount] = React.useState(0)
   const [hovered, setHovered] = React.useState(false)
+  const [focused, setFocused] = React.useState(false)
+  const [autoplayStopped, setAutoplayStopped] = React.useState(false)
+  const [documentHidden, setDocumentHidden] = React.useState(false)
+  const reducedMotion = useReducedMotion()
 
   const listenersRef = React.useRef({
     select: new Set<() => void>(),
@@ -289,16 +308,34 @@ export function useCarousel(
     }
   }, [axis, dragFree, scrollNext, scrollPrev, scrollToIndex, selectedIndex])
 
-  // Autoplay
+  // Content that advances on its own has to be stoppable, and has to stop by
+  // itself when the reader is plainly engaged with it — WCAG 2.2.2 is a Level A
+  // criterion and this timer previously honoured none of it: hover was the only
+  // brake, opt-in, and there was no control at all.
+  React.useEffect(() => {
+    if (typeof document === "undefined") return
+    const sync = () => setDocumentHidden(document.hidden)
+    sync()
+    document.addEventListener("visibilitychange", sync)
+    return () => document.removeEventListener("visibilitychange", sync)
+  }, [])
+
+  const autoplayPaused =
+    autoplayStopped ||
+    reducedMotion ||
+    documentHidden ||
+    focused ||
+    ((autoplay?.pauseOnHover ?? true) && hovered)
+
   React.useEffect(() => {
     if (!autoplay) return
-    if (autoplay.pauseOnHover && hovered) return
+    if (autoplayPaused) return
     if (slideCount <= 1) return
     const id = window.setInterval(() => {
       scrollNext()
     }, autoplay.delay)
     return () => window.clearInterval(id)
-  }, [autoplay, hovered, scrollNext, slideCount])
+  }, [autoplay, autoplayPaused, scrollNext, slideCount])
 
   const canScrollPrev = loop ? slideCount > 1 : selectedIndex > 0
   const canScrollNext = loop ? slideCount > 1 : selectedIndex < slideCount - 1
@@ -329,6 +366,8 @@ export function useCarousel(
   )
 
   const registerHover = useEvent((next: boolean) => setHovered(next))
+  const registerFocus = useEvent((next: boolean) => setFocused(next))
+  const toggleAutoplay = useEvent(() => setAutoplayStopped((prev) => !prev))
 
   return {
     viewportRef,
@@ -342,5 +381,9 @@ export function useCarousel(
     scrollTo: scrollToIndex,
     api,
     registerHover,
+    registerFocus,
+    hasAutoplay: autoplay !== undefined,
+    autoplayStopped,
+    toggleAutoplay,
   }
 }

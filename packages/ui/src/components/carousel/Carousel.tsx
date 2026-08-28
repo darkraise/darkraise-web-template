@@ -1,5 +1,5 @@
 import * as React from "react"
-import { ArrowLeft, ArrowRight } from "lucide-react"
+import { ArrowLeft, ArrowRight, Pause, Play } from "lucide-react"
 
 import { cn } from "@lib/utils"
 import { Button } from "@components/button"
@@ -50,6 +50,8 @@ function Carousel({
   ref,
   onMouseEnter,
   onMouseLeave,
+  onFocus,
+  onBlur,
   ...props
 }: React.HTMLAttributes<HTMLDivElement> &
   CarouselProps & {
@@ -94,6 +96,22 @@ function Carousel({
           carousel.registerHover(false)
           onMouseLeave?.(event)
         }}
+        onFocus={(event) => {
+          carousel.registerFocus(true)
+          onFocus?.(event)
+        }}
+        onBlur={(event) => {
+          // React's onBlur is the delegated focusout, so moving between two
+          // slides inside the carousel would otherwise read as leaving it.
+          if (
+            event.currentTarget.contains(event.relatedTarget as Node | null)
+          ) {
+            onBlur?.(event)
+            return
+          }
+          carousel.registerFocus(false)
+          onBlur?.(event)
+        }}
         className={cn("dr-carousel", className)}
         role="region"
         aria-roledescription="carousel"
@@ -102,6 +120,53 @@ function Carousel({
         {children}
       </div>
     </CarouselContext.Provider>
+  )
+}
+
+/**
+ * Stop/start control for an autoplaying carousel. Renders nothing when the
+ * carousel has no autoplay, so it is safe to place unconditionally.
+ *
+ * The automatic pauses — hover, focus, reduced motion, hidden tab — are not on
+ * their own a "mechanism to pause" in the WCAG sense, because none of them is
+ * a control the reader can find and operate. This is.
+ */
+function CarouselAutoplayToggle({
+  className,
+  labels,
+  ref,
+  onClick,
+  ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  /** Override the button's accessible names. */
+  labels?: { play: string; pause: string }
+  ref?: React.Ref<HTMLButtonElement>
+}) {
+  const ctx = useCarouselContext()
+  if (!ctx.hasAutoplay) return null
+
+  const play = labels?.play ?? "Start automatic slideshow"
+  const pause = labels?.pause ?? "Stop automatic slideshow"
+  const label = ctx.autoplayStopped ? play : pause
+
+  return (
+    <Button
+      ref={ref}
+      variant="ghost"
+      size="icon"
+      className={cn("dr-carousel-autoplay-toggle", className)}
+      aria-label={label}
+      data-stopped={ctx.autoplayStopped ? "true" : undefined}
+      onClick={(event) => {
+        onClick?.(event)
+        if (event.defaultPrevented) return
+        ctx.toggleAutoplay()
+      }}
+      {...props}
+    >
+      {ctx.autoplayStopped ? <Play /> : <Pause />}
+      <span className="sr-only">{label}</span>
+    </Button>
   )
 }
 
@@ -286,5 +351,6 @@ export {
   CarouselNext,
   CarouselIndicatorGroup,
   CarouselIndicator,
+  CarouselAutoplayToggle,
 }
 export type { CarouselIndicatorProps }

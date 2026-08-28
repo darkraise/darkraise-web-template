@@ -1,12 +1,13 @@
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { describe, it, expect, vi } from "vitest"
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselPrevious,
   CarouselNext,
+  CarouselAutoplayToggle,
   type CarouselApi,
 } from "@components/carousel"
 
@@ -109,5 +110,97 @@ describe("Carousel", () => {
     )
     const slide = screen.getByRole("group")
     expect(slide).toHaveAttribute("data-orientation", "vertical")
+  })
+})
+
+describe("Carousel autoplay is stoppable", () => {
+  function mockReducedMotion(reduce: boolean) {
+    Object.defineProperty(window, "matchMedia", {
+      writable: true,
+      configurable: true,
+      value: vi.fn((query: string) => ({
+        matches: query.includes("prefers-reduced-motion") ? reduce : false,
+        media: query,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      })),
+    })
+  }
+
+  function Autoplaying() {
+    return (
+      <Carousel autoplay={{ delay: 1000 }}>
+        <CarouselContent>
+          <CarouselItem>Slide 1</CarouselItem>
+          <CarouselItem>Slide 2</CarouselItem>
+        </CarouselContent>
+        <CarouselAutoplayToggle />
+      </Carousel>
+    )
+  }
+
+  beforeEach(() => {
+    mockReducedMotion(false)
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+    vi.restoreAllMocks()
+  })
+
+  it("offers a control, which is the part hover and focus cannot supply", () => {
+    render(<Autoplaying />)
+    expect(
+      screen.getByRole("button", { name: /stop automatic slideshow/i }),
+    ).toBeInTheDocument()
+  })
+
+  it("renders no control when the carousel does not autoplay", () => {
+    render(
+      <Carousel>
+        <CarouselContent>
+          <CarouselItem>Slide 1</CarouselItem>
+        </CarouselContent>
+        <CarouselAutoplayToggle />
+      </Carousel>,
+    )
+    expect(
+      screen.queryByRole("button", { name: /automatic slideshow/i }),
+    ).not.toBeInTheDocument()
+  })
+
+  it("flips the control's accessible name once stopped", async () => {
+    const user = userEvent.setup()
+    render(<Autoplaying />)
+    await user.click(
+      screen.getByRole("button", { name: /stop automatic slideshow/i }),
+    )
+    expect(
+      screen.getByRole("button", { name: /start automatic slideshow/i }),
+    ).toBeInTheDocument()
+  })
+
+  // Positive control: without this the "does not start" assertions below
+  // would pass just as happily if autoplay never ran in jsdom at all.
+  it("starts a timer when nothing is paused", () => {
+    const setInterval = vi.spyOn(window, "setInterval")
+    render(<Autoplaying />)
+    expect(setInterval).toHaveBeenCalled()
+  })
+  it("does not start a timer under reduced motion", () => {
+    mockReducedMotion(true)
+    const setInterval = vi.spyOn(window, "setInterval")
+    render(<Autoplaying />)
+    expect(setInterval).not.toHaveBeenCalled()
+  })
+
+  it("does not start a timer while focus is inside the carousel", async () => {
+    const user = userEvent.setup()
+    const setInterval = vi.spyOn(window, "setInterval")
+    render(<Autoplaying />)
+    setInterval.mockClear()
+    await user.tab()
+    expect(document.activeElement).not.toBe(document.body)
+    expect(setInterval).not.toHaveBeenCalled()
   })
 })
