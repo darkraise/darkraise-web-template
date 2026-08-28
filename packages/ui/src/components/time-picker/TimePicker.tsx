@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react"
 import { Clock } from "lucide-react"
 import { cn } from "@lib/utils"
+import { useReducedMotion } from "@hooks/useReducedMotion"
 import { Button } from "@components/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@components/popover"
 import { ScrollArea } from "@components/scroll-area"
@@ -39,6 +40,7 @@ function TimeColumn({
   const containerRef = useRef<HTMLDivElement>(null)
   const itemRefs = useRef<Map<string, HTMLButtonElement>>(new Map())
   const [inputValue, setInputValue] = useState(value)
+  const reducedMotion = useReducedMotion()
 
   useEffect(() => {
     setInputValue(value)
@@ -47,9 +49,12 @@ function TimeColumn({
   useEffect(() => {
     const el = itemRefs.current.get(value)
     if (el) {
-      el.scrollIntoView({ block: "nearest", behavior: "smooth" })
+      el.scrollIntoView({
+        block: "nearest",
+        behavior: reducedMotion ? "auto" : "smooth",
+      })
     }
-  }, [value])
+  }, [value, reducedMotion])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value.replace(/\D/g, "").slice(0, 2)

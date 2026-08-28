@@ -3,6 +3,7 @@ import { Button } from "@components/button"
 import { Portal } from "@primitives/portal"
 import { useFocusTrap } from "@primitives/focus-trap"
 import { useId } from "@primitives/state"
+import { useReducedMotion } from "@hooks/useReducedMotion"
 import { cn } from "@lib/utils"
 import "./tour.css"
 
@@ -55,6 +56,8 @@ function Tour({
     restoreFocus: true,
   })
 
+  const reducedMotion = useReducedMotion()
+
   React.useEffect(() => {
     if (!open || !step) return
     const target = document.querySelector<HTMLElement>(step.targetSelector)
@@ -62,7 +65,10 @@ function Tour({
       setRect(null)
       return
     }
-    target.scrollIntoView?.({ block: "center", behavior: "smooth" })
+    target.scrollIntoView?.({
+      block: "center",
+      behavior: reducedMotion ? "auto" : "smooth",
+    })
     const update = () => {
       const r = target.getBoundingClientRect()
       setRect({

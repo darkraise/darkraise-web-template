@@ -1,4 +1,5 @@
 export { useMediaQuery } from "./useMediaQuery"
+export { useReducedMotion } from "./useReducedMotion"
 export { useBreakpoint } from "./useBreakpoint"
 export { useSyncedRef } from "./useSyncedRef"
 export { useFirstMountState } from "./useFirstMountState"
