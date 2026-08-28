@@ -44,7 +44,10 @@ export function DataTableFacet<TData>({ column }: DataTableFacetProps<TData>) {
           className="dr-data-table-facet-trigger"
           aria-label={labels.dataTable.filterBy(title)}
         >
-          <ListFilter className="mr-2 size-[var(--icon-size)]" />
+          <ListFilter
+            className="mr-2 size-[var(--icon-size)]"
+            aria-hidden="true"
+          />
           {title}
           {selected.size > 0 && (
             <span className="dr-data-table-facet-count">{selected.size}</span>

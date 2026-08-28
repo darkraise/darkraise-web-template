@@ -1,6 +1,6 @@
 @layer components {
   .dr-btn {
-    @apply focus-ring-inset inline-flex cursor-pointer items-center justify-center gap-2 rounded-[var(--radius-button)] text-sm font-medium whitespace-nowrap transition-[background-image,background-color,border-color,color,text-decoration-color,box-shadow] duration-150 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size)] [&_svg]:shrink-0;
+    @apply focus-ring-inset inline-flex cursor-pointer items-center justify-center gap-2 rounded-[var(--radius-button)] text-sm font-medium whitespace-nowrap transition-[background-image,background-color,border-color,color,text-decoration-color,box-shadow] duration-150 disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size)] [&_svg]:shrink-0;
     position: relative;
     isolation: isolate;
     box-shadow: var(--glow-outer), var(--glow-inner);
@@ -13,6 +13,12 @@
   .dr-btn[data-loading] {
     opacity: 0.7;
   }
+
+  /* `cursor-not-allowed` rather than `pointer-events-none`: a native disabled
+     button ignores clicks by itself, so suppressing pointer events bought
+     nothing and cost the cursor — and with it any chance of a tooltip
+     explaining why the button is unavailable. The state layer below opts out
+     of :disabled explicitly, since hover can now reach it. */
 
   /* One wash for every variant, carried by a pseudo-element rather than a
      flood inset shadow.
@@ -37,11 +43,11 @@
     pointer-events: none;
     transition: opacity var(--state-layer-out) ease-out;
   }
-  .dr-btn:not([data-variant="link"]):hover::before {
+  .dr-btn:not([data-variant="link"]):not(:disabled):hover::before {
     opacity: var(--state-layer-hover);
     transition-duration: var(--state-layer-in);
   }
-  .dr-btn:not([data-variant="link"]):active::before {
+  .dr-btn:not([data-variant="link"]):not(:disabled):active::before {
     opacity: var(--state-layer-press);
     transition-duration: var(--state-layer-in);
   }

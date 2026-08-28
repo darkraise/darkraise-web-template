@@ -2179,6 +2179,65 @@ writes are already under
   }
 }
 
+/* Tap latency.
+
+   `touch-action: manipulation` opts an element out of the double-tap-to-zoom
+   gesture, which is what a browser waits for before dispatching a click. It is
+   only the legacy 300ms delay on viewports that do not set `width=device-width`
+   on modern engines, but it costs nothing and the kit was applying it to seven
+   drag surfaces and no ordinary controls.
+
+   Scoped to the kit's own interactive classes rather than a blanket `button,
+   a` so a consuming app's own elements are left to its own judgement. */
+@layer components {
+  .dr-btn,
+  .dr-menu-item,
+  .dr-menubar-item,
+  .dr-select-item,
+  .dr-command-item,
+  .dr-combobox-item,
+  .dr-listbox-item,
+  .dr-checkbox,
+  .dr-radio-group-item,
+  .dr-switch,
+  .dr-toggle,
+  .dr-tabs-trigger,
+  .dr-carousel-indicator,
+  .dr-pagination-link {
+    touch-action: manipulation;
+  }
+}
+
+/* Forced colours (Windows High Contrast).
+
+   The OS replaces the page's palette wholesale, and anything the kit draws
+   with `box-shadow` or a background — focus rings included — is simply
+   dropped. Borders and outlines survive, so the rule is to restate the two
+   things that must not disappear: the boundary of a control and the focus
+   indicator.
+
+   `Highlight` and `ButtonBorder` are system colour keywords, which is the only
+   palette that exists in this mode; a hex value here would be ignored. */
+@media (forced-colors: active) {
+  .dr-btn,
+  .dr-input,
+  .dr-textarea,
+  .dr-checkbox,
+  .dr-radio-group-item,
+  .dr-switch,
+  .dr-card,
+  .dr-dialog-content,
+  .dr-menu-content,
+  .dr-popover-content {
+    border: 1px solid ButtonBorder;
+  }
+
+  :focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+}
+
 /* Reduced motion, applied once for the whole kit.
 
    Every overlay in the library animates through tw-animate-css's

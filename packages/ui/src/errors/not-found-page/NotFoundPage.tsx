@@ -16,6 +16,7 @@ export function NotFoundPage() {
         <FileQuestion
           className="size-[var(--icon-size-3xl)]"
           strokeWidth={1.5}
+          aria-hidden="true"
         />
       }
       code="404"

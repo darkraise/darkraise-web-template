@@ -284,7 +284,10 @@ function CommandInput({
 
   return (
     <div className="dr-command-input-wrapper" cmdk-input-wrapper="">
-      <Search className="mr-2 size-[var(--icon-size)] shrink-0 opacity-50" />
+      <Search
+        className="mr-2 size-[var(--icon-size)] shrink-0 opacity-50"
+        aria-hidden="true"
+      />
       <input
         ref={(node) => {
           ctx.inputRef.current = node

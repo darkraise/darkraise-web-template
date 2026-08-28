@@ -27,7 +27,10 @@ export function ColumnVisibility<TData>({
           size="sm"
           className="dr-data-table-column-visibility-trigger"
         >
-          <SlidersHorizontal className="mr-2 size-[var(--icon-size)]" />
+          <SlidersHorizontal
+            className="mr-2 size-[var(--icon-size)]"
+            aria-hidden="true"
+          />
           {labels.dataTable.columns}
         </Button>
       </DropdownMenuTrigger>

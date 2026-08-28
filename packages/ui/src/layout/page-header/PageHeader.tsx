@@ -50,7 +50,7 @@ export function PageHeader({
         {actions && <div className="dr-page-header-actions">{actions}</div>}
       </div>
       {tabs && tabs.length > 0 && (
-        <nav className="dr-page-header-tabs">
+        <nav aria-label="Page sections" className="dr-page-header-tabs">
           {tabs.map((tab) => (
             <Link
               key={tab.value}

@@ -23,6 +23,7 @@ export function ErrorPage({ error, reset }: ErrorPageProps) {
         <TriangleAlert
           className="size-[var(--icon-size-3xl)]"
           strokeWidth={1.5}
+          aria-hidden="true"
         />
       }
       title={labels.errors.genericTitle}

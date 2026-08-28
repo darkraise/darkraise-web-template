@@ -75,7 +75,10 @@ export function DataTablePagination<TData>({
                 onClick={() => table.setPageIndex(0)}
                 disabled={!table.getCanPreviousPage()}
               >
-                <ChevronsLeft className="size-[var(--icon-size)]" />
+                <ChevronsLeft
+                  className="size-[var(--icon-size)]"
+                  aria-hidden="true"
+                />
               </Button>
             </PaginationItem>
             <PaginationItem>
@@ -86,7 +89,10 @@ export function DataTablePagination<TData>({
                 onClick={() => table.previousPage()}
                 disabled={!table.getCanPreviousPage()}
               >
-                <ChevronLeft className="size-[var(--icon-size)]" />
+                <ChevronLeft
+                  className="size-[var(--icon-size)]"
+                  aria-hidden="true"
+                />
               </Button>
             </PaginationItem>
             <PaginationItem>
@@ -97,7 +103,10 @@ export function DataTablePagination<TData>({
                 onClick={() => table.nextPage()}
                 disabled={!table.getCanNextPage()}
               >
-                <ChevronRight className="size-[var(--icon-size)]" />
+                <ChevronRight
+                  className="size-[var(--icon-size)]"
+                  aria-hidden="true"
+                />
               </Button>
             </PaginationItem>
             <PaginationItem>
@@ -110,7 +119,10 @@ export function DataTablePagination<TData>({
                 }
                 disabled={!table.getCanNextPage() || table.getPageCount() === 0}
               >
-                <ChevronsRight className="size-[var(--icon-size)]" />
+                <ChevronsRight
+                  className="size-[var(--icon-size)]"
+                  aria-hidden="true"
+                />
               </Button>
             </PaginationItem>
           </PaginationContent>

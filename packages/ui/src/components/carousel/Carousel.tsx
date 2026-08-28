@@ -164,7 +164,11 @@ function CarouselAutoplayToggle({
       }}
       {...props}
     >
-      {ctx.autoplayStopped ? <Play /> : <Pause />}
+      {ctx.autoplayStopped ? (
+        <Play aria-hidden="true" />
+      ) : (
+        <Pause aria-hidden="true" />
+      )}
       <span className="sr-only">{label}</span>
     </Button>
   )
@@ -252,7 +256,7 @@ function CarouselPrevious({
       onClick={ctx.scrollPrev}
       {...props}
     >
-      <ArrowLeft className="size-[var(--icon-size)]" />
+      <ArrowLeft className="size-[var(--icon-size)]" aria-hidden="true" />
       <span className="sr-only">Previous slide</span>
     </Button>
   )
@@ -278,7 +282,7 @@ function CarouselNext({
       onClick={ctx.scrollNext}
       {...props}
     >
-      <ArrowRight className="size-[var(--icon-size)]" />
+      <ArrowRight className="size-[var(--icon-size)]" aria-hidden="true" />
       <span className="sr-only">Next slide</span>
     </Button>
   )

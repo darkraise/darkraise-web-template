@@ -566,7 +566,9 @@ function ContextMenuCheckboxItem({
       {...rest}
     >
       <span className="absolute left-2 flex size-[var(--icon-size-sm)] items-center justify-center">
-        {isChecked ? <Check className="size-[var(--icon-size)]" /> : null}
+        {isChecked ? (
+          <Check className="size-[var(--icon-size)]" aria-hidden="true" />
+        ) : null}
       </span>
       {children}
     </ContextMenuItem>
@@ -628,7 +630,10 @@ function ContextMenuRadioItem({
     >
       <span className="absolute left-2 flex size-[var(--icon-size-sm)] items-center justify-center">
         {checked ? (
-          <Circle className="size-[calc(var(--icon-size)*0.5)] fill-current" />
+          <Circle
+            className="size-[calc(var(--icon-size)*0.5)] fill-current"
+            aria-hidden="true"
+          />
         ) : null}
       </span>
       {children}
@@ -780,7 +785,7 @@ function ContextMenuSubTrigger({
       {...rest}
     >
       {children}
-      <ChevronRight className="ml-auto" />
+      <ChevronRight className="ml-auto" aria-hidden="true" />
     </ContextMenuItem>
   )
 }

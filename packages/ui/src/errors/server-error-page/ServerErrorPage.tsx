@@ -16,6 +16,7 @@ export function ServerErrorPage() {
         <ServerCrash
           className="size-[var(--icon-size-3xl)]"
           strokeWidth={1.5}
+          aria-hidden="true"
         />
       }
       code="500"

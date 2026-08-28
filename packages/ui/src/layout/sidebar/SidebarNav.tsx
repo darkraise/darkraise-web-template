@@ -278,6 +278,7 @@ function CollapsibleSidebarItem({
           <ChevronRight
             className="dr-sidebar-nav-collapsible-chevron"
             data-open={open ? "true" : undefined}
+            aria-hidden="true"
           />
         </CollapsibleTrigger>
       </div>

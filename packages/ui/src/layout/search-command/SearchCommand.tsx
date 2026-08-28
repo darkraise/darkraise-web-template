@@ -74,13 +74,17 @@ export function SearchCommand({
         data-collapsed={collapsed ? "true" : undefined}
         onClick={() => setOpen(true)}
         aria-label={
-          collapsed ? labels.layout.searchWithShortcut(SHORTCUT_LABEL) : undefined
+          collapsed
+            ? labels.layout.searchWithShortcut(SHORTCUT_LABEL)
+            : undefined
         }
         title={
-          collapsed ? labels.layout.searchWithShortcut(SHORTCUT_LABEL) : undefined
+          collapsed
+            ? labels.layout.searchWithShortcut(SHORTCUT_LABEL)
+            : undefined
         }
       >
-        <Search className="size-[var(--icon-size)]" />
+        <Search className="size-[var(--icon-size)]" aria-hidden="true" />
         {!collapsed && (
           <>
             <span>{labels.layout.search}</span>

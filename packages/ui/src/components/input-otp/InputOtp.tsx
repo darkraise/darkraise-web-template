@@ -496,7 +496,7 @@ function InputOTPSeparator({ ref, ...props }: React.ComponentProps<"div">) {
       {/* Previously unsized, so it fell back to lucide's own 24px default.
           --icon-size-xl is that same 24px at scale 1, making the size
           explicit without changing how it renders today. */}
-      <Dot className="size-[var(--icon-size-xl)]" />
+      <Dot className="size-[var(--icon-size-xl)]" aria-hidden="true" />
     </div>
   )
 }

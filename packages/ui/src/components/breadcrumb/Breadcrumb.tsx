@@ -77,7 +77,7 @@ function BreadcrumbSeparator({
       className={cn("dr-breadcrumb-separator", className)}
       {...props}
     >
-      {children ?? <ChevronRight />}
+      {children ?? <ChevronRight aria-hidden="true" />}
     </li>
   )
 }
@@ -93,7 +93,7 @@ function BreadcrumbEllipsis({
       className={cn("dr-breadcrumb-ellipsis", className)}
       {...props}
     >
-      <MoreHorizontal className="size-[var(--icon-size)]" />
+      <MoreHorizontal className="size-[var(--icon-size)]" aria-hidden="true" />
       <span className="sr-only">More</span>
     </span>
   )

@@ -492,6 +492,9 @@ function FileUploadItemPreviewImage({
       ref={ref}
       src={url}
       alt={alt ?? file.name}
+      // A long upload list is mostly below the fold.
+      loading="lazy"
+      decoding="async"
       className={cn("dr-file-upload-item-preview-image", className)}
       {...props}
     />

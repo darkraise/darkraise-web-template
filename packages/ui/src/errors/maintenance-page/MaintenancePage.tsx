@@ -8,7 +8,11 @@ export function MaintenancePage() {
   return (
     <ErrorLayout
       icon={
-        <Wrench className="size-[var(--icon-size-3xl)]" strokeWidth={1.5} />
+        <Wrench
+          className="size-[var(--icon-size-3xl)]"
+          strokeWidth={1.5}
+          aria-hidden="true"
+        />
       }
       title={labels.errors.maintenanceTitle}
       description={labels.errors.maintenanceDescription}

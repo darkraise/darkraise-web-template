@@ -70,7 +70,16 @@ function TableHead({
 }: React.ThHTMLAttributes<HTMLTableCellElement> & {
   ref?: React.Ref<HTMLTableCellElement>
 }) {
-  return <th ref={ref} className={cn("dr-table-head", className)} {...props} />
+  return (
+    <th
+      ref={ref}
+      // Column is the right default for a header row; a caller putting a
+      // header in the first column of a row can pass scope="row" instead.
+      scope="col"
+      className={cn("dr-table-head", className)}
+      {...props}
+    />
+  )
 }
 
 function TableCell({

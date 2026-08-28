@@ -109,7 +109,7 @@ function Checkbox({
           className="dr-checkbox-indicator grid place-content-center text-current"
         >
           {(checked === true || isIndeterminate(checked)) && (
-            <Check className={checkIconSize[size]} />
+            <Check className={checkIconSize[size]} aria-hidden="true" />
           )}
         </span>
       </button>

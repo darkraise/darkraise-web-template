@@ -103,7 +103,10 @@ function CascadeSelect({
           className={cn("dr-cascade-trigger", className)}
         >
           <span>{label}</span>
-          <ChevronDown className="ml-auto size-[var(--icon-size)] opacity-60" />
+          <ChevronDown
+            className="ml-auto size-[var(--icon-size)] opacity-60"
+            aria-hidden="true"
+          />
         </Button>
       </PopoverTrigger>
       <PopoverContent
@@ -136,7 +139,10 @@ function CascadeSelect({
                   >
                     <span className="flex-1">{option.label}</span>
                     {option.children?.length ? (
-                      <ChevronRight className="size-[var(--icon-size)] opacity-60" />
+                      <ChevronRight
+                        className="size-[var(--icon-size)] opacity-60"
+                        aria-hidden="true"
+                      />
                     ) : null}
                   </li>
                 )

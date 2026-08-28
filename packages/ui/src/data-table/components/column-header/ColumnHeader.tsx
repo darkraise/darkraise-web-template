@@ -24,11 +24,20 @@ export function ColumnHeader<TData, TValue>({
     >
       {title}
       {column.getIsSorted() === "asc" ? (
-        <ArrowUp className="dr-data-table-column-header-icon" />
+        <ArrowUp
+          className="dr-data-table-column-header-icon"
+          aria-hidden="true"
+        />
       ) : column.getIsSorted() === "desc" ? (
-        <ArrowDown className="dr-data-table-column-header-icon" />
+        <ArrowDown
+          className="dr-data-table-column-header-icon"
+          aria-hidden="true"
+        />
       ) : (
-        <ArrowUpDown className="dr-data-table-column-header-icon" />
+        <ArrowUpDown
+          className="dr-data-table-column-header-icon"
+          aria-hidden="true"
+        />
       )}
     </Button>
   )

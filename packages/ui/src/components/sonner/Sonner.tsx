@@ -37,11 +37,20 @@ const DEFAULT_DURATION_BY_KIND: Record<ToastKind, number> = {
 
 const ICONS: Record<ToastKind, React.ReactNode> = {
   default: null,
-  success: <CircleCheck className="size-[var(--icon-size)]" />,
-  info: <Info className="size-[var(--icon-size)]" />,
-  warning: <TriangleAlert className="size-[var(--icon-size)]" />,
-  error: <OctagonX className="size-[var(--icon-size)]" />,
-  loading: <LoaderCircle className="size-[var(--icon-size)] animate-spin" />,
+  success: (
+    <CircleCheck className="size-[var(--icon-size)]" aria-hidden="true" />
+  ),
+  info: <Info className="size-[var(--icon-size)]" aria-hidden="true" />,
+  warning: (
+    <TriangleAlert className="size-[var(--icon-size)]" aria-hidden="true" />
+  ),
+  error: <OctagonX className="size-[var(--icon-size)]" aria-hidden="true" />,
+  loading: (
+    <LoaderCircle
+      className="size-[var(--icon-size)] animate-spin"
+      aria-hidden="true"
+    />
+  ),
 }
 
 interface ToasterProps {
@@ -461,7 +470,7 @@ function ToastItem({
               className="dr-toast-close"
               onClick={close}
             >
-              <X />
+              <X aria-hidden="true" />
             </button>
           </>
         )}

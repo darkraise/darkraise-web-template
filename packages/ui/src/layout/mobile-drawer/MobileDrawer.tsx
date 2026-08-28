@@ -54,7 +54,7 @@ export function MobileDrawer({
           size="icon"
           className="dr-mobile-drawer-trigger"
         >
-          <Menu className="size-[var(--icon-size-lg)]" />
+          <Menu className="size-[var(--icon-size-lg)]" aria-hidden="true" />
           <span className="sr-only">{triggerLabel}</span>
         </Button>
       </SheetTrigger>

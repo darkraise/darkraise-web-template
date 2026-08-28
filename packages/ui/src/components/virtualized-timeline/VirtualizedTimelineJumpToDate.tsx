@@ -43,7 +43,7 @@ export function VirtualizedTimelineJumpToDate({
         data-variant="outline"
         data-size="sm"
       >
-        <CalendarDays />
+        <CalendarDays aria-hidden="true" />
         Jump to date
       </DatePickerTrigger>
       <DatePickerContent>

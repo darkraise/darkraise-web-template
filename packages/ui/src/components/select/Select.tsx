@@ -654,7 +654,9 @@ function SelectItem({
       {...rest}
     >
       <span className="absolute left-2 flex size-[var(--icon-size-sm)] items-center justify-center">
-        {selected ? <Check className="size-[var(--icon-size)]" /> : null}
+        {selected ? (
+          <Check className="size-[var(--icon-size)]" aria-hidden="true" />
+        ) : null}
       </span>
       <SelectItemContext.Provider value={itemCtx}>
         <SelectItemText>{children}</SelectItemText>

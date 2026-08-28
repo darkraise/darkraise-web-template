@@ -1,3 +1,4 @@
+import * as React from "react"
 import { useControllableState, useEvent, useId } from "@primitives/state"
 
 export type DialogRole = "dialog" | "alertdialog"
@@ -21,6 +22,13 @@ export interface UseDialogReturn {
   contentId: string
   titleId: string
   descriptionId: string
+  /**
+   * Whether a <DialogDescription> is mounted. The content element can only
+   * point `aria-describedby` at the description once one exists — otherwise
+   * every dialog without a description carries a dangling IDREF.
+   */
+  hasDescription: boolean
+  registerDescription: (present: boolean) => void
 }
 
 export function useDialog(options: UseDialogOptions = {}): UseDialogReturn {
@@ -42,6 +50,10 @@ export function useDialog(options: UseDialogOptions = {}): UseDialogReturn {
   const contentId = useId()
   const titleId = useId()
   const descriptionId = useId()
+  const [descriptionCount, setDescriptionCount] = React.useState(0)
+  const registerDescription = React.useCallback((present: boolean) => {
+    setDescriptionCount((count) => count + (present ? 1 : -1))
+  }, [])
 
   const toggle = useEvent(() => setOpen(!open))
 
@@ -56,5 +68,7 @@ export function useDialog(options: UseDialogOptions = {}): UseDialogReturn {
     contentId,
     titleId,
     descriptionId,
+    hasDescription: descriptionCount > 0,
+    registerDescription,
   }
 }

@@ -121,7 +121,10 @@ function MultiSelect({
                       (multi-select.css) is a fixed h-4 w-4 slot that does
                       not follow the font-size axis; the token's growth
                       leaves almost no margin at large/extra-large. */}
-                  <X className="size-[var(--icon-size-xs)]" />
+                  <X
+                    className="size-[var(--icon-size-xs)]"
+                    aria-hidden="true"
+                  />
                 </button>
               </span>
             )
@@ -133,10 +136,13 @@ function MultiSelect({
         </div>
         <div className="dr-multi-select-end">
           <ComboboxClearTrigger className="dr-multi-select-clear">
-            <X className="size-[var(--icon-size)]" />
+            <X className="size-[var(--icon-size)]" aria-hidden="true" />
           </ComboboxClearTrigger>
           <ComboboxTrigger className="dr-multi-select-toggle">
-            <ChevronDown className="size-[var(--icon-size)]" />
+            <ChevronDown
+              className="size-[var(--icon-size)]"
+              aria-hidden="true"
+            />
           </ComboboxTrigger>
         </div>
       </ComboboxControl>
@@ -150,7 +156,7 @@ function MultiSelect({
                     is a fixed h-4 w-4 slot that does not follow the
                     font-size axis. A scaling token would overflow it at
                     large/extra-large. */}
-                <Check className="size-[var(--icon-size)]" />
+                <Check className="size-[var(--icon-size)]" aria-hidden="true" />
               </ComboboxItemIndicator>
             </ComboboxItem>
           ))}

@@ -71,6 +71,14 @@ function AvatarImage({
     <img
       ref={ref}
       src={src}
+      // AvatarFallback already carries the initials or icon, so the image is
+      // decorative by default. Without this an <img> with no alt announces
+      // its filename.
+      alt=""
+      // Avatars are small and often numerous — a table of them costs a
+      // request each above the fold otherwise.
+      loading="lazy"
+      decoding="async"
       className={cn("dr-avatar-image", className)}
       {...props}
     />

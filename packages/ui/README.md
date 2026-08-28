@@ -5,6 +5,55 @@ layout variants. Components ship with no runtime UI dependencies — no
 Radix UI, all primitives implemented in-house — and are styled with
 Tailwind CSS 4.
 
+## Accessibility
+
+The kit does the parts a component library can do on its own, and names the
+parts it cannot.
+
+**Handled for you.** Dialog, AlertDialog, Sheet and Drawer trap focus, restore
+it on close, lock page scroll and wire `aria-modal` / `aria-labelledby`.
+Slider implements the full ARIA slider pattern including Home, End and
+PageUp/PageDown. Progress, Spinner and the toast stack carry correct live-region
+semantics. Menus, selects, comboboxes and the command palette draw a real focus
+ring rather than relying on a background tint. Every pointer target clears the
+WCAG 2.2 minimum of 24x24 CSS px, small controls via a transparent hit area that
+leaves their visual size alone. Colour contrast is computed rather than eyeballed
+— muted text targets 7:1, and focus, primary and status colours are unit-tested
+at 3:1 or better across every accent in both modes.
+
+**Motion.** A single guard in `theme.css` neutralises animation and transition
+duration under `prefers-reduced-motion`. Motion that CSS cannot reach — smooth
+scrolling, Carousel autoplay — reads the preference through the exported
+`useReducedMotion` hook.
+
+**Your part.**
+
+- `<ChartContainer description="...">` — a chart is a picture of data with no
+  text alternative of its own, and recharts exposes values only on hover. Write
+  the insight, not the chart type. `loading` and `empty` replace the axis frame
+  recharts would otherwise draw over an empty dataset.
+- `<CarouselAutoplayToggle />` — autoplay pauses on hover, focus, a hidden tab
+  and reduced motion, but WCAG 2.2.2 asks for a control the reader can operate.
+  Place one whenever you pass `autoplay`. It renders nothing when you do not.
+- `<FormErrorSummary errors={...} submitCount={...} />` — inline field errors
+  stay where they are; this focuses a linked summary after a failed submit.
+- `required` on a field marks the label and sets `aria-required` on the control.
+- Router adapters must put `aria-current="page"` on the active link. Routers
+  that do this themselves (TanStack Router among them) satisfy it as long as
+  your adapter spreads its remaining props onto the anchor.
+- `<Button loading>` disables the button, marks it `aria-busy` and shows a
+  spinner. Under `asChild` the spinner is not injected — Slot renders a single
+  child — but the semantics still apply.
+- Layouts move focus to `<main id="main-content">` after a route change. Use
+  `useRouteFocus` directly if you compose your own layout.
+
+## Dialog sizing and overflow
+
+`DialogContent` caps its height at the viewport and scrolls internally.
+Rendering a `<DialogBody>` switches to a pinned layout where the header and
+footer hold still and only the body scrolls. `size` takes `sm | default | lg |
+xl | full`; `default` is the historical width.
+
 ## Translating component text
 
 Components render English by default. To supply your own strings, mount

@@ -207,7 +207,10 @@ function DialogContentImpl({
         id={ctx.contentId}
         aria-modal={ctx.modal ? "true" : undefined}
         aria-labelledby={ctx.titleId}
-        aria-describedby={ctx.descriptionId}
+        // Only when a <DialogDescription> is actually rendered — most
+        // dialogs have none, and pointing at a missing id leaves a dangling
+        // IDREF on every one of them.
+        aria-describedby={ctx.hasDescription ? ctx.descriptionId : undefined}
         data-state={ctx.state}
         data-size={size}
         data-surface-intensity={surfaceIntensity}
@@ -319,6 +322,11 @@ function DialogDescription({
   ...props
 }: DialogDescriptionProps) {
   const ctx = useDialogContext("DialogDescription")
+  const { registerDescription } = ctx
+  React.useEffect(() => {
+    registerDescription(true)
+    return () => registerDescription(false)
+  }, [registerDescription])
   return (
     <p
       ref={ref}

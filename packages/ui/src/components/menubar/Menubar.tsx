@@ -755,7 +755,9 @@ function MenubarCheckboxItem({
       {...rest}
     >
       <span className="absolute left-2 flex size-[var(--icon-size-sm)] items-center justify-center">
-        {isChecked ? <Check className="size-[var(--icon-size)]" /> : null}
+        {isChecked ? (
+          <Check className="size-[var(--icon-size)]" aria-hidden="true" />
+        ) : null}
       </span>
       {children}
     </MenubarItem>
@@ -814,7 +816,10 @@ function MenubarRadioItem({
     >
       <span className="absolute left-2 flex size-[var(--icon-size-sm)] items-center justify-center">
         {checked ? (
-          <Circle className="size-[calc(var(--icon-size)*0.5)] fill-current" />
+          <Circle
+            className="size-[calc(var(--icon-size)*0.5)] fill-current"
+            aria-hidden="true"
+          />
         ) : null}
       </span>
       {children}
@@ -946,7 +951,10 @@ function MenubarSubTrigger({
       {...rest}
     >
       {children}
-      <ChevronRight className="ml-auto size-[var(--icon-size)]" />
+      <ChevronRight
+        className="ml-auto size-[var(--icon-size)]"
+        aria-hidden="true"
+      />
     </MenubarItem>
   )
 }

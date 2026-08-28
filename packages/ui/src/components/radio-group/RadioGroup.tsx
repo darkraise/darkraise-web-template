@@ -176,6 +176,7 @@ function RadioGroupItem({
                 "fill-current text-current",
                 radioIndicatorSizeClass[size],
               )}
+              aria-hidden="true"
             />
           </span>
         )}

@@ -56,20 +56,20 @@ export function UserMenu({
         )}
         {onProfile && (
           <DropdownMenuItem onClick={onProfile}>
-            <User className="dr-user-menu-item-icon" />
+            <User className="dr-user-menu-item-icon" aria-hidden="true" />
             {labels.userMenu.profile}
           </DropdownMenuItem>
         )}
         {onSettings && (
           <DropdownMenuItem onClick={onSettings}>
-            <Settings className="dr-user-menu-item-icon" />
+            <Settings className="dr-user-menu-item-icon" aria-hidden="true" />
             {labels.userMenu.settings}
           </DropdownMenuItem>
         )}
         {(onProfile || onSettings) && onLogout && <DropdownMenuSeparator />}
         {onLogout && (
           <DropdownMenuItem onClick={onLogout}>
-            <LogOut className="dr-user-menu-item-icon" />
+            <LogOut className="dr-user-menu-item-icon" aria-hidden="true" />
             {labels.userMenu.logout}
           </DropdownMenuItem>
         )}

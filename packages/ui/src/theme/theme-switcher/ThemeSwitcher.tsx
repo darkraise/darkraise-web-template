@@ -56,7 +56,7 @@ export function ThemeSwitcher({
     >
       <PopoverTrigger asChild>
         <Button variant="ghost" size="icon">
-          <Palette className="size-[var(--icon-size)]" />
+          <Palette className="size-[var(--icon-size)]" aria-hidden="true" />
           <span className="sr-only">{resolvedTriggerLabel}</span>
         </Button>
       </PopoverTrigger>

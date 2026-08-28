@@ -999,6 +999,7 @@ export function VirtualizedTimeline<T>({
                 <ChevronDown
                   className="dr-virtualized-timeline-disclosure"
                   data-collapsed={collapsed ? "true" : undefined}
+                  aria-hidden="true"
                 />
               </Button>
             ) : null}

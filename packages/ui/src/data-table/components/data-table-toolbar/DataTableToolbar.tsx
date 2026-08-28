@@ -41,7 +41,7 @@ export function DataTableToolbar<TData>({
             onClick={() => table.resetColumnFilters()}
           >
             {labels.dataTable.reset}
-            <X className="ml-2 size-[var(--icon-size)]" />
+            <X className="ml-2 size-[var(--icon-size)]" aria-hidden="true" />
           </Button>
         )}
       </div>

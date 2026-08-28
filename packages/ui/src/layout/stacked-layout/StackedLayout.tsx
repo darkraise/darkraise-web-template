@@ -50,7 +50,7 @@ export function StackedLayout({
           {/* Icon sidebar */}
           <aside className="dr-stacked-layout-rail">
             <div className="dr-stacked-layout-rail-logo" />
-            <nav className="dr-stacked-layout-rail-nav">
+            <nav aria-label="Primary" className="dr-stacked-layout-rail-nav">
               {nav.map((group, gi) => {
                 const firstItem = group.items[0]
                 if (!firstItem) return null
@@ -94,7 +94,10 @@ export function StackedLayout({
                 </div>
               )}
               <div className="dr-stacked-layout-aside-scroll">
-                <nav className="dr-stacked-layout-aside-nav">
+                <nav
+                  aria-label="Secondary"
+                  className="dr-stacked-layout-aside-nav"
+                >
                   {activeGroup.items.map((item) => (
                     <SidebarItem key={item.href} item={item} />
                   ))}
