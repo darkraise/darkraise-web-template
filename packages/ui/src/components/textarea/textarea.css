@@ -55,4 +55,14 @@
     box-shadow: none;
     opacity: 0.5;
   }
+
+  /* Read-only is not disabled: the value is legible, selectable and
+     focusable, it simply cannot be edited. Reusing the disabled treatment
+     (half opacity, not-allowed cursor) says the opposite, and the two states
+     were indistinguishable here before. The well-coloured fill reads as
+     "fixed" while text stays at full contrast. */
+  .dr-textarea:read-only {
+    background-color: hsl(var(--muted));
+    cursor: default;
+  }
 }

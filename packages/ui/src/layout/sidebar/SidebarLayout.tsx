@@ -7,6 +7,7 @@ import { BrandLogo } from "@layout/brand-logo"
 import { LayoutHeader } from "@layout/layout-header"
 import { SearchCommand } from "@layout/search-command"
 import { SkipLink } from "@layout/skip-link"
+import { useRouteFocus } from "@layout/useRouteFocus"
 import { flattenNavItems } from "@layout/navTree"
 import { SidebarNav } from "./SidebarNav"
 import { resolveActiveBar } from "./sidebar-active-bar"
@@ -58,6 +59,7 @@ export function SidebarLayout({
   onLogout,
 }: SidebarLayoutProps) {
   const labels = useUiLabels()
+  useRouteFocus()
   const [collapsed, setCollapsed] = useState(false)
   // Defaults to unset so nobody's sidebar changes appearance unless they ask:
   // each preset renders its own default indicator until the control below

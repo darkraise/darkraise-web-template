@@ -80,4 +80,27 @@
   .dr-sheet-content[data-side="right"] {
     @apply data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-sm;
   }
+
+  /* Safe areas. An edge-anchored surface on a phone lands under the notch or
+     the gesture home indicator, which puts its last row of controls somewhere
+     the user cannot reliably tap. `env()` resolves to 0 everywhere else, so
+     this costs nothing on desktop. */
+  .dr-sheet-content[data-side="bottom"] {
+    padding-bottom: max(
+      var(--density-container-p),
+      env(safe-area-inset-bottom)
+    );
+  }
+
+  .dr-sheet-content[data-side="top"] {
+    padding-top: max(var(--density-container-p), env(safe-area-inset-top));
+  }
+
+  .dr-sheet-content[data-side="left"] {
+    padding-left: max(var(--density-container-p), env(safe-area-inset-left));
+  }
+
+  .dr-sheet-content[data-side="right"] {
+    padding-right: max(var(--density-container-p), env(safe-area-inset-right));
+  }
 }

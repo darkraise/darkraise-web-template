@@ -42,3 +42,5 @@ export type {
   TabItem,
   PageHeaderProps,
 } from "./types"
+export { useRouteFocus } from "./useRouteFocus"
+export type { UseRouteFocusOptions } from "./useRouteFocus"

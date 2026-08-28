@@ -308,4 +308,14 @@
       transform: scaleX(0);
     }
   }
+
+  /* Toasts are fixed to the viewport corners, so on a phone the bottom
+     stack overlaps the gesture bar and its action button becomes a gamble. */
+  .dr-toaster[data-position^="bottom"] {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .dr-toaster[data-position^="top"] {
+    padding-top: env(safe-area-inset-top);
+  }
 }

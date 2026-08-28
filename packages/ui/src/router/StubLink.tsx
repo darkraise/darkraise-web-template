@@ -10,12 +10,14 @@ export function StubLink({
   style,
   children,
   onClick,
+  "aria-current": ariaCurrent,
 }: RouterLinkProps) {
   return (
     <a
       href={to}
       className={className}
       style={style}
+      aria-current={ariaCurrent}
       onClick={(event) => {
         onClick?.(event)
         if (event.defaultPrevented) return

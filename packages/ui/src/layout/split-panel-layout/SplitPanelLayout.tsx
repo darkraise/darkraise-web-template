@@ -4,6 +4,7 @@ import { SearchCommand } from "@layout/search-command"
 import { BrandLogo } from "@layout/brand-logo"
 import { LayoutHeader } from "@layout/layout-header"
 import { SkipLink } from "@layout/skip-link"
+import { useRouteFocus } from "@layout/useRouteFocus"
 import { flattenNavItems } from "@layout/navTree"
 import type { LayoutProps } from "@layout/types"
 import type { CSSProperties, ReactNode } from "react"
@@ -33,6 +34,7 @@ export function SplitPanelLayout({
   maxPanelWidth = 480,
 }: SplitPanelLayoutProps) {
   const [panelWidth, setPanelWidth] = useState(defaultPanelWidth)
+  useRouteFocus()
   const [isDragging, setIsDragging] = useState(false)
   const docRef = useRef(typeof document !== "undefined" ? document : null)
   const bodyRef = useRef<HTMLDivElement | null>(null)

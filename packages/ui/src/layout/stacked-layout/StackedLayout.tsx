@@ -8,6 +8,7 @@ import {
 } from "@components/tooltip"
 import { LayoutHeader } from "@layout/layout-header"
 import { SkipLink } from "@layout/skip-link"
+import { useRouteFocus } from "@layout/useRouteFocus"
 import { coversPath } from "@layout/navTree"
 import type { LayoutProps } from "@layout/types"
 
@@ -25,6 +26,7 @@ export function StackedLayout({
   onLogout,
 }: LayoutProps) {
   const { Link, usePathname } = useRouterAdapter()
+  useRouteFocus()
   const currentPath = usePathname()
 
   const activeGroupIndex = nav.findIndex((group) =>
@@ -62,6 +64,10 @@ export function StackedLayout({
                         to={firstItem.href}
                         className="dr-sidebar-nav-item dr-stacked-layout-rail-item"
                         data-status={isActive ? "active" : undefined}
+                        // This layout resolves active state itself, so it
+                        // states the current page rather than relying on
+                        // the router adapter to do it.
+                        aria-current={isActive ? "page" : undefined}
                       >
                         {Icon && (
                           <Icon className="size-[var(--icon-size-lg)]" />

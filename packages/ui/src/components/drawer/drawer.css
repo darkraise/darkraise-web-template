@@ -75,4 +75,13 @@
   .dr-drawer-description {
     @apply text-muted-foreground text-sm;
   }
+
+  /* See sheet.css — an edge-anchored surface has to clear the gesture bar. */
+  .dr-drawer-content[data-direction="bottom"] {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .dr-drawer-content[data-direction="top"] {
+    padding-top: env(safe-area-inset-top);
+  }
 }
