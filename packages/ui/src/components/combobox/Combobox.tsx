@@ -593,8 +593,22 @@ function ComboboxItem({
 
 export type ComboboxItemTextProps = React.HTMLAttributes<HTMLSpanElement>
 
-function ComboboxItemText({ className, ...props }: ComboboxItemTextProps) {
-  return <span className={cn("dr-combobox-item-text", className)} {...props} />
+function ComboboxItemText({
+  className,
+  children,
+  ...props
+}: ComboboxItemTextProps) {
+  return (
+    <span
+      // Truncated by CSS; `title` surfaces the full option on hover. Only a
+      // plain string can be mirrored — anything richer has no text to show.
+      title={typeof children === "string" ? children : undefined}
+      className={cn("dr-combobox-item-text", className)}
+      {...props}
+    >
+      {children}
+    </span>
+  )
 }
 
 export type ComboboxItemIndicatorProps = React.HTMLAttributes<HTMLSpanElement>

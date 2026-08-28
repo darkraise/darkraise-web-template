@@ -296,6 +296,41 @@ export function useFloatingPanel(options: UseFloatingPanelOptions) {
     if (!maximized && minimized) setMinimized(false)
     setMaximized(!maximized)
   })
+  /* Keyboard equivalents for the two pointer gestures.
+
+     WCAG 2.5.7 asks for a single-pointer or keyboard path for every
+     author-controlled drag, and this panel had neither: moving and resizing
+     were pointer-only. These take deltas rather than absolute values so the
+     drag handle can drive them straight from an arrow key, and they clamp
+     against the same bounds and size limits the pointer path uses so the two
+     routes cannot disagree about where a panel is allowed to be. */
+  const moveBy = useEvent((dx: number, dy: number) => {
+    if (pinned || maximized) return
+    const bounds = options.getBounds?.()
+    let nextX = position.x + dx
+    let nextY = position.y + dy
+    if (bounds) {
+      const maxX = bounds.width - size.width
+      const maxY = bounds.height - size.height
+      nextX = maxX < 0 ? 0 : Math.max(0, Math.min(maxX, nextX))
+      nextY = maxY < 0 ? 0 : Math.max(0, Math.min(maxY, nextY))
+    }
+    setPosition({ x: nextX, y: nextY })
+  })
+
+  const resizeBy = useEvent((dw: number, dh: number) => {
+    if (pinned || maximized) return
+    const bounds = options.getBounds?.()
+    // Grows from the south-east corner, matching the default resize direction,
+    // so the panel's top-left stays put and no position change is needed.
+    const upperW = bounds ? Math.min(maxW, bounds.width - position.x) : maxW
+    const upperH = bounds ? Math.min(maxH, bounds.height - position.y) : maxH
+    setSize({
+      width: Math.min(upperW, Math.max(minW, size.width + dw)),
+      height: Math.min(upperH, Math.max(minH, size.height + dh)),
+    })
+  })
+
   const togglePinned = useEvent(() => setPinned(!pinned))
 
   return {
@@ -308,6 +343,8 @@ export function useFloatingPanel(options: UseFloatingPanelOptions) {
     zOrder,
     beginDrag,
     beginResize,
+    moveBy,
+    resizeBy,
     setOpen,
     setMinimized,
     setMaximized,

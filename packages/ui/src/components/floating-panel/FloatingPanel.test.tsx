@@ -853,3 +853,49 @@ describe('FloatingPanel scope="app"', () => {
     expect(getByTestId("props").textContent).toBe(JSON.stringify({ v: 42 }))
   })
 })
+
+describe("FloatingPanel keyboard drag alternative", () => {
+  function panel() {
+    return (
+      <FloatingPanel
+        defaultOpen
+        defaultPosition={{ x: 100, y: 100 }}
+        defaultSize={{ width: 300, height: 200 }}
+      >
+        <FloatingPanelContent>
+          <FloatingPanelHeader>
+            <FloatingPanelDragHandle />
+          </FloatingPanelHeader>
+        </FloatingPanelContent>
+      </FloatingPanel>
+    )
+  }
+
+  it("exposes the handle as a real control, not presentational", () => {
+    render(panel())
+    // role="presentation" discards the aria-label it was carrying, so the
+    // handle previously announced nothing and could not be reached at all.
+    const handle = screen.getByRole("button", { name: /move panel/i })
+    expect(handle).toHaveAttribute("tabindex", "0")
+  })
+
+  it("moves the panel with arrow keys", async () => {
+    const user = userEvent.setup()
+    render(panel())
+    const handle = screen.getByRole("button", { name: /move panel/i })
+    handle.focus()
+    await user.keyboard("{ArrowRight}")
+    const surface = handle.closest(".dr-floating-panel") as HTMLElement
+    expect(surface.style.left).toBe("110px")
+  })
+
+  it("resizes with shift and arrow keys", async () => {
+    const user = userEvent.setup()
+    render(panel())
+    const handle = screen.getByRole("button", { name: /move panel/i })
+    handle.focus()
+    await user.keyboard("{Shift>}{ArrowRight}{/Shift}")
+    const surface = handle.closest(".dr-floating-panel") as HTMLElement
+    expect(surface.style.width).toBe("310px")
+  })
+})

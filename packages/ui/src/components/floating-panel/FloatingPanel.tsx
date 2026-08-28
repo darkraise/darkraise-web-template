@@ -23,6 +23,8 @@ import "./floating-panel.css"
 interface FloatingPanelContextValue {
   beginDrag: (event: PointerEvent) => void
   beginResize: (event: PointerEvent, direction: ResizeDirection) => void
+  moveBy: (dx: number, dy: number) => void
+  resizeBy: (dw: number, dh: number) => void
   minimized: boolean
   maximized: boolean
   pinned: boolean
@@ -194,6 +196,8 @@ function FloatingPanelImpl({
     () => ({
       beginDrag: machine.beginDrag,
       beginResize: machine.beginResize,
+      moveBy: machine.moveBy,
+      resizeBy: machine.resizeBy,
       minimized: machine.minimized,
       maximized: machine.maximized,
       pinned: machine.pinned,
@@ -205,6 +209,8 @@ function FloatingPanelImpl({
     [
       machine.beginDrag,
       machine.beginResize,
+      machine.moveBy,
+      machine.resizeBy,
       machine.minimized,
       machine.maximized,
       machine.pinned,
@@ -394,16 +400,48 @@ function FloatingPanelHeader({
   )
 }
 
+/** Distance one arrow press moves or resizes the panel, in CSS px. */
+const KEYBOARD_STEP = 10
+/** Coarse step, for crossing a screen without holding the key down. */
+const KEYBOARD_STEP_COARSE = 50
+
 function FloatingPanelDragHandle({
   className,
-  "aria-label": ariaLabel = "Drag to move",
+  "aria-label":
+    ariaLabel = "Move panel. Arrow keys move, shift and arrow keys resize.",
+  onKeyDown,
   ...rest
 }: Omit<React.HTMLAttributes<HTMLSpanElement>, "children">) {
+  const ctx = useCtx("FloatingPanelDragHandle")
+
   return (
     <span
-      role="presentation"
+      // Was `role="presentation"` with an aria-label, which the presentation
+      // role discards — so the label announced nothing and the handle was not
+      // reachable at all. Moving and resizing were pointer-only, which WCAG
+      // 2.5.7 does not allow for an author-controlled drag.
+      role="button"
+      tabIndex={ctx.pinned || ctx.maximized ? -1 : 0}
       aria-label={ariaLabel}
+      aria-disabled={ctx.pinned || ctx.maximized || undefined}
       className={cn("dr-floating-panel-drag-handle", className)}
+      onKeyDown={(event: React.KeyboardEvent<HTMLSpanElement>) => {
+        onKeyDown?.(event)
+        if (event.defaultPrevented) return
+        const step = event.altKey ? KEYBOARD_STEP_COARSE : KEYBOARD_STEP
+        const deltas: Record<string, readonly [number, number]> = {
+          ArrowLeft: [-1, 0],
+          ArrowRight: [1, 0],
+          ArrowUp: [0, -1],
+          ArrowDown: [0, 1],
+        }
+        const delta = deltas[event.key]
+        if (!delta) return
+        event.preventDefault()
+        const [x, y] = delta
+        if (event.shiftKey) ctx.resizeBy(x * step, y * step)
+        else ctx.moveBy(x * step, y * step)
+      }}
       {...rest}
     >
       <GripVertical aria-hidden="true" />

@@ -383,7 +383,14 @@ function TagsInputItemText({
 }: TagsInputItemTextProps) {
   const item = useTagsInputItemContext("TagsInputItemText")
   return (
-    <span className={cn("dr-tags-input-item-text", className)} {...props}>
+    <span
+      // Truncated by CSS; `title` surfaces the full value on hover. The
+      // complete string stays in the DOM, so screen readers are unaffected
+      // either way — only the painting is clipped.
+      title={children === undefined ? item.value : undefined}
+      className={cn("dr-tags-input-item-text", className)}
+      {...props}
+    >
       {children ?? item.value}
     </span>
   )

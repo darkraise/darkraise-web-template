@@ -512,6 +512,10 @@ function FileUploadItemName({
   return (
     <span
       ref={ref}
+      // Truncated by CSS; `title` surfaces the full value on hover. The
+      // complete string stays in the DOM, so screen readers are unaffected
+      // either way — only the painting is clipped.
+      title={children === undefined ? file.name : undefined}
       className={cn("dr-file-upload-item-name", className)}
       {...props}
     >

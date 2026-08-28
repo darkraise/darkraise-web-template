@@ -2154,37 +2154,6 @@
   }
 }
 
-/* Reduced motion, applied once for the whole kit.
-
-   Every overlay in the library animates through tw-animate-css's
-   `animate-in` / `animate-out` keyframes, and that package ships no
-   reduced-motion guard of its own — so without this block Dialog, Sheet,
-   Drawer, AlertDialog, Popover, HoverCard, every menu surface, Toast,
-   Accordion, Collapsible, Tabs and Tour all animated regardless of the
-   preference. Before this, exactly four places in the kit honoured it.
-
-   `!important` is deliberate and is the one place the kit uses it. A
-   universal selector sits at specificity 0,0,0 and loses to every component
-   rule it needs to neutralise; there is no selector that wins this on
-   specificity alone. This is the canonical pattern for the guard.
-
-   Kept unlayered and last so it also outranks anything in @layer overrides.
-
-   Two motions live outside CSS's reach and are handled in JS instead:
-   `scrollIntoView({ behavior: "smooth" })` takes its behaviour from the call
-   option rather than the `scroll-behavior` property, and Carousel autoplay is
-   a timer. Both read the preference through the `useReducedMotion` hook. */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
 @source "..";
 writes are already under
    control, and blanket mid-word breaking makes them look broken.

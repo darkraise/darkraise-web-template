@@ -73,6 +73,22 @@ interface ChartContainerProps extends React.ComponentProps<"div"> {
   >["children"]
   /** Size assumed for the single render before the container is measured. */
   initialDimension?: { width: number; height: number }
+  /**
+   * What this chart shows, for anyone who cannot see it. A chart is a picture
+   * of data with no text alternative of its own: without this the region
+   * announces as an unlabelled graphic, and the values are unreachable because
+   * recharts surfaces them only through a hover tooltip.
+   *
+   * Write the insight, not the chart type — "Revenue rose 40% over the last
+   * six months" beats "Line chart of revenue".
+   */
+  description?: string
+  /** Renders instead of the chart while data loads. */
+  loading?: boolean
+  /** Renders instead of the chart when there is nothing to plot. */
+  empty?: boolean
+  /** Shown in place of the chart when `empty`. */
+  emptyContent?: React.ReactNode
 }
 
 /**
@@ -88,26 +104,52 @@ function ChartContainer({
   className,
   children,
   config,
+  description,
+  loading = false,
+  empty = false,
+  emptyContent,
   initialDimension = DEFAULT_INITIAL_DIMENSION,
   ...props
 }: ChartContainerProps) {
   const uniqueId = React.useId()
   const chartId = `chart-${id ?? uniqueId.replace(/:/g, "")}`
+  const descriptionId = description ? `${chartId}-description` : undefined
 
   return (
     <ChartContext.Provider value={{ config }}>
       <div
         data-slot="chart"
         data-chart={chartId}
+        data-state={loading ? "loading" : empty ? "empty" : undefined}
+        // `img` collapses the chart's internal SVG scaffolding into one node,
+        // so assistive technology announces the description rather than
+        // walking hundreds of unlabelled paths.
+        role={description ? "img" : undefined}
+        aria-describedby={descriptionId}
+        aria-busy={loading || undefined}
         className={cn("dr-chart", className)}
         {...props}
       >
         <ChartStyle id={chartId} config={config} />
-        <RechartsPrimitive.ResponsiveContainer
-          initialDimension={initialDimension}
-        >
-          {children}
-        </RechartsPrimitive.ResponsiveContainer>
+        {description && (
+          <p id={descriptionId} className="sr-only">
+            {description}
+          </p>
+        )}
+        {loading ? (
+          // An empty axis frame reads as "no data" rather than "not yet".
+          <div className="dr-chart-placeholder" aria-hidden="true" />
+        ) : empty ? (
+          <div className="dr-chart-empty">
+            {emptyContent ?? "No data to show"}
+          </div>
+        ) : (
+          <RechartsPrimitive.ResponsiveContainer
+            initialDimension={initialDimension}
+          >
+            {children}
+          </RechartsPrimitive.ResponsiveContainer>
+        )}
       </div>
     </ChartContext.Provider>
   )

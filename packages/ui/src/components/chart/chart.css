@@ -18,4 +18,15 @@
   .dr-chart-legend[data-valign="bottom"] {
     @apply pt-3;
   }
+
+  /* Loading and empty states. Recharts renders an axis frame with no series
+     when handed an empty dataset, which reads as "the answer is nothing"
+     rather than "there is nothing yet" — both states need to say which. */
+  .dr-chart-placeholder {
+    @apply bg-muted size-full animate-pulse rounded-md;
+  }
+
+  .dr-chart-empty {
+    @apply text-muted-foreground flex size-full items-center justify-center text-sm;
+  }
 }

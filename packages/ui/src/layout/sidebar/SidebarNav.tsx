@@ -129,7 +129,14 @@ function SidebarItem({ item, depth = 0 }: SidebarItemProps) {
           <item.icon className="dr-sidebar-nav-icon-svg" />
         </span>
       )}
-      {!collapsed && <span className="dr-sidebar-nav-label">{item.label}</span>}
+      {!collapsed && (
+        // Truncated by CSS; `title` surfaces the full text on hover. Screen
+        // readers are unaffected — the complete string stays in the DOM and
+        // only the painting is clipped.
+        <span className="dr-sidebar-nav-label" title={item.label}>
+          {item.label}
+        </span>
+      )}
       {!collapsed && item.badge && (
         <span className="dr-sidebar-nav-badge">{item.badge}</span>
       )}
@@ -253,7 +260,9 @@ function CollapsibleSidebarItem({
               <item.icon className="dr-sidebar-nav-icon-svg" />
             </span>
           )}
-          <span className="dr-sidebar-nav-label">{item.label}</span>
+          <span className="dr-sidebar-nav-label" title={item.label}>
+            {item.label}
+          </span>
           {item.badge && (
             <span className="dr-sidebar-nav-badge">{item.badge}</span>
           )}
