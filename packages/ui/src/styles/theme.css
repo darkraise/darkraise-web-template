@@ -230,6 +230,32 @@
 }
 
 /* Inputs deliberately use --primary (not --focus-ring) — text fields want a sharp brand-color indicator, matching ark-ui's input pattern. */
+/* Extends a small control's pointer and touch target to the WCAG 2.2 AA
+   minimum of 24x24 CSS px without changing how large it looks. Checkbox,
+   RadioGroupItem and Switch all render below that: 14-20px boxes with no
+   padding, so the thing you have to hit is the thing you can see.
+
+   The overlay is a child of the control, so a press on it reaches the control
+   by bubbling — no extra handlers. `position: relative` anchors it and, unlike
+   transform or filter, does not create a containing block for
+   `position: fixed`, so portalled content is unaffected.
+
+   `max(100%, 24px)` leaves controls already at or above the floor untouched,
+   which keeps the utility safe to apply to a whole size ladder. */
+@utility hit-area-24 {
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: max(100%, 24px);
+    height: max(100%, 24px);
+    transform: translate(-50%, -50%);
+  }
+}
+
 @utility focus-ring-input {
   outline: none;
 

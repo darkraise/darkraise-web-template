@@ -4,6 +4,7 @@ import { describe, it, expect, vi } from "vitest"
 import { useState } from "react"
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogTitle,
@@ -198,5 +199,40 @@ describe("Dialog", () => {
       "data-surface-intensity",
       "balanced",
     )
+  })
+})
+
+describe("overflow and sizing", () => {
+  it("defaults to the historical width so existing dialogs are unchanged", () => {
+    render(
+      <Dialog defaultOpen>
+        <DialogContent>Body</DialogContent>
+      </Dialog>,
+    )
+    expect(screen.getByRole("dialog")).toHaveAttribute("data-size", "default")
+  })
+
+  it.each(["sm", "lg", "xl", "full"] as const)("carries size %s", (size) => {
+    render(
+      <Dialog defaultOpen>
+        <DialogContent size={size}>Body</DialogContent>
+      </Dialog>,
+    )
+    expect(screen.getByRole("dialog")).toHaveAttribute("data-size", size)
+  })
+
+  it("marks a body region so the header and footer can be pinned", () => {
+    render(
+      <Dialog defaultOpen>
+        <DialogContent>
+          <DialogBody>Long body</DialogBody>
+        </DialogContent>
+      </Dialog>,
+    )
+    // The pinned layout is selected in CSS via `:has(> .dr-dialog-body)`, so
+    // the class landing as a direct child is the whole contract.
+    const body = screen.getByText("Long body")
+    expect(body).toHaveClass("dr-dialog-body")
+    expect(body.parentElement).toBe(screen.getByRole("dialog"))
   })
 })

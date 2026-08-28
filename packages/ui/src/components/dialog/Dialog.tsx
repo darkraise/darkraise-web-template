@@ -11,6 +11,8 @@ import { Portal } from "@primitives/portal"
 import { Presence } from "@primitives/presence"
 import { Slot, composeRefs } from "@primitives/slot"
 import { useDialog, type DialogRole, type UseDialogReturn } from "./useDialog"
+
+export type DialogSize = "sm" | "default" | "lg" | "xl" | "full"
 import { lockScroll, unlockScroll } from "./scrollLock"
 
 interface DialogContextValue extends UseDialogReturn {
@@ -146,6 +148,11 @@ interface DialogContentProps extends React.HTMLAttributes<HTMLDivElement> {
    * through the DOM tree rather than the React tree.
    */
   surfaceIntensity?: SurfaceIntensityProp
+  /**
+   * Width ladder. `default` is the historical `max-w-lg`; the rest exist so a
+   * confirmation and a data-heavy form are not forced into the same shape.
+   */
+  size?: DialogSize
   ref?: React.Ref<HTMLDivElement>
 }
 
@@ -156,6 +163,7 @@ function DialogContentImpl({
   onPointerDownOutside,
   onInteractOutside,
   surfaceIntensity,
+  size = "default",
   ref,
   ...rest
 }: Omit<DialogContentProps, "forceMount">) {
@@ -201,6 +209,7 @@ function DialogContentImpl({
         aria-labelledby={ctx.titleId}
         aria-describedby={ctx.descriptionId}
         data-state={ctx.state}
+        data-size={size}
         data-surface-intensity={surfaceIntensity}
         tabIndex={-1}
         className={cn("dr-dialog-content", className)}
@@ -262,6 +271,19 @@ const DialogHeader = ({
 )
 DialogHeader.displayName = "DialogHeader"
 
+/**
+ * Scrolling middle region. Rendering one switches the dialog to a pinned
+ * layout where the header and footer hold still — see dialog.css. Without it
+ * the whole dialog scrolls as one, which is fine for short content.
+ */
+const DialogBody = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div className={cn("dr-dialog-body", className)} {...props} />
+)
+DialogBody.displayName = "DialogBody"
+
 const DialogFooter = ({
   className,
   ...props
@@ -315,6 +337,7 @@ export {
   DialogTrigger,
   DialogContent,
   DialogHeader,
+  DialogBody,
   DialogFooter,
   DialogTitle,
   DialogDescription,

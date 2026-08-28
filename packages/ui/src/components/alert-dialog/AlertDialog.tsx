@@ -6,6 +6,7 @@ import { cn } from "@lib/utils"
 import {
   Dialog,
   DialogClose,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -64,6 +65,7 @@ const AlertDialogPortal = DialogPortal
 const AlertDialogOverlay = DialogOverlay
 const AlertDialogContent = DialogContent
 const AlertDialogHeader = DialogHeader
+const AlertDialogBody = DialogBody
 const AlertDialogFooter = DialogFooter
 const AlertDialogTitle = DialogTitle
 const AlertDialogDescription = DialogDescription
@@ -119,6 +121,7 @@ export {
   AlertDialogTrigger,
   AlertDialogContent,
   AlertDialogHeader,
+  AlertDialogBody,
   AlertDialogFooter,
   AlertDialogTitle,
   AlertDialogDescription,

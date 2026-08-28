@@ -12,6 +12,50 @@
     backdrop-filter: var(--backdrop-filter);
   }
 
+  /* Height cap and scroll.
+
+     Without this a dialog taller than the viewport extended past both edges
+     while the page behind it was scroll-locked, which put the footer — and
+     with it the confirm button — permanently out of reach. `dvh` rather than
+     `vh` so a mobile browser collapsing its chrome does not clip the dialog.
+
+     Excludes Sheet, which composes this class but anchors itself to an edge
+     and sets its own `h-full`; clamping that to the viewport minus a margin
+     would leave a gap at the bottom of every side sheet. */
+  .dr-dialog-content:not(.dr-sheet-content) {
+    max-height: calc(100dvh - 2rem);
+    overflow-y: auto;
+  }
+
+  /* Pinned layout, opted into by rendering a <DialogBody>. Header and footer
+     hold still and only the body scrolls. The root gives up its own scrolling
+     when it delegates — two nested scroll regions in one dialog is the thing
+     this is meant to avoid, not introduce. */
+  .dr-dialog-content:not(.dr-sheet-content):has(> .dr-dialog-body) {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .dr-dialog-body {
+    @apply min-h-0 flex-1 overflow-y-auto;
+  }
+
+  /* Size ladder. `default` is the historical `max-w-lg` and stays the
+     default, so existing dialogs are unchanged. */
+  .dr-dialog-content[data-size="sm"] {
+    @apply max-w-sm;
+  }
+  .dr-dialog-content[data-size="lg"] {
+    @apply max-w-2xl;
+  }
+  .dr-dialog-content[data-size="xl"] {
+    @apply max-w-3xl;
+  }
+  .dr-dialog-content[data-size="full"] {
+    max-width: calc(100vw - 2rem);
+  }
+
   .dr-dialog-title {
     @apply text-lg leading-none font-semibold tracking-tight;
   }

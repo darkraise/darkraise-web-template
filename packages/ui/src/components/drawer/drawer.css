@@ -16,10 +16,16 @@
     backdrop-filter: var(--backdrop-filter);
   }
 
+  /* The `mt-24` reserves a strip of page at the far edge; without a
+     matching height cap a tall drawer simply grew past it and its footer
+     became unreachable behind the locked page scroll. */
   .dr-drawer-content[data-direction="bottom"] {
     @apply data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom inset-x-0 bottom-0 mt-24 h-auto rounded-t-[10px];
   }
 
+  /* The `mb-24` reserves a strip of page at the far edge; without a
+     matching height cap a tall drawer simply grew past it and its footer
+     became unreachable behind the locked page scroll. */
   .dr-drawer-content[data-direction="top"] {
     @apply data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top inset-x-0 top-0 mb-24 h-auto rounded-b-[10px];
   }
@@ -30,6 +36,12 @@
 
   .dr-drawer-content[data-direction="right"] {
     @apply data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-3/4 rounded-l-[10px] sm:max-w-sm;
+  }
+
+  .dr-drawer-content[data-direction="bottom"],
+  .dr-drawer-content[data-direction="top"] {
+    max-height: calc(100dvh - 6rem);
+    overflow-y: auto;
   }
 
   .dr-drawer-handle {
