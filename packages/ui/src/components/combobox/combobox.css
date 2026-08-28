@@ -49,6 +49,16 @@
     @apply bg-accent text-accent-foreground;
   }
 
+  /* The active row is tracked with aria-activedescendant, so DOM focus never
+     reaches it and `:focus-visible` cannot match. `bg-accent` alone sits at
+     roughly 1.1:1 against the popover, under the 3:1 a focus indicator needs,
+     so the active row carries a real ring. Dropped under the pointer, where
+     the cursor already marks the row. */
+  .dr-combobox-item[data-highlighted="true"]:not(:hover) {
+    outline: 2px solid hsl(var(--focus-ring));
+    outline-offset: -2px;
+  }
+
   .dr-combobox-item[data-disabled="true"] {
     @apply pointer-events-none opacity-50;
   }

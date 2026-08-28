@@ -74,4 +74,20 @@
     background-image: var(--glass-state-selected-fill);
     box-shadow: var(--glass-halo-raised), var(--glass-state-active-inset);
   }
+
+  /* Keyboard focus indicator. Written as its own rule rather than an
+     `@apply focus-ring-tight` inside the base rule: prettier's Tailwind class
+     sorter reorders `@apply` lists on every commit, and for the rows whose
+     base rule carries `focus:outline-none` that ordering is what decides the
+     tie between two equal-specificity pseudo-class rules. An explicit rule
+     placed after the base one wins on source order permanently, and the
+     sorter cannot reach it. */
+  .dr-menubar-trigger:focus-visible,
+  .dr-menubar-sub-trigger:focus-visible,
+  .dr-menubar-item:focus-visible,
+  .dr-menubar-checkbox-item:focus-visible,
+  .dr-menubar-radio-item:focus-visible {
+    outline: 2px solid hsl(var(--focus-ring));
+    outline-offset: -2px;
+  }
 }

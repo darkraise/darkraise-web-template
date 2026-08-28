@@ -11,6 +11,16 @@
   .dr-listbox-item[data-focused="true"] {
     @apply bg-accent text-accent-foreground;
   }
+  /* The active row is tracked with aria-activedescendant, so DOM focus never
+     reaches it and `:focus-visible` cannot match. `bg-accent` alone sits at
+     roughly 1.1:1 against the popover, under the 3:1 a focus indicator needs,
+     so the active row carries a real ring. Dropped under the pointer, where
+     the cursor already marks the row. */
+  .dr-listbox-item[data-focused="true"]:not(:hover) {
+    outline: 2px solid hsl(var(--focus-ring));
+    outline-offset: -2px;
+  }
+
   /* Selected — solid primary fill, matching TreeView's selected row. The
      bare `font-medium` this used to carry was indistinguishable from an
      idle item, so selection was effectively invisible outside Glass.

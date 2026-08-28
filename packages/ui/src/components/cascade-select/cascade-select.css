@@ -28,5 +28,7 @@
      glow under Neon — signals "this is the active drill-down path". */
   .dr-cascade-item[data-active="true"] {
     box-shadow: var(--affordance-glow);
+    outline: 2px solid hsl(var(--focus-ring));
+    outline-offset: -2px;
   }
 }
