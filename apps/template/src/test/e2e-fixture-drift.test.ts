@@ -25,8 +25,9 @@ function packageList(name: string): string[] {
   const match = new RegExp(
     `export const ${name} = \\[([\\s\\S]*?)\\] as const`,
   ).exec(source)
-  if (!match) throw new Error(`${name} not found in ${TYPES_PATH}`)
-  return [...match[1].matchAll(/"([^"]+)"/g)].map((m) => m[1])
+  const body = match?.[1]
+  if (body === undefined) throw new Error(`${name} not found in ${TYPES_PATH}`)
+  return [...body.matchAll(/"([^"]+)"/g)].flatMap((m) => m[1] ?? [])
 }
 
 describe("e2e theme fixtures mirror the package", () => {
