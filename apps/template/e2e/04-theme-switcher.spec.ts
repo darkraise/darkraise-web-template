@@ -69,6 +69,7 @@ test.describe("theme switcher popover", () => {
       "Elevation",
       "Button Elevation",
       "Surface Intensity",
+      "Control Depth",
       "Outer Glow",
       "Inner Glow",
       "Radius",
@@ -231,7 +232,7 @@ test.describe("background controls", () => {
       await gotoApp(page, PROBE)
       await openThemeSwitcher(page)
       await themeSwitcher(page)
-        .locator('[aria-label="Gradient pattern"]')
+        .locator('[aria-label="Gradient Pattern"]')
         .getByRole("radio", { name: pattern })
         .click()
       await expect

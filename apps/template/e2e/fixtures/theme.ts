@@ -3,6 +3,7 @@ export type Preset = (typeof PRESETS)[number]
 
 export const ACCENT_COLORS = [
   "red",
+  "coral",
   "orange",
   "amber",
   "yellow",
@@ -21,7 +22,25 @@ export const ACCENT_COLORS = [
   "rose",
 ] as const
 
-export const SURFACE_COLORS = ["slate", ...ACCENT_COLORS] as const
+// The twelve neutral ramps the kit registers, then every accent — mirroring
+// SURFACE_COLORS in packages/ui/src/theme/types.ts. The old value described
+// neither list, so the swatch tests asserted against 18 of the 30 surfaces the
+// switcher actually offers.
+export const SURFACE_COLORS = [
+  "slate",
+  "gray",
+  "cool",
+  "zinc",
+  "neutral",
+  "iron",
+  "mauve",
+  "graphite",
+  "stone",
+  "sand",
+  "olive",
+  "sepia",
+  ...ACCENT_COLORS,
+] as const
 
 export const MODES = ["light", "dark", "system"] as const
 export const BACKGROUND_STYLES = ["solid", "gradient"] as const
