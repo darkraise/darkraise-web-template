@@ -51,8 +51,12 @@
     @apply -bottom-12 left-1/2 -translate-x-1/2 rotate-90;
   }
 
+  /* gap-4, not gap-2: the dots below carry a 24px hit target, and at an 8px
+     gap two neighbouring targets overlap by 8px — the expansion would have
+     traded a small target for an ambiguous one. At 16px the centres sit 24px
+     apart and the targets meet exactly without intersecting. */
   .dr-carousel-indicator-group {
-    @apply mt-3 flex items-center justify-center gap-2;
+    @apply mt-3 flex items-center justify-center gap-4;
   }
 
   .dr-carousel-indicator-group[data-orientation="vertical"] {
@@ -60,7 +64,7 @@
   }
 
   .dr-carousel-indicator {
-    @apply bg-muted hover:bg-muted-foreground/40 inline-block h-2 w-2 cursor-pointer rounded-full border-0 p-0 transition-[background-color,width,height] duration-200;
+    @apply bg-muted hover:bg-muted-foreground/40 hit-area-24 inline-block h-2 w-2 cursor-pointer rounded-full border-0 p-0 transition-[background-color,width,height] duration-200;
   }
 
   .dr-carousel-indicator[data-current="true"] {

@@ -10,7 +10,11 @@
   }
 
   .dr-overlay-footer {
-    @apply flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2;
+    /* `gap`, not `space-x`: below `sm` this is a column, and a horizontal
+       spacing utility contributes nothing there — Cancel and Confirm rendered
+       flush against each other on exactly the interaction where a mis-tap is
+       most expensive. */
+    @apply flex flex-col-reverse gap-2 sm:flex-row sm:justify-end;
   }
 
   .dr-overlay-description {

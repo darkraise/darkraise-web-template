@@ -12,7 +12,7 @@
   }
 
   .dr-slider-thumb {
-    @apply border-primary bg-primary-foreground block h-5 w-5 cursor-pointer rounded-full border-2 disabled:pointer-events-none disabled:cursor-default;
+    @apply border-primary bg-primary-foreground hit-area-24 block h-5 w-5 cursor-pointer rounded-full border-2 disabled:pointer-events-none disabled:cursor-default;
     /* Preset-driven affordance glow at rest. Transparent under
        Default/Glass; primary-color glow under Neon so the current
        slider value reads as "the active one" without a focus event. */
