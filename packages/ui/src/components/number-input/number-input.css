@@ -19,8 +19,8 @@
     background-color: hsl(var(--control-surface) / var(--surface-opacity, 1));
     border-radius: var(--radius-button);
     transition:
-      border-color 150ms,
-      box-shadow 150ms;
+      border-color var(--duration-fast),
+      box-shadow var(--duration-fast);
   }
 
   /* The field shares typography and density-padding with .dr-input but

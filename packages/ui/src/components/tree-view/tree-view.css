@@ -30,8 +30,8 @@
   .dr-tree-view-item {
     @apply focus-ring-tight flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none select-none;
     transition:
-      background-color 150ms,
-      color 150ms;
+      background-color var(--duration-fast),
+      color var(--duration-fast);
   }
 
   .dr-tree-view-item {

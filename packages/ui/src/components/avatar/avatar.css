@@ -5,7 +5,7 @@
 
   .dr-avatar-image {
     @apply aspect-square h-full w-full;
-    animation: dr-avatar-fade-in 200ms ease-out;
+    animation: dr-avatar-fade-in var(--duration-normal) ease-out;
   }
 
   @keyframes dr-avatar-fade-in {

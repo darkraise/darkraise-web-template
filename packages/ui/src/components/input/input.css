@@ -6,8 +6,8 @@
        -- see `--control-surface` in theme.css. */
     background-color: hsl(var(--control-surface) / var(--surface-opacity, 1));
     transition:
-      border-color 150ms,
-      box-shadow 150ms;
+      border-color var(--duration-fast),
+      box-shadow var(--duration-fast);
   }
 
   /* Group wrapper used when the consumer passes `prefix` or `suffix` to
@@ -22,8 +22,8 @@
     background-color: hsl(var(--control-surface) / var(--surface-opacity, 1));
     border-radius: var(--radius-button);
     transition:
-      border-color 150ms,
-      box-shadow 150ms;
+      border-color var(--duration-fast),
+      box-shadow var(--duration-fast);
   }
 
   /* Addon slot: shared visual for prefix and suffix. A muted block with a

@@ -67,9 +67,9 @@
        stays visually unchanged under default/glass). */
     box-shadow: var(--shadow-button), var(--affordance-glow);
     transition:
-      transform 200ms ease-out,
-      width 200ms ease-out,
-      height 200ms ease-out;
+      transform var(--duration-normal) ease-out,
+      width var(--duration-normal) ease-out,
+      height var(--duration-normal) ease-out;
   }
 
   .dr-segment-group[data-mounted="false"] .dr-segment-group-indicator {

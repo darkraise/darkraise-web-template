@@ -18,8 +18,8 @@
        slider value reads as "the active one" without a focus event. */
     box-shadow: var(--affordance-glow);
     transition:
-      background-color 150ms,
-      border-color 150ms,
+      background-color var(--duration-fast),
+      border-color var(--duration-fast),
       transform 100ms ease-out;
   }
 

@@ -15,11 +15,11 @@
   .dr-tabs-indicator {
     @apply pointer-events-none absolute top-0 left-0 z-0;
     transition:
-      translate 200ms ease-out,
-      width 200ms ease-out,
-      height 200ms ease-out,
-      top 200ms ease-out,
-      left 200ms ease-out;
+      translate var(--duration-normal) ease-out,
+      width var(--duration-normal) ease-out,
+      height var(--duration-normal) ease-out,
+      top var(--duration-normal) ease-out,
+      left var(--duration-normal) ease-out;
   }
 
   /* Suppress the very first transition: on mount the indicator has no
@@ -50,10 +50,10 @@
   .dr-tabs-trigger {
     @apply hover:text-foreground focus-ring relative z-10 inline-flex cursor-pointer items-center justify-center text-sm font-medium whitespace-nowrap disabled:pointer-events-none disabled:opacity-50;
     transition:
-      background-color 150ms,
-      color 150ms,
-      border-color 150ms,
-      box-shadow 150ms;
+      background-color var(--duration-fast),
+      color var(--duration-fast),
+      border-color var(--duration-fast),
+      box-shadow var(--duration-fast);
   }
 
   .dr-tabs-trigger[data-variant="default"] {
@@ -386,7 +386,7 @@
 
   .dr-tabs-content {
     @apply focus-ring-tight mt-2;
-    transition: opacity 150ms;
+    transition: opacity var(--duration-fast);
   }
 
   /* Hover wash on inactive triggers. A `bg-accent` fill — the usual

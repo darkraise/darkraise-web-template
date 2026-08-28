@@ -13,9 +13,9 @@
 
   .dr-pagination-link {
     transition:
-      background-color 150ms,
-      color 150ms,
-      border-color 150ms;
+      background-color var(--duration-fast),
+      color var(--duration-fast),
+      border-color var(--duration-fast);
   }
 
   .dr-pagination-link[data-active="true"][data-variant="ghost"] {

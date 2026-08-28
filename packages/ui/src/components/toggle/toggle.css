@@ -4,10 +4,10 @@
     isolation: isolate;
     @apply focus-ring-inset inline-flex cursor-pointer items-center justify-center gap-2 rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size)] [&_svg]:shrink-0;
     transition:
-      background-color 150ms,
-      color 150ms,
-      border-color 150ms,
-      box-shadow 150ms;
+      background-color var(--duration-fast),
+      color var(--duration-fast),
+      border-color var(--duration-fast),
+      box-shadow var(--duration-fast);
   }
 
   /* Default variant — solid fill on active state.

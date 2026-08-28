@@ -44,7 +44,7 @@
 
   .dr-sidebar-layout-brand-slot > * {
     grid-area: 1 / 1;
-    transition: opacity 150ms ease-in-out;
+    transition: opacity var(--duration-fast) ease-in-out;
   }
 
   /* The mark is decoration here — the toggle underneath owns every click
