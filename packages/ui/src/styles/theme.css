@@ -546,6 +546,18 @@
      (today's default); the [data-radius] selectors below rebind them. */
     --radius: 0.5rem;
     --radius-button: 0.5rem;
+
+    /* Shell chrome axis. Defaults are the welded `classic` look: no gutter,
+     no radius, no detached-region paint. Each [data-shell-style] block below
+     rebinds only what it changes. --shell-region-shadow is deliberately a
+     constant rather than var(--elevation-*): a shell's separation from the
+     page belongs to the shell style, not to the page's elevation setting. */
+    --shell-gap: 0px;
+    --shell-pad: 0px;
+    --shell-radius: 0px;
+    --shell-region-border: 0 0 0 0 transparent;
+    --shell-region-shadow: 0 0 transparent;
+    --shell-ground: var(--background);
     --noise-opacity: 0;
     --cropper-grid-line: rgba(255, 255, 255, 0.5);
     /* Dark blob peaks bumped from 8/6/4/3% to 10/8/6/5% (mid values from
@@ -1188,18 +1200,63 @@
 [data-radius="sharp"] {
   --radius: 0;
   --radius-button: 0;
+  --shell-radius-scale: 0px;
 }
 [data-radius="subtle"] {
   --radius: 0.25rem;
   --radius-button: 0.25rem;
+  --shell-radius-scale: 0.25rem;
 }
 [data-radius="rounded"] {
   --radius: 0.5rem;
   --radius-button: 0.5rem;
+  --shell-radius-scale: 0.5rem;
 }
 [data-radius="pill"] {
   --radius: 1rem;
   --radius-button: 9999px;
+  /* Deliberately the same as `rounded`. The shell clamps rather than tracking
+     the axis: a pill-radius sidebar reads as a lozenge, not as a shell. */
+  --shell-radius-scale: 0.5rem;
+}
+
+/* Shell style axis. `classic` is the default and owns no block — it is what
+   the :root defaults already describe. */
+[data-shell-style="inset"] {
+  --shell-radius: var(--shell-radius-scale, 0.5rem);
+  --shell-region-border: inset 0 0 0 1px hsl(var(--border));
+  --shell-ground: var(--surface-sidebar);
+}
+
+[data-shell-style="island"] {
+  --shell-gap: 0.5rem;
+  --shell-pad: 0.5rem;
+  --shell-radius: var(--shell-radius-scale, 0.5rem);
+  --shell-region-border: inset 0 0 0 1px hsl(var(--border));
+  --shell-region-shadow:
+    0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.06);
+  --shell-ground: var(--surface-sidebar);
+}
+
+[data-shell-style="floating"] {
+  --shell-gap: 0.75rem;
+  --shell-pad: 0.75rem;
+  --shell-radius: var(--shell-radius-scale, 0.5rem);
+  --shell-region-border: inset 0 0 0 1px hsl(var(--border));
+  --shell-region-shadow:
+    0 12px 28px -8px rgb(0 0 0 / 0.28), 0 4px 10px -4px rgb(0 0 0 / 0.16);
+}
+
+[data-shell-style="framed"] {
+  --shell-pad: 0.75rem;
+  --shell-radius: var(--shell-radius-scale, 0.5rem);
+  --shell-region-border: inset 0 0 0 1px hsl(var(--border));
+  --shell-region-shadow: 0 8px 24px -10px rgb(0 0 0 / 0.24);
+  --shell-ground: var(--surface-sidebar);
+}
+
+[data-shell-style="flat"] {
+  --shell-ground: var(--background);
 }
 
 /* Background intensity axis — scales the blob recipes via --canvas-blob-scale.
