@@ -88,3 +88,44 @@ describe("shell style rules", () => {
     }
   })
 })
+
+const shellPresets = readFileSync(
+  resolve(process.cwd(), "src/layout/shell/shell-presets.css"),
+  "utf8",
+)
+const sidebarLayout = readFileSync(
+  resolve(process.cwd(), "src/layout/sidebar/sidebar-layout.css"),
+  "utf8",
+)
+const layoutHeader = readFileSync(
+  resolve(process.cwd(), "src/layout/layout-header/layout-header.css"),
+  "utf8",
+)
+
+describe("preset chrome", () => {
+  it("paints glass chrome on every chrome region", () => {
+    for (const region of ["nav", "subnav", "bar", "panel"]) {
+      expect(shellPresets).toContain(`[data-region="${region}"]`)
+    }
+  })
+
+  it("gives a detached glass region its fog edge back", () => {
+    // The generic shell-style rule is (0,3,0) and would otherwise replace
+    // the fog border and the specular with a neutral one.
+    expect(shellPresets).toMatch(
+      /island[\s\S]*?inset 0 0 0 1px var\(--fog-20\)/,
+    )
+  })
+
+  it("keeps the seam edge on the welded styles", () => {
+    expect(shellPresets).toContain("border-right: 1px solid var(--fog-20)")
+    expect(shellPresets).toContain("border-bottom: 1px solid var(--fog-20)")
+  })
+
+  it("no longer duplicates chrome paint in the layout files", () => {
+    // Chrome is a region concern now; a layout-class rule would sit at
+    // (0,2,0) and lose to the shell-style rules.
+    expect(sidebarLayout).not.toContain('[data-preset="glass"]')
+    expect(layoutHeader).not.toContain('[data-preset="glass"]')
+  })
+})

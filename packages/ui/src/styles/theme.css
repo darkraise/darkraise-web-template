@@ -111,6 +111,7 @@
 /* After the per-layout imports on purpose: at equal specificity the later
    import wins, and shell styles must override a layout's own chrome. */
 @import "../layout/shell/shell-styles.css";
+@import "../layout/shell/shell-presets.css";
 
 /* Layout primitive imports (manual; layout/ is outside the auto-scanner) */
 @import "../layout/box/box.css";

@@ -1,0 +1,75 @@
+@layer components {
+  /* Glass owns its chrome paint at every shell style.
+     
+     These rules live here rather than beside each layout because chrome is a
+     region concern now, not a per-layout one, and because the shell-style
+     rules sit at (0,3,0): a (0,2,0) rule keyed to a layout class would lose
+     the fog gradient and the specular the moment a region detached.
+
+     No --glass-halo-overlay on any of these: the halo's 40px mid layer would
+     extend past a chrome edge as an accent-tinted glow and bleed into the
+     content region as a visible colour band. Chrome's identity comes from the
+     heavy blur, the fog gradient and the edge specular; the halo axis stays
+     on floating-tier surfaces. */
+  [data-preset="glass"] .dr-shell > [data-region="nav"],
+  [data-preset="glass"] .dr-shell > [data-region="subnav"],
+  [data-preset="glass"] .dr-shell > [data-region="panel"] {
+    background-color: transparent;
+    background-image: linear-gradient(135deg, var(--fog-30), var(--fog-15));
+    -webkit-backdrop-filter: blur(calc(var(--backdrop-blur, 12px) * 1.5))
+      saturate(140%);
+    backdrop-filter: blur(calc(var(--backdrop-blur, 12px) * 1.5)) saturate(140%);
+    box-shadow: var(--inset-hi);
+  }
+
+  /* Top-down rather than diagonal: light falls that way on a horizontal bar. */
+  [data-preset="glass"] .dr-shell > [data-region="bar"] {
+    background-color: transparent;
+    background-image: linear-gradient(180deg, var(--fog-30), var(--fog-15));
+    -webkit-backdrop-filter: blur(calc(var(--backdrop-blur, 12px) * 1.5))
+      saturate(140%);
+    backdrop-filter: blur(calc(var(--backdrop-blur, 12px) * 1.5)) saturate(140%);
+    box-shadow: var(--inset-hi);
+  }
+
+  /* Welded styles keep the single seam edge the chrome has always drawn. */
+  [data-preset="glass"]
+    .dr-shell:is(
+      [data-shell-style="classic"],
+      [data-shell-style="framed"],
+      [data-shell-style="inset"]
+    )
+    > :is([data-region="nav"], [data-region="subnav"], [data-region="panel"]) {
+    border-right: 1px solid var(--fog-20);
+  }
+
+  [data-preset="glass"]
+    .dr-shell:is(
+      [data-shell-style="classic"],
+      [data-shell-style="framed"],
+      [data-shell-style="inset"]
+    )
+    > [data-region="bar"] {
+    border-bottom: 1px solid var(--fog-20);
+  }
+
+  /* Detached from the shell, a region is a floating surface rather than a
+     wall: every edge is drawn, and the gutter around it keeps the glow off
+     the content, so the halo suppression note above stops applying. */
+  [data-preset="glass"]
+    .dr-shell:is([data-shell-style="island"], [data-shell-style="floating"])
+    > [data-region] {
+    box-shadow:
+      inset 0 0 0 1px var(--fog-20),
+      var(--inset-hi),
+      var(--shell-region-shadow);
+  }
+
+  /* The handle is a gutter, never a surface. */
+  [data-preset="glass"] .dr-shell > [data-region="handle"] {
+    background-image: none;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
