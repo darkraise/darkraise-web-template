@@ -192,11 +192,15 @@ test.describe("visualisation", () => {
 
   test("contribution graph renders cells", async ({ page }) => {
     const main = await open(page, "/components/contribution-graph")
-    expect(
-      await main
-        .locator('[class*="contribution"] rect, [class*="contribution"] div')
-        .count(),
-    ).toBeGreaterThan(10)
+    // Poll rather than count once: `count()` reads a single instant, so under
+    // parallel load it can run before the route has finished rendering.
+    await expect
+      .poll(async () =>
+        main
+          .locator('[class*="contribution"] rect, [class*="contribution"] div')
+          .count(),
+      )
+      .toBeGreaterThan(10)
   })
 
   test("qr code renders", async ({ page }) => {

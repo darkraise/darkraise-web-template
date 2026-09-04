@@ -113,3 +113,82 @@ test.describe("shell style axis", () => {
     }
   })
 })
+
+test.describe("shell style geometry", () => {
+  test("inset leaves no hairline inside surfaceless chrome", async ({
+    page,
+  }) => {
+    await seedApp(page, { shellStyle: "inset" })
+    await gotoApp(page, "/")
+
+    const seams = await page
+      .locator('[data-region="nav"] [data-seam]')
+      .evaluateAll((els) =>
+        els.map((el) => {
+          const cs = getComputedStyle(el)
+          return [
+            cs.borderTopWidth,
+            cs.borderBottomWidth,
+            cs.borderLeftWidth,
+            cs.borderRightWidth,
+          ].join(" ")
+        }),
+      )
+
+    expect(seams.length).toBeGreaterThan(0)
+    expect(seams.every((s) => s === "0px 0px 0px 0px")).toBe(true)
+  })
+
+  test("floating runs the content full-bleed under floating chrome", async ({
+    page,
+  }) => {
+    await seedApp(page, { shellStyle: "floating" })
+    await gotoApp(page, "/")
+
+    const geom = await page.evaluate(() => {
+      const box = (sel: string) => {
+        const el = document.querySelector(sel)
+        if (!el) throw new Error(`missing ${sel}`)
+        const r = el.getBoundingClientRect()
+        return { x: r.x, y: r.y, w: r.width, h: r.height }
+      }
+      return {
+        viewport: { w: innerWidth, h: innerHeight },
+        content: box('[data-region="content"]'),
+        nav: box('[data-region="nav"]'),
+      }
+    })
+
+    // The content plane reaches every edge; only the chrome is inset.
+    expect(geom.content.x).toBe(0)
+    expect(geom.content.y).toBe(0)
+    expect(geom.content.w).toBe(geom.viewport.w)
+    expect(geom.nav.x).toBeGreaterThan(0)
+    expect(geom.nav.y).toBeGreaterThan(0)
+  })
+
+  test("framed insets the whole shell from the viewport edge", async ({
+    page,
+  }) => {
+    await seedApp(page, { shellStyle: "framed" })
+    await gotoApp(page, "/")
+
+    const geom = await page.evaluate(() => {
+      const el = document.querySelector(".dr-shell")
+      if (!el) throw new Error("missing .dr-shell")
+      const r = el.getBoundingClientRect()
+      return {
+        viewport: { w: innerWidth, h: innerHeight },
+        shell: { x: r.x, y: r.y, w: r.width, h: r.height },
+        radius: getComputedStyle(el).borderRadius,
+      }
+    })
+
+    // A window on a desktop: ground shows on every side, corners rounded.
+    expect(geom.shell.x).toBeGreaterThan(0)
+    expect(geom.shell.y).toBeGreaterThan(0)
+    expect(geom.shell.w).toBeLessThan(geom.viewport.w)
+    expect(geom.shell.h).toBeLessThan(geom.viewport.h)
+    expect(geom.radius).not.toBe("0px")
+  })
+})

@@ -1244,8 +1244,12 @@
 }
 
 [data-shell-style="floating"] {
-  --shell-gap: 0.75rem;
-  --shell-pad: 0.75rem;
+  /* Deliberately no shell gap or padding: those inset every grid item, and
+     the content plane must reach the viewport edge. The gutter is the
+     chrome's own margin instead. */
+  --shell-gap: 0px;
+  --shell-pad: 0px;
+  --shell-float-inset: 0.75rem;
   --shell-radius: var(--shell-radius-scale, 0.5rem);
   --shell-region-border: inset 0 0 0 1px hsl(var(--border));
   --shell-region-shadow:
@@ -1253,7 +1257,10 @@
 }
 
 [data-shell-style="framed"] {
-  --shell-pad: 0.75rem;
+  /* The shell shrinks rather than padding its contents: padding would leave
+     the frame drawn at the viewport edge with the gutter inside it. */
+  --shell-pad: 0px;
+  --shell-frame-gutter: 0.75rem;
   --shell-radius: var(--shell-radius-scale, 0.5rem);
   --shell-region-border: inset 0 0 0 1px hsl(var(--border));
   --shell-region-shadow: 0 8px 24px -10px rgb(0 0 0 / 0.24);

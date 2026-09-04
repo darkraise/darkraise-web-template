@@ -162,7 +162,7 @@ export function SidebarLayout({
             className="dr-sidebar-layout-aside sidebar-gradient-overlay theme-transition bg-surface-sidebar"
             data-collapsed={collapsed ? "true" : undefined}
           >
-            <div className="dr-sidebar-layout-aside-header">
+            <div data-seam className="dr-sidebar-layout-aside-header">
               {collapsed ? (
                 // One square is all the collapsed rail has, so the brand
                 // mark and the toggle share it: the mark carries the app's
@@ -187,7 +187,7 @@ export function SidebarLayout({
             </div>
 
             {resolvedNavHeader && (
-              <div className="dr-sidebar-layout-aside-section">
+              <div data-seam className="dr-sidebar-layout-aside-section">
                 {resolvedNavHeader}
               </div>
             )}
@@ -198,6 +198,7 @@ export function SidebarLayout({
 
             {resolvedNavFooter && (
               <div
+                data-seam
                 className="dr-sidebar-layout-aside-section"
                 data-position="footer"
               >

@@ -25,6 +25,15 @@
     box-shadow: none;
   }
 
+  /* A seam divides one part of a chrome surface from another. Where the
+     chrome gives up its surface (inset) or its rules (flat), the seam has
+     nothing left to divide and reads as a stray line. Marked with
+     `data-seam` rather than by layout class so this stays region-level. */
+  .dr-shell[data-shell-style="inset"] [data-seam],
+  .dr-shell[data-shell-style="flat"] [data-seam] {
+    border-width: 0;
+  }
+
   /* inset — chrome stays welded to the viewport and gives up its own surface
      so the shell ground shows through; only the content detaches. */
   .dr-shell[data-shell-style="inset"] > [data-region="nav"],
@@ -56,8 +65,15 @@
   .dr-shell[data-shell-style="floating"] > [data-region="panel"] {
     position: relative;
     z-index: 1;
+    margin: var(--shell-float-inset, 0.75rem);
     -webkit-backdrop-filter: blur(var(--backdrop-blur, 12px));
     backdrop-filter: blur(var(--backdrop-blur, 12px));
+  }
+
+  /* Neighbouring chrome would otherwise double the gutter between them. */
+  .dr-shell[data-shell-style="floating"] > [data-region="nav"],
+  .dr-shell[data-shell-style="floating"] > [data-region="subnav"] {
+    margin-right: 0;
   }
 
   /* The content reserves its own room so the background bleeds under the
@@ -65,28 +81,39 @@
   .dr-shell[data-shell-style="floating"][data-structure="sidebar"]
     > [data-region="content"] {
     padding-inline-start: calc(
-      var(--sidebar-width-expanded, 16rem) + var(--shell-gap) + 1.5rem
+      var(--sidebar-width-expanded, 16rem) + var(--shell-float-inset, 0.75rem) +
+        1.5rem
     );
-    padding-block-start: calc(3.5rem + var(--shell-gap) + 1.5rem);
+    padding-block-start: calc(
+      3.5rem + var(--shell-float-inset, 0.75rem) * 2 + 1.5rem
+    );
   }
 
   .dr-shell[data-shell-style="floating"][data-structure="top-nav"]
     > [data-region="content"] {
-    padding-block-start: calc(3.5rem + var(--shell-gap) + 1.5rem);
+    padding-block-start: calc(
+      3.5rem + var(--shell-float-inset, 0.75rem) * 2 + 1.5rem
+    );
   }
 
   .dr-shell[data-shell-style="floating"][data-structure="stacked"]
     > [data-region="content"] {
-    padding-inline-start: calc(4rem + 14rem + var(--shell-gap) + 1.5rem);
-    padding-block-start: calc(3.5rem + var(--shell-gap) + 1.5rem);
+    padding-inline-start: calc(
+      4rem + 14rem + var(--shell-float-inset, 0.75rem) + 1.5rem
+    );
+    padding-block-start: calc(
+      3.5rem + var(--shell-float-inset, 0.75rem) * 2 + 1.5rem
+    );
   }
 
   .dr-shell[data-shell-style="floating"][data-structure="split-panel"]
     > [data-region="content"] {
     padding-inline-start: calc(
-      var(--panel-width, 20rem) + var(--shell-gap) + 1.5rem
+      var(--panel-width, 20rem) + var(--shell-float-inset, 0.75rem) + 1.5rem
     );
-    padding-block-start: calc(3.5rem + var(--shell-gap) + 1.5rem);
+    padding-block-start: calc(
+      3.5rem + var(--shell-float-inset, 0.75rem) * 2 + 1.5rem
+    );
   }
 
   /* Below md the rails are gone, so only the bar's height is reserved. */
@@ -99,7 +126,13 @@
   /* framed — the shell insets from the viewport as a whole and rounds off,
      so the outer corners round while the seams between regions stay welded. */
   .dr-shell[data-shell-style="framed"] {
+    --gutter: var(--shell-frame-gutter, 0.75rem);
+    margin: var(--gutter);
+    height: calc(100dvh - var(--gutter) * 2);
     border-radius: var(--shell-radius);
+    /* The radius clips the square regions into the frame's corners, which is
+       why the corner regions need no rounding of their own. */
+    overflow: hidden;
     box-shadow: var(--shell-region-border), var(--shell-region-shadow);
   }
 

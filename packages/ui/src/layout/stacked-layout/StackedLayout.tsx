@@ -115,7 +115,7 @@ export function StackedLayout({
           {activeGroup && (
             <aside data-region="subnav" className="dr-stacked-layout-aside">
               {activeGroup.label && (
-                <div className="dr-stacked-layout-aside-header">
+                <div data-seam className="dr-stacked-layout-aside-header">
                   <p className="dr-stacked-layout-aside-label">
                     {activeGroup.label}
                   </p>
