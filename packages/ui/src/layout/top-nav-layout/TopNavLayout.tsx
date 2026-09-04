@@ -34,8 +34,14 @@ export function TopNavLayout({
   children,
   nav,
   headerSlot,
+  navHeader,
+  navFooter,
+  // Accepting the deprecated names is what makes them aliases; the rule is
+  // aimed at callers, not at the shim that keeps them working.
+  /* eslint-disable @typescript-eslint/no-deprecated */
   sidebarHeader,
   sidebarFooter,
+  /* eslint-enable @typescript-eslint/no-deprecated */
   showLayoutSwitcher,
   showThemeSwitcher,
   shellStyle: shellStyleProp,
@@ -46,6 +52,10 @@ export function TopNavLayout({
 }: TopNavLayoutProps) {
   const labels = useUiLabels()
   const shellStyle = useShellStyle(shellStyleProp)
+  // The sidebar* names predate the layouts that have no sidebar; both still
+  // work, and the new name wins when a caller passes each.
+  const resolvedNavHeader = navHeader ?? sidebarHeader
+  const resolvedNavFooter = navFooter ?? sidebarFooter
   const flatNavItems = flattenNavItems(nav)
 
   const { Link } = useRouterAdapter()
@@ -61,8 +71,8 @@ export function TopNavLayout({
       <LayoutHeader
         data-region="bar"
         nav={nav}
-        sidebarHeader={sidebarHeader}
-        sidebarFooter={sidebarFooter}
+        sidebarHeader={resolvedNavHeader}
+        sidebarFooter={resolvedNavFooter}
         className="gap-4"
         showLayoutSwitcher={showLayoutSwitcher}
         showThemeSwitcher={showThemeSwitcher}

@@ -25,8 +25,14 @@ export function StackedLayout({
   children,
   nav,
   headerSlot,
+  navHeader,
+  navFooter,
+  // Accepting the deprecated names is what makes them aliases; the rule is
+  // aimed at callers, not at the shim that keeps them working.
+  /* eslint-disable @typescript-eslint/no-deprecated */
   sidebarHeader,
   sidebarFooter,
+  /* eslint-enable @typescript-eslint/no-deprecated */
   showLayoutSwitcher,
   showThemeSwitcher,
   shellStyle: shellStyleProp,
@@ -37,6 +43,10 @@ export function StackedLayout({
 }: StackedLayoutProps) {
   const labels = useUiLabels()
   const shellStyle = useShellStyle(shellStyleProp)
+  // The sidebar* names predate the layouts that have no sidebar; both still
+  // work, and the new name wins when a caller passes each.
+  const resolvedNavHeader = navHeader ?? sidebarHeader
+  const resolvedNavFooter = navFooter ?? sidebarFooter
   const { Link, usePathname } = useRouterAdapter()
   useRouteFocus()
   const currentPath = usePathname()
@@ -127,8 +137,8 @@ export function StackedLayout({
           <LayoutHeader
             data-region="bar"
             nav={nav}
-            sidebarHeader={sidebarHeader}
-            sidebarFooter={sidebarFooter}
+            sidebarHeader={resolvedNavHeader}
+            sidebarFooter={resolvedNavFooter}
             headerSlot={headerSlot}
             showLayoutSwitcher={showLayoutSwitcher}
             showThemeSwitcher={showThemeSwitcher}

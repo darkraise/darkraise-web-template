@@ -49,8 +49,14 @@ export function SidebarLayout({
   children,
   nav,
   headerSlot,
+  navHeader,
+  navFooter,
+  // Accepting the deprecated names is what makes them aliases; the rule is
+  // aimed at callers, not at the shim that keeps them working.
+  /* eslint-disable @typescript-eslint/no-deprecated */
   sidebarHeader,
   sidebarFooter,
+  /* eslint-enable @typescript-eslint/no-deprecated */
   showLayoutSwitcher,
   showThemeSwitcher,
   showActiveBarToggle = false,
@@ -65,6 +71,10 @@ export function SidebarLayout({
 }: SidebarLayoutProps) {
   const labels = useUiLabels()
   const shellStyle = useShellStyle(shellStyleProp)
+  // The sidebar* names predate the layouts that have no sidebar; both still
+  // work, and the new name wins when a caller passes each.
+  const resolvedNavHeader = navHeader ?? sidebarHeader
+  const resolvedNavFooter = navFooter ?? sidebarFooter
   useRouteFocus()
   const [collapsed, setCollapsed] = useState(false)
   // Defaults to unset so nobody's sidebar changes appearance unless they ask:
@@ -176,9 +186,9 @@ export function SidebarLayout({
               <SearchCommand navItems={flatNavItems} collapsed={collapsed} />
             </div>
 
-            {sidebarHeader && (
+            {resolvedNavHeader && (
               <div className="dr-sidebar-layout-aside-section">
-                {sidebarHeader}
+                {resolvedNavHeader}
               </div>
             )}
 
@@ -186,12 +196,12 @@ export function SidebarLayout({
               <SidebarNav nav={nav} activeBar={activeBar} />
             </div>
 
-            {sidebarFooter && (
+            {resolvedNavFooter && (
               <div
                 className="dr-sidebar-layout-aside-section"
                 data-position="footer"
               >
-                {sidebarFooter}
+                {resolvedNavFooter}
               </div>
             )}
           </aside>
@@ -199,8 +209,8 @@ export function SidebarLayout({
           <LayoutHeader
             data-region="bar"
             nav={nav}
-            sidebarHeader={sidebarHeader}
-            sidebarFooter={sidebarFooter}
+            sidebarHeader={resolvedNavHeader}
+            sidebarFooter={resolvedNavFooter}
             sidebarActiveBar={activeBar}
             headerSlot={
               <>

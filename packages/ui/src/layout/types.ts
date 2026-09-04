@@ -18,7 +18,13 @@ export interface LayoutProps {
   children: ReactNode
   nav: NavGroup[]
   headerSlot?: ReactNode
+  /** Slot above the primary nav, mirrored into the mobile drawer. */
+  navHeader?: ReactNode
+  /** Slot below the primary nav, mirrored into the mobile drawer. */
+  navFooter?: ReactNode
+  /** @deprecated Use `navHeader`. Still honoured as an alias. */
   sidebarHeader?: ReactNode
+  /** @deprecated Use `navFooter`. Still honoured as an alias. */
   sidebarFooter?: ReactNode
   showLayoutSwitcher?: boolean
   showThemeSwitcher?: boolean
