@@ -17,6 +17,7 @@ export {
   RADII,
   MODES,
   SHELL_STYLES,
+  SIDEBAR_ACTIVE_BARS,
 } from "./types"
 export type {
   AccentColor,
@@ -27,6 +28,7 @@ export type {
   SurfaceIntensity,
   Radius,
   ShellStyle,
+  SidebarActiveBarSetting,
   Mode,
   ResolvedMode,
   ColorScale,

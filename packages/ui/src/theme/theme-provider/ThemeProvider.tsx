@@ -20,6 +20,7 @@ import type {
   ThemeSettings,
   ThemeSyncStatus,
   ShellStyle,
+  SidebarActiveBarSetting,
 } from "@theme/types"
 import {
   SURFACE_COLORS,
@@ -30,6 +31,7 @@ import {
   SURFACE_INTENSITIES,
   RADII,
   SHELL_STYLES,
+  SIDEBAR_ACTIVE_BARS,
   FONT_SIZES,
   ACCENT_INTENSITIES,
   CONTROL_DEPTHS,
@@ -73,6 +75,7 @@ const LS_BUTTON_ELEVATION = "theme-button-elevation"
 const LS_SURFACE_INTENSITY = "theme-surface-intensity"
 const LS_RADIUS = "theme-radius"
 const LS_SHELL_STYLE = "theme-shell-style"
+const LS_SIDEBAR_ACTIVE_BAR = "theme-sidebar-active-bar"
 const LS_FONT_SIZE = "theme-font-size"
 const LS_ACCENT_INTENSITY = "theme-accent-intensity"
 const LS_CONTROL_DEPTH = "theme-control-depth"
@@ -347,6 +350,18 @@ export function ThemeProvider({
     return cfg.defaults.shellStyle
   })
 
+  const [sidebarActiveBar, setSidebarActiveBarState] =
+    useState<SidebarActiveBarSetting>(() => {
+      const stored = readStorage(LS_SIDEBAR_ACTIVE_BAR)
+      if (
+        stored &&
+        (SIDEBAR_ACTIVE_BARS as readonly string[]).includes(stored)
+      ) {
+        return stored as SidebarActiveBarSetting
+      }
+      return cfg.defaults.sidebarActiveBar
+    })
+
   const [fontSize, setFontSizeState] = useState<FontSize>(() => {
     const stored = readStorage(LS_FONT_SIZE)
     if (stored && (FONT_SIZES as readonly string[]).includes(stored)) {
@@ -521,6 +536,7 @@ export function ThemeProvider({
       surfaceIntensity,
       radius,
       shellStyle,
+      sidebarActiveBar,
       fontSize,
       accentIntensity,
       controlDepth,
@@ -541,6 +557,7 @@ export function ThemeProvider({
       surfaceIntensity,
       radius,
       shellStyle,
+      sidebarActiveBar,
       fontSize,
       accentIntensity,
       controlDepth,
@@ -582,6 +599,9 @@ export function ThemeProvider({
       )
       setRadiusState(settings.radius ?? cfg.defaults.radius)
       setShellStyleState(settings.shellStyle ?? cfg.defaults.shellStyle)
+      setSidebarActiveBarState(
+        settings.sidebarActiveBar ?? cfg.defaults.sidebarActiveBar,
+      )
       setFontSizeState(settings.fontSize ?? cfg.defaults.fontSize)
       setAccentIntensityState(
         settings.accentIntensity ?? cfg.defaults.accentIntensity,
@@ -610,6 +630,10 @@ export function ThemeProvider({
       writeStorage(
         LS_SHELL_STYLE,
         settings.shellStyle ?? cfg.defaults.shellStyle,
+      )
+      writeStorage(
+        LS_SIDEBAR_ACTIVE_BAR,
+        settings.sidebarActiveBar ?? cfg.defaults.sidebarActiveBar,
       )
       writeStorage(LS_FONT_SIZE, settings.fontSize ?? cfg.defaults.fontSize)
       writeStorage(
@@ -653,6 +677,10 @@ export function ThemeProvider({
       document.documentElement.setAttribute(
         "data-shell-style",
         settings.shellStyle ?? cfg.defaults.shellStyle,
+      )
+      document.documentElement.setAttribute(
+        "data-sidebar-active-bar",
+        settings.sidebarActiveBar ?? cfg.defaults.sidebarActiveBar,
       )
       document.documentElement.setAttribute(
         "data-font-size",
@@ -1152,6 +1180,19 @@ export function ThemeProvider({
     [buildSettings, notifyChange, debouncedSave],
   )
 
+  const setSidebarActiveBar = useCallback(
+    (value: SidebarActiveBarSetting) => {
+      setSidebarActiveBarState(value)
+      writeStorage(LS_SIDEBAR_ACTIVE_BAR, value)
+      document.documentElement.setAttribute("data-sidebar-active-bar", value)
+      const settings = buildSettings({ sidebarActiveBar: value })
+      notifyChange(settings)
+      hasUserChanged.current = true
+      debouncedSave(settings)
+    },
+    [buildSettings, notifyChange, debouncedSave],
+  )
+
   const setRadius = useCallback(
     (r: Radius) => {
       setRadiusState(r)
@@ -1247,6 +1288,10 @@ export function ThemeProvider({
     )
     document.documentElement.setAttribute("data-radius", radius)
     document.documentElement.setAttribute("data-shell-style", shellStyle)
+    document.documentElement.setAttribute(
+      "data-sidebar-active-bar",
+      sidebarActiveBar,
+    )
     document.documentElement.setAttribute("data-font-size", fontSize)
     document.documentElement.setAttribute(
       "data-background-intensity",
@@ -1270,6 +1315,7 @@ export function ThemeProvider({
     surfaceIntensity,
     radius,
     shellStyle,
+    sidebarActiveBar,
     fontSize,
     backgroundIntensity,
     gradientPattern,
@@ -1348,6 +1394,7 @@ export function ThemeProvider({
       surfaceIntensity,
       radius,
       shellStyle,
+      sidebarActiveBar,
       fontSize,
       accentIntensity,
       controlDepth,
@@ -1371,6 +1418,7 @@ export function ThemeProvider({
       setSurfaceIntensity,
       setRadius,
       setShellStyle,
+      setSidebarActiveBar,
       setFontSize,
       setAccentIntensity,
       setControlDepth,
@@ -1392,6 +1440,7 @@ export function ThemeProvider({
       surfaceIntensity,
       radius,
       shellStyle,
+      sidebarActiveBar,
       fontSize,
       accentIntensity,
       controlDepth,
@@ -1414,6 +1463,7 @@ export function ThemeProvider({
       setSurfaceIntensity,
       setRadius,
       setShellStyle,
+      setSidebarActiveBar,
       setFontSize,
       setAccentIntensity,
       setControlDepth,

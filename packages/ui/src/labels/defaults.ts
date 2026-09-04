@@ -59,6 +59,7 @@ export const defaultLabels: UiLabels = {
       surfaceIntensity: "Surface Intensity",
       radius: "Radius",
       shellStyle: "Shell Style",
+      sidebarActiveBar: "Sidebar Indicator",
       fontSize: "Font Size",
       accentIntensity: "Accent Intensity",
       outerGlow: "Outer Glow",

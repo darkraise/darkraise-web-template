@@ -14,6 +14,7 @@ import {
   CONTROL_DEPTHS,
   RADII,
   SHELL_STYLES,
+  SIDEBAR_ACTIVE_BARS,
   FONT_SIZES,
   ACCENT_INTENSITIES,
   GLOW_LEVELS,
@@ -61,6 +62,19 @@ export interface ThemeSettingsSection {
  * which needs to know whether ANY are visible so it can hide its trigger
  * entirely rather than offering a button that opens an empty panel.
  */
+/* "Auto" rather than "Default" or "Preset": both of those already name other
+   things in this panel — the Default preset and the Preset section — and the
+   collision is real enough that queries for one find the other. */
+const SIDEBAR_ACTIVE_BAR_LABELS: Record<
+  (typeof SIDEBAR_ACTIVE_BARS)[number],
+  string
+> = {
+  default: "Auto",
+  bar: "Bar",
+  ring: "Ring",
+  both: "Both",
+}
+
 export function useThemeSettingsSections(): ThemeSettingsSection[] {
   const labels = useUiLabels()
   const {
@@ -78,6 +92,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
     controlDepth,
     radius,
     shellStyle,
+    sidebarActiveBar,
     fontSize,
     accentIntensity,
     outerGlow,
@@ -99,6 +114,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
     setControlDepth,
     setRadius,
     setShellStyle,
+    setSidebarActiveBar,
     setFontSize,
     setAccentIntensity,
     setOuterGlow,
@@ -549,6 +565,41 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
             onChange={setShellStyle}
             label={labels.theme.axisLabels.shellStyle}
           />
+        </div>
+      ),
+    },
+    show("sidebarActiveBar") && {
+      key: "sidebarActiveBar",
+      group: "layout" as const,
+      node: (
+        <div key="sidebarActiveBar" className="dr-theme-switcher-row">
+          <Label className="dr-theme-switcher-section-label">
+            {labels.theme.axisLabels.sidebarActiveBar}
+          </Label>
+          {/* Not AxisControl: it renders any four-value axis as a stepped
+              slider, which is right for ordinal axes only. These four are
+              categorical — there is no "more" direction. */}
+          <ToggleGroup
+            type="single"
+            value={sidebarActiveBar}
+            onValueChange={(value) => {
+              // A single-selection group emits "" on deselect; that must not
+              // reach state or the control ends up with no active item.
+              if (!value) return
+              setSidebarActiveBar(value as (typeof SIDEBAR_ACTIVE_BARS)[number])
+            }}
+            variant="outline"
+            size="sm"
+            aria-label={labels.theme.axisLabels.sidebarActiveBar}
+            className="dr-theme-switcher-toggle-group"
+            data-cols={SIDEBAR_ACTIVE_BARS.length}
+          >
+            {SIDEBAR_ACTIVE_BARS.map((value) => (
+              <ToggleGroupItem key={value} value={value}>
+                {SIDEBAR_ACTIVE_BAR_LABELS[value]}
+              </ToggleGroupItem>
+            ))}
+          </ToggleGroup>
         </div>
       ),
     },

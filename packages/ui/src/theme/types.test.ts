@@ -4,6 +4,7 @@ import {
   BACKGROUND_INTENSITIES,
   CONTROL_DEPTHS,
   SHELL_STYLES,
+  SIDEBAR_ACTIVE_BARS,
 } from "./types"
 import { themeConfig } from "./themeConfig"
 
@@ -73,5 +74,19 @@ describe("shell style axis", () => {
 
   it("is switchable by default", () => {
     expect(themeConfig.switcher.axes.shellStyle).toBe(true)
+  })
+})
+
+describe("sidebarActiveBar axis", () => {
+  it("leads with the preset's own indicator", () => {
+    expect(SIDEBAR_ACTIVE_BARS).toEqual(["default", "bar", "ring", "both"])
+  })
+
+  it("defaults to the preset's own indicator so nothing moves", () => {
+    expect(themeConfig.defaults.sidebarActiveBar).toBe("default")
+  })
+
+  it("is switchable by default", () => {
+    expect(themeConfig.switcher.axes.sidebarActiveBar).toBe(true)
   })
 })

@@ -37,6 +37,7 @@ const ELEVATIONS = ["flat", "low", "medium", "high"]
 const RADII = ["sharp", "subtle", "rounded", "pill"]
 const CONTROL_DEPTHS = ["flush", "subtle", "recessed", "deep"]
 const SHELL_STYLES = ["classic", "inset", "island", "floating", "framed", "flat"]
+const SIDEBAR_ACTIVE_BARS = ["default", "bar", "ring", "both"]
 const FONT_SIZES = ["small", "medium", "large", "extra-large"]
 const ACCENT_INTENSITIES = ["calm", "balanced", "vivid", "intense"]
 const GLOW_LEVELS = ["none", "subtle", "balanced", "vivid"]
@@ -51,7 +52,8 @@ const THEME_AXIS_KEYS = [
   "mode", "accentColor", "surfaceColor", "preset",
   "backgroundStyle", "backgroundIntensity", "gradientPattern",
   "density", "elevation", "buttonElevation", "surfaceIntensity", "radius", "fontSize",
-  "accentIntensity", "controlDepth", "shellStyle", "outerGlow", "innerGlow", "presetAxes",
+  "accentIntensity", "controlDepth", "shellStyle", "sidebarActiveBar",
+  "outerGlow", "innerGlow", "presetAxes",
 ]
 
 const argv = minimist(process.argv.slice(2), {
@@ -61,7 +63,8 @@ const argv = minimist(process.argv.slice(2), {
     "background", "background-intensity", "gradient-pattern",
     "mode", "theme-axes",
     "density", "elevation", "button-elevation", "surface-intensity", "radius", "font-size",
-    "accent-intensity", "control-depth", "shell-style", "outer-glow", "inner-glow",
+    "accent-intensity", "control-depth", "shell-style", "sidebar-active-bar",
+    "outer-glow", "inner-glow",
     "host", "port",
   ],
   alias: { y: "yes" },
@@ -100,6 +103,7 @@ validate(argv["surface-intensity"], SURFACE_INTENSITIES, "surface-intensity")
 validate(argv.radius, RADII, "radius")
 validate(argv["control-depth"], CONTROL_DEPTHS, "control-depth")
 validate(argv["shell-style"], SHELL_STYLES, "shell-style")
+validate(argv["sidebar-active-bar"], SIDEBAR_ACTIVE_BARS, "sidebar-active-bar")
 validate(argv["font-size"], FONT_SIZES, "font-size")
 validate(argv["accent-intensity"], ACCENT_INTENSITIES, "accent-intensity")
 validate(argv["outer-glow"], GLOW_LEVELS, "outer-glow")
@@ -286,6 +290,14 @@ async function main() {
     }),
   ))
 
+  const sidebarActiveBar = argv["sidebar-active-bar"] || (skipPrompts ? "default" : cancelled(
+    await p.select({
+      message: "Sidebar indicator",
+      options: SIDEBAR_ACTIVE_BARS.map((v) => ({ value: v, label: v })),
+      initialValue: "default",
+    }),
+  ))
+
   const fontSize = argv["font-size"] || (skipPrompts ? "medium" : cancelled(
     await p.select({
       message: "Font size",
@@ -349,6 +361,7 @@ async function main() {
             { value: "accentIntensity", label: "Accent intensity" },
             { value: "controlDepth", label: "Control depth" },
             { value: "shellStyle", label: "Shell style" },
+            { value: "sidebarActiveBar", label: "Sidebar indicator" },
             { value: "outerGlow", label: "Outer glow" },
             { value: "innerGlow", label: "Inner glow" },
             { value: "presetAxes", label: "Preset-specific axes (e.g. glass blur, scifi frame)" },
@@ -407,6 +420,7 @@ async function main() {
         radius: radius,
         controlDepth: controlDepth,
         shellStyle: shellStyle,
+        sidebarActiveBar: sidebarActiveBar,
         fontSize: fontSize,
         accentIntensity: accentIntensity,
         outerGlow: outerGlow,
@@ -506,6 +520,7 @@ async function main() {
           "radius": "theme-radius",
           "control-depth": "theme-control-depth",
           "shell-style": "theme-shell-style",
+          "sidebar-active-bar": "theme-sidebar-active-bar",
           "font-size": "theme-font-size",
           "outer-glow": "theme-outer-glow",
           "inner-glow": "theme-inner-glow",
@@ -623,6 +638,7 @@ export const themeConfig: ThemeConfig = {
     radius: "${config.theme.defaults.radius}",
     controlDepth: "${config.theme.defaults.controlDepth}",
     shellStyle: "${config.theme.defaults.shellStyle}",
+    sidebarActiveBar: "${config.theme.defaults.sidebarActiveBar}",
     fontSize: "${config.theme.defaults.fontSize}",
     accentIntensity: "${config.theme.defaults.accentIntensity}",
     outerGlow: "${config.theme.defaults.outerGlow}",
@@ -645,6 +661,7 @@ export const themeConfig: ThemeConfig = {
       radius: ${config.theme.switcher.axes.radius},
       controlDepth: ${config.theme.switcher.axes.controlDepth},
       shellStyle: ${config.theme.switcher.axes.shellStyle},
+      sidebarActiveBar: ${config.theme.switcher.axes.sidebarActiveBar},
       fontSize: ${config.theme.switcher.axes.fontSize},
       accentIntensity: ${config.theme.switcher.axes.accentIntensity},
       outerGlow: ${config.theme.switcher.axes.outerGlow},

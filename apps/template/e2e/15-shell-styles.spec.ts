@@ -203,3 +203,38 @@ test.describe("shell style geometry", () => {
     ).toBe(true)
   })
 })
+
+test.describe("sidebar indicator axis", () => {
+  test("defers to the preset's own indicator by default", async ({ page }) => {
+    await seedApp(page)
+    await gotoApp(page, "/")
+    await expect(page.locator(".dr-sidebar-nav").first()).not.toHaveAttribute(
+      "data-active-bar",
+      /.+/,
+    )
+  })
+
+  test("a chosen indicator reaches the sidebar", async ({ page }) => {
+    await seedApp(page, { sidebarActiveBar: "ring" })
+    await gotoApp(page, "/")
+    await expect(page.locator(".dr-sidebar-nav").first()).toHaveAttribute(
+      "data-active-bar",
+      "ring",
+    )
+  })
+
+  test("the theme panel switches it live", async ({ page }) => {
+    await seedApp(page)
+    await gotoApp(page, "/")
+    await openThemeSwitcher(page)
+    await themeSwitcher(page)
+      .locator('[aria-label="Sidebar Indicator"]')
+      .getByRole("radio", { name: "Both", exact: true })
+      .click()
+
+    await expect(page.locator(".dr-sidebar-nav").first()).toHaveAttribute(
+      "data-active-bar",
+      "both",
+    )
+  })
+})

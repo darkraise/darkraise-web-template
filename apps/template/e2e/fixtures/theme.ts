@@ -139,6 +139,7 @@ export const LS_KEYS = {
   buttonElevation: "theme-button-elevation",
   radius: "theme-radius",
   shellStyle: "theme-shell-style",
+  sidebarActiveBar: "theme-sidebar-active-bar",
   fontSize: "theme-font-size",
   accentIntensity: "theme-accent-intensity",
   surfaceIntensity: "theme-surface-intensity",

@@ -14,6 +14,7 @@ import type {
   GlowLevel,
   Mode,
   ShellStyle,
+  SidebarActiveBarSetting,
 } from "./types"
 import type { PresetName } from "./presets"
 
@@ -37,6 +38,7 @@ export interface ThemeConfig {
     outerGlow: GlowLevel
     innerGlow: GlowLevel
     shellStyle: ShellStyle
+    sidebarActiveBar: SidebarActiveBarSetting
   }
   switcher: {
     enabled: boolean
@@ -59,6 +61,7 @@ export interface ThemeConfig {
       outerGlow: boolean
       innerGlow: boolean
       shellStyle: boolean
+      sidebarActiveBar: boolean
       /** Master toggle for all preset-specific axis controls. */
       presetAxes: boolean
     }
@@ -85,6 +88,7 @@ export const themeConfig: ThemeConfig = {
     outerGlow: "none",
     innerGlow: "none",
     shellStyle: "classic",
+    sidebarActiveBar: "default",
   },
   switcher: {
     enabled: true,
@@ -107,6 +111,7 @@ export const themeConfig: ThemeConfig = {
       outerGlow: true,
       innerGlow: true,
       shellStyle: true,
+      sidebarActiveBar: true,
       presetAxes: true,
     },
   },

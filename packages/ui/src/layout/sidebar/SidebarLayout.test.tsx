@@ -1,6 +1,8 @@
 import { render, screen, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi } from "vitest"
+import { ThemeProvider, themeConfig } from "@theme"
+import type { SidebarActiveBarSetting } from "@theme"
 import { SidebarLayout } from "@layout/sidebar"
 import type { SidebarLayoutProps } from "@layout/sidebar"
 import { RouterAdapterProvider } from "@router"
@@ -197,5 +199,64 @@ describe("shell grid", () => {
       "data-shell-style",
       "island",
     )
+  })
+})
+
+describe("active indicator precedence", () => {
+  // Drive the axis through the provider's config rather than storage: this
+  // suite runs without a localStorage stub.
+  const withAxis = (value: SidebarActiveBarSetting) => ({
+    ...themeConfig,
+    defaults: { ...themeConfig.defaults, sidebarActiveBar: value },
+  })
+
+  const renderWithTheme = (
+    props: Partial<SidebarLayoutProps> = {},
+    axis?: SidebarActiveBarSetting,
+  ) => {
+    const tree = (
+      <RouterAdapterProvider value={adapter}>
+        <SidebarLayout nav={nav} showThemeSwitcher={false} {...props}>
+          <div>Content</div>
+        </SidebarLayout>
+      </RouterAdapterProvider>
+    )
+    return render(
+      axis === undefined ? (
+        tree
+      ) : (
+        <ThemeProvider config={withAxis(axis)}>{tree}</ThemeProvider>
+      ),
+    )
+  }
+
+  const wire = (container: HTMLElement) =>
+    container
+      .querySelector(".dr-sidebar-nav")
+      ?.getAttribute("data-active-bar") ?? null
+
+  it("leaves the preset's own indicator alone by default", () => {
+    const { container } = renderWithTheme({}, "default")
+    expect(wire(container)).toBeNull()
+  })
+
+  it("follows the theme axis when nothing more specific is set", () => {
+    const { container } = renderWithTheme({}, "ring")
+    expect(wire(container)).toBe("ring")
+  })
+
+  it("lets the prop beat the theme axis", () => {
+    const { container } = renderWithTheme({ activeBar: "both" }, "ring")
+    expect(wire(container)).toBe("both")
+  })
+
+  it("lets defaultActiveBar beat the theme axis", () => {
+    const { container } = renderWithTheme({ defaultActiveBar: "bar" }, "ring")
+    expect(wire(container)).toBe("bar")
+  })
+
+  it("still works with no ThemeProvider at all", () => {
+    const { container } = renderWithTheme({ activeBar: "bar" })
+    expect(wire(container)).toBe("bar")
   })
 })

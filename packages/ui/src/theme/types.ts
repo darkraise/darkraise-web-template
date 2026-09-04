@@ -99,6 +99,14 @@ export const SHELL_STYLES = [
 export type ShellStyle = (typeof SHELL_STYLES)[number]
 
 /**
+ * Indicator drawn beside the active sidebar item. `default` leaves each
+ * preset's own look alone, which is what the sidebar did before this became
+ * a theme axis; the other three force one look everywhere.
+ */
+export const SIDEBAR_ACTIVE_BARS = ["default", "bar", "ring", "both"] as const
+export type SidebarActiveBarSetting = (typeof SIDEBAR_ACTIVE_BARS)[number]
+
+/**
  * How far a form control recesses below the surface that contains it. Only
  * meaningful inside a raised surface: a control sitting on the bare page
  * canvas keeps the raised rung at every step, because recessing it there
@@ -161,6 +169,7 @@ export interface ThemeSettings {
   outerGlow?: GlowLevel
   innerGlow?: GlowLevel
   shellStyle?: ShellStyle
+  sidebarActiveBar?: SidebarActiveBarSetting
   /** Per-preset axis values; outer key = preset name, inner key = axis name. */
   presetAxisValues?: Record<string, Record<string, string>>
 }
@@ -186,6 +195,7 @@ export interface ThemeContextValue {
   surfaceIntensity: SurfaceIntensity
   radius: Radius
   shellStyle: ShellStyle
+  sidebarActiveBar: SidebarActiveBarSetting
   fontSize: FontSize
   accentIntensity: AccentIntensity
   controlDepth: ControlDepth
@@ -211,6 +221,7 @@ export interface ThemeContextValue {
   setSurfaceIntensity: (intensity: SurfaceIntensity) => void
   setRadius: (radius: Radius) => void
   setShellStyle: (style: ShellStyle) => void
+  setSidebarActiveBar: (value: SidebarActiveBarSetting) => void
   setFontSize: (size: FontSize) => void
   setAccentIntensity: (intensity: AccentIntensity) => void
   setControlDepth: (depth: ControlDepth) => void

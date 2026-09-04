@@ -73,6 +73,7 @@ test.describe("theme switcher popover", () => {
       "Outer Glow",
       "Inner Glow",
       "Shell Style",
+      "Sidebar Indicator",
       "Radius",
     ])
   })

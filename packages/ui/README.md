@@ -113,6 +113,26 @@ Set it globally through `themeConfig.defaults.shellStyle` or
 A layout resolves `prop ?? theme value` and stamps the result on its own root,
 so a pinned shell ignores the axis without any CSS specificity fight.
 
+## Sidebar indicator
+
+`sidebarActiveBar` is a theme axis with four values. `default` leaves each
+preset's own indicator alone (glass draws a ring and a rail, sci-fi a ring,
+everything else a rail); `bar`, `ring` and `both` force one look everywhere.
+It appears in the theme panel as **Sidebar Indicator**, with `default`
+labelled "Auto".
+
+`SidebarLayout` resolves it most-specific-first: the `activeBar` prop pins it,
+otherwise the header toggle's value once someone has used it, otherwise the
+theme axis.
+
+```tsx
+// Follows the axis:
+<SidebarLayout nav={nav} />
+
+// Pins one sidebar, ignoring the axis:
+<SidebarLayout nav={nav} activeBar="ring" />
+```
+
 ## Server rendering the layout variant
 
 `useLayoutStore` reads `localStorage` when the module initialises. In a

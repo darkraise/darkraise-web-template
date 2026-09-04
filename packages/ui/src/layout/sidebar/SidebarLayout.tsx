@@ -14,7 +14,7 @@ import { resolveActiveBar } from "./sidebar-active-bar"
 import type { SidebarActiveBar } from "./sidebar-active-bar"
 import { SidebarProvider } from "./SidebarContext"
 import type { LayoutProps } from "@layout/types"
-import { useShellStyle } from "@layout/shell"
+import { useShellStyle, useSidebarActiveBarSetting } from "@layout/shell"
 import type { ShellStyle } from "@theme"
 import { useUiLabels } from "@labels"
 
@@ -82,14 +82,27 @@ export function SidebarLayout({
   // is touched. A single-selection ToggleGroup can't hold `undefined`
   // itself, so "unset" is represented on the wire as the "default" item
   // and mapped back to `undefined` in onValueChange.
-  const [uncontrolledActiveBar, setUncontrolledActiveBar] = useState<
-    SidebarActiveBar | undefined
-  >(() => resolveActiveBar(defaultActiveBar))
+  // Three states, not two: "bar"/"ring"/"both" force a look, "default" asks
+  // for the preset's own, and `undefined` means nobody local has spoken yet —
+  // only then does the theme axis get a say.
+  const [localActiveBar, setLocalActiveBar] = useState<
+    SidebarActiveBar | "default" | undefined
+  >(() =>
+    defaultActiveBar === undefined
+      ? undefined
+      : (resolveActiveBar(defaultActiveBar) ?? "default"),
+  )
+  const themeActiveBar = useSidebarActiveBarSetting()
+
+  const settingToWire = (value: SidebarActiveBar | "default") =>
+    value === "default" ? undefined : value
 
   const activeBar =
-    activeBarProp === undefined
-      ? uncontrolledActiveBar
-      : resolveActiveBar(activeBarProp)
+    activeBarProp !== undefined
+      ? resolveActiveBar(activeBarProp)
+      : localActiveBar !== undefined
+        ? settingToWire(localActiveBar)
+        : settingToWire(themeActiveBar)
 
   const flatNavItems = flattenNavItems(nav)
 
@@ -97,15 +110,14 @@ export function SidebarLayout({
     <ToggleGroup
       type="single"
       size="sm"
-      value={activeBar ?? "default"}
+      value={localActiveBar ?? themeActiveBar}
       onValueChange={(value) => {
         // A single-selection group emits "" on deselect; that must not
         // reach state, or the control would end up with no active item.
         if (!value) return
-        const next =
-          value === "default" ? undefined : (value as SidebarActiveBar)
-        if (activeBarProp === undefined) setUncontrolledActiveBar(next)
-        onActiveBarChange?.(next)
+        const next = value as SidebarActiveBar | "default"
+        if (activeBarProp === undefined) setLocalActiveBar(next)
+        onActiveBarChange?.(settingToWire(next))
       }}
       variant="outline"
       aria-label="Sidebar active-item indicator"
