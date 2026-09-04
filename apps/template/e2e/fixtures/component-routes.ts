@@ -59,6 +59,7 @@ export const COMPONENT_ROUTES: ComponentRoute[] = [
   { path: "/components/kbd", title: "Kbd" },
   { path: "/components/label", title: "Label" },
   { path: "/components/layouts", title: "Layouts" },
+  { path: "/components/shell-styles", title: "Shell Styles" },
   { path: "/components/listbox", title: "Listbox" },
   { path: "/components/marquee", title: "Marquee" },
   { path: "/components/menubar", title: "Menubar" },

@@ -85,6 +85,43 @@ translating it will not change anything rendered today; it is kept so that a
 future wiring stays backward-compatible for anyone already providing a
 complete `UiLabels`.
 
+## Shell styles
+
+Every app shell structure — `SidebarLayout`, `TopNavLayout`, `StackedLayout`
+and `SplitPanelLayout` — is laid out on one CSS grid whose regions carry
+`data-region`. The `shellStyle` theme axis repaints those regions without
+changing which structure is in use:
+
+| Style      | Treatment                                                               |
+| ---------- | ----------------------------------------------------------------------- |
+| `classic`  | Regions welded, hairline rules, no gutter. The default.                 |
+| `inset`    | Chrome stays welded; only the content area detaches as a rounded panel. |
+| `island`   | Every region is a detached card on the app ground.                      |
+| `floating` | Content runs full-bleed; chrome hovers over it with blur.               |
+| `framed`   | The whole shell insets from the viewport as a window.                   |
+| `flat`     | No rules; regions separated by background tone alone.                   |
+
+Set it globally through `themeConfig.defaults.shellStyle` or
+`useTheme().setShellStyle`, or pin one shell with the prop:
+
+```tsx
+<SidebarLayout nav={nav} shellStyle="island">
+  <Outlet />
+</SidebarLayout>
+```
+
+A layout resolves `prop ?? theme value` and stamps the result on its own root,
+so a pinned shell ignores the axis without any CSS specificity fight.
+
+## Server rendering the layout variant
+
+`useLayoutStore` reads `localStorage` when the module initialises. In a
+browser-only app the first render is already correct. Under SSR the server has
+no `localStorage`, so it returns the default `sidebar` and the client swaps
+after hydration. If you server-render, read the persisted variant in your
+document template and hand it to `useLayoutStore.setState` before the app
+mounts, the way the scaffolder's inline theme script does for theme axes.
+
 ## Sci-fi preset font
 
 Orbitron is no longer fetched or bundled. The Sci-fi preset renders it only

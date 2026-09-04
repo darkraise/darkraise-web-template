@@ -41,6 +41,7 @@ export interface ThemeSeed {
   elevation?: string
   buttonElevation?: string
   radius?: string
+  shellStyle?: string
   fontSize?: string
   accentIntensity?: string
   surfaceIntensity?: string
@@ -78,6 +79,7 @@ function storageEntries(theme: ThemeSeed, authenticated: boolean) {
     ["elevation", LS_KEYS.elevation],
     ["buttonElevation", LS_KEYS.buttonElevation],
     ["radius", LS_KEYS.radius],
+    ["shellStyle", LS_KEYS.shellStyle],
     ["fontSize", LS_KEYS.fontSize],
     ["accentIntensity", LS_KEYS.accentIntensity],
     ["surfaceIntensity", LS_KEYS.surfaceIntensity],
