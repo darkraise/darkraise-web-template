@@ -6,6 +6,7 @@ export { MobileDrawer } from "./mobile-drawer"
 export { BrandLogo } from "./brand-logo"
 export { useBrandStore } from "./brandStore"
 export { LayoutHeader } from "./layout-header"
+export { useShellStyle } from "./shell"
 export {
   SidebarLayout,
   SidebarNav,

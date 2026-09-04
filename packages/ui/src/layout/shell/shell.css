@@ -1,0 +1,69 @@
+@layer components {
+  /* The grid every app shell structure is laid out on. Area names are the
+     region names, so a template line reads as the regions it places.
+
+     Single-level on purpose: an intermediate wrapper around the bar and the
+     content would weld them into one box, which is exactly what the island
+     and floating styles have to be able to pull apart. */
+  .dr-shell {
+    @apply grid h-dvh overflow-hidden;
+    gap: var(--shell-gap);
+    padding: var(--shell-pad);
+    background-color: hsl(var(--shell-ground));
+  }
+
+  .dr-shell[data-structure="sidebar"] {
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto 1fr;
+    grid-template-areas: "nav bar" "nav content";
+  }
+
+  .dr-shell[data-structure="top-nav"] {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    grid-template-areas: "bar" "content";
+  }
+
+  .dr-shell[data-structure="stacked"] {
+    grid-template-columns: auto auto 1fr;
+    grid-template-rows: auto 1fr;
+    grid-template-areas: "nav subnav bar" "nav subnav content";
+  }
+
+  .dr-shell[data-structure="split-panel"] {
+    grid-template-columns: auto auto 1fr;
+    grid-template-rows: auto 1fr;
+    grid-template-areas: "bar bar bar" "panel handle content";
+  }
+
+  .dr-shell > [data-region="nav"] {
+    grid-area: nav;
+  }
+  .dr-shell > [data-region="subnav"] {
+    grid-area: subnav;
+  }
+  .dr-shell > [data-region="bar"] {
+    grid-area: bar;
+  }
+  .dr-shell > [data-region="content"] {
+    grid-area: content;
+  }
+  .dr-shell > [data-region="panel"] {
+    grid-area: panel;
+  }
+  .dr-shell > [data-region="handle"] {
+    grid-area: handle;
+  }
+
+  /* Below md the rails are hidden, so every structure collapses to a bar over
+     content. Declared explicitly because a `display: none` rail still leaves
+     its auto-sized column in the template. */
+  @media (width < 48rem) {
+    .dr-shell[data-structure="sidebar"],
+    .dr-shell[data-structure="stacked"],
+    .dr-shell[data-structure="split-panel"] {
+      grid-template-columns: 1fr;
+      grid-template-areas: "bar" "content";
+    }
+  }
+}
