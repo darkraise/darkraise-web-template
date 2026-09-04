@@ -16,6 +16,7 @@ export {
   SURFACE_INTENSITIES,
   RADII,
   MODES,
+  SHELL_STYLES,
 } from "./types"
 export type {
   AccentColor,
@@ -25,6 +26,7 @@ export type {
   Elevation,
   SurfaceIntensity,
   Radius,
+  ShellStyle,
   Mode,
   ResolvedMode,
   ColorScale,

@@ -84,6 +84,21 @@ export const FONT_SIZES = ["small", "medium", "large", "extra-large"] as const
 export type FontSize = (typeof FONT_SIZES)[number]
 
 /**
+ * Chrome treatment of the app shell, orthogonal to which structure is in
+ * use. `classic` is the welded, hairline-ruled look the package shipped
+ * before this axis existed.
+ */
+export const SHELL_STYLES = [
+  "classic",
+  "inset",
+  "island",
+  "floating",
+  "framed",
+  "flat",
+] as const
+export type ShellStyle = (typeof SHELL_STYLES)[number]
+
+/**
  * How far a form control recesses below the surface that contains it. Only
  * meaningful inside a raised surface: a control sitting on the bare page
  * canvas keeps the raised rung at every step, because recessing it there

@@ -13,6 +13,7 @@ import type {
   ControlDepth,
   GlowLevel,
   Mode,
+  ShellStyle,
 } from "./types"
 import type { PresetName } from "./presets"
 
@@ -35,6 +36,7 @@ export interface ThemeConfig {
     controlDepth: ControlDepth
     outerGlow: GlowLevel
     innerGlow: GlowLevel
+    shellStyle: ShellStyle
   }
   switcher: {
     enabled: boolean
@@ -56,6 +58,7 @@ export interface ThemeConfig {
       controlDepth: boolean
       outerGlow: boolean
       innerGlow: boolean
+      shellStyle: boolean
       /** Master toggle for all preset-specific axis controls. */
       presetAxes: boolean
     }
@@ -81,6 +84,7 @@ export const themeConfig: ThemeConfig = {
     controlDepth: "recessed",
     outerGlow: "none",
     innerGlow: "none",
+    shellStyle: "classic",
   },
   switcher: {
     enabled: true,
@@ -102,6 +106,7 @@ export const themeConfig: ThemeConfig = {
       controlDepth: true,
       outerGlow: true,
       innerGlow: true,
+      shellStyle: true,
       presetAxes: true,
     },
   },

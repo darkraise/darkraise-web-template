@@ -3,6 +3,7 @@ import {
   SURFACE_INTENSITIES,
   BACKGROUND_INTENSITIES,
   CONTROL_DEPTHS,
+  SHELL_STYLES,
 } from "./types"
 import { themeConfig } from "./themeConfig"
 
@@ -51,5 +52,26 @@ describe("backgroundIntensity axis", () => {
 
   it("is switchable by default", () => {
     expect(themeConfig.switcher.axes.backgroundIntensity).toBe(true)
+  })
+})
+
+describe("shell style axis", () => {
+  it("lists the six shell styles with classic first", () => {
+    expect(SHELL_STYLES).toEqual([
+      "classic",
+      "inset",
+      "island",
+      "floating",
+      "framed",
+      "flat",
+    ])
+  })
+
+  it("defaults to classic so existing apps do not move", () => {
+    expect(themeConfig.defaults.shellStyle).toBe("classic")
+  })
+
+  it("is switchable by default", () => {
+    expect(themeConfig.switcher.axes.shellStyle).toBe(true)
   })
 })
