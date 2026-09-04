@@ -14,6 +14,8 @@ import { resolveActiveBar } from "./sidebar-active-bar"
 import type { SidebarActiveBar } from "./sidebar-active-bar"
 import { SidebarProvider } from "./SidebarContext"
 import type { LayoutProps } from "@layout/types"
+import { useShellStyle } from "@layout/shell"
+import type { ShellStyle } from "@theme"
 import { useUiLabels } from "@labels"
 
 export interface SidebarLayoutProps extends LayoutProps {
@@ -39,6 +41,8 @@ export interface SidebarLayoutProps extends LayoutProps {
   defaultActiveBar?: boolean | SidebarActiveBar
   /** Fires when the header toggle picks a style. */
   onActiveBarChange?: (activeBar: SidebarActiveBar | undefined) => void
+  /** Pins this shell's chrome treatment, overriding the theme axis. */
+  shellStyle?: ShellStyle
 }
 
 export function SidebarLayout({
@@ -53,12 +57,14 @@ export function SidebarLayout({
   activeBar: activeBarProp,
   defaultActiveBar,
   onActiveBarChange,
+  shellStyle: shellStyleProp,
   user,
   onProfile,
   onSettings,
   onLogout,
 }: SidebarLayoutProps) {
   const labels = useUiLabels()
+  const shellStyle = useShellStyle(shellStyleProp)
   useRouteFocus()
   const [collapsed, setCollapsed] = useState(false)
   // Defaults to unset so nobody's sidebar changes appearance unless they ask:
@@ -133,11 +139,16 @@ export function SidebarLayout({
   return (
     <TooltipProvider>
       <SidebarProvider collapsed={collapsed}>
-        <div className="dr-sidebar-layout">
+        <div
+          className="dr-shell dr-sidebar-layout"
+          data-structure="sidebar"
+          data-shell-style={shellStyle}
+        >
           <SkipLink>{labels.layout.skipToContent}</SkipLink>
           <aside
             aria-label="Primary"
             aria-expanded={!collapsed}
+            data-region="nav"
             className="dr-sidebar-layout-aside sidebar-gradient-overlay theme-transition bg-surface-sidebar"
             data-collapsed={collapsed ? "true" : undefined}
           >
@@ -185,37 +196,37 @@ export function SidebarLayout({
             )}
           </aside>
 
-          <div className="dr-sidebar-layout-main">
-            <LayoutHeader
-              nav={nav}
-              sidebarHeader={sidebarHeader}
-              sidebarFooter={sidebarFooter}
-              sidebarActiveBar={activeBar}
-              headerSlot={
-                <>
-                  {activeBarToggle}
-                  {headerSlot}
-                </>
-              }
-              className="header-gradient-overlay theme-transition"
-              showLayoutSwitcher={showLayoutSwitcher}
-              showThemeSwitcher={showThemeSwitcher}
-              /* Search lives in the rail for this layout. */
-              showSearch={false}
-              user={user}
-              onProfile={onProfile}
-              onSettings={onSettings}
-              onLogout={onLogout}
-            />
-            <main
-              id="main-content"
-              tabIndex={-1}
-              className="dr-sidebar-layout-content"
-              data-content
-            >
-              {children}
-            </main>
-          </div>
+          <LayoutHeader
+            data-region="bar"
+            nav={nav}
+            sidebarHeader={sidebarHeader}
+            sidebarFooter={sidebarFooter}
+            sidebarActiveBar={activeBar}
+            headerSlot={
+              <>
+                {activeBarToggle}
+                {headerSlot}
+              </>
+            }
+            className="header-gradient-overlay theme-transition"
+            showLayoutSwitcher={showLayoutSwitcher}
+            showThemeSwitcher={showThemeSwitcher}
+            /* Search lives in the rail for this layout. */
+            showSearch={false}
+            user={user}
+            onProfile={onProfile}
+            onSettings={onSettings}
+            onLogout={onLogout}
+          />
+          <main
+            id="main-content"
+            tabIndex={-1}
+            data-region="content"
+            className="dr-sidebar-layout-content"
+            data-content
+          >
+            {children}
+          </main>
         </div>
       </SidebarProvider>
     </TooltipProvider>

@@ -152,3 +152,50 @@ describe("SidebarLayout activeBar", () => {
     expect(onActiveBarChange).toHaveBeenCalledWith(undefined)
   })
 })
+
+describe("shell grid", () => {
+  it("marks its regions so shell style CSS can reach them", () => {
+    const { container } = renderLayout()
+    const shell = container.querySelector(".dr-shell")
+    expect(shell).toHaveAttribute("data-structure", "sidebar")
+    expect(shell?.querySelector('[data-region="nav"]')).toBeInTheDocument()
+    expect(shell?.querySelector('[data-region="bar"]')).toBeInTheDocument()
+    expect(shell?.querySelector('[data-region="content"]')).toBeInTheDocument()
+  })
+
+  it("puts the bar and the content in separate regions", () => {
+    // The old .dr-sidebar-layout-main wrapper welded these into one box,
+    // which no gutter could ever pull apart.
+    const { container } = renderLayout()
+    const bar = container.querySelector('[data-region="bar"]')
+    const content = container.querySelector('[data-region="content"]')
+    expect(bar).not.toBeNull()
+    expect(content).not.toBeNull()
+    expect(bar?.contains(content as Node)).toBe(false)
+  })
+
+  it("makes every region a direct grid child", () => {
+    const { container } = renderLayout()
+    const shell = container.querySelector(".dr-shell") as HTMLElement
+    for (const region of ["nav", "bar", "content"]) {
+      const node = container.querySelector(`[data-region="${region}"]`)
+      expect(node?.parentElement).toBe(shell)
+    }
+  })
+
+  it("defaults to the classic treatment", () => {
+    const { container } = renderLayout()
+    expect(container.querySelector(".dr-shell")).toHaveAttribute(
+      "data-shell-style",
+      "classic",
+    )
+  })
+
+  it("pins the style when the prop is given", () => {
+    const { container } = renderLayout({ shellStyle: "island" })
+    expect(container.querySelector(".dr-shell")).toHaveAttribute(
+      "data-shell-style",
+      "island",
+    )
+  })
+})

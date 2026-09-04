@@ -1,4 +1,5 @@
 import type { ReactNode } from "react"
+import type * as React from "react"
 import { cn } from "@lib/utils"
 import { ThemeSwitcher } from "@theme"
 import { SearchCommand } from "@layout/search-command"
@@ -10,7 +11,7 @@ import { flattenNavItems } from "@layout/navTree"
 import type { NavGroup } from "@layout/types"
 import type { SidebarActiveBar } from "@layout/sidebar"
 
-interface LayoutHeaderProps {
+interface LayoutHeaderProps extends React.HTMLAttributes<HTMLElement> {
   nav: NavGroup[]
   headerSlot?: ReactNode
   /** Forwarded to MobileDrawer so the drawer mirrors the sidebar rails. */
@@ -54,11 +55,12 @@ export function LayoutHeader({
   onProfile,
   onSettings,
   onLogout,
+  ...props
 }: LayoutHeaderProps) {
   const flatNavItems = flattenNavItems(nav)
 
   return (
-    <header className={cn("dr-layout-header", className)}>
+    <header {...props} className={cn("dr-layout-header", className)}>
       <MobileDrawer
         nav={nav}
         header={sidebarHeader}

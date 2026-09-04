@@ -36,6 +36,14 @@
     grid-template-areas: "bar bar bar" "panel handle content";
   }
 
+  /* A grid item's automatic minimum size is its content, so a region that
+     scrolls would otherwise grow past its track and be clipped by the
+     shell's own overflow rather than scrolling inside it. */
+  .dr-shell > [data-region] {
+    min-width: 0;
+    min-height: 0;
+  }
+
   .dr-shell > [data-region="nav"] {
     grid-area: nav;
   }
