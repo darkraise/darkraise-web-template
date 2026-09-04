@@ -330,6 +330,11 @@ export const nav: NavGroup[] = [
       { label: "Kbd", href: "/components/kbd", icon: Keyboard },
       { label: "Label", href: "/components/label", icon: Bookmark },
       { label: "Layouts", href: "/components/layouts", icon: LayoutPanelLeft },
+      {
+        label: "Shell Styles",
+        href: "/components/shell-styles",
+        icon: LayoutPanelLeft,
+      },
       { label: "Listbox", href: "/components/listbox", icon: List },
       {
         label: "Marquee",

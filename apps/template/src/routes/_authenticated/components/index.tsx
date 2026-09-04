@@ -87,6 +87,8 @@ const DESCRIPTIONS: Record<string, string> = {
   "/components/label": "Accessible labels associated with form controls",
   "/components/layouts":
     "Sidebar, top-nav, stacked, and split-panel layout shells",
+  "/components/shell-styles":
+    "Six chrome treatments composing with every layout shell",
   "/components/listbox":
     "Single and multi-select option lists with keyboard nav",
   "/components/marquee": "Continuously scrolling ticker of content",
