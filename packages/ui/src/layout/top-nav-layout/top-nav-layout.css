@@ -12,6 +12,10 @@
     @apply bg-accent text-accent-foreground;
   }
 
+  .dr-top-nav-layout-nav-chevron {
+    @apply size-[var(--icon-size-sm)] opacity-60;
+  }
+
   .dr-top-nav-layout-content {
     @apply overflow-y-auto p-6;
   }

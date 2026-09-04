@@ -1,4 +1,11 @@
+import { ChevronDown } from "lucide-react"
 import { useRouterAdapter } from "@router"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@components/dropdown-menu"
 import { SearchCommand } from "@layout/search-command"
 import { BrandLogo } from "@layout/brand-logo"
 import { LayoutHeader } from "@layout/layout-header"
@@ -15,6 +22,14 @@ export interface TopNavLayoutProps extends LayoutProps {
   shellStyle?: ShellStyle
 }
 
+/**
+ * Horizontal navigation in the app bar.
+ *
+ * Two documented limits: an item's `children` render as a one-level dropdown,
+ * so grandchildren are dropped rather than nested, and the bar scrolls
+ * horizontally when the items outgrow it rather than collapsing into an
+ * overflow menu.
+ */
 export function TopNavLayout({
   children,
   nav,
@@ -65,18 +80,53 @@ export function TopNavLayout({
         <BrandLogo />
         <nav aria-label="Primary" className="dr-top-nav-layout-nav">
           {nav.flatMap((group) =>
-            group.items.map((item) => (
-              <Link
-                key={item.href}
-                to={item.href}
-                className="dr-top-nav-layout-nav-item"
-                activeClassName="active"
-                activeExact={item.href === "/"}
-              >
-                {item.icon && <item.icon className="size-[var(--icon-size)]" />}
-                {item.label}
-              </Link>
-            )),
+            group.items.map((item) =>
+              item.children?.length ? (
+                <DropdownMenu key={item.href}>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      type="button"
+                      className="dr-top-nav-layout-nav-item"
+                    >
+                      {item.icon && (
+                        <item.icon className="size-[var(--icon-size)]" />
+                      )}
+                      {item.label}
+                      <ChevronDown
+                        className="dr-top-nav-layout-nav-chevron"
+                        aria-hidden="true"
+                      />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start">
+                    {/* The parent is a route in its own right, so it leads its
+                        own menu — the same contract SidebarNav's collapsed
+                        popover uses. */}
+                    <DropdownMenuItem asChild>
+                      <Link to={item.href}>{item.label}</Link>
+                    </DropdownMenuItem>
+                    {item.children.map((child) => (
+                      <DropdownMenuItem key={child.href} asChild>
+                        <Link to={child.href}>{child.label}</Link>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <Link
+                  key={item.href}
+                  to={item.href}
+                  className="dr-top-nav-layout-nav-item"
+                  activeClassName="active"
+                  activeExact={item.href === "/"}
+                >
+                  {item.icon && (
+                    <item.icon className="size-[var(--icon-size)]" />
+                  )}
+                  {item.label}
+                </Link>
+              ),
+            ),
           )}
         </nav>
       </LayoutHeader>

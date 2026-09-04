@@ -5,10 +5,13 @@ import { RouterAdapterProvider } from "@router"
 import { UiLabelsProvider } from "@labels"
 import type { RouterAdapter, RouterLinkProps } from "@router"
 import type { NavGroup } from "@layout/types"
+import userEvent from "@testing-library/user-event"
 
-function StubLink({ to, className, children }: RouterLinkProps) {
+// Spreads the rest: `asChild` composition passes role, id and handlers down
+// through Link, and a stub that swallows them makes menu items untestable.
+function StubLink({ to, className, children, ...rest }: RouterLinkProps) {
   return (
-    <a href={to} className={className}>
+    <a href={to} className={className} {...rest}>
       {children}
     </a>
   )
@@ -87,5 +90,52 @@ describe("TopNavLayout shell grid", () => {
     expect(
       screen.getByRole("link", { name: "Aller au contenu" }),
     ).toBeInTheDocument()
+  })
+})
+
+const nestedNav: NavGroup[] = [
+  {
+    items: [
+      { label: "Dashboard", href: "/" },
+      {
+        label: "Library",
+        href: "/library",
+        children: [{ label: "Accordion", href: "/library/accordion" }],
+      },
+    ],
+  },
+]
+
+function renderNested() {
+  return render(
+    <RouterAdapterProvider value={adapter}>
+      <TopNavLayout nav={nestedNav} showThemeSwitcher={false}>
+        <div>Content</div>
+      </TopNavLayout>
+    </RouterAdapterProvider>,
+  )
+}
+
+describe("TopNavLayout nested nav items", () => {
+  it("reaches a child route through a dropdown", async () => {
+    const user = userEvent.setup()
+    renderNested()
+    await user.click(screen.getByRole("button", { name: /Library/ }))
+    expect(
+      await screen.findByRole("menuitem", { name: "Accordion" }),
+    ).toBeInTheDocument()
+  })
+
+  it("keeps the parent route reachable in its own right", async () => {
+    const user = userEvent.setup()
+    renderNested()
+    await user.click(screen.getByRole("button", { name: /Library/ }))
+    const parent = await screen.findByRole("menuitem", { name: "Library" })
+    expect(parent).toHaveAttribute("href", "/library")
+  })
+
+  it("leaves childless items as plain links", () => {
+    renderNested()
+    expect(screen.getByRole("link", { name: "Dashboard" })).toBeInTheDocument()
   })
 })
