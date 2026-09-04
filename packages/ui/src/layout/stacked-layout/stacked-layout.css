@@ -1,14 +1,10 @@
 @layer components {
-  .dr-stacked-layout {
-    @apply flex h-screen overflow-hidden;
-  }
-
   .dr-stacked-layout-rail {
-    @apply border-border-default bg-surface-sidebar hidden w-16 shrink-0 flex-col items-center overflow-hidden border-r py-4 md:flex;
+    @apply border-border-default bg-surface-sidebar hidden w-16 flex-col items-center overflow-hidden border-r py-4 md:flex;
   }
 
   .dr-stacked-layout-rail-logo {
-    @apply bg-primary-fill mb-6 h-8 w-8 rounded-md;
+    @apply mb-6;
   }
 
   .dr-stacked-layout-rail-nav {
@@ -20,7 +16,7 @@
   }
 
   .dr-stacked-layout-aside {
-    @apply border-border bg-background hidden w-56 shrink-0 flex-col overflow-hidden border-r md:flex;
+    @apply border-border bg-background hidden w-56 flex-col overflow-hidden border-r md:flex;
   }
 
   .dr-stacked-layout-aside-header {
@@ -39,11 +35,7 @@
     @apply flex flex-col gap-0.5 px-2;
   }
 
-  .dr-stacked-layout-main {
-    @apply flex flex-1 flex-col overflow-hidden;
-  }
-
   .dr-stacked-layout-content {
-    @apply flex-1 overflow-y-auto p-6;
+    @apply overflow-y-auto p-6;
   }
 }

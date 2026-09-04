@@ -11,6 +11,15 @@ import { SkipLink } from "@layout/skip-link"
 import { useRouteFocus } from "@layout/useRouteFocus"
 import { coversPath } from "@layout/navTree"
 import type { LayoutProps } from "@layout/types"
+import { BrandLogo } from "@layout/brand-logo"
+import { useShellStyle } from "@layout/shell"
+import type { ShellStyle } from "@theme"
+import { useUiLabels } from "@labels"
+
+export interface StackedLayoutProps extends LayoutProps {
+  /** Pins this shell's chrome treatment, overriding the theme axis. */
+  shellStyle?: ShellStyle
+}
 
 export function StackedLayout({
   children,
@@ -20,11 +29,14 @@ export function StackedLayout({
   sidebarFooter,
   showLayoutSwitcher,
   showThemeSwitcher,
+  shellStyle: shellStyleProp,
   user,
   onProfile,
   onSettings,
   onLogout,
-}: LayoutProps) {
+}: StackedLayoutProps) {
+  const labels = useUiLabels()
+  const shellStyle = useShellStyle(shellStyleProp)
   const { Link, usePathname } = useRouterAdapter()
   useRouteFocus()
   const currentPath = usePathname()
@@ -45,11 +57,17 @@ export function StackedLayout({
        * we wrap with collapsed={false}. Without this, mounting the layout
        * throws "useSidebar must be used within a <SidebarProvider>". */}
       <SidebarProvider collapsed={false}>
-        <div className="dr-stacked-layout">
-          <SkipLink />
+        <div
+          className="dr-shell dr-stacked-layout"
+          data-structure="stacked"
+          data-shell-style={shellStyle}
+        >
+          <SkipLink>{labels.layout.skipToContent}</SkipLink>
           {/* Icon sidebar */}
-          <aside className="dr-stacked-layout-rail">
-            <div className="dr-stacked-layout-rail-logo" />
+          <aside data-region="nav" className="dr-stacked-layout-rail">
+            <div className="dr-stacked-layout-rail-logo">
+              <BrandLogo collapsed />
+            </div>
             <nav aria-label="Primary" className="dr-stacked-layout-rail-nav">
               {nav.map((group, gi) => {
                 const firstItem = group.items[0]
@@ -85,7 +103,7 @@ export function StackedLayout({
 
           {/* Sub-nav panel */}
           {activeGroup && (
-            <aside className="dr-stacked-layout-aside">
+            <aside data-region="subnav" className="dr-stacked-layout-aside">
               {activeGroup.label && (
                 <div className="dr-stacked-layout-aside-header">
                   <p className="dr-stacked-layout-aside-label">
@@ -106,29 +124,29 @@ export function StackedLayout({
             </aside>
           )}
 
-          {/* Main area */}
-          <div className="dr-stacked-layout-main">
-            <LayoutHeader
-              nav={nav}
-              sidebarHeader={sidebarHeader}
-              sidebarFooter={sidebarFooter}
-              headerSlot={headerSlot}
-              showLayoutSwitcher={showLayoutSwitcher}
-              showThemeSwitcher={showThemeSwitcher}
-              user={user}
-              onProfile={onProfile}
-              onSettings={onSettings}
-              onLogout={onLogout}
-            />
+          <LayoutHeader
+            data-region="bar"
+            nav={nav}
+            sidebarHeader={sidebarHeader}
+            sidebarFooter={sidebarFooter}
+            headerSlot={headerSlot}
+            showLayoutSwitcher={showLayoutSwitcher}
+            showThemeSwitcher={showThemeSwitcher}
+            user={user}
+            onProfile={onProfile}
+            onSettings={onSettings}
+            onLogout={onLogout}
+          />
 
-            <main
-              id="main-content"
-              tabIndex={-1}
-              className="dr-stacked-layout-content"
-            >
-              {children}
-            </main>
-          </div>
+          <main
+            id="main-content"
+            tabIndex={-1}
+            data-region="content"
+            data-content
+            className="dr-stacked-layout-content"
+          >
+            {children}
+          </main>
         </div>
       </SidebarProvider>
     </TooltipProvider>
