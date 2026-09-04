@@ -26,4 +26,15 @@ describe("useShellStyle", () => {
     )
     expect(screen.getByText("island")).toBeInTheDocument()
   })
+
+  it("still resolves without a ThemeProvider", () => {
+    // Layouts must not hard-require the provider: the axis is cosmetic.
+    render(<Probe />)
+    expect(screen.getByText("classic")).toBeInTheDocument()
+  })
+
+  it("honours an override without a ThemeProvider", () => {
+    render(<Probe override="framed" />)
+    expect(screen.getByText("framed")).toBeInTheDocument()
+  })
 })
