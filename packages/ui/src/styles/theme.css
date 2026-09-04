@@ -108,6 +108,9 @@
 @import "../layout/stacked-layout/stacked-layout.css";
 @import "../layout/top-nav-layout/top-nav-layout.css";
 @import "../layout/split-panel-layout/split-panel-layout.css";
+/* After the per-layout imports on purpose: at equal specificity the later
+   import wins, and shell styles must override a layout's own chrome. */
+@import "../layout/shell/shell-styles.css";
 
 /* Layout primitive imports (manual; layout/ is outside the auto-scanner) */
 @import "../layout/box/box.css";

@@ -1,0 +1,113 @@
+@layer components {
+  /* Regions that detach from the shell share one paint recipe. Which regions
+     detach is the only thing that differs between the styles below. */
+  .dr-shell[data-shell-style="island"] > [data-region],
+  .dr-shell[data-shell-style="floating"] > [data-region],
+  .dr-shell[data-shell-style="inset"] > [data-region="content"] {
+    border-radius: var(--shell-radius);
+    box-shadow: var(--shell-region-border), var(--shell-region-shadow);
+  }
+
+  /* A 1px CSS border plus the inset border-shadow would read as 2px on the
+     straight edges, so a detached region gives up the border it carried when
+     it was welded and lets the inset shadow draw its edge instead. */
+  .dr-shell[data-shell-style="island"] > [data-region],
+  .dr-shell[data-shell-style="floating"] > [data-region],
+  .dr-shell[data-shell-style="inset"] > [data-region],
+  .dr-shell[data-shell-style="flat"] > [data-region] {
+    border-width: 0;
+  }
+
+  /* The handle is a gutter, not a surface: it never detaches. */
+  .dr-shell[data-shell-style="island"] > [data-region="handle"],
+  .dr-shell[data-shell-style="floating"] > [data-region="handle"] {
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  /* inset — chrome stays welded to the viewport and gives up its own surface
+     so the shell ground shows through; only the content detaches. */
+  .dr-shell[data-shell-style="inset"] > [data-region="nav"],
+  .dr-shell[data-shell-style="inset"] > [data-region="subnav"],
+  .dr-shell[data-shell-style="inset"] > [data-region="bar"],
+  .dr-shell[data-shell-style="inset"] > [data-region="panel"],
+  .dr-shell[data-shell-style="inset"] > [data-region="handle"] {
+    background-color: transparent;
+  }
+
+  .dr-shell[data-shell-style="inset"] > [data-region="content"] {
+    margin: 0 0.5rem 0.5rem 0;
+  }
+
+  .dr-shell[data-shell-style="inset"][data-structure="top-nav"]
+    > [data-region="content"] {
+    margin-left: 0.5rem;
+  }
+
+  /* floating — the content plane runs the full grid and the chrome hovers
+     over it. */
+  .dr-shell[data-shell-style="floating"] > [data-region="content"] {
+    grid-area: 1 / 1 / -1 / -1;
+  }
+
+  .dr-shell[data-shell-style="floating"] > [data-region="nav"],
+  .dr-shell[data-shell-style="floating"] > [data-region="subnav"],
+  .dr-shell[data-shell-style="floating"] > [data-region="bar"],
+  .dr-shell[data-shell-style="floating"] > [data-region="panel"] {
+    position: relative;
+    z-index: 1;
+    -webkit-backdrop-filter: blur(var(--backdrop-blur, 12px));
+    backdrop-filter: blur(var(--backdrop-blur, 12px));
+  }
+
+  /* The content reserves its own room so the background bleeds under the
+     chrome but the text never sits beneath it. */
+  .dr-shell[data-shell-style="floating"][data-structure="sidebar"]
+    > [data-region="content"] {
+    padding-inline-start: calc(
+      var(--sidebar-width-expanded, 16rem) + var(--shell-gap) + 1.5rem
+    );
+    padding-block-start: calc(3.5rem + var(--shell-gap) + 1.5rem);
+  }
+
+  .dr-shell[data-shell-style="floating"][data-structure="top-nav"]
+    > [data-region="content"] {
+    padding-block-start: calc(3.5rem + var(--shell-gap) + 1.5rem);
+  }
+
+  .dr-shell[data-shell-style="floating"][data-structure="stacked"]
+    > [data-region="content"] {
+    padding-inline-start: calc(4rem + 14rem + var(--shell-gap) + 1.5rem);
+    padding-block-start: calc(3.5rem + var(--shell-gap) + 1.5rem);
+  }
+
+  .dr-shell[data-shell-style="floating"][data-structure="split-panel"]
+    > [data-region="content"] {
+    padding-inline-start: calc(
+      var(--panel-width, 20rem) + var(--shell-gap) + 1.5rem
+    );
+    padding-block-start: calc(3.5rem + var(--shell-gap) + 1.5rem);
+  }
+
+  /* Below md the rails are gone, so only the bar's height is reserved. */
+  @media (width < 48rem) {
+    .dr-shell[data-shell-style="floating"] > [data-region="content"] {
+      padding-inline-start: 1.5rem;
+    }
+  }
+
+  /* framed — the shell insets from the viewport as a whole and rounds off,
+     so the outer corners round while the seams between regions stay welded. */
+  .dr-shell[data-shell-style="framed"] {
+    border-radius: var(--shell-radius);
+    box-shadow: var(--shell-region-border), var(--shell-region-shadow);
+  }
+
+  /* flat — tone alone separates the regions. */
+  .dr-shell[data-shell-style="flat"] > [data-region="nav"],
+  .dr-shell[data-shell-style="flat"] > [data-region="subnav"],
+  .dr-shell[data-shell-style="flat"] > [data-region="bar"],
+  .dr-shell[data-shell-style="flat"] > [data-region="panel"] {
+    background-color: hsl(var(--muted));
+  }
+}

@@ -55,3 +55,36 @@ describe("shell tokens", () => {
     )
   })
 })
+
+const shellStyles = readFileSync(
+  resolve(process.cwd(), "src/layout/shell/shell-styles.css"),
+  "utf8",
+)
+
+describe("shell style rules", () => {
+  it("never reaches for !important", () => {
+    expect(shellStyles).not.toMatch(/!important/)
+  })
+
+  it("targets the shell root, not the document element", () => {
+    // A document-level selector would lose to a pinned shellStyle prop.
+    expect(shellStyles).not.toMatch(
+      /\[data-shell-style="[a-z]+"\]\s+\.dr-shell/,
+    )
+  })
+
+  it("styles regions by role rather than by layout class", () => {
+    expect(shellStyles).not.toMatch(/\.dr-sidebar-layout|\.dr-stacked-layout/)
+    expect(shellStyles).toContain('[data-region="nav"]')
+  })
+
+  it("gives classic no rules, since it is the unstyled base", () => {
+    expect(shellStyles).not.toContain('data-shell-style="classic"')
+  })
+
+  it("covers every non-default style", () => {
+    for (const style of SHELL_STYLES.filter((s) => s !== "classic")) {
+      expect(shellStyles).toContain(`data-shell-style="${style}"`)
+    }
+  })
+})
