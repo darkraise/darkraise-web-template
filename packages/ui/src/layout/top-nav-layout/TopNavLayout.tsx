@@ -6,6 +6,14 @@ import { SkipLink } from "@layout/skip-link"
 import { useRouteFocus } from "@layout/useRouteFocus"
 import { flattenNavItems } from "@layout/navTree"
 import type { LayoutProps } from "@layout/types"
+import { useShellStyle } from "@layout/shell"
+import type { ShellStyle } from "@theme"
+import { useUiLabels } from "@labels"
+
+export interface TopNavLayoutProps extends LayoutProps {
+  /** Pins this shell's chrome treatment, overriding the theme axis. */
+  shellStyle?: ShellStyle
+}
 
 export function TopNavLayout({
   children,
@@ -15,20 +23,28 @@ export function TopNavLayout({
   sidebarFooter,
   showLayoutSwitcher,
   showThemeSwitcher,
+  shellStyle: shellStyleProp,
   user,
   onProfile,
   onSettings,
   onLogout,
-}: LayoutProps) {
+}: TopNavLayoutProps) {
+  const labels = useUiLabels()
+  const shellStyle = useShellStyle(shellStyleProp)
   const flatNavItems = flattenNavItems(nav)
 
   const { Link } = useRouterAdapter()
   useRouteFocus()
 
   return (
-    <div className="dr-top-nav-layout">
-      <SkipLink />
+    <div
+      className="dr-shell dr-top-nav-layout"
+      data-structure="top-nav"
+      data-shell-style={shellStyle}
+    >
+      <SkipLink>{labels.layout.skipToContent}</SkipLink>
       <LayoutHeader
+        data-region="bar"
         nav={nav}
         sidebarHeader={sidebarHeader}
         sidebarFooter={sidebarFooter}
@@ -68,6 +84,8 @@ export function TopNavLayout({
       <main
         id="main-content"
         tabIndex={-1}
+        data-region="content"
+        data-content
         className="dr-top-nav-layout-content"
       >
         {children}

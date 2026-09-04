@@ -1,8 +1,4 @@
 @layer components {
-  .dr-top-nav-layout {
-    @apply flex h-screen flex-col overflow-hidden;
-  }
-
   .dr-top-nav-layout-nav {
     @apply hidden min-w-0 flex-1 items-center gap-1 overflow-x-auto md:flex;
   }
@@ -17,6 +13,6 @@
   }
 
   .dr-top-nav-layout-content {
-    @apply flex-1 overflow-y-auto p-6;
+    @apply overflow-y-auto p-6;
   }
 }
