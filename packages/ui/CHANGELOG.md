@@ -4,6 +4,8 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 
 ## [Unreleased]
 
+## [6.8.0] — 2026-09-04
+
 ## [6.7.0] — 2026-08-28
 
 ## [6.6.0] — 2026-08-27
