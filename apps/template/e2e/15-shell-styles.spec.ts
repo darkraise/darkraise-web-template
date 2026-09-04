@@ -181,6 +181,7 @@ test.describe("shell style geometry", () => {
         viewport: { w: innerWidth, h: innerHeight },
         shell: { x: r.x, y: r.y, w: r.width, h: r.height },
         radius: getComputedStyle(el).borderRadius,
+        shadow: getComputedStyle(el).boxShadow,
       }
     })
 
@@ -190,5 +191,15 @@ test.describe("shell style geometry", () => {
     expect(geom.shell.w).toBeLessThan(geom.viewport.w)
     expect(geom.shell.h).toBeLessThan(geom.viewport.h)
     expect(geom.radius).not.toBe("0px")
+
+    // The frame edge must be an OUTSET ring. An inset ring paints during the
+    // shell's own background stage, and the regions fill every grid cell, so
+    // they cover it completely — present in the computed style, invisible on
+    // screen.
+    const rings = geom.shadow.split(/,(?![^(]*\))/).map((r) => r.trim())
+    expect(
+      rings.some((r) => r.includes("1px") && !r.includes("inset")),
+      `frame ring must be outset; got: ${geom.shadow}`,
+    ).toBe(true)
   })
 })

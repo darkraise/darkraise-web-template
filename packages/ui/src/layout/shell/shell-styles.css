@@ -133,7 +133,13 @@
     /* The radius clips the square regions into the frame's corners, which is
        why the corner regions need no rounding of their own. */
     overflow: hidden;
-    box-shadow: var(--shell-region-border), var(--shell-region-shadow);
+    /* An OUTSET ring, not the shared inset one: an inset shadow paints during
+       this element's background stage and the regions fill every grid cell,
+       so they would cover it entirely — computed, but never visible. The
+       ring sits in the gutter the margin already reserves. */
+    box-shadow:
+      0 0 0 1px hsl(var(--border)),
+      var(--shell-region-shadow);
   }
 
   /* flat — tone alone separates the regions. */
