@@ -11,8 +11,10 @@
     @apply flex;
   }
 
+  /* dvh, not vh: on iOS Safari the URL bar is inside 100vh, so a centred
+     full-height box sits partly behind it. */
   .dr-center[data-min-height="screen"] {
-    @apply min-h-screen;
+    @apply min-h-dvh;
   }
 
   .dr-center[data-min-height="full"] {

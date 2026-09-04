@@ -22,7 +22,7 @@ function FloatingShape({
 
 export function AuthLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-dvh">
       <Center className="flex-1 p-8">
         <Stack gap="lg" className="w-full max-w-sm">
           {children}

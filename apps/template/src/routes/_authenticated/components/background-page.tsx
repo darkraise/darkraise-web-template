@@ -129,7 +129,7 @@ function BackgroundPagePage() {
     >
       <ShowcaseExample
         title="Full-page usage — wrap an auth screen"
-        code={`<BackgroundPage variant="aurora" className="grid min-h-screen place-items-center p-6">
+        code={`<BackgroundPage variant="aurora" className="grid min-h-dvh place-items-center p-6">
   <LoginCard />
 </BackgroundPage>`}
       >
