@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from "react"
-import { useEventListener } from "@hooks"
+import { useEventListener, useSeparatorA11y } from "@hooks"
 import { SearchCommand } from "@layout/search-command"
 import { BrandLogo } from "@layout/brand-logo"
 import { LayoutHeader } from "@layout/layout-header"
@@ -7,10 +7,15 @@ import { SkipLink } from "@layout/skip-link"
 import { useRouteFocus } from "@layout/useRouteFocus"
 import { flattenNavItems } from "@layout/navTree"
 import type { LayoutProps } from "@layout/types"
+import { useShellStyle } from "@layout/shell"
+import type { ShellStyle } from "@theme"
+import { useUiLabels } from "@labels"
 import type { CSSProperties, ReactNode } from "react"
 
-interface SplitPanelLayoutProps extends LayoutProps {
+export interface SplitPanelLayoutProps extends LayoutProps {
   panel: ReactNode
+  /** Pins this shell's chrome treatment, overriding the theme axis. */
+  shellStyle?: ShellStyle
   defaultPanelWidth?: number
   minPanelWidth?: number
   maxPanelWidth?: number
@@ -28,30 +33,34 @@ export function SplitPanelLayout({
   onProfile,
   onSettings,
   onLogout,
+  shellStyle: shellStyleProp,
   panel,
   defaultPanelWidth = 320,
   minPanelWidth = 240,
   maxPanelWidth = 480,
 }: SplitPanelLayoutProps) {
+  const labels = useUiLabels()
+  const shellStyle = useShellStyle(shellStyleProp)
   const [panelWidth, setPanelWidth] = useState(defaultPanelWidth)
   useRouteFocus()
   const [isDragging, setIsDragging] = useState(false)
   const docRef = useRef(typeof document !== "undefined" ? document : null)
-  const bodyRef = useRef<HTMLDivElement | null>(null)
+  const shellRef = useRef<HTMLDivElement | null>(null)
+
+  const clampWidth = useCallback(
+    (width: number) => Math.min(Math.max(width, minPanelWidth), maxPanelWidth),
+    [minPanelWidth, maxPanelWidth],
+  )
 
   useEventListener(docRef, "pointermove", (e: PointerEvent) => {
     if (!isDragging) return
-    const body = bodyRef.current
-    if (!body) return
-    // Width is measured from the body container's left edge, not the
-    // viewport, so the drag works correctly when the layout is offset by
-    // a sidebar, padding, or any horizontally-scrolled ancestor.
-    const left = body.getBoundingClientRect().left
-    const width = Math.min(
-      Math.max(e.clientX - left, minPanelWidth),
-      maxPanelWidth,
-    )
-    setPanelWidth(width)
+    const shell = shellRef.current
+    if (!shell) return
+    // Width is measured from the shell's left edge, not the viewport, so the
+    // drag works correctly when the layout is offset by padding or by any
+    // horizontally-scrolled ancestor.
+    const left = shell.getBoundingClientRect().left
+    setPanelWidth(clampWidth(e.clientX - left))
   })
 
   const stopDragging = useCallback(() => {
@@ -60,6 +69,21 @@ export function SplitPanelLayout({
 
   useEventListener(docRef, "pointerup", stopDragging)
   useEventListener(docRef, "pointercancel", stopDragging)
+
+  const separator = useSeparatorA11y({
+    orientation: "horizontal",
+    valueNow: Math.round(
+      ((panelWidth - minPanelWidth) / (maxPanelWidth - minPanelWidth)) * 100,
+    ),
+    onNudge: (deltaPercent) =>
+      setPanelWidth((prev) =>
+        clampWidth(
+          prev + ((maxPanelWidth - minPanelWidth) * deltaPercent) / 100,
+        ),
+      ),
+    onJump: (edge) =>
+      setPanelWidth(edge === "min" ? minPanelWidth : maxPanelWidth),
+  })
 
   const handlePointerDown = useCallback(
     (event: React.PointerEvent<HTMLDivElement>) => {
@@ -71,11 +95,15 @@ export function SplitPanelLayout({
 
   return (
     <div
-      className="dr-split-panel-layout"
+      ref={shellRef}
+      className="dr-shell dr-split-panel-layout"
+      data-structure="split-panel"
+      data-shell-style={shellStyle}
       style={{ "--panel-width": `${panelWidth}px` } as CSSProperties}
     >
-      <SkipLink />
+      <SkipLink>{labels.layout.skipToContent}</SkipLink>
       <LayoutHeader
+        data-region="bar"
         nav={nav}
         sidebarHeader={sidebarHeader}
         sidebarFooter={sidebarFooter}
@@ -92,26 +120,30 @@ export function SplitPanelLayout({
         <SearchCommand navItems={flattenNavItems(nav)} />
       </LayoutHeader>
 
-      <div ref={bodyRef} className="dr-split-panel-layout-body">
-        <div className="dr-split-panel-layout-aside">{panel}</div>
-
-        <div
-          className="dr-split-panel-layout-handle"
-          data-dragging={isDragging ? "true" : undefined}
-          onPointerDown={handlePointerDown}
-          // touch-action: none keeps a touch drag on the handle from
-          // scrolling the page or triggering platform gestures.
-          style={{ touchAction: "none" }}
-        />
-
-        <main
-          id="main-content"
-          tabIndex={-1}
-          className="dr-split-panel-layout-content"
-        >
-          {children}
-        </main>
+      <div data-region="panel" className="dr-split-panel-layout-aside">
+        {panel}
       </div>
+
+      <div
+        {...separator}
+        data-region="handle"
+        className="dr-split-panel-layout-handle"
+        data-dragging={isDragging ? "true" : undefined}
+        onPointerDown={handlePointerDown}
+        // touch-action: none keeps a touch drag on the handle from
+        // scrolling the page or triggering platform gestures.
+        style={{ touchAction: "none" }}
+      />
+
+      <main
+        id="main-content"
+        tabIndex={-1}
+        data-region="content"
+        data-content
+        className="dr-split-panel-layout-content"
+      >
+        {children}
+      </main>
     </div>
   )
 }

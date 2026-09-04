@@ -1,33 +1,38 @@
 @layer components {
-  .dr-split-panel-layout {
-    @apply flex h-screen flex-col overflow-hidden;
-  }
-
-  .dr-split-panel-layout-body {
-    /* Below md the panel and reading pane stack vertically so the reading
-     * pane is not crushed to a few pixels on phones; at md+ they sit
-     * side-by-side and the panel width is driven by the --panel-width
-     * custom property (set inline so the drag handle can update it). */
-    @apply flex flex-1 flex-col overflow-hidden md:flex-row;
-  }
-
+  /* `bg-card` lifts the panel one tier above the page background so the list
+     and the reading pane read as two distinct surfaces, especially in dark
+     mode where the page and an untreated aside would otherwise sit at the
+     same near-black lightness. */
   .dr-split-panel-layout-aside {
-    /* `bg-card` lifts the panel one tier above the page background so the
-     * list and the reading pane read as two distinct surfaces, especially
-     * in dark mode where the page and an untreated aside would otherwise
-     * sit at the same near-black lightness. */
-    @apply bg-card border-border max-h-[45vh] w-full flex-shrink-0 overflow-y-auto border-b md:max-h-none md:w-[var(--panel-width)] md:border-r md:border-b-0;
+    @apply bg-card border-border overflow-y-auto border-r;
+    width: var(--panel-width);
   }
 
   .dr-split-panel-layout-handle {
-    @apply hover:bg-primary/20 hidden w-1 cursor-col-resize bg-transparent transition-colors md:block;
+    @apply hover:bg-primary/20 w-1 cursor-col-resize bg-transparent transition-colors;
   }
 
   .dr-split-panel-layout-handle[data-dragging="true"] {
     @apply bg-primary/30;
   }
 
+  /* The handle is focusable now that it is a real separator, so it needs a
+     visible focus state of its own. */
+  .dr-split-panel-layout-handle:focus-visible {
+    @apply ring-ring z-1 ring-2 outline-none;
+  }
+
   .dr-split-panel-layout-content {
-    @apply flex-1 overflow-y-auto p-6;
+    @apply overflow-y-auto p-6;
+  }
+
+  /* Below md the shared shell rule collapses this structure to bar over
+     content, so the panel and its handle step out rather than crushing the
+     reading pane into a few pixels. */
+  @media (width < 48rem) {
+    .dr-split-panel-layout-aside,
+    .dr-split-panel-layout-handle {
+      @apply hidden;
+    }
   }
 }
