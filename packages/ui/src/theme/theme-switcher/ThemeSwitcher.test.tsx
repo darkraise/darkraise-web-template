@@ -270,6 +270,20 @@ describe("ThemeSwitcher preset section", () => {
     expect(screen.queryByText("Button Elevation")).not.toBeInTheDocument()
     expect(screen.getByText("Outer Glow")).toBeInTheDocument()
   })
+
+  it("switches the shell style", () => {
+    render(
+      <ThemeProvider>
+        <ThemeSwitcher />
+      </ThemeProvider>,
+    )
+    openSwitcher()
+    // Six values, so AxisControl renders a toggle group rather than a slider.
+    fireEvent.click(screen.getByRole("radio", { name: "island" }))
+    expect(document.documentElement.getAttribute("data-shell-style")).toBe(
+      "island",
+    )
+  })
 })
 
 describe("ThemeSwitcher font size section", () => {

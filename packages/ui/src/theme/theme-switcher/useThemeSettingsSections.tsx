@@ -13,6 +13,7 @@ import {
   SURFACE_INTENSITIES,
   CONTROL_DEPTHS,
   RADII,
+  SHELL_STYLES,
   FONT_SIZES,
   ACCENT_INTENSITIES,
   GLOW_LEVELS,
@@ -76,6 +77,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
     surfaceIntensity,
     controlDepth,
     radius,
+    shellStyle,
     fontSize,
     accentIntensity,
     outerGlow,
@@ -96,6 +98,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
     setSurfaceIntensity,
     setControlDepth,
     setRadius,
+    setShellStyle,
     setFontSize,
     setAccentIntensity,
     setOuterGlow,
@@ -528,6 +531,23 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
             value={innerGlow}
             onChange={setInnerGlow}
             label={labels.theme.axisLabels.innerGlow}
+          />
+        </div>
+      ),
+    },
+    show("shellStyle") && {
+      key: "shellStyle",
+      group: "layout" as const,
+      node: (
+        <div key="shellStyle" className="dr-theme-switcher-row">
+          <Label className="dr-theme-switcher-section-label">
+            {labels.theme.axisLabels.shellStyle}
+          </Label>
+          <AxisControl
+            values={SHELL_STYLES}
+            value={shellStyle}
+            onChange={setShellStyle}
+            label={labels.theme.axisLabels.shellStyle}
           />
         </div>
       ),
