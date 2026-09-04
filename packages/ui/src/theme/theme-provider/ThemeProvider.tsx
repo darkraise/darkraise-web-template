@@ -19,6 +19,7 @@ import type {
   ThemePersistenceAdapter,
   ThemeSettings,
   ThemeSyncStatus,
+  ShellStyle,
 } from "@theme/types"
 import {
   SURFACE_COLORS,
@@ -28,6 +29,7 @@ import {
   ELEVATIONS,
   SURFACE_INTENSITIES,
   RADII,
+  SHELL_STYLES,
   FONT_SIZES,
   ACCENT_INTENSITIES,
   CONTROL_DEPTHS,
@@ -70,6 +72,7 @@ const LS_ELEVATION = "theme-elevation"
 const LS_BUTTON_ELEVATION = "theme-button-elevation"
 const LS_SURFACE_INTENSITY = "theme-surface-intensity"
 const LS_RADIUS = "theme-radius"
+const LS_SHELL_STYLE = "theme-shell-style"
 const LS_FONT_SIZE = "theme-font-size"
 const LS_ACCENT_INTENSITY = "theme-accent-intensity"
 const LS_CONTROL_DEPTH = "theme-control-depth"
@@ -336,6 +339,14 @@ export function ThemeProvider({
     return cfg.defaults.radius
   })
 
+  const [shellStyle, setShellStyleState] = useState<ShellStyle>(() => {
+    const stored = readStorage(LS_SHELL_STYLE)
+    if (stored && (SHELL_STYLES as readonly string[]).includes(stored)) {
+      return stored as ShellStyle
+    }
+    return cfg.defaults.shellStyle
+  })
+
   const [fontSize, setFontSizeState] = useState<FontSize>(() => {
     const stored = readStorage(LS_FONT_SIZE)
     if (stored && (FONT_SIZES as readonly string[]).includes(stored)) {
@@ -509,6 +520,7 @@ export function ThemeProvider({
       buttonElevation,
       surfaceIntensity,
       radius,
+      shellStyle,
       fontSize,
       accentIntensity,
       controlDepth,
@@ -528,6 +540,7 @@ export function ThemeProvider({
       buttonElevation,
       surfaceIntensity,
       radius,
+      shellStyle,
       fontSize,
       accentIntensity,
       controlDepth,
@@ -568,6 +581,7 @@ export function ThemeProvider({
         settings.surfaceIntensity ?? cfg.defaults.surfaceIntensity,
       )
       setRadiusState(settings.radius ?? cfg.defaults.radius)
+      setShellStyleState(settings.shellStyle ?? cfg.defaults.shellStyle)
       setFontSizeState(settings.fontSize ?? cfg.defaults.fontSize)
       setAccentIntensityState(
         settings.accentIntensity ?? cfg.defaults.accentIntensity,
@@ -593,6 +607,10 @@ export function ThemeProvider({
         settings.surfaceIntensity ?? cfg.defaults.surfaceIntensity,
       )
       writeStorage(LS_RADIUS, settings.radius ?? cfg.defaults.radius)
+      writeStorage(
+        LS_SHELL_STYLE,
+        settings.shellStyle ?? cfg.defaults.shellStyle,
+      )
       writeStorage(LS_FONT_SIZE, settings.fontSize ?? cfg.defaults.fontSize)
       writeStorage(
         LS_ACCENT_INTENSITY,
@@ -631,6 +649,10 @@ export function ThemeProvider({
       document.documentElement.setAttribute(
         "data-radius",
         settings.radius ?? cfg.defaults.radius,
+      )
+      document.documentElement.setAttribute(
+        "data-shell-style",
+        settings.shellStyle ?? cfg.defaults.shellStyle,
       )
       document.documentElement.setAttribute(
         "data-font-size",
@@ -1117,6 +1139,19 @@ export function ThemeProvider({
     ],
   )
 
+  const setShellStyle = useCallback(
+    (style: ShellStyle) => {
+      setShellStyleState(style)
+      writeStorage(LS_SHELL_STYLE, style)
+      document.documentElement.setAttribute("data-shell-style", style)
+      const settings = buildSettings({ shellStyle: style })
+      notifyChange(settings)
+      hasUserChanged.current = true
+      debouncedSave(settings)
+    },
+    [buildSettings, notifyChange, debouncedSave],
+  )
+
   const setRadius = useCallback(
     (r: Radius) => {
       setRadiusState(r)
@@ -1211,6 +1246,7 @@ export function ThemeProvider({
       ),
     )
     document.documentElement.setAttribute("data-radius", radius)
+    document.documentElement.setAttribute("data-shell-style", shellStyle)
     document.documentElement.setAttribute("data-font-size", fontSize)
     document.documentElement.setAttribute(
       "data-background-intensity",
@@ -1233,6 +1269,7 @@ export function ThemeProvider({
     buttonElevation,
     surfaceIntensity,
     radius,
+    shellStyle,
     fontSize,
     backgroundIntensity,
     gradientPattern,
@@ -1310,6 +1347,7 @@ export function ThemeProvider({
       buttonElevation,
       surfaceIntensity,
       radius,
+      shellStyle,
       fontSize,
       accentIntensity,
       controlDepth,
@@ -1332,6 +1370,7 @@ export function ThemeProvider({
       setButtonElevation,
       setSurfaceIntensity,
       setRadius,
+      setShellStyle,
       setFontSize,
       setAccentIntensity,
       setControlDepth,
@@ -1352,6 +1391,7 @@ export function ThemeProvider({
       buttonElevation,
       surfaceIntensity,
       radius,
+      shellStyle,
       fontSize,
       accentIntensity,
       controlDepth,
@@ -1373,6 +1413,7 @@ export function ThemeProvider({
       setButtonElevation,
       setSurfaceIntensity,
       setRadius,
+      setShellStyle,
       setFontSize,
       setAccentIntensity,
       setControlDepth,

@@ -160,6 +160,7 @@ export interface ThemeSettings {
   controlDepth?: ControlDepth
   outerGlow?: GlowLevel
   innerGlow?: GlowLevel
+  shellStyle?: ShellStyle
   /** Per-preset axis values; outer key = preset name, inner key = axis name. */
   presetAxisValues?: Record<string, Record<string, string>>
 }
@@ -184,6 +185,7 @@ export interface ThemeContextValue {
   buttonElevation: Elevation
   surfaceIntensity: SurfaceIntensity
   radius: Radius
+  shellStyle: ShellStyle
   fontSize: FontSize
   accentIntensity: AccentIntensity
   controlDepth: ControlDepth
@@ -208,6 +210,7 @@ export interface ThemeContextValue {
   setButtonElevation: (elevation: Elevation) => void
   setSurfaceIntensity: (intensity: SurfaceIntensity) => void
   setRadius: (radius: Radius) => void
+  setShellStyle: (style: ShellStyle) => void
   setFontSize: (size: FontSize) => void
   setAccentIntensity: (intensity: AccentIntensity) => void
   setControlDepth: (depth: ControlDepth) => void

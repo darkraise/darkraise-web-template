@@ -345,3 +345,28 @@ describe("ThemeProvider preset orchestration", () => {
     expect(result.current.resolvedMode).toBe("light")
   })
 })
+
+describe("shell style axis", () => {
+  it("stamps the default on the document element", () => {
+    renderHook(() => useTheme(), { wrapper: wrap })
+    expect(document.documentElement.getAttribute("data-shell-style")).toBe(
+      "classic",
+    )
+  })
+
+  it("restores a persisted value on first render", () => {
+    localStorage.setItem("theme-shell-style", "island")
+    renderHook(() => useTheme(), { wrapper: wrap })
+    expect(document.documentElement.getAttribute("data-shell-style")).toBe(
+      "island",
+    )
+  })
+
+  it("ignores a persisted value that is not a known style", () => {
+    localStorage.setItem("theme-shell-style", "bogus")
+    renderHook(() => useTheme(), { wrapper: wrap })
+    expect(document.documentElement.getAttribute("data-shell-style")).toBe(
+      "classic",
+    )
+  })
+})

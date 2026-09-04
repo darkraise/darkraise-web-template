@@ -578,3 +578,17 @@ describe("useTheme persistence", () => {
     expect(result.current.accentIntensity).toBe("balanced")
   })
 })
+
+describe("useTheme shell style", () => {
+  it("reads the current style and sets a new one", () => {
+    const { result } = renderHook(() => useTheme(), { wrapper })
+    expect(result.current.shellStyle).toBe("classic")
+
+    act(() => result.current.setShellStyle("island"))
+
+    expect(result.current.shellStyle).toBe("island")
+    expect(document.documentElement.getAttribute("data-shell-style")).toBe(
+      "island",
+    )
+  })
+})
