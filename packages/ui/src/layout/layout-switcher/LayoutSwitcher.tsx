@@ -1,4 +1,4 @@
-import { PanelLeft, PanelTop, Columns3 } from "lucide-react"
+import { PanelLeft, PanelTop, Columns3, Columns2 } from "lucide-react"
 import { Button } from "@components/button"
 import {
   DropdownMenu,
@@ -24,11 +24,24 @@ const LAYOUTS: LayoutEntry[] = [
   DEFAULT_LAYOUT,
   { value: "top-nav", label: "Top Navigation", icon: PanelTop },
   { value: "stacked", label: "Stacked", icon: Columns3 },
+  { value: "split-panel", label: "Split Panel", icon: Columns2 },
 ]
 
-export function LayoutSwitcher() {
+export interface LayoutSwitcherProps {
+  /**
+   * Which variants this app can render. `split-panel` needs a `panel`, so an
+   * app without one leaves it out rather than offering a shell it cannot
+   * build. Defaults to all four.
+   */
+  variants?: LayoutVariant[]
+}
+
+export function LayoutSwitcher({ variants }: LayoutSwitcherProps = {}) {
   const { layout, setLayout } = useLayoutStore()
-  const current = LAYOUTS.find((l) => l.value === layout) ?? DEFAULT_LAYOUT
+  const entries = variants
+    ? LAYOUTS.filter((entry) => variants.includes(entry.value))
+    : LAYOUTS
+  const current = entries.find((l) => l.value === layout) ?? DEFAULT_LAYOUT
   const CurrentIcon = current.icon
 
   return (
@@ -40,7 +53,7 @@ export function LayoutSwitcher() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        {LAYOUTS.map(({ value, label, icon: Icon }) => (
+        {entries.map(({ value, label, icon: Icon }) => (
           <DropdownMenuItem
             key={value}
             onClick={() => setLayout(value)}

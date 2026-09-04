@@ -1,6 +1,13 @@
 import { create } from "zustand"
 
-export type LayoutVariant = "sidebar" | "top-nav" | "stacked"
+export type LayoutVariant = "sidebar" | "top-nav" | "stacked" | "split-panel"
+
+export const LAYOUT_VARIANTS: readonly LayoutVariant[] = [
+  "sidebar",
+  "top-nav",
+  "stacked",
+  "split-panel",
+]
 
 interface LayoutState {
   layout: LayoutVariant
@@ -15,8 +22,8 @@ const getStoredLayout = (): LayoutVariant => {
   if (typeof window === "undefined") return "sidebar"
   try {
     const stored = localStorage.getItem("layout-variant")
-    if (stored === "sidebar" || stored === "top-nav" || stored === "stacked") {
-      return stored
+    if (LAYOUT_VARIANTS.includes(stored as LayoutVariant)) {
+      return stored as LayoutVariant
     }
   } catch {
     // localStorage unavailable (private browsing, sandboxed iframe).
