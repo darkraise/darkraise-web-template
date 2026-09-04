@@ -126,3 +126,8 @@ export {
   subscribeHotkeys,
 } from "./hotkeyRegistry"
 export type { HotkeyEntry } from "./hotkeyRegistry"
+export { useSeparatorA11y } from "./useSeparatorA11y"
+export type {
+  SeparatorA11yOptions,
+  SeparatorA11yProps,
+} from "./useSeparatorA11y"

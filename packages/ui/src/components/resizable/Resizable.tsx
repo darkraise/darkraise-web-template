@@ -4,6 +4,7 @@ import * as React from "react"
 import { GripVertical } from "lucide-react"
 
 import { cn } from "@lib/utils"
+import { useSeparatorA11y } from "@hooks/useSeparatorA11y"
 import { useEvent } from "@primitives/state"
 import "./resizable.css"
 
@@ -332,8 +333,6 @@ function ResizableHandle({
   const [dragging, setDragging] = React.useState(false)
   const endDragRef = React.useRef<(() => void) | null>(null)
   React.useEffect(() => () => endDragRef.current?.(), [])
-  const ariaOrientation =
-    ctx.orientation === "horizontal" ? "vertical" : "horizontal"
 
   const valueNow = React.useMemo(() => {
     const left = ctx.panelOrder[handleIndex]
@@ -342,15 +341,18 @@ function ResizableHandle({
     return v !== undefined ? Math.round(v) : undefined
   }, [ctx.panelOrder, ctx.sizes, handleIndex])
 
+  const separator = useSeparatorA11y({
+    orientation: ctx.orientation,
+    valueNow,
+    step,
+    disabled,
+    onNudge: (delta) => ctx.nudgeHandle(handleIndex, delta),
+  })
+
   return (
     <div
       ref={ref}
-      role="separator"
-      tabIndex={disabled ? -1 : 0}
-      aria-orientation={ariaOrientation}
-      aria-valuenow={valueNow}
-      aria-valuemin={0}
-      aria-valuemax={100}
+      {...separator}
       data-panel-group-direction={ctx.orientation}
       data-disabled={disabled ? "" : undefined}
       data-dragging={dragging ? "true" : undefined}
@@ -400,26 +402,11 @@ function ResizableHandle({
         )
       }}
       onKeyDown={(event) => {
+        // A caller's handler runs first and can claim the key, exactly as
+        // before the behaviour moved into the shared hook.
         onKeyDown?.(event)
         if (event.defaultPrevented) return
-        if (disabled) return
-        if (ctx.orientation === "horizontal") {
-          if (event.key === "ArrowLeft") {
-            event.preventDefault()
-            ctx.nudgeHandle(handleIndex, -step)
-          } else if (event.key === "ArrowRight") {
-            event.preventDefault()
-            ctx.nudgeHandle(handleIndex, step)
-          }
-        } else {
-          if (event.key === "ArrowUp") {
-            event.preventDefault()
-            ctx.nudgeHandle(handleIndex, -step)
-          } else if (event.key === "ArrowDown") {
-            event.preventDefault()
-            ctx.nudgeHandle(handleIndex, step)
-          }
-        }
+        separator.onKeyDown(event)
       }}
       {...props}
     >
