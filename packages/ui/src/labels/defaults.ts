@@ -34,6 +34,23 @@ export const defaultLabels: UiLabels = {
     visible: "Password visible",
     hidden: "Password hidden",
   },
+  calendar: {
+    previousMonth: "Previous month",
+    nextMonth: "Next month",
+    previousYear: "Previous year",
+    nextYear: "Next year",
+    previousDecade: "Previous decade",
+    nextDecade: "Next decade",
+    chooseMonth: "Choose month",
+    chooseYear: "Choose year",
+    weekNumber: "Week number",
+    switchToYearView: (monthLabel) => `${monthLabel}, switch to year view`,
+    switchToDecadeView: (yearLabel) => `${yearLabel}, switch to decade view`,
+  },
+  datePicker: {
+    trigger: "Open date picker",
+    presets: "Presets",
+  },
   theme: {
     title: "Theme settings",
     triggerLabel: "Customize theme",

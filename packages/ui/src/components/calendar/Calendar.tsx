@@ -4,6 +4,7 @@ import * as React from "react"
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 
 import { cn } from "@lib/utils"
+import { useUiLabels } from "@labels"
 import { Button } from "@components/button"
 import {
   Select,
@@ -658,6 +659,7 @@ function MonthBlock({
   }, [mode, range, hoveredDate])
 
   const isPreviewing = previewRange !== range
+  const labels = useUiLabels().calendar
 
   return (
     <div className={cls("month", "dr-calendar-month")}>
@@ -666,6 +668,7 @@ function MonthBlock({
           <button
             type="button"
             onClick={onOpenYearView}
+            aria-label={labels.switchToYearView(monthFmt.format(month))}
             className={cn(
               "dr-calendar-caption-label",
               "dr-calendar-caption-label-btn",
@@ -694,7 +697,7 @@ function MonthBlock({
           <button
             type="button"
             onClick={onPrev}
-            aria-label="Previous month"
+            aria-label={labels.previousMonth}
             data-variant={buttonVariant}
             data-size="icon"
             className={cn(
@@ -715,7 +718,7 @@ function MonthBlock({
           <button
             type="button"
             onClick={onNext}
-            aria-label="Next month"
+            aria-label={labels.nextMonth}
             data-variant={buttonVariant}
             data-size="icon"
             className={cn(
@@ -739,7 +742,7 @@ function MonthBlock({
           {showWeekNumber && (
             <div
               role="columnheader"
-              aria-label="Week number"
+              aria-label={labels.weekNumber}
               className={cls(
                 "week_number_header",
                 "dr-calendar-week-number-header",
@@ -877,6 +880,7 @@ function DropdownCaption({
     () => new Intl.DateTimeFormat(locale, { month: "long" }),
     [locale],
   )
+  const labels = useUiLabels().calendar
 
   const showMonth =
     captionLayout === "dropdown" || captionLayout === "dropdown-months"
@@ -898,7 +902,7 @@ function DropdownCaption({
           >
             <SelectTrigger
               className="dr-calendar-dropdown-trigger"
-              aria-label="Choose month"
+              aria-label={labels.chooseMonth}
             >
               <SelectValue />
             </SelectTrigger>
@@ -920,7 +924,7 @@ function DropdownCaption({
           >
             <SelectTrigger
               className="dr-calendar-dropdown-trigger"
-              aria-label="Choose year"
+              aria-label={labels.chooseYear}
             >
               <SelectValue />
             </SelectTrigger>
@@ -1013,6 +1017,7 @@ function YearGrid({
     () => new Intl.DateTimeFormat(locale, { month: "short" }),
     [locale],
   )
+  const labels = useUiLabels().calendar
 
   return (
     <div
@@ -1021,14 +1026,15 @@ function YearGrid({
     >
       <GridHeader
         buttonVariant={buttonVariant}
-        prevLabel="Previous year"
-        nextLabel="Next year"
+        prevLabel={labels.previousYear}
+        nextLabel={labels.nextYear}
         onPrev={onPrev}
         onNext={onNext}
         label={
           <button
             type="button"
             onClick={onOpenDecade}
+            aria-label={labels.switchToDecadeView(String(year))}
             className="dr-calendar-caption-label-btn"
           >
             {year}
@@ -1073,6 +1079,7 @@ function DecadeGrid({
   onNext: () => void
   onSelect: (year: number) => void
 }) {
+  const labels = useUiLabels().calendar
   const currentYear = month.getFullYear()
   const decadeStart = Math.floor(currentYear / 10) * 10
   const thisYear = new Date().getFullYear()
@@ -1085,8 +1092,8 @@ function DecadeGrid({
     >
       <GridHeader
         buttonVariant={buttonVariant}
-        prevLabel="Previous decade"
-        nextLabel="Next decade"
+        prevLabel={labels.previousDecade}
+        nextLabel={labels.nextDecade}
         onPrev={onPrev}
         onNext={onNext}
         label={

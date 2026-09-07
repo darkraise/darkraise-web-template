@@ -3,6 +3,7 @@
 import * as React from "react"
 
 import { cn } from "@lib/utils"
+import { useUiLabels } from "@labels"
 import { format as fmt, isValid as dateIsValid } from "@lib/date"
 import { Calendar, type DateRange, type Matcher } from "@components/calendar"
 import {
@@ -398,6 +399,7 @@ function DatePickerTrigger({
 }: DatePickerTriggerProps) {
   const { open, disabled, contentId, triggerRef } =
     useDatePickerContext("DatePickerTrigger")
+  const labels = useUiLabels().datePicker
 
   const setRef = React.useCallback(
     (node: HTMLButtonElement | null) => {
@@ -417,7 +419,7 @@ function DatePickerTrigger({
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-controls={contentId}
-        aria-label={ariaLabelProp ?? "Open date picker"}
+        aria-label={ariaLabelProp ?? labels.trigger}
         disabled={disabled}
         data-state={open ? "open" : "closed"}
         data-disabled={disabled ? "true" : undefined}
@@ -561,11 +563,16 @@ function DatePickerCalendar({
 
 export type DatePickerPresetsProps = React.HTMLAttributes<HTMLDivElement>
 
-function DatePickerPresets({ className, ...props }: DatePickerPresetsProps) {
+function DatePickerPresets({
+  className,
+  "aria-label": ariaLabelProp,
+  ...props
+}: DatePickerPresetsProps) {
+  const labels = useUiLabels().datePicker
   return (
     <div
       role="group"
-      aria-label="Presets"
+      aria-label={ariaLabelProp ?? labels.presets}
       className={cn("dr-date-picker-presets", className)}
       {...props}
     />

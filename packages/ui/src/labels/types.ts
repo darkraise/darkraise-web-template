@@ -39,6 +39,27 @@ export interface UiLabels {
     visible: string
     hidden: string
   }
+  calendar: {
+    previousMonth: string
+    nextMonth: string
+    previousYear: string
+    nextYear: string
+    previousDecade: string
+    nextDecade: string
+    chooseMonth: string
+    chooseYear: string
+    weekNumber: string
+    /** Accessible name of the caption button that leaves the day grid for the
+     *  year grid. Takes the visible month text so the rendered label stays a
+     *  prefix of the accessible name. */
+    switchToYearView: (monthLabel: string) => string
+    /** Same contract as `switchToYearView`, for year grid to decade grid. */
+    switchToDecadeView: (yearLabel: string) => string
+  }
+  datePicker: {
+    trigger: string
+    presets: string
+  }
   theme: {
     title: string
     triggerLabel: string

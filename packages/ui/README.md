@@ -80,6 +80,27 @@ subset. Components render correctly with no provider mounted.
 The package ships no translations and has no concept of a locale — it takes
 strings, and the app decides which ones.
 
+`Calendar`'s `locale` prop covers only the strings `Intl` produces — weekday
+names, month names, the day cell's accessible name. Its navigation chrome
+(`previousMonth`, `nextMonth`, `chooseMonth`, `chooseYear`, the year and decade
+arrows, the week-number header and the two view-switch captions) comes from
+`labels.calendar`, and `DatePicker`'s trigger and preset group from
+`labels.datePicker`, so a translated calendar needs both:
+
+```tsx
+<UiLabelsProvider
+  value={{
+    calendar: { previousMonth: "Tháng trước", nextMonth: "Tháng sau" },
+    datePicker: { trigger: "Mở lịch" },
+  }}
+>
+  <Calendar locale="vi-VN" />
+</UiLabelsProvider>
+```
+
+An explicit `aria-label` on `DatePickerTrigger` or `DatePickerPresets` still
+wins over the provider.
+
 `theme.axisLabels.presetAxes` is a reserved key with no current effect —
 translating it will not change anything rendered today; it is kept so that a
 future wiring stays backward-compatible for anyone already providing a

@@ -9,6 +9,8 @@ export function mergeLabels(
     layout: { ...base.layout, ...override.layout },
     userMenu: { ...base.userMenu, ...override.userMenu },
     passwordInput: { ...base.passwordInput, ...override.passwordInput },
+    calendar: { ...base.calendar, ...override.calendar },
+    datePicker: { ...base.datePicker, ...override.datePicker },
     theme: {
       ...base.theme,
       ...override.theme,
