@@ -42,6 +42,9 @@ interface BaseProps {
   showWeekNumber?: boolean
   captionLayout?: CaptionLayout
   buttonVariant?: React.ComponentProps<typeof Button>["variant"]
+  /** @deprecated Never read. Declared for react-day-picker parity and inert
+   *  since; it overrides nothing. Removed in 7.0.0 — translate the navigation
+   *  chrome through `UiLabelsProvider`'s `calendar` labels instead. */
   components?: unknown
   month?: Date
   defaultMonth?: Date

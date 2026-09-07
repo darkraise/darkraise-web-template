@@ -4,6 +4,10 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 
 ## [Unreleased]
 
+### Deprecated
+
+- `Calendar`'s `components` prop is deprecated and will be removed in 7.0.0. It has never been read — it is typed `unknown`, is not destructured, and the component takes no rest spread, so passing it has no effect of any kind. Typed but undocumented, it read in an editor as the escape hatch for replacing the calendar's chrome — which meant the hardcoded English navigation labels had no override path at all. That gap is closed by the `calendar` and `datePicker` label groups added in 6.8.1, so the prop now has nothing left to offer and is removed rather than wired.
+
 ## [6.8.1] — 2026-09-07
 
 ## [6.8.0] — 2026-09-04
@@ -27,7 +31,7 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 
 - Selecting one of the eleven newly exposed ramps changes `--foreground`, `--muted-foreground` and `--card-foreground` to that ramp's neutrals rather than slate's. No existing consumer is affected: `slate` and every accent surface resolve exactly as before, which the palette suite pins.
 - `ACCENT_COLORS` gains an eighteenth entry, inserted after `red` to keep the swatch grid hue-ordered. `resolveSfHueTokens` picks a gradient's second hue by stepping three places along that list and wrapping, so an accent surface under `backgroundStyle: "gradient"` may resolve a different `--sf-hue-2` than it did on 6.4.0. Only the decorative gradient hue moves; no semantic token does.
-- **The text tiers are computed against the page background instead of snapped to ramp steps, which moves `--muted-foreground` for every consumer.** The steps are too coarse to carry three tiers: across the twelve neutral ramps, light step 500 measures 4.31:1 and step 600 measures 6.61:1, so nothing could sit below 500 and still clear the 4.5:1 AA floor. Snapping also left `--muted-foreground` itself *under* AA on the warmer ramps — worst case 4.31:1 in light. Each tier is now the quietest value on the ramp's hue that clears its target: `--muted-foreground` at 7:1, `--legend` at 4.6:1. Measured on slate, light `--muted-foreground` moves from `215 16% 47%` (4.51:1) to `215 16% 35%` (7.03:1), so muted text renders darker in light mode. Worst case across all twelve ramps is now 7.00:1 for muted and 4.64:1 for legend, in both modes.
+- **The text tiers are computed against the page background instead of snapped to ramp steps, which moves `--muted-foreground` for every consumer.** The steps are too coarse to carry three tiers: across the twelve neutral ramps, light step 500 measures 4.31:1 and step 600 measures 6.61:1, so nothing could sit below 500 and still clear the 4.5:1 AA floor. Snapping also left `--muted-foreground` itself _under_ AA on the warmer ramps — worst case 4.31:1 in light. Each tier is now the quietest value on the ramp's hue that clears its target: `--muted-foreground` at 7:1, `--legend` at 4.6:1. Measured on slate, light `--muted-foreground` moves from `215 16% 47%` (4.51:1) to `215 16% 35%` (7.03:1), so muted text renders darker in light mode. Worst case across all twelve ramps is now 7.00:1 for muted and 4.64:1 for legend, in both modes.
 - `--sidebar-foreground-muted` is now exactly `--muted-foreground` rather than a parallel pair of ramp steps, and moves with it.
 
 ### Fixed
@@ -40,12 +44,12 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 
 - **Button labels are held to 3:1, not 4.5:1.** `pickForeground` picks white or ink for a `--primary-fill` label against `FOREGROUND_MIN_RATIO = 3`, and 77 accent/intensity/mode combinations sit under AA. Worst case per step, measured across all eighteen accents:
 
-  | Step | Light | Dark |
-  |---|---|---|
-  | calm | 3.29 | **4.75** |
-  | balanced | 3.29 | 4.10 |
-  | vivid | 3.29 | 3.59 |
-  | intense | 3.29 | 3.18 |
+  | Step     | Light | Dark     |
+  | -------- | ----- | -------- |
+  | calm     | 3.29  | **4.75** |
+  | balanced | 3.29  | 4.10     |
+  | vivid    | 3.29  | 3.59     |
+  | intense  | 3.29  | 3.18     |
 
   `dark` + `calm` is the only combination that clears AA, which is why a consumer needing accessible button labels should pin it. The floor is deliberately not raised here: doing so makes the label flip to ink on many accents, which the `VIBRANCY` notes call out as making label colour vary by accent, and it requires moving fills off the pinned OKLCH lightness ladder, which would make light mode vary across an axis documented as dark-mode-only. That is a design decision rather than a contrast repair, and it is left for a major.
 
