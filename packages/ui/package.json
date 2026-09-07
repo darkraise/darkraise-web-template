@@ -117,6 +117,7 @@
     "cross-env": "^10.1.0",
     "eslint-plugin-storybook": "^10.3.6",
     "jsdom": "^29.1.1",
+    "lightningcss": "1.32.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "storybook": "^10.3.6",

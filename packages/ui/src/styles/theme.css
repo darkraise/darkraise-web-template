@@ -2223,31 +2223,6 @@
   }
 }
 
-@source "..";
-writes are already under
-   control, and blanket mid-word breaking makes them look broken.
-
-   `min-width: 0` accompanies it because these sit inside flex rows, where the
-   default `min-width: auto` floors an item at its content width and defeats
-   the wrap entirely. */
-@layer components {
-  .dr-toast-title,
-  .dr-toast-description,
-  .dr-alert-title,
-  .dr-alert-description,
-  .dr-overlay-description,
-  .dr-dialog-title,
-  .dr-field-description,
-  .dr-field-error,
-  .dr-table-cell,
-  .dr-tooltip-content,
-  .dr-empty-state-description,
-  .dr-form-error-summary-list {
-    overflow-wrap: anywhere;
-    min-width: 0;
-  }
-}
-
 /* Tap latency.
 
    `touch-action: manipulation` opts an element out of the double-tap-to-zoom
