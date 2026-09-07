@@ -4,6 +4,8 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 
 ## [Unreleased]
 
+## [6.8.2] — 2026-09-07
+
 ### Deprecated
 
 - `Calendar`'s `components` prop is deprecated and will be removed in 7.0.0. It has never been read — it is typed `unknown`, is not destructured, and the component takes no rest spread, so passing it has no effect of any kind. Typed but undocumented, it read in an editor as the escape hatch for replacing the calendar's chrome — which meant the hardcoded English navigation labels had no override path at all. That gap is closed by the `calendar` and `datePicker` label groups added in 6.8.1, so the prop now has nothing left to offer and is removed rather than wired.
