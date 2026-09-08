@@ -1,3 +1,4 @@
+import { useUiLocale } from "darkraise-ui/i18n"
 import { Card, CardContent } from "darkraise-ui/components/card"
 import { Progress } from "darkraise-ui/components/progress"
 import type { ProgressCardProps } from "../../types"
@@ -9,8 +10,12 @@ export function ProgressCard({
   unit = "",
   formatValue,
 }: ProgressCardProps) {
+  const uiLocale = useUiLocale()
+
   const percentage = Math.min((value / target) * 100, 100)
-  const format = formatValue ?? ((n: number) => `${n.toLocaleString()}${unit}`)
+  const format =
+    formatValue ??
+    ((n: number) => `${n.toLocaleString(uiLocale.locale)}${unit}`)
 
   return (
     <Card>

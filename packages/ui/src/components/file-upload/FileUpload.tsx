@@ -1,6 +1,8 @@
 "use client"
+import { useUiText } from "../../i18n/useUiText"
 
 import * as React from "react"
+import { useUiLabels } from "../../labels"
 
 import { cn } from "@lib/utils"
 import {
@@ -563,6 +565,7 @@ function FileUploadItemDeleteTrigger({
   children,
   ...props
 }: FileUploadItemDeleteTriggerProps) {
+  const labels = useUiLabels()
   const ctx = useFileUploadContext("FileUploadItemDeleteTrigger")
   const { file } = useFileUploadItemContext("FileUploadItemDeleteTrigger")
   const disabled = !!disabledProp || ctx.disabled
@@ -570,7 +573,7 @@ function FileUploadItemDeleteTrigger({
     <button
       ref={ref}
       type={type}
-      aria-label={`Remove ${file.name}`}
+      aria-label={labels.announcements.remove(file.name)}
       disabled={disabled}
       data-disabled={disabled ? "true" : undefined}
       className={cn("dr-file-upload-item-delete-trigger", className)}
@@ -601,6 +604,8 @@ function FileUploadClearTrigger({
   children,
   ...props
 }: FileUploadClearTriggerProps) {
+  const uiText = useUiText()
+
   const ctx = useFileUploadContext("FileUploadClearTrigger")
   const disabled = !!disabledProp || ctx.disabled
   if (ctx.acceptedFiles.length === 0) return null
@@ -608,7 +613,7 @@ function FileUploadClearTrigger({
     <button
       ref={ref}
       type={type}
-      aria-label="Clear all files"
+      aria-label={uiText("Clear all files")}
       disabled={disabled}
       data-disabled={disabled ? "true" : undefined}
       className={cn("dr-file-upload-clear-trigger", className)}

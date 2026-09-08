@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useUiLocale } from "../../i18n/context"
 import { useControllableState } from "@primitives/state"
 
 export type DateInputFormat = "ymd" | "mdy" | "dmy"
@@ -64,6 +65,7 @@ function partsEqualDate(p: Parts, d: Date | null | undefined): boolean {
 }
 
 export function useDateInput(options: UseDateInputOptions) {
+  const uiLocale = useUiLocale()
   const [value, setValue] = useControllableState<Date | null | undefined>({
     value: options.value,
     defaultValue: options.defaultValue ?? null,
@@ -119,6 +121,20 @@ export function useDateInput(options: UseDateInputOptions) {
   }
 
   const order: Array<keyof Parts> = (() => {
+    if (options.format === undefined && uiLocale.enabled) {
+      return new Intl.DateTimeFormat(uiLocale.locale, {
+        calendar: "gregory",
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+      })
+        .formatToParts(new Date(2026, 8, 8))
+        .map((part) => part.type)
+        .filter(
+          (part): part is keyof Parts =>
+            part === "year" || part === "month" || part === "day",
+        )
+    }
     const f = options.format ?? "ymd"
     if (f === "mdy") return ["month", "day", "year"]
     if (f === "dmy") return ["day", "month", "year"]

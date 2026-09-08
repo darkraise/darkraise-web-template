@@ -1,3 +1,4 @@
+import { useUiText } from "../../i18n/useUiText"
 import * as React from "react"
 import { ChevronDown, ChevronUp } from "lucide-react"
 
@@ -381,6 +382,8 @@ function NumberInputIncrementTrigger({
   "aria-label": ariaLabel,
   ...props
 }: StepperButtonProps) {
+  const uiText = useUiText()
+
   const ctx = useNumberInputContext("NumberInputIncrementTrigger")
   const isDisabled = disabled ?? (ctx.disabled || ctx.isAtMax)
   const { start, stop } = useStepperPressHold(() => ctx.increment(), isDisabled)
@@ -395,7 +398,7 @@ function NumberInputIncrementTrigger({
       )}
       data-disabled={isDisabled ? "true" : undefined}
       tabIndex={-1}
-      aria-label={ariaLabel ?? "Increment"}
+      aria-label={ariaLabel ?? uiText("Increment")}
       disabled={isDisabled}
       onPointerDown={(event) => {
         onPointerDown?.(event)
@@ -442,6 +445,8 @@ function NumberInputDecrementTrigger({
   "aria-label": ariaLabel,
   ...props
 }: StepperButtonProps) {
+  const uiText = useUiText()
+
   const ctx = useNumberInputContext("NumberInputDecrementTrigger")
   const isDisabled = disabled ?? (ctx.disabled || ctx.isAtMin)
   const { start, stop } = useStepperPressHold(() => ctx.decrement(), isDisabled)
@@ -456,7 +461,7 @@ function NumberInputDecrementTrigger({
       )}
       data-disabled={isDisabled ? "true" : undefined}
       tabIndex={-1}
-      aria-label={ariaLabel ?? "Decrement"}
+      aria-label={ariaLabel ?? uiText("Decrement")}
       disabled={isDisabled}
       onPointerDown={(event) => {
         onPointerDown?.(event)

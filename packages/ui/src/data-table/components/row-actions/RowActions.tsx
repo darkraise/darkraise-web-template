@@ -1,3 +1,4 @@
+import { useUiText } from "../../../i18n/useUiText"
 import { MoreHorizontal } from "lucide-react"
 import { Button } from "@components/button"
 import {
@@ -18,6 +19,8 @@ interface RowActionsProps {
 }
 
 export function RowActions({ actions }: RowActionsProps) {
+  const uiText = useUiText()
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -30,7 +33,7 @@ export function RowActions({ actions }: RowActionsProps) {
             className="size-[var(--icon-size)]"
             aria-hidden="true"
           />
-          <span className="sr-only">Actions</span>
+          <span className="sr-only">{uiText("Actions")}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

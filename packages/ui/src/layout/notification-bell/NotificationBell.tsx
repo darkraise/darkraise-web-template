@@ -1,3 +1,4 @@
+import { useUiText } from "../../i18n/useUiText"
 import type { ReactNode } from "react"
 import { Bell } from "lucide-react"
 import { Button } from "@components/button"
@@ -16,8 +17,11 @@ interface NotificationBellProps {
 export function NotificationBell({
   count = 0,
   children,
-  emptyMessage = "No new notifications",
+  emptyMessage: emptyMessageLocaleProp,
 }: NotificationBellProps) {
+  const uiText = useUiText()
+  const emptyMessage = emptyMessageLocaleProp ?? uiText("No new notifications")
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -32,7 +36,7 @@ export function NotificationBell({
               {count > 9 ? "9+" : count}
             </span>
           )}
-          <span className="sr-only">Notifications</span>
+          <span className="sr-only">{uiText("Notifications")}</span>
         </Button>
       </PopoverTrigger>
       <PopoverContent className="dr-notification-bell-content" align="end">

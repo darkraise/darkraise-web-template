@@ -1,3 +1,4 @@
+import { useUiText } from "../../i18n/useUiText"
 import type { ReactNode } from "react"
 import { Menu } from "lucide-react"
 import { Button } from "@components/button"
@@ -42,10 +43,14 @@ export function MobileDrawer({
   header,
   footer,
   children,
-  title = "Navigation",
-  triggerLabel = "Open menu",
+  title: titleLocaleProp,
+  triggerLabel: triggerLabelLocaleProp,
   activeBar,
 }: MobileDrawerProps) {
+  const uiText = useUiText()
+  const title = titleLocaleProp ?? uiText("Navigation")
+  const triggerLabel = triggerLabelLocaleProp ?? uiText("Open menu")
+
   return (
     <Sheet>
       <SheetTrigger asChild>

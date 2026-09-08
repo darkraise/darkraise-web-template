@@ -1,5 +1,5 @@
 import { render, screen, within, fireEvent } from "@testing-library/react"
-import { describe, it, expect } from "vitest"
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest"
 import { DataTable } from "@data-table"
 
 interface Row {
@@ -23,6 +23,33 @@ function scroller() {
 }
 
 describe("DataTable virtualization", () => {
+  beforeEach(() => {
+    vi.stubGlobal(
+      "ResizeObserver",
+      class {
+        observe() {}
+        disconnect() {}
+        unobserve() {}
+      },
+    )
+  })
+  afterEach(() => vi.unstubAllGlobals())
+
+  it("shows replacement data after scrolling beyond its length", () => {
+    const { rerender } = render(
+      <DataTable columns={columns} data={rows} virtualize={VIRTUAL} />,
+    )
+    fireEvent.scroll(scroller(), { target: { scrollTop: 32 * 1000 } })
+    rerender(
+      <DataTable
+        columns={columns}
+        data={[{ name: "remaining" }]}
+        virtualize={VIRTUAL}
+      />,
+    )
+    expect(screen.getByRole("cell", { name: "remaining" })).toBeVisible()
+    expect(scroller().scrollTop).toBe(0)
+  })
   it("mounts a bounded number of rows for a long list", () => {
     render(<DataTable columns={columns} data={rows} virtualize={VIRTUAL} />)
     // 320px of viewport at 32px a row is ten, plus overscan at each end. The
@@ -33,8 +60,8 @@ describe("DataTable virtualization", () => {
 
   it("still reports the full row count to assistive tech", () => {
     render(<DataTable columns={columns} data={rows} virtualize={VIRTUAL} />)
-    // A screen reader must hear "row 4000 of 5000", not "of 20".
-    expect(screen.getByRole("table")).toHaveAttribute("aria-rowcount", "5000")
+    // Header rows are included in the total and in each data row's index.
+    expect(screen.getByRole("table")).toHaveAttribute("aria-rowcount", "5001")
   })
 
   it("mounts different rows once scrolled", () => {

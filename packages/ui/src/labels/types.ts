@@ -8,6 +8,10 @@ export type ThemeAxisName = keyof ThemeConfig["switcher"]["axes"]
 
 export interface UiLabels {
   dataTable: {
+    firstPage?: string
+    previousPage?: string
+    nextPage?: string
+    lastPage?: string
     search: string
     reset: string
     columns: string

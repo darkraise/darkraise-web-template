@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useUiLocale } from "../../i18n/context"
 
 export interface NumberInputValueChangeDetails {
   value: string
@@ -49,6 +50,9 @@ interface Separators {
   decimal: string
   group: string
   literals: string[]
+  digits: string[]
+  minus: string
+  plus: string
 }
 
 function getSeparators(
@@ -56,9 +60,20 @@ function getSeparators(
   formatOptions: Intl.NumberFormatOptions | undefined,
 ): Separators {
   try {
-    const fmt = new Intl.NumberFormat(locale, formatOptions)
+    const effectiveLocale = locale ?? (formatOptions ? undefined : "en-US")
+    const fmt = new Intl.NumberFormat(effectiveLocale, formatOptions)
     const parts = fmt.formatToParts(1234567.89)
-    let decimal = "."
+    const digitFormatter = new Intl.NumberFormat(effectiveLocale, {
+      numberingSystem: fmt.resolvedOptions().numberingSystem,
+      useGrouping: false,
+    })
+    let decimal =
+      new Intl.NumberFormat(effectiveLocale, {
+        minimumFractionDigits: 2,
+        numberingSystem: fmt.resolvedOptions().numberingSystem,
+      })
+        .formatToParts(1.5)
+        .find((part) => part.type === "decimal")?.value ?? "."
     let group = ","
     const literals: string[] = []
     for (const part of parts) {
@@ -75,9 +90,33 @@ function getSeparators(
         }
       }
     }
-    return { decimal, group, literals }
+    const signed = new Intl.NumberFormat(effectiveLocale, {
+      ...formatOptions,
+      signDisplay: "always",
+    })
+    return {
+      decimal,
+      group,
+      literals,
+      digits: Array.from({ length: 10 }, (_, digit) =>
+        digitFormatter.format(digit),
+      ),
+      minus:
+        signed.formatToParts(-1).find((part) => part.type === "minusSign")
+          ?.value ?? "-",
+      plus:
+        signed.formatToParts(1).find((part) => part.type === "plusSign")
+          ?.value ?? "+",
+    }
   } catch {
-    return { decimal: ".", group: ",", literals: [] }
+    return {
+      decimal: ".",
+      group: ",",
+      literals: [],
+      digits: [],
+      minus: "-",
+      plus: "+",
+    }
   }
 }
 
@@ -91,13 +130,27 @@ function parseInputString(
   formatOptions: Intl.NumberFormatOptions | undefined,
 ): number {
   if (!raw) return Number.NaN
-  let working = raw.trim()
+  let working = raw.replace(/[\u061c\u200e\u200f]/gu, "").trim()
   if (!working) return Number.NaN
+
+  const accounting =
+    formatOptions?.currencySign === "accounting" &&
+    working.startsWith("(") &&
+    working.endsWith(")")
+  if (accounting) working = working.slice(1, -1)
+  separators.digits.forEach((digit, index) => {
+    working = working.split(digit).join(String(index))
+  })
+  working = working
+    .split(separators.minus)
+    .join("-")
+    .split(separators.plus)
+    .join("+")
 
   for (const literal of separators.literals) {
     working = working.split(literal).join("")
   }
-  // Strip any non-numeric symbols (currency, % etc.) characters Intl may add.
+  // Intl inserts spacing and direction marks around currency/unit symbols.
   working = working.replace(/\s+/gu, "")
 
   if (separators.group) {
@@ -110,8 +163,11 @@ function parseInputString(
 
   // For percent style the displayed "50%" actually represents 0.5; keep parity
   // with the raw entered number so user keeps typing freely.
-  let parsed = Number.parseFloat(working)
-  if (Number.isNaN(parsed)) return Number.NaN
+  if (!/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/.test(working))
+    return Number.NaN
+  let parsed = Number(working)
+  if (!Number.isFinite(parsed)) return Number.NaN
+  if (accounting) parsed = -parsed
 
   if (formatOptions?.style === "percent") {
     parsed = parsed / 100
@@ -128,9 +184,17 @@ function formatNumber(
 ): string {
   if (Number.isNaN(value)) return ""
 
-  if (formatOptions) {
+  if (formatOptions || locale) {
     try {
-      const fmt = new Intl.NumberFormat(locale, formatOptions)
+      const fmt = new Intl.NumberFormat(
+        locale,
+        formatOptions ?? {
+          minimumFractionDigits:
+            precision === undefined ? 0 : Math.max(0, precision),
+          maximumFractionDigits:
+            precision === undefined ? 20 : Math.max(0, precision),
+        },
+      )
       return fmt.format(value)
     } catch {
       // fall through to plain number formatting
@@ -179,12 +243,17 @@ export function useNumberInput(
     max,
     step = 1,
     precision,
-    formatOptions,
-    locale,
+    formatOptions: formatOptionsProp,
+    locale: localeProp,
     allowMouseWheel = false,
     disabled = false,
     readOnly = false,
   } = props
+  const uiLocale = useUiLocale()
+  const locale = localeProp ?? (uiLocale.enabled ? uiLocale.locale : undefined)
+  const formatOptions =
+    formatOptionsProp ??
+    (uiLocale.enabled ? uiLocale.formats.number : undefined)
 
   const isControlled = valueProp !== undefined
   const [internalValue, setInternalValue] = React.useState<number>(() => {
@@ -226,6 +295,10 @@ export function useNumberInput(
 
   const [isFocused, setFocused] = React.useState(false)
   const [editingString, setEditingString] = React.useState<string | null>(null)
+  const [draftFormat, setDraftFormat] = React.useState<{
+    separators: Separators
+    options: Intl.NumberFormatOptions | undefined
+  } | null>(null)
 
   // When value changes externally and we're not editing, drop any stale string.
   React.useEffect(() => {
@@ -278,7 +351,13 @@ export function useNumberInput(
   const setInputString = React.useCallback(
     (next: string) => {
       setEditingString(next)
-      const parsed = parseInputString(next, separators, formatOptions)
+      const convention = draftFormat ?? { separators, options: formatOptions }
+      if (!draftFormat) setDraftFormat(convention)
+      const parsed = parseInputString(
+        next,
+        convention.separators,
+        convention.options,
+      )
       if (Number.isNaN(parsed)) {
         if (next === "") {
           if (!isControlled) setInternalValue(Number.NaN)
@@ -290,12 +369,18 @@ export function useNumberInput(
       if (!isControlled) setInternalValue(parsed)
       onValueChangeRef.current?.({ value: next, valueAsNumber: parsed })
     },
-    [separators, formatOptions, isControlled],
+    [separators, formatOptions, isControlled, draftFormat],
   )
 
   const commit = React.useCallback(() => {
     if (editingString === null) return
-    const parsed = parseInputString(editingString, separators, formatOptions)
+    const convention = draftFormat ?? { separators, options: formatOptions }
+    const parsed = parseInputString(
+      editingString,
+      convention.separators,
+      convention.options,
+    )
+    setDraftFormat(null)
     if (Number.isNaN(parsed)) {
       setEditingString(null)
       return
@@ -303,7 +388,15 @@ export function useNumberInput(
     const clamped = clamp(parsed, min, max)
     updateValue(clamped)
     setEditingString(null)
-  }, [editingString, separators, formatOptions, min, max, updateValue])
+  }, [
+    editingString,
+    separators,
+    formatOptions,
+    min,
+    max,
+    updateValue,
+    draftFormat,
+  ])
 
   const isAtMin =
     typeof min === "number" &&

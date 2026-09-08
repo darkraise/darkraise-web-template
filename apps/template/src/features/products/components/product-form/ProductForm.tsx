@@ -1,3 +1,4 @@
+import { useAppTranslation } from "@/i18n/useAppTranslation"
 import { useForm } from "@tanstack/react-form"
 import { z } from "zod"
 import {
@@ -38,6 +39,8 @@ export function ProductForm({
   onSubmit,
   onCancel,
 }: ProductFormProps) {
+  const t = useAppTranslation()
+
   const form = useForm({
     defaultValues,
     validators: {
@@ -57,14 +60,14 @@ export function ProductForm({
       }}
       className="max-w-2xl space-y-8"
     >
-      <FormSection title="Basic Information">
+      <FormSection title={t("Basic Information")}>
         <form.Field
           name="name"
           children={(field) => (
             <TextField
-              {...fieldProps<string>(field)}
-              label="Product Name"
-              placeholder="Enter product name"
+              {...fieldProps<string>(field, t)}
+              label={t("Product Name")}
+              placeholder={t("Enter product name")}
             />
           )}
         />
@@ -72,9 +75,9 @@ export function ProductForm({
           name="description"
           children={(field) => (
             <TextareaField
-              {...fieldProps<string>(field)}
-              label="Description"
-              placeholder="Describe your product"
+              {...fieldProps<string>(field, t)}
+              label={t("Description")}
+              placeholder={t("Describe your product")}
               rows={4}
             />
           )}
@@ -83,22 +86,22 @@ export function ProductForm({
           name="category"
           children={(field) => (
             <SelectField
-              {...fieldProps<string>(field)}
-              label="Category"
-              placeholder="Select a category"
+              {...fieldProps<string>(field, t)}
+              label={t("Category")}
+              placeholder={t("Select a category")}
               options={categoryOptions}
             />
           )}
         />
       </FormSection>
 
-      <FormSection title="Pricing">
+      <FormSection title={t("Pricing")}>
         <form.Field
           name="price"
           children={(field) => (
             <NumberField
-              {...fieldProps<number | undefined>(field)}
-              label="Price"
+              {...fieldProps<number | undefined>(field, t)}
+              label={t("Price")}
               placeholder="0.00"
               min={0}
               step={0.01}
@@ -109,8 +112,8 @@ export function ProductForm({
           name="compareAtPrice"
           children={(field) => (
             <NumberField
-              {...fieldProps<number | undefined>(field)}
-              label="Compare-at Price"
+              {...fieldProps<number | undefined>(field, t)}
+              label={t("Compare-at Price")}
               placeholder="0.00"
               min={0}
               step={0.01}
@@ -119,12 +122,12 @@ export function ProductForm({
         />
       </FormSection>
 
-      <FormSection title="Inventory">
+      <FormSection title={t("Inventory")}>
         <form.Field
           name="sku"
           children={(field) => (
             <TextField
-              {...fieldProps<string>(field)}
+              {...fieldProps<string>(field, t)}
               label="SKU"
               placeholder="e.g. APL-IP15-256"
             />
@@ -134,8 +137,8 @@ export function ProductForm({
           name="stock"
           children={(field) => (
             <NumberField
-              {...fieldProps<number | undefined>(field)}
-              label="Stock Quantity"
+              {...fieldProps<number | undefined>(field, t)}
+              label={t("Stock Quantity")}
               placeholder="0"
               min={0}
               step={1}
@@ -144,14 +147,14 @@ export function ProductForm({
         />
       </FormSection>
 
-      <FormSection title="Status">
+      <FormSection title={t("Status")}>
         <form.Field
           name="isActive"
           children={(field) => (
             <SwitchField
-              {...fieldProps<boolean>(field)}
-              label="Active"
-              description="Make this product visible in the store"
+              {...fieldProps<boolean>(field, t)}
+              label={t("Active")}
+              description={t("Make this product visible in the store")}
             />
           )}
         />

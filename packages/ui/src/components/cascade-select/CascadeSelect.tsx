@@ -1,3 +1,4 @@
+import { useUiText } from "../../i18n/useUiText"
 import * as React from "react"
 import { ChevronDown, ChevronRight } from "lucide-react"
 import { cn } from "@lib/utils"
@@ -43,10 +44,13 @@ function CascadeSelect({
   value,
   defaultValue,
   onValueChange,
-  placeholder = "Select…",
+  placeholder: placeholderLocaleProp,
   disabled,
   className,
 }: CascadeSelectProps) {
+  const uiText = useUiText()
+  const placeholder = placeholderLocaleProp ?? uiText("Select…")
+
   const [path, setPath] = useControllableState<string[]>({
     value,
     defaultValue: defaultValue ?? [],

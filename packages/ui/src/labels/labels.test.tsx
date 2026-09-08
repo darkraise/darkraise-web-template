@@ -63,6 +63,15 @@ describe("useUiLabels", () => {
 })
 
 describe("mergeLabels", () => {
+  it("ignores undefined leaves without losing empty strings or nested defaults", () => {
+    const merged = mergeLabels(defaultLabels, {
+      dataTable: { pageInfo: undefined, reset: "" },
+      theme: { modes: { dark: undefined } },
+    })
+    expect(merged.dataTable.pageInfo(2, 7)).toBe("Page 2 of 7")
+    expect(merged.dataTable.reset).toBe("")
+    expect(merged.theme.modes.dark).toBe("Dark")
+  })
   it("merges the nested theme records key by key", () => {
     const merged = mergeLabels(defaultLabels, {
       theme: { modes: { dark: "Tối" } },

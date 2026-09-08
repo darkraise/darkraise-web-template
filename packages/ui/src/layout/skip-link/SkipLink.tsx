@@ -1,3 +1,4 @@
+import { useUiText } from "../../i18n/useUiText"
 interface SkipLinkProps {
   targetId?: string
   children?: React.ReactNode
@@ -7,8 +8,11 @@ interface SkipLinkProps {
 // could cover the first control a keyboard user reaches on the page.
 export function SkipLink({
   targetId = "main-content",
-  children = "Skip to content",
+  children: childrenLocaleProp,
 }: SkipLinkProps) {
+  const uiText = useUiText()
+  const children = childrenLocaleProp ?? uiText("Skip to content")
+
   return (
     <a
       href={`#${targetId}`}

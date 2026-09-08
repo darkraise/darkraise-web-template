@@ -1,3 +1,4 @@
+import { useUiText } from "../../i18n/useUiText"
 import { useMemo } from "react"
 
 import { cn } from "@lib/utils"
@@ -85,6 +86,8 @@ function FieldLabel({
   /** Marks the field as required, visually and for assistive technology. */
   required?: boolean
 }) {
+  const uiText = useUiText()
+
   return (
     <Label
       data-slot="field-label"
@@ -103,7 +106,7 @@ function FieldLabel({
           <span aria-hidden="true" className="dr-field-required-mark">
             *
           </span>
-          <span className="sr-only">(required)</span>
+          <span className="sr-only">{uiText("(required)")}</span>
         </>
       )}
     </Label>

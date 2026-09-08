@@ -1,3 +1,4 @@
+import { useUiText } from "../../i18n/useUiText"
 import * as React from "react"
 
 import { Button } from "@components/button"
@@ -23,20 +24,22 @@ const DEFAULT_ERROR_MESSAGE = "Failed to copy"
 
 function resolveSuccessMessage(
   option: ClipboardToastOption | undefined,
+  defaultMessage: string,
 ): string | null {
   if (!option) return null
-  if (option === true) return DEFAULT_SUCCESS_MESSAGE
+  if (option === true) return defaultMessage
   if (option.success === false) return null
-  return option.success ?? DEFAULT_SUCCESS_MESSAGE
+  return option.success ?? defaultMessage
 }
 
 function resolveErrorMessage(
   option: ClipboardToastOption | undefined,
+  defaultMessage: string,
 ): string | null {
   if (!option) return null
-  if (option === true) return DEFAULT_ERROR_MESSAGE
+  if (option === true) return defaultMessage
   if (option.error === false) return null
-  return option.error ?? DEFAULT_ERROR_MESSAGE
+  return option.error ?? defaultMessage
 }
 
 interface ClipboardContextValue {
@@ -83,6 +86,7 @@ function Clipboard({
   children,
   ...props
 }: ClipboardProps) {
+  const uiText = useUiText()
   const [copied, setCopied] = React.useState(false)
   const timerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
   const mountedRef = React.useRef(true)
@@ -117,7 +121,10 @@ function Clipboard({
         if (!mountedRef.current) return
         setCopied(true)
         onStatusChangeRef.current?.({ copied: true, value })
-        const successMessage = resolveSuccessMessage(toastOptionRef.current)
+        const successMessage = resolveSuccessMessage(
+          toastOptionRef.current,
+          uiText(DEFAULT_SUCCESS_MESSAGE),
+        )
         if (successMessage) toast.success(successMessage)
         if (timerRef.current) clearTimeout(timerRef.current)
         timerRef.current = setTimeout(() => {
@@ -129,11 +136,14 @@ function Clipboard({
         if (!mountedRef.current) return
         const error = err instanceof Error ? err : new Error(String(err))
         onStatusChangeRef.current?.({ copied: false, value, error })
-        const errorMessage = resolveErrorMessage(toastOptionRef.current)
+        const errorMessage = resolveErrorMessage(
+          toastOptionRef.current,
+          uiText(DEFAULT_ERROR_MESSAGE),
+        )
         if (errorMessage) toast.error(errorMessage)
       }
     })()
-  }, [value, timeout])
+  }, [value, timeout, uiText])
 
   const ctx = React.useMemo<ClipboardContextValue>(
     () => ({ value, copied, copy, timeout }),
@@ -196,6 +206,8 @@ function ClipboardTrigger({
 }: React.ButtonHTMLAttributes<HTMLButtonElement> & {
   ref?: React.Ref<HTMLButtonElement>
 }) {
+  const uiText = useUiText()
+
   const { copy, copied } = useClipboardContext("ClipboardTrigger")
   return (
     <Button
@@ -214,7 +226,7 @@ function ClipboardTrigger({
     >
       {children}
       <span className="sr-only" role="status" aria-live="polite">
-        {copied ? "Copied" : ""}
+        {copied ? uiText("Copied") : ""}
       </span>
     </Button>
   )

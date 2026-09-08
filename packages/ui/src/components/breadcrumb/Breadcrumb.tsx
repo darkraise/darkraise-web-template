@@ -1,3 +1,4 @@
+import { useUiText } from "../../i18n/useUiText"
 import * as React from "react"
 import { Slot } from "@primitives/slot"
 import { ChevronRight, MoreHorizontal } from "lucide-react"
@@ -9,7 +10,9 @@ function Breadcrumb({
   ref,
   ...props
 }: React.ComponentProps<"nav"> & { separator?: React.ReactNode }) {
-  return <nav ref={ref} aria-label="breadcrumb" {...props} />
+  const uiText = useUiText()
+
+  return <nav ref={ref} aria-label={uiText("breadcrumb")} {...props} />
 }
 
 function BreadcrumbList({
@@ -86,6 +89,8 @@ function BreadcrumbEllipsis({
   className,
   ...props
 }: React.ComponentProps<"span">) {
+  const uiText = useUiText()
+
   return (
     <span
       role="presentation"
@@ -94,7 +99,7 @@ function BreadcrumbEllipsis({
       {...props}
     >
       <MoreHorizontal className="size-[var(--icon-size)]" aria-hidden="true" />
-      <span className="sr-only">More</span>
+      <span className="sr-only">{uiText("More")}</span>
     </span>
   )
 }

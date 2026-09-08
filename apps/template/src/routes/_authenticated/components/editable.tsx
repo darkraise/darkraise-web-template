@@ -1,3 +1,4 @@
+import { useUiLocale } from "darkraise-ui/i18n"
 import { createFileRoute } from "@tanstack/react-router"
 import { Check, Pencil, X } from "lucide-react"
 import { useEffect, useState, type Ref } from "react"
@@ -326,6 +327,8 @@ function MultilineDescriptionExample() {
 }
 
 function NumericCountExample() {
+  const uiLocale = useUiLocale()
+
   const [count, setCount] = useState<number>(42)
   return (
     <Editable
@@ -336,7 +339,7 @@ function NumericCountExample() {
       <EditableLabel>Item count</EditableLabel>
       <EditableArea>
         <NumberSlot step={1} min={0} max={9999} />
-        <EditablePreview>{`${count.toLocaleString()} items`}</EditablePreview>
+        <EditablePreview>{`${count.toLocaleString(uiLocale.locale)} items`}</EditablePreview>
       </EditableArea>
       <EditableControl>
         <EditableEditTrigger aria-label="Edit count">

@@ -1,3 +1,4 @@
+import { useUiText } from "../../i18n/useUiText"
 import * as React from "react"
 import {
   Box,
@@ -53,6 +54,7 @@ import {
 } from "./useImageEditorContext"
 import {
   FILTER_RANGES,
+  DEFAULT_PRESETS,
   type AnnotationKind,
   type AnnotationStroke,
   type EditorTool,
@@ -337,13 +339,14 @@ function ImageEditorAdjust({
   label,
   className,
 }: ImageEditorAdjustProps) {
+  const uiText = useUiText()
   const editor = useImageEditorContext("ImageEditorAdjust")
   const range = FILTER_RANGES[channel]
   const value = editor.filters[channel]
   return (
     <div className={cn("dr-image-editor-adjust", className)}>
       <span className="dr-image-editor-adjust-label">
-        {label ?? ADJUST_LABELS[channel]}
+        {label ?? uiText(ADJUST_LABELS[channel])}
       </span>
       <Slider
         value={[value]}
@@ -430,6 +433,8 @@ function ImageEditorAdjustClear({
   ref,
   ...rest
 }: ImageEditorAdjustClearProps) {
+  const uiText = useUiText()
+
   const editor = useImageEditorContext("ImageEditorAdjustClear")
   const neutral = isFiltersNeutral(editor.filters)
   return (
@@ -448,7 +453,7 @@ function ImageEditorAdjustClear({
       }}
       {...rest}
     >
-      {children ?? "Clear"}
+      {children ?? uiText("Clear")}
     </Button>
   )
 }
@@ -479,6 +484,7 @@ function ImageEditorPreset({
   ref,
   ...rest
 }: ImageEditorPresetProps) {
+  const uiText = useUiText()
   const editor = useImageEditorContext("ImageEditorPreset")
   const resolved = resolvePreset(editor.presets, preset)
   return (
@@ -498,7 +504,10 @@ function ImageEditorPreset({
       }}
       {...rest}
     >
-      {children ?? resolved?.label}
+      {children ??
+        (resolved && DEFAULT_PRESETS.includes(resolved)
+          ? uiText(resolved.label)
+          : resolved?.label)}
     </Button>
   )
 }
@@ -579,7 +588,8 @@ function ImageEditorTool({
 }: ImageEditorToolProps) {
   const editor = useImageEditorContext("ImageEditorTool")
   const active = editor.tool === tool
-  const label = TOOL_LABELS[tool]
+  const uiText = useUiText()
+  const label = uiText(TOOL_LABELS[tool])
   const Icon = TOOL_ICONS[tool]
   return (
     <Tooltip>
@@ -622,12 +632,14 @@ function ImageEditorTools({
   ref,
   ...rest
 }: ImageEditorToolsProps) {
+  const uiText = useUiText()
+
   return (
     <TooltipProvider delayDuration={300}>
       <div
         ref={ref}
         role="radiogroup"
-        aria-label="Editor tool"
+        aria-label={uiText("Editor tool")}
         className={cn("dr-image-editor-tools", className)}
         {...rest}
       >
@@ -660,10 +672,14 @@ function ImageEditorRotationSlider({
   max = 360,
   step = 1,
 }: ImageEditorRotationSliderProps) {
+  const uiText = useUiText()
+
   const editor = useImageEditorContext("ImageEditorRotationSlider")
   return (
     <div className={cn("dr-image-editor-rotation", className)}>
-      <span className="dr-image-editor-rotation-label">Rotation</span>
+      <span className="dr-image-editor-rotation-label">
+        {uiText("Rotation")}
+      </span>
       <Slider
         value={[editor.cropper.rotation]}
         onValueChange={(arr) => {
@@ -696,6 +712,8 @@ function ImageEditorUndo({
   ref,
   ...rest
 }: ImageEditorUndoProps) {
+  const uiText = useUiText()
+
   const editor = useImageEditorContext("ImageEditorUndo")
   return (
     <Button
@@ -704,7 +722,7 @@ function ImageEditorUndo({
       size="sm"
       className={className}
       data-action="undo"
-      aria-label="Undo"
+      aria-label={uiText("Undo")}
       disabled={disabled ?? !editor.canUndo}
       onClick={(event) => {
         onClick?.(event)
@@ -713,7 +731,7 @@ function ImageEditorUndo({
       }}
       {...rest}
     >
-      {children ?? "Undo"}
+      {children ?? uiText("Undo")}
     </Button>
   )
 }
@@ -730,6 +748,8 @@ function ImageEditorRedo({
   ref,
   ...rest
 }: ImageEditorRedoProps) {
+  const uiText = useUiText()
+
   const editor = useImageEditorContext("ImageEditorRedo")
   return (
     <Button
@@ -738,7 +758,7 @@ function ImageEditorRedo({
       size="sm"
       className={className}
       data-action="redo"
-      aria-label="Redo"
+      aria-label={uiText("Redo")}
       disabled={disabled ?? !editor.canRedo}
       onClick={(event) => {
         onClick?.(event)
@@ -747,7 +767,7 @@ function ImageEditorRedo({
       }}
       {...rest}
     >
-      {children ?? "Redo"}
+      {children ?? uiText("Redo")}
     </Button>
   )
 }
@@ -774,6 +794,8 @@ function ImageEditorAnnotationLayer({
 }: React.HTMLAttributes<HTMLCanvasElement> & {
   ref?: React.Ref<HTMLCanvasElement>
 }) {
+  const uiText = useUiText()
+
   const editor = useImageEditorContext("ImageEditorAnnotationLayer")
   const canvasRef = React.useRef<HTMLCanvasElement | null>(null)
   const composedRef = React.useCallback(
@@ -979,7 +1001,7 @@ function ImageEditorAnnotationLayer({
             }
           }}
           onBlur={commitText}
-          placeholder="Type, then Enter"
+          placeholder={uiText("Type, then Enter")}
         />
       )}
     </>
@@ -1024,7 +1046,8 @@ function ImageEditorAnnotationKind({
 }: ImageEditorAnnotationKindProps) {
   const editor = useImageEditorContext("ImageEditorAnnotationKind")
   const active = editor.activeAnnotationKind === kind
-  const label = ANNOTATION_KIND_LABELS[kind]
+  const uiText = useUiText()
+  const label = uiText(ANNOTATION_KIND_LABELS[kind])
   const Icon = ANNOTATION_KIND_ICONS[kind]
   return (
     <Tooltip>
@@ -1077,6 +1100,8 @@ function ImageEditorAnnotationColor({
   className,
   swatches = DEFAULT_ANNOTATION_SWATCHES,
 }: ImageEditorAnnotationColorProps) {
+  const uiText = useUiText()
+
   const editor = useImageEditorContext("ImageEditorAnnotationColor")
   return (
     <ColorPicker
@@ -1087,7 +1112,7 @@ function ImageEditorAnnotationColor({
       <ColorPickerControl>
         {/* The swatch is itself the popover trigger; wrapping it in
             ColorPickerTrigger would nest a button inside a button. */}
-        <ColorPickerSwatch aria-label="Annotation color" />
+        <ColorPickerSwatch aria-label={uiText("Annotation color")} />
       </ColorPickerControl>
       <ColorPickerContent>
         <ColorPickerArea />
@@ -1115,10 +1140,12 @@ function ImageEditorAnnotationWidth({
   max = 32,
   step = 1,
 }: ImageEditorAnnotationWidthProps) {
+  const uiText = useUiText()
+
   const editor = useImageEditorContext("ImageEditorAnnotationWidth")
   return (
     <Slider
-      aria-label="Annotation width"
+      aria-label={uiText("Annotation width")}
       min={min}
       max={max}
       step={step}
@@ -1143,6 +1170,8 @@ function ImageEditorAnnotationClear({
   ref,
   ...rest
 }: ImageEditorAnnotationClearProps) {
+  const uiText = useUiText()
+
   const editor = useImageEditorContext("ImageEditorAnnotationClear")
   return (
     <Button
@@ -1160,7 +1189,7 @@ function ImageEditorAnnotationClear({
       }}
       {...rest}
     >
-      {children ?? "Clear"}
+      {children ?? uiText("Clear")}
     </Button>
   )
 }
@@ -1186,12 +1215,14 @@ function ImageEditorAnnotationToolbar({
   ref,
   ...rest
 }: ImageEditorAnnotationToolbarProps) {
+  const uiText = useUiText()
+
   return (
     <TooltipProvider delayDuration={300}>
       <div
         ref={ref}
         role="toolbar"
-        aria-label="Annotation tools"
+        aria-label={uiText("Annotation tools")}
         className={cn("dr-image-editor-annotation-toolbar", className)}
         {...rest}
       >
@@ -1199,7 +1230,7 @@ function ImageEditorAnnotationToolbar({
           <>
             <div
               role="radiogroup"
-              aria-label="Annotation kind"
+              aria-label={uiText("Annotation kind")}
               className="dr-image-editor-annotation-kinds"
             >
               {(kinds ?? DEFAULT_ANNOTATION_KINDS).map((kind) => (
@@ -1377,6 +1408,8 @@ function ImageEditorFreeformClear({
   ref,
   ...rest
 }: ImageEditorFreeformClearProps) {
+  const uiText = useUiText()
+
   const editor = useImageEditorContext("ImageEditorFreeformClear")
   return (
     <Button
@@ -1394,7 +1427,7 @@ function ImageEditorFreeformClear({
       }}
       {...rest}
     >
-      {children ?? "Clear selection"}
+      {children ?? uiText("Clear selection")}
     </Button>
   )
 }
@@ -1587,6 +1620,8 @@ function ImageEditorPerspectiveReset({
   ref,
   ...rest
 }: ImageEditorPerspectiveResetProps) {
+  const uiText = useUiText()
+
   const editor = useImageEditorContext("ImageEditorPerspectiveReset")
   return (
     <Button
@@ -1604,7 +1639,7 @@ function ImageEditorPerspectiveReset({
       }}
       {...rest}
     >
-      {children ?? "Reset perspective"}
+      {children ?? uiText("Reset perspective")}
     </Button>
   )
 }
@@ -1768,6 +1803,8 @@ function ImageEditorStatusBar({
   ref,
   ...rest
 }: ImageEditorStatusBarProps) {
+  const uiText = useUiText()
+
   const editor = useImageEditorContext("ImageEditorStatusBar")
   if (!visible) return null
   const { naturalWidth, naturalHeight } = editor.cropper.image
@@ -1796,14 +1833,14 @@ function ImageEditorStatusBar({
     <div
       ref={ref}
       role="status"
-      aria-label="Image status"
+      aria-label={uiText("Image status")}
       className={cn("dr-image-editor-status-bar", className)}
       {...rest}
     >
       {items.map((id) => (
         <StatusItem
           key={id}
-          label={builtIn[id].label}
+          label={uiText(builtIn[id].label)}
           value={builtIn[id].value}
         />
       ))}

@@ -25,6 +25,10 @@ export default defineConfig({
     "data-table/index": "src/data-table/index.ts",
     "lib/index": "src/lib/index.ts",
     "labels/index": "src/labels/index.ts",
+    "i18n/index": "src/i18n/index.ts",
+    "i18n/react-i18next/index": "src/i18n/react-i18next/index.ts",
+    "locales/en": "src/locales/en.ts",
+    "locales/vi": "src/locales/vi.ts",
     ...componentEntries,
   },
   format: ["esm"],
@@ -37,5 +41,7 @@ export default defineConfig({
     "react/jsx-runtime",
     "tailwindcss",
     "recharts",
+    "i18next",
+    "react-i18next",
   ],
 })

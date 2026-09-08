@@ -1,3 +1,5 @@
+import { useUiLocale } from "darkraise-ui/i18n"
+import { useAppTranslation } from "@/i18n/useAppTranslation"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { PageHeader } from "darkraise-ui/layout"
 import { Button } from "darkraise-ui/components/button"
@@ -39,6 +41,10 @@ const statusColors: Record<string, string> = {
 const statusSteps = ["pending", "processing", "shipped", "delivered"] as const
 
 function OrderDetailPage() {
+  const uiLocale = useUiLocale()
+
+  const t = useAppTranslation()
+
   const { id } = Route.useParams()
   const { data: order, isLoading } = useOrder(id)
   const updateStatus = useUpdateOrderStatus()
@@ -46,7 +52,7 @@ function OrderDetailPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-12">
-        <p className="text-muted-foreground">Loading order...</p>
+        <p className="text-muted-foreground">{t("Loading order...")}</p>
       </div>
     )
   }
@@ -54,7 +60,7 @@ function OrderDetailPage() {
   if (!order) {
     return (
       <div className="flex items-center justify-center p-12">
-        <p className="text-muted-foreground">Order not found.</p>
+        <p className="text-muted-foreground">{t("Order not found.")}</p>
       </div>
     )
   }
@@ -67,12 +73,18 @@ function OrderDetailPage() {
     <>
       <PageHeader
         breadcrumbs={[
-          { label: "Dashboard", href: "/" },
-          { label: "Orders", href: "/orders" },
+          { label: t("Dashboard"), href: "/" },
+          { label: t("Orders"), href: "/orders" },
           { label: order.orderNumber },
         ]}
         title={order.orderNumber}
-        description={`Placed on ${new Date(order.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}`}
+        description={t("Placed on {{date}}", {
+          date: new Date(order.createdAt).toLocaleDateString(uiLocale.locale, {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          }),
+        })}
         actions={
           <div className="flex gap-2">
             {order.status === "processing" && (
@@ -82,7 +94,7 @@ function OrderDetailPage() {
                   updateStatus.mutate({ id: order.id, status: "shipped" })
                 }
               >
-                Mark as Shipped
+                {t("Mark as Shipped")}
               </Button>
             )}
             {order.status === "pending" && (
@@ -92,7 +104,7 @@ function OrderDetailPage() {
                   updateStatus.mutate({ id: order.id, status: "processing" })
                 }
               >
-                Start Processing
+                {t("Start Processing")}
               </Button>
             )}
             {order.status !== "cancelled" && order.status !== "delivered" && (
@@ -103,7 +115,7 @@ function OrderDetailPage() {
                   updateStatus.mutate({ id: order.id, status: "cancelled" })
                 }
               >
-                Cancel Order
+                {t("Cancel Order")}
               </Button>
             )}
           </div>
@@ -131,7 +143,7 @@ function OrderDetailPage() {
                       : "text-muted-foreground"
                   }`}
                 >
-                  {step}
+                  {t(step)}
                 </span>
                 {i < statusSteps.length - 1 && (
                   <div
@@ -149,9 +161,9 @@ function OrderDetailPage() {
           <div className="space-y-6 md:col-span-2">
             <Tabs defaultValue="items">
               <TabsList>
-                <TabsTrigger value="items">Items</TabsTrigger>
-                <TabsTrigger value="shipping">Shipping</TabsTrigger>
-                <TabsTrigger value="notes">Notes</TabsTrigger>
+                <TabsTrigger value="items">{t("Items")}</TabsTrigger>
+                <TabsTrigger value="shipping">{t("Shipping")}</TabsTrigger>
+                <TabsTrigger value="notes">{t("Notes")}</TabsTrigger>
               </TabsList>
 
               <TabsContent value="items" className="mt-4">
@@ -160,10 +172,16 @@ function OrderDetailPage() {
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>Product</TableHead>
-                          <TableHead className="text-right">Qty</TableHead>
-                          <TableHead className="text-right">Price</TableHead>
-                          <TableHead className="text-right">Subtotal</TableHead>
+                          <TableHead>{t("Product")}</TableHead>
+                          <TableHead className="text-right">
+                            {t("Qty")}
+                          </TableHead>
+                          <TableHead className="text-right">
+                            {t("Price")}
+                          </TableHead>
+                          <TableHead className="text-right">
+                            {t("Subtotal")}
+                          </TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -176,10 +194,13 @@ function OrderDetailPage() {
                               {item.quantity}
                             </TableCell>
                             <TableCell className="text-right">
-                              ${item.price.toLocaleString()}
+                              ${item.price.toLocaleString(uiLocale.locale)}
                             </TableCell>
                             <TableCell className="text-right">
-                              ${(item.quantity * item.price).toLocaleString()}
+                              $
+                              {(item.quantity * item.price).toLocaleString(
+                                uiLocale.locale,
+                              )}
                             </TableCell>
                           </TableRow>
                         ))}
@@ -188,10 +209,10 @@ function OrderDetailPage() {
                             colSpan={3}
                             className="text-right font-medium"
                           >
-                            Total
+                            {t("Total")}
                           </TableCell>
                           <TableCell className="text-right font-medium">
-                            ${order.total.toLocaleString()}
+                            ${order.total.toLocaleString(uiLocale.locale)}
                           </TableCell>
                         </TableRow>
                       </TableBody>
@@ -204,7 +225,7 @@ function OrderDetailPage() {
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-base">
-                      Shipping Address
+                      {t("Shipping Address")}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -218,11 +239,13 @@ function OrderDetailPage() {
               <TabsContent value="notes" className="mt-4">
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-base">Order Notes</CardTitle>
+                    <CardTitle className="text-base">
+                      {t("Order Notes")}
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <p className="text-muted-foreground text-sm">
-                      No notes for this order.
+                      {t("No notes for this order.")}
                     </p>
                   </CardContent>
                 </Card>
@@ -233,20 +256,20 @@ function OrderDetailPage() {
           <div className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Status</CardTitle>
+                <CardTitle className="text-base">{t("Status")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <span
                   className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${statusColors[order.status]}`}
                 >
-                  {order.status}
+                  {t(order.status)}
                 </span>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Customer</CardTitle>
+                <CardTitle className="text-base">{t("Customer")}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
                 <p className="text-sm font-medium">{order.customer.name}</p>
@@ -259,7 +282,7 @@ function OrderDetailPage() {
                   params={{ id: order.customer.id }}
                   className="text-primary text-sm hover:underline"
                 >
-                  View customer profile
+                  {t("View customer profile")}
                 </Link>
               </CardContent>
             </Card>

@@ -35,6 +35,7 @@ export interface Calendar {
 }
 
 export interface BuildCalendarOptions {
+  locale?: string
   startDate: Date
   endDate: Date
   weekStartsOn: number
@@ -194,7 +195,12 @@ export function buildCalendar(options: BuildCalendarOptions): Calendar {
         const monthKey = `${date.getFullYear()}-${date.getMonth()}`
         if (!months.has(monthKey)) {
           months.set(monthKey, {
-            label: MONTH_NAMES[date.getMonth()] ?? "",
+            label: options.locale
+              ? new Intl.DateTimeFormat(options.locale, {
+                  month: "short",
+                  calendar: "gregory",
+                }).format(date)
+              : (MONTH_NAMES[date.getMonth()] ?? ""),
             weekIndex,
             span: 0, // resolved below, once every month's start week is known
           })

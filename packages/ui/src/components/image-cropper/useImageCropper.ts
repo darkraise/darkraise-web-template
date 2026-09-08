@@ -1,7 +1,7 @@
 import * as React from "react"
+import { useUiLabels } from "../../labels"
 import { useControllableState } from "@primitives/state"
 import {
-  DEFAULT_TRANSLATIONS,
   type CropChangeDetails,
   type CropRect,
   type CropShape,
@@ -198,9 +198,17 @@ export function useImageCropper(
   const aspectRatio = options.aspectRatio
   const constrainToImage = options.constrainToImage ?? false
 
+  const labels = useUiLabels()
   const translations = React.useMemo<IntlTranslations>(
-    () => ({ ...DEFAULT_TRANSLATIONS, ...options.translations }),
-    [options.translations],
+    () => ({
+      ...labels.imageCropper,
+      ...Object.fromEntries(
+        Object.entries(options.translations ?? {}).filter(
+          ([, value]) => value !== undefined,
+        ),
+      ),
+    }),
+    [options.translations, labels.imageCropper],
   )
 
   const [zoom, setZoomState] = useControllableState<number>({

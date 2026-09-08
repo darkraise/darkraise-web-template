@@ -1,4 +1,5 @@
 "use client"
+import { useUiText } from "../../i18n/useUiText"
 
 import * as React from "react"
 import { Check, ChevronDown, X } from "lucide-react"
@@ -40,12 +41,16 @@ function MultiSelect({
   value,
   defaultValue,
   onValueChange,
-  placeholder = "Select…",
+  placeholder: placeholderLocaleProp,
   disabled,
   name,
   className,
-  emptyMessage = "No matches.",
+  emptyMessage: emptyMessageLocaleProp,
 }: MultiSelectProps) {
+  const uiText = useUiText()
+  const placeholder = placeholderLocaleProp ?? uiText("Select…")
+  const emptyMessage = emptyMessageLocaleProp ?? uiText("No matches.")
+
   const [inputValue, setInputValue] = React.useState("")
 
   const isControlled = value !== undefined

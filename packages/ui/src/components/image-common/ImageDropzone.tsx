@@ -1,4 +1,5 @@
 import * as React from "react"
+import { useUiLabels } from "../../labels"
 import { cn } from "@lib/utils"
 import { readFileAsDataURL } from "./readFileAsDataURL"
 import type { FileAcceptDetails, FileRejectDetails } from "./types"
@@ -23,9 +24,6 @@ export interface ImageDropzoneProps extends Omit<
   ref?: React.Ref<HTMLDivElement>
 }
 
-const DEFAULT_LABEL = "Drop an image here, or click to browse"
-const DEFAULT_ACTIVE_LABEL = "Release to load image"
-
 /**
  * Generic file dropzone — drag-and-drop or click-to-browse. Standalone:
  * doesn't read any context from the cropper or editor, so it can be used
@@ -44,12 +42,13 @@ function ImageDropzone({
   ref,
   ...rest
 }: ImageDropzoneProps) {
+  const labels = useUiLabels()
   const [active, setActive] = React.useState(false)
   const inputRef = React.useRef<HTMLInputElement | null>(null)
   const dragDepthRef = React.useRef(0)
 
-  const idleLabel = label ?? DEFAULT_LABEL
-  const busyLabel = activeLabel ?? DEFAULT_ACTIVE_LABEL
+  const idleLabel = label ?? labels.imageCropper.dropzoneLabel
+  const busyLabel = activeLabel ?? labels.imageCropper.dropzoneActiveLabel
 
   const acceptList = React.useMemo(
     () =>

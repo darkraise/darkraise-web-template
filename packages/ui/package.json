@@ -1,7 +1,7 @@
 {
   "name": "darkraise-ui",
   "version": "6.8.2",
-  "description": "React 19 UI kit with 65 themed components, 38 hooks, 6-axis theming, and layout variants",
+  "description": "React 19 UI kit with themed components, reusable hooks, configurable themes, and layout variants",
   "type": "module",
   "sideEffects": [
     "**/*.css"
@@ -61,7 +61,23 @@
       "import": "./dist/labels/index.js",
       "types": "./dist/labels/index.d.ts"
     },
-    "./styles.css": "./dist/styles.css"
+    "./styles.css": "./dist/styles.css",
+    "./i18n": {
+      "types": "./dist/i18n/index.d.ts",
+      "import": "./dist/i18n/index.js"
+    },
+    "./locales/en": {
+      "types": "./dist/locales/en.d.ts",
+      "import": "./dist/locales/en.js"
+    },
+    "./locales/vi": {
+      "types": "./dist/locales/vi.d.ts",
+      "import": "./dist/locales/vi.js"
+    },
+    "./i18n/react-i18next": {
+      "import": "./dist/i18n/react-i18next/index.js",
+      "types": "./dist/i18n/react-i18next/index.d.ts"
+    }
   },
   "scripts": {
     "generate:imports": "tsx scripts/generate-component-imports.ts",
@@ -79,13 +95,21 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "recharts": "^3.0.0",
-    "tailwindcss": "^4.0.0"
+    "tailwindcss": "^4.0.0",
+    "i18next": "^26.4.2",
+    "react-i18next": "^17.0.13"
   },
   "peerDependenciesMeta": {
     "@tailwindcss/vite": {
       "optional": true
     },
     "recharts": {
+      "optional": true
+    },
+    "i18next": {
+      "optional": true
+    },
+    "react-i18next": {
       "optional": true
     }
   },
@@ -116,10 +140,12 @@
     "@vitest/coverage-v8": "^4.1.5",
     "cross-env": "^10.1.0",
     "eslint-plugin-storybook": "^10.3.6",
+    "i18next": "^26.4.2",
     "jsdom": "^29.1.1",
     "lightningcss": "1.32.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
+    "react-i18next": "^17.0.13",
     "storybook": "^10.3.6",
     "tailwindcss": "^4.2.4",
     "tsup": "^8.5.1",

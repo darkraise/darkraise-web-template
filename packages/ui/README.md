@@ -1,9 +1,9 @@
 # darkraise-ui
 
-React 19 UI kit with 65 themed components, 38 hooks, 6-axis theming, and
-layout variants. Components ship with no runtime UI dependencies — no
-Radix UI, all primitives implemented in-house — and are styled with
-Tailwind CSS 4.
+React 19 UI kit with themed components, reusable hooks, configurable themes,
+and layout variants, styled with Tailwind CSS 4. Primitives are implemented
+in-house, with Floating UI for positioning and TanStack Table for table behavior.
+The package does not depend on Radix UI.
 
 ## Accessibility
 
@@ -47,6 +47,16 @@ scrolling, Carousel autoplay — reads the preference through the exported
 - Layouts move focus to `<main id="main-content">` after a route change. Use
   `useRouteFocus` directly if you compose your own layout.
 
+## Layout choices and virtual tables
+
+Layout shells accept `layoutVariants` to limit the header switcher to variants
+the application renders, for example `["sidebar", "top-nav", "stacked"]`.
+Omitting it retains all four variants.
+
+Virtualized `DataTable` rows use the configured `rowHeight` as a fixed height.
+Cell content is clipped to preserve scroll geometry. Choose a height that fits
+your content, or use pagination when rows need variable heights.
+
 ## Dialog sizing and overflow
 
 `DialogContent` caps its height at the viewport and scrolls internally.
@@ -77,8 +87,132 @@ differently or needs a plural form expresses that in its own function body.
 Nested providers merge over the nearest ancestor, so a subtree can override a
 subset. Components render correctly with no provider mounted.
 
-The package ships no translations and has no concept of a locale — it takes
-strings, and the app decides which ones.
+Undefined overrides preserve inherited defaults; empty strings intentionally
+replace them. Pagination navigation names can be overridden through
+`dataTable.firstPage`, `previousPage`, `nextPage`, and `lastPage`.
+
+For maintained English and Vietnamese translations and coordinated formatting,
+use the controlled locale provider. English is built in; other packs are imported
+explicitly and do not enter a core-only bundle:
+
+```tsx
+import { UiI18nProvider } from "darkraise-ui/i18n"
+import { vi } from "darkraise-ui/locales/vi"
+
+;<UiI18nProvider
+  locale="vi-VN"
+  locales={[vi]}
+  labels={{ userMenu: { logout: "Thoát" } }}
+>
+  <App />
+</UiI18nProvider>
+```
+
+Consumers can register any language with a partial message catalog. Missing keys
+fall back to English. `UiLocaleDefinition` checks the keys and function signatures:
+
+```tsx
+import type { UiLocaleDefinition } from "darkraise-ui/i18n"
+
+const fr = {
+  locale: "fr", label: "Français", dir: "ltr",
+  messages: { dataTable: { empty: "Aucun résultat" } },
+} satisfies UiLocaleDefinition
+
+<UiI18nProvider locale="fr-CA" locales={[fr]}><App /></UiI18nProvider>
+```
+
+Message precedence is explicit component props, nearest `UiLabelsProvider`,
+locale-provider labels, registered pack, then English. An explicit nested locale
+starts a new message boundary; omitting `locale` inherits its parent's messages.
+Regional requests use the exact registered pack, then its base language, then
+English. Formatting retains the requested valid locale even when messages fall
+back; invalid locale strings fall back to `en`.
+
+`useUiLocale()` exposes `locale`, `messageLocale`, `dir`, and whether a provider
+is mounted. `useUiFormatters()` supplies `number`, `date`, `calendarDate`, `time`,
+`relativeTime`, and `plural`. Explicit component formatting wins. Currency remains
+explicit and is never converted. `formats.timeZone` applies to timestamps;
+`calendarDate` and calendar interactions use local Gregorian dates. DatePicker
+still needs a consumer `parse` function for editable input. NumberInput keeps its
+draft's original parsing convention when the language changes during editing.
+
+Core providers perform no storage or document mutation. Portal content receives
+the active `lang` and `dir`. The maintained packs are left-to-right; complete
+right-to-left layout and keyboard support is not promised.
+
+### Optional application translations
+
+Install `i18next` and `react-i18next` only when using the adapter entry. Core UI
+imports and their declarations do not require them.
+
+```tsx
+import { AppI18nProvider, createDarkraiseI18n, resolveBrowserLocale }
+  from "darkraise-ui/i18n/react-i18next"
+import { en } from "darkraise-ui/locales/en"
+import { vi } from "darkraise-ui/locales/vi"
+
+const locales = [en, vi]
+const storageKey = "my-app.language"
+const instance = await createDarkraiseI18n({
+  locale: resolveBrowserLocale({ locales, storageKey }),
+  locales,
+  resources: {
+    en: { translation: { welcome: "Welcome" } },
+    vi: { translation: { welcome: "Chào mừng" } },
+  },
+})
+
+<AppI18nProvider instance={instance} locales={locales} storageKey={storageKey}
+  syncDocument><App /></AppI18nProvider>
+```
+
+Use normal `useTranslation()` hooks and i18next resource typing for app namespaces.
+The factory returns an isolated initialized instance. A supplied initialized
+instance also works; the provider does not reinitialize it. `changeAppLanguage`
+loads resources before changing language and serializes repeated requests.
+Handle its rejected promise and keep the switcher pending until it settles.
+
+`LocaleSwitcher` from `darkraise-ui/components/locale-switcher` is controlled via
+`value`, `options` (`{ locale, label }`), and `onValueChange`; `pending` and
+`disabled` prevent activation. It works without the optional adapter.
+
+Each `LocaleSwitcherOption` also accepts an optional decorative `icon`, rendered
+beside its label in both the trigger and dropdown. Supply any React node for
+additional languages; no component changes or country registration are needed:
+
+```tsx
+import {
+  LocaleSwitcher, UnitedStatesFlagIcon, VietnamFlagIcon,
+  type LocaleSwitcherOption,
+} from "darkraise-ui/components/locale-switcher"
+
+const options = [
+  { locale: "en", label: "English", icon: <UnitedStatesFlagIcon /> },
+  { locale: "vi", label: "Tiếng Việt", icon: <VietnamFlagIcon /> },
+  { locale: "fr", label: "Français", icon: <img src="/flags/fr.svg" alt="" /> },
+] satisfies LocaleSwitcherOption[]
+
+<LocaleSwitcher value={locale} options={options} onValueChange={setLocale} />
+```
+
+The application chooses which flag represents each language. Register its message
+pack separately with the locale provider. Options without an icon stay text-only;
+icons should contain no interactive elements.
+
+Browser preference resolution is explicit initial locale, saved supported
+preference, browser preference, then English (or the first configured language
+when English is unavailable). Storage failures are tolerated. Use an application
+specific storage key. Document synchronization is opt-in and has one owner per
+document. For server rendering, initialize an instance per request and supply the
+same locale on server and client; defer browser detection until after hydration.
+
+Existing `UiLabelsProvider` consumers need no changes. To migrate, place the
+locale provider outside existing label providers and keep their overrides.
+
+Common control wording is available through `labels.controls`, for example
+`labels={{ controls: { Loading: "Please wait" } }}`. Consumer-provided preset
+labels and explicit component content retain their original wording.
 
 `Calendar`'s `locale` prop covers only the strings `Intl` produces — weekday
 names, month names, the day cell's accessible name. Its navigation chrome
@@ -107,6 +241,10 @@ future wiring stays backward-compatible for anyone already providing a
 complete `UiLabels`.
 
 ## Shell styles
+
+All four layouts accept `notificationSlot`. Omit it for the default bell, pass
+`null` to hide notifications, or pass a React node for your own notification
+control. `headerSlot` remains available for other header content.
 
 Every app shell structure — `SidebarLayout`, `TopNavLayout`, `StackedLayout`
 and `SplitPanelLayout` — is laid out on one CSS grid whose regions carry

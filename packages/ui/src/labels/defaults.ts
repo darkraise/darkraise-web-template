@@ -2,6 +2,10 @@ import type { UiLabels } from "./types"
 
 export const defaultLabels: UiLabels = {
   dataTable: {
+    firstPage: "First page",
+    previousPage: "Previous page",
+    nextPage: "Next page",
+    lastPage: "Last page",
     search: "Search...",
     reset: "Reset",
     columns: "Columns",

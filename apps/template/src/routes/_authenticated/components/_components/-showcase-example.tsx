@@ -1,4 +1,9 @@
-import { useState, useCallback } from "react"
+import { useAppTranslation } from "@/i18n/useAppTranslation"
+import {
+  Clipboard,
+  ClipboardTrigger,
+  ClipboardIndicator,
+} from "darkraise-ui/components/clipboard"
 import {
   Accordion,
   AccordionContent,
@@ -16,19 +21,12 @@ export function ShowcaseExample({
   code: string
   children: React.ReactNode
 }) {
-  const [copied, setCopied] = useState(false)
-
-  const handleCopy = useCallback(() => {
-    void navigator.clipboard.writeText(code).then(() => {
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    })
-  }, [code])
+  const t = useAppTranslation()
 
   return (
     <div className="space-y-3">
       <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-        {title}
+        {t(title)}
       </p>
       {/* A real surface, not a transparent outline: controls resolve their
           rung from the surface that contains them, so an example floating on
@@ -39,15 +37,16 @@ export function ShowcaseExample({
         <AccordionItem value="code" className="border-none">
           <div className="flex items-center justify-between">
             <AccordionTrigger className="text-muted-foreground py-1 text-xs hover:no-underline">
-              View code
+              {t("View code")}
             </AccordionTrigger>
-            <button
-              type="button"
-              onClick={handleCopy}
-              className="text-muted-foreground hover:bg-muted hover:text-foreground rounded px-2 py-1 text-xs transition-colors"
-            >
-              {copied ? "Copied!" : "Copy"}
-            </button>
+            <Clipboard value={code} toast={{ success: false }}>
+              <ClipboardTrigger>
+                <ClipboardIndicator
+                  copied={t("Copied!")}
+                  fallback={t("Copy")}
+                />
+              </ClipboardTrigger>
+            </Clipboard>
           </div>
           <AccordionContent className="pt-1">
             <pre className="bg-muted overflow-x-auto rounded-md p-4">

@@ -1,26 +1,24 @@
 import type { DeepPartialLabels, UiLabels } from "./types"
 
-export function mergeLabels(
-  base: UiLabels,
-  override: DeepPartialLabels<UiLabels>,
-): UiLabels {
-  return {
-    dataTable: { ...base.dataTable, ...override.dataTable },
-    layout: { ...base.layout, ...override.layout },
-    userMenu: { ...base.userMenu, ...override.userMenu },
-    passwordInput: { ...base.passwordInput, ...override.passwordInput },
-    calendar: { ...base.calendar, ...override.calendar },
-    datePicker: { ...base.datePicker, ...override.datePicker },
-    theme: {
-      ...base.theme,
-      ...override.theme,
-      groupLabels: {
-        ...base.theme.groupLabels,
-        ...override.theme?.groupLabels,
-      },
-      axisLabels: { ...base.theme.axisLabels, ...override.theme?.axisLabels },
-      modes: { ...base.theme.modes, ...override.theme?.modes },
-    },
-    errors: { ...base.errors, ...override.errors },
+function mergeObjects(base: object, override: object): object {
+  const result: Record<string, unknown> = { ...base }
+  for (const [key, value] of Object.entries(override)) {
+    if (value === undefined) continue
+    const previous = result[key]
+    result[key] =
+      value !== null &&
+      typeof value === "object" &&
+      previous !== null &&
+      typeof previous === "object"
+        ? mergeObjects(previous, value)
+        : value
   }
+  return result
+}
+
+export function mergeLabels<T extends UiLabels>(
+  base: T,
+  override: DeepPartialLabels<T>,
+): T {
+  return mergeObjects(base, override) as T
 }

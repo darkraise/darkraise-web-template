@@ -1,4 +1,5 @@
 "use client"
+import { useUiText } from "../../i18n/useUiText"
 
 import * as React from "react"
 import {
@@ -245,6 +246,8 @@ function ToastItem({
   paused,
   closeButton,
 }: ToastItemProps) {
+  const uiText = useUiText()
+
   const [present, setPresent] = React.useState(true)
   // Mount-window flag for the entrance animation. Set true on initial mount,
   // cleared shortly after so a *promotion* to front (when an older front
@@ -466,7 +469,7 @@ function ToastItem({
             </div>
             <button
               type="button"
-              aria-label="Dismiss notification"
+              aria-label={uiText("Dismiss notification")}
               className="dr-toast-close"
               onClick={close}
             >

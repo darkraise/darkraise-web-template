@@ -1,3 +1,4 @@
+import { useAppTranslation } from "@/i18n/useAppTranslation"
 import { useState } from "react"
 import { Link } from "@tanstack/react-router"
 import { z } from "zod"
@@ -13,6 +14,8 @@ const schema = z.object({
 })
 
 export function ForgotPasswordForm() {
+  const t = useAppTranslation()
+
   const { forgotPassword } = useAuth()
   const [sent, setSent] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
@@ -29,7 +32,7 @@ export function ForgotPasswordForm() {
         setFormError(
           err instanceof Error
             ? err.message
-            : "Unable to send the reset link. Please try again.",
+            : t("Unable to send the reset link. Please try again."),
         )
       }
     },
@@ -38,13 +41,13 @@ export function ForgotPasswordForm() {
   if (sent) {
     return (
       <Stack gap="md" className="text-center">
-        <h1 className="text-2xl font-medium">Check your email</h1>
+        <h1 className="text-2xl font-medium">{t("Check your email")}</h1>
         <p className="text-muted-foreground text-sm">
-          We sent a password reset link to your email address.
+          {t("We sent a password reset link to your email address.")}
         </p>
         <Link to="/login">
           <Button variant="outline" className="mt-4">
-            Back to sign in
+            {t("Back to sign in")}
           </Button>
         </Link>
       </Stack>
@@ -54,9 +57,9 @@ export function ForgotPasswordForm() {
   return (
     <>
       <Stack gap="xs" className="text-center">
-        <h1 className="text-2xl font-medium">Forgot password?</h1>
+        <h1 className="text-2xl font-medium">{t("Forgot password?")}</h1>
         <p className="text-muted-foreground text-sm">
-          Enter your email and we&apos;ll send a reset link
+          {t("Enter your email and we&apos;ll send a reset link")}
         </p>
       </Stack>
 
@@ -77,7 +80,7 @@ export function ForgotPasswordForm() {
             {(field) => (
               <AuthFormField
                 field={field}
-                label="Email"
+                label={t("Email")}
                 type="email"
                 autoComplete="email"
                 autoFocus
@@ -94,7 +97,7 @@ export function ForgotPasswordForm() {
                 className="w-full"
                 disabled={!canSubmit || isSubmitting}
               >
-                {isSubmitting ? "Sending..." : "Send reset link"}
+                {isSubmitting ? t("Sending...") : t("Send reset link")}
               </Button>
             )}
           />
@@ -103,7 +106,7 @@ export function ForgotPasswordForm() {
 
       <p className="text-muted-foreground text-center text-sm">
         <Link to="/login" className="text-primary hover:underline">
-          Back to sign in
+          {t("Back to sign in")}
         </Link>
       </p>
     </>

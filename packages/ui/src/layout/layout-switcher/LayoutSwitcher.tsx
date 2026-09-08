@@ -1,3 +1,4 @@
+import { useUiText } from "../../i18n/useUiText"
 import { PanelLeft, PanelTop, Columns3, Columns2 } from "lucide-react"
 import { Button } from "@components/button"
 import {
@@ -37,6 +38,8 @@ export interface LayoutSwitcherProps {
 }
 
 export function LayoutSwitcher({ variants }: LayoutSwitcherProps = {}) {
+  const uiText = useUiText()
+
   const { layout, setLayout } = useLayoutStore()
   const entries = variants
     ? LAYOUTS.filter((entry) => variants.includes(entry.value))
@@ -49,7 +52,7 @@ export function LayoutSwitcher({ variants }: LayoutSwitcherProps = {}) {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon">
           <CurrentIcon className="size-[var(--icon-size)]" />
-          <span className="sr-only">Switch layout</span>
+          <span className="sr-only">{uiText("Switch layout")}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
@@ -61,7 +64,7 @@ export function LayoutSwitcher({ variants }: LayoutSwitcherProps = {}) {
             data-active={layout === value ? "true" : undefined}
           >
             <Icon className="dr-layout-switcher-item-icon" />
-            {label}
+            {uiText(label)}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

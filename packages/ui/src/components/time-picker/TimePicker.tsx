@@ -1,3 +1,5 @@
+import { useUiText } from "../../i18n/useUiText"
+import { useUiLocale } from "../../i18n/context"
 import { useState, useRef, useEffect, useCallback, useMemo } from "react"
 import { Clock } from "lucide-react"
 import { cn } from "@lib/utils"
@@ -121,12 +123,24 @@ function TimeColumn({
 function TimePicker({
   value = "12:00",
   onChange,
-  format = "12h",
+  format: formatProp,
   minuteStep = 1,
   disabled = false,
-  placeholder = "Select time",
+  placeholder: placeholderLocaleProp,
   className,
 }: TimePickerProps) {
+  const uiText = useUiText()
+  const uiLocale = useUiLocale()
+  const format =
+    formatProp ??
+    (uiLocale.enabled &&
+    !new Intl.DateTimeFormat(uiLocale.locale, {
+      hour: "numeric",
+    }).resolvedOptions().hour12
+      ? "24h"
+      : "12h")
+  const placeholder = placeholderLocaleProp ?? uiText("Select time")
+
   const [open, setOpen] = useState(false)
   const is12Hour = format === "12h"
 
@@ -219,14 +233,14 @@ function TimePicker({
       <PopoverContent className="w-auto overflow-hidden p-0" align="start">
         <div className="flex border-b">
           <TimeColumn
-            label="Hour"
+            label={uiText("Hour")}
             items={hours}
             value={parsed.hour}
             onChange={(h) => onChange?.(to24(h, parsed.minute, parsed.period))}
           />
           <div className="dr-time-divider" />
           <TimeColumn
-            label="Minute"
+            label={uiText("Minute")}
             items={minutes}
             value={parsed.minute}
             onChange={(m) => onChange?.(to24(parsed.hour, m, parsed.period))}
@@ -235,7 +249,7 @@ function TimePicker({
             <>
               <div className="dr-time-divider" />
               <TimeColumn
-                label="Period"
+                label={uiText("Period")}
                 items={["AM", "PM"]}
                 value={parsed.period}
                 onChange={(p) =>
@@ -253,14 +267,14 @@ function TimePicker({
             className="px-2 text-xs"
             onClick={handleNow}
           >
-            Now
+            {uiText("Now")}
           </Button>
           <Button
             size="sm"
             className="px-3 text-xs"
             onClick={() => setOpen(false)}
           >
-            OK
+            {uiText("OK")}
           </Button>
         </div>
       </PopoverContent>

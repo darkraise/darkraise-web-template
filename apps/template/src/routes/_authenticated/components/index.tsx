@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { PageHeader } from "darkraise-ui/layout"
 import { nav } from "@/routes/_authenticated"
+import { useAppTranslation } from "@/i18n/useAppTranslation"
 
 // Short blurbs keyed by route. The grid itself is derived from the sidebar's
 // "Components" nav group (the single source of truth), so a component added to
@@ -25,7 +26,7 @@ const DESCRIPTIONS: Record<string, string> = {
   "/components/button-group": "Segmented sets of related buttons",
   "/components/buttons": "Variants, sizes, and states for the Button primitive",
   "/components/calendar":
-    "Date and date-range picker built on react-day-picker",
+    "Date and date-range selection with keyboard navigation",
   "/components/cards": "Card layout with header, content, and footer regions",
   "/components/carousel": "Swipeable slides with snap points and controls",
   "/components/cascade-select":
@@ -160,11 +161,15 @@ export const Route = createFileRoute("/_authenticated/components/")({
 })
 
 function ComponentsIndexPage() {
+  const t = useAppTranslation()
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Component Library"
-        description={`${componentItems.length} UI components, each with live demos and copyable code snippets.`}
+        title={t("Component Library")}
+        description={t(
+          "{{count}} UI components, each with live demos and copyable code snippets.",
+          { count: componentItems.length },
+        )}
       />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -179,7 +184,7 @@ function ComponentsIndexPage() {
             </div>
             <p className="text-foreground font-medium">{label}</p>
             <p className="text-muted-foreground mt-1 text-xs">
-              {DESCRIPTIONS[href] ?? "Live demo and usage examples"}
+              {t(DESCRIPTIONS[href] ?? "Live demo and usage examples")}
             </p>
           </Link>
         ))}

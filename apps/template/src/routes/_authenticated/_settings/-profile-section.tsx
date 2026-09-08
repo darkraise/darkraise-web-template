@@ -1,3 +1,4 @@
+import { useAppTranslation } from "@/i18n/useAppTranslation"
 import { useEffect, useState } from "react"
 import { Upload, X } from "lucide-react"
 import {
@@ -33,6 +34,8 @@ function initialsOf(name: string) {
 }
 
 export function ProfileSection() {
+  const t = useAppTranslation()
+
   const [avatarFiles, setAvatarFiles] = useState<File[]>([])
   const [avatarUrl, setAvatarUrl] = useState<string | undefined>(undefined)
   const [displayName, setDisplayName] = useState("Alex Johnson")
@@ -54,8 +57,10 @@ export function ProfileSection() {
 
   return (
     <FormSection
-      title="Profile"
-      description="This information is displayed publicly, so be careful what you share."
+      title={t("Profile")}
+      description={t(
+        "This information is displayed publicly, so be careful what you share.",
+      )}
     >
       <Card>
         <CardContent className="space-y-6 pt-6">
@@ -76,13 +81,13 @@ export function ProfileSection() {
                 multiple={false}
                 maxFiles={1}
               >
-                <FileUploadLabel>Profile picture</FileUploadLabel>
+                <FileUploadLabel>{t("Profile picture")}</FileUploadLabel>
                 <FileUploadDropzone>
                   <Upload className="text-muted-foreground h-6 w-6" />
                   <p className="text-muted-foreground text-sm">
-                    Drop an image here or
+                    {t("Drop an image here or")}
                   </p>
-                  <FileUploadTrigger>Change picture</FileUploadTrigger>
+                  <FileUploadTrigger>{t("Change picture")}</FileUploadTrigger>
                   <FileUploadHiddenInput />
                 </FileUploadDropzone>
                 <FileUploadItemGroup>
@@ -105,7 +110,7 @@ export function ProfileSection() {
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
-              <Label htmlFor="profile-display-name">Display name</Label>
+              <Label htmlFor="profile-display-name">{t("Display name")}</Label>
               <Input
                 id="profile-display-name"
                 value={displayName}
@@ -113,7 +118,7 @@ export function ProfileSection() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="profile-email">Email</Label>
+              <Label htmlFor="profile-email">{t("Email")}</Label>
               <Input
                 id="profile-email"
                 type="email"
@@ -124,13 +129,13 @@ export function ProfileSection() {
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="profile-bio">Bio</Label>
+            <Label htmlFor="profile-bio">{t("Bio")}</Label>
             <Textarea
               id="profile-bio"
               rows={3}
               value={bio}
               onChange={(e) => setBio(e.target.value)}
-              placeholder="Tell us about yourself..."
+              placeholder={t("Tell us about yourself...")}
             />
           </div>
         </CardContent>

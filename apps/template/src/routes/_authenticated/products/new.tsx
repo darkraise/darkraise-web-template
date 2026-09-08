@@ -1,3 +1,4 @@
+import { useAppTranslation } from "@/i18n/useAppTranslation"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import { PageHeader } from "darkraise-ui/layout"
 import { useCreateProduct, useCategories } from "@/demo/hooks"
@@ -9,6 +10,8 @@ export const Route = createFileRoute("/_authenticated/products/new")({
 })
 
 function ProductCreatePage() {
+  const t = useAppTranslation()
+
   const navigate = useNavigate()
   const createProduct = useCreateProduct()
   const { data: categories } = useCategories()
@@ -22,12 +25,12 @@ function ProductCreatePage() {
     <>
       <PageHeader
         breadcrumbs={[
-          { label: "Dashboard", href: "/" },
-          { label: "Products", href: "/products" },
-          { label: "New Product" },
+          { label: t("Dashboard"), href: "/" },
+          { label: t("Products"), href: "/products" },
+          { label: t("New Product") },
         ]}
-        title="New Product"
-        description="Add a new product to your catalog"
+        title={t("New Product")}
+        description={t("Add a new product to your catalog")}
       />
       <ProductForm
         defaultValues={{
@@ -41,7 +44,7 @@ function ProductCreatePage() {
           isActive: true,
         }}
         categoryOptions={categoryOptions}
-        submitLabel="Create Product"
+        submitLabel={t("Create Product")}
         isSubmitting={createProduct.isPending}
         onSubmit={async (value) => {
           const status: Product["status"] = value.isActive ? "active" : "draft"

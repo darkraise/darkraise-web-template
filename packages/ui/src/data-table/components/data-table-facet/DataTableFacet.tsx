@@ -19,14 +19,14 @@ export function DataTableFacet<TData>({ column }: DataTableFacetProps<TData>) {
   const labels = useUiLabels()
   const header = column.columnDef.header
   const title = typeof header === "string" ? header : column.id
-  const selected = new Set((column.getFilterValue() as string[]) ?? [])
+  const selected = new Set((column.getFilterValue() as unknown[]) ?? [])
   // Sorted so the option list does not reorder itself as counts change under a
   // filter applied to a different column.
   const values = Array.from(column.getFacetedUniqueValues().entries()).sort(
     (a, b) => String(a[0]).localeCompare(String(b[0])),
   )
 
-  function toggle(value: string, on: boolean) {
+  function toggle(value: unknown, on: boolean) {
     const next = new Set(selected)
     if (on) next.add(value)
     else next.delete(value)
@@ -59,11 +59,11 @@ export function DataTableFacet<TData>({ column }: DataTableFacetProps<TData>) {
           {labels.dataTable.filterBy(title)}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {values.map(([value, count]) => (
+        {values.map(([value, count], index) => (
           <DropdownMenuCheckboxItem
-            key={String(value)}
-            checked={selected.has(String(value))}
-            onCheckedChange={(v) => toggle(String(value), !!v)}
+            key={index}
+            checked={selected.has(value)}
+            onCheckedChange={(v) => toggle(value, !!v)}
             onSelect={(e) => e.preventDefault()}
           >
             <span className="dr-data-table-facet-value">{String(value)}</span>

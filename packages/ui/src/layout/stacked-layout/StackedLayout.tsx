@@ -1,3 +1,4 @@
+import { useUiText } from "../../i18n/useUiText"
 import { useRouterAdapter } from "@router"
 import { SidebarItem, SidebarProvider } from "@layout/sidebar"
 import {
@@ -25,6 +26,7 @@ export function StackedLayout({
   children,
   nav,
   headerSlot,
+  notificationSlot,
   navHeader,
   navFooter,
   // Accepting the deprecated names is what makes them aliases; the rule is
@@ -34,6 +36,7 @@ export function StackedLayout({
   sidebarFooter,
   /* eslint-enable @typescript-eslint/no-deprecated */
   showLayoutSwitcher,
+  layoutVariants,
   showThemeSwitcher,
   shellStyle: shellStyleProp,
   user,
@@ -41,6 +44,8 @@ export function StackedLayout({
   onSettings,
   onLogout,
 }: StackedLayoutProps) {
+  const uiText = useUiText()
+
   const labels = useUiLabels()
   const shellStyle = useShellStyle(shellStyleProp)
   // The sidebar* names predate the layouts that have no sidebar; both still
@@ -78,7 +83,10 @@ export function StackedLayout({
             <div className="dr-stacked-layout-rail-logo">
               <BrandLogo collapsed />
             </div>
-            <nav aria-label="Primary" className="dr-stacked-layout-rail-nav">
+            <nav
+              aria-label={uiText("Primary")}
+              className="dr-stacked-layout-rail-nav"
+            >
               {nav.map((group, gi) => {
                 const firstItem = group.items[0]
                 if (!firstItem) return null
@@ -123,7 +131,7 @@ export function StackedLayout({
               )}
               <div className="dr-stacked-layout-aside-scroll">
                 <nav
-                  aria-label="Secondary"
+                  aria-label={uiText("Secondary")}
                   className="dr-stacked-layout-aside-nav"
                 >
                   {activeGroup.items.map((item) => (
@@ -135,12 +143,14 @@ export function StackedLayout({
           )}
 
           <LayoutHeader
+            notificationSlot={notificationSlot}
             data-region="bar"
             nav={nav}
             sidebarHeader={resolvedNavHeader}
             sidebarFooter={resolvedNavFooter}
             headerSlot={headerSlot}
             showLayoutSwitcher={showLayoutSwitcher}
+            layoutVariants={layoutVariants}
             showThemeSwitcher={showThemeSwitcher}
             user={user}
             onProfile={onProfile}

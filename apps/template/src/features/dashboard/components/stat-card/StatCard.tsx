@@ -1,9 +1,12 @@
+import { useAppTranslation } from "@/i18n/useAppTranslation"
 import { TrendingDown, TrendingUp } from "lucide-react"
 import { Card, CardContent } from "darkraise-ui/components/card"
 import { cn } from "darkraise-ui/lib"
 import type { StatCardProps } from "../../types"
 
 export function StatCard({ label, value, icon: Icon, trend }: StatCardProps) {
+  const t = useAppTranslation()
+
   return (
     <Card className="transition-all duration-200 hover:-translate-y-px hover:shadow-md">
       <CardContent className="p-6">
@@ -26,7 +29,9 @@ export function StatCard({ label, value, icon: Icon, trend }: StatCardProps) {
             >
               {trend.value}%
             </span>
-            <span className="text-muted-foreground">from last period</span>
+            <span className="text-muted-foreground">
+              {t("from last period")}
+            </span>
           </div>
         )}
       </CardContent>

@@ -19,10 +19,11 @@ export function toBucketDate(value: Date | string): Date {
 export function formatBucketLabel(
   bucket: TimelineBucket<unknown>,
   granularity: TimelineGranularity,
+  locale?: string,
 ): string {
   if (bucket.label) return bucket.label
-  return toBucketDate(bucket.date).toLocaleDateString(
-    undefined,
-    LABEL_OPTIONS[granularity],
-  )
+  return toBucketDate(bucket.date).toLocaleDateString(locale, {
+    ...LABEL_OPTIONS[granularity],
+    calendar: "gregory",
+  })
 }

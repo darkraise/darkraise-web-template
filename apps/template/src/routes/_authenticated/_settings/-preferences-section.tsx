@@ -1,3 +1,5 @@
+import { useAppTranslation } from "@/i18n/useAppTranslation"
+import { AppLocaleSwitcher } from "@/i18n/AppLocaleSwitcher"
 import { useMemo, useState } from "react"
 import { Check, ChevronDown, X } from "lucide-react"
 import {
@@ -26,24 +28,8 @@ import {
   NumberInputLabel,
   NumberInputTriggerGroup,
 } from "darkraise-ui/components/number-input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "darkraise-ui/components/select"
 import { Slider } from "darkraise-ui/components/slider"
 import { FormSection } from "darkraise-ui/forms"
-
-const LANGUAGE_OPTIONS = [
-  { value: "en", label: "English" },
-  { value: "es", label: "Spanish" },
-  { value: "fr", label: "French" },
-  { value: "de", label: "German" },
-  { value: "ja", label: "Japanese" },
-  { value: "pt", label: "Portuguese" },
-]
 
 // Mirrors the app's real nav destinations (see the `nav` export in
 // _authenticated.tsx) so the picker points at pages that actually exist.
@@ -58,7 +44,8 @@ const LANDING_PAGE_OPTIONS: ComboboxItemData[] = [
 ]
 
 export function PreferencesSection() {
-  const [language, setLanguage] = useState("en")
+  const t = useAppTranslation()
+
   const [landingQuery, setLandingQuery] = useState("")
   const [landingPage, setLandingPage] = useState<string | null>(null)
   const [itemsPerPage, setItemsPerPage] = useState(25)
@@ -66,34 +53,33 @@ export function PreferencesSection() {
 
   const filteredPages = useMemo(
     () =>
-      LANDING_PAGE_OPTIONS.filter((page) =>
+      LANDING_PAGE_OPTIONS.map((page) => ({
+        ...page,
+        label: t(page.label),
+      })).filter((page) =>
         page.label.toLowerCase().includes(landingQuery.toLowerCase()),
       ),
-    [landingQuery],
+    [landingQuery, t],
   )
 
   return (
     <FormSection
-      title="Preferences"
-      description="Personal defaults for this dashboard, separate from the store configuration above."
+      title={t("Preferences")}
+      description={t(
+        "Language is saved on this device. Other preferences are interactive examples and are not saved.",
+      )}
     >
       <Card>
         <CardContent className="space-y-6 pt-6">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
-              <Label htmlFor="preferences-language">Language</Label>
-              <Select value={language} onValueChange={setLanguage}>
-                <SelectTrigger id="preferences-language">
-                  <SelectValue placeholder="Select a language" />
-                </SelectTrigger>
-                <SelectContent>
-                  {LANGUAGE_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label htmlFor="preferences-language">{t("Language")}</Label>
+              <AppLocaleSwitcher id="preferences-language" />
+              <p className="text-muted-foreground text-xs">
+                {t(
+                  "Language applies immediately and is remembered on this device.",
+                )}
+              </p>
             </div>
 
             <Combobox
@@ -102,9 +88,9 @@ export function PreferencesSection() {
               onInputValueChange={(d) => setLandingQuery(d.value)}
               value={landingPage}
               onValueChange={(d) => setLandingPage(d.value[0] ?? null)}
-              placeholder="Search pages..."
+              placeholder={t("Search pages...")}
             >
-              <ComboboxLabel>Default landing page</ComboboxLabel>
+              <ComboboxLabel>{t("Default landing page")}</ComboboxLabel>
               <ComboboxControl>
                 <ComboboxInput />
                 <ComboboxClearTrigger>
@@ -125,7 +111,7 @@ export function PreferencesSection() {
                     </ComboboxItem>
                   ))}
                 </ComboboxList>
-                <ComboboxEmpty>No pages match.</ComboboxEmpty>
+                <ComboboxEmpty>{t("No pages match.")}</ComboboxEmpty>
               </ComboboxContent>
             </Combobox>
           </div>
@@ -139,7 +125,7 @@ export function PreferencesSection() {
               step={5}
               precision={0}
             >
-              <NumberInputLabel>Items per page</NumberInputLabel>
+              <NumberInputLabel>{t("Items per page")}</NumberInputLabel>
               <NumberInputControl>
                 <NumberInputField />
                 <NumberInputTriggerGroup>
@@ -152,13 +138,16 @@ export function PreferencesSection() {
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Autosave interval</span>
+              <span className="text-sm font-medium">
+                {t("Autosave interval")}
+              </span>
               <span className="text-muted-foreground text-sm">
-                Every {autosaveInterval[0]} min
+                {t("Every")}
+                {autosaveInterval[0]} {t("min")}
               </span>
             </div>
             <Slider
-              aria-label="Autosave interval"
+              aria-label={t("Autosave interval")}
               value={autosaveInterval}
               onValueChange={setAutosaveInterval}
               min={1}

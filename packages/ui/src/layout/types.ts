@@ -1,5 +1,6 @@
 import type { ReactNode } from "react"
 import type { LucideIcon } from "lucide-react"
+import type { LayoutVariant } from "./layoutStore"
 
 export interface NavItem {
   label: string
@@ -18,6 +19,8 @@ export interface LayoutProps {
   children: ReactNode
   nav: NavGroup[]
   headerSlot?: ReactNode
+  /** Omit for the default bell; pass null to hide or a node to replace it. */
+  notificationSlot?: ReactNode
   /** Slot above the primary nav, mirrored into the mobile drawer. */
   navHeader?: ReactNode
   /** Slot below the primary nav, mirrored into the mobile drawer. */
@@ -27,6 +30,7 @@ export interface LayoutProps {
   /** @deprecated Use `navFooter`. Still honoured as an alias. */
   sidebarFooter?: ReactNode
   showLayoutSwitcher?: boolean
+  layoutVariants?: LayoutVariant[]
   showThemeSwitcher?: boolean
   /**
    * Show a header toggle for the sidebar's active-item left bar.

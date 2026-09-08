@@ -25,6 +25,20 @@ function ticks(overrides: Partial<Parameters<typeof buildRailTicks>[0]> = {}) {
 }
 
 describe("buildRailTicks", () => {
+  it("formats month labels using the requested locale", () => {
+    expect(ticks({ locale: "vi" }).map((tick) => tick.label)).toEqual([
+      "2026",
+      new Intl.DateTimeFormat("vi", {
+        month: "short",
+        calendar: "gregory",
+      }).format(new Date(2026, 5, 1)),
+      "2025",
+      new Intl.DateTimeFormat("vi", {
+        month: "short",
+        calendar: "gregory",
+      }).format(new Date(2025, 10, 1)),
+    ])
+  })
   it("places a tick per bucket at its proportional offset", () => {
     expect(ticks().map((t) => t.y)).toEqual([0, 100, 200, 300])
   })

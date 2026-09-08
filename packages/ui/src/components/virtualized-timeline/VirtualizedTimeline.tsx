@@ -3,6 +3,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import * as React from "react"
+import { useUiLocale } from "../../i18n/context"
+import { useUiLabels } from "../../labels"
 
 import { ChevronDown } from "lucide-react"
 
@@ -899,10 +901,16 @@ export function VirtualizedTimeline<T>({
     )
   }, [list, minTileWidthProp, tileAspectProp])
 
+  const uiLocale = useUiLocale()
+  const labels = useUiLabels()
   const renderBucketAt = (index: number): React.ReactNode => {
     const bucket = buckets[index]
     if (!bucket) return null
-    const label = formatBucketLabel(bucket, granularity)
+    const label = formatBucketLabel(
+      bucket,
+      granularity,
+      uiLocale.enabled ? uiLocale.locale : undefined,
+    )
     const headerId = `${idBase}-header-${bucket.id}`
     // Named from the label span alone, not the whole header: the header div
     // also holds the checkbox and disclosure button, whose accessible names
@@ -976,7 +984,7 @@ export function VirtualizedTimeline<T>({
                       ? "indeterminate"
                       : false
                 }
-                aria-label={`Select ${label}`}
+                aria-label={labels.announcements.select(label)}
                 // An unloaded bucket has no ids to select, so the checkbox has
                 // to await its load; disabling it during that wait is what
                 // stops a second click from queueing a second load.
@@ -993,7 +1001,11 @@ export function VirtualizedTimeline<T>({
               <Button
                 size="icon"
                 variant="ghost"
-                aria-label={collapsed ? `Expand ${label}` : `Collapse ${label}`}
+                aria-label={
+                  collapsed
+                    ? labels.announcements.expand(label)
+                    : labels.announcements.collapse(label)
+                }
                 onClick={() => toggleCollapsed(bucket.id)}
               >
                 <ChevronDown

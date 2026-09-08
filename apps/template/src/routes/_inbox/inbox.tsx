@@ -1,3 +1,6 @@
+import { useUiLocale } from "darkraise-ui/i18n"
+import { AppLocaleSwitcher } from "@/i18n/AppLocaleSwitcher"
+import { useAppTranslation } from "@/i18n/useAppTranslation"
 import { useState } from "react"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import { SplitPanelLayout } from "darkraise-ui/layout"
@@ -13,6 +16,10 @@ export const Route = createFileRoute("/_inbox/inbox")({
 })
 
 function InboxPage() {
+  const uiLocale = useUiLocale()
+
+  const t = useAppTranslation()
+
   const { data: messages } = useMessages()
   const markAsRead = useMarkMessageAsRead()
   const { user, logout } = useAuth()
@@ -62,10 +69,13 @@ function InboxPage() {
                     {message.from.name}
                   </span>
                   <span className="text-muted-foreground shrink-0 text-xs">
-                    {new Date(message.createdAt).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                    })}
+                    {new Date(message.createdAt).toLocaleDateString(
+                      uiLocale.locale,
+                      {
+                        month: "short",
+                        day: "numeric",
+                      },
+                    )}
                   </span>
                 </div>
                 <p
@@ -94,7 +104,12 @@ function InboxPage() {
 
   return (
     <SplitPanelLayout
-      nav={inboxNav}
+      nav={inboxNav.map((group) => ({
+        ...group,
+        label: group.label ? t(group.label) : undefined,
+        items: group.items.map((item) => ({ ...item, label: t(item.label) })),
+      }))}
+      headerSlot={<AppLocaleSwitcher />}
       panel={panel}
       showLayoutSwitcher
       user={user ? { name: user.name, email: user.email } : undefined}
@@ -121,7 +136,7 @@ function InboxPage() {
                 <p className="text-muted-foreground text-xs">
                   {selectedMessage.from.email} &middot;{" "}
                   {new Date(selectedMessage.createdAt).toLocaleDateString(
-                    "en-US",
+                    uiLocale.locale,
                     {
                       year: "numeric",
                       month: "long",
@@ -140,7 +155,9 @@ function InboxPage() {
         </div>
       ) : (
         <div className="flex h-full items-center justify-center">
-          <p className="text-muted-foreground">Select a message to read it</p>
+          <p className="text-muted-foreground">
+            {t("Select a message to read it")}
+          </p>
         </div>
       )}
     </SplitPanelLayout>

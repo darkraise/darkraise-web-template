@@ -179,9 +179,18 @@ empty state, download trigger, image cropper.
 
 ## Regression tests for fixed defects
 
-The suite is green. These four tests were written against real defects the first
-run surfaced; each now guards the fix, so treat a failure here as a regression
-rather than a flake.
+`11-review-regressions.spec.ts` checks supported layout choices, settings form
+subscriptions, and virtual-table row height, end-of-list scrolling, and filtering.
+The virtual-table fixture deliberately includes long cell content.
+
+`12-i18n.spec.ts` covers switching and persistence, translated existing validation
+errors, retained form drafts and table filters, language in portal content,
+showcase headings, root error pages, and mobile language controls.
+
+Pull-request and release workflows run suites `01`, `06`, `08`, `11`, and `12` against
+a fresh UI build. The full browser suite remains available separately.
+
+These four earlier tests also guard fixed defects:
 
 | Test                                                        | Guards                                                                                                                                                       |
 | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |

@@ -12,6 +12,57 @@ import {
   NumberInputTriggerGroup,
 } from "./NumberInput"
 
+describe("localized number editing", () => {
+  it.each([
+    ["de-DE", undefined, "1,5", 1.5],
+    ["ar-EG", {}, "١٬٢٣٤٫٥", 1234.5],
+    [
+      "en-US",
+      { style: "currency", currency: "USD", currencySign: "accounting" },
+      "($12.00)",
+      -12,
+    ],
+    ["de-DE", { style: "percent" }, "50 %", 0.5],
+  ] as const)(
+    "round-trips %s input %s",
+    (locale, formatOptions, text, value) => {
+      const onValueChange = vi.fn()
+      renderBasic({
+        locale,
+        formatOptions,
+        defaultValue: 0,
+        min: undefined,
+        max: undefined,
+        onValueChange,
+      })
+      const input = screen.getByRole("spinbutton")
+      fireEvent.focus(input)
+      fireEvent.change(input, { target: { value: text } })
+      fireEvent.blur(input)
+      expect(input).toHaveAttribute("aria-valuenow", String(value))
+      expect(onValueChange).toHaveBeenLastCalledWith(
+        expect.objectContaining({ valueAsNumber: value }),
+      )
+    },
+  )
+
+  it("uses the same locale for plain display and parsing", () => {
+    renderBasic({ locale: "de-DE", defaultValue: 1.5 })
+    expect(screen.getByRole("spinbutton")).toHaveValue("1,5")
+  })
+
+  it("does not commit the numeric prefix of malformed input", () => {
+    const onValueChange = vi.fn()
+    renderBasic({ defaultValue: 5, onValueChange })
+    const input = screen.getByRole("spinbutton")
+    fireEvent.focus(input)
+    fireEvent.change(input, { target: { value: "12oops" } })
+    fireEvent.blur(input)
+    expect(input).toHaveValue("5")
+    expect(onValueChange).not.toHaveBeenCalled()
+  })
+})
+
 function renderBasic(
   props: Partial<React.ComponentProps<typeof NumberInput>> = {},
 ) {

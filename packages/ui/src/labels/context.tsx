@@ -1,17 +1,14 @@
-import { createContext, useContext, useMemo, type ReactNode } from "react"
-import { defaultLabels } from "./defaults"
+import { useContext, useMemo, type ReactNode } from "react"
+import { UiLabelsContext } from "./useUiLabels"
 import { mergeLabels } from "./mergeLabels"
-import type { DeepPartialLabels, UiLabels } from "./types"
-
-// Defaulting the context to the full English set is what lets every component
-// call useUiLabels() unconditionally — no provider is ever required.
-const UiLabelsContext = createContext<UiLabels>(defaultLabels)
+import type { DeepPartialLabels } from "./types"
+import type { UiMessages } from "../i18n/types"
 
 export function UiLabelsProvider({
   value,
   children,
 }: {
-  value: DeepPartialLabels<UiLabels>
+  value: DeepPartialLabels<UiMessages>
   children: ReactNode
 }) {
   // Merging over the nearest ancestor rather than over defaultLabels is what
@@ -23,8 +20,4 @@ export function UiLabelsProvider({
       {children}
     </UiLabelsContext.Provider>
   )
-}
-
-export function useUiLabels(): UiLabels {
-  return useContext(UiLabelsContext)
 }

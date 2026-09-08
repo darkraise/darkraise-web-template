@@ -19,6 +19,7 @@ export interface RailTicksArgs<T> {
   totalSize: number
   railHeight: number
   showLabels: boolean
+  locale?: string
   /** Minimum pixels between rendered sub ticks. Default 4. */
   minTickGap?: number
   /** Minimum pixels between rendered labels — one label line box. Default 18:
@@ -35,6 +36,7 @@ export function buildRailTicks<T>({
   totalSize,
   railHeight,
   showLabels,
+  locale,
   minTickGap = 4,
   minLabelGap = 18,
 }: RailTicksArgs<T>): RailTick[] {
@@ -87,8 +89,8 @@ export function buildRailTicks<T>({
     if (!clears(tick.y)) continue
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     tick.label = toBucketDate(buckets[tick.index]!.date).toLocaleDateString(
-      undefined,
-      { month: "short" },
+      locale,
+      { month: "short", calendar: "gregory" },
     )
     labelledYs.push(tick.y)
   }

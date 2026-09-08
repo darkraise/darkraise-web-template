@@ -1,3 +1,4 @@
+import { useAppTranslation } from "@/i18n/useAppTranslation"
 import { useState } from "react"
 import { Link } from "@tanstack/react-router"
 import { z } from "zod"
@@ -15,6 +16,8 @@ const loginSchema = z.object({
 })
 
 export function LoginForm() {
+  const t = useAppTranslation()
+
   const { login } = useAuth()
   const [formError, setFormError] = useState<string | null>(null)
 
@@ -29,7 +32,7 @@ export function LoginForm() {
         setFormError(
           err instanceof Error
             ? err.message
-            : "Unable to sign in. Please try again.",
+            : t("Unable to sign in. Please try again."),
         )
       }
     },
@@ -38,9 +41,9 @@ export function LoginForm() {
   return (
     <>
       <Stack gap="xs" className="text-center">
-        <h1 className="text-2xl font-medium">Welcome back</h1>
+        <h1 className="text-2xl font-medium">{t("Welcome back")}</h1>
         <p className="text-muted-foreground text-sm">
-          Enter your credentials to sign in
+          {t("Enter your credentials to sign in")}
         </p>
       </Stack>
 
@@ -61,7 +64,7 @@ export function LoginForm() {
             {(field) => (
               <AuthFormField
                 field={field}
-                label="Email"
+                label={t("Email")}
                 type="email"
                 autoComplete="email"
                 autoFocus
@@ -74,17 +77,19 @@ export function LoginForm() {
             {(field) => (
               <AuthFormField
                 field={field}
-                label="Password"
+                label={t("Password")}
                 type="password"
                 autoComplete="current-password"
                 labelSlot={
                   <div className="flex items-center justify-between">
-                    <FieldLabel htmlFor={field.name}>Password</FieldLabel>
+                    <FieldLabel htmlFor={field.name}>
+                      {t("Password")}
+                    </FieldLabel>
                     <Link
                       to="/forgot-password"
                       className="text-muted-foreground hover:text-primary text-xs"
                     >
-                      Forgot password?
+                      {t("Forgot password?")}
                     </Link>
                   </div>
                 }
@@ -100,7 +105,7 @@ export function LoginForm() {
                 className="w-full"
                 disabled={!canSubmit || isSubmitting}
               >
-                {isSubmitting ? "Signing in..." : "Sign in"}
+                {isSubmitting ? t("Signing in...") : t("Sign in")}
               </Button>
             )}
           />
@@ -108,9 +113,9 @@ export function LoginForm() {
       </form>
 
       <p className="text-muted-foreground text-center text-sm">
-        Don&apos;t have an account?{" "}
+        {t("Don&apos;t have an account?")}{" "}
         <Link to="/register" className="text-primary hover:underline">
-          Sign up
+          {t("Sign up")}
         </Link>
       </p>
     </>

@@ -1,4 +1,5 @@
 import { PageHeader } from "darkraise-ui/layout"
+import { useAppTranslation } from "@/i18n/useAppTranslation"
 
 interface ShowcasePageProps {
   title: string
@@ -11,15 +12,16 @@ export function ShowcasePage({
   description,
   children,
 }: ShowcasePageProps) {
+  const t = useAppTranslation()
   return (
     <div className="space-y-8">
       <PageHeader
         breadcrumbs={[
-          { label: "Components", href: "/components" },
+          { label: t("Components"), href: "/components" },
           { label: title },
         ]}
         title={title}
-        description={description}
+        description={t(description)}
       />
       <div className="space-y-6">{children}</div>
     </div>

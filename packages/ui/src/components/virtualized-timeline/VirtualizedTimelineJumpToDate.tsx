@@ -1,4 +1,5 @@
 "use client"
+import { useUiText } from "../../i18n/useUiText"
 
 import * as React from "react"
 import { CalendarDays } from "lucide-react"
@@ -21,6 +22,8 @@ export function VirtualizedTimelineJumpToDate({
   max,
   onJump,
 }: VirtualizedTimelineJumpToDateProps) {
+  const uiText = useUiText()
+
   const [value, setValue] = React.useState<Date | null>(null)
   return (
     <DatePicker
@@ -38,13 +41,13 @@ export function VirtualizedTimelineJumpToDate({
           affordance, worse than no input. The dr-btn classes restyle the
           trigger as a toolbar button (see virtualized-timeline.css). */}
       <DatePickerTrigger
-        aria-label="Jump to date"
+        aria-label={uiText("Jump to date")}
         className="dr-btn"
         data-variant="outline"
         data-size="sm"
       >
         <CalendarDays aria-hidden="true" />
-        Jump to date
+        {uiText("Jump to date")}
       </DatePickerTrigger>
       <DatePickerContent>
         <DatePickerCalendar />

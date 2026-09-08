@@ -1,9 +1,11 @@
+import { useAppTranslation } from "@/i18n/useAppTranslation"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "darkraise-ui/components/sonner"
 import type { Product, Order, Category } from "@/demo/types"
 
-const notifyError = (fallback: string) => (err: unknown) =>
-  toast.error(err instanceof Error ? err.message : fallback)
+const notifyError =
+  (fallback: string, t: (text: string) => string) => (err: unknown) =>
+    toast.error(t(err instanceof Error ? err.message : fallback))
 import {
   getProducts,
   getProduct,
@@ -38,19 +40,21 @@ export function useProduct(id: string) {
 }
 
 export function useCreateProduct() {
+  const t = useAppTranslation()
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (data: Omit<Product, "id" | "createdAt">) =>
       createProduct(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] })
-      toast.success("Product created")
+      toast.success(t("Product created"))
     },
-    onError: notifyError("Failed to create product"),
+    onError: notifyError("Failed to create product", t),
   })
 }
 
 export function useUpdateProduct() {
+  const t = useAppTranslation()
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: ({
@@ -62,21 +66,22 @@ export function useUpdateProduct() {
     }) => updateProduct(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] })
-      toast.success("Product updated")
+      toast.success(t("Product updated"))
     },
-    onError: notifyError("Failed to update product"),
+    onError: notifyError("Failed to update product", t),
   })
 }
 
 export function useDeleteProduct() {
+  const t = useAppTranslation()
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (id: string) => deleteProduct(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] })
-      toast.success("Product deleted")
+      toast.success(t("Product deleted"))
     },
-    onError: notifyError("Failed to delete product"),
+    onError: notifyError("Failed to delete product", t),
   })
 }
 
@@ -93,15 +98,16 @@ export function useOrder(id: string) {
 }
 
 export function useUpdateOrderStatus() {
+  const t = useAppTranslation()
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: ({ id, status }: { id: string; status: Order["status"] }) =>
       updateOrderStatus(id, status),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["orders"] })
-      toast.success("Order status updated")
+      toast.success(t("Order status updated"))
     },
-    onError: notifyError("Failed to update order"),
+    onError: notifyError("Failed to update order", t),
   })
 }
 
@@ -122,18 +128,20 @@ export function useCategories() {
 }
 
 export function useCreateCategory() {
+  const t = useAppTranslation()
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (data: Omit<Category, "id">) => createCategory(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] })
-      toast.success("Category created")
+      toast.success(t("Category created"))
     },
-    onError: notifyError("Failed to create category"),
+    onError: notifyError("Failed to create category", t),
   })
 }
 
 export function useUpdateCategory() {
+  const t = useAppTranslation()
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: ({
@@ -145,21 +153,22 @@ export function useUpdateCategory() {
     }) => updateCategory(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] })
-      toast.success("Category updated")
+      toast.success(t("Category updated"))
     },
-    onError: notifyError("Failed to update category"),
+    onError: notifyError("Failed to update category", t),
   })
 }
 
 export function useDeleteCategory() {
+  const t = useAppTranslation()
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (id: string) => deleteCategory(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] })
-      toast.success("Category deleted")
+      toast.success(t("Category deleted"))
     },
-    onError: notifyError("Failed to delete category"),
+    onError: notifyError("Failed to delete category", t),
   })
 }
 

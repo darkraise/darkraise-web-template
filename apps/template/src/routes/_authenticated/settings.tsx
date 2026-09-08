@@ -1,3 +1,4 @@
+import { useAppTranslation } from "@/i18n/useAppTranslation"
 import { createFileRoute } from "@tanstack/react-router"
 import { useForm } from "@tanstack/react-form"
 import { z } from "zod"
@@ -65,23 +66,30 @@ const notificationsSchema = z.object({
 })
 
 function SettingsPage() {
+  const t = useAppTranslation()
+
   return (
     <>
       <PageHeader
-        breadcrumbs={[{ label: "Dashboard", href: "/" }, { label: "Settings" }]}
-        title="Settings"
-        description="Manage your store configuration"
+        breadcrumbs={[
+          { label: t("Dashboard"), href: "/" },
+          { label: t("Settings") },
+        ]}
+        title={t("Settings")}
+        description={t(
+          "Explore example store settings. Submissions are simulated and are not saved.",
+        )}
       />
       <Tabs defaultValue="general">
         <TabsList className="w-full max-w-2xl">
           <TabsTrigger value="general" className="flex-1">
-            General
+            {t("General")}
           </TabsTrigger>
           <TabsTrigger value="notifications" className="flex-1">
-            Notifications
+            {t("Notifications")}
           </TabsTrigger>
           <TabsTrigger value="billing" className="flex-1">
-            Billing
+            {t("Billing")}
           </TabsTrigger>
         </TabsList>
 
@@ -100,6 +108,8 @@ function SettingsPage() {
 }
 
 function GeneralSettings() {
+  const t = useAppTranslation()
+
   const form = useForm({
     defaultValues: {
       storeName: "My E-Commerce Store",
@@ -113,7 +123,7 @@ function GeneralSettings() {
     },
     onSubmit: async () => {
       await new Promise((r) => setTimeout(r, 500))
-      toast.success("Settings saved")
+      toast.success(t("Demo settings submitted"))
     },
   })
 
@@ -129,24 +139,30 @@ function GeneralSettings() {
       >
         <SettingsCard
           icon={<Store />}
-          title="Store Information"
+          title={t("Store Information")}
           action={
-            <Button
-              type="submit"
-              size="sm"
-              disabled={!form.state.canSubmit || form.state.isSubmitting}
+            <form.Subscribe
+              selector={(state) => [state.canSubmit, state.isSubmitting]}
             >
-              {form.state.isSubmitting ? "Saving…" : "Save Changes"}
-            </Button>
+              {([canSubmit, isSubmitting]) => (
+                <Button
+                  type="submit"
+                  size="sm"
+                  disabled={!canSubmit || isSubmitting}
+                >
+                  {isSubmitting ? t("Saving…") : t("Save Changes")}
+                </Button>
+              )}
+            </form.Subscribe>
           }
         >
           <form.Field
             name="storeName"
             children={(field) => (
               <TextField
-                {...fieldProps<string>(field)}
-                label="Store Name"
-                placeholder="Your store name"
+                {...fieldProps<string>(field, t)}
+                label={t("Store Name")}
+                placeholder={t("Your store name")}
               />
             )}
           />
@@ -154,9 +170,9 @@ function GeneralSettings() {
             name="storeDescription"
             children={(field) => (
               <TextareaField
-                {...fieldProps<string>(field)}
-                label="Store Description"
-                placeholder="Describe your store"
+                {...fieldProps<string>(field, t)}
+                label={t("Store Description")}
+                placeholder={t("Describe your store")}
                 rows={3}
               />
             )}
@@ -165,8 +181,8 @@ function GeneralSettings() {
             name="currency"
             children={(field) => (
               <SelectField
-                {...fieldProps<string>(field)}
-                label="Currency"
+                {...fieldProps<string>(field, t)}
+                label={t("Currency")}
                 options={[
                   { label: "USD ($)", value: "usd" },
                   { label: "EUR (€)", value: "eur" },
@@ -181,28 +197,31 @@ function GeneralSettings() {
             name="timezone"
             children={(field) => (
               <SelectField
-                {...fieldProps<string>(field)}
-                label="Timezone"
+                {...fieldProps<string>(field, t)}
+                label={t("Timezone")}
                 options={[
-                  { label: "Eastern Time (ET)", value: "america-new_york" },
-                  { label: "Central Time (CT)", value: "america-chicago" },
-                  { label: "Mountain Time (MT)", value: "america-denver" },
-                  { label: "Pacific Time (PT)", value: "america-los_angeles" },
+                  { label: t("Eastern Time (ET)"), value: "america-new_york" },
+                  { label: t("Central Time (CT)"), value: "america-chicago" },
+                  { label: t("Mountain Time (MT)"), value: "america-denver" },
+                  {
+                    label: t("Pacific Time (PT)"),
+                    value: "america-los_angeles",
+                  },
                   { label: "UTC", value: "utc" },
                 ]}
               />
             )}
           />
           <StatusPanel
-            title="All settings are in sync"
+            title={t("Example sync status")}
             meta={[
               <>
                 <Clock />
-                Last saved 08/21/2026 09:57 PM
+                {t("Last saved 08/21/2026 09:57 PM")}
               </>,
               <>
                 <CheckCircle2 />
-                Applied across 3 storefronts
+                {t("Applied across 3 storefronts")}
               </>,
             ]}
           />
@@ -216,6 +235,8 @@ function GeneralSettings() {
 }
 
 function NotificationSettings() {
+  const t = useAppTranslation()
+
   const form = useForm({
     defaultValues: {
       emailNotifications: true,
@@ -228,7 +249,7 @@ function NotificationSettings() {
     },
     onSubmit: async () => {
       await new Promise((r) => setTimeout(r, 500))
-      toast.success("Preferences saved")
+      toast.success(t("Demo preferences submitted"))
     },
   })
 
@@ -243,24 +264,32 @@ function NotificationSettings() {
       >
         <SettingsCard
           icon={<Bell />}
-          title="Email Preferences"
+          title={t("Email Preferences")}
           action={
-            <Button
-              type="submit"
-              size="sm"
-              disabled={!form.state.canSubmit || form.state.isSubmitting}
+            <form.Subscribe
+              selector={(state) => [state.canSubmit, state.isSubmitting]}
             >
-              {form.state.isSubmitting ? "Saving…" : "Save Preferences"}
-            </Button>
+              {([canSubmit, isSubmitting]) => (
+                <Button
+                  type="submit"
+                  size="sm"
+                  disabled={!canSubmit || isSubmitting}
+                >
+                  {isSubmitting ? t("Saving…") : t("Save Preferences")}
+                </Button>
+              )}
+            </form.Subscribe>
           }
         >
           <form.Field
             name="emailNotifications"
             children={(field) => (
               <SwitchField
-                {...fieldProps<boolean>(field)}
-                label="Email Notifications"
-                description="Receive email notifications for important events"
+                {...fieldProps<boolean>(field, t)}
+                label={t("Email Notifications")}
+                description={t(
+                  "Receive email notifications for important events",
+                )}
               />
             )}
           />
@@ -268,9 +297,9 @@ function NotificationSettings() {
             name="orderAlerts"
             children={(field) => (
               <SwitchField
-                {...fieldProps<boolean>(field)}
-                label="Order Alerts"
-                description="Get notified when new orders are placed"
+                {...fieldProps<boolean>(field, t)}
+                label={t("Order Alerts")}
+                description={t("Get notified when new orders are placed")}
               />
             )}
           />
@@ -278,27 +307,29 @@ function NotificationSettings() {
             name="marketingEmails"
             children={(field) => (
               <CheckboxField
-                {...fieldProps<boolean>(field)}
-                label="Marketing Emails"
-                description="Receive promotional emails and product updates"
+                {...fieldProps<boolean>(field, t)}
+                label={t("Marketing Emails")}
+                description={t(
+                  "Receive promotional emails and product updates",
+                )}
               />
             )}
           />
 
           <FormSection
-            title="Frequency"
-            description="How often you want to receive notifications"
+            title={t("Frequency")}
+            description={t("How often you want to receive notifications")}
           >
             <form.Field
               name="notificationFrequency"
               children={(field) => (
                 <RadioGroupField
-                  {...fieldProps<string>(field)}
-                  label="Notification Frequency"
+                  {...fieldProps<string>(field, t)}
+                  label={t("Notification Frequency")}
                   options={[
-                    { label: "Instant", value: "instant" },
-                    { label: "Daily digest", value: "daily" },
-                    { label: "Weekly summary", value: "weekly" },
+                    { label: t("Instant"), value: "instant" },
+                    { label: t("Daily digest"), value: "daily" },
+                    { label: t("Weekly summary"), value: "weekly" },
                   ]}
                 />
               )}
@@ -307,10 +338,11 @@ function NotificationSettings() {
 
           <Alert variant="info">
             <Info />
-            <AlertTitle>Digests are sent at 09:00 local time</AlertTitle>
+            <AlertTitle>{t("Digests are sent at 09:00 local time")}</AlertTitle>
             <AlertDescription>
-              Daily and weekly summaries follow the timezone set under General.
-              Instant alerts ignore this schedule.
+              {t(
+                "Daily and weekly summaries follow the timezone set under General. Instant alerts ignore this schedule.",
+              )}
             </AlertDescription>
           </Alert>
         </SettingsCard>
@@ -321,50 +353,56 @@ function NotificationSettings() {
 }
 
 function BillingSettings() {
+  const t = useAppTranslation()
+
   return (
     <div className="max-w-2xl space-y-6">
       <SettingsCard
         icon={<CreditCard />}
-        title="Pro Plan"
+        title={t("Pro Plan")}
         action={
           <Button variant="outline" size="sm">
-            Upgrade Plan
+            {t("Upgrade Plan")}
           </Button>
         }
       >
         <StatValue
-          label="Monthly Price"
+          label={t("Monthly Price")}
           value="$49"
           badge={<CheckCircle2 className="text-success size-5" />}
         />
         <div className="space-y-4">
           <SettingRow
-            label="Billing cycle"
-            description="How often the subscription renews"
-            control={<span className="text-sm font-medium">Monthly</span>}
+            label={t("Billing cycle")}
+            description={t("How often the subscription renews")}
+            control={
+              <span className="text-sm font-medium">{t("Monthly")}</span>
+            }
           />
           <SettingRow
-            label="Next billing date"
-            description="The card on file is charged on this date"
-            control={<span className="text-sm font-medium">May 1, 2026</span>}
+            label={t("Next billing date")}
+            description={t("The card on file is charged on this date")}
+            control={
+              <span className="text-sm font-medium">{t("May 1, 2026")}</span>
+            }
           />
         </div>
         <StatusPanel
-          title="Your subscription is active"
+          title={t("Your subscription is active")}
           meta={[
             <>
               <Clock />
-              Renews in 12 days
+              {t("Renews in 12 days")}
             </>,
           ]}
         />
       </SettingsCard>
 
-      <SettingsCard icon={<Wallet />} title="Billing Information">
+      <SettingsCard icon={<Wallet />} title={t("Billing Information")}>
         <div className="space-y-4">
           <SettingRow
-            label="Billing Email"
-            description="Invoices and receipts are sent here"
+            label={t("Billing Email")}
+            description={t("Invoices and receipts are sent here")}
             control={
               <span className="text-muted-foreground text-sm">
                 billing@example.com
@@ -372,17 +410,17 @@ function BillingSettings() {
             }
           />
           <SettingRow
-            label="Payment Method"
-            description="Charged automatically each cycle"
+            label={t("Payment Method")}
+            description={t("Charged automatically each cycle")}
             control={
               <span className="text-muted-foreground text-sm">
-                Visa ending in 4242
+                {t("Visa ending in 4242")}
               </span>
             }
           />
           <SettingRow
-            label="Billing Address"
-            description="Used on every invoice"
+            label={t("Billing Address")}
+            description={t("Used on every invoice")}
             control={
               <span className="text-muted-foreground max-w-56 text-right text-sm">
                 123 Business Ave, Suite 100, San Francisco, CA 94102

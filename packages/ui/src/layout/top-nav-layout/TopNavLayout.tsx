@@ -1,3 +1,4 @@
+import { useUiText } from "../../i18n/useUiText"
 import { ChevronDown } from "lucide-react"
 import { useRouterAdapter } from "@router"
 import {
@@ -34,6 +35,7 @@ export function TopNavLayout({
   children,
   nav,
   headerSlot,
+  notificationSlot,
   navHeader,
   navFooter,
   // Accepting the deprecated names is what makes them aliases; the rule is
@@ -43,6 +45,7 @@ export function TopNavLayout({
   sidebarFooter,
   /* eslint-enable @typescript-eslint/no-deprecated */
   showLayoutSwitcher,
+  layoutVariants,
   showThemeSwitcher,
   shellStyle: shellStyleProp,
   user,
@@ -50,6 +53,8 @@ export function TopNavLayout({
   onSettings,
   onLogout,
 }: TopNavLayoutProps) {
+  const uiText = useUiText()
+
   const labels = useUiLabels()
   const shellStyle = useShellStyle(shellStyleProp)
   // The sidebar* names predate the layouts that have no sidebar; both still
@@ -69,12 +74,14 @@ export function TopNavLayout({
     >
       <SkipLink>{labels.layout.skipToContent}</SkipLink>
       <LayoutHeader
+        notificationSlot={notificationSlot}
         data-region="bar"
         nav={nav}
         sidebarHeader={resolvedNavHeader}
         sidebarFooter={resolvedNavFooter}
         className="gap-4"
         showLayoutSwitcher={showLayoutSwitcher}
+        layoutVariants={layoutVariants}
         showThemeSwitcher={showThemeSwitcher}
         user={user}
         onProfile={onProfile}
@@ -88,7 +95,7 @@ export function TopNavLayout({
         }
       >
         <BrandLogo />
-        <nav aria-label="Primary" className="dr-top-nav-layout-nav">
+        <nav aria-label={uiText("Primary")} className="dr-top-nav-layout-nav">
           {nav.flatMap((group) =>
             group.items.map((item) =>
               item.children?.length ? (

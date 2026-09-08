@@ -1,3 +1,4 @@
+import { useUiText } from "../../i18n/useUiText"
 import { Fragment } from "react"
 import { useRouterAdapter } from "@router"
 import type { PageHeaderProps } from "@layout/types"
@@ -17,6 +18,8 @@ export function PageHeader({
   actions,
   tabs,
 }: PageHeaderProps) {
+  const uiText = useUiText()
+
   const { Link } = useRouterAdapter()
   return (
     <div className="dr-page-header">
@@ -50,7 +53,10 @@ export function PageHeader({
         {actions && <div className="dr-page-header-actions">{actions}</div>}
       </div>
       {tabs && tabs.length > 0 && (
-        <nav aria-label="Page sections" className="dr-page-header-tabs">
+        <nav
+          aria-label={uiText("Page sections")}
+          className="dr-page-header-tabs"
+        >
           {tabs.map((tab) => (
             <Link
               key={tab.value}

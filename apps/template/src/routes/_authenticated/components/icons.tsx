@@ -1,3 +1,4 @@
+import { useUiLocale } from "darkraise-ui/i18n"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import * as LucideIcons from "lucide-react"
@@ -232,6 +233,8 @@ function UsagePatterns() {
 }
 
 function IconCatalog() {
+  const uiLocale = useUiLocale()
+
   const [query, setQuery] = useState("")
   const [copied, setCopied] = useState<string | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -308,8 +311,8 @@ function IconCatalog() {
             />
           </div>
           <span className="text-muted-foreground text-xs tabular-nums">
-            Showing {filtered.length.toLocaleString()} of{" "}
-            {ALL_ICONS.length.toLocaleString()}
+            Showing {filtered.length.toLocaleString(uiLocale.locale)} of{" "}
+            {ALL_ICONS.length.toLocaleString(uiLocale.locale)}
           </span>
         </div>
 

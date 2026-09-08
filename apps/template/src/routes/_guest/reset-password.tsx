@@ -1,3 +1,4 @@
+import { useAppTranslation } from "@/i18n/useAppTranslation"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { z } from "zod"
 import { Button } from "darkraise-ui/components/button"
@@ -14,19 +15,22 @@ export const Route = createFileRoute("/_guest/reset-password")({
 })
 
 function ResetPasswordRoute() {
+  const t = useAppTranslation()
+
   const { token } = Route.useSearch()
 
   if (!token) {
     return (
       <Stack gap="md" className="text-center">
-        <h1 className="text-2xl font-medium">Invalid reset link</h1>
+        <h1 className="text-2xl font-medium">{t("Invalid reset link")}</h1>
         <p className="text-muted-foreground text-sm">
-          This password reset link is missing or has expired. Request a new one
-          to continue.
+          {t(
+            "This password reset link is missing or has expired. Request a new one to continue.",
+          )}
         </p>
         <Link to="/forgot-password">
           <Button variant="outline" className="mt-4">
-            Request a new link
+            {t("Request a new link")}
           </Button>
         </Link>
       </Stack>

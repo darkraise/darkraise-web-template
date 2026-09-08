@@ -11,6 +11,21 @@ const columns = [{ accessorKey: "name", header: "Name" }]
 const rows: Row[] = [{ name: "a" }, { name: "b" }]
 
 describe("DataTable labels", () => {
+  it("names navigation and page-size controls and handles an empty result", () => {
+    render(<DataTable columns={columns} data={[]} />)
+    for (const name of [
+      "First page",
+      "Previous page",
+      "Next page",
+      "Last page",
+    ]) {
+      expect(screen.getByRole("button", { name })).toBeDisabled()
+    }
+    expect(
+      screen.getByRole("combobox", { name: "Rows per page" }),
+    ).toBeInTheDocument()
+    expect(screen.getByText("Page 0 of 0")).toBeInTheDocument()
+  })
   it("renders English chrome with no provider", () => {
     render(<DataTable columns={columns} data={rows} searchKey="name" />)
     expect(screen.getByText("Columns")).toBeInTheDocument()

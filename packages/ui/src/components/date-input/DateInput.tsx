@@ -1,3 +1,5 @@
+import { useUiText } from "../../i18n/useUiText"
+import { useUiLabels } from "../../labels"
 import * as React from "react"
 import { cn } from "@lib/utils"
 import { useId } from "@primitives/state"
@@ -21,12 +23,6 @@ const SEGMENT_LIMITS: Record<
   day: { min: 1, max: 31, len: 2 },
 }
 
-const SEGMENT_LABELS: Record<"year" | "month" | "day", string> = {
-  year: "Year",
-  month: "Month",
-  day: "Day",
-}
-
 function DateInput({
   className,
   value,
@@ -37,6 +33,9 @@ function DateInput({
   "aria-label": ariaLabel,
   ...rest
 }: DateInputProps) {
+  const uiText = useUiText()
+  const labels = useUiLabels()
+
   const groupId = useId()
   const { parts, setSegment, adjustSegment, order } = useDateInput({
     value,
@@ -54,7 +53,7 @@ function DateInput({
       {...rest}
     >
       <span id={groupId} className="sr-only">
-        {ariaLabel ?? "Date"}
+        {ariaLabel ?? uiText("Date")}
       </span>
       {order.map((key, idx) => {
         const limits = SEGMENT_LIMITS[key]
@@ -73,7 +72,7 @@ function DateInput({
               type="text"
               role="spinbutton"
               inputMode="numeric"
-              aria-label={SEGMENT_LABELS[key]}
+              aria-label={labels.dateInput[key]}
               aria-valuemin={limits.min}
               aria-valuemax={limits.max}
               aria-valuenow={Number.parseInt(valStr, 10) || undefined}

@@ -25,6 +25,7 @@ export function SplitPanelLayout({
   children,
   nav,
   headerSlot,
+  notificationSlot,
   navHeader,
   navFooter,
   // Accepting the deprecated names is what makes them aliases; the rule is
@@ -34,6 +35,7 @@ export function SplitPanelLayout({
   sidebarFooter,
   /* eslint-enable @typescript-eslint/no-deprecated */
   showLayoutSwitcher,
+  layoutVariants,
   showThemeSwitcher,
   user,
   onProfile,
@@ -113,6 +115,7 @@ export function SplitPanelLayout({
     >
       <SkipLink>{labels.layout.skipToContent}</SkipLink>
       <LayoutHeader
+        notificationSlot={notificationSlot}
         data-region="bar"
         nav={nav}
         sidebarHeader={resolvedNavHeader}
@@ -120,6 +123,7 @@ export function SplitPanelLayout({
         headerSlot={headerSlot}
         className="gap-4"
         showLayoutSwitcher={showLayoutSwitcher}
+        layoutVariants={layoutVariants}
         showThemeSwitcher={showThemeSwitcher}
         user={user}
         onProfile={onProfile}

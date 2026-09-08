@@ -1,4 +1,6 @@
 "use client"
+import { useUiText } from "../../i18n/useUiText"
+import { useUiLocale } from "../../i18n/context"
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
@@ -47,10 +49,18 @@ export function VirtualizedTimelineScrubber<T>({
   onScrubTo,
   className,
 }: VirtualizedTimelineScrubberProps<T>) {
+  const uiText = useUiText()
+  const uiLocale = useUiLocale()
+  const locale = uiLocale.enabled ? uiLocale.locale : undefined
+
   const railRef = React.useRef<HTMLDivElement | null>(null)
   const [dragging, setDragging] = React.useState(false)
   const [hoverY, setHoverY] = React.useState<number | null>(null)
-  const [hoverLabel, setHoverLabel] = React.useState<string | null>(null)
+  const [hoverBucket, setHoverBucket] =
+    React.useState<TimelineBucket<T> | null>(null)
+  const hoverLabel = hoverBucket
+    ? formatBucketLabel(hoverBucket, granularity, locale)
+    : null
   const frame = React.useRef(0)
   const pendingClientY = React.useRef<number | null>(null)
 
@@ -67,11 +77,12 @@ export function VirtualizedTimelineScrubber<T>({
         totalSize: layout.totalSize,
         railHeight,
         showLabels,
+        locale,
       }),
     // Deliberately not keyed on scrollTop: the index is fixed while you
     // scroll, and only the caret moves. Re-deriving it per frame would
     // reconcile every tick on every frame.
-    [buckets, layout.offsets, layout.totalSize, railHeight, showLabels],
+    [buckets, layout.offsets, layout.totalSize, railHeight, showLabels, locale],
   )
 
   const scrubToClientY = React.useCallback(
@@ -102,7 +113,7 @@ export function VirtualizedTimelineScrubber<T>({
       layout.totalSize > 0
         ? buckets[indexAtOffset(layout.offsets, target)]
         : undefined
-    setHoverLabel(hovered ? formatBucketLabel(hovered, granularity) : null)
+    setHoverBucket(hovered ?? null)
   }
 
   function handlePointerDown(event: React.PointerEvent<HTMLDivElement>) {
@@ -187,7 +198,7 @@ export function VirtualizedTimelineScrubber<T>({
   const caretY =
     layout.totalSize > 0 ? (scrollTop / layout.totalSize) * railHeight : 0
   const activeLabel = buckets[activeIndex]
-    ? formatBucketLabel(buckets[activeIndex]!, granularity)
+    ? formatBucketLabel(buckets[activeIndex]!, granularity, locale)
     : null
 
   // The viewport's footprint on the rail, from the caret down to where the
@@ -209,7 +220,7 @@ export function VirtualizedTimelineScrubber<T>({
       ref={railRef}
       role="slider"
       tabIndex={0}
-      aria-label="Scroll through the timeline by date"
+      aria-label={uiText("Scroll through the timeline by date")}
       aria-orientation="vertical"
       aria-valuemin={0}
       aria-valuemax={Math.round(maxScroll)}
@@ -224,7 +235,7 @@ export function VirtualizedTimelineScrubber<T>({
       onLostPointerCapture={endDrag}
       onPointerLeave={() => {
         setHoverY(null)
-        setHoverLabel(null)
+        setHoverBucket(null)
       }}
       onKeyDown={handleKeyDown}
     >

@@ -33,6 +33,34 @@ async function openFacet(user: ReturnType<typeof userEvent.setup>) {
 }
 
 describe("DataTable faceted filters", () => {
+  it.each([
+    ["active", "inactive"],
+    [10, 100],
+    [true, false],
+    [null, "null"],
+  ])("matches scalar %s exactly", async (first, second) => {
+    const user = userEvent.setup()
+    render(
+      <DataTable
+        columns={columns}
+        data={[
+          { name: "a", kind: first },
+          { name: "b", kind: second },
+        ]}
+        facets={["kind"]}
+      />,
+    )
+    await openFacet(user)
+    const choices = screen.getAllByRole("menuitemcheckbox")
+    const option = choices.find(
+      (choice) =>
+        choice.querySelector(".dr-data-table-facet-value")?.textContent ===
+        String(first),
+    )
+    if (!option) throw new Error(`Missing facet option: ${String(first)}`)
+    await user.click(option)
+    expect(visibleNames()).toEqual(["a"])
+  })
   it("offers each distinct value with its count", async () => {
     const user = userEvent.setup()
     render(<DataTable columns={columns} data={rows} facets={["kind"]} />)

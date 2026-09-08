@@ -144,7 +144,7 @@
   }
 
   .dr-data-table-facet-count {
-    @apply ml-2 rounded-sm bg-secondary px-1.5 text-xs;
+    @apply bg-secondary ml-2 rounded-sm px-1.5 text-xs;
   }
 
   .dr-data-table-facet-value {
@@ -164,5 +164,22 @@
 
   .dr-data-table-viewport thead {
     @apply sticky top-0 z-10 bg-[hsl(var(--surface-header))];
+  }
+
+  .dr-data-table-viewport .dr-table-wrapper {
+    @apply overflow-visible border-0;
+  }
+
+  .dr-data-table-viewport .dr-table-cell {
+    padding-block: 0;
+  }
+
+  .dr-data-table-virtual-cell {
+    height: calc(var(--data-table-row-height) - 1px);
+    @apply flex items-center overflow-hidden;
+  }
+
+  .dr-data-table-virtual-cell > div {
+    @apply max-h-full min-w-0 overflow-hidden;
   }
 }

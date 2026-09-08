@@ -1,4 +1,6 @@
+import { useUiText } from "../../i18n/useUiText"
 import * as React from "react"
+import { useUiLocale } from "../../i18n/context"
 import * as RechartsPrimitive from "recharts"
 
 import { cn } from "@lib/utils"
@@ -111,6 +113,8 @@ function ChartContainer({
   initialDimension = DEFAULT_INITIAL_DIMENSION,
   ...props
 }: ChartContainerProps) {
+  const uiText = useUiText()
+
   const uniqueId = React.useId()
   const chartId = `chart-${id ?? uniqueId.replace(/:/g, "")}`
   const descriptionId = description ? `${chartId}-description` : undefined
@@ -141,7 +145,7 @@ function ChartContainer({
           <div className="dr-chart-placeholder" aria-hidden="true" />
         ) : empty ? (
           <div className="dr-chart-empty">
-            {emptyContent ?? "No data to show"}
+            {emptyContent ?? uiText("No data to show")}
           </div>
         ) : (
           <RechartsPrimitive.ResponsiveContainer
@@ -201,6 +205,7 @@ function ChartTooltipContent({
   nameKey,
   labelKey,
 }: ChartTooltipContentProps) {
+  const uiLocale = useUiLocale()
   const { config } = useChart()
 
   const tooltipLabel = React.useMemo(() => {
@@ -304,7 +309,9 @@ function ChartTooltipContent({
                     </div>
                     {item.value !== undefined && (
                       <span className="text-foreground font-mono font-medium tabular-nums">
-                        {item.value.toLocaleString()}
+                        {item.value.toLocaleString(
+                          uiLocale.enabled ? uiLocale.locale : undefined,
+                        )}
                       </span>
                     )}
                   </div>

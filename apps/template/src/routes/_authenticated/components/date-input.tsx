@@ -1,3 +1,4 @@
+import { useUiLocale } from "darkraise-ui/i18n"
 import { useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import { Button } from "darkraise-ui/components/button"
@@ -10,6 +11,8 @@ export const Route = createFileRoute("/_authenticated/components/date-input")({
 })
 
 function DateInputPage() {
+  const uiLocale = useUiLocale()
+
   const [ymd, setYmd] = useState<Date | null>(null)
   const [mdy, setMdy] = useState<Date | null>(null)
   const [dmy, setDmy] = useState<Date | null>(null)
@@ -55,7 +58,7 @@ function DateInputPage() {
           <p className="text-muted-foreground text-xs">
             Committed:{" "}
             <span className="font-medium">
-              {mdy ? mdy.toLocaleDateString("en-US") : "(none)"}
+              {mdy ? mdy.toLocaleDateString(uiLocale.locale) : "(none)"}
             </span>
           </p>
         </div>

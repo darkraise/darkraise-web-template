@@ -1,3 +1,4 @@
+import { useUiText } from "../../../i18n/useUiText"
 import { useEffect, useRef } from "react"
 
 import { useId } from "@primitives/state"
@@ -38,10 +39,13 @@ export interface FormErrorSummaryProps {
  */
 export function FormErrorSummary({
   errors,
-  title = "There is a problem",
+  title: titleLocaleProp,
   submitCount,
   className,
 }: FormErrorSummaryProps) {
+  const uiText = useUiText()
+  const title = titleLocaleProp ?? uiText("There is a problem")
+
   const ref = useRef<HTMLDivElement | null>(null)
   const titleId = useId()
 

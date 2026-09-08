@@ -1,3 +1,4 @@
+import { useId } from "react"
 import {
   ChevronLeft,
   ChevronRight,
@@ -18,12 +19,13 @@ import {
   SelectValue,
 } from "@components/select"
 import type { DataTablePaginationProps } from "@data-table/types"
-import { useUiLabels } from "@labels"
+import { defaultLabels, useUiLabels } from "@labels"
 
 export function DataTablePagination<TData>({
   table,
 }: DataTablePaginationProps<TData>) {
   const labels = useUiLabels()
+  const pageSizeLabelId = useId()
   const selectedCount = table.getFilteredSelectedRowModel().rows.length
   const filteredCount = table.getFilteredRowModel().rows.length
   return (
@@ -40,14 +42,20 @@ export function DataTablePagination<TData>({
       )}
       <div className="dr-data-table-pagination-controls">
         <div className="dr-data-table-pagination-page-size">
-          <p className="dr-data-table-pagination-page-info">
+          <p
+            id={pageSizeLabelId}
+            className="dr-data-table-pagination-page-info"
+          >
             {labels.dataTable.rowsPerPage}
           </p>
           <Select
             value={`${table.getState().pagination.pageSize}`}
             onValueChange={(v) => table.setPageSize(Number(v))}
           >
-            <SelectTrigger className="dr-data-table-pagination-page-size-trigger">
+            <SelectTrigger
+              aria-labelledby={pageSizeLabelId}
+              className="dr-data-table-pagination-page-size-trigger"
+            >
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -61,7 +69,9 @@ export function DataTablePagination<TData>({
         </div>
         <div className="dr-data-table-pagination-page-info">
           {labels.dataTable.pageInfo(
-            table.getState().pagination.pageIndex + 1,
+            table.getPageCount()
+              ? table.getState().pagination.pageIndex + 1
+              : 0,
             table.getPageCount(),
           )}
         </div>
@@ -73,6 +83,10 @@ export function DataTablePagination<TData>({
                 size="icon"
                 className="dr-data-table-pagination-nav-btn"
                 onClick={() => table.setPageIndex(0)}
+                aria-label={
+                  labels.dataTable.firstPage ??
+                  defaultLabels.dataTable.firstPage
+                }
                 disabled={!table.getCanPreviousPage()}
               >
                 <ChevronsLeft
@@ -87,6 +101,10 @@ export function DataTablePagination<TData>({
                 size="icon"
                 className="dr-data-table-pagination-nav-btn"
                 onClick={() => table.previousPage()}
+                aria-label={
+                  labels.dataTable.previousPage ??
+                  defaultLabels.dataTable.previousPage
+                }
                 disabled={!table.getCanPreviousPage()}
               >
                 <ChevronLeft
@@ -101,6 +119,9 @@ export function DataTablePagination<TData>({
                 size="icon"
                 className="dr-data-table-pagination-nav-btn"
                 onClick={() => table.nextPage()}
+                aria-label={
+                  labels.dataTable.nextPage ?? defaultLabels.dataTable.nextPage
+                }
                 disabled={!table.getCanNextPage()}
               >
                 <ChevronRight
@@ -118,6 +139,9 @@ export function DataTablePagination<TData>({
                   table.setPageIndex(Math.max(0, table.getPageCount() - 1))
                 }
                 disabled={!table.getCanNextPage() || table.getPageCount() === 0}
+                aria-label={
+                  labels.dataTable.lastPage ?? defaultLabels.dataTable.lastPage
+                }
               >
                 <ChevronsRight
                   className="size-[var(--icon-size)]"

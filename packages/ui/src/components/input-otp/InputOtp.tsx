@@ -1,3 +1,4 @@
+import { useUiText } from "../../i18n/useUiText"
 import * as React from "react"
 import { Dot } from "lucide-react"
 
@@ -48,6 +49,8 @@ function InputOTP({
   children,
   ...rest
 }: InputOTPProps) {
+  const uiText = useUiText()
+
   // OTPs are numeric by default — typed and pasted non-digits get stripped
   // by `normalize` below. Consumers who need alphanumeric/etc. override via
   // `pattern="A-Za-z0-9"`; explicitly passing `pattern=""` disables the
@@ -243,7 +246,7 @@ function InputOTP({
         role={variant === "separate" ? "group" : undefined}
         aria-label={
           variant === "separate"
-            ? (rest["aria-label"] ?? "One-time password")
+            ? (rest["aria-label"] ?? uiText("One-time password"))
             : undefined
         }
       >
@@ -274,7 +277,7 @@ function InputOTP({
                would silently discard a caller's visible label. An `id` means
                a label may point here, so we stand aside. A caller-supplied
                aria-label or aria-labelledby still wins via {...rest}. */
-            aria-label={rest.id ? undefined : "One-time password"}
+            aria-label={rest.id ? undefined : uiText("One-time password")}
             className={cn(
               "dr-input-otp",
               "absolute inset-0 w-full opacity-0",

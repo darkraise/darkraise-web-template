@@ -1,3 +1,5 @@
+import { useUiLocale } from "darkraise-ui/i18n"
+import { useAppTranslation } from "@/i18n/useAppTranslation"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import type { ColumnDef } from "@tanstack/react-table"
 import { PageHeader } from "darkraise-ui/layout"
@@ -11,13 +13,19 @@ export const Route = createFileRoute("/_authenticated/customers/")({
 })
 
 function CustomersPage() {
+  const uiLocale = useUiLocale()
+
+  const t = useAppTranslation()
+
   const navigate = useNavigate()
   const { data: customers, isLoading } = useCustomers()
 
   const columns: ColumnDef<Customer>[] = [
     {
       accessorKey: "name",
-      header: ({ column }) => <ColumnHeader column={column} title="Customer" />,
+      header: ({ column }) => (
+        <ColumnHeader column={column} title={t("Customer")} />
+      ),
       cell: ({ row }) => (
         <div className="flex items-center gap-3">
           <Avatar className="h-8 w-8">
@@ -34,27 +42,34 @@ function CustomersPage() {
     },
     {
       accessorKey: "email",
-      header: ({ column }) => <ColumnHeader column={column} title="Email" />,
+      header: ({ column }) => (
+        <ColumnHeader column={column} title={t("Email")} />
+      ),
       cell: ({ row }) => (
         <span className="text-muted-foreground">{row.original.email}</span>
       ),
     },
     {
       accessorKey: "totalOrders",
-      header: ({ column }) => <ColumnHeader column={column} title="Orders" />,
+      header: ({ column }) => (
+        <ColumnHeader column={column} title={t("Orders")} />
+      ),
     },
     {
       accessorKey: "totalSpent",
       header: ({ column }) => (
-        <ColumnHeader column={column} title="Total Spent" />
+        <ColumnHeader column={column} title={t("Total Spent")} />
       ),
-      cell: ({ row }) => `$${row.original.totalSpent.toLocaleString()}`,
+      cell: ({ row }) =>
+        `$${row.original.totalSpent.toLocaleString(uiLocale.locale)}`,
     },
     {
       accessorKey: "createdAt",
-      header: ({ column }) => <ColumnHeader column={column} title="Joined" />,
+      header: ({ column }) => (
+        <ColumnHeader column={column} title={t("Joined")} />
+      ),
       cell: ({ row }) =>
-        new Date(row.original.createdAt).toLocaleDateString("en-US", {
+        new Date(row.original.createdAt).toLocaleDateString(uiLocale.locale, {
           year: "numeric",
           month: "short",
           day: "numeric",
@@ -66,7 +81,7 @@ function CustomersPage() {
         <RowActions
           actions={[
             {
-              label: "View Profile",
+              label: t("View Profile"),
               onClick: () =>
                 navigate({
                   to: "/customers/$id",
@@ -83,18 +98,18 @@ function CustomersPage() {
     <>
       <PageHeader
         breadcrumbs={[
-          { label: "Dashboard", href: "/" },
-          { label: "Customers" },
+          { label: t("Dashboard"), href: "/" },
+          { label: t("Customers") },
         ]}
-        title="Customers"
-        description="View and manage your customer base"
+        title={t("Customers")}
+        description={t("View and manage your customer base")}
       />
       <DataTable
         columns={columns}
         data={customers ?? []}
         isLoading={isLoading}
         searchKey="name"
-        searchPlaceholder="Search customers..."
+        searchPlaceholder={t("Search customers...")}
       />
     </>
   )

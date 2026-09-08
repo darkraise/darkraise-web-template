@@ -30,6 +30,48 @@ import {
 
 const FIXED = new Date(2024, 5, 15)
 
+describe("date picker commit constraints", () => {
+  it("rejects typed dates outside root bounds", async () => {
+    const user = userEvent.setup()
+    const onChange = vi.fn()
+    render(
+      <SingleHarness
+        initial={FIXED}
+        min={new Date(2024, 5, 1)}
+        max={new Date(2024, 5, 30)}
+        parseInput
+        onChange={onChange}
+      />,
+    )
+    const input = screen.getByRole("textbox")
+    await user.clear(input)
+    await user.type(input, "2024-07-01")
+    await user.tab()
+    expect(onChange).not.toHaveBeenCalled()
+    expect(input).toHaveValue("2024-06-15")
+  })
+
+  it.each([false, true])(
+    "rejects invalid presets when disabled is %s",
+    async (disabled) => {
+      const onValueChange = vi.fn()
+      render(
+        <DatePicker
+          disabled={disabled}
+          min={new Date(2024, 6, 1)}
+          onValueChange={onValueChange}
+        >
+          <DatePickerPreset value={FIXED}>Earlier date</DatePickerPreset>
+        </DatePicker>,
+      )
+      await userEvent.click(
+        screen.getByRole("button", { name: "Earlier date" }),
+      )
+      expect(onValueChange).not.toHaveBeenCalled()
+    },
+  )
+})
+
 interface SingleProps {
   initial?: Date | null
   disabled?: boolean

@@ -1,4 +1,5 @@
 "use client"
+import { useUiText } from "../../i18n/useUiText"
 
 import * as React from "react"
 
@@ -101,6 +102,8 @@ export function VirtualizedTimelineBucket<T>({
   onFocusItem,
   onItemFocus,
 }: VirtualizedTimelineBucketProps<T>) {
+  const uiText = useUiText()
+
   const list = layout === "list"
   // Cells grouped by grid row, so each group can mount inside a `role="row"`
   // wrapper: a grid whose gridcells sit directly under the grid element has
@@ -269,7 +272,7 @@ export function VirtualizedTimelineBucket<T>({
               {error instanceof Error ? error.message : String(error)}
             </span>
             <Button size="sm" variant="outline" onClick={onRetry}>
-              Retry
+              {uiText("Retry")}
             </Button>
           </div>
         ) : list ? (

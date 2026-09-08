@@ -196,7 +196,7 @@ function CalendarPage() {
   return (
     <ShowcasePage
       title="Calendar"
-      description="A date picker built on react-day-picker with full keyboard navigation."
+      description="Date and date-range selection with keyboard navigation"
     >
       <ShowcaseExample
         title="Basic calendar"

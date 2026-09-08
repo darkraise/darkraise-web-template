@@ -1,3 +1,4 @@
+import { useUiText } from "../../i18n/useUiText"
 import * as React from "react"
 import { Button } from "@components/button"
 import { Portal } from "@primitives/portal"
@@ -40,6 +41,8 @@ function Tour({
   spotlightPadding = 8,
   className,
 }: TourProps) {
+  const uiText = useUiText()
+
   const [rect, setRect] = React.useState<Rect | null>(null)
   const popoverRef = React.useRef<HTMLDivElement | null>(null)
   const previousFocusRef = React.useRef<HTMLElement | null>(null)
@@ -85,7 +88,7 @@ function Tour({
       window.removeEventListener("resize", update)
       window.removeEventListener("scroll", update, true)
     }
-  }, [open, step, spotlightPadding])
+  }, [open, step, spotlightPadding, reducedMotion])
 
   // Move focus to the popover on open so keyboard users can interact with the
   // controls; restore focus to the previously-focused element on close.
@@ -171,7 +174,7 @@ function Tour({
           </span>
           <div className="dr-tour-actions">
             <Button variant="ghost" size="sm" onClick={onClose}>
-              Skip
+              {uiText("Skip")}
             </Button>
             <Button
               variant="outline"
@@ -179,15 +182,15 @@ function Tour({
               onClick={() => onChange(current - 1)}
               disabled={current === 0}
             >
-              Previous
+              {uiText("Previous")}
             </Button>
             {current === steps.length - 1 ? (
               <Button size="sm" onClick={onClose}>
-                Done
+                {uiText("Done")}
               </Button>
             ) : (
               <Button size="sm" onClick={() => onChange(current + 1)}>
-                Next
+                {uiText("Next")}
               </Button>
             )}
           </div>

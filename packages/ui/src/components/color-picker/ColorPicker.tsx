@@ -1,3 +1,4 @@
+import { useUiText } from "../../i18n/useUiText"
 import * as React from "react"
 
 import { cn } from "@lib/utils"
@@ -326,6 +327,8 @@ function ColorPickerTrigger({
   "aria-label": ariaLabelProp,
   ...props
 }: ColorPickerTriggerProps) {
+  const uiText = useUiText()
+
   const { open, disabled, triggerRef } =
     useColorPickerContext("ColorPickerTrigger")
 
@@ -346,7 +349,7 @@ function ColorPickerTrigger({
         type={type}
         aria-haspopup="dialog"
         aria-expanded={open}
-        aria-label={ariaLabelProp ?? "Open color picker"}
+        aria-label={ariaLabelProp ?? uiText("Open color picker")}
         disabled={disabled}
         data-state={open ? "open" : "closed"}
         data-disabled={disabled ? "true" : undefined}
@@ -396,6 +399,8 @@ export type ColorPickerAreaProps = Omit<
 >
 
 function ColorPickerArea({ className, style, ...props }: ColorPickerAreaProps) {
+  const uiText = useUiText()
+
   const { value, setValue, disabled } = useColorPickerContext("ColorPickerArea")
   const hsv = React.useMemo<HSV>(
     () => hexToHsv(value) ?? { h: 0, s: 0, v: 0 },
@@ -482,7 +487,7 @@ function ColorPickerArea({ className, style, ...props }: ColorPickerAreaProps) {
       <div
         ref={svRef}
         role="application"
-        aria-label="Saturation and brightness"
+        aria-label={uiText("Saturation and brightness")}
         tabIndex={disabled ? -1 : 0}
         className="dr-color-picker-sv"
         onPointerDown={onSvPointerDown}
@@ -535,7 +540,7 @@ function ColorPickerArea({ className, style, ...props }: ColorPickerAreaProps) {
       <div
         ref={hueRef}
         role="slider"
-        aria-label="Hue"
+        aria-label={uiText("Hue")}
         aria-valuemin={0}
         aria-valuemax={360}
         aria-valuenow={Math.round(hsv.h)}
@@ -593,10 +598,12 @@ function ColorPickerSwatchGroup({
   className,
   ...props
 }: ColorPickerSwatchGroupProps) {
+  const uiText = useUiText()
+
   return (
     <div
       role="group"
-      aria-label="Color presets"
+      aria-label={uiText("Color presets")}
       className={cn("dr-color-picker-swatch-group", className)}
       {...props}
     />
@@ -669,6 +676,8 @@ function ColorPickerEyeDropperTrigger({
   "aria-label": ariaLabelProp,
   ...props
 }: ColorPickerEyeDropperTriggerProps) {
+  const uiText = useUiText()
+
   const [supported, setSupported] = React.useState(false)
   const { setValue, disabled } = useColorPickerContext(
     "ColorPickerEyeDropperTrigger",
@@ -698,7 +707,7 @@ function ColorPickerEyeDropperTrigger({
       ref={ref}
       type={type}
       disabled={disabled}
-      aria-label={ariaLabelProp ?? "Pick color from screen"}
+      aria-label={ariaLabelProp ?? uiText("Pick color from screen")}
       data-disabled={disabled ? "true" : undefined}
       className={cn("dr-color-picker-eye-dropper-trigger", className)}
       onClick={handleClick}

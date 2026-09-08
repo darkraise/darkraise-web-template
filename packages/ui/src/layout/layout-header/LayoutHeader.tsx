@@ -10,10 +10,12 @@ import { LayoutSwitcher } from "@layout/layout-switcher"
 import { flattenNavItems } from "@layout/navTree"
 import type { NavGroup } from "@layout/types"
 import type { SidebarActiveBar } from "@layout/sidebar"
+import type { LayoutVariant } from "@layout/layoutStore"
 
 interface LayoutHeaderProps extends React.HTMLAttributes<HTMLElement> {
   nav: NavGroup[]
   headerSlot?: ReactNode
+  notificationSlot?: ReactNode
   /** Forwarded to MobileDrawer so the drawer mirrors the sidebar rails. */
   sidebarHeader?: ReactNode
   sidebarFooter?: ReactNode
@@ -25,6 +27,7 @@ interface LayoutHeaderProps extends React.HTMLAttributes<HTMLElement> {
   className?: string
   children?: ReactNode
   showLayoutSwitcher?: boolean
+  layoutVariants?: LayoutVariant[]
   showThemeSwitcher?: boolean
   /**
    * Render the search trigger in the header. `SidebarLayout` sets this to
@@ -43,12 +46,14 @@ interface LayoutHeaderProps extends React.HTMLAttributes<HTMLElement> {
 export function LayoutHeader({
   nav,
   headerSlot,
+  notificationSlot,
   sidebarHeader,
   sidebarFooter,
   sidebarActiveBar,
   className,
   children,
   showLayoutSwitcher = false,
+  layoutVariants,
   showThemeSwitcher = true,
   showSearch = true,
   user,
@@ -73,9 +78,13 @@ export function LayoutHeader({
         (showSearch ? <SearchCommand navItems={flatNavItems} /> : null)}
       <div className="dr-layout-header-end">
         {headerSlot}
-        {showLayoutSwitcher && <LayoutSwitcher />}
+        {showLayoutSwitcher && <LayoutSwitcher variants={layoutVariants} />}
         {showThemeSwitcher && <ThemeSwitcher />}
-        <NotificationBell />
+        {notificationSlot === undefined ? (
+          <NotificationBell />
+        ) : (
+          notificationSlot
+        )}
         <UserMenu
           user={user}
           onProfile={onProfile}

@@ -1,4 +1,5 @@
 "use client"
+import { useUiText } from "../../i18n/useUiText"
 
 import * as React from "react"
 
@@ -394,6 +395,8 @@ function ComboboxClearTrigger({
   ref,
   ...props
 }: ComboboxClearTriggerProps) {
+  const uiText = useUiText()
+
   const { inputValue, selectedValues, clearAll, inputRef, multiple, disabled } =
     useComboboxContext("ComboboxClearTrigger")
 
@@ -406,7 +409,7 @@ function ComboboxClearTrigger({
       ref={ref}
       type={type}
       tabIndex={-1}
-      aria-label="Clear"
+      aria-label={uiText("Clear")}
       disabled={disabled}
       data-disabled={disabled ? "true" : undefined}
       className={cn("dr-combobox-clear-trigger", className)}
@@ -435,6 +438,8 @@ function ComboboxTrigger({
   ref,
   ...props
 }: ComboboxTriggerProps) {
+  const uiText = useUiText()
+
   const { open, setOpen, inputRef, disabled, listId } =
     useComboboxContext("ComboboxTrigger")
 
@@ -443,7 +448,7 @@ function ComboboxTrigger({
       ref={ref}
       type={type}
       tabIndex={-1}
-      aria-label="Toggle"
+      aria-label={uiText("Toggle")}
       aria-haspopup="listbox"
       aria-expanded={open}
       aria-controls={listId}

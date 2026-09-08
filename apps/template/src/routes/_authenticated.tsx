@@ -4,6 +4,8 @@ import {
   redirect,
   useNavigate,
 } from "@tanstack/react-router"
+import { AppLocaleSwitcher } from "@/i18n/AppLocaleSwitcher"
+import { useAppTranslation } from "@/i18n/useAppTranslation"
 import {
   Home,
   BarChart3,
@@ -106,7 +108,7 @@ import {
 import { SidebarLayout, TopNavLayout, StackedLayout } from "darkraise-ui/layout"
 import { useLayoutStore } from "darkraise-ui/layout"
 import { useAuthStore, useAuth } from "@/features/auth"
-import type { NavGroup } from "darkraise-ui/layout"
+import type { NavGroup, LayoutVariant } from "darkraise-ui/layout"
 
 export const nav: NavGroup[] = [
   {
@@ -464,13 +466,26 @@ export const Route = createFileRoute("/_authenticated")({
     }
   },
   component: function AuthenticatedLayout() {
+    const t = useAppTranslation()
+    const translateItems = (items: NavGroup["items"]): NavGroup["items"] =>
+      items.map((item) => ({
+        ...item,
+        label: t(item.label),
+        children: item.children ? translateItems(item.children) : undefined,
+      }))
     const layout = useLayoutStore((s) => s.layout)
     const { user, logout } = useAuth()
     const navigate = useNavigate()
 
     const chrome = {
-      nav,
+      nav: nav.map((group) => ({
+        ...group,
+        label: group.label ? t(group.label) : undefined,
+        items: translateItems(group.items),
+      })),
+      headerSlot: <AppLocaleSwitcher />,
       showLayoutSwitcher: true,
+      layoutVariants: ["sidebar", "top-nav", "stacked"] as LayoutVariant[],
       user: user ? { name: user.name, email: user.email } : undefined,
       onSettings: () => void navigate({ to: "/settings" }),
       onLogout: () => void logout(),

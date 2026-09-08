@@ -1,3 +1,4 @@
+import { useUiText } from "../../i18n/useUiText"
 import type * as React from "react"
 import { Moon, Sun, Monitor, Square, Blend } from "lucide-react"
 import { Label } from "@components/label"
@@ -77,6 +78,7 @@ const SIDEBAR_ACTIVE_BAR_LABELS: Record<
 
 export function useThemeSettingsSections(): ThemeSettingsSection[] {
   const labels = useUiLabels()
+  const uiText = useUiText()
   const {
     accentColor,
     surfaceColor,
@@ -133,8 +135,8 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
     icon: typeof Square
     label: string
   }[] = [
-    { value: "solid", icon: Square, label: "Solid" },
-    { value: "gradient", icon: Blend, label: "Gradient" },
+    { value: "solid", icon: Square, label: labels.themeOptions.solid },
+    { value: "gradient", icon: Blend, label: labels.themeOptions.gradient },
   ]
 
   const { axes } = config.switcher
@@ -245,7 +247,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
                 className="dr-theme-switcher-preset-axis"
               >
                 <Label className="dr-theme-switcher-section-label">
-                  {axisDef.label}
+                  {uiText(axisDef.label)}
                 </Label>
                 <AxisControl
                   values={axisDef.values}
@@ -253,7 +255,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
                     presetAxisValues[preset]?.[axisName] ?? axisDef.default
                   }
                   onChange={(v) => setPresetAxis(axisName, v)}
-                  label={axisDef.label}
+                  label={uiText(axisDef.label)}
                 />
               </div>
             ))}
@@ -332,7 +334,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
           >
             {GRADIENT_PATTERNS.map((value) => (
               <ToggleGroupItem key={value} value={value} className="capitalize">
-                {value}
+                {labels.themeOptions[value]}
               </ToggleGroupItem>
             ))}
           </ToggleGroup>
@@ -352,7 +354,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
               <button
                 key={color}
                 type="button"
-                title={color}
+                title={labels.themeOptions[color]}
                 className="dr-theme-switcher-swatch"
                 data-active={accentColor === color ? "true" : undefined}
                 style={{
@@ -384,7 +386,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
                 <button
                   key={color}
                   type="button"
-                  title={color}
+                  title={labels.themeOptions[color]}
                   className="dr-theme-switcher-swatch"
                   data-active={surfaceColor === color ? "true" : undefined}
                   style={{
@@ -596,7 +598,9 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
           >
             {SIDEBAR_ACTIVE_BARS.map((value) => (
               <ToggleGroupItem key={value} value={value}>
-                {SIDEBAR_ACTIVE_BAR_LABELS[value]}
+                {labels.themeOptions[value] === value
+                  ? SIDEBAR_ACTIVE_BAR_LABELS[value]
+                  : labels.themeOptions[value]}
               </ToggleGroupItem>
             ))}
           </ToggleGroup>

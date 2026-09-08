@@ -1,3 +1,6 @@
+import { AppText } from "@/i18n/AppText"
+import { useUiLocale } from "darkraise-ui/i18n"
+import { useAppTranslation } from "@/i18n/useAppTranslation"
 import { createFileRoute } from "@tanstack/react-router"
 import {
   DollarSign,
@@ -40,14 +43,13 @@ export const Route = createFileRoute("/_authenticated/")({
 })
 
 const revenueConfig = {
-  revenue: { label: "Revenue", color: "var(--chart-1)" },
+  revenue: { label: <AppText text="Revenue" />, color: "var(--chart-1)" },
 } satisfies ChartConfig
 
 const topProductsConfig = {
-  count: { label: "Count", color: "var(--chart-1)" },
+  count: { label: <AppText text="Count" />, color: "var(--chart-1)" },
 } satisfies ChartConfig
 
-const currency = (n: number) => `$${Math.round(n).toLocaleString()}`
 const sumOf = (values: number[]) => values.reduce((acc, n) => acc + n, 0)
 
 // Period-over-period trend: compares the sum of the most recent half of a
@@ -64,6 +66,12 @@ function seriesTrend(values: number[]) {
 }
 
 function DashboardPage() {
+  const uiLocale = useUiLocale()
+
+  const t = useAppTranslation()
+  const currency = (n: number) =>
+    `$${Math.round(n).toLocaleString(uiLocale.locale)}`
+
   const { data: orders, isLoading: ordersLoading } = useOrders()
   const { data: customers, isLoading: customersLoading } = useCustomers()
   const { data: analytics, isLoading: analyticsLoading } = useAnalytics(30)
@@ -153,7 +161,7 @@ function DashboardPage() {
     link.download = "dashboard-report.csv"
     link.click()
     URL.revokeObjectURL(url)
-    toast.success("Report downloaded")
+    toast.success(t("Report downloaded"))
   }
 
   if (isLoading) {
@@ -164,8 +172,11 @@ function DashboardPage() {
     ? orders.slice(0, 8).map((o) => ({
         id: o.id,
         user: { name: o.customer.name },
-        action: `placed order ${o.orderNumber} for $${o.total.toLocaleString()}`,
-        timestamp: new Date(o.createdAt).toLocaleDateString("en-US", {
+        action: t("placed order {{number}} for {{amount}}", {
+          number: o.orderNumber,
+          amount: `$${o.total.toLocaleString(uiLocale.locale)}`,
+        }),
+        timestamp: new Date(o.createdAt).toLocaleDateString(uiLocale.locale, {
           month: "short",
           day: "numeric",
           hour: "numeric",
@@ -177,13 +188,13 @@ function DashboardPage() {
   return (
     <>
       <PageHeader
-        breadcrumbs={[{ label: "Dashboard" }]}
-        title="Dashboard"
-        description="Overview of your store performance"
+        breadcrumbs={[{ label: t("Dashboard") }]}
+        title={t("Dashboard")}
+        description={t("Overview of your store performance")}
         actions={
           <Button variant="outline" size="sm" onClick={handleDownloadReport}>
             <Download className="h-4 w-4" />
-            Download Report
+            {t("Download Report")}
           </Button>
         }
       />
@@ -191,25 +202,25 @@ function DashboardPage() {
       <div className="space-y-6">
         <MetricGrid columns={4}>
           <StatCard
-            label="Total Revenue"
-            value={`$${totalRevenue.toLocaleString()}`}
+            label={t("Total Revenue")}
+            value={`$${totalRevenue.toLocaleString(uiLocale.locale)}`}
             icon={DollarSign}
             trend={revenueTrend}
           />
           <StatCard
-            label="Total Orders"
+            label={t("Total Orders")}
             value={totalOrders}
             icon={ShoppingCart}
             trend={ordersTrend}
           />
           <StatCard
-            label="Total Customers"
+            label={t("Total Customers")}
             value={totalCustomers}
             icon={Users}
             trend={customersTrend}
           />
           <StatCard
-            label="Conversion Rate"
+            label={t("Conversion Rate")}
             value={`${conversionRate}%`}
             icon={TrendingUp}
             trend={conversionTrend}
@@ -218,26 +229,31 @@ function DashboardPage() {
 
         <div className="grid gap-4 md:grid-cols-2">
           <KPICard
-            label="Average Order Value"
-            value={`$${avgOrderValue.toFixed(2)}`}
+            label={t("Average Order Value")}
+            value={`${avgOrderValue.toLocaleString(uiLocale.locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
             comparison={
               priorAov > 0
-                ? `vs $${priorAov.toFixed(2)} prior period`
+                ? t("vs {{amount}} prior period", {
+                    amount: `$${priorAov.toLocaleString(uiLocale.locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+                  })
                 : undefined
             }
             sparklineData={aovSparkline}
           />
           <KPICard
-            label="Returning Customers"
+            label={t("Returning Customers")}
             value={`${returningPct}%`}
-            comparison={`${returningCustomers} of ${totalCustomers} customers`}
+            comparison={t("{{returning}} of {{total}} customers", {
+              returning: returningCustomers,
+              total: totalCustomers,
+            })}
           />
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
           <ChartCard
-            title="Revenue Trend"
-            description="Daily revenue over the last 30 days"
+            title={t("Revenue Trend")}
+            description={t("Daily revenue over the last 30 days")}
           >
             <ChartContainer
               config={revenueConfig}
@@ -264,8 +280,8 @@ function DashboardPage() {
             </ChartContainer>
           </ChartCard>
           <ChartCard
-            title="Top Products by Quantity"
-            description="Most ordered products"
+            title={t("Top Products by Quantity")}
+            description={t("Most ordered products")}
           >
             <ChartContainer
               config={topProductsConfig}
@@ -293,13 +309,13 @@ function DashboardPage() {
 
         <div className="grid gap-4 md:grid-cols-3">
           <ProgressCard
-            label="Monthly Sales Target"
+            label={t("Monthly Sales Target")}
             value={currentMonthRevenue}
             target={monthlySalesTarget}
             formatValue={currency}
           />
           <div className="md:col-span-2">
-            <ActivityFeed items={recentActivity} title="Recent Orders" />
+            <ActivityFeed items={recentActivity} title={t("Recent Orders")} />
           </div>
         </div>
       </div>
@@ -308,12 +324,14 @@ function DashboardPage() {
 }
 
 function DashboardSkeleton() {
+  const t = useAppTranslation()
+
   return (
     <>
       <PageHeader
-        breadcrumbs={[{ label: "Dashboard" }]}
-        title="Dashboard"
-        description="Overview of your store performance"
+        breadcrumbs={[{ label: t("Dashboard") }]}
+        title={t("Dashboard")}
+        description={t("Overview of your store performance")}
       />
       <div className="space-y-6">
         <MetricGrid columns={4}>

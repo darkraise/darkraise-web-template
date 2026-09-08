@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useUiText } from "../../i18n/useUiText"
 import { Search } from "lucide-react"
 
 import { cn } from "@lib/utils"
@@ -206,15 +207,20 @@ interface CommandDialogProps extends DialogProps {
 
 const CommandDialog = ({
   children,
-  title = "Command Menu",
-  description = "Search for a command to run.",
+  title,
+  description,
   ...props
 }: CommandDialogProps) => {
+  const uiText = useUiText()
   return (
     <Dialog {...props}>
       <DialogContent className="dr-command-dialog-content overflow-hidden p-0">
-        <DialogTitle className="sr-only">{title}</DialogTitle>
-        <DialogDescription className="sr-only">{description}</DialogDescription>
+        <DialogTitle className="sr-only">
+          {title ?? uiText("Command Menu")}
+        </DialogTitle>
+        <DialogDescription className="sr-only">
+          {description ?? uiText("Search for a command to run.")}
+        </DialogDescription>
         <Command className="dr-command-dialog">{children}</Command>
       </DialogContent>
     </Dialog>

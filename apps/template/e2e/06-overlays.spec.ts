@@ -199,7 +199,7 @@ test.describe("toasts and banners", () => {
   test("banner can be dismissed", async ({ page }) => {
     const main = await open(page, "/components/banner")
     const dismiss = main.getByRole("button", { name: /dismiss|close/i }).first()
-    if ((await dismiss.count()) === 0) test.skip()
+    await expect(dismiss).toBeVisible()
     await dismiss.click()
     await expect(dismiss).toBeHidden()
   })

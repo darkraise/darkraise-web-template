@@ -1,3 +1,4 @@
+import { useAppTranslation } from "@/i18n/useAppTranslation"
 import { useState } from "react"
 import { Link } from "@tanstack/react-router"
 import { z } from "zod"
@@ -15,6 +16,8 @@ const registerSchema = z.object({
 })
 
 export function RegisterForm() {
+  const t = useAppTranslation()
+
   const { register } = useAuth()
   const [formError, setFormError] = useState<string | null>(null)
 
@@ -29,7 +32,7 @@ export function RegisterForm() {
         setFormError(
           err instanceof Error
             ? err.message
-            : "Unable to create your account. Please try again.",
+            : t("Unable to create your account. Please try again."),
         )
       }
     },
@@ -38,9 +41,9 @@ export function RegisterForm() {
   return (
     <>
       <Stack gap="xs" className="text-center">
-        <h1 className="text-2xl font-medium">Create an account</h1>
+        <h1 className="text-2xl font-medium">{t("Create an account")}</h1>
         <p className="text-muted-foreground text-sm">
-          Enter your details to get started
+          {t("Enter your details to get started")}
         </p>
       </Stack>
 
@@ -61,10 +64,10 @@ export function RegisterForm() {
             {(field) => (
               <AuthFormField
                 field={field}
-                label="Name"
+                label={t("Name")}
                 autoComplete="name"
                 autoFocus
-                placeholder="Your name"
+                placeholder={t("Your name")}
               />
             )}
           </form.Field>
@@ -73,7 +76,7 @@ export function RegisterForm() {
             {(field) => (
               <AuthFormField
                 field={field}
-                label="Email"
+                label={t("Email")}
                 type="email"
                 autoComplete="email"
                 placeholder="name@example.com"
@@ -85,10 +88,10 @@ export function RegisterForm() {
             {(field) => (
               <AuthFormField
                 field={field}
-                label="Password"
+                label={t("Password")}
                 type="password"
                 autoComplete="new-password"
-                placeholder="At least 8 characters"
+                placeholder={t("At least 8 characters")}
               />
             )}
           </form.Field>
@@ -101,7 +104,7 @@ export function RegisterForm() {
                 className="w-full"
                 disabled={!canSubmit || isSubmitting}
               >
-                {isSubmitting ? "Creating account..." : "Create account"}
+                {isSubmitting ? t("Creating account...") : t("Create account")}
               </Button>
             )}
           />
@@ -109,9 +112,9 @@ export function RegisterForm() {
       </form>
 
       <p className="text-muted-foreground text-center text-sm">
-        Already have an account?{" "}
+        {t("Already have an account?")}{" "}
         <Link to="/login" className="text-primary hover:underline">
-          Sign in
+          {t("Sign in")}
         </Link>
       </p>
     </>

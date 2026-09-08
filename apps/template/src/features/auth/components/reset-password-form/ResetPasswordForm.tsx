@@ -1,3 +1,4 @@
+import { useAppTranslation } from "@/i18n/useAppTranslation"
 import { useState } from "react"
 import { z } from "zod"
 import { useForm } from "@tanstack/react-form"
@@ -23,6 +24,8 @@ interface ResetPasswordFormProps {
 }
 
 export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
+  const t = useAppTranslation()
+
   const { resetPassword } = useAuth()
   const [formError, setFormError] = useState<string | null>(null)
 
@@ -38,7 +41,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
         setFormError(
           err instanceof Error
             ? err.message
-            : "Unable to reset your password. The link may have expired.",
+            : t("Unable to reset your password. The link may have expired."),
         )
       }
     },
@@ -47,8 +50,10 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
   return (
     <>
       <Stack gap="xs" className="text-center">
-        <h1 className="text-2xl font-medium">Reset password</h1>
-        <p className="text-muted-foreground text-sm">Enter your new password</p>
+        <h1 className="text-2xl font-medium">{t("Reset password")}</h1>
+        <p className="text-muted-foreground text-sm">
+          {t("Enter your new password")}
+        </p>
       </Stack>
 
       <form
@@ -68,11 +73,11 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
             {(field) => (
               <AuthFormField
                 field={field}
-                label="New password"
+                label={t("New password")}
                 type="password"
                 autoComplete="new-password"
                 autoFocus
-                placeholder="At least 8 characters"
+                placeholder={t("At least 8 characters")}
               />
             )}
           </form.Field>
@@ -81,7 +86,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
             {(field) => (
               <AuthFormField
                 field={field}
-                label="Confirm password"
+                label={t("Confirm password")}
                 type="password"
                 autoComplete="new-password"
               />
@@ -96,7 +101,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
                 className="w-full"
                 disabled={!canSubmit || isSubmitting}
               >
-                {isSubmitting ? "Resetting..." : "Reset password"}
+                {isSubmitting ? t("Resetting...") : t("Reset password")}
               </Button>
             )}
           />

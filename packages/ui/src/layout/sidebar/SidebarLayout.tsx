@@ -1,3 +1,4 @@
+import { useUiText } from "../../i18n/useUiText"
 import { useState } from "react"
 import { PanelLeftClose, PanelLeft } from "lucide-react"
 import { Button } from "@components/button"
@@ -49,6 +50,7 @@ export function SidebarLayout({
   children,
   nav,
   headerSlot,
+  notificationSlot,
   navHeader,
   navFooter,
   // Accepting the deprecated names is what makes them aliases; the rule is
@@ -58,6 +60,7 @@ export function SidebarLayout({
   sidebarFooter,
   /* eslint-enable @typescript-eslint/no-deprecated */
   showLayoutSwitcher,
+  layoutVariants,
   showThemeSwitcher,
   showActiveBarToggle = false,
   activeBar: activeBarProp,
@@ -69,6 +72,8 @@ export function SidebarLayout({
   onSettings,
   onLogout,
 }: SidebarLayoutProps) {
+  const uiText = useUiText()
+
   const labels = useUiLabels()
   const shellStyle = useShellStyle(shellStyleProp)
   // The sidebar* names predate the layouts that have no sidebar; both still
@@ -120,19 +125,22 @@ export function SidebarLayout({
         onActiveBarChange?.(settingToWire(next))
       }}
       variant="outline"
-      aria-label="Sidebar active-item indicator"
+      aria-label={uiText("Sidebar active-item indicator")}
     >
-      <ToggleGroupItem value="default" aria-label="Each preset's own indicator">
-        Default
+      <ToggleGroupItem
+        value="default"
+        aria-label={uiText("Each preset's own indicator")}
+      >
+        {uiText("Default")}
       </ToggleGroupItem>
-      <ToggleGroupItem value="bar" aria-label="Left rail only">
-        Bar
+      <ToggleGroupItem value="bar" aria-label={uiText("Left rail only")}>
+        {uiText("Bar")}
       </ToggleGroupItem>
-      <ToggleGroupItem value="ring" aria-label="Uniform ring only">
-        Ring
+      <ToggleGroupItem value="ring" aria-label={uiText("Uniform ring only")}>
+        {uiText("Ring")}
       </ToggleGroupItem>
-      <ToggleGroupItem value="both" aria-label="Ring and left rail">
-        Both
+      <ToggleGroupItem value="both" aria-label={uiText("Ring and left rail")}>
+        {uiText("Both")}
       </ToggleGroupItem>
     </ToggleGroup>
   ) : null
@@ -168,7 +176,7 @@ export function SidebarLayout({
         >
           <SkipLink>{labels.layout.skipToContent}</SkipLink>
           <aside
-            aria-label="Primary"
+            aria-label={uiText("Primary")}
             aria-expanded={!collapsed}
             data-region="nav"
             className="dr-sidebar-layout-aside sidebar-gradient-overlay theme-transition bg-surface-sidebar"
@@ -220,6 +228,7 @@ export function SidebarLayout({
           </aside>
 
           <LayoutHeader
+            notificationSlot={notificationSlot}
             data-region="bar"
             nav={nav}
             sidebarHeader={resolvedNavHeader}
@@ -233,6 +242,7 @@ export function SidebarLayout({
             }
             className="header-gradient-overlay theme-transition"
             showLayoutSwitcher={showLayoutSwitcher}
+            layoutVariants={layoutVariants}
             showThemeSwitcher={showThemeSwitcher}
             /* Search lives in the rail for this layout. */
             showSearch={false}

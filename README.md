@@ -12,6 +12,15 @@ npm run dev
 
 The CLI walks you through choosing a layout, theme defaults, and theme switcher visibility. Pass `-y` to accept all defaults.
 
+Add `--multilingual` to generate English/Vietnamese switching, persisted language
+preferences, and app-owned translations using the optional `darkraise-ui` adapter.
+The plain starter keeps translation-engine dependencies out. Consumers can
+override individual UI messages or register additional languages; see the
+[package localization API](packages/ui/README.md#translating-component-text).
+
+`--no-install` and `--no-git` leave installation and repository initialization to
+you. `--ui-version` accepts a package version or local tarball for consumer checks.
+
 ### CLI Flags
 
 All options can also be passed as flags to skip prompts:
@@ -66,7 +75,7 @@ npm create darkraise-ui my-app \
 
 ### UI Components
 
-90+ components exported from the `darkraise-ui` package and styled with Tailwind CSS 4. The library has no runtime UI dependencies — it does not use Radix UI (all primitives are implemented in-house). The live demo app browses every component with copyable code snippets:
+90+ components exported from the `darkraise-ui` package and styled with Tailwind CSS 4. The library implements its own primitives, with Floating UI for positioning and TanStack Table for table behavior; it does not use Radix UI. The live demo app browses every component with copyable code snippets:
 
 Accordion, Alert, Alert Dialog, Angle Slider, Aspect Ratio, Avatar, Background Page, Badge, Banner, Breadcrumb, Button, Button Group, Calendar, Card, Carousel, Cascade Select, Chart, Checkbox, Clipboard, Collapsible, Color Picker, Combobox, Command, Context Menu, Date Input, Date Picker, Dialog, Download Trigger, Drawer, Dropdown Menu, Editable, Empty State, Field, Fieldset, File Upload, Floating Panel, Frame, Highlight, Hover Card, Image Cropper, Image Editor, Input, Input OTP, JSON Tree View, Kbd, Label, Listbox, Marquee, Menubar, Multi Select, Navigation Menu, Number Input, Pagination, Password Input, Popover, Progress, QR Code, Radio Group, Rating Group, Resizable, Scroll Area, Segment Group, Select, Separator, Sheet, Signature Pad, Skeleton, Slider, Sonner (toast), Spinner, Stat, Steps, Swap, Switch, Table, Tabs, Tags Input, Textarea, Time Picker, Timer, Toggle, Toggle Group, Toolbar, Tooltip, Tour, Tree View, Virtualized Dropdown Menu.
 
@@ -221,7 +230,7 @@ git tag v6.0.0 && git push origin v6.0.0
 
 ## Tech Stack
 
-React 19, TypeScript 6, Vite 8, Tailwind CSS 4, TanStack Router, TanStack React Query, TanStack React Form, Zustand, Zod, Recharts. The `darkraise-ui` component library has no runtime UI dependencies (no Radix UI). Monorepo tooling includes Storybook, Vitest, Playwright, ESLint, Prettier, Husky, and commitlint.
+React 19, TypeScript 6, Vite 8, Tailwind CSS 4, TanStack Router, TanStack React Query, TanStack React Form, Zustand, Zod, Recharts. The `darkraise-ui` component library uses Floating UI and TanStack Table alongside its own primitives. Monorepo tooling includes Storybook, Vitest, Playwright, ESLint, Prettier, Husky, and commitlint.
 
 ## License
 

@@ -1,3 +1,5 @@
+import { useUiLocale } from "darkraise-ui/i18n"
+import { useAppTranslation } from "@/i18n/useAppTranslation"
 import { useState } from "react"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import type { ColumnDef } from "@tanstack/react-table"
@@ -23,6 +25,10 @@ export const Route = createFileRoute("/_authenticated/products/")({
 })
 
 function ProductsPage() {
+  const uiLocale = useUiLocale()
+
+  const t = useAppTranslation()
+
   const navigate = useNavigate()
   const { data: products, isLoading } = useProducts()
   const deleteProduct = useDeleteProduct()
@@ -31,7 +37,7 @@ function ProductsPage() {
   const columns: ColumnDef<Product>[] = [
     {
       accessorKey: "image",
-      header: "Image",
+      header: t("Image"),
       cell: ({ row }) => (
         <img
           src={row.original.image}
@@ -43,27 +49,38 @@ function ProductsPage() {
     },
     {
       accessorKey: "name",
-      header: ({ column }) => <ColumnHeader column={column} title="Name" />,
+      header: ({ column }) => (
+        <ColumnHeader column={column} title={t("Name")} />
+      ),
     },
     {
       accessorKey: "category",
-      header: ({ column }) => <ColumnHeader column={column} title="Category" />,
+      header: ({ column }) => (
+        <ColumnHeader column={column} title={t("Category")} />
+      ),
       cell: ({ row }) => (
         <Badge variant="secondary">{row.original.category}</Badge>
       ),
     },
     {
       accessorKey: "price",
-      header: ({ column }) => <ColumnHeader column={column} title="Price" />,
-      cell: ({ row }) => `$${row.original.price.toLocaleString()}`,
+      header: ({ column }) => (
+        <ColumnHeader column={column} title={t("Price")} />
+      ),
+      cell: ({ row }) =>
+        `$${row.original.price.toLocaleString(uiLocale.locale)}`,
     },
     {
       accessorKey: "stock",
-      header: ({ column }) => <ColumnHeader column={column} title="Stock" />,
+      header: ({ column }) => (
+        <ColumnHeader column={column} title={t("Stock")} />
+      ),
     },
     {
       accessorKey: "status",
-      header: ({ column }) => <ColumnHeader column={column} title="Status" />,
+      header: ({ column }) => (
+        <ColumnHeader column={column} title={t("Status")} />
+      ),
       cell: ({ row }) => {
         const status = row.original.status
         const variant =
@@ -72,7 +89,7 @@ function ProductsPage() {
             : status === "draft"
               ? "secondary"
               : "outline"
-        return <Badge variant={variant}>{status}</Badge>
+        return <Badge variant={variant}>{t(status)}</Badge>
       },
     },
     {
@@ -81,7 +98,7 @@ function ProductsPage() {
         <RowActions
           actions={[
             {
-              label: "Edit",
+              label: t("Edit"),
               onClick: () =>
                 navigate({
                   to: "/products/$id/edit",
@@ -89,7 +106,7 @@ function ProductsPage() {
                 }),
             },
             {
-              label: "Delete",
+              label: t("Delete"),
               onClick: () => setPendingDelete(row.original),
               variant: "destructive",
             },
@@ -102,12 +119,15 @@ function ProductsPage() {
   return (
     <>
       <PageHeader
-        breadcrumbs={[{ label: "Dashboard", href: "/" }, { label: "Products" }]}
-        title="Products"
-        description="Manage your product catalog"
+        breadcrumbs={[
+          { label: t("Dashboard"), href: "/" },
+          { label: t("Products") },
+        ]}
+        title={t("Products")}
+        description={t("Manage your product catalog")}
         actions={
           <Button onClick={() => navigate({ to: "/products/new" })}>
-            Add Product
+            {t("Add Product")}
           </Button>
         }
       />
@@ -116,7 +136,7 @@ function ProductsPage() {
         data={products ?? []}
         isLoading={isLoading}
         searchKey="name"
-        searchPlaceholder="Search products..."
+        searchPlaceholder={t("Search products...")}
       />
 
       <AlertDialog
@@ -127,14 +147,16 @@ function ProductsPage() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete product?</AlertDialogTitle>
+            <AlertDialogTitle>{t("Delete product?")}</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete &ldquo;{pendingDelete?.name}&rdquo;.
-              This action cannot be undone.
+              {t(
+                "This will permanently delete “{{name}}”. This action cannot be undone.",
+                { name: pendingDelete?.name ?? "" },
+              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t("Cancel")}</AlertDialogCancel>
             <AlertDialogAction
               data-variant="destructive"
               onClick={() => {
@@ -142,7 +164,7 @@ function ProductsPage() {
                 setPendingDelete(null)
               }}
             >
-              Delete
+              {t("Delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

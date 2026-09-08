@@ -1,3 +1,4 @@
+import { useAppTranslation } from "@/i18n/useAppTranslation"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import { PageHeader } from "darkraise-ui/layout"
 import { useProduct, useUpdateProduct, useCategories } from "@/demo/hooks"
@@ -9,6 +10,8 @@ export const Route = createFileRoute("/_authenticated/products/$id/edit")({
 })
 
 function ProductEditPage() {
+  const t = useAppTranslation()
+
   const { id } = Route.useParams()
   const navigate = useNavigate()
   const { data: product, isLoading } = useProduct(id)
@@ -23,7 +26,7 @@ function ProductEditPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-12">
-        <p className="text-muted-foreground">Loading product...</p>
+        <p className="text-muted-foreground">{t("Loading product...")}</p>
       </div>
     )
   }
@@ -31,7 +34,7 @@ function ProductEditPage() {
   if (!product) {
     return (
       <div className="flex items-center justify-center p-12">
-        <p className="text-muted-foreground">Product not found.</p>
+        <p className="text-muted-foreground">{t("Product not found.")}</p>
       </div>
     )
   }
@@ -40,12 +43,12 @@ function ProductEditPage() {
     <>
       <PageHeader
         breadcrumbs={[
-          { label: "Dashboard", href: "/" },
-          { label: "Products", href: "/products" },
+          { label: t("Dashboard"), href: "/" },
+          { label: t("Products"), href: "/products" },
           { label: product.name },
         ]}
-        title={`Edit ${product.name}`}
-        description="Update product details"
+        title={t("Edit {{name}}", { name: product.name })}
+        description={t("Update product details")}
       />
       <ProductForm
         defaultValues={{
@@ -59,7 +62,7 @@ function ProductEditPage() {
           isActive: product.status === "active",
         }}
         categoryOptions={categoryOptions}
-        submitLabel="Save Changes"
+        submitLabel={t("Save Changes")}
         isSubmitting={updateProduct.isPending}
         onSubmit={async (value) => {
           const status: Product["status"] = value.isActive ? "active" : "draft"

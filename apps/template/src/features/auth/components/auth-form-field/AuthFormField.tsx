@@ -1,3 +1,4 @@
+import { useAppTranslation } from "@/i18n/useAppTranslation"
 import { useState } from "react"
 import type { AnyFieldApi } from "@tanstack/react-form"
 import type { InputHTMLAttributes, ReactNode } from "react"
@@ -21,6 +22,8 @@ export function AuthFormField({
   labelSlot,
   ...inputProps
 }: AuthFormFieldProps) {
+  const t = useAppTranslation()
+
   const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
   const isPassword = inputProps.type === "password"
   const [revealed, setRevealed] = useState(false)
@@ -42,7 +45,7 @@ export function AuthFormField({
               type="button"
               variant="ghost"
               size="icon"
-              aria-label={revealed ? "Hide password" : "Show password"}
+              aria-label={revealed ? t("Hide password") : t("Show password")}
               aria-pressed={revealed}
               onClick={() => setRevealed((prev) => !prev)}
             >
@@ -55,7 +58,18 @@ export function AuthFormField({
           ) : undefined
         }
       />
-      {isInvalid && <FieldError errors={field.state.meta.errors} />}
+      {isInvalid && (
+        <FieldError
+          errors={field.state.meta.errors.map(
+            (error: { message?: string } | string | undefined) =>
+              typeof error === "string"
+                ? { message: t(error) }
+                : error?.message
+                  ? { ...error, message: t(error.message) }
+                  : error,
+          )}
+        />
+      )}
     </Field>
   )
 }

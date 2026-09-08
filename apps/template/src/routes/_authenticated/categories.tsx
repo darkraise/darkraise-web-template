@@ -1,3 +1,4 @@
+import { useAppTranslation } from "@/i18n/useAppTranslation"
 import { useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import { useForm } from "@tanstack/react-form"
@@ -50,6 +51,8 @@ const categorySchema = z.object({
 })
 
 function CategoriesPage() {
+  const t = useAppTranslation()
+
   const { data: categories, isLoading } = useCategories()
   const createCategory = useCreateCategory()
   const updateCategory = useUpdateCategory()
@@ -71,11 +74,15 @@ function CategoriesPage() {
   const columns: ColumnDef<Category>[] = [
     {
       accessorKey: "name",
-      header: ({ column }) => <ColumnHeader column={column} title="Name" />,
+      header: ({ column }) => (
+        <ColumnHeader column={column} title={t("Name")} />
+      ),
     },
     {
       accessorKey: "slug",
-      header: ({ column }) => <ColumnHeader column={column} title="Slug" />,
+      header: ({ column }) => (
+        <ColumnHeader column={column} title={t("Slug")} />
+      ),
       cell: ({ row }) => (
         <span className="text-muted-foreground font-mono text-sm">
           {row.original.slug}
@@ -84,11 +91,15 @@ function CategoriesPage() {
     },
     {
       accessorKey: "productCount",
-      header: ({ column }) => <ColumnHeader column={column} title="Products" />,
+      header: ({ column }) => (
+        <ColumnHeader column={column} title={t("Products")} />
+      ),
     },
     {
       accessorKey: "status",
-      header: ({ column }) => <ColumnHeader column={column} title="Status" />,
+      header: ({ column }) => (
+        <ColumnHeader column={column} title={t("Status")} />
+      ),
       cell: ({ row }) => {
         const status = row.original.status
         return (
@@ -103,9 +114,9 @@ function CategoriesPage() {
       cell: ({ row }) => (
         <RowActions
           actions={[
-            { label: "Edit", onClick: () => openEdit(row.original) },
+            { label: t("Edit"), onClick: () => openEdit(row.original) },
             {
-              label: "Delete",
+              label: t("Delete"),
               onClick: () => setPendingDelete(row.original),
               variant: "destructive",
             },
@@ -119,25 +130,25 @@ function CategoriesPage() {
     <>
       <PageHeader
         breadcrumbs={[
-          { label: "Dashboard", href: "/" },
-          { label: "Categories" },
+          { label: t("Dashboard"), href: "/" },
+          { label: t("Categories") },
         ]}
-        title="Categories"
-        description="Organize your product catalog"
-        actions={<Button onClick={openCreate}>Add Category</Button>}
+        title={t("Categories")}
+        description={t("Organize your product catalog")}
+        actions={<Button onClick={openCreate}>{t("Add Category")}</Button>}
       />
       <DataTable
         columns={columns}
         data={categories ?? []}
         isLoading={isLoading}
         searchKey="name"
-        searchPlaceholder="Search categories..."
+        searchPlaceholder={t("Search categories...")}
       />
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {editingCategory ? "Edit Category" : "New Category"}
+              {editingCategory ? t("Edit Category") : t("New Category")}
             </DialogTitle>
           </DialogHeader>
           <CategoryForm
@@ -167,15 +178,16 @@ function CategoriesPage() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete category?</AlertDialogTitle>
+            <AlertDialogTitle>{t("Delete category?")}</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete &ldquo;{pendingDelete?.name}&rdquo;.
-              Products in this category will not be deleted. This action cannot
-              be undone.
+              {t(
+                "This will permanently delete “{{name}}”. Products in this category will not be deleted. This action cannot be undone.",
+                { name: pendingDelete?.name ?? "" },
+              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t("Cancel")}</AlertDialogCancel>
             <AlertDialogAction
               data-variant="destructive"
               onClick={() => {
@@ -183,7 +195,7 @@ function CategoriesPage() {
                 setPendingDelete(null)
               }}
             >
-              Delete
+              {t("Delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -203,6 +215,8 @@ function CategoryForm({
   onCancel: () => void
   isSubmitting: boolean
 }) {
+  const t = useAppTranslation()
+
   const form = useForm({
     defaultValues: {
       name: category?.name ?? "",
@@ -231,9 +245,9 @@ function CategoryForm({
         name="name"
         children={(field) => (
           <TextField
-            {...fieldProps<string>(field)}
-            label="Name"
-            placeholder="e.g. Electronics"
+            {...fieldProps<string>(field, t)}
+            label={t("Name")}
+            placeholder={t("e.g. Electronics")}
           />
         )}
       />
@@ -241,9 +255,9 @@ function CategoryForm({
         name="slug"
         children={(field) => (
           <TextField
-            {...fieldProps<string>(field)}
-            label="Slug"
-            placeholder="e.g. electronics"
+            {...fieldProps<string>(field, t)}
+            label={t("Slug")}
+            placeholder={t("e.g. electronics")}
           />
         )}
       />
@@ -251,8 +265,8 @@ function CategoryForm({
         name="productCount"
         children={(field) => (
           <NumberField
-            {...fieldProps<number | undefined>(field)}
-            label="Product Count"
+            {...fieldProps<number | undefined>(field, t)}
+            label={t("Product Count")}
             min={0}
             step={1}
           />
@@ -262,17 +276,17 @@ function CategoryForm({
         name="status"
         children={(field) => (
           <SelectField
-            {...fieldProps<string>(field)}
-            label="Status"
+            {...fieldProps<string>(field, t)}
+            label={t("Status")}
             options={[
-              { label: "Active", value: "active" },
-              { label: "Inactive", value: "inactive" },
+              { label: t("Active"), value: "active" },
+              { label: t("Inactive"), value: "inactive" },
             ]}
           />
         )}
       />
       <FormActions
-        submitLabel={category ? "Save Changes" : "Create Category"}
+        submitLabel={category ? t("Save Changes") : t("Create Category")}
         onCancel={onCancel}
         isSubmitting={isSubmitting}
         canSubmit={form.state.canSubmit}

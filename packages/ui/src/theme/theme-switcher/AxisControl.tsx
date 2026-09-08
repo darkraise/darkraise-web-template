@@ -1,4 +1,5 @@
 import { Slider } from "@components/slider"
+import { useUiLabels } from "../../labels"
 import { ToggleGroup, ToggleGroupItem } from "@components/toggle-group"
 
 /** Render an ordinal 4-value axis as a stepped slider (cleaner than a
@@ -17,6 +18,9 @@ export function AxisControl<V extends string>({
   onChange: (v: V) => void
   label: string
 }) {
+  const { themeOptions } = useUiLabels()
+  const display = (key: string) =>
+    themeOptions[key as keyof typeof themeOptions] ?? key
   // 4 and 5 render as a stepped slider; anything else is a ToggleGroup. Scoped
   // to these two rather than `>= 4` so a future six-value axis does not
   // silently become a slider too fine to aim at.
@@ -35,7 +39,7 @@ export function AxisControl<V extends string>({
             if (typeof i === "number" && values[i]) onChange(values[i])
           }}
         />
-        <span className="dr-theme-switcher-slider-value">{value}</span>
+        <span className="dr-theme-switcher-slider-value">{display(value)}</span>
       </div>
     )
   }
@@ -54,7 +58,7 @@ export function AxisControl<V extends string>({
     >
       {values.map((v) => (
         <ToggleGroupItem key={v} value={v} className="capitalize">
-          {v}
+          {display(v)}
         </ToggleGroupItem>
       ))}
     </ToggleGroup>

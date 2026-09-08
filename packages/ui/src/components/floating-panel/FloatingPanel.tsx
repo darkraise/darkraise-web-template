@@ -1,3 +1,4 @@
+import { useUiText } from "../../i18n/useUiText"
 import * as React from "react"
 import {
   GripVertical,
@@ -407,11 +408,15 @@ const KEYBOARD_STEP_COARSE = 50
 
 function FloatingPanelDragHandle({
   className,
-  "aria-label":
-    ariaLabel = "Move panel. Arrow keys move, shift and arrow keys resize.",
+  "aria-label": ariaLabelLocaleProp,
   onKeyDown,
   ...rest
 }: Omit<React.HTMLAttributes<HTMLSpanElement>, "children">) {
+  const uiText = useUiText()
+  const ariaLabel =
+    ariaLabelLocaleProp ??
+    uiText("Move panel. Arrow keys move, shift and arrow keys resize.")
+
   const ctx = useCtx("FloatingPanelDragHandle")
 
   return (
@@ -469,8 +474,11 @@ function FloatingPanelMinimizeTrigger({
   ref,
   ...rest
 }: FloatingPanelTriggerProps) {
+  const uiText = useUiText()
+
   const ctx = useCtx("FloatingPanelMinimizeTrigger")
-  const label = ariaLabel ?? (ctx.minimized ? "Restore" : "Minimize")
+  const label =
+    ariaLabel ?? (ctx.minimized ? uiText("Restore") : uiText("Minimize"))
   return (
     <button
       ref={ref}
@@ -503,13 +511,16 @@ function FloatingPanelMaximizeTrigger({
   ref,
   ...rest
 }: FloatingPanelTriggerProps) {
+  const uiText = useUiText()
+
   const ctx = useCtx("FloatingPanelMaximizeTrigger")
   // Maximise has no meaning while the panel is collapsed to its header — Ark
   // UI hides the trigger in that state, and we mirror it. Returning null
   // also strips the button from the accessibility tree, so screen-reader
   // users don't see a maximise affordance that does nothing.
   if (ctx.minimized) return null
-  const label = ariaLabel ?? (ctx.maximized ? "Restore" : "Maximize")
+  const label =
+    ariaLabel ?? (ctx.maximized ? uiText("Restore") : uiText("Maximize"))
   return (
     <button
       ref={ref}
@@ -542,8 +553,10 @@ function FloatingPanelPinTrigger({
   ref,
   ...rest
 }: FloatingPanelTriggerProps) {
+  const uiText = useUiText()
+
   const ctx = useCtx("FloatingPanelPinTrigger")
-  const label = ariaLabel ?? (ctx.pinned ? "Unpin" : "Pin")
+  const label = ariaLabel ?? (ctx.pinned ? uiText("Unpin") : uiText("Pin"))
   return (
     <button
       ref={ref}
@@ -572,11 +585,14 @@ function FloatingPanelPinTrigger({
 function FloatingPanelCloseTrigger({
   className,
   onClick,
-  "aria-label": ariaLabel = "Close",
+  "aria-label": ariaLabelLocaleProp,
   children,
   ref,
   ...rest
 }: FloatingPanelTriggerProps) {
+  const uiText = useUiText()
+  const ariaLabel = ariaLabelLocaleProp ?? uiText("Close")
+
   const ctx = useCtx("FloatingPanelCloseTrigger")
   return (
     <button

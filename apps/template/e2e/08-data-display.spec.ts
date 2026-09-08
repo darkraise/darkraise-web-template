@@ -70,7 +70,7 @@ test.describe("panels and structure", () => {
     const tabs = main.getByRole("tab")
     const before = await tabs.first().getAttribute("data-status")
     const next = main.getByRole("button", { name: /next|continue/i }).first()
-    if ((await next.count()) === 0) test.skip()
+    await expect(next).toBeVisible()
     await next.click()
     await expect
       .poll(async () => tabs.first().getAttribute("data-status"))

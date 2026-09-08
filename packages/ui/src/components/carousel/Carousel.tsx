@@ -1,4 +1,6 @@
+import { useUiText } from "../../i18n/useUiText"
 import * as React from "react"
+import { useUiLabels } from "../../labels"
 import { ArrowLeft, ArrowRight, Pause, Play } from "lucide-react"
 
 import { cn } from "@lib/utils"
@@ -57,6 +59,8 @@ function Carousel({
   CarouselProps & {
     ref?: React.Ref<HTMLDivElement>
   }) {
+  const uiText = useUiText()
+
   const carousel = useCarousel({
     orientation,
     align: opts?.align,
@@ -114,7 +118,7 @@ function Carousel({
         }}
         className={cn("dr-carousel", className)}
         role="region"
-        aria-roledescription="carousel"
+        aria-roledescription={uiText("carousel")}
         {...props}
       >
         {children}
@@ -142,11 +146,13 @@ function CarouselAutoplayToggle({
   labels?: { play: string; pause: string }
   ref?: React.Ref<HTMLButtonElement>
 }) {
+  const uiText = useUiText()
+
   const ctx = useCarouselContext()
   if (!ctx.hasAutoplay) return null
 
-  const play = labels?.play ?? "Start automatic slideshow"
-  const pause = labels?.pause ?? "Stop automatic slideshow"
+  const play = labels?.play ?? uiText("Start automatic slideshow")
+  const pause = labels?.pause ?? uiText("Stop automatic slideshow")
   const label = ctx.autoplayStopped ? play : pause
 
   return (
@@ -222,13 +228,15 @@ function CarouselItem({
   ref,
   ...props
 }: React.HTMLAttributes<HTMLDivElement> & { ref?: React.Ref<HTMLDivElement> }) {
+  const uiText = useUiText()
+
   const ctx = useCarouselContext()
 
   return (
     <div
       ref={ref}
       role="group"
-      aria-roledescription="slide"
+      aria-roledescription={uiText("slide")}
       data-orientation={ctx.orientation}
       className={cn("dr-carousel-item", className)}
       {...props}
@@ -243,6 +251,8 @@ function CarouselPrevious({
   ref,
   ...props
 }: React.ComponentProps<typeof Button>) {
+  const uiText = useUiText()
+
   const ctx = useCarouselContext()
 
   return (
@@ -257,7 +267,7 @@ function CarouselPrevious({
       {...props}
     >
       <ArrowLeft className="size-[var(--icon-size)]" aria-hidden="true" />
-      <span className="sr-only">Previous slide</span>
+      <span className="sr-only">{uiText("Previous slide")}</span>
     </Button>
   )
 }
@@ -269,6 +279,8 @@ function CarouselNext({
   ref,
   ...props
 }: React.ComponentProps<typeof Button>) {
+  const uiText = useUiText()
+
   const ctx = useCarouselContext()
 
   return (
@@ -283,7 +295,7 @@ function CarouselNext({
       {...props}
     >
       <ArrowRight className="size-[var(--icon-size)]" aria-hidden="true" />
-      <span className="sr-only">Next slide</span>
+      <span className="sr-only">{uiText("Next slide")}</span>
     </Button>
   )
 }
@@ -295,13 +307,15 @@ function CarouselIndicatorGroup({
 }: React.HTMLAttributes<HTMLDivElement> & {
   ref?: React.Ref<HTMLDivElement>
 }) {
+  const uiText = useUiText()
+
   const ctx = useCarouselContext()
 
   return (
     <div
       ref={ref}
       role="group"
-      aria-label="Carousel pagination"
+      aria-label={uiText("Carousel pagination")}
       data-orientation={ctx.orientation}
       className={cn("dr-carousel-indicator-group", className)}
       {...props}
@@ -324,6 +338,7 @@ function CarouselIndicator({
   "aria-label": ariaLabel,
   ...props
 }: CarouselIndicatorProps) {
+  const labels = useUiLabels()
   const ctx = useCarouselContext()
   const isCurrent = ctx.selectedIndex === index
 
@@ -331,7 +346,7 @@ function CarouselIndicator({
     <button
       ref={ref}
       type="button"
-      aria-label={ariaLabel ?? `Go to slide ${index + 1}`}
+      aria-label={ariaLabel ?? labels.announcements.slide(index + 1)}
       aria-current={isCurrent ? "true" : undefined}
       data-current={isCurrent ? "true" : undefined}
       data-readonly={readOnly ? "true" : undefined}

@@ -1,4 +1,7 @@
 "use client"
+import { useUiText } from "../../i18n/useUiText"
+import { useUiLocale } from "../../i18n/context"
+import { useUiLabels } from "../../labels"
 
 import * as React from "react"
 
@@ -91,15 +94,35 @@ function ContributionGraph({
   showWeekdayLabels = true,
   showLegend = true,
   onCellClick,
-  cellLabel = defaultCellLabel,
-  "aria-label": ariaLabel = "Contribution activity",
+  cellLabel: cellLabelProp,
+  "aria-label": ariaLabelLocaleProp,
   ...props
 }: ContributionGraphProps) {
+  const uiText = useUiText()
+  const uiLocale = useUiLocale()
+  const labels = useUiLabels()
+  const cellLabel =
+    cellLabelProp ??
+    (uiLocale.enabled
+      ? (cell: ContributionGraphCell) =>
+          labels.announcements.contributions(
+            cell.value,
+            cell.date.toLocaleDateString(uiLocale.locale, {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+              calendar: "gregory",
+            }),
+          )
+      : defaultCellLabel)
+  const ariaLabel = ariaLabelLocaleProp ?? uiText("Contribution activity")
+
   const calendar = React.useMemo(() => {
     const end = endDate ? toDate(endDate) : new Date()
     const start = startDate ? toDate(startDate) : addDays(end, -364)
     const values = new Map(data.map((datum) => [datum.date, datum.value]))
     return buildCalendar({
+      locale: uiLocale.enabled ? uiLocale.locale : undefined,
       startDate: start,
       endDate: end,
       weekStartsOn,
@@ -107,7 +130,16 @@ function ContributionGraph({
       levels,
       thresholds,
     })
-  }, [data, startDate, endDate, weekStartsOn, levels, thresholds])
+  }, [
+    data,
+    startDate,
+    endDate,
+    weekStartsOn,
+    levels,
+    thresholds,
+    uiLocale.enabled,
+    uiLocale.locale,
+  ])
 
   const cellRefs = React.useRef(new Map<string, HTMLDivElement>())
   const [focusedId, setFocusedId] = React.useState<string | null>(null)
@@ -294,7 +326,14 @@ function ContributionGraph({
             {Array.from({ length: 7 }, (_, row) => (
               <span key={row}>
                 {LABELLED_ROWS.includes(row)
-                  ? WEEKDAY_NAMES[(weekStartsOn + row) % 7]
+                  ? uiLocale.enabled
+                    ? new Intl.DateTimeFormat(uiLocale.locale, {
+                        weekday: "short",
+                        calendar: "gregory",
+                      }).format(
+                        new Date(2026, 8, 6 + ((weekStartsOn + row) % 7)),
+                      )
+                    : WEEKDAY_NAMES[(weekStartsOn + row) % 7]
                   : null}
               </span>
             ))}
@@ -380,7 +419,7 @@ function ContributionGraph({
 
       {showLegend ? (
         <div className="dr-contribution-graph-legend">
-          <span>Less</span>
+          <span>{uiText("Less")}</span>
           {Array.from({ length: levels + 1 }, (_, level) => (
             <span
               key={level}
@@ -389,7 +428,7 @@ function ContributionGraph({
               aria-hidden="true"
             />
           ))}
-          <span>More</span>
+          <span>{uiText("More")}</span>
         </div>
       ) : null}
     </div>

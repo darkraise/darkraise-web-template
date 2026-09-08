@@ -1,3 +1,4 @@
+import { useUiText } from "../../i18n/useUiText"
 import * as React from "react"
 import {
   ChevronRight,
@@ -299,11 +300,15 @@ function JsonTreeView({
   defaultExpandLevel = 1,
   copyable = false,
   toolbar = false,
-  searchPlaceholder = "Search keys and values…",
+  searchPlaceholder: searchPlaceholderLocaleProp,
   longStringThreshold = 120,
   className,
   ...rest
 }: JsonTreeViewProps) {
+  const uiText = useUiText()
+  const searchPlaceholder =
+    searchPlaceholderLocaleProp ?? uiText("Search keys and values…")
+
   const [expanded, setExpanded] = React.useState<Set<string>>(() =>
     pathsToDepth(data, defaultExpandLevel),
   )
@@ -478,7 +483,7 @@ function JsonTreeView({
         ) : null}
         <div
           role="tree"
-          aria-label="JSON tree"
+          aria-label={uiText("JSON tree")}
           className="dr-json-tree-body"
           tabIndex={focusedPath ? -1 : 0}
           onKeyDown={handleKeyDown}
@@ -507,12 +512,14 @@ function Toolbar({
   collapseAll: () => void
   matchCount: number
 }) {
+  const uiText = useUiText()
+
   return (
     <TooltipProvider delayDuration={300}>
       <div
         className="dr-json-toolbar"
         role="toolbar"
-        aria-label="JSON tree controls"
+        aria-label={uiText("JSON tree controls")}
       >
         {/* Search section — bare input nested inside the toolbar surface so
          * the whole bar reads as one integrated control rather than a row
@@ -525,7 +532,7 @@ function Toolbar({
             onChange={(e) => onQueryChange(e.target.value)}
             placeholder={searchPlaceholder}
             className="dr-json-toolbar-search-input"
-            aria-label="Search keys and values"
+            aria-label={uiText("Search keys and values")}
           />
           {query ? (
             <>
@@ -537,7 +544,7 @@ function Toolbar({
                   <Button
                     variant="ghost"
                     size="icon"
-                    aria-label="Clear search"
+                    aria-label={uiText("Clear search")}
                     className="dr-json-toolbar-clear"
                     onClick={() => onQueryChange("")}
                   >
@@ -547,7 +554,9 @@ function Toolbar({
                     />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="bottom">Clear search</TooltipContent>
+                <TooltipContent side="bottom">
+                  {uiText("Clear search")}
+                </TooltipContent>
               </Tooltip>
             </>
           ) : null}
@@ -561,7 +570,7 @@ function Toolbar({
               <Button
                 variant="ghost"
                 size="icon"
-                aria-label="Expand all"
+                aria-label={uiText("Expand all")}
                 className="dr-json-toolbar-action"
                 onClick={expandAll}
               >
@@ -571,14 +580,16 @@ function Toolbar({
                 />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">Expand all</TooltipContent>
+            <TooltipContent side="bottom">
+              {uiText("Expand all")}
+            </TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 variant="ghost"
                 size="icon"
-                aria-label="Collapse all"
+                aria-label={uiText("Collapse all")}
                 className="dr-json-toolbar-action"
                 onClick={collapseAll}
               >
@@ -588,7 +599,9 @@ function Toolbar({
                 />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom">Collapse all</TooltipContent>
+            <TooltipContent side="bottom">
+              {uiText("Collapse all")}
+            </TooltipContent>
           </Tooltip>
         </div>
       </div>
@@ -607,6 +620,8 @@ function CopyButton({
   label: string
   icon: React.ReactNode
 }) {
+  const uiText = useUiText()
+
   const [copied, setCopied] = React.useState(false)
   const timerRef = React.useRef<number | null>(null)
   const onClick = () => {
@@ -627,7 +642,7 @@ function CopyButton({
       variant="ghost"
       size="icon"
       aria-label={label}
-      title={copied ? "Copied!" : label}
+      title={copied ? uiText("Copied!") : label}
       onClick={onClick}
       className="dr-json-row-action"
       data-state={copied ? "copied" : undefined}
@@ -747,6 +762,8 @@ interface NodeProps {
 }
 
 function Node({ value, keyName, path, depth }: NodeProps) {
+  const uiText = useUiText()
+
   const ctx = useTreeContext()
   const t = typeOf(value)
   const containerLike = isContainer(t)
@@ -839,7 +856,7 @@ function Node({ value, keyName, path, depth }: NodeProps) {
           <span className="dr-json-row-actions">
             <CopyButton
               value={path}
-              label="Copy path"
+              label={uiText("Copy path")}
               icon={
                 <Route
                   className="size-[var(--icon-size-xs)]"
@@ -855,7 +872,7 @@ function Node({ value, keyName, path, depth }: NodeProps) {
                     ? (value as string)
                     : String(value)
               }
-              label="Copy value"
+              label={uiText("Copy value")}
               icon={
                 <Copy
                   className="size-[var(--icon-size-xs)]"

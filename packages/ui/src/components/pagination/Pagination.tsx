@@ -1,3 +1,4 @@
+import { useUiText } from "../../i18n/useUiText"
 import * as React from "react"
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react"
 
@@ -16,11 +17,13 @@ function Pagination({
   variant = "filled",
   ...props
 }: React.ComponentProps<"nav"> & { variant?: PaginationVariant }) {
+  const uiText = useUiText()
+
   return (
     <PaginationContext.Provider value={{ variant }}>
       <nav
         role="navigation"
-        aria-label="pagination"
+        aria-label={uiText("pagination")}
         className={cn("dr-pagination", className)}
         {...props}
       />
@@ -84,15 +87,17 @@ function PaginationPrevious({
   className,
   ...props
 }: React.ComponentProps<typeof PaginationLink>) {
+  const uiText = useUiText()
+
   return (
     <PaginationLink
-      aria-label="Go to previous page"
+      aria-label={uiText("Go to previous page")}
       size="default"
       className={cn("dr-pagination-previous", className)}
       {...props}
     >
       <ChevronLeft className="size-[var(--icon-size)]" aria-hidden="true" />
-      <span>Previous</span>
+      <span>{uiText("Previous")}</span>
     </PaginationLink>
   )
 }
@@ -102,14 +107,16 @@ function PaginationNext({
   className,
   ...props
 }: React.ComponentProps<typeof PaginationLink>) {
+  const uiText = useUiText()
+
   return (
     <PaginationLink
-      aria-label="Go to next page"
+      aria-label={uiText("Go to next page")}
       size="default"
       className={cn("dr-pagination-next", className)}
       {...props}
     >
-      <span>Next</span>
+      <span>{uiText("Next")}</span>
       <ChevronRight className="size-[var(--icon-size)]" aria-hidden="true" />
     </PaginationLink>
   )
@@ -120,6 +127,8 @@ function PaginationEllipsis({
   className,
   ...props
 }: React.ComponentProps<"span">) {
+  const uiText = useUiText()
+
   return (
     <span
       aria-hidden
@@ -127,7 +136,7 @@ function PaginationEllipsis({
       {...props}
     >
       <MoreHorizontal className="size-[var(--icon-size)]" aria-hidden="true" />
-      <span className="sr-only">More pages</span>
+      <span className="sr-only">{uiText("More pages")}</span>
     </span>
   )
 }

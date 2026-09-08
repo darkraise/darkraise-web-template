@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useUiLocale } from "../../i18n/context"
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 
 import { cn } from "@lib/utils"
@@ -88,7 +89,10 @@ function getWeekdayNames(
   weekStartsOn: number,
   locale?: string | string[],
 ): string[] {
-  const fmt = new Intl.DateTimeFormat(locale, { weekday: "short" })
+  const fmt = new Intl.DateTimeFormat(locale, {
+    calendar: "gregory",
+    weekday: "short",
+  })
   const ref = new Date(2024, 5, 2) // Sunday June 2 2024
   const out: string[] = []
   for (let i = 0; i < 7; i++) {
@@ -99,11 +103,16 @@ function getWeekdayNames(
 }
 
 function getMonthFormatter(locale?: string | string[]): Intl.DateTimeFormat {
-  return new Intl.DateTimeFormat(locale, { month: "long", year: "numeric" })
+  return new Intl.DateTimeFormat(locale, {
+    calendar: "gregory",
+    month: "long",
+    year: "numeric",
+  })
 }
 
 function getDayLabelFormatter(locale?: string | string[]): Intl.DateTimeFormat {
   return new Intl.DateTimeFormat(locale, {
+    calendar: "gregory",
     month: "long",
     day: "numeric",
     year: "numeric",
@@ -119,8 +128,14 @@ function ordinalDayLabel(date: Date, locale?: string | string[]): string {
   if (!isEnglish) {
     return getDayLabelFormatter(locale).format(date)
   }
-  const monthFmt = new Intl.DateTimeFormat(locale, { month: "long" })
-  const yearFmt = new Intl.DateTimeFormat(locale, { year: "numeric" })
+  const monthFmt = new Intl.DateTimeFormat(locale, {
+    calendar: "gregory",
+    month: "long",
+  })
+  const yearFmt = new Intl.DateTimeFormat(locale, {
+    calendar: "gregory",
+    year: "numeric",
+  })
   const day = date.getDate()
   const suffix =
     day % 100 >= 11 && day % 100 <= 13
@@ -136,6 +151,7 @@ function ordinalDayLabel(date: Date, locale?: string | string[]): string {
 }
 
 function Calendar(props: CalendarProps) {
+  const uiLocale = useUiLocale()
   const {
     className,
     classNames,
@@ -150,10 +166,10 @@ function Calendar(props: CalendarProps) {
     disabled,
     weekStartsOn = DEFAULT_WEEK_STARTS_ON,
     autoFocus,
-    dir = "ltr",
+    dir = uiLocale.dir,
     fromYear,
     toYear,
-    locale,
+    locale = uiLocale.enabled ? uiLocale.locale : undefined,
   } = props
 
   const mode: CalendarMode = (props.mode ?? "single") as CalendarMode
@@ -880,7 +896,8 @@ function DropdownCaption({
   onMonthIndexChange,
 }: DropdownCaptionProps) {
   const monthShortFmt = React.useMemo(
-    () => new Intl.DateTimeFormat(locale, { month: "long" }),
+    () =>
+      new Intl.DateTimeFormat(locale, { calendar: "gregory", month: "long" }),
     [locale],
   )
   const labels = useUiLabels().calendar
@@ -1017,7 +1034,8 @@ function YearGrid({
   const year = month.getFullYear()
   const today = new Date()
   const monthShortFmt = React.useMemo(
-    () => new Intl.DateTimeFormat(locale, { month: "short" }),
+    () =>
+      new Intl.DateTimeFormat(locale, { calendar: "gregory", month: "short" }),
     [locale],
   )
   const labels = useUiLabels().calendar

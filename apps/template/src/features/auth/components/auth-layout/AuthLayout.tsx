@@ -1,4 +1,5 @@
 import type { ReactNode } from "react"
+import { AppLocaleSwitcher } from "@/i18n/AppLocaleSwitcher"
 import { Center, Stack } from "darkraise-ui/layout"
 
 function FloatingShape({
@@ -25,6 +26,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
     <div className="flex min-h-dvh">
       <Center className="flex-1 p-8">
         <Stack gap="lg" className="w-full max-w-sm">
+          <AppLocaleSwitcher />
           {children}
         </Stack>
       </Center>

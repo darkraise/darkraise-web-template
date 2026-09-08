@@ -1,3 +1,4 @@
+import { useUiText } from "../../i18n/useUiText"
 import * as React from "react"
 import { X } from "lucide-react"
 import { cn } from "@lib/utils"
@@ -32,6 +33,8 @@ function Banner({
   children,
   ...rest
 }: BannerProps) {
+  const uiText = useUiText()
+
   const role = variant === "destructive" ? "alert" : "region"
   return (
     <div
@@ -46,7 +49,7 @@ function Banner({
       {dismissible ? (
         <button
           type="button"
-          aria-label="Dismiss"
+          aria-label={uiText("Dismiss")}
           className="dr-banner-close"
           onClick={onDismiss}
         >

@@ -1,10 +1,9 @@
 import type { ColumnDef, Table } from "@tanstack/react-table"
 
 /**
- * Fixed-height windowing. The row height is declared rather than measured
- * because every row in this kit is one `density` cell tall, and a declared
- * height keeps the maths deterministic instead of depending on layout that a
- * test environment never performs.
+ * Fixed-height windowing. Cells are clipped to the declared height so wrapped
+ * content cannot invalidate scroll offsets. Choose a height that fits the
+ * controls and text in each row, or use pagination for variable-height content.
  */
 export interface DataTableVirtualization {
   rowHeight: number

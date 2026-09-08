@@ -1,3 +1,4 @@
+import { useAppTranslation } from "@/i18n/useAppTranslation"
 import { useId, useState } from "react"
 import { Eye, EyeOff, Trash2 } from "lucide-react"
 import {
@@ -33,6 +34,8 @@ import { Switch } from "darkraise-ui/components/switch"
 import { FormSection } from "darkraise-ui/forms"
 
 export function SecuritySection() {
+  const t = useAppTranslation()
+
   const changePasswordHeadingId = useId()
   const mismatchMessageId = useId()
   const [newPassword, setNewPassword] = useState("")
@@ -45,14 +48,16 @@ export function SecuritySection() {
 
   return (
     <FormSection
-      title="Security"
-      description="Manage your password, two-factor authentication, and account deletion."
+      title={t("Security")}
+      description={t(
+        "Manage your password, two-factor authentication, and account deletion.",
+      )}
     >
       <Card>
         <CardContent className="space-y-8 pt-6">
           <div className="space-y-2.5">
             <p id={changePasswordHeadingId} className="text-sm font-medium">
-              Change password
+              {t("Change password")}
             </p>
             <div
               role="group"
@@ -60,10 +65,10 @@ export function SecuritySection() {
               className="grid gap-4 sm:grid-cols-2"
             >
               <PasswordInput>
-                <PasswordInputLabel>New password</PasswordInputLabel>
+                <PasswordInputLabel>{t("New password")}</PasswordInputLabel>
                 <PasswordInputControl>
                   <PasswordInputField
-                    placeholder="At least 8 characters"
+                    placeholder={t("At least 8 characters")}
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     autoComplete="new-password"
@@ -77,10 +82,12 @@ export function SecuritySection() {
                 </PasswordInputControl>
               </PasswordInput>
               <PasswordInput>
-                <PasswordInputLabel>Confirm new password</PasswordInputLabel>
+                <PasswordInputLabel>
+                  {t("Confirm new password")}
+                </PasswordInputLabel>
                 <PasswordInputControl>
                   <PasswordInputField
-                    placeholder="Re-enter password"
+                    placeholder={t("Re-enter password")}
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     autoComplete="new-password"
@@ -102,7 +109,7 @@ export function SecuritySection() {
               className="text-destructive text-xs"
               data-invalid={mismatch ? "true" : "false"}
             >
-              {mismatch ? "Passwords do not match." : " "}
+              {mismatch ? t("Passwords do not match.") : " "}
             </p>
           </div>
 
@@ -110,11 +117,12 @@ export function SecuritySection() {
             <div className="flex items-center justify-between gap-4">
               <div className="space-y-0.5">
                 <Label htmlFor="security-2fa-toggle">
-                  Two-factor authentication
+                  {t("Two-factor authentication")}
                 </Label>
                 <p className="text-muted-foreground text-sm">
-                  Require a verification code from your authenticator app when
-                  signing in.
+                  {t(
+                    "Require a verification code from your authenticator app when signing in.",
+                  )}
                 </p>
               </div>
               <Switch
@@ -131,10 +139,12 @@ export function SecuritySection() {
             </div>
             {twoFactorEnabled && (
               <div className="space-y-2">
-                <Label htmlFor="security-2fa-otp">Verification code</Label>
+                <Label htmlFor="security-2fa-otp">
+                  {t("Verification code")}
+                </Label>
                 <InputOTP
                   id="security-2fa-otp"
-                  aria-label="Verification code"
+                  aria-label={t("Verification code")}
                   maxLength={6}
                   value={otpCode}
                   onChange={(next) => {
@@ -157,8 +167,8 @@ export function SecuritySection() {
                 </InputOTP>
                 <p aria-live="polite" className="text-muted-foreground text-xs">
                   {twoFactorVerified
-                    ? "Verified — two-factor authentication is active."
-                    : "Enter the 6-digit code from your authenticator app."}
+                    ? t("Verified — two-factor authentication is active.")
+                    : t("Enter the 6-digit code from your authenticator app.")}
                 </p>
               </div>
             )}
@@ -166,37 +176,42 @@ export function SecuritySection() {
 
           <div className="border-destructive/40 space-y-3 rounded-lg border p-4">
             <div>
-              <p className="text-sm font-medium">Delete account</p>
+              <p className="text-sm font-medium">{t("Delete account")}</p>
               <p className="text-muted-foreground text-sm">
-                Permanently remove your account and all associated data. This
-                cannot be undone.
+                {t(
+                  "Permanently remove your account and all associated data. This cannot be undone.",
+                )}
               </p>
             </div>
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button variant="destructive" size="sm">
                   <Trash2 className="mr-2 h-4 w-4" />
-                  Delete account
+                  {t("Delete account")}
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Delete your account?</AlertDialogTitle>
+                  <AlertDialogTitle>
+                    {t("Delete your account?")}
+                  </AlertDialogTitle>
                   <AlertDialogDescription>
-                    This will permanently delete your account and remove all
-                    associated data. This action is irreversible and cannot be
-                    undone.
+                    {t(
+                      "This will permanently delete your account and remove all associated data. This action is irreversible and cannot be undone.",
+                    )}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogCancel>{t("Cancel")}</AlertDialogCancel>
                   <AlertDialogAction
                     className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                     onClick={() =>
-                      toast.success("This is a demo — no account was deleted.")
+                      toast.success(
+                        t("This is a demo — no account was deleted."),
+                      )
                     }
                   >
-                    Delete account
+                    {t("Delete account")}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>

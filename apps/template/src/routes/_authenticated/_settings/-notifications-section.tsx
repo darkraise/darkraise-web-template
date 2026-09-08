@@ -1,3 +1,4 @@
+import { useAppTranslation } from "@/i18n/useAppTranslation"
 import { useId, useState } from "react"
 import { Card, CardContent } from "darkraise-ui/components/card"
 import { Checkbox } from "darkraise-ui/components/checkbox"
@@ -23,6 +24,8 @@ const EVENT_OPTIONS = [
 type EventId = (typeof EVENT_OPTIONS)[number]["id"]
 
 export function NotificationsSection() {
+  const t = useAppTranslation()
+
   const channelsHeadingId = useId()
   const eventsHeadingId = useId()
   const [channels, setChannels] = useState<Record<ChannelId, boolean>>({
@@ -39,14 +42,16 @@ export function NotificationsSection() {
 
   return (
     <FormSection
-      title="Notification channels"
-      description="Email and digest frequency are managed above — choose which other channels reach you and which events they cover."
+      title={t("Notification channels")}
+      description={t(
+        "Email and digest frequency are managed above — choose which other channels reach you and which events they cover.",
+      )}
     >
       <Card>
         <CardContent className="space-y-8 pt-6">
           <div className="space-y-2.5">
             <p id={channelsHeadingId} className="text-sm font-medium">
-              Channels
+              {t("Channels")}
             </p>
             <div
               role="group"
@@ -66,7 +71,7 @@ export function NotificationsSection() {
                     }
                   />
                   <Label htmlFor={`notif-channel-${channel.id}`}>
-                    {channel.label}
+                    {t(channel.label)}
                   </Label>
                 </div>
               ))}
@@ -75,7 +80,7 @@ export function NotificationsSection() {
 
           <div className="space-y-2.5">
             <p id={eventsHeadingId} className="text-sm font-medium">
-              Notify me about
+              {t("Notify me about")}
             </p>
             <div
               role="group"
@@ -95,7 +100,7 @@ export function NotificationsSection() {
                     }
                   />
                   <Label htmlFor={`notif-event-${event.id}`}>
-                    {event.label}
+                    {t(event.label)}
                   </Label>
                 </div>
               ))}

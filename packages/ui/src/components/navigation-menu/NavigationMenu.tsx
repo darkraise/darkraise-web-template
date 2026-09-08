@@ -1,4 +1,5 @@
 "use client"
+import { useUiText } from "../../i18n/useUiText"
 
 import * as React from "react"
 import { ChevronDown } from "lucide-react"
@@ -64,6 +65,8 @@ function NavigationMenu({
   children,
   ...rest
 }: NavigationMenuProps) {
+  const uiText = useUiText()
+
   const [value, setValue] = useControllableState<string>({
     value: valueProp,
     defaultValue: defaultValue ?? "",
@@ -161,7 +164,7 @@ function NavigationMenu({
       <nav
         ref={ref as React.Ref<HTMLElement>}
         className={cn("dr-navigation-menu", className)}
-        aria-label="Main"
+        aria-label={uiText("Main")}
         data-orientation="horizontal"
         {...rest}
       >

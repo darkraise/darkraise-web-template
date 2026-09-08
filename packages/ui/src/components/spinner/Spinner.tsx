@@ -1,3 +1,4 @@
+import { useUiText } from "../../i18n/useUiText"
 import * as React from "react"
 import { cn } from "@lib/utils"
 import "./spinner.css"
@@ -20,6 +21,8 @@ function Spinner({
   "aria-label": ariaLabel,
   ...rest
 }: SpinnerProps) {
+  const uiText = useUiText()
+
   return (
     <span
       role="status"
@@ -34,7 +37,7 @@ function Spinner({
       {label !== undefined ? (
         label
       ) : !ariaLabel ? (
-        <span className="sr-only">Loading</span>
+        <span className="sr-only">{uiText("Loading")}</span>
       ) : null}
     </span>
   )

@@ -1,3 +1,5 @@
+import { useUiLocale } from "darkraise-ui/i18n"
+import { useAppTranslation } from "@/i18n/useAppTranslation"
 import { createFileRoute } from "@tanstack/react-router"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Center, PageHeader } from "darkraise-ui/layout"
@@ -24,6 +26,10 @@ export const Route = createFileRoute("/_authenticated/customers/$id")({
 })
 
 function CustomerDetailPage() {
+  const uiLocale = useUiLocale()
+
+  const t = useAppTranslation()
+
   const { id } = Route.useParams()
   const { data: customer, isLoading: customerLoading } = useCustomer(id)
   const { data: allOrders } = useOrders()
@@ -33,7 +39,7 @@ function CustomerDetailPage() {
   if (customerLoading) {
     return (
       <Center className="p-12">
-        <p className="text-muted-foreground">Loading customer...</p>
+        <p className="text-muted-foreground">{t("Loading customer...")}</p>
       </Center>
     )
   }
@@ -41,7 +47,7 @@ function CustomerDetailPage() {
   if (!customer) {
     return (
       <Center className="p-12">
-        <p className="text-muted-foreground">Customer not found.</p>
+        <p className="text-muted-foreground">{t("Customer not found.")}</p>
       </Center>
     )
   }
@@ -52,16 +58,20 @@ function CustomerDetailPage() {
   const orderColumns: ColumnDef<Order>[] = [
     {
       accessorKey: "orderNumber",
-      header: ({ column }) => <ColumnHeader column={column} title="Order" />,
+      header: ({ column }) => (
+        <ColumnHeader column={column} title={t("Order")} />
+      ),
       cell: ({ row }) => (
         <span className="font-medium">{row.original.orderNumber}</span>
       ),
     },
     {
       accessorKey: "createdAt",
-      header: ({ column }) => <ColumnHeader column={column} title="Date" />,
+      header: ({ column }) => (
+        <ColumnHeader column={column} title={t("Date")} />
+      ),
       cell: ({ row }) =>
-        new Date(row.original.createdAt).toLocaleDateString("en-US", {
+        new Date(row.original.createdAt).toLocaleDateString(uiLocale.locale, {
           year: "numeric",
           month: "short",
           day: "numeric",
@@ -69,15 +79,20 @@ function CustomerDetailPage() {
     },
     {
       accessorKey: "status",
-      header: ({ column }) => <ColumnHeader column={column} title="Status" />,
+      header: ({ column }) => (
+        <ColumnHeader column={column} title={t("Status")} />
+      ),
       cell: ({ row }) => (
         <span className="capitalize">{row.original.status}</span>
       ),
     },
     {
       accessorKey: "total",
-      header: ({ column }) => <ColumnHeader column={column} title="Total" />,
-      cell: ({ row }) => `$${row.original.total.toLocaleString()}`,
+      header: ({ column }) => (
+        <ColumnHeader column={column} title={t("Total")} />
+      ),
+      cell: ({ row }) =>
+        `$${row.original.total.toLocaleString(uiLocale.locale)}`,
     },
   ]
 
@@ -85,12 +100,17 @@ function CustomerDetailPage() {
     <>
       <PageHeader
         breadcrumbs={[
-          { label: "Dashboard", href: "/" },
-          { label: "Customers", href: "/customers" },
+          { label: t("Dashboard"), href: "/" },
+          { label: t("Customers"), href: "/customers" },
           { label: customer.name },
         ]}
         title={customer.name}
-        description={`Customer since ${new Date(customer.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "long" })}`}
+        description={t("Customer since {{date}}", {
+          date: new Date(customer.createdAt).toLocaleDateString(
+            uiLocale.locale,
+            { year: "numeric", month: "long" },
+          ),
+        })}
       />
 
       <div className="space-y-6">
@@ -118,55 +138,60 @@ function CustomerDetailPage() {
 
         <div className="grid gap-4 md:grid-cols-3">
           <KPICard
-            label="Lifetime Value"
-            value={`$${customer.totalSpent.toLocaleString()}`}
+            label={t("Lifetime Value")}
+            value={`$${customer.totalSpent.toLocaleString(uiLocale.locale)}`}
           />
-          <KPICard label="Total Orders" value={customer.totalOrders} />
+          <KPICard label={t("Total Orders")} value={customer.totalOrders} />
           <KPICard
-            label="Average Order Value"
-            value={`$${avgOrderValue.toFixed(2)}`}
+            label={t("Average Order Value")}
+            value={`$${avgOrderValue.toLocaleString(uiLocale.locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
           />
         </div>
 
         <Tabs defaultValue="orders">
           <TabsList>
-            <TabsTrigger value="orders">Orders</TabsTrigger>
-            <TabsTrigger value="profile">Profile</TabsTrigger>
+            <TabsTrigger value="orders">{t("Orders")}</TabsTrigger>
+            <TabsTrigger value="profile">{t("Profile")}</TabsTrigger>
           </TabsList>
           <TabsContent value="orders" className="mt-4">
             <DataTable
               columns={orderColumns}
               data={customerOrders}
               searchKey="orderNumber"
-              searchPlaceholder="Search orders..."
+              searchPlaceholder={t("Search orders...")}
             />
           </TabsContent>
           <TabsContent value="profile" className="mt-4">
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Contact Information</CardTitle>
+                <CardTitle className="text-base">
+                  {t("Contact Information")}
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div>
-                  <p className="text-sm font-medium">Email</p>
+                  <p className="text-sm font-medium">{t("Email")}</p>
                   <p className="text-muted-foreground text-sm">
                     {customer.email}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium">Phone</p>
+                  <p className="text-sm font-medium">{t("Phone")}</p>
                   <p className="text-muted-foreground text-sm">
-                    {customer.phone ?? "Not provided"}
+                    {customer.phone ?? t("Not provided")}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium">Member Since</p>
+                  <p className="text-sm font-medium">{t("Member Since")}</p>
                   <p className="text-muted-foreground text-sm">
-                    {new Date(customer.createdAt).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
+                    {new Date(customer.createdAt).toLocaleDateString(
+                      uiLocale.locale,
+                      {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      },
+                    )}
                   </p>
                 </div>
               </CardContent>

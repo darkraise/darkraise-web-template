@@ -5,10 +5,13 @@ import { existsSync, mkdirSync, writeFileSync } from "fs"
 import { resolve } from "path"
 import * as p from "@clack/prompts"
 import minimist from "minimist"
+import { i18nTemplate, multilingualMain } from "./i18n-template.mjs"
 
 async function latestVersion(pkg) {
   try {
-    const res = await fetch(`https://registry.npmjs.org/${pkg}/latest`)
+    const res = await fetch(`https://registry.npmjs.org/${pkg}/latest`, {
+      signal: AbortSignal.timeout(10000),
+    })
     const data = await res.json()
     return `^${data.version}`
   } catch {
@@ -17,9 +20,23 @@ async function latestVersion(pkg) {
 }
 
 const ACCENT_COLORS = [
-  "red", "orange", "amber", "yellow", "lime", "green", "emerald",
-  "teal", "cyan", "sky", "blue", "indigo", "violet", "purple",
-  "fuchsia", "pink", "rose",
+  "red",
+  "orange",
+  "amber",
+  "yellow",
+  "lime",
+  "green",
+  "emerald",
+  "teal",
+  "cyan",
+  "sky",
+  "blue",
+  "indigo",
+  "violet",
+  "purple",
+  "fuchsia",
+  "pink",
+  "rose",
 ]
 const SURFACE_COLORS = ["slate", ...ACCENT_COLORS]
 const PRESETS = ["default", "glass", "scifi"]
@@ -36,7 +53,14 @@ const DENSITIES = ["compact", "cozy", "comfortable", "spacious"]
 const ELEVATIONS = ["flat", "low", "medium", "high"]
 const RADII = ["sharp", "subtle", "rounded", "pill"]
 const CONTROL_DEPTHS = ["flush", "subtle", "recessed", "deep"]
-const SHELL_STYLES = ["classic", "inset", "island", "floating", "framed", "flat"]
+const SHELL_STYLES = [
+  "classic",
+  "inset",
+  "island",
+  "floating",
+  "framed",
+  "flat",
+]
 const SIDEBAR_ACTIVE_BARS = ["default", "bar", "ring", "both"]
 const FONT_SIZES = ["small", "medium", "large", "extra-large"]
 const ACCENT_INTENSITIES = ["calm", "balanced", "vivid", "intense"]
@@ -49,23 +73,54 @@ const LAYOUTS = ["sidebar", "stacked", "top-nav", "split-panel"]
 // toggle for whether the per-preset axis controls (e.g. glass blur,
 // scifi frame) appear in the switcher panel.
 const THEME_AXIS_KEYS = [
-  "mode", "accentColor", "surfaceColor", "preset",
-  "backgroundStyle", "backgroundIntensity", "gradientPattern",
-  "density", "elevation", "buttonElevation", "surfaceIntensity", "radius", "fontSize",
-  "accentIntensity", "controlDepth", "shellStyle", "sidebarActiveBar",
-  "outerGlow", "innerGlow", "presetAxes",
+  "mode",
+  "accentColor",
+  "surfaceColor",
+  "preset",
+  "backgroundStyle",
+  "backgroundIntensity",
+  "gradientPattern",
+  "density",
+  "elevation",
+  "buttonElevation",
+  "surfaceIntensity",
+  "radius",
+  "fontSize",
+  "accentIntensity",
+  "controlDepth",
+  "shellStyle",
+  "sidebarActiveBar",
+  "outerGlow",
+  "innerGlow",
+  "presetAxes",
 ]
 
 const argv = minimist(process.argv.slice(2), {
   boolean: ["y"],
   string: [
-    "layout", "accent", "surface-color", "preset",
-    "background", "background-intensity", "gradient-pattern",
-    "mode", "theme-axes",
-    "density", "elevation", "button-elevation", "surface-intensity", "radius", "font-size",
-    "accent-intensity", "control-depth", "shell-style", "sidebar-active-bar",
-    "outer-glow", "inner-glow",
-    "host", "port",
+    "layout",
+    "accent",
+    "surface-color",
+    "preset",
+    "background",
+    "background-intensity",
+    "gradient-pattern",
+    "mode",
+    "theme-axes",
+    "density",
+    "elevation",
+    "button-elevation",
+    "surface-intensity",
+    "radius",
+    "font-size",
+    "accent-intensity",
+    "control-depth",
+    "shell-style",
+    "sidebar-active-bar",
+    "outer-glow",
+    "inner-glow",
+    "host",
+    "port",
   ],
   alias: { y: "yes" },
 })
@@ -80,10 +135,13 @@ function resolveBoolFlag(argv, name) {
 }
 
 const themeSwitcherFlag = resolveBoolFlag(argv, "theme-switcher")
+const multilingualFlag = resolveBoolFlag(argv, "multilingual")
 
 function validate(value, allowed, label) {
   if (value !== undefined && !allowed.includes(value)) {
-    console.error(`Error: invalid ${label} "${value}". Allowed: ${allowed.join(", ")}`)
+    console.error(
+      `Error: invalid ${label} "${value}". Allowed: ${allowed.join(", ")}`,
+    )
     process.exit(1)
   }
 }
@@ -93,7 +151,11 @@ validate(argv.accent, ACCENT_COLORS, "accent color")
 validate(argv["surface-color"], SURFACE_COLORS, "surface color")
 validate(argv.preset, PRESETS, "preset")
 validate(argv.background, BACKGROUND_STYLES, "background")
-validate(argv["background-intensity"], BACKGROUND_INTENSITIES, "background-intensity")
+validate(
+  argv["background-intensity"],
+  BACKGROUND_INTENSITIES,
+  "background-intensity",
+)
 validate(argv["gradient-pattern"], GRADIENT_PATTERNS, "gradient-pattern")
 validate(argv.mode, MODES, "mode")
 validate(argv.density, DENSITIES, "density")
@@ -113,7 +175,9 @@ if (argv["theme-axes"] !== undefined) {
   const axes = argv["theme-axes"].split(",")
   for (const axis of axes) {
     if (!THEME_AXIS_KEYS.includes(axis)) {
-      console.error(`Error: invalid theme axis "${axis}". Allowed: ${THEME_AXIS_KEYS.join(", ")}`)
+      console.error(
+        `Error: invalid theme axis "${axis}". Allowed: ${THEME_AXIS_KEYS.join(", ")}`,
+      )
       process.exit(1)
     }
   }
@@ -153,12 +217,16 @@ async function main() {
   }
 
   if (!projectName) {
-    p.cancel("Project name is required. Pass it as the first argument or run without -y.")
+    p.cancel(
+      "Project name is required. Pass it as the first argument or run without -y.",
+    )
     process.exit(1)
   }
 
   if (!/^[a-zA-Z0-9_-]+$/.test(projectName)) {
-    p.cancel("Project name must contain only letters, numbers, hyphens, and underscores.")
+    p.cancel(
+      "Project name must contain only letters, numbers, hyphens, and underscores.",
+    )
     process.exit(1)
   }
 
@@ -169,157 +237,242 @@ async function main() {
   }
 
   // --- Layout ---
-  const layout = argv.layout || (skipPrompts ? "sidebar" : cancelled(
-    await p.select({
-      message: "Layout",
-      options: LAYOUTS.map((l) => ({ value: l, label: l })),
-      initialValue: "sidebar",
-    }),
-  ))
+  const multilingual =
+    multilingualFlag ??
+    (skipPrompts
+      ? false
+      : cancelled(
+          await p.confirm({
+            message:
+              "Enable English and Vietnamese with shared multilingual support?",
+            initialValue: false,
+          }),
+        ))
+  const layout =
+    argv.layout ||
+    (skipPrompts
+      ? "sidebar"
+      : cancelled(
+          await p.select({
+            message: "Layout",
+            options: LAYOUTS.map((l) => ({ value: l, label: l })),
+            initialValue: "sidebar",
+          }),
+        ))
 
   // --- Theme defaults ---
-  const accent = argv.accent || (skipPrompts ? "blue" : cancelled(
-    await p.select({
-      message: "Accent color",
-      options: ACCENT_COLORS.map((c) => ({ value: c, label: c })),
-      initialValue: "blue",
-    }),
-  ))
+  const accent =
+    argv.accent ||
+    (skipPrompts
+      ? "blue"
+      : cancelled(
+          await p.select({
+            message: "Accent color",
+            options: ACCENT_COLORS.map((c) => ({ value: c, label: c })),
+            initialValue: "blue",
+          }),
+        ))
 
-  const surfaceColor = argv["surface-color"] || (skipPrompts ? "slate" : cancelled(
-    await p.select({
-      message: "Surface color",
-      options: SURFACE_COLORS.map((c) => ({ value: c, label: c })),
-      initialValue: "slate",
-    }),
-  ))
+  const surfaceColor =
+    argv["surface-color"] ||
+    (skipPrompts
+      ? "slate"
+      : cancelled(
+          await p.select({
+            message: "Surface color",
+            options: SURFACE_COLORS.map((c) => ({ value: c, label: c })),
+            initialValue: "slate",
+          }),
+        ))
 
-  const preset = argv.preset || (skipPrompts ? "default" : cancelled(
-    await p.select({
-      message: "Preset",
-      options: PRESETS.map((s) => ({ value: s, label: s })),
-      initialValue: "default",
-    }),
-  ))
+  const preset =
+    argv.preset ||
+    (skipPrompts
+      ? "default"
+      : cancelled(
+          await p.select({
+            message: "Preset",
+            options: PRESETS.map((s) => ({ value: s, label: s })),
+            initialValue: "default",
+          }),
+        ))
 
-  const background = argv.background || (skipPrompts ? "solid" : cancelled(
-    await p.select({
-      message: "Background",
-      options: BACKGROUND_STYLES.map((b) => ({ value: b, label: b })),
-      initialValue: "solid",
-    }),
-  ))
+  const background =
+    argv.background ||
+    (skipPrompts
+      ? "solid"
+      : cancelled(
+          await p.select({
+            message: "Background",
+            options: BACKGROUND_STYLES.map((b) => ({ value: b, label: b })),
+            initialValue: "solid",
+          }),
+        ))
 
-  const backgroundIntensity = argv["background-intensity"] || (skipPrompts ? "balanced" : cancelled(
-    await p.select({
-      message: "Background intensity",
-      options: BACKGROUND_INTENSITIES.map((i) => ({ value: i, label: i })),
-      initialValue: "balanced",
-    }),
-  ))
+  const backgroundIntensity =
+    argv["background-intensity"] ||
+    (skipPrompts
+      ? "balanced"
+      : cancelled(
+          await p.select({
+            message: "Background intensity",
+            options: BACKGROUND_INTENSITIES.map((i) => ({
+              value: i,
+              label: i,
+            })),
+            initialValue: "balanced",
+          }),
+        ))
 
-  const gradientPattern = argv["gradient-pattern"] || (skipPrompts ? "blobs" : cancelled(
-    await p.select({
-      message: "Gradient pattern",
-      options: GRADIENT_PATTERNS.map((g) => ({ value: g, label: g })),
-      initialValue: "blobs",
-    }),
-  ))
+  const gradientPattern =
+    argv["gradient-pattern"] ||
+    (skipPrompts
+      ? "blobs"
+      : cancelled(
+          await p.select({
+            message: "Gradient pattern",
+            options: GRADIENT_PATTERNS.map((g) => ({ value: g, label: g })),
+            initialValue: "blobs",
+          }),
+        ))
 
-  const mode = argv.mode || (skipPrompts ? "system" : cancelled(
-    await p.select({
-      message: "Mode",
-      options: MODES.map((m) => ({ value: m, label: m })),
-      initialValue: "system",
-    }),
-  ))
+  const mode =
+    argv.mode ||
+    (skipPrompts
+      ? "system"
+      : cancelled(
+          await p.select({
+            message: "Mode",
+            options: MODES.map((m) => ({ value: m, label: m })),
+            initialValue: "system",
+          }),
+        ))
 
-  const density = argv.density || (skipPrompts ? "cozy" : cancelled(
-    await p.select({
-      message: "Density",
-      options: DENSITIES.map((d) => ({ value: d, label: d })),
-      initialValue: "cozy",
-    }),
-  ))
+  const density =
+    argv.density ||
+    (skipPrompts
+      ? "cozy"
+      : cancelled(
+          await p.select({
+            message: "Density",
+            options: DENSITIES.map((d) => ({ value: d, label: d })),
+            initialValue: "cozy",
+          }),
+        ))
 
-  const elevation = argv.elevation || (skipPrompts ? "medium" : cancelled(
-    await p.select({
-      message: "Elevation",
-      options: ELEVATIONS.map((e) => ({ value: e, label: e })),
-      initialValue: "medium",
-    }),
-  ))
+  const elevation =
+    argv.elevation ||
+    (skipPrompts
+      ? "medium"
+      : cancelled(
+          await p.select({
+            message: "Elevation",
+            options: ELEVATIONS.map((e) => ({ value: e, label: e })),
+            initialValue: "medium",
+          }),
+        ))
 
-  const buttonElevation = argv["button-elevation"] || (skipPrompts ? "flat" : cancelled(
-    await p.select({
-      message: "Button elevation",
-      options: ELEVATIONS.map((e) => ({ value: e, label: e })),
-      initialValue: "flat",
-    }),
-  ))
+  const buttonElevation =
+    argv["button-elevation"] ||
+    (skipPrompts
+      ? "flat"
+      : cancelled(
+          await p.select({
+            message: "Button elevation",
+            options: ELEVATIONS.map((e) => ({ value: e, label: e })),
+            initialValue: "flat",
+          }),
+        ))
 
-  const surfaceIntensity = argv["surface-intensity"] || (skipPrompts ? "balanced" : cancelled(
-    await p.select({
-      message: "Surface intensity",
-      options: SURFACE_INTENSITIES.map((s) => ({ value: s, label: s })),
-      initialValue: "balanced",
-    }),
-  ))
+  const surfaceIntensity =
+    argv["surface-intensity"] ||
+    (skipPrompts
+      ? "balanced"
+      : cancelled(
+          await p.select({
+            message: "Surface intensity",
+            options: SURFACE_INTENSITIES.map((s) => ({ value: s, label: s })),
+            initialValue: "balanced",
+          }),
+        ))
 
-  const radius = argv.radius || (skipPrompts ? "rounded" : cancelled(
-    await p.select({
-      message: "Radius",
-      options: RADII.map((r) => ({ value: r, label: r })),
-      initialValue: "rounded",
-    }),
-  ))
+  const radius =
+    argv.radius ||
+    (skipPrompts
+      ? "rounded"
+      : cancelled(
+          await p.select({
+            message: "Radius",
+            options: RADII.map((r) => ({ value: r, label: r })),
+            initialValue: "rounded",
+          }),
+        ))
 
-  const controlDepth = argv["control-depth"] || (skipPrompts ? "recessed" : cancelled(
-    await p.select({
-      message: "Control depth",
-      options: CONTROL_DEPTHS.map((d) => ({ value: d, label: d })),
-      initialValue: "recessed",
-    }),
-  ))
+  const controlDepth =
+    argv["control-depth"] ||
+    (skipPrompts
+      ? "recessed"
+      : cancelled(
+          await p.select({
+            message: "Control depth",
+            options: CONTROL_DEPTHS.map((d) => ({ value: d, label: d })),
+            initialValue: "recessed",
+          }),
+        ))
 
-  const shellStyle = argv["shell-style"] || (skipPrompts ? "classic" : cancelled(
-    await p.select({
-      message: "Shell style",
-      options: SHELL_STYLES.map((v) => ({ value: v, label: v })),
-      initialValue: "classic",
-    }),
-  ))
+  const shellStyle =
+    argv["shell-style"] ||
+    (skipPrompts
+      ? "classic"
+      : cancelled(
+          await p.select({
+            message: "Shell style",
+            options: SHELL_STYLES.map((v) => ({ value: v, label: v })),
+            initialValue: "classic",
+          }),
+        ))
 
-  const sidebarActiveBar = argv["sidebar-active-bar"] || (skipPrompts ? "default" : cancelled(
-    await p.select({
-      message: "Sidebar indicator",
-      options: SIDEBAR_ACTIVE_BARS.map((v) => ({ value: v, label: v })),
-      initialValue: "default",
-    }),
-  ))
+  const sidebarActiveBar =
+    argv["sidebar-active-bar"] ||
+    (skipPrompts
+      ? "default"
+      : cancelled(
+          await p.select({
+            message: "Sidebar indicator",
+            options: SIDEBAR_ACTIVE_BARS.map((v) => ({ value: v, label: v })),
+            initialValue: "default",
+          }),
+        ))
 
-  const fontSize = argv["font-size"] || (skipPrompts ? "medium" : cancelled(
-    await p.select({
-      message: "Font size",
-      options: FONT_SIZES.map((f) => ({ value: f, label: f })),
-      initialValue: "medium",
-    }),
-  ))
+  const fontSize =
+    argv["font-size"] ||
+    (skipPrompts
+      ? "medium"
+      : cancelled(
+          await p.select({
+            message: "Font size",
+            options: FONT_SIZES.map((f) => ({ value: f, label: f })),
+            initialValue: "medium",
+          }),
+        ))
 
-  const accentIntensity = argv["accent-intensity"] || (skipPrompts ? "balanced" : cancelled(
-    await p.select({
-      message: "Accent intensity",
-      options: ACCENT_INTENSITIES.map((v) => ({ value: v, label: v })),
-      initialValue: "balanced",
-    }),
-  ))
+  const accentIntensity =
+    argv["accent-intensity"] ||
+    (skipPrompts
+      ? "balanced"
+      : cancelled(
+          await p.select({
+            message: "Accent intensity",
+            options: ACCENT_INTENSITIES.map((v) => ({ value: v, label: v })),
+            initialValue: "balanced",
+          }),
+        ))
 
   // Glow ships at "none" so a new project looks the same as before the axes
   // existed; presets that own a glow supply their own default at runtime.
   // Flag-only rather than prompted, to keep the interactive flow short.
   const outerGlow = argv["outer-glow"] || "none"
   const innerGlow = argv["inner-glow"] || "none"
-
 
   // --- Theme switcher ---
   let themeSwitcherEnabled
@@ -364,7 +517,10 @@ async function main() {
             { value: "sidebarActiveBar", label: "Sidebar indicator" },
             { value: "outerGlow", label: "Outer glow" },
             { value: "innerGlow", label: "Inner glow" },
-            { value: "presetAxes", label: "Preset-specific axes (e.g. glass blur, scifi frame)" },
+            {
+              value: "presetAxes",
+              label: "Preset-specific axes (e.g. glass blur, scifi frame)",
+            },
           ],
           initialValues: THEME_AXIS_KEYS,
         }),
@@ -377,29 +533,36 @@ async function main() {
   }
 
   // --- Server ---
-  const host = argv.host || (skipPrompts ? "localhost" : cancelled(
-    await p.text({
-      message: "Dev server host",
-      placeholder: "localhost",
-      initialValue: "localhost",
-    }),
-  ))
+  const host =
+    argv.host ||
+    (skipPrompts
+      ? "localhost"
+      : cancelled(
+          await p.text({
+            message: "Dev server host",
+            placeholder: "localhost",
+            initialValue: "localhost",
+          }),
+        ))
 
   const port = argv.port
     ? Number(argv.port)
     : skipPrompts
       ? 5173
-      : Number(cancelled(
-          await p.text({
-            message: "Dev server port",
-            placeholder: "5173",
-            initialValue: "5173",
-            validate: (v) => {
-              const n = Number(v)
-              if (!Number.isInteger(n) || n < 1 || n > 65535) return "Must be a valid port (1-65535)"
-            },
-          }),
-        ))
+      : Number(
+          cancelled(
+            await p.text({
+              message: "Dev server port",
+              placeholder: "5173",
+              initialValue: "5173",
+              validate: (v) => {
+                const n = Number(v)
+                if (!Number.isInteger(n) || n < 1 || n > 65535)
+                  return "Must be a valid port (1-65535)"
+              },
+            }),
+          ),
+        )
 
   // --- Scaffold ---
   const config = {
@@ -429,7 +592,10 @@ async function main() {
       switcher: {
         enabled: themeSwitcherEnabled,
         axes: Object.fromEntries(
-          THEME_AXIS_KEYS.map((key) => [key, themeSwitcherEnabled && themeAxes.includes(key)]),
+          THEME_AXIS_KEYS.map((key) => [
+            key,
+            themeSwitcherEnabled && themeAxes.includes(key),
+          ]),
         ),
       },
     },
@@ -438,7 +604,9 @@ async function main() {
 
   p.log.step("Resolving latest package versions...")
   const [darkraiseUiVersion, reactVersion] = await Promise.all([
-    latestVersion("darkraise-ui"),
+    argv["ui-version"]
+      ? Promise.resolve(String(argv["ui-version"]))
+      : latestVersion("darkraise-ui"),
     latestVersion("react"),
   ])
 
@@ -475,7 +643,21 @@ async function main() {
       vite: "^6.0.0",
     },
   }
-  writeProjectFile(targetDir, "package.json", JSON.stringify(pkg, null, 2) + "\n")
+  if (multilingual) {
+    pkg.dependencies.i18next = "^26.4.2"
+    pkg.dependencies["react-i18next"] = "^17.0.13"
+    pkg.devDependencies.typescript = "~6.0.3"
+    writeProjectFile(
+      targetDir,
+      "src/i18n.tsx",
+      i18nTemplate(`${projectName}.language`),
+    )
+  }
+  writeProjectFile(
+    targetDir,
+    "package.json",
+    JSON.stringify(pkg, null, 2) + "\n",
+  )
 
   // --- index.html ---
   const indexHtml = `<!doctype html>
@@ -595,10 +777,18 @@ export default defineConfig({
     },
     include: ["src"],
   }
-  writeProjectFile(targetDir, "tsconfig.json", JSON.stringify(tsconfig, null, 2) + "\n")
+  writeProjectFile(
+    targetDir,
+    "tsconfig.json",
+    JSON.stringify(tsconfig, null, 2) + "\n",
+  )
 
   // --- src/styles/globals.css ---
-  writeProjectFile(targetDir, "src/styles/globals.css", '@import "darkraise-ui/styles.css";\n')
+  writeProjectFile(
+    targetDir,
+    "src/styles/globals.css",
+    '@import "darkraise-ui/styles.css";\n',
+  )
 
   // --- src/main.tsx ---
   const mainTsx = `import { StrictMode } from "react"
@@ -612,7 +802,11 @@ createRoot(document.getElementById("root")!).render(
   </StrictMode>,
 )
 `
-  writeProjectFile(targetDir, "src/main.tsx", mainTsx)
+  writeProjectFile(
+    targetDir,
+    "src/main.tsx",
+    multilingual ? multilingualMain : mainTsx,
+  )
 
   // --- src/theme.config.ts ---
   // Matches ThemeConfig in packages/ui/src/theme/themeConfig.ts.
@@ -689,20 +883,27 @@ export const themeConfig: ThemeConfig = {
   ]
 
   const showThemeSwitcher = config.theme.switcher.enabled
+  if (multilingual)
+    imports.push(
+      'import { useTranslation } from "react-i18next"',
+      'import { AppLanguageSwitcher } from "./i18n"',
+    )
 
   const appTsx = `${imports.join("\n")}
 
 export function App() {
+  ${multilingual ? "const { t } = useTranslation()" : ""}
   return (
     <ThemeProvider config={themeConfig}>
       <${layoutComponent}
         nav={[]}
         showThemeSwitcher={${showThemeSwitcher}}
+        ${multilingual ? "headerSlot={<AppLanguageSwitcher />}" : ""}
       >
         <div className="flex flex-col items-center justify-center gap-4 py-16">
-          <h1 className="text-4xl font-medium">Welcome</h1>
+          <h1 className="text-4xl font-medium">${multilingual ? '{t("welcome")}' : "Welcome"}</h1>
           <p className="text-muted-foreground">
-            Your project is ready. Start building in src/app.tsx
+            ${multilingual ? '{t("ready")}' : "Your project is ready. Start building in src/app.tsx"}
           </p>
         </div>
       </${layoutComponent}>
@@ -723,20 +924,44 @@ dist
   writeProjectFile(targetDir, ".gitignore", gitignore)
 
   // --- env.d.ts ---
-  writeProjectFile(targetDir, "src/env.d.ts", '/// <reference types="vite/client" />\n')
+  writeProjectFile(
+    targetDir,
+    "src/env.d.ts",
+    '/// <reference types="vite/client" />\n',
+  )
 
-  p.log.step(`Generated ${Object.keys(pkg.dependencies).length + Object.keys(pkg.devDependencies).length} dependencies`)
+  p.log.step(
+    `Generated ${Object.keys(pkg.dependencies).length + Object.keys(pkg.devDependencies).length} dependencies`,
+  )
 
-  p.log.step("Installing dependencies...")
-  execFileSync("npm", ["install"], { cwd: targetDir, stdio: "inherit", shell: true })
+  if (argv.install !== false) {
+    p.log.step("Installing dependencies...")
+    execFileSync("npm", ["install"], {
+      cwd: targetDir,
+      stdio: "inherit",
+      shell: true,
+      timeout: 180000,
+    })
+  }
 
-  p.log.step("Initializing git repository...")
-  execFileSync("git", ["init"], { cwd: targetDir, stdio: "inherit" })
-  execFileSync("git", ["add", "-A"], { cwd: targetDir, stdio: "inherit" })
-  execFileSync("git", ["commit", "-m", "chore: initialize project"], {
-    cwd: targetDir,
-    stdio: "inherit",
-  })
+  if (argv.git !== false) {
+    p.log.step("Initializing git repository...")
+    execFileSync("git", ["init"], {
+      cwd: targetDir,
+      stdio: "inherit",
+      timeout: 30000,
+    })
+    execFileSync("git", ["add", "-A"], {
+      cwd: targetDir,
+      stdio: "inherit",
+      timeout: 30000,
+    })
+    execFileSync("git", ["commit", "-m", "chore: initialize project"], {
+      cwd: targetDir,
+      stdio: "inherit",
+      timeout: 30000,
+    })
+  }
 
   p.outro(`Success! Created ${projectName} at ${targetDir}
 

@@ -1,3 +1,5 @@
+import { AppText } from "@/i18n/AppText"
+import { useAppTranslation } from "@/i18n/useAppTranslation"
 import { createFileRoute } from "@tanstack/react-router"
 import {
   LineChart,
@@ -29,15 +31,21 @@ export const Route = createFileRoute("/_authenticated/analytics")({
 })
 
 const revenueConfig = {
-  revenue: { label: "Revenue", color: "var(--chart-1)" },
+  revenue: { label: <AppText text="Revenue" />, color: "var(--chart-1)" },
 } satisfies ChartConfig
 
 const trafficConfig = {
-  "Organic Search": { label: "Organic Search", color: "var(--chart-1)" },
-  Direct: { label: "Direct", color: "var(--chart-2)" },
-  "Social Media": { label: "Social Media", color: "var(--chart-3)" },
-  Email: { label: "Email", color: "var(--chart-4)" },
-  Referral: { label: "Referral", color: "var(--chart-5)" },
+  "Organic Search": {
+    label: <AppText text="Organic Search" />,
+    color: "var(--chart-1)",
+  },
+  Direct: { label: <AppText text="Direct" />, color: "var(--chart-2)" },
+  "Social Media": {
+    label: <AppText text="Social Media" />,
+    color: "var(--chart-3)",
+  },
+  Email: { label: <AppText text="Email" />, color: "var(--chart-4)" },
+  Referral: { label: <AppText text="Referral" />, color: "var(--chart-5)" },
 } satisfies ChartConfig
 
 const trafficColors = [
@@ -49,15 +57,17 @@ const trafficColors = [
 ]
 
 const ordersVisitorsConfig = {
-  orders: { label: "Orders", color: "var(--chart-1)" },
-  visitors: { label: "Visitors", color: "var(--chart-2)" },
+  orders: { label: <AppText text="Orders" />, color: "var(--chart-1)" },
+  visitors: { label: <AppText text="Visitors" />, color: "var(--chart-2)" },
 } satisfies ChartConfig
 
 const productRevenueConfig = {
-  revenue: { label: "Revenue", color: "var(--chart-3)" },
+  revenue: { label: <AppText text="Revenue" />, color: "var(--chart-3)" },
 } satisfies ChartConfig
 
 function AnalyticsPage() {
+  const t = useAppTranslation()
+
   const { data: analytics } = useAnalytics(30)
   const { data: orders } = useOrders()
 
@@ -108,18 +118,18 @@ function AnalyticsPage() {
     <>
       <PageHeader
         breadcrumbs={[
-          { label: "Dashboard", href: "/" },
-          { label: "Analytics" },
+          { label: t("Dashboard"), href: "/" },
+          { label: t("Analytics") },
         ]}
-        title="Analytics"
-        description="Detailed performance metrics and trends"
+        title={t("Analytics")}
+        description={t("Detailed performance metrics and trends")}
       />
 
       <Stack gap="lg">
         <Grid cols={2} gap="md" responsive>
           <ChartCard
-            title="Revenue Trend"
-            description="Daily revenue over the last 30 days"
+            title={t("Revenue Trend")}
+            description={t("Daily revenue over the last 30 days")}
           >
             <ChartContainer
               config={revenueConfig}
@@ -146,8 +156,8 @@ function AnalyticsPage() {
             </ChartContainer>
           </ChartCard>
           <ChartCard
-            title="Traffic Sources"
-            description="Visitor acquisition breakdown"
+            title={t("Traffic Sources")}
+            description={t("Visitor acquisition breakdown")}
           >
             <ChartContainer
               config={trafficConfig}
@@ -174,8 +184,8 @@ function AnalyticsPage() {
 
         <Grid cols={2} gap="md" responsive>
           <ChartCard
-            title="Orders & Visitors"
-            description="Daily orders and scaled visitor count"
+            title={t("Orders & Visitors")}
+            description={t("Daily orders and scaled visitor count")}
           >
             <ChartContainer
               config={ordersVisitorsConfig}
@@ -209,8 +219,8 @@ function AnalyticsPage() {
             </ChartContainer>
           </ChartCard>
           <ChartCard
-            title="Top Products by Revenue"
-            description="Highest revenue-generating products"
+            title={t("Top Products by Revenue")}
+            description={t("Highest revenue-generating products")}
           >
             <ChartContainer
               config={productRevenueConfig}

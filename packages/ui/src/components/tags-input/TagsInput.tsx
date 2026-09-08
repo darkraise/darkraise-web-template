@@ -1,4 +1,5 @@
 "use client"
+import { useUiText } from "../../i18n/useUiText"
 
 import * as React from "react"
 
@@ -701,6 +702,8 @@ function TagsInputClearTrigger({
   ref,
   ...props
 }: TagsInputClearTriggerProps) {
+  const uiText = useUiText()
+
   const { value, clearAll, disabled, readOnly, focusInput } =
     useTagsInputContext("TagsInputClearTrigger")
 
@@ -711,7 +714,7 @@ function TagsInputClearTrigger({
       ref={ref}
       type={type}
       tabIndex={-1}
-      aria-label="Clear all tags"
+      aria-label={uiText("Clear all tags")}
       disabled={disabled || readOnly}
       data-disabled={disabled || readOnly ? "true" : undefined}
       className={cn("dr-tags-input-item-delete-trigger", className)}

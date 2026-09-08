@@ -63,7 +63,7 @@ const AUTH_USER = JSON.stringify({
  * the boot-time read path at all.
  */
 function storageEntries(theme: ThemeSeed, authenticated: boolean) {
-  const entries: [string, string][] = []
+  const entries: [string, string][] = [["darkraise-demo.language", "en"]]
 
   if (authenticated) {
     entries.push(["auth-token", "mock-jwt-token"], ["auth-user", AUTH_USER])

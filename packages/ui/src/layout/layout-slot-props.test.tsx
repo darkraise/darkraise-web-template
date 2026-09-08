@@ -56,6 +56,21 @@ async function openDrawer() {
 }
 
 describe.each(layouts)("%s nav slot props", (_name, Layout) => {
+  it("keeps the default notification bell when no slot is supplied", () => {
+    renderWith(Layout, {})
+    expect(screen.getByRole("button", { name: "Notifications" })).toBeVisible()
+  })
+
+  it("omits notifications when the slot is null", () => {
+    renderWith(Layout, { notificationSlot: null })
+    expect(screen.queryByRole("button", { name: "Notifications" })).toBeNull()
+  })
+
+  it("replaces the notification bell with consumer content", () => {
+    renderWith(Layout, { notificationSlot: <button>Farm alerts</button> })
+    expect(screen.queryByRole("button", { name: "Notifications" })).toBeNull()
+    expect(screen.getByRole("button", { name: "Farm alerts" })).toBeVisible()
+  })
   it("renders the new prop name", async () => {
     renderWith(Layout, { navHeader: <p>slot</p> })
     await openDrawer()

@@ -1,6 +1,8 @@
 "use client"
 
 import * as React from "react"
+import { useUiLocale } from "../../i18n/context"
+import { useUiFormatters } from "../../i18n/useUiFormatters"
 
 import { cn } from "@lib/utils"
 import { useUiLabels } from "@labels"
@@ -110,6 +112,8 @@ const defaultFormatRange = (r: DatePickerRangeValue) => {
 const EMPTY_RANGE: DatePickerRangeValue = {}
 
 function DatePicker(props: DatePickerProps) {
+  const uiLocale = useUiLocale()
+  const uiFormat = useUiFormatters()
   const {
     mode = "single",
     disabled = false,
@@ -155,29 +159,66 @@ function DatePicker(props: DatePickerProps) {
       : internalRange
     : EMPTY_RANGE
 
+  const canCommitDate = React.useCallback(
+    (date: Date) => {
+      if (!dateIsValid(date)) return false
+      const day = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
+      ).getTime()
+      const first = min
+        ? new Date(min.getFullYear(), min.getMonth(), min.getDate()).getTime()
+        : -Infinity
+      const last = max
+        ? new Date(max.getFullYear(), max.getMonth(), max.getDate()).getTime()
+        : Infinity
+      return day >= first && day <= last
+    },
+    [min, max],
+  )
+
   const commitSingle = React.useCallback(
     (date: Date | null) => {
+      if (disabled || (date !== null && !canCommitDate(date))) return
       if (singleProps?.value === undefined) setInternalSingle(date)
       singleProps?.onValueChange?.({ value: date })
     },
-    [singleProps],
+    [singleProps, disabled, canCommitDate],
   )
 
   const commitRange = React.useCallback(
     (range: DatePickerRangeValue) => {
+      if (
+        disabled ||
+        (range.from && !canCommitDate(range.from)) ||
+        (range.to && !canCommitDate(range.to))
+      )
+        return
       if (rangeProps?.value === undefined) setInternalRange(range)
       rangeProps?.onValueChange?.({ value: range })
     },
-    [rangeProps],
+    [rangeProps, disabled, canCommitDate],
   )
 
   const formatSingle = React.useMemo(
-    () => singleProps?.format ?? defaultFormatSingle,
-    [singleProps?.format],
+    () =>
+      singleProps?.format ??
+      (uiLocale.enabled ? uiFormat.calendarDate : defaultFormatSingle),
+    [singleProps?.format, uiLocale.enabled, uiFormat],
   )
   const formatRange = React.useMemo(
-    () => rangeProps?.format ?? defaultFormatRange,
-    [rangeProps?.format],
+    () =>
+      rangeProps?.format ??
+      (uiLocale.enabled
+        ? (range: DatePickerRangeValue) => {
+            if (!range.from) return ""
+            return range.to
+              ? `${uiFormat.calendarDate(range.from)} – ${uiFormat.calendarDate(range.to)}`
+              : uiFormat.calendarDate(range.from)
+          }
+        : defaultFormatRange),
+    [rangeProps?.format, uiLocale.enabled, uiFormat],
   )
 
   const parse = singleProps?.parse

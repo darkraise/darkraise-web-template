@@ -439,7 +439,7 @@ function ImageEditorPage() {
   return (
     <ShowcasePage
       title="Image Editor"
-      description="Composes ImageCropper with a filter chain, named presets, free-rotate, undo/redo, a tool switcher, and getEditedImage(). Annotation, freeform selection, perspective correction, and AI hooks ship in later phases."
+      description="Composes ImageCropper with a filter chain, named presets, free-rotate, undo/redo, a tool switcher, and getEditedImage(). Includes annotation, freeform selection, and perspective correction."
     >
       <ShowcaseExample title="Basic" code={BASIC_CODE}>
         <BasicExample />

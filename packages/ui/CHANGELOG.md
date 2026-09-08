@@ -4,6 +4,18 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 
 ## [Unreleased]
 
+### Added
+
+- Add controlled locale providers, English/Vietnamese packs, partial consumer
+  overrides, custom language registration, and shared Intl formatters.
+- Add an optional isolated i18next adapter and a controlled LocaleSwitcher.
+- Localize component controls, accessible text, image tools, theme options,
+  calendars, and numeric/date displays while retaining no-provider behavior.
+- Connect the demo and opt-in starter to shared language preferences.
+- Add an optional notification slot across all four layout shells.
+- Add optional locale option icons in the trigger and dropdown, with reusable
+  US/Vietnam SVG flags and custom SVG/image support.
+
 ## [6.8.2] — 2026-09-07
 
 ### Deprecated
