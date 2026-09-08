@@ -180,7 +180,16 @@ jobs:
         run: pnpm lint
 
       - name: Test
-        run: pnpm test
+        run: pnpm test --maxWorkers=2
+        timeout-minutes: 5
+
+      - name: Install browser
+        run: pnpm --filter darkraise-web-template exec playwright install --with-deps chromium
+        timeout-minutes: 5
+
+      - name: Browser regressions
+        run: pnpm --filter darkraise-web-template exec playwright test 01-auth 06-overlays 08-data-display 11-review-regressions 12-i18n --global-timeout=300000
+        timeout-minutes: 6
 
       - name: Publish to npm
         env:

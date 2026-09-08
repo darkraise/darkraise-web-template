@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+        timeout-minutes: 5
+      - run: pnpm --filter darkraise-ui build
+        timeout-minutes: 5
+      - run: pnpm --filter darkraise-web-template build
+        timeout-minutes: 5
+      - run: pnpm -r typecheck
+        timeout-minutes: 3
+      - run: pnpm lint
+        timeout-minutes: 3
+      - run: pnpm test --maxWorkers=2
+        timeout-minutes: 5
+      - run: pnpm --filter darkraise-web-template exec playwright install --with-deps chromium
+        timeout-minutes: 5
+      - run: pnpm --filter darkraise-web-template exec playwright test 01-auth 06-overlays 08-data-display 11-review-regressions 12-i18n --global-timeout=300000
+        timeout-minutes: 6

@@ -43,7 +43,7 @@ test.describe("authentication", () => {
     await page.getByRole("textbox", { name: "Password" }).fill("password123")
     await page.getByRole("button", { name: "Sign in" }).click()
 
-    await expect(page).toHaveURL("http://localhost:5176/")
+    await expect(page).toHaveURL("/")
     await expect(page.getByRole("heading", { name: "Dashboard" })).toBeVisible()
     expect(
       await page.evaluate(() => localStorage.getItem("auth-token")),
