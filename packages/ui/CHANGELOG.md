@@ -4,6 +4,8 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 
 ## [Unreleased]
 
+## [6.9.0] — 2026-09-08
+
 ### Added
 
 - Add controlled locale providers, English/Vietnamese packs, partial consumer
