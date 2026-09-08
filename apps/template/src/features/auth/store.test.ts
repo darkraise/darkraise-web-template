@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest"
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest"
 import { useAuthStore } from "./store"
 
 const storageMock = (() => {
@@ -20,6 +20,44 @@ const storageMock = (() => {
 })()
 
 describe("useAuthStore", () => {
+  afterEach(() => vi.unstubAllGlobals())
+
+  it("keeps authentication in memory when writes fail", () => {
+    vi.stubGlobal("localStorage", {
+      ...storageMock,
+      setItem: () => {
+        throw new Error("Storage denied")
+      },
+    })
+    const user = { id: "1", name: "Test", email: "test@example.com" }
+    expect(() =>
+      useAuthStore.getState().setAuth({ user, token: "abc" }),
+    ).not.toThrow()
+    expect(useAuthStore.getState()).toMatchObject({
+      user,
+      token: "abc",
+      isAuthenticated: true,
+    })
+  })
+
+  it("clears authentication in memory when removal fails", () => {
+    useAuthStore.getState().setAuth({
+      user: { id: "1", name: "Test", email: "test@example.com" },
+      token: "abc",
+    })
+    vi.stubGlobal("localStorage", {
+      ...storageMock,
+      removeItem: () => {
+        throw new Error("Storage denied")
+      },
+    })
+    expect(() => useAuthStore.getState().logout()).not.toThrow()
+    expect(useAuthStore.getState()).toMatchObject({
+      user: null,
+      token: null,
+      isAuthenticated: false,
+    })
+  })
   beforeEach(() => {
     vi.stubGlobal("localStorage", storageMock)
     storageMock.clear()

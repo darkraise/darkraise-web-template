@@ -32,14 +32,23 @@ export const useAuthStore = create<AuthState>((set) => ({
   isAuthenticated: !!getStoredToken(),
 
   setAuth: ({ user, token }) => {
-    localStorage.setItem("auth-token", token)
-    localStorage.setItem("auth-user", JSON.stringify(user))
     set({ user, token, isAuthenticated: true })
+    try {
+      localStorage.setItem("auth-token", token)
+      localStorage.setItem("auth-user", JSON.stringify(user))
+    } catch {
+      // Authentication remains usable in memory when persistence is denied.
+    }
   },
 
   logout: () => {
-    localStorage.removeItem("auth-token")
-    localStorage.removeItem("auth-user")
     set({ user: null, token: null, isAuthenticated: false })
+    for (const key of ["auth-token", "auth-user"]) {
+      try {
+        localStorage.removeItem(key)
+      } catch {
+        // A storage failure must not keep the current session authenticated.
+      }
+    }
   },
 }))

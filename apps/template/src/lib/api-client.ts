@@ -19,20 +19,24 @@ export async function apiClient<T>(
   const baseUrl = import.meta.env.VITE_API_BASE_URL || ""
   const { body, headers: customHeaders, ...rest } = options
 
-  const token = localStorage.getItem("auth-token")
-
-  const headers: HeadersInit = {
-    "Content-Type": "application/json",
-    ...customHeaders,
+  let token: string | null = null
+  try {
+    token = localStorage.getItem("auth-token")
+  } catch {
+    // Storage can be unavailable in embedded or private browsing contexts.
   }
 
+  const headers = new Headers(customHeaders)
+  if (!headers.has("Content-Type"))
+    headers.set("Content-Type", "application/json")
+
   if (token) {
-    ;(headers as Record<string, string>)["Authorization"] = `Bearer ${token}`
+    headers.set("Authorization", `Bearer ${token}`)
   }
 
   const response = await fetch(`${baseUrl}${endpoint}`, {
     headers,
-    body: body ? JSON.stringify(body) : undefined,
+    body: body !== undefined ? JSON.stringify(body) : undefined,
     ...rest,
   })
 
