@@ -57,9 +57,28 @@ function Button({
       // Slot forwards to whatever element the consumer supplied, which may not
       // accept `disabled` at all (an anchor, for instance), so the busy state
       // is expressed through aria there instead.
-      disabled={asChild ? undefined : (disabled ?? loading)}
+      disabled={asChild ? undefined : disabled || loading}
       aria-disabled={asChild && (disabled || loading) ? true : undefined}
       {...props}
+      onClick={(event) => {
+        if (disabled || loading) {
+          event.preventDefault()
+          event.stopPropagation()
+          return
+        }
+        props.onClick?.(event)
+      }}
+      onKeyDown={(event) => {
+        if (
+          (disabled || loading) &&
+          (event.key === "Enter" || event.key === " ")
+        ) {
+          event.preventDefault()
+          event.stopPropagation()
+          return
+        }
+        props.onKeyDown?.(event)
+      }}
     >
       {asChild ? (
         children

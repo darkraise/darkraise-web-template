@@ -5,6 +5,33 @@ import { createRef } from "react"
 import { Button } from "@components/button"
 
 describe("Button", () => {
+  it("blocks actions while loading even when disabled is false", async () => {
+    const onClick = vi.fn()
+    render(
+      <Button loading disabled={false} onClick={onClick}>
+        Save
+      </Button>,
+    )
+    await userEvent.click(screen.getByRole("button", { name: "Save" }))
+    expect(onClick).not.toHaveBeenCalled()
+  })
+
+  it("blocks pointer and keyboard activation of busy slotted links", async () => {
+    const user = userEvent.setup()
+    const onClick = vi.fn((event) => event.preventDefault())
+    render(
+      <Button asChild loading>
+        <a href="/save" onClick={onClick}>
+          Save
+        </a>
+      </Button>,
+    )
+    const link = screen.getByRole("link", { name: "Save" })
+    await user.click(link)
+    link.focus()
+    await user.keyboard("{Enter}")
+    expect(onClick).not.toHaveBeenCalled()
+  })
   it("renders with correct text", () => {
     render(<Button>Click me</Button>)
     expect(screen.getByRole("button", { name: "Click me" })).toBeInTheDocument()
