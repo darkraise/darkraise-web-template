@@ -4,6 +4,8 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 
 ## [Unreleased]
 
+## [6.9.2] — 2026-09-23
+
 ### Fixed
 
 - A layer that is closing no longer swallows Escape. Content stays mounted through its exit animation, and since 6.9.1 a nested layer blocks its parent, so an Escape pressed in that window — closing a dialog and then the sheet under it in quick succession — went to the dialog already on its way out and did nothing. `DismissableLayer` takes an `active` prop, which every overlay passes its open state to; an inactive layer neither answers Escape nor blocks the layer beneath it.
