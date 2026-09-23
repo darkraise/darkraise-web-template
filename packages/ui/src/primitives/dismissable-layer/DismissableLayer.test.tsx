@@ -109,4 +109,24 @@ describe("DismissableLayer", () => {
     expect(dialogEsc).toHaveBeenCalledTimes(1)
     expect(sheetEsc).toHaveBeenCalledTimes(0)
   })
+
+  it("a nested layer that is closing neither answers Escape nor blocks its parent", async () => {
+    // Content stays mounted through its exit animation; an Escape pressed in
+    // that window belongs to the layer underneath.
+    const sheetEsc = vi.fn()
+    const dialogEsc = vi.fn()
+    render(
+      <DismissableLayer onEscapeKeyDown={sheetEsc}>
+        {createPortal(
+          <DismissableLayer active={false} onEscapeKeyDown={dialogEsc}>
+            <div data-testid="dialog">x</div>
+          </DismissableLayer>,
+          document.body,
+        )}
+      </DismissableLayer>,
+    )
+    await userEvent.keyboard("{Escape}")
+    expect(dialogEsc).toHaveBeenCalledTimes(0)
+    expect(sheetEsc).toHaveBeenCalledTimes(1)
+  })
 })

@@ -300,6 +300,7 @@ function DrawerContentImpl({
 
   return (
     <DismissableLayer
+      active={ctx.open}
       onPointerDownOutside={(event) => {
         onPointerDownOutside?.(event)
         if (event.defaultPrevented) return

@@ -14,6 +14,8 @@ export interface DismissableLayerProps extends React.HTMLAttributes<HTMLDivEleme
   onEscapeKeyDown?: (event: KeyboardEvent) => void
   onFocusOutside?: (event: FocusEvent) => void
   disableOutsidePointerEvents?: boolean
+  /** Pass the owner's open state: content kept mounted for an exit animation is not a layer. */
+  active?: boolean
   children: React.ReactNode
 }
 
@@ -22,6 +24,7 @@ export function DismissableLayer({
   onEscapeKeyDown,
   onFocusOutside,
   disableOutsidePointerEvents,
+  active = true,
   children,
   ...rest
 }: DismissableLayerProps) {
@@ -32,9 +35,15 @@ export function DismissableLayer({
   const stableOutside = useEvent((e: PointerEvent) => onPointerDownOutside?.(e))
   const stableEscape = useEvent((e: KeyboardEvent) => onEscapeKeyDown?.(e))
   const stableFocusOutside = useEvent((e: FocusEvent) => onFocusOutside?.(e))
+  const isActive = useEvent(() => active)
 
   React.useEffect(() => {
-    pushLayer(id, ancestors, () => ref.current)
+    pushLayer(
+      id,
+      ancestors,
+      () => ref.current,
+      isActive,
+    )
     const onPointerDown = (e: PointerEvent) => {
       if (!ref.current) return
       if (e.target instanceof Node && isTargetInLayerOrAbove(id, e.target))
@@ -61,7 +70,7 @@ export function DismissableLayer({
       document.removeEventListener("keydown", onKeyDown, true)
       document.removeEventListener("focusin", onFocusIn, true)
     }
-  }, [id, ancestors, stableEscape, stableFocusOutside, stableOutside])
+  }, [id, ancestors, isActive, stableEscape, stableFocusOutside, stableOutside])
 
   React.useEffect(() => {
     if (!disableOutsidePointerEvents) return

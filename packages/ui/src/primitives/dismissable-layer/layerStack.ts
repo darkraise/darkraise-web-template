@@ -3,6 +3,8 @@ interface LayerEntry {
   /** Every layer this one renders inside, outermost first — read from React, so it crosses portals. */
   ancestors: readonly symbol[]
   getNode: () => HTMLElement | null
+  /** False while the owner is closed but its content is still animating out. */
+  isActive: () => boolean
 }
 
 const stack: LayerEntry[] = []
@@ -11,8 +13,9 @@ export function pushLayer(
   id: symbol,
   ancestors: readonly symbol[],
   getNode: () => HTMLElement | null,
+  isActive: () => boolean,
 ): void {
-  stack.push({ id, ancestors, getNode })
+  stack.push({ id, ancestors, getNode, isActive })
 }
 
 export function popLayer(id: symbol): void {
@@ -41,7 +44,9 @@ export function isTargetInLayerOrAbove(id: symbol, target: Node): boolean {
 // nested layer that portals out (a dialog opened from a sheet) is not inside
 // its parent's node, and React runs a child's effects before its parent's, so
 // a layer mounted in the same commit as its parent is pushed first.
+// A closing layer takes no part: it neither answers nor blocks its parent.
 export function isTopLayer(id: symbol): boolean {
-  if (!stack.some((entry) => entry.id === id)) return false
-  return !stack.some((entry) => entry.ancestors.includes(id))
+  const target = stack.find((entry) => entry.id === id)
+  if (!target || !target.isActive()) return false
+  return !stack.some((entry) => entry.isActive() && entry.ancestors.includes(id))
 }

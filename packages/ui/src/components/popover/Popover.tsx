@@ -253,6 +253,7 @@ function PopoverContentImpl({
 
   return (
     <DismissableLayer
+      active={ctx.open}
       onPointerDownOutside={(event) => {
         onPointerDownOutside?.(event)
         onInteractOutside?.(event)
