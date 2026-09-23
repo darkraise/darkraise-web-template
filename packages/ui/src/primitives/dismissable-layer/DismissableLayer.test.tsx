@@ -1,4 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from "vitest"
+import { createPortal } from "react-dom"
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { DismissableLayer } from "./DismissableLayer"
@@ -87,5 +88,25 @@ describe("DismissableLayer", () => {
     await userEvent.keyboard("{Escape}")
     expect(innerEsc).toHaveBeenCalledTimes(1)
     expect(outerEsc).toHaveBeenCalledTimes(0)
+  })
+
+  it("only a nested layer portalled out of its parent responds to Escape", async () => {
+    // A dialog opened from inside a sheet portals to document.body, so the
+    // sheet's node never contains it; the nesting is only visible in React.
+    const sheetEsc = vi.fn()
+    const dialogEsc = vi.fn()
+    render(
+      <DismissableLayer onEscapeKeyDown={sheetEsc}>
+        {createPortal(
+          <DismissableLayer onEscapeKeyDown={dialogEsc}>
+            <div data-testid="dialog">x</div>
+          </DismissableLayer>,
+          document.body,
+        )}
+      </DismissableLayer>,
+    )
+    await userEvent.keyboard("{Escape}")
+    expect(dialogEsc).toHaveBeenCalledTimes(1)
+    expect(sheetEsc).toHaveBeenCalledTimes(0)
   })
 })

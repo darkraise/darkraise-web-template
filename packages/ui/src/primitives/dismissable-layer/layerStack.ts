@@ -1,14 +1,18 @@
 interface LayerEntry {
   id: symbol
+  /** Every layer this one renders inside, outermost first — read from React, so it crosses portals. */
+  ancestors: readonly symbol[]
   getNode: () => HTMLElement | null
 }
 
 const stack: LayerEntry[] = []
 
-export function pushLayer(getNode: () => HTMLElement | null): symbol {
-  const id = Symbol("dismissable-layer")
-  stack.push({ id, getNode })
-  return id
+export function pushLayer(
+  id: symbol,
+  ancestors: readonly symbol[],
+  getNode: () => HTMLElement | null,
+): void {
+  stack.push({ id, ancestors, getNode })
 }
 
 export function popLayer(id: symbol): void {
@@ -32,20 +36,12 @@ export function isTargetInLayerOrAbove(id: symbol, target: Node): boolean {
   return false
 }
 
-// The topmost layer is the deepest in the DOM tree — the layer whose node
-// is not contained by any other registered layer's node.
+// A layer is topmost while no other registered layer renders inside it. The
+// nesting comes from React rather than from the DOM or the push order: a
+// nested layer that portals out (a dialog opened from a sheet) is not inside
+// its parent's node, and React runs a child's effects before its parent's, so
+// a layer mounted in the same commit as its parent is pushed first.
 export function isTopLayer(id: symbol): boolean {
-  const target = stack.find((entry) => entry.id === id)
-  if (!target) return false
-  const targetNode = target.getNode()
-  if (!targetNode) return false
-  for (const entry of stack) {
-    if (entry.id === id) continue
-    const node = entry.getNode()
-    if (node && targetNode.contains(node) && targetNode !== node) {
-      // Another layer lives inside this one — this is not the topmost.
-      return false
-    }
-  }
-  return true
+  if (!stack.some((entry) => entry.id === id)) return false
+  return !stack.some((entry) => entry.ancestors.includes(id))
 }

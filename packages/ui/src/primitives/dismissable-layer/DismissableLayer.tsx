@@ -7,6 +7,8 @@ import {
   pushLayer,
 } from "./layerStack"
 
+const LayerAncestry = React.createContext<readonly symbol[]>([])
+
 export interface DismissableLayerProps extends React.HTMLAttributes<HTMLDivElement> {
   onPointerDownOutside?: (event: PointerEvent) => void
   onEscapeKeyDown?: (event: KeyboardEvent) => void
@@ -24,12 +26,15 @@ export function DismissableLayer({
   ...rest
 }: DismissableLayerProps) {
   const ref = React.useRef<HTMLDivElement | null>(null)
+  const [id] = React.useState(() => Symbol("dismissable-layer"))
+  const ancestors = React.useContext(LayerAncestry)
+  const lineage = React.useMemo(() => [...ancestors, id], [ancestors, id])
   const stableOutside = useEvent((e: PointerEvent) => onPointerDownOutside?.(e))
   const stableEscape = useEvent((e: KeyboardEvent) => onEscapeKeyDown?.(e))
   const stableFocusOutside = useEvent((e: FocusEvent) => onFocusOutside?.(e))
 
   React.useEffect(() => {
-    const id = pushLayer(() => ref.current)
+    pushLayer(id, ancestors, () => ref.current)
     const onPointerDown = (e: PointerEvent) => {
       if (!ref.current) return
       if (e.target instanceof Node && isTargetInLayerOrAbove(id, e.target))
@@ -56,7 +61,7 @@ export function DismissableLayer({
       document.removeEventListener("keydown", onKeyDown, true)
       document.removeEventListener("focusin", onFocusIn, true)
     }
-  }, [stableEscape, stableFocusOutside, stableOutside])
+  }, [id, ancestors, stableEscape, stableFocusOutside, stableOutside])
 
   React.useEffect(() => {
     if (!disableOutsidePointerEvents) return
@@ -70,8 +75,10 @@ export function DismissableLayer({
   }, [disableOutsidePointerEvents])
 
   return (
-    <div ref={ref} {...rest}>
-      {children}
-    </div>
+    <LayerAncestry.Provider value={lineage}>
+      <div ref={ref} {...rest}>
+        {children}
+      </div>
+    </LayerAncestry.Provider>
   )
 }

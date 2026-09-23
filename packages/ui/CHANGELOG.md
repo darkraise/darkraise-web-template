@@ -4,6 +4,10 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 
 ## [Unreleased]
 
+### Fixed
+
+- One Escape no longer closes two layers when the upper one is portalled out of the lower one — a `Dialog` opened from inside a `Sheet`, for example. `DismissableLayer` decided the topmost layer by DOM containment, and a portalled layer is never inside its parent's node, so both answered the key. Each layer now carries its ancestor chain through React context, which crosses portals, and is topmost while no other open layer renders inside it.
+
 ## [6.9.0] — 2026-09-08
 
 ### Added
