@@ -4,6 +4,8 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 
 ## [Unreleased]
 
+## [6.9.3] — 2026-09-24
+
 ### Fixed
 
 - A `Switch` inside a vertical or responsive `Field` keeps its size. The Field's width reset on its children (`.dr-field[data-orientation=…] > *`) outranked `.dr-switch`, so a responsive group at `@md` collapsed the track to a 20×20 dot with the thumb spilling out, and a vertical field stretched it across the row. A `Checkbox` lost its size the same way, since its size rule ties on specificity and `field.css` loads after it. The reset now skips `[role=switch]`, `[role=checkbox]` and `[role=radio]`, which size themselves.
