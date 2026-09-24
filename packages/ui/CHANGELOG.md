@@ -7,6 +7,7 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 ### Fixed
 
 - Escape with a `HoverCard` open inside a `Dialog` or `Sheet` closes only the card. The card closed on its own document `keydown` listener and never joined the dismissable-layer stack, so the dialog around it still counted itself as the top layer and one Escape closed both. `HoverCardContent` is now a `DismissableLayer`, active while the card is open, as `TooltipContent` became in 6.9.3.
+- A horizontal or responsive `Field` nudges only its own checkbox or radio down a pixel. The rule was written `[&>[role=checkbox],[role=radio]]`, whose second branch compiled to a descendant selector, so every radio anywhere inside the Field — one in its description block, say — got the nudge too.
 
 ## [6.9.3] — 2026-09-24
 

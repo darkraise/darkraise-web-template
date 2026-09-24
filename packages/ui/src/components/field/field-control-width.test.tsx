@@ -5,7 +5,12 @@ import { dirname, resolve } from "node:path"
 import { compile } from "tailwindcss"
 import { transform } from "lightningcss"
 import type { ReactNode } from "react"
-import { Field, FieldLabel, type FieldOrientation } from "@components/field"
+import {
+  Field,
+  FieldContent,
+  FieldLabel,
+  type FieldOrientation,
+} from "@components/field"
 import { Switch } from "@components/switch"
 import { Checkbox } from "@components/checkbox"
 import { RadioGroup, RadioGroupItem } from "@components/radio-group"
@@ -135,4 +140,62 @@ describe("Field child width", () => {
       ),
     ).toBe(true)
   })
+})
+
+// A checkbox or radio beside a label-and-description block is nudged down a
+// pixel to sit on the label's first line. That nudge is for the Field's own
+// control; a radio further down, inside the description block, is not it.
+describe("Field control top offset", () => {
+  let fieldMarginRules: Rule[]
+
+  beforeAll(async () => {
+    fieldMarginRules = (await compiledRules()).filter(
+      (rule) =>
+        rule.selector.includes(".dr-field[") &&
+        /(^|[;\s])margin-top:/.test(rule.declarations),
+    )
+  })
+
+  const matching = (element: HTMLElement) =>
+    fieldMarginRules.filter((rule) => element.matches(rule.selector))
+
+  for (const orientation of ["horizontal", "responsive"] as const) {
+    it(`nudges a ${orientation} field's own checkbox and radio`, () => {
+      const { getByTestId } = render(
+        <>
+          <Field orientation={orientation}>
+            <Checkbox data-testid="checkbox" />
+            <FieldContent>
+              <FieldLabel>Label</FieldLabel>
+            </FieldContent>
+          </Field>
+          <RadioGroup>
+            <Field orientation={orientation}>
+              <RadioGroupItem value="a" data-testid="radio" />
+              <FieldContent>
+                <FieldLabel>Label</FieldLabel>
+              </FieldContent>
+            </Field>
+          </RadioGroup>
+        </>,
+      )
+      expect(matching(getByTestId("checkbox"))).not.toEqual([])
+      expect(matching(getByTestId("radio"))).not.toEqual([])
+    })
+
+    it(`leaves a radio nested inside a ${orientation} field's content alone`, () => {
+      const { getByTestId } = render(
+        <Field orientation={orientation}>
+          <Checkbox />
+          <FieldContent>
+            <FieldLabel>Label</FieldLabel>
+            <RadioGroup>
+              <RadioGroupItem value="a" data-testid="nested" />
+            </RadioGroup>
+          </FieldContent>
+        </Field>,
+      )
+      expect(matching(getByTestId("nested")).map((rule) => rule.selector)).toEqual([])
+    })
+  }
 })
