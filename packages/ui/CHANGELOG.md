@@ -10,6 +10,7 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 
 - A layer that is closing no longer swallows Escape. Content stays mounted through its exit animation, and since 6.9.1 a nested layer blocks its parent, so an Escape pressed in that window — closing a dialog and then the sheet under it in quick succession — went to the dialog already on its way out and did nothing. `DismissableLayer` takes an `active` prop, which every overlay passes its open state to; an inactive layer neither answers Escape nor blocks the layer beneath it.
 - A `Switch` inside a vertical or responsive `Field` keeps its size. The Field's width reset on its children (`.dr-field[data-orientation=…] > *`) outranked `.dr-switch`, so a responsive group at `@md` collapsed the track to a 20×20 dot with the thumb spilling out, and a vertical field stretched it across the row. A `Checkbox` lost its size the same way, since its size rule ties on specificity and `field.css` loads after it. The reset now skips `[role=switch]`, `[role=checkbox]` and `[role=radio]`, which size themselves.
+- Escape with a `Tooltip` open inside a `Dialog` or `Sheet` closes only the tooltip. The tooltip closed on its own document `keydown` listener and never joined the layer stack, so the dialog underneath still counted itself as topmost and answered the same key. `TooltipContent` is now a `DismissableLayer`, active while the tooltip is open; the next Escape reaches the dialog, and with no tooltip open the first one does.
 
 ## [6.9.1] — 2026-09-23
 

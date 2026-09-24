@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { describe, it, expect } from "vitest"
+import { describe, it, expect, vi } from "vitest"
+import { useState } from "react"
 import {
   Tooltip,
   TooltipTrigger,
@@ -8,6 +9,7 @@ import {
   TooltipProvider,
   TOOLTIP_DEFAULT_DELAY,
 } from "@components/tooltip"
+import { Dialog, DialogContent, DialogTitle } from "@components/dialog"
 
 function Basic({ delayDuration = 0 }: { delayDuration?: number } = {}) {
   return (
@@ -24,6 +26,33 @@ function Basic({ delayDuration = 0 }: { delayDuration?: number } = {}) {
 // `user.hover` earlier in the file leaves `:focus-visible` false for every
 // later `user.tab()`. Firing the Tab keydown ourselves before moving focus
 // states the intent directly instead of depending on that leaked state.
+function TooltipInDialog({
+  onDialogOpenChange,
+}: {
+  onDialogOpenChange: (open: boolean) => void
+}) {
+  const [open, setOpen] = useState(true)
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        onDialogOpenChange(next)
+        setOpen(next)
+      }}
+    >
+      <DialogContent>
+        <DialogTitle>Settings</DialogTitle>
+        {/* Takes the dialog's initial focus, so opening it raises no tooltip. */}
+        <button type="button">Save</button>
+        <Tooltip delayDuration={0}>
+          <TooltipTrigger>Help</TooltipTrigger>
+          <TooltipContent>Help text</TooltipContent>
+        </Tooltip>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
 async function keyboardFocus(element: HTMLElement): Promise<void> {
   fireEvent.keyDown(document, { key: "Tab" })
   element.focus()
@@ -93,6 +122,34 @@ describe("Tooltip", () => {
     await screen.findByRole("tooltip")
     await user.keyboard("{Escape}")
     await waitFor(() => expect(screen.queryByRole("tooltip")).toBeNull())
+  })
+
+  // The tooltip is a layer above the dialog it sits in: one Escape closes
+  // the tooltip alone, and only the next one reaches the dialog.
+  it("Escape inside a dialog closes the tooltip and not the dialog", async () => {
+    const user = userEvent.setup()
+    const onDialogOpenChange = vi.fn()
+    render(<TooltipInDialog onDialogOpenChange={onDialogOpenChange} />)
+    await keyboardFocus(screen.getByRole("button", { name: "Help" }))
+    await screen.findByRole("tooltip")
+
+    await user.keyboard("{Escape}")
+    await waitFor(() => expect(screen.queryByRole("tooltip")).toBeNull())
+    expect(onDialogOpenChange).not.toHaveBeenCalled()
+    expect(screen.getByRole("dialog")).toBeInTheDocument()
+
+    await user.keyboard("{Escape}")
+    expect(onDialogOpenChange).toHaveBeenCalledExactlyOnceWith(false)
+  })
+
+  it("Escape reaches the dialog when no tooltip is open", async () => {
+    const user = userEvent.setup()
+    const onDialogOpenChange = vi.fn()
+    render(<TooltipInDialog onDialogOpenChange={onDialogOpenChange} />)
+    expect(screen.queryByRole("tooltip")).toBeNull()
+
+    await user.keyboard("{Escape}")
+    expect(onDialogOpenChange).toHaveBeenCalledExactlyOnceWith(false)
   })
 
   // A tooltip opened by focus can never be dismissed by `pointerleave`,

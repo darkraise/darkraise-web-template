@@ -4,6 +4,7 @@ import * as React from "react"
 
 import { cn } from "@lib/utils"
 import type { SurfaceIntensityProp } from "@lib/surface-intensity"
+import { DismissableLayer } from "@primitives/dismissable-layer"
 import { Portal } from "@primitives/portal"
 import { Presence } from "@primitives/presence"
 import { Slot, composeRefs } from "@primitives/slot"
@@ -277,51 +278,48 @@ function TooltipContentImpl({
     setReferenceFloat(ctx.reference ?? null)
   }, [ctx.reference, setReferenceFloat])
 
-  // Escape closes (window-level — Tooltip is non-modal, no DismissableLayer needed).
-  React.useEffect(() => {
-    if (!ctx.open) return
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") ctx.setOpen(false)
-    }
-    document.addEventListener("keydown", onKey)
-    return () => document.removeEventListener("keydown", onKey)
-  }, [ctx.open, ctx])
-
   const [resolvedSide, resolvedAlign] = React.useMemo(() => {
     const p = floating.placement
     const [s, a = "center"] = p.split("-")
     return [s, a]
   }, [floating.placement])
 
+  // Non-modal, but still a layer: a tooltip inside a dialog must take the
+  // Escape that would otherwise close the dialog too.
   return (
-    <div
-      ref={composeRefs(localRef, floating.refs.setFloating, ref)}
-      role="tooltip"
-      id={ctx.contentId}
-      data-state={ctx.state}
-      data-side={resolvedSide}
-      data-align={resolvedAlign}
-      data-surface-intensity={surfaceIntensity}
-      style={{
-        position: floating.strategy,
-        top: Math.round(floating.y ?? 0),
-        left: Math.round(floating.x ?? 0),
-      }}
-      className={cn("dr-tooltip-content", className)}
-      onPointerEnter={(event) => {
-        onPointerEnter?.(event)
-        if (event.defaultPrevented) return
-        if (!ctx.disableHoverableContent) ctx.cancelSchedule()
-      }}
-      onPointerLeave={(event) => {
-        onPointerLeave?.(event)
-        if (event.defaultPrevented) return
-        ctx.scheduleClose()
-      }}
-      {...rest}
+    <DismissableLayer
+      active={ctx.open}
+      onEscapeKeyDown={() => ctx.setOpen(false)}
     >
-      {children}
-    </div>
+      <div
+        ref={composeRefs(localRef, floating.refs.setFloating, ref)}
+        role="tooltip"
+        id={ctx.contentId}
+        data-state={ctx.state}
+        data-side={resolvedSide}
+        data-align={resolvedAlign}
+        data-surface-intensity={surfaceIntensity}
+        style={{
+          position: floating.strategy,
+          top: Math.round(floating.y ?? 0),
+          left: Math.round(floating.x ?? 0),
+        }}
+        className={cn("dr-tooltip-content", className)}
+        onPointerEnter={(event) => {
+          onPointerEnter?.(event)
+          if (event.defaultPrevented) return
+          if (!ctx.disableHoverableContent) ctx.cancelSchedule()
+        }}
+        onPointerLeave={(event) => {
+          onPointerLeave?.(event)
+          if (event.defaultPrevented) return
+          ctx.scheduleClose()
+        }}
+        {...rest}
+      >
+        {children}
+      </div>
+    </DismissableLayer>
   )
 }
 
