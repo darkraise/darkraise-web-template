@@ -9,6 +9,7 @@ import { Portal } from "@primitives/portal"
 import { Presence } from "@primitives/presence"
 import { Slot, composeRefs } from "@primitives/slot"
 import { useFloating } from "@primitives/floating"
+import { isProgrammaticFocus } from "@primitives/focus-trap"
 import { useHoverCard, type UseHoverCardReturn } from "./useHoverCard"
 import "./hover-card.css"
 
@@ -104,6 +105,8 @@ function HoverCardTrigger({
       onFocus={(event: React.FocusEvent<HTMLAnchorElement>) => {
         onFocus?.(event)
         if (event.defaultPrevented) return
+        // Focus an overlay moved here on open or close; see TooltipTrigger.
+        if (isProgrammaticFocus()) return
         ctx.scheduleOpen()
       }}
       onBlur={(event: React.FocusEvent<HTMLAnchorElement>) => {

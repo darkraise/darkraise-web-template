@@ -11,6 +11,7 @@ import { Presence } from "@primitives/presence"
 import { Slot, composeRefs } from "@primitives/slot"
 import { useFloating } from "@primitives/floating"
 import { useControllableState } from "@primitives/state"
+import { focusProgrammatically } from "@primitives/focus-trap"
 import { useMenu } from "@components/_internal/useMenu"
 import "./select.css"
 
@@ -432,7 +433,7 @@ function SelectContentImpl({
       const event = new Event("closeAutoFocus", { cancelable: true })
       onCloseAutoFocusRef.current?.(event)
       if (event.defaultPrevented) return
-      ctx.triggerRef.current?.focus({ preventScroll: true })
+      focusProgrammatically(ctx.triggerRef.current, { preventScroll: true })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])

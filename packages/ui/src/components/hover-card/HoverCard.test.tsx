@@ -8,6 +8,7 @@ import {
   HoverCardContent,
 } from "@components/hover-card"
 import { Dialog, DialogContent, DialogTitle } from "@components/dialog"
+import { focusProgrammatically } from "@primitives/focus-trap"
 
 function Basic({
   openDelay = 0,
@@ -76,6 +77,15 @@ describe("HoverCard", () => {
     render(<Basic />)
     await user.tab()
     expect(await screen.findByText("card content")).toBeInTheDocument()
+  })
+
+  it("does not open for focus moved with focusProgrammatically", async () => {
+    render(<Basic />)
+
+    focusProgrammatically(screen.getByText("trigger"))
+    await new Promise((resolve) => setTimeout(resolve, 50))
+
+    expect(screen.queryByText("card content")).toBeNull()
   })
 
   it("Escape closes", async () => {

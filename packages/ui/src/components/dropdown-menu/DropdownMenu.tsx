@@ -10,6 +10,7 @@ import { Portal } from "@primitives/portal"
 import { Presence } from "@primitives/presence"
 import { Slot, composeRefs } from "@primitives/slot"
 import { useFloating } from "@primitives/floating"
+import { focusProgrammatically } from "@primitives/focus-trap"
 import {
   useMenu,
   type MenuItemDescriptor,
@@ -312,7 +313,7 @@ function DropdownMenuContentImpl({
       if (event.defaultPrevented) return
       const ref = referenceRef.current
       if (ref instanceof HTMLElement && ref.isConnected) {
-        ref.focus({ preventScroll: true })
+        focusProgrammatically(ref, { preventScroll: true })
       }
     }
     // We only want this on unmount of the *content* element. Empty deps suffice.

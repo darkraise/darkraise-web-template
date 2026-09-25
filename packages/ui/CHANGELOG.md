@@ -4,6 +4,10 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 
 ## [Unreleased]
 
+### Fixed
+
+- A dialog, sheet, popover, dropdown menu or select that moves focus no longer opens a tooltip or hover card on the element it lands on. After an Escape the browser counts that move as keyboard focus, so closing a dialog handed focus back to its trigger with the trigger's tooltip open, and the next Escape closed only the tooltip — closing a sheet under a dialog took three presses. The overlays now move focus with `focusProgrammatically`, exported for app code that restores focus itself, and `TooltipTrigger` and `HoverCardTrigger` ignore focus moved that way. Tabbing to a trigger still opens its tooltip.
+
 ## [6.9.4] — 2026-09-24
 
 ### Fixed

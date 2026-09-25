@@ -2,6 +2,7 @@ import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi } from "vitest"
 import { useState } from "react"
+import { isProgrammaticFocus } from "@primitives/focus-trap"
 import {
   Popover,
   PopoverTrigger,
@@ -178,5 +179,20 @@ describe("Popover", () => {
       "data-surface-intensity",
       "balanced",
     )
+  })
+
+  it("marks the focus it returns to the trigger as programmatic", async () => {
+    const user = userEvent.setup()
+    render(<Basic />)
+    const trigger = screen.getByRole("button", { name: "Toggle" })
+    await user.click(trigger)
+    await screen.findByText("Popover content")
+    const marks: boolean[] = []
+    trigger.addEventListener("focus", () => marks.push(isProgrammaticFocus()))
+
+    await user.keyboard("{Escape}")
+    await waitFor(() => expect(document.activeElement).toBe(trigger))
+
+    expect(marks).toEqual([true])
   })
 })

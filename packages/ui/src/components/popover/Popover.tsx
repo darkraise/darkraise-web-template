@@ -5,7 +5,7 @@ import * as React from "react"
 import { cn } from "@lib/utils"
 import type { SurfaceIntensityProp } from "@lib/surface-intensity"
 import { DismissableLayer } from "@primitives/dismissable-layer"
-import { useFocusTrap } from "@primitives/focus-trap"
+import { focusProgrammatically, useFocusTrap } from "@primitives/focus-trap"
 import { Portal } from "@primitives/portal"
 import { Presence } from "@primitives/presence"
 import { Slot, composeRefs } from "@primitives/slot"
@@ -234,7 +234,7 @@ function PopoverContentImpl({
       if (active && active !== document.body) return
       const previous = previouslyFocusedRef.current
       if (previous && document.contains(previous)) {
-        previous.focus({ preventScroll: true })
+        focusProgrammatically(previous, { preventScroll: true })
       }
     }
   }, [])

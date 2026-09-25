@@ -9,7 +9,13 @@ import {
   TooltipProvider,
   TOOLTIP_DEFAULT_DELAY,
 } from "@components/tooltip"
-import { Dialog, DialogContent, DialogTitle } from "@components/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from "@components/dialog"
+import { focusProgrammatically } from "@primitives/focus-trap"
 
 function Basic({ delayDuration = 0 }: { delayDuration?: number } = {}) {
   return (
@@ -51,6 +57,32 @@ function TooltipInDialog({
       </DialogContent>
     </Dialog>
   )
+}
+
+// A dialog opened from the keyboard hands focus back to its trigger on close,
+// and the trigger carries a tooltip.
+function DialogWithTooltips() {
+  return (
+    <Dialog>
+      <Tooltip delayDuration={0}>
+        <TooltipTrigger asChild>
+          <DialogTrigger>Open settings</DialogTrigger>
+        </TooltipTrigger>
+        <TooltipContent>Settings tip</TooltipContent>
+      </Tooltip>
+      <DialogContent>
+        <DialogTitle>Settings</DialogTitle>
+        <Tooltip delayDuration={0}>
+          <TooltipTrigger>Fullscreen</TooltipTrigger>
+          <TooltipContent>Fullscreen tip</TooltipContent>
+        </Tooltip>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+async function settle(): Promise<void> {
+  await new Promise((resolve) => setTimeout(resolve, 50))
 }
 
 async function keyboardFocus(element: HTMLElement): Promise<void> {
@@ -194,6 +226,37 @@ describe("Tooltip", () => {
     // Outlast the close grace period before asserting: a tooltip opened by the
     // click's hover would still be mounted mid-close.
     await waitFor(() => expect(screen.queryByRole("tooltip")).toBeNull())
+  })
+
+  // Focus the library moves on the user's behalf is not the user reaching for
+  // a control. A tooltip raised by it answers the next Escape, so closing the
+  // dialog around it took one press more than it should.
+  it("raises no tooltip on the trigger a closing dialog hands focus back to", async () => {
+    const user = userEvent.setup()
+    render(<DialogWithTooltips />)
+    const trigger = screen.getByRole("button", { name: "Open settings" })
+    await keyboardFocus(trigger)
+    await user.keyboard("{Enter}")
+    await screen.findByRole("dialog")
+    // The opener's own tooltip outlives its blur by the close delay, and would
+    // take this Escape instead of the dialog.
+    await waitFor(() => expect(screen.queryByRole("tooltip")).toBeNull())
+
+    await user.keyboard("{Escape}")
+    await waitFor(() => expect(trigger).toHaveFocus())
+    await settle()
+
+    expect(screen.queryByRole("tooltip")).toBeNull()
+  })
+
+  it("raises no tooltip for focus moved with focusProgrammatically", async () => {
+    render(<Basic delayDuration={0} />)
+    fireEvent.keyDown(document, { key: "Tab" })
+
+    focusProgrammatically(screen.getByRole("button", { name: "Hover me" }))
+    await settle()
+
+    expect(screen.queryByRole("tooltip")).toBeNull()
   })
 
   // The app-wide layouts used to mount `<TooltipProvider delayDuration={0}>`,

@@ -1,6 +1,7 @@
 import * as React from "react"
 import { useSyncedRef } from "@hooks/useSyncedRef"
 import { getTabbables } from "./tabbable"
+import { focusProgrammatically } from "./programmaticFocus"
 
 export interface UseFocusTrapOptions {
   loop?: boolean
@@ -46,11 +47,11 @@ export function useFocusTrap(
           ? initialFocusRef.current()
           : (initialFocusRef.current?.current ?? null)
       if (initial && container.contains(initial)) {
-        initial.focus()
+        focusProgrammatically(initial)
         return
       }
       const tabbables = getTabbables(container)
-      tabbables[0]?.focus()
+      focusProgrammatically(tabbables[0])
     }
 
     focusFirst()
@@ -92,7 +93,7 @@ export function useFocusTrap(
         previousActive &&
         document.contains(previousActive)
       ) {
-        previousActive.focus()
+        focusProgrammatically(previousActive)
       }
     }
   }, [containerRef, disabled, initialFocusRef, loopRef, restoreFocusRef])

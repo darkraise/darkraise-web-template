@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi } from "vitest"
+import { isProgrammaticFocus } from "@primitives/focus-trap"
 import {
   Select,
   SelectTrigger,
@@ -178,5 +179,20 @@ describe("Select", () => {
       "data-surface-intensity",
       "balanced",
     )
+  })
+
+  it("marks the focus it returns to the trigger as programmatic", async () => {
+    const user = userEvent.setup()
+    render(<Basic />)
+    const trigger = screen.getByRole("combobox")
+    await user.click(trigger)
+    await screen.findByRole("listbox")
+    const marks: boolean[] = []
+    trigger.addEventListener("focus", () => marks.push(isProgrammaticFocus()))
+
+    await user.keyboard("{Escape}")
+    await waitFor(() => expect(document.activeElement).toBe(trigger))
+
+    expect(marks).toEqual([true])
   })
 })

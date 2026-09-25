@@ -1,6 +1,7 @@
-import { render, screen, fireEvent } from "@testing-library/react"
+import { render, screen, fireEvent, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi } from "vitest"
+import { isProgrammaticFocus } from "@primitives/focus-trap"
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -273,5 +274,20 @@ describe("DropdownMenu", () => {
       hover("Beta")
       expect(stateOf("Alpha Deep One")).toBe("closed")
     })
+  })
+
+  it("marks the focus it returns to the trigger as programmatic", async () => {
+    const user = userEvent.setup()
+    render(<Basic />)
+    const trigger = screen.getByRole("button", { name: "Open" })
+    await user.click(trigger)
+    await screen.findByRole("menu")
+    const marks: boolean[] = []
+    trigger.addEventListener("focus", () => marks.push(isProgrammaticFocus()))
+
+    await user.keyboard("{Escape}")
+    await waitFor(() => expect(document.activeElement).toBe(trigger))
+
+    expect(marks).toEqual([true])
   })
 })

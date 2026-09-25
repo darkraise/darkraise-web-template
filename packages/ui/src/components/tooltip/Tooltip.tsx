@@ -5,6 +5,7 @@ import * as React from "react"
 import { cn } from "@lib/utils"
 import type { SurfaceIntensityProp } from "@lib/surface-intensity"
 import { DismissableLayer } from "@primitives/dismissable-layer"
+import { isProgrammaticFocus } from "@primitives/focus-trap"
 import { Portal } from "@primitives/portal"
 import { Presence } from "@primitives/presence"
 import { Slot, composeRefs } from "@primitives/slot"
@@ -211,6 +212,11 @@ function TooltipTrigger({
         // handing focus back here when it closes (useFocusTrap
         // `restoreFocus`), long after the pointer has moved away.
         if (!event.currentTarget.matches(":focus-visible")) return
+        // An overlay opening onto this trigger or handing focus back to it
+        // is not the user reaching for it, even though the browser calls it
+        // keyboard focus after an Escape. Opened here, the tooltip would take
+        // the next Escape from the dialog around it.
+        if (isProgrammaticFocus()) return
         ctx.scheduleOpen()
       }}
       onBlur={(event: React.FocusEvent<HTMLButtonElement>) => {
