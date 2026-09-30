@@ -46,58 +46,60 @@
   }
 
   /* Fixed accent-color variants — independent of the active theme accent.
-     Light-luminance accents (amber, yellow, lime) use a dark on-color text
-     for contrast; the rest use white. */
+     Each keeps its -500 fill where a label clears 4.5:1 on it: the light
+     hues take their own -950 ink, indigo takes white. Where neither label
+     does, the fill darkens to -600 under white. Hover moves one shade away
+     from the label; a translucent hover let the page lighten the fill. */
   .dr-badge[data-variant="red"] {
-    @apply border-transparent bg-red-500 text-white hover:bg-red-500/80;
+    @apply border-transparent bg-red-600 text-white hover:bg-red-700;
   }
   .dr-badge[data-variant="orange"] {
-    @apply border-transparent bg-orange-500 text-white hover:bg-orange-500/80;
+    @apply border-transparent bg-orange-500 text-orange-950 hover:bg-orange-400;
   }
   .dr-badge[data-variant="amber"] {
-    @apply border-transparent bg-amber-500 text-amber-950 hover:bg-amber-500/80;
+    @apply border-transparent bg-amber-500 text-amber-950 hover:bg-amber-400;
   }
   .dr-badge[data-variant="yellow"] {
-    @apply border-transparent bg-yellow-500 text-yellow-950 hover:bg-yellow-500/80;
+    @apply border-transparent bg-yellow-500 text-yellow-950 hover:bg-yellow-400;
   }
   .dr-badge[data-variant="lime"] {
-    @apply border-transparent bg-lime-500 text-lime-950 hover:bg-lime-500/80;
+    @apply border-transparent bg-lime-500 text-lime-950 hover:bg-lime-400;
   }
   .dr-badge[data-variant="green"] {
-    @apply border-transparent bg-green-500 text-white hover:bg-green-500/80;
+    @apply border-transparent bg-green-500 text-green-950 hover:bg-green-400;
   }
   .dr-badge[data-variant="emerald"] {
-    @apply border-transparent bg-emerald-500 text-white hover:bg-emerald-500/80;
+    @apply border-transparent bg-emerald-500 text-emerald-950 hover:bg-emerald-400;
   }
   .dr-badge[data-variant="teal"] {
-    @apply border-transparent bg-teal-500 text-white hover:bg-teal-500/80;
+    @apply border-transparent bg-teal-500 text-teal-950 hover:bg-teal-400;
   }
   .dr-badge[data-variant="cyan"] {
-    @apply border-transparent bg-cyan-500 text-white hover:bg-cyan-500/80;
+    @apply border-transparent bg-cyan-500 text-cyan-950 hover:bg-cyan-400;
   }
   .dr-badge[data-variant="sky"] {
-    @apply border-transparent bg-sky-500 text-white hover:bg-sky-500/80;
+    @apply border-transparent bg-sky-500 text-sky-950 hover:bg-sky-400;
   }
   .dr-badge[data-variant="blue"] {
-    @apply border-transparent bg-blue-500 text-white hover:bg-blue-500/80;
+    @apply border-transparent bg-blue-600 text-white hover:bg-blue-700;
   }
   .dr-badge[data-variant="indigo"] {
-    @apply border-transparent bg-indigo-500 text-white hover:bg-indigo-500/80;
+    @apply border-transparent bg-indigo-500 text-white hover:bg-indigo-600;
   }
   .dr-badge[data-variant="violet"] {
-    @apply border-transparent bg-violet-500 text-white hover:bg-violet-500/80;
+    @apply border-transparent bg-violet-600 text-white hover:bg-violet-700;
   }
   .dr-badge[data-variant="purple"] {
-    @apply border-transparent bg-purple-500 text-white hover:bg-purple-500/80;
+    @apply border-transparent bg-purple-600 text-white hover:bg-purple-700;
   }
   .dr-badge[data-variant="fuchsia"] {
-    @apply border-transparent bg-fuchsia-500 text-white hover:bg-fuchsia-500/80;
+    @apply border-transparent bg-fuchsia-600 text-white hover:bg-fuchsia-700;
   }
   .dr-badge[data-variant="pink"] {
-    @apply border-transparent bg-pink-500 text-white hover:bg-pink-500/80;
+    @apply border-transparent bg-pink-600 text-white hover:bg-pink-700;
   }
   .dr-badge[data-variant="rose"] {
-    @apply border-transparent bg-rose-500 text-white hover:bg-rose-500/80;
+    @apply border-transparent bg-rose-600 text-white hover:bg-rose-700;
   }
 
   /* Material-style anchored indicator. The wrapper sits inline-flex around
