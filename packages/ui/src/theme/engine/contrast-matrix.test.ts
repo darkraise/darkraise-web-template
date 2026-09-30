@@ -22,7 +22,8 @@ describe("contrast matrix support", () => {
   })
 
   it("builds each combination's tokens once", () => {
-    const combo = reachableCombos()[0]!
+    const [combo] = reachableCombos()
+    if (!combo) throw new Error("no reachable combination")
     expect(finalTokens(combo)).toBe(finalTokens({ ...combo }))
   })
 
