@@ -848,9 +848,6 @@ export function generateTokens(
     "--border-default": recipe.borderDefault(surface, mode),
     "--border-strong": recipe.borderStrong(surface, mode),
 
-    "--shadow-card": isLightGlass
-      ? recipe.overrides.shadowCard.replace(/rgb\(0 0 0 \//g, "rgb(16 24 40 /")
-      : recipe.overrides.shadowCard,
     "--shadow-dropdown": isLightGlass
       ? recipe.overrides.shadowDropdown.replace(
           /rgb\(0 0 0 \//g,

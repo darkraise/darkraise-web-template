@@ -66,7 +66,6 @@ export interface PresetSurfaceRecipe {
   borderDefault: (scale: ColorScale, mode: ResolvedMode) => string
   borderStrong: (scale: ColorScale, mode: ResolvedMode) => string
   overrides: {
-    shadowCard: string
     shadowDropdown: string
     foreground?: (scale: ColorScale, mode: ResolvedMode) => string
     border?: (scale: ColorScale, mode: ResolvedMode) => string
@@ -116,9 +115,9 @@ export interface ThemePreset<
    * `[data-preset="..."] { --x: ... }` in <preset>.css) self-clean
    * via the CSS cascade when the preset's data attribute changes —
    * listing them here is harmless but misleading. Tokens written by
-   * the engine from `surfaceRecipe.overrides` (shadowCard /
-   * shadowDropdown) also don't need to be listed because the engine
-   * overwrites them on every applyTheme with the new preset's recipe.
+   * the engine from `surfaceRecipe.overrides` (shadowDropdown) also
+   * don't need to be listed because the engine overwrites them on every
+   * applyTheme with the new preset's recipe.
    */
   ownedTokenKeys?: readonly string[]
 

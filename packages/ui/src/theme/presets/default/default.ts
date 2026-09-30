@@ -22,7 +22,6 @@ export const defaultPreset: ThemePreset<Record<string, never>> = {
     borderDefault: (s, m) => (m === "light" ? s[200] : s[700]),
     borderStrong: (s, m) => (m === "light" ? s[400] : s[500]),
     overrides: {
-      shadowCard: "none",
       shadowDropdown:
         "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
     },

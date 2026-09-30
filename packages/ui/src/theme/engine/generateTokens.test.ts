@@ -71,7 +71,6 @@ describe("generateTokens", () => {
       "--border-subtle",
       "--border-default",
       "--border-strong",
-      "--shadow-card",
       "--shadow-dropdown",
     ]
 
@@ -349,7 +348,7 @@ describe("generateTokens", () => {
   })
 
   // Re-enabled in Phase 3 with the glass preset registered
-  it("light + glass tints card shadow drops with blue-black (16 24 40)", () => {
+  it("light + glass tints dropdown shadow drops with blue-black (16 24 40)", () => {
     const tokens = generateTokens({
       accentColor: "blue",
       surfaceColor: "slate",
@@ -359,9 +358,8 @@ describe("generateTokens", () => {
       accentIntensity: "balanced",
     })
 
-    expect(tokens["--shadow-card"]).toContain("rgb(16 24 40")
-    expect(tokens["--shadow-card"]).not.toContain("rgb(0 0 0")
     expect(tokens["--shadow-dropdown"]).toContain("rgb(16 24 40")
+    expect(tokens).not.toHaveProperty("--shadow-card")
   })
 
   it("destructive uses red-500 for light and red-600 for dark", () => {

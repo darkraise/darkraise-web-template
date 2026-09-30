@@ -157,7 +157,6 @@ export const glass: ThemePreset<GlassAxes> = {
     borderDefault: (s, m) => (m === "light" ? s[200] : s[500]),
     borderStrong: (s, m) => (m === "light" ? s[400] : s[400]),
     overrides: {
-      shadowCard: "0 1px 3px 0 rgb(0 0 0 / 0.1)",
       shadowDropdown:
         "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
     },
