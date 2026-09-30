@@ -19,6 +19,7 @@ import { useVirtualizer } from "@tanstack/react-virtual"
 import { Button } from "darkraise-ui/components/button"
 import { Input } from "darkraise-ui/components/input"
 import { Badge } from "darkraise-ui/components/badge"
+import { writeClipboardText } from "darkraise-ui/lib"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
@@ -284,7 +285,7 @@ function IconCatalog() {
 
   const handleCopy = (name: string) => {
     const snippet = `import { ${name} } from "lucide-react"`
-    void navigator.clipboard.writeText(snippet).then(() => {
+    void writeClipboardText(snippet).then(() => {
       setCopied(name)
       setTimeout(
         () => setCopied((current) => (current === name ? null : current)),

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react"
+import { writeClipboardText } from "@lib/clipboard"
 
 export type UseClipboardReturn = {
   copy: (text: string) => Promise<boolean>
@@ -23,7 +24,7 @@ export function useClipboard(resetMs = 2000): UseClipboardReturn {
   const copy = useCallback(
     async (text: string): Promise<boolean> => {
       try {
-        await navigator.clipboard.writeText(text)
+        await writeClipboardText(text)
         setCopied(true)
         setError(null)
         if (resetTimerRef.current !== null) {

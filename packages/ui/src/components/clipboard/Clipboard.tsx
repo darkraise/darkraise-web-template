@@ -4,6 +4,7 @@ import * as React from "react"
 import { Button } from "@components/button"
 import { toast } from "@components/sonner"
 import { cn } from "@lib/utils"
+import { writeClipboardText } from "@lib/clipboard"
 import "./clipboard.css"
 
 export interface ClipboardCopyDetails {
@@ -117,7 +118,7 @@ function Clipboard({
     if (timerRef.current) clearTimeout(timerRef.current)
     void (async () => {
       try {
-        await navigator.clipboard.writeText(value)
+        await writeClipboardText(value)
         if (!mountedRef.current) return
         setCopied(true)
         onStatusChangeRef.current?.({ copied: true, value })

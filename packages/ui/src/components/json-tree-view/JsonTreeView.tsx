@@ -10,6 +10,7 @@ import {
   X,
 } from "lucide-react"
 import { cn } from "@lib/utils"
+import { writeClipboardText } from "@lib/clipboard"
 import { Button } from "@components/button"
 import {
   Tooltip,
@@ -625,7 +626,7 @@ function CopyButton({
   const [copied, setCopied] = React.useState(false)
   const timerRef = React.useRef<number | null>(null)
   const onClick = () => {
-    void navigator.clipboard.writeText(value).then(() => {
+    void writeClipboardText(value).then(() => {
       setCopied(true)
       if (timerRef.current) window.clearTimeout(timerRef.current)
       timerRef.current = window.setTimeout(() => setCopied(false), 1200)

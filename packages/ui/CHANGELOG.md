@@ -4,6 +4,14 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 
 ## [Unreleased]
 
+### Added
+
+- `writeClipboardText` in `darkraise-ui/lib`: writes through the async Clipboard API and falls back to a selection copy when that API is missing or rejects.
+
+### Fixed
+
+- `Clipboard`, `useClipboard` and `JsonTreeView`'s copy buttons failed with "Failed to copy" outside a secure context. `navigator.clipboard` does not exist on plain HTTP, such as a dev server opened by LAN address, so every copy threw. They now go through `writeClipboardText`.
+
 ## [6.9.5] — 2026-09-25
 
 ### Fixed
