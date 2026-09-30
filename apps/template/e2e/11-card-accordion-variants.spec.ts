@@ -70,6 +70,27 @@ for (const preset of PRESETS) {
         consoleWatch.assertClean()
       })
 
+      test("an elevated card leaves its content on the page's ramp", async ({
+        page,
+      }) => {
+        const consoleWatch = watchConsole(page)
+        await seedApp(page, { preset, mode })
+        await gotoApp(page, "/components/cards")
+
+        const card = ".dr-card[data-card-elevation='high']"
+        await page.locator(card).first().waitFor({ state: "visible" })
+        const [inside, root] = await page.evaluate((sel) => {
+          const node = document.querySelector(sel)
+          if (!node) throw new Error(`no element matched ${sel}`)
+          const read = (el: Element) =>
+            getComputedStyle(el).getPropertyValue("--elevation-medium").trim()
+          return [read(node), read(document.documentElement)]
+        }, card)
+        expect(inside).toBe(root)
+
+        consoleWatch.assertClean()
+      })
+
       test("border variants survive the preset and keep geometry", async ({
         page,
       }) => {

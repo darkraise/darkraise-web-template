@@ -11,6 +11,17 @@ import {
 } from "@components/card"
 
 describe("Card", () => {
+  it("exposes the elevation prop as data-card-elevation", () => {
+    const { container, rerender } = render(<Card elevation="high">x</Card>)
+    const card = container.firstChild as HTMLElement
+    expect(card).toHaveAttribute("data-card-elevation", "high")
+    expect(card).not.toHaveAttribute("data-elevation")
+    rerender(<Card elevation>x</Card>)
+    expect(card).toHaveAttribute("data-card-elevation", "auto")
+    rerender(<Card>x</Card>)
+    expect(card).not.toHaveAttribute("data-card-elevation")
+  })
+
   it("renders Card with children", () => {
     render(<Card>Card body</Card>)
     expect(screen.getByText("Card body")).toBeInTheDocument()

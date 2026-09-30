@@ -28,23 +28,23 @@
      constants that the theme axis never overrides, so a `<Card
      elevation="medium">` renders the same shadow regardless of the theme
      picker. `flat` is hard-zeroed so theme=high can't accidentally lift it. */
-  .dr-card[data-elevation="auto"] {
+  .dr-card[data-card-elevation="auto"] {
     box-shadow: var(--elevation-current), var(--glow-outer), var(--glow-inner);
   }
-  .dr-card[data-elevation="flat"] {
+  .dr-card[data-card-elevation="flat"] {
     box-shadow:
       0 0 transparent,
       var(--glow-outer),
       var(--glow-inner);
   }
-  .dr-card[data-elevation="low"] {
+  .dr-card[data-card-elevation="low"] {
     box-shadow: var(--card-elevation-low), var(--glow-outer), var(--glow-inner);
   }
-  .dr-card[data-elevation="medium"] {
+  .dr-card[data-card-elevation="medium"] {
     box-shadow:
       var(--card-elevation-medium), var(--glow-outer), var(--glow-inner);
   }
-  .dr-card[data-elevation="high"] {
+  .dr-card[data-card-elevation="high"] {
     box-shadow:
       var(--card-elevation-high), var(--glow-outer), var(--glow-inner);
   }

@@ -48,7 +48,7 @@ function Card({
   return (
     <div
       ref={ref}
-      data-elevation={value}
+      data-card-elevation={value}
       data-divided={divided ? "true" : undefined}
       data-border={border && border !== "default" ? border : undefined}
       data-surface-intensity={surfaceIntensity}

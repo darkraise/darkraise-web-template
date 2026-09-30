@@ -118,7 +118,7 @@ describe("Accordion card variant", () => {
   it("maps elevation true to auto, matching Card", () => {
     const { container } = render(<CardAccordion elevation />)
     expect(container.querySelector(".dr-accordion-item")).toHaveAttribute(
-      "data-elevation",
+      "data-card-elevation",
       "auto",
     )
   })
@@ -126,8 +126,11 @@ describe("Accordion card variant", () => {
   it("forwards an explicit elevation level to the item", () => {
     const { container } = render(<CardAccordion elevation="low" />)
     expect(container.querySelector(".dr-accordion-item")).toHaveAttribute(
-      "data-elevation",
+      "data-card-elevation",
       "low",
+    )
+    expect(container.querySelector(".dr-accordion-item")).not.toHaveAttribute(
+      "data-elevation",
     )
   })
 
@@ -135,7 +138,7 @@ describe("Accordion card variant", () => {
     const { container } = render(<TestAccordion />)
     const item = container.querySelector(".dr-accordion-item")
     expect(item).not.toHaveAttribute("data-border")
-    expect(item).not.toHaveAttribute("data-elevation")
+    expect(item).not.toHaveAttribute("data-card-elevation")
   })
 
   it("ignores border and elevation in the default variant", () => {
@@ -149,7 +152,7 @@ describe("Accordion card variant", () => {
     )
     const item = container.querySelector(".dr-accordion-item")
     expect(item).not.toHaveAttribute("data-border")
-    expect(item).not.toHaveAttribute("data-elevation")
+    expect(item).not.toHaveAttribute("data-card-elevation")
     expect(item).not.toHaveClass("dr-card")
   })
 

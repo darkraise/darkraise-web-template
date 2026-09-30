@@ -68,7 +68,7 @@ describe("glow axes — adoption", () => {
     for (const level of ["auto", "flat", "low", "medium", "high"]) {
       expect(card, level).toMatch(
         new RegExp(
-          `\\.dr-card\\[data-elevation="${level}"\\] \\{ box-shadow:[^;]*var\\(--glow-outer\\), var\\(--glow-inner\\)`,
+          `\\.dr-card\\[data-card-elevation="${level}"\\] \\{ box-shadow:[^;]*var\\(--glow-outer\\), var\\(--glow-inner\\)`,
         ),
       )
     }

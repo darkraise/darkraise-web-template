@@ -201,7 +201,7 @@ function AccordionItem({
           ? ctx.border
           : undefined
       }
-      data-elevation={isCard ? ctx.elevation : undefined}
+      data-card-elevation={isCard ? ctx.elevation : undefined}
       className={cn("dr-accordion-item", isCard && "dr-card", className)}
       {...props}
     >
