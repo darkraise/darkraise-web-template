@@ -12,7 +12,7 @@
   }
 
   .dr-calendar-caption-label-btn {
-    @apply hover:text-primary cursor-pointer rounded-md text-sm font-medium transition-colors select-none;
+    @apply hover:text-primary-text cursor-pointer rounded-md text-sm font-medium transition-colors select-none;
   }
 
   .dr-calendar-day-btn {

@@ -61,7 +61,7 @@
   }
 
   .dr-timeline-indicator[data-status="current"] {
-    @apply border-primary bg-primary/20 text-primary;
+    @apply border-primary bg-primary/20 text-primary-text;
     box-shadow: var(--affordance-glow);
   }
 
@@ -88,7 +88,7 @@
   }
 
   .dr-timeline-connector[data-variant="dashed"][data-status="complete"] {
-    @apply text-primary;
+    @apply text-primary-text;
   }
 
   .dr-timeline-content {

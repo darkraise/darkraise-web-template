@@ -267,10 +267,10 @@ export const glass: ThemePreset<GlassAxes> = {
     }
 
     tokens["--accent"] = `var(--primary) / ${accentAlpha}`
-    tokens["--accent-foreground"] = "var(--primary)"
+    tokens["--accent-foreground"] = "var(--primary-text)"
     tokens["--muted"] = `var(--primary) / ${mutedAlpha}`
     tokens["--secondary"] = `var(--primary) / ${secondaryAlpha}`
-    tokens["--secondary-foreground"] = "var(--primary)"
+    tokens["--secondary-foreground"] = "var(--primary-text)"
 
     return tokens
   },

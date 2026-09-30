@@ -102,7 +102,7 @@
 
   /* link */
   .dr-btn[data-variant="link"] {
-    @apply text-primary underline-offset-4 hover:underline;
+    @apply text-primary-text underline-offset-4 hover:underline;
   }
 
   /* sizes

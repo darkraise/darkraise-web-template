@@ -1,6 +1,6 @@
 @layer components {
   .dr-highlight-match {
-    @apply bg-primary/20 text-primary rounded-sm px-0.5;
+    @apply bg-primary/20 text-primary-text rounded-sm px-0.5;
   }
 
   .dr-highlight-match-strong {

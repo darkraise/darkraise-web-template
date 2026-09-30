@@ -70,10 +70,10 @@ export const scifi: ThemePreset<ScifiAxes> = {
     return {
       // Primary-tinted hover/selected states (same pattern as Neon).
       "--accent": "var(--primary) / 0.14",
-      "--accent-foreground": "var(--primary)",
+      "--accent-foreground": "var(--primary-text)",
       "--muted": "var(--primary) / 0.05",
       "--secondary": "var(--primary) / 0.1",
-      "--secondary-foreground": "var(--primary)",
+      "--secondary-foreground": "var(--primary-text)",
       // Sharp corners forced — frame axis handles shape via clip-path
       // pseudo-elements instead of border-radius.
       "--radius": "0px",

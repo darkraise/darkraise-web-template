@@ -46,10 +46,10 @@ describe("scifi preset", () => {
     // is the Terminal preset's signature.
     expect(tokens["--font-sans"]).toMatch(/orbitron/i)
     expect(tokens["--accent"]).toBe("var(--primary) / 0.14")
-    expect(tokens["--accent-foreground"]).toBe("var(--primary)")
+    expect(tokens["--accent-foreground"]).toBe("var(--primary-text)")
     expect(tokens["--muted"]).toBe("var(--primary) / 0.05")
     expect(tokens["--secondary"]).toBe("var(--primary) / 0.1")
-    expect(tokens["--secondary-foreground"]).toBe("var(--primary)")
+    expect(tokens["--secondary-foreground"]).toBe("var(--primary-text)")
   })
 
   it("ownedTokenKeys lists every key generateTokens writes (incl. --surface-opacity)", () => {

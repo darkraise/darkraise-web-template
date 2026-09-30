@@ -41,7 +41,7 @@
   }
 
   .dr-steps-indicator[data-status="current"] {
-    @apply border-primary bg-primary/20 text-primary border;
+    @apply border-primary bg-primary/20 text-primary-text border;
     box-shadow: var(--affordance-glow);
   }
 

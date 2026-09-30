@@ -82,7 +82,7 @@
   }
   .dr-image-editor-preset:hover {
     border-color: hsl(var(--primary));
-    color: hsl(var(--primary));
+    color: hsl(var(--primary-text));
   }
   .dr-image-editor-preset:focus-visible {
     @apply ring-primary ring-2 outline-none;
@@ -139,7 +139,7 @@
   }
   .dr-image-editor-history-trigger:hover:not(:disabled) {
     border-color: hsl(var(--primary));
-    color: hsl(var(--primary));
+    color: hsl(var(--primary-text));
   }
   .dr-image-editor-history-trigger:disabled {
     @apply opacity-50;
@@ -328,7 +328,7 @@
   }
   .dr-image-editor-extension:hover:not(:disabled) {
     border-color: hsl(var(--primary));
-    color: hsl(var(--primary));
+    color: hsl(var(--primary-text));
   }
   .dr-image-editor-extension:disabled {
     @apply opacity-50;

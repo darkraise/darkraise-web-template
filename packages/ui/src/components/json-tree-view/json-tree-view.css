@@ -135,7 +135,7 @@
   .dr-json-show-more {
     position: relative;
     isolation: isolate;
-    @apply text-primary ml-1 cursor-pointer text-[length:var(--text-2xs)] tracking-wide uppercase;
+    @apply text-primary-text ml-1 cursor-pointer text-[length:var(--text-2xs)] tracking-wide uppercase;
     background: transparent;
     border: 0;
     padding: 0;

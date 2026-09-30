@@ -91,7 +91,7 @@
 
   .dr-segment-group
     .dr-segment-group-item[data-variant="outline"][data-state="checked"] {
-    @apply text-primary;
+    @apply text-primary-text;
   }
 
   /* Accent colour — the pill takes the brand hue and the checked label

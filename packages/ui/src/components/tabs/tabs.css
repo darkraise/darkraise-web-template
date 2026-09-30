@@ -61,14 +61,14 @@
   }
 
   .dr-tabs-trigger[data-variant="outline"] {
-    @apply data-[state=active]:text-primary rounded-sm border border-transparent bg-transparent px-[var(--density-button-px)] py-[var(--density-row-py)];
+    @apply data-[state=active]:text-primary-text rounded-sm border border-transparent bg-transparent px-[var(--density-button-px)] py-[var(--density-row-py)];
   }
 
   /* The transparent bottom border stays for layout — it reserves the row
      the indicator bar occupies, so the label does not shift by 2px when
      the tab becomes active. The visible rule is drawn by the indicator. */
   .dr-tabs-trigger[data-variant="underline"] {
-    @apply data-[state=active]:text-primary -mb-px h-full border-b-2 border-transparent px-[var(--density-button-px)] py-[var(--density-row-py)];
+    @apply data-[state=active]:text-primary-text -mb-px h-full border-b-2 border-transparent px-[var(--density-button-px)] py-[var(--density-row-py)];
   }
 
   .dr-tabs-indicator[data-variant="default"] {
@@ -428,7 +428,7 @@
   }
   .dr-tabs-trigger[data-variant="outline"][data-state="active"]:hover,
   .dr-tabs-trigger[data-variant="underline"][data-state="active"]:hover {
-    @apply text-primary;
+    @apply text-primary-text;
   }
 
   /* Glass surface style — the moving indicator carries the glass

@@ -73,7 +73,7 @@
     .dr-tree-view-branch-control[data-selected="true"],
   .dr-tree-view[data-variant="outlined"]
     .dr-tree-view-item[data-selected="true"] {
-    @apply text-primary bg-transparent;
+    @apply text-primary-text bg-transparent;
     box-shadow:
       inset 0 0 0 1px hsl(var(--primary)),
       var(--affordance-glow);
@@ -83,7 +83,7 @@
     .dr-tree-view-branch-control[data-selected="true"]:hover,
   .dr-tree-view[data-variant="outlined"]
     .dr-tree-view-item[data-selected="true"]:hover {
-    @apply bg-primary/10 text-primary;
+    @apply bg-primary/10 text-primary-text;
     box-shadow:
       inset 0 0 0 1px hsl(var(--primary)),
       var(--affordance-glow);

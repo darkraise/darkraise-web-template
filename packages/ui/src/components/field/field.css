@@ -47,7 +47,7 @@
   }
 
   .dr-field-description {
-    @apply text-muted-foreground [&>a:hover]:text-primary text-sm leading-normal font-normal group-has-data-[orientation=horizontal]/field:text-balance last:mt-0 nth-last-2:-mt-1 [&>a]:underline [&>a]:underline-offset-4 [[data-variant=legend]+&]:-mt-1.5;
+    @apply text-muted-foreground [&>a:hover]:text-primary-text text-sm leading-normal font-normal group-has-data-[orientation=horizontal]/field:text-balance last:mt-0 nth-last-2:-mt-1 [&>a]:underline [&>a]:underline-offset-4 [[data-variant=legend]+&]:-mt-1.5;
   }
 
   .dr-field-error {

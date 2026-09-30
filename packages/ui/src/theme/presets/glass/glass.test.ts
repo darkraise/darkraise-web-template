@@ -201,10 +201,10 @@ describe("glass preset", () => {
         halo: "soft",
       })
       expect(light["--accent"]).toBe("var(--primary) / 0.1")
-      expect(light["--accent-foreground"]).toBe("var(--primary)")
+      expect(light["--accent-foreground"]).toBe("var(--primary-text)")
       expect(light["--muted"]).toBe("var(--primary) / 0.04")
       expect(light["--secondary"]).toBe("var(--primary) / 0.08")
-      expect(light["--secondary-foreground"]).toBe("var(--primary)")
+      expect(light["--secondary-foreground"]).toBe("var(--primary-text)")
 
       const dark = generateTokens(buildCommon({ mode: "dark" }), {
         opacity: "medium",
