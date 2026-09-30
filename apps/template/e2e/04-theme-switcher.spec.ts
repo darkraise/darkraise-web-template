@@ -20,6 +20,7 @@ import {
   openThemeSwitcher,
   readThemeAttrs,
   readToken,
+  reloadApp,
   seedApp,
   setAxisSlider,
   switcherSections,
@@ -90,7 +91,7 @@ test.describe("preset selection through the UI", () => {
       await openThemeSwitcher(page)
       await selectPreset(page, preset)
 
-      await page.reload()
+      await reloadApp(page)
       expect((await readThemeAttrs(page))["data-preset"]).toBe(preset)
       consoleWatch.assertClean()
     })

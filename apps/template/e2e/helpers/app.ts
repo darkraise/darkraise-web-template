@@ -165,10 +165,35 @@ export function watchConsole(page: Page): ConsoleWatcher {
   }
 }
 
+/**
+ * The app renders only after i18n initialises, which can finish after the
+ * load event that goto and reload resolve on, and #root holds a loading
+ * placeholder until then. data-preset is written by ThemeProvider in the same
+ * synchronous pass that emits the tokens, so its presence means both are
+ * readable.
+ */
+async function waitForTheme(page: Page) {
+  await expect(page.locator("html")).toHaveAttribute("data-preset", /.+/)
+}
+
 /** Navigate and wait for the app shell to be interactive. */
 export async function gotoApp(page: Page, path: string) {
   await page.goto(path)
   await expect(page.locator("#root")).not.toBeEmpty()
+  await waitForTheme(page)
+}
+
+/**
+ * Reload once the previous load has settled, then wait until the stored theme
+ * has been painted again. The theme paints before the route's lazy modules
+ * finish loading; reloading then aborts them, and after roughly a hundred
+ * aborted requests in one page Chromium fails the next navigation with
+ * ERR_INSUFFICIENT_RESOURCES.
+ */
+export async function reloadApp(page: Page) {
+  await page.waitForLoadState("networkidle")
+  await page.reload()
+  await waitForTheme(page)
 }
 
 /** All `data-*` attributes the ThemeProvider writes on <html>. */

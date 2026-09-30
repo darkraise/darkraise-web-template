@@ -21,6 +21,7 @@ import {
   gotoApp,
   readThemeAttrs,
   readToken,
+  reloadApp,
   seedApp,
   watchConsole,
 } from "./helpers/app"
@@ -60,7 +61,7 @@ test.describe("preset axis", () => {
     test(`preset "${preset}" survives a reload`, async ({ page }) => {
       await seedApp(page, { preset })
       await gotoApp(page, PROBE)
-      await page.reload()
+      await reloadApp(page)
       const attrs = await readThemeAttrs(page)
       expect(attrs["data-preset"]).toBe(preset)
     })
@@ -98,7 +99,7 @@ test.describe("preset axis", () => {
     await gotoApp(page, PROBE)
     for (const preset of PRESETS) {
       await applyTheme(page, { preset, mode: "dark" })
-      await page.reload()
+      await reloadApp(page)
       seen.set(preset, await readToken(page, "--surface-raised"))
     }
     const values = [...seen.values()]
@@ -157,7 +158,7 @@ test.describe("mode axis", () => {
     const light = await readToken(page, "--background")
 
     await applyTheme(page, { mode: "dark", preset: "default" })
-    await page.reload()
+    await reloadApp(page)
     const dark = await readToken(page, "--background")
 
     expect(light).not.toBe(dark)
@@ -179,7 +180,7 @@ test.describe("accent color axis", () => {
     await gotoApp(page, PROBE)
     for (const accent of ACCENT_COLORS) {
       await applyTheme(page, { accent, preset: "default", mode: "light" })
-      await page.reload()
+      await reloadApp(page)
       values.push(await readToken(page, "--primary"))
     }
     expect(new Set(values).size).toBe(ACCENT_COLORS.length)
@@ -200,7 +201,7 @@ test.describe("accent intensity axis", () => {
     const seen = new Set<string>()
     for (const intensity of ACCENT_INTENSITIES) {
       await applyTheme(page, { accentIntensity: intensity })
-      await page.reload()
+      await reloadApp(page)
       const fill = await readToken(page, "--primary-fill")
       expect(fill, `${intensity} must emit a fill`).not.toBe("")
       seen.add(fill)
@@ -219,11 +220,11 @@ test.describe("accent intensity axis", () => {
     await gotoApp(page, PROBE)
 
     await applyTheme(page, { accentIntensity: "calm" })
-    await page.reload()
+    await reloadApp(page)
     const calm = await readToken(page, "--primary-fill")
 
     await applyTheme(page, { accentIntensity: "intense" })
-    await page.reload()
+    await reloadApp(page)
     expect(await readToken(page, "--primary-fill")).toBe(calm)
   })
 
@@ -237,7 +238,7 @@ test.describe("accent intensity axis", () => {
     const seen = new Set<string>()
     for (const intensity of ACCENT_INTENSITIES) {
       await applyTheme(page, { accentIntensity: intensity })
-      await page.reload()
+      await reloadApp(page)
       const ring = await readToken(page, "--focus-ring")
       expect(ring, `${intensity} must emit a focus ring`).not.toBe("")
       seen.add(ring)
@@ -275,7 +276,7 @@ test.describe("surface color axis", () => {
     await gotoApp(page, PROBE)
     for (const surface of SURFACE_COLORS) {
       await applyTheme(page, { surface, preset: "default", mode: "dark" })
-      await page.reload()
+      await reloadApp(page)
       values.push(await readToken(page, "--background"))
     }
     expect(new Set(values).size).toBe(SURFACE_COLORS.length)
@@ -316,7 +317,7 @@ test.describe("background style axis", () => {
         backgroundIntensity: intensity,
         preset: "default",
       })
-      await page.reload()
+      await reloadApp(page)
       scales.push(Number(await readToken(page, "--canvas-blob-scale")))
     }
     for (let i = 1; i < scales.length; i++) {
@@ -357,7 +358,7 @@ test.describe("density axis", () => {
     await gotoApp(page, PROBE)
     for (const density of DENSITIES) {
       await applyTheme(page, { density, preset: "default" })
-      await page.reload()
+      await reloadApp(page)
       values.push(
         Number.parseFloat(await readToken(page, "--density-button-px")),
       )
@@ -383,7 +384,7 @@ test.describe("font size axis", () => {
     await gotoApp(page, PROBE)
     for (const fontSize of FONT_SIZES) {
       await applyTheme(page, { fontSize, preset: "default" })
-      await page.reload()
+      await reloadApp(page)
       values.push(Number.parseFloat(await readToken(page, "--text-base")))
     }
     for (let i = 1; i < values.length; i++) {
@@ -440,7 +441,7 @@ test.describe("background intensity canvas cap", () => {
     const seen = new Set<string>()
     for (const step of BACKGROUND_INTENSITIES) {
       await applyTheme(page, { backgroundIntensity: step })
-      await page.reload()
+      await reloadApp(page)
       const bg = await readToken(page, "--background")
       expect(bg, `${step} must emit a background`).not.toBe("")
       seen.add(bg)
@@ -456,11 +457,11 @@ test.describe("background intensity canvas cap", () => {
     await gotoApp(page, PROBE)
 
     await applyTheme(page, { backgroundIntensity: "neutral" })
-    await page.reload()
+    await reloadApp(page)
     const neutral = await readToken(page, "--background")
 
     await applyTheme(page, { backgroundIntensity: "vivid" })
-    await page.reload()
+    await reloadApp(page)
     expect(await readToken(page, "--background")).not.toBe(neutral)
   })
 
@@ -589,9 +590,9 @@ test.describe("theme persistence", () => {
     await gotoApp(page, PROBE)
     const before = await readThemeAttrs(page)
 
-    await page.reload()
-    await page.goto("/settings")
-    await page.goto(PROBE)
+    await reloadApp(page)
+    await gotoApp(page, "/settings")
+    await gotoApp(page, PROBE)
 
     expect(await readThemeAttrs(page)).toEqual(before)
   })
