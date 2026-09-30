@@ -87,6 +87,15 @@ describe("shell style rules", () => {
       expect(shellStyles).toContain(`data-shell-style="${style}"`)
     }
   })
+
+  it("frosts floating chrome with the preset's backdrop filter", () => {
+    // blur(var(--backdrop-blur)) is invalid on the default preset, where the
+    // token is `none`, so the declaration was dropped there.
+    expect(shellStyles).not.toMatch(/blur\(var\(--backdrop-blur/)
+    expect(shellStyles).toMatch(
+      /-webkit-backdrop-filter:\s*var\(--backdrop-filter\);\s*backdrop-filter:\s*var\(--backdrop-filter\);/,
+    )
+  })
 })
 
 const shellPresets = readFileSync(

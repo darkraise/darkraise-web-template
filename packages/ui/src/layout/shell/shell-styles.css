@@ -72,8 +72,8 @@
     position: relative;
     z-index: 1;
     margin: var(--shell-float-inset, 0.75rem);
-    -webkit-backdrop-filter: blur(var(--backdrop-blur, 12px));
-    backdrop-filter: blur(var(--backdrop-blur, 12px));
+    -webkit-backdrop-filter: var(--backdrop-filter);
+    backdrop-filter: var(--backdrop-filter);
   }
 
   /* Neighbouring chrome would otherwise double the gutter between them. */
