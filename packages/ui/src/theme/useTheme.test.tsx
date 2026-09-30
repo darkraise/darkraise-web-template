@@ -196,10 +196,11 @@ describe("useTheme", () => {
     expect(result.current.fontSize).toBe("medium")
   })
 
-  // The vibrancy axis is a dark-mode-only lever, and the token it always moves
-  // is --primary-fill: --primary goes through capChroma, which only binds for
+  // The vibrancy axis is a dark-mode-only lever, and the token it moves is
+  // --primary-fill: --primary goes through capChroma, which only binds for
   // high-chroma accents and is identical across all four steps for the default
-  // blue.
+  // blue. Blue's upper three steps share one fill at its 4.5:1 label point, so
+  // only calm is compared against them.
   it("repaints accent tokens when the vibrancy axis changes in dark mode", () => {
     const { result } = renderHook(() => useTheme(), { wrapper })
     act(() => result.current.setMode("dark"))
@@ -212,7 +213,7 @@ describe("useTheme", () => {
     act(() => result.current.setAccentIntensity("calm"))
     const calm = read()
 
-    expect(intense).not.toBe(balanced)
+    expect(calm).not.toBe(balanced)
     expect(calm).not.toBe(intense)
   })
 

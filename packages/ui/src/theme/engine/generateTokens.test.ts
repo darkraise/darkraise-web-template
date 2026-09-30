@@ -865,20 +865,10 @@ describe("generateTokens", () => {
     const GAMUT_CHROMA_MAX = 0.26
 
     const STEPS = {
-      calm: { L: 0.54, fillChroma: 0.24, primaryChroma: 0.2, labelFloor: 4.5 },
-      balanced: {
-        L: 0.57,
-        fillChroma: null,
-        primaryChroma: 0.24,
-        labelFloor: 4,
-      },
-      vivid: { L: 0.6, fillChroma: null, primaryChroma: null, labelFloor: 3.5 },
-      intense: {
-        L: 0.63,
-        fillChroma: null,
-        primaryChroma: null,
-        labelFloor: 3,
-      },
+      calm: { L: 0.54, fillChroma: 0.24, primaryChroma: 0.2 },
+      balanced: { L: 0.57, fillChroma: null, primaryChroma: 0.24 },
+      vivid: { L: 0.6, fillChroma: null, primaryChroma: null },
+      intense: { L: 0.63, fillChroma: null, primaryChroma: null },
     } as const
 
     const VIBRANCIES = Object.keys(STEPS) as (keyof typeof STEPS)[]
@@ -905,7 +895,7 @@ describe("generateTokens", () => {
     )
 
     it.each(PAIRS)(
-      "%s at %s on %s: fill lands on the step lightness within its chroma cap",
+      "%s at %s on %s: fill stays at or under the step lightness within its chroma cap",
       (accentColor, step, preset) => {
         const fill = build(accentColor, "dark", step, preset)[
           "--primary-fill"
@@ -913,7 +903,10 @@ describe("generateTokens", () => {
         const { L, C } = hslStringToOklch(fill)
         const cap = STEPS[step].fillChroma ?? GAMUT_CHROMA_MAX
 
-        expect(Math.abs(L - STEPS[step].L)).toBeLessThanOrEqual(0.02)
+        // The step is a ceiling: the 4.5:1 label solve may lower it, by at
+        // most 0.090 across every accent measured.
+        expect(L).toBeLessThanOrEqual(STEPS[step].L + 0.02)
+        expect(L).toBeGreaterThanOrEqual(STEPS[step].L - 0.1)
         expect(C).toBeLessThanOrEqual(cap + CHROMA_TOLERANCE)
       },
     )
@@ -934,7 +927,7 @@ describe("generateTokens", () => {
     )
 
     it.each(PAIRS)(
-      "%s at %s on %s: label clears the step's floor and stays white",
+      "%s at %s on %s: label clears 4.5:1 and stays white",
       (accentColor, step, preset) => {
         const tokens = build(accentColor, "dark", step, preset)
         expect(tokens["--primary-foreground"]).toBe("0 0% 100%")
@@ -943,7 +936,7 @@ describe("generateTokens", () => {
             tokens["--primary-foreground"] as string,
             tokens["--primary-fill"] as string,
           ),
-        ).toBeGreaterThanOrEqual(STEPS[step].labelFloor)
+        ).toBeGreaterThanOrEqual(4.5)
       },
     )
 
@@ -991,15 +984,26 @@ describe("generateTokens", () => {
       },
     )
 
-    // The guard that would have caught a chroma-only ladder, which collapsed
-    // to identical fills for most accents because chroma is gamut-limited.
+    // Each step's lightness is a ceiling under the 4.5:1 label solve, so the
+    // upper steps can meet; they must never reverse.
     it.each(ACCENT_COLORS)(
-      "%s: all four steps emit distinct fills",
+      "%s: fills never get darker as the step rises",
       (accentColor) => {
-        const fills = VIBRANCIES.map(
-          (step) => build(accentColor, "dark", step)["--primary-fill"],
+        const lightness = VIBRANCIES.map(
+          (step) =>
+            hslStringToOklch(
+              build(accentColor, "dark", step)["--primary-fill"] as string,
+            ).L,
         )
-        expect(new Set(fills).size).toBe(4)
+        // Emitted triplets move in whole HSL percents (about 0.007 OKLCH L),
+        // so steps that meet at the 4.5:1 point can land up to one such step
+        // apart in either order. 0.008 allows that and still fails any
+        // reversal larger than one rounding step.
+        for (let i = 1; i < lightness.length; i++) {
+          expect(lightness[i] as number).toBeGreaterThanOrEqual(
+            (lightness[i - 1] as number) - 0.008,
+          )
+        }
       },
     )
 
@@ -1015,7 +1019,14 @@ describe("generateTokens", () => {
       )
       expect(new Set(primaries).size).toBe(1)
       expect(new Set(fills).size).toBe(1)
-      expect(fills[0]).toBe(accentColors[accentColor][500])
+      const base = accentColors[accentColor][500]
+      if (contrastRatio("0 0% 100%", base) >= 3) {
+        expect(
+          contrastRatio("0 0% 100%", fills[0] as string),
+        ).toBeGreaterThanOrEqual(4.5)
+      } else {
+        expect(fills[0]).toBe(base)
+      }
     })
 
     it("light glass keeps its own shade at every step", () => {

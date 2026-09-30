@@ -267,12 +267,13 @@ const SIDEBAR_HOVER: Record<
  * chroma cap; `--primary` keeps its palette lightness and takes the cap only,
  * which is what stops the bright warm accents from being dragged down.
  *
- * Neither end of the lightness band is arbitrary. Below ~0.535 the fill drops
- * under 3:1 against `--card`; at ~0.645 accents start flipping to a dark label
- * as `pickForeground` crosses its threshold, which would make label colour
- * vary by accent. A chroma cap above ~0.26 never binds, because that is the
- * sRGB gamut ceiling at these lightnesses — hence the nulls rather than
- * decorative large numbers.
+ * Each step's lightness is a ceiling, not a fixed value: `solveWhiteFill`
+ * lowers any fill whose white label would miss 4.5:1, so `vivid` and `intense`
+ * meet at each hue's 4.5:1 point. Below ~0.535 the fill would drop under 3:1
+ * against `--card`; the deepest solve measured (lime at `intense`) sits 0.090
+ * under its step and still clears that floor. A chroma cap above ~0.26 never
+ * binds, because that is the sRGB gamut ceiling at these lightnesses — hence
+ * the nulls rather than decorative large numbers.
  */
 const VIBRANCY: Record<
   AccentIntensity,
@@ -313,8 +314,15 @@ export function capCanvasSaturation(hsl: string, cap: number | null): string {
   return `${h} ${saturation.toFixed(0)}% ${l}`
 }
 
-/** WCAG floor for large text, which is what a filled control's label is. */
+/**
+ * Decides which label a hue keeps: white wherever white clears 3:1 on the
+ * unsolved fill, ink everywhere else. The fill is then solved so the label
+ * reaches LABEL_SOLVE_TARGET, which is how labels stay put per hue while
+ * clearing AA for 14px text.
+ */
 const FOREGROUND_MIN_RATIO = 3
+/** AA for body-size text, with headroom so integer HSL rounding cannot land under 4.5. */
+const LABEL_SOLVE_TARGET = 4.6
 const WHITE = "0 0% 100%"
 const INK = "222 47% 11%"
 
@@ -335,8 +343,45 @@ function capChroma(hsl: string, max: number | null): string {
   return oklchToHslString({ L, C: max, h })
 }
 
-function pickForeground(fill: string): string {
-  return contrastRatio(WHITE, fill) >= FOREGROUND_MIN_RATIO ? WHITE : INK
+const whiteFillCache = new Map<string, string>()
+
+/**
+ * The fill nearest `base` that carries a white label at LABEL_SOLVE_TARGET:
+ * hue and chroma kept, OKLCH lightness lowered in 0.002 steps, each candidate
+ * measured as the triplet actually emitted. `base` itself when it already
+ * clears.
+ */
+function solveWhiteFill(base: string): string {
+  const cached = whiteFillCache.get(base)
+  if (cached !== undefined) return cached
+  let result = base
+  if (contrastRatio(WHITE, base) < LABEL_SOLVE_TARGET) {
+    const { L, C, h } = hslStringToOklch(base)
+    for (let l = L - 0.002; l > 0; l -= 0.002) {
+      const candidate = oklchToHslString({ L: l, C, h })
+      if (contrastRatio(WHITE, candidate) >= LABEL_SOLVE_TARGET) {
+        result = candidate
+        break
+      }
+    }
+  }
+  whiteFillCache.set(base, result)
+  return result
+}
+
+/**
+ * Keeps today's label per hue and solves the fill to carry it: a white label
+ * darkens the fill just enough; an ink label leaves it alone, because ink
+ * clears at least 5.9:1 on any fill where white is under 3:1.
+ */
+function primaryFillAndLabel(base: string): {
+  fill: string
+  foreground: string
+} {
+  if (contrastRatio(WHITE, base) >= FOREGROUND_MIN_RATIO) {
+    return { fill: solveWhiteFill(base), foreground: WHITE }
+  }
+  return { fill: base, foreground: INK }
 }
 
 /**
@@ -499,9 +544,12 @@ export function generateTokens(
     mode === "dark"
       ? capChroma(primaryBase, VIBRANCY[accentIntensity].primaryChroma)
       : primaryBase
-  const primaryFill =
-    mode === "dark" ? vibrancyFill(primaryBase, accentIntensity) : primaryBase
-  const primaryForeground = pickForeground(primaryFill)
+  const { fill: primaryFill, foreground: primaryForeground } =
+    primaryFillAndLabel(
+      mode === "dark"
+        ? vibrancyFill(primaryBase, accentIntensity)
+        : primaryBase,
+    )
   const ringValue = primaryValue
   const focusRingShade = FOCUS_RING_SHADE[accentIntensity][mode]
   const focusRingValue = accent[focusRingShade]

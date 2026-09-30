@@ -187,7 +187,7 @@ test.describe("accent color axis", () => {
 })
 
 test.describe("accent intensity axis", () => {
-  test("each step emits a distinct --primary-fill in dark mode", async ({
+  test("the steps emit at least three --primary-fill values in dark mode", async ({
     page,
   }) => {
     const consoleWatch = watchConsole(page)
@@ -205,7 +205,9 @@ test.describe("accent intensity axis", () => {
       expect(fill, `${intensity} must emit a fill`).not.toBe("")
       seen.add(fill)
     }
-    expect(seen.size).toBe(ACCENT_INTENSITIES.length)
+    // vivid and intense can meet at fuchsia's 4.5:1 label point, because
+    // each step's lightness is now a ceiling under the label solve.
+    expect(seen.size).toBeGreaterThanOrEqual(3)
 
     consoleWatch.assertClean()
   })
