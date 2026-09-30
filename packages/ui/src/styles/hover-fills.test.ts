@@ -170,6 +170,27 @@ describe("filled hover states", () => {
     expect(css).not.toMatch(/hsl\(var\(--(primary|destructive)\) \/ 0\.[24]5\)/)
   })
 
+  // A glass filled button was 55-70% of its fill mixed toward white over the
+  // page, which measured 2.57-2.91:1 in light: translucency cannot work on a
+  // fill that sits at its label's contrast floor.
+  it("glass filled buttons paint an opaque fill under a wash sheen", () => {
+    const css = readFileSync("src/components/button/button.css", "utf8")
+      .replace(/\/\*[\s\S]*?\*\//g, "")
+      .replace(/\s+/g, " ")
+    const glassFilled = [
+      ...css.matchAll(
+        /\[data-preset="glass"\] \.dr-btn\[data-variant="default"\](?::hover)?, \[data-preset="glass"\] \.dr-btn\[data-variant="destructive"\](?::hover)? \{([^}]*)\}/g,
+      ),
+    ].map((m) => m[1] as string)
+    expect(glassFilled.length).toBeGreaterThan(0)
+    for (const body of glassFilled) {
+      expect(body).not.toMatch(/background-color:\s*transparent/)
+      expect(body).not.toMatch(/background-image:[^;]*rgba\(255, 255, 255/)
+    }
+    expect(css).toContain(`hsl(var(--primary-fill-wash) / ${GLASS_SHEEN})`)
+    expect(css).toContain(`hsl(var(--destructive-solid-wash) / ${GLASS_SHEEN})`)
+  })
+
   it("every hover, press and sheen keeps the label at 4.5:1 and above rest", () => {
     const amounts = new Map<Fill, Set<number>>([
       ["primary-fill", new Set(BUTTON_STATE_LAYER)],
