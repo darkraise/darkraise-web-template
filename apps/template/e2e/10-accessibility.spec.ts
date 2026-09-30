@@ -217,6 +217,61 @@ test.describe("colour contrast of core tokens", () => {
   }
 })
 
+/** WCAG relative luminance from a computed `rgb()`/`rgba()` colour. */
+function rgbToLuminance(color: string): number {
+  const match = color.match(/^rgba?\(([\d.]+),\s*([\d.]+),\s*([\d.]+)/)
+  if (!match) throw new Error(`expected an rgb() colour, got "${color}"`)
+  const [r = 0, g = 0, b = 0] = match
+    .slice(1, 4)
+    .map((c) => Number(c) / 255)
+    .map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4))
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b
+}
+
+/** Text colour against the nearest opaque background behind it. */
+async function textContrast(locator: import("@playwright/test").Locator) {
+  const { color, background } = await locator.evaluate((el) => {
+    let node: Element | null = el
+    let bg = "rgb(255, 255, 255)"
+    while (node) {
+      const value = getComputedStyle(node).backgroundColor
+      const alpha = value.match(/^rgba\([^)]*,\s*([\d.]+)\)$/)?.[1]
+      if (alpha === undefined || Number(alpha) === 1) {
+        bg = value
+        break
+      }
+      node = node.parentElement
+    }
+    return { color: getComputedStyle(el).color, background: bg }
+  })
+  return contrastRatio(rgbToLuminance(color), rgbToLuminance(background))
+}
+
+test.describe("colour contrast of template text", () => {
+  for (const mode of ["light", "dark"] as const) {
+    test(`${mode}: the destructive alert-dialog action paints like a destructive button`, async ({
+      page,
+    }) => {
+      await seedApp(page, { mode })
+      await gotoApp(page, "/components/alert-dialog")
+      const paint = (el: Element) => {
+        const style = getComputedStyle(el)
+        return [style.color, style.backgroundColor]
+      }
+      const trigger = page
+        .getByRole("button", { name: "Delete Account" })
+        .first()
+      const expected = await trigger.evaluate(paint)
+      await trigger.click()
+      const action = page
+        .getByRole("alertdialog")
+        .getByRole("button", { name: "Delete Account" })
+      expect(await action.evaluate(paint)).toEqual(expected)
+      expect(await textContrast(action)).toBeGreaterThanOrEqual(4.5)
+    })
+  }
+})
+
 test.describe("reduced motion", () => {
   test("app renders with prefers-reduced-motion", async ({ page }) => {
     const consoleWatch = watchConsole(page)

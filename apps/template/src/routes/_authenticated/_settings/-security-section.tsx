@@ -204,7 +204,7 @@ export function SecuritySection() {
                 <AlertDialogFooter>
                   <AlertDialogCancel>{t("Cancel")}</AlertDialogCancel>
                   <AlertDialogAction
-                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    data-variant="destructive"
                     onClick={() =>
                       toast.success(
                         t("This is a demo — no account was deleted."),
