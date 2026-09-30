@@ -202,8 +202,6 @@ function tierClearingAll(
   return best
 }
 
-const contrastCache = new Map<string, string>()
-
 /**
  * `value` unchanged when it already clears `target` against `background`,
  * otherwise the nearest lightness on the same hue that does.
@@ -218,30 +216,7 @@ function ensureContrast(
   background: string,
   target: number,
 ): string {
-  if (value.includes("/")) return value
-  const key = `${value}|${background}|${target}`
-  const cached = contrastCache.get(key)
-  if (cached !== undefined) return cached
-
-  let result = value
-  if (contrastRatio(value, background) < target) {
-    const parts = value.split(" ")
-    const hue = parts[0] ?? "0"
-    const saturation = parts[1] ?? "0%"
-    const start = Math.round(parseFloat(parts[2] ?? "50"))
-    outer: for (let delta = 1; delta <= 100; delta++) {
-      for (const l of [start - delta, start + delta]) {
-        if (l < 0 || l > 100) continue
-        const candidate = `${hue} ${saturation} ${l}%`
-        if (contrastRatio(candidate, background) >= target) {
-          result = candidate
-          break outer
-        }
-      }
-    }
-  }
-  contrastCache.set(key, result)
-  return result
+  return ensureContrastAll(value, [background], target)
 }
 
 const contrastAllCache = new Map<string, string>()
