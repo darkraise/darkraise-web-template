@@ -98,7 +98,6 @@ explicitly and do not enter a core-only bundle:
 ```tsx
 import { UiI18nProvider } from "darkraise-ui/i18n"
 import { vi } from "darkraise-ui/locales/vi"
-
 ;<UiI18nProvider
   locale="vi-VN"
   locales={[vi]}
@@ -275,8 +274,7 @@ so a pinned shell ignores the axis without any CSS specificity fight.
 ## Sidebar indicator
 
 `sidebarActiveBar` is a theme axis with four values. `default` leaves each
-preset's own indicator alone (glass draws a ring and a rail, sci-fi a ring,
-everything else a rail); `bar`, `ring` and `both` force one look everywhere.
+preset's own indicator alone (glass draws a ring and a rail, everything else a rail); `bar`, `ring` and `both` force one look everywhere.
 It appears in the theme panel as **Sidebar Indicator**, with `default`
 labelled "Auto".
 
@@ -300,15 +298,6 @@ no `localStorage`, so it returns the default `sidebar` and the client swaps
 after hydration. If you server-render, read the persisted variant in your
 document template and hand it to `useLayoutStore.setState` before the app
 mounts, the way the scaffolder's inline theme script does for theme axes.
-
-## Sci-fi preset font
-
-Orbitron is no longer fetched or bundled. The Sci-fi preset renders it only
-when the host system or the consuming app already provides the font;
-otherwise it falls through to the rest of the stack (Rajdhani and the
-generic families after it). This removes a third-party network request from
-every page load of every consuming app. An app that wants Sci-fi's intended
-typography must supply Orbitron itself.
 
 ## Migrating to 2.0.0
 

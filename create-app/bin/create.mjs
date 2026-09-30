@@ -39,7 +39,7 @@ const ACCENT_COLORS = [
   "rose",
 ]
 const SURFACE_COLORS = ["slate", ...ACCENT_COLORS]
-const PRESETS = ["default", "glass", "scifi"]
+const PRESETS = ["default", "glass"]
 const BACKGROUND_STYLES = ["solid", "gradient"]
 const BACKGROUND_INTENSITIES = [
   "neutral",
@@ -71,8 +71,8 @@ const MODES = ["light", "dark", "system"]
 const LAYOUTS = ["sidebar", "stacked", "top-nav", "split-panel"]
 // Mirrors `ThemeConfig.switcher.axes` in
 // packages/ui/src/theme/themeConfig.ts. `presetAxes` is a master
-// toggle for whether the per-preset axis controls (e.g. glass blur,
-// scifi frame) appear in the switcher panel.
+// toggle for whether the per-preset axis controls (e.g. glass opacity and
+// blur) appear in the switcher panel.
 const THEME_AXIS_KEYS = [
   "mode",
   "accentColor",
@@ -517,7 +517,7 @@ async function main() {
             { value: "mode", label: "Mode (light/dark/system)" },
             { value: "accentColor", label: "Accent color" },
             { value: "surfaceColor", label: "Surface color" },
-            { value: "preset", label: "Preset (default/glass/scifi)" },
+            { value: "preset", label: "Preset (default/glass)" },
             { value: "backgroundStyle", label: "Background style" },
             { value: "backgroundIntensity", label: "Background intensity" },
             { value: "gradientPattern", label: "Gradient pattern" },
@@ -536,7 +536,7 @@ async function main() {
             { value: "innerGlow", label: "Inner glow" },
             {
               value: "presetAxes",
-              label: "Preset-specific axes (e.g. glass blur, scifi frame)",
+              label: "Preset-specific axes (e.g. glass opacity, blur)",
             },
           ],
           initialValues: THEME_AXIS_KEYS,
@@ -731,7 +731,6 @@ async function main() {
         // NEUTRALISED_WHEN_HIDDEN + hiddenCommonAxes in the library.
         var NEUTRALISED_BY_PRESET = {
           glass: ["surface-intensity"],
-          scifi: ["surface-intensity"],
         }
         var activePreset = localStorage.getItem("theme-preset") || ""
         var neutralised = NEUTRALISED_BY_PRESET[activePreset] || []

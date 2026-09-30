@@ -52,7 +52,7 @@ npm create darkraise-ui my-app \
 | `--layout`                                 | `sidebar`, `stacked`, `top-nav`, `split-panel`              | `sidebar`   |
 | `--accent`                                 | 17 colors (`red` through `rose`)                            | `blue`      |
 | `--surface-color`                          | `slate` + 17 accent colors                                  | `slate`     |
-| `--preset`                                 | `default`, `glass`, `neon`, `terminal`, `scifi`, `playful`  | `default`   |
+| `--preset`                                 | `default`, `glass`                                          | `default`   |
 | `--background`                             | `solid`, `gradient`                                         | `solid`     |
 | `--background-intensity`                   | `subtle`, `balanced`, `vivid`, `intense`                    | `balanced`  |
 | `--gradient-pattern`                       | `blobs`, `aurora`, `spotlight`, `mesh`                      | `blobs`     |
@@ -104,7 +104,7 @@ A 15-axis theming system. Scaffolded projects configure it through `src/theme.co
 - **Mode** -- light, dark, or system
 - **Accent color** -- 17 color options
 - **Surface color** -- neutral slate or one of 17 tinted surfaces
-- **Preset** -- `default`, `glass`, `neon`, `terminal`, `scifi`, or `playful` (glassmorphism is the `glass` preset)
+- **Preset** -- `default` or `glass` (glassmorphism is the `glass` preset)
 - **Background style** -- solid or gradient
 - **Background intensity** -- subtle, balanced, vivid, or intense
 - **Gradient pattern** -- blobs, aurora, spotlight, or mesh
@@ -117,14 +117,13 @@ A 15-axis theming system. Scaffolded projects configure it through `src/theme.co
 - **Accent vibrancy** -- calm, balanced, vivid, or intense (dark mode only; controls how loud the brand accent renders)
 - **Canvas tint** -- neutral, subtle, balanced, or vivid (dark mode only; caps how much the surface color tints the page canvas)
 
-The switcher config also exposes a `presetAxes` master toggle that controls whether preset-specific controls (for example neon glow or sci-fi intensity and frame) appear in the switcher panel.
+The switcher config also exposes a `presetAxes` master toggle that controls whether preset-specific controls (for example glass opacity and blur) appear in the switcher panel.
 
 Font family is fixed: Inter for sans/heading, JetBrains Mono for monospace. Font size is adjustable via the axis above.
 
 The `ThemeSwitcher` component renders controls for whichever axes are enabled in the config. The `ThemeProvider` accepts an optional `onChange` callback for persisting theme settings to a backend. Theme defaults and axis visibility are set at scaffold time and can be changed later by editing `theme.config.ts`.
 
-See [`packages/ui/README.md`](./packages/ui/README.md) for the Sci-fi preset's
-font behavior and for translating component text via `UiLabelsProvider`.
+See [`packages/ui/README.md`](./packages/ui/README.md) for translating component text via `UiLabelsProvider`.
 
 ### Layouts
 
