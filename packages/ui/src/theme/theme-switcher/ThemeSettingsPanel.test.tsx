@@ -50,8 +50,8 @@ describe("ThemeSettingsPanel", () => {
   beforeEach(() => {
     mockMatchMedia()
     // The provider persists the chosen preset, so a test that clicks a preset
-    // radio leaves every later test running under it. Sci-fi hides the radius
-    // axis, which is enough to make an unrelated assertion disappear.
+    // radio leaves every later test running under it. Glass hides the surface
+    // intensity axis, which is enough to make an unrelated assertion disappear.
     vi.stubGlobal("localStorage", memoryStorage())
   })
 
@@ -106,17 +106,14 @@ describe("ThemeSettingsPanel", () => {
     // Default preset — every Depth axis is visible, so the heading shows.
     expect(screen.getByRole("heading", { name: "Depth" })).toBeInTheDocument()
 
-    // Sci-fi hides elevation, buttonElevation and surfaceIntensity, but drives
-    // its glow from the shared axes rather than hiding them — so the Depth
-    // group thins to the two glow controls and keeps its heading.
-    fireEvent.click(screen.getByRole("radio", { name: /^sci-fi$/i }))
+    // Glass hides surfaceIntensity but keeps the rest of the Depth group, so
+    // the group thins and keeps its heading.
+    fireEvent.click(screen.getByRole("radio", { name: /^glass$/i }))
 
     expect(screen.getByRole("heading", { name: "Depth" })).toBeInTheDocument()
-    expect(screen.queryByText("Elevation")).not.toBeInTheDocument()
-    expect(screen.queryByText("Button Elevation")).not.toBeInTheDocument()
     expect(screen.queryByText("Surface Intensity")).not.toBeInTheDocument()
+    expect(screen.getByText("Elevation")).toBeInTheDocument()
     expect(screen.getByText("Outer Glow")).toBeInTheDocument()
-    expect(screen.getByText("Inner Glow")).toBeInTheDocument()
   })
 
   it("omits a group heading entirely once every axis in it is hidden", () => {
@@ -158,9 +155,7 @@ describe("ThemeSettingsPanel", () => {
 
   it("names its axis sliders so they are reachable by role and name", () => {
     renderPanel(<ThemeSettingsPanel layout="page" />)
-    // A four-value axis renders as a Slider carrying the axis name. Radius is
-    // the one worth asserting: it is hidden by the sci-fi preset, so it also
-    // catches preset state leaking in from an earlier test.
+    // A four-value axis renders as a Slider carrying the axis name.
     expect(screen.getByRole("slider", { name: "Density" })).toBeInTheDocument()
     expect(screen.getByRole("slider", { name: "Radius" })).toBeInTheDocument()
   })

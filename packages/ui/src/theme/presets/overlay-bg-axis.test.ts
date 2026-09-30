@@ -6,7 +6,7 @@ import { readFileSync } from "node:fs"
 // --background, which the axis never washes, making Dialog/Popover/Tooltip/
 // Select/Command and every menu silent no-ops there. This is the regression
 // this test exists to prevent.
-const PRESETS = ["scifi/scifi.css", "glass/glass.css"]
+const PRESETS = ["glass/glass.css"]
 
 // Selector-then-brace matching, not a substring search: the mix block's own
 // selector contains the literal `[data-surface-intensity="none"]` inside its

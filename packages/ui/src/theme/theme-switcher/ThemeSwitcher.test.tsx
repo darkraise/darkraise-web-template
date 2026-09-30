@@ -232,23 +232,19 @@ describe("ThemeSwitcher preset section", () => {
     expect(screen.getByRole("radio", { name: /^system$/i })).toBeInTheDocument()
   })
 
-  it("hides Elevation + Button Elevation when active preset declares hiddenCommonAxes (scifi)", () => {
+  it("hides Accent and Surface Intensity when the active preset declares hiddenCommonAxes (glass)", () => {
     render(
       <ThemeProvider>
         <ThemeSwitcher />
       </ThemeProvider>,
     )
     openSwitcher()
-    // Default preset on mount — both common axes visible.
-    expect(screen.getByText("Elevation")).toBeInTheDocument()
-    expect(screen.getByText("Button Elevation")).toBeInTheDocument()
+    expect(screen.getByText("Surface Intensity")).toBeInTheDocument()
 
-    fireEvent.click(screen.getByRole("radio", { name: /^sci-fi$/i }))
-    // Sci-fi hides both via hiddenCommonAxes; the shared glow axes take
-    // their place.
-    expect(screen.queryByText("Elevation")).not.toBeInTheDocument()
-    expect(screen.queryByText("Button Elevation")).not.toBeInTheDocument()
-    expect(screen.getByText("Outer Glow")).toBeInTheDocument()
+    fireEvent.click(screen.getByRole("radio", { name: /^glass$/i }))
+    expect(screen.queryByText("Accent Intensity")).not.toBeInTheDocument()
+    expect(screen.queryByText("Surface Intensity")).not.toBeInTheDocument()
+    expect(screen.getByText("Elevation")).toBeInTheDocument()
   })
 
   it("switches the shell style", () => {

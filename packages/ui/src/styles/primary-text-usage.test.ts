@@ -22,11 +22,6 @@ const GRAPHIC_DECLARATIONS: Array<[string, string, string]> = [
     ".dr-sidebar-nav-icon-svg",
     "the active nav icon is a graphic",
   ],
-  [
-    "src/theme/presets/scifi/scifi.css",
-    ".dr-spinner > svg",
-    "the spinner's stroke is a graphic",
-  ],
 ]
 
 /** A ::before or ::after glyph is decoration, not text a reader must read. */
@@ -68,7 +63,9 @@ describe("primary-coloured text", () => {
     ]) {
       const css = readFileSync(path, "utf8").replace(/\/\*[\s\S]*?\*\//g, "")
       for (const rule of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
-        if (!/(?<![\w-])color:\s*hsl\(var\(--primary\)/.test(rule[2] as string)) {
+        if (
+          !/(?<![\w-])color:\s*hsl\(var\(--primary\)/.test(rule[2] as string)
+        ) {
           continue
         }
         const selector = (rule[1] as string).trim()
@@ -94,7 +91,7 @@ describe("primary-coloured text", () => {
     ]) {
       const css = readFileSync(path, "utf8").replace(/\/\*[\s\S]*?\*\//g, "")
       for (const match of css.matchAll(
-        /(?<![\w-])color:\s*hsl\(var\(--(?:primary-text|primary|success|warning|info|destructive|scifi-badge-accent)\)\s*\/\s*[\d.]+\)/g,
+        /(?<![\w-])color:\s*hsl\(var\(--(?:primary-text|primary|success|warning|info|destructive)\)\s*\/\s*[\d.]+\)/g,
       )) {
         offenders.push(`${match[0]} in ${path}`)
       }
@@ -119,14 +116,13 @@ describe("primary-coloured text", () => {
     expect(offenders).toEqual([])
   })
 
-  it("glass and sci-fi paint their accent text with --primary-text", () => {
+  it("glass paints its accent text with --primary-text", () => {
     const glass = readFileSync("src/theme/presets/glass/glass.ts", "utf8")
-    expect(glass).toContain(`tokens["--accent-foreground"] = "var(--primary-text)"`)
+    expect(glass).toContain(
+      `tokens["--accent-foreground"] = "var(--primary-text)"`,
+    )
     expect(glass).toContain(
       `tokens["--secondary-foreground"] = "var(--primary-text)"`,
     )
-    const scifi = readFileSync("src/theme/presets/scifi/scifi.ts", "utf8")
-    expect(scifi).toContain(`"--accent-foreground": "var(--primary-text)"`)
-    expect(scifi).toContain(`"--secondary-foreground": "var(--primary-text)"`)
   })
 })

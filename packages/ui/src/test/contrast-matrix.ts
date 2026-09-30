@@ -31,9 +31,9 @@ export interface ThemeCombo {
 }
 
 /**
- * Every combination a user can reach. Glass and sci-fi hide accentIntensity
- * and neutralise it to the default, and sci-fi is dark-only, so iterating
- * their other steps would test states nothing paints.
+ * Every combination a user can reach. Glass hides accentIntensity and
+ * neutralises it to the default, so iterating its other steps would test
+ * states nothing paints.
  *
  * backgroundStyle stays solid: it only moves the decorative --sf-hue tokens,
  * never a colour text or a fill is read against. backgroundIntensity caps the
@@ -61,13 +61,6 @@ export function reachableCombos(): ThemeCombo[] {
           preset: "glass",
         })
       }
-      combos.push({
-        accentColor,
-        surfaceColor,
-        mode: "dark",
-        accentIntensity: "balanced",
-        preset: "scifi",
-      })
     }
   }
   return BACKGROUND_INTENSITIES.flatMap((backgroundIntensity) =>

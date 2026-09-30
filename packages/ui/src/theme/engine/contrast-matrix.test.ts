@@ -9,11 +9,8 @@ import {
 describe("contrast matrix support", () => {
   it("enumerates every reachable combination once", () => {
     const combos = reachableCombos()
-    expect(combos).toHaveLength(18 * 30 * 11 * 5)
+    expect(combos).toHaveLength(18 * 30 * 10 * 5)
     expect(new Set(combos.map(comboName)).size).toBe(combos.length)
-    expect(
-      combos.filter((c) => c.preset === "scifi").every((c) => c.mode === "dark"),
-    ).toBe(true)
     expect(
       combos
         .filter((c) => c.preset !== "default")

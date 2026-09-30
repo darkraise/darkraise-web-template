@@ -22,10 +22,6 @@ const sidebarNavCss = readFileSync(
   resolve(thisDir, "./sidebar-nav.css"),
   "utf8",
 )
-const scifiCss = readFileSync(
-  resolve(thisDir, "../../theme/presets/scifi/scifi.css"),
-  "utf8",
-)
 
 function StrictLink({ to, className, style, children }: RouterLinkProps) {
   return (
@@ -366,48 +362,5 @@ describe("SidebarNav activeBar", () => {
     expect(base, "glass base rule missing").toBeDefined()
     expect(base?.[2]).toMatch(/inset 3px/)
     expect(base?.[2]).toMatch(/inset 0 0 0 1px/)
-  })
-
-  it("gives scifi its own variant for each value, in its own file", () => {
-    const withoutComments = scifiCss.replace(/\/\*[\s\S]*?\*\//g, "")
-    const rules = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)]
-    for (const value of ["bar", "ring", "both"]) {
-      const rule = rules.find(
-        ([, selector]) =>
-          selector.includes(".dr-sidebar-nav-item") &&
-          selector.includes(`[data-active-bar="${value}"]`),
-      )
-      expect(rule, `no scifi rule for activeBar=${value}`).toBeDefined()
-    }
-  })
-
-  it("gives scifi both the rail and the ring, rail painted first", () => {
-    const withoutComments = scifiCss.replace(/\/\*[\s\S]*?\*\//g, "")
-    const rule = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)].find(
-      ([, selector]) =>
-        selector.includes(".dr-sidebar-nav-item") &&
-        selector.includes('[data-active-bar="both"]'),
-    )
-    expect(rule, "no scifi activeBar=both rule found").toBeDefined()
-    const body = rule?.[2] ?? ""
-    expect(body).toMatch(/inset 3px/)
-    expect(body).toMatch(/inset 0 0 0 1px/)
-    const railIndex = body.indexOf("inset 3px")
-    const ringIndex = body.indexOf("inset 0 0 0 1px")
-    expect(railIndex).toBeGreaterThanOrEqual(0)
-    expect(ringIndex).toBeGreaterThanOrEqual(0)
-    expect(railIndex).toBeLessThan(ringIndex)
-  })
-
-  it("keeps the scifi default as a ring only", () => {
-    const withoutComments = scifiCss.replace(/\/\*[\s\S]*?\*\//g, "")
-    const base = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)].find(
-      ([, selector]) =>
-        selector.includes(".dr-sidebar-nav-item.active") &&
-        !selector.includes("data-active-bar"),
-    )
-    expect(base, "scifi base rule missing").toBeDefined()
-    expect(base?.[2]).toMatch(/inset 0 0 0 1px/)
-    expect(base?.[2]).not.toMatch(/inset 3px/)
   })
 })

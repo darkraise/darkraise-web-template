@@ -139,7 +139,6 @@
 /* Preset-specific CSS (manual; presets/ is outside the auto-scanner) */
 @import "../theme/presets/default/default.css";
 @import "../theme/presets/glass/glass.css";
-@import "../theme/presets/scifi/scifi.css";
 
 @layer theme, base, components, utilities, overrides;
 

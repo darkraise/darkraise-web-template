@@ -265,6 +265,21 @@ describe("ThemeProvider preset orchestration", () => {
     )
   })
 
+  it("boots a stored removed preset on the default preset, keeping its mode", () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {})
+    localStorage.setItem("theme-preset", "scifi")
+    localStorage.setItem("mode", "dark")
+
+    const { result } = renderHook(() => useTheme(), { wrapper: wrap })
+
+    expect(result.current.preset).toBe("default")
+    expect(result.current.resolvedMode).toBe("dark")
+    expect(document.documentElement.getAttribute("data-preset")).toBe("default")
+    expect(document.documentElement.getAttribute("data-mode")).toBe("dark")
+    expect(error).not.toHaveBeenCalled()
+    error.mockRestore()
+  })
+
   it("leaves a supported stored mode untouched at boot", () => {
     localStorage.setItem("theme-preset", "glass")
     localStorage.setItem("mode", "light")
