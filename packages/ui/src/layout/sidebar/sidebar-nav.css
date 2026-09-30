@@ -25,7 +25,7 @@
   }
 
   .dr-sidebar-nav-link {
-    @apply flex min-h-[var(--density-cell)] items-center gap-3 rounded-md p-[var(--density-row-py)] text-sm transition-colors;
+    @apply focus-ring-inset flex min-h-[var(--density-cell)] items-center gap-3 rounded-md p-[var(--density-row-py)] text-sm transition-colors;
     transition-duration: var(--duration-fast);
   }
 
@@ -78,7 +78,7 @@
   .dr-sidebar-nav-popover-trigger {
     /* Icon-only popover trigger keeps symmetric `p-[var(--density-row-py)]`
      * so it stays square — same reasoning as the collapsed nav link. */
-    @apply mx-auto flex min-h-[var(--density-cell)] w-[var(--density-cell)] cursor-pointer items-center justify-center gap-3 rounded-md p-[var(--density-row-py)] transition-colors;
+    @apply focus-ring-inset mx-auto flex min-h-[var(--density-cell)] w-[var(--density-cell)] cursor-pointer items-center justify-center gap-3 rounded-md p-[var(--density-row-py)] transition-colors;
     transition-duration: var(--duration-fast);
   }
 
@@ -121,7 +121,7 @@
   }
 
   .dr-sidebar-nav-chevron-button {
-    @apply flex size-[var(--density-cell)] shrink-0 cursor-pointer items-center justify-center rounded-md transition-colors;
+    @apply focus-ring-inset flex size-[var(--density-cell)] shrink-0 cursor-pointer items-center justify-center rounded-md transition-colors;
     transition-duration: var(--duration-fast);
   }
 

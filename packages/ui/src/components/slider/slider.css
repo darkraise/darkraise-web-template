@@ -24,11 +24,10 @@
   }
 
   .dr-slider-thumb:focus-visible {
-    /* Compose the focus ring with the affordance glow so focused
-       thumbs in Neon keep both their ring and their glow. */
-    box-shadow:
-      0 0 0 2px hsl(var(--focus-ring)),
-      var(--affordance-glow);
+    /* An outline, so preset rules that restyle box-shadow (glass's halo)
+       add to the focused thumb without removing its ring. */
+    outline: 2px solid hsl(var(--focus-ring));
+    outline-offset: 2px;
   }
 
   /* Anchor dots rendered when Slider has showSteps and the stop count

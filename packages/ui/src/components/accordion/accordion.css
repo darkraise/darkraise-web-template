@@ -4,7 +4,7 @@
   }
 
   .dr-accordion-trigger {
-    @apply flex flex-1 cursor-pointer items-center justify-between py-4 font-medium transition-[color,text-decoration-color,border-bottom-color,border-bottom-width] hover:underline;
+    @apply focus-ring-inset flex flex-1 cursor-pointer items-center justify-between py-4 font-medium transition-[color,text-decoration-color,border-bottom-color,border-bottom-width] hover:underline;
     transition-duration: var(--duration-fast);
   }
 

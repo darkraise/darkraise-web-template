@@ -136,3 +136,54 @@ describe("menu-style rows carry a visible focus indicator", () => {
     }
   })
 })
+
+/** Every declaration block whose selector list contains `selector`. */
+function allRuleBodiesFor(css: string, selector: string): string {
+  const bodies: string[] = []
+  let from = 0
+  for (;;) {
+    const at = css.indexOf(selector, from)
+    if (at === -1) break
+    from = at + selector.length
+    const after = css[at + selector.length] ?? ""
+    if (/[\w-]/.test(after)) continue
+    const open = css.indexOf("{", at)
+    const close = css.indexOf("}", open)
+    if (open === -1 || close === -1) break
+    const between = css.slice(at + selector.length, open)
+    if (!/^[\s,.\-:[\]="\w()]*$/.test(between)) continue
+    bodies.push(css.slice(open + 1, close))
+  }
+  return bodies.join("\n")
+}
+
+const APPLIED: Array<[string, string, string]> = [
+  ["src/layout/sidebar/sidebar-nav.css", ".dr-sidebar-nav-link", "focus-ring-inset"],
+  ["src/layout/sidebar/sidebar-nav.css", ".dr-sidebar-nav-popover-trigger", "focus-ring-inset"],
+  ["src/layout/sidebar/sidebar-nav.css", ".dr-sidebar-nav-chevron-button", "focus-ring-inset"],
+  ["src/components/accordion/accordion.css", ".dr-accordion-trigger", "focus-ring-inset"],
+  ["src/layout/page-header/page-header.css", ".dr-page-header-tab", "focus-ring-inset"],
+  ["src/components/banner/banner.css", ".dr-banner-close", "focus-ring"],
+  ["src/components/sonner/sonner.css", ".dr-toast-action", "focus-ring"],
+  ["src/components/sonner/sonner.css", ".dr-toast-cancel", "focus-ring"],
+  ["src/components/sonner/sonner.css", ".dr-toast-close", "focus-ring"],
+  ["src/components/multi-select/multi-select.css", ".dr-multi-select-control", "focus-ring-input-wrapper"],
+  ["src/components/multi-select/multi-select.css", ".dr-multi-select-clear", "focus-ring-tight"],
+  ["src/components/multi-select/multi-select.css", ".dr-multi-select-toggle", "focus-ring-tight"],
+]
+
+describe("controls that had no focus indicator", () => {
+  it.each(APPLIED)("%s → %s applies %s", (path, selector, utility) => {
+    const css = readFileSync(path, "utf8").replace(/\/\*[\s\S]*?\*\//g, "")
+    const bodies = allRuleBodiesFor(css, selector)
+    expect(bodies).toMatch(new RegExp(`@apply[^;]*(?<![\\w-])${utility}(?![\\w-])`))
+  })
+
+  it("the slider thumb draws its ring as an outline, which presets cannot remove", () => {
+    const css = readFileSync("src/components/slider/slider.css", "utf8")
+    const body = ruleBodyFor(css, ".dr-slider-thumb:focus-visible")
+    expect(body?.replace(/\s+/g, " ")).toMatch(
+      /outline:\s*2px solid hsl\(var\(--focus-ring\)\);\s*outline-offset:\s*2px/,
+    )
+  })
+})
