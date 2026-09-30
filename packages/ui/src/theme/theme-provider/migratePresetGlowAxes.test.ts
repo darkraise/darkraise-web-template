@@ -29,18 +29,12 @@ describe("migratePresetGlowAxes", () => {
     expect(ls.getItem("theme-outer-glow")).toBe("balanced")
   })
 
-  it("seeds both axes from scifi intensity, which drove both layers", () => {
+  it("drops the retired sci-fi intensity key without seeding any glow axis", () => {
     const ls = makeStorage({ "theme-scifi-intensity": "dim" })
     migratePresetGlowAxes(ls)
-    expect(ls.getItem("theme-outer-glow")).toBe("subtle")
-    expect(ls.getItem("theme-inner-glow")).toBe("subtle")
     expect(ls.getItem("theme-scifi-intensity")).toBeNull()
-  })
-
-  it("collapses scifi intense onto vivid", () => {
-    const ls = makeStorage({ "theme-scifi-intensity": "intense" })
-    migratePresetGlowAxes(ls)
-    expect(ls.getItem("theme-outer-glow")).toBe("vivid")
+    expect(ls.getItem("theme-outer-glow")).toBeNull()
+    expect(ls.getItem("theme-inner-glow")).toBeNull()
   })
 
   it("never clobbers a value the user already set on the shared axis", () => {
