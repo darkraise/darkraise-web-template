@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest"
 import {
   SURFACE_INTENSITIES,
   BACKGROUND_INTENSITIES,
+  BORDER_INTENSITIES,
   CONTROL_DEPTHS,
   SHELL_STYLES,
   SIDEBAR_ACTIVE_BARS,
@@ -33,6 +34,20 @@ describe("controlDepth axis", () => {
 
   it("is switchable by default", () => {
     expect(themeConfig.switcher.axes.controlDepth).toBe(true)
+  })
+})
+
+describe("borderIntensity axis", () => {
+  it("has four steps from subtle to bold", () => {
+    expect(BORDER_INTENSITIES).toEqual(["subtle", "balanced", "strong", "bold"])
+  })
+
+  it("defaults to the unmodified recipe", () => {
+    expect(themeConfig.defaults.borderIntensity).toBe("balanced")
+  })
+
+  it("is switchable by default", () => {
+    expect(themeConfig.switcher.axes.borderIntensity).toBe(true)
   })
 })
 

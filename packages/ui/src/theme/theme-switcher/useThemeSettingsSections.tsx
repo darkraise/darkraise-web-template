@@ -17,6 +17,7 @@ import {
   DENSITIES,
   ELEVATIONS,
   SURFACE_INTENSITIES,
+  BORDER_INTENSITIES,
   CONTROL_DEPTHS,
   RADII,
   SHELL_STYLES,
@@ -97,6 +98,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
     elevation,
     buttonElevation,
     surfaceIntensity,
+    borderIntensity,
     controlDepth,
     radius,
     shellStyle,
@@ -119,6 +121,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
     setElevation,
     setButtonElevation,
     setSurfaceIntensity,
+    setBorderIntensity,
     setControlDepth,
     setRadius,
     setShellStyle,
@@ -504,6 +507,23 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
             value={surfaceIntensity}
             onChange={setSurfaceIntensity}
             label={labels.theme.axisLabels.surfaceIntensity}
+          />
+        </div>
+      ),
+    },
+    show("borderIntensity") && {
+      key: "borderIntensity",
+      group: "depth" as const,
+      node: (
+        <div key="borderIntensity" className="dr-theme-switcher-row">
+          <Label className="dr-theme-switcher-section-label">
+            {labels.theme.axisLabels.borderIntensity}
+          </Label>
+          <AxisControl
+            values={BORDER_INTENSITIES}
+            value={borderIntensity}
+            onChange={setBorderIntensity}
+            label={labels.theme.axisLabels.borderIntensity}
           />
         </div>
       ),

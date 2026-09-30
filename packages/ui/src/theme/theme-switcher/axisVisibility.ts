@@ -65,6 +65,8 @@ export const AXIS_VISIBILITY: Record<
     s.axes.accentIntensity && !s.isHiddenByPreset("accentIntensity"),
   surfaceIntensity: (s) =>
     s.axes.surfaceIntensity && !s.isHiddenByPreset("surfaceIntensity"),
+  borderIntensity: (s) =>
+    s.axes.borderIntensity && !s.isHiddenByPreset("borderIntensity"),
   controlDepth: (s) =>
     s.axes.controlDepth && !s.isHiddenByPreset("controlDepth"),
 

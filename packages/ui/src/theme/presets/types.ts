@@ -178,6 +178,7 @@ export interface ThemePreset<
     | "radius"
     | "accentIntensity"
     | "surfaceIntensity"
+    | "borderIntensity"
     | "controlDepth"
     | "fontSize"
     | "outerGlow"

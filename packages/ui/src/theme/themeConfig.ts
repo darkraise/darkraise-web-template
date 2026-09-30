@@ -7,6 +7,7 @@ import type {
   Density,
   Elevation,
   SurfaceIntensity,
+  BorderIntensity,
   Radius,
   FontSize,
   AccentIntensity,
@@ -31,6 +32,7 @@ export interface ThemeConfig {
     elevation: Elevation
     buttonElevation: Elevation
     surfaceIntensity: SurfaceIntensity
+    borderIntensity: BorderIntensity
     radius: Radius
     fontSize: FontSize
     accentIntensity: AccentIntensity
@@ -54,6 +56,7 @@ export interface ThemeConfig {
       elevation: boolean
       buttonElevation: boolean
       surfaceIntensity: boolean
+      borderIntensity: boolean
       radius: boolean
       fontSize: boolean
       accentIntensity: boolean
@@ -81,6 +84,7 @@ export const themeConfig: ThemeConfig = {
     elevation: "medium",
     buttonElevation: "flat",
     surfaceIntensity: "balanced",
+    borderIntensity: "balanced",
     radius: "rounded",
     fontSize: "medium",
     accentIntensity: "balanced",
@@ -104,6 +108,7 @@ export const themeConfig: ThemeConfig = {
       elevation: true,
       buttonElevation: true,
       surfaceIntensity: true,
+      borderIntensity: true,
       radius: true,
       fontSize: true,
       accentIntensity: true,

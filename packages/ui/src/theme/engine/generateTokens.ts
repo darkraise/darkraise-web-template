@@ -3,6 +3,7 @@ import type {
   AccentIntensity,
   BackgroundStyle,
   BackgroundIntensity,
+  BorderIntensity,
   SurfaceColor,
   ResolvedMode,
   ColorScale,
@@ -392,6 +393,70 @@ export function controlWells(
     subtle: mixHsl(raised, sunken, 0.5),
     deep: withLightness(sunken, deepL),
   }
+}
+
+const BORDER_TOKENS = [
+  "--border",
+  "--input",
+  "--border-subtle",
+  "--border-default",
+  "--border-strong",
+  "--sidebar-border",
+] as const
+
+/**
+ * How each `borderIntensity` step moves a border. An opaque border moves its
+ * OKLCH lightness toward the page (`subtle`) or the text colour (`strong`,
+ * `bold`) by `mix`, keeping its own chroma and hue: blending in HSL carried
+ * the ink's saturation across and tinted a grey border blue. A translucent
+ * one, such as dark glass's white hairline, has no fixed ground to move
+ * against, so its alpha scales by `alpha` instead.
+ */
+const BORDER_SHIFT: Record<
+  BorderIntensity,
+  { toward: "--background" | "--foreground"; mix: number; alpha: number }
+> = {
+  subtle: { toward: "--background", mix: 0.5, alpha: 0.55 },
+  balanced: { toward: "--background", mix: 0, alpha: 1 },
+  strong: { toward: "--foreground", mix: 0.2, alpha: 1.7 },
+  bold: { toward: "--foreground", mix: 0.4, alpha: 2.5 },
+}
+
+const HSL_TRIPLET = /^-?[\d.]+ [\d.]+% [\d.]+%$/
+const HSL_WITH_ALPHA = /^(-?[\d.]+ [\d.]+% [\d.]+%) \/ ([\d.]+)$/
+
+/**
+ * Rewrites the border tokens of an already-merged token set. Runs after the
+ * preset's own tokens are merged in, so a preset that replaces a border
+ * (glass does, with a translucent one) is scaled rather than bypassed. A
+ * value in any other shape, such as a `var()` reference, passes through.
+ */
+export function applyBorderIntensity(
+  tokens: Record<string, string>,
+  intensity: BorderIntensity,
+): Record<string, string> {
+  // A config written before this axis existed passes `undefined` at runtime.
+  if (intensity === "balanced" || !(intensity in BORDER_SHIFT)) return tokens
+  const shift = BORDER_SHIFT[intensity]
+  const target = tokens[shift.toward]
+  const next = { ...tokens }
+  for (const key of BORDER_TOKENS) {
+    const value = tokens[key]
+    if (value === undefined) continue
+    const translucent = HSL_WITH_ALPHA.exec(value)
+    if (translucent) {
+      const alpha = Math.min(1, parseFloat(translucent[2] ?? "1") * shift.alpha)
+      next[key] = `${translucent[1]} / ${Math.round(alpha * 100) / 100}`
+    } else if (target && HSL_TRIPLET.test(value) && HSL_TRIPLET.test(target)) {
+      const from = hslStringToOklch(value)
+      const toL = hslStringToOklch(target).L
+      next[key] = oklchToHslString({
+        ...from,
+        L: from.L + (toL - from.L) * shift.mix,
+      })
+    }
+  }
+  return next
 }
 
 export function generateTokens(

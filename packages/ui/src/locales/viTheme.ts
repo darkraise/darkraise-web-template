@@ -49,6 +49,7 @@ export const viTheme: Record<keyof typeof themeMessages, string> = {
   medium: "trung bình",
   high: "cao",
   bold: "đậm",
+  strong: "mạnh",
   sharp: "vuông",
   rounded: "tròn",
   pill: "viên thuốc",

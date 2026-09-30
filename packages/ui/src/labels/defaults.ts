@@ -78,6 +78,7 @@ export const defaultLabels: UiLabels = {
       elevation: "Elevation",
       buttonElevation: "Button Elevation",
       surfaceIntensity: "Surface Intensity",
+      borderIntensity: "Border Intensity",
       radius: "Radius",
       shellStyle: "Shell Style",
       sidebarActiveBar: "Sidebar Indicator",

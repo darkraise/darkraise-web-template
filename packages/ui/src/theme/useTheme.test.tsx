@@ -246,6 +246,17 @@ describe("useTheme", () => {
     )
   })
 
+  it("persists borderIntensity and repaints the border token", () => {
+    const { result } = renderHook(() => useTheme(), { wrapper })
+    const before = document.documentElement.style.getPropertyValue("--border")
+    act(() => result.current.setBorderIntensity("bold"))
+    expect(result.current.borderIntensity).toBe("bold")
+    expect(localStorage.getItem("theme-border-intensity")).toBe("bold")
+    expect(
+      document.documentElement.style.getPropertyValue("--border"),
+    ).not.toBe(before)
+  })
+
   it("persists backgroundIntensity and writes its data attribute", () => {
     // Unlike the canvasTint axis it absorbed, this one drives CSS as well as
     // the token engine, so it does carry an attribute.

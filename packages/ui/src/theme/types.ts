@@ -77,6 +77,18 @@ export const SURFACE_INTENSITIES = [
 ] as const
 export type SurfaceIntensity = (typeof SURFACE_INTENSITIES)[number]
 
+/**
+ * How far every border token leans away from the page (`strong`, `bold`) or
+ * into it (`subtle`). `balanced` is the unmodified preset recipe.
+ */
+export const BORDER_INTENSITIES = [
+  "subtle",
+  "balanced",
+  "strong",
+  "bold",
+] as const
+export type BorderIntensity = (typeof BORDER_INTENSITIES)[number]
+
 export const RADII = ["sharp", "subtle", "rounded", "pill"] as const
 export type Radius = (typeof RADII)[number]
 
@@ -158,6 +170,7 @@ export interface ThemeSettings {
   elevation?: Elevation
   buttonElevation?: Elevation
   surfaceIntensity?: SurfaceIntensity
+  borderIntensity?: BorderIntensity
   radius?: Radius
   fontSize?: FontSize
   /** How loud the accent reads in dark mode; ignored in light. Defaults to
@@ -193,6 +206,7 @@ export interface ThemeContextValue {
   elevation: Elevation
   buttonElevation: Elevation
   surfaceIntensity: SurfaceIntensity
+  borderIntensity: BorderIntensity
   radius: Radius
   shellStyle: ShellStyle
   sidebarActiveBar: SidebarActiveBarSetting
@@ -219,6 +233,7 @@ export interface ThemeContextValue {
   setElevation: (elevation: Elevation) => void
   setButtonElevation: (elevation: Elevation) => void
   setSurfaceIntensity: (intensity: SurfaceIntensity) => void
+  setBorderIntensity: (intensity: BorderIntensity) => void
   setRadius: (radius: Radius) => void
   setShellStyle: (style: ShellStyle) => void
   setSidebarActiveBar: (value: SidebarActiveBarSetting) => void

@@ -93,6 +93,7 @@ const messages: UiMessages = {
       elevation: "Độ nổi",
       buttonElevation: "Độ nổi nút",
       surfaceIntensity: "Cường độ bề mặt",
+      borderIntensity: "Cường độ viền",
       radius: "Bo góc",
       shellStyle: "Kiểu khung",
       sidebarActiveBar: "Chỉ báo thanh bên",

@@ -8,6 +8,7 @@ import type {
   Density,
   Elevation,
   SurfaceIntensity,
+  BorderIntensity,
   Radius,
   FontSize,
   AccentIntensity,
@@ -29,6 +30,7 @@ import {
   DENSITIES,
   ELEVATIONS,
   SURFACE_INTENSITIES,
+  BORDER_INTENSITIES,
   RADII,
   SHELL_STYLES,
   SIDEBAR_ACTIVE_BARS,
@@ -38,6 +40,7 @@ import {
   GLOW_LEVELS,
 } from "@theme/types"
 import {
+  applyBorderIntensity,
   generateTokens,
   resolveSurfaceScale,
   resolveNeutralScale,
@@ -73,6 +76,7 @@ const LS_DENSITY = "theme-density"
 const LS_ELEVATION = "theme-elevation"
 const LS_BUTTON_ELEVATION = "theme-button-elevation"
 const LS_SURFACE_INTENSITY = "theme-surface-intensity"
+const LS_BORDER_INTENSITY = "theme-border-intensity"
 const LS_RADIUS = "theme-radius"
 const LS_SHELL_STYLE = "theme-shell-style"
 const LS_SIDEBAR_ACTIVE_BAR = "theme-sidebar-active-bar"
@@ -334,6 +338,19 @@ export function ThemeProvider({
       return cfg.defaults.surfaceIntensity
     })
 
+  const [borderIntensity, setBorderIntensityState] = useState<BorderIntensity>(
+    () => {
+      const stored = readStorage(LS_BORDER_INTENSITY)
+      if (
+        stored &&
+        (BORDER_INTENSITIES as readonly string[]).includes(stored)
+      ) {
+        return stored as BorderIntensity
+      }
+      return cfg.defaults.borderIntensity
+    },
+  )
+
   const [radius, setRadiusState] = useState<Radius>(() => {
     const stored = readStorage(LS_RADIUS)
     if (stored && (RADII as readonly string[]).includes(stored)) {
@@ -506,7 +523,13 @@ export function ThemeProvider({
       const otherOwnedKeys = PRESET_NAMES.filter(
         (n) => n !== presetName,
       ).flatMap((n) => presetsAny[n]?.ownedTokenKeys ?? [])
-      const mergedTokens = { ...commonTokens, ...presetTokens }
+      // Read from state rather than threaded through the positional
+      // signature, like the glow axes: a change re-creates applyTheme, and
+      // the effect that depends on it repaints.
+      const mergedTokens = applyBorderIntensity(
+        { ...commonTokens, ...presetTokens },
+        borderIntensity,
+      )
       applyTokens(
         mergedTokens,
         otherOwnedKeys.filter((k) => !(k in mergedTokens)),
@@ -518,6 +541,7 @@ export function ThemeProvider({
       cfg.defaults.accentIntensity,
       outerGlowRaw,
       innerGlowRaw,
+      borderIntensity,
     ],
   )
 
@@ -534,6 +558,7 @@ export function ThemeProvider({
       elevation,
       buttonElevation,
       surfaceIntensity,
+      borderIntensity,
       radius,
       shellStyle,
       sidebarActiveBar,
@@ -555,6 +580,7 @@ export function ThemeProvider({
       elevation,
       buttonElevation,
       surfaceIntensity,
+      borderIntensity,
       radius,
       shellStyle,
       sidebarActiveBar,
@@ -597,6 +623,9 @@ export function ThemeProvider({
       setSurfaceIntensityState(
         settings.surfaceIntensity ?? cfg.defaults.surfaceIntensity,
       )
+      setBorderIntensityState(
+        settings.borderIntensity ?? cfg.defaults.borderIntensity,
+      )
       setRadiusState(settings.radius ?? cfg.defaults.radius)
       setShellStyleState(settings.shellStyle ?? cfg.defaults.shellStyle)
       setSidebarActiveBarState(
@@ -625,6 +654,10 @@ export function ThemeProvider({
       writeStorage(
         LS_SURFACE_INTENSITY,
         settings.surfaceIntensity ?? cfg.defaults.surfaceIntensity,
+      )
+      writeStorage(
+        LS_BORDER_INTENSITY,
+        settings.borderIntensity ?? cfg.defaults.borderIntensity,
       )
       writeStorage(LS_RADIUS, settings.radius ?? cfg.defaults.radius)
       writeStorage(
@@ -1140,6 +1173,18 @@ export function ThemeProvider({
     [buildSettings, notifyChange, debouncedSave],
   )
 
+  const setBorderIntensity = useCallback(
+    (i: BorderIntensity) => {
+      setBorderIntensityState(i)
+      writeStorage(LS_BORDER_INTENSITY, i)
+      const settings = buildSettings({ borderIntensity: i })
+      notifyChange(settings)
+      hasUserChanged.current = true
+      debouncedSave(settings)
+    },
+    [buildSettings, notifyChange, debouncedSave],
+  )
+
   const setSurfaceIntensity = useCallback(
     (i: SurfaceIntensity) => {
       setSurfaceIntensityState(i)
@@ -1392,6 +1437,7 @@ export function ThemeProvider({
       elevation,
       buttonElevation,
       surfaceIntensity,
+      borderIntensity,
       radius,
       shellStyle,
       sidebarActiveBar,
@@ -1416,6 +1462,7 @@ export function ThemeProvider({
       setElevation,
       setButtonElevation,
       setSurfaceIntensity,
+      setBorderIntensity,
       setRadius,
       setShellStyle,
       setSidebarActiveBar,
@@ -1438,6 +1485,7 @@ export function ThemeProvider({
       elevation,
       buttonElevation,
       surfaceIntensity,
+      borderIntensity,
       radius,
       shellStyle,
       sidebarActiveBar,
@@ -1461,6 +1509,7 @@ export function ThemeProvider({
       setElevation,
       setButtonElevation,
       setSurfaceIntensity,
+      setBorderIntensity,
       setRadius,
       setShellStyle,
       setSidebarActiveBar,

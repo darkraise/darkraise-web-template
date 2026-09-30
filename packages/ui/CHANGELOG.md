@@ -4,8 +4,18 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 
 ## [Unreleased]
 
+Breaking: `ThemeConfig` gains two required properties, `defaults.borderIntensity` and `switcher.axes.borderIntensity`. Consumers passing their own `config` object must add both before upgrading:
+
+```ts
+defaults: { …, borderIntensity: "balanced" },
+switcher: { axes: { …, borderIntensity: true } },
+```
+
+Once added, the `balanced` default renders exactly as before. A config that still omits it at runtime also renders as before rather than throwing.
+
 ### Added
 
+- A `borderIntensity` theme axis — `subtle`, `balanced`, `strong`, `bold` — shown in the theme panel's Depth group as **Border Intensity**. It moves `--border`, `--input`, `--border-subtle`, `--border-default`, `--border-strong` and `--sidebar-border` toward the page or toward the text colour in OKLCH lightness, keeping each border's own hue and chroma; a translucent border, such as dark glass's white hairline, has its alpha scaled instead. It runs after a preset's own tokens are merged, so it applies under every preset. Elements that rebind `--border` in CSS, such as the `.dr-surface` utility, keep their own border.
 - `writeClipboardText` in `darkraise-ui/lib`: writes through the async Clipboard API and falls back to a selection copy when that API is missing or rejects.
 
 ### Changed

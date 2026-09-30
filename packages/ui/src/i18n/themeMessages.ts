@@ -48,6 +48,7 @@ export const themeMessages = {
   medium: "medium",
   high: "high",
   bold: "bold",
+  strong: "strong",
   sharp: "sharp",
   rounded: "rounded",
   pill: "pill",
