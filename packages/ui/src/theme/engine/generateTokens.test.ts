@@ -400,7 +400,7 @@ describe("generateTokens", () => {
     ).toBeGreaterThanOrEqual(4.5)
   })
 
-  it("success uses emerald-500 for light and emerald-400 for dark, white foreground", () => {
+  it("success starts from emerald-500 in light and emerald-400 in dark; white label in light, ink in dark", () => {
     const light = generateTokens({
       accentColor: "blue",
       surfaceColor: "slate",
@@ -418,7 +418,8 @@ describe("generateTokens", () => {
       accentIntensity: "balanced",
     })
 
-    // emerald-500 measured 2.48:1 in light, under the 3:1 a mark is held to.
+    // emerald-500 measured 2.48:1 in light, so it is darkened to the 4.5:1
+    // status text floor.
     expect(light["--success"]).toMatch(/^160 /)
     expect(dark["--success"]).toBe(accentColors.emerald[400])
     expect(
@@ -426,13 +427,13 @@ describe("generateTokens", () => {
         light["--success"] as string,
         light["--background"] as string,
       ),
-    ).toBeGreaterThanOrEqual(3)
+    ).toBeGreaterThanOrEqual(4.5)
     expect(light["--success-foreground"]).toBe("0 0% 100%")
     // A dark success readable as text is too light for a white label.
     expect(dark["--success-foreground"]).toBe("222 47% 11%")
   })
 
-  it("warning uses amber-500 for light and amber-400 for dark, dark foreground", () => {
+  it("warning starts from amber-500 in light and amber-400 in dark; white label in light, ink in dark", () => {
     const light = generateTokens({
       accentColor: "blue",
       surfaceColor: "slate",
@@ -450,7 +451,8 @@ describe("generateTokens", () => {
       accentIntensity: "balanced",
     })
 
-    // amber-500 measured 2.03:1 in light, the worst of the state colours.
+    // amber-500 measured 2.03:1 in light, the worst of the state colours; it is
+    // darkened to the 4.5:1 status text floor.
     expect(light["--warning"]).toMatch(/^38 /)
     expect(dark["--warning"]).toBe(accentColors.amber[400])
     expect(
@@ -458,7 +460,7 @@ describe("generateTokens", () => {
         light["--warning"] as string,
         light["--background"] as string,
       ),
-    ).toBeGreaterThanOrEqual(3)
+    ).toBeGreaterThanOrEqual(4.5)
     // Light warning is darkened to read as text, which makes white the better label.
     expect(light["--warning-foreground"]).toBe("0 0% 100%")
     expect(dark["--warning-foreground"]).toBe("222 47% 11%")
@@ -906,9 +908,11 @@ describe("generateTokens", () => {
         const cap = STEPS[step].fillChroma ?? GAMUT_CHROMA_MAX
 
         // The step is a ceiling: the 4.5:1 label solve may lower it, by at
-        // most 0.090 across every accent measured.
+        // most 0.090 across every accent measured. It never moves a calm
+        // fill, which only strays by HSL integer rounding (0.533-0.545).
+        const maxDrop = step === "calm" ? 0.01 : 0.1
         expect(L).toBeLessThanOrEqual(STEPS[step].L + 0.02)
-        expect(L).toBeGreaterThanOrEqual(STEPS[step].L - 0.1)
+        expect(L).toBeGreaterThanOrEqual(STEPS[step].L - maxDrop)
         expect(C).toBeLessThanOrEqual(cap + CHROMA_TOLERANCE)
       },
     )
