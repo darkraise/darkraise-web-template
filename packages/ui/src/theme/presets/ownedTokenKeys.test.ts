@@ -9,7 +9,7 @@ import type { ColorScale, ResolvedMode, BackgroundStyle } from "@theme/types"
 // inline documentElement style MUST be declared in that preset's
 // ownedTokenKeys, so the provider removeProperty's it when switching away.
 // A missing entry leaks the inline value onto every subsequent preset (the
-// Sci-fi --surface-opacity bug). This derives the write-set from a real run
+// --surface-opacity bug). This derives the write-set from a real run
 // across the axis × mode × backgroundStyle matrix instead of trusting a
 // hand-maintained literal array, so the whole class of bug fails loudly.
 

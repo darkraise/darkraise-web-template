@@ -5,8 +5,8 @@ import { GLOW_LEVELS } from "@theme/types"
 // jsdom never parses CSS, so the rules themselves are what this asserts.
 //
 // The Default preset consumes two composed tokens rather than a per-component
-// recipe. Glass and Sci-fi drive their own multi-layer glow from the same axis
-// steps instead, because a single composed layer cannot express a three-layer
+// recipe. Glass drives its own multi-layer glow from the same axis steps
+// instead, because a single composed layer cannot express a three-layer
 // directional halo — see the preset re-expression in glow-baseline.test.ts.
 const theme = readFileSync("src/styles/theme.css", "utf8").replace(/\s+/g, " ")
 const card = readFileSync("src/components/card/card.css", "utf8").replace(

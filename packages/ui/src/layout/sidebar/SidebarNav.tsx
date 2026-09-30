@@ -27,7 +27,7 @@ interface SidebarNavProps {
    * Indicator style for the active item.
    *
    * - omitted: whatever the active preset renders today. Glass shows a ring
-   *   and a rail; Sci-fi shows a ring; everything else shows a rail.
+   *   and a rail; everything else shows a rail.
    * - `"bar"` / `true`: 3px left rail only.
    * - `"ring"` / `false`: uniform 1px ring only.
    * - `"both"`: 1px ring plus the 3px rail.

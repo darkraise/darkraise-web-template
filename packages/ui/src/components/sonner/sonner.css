@@ -192,7 +192,7 @@
      read straight through it. background-image paints above
      background-color, so the surface keeps exactly the opacity its preset
      gives it — `--color-popover` is `hsl(var(--popover) / --surface-opacity)`,
-     opaque by default and frosted under glass/sci-fi — and the accent only
+     opaque by default and frosted under glass — and the accent only
      washes it. */
   .dr-toast--success,
   .dr-toast--error,
@@ -282,7 +282,7 @@
     @apply pointer-events-none absolute right-0 bottom-0 left-0 overflow-hidden;
     height: 3px;
     /* Only the bottom corners follow the toast's radius; presets that square
-       the toast off (scifi, terminal) flow through for free. */
+       the toast off flow through for free. */
     border-end-start-radius: inherit;
     border-end-end-radius: inherit;
     background-color: hsl(var(--toast-accent, var(--muted-foreground)) / 0.15);

@@ -163,7 +163,7 @@
 
      hsl(var(--card)) deliberately, NOT the bg-card utility: that resolves
      through --color-card, which multiplies in --surface-opacity — 0.78 to
-     0.3 under glass, 0.82 under sci-fi. A translucent fill cannot erase
+     0.3 under glass. A translucent fill cannot erase
      the baseline and the seam would ghost through, so this tracks the axis
      through the opaque fill variable rather than --color-card. */
   .dr-tabs-indicator[data-variant="enclosed"][data-orientation="horizontal"] {
@@ -243,7 +243,7 @@
   /* --affordance-glow-bottom is a bottom-only halo, which on a
      right-hand border would emanate off the wrong edge. There is no
      right-hand token, so the omni-directional glow stands in — it
-     still reads as a halo around the active tab under Neon/Sci-fi. */
+     still reads as a halo around the active tab under a glowing preset. */
   .dr-tabs-trigger[data-variant="underline"][data-orientation="vertical"][data-state="active"] {
     box-shadow: var(--affordance-glow);
   }

@@ -25,10 +25,7 @@ const OPAQUE_FILL = new RegExp(
   ].join("|"),
 )
 // Stripping block comments wholesale is the only reliable way to tell a
-// declaration from a sentence about one. scifi.css discusses `bg-primary` in
-// prose at two points, and it indents its continuation lines rather than
-// prefixing them with `*`, so every line-shape heuristic misreads that prose
-// as code.
+// declaration from a sentence about one.
 const BLOCK_COMMENT = /\/\*[\s\S]*?\*\//g
 
 function sourceFiles(): string[] {

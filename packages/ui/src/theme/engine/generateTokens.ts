@@ -149,13 +149,13 @@ const TEXT_FLOOR = 4.5
 /**
  * Strongest --primary tint that primary-coloured text sits on: bg-primary/10
  * under selected toggle, pagination, listbox and tree items, /20 under steps,
- * timeline, highlight and the sidebar count, and 24% under sci-fi's hovered
- * buttons.
+ * timeline, highlight and the sidebar count. The ceiling keeps 24% so the
+ * token does not move again now that the strongest remaining tint is 20%.
  */
 const PRIMARY_TINT_CEILING = 0.24
 /**
  * Strongest tint of its own colour that status text sits on: alert titles at
- * 6%, toast titles at 10-12%, sci-fi's hovered destructive button at 12%.
+ * 6%, toast titles at 10-12%.
  */
 const STATUS_TINT_CEILING = 0.12
 const LEGEND_TARGET_RATIO = 4.6

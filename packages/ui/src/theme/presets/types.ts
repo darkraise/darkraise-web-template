@@ -143,9 +143,9 @@ export interface ThemePreset<
    * when the user has not set that axis themselves.
    *
    * The glow axes default to `none` globally so they ship invisible on the
-   * Default preset. Glass and Sci-fi drive their own long-standing glow from
-   * those axes, so without this they would boot glow-less — a visible
-   * regression for two presets that have already been through design review.
+   * Default preset. Glass drives its own long-standing glow from those axes,
+   * so without this it would boot glow-less — a visible regression for a
+   * preset that has already been through design review.
    *
    * Only consulted for axes the user has never touched. Once a value is
    * user-set it wins, including when it equals the global default.

@@ -249,7 +249,7 @@ export function ThemeProvider({
 
   // A glow axis resolves to the user's value if they set one, else whatever the
   // active preset asks for, else the global default. This is what lets the axes
-  // ship at `none` without stripping the glow from Glass and Sci-fi.
+  // ship at `none` without stripping the glow from Glass.
   const presetGlowDefaults = presets[preset].commonAxisDefaults
   const outerGlow: GlowLevel =
     outerGlowRaw ??

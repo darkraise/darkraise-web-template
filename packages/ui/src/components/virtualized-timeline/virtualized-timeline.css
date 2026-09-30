@@ -198,8 +198,8 @@
     background-color: hsl(var(--primary) / 0.3);
   }
 
-  /* --primary, not --muted: five of the six presets (Glass, Neon, Terminal,
-     Sci-fi, Playful) redefine --muted as a value that already carries its
+  /* --primary, not --muted: four of the six presets (Glass, Neon, Terminal,
+     Playful) redefine --muted as a value that already carries its
      own alpha (e.g. "var(--primary) / 0.04"), so slicing a second alpha onto
      it here produced an invalid doubly-sliced hsl() that the browser
      silently discarded, leaving the rail untinted while dragging in every

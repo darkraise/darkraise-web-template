@@ -71,8 +71,7 @@
    --backdrop-filter:none (plus --backdrop-blur:0) removes the blur on every
    surface that consumes those vars. Scoped to [data-preset="glass"] so it
    only touches the Glass material and leaves the default look untouched for
-   everyone else. Mirrors the prefers-reduced-motion guards the other presets
-   already ship (scifi.css / playful.css). */
+   everyone else. */
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
   [data-preset="glass"] {
     --surface-opacity: 1;

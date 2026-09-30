@@ -25,7 +25,9 @@ describe("primary text", () => {
         if (!isOpaque(ground)) continue
         const ratio = contrastRatio(text, ground)
         if (ratio < 4.5) {
-          failures.push(`${comboName(combo)} on ${surface}: ${ratio.toFixed(2)}`)
+          failures.push(
+            `${comboName(combo)} on ${surface}: ${ratio.toFixed(2)}`,
+          )
         }
       }
     }
@@ -33,8 +35,8 @@ describe("primary text", () => {
   })
 
   // Selected toggle, pagination, listbox and tree items sit on bg-primary/10;
-  // steps, timeline, highlight and the sidebar count on /20; sci-fi's hovered
-  // buttons on 24%.
+  // steps, timeline, highlight and the sidebar count on /20. The solve holds
+  // 24% for headroom.
   it("clears 4.5:1 on a --primary tint of up to 24% over the page and the card", () => {
     const failures: string[] = []
     for (const combo of combos) {

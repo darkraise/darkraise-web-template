@@ -25,7 +25,9 @@ describe("status colours", () => {
           if (!isOpaque(ground)) continue
           const ratio = contrastRatio(value, ground)
           if (ratio < 4.5) {
-            failures.push(`${comboName(combo)} ${status} on ${surface}: ${ratio.toFixed(2)}`)
+            failures.push(
+              `${comboName(combo)} ${status} on ${surface}: ${ratio.toFixed(2)}`,
+            )
           }
         }
         const label = contrastRatio(
@@ -33,15 +35,16 @@ describe("status colours", () => {
           value,
         )
         if (label < 4.5) {
-          failures.push(`${comboName(combo)} ${status} label: ${label.toFixed(2)}`)
+          failures.push(
+            `${comboName(combo)} ${status} label: ${label.toFixed(2)}`,
+          )
         }
       }
     }
     expect(failures).toEqual([])
   })
 
-  // Alert titles sit on their own colour at 6%, toast titles at 10-12%, and
-  // sci-fi's destructive button text at up to 12%.
+  // Alert titles sit on their own colour at 6% and toast titles at 10-12%.
   it("clear 4.5:1 on their own tint of up to 12% over page and card", () => {
     const failures: string[] = []
     for (const combo of combos) {
@@ -104,7 +107,8 @@ describe("status colours", () => {
           tokens[ring] as string,
           tokens["--background"] as string,
         )
-        if (ratio < 3) failures.push(`${comboName(combo)} ${ring}: ${ratio.toFixed(2)}`)
+        if (ratio < 3)
+          failures.push(`${comboName(combo)} ${ring}: ${ratio.toFixed(2)}`)
       }
     }
     expect(failures).toEqual([])

@@ -5,13 +5,12 @@
  * This is deliberately a short explicit list and not "every axis in
  * `hiddenCommonAxes`". `presets/types.ts` documents that a hidden common axis
  * still has its state and data attribute applied, so components reading it
- * outside the preset's own CSS keep working — Sci-fi relies on that today for
- * `elevation`, `buttonElevation` and `radius`. Narrowing that contract for
+ * outside the preset's own CSS keep working. Narrowing that contract for
  * every preset is out of scope; these two axes opt in by name.
  *
  * Why they need it: `accentIntensity` and `surfaceIntensity` are Default-preset
- * controls, and Glass and Sci-fi reinterpret the same surfaces through their
- * own recipes. Hiding alone would leave a stored `calm` silently applying under
+ * controls, and Glass reinterprets the same surfaces through its own recipe.
+ * Hiding alone would leave a stored `calm` silently applying under
  * Glass with no control to change it back. The stored value is untouched, so
  * switching back to Default restores the user's choice.
  */
