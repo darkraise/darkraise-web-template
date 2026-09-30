@@ -426,6 +426,11 @@ function primaryFillAndLabel(base: string): {
   return { fill: base, foreground: INK }
 }
 
+/** White or ink, whichever reads better on `fill`; white on a tie. */
+function bestLabel(fill: string): string {
+  return contrastRatio(WHITE, fill) >= contrastRatio(INK, fill) ? WHITE : INK
+}
+
 /**
  * Linear blend of two `H S% L%` triplets. Hue is interpolated only when both
  * ends are chromatic: white is stored as `0 0% 100%`, and interpolating from
@@ -659,6 +664,41 @@ export function generateTokens(
   // Popovers paint the card rung; named so the text solves can list it.
   const popover = card
   const muted = mode === "light" ? surface[100] : surface[800]
+  // Status colours are read mostly as text, so each clears 4.5:1 against the
+  // page and the card. In dark, ink is listed too, which makes the ink label
+  // exact on ramps whose step 900 sits darker than ink itself.
+  const statusSurfaces =
+    mode === "light" ? [background, card] : [background, card, INK]
+  const destructiveSource = isRedishAccent
+    ? mode === "light"
+      ? "25 95% 53%"
+      : "21 90% 48%"
+    : mode === "light"
+      ? "0 84% 60%"
+      : "0 72% 51%"
+  const destructive = ensureContrastAll(
+    destructiveSource,
+    statusSurfaces,
+    TEXT_FLOOR,
+  )
+  // Fills (the destructive button, badge and notification count) need a
+  // white label, which a text-safe dark red cannot carry.
+  const destructiveSolid = solveWhiteFill(destructiveSource)
+  const success = ensureContrastAll(
+    mode === "light" ? accentColors.emerald[500] : accentColors.emerald[400],
+    statusSurfaces,
+    TEXT_FLOOR,
+  )
+  const warning = ensureContrastAll(
+    mode === "light" ? accentColors.amber[500] : accentColors.amber[400],
+    statusSurfaces,
+    TEXT_FLOOR,
+  )
+  const info = ensureContrastAll(
+    mode === "light" ? accentColors.blue[500] : accentColors.blue[400],
+    statusSurfaces,
+    TEXT_FLOOR,
+  )
 
   const tokens: Record<string, string> = {
     "--primary": ensureContrast(primaryValue, background, MARK_FLOOR),
@@ -671,7 +711,7 @@ export function generateTokens(
     ),
     "--primary-fill": primaryFill,
     "--primary-foreground": primaryForeground,
-    "--ring": ringValue,
+    "--ring": ensureContrast(ringValue, background, MARK_FLOOR),
     "--focus-ring": ensureContrast(focusRingValue, background, MARK_FLOOR),
     "--surface-tint": surfaceTint,
 
@@ -700,36 +740,19 @@ export function generateTokens(
     "--accent": mode === "light" ? surface[100] : surface[800],
     "--accent-foreground": mode === "light" ? neutral[900] : neutral[50],
 
-    "--destructive": ensureContrast(
-      isRedishAccent
-        ? mode === "light"
-          ? "25 95% 53%"
-          : "21 90% 48%"
-        : mode === "light"
-          ? "0 84% 60%"
-          : "0 72% 51%",
-      background,
-      TEXT_FLOOR,
-    ),
-    "--destructive-foreground": "0 0% 100%",
+    "--destructive": destructive,
+    "--destructive-foreground": bestLabel(destructive),
+    "--destructive-solid": destructiveSolid,
+    "--destructive-solid-foreground": WHITE,
 
-    "--success": ensureContrast(
-      mode === "light" ? accentColors.emerald[500] : accentColors.emerald[400],
-      background,
-      MARK_FLOOR,
-    ),
-    "--success-foreground": "0 0% 100%",
+    "--success": success,
+    "--success-foreground": bestLabel(success),
 
-    "--warning": ensureContrast(
-      mode === "light" ? accentColors.amber[500] : accentColors.amber[400],
-      background,
-      MARK_FLOOR,
-    ),
-    "--warning-foreground": "222 47% 11%",
+    "--warning": warning,
+    "--warning-foreground": bestLabel(warning),
 
-    "--info":
-      mode === "light" ? accentColors.blue[500] : accentColors.blue[400],
-    "--info-foreground": "0 0% 100%",
+    "--info": info,
+    "--info-foreground": bestLabel(info),
 
     "--border": border,
     "--input": inputValue,

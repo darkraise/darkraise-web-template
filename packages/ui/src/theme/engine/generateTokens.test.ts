@@ -428,7 +428,8 @@ describe("generateTokens", () => {
       ),
     ).toBeGreaterThanOrEqual(3)
     expect(light["--success-foreground"]).toBe("0 0% 100%")
-    expect(dark["--success-foreground"]).toBe("0 0% 100%")
+    // A dark success readable as text is too light for a white label.
+    expect(dark["--success-foreground"]).toBe("222 47% 11%")
   })
 
   it("warning uses amber-500 for light and amber-400 for dark, dark foreground", () => {
@@ -458,7 +459,8 @@ describe("generateTokens", () => {
         light["--background"] as string,
       ),
     ).toBeGreaterThanOrEqual(3)
-    expect(light["--warning-foreground"]).toBe("222 47% 11%")
+    // Light warning is darkened to read as text, which makes white the better label.
+    expect(light["--warning-foreground"]).toBe("0 0% 100%")
     expect(dark["--warning-foreground"]).toBe("222 47% 11%")
   })
 
