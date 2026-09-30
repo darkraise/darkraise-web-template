@@ -162,19 +162,27 @@
      the tinted surface. Default + loading inherit the popover/border base. */
   .dr-toast--success {
     --toast-accent: var(--success);
+    --toast-action: var(--success);
+    --toast-action-foreground: var(--success-foreground);
     border-color: hsl(var(--toast-accent) / 0.4);
   }
   .dr-toast--error {
     --toast-accent: var(--destructive);
+    --toast-action: var(--destructive-solid);
+    --toast-action-foreground: var(--destructive-solid-foreground);
     border-color: hsl(var(--toast-accent) / 0.45);
   }
   .dr-toast--warning {
     --toast-accent: var(--warning);
+    --toast-action: var(--warning);
+    --toast-action-foreground: var(--warning-foreground);
     --toast-tint: 0.12;
     border-color: hsl(var(--toast-accent) / 0.5);
   }
   .dr-toast--info {
     --toast-accent: var(--info);
+    --toast-action: var(--info);
+    --toast-action-foreground: var(--info-foreground);
     border-color: hsl(var(--toast-accent) / 0.4);
   }
 
@@ -222,25 +230,20 @@
   .dr-toast-actions {
     @apply mt-2 flex justify-end gap-2;
   }
-  /* Action button. On tinted variants it borrows the variant accent so the
-     CTA matches the toast tone; on default/loading it falls back to the calmed
-     fill token, since the label is --primary-foreground, whose contrast is
-     guaranteed against --primary-fill only. */
+  /* Action button. Each status variant sets its own fill and label pair so
+     the label is guaranteed against the fill it sits on; default and loading
+     set neither and fall back to the primary pair. */
   .dr-toast-action {
     @apply cursor-pointer rounded px-2 py-1 text-xs font-medium transition-colors;
-    background-color: hsl(var(--toast-accent, var(--primary-fill)));
-    color: hsl(var(--primary-foreground));
+    background-color: hsl(var(--toast-action, var(--primary-fill)));
+    color: hsl(var(--toast-action-foreground, var(--primary-foreground)));
   }
   .dr-toast-action:hover {
     background-color: color-mix(
       in srgb,
-      hsl(var(--toast-accent, var(--primary-fill))) 88%,
+      hsl(var(--toast-action, var(--primary-fill))) 88%,
       black
     );
-  }
-  .dr-toast--warning .dr-toast-action {
-    /* Warning yellow needs a dark foreground for legibility. */
-    color: hsl(var(--warning-foreground));
   }
   .dr-toast-cancel {
     @apply bg-muted text-muted-foreground hover:bg-muted/70 cursor-pointer rounded px-2 py-1 text-xs font-medium transition-colors;

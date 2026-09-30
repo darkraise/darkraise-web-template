@@ -22,7 +22,7 @@
     @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 border-transparent;
   }
   .dr-badge[data-variant="destructive"] {
-    @apply bg-destructive text-destructive-foreground hover:bg-destructive/80 border-transparent;
+    @apply bg-destructive-solid text-destructive-solid-foreground hover:bg-destructive-solid/80 border-transparent;
   }
   .dr-badge[data-variant="outline"] {
     @apply text-foreground;
@@ -145,7 +145,7 @@
     @apply bg-secondary;
   }
   .dr-badge-anchor-dot[data-variant="destructive"] {
-    @apply bg-destructive;
+    @apply bg-destructive-solid;
   }
   .dr-badge-anchor-dot[data-variant="outline"] {
     @apply bg-background border-foreground border;

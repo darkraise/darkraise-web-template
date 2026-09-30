@@ -69,8 +69,8 @@
     box-shadow: var(--shadow-button), var(--glow-outer), var(--glow-inner);
   }
   .dr-btn[data-variant="destructive"] {
-    @apply text-destructive-foreground;
-    --hue: hsl(var(--destructive));
+    @apply text-destructive-solid-foreground;
+    --hue: hsl(var(--destructive-solid));
     background-color: var(--hue);
     box-shadow: var(--shadow-button), var(--glow-outer), var(--glow-inner);
   }
