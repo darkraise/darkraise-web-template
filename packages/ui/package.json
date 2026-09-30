@@ -23,7 +23,7 @@
     },
     "./components/*": {
       "import": "./dist/components/*.js",
-      "types": "./dist/components/*.d.ts"
+      "types": "./dist/components/*/index.d.ts"
     },
     "./hooks": {
       "import": "./dist/hooks/index.js",
@@ -82,7 +82,8 @@
   "scripts": {
     "generate:imports": "tsx scripts/generate-component-imports.ts",
     "build:css": "tsx scripts/build-css.ts",
-    "build": "pnpm run generate:imports && cross-env NODE_OPTIONS=\"--max-old-space-size=8192\" tsup && pnpm run build:css",
+    "build": "pnpm run generate:imports && tsup && pnpm run build:types && pnpm run build:css",
+    "build:types": "tsc -p tsconfig.build.json && tsx scripts/rewrite-dts-imports.ts",
     "dev": "pnpm run generate:imports && tsup --watch",
     "prepublishOnly": "pnpm run build",
     "typecheck": "tsc --noEmit",
@@ -138,7 +139,6 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
     "@vitest/coverage-v8": "^4.1.5",
-    "cross-env": "^10.1.0",
     "eslint-plugin-storybook": "^10.3.6",
     "i18next": "^26.4.2",
     "jsdom": "^29.1.1",
