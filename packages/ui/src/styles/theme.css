@@ -468,7 +468,6 @@
     --border-subtle: 210 40% 96%;
     --border-default: 214 32% 91%;
     --border-strong: 215 20% 65%;
-    --shadow-card: none;
     --shadow-dropdown:
       0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
     --backdrop-blur: none;
@@ -1802,10 +1801,6 @@
     --border: var(--fog-15);
     --input: var(--fog-10);
     --card: var(--fog-05);
-    --card-border: var(--fog-15);
-    --glow-surface:
-      0 0 0 1px color-mix(in oklab, var(--sf-hue) 40%, transparent),
-      0 12px 40px color-mix(in oklab, var(--sf-hue) 32%, transparent);
 
     background:
       var(--canvas-blob-a), var(--canvas-blob-b), var(--canvas-blob-c),

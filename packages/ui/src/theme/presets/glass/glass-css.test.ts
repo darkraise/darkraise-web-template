@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs"
 import { resolve } from "node:path"
 
 // The Glass material's CSS-only tokens (opacity/blur scalar maps, the
-// halo=none and main[data-content] resets, the reduced-transparency
+// main[data-content] reset, the reduced-transparency
 // accommodation, and the cross-file card-elevation duplication) are set by
 // attribute selectors in glass.css / theme.css, not by JS, so the unit tests
 // in glass.test.ts can't reach them. These text assertions lock the magic
@@ -53,21 +53,12 @@ describe("glass.css accessibility accommodation", () => {
   })
 })
 
-describe("glass.css halo + state suppression", () => {
-  it("halo=none zeros the glow state tokens but KEEPS the selected-fill", () => {
-    const block = glassCss
-      .slice(glassCss.indexOf('[data-glass-halo="none"]'))
-      .slice(
-        0,
-        glassCss
-          .slice(glassCss.indexOf('[data-glass-halo="none"]'))
-          .indexOf("}"),
-      )
-    expect(block).toContain("--glass-state-hover-glow: 0 0 transparent")
-    expect(block).toContain("--glass-state-active-inset: 0 0 transparent")
-    // selected-fill is the primary selection affordance — must NOT be zeroed
-    // here, or fill-only consumers lose their selected state at halo=none.
-    expect(block).not.toContain("--glass-state-selected-fill")
+describe("glass.css state suppression", () => {
+  it("carries no dead halo attribute or card tokens", () => {
+    // The halo axis moved to the global glow axes and its storage key is
+    // migrated away, so nothing sets data-glass-halo any more.
+    expect(glassCss).not.toContain("data-glass-halo")
+    expect(themeCss).not.toMatch(/--(card-border|glow-surface|shadow-card)\s*:/)
   })
 
   it("main[data-content] suppresses halo tiers + glow tokens but KEEPS selected-fill", () => {
