@@ -18,7 +18,7 @@
   }
 
   .dr-image-cropper-selection {
-    @apply ring-primary box-border cursor-move shadow-[0_0_0_9999px_rgba(0,0,0,0.45)] ring-2;
+    @apply focus-ring ring-primary box-border cursor-move shadow-[0_0_0_9999px_rgba(0,0,0,0.45)] ring-2;
   }
   .dr-image-cropper-selection[data-shape="circle"] {
     @apply rounded-full;

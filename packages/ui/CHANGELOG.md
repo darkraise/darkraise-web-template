@@ -40,6 +40,7 @@ Once added, the `balanced` default renders exactly as before. A config that stil
 - The toast action button painted status fills under the brand label (1.92:1 on dark success, 2.52:1 on dark info), and the loading toast painted it on the muted text colour. Each variant now sets its own fill and label pair.
 - Sidebar links and triggers, accordion triggers, page-header tabs, the banner close button, toast action and cancel buttons, multi-select, chip remove buttons, the calendar caption, theme swatches, colour-picker swatches, sidebar popover children, top-navigation items, stacked-layout rail items and the JSON tree's show-more button and links had no focus indicator of their own.
 - Under the glass preset the slider thumb lost its focus ring; the ring is now an outline.
+- The floating-panel drag handle and the virtualized-timeline scrubber showed no focus indicator, the image-cropper selection's permanent ring looked the same focused or not, and a focused JSON tree row showed only a 10% tint. Each now draws the focus ring.
 - `--ring` could fall to 1.89:1 on the light page (yellow); it now gets the same 3:1 repair as `--focus-ring`.
 - Dialog, sheet and drawer transitioned every property alongside their enter and exit animation, so theme changes animated on open overlays.
 - The colours painted before the theme provider hydrates were stale; they now equal the engine's default light output.

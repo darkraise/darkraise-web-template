@@ -65,6 +65,12 @@
   .dr-json-row[data-focused="true"] > .dr-json-line {
     @apply bg-primary/10 rounded-sm;
   }
+  /* The ring sits on the row's own line: on the row it would also wrap the
+     expanded children. */
+  .dr-json-row:focus-visible > .dr-json-line {
+    outline: 2px solid hsl(var(--focus-ring));
+    outline-offset: -2px;
+  }
   /* Matching rows in a filtered result get a subtle accent stripe. */
   .dr-json-row[data-matching="true"] > .dr-json-line {
     box-shadow: inset 2px 0 0 0 hsl(var(--primary));

@@ -29,6 +29,10 @@ const EXEMPT = new Map<string, string>([
     "shares its element with dr-sidebar-nav-link, dr-sidebar-nav-popover-trigger or dr-stacked-layout-rail-item, each of which draws the ring",
   ],
   [
+    "dr-json-row",
+    "draws its focus ring on its own dr-json-line, so the outline does not wrap the expanded children",
+  ],
+  [
     "dr-sidebar-nav-collapsible-link",
     "shares its element with dr-sidebar-nav-link, which draws the ring",
   ],
@@ -104,6 +108,9 @@ const TSX = ROOTS.flatMap((root) => filesUnder(root, ".tsx")).map((path) => ({
   source: readFileSync(path, "utf8"),
 }))
 
+/** A tabIndex other than a literal -1: 0, or a roving expression. */
+const INTERACTIVE_ATTRS = /\btabIndex=(?!\{\s*-1\s*\})/
+
 function interactiveClasses(): Map<string, string> {
   const found = new Map<string, string>()
   for (const rule of RULES) {
@@ -117,6 +124,16 @@ function interactiveClasses(): Map<string, string> {
       /<(?:button|a|Link)\b(?:=>|[^>])*?className=(?:\{\s*cn\(\s*)?["'`]([^"'`]+)["'`]/g,
     )) {
       for (const cls of (match[1] as string).split(/\s+/)) {
+        if (cls.startsWith("dr-")) found.set(cls, path)
+      }
+    }
+    // A plain element given a tabIndex is as focusable as a button, and has
+    // no cursor-pointer rule to give it away. A role alone does not make an
+    // element focusable.
+    for (const tag of source.matchAll(/<[a-z][\w-]*\b((?:=>|[^>])*?)>/g)) {
+      const attrs = tag[1] as string
+      if (!INTERACTIVE_ATTRS.test(attrs)) continue
+      for (const cls of classGroups(attrs).flat()) {
         if (cls.startsWith("dr-")) found.set(cls, path)
       }
     }
