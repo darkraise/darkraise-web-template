@@ -197,13 +197,13 @@ describe("useTheme", () => {
   })
 
   // The vibrancy axis is a dark-mode-only lever, and the token it moves is
-  // --primary-fill: --primary goes through capChroma, which only binds for
-  // high-chroma accents and is identical across all four steps for the default
-  // blue. Blue's upper three steps share one fill at its 4.5:1 label point, so
-  // only calm is compared against them.
+  // --primary-fill. Many accents' upper steps share one fill at their 4.5:1
+  // label point (blue's upper three do), which would let a missed repaint pass;
+  // violet's four steps give four fills.
   it("repaints accent tokens when the vibrancy axis changes in dark mode", () => {
     const { result } = renderHook(() => useTheme(), { wrapper })
     act(() => result.current.setMode("dark"))
+    act(() => result.current.setAccentColor("violet"))
     const read = () =>
       document.documentElement.style.getPropertyValue("--primary-fill")
 
@@ -213,8 +213,7 @@ describe("useTheme", () => {
     act(() => result.current.setAccentIntensity("calm"))
     const calm = read()
 
-    expect(calm).not.toBe(balanced)
-    expect(calm).not.toBe(intense)
+    expect(new Set([balanced, intense, calm]).size).toBe(3)
   })
 
   it("honours a stored vibrancy on first paint without a setter call", () => {
