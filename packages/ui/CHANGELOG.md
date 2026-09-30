@@ -13,7 +13,7 @@ switcher: { axes: { …, borderIntensity: true } },
 
 Once added, the `balanced` default renders exactly as before. A config that still omits it at runtime also renders as before rather than throwing.
 
-Breaking: the Sci-fi preset is removed, and with it the `supportedModes` field on presets. `PresetName` is now `"default" | "glass"`, so a config or call naming `"scifi"` fails to type-check. A user whose stored or synced settings name `scifi` loads the configured default preset and keeps dark mode.
+Breaking: the Sci-fi preset is removed, and with it the `supportedModes` field on presets. `PresetName` is now `"default" | "glass"`, so a config or call naming `"scifi"` fails to type-check. A user whose stored or synced settings name `scifi` loads the configured default preset and keeps its stored mode: dark, unless the user chose System, which follows the OS.
 
 ### Added
 

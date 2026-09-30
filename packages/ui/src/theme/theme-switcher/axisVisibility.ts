@@ -7,8 +7,9 @@ import type { BackgroundStyle } from "@theme/types"
  * Three independent kinds of rule govern visibility, and before this table they
  * were interleaved with JSX in `useThemeSettingsSections` — a config flag per
  * axis, membership of the preset's `hiddenCommonAxes`, and one-off
- * dependencies on another axis's value. Each was correct, but the set could only be understood by reading the
- * whole hook, which is why auditing it was hard enough to become its own task.
+ * dependencies on another axis's value. Each was correct, but the set could
+ * only be understood by reading the whole hook, which is why auditing it was
+ * hard enough to become its own task.
  */
 export interface AxisVisibilityInput {
   axes: ThemeConfig["switcher"]["axes"]

@@ -280,7 +280,7 @@ describe("ThemeProvider preset orchestration", () => {
     error.mockRestore()
   })
 
-  it("leaves a supported stored mode untouched at boot", () => {
+  it("leaves a stored mode untouched at boot", () => {
     localStorage.setItem("theme-preset", "glass")
     localStorage.setItem("mode", "light")
 

@@ -76,9 +76,8 @@ test.describe("preset axis", () => {
     }
     const values = [...seen.values()]
     expect(values.every((v) => v !== "")).toBe(true)
-    // Glass rebinds --muted to a primary-tinted expression in dark mode, so a
-    // single shared value across the presets would mean the recipes are not
-    // being applied.
+    // Glass rebinds --muted to a primary-tinted expression, so a single shared
+    // value across the presets would mean the recipes are not being applied.
     expect(new Set(values).size).toBeGreaterThan(1)
   })
 })

@@ -44,8 +44,7 @@ individually, restart the server before believing them.
   on `<html>` and the resolved CSS custom properties, then confirm the tokens
   reach real rendered components.
 - **Console output** is captured per test by `watchConsole`. Errors fail the
-  test; Vite, React DevTools and the expected `[ThemeProvider] Preset … requires
-mode` notice are allowlisted.
+  test; Vite and React DevTools messages are allowlisted.
 
 ## Coverage
 
@@ -172,7 +171,7 @@ empty state, download trigger, image cropper.
 - Landmarks (`banner`, `main`, `complementary`), accessible names on every
   icon-only header button, labels on every non-hidden form input.
 - WCAG AA contrast for `--foreground` on `--background`, computed from the raw
-  HSL tokens, for every preset × supported mode.
+  HSL tokens, for every preset × both modes.
 - The app renders under `prefers-reduced-motion: reduce`.
 
 ## Regression tests for fixed defects

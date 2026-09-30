@@ -361,6 +361,29 @@ describe("useTheme persistence", () => {
     expect(result.current.buttonElevation).toBe("low")
   })
 
+  it("loads the default preset when synced settings name a removed preset", async () => {
+    const adapter = createAdapter({
+      load: vi.fn(() =>
+        Promise.resolve({
+          ...serverSettings,
+          preset: "scifi",
+          mode: "dark",
+        } as unknown as ThemeSettings),
+      ),
+    })
+    const { result } = renderHook(() => useTheme(), {
+      wrapper: wrapperWith(adapter),
+    })
+
+    await act(async () => {
+      await vi.runAllTimersAsync()
+    })
+
+    expect(result.current.preset).toBe("default")
+    expect(result.current.mode).toBe("dark")
+    expect(result.current.accentColor).toBe("rose")
+  })
+
   it("falls back to config defaults when load returns settings without new fields", async () => {
     const partialSettings: ThemeSettings = {
       accentColor: "violet",

@@ -10,9 +10,8 @@ import {
 } from "./helpers/app"
 
 /**
- * The settings page under every preset, in every mode that preset supports.
- * It is not a component showcase route, so 05-component-preset-matrix never
- * reaches it — yet it composes NumberInput, Combobox, InputOTP and
+ * The settings page under every preset, in both modes. It is not a component
+ * showcase route, so 05-component-preset-matrix never reaches it — yet it composes NumberInput, Combobox, InputOTP and
  * PasswordInput, the compound inputs most prone to preset-specific breakage.
  */
 for (const preset of PRESETS) {
