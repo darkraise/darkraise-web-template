@@ -230,6 +230,48 @@ function ensureContrast(
   return result
 }
 
+const contrastAllCache = new Map<string, string>()
+
+/**
+ * `ensureContrast` against several grounds at once: `value` unchanged when it
+ * clears `target` against every background, otherwise the nearest lightness
+ * on the same hue and saturation that does, searched outward from the
+ * original lightness. Returns `value` unchanged when nothing clears, and
+ * passes alpha values through untouched, as `ensureContrast` does.
+ */
+function ensureContrastAll(
+  value: string,
+  backgrounds: readonly string[],
+  target: number,
+): string {
+  if (value.includes("/")) return value
+  const key = `${value}|${backgrounds.join("|")}|${target}`
+  const cached = contrastAllCache.get(key)
+  if (cached !== undefined) return cached
+
+  const clears = (candidate: string) =>
+    backgrounds.every((bg) => contrastRatio(candidate, bg) >= target)
+  let result = value
+  if (!clears(value)) {
+    const parts = value.split(" ")
+    const hue = parts[0] ?? "0"
+    const saturation = parts[1] ?? "0%"
+    const start = Math.round(parseFloat(parts[2] ?? "50"))
+    outer: for (let delta = 1; delta <= 100; delta++) {
+      for (const l of [start - delta, start + delta]) {
+        if (l < 0 || l > 100) continue
+        const candidate = `${hue} ${saturation} ${l}%`
+        if (clears(candidate)) {
+          result = candidate
+          break outer
+        }
+      }
+    }
+  }
+  contrastAllCache.set(key, result)
+  return result
+}
+
 function isSidebarDark(mode: ResolvedMode): boolean {
   return mode === "dark"
 }
@@ -613,9 +655,20 @@ export function generateTokens(
     background,
     MUTED_TARGET_RATIO,
   )
+  const card = mode === "light" ? "0 0% 100%" : surface[900]
+  // Popovers paint the card rung; named so the text solves can list it.
+  const popover = card
+  const muted = mode === "light" ? surface[100] : surface[800]
 
   const tokens: Record<string, string> = {
     "--primary": ensureContrast(primaryValue, background, MARK_FLOOR),
+    // Primary as text (links, selected tab and toggle labels). `--primary`
+    // keeps its 3:1 mark floor for borders, tints and preset surfaces.
+    "--primary-text": ensureContrastAll(
+      primaryValue,
+      [background, card],
+      TEXT_FLOOR,
+    ),
     "--primary-fill": primaryFill,
     "--primary-foreground": primaryForeground,
     "--ring": ringValue,
@@ -631,16 +684,16 @@ export function generateTokens(
     "--background": background,
     "--foreground": foreground,
 
-    "--card": mode === "light" ? "0 0% 100%" : surface[900],
+    "--card": card,
     "--card-foreground": mode === "light" ? neutral[900] : neutral[50],
 
-    "--popover": mode === "light" ? "0 0% 100%" : surface[900],
+    "--popover": popover,
     "--popover-foreground": mode === "light" ? neutral[900] : neutral[50],
 
     "--secondary": mode === "light" ? surface[100] : surface[800],
     "--secondary-foreground": mode === "light" ? neutral[900] : neutral[50],
 
-    "--muted": mode === "light" ? surface[100] : surface[800],
+    "--muted": muted,
     "--muted-foreground": mutedForeground,
     "--legend": tierClearing(neutral, background, LEGEND_TARGET_RATIO),
 
