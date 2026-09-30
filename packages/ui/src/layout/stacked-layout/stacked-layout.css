@@ -12,7 +12,8 @@
   }
 
   .dr-stacked-layout-rail-item {
-    @apply flex h-10 w-10 items-center justify-center rounded-md transition-colors duration-150;
+    @apply flex h-10 w-10 items-center justify-center rounded-md transition-colors;
+    transition-duration: var(--duration-fast);
   }
 
   .dr-stacked-layout-aside {

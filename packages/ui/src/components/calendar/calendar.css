@@ -18,8 +18,8 @@
   .dr-calendar-day-btn {
     @apply data-[selected-single=true]:bg-primary-fill data-[selected-single=true]:text-primary-foreground data-[range-middle=true]:bg-accent data-[range-middle=true]:text-accent-foreground data-[range-start=true]:bg-primary-fill data-[range-start=true]:text-primary-foreground data-[range-end=true]:bg-primary-fill data-[range-end=true]:text-primary-foreground data-[range-single=true]:bg-primary-fill data-[range-single=true]:text-primary-foreground flex aspect-square w-[var(--density-cell)] flex-col gap-1 leading-none font-normal data-[range-end=true]:rounded-md data-[range-middle=true]:rounded-none data-[range-single=true]:rounded-md data-[range-start=true]:rounded-md [&>span]:text-xs [&>span]:opacity-70;
     transition:
-      background-color 120ms,
-      color 120ms;
+      background-color var(--duration-fast),
+      color var(--duration-fast);
   }
 
   /* Hold the selected-state colors on hover so the underlying Button ghost

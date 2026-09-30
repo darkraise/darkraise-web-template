@@ -19,8 +19,21 @@ const EXEMPT_DIRS = new Set(["background-page", "marquee", "sonner"])
 /** Literals that are not durations on the ladder and never should be. */
 const ALLOWED_LITERALS = new Set([
   "0ms", // an instant transition is the absence of one, not a tier
+  "0s",
   "0.01ms", // the reduced-motion guard
 ])
+
+/**
+ * Declarations kept off the ladder on purpose, as [file suffix, text in the
+ * declaration, reason].
+ */
+const EXEMPT_DECLARATIONS: Array<[string, string, string]> = [
+  [
+    "image-editor/image-editor.css",
+    "filter 80ms",
+    "the live filter preview tracks a slider drag and must lag it by one frame at most",
+  ],
+]
 
 function everyStylesheet(): string[] {
   const walk = (dir: string): string[] =>
@@ -54,20 +67,36 @@ describe("motion ladder", () => {
     expect(theme).toMatch(/--ease-in-out:\s*cubic-bezier/)
   })
 
-  it("has no raw 150ms or 200ms left in a transition or animation", () => {
-    // These two carry most of the kit's motion; leaving any behind means the
-    // ladder describes the code rather than governing it.
+  it("has no raw duration literal in a transition or animation", () => {
     const offenders: string[] = []
     for (const path of everyStylesheet()) {
       const css = readFileSync(path, "utf8").replace(/\/\*[\s\S]*?\*\//g, "")
       for (const decl of css.matchAll(
-        /(?:transition|animation)(?:-duration)?\s*:\s*([^;]+);/g,
+        /(?<![\w-])(?:transition|transition-duration|animation|animation-duration)\s*:\s*([^;]+);/g,
       )) {
-        for (const literal of decl[1].matchAll(
-          /(?<![\w.-])(150ms|200ms)(?![\w-])/g,
+        const exempt = EXEMPT_DECLARATIONS.some(
+          ([file, text]) => path.endsWith(file) && decl[0].includes(text),
+        )
+        if (exempt) continue
+        for (const literal of (decl[1] as string).matchAll(
+          /(?<![\w.-])(\d*\.?\d+m?s)(?![\w-])/g,
         )) {
+          if (ALLOWED_LITERALS.has(literal[1] as string)) continue
           offenders.push(`${literal[1]} in ${path}`)
         }
+      }
+    }
+    expect(offenders).toEqual([])
+  })
+
+  it("uses no duration utilities, timed arbitrary animations or transition-all", () => {
+    const offenders: string[] = []
+    for (const path of everyStylesheet()) {
+      const css = readFileSync(path, "utf8").replace(/\/\*[\s\S]*?\*\//g, "")
+      for (const match of css.matchAll(
+        /(?<![\w-])duration-\d+(?![\w-])|animate-\[[^\]]*\d+m?s[^\]]*\]|(?<![\w-])transition-all(?![\w-])|(?<![\w-])transition\s*:\s*all(?![\w-])/g,
+      )) {
+        offenders.push(`${match[0]} in ${path}`)
       }
     }
     expect(offenders).toEqual([])

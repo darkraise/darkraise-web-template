@@ -4,11 +4,13 @@
   }
 
   .dr-accordion-trigger {
-    @apply flex flex-1 cursor-pointer items-center justify-between py-4 font-medium transition-all hover:underline;
+    @apply flex flex-1 cursor-pointer items-center justify-between py-4 font-medium transition-[color,text-decoration-color,border-bottom-color,border-bottom-width] hover:underline;
+    transition-duration: var(--duration-fast);
   }
 
   .dr-accordion-trigger > svg {
-    @apply size-[var(--icon-size)] shrink-0 transition-transform duration-200;
+    @apply size-[var(--icon-size)] shrink-0 transition-transform;
+    transition-duration: var(--duration-normal);
   }
 
   .dr-accordion-trigger[data-state="open"] > svg {
@@ -16,15 +18,15 @@
   }
 
   .dr-accordion-content {
-    @apply overflow-hidden text-sm transition-all;
+    @apply overflow-hidden text-sm;
   }
 
   .dr-accordion-content[data-state="closed"] {
-    animation: accordion-up 0.2s ease-out;
+    animation: accordion-up var(--duration-normal) ease-out;
   }
 
   .dr-accordion-content[data-state="open"] {
-    animation: accordion-down 0.2s ease-out;
+    animation: accordion-down var(--duration-normal) ease-out;
   }
 
   .dr-accordion-content-inner {

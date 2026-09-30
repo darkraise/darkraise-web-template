@@ -1,12 +1,12 @@
 @layer components {
   .dr-drawer-overlay {
-    @apply data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 fixed inset-0 z-50 bg-black/50 data-[state=closed]:duration-300 data-[state=open]:duration-500;
+    @apply data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0 fixed inset-0 z-50 bg-black/50;
     -webkit-backdrop-filter: var(--backdrop-filter);
     backdrop-filter: var(--backdrop-filter);
   }
 
   .dr-drawer-content {
-    @apply modal-surface text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 flex flex-col border transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500;
+    @apply modal-surface text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 flex flex-col border ease-in-out;
     /* Modal-tier surface: bg + border from preset-driven tokens;
        --elevation-high stays via .modal-surface. */
     background: var(--surface-overlay-bg);
@@ -14,6 +14,16 @@
     border-color: var(--surface-overlay-border);
     -webkit-backdrop-filter: var(--backdrop-filter);
     backdrop-filter: var(--backdrop-filter);
+  }
+
+  .dr-drawer-overlay[data-state="closed"],
+  .dr-drawer-content[data-state="closed"] {
+    --tw-animation-duration: var(--duration-slow);
+  }
+
+  .dr-drawer-overlay[data-state="open"],
+  .dr-drawer-content[data-state="open"] {
+    --tw-animation-duration: var(--duration-slower);
   }
 
   /* The `mt-24` reserves a strip of page at the far edge; without a

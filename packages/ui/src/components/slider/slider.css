@@ -20,7 +20,7 @@
     transition:
       background-color var(--duration-fast),
       border-color var(--duration-fast),
-      transform 100ms ease-out;
+      transform var(--duration-fast) ease-out;
   }
 
   .dr-slider-thumb:focus-visible {

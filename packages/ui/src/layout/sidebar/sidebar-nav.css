@@ -25,7 +25,8 @@
   }
 
   .dr-sidebar-nav-link {
-    @apply flex min-h-[var(--density-cell)] items-center gap-3 rounded-md p-[var(--density-row-py)] text-sm transition-colors duration-150;
+    @apply flex min-h-[var(--density-cell)] items-center gap-3 rounded-md p-[var(--density-row-py)] text-sm transition-colors;
+    transition-duration: var(--duration-fast);
   }
 
   .dr-sidebar-nav-link:not([data-collapsed="true"]) {
@@ -77,7 +78,8 @@
   .dr-sidebar-nav-popover-trigger {
     /* Icon-only popover trigger keeps symmetric `p-[var(--density-row-py)]`
      * so it stays square — same reasoning as the collapsed nav link. */
-    @apply mx-auto flex min-h-[var(--density-cell)] w-[var(--density-cell)] cursor-pointer items-center justify-center gap-3 rounded-md p-[var(--density-row-py)] transition-colors duration-150;
+    @apply mx-auto flex min-h-[var(--density-cell)] w-[var(--density-cell)] cursor-pointer items-center justify-center gap-3 rounded-md p-[var(--density-row-py)] transition-colors;
+    transition-duration: var(--duration-fast);
   }
 
   .dr-sidebar-nav-popover-content {
@@ -106,7 +108,8 @@
      with a button parked beside it. Its children paint no background of their
      own. */
   .dr-sidebar-nav-collapsible-row {
-    @apply flex items-center gap-1 rounded-md transition-colors duration-150;
+    @apply flex items-center gap-1 rounded-md transition-colors;
+    transition-duration: var(--duration-fast);
   }
 
   /* Compound with the base class on purpose: the expanded-width rule above is
@@ -118,11 +121,13 @@
   }
 
   .dr-sidebar-nav-chevron-button {
-    @apply flex size-[var(--density-cell)] shrink-0 cursor-pointer items-center justify-center rounded-md transition-colors duration-150;
+    @apply flex size-[var(--density-cell)] shrink-0 cursor-pointer items-center justify-center rounded-md transition-colors;
+    transition-duration: var(--duration-fast);
   }
 
   .dr-sidebar-nav-collapsible-chevron {
-    @apply size-[var(--icon-size)] shrink-0 transition-transform duration-200;
+    @apply size-[var(--icon-size)] shrink-0 transition-transform;
+    transition-duration: var(--duration-normal);
     color: hsl(var(--sidebar-foreground-muted));
   }
 
@@ -131,7 +136,15 @@
   }
 
   .dr-sidebar-nav-collapsible-content {
-    @apply overflow-hidden data-[state=closed]:animate-[collapsible-up_150ms_ease-out] data-[state=open]:animate-[collapsible-down_150ms_ease-out];
+    @apply overflow-hidden;
+  }
+
+  .dr-sidebar-nav-collapsible-content[data-state="closed"] {
+    animation: collapsible-up var(--duration-fast) ease-out;
+  }
+
+  .dr-sidebar-nav-collapsible-content[data-state="open"] {
+    animation: collapsible-down var(--duration-fast) ease-out;
   }
 
   .dr-sidebar-nav-collapsible-children {

@@ -92,7 +92,8 @@
 
   .dr-badge-anchor-indicator,
   .dr-badge-anchor-dot {
-    @apply pointer-events-none absolute z-10 transition-opacity transition-transform duration-150;
+    @apply pointer-events-none absolute z-10 transition-opacity transition-transform;
+    transition-duration: var(--duration-fast);
     /* Inline style may set --badge-anchor-offset-{x,y} for fine-tuning. */
   }
 

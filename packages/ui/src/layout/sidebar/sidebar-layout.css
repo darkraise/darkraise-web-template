@@ -1,6 +1,7 @@
 @layer components {
   .dr-sidebar-layout-aside {
-    @apply hidden flex-col overflow-hidden border-r transition-[width] duration-300 md:flex;
+    @apply hidden flex-col overflow-hidden border-r transition-[width] md:flex;
+    transition-duration: var(--duration-slow);
     width: var(--sidebar-width-expanded, 16rem);
     border-color: hsl(var(--sidebar-border));
   }

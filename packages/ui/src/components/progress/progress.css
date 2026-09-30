@@ -4,7 +4,8 @@
   }
 
   .dr-progress-indicator {
-    @apply bg-primary-fill h-full w-full flex-1 transition-all;
+    @apply bg-primary-fill h-full w-full flex-1 transition-transform;
+    transition-duration: var(--duration-fast);
   }
 
   /* Glass preset — light-frost track + accent-tinted fill (no

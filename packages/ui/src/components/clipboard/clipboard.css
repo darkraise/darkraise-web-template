@@ -21,7 +21,8 @@
   }
 
   .dr-clipboard-trigger {
-    @apply transition-colors duration-200;
+    @apply transition-colors;
+    transition-duration: var(--duration-normal);
   }
 
   .dr-clipboard-trigger[data-copied="true"] {
@@ -29,7 +30,8 @@
   }
 
   .dr-clipboard-indicator {
-    @apply inline-flex items-center justify-center transition-colors duration-200;
+    @apply inline-flex items-center justify-center transition-colors;
+    transition-duration: var(--duration-normal);
   }
 
   .dr-clipboard-indicator[data-copied="true"] {
