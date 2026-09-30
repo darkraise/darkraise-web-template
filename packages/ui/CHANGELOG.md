@@ -11,6 +11,7 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 ### Changed
 
 - The theme panel's **Shell Style** control is a single-row `SegmentGroup`. As a six-value toggle group it had no matching column rule and stacked vertically.
+- `inset`, `island` and `framed` shells paint the page background as their ground, as `floating` already did, instead of the sidebar surface.
 
 ### Fixed
 
