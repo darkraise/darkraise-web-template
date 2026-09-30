@@ -26,6 +26,7 @@ Once added, the `balanced` default renders exactly as before. A config that stil
 ### Fixed
 
 - `Clipboard`, `useClipboard` and `JsonTreeView`'s copy buttons failed with "Failed to copy" outside a secure context. `navigator.clipboard` does not exist on plain HTTP, such as a dev server opened by LAN address, so every copy threw. They now go through `writeClipboardText`.
+- A scrolling shell region lost its edge under `inset`, `island` and `floating`. Its 1px edge was an inset `box-shadow`, which paints beneath the region's children, so content scrolled toward the edge covered it. Detached regions now draw a real 1px border, which stays above scrolled content. `--shell-region-border` accordingly holds the border colour rather than a shadow.
 
 ## [6.9.5] — 2026-09-25
 

@@ -167,6 +167,23 @@ test.describe("shell style geometry", () => {
     expect(geom.nav.y).toBeGreaterThan(0)
   })
 
+  test("a scrolling region keeps its edge above its content", async ({
+    page,
+  }) => {
+    // An inset box-shadow paints beneath the region's children, so content
+    // scrolled under it erased the edge. Only a real border stays on top.
+    await seedApp(page, { shellStyle: "island" })
+    await gotoApp(page, "/")
+
+    const content = page.locator('[data-region="content"]')
+    await expect(content).toHaveCSS("border-top-width", "1px")
+    await expect(content).toHaveCSS("border-top-style", "solid")
+    const shadow = await content.evaluate(
+      (el) => getComputedStyle(el).boxShadow,
+    )
+    expect(shadow).not.toContain("inset")
+  })
+
   test("framed insets the whole shell from the viewport edge", async ({
     page,
   }) => {

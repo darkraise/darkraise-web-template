@@ -112,9 +112,7 @@ describe("preset chrome", () => {
   it("gives a detached glass region its fog edge back", () => {
     // The generic shell-style rule is (0,3,0) and would otherwise replace
     // the fog border and the specular with a neutral one.
-    expect(shellPresets).toMatch(
-      /island[\s\S]*?inset 0 0 0 1px var\(--fog-20\)/,
-    )
+    expect(shellPresets).toMatch(/island[\s\S]*?border-color: var\(--fog-20\)/)
   })
 
   it("keeps the seam edge on the welded styles", () => {

@@ -1,19 +1,24 @@
 @layer components {
   /* Regions that detach from the shell share one paint recipe. Which regions
-     detach is the only thing that differs between the styles below. */
+     detach is the only thing that differs between the styles below.
+
+     The edge is a real border, replacing the per-side rules a region carries
+     when welded. It was an inset box-shadow, but an inset shadow paints with
+     the element's background, beneath its children, so content scrolling
+     inside the region slid over the edge and erased it. A border sits outside
+     the scrollport and stays on top. */
   .dr-shell[data-shell-style="island"] > [data-region],
   .dr-shell[data-shell-style="floating"] > [data-region],
   .dr-shell[data-shell-style="inset"] > [data-region="content"] {
+    border: 1px solid var(--shell-region-border);
     border-radius: var(--shell-radius);
-    box-shadow: var(--shell-region-border), var(--shell-region-shadow);
+    box-shadow: var(--shell-region-shadow);
   }
 
-  /* A 1px CSS border plus the inset border-shadow would read as 2px on the
-     straight edges, so a detached region gives up the border it carried when
-     it was welded and lets the inset shadow draw its edge instead. */
-  .dr-shell[data-shell-style="island"] > [data-region],
-  .dr-shell[data-shell-style="floating"] > [data-region],
-  .dr-shell[data-shell-style="inset"] > [data-region],
+  /* Chrome that stays welded but gives up its surface (inset) or its rules
+     (flat) drops the hairlines it carried under classic. */
+  .dr-shell[data-shell-style="inset"]
+    > [data-region]:not([data-region="content"]),
   .dr-shell[data-shell-style="flat"] > [data-region] {
     border-width: 0;
   }
@@ -22,6 +27,7 @@
   .dr-shell[data-shell-style="island"] > [data-region="handle"],
   .dr-shell[data-shell-style="floating"] > [data-region="handle"] {
     background-color: transparent;
+    border-width: 0;
     box-shadow: none;
   }
 
