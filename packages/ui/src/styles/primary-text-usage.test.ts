@@ -22,7 +22,15 @@ const GRAPHIC_DECLARATIONS: Array<[string, string, string]> = [
     ".dr-sidebar-nav-icon-svg",
     "the active nav icon is a graphic",
   ],
+  [
+    "src/theme/presets/scifi/scifi.css",
+    ".dr-spinner > svg",
+    "the spinner's stroke is a graphic",
+  ],
 ]
+
+/** A ::before or ::after glyph is decoration, not text a reader must read. */
+const PSEUDO = /::(?:before|after)\s*$/
 
 function filesUnder(dir: string, test: (name: string) => boolean): string[] {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
@@ -56,6 +64,7 @@ describe("primary-coloured text", () => {
     for (const path of [
       ...stylesheets("src/components"),
       ...stylesheets("src/layout"),
+      ...stylesheets("src/theme/presets"),
     ]) {
       const css = readFileSync(path, "utf8").replace(/\/\*[\s\S]*?\*\//g, "")
       for (const rule of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
@@ -63,10 +72,31 @@ describe("primary-coloured text", () => {
           continue
         }
         const selector = (rule[1] as string).trim()
-        const exempt = GRAPHIC_DECLARATIONS.some(
-          ([file, text]) => path === file && selector.includes(text),
-        )
+        const exempt =
+          selector.split(",").every((part) => PSEUDO.test(part.trim())) ||
+          GRAPHIC_DECLARATIONS.some(
+            ([file, text]) => path === file && selector.includes(text),
+          )
         if (!exempt) offenders.push(`${selector} in ${path}`)
+      }
+    }
+    expect(offenders).toEqual([])
+  })
+
+  // Text colours are solved to 4.5:1 at full strength; an alpha lets the
+  // ground through and undoes the solve.
+  it("never dims a solved text colour with an alpha", () => {
+    const offenders: string[] = []
+    for (const path of [
+      ...stylesheets("src/components"),
+      ...stylesheets("src/layout"),
+      ...stylesheets("src/theme/presets"),
+    ]) {
+      const css = readFileSync(path, "utf8").replace(/\/\*[\s\S]*?\*\//g, "")
+      for (const match of css.matchAll(
+        /(?<![\w-])color:\s*hsl\(var\(--(?:primary-text|primary|success|warning|info|destructive|scifi-badge-accent)\)\s*\/\s*[\d.]+\)/g,
+      )) {
+        offenders.push(`${match[0]} in ${path}`)
       }
     }
     expect(offenders).toEqual([])
