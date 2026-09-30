@@ -35,7 +35,7 @@ follows.
   `variant` x `elevation` cross-product (`AccordionVariant` x `CardElevation`),
   a single-axis `border` row (`CardBorder`), and a single-axis `orientation`
   row. `border` and `elevation` only paint under `variant="card"` — the
-  component gates `data-border` / `data-elevation` on `isCard`
+  component gates `data-border` / `data-card-elevation` on `isCard`
   (`Accordion.tsx:199-204`) — so the `variant="default"` row carries the muted
   footnote used elsewhere on this branch, and the `border` row is pinned to
   `variant="card"`.

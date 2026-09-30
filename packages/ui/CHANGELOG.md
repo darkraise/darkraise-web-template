@@ -15,7 +15,7 @@ Once added, the `balanced` default renders exactly as before. A config that stil
 
 Breaking: the Sci-fi preset is removed, and with it the `supportedModes` field on presets. `PresetName` is now `"default" | "glass"`, so a config or call naming `"scifi"` fails to type-check. A user whose stored or synced settings name `scifi` loads the configured default preset and keeps its stored mode: dark, unless the user chose System, which follows the OS.
 
-Breaking: `Card` and card-variant `AccordionItem` expose their elevation as `data-card-elevation` instead of `data-elevation`, so a selector such as `.dr-card[data-elevation="high"]` must become `.dr-card[data-card-elevation="high"]`. Also removed: the `--shadow-card`, `--card-border` and `--glow-surface` tokens, `SurfaceRecipe.overrides.shadowCard`, and the `data-sidebar-active-bar` attribute on `<html>`; see Removed.
+Breaking: `Card` and card-variant `AccordionItem` expose their elevation as `data-card-elevation` instead of `data-elevation`, so a selector such as `.dr-card[data-elevation="high"]` must become `.dr-card[data-card-elevation="high"]`. Also removed: the `--shadow-card`, `--card-border` and `--glow-surface` tokens, `PresetSurfaceRecipe.overrides.shadowCard`, and the `data-sidebar-active-bar` attribute on `<html>`; see Removed.
 
 ### Added
 
@@ -43,7 +43,7 @@ Breaking: `Card` and card-variant `AccordionItem` expose their elevation as `dat
 
 - The Sci-fi preset, its `frame` axis and its stylesheet. The theme switcher and `create-darkraise-ui` no longer offer it.
 - `supportedModes` on presets, which only Sci-fi used, and the provider and switcher logic that enforced it.
-- The `--shadow-card`, `--card-border` and `--glow-surface` tokens, which no stylesheet read, and `SurfaceRecipe.overrides.shadowCard` on the preset type.
+- The `--shadow-card`, `--card-border` and `--glow-surface` tokens, which no stylesheet read, and `PresetSurfaceRecipe.overrides.shadowCard` on the preset type.
 - The `data-sidebar-active-bar` attribute on `<html>`. Read the setting from `useTheme().sidebarActiveBar`; the sidebar still writes its own `data-active-bar`.
 - The glass `[data-glass-halo="none"]` rule, which nothing could trigger since the halo axis moved to the global glow axes.
 
@@ -58,7 +58,7 @@ Breaking: `Card` and card-variant `AccordionItem` expose their elevation as `dat
 - `--ring` could fall to 1.89:1 on the light page (yellow); it now gets the same 3:1 repair as `--focus-ring`.
 - Dialog, sheet and drawer transitioned every property alongside their enter and exit animation, so theme changes animated on open overlays.
 - The colours painted before the theme provider hydrates were stale; they now equal the engine's default light output.
-- Content inside an elevated `Card` or card accordion item keeps the page's elevation ramp. It used to take the light ramp in dark mode, because the card reused the theme's `data-elevation` attribute.
+- Content inside an elevated `Card` or card accordion item keeps the page's elevation ramp. It used to take the light ramp in dark mode, and in light mode the card's own level (a `flat` card zeroed every nested shadow), because the card reused the theme's `data-elevation` attribute.
 
 ## [6.9.5] — 2026-09-25
 
