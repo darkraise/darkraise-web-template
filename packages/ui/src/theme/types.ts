@@ -173,7 +173,8 @@ export interface ThemeSettings {
   borderIntensity?: BorderIntensity
   radius?: Radius
   fontSize?: FontSize
-  /** How loud the accent reads in dark mode; ignored in light. Defaults to
+  /** How loud the accent reads, mainly in dark mode; in light it still sets
+   *  the focus-ring shade and the sidebar hover fill. Defaults to
    *  "balanced". */
   accentIntensity?: AccentIntensity
   /** How deep form controls sit inside a raised surface. Defaults to
