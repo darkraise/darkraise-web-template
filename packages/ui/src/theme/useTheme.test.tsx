@@ -47,6 +47,7 @@ describe("useTheme", () => {
     mockMatchMedia()
     document.documentElement.removeAttribute("data-mode")
     document.documentElement.removeAttribute("data-font-size")
+    document.documentElement.removeAttribute("data-sidebar-active-bar")
     document.documentElement.style.cssText = ""
   })
 
@@ -292,6 +293,18 @@ describe("useTheme", () => {
     expect(readBackground()).toBe("229 0% 5%")
     expect(readBackground()).not.toBe(vividBackground)
     expect(readSurfaceBase()).toBe(readBackground())
+  })
+
+  it("keeps the sidebar indicator off the document element", () => {
+    const { result } = renderHook(() => useTheme(), { wrapper })
+    expect(
+      document.documentElement.hasAttribute("data-sidebar-active-bar"),
+    ).toBe(false)
+    act(() => result.current.setSidebarActiveBar("ring"))
+    expect(result.current.sidebarActiveBar).toBe("ring")
+    expect(
+      document.documentElement.hasAttribute("data-sidebar-active-bar"),
+    ).toBe(false)
   })
 })
 

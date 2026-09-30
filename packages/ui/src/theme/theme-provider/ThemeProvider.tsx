@@ -697,10 +697,6 @@ export function ThemeProvider({
         settings.shellStyle ?? cfg.defaults.shellStyle,
       )
       document.documentElement.setAttribute(
-        "data-sidebar-active-bar",
-        settings.sidebarActiveBar ?? cfg.defaults.sidebarActiveBar,
-      )
-      document.documentElement.setAttribute(
         "data-font-size",
         settings.fontSize ?? cfg.defaults.fontSize,
       )
@@ -1164,7 +1160,6 @@ export function ThemeProvider({
     (value: SidebarActiveBarSetting) => {
       setSidebarActiveBarState(value)
       writeStorage(LS_SIDEBAR_ACTIVE_BAR, value)
-      document.documentElement.setAttribute("data-sidebar-active-bar", value)
       const settings = buildSettings({ sidebarActiveBar: value })
       notifyChange(settings)
       hasUserChanged.current = true
@@ -1253,10 +1248,6 @@ export function ThemeProvider({
     )
     document.documentElement.setAttribute("data-radius", radius)
     document.documentElement.setAttribute("data-shell-style", shellStyle)
-    document.documentElement.setAttribute(
-      "data-sidebar-active-bar",
-      sidebarActiveBar,
-    )
     document.documentElement.setAttribute("data-font-size", fontSize)
     document.documentElement.setAttribute(
       "data-background-intensity",
@@ -1280,7 +1271,6 @@ export function ThemeProvider({
     surfaceIntensity,
     radius,
     shellStyle,
-    sidebarActiveBar,
     fontSize,
     backgroundIntensity,
     gradientPattern,
