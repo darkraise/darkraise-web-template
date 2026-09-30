@@ -22,6 +22,17 @@
       color var(--duration-fast);
   }
 
+  /* A filled day is a ghost .dr-btn, whose state layer washes toward its
+     label; toward white would drop the label under AA on the fill. */
+  .dr-calendar-day-btn:is(
+    [data-selected-single="true"],
+    [data-range-start="true"],
+    [data-range-end="true"],
+    [data-range-single="true"]
+  ) {
+    --state-layer-color: hsl(var(--primary-fill-wash));
+  }
+
   /* Hold the selected-state colors on hover so the underlying Button ghost
      variant's `hover:bg-accent` does not override the primary fill. */
   .dr-calendar-day-btn[data-selected-single="true"]:hover,

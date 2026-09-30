@@ -383,6 +383,16 @@ const FOREGROUND_MIN_RATIO = 3
 const LABEL_SOLVE_TARGET = 4.6
 const WHITE = "0 0% 100%"
 const INK = "222 47% 11%"
+const BLACK = "0 0% 0%"
+
+/**
+ * What a hover or press mixes into a fill: the end of the lightness range away
+ * from its label. A fill sits at its label's contrast floor, so mixing toward
+ * the label (the old translucent and label-coloured hovers) dropped under AA.
+ */
+function washFor(label: string): string {
+  return label === WHITE ? BLACK : WHITE
+}
 
 function vibrancyFill(hsl: string, vibrancy: AccentIntensity): string {
   const { C, h } = hslStringToOklch(hsl)
@@ -671,11 +681,7 @@ export function generateTokens(
     mode === "light" ? surface[50] : surface[950],
     CANVAS_SATURATION_CAP[backgroundIntensity],
   )
-  const mutedForeground = tierClearing(
-    neutral,
-    background,
-    MUTED_TARGET_RATIO,
-  )
+  const mutedForeground = tierClearing(neutral, background, MUTED_TARGET_RATIO)
   const card = mode === "light" ? "0 0% 100%" : surface[900]
   // Popovers paint the card rung; named so the text solves can list it.
   const popover = card
@@ -727,6 +733,7 @@ export function generateTokens(
     ),
     "--primary-fill": primaryFill,
     "--primary-foreground": primaryForeground,
+    "--primary-fill-wash": washFor(primaryForeground),
     "--ring": ensureContrast(ringValue, background, MARK_FLOOR),
     "--focus-ring": ensureContrast(focusRingValue, background, MARK_FLOOR),
     "--surface-tint": surfaceTint,
@@ -767,6 +774,7 @@ export function generateTokens(
     "--destructive-foreground": bestLabel(destructive),
     "--destructive-solid": destructiveSolid,
     "--destructive-solid-foreground": WHITE,
+    "--destructive-solid-wash": washFor(WHITE),
 
     "--success": success,
     "--success-foreground": bestLabel(success),

@@ -90,8 +90,8 @@ describe("status colours", () => {
     expect(theme).toContain(
       "--color-destructive-solid: hsl(var(--destructive-solid));",
     )
-    expect(theme).toContain(
-      "--color-destructive-solid-foreground: hsl(var(--destructive-solid-foreground));",
+    expect(theme).toMatch(
+      /--color-destructive-solid-foreground:\s*hsl\(\s*var\(--destructive-solid-foreground\)\s*\);/,
     )
   })
 })

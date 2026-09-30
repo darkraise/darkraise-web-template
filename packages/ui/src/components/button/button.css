@@ -39,7 +39,7 @@
     inset: 0;
     z-index: -1;
     border-radius: inherit;
-    background: currentColor;
+    background: var(--state-layer-color, currentColor);
     opacity: 0;
     pointer-events: none;
     transition: opacity var(--state-layer-out) ease-out;
@@ -63,14 +63,19 @@
   }
 
   /* default + destructive: hue-based filled variants (was .btn-glass-hue) */
+  /* A filled variant washes toward its fill's wash rather than its label: the
+     fill sits at the label's contrast floor, so any step toward the label
+     drops it under AA. */
   .dr-btn[data-variant="default"] {
     @apply text-primary-foreground;
+    --state-layer-color: hsl(var(--primary-fill-wash));
     --hue: hsl(var(--primary-fill));
     background-color: var(--hue);
     box-shadow: var(--shadow-button), var(--glow-outer), var(--glow-inner);
   }
   .dr-btn[data-variant="destructive"] {
     @apply text-destructive-solid-foreground;
+    --state-layer-color: hsl(var(--destructive-solid-wash));
     --hue: hsl(var(--destructive-solid));
     background-color: var(--hue);
     box-shadow: var(--shadow-button), var(--glow-outer), var(--glow-inner);

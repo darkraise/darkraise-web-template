@@ -66,7 +66,7 @@ describe("interaction state layer", () => {
   it("paints the wash with a pseudo-element, not a flood shadow", () => {
     const css = flat(BUTTON)
     expect(css).toMatch(
-      /\.dr-btn:not\(\[data-variant="link"\]\)::before \{[^}]*background: currentColor/,
+      /\.dr-btn:not\(\[data-variant="link"\]\)::before \{[^}]*background: var\(--state-layer-color, currentColor\)/,
     )
     expect(css).toMatch(/transition: opacity var\(--state-layer-out\)/)
     expect(css).not.toMatch(/100vmax/)
