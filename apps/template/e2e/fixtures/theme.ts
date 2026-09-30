@@ -1,4 +1,4 @@
-export const PRESETS = ["default", "glass", "scifi"] as const
+export const PRESETS = ["default", "glass"] as const
 export type Preset = (typeof PRESETS)[number]
 
 export const ACCENT_COLORS = [
@@ -74,21 +74,16 @@ export const SURFACE_INTENSITIES = [
   "bold",
 ] as const
 
-/** Presets that force a single resolved mode regardless of the mode axis. */
-export const DARK_ONLY_PRESETS: Preset[] = ["scifi"]
-
 /** Labels the theme switcher renders for each preset. */
 export const PRESET_LABELS: Record<Preset, string> = {
   default: "Default",
   glass: "Glass",
-  scifi: "Sci-fi",
 }
 
 /** Common axes each preset hides from the switcher (and that its own axes replace). */
 export const HIDDEN_COMMON_AXES: Record<Preset, string[]> = {
   default: [],
   glass: [],
-  scifi: ["elevation", "buttonElevation", "radius"],
 }
 
 export interface PresetAxis {
@@ -113,14 +108,6 @@ export const PRESET_AXES: Record<Preset, PresetAxis[]> = {
       label: "Backdrop Blur",
       values: ["none", "low", "medium", "high"],
       default: "medium",
-    },
-  ],
-  scifi: [
-    {
-      name: "frame",
-      label: "Frame",
-      values: ["clean", "notched", "bracketed"],
-      default: "notched",
     },
   ],
 }

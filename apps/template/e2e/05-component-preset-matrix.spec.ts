@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test"
 import { COMPONENT_ROUTES } from "./fixtures/component-routes"
-import { DARK_ONLY_PRESETS, PRESETS } from "./fixtures/theme"
+import { PRESETS } from "./fixtures/theme"
 import {
   expectNoErrorBoundary,
   expectNoHorizontalOverflow,
@@ -11,17 +11,15 @@ import {
 } from "./helpers/app"
 
 /**
- * Every component showcase page under every preset, in every mode that preset
- * supports. Presets rebind surface, radius, shadow and glow tokens, and several
- * ship their own CSS layer — a page that renders under Default can still break
- * under Terminal or Sci-fi.
+ * Every component showcase page under every preset, in both modes. Presets
+ * rebind surface, radius, shadow and glow tokens, and several ship their own
+ * CSS layer — a page that renders under Default can still break under another
+ * preset.
  */
 const ERROR_COPY_BY_DESIGN = new Set(["/components/error-pages"])
 
 for (const preset of PRESETS) {
-  const modes = DARK_ONLY_PRESETS.includes(preset)
-    ? (["dark"] as const)
-    : (["light", "dark"] as const)
+  const modes = ["light", "dark"] as const
 
   for (const mode of modes) {
     test.describe(`${preset} · ${mode}`, () => {

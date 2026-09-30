@@ -117,12 +117,7 @@ test.describe("preset selection through the UI", () => {
           hiddenLabels[axis],
         )
       }
-      // Dark-only presets hide the Mode section entirely.
-      if (["scifi"].includes(preset)) {
-        expect(sections).not.toContain("Mode")
-      } else {
-        expect(sections).toContain("Mode")
-      }
+      expect(sections).toContain("Mode")
       // Preset-specific axes must be offered.
       for (const axis of PRESET_AXES[preset]) {
         expect(sections).toContain(axis.label)
@@ -348,7 +343,7 @@ test.describe("preset-specific axis controls", () => {
       .poll(async () => (await readThemeAttrs(page))["data-glass-opacity"])
       .toBe("strong")
 
-    await selectPreset(page, "scifi")
+    await selectPreset(page, "default")
     await selectPreset(page, "glass")
 
     await expect

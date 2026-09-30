@@ -77,25 +77,25 @@ mode` notice are allowlisted.
 Every value of every axis, seeded at boot and verified on `<html>` plus the
 token it drives:
 
-| Axis                 | Values                          | Verified through                                                                                              |
-| -------------------- | ------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| Preset               | default, glass, scifi           | `data-preset`, own-axis attributes set, other presets' attributes cleared, reload persistence                 |
-| Preset axes          | glass opacity/blur, scifi frame | `data-<preset>-<axis>` for all 11 axis × value combinations                                                   |
-| Mode                 | light, dark, system             | `data-mode`; `system` checked against both emulated `prefers-color-scheme` values                             |
-| Accent               | all 17                          | `--primary` set, and all 17 distinct                                                                          |
-| Surface              | all 18                          | `--background` set, and all 18 distinct in dark mode                                                          |
-| Background           | solid, gradient                 | `data-background-style`                                                                                       |
-| Background intensity | neutral → intense               | `data-background-intensity`, `--canvas-blob-scale` increases monotonically, `--background` saturation capped  |
-| Gradient pattern     | blobs, aurora, spotlight, mesh  | `data-gradient-pattern`                                                                                       |
-| Density              | compact → spacious              | `data-density`, `--density-button-px` increases monotonically                                                 |
-| Font size            | small → extra-large             | `data-font-size`, `--text-base` increases monotonically                                                       |
-| Accent intensity     | calm, balanced, vivid, intense  | `--primary-fill` / `--primary` in dark; `--focus-ring` / `--sidebar-hover-bg` in both — no `data-*` attribute |
-| Elevation            | flat → high                     | `data-elevation`, `--elevation-current`                                                                       |
-| Button elevation     | flat → high                     | `data-button-elevation`, `--shadow-button` (flat ⇒ transparent)                                               |
-| Surface intensity    | flat, subtle, balanced, bold    | `data-surface-intensity`                                                                                      |
-| Radius               | sharp, subtle, rounded, pill    | `data-radius`, exact `--radius`, pill ⇒ `--radius-button: 9999px`                                             |
+| Axis                 | Values                         | Verified through                                                                                              |
+| -------------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| Preset               | default, glass                 | `data-preset`, own-axis attributes set, other presets' attributes cleared, reload persistence                 |
+| Preset axes          | glass opacity/blur             | `data-<preset>-<axis>` for all 7 axis × value combinations                                                    |
+| Mode                 | light, dark, system            | `data-mode`; `system` checked against both emulated `prefers-color-scheme` values                             |
+| Accent               | all 17                         | `--primary` set, and all 17 distinct                                                                          |
+| Surface              | all 18                         | `--background` set, and all 18 distinct in dark mode                                                          |
+| Background           | solid, gradient                | `data-background-style`                                                                                       |
+| Background intensity | neutral → intense              | `data-background-intensity`, `--canvas-blob-scale` increases monotonically, `--background` saturation capped  |
+| Gradient pattern     | blobs, aurora, spotlight, mesh | `data-gradient-pattern`                                                                                       |
+| Density              | compact → spacious             | `data-density`, `--density-button-px` increases monotonically                                                 |
+| Font size            | small → extra-large            | `data-font-size`, `--text-base` increases monotonically                                                       |
+| Accent intensity     | calm, balanced, vivid, intense | `--primary-fill` / `--primary` in dark; `--focus-ring` / `--sidebar-hover-bg` in both — no `data-*` attribute |
+| Elevation            | flat → high                    | `data-elevation`, `--elevation-current`                                                                       |
+| Button elevation     | flat → high                    | `data-button-elevation`, `--shadow-button` (flat ⇒ transparent)                                               |
+| Surface intensity    | flat, subtle, balanced, bold   | `data-surface-intensity`                                                                                      |
+| Radius               | sharp, subtle, rounded, pill   | `data-radius`, exact `--radius`, pill ⇒ `--radius-button: 9999px`                                             |
 
-Plus five hand-built cross-axis combinations (one per non-default preset) and a
+Plus one hand-built cross-axis combination for the glass preset and a
 full round-trip test that every axis survives reload and navigation.
 
 ### 04 · Theme switcher UI (`04-theme-switcher.spec.ts`)
@@ -104,9 +104,8 @@ Everything above again, this time through the popover a user actually operates:
 
 - Opens from the header, closes on Escape; the default preset shows all thirteen
   common-axis sections in order.
-- Each of the 6 presets is selectable and persists across reload.
-- Each preset hides exactly the axes it takes over (`hiddenCommonAxes`) and the
-  three dark-only presets hide the Mode section entirely.
+- Each of the 2 presets is selectable and persists across reload.
+- Each preset hides exactly the axes it takes over (`hiddenCommonAxes`).
 - Mode radios, including System against an emulated dark scheme.
 - All 17 accent and all 18 surface swatches: clicked, `data-active` confirmed,
   and each one produces a distinct token.
@@ -114,17 +113,16 @@ Everything above again, this time through the popover a user actually operates:
   four gradient patterns are selectable.
 - The six 4-value axes render as stepped sliders and are walked value by value
   **with the keyboard**, since a slider has no clickable cell.
-- Preset-specific axis controls for all 6 presets, plus a check that per-preset
+- Preset-specific axis controls for both presets, plus a check that per-preset
   axis values are remembered when switching away and back.
 - Two end-to-end proofs that switcher changes restyle real components: radius
   changes a button's computed `border-radius`, font size changes body copy.
 
 ### 05 · Component × preset matrix (`05-component-preset-matrix.spec.ts`)
 
-All 97 component routes × 6 presets × each preset's supported modes = **873
-tests**. Per page: the theme attributes applied, the expected heading, no error
+All 97 component routes × 2 presets × 2 modes. Per page: the theme attributes applied, the expected heading, no error
 boundary, no horizontal overflow, and a clean console. This is the check that
-catches a component that only breaks under Terminal or Sci-fi.
+catches a component that only breaks under one preset.
 
 ### 06 · Overlays and menus (`06-overlays.spec.ts`)
 
@@ -162,7 +160,7 @@ empty state, download trigger, image cropper.
 - Mobile: desktop sidebar hidden, drawer opens the nav, theme popover stays
   inside the viewport.
 - Sidebar collapse, active-route marking, search opening the palette.
-- The dashboard shell under each of the 6 presets.
+- The dashboard shell under each of the 2 presets.
 
 ### 10 · Accessibility (`10-accessibility.spec.ts`)
 
@@ -190,14 +188,13 @@ showcase headings, root error pages, and mobile language controls.
 Pull-request and release workflows run suites `01`, `06`, `08`, `11`, and `12` against
 a fresh UI build. The full browser suite remains available separately.
 
-These four earlier tests also guard fixed defects:
+These three earlier tests also guard fixed defects:
 
-| Test                                                        | Guards                                                                                                                                                       |
-| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `02-routes` → `/components/data-table`                      | The expandable-table example must key its rows via `<Fragment key>`; a bare `<>` makes React log a missing-`key` error on every render.                      |
-| `02-routes` → `/components/image-editor`                    | `ImageEditorAnnotationColor` must not nest `ColorPickerSwatch` (a button) inside `ColorPickerTrigger` (also a button) — that is invalid HTML and ~58 errors. |
-| `03-theme-axes` → `preset "scifi" forces dark mode at boot` | `supportedModes` must be enforced on the boot path too, not only in `setPreset`; otherwise a dark-only preset paints its recipes onto a near-white rail.     |
-| `08-data-display` → `dashboard charts size correctly`       | `ChartContainer` must seed `ResponsiveContainer` with a positive `initialDimension`; the recharts default of `-1 × -1` warns once per chart on first render. |
+| Test                                                  | Guards                                                                                                                                                       |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `02-routes` → `/components/data-table`                | The expandable-table example must key its rows via `<Fragment key>`; a bare `<>` makes React log a missing-`key` error on every render.                      |
+| `02-routes` → `/components/image-editor`              | `ImageEditorAnnotationColor` must not nest `ColorPickerSwatch` (a button) inside `ColorPickerTrigger` (also a button) — that is invalid HTML and ~58 errors. |
+| `08-data-display` → `dashboard charts size correctly` | `ChartContainer` must seed `ResponsiveContainer` with a positive `initialDimension`; the recharts default of `-1 × -1` warns once per chart on first render. |
 
 If a future defect can't be fixed immediately, tag its test `@known-issue` so
 `pnpm test:e2e:baseline` stays green while `pnpm test:e2e` still reports it.

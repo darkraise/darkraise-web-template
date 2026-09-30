@@ -130,11 +130,7 @@ export async function applyTheme(page: Page, theme: ThemeSeed) {
 }
 
 /** Console messages that are expected and must not fail a test. */
-const ALLOWED_CONSOLE = [
-  /\[vite\]/i,
-  /Download the React DevTools/i,
-  /\[ThemeProvider\] Preset ".+" requires mode/,
-]
+const ALLOWED_CONSOLE = [/\[vite\]/i, /Download the React DevTools/i]
 
 export interface ConsoleWatcher {
   errors: string[]

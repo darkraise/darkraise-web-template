@@ -1,14 +1,12 @@
 import { test, expect, type Page } from "@playwright/test"
-import { DARK_ONLY_PRESETS, PRESETS } from "./fixtures/theme"
+import { PRESETS } from "./fixtures/theme"
 import { gotoApp, seedApp, watchConsole } from "./helpers/app"
 
 /**
  * Card `divided` / `border` and the Accordion card variant are pure CSS
  * behaviour, so jsdom unit tests can only assert the data attributes. These
- * rules are also the ones presets are most likely to defeat: Terminal, Sci-fi
- * and Neon each re-tint `.dr-card`'s border, and Sci-fi additionally animates
- * `border-color`, which outranks normal declarations in the cascade. Every
- * assertion below therefore runs under every preset.
+ * rules are also the ones presets are most likely to defeat: presets can re-tint
+ * `.dr-card`'s border. Every assertion below therefore runs under every preset.
  */
 
 const TRANSPARENT = "rgba(0, 0, 0, 0)"
@@ -42,9 +40,7 @@ async function expectSettledStyle(
 }
 
 for (const preset of PRESETS) {
-  const modes = DARK_ONLY_PRESETS.includes(preset)
-    ? (["dark"] as const)
-    : (["light", "dark"] as const)
+  const modes = ["light", "dark"] as const
 
   for (const mode of modes) {
     test.describe(`${preset} · ${mode}`, () => {
@@ -95,9 +91,9 @@ for (const preset of PRESETS) {
         ).not.toBe(TRANSPARENT)
 
         // The whole point of the `:not([data-border])` guards: an explicit
-        // prop must win over the preset's own .dr-card border rules, which are
-        // unlayered under Terminal and Sci-fi and therefore outrank
-        // @layer components on specificity alone.
+        // prop must win over the preset's own .dr-card border rules, which may be
+        // unlayered and would then outrank @layer components on specificity
+        // alone.
         const strong = await styleOf(
           page,
           ".dr-card[data-border='strong']",

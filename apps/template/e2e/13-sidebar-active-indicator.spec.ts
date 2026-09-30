@@ -1,5 +1,5 @@
 import { test, expect, type Page } from "@playwright/test"
-import { DARK_ONLY_PRESETS, PRESETS, type Preset } from "./fixtures/theme"
+import { PRESETS, type Preset } from "./fixtures/theme"
 import { gotoApp, openThemeSwitcher, seedApp } from "./helpers/app"
 
 /**
@@ -8,10 +8,8 @@ import { gotoApp, openThemeSwitcher, seedApp } from "./helpers/app"
  * to an element. This drives a real browser: it walks the four-way
  * `sidebarActiveBar` theme axis per preset and counts `inset` layers in the active
  * item's COMPUTED box-shadow. A preset whose rules never left `@layer
- * components` (or landed in the wrong file, as sci-fi's do — scifi.css is
- * unlayered and beats @layer components regardless of specificity) would
- * return the same count for "bar" and "both", which is exactly what the
- * `both > bar` comparison below is built to catch.
+ * components` would return the same count for "bar" and "both", which is
+ * exactly what the `both > bar` comparison below is built to catch.
  *
  * The layer COUNT alone cannot tell "bar" apart from "ring" — both produce
  * exactly one inset layer in every preset, so a broken "ring" that silently
@@ -84,7 +82,6 @@ async function setActiveBar(page: Page, value: keyof typeof ACTIVE_BAR_LABELS) {
  *
  *   MASTER default light unset=1
  *   MASTER glass light unset=2
- *   MASTER scifi dark unset=2
  *
  * This branch's Task 4 regressed that: `SidebarLayout` started at the
  * literal `"bar"` value instead of `undefined`, which forced a rail
@@ -97,16 +94,12 @@ async function setActiveBar(page: Page, value: keyof typeof ACTIVE_BAR_LABELS) {
 const UNSET_LAYERS: Record<Preset, number> = {
   default: 1,
   glass: 2,
-  scifi: 2,
 }
 
 /**
  * Explicit "bar"/"ring" baseline inset-layer count per preset, measured in
- * a real browser on this branch. Sci-fi carries 2 rather than 1: its
- * own `--scifi-active-glow` token already
- * embed one inset layer as part of their "lit from within" look, on top of
- * the explicit rail-or-ring inset the activeBar variant adds. Glass drops
- * to 1 here (below its own unset default of 2) because its dedicated
+ * a real browser on this branch. Glass drops to 1 here (below its own unset
+ * default of 2) because its dedicated
  * `data-active-bar="bar"`/`"ring"` overrides intentionally show a single
  * indicator when the caller asks for one explicitly. "both" always adds
  * exactly one more inset layer than "bar"/"ring" alone, on every preset.
@@ -114,11 +107,10 @@ const UNSET_LAYERS: Record<Preset, number> = {
 const EXPLICIT_LAYERS: Record<Preset, number> = {
   default: 1,
   glass: 1,
-  scifi: 2,
 }
 
 for (const preset of PRESETS) {
-  const mode = DARK_ONLY_PRESETS.includes(preset) ? "dark" : "light"
+  const mode = "light"
   const unset = UNSET_LAYERS[preset]
   const explicit = EXPLICIT_LAYERS[preset]
 

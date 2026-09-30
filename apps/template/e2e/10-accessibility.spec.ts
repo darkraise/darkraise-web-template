@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test"
-import { DARK_ONLY_PRESETS, PRESETS } from "./fixtures/theme"
+import { PRESETS } from "./fixtures/theme"
 import {
   gotoApp,
   openThemeSwitcher,
@@ -187,9 +187,7 @@ test.describe("landmarks and labels", () => {
 
 test.describe("colour contrast of core tokens", () => {
   for (const preset of PRESETS) {
-    const modes = DARK_ONLY_PRESETS.includes(preset)
-      ? (["dark"] as const)
-      : (["light", "dark"] as const)
+    const modes = ["light", "dark"] as const
 
     for (const mode of modes) {
       test(`${preset} · ${mode}: body text meets WCAG AA`, async ({ page }) => {

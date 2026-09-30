@@ -3,14 +3,12 @@ import {
   ACCENT_COLORS,
   ACCENT_INTENSITIES,
   BACKGROUND_INTENSITIES,
-  DARK_ONLY_PRESETS,
   DENSITIES,
   ELEVATIONS,
   FONT_SIZES,
   GRADIENT_PATTERNS,
   PRESETS,
   PRESET_AXES,
-  PRESET_LABELS,
   RADII,
   SURFACE_COLORS,
   SURFACE_INTENSITIES,
@@ -67,32 +65,6 @@ test.describe("preset axis", () => {
     })
   }
 
-  for (const preset of DARK_ONLY_PRESETS) {
-    test(`preset "${preset}" forces dark mode when switched at runtime`, async ({
-      page,
-    }) => {
-      await seedApp(page, { preset: "default", mode: "light" })
-      await gotoApp(page, PROBE)
-      await page.getByRole("button", { name: "Customize theme" }).click()
-      const label = PRESET_LABELS[preset]
-      await page
-        .locator('[aria-label="Preset"]')
-        .getByRole("radio", { name: label, exact: true })
-        .click()
-      await expect
-        .poll(async () => (await readThemeAttrs(page))["data-mode"])
-        .toBe("dark")
-    })
-
-    test(`preset "${preset}" forces dark mode at boot`, async ({ page }) => {
-      // Both paths must enforce `supportedModes`: the runtime setPreset call
-      // and the boot path that reads localStorage / themeConfig defaults.
-      await seedApp(page, { preset, mode: "light" })
-      await gotoApp(page, PROBE)
-      expect((await readThemeAttrs(page))["data-mode"]).toBe("dark")
-    })
-  }
-
   test("presets produce distinct surface tokens", async ({ page }) => {
     const seen = new Map<string, string>()
     await seedApp(page)
@@ -100,12 +72,13 @@ test.describe("preset axis", () => {
     for (const preset of PRESETS) {
       await applyTheme(page, { preset, mode: "dark" })
       await reloadApp(page)
-      seen.set(preset, await readToken(page, "--surface-raised"))
+      seen.set(preset, await readToken(page, "--muted"))
     }
     const values = [...seen.values()]
     expect(values.every((v) => v !== "")).toBe(true)
-    // Not every preset has to differ from every other, but a single shared
-    // value across all six would mean the recipes are not being applied.
+    // Glass rebinds --muted to a primary-tinted expression in dark mode, so a
+    // single shared value across the presets would mean the recipes are not
+    // being applied.
     expect(new Set(values).size).toBeGreaterThan(1)
   })
 })
@@ -533,21 +506,6 @@ test.describe("axis combinations", () => {
         "data-font-size": "extra-large",
         "data-glass-opacity": "strong",
         "data-glass-blur": "high",
-      },
-    },
-    {
-      name: "scifi · bracketed",
-      seed: {
-        preset: "scifi",
-        mode: "dark",
-        accent: "cyan",
-        surface: "slate",
-        presetAxes: { scifi: { frame: "bracketed" } },
-      },
-      expect: {
-        "data-preset": "scifi",
-        "data-mode": "dark",
-        "data-scifi-frame": "bracketed",
       },
     },
   ]

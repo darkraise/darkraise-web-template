@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test"
-import { DARK_ONLY_PRESETS, PRESETS } from "./fixtures/theme"
+import { PRESETS } from "./fixtures/theme"
 import {
   expectNoErrorBoundary,
   expectNoHorizontalOverflow,
@@ -16,9 +16,7 @@ import {
  * PasswordInput, the compound inputs most prone to preset-specific breakage.
  */
 for (const preset of PRESETS) {
-  const modes = DARK_ONLY_PRESETS.includes(preset)
-    ? (["dark"] as const)
-    : (["light", "dark"] as const)
+  const modes = ["light", "dark"] as const
 
   for (const mode of modes) {
     test(`/settings · ${preset} · ${mode}`, async ({ page }) => {
