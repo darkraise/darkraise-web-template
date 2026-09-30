@@ -611,6 +611,29 @@ describe("useTheme persistence", () => {
     const { result } = renderHook(() => useTheme(), { wrapper })
     expect(result.current.accentIntensity).toBe("balanced")
   })
+
+  it("falls back to the default mode for an unknown stored mode", () => {
+    localStorage.setItem("mode", "neon")
+    const { result } = renderHook(() => useTheme(), { wrapper })
+    expect(result.current.mode).toBe("system")
+    expect(result.current.resolvedMode).toBe("light")
+    expect(document.documentElement.getAttribute("data-mode")).toBe("light")
+  })
+
+  it("falls back to the default accent for an unknown stored accent", () => {
+    localStorage.setItem("theme-accent", "nonsense")
+    const { result } = renderHook(() => useTheme(), { wrapper })
+    expect(result.current.accentColor).toBe("blue")
+    expect(
+      document.documentElement.style.getPropertyValue("--primary"),
+    ).toBeTruthy()
+  })
+
+  it("falls back to the default background style for an unknown stored one", () => {
+    localStorage.setItem("theme-bg-style", "nonsense")
+    const { result } = renderHook(() => useTheme(), { wrapper })
+    expect(result.current.backgroundStyle).toBe("solid")
+  })
 })
 
 describe("useTheme shell style", () => {

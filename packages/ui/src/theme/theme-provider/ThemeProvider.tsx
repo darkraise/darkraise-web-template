@@ -24,7 +24,9 @@ import type {
   SidebarActiveBarSetting,
 } from "@theme/types"
 import {
+  ACCENT_COLORS,
   SURFACE_COLORS,
+  BACKGROUND_STYLES,
   BACKGROUND_INTENSITIES,
   GRADIENT_PATTERNS,
   DENSITIES,
@@ -38,6 +40,7 @@ import {
   ACCENT_INTENSITIES,
   CONTROL_DEPTHS,
   GLOW_LEVELS,
+  MODES,
 } from "@theme/types"
 import {
   applyBorderIntensity,
@@ -174,7 +177,10 @@ export function ThemeProvider({
 
   const [accentColor, setAccentColorState] = useState<AccentColor>(() => {
     const stored = readStorage(LS_ACCENT)
-    return (stored as AccentColor) || cfg.defaults.accentColor
+    if (stored && (ACCENT_COLORS as readonly string[]).includes(stored)) {
+      return stored as AccentColor
+    }
+    return cfg.defaults.accentColor
   })
 
   const [surfaceColor, setSurfaceColorState] = useState<SurfaceColor>(() => {
@@ -214,7 +220,10 @@ export function ThemeProvider({
   const [backgroundStyle, setBackgroundStyleState] = useState<BackgroundStyle>(
     () => {
       const stored = readStorage(LS_BG_STYLE)
-      return (stored as BackgroundStyle) || cfg.defaults.backgroundStyle
+      if (stored && (BACKGROUND_STYLES as readonly string[]).includes(stored)) {
+        return stored as BackgroundStyle
+      }
+      return cfg.defaults.backgroundStyle
     },
   )
 
@@ -272,7 +281,10 @@ export function ThemeProvider({
 
   const [mode, setModeState] = useState<Mode>(() => {
     const stored = readStorage(LS_MODE)
-    return (stored as Mode) || cfg.defaults.mode
+    if (stored && (MODES as readonly string[]).includes(stored)) {
+      return stored as Mode
+    }
+    return cfg.defaults.mode
   })
 
   const [density, setDensityState] = useState<Density>(() => {
