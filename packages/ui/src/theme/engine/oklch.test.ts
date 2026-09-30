@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest"
 import {
   contrastRatio,
   hslStringToOklch,
+  mixedContrast,
   oklchToHslString,
   relativeLuminance,
 } from "./oklch"
@@ -80,5 +81,15 @@ describe("oklch", () => {
     expect(contrastRatio("0 0% 100%", "0 0% 0%")).toBeCloseTo(21, 1)
     expect(contrastRatio("0 0% 0%", "0 0% 100%")).toBeCloseTo(21, 1)
     expect(contrastRatio("0 0% 50%", "0 0% 50%")).toBeCloseTo(1, 5)
+  })
+
+  it("measures text against a tint composited over its ground", () => {
+    // Half black over white is sRGB 0.5, the same ground as 0 0% 50%.
+    expect(mixedContrast("0 0% 0%", "0 0% 100%", "0 0% 0%", 0.5)).toBeCloseTo(
+      contrastRatio("0 0% 0%", "0 0% 50%"),
+      6,
+    )
+    expect(mixedContrast("0 0% 0%", "0 0% 100%", "0 0% 0%", 0)).toBeCloseTo(21, 1)
+    expect(mixedContrast("0 0% 0%", "0 0% 100%", "0 0% 0%", 1)).toBeCloseTo(1, 5)
   })
 })

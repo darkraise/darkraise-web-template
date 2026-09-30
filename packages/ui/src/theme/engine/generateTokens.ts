@@ -15,6 +15,7 @@ import { ACCENT_COLORS } from "@theme/types"
 import {
   contrastRatio,
   hslStringToOklch,
+  mixedContrast,
   oklchToHslString,
 } from "@theme/engine/oklch"
 
@@ -145,6 +146,18 @@ export function resolveNeutralScale(surfaceColor: SurfaceColor): ColorScale {
 const MARK_FLOOR = 3
 /** Text must be readable, whatever else the colour is also used for. */
 const TEXT_FLOOR = 4.5
+/**
+ * Strongest --primary tint that primary-coloured text sits on: bg-primary/10
+ * under selected toggle, pagination, listbox and tree items, /20 under steps,
+ * timeline, highlight and the sidebar count, and 24% under sci-fi's hovered
+ * buttons.
+ */
+const PRIMARY_TINT_CEILING = 0.24
+/**
+ * Strongest tint of its own colour that status text sits on: alert titles at
+ * 6%, toast titles at 10-12%, sci-fi's hovered destructive button at 12%.
+ */
+const STATUS_TINT_CEILING = 0.12
 const LEGEND_TARGET_RATIO = 4.6
 /** Far enough above the legend tier that the two read as different ranks. */
 const MUTED_TARGET_RATIO = 7
@@ -219,27 +232,24 @@ function ensureContrast(
   return ensureContrastAll(value, [background], target)
 }
 
-const contrastAllCache = new Map<string, string>()
+const clearingCache = new Map<string, string>()
 
 /**
- * `ensureContrast` against several grounds at once: `value` unchanged when it
- * clears `target` against every background, otherwise the nearest lightness
- * on the same hue and saturation that does, searched outward from the
+ * `value` unchanged when `clears` accepts it, otherwise the nearest lightness
+ * on the same hue and saturation that it accepts, searched outward from the
  * original lightness. Returns `value` unchanged when nothing clears, and
- * passes alpha values through untouched, as `ensureContrast` does.
+ * passes alpha values through untouched. `key` names the test for the cache.
  */
-function ensureContrastAll(
+function nearestClearing(
   value: string,
-  backgrounds: readonly string[],
-  target: number,
+  key: string,
+  clears: (candidate: string) => boolean,
 ): string {
   if (value.includes("/")) return value
-  const key = `${value}|${backgrounds.join("|")}|${target}`
-  const cached = contrastAllCache.get(key)
+  const cacheKey = `${value}|${key}`
+  const cached = clearingCache.get(cacheKey)
   if (cached !== undefined) return cached
 
-  const clears = (candidate: string) =>
-    backgrounds.every((bg) => contrastRatio(candidate, bg) >= target)
   let result = value
   if (!clears(value)) {
     const parts = value.split(" ")
@@ -257,8 +267,47 @@ function ensureContrastAll(
       }
     }
   }
-  contrastAllCache.set(key, result)
+  clearingCache.set(cacheKey, result)
   return result
+}
+
+/** `ensureContrast` against several grounds at once. */
+function ensureContrastAll(
+  value: string,
+  backgrounds: readonly string[],
+  target: number,
+): string {
+  return nearestClearing(
+    value,
+    `all|${backgrounds.join("|")}|${target}`,
+    (candidate) =>
+      backgrounds.every((bg) => contrastRatio(candidate, bg) >= target),
+  )
+}
+
+/**
+ * Text that also sits on a tint of `tint` at up to `amount` over each ground,
+ * as `hsl(var(--x) / amount)` backgrounds paint it. Contrast falls
+ * monotonically as the tint strengthens, so clearing the ceiling clears every
+ * weaker tint. `tint` null means the text's own colour.
+ */
+function ensureContrastOnTint(
+  value: string,
+  grounds: readonly string[],
+  tint: string | null,
+  amount: number,
+  target: number,
+): string {
+  return nearestClearing(
+    value,
+    `tint|${grounds.join("|")}|${tint ?? "self"}|${amount}|${target}`,
+    (candidate) =>
+      grounds.every(
+        (ground) =>
+          contrastRatio(candidate, ground) >= target &&
+          mixedContrast(candidate, ground, tint ?? candidate, amount) >= target,
+      ),
+  )
 }
 
 function isSidebarDark(mode: ResolvedMode): boolean {
@@ -666,6 +715,15 @@ export function generateTokens(
   // exact on ramps whose step 900 sits darker than ink itself.
   const statusSurfaces =
     mode === "light" ? [background, card] : [background, card, INK]
+  // Status text also sits on its own tint, so the solve holds it there too.
+  const statusText = (source: string) =>
+    ensureContrastOnTint(
+      ensureContrastAll(source, statusSurfaces, TEXT_FLOOR),
+      [background, card],
+      null,
+      STATUS_TINT_CEILING,
+      TEXT_FLOOR,
+    )
   const destructiveSource = isRedishAccent
     ? mode === "light"
       ? "25 95% 53%"
@@ -673,37 +731,32 @@ export function generateTokens(
     : mode === "light"
       ? "0 84% 60%"
       : "0 72% 51%"
-  const destructive = ensureContrastAll(
-    destructiveSource,
-    statusSurfaces,
-    TEXT_FLOOR,
-  )
+  const destructive = statusText(destructiveSource)
   // Fills (the destructive button, badge and notification count) need a
   // white label, which a text-safe dark red cannot carry.
   const destructiveSolid = solveWhiteFill(destructiveSource)
-  const success = ensureContrastAll(
+  const success = statusText(
     mode === "light" ? accentColors.emerald[500] : accentColors.emerald[400],
-    statusSurfaces,
-    TEXT_FLOOR,
   )
-  const warning = ensureContrastAll(
+  const warning = statusText(
     mode === "light" ? accentColors.amber[500] : accentColors.amber[400],
-    statusSurfaces,
-    TEXT_FLOOR,
   )
-  const info = ensureContrastAll(
+  const info = statusText(
     mode === "light" ? accentColors.blue[500] : accentColors.blue[400],
-    statusSurfaces,
-    TEXT_FLOOR,
   )
 
+  const primaryMark = ensureContrast(primaryValue, background, MARK_FLOOR)
+
   const tokens: Record<string, string> = {
-    "--primary": ensureContrast(primaryValue, background, MARK_FLOOR),
-    // Primary as text (links, selected tab and toggle labels). `--primary`
-    // keeps its 3:1 mark floor for borders, tints and preset surfaces.
-    "--primary-text": ensureContrastAll(
+    "--primary": primaryMark,
+    // Primary as text (links, selected tab and toggle labels), including on
+    // --primary tints. `--primary` keeps its 3:1 mark floor for borders,
+    // tints and preset surfaces.
+    "--primary-text": ensureContrastOnTint(
       primaryValue,
       [background, card],
+      primaryMark,
+      PRIMARY_TINT_CEILING,
       TEXT_FLOOR,
     ),
     "--primary-fill": primaryFill,

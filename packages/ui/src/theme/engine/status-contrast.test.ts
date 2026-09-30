@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
-import { contrastRatio } from "@theme/engine/oklch"
+import { contrastRatio, mixedContrast } from "@theme/engine/oklch"
 import { isAccentSurface } from "@theme/engine/generateTokens"
 import {
   comboName,
@@ -34,6 +34,31 @@ describe("status colours", () => {
         )
         if (label < 4.5) {
           failures.push(`${comboName(combo)} ${status} label: ${label.toFixed(2)}`)
+        }
+      }
+    }
+    expect(failures).toEqual([])
+  })
+
+  // Alert titles sit on their own colour at 6%, toast titles at 10-12%, and
+  // sci-fi's destructive button text at up to 12%.
+  it("clear 4.5:1 on their own tint of up to 12% over page and card", () => {
+    const failures: string[] = []
+    for (const combo of combos) {
+      const tokens = finalTokens(combo)
+      for (const status of STATUSES) {
+        const value = tokens[`--${status}`] as string
+        for (const surface of ["--background", "--card"]) {
+          const ground = tokens[surface]
+          if (!isOpaque(ground)) continue
+          for (const amount of [0.06, 0.1, 0.12]) {
+            const ratio = mixedContrast(value, ground, value, amount)
+            if (ratio < 4.5) {
+              failures.push(
+                `${comboName(combo)} ${status} on ${surface} + ${amount}: ${ratio.toFixed(2)}`,
+              )
+            }
+          }
         }
       }
     }

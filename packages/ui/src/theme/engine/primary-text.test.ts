@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
-import { contrastRatio } from "@theme/engine/oklch"
+import { contrastRatio, mixedContrast } from "@theme/engine/oklch"
 import {
   comboName,
   finalTokens,
@@ -26,6 +26,31 @@ describe("primary text", () => {
         const ratio = contrastRatio(text, ground)
         if (ratio < 4.5) {
           failures.push(`${comboName(combo)} on ${surface}: ${ratio.toFixed(2)}`)
+        }
+      }
+    }
+    expect(failures).toEqual([])
+  })
+
+  // Selected toggle, pagination, listbox and tree items sit on bg-primary/10;
+  // steps, timeline, highlight and the sidebar count on /20; sci-fi's hovered
+  // buttons on 24%.
+  it("clears 4.5:1 on a --primary tint of up to 24% over the page and the card", () => {
+    const failures: string[] = []
+    for (const combo of combos) {
+      const tokens = finalTokens(combo)
+      const text = tokens["--primary-text"] as string
+      const tint = tokens["--primary"] as string
+      for (const surface of ["--background", "--card"]) {
+        const ground = tokens[surface]
+        if (!isOpaque(ground)) continue
+        for (const amount of [0.1, 0.2, 0.24]) {
+          const ratio = mixedContrast(text, ground, tint, amount)
+          if (ratio < 4.5) {
+            failures.push(
+              `${comboName(combo)} on ${surface} + ${amount}: ${ratio.toFixed(2)}`,
+            )
+          }
         }
       }
     }
