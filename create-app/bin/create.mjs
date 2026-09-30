@@ -66,6 +66,7 @@ const FONT_SIZES = ["small", "medium", "large", "extra-large"]
 const ACCENT_INTENSITIES = ["calm", "balanced", "vivid", "intense"]
 const GLOW_LEVELS = ["none", "subtle", "balanced", "vivid"]
 const SURFACE_INTENSITIES = ["flat", "subtle", "balanced", "bold"]
+const BORDER_INTENSITIES = ["subtle", "balanced", "strong", "bold"]
 const MODES = ["light", "dark", "system"]
 const LAYOUTS = ["sidebar", "stacked", "top-nav", "split-panel"]
 // Mirrors `ThemeConfig.switcher.axes` in
@@ -84,6 +85,7 @@ const THEME_AXIS_KEYS = [
   "elevation",
   "buttonElevation",
   "surfaceIntensity",
+  "borderIntensity",
   "radius",
   "fontSize",
   "accentIntensity",
@@ -111,6 +113,7 @@ const argv = minimist(process.argv.slice(2), {
     "elevation",
     "button-elevation",
     "surface-intensity",
+    "border-intensity",
     "radius",
     "font-size",
     "accent-intensity",
@@ -162,6 +165,7 @@ validate(argv.density, DENSITIES, "density")
 validate(argv.elevation, ELEVATIONS, "elevation")
 validate(argv["button-elevation"], ELEVATIONS, "button-elevation")
 validate(argv["surface-intensity"], SURFACE_INTENSITIES, "surface-intensity")
+validate(argv["border-intensity"], BORDER_INTENSITIES, "border-intensity")
 validate(argv.radius, RADII, "radius")
 validate(argv["control-depth"], CONTROL_DEPTHS, "control-depth")
 validate(argv["shell-style"], SHELL_STYLES, "shell-style")
@@ -396,6 +400,18 @@ async function main() {
           }),
         ))
 
+  const borderIntensity =
+    argv["border-intensity"] ||
+    (skipPrompts
+      ? "balanced"
+      : cancelled(
+          await p.select({
+            message: "Border intensity",
+            options: BORDER_INTENSITIES.map((b) => ({ value: b, label: b })),
+            initialValue: "balanced",
+          }),
+        ))
+
   const radius =
     argv.radius ||
     (skipPrompts
@@ -509,6 +525,7 @@ async function main() {
             { value: "elevation", label: "Elevation" },
             { value: "buttonElevation", label: "Button elevation" },
             { value: "surfaceIntensity", label: "Surface intensity" },
+            { value: "borderIntensity", label: "Border intensity" },
             { value: "radius", label: "Radius" },
             { value: "fontSize", label: "Font size" },
             { value: "accentIntensity", label: "Accent intensity" },
@@ -580,6 +597,7 @@ async function main() {
         elevation: elevation,
         buttonElevation: buttonElevation,
         surfaceIntensity: surfaceIntensity,
+        borderIntensity: borderIntensity,
         radius: radius,
         controlDepth: controlDepth,
         shellStyle: shellStyle,
@@ -829,6 +847,7 @@ export const themeConfig: ThemeConfig = {
     elevation: "${config.theme.defaults.elevation}",
     buttonElevation: "${config.theme.defaults.buttonElevation}",
     surfaceIntensity: "${config.theme.defaults.surfaceIntensity}",
+    borderIntensity: "${config.theme.defaults.borderIntensity}",
     radius: "${config.theme.defaults.radius}",
     controlDepth: "${config.theme.defaults.controlDepth}",
     shellStyle: "${config.theme.defaults.shellStyle}",
@@ -852,6 +871,7 @@ export const themeConfig: ThemeConfig = {
       elevation: ${config.theme.switcher.axes.elevation},
       buttonElevation: ${config.theme.switcher.axes.buttonElevation},
       surfaceIntensity: ${config.theme.switcher.axes.surfaceIntensity},
+      borderIntensity: ${config.theme.switcher.axes.borderIntensity},
       radius: ${config.theme.switcher.axes.radius},
       controlDepth: ${config.theme.switcher.axes.controlDepth},
       shellStyle: ${config.theme.switcher.axes.shellStyle},
