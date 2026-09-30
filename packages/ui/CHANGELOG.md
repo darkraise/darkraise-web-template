@@ -17,16 +17,29 @@ Once added, the `balanced` default renders exactly as before. A config that stil
 
 - A `borderIntensity` theme axis — `subtle`, `balanced`, `strong`, `bold` — shown in the theme panel's Depth group as **Border Intensity**. It moves `--border`, `--input`, `--border-subtle`, `--border-default`, `--border-strong` and `--sidebar-border` toward the page or toward the text colour in OKLCH lightness, keeping each border's own hue and chroma; a translucent border, such as dark glass's white hairline, has its alpha scaled instead. It runs after a preset's own tokens are merged, so it applies under every preset. Elements that rebind `--border` in CSS, such as the `.dr-surface` utility, keep their own border.
 - `writeClipboardText` in `darkraise-ui/lib`: writes through the async Clipboard API and falls back to a selection copy when that API is missing or rejects.
+- `--primary-text` (utility `text-primary-text`): the accent as a text colour, solved to 4.5:1 against the page and the card. The kit's links and selected tab, toggle, pagination, listbox and tree labels use it; apps that colour text with `text-primary` should move to `text-primary-text`, since `--primary` itself only clears 3:1.
+- `--destructive-solid` and `--destructive-solid-foreground` (utilities `bg-destructive-solid`, `text-destructive-solid-foreground`): a destructive fill that carries a white label at 4.5:1 in both modes. The destructive button, destructive badge and notification count use it.
 
 ### Changed
 
 - The theme panel's **Shell Style** control is a single-row `SegmentGroup`. As a six-value toggle group it had no matching column rule and stacked vertically.
 - `inset`, `island` and `framed` shells paint the page background as their ground, as `floating` already did, instead of the sidebar surface.
+- Primary fills are solved so their label clears 4.5:1. In light mode the nine white-labelled accents (red, coral, blue, indigo, violet, purple, fuchsia, pink, rose) darken slightly; the other nine keep their fill and ink label. In dark mode each Accent Intensity step's lightness is now a ceiling, so `vivid` and `intense` can produce the same fill. No accent's label colour changes.
+- Status colours follow one policy: each clears 4.5:1 against the page and the card, and its `-foreground` is whichever of white or ink reads better on it. In light mode success, warning and info darken and the warning label becomes white; in dark mode every status label becomes ink, and destructive lightens slightly (destructive fills use the new solid pair).
+- `--legend` is solved against the page, card and popover instead of the page alone, so it reads slightly stronger; it is not meant for muted fills.
+- Primary-coloured text in the kit (links, selected tab, toggle, pagination, listbox and tree labels) now reads `--primary-text`: in light mode every accent's text colour darkens, and in dark mode indigo and violet lighten. Glass and sci-fi paint their accent text foregrounds with it too.
+- Timing: the steps indicator moves from 250 to 200ms, the slider thumb from 100 to 150ms and calendar days from 120 to 150ms. Every other component keeps its timing, now expressed through the motion tokens.
 
 ### Fixed
 
 - `Clipboard`, `useClipboard` and `JsonTreeView`'s copy buttons failed with "Failed to copy" outside a secure context. `navigator.clipboard` does not exist on plain HTTP, such as a dev server opened by LAN address, so every copy threw. They now go through `writeClipboardText`.
 - A scrolling shell region lost its edge under `inset`, `island` and `floating`. Its 1px edge was an inset `box-shadow`, which paints beneath the region's children, so content scrolled toward the edge covered it. Detached regions now draw a real 1px border, which stays above scrolled content. `--shell-region-border` accordingly holds the border colour rather than a shadow.
+- The toast action button painted status fills under the brand label (1.92:1 on dark success, 2.52:1 on dark info), and the loading toast painted it on the muted text colour. Each variant now sets its own fill and label pair.
+- Sidebar links and triggers, accordion triggers, page-header tabs, the banner close button, toast action and cancel buttons, multi-select, steps triggers, chip remove buttons, the calendar caption, theme swatches, colour-picker swatches, segment items, rating items, sidebar popover children, top-navigation items, stacked-layout rail items and the JSON tree's show-more button and links had no focus indicator of their own.
+- Under the glass preset the slider thumb lost its focus ring; the ring is now an outline.
+- `--ring` could fall to 1.89:1 on the light page (yellow); it now gets the same 3:1 repair as `--focus-ring`.
+- Dialog, sheet and drawer transitioned every property alongside their enter and exit animation, so theme changes animated on open overlays.
+- The colours painted before the theme provider hydrates were stale; they now equal the engine's default light output.
 
 ## [6.9.5] — 2026-09-25
 
