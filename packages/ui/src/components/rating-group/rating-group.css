@@ -16,7 +16,7 @@
   }
 
   .dr-rating-group-item {
-    @apply focus-ring relative inline-flex cursor-pointer items-center justify-center rounded-sm;
+    @apply relative inline-flex cursor-pointer items-center justify-center rounded-sm;
     transition:
       transform var(--duration-fast),
       color var(--duration-fast);

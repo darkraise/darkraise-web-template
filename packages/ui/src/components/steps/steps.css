@@ -20,7 +20,7 @@
   }
 
   .dr-steps-trigger {
-    @apply focus-ring flex cursor-pointer items-center gap-2 rounded-md bg-transparent p-1 text-sm transition-colors;
+    @apply flex cursor-pointer items-center gap-2 rounded-md bg-transparent p-1 text-sm transition-colors;
   }
 
   .dr-steps-trigger[data-locked="true"] {

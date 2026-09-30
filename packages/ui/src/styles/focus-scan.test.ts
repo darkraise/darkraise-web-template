@@ -29,6 +29,14 @@ const EXEMPT = new Map<string, string>([
     "shares its element with dr-sidebar-nav-link, dr-sidebar-nav-popover-trigger or dr-stacked-layout-rail-item, each of which draws the ring",
   ],
   [
+    "dr-steps-trigger",
+    "Steps.tsx passes focus-ring-tight as a separate cn() argument, which this scan cannot pair with the class",
+  ],
+  [
+    "dr-rating-group-item",
+    "RatingGroup.tsx passes focus-ring-tight as a separate cn() argument, which this scan cannot pair with the class",
+  ],
+  [
     "dr-sidebar-nav-collapsible-link",
     "shares its element with dr-sidebar-nav-link, which draws the ring",
   ],
