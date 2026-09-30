@@ -51,7 +51,8 @@
     </style>
     <script>
       ;(function () {
-        var mode = localStorage.getItem("mode") || "system"
+        var mode = localStorage.getItem("mode")
+        if (mode !== "light" && mode !== "dark") mode = "system"
         var resolved =
           mode === "system"
             ? window.matchMedia("(prefers-color-scheme: dark)").matches
