@@ -3,7 +3,7 @@
     /* `rounded-lg` matches Alert and tracks the theme picker's radius axis
      * via --radius-lg → --radius. */
     @apply flex items-center gap-3 rounded-lg border px-4 py-2 text-sm;
-    /* No-op under Default/Neon (--backdrop-filter: none); under Glass the
+    /* No-op under Default (--backdrop-filter: none); under Glass the
      * banner picks up the preset's blur so the muted/tinted wash reads as
      * frosted instead of flat translucent. */
     -webkit-backdrop-filter: var(--backdrop-filter);

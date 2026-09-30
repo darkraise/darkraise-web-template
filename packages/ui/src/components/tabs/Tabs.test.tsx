@@ -465,7 +465,7 @@ describe("Tabs", () => {
     }
   })
 
-  // untransformed layout box, and the Playful preset scales the active
+  // untransformed layout box, and a preset may scale the active
   // trigger. Measuring its client rect would fold that scale into the
   // indicator's size on top of the scale the indicator carries itself.
   it("keeps the non-enclosed indicator on untransformed offsets", () => {

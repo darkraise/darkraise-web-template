@@ -8,7 +8,7 @@ import type {
 } from "@theme/types"
 
 /**
- * Declares a single discrete-enum axis (e.g. Glass-Opacity, Neon-Glow).
+ * Declares a single discrete-enum axis (e.g. Glass-Opacity).
  * Values is a readonly string tuple so callers get exhaustive type narrowing.
  */
 export interface AxisDefinition<
@@ -75,9 +75,8 @@ export interface PresetSurfaceRecipe {
 }
 
 /**
- * A theme preset: visual language (Default / Glass / future Neon, Terminal,
- * Cartoon...) plus its own discrete axes that get exposed in the switcher
- * only when the preset is active.
+ * A theme preset: visual language (Default / Glass) plus its own discrete
+ * axes that get exposed in the switcher only when the preset is active.
  *
  * Type parameter `Axes` lets each preset declare a specific shape so
  * generateTokens receives strongly-typed axis values.
@@ -132,11 +131,9 @@ export interface ThemePreset<
    * switcher doesn't render a picker for them — the user controls the
    * affected tokens via the preset's own axes instead.
    *
-   * Example: Neon declares ["elevation", "buttonElevation"] because
-   * its `glow` preset axis drives `--card-elevation-*` /
-   * `--shadow-button` directly with multi-layer bloom recipes that have
-   * nothing to do with the drop-shadow ramp the common axes were
-   * designed around. Exposing both would just be confusing.
+   * Example: Glass declares ["accentIntensity", "surfaceIntensity"]
+   * because its fog recipe reinterprets the surfaces those axes tune.
+   * Exposing both would just be confusing.
    */
   /**
    * Default values this preset wants for common axes it participates in, used

@@ -1,7 +1,7 @@
 @layer components {
   .dr-floating-panel {
     @apply bg-popover text-popover-foreground border-border flex flex-col overflow-hidden rounded-md border shadow-[var(--elevation-medium)];
-    /* Glass-frost the panel (no-op under Default/Neon). */
+    /* Glass-frost the panel (no-op under Default). */
     -webkit-backdrop-filter: var(--backdrop-filter);
     backdrop-filter: var(--backdrop-filter);
     /* Default: parent-scoped. Switched to `fixed` for global scope below.

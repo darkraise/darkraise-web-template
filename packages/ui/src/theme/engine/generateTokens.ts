@@ -836,7 +836,7 @@ export function generateTokens(
     // Same polarity as --muted-foreground (light → 500, dark → 400). The
     // branches were the other way round, which put the lighter grey on the
     // near-white light rail: sidebar group labels measured 2.43:1 in light
-    // (2.29:1 under Terminal) against a 4.5:1 requirement.
+    // against a 4.5:1 requirement.
     "--sidebar-foreground-muted": mutedForeground,
     "--sidebar-border": isSidebarDark(mode) ? "0 0% 100% / 0.1" : surface[200],
     "--sidebar-hover-bg": isSidebarDark(mode)

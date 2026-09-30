@@ -23,7 +23,8 @@
   }
 
   /* Preset-driven affordance glow on the checked/indeterminate state.
-     Transparent under Default/Glass; primary-color glow under Neon. */
+     Transparent in every shipped preset; a preset can bind a primary-color
+     glow. */
   .dr-checkbox[data-state="checked"],
   .dr-checkbox[data-state="indeterminate"] {
     box-shadow: var(--affordance-glow);

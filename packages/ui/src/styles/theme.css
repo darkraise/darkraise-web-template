@@ -405,13 +405,11 @@
 }
 
 /* :root token defaults live in @layer base so unlayered preset bindings
-   in neon.css / glass.css / @layer overrides win the cascade. Without
+   in glass.css / @layer overrides win the cascade. Without
    this wrapper, `:root` (specificity 0,1,0, unlayered, source-order
    LATER than the preset @imports) was overriding every preset's CSS
-   token overrides at runtime — Neon's --affordance-glow, Neon's
-   --surface-overlay-bg, Neon's --card-elevation-* glow recipes, and
-   Glass's --surface-overlay-bg with frosted noise. Inline-style writes
-   from generateTokens (engine + Neon's accent rebind) were the only
+   token overrides at runtime, such as Glass's --surface-overlay-bg with
+   frosted noise. Inline-style writes from generateTokens were the only
    preset overrides that worked, because they win regardless of
    stylesheet layer. */
 @layer base {
@@ -784,7 +782,7 @@
 
     /* Preset-driven affordance tokens. Each preset binds these once in
      its own CSS file; components consume them as a single source of
-     truth, so adding a new preset (Terminal, Cartoon, etc.) is a
+     truth, so adding a new preset is a
      one-file change in that preset's CSS and every consumer
      automatically participates. Defaults below preserve today's
      behaviour for the Default preset. Tokenize the affordance, not
@@ -799,7 +797,7 @@
     /* --affordance-glow-bottom — directional bottom-only variant for
      components whose active treatment is a bottom border (Tabs
      underline variant, future stepper bottom-bar indicators, etc.).
-     Neon binds it to a primary glow with positive Y-offset and
+     A preset binds it to a primary glow with positive Y-offset and
      negative spread so the halo emanates downward only without
      wrapping the element's left/right/top edges. */
     --affordance-glow-bottom: 0 0 transparent;
@@ -2157,8 +2155,7 @@
      `elevation={"low" | "medium" | "high"}` (the theme-axis-immune
      explicit-elevation API) still feel like Glass. Theme-immunity is
      preserved at its semantic level: immune from the theme's elevation
-     axis, not from the preset's spatial language. Neon follows the same
-     pattern for its glow recipes.
+     axis, not from the preset's spatial language.
 
      Dark mode lives in glass.css (unlayered) instead of here because
      the dark-mode `--card-elevation-*` defaults at theme.css ~line 730

@@ -21,8 +21,8 @@
   .dr-pagination-link[data-active="true"][data-variant="ghost"] {
     @apply border-primary text-primary-text border bg-transparent;
     /* Preset-driven affordance glow on the current page indicator.
-       Transparent under Default/Glass; primary-color glow under Neon
-       so the active page reads independently of the border alone. */
+       Transparent in every shipped preset; a preset can bind a primary-color
+       glow so the active page reads independently of the border alone. */
     box-shadow: var(--affordance-glow);
   }
 

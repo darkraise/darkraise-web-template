@@ -77,8 +77,8 @@
   }
 
   /* Affordance glow on outline + underline (preset-driven — transparent
-     under Default/Glass; primary glow under Neon). Outline gets the
-     omni-directional glow because all four borders are primary;
+     in every shipped preset; a preset can bind a primary glow). Outline gets
+     the omni-directional glow because all four borders are primary;
      underline gets the bottom-only directional glow so the halo
      emanates downward from the bar instead of wrapping all four edges. */
   .dr-tabs-indicator[data-variant="outline"] {

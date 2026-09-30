@@ -24,8 +24,8 @@
   }
 
   /* Affordance glow on the active cascade item (the one whose subtree is
-     showing in the next column). Transparent under Default/Glass; primary
-     glow under Neon — signals "this is the active drill-down path". */
+     showing in the next column). Transparent in every shipped preset; a
+     preset's primary glow signals "this is the active drill-down path". */
   .dr-cascade-item[data-active="true"] {
     box-shadow: var(--affordance-glow);
     outline: 2px solid hsl(var(--focus-ring));

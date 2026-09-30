@@ -28,8 +28,8 @@
     /* Press washes away from the label: the fill sits at its contrast floor. */
     --state-layer-color: hsl(var(--primary-fill-wash));
     /* Compose --shadow-button with the preset-driven --affordance-glow.
-       Transparent glow under Default/Glass (button shadow unchanged);
-       under Neon the active toggle gains a primary-color glow. */
+       The glow is transparent in every shipped preset (button shadow
+       unchanged); a preset can give the active toggle a primary-color glow. */
     box-shadow: var(--shadow-button), var(--affordance-glow);
   }
 
@@ -49,7 +49,7 @@
   .dr-toggle[data-variant="outline"][data-state="on"] {
     @apply text-primary-text border-primary bg-transparent;
     /* Outer affordance glow on the outlined-active toggle. Transparent
-       under Default/Glass; primary glow under Neon. The earlier
+       in every shipped preset; a preset can bind a primary glow. The earlier
        `shadow-none` here was killing the affordance composition. */
     box-shadow: var(--affordance-glow);
   }

@@ -39,7 +39,7 @@
   }
 
   /* Preset-driven affordance glow on the selected radio. Transparent
-     under Default/Glass; primary-color glow under Neon. */
+     in every shipped preset; a preset can bind a primary-color glow. */
   .dr-radio-group-item[data-state="checked"] {
     box-shadow: var(--affordance-glow);
   }

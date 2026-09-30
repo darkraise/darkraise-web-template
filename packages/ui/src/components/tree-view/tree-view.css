@@ -49,8 +49,8 @@
   }
 
   /* Selected — filled variant (default): solid primary background.
-     Affordance glow composes on top so under Neon the selected row gains
-     a primary-color halo; transparent under Default/Glass. */
+     Affordance glow composes on top so a preset can give the selected row
+     a primary-color halo; transparent in every shipped preset. */
   .dr-tree-view-branch-control[data-selected="true"],
   .dr-tree-view-item[data-selected="true"] {
     @apply bg-primary-fill text-primary-foreground;

@@ -167,10 +167,10 @@ export const glass: ThemePreset<GlassAxes> = {
     const alphas = FOG_ALPHA[axes.opacity][common.mode]
     const insetAlpha = INSET_HI[axes.opacity][common.mode]
 
-    // Semantic surface-tier overrides. Same approach Neon uses (rebinding
-    // --accent / --muted / --secondary to primary-tinted CSS expressions
-    // so every bg-accent / bg-muted / bg-secondary consumer in the system
-    // automatically reads as preset-styled), but with conservative alphas
+    // Semantic surface-tier overrides: rebind --accent / --muted /
+    // --secondary to primary-tinted CSS expressions so every bg-accent /
+    // bg-muted / bg-secondary consumer in the system automatically reads
+    // as preset-styled, with conservative alphas
     // that preserve Glass's "frosted subtle" aesthetic. Mode-aware
     // because light glass surfaces are mostly white (low alpha reads
     // cleanly as a tint) while dark glass surfaces are mostly

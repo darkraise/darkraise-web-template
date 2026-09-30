@@ -45,9 +45,9 @@
     @apply bg-accent text-accent-foreground;
   }
 
-  /* Affordance glow on the selected day cells — primary halo under Neon,
-     transparent under Default/Glass. Range start/end/single get the full
-     glow; range-middle gets none (it's between the endpoints, no glow
+  /* Affordance glow on the selected day cells — a preset can bind a primary
+     halo; transparent in every shipped preset. Range start/end/single get
+     the full glow; range-middle gets none (it's between the endpoints, no glow
      emphasis needed). */
   .dr-calendar-day-btn[data-selected-single="true"],
   .dr-calendar-day-btn[data-range-start="true"],

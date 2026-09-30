@@ -1,7 +1,7 @@
 @layer components {
   .dr-segment-group {
     @apply bg-muted relative inline-flex rounded-md p-1;
-    /* Glass-frost the segmented control container (no-op under Default/Neon). */
+    /* Glass-frost the segmented control container (no-op under Default). */
     -webkit-backdrop-filter: var(--backdrop-filter);
     backdrop-filter: var(--backdrop-filter);
   }
@@ -63,8 +63,8 @@
        elevation and looked black. */
     @apply bg-card dark:bg-border absolute z-0 rounded-sm;
     /* Compose --shadow-button with the preset-driven --affordance-glow so
-       the sliding indicator pill gains a primary halo under neon (and
-       stays visually unchanged under default/glass). */
+       the sliding indicator pill can gain a primary halo from a preset
+       (it stays visually unchanged in every shipped preset). */
     box-shadow: var(--shadow-button), var(--affordance-glow);
     transition:
       transform var(--duration-normal) ease-out,

@@ -152,8 +152,8 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
 
   // Presets can declare `hiddenCommonAxes` to hide common-axis pickers
   // they conceptually take over with their own preset-specific axes
-  // (e.g. neon hides Elevation + Button Elevation because its `glow`
-  // axis drives the same tokens with a different recipe shape).
+  // (e.g. Glass hides the two intensity axes because its fog recipe
+  // reinterprets the same surfaces).
   const hiddenCommonAxes = activePreset.hiddenCommonAxes ?? []
   const isCommonAxisHidden = (name: string): boolean =>
     (hiddenCommonAxes as readonly string[]).includes(name)
@@ -218,7 +218,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
             className="dr-theme-switcher-toggle-group"
             /* Cap at 3 cols so 6+ presets wrap to multiple rows instead
                of cramming into a single horizontal strip too narrow to
-               show labels like "Brutalist" or "Playful". Each cell ends
+               show the preset labels. Each cell ends
                up ~92px wide which fits the longest current label. */
             data-cols={Math.min(PRESET_NAMES.length, 3)}
           >
