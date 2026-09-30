@@ -100,6 +100,28 @@
     }
   }
 
+  /* One row of equal segments filling the control column. The item rule
+     needs the (0,2,0) root-plus-item chain to beat segment-group.css's own
+     padding and type size. */
+  .dr-theme-switcher-segment-group {
+    @apply flex w-full;
+    min-width: 0;
+  }
+
+  .dr-theme-switcher-segment-group .dr-segment-group-item {
+    @apply px-1 text-xs capitalize;
+    flex: 1 1 0;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  @container (min-width: 26rem) {
+    .dr-theme-switcher-row > .dr-theme-switcher-segment-group {
+      flex: 1 1 0;
+    }
+  }
+
   .dr-theme-switcher-toggle-group[data-cols="2"] {
     @apply grid-cols-2;
   }

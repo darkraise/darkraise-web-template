@@ -8,6 +8,10 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 
 - `writeClipboardText` in `darkraise-ui/lib`: writes through the async Clipboard API and falls back to a selection copy when that API is missing or rejects.
 
+### Changed
+
+- The theme panel's **Shell Style** control is a single-row `SegmentGroup`. As a six-value toggle group it had no matching column rule and stacked vertically.
+
 ### Fixed
 
 - `Clipboard`, `useClipboard` and `JsonTreeView`'s copy buttons failed with "Failed to copy" outside a secure context. `navigator.clipboard` does not exist on plain HTTP, such as a dev server opened by LAN address, so every copy threw. They now go through `writeClipboardText`.

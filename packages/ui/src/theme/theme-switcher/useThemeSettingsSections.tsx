@@ -3,6 +3,11 @@ import type * as React from "react"
 import { Moon, Sun, Monitor, Square, Blend } from "lucide-react"
 import { Label } from "@components/label"
 import { ToggleGroup, ToggleGroupItem } from "@components/toggle-group"
+import {
+  SegmentGroup,
+  SegmentGroupIndicator,
+  SegmentGroupItem,
+} from "@components/segment-group"
 import { useTheme } from "@theme/useTheme"
 import {
   ACCENT_COLORS,
@@ -27,6 +32,7 @@ import type {
   BackgroundStyle,
   GradientPattern,
   ColorScale,
+  ShellStyle,
 } from "@theme/types"
 import { isAccentSurface } from "@theme/engine/generateTokens"
 import {
@@ -561,12 +567,23 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
           <Label className="dr-theme-switcher-section-label">
             {labels.theme.axisLabels.shellStyle}
           </Label>
-          <AxisControl
-            values={SHELL_STYLES}
+          {/* Not AxisControl: six categorical values would fall through to
+              a toggle grid with no six-column rule and stack vertically. */}
+          <SegmentGroup
             value={shellStyle}
-            onChange={setShellStyle}
-            label={labels.theme.axisLabels.shellStyle}
-          />
+            onValueChange={(value) => {
+              if (value) setShellStyle(value as ShellStyle)
+            }}
+            aria-label={labels.theme.axisLabels.shellStyle}
+            className="dr-theme-switcher-segment-group"
+          >
+            <SegmentGroupIndicator />
+            {SHELL_STYLES.map((value) => (
+              <SegmentGroupItem key={value} value={value}>
+                {labels.themeOptions[value]}
+              </SegmentGroupItem>
+            ))}
+          </SegmentGroup>
         </div>
       ),
     },
