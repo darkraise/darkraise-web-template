@@ -415,39 +415,42 @@
    stylesheet layer. */
 @layer base {
   :root {
-    --background: 210 40% 98%;
+    --background: 210 16% 98%;
     --foreground: 222 47% 11%;
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
     --primary: 217 91% 60%;
-    --primary-fill: 217 91% 60%;
+    --primary-fill: 217 76% 52%;
     --primary-foreground: 0 0% 100%;
+    --primary-text: 217 91% 52%;
     --secondary: 210 40% 96%;
     --secondary-foreground: 222 47% 11%;
     --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
+    --muted-foreground: 215 16% 35%;
     --accent: 210 40% 96%;
     --accent-foreground: 222 47% 11%;
-    --destructive: 0 84% 60%;
+    --destructive: 0 84% 48%;
     --destructive-foreground: 0 0% 100%;
-    --success: 160 84% 39%;
+    --destructive-solid: 358 71% 53%;
+    --destructive-solid-foreground: 0 0% 100%;
+    --success: 160 84% 28%;
     --success-foreground: 0 0% 100%;
-    --warning: 38 92% 50%;
-    --warning-foreground: 222 47% 11%;
-    --info: 217 91% 60%;
+    --warning: 38 92% 32%;
+    --warning-foreground: 0 0% 100%;
+    --info: 217 91% 52%;
     --info-foreground: 0 0% 100%;
     --border: 214 32% 91%;
     --input: 214 32% 91%;
     --ring: 217 91% 60%;
-    --focus-ring: 217 91% 78%;
+    --focus-ring: 212 96% 59%;
     --chart-1: hsl(217 91% 60%);
-    --chart-2: hsl(142 71% 45%);
+    --chart-2: hsl(271 91% 65%);
     --chart-3: hsl(350 89% 60%);
-    --chart-4: hsl(38 92% 50%);
-    --chart-5: hsl(258 90% 66%);
-    --surface-base: 210 40% 98%;
+    --chart-4: hsl(25 95% 53%);
+    --chart-5: hsl(84 81% 44%);
+    --surface-base: 210 16% 98%;
     --surface-raised: 0 0% 100%;
     --surface-overlay: 0 0% 100%;
     --surface-sunken: 210 40% 96%;
@@ -455,7 +458,7 @@
        matching the rest of this fallback block. */
     --control-well-subtle: 210 20% 98%;
     --control-well-deep: 210 40% 92%;
-    --surface-sidebar: 222 47% 11%;
+    --surface-sidebar: 210 40% 98%;
     --surface-header: 0 0% 100%;
     --border-subtle: 210 40% 96%;
     --border-default: 214 32% 91%;
