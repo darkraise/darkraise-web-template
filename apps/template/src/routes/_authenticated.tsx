@@ -506,10 +506,8 @@ export const Route = createFileRoute("/_authenticated")({
         )
       case "sidebar":
       default:
-        // Only SidebarLayout has a rail to drive, so the active-bar toggle
-        // is opted into here rather than in the shared `chrome` object.
         return (
-          <SidebarLayout {...chrome} showActiveBarToggle>
+          <SidebarLayout {...chrome}>
             <Outlet />
           </SidebarLayout>
         )

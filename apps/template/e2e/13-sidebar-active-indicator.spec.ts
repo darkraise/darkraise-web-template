@@ -1,12 +1,12 @@
 import { test, expect, type Page } from "@playwright/test"
 import { DARK_ONLY_PRESETS, PRESETS, type Preset } from "./fixtures/theme"
-import { gotoApp, seedApp } from "./helpers/app"
+import { gotoApp, openThemeSwitcher, seedApp } from "./helpers/app"
 
 /**
  * Every prior test for the sidebar active-item indicator reads the stylesheet
  * as TEXT (jsdom parses no CSS), so none of them prove a rule actually applies
- * to an element. This drives a real browser: it flips the four-way
- * `activeBar` control per preset and counts `inset` layers in the active
+ * to an element. This drives a real browser: it walks the four-way
+ * `sidebarActiveBar` theme axis per preset and counts `inset` layers in the active
  * item's COMPUTED box-shadow. A preset whose rules never left `@layer
  * components` (or landed in the wrong file, as sci-fi's do — scifi.css is
  * unlayered and beats @layer components regardless of specificity) would
@@ -50,18 +50,25 @@ async function activeItemShadow(
   })
 }
 
-const activeBarControl = (page: Page) =>
-  page.getByRole("radiogroup", { name: "Sidebar active-item indicator" })
+const ACTIVE_BAR_LABELS = {
+  default: "Auto",
+  bar: "Bar",
+  ring: "Ring",
+  both: "Both",
+} as const
 
-async function selectActiveBar(
-  page: Page,
-  name:
-    | "Each preset's own indicator"
-    | "Left rail only"
-    | "Uniform ring only"
-    | "Ring and left rail",
-) {
-  await activeBarControl(page).getByRole("radio", { name }).click()
+async function setActiveBar(page: Page, value: keyof typeof ACTIVE_BAR_LABELS) {
+  const panel = await openThemeSwitcher(page)
+  await panel
+    .locator('[aria-label="Sidebar Indicator"]')
+    .getByRole("radio", { name: ACTIVE_BAR_LABELS[value], exact: true })
+    .click()
+  const nav = page.locator(".dr-sidebar-nav").first()
+  if (value === "default") {
+    await expect(nav).not.toHaveAttribute("data-active-bar", /.+/)
+  } else {
+    await expect(nav).toHaveAttribute("data-active-bar", value)
+  }
 }
 
 /**
@@ -116,18 +123,17 @@ for (const preset of PRESETS) {
   const explicit = EXPLICIT_LAYERS[preset]
 
   test.describe(`${preset} · ${mode}`, () => {
-    test(`active-bar control changes computed box-shadow layers`, async ({
+    test(`sidebar indicator axis changes computed box-shadow layers`, async ({
       page,
     }) => {
       await seedApp(page, { preset, mode })
       await gotoApp(page, "/")
-      await expect(activeBarControl(page)).toBeVisible()
 
-      // Before touching the control, `activeBar` is unset — each preset
+      // With the axis at its default, `activeBar` is unset — each preset
       // renders its own pre-existing default, matching master.
       expect((await activeItemShadow(page)).count).toBe(unset)
 
-      await selectActiveBar(page, "Left rail only")
+      await setActiveBar(page, "bar")
       const bar = await activeItemShadow(page)
       expect(bar.count).toBe(explicit)
       // "bar" must carry the rail geometry and NOT the ring geometry, or a
@@ -136,13 +142,13 @@ for (const preset of PRESETS) {
       expect(bar.shadow).toMatch(RAIL_GEOMETRY)
       expect(bar.shadow).not.toMatch(RING_GEOMETRY)
 
-      await selectActiveBar(page, "Uniform ring only")
+      await setActiveBar(page, "ring")
       const ring = await activeItemShadow(page)
       expect(ring.count).toBe(explicit)
       expect(ring.shadow).toMatch(RING_GEOMETRY)
       expect(ring.shadow).not.toMatch(RAIL_GEOMETRY)
 
-      await selectActiveBar(page, "Ring and left rail")
+      await setActiveBar(page, "both")
       const both = await activeItemShadow(page)
       expect(both.count).toBe(explicit + 1)
       expect(both.shadow).toMatch(RAIL_GEOMETRY)
@@ -152,8 +158,8 @@ for (const preset of PRESETS) {
       // unconverted preset returns the same count for "bar" and "both".
       expect(both.count).toBeGreaterThan(bar.count)
 
-      // Selecting "Default" again round-trips back to the unset baseline.
-      await selectActiveBar(page, "Each preset's own indicator")
+      // Setting "default" again round-trips back to the unset baseline.
+      await setActiveBar(page, "default")
       expect((await activeItemShadow(page)).count).toBe(unset)
     })
   })
