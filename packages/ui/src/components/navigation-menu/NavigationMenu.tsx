@@ -323,7 +323,7 @@ function NavigationMenuTrigger({
     >
       {children}{" "}
       <ChevronDown
-        className="relative top-[1px] ml-1 size-[var(--icon-size-xs)] transition duration-200 group-data-[state=open]:rotate-180"
+        className="relative top-[1px] ml-1 size-[var(--icon-size-xs)] transition-transform duration-(--duration-normal) group-data-[state=open]:rotate-180"
         aria-hidden="true"
       />
     </Comp>

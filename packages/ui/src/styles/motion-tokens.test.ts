@@ -102,6 +102,32 @@ describe("motion ladder", () => {
     expect(offenders).toEqual([])
   })
 
+  it("uses no duration utilities, transition-all or bare transition in TSX class strings", () => {
+    const walk = (dir: string): string[] =>
+      readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+        const path = join(dir, entry.name)
+        if (entry.isDirectory()) {
+          return EXEMPT_DIRS.has(entry.name) ? [] : walk(path)
+        }
+        return /\.tsx?$/.test(entry.name) &&
+          !/\.(test|stories)\.tsx?$/.test(entry.name)
+          ? [path]
+          : []
+      })
+    const offenders: string[] = []
+    for (const path of walk("src")) {
+      const source = readFileSync(path, "utf8")
+      for (const literal of source.matchAll(/"[^"\n]*"|'[^'\n]*'|`[^`]*`/g)) {
+        for (const match of literal[0].matchAll(
+          /(?<![\w-])(?:duration-\d+|transition-all|transition)(?![\w-])/g,
+        )) {
+          offenders.push(`${match[0]} in ${path}`)
+        }
+      }
+    }
+    expect(offenders).toEqual([])
+  })
+
   it("keeps the reduced-motion guard on literals, not tokens", () => {
     // The guard has to win against whatever the ladder resolves to, so it
     // cannot be expressed in terms of it.
