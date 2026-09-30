@@ -166,8 +166,20 @@ function tierClearing(
   background: string,
   target: number,
 ): string {
+  return tierClearingAll(ramp, [background], target)
+}
+
+/**
+ * `tierClearing` against several grounds: the quietest lightness on the
+ * ramp's hue that clears `target` against every listed surface.
+ */
+function tierClearingAll(
+  ramp: ColorScale,
+  backgrounds: readonly string[],
+  target: number,
+): string {
   const base = ramp[500] ?? "0 0% 50%"
-  const key = `${base}|${background}|${target}`
+  const key = `${base}|${backgrounds.join("|")}|${target}`
   const cached = tierCache.get(key)
   if (cached !== undefined) return cached
 
@@ -178,7 +190,9 @@ function tierClearing(
   let bestRatio = Infinity
   for (let l = 0; l <= 100; l++) {
     const candidate = `${hue} ${saturation} ${l}%`
-    const ratio = contrastRatio(candidate, background)
+    const ratio = Math.min(
+      ...backgrounds.map((bg) => contrastRatio(candidate, bg)),
+    )
     if (ratio >= target && ratio < bestRatio) {
       bestRatio = ratio
       best = candidate
@@ -735,7 +749,14 @@ export function generateTokens(
 
     "--muted": muted,
     "--muted-foreground": mutedForeground,
-    "--legend": tierClearing(neutral, background, LEGEND_TARGET_RATIO),
+    // Solved against every surface it is used on. Not for muted fills, where
+    // it measures 3.81–4.35:1; solving against those too left it nearly equal
+    // to --muted-foreground in dark mode.
+    "--legend": tierClearingAll(
+      neutral,
+      [background, card, popover],
+      LEGEND_TARGET_RATIO,
+    ),
 
     "--accent": mode === "light" ? surface[100] : surface[800],
     "--accent-foreground": mode === "light" ? neutral[900] : neutral[50],
