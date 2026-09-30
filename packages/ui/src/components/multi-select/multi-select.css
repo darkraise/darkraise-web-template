@@ -28,7 +28,7 @@
   }
 
   .dr-multi-select-chip-remove {
-    @apply text-muted-foreground hover:text-foreground -mr-1 inline-flex size-[var(--icon-size)] cursor-pointer items-center justify-center rounded-sm border-0 bg-transparent p-0;
+    @apply focus-ring-tight text-muted-foreground hover:text-foreground -mr-1 inline-flex size-[var(--icon-size)] cursor-pointer items-center justify-center rounded-sm border-0 bg-transparent p-0;
   }
 
   .dr-multi-select-chip-remove:disabled {

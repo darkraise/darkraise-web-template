@@ -207,7 +207,7 @@
   }
 
   .dr-sidebar-popover-child {
-    @apply hover:bg-accent hover:text-accent-foreground flex items-center rounded-md px-2 py-1.5 text-sm transition-colors;
+    @apply focus-ring-inset hover:bg-accent hover:text-accent-foreground flex items-center rounded-md px-2 py-1.5 text-sm transition-colors;
   }
 
   .dr-sidebar-popover-child.active {

@@ -12,7 +12,7 @@
   }
 
   .dr-stacked-layout-rail-item {
-    @apply flex h-10 w-10 items-center justify-center rounded-md transition-colors;
+    @apply focus-ring flex h-10 w-10 items-center justify-center rounded-md transition-colors;
     transition-duration: var(--duration-fast);
   }
 

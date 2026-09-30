@@ -69,7 +69,7 @@
   }
 
   .dr-color-picker-swatch-item {
-    @apply ring-ring/0 inline-block h-6 w-6 cursor-pointer rounded ring-2 ring-offset-1 transition-shadow;
+    @apply focus-ring ring-ring/0 inline-block h-6 w-6 cursor-pointer rounded ring-2 ring-offset-1 transition-shadow;
   }
 
   .dr-color-picker-swatch-item[data-active="true"] {

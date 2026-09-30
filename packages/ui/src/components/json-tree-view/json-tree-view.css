@@ -124,7 +124,7 @@
 
   /* Smart string renderings — URL, color swatch, long-string truncation. */
   .dr-json-url {
-    @apply underline decoration-dotted underline-offset-2;
+    @apply focus-ring underline decoration-dotted underline-offset-2;
   }
   .dr-json-color-swatch {
     @apply inline-block size-[var(--icon-size-xs)] align-middle;
@@ -135,7 +135,7 @@
   .dr-json-show-more {
     position: relative;
     isolation: isolate;
-    @apply text-primary-text ml-1 cursor-pointer text-[length:var(--text-2xs)] tracking-wide uppercase;
+    @apply focus-ring text-primary-text ml-1 cursor-pointer text-[length:var(--text-2xs)] tracking-wide uppercase;
     background: transparent;
     border: 0;
     padding: 0;
