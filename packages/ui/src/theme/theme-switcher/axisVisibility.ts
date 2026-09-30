@@ -4,18 +4,15 @@ import type { BackgroundStyle } from "@theme/types"
 /**
  * Everything an axis needs to decide whether its control is shown.
  *
- * Four independent kinds of rule govern visibility, and before this table they
+ * Three independent kinds of rule govern visibility, and before this table they
  * were interleaved with JSX in `useThemeSettingsSections` — a config flag per
- * axis, `modeLocked` from the preset's `supportedModes`, membership of the
- * preset's `hiddenCommonAxes`, and one-off dependencies on another axis's
- * value. Each was correct, but the set could only be understood by reading the
+ * axis, membership of the preset's `hiddenCommonAxes`, and one-off
+ * dependencies on another axis's value. Each was correct, but the set could only be understood by reading the
  * whole hook, which is why auditing it was hard enough to become its own task.
  */
 export interface AxisVisibilityInput {
   axes: ThemeConfig["switcher"]["axes"]
   backgroundStyle: BackgroundStyle
-  /** True when the active preset supports exactly one mode. */
-  modeLocked: boolean
   /** True when the active preset lists this axis in `hiddenCommonAxes`. */
   isHiddenByPreset: (axisName: string) => boolean
   /** How many preset-specific axes the active preset declares. */
@@ -33,9 +30,7 @@ export const AXIS_VISIBILITY: Record<
   AxisName,
   (input: AxisVisibilityInput) => boolean
 > = {
-  // Hidden outright when the preset supports a single mode: the provider has
-  // already switched to it, so the control offers no real choice.
-  mode: (s) => s.axes.mode && !s.modeLocked,
+  mode: (s) => s.axes.mode,
   preset: (s) => s.axes.preset,
   shellStyle: (s) => s.axes.shellStyle,
   sidebarActiveBar: (s) => s.axes.sidebarActiveBar,

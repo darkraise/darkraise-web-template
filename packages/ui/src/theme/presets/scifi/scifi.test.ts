@@ -17,10 +17,6 @@ describe("scifi preset", () => {
     expect(scifi.commonAxisDefaults?.innerGlow).toBe("balanced")
   })
 
-  it("declares supportedModes: ['dark']", () => {
-    expect(scifi.supportedModes).toEqual(["dark"])
-  })
-
   it("hides the common axes it reinterprets", () => {
     expect(scifi.hiddenCommonAxes).toEqual([
       "elevation",

@@ -31,7 +31,6 @@ export const scifi: ThemePreset<ScifiAxes> = {
     },
   },
 
-  supportedModes: ["dark"],
   hiddenCommonAxes: [
     "elevation",
     "buttonElevation",

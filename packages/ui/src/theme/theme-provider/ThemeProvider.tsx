@@ -122,33 +122,6 @@ function resolveMode(mode: Mode): ResolvedMode {
   return mode === "system" ? getSystemMode() : mode
 }
 
-/** Clamp an already-resolved mode to the preset's `supportedModes`. */
-function clampResolvedMode(
-  presetName: PresetName,
-  resolved: ResolvedMode,
-): ResolvedMode {
-  const supported = presets[presetName].supportedModes
-  if (!supported || supported.includes(resolved)) return resolved
-  // Non-empty by convention; TS models it as a plain array.
-  return supported[0] ?? "dark"
-}
-
-/**
- * Clamp a stored/configured mode to the preset's `supportedModes`. `setPreset`
- * enforces this when the user switches presets, but the boot path reads the
- * mode independently of the preset — without this, a dark-only preset stored
- * or configured alongside `light` paints near-black recipes onto a light rail.
- *
- * `system` is deliberately left alone: it is not a conflicting choice, and
- * rewriting it to a concrete mode would silently discard the user's
- * follow-the-OS preference the moment they visited a dark-only preset. It is
- * clamped at resolve time by `clampResolvedMode` instead.
- */
-function clampModeToPreset(presetName: PresetName, mode: Mode): Mode {
-  if (mode === "system") return mode
-  return clampResolvedMode(presetName, mode)
-}
-
 // One-time Glass-preset rename migration (glassmorphism → glass). The pure,
 // testable helper lives in ./migrateGlassPresetKeys; run it once at module
 // load, guarded for SSR (no window) and runtime storage failures (private-
@@ -299,7 +272,7 @@ export function ThemeProvider({
 
   const [mode, setModeState] = useState<Mode>(() => {
     const stored = readStorage(LS_MODE)
-    return clampModeToPreset(preset, (stored as Mode) || cfg.defaults.mode)
+    return (stored as Mode) || cfg.defaults.mode
   })
 
   const [density, setDensityState] = useState<Density>(() => {
@@ -409,7 +382,7 @@ export function ThemeProvider({
   })
 
   const [resolvedMode, setResolvedMode] = useState<ResolvedMode>(() =>
-    clampResolvedMode(preset, resolveMode(mode)),
+    resolveMode(mode),
   )
 
   const [syncStatus, setSyncStatus] = useState<ThemeSyncStatus>("idle")
@@ -825,35 +798,6 @@ export function ThemeProvider({
 
   const setPreset = useCallback(
     (p: PresetName) => {
-      const target = presets[p]
-      // supportedModes enforcement: if the target preset doesn't work
-      // in the current resolved mode (e.g. Neon needs dark), force-
-      // switch mode to the preset's first supported value. The mode
-      // change is committed alongside the preset change so applyTheme
-      // sees both at once and the user gets one paint, not two.
-      let nextResolvedMode = resolvedMode
-      let nextMode = mode
-      if (
-        target.supportedModes &&
-        !target.supportedModes.includes(resolvedMode)
-      ) {
-        // Nullish coalescing for type-safety; supportedModes is a non-
-        // empty tuple by convention but TS doesn't model that, and an
-        // empty array would degenerate to "no enforcement" anyway.
-        const forced = target.supportedModes[0] ?? "dark"
-        nextResolvedMode = forced
-        nextMode = forced
-        setResolvedMode(forced)
-        setModeState(forced)
-        writeStorage(LS_MODE, forced)
-        document.documentElement.setAttribute("data-mode", forced)
-        if (process.env.NODE_ENV !== "production") {
-          console.warn(
-            `[ThemeProvider] Preset "${p}" requires mode "${forced}"; auto-switched from "${resolvedMode}".`,
-          )
-        }
-      }
-
       setPresetState(p)
       writeStorage(LS_PRESET, p)
       applyTheme(
@@ -861,12 +805,12 @@ export function ThemeProvider({
         surfaceColor,
         p,
         backgroundStyle,
-        nextResolvedMode,
+        resolvedMode,
         accentIntensity,
         backgroundIntensity,
         presetAxisValues,
       )
-      const settings = buildSettings({ preset: p, mode: nextMode })
+      const settings = buildSettings({ preset: p })
       notifyChange(settings)
       hasUserChanged.current = true
       debouncedSave(settings)
@@ -880,7 +824,6 @@ export function ThemeProvider({
       surfaceColor,
       backgroundStyle,
       resolvedMode,
-      mode,
       accentIntensity,
       backgroundIntensity,
       presetAxisValues,
@@ -1068,40 +1011,20 @@ export function ThemeProvider({
   const setMode = useCallback(
     (m: Mode) => {
       const resolved = resolveMode(m)
-      // Inverse supportedModes enforcement: if the new mode isn't
-      // supported by the current preset, fall back to the default
-      // preset (which has no supportedModes constraint). Otherwise an
-      // active Neon would silently break the moment a user picks light.
-      const activePreset = presets[preset]
-      let nextPreset = preset
-      if (
-        activePreset.supportedModes &&
-        !activePreset.supportedModes.includes(resolved)
-      ) {
-        nextPreset = "default" as PresetName
-        setPresetState(nextPreset)
-        writeStorage(LS_PRESET, nextPreset)
-        if (process.env.NODE_ENV !== "production") {
-          console.warn(
-            `[ThemeProvider] Mode "${resolved}" isn't supported by preset "${preset}"; auto-reset to "default" preset.`,
-          )
-        }
-      }
-
       setModeState(m)
       setResolvedMode(resolved)
       writeStorage(LS_MODE, m)
       applyTheme(
         accentColor,
         surfaceColor,
-        nextPreset,
+        preset,
         backgroundStyle,
         resolved,
         accentIntensity,
         backgroundIntensity,
         presetAxisValues,
       )
-      const settings = buildSettings({ mode: m, preset: nextPreset })
+      const settings = buildSettings({ mode: m })
       notifyChange(settings)
       hasUserChanged.current = true
       debouncedSave(settings)
@@ -1299,21 +1222,6 @@ export function ThemeProvider({
     presetAxisValues,
   ])
 
-  // Mirror the boot-time mode clamp into storage. State was already clamped by
-  // the `mode` initializer; without persisting it, the unsupported mode would
-  // still be sitting in storage and would come back on the next reload.
-  useEffect(() => {
-    const requested = (readStorage(LS_MODE) as Mode) || cfg.defaults.mode
-    const effective = clampModeToPreset(preset, requested)
-    if (effective === requested) return
-    writeStorage(LS_MODE, effective)
-    if (process.env.NODE_ENV !== "production") {
-      console.warn(
-        `[ThemeProvider] Preset "${preset}" requires mode "${effective}"; auto-switched from "${requested}".`,
-      )
-    }
-  }, [preset, cfg.defaults.mode])
-
   useEffect(() => {
     document.documentElement.setAttribute("data-density", density)
     document.documentElement.setAttribute("data-control-depth", controlDepth)
@@ -1370,7 +1278,7 @@ export function ThemeProvider({
     if (mode !== "system") return
     const mq = window.matchMedia("(prefers-color-scheme: dark)")
     const handler = () => {
-      const resolved = clampResolvedMode(preset, getSystemMode())
+      const resolved = getSystemMode()
       setResolvedMode(resolved)
       applyTheme(
         accentColor,

@@ -150,14 +150,6 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
 
   const { axes } = config.switcher
 
-  // When the active preset declares a single supported mode (e.g. neon =
-  // dark-only), the Mode section is hidden entirely — there's no useful
-  // choice for the user to make, and the ThemeProvider has already
-  // auto-switched to the supported mode. Presets that allow multiple
-  // modes still render the section normally.
-  const supportedModes = activePreset.supportedModes
-  const modeLocked = !!supportedModes && supportedModes.length === 1
-
   // Presets can declare `hiddenCommonAxes` to hide common-axis pickers
   // they conceptually take over with their own preset-specific axes
   // (e.g. neon hides Elevation + Button Elevation because its `glow`
@@ -169,7 +161,6 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
   const visibility: AxisVisibilityInput = {
     axes,
     backgroundStyle,
-    modeLocked,
     isHiddenByPreset: isCommonAxisHidden,
     presetAxisCount: Object.keys(activePreset.axes).length,
   }

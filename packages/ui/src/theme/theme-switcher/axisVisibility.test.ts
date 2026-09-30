@@ -11,7 +11,6 @@ function input(overrides: Partial<AxisVisibilityInput> = {}) {
   return {
     axes: themeConfig.switcher.axes,
     backgroundStyle: "solid" as const,
-    modeLocked: false,
     isHiddenByPreset: () => false,
     presetAxisCount: 0,
     ...overrides,
@@ -39,9 +38,8 @@ describe("axis visibility table", () => {
     }
   })
 
-  it("hides Mode only when the preset locks to one mode", () => {
-    expect(isAxisVisible("mode", input({ modeLocked: false }))).toBe(true)
-    expect(isAxisVisible("mode", input({ modeLocked: true }))).toBe(false)
+  it("shows Mode whenever the config enables it", () => {
+    expect(isAxisVisible("mode", input())).toBe(true)
   })
 
   it("gates the gradient pattern on the gradient style, and nothing else", () => {

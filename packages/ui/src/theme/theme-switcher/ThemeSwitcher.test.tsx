@@ -219,27 +219,7 @@ describe("ThemeSwitcher preset section", () => {
     )
   })
 
-  it("hides the Mode section when active preset locks to a single mode (scifi = dark only)", () => {
-    render(
-      <ThemeProvider>
-        <ThemeSwitcher />
-      </ThemeProvider>,
-    )
-    openSwitcher()
-    // Default preset on mount — Mode section is visible.
-    expect(screen.getByText("Mode")).toBeInTheDocument()
-
-    fireEvent.click(screen.getByRole("radio", { name: /^sci-fi$/i }))
-    // After switching to Neon (supportedModes: ["dark"]), the Mode label
-    // and the three mode radios are removed from the DOM entirely.
-    expect(screen.queryByText("Mode")).not.toBeInTheDocument()
-    expect(screen.queryByRole("radio", { name: /^light$/i })).toBeNull()
-    expect(screen.queryByRole("radio", { name: /^system$/i })).toBeNull()
-    // ThemeProvider has already auto-switched mode to dark.
-    expect(document.documentElement.getAttribute("data-mode")).toBe("dark")
-  })
-
-  it("keeps the Mode section visible when active preset has no supportedModes (default, glass)", () => {
+  it("always shows the Mode section", () => {
     render(
       <ThemeProvider>
         <ThemeSwitcher />

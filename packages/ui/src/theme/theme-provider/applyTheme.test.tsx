@@ -265,66 +265,6 @@ describe("ThemeProvider preset orchestration", () => {
     )
   })
 
-  it("setPreset('scifi') from light mode auto-switches to dark", () => {
-    const warn = vi.spyOn(console, "warn").mockImplementation(() => {})
-    const { result } = renderHook(() => useTheme(), { wrapper: wrap })
-    act(() => result.current.setMode("light"))
-    expect(result.current.resolvedMode).toBe("light")
-    act(() => result.current.setPreset("scifi"))
-    expect(result.current.preset).toBe("scifi")
-    expect(result.current.resolvedMode).toBe("dark")
-    expect(result.current.mode).toBe("dark")
-    expect(document.documentElement.getAttribute("data-mode")).toBe("dark")
-    expect(localStorage.getItem("mode")).toBe("dark")
-    expect(warn).toHaveBeenCalled()
-    warn.mockRestore()
-  })
-
-  it("setMode('light') while scifi active resets preset to default", () => {
-    const warn = vi.spyOn(console, "warn").mockImplementation(() => {})
-    const { result } = renderHook(() => useTheme(), { wrapper: wrap })
-    act(() => result.current.setPreset("scifi"))
-    expect(result.current.preset).toBe("scifi")
-    act(() => result.current.setMode("light"))
-    expect(result.current.preset).toBe("default")
-    expect(result.current.resolvedMode).toBe("light")
-    expect(localStorage.getItem("theme-preset")).toBe("default")
-    expect(warn).toHaveBeenCalled()
-    warn.mockRestore()
-  })
-
-  it("boots a dark-only preset in dark mode when storage says light", () => {
-    const warn = vi.spyOn(console, "warn").mockImplementation(() => {})
-    localStorage.setItem("theme-preset", "scifi")
-    localStorage.setItem("mode", "light")
-
-    const { result } = renderHook(() => useTheme(), { wrapper: wrap })
-
-    expect(result.current.preset).toBe("scifi")
-    expect(result.current.mode).toBe("dark")
-    expect(result.current.resolvedMode).toBe("dark")
-    expect(document.documentElement.getAttribute("data-mode")).toBe("dark")
-    // The clamp is mirrored back so the next boot reads a consistent value.
-    expect(localStorage.getItem("mode")).toBe("dark")
-    expect(warn).toHaveBeenCalled()
-    warn.mockRestore()
-  })
-
-  it("resolves system to dark under a dark-only preset without discarding it", () => {
-    mockMatchMedia(false)
-    localStorage.setItem("theme-preset", "scifi")
-    localStorage.setItem("mode", "system")
-
-    const { result } = renderHook(() => useTheme(), { wrapper: wrap })
-
-    expect(result.current.resolvedMode).toBe("dark")
-    expect(document.documentElement.getAttribute("data-mode")).toBe("dark")
-    // "system" is not a conflicting choice, so it must survive for the next
-    // preset that supports both modes.
-    expect(result.current.mode).toBe("system")
-    expect(localStorage.getItem("mode")).toBe("system")
-  })
-
   it("leaves a supported stored mode untouched at boot", () => {
     localStorage.setItem("theme-preset", "glass")
     localStorage.setItem("mode", "light")
@@ -336,7 +276,16 @@ describe("ThemeProvider preset orchestration", () => {
     expect(localStorage.getItem("mode")).toBe("light")
   })
 
-  it("setPreset to a preset WITHOUT supportedModes (glass) leaves mode alone", () => {
+  it("setMode('light') keeps the active preset", () => {
+    const { result } = renderHook(() => useTheme(), { wrapper: wrap })
+    act(() => result.current.setPreset("glass"))
+    act(() => result.current.setMode("light"))
+    expect(result.current.preset).toBe("glass")
+    expect(result.current.resolvedMode).toBe("light")
+    expect(localStorage.getItem("theme-preset")).toBe("glass")
+  })
+
+  it("setPreset leaves the mode alone", () => {
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
     act(() => result.current.setMode("light"))
     expect(result.current.resolvedMode).toBe("light")
