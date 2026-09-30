@@ -113,7 +113,7 @@ export function RegisterForm() {
 
       <p className="text-muted-foreground text-center text-sm">
         {t("Already have an account?")}{" "}
-        <Link to="/login" className="text-primary hover:underline">
+        <Link to="/login" className="text-primary-text hover:underline">
           {t("Sign in")}
         </Link>
       </p>

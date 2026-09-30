@@ -87,7 +87,7 @@ export function LoginForm() {
                     </FieldLabel>
                     <Link
                       to="/forgot-password"
-                      className="text-muted-foreground hover:text-primary text-xs"
+                      className="text-muted-foreground hover:text-primary-text text-xs"
                     >
                       {t("Forgot password?")}
                     </Link>
@@ -114,7 +114,7 @@ export function LoginForm() {
 
       <p className="text-muted-foreground text-center text-sm">
         {t("Don&apos;t have an account?")}{" "}
-        <Link to="/register" className="text-primary hover:underline">
+        <Link to="/register" className="text-primary-text hover:underline">
           {t("Sign up")}
         </Link>
       </p>

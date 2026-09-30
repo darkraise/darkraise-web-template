@@ -134,14 +134,14 @@ function HoverCardPage() {
         title="Product preview hover card"
         code={`<HoverCard>
   <HoverCardTrigger asChild>
-    <a href="#" className="text-sm font-medium text-primary underline-offset-4 hover:underline">
+    <a href="#" className="text-sm font-medium text-primary-text underline-offset-4 hover:underline">
       Pro Plan
     </a>
   </HoverCardTrigger>
   <HoverCardContent className="w-72">
     <div className="space-y-3">
       <div className="h-24 rounded-md bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-        <span className="text-2xl font-bold text-primary">PRO</span>
+        <span className="text-2xl font-bold text-primary-text">PRO</span>
       </div>
       <div>
         <h4 className="text-sm font-semibold">Pro Plan</h4>
@@ -161,7 +161,7 @@ function HoverCardPage() {
           <HoverCardTrigger asChild>
             <a
               href="#"
-              className="text-primary text-sm font-medium underline-offset-4 hover:underline"
+              className="text-primary-text text-sm font-medium underline-offset-4 hover:underline"
             >
               Pro Plan
             </a>
@@ -169,7 +169,9 @@ function HoverCardPage() {
           <HoverCardContent className="w-72">
             <div className="space-y-3">
               <div className="from-primary/20 to-primary/5 flex h-24 items-center justify-center rounded-md bg-gradient-to-br">
-                <span className="text-primary text-2xl font-bold">PRO</span>
+                <span className="text-primary-text text-2xl font-bold">
+                  PRO
+                </span>
               </div>
               <div>
                 <h4 className="text-sm font-semibold">Pro Plan</h4>

@@ -32,7 +32,7 @@ export const Route = createFileRoute("/_authenticated/orders/$id")({
 
 const statusColors: Record<string, string> = {
   pending: "bg-warning/15 text-warning",
-  processing: "bg-primary/15 text-primary",
+  processing: "bg-primary/15 text-primary-text",
   shipped: "bg-accent text-accent-foreground",
   delivered: "bg-success/15 text-success",
   cancelled: "bg-destructive/15 text-destructive",
@@ -280,7 +280,7 @@ function OrderDetailPage() {
                 <Link
                   to="/customers/$id"
                   params={{ id: order.customer.id }}
-                  className="text-primary text-sm hover:underline"
+                  className="text-primary-text text-sm hover:underline"
                 >
                   {t("View customer profile")}
                 </Link>

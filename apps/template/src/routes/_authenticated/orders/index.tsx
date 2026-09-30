@@ -19,7 +19,7 @@ export const Route = createFileRoute("/_authenticated/orders/")({
 
 const statusColors: Record<Order["status"], string> = {
   pending: "bg-warning/15 text-warning",
-  processing: "bg-primary/15 text-primary",
+  processing: "bg-primary/15 text-primary-text",
   shipped: "bg-accent text-accent-foreground",
   delivered: "bg-success/15 text-success",
   cancelled: "bg-destructive/15 text-destructive",

@@ -185,7 +185,7 @@ function AnimationPage() {
 
       <ShowcaseExample
         title="Color and opacity transitions"
-        code={`<a className="text-muted-foreground hover:text-primary transition-colors duration-200">
+        code={`<a className="text-muted-foreground hover:text-primary-text transition-colors duration-200">
   Transition colors
 </a>
 <span className="transition-opacity duration-200 hover:opacity-50">
@@ -196,7 +196,7 @@ function AnimationPage() {
           <a
             href="#"
             onClick={(e) => e.preventDefault()}
-            className="text-muted-foreground hover:text-primary text-sm transition-colors duration-200"
+            className="text-muted-foreground hover:text-primary-text text-sm transition-colors duration-200"
           >
             Transition colors
           </a>

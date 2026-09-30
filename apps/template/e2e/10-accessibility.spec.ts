@@ -248,7 +248,24 @@ async function textContrast(locator: import("@playwright/test").Locator) {
 }
 
 test.describe("colour contrast of template text", () => {
+  const AUTH_LINKS = [
+    ["/login", "Sign up"],
+    ["/register", "Sign in"],
+    ["/forgot-password", "Back to sign in"],
+  ] as const
+
   for (const mode of ["light", "dark"] as const) {
+    for (const [path, name] of AUTH_LINKS) {
+      test(`${mode}: the "${name}" link on ${path} meets 4.5:1`, async ({
+        page,
+      }) => {
+        await seedApp(page, { mode }, { authenticated: false })
+        await gotoApp(page, path)
+        const ratio = await textContrast(page.getByRole("link", { name }))
+        expect(ratio, `${ratio.toFixed(2)}:1`).toBeGreaterThanOrEqual(4.5)
+      })
+    }
+
     test(`${mode}: the destructive alert-dialog action paints like a destructive button`, async ({
       page,
     }) => {
