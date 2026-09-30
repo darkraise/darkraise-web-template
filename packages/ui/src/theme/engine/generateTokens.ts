@@ -324,10 +324,12 @@ const SIDEBAR_HOVER: Record<
  * which is what stops the bright warm accents from being dragged down.
  *
  * Each step's lightness is a ceiling, not a fixed value: `solveWhiteFill`
- * lowers any fill whose white label would miss 4.5:1, so `vivid` and `intense`
- * meet at each hue's 4.5:1 point. Below ~0.535 the fill would drop under 3:1
- * against `--card`; the deepest solve measured (lime at `intense`) sits 0.090
- * under its step and still clears that floor. A chroma cap above ~0.26 never
+ * lowers any fill whose white label would miss 4.5:1, so neighbouring steps
+ * can land on the same fill where a hue's 4.5:1 point sits below them (dark
+ * mode on slate: orange, emerald, teal and fuchsia at `vivid` and `intense`,
+ * sky at `balanced` and `vivid`). Below ~0.535 the fill would drop under 3:1
+ * against `--card`; the deepest solve measured (lime at `intense`) sits about
+ * 0.09 under its step and still clears that floor. A chroma cap above ~0.26 never
  * binds, because that is the sRGB gamut ceiling at these lightnesses — hence
  * the nulls rather than decorative large numbers.
  */
