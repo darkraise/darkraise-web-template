@@ -70,6 +70,7 @@ test.describe("theme switcher popover", () => {
       "Elevation",
       "Button Elevation",
       "Surface Intensity",
+      "Border Intensity",
       "Control Depth",
       "Outer Glow",
       "Inner Glow",
