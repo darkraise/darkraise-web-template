@@ -54,6 +54,7 @@ describe("pre-hydration fallback block", () => {
   it("declares the tokens added in this phase", () => {
     for (const key of [
       "--primary-text",
+      "--legend",
       "--destructive-solid",
       "--destructive-solid-foreground",
     ]) {
