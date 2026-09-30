@@ -29,14 +29,6 @@ const EXEMPT = new Map<string, string>([
     "shares its element with dr-sidebar-nav-link, dr-sidebar-nav-popover-trigger or dr-stacked-layout-rail-item, each of which draws the ring",
   ],
   [
-    "dr-steps-trigger",
-    "Steps.tsx passes focus-ring-tight as a separate cn() argument, which this scan cannot pair with the class",
-  ],
-  [
-    "dr-rating-group-item",
-    "RatingGroup.tsx passes focus-ring-tight as a separate cn() argument, which this scan cannot pair with the class",
-  ],
-  [
     "dr-sidebar-nav-collapsible-link",
     "shares its element with dr-sidebar-nav-link, which draws the ring",
   ],
@@ -78,6 +70,32 @@ function rulesOf(path: string): Rule[] {
 function subjectClasses(selector: string): string[] {
   const last = selector.split(/\s*[>+~]\s*|\s+/).pop() ?? ""
   return [...last.matchAll(/\.(dr-[\w-]+)/g)].map((m) => m[1] as string)
+}
+
+/**
+ * Classes that land on one element: each string literal on its own, and all
+ * the literals of one cn() call together, since cn() joins its arguments.
+ */
+function classGroups(source: string): string[][] {
+  const literal = /["'`]([^"'`]*)["'`]/g
+  const groups = [...source.matchAll(literal)].map((m) =>
+    (m[1] as string).split(/\s+/),
+  )
+  for (const call of source.matchAll(/(?<![\w.])cn\(/g)) {
+    let depth = 1
+    let end = (call.index as number) + call[0].length
+    while (depth > 0 && end < source.length) {
+      const ch = source[end]
+      if (ch === "(") depth++
+      else if (ch === ")") depth--
+      end++
+    }
+    const args = source.slice((call.index as number) + call[0].length, end - 1)
+    groups.push(
+      [...args.matchAll(literal)].flatMap((m) => (m[1] as string).split(/\s+/)),
+    )
+  }
+  return groups
 }
 
 const RULES = ROOTS.flatMap((root) => filesUnder(root, ".css")).flatMap(rulesOf)
@@ -140,9 +158,8 @@ function hasFocusRule(cls: string): boolean {
     }
   }
   for (const { source } of TSX) {
-    for (const match of source.matchAll(/["'`]([^"'`]*)["'`]/g)) {
-      const classes = (match[1] as string).split(/\s+/)
-      if (classes.includes(cls) && classes.some((c) => c.startsWith("focus-ring"))) {
+    for (const group of classGroups(source)) {
+      if (group.includes(cls) && group.some((c) => c.startsWith("focus-ring"))) {
         return true
       }
     }
@@ -168,6 +185,7 @@ describe("every interactive class draws a focus indicator", () => {
   it("keeps every exemption justified and still needed", () => {
     for (const [cls, reason] of EXEMPT) {
       expect(interactive.has(cls), `${cls} is no longer interactive`).toBe(true)
+      expect(hasFocusRule(cls), `${cls} now draws its own ring`).toBe(false)
       expect(reason.length, `${cls} needs a reason`).toBeGreaterThan(20)
     }
   })
