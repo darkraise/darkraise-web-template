@@ -363,9 +363,12 @@ const SELECTED =
 const PRIMARY =
   /(?<![\w-])(?:bg|border|text|ring|outline|fill|stroke)-primary(?:-fill|-text)?(?![\w-])|(?<![\w-])(?:bg|border|text)-primary(?:-fill)?\/\d+|var\(--primary(?:-fill|-text)?\)/
 
-/** A checked or selected state written as a Tailwind variant. */
+/**
+ * A checked, on, active or selected state written as a Tailwind variant,
+ * directly or through a peer- or group- (optionally named) form.
+ */
 const STATE_VARIANT =
-  /^(?:has-)?data-\[state=checked\]$|^aria-(?:checked|selected)$/
+  /^(?:(?:peer|group)-)?(?:has-)?(?:data-\[(?:state=(?:checked|on|active)|selected=true)\]|aria-(?:checked|selected))(?:\/[\w-]+)?$/
 
 /**
  * @apply utilities that paint a checked or selected state with the accent,
@@ -614,12 +617,24 @@ describe("checked family on Checkbox and Switch", () => {
     }
   })
 
-  it("catches a checked utility that paints the accent inside @apply", () => {
+  it.each([
+    "data-[state=checked]",
+    "has-data-[state=checked]",
+    "data-[state=on]",
+    "data-[state=active]",
+    "data-[selected=true]",
+    "aria-selected",
+    "peer-data-[state=checked]",
+    "group-data-[state=on]",
+    "group-has-data-[state=checked]",
+    "peer-aria-checked",
+    "group-data-[selected=true]/item",
+  ])("catches a %s utility that paints the accent inside @apply", (variant) => {
     expect(
       accentStateUtilities(
         "src/components/x/x.css",
-        ".dr-x { @apply data-[state=checked]:bg-primary flex; }",
+        `.dr-x { @apply ${variant}:bg-primary flex; }`,
       ),
-    ).toEqual([["components/x/x.css", ".dr-x data-[state=checked]:bg-primary"]])
+    ).toEqual([["components/x/x.css", `.dr-x ${variant}:bg-primary`]])
   })
 })
