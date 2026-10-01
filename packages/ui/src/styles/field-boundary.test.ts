@@ -298,3 +298,53 @@ describe("glass invalid state", () => {
     },
   )
 })
+
+const OTP_INVALID = ".dr-input-otp-container[data-invalid] .dr-input-otp-slot"
+const OTP_INVALID_FOCUSED = [
+  `${OTP_INVALID}[data-active]`,
+  ".dr-input-otp-container[data-invalid] .dr-input-otp-slot-separate:focus",
+]
+
+// The overlay variant's aria-invalid sits on its hidden input, so the slots
+// read the container's data-invalid. The default focused rule uses :focus,
+// which the focus scan leaves to the field indicator check.
+describe("InputOTP invalid state", () => {
+  it.each([
+    ["default", ""],
+    ["glass", '[data-preset="glass"] '],
+  ])("draws the %s invalid border and focused ring", (_preset, prefix) => {
+    const rules = rulesOf("input-otp/input-otp.css")
+    const rest = rules.find((r) => r.selector === `${prefix}${OTP_INVALID}`)
+    expect(rest?.body).toBe("border-color: hsl(var(--destructive));")
+    const focused = rules.find((r) =>
+      OTP_INVALID_FOCUSED.every((f) =>
+        selectorsOf(r).includes(`${prefix}${f}`),
+      ),
+    )
+    expect(focused, "no focused invalid rule").toBeDefined()
+    expect(focused?.body).toContain("border-color: hsl(var(--destructive));")
+    expect(focused?.body).toContain("0 0 0 1px hsl(var(--destructive))")
+  })
+
+  it("keeps the glass halo under the invalid ring, after the glass slot rules", () => {
+    const rules = rulesOf("input-otp/input-otp.css")
+    const glassActive = rules.findIndex((r) =>
+      r.selector.startsWith(
+        '[data-preset="glass"] .dr-input-otp-slot[data-active]',
+      ),
+    )
+    const glassInvalid = rules.findIndex(
+      (r) => r.selector === `[data-preset="glass"] ${OTP_INVALID}`,
+    )
+    expect(glassActive).toBeGreaterThanOrEqual(0)
+    expect(glassInvalid).toBeGreaterThan(glassActive)
+    const focused = rules.find((r) =>
+      selectorsOf(r).includes(
+        `[data-preset="glass"] ${OTP_INVALID}[data-active]`,
+      ),
+    )
+    expect(focused?.body).toBe(
+      "border-color: hsl(var(--destructive)); box-shadow: var(--inset-hi), var(--glass-halo-raised), 0 0 0 1px hsl(var(--destructive));",
+    )
+  })
+})

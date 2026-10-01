@@ -95,7 +95,8 @@ Breaking: `PaginationLink` marks the current page with `data-active="true"` and 
 - Under the glass preset the switch thumb sat 1px from one edge of its track and 3px from the other.
 - AlertDialog buttons sat 16px apart when stacked on mobile; the footer's 8px gap is now the only spacing.
 - Under the glass preset the combobox drew two nested borders, and grouped OTP slots drew a 2px seam between each pair.
-- Under the glass preset fields never showed the invalid state (InputOTP has no invalid state in either preset yet).
+- Under the glass preset fields never showed the invalid state.
+- InputOTP showed no invalid state. `aria-invalid` on `InputOTP` now draws its slots in the destructive colour, with a destructive ring on the active slot, under both presets, and reaches every slot input in the separate variant.
 - The stacked layout ignored the sidebar's Bar, Ring and Both indicator settings.
 - In forced-colours mode every focus ring was pushed 2px outside its control, so inset rings inside clipping wrappers were cut off.
 - Packed toolbar buttons (image-editor tools and annotation kinds, JSON tree toolbar actions) drew focus rings over their neighbours.
