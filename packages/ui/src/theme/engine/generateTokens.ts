@@ -141,7 +141,6 @@ export function resolveNeutralScale(surfaceColor: SurfaceColor): ColorScale {
   return (surfaceColors[surfaceColor] ?? surfaceColors.slate) as ColorScale
 }
 
-/** Body-text AA, with a shade of headroom so rounding cannot drop under it. */
 /** A shape or boundary must be distinguishable from its ground. */
 const MARK_FLOOR = 3
 /**
