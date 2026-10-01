@@ -60,16 +60,13 @@
   }
 
   .dr-toggle[data-size="sm"] {
-    height: max(
+    --toggle-sm-size: max(
       calc(var(--btn-height) - 0.25rem),
       var(--control-height-xs),
       var(--control-height-min)
     );
-    min-width: max(
-      calc(var(--btn-height) - 0.25rem),
-      var(--control-height-xs),
-      var(--control-height-min)
-    );
+    height: var(--toggle-sm-size);
+    min-width: var(--toggle-sm-size);
     padding-inline: max(calc(var(--btn-px-tight) - 0.25rem), 0.125rem);
   }
 

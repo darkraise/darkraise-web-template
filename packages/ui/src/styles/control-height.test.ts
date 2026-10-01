@@ -165,7 +165,7 @@ describe("toggle heights", () => {
     ],
     [
       '.dr-toggle[data-size="sm"]',
-      SM_HEIGHT,
+      "var(--toggle-sm-size)",
       "max(calc(var(--btn-px-tight) - 0.25rem), 0.125rem)",
     ],
     [
@@ -183,6 +183,12 @@ describe("toggle heights", () => {
       expect(rule.replace(/min-width: [^;]*;/, "")).not.toMatch(LEGACY_HEIGHT)
     },
   )
+
+  it("holds the small toggle's size in one rule-local property", () => {
+    expect(body(TOGGLE, '.dr-toggle[data-size="sm"]')).toContain(
+      `--toggle-sm-size: ${SM_HEIGHT};`,
+    )
+  })
 })
 
 describe("field family tokens", () => {
