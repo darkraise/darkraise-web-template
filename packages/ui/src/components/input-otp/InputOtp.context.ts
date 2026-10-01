@@ -36,6 +36,8 @@ export interface OTPInputContextValue {
   inputMode: "numeric" | "text"
   pattern?: string
   disabled?: boolean
+  /** From `aria-invalid` on InputOTP; separate slot inputs repeat it. */
+  invalid: boolean
 }
 
 export const OTPInputContext = React.createContext<OTPInputContextValue>({
@@ -50,4 +52,5 @@ export const OTPInputContext = React.createContext<OTPInputContextValue>({
   spreadPaste: () => {},
   maxLength: 0,
   inputMode: "numeric",
+  invalid: false,
 })

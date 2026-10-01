@@ -337,3 +337,58 @@ describe("InputOTP accessible name", () => {
     ).toBeInTheDocument()
   })
 })
+
+describe("InputOTP invalid state", () => {
+  it("keeps aria-invalid on the overlay input and marks the container", () => {
+    const { container } = render(
+      <InputOTP maxLength={2} aria-invalid aria-label="Code">
+        <InputOTPGroup>
+          <InputOTPSlot index={0} />
+          <InputOTPSlot index={1} />
+        </InputOTPGroup>
+      </InputOTP>,
+    )
+    expect(screen.getByLabelText("Code")).toHaveAttribute(
+      "aria-invalid",
+      "true",
+    )
+    const root = container.querySelector(".dr-input-otp-container")
+    expect(root).toHaveAttribute("data-invalid", "true")
+    expect(root).not.toHaveAttribute("aria-invalid")
+  })
+
+  it("puts aria-invalid on every separate slot input", () => {
+    const { container } = render(
+      <InputOTP maxLength={2} variant="separate" aria-invalid="true">
+        <InputOTPGroup>
+          <InputOTPSlot index={0} />
+          <InputOTPSlot index={1} />
+        </InputOTPGroup>
+      </InputOTP>,
+    )
+    const inputs = container.querySelectorAll("input")
+    expect(inputs).toHaveLength(2)
+    for (const input of inputs) {
+      expect(input).toHaveAttribute("aria-invalid", "true")
+    }
+    const root = container.querySelector(".dr-input-otp-container")
+    expect(root).toHaveAttribute("data-invalid", "true")
+    expect(root).not.toHaveAttribute("aria-invalid")
+  })
+
+  it("sets no invalid marker without aria-invalid", () => {
+    const { container } = render(
+      <InputOTP maxLength={2} variant="separate" aria-invalid={false}>
+        <InputOTPGroup>
+          <InputOTPSlot index={0} />
+          <InputOTPSlot index={1} />
+        </InputOTPGroup>
+      </InputOTP>,
+    )
+    const root = container.querySelector(".dr-input-otp-container")
+    expect(root).not.toHaveAttribute("data-invalid")
+    for (const input of container.querySelectorAll("input")) {
+      expect(input).not.toHaveAttribute("aria-invalid")
+    }
+  })
+})

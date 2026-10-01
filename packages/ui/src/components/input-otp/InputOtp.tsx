@@ -50,6 +50,8 @@ function InputOTP({
   ...rest
 }: InputOTPProps) {
   const uiText = useUiText()
+  const ariaInvalid = rest["aria-invalid"]
+  const invalid = ariaInvalid === true || ariaInvalid === "true"
 
   // OTPs are numeric by default — typed and pasted non-digits get stripped
   // by `normalize` below. Consumers who need alphanumeric/etc. override via
@@ -221,6 +223,7 @@ function InputOTP({
       inputMode,
       pattern: effectivePattern,
       disabled,
+      invalid,
     }),
     [
       slots,
@@ -235,6 +238,7 @@ function InputOTP({
       inputMode,
       effectivePattern,
       disabled,
+      invalid,
     ],
   )
 
@@ -243,6 +247,7 @@ function InputOTP({
       <div
         className={cn("dr-input-otp-container", containerClassName)}
         data-variant={variant}
+        data-invalid={invalid || undefined}
         role={variant === "separate" ? "group" : undefined}
         aria-label={
           variant === "separate"
@@ -459,6 +464,7 @@ function InputOTPSlotSeparate({
       pattern={ctx.pattern ? `[${ctx.pattern}]` : undefined}
       value={char}
       aria-label={`Character ${index + 1}`}
+      aria-invalid={ctx.invalid || undefined}
       data-active={slot?.isActive || undefined}
       className={cn(
         "dr-input-otp-slot",
