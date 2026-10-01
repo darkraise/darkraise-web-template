@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest"
-import { readFileSync } from "node:fs"
+import { readFileSync, readdirSync } from "node:fs"
+import { join } from "node:path"
 
 // jsdom never parses CSS, so the rules themselves are what this asserts.
 //
@@ -26,6 +27,67 @@ function flat(path: string): string {
 const THEME = "src/styles/theme.css"
 const BUTTON = "src/components/button/button.css"
 const TOGGLE = "src/components/toggle/toggle.css"
+
+const SEGMENT = "src/components/segment-group/segment-group.css"
+
+/** Every rule that applies the shared layer, as [file, selector list]. */
+const LAYER_HOSTS: Array<[string, string]> = [
+  ["src/components/banner/banner.css", ".dr-banner-close"],
+  ["src/components/button/button.css", '.dr-btn:not([data-variant="link"])'],
+  [
+    "src/components/color-picker/color-picker.css",
+    ".dr-color-picker-trigger, .dr-color-picker-eye-dropper-trigger",
+  ],
+  [
+    "src/components/combobox/combobox.css",
+    ".dr-combobox-clear-trigger, .dr-combobox-trigger",
+  ],
+  ["src/components/date-picker/date-picker.css", ".dr-date-picker-trigger"],
+  [
+    "src/components/editable/editable.css",
+    ".dr-editable-edit-trigger, .dr-editable-submit-trigger, .dr-editable-cancel-trigger",
+  ],
+  [
+    "src/components/file-upload/file-upload.css",
+    ".dr-file-upload-item-delete-trigger",
+  ],
+  [
+    "src/components/floating-panel/floating-panel.css",
+    ".dr-floating-panel-trigger",
+  ],
+  [
+    "src/components/image-editor/image-editor.css",
+    ".dr-image-editor-preset, .dr-image-editor-history-trigger, .dr-image-editor-extension",
+  ],
+  ["src/components/json-tree-view/json-tree-view.css", ".dr-json-show-more"],
+  [
+    "src/components/multi-select/multi-select.css",
+    ".dr-multi-select-chip-remove",
+  ],
+  ["src/components/number-input/number-input.css", ".dr-number-input-stepper"],
+  [
+    "src/components/overlay-primitives/overlay-primitives.css",
+    ".dr-overlay-close-btn",
+  ],
+  [
+    "src/components/password-input/password-input.css",
+    ".dr-password-input-trigger",
+  ],
+  ["src/components/tabs/tabs.css", ".dr-tabs-trigger"],
+  [
+    "src/components/tags-input/tags-input.css",
+    ".dr-tags-input-item-delete-trigger",
+  ],
+  ["src/components/toggle/toggle.css", ".dr-toggle"],
+]
+
+function stylesheets(dir: string): string[] {
+  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const path = join(dir, entry.name)
+    if (entry.isDirectory()) return stylesheets(path)
+    return entry.name.endsWith(".css") ? [path] : []
+  })
+}
 
 // Clickable affordances that do not render a real <Button> and so have to opt
 // into the layer themselves. Everything else inherits it from `.dr-btn`.
@@ -141,17 +203,18 @@ describe("interaction state layer", () => {
   })
 
   it("paints the wash with a pseudo-element, not a flood shadow", () => {
-    const css = flat(BUTTON)
-    expect(css).toMatch(
-      /\.dr-btn:not\(\[data-variant="link"\]\)::before \{[^}]*background: var\(--state-layer-color, currentColor\)/,
+    expect(flat(THEME)).toMatch(
+      /@utility state-layer \{ &::before \{[^}]*background: var\(--state-layer-color, currentColor\)/,
     )
-    expect(css).toMatch(/transition: opacity var\(--state-layer-out\)/)
-    expect(css).not.toMatch(/100vmax/)
+    expect(flat(THEME)).toMatch(
+      /@utility state-layer \{[^}]*transition: opacity var\(--state-layer-out\)/,
+    )
+    expect(flat(BUTTON)).not.toMatch(/100vmax/)
   })
 
   it("layers the wash above the background and below the label", () => {
-    expect(flat(BUTTON)).toMatch(
-      /\.dr-btn:not\(\[data-variant="link"\]\)::before \{[^}]*z-index: -1/,
+    expect(flat(THEME)).toMatch(
+      /@utility state-layer \{ &::before \{[^}]*z-index: -1/,
     )
     expect(flat(BUTTON)).toMatch(/\.dr-btn \{[^}]*isolation: isolate/)
   })
@@ -177,8 +240,8 @@ describe("interaction state layer", () => {
 
   it("never washes the link variant", () => {
     expect(flat(BUTTON)).not.toMatch(/\.dr-btn::before/)
-    expect(flat(BUTTON)).toMatch(
-      /\.dr-btn:not\(\[data-variant="link"\]\)::before/,
+    expect(flat(BUTTON)).toContain(
+      '.dr-btn:not([data-variant="link"]) { @apply state-layer; }',
     )
   })
 
@@ -203,4 +266,37 @@ describe("interaction state layer", () => {
       expect(flat(path)).toContain(`${selector}:hover${pseudo}`)
     })
   }
+})
+
+describe("shared state-layer utility", () => {
+  it("declares the wash once, as a utility", () => {
+    expect(flat(THEME)).toContain(
+      '@utility state-layer { &::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: var(--state-layer-color, currentColor); opacity: 0; pointer-events: none; transition: opacity var(--state-layer-out) var(--ease-out); } }',
+    )
+  })
+
+  it.each(LAYER_HOSTS)("%s applies it to %s", (path, selectors) => {
+    expect(flat(path)).toContain(`${selectors} { @apply state-layer; }`)
+  })
+
+  it("leaves no hand-copied ::before wash in component CSS", () => {
+    const copies = stylesheets("src/components").filter((path) =>
+      /::before \{[^}]*background: (?:var\(--state-layer-color, currentColor\)|currentColor);/.test(
+        flat(path),
+      ),
+    )
+    expect(copies).toEqual([])
+  })
+
+  // The segment item's ::before is its 24px hit area (hit-area-24), so its
+  // wash stays a hand-written ::after.
+  it("keeps SegmentGroup's ::after wash as the one copy", () => {
+    const owners = stylesheets("src/components").filter((path) =>
+      flat(path).includes("var(--state-layer-color, currentColor)"),
+    )
+    expect(owners).toEqual([SEGMENT])
+    expect(flat(SEGMENT)).toMatch(
+      /\.dr-segment-group \.dr-segment-group-item::after \{[^}]*background: var\(--state-layer-color, currentColor\)/,
+    )
+  })
 })

@@ -118,16 +118,8 @@
   /* Interaction state layer — see theme.css. Painted by a pseudo-element so
      the wash can apply instantly; `opacity` is composited, unlike the flood
      inset shadow this replaced. */
-  .dr-toggle::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: inherit;
-    background: var(--state-layer-color, currentColor);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity var(--state-layer-out) var(--ease-out);
+  .dr-toggle {
+    @apply state-layer;
   }
   .dr-toggle:not(:disabled):hover::before {
     opacity: var(--state-layer-hover);

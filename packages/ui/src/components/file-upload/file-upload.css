@@ -78,16 +78,8 @@
   .dr-file-upload-item-delete-trigger:where(:not(:disabled)):hover {
     @apply text-foreground;
   }
-  .dr-file-upload-item-delete-trigger::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: inherit;
-    background: var(--state-layer-color, currentColor);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity var(--state-layer-out) var(--ease-out);
+  .dr-file-upload-item-delete-trigger {
+    @apply state-layer;
   }
   .dr-file-upload-item-delete-trigger:not(:disabled):hover::before {
     opacity: var(--state-layer-hover);

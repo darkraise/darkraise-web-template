@@ -339,18 +339,10 @@
   }
 
   /* Interaction state layer — see theme.css. */
-  .dr-image-editor-preset::before,
-  .dr-image-editor-history-trigger::before,
-  .dr-image-editor-extension::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: inherit;
-    background: currentColor;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity var(--state-layer-out) var(--ease-out);
+  .dr-image-editor-preset,
+  .dr-image-editor-history-trigger,
+  .dr-image-editor-extension {
+    @apply state-layer;
   }
   .dr-image-editor-preset:hover::before,
   .dr-image-editor-history-trigger:hover::before,

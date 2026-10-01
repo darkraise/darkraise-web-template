@@ -96,16 +96,8 @@
   .dr-floating-panel-trigger:where(:not(:disabled)):hover {
     @apply text-foreground;
   }
-  .dr-floating-panel-trigger::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: inherit;
-    background: var(--state-layer-color, currentColor);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity var(--state-layer-out) var(--ease-out);
+  .dr-floating-panel-trigger {
+    @apply state-layer;
   }
   .dr-floating-panel-trigger:not(:disabled):hover::before {
     opacity: var(--state-layer-hover);

@@ -230,6 +230,23 @@
   }
 }
 
+/* The interaction wash: a pseudo-element whose opacity carries hover and
+   press. Each host keeps its own :hover and :active rules, whose disabled
+   guards differ, and its own position and isolation. */
+@utility state-layer {
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--state-layer-color, currentColor);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--state-layer-out) var(--ease-out);
+  }
+}
+
 /* Inputs deliberately use --primary (not --focus-ring) — text fields want a sharp brand-color indicator, matching ark-ui's input pattern. */
 /* Extends a small control's pointer and touch target to the WCAG 2.2 AA
    minimum of 24x24 CSS px without changing how large it looks. Checkbox,

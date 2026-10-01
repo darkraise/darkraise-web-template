@@ -36,16 +36,8 @@
      background and below the label. `position: relative` is safe here: unlike
      transform or filter it does not create a containing block for
      `position: fixed`, so portalled content is unaffected. */
-  .dr-btn:not([data-variant="link"])::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: inherit;
-    background: var(--state-layer-color, currentColor);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity var(--state-layer-out) var(--ease-out);
+  .dr-btn:not([data-variant="link"]) {
+    @apply state-layer;
   }
   .dr-btn:not([data-variant="link"]):not(:disabled):hover::before {
     opacity: var(--state-layer-hover);

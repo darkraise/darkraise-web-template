@@ -48,17 +48,9 @@
   .dr-combobox-trigger:where(:not(:disabled)):hover {
     @apply text-foreground;
   }
-  .dr-combobox-clear-trigger::before,
-  .dr-combobox-trigger::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: inherit;
-    background: var(--state-layer-color, currentColor);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity var(--state-layer-out) var(--ease-out);
+  .dr-combobox-clear-trigger,
+  .dr-combobox-trigger {
+    @apply state-layer;
   }
   .dr-combobox-clear-trigger:not(:disabled):hover::before,
   .dr-combobox-trigger:not(:disabled):hover::before {

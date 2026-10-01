@@ -186,16 +186,8 @@
   /* Interaction state layer — see theme.css. Painted by a pseudo-element so
      the wash can apply instantly; `opacity` is composited, unlike the flood
      inset shadow this replaced. */
-  .dr-json-show-more::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: inherit;
-    background: currentColor;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity var(--state-layer-out) var(--ease-out);
+  .dr-json-show-more {
+    @apply state-layer;
   }
   .dr-json-show-more:hover::before {
     opacity: var(--state-layer-hover);

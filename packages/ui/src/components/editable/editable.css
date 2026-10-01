@@ -75,18 +75,10 @@
   .dr-editable-cancel-trigger:where(:not(:disabled)):hover {
     @apply text-foreground;
   }
-  .dr-editable-edit-trigger::before,
-  .dr-editable-submit-trigger::before,
-  .dr-editable-cancel-trigger::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: inherit;
-    background: var(--state-layer-color, currentColor);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity var(--state-layer-out) var(--ease-out);
+  .dr-editable-edit-trigger,
+  .dr-editable-submit-trigger,
+  .dr-editable-cancel-trigger {
+    @apply state-layer;
   }
   .dr-editable-edit-trigger:not(:disabled):hover::before,
   .dr-editable-submit-trigger:not(:disabled):hover::before,

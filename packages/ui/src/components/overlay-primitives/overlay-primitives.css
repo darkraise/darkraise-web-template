@@ -36,16 +36,8 @@
   .dr-overlay-close-btn:where(:not(:disabled)):hover {
     @apply text-foreground;
   }
-  .dr-overlay-close-btn::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: inherit;
-    background: var(--state-layer-color, currentColor);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity var(--state-layer-out) var(--ease-out);
+  .dr-overlay-close-btn {
+    @apply state-layer;
   }
   .dr-overlay-close-btn:not(:disabled):hover::before {
     opacity: var(--state-layer-hover);

@@ -428,16 +428,8 @@
 
   /* `relative z-10` already makes each trigger a stacking context, so the
      wash paints above the sliding indicator and below the label. */
-  .dr-tabs-trigger::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: inherit;
-    background: var(--state-layer-color, currentColor);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity var(--state-layer-out) var(--ease-out);
+  .dr-tabs-trigger {
+    @apply state-layer;
   }
   .dr-tabs-trigger:not([data-state="active"]):not(:disabled):hover::before {
     opacity: var(--state-layer-hover);

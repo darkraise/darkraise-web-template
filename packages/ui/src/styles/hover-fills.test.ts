@@ -126,7 +126,10 @@ describe("filled hover states", () => {
   it("filled buttons wash toward their fill's wash, not their label", () => {
     const css = readFileSync("src/components/button/button.css", "utf8")
     expect(css).toMatch(
-      /::before\s*\{[^}]*background:\s*var\(--state-layer-color,\s*currentColor\)/,
+      /\.dr-btn:not\(\[data-variant="link"\]\)\s*\{\s*@apply state-layer;\s*\}/,
+    )
+    expect(readFileSync("src/styles/theme.css", "utf8")).toMatch(
+      /@utility state-layer\s*\{\s*&::before\s*\{[^}]*background:\s*var\(--state-layer-color,\s*currentColor\)/,
     )
     expect(css).toMatch(
       /\.dr-btn\[data-variant="default"\]\s*\{[^}]*--state-layer-color:\s*hsl\(var\(--primary-fill-wash\)\)/,
@@ -138,9 +141,7 @@ describe("filled hover states", () => {
 
   it("an on toggle and a selected calendar day wash toward the wash", () => {
     const toggle = readFileSync("src/components/toggle/toggle.css", "utf8")
-    expect(toggle).toMatch(
-      /\.dr-toggle::before\s*\{[^}]*background:\s*var\(--state-layer-color,\s*currentColor\)/,
-    )
+    expect(toggle).toMatch(/\.dr-toggle\s*\{\s*@apply state-layer;\s*\}/)
     expect(toggle).toMatch(
       /\.dr-toggle\[data-variant="default"\]\[data-state="on"\]\s*\{[^}]*--state-layer-color:\s*hsl\(var\(--primary-fill-wash\)\)/,
     )

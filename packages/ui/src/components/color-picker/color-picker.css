@@ -101,17 +101,9 @@
   .dr-color-picker-eye-dropper-trigger:where(:not(:disabled)):hover {
     @apply text-foreground;
   }
-  .dr-color-picker-trigger::before,
-  .dr-color-picker-eye-dropper-trigger::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: inherit;
-    background: var(--state-layer-color, currentColor);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity var(--state-layer-out) var(--ease-out);
+  .dr-color-picker-trigger,
+  .dr-color-picker-eye-dropper-trigger {
+    @apply state-layer;
   }
   .dr-color-picker-trigger:not(:disabled):hover::before,
   .dr-color-picker-eye-dropper-trigger:not(:disabled):hover::before {

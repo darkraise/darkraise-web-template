@@ -91,16 +91,8 @@
   .dr-multi-select-chip-remove:where(:not(:disabled)):hover {
     @apply text-foreground;
   }
-  .dr-multi-select-chip-remove::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: inherit;
-    background: var(--state-layer-color, currentColor);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity var(--state-layer-out) var(--ease-out);
+  .dr-multi-select-chip-remove {
+    @apply state-layer;
   }
   .dr-multi-select-chip-remove:not(:disabled):hover::before {
     opacity: var(--state-layer-hover);
