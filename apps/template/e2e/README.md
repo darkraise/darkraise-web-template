@@ -174,6 +174,21 @@ empty state, download trigger, image cropper.
   HSL tokens, for every preset × both modes.
 - The app renders under `prefers-reduced-motion: reduce`.
 
+### 16 · Control contract (`16-control-contract.spec.ts`)
+
+Runs against the standalone fixture `e2e/fixtures/control-contract.html`.
+
+- Every button variant, toggle, input, select, combobox, multi-select, date
+  input, number input, OTP slot and segment item measures exactly
+  `--control-height`, for every preset × both modes × every density × the
+  `medium` and `extra-large` font sizes.
+- With `hasTouch` (which makes Chromium match `pointer: coarse`), the same
+  controls measure at least `--control-height-xl` at compact and cozy.
+- A field's bottom edge reaches 3:1 against the page and against a card,
+  sampled from rendered pixels, for every preset and for strong glass
+  opacity × both modes.
+- The glass switch thumb sits the same distance from each end of its track.
+
 ## Regression tests for fixed defects
 
 `11-review-regressions.spec.ts` checks supported layout choices, settings form

@@ -17,6 +17,8 @@ Breaking: the Sci-fi preset is removed, and with it the `supportedModes` field o
 
 Breaking: `Card` and card-variant `AccordionItem` expose their elevation as `data-card-elevation` instead of `data-elevation`, so a selector such as `.dr-card[data-elevation="high"]` must become `.dr-card[data-card-elevation="high"]`. Also removed: the `--shadow-card`, `--card-border` and `--glow-surface` tokens, `PresetSurfaceRecipe.overrides.shadowCard`, and the `data-sidebar-active-bar` attribute on `<html>`; see Removed.
 
+Breaking: control sizing, radius and focus tokens are renamed, with no aliases. `--density-cell`, `--density-cell-base`, `--density-cell-sm` and `--density-cell-lg` are replaced by `--control-height` (with the scale `--control-height-xs` … `--control-height-xl`, `--control-height-default` set by density and `--control-height-min`, the coarse-pointer floor); `--density-button-px`, `--density-button-py` and their `-sm` / `-lg` forms by `--btn-height`, `--btn-px` and `--btn-px-tight`; `--density-input-px` and `--density-input-py` by `--field-px` and `--field-py`; `--radius-button` by `--radius-control`. The `focus-ring-tight` utility is removed; use `focus-ring-inset`, which now draws 2px inside the element. Badge, Kbd and Spinner size `md` is now `default`, and TreeView and Pagination variant `outlined` is now `outline`.
+
 ### Added
 
 - A `borderIntensity` theme axis — `subtle`, `balanced`, `strong`, `bold` — shown in the theme panel's Depth group as **Border Intensity**. It moves `--border`, `--input`, `--border-subtle`, `--border-default`, `--border-strong` and `--sidebar-border` toward the page or toward the text colour in OKLCH lightness, keeping each border's own hue and chroma; a translucent border, such as dark glass's white hairline, has its alpha scaled instead. It runs after a preset's own tokens are merged, so it applies under every preset. Elements that rebind `--border` in CSS, such as the `.dr-surface` utility, keep their own border.
@@ -24,6 +26,8 @@ Breaking: `Card` and card-variant `AccordionItem` expose their elevation as `dat
 - `--primary-text` (utility `text-primary-text`): the accent as a text colour, solved to 4.5:1 against the page and the card. The kit's links and selected tab, toggle, pagination, listbox and tree labels use it; apps that colour text with `text-primary` should move to `text-primary-text`, since `--primary` itself only clears 3:1.
 - `--destructive-solid` and `--destructive-solid-foreground` (utilities `bg-destructive-solid`, `text-destructive-solid-foreground`): a destructive fill that carries a white label at 4.5:1 in both modes. The destructive button, destructive badge and notification count use it.
 - `--primary-fill-wash` and `--destructive-solid-wash`: what a hover or press mixes into the matching fill, black under a white label and white under an ink label. Mixing toward them always raises the label's contrast.
+- Control tokens: `--btn-height`, `--btn-px`, `--btn-px-tight`, `--btn-radius`; `--field-height`, `--field-px`, `--field-py`, `--field-radius`, `--field-edge`; `--overlay-bg`, `--overlay-border`, `--overlay-shadow`, `--overlay-radius`; `--track-height`; `--disabled-opacity` and `--loading-opacity`. Override one family (for example `--btn-radius`) without touching the others.
+- `--field-edge-color`: a boundary colour solved to 3:1 against the page, card, sunken well, deep well, sidebar and header, and to 3.5:1 under the glass preset, whose translucent cards let the canvas shift the ground a field sits on. `borderIntensity` does not move it.
 
 ### Changed
 
@@ -38,6 +42,16 @@ Breaking: `Card` and card-variant `AccordionItem` expose their elevation as `dat
 - The fixed accent-colour badges clear 4.5:1: orange, green, emerald, teal, cyan and sky take their own -950 ink on the -500 fill, as amber, yellow and lime already did; red, rose, pink, fuchsia, blue, violet and purple darken to -600 under white; indigo is unchanged. White on green-500 measured 2.22:1. Hover moves one shade away from the label instead of turning translucent.
 - `--primary-text` also clears 4.5:1 on a `--primary` tint of up to 24% over the page and card, where selected toggle, pagination, listbox and tree items (10%), steps, timeline, highlight and the sidebar count (20%) put it; on a 10% tint it had failed in about half of all themes. It darkens by up to about 12 lightness points in light mode and lightens by up to about 11 in dark. The status colours likewise clear 4.5:1 on their own tint of up to 12%, as alert and toast titles use them: success and warning darken by up to about 4 points in light, info by up to about 7, and destructive moves by up to about 7 in both modes.
 - Timing: the steps indicator moves from 250 to 200ms, the slider thumb from 100 to 150ms and calendar days from 120 to 150ms. Every other component keeps its timing, now expressed through the motion tokens.
+- Buttons, toggles and fields share one height per density: compact 28px, cozy 32px, comfortable 36px, spacious 40px, scaled by the font-size axis. Outline, ghost and dark-mode secondary buttons no longer sit 2px taller, and multi-select, date input, OTP slots and segment items now follow density. On a coarse pointer (touch screens), buttons and fields are at least 40px tall at every density.
+- Fields draw a bottom edge at 3:1 or more, with faint sides and top; unchecked checkboxes, radios and switch tracks draw that edge all round instead of the accent colour. Under the glass preset the frosted sides stay and the edge is added.
+- Multi-select, date input and OTP slots use the field surface, so they recess inside cards and overlays like other fields; multi-select no longer carries a drop shadow.
+- Textarea, tags input and multi-select take the surface radius, so they stay rounded rectangles at the `pill` radius; overlays (dialog, sheet, drawer, popover, tooltip, menus, command, toast and others) share `--overlay-radius`; kbd follows the radius setting, capped at 6px. At `pill`, tooltips become fully rounded.
+- The progress bar is 8px tall, matching the slider track.
+- Focus: standalone controls draw the focus ring 2px outside; items packed into a container (menu and list rows, segment and toggle-group items, grouped buttons, buttons inside input and number-input wrappers, calendar days) draw it 2px inside. Date input, listbox and multi-select show focus with the shared utilities instead of a box-shadow ring.
+- Hover: toggle, tabs, segment items, number-input steppers, icon triggers, overlay close buttons and pagination use the button's state layer, and none of them reacts to hover while disabled. The toggle's label no longer dims on hover, and accordion triggers no longer underline.
+- Disabled: every disabled control uses `--disabled-opacity` (0.5); a loading button uses `--loading-opacity` (0.7). Disabled toggles, tabs, navigation-menu triggers, number-input steppers and password toggles keep pointer events and show the not-allowed cursor, so a tooltip can explain them.
+- Every interactive control opts out of double-tap zoom and draws a boundary in forced-colours mode.
+- Transitions use the kit's easing curves instead of CSS keywords, so short fades such as the 120ms hover wash feel sharper.
 
 ### Removed
 
@@ -46,6 +60,7 @@ Breaking: `Card` and card-variant `AccordionItem` expose their elevation as `dat
 - The `--shadow-card`, `--card-border` and `--glow-surface` tokens, which no stylesheet read, and `PresetSurfaceRecipe.overrides.shadowCard` on the preset type.
 - The `data-sidebar-active-bar` attribute on `<html>`. Read the setting from `useTheme().sidebarActiveBar`; the sidebar still writes its own `data-active-bar`.
 - The glass `[data-glass-halo="none"]` rule, which nothing could trigger since the halo axis moved to the global glow axes.
+- The tokens and utility listed in the Breaking note above: `--density-cell`, `--density-cell-base`, `--density-cell-sm`, `--density-cell-lg`, `--density-button-px`, `--density-button-py` and their `-sm` / `-lg` forms, `--density-input-px`, `--density-input-py`, `--radius-button`, and `focus-ring-tight`.
 
 ### Fixed
 
@@ -59,6 +74,7 @@ Breaking: `Card` and card-variant `AccordionItem` expose their elevation as `dat
 - Dialog, sheet and drawer transitioned every property alongside their enter and exit animation, so theme changes animated on open overlays.
 - The colours painted before the theme provider hydrates were stale; they now equal the engine's default light output.
 - Content inside an elevated `Card` or card accordion item keeps the page's elevation ramp. It used to take the light ramp in dark mode, and in light mode the card's own level (a `flat` card zeroed every nested shadow), because the card reused the theme's `data-elevation` attribute.
+- Under the glass preset the switch thumb sat 1px from one edge of its track and 3px from the other.
 
 ## [6.9.5] — 2026-09-25
 
