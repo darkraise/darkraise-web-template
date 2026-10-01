@@ -130,6 +130,24 @@
       var(--inset-hi), var(--glass-halo-raised), var(--glass-state-hover-glow);
   }
 
+  /* Invalid companion: the glass rules above outrank the field utility's
+     invalid rule, so glass restates it one attribute higher, after them. */
+  [data-preset="glass"]
+    .dr-number-input-control:has(:is([data-invalid], [aria-invalid="true"])) {
+    border-color: hsl(var(--destructive));
+  }
+
+  [data-preset="glass"]
+    .dr-number-input-control:has(
+      :is([data-invalid], [aria-invalid="true"])
+    ):focus-within {
+    border-color: hsl(var(--destructive));
+    box-shadow:
+      var(--inset-hi),
+      var(--glass-halo-raised),
+      0 0 0 1px hsl(var(--destructive));
+  }
+
   /* Glass preset — addon chips and every interior divider (addon side
      borders, the trigger-group divider, the increment/decrement split)
      are retinted to the fog edge so they read as part of the frosted

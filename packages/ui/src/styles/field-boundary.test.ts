@@ -199,3 +199,88 @@ describe("small control edge", () => {
     )
   })
 })
+
+const GLASS_INPUT =
+  '[data-preset="glass"] .dr-input:not(.dr-number-input *):not(.dr-date-input *):not(.dr-password-input *):not(.dr-input-otp *):not(.dr-file-upload *):not(.dr-combobox *):not(.dr-cascade-select *)'
+const INVALID = ':is([data-invalid], [aria-invalid="true"])'
+const HAS_INVALID = `:has(${INVALID})`
+
+/** [file, the glass rest rule, how the companion finds invalid, focus forms] */
+const INVALID_COMPANIONS: Array<[string, string, string, string[]]> = [
+  ["input/input.css", GLASS_INPUT, INVALID, [":focus", ":focus-visible"]],
+  [
+    "select/select.css",
+    '[data-preset="glass"] .dr-select-trigger',
+    INVALID,
+    [":focus", ":focus-visible"],
+  ],
+  [
+    "textarea/textarea.css",
+    '[data-preset="glass"] .dr-textarea',
+    INVALID,
+    [":focus", ":focus-visible"],
+  ],
+  [
+    "number-input/number-input.css",
+    '[data-preset="glass"] .dr-number-input-control',
+    HAS_INVALID,
+    [":focus-within"],
+  ],
+  [
+    "date-input/date-input.css",
+    '[data-preset="glass"] .dr-date-input',
+    INVALID,
+    [":focus-within"],
+  ],
+  [
+    "password-input/password-input.css",
+    '[data-preset="glass"] .dr-password-input-field',
+    INVALID,
+    [":focus", ":focus-visible"],
+  ],
+  [
+    "combobox/combobox.css",
+    '[data-preset="glass"] .dr-combobox-control',
+    HAS_INVALID,
+    [":focus-within"],
+  ],
+  [
+    "multi-select/multi-select.css",
+    '[data-preset="glass"] .dr-combobox-control.dr-multi-select-control',
+    HAS_INVALID,
+    [":focus-within"],
+  ],
+]
+
+/** A rule's selector list, split at top-level commas. */
+function selectorsOf(rule: Rule): string[] {
+  return rule.selector.split(/,(?![^(]*\))/).map((s) => s.trim())
+}
+
+// The glass rest rules sit at (0,2,0) or more, so focus-ring-input's invalid
+// rule at (0,2,0) never reached a glass field. Each companion appends one
+// attribute or pseudo-class to the rule it overrides and follows it in the
+// file, so the rest-rule finder above still meets the rest rule first.
+describe("glass invalid state", () => {
+  it.each(INVALID_COMPANIONS)(
+    "%s restates invalid on %s",
+    (file, rest, invalid, focus) => {
+      const rules = rulesOf(file)
+      const restAt = rules.findIndex((r) => r.selector === rest)
+      const companionAt = rules.findIndex(
+        (r) => r.selector === `${rest}${invalid}`,
+      )
+      expect(restAt, `no rest rule ${rest}`).toBeGreaterThanOrEqual(0)
+      expect(companionAt, "no invalid companion").toBeGreaterThan(restAt)
+      expect(rules[companionAt]?.body).toBe(
+        "border-color: hsl(var(--destructive));",
+      )
+      const focused = rules.find((r) =>
+        focus.every((f) => selectorsOf(r).includes(`${rest}${invalid}${f}`)),
+      )
+      expect(focused, "no focused invalid companion").toBeDefined()
+      expect(focused?.body).toContain("border-color: hsl(var(--destructive));")
+      expect(focused?.body).toContain("0 0 0 1px hsl(var(--destructive))")
+    },
+  )
+})

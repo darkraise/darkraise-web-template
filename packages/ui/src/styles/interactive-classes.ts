@@ -32,8 +32,9 @@ function rulesOf(path: string): Rule[] {
   const css = readFileSync(path, "utf8").replace(/\/\*[\s\S]*?\*\//g, "")
   return [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((match) => ({
     path,
+    // Top-level commas only: `:is(a, b)` is one selector, not two.
     selectors: (match[1] as string)
-      .split(",")
+      .split(/,(?![^(]*\))/)
       .map((s) => s.trim())
       .filter(Boolean),
     body: match[2] as string,

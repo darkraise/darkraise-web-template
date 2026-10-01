@@ -138,6 +138,24 @@
       var(--inset-hi), var(--glass-halo-raised), var(--glass-state-hover-glow);
   }
 
+  /* Invalid companion: the glass rules above outrank the field utility's
+     invalid rule, so glass restates it one attribute higher, after them. */
+  [data-preset="glass"]
+    .dr-combobox-control:has(:is([data-invalid], [aria-invalid="true"])) {
+    border-color: hsl(var(--destructive));
+  }
+
+  [data-preset="glass"]
+    .dr-combobox-control:has(
+      :is([data-invalid], [aria-invalid="true"])
+    ):focus-within {
+    border-color: hsl(var(--destructive));
+    box-shadow:
+      var(--inset-hi),
+      var(--glass-halo-raised),
+      0 0 0 1px hsl(var(--destructive));
+  }
+
   /* The control draws the single glass border; the input inside it stays
      bare, or the two borders nest. (0,3,0) outranks the input's own field
      and focus rules. */
