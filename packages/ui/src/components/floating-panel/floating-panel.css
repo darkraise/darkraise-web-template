@@ -1,6 +1,6 @@
 @layer components {
   .dr-floating-panel {
-    @apply bg-popover text-popover-foreground border-border flex flex-col overflow-hidden rounded-md border shadow-[var(--elevation-medium)];
+    @apply bg-popover text-popover-foreground border-border flex flex-col overflow-hidden rounded-[var(--overlay-radius)] border shadow-[var(--elevation-medium)];
     /* Glass-frost the panel (no-op under Default). */
     -webkit-backdrop-filter: var(--backdrop-filter);
     backdrop-filter: var(--backdrop-filter);

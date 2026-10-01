@@ -1,9 +1,9 @@
 @layer components {
   .dr-command {
-    @apply text-popover-foreground flex h-full w-full flex-col overflow-hidden rounded-md;
-    background: var(--surface-overlay-bg);
+    @apply text-popover-foreground flex h-full w-full flex-col overflow-hidden rounded-[var(--overlay-radius)];
+    background: var(--overlay-bg);
     background-blend-mode: var(--surface-overlay-blend-mode);
-    box-shadow: var(--surface-overlay-shadow);
+    box-shadow: var(--overlay-shadow);
     -webkit-backdrop-filter: var(--backdrop-filter);
     backdrop-filter: var(--backdrop-filter);
   }

@@ -799,8 +799,8 @@
 
     /* --surface-overlay-* — chrome for floating overlay surfaces
      (Tooltip, Hover-card, Popover, Dropdown menu content, etc.).
-     Components opt in by reading these instead of hard-coding
-     bg-popover + border + shadow-dropdown. Default values
+     Overlays read them through the --overlay-* family below instead
+     of hard-coding bg-popover + border + shadow-dropdown. Default values
      reproduce the current overlay look. The blend-mode token lets
      presets (e.g. Glass) layer multiple background images with a
      specific blending recipe; defaults to `normal` (no-op for
@@ -823,6 +823,16 @@
     --surface-overlay-shadow:
       var(--shadow-dropdown), var(--glow-outer), var(--glow-inner);
     --surface-overlay-blend-mode: normal;
+
+    /* Overlay family. --overlay-bg is redeclared beside every
+     --surface-overlay-bg in the [data-surface-intensity] rules: overlays
+     forward their surfaceIntensity prop as that attribute on themselves,
+     and a custom property that reads another resolves where it is
+     declared, so a :root-only --overlay-bg would keep <html>'s wash. */
+    --overlay-bg: var(--surface-overlay-bg);
+    --overlay-border: var(--surface-overlay-border);
+    --overlay-shadow: var(--surface-overlay-shadow);
+    --overlay-radius: var(--radius);
 
     /* Default elevation-current so `<Card elevation="auto">` and other
      consumers reading `var(--elevation-current)` resolve to a real shadow
@@ -1082,6 +1092,7 @@
       var(--surface-overlay-base),
       hsl(var(--surface-wash-color)) var(--surface-wash)
     );
+  --overlay-bg: var(--surface-overlay-bg);
 }
 
 /* The downward steps are large and the upward step is small on purpose.
@@ -1121,6 +1132,7 @@
   --surface-card-fill-opaque: hsl(var(--card));
   --surface-overlay-bg: var(--surface-overlay-layers)
     var(--surface-overlay-base);
+  --overlay-bg: var(--surface-overlay-bg);
 }
 
 /* Glass's light-mode override, [data-mode="light"][data-preset="glass"], is
@@ -1137,6 +1149,7 @@
   --surface-overlay-fill: transparent;
   --surface-card-fill-opaque: transparent;
   --surface-overlay-bg: transparent;
+  --overlay-bg: var(--surface-overlay-bg);
 }
 
 /* Dark-mode shadow boost — drop shadows tinted black barely register

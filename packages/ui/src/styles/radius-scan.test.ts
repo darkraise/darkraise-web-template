@@ -47,13 +47,53 @@ const FULL_ROUND = new Map<string, string>([
   ["dr-user-menu-trigger", "avatar trigger"],
 ])
 
-/** Literal radii that stay until their owner moves to a family token. */
-const LITERAL_EXEMPT = new Map<string, string>([
-  [
-    "dr-drawer-content",
-    "the drawer's corner moves to --overlay-radius with the other overlays",
-  ],
-])
+/** Every overlay surface: [stylesheet, selector of the rule that shapes it]. */
+const OVERLAYS: Array<[string, string]> = [
+  ["dialog/dialog.css", ".dr-dialog-content"],
+  ["drawer/drawer.css", '.dr-drawer-content[data-direction="bottom"]'],
+  ["drawer/drawer.css", '.dr-drawer-content[data-direction="top"]'],
+  ["drawer/drawer.css", '.dr-drawer-content[data-direction="left"]'],
+  ["drawer/drawer.css", '.dr-drawer-content[data-direction="right"]'],
+  ["popover/popover.css", ".dr-popover-content"],
+  ["hover-card/hover-card.css", ".dr-hover-card-content"],
+  ["tooltip/tooltip.css", ".dr-tooltip-content"],
+  ["menu-primitives/menu-primitives.css", ".dr-menu-content"],
+  ["menu-primitives/menu-primitives.css", ".dr-menu-sub-content"],
+  ["menubar/menubar.css", ".dr-menubar-content"],
+  ["menubar/menubar.css", ".dr-menubar-sub-content"],
+  ["select/select.css", ".dr-select-content"],
+  ["combobox/combobox.css", ".dr-combobox-content"],
+  ["date-picker/date-picker.css", ".dr-date-picker-content"],
+  ["command/command.css", ".dr-command"],
+  ["virtualized-dropdown-menu/virtualized-dropdown-menu.css", ".dr-vdm-content"],
+  ["navigation-menu/navigation-menu.css", ".dr-navigation-menu-content"],
+  ["color-picker/color-picker.css", ".dr-color-picker-content"],
+  ["floating-panel/floating-panel.css", ".dr-floating-panel"],
+  ["tour/tour.css", ".dr-tour-popover"],
+  ["sonner/sonner.css", ".dr-toast"],
+]
+
+/**
+ * Stylesheets whose overlay paints the shared overlay surface. Floating
+ * panel, tour and toast paint their own and only take the radius.
+ */
+const OVERLAY_SURFACES = [
+  "dialog/dialog.css",
+  "sheet/sheet.css",
+  "drawer/drawer.css",
+  "popover/popover.css",
+  "hover-card/hover-card.css",
+  "tooltip/tooltip.css",
+  "menu-primitives/menu-primitives.css",
+  "menubar/menubar.css",
+  "select/select.css",
+  "combobox/combobox.css",
+  "date-picker/date-picker.css",
+  "command/command.css",
+  "virtualized-dropdown-menu/virtualized-dropdown-menu.css",
+  "navigation-menu/navigation-menu.css",
+  "color-picker/color-picker.css",
+]
 
 const SIDES = "(?:-(?:t|r|b|l|s|e|tl|tr|br|bl|ss|se|es|ee))?"
 /** `rounded`, `rounded-t`, `first:rounded-l`: Tailwind's fixed 0.25rem. */
@@ -260,11 +300,10 @@ describe("radius scan", () => {
   })
 
   it("uses no literal length in an arbitrary rounded utility", () => {
-    const offenders = RULES.filter((rule) => !exempt(rule, LITERAL_EXEMPT)).flatMap(
-      (rule) =>
-        [...rule.body.matchAll(ARBITRARY_LITERAL)].map(
-          (m) => `${m[0]} in ${label(rule)}`,
-        ),
+    const offenders = RULES.flatMap((rule) =>
+      [...rule.body.matchAll(ARBITRARY_LITERAL)].map(
+        (m) => `${m[0]} in ${label(rule)}`,
+      ),
     )
     expect(offenders).toEqual([])
   })
@@ -294,5 +333,42 @@ describe("radius scan", () => {
       ),
     )
     expect([...FULL_ROUND.keys()].filter((cls) => !used.has(cls))).toEqual([])
+  })
+})
+
+describe("overlay family", () => {
+  it("declares the overlay tokens on :root", () => {
+    expect(THEME).toContain("--overlay-bg: var(--surface-overlay-bg);")
+    expect(THEME).toContain("--overlay-border: var(--surface-overlay-border);")
+    expect(THEME).toContain("--overlay-shadow: var(--surface-overlay-shadow);")
+    expect(THEME).toContain("--overlay-radius: var(--radius);")
+  })
+
+  it.each(OVERLAYS)("rounds %s %s with --overlay-radius", (file, selector) => {
+    const body = bodyOf(file, selector)
+    expect(readsRadius(body, "--overlay-radius")).toBe(true)
+    expect(body).not.toMatch(
+      new RegExp(`(?<![\\w-])rounded${SIDES}-(?:sm|md|lg)(?![\\w-])`),
+    )
+  })
+
+  // SheetContent renders DialogContent, so the sheet takes the dialog's
+  // radius and must not set one of its own.
+  it("leaves the sheet on the dialog's radius", () => {
+    const own = RULES.filter(
+      (rule) =>
+        rule.path.endsWith("sheet/sheet.css") &&
+        /(?<![\w-])rounded|border(?:-[a-z]+)*-radius/.test(rule.body),
+    ).map(label)
+    expect(own).toEqual([])
+  })
+
+  it.each(OVERLAY_SURFACES)("%s reads the surface through --overlay-*", (file) => {
+    const css = readFileSync(`src/components/${file}`, "utf8").replace(
+      /\/\*[\s\S]*?\*\//g,
+      "",
+    )
+    expect(css).not.toMatch(/var\(--surface-overlay-(?:bg|border|shadow)\)/)
+    expect(css).toContain("var(--overlay-bg)")
   })
 })
