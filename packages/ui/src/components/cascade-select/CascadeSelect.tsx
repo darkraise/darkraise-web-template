@@ -44,6 +44,22 @@ function firstEnabled(items: CascadeOption[]): CascadeOption | undefined {
 }
 
 /**
+ * The path to open on: a selected path whose last item is disabled ends on
+ * its column's first enabled item instead, so focus never lands on an item
+ * the keyboard cannot reach.
+ */
+function openablePath(options: CascadeOption[], path: string[]): string[] {
+  let column = options
+  for (const value of path.slice(0, -1)) {
+    column = column.find((o) => o.value === value)?.children ?? []
+  }
+  const last = column.find((o) => o.value === path[path.length - 1])
+  if (!last?.disabled) return path
+  const first = firstEnabled(column)
+  return first ? [...path.slice(0, -1), first.value] : path.slice(0, -1)
+}
+
+/**
  * Focuses the item the open path ends on, if it is mounted, and scrolls only
  * its own column to it: scrollIntoView would also scroll the page. A hovered
  * item is left where it is, so the list never moves under the pointer.
@@ -113,7 +129,7 @@ function CascadeSelect({
       return
     }
     if (path.length > 0 && findLabelByPath(options, path) !== null) {
-      setHoverPath(path)
+      setHoverPath(openablePath(options, path))
       return
     }
     const first = firstEnabled(options)

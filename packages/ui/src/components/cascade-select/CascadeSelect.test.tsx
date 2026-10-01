@@ -118,6 +118,15 @@ describe("CascadeSelect keyboard", () => {
     await waitFor(() => expect(option("New York")).toHaveFocus())
   })
 
+  it("focuses the column's first enabled item when the selected path ends on a disabled one", async () => {
+    await openKeyed({ defaultValue: ["us", "tx"] })
+    await waitFor(() => expect(option("California")).toHaveFocus())
+    const tabbable = screen
+      .getAllByRole("option")
+      .filter((item) => item.tabIndex === 0)
+    expect(tabbable).toEqual([option("California")])
+  })
+
   it("moves with Up, Down, Home and End and skips disabled items", async () => {
     await openKeyed()
     await waitFor(() => expect(option("United States")).toHaveFocus())
