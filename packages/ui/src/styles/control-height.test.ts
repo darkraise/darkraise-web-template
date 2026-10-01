@@ -41,10 +41,13 @@ function densityBlock(step: string): string {
 
 /** Source files, tests excluded, whose text matches `pattern`. */
 function readersOf(pattern: RegExp): string[] {
-  return globSync("src/**/*.{css,ts,tsx}")
+  const files = globSync("src/**/*.{css,ts,tsx}")
     .map((file) => file.replaceAll("\\", "/"))
     .filter((file) => !/\.test\.tsx?$/.test(file))
-    .filter((file) => pattern.test(readFileSync(file, "utf8")))
+  // Run from anywhere but packages/ui, the glob finds nothing and every
+  // "no reader" case would pass on an empty list.
+  expect(files.length).toBeGreaterThan(0)
+  return files.filter((file) => pattern.test(readFileSync(file, "utf8")))
 }
 
 /** A padding- or utility-derived height left beside the fixed one. */

@@ -315,12 +315,13 @@ describe("density and font-size composition", () => {
   })
 
   it("leaves no reader of --density-cell or --density-cell-base", () => {
-    const offenders = globSync("src/**/*.{css,ts,tsx}")
+    const files = globSync("src/**/*.{css,ts,tsx}")
       .map((file) => file.replaceAll("\\", "/"))
       .filter((file) => !/\.test\.tsx?$/.test(file))
-      .filter((file) =>
-        /--density-cell(?:-base)?(?![\w-])/.test(readFileSync(file, "utf8")),
-      )
+    expect(files.length).toBeGreaterThan(0)
+    const offenders = files.filter((file) =>
+      /--density-cell(?:-base)?(?![\w-])/.test(readFileSync(file, "utf8")),
+    )
     expect(offenders).toEqual([])
   })
 })
