@@ -1,6 +1,10 @@
 @layer components {
   .dr-switch {
-    @apply data-[state=checked]:bg-primary-fill data-[state=unchecked]:bg-input focus-ring hit-area-24 inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)];
+    @apply data-[state=unchecked]:bg-input focus-ring hit-area-24 inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)];
+  }
+
+  .dr-switch[data-state="checked"] {
+    background-color: var(--selected-check-bg);
   }
 
   .dr-switch[data-state="unchecked"] {

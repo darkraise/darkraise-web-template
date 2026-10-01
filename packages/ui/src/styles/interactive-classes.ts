@@ -123,3 +123,23 @@ export function interactiveClasses(): Map<string, string> {
   }
   return found
 }
+
+/** Variants and utility of an @apply token; brackets may hold colons. */
+export function splitToken(token: string): {
+  variants: string[]
+  utility: string
+} {
+  const parts: string[] = []
+  let depth = 0
+  let start = 0
+  for (let i = 0; i < token.length; i++) {
+    const ch = token[i]
+    if (ch === "[") depth++
+    else if (ch === "]") depth--
+    else if (ch === ":" && depth === 0) {
+      parts.push(token.slice(start, i))
+      start = i + 1
+    }
+  }
+  return { variants: parts, utility: token.slice(start) }
+}

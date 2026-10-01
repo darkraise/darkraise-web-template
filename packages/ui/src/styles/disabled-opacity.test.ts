@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync, readdirSync } from "node:fs"
 import { join } from "node:path"
+import { splitToken } from "./interactive-classes"
 
 // Disabled controls faded by three amounts — 0.5 on most, 0.6 on compound
 // roots, 0.7 on the label and Editable — so two unavailable controls side by
@@ -50,23 +51,6 @@ function rulesOf(path: string): Rule[] {
 
 function isDisabledSelector(selector: string): boolean {
   return /disabled/.test(selector.replace(/:not\((?:[^()]|\([^()]*\))*\)/g, ""))
-}
-
-/** Variants and utility of an @apply token; brackets may hold colons. */
-function splitToken(token: string): { variants: string[]; utility: string } {
-  const parts: string[] = []
-  let depth = 0
-  let start = 0
-  for (let i = 0; i < token.length; i++) {
-    const ch = token[i]
-    if (ch === "[") depth++
-    else if (ch === "]") depth--
-    else if (ch === ":" && depth === 0) {
-      parts.push(token.slice(start, i))
-      start = i + 1
-    }
-  }
-  return { variants: parts, utility: token.slice(start) }
 }
 
 const RULES = filesUnder("src", /\.css$/).flatMap(rulesOf)

@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync, readdirSync } from "node:fs"
 import { join } from "node:path"
+import { splitToken } from "./interactive-classes"
 
 // Selection reads from four families instead of six visual languages: a
 // neutral raised pill for view switches, an accent fill for checked and
@@ -351,13 +352,45 @@ const SELECTED =
 const PRIMARY =
   /(?<![\w-])(?:bg|border|text|ring|outline|fill|stroke)-primary(?:-fill|-text)?(?![\w-])|(?<![\w-])(?:bg|border|text)-primary(?:-fill)?\/\d+|var\(--primary(?:-fill|-text)?\)/
 
+/** A checked or selected state written as a Tailwind variant. */
+const STATE_VARIANT =
+  /^(?:has-)?data-\[state=checked\]$|^aria-(?:checked|selected)$/
+
+/**
+ * @apply utilities that paint a checked or selected state with the accent,
+ * outside glass, as [file, "<selector> <token>"].
+ */
+function accentStateUtilities(
+  path: string,
+  css: string,
+): Array<[string, string]> {
+  const found: Array<[string, string]> = []
+  const text = css.replace(/\/\*[\s\S]*?\*\//g, "")
+  for (const match of text.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+    const selector = normalise(match[1] as string)
+    if (selector.startsWith("[data-preset=")) continue
+    for (const apply of (match[2] as string).matchAll(/@apply([^;]*);/g)) {
+      for (const token of (apply[1] as string).trim().split(/\s+/)) {
+        const { variants, utility } = splitToken(token)
+        if (
+          variants.some((v) => STATE_VARIANT.test(v)) &&
+          PRIMARY.test(utility)
+        ) {
+          found.push([path.replace(/^src\//, ""), `${selector} ${token}`])
+        }
+      }
+    }
+  }
+  return found
+}
+
 /**
  * Selected rules that keep the accent, as [file, text in the selector,
- * reason]. Everything else matched here reads a family token. The scan sees
- * selectors only: checked states written as `data-[state=checked]:` or
- * `has-data-[state=checked]:` utilities inside @apply (checkbox.css,
- * switch.css, the field choice card in field.css) are outside it and outside
- * spec section 1's reader list.
+ * reason]. Everything else matched here reads a family token. The scan reads
+ * selectors, and checked or selected states written as Tailwind variants
+ * inside @apply (`data-[state=checked]:`, `has-data-[state=checked]:`,
+ * `aria-checked:`, `aria-selected:`), which it reports as
+ * `<selector> <token>`.
  */
 const ALLOWED: Array<[string, string, string]> = [
   [
@@ -374,6 +407,21 @@ const ALLOWED: Array<[string, string, string]> = [
     "components/color-picker/color-picker.css",
     '.dr-color-picker-swatch-item[data-active="true"]',
     "a colour swatch ring is tool chrome around a colour",
+  ],
+  [
+    "components/field/field.css",
+    ".dr-field-label has-data-[state=checked]:bg-primary/5",
+    "the choice card tints its container around a checked control; the tint is not the checked fill",
+  ],
+  [
+    "components/field/field.css",
+    ".dr-field-label has-data-[state=checked]:border-primary",
+    "the choice card's edge marks the container around a checked control, not the checked fill",
+  ],
+  [
+    "components/field/field.css",
+    ".dr-field-label dark:has-data-[state=checked]:bg-primary/10",
+    "the choice card's dark-mode container tint around a checked control, not the checked fill",
   ],
   [
     "components/floating-panel/floating-panel.css",
@@ -457,9 +505,9 @@ function stylesheets(dir: string): string[] {
 
 /** Selected rules outside glass that read the accent, as [file, selector]. */
 function accentSelections(): Array<[string, string]> {
-  return ["src/components", "src/layout"]
-    .flatMap(stylesheets)
-    .flatMap((path) =>
+  const paths = ["src/components", "src/layout"].flatMap(stylesheets)
+  return [
+    ...paths.flatMap((path) =>
       rulesOf(path).flatMap((rule) =>
         rule.selectors
           .filter(
@@ -470,7 +518,11 @@ function accentSelections(): Array<[string, string]> {
           )
           .map((s): [string, string] => [path.replace(/^src\//, ""), s]),
       ),
-    )
+    ),
+    ...paths.flatMap((path) =>
+      accentStateUtilities(path, readFileSync(path, "utf8")),
+    ),
+  ]
 }
 
 describe("selected states read a family token", () => {
@@ -525,5 +577,38 @@ describe("selected states read a family token", () => {
           .map((rule) => `${rule.selectors.join(", ")} (${path})`),
       )
     expect(offenders).toEqual([])
+  })
+})
+
+describe("checked family on Checkbox and Switch", () => {
+  it.each([
+    [
+      "src/components/checkbox/checkbox.css",
+      '.dr-checkbox[data-state="checked"]',
+      [
+        "background-color: var(--selected-check-bg);",
+        "border-color: var(--selected-check-bg);",
+        "color: var(--selected-check-fg);",
+      ],
+    ],
+    [
+      "src/components/switch/switch.css",
+      '.dr-switch[data-state="checked"]',
+      ["background-color: var(--selected-check-bg);"],
+    ],
+  ])("%s paints %s from the checked family", (path, selector, declarations) => {
+    const body = bodyOf(path, selector)
+    for (const declaration of declarations) {
+      expect(body).toContain(declaration)
+    }
+  })
+
+  it("catches a checked utility that paints the accent inside @apply", () => {
+    expect(
+      accentStateUtilities(
+        "src/components/x/x.css",
+        ".dr-x { @apply data-[state=checked]:bg-primary flex; }",
+      ),
+    ).toEqual([["components/x/x.css", ".dr-x data-[state=checked]:bg-primary"]])
   })
 })
