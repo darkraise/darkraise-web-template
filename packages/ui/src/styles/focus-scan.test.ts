@@ -37,10 +37,6 @@ const EXEMPT = new Map<string, string>([
     "dr-sidebar-nav-popover-parent",
     "shares its element with dr-sidebar-popover-child, which draws the ring",
   ],
-  [
-    "dr-cascade-item",
-    "not focusable: CascadeSelect has no keyboard support yet (register row 37), and its active path follows the pointer",
-  ],
 ])
 
 const FOCUS_STATE =

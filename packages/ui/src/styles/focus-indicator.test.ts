@@ -343,9 +343,9 @@ describe("one focus outline pair", () => {
     )
   })
 
-  // The active path follows the pointer, and the items are not focusable
-  // (CascadeSelect has no keyboard support yet), so it is a highlighted row,
-  // not a focus indicator.
+  // The active path follows the pointer as well as the keyboard, so it is a
+  // highlighted row, not a focus indicator; keyboard focus draws its own
+  // ring on :focus-visible.
   it("highlights the cascade's active path like its hover, with no ring", () => {
     const css = flat("src/components/cascade-select/cascade-select.css")
     expect(css).toMatch(

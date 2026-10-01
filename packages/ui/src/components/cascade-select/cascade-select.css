@@ -16,15 +16,21 @@
     @apply m-0 max-h-72 min-w-44 list-none overflow-auto p-1;
   }
   .dr-cascade-item {
-    @apply flex cursor-pointer items-center gap-2 rounded-sm px-2 py-[var(--density-row-py)] text-sm transition-colors;
+    @apply flex cursor-pointer items-center gap-2 rounded-sm px-2 py-[var(--density-row-py)] text-sm transition-colors outline-none;
   }
-  /* The active item (the one whose subtree shows in the next column)
-     follows the pointer, so it takes the highlighted-row treatment its
-     hover uses. The items are not focusable, so there is no focus ring to
-     draw here. */
+  /* The active item (the one whose subtree shows in the next column) takes
+     the highlighted-row treatment its hover uses. Keyboard focus adds a ring
+     only on :focus-visible, so a pointer-driven active path shows none. */
   .dr-cascade-item:hover,
   .dr-cascade-item[data-active="true"] {
     @apply bg-accent text-accent-foreground;
+  }
+
+  /* Keyboard focus indicator, as its own rule rather than an @apply in the
+     base rule, as tree-view.css does. */
+  .dr-cascade-item:focus-visible {
+    outline: 2px solid hsl(var(--focus-ring));
+    outline-offset: -2px;
   }
 
   .dr-cascade-item[aria-disabled="true"] {
