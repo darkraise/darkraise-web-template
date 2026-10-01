@@ -39,15 +39,21 @@ async function openFixture(page: Page) {
     .waitFor()
   // The fixture paints the light fallback before ThemeProvider applies the
   // seeded theme, so colours are still transitioning when the controls first
-  // appear; a pixel sampled then is a blend of the two themes.
-  await page.evaluate(() =>
-    Promise.all(
+  // appear; a pixel sampled then is a blend of the two themes. Wait for the
+  // theme, give its transitions a frame to start, then let them finish (a
+  // transition cut short by a later style change rejects, which is fine).
+  await expect(page.locator("html")).toHaveAttribute("data-preset", /.+/)
+  await page.evaluate(async () => {
+    await new Promise((resolve) =>
+      requestAnimationFrame(() => requestAnimationFrame(resolve)),
+    )
+    await Promise.all(
       document
         .getAnimations()
         .filter((animation) => animation instanceof CSSTransition)
-        .map((animation) => animation.finished),
-    ),
-  )
+        .map((animation) => animation.finished.catch(() => undefined)),
+    )
+  })
 }
 
 async function measuredHeights(page: Page) {
