@@ -247,6 +247,49 @@
   }
 }
 
+/* Type roles: one per kind of text, read from the --type-* tokens. */
+@utility type-page-title {
+  font-size: var(--type-page-title-size);
+  font-weight: var(--type-page-title-weight);
+  letter-spacing: var(--type-page-title-tracking);
+  line-height: var(--type-page-title-leading);
+}
+
+@utility type-dialog-title {
+  font-size: var(--type-dialog-title-size);
+  font-weight: var(--type-dialog-title-weight);
+  letter-spacing: var(--type-dialog-title-tracking);
+  line-height: var(--type-dialog-title-leading);
+}
+
+@utility type-section-title {
+  font-size: var(--type-section-title-size);
+  font-weight: var(--type-section-title-weight);
+  letter-spacing: var(--type-section-title-tracking);
+  line-height: var(--type-section-title-leading);
+}
+
+@utility type-label {
+  font-size: var(--type-label-size);
+  font-weight: var(--type-label-weight);
+  letter-spacing: var(--type-label-tracking);
+  line-height: var(--type-label-leading);
+}
+
+@utility type-caption {
+  font-size: var(--type-caption-size);
+  font-weight: var(--type-caption-weight);
+  letter-spacing: var(--type-caption-tracking);
+  line-height: var(--type-caption-leading);
+}
+
+@utility type-ui {
+  font-size: var(--type-ui-size);
+  font-weight: var(--type-ui-weight);
+  letter-spacing: var(--type-ui-tracking);
+  line-height: var(--type-ui-leading);
+}
+
 /* Inputs deliberately use --primary (not --focus-ring) — text fields want a sharp brand-color indicator, matching ark-ui's input pattern. */
 /* Extends a small control's pointer and touch target to the WCAG 2.2 AA
    minimum of 24x24 CSS px without changing how large it looks. Checkbox,
@@ -740,6 +783,35 @@
        re-binds it alongside the Tailwind tokens. There is no `text-2xs`
        utility — consume it as `text-[length:var(--text-2xs)]`. */
     --text-2xs: 0.625rem;
+
+    /* Type roles. Sizes read the --text-* steps, so the font-size axis
+       scales them; leadings are ratios, so they follow the size. Titles and
+       labels sit on a line height of 1 so headers and form rows keep their
+       height. */
+    --type-page-title-size: var(--text-2xl);
+    --type-page-title-weight: 600;
+    --type-page-title-tracking: -0.02em;
+    --type-page-title-leading: var(--text-2xl--line-height);
+    --type-dialog-title-size: var(--text-lg);
+    --type-dialog-title-weight: 600;
+    --type-dialog-title-tracking: 0;
+    --type-dialog-title-leading: 1;
+    --type-section-title-size: var(--text-base);
+    --type-section-title-weight: 600;
+    --type-section-title-tracking: 0;
+    --type-section-title-leading: 1;
+    --type-label-size: var(--text-sm);
+    --type-label-weight: 500;
+    --type-label-tracking: 0;
+    --type-label-leading: 1;
+    --type-caption-size: var(--text-xs);
+    --type-caption-weight: 500;
+    --type-caption-tracking: 0;
+    --type-caption-leading: var(--text-xs--line-height);
+    --type-ui-size: var(--text-sm);
+    --type-ui-weight: 400;
+    --type-ui-tracking: 0;
+    --type-ui-leading: var(--text-sm--line-height);
 
     /* Icon sizing. Tracks the font-size axis so glyphs stay visually
        matched to the labels beside them; this :root value is the
