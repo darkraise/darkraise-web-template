@@ -88,8 +88,9 @@
   .dr-btn[data-variant="outline"] {
     @apply text-foreground border bg-transparent;
     box-shadow: var(--shadow-button), var(--glow-outer), var(--glow-inner);
-    /* was .btn-glass-neutral--accent-border (theme.css line 932-934) */
-    border-color: hsl(var(--primary) / 0.6);
+    /* The neutral edge solved to 3:1 on every ground: accent is kept for
+       action, focus, checked and selected states. */
+    border-color: var(--field-edge);
   }
   .dr-btn[data-variant="secondary"] {
     @apply bg-secondary text-secondary-foreground;
@@ -104,9 +105,10 @@
     @apply border-border border;
   }
 
-  /* ghost: hover-only glass treatment (was .btn-ghost-glass) */
+  /* ghost: foreground text at rest; hover and press come from the state
+     layer alone. */
   .dr-btn[data-variant="ghost"] {
-    @apply text-muted-foreground hover:text-foreground border border-transparent;
+    @apply text-foreground border border-transparent;
   }
 
   /* link */
