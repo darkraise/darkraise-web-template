@@ -18,18 +18,13 @@
   .dr-cascade-item {
     @apply flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors;
   }
+  /* The active item (the one whose subtree shows in the next column)
+     follows the pointer, so it takes the highlighted-row treatment its
+     hover uses. The items are not focusable, so there is no focus ring to
+     draw here. */
   .dr-cascade-item:hover,
   .dr-cascade-item[data-active="true"] {
     @apply bg-accent text-accent-foreground;
-  }
-
-  /* Affordance glow on the active cascade item (the one whose subtree is
-     showing in the next column). Transparent in every shipped preset; a
-     preset's primary glow signals "this is the active drill-down path". */
-  .dr-cascade-item[data-active="true"] {
-    box-shadow: var(--affordance-glow);
-    outline: 2px solid hsl(var(--focus-ring));
-    outline-offset: -2px;
   }
 
   .dr-cascade-item[aria-disabled="true"] {

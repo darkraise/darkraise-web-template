@@ -37,6 +37,10 @@ const EXEMPT = new Map<string, string>([
     "dr-sidebar-nav-popover-parent",
     "shares its element with dr-sidebar-popover-child, which draws the ring",
   ],
+  [
+    "dr-cascade-item",
+    "not focusable: CascadeSelect has no keyboard support yet (register row 37), and its active path follows the pointer",
+  ],
 ])
 
 const FOCUS_STATE =
@@ -45,7 +49,7 @@ const FOCUS_STATE =
  * Rows whose keyboard-active state is `data-active` (aria-activedescendant).
  * Elsewhere `data-active` means "selected", and a selection glow is not focus.
  */
-const ACTIVE_ROW_CLASSES = new Set(["dr-vdm-item", "dr-cascade-item"])
+const ACTIVE_ROW_CLASSES = new Set(["dr-vdm-item"])
 
 /** Declarations and utilities that remove an indicator rather than draw one. */
 const REMOVALS =

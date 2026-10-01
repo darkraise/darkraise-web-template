@@ -331,6 +331,23 @@ describe("one focus outline pair", () => {
     )
   })
 
+  // The active path follows the pointer, and the items are not focusable
+  // (CascadeSelect has no keyboard support yet), so it is a highlighted row,
+  // not a focus indicator.
+  it("highlights the cascade's active path like its hover, with no ring", () => {
+    const css = flat("src/components/cascade-select/cascade-select.css")
+    expect(css).toMatch(
+      /\.dr-cascade-item:hover, \.dr-cascade-item\[data-active="true"\] \{ @apply bg-accent text-accent-foreground; \}/,
+    )
+    const active = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].filter(
+      ([, selector]) =>
+        selector?.includes('.dr-cascade-item[data-active="true"]'),
+    )
+    for (const [, , body] of active) {
+      expect(body).not.toMatch(/outline|box-shadow|affordance-glow/)
+    }
+  })
+
   it("rings the colour picker's area and hue strip at the standalone offset", () => {
     expect(flat("src/components/color-picker/color-picker.css")).toMatch(
       /\.dr-color-picker-sv:focus-visible, \.dr-color-picker-hue:focus-visible \{ outline: 2px solid hsl\(var\(--focus-ring\)\); outline-offset: 2px; \}/,
