@@ -157,9 +157,10 @@
   }
 
   /* The control draws the single glass border; the input inside it stays
-     bare, or the two borders nest. (0,3,0) outranks the input's own field
-     and focus rules. */
-  [data-preset="glass"] .dr-combobox-control > .dr-combobox-input {
+     bare, or the two borders nest. .dr-input is in the selector so this
+     (0,4,0) outranks the input's own focus and invalid-focus rings, which
+     are (0,3,0) and load later. */
+  [data-preset="glass"] .dr-combobox-control > .dr-combobox-input.dr-input {
     border-width: 0;
     background: transparent;
     box-shadow: none;

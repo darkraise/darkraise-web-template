@@ -109,10 +109,13 @@ describe("field boundary", () => {
 
   // Under glass the combobox control draws the field's border, so the
   // input inside it is bare; otherwise the two borders nest.
+  // The input also carries .dr-input, whose invalid-focus ring is (0,3,0) and
+  // sits later in the bundle, so a reset without .dr-input would tie and lose
+  // and a focused invalid combobox would nest a second ring inside the control.
   it("leaves the glass combobox one border: the control's", () => {
     const body = bodyOf(
       "combobox/combobox.css",
-      '[data-preset="glass"] .dr-combobox-control > .dr-combobox-input',
+      '[data-preset="glass"] .dr-combobox-control > .dr-combobox-input.dr-input',
     )
     for (const declaration of [
       "border-width: 0;",
@@ -122,6 +125,17 @@ describe("field boundary", () => {
     ]) {
       expect(body).toContain(declaration)
     }
+  })
+
+  // The number field carries .dr-input too; its own focus reset is (0,2,0) and
+  // loses to the invalid ring, which under glass would nest inside the
+  // wrapper's invalid ring.
+  it("leaves the glass number input one invalid ring: the wrapper's", () => {
+    const body = bodyOf(
+      "number-input/number-input.css",
+      '[data-preset="glass"] .dr-number-input-control .dr-number-input-field:is(:focus, :focus-visible)',
+    )
+    expect(body).toContain("box-shadow: none;")
   })
 
   // The base rule gives grouped slots top, bottom and right borders and the

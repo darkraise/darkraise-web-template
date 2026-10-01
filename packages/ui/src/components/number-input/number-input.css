@@ -148,6 +148,15 @@
       0 0 0 1px hsl(var(--destructive));
   }
 
+  /* The wrapper draws the invalid ring. The field's own focus reset above is
+     (0,2,0) and loses to .dr-input's invalid-focus ring at (0,3,0), which
+     would nest a second ring inside the wrapper's; this (0,4,0) wins. */
+  [data-preset="glass"]
+    .dr-number-input-control
+    .dr-number-input-field:is(:focus, :focus-visible) {
+    box-shadow: none;
+  }
+
   /* Glass preset — addon chips and every interior divider (addon side
      borders, the trigger-group divider, the increment/decrement split)
      are retinted to the fog edge so they read as part of the frosted
