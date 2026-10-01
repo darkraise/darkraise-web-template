@@ -29,7 +29,7 @@
   }
 
   .dr-segment-group .dr-segment-group-item[data-state="checked"] {
-    @apply text-foreground;
+    color: var(--selected-view-fg);
   }
 
   .dr-segment-group .dr-segment-group-item[data-disabled] {
@@ -76,18 +76,17 @@
   }
 
   .dr-segment-group-indicator {
-    /* Light mode: pure white (`bg-card`) — clearly raised above the muted
-       container (`surface[100]`).
-       Dark mode: `bg-border` (`surface[700]`) — the only token in this
-       theme that's *lighter* than `bg-muted` (`surface[800]`), so the pill
-       still reads as raised instead of recessed. Using `bg-background`
-       previously gave `surface[950]` in dark mode, which inverted the
-       elevation and looked black. */
-    @apply bg-card dark:bg-border absolute z-0 rounded-sm;
-    /* Compose --shadow-button with the preset-driven --affordance-glow so
+    /* The view-switch pill: --card in light mode, clearly raised above the
+       muted container (`surface[100]`); --border in dark mode
+       (`surface[700]`), the only token there that's *lighter* than
+       `bg-muted` (`surface[800]`), so the pill still reads as raised
+       instead of recessed. */
+    @apply absolute z-0 rounded-sm;
+    background-color: var(--selected-view-bg);
+    /* Compose the family shadow with the preset-driven --affordance-glow so
        the sliding indicator pill can gain a primary halo from a preset
        (it stays visually unchanged in every shipped preset). */
-    box-shadow: var(--shadow-button), var(--affordance-glow);
+    box-shadow: var(--selected-view-shadow), var(--affordance-glow);
     transition:
       transform var(--duration-normal) var(--ease-out),
       width var(--duration-normal) var(--ease-out),
@@ -98,26 +97,21 @@
     transition-duration: 0ms;
   }
 
-  /* Outline variant — the track keeps its muted fill; only the sliding
-     indicator changes. --shadow-button is dropped because a drop shadow
-     cast by a hollow ring reads as a smudge rather than as elevation.
-     background-image is reset defensively: preset rules paint this pill
-     with a gradient rather than a colour, so clearing only
-     background-color would leave the pill fillable. */
+  /* Outline variant — the same raised pill plus a 1px neutral ring, so the
+     variant still reads apart from default. --border-strong, not --border:
+     in dark mode the pill itself is --border. background-image is reset
+     defensively: preset rules paint this pill with a gradient. */
   .dr-segment-group-indicator[data-variant="outline"] {
-    background-color: transparent;
     background-image: none;
-    border: 1px solid hsl(var(--primary));
-    box-shadow: var(--affordance-glow);
+    box-shadow:
+      var(--selected-view-shadow),
+      inset 0 0 0 1px hsl(var(--border-strong)),
+      var(--affordance-glow);
   }
 
-  .dr-segment-group
-    .dr-segment-group-item[data-variant="outline"][data-state="checked"] {
-    @apply text-primary-text;
-  }
-
-  /* Accent colour — the pill takes the brand hue and the checked label
-     flips to the on-primary colour. The track is untouched.
+  /* Accent colour — an opt-in that reads the checked family: the pill takes
+     the accent fill and the checked label its foreground. The track is
+     untouched.
 
      box-shadow is re-declared rather than left to the base rule: the
      glass rule below also sets box-shadow, and at (0,3,0) it beats the
@@ -129,14 +123,14 @@
      fillable. */
   .dr-segment-group[data-color="accent"]
     .dr-segment-group-indicator[data-variant="default"] {
-    background-color: hsl(var(--primary-fill));
+    background-color: var(--selected-check-bg);
     background-image: none;
     box-shadow: var(--shadow-button), var(--affordance-glow);
   }
 
   .dr-segment-group[data-color="accent"]
     .dr-segment-group-item[data-variant="default"][data-state="checked"] {
-    @apply text-primary-foreground;
+    color: var(--selected-check-fg);
   }
 
   /* Glass-preset SegmentGroup. The track gets the frosted treatment;

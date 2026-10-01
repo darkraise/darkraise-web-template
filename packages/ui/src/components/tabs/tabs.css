@@ -57,13 +57,21 @@
   }
 
   .dr-tabs-trigger[data-variant="default"] {
-    @apply data-[state=active]:text-primary-foreground rounded-sm border border-transparent px-[var(--btn-px)];
+    @apply rounded-sm border border-transparent px-[var(--btn-px)];
     height: var(--btn-height);
   }
 
   .dr-tabs-trigger[data-variant="outline"] {
-    @apply data-[state=active]:text-primary-text rounded-sm border border-transparent bg-transparent px-[var(--btn-px)];
+    @apply rounded-sm border border-transparent bg-transparent px-[var(--btn-px)];
     height: var(--btn-height);
+  }
+
+  /* View switch: the selected label reads the family's foreground. */
+  .dr-tabs-trigger:is(
+      [data-variant="default"],
+      [data-variant="outline"]
+    )[data-state="active"] {
+    color: var(--selected-view-fg);
   }
 
   /* The transparent bottom border stays for layout — it reserves the row
@@ -78,19 +86,25 @@
     height: var(--btn-height);
   }
 
+  /* View switch: a neutral raised pill, not the accent. */
   .dr-tabs-indicator[data-variant="default"] {
-    @apply bg-primary-fill rounded-sm;
-    box-shadow: var(--shadow-button), var(--affordance-glow);
+    @apply rounded-sm;
+    background-color: var(--selected-view-bg);
+    box-shadow: var(--selected-view-shadow), var(--affordance-glow);
   }
 
-  /* Affordance glow on outline + underline (preset-driven — transparent
-     in every shipped preset; a preset can bind a primary glow). Outline gets
-     the omni-directional glow because all four borders are primary;
-     underline gets the bottom-only directional glow so the halo
-     emanates downward from the bar instead of wrapping all four edges. */
+  /* Outline keeps the same pill and adds a 1px neutral ring, so it still
+     reads apart from default. --border-strong, not --border: in dark mode
+     the pill itself is --border, which would hide the ring. Underline takes
+     the bottom-only affordance glow (preset-driven, transparent in every
+     shipped preset) so the halo emanates downward from the bar. */
   .dr-tabs-indicator[data-variant="outline"] {
-    @apply border-primary rounded-sm border;
-    box-shadow: var(--affordance-glow);
+    @apply rounded-sm;
+    background-color: var(--selected-view-bg);
+    box-shadow:
+      var(--selected-view-shadow),
+      inset 0 0 0 1px hsl(var(--border-strong)),
+      var(--affordance-glow);
   }
 
   .dr-tabs-indicator[data-variant="underline"] {
@@ -485,7 +499,4 @@
   [data-preset="glass"] .dr-tabs-indicator[data-variant="underline"] {
     box-shadow: var(--affordance-glow-bottom), var(--glass-state-hover-glow);
   }
-  /* And the outline/underline variants get their existing primary
-     border + text plus the same affordance glow from --shadow-button
-     composition — no extra rules needed. */
 }
