@@ -38,8 +38,8 @@
   .dr-radio-group-indicator {
     @apply data-[state=checked]:scale-100 data-[state=checked]:opacity-100 data-[state=unchecked]:scale-50 data-[state=unchecked]:opacity-0;
     transition:
-      opacity var(--duration-fast) ease-out,
-      transform var(--duration-fast) ease-out;
+      opacity var(--duration-fast) var(--ease-out),
+      transform var(--duration-fast) var(--ease-out);
   }
 
   /* Preset-driven affordance glow on the selected radio. Transparent

@@ -160,10 +160,10 @@
   border-radius: var(--radius);
   box-shadow: var(--inset-hi);
   transition:
-    background-color var(--duration-fast) ease-in-out,
-    color var(--duration-fast) ease-in-out,
-    border-color var(--duration-fast) ease-in-out,
-    box-shadow var(--duration-fast) ease-in-out;
+    background-color var(--duration-fast) var(--ease-in-out),
+    color var(--duration-fast) var(--ease-in-out),
+    border-color var(--duration-fast) var(--ease-in-out),
+    box-shadow var(--duration-fast) var(--ease-in-out);
 }
 
 @utility glass {
@@ -174,10 +174,10 @@
   border-radius: var(--radius);
   box-shadow: var(--inset-hi);
   transition:
-    background-color var(--duration-fast) ease-in-out,
-    color var(--duration-fast) ease-in-out,
-    border-color var(--duration-fast) ease-in-out,
-    box-shadow var(--duration-fast) ease-in-out;
+    background-color var(--duration-fast) var(--ease-in-out),
+    color var(--duration-fast) var(--ease-in-out),
+    border-color var(--duration-fast) var(--ease-in-out),
+    box-shadow var(--duration-fast) var(--ease-in-out);
 }
 
 @utility glass-strong {
@@ -188,10 +188,10 @@
   border-radius: var(--radius);
   box-shadow: var(--elevation-medium), var(--inset-hi-strong);
   transition:
-    background-color var(--duration-fast) ease-in-out,
-    color var(--duration-fast) ease-in-out,
-    border-color var(--duration-fast) ease-in-out,
-    box-shadow var(--duration-fast) ease-in-out;
+    background-color var(--duration-fast) var(--ease-in-out),
+    color var(--duration-fast) var(--ease-in-out),
+    border-color var(--duration-fast) var(--ease-in-out),
+    box-shadow var(--duration-fast) var(--ease-in-out);
 }
 
 @utility card-surface {
@@ -202,10 +202,10 @@
   border-radius: var(--radius);
   box-shadow: var(--inset-hi);
   transition:
-    background-color var(--duration-fast) ease-in-out,
-    color var(--duration-fast) ease-in-out,
-    border-color var(--duration-fast) ease-in-out,
-    box-shadow var(--duration-fast) ease-in-out;
+    background-color var(--duration-fast) var(--ease-in-out),
+    color var(--duration-fast) var(--ease-in-out),
+    border-color var(--duration-fast) var(--ease-in-out),
+    box-shadow var(--duration-fast) var(--ease-in-out);
 }
 
 @utility modal-surface {
@@ -1773,8 +1773,8 @@
   body {
     background-color: hsl(var(--background));
     transition:
-      background-color var(--duration-fast) ease-in-out,
-      color var(--duration-fast) ease-in-out;
+      background-color var(--duration-fast) var(--ease-in-out),
+      color var(--duration-fast) var(--ease-in-out);
   }
 
   [data-background-style="gradient"] body {
@@ -1808,10 +1808,10 @@
     border-radius: var(--radius);
     box-shadow: var(--elevation-medium), var(--inset-hi-strong);
     transition:
-      background-color var(--duration-fast) ease-in-out,
-      color var(--duration-fast) ease-in-out,
-      border-color var(--duration-fast) ease-in-out,
-      box-shadow var(--duration-fast) ease-in-out;
+      background-color var(--duration-fast) var(--ease-in-out),
+      color var(--duration-fast) var(--ease-in-out),
+      border-color var(--duration-fast) var(--ease-in-out),
+      box-shadow var(--duration-fast) var(--ease-in-out);
   }
 
   .dr-surface {
@@ -1921,9 +1921,9 @@
 
   .theme-transition {
     transition:
-      background-color var(--duration-fast) ease-in-out,
-      color var(--duration-fast) ease-in-out,
-      border-color var(--duration-fast) ease-in-out;
+      background-color var(--duration-fast) var(--ease-in-out),
+      color var(--duration-fast) var(--ease-in-out),
+      border-color var(--duration-fast) var(--ease-in-out);
   }
 
   [data-mode="dark"] input::-ms-reveal,

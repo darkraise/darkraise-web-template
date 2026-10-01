@@ -85,9 +85,9 @@
        (it stays visually unchanged in every shipped preset). */
     box-shadow: var(--shadow-button), var(--affordance-glow);
     transition:
-      transform var(--duration-normal) ease-out,
-      width var(--duration-normal) ease-out,
-      height var(--duration-normal) ease-out;
+      transform var(--duration-normal) var(--ease-out),
+      width var(--duration-normal) var(--ease-out),
+      height var(--duration-normal) var(--ease-out);
   }
 
   .dr-segment-group[data-mounted="false"] .dr-segment-group-indicator {

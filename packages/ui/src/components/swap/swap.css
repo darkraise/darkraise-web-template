@@ -7,8 +7,8 @@
     @apply inline-flex items-center justify-center;
     grid-area: 1 / 1;
     transition:
-      opacity var(--duration-normal) ease,
-      transform var(--duration-normal) ease;
+      opacity var(--duration-normal) var(--ease-in-out),
+      transform var(--duration-normal) var(--ease-in-out);
   }
 
   .dr-swap-indicator[data-active="true"] {

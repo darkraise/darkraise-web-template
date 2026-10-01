@@ -102,6 +102,28 @@ describe("motion ladder", () => {
     expect(offenders).toEqual([])
   })
 
+  it("eases with the kit's curves, not CSS keywords", () => {
+    // Keyword `ease-out` is cubic-bezier(0, 0, 0.58, 1), far softer than
+    // --ease-out, and Tailwind's `ease-*` utilities already resolve to the
+    // kit's curves, so one word meant two curves depending on where it was
+    // written. `linear` stays allowed: progress, spinner and shimmer motion
+    // is constant-rate on purpose.
+    const offenders: string[] = []
+    for (const path of everyStylesheet()) {
+      const css = readFileSync(path, "utf8").replace(/\/\*[\s\S]*?\*\//g, "")
+      for (const decl of css.matchAll(
+        /(?<![\w-])(?:transition|transition-timing-function|animation|animation-timing-function)\s*:\s*([^;]+);/g,
+      )) {
+        for (const keyword of (decl[1] as string).matchAll(
+          /(?<![\w-])ease(?:-in-out|-in|-out)?(?![\w-])/g,
+        )) {
+          offenders.push(`${keyword[0]} in ${path}`)
+        }
+      }
+    }
+    expect(offenders).toEqual([])
+  })
+
   it("uses no duration utilities, transition-all or bare transition in TSX class strings", () => {
     const walk = (dir: string): string[] =>
       readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {

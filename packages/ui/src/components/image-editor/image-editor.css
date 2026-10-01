@@ -342,7 +342,7 @@
     background: currentColor;
     opacity: 0;
     pointer-events: none;
-    transition: opacity var(--state-layer-out) ease-out;
+    transition: opacity var(--state-layer-out) var(--ease-out);
   }
   .dr-image-editor-preset:hover::before,
   .dr-image-editor-history-trigger:hover::before,

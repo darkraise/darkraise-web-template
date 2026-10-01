@@ -124,7 +124,7 @@
     background: var(--state-layer-color, currentColor);
     opacity: 0;
     pointer-events: none;
-    transition: opacity var(--state-layer-out) ease-out;
+    transition: opacity var(--state-layer-out) var(--ease-out);
   }
   .dr-toggle:not(:disabled):hover::before {
     opacity: var(--state-layer-hover);

@@ -140,11 +140,11 @@
   }
 
   .dr-sidebar-nav-collapsible-content[data-state="closed"] {
-    animation: collapsible-up var(--duration-fast) ease-out;
+    animation: collapsible-up var(--duration-fast) var(--ease-out);
   }
 
   .dr-sidebar-nav-collapsible-content[data-state="open"] {
-    animation: collapsible-down var(--duration-fast) ease-out;
+    animation: collapsible-down var(--duration-fast) var(--ease-out);
   }
 
   .dr-sidebar-nav-collapsible-children {

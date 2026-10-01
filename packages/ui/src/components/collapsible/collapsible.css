@@ -4,11 +4,11 @@
   }
 
   .dr-collapsible-content[data-state="open"] {
-    animation: dr-collapsible-down var(--duration-normal) ease-out;
+    animation: dr-collapsible-down var(--duration-normal) var(--ease-out);
   }
 
   .dr-collapsible-content[data-state="closed"] {
-    animation: dr-collapsible-up var(--duration-normal) ease-out;
+    animation: dr-collapsible-up var(--duration-normal) var(--ease-out);
   }
 
   @keyframes dr-collapsible-down {

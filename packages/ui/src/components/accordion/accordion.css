@@ -22,11 +22,11 @@
   }
 
   .dr-accordion-content[data-state="closed"] {
-    animation: accordion-up var(--duration-normal) ease-out;
+    animation: accordion-up var(--duration-normal) var(--ease-out);
   }
 
   .dr-accordion-content[data-state="open"] {
-    animation: accordion-down var(--duration-normal) ease-out;
+    animation: accordion-down var(--duration-normal) var(--ease-out);
   }
 
   .dr-accordion-content-inner {
