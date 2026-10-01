@@ -79,13 +79,7 @@ SheetFooter.displayName = "SheetFooter"
 type SheetTitleProps = React.ComponentProps<typeof DialogTitle>
 
 function SheetTitle({ className, ref, ...props }: SheetTitleProps) {
-  return (
-    <DialogTitle
-      ref={ref}
-      className={cn("text-foreground text-lg font-semibold", className)}
-      {...props}
-    />
-  )
+  return <DialogTitle ref={ref} className={className} {...props} />
 }
 
 type SheetDescriptionProps = React.ComponentProps<typeof DialogDescription>

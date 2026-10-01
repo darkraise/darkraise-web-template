@@ -10,7 +10,7 @@
   }
 
   .dr-page-header-title {
-    @apply text-3xl font-medium;
+    @apply type-page-title;
   }
 
   .dr-page-header-description {

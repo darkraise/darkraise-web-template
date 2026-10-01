@@ -6,7 +6,7 @@
     @apply text-muted-foreground bg-muted/40 flex h-12 w-12 items-center justify-center rounded-full [&_svg]:size-[var(--icon-size-xl)];
   }
   .dr-empty-state-title {
-    @apply text-base font-semibold;
+    @apply type-section-title;
   }
   .dr-empty-state-description {
     @apply text-muted-foreground max-w-sm text-sm;

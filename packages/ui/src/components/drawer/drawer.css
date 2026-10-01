@@ -79,7 +79,7 @@
   }
 
   .dr-drawer-title {
-    @apply text-lg leading-none font-semibold tracking-tight;
+    @apply type-dialog-title;
   }
 
   .dr-drawer-description {

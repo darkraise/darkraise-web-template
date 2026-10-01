@@ -34,6 +34,7 @@ Breaking: `PaginationLink` marks the current page with `data-active="true"` and 
 - `--status-tint` (0.1): the alpha Alert, Banner and Toast wash their status colour at, in both modes.
 - `--sidebar-active-bg`: an engine token one accent-ramp step above `--sidebar-hover-bg` (the next shade up in light mode, 0.1 more alpha in dark), so the active sidebar row always differs from a hovered one.
 - `CascadeSelect` keyboard support. Opening focuses the selected item (the first enabled item of its column when the selected one is disabled), or the first enabled item, and shows that item's child column, so reopening restores the selected path's columns; Up, Down, Home and End move within a column; Right or Enter opens a child column and Left returns to the parent; Enter or Space selects a leaf and closes; Escape closes. Focus then returns to the trigger. Focus and hover move the same cursor, so a focused parent shows its children as a hovered one does; only a moving pointer moves it, so a column the keyboard scrolls under a resting pointer keeps focus on the keyboard row.
+- Type roles: `--type-<role>-size`, `-weight`, `-tracking` and `-leading` on `:root`, and the utilities `type-page-title`, `type-dialog-title`, `type-section-title`, `type-label`, `type-caption` and `type-ui`. Sizes read the `--text-*` steps, so the font-size axis scales them.
 
 ### Changed
 
@@ -70,6 +71,7 @@ Breaking: `PaginationLink` marks the current page with `data-active="true"` and 
 - NavigationMenu triggers and the Menubar are transparent at rest; the menubar keeps its border.
 - Sheets round only the two corners away from their viewport edge, draw their border only on the inner side, and pad that edge 1.5rem like the other sides.
 - Under the glass preset the default Tabs pill is the view-switch pill under the glass selected tint, as SegmentGroup's is, instead of an accent gradient on which the label fell under 4.5:1 for most accents in dark mode.
+- Titles follow the type roles: page header titles are 24px at weight 600 with -0.02em tracking (were 30px at 500), card and empty-state titles 16px at 600 (card titles were 24px), and dialog, alert-dialog, drawer and sheet titles 18px at 600. Card, dialog and drawer titles drop their negative tracking.
 
 ### Removed
 

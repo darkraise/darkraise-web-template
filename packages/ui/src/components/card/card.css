@@ -54,7 +54,7 @@
   }
 
   .dr-card-title {
-    @apply text-2xl leading-none font-semibold tracking-tight;
+    @apply type-section-title;
   }
 
   .dr-card-description {

@@ -24,7 +24,21 @@ const SIZE_STEP: Record<Role, string> = {
 }
 
 /** Every class that takes a role, as [stylesheet, exact selector, role]. */
-const ROLE_CLASSES: Array<[string, string, Role]> = []
+const ROLE_CLASSES: Array<[string, string, Role]> = [
+  [
+    "src/layout/page-header/page-header.css",
+    ".dr-page-header-title",
+    "page-title",
+  ],
+  ["src/components/dialog/dialog.css", ".dr-dialog-title", "dialog-title"],
+  ["src/components/drawer/drawer.css", ".dr-drawer-title", "dialog-title"],
+  ["src/components/card/card.css", ".dr-card-title", "section-title"],
+  [
+    "src/components/empty-state/empty-state.css",
+    ".dr-empty-state-title",
+    "section-title",
+  ],
+]
 
 /** A utility that sets a size, weight, tracking or line height. */
 const TYPOGRAPHY =
@@ -130,5 +144,15 @@ describe("classes on a type role", () => {
         ".dr-x",
       ),
     ).toEqual([])
+  })
+})
+
+describe("SheetTitle", () => {
+  it("adds no size or weight to the dialog title it renders", () => {
+    const source = readFileSync("src/components/sheet/Sheet.tsx", "utf8")
+    const start = source.indexOf("function SheetTitle")
+    const body = source.slice(start, source.indexOf("\nfunction ", start + 1))
+    expect(body).not.toMatch(/\btext-(?:xs|sm|base|lg|xl|\dxl)\b/)
+    expect(body).not.toMatch(/\bfont-(?:medium|semibold|bold)\b/)
   })
 })
