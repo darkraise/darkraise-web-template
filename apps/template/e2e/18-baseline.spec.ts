@@ -13,20 +13,27 @@ import { settle } from "./helpers/measure"
 
 const MODES = ["light", "dark"] as const
 
-/** A drawn chart series: present only once the demo data has arrived. */
-const CHART =
-  ".recharts-area-area, .recharts-bar-rectangle, .recharts-line-curve, .recharts-pie-sector"
+/**
+ * Drawn chart series, present only once the demo data behind them has
+ * arrived. A page waits for every kind it renders: its data hooks resolve
+ * after separate random delays, and one static series would otherwise mark
+ * the page ready while the others are still empty.
+ */
+const AREA = ".recharts-area-area"
+const BAR = ".recharts-bar-rectangle"
+const LINE = ".recharts-line-curve"
+const PIE = ".recharts-pie-sector"
 
 /**
  * App pages, captured to the full height of their scrolling main region,
- * each with an element that exists only once its data has loaded.
+ * each with the elements that exist only once its data has loaded.
  */
 const APP_PAGES = [
-  ["dashboard", "/", CHART],
-  ["orders", "/orders", "tbody tr td"],
-  ["order-detail", "/orders/ord-1", ".dr-card-title"],
-  ["settings", "/settings", ".dr-card-title"],
-  ["analytics", "/analytics", CHART],
+  ["dashboard", "/", [AREA, BAR]],
+  ["orders", "/orders", ["tbody tr td"]],
+  ["order-detail", "/orders/ord-1", [".dr-card-title"]],
+  ["settings", "/settings", [".dr-card-title"]],
+  ["analytics", "/analytics", [LINE, PIE, AREA, BAR]],
 ] as const
 
 /** Showcase pages, captured at the viewport. */
@@ -73,8 +80,8 @@ async function serveFontsFromCache(context: BrowserContext) {
   await context.route(FONT_HOSTS, async (route) => {
     const url = route.request().url()
     let font = fontCache.get(url)
-    for (let attempt = 0; !font && attempt < 4; attempt++) {
-      const response = await route.fetch({ timeout: 20_000 }).catch(() => null)
+    for (let attempt = 0; !font && attempt < 3; attempt++) {
+      const response = await route.fetch({ timeout: 15_000 }).catch(() => null)
       if (response?.ok()) {
         const headers = Object.fromEntries(
           Object.entries(response.headers()).filter(
@@ -95,22 +102,41 @@ async function serveFontsFromCache(context: BrowserContext) {
   })
 }
 
+/** The faces the app text and code samples use, as `fonts.load` specs. */
+const FACES = [
+  "400 1em Inter",
+  "500 1em Inter",
+  "600 1em Inter",
+  "700 1em Inter",
+  '400 1em "JetBrains Mono"',
+]
+
 /**
- * True once an Inter face has loaded. `document.fonts.check` alone answers
- * true when the stylesheet never arrived, which would record a fallback font.
- * A face loads on first use and `fonts.ready` can resolve before that starts,
- * so the face is requested here rather than waited for.
+ * True once every face in FACES has loaded. `document.fonts.check` alone
+ * answers true when the stylesheet never arrived, which would record a
+ * fallback font. A face loads on first use and `fonts.ready` can resolve
+ * before that starts, so each is requested here rather than waited for.
  */
-async function interLoaded(page: Page): Promise<boolean> {
-  return page.evaluate(async () => {
-    await document.fonts.load("1em Inter").catch(() => [])
-    await document.fonts.ready
-    return [...document.fonts].some(
-      (face) =>
-        face.family.replace(/["']/g, "") === "Inter" &&
-        face.status === "loaded",
+async function fontsLoaded(page: Page): Promise<boolean> {
+  return page.evaluate(async (faces) => {
+    const loaded = await Promise.all(
+      faces.map(async (face) => {
+        const found = await document.fonts.load(face).catch(() => [])
+        return found.length > 0 && found.every((f) => f.status === "loaded")
+      }),
     )
-  })
+    return loaded.every(Boolean)
+  }, FACES)
+}
+
+/** Fails, rather than records, a page drawn in a fallback face. */
+async function waitForFonts(page: Page) {
+  await expect
+    .poll(() => fontsLoaded(page), {
+      message: "Inter and JetBrains Mono must load before recording",
+      timeout: 30_000,
+    })
+    .toBe(true)
 }
 
 /** Grows the viewport so the app shell's scrolling region shows whole. */
@@ -118,21 +144,19 @@ async function fitContent(page: Page) {
   const overflow = await page
     .locator("#main-content")
     .evaluate((main) => main.scrollHeight - main.clientHeight)
+  if (VIEWPORT.height + overflow > MAX_HEIGHT) {
+    throw new Error(`main region needs ${VIEWPORT.height + overflow}px`)
+  }
   if (overflow > 0) {
     await page.setViewportSize({
       width: VIEWPORT.width,
-      height: Math.min(VIEWPORT.height + overflow, MAX_HEIGHT),
+      height: VIEWPORT.height + overflow,
     })
   }
 }
 
 async function capture(page: Page, name: string) {
-  await expect
-    .poll(() => interLoaded(page), {
-      message: "Inter must load before recording",
-      timeout: 30_000,
-    })
-    .toBe(true)
+  await waitForFonts(page)
   await expect(page.locator(".dr-skeleton")).toHaveCount(0)
   await page.mouse.move(0, 0)
   await settle(page)
@@ -148,7 +172,7 @@ async function capture(page: Page, name: string) {
  * cost out of the captures.
  */
 test.beforeAll(async ({ browser }) => {
-  test.setTimeout(180_000)
+  test.setTimeout(600_000)
   const context = await browser.newContext({ viewport: VIEWPORT })
   try {
     await serveFontsFromCache(context)
@@ -179,9 +203,12 @@ for (const preset of PRESETS) {
         test(name, async ({ page }) => {
           await gotoApp(page, path)
           await expect(page.locator(".dr-page-header-title")).toBeVisible()
-          await expect(page.locator(ready).first()).toBeVisible()
+          for (const marker of ready) {
+            await expect(page.locator(marker).first()).toBeVisible()
+          }
           await expect(page.getByText("Loading order...")).toHaveCount(0)
           await expect(page.locator(".dr-skeleton")).toHaveCount(0)
+          await waitForFonts(page)
           await fitContent(page)
           await capture(page, `${preset}-${mode}-${name}`)
         })
