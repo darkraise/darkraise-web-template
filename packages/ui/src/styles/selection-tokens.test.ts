@@ -256,3 +256,38 @@ describe("checked family: pagination", () => {
     expect(body).not.toMatch(/background-color:\s*transparent/)
   })
 })
+
+const PAGE_HEADER = "src/layout/page-header/page-header.css"
+
+describe("underline family", () => {
+  it.each([
+    [
+      TABS,
+      '.dr-tabs-indicator[data-variant="underline"]',
+      "background-color: var(--selected-mark);",
+    ],
+    [
+      TABS,
+      '.dr-tabs-trigger[data-variant="underline"][data-state="active"]',
+      "color: var(--selected-mark-fg);",
+    ],
+    [
+      PAGE_HEADER,
+      '.dr-page-header-tab[data-active="true"]',
+      "border-color: var(--selected-mark);",
+    ],
+    [
+      PAGE_HEADER,
+      '.dr-page-header-tab[data-active="true"]',
+      "color: var(--selected-mark-fg);",
+    ],
+  ])("%s %s reads %s", (path, selector, declaration) => {
+    expect(bodyOf(path, selector)).toContain(declaration)
+  })
+
+  it("keeps the underline trigger's @apply free of an active text colour", () => {
+    expect(
+      bodyOf(TABS, '.dr-tabs-trigger[data-variant="underline"]'),
+    ).not.toMatch(/data-\[state=active\]:text-/)
+  })
+})

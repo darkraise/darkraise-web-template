@@ -32,6 +32,7 @@
 
   .dr-page-header-tab.active,
   .dr-page-header-tab[data-active="true"] {
-    @apply border-primary text-foreground;
+    border-color: var(--selected-mark);
+    color: var(--selected-mark-fg);
   }
 }

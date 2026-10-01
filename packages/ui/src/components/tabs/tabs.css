@@ -82,8 +82,13 @@
      margin shortens by a pixel would centre half a pixel low. Sized by
      its triggers, the list comes out exactly --btn-height tall. */
   .dr-tabs-trigger[data-variant="underline"] {
-    @apply data-[state=active]:text-primary-text -mb-px border-b-2 border-transparent px-[var(--btn-px)];
+    @apply -mb-px border-b-2 border-transparent px-[var(--btn-px)];
     height: var(--btn-height);
+  }
+
+  /* Underline: the accent stays in the bar; the label reads foreground. */
+  .dr-tabs-trigger[data-variant="underline"][data-state="active"] {
+    color: var(--selected-mark-fg);
   }
 
   /* View switch: a neutral raised pill, not the accent. */
@@ -108,7 +113,7 @@
   }
 
   .dr-tabs-indicator[data-variant="underline"] {
-    @apply bg-primary-fill;
+    background-color: var(--selected-mark);
     box-shadow: var(--affordance-glow-bottom);
   }
 
