@@ -21,7 +21,6 @@
       transform var(--duration-fast),
       color var(--duration-fast);
     user-select: none;
-    touch-action: manipulation;
   }
 
   .dr-rating-group-item:hover {

@@ -2263,7 +2263,10 @@
    drag surfaces and no ordinary controls.
 
    Scoped to the kit's own interactive classes rather than a blanket `button,
-   a` so a consuming app's own elements are left to its own judgement. */
+   a` so a consuming app's own elements are left to its own judgement. The list
+   is every class `styles/interactive-classes.ts` finds, except drag surfaces
+   that set their own `touch-action` and the exemptions in
+   `forced-colors-coverage.test.ts`, which holds it there. */
 @layer components {
   .dr-btn,
   .dr-menu-item,
@@ -2278,7 +2281,74 @@
   .dr-toggle,
   .dr-tabs-trigger,
   .dr-carousel-indicator,
-  .dr-pagination-link {
+  .dr-pagination-link,
+  .dr-accordion-trigger,
+  .dr-banner-close,
+  .dr-calendar-caption-label,
+  .dr-calendar-caption-label-btn,
+  .dr-cascade-item,
+  .dr-color-picker-eye-dropper-trigger,
+  .dr-color-picker-swatch,
+  .dr-color-picker-swatch-item,
+  .dr-color-picker-trigger,
+  .dr-combobox-clear-trigger,
+  .dr-combobox-trigger,
+  .dr-contribution-graph-cell,
+  .dr-date-picker-preset,
+  .dr-date-picker-trigger,
+  .dr-editable-cancel-trigger,
+  .dr-editable-edit-trigger,
+  .dr-editable-preview,
+  .dr-editable-submit-trigger,
+  .dr-file-upload-clear-trigger,
+  .dr-file-upload-dropzone,
+  .dr-file-upload-item-delete-trigger,
+  .dr-file-upload-trigger,
+  .dr-floating-panel-trigger,
+  .dr-image-dropzone,
+  .dr-json-chevron,
+  .dr-json-row,
+  .dr-json-show-more,
+  .dr-json-url,
+  .dr-menu-checkbox-item,
+  .dr-menu-radio-item,
+  .dr-menu-sub-trigger,
+  .dr-menubar-checkbox-item,
+  .dr-menubar-radio-item,
+  .dr-menubar-sub-trigger,
+  .dr-menubar-trigger,
+  .dr-multi-select-chip-remove,
+  .dr-multi-select-clear,
+  .dr-multi-select-toggle,
+  .dr-navigation-menu-trigger,
+  .dr-number-input-stepper,
+  .dr-overlay-close-btn,
+  .dr-page-header-tab,
+  .dr-password-input-trigger,
+  .dr-rating-group-item,
+  .dr-segment-group-item,
+  .dr-select-trigger,
+  .dr-sidebar-nav-chevron-button,
+  .dr-sidebar-nav-collapsible-link,
+  .dr-sidebar-nav-item,
+  .dr-sidebar-nav-link,
+  .dr-sidebar-nav-popover-parent,
+  .dr-sidebar-nav-popover-trigger,
+  .dr-sidebar-popover-child,
+  .dr-stacked-layout-rail-item,
+  .dr-steps-trigger,
+  .dr-tags-input-item-delete-trigger,
+  .dr-tags-input-item-preview,
+  .dr-theme-switcher-swatch,
+  .dr-time-column-item,
+  .dr-timer-action-trigger,
+  .dr-toast-action,
+  .dr-toast-cancel,
+  .dr-toast-close,
+  .dr-top-nav-layout-nav-item,
+  .dr-tree-view-branch-control,
+  .dr-tree-view-item,
+  .dr-vdm-item {
     touch-action: manipulation;
   }
 }
@@ -2290,6 +2360,12 @@
    dropped. Borders and outlines survive, so the rule is to restate the two
    things that must not disappear: the boundary of a control and the focus
    indicator.
+
+   Controls without a border rule here get their boundary as a 1px outline
+   pulled 1px inside, which adds no layout. `:focus-visible` has the specificity
+   of one class, so it stays the last rule in this block and wins on source
+   order; a boundary selector with two classes would outrank it, so every
+   boundary selector is a single class.
 
    `Highlight` and `ButtonBorder` are system colour keywords, which is the only
    palette that exists in this mode; a hex value here would be ignored. */
@@ -2305,6 +2381,36 @@
   .dr-menu-content,
   .dr-popover-content {
     border: 1px solid ButtonBorder;
+  }
+
+  .dr-angle-slider,
+  .dr-carousel-indicator,
+  .dr-color-picker-eye-dropper-trigger,
+  .dr-color-picker-hue,
+  .dr-color-picker-sv,
+  .dr-color-picker-swatch,
+  .dr-color-picker-swatch-item,
+  .dr-color-picker-trigger,
+  .dr-contribution-graph-cell,
+  .dr-date-picker-preset,
+  .dr-file-upload-dropzone,
+  .dr-file-upload-trigger,
+  .dr-floating-panel-trigger,
+  .dr-image-cropper-selection,
+  .dr-image-dropzone,
+  .dr-listbox,
+  .dr-segment-group-item,
+  .dr-select-trigger,
+  .dr-slider-thumb,
+  .dr-tabs-trigger,
+  .dr-tags-input-item-preview,
+  .dr-theme-switcher-swatch,
+  .dr-timer-action-trigger,
+  .dr-toast-action,
+  .dr-toast-cancel,
+  .dr-toggle {
+    outline: 1px solid ButtonBorder;
+    outline-offset: -1px;
   }
 
   :focus-visible {
