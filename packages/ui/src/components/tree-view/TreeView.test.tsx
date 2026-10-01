@@ -235,12 +235,15 @@ describe("TreeView", () => {
     expect(root).toHaveAttribute("data-variant", "outline")
   })
 
-  it("styles the outline variant's selection", () => {
+  it("selects with the checked fill in both variants", () => {
+    // Outline rows have no outline at rest, so the checked family's fill is
+    // their selected style too.
     const css = readFileSync(
       resolve(dirname(fileURLToPath(import.meta.url)), "./tree-view.css"),
       "utf8",
     )
-    expect(css).toContain('.dr-tree-view[data-variant="outline"]')
+    expect(css).not.toContain('.dr-tree-view[data-variant="outline"]')
     expect(css).not.toContain('data-variant="outlined"')
+    expect(css).toContain("background-color: var(--selected-check-bg);")
   })
 })

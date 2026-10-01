@@ -23,7 +23,8 @@
   }
 
   .dr-toggle[data-variant="default"][data-state="on"] {
-    @apply bg-primary-fill text-primary-foreground;
+    background-color: var(--selected-check-bg);
+    color: var(--selected-check-fg);
     /* Press washes away from the label: the fill sits at its contrast floor. */
     --state-layer-color: hsl(var(--primary-fill-wash));
     /* Compose --shadow-button with the preset-driven --affordance-glow.
@@ -32,13 +33,16 @@
     box-shadow: var(--shadow-button), var(--affordance-glow);
   }
 
-  /* Outline variant — bordered, transparent on both states. */
+  /* Outline variant — a neutral border at rest; on, it takes the same
+     checked fill as default and keeps the border. */
   .dr-toggle[data-variant="outline"] {
     @apply border-input border bg-transparent;
   }
 
   .dr-toggle[data-variant="outline"][data-state="on"] {
-    @apply text-primary-text border-primary bg-transparent;
+    background-color: var(--selected-check-bg);
+    color: var(--selected-check-fg);
+    --state-layer-color: hsl(var(--primary-fill-wash));
     /* Outer affordance glow on the outlined-active toggle. Transparent
        in every shipped preset; a preset can bind a primary glow. The earlier
        `shadow-none` here was killing the affordance composition. */

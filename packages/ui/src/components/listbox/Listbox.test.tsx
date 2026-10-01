@@ -175,15 +175,20 @@ describe("Listbox variant", () => {
     )
   })
 
-  it("styles the selected item from the root variant, not the item", () => {
-    // The rule has to be scoped by the root so a single prop drives every
-    // item; an item-level selector would need the prop threaded per item.
-    const rule = listboxCss.match(
-      /\.dr-listbox\[data-variant="outline"\][^{]*\[data-selected="true"\][^{]*\{([^}]*)\}/,
+  it("selects with the checked fill in both variants", () => {
+    // Outline rows have no outline at rest, so the checked family's fill is
+    // their selected style too; only glass scopes a rule by the variant.
+    const css = listboxCss.replace(/\/\*[\s\S]*?\*\//g, "")
+    const outlineRules = [...css.matchAll(/([^{}]+)\{[^}]*\}/g)]
+      .map((match) => (match[1] as string).trim())
+      .filter(
+        (selector) =>
+          selector.includes('.dr-listbox[data-variant="outline"]') &&
+          !selector.startsWith("[data-preset="),
+      )
+    expect(outlineRules).toEqual([])
+    expect(css).toMatch(
+      /\.dr-listbox-item\[data-selected="true"\] \{[^}]*background-color: var\(--selected-check-bg\);/,
     )
-    expect(rule?.[1], "no outline selected rule found").toBeDefined()
-    // Outlined means a ring and no solid fill.
-    expect(rule?.[1]).toMatch(/inset 0 0 0 1px/)
-    expect(rule?.[1]).toMatch(/bg-transparent/)
   })
 })

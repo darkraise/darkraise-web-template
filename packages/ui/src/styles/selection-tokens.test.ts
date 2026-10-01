@@ -146,3 +146,55 @@ describe("view switch family", () => {
     )
   })
 })
+
+const TOGGLE = "src/components/toggle/toggle.css"
+const LISTBOX = "src/components/listbox/listbox.css"
+const TREE = "src/components/tree-view/tree-view.css"
+
+const CHECKED = [
+  "background-color: var(--selected-check-bg);",
+  "color: var(--selected-check-fg);",
+]
+
+describe("checked family: toggle, listbox and tree view", () => {
+  it.each([
+    [TOGGLE, '.dr-toggle[data-variant="default"][data-state="on"]'],
+    [TOGGLE, '.dr-toggle[data-variant="outline"][data-state="on"]'],
+    [LISTBOX, '.dr-listbox-item[data-selected="true"]'],
+    [LISTBOX, '.dr-listbox-item[data-selected="true"]:hover'],
+    [TREE, '.dr-tree-view-item[data-selected="true"]'],
+    [TREE, '.dr-tree-view-item[data-selected="true"]:hover'],
+  ])("%s %s reads the checked fill and label", (path, selector) => {
+    const body = bodyOf(path, selector)
+    for (const declaration of CHECKED) expect(body).toContain(declaration)
+  })
+
+  // Hover on a selected item comes from the state layer, washed toward the
+  // fill's wash as the filled button does.
+  it("washes the outline toggle's on state toward the fill's wash", () => {
+    expect(
+      bodyOf(TOGGLE, '.dr-toggle[data-variant="outline"][data-state="on"]'),
+    ).toContain("--state-layer-color: hsl(var(--primary-fill-wash));")
+  })
+
+  it.each([
+    [LISTBOX, '.dr-listbox[data-variant="outline"]'],
+    [TREE, '.dr-tree-view[data-variant="outline"]'],
+  ])("%s has no selected rule of its own under %s", (path, scope) => {
+    const own = rulesOf(path).filter((rule) =>
+      rule.selectors.some(
+        (s) => !s.startsWith("[data-preset=") && s.includes(scope),
+      ),
+    )
+    expect(own).toEqual([])
+  })
+
+  it("keeps the checked fill under the glass outline listbox", () => {
+    const body = bodyOf(
+      LISTBOX,
+      '[data-preset="glass"] .dr-listbox[data-variant="outline"] .dr-listbox-item[data-selected="true"]',
+    )
+    expect(body).not.toMatch(/background-color:\s*transparent/)
+    expect(body).not.toMatch(/background-image:\s*none/)
+  })
+})
