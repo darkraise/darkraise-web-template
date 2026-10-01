@@ -3,6 +3,10 @@
     @apply border-primary data-[state=checked]:bg-primary-fill data-[state=checked]:border-primary-fill data-[state=checked]:text-primary-foreground focus-ring hit-area-24 grid shrink-0 cursor-pointer place-content-center rounded-sm border disabled:cursor-not-allowed disabled:opacity-50;
   }
 
+  .dr-checkbox[data-state="unchecked"] {
+    border-color: var(--field-edge);
+  }
+
   .dr-checkbox[data-size="sm"] {
     @apply h-3.5 w-3.5;
   }
@@ -30,13 +34,12 @@
     box-shadow: var(--affordance-glow);
   }
 
-  /* Glass-preset frosted Checkbox. Unchecked state is fog tint; the
-     checked/indeterminate states swap in a primary-tinted gradient
-     for the "on" reading. Border alpha bumps up to 20 from 15 for
-     a slightly stronger affordance at this size. */
+  /* Glass-preset frosted Checkbox. Unchecked state is fog tint inside the
+     3:1 field edge; the checked/indeterminate states swap in a
+     primary-tinted gradient for the "on" reading. */
   [data-preset="glass"] .dr-checkbox {
     background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
-    border: 1px solid var(--fog-20);
+    border-color: var(--field-edge);
     -webkit-backdrop-filter: var(--backdrop-filter);
     backdrop-filter: var(--backdrop-filter);
     box-shadow: var(--inset-hi), var(--glass-halo-raised);

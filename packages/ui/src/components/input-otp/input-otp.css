@@ -26,6 +26,7 @@
     height: var(--field-height);
     width: var(--field-height);
     transition-duration: var(--duration-fast);
+    border-bottom-color: var(--field-edge);
   }
 
   .dr-input-otp-slot[data-active] {
@@ -74,7 +75,10 @@
      input in separate mode) lights up with the focus halo. */
   [data-preset="glass"] .dr-input-otp-slot {
     background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
-    border: 1px solid var(--fog-15);
+    border-width: 1px;
+    border-style: solid;
+    border-color: var(--fog-15);
+    border-bottom-color: var(--field-edge);
     -webkit-backdrop-filter: var(--backdrop-filter);
     backdrop-filter: var(--backdrop-filter);
     box-shadow: var(--inset-hi), var(--glass-halo-raised);

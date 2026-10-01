@@ -18,12 +18,19 @@
       var(--field-py),
       calc((var(--field-height) - 1.75rem) / 2)
     );
+    border-bottom-color: var(--field-edge);
   }
 
   /* The control also carries .dr-combobox-control, whose glass rule rounds
      single-line fields; chips wrap here, so keep the surface radius. */
   [data-preset="glass"] .dr-combobox-control.dr-multi-select-control {
     border-radius: var(--radius);
+    border-bottom-color: var(--field-edge);
+  }
+
+  [data-preset="glass"]
+    .dr-combobox-control.dr-multi-select-control:is(:focus-within, [data-state="open"]) {
+    border-bottom-color: hsl(var(--primary) / 0.4);
   }
 
   /* Outranks the fixed height .dr-combobox-control sets: the chip row grows

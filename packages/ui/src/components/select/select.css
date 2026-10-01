@@ -7,6 +7,7 @@
        -- see `--control-surface` in theme.css. */
     background-color: hsl(var(--control-surface) / var(--surface-opacity, 1));
     border-radius: var(--field-radius);
+    border-bottom-color: var(--field-edge);
   }
 
   .dr-select-content {
@@ -50,7 +51,8 @@
 
   [data-preset="glass"] .dr-select-trigger {
     background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
-    border: 1px solid var(--fog-15);
+    border-color: var(--fog-15);
+    border-bottom-color: var(--field-edge);
     -webkit-backdrop-filter: var(--backdrop-filter);
     backdrop-filter: var(--backdrop-filter);
     box-shadow: var(--inset-hi), var(--glass-halo-raised);

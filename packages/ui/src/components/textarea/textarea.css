@@ -6,6 +6,7 @@
        -- see `--control-surface` in theme.css. */
     background-color: hsl(var(--control-surface) / var(--surface-opacity, 1));
     border-radius: var(--radius);
+    border-bottom-color: var(--field-edge);
   }
 
   /* Grouped form — relative wrapper hosts an absolute action button. The
@@ -36,7 +37,8 @@
      .dr-textarea-group wrapper is layout-only). */
   [data-preset="glass"] .dr-textarea {
     background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
-    border: 1px solid var(--fog-15);
+    border-color: var(--fog-15);
+    border-bottom-color: var(--field-edge);
     -webkit-backdrop-filter: var(--backdrop-filter);
     backdrop-filter: var(--backdrop-filter);
     box-shadow: var(--inset-hi), var(--glass-halo-raised);

@@ -10,6 +10,7 @@
     transition:
       border-color var(--duration-fast),
       box-shadow var(--duration-fast);
+    border-bottom-color: var(--field-edge);
   }
 
   /* Group wrapper used when the consumer passes `prefix` or `suffix` to
@@ -27,6 +28,7 @@
     transition:
       border-color var(--duration-fast),
       box-shadow var(--duration-fast);
+    border-bottom-color: var(--field-edge);
   }
 
   /* Addon slot: shared visual for prefix and suffix. A muted block with a
@@ -115,7 +117,8 @@
       .dr-cascade-select *
     ) {
     background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
-    border: 1px solid var(--fog-15);
+    border-color: var(--fog-15);
+    border-bottom-color: var(--field-edge);
     -webkit-backdrop-filter: var(--backdrop-filter);
     backdrop-filter: var(--backdrop-filter);
     box-shadow: var(--inset-hi), var(--glass-halo-raised);
