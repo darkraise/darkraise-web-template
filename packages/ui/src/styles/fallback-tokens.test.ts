@@ -57,6 +57,7 @@ describe("pre-hydration fallback block", () => {
       "--legend",
       "--destructive-solid",
       "--destructive-solid-foreground",
+      "--field-edge-color",
     ]) {
       expect(block.has(key), key).toBe(true)
     }

@@ -62,6 +62,7 @@ describe("generateTokens", () => {
       "--warning-foreground",
       "--border",
       "--input",
+      "--field-edge-color",
       "--surface-base",
       "--surface-raised",
       "--surface-overlay",

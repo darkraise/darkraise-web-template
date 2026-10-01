@@ -448,6 +448,7 @@
     --info-foreground: 0 0% 100%;
     --border: 214 32% 91%;
     --input: 214 32% 91%;
+    --field-edge-color: 215 16% 54%;
     --ring: 217 91% 60%;
     --focus-ring: 212 96% 59%;
     --chart-1: hsl(217 91% 60%);
@@ -704,6 +705,7 @@
     --btn-radius: var(--radius-control);
     --field-height: var(--control-height);
     --field-radius: var(--radius-control);
+    --field-edge: hsl(var(--field-edge-color));
     --density-container-p: 1rem;
     --density-row-py: 0.375rem;
     --density-stack-gap: 0.5rem;

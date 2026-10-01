@@ -746,6 +746,23 @@ export function generateTokens(
   )
 
   const primaryMark = ensureContrast(primaryValue, background, MARK_FLOOR)
+  // The 3:1 edge a field draws along its bottom and an unchecked checkbox,
+  // radio or switch draws all round. It is one value per theme, so it is
+  // solved against every ground a control can sit on. It stays out of
+  // BORDER_TOKENS: borderIntensity is a taste axis, and its subtle step
+  // would pull the edge back under 3:1.
+  const fieldEdge = tierClearingAll(
+    neutral,
+    [
+      background,
+      card,
+      recipe.surfaceSunken(surface, mode),
+      controlWell.deep,
+      recipe.surfaceSidebar(surface, mode),
+      recipe.surfaceHeader(surface, mode),
+    ],
+    MARK_FLOOR,
+  )
 
   const tokens: Record<string, string> = {
     "--primary": primaryMark,
@@ -815,6 +832,7 @@ export function generateTokens(
 
     "--border": border,
     "--input": inputValue,
+    "--field-edge-color": fieldEdge,
 
     "--surface-base": capCanvasSaturation(
       mode === "light" ? surface[50] : surface[950],
