@@ -49,7 +49,36 @@
   }
 
   .dr-tags-input-item-delete-trigger {
-    @apply text-muted-foreground hover:text-foreground focus-ring-inset inline-flex size-[var(--icon-size)] items-center justify-center rounded-sm transition-colors;
+    @apply text-muted-foreground focus-ring-inset inline-flex size-[var(--icon-size)] items-center justify-center rounded-sm transition-colors;
+  }
+
+  /* Shared interaction state layer (button.css). The label rule keeps its
+     guard in :where() so it keeps the `hover:` utility's specificity. */
+  .dr-tags-input-item-delete-trigger {
+    position: relative;
+    isolation: isolate;
+  }
+  .dr-tags-input-item-delete-trigger:where(:not(:disabled)):hover {
+    @apply text-foreground;
+  }
+  .dr-tags-input-item-delete-trigger::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--state-layer-color, currentColor);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--state-layer-out) var(--ease-out);
+  }
+  .dr-tags-input-item-delete-trigger:not(:disabled):hover::before {
+    opacity: var(--state-layer-hover);
+    transition-duration: var(--state-layer-in);
+  }
+  .dr-tags-input-item-delete-trigger:not(:disabled):active::before {
+    opacity: var(--state-layer-press);
+    transition-duration: var(--state-layer-in);
   }
 
   .dr-tags-input-item-delete-trigger[data-disabled="true"] {

@@ -55,6 +55,45 @@
   .dr-editable-edit-trigger,
   .dr-editable-submit-trigger,
   .dr-editable-cancel-trigger {
-    @apply text-muted-foreground hover:text-foreground focus-ring inline-flex aspect-square h-[var(--control-height-default)] cursor-pointer items-center justify-center rounded-md bg-transparent transition-colors disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size)] [&_svg]:shrink-0;
+    @apply text-muted-foreground focus-ring inline-flex aspect-square h-[var(--control-height-default)] cursor-pointer items-center justify-center rounded-md bg-transparent transition-colors disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size)] [&_svg]:shrink-0;
+  }
+
+  /* Shared interaction state layer (button.css). The label rule keeps its
+     guard in :where() so it keeps the `hover:` utility's specificity. */
+  .dr-editable-edit-trigger,
+  .dr-editable-submit-trigger,
+  .dr-editable-cancel-trigger {
+    position: relative;
+    isolation: isolate;
+  }
+  .dr-editable-edit-trigger:where(:not(:disabled)):hover,
+  .dr-editable-submit-trigger:where(:not(:disabled)):hover,
+  .dr-editable-cancel-trigger:where(:not(:disabled)):hover {
+    @apply text-foreground;
+  }
+  .dr-editable-edit-trigger::before,
+  .dr-editable-submit-trigger::before,
+  .dr-editable-cancel-trigger::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--state-layer-color, currentColor);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--state-layer-out) var(--ease-out);
+  }
+  .dr-editable-edit-trigger:not(:disabled):hover::before,
+  .dr-editable-submit-trigger:not(:disabled):hover::before,
+  .dr-editable-cancel-trigger:not(:disabled):hover::before {
+    opacity: var(--state-layer-hover);
+    transition-duration: var(--state-layer-in);
+  }
+  .dr-editable-edit-trigger:not(:disabled):active::before,
+  .dr-editable-submit-trigger:not(:disabled):active::before,
+  .dr-editable-cancel-trigger:not(:disabled):active::before {
+    opacity: var(--state-layer-press);
+    transition-duration: var(--state-layer-in);
   }
 }

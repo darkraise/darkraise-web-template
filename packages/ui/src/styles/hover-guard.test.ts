@@ -17,6 +17,24 @@ const CONTROLS: Array<[string, string]> = [
   ["dr-overlay-close-btn", ":not(:disabled)"],
   // An <a>, which never matches :disabled; its wash comes from `.dr-btn`.
   ["dr-pagination-link", ":not([data-disabled])"],
+  // Icon triggers: icon-only native buttons whose hover was colour-only.
+  ["dr-password-input-trigger", ":not(:disabled)"],
+  ["dr-date-picker-trigger", ":not(:disabled)"],
+  ["dr-combobox-clear-trigger", ":not(:disabled)"],
+  ["dr-combobox-trigger", ":not(:disabled)"],
+  // Multi-select's clear and toggle also carry the two combobox classes
+  // above, and take the layer from them.
+  ["dr-multi-select-clear", ":not(:disabled)"],
+  ["dr-multi-select-toggle", ":not(:disabled)"],
+  ["dr-multi-select-chip-remove", ":not(:disabled)"],
+  ["dr-tags-input-item-delete-trigger", ":not(:disabled)"],
+  ["dr-file-upload-item-delete-trigger", ":not(:disabled)"],
+  ["dr-editable-edit-trigger", ":not(:disabled)"],
+  ["dr-editable-submit-trigger", ":not(:disabled)"],
+  ["dr-editable-cancel-trigger", ":not(:disabled)"],
+  ["dr-banner-close", ":not(:disabled)"],
+  ["dr-color-picker-trigger", ":not(:disabled)"],
+  ["dr-color-picker-eye-dropper-trigger", ":not(:disabled)"],
 ]
 
 function stylesheets(dir: string): string[] {

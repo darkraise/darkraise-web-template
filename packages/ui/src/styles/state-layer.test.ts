@@ -68,6 +68,58 @@ const HAND_ROLLED: { path: string; selector: string; pseudo?: string }[] = [
     path: "src/components/overlay-primitives/overlay-primitives.css",
     selector: ".dr-overlay-close-btn:not(:disabled)",
   },
+  {
+    path: "src/components/password-input/password-input.css",
+    selector: ".dr-password-input-trigger:not(:disabled)",
+  },
+  {
+    path: "src/components/date-picker/date-picker.css",
+    selector: ".dr-date-picker-trigger:not(:disabled)",
+  },
+  {
+    path: "src/components/combobox/combobox.css",
+    selector: ".dr-combobox-clear-trigger:not(:disabled)",
+  },
+  {
+    path: "src/components/combobox/combobox.css",
+    selector: ".dr-combobox-trigger:not(:disabled)",
+  },
+  {
+    path: "src/components/multi-select/multi-select.css",
+    selector: ".dr-multi-select-chip-remove:not(:disabled)",
+  },
+  {
+    path: "src/components/tags-input/tags-input.css",
+    selector: ".dr-tags-input-item-delete-trigger:not(:disabled)",
+  },
+  {
+    path: "src/components/file-upload/file-upload.css",
+    selector: ".dr-file-upload-item-delete-trigger:not(:disabled)",
+  },
+  {
+    path: "src/components/editable/editable.css",
+    selector: ".dr-editable-edit-trigger:not(:disabled)",
+  },
+  {
+    path: "src/components/editable/editable.css",
+    selector: ".dr-editable-submit-trigger:not(:disabled)",
+  },
+  {
+    path: "src/components/editable/editable.css",
+    selector: ".dr-editable-cancel-trigger:not(:disabled)",
+  },
+  {
+    path: "src/components/banner/banner.css",
+    selector: ".dr-banner-close:not(:disabled)",
+  },
+  {
+    path: "src/components/color-picker/color-picker.css",
+    selector: ".dr-color-picker-trigger:not(:disabled)",
+  },
+  {
+    path: "src/components/color-picker/color-picker.css",
+    selector: ".dr-color-picker-eye-dropper-trigger:not(:disabled)",
+  },
 ]
 
 describe("interaction state layer", () => {

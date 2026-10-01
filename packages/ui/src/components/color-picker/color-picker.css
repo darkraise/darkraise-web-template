@@ -28,7 +28,7 @@
   }
 
   .dr-color-picker-trigger {
-    @apply text-muted-foreground hover:text-foreground border-border focus-ring-inset inline-flex h-9 w-9 items-center justify-center rounded-md border transition-colors;
+    @apply text-muted-foreground border-border focus-ring-inset inline-flex h-9 w-9 items-center justify-center rounded-md border transition-colors;
   }
 
   .dr-color-picker-trigger[data-disabled="true"] {
@@ -82,7 +82,42 @@
   }
 
   .dr-color-picker-eye-dropper-trigger {
-    @apply text-muted-foreground hover:text-foreground border-border focus-ring-inset inline-flex h-8 w-8 items-center justify-center self-start rounded-md border transition-colors;
+    @apply text-muted-foreground border-border focus-ring-inset inline-flex h-8 w-8 items-center justify-center self-start rounded-md border transition-colors;
+  }
+
+  /* Shared interaction state layer (button.css) for the trigger and the
+     eye dropper. The label rule keeps its guard in :where() so it keeps
+     the `hover:` utility's specificity. */
+  .dr-color-picker-trigger,
+  .dr-color-picker-eye-dropper-trigger {
+    position: relative;
+    isolation: isolate;
+  }
+  .dr-color-picker-trigger:where(:not(:disabled)):hover,
+  .dr-color-picker-eye-dropper-trigger:where(:not(:disabled)):hover {
+    @apply text-foreground;
+  }
+  .dr-color-picker-trigger::before,
+  .dr-color-picker-eye-dropper-trigger::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--state-layer-color, currentColor);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--state-layer-out) var(--ease-out);
+  }
+  .dr-color-picker-trigger:not(:disabled):hover::before,
+  .dr-color-picker-eye-dropper-trigger:not(:disabled):hover::before {
+    opacity: var(--state-layer-hover);
+    transition-duration: var(--state-layer-in);
+  }
+  .dr-color-picker-trigger:not(:disabled):active::before,
+  .dr-color-picker-eye-dropper-trigger:not(:disabled):active::before {
+    opacity: var(--state-layer-press);
+    transition-duration: var(--state-layer-in);
   }
 
   .dr-color-picker-eye-dropper-trigger[data-disabled="true"] {
@@ -113,8 +148,8 @@
     box-shadow: var(--inset-hi), var(--glass-halo-raised);
   }
 
-  [data-preset="glass"] .dr-color-picker-trigger:hover,
-  [data-preset="glass"] .dr-color-picker-eye-dropper-trigger:hover {
+  [data-preset="glass"] .dr-color-picker-trigger:where(:not(:disabled)):hover,
+  [data-preset="glass"] .dr-color-picker-eye-dropper-trigger:where(:not(:disabled)):hover {
     box-shadow:
       var(--inset-hi), var(--glass-halo-raised), var(--glass-state-hover-glow);
   }

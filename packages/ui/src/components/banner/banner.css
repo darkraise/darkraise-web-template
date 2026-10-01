@@ -84,6 +84,35 @@
     @apply shrink-0;
   }
   .dr-banner-close {
-    @apply focus-ring text-muted-foreground hover:text-foreground rounded-sm p-0.5 transition-colors;
+    @apply focus-ring text-muted-foreground rounded-sm p-0.5 transition-colors;
+  }
+
+  /* Shared interaction state layer (button.css). The label rule keeps its
+     guard in :where() so it keeps the `hover:` utility's specificity. */
+  .dr-banner-close {
+    position: relative;
+    isolation: isolate;
+  }
+  .dr-banner-close:where(:not(:disabled)):hover {
+    @apply text-foreground;
+  }
+  .dr-banner-close::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--state-layer-color, currentColor);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--state-layer-out) var(--ease-out);
+  }
+  .dr-banner-close:not(:disabled):hover::before {
+    opacity: var(--state-layer-hover);
+    transition-duration: var(--state-layer-in);
+  }
+  .dr-banner-close:not(:disabled):active::before {
+    opacity: var(--state-layer-press);
+    transition-duration: var(--state-layer-in);
   }
 }

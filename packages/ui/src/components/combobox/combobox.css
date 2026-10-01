@@ -28,11 +28,47 @@
   }
 
   .dr-combobox-clear-trigger {
-    @apply text-muted-foreground hover:text-foreground focus-ring-inset absolute top-1/2 right-9 inline-flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-sm transition-colors;
+    @apply text-muted-foreground focus-ring-inset absolute top-1/2 right-9 inline-flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-sm transition-colors;
   }
 
   .dr-combobox-trigger {
-    @apply text-muted-foreground hover:text-foreground focus-ring-inset absolute top-1/2 right-2 inline-flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-sm transition-colors;
+    @apply text-muted-foreground focus-ring-inset absolute top-1/2 right-2 inline-flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-sm transition-colors;
+  }
+
+  /* Shared interaction state layer (button.css). Both triggers are already
+     absolutely positioned, which anchors the wash; isolation keeps it
+     above the transparent background and below the icon. MultiSelect's
+     clear and toggle carry these classes too. The label rule keeps its
+     guard in :where() so it keeps the `hover:` utility's specificity. */
+  .dr-combobox-clear-trigger,
+  .dr-combobox-trigger {
+    isolation: isolate;
+  }
+  .dr-combobox-clear-trigger:where(:not(:disabled)):hover,
+  .dr-combobox-trigger:where(:not(:disabled)):hover {
+    @apply text-foreground;
+  }
+  .dr-combobox-clear-trigger::before,
+  .dr-combobox-trigger::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--state-layer-color, currentColor);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--state-layer-out) var(--ease-out);
+  }
+  .dr-combobox-clear-trigger:not(:disabled):hover::before,
+  .dr-combobox-trigger:not(:disabled):hover::before {
+    opacity: var(--state-layer-hover);
+    transition-duration: var(--state-layer-in);
+  }
+  .dr-combobox-clear-trigger:not(:disabled):active::before,
+  .dr-combobox-trigger:not(:disabled):active::before {
+    opacity: var(--state-layer-press);
+    transition-duration: var(--state-layer-in);
   }
 
   .dr-combobox-content {
