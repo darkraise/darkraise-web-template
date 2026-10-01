@@ -9,35 +9,29 @@ import { readFileSync } from "node:fs"
 // `--card` on the page canvas, `--surface-sunken` inside a card. Both are
 // raw token triplets, so the wash still cannot reach a field.
 const CONTROLS = [
-  "components/input/input.css",
-  "components/textarea/textarea.css",
-  "components/number-input/number-input.css",
-  "components/tags-input/tags-input.css",
-  "components/select/select.css",
-  "components/multi-select/multi-select.css",
-  "components/date-input/date-input.css",
-  "components/input-otp/input-otp.css",
-]
+  ["components/input/input.css", ".dr-input"],
+  ["components/textarea/textarea.css", ".dr-textarea"],
+  ["components/number-input/number-input.css", ".dr-number-input-control"],
+  ["components/tags-input/tags-input.css", ".dr-tags-input-control"],
+  ["components/select/select.css", ".dr-select-trigger"],
+  ["components/multi-select/multi-select.css", ".dr-multi-select-control"],
+  ["components/date-input/date-input.css", ".dr-date-input"],
+  ["components/input-otp/input-otp.css", ".dr-input-otp-slot"],
+] as const
 
 describe("form control fills", () => {
-  it.each(CONTROLS)("%s does not paint through bg-card", (file) => {
-    const css = readFileSync(`src/${file}`, "utf8").replace(
-      /\/\*[\s\S]*?\*\//g,
-      "",
-    )
-    expect(css).not.toMatch(/@apply[^;]*\bbg-card\b/)
-  })
+  it.each(CONTROLS.map(([file]) => file))(
+    "%s does not paint through bg-card",
+    (file) => {
+      const css = readFileSync(`src/${file}`, "utf8").replace(
+        /\/\*[\s\S]*?\*\//g,
+        "",
+      )
+      expect(css).not.toMatch(/@apply[^;]*\bbg-card\b/)
+    },
+  )
 
-  it.each([
-    ["components/input/input.css", ".dr-input"],
-    ["components/textarea/textarea.css", ".dr-textarea"],
-    ["components/number-input/number-input.css", ".dr-number-input-control"],
-    ["components/tags-input/tags-input.css", ".dr-tags-input-control"],
-    ["components/select/select.css", ".dr-select-trigger"],
-    ["components/multi-select/multi-select.css", ".dr-multi-select-control"],
-    ["components/date-input/date-input.css", ".dr-date-input"],
-    ["components/input-otp/input-otp.css", ".dr-input-otp-slot"],
-  ])("%s pins an unwashed fill on %s", (file, selector) => {
+  it.each(CONTROLS)("%s pins an unwashed fill on %s", (file, selector) => {
     const css = readFileSync(`src/${file}`, "utf8")
       .replace(/\/\*[\s\S]*?\*\//g, "")
       .replace(/\s+/g, " ")
