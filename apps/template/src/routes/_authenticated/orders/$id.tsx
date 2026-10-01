@@ -138,7 +138,7 @@ function OrderDetailPage() {
                   {i + 1}
                 </div>
                 <span
-                  className={`text-sm whitespace-nowrap capitalize ${
+                  className={`text-sm whitespace-nowrap ${
                     i <= currentStepIndex
                       ? "text-foreground font-medium"
                       : "text-muted-foreground"
