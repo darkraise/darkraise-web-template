@@ -76,7 +76,10 @@ const SELECTORS: Array<[string, string]> = [
     "src/components/tree-view/tree-view.css",
     ".dr-tree-view-branch-control:focus-visible",
   ],
-  ["src/components/tree-view/tree-view.css", ".dr-tree-view-item:focus-visible"],
+  [
+    "src/components/tree-view/tree-view.css",
+    ".dr-tree-view-item:focus-visible",
+  ],
   // aria-activedescendant
   [
     "src/components/command/command.css",
@@ -137,7 +140,10 @@ describe("menu-style rows carry a visible focus indicator", () => {
         const stylesRow = (match[1] as string)
           .split(",")
           .some((s) => onRow.test(s.trim().split(/\s+/).pop() ?? ""))
-        if (stylesRow && /@apply[^;]*(?<![\w-])focus-ring/.test(match[2] as string)) {
+        if (
+          stylesRow &&
+          /@apply[^;]*(?<![\w-])focus-ring/.test(match[2] as string)
+        ) {
           offenders.push(`${row} (${path})`)
         }
       }
@@ -167,25 +173,59 @@ function allRuleBodiesFor(css: string, selector: string): string {
 }
 
 const APPLIED: Array<[string, string, string]> = [
-  ["src/layout/sidebar/sidebar-nav.css", ".dr-sidebar-nav-link", "focus-ring-inset"],
-  ["src/layout/sidebar/sidebar-nav.css", ".dr-sidebar-nav-popover-trigger", "focus-ring-inset"],
-  ["src/layout/sidebar/sidebar-nav.css", ".dr-sidebar-nav-chevron-button", "focus-ring-inset"],
-  ["src/components/accordion/accordion.css", ".dr-accordion-trigger", "focus-ring-inset"],
-  ["src/layout/page-header/page-header.css", ".dr-page-header-tab", "focus-ring-inset"],
+  [
+    "src/layout/sidebar/sidebar-nav.css",
+    ".dr-sidebar-nav-link",
+    "focus-ring-inset",
+  ],
+  [
+    "src/layout/sidebar/sidebar-nav.css",
+    ".dr-sidebar-nav-popover-trigger",
+    "focus-ring-inset",
+  ],
+  [
+    "src/layout/sidebar/sidebar-nav.css",
+    ".dr-sidebar-nav-chevron-button",
+    "focus-ring-inset",
+  ],
+  [
+    "src/components/accordion/accordion.css",
+    ".dr-accordion-trigger",
+    "focus-ring-inset",
+  ],
+  [
+    "src/layout/page-header/page-header.css",
+    ".dr-page-header-tab",
+    "focus-ring-inset",
+  ],
   ["src/components/banner/banner.css", ".dr-banner-close", "focus-ring"],
   ["src/components/sonner/sonner.css", ".dr-toast-action", "focus-ring"],
   ["src/components/sonner/sonner.css", ".dr-toast-cancel", "focus-ring"],
   ["src/components/sonner/sonner.css", ".dr-toast-close", "focus-ring"],
-  ["src/components/multi-select/multi-select.css", ".dr-multi-select-control", "focus-ring-input-wrapper"],
-  ["src/components/multi-select/multi-select.css", ".dr-multi-select-clear", "focus-ring-inset"],
-  ["src/components/multi-select/multi-select.css", ".dr-multi-select-toggle", "focus-ring-inset"],
+  [
+    "src/components/multi-select/multi-select.css",
+    ".dr-multi-select-control",
+    "focus-ring-input-wrapper",
+  ],
+  [
+    "src/components/multi-select/multi-select.css",
+    ".dr-multi-select-clear",
+    "focus-ring-inset",
+  ],
+  [
+    "src/components/multi-select/multi-select.css",
+    ".dr-multi-select-toggle",
+    "focus-ring-inset",
+  ],
 ]
 
 describe("controls that had no focus indicator", () => {
   it.each(APPLIED)("%s → %s applies %s", (path, selector, utility) => {
     const css = readFileSync(path, "utf8").replace(/\/\*[\s\S]*?\*\//g, "")
     const bodies = allRuleBodiesFor(css, selector)
-    expect(bodies).toMatch(new RegExp(`@apply[^;]*(?<![\\w-])${utility}(?![\\w-])`))
+    expect(bodies).toMatch(
+      new RegExp(`@apply[^;]*(?<![\\w-])${utility}(?![\\w-])`),
+    )
   })
 
   it("the slider thumb draws its ring as an outline, which presets cannot remove", () => {
@@ -244,7 +284,10 @@ const INSET: Array<[string, string]> = [
     "src/components/password-input/password-input.css",
     ".dr-password-input-trigger",
   ],
-  ["src/components/toggle-group/toggle-group.css", ".dr-toggle-group .dr-toggle"],
+  [
+    "src/components/toggle-group/toggle-group.css",
+    ".dr-toggle-group .dr-toggle",
+  ],
   [
     "src/components/segment-group/segment-group.css",
     ".dr-segment-group .dr-segment-group-item",

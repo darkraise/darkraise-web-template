@@ -94,24 +94,27 @@ function styles(selector: string, cls: string): boolean {
 
 describe("hover and press on controls with the shared state layer", () => {
   it.each(CONTROLS)("%s is still styled", (cls) => {
-    expect(RULES.some((rule) => rule.selectors.some((s) => styles(s, cls)))).toBe(
-      true,
-    )
+    expect(
+      RULES.some((rule) => rule.selectors.some((s) => styles(s, cls))),
+    ).toBe(true)
   })
 
-  it.each(CONTROLS)("%s guards every :hover and :active rule with %s", (cls, guard) => {
-    const offenders = RULES.flatMap((rule) =>
-      rule.selectors
-        .filter(
-          (s) =>
-            styles(s, cls) &&
-            /:(?:hover|active)(?![\w-])/.test(subject(s)) &&
-            !subject(s).includes(guard),
-        )
-        .map((s) => `${s} (${rule.path})`),
-    )
-    expect(offenders).toEqual([])
-  })
+  it.each(CONTROLS)(
+    "%s guards every :hover and :active rule with %s",
+    (cls, guard) => {
+      const offenders = RULES.flatMap((rule) =>
+        rule.selectors
+          .filter(
+            (s) =>
+              styles(s, cls) &&
+              /:(?:hover|active)(?![\w-])/.test(subject(s)) &&
+              !subject(s).includes(guard),
+          )
+          .map((s) => `${s} (${rule.path})`),
+      )
+      expect(offenders).toEqual([])
+    },
+  )
 
   it.each(CONTROLS)("%s carries no hover or press utility in @apply", (cls) => {
     const offenders = RULES.filter(

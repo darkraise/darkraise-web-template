@@ -65,7 +65,10 @@ const OVERLAYS: Array<[string, string]> = [
   ["combobox/combobox.css", ".dr-combobox-content"],
   ["date-picker/date-picker.css", ".dr-date-picker-content"],
   ["command/command.css", ".dr-command"],
-  ["virtualized-dropdown-menu/virtualized-dropdown-menu.css", ".dr-vdm-content"],
+  [
+    "virtualized-dropdown-menu/virtualized-dropdown-menu.css",
+    ".dr-vdm-content",
+  ],
   ["navigation-menu/navigation-menu.css", ".dr-navigation-menu-content"],
   ["color-picker/color-picker.css", ".dr-color-picker-content"],
   ["floating-panel/floating-panel.css", ".dr-floating-panel"],
@@ -107,8 +110,7 @@ const ARBITRARY_LITERAL = new RegExp(
   `(?<![\\w-])rounded${SIDES}-\\[-?\\d*\\.?\\d+[a-z%]+\\]`,
   "g",
 )
-const RADIUS_DECLARATION =
-  /(?<![\w-])border(?:-[a-z]+)*-radius\s*:\s*([^;]+)/g
+const RADIUS_DECLARATION = /(?<![\w-])border(?:-[a-z]+)*-radius\s*:\s*([^;]+)/g
 const LENGTH = /(?<![\w.-])-?\d*\.?\d+[a-z%]+/g
 const FULL = /(?<![\w-])rounded-full(?![\w-])/
 
@@ -187,7 +189,9 @@ function hardCoded(value: string): string {
     const next = current.replace(
       /([a-z-]*)\(([^()]*)\)/gi,
       (_, name: string, inner: string) =>
-        name === "var" || inner.includes("TOKEN") ? "TOKEN" : `${name}[${inner}]`,
+        name === "var" || inner.includes("TOKEN")
+          ? "TOKEN"
+          : `${name}[${inner}]`,
     )
     if (next === current) return current.replace(/TOKEN/g, "")
     current = next
@@ -221,7 +225,8 @@ describe("control radius tokens", () => {
       readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
         const path = join(dir, entry.name)
         if (entry.isDirectory()) return walk(path)
-        return /\.(css|tsx?)$/.test(entry.name) && !entry.name.includes(".test.")
+        return /\.(css|tsx?)$/.test(entry.name) &&
+          !entry.name.includes(".test.")
           ? [path]
           : []
       })
@@ -235,7 +240,9 @@ describe("control radius tokens", () => {
 
 describe("control radius readers", () => {
   it("rounds buttons with --btn-radius", () => {
-    expect(readsRadius(bodyOf("button/button.css", ".dr-btn"), "--btn-radius")).toBe(true)
+    expect(
+      readsRadius(bodyOf("button/button.css", ".dr-btn"), "--btn-radius"),
+    ).toBe(true)
   })
 
   it.each([
@@ -249,9 +256,12 @@ describe("control radius readers", () => {
       "input-otp/input-otp.css",
       '.dr-input-otp-container[data-variant="separate"] .dr-input-otp-slot',
     ],
-  ])("rounds the single-line field %s %s with --field-radius", (file, selector) => {
-    expect(readsRadius(bodyOf(file, selector), "--field-radius")).toBe(true)
-  })
+  ])(
+    "rounds the single-line field %s %s with --field-radius",
+    (file, selector) => {
+      expect(readsRadius(bodyOf(file, selector), "--field-radius")).toBe(true)
+    },
+  )
 
   it("rounds the outer corners of grouped OTP slots with --field-radius", () => {
     const body = bodyOf("input-otp/input-otp.css", ".dr-input-otp-slot")
@@ -363,12 +373,15 @@ describe("overlay family", () => {
     expect(own).toEqual([])
   })
 
-  it.each(OVERLAY_SURFACES)("%s reads the surface through --overlay-*", (file) => {
-    const css = readFileSync(`src/components/${file}`, "utf8").replace(
-      /\/\*[\s\S]*?\*\//g,
-      "",
-    )
-    expect(css).not.toMatch(/var\(--surface-overlay-(?:bg|border|shadow)\)/)
-    expect(css).toContain("var(--overlay-bg)")
-  })
+  it.each(OVERLAY_SURFACES)(
+    "%s reads the surface through --overlay-*",
+    (file) => {
+      const css = readFileSync(`src/components/${file}`, "utf8").replace(
+        /\/\*[\s\S]*?\*\//g,
+        "",
+      )
+      expect(css).not.toMatch(/var\(--surface-overlay-(?:bg|border|shadow)\)/)
+      expect(css).toContain("var(--overlay-bg)")
+    },
+  )
 })

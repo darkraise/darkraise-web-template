@@ -432,7 +432,9 @@
   /* The underline trigger is the only variant with no radius of its own
      (its chrome is a bottom border), so the wash needs one. Top corners
      only, so the fill meets the indicator bar square. */
-  .dr-tabs-trigger[data-variant="underline"]:not([data-state="active"]):where(:not(:disabled)):hover {
+  .dr-tabs-trigger[data-variant="underline"]:not([data-state="active"]):where(
+      :not(:disabled)
+    ):hover {
     /* @apply, not `var(--radius-sm)`: the radius aliases live in
        `@theme inline`, so they are folded into utilities at build time
        and never emitted as custom properties to reference here. */
@@ -467,8 +469,10 @@
     backdrop-filter: var(--backdrop-filter);
   }
 
-  [data-preset="glass"] .dr-tabs-trigger[data-variant="outline"]:where(:not(:disabled)):hover,
-  [data-preset="glass"] .dr-tabs-trigger[data-variant="underline"]:where(:not(:disabled)):hover {
+  [data-preset="glass"]
+    .dr-tabs-trigger[data-variant="outline"]:where(:not(:disabled)):hover,
+  [data-preset="glass"]
+    .dr-tabs-trigger[data-variant="underline"]:where(:not(:disabled)):hover {
     box-shadow: var(--glass-state-hover-glow);
   }
 

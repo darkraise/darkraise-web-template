@@ -39,7 +39,8 @@ const EXEMPT = new Map<string, string>([
   ],
 ])
 
-const FOCUS_STATE = /:focus-visible|:focus-within|\[data-highlighted|\[data-focused/
+const FOCUS_STATE =
+  /:focus-visible|:focus-within|\[data-highlighted|\[data-focused/
 /**
  * Rows whose keyboard-active state is `data-active` (aria-activedescendant).
  * Elsewhere `data-active` means "selected", and a selection glow is not focus.
@@ -64,7 +65,9 @@ function hasFocusRule(cls: string): boolean {
       if (/(?<![\w-])focus-ring/.test(rule.body)) return true
       const variantRing = rule.body
         .replace(REMOVALS, "")
-        .match(/(?:focus-visible|focus-within):(?:ring-(?!0(?![\w-]))|outline-(?!none)\w)/)
+        .match(
+          /(?:focus-visible|focus-within):(?:ring-(?!0(?![\w-]))|outline-(?!none)\w)/,
+        )
       if (variantRing) return true
       const keyboardState =
         FOCUS_STATE.test(selector) ||
@@ -74,7 +77,10 @@ function hasFocusRule(cls: string): boolean {
   }
   for (const { source } of TSX) {
     for (const group of classGroups(source)) {
-      if (group.includes(cls) && group.some((c) => c.startsWith("focus-ring"))) {
+      if (
+        group.includes(cls) &&
+        group.some((c) => c.startsWith("focus-ring"))
+      ) {
         return true
       }
     }
@@ -202,13 +208,16 @@ describe("focus indicators are outlines", () => {
     const multiSelect = RULES.filter((rule) =>
       rule.path.endsWith("multi-select.css"),
     ).flatMap((rule) => rule.selectors)
-    expect(multiSelect).not.toContain('.dr-multi-select-control[data-state="open"]')
+    expect(multiSelect).not.toContain(
+      '.dr-multi-select-control[data-state="open"]',
+    )
   })
 
   it("rings the listbox root with focus-ring", () => {
     const listbox = RULES.find(
       (rule) =>
-        rule.path.endsWith("listbox.css") && rule.selectors.includes(".dr-listbox"),
+        rule.path.endsWith("listbox.css") &&
+        rule.selectors.includes(".dr-listbox"),
     )
     expect(listbox?.body).toMatch(/@apply[^;]*(?<![\w-])focus-ring(?![\w-])/)
   })

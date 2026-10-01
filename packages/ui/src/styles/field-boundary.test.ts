@@ -16,7 +16,11 @@ function rulesOf(file: string): Rule[] {
     .replace(/\/\*[\s\S]*?\*\//g, "")
     .replace(/\s+/g, " ")
   return [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((m) => ({
-    selector: (m[1] as string).trim(),
+    // Prettier wraps long :is() lists, leaving spaces inside the parens.
+    selector: (m[1] as string)
+      .trim()
+      .replace(/\(\s+/g, "(")
+      .replace(/\s+\)/g, ")"),
     body: (m[2] as string).trim(),
   }))
 }
@@ -70,14 +74,17 @@ const SMALL_CONTROLS: Array<[string, string]> = [
 ]
 
 describe("field boundary", () => {
-  it.each(FIELDS)("%s .%s draws a faint border and a 3:1 bottom edge", (file, cls) => {
-    const body = bodyOf(file, `.${cls}`)
-    expect(body).toMatch(
-      /(?<![\w:-])border-input(?![\w-])|border-color:\s*hsl\(var\(--input\)\)/,
-    )
-    // Last, so no border-color shorthand after it can take the bottom back.
-    expect(body).toMatch(/border-bottom-color: var\(--field-edge\);$/)
-  })
+  it.each(FIELDS)(
+    "%s .%s draws a faint border and a 3:1 bottom edge",
+    (file, cls) => {
+      const body = bodyOf(file, `.${cls}`)
+      expect(body).toMatch(
+        /(?<![\w:-])border-input(?![\w-])|border-color:\s*hsl\(var\(--input\)\)/,
+      )
+      // Last, so no border-color shorthand after it can take the bottom back.
+      expect(body).toMatch(/border-bottom-color: var\(--field-edge\);$/)
+    },
+  )
 
   it("gives the glass multi-select the edge its combobox glass rule hides", () => {
     // The control also carries .dr-combobox-control, whose glass border
@@ -100,19 +107,24 @@ describe("field boundary", () => {
     expect(body).toContain("border-bottom-color: hsl(var(--primary) / 0.4);")
   })
 
-  it.each(GLASS_FIELDS)("glass %s .%s keeps the fog sides over the edge", (file, cls) => {
-    const body = glassRestBody(file, cls)
-    expect(body).not.toMatch(SHORTHAND)
-    expect(body).toContain("border-color: var(--fog-15);")
-    expect(body).toContain("border-bottom-color: var(--field-edge);")
-  })
+  it.each(GLASS_FIELDS)(
+    "glass %s .%s keeps the fog sides over the edge",
+    (file, cls) => {
+      const body = glassRestBody(file, cls)
+      expect(body).not.toMatch(SHORTHAND)
+      expect(body).toContain("border-color: var(--fog-15);")
+      expect(body).toContain("border-bottom-color: var(--field-edge);")
+    },
+  )
 
   // Component rules declare their border colours after the utility's nested
   // rules, and native CSS nesting keeps that order, so an invalid rule with
   // no specificity lost to them and the field kept its neutral border.
   it("lets the invalid state outrank a field's own border colours", () => {
     const theme = readFileSync("src/styles/theme.css", "utf8")
-    const utility = /@utility focus-ring-input \{([\s\S]*?)\n\}/.exec(theme)?.[1]
+    const utility = /@utility focus-ring-input \{([\s\S]*?)\n\}/.exec(
+      theme,
+    )?.[1]
     expect(utility).toBeDefined()
     expect(utility).not.toContain(":where(")
     expect(utility).toContain(':is([data-invalid], [aria-invalid="true"])')
@@ -120,32 +132,40 @@ describe("field boundary", () => {
 })
 
 describe("small control edge", () => {
-  it.each(SMALL_CONTROLS)("%s .%s draws the edge while unchecked", (file, cls) => {
-    expect(bodyOf(file, `.${cls}[data-state="unchecked"]`)).toContain(
-      "border-color: var(--field-edge);",
-    )
-  })
+  it.each(SMALL_CONTROLS)(
+    "%s .%s draws the edge while unchecked",
+    (file, cls) => {
+      expect(bodyOf(file, `.${cls}[data-state="unchecked"]`)).toContain(
+        "border-color: var(--field-edge);",
+      )
+    },
+  )
 
-  it.each(SMALL_CONTROLS)("glass %s .%s draws the edge in place of fog", (file, cls) => {
-    const body = glassRestBody(file, cls)
-    expect(body).not.toMatch(SHORTHAND)
-    expect(body).toContain("border-color: var(--field-edge);")
-  })
+  it.each(SMALL_CONTROLS)(
+    "glass %s .%s draws the edge in place of fog",
+    (file, cls) => {
+      const body = glassRestBody(file, cls)
+      expect(body).not.toMatch(SHORTHAND)
+      expect(body).toContain("border-color: var(--field-edge);")
+    },
+  )
 
   it("keeps the checked checkbox and radio on --primary", () => {
     expect(bodyOf("checkbox/checkbox.css", ".dr-checkbox")).toMatch(
       /(?<![\w:-])border-primary(?![\w-])/,
     )
-    expect(bodyOf("radio-group/radio-group.css", ".dr-radio-group-item")).toMatch(
-      /(?<![\w:-])border-primary(?![\w-])/,
-    )
+    expect(
+      bodyOf("radio-group/radio-group.css", ".dr-radio-group-item"),
+    ).toMatch(/(?<![\w:-])border-primary(?![\w-])/)
   })
 
   // The 16px thumb is centred by the track's 2px border. Glass used to swap
   // in a 1px shorthand, which left the thumb 1px from one edge and 3px from
   // the other.
   it("keeps the switch track's 2px border under glass", () => {
-    expect(bodyOf("switch/switch.css", ".dr-switch")).toMatch(/(?<![\w-])border-2(?![\w-])/)
+    expect(bodyOf("switch/switch.css", ".dr-switch")).toMatch(
+      /(?<![\w-])border-2(?![\w-])/,
+    )
     expect(glassRestBody("switch/switch.css", "dr-switch")).not.toMatch(
       /border(?:-[a-z]+)?-width|(?<![\w-])border\s*:/,
     )

@@ -33,7 +33,10 @@ const SIZED = [
 async function openFixture(page: Page) {
   await page.goto(FIXTURE)
   await page.getByTestId("control-height").waitFor({ state: "attached" })
-  await page.locator('[data-probe="segment"] .dr-segment-group-item').first().waitFor()
+  await page
+    .locator('[data-probe="segment"] .dr-segment-group-item')
+    .first()
+    .waitFor()
 }
 
 async function measuredHeights(page: Page) {
@@ -99,7 +102,8 @@ for (const preset of PRESETS) {
           const consoleWatch = watchConsole(page)
           await seedApp(page, { preset, mode, density, fontSize })
           await openFixture(page)
-          const expected = (await boxOf(page.getByTestId("control-height"))).height
+          const expected = (await boxOf(page.getByTestId("control-height")))
+            .height
           for (const row of await measuredHeights(page)) {
             expect(row.height, `${row.selector} #${row.index}`).toBeCloseTo(
               expected,
@@ -135,7 +139,9 @@ test.describe("coarse pointer", () => {
       }
       // Calendar days are buttons but must not take the floor: they would
       // overflow their density-sized cells (Task 3, Step 7).
-      const cell = page.locator('[data-probe="calendar"] .dr-calendar-day').nth(10)
+      const cell = page
+        .locator('[data-probe="calendar"] .dr-calendar-day')
+        .nth(10)
       const day = cell.locator(".dr-calendar-day-btn")
       expect((await boxOf(day)).width).toBeCloseTo((await boxOf(cell)).width, 0)
     })
@@ -188,7 +194,10 @@ test("glass switch thumb sits evenly in its track", async ({ page }) => {
   await expect
     .poll(async () => {
       const box = await boxOf(thumb)
-      return Math.round((trackBox.x + trackBox.width - (box.x + box.width)) * 10) / 10
+      return (
+        Math.round((trackBox.x + trackBox.width - (box.x + box.width)) * 10) /
+        10
+      )
     })
     .toBeCloseTo(offGap, 0)
 })

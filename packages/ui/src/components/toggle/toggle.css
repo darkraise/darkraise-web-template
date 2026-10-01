@@ -90,8 +90,10 @@
     box-shadow: var(--inset-hi), var(--glass-halo-raised);
   }
 
-  [data-preset="glass"] .dr-toggle[data-variant="default"]:where(:not(:disabled)):hover,
-  [data-preset="glass"] .dr-toggle[data-variant="outline"]:where(:not(:disabled)):hover {
+  [data-preset="glass"]
+    .dr-toggle[data-variant="default"]:where(:not(:disabled)):hover,
+  [data-preset="glass"]
+    .dr-toggle[data-variant="outline"]:where(:not(:disabled)):hover {
     background-image: linear-gradient(135deg, var(--fog-20), var(--fog-10));
     box-shadow:
       var(--inset-hi), var(--glass-halo-raised), var(--glass-state-hover-glow);

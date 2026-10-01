@@ -29,7 +29,10 @@
   }
 
   [data-preset="glass"]
-    .dr-combobox-control.dr-multi-select-control:is(:focus-within, [data-state="open"]) {
+    .dr-combobox-control.dr-multi-select-control:is(
+      :focus-within,
+      [data-state="open"]
+    ) {
     border-bottom-color: hsl(var(--primary) / 0.4);
   }
 

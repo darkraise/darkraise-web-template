@@ -149,7 +149,8 @@
   }
 
   [data-preset="glass"] .dr-color-picker-trigger:where(:not(:disabled)):hover,
-  [data-preset="glass"] .dr-color-picker-eye-dropper-trigger:where(:not(:disabled)):hover {
+  [data-preset="glass"]
+    .dr-color-picker-eye-dropper-trigger:where(:not(:disabled)):hover {
     box-shadow:
       var(--inset-hi), var(--glass-halo-raised), var(--glass-state-hover-glow);
   }

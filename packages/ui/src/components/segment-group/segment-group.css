@@ -61,12 +61,16 @@
     transition: opacity var(--state-layer-out) var(--ease-out);
   }
   .dr-segment-group
-    .dr-segment-group-item:not([data-state="checked"]):not(:disabled):hover::after {
+    .dr-segment-group-item:not([data-state="checked"]):not(
+      :disabled
+    ):hover::after {
     opacity: var(--state-layer-hover);
     transition-duration: var(--state-layer-in);
   }
   .dr-segment-group
-    .dr-segment-group-item:not([data-state="checked"]):not(:disabled):active::after {
+    .dr-segment-group-item:not([data-state="checked"]):not(
+      :disabled
+    ):active::after {
     opacity: var(--state-layer-press);
     transition-duration: var(--state-layer-in);
   }

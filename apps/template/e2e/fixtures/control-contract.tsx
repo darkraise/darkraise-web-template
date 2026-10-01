@@ -60,7 +60,14 @@ const ITEMS = [
 // without relying on props each component may not forward.
 function Controls() {
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "flex-start" }}>
+    <div
+      style={{
+        display: "flex",
+        flexWrap: "wrap",
+        gap: 12,
+        alignItems: "flex-start",
+      }}
+    >
       <div data-probe="buttons" style={{ display: "flex", gap: 8 }}>
         {VARIANTS.map((variant) => (
           <Button key={variant} variant={variant}>
@@ -98,7 +105,11 @@ function Controls() {
         </Combobox>
       </div>
       <div data-probe="multi-select" style={{ width: 240 }}>
-        <MultiSelect items={ITEMS} defaultValue={["apple"]} placeholder="Pick" />
+        <MultiSelect
+          items={ITEMS}
+          defaultValue={["apple"]}
+          placeholder="Pick"
+        />
       </div>
       <div data-probe="date-input">
         <DateInput aria-label="Date" />
@@ -154,7 +165,10 @@ createRoot(root).render(
         style={{ height: "var(--control-height-xl)", width: 1 }}
       />
       <Controls />
-      <div data-probe="edge-page" style={{ width: 200, marginTop: 24, paddingBottom: 12 }}>
+      <div
+        data-probe="edge-page"
+        style={{ width: 200, marginTop: 24, paddingBottom: 12 }}
+      >
         <Input aria-label="On page" placeholder="On page" />
       </div>
       <Card style={{ width: 280, marginTop: 24 }}>

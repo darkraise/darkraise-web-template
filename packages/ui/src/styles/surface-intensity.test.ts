@@ -173,7 +173,10 @@ describe("surface intensity rules", () => {
     ["the mix block", () => mixBody()],
     ["balanced", () => bodyOf('[data-surface-intensity="balanced"]')],
     ["none", () => bodyOf('[data-surface-intensity="none"]')],
-  ])("redeclares --overlay-bg beside --surface-overlay-bg in %s", (_label, getBody) => {
-    expect(getBody()).toContain("--overlay-bg: var(--surface-overlay-bg);")
-  })
+  ])(
+    "redeclares --overlay-bg beside --surface-overlay-bg in %s",
+    (_label, getBody) => {
+      expect(getBody()).toContain("--overlay-bg: var(--surface-overlay-bg);")
+    },
+  )
 })

@@ -33,7 +33,9 @@ describe("--field-edge-color", () => {
       const base = finalTokens(combo)
       const edge = base["--field-edge-color"]
       if (!isOpaque(edge)) {
-        failures.push(`${comboName(combo)}: edge ${String(edge)} is not an opaque triplet`)
+        failures.push(
+          `${comboName(combo)}: edge ${String(edge)} is not an opaque triplet`,
+        )
         continue
       }
       for (const step of BORDER_INTENSITIES) {
@@ -44,7 +46,9 @@ describe("--field-edge-color", () => {
         for (const ground of GROUNDS) {
           const value = tokens[ground]
           if (!isOpaque(value)) {
-            failures.push(`${comboName(combo)} ${step}: ${ground} is not opaque`)
+            failures.push(
+              `${comboName(combo)} ${step}: ${ground} is not opaque`,
+            )
             continue
           }
           const ratio = contrastRatio(edge, value)
