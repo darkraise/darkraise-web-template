@@ -46,10 +46,14 @@ const EXEMPT = new Map<string, string>([
 const FOCUS_STATE =
   /:focus-visible|:focus-within|\[data-highlighted|\[data-focused/
 /**
- * Rows whose keyboard-active state is `data-active` (aria-activedescendant).
- * Elsewhere `data-active` means "selected", and a selection glow is not focus.
+ * Rows whose keyboard-active state is an attribute (aria-activedescendant),
+ * mapped to that attribute. Elsewhere `data-active` means "selected", and a
+ * selection glow is not focus.
  */
-const ACTIVE_ROW_CLASSES = new Set(["dr-vdm-item"])
+const ACTIVE_ROW_STATE = new Map([
+  ["dr-vdm-item", "[data-active"],
+  ["dr-command-item", "[data-selected"],
+])
 
 /** Declarations and utilities that remove an indicator rather than draw one. */
 const REMOVALS =
@@ -75,7 +79,7 @@ function hasFocusRule(cls: string): boolean {
       if (variantRing) return true
       const keyboardState =
         FOCUS_STATE.test(selector) ||
-        (ACTIVE_ROW_CLASSES.has(cls) && selector.includes("[data-active"))
+        selector.includes(ACTIVE_ROW_STATE.get(cls) ?? "\u0000")
       if (keyboardState && drawsIndicator(rule.body)) return true
     }
   }

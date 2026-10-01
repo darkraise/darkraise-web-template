@@ -16,7 +16,7 @@
     @apply m-0 max-h-72 min-w-44 list-none overflow-auto p-1;
   }
   .dr-cascade-item {
-    @apply flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors;
+    @apply flex cursor-pointer items-center gap-2 rounded-sm px-2 py-[var(--density-row-py)] text-sm transition-colors;
   }
   /* The active item (the one whose subtree shows in the next column)
      follows the pointer, so it takes the highlighted-row treatment its

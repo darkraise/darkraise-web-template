@@ -30,6 +30,10 @@ const FORCED_COLORS_EXEMPT = new Map<string, string>([
   ],
   ["dr-combobox-item", "a menu row; the popover's border bounds the list"],
   ["dr-combobox-trigger", "an icon-only trigger inside the bordered field"],
+  [
+    "dr-command-item",
+    "a menu row; the command palette's surface bounds the list",
+  ],
   ["dr-date-picker-trigger", "an icon-only trigger inside the bordered field"],
   [
     "dr-editable-cancel-trigger",

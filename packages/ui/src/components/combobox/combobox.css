@@ -86,7 +86,7 @@
   }
 
   .dr-combobox-item {
-    @apply relative flex cursor-pointer items-center justify-between gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors outline-none select-none;
+    @apply relative flex cursor-pointer items-center justify-between gap-2 rounded-sm px-2 py-[var(--density-row-py)] text-sm transition-colors outline-none select-none;
   }
 
   .dr-combobox-item[data-highlighted="true"] {

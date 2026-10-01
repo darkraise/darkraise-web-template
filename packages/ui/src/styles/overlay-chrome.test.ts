@@ -197,3 +197,22 @@ describe("menu family", () => {
     }
   })
 })
+
+describe("menu rows", () => {
+  it.each([
+    ["src/components/combobox/combobox.css", ".dr-combobox-item"],
+    ["src/components/listbox/listbox.css", ".dr-listbox-item"],
+    ["src/components/tree-view/tree-view.css", ".dr-tree-view-item"],
+    ["src/components/cascade-select/cascade-select.css", ".dr-cascade-item"],
+  ])("%s %s pads its rows with the density token", (path, selector) => {
+    const utilities = applied(bodyOf(path, selector))
+    expect(utilities).toContain("py-[var(--density-row-py)]")
+    expect(utilities).not.toContain("py-1.5")
+  })
+
+  it("gives command items the pointer cursor every other menu row has", () => {
+    const utilities = applied(bodyOf(COMMAND, ".dr-command-item"))
+    expect(utilities).toContain("cursor-pointer")
+    expect(utilities).not.toContain("cursor-default")
+  })
+})
