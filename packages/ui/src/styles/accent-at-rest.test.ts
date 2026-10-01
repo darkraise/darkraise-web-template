@@ -94,3 +94,30 @@ describe("scrollbars and skeletons at rest", () => {
     expect(body).not.toContain("--primary")
   })
 })
+
+const BADGE = "src/components/badge/badge.css"
+const INTERACTIVE = ':is(a, button, [role="button"])'
+
+describe("badge hover", () => {
+  const badgeRules = rulesOf(BADGE).filter((rule) =>
+    rule.selectors.some((s) => /\.dr-badge(?![\w-])/.test(s)),
+  )
+
+  it("puts no hover utility in a badge's resting rule", () => {
+    const offenders = badgeRules
+      .filter((rule) => /(?<![\w-])hover:/.test(rule.body))
+      .map((rule) => rule.selectors.join(", "))
+    expect(offenders).toEqual([])
+  })
+
+  it("hovers only a badge that is a link or a button", () => {
+    const hovers = badgeRules.flatMap((rule) =>
+      rule.selectors.filter((s) => s.includes(":hover")),
+    )
+    // default, secondary, destructive and the 17 fixed colours.
+    expect(hovers.length).toBe(20)
+    expect(
+      hovers.filter((s) => !s.includes(`.dr-badge${INTERACTIVE}`)),
+    ).toEqual([])
+  })
+})

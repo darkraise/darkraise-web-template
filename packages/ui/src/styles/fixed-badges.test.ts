@@ -69,9 +69,15 @@ function variant(hue: string) {
     `\\.dr-badge\\[data-variant="${hue}"\\]\\s*\\{([^}]*)\\}`,
   ).exec(badgeCss)?.[1]
   if (!body) throw new Error(`no rule for ${hue}`)
+  // Hover lives on its own rule, scoped to a badge that is a link or button.
+  const hoverBody = new RegExp(
+    `\\.dr-badge:is\\(a, button, \\[role="button"\\]\\)\\[data-variant="${hue}"\\]:hover\\s*\\{([^}]*)\\}`,
+  ).exec(badgeCss)?.[1]
   const fill = /(?<![\w:-])bg-([a-z]+-\d+)(?![\w/-])/.exec(body)?.[1]
   const label = /(?<![\w:-])text-(white|[a-z]+-\d+)(?![\w/-])/.exec(body)?.[1]
-  const hover = /hover:bg-([a-z]+-\d+)(?![\w/-])/.exec(body)?.[1]
+  const hover = /(?<![\w:-])bg-([a-z]+-\d+)(?![\w/-])/.exec(
+    hoverBody ?? "",
+  )?.[1]
   return { fill, label, hover }
 }
 
