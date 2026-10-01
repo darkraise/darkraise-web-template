@@ -1,7 +1,7 @@
-import { test, expect, type Page } from "@playwright/test"
+import { test, expect, type Locator, type Page } from "@playwright/test"
 import { DENSITIES, PRESETS } from "./fixtures/theme"
 import { boxOf, seedApp, watchConsole } from "./helpers/app"
-import { contrast, pixel } from "./helpers/measure"
+import { computed, contrast, pixel } from "./helpers/measure"
 
 /**
  * The control contract: every button and field sits at --control-height, at
@@ -69,6 +69,20 @@ async function measuredHeights(page: Page) {
   return rows
 }
 
+/** Left edge of the first non-empty text run inside an element. */
+async function textLeft(locator: Locator): Promise<number> {
+  return locator.evaluate((element) => {
+    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT)
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      if (!node.textContent?.trim()) continue
+      const range = document.createRange()
+      range.selectNodeContents(node)
+      return range.getBoundingClientRect().left
+    }
+    throw new Error("no text in element")
+  })
+}
+
 for (const preset of PRESETS) {
   for (const mode of MODES) {
     for (const density of DENSITIES) {
@@ -125,6 +139,44 @@ test.describe("coarse pointer", () => {
   }
 })
 
+for (const preset of PRESETS) {
+  for (const mode of MODES) {
+    for (const density of DENSITIES) {
+      test(`table rows and headers · ${preset} · ${mode} · ${density}`, async ({
+        page,
+      }) => {
+        await seedApp(page, { preset, mode, density })
+        await openFixture(page)
+        await page.mouse.move(0, 0)
+        const expected =
+          (await boxOf(page.getByTestId("control-height"))).height + 8
+        const table = page.locator('[data-probe="table"]')
+        const rows = table.locator("tbody tr")
+        await expect(rows).toHaveCount(3)
+        for (const row of await rows.all()) {
+          const height = (await boxOf(row)).height
+          expect(
+            Math.abs(height - expected),
+            `row ${height}px`,
+          ).toBeLessThanOrEqual(1)
+        }
+        const sortable = table.locator(".dr-data-table-column-header-btn")
+        const firstCell = rows.first().locator("td").first()
+        expect(
+          Math.abs((await textLeft(sortable)) - (await textLeft(firstCell))),
+          "sortable header label on the cell text edge",
+        ).toBeLessThanOrEqual(1)
+        const plain = table.locator("th").filter({ hasText: "Total" })
+        for (const property of ["font-size", "font-weight", "color"]) {
+          expect(await computed(sortable, property), property).toBe(
+            await computed(plain, property),
+          )
+        }
+      })
+    }
+  }
+}
+
 // Strong glass is the most see-through card, so the most canvas shows under
 // the field; the engine's glass margin is sized for it.
 const EDGE_THEMES = [
@@ -132,6 +184,19 @@ const EDGE_THEMES = [
   {
     name: "glass strong",
     seed: { preset: "glass", presetAxes: { glass: { opacity: "strong" } } },
+  },
+  {
+    name: "glass vivid fuchsia",
+    seed: { preset: "glass", accent: "fuchsia", accentIntensity: "vivid" },
+  },
+  { name: "glass sand surface", seed: { preset: "glass", surface: "sand" } },
+  {
+    name: "glass intense gradient",
+    seed: {
+      preset: "glass",
+      backgroundStyle: "gradient",
+      backgroundIntensity: "intense",
+    },
   },
 ]
 
@@ -150,8 +215,12 @@ for (const { name, seed } of EDGE_THEMES) {
         const bottom = Math.floor(box.y + box.height)
         const edge = await pixel(page, x, bottom - 1)
         const ground = await pixel(page, x, bottom + 4)
+        const ratio = contrast(edge, ground)
+        console.log(
+          `edge contrast ${name} · ${mode} · ${probe}: ${ratio.toFixed(2)}:1`,
+        )
         expect(
-          contrast(edge, ground),
+          ratio,
           `${probe}: edge rgb(${edge.join(",")}) on rgb(${ground.join(",")})`,
         ).toBeGreaterThanOrEqual(3)
       }

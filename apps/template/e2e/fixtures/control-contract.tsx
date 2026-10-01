@@ -1,4 +1,5 @@
 import { createRoot } from "react-dom/client"
+import type { ColumnDef } from "@tanstack/react-table"
 import { ChevronDown } from "lucide-react"
 import { Button, type ButtonVariant } from "darkraise-ui/components/button"
 import { Calendar } from "darkraise-ui/components/calendar"
@@ -39,6 +40,7 @@ import {
 } from "darkraise-ui/components/select"
 import { Switch } from "darkraise-ui/components/switch"
 import { Toggle } from "darkraise-ui/components/toggle"
+import { ColumnHeader, DataTable } from "darkraise-ui/data-table"
 import { ThemeProvider } from "darkraise-ui/theme"
 import "../../src/styles/globals.css"
 
@@ -54,6 +56,27 @@ const VARIANTS: ButtonVariant[] = [
 const ITEMS = [
   { value: "apple", label: "Apple" },
   { value: "banana", label: "Banana" },
+]
+
+interface Invoice {
+  name: string
+  total: number
+}
+
+const INVOICES: Invoice[] = [
+  { name: "Acme", total: 1200 },
+  { name: "Globex", total: 85.5 },
+  { name: "Initech", total: 4 },
+]
+
+// Name is sortable (a ghost button in the header); Total is a plain,
+// end-aligned header, the reference the sortable one must match.
+const INVOICE_COLUMNS: ColumnDef<Invoice>[] = [
+  {
+    accessorKey: "name",
+    header: ({ column }) => <ColumnHeader column={column} title="Name" />,
+  },
+  { accessorKey: "total", header: "Total", meta: { align: "end" } },
 ]
 
 // Every control sits in a `data-probe` wrapper so the spec can find it
@@ -178,6 +201,9 @@ createRoot(root).render(
           </div>
         </CardContent>
       </Card>
+      <div data-probe="table" style={{ width: 360, marginTop: 24 }}>
+        <DataTable columns={INVOICE_COLUMNS} data={INVOICES} />
+      </div>
     </div>
   </ThemeProvider>,
 )
