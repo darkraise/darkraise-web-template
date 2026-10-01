@@ -861,6 +861,11 @@
     --selected-nav-bg: hsl(var(--sidebar-active-bg));
     --selected-nav-fg: hsl(var(--foreground));
 
+    /* Severity wash. Alert, Banner and Toast tint their status colour at
+       this alpha in both modes, always over an opaque base. The engine
+       solves status text to 4.5:1 on its own tint up to 12%. */
+    --status-tint: 0.1;
+
     /* Default elevation-current so `<Card elevation="auto">` and other
      consumers reading `var(--elevation-current)` resolve to a real shadow
      when no `[data-elevation]` attribute is set on any ancestor. Themes
