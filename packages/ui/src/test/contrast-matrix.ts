@@ -35,9 +35,10 @@ export interface ThemeCombo {
  * neutralises it to the default, so iterating its other steps would test
  * states nothing paints.
  *
- * backgroundStyle stays solid: it only moves the decorative --sf-hue tokens,
- * never a colour text or a fill is read against. backgroundIntensity caps the
- * page's saturation, so every step is included.
+ * backgroundStyle stays solid: it moves the decorative --sf-hue tokens and
+ * the page a field edge sits on, and field-edge.test.ts covers that case
+ * against gradientCanvasPeak. backgroundIntensity caps the page's saturation,
+ * so every step is included.
  */
 export function reachableCombos(): ThemeCombo[] {
   const combos: Array<Omit<ThemeCombo, "backgroundIntensity">> = []

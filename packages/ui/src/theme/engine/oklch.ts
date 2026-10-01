@@ -44,7 +44,7 @@ function hslToSrgb(hsl: string): Triple {
   return [r + offset, g + offset, b + offset]
 }
 
-function srgbToHsl([r, g, b]: Triple): string {
+function srgbToHsl([r, g, b]: Triple, digits = 0): string {
   const max = Math.max(r, g, b)
   const min = Math.min(r, g, b)
   const lightness = (max + min) / 2
@@ -60,7 +60,9 @@ function srgbToHsl([r, g, b]: Triple): string {
   }
   if (hue < 0) hue += 360
 
-  return `${Math.round(hue) % 360} ${Math.round(saturation * 100)}% ${Math.round(
+  const scale = 10 ** digits
+  const round = (value: number) => Math.round(value * scale) / scale
+  return `${round(hue) % 360} ${round(saturation * 100)}% ${round(
     lightness * 100,
   )}%`
 }
@@ -138,6 +140,8 @@ export function contrastRatio(a: string, b: string): number {
 /**
  * `tint` at `amount` composited over `ground`, as an HSL triplet. Browsers
  * composite an alpha layer in gamma-encoded sRGB, so the mix happens there.
+ * The triplet keeps two decimals: a whole-number round-trip can move a
+ * contrast ratio by a percent or two, enough to matter at a floor.
  */
 export function composite(
   ground: string,
@@ -150,6 +154,7 @@ export function composite(
     under.map(
       (c, i) => c * (1 - amount) + (over[i] as number) * amount,
     ) as Triple,
+    2,
   )
 }
 

@@ -1,8 +1,11 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
 import { contrastRatio } from "@theme/engine/oklch"
+import { parseRules } from "../../styles/interactive-classes"
 import {
   applyBorderIntensity,
+  CANVAS_BLOB_SCALE,
+  CANVAS_PEAK_SHARE,
   generateTokens,
   gradientCanvasPeak,
   isAccentSurface,
@@ -149,4 +152,71 @@ describe("--field-edge", () => {
     const theme = readFileSync("src/styles/theme.css", "utf8")
     expect(theme).toMatch(/--field-edge:\s*hsl\(var\(--field-edge-color\)\);/)
   })
+})
+
+describe("the gradient canvas model against theme.css", () => {
+  const rules = parseRules(readFileSync("src/styles/theme.css", "utf8"))
+
+  const declaration = (body: string, name: string): string => {
+    const start = body.indexOf(`--canvas-${name}:`)
+    if (start < 0) return ""
+    const rest = body.slice(start)
+    const end = rest.search(/;\s*(--|$)/)
+    return end < 0 ? rest : rest.slice(0, end)
+  }
+
+  it.each(Object.entries(CANVAS_BLOB_SCALE))(
+    "scales the %s step as the stylesheet does",
+    (intensity, scale) => {
+      const rule = rules.find((r) =>
+        r.selectors.includes(`[data-background-intensity="${intensity}"]`),
+      )
+      expect(rule, `no rule for ${intensity}`).toBeDefined()
+      expect(rule?.body).toContain(`--canvas-blob-scale: ${scale};`)
+    },
+  )
+
+  // Dark is the unqualified canvas: :root and the pattern blocks. Light is
+  // every block that names data-mode="light".
+  const MODES = [
+    ["dark", (selector: string) => !selector.includes("data-mode")],
+    ["light", (selector: string) => selector.includes('data-mode="light"')],
+  ] as const
+
+  it.each(MODES)(
+    "models the %s ink as the stylesheet's top stop",
+    (mode, owns) => {
+      const stops = rules
+        .filter((r) => r.selectors.some(owns))
+        .map((r) => declaration(r.body, "ink"))
+        .filter(Boolean)
+        .map((text) => Number(/var\(--sf-hue\) ([\d.]+)%/.exec(text)?.[1]))
+      expect(stops.length).toBeGreaterThan(0)
+      for (const stop of stops) {
+        expect(stop / 100).toBeCloseTo(CANVAS_PEAK_SHARE[mode].ink, 5)
+      }
+    },
+  )
+
+  it.each(MODES)(
+    "covers the loudest single %s blob in any gradient pattern",
+    (mode, owns) => {
+      const peaks = rules
+        .filter((r) => r.selectors.some(owns))
+        .flatMap((r) =>
+          ["blob-a", "blob-b", "blob-c", "blob-d"].map((name) =>
+            Number(
+              /calc\(([\d.]+)% \* var\(--canvas-blob-scale\)\)/.exec(
+                declaration(r.body, name),
+              )?.[1],
+            ),
+          ),
+        )
+        .filter((peak) => !Number.isNaN(peak))
+      expect(peaks.length).toBeGreaterThan(4)
+      expect(Math.max(...peaks) / 100).toBeLessThanOrEqual(
+        CANVAS_PEAK_SHARE[mode].blobs,
+      )
+    },
+  )
 })

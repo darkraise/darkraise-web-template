@@ -411,7 +411,7 @@ const CANVAS_SATURATION_CAP: Record<BackgroundIntensity, number | null> = {
 }
 
 /** `--canvas-blob-scale` per step: how loud the gradient canvas's blobs paint. */
-const CANVAS_BLOB_SCALE: Record<BackgroundIntensity, number> = {
+export const CANVAS_BLOB_SCALE: Record<BackgroundIntensity, number> = {
   neutral: 0.25,
   subtle: 0.5,
   balanced: 1,
@@ -421,15 +421,17 @@ const CANVAS_BLOB_SCALE: Record<BackgroundIntensity, number> = {
 
 /**
  * The loudest point of the gradient canvas, as the share of the surface hue
- * composited over the page: the ink layer's fixed mix, plus the peak of the
- * largest blob and the tail of the one overlapping it per unit of blob scale.
- * Read off the body's blob recipes in theme.css.
+ * composited over the page: the ink layer's top stop, plus per unit of blob
+ * scale the peak of the loudest single blob in any gradient pattern. Read off
+ * the body's blob recipes in theme.css, which field-edge.test.ts checks.
  */
-const CANVAS_PEAK_SHARE: Record<ResolvedMode, { ink: number; blobs: number }> =
-  {
-    light: { ink: 0.04, blobs: 0.2 },
-    dark: { ink: 0.07, blobs: 0.18 },
-  }
+export const CANVAS_PEAK_SHARE: Record<
+  ResolvedMode,
+  { ink: number; blobs: number }
+> = {
+  light: { ink: 0.04, blobs: 0.22 },
+  dark: { ink: 0.07, blobs: 0.18 },
+}
 
 /**
  * The page where a gradient canvas is loudest. Under `solid` the page is
