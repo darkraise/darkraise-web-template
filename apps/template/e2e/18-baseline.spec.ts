@@ -62,6 +62,10 @@ test.use({
   reducedMotion: "reduce",
 })
 
+// One font URL can take three 15s attempts and the font poll waits up to 30s,
+// so a test needs more than the suite's 45s for the poll's own message to fire.
+test.describe.configure({ timeout: 90_000 })
+
 interface CachedFont {
   headers: Record<string, string>
   body: Buffer
@@ -109,6 +113,7 @@ const FACES = [
   "600 1em Inter",
   "700 1em Inter",
   '400 1em "JetBrains Mono"',
+  '500 1em "JetBrains Mono"',
 ]
 
 /**
@@ -184,7 +189,7 @@ test.beforeAll(async ({ browser }) => {
       "/e2e/fixtures/baseline-overlays.html?show=dialog",
     ]
     for (const path of paths) {
-      await page.goto(path, { waitUntil: "networkidle", timeout: 60_000 })
+      await page.goto(path, { waitUntil: "networkidle", timeout: 45_000 })
     }
   } finally {
     await context.close()
