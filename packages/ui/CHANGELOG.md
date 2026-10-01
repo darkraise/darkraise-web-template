@@ -28,6 +28,9 @@ Breaking: control sizing, radius and focus tokens are renamed, with no aliases. 
 - `--primary-fill-wash` and `--destructive-solid-wash`: what a hover or press mixes into the matching fill, black under a white label and white under an ink label. Mixing toward them always raises the label's contrast.
 - Control tokens: `--btn-height`, `--btn-px`, `--btn-px-tight`, `--btn-radius`; `--field-height`, `--field-px`, `--field-py`, `--field-radius`, `--field-edge`; `--overlay-bg`, `--overlay-border`, `--overlay-shadow`, `--overlay-radius`; `--track-height`; `--disabled-opacity` and `--loading-opacity`. Override one family (for example `--btn-radius`) without touching the others.
 - `--field-edge-color`: a boundary colour solved to 3:1 against the page, card, sunken well, deep well, sidebar and header, and to 3.5:1 under the glass preset, whose translucent cards let the canvas shift the ground a field sits on. `borderIntensity` does not move it.
+- Selection tokens: `--selected-view-bg`, `--selected-view-fg` and `--selected-view-shadow` for view switches; `--selected-check-bg` and `--selected-check-fg` for checked and selected items; `--selected-mark` and `--selected-mark-fg` for underline tabs; `--selected-nav-bg` and `--selected-nav-fg` for the active navigation row. Override one family to restyle every component that reads it.
+- `--status-tint` (0.1): the alpha Alert, Banner and Toast wash their status colour at, in both modes.
+- `--sidebar-active-bg`: an engine token one accent-ramp step above `--sidebar-hover-bg` (the next shade up in light mode, 0.1 more alpha in dark), so the active sidebar row always differs from a hovered one.
 
 ### Changed
 
@@ -53,6 +56,17 @@ Breaking: control sizing, radius and focus tokens are renamed, with no aliases. 
 - Disabled: every disabled control uses `--disabled-opacity` (0.5); a loading button uses `--loading-opacity` (0.7). Disabled toggles, tabs, navigation-menu triggers, number-input steppers and password toggles keep pointer events and show the not-allowed cursor, so a tooltip can explain them.
 - Every interactive control opts out of double-tap zoom and draws a boundary in forced-colours mode.
 - Transitions use the kit's easing curves instead of CSS keywords, so short fades such as the 120ms hover wash feel sharper.
+- Selected states use four families. Tabs (`default` and `outline`) and SegmentGroup select with a neutral raised pill and foreground text instead of the accent, including the default Tabs pill; their `outline` pills carry a 1px neutral ring so the variant still differs from `default`. Toggle, Listbox, TreeView, Calendar, TimePicker, TagsInput, Pagination, Steps and Timeline fill checked and selected items with the accent, outline variants included: an on outline toggle, a selected outline listbox or tree row and the outline current page now take the filled variant's fill instead of an accent border and accent text. Underline tabs and PageHeader tabs keep an accent bar under foreground text.
+- `PaginationLink` marks the current page with `data-active="true"` and stays a ghost button in both variants; the filled variant used to render it as a `data-variant="default"` button. `Pagination` writes its `variant` on its root as `data-variant`.
+- The sidebar's active row is a tint one step stronger than hover, plus its bolder label and primary icon. The 3px bar is opt-in through `sidebarActiveBar` (`bar` or `both`): "Auto" no longer draws it under the default preset (glass keeps its ring and rail), and the stacked layout's rail and sub-navigation follow the setting too. The sidebar popover's active child, the top-nav active item and the layout switcher's active option use the same tint.
+- Outline buttons and FloatingPanel header triggers rest on the neutral 3:1 field edge instead of the accent, and ghost buttons rest on foreground text; hover on all of them comes from the state layer, and the FloatingPanel trigger rim no longer changes on hover. Search triggers, AlertDialog Cancel and the CascadeSelect trigger are outline buttons and follow.
+- Scrollbars, the ScrollArea thumb and Skeleton are neutral (a foreground alpha) instead of accent-tinted.
+- Badges react to hover only when they are a link, a button or `role="button"`.
+- Alert, Banner and Toast share a 10% status tint in both modes, painted over an opaque base: Alert's wash moves from 6%, Banner's from 12% (18% in dark) and the warning toast's from 12%. The icon and title take the status colour and body text stays on the foreground; Banner's frame is neutral beside its 4px rail, and its dark-mode text is no longer status-coloured. Toasts have no status border.
+- Toasts read the overlay tokens (`--overlay-bg` with the overlay blend mode, `--overlay-border`, `--overlay-shadow`), so the glass preset frosts them like other overlays.
+- Menus agree on their details: separators use `--border` (select and menubar used `--muted`); shortcuts use the muted text colour instead of 60% opacity; menubar content is at least 8rem wide, like other menus (was 12rem); command items show the pointer cursor; combobox, listbox, tree and cascade rows pad by density; menu, select and menubar group labels are small, medium-weight and muted, like command's.
+- NavigationMenu triggers and the Menubar are transparent at rest; the menubar keeps its border.
+- Sheets round only the two corners away from their viewport edge, draw their border only on the inner side, and pad that edge 1.5rem like the other sides.
 
 ### Removed
 
@@ -76,6 +90,13 @@ Breaking: control sizing, radius and focus tokens are renamed, with no aliases. 
 - The colours painted before the theme provider hydrates were stale; they now equal the engine's default light output.
 - Content inside an elevated `Card` or card accordion item keeps the page's elevation ramp. It used to take the light ramp in dark mode, and in light mode the card's own level (a `flat` card zeroed every nested shadow), because the card reused the theme's `data-elevation` attribute.
 - Under the glass preset the switch thumb sat 1px from one edge of its track and 3px from the other.
+- AlertDialog buttons sat 16px apart when stacked on mobile; the footer's 8px gap is now the only spacing.
+- Under the glass preset the combobox drew two nested borders, and grouped OTP slots drew a 2px seam between each pair.
+- Under the glass preset fields never showed the invalid state (InputOTP has no invalid state in either preset yet).
+- The stacked layout ignored the sidebar's Bar, Ring and Both indicator settings.
+- In forced-colours mode every focus ring was pushed 2px outside its control, so inset rings inside clipping wrappers were cut off.
+- Packed toolbar buttons (image-editor tools and annotation kinds, JSON tree toolbar actions) drew focus rings over their neighbours.
+- CascadeSelect drew a focus ring on the active path permanently, even under the mouse.
 
 ## [6.9.6] — 2026-09-30
 
