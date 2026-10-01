@@ -230,6 +230,18 @@ describe("field heights", () => {
     expect(rule).not.toMatch(LEGACY_HEIGHT)
   })
 
+  // The picker's chrome sits beside its .dr-input, so it follows the same
+  // density and coarse-pointer heights.
+  it.each([
+    [".dr-color-picker-trigger", "--btn-height"],
+    [".dr-color-picker-swatch", "--field-height"],
+  ])("sizes the colour-picker %s as a square of %s", (selector, token) => {
+    const rule = body("src/components/color-picker/color-picker.css", selector)
+    expect(rule).toContain(`height: var(${token});`)
+    expect(rule).toContain(`width: var(${token});`)
+    expect(rule).not.toMatch(LEGACY_HEIGHT)
+  })
+
   it.each([
     ["src/components/input/input.css", ".dr-input-grouped", "auto"],
     [

@@ -16,7 +16,9 @@
   }
 
   .dr-color-picker-swatch {
-    @apply border-border focus-ring-inset inline-block h-8 w-8 cursor-pointer rounded-md border transition-shadow;
+    @apply border-border focus-ring-inset inline-block cursor-pointer rounded-md border transition-shadow;
+    height: var(--field-height);
+    width: var(--field-height);
   }
 
   .dr-color-picker-swatch[data-disabled="true"] {
@@ -28,7 +30,9 @@
   }
 
   .dr-color-picker-trigger {
-    @apply text-muted-foreground border-border focus-ring-inset inline-flex h-9 w-9 items-center justify-center rounded-md border transition-colors;
+    @apply text-muted-foreground border-border focus-ring-inset inline-flex items-center justify-center rounded-md border transition-colors;
+    height: var(--btn-height);
+    width: var(--btn-height);
   }
 
   .dr-color-picker-trigger[data-disabled="true"] {
