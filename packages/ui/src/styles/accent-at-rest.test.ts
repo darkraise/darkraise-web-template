@@ -54,3 +54,43 @@ describe("buttons at rest", () => {
     expect(body).not.toMatch(/(?<![\w-])hover:/)
   })
 })
+
+const THEME = "src/styles/theme.css"
+
+describe("scrollbars and skeletons at rest", () => {
+  const scrollbars = rulesOf(THEME).filter(
+    (rule) =>
+      rule.selectors.some((s) => s.includes("::-webkit-scrollbar")) ||
+      rule.body.includes("scrollbar-color"),
+  )
+
+  it("paints the global scrollbar on a foreground alpha", () => {
+    expect(scrollbars.length).toBeGreaterThanOrEqual(3)
+    expect(scrollbars.map((rule) => rule.body).join(" ")).toContain(
+      "scrollbar-color: hsl(var(--foreground) / 0.25) transparent;",
+    )
+    expect(bodyOf(THEME, "*::-webkit-scrollbar-thumb")).toContain(
+      "background-color: hsl(var(--foreground) / 0.25);",
+    )
+    expect(bodyOf(THEME, "*::-webkit-scrollbar-thumb:hover")).toContain(
+      "background-color: hsl(var(--foreground) / 0.4);",
+    )
+    for (const rule of scrollbars) expect(rule.body).not.toContain("--primary")
+  })
+
+  it("paints the ScrollArea thumb the same way", () => {
+    const css = "src/components/scroll-area/scroll-area.css"
+    const thumb = bodyOf(css, ".dr-scroll-thumb")
+    expect(thumb).toContain("background-color: hsl(var(--foreground) / 0.25);")
+    expect(thumb).not.toMatch(/primary/)
+    expect(bodyOf(css, ".dr-scroll-thumb:hover")).toContain(
+      "background-color: hsl(var(--foreground) / 0.4);",
+    )
+  })
+
+  it("paints the skeleton with no accent mixed in", () => {
+    const body = bodyOf("src/components/skeleton/skeleton.css", ".dr-skeleton")
+    expect(body).toContain("background-color: hsl(var(--foreground) / 0.1);")
+    expect(body).not.toContain("--primary")
+  })
+})

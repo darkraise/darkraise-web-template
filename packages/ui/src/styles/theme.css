@@ -2064,9 +2064,11 @@
     -webkit-mask-image: linear-gradient(to bottom, black, transparent);
   }
 
+  /* Neutral: a scrollbar is chrome, and accent marks action, focus,
+     checked and selected states. */
   * {
     scrollbar-width: thin;
-    scrollbar-color: hsl(var(--primary-fill) / 0.6) transparent;
+    scrollbar-color: hsl(var(--foreground) / 0.25) transparent;
   }
 
   *::-webkit-scrollbar {
@@ -2079,14 +2081,14 @@
   }
 
   *::-webkit-scrollbar-thumb {
-    background-color: hsl(var(--primary-fill) / 0.6);
+    background-color: hsl(var(--foreground) / 0.25);
     border-radius: 9999px;
     border: 2px solid transparent;
     background-clip: content-box;
   }
 
   *::-webkit-scrollbar-thumb:hover {
-    background-color: hsl(var(--primary-fill) / 0.9);
+    background-color: hsl(var(--foreground) / 0.4);
   }
 
   *::-webkit-scrollbar-corner {

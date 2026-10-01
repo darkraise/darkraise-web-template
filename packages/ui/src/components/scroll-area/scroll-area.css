@@ -15,8 +15,14 @@
     @apply right-0 bottom-0 left-0 h-2.5 flex-col border-t border-t-transparent p-[1px];
   }
 
+  /* Neutral, like the global scrollbar in theme.css. */
   .dr-scroll-thumb {
-    @apply bg-primary-fill/60 hover:bg-primary-fill/90 relative flex-1 rounded-full;
+    @apply relative flex-1 rounded-full;
+    background-color: hsl(var(--foreground) / 0.25);
+  }
+
+  .dr-scroll-thumb:hover {
+    background-color: hsl(var(--foreground) / 0.4);
   }
 
   /* Hide native scrollbar tracks inside the in-house ScrollArea viewport. */

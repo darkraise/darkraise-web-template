@@ -1,10 +1,6 @@
 @layer components {
   .dr-skeleton {
     @apply animate-pulse rounded-md;
-    background-color: color-mix(
-      in oklab,
-      hsl(var(--foreground) / 0.1),
-      hsl(var(--primary) / 0.2) 25%
-    );
+    background-color: hsl(var(--foreground) / 0.1);
   }
 }
