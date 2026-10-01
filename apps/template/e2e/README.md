@@ -189,6 +189,23 @@ Runs against the standalone fixture `e2e/fixtures/control-contract.html`.
   opacity × both modes.
 - The glass switch thumb sits the same distance from each end of its track.
 
+### 17 · Selection and overlays (`17-selection-overlays.spec.ts`)
+
+Runs against the standalone fixture `e2e/fixtures/selection-overlays.html`.
+
+- At a 375px viewport the AlertDialog's stacked Cancel and Action buttons sit
+  8px apart, the footer gap alone, under both presets.
+- A right Sheet squares its two right-hand corners and draws no right border,
+  under both presets.
+- The selected default Tabs pill is not the accent fill; under the default
+  preset it is the view-switch pill (`--selected-view-bg`). Under glass in
+  light mode, the selected label reads at 4.5:1 on its pill, sampled from
+  rendered pixels.
+- Under glass, grouped OTP slots share one 1px seam and the combobox draws one
+  border, on its control.
+- A hovered idle sidebar link and the active link have different backgrounds,
+  in both modes.
+
 ## Regression tests for fixed defects
 
 `11-review-regressions.spec.ts` checks supported layout choices, settings form
