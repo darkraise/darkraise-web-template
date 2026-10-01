@@ -33,6 +33,7 @@ Breaking: `PaginationLink` marks the current page with `data-active="true"` and 
 - Selection tokens: `--selected-view-bg`, `--selected-view-fg` and `--selected-view-shadow` for view switches; `--selected-check-bg` and `--selected-check-fg` for checked and selected items; `--selected-mark` and `--selected-mark-fg` for underline tabs; `--selected-nav-bg` and `--selected-nav-fg` for the active navigation row. Override one family to restyle every component that reads it, Checkbox and Switch included; field choice cards still tint their container from the primary tokens directly.
 - `--status-tint` (0.1): the alpha Alert, Banner and Toast wash their status colour at, in both modes.
 - `--sidebar-active-bg`: an engine token one accent-ramp step above `--sidebar-hover-bg` (the next shade up in light mode, 0.1 more alpha in dark), so the active sidebar row always differs from a hovered one.
+- `CascadeSelect` keyboard support. Opening focuses the selected item, or the first item; Up, Down, Home and End move within a column; Right or Enter opens a child column and Left returns to the parent; Enter or Space selects a leaf and closes; Escape closes. Focus then returns to the trigger. Focus and hover move the same cursor, so a focused parent shows its children as a hovered one does.
 
 ### Changed
 

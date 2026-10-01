@@ -187,9 +187,11 @@ test.describe("selection menus", () => {
   test("cascade select drills into a child level", async ({ page }) => {
     const main = await open(page, "/components/cascade-select")
     await main.locator("button.dr-cascade-trigger").first().click()
-    const option = page.locator('[role="listbox"] [role="option"]').first()
-    await expect(option).toBeVisible()
+    // The first item's column opens with the popover; drill into the second.
+    const option = page.locator('[role="listbox"] [role="option"]').nth(1)
+    await expect(option).toHaveText(/Canada/)
     await option.click()
+    await expect(page.getByRole("option", { name: "Ontario" })).toBeVisible()
     await expect(page.locator('[role="listbox"]')).toHaveCount(2)
   })
 
