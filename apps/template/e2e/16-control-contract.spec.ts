@@ -1,6 +1,7 @@
 import { test, expect, type Page } from "@playwright/test"
 import { DENSITIES, PRESETS } from "./fixtures/theme"
 import { boxOf, seedApp, watchConsole } from "./helpers/app"
+import { contrast, pixel } from "./helpers/measure"
 
 /**
  * The control contract: every button and field sits at --control-height, at
@@ -66,47 +67,6 @@ async function measuredHeights(page: Page) {
     }
   }
   return rows
-}
-
-function luminance([r, g, b]: [number, number, number]): number {
-  const channel = (value: number) => {
-    const c = value / 255
-    return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4
-  }
-  return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b)
-}
-
-function contrast(a: [number, number, number], b: [number, number, number]) {
-  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x) as [
-    number,
-    number,
-  ]
-  return (hi + 0.05) / (lo + 0.05)
-}
-
-/**
- * The rendered colour of one device pixel. Computed style cannot answer this
- * under glass, where the card is translucent over a gradient canvas.
- */
-async function pixel(
-  page: Page,
-  x: number,
-  y: number,
-): Promise<[number, number, number]> {
-  const png = await page.screenshot({ clip: { x, y, width: 1, height: 1 } })
-  return page.evaluate(async (b64) => {
-    const img = new Image()
-    img.src = `data:image/png;base64,${b64}`
-    await img.decode()
-    const canvas = document.createElement("canvas")
-    canvas.width = 1
-    canvas.height = 1
-    const context = canvas.getContext("2d")
-    if (!context) throw new Error("no 2d context")
-    context.drawImage(img, 0, 0)
-    const [r = 0, g = 0, b = 0] = context.getImageData(0, 0, 1, 1).data
-    return [r, g, b] as [number, number, number]
-  }, png.toString("base64"))
 }
 
 for (const preset of PRESETS) {
