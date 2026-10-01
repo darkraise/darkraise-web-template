@@ -64,6 +64,7 @@ function ProductsPage() {
     },
     {
       accessorKey: "price",
+      meta: { align: "end" },
       header: ({ column }) => (
         <ColumnHeader column={column} title={t("Price")} />
       ),
@@ -72,6 +73,7 @@ function ProductsPage() {
     },
     {
       accessorKey: "stock",
+      meta: { align: "end" },
       header: ({ column }) => (
         <ColumnHeader column={column} title={t("Stock")} />
       ),

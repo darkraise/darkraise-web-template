@@ -37,6 +37,7 @@ import {
   type ChartConfig,
 } from "@/features/charts"
 import { useOrders, useCustomers, useAnalytics } from "@/demo/hooks"
+import { useReducedMotion } from "darkraise-ui/hooks"
 
 export const Route = createFileRoute("/_authenticated/")({
   component: DashboardPage,
@@ -66,6 +67,7 @@ function seriesTrend(values: number[]) {
 }
 
 function DashboardPage() {
+  const reducedMotion = useReducedMotion()
   const uiLocale = useUiLocale()
 
   const t = useAppTranslation()
@@ -269,6 +271,7 @@ function DashboardPage() {
                 <YAxis tickLine={false} axisLine={false} className="text-xs" />
                 <ChartTooltip content={<ChartTooltipContent />} />
                 <Area
+                  isAnimationActive={!reducedMotion}
                   type="monotone"
                   dataKey="revenue"
                   stroke="var(--color-revenue)"
@@ -297,6 +300,7 @@ function DashboardPage() {
                 <YAxis tickLine={false} axisLine={false} className="text-xs" />
                 <ChartTooltip content={<ChartTooltipContent />} />
                 <Bar
+                  isAnimationActive={!reducedMotion}
                   dataKey="count"
                   fill="var(--color-count)"
                   radius={[4, 4, 0, 0]}

@@ -91,6 +91,7 @@ function CategoriesPage() {
     },
     {
       accessorKey: "productCount",
+      meta: { align: "end" },
       header: ({ column }) => (
         <ColumnHeader column={column} title={t("Products")} />
       ),

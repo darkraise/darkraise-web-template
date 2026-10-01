@@ -25,6 +25,7 @@ import {
   type ChartConfig,
 } from "@/features/charts"
 import { useAnalytics, useOrders } from "@/demo/hooks"
+import { useReducedMotion } from "darkraise-ui/hooks"
 
 export const Route = createFileRoute("/_authenticated/analytics")({
   component: AnalyticsPage,
@@ -66,6 +67,7 @@ const productRevenueConfig = {
 } satisfies ChartConfig
 
 function AnalyticsPage() {
+  const reducedMotion = useReducedMotion()
   const t = useAppTranslation()
 
   const { data: analytics } = useAnalytics(30)
@@ -146,6 +148,7 @@ function AnalyticsPage() {
                 <YAxis tickLine={false} axisLine={false} className="text-xs" />
                 <ChartTooltip content={<ChartTooltipContent />} />
                 <Line
+                  isAnimationActive={!reducedMotion}
                   type="monotone"
                   dataKey="revenue"
                   stroke="var(--color-revenue)"
@@ -165,6 +168,7 @@ function AnalyticsPage() {
             >
               <PieChart>
                 <Pie
+                  isAnimationActive={!reducedMotion}
                   data={trafficSources}
                   cx="50%"
                   cy="50%"
@@ -202,6 +206,7 @@ function AnalyticsPage() {
                 <YAxis tickLine={false} axisLine={false} className="text-xs" />
                 <ChartTooltip content={<ChartTooltipContent />} />
                 <Area
+                  isAnimationActive={!reducedMotion}
                   type="monotone"
                   dataKey="orders"
                   stroke="var(--color-orders)"
@@ -209,6 +214,7 @@ function AnalyticsPage() {
                   fillOpacity={0.1}
                 />
                 <Area
+                  isAnimationActive={!reducedMotion}
                   type="monotone"
                   dataKey="visitors"
                   stroke="var(--color-visitors)"
@@ -237,6 +243,7 @@ function AnalyticsPage() {
                 <YAxis tickLine={false} axisLine={false} className="text-xs" />
                 <ChartTooltip content={<ChartTooltipContent />} />
                 <Bar
+                  isAnimationActive={!reducedMotion}
                   dataKey="revenue"
                   fill="var(--color-revenue)"
                   radius={[4, 4, 0, 0]}

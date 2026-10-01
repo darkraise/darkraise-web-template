@@ -115,11 +115,13 @@ const basicColumns: ColumnDef<Product, unknown>[] = [
   },
   {
     accessorKey: "price",
+    meta: { align: "end" },
     header: ({ column }) => <ColumnHeader column={column} title="Price" />,
     cell: ({ row }) => `$${(row.getValue("price") as number).toFixed(2)}`,
   },
   {
     accessorKey: "stock",
+    meta: { align: "end" },
     header: ({ column }) => <ColumnHeader column={column} title="Stock" />,
   },
 ]
@@ -135,11 +137,13 @@ const statusColumns: ColumnDef<Product, unknown>[] = [
   },
   {
     accessorKey: "price",
+    meta: { align: "end" },
     header: ({ column }) => <ColumnHeader column={column} title="Price" />,
     cell: ({ row }) => `$${(row.getValue("price") as number).toFixed(2)}`,
   },
   {
     accessorKey: "stock",
+    meta: { align: "end" },
     header: ({ column }) => <ColumnHeader column={column} title="Stock" />,
   },
   {
@@ -399,6 +403,7 @@ function DataTablePage() {
   },
   {
     accessorKey: "price",
+    meta: { align: "end" },
     header: ({ column }) => <ColumnHeader column={column} title="Price" />,
     cell: ({ row }) => \`$\${(row.getValue("price") as number).toFixed(2)}\`,
   },

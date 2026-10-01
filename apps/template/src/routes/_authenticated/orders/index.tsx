@@ -3,6 +3,7 @@ import { useAppTranslation } from "@/i18n/useAppTranslation"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import type { ColumnDef } from "@tanstack/react-table"
 import { PageHeader } from "darkraise-ui/layout"
+import { Badge } from "darkraise-ui/components/badge"
 import { Button } from "darkraise-ui/components/button"
 import {
   DataTable,
@@ -83,11 +84,12 @@ function OrdersPage() {
       cell: ({ row }) => {
         const status = row.original.status
         return (
-          <span
-            className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${statusColors[status]}`}
+          <Badge
+            variant="outline"
+            className={`border-transparent bg-none shadow-none ${statusColors[status]}`}
           >
             {t(status)}
-          </span>
+          </Badge>
         )
       },
       filterFn: (row, _columnId, filterValue: string[]) => {
@@ -97,6 +99,7 @@ function OrdersPage() {
     },
     {
       accessorKey: "total",
+      meta: { align: "end" },
       header: ({ column }) => (
         <ColumnHeader column={column} title={t("Total")} />
       ),

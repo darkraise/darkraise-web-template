@@ -2,6 +2,7 @@ import { useUiLocale } from "darkraise-ui/i18n"
 import { useAppTranslation } from "@/i18n/useAppTranslation"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { PageHeader } from "darkraise-ui/layout"
+import { Badge } from "darkraise-ui/components/badge"
 import { Button } from "darkraise-ui/components/button"
 import {
   Card,
@@ -255,11 +256,12 @@ function OrderDetailPage() {
                 <CardTitle>{t("Status")}</CardTitle>
               </CardHeader>
               <CardContent>
-                <span
-                  className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${statusColors[order.status]}`}
+                <Badge
+                  variant="outline"
+                  className={`border-transparent bg-none shadow-none ${statusColors[order.status]}`}
                 >
                   {t(order.status)}
-                </span>
+                </Badge>
               </CardContent>
             </Card>
 

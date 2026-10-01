@@ -88,6 +88,7 @@ function CustomerDetailPage() {
     },
     {
       accessorKey: "total",
+      meta: { align: "end" },
       header: ({ column }) => (
         <ColumnHeader column={column} title={t("Total")} />
       ),
