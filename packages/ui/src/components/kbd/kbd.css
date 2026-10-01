@@ -1,6 +1,7 @@
 @layer components {
   .dr-kbd {
-    @apply bg-muted text-muted-foreground border-border inline-flex items-center justify-center rounded border px-1.5 font-mono font-medium;
+    @apply bg-muted text-muted-foreground border-border inline-flex items-center justify-center border px-1.5 font-mono font-medium;
+    border-radius: min(var(--radius-control), 0.375rem);
   }
   .dr-kbd[data-size="sm"] {
     @apply h-4 min-w-4 text-[length:var(--text-2xs)];

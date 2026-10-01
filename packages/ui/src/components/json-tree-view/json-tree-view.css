@@ -7,7 +7,7 @@
     @apply outline-none;
   }
   .dr-json-tree-body:focus-visible {
-    @apply ring-primary rounded ring-2 ring-offset-1;
+    @apply ring-primary rounded-sm ring-2 ring-offset-1;
   }
 
   /* Toolbar — integrated bar with bare search input and an icon-button
@@ -44,7 +44,7 @@
     width: 1.75rem;
     min-width: 0;
     padding: 0;
-    border-radius: calc(var(--radius-button) - 2px);
+    border-radius: calc(var(--radius-control) - 2px);
   }
   .dr-json-toolbar-divider {
     @apply inline-block;
@@ -87,7 +87,7 @@
   }
 
   .dr-json-chevron {
-    @apply text-muted-foreground hover:text-foreground inline-flex size-[var(--icon-size)] cursor-pointer items-center justify-center rounded transition-colors;
+    @apply text-muted-foreground hover:text-foreground inline-flex size-[var(--icon-size)] cursor-pointer items-center justify-center rounded-sm transition-colors;
   }
   .dr-json-chevron-spacer {
     @apply inline-block size-[var(--icon-size)] shrink-0;
@@ -136,7 +136,7 @@
     @apply inline-block size-[var(--icon-size-xs)] align-middle;
     margin-right: 0.25rem;
     border: 1px solid hsl(var(--border));
-    border-radius: 0.125rem;
+    border-radius: calc(var(--radius) / 4);
   }
   .dr-json-show-more {
     position: relative;

@@ -6,6 +6,7 @@
        still while panels move around them. The rung is container-relative
        -- see `--control-surface` in theme.css. */
     background-color: hsl(var(--control-surface) / var(--surface-opacity, 1));
+    border-radius: var(--field-radius);
     transition:
       border-color var(--duration-fast),
       box-shadow var(--duration-fast);
@@ -22,7 +23,7 @@
        still while panels move around them. The rung is container-relative
        -- see `--control-surface` in theme.css. */
     background-color: hsl(var(--control-surface) / var(--surface-opacity, 1));
-    border-radius: var(--radius-button);
+    border-radius: var(--field-radius);
     transition:
       border-color var(--duration-fast),
       box-shadow var(--duration-fast);

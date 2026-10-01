@@ -1,6 +1,6 @@
 @layer components {
   .dr-date-input {
-    @apply border-input inline-flex items-center gap-0.5 rounded-md border px-2;
+    @apply border-input inline-flex items-center gap-0.5 rounded-[var(--field-radius)] border px-2;
     /* Pinned out of the surface-intensity axis on purpose: fields hold
        still while panels move around them. The rung is container-relative
        -- see `--control-surface` in theme.css. */

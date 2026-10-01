@@ -12,7 +12,7 @@
   }
 
   .dr-tags-input-control {
-    @apply glass border-input focus-ring-input-wrapper text-card-foreground flex w-full flex-wrap items-center gap-1 rounded-md border px-[var(--field-px)];
+    @apply glass border-input focus-ring-input-wrapper text-card-foreground flex w-full flex-wrap items-center gap-1 rounded-[var(--radius)] border px-[var(--field-px)];
     /* Pinned out of the surface-intensity axis on purpose: fields hold
        still while panels move around them. The rung is container-relative
        -- see `--control-surface` in theme.css. */

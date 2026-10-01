@@ -92,7 +92,7 @@ token it drives:
 | Elevation            | flat → high                    | `data-elevation`, `--elevation-current`                                                                       |
 | Button elevation     | flat → high                    | `data-button-elevation`, `--shadow-button` (flat ⇒ transparent)                                               |
 | Surface intensity    | flat, subtle, balanced, bold   | `data-surface-intensity`                                                                                      |
-| Radius               | sharp, subtle, rounded, pill   | `data-radius`, exact `--radius`, pill ⇒ `--radius-button: 9999px`                                             |
+| Radius               | sharp, subtle, rounded, pill   | `data-radius`, exact `--radius`, pill ⇒ `--radius-control: 9999px`                                            |
 
 Plus one hand-built cross-axis combination for the glass preset and a
 full round-trip test that every axis survives reload and navigation.

@@ -105,7 +105,7 @@
     width: 2rem;
     min-width: 0;
     padding: 0;
-    border-radius: calc(var(--radius-button) - 2px);
+    border-radius: calc(var(--radius-control) - 2px);
   }
   .dr-image-editor-tools .dr-image-editor-tool[data-state="active"] {
     box-shadow:
@@ -185,7 +185,7 @@
     width: 2rem;
     min-width: 0;
     padding: 0;
-    border-radius: calc(var(--radius-button) - 2px);
+    border-radius: calc(var(--radius-control) - 2px);
   }
   .dr-image-editor-annotation-kinds
     .dr-image-editor-annotation-kind[data-state="active"] {
@@ -242,7 +242,7 @@
    * via inline style so the input mirrors what the committed text will
    * look like. */
   .dr-image-editor-annotation-text-input {
-    @apply rounded border border-dashed border-current bg-transparent px-1 py-0;
+    @apply rounded-sm border border-dashed border-current bg-transparent px-1 py-0;
     line-height: 1.2;
     font-family: system-ui, sans-serif;
     outline: none;

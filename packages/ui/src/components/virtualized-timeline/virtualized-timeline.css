@@ -15,7 +15,7 @@
      is a flex column whose default stretch alignment overrides width: auto
      and spans the trigger across the whole container. */
   .dr-virtualized-timeline-toolbar .dr-date-picker-trigger {
-    @apply static w-auto translate-none self-start rounded-[var(--radius-button)];
+    @apply static w-auto translate-none self-start rounded-[var(--radius-control)];
   }
 
   /* A row, not a stack: the rail is a sibling of the viewport rather than an

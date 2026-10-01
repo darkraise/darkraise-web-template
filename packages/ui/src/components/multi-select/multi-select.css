@@ -4,7 +4,7 @@
   }
 
   .dr-multi-select-control {
-    @apply focus-ring-input-wrapper border-input flex w-full items-center gap-1 rounded-md border px-2 text-sm transition-colors;
+    @apply focus-ring-input-wrapper border-input flex w-full items-center gap-1 rounded-[var(--radius)] border px-2 text-sm transition-colors;
     /* Pinned out of the surface-intensity axis on purpose: fields hold
        still while panels move around them. The rung is container-relative
        -- see `--control-surface` in theme.css. */
@@ -18,6 +18,12 @@
       var(--field-py),
       calc((var(--field-height) - 1.75rem) / 2)
     );
+  }
+
+  /* The control also carries .dr-combobox-control, whose glass rule rounds
+     single-line fields; chips wrap here, so keep the surface radius. */
+  [data-preset="glass"] .dr-combobox-control.dr-multi-select-control {
+    border-radius: var(--radius);
   }
 
   /* Outranks the fixed height .dr-combobox-control sets: the chip row grows

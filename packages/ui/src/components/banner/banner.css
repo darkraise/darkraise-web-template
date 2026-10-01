@@ -84,6 +84,6 @@
     @apply shrink-0;
   }
   .dr-banner-close {
-    @apply focus-ring text-muted-foreground hover:text-foreground rounded p-0.5 transition-colors;
+    @apply focus-ring text-muted-foreground hover:text-foreground rounded-sm p-0.5 transition-colors;
   }
 }

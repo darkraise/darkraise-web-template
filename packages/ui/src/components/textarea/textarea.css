@@ -5,6 +5,7 @@
        still while panels move around them. The rung is container-relative
        -- see `--control-surface` in theme.css. */
     background-color: hsl(var(--control-surface) / var(--surface-opacity, 1));
+    border-radius: var(--radius);
   }
 
   /* Grouped form — relative wrapper hosts an absolute action button. The

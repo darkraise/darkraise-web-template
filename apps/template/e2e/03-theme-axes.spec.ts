@@ -467,7 +467,7 @@ test.describe("radius axis", () => {
   test("pill radius rounds buttons fully", async ({ page }) => {
     await seedApp(page, { radius: "pill", preset: "default" })
     await gotoApp(page, PROBE)
-    expect(await readToken(page, "--radius-button")).toBe("9999px")
+    expect(await readToken(page, "--radius-control")).toBe("9999px")
   })
 })
 

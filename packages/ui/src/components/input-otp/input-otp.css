@@ -18,7 +18,7 @@
   }
 
   .dr-input-otp-slot {
-    @apply border-input relative flex items-center justify-center border-y border-r text-sm transition-[border-color,box-shadow] first:rounded-l-md first:border-l last:rounded-r-md;
+    @apply border-input relative flex items-center justify-center border-y border-r text-sm transition-[border-color,box-shadow] first:rounded-l-[var(--field-radius)] first:border-l last:rounded-r-[var(--field-radius)];
     /* Pinned out of the surface-intensity axis on purpose: fields hold
        still while panels move around them. The rung is container-relative
        -- see `--control-surface` in theme.css. */
@@ -66,7 +66,7 @@
     @apply gap-2;
   }
   .dr-input-otp-container[data-variant="separate"] .dr-input-otp-slot {
-    @apply rounded-md border;
+    @apply rounded-[var(--field-radius)] border;
   }
 
   /* Glass-preset frosted InputOTP slots. Each slot is its own bordered

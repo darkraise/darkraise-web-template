@@ -557,13 +557,15 @@
     --inset-hi-strong: 0 0 transparent;
     --inset-hi-button: 0 0 transparent;
 
-    /* Radius axis. --radius drives Tailwind's rounded-md/lg/sm utilities used
-     by cards, popovers, inputs, etc. --radius-button is read directly by
-     buttons so they can go fully pill-shaped at the highest level without
-     turning cards into circles. The values here match data-radius="rounded"
-     (today's default); the [data-radius] selectors below rebind them. */
+    /* Radius axis. --radius is the surface radius and drives Tailwind's
+     rounded-sm/md/lg: cards, overlays and multi-line fields.
+     --radius-control reaches buttons and single-line fields through
+     --btn-radius and --field-radius, so they can go fully pill-shaped at
+     the highest level without turning cards into circles. The values here
+     match data-radius="rounded" (today's default); the [data-radius]
+     selectors below rebind them. */
     --radius: 0.5rem;
-    --radius-button: 0.5rem;
+    --radius-control: 0.5rem;
 
     /* Shell chrome axis. Defaults are the welded `classic` look: no gutter,
      no radius, no detached-region paint. Each [data-shell-style] block below
@@ -699,9 +701,9 @@
       var(--control-height-min)
     );
     --btn-height: var(--control-height);
-    --btn-radius: var(--radius-button);
+    --btn-radius: var(--radius-control);
     --field-height: var(--control-height);
-    --field-radius: var(--radius-button);
+    --field-radius: var(--radius-control);
     --density-container-p: 1rem;
     --density-row-py: 0.375rem;
     --density-stack-gap: 0.5rem;
@@ -1215,27 +1217,28 @@
     0 6px 12px -2px rgb(0 0 0 / 0.75), 0 2px 4px 0 rgb(0 0 0 / 0.55);
 }
 
-/* Radius axis. --radius drives Tailwind's rounded-*. --radius-button is
-   read directly by Button so it can go fully pill-shaped at the highest
-   level without making cards circular. */
+/* Radius axis. --radius drives Tailwind's rounded-sm/md/lg. --radius-control
+   reaches buttons and single-line fields through --btn-radius and
+   --field-radius, so they can go fully pill-shaped at the highest level
+   without making cards circular. */
 [data-radius="sharp"] {
   --radius: 0;
-  --radius-button: 0;
+  --radius-control: 0;
   --shell-radius-scale: 0px;
 }
 [data-radius="subtle"] {
   --radius: 0.25rem;
-  --radius-button: 0.25rem;
+  --radius-control: 0.25rem;
   --shell-radius-scale: 0.25rem;
 }
 [data-radius="rounded"] {
   --radius: 0.5rem;
-  --radius-button: 0.5rem;
+  --radius-control: 0.5rem;
   --shell-radius-scale: 0.5rem;
 }
 [data-radius="pill"] {
   --radius: 1rem;
-  --radius-button: 9999px;
+  --radius-control: 9999px;
   /* Deliberately the same as `rounded`. The shell clamps rather than tracking
      the axis: a pill-radius sidebar reads as a lozenge, not as a shell. */
   --shell-radius-scale: 0.5rem;
