@@ -1,6 +1,6 @@
 import { test, expect, type Locator, type Page } from "@playwright/test"
 import { DENSITIES, PRESETS } from "./fixtures/theme"
-import { boxOf, seedApp, watchConsole } from "./helpers/app"
+import { boxOf, gotoApp, seedApp, watchConsole } from "./helpers/app"
 import { computed, contrast, pixel } from "./helpers/measure"
 
 /**
@@ -137,6 +137,41 @@ test.describe("coarse pointer", () => {
       expect((await boxOf(day)).width).toBeCloseTo((await boxOf(cell)).width, 0)
     })
   }
+
+  test("floors the collapsed sidebar rail at --control-height-xl", async ({
+    page,
+  }) => {
+    await seedApp(page, { preset: "default", mode: "light", density: "cozy" })
+    await gotoApp(page, "/")
+    await page.getByRole("button", { name: /collapse sidebar/i }).click()
+    const aside = page.locator(".dr-sidebar-layout-aside")
+    await expect(aside).toHaveAttribute("data-collapsed", "true")
+    const floor = await page.evaluate(() => {
+      const probe = document.createElement("div")
+      probe.style.height = "var(--control-height-xl)"
+      document.body.append(probe)
+      const height = probe.getBoundingClientRect().height
+      probe.remove()
+      return height
+    })
+    const rail = [
+      ".dr-sidebar-layout-brand-slot",
+      ".dr-sidebar-layout-toggle",
+      '.dr-search-command-trigger[data-collapsed="true"]',
+      ".dr-sidebar-nav-link",
+      ".dr-sidebar-nav-popover-trigger",
+    ]
+    for (const selector of rail) {
+      const all = await aside.locator(selector).all()
+      expect(all.length, `${selector} rendered`).toBeGreaterThan(0)
+      for (const [index, locator] of all.entries()) {
+        const box = await boxOf(locator)
+        const label = `${selector} #${index}`
+        expect(box.width, label).toBeGreaterThanOrEqual(floor - 0.5)
+        expect(box.height, label).toBeGreaterThanOrEqual(floor - 0.5)
+      }
+    }
+  })
 })
 
 for (const preset of PRESETS) {

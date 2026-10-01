@@ -184,7 +184,9 @@ Runs against the standalone fixture `e2e/fixtures/control-contract.html`.
   `--control-height`, for every preset × both modes × every density × the
   `medium` and `extra-large` font sizes.
 - With `hasTouch` (which makes Chromium match `pointer: coarse`), the same
-  controls measure at least `--control-height-xl` at compact and cozy.
+  controls measure at least `--control-height-xl` at compact and cozy, and so
+  does every square on the app's collapsed sidebar rail (brand slot, toggle,
+  search trigger, nav links and group triggers).
 - A field's bottom edge reaches 3:1 against the page and against a card,
   sampled from rendered pixels, for every preset and for strong glass
   opacity × both modes.

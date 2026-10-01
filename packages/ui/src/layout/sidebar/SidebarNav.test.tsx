@@ -55,7 +55,7 @@ function collapsedSquareSelector(): string {
   const rule = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)].find(
     ([, selector, body]) =>
       selector.includes(".dr-sidebar-nav-link") &&
-      body.includes("w-[var(--control-height-default)]"),
+      body.includes("w-[var(--control-height)]"),
   )
   if (!rule) {
     throw new Error("no collapsed square rule found in sidebar-nav.css")

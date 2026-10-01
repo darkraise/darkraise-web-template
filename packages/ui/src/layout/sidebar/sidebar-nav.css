@@ -46,11 +46,13 @@
    * package, so its attribute always lands. It must stay ordered after the
    * expanded rule, which still matches whenever the item attribute went
    * missing — hence the `py-` restatement of the base symmetric padding,
-   * which together with `min-h-[var(--control-height-default)]` keeps the item square
-   * at every density level. */
+   * which together with `min-h-[var(--control-height)]` keeps the item square
+   * at every density level. The collapsed square takes the coarse-pointer
+   * floor; an expanded row is a full-width target and keeps its density
+   * height. */
   .dr-sidebar-nav-link[data-collapsed="true"],
   .dr-sidebar-nav[data-collapsed="true"] .dr-sidebar-nav-link {
-    @apply mx-auto w-[var(--control-height-default)] justify-center py-[var(--density-row-py)];
+    @apply mx-auto min-h-[var(--control-height)] w-[var(--control-height)] justify-center py-[var(--density-row-py)];
   }
 
   /* Nested items deliberately carry no size override: a child row is the same
@@ -78,7 +80,7 @@
   .dr-sidebar-nav-popover-trigger {
     /* Icon-only popover trigger keeps symmetric `p-[var(--density-row-py)]`
      * so it stays square — same reasoning as the collapsed nav link. */
-    @apply focus-ring-inset mx-auto flex min-h-[var(--control-height-default)] w-[var(--control-height-default)] cursor-pointer items-center justify-center gap-3 rounded-md p-[var(--density-row-py)] transition-colors;
+    @apply focus-ring-inset mx-auto flex min-h-[var(--control-height)] w-[var(--control-height)] cursor-pointer items-center justify-center gap-3 rounded-md p-[var(--density-row-py)] transition-colors;
     transition-duration: var(--duration-fast);
   }
 

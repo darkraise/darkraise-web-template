@@ -141,14 +141,24 @@ describe("chrome buttons stay off the coarse-pointer floor", () => {
   it.each([
     ["src/components/calendar/calendar.css", ".dr-calendar-day-btn"],
     ["src/components/calendar/calendar.css", ".dr-calendar-nav-btn"],
+  ])("%s %s re-binds --btn-height to the density default", (path, selector) => {
+    expect(body(path, selector)).toContain(
+      "--btn-height: var(--control-height-default);",
+    )
+  })
+})
+
+describe("collapsed sidebar rail buttons take the coarse-pointer floor", () => {
+  // The rail is 4rem wide, so a 40px square still fits inside its padding.
+  it.each([
     ["src/layout/sidebar/sidebar-layout.css", ".dr-sidebar-layout-toggle"],
     [
       "src/layout/search-command/search-command.css",
       '.dr-search-command-trigger[data-collapsed="true"]',
     ],
-  ])("%s %s re-binds --btn-height to the density default", (path, selector) => {
+  ])("%s %s re-binds --btn-height to --control-height", (path, selector) => {
     expect(body(path, selector)).toContain(
-      "--btn-height: var(--control-height-default);",
+      "--btn-height: var(--control-height);",
     )
   })
 })
