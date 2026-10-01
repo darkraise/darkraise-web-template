@@ -26,8 +26,9 @@
     @apply bg-accent text-accent-foreground;
   }
 
-  /* Keyboard focus indicator, as its own rule rather than an @apply in the
-     base rule, as tree-view.css does. */
+  /* Keyboard focus indicator, as its own rule rather than an
+     `@apply focus-ring-inset` in the base rule: see the note in
+     menubar.css. */
   .dr-cascade-item:focus-visible {
     outline: 2px solid hsl(var(--focus-ring));
     outline-offset: -2px;
