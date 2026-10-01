@@ -181,3 +181,27 @@ describe("toggle heights", () => {
     },
   )
 })
+
+describe("field family tokens", () => {
+  it("defaults on :root to the control height and radius", () => {
+    const css = flat(THEME)
+    expect(css).toContain("--field-height: var(--control-height);")
+    expect(css).toMatch(/--field-radius: var\(--radius-[a-z]+\);/)
+    expect(css).not.toContain("--field-border")
+  })
+
+  it.each([
+    [":root", "0.625rem", "0.5rem"],
+    ["compact", "0.5rem", "0.375rem"],
+    ["comfortable", "0.875rem", "0.625rem"],
+    ["spacious", "1.125rem", "0.75rem"],
+  ])("%s sets --field-px %s and --field-py %s", (step, px, py) => {
+    const block = step === ":root" ? flat(THEME) : densityBlock(step)
+    expect(block).toContain(`--field-px: ${px};`)
+    expect(block).toContain(`--field-py: ${py};`)
+  })
+
+  it("leaves no reader of the removed input tokens", () => {
+    expect(readersOf(/--density-input-/)).toEqual([])
+  })
+})

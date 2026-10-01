@@ -24,7 +24,7 @@
   }
 
   .dr-editable-preview {
-    @apply text-foreground focus-ring inline-flex min-h-[var(--control-height-default)] cursor-text items-center rounded-md px-[var(--density-input-px)] py-[var(--density-input-py)] text-sm;
+    @apply text-foreground focus-ring inline-flex min-h-[var(--control-height-default)] cursor-text items-center rounded-md px-[var(--field-px)] py-[var(--field-py)] text-sm;
   }
 
   .dr-editable-preview[data-empty="true"] {
