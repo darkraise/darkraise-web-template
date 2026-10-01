@@ -1,6 +1,6 @@
 @layer components {
   .dr-menubar {
-    @apply bg-background flex items-center space-x-1 rounded-md border p-1 py-[var(--btn-px-tight)];
+    @apply flex items-center space-x-1 rounded-md border bg-transparent p-1 py-[var(--btn-px-tight)];
     /* Glass-frost the menubar (no-op under Default). The dr-menu-content
        and dr-menu-sub-content rules already consume backdrop-filter for the
        popover surfaces. */

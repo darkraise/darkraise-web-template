@@ -216,3 +216,42 @@ describe("menu rows", () => {
     expect(utilities).not.toContain("cursor-default")
   })
 })
+
+describe("header chrome", () => {
+  it.each([
+    [
+      "src/components/navigation-menu/navigation-menu.css",
+      ".dr-navigation-menu-trigger",
+    ],
+    [MENUBAR, ".dr-menubar"],
+  ])("%s %s is transparent at rest", (path, selector) => {
+    const utilities = applied(bodyOf(path, selector))
+    expect(utilities).toContain("bg-transparent")
+    expect(utilities).not.toContain("bg-background")
+  })
+
+  it("keeps the menubar's frame", () => {
+    expect(applied(bodyOf(MENUBAR, ".dr-menubar"))).toContain("border")
+  })
+})
+
+describe("alert dialog footer", () => {
+  // The footer stacks Cancel under Action below `sm` with gap-2; a margin
+  // on Cancel doubled that to 16px.
+  it("leaves the footer gap as the only space between the buttons", () => {
+    const margins = rulesOf("src/components/alert-dialog/alert-dialog.css")
+      .filter((rule) =>
+        rule.selectors.some((s) => s.includes(".dr-alert-dialog-cancel")),
+      )
+      .filter((rule) => /(?<![\w-])(?:m[trblxy]?-|margin)/.test(rule.body))
+    expect(margins).toEqual([])
+    expect(
+      applied(
+        bodyOf(
+          "src/components/overlay-primitives/overlay-primitives.css",
+          ".dr-overlay-footer",
+        ),
+      ),
+    ).toContain("gap-2")
+  })
+})

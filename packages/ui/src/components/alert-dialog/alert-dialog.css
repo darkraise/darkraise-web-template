@@ -1,10 +1,7 @@
 @layer components {
   /* AlertDialog reuses .dr-dialog-content / .dr-dialog-title and the
      Dialog header/footer/description classes wholesale — no parallel
-     CSS surface. The only AlertDialog-specific affordance is the
-     stacked-mobile margin on Cancel so it doesn't crowd Action when
-     they wrap onto two rows on narrow viewports. */
-  .dr-alert-dialog-cancel {
-    @apply mt-2 sm:mt-0;
-  }
+     CSS surface. Cancel takes no rule of its own: the footer's gap-2
+     spaces it from Action in both the stacked and the row layout, and the
+     margin it used to add doubled the stacked gap to 16px. */
 }
