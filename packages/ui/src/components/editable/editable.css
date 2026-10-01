@@ -21,6 +21,9 @@
 
   .dr-editable-input {
     @apply w-auto;
+    /* A .dr-input; held at the density height so editable does not grow
+       under the coarse-pointer floor, like its preview and triggers. */
+    --field-height: var(--control-height-default);
   }
 
   .dr-editable-preview {

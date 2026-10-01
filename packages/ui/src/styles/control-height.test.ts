@@ -289,6 +289,12 @@ describe("field heights", () => {
     expect(rule).toContain("py-[var(--field-py)]")
   })
 
+  it("keeps the editable input at the density height", () => {
+    expect(
+      body("src/components/editable/editable.css", ".dr-editable-input"),
+    ).toContain("--field-height: var(--control-height-default);")
+  })
+
   it("keeps the calendar caption dropdowns at h-7", () => {
     expect(
       body(
