@@ -7,6 +7,7 @@ const data = Array.from({ length: 500 }, (_, index) => ({
   name: `Item ${index}`,
   description:
     "Long content that wraps repeatedly inside a narrow table cell. ".repeat(4),
+  total: index * 3,
 }))
 
 const root = document.getElementById("root")
@@ -18,6 +19,7 @@ createRoot(root).render(
         columns={[
           { accessorKey: "name", header: "Name" },
           { accessorKey: "description", header: "Description" },
+          { accessorKey: "total", header: "Total", meta: { align: "end" } },
         ]}
         data={data}
         searchKey="name"
