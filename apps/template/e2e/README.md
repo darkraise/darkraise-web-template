@@ -208,6 +208,9 @@ Runs against the standalone fixture `e2e/fixtures/selection-overlays.html`.
   border, on its control.
 - A hovered idle sidebar link and the active link have different backgrounds,
   in both modes.
+- A dropdown menu opened with `defaultOpen` (from
+  `e2e/fixtures/baseline-overlays.html`) holds focus on its container and draws
+  no outline there.
 
 ## Regression tests for fixed defects
 

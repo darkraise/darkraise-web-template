@@ -10,7 +10,8 @@ import { computed, contrast, pixel, rgbOf, settle } from "./helpers/measure"
  * glass combobox draws one border; a right sheet squares its viewport edge;
  * the default Tabs pill is not the accent; and a hovered idle sidebar link
  * never matches the active one; a CascadeSelect column scrolled by the
- * keyboard keeps focus on the keyboard row under a resting pointer.
+ * keyboard keeps focus on the keyboard row under a resting pointer; and a
+ * menu container holding focus draws no outline.
  */
 
 const FIXTURE = "/e2e/fixtures/selection-overlays.html"
@@ -181,4 +182,15 @@ test("a resting pointer leaves keyboard focus on a scrolled cascade column", asy
   expect(await page.evaluate(() => document.activeElement?.textContent)).toBe(
     "Item 18",
   )
+})
+
+test("a focused menu container draws no outline", async ({ page }) => {
+  await seedApp(page, { preset: "default", mode: "light" })
+  await page.goto("/e2e/fixtures/baseline-overlays.html?show=menu")
+  const menu = page.locator('[role="menu"]')
+  await expect(menu).toBeVisible()
+  // Opened with defaultOpen and no prior click, so the container takes focus
+  // and matches :focus-visible, which is when the browser default draws.
+  await expect(menu).toBeFocused()
+  expect(await computed(menu, "outline-style")).toBe("none")
 })

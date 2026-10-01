@@ -95,6 +95,7 @@ Breaking: `TableHead` and `TableCell` take `align?: "start" | "center" | "end"` 
 
 ### Fixed
 
+- Dropdown, context-menu and menubar content and their submenus no longer draw the browser's default focus outline when the menu container takes focus without a prior click, as it does with `defaultOpen`. Focused items keep their own indicator.
 - `Clipboard`, `useClipboard` and `JsonTreeView`'s copy buttons failed with "Failed to copy" outside a secure context. `navigator.clipboard` does not exist on plain HTTP, such as a dev server opened by LAN address, so every copy threw. They now go through `writeClipboardText`.
 - A scrolling shell region lost its edge under `inset`, `island` and `floating`. Its 1px edge was an inset `box-shadow`, which paints beneath the region's children, so content scrolled toward the edge covered it. Detached regions now draw a real 1px border, which stays above scrolled content. `--shell-region-border` accordingly holds the border colour rather than a shadow.
 - The toast action button painted status fills under the brand label (1.92:1 on dark success, 2.52:1 on dark info), and the loading toast painted it on the muted text colour. Each variant now sets its own fill and label pair.
