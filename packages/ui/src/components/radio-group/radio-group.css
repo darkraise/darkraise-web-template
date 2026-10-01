@@ -4,7 +4,7 @@
   }
 
   .dr-radio-group-item {
-    @apply border-primary text-primary focus-ring hit-area-24 aspect-square cursor-pointer rounded-full border disabled:cursor-not-allowed disabled:opacity-50;
+    @apply border-primary text-primary focus-ring hit-area-24 aspect-square cursor-pointer rounded-full border disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)];
   }
 
   .dr-radio-group-item[data-state="unchecked"] {
@@ -80,6 +80,6 @@
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
     box-shadow: none;
-    opacity: 0.5;
+    opacity: var(--disabled-opacity);
   }
 }

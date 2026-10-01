@@ -1,6 +1,6 @@
 @layer components {
   .dr-slider {
-    @apply relative flex w-full touch-none items-center select-none data-[disabled]:opacity-50;
+    @apply relative flex w-full touch-none items-center select-none data-[disabled]:opacity-[var(--disabled-opacity)];
   }
 
   .dr-slider-track {

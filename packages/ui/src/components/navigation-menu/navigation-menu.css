@@ -8,7 +8,13 @@
   }
 
   .dr-navigation-menu-trigger {
-    @apply bg-background hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[state=open]:text-accent-foreground data-[state=open]:bg-accent/50 data-[state=open]:hover:bg-accent data-[state=open]:focus:bg-accent inline-flex w-max cursor-pointer items-center justify-center rounded-md px-[var(--btn-px)] py-[var(--btn-px-tight)] text-sm font-medium transition-colors focus:outline-none disabled:pointer-events-none disabled:cursor-default disabled:opacity-50;
+    @apply bg-background focus:bg-accent focus:text-accent-foreground data-[state=open]:text-accent-foreground data-[state=open]:bg-accent/50 data-[state=open]:focus:bg-accent inline-flex w-max cursor-pointer items-center justify-center rounded-md px-[var(--btn-px)] py-[var(--btn-px-tight)] text-sm font-medium transition-colors focus:outline-none disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)];
+  }
+
+  /* Hover as a rule rather than `hover:` utilities: a disabled trigger keeps
+     its pointer events, so the hover has to opt out of :disabled itself. */
+  .dr-navigation-menu-trigger:not(:disabled):hover {
+    @apply bg-accent text-accent-foreground;
   }
 
   /* Popover-style panel. Reads the --overlay-* tokens so the
@@ -53,7 +59,10 @@
     backdrop-filter: var(--backdrop-filter);
   }
 
-  [data-preset="glass"] .dr-navigation-menu-trigger:hover {
+  /* :where keeps this at (0,3,0), so the open rule below still wins on
+     source order while the trigger is hovered. */
+  [data-preset="glass"]
+    .dr-navigation-menu-trigger:where(:not(:disabled)):hover {
     background-color: transparent;
     background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
     box-shadow: var(--glass-state-hover-glow);

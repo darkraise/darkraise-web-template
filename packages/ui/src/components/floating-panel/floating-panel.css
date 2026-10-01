@@ -58,7 +58,7 @@
   }
   .dr-floating-panel[data-pinned="true"] .dr-floating-panel-drag-handle {
     cursor: default;
-    opacity: 0.45;
+    opacity: var(--disabled-opacity);
   }
   /* Active state on the pin trigger — same accent fill as
      minimize/maximize when toggled on. */

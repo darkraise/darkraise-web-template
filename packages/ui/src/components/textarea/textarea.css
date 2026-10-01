@@ -1,6 +1,6 @@
 @layer components {
   .dr-textarea {
-    @apply glass border-input text-card-foreground focus-ring-input placeholder:text-muted-foreground flex min-h-[72px] w-full border px-[var(--field-px)] py-[var(--field-py)] text-base disabled:cursor-not-allowed disabled:opacity-50 md:text-sm;
+    @apply glass border-input text-card-foreground focus-ring-input placeholder:text-muted-foreground flex min-h-[72px] w-full border px-[var(--field-px)] py-[var(--field-py)] text-base disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)] md:text-sm;
     /* Pinned out of the surface-intensity axis on purpose: fields hold
        still while panels move around them. The rung is container-relative
        -- see `--control-surface` in theme.css. */
@@ -56,7 +56,7 @@
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
     box-shadow: none;
-    opacity: 0.5;
+    opacity: var(--disabled-opacity);
   }
 
   /* Read-only is not disabled: the value is legible, selectable and

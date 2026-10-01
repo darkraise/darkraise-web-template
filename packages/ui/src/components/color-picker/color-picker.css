@@ -4,7 +4,7 @@
   }
 
   .dr-color-picker[data-disabled="true"] {
-    @apply pointer-events-none opacity-60;
+    @apply pointer-events-none opacity-[var(--disabled-opacity)];
   }
 
   .dr-color-picker-label {
@@ -20,7 +20,7 @@
   }
 
   .dr-color-picker-swatch[data-disabled="true"] {
-    @apply pointer-events-none opacity-50;
+    @apply pointer-events-none opacity-[var(--disabled-opacity)];
   }
 
   .dr-color-picker-input {
@@ -32,7 +32,7 @@
   }
 
   .dr-color-picker-trigger[data-disabled="true"] {
-    @apply pointer-events-none opacity-50;
+    @apply pointer-events-none opacity-[var(--disabled-opacity)];
   }
 
   .dr-color-picker-content {
@@ -61,7 +61,7 @@
   }
 
   .dr-color-picker-area[data-disabled="true"] {
-    @apply pointer-events-none opacity-50;
+    @apply pointer-events-none opacity-[var(--disabled-opacity)];
   }
 
   .dr-color-picker-swatch-group {
@@ -78,7 +78,7 @@
   }
 
   .dr-color-picker-swatch-item[data-disabled="true"] {
-    @apply pointer-events-none opacity-50;
+    @apply pointer-events-none opacity-[var(--disabled-opacity)];
   }
 
   .dr-color-picker-eye-dropper-trigger {
@@ -121,7 +121,7 @@
   }
 
   .dr-color-picker-eye-dropper-trigger[data-disabled="true"] {
-    @apply pointer-events-none opacity-50;
+    @apply pointer-events-none opacity-[var(--disabled-opacity)];
   }
 
   /* ColorPicker's swatch (current-color preview), trigger (icon button),

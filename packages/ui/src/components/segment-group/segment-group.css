@@ -11,7 +11,7 @@
   }
 
   .dr-segment-group[data-disabled="true"] {
-    @apply pointer-events-none opacity-50;
+    @apply pointer-events-none opacity-[var(--disabled-opacity)];
   }
 
   /* SegmentGroupItem renders a `RadioGroupItem`, which carries
@@ -33,7 +33,7 @@
   }
 
   .dr-segment-group .dr-segment-group-item[data-disabled] {
-    @apply cursor-not-allowed opacity-50;
+    @apply cursor-not-allowed opacity-[var(--disabled-opacity)];
   }
 
   /* Unchecked segments lift their label on hover and take the shared state

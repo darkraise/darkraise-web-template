@@ -1,6 +1,6 @@
 @layer components {
   .dr-switch {
-    @apply data-[state=checked]:bg-primary-fill data-[state=unchecked]:bg-input focus-ring hit-area-24 inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+    @apply data-[state=checked]:bg-primary-fill data-[state=unchecked]:bg-input focus-ring hit-area-24 inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)];
   }
 
   .dr-switch[data-state="unchecked"] {
@@ -49,6 +49,6 @@
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
     box-shadow: none;
-    opacity: 0.5;
+    opacity: var(--disabled-opacity);
   }
 }

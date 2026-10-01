@@ -31,4 +31,9 @@
     outline: 2px solid hsl(var(--focus-ring));
     outline-offset: -2px;
   }
+
+  .dr-cascade-item[aria-disabled="true"] {
+    @apply pointer-events-none;
+    opacity: var(--disabled-opacity);
+  }
 }

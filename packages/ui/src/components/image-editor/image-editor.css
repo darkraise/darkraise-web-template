@@ -139,7 +139,7 @@
     color: hsl(var(--primary-text));
   }
   .dr-image-editor-history-trigger:disabled {
-    @apply opacity-50;
+    @apply opacity-[var(--disabled-opacity)];
     cursor: not-allowed;
   }
 
@@ -322,7 +322,7 @@
     color: hsl(var(--primary-text));
   }
   .dr-image-editor-extension:disabled {
-    @apply opacity-50;
+    @apply opacity-[var(--disabled-opacity)];
     cursor: not-allowed;
   }
   .dr-image-editor-extension[data-running="true"] {

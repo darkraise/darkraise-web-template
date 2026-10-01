@@ -1,6 +1,6 @@
 @layer components {
   .dr-select-trigger {
-    @apply glass border-input text-card-foreground focus-ring-input data-[placeholder]:text-muted-foreground flex w-full cursor-pointer items-center justify-between border px-[var(--field-px)] text-sm disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1;
+    @apply glass border-input text-card-foreground focus-ring-input data-[placeholder]:text-muted-foreground flex w-full cursor-pointer items-center justify-between border px-[var(--field-px)] text-sm disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)] [&>span]:line-clamp-1;
     height: var(--field-height);
     /* Pinned out of the surface-intensity axis on purpose: fields hold
        still while panels move around them. The rung is container-relative
@@ -42,7 +42,7 @@
   }
 
   .dr-select-item {
-    @apply focus:bg-accent focus:text-accent-foreground relative flex w-full cursor-pointer items-center rounded-sm py-[var(--density-row-py)] pr-2 pl-8 text-sm outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50;
+    @apply focus:bg-accent focus:text-accent-foreground relative flex w-full cursor-pointer items-center rounded-sm py-[var(--density-row-py)] pr-2 pl-8 text-sm outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-[var(--disabled-opacity)];
   }
 
   .dr-select-separator {
@@ -73,7 +73,7 @@
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
     box-shadow: none;
-    opacity: 0.5;
+    opacity: var(--disabled-opacity);
   }
 
   /* Keyboard focus indicator. Written as its own rule rather than an

@@ -106,7 +106,7 @@
   .dr-number-input-stepper {
     position: relative;
     isolation: isolate;
-    @apply text-muted-foreground focus-ring-inset inline-flex cursor-pointer items-center justify-center bg-transparent transition-colors disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size-xs)] [&_svg]:shrink-0;
+    @apply text-muted-foreground focus-ring-inset inline-flex cursor-pointer items-center justify-center bg-transparent transition-colors disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)] [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size-xs)] [&_svg]:shrink-0;
   }
 
   /* Glass-preset frosted NumberInput. The bordered surface is the

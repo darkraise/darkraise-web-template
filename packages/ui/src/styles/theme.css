@@ -512,6 +512,11 @@
     --state-layer-hover: 0.08;
     --state-layer-press: 0.16;
 
+    /* One fade for every disabled control, whatever the component. Loading
+       is busy rather than unavailable, so it fades less. */
+    --disabled-opacity: 0.5;
+    --loading-opacity: 0.7;
+
     /* Motion ladder. Before this the kit had token axes for colour, density,
      radius, elevation, font size, glow and surface intensity — and none for
      motion, so durations were written as literals and drifted: 150, 200, 250,

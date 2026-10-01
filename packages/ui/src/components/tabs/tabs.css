@@ -48,7 +48,7 @@
   /* z-10 keeps labels above the sliding indicator, which shares the
      strip's stacking context at z-0. */
   .dr-tabs-trigger {
-    @apply focus-ring relative z-10 inline-flex cursor-pointer items-center justify-center text-sm font-medium whitespace-nowrap disabled:pointer-events-none disabled:opacity-50;
+    @apply focus-ring relative z-10 inline-flex cursor-pointer items-center justify-center text-sm font-medium whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)];
     transition:
       background-color var(--duration-fast),
       color var(--duration-fast),

@@ -4,7 +4,7 @@
   }
 
   .dr-combobox[data-disabled="true"] {
-    @apply pointer-events-none opacity-60;
+    @apply pointer-events-none opacity-[var(--disabled-opacity)];
   }
 
   .dr-combobox-label {
@@ -104,7 +104,7 @@
   }
 
   .dr-combobox-item[data-disabled="true"] {
-    @apply pointer-events-none opacity-50;
+    @apply pointer-events-none opacity-[var(--disabled-opacity)];
   }
 
   .dr-combobox-item-text {

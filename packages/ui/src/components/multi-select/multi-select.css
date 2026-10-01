@@ -40,7 +40,7 @@
   }
 
   .dr-multi-select-control[data-disabled="true"] {
-    @apply cursor-not-allowed opacity-50;
+    @apply cursor-not-allowed opacity-[var(--disabled-opacity)];
   }
 
   .dr-multi-select-chips {
@@ -89,7 +89,7 @@
   }
 
   .dr-multi-select-chip-remove:disabled {
-    @apply cursor-not-allowed opacity-50;
+    @apply cursor-not-allowed opacity-[var(--disabled-opacity)];
   }
 
   /* Bare input — drop the dr-input chrome so the typeahead reads as part of

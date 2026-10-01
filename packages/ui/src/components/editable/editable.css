@@ -34,7 +34,11 @@
     @apply text-muted-foreground;
   }
 
-  .dr-editable[data-disabled="true"] .dr-editable-preview,
+  .dr-editable[data-disabled="true"] .dr-editable-preview {
+    @apply cursor-not-allowed;
+    opacity: var(--disabled-opacity);
+  }
+
   .dr-editable[data-readonly="true"] .dr-editable-preview {
     @apply cursor-not-allowed opacity-70;
   }
@@ -55,7 +59,7 @@
   .dr-editable-edit-trigger,
   .dr-editable-submit-trigger,
   .dr-editable-cancel-trigger {
-    @apply text-muted-foreground focus-ring inline-flex aspect-square h-[var(--control-height-default)] cursor-pointer items-center justify-center rounded-md bg-transparent transition-colors disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size)] [&_svg]:shrink-0;
+    @apply text-muted-foreground focus-ring inline-flex aspect-square h-[var(--control-height-default)] cursor-pointer items-center justify-center rounded-md bg-transparent transition-colors disabled:pointer-events-none disabled:opacity-[var(--disabled-opacity)] [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size)] [&_svg]:shrink-0;
   }
 
   /* Shared interaction state layer (button.css). The label rule keeps its

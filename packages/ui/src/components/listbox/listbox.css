@@ -60,7 +60,7 @@
   }
 
   .dr-listbox-item[data-disabled] {
-    @apply pointer-events-none opacity-50;
+    @apply pointer-events-none opacity-[var(--disabled-opacity)];
   }
 
   [data-preset="glass"] .dr-listbox-item:hover,

@@ -4,7 +4,7 @@
     touch-action: none;
   }
   .dr-angle-slider[data-disabled] {
-    @apply pointer-events-none opacity-50;
+    @apply pointer-events-none opacity-[var(--disabled-opacity)];
   }
   .dr-angle-slider-thumb {
     @apply absolute inset-0 origin-center;

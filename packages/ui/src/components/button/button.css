@@ -1,6 +1,6 @@
 @layer components {
   .dr-btn {
-    @apply focus-ring inline-flex cursor-pointer items-center justify-center gap-2 rounded-[var(--btn-radius)] text-sm font-medium whitespace-nowrap transition-[background-image,background-color,border-color,color,text-decoration-color,box-shadow] disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size)] [&_svg]:shrink-0;
+    @apply focus-ring inline-flex cursor-pointer items-center justify-center gap-2 rounded-[var(--btn-radius)] text-sm font-medium whitespace-nowrap transition-[background-image,background-color,border-color,color,text-decoration-color,box-shadow] disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)] [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size)] [&_svg]:shrink-0;
     transition-duration: var(--duration-fast);
     position: relative;
     isolation: isolate;
@@ -12,10 +12,10 @@
 
   /* A loading button is disabled, but it should not look as inert as one the
      user simply cannot use — the reference states table separates the two at
-     0.7 and 0.5. Declared after the base rule so it wins the specificity tie
-     with `disabled:opacity-50`. */
+     --loading-opacity and --disabled-opacity. Declared after the base rule so
+     it wins the specificity tie with the disabled opacity. */
   .dr-btn[data-loading] {
-    opacity: 0.7;
+    opacity: var(--loading-opacity);
   }
 
   /* `cursor-not-allowed` rather than `pointer-events-none`: a native disabled
