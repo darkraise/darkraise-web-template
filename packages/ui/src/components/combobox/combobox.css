@@ -13,10 +13,18 @@
 
   .dr-combobox-control {
     @apply relative flex w-full items-center gap-1;
+    height: var(--field-height);
   }
 
   .dr-combobox-input {
     @apply pr-16;
+  }
+
+  /* The input fills the control instead of carrying its own fixed height:
+     under glass the control draws a border as well, and a full-height box
+     inside it would stand 2px taller than every other field. */
+  .dr-combobox-control > .dr-combobox-input {
+    height: 100%;
   }
 
   .dr-combobox-clear-trigger {

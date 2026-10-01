@@ -205,3 +205,96 @@ describe("field family tokens", () => {
     expect(readersOf(/--density-input-/)).toEqual([])
   })
 })
+
+const CHIP_ROW_PADDING =
+  "padding-block: min(var(--field-py), calc((var(--field-height) - 1.75rem) / 2));"
+
+describe("field heights", () => {
+  it.each([
+    ["src/components/input/input.css", ".dr-input"],
+    ["src/components/input/input.css", ".dr-input-group"],
+    ["src/components/select/select.css", ".dr-select-trigger"],
+    ["src/components/combobox/combobox.css", ".dr-combobox-control"],
+    ["src/components/date-input/date-input.css", ".dr-date-input"],
+    [
+      "src/components/number-input/number-input.css",
+      ".dr-number-input-control",
+    ],
+    ["src/components/input-otp/input-otp.css", ".dr-input-otp-slot"],
+  ])("%s → %s has a fixed --field-height", (path, selector) => {
+    const rule = body(path, selector)
+    expect(rule).toContain("height: var(--field-height);")
+    expect(rule).not.toMatch(LEGACY_HEIGHT)
+  })
+
+  it.each([
+    ["src/components/input/input.css", ".dr-input-grouped", "auto"],
+    [
+      "src/components/number-input/number-input.css",
+      ".dr-number-input-field",
+      "auto",
+    ],
+    [
+      "src/components/combobox/combobox.css",
+      ".dr-combobox-control > .dr-combobox-input",
+      "100%",
+    ],
+  ])("%s → %s fills its wrapper (height: %s)", (path, selector, height) => {
+    expect(body(path, selector)).toContain(`height: ${height};`)
+  })
+
+  it("leaves the password field on the .dr-input height", () => {
+    const rule = body(
+      "src/components/password-input/password-input.css",
+      ".dr-password-input-field",
+    )
+    expect(rule).not.toMatch(/height/)
+    expect(rule).not.toMatch(LEGACY_HEIGHT)
+  })
+
+  it.each([
+    [
+      "src/components/multi-select/multi-select.css",
+      ".dr-multi-select-control",
+    ],
+    ["src/components/tags-input/tags-input.css", ".dr-tags-input-control"],
+  ])("%s → %s floors at --field-height and grows", (path, selector) => {
+    const rule = body(path, selector)
+    expect(rule).toContain("min-height: var(--field-height);")
+    expect(rule).toContain(CHIP_ROW_PADDING)
+    expect(rule).not.toMatch(/(?<![\w-])(?:min-h|h|py)-[[\d]/)
+  })
+
+  it("lets the multi-select control outgrow the combobox height", () => {
+    expect(
+      body(
+        "src/components/multi-select/multi-select.css",
+        ".dr-multi-select .dr-multi-select-control",
+      ),
+    ).toContain("height: auto;")
+  })
+
+  it("keeps a drop shadow off the multi-select control", () => {
+    expect(
+      body(
+        "src/components/multi-select/multi-select.css",
+        ".dr-multi-select-control",
+      ),
+    ).not.toContain("--shadow-button")
+  })
+
+  it("pads the textarea from the field tokens", () => {
+    const rule = body("src/components/textarea/textarea.css", ".dr-textarea")
+    expect(rule).toContain("px-[var(--field-px)]")
+    expect(rule).toContain("py-[var(--field-py)]")
+  })
+
+  it("keeps the calendar caption dropdowns at h-7", () => {
+    expect(
+      body(
+        "src/components/calendar/calendar.css",
+        ".dr-calendar-dropdown-root .dr-calendar-dropdown-trigger",
+      ),
+    ).toMatch(/(?<![\w-])h-7(?![\w-])/)
+  })
+})

@@ -13,6 +13,7 @@
    * borderless on its own. */
   .dr-number-input-control {
     @apply glass border-input focus-ring-input-wrapper text-card-foreground flex w-full items-stretch overflow-hidden border;
+    height: var(--field-height);
     /* Pinned out of the surface-intensity axis on purpose: fields hold
        still while panels move around them. The rung is container-relative
        -- see `--control-surface` in theme.css. */
@@ -24,10 +25,12 @@
   }
 
   /* The field shares typography and density-padding with .dr-input but
-   * strips the chrome — the wrapper owns it. */
+   * strips the chrome and the fixed height — the wrapper owns both, and
+   * the field stretches to the wrapper's inner height. */
   .dr-number-input-field {
     @apply flex-1 border-0 bg-transparent tabular-nums shadow-none;
     border-radius: 0;
+    height: auto;
     /* Force the field to ignore the global :focus-visible chrome from
      * .dr-input's focus-ring-input utility. The wrapper's focus-within
      * ring is the single source of truth. */

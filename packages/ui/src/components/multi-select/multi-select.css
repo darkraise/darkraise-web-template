@@ -4,7 +4,26 @@
   }
 
   .dr-multi-select-control {
-    @apply focus-ring-input-wrapper bg-background border-input flex min-h-9 w-full items-center gap-1 rounded-md border px-2 py-1 text-sm shadow-[var(--shadow-button)] transition-colors;
+    @apply focus-ring-input-wrapper border-input flex w-full items-center gap-1 rounded-md border px-2 text-sm transition-colors;
+    /* Pinned out of the surface-intensity axis on purpose: fields hold
+       still while panels move around them. The rung is container-relative
+       -- see `--control-surface` in theme.css. */
+    background-color: hsl(var(--control-surface) / var(--surface-opacity, 1));
+    min-height: var(--field-height);
+    /* One row must land exactly on --field-height, so the padding never
+       exceeds what a 26px row leaves inside the border: the 24px toggles,
+       or the input's line box at the extra-large font size. --field-py
+       caps it where the field is taller. */
+    padding-block: min(
+      var(--field-py),
+      calc((var(--field-height) - 1.75rem) / 2)
+    );
+  }
+
+  /* Outranks the fixed height .dr-combobox-control sets: the chip row grows
+     when it wraps. */
+  .dr-multi-select .dr-multi-select-control {
+    height: auto;
   }
 
   .dr-multi-select-control[data-state="open"] {

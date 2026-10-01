@@ -1,6 +1,7 @@
 @layer components {
   .dr-input {
-    @apply glass border-input text-card-foreground focus-ring-input file:text-foreground placeholder:text-muted-foreground flex w-full border px-[var(--field-px)] py-[var(--field-py)] text-base file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:cursor-not-allowed disabled:opacity-50 md:text-sm [&::-ms-reveal]:dark:invert [&::-webkit-calendar-picker-indicator]:dark:invert;
+    @apply glass border-input text-card-foreground focus-ring-input file:text-foreground placeholder:text-muted-foreground flex w-full border px-[var(--field-px)] text-base file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:cursor-not-allowed disabled:opacity-50 md:text-sm [&::-ms-reveal]:dark:invert [&::-webkit-calendar-picker-indicator]:dark:invert;
+    height: var(--field-height);
     /* Pinned out of the surface-intensity axis on purpose: fields hold
        still while panels move around them. The rung is container-relative
        -- see `--control-surface` in theme.css. */
@@ -16,6 +17,7 @@
    * the input share a single bordered surface. */
   .dr-input-group {
     @apply glass border-input focus-ring-input-wrapper text-card-foreground flex w-full overflow-hidden border;
+    height: var(--field-height);
     /* Pinned out of the surface-intensity axis on purpose: fields hold
        still while panels move around them. The rung is container-relative
        -- see `--control-surface` in theme.css. */
@@ -40,12 +42,14 @@
   }
 
   /* The input inside a group strips its own chrome — border, focus ring,
-   * radius, glass — so the group's chrome shows through unobstructed.
+   * radius, glass, fixed height — so the group's chrome shows through
+   * unobstructed and the input stretches to the group's inner height.
    * `dr-input` is still applied for typography, placeholder, density
    * padding, and disabled handling. */
   .dr-input-grouped {
     @apply border-0 bg-transparent shadow-none;
     border-radius: 0;
+    height: auto;
   }
   .dr-input-grouped:focus,
   .dr-input-grouped:focus-visible {
@@ -69,10 +73,9 @@
   .dr-input-action[data-side="trailing"] {
     padding-right: 0.25rem;
   }
-  /* Tighten compact icon buttons inside the slot so the button doesn't
-   * push the input height up. The Button component's size="icon" renders
-   * a 36px square by default; this constrains it to fit the input's
-   * effective height. */
+  /* Tighten icon buttons inside the slot. The Button component's
+   * size="icon" renders a --btn-height square, as tall as the whole field;
+   * this fits it inside the group's border with 2px to spare on each side. */
   .dr-input-action .dr-btn[data-size="icon"] {
     height: calc(100% - 4px);
     width: auto;

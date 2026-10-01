@@ -12,11 +12,19 @@
   }
 
   .dr-tags-input-control {
-    @apply glass border-input focus-ring-input-wrapper text-card-foreground flex min-h-[var(--control-height)] w-full flex-wrap items-center gap-1 rounded-md border px-[var(--field-px)] py-[var(--field-py)];
+    @apply glass border-input focus-ring-input-wrapper text-card-foreground flex w-full flex-wrap items-center gap-1 rounded-md border px-[var(--field-px)];
     /* Pinned out of the surface-intensity axis on purpose: fields hold
        still while panels move around them. The rung is container-relative
        -- see `--control-surface` in theme.css. */
     background-color: hsl(var(--control-surface) / var(--surface-opacity, 1));
+    min-height: var(--field-height);
+    /* Same single-row rule as the multi-select control: one row of chips
+       lands exactly on --field-height, and --field-py caps the padding
+       where the field is taller. */
+    padding-block: min(
+      var(--field-py),
+      calc((var(--field-height) - 1.75rem) / 2)
+    );
   }
 
   .dr-tags-input-item {

@@ -139,7 +139,14 @@
   }
 
   .dr-calendar-dropdown-trigger {
-    @apply h-7 w-auto gap-1 px-2 text-sm font-medium shadow-none;
+    @apply w-auto gap-1 px-2 text-sm font-medium shadow-none;
+  }
+
+  /* Two classes outrank the field height .dr-select-trigger sets, which
+     loads later: the caption row is a fixed h-8, so the dropdowns stay h-7
+     at every density. */
+  .dr-calendar-dropdown-root .dr-calendar-dropdown-trigger {
+    @apply h-7;
   }
 
   .dr-calendar-dropdown-content {

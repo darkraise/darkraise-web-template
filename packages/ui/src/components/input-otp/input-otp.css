@@ -18,7 +18,13 @@
   }
 
   .dr-input-otp-slot {
-    @apply border-input relative flex aspect-square w-[var(--control-height)] items-center justify-center border-y border-r text-sm transition-[border-color,box-shadow] first:rounded-l-md first:border-l last:rounded-r-md;
+    @apply border-input relative flex items-center justify-center border-y border-r text-sm transition-[border-color,box-shadow] first:rounded-l-md first:border-l last:rounded-r-md;
+    /* Pinned out of the surface-intensity axis on purpose: fields hold
+       still while panels move around them. The rung is container-relative
+       -- see `--control-surface` in theme.css. */
+    background-color: hsl(var(--control-surface) / var(--surface-opacity, 1));
+    height: var(--field-height);
+    width: var(--field-height);
     transition-duration: var(--duration-fast);
   }
 
@@ -35,7 +41,7 @@
      of data-active for the highlighted state (the slot owns its own focus
      now, so there's no shared overlay input to mirror). */
   .dr-input-otp-slot-separate {
-    @apply bg-transparent p-0 text-center font-medium outline-none;
+    @apply p-0 text-center font-medium outline-none;
     /* `appearance: none` strips Safari's inner shadow + iOS rounded corners
        so the slot border stays the visible boundary. */
     appearance: none;
