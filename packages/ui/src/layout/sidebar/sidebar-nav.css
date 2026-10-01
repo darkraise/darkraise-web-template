@@ -160,25 +160,33 @@
     color: hsl(var(--sidebar-foreground-hover));
   }
 
-  /* Active uses the same fill so a hovered active link still reads as
-   * active, but adds an inset left-edge primary bar, a primary icon glyph,
-   * and a bolder label so it stays distinguishable from a hovered idle
-   * item. Without this, hover and active are visually identical and a
-   * cursor parked on any link makes that link look like the current page.
-   * Affordance glow composed as outer layer so a preset can add a primary
-   * halo around the active item (transparent in every shipped preset). */
+  /* Active takes the nav-row tint, one accent step above the hover fill
+   * (--sidebar-active-bg), plus a primary icon glyph and a bolder label, so
+   * a cursor parked on an idle link never makes it look like the current
+   * page. This rule follows the hover rule at the same specificity, so a
+   * hovered active link keeps the active fill. The 3px left bar is opt-in
+   * (`activeBar` "bar" or "both"). Affordance glow composed as outer layer
+   * so a preset can add a primary halo around the active item (transparent
+   * in every shipped preset). */
   .dr-sidebar-nav-item.active,
   .dr-sidebar-nav-item[data-status="active"] {
-    background-color: hsl(var(--sidebar-hover-bg));
+    background-color: var(--selected-nav-bg);
     color: hsl(var(--sidebar-foreground-hover));
     font-weight: 600;
+    box-shadow: var(--affordance-glow);
+  }
+
+  /* `activeBar="bar"` — a 3px rail on the left edge. */
+  .dr-sidebar-nav[data-active-bar="bar"] .dr-sidebar-nav-item.active,
+  .dr-sidebar-nav[data-active-bar="bar"]
+    .dr-sidebar-nav-item[data-status="active"] {
     box-shadow:
       inset 3px 0 0 0 hsl(var(--primary)),
       var(--affordance-glow);
   }
 
-  /* `activeBar="ring"` — swap the 3px left rail for a uniform 1px ring so
-     the indicator has the same weight on every edge. */
+  /* `activeBar="ring"` — a uniform 1px ring, the same weight on every
+     edge. */
   .dr-sidebar-nav[data-active-bar="ring"] .dr-sidebar-nav-item.active,
   .dr-sidebar-nav[data-active-bar="ring"]
     .dr-sidebar-nav-item[data-status="active"] {

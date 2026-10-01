@@ -291,3 +291,35 @@ describe("underline family", () => {
     ).not.toMatch(/data-\[state=active\]:text-/)
   })
 })
+
+const SIDEBAR = "src/layout/sidebar/sidebar-nav.css"
+
+describe("nav row family: sidebar", () => {
+  const active = '.dr-sidebar-nav-item[data-status="active"]'
+
+  it("tints the active link with the nav-row fill and keeps its own text", () => {
+    const body = bodyOf(SIDEBAR, active)
+    expect(body).toContain("background-color: var(--selected-nav-bg);")
+    expect(body).toContain("color: hsl(var(--sidebar-foreground-hover));")
+    expect(body).toContain("font-weight: 600;")
+  })
+
+  it("keeps the hover fill apart from the active fill", () => {
+    expect(bodyOf(SIDEBAR, ".dr-sidebar-nav-item:hover")).toContain(
+      "hsl(var(--sidebar-hover-bg))",
+    )
+    expect(bodyOf(SIDEBAR, active)).not.toContain("--sidebar-hover-bg")
+  })
+
+  it("draws the 3px bar only under bar and both", () => {
+    const offenders = rulesOf(SIDEBAR)
+      .filter((rule) => rule.body.includes("inset 3px"))
+      .flatMap((rule) => rule.selectors)
+      .filter(
+        (s) =>
+          !s.startsWith("[data-preset=") &&
+          !/\[data-active-bar="(?:bar|both)"\]/.test(s),
+      )
+    expect(offenders).toEqual([])
+  })
+})

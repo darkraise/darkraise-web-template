@@ -274,7 +274,9 @@ so a pinned shell ignores the axis without any CSS specificity fight.
 ## Sidebar indicator
 
 `sidebarActiveBar` is a theme axis with four values. `default` leaves each
-preset's own indicator alone (glass draws a ring and a rail, everything else a rail); `bar`, `ring` and `both` force one look everywhere.
+preset's own indicator alone: the default preset marks the active row with a
+tint one step stronger than hover and a bolder label, with no bar, and glass
+draws a ring and a rail. `bar`, `ring` and `both` force one look everywhere.
 It appears in the theme panel as **Sidebar Indicator**, with `default`
 labelled "Auto".
 

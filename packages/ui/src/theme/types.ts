@@ -111,9 +111,10 @@ export const SHELL_STYLES = [
 export type ShellStyle = (typeof SHELL_STYLES)[number]
 
 /**
- * Indicator drawn beside the active sidebar item. `default` leaves each
- * preset's own look alone, which is what the sidebar did before this became
- * a theme axis; the other three force one look everywhere.
+ * Indicator drawn on the active sidebar item. `default` leaves each preset's
+ * own look alone: the default preset marks the row with a tint one step
+ * stronger than hover and a bolder label, with no bar, and glass draws a ring
+ * and a rail. The other three force one look everywhere.
  */
 export const SIDEBAR_ACTIVE_BARS = ["default", "bar", "ring", "both"] as const
 export type SidebarActiveBarSetting = (typeof SIDEBAR_ACTIVE_BARS)[number]

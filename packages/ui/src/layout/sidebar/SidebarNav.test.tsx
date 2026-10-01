@@ -307,6 +307,27 @@ describe("SidebarNav activeBar", () => {
     expect(rule?.[2]).toMatch(/inset 3px/)
   })
 
+  it("draws no rail on the active row unless activeBar asks for one", () => {
+    const withoutComments = sidebarNavCss.replace(/\/\*[\s\S]*?\*\//g, "")
+    const rules = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)]
+    const base = rules.find(
+      ([, selector]) =>
+        selector.includes(".dr-sidebar-nav-item.active") &&
+        !selector.includes("data-active-bar") &&
+        !selector.includes("data-preset"),
+    )
+    expect(base, "no base active rule in sidebar-nav.css").toBeDefined()
+    expect(base?.[2]).not.toMatch(/inset/)
+    const bar = rules.find(
+      ([, selector]) =>
+        selector.includes('[data-active-bar="bar"]') &&
+        !selector.includes("data-preset"),
+    )
+    expect(bar, "no activeBar=bar rule in sidebar-nav.css").toBeDefined()
+    expect(bar?.[2]).toMatch(/inset 3px/)
+    expect(bar?.[2]).not.toMatch(/inset 0 0 0 1px/)
+  })
+
   it("gives glass its own variant for each value", () => {
     const withoutComments = sidebarNavCss.replace(/\/\*[\s\S]*?\*\//g, "")
     const rules = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)]

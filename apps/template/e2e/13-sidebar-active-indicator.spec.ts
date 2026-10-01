@@ -91,8 +91,11 @@ async function setActiveBar(page: Page, value: keyof typeof ACTIVE_BAR_LABELS) {
  * "Default" control item since a single-selection ToggleGroup can't hold
  * `undefined` itself.
  */
+// The default preset's unset count dropped from 1 to 0 when its 3px rail
+// became opt-in ("bar" or "both"): the active row is marked by a tint one
+// step stronger than hover, which 17-selection-overlays.spec.ts measures.
 const UNSET_LAYERS: Record<Preset, number> = {
-  default: 1,
+  default: 0,
   glass: 2,
 }
 
