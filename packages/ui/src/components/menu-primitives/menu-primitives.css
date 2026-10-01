@@ -36,7 +36,7 @@
   }
 
   .dr-menu-label {
-    @apply px-2 py-[var(--density-row-py)] text-sm font-semibold;
+    @apply text-muted-foreground px-2 py-[var(--density-row-py)] text-xs font-medium;
   }
 
   .dr-menu-separator {
@@ -44,7 +44,7 @@
   }
 
   .dr-menu-shortcut {
-    @apply ml-auto text-xs tracking-widest opacity-60;
+    @apply text-muted-foreground ml-auto text-xs tracking-widest;
   }
 
   /* Keyboard focus indicator. Written as its own rule rather than an

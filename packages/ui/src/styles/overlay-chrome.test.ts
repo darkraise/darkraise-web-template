@@ -126,3 +126,74 @@ describe("toast surface", () => {
     },
   )
 })
+
+const MENU = "src/components/menu-primitives/menu-primitives.css"
+const SELECT = "src/components/select/select.css"
+const MENUBAR = "src/components/menubar/menubar.css"
+const COMMAND = "src/components/command/command.css"
+
+/** The utilities a rule's @apply lists. */
+function applied(body: string): string[] {
+  return (/@apply ([^;]*);/.exec(body)?.[1] ?? "").split(" ")
+}
+
+describe("menu family", () => {
+  it.each([
+    [MENU, ".dr-menu-separator"],
+    [SELECT, ".dr-select-separator"],
+    [MENUBAR, ".dr-menubar-separator"],
+    [COMMAND, ".dr-command-separator"],
+  ])("%s %s draws a --border line", (path, selector) => {
+    expect(applied(bodyOf(path, selector))).toContain("bg-border")
+  })
+
+  it.each([
+    [MENU, ".dr-menu-shortcut"],
+    [MENUBAR, ".dr-menubar-shortcut"],
+    [COMMAND, ".dr-command-shortcut"],
+  ])("%s %s is muted text, not faded", (path, selector) => {
+    const utilities = applied(bodyOf(path, selector))
+    expect(utilities).toContain("text-muted-foreground")
+    expect(utilities.filter((u) => u.startsWith("opacity-"))).toEqual([])
+  })
+
+  it.each([
+    [MENU, ".dr-menu-content"],
+    [MENU, ".dr-menu-sub-content"],
+    [MENUBAR, ".dr-menubar-content"],
+    [MENUBAR, ".dr-menubar-sub-content"],
+  ])("%s %s is at least 8rem wide", (path, selector) => {
+    const utilities = applied(bodyOf(path, selector))
+    expect(utilities).toContain("min-w-[8rem]")
+    expect(utilities).not.toContain("min-w-[12rem]")
+  })
+
+  it.each([
+    [MENU, ".dr-menu-label", "px-2"],
+    [SELECT, ".dr-select-label", "pl-8"],
+    [MENUBAR, ".dr-menubar-label", "px-2"],
+  ])("%s %s is a small muted group label", (path, selector, padding) => {
+    const utilities = applied(bodyOf(path, selector))
+    for (const utility of [
+      "text-xs",
+      "font-medium",
+      "text-muted-foreground",
+      padding,
+    ]) {
+      expect(utilities).toContain(utility)
+    }
+    expect(utilities).not.toContain("text-sm")
+    expect(utilities).not.toContain("font-semibold")
+  })
+
+  it("gives command group headings the same label style", () => {
+    const utilities = applied(bodyOf(COMMAND, ".dr-command-group"))
+    for (const utility of [
+      "[&_[cmdk-group-heading]]:text-xs",
+      "[&_[cmdk-group-heading]]:font-medium",
+      "[&_[cmdk-group-heading]]:text-muted-foreground",
+    ]) {
+      expect(utilities).toContain(utility)
+    }
+  })
+})

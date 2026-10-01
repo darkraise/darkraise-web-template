@@ -38,7 +38,7 @@
   }
 
   .dr-select-label {
-    @apply py-[var(--density-row-py)] pr-2 pl-8 text-sm font-semibold;
+    @apply text-muted-foreground py-[var(--density-row-py)] pr-2 pl-8 text-xs font-medium;
   }
 
   .dr-select-item {
@@ -46,7 +46,7 @@
   }
 
   .dr-select-separator {
-    @apply bg-muted -mx-1 my-1 h-px;
+    @apply bg-border -mx-1 my-1 h-px;
   }
 
   [data-preset="glass"] .dr-select-trigger {
