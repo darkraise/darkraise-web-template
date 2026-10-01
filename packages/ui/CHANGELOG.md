@@ -78,6 +78,7 @@ Breaking: `PaginationLink` marks the current page with `data-active="true"` and 
 - The `--shadow-card`, `--card-border` and `--glow-surface` tokens, which no stylesheet read, and `PresetSurfaceRecipe.overrides.shadowCard` on the preset type.
 - The `data-sidebar-active-bar` attribute on `<html>`. Read the setting from `useTheme().sidebarActiveBar`; the sidebar still writes its own `data-active-bar`.
 - The glass `[data-glass-halo="none"]` rule, which nothing could trigger since the halo axis moved to the global glow axes.
+- The `.dr-image-editor-history-trigger` and `.dr-image-editor-extension` rules, which no component rendered.
 - The tokens and utility listed in the Breaking note above: `--density-cell`, `--density-cell-base`, `--density-cell-sm`, `--density-cell-lg`, `--density-button-px`, `--density-button-py` and their `-sm` / `-lg` forms, `--density-input-px`, `--density-input-py`, `--radius-button`, and `focus-ring-tight`.
 
 ### Fixed

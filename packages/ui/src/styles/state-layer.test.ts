@@ -55,10 +55,7 @@ const LAYER_HOSTS: Array<[string, string]> = [
     "src/components/floating-panel/floating-panel.css",
     ".dr-floating-panel-trigger",
   ],
-  [
-    "src/components/image-editor/image-editor.css",
-    ".dr-image-editor-preset, .dr-image-editor-history-trigger, .dr-image-editor-extension",
-  ],
+  ["src/components/image-editor/image-editor.css", ".dr-image-editor-preset"],
   ["src/components/json-tree-view/json-tree-view.css", ".dr-json-show-more"],
   [
     "src/components/multi-select/multi-select.css",
@@ -105,14 +102,6 @@ const HAND_ROLLED: { path: string; selector: string; pseudo?: string }[] = [
   {
     path: "src/components/image-editor/image-editor.css",
     selector: ".dr-image-editor-preset",
-  },
-  {
-    path: "src/components/image-editor/image-editor.css",
-    selector: ".dr-image-editor-history-trigger",
-  },
-  {
-    path: "src/components/image-editor/image-editor.css",
-    selector: ".dr-image-editor-extension",
   },
   {
     path: "src/components/tabs/tabs.css",
