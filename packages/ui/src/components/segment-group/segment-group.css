@@ -36,21 +36,39 @@
     @apply cursor-not-allowed opacity-50;
   }
 
-  /* Hover wash on unchecked, enabled segments. A `bg-accent` fill would
-     be invisible: --accent and --muted resolve to the same surface step,
-     which is what the track already paints. A foreground alpha reads
-     against any track in both modes and survives every preset, since
-     none of them redefine --foreground.
-
-     `[data-disabled]` has to be excluded explicitly — only the GROUP's
-     disabled rule sets pointer-events: none, so an individually disabled
-     segment still receives hover. */
+  /* Unchecked segments lift their label on hover and take the shared state
+     layer (button.css); a `currentColor` wash reads against the track in
+     both modes, where a `bg-accent` fill would match it. The guard is
+     needed: only the group's disabled rule sets pointer-events: none, so a
+     segment disabled on its own still receives hover. */
   .dr-segment-group
-    .dr-segment-group-item:not([data-state="checked"]):not(
-      [data-disabled]
-    ):hover {
+    .dr-segment-group-item:not([data-state="checked"]):not(:disabled):hover {
     @apply text-foreground;
-    background-color: hsl(var(--foreground) / 0.08);
+  }
+
+  /* ::after, because the item's radio-group rule gives ::before to its
+     24px hit area (hit-area-24). `relative z-10` already makes the item a
+     stacking context, so the wash paints above the sliding pill. */
+  .dr-segment-group .dr-segment-group-item::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--state-layer-color, currentColor);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--state-layer-out) var(--ease-out);
+  }
+  .dr-segment-group
+    .dr-segment-group-item:not([data-state="checked"]):not(:disabled):hover::after {
+    opacity: var(--state-layer-hover);
+    transition-duration: var(--state-layer-in);
+  }
+  .dr-segment-group
+    .dr-segment-group-item:not([data-state="checked"]):not(:disabled):active::after {
+    opacity: var(--state-layer-press);
+    transition-duration: var(--state-layer-in);
   }
 
   .dr-segment-group-indicator {
@@ -154,7 +172,7 @@
     box-shadow: var(--glass-state-active-inset);
   }
 
-  [data-preset="glass"] .dr-segment-group-item:hover {
+  [data-preset="glass"] .dr-segment-group-item:where(:not(:disabled)):hover {
     box-shadow: var(--glass-state-hover-glow);
   }
 }

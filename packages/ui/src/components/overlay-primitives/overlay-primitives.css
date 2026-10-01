@@ -22,6 +22,37 @@
   }
 
   .dr-overlay-close-btn {
-    @apply text-muted-foreground hover:bg-accent hover:text-foreground focus-ring absolute top-4 right-4 flex h-7 w-7 cursor-pointer items-center justify-center rounded-md transition-colors disabled:pointer-events-none;
+    @apply text-muted-foreground focus-ring absolute top-4 right-4 flex h-7 w-7 cursor-pointer items-center justify-center rounded-md transition-colors disabled:pointer-events-none;
+  }
+
+  /* Shared interaction state layer (button.css). The button is already
+     absolutely positioned, which anchors the wash; isolation keeps it
+     above the transparent background and below the icon. The label rule
+     keeps its guard in :where() so it keeps the `hover:` utility's
+     specificity. */
+  .dr-overlay-close-btn {
+    isolation: isolate;
+  }
+  .dr-overlay-close-btn:where(:not(:disabled)):hover {
+    @apply text-foreground;
+  }
+  .dr-overlay-close-btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--state-layer-color, currentColor);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--state-layer-out) var(--ease-out);
+  }
+  .dr-overlay-close-btn:not(:disabled):hover::before {
+    opacity: var(--state-layer-hover);
+    transition-duration: var(--state-layer-in);
+  }
+  .dr-overlay-close-btn:not(:disabled):active::before {
+    opacity: var(--state-layer-press);
+    transition-duration: var(--state-layer-in);
   }
 }

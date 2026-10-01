@@ -26,10 +26,6 @@
     box-shadow: var(--affordance-glow);
   }
 
-  .dr-pagination-link[data-active="true"][data-variant="ghost"]:hover {
-    @apply bg-primary/10 text-primary-text;
-  }
-
   .dr-pagination-previous {
     @apply gap-1 pl-2.5;
   }
