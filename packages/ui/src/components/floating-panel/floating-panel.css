@@ -81,20 +81,39 @@
     @apply text-foreground min-w-0 flex-1 truncate text-sm font-semibold;
   }
 
-  /* Outlined trigger — primary-tinted 1px border at rest (matches the
-     Button compound's `variant="outline"` styling so all outlined buttons
-     in the system read the same), accent fill + lighter text on hover.
-     `border-border` was tried previously but is too low-contrast against
-     `bg-popover` and reads as "no border". Switching to `--primary / 0.5`
-     for the resting border, with the hover state shifting bg to `accent`
-     and the text to the full foreground colour for emphasis. */
+  /* Outlined trigger — rests on the 3:1 field edge, as the outline button
+     does. `border-border` was tried previously but is too low-contrast
+     against `bg-popover` and reads as "no border". Hover is the shared
+     state layer (button.css) plus the label lift; the rim does not change.
+     The label rule keeps its guard in :where() so it keeps the `hover:`
+     utility's specificity. */
   .dr-floating-panel-trigger {
     @apply focus-ring text-muted-foreground inline-flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-md border bg-transparent p-0 transition-colors [&_svg]:size-[var(--icon-size-xs)];
-    border-color: hsl(var(--primary) / 0.5);
+    border-color: var(--field-edge);
+    position: relative;
+    isolation: isolate;
   }
-  .dr-floating-panel-trigger:hover {
-    @apply bg-accent text-accent-foreground;
-    border-color: hsl(var(--primary) / 0.7);
+  .dr-floating-panel-trigger:where(:not(:disabled)):hover {
+    @apply text-foreground;
+  }
+  .dr-floating-panel-trigger::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--state-layer-color, currentColor);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--state-layer-out) var(--ease-out);
+  }
+  .dr-floating-panel-trigger:not(:disabled):hover::before {
+    opacity: var(--state-layer-hover);
+    transition-duration: var(--state-layer-in);
+  }
+  .dr-floating-panel-trigger:not(:disabled):active::before {
+    opacity: var(--state-layer-press);
+    transition-duration: var(--state-layer-in);
   }
 
   .dr-floating-panel-content {

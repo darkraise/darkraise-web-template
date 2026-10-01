@@ -120,6 +120,10 @@ const HAND_ROLLED: { path: string; selector: string; pseudo?: string }[] = [
     path: "src/components/color-picker/color-picker.css",
     selector: ".dr-color-picker-eye-dropper-trigger:not(:disabled)",
   },
+  {
+    path: "src/components/floating-panel/floating-panel.css",
+    selector: ".dr-floating-panel-trigger:not(:disabled)",
+  },
 ]
 
 describe("interaction state layer", () => {

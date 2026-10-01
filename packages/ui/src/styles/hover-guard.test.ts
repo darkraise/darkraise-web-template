@@ -35,6 +35,7 @@ const CONTROLS: Array<[string, string]> = [
   ["dr-banner-close", ":not(:disabled)"],
   ["dr-color-picker-trigger", ":not(:disabled)"],
   ["dr-color-picker-eye-dropper-trigger", ":not(:disabled)"],
+  ["dr-floating-panel-trigger", ":not(:disabled)"],
 ]
 
 function stylesheets(dir: string): string[] {

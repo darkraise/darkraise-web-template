@@ -121,3 +121,26 @@ describe("badge hover", () => {
     ).toEqual([])
   })
 })
+
+describe("floating panel triggers at rest", () => {
+  const css = "src/components/floating-panel/floating-panel.css"
+
+  it("rims the trigger with the neutral field edge", () => {
+    const body = bodyOf(css, ".dr-floating-panel-trigger")
+    expect(body).toContain("border-color: var(--field-edge);")
+    expect(body).not.toContain("--primary")
+  })
+
+  it("leaves the rim alone on hover", () => {
+    const offenders = rulesOf(css)
+      .filter(
+        (rule) =>
+          rule.selectors.some(
+            (s) =>
+              s.includes(".dr-floating-panel-trigger") && s.includes(":hover"),
+          ) && /border-color|(?<![\w-])bg-/.test(rule.body),
+      )
+      .map((rule) => rule.selectors.join(", "))
+    expect(offenders).toEqual([])
+  })
+})
