@@ -13,6 +13,7 @@ import { surfaceColors } from "@theme/palettes/surfaceColors"
 import { presets, type PresetName } from "@theme/presets"
 import { ACCENT_COLORS } from "@theme/types"
 import {
+  composite,
   contrastRatio,
   hslStringToOklch,
   mixedContrast,
@@ -409,6 +410,42 @@ const CANVAS_SATURATION_CAP: Record<BackgroundIntensity, number | null> = {
   intense: null,
 }
 
+/** `--canvas-blob-scale` per step: how loud the gradient canvas's blobs paint. */
+const CANVAS_BLOB_SCALE: Record<BackgroundIntensity, number> = {
+  neutral: 0.25,
+  subtle: 0.5,
+  balanced: 1,
+  vivid: 1.5,
+  intense: 2,
+}
+
+/**
+ * The loudest point of the gradient canvas, as the share of the surface hue
+ * composited over the page: the ink layer's fixed mix, plus the peak of the
+ * largest blob and the tail of the one overlapping it per unit of blob scale.
+ * Read off the body's blob recipes in theme.css.
+ */
+const CANVAS_PEAK_SHARE: Record<ResolvedMode, { ink: number; blobs: number }> =
+  {
+    light: { ink: 0.04, blobs: 0.2 },
+    dark: { ink: 0.07, blobs: 0.18 },
+  }
+
+/**
+ * The page where a gradient canvas is loudest. Under `solid` the page is
+ * `background` itself and nothing needs listing.
+ */
+export function gradientCanvasPeak(
+  background: string,
+  surfaceHue: string,
+  mode: ResolvedMode,
+  intensity: BackgroundIntensity,
+): string {
+  const { ink, blobs } = CANVAS_PEAK_SHARE[mode]
+  const share = Math.min(1, ink + blobs * CANVAS_BLOB_SCALE[intensity])
+  return composite(background, surfaceHue, share)
+}
+
 /** Clamps an `H S% L%` triplet's saturation. Hue and lightness pass through. */
 export function capCanvasSaturation(hsl: string, cap: number | null): string {
   if (cap === null) return hsl
@@ -771,7 +808,9 @@ export function generateTokens(
   // radio or switch draws all round. It is one value per theme, so it is
   // solved against every ground a control can sit on. It stays out of
   // BORDER_TOKENS: borderIntensity is a taste axis, and its subtle step
-  // would pull the edge back under 3:1.
+  // would pull the edge back under 3:1. A gradient canvas paints the surface
+  // hue over the page, so the page a field really sits on is listed at the
+  // canvas's loudest point rather than as `background` alone.
   const fieldEdge = tierClearingAll(
     neutral,
     [
@@ -781,6 +820,16 @@ export function generateTokens(
       controlWell.deep,
       recipe.surfaceSidebar(surface, mode),
       recipe.surfaceHeader(surface, mode),
+      ...(backgroundStyle === "gradient"
+        ? [
+            gradientCanvasPeak(
+              background,
+              surfaceTint,
+              mode,
+              backgroundIntensity,
+            ),
+          ]
+        : []),
     ],
     preset === "glass" ? GLASS_EDGE_FLOOR : MARK_FLOOR,
   )

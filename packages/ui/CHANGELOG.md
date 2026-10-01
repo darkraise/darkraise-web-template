@@ -80,6 +80,7 @@ Breaking: `TableHead` and `TableCell` take `align?: "start" | "center" | "end"` 
 - Badges are at least 16, 20 and 24px tall (`sm`, `default`, `lg`), take a radius of `min(var(--radius-control), 0.375rem)` instead of a full pill, and use weight 500 (was 600). The default size uses the caption role and `lg` the label role.
 - Tables: header cells use the caption role (12px at 500), every head and cell uses tabular figures, and rows are at least the control height plus 8px (36, 40, 44 and 48px from compact to spacious at the default font size). Virtualized `DataTable` rows keep `virtualize.rowHeight`. Header text starts on the inline start edge, so it flips in right-to-left layouts.
 - Sortable `DataTable` headers start their label on the column's text edge (they sat a few pixels left of it) and read like plain headers: 12px at 500 in the header's muted colour instead of a foreground ghost button. In an end-aligned column the sort button sits at the end.
+- Under a gradient background the field edge (`--field-edge-color`) is also solved against the page where the canvas paints the surface hue loudest, so it reaches 3:1 on the gradient itself; it darkens in light mode and lightens in dark mode as `backgroundIntensity` rises (by about 5 lightness points at `balanced`, up to 13 in light and 25 in dark at `intense`). Solid backgrounds are unchanged.
 
 ### Removed
 

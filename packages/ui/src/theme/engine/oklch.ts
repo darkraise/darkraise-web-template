@@ -136,6 +136,24 @@ export function contrastRatio(a: string, b: string): number {
 }
 
 /**
+ * `tint` at `amount` composited over `ground`, as an HSL triplet. Browsers
+ * composite an alpha layer in gamma-encoded sRGB, so the mix happens there.
+ */
+export function composite(
+  ground: string,
+  tint: string,
+  amount: number,
+): string {
+  const under = hslToSrgb(ground)
+  const over = hslToSrgb(tint)
+  return srgbToHsl(
+    under.map(
+      (c, i) => c * (1 - amount) + (over[i] as number) * amount,
+    ) as Triple,
+  )
+}
+
+/**
  * `text` against `tint` at `amount` composited over `ground`, as a
  * `hsl(var(--x) / amount)` background paints it. Browsers composite in
  * gamma-encoded sRGB; mixing there directly avoids rounding the ground back
@@ -149,9 +167,13 @@ export function mixedContrast(
 ): number {
   const under = hslToSrgb(ground)
   const over = hslToSrgb(tint)
-  const [r, g, b] = under.map((c, i) => c * (1 - amount) + (over[i] as number) * amount) as Triple
+  const [r, g, b] = under.map(
+    (c, i) => c * (1 - amount) + (over[i] as number) * amount,
+  ) as Triple
   const mixed =
-    0.2126 * srgbToLinear(r) + 0.7152 * srgbToLinear(g) + 0.0722 * srgbToLinear(b)
+    0.2126 * srgbToLinear(r) +
+    0.7152 * srgbToLinear(g) +
+    0.0722 * srgbToLinear(b)
   const lt = relativeLuminance(text)
   return (Math.max(lt, mixed) + 0.05) / (Math.min(lt, mixed) + 0.05)
 }
