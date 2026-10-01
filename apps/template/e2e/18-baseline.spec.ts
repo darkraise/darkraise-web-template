@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "@playwright/test"
+import { test, expect, type BrowserContext, type Page } from "@playwright/test"
 import { PRESETS } from "./fixtures/theme"
 import { gotoApp, seedApp } from "./helpers/app"
 import { settle } from "./helpers/measure"
@@ -55,12 +55,55 @@ test.use({
   reducedMotion: "reduce",
 })
 
+interface CachedFont {
+  headers: Record<string, string>
+  body: Buffer
+}
+
+const FONT_HOSTS = /^https:\/\/fonts\.(googleapis|gstatic)\.com\//
+const fontCache = new Map<string, CachedFont>()
+
+/**
+ * Google Fonts is the only network the captured pages depend on. A slow
+ * request holds the app's first paint and a failed one leaves a fallback face
+ * in the image, so each font URL is fetched once, retried on failure, and
+ * replayed from memory.
+ */
+async function serveFontsFromCache(context: BrowserContext) {
+  await context.route(FONT_HOSTS, async (route) => {
+    const url = route.request().url()
+    let font = fontCache.get(url)
+    for (let attempt = 0; !font && attempt < 4; attempt++) {
+      const response = await route.fetch({ timeout: 20_000 }).catch(() => null)
+      if (response?.ok()) {
+        const headers = Object.fromEntries(
+          Object.entries(response.headers()).filter(
+            ([name]) =>
+              name !== "content-encoding" && name !== "content-length",
+          ),
+        )
+        font = { headers, body: await response.body() }
+      }
+    }
+    if (!font) return route.abort()
+    fontCache.set(url, font)
+    return route.fulfill({
+      status: 200,
+      headers: font.headers,
+      body: font.body,
+    })
+  })
+}
+
 /**
  * True once an Inter face has loaded. `document.fonts.check` alone answers
  * true when the stylesheet never arrived, which would record a fallback font.
+ * A face loads on first use and `fonts.ready` can resolve before that starts,
+ * so the face is requested here rather than waited for.
  */
 async function interLoaded(page: Page): Promise<boolean> {
   return page.evaluate(async () => {
+    await document.fonts.load("1em Inter").catch(() => [])
     await document.fonts.ready
     return [...document.fonts].some(
       (face) =>
@@ -84,7 +127,12 @@ async function fitContent(page: Page) {
 }
 
 async function capture(page: Page, name: string) {
-  expect(await interLoaded(page), "Inter must load before recording").toBe(true)
+  await expect
+    .poll(() => interLoaded(page), {
+      message: "Inter must load before recording",
+      timeout: 30_000,
+    })
+    .toBe(true)
   await expect(page.locator(".dr-skeleton")).toHaveCount(0)
   await page.mouse.move(0, 0)
   await settle(page)
@@ -94,10 +142,36 @@ async function capture(page: Page, name: string) {
   })
 }
 
+/**
+ * Vite compiles a route on its first request, which can outlast gotoApp's
+ * wait for the app shell. Visiting every captured route once first keeps that
+ * cost out of the captures.
+ */
+test.beforeAll(async ({ browser }) => {
+  test.setTimeout(180_000)
+  const context = await browser.newContext({ viewport: VIEWPORT })
+  try {
+    await serveFontsFromCache(context)
+    const page = await context.newPage()
+    await seedApp(page, { preset: "default", mode: "light" })
+    const paths = [
+      ...APP_PAGES.map(([, path]) => path),
+      ...SHOWCASE_PAGES.map(([, path]) => path),
+      "/e2e/fixtures/baseline-overlays.html?show=dialog",
+    ]
+    for (const path of paths) {
+      await page.goto(path, { waitUntil: "networkidle", timeout: 60_000 })
+    }
+  } finally {
+    await context.close()
+  }
+})
+
 for (const preset of PRESETS) {
   for (const mode of MODES) {
     test.describe(`${preset} · ${mode}`, () => {
       test.beforeEach(async ({ page }) => {
+        await serveFontsFromCache(page.context())
         await seedApp(page, { preset, mode })
       })
 
