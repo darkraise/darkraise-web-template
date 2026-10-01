@@ -89,6 +89,7 @@ const ROLE_CLASSES: Array<[string, string, Role]> = [
     "caption",
   ],
   ["src/components/badge/badge.css", '.dr-badge[data-size="lg"]', "label"],
+  ["src/components/table/table.css", ".dr-table-head", "caption"],
 ]
 
 /** A utility that sets a size, weight, tracking or line height. */

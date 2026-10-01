@@ -24,11 +24,25 @@
   }
 
   .dr-table-head {
-    @apply text-muted-foreground px-[var(--density-container-p)] py-[var(--density-row-py)] text-left align-middle font-medium [&:has([role=checkbox])]:pr-0;
+    @apply type-caption text-muted-foreground px-[var(--density-container-p)] py-[var(--density-row-py)] text-start align-middle tabular-nums [&:has([role=checkbox])]:pr-0;
+    height: calc(var(--control-height) + 0.5rem);
   }
 
+  /* The height is a minimum on a table cell: one line of text sits at the
+     control height plus 8px at every density, and wrapped content grows. */
   .dr-table-cell {
-    @apply px-[var(--density-container-p)] py-[var(--density-row-py)] align-middle [&:has([role=checkbox])]:pr-0;
+    @apply px-[var(--density-container-p)] py-[var(--density-row-py)] align-middle tabular-nums [&:has([role=checkbox])]:pr-0;
+    height: calc(var(--control-height) + 0.5rem);
+  }
+
+  .dr-table-head[data-align="center"],
+  .dr-table-cell[data-align="center"] {
+    text-align: center;
+  }
+
+  .dr-table-head[data-align="end"],
+  .dr-table-cell[data-align="end"] {
+    text-align: end;
   }
 
   .dr-table-caption {

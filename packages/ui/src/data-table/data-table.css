@@ -168,8 +168,11 @@
     @apply overflow-visible border-0;
   }
 
+  /* Virtualized rows are exactly virtualize.rowHeight: the scroll maths
+     assumes it, so the table's minimum row height must not apply. */
   .dr-data-table-viewport .dr-table-cell {
     padding-block: 0;
+    height: auto;
   }
 
   .dr-data-table-virtual-cell {
