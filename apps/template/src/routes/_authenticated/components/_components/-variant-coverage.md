@@ -127,7 +127,7 @@ reasons, not coverage reasons.
 ## Components with no enumerable presentational axis (55)
 
 An earlier revision of this list wrongly included `pagination`. It has
-`PaginationVariant = "filled" | "outlined"`
+`PaginationVariant = "filled" | "outline"`
 (`packages/ui/src/components/pagination/Pagination.tsx:8`); both values already
 rendered on the page, so there was never a visual gap, but the claim was false.
 The type is now exported and the page has a proper `allOf` matrix, so

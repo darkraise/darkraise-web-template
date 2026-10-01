@@ -2,6 +2,9 @@ import * as React from "react"
 import { render, screen, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect } from "vitest"
+import { readFileSync } from "node:fs"
+import { dirname, resolve } from "node:path"
+import { fileURLToPath } from "node:url"
 import {
   TreeView,
   TreeViewLabel,
@@ -218,9 +221,9 @@ describe("TreeView", () => {
     expect(root).toHaveAttribute("data-variant", "filled")
   })
 
-  it("variant='outlined' writes data-variant='outlined' on root", () => {
+  it("variant='outline' writes data-variant='outline' on root", () => {
     const { container } = render(
-      <TreeView data={tree} variant="outlined">
+      <TreeView data={tree} variant="outline">
         <TreeViewTree>
           {tree.children?.map((node) => (
             <TreeViewNode key={node.id} node={node} />
@@ -229,6 +232,15 @@ describe("TreeView", () => {
       </TreeView>,
     )
     const root = container.querySelector(".dr-tree-view")
-    expect(root).toHaveAttribute("data-variant", "outlined")
+    expect(root).toHaveAttribute("data-variant", "outline")
+  })
+
+  it("styles the outline variant's selection", () => {
+    const css = readFileSync(
+      resolve(dirname(fileURLToPath(import.meta.url)), "./tree-view.css"),
+      "utf8",
+    )
+    expect(css).toContain('.dr-tree-view[data-variant="outline"]')
+    expect(css).not.toContain('data-variant="outlined"')
   })
 })

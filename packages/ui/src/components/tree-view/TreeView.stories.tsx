@@ -107,15 +107,15 @@ export const ManualComposition: Story = {
   ),
 }
 
-export const OutlinedVariant: Story = {
+export const OutlineVariant: Story = {
   render: () => (
     <TreeView
       data={fileTree}
-      variant="outlined"
+      variant="outline"
       defaultExpanded={["components", "hooks"]}
       defaultSelected={["Button.tsx"]}
     >
-      <TreeViewLabel>Project (outlined)</TreeViewLabel>
+      <TreeViewLabel>Project (outline)</TreeViewLabel>
       <TreeViewTree>
         {fileTree.children?.map((node) => (
           <TreeViewNode key={node.id} node={node} />

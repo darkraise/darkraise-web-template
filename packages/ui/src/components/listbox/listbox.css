@@ -39,7 +39,7 @@
   /* Selected — outline variant. Transparent surface with a 1px primary
      ring drawn as an inset shadow, so it occupies the same box as the
      filled variant and switching variants shifts no layout. Mirrors
-     TreeView's outlined selection.
+     TreeView's outline selection.
 
      Scoped from the root so one prop drives every item, and at (0,3,0)
      it outranks the filled rules above — including the
