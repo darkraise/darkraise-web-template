@@ -100,7 +100,11 @@ describe("glass dark --card-elevation-* stays in sync with the base ramp", () =>
   // (unlayered constraint) and only appends ", var(--glass-halo-raised)".
   // This converts the "update both if the base ramp changes" comment into an
   // enforced invariant.
-  const darkBaseBlock = themeCss.split('[data-mode="dark"] {')[1].split("}")[0]
+  // Anchored to a line start: `:root[data-mode="dark"] {` inside
+  // `@layer base` also contains the bare selector.
+  const darkBaseBlock = themeCss
+    .split(/^\[data-mode="dark"\] \{/m)[1]
+    .split("}")[0]
 
   for (const tier of ["low", "medium", "high"] as const) {
     it(`dark ${tier} = base ramp + halo`, () => {

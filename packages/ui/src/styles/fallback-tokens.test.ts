@@ -65,6 +65,7 @@ describe("pre-hydration fallback block", () => {
       "--destructive-solid",
       "--destructive-solid-foreground",
       "--field-edge-color",
+      "--sidebar-active-bg",
     ]) {
       expect(block.has(key), key).toBe(true)
     }
