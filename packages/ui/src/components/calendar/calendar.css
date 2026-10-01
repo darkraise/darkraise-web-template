@@ -75,8 +75,15 @@
   ) {
     position: relative;
     z-index: 10;
-    outline: 3px solid hsl(var(--focus-ring));
-    outline-offset: -1px;
+    outline: 2px solid hsl(var(--focus-ring));
+    outline-offset: -2px;
+  }
+
+  /* Days sit edge to edge along a week, so the ring stays inside the cell.
+     The day is a `.dr-btn`; the compound selector outranks the button's
+     own :focus-visible rule. */
+  .dr-btn.dr-calendar-day-btn {
+    @apply focus-ring-inset;
   }
 
   .dr-calendar-grid {

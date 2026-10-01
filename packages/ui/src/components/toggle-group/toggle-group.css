@@ -3,6 +3,11 @@
     @apply flex items-center justify-center gap-1;
   }
 
+  /* Items sit 4px apart, too close for an outset ring. */
+  .dr-toggle-group .dr-toggle {
+    @apply focus-ring-inset;
+  }
+
   /* Glass-preset ToggleGroup. The group itself is transparent — each
      toggle item carries its own frosted surface (see toggle.css). */
   [data-preset="glass"] .dr-toggle-group {

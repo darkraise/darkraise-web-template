@@ -5,7 +5,7 @@
     /* Transparent where the variant draws no edge, so default and outline
        toggles measure the same. */
     border: 1px solid transparent;
-    @apply focus-ring-inset inline-flex cursor-pointer items-center justify-center gap-2 rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size)] [&_svg]:shrink-0;
+    @apply focus-ring inline-flex cursor-pointer items-center justify-center gap-2 rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size)] [&_svg]:shrink-0;
     transition:
       background-color var(--duration-fast),
       color var(--duration-fast),

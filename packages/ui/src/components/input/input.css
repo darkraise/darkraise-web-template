@@ -86,6 +86,12 @@
     padding-inline: 0.375rem;
   }
 
+  /* The input group clips its children (overflow-hidden), which would cut
+     an outset ring off. */
+  .dr-input-action .dr-btn {
+    @apply focus-ring-inset;
+  }
+
   /* Glass preset — prefix/suffix addon chips read as a frosted segment of
      the same surface instead of a flat muted block (bg-muted resolves to a
      near-invisible primary tint under Glass). No backdrop-filter here: the

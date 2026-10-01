@@ -69,6 +69,12 @@
     padding-inline: 0.375rem;
   }
 
+  /* The control clips its children (overflow-hidden), which would cut an
+     outset ring off. */
+  .dr-number-input-action .dr-btn {
+    @apply focus-ring-inset;
+  }
+
   /* Trigger group — a flex column at the right edge of the control. The
    * left border draws the divider against the field (or the suffix, if
    * one is rendered between the field and the group). The wrapper's

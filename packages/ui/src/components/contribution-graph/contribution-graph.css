@@ -195,7 +195,7 @@
      `overflow-x-auto` wrapper consumers put around the graph. `[data-date]`
      restricts this to real day cells — the padding cells and the legend
      swatches share this class. The keyboard focus ring still wins, since
-     `focus-ring-tight` is a Tailwind utility and `@layer utilities` outranks
+     `focus-ring-inset` is a Tailwind utility and `@layer utilities` outranks
      `@layer components`. */
   .dr-contribution-graph-cell[data-date]:hover {
     outline: 1px solid var(--contrib-cell-outline);

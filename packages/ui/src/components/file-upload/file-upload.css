@@ -27,7 +27,7 @@
   }
 
   .dr-file-upload-trigger {
-    @apply bg-primary-fill text-primary-foreground focus-ring-tight inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-md px-3 text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50;
+    @apply bg-primary-fill text-primary-foreground focus-ring-inset inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-md px-3 text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50;
   }
 
   .dr-file-upload-trigger:hover {
@@ -66,11 +66,11 @@
   }
 
   .dr-file-upload-item-delete-trigger {
-    @apply text-muted-foreground hover:text-foreground focus-ring-tight inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-sm transition-colors disabled:pointer-events-none disabled:opacity-50;
+    @apply text-muted-foreground hover:text-foreground focus-ring-inset inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-sm transition-colors disabled:pointer-events-none disabled:opacity-50;
   }
 
   .dr-file-upload-clear-trigger {
-    @apply text-muted-foreground hover:text-foreground focus-ring-tight inline-flex h-8 cursor-pointer items-center gap-1 self-start rounded-sm px-2 text-xs underline transition-colors disabled:pointer-events-none disabled:opacity-50;
+    @apply text-muted-foreground hover:text-foreground focus-ring-inset inline-flex h-8 cursor-pointer items-center gap-1 self-start rounded-sm px-2 text-xs underline transition-colors disabled:pointer-events-none disabled:opacity-50;
   }
 
   /* Glass-preset frosted FileUpload drop-zone. The drop-zone is the

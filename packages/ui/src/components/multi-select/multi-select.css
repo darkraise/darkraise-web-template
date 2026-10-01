@@ -60,7 +60,7 @@
   }
 
   .dr-multi-select-chip-remove {
-    @apply focus-ring-tight text-muted-foreground hover:text-foreground -mr-1 inline-flex size-[var(--icon-size)] cursor-pointer items-center justify-center rounded-sm border-0 bg-transparent p-0;
+    @apply focus-ring-inset text-muted-foreground hover:text-foreground -mr-1 inline-flex size-[var(--icon-size)] cursor-pointer items-center justify-center rounded-sm border-0 bg-transparent p-0;
   }
 
   .dr-multi-select-chip-remove:disabled {
@@ -92,7 +92,7 @@
 
   .dr-multi-select-clear,
   .dr-multi-select-toggle {
-    @apply focus-ring-tight text-muted-foreground hover:text-foreground inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded-sm border-0 bg-transparent p-0;
+    @apply focus-ring-inset text-muted-foreground hover:text-foreground inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded-sm border-0 bg-transparent p-0;
   }
 
   .dr-multi-select-toggle[data-state="open"] {

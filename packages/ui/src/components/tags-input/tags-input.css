@@ -33,7 +33,7 @@
   }
 
   .dr-tags-input-item-preview {
-    @apply bg-secondary text-secondary-foreground focus-ring-tight inline-flex items-center gap-1 rounded-sm px-2 py-0.5 text-xs font-medium transition-colors;
+    @apply bg-secondary text-secondary-foreground focus-ring-inset inline-flex items-center gap-1 rounded-sm px-2 py-0.5 text-xs font-medium transition-colors;
   }
 
   .dr-tags-input-item-preview[data-highlighted="true"] {
@@ -49,7 +49,7 @@
   }
 
   .dr-tags-input-item-delete-trigger {
-    @apply text-muted-foreground hover:text-foreground focus-ring-tight inline-flex size-[var(--icon-size)] items-center justify-center rounded-sm transition-colors;
+    @apply text-muted-foreground hover:text-foreground focus-ring-inset inline-flex size-[var(--icon-size)] items-center justify-center rounded-sm transition-colors;
   }
 
   .dr-tags-input-item-delete-trigger[data-disabled="true"] {

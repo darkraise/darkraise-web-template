@@ -20,7 +20,7 @@
   }
 
   .dr-date-picker-trigger {
-    @apply text-muted-foreground hover:text-foreground focus-ring-tight absolute top-1/2 right-2 inline-flex h-6 w-6 -translate-y-1/2 cursor-pointer items-center justify-center rounded-sm transition-colors;
+    @apply text-muted-foreground hover:text-foreground focus-ring-inset absolute top-1/2 right-2 inline-flex h-6 w-6 -translate-y-1/2 cursor-pointer items-center justify-center rounded-sm transition-colors;
   }
 
   .dr-date-picker-trigger[data-disabled="true"] {
@@ -54,7 +54,7 @@
   }
 
   .dr-date-picker-preset {
-    @apply text-foreground hover:bg-accent hover:text-accent-foreground focus-ring-tight inline-flex items-center justify-center rounded-sm border px-2 py-1 text-xs transition-colors;
+    @apply text-foreground hover:bg-accent hover:text-accent-foreground focus-ring-inset inline-flex items-center justify-center rounded-sm border px-2 py-1 text-xs transition-colors;
   }
 
   /* The trigger is a small icon button overlaid on top of the

@@ -454,7 +454,7 @@ function RatingGroupItem({
         data-highlighted={state.highlighted ? "true" : "false"}
         data-half={state.half ? "true" : "false"}
         data-checked={isChecked ? "true" : undefined}
-        className={cn("dr-rating-group-item", "focus-ring-tight", className)}
+        className={cn("dr-rating-group-item", "focus-ring-inset", className)}
         onClick={handleClick}
         onPointerEnter={handlePointerEnter}
         onPointerMove={handlePointerMove}

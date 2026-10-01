@@ -394,7 +394,7 @@
   }
 
   .dr-tabs-content {
-    @apply focus-ring-tight mt-2;
+    @apply focus-ring-inset mt-2;
     transition: opacity var(--duration-fast);
   }
 

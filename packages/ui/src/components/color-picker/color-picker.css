@@ -16,7 +16,7 @@
   }
 
   .dr-color-picker-swatch {
-    @apply border-border focus-ring-tight inline-block h-8 w-8 cursor-pointer rounded-md border transition-shadow;
+    @apply border-border focus-ring-inset inline-block h-8 w-8 cursor-pointer rounded-md border transition-shadow;
   }
 
   .dr-color-picker-swatch[data-disabled="true"] {
@@ -28,7 +28,7 @@
   }
 
   .dr-color-picker-trigger {
-    @apply text-muted-foreground hover:text-foreground border-border focus-ring-tight inline-flex h-9 w-9 items-center justify-center rounded-md border transition-colors;
+    @apply text-muted-foreground hover:text-foreground border-border focus-ring-inset inline-flex h-9 w-9 items-center justify-center rounded-md border transition-colors;
   }
 
   .dr-color-picker-trigger[data-disabled="true"] {
@@ -57,7 +57,7 @@
   .dr-color-picker-sv:focus-visible,
   .dr-color-picker-hue:focus-visible {
     outline: 2px solid hsl(var(--focus-ring));
-    outline-offset: 1px;
+    outline-offset: 2px;
   }
 
   .dr-color-picker-area[data-disabled="true"] {
@@ -82,7 +82,7 @@
   }
 
   .dr-color-picker-eye-dropper-trigger {
-    @apply text-muted-foreground hover:text-foreground border-border focus-ring-tight inline-flex h-8 w-8 items-center justify-center self-start rounded-md border transition-colors;
+    @apply text-muted-foreground hover:text-foreground border-border focus-ring-inset inline-flex h-8 w-8 items-center justify-center self-start rounded-md border transition-colors;
   }
 
   .dr-color-picker-eye-dropper-trigger[data-disabled="true"] {

@@ -385,7 +385,7 @@ function ContributionGraph({
                     data-date={cell.key}
                     data-clickable={onCellClick ? "true" : undefined}
                     aria-label={cellLabel(cell)}
-                    className="dr-contribution-graph-cell focus-ring-tight"
+                    className="dr-contribution-graph-cell focus-ring-inset"
                     onKeyDown={(event) => handleKeyDown(event, cell)}
                     onClick={() => onCellClick?.(cell)}
                     onPointerEnter={(event) =>
