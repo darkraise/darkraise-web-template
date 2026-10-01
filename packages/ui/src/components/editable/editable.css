@@ -62,7 +62,7 @@
     @apply text-muted-foreground focus-ring inline-flex aspect-square h-[var(--control-height-default)] cursor-pointer items-center justify-center rounded-md bg-transparent transition-colors disabled:pointer-events-none disabled:opacity-[var(--disabled-opacity)] [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size)] [&_svg]:shrink-0;
   }
 
-  /* Shared interaction state layer (button.css). The label rule keeps its
+  /* Shared interaction state layer (theme.css). The label rule keeps its
      guard in :where() so it keeps the `hover:` utility's specificity. */
   .dr-editable-edit-trigger,
   .dr-editable-submit-trigger,

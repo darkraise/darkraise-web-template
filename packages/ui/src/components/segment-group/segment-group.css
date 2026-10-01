@@ -37,7 +37,7 @@
   }
 
   /* Unchecked segments lift their label on hover and take the shared state
-     layer (button.css); a `currentColor` wash reads against the track in
+     layer (theme.css); a `currentColor` wash reads against the track in
      both modes, where a `bg-accent` fill would match it. The guard is
      needed: only the group's disabled rule sets pointer-events: none, so a
      segment disabled on its own still receives hover. */

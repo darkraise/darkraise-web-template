@@ -84,7 +84,7 @@
   /* Outlined trigger — rests on the 3:1 field edge, as the outline button
      does. `border-border` was tried previously but is too low-contrast
      against `bg-popover` and reads as "no border". Hover is the shared
-     state layer (button.css) plus the label lift; the rim does not change.
+     state layer (theme.css) plus the label lift; the rim does not change.
      The label rule keeps its guard in :where() so it keeps the `hover:`
      utility's specificity. */
   .dr-floating-panel-trigger {

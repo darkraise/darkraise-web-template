@@ -89,7 +89,7 @@
     @apply text-muted-foreground border-border focus-ring-inset inline-flex h-8 w-8 items-center justify-center self-start rounded-md border transition-colors;
   }
 
-  /* Shared interaction state layer (button.css) for the trigger and the
+  /* Shared interaction state layer (theme.css) for the trigger and the
      eye dropper. The label rule keeps its guard in :where() so it keeps
      the `hover:` utility's specificity. */
   .dr-color-picker-trigger,

@@ -25,7 +25,7 @@
     @apply text-muted-foreground focus-ring absolute top-4 right-4 flex h-7 w-7 cursor-pointer items-center justify-center rounded-md transition-colors disabled:pointer-events-none;
   }
 
-  /* Shared interaction state layer (button.css). The button is already
+  /* Shared interaction state layer (theme.css). The button is already
      absolutely positioned, which anchors the wash; isolation keeps it
      above the transparent background and below the icon. The label rule
      keeps its guard in :where() so it keeps the `hover:` utility's

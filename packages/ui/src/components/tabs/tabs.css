@@ -418,7 +418,7 @@
   }
 
   /* Inactive triggers lift their label on hover and take the shared state
-     layer (button.css); a `currentColor` wash reads against every track in
+     layer (theme.css); a `currentColor` wash reads against every track in
      both modes, where a `bg-accent` fill would match the strip. The label
      rule keeps its guard in :where() so it keeps the specificity the
      `hover:` utility had. */

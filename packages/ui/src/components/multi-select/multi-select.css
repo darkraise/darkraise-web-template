@@ -82,7 +82,7 @@
     @apply focus-ring-inset text-muted-foreground -mr-1 inline-flex size-[var(--icon-size)] cursor-pointer items-center justify-center rounded-sm border-0 bg-transparent p-0;
   }
 
-  /* Shared interaction state layer (button.css). The label rule keeps its
+  /* Shared interaction state layer (theme.css). The label rule keeps its
      guard in :where() so it keeps the `hover:` utility's specificity. */
   .dr-multi-select-chip-remove {
     position: relative;

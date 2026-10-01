@@ -70,7 +70,7 @@
     @apply focus-ring text-muted-foreground rounded-sm p-0.5 transition-colors;
   }
 
-  /* Shared interaction state layer (button.css). The label rule keeps its
+  /* Shared interaction state layer (theme.css). The label rule keeps its
      guard in :where() so it keeps the `hover:` utility's specificity. */
   .dr-banner-close {
     position: relative;

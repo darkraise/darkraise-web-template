@@ -69,7 +69,7 @@
     @apply text-muted-foreground focus-ring-inset inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-sm transition-colors disabled:pointer-events-none disabled:opacity-[var(--disabled-opacity)];
   }
 
-  /* Shared interaction state layer (button.css). The label rule keeps its
+  /* Shared interaction state layer (theme.css). The label rule keeps its
      guard in :where() so it keeps the `hover:` utility's specificity. */
   .dr-file-upload-item-delete-trigger {
     position: relative;
