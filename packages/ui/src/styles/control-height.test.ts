@@ -242,6 +242,15 @@ describe("field heights", () => {
     expect(rule).not.toMatch(LEGACY_HEIGHT)
   })
 
+  it("keeps the user-menu avatar inside its icon trigger", () => {
+    const rule = body(
+      "src/layout/user-menu/user-menu.css",
+      ".dr-user-menu-avatar",
+    )
+    expect(rule).toContain("height: min(2rem, var(--btn-height));")
+    expect(rule).toContain("width: min(2rem, var(--btn-height));")
+  })
+
   it.each([
     ["src/components/input/input.css", ".dr-input-grouped", "auto"],
     [

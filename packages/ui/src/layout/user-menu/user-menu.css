@@ -4,7 +4,8 @@
   }
 
   .dr-user-menu-avatar {
-    @apply h-8 w-8;
+    width: min(2rem, var(--btn-height));
+    height: min(2rem, var(--btn-height));
   }
 
   .dr-user-menu-content {
