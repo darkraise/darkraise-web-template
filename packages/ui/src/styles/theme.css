@@ -835,7 +835,9 @@
      --surface-overlay-bg in the [data-surface-intensity] rules: overlays
      forward their surfaceIntensity prop as that attribute on themselves,
      and a custom property that reads another resolves where it is
-     declared, so a :root-only --overlay-bg would keep <html>'s wash. */
+     declared, so a :root-only --overlay-bg would keep <html>'s wash.
+     --overlay-border and --overlay-shadow stay :root-only: nothing below
+     <html> re-sets --surface-overlay-border or --surface-overlay-shadow. */
     --overlay-bg: var(--surface-overlay-bg);
     --overlay-border: var(--surface-overlay-border);
     --overlay-shadow: var(--surface-overlay-shadow);

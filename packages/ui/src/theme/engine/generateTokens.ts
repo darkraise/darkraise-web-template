@@ -147,9 +147,10 @@ const MARK_FLOOR = 3
 /**
  * The field edge's floor under glass. A glass card is translucent over the
  * gradient canvas, so the ground a field really sits on drifts from the
- * opaque values the edge is solved against; 3.5 keeps the rendered edge at
- * 3:1 on medium and strong glass cards (measured by the template's
- * control-contract e2e spec).
+ * opaque values the edge is solved against. 3.5 kept the rendered edge at
+ * 3:1 on medium and strong glass cards for the default accent and surface
+ * (the template's control-contract e2e spec); other accents, surfaces and
+ * background intensities are not measured.
  */
 const GLASS_EDGE_FLOOR = 3.5
 /** Text must be readable, whatever else the colour is also used for. */
