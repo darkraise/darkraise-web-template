@@ -37,7 +37,7 @@ export interface OTPInputContextValue {
   pattern?: string
   disabled?: boolean
   /** From `aria-invalid` on InputOTP; separate slot inputs repeat it. */
-  invalid: boolean
+  invalid?: boolean
 }
 
 export const OTPInputContext = React.createContext<OTPInputContextValue>({
