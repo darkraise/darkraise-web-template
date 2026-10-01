@@ -2,6 +2,9 @@ import { defineConfig, devices } from "@playwright/test"
 
 export default defineConfig({
   testDir: "./e2e",
+  /* The visual baseline records committed screenshots; it runs only when
+     asked (`pnpm test:e2e:visual`). */
+  testIgnore: process.env.BASELINE ? [] : ["**/18-baseline.spec.ts"],
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,

@@ -11,6 +11,7 @@ pnpm --filter darkraise-ui build      # the demo consumes dist/, not src/
 cd apps/template
 pnpm test:e2e                         # the whole plan
 pnpm test:e2e:baseline                # skips anything tagged @known-issue
+pnpm test:e2e:visual                  # screenshot baseline (Linux Chromium); add --update-snapshots to re-record
 pnpm test:e2e:report                  # open the HTML report
 ```
 

@@ -11,6 +11,7 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "test:e2e:baseline": "playwright test --grep-invert @known-issue",
+    "test:e2e:visual": "BASELINE=1 playwright test 18-baseline --workers=1",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:report": "playwright show-report",
     "lint": "eslint src/"
