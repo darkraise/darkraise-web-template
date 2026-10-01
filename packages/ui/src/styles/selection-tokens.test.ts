@@ -349,11 +349,15 @@ const SELECTED =
 
 /** The accent, read directly rather than through a family token. */
 const PRIMARY =
-  /(?<![\w-])(?:bg|border|text|ring|outline)-primary(?:-fill|-text)?(?![\w-])|(?<![\w-])(?:bg|border|text)-primary(?:-fill)?\/\d+|hsl\(var\(--primary(?:-fill|-text)?\)/
+  /(?<![\w-])(?:bg|border|text|ring|outline|fill|stroke)-primary(?:-fill|-text)?(?![\w-])|(?<![\w-])(?:bg|border|text)-primary(?:-fill)?\/\d+|var\(--primary(?:-fill|-text)?\)/
 
 /**
  * Selected rules that keep the accent, as [file, text in the selector,
- * reason]. Everything else selected reads a family token.
+ * reason]. Everything else matched here reads a family token. The scan sees
+ * selectors only: checked states written as `data-[state=checked]:` or
+ * `has-data-[state=checked]:` utilities inside @apply (checkbox.css,
+ * switch.css, the field choice card in field.css) are outside it and outside
+ * spec section 1's reader list.
  */
 const ALLOWED: Array<[string, string, string]> = [
   [
