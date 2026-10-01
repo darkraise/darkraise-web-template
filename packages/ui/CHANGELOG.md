@@ -73,6 +73,7 @@ Breaking: `PaginationLink` marks the current page with `data-active="true"` and 
 - Under the glass preset the default Tabs pill is the view-switch pill under the glass selected tint, as SegmentGroup's is, instead of an accent gradient on which the label fell under 4.5:1 for most accents in dark mode.
 - Titles follow the type roles: page header titles are 24px at weight 600 with -0.02em tracking (were 30px at 500), card and empty-state titles 16px at 600 (card titles were 24px), and dialog, alert-dialog, drawer and sheet titles 18px at 600. Card, dialog and drawer titles drop their negative tracking.
 - Labels follow the `label` role (14px at 500, line height 1): `Label`, the combobox, file-upload, tags-input, date-picker, color-picker and rating-group labels, and alert and toast titles. Alert titles were 16px with negative tracking; toast titles had a 1.25 line height. Menu, menubar, select and command group labels follow the `caption` role (12px at 500).
+- Badges are at least 16, 20 and 24px tall (`sm`, `default`, `lg`), take a radius of `min(var(--radius-control), 0.375rem)` instead of a full pill, and use weight 500 (was 600). The default size uses the caption role and `lg` the label role.
 
 ### Removed
 

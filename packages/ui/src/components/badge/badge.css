@@ -1,17 +1,23 @@
 @layer components {
   .dr-badge {
-    @apply glass-thin inline-flex items-center rounded-full border font-semibold transition-colors;
+    @apply glass-thin inline-flex items-center border transition-colors;
+    border-radius: min(var(--radius-control), 0.375rem);
   }
 
-  /* Sizes */
+  /* Sizes. A minimum height, so a label that wraps grows the badge rather
+     than being clipped. sm keeps the micro type step, which no role covers,
+     at the caption weight. */
   .dr-badge[data-size="sm"] {
-    @apply px-2 py-0 text-[length:var(--text-2xs)] leading-4;
+    @apply px-2 text-[length:var(--text-2xs)] leading-4 font-medium;
+    min-height: 1rem;
   }
   .dr-badge[data-size="default"] {
-    @apply px-2.5 py-0.5 text-xs;
+    @apply type-caption px-2.5;
+    min-height: 1.25rem;
   }
   .dr-badge[data-size="lg"] {
-    @apply px-3 py-1 text-sm;
+    @apply type-label px-3;
+    min-height: 1.5rem;
   }
 
   /* Theme-aware variants */

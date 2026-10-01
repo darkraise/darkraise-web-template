@@ -83,6 +83,12 @@ const ROLE_CLASSES: Array<[string, string, Role]> = [
   ],
   ["src/components/command/command.css", ".dr-command-group", "caption"],
   ["src/components/command/command.css", ".dr-command-dialog", "caption"],
+  [
+    "src/components/badge/badge.css",
+    '.dr-badge[data-size="default"]',
+    "caption",
+  ],
+  ["src/components/badge/badge.css", '.dr-badge[data-size="lg"]', "label"],
 ]
 
 /** A utility that sets a size, weight, tracking or line height. */
@@ -201,5 +207,47 @@ describe("SheetTitle", () => {
     const body = source.slice(start, source.indexOf("\nfunction ", start + 1))
     expect(body).not.toMatch(/\btext-(?:xs|sm|base|lg|xl|\dxl)\b/)
     expect(body).not.toMatch(/\bfont-(?:medium|semibold|bold)\b/)
+  })
+})
+
+/** Classes that set their own type on purpose, with the reason. */
+const ROLE_EXEMPT: Array<[string, string, string]> = [
+  [
+    "src/components/badge/badge.css",
+    '.dr-badge[data-size="sm"]',
+    "keeps --text-2xs, a micro step no role covers",
+  ],
+]
+
+describe("role exemptions", () => {
+  it.each(ROLE_EXEMPT)("%s %s applies no role: %s", (path, selector) => {
+    const css = readFileSync(path, "utf8")
+    for (const role of ROLES)
+      expect(appliesRole(css, selector, role)).toBe(false)
+  })
+})
+
+describe("badge geometry", () => {
+  const css = readFileSync("src/components/badge/badge.css", "utf8")
+  const body = (selector: string) =>
+    parseRules(css)
+      .filter((rule) => rule.selectors.includes(selector))
+      .map((rule) => rule.body)
+      .join(" ")
+
+  it.each([
+    ['.dr-badge[data-size="sm"]', "1rem"],
+    ['.dr-badge[data-size="default"]', "1.25rem"],
+    ['.dr-badge[data-size="lg"]', "1.5rem"],
+  ])("%s is at least %s tall", (selector, height) => {
+    expect(body(selector)).toContain(`min-height: ${height};`)
+    expect(body(selector)).not.toMatch(/\bpy-/)
+  })
+
+  it("weighs 500 and is never a pill", () => {
+    expect(body(".dr-badge")).not.toContain("font-semibold")
+    expect(body(".dr-badge")).not.toContain("rounded-full")
+    // sm is not a role: it keeps the micro step, at the caption weight.
+    expect(body('.dr-badge[data-size="sm"]')).toContain("font-medium")
   })
 })

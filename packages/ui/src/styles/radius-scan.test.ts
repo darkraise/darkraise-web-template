@@ -21,7 +21,6 @@ const FULL_ROUND = new Map<string, string>([
   ["dr-angle-slider-pointer", "the dial's needle is a capsule"],
   ["dr-avatar", "avatars are circles"],
   ["dr-avatar-fallback", "fills the circular avatar"],
-  ["dr-badge", "badges are pills at every radius step"],
   ["dr-badge-anchor-dot", "status dot"],
   ["dr-box", 'the consumer asked for rounded="full"'],
   ["dr-carousel-previous", "round arrow floating over the slide"],
@@ -298,6 +297,12 @@ describe("control radius readers", () => {
 
   it("caps the kbd radius so a pill axis leaves keys square-ish", () => {
     expect(bodyOf("kbd/kbd.css", ".dr-kbd")).toMatch(
+      /border-radius:\s*min\(var\(--radius-control\),\s*0\.375rem\)\s*;/,
+    )
+  })
+
+  it("caps the badge radius so it is never rounder than a button", () => {
+    expect(bodyOf("badge/badge.css", ".dr-badge")).toMatch(
       /border-radius:\s*min\(var\(--radius-control\),\s*0\.375rem\)\s*;/,
     )
   })
