@@ -735,26 +735,6 @@
     --icon-size-2xl: calc(2.5rem * var(--icon-scale));
     --icon-size-3xl: calc(4rem * var(--icon-scale));
 
-    /* Derived sm/lg variants — these reference the base tokens via calc(),
-     so they update automatically when [data-density] re-binds the base tokens.
-     Using derived tokens (rather than calc() inside Tailwind arbitrary values)
-     avoids the CSS-spec requirement for whitespace around calc() operators
-     and keeps consumer classes readable.
-     The max() floors prevent compact-sm from collapsing padding to 0
-     (which would render a 20px-tall sm button with text touching its border). */
-    --density-button-px-sm: max(
-      calc(var(--btn-px) - 0.25rem),
-      0.25rem
-    );
-    --density-button-py-sm: max(
-      calc(var(--btn-px-tight) - 0.25rem),
-      0.125rem
-    );
-    --density-button-px-lg: calc(var(--btn-px) + 0.5rem);
-    --density-button-py-lg: calc(var(--btn-px-tight) + 0.25rem);
-    --density-cell-sm: max(calc(var(--control-height) - 0.25rem), 1.5rem);
-    --density-cell-lg: calc(var(--control-height) + 0.5rem);
-
     /* Two parallel shadow ramps.
 
      `--elevation-{low,medium,high}` is theme-axis-tracking. The :root

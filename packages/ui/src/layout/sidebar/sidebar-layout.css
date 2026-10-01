@@ -29,6 +29,7 @@
      square under every density and font-size step. */
   .dr-sidebar-layout-toggle {
     @apply size-[var(--control-height-default)];
+    --btn-height: var(--control-height-default);
   }
 
   /* Collapsed rail: the brand mark and the toggle stack in one cell and

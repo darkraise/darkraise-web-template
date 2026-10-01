@@ -4,6 +4,9 @@
     transition-duration: var(--duration-fast);
     position: relative;
     isolation: isolate;
+    /* Transparent where a variant draws no edge, so a bordered and a
+       borderless button measure the same. */
+    border: 1px solid transparent;
     box-shadow: var(--glow-outer), var(--glow-inner);
   }
 
@@ -112,24 +115,31 @@
   }
 
   /* sizes
-   * Each non-icon size gets a min-height floor at --control-height* so
-   * adjacent buttons in a ButtonGroup (and any single button bearing
-   * short content like "OK" or an icon at the default text size) align
-   * to a consistent height across the design system. Text buttons at
-   * cozy default land at exactly --control-height tall by content, so
-   * the floor is a no-op there; sm/lg may add a few px to short content.
-   * size="icon" keeps its explicit aspect-square w=cell behaviour. */
+   * A fixed border-box height rather than padding around the label, so
+   * every variant and every label lands on one line in a toolbar. The sm
+   * and lg steps are computed here, not at :root, so a subtree override of
+   * --btn-height carries through to them. sm never drops below the 24px
+   * step or the coarse-pointer floor. */
   .dr-btn[data-size="default"] {
-    @apply min-h-[var(--control-height)] px-[var(--btn-px)] py-[var(--btn-px-tight)];
+    @apply px-[var(--btn-px)];
+    height: var(--btn-height);
   }
   .dr-btn[data-size="sm"] {
-    @apply min-h-[var(--density-cell-sm)] px-[var(--density-button-px-sm)] py-[var(--density-button-py-sm)];
+    height: max(
+      calc(var(--btn-height) - 0.25rem),
+      var(--control-height-xs),
+      var(--control-height-min)
+    );
+    padding-inline: max(calc(var(--btn-px) - 0.25rem), 0.25rem);
   }
   .dr-btn[data-size="lg"] {
-    @apply min-h-[var(--density-cell-lg)] px-[var(--density-button-px-lg)] py-[var(--density-button-py-lg)];
+    height: calc(var(--btn-height) + 0.5rem);
+    padding-inline: calc(var(--btn-px) + 0.5rem);
   }
   .dr-btn[data-size="icon"] {
-    @apply aspect-square w-[var(--control-height)] p-0;
+    @apply aspect-square p-0;
+    height: var(--btn-height);
+    width: var(--btn-height);
   }
 
   /* Glass mode — preset-scoped glass styling for the standard variants. */

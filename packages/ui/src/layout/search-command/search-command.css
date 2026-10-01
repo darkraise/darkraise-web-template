@@ -9,6 +9,7 @@
      rather than by source order alone. */
   .dr-search-command-trigger[data-collapsed="true"] {
     @apply h-[var(--control-height-default)] w-[var(--control-height-default)] shrink-0 justify-center p-0;
+    --btn-height: var(--control-height-default);
   }
 
   @media (min-width: 48rem) {

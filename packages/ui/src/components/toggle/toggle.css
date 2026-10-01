@@ -2,6 +2,9 @@
   .dr-toggle {
     position: relative;
     isolation: isolate;
+    /* Transparent where the variant draws no edge, so default and outline
+       toggles measure the same. */
+    border: 1px solid transparent;
     @apply focus-ring-inset inline-flex cursor-pointer items-center justify-center gap-2 rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size)] [&_svg]:shrink-0;
     transition:
       background-color var(--duration-fast),
@@ -58,21 +61,34 @@
     @apply bg-primary/10 text-primary-text;
   }
 
-  /* X and Y both use --btn-px-tight* so padding stays symmetric and
-     tracks the density axis. Both min-width AND min-height use
-     --control-height* so icon-only toggles land on a square floor
-     (e.g. 32×32 at cozy default); text labels grow horizontally past
-     the floor as their content requires. */
+  /* Same heights as the button steps. min-width equals the height, so an
+     icon-only toggle is square (32×32 at cozy default); a text label grows
+     past it horizontally. */
   .dr-toggle[data-size="default"] {
-    @apply aspect-auto min-h-[var(--control-height)] min-w-[var(--control-height)] px-[var(--btn-px-tight)] py-[var(--btn-px-tight)];
+    @apply aspect-auto;
+    height: var(--btn-height);
+    min-width: var(--btn-height);
+    padding-inline: var(--btn-px-tight);
   }
 
   .dr-toggle[data-size="sm"] {
-    @apply min-h-[var(--density-cell-sm)] min-w-[var(--density-cell-sm)] px-[var(--density-button-py-sm)] py-[var(--density-button-py-sm)];
+    height: max(
+      calc(var(--btn-height) - 0.25rem),
+      var(--control-height-xs),
+      var(--control-height-min)
+    );
+    min-width: max(
+      calc(var(--btn-height) - 0.25rem),
+      var(--control-height-xs),
+      var(--control-height-min)
+    );
+    padding-inline: max(calc(var(--btn-px-tight) - 0.25rem), 0.125rem);
   }
 
   .dr-toggle[data-size="lg"] {
-    @apply min-h-[var(--density-cell-lg)] min-w-[var(--density-cell-lg)] px-[var(--density-button-py-lg)] py-[var(--density-button-py-lg)];
+    height: calc(var(--btn-height) + 0.5rem);
+    min-width: calc(var(--btn-height) + 0.5rem);
+    padding-inline: calc(var(--btn-px-tight) + 0.25rem);
   }
 
   /* Glass-preset frosted Toggle. Variant-aware to preserve the design
