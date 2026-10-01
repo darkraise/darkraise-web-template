@@ -37,6 +37,17 @@ async function openFixture(page: Page) {
     .locator('[data-probe="segment"] .dr-segment-group-item')
     .first()
     .waitFor()
+  // The fixture paints the light fallback before ThemeProvider applies the
+  // seeded theme, so colours are still transitioning when the controls first
+  // appear; a pixel sampled then is a blend of the two themes.
+  await page.evaluate(() =>
+    Promise.all(
+      document
+        .getAnimations()
+        .filter((animation) => animation instanceof CSSTransition)
+        .map((animation) => animation.finished),
+    ),
+  )
 }
 
 async function measuredHeights(page: Page) {
