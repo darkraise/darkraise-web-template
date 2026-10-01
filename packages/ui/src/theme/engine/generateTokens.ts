@@ -351,6 +351,19 @@ const SIDEBAR_HOVER: Record<
   intense: { light: 300, darkAlpha: 0.3 },
 }
 
+// The active sidebar row is one step stronger than its hover on the same
+// ramp, so hover and active always differ by fill: light takes the next shade
+// up, dark adds 0.1 alpha.
+const SIDEBAR_ACTIVE: Record<
+  AccentIntensity,
+  { light: 100 | 200 | 300 | 400; darkAlpha: number }
+> = {
+  calm: { light: 100, darkAlpha: 0.2 },
+  balanced: { light: 200, darkAlpha: 0.25 },
+  vivid: { light: 300, darkAlpha: 0.32 },
+  intense: { light: 400, darkAlpha: 0.4 },
+}
+
 /**
  * How loud the dark-mode accent reads. The fill takes the step's lightness and
  * chroma cap; `--primary` keeps its palette lightness and takes the cap only,
@@ -869,6 +882,9 @@ export function generateTokens(
     "--sidebar-hover-bg": isSidebarDark(mode)
       ? `${accent[500]} / ${SIDEBAR_HOVER[accentIntensity].darkAlpha}`
       : accent[SIDEBAR_HOVER[accentIntensity].light],
+    "--sidebar-active-bg": isSidebarDark(mode)
+      ? `${accent[500]} / ${SIDEBAR_ACTIVE[accentIntensity].darkAlpha}`
+      : accent[SIDEBAR_ACTIVE[accentIntensity].light],
     "--surface-header": recipe.surfaceHeader(surface, mode),
 
     "--border-subtle": recipe.borderSubtle(surface, mode),

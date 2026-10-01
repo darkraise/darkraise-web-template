@@ -68,6 +68,7 @@ describe("generateTokens", () => {
       "--surface-overlay",
       "--surface-sunken",
       "--surface-sidebar",
+      "--sidebar-active-bg",
       "--surface-header",
       "--border-subtle",
       "--border-default",
