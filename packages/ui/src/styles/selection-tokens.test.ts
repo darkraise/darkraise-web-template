@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest"
-import { readFileSync } from "node:fs"
+import { readFileSync, readdirSync } from "node:fs"
+import { join } from "node:path"
 
 // Selection reads from four families instead of six visual languages: a
 // neutral raised pill for view switches, an accent fill for checked and
@@ -339,5 +340,186 @@ describe("nav row family: popover, top nav and layout switcher", () => {
     const body = bodyOf(path, selector)
     expect(body).toContain("background-color: var(--selected-nav-bg);")
     expect(body).toContain("color: var(--selected-nav-fg);")
+  })
+})
+
+/** A selected, checked, current or active state in a selector. */
+const SELECTED =
+  /\[data-state="?(?:on|active|checked|open)"?\]|\[data-selected(?:-single)?="?true"?\]|\[aria-selected="true"\]|\[data-active(?:="?true"?)?\]|\[data-status="(?:active|complete|current)"\]|\.active(?![\w-])|\[data-range-(?:start|end|single|middle|preview)="?true"?\]|\[data-highlighted="?true"?\]|\[data-current="?true"?\]|\[data-focused="?true"?\]|-indicator(?![\w-])/
+
+/** The accent, read directly rather than through a family token. */
+const PRIMARY =
+  /(?<![\w-])(?:bg|border|text|ring|outline)-primary(?:-fill|-text)?(?![\w-])|(?<![\w-])(?:bg|border|text)-primary(?:-fill)?\/\d+|hsl\(var\(--primary(?:-fill|-text)?\)/
+
+/**
+ * Selected rules that keep the accent, as [file, text in the selector,
+ * reason]. Everything else selected reads a family token.
+ */
+const ALLOWED: Array<[string, string, string]> = [
+  [
+    "components/calendar/calendar.css",
+    '[data-range-preview="true"]',
+    "a range preview is provisional, not a selection",
+  ],
+  [
+    "components/carousel/carousel.css",
+    '.dr-carousel-indicator[data-current="true"]',
+    "a carousel position dot is media chrome",
+  ],
+  [
+    "components/color-picker/color-picker.css",
+    '.dr-color-picker-swatch-item[data-active="true"]',
+    "a colour swatch ring is tool chrome around a colour",
+  ],
+  [
+    "components/floating-panel/floating-panel.css",
+    '.dr-floating-panel-trigger[data-active="true"]',
+    "a pressed panel trigger is window chrome, not a selection",
+  ],
+  [
+    "components/image-common/image-common.css",
+    '.dr-image-dropzone[data-state="active"]',
+    "a drag-over dropzone is a hover-only accent",
+  ],
+  [
+    "components/image-editor/image-editor.css",
+    '.dr-image-editor-tool[data-state="active"]',
+    "the active editor tool is tool chrome",
+  ],
+  [
+    "components/image-editor/image-editor.css",
+    '.dr-image-editor-annotation-kind[data-state="active"]',
+    "the active annotation kind is tool chrome",
+  ],
+  [
+    "components/input-otp/input-otp.css",
+    ".dr-input-otp-slot[data-active]",
+    "the active slot is the caret position, drawn as field focus",
+  ],
+  [
+    "components/json-tree-view/json-tree-view.css",
+    '.dr-json-row[data-focused="true"]',
+    "the focused JSON row is a keyboard position, not a selection",
+  ],
+  [
+    "components/progress/progress.css",
+    ".dr-progress-indicator",
+    "a progress bar shows a value, not a selection",
+  ],
+  [
+    "components/steps/steps.css",
+    '.dr-steps-indicator[data-status="current"]',
+    "the current step is in progress, not selected",
+  ],
+  [
+    "components/tabs/tabs.css",
+    '[data-variant="enclosed"]',
+    'enclosed tabs with color="accent" are an opt-in accent',
+  ],
+  [
+    "components/time-picker/time-picker.css",
+    '.dr-time-column-item[data-selected="true"]:hover',
+    "the hover mixes the checked fill toward its wash (hover-fills.test)",
+  ],
+  [
+    "components/timeline/timeline.css",
+    '.dr-timeline-indicator[data-status="current"]',
+    "the current event is in progress, not selected",
+  ],
+  [
+    "components/virtualized-timeline/virtualized-timeline.css",
+    '[data-selected="true"]',
+    "a selected timeline tile or row is timeline chrome",
+  ],
+  [
+    "layout/sidebar/sidebar-nav.css",
+    "[data-active-bar=",
+    "the bar and ring are the opt-in sidebarActiveBar indicators",
+  ],
+  [
+    "layout/sidebar/sidebar-nav.css",
+    ".dr-sidebar-nav-icon-svg",
+    "the active sidebar row keeps its primary icon",
+  ],
+]
+
+function stylesheets(dir: string): string[] {
+  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const path = join(dir, entry.name)
+    if (entry.isDirectory()) return stylesheets(path)
+    return entry.name.endsWith(".css") ? [path] : []
+  })
+}
+
+/** Selected rules outside glass that read the accent, as [file, selector]. */
+function accentSelections(): Array<[string, string]> {
+  return ["src/components", "src/layout"]
+    .flatMap(stylesheets)
+    .flatMap((path) =>
+      rulesOf(path).flatMap((rule) =>
+        rule.selectors
+          .filter(
+            (s) =>
+              !s.startsWith("[data-preset=") &&
+              SELECTED.test(s) &&
+              PRIMARY.test(rule.body),
+          )
+          .map((s): [string, string] => [path.replace(/^src\//, ""), s]),
+      ),
+    )
+}
+
+describe("selected states read a family token", () => {
+  const found = accentSelections()
+
+  it("reads the accent in a selected rule only where it is allowed", () => {
+    const offenders = found
+      .filter(
+        ([file, selector]) =>
+          !ALLOWED.some(
+            ([allowedFile, text]) =>
+              allowedFile === file && selector.includes(text),
+          ),
+      )
+      .map(([file, selector]) => `${selector} (${file})`)
+    expect(offenders).toEqual([])
+  })
+
+  it("keeps every allowance justified and still needed", () => {
+    for (const [file, text, reason] of ALLOWED) {
+      expect(
+        found.some(
+          ([foundFile, selector]) =>
+            foundFile === file && selector.includes(text),
+        ),
+        `${text} in ${file} no longer reads the accent`,
+      ).toBe(true)
+      expect(reason.length, `${text} needs a reason`).toBeGreaterThan(20)
+    }
+  })
+
+  // An outline variant keeps its neutral outline at rest and takes its
+  // family's selected style; none of them falls back to an accent edge.
+  it("gives no outline variant an accent edge or label when selected", () => {
+    const offenders = ["src/components", "src/layout"]
+      .flatMap(stylesheets)
+      .flatMap((path) =>
+        rulesOf(path)
+          .filter((rule) =>
+            rule.selectors.some(
+              (s) =>
+                !s.startsWith("[data-preset=") &&
+                /\[data-variant="?outline"?\]/.test(s) &&
+                SELECTED.test(s),
+            ),
+          )
+          .filter((rule) =>
+            /(?<![\w-])(?:border-primary|text-primary-text)(?![\w-])|inset 0 0 0 1px hsl\(var\(--primary\)\)/.test(
+              rule.body,
+            ),
+          )
+          .map((rule) => `${rule.selectors.join(", ")} (${path})`),
+      )
+    expect(offenders).toEqual([])
   })
 })
