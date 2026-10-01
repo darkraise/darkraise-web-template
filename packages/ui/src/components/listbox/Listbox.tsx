@@ -17,9 +17,8 @@ function useListboxContext(consumer: string): UseListboxReturn {
 }
 
 /**
- * How a selected item is painted. `filled` is a solid primary surface;
- * `outline` keeps the surface transparent and marks selection with a 1px
- * primary ring, for denser lists where a run of solid fills is heavy.
+ * How a selected item is painted. Both variants fill it with the checked
+ * fill; under the glass preset `outline` also keeps a 1px primary ring.
  */
 export type ListboxVariant = "filled" | "outline"
 

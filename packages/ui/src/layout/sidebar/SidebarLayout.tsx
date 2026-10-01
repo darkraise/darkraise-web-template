@@ -26,8 +26,8 @@ export interface SidebarLayoutProps extends LayoutProps {
    * `onActiveBarChange` instead of changing anything on its own.
    *
    * Omitting it is NOT the same as passing a value — omitted leaves each
-   * preset's own look alone (glass shows a ring and a rail, everything
-   * else a rail), while a value forces that look everywhere.
+   * preset's own look alone (glass shows a ring and a rail, the default
+   * preset a tint with no bar), while a value forces that look everywhere.
    *
    * `true` is shorthand for `"bar"`, `false` for `"ring"`.
    */
