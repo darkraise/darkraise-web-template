@@ -14,6 +14,7 @@ export default tseslint.config(
       "**/.tanstack/**",
       "**/coverage/**",
       "**/routeTree.gen.ts",
+      "**/.claude/**",
     ],
   },
   js.configs.recommended,
