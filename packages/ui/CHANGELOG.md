@@ -35,6 +35,7 @@ Breaking: `PaginationLink` marks the current page with `data-active="true"` and 
 - `--sidebar-active-bg`: an engine token one accent-ramp step above `--sidebar-hover-bg` (the next shade up in light mode, 0.1 more alpha in dark), so the active sidebar row always differs from a hovered one.
 - `CascadeSelect` keyboard support. Opening focuses the selected item (the first enabled item of its column when the selected one is disabled), or the first enabled item, and shows that item's child column, so reopening restores the selected path's columns; Up, Down, Home and End move within a column; Right or Enter opens a child column and Left returns to the parent; Enter or Space selects a leaf and closes; Escape closes. Focus then returns to the trigger. Focus and hover move the same cursor, so a focused parent shows its children as a hovered one does; only a moving pointer moves it, so a column the keyboard scrolls under a resting pointer keeps focus on the keyboard row.
 - Type roles: `--type-<role>-size`, `-weight`, `-tracking` and `-leading` on `:root`, and the utilities `type-page-title`, `type-dialog-title`, `type-section-title`, `type-label`, `type-caption` and `type-ui`. Sizes read the `--text-*` steps, so the font-size axis scales them.
+- `--btn-px-sm` on every `.dr-btn`: the small size's inline padding, for rules that line a small button's label up with neighbouring text.
 
 ### Changed
 
@@ -75,6 +76,7 @@ Breaking: `PaginationLink` marks the current page with `data-active="true"` and 
 - Labels follow the `label` role (14px at 500, line height 1): `Label`, the combobox, file-upload, tags-input, date-picker, color-picker and rating-group labels, and alert and toast titles. Alert titles were 16px with negative tracking; toast titles had a 1.25 line height. Menu, menubar, select and command group labels follow the `caption` role (12px at 500).
 - Badges are at least 16, 20 and 24px tall (`sm`, `default`, `lg`), take a radius of `min(var(--radius-control), 0.375rem)` instead of a full pill, and use weight 500 (was 600). The default size uses the caption role and `lg` the label role.
 - Tables: header cells use the caption role (12px at 500), every head and cell uses tabular figures, and rows are at least the control height plus 8px (36, 40, 44 and 48px from compact to spacious at the default font size). Virtualized `DataTable` rows keep `virtualize.rowHeight`. Header text starts on the inline start edge, so it flips in right-to-left layouts.
+- Sortable `DataTable` headers start their label on the column's text edge (they sat a few pixels left of it) and read like plain headers: 12px at 500 in the header's muted colour instead of a foreground ghost button. In an end-aligned column the sort button sits at the end.
 
 ### Removed
 

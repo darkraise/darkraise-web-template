@@ -4,6 +4,9 @@
     transition-duration: var(--duration-fast);
     position: relative;
     isolation: isolate;
+    /* The small step's inline padding, read by rules that must line a
+       small button's label up with neighbouring text. */
+    --btn-px-sm: max(calc(var(--btn-px) - 0.25rem), 0.25rem);
     /* Transparent where a variant draws no edge, so a bordered and a
        borderless button measure the same. */
     border: 1px solid transparent;
@@ -124,7 +127,7 @@
       var(--control-height-xs),
       var(--control-height-min)
     );
-    padding-inline: max(calc(var(--btn-px) - 0.25rem), 0.25rem);
+    padding-inline: var(--btn-px-sm);
   }
   .dr-btn[data-size="lg"] {
     height: calc(var(--btn-height) + 0.5rem);

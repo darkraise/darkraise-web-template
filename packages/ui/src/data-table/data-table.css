@@ -117,8 +117,23 @@
      attribute outrank `.dr-btn[data-size="sm"]` whatever order the
      stylesheets load in. */
   .dr-btn.dr-data-table-column-header-btn[data-size] {
-    @apply -ml-3;
+    @apply type-caption;
     height: var(--btn-height);
+    /* The label starts on the cell's text edge, and the button reads as
+       header text rather than as a foreground ghost button. */
+    margin-inline-start: calc(-1 * var(--btn-px-sm));
+    color: inherit;
+  }
+
+  .dr-table-head[data-align="center"]
+    .dr-btn.dr-data-table-column-header-btn[data-size] {
+    margin-inline-start: 0;
+  }
+
+  /* prettier-ignore */
+  .dr-table-head[data-align="end"] .dr-btn.dr-data-table-column-header-btn[data-size] {
+    margin-inline-start: 0;
+    margin-inline-end: calc(-1 * var(--btn-px-sm));
   }
 
   .dr-data-table-column-header-icon {

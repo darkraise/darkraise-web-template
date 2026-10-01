@@ -46,3 +46,20 @@ describe("table cells", () => {
     ).toContain("height: auto;")
   })
 })
+
+describe("sortable column header", () => {
+  const HEADER = ".dr-btn.dr-data-table-column-header-btn[data-size]"
+
+  it("starts its label on the cell's text edge and inherits the head colour", () => {
+    const rule = body(DATA_TABLE, HEADER)
+    expect(rule).toContain("margin-inline-start: calc(-1 * var(--btn-px-sm));")
+    expect(rule).toContain("color: inherit;")
+    expect(rule).not.toContain("-ml-3")
+  })
+
+  it("moves to the end edge in an end-aligned column", () => {
+    const rule = body(DATA_TABLE, `.dr-table-head[data-align="end"] ${HEADER}`)
+    expect(rule).toContain("margin-inline-start: 0;")
+    expect(rule).toContain("margin-inline-end: calc(-1 * var(--btn-px-sm));")
+  })
+})

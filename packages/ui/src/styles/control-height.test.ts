@@ -105,7 +105,10 @@ describe("button heights", () => {
       "px-[var(--btn-px)]",
     )
     expect(body(BUTTON, '.dr-btn[data-size="sm"]')).toContain(
-      "padding-inline: max(calc(var(--btn-px) - 0.25rem), 0.25rem);",
+      "padding-inline: var(--btn-px-sm);",
+    )
+    expect(body(BUTTON, ".dr-btn")).toContain(
+      "--btn-px-sm: max(calc(var(--btn-px) - 0.25rem), 0.25rem);",
     )
     expect(body(BUTTON, '.dr-btn[data-size="lg"]')).toContain(
       "padding-inline: calc(var(--btn-px) + 0.5rem);",
