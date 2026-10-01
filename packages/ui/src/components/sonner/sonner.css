@@ -29,9 +29,17 @@
 
   /* Each toast — absolute positioned within the toaster, transformed by index. */
   .dr-toast {
-    @apply bg-popover text-popover-foreground border-border pointer-events-auto absolute flex w-full items-start gap-3 rounded-[var(--overlay-radius)] border p-4 pr-9 shadow-[var(--shadow-dropdown)];
+    @apply text-popover-foreground pointer-events-auto absolute flex w-full items-start gap-3 rounded-[var(--overlay-radius)] border p-4 pr-9;
+    /* The overlay family, read as every other overlay reads it. */
+    background: var(--overlay-bg);
+    background-blend-mode: var(--surface-overlay-blend-mode);
+    border-color: var(--overlay-border);
+    box-shadow: var(--overlay-shadow);
     -webkit-backdrop-filter: var(--backdrop-filter);
     backdrop-filter: var(--backdrop-filter);
+    /* Keeps the status tint (::before, z-index -1) above the surface and
+       below the content. */
+    isolation: isolate;
 
     --toast-stack-gap: 12px;
     --toast-scale: calc(1 - var(--toast-index, 0) * 0.06);
@@ -156,52 +164,48 @@
     }
   }
 
-  /* Variant tints. Each kind gets its own --toast-accent var driving a tinted
-     background, a stronger border, and the icon + title color. The body's
-     description stays on muted-foreground so long copy remains readable on
-     the tinted surface. Default + loading inherit the popover/border base. */
+  /* Variant tints. Each kind gets its own --toast-accent var driving the
+     tint layer below and the icon + title color. The body's description
+     stays on muted-foreground so long copy remains readable on the tinted
+     surface. Every kind keeps the overlay border; there is no status rail. */
   .dr-toast--success {
     --toast-accent: var(--success);
     --toast-action: var(--success);
     --toast-action-foreground: var(--success-foreground);
-    border-color: hsl(var(--toast-accent) / 0.4);
   }
   .dr-toast--error {
     --toast-accent: var(--destructive);
     --toast-action: var(--destructive-solid);
     --toast-action-foreground: var(--destructive-solid-foreground);
-    border-color: hsl(var(--toast-accent) / 0.45);
   }
   .dr-toast--warning {
     --toast-accent: var(--warning);
     --toast-action: var(--warning);
     --toast-action-foreground: var(--warning-foreground);
-    --toast-tint: 0.12;
-    border-color: hsl(var(--toast-accent) / 0.5);
   }
   .dr-toast--info {
     --toast-accent: var(--info);
     --toast-action: var(--info);
     --toast-action-foreground: var(--info-foreground);
-    border-color: hsl(var(--toast-accent) / 0.4);
   }
 
-  /* The tint is a layer OVER the toast's surface, never a replacement for
-     it. Set as background-color it displaced the base `bg-popover`, which
-     left the whole card at the tint's own 10% alpha and let page content
-     read straight through it. background-image paints above
-     background-color, so the surface keeps exactly the opacity its preset
-     gives it — `--color-popover` is `hsl(var(--popover) / --surface-opacity)`,
-     opaque by default and frosted under glass — and the accent only
-     washes it. */
-  .dr-toast--success,
-  .dr-toast--error,
-  .dr-toast--warning,
-  .dr-toast--info {
-    background-image: linear-gradient(
-      hsl(var(--toast-accent) / var(--toast-tint, 0.1)),
-      hsl(var(--toast-accent) / var(--toast-tint, 0.1))
-    );
+  /* The tint is a layer over the toast's surface, never a replacement for
+     it: as background-color it let page content read straight through.
+     --overlay-bg is a multi-layer `background` value (glass stacks noise
+     and fog over the colour), which a later background-image would
+     overwrite, so the tint paints in ::before, inside the toast's isolated
+     stacking context. */
+  .dr-toast--success::before,
+  .dr-toast--error::before,
+  .dr-toast--warning::before,
+  .dr-toast--info::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: hsl(var(--toast-accent) / var(--status-tint));
+    pointer-events: none;
   }
   .dr-toast--loading {
     --toast-accent: var(--muted-foreground);

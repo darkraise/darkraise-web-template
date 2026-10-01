@@ -78,7 +78,7 @@ const OVERLAYS: Array<[string, string]> = [
 
 /**
  * Stylesheets whose overlay paints the shared overlay surface. Floating
- * panel, tour and toast paint their own and only take the radius.
+ * panel and tour paint their own and only take the radius.
  */
 const OVERLAY_SURFACES = [
   "dialog/dialog.css",
@@ -96,6 +96,7 @@ const OVERLAY_SURFACES = [
   "virtualized-dropdown-menu/virtualized-dropdown-menu.css",
   "navigation-menu/navigation-menu.css",
   "color-picker/color-picker.css",
+  "sonner/sonner.css",
 ]
 
 const SIDES = "(?:-(?:t|r|b|l|s|e|tl|tr|br|bl|ss|se|es|ee))?"

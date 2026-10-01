@@ -47,6 +47,7 @@ function bodyOf(path: string, selector: string): string {
 const THEME = "src/styles/theme.css"
 const ALERT = "src/components/alert/alert.css"
 const BANNER = "src/components/banner/banner.css"
+const SONNER = "src/components/sonner/sonner.css"
 
 /** A status colour written with a literal alpha instead of --status-tint. */
 const LITERAL_TINT =
@@ -70,9 +71,12 @@ describe("severity tint", () => {
     expect(body).toContain(`border-left-color: hsl(var(${accent}));`)
   })
 
-  it.each([ALERT, BANNER])("%s writes no literal tint alpha", (path) => {
-    expect(normalise(source(path))).not.toMatch(LITERAL_TINT)
-  })
+  it.each([ALERT, BANNER, SONNER])(
+    "%s writes no literal tint alpha",
+    (path) => {
+      expect(normalise(source(path))).not.toMatch(LITERAL_TINT)
+    },
+  )
 
   it("keeps the banner on its muted base and neutral frame", () => {
     const body = bodyOf(BANNER, '.dr-banner[data-variant="info"]')
@@ -86,4 +90,39 @@ describe("severity tint", () => {
     )
     expect(dark).toEqual([])
   })
+})
+
+describe("toast surface", () => {
+  it("reads the overlay tokens and blend mode like every other overlay", () => {
+    const body = bodyOf(SONNER, ".dr-toast")
+    for (const declaration of [
+      "background: var(--overlay-bg);",
+      "background-blend-mode: var(--surface-overlay-blend-mode);",
+      "border-color: var(--overlay-border);",
+      "box-shadow: var(--overlay-shadow);",
+      "isolation: isolate;",
+    ]) {
+      expect(body).toContain(declaration)
+    }
+    expect(body).toContain("rounded-[var(--overlay-radius)]")
+    expect(body).not.toMatch(/(?<![\w:-])(?:bg-popover|border-border)(?![\w-])/)
+    expect(body).not.toContain("shadow-[var(--shadow-dropdown)]")
+  })
+
+  // --overlay-bg is a multi-layer `background` value, which a later
+  // background-image on the toast would overwrite.
+  it.each(["success", "error", "warning", "info"])(
+    "paints the %s tint in ::before over the surface",
+    (kind) => {
+      const tint = bodyOf(SONNER, `.dr-toast--${kind}::before`)
+      expect(tint).toContain(
+        "background: hsl(var(--toast-accent) / var(--status-tint));",
+      )
+      expect(tint).toContain("inset: 0;")
+      expect(tint).toContain("z-index: -1;")
+      expect(bodyOf(SONNER, `.dr-toast--${kind}`)).not.toMatch(
+        /border-color|background/,
+      )
+    },
+  )
 })
