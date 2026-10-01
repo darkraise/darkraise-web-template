@@ -97,12 +97,28 @@ const ROLE_CLASSES: Array<[string, string, Role]> = [
   ],
 ]
 
-/** A utility that sets a size, weight, tracking or line height. */
-const TYPOGRAPHY =
-  /^(?:text-(?:xs|sm|base|lg|xl|[2-9]xl|\[length:[^\]]+\])|font-(?:thin|extralight|light|normal|medium|semibold|bold|extrabold|black)|tracking-[\w-]+|leading-[\w-[\]().]+)$/
+/**
+ * A utility that sets a size, weight, tracking or line height, including the
+ * arbitrary-value and line-height-shorthand forms (`text-[13px]`,
+ * `text-sm/6`, `tracking-[-0.02em]`, `font-[600]`).
+ */
+const TYPOGRAPHY = new RegExp(
+  "^(?:" +
+    [
+      "text-(?:xs|sm|base|lg|xl|[2-9]xl)(?:/[\\w.\\[\\]-]+)?",
+      "text-\\[(?:length:)?[\\d.]+(?:px|rem|em)\\]",
+      "text-\\[length:[^\\]]+\\]",
+      "font-(?:thin|extralight|light|normal|medium|semibold|bold|extrabold|black)",
+      "font-\\[\\d+\\]",
+      "tracking-[\\w-]+",
+      "tracking-\\[[^\\]]+\\]",
+      "leading-[\\w-[\\]().]+",
+    ].join("|") +
+    ")$",
+)
 
 const DECLARATION =
-  /(?:^|;)\s*(font-size|font-weight|letter-spacing|line-height)\s*:/
+  /(?:^|;)\s*(font-size|font-weight|letter-spacing|line-height|font)\s*:/
 
 /** The typography a rule sets for itself instead of through a role. */
 function typographyOffenders(css: string, selector: string): string[] {
@@ -194,6 +210,24 @@ describe("classes on a type role", () => {
         ".dr-x",
       ),
     ).toEqual(["[&_[cmdk-group-heading]]:text-xs"])
+  })
+
+  it("catches arbitrary values, the line-height shorthand and font", () => {
+    expect(
+      typographyOffenders(
+        ".dr-x { @apply text-[13px] text-sm/6 tracking-[-0.02em] font-[600] leading-[1.2]; }",
+        ".dr-x",
+      ),
+    ).toEqual([
+      "text-[13px]",
+      "text-sm/6",
+      "tracking-[-0.02em]",
+      "font-[600]",
+      "leading-[1.2]",
+    ])
+    expect(
+      typographyOffenders(".dr-x { font: 600 14px Inter; }", ".dr-x"),
+    ).toEqual(["font"])
   })
 
   it("leaves colours and arbitrary sizes that are not type alone", () => {
