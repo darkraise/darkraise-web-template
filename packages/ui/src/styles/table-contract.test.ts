@@ -62,4 +62,36 @@ describe("sortable column header", () => {
     expect(rule).toContain("margin-inline-start: 0;")
     expect(rule).toContain("margin-inline-end: calc(-1 * var(--btn-px-sm));")
   })
+
+  it("carries no glow of its own", () => {
+    const rule = body(DATA_TABLE, HEADER)
+    expect(rule).toContain("--glow-outer: 0 0 transparent;")
+    expect(rule).toContain("--glow-inner: 0 0 transparent;")
+  })
+
+  it("sits flush in a centred column", () => {
+    expect(
+      body(DATA_TABLE, `.dr-table-head[data-align="center"] ${HEADER}`),
+    ).toContain("margin-inline-start: 0;")
+  })
+
+  it("puts its icon on the inline-end side", () => {
+    expect(body(DATA_TABLE, ".dr-data-table-column-header-icon")).toContain(
+      "ms-2",
+    )
+  })
+})
+
+describe("virtualized cells", () => {
+  it.each([
+    ["center", "center"],
+    ["end", "flex-end"],
+  ])("align the %s column through the flex row", (align, value) => {
+    expect(
+      body(
+        DATA_TABLE,
+        `.dr-table-cell[data-align="${align}"] .dr-data-table-virtual-cell`,
+      ),
+    ).toContain(`justify-content: ${value};`)
+  })
 })

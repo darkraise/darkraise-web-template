@@ -123,10 +123,13 @@
        header text rather than as a foreground ghost button. */
     margin-inline-start: calc(-1 * var(--btn-px-sm));
     color: inherit;
+    /* No glass halo: a plain header carries none. */
+    --glow-outer: 0 0 transparent;
+    --glow-inner: 0 0 transparent;
   }
 
-  .dr-table-head[data-align="center"]
-    .dr-btn.dr-data-table-column-header-btn[data-size] {
+  /* prettier-ignore */
+  .dr-table-head[data-align="center"] .dr-btn.dr-data-table-column-header-btn[data-size] {
     margin-inline-start: 0;
   }
 
@@ -137,7 +140,7 @@
   }
 
   .dr-data-table-column-header-icon {
-    @apply ml-2 size-[var(--icon-size)];
+    @apply ms-2 size-[var(--icon-size)];
   }
 
   /* Row actions */
@@ -197,5 +200,15 @@
 
   .dr-data-table-virtual-cell > div {
     @apply max-h-full min-w-0 overflow-hidden;
+  }
+
+  /* The virtual cell is a flex row, so the cell's text-align has nothing to
+     move; the row's own main axis takes the alignment instead. */
+  .dr-table-cell[data-align="center"] .dr-data-table-virtual-cell {
+    justify-content: center;
+  }
+
+  .dr-table-cell[data-align="end"] .dr-data-table-virtual-cell {
+    justify-content: flex-end;
   }
 }
