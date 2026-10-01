@@ -5,6 +5,9 @@ import { RouterAdapterProvider } from "@router"
 import { UiLabelsProvider } from "@labels"
 import type { RouterAdapter, RouterLinkProps } from "@router"
 import type { NavGroup } from "@layout/types"
+import { readFileSync } from "node:fs"
+import { ThemeProvider, themeConfig } from "@theme"
+import type { SidebarActiveBarSetting } from "@theme"
 
 function StubLink({ to, className, children }: RouterLinkProps) {
   return (
@@ -81,5 +84,55 @@ describe("StackedLayout shell grid", () => {
       </UiLabelsProvider>,
     )
     expect(screen.getByRole("link", { name: "Bo qua" })).toBeInTheDocument()
+  })
+})
+
+describe("active indicator setting", () => {
+  // Drive the axis through the provider's config rather than storage, as
+  // SidebarLayout.test.tsx does: this suite runs without a localStorage stub.
+  const withAxis = (value: SidebarActiveBarSetting) => ({
+    ...themeConfig,
+    defaults: { ...themeConfig.defaults, sidebarActiveBar: value },
+  })
+
+  const renderWithAxis = (axis: SidebarActiveBarSetting) =>
+    render(
+      <ThemeProvider config={withAxis(axis)}>
+        <RouterAdapterProvider value={adapter}>
+          <StackedLayout nav={nav} showThemeSwitcher={false}>
+            <div>Content</div>
+          </StackedLayout>
+        </RouterAdapterProvider>
+      </ThemeProvider>,
+    )
+
+  const wire = (container: HTMLElement, cls: string) =>
+    container.querySelector(`.${cls}`)?.getAttribute("data-active-bar") ?? null
+
+  it.each(["dr-stacked-layout-rail-nav", "dr-stacked-layout-aside-nav"])(
+    "stamps the theme's bar setting on .%s",
+    (cls) => {
+      const { container } = renderWithAxis("bar")
+      expect(wire(container, cls)).toBe("bar")
+    },
+  )
+
+  it("leaves the preset's own indicator alone by default", () => {
+    const { container } = renderWithAxis("default")
+    expect(wire(container, "dr-stacked-layout-rail-nav")).toBeNull()
+    expect(wire(container, "dr-stacked-layout-aside-nav")).toBeNull()
+  })
+
+  it("lets the sidebar's bar, ring and both rules reach the stacked navs", () => {
+    // Prettier wraps a long :is() list across lines; compare on one line.
+    const css = readFileSync("src/layout/sidebar/sidebar-nav.css", "utf8")
+      .replace(/\s+/g, " ")
+      .replace(/\(\s+/g, "(")
+      .replace(/\s+\)/g, ")")
+    for (const value of ["bar", "ring", "both"]) {
+      expect(css).toContain(
+        `:is(.dr-sidebar-nav, .dr-stacked-layout-rail-nav, .dr-stacked-layout-aside-nav)[data-active-bar="${value}"]`,
+      )
+    }
   })
 })

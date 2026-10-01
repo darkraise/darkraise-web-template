@@ -13,7 +13,7 @@ import { useRouteFocus } from "@layout/useRouteFocus"
 import { coversPath } from "@layout/navTree"
 import type { LayoutProps } from "@layout/types"
 import { BrandLogo } from "@layout/brand-logo"
-import { useShellStyle } from "@layout/shell"
+import { useShellStyle, useSidebarActiveBarSetting } from "@layout/shell"
 import type { ShellStyle } from "@theme"
 import { useUiLabels } from "@labels"
 
@@ -56,6 +56,11 @@ export function StackedLayout({
   useRouteFocus()
   const currentPath = usePathname()
 
+  // The rail and aside items are sidebar nav items without a SidebarNav
+  // ancestor, so the layout stamps the bar setting itself.
+  const activeBarSetting = useSidebarActiveBarSetting()
+  const activeBar =
+    activeBarSetting === "default" ? undefined : activeBarSetting
   const activeGroupIndex = nav.findIndex((group) =>
     group.items.some((item) => coversPath(item, currentPath)),
   )
@@ -86,6 +91,7 @@ export function StackedLayout({
             <nav
               aria-label={uiText("Primary")}
               className="dr-stacked-layout-rail-nav"
+              data-active-bar={activeBar}
             >
               {nav.map((group, gi) => {
                 const firstItem = group.items[0]
@@ -133,6 +139,7 @@ export function StackedLayout({
                 <nav
                   aria-label={uiText("Secondary")}
                   className="dr-stacked-layout-aside-nav"
+                  data-active-bar={activeBar}
                 >
                   {activeGroup.items.map((item) => (
                     <SidebarItem key={item.href} item={item} />
