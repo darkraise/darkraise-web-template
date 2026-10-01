@@ -2,7 +2,6 @@ import { useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import {
   Mail,
-  Loader2,
   Plus,
   Trash2,
   TrendingUp,
@@ -104,22 +103,14 @@ function ButtonsPage() {
 
       <ShowcaseExample
         title="Loading state"
-        code={`<Button disabled>
-  <Loader2 className="h-4 w-4 animate-spin" />
-  Saving...
-</Button>
-<Button variant="outline" disabled>
-  <Loader2 className="h-4 w-4 animate-spin" />
+        code={`<Button loading>Saving...</Button>
+<Button variant="outline" loading>
   Loading
 </Button>`}
       >
         <div className="flex flex-wrap gap-3">
-          <Button disabled>
-            <Loader2 className="h-4 w-4 animate-spin" />
-            Saving...
-          </Button>
-          <Button variant="outline" disabled>
-            <Loader2 className="h-4 w-4 animate-spin" />
+          <Button loading>Saving...</Button>
+          <Button variant="outline" loading>
             Loading
           </Button>
         </div>

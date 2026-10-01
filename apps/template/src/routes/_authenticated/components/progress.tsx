@@ -95,7 +95,7 @@ function startAnimation() {
     <Progress value={40} className="h-1" />
   </div>
   <div>
-    <p className="text-muted-foreground mb-1 text-xs">Default (h-4)</p>
+    <p className="text-muted-foreground mb-1 text-xs">Default (h-2)</p>
     <Progress value={60} />
   </div>
   <div>
@@ -110,7 +110,7 @@ function startAnimation() {
             <Progress value={40} className="h-1" />
           </div>
           <div>
-            <p className="text-muted-foreground mb-1 text-xs">Default (h-4)</p>
+            <p className="text-muted-foreground mb-1 text-xs">Default (h-2)</p>
             <Progress value={60} />
           </div>
           <div>

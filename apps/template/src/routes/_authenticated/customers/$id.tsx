@@ -82,9 +82,7 @@ function CustomerDetailPage() {
       header: ({ column }) => (
         <ColumnHeader column={column} title={t("Status")} />
       ),
-      cell: ({ row }) => (
-        <span className="capitalize">{row.original.status}</span>
-      ),
+      cell: ({ row }) => <span>{t(row.original.status)}</span>,
     },
     {
       accessorKey: "total",
