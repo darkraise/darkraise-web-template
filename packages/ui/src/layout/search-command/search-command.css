@@ -1,6 +1,6 @@
 @layer components {
   .dr-search-command-trigger {
-    @apply text-muted-foreground relative h-9 w-full justify-start gap-2 text-sm md:w-64;
+    @apply text-muted-foreground relative w-full justify-start gap-2 text-sm md:w-64;
   }
 
   /* Collapsed rail — same square geometry as a collapsed nav link, so the
