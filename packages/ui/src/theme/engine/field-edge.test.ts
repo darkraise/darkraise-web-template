@@ -21,8 +21,13 @@ const GROUNDS = [
   "--surface-header",
 ] as const
 
+// A glass card is translucent over the gradient canvas, so the rendered ground
+// under a field drifts from these opaque values. The margin keeps the rendered
+// edge at 3:1 (measured by the template's control-contract e2e spec).
+const floorFor = (preset: string) => (preset === "glass" ? 3.5 : 3)
+
 describe("--field-edge-color", () => {
-  it("clears 3:1 on every ground at every border intensity, and never moves", () => {
+  it("clears 3:1 (3.5:1 under glass) on every ground at every border intensity, and never moves", () => {
     const failures: string[] = []
     for (const combo of reachableCombos()) {
       const base = finalTokens(combo)
@@ -43,7 +48,7 @@ describe("--field-edge-color", () => {
             continue
           }
           const ratio = contrastRatio(edge, value)
-          if (ratio < 3) {
+          if (ratio < floorFor(combo.preset)) {
             failures.push(
               `${comboName(combo)} ${step}: ${ratio.toFixed(2)} on ${ground}`,
             )
