@@ -8,7 +8,7 @@
   }
 
   .dr-pagination-ellipsis {
-    @apply flex aspect-square w-[var(--density-cell)] items-center justify-center;
+    @apply flex aspect-square w-[var(--control-height)] items-center justify-center;
   }
 
   .dr-pagination-link {

@@ -18,7 +18,7 @@
   }
 
   .dr-input-otp-slot {
-    @apply border-input relative flex aspect-square w-[var(--density-cell)] items-center justify-center border-y border-r text-sm transition-[border-color,box-shadow] first:rounded-l-md first:border-l last:rounded-r-md;
+    @apply border-input relative flex aspect-square w-[var(--control-height)] items-center justify-center border-y border-r text-sm transition-[border-color,box-shadow] first:rounded-l-md first:border-l last:rounded-r-md;
     transition-duration: var(--duration-fast);
   }
 

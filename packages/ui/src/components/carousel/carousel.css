@@ -28,7 +28,7 @@
   }
 
   .dr-carousel-previous {
-    @apply absolute aspect-square w-[var(--density-cell)] rounded-full;
+    @apply absolute aspect-square w-[var(--control-height)] rounded-full;
   }
 
   .dr-carousel-previous[data-orientation="horizontal"] {
@@ -40,7 +40,7 @@
   }
 
   .dr-carousel-next {
-    @apply absolute aspect-square w-[var(--density-cell)] rounded-full;
+    @apply absolute aspect-square w-[var(--control-height)] rounded-full;
   }
 
   .dr-carousel-next[data-orientation="horizontal"] {

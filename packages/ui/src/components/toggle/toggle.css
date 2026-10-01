@@ -60,11 +60,11 @@
 
   /* X and Y both use --density-button-py* so padding stays symmetric and
      tracks the density axis. Both min-width AND min-height use
-     --density-cell* so icon-only toggles land on a square floor
+     --control-height* so icon-only toggles land on a square floor
      (e.g. 32×32 at cozy default); text labels grow horizontally past
      the floor as their content requires. */
   .dr-toggle[data-size="default"] {
-    @apply aspect-auto min-h-[var(--density-cell)] min-w-[var(--density-cell)] px-[var(--density-button-py)] py-[var(--density-button-py)];
+    @apply aspect-auto min-h-[var(--control-height)] min-w-[var(--control-height)] px-[var(--density-button-py)] py-[var(--density-button-py)];
   }
 
   .dr-toggle[data-size="sm"] {

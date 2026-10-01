@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { describe, it, expect } from "vitest"
-import { readdirSync, readFileSync } from "node:fs"
+import { globSync, readdirSync, readFileSync } from "node:fs"
 import { fileURLToPath } from "node:url"
 import { dirname, relative, resolve } from "node:path"
 
@@ -252,9 +252,17 @@ describe("density and font-size composition", () => {
     return match[1]
   }
 
-  it("derives --density-cell from --density-cell-base and --control-scale", () => {
+  it.each([
+    ["xs", "1.5rem"],
+    ["sm", "1.75rem"],
+    ["md", "2rem"],
+    ["lg", "2.25rem"],
+    ["xl", "2.5rem"],
+  ])("scales --control-height-%s (%s) by --control-scale", (step, rem) => {
     expect(themeCss).toMatch(
-      /--density-cell:\s*calc\(\s*var\(--density-cell-base\)\s*\*\s*var\(--control-scale\)\s*\)/,
+      new RegExp(
+        `--control-height-${step}:\\s*calc\\(\\s*${rem.replace(".", "\\.")}\\s*\\*\\s*var\\(--control-scale\\)\\s*\\)`,
+      ),
     )
   })
 
@@ -262,12 +270,57 @@ describe("density and font-size composition", () => {
     expect(themeCss).toMatch(/--control-scale:\s*1;/)
   })
 
-  it.each(["compact", "comfortable", "spacious"])(
-    "%s re-binds --density-cell-base, not --density-cell",
-    (step) => {
-      const body = densityBlockBody(step)
-      expect(body).toMatch(/--density-cell-base:/)
-      expect(body).not.toMatch(/--density-cell:/)
-    },
-  )
+  it("floors the cozy default at --control-height-min", () => {
+    expect(themeCss).toMatch(
+      /--control-height-default:\s*var\(--control-height-md\);/,
+    )
+    expect(themeCss).toMatch(/--control-height-min:\s*0px;/)
+    expect(themeCss).toMatch(
+      /--control-height:\s*max\(\s*var\(--control-height-default\),\s*var\(--control-height-min\)\s*\)/,
+    )
+  })
+
+  it("raises the floor on coarse pointers, after :root inside @layer base", () => {
+    const css = themeCss.replace(/\/\*[\s\S]*?\*\//g, "")
+    const closing = (text: string, open: number): number => {
+      let depth = 0
+      for (let i = open; i < text.length; i++) {
+        if (text[i] === "{") depth++
+        if (text[i] === "}" && --depth === 0) return i
+      }
+      throw new Error("unbalanced braces in theme.css")
+    }
+    const start = css.indexOf("@layer base {")
+    const layer = css.slice(start, closing(css, css.indexOf("{", start)) + 1)
+    const rootEnd = closing(layer, layer.indexOf("{", layer.indexOf(":root")))
+    const media = layer.indexOf("@media (pointer: coarse)")
+    expect(media).toBeGreaterThan(rootEnd)
+    expect(layer.slice(media).replace(/\s+/g, " ")).toMatch(
+      /^@media \(pointer: coarse\) \{ :root \{ --control-height-min: var\(--control-height-xl\); \} \}/,
+    )
+  })
+
+  it.each([
+    ["compact", "sm"],
+    ["comfortable", "lg"],
+    ["spacious", "xl"],
+  ])("%s picks the %s step and nothing derived from it", (density, step) => {
+    const body = densityBlockBody(density)
+    expect(body).toMatch(
+      new RegExp(
+        `--control-height-default:\\s*var\\(--control-height-${step}\\);`,
+      ),
+    )
+    expect(body).not.toMatch(/--control-height(?:-min)?:/)
+  })
+
+  it("leaves no reader of --density-cell or --density-cell-base", () => {
+    const offenders = globSync("src/**/*.{css,ts,tsx}")
+      .map((file) => file.replaceAll("\\", "/"))
+      .filter((file) => !/\.test\.tsx?$/.test(file))
+      .filter((file) =>
+        /--density-cell(?:-base)?(?![\w-])/.test(readFileSync(file, "utf8")),
+      )
+    expect(offenders).toEqual([])
+  })
 })

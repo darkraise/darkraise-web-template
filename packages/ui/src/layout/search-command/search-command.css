@@ -8,12 +8,12 @@
      is a media-query rule, so it needs overriding at the same breakpoint
      rather than by source order alone. */
   .dr-search-command-trigger[data-collapsed="true"] {
-    @apply h-[var(--density-cell)] w-[var(--density-cell)] shrink-0 justify-center p-0;
+    @apply h-[var(--control-height-default)] w-[var(--control-height-default)] shrink-0 justify-center p-0;
   }
 
   @media (min-width: 48rem) {
     .dr-search-command-trigger[data-collapsed="true"] {
-      @apply w-[var(--density-cell)];
+      @apply w-[var(--control-height-default)];
     }
   }
 

@@ -20,7 +20,7 @@
   }
 
   .dr-breadcrumb-ellipsis {
-    @apply flex aspect-square w-[var(--density-cell)] items-center justify-center;
+    @apply flex aspect-square w-[var(--control-height-default)] items-center justify-center;
   }
 
   /* Breadcrumb links are inline text without padding or rounded chrome,
