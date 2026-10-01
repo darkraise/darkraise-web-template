@@ -1,4 +1,20 @@
-import type { ColumnDef, Table } from "@tanstack/react-table"
+import type { ColumnDef, RowData, Table } from "@tanstack/react-table"
+import type { TableCellAlign } from "@components/table"
+
+/** Per-column options DataTable reads from `columnDef.meta`. */
+export interface DataTableColumnMeta {
+  /** Aligns the column's header and cells; "end" suits numbers. */
+  align?: TableCellAlign
+}
+
+declare module "@tanstack/react-table" {
+  /* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-object-type -- declaration merging must repeat TanStack's type parameters */
+  interface ColumnMeta<
+    TData extends RowData,
+    TValue,
+  > extends DataTableColumnMeta {}
+  /* eslint-enable @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-object-type */
+}
 
 /**
  * Fixed-height windowing. Cells are clipped to the declared height so wrapped

@@ -38,6 +38,7 @@ Breaking: `TableHead` and `TableCell` take `align?: "start" | "center" | "end"` 
 - `CascadeSelect` keyboard support. Opening focuses the selected item (the first enabled item of its column when the selected one is disabled), or the first enabled item, and shows that item's child column, so reopening restores the selected path's columns; Up, Down, Home and End move within a column; Right or Enter opens a child column and Left returns to the parent; Enter or Space selects a leaf and closes; Escape closes. Focus then returns to the trigger. Focus and hover move the same cursor, so a focused parent shows its children as a hovered one does; only a moving pointer moves it, so a column the keyboard scrolls under a resting pointer keeps focus on the keyboard row.
 - Type roles: `--type-<role>-size`, `-weight`, `-tracking` and `-leading` on `:root`, and the utilities `type-page-title`, `type-dialog-title`, `type-section-title`, `type-label`, `type-caption` and `type-ui`. Sizes read the `--text-*` steps, so the font-size axis scales them.
 - `--btn-px-sm` on every `.dr-btn`: the small size's inline padding, for rules that line a small button's label up with neighbouring text.
+- `DataTable` aligns a column's header and cells from `meta.align` (`"start" | "center" | "end"`) on its column definition. `DataTableColumnMeta` types it, and `@tanstack/react-table`'s `ColumnMeta` is augmented with it.
 
 ### Changed
 

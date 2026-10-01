@@ -10,4 +10,5 @@ export type {
   DataTableVirtualization,
   DataTableToolbarProps,
   DataTablePaginationProps,
+  DataTableColumnMeta,
 } from "./types"

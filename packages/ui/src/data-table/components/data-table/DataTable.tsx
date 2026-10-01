@@ -203,7 +203,11 @@ export function DataTable<TData, TValue>({
                             ? "none"
                             : undefined
                     return (
-                      <TableHead key={header.id} aria-sort={ariaSort}>
+                      <TableHead
+                        key={header.id}
+                        aria-sort={ariaSort}
+                        align={header.column.columnDef.meta?.align}
+                      >
                         {header.isPlaceholder
                           ? null
                           : flexRender(
@@ -239,7 +243,10 @@ export function DataTable<TData, TValue>({
                     }
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
+                      <TableCell
+                        key={cell.id}
+                        align={cell.column.columnDef.meta?.align}
+                      >
                         {virtualize ? (
                           <div className="dr-data-table-virtual-cell">
                             <div>
