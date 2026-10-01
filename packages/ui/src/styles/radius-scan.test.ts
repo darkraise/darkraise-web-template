@@ -155,6 +155,9 @@ const THEME = readFileSync("src/styles/theme.css", "utf8")
   .replace(/\/\*[\s\S]*?\*\//g, "")
   .replace(/\s+/g, " ")
 
+/** The declarations of theme.css's :root block. */
+const ROOT = /:root \{([^}]*)\}/.exec(THEME)?.[1] ?? ""
+
 function label(rule: Rule): string {
   return `${rule.path}: ${rule.selectors.join(", ")}`
 }
@@ -360,10 +363,10 @@ describe("radius scan", () => {
 
 describe("overlay family", () => {
   it("declares the overlay tokens on :root", () => {
-    expect(THEME).toContain("--overlay-bg: var(--surface-overlay-bg);")
-    expect(THEME).toContain("--overlay-border: var(--surface-overlay-border);")
-    expect(THEME).toContain("--overlay-shadow: var(--surface-overlay-shadow);")
-    expect(THEME).toContain("--overlay-radius: var(--radius);")
+    expect(ROOT).toContain("--overlay-bg: var(--surface-overlay-bg);")
+    expect(ROOT).toContain("--overlay-border: var(--surface-overlay-border);")
+    expect(ROOT).toContain("--overlay-shadow: var(--surface-overlay-shadow);")
+    expect(ROOT).toContain("--overlay-radius: var(--radius);")
   })
 
   it.each(OVERLAYS)("rounds %s %s with --overlay-radius", (file, selector) => {

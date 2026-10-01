@@ -28,10 +28,25 @@ describe("form control fills", () => {
     expect(css).not.toMatch(/@apply[^;]*\bbg-card\b/)
   })
 
-  it.each(CONTROLS)("%s pins an unwashed fill", (file) => {
-    const css = readFileSync(`src/${file}`, "utf8").replace(/\s+/g, " ")
-    expect(css).toContain(
-      "hsl(var(--control-surface) / var(--surface-opacity, 1))",
+  it.each([
+    ["components/input/input.css", ".dr-input"],
+    ["components/textarea/textarea.css", ".dr-textarea"],
+    ["components/number-input/number-input.css", ".dr-number-input-control"],
+    ["components/tags-input/tags-input.css", ".dr-tags-input-control"],
+    ["components/select/select.css", ".dr-select-trigger"],
+    ["components/multi-select/multi-select.css", ".dr-multi-select-control"],
+    ["components/date-input/date-input.css", ".dr-date-input"],
+    ["components/input-otp/input-otp.css", ".dr-input-otp-slot"],
+  ])("%s pins an unwashed fill on %s", (file, selector) => {
+    const css = readFileSync(`src/${file}`, "utf8")
+      .replace(/\/\*[\s\S]*?\*\//g, "")
+      .replace(/\s+/g, " ")
+    const rule = new RegExp(
+      `[{}] ${selector.replaceAll(".", "\\.")} \\{([^}]*)\\}`,
+    ).exec(css)
+    expect(rule, `${selector} has no rule`).not.toBeNull()
+    expect(rule?.[1]).toContain(
+      "background-color: hsl(var(--control-surface) / var(--surface-opacity, 1));",
     )
   })
 

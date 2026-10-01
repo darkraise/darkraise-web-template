@@ -37,11 +37,15 @@ interface Rule {
 
 function rulesOf(path: string): Rule[] {
   const css = withoutComments(readFileSync(path, "utf8"))
-  return [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((match) => ({
-    where: `${path}:${css.slice(0, match.index).split("\n").length}`,
-    selector: (match[1] as string).trim().replace(/\s+/g, " "),
-    body: match[2] as string,
-  }))
+  return [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((match) => {
+    // The match starts right after the previous brace.
+    const start = (match.index as number) + (match[1] as string).search(/\S/)
+    return {
+      where: `${path}:${css.slice(0, start).split("\n").length}`,
+      selector: (match[1] as string).trim().replace(/\s+/g, " "),
+      body: match[2] as string,
+    }
+  })
 }
 
 function isDisabledSelector(selector: string): boolean {
@@ -103,6 +107,20 @@ describe("disabled opacity", () => {
   it("declares the disabled and loading opacities", () => {
     expect(theme).toMatch(/--disabled-opacity:\s*0\.5;/)
     expect(theme).toMatch(/--loading-opacity:\s*0\.7;/)
+  })
+
+  it("reports the line a rule's selector starts on", () => {
+    const path = "src/components/button/button.css"
+    const rule = rulesOf(path).find(
+      (r) => r.selector === ".dr-btn[data-loading]",
+    )
+    const line =
+      readFileSync(path, "utf8")
+        .split("\n")
+        .findIndex((text) => text.trim().startsWith(".dr-btn[data-loading]")) +
+      1
+    expect(line).toBeGreaterThan(0)
+    expect(rule?.where).toBe(`${path}:${line}`)
   })
 
   it("finds the disabled rules it must check", () => {
