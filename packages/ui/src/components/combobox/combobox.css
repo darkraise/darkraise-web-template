@@ -8,7 +8,7 @@
   }
 
   .dr-combobox-label {
-    @apply text-foreground text-sm leading-none font-medium;
+    @apply type-label text-foreground;
   }
 
   .dr-combobox-control {

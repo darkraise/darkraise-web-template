@@ -23,6 +23,12 @@ const SIZE_STEP: Record<Role, string> = {
   ui: "var(--text-sm)",
 }
 
+/** Wrapper rules checked only for typography they must not set. */
+const NO_TYPE_OF_THEIR_OWN = new Set([
+  ".dr-command-group",
+  ".dr-command-dialog",
+])
+
 /** Every class that takes a role, as [stylesheet, exact selector, role]. */
 const ROLE_CLASSES: Array<[string, string, Role]> = [
   [
@@ -38,6 +44,45 @@ const ROLE_CLASSES: Array<[string, string, Role]> = [
     ".dr-empty-state-title",
     "section-title",
   ],
+  ["src/components/label/label.css", ".dr-label", "label"],
+  ["src/components/alert/alert.css", ".dr-alert-title", "label"],
+  ["src/components/sonner/sonner.css", ".dr-toast-title", "label"],
+  ["src/components/combobox/combobox.css", ".dr-combobox-label", "label"],
+  [
+    "src/components/file-upload/file-upload.css",
+    ".dr-file-upload-label",
+    "label",
+  ],
+  ["src/components/tags-input/tags-input.css", ".dr-tags-input-label", "label"],
+  [
+    "src/components/date-picker/date-picker.css",
+    ".dr-date-picker-label",
+    "label",
+  ],
+  [
+    "src/components/color-picker/color-picker.css",
+    ".dr-color-picker-label",
+    "label",
+  ],
+  [
+    "src/components/rating-group/rating-group.css",
+    ".dr-rating-group-label",
+    "label",
+  ],
+  [
+    "src/components/menu-primitives/menu-primitives.css",
+    ".dr-menu-label",
+    "caption",
+  ],
+  ["src/components/menubar/menubar.css", ".dr-menubar-label", "caption"],
+  ["src/components/select/select.css", ".dr-select-label", "caption"],
+  [
+    "src/components/command/command.css",
+    ".dr-command-group [cmdk-group-heading]",
+    "caption",
+  ],
+  ["src/components/command/command.css", ".dr-command-group", "caption"],
+  ["src/components/command/command.css", ".dr-command-dialog", "caption"],
 ]
 
 /** A utility that sets a size, weight, tracking or line height. */
@@ -106,7 +151,9 @@ describe("type role tokens", () => {
 })
 
 describe("classes on a type role", () => {
-  it.each(ROLE_CLASSES)("%s %s applies type-%s", (path, selector, role) => {
+  it.each(
+    ROLE_CLASSES.filter(([, selector]) => !NO_TYPE_OF_THEIR_OWN.has(selector)),
+  )("%s %s applies type-%s", (path, selector, role) => {
     expect(appliesRole(readFileSync(path, "utf8"), selector, role)).toBe(true)
   })
 

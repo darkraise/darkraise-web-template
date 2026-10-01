@@ -45,7 +45,7 @@
   }
 
   .dr-alert-title {
-    @apply mb-1 leading-none font-medium tracking-tight;
+    @apply type-label mb-1;
   }
   .dr-alert[data-variant="destructive"] .dr-alert-title,
   .dr-alert[data-variant="success"] .dr-alert-title,

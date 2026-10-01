@@ -49,7 +49,7 @@
   }
 
   .dr-menubar-label {
-    @apply text-muted-foreground px-2 py-[var(--density-row-py)] text-xs font-medium;
+    @apply type-caption text-muted-foreground px-2 py-[var(--density-row-py)];
   }
 
   .dr-menubar-separator {

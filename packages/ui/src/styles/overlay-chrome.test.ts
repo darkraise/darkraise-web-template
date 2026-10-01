@@ -172,29 +172,20 @@ describe("menu family", () => {
     [MENU, ".dr-menu-label", "px-2"],
     [SELECT, ".dr-select-label", "pl-8"],
     [MENUBAR, ".dr-menubar-label", "px-2"],
-  ])("%s %s is a small muted group label", (path, selector, padding) => {
+  ])("%s %s is a muted caption", (path, selector, padding) => {
     const utilities = applied(bodyOf(path, selector))
-    for (const utility of [
-      "text-xs",
-      "font-medium",
-      "text-muted-foreground",
-      padding,
-    ]) {
+    for (const utility of ["type-caption", "text-muted-foreground", padding]) {
       expect(utilities).toContain(utility)
     }
-    expect(utilities).not.toContain("text-sm")
-    expect(utilities).not.toContain("font-semibold")
   })
 
-  it("gives command group headings the same label style", () => {
-    const utilities = applied(bodyOf(COMMAND, ".dr-command-group"))
-    for (const utility of [
-      "[&_[cmdk-group-heading]]:text-xs",
-      "[&_[cmdk-group-heading]]:font-medium",
+  it("gives command group headings the same caption", () => {
+    expect(
+      applied(bodyOf(COMMAND, ".dr-command-group [cmdk-group-heading]")),
+    ).toContain("type-caption")
+    expect(applied(bodyOf(COMMAND, ".dr-command-group"))).toContain(
       "[&_[cmdk-group-heading]]:text-muted-foreground",
-    ]) {
-      expect(utilities).toContain(utility)
-    }
+    )
   })
 })
 

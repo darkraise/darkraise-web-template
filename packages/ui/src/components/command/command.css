@@ -25,7 +25,11 @@
   }
 
   .dr-command-group {
-    @apply text-foreground [&_[cmdk-group-heading]]:text-muted-foreground overflow-hidden p-1 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-[var(--density-row-py)] [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium;
+    @apply text-foreground [&_[cmdk-group-heading]]:text-muted-foreground overflow-hidden p-1 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-[var(--density-row-py)];
+  }
+
+  .dr-command-group [cmdk-group-heading] {
+    @apply type-caption;
   }
 
   .dr-command-separator {
@@ -76,6 +80,6 @@
   }
 
   .dr-command-dialog {
-    @apply [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group]]:px-2 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-input-wrapper]_svg]:size-[var(--icon-size-lg)] [&_[cmdk-input]]:py-[var(--field-py)] [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-[var(--density-row-py)] [&_[cmdk-item]_svg]:size-[var(--icon-size-lg)];
+    @apply [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group]]:px-2 [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-input-wrapper]_svg]:size-[var(--icon-size-lg)] [&_[cmdk-input]]:py-[var(--field-py)] [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-[var(--density-row-py)] [&_[cmdk-item]_svg]:size-[var(--icon-size-lg)];
   }
 }

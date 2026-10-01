@@ -72,6 +72,7 @@ Breaking: `PaginationLink` marks the current page with `data-active="true"` and 
 - Sheets round only the two corners away from their viewport edge, draw their border only on the inner side, and pad that edge 1.5rem like the other sides.
 - Under the glass preset the default Tabs pill is the view-switch pill under the glass selected tint, as SegmentGroup's is, instead of an accent gradient on which the label fell under 4.5:1 for most accents in dark mode.
 - Titles follow the type roles: page header titles are 24px at weight 600 with -0.02em tracking (were 30px at 500), card and empty-state titles 16px at 600 (card titles were 24px), and dialog, alert-dialog, drawer and sheet titles 18px at 600. Card, dialog and drawer titles drop their negative tracking.
+- Labels follow the `label` role (14px at 500, line height 1): `Label`, the combobox, file-upload, tags-input, date-picker, color-picker and rating-group labels, and alert and toast titles. Alert titles were 16px with negative tracking; toast titles had a 1.25 line height. Menu, menubar, select and command group labels follow the `caption` role (12px at 500).
 
 ### Removed
 

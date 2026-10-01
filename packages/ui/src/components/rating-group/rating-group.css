@@ -8,7 +8,7 @@
   }
 
   .dr-rating-group-label {
-    @apply text-foreground text-sm leading-none font-medium;
+    @apply type-label text-foreground;
   }
 
   .dr-rating-group-control {

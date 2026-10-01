@@ -8,7 +8,7 @@
   }
 
   .dr-date-picker-label {
-    @apply text-foreground text-sm leading-none font-medium;
+    @apply type-label text-foreground;
   }
 
   .dr-date-picker-control {

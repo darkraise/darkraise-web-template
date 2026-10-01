@@ -38,7 +38,7 @@
   }
 
   .dr-select-label {
-    @apply text-muted-foreground py-[var(--density-row-py)] pr-2 pl-8 text-xs font-medium;
+    @apply type-caption text-muted-foreground py-[var(--density-row-py)] pr-2 pl-8;
   }
 
   .dr-select-item {
