@@ -10,7 +10,8 @@
 
   .dr-top-nav-layout-nav-item.active,
   .dr-top-nav-layout-nav-item[data-active="true"] {
-    @apply bg-accent text-accent-foreground;
+    background-color: var(--selected-nav-bg);
+    color: var(--selected-nav-fg);
   }
 
   .dr-top-nav-layout-nav-chevron {

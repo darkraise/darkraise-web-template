@@ -4,6 +4,7 @@
   }
 
   .dr-layout-switcher-item[data-active="true"] {
-    @apply bg-accent;
+    background-color: var(--selected-nav-bg);
+    color: var(--selected-nav-fg);
   }
 }

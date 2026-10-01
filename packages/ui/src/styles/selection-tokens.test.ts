@@ -323,3 +323,21 @@ describe("nav row family: sidebar", () => {
     expect(offenders).toEqual([])
   })
 })
+
+describe("nav row family: popover, top nav and layout switcher", () => {
+  it.each([
+    [SIDEBAR, ".dr-sidebar-popover-child.active"],
+    [
+      "src/layout/top-nav-layout/top-nav-layout.css",
+      '.dr-top-nav-layout-nav-item[data-active="true"]',
+    ],
+    [
+      "src/layout/layout-switcher/layout-switcher.css",
+      '.dr-layout-switcher-item[data-active="true"]',
+    ],
+  ])("%s %s reads the nav-row fill and text", (path, selector) => {
+    const body = bodyOf(path, selector)
+    expect(body).toContain("background-color: var(--selected-nav-bg);")
+    expect(body).toContain("color: var(--selected-nav-fg);")
+  })
+})

@@ -219,7 +219,8 @@
   }
 
   .dr-sidebar-popover-child.active {
-    @apply bg-accent text-accent-foreground;
+    background-color: var(--selected-nav-bg);
+    color: var(--selected-nav-fg);
   }
 
   /* Glass-preset sidebar items: replace the solid hover-bg + active-bg
