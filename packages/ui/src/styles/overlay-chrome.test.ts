@@ -255,3 +255,43 @@ describe("alert dialog footer", () => {
     ).toContain("gap-2")
   })
 })
+
+describe("sheet edges", () => {
+  it.each([
+    [
+      "top",
+      "border-width: 0 0 1px;",
+      "border-radius: 0 0 var(--overlay-radius) var(--overlay-radius);",
+      "padding-top: max(1.5rem, env(safe-area-inset-top));",
+    ],
+    [
+      "bottom",
+      "border-width: 1px 0 0;",
+      "border-radius: var(--overlay-radius) var(--overlay-radius) 0 0;",
+      "padding-bottom: max(1.5rem, env(safe-area-inset-bottom));",
+    ],
+    [
+      "left",
+      "border-width: 0 1px 0 0;",
+      "border-radius: 0 var(--overlay-radius) var(--overlay-radius) 0;",
+      "padding-left: max(1.5rem, env(safe-area-inset-left));",
+    ],
+    [
+      "right",
+      "border-width: 0 0 0 1px;",
+      "border-radius: var(--overlay-radius) 0 0 var(--overlay-radius);",
+      "padding-right: max(1.5rem, env(safe-area-inset-right));",
+    ],
+  ])(
+    "a %s sheet squares its viewport edge and pads it like the others",
+    (side, border, radius, padding) => {
+      const body = bodyOf(
+        "src/components/sheet/sheet.css",
+        `.dr-sheet-content[data-side="${side}"]`,
+      )
+      expect(body).toContain(border)
+      expect(body).toContain(radius)
+      expect(body).toContain(padding)
+    },
+  )
+})

@@ -73,42 +73,51 @@
     --tw-exit-rotate: 0;
   }
 
+  /* A sheet sits flush against one viewport edge, so it rounds only the
+     two corners away from that edge and draws its border only on the inner
+     side. The dialog base it reuses rounds and borders all four. */
   .dr-sheet-content[data-side="top"] {
-    @apply data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top inset-x-0 top-0 border-b;
+    @apply data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top inset-x-0 top-0;
+    border-width: 0 0 1px;
+    border-radius: 0 0 var(--overlay-radius) var(--overlay-radius);
   }
 
   .dr-sheet-content[data-side="bottom"] {
-    @apply data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom inset-x-0 bottom-0 border-t;
+    @apply data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom inset-x-0 bottom-0;
+    border-width: 1px 0 0;
+    border-radius: var(--overlay-radius) var(--overlay-radius) 0 0;
   }
 
   .dr-sheet-content[data-side="left"] {
-    @apply data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left inset-y-0 left-0 h-full w-3/4 border-r sm:max-w-sm;
+    @apply data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left inset-y-0 left-0 h-full w-3/4 sm:max-w-sm;
+    border-width: 0 1px 0 0;
+    border-radius: 0 var(--overlay-radius) var(--overlay-radius) 0;
   }
 
   .dr-sheet-content[data-side="right"] {
-    @apply data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-sm;
+    @apply data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-3/4 sm:max-w-sm;
+    border-width: 0 0 0 1px;
+    border-radius: var(--overlay-radius) 0 0 var(--overlay-radius);
   }
 
   /* Safe areas. An edge-anchored surface on a phone lands under the notch or
      the gesture home indicator, which puts its last row of controls somewhere
      the user cannot reliably tap. `env()` resolves to 0 everywhere else, so
-     this costs nothing on desktop. */
+     this costs nothing on desktop. The floor is the p-6 the other three
+     sides take. */
   .dr-sheet-content[data-side="bottom"] {
-    padding-bottom: max(
-      var(--density-container-p),
-      env(safe-area-inset-bottom)
-    );
+    padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
   }
 
   .dr-sheet-content[data-side="top"] {
-    padding-top: max(var(--density-container-p), env(safe-area-inset-top));
+    padding-top: max(1.5rem, env(safe-area-inset-top));
   }
 
   .dr-sheet-content[data-side="left"] {
-    padding-left: max(var(--density-container-p), env(safe-area-inset-left));
+    padding-left: max(1.5rem, env(safe-area-inset-left));
   }
 
   .dr-sheet-content[data-side="right"] {
-    padding-right: max(var(--density-container-p), env(safe-area-inset-right));
+    padding-right: max(1.5rem, env(safe-area-inset-right));
   }
 }

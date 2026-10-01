@@ -374,15 +374,21 @@ describe("overlay family", () => {
     )
   })
 
-  // SheetContent renders DialogContent, so the sheet takes the dialog's
-  // radius and must not set one of its own.
-  it("leaves the sheet on the dialog's radius", () => {
+  // SheetContent renders DialogContent, which rounds every corner with
+  // --overlay-radius. Each side squares the two corners on its viewport
+  // edge and reads no other radius.
+  it("rounds only the sheet's inner corners, with --overlay-radius", () => {
     const own = RULES.filter(
       (rule) =>
         rule.path.endsWith("sheet/sheet.css") &&
         /(?<![\w-])rounded|border(?:-[a-z]+)*-radius/.test(rule.body),
-    ).map(label)
-    expect(own).toEqual([])
+    )
+    expect(own.map(label)).toHaveLength(4)
+    for (const rule of own) {
+      expect(rule.body.replace(/\s+/g, " ")).toMatch(
+        /border-radius: (?:0|var\(--overlay-radius\))(?: (?:0|var\(--overlay-radius\))){3};/,
+      )
+    }
   })
 
   it.each(OVERLAY_SURFACES)(
