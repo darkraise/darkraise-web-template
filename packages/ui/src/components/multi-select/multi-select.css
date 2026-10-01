@@ -39,10 +39,6 @@
     height: auto;
   }
 
-  .dr-multi-select-control[data-state="open"] {
-    @apply ring-ring ring-2 ring-offset-2;
-  }
-
   .dr-multi-select-control[data-disabled="true"] {
     @apply cursor-not-allowed opacity-50;
   }

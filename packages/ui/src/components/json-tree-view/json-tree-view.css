@@ -4,10 +4,7 @@
   }
 
   .dr-json-tree-body {
-    @apply outline-none;
-  }
-  .dr-json-tree-body:focus-visible {
-    @apply ring-primary rounded-sm ring-2 ring-offset-1;
+    @apply focus-ring outline-none;
   }
 
   /* Toolbar — integrated bar with bare search input and an icon-button

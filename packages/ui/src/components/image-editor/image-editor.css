@@ -75,7 +75,7 @@
   .dr-image-editor-preset {
     position: relative;
     isolation: isolate;
-    @apply rounded-md border px-3 py-1.5 text-xs font-medium transition-colors;
+    @apply focus-ring rounded-md border px-3 py-1.5 text-xs font-medium transition-colors;
     border-color: hsl(var(--border));
     background: hsl(var(--background));
     color: hsl(var(--foreground));
@@ -83,9 +83,6 @@
   .dr-image-editor-preset:hover {
     border-color: hsl(var(--primary));
     color: hsl(var(--primary-text));
-  }
-  .dr-image-editor-preset:focus-visible {
-    @apply ring-primary ring-2 outline-none;
   }
 
   /* Tool palette — Photoshop / Pixlr style. A bordered card with a
@@ -132,7 +129,7 @@
   .dr-image-editor-history-trigger {
     position: relative;
     isolation: isolate;
-    @apply rounded-md border px-3 py-1.5 text-xs font-medium transition-colors;
+    @apply focus-ring rounded-md border px-3 py-1.5 text-xs font-medium transition-colors;
     border-color: hsl(var(--border));
     background: hsl(var(--background));
     color: hsl(var(--foreground));
@@ -144,9 +141,6 @@
   .dr-image-editor-history-trigger:disabled {
     @apply opacity-50;
     cursor: not-allowed;
-  }
-  .dr-image-editor-history-trigger:focus-visible {
-    @apply ring-primary ring-2 outline-none;
   }
 
   /* Annotation canvas overlay sits inside the cropper viewport, above the
@@ -223,7 +217,7 @@
   }
 
   .dr-image-editor-annotation-clear {
-    @apply rounded-md border px-3 py-1 text-xs font-medium transition-colors;
+    @apply focus-ring rounded-md border px-3 py-1 text-xs font-medium transition-colors;
     border-color: hsl(var(--border));
     background: hsl(var(--background));
     color: hsl(var(--foreground));
@@ -231,9 +225,6 @@
   .dr-image-editor-annotation-clear:hover {
     border-color: hsl(var(--destructive));
     color: hsl(var(--destructive));
-  }
-  .dr-image-editor-annotation-clear:focus-visible {
-    @apply ring-primary ring-2 outline-none;
   }
 
   /* Text annotation input — anchored at the click point inside the

@@ -1,9 +1,6 @@
 @layer components {
   .dr-listbox {
-    @apply border-border max-h-72 min-w-32 overflow-auto rounded-md border p-1 outline-none;
-  }
-  .dr-listbox:focus-visible {
-    @apply ring-ring ring-2;
+    @apply focus-ring border-border max-h-72 min-w-32 overflow-auto rounded-md border p-1 outline-none;
   }
   .dr-listbox-item {
     @apply cursor-pointer rounded-sm px-2 py-1.5 text-sm transition-colors select-none;

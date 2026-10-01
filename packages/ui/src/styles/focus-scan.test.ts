@@ -207,3 +207,111 @@ describe("every interactive class draws a focus indicator", () => {
     }
   })
 })
+
+/**
+ * Components whose focus styling sits next to box-shadow or ring chrome, each
+ * with the reason. Everywhere else focus is an outline: forced colours drop
+ * box-shadow, and a preset rule can restyle a shadow away (the glass slider
+ * thumb lost its ring exactly that way).
+ */
+const OUTLINE_EXEMPT = new Map<string, string>([
+  [
+    "dr-image-cropper-selection",
+    "the crop box draws its frame with a ring at rest; that is selection chrome, and focus-ring draws focus on top of it",
+  ],
+  [
+    "dr-resizable-handle",
+    "resize handles keep their own treatment, drawn on a hit area wider than the visible line",
+  ],
+  [
+    "dr-split-panel-layout-handle",
+    "a 4px-wide separator whose focus ring is drawn with ring-2 above both panes, as a resize handle",
+  ],
+  [
+    "dr-contribution-graph-cell",
+    "a chart cell whose hover outline and level colours are chart chrome; keyboard focus is focus-ring-inset on the cell",
+  ],
+  [
+    "dr-virtualized-timeline-tile",
+    "a tile marks its selected state with a ring; that is selection chrome, not a focus indicator",
+  ],
+])
+
+/** Rules written for one preset restyle on top of the base rule. */
+const PRESET_RULE = /^\[data-preset=/
+
+/** The 1px --primary edge the field utilities draw (theme.css). */
+const FIELD_INDICATOR =
+  /border-color:\s*hsl\(var\(--primary\)\);[\s\S]*?box-shadow:\s*0 0 0 1px hsl\(var\(--primary\)\)/
+
+const SHADOW_OR_RING =
+  /box-shadow\s*:|(?<![\w-])(?:ring|shadow)-(?!0(?![\w-])|none(?![\w-]))/
+
+const FOCUS_VARIANT_SHADOW_OR_RING =
+  /(?<![\w-])(?:focus|focus-visible|focus-within):(?:ring|shadow)-(?!0(?![\w-])|none(?![\w-]))/
+
+describe("focus indicators are outlines", () => {
+  it("draws no focus indicator with box-shadow or a ring", () => {
+    const offenders: string[] = []
+    for (const rule of RULES) {
+      const exempt = rule.selectors
+        .flatMap(subjectClasses)
+        .some((cls) => OUTLINE_EXEMPT.has(cls))
+      if (exempt) continue
+      const drawn = rule.body.replace(REMOVALS, "")
+      if (FOCUS_VARIANT_SHADOW_OR_RING.test(drawn)) {
+        offenders.push(`${rule.selectors.join(", ")} (${rule.path})`)
+        continue
+      }
+      const focused = rule.selectors.filter((s) => FOCUS_STATE.test(s))
+      if (focused.length === 0) continue
+      if (rule.selectors.every((s) => PRESET_RULE.test(s))) continue
+      if (rule.selectors.some((s) => s.includes(":hover"))) continue
+      if (FIELD_INDICATOR.test(drawn)) continue
+      if (SHADOW_OR_RING.test(drawn)) {
+        offenders.push(`${focused.join(", ")} (${rule.path})`)
+      }
+    }
+    for (const { path, source } of TSX) {
+      for (const group of classGroups(source)) {
+        if (group.some((cls) => FOCUS_VARIANT_SHADOW_OR_RING.test(cls))) {
+          offenders.push(`${group.join(" ")} (${path})`)
+        }
+      }
+    }
+    expect(offenders).toEqual([])
+  })
+
+  it("keeps every outline exemption named and justified", () => {
+    const styled = new Set(
+      RULES.flatMap((rule) => rule.selectors.flatMap(subjectClasses)),
+    )
+    for (const [cls, reason] of OUTLINE_EXEMPT) {
+      expect(styled.has(cls), `${cls} is no longer styled`).toBe(true)
+      expect(reason.length, `${cls} needs a reason`).toBeGreaterThan(20)
+    }
+  })
+
+  it("puts the date input on the field indicator and drops the open multi-select ring", () => {
+    const dateInput = RULES.find(
+      (rule) =>
+        rule.path.endsWith("date-input.css") &&
+        rule.selectors.includes(".dr-date-input"),
+    )
+    expect(dateInput?.body).toMatch(
+      /@apply[^;]*(?<![\w-])focus-ring-input-wrapper(?![\w-])/,
+    )
+    const multiSelect = RULES.filter((rule) =>
+      rule.path.endsWith("multi-select.css"),
+    ).flatMap((rule) => rule.selectors)
+    expect(multiSelect).not.toContain('.dr-multi-select-control[data-state="open"]')
+  })
+
+  it("rings the listbox root with focus-ring", () => {
+    const listbox = RULES.find(
+      (rule) =>
+        rule.path.endsWith("listbox.css") && rule.selectors.includes(".dr-listbox"),
+    )
+    expect(listbox?.body).toMatch(/@apply[^;]*(?<![\w-])focus-ring(?![\w-])/)
+  })
+})
