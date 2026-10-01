@@ -70,13 +70,13 @@
     @apply rounded-[var(--field-radius)] border;
   }
 
-  /* Glass-preset frosted InputOTP slots. Each slot is its own bordered
-     cell; the active slot (caret position in overlay mode, focused
-     input in separate mode) lights up with the focus halo. */
+  /* Glass-preset frosted InputOTP slots. Colours only: the widths come from
+     the base rules, so grouped slots share one 1px seam and the separate
+     variant keeps a border on every side. The active slot (caret position
+     in overlay mode, focused input in separate mode) lights up with the
+     focus halo. */
   [data-preset="glass"] .dr-input-otp-slot {
     background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
-    border-width: 1px;
-    border-style: solid;
     border-color: var(--fog-15);
     border-bottom-color: var(--field-edge);
     -webkit-backdrop-filter: var(--backdrop-filter);

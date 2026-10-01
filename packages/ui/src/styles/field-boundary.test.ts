@@ -65,6 +65,7 @@ const GLASS_FIELDS: Array<[string, string]> = [
   ["date-input/date-input.css", "dr-date-input"],
   ["input-otp/input-otp.css", "dr-input-otp-slot"],
   ["password-input/password-input.css", "dr-password-input-field"],
+  ["combobox/combobox.css", "dr-combobox-control"],
 ]
 
 const SMALL_CONTROLS: Array<[string, string]> = [
@@ -87,9 +88,8 @@ describe("field boundary", () => {
   )
 
   it("gives the glass multi-select the edge its combobox glass rule hides", () => {
-    // The control also carries .dr-combobox-control, whose glass border
-    // shorthand (0,2,0) would repaint the bottom; its inner input has no
-    // border, unlike the combobox's.
+    // The control also carries .dr-combobox-control; this rule restores the
+    // surface radius for wrapping chips and has to keep the edge with it.
     const body = bodyOf(
       "multi-select/multi-select.css",
       '[data-preset="glass"] .dr-combobox-control.dr-multi-select-control',
@@ -105,6 +105,34 @@ describe("field boundary", () => {
       '[data-preset="glass"] .dr-combobox-control.dr-multi-select-control:is(:focus-within, [data-state="open"])',
     )
     expect(body).toContain("border-bottom-color: hsl(var(--primary) / 0.4);")
+  })
+
+  // Under glass the combobox control draws the field's border, so the
+  // input inside it is bare; otherwise the two borders nest.
+  it("leaves the glass combobox one border: the control's", () => {
+    const body = bodyOf(
+      "combobox/combobox.css",
+      '[data-preset="glass"] .dr-combobox-control > .dr-combobox-input',
+    )
+    for (const declaration of [
+      "border-width: 0;",
+      "background: transparent;",
+      "box-shadow: none;",
+      "backdrop-filter: none;",
+    ]) {
+      expect(body).toContain(declaration)
+    }
+  })
+
+  // The base rule gives grouped slots top, bottom and right borders and the
+  // first slot its left; setting widths under glass doubled every seam.
+  it("lets grouped glass OTP slots share one seam", () => {
+    expect(
+      glassRestBody("input-otp/input-otp.css", "dr-input-otp-slot"),
+    ).not.toMatch(/border(?:-[a-z]+)?-(?:width|style)\s*:/)
+    expect(bodyOf("input-otp/input-otp.css", ".dr-input-otp-slot")).toMatch(
+      /(?<![\w:-])border-y border-r(?![\w-])/,
+    )
   })
 
   it.each(GLASS_FIELDS)(
