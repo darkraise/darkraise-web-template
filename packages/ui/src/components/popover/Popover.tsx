@@ -308,10 +308,13 @@ function useEventLike<T extends (...args: never[]) => void>(
   React.useLayoutEffect(() => {
     ref.current = cb
   })
+  const present = cb !== undefined
+  // Keyed on presence, not identity: an inline handler would otherwise get a
+  // new wrapper every render and re-run every effect that depends on it.
   return React.useMemo<T | undefined>(() => {
-    if (!cb) return undefined
+    if (!present) return undefined
     return ((...args: never[]) => ref.current?.(...args)) as T
-  }, [cb])
+  }, [present])
 }
 
 const FloatingContext = React.createContext<ReturnType<

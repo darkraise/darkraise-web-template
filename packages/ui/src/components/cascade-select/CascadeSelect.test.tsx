@@ -204,4 +204,19 @@ describe("CascadeSelect keyboard", () => {
     await waitFor(() => expect(option("British Columbia")).toHaveFocus())
     expect(screen.getAllByRole("listbox")).toHaveLength(2)
   })
+
+  it("leaves focus alone when the parent re-renders after focus moved out", async () => {
+    const tree = () => (
+      <>
+        <input aria-label="Other" />
+        <CascadeSelect options={KEYED} placeholder="Pick" />
+      </>
+    )
+    const { rerender } = render(tree())
+    await userEvent.click(screen.getByRole("button"))
+    await waitFor(() => expect(option("United States")).toHaveFocus())
+    screen.getByLabelText("Other").focus()
+    rerender(tree())
+    expect(screen.getByLabelText("Other")).toHaveFocus()
+  })
 })
