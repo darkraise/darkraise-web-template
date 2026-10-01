@@ -91,6 +91,17 @@ const TABS = "src/components/tabs/tabs.css"
 const SEGMENT = "src/components/segment-group/segment-group.css"
 
 describe("view switch family", () => {
+  it("gives the glass default Tabs pill the glass selected tint", () => {
+    expect(
+      bodyOf(
+        TABS,
+        '[data-preset="glass"] .dr-tabs-indicator[data-variant="default"]',
+      ),
+    ).toBe(
+      "background-image: var(--glass-state-selected-fill); box-shadow: var(--glass-state-active-inset);",
+    )
+  })
+
   it.each([
     [
       TABS,

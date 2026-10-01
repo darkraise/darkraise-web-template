@@ -68,6 +68,7 @@ Breaking: `PaginationLink` marks the current page with `data-active="true"` and 
 - Menus agree on their details: separators use `--border` (select and menubar used `--muted`); shortcuts use the muted text colour instead of 60% opacity; menubar content is at least 8rem wide, like other menus (was 12rem); command items show the pointer cursor; combobox, listbox, tree and cascade rows pad by density; menu, select and menubar group labels are small, medium-weight and muted, like command's.
 - NavigationMenu triggers and the Menubar are transparent at rest; the menubar keeps its border.
 - Sheets round only the two corners away from their viewport edge, draw their border only on the inner side, and pad that edge 1.5rem like the other sides.
+- Under the glass preset the default Tabs pill is the view-switch pill under the glass selected tint, as SegmentGroup's is, instead of an accent gradient on which the label fell under 4.5:1 for most accents in dark mode.
 
 ### Removed
 

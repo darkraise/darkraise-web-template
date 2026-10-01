@@ -452,23 +452,13 @@
     @apply rounded-t-sm;
   }
 
-  /* Glass surface style — the moving indicator carries the glass
-     gradient, so the preset identity travels with the selection. */
+  /* Glass: the glass selected tint and inset over the base view pill, as
+     the glass SegmentGroup indicator has. The base fill stays underneath:
+     inside main[data-content] glass zeroes the inset, and the tint alone
+     would not read as a pill. */
   [data-preset="glass"] .dr-tabs-indicator[data-variant="default"] {
-    background-color: transparent;
-    background-image: linear-gradient(
-      180deg,
-      color-mix(in srgb, hsl(var(--primary)) 55%, rgba(255, 255, 255, 0.18)),
-      color-mix(in srgb, hsl(var(--primary)) 70%, rgba(255, 255, 255, 0.05))
-    );
-    border: 1px solid
-      color-mix(in srgb, hsl(var(--primary)) 50%, rgba(255, 255, 255, 0.25));
-    box-shadow:
-      var(--shadow-button),
-      var(--inset-hi-button),
-      inset 0 -1px 0 color-mix(in srgb, hsl(var(--primary)) 70%, #000),
-      var(--glass-halo-raised),
-      var(--glass-state-active-inset);
+    background-image: var(--glass-state-selected-fill);
+    box-shadow: var(--glass-state-active-inset);
   }
 
   /* Outline + underline variants: frost the trigger at rest and add a

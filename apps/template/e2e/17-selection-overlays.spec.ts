@@ -145,11 +145,9 @@ for (const preset of PRESETS) {
     expect(background).not.toBe(
       await computed(page.getByTestId("primary-fill"), "background-color"),
     )
-    if (preset === "default") {
-      expect(background).toBe(
-        await computed(page.getByTestId("view-bg"), "background-color"),
-      )
-    }
+    expect(background).toBe(
+      await computed(page.getByTestId("view-bg"), "background-color"),
+    )
   })
 }
 
@@ -182,35 +180,40 @@ test("the glass combobox draws one border, on its control", async ({
   expect(await computed(control, "border-top-width")).toBe("1px")
 })
 
-// Glass keeps its accent gradient on the default pill while the label moved
-// to the view-switch foreground. Light mode only: under glass dark the label
-// measured 4.26:1 here (the old white label about 4.45:1), an open finding
-// left to the glass restyle rather than asserted.
-test("the glass default tab label reads on its pill in light mode", async ({
-  page,
-}) => {
-  await seedApp(page, { preset: "glass", mode: "light" })
-  await openFixture(page)
-  await page.mouse.move(0, 0)
-  const label = rgbOf(
-    await computed(
-      page.locator('[data-probe="tabs"] .dr-tabs-trigger[data-state="active"]'),
-      "color",
-    ),
-  )
-  const pill = await boxOf(
-    page.locator('[data-probe="tabs"] .dr-tabs-indicator'),
-  )
-  const ground = await pixel(
-    page,
-    Math.round(pill.x + 6),
-    Math.round(pill.y + pill.height / 2),
-  )
-  expect(
-    contrast(label, ground),
-    `label rgb(${label.join(",")}) on rgb(${ground.join(",")})`,
-  ).toBeGreaterThanOrEqual(4.5)
-})
+// The glass default pill is the view pill under the glass selected tint.
+// Yellow and lime are the lightest accents, the hardest case for a
+// foreground label on an accent tint.
+for (const mode of MODES) {
+  for (const accent of ["blue", "yellow", "lime"]) {
+    test(`the glass default tab label reads on its pill · ${mode} · ${accent}`, async ({
+      page,
+    }) => {
+      await seedApp(page, { preset: "glass", mode, accent })
+      await openFixture(page)
+      await page.mouse.move(0, 0)
+      const label = rgbOf(
+        await computed(
+          page.locator(
+            '[data-probe="tabs"] .dr-tabs-trigger[data-state="active"]',
+          ),
+          "color",
+        ),
+      )
+      const pill = await boxOf(
+        page.locator('[data-probe="tabs"] .dr-tabs-indicator'),
+      )
+      const ground = await pixel(
+        page,
+        Math.round(pill.x + 6),
+        Math.round(pill.y + pill.height / 2),
+      )
+      expect(
+        contrast(label, ground),
+        `label rgb(${label.join(",")}) on rgb(${ground.join(",")})`,
+      ).toBeGreaterThanOrEqual(4.5)
+    })
+  }
+}
 
 for (const mode of MODES) {
   test(`a hovered idle sidebar link differs from the active one · ${mode}`, async ({
