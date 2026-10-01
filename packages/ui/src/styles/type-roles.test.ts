@@ -70,6 +70,18 @@ const ROLE_CLASSES: Array<[string, string, Role]> = [
     "label",
   ],
   [
+    "src/components/number-input/number-input.css",
+    ".dr-number-input-label",
+    "label",
+  ],
+  [
+    "src/components/password-input/password-input.css",
+    ".dr-password-input-label",
+    "label",
+  ],
+  ["src/components/clipboard/clipboard.css", ".dr-clipboard-label", "label"],
+  ["src/components/editable/editable.css", ".dr-editable-label", "label"],
+  [
     "src/components/menu-primitives/menu-primitives.css",
     ".dr-menu-label",
     "caption",

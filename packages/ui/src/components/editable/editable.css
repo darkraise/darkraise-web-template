@@ -4,7 +4,7 @@
   }
 
   .dr-editable-label {
-    @apply text-foreground text-sm font-medium;
+    @apply type-label text-foreground;
   }
 
   .dr-editable-area {

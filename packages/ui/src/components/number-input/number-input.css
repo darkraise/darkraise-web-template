@@ -4,7 +4,7 @@
   }
 
   .dr-number-input-label {
-    @apply text-foreground text-sm font-medium;
+    @apply type-label text-foreground;
   }
 
   /* The control is the bordered surface. It owns the border, background,
