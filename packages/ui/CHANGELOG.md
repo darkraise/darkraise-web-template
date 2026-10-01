@@ -60,6 +60,8 @@ Breaking: `Card` and card-variant `AccordionItem` expose their elevation as `dat
 - The colours painted before the theme provider hydrates were stale; they now equal the engine's default light output.
 - Content inside an elevated `Card` or card accordion item keeps the page's elevation ramp. It used to take the light ramp in dark mode, and in light mode the card's own level (a `flat` card zeroed every nested shadow), because the card reused the theme's `data-elevation` attribute.
 
+## [6.9.6] — 2026-09-30
+
 ## [6.9.5] — 2026-09-25
 
 ### Fixed
