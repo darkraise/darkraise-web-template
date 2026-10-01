@@ -8,7 +8,8 @@ import { boxOf, seedApp, watchConsole, type Box } from "./helpers/app"
  * footer gap apart on a phone; grouped glass OTP slots share one seam; the
  * glass combobox draws one border; a right sheet squares its viewport edge;
  * the default Tabs pill is not the accent; and a hovered idle sidebar link
- * never matches the active one.
+ * never matches the active one; a CascadeSelect column scrolled by the
+ * keyboard keeps focus on the keyboard row under a resting pointer.
  */
 
 const FIXTURE = "/e2e/fixtures/selection-overlays.html"
@@ -234,3 +235,24 @@ for (const mode of MODES) {
     expect(hovered).not.toBe(await computed(active, "background-color"))
   })
 }
+
+test("a resting pointer leaves keyboard focus on a scrolled cascade column", async ({
+  page,
+}) => {
+  await seedApp(page, { preset: "default", mode: "light" })
+  await openFixture(page)
+  await page.getByRole("button", { name: "Pick an item" }).click()
+  const item = (n: number) =>
+    page.getByRole("option", { name: `Item ${String(n).padStart(2, "0")}` })
+  await expect(item(1)).toBeFocused()
+  await item(3).hover()
+  await expect(item(3)).toBeFocused()
+  for (let i = 0; i < 15; i++) await page.keyboard.press("ArrowDown")
+  await settle(page)
+  // Chromium refreshes hover after a scroll on a timer, not in the same
+  // frame, so a stray pointerenter arrives after the keys have settled.
+  await page.waitForTimeout(300)
+  expect(await page.evaluate(() => document.activeElement?.textContent)).toBe(
+    "Item 18",
+  )
+})

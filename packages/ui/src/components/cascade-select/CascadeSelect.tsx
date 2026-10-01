@@ -258,8 +258,13 @@ function CascadeSelect({
                     aria-selected={active ? "true" : "false"}
                     aria-disabled={option.disabled || undefined}
                     data-active={active ? "true" : undefined}
-                    onPointerEnter={() => {
-                      if (!option.disabled) onHoverAt(depth, option)
+                    // Move, not enter: a column the keyboard scrolls slides
+                    // items under a resting pointer, and Chromium fires
+                    // pointerenter for them, pulling focus off the keyboard
+                    // row.
+                    onPointerMove={() => {
+                      if (option.disabled || focused) return
+                      onHoverAt(depth, option)
                     }}
                     onClick={() => {
                       if (!option.disabled) onSelectAt(depth, option)

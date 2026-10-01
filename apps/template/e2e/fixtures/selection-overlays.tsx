@@ -13,6 +13,10 @@ import {
 } from "darkraise-ui/components/alert-dialog"
 import { Button } from "darkraise-ui/components/button"
 import {
+  CascadeSelect,
+  type CascadeOption,
+} from "darkraise-ui/components/cascade-select"
+import {
   Combobox,
   ComboboxControl,
   ComboboxInput,
@@ -49,6 +53,12 @@ const ITEMS = [
   { value: "apple", label: "Apple" },
   { value: "banana", label: "Banana" },
 ]
+
+// Longer than the column's max height, so keyboard moves scroll it.
+const LONG_COLUMN: CascadeOption[] = Array.from({ length: 30 }, (_, i) => {
+  const label = `Item ${String(i + 1).padStart(2, "0")}`
+  return { value: label, label }
+})
 
 // The adapter applies the active class itself, as a router would, so
 // "Dashboard" (the current path) is the active link and "Settings" is idle.
@@ -141,6 +151,9 @@ createRoot(root).render(
             </ComboboxTrigger>
           </ComboboxControl>
         </Combobox>
+      </div>
+      <div data-probe="cascade">
+        <CascadeSelect options={LONG_COLUMN} placeholder="Pick an item" />
       </div>
       <div data-probe="sidebar" style={{ width: 240 }}>
         <RouterAdapterProvider value={ADAPTER}>
