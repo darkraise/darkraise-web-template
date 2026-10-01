@@ -21,6 +21,8 @@ Breaking: control sizing, radius and focus tokens are renamed, with no aliases. 
 
 Breaking: `PaginationLink` marks the current page with `data-active="true"` and stays a ghost button in both variants; the filled variant used to render it as a `data-variant="default"` button, so a selector for the current page such as `.dr-pagination-link[data-variant="default"]` must become `.dr-pagination-link[data-active="true"]`. `Pagination` writes its `variant` on its root as `data-variant`.
 
+Breaking: `TableHead` and `TableCell` take `align?: "start" | "center" | "end"` (type `TableCellAlign`), rendered as `data-align` and styled with logical `text-align`. They no longer pass the HTML `align` attribute (`"left" | "right" | …`) to the DOM; replace `align="right"` with `align="end"`.
+
 ### Added
 
 - A `borderIntensity` theme axis — `subtle`, `balanced`, `strong`, `bold` — shown in the theme panel's Depth group as **Border Intensity**. It moves `--border`, `--input`, `--border-subtle`, `--border-default`, `--border-strong` and `--sidebar-border` toward the page or toward the text colour in OKLCH lightness, keeping each border's own hue and chroma; a translucent border, such as dark glass's white hairline, has its alpha scaled instead. It runs after a preset's own tokens are merged, so it applies under every preset. Elements that rebind `--border` in CSS, such as the `.dr-surface` utility, keep their own border.

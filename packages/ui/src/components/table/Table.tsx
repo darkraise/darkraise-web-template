@@ -3,6 +3,9 @@ import * as React from "react"
 import { cn } from "@lib/utils"
 import "./table.css"
 
+/** Inline alignment of a column's header and cells; "end" suits numbers. */
+type TableCellAlign = "start" | "center" | "end"
+
 function Table({
   className,
   ref,
@@ -66,9 +69,11 @@ function TableRow({
 function TableHead({
   className,
   ref,
+  align,
   ...props
-}: React.ThHTMLAttributes<HTMLTableCellElement> & {
+}: Omit<React.ThHTMLAttributes<HTMLTableCellElement>, "align"> & {
   ref?: React.Ref<HTMLTableCellElement>
+  align?: TableCellAlign
 }) {
   return (
     <th
@@ -76,6 +81,7 @@ function TableHead({
       // Column is the right default for a header row; a caller putting a
       // header in the first column of a row can pass scope="row" instead.
       scope="col"
+      data-align={align}
       className={cn("dr-table-head", className)}
       {...props}
     />
@@ -85,11 +91,20 @@ function TableHead({
 function TableCell({
   className,
   ref,
+  align,
   ...props
-}: React.TdHTMLAttributes<HTMLTableCellElement> & {
+}: Omit<React.TdHTMLAttributes<HTMLTableCellElement>, "align"> & {
   ref?: React.Ref<HTMLTableCellElement>
+  align?: TableCellAlign
 }) {
-  return <td ref={ref} className={cn("dr-table-cell", className)} {...props} />
+  return (
+    <td
+      ref={ref}
+      data-align={align}
+      className={cn("dr-table-cell", className)}
+      {...props}
+    />
+  )
 }
 
 function TableCaption({
@@ -118,3 +133,5 @@ export {
   TableCell,
   TableCaption,
 }
+
+export type { TableCellAlign }
