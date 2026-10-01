@@ -9,7 +9,7 @@ export function StatCard({ label, value, icon: Icon, trend }: StatCardProps) {
 
   return (
     <Card className="transition-all duration-200 hover:-translate-y-px hover:shadow-md">
-      <CardContent className="p-6">
+      <CardContent className="pt-[var(--density-container-p)]">
         <div className="flex items-center justify-between">
           <p className="text-muted-foreground text-sm">{label}</p>
           {Icon && <Icon className="text-muted-foreground h-4 w-4" />}

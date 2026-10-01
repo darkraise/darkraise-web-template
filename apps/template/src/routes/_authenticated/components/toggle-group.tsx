@@ -38,7 +38,7 @@ function ToggleGroupPage() {
   return (
     <ShowcasePage
       title="Toggle Group"
-      description={`A row of toggle buttons that share state. \`type="single"\` enforces one active item, \`type="multiple"\` allows any combination. Pass \`variant="outline"\` to render bordered items instead of the default solid fill on active.`}
+      description={`A row of toggle buttons that share state. \`type="single"\` enforces one active item, \`type="multiple"\` allows any combination. Pass \`variant="outline"\` to give every item a neutral border; active items take the same checked fill in both variants.`}
     >
       <ShowcaseExample
         title="Single — only one item active"

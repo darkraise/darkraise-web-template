@@ -42,9 +42,10 @@ const TABS_COLORS = allOf<TabsColor>()("default", "accent")
 const TABS_ORIENTATIONS = allOf<TabsOrientation>()("horizontal", "vertical")
 const TABS_BORDERS = allOf<TabsBorder>()("default", "strong", "accent", "none")
 
-// `color="accent"` retints neutral chrome to the brand hue, so only the
-// enclosed variant has anywhere to take it. The other three already draw
-// their active tab in the primary colour at the default setting.
+// `color="accent"` retints the enclosed variant's neutral chrome. The other
+// three have no accent treatment for it to change: default and outline
+// select with the neutral view pill, underline draws its bar in the
+// selected mark.
 const ACCENT_AWARE_VARIANTS = new Set<TabsVariant>(["enclosed"])
 
 function TabsMatrixCell({
@@ -83,8 +84,7 @@ function TabsMatrixCell({
       </Tabs>
       {redundant ? (
         <p className="text-muted-foreground/70 max-w-[20rem] text-[length:var(--text-2xs)]">
-          Identical to the default colour — this variant already draws its
-          active tab in the primary hue.
+          No effect on this variant: color only retints the enclosed variant.
         </p>
       ) : null}
     </div>

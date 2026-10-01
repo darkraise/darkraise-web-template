@@ -118,10 +118,9 @@ function ListboxPage() {
       >
         <div className="space-y-3">
           <p className="text-muted-foreground text-sm">
-            Marks selection with a 1px primary ring instead of a solid fill. The
-            ring is drawn inside the item&apos;s box, so switching variants
-            shifts no layout — useful for dense lists where a run of filled rows
-            reads heavy.
+            Outside the Glass preset the outline variant selects with the same
+            checked fill as the default. Under Glass it adds a 1px primary ring
+            inside the item&apos;s box, so switching variants shifts no layout.
           </p>
           <div className="flex flex-wrap gap-6">
             <div className="space-y-2">

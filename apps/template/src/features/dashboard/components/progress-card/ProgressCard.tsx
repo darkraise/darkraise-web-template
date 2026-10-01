@@ -19,7 +19,7 @@ export function ProgressCard({
 
   return (
     <Card>
-      <CardContent className="p-6">
+      <CardContent className="pt-[var(--density-container-p)]">
         <div className="flex items-center justify-between">
           <p className="text-muted-foreground text-sm">{label}</p>
           <p className="text-muted-foreground text-xs">

@@ -172,7 +172,7 @@ function CardsPage() {
           {CARD_SURFACE_INTENSITIES.map((intensity) => (
             <Card key={intensity} surfaceIntensity={intensity}>
               <CardHeader>
-                <CardTitle className="text-base">{intensity}</CardTitle>
+                <CardTitle>{intensity}</CardTitle>
                 <CardDescription>
                   {intensity === "none"
                     ? "Blends into the page behind it."
@@ -202,12 +202,12 @@ function CardsPage() {
 
 // "auto" (boolean true) tracks the active theme elevation: switching the
 // axis to "low" flattens the card's shadow, "high" deepens it. Explicit
-// levels override the axis (still go flat under data-elevation="flat").`}
+// levels ignore the axis and keep their shadow under data-elevation="flat".`}
       >
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
           <Card elevation>
             <CardHeader>
-              <CardTitle className="text-base">Auto (theme)</CardTitle>
+              <CardTitle>Auto (theme)</CardTitle>
               <CardDescription>
                 Tracks the active elevation axis.
               </CardDescription>
@@ -221,9 +221,7 @@ function CardsPage() {
           {(["low", "medium", "high"] as const).map((level) => (
             <Card key={level} elevation={level}>
               <CardHeader>
-                <CardTitle className="text-base capitalize">
-                  {level} (explicit)
-                </CardTitle>
+                <CardTitle className="capitalize">{level} (explicit)</CardTitle>
                 <CardDescription>Pinned regardless of axis.</CardDescription>
               </CardHeader>
               <CardContent>
@@ -500,7 +498,7 @@ function CardsPage() {
               tabIndex={0}
             >
               <CardHeader>
-                <CardTitle className="text-base">{article.title}</CardTitle>
+                <CardTitle>{article.title}</CardTitle>
                 <CardDescription>{article.meta}</CardDescription>
               </CardHeader>
               <CardContent>

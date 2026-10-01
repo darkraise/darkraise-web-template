@@ -23,7 +23,7 @@ export function SettingsCard({
   return (
     <Card>
       <CardHeader className="flex-row items-center justify-between gap-4 space-y-0">
-        <CardTitle className="flex items-center gap-2 text-lg">
+        <CardTitle className="flex items-center gap-2">
           <span className="text-primary flex shrink-0 [&>svg]:size-5">
             {icon}
           </span>

@@ -17,7 +17,7 @@ export function ChartCard({
     <Card className={className}>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <div>
-          <CardTitle className="text-base font-medium">{title}</CardTitle>
+          <CardTitle>{title}</CardTitle>
           {description && (
             <p className="text-muted-foreground text-xs">{description}</p>
           )}

@@ -188,7 +188,6 @@ function DashboardPage() {
   return (
     <>
       <PageHeader
-        breadcrumbs={[{ label: t("Dashboard") }]}
         title={t("Dashboard")}
         description={t("Overview of your store performance")}
         actions={
@@ -329,7 +328,6 @@ function DashboardSkeleton() {
   return (
     <>
       <PageHeader
-        breadcrumbs={[{ label: t("Dashboard") }]}
         title={t("Dashboard")}
         description={t("Overview of your store performance")}
       />

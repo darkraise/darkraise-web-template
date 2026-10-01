@@ -164,9 +164,7 @@ function CustomerDetailPage() {
           <TabsContent value="profile" className="mt-4">
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">
-                  {t("Contact Information")}
-                </CardTitle>
+                <CardTitle>{t("Contact Information")}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div>

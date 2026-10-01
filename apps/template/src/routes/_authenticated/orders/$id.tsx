@@ -224,9 +224,7 @@ function OrderDetailPage() {
               <TabsContent value="shipping" className="mt-4">
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-base">
-                      {t("Shipping Address")}
-                    </CardTitle>
+                    <CardTitle>{t("Shipping Address")}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <p className="text-muted-foreground text-sm">
@@ -239,9 +237,7 @@ function OrderDetailPage() {
               <TabsContent value="notes" className="mt-4">
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-base">
-                      {t("Order Notes")}
-                    </CardTitle>
+                    <CardTitle>{t("Order Notes")}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <p className="text-muted-foreground text-sm">
@@ -256,7 +252,7 @@ function OrderDetailPage() {
           <div className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">{t("Status")}</CardTitle>
+                <CardTitle>{t("Status")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <span
@@ -269,7 +265,7 @@ function OrderDetailPage() {
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">{t("Customer")}</CardTitle>
+                <CardTitle>{t("Customer")}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
                 <p className="text-sm font-medium">{order.customer.name}</p>

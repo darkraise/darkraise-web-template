@@ -19,7 +19,7 @@ export function ActivityFeed({
   return (
     <Card>
       <CardHeader className="pb-3">
-        <CardTitle className="text-base font-medium">{title}</CardTitle>
+        <CardTitle>{title}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
