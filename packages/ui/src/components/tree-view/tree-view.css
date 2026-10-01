@@ -28,10 +28,18 @@
 
   .dr-tree-view-branch-control,
   .dr-tree-view-item {
-    @apply focus-ring-tight flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none select-none;
+    @apply flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none select-none;
     transition:
       background-color var(--duration-fast),
       color var(--duration-fast);
+  }
+
+  /* Keyboard focus indicator, as its own rule rather than an `@apply` in
+     the base rule: see the note in menubar.css. */
+  .dr-tree-view-branch-control:focus-visible,
+  .dr-tree-view-item:focus-visible {
+    outline: 2px solid hsl(var(--focus-ring));
+    outline-offset: -2px;
   }
 
   .dr-tree-view-item {
@@ -63,15 +71,15 @@
     box-shadow: var(--affordance-glow);
   }
 
-  /* Selected — outlined variant: transparent surface with a 1px primary
+  /* Selected — outline variant: transparent surface with a 1px primary
      ring drawn as inset box-shadow (no layout shift vs the filled variant
      since the ring lives inside the element's box). Hover keeps the same
      ring but adds a low-alpha primary fill for a subtle pressed feel.
      Affordance glow composed as a second box-shadow layer so the outer
      glow shows around the ring without losing the ring itself. */
-  .dr-tree-view[data-variant="outlined"]
+  .dr-tree-view[data-variant="outline"]
     .dr-tree-view-branch-control[data-selected="true"],
-  .dr-tree-view[data-variant="outlined"]
+  .dr-tree-view[data-variant="outline"]
     .dr-tree-view-item[data-selected="true"] {
     @apply text-primary-text bg-transparent;
     box-shadow:
@@ -79,9 +87,9 @@
       var(--affordance-glow);
   }
 
-  .dr-tree-view[data-variant="outlined"]
+  .dr-tree-view[data-variant="outline"]
     .dr-tree-view-branch-control[data-selected="true"]:hover,
-  .dr-tree-view[data-variant="outlined"]
+  .dr-tree-view[data-variant="outline"]
     .dr-tree-view-item[data-selected="true"]:hover {
     @apply bg-primary/10 text-primary-text;
     box-shadow:
@@ -91,12 +99,12 @@
 
   .dr-tree-view-branch-control[data-disabled="true"],
   .dr-tree-view-item[data-disabled="true"] {
-    @apply pointer-events-none cursor-default opacity-50;
+    @apply pointer-events-none cursor-default opacity-[var(--disabled-opacity)];
   }
 
   .dr-tree-view[data-disabled="true"] .dr-tree-view-branch-control,
   .dr-tree-view[data-disabled="true"] .dr-tree-view-item {
-    @apply pointer-events-none cursor-default opacity-50;
+    @apply pointer-events-none cursor-default opacity-[var(--disabled-opacity)];
   }
 
   .dr-tree-view-branch-indicator {

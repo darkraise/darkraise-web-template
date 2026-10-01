@@ -158,6 +158,6 @@ describe("CommandDialog close-button alignment", () => {
     // A fixed px height here would drift the moment either axis moves.
     expect(body).toMatch(/--dr-command-row-h:/)
     expect(body).toMatch(/--text-sm/)
-    expect(body).toMatch(/--density-input-py/)
+    expect(body).toMatch(/--field-py/)
   })
 })

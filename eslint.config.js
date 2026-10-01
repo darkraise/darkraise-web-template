@@ -57,7 +57,13 @@ export default tseslint.config(
     // tsconfigs exclude from their project) so the parser's project service
     // can resolve every linted file.
     files: ["apps/template/src/**/*.{ts,tsx}", "packages/ui/src/**/*.{ts,tsx}"],
-    ignores: ["**/*.test.{ts,tsx}", "**/*.stories.tsx"],
+    ignores: [
+      "**/*.test.{ts,tsx}",
+      "**/*.stories.tsx",
+      // A Node-only helper for the style scan tests, excluded from the
+      // package tsconfig like the tests themselves.
+      "packages/ui/src/styles/interactive-classes.ts",
+    ],
     languageOptions: {
       parserOptions: {
         projectService: true,

@@ -6,7 +6,7 @@ import { cn } from "@lib/utils"
 import type { ButtonProps } from "@components/button"
 import "./pagination.css"
 
-export type PaginationVariant = "filled" | "outlined"
+export type PaginationVariant = "filled" | "outline"
 
 const PaginationContext = React.createContext<{ variant: PaginationVariant }>({
   variant: "filled",
@@ -68,7 +68,7 @@ function PaginationLink({
   ...props
 }: PaginationLinkProps) {
   const { variant } = React.useContext(PaginationContext)
-  const isOutlinedActive = isActive && variant === "outlined"
+  const isOutlineActive = isActive && variant === "outline"
 
   return (
     <a
@@ -76,7 +76,7 @@ function PaginationLink({
       className={cn("dr-btn", "dr-pagination-link", className)}
       data-variant={isActive && variant === "filled" ? "default" : "ghost"}
       data-size={size}
-      data-active={isOutlinedActive ? "true" : undefined}
+      data-active={isOutlineActive ? "true" : undefined}
       {...props}
     />
   )

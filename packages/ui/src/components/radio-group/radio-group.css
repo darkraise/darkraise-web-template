@@ -4,7 +4,11 @@
   }
 
   .dr-radio-group-item {
-    @apply border-primary text-primary focus-ring hit-area-24 aspect-square cursor-pointer rounded-full border disabled:cursor-not-allowed disabled:opacity-50;
+    @apply border-primary text-primary focus-ring hit-area-24 aspect-square cursor-pointer rounded-full border disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)];
+  }
+
+  .dr-radio-group-item[data-state="unchecked"] {
+    border-color: var(--field-edge);
   }
 
   .dr-radio-group-item[data-size="sm"] {
@@ -34,8 +38,8 @@
   .dr-radio-group-indicator {
     @apply data-[state=checked]:scale-100 data-[state=checked]:opacity-100 data-[state=unchecked]:scale-50 data-[state=unchecked]:opacity-0;
     transition:
-      opacity var(--duration-fast) ease-out,
-      transform var(--duration-fast) ease-out;
+      opacity var(--duration-fast) var(--ease-out),
+      transform var(--duration-fast) var(--ease-out);
   }
 
   /* Preset-driven affordance glow on the selected radio. Transparent
@@ -50,7 +54,7 @@
      --glass-state-active-inset to reinforce the "pressed in" state. */
   [data-preset="glass"] .dr-radio-group-item {
     background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
-    border: 1px solid var(--fog-20);
+    border-color: var(--field-edge);
     -webkit-backdrop-filter: var(--backdrop-filter);
     backdrop-filter: var(--backdrop-filter);
     box-shadow: var(--inset-hi), var(--glass-halo-raised);
@@ -76,6 +80,6 @@
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
     box-shadow: none;
-    opacity: 0.5;
+    opacity: var(--disabled-opacity);
   }
 }

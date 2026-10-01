@@ -29,7 +29,7 @@
 
   /* Each toast — absolute positioned within the toaster, transformed by index. */
   .dr-toast {
-    @apply bg-popover text-popover-foreground border-border pointer-events-auto absolute flex w-full items-start gap-3 rounded-lg border p-4 pr-9 shadow-[var(--shadow-dropdown)];
+    @apply bg-popover text-popover-foreground border-border pointer-events-auto absolute flex w-full items-start gap-3 rounded-[var(--overlay-radius)] border p-4 pr-9 shadow-[var(--shadow-dropdown)];
     -webkit-backdrop-filter: var(--backdrop-filter);
     backdrop-filter: var(--backdrop-filter);
 
@@ -234,7 +234,7 @@
      the label is guaranteed against the fill it sits on; default and loading
      set neither and fall back to the primary pair. */
   .dr-toast-action {
-    @apply focus-ring cursor-pointer rounded px-2 py-1 text-xs font-medium transition-colors;
+    @apply focus-ring cursor-pointer rounded-sm px-2 py-1 text-xs font-medium transition-colors;
     background-color: hsl(var(--toast-action, var(--primary-fill)));
     color: hsl(var(--toast-action-foreground, var(--primary-foreground)));
   }
@@ -246,7 +246,7 @@
     );
   }
   .dr-toast-cancel {
-    @apply focus-ring bg-muted text-muted-foreground hover:bg-muted/70 cursor-pointer rounded px-2 py-1 text-xs font-medium transition-colors;
+    @apply focus-ring bg-muted text-muted-foreground hover:bg-muted/70 cursor-pointer rounded-sm px-2 py-1 text-xs font-medium transition-colors;
   }
 
   /* Custom close button — stays in the toast's stylistic family by reading

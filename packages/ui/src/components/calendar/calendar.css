@@ -16,7 +16,8 @@
   }
 
   .dr-calendar-day-btn {
-    @apply data-[selected-single=true]:bg-primary-fill data-[selected-single=true]:text-primary-foreground data-[range-middle=true]:bg-accent data-[range-middle=true]:text-accent-foreground data-[range-start=true]:bg-primary-fill data-[range-start=true]:text-primary-foreground data-[range-end=true]:bg-primary-fill data-[range-end=true]:text-primary-foreground data-[range-single=true]:bg-primary-fill data-[range-single=true]:text-primary-foreground flex aspect-square w-[var(--density-cell)] flex-col gap-1 leading-none font-normal data-[range-end=true]:rounded-md data-[range-middle=true]:rounded-none data-[range-single=true]:rounded-md data-[range-start=true]:rounded-md;
+    @apply data-[selected-single=true]:bg-primary-fill data-[selected-single=true]:text-primary-foreground data-[range-middle=true]:bg-accent data-[range-middle=true]:text-accent-foreground data-[range-start=true]:bg-primary-fill data-[range-start=true]:text-primary-foreground data-[range-end=true]:bg-primary-fill data-[range-end=true]:text-primary-foreground data-[range-single=true]:bg-primary-fill data-[range-single=true]:text-primary-foreground flex aspect-square w-[var(--control-height-default)] flex-col gap-1 leading-none font-normal data-[range-end=true]:rounded-md data-[range-middle=true]:rounded-none data-[range-single=true]:rounded-md data-[range-start=true]:rounded-md;
+    --btn-height: var(--control-height-default);
     transition:
       background-color var(--duration-fast),
       color var(--duration-fast);
@@ -74,8 +75,15 @@
   ) {
     position: relative;
     z-index: 10;
-    outline: 3px solid hsl(var(--focus-ring));
-    outline-offset: -1px;
+    outline: 2px solid hsl(var(--focus-ring));
+    outline-offset: -2px;
+  }
+
+  /* Days sit edge to edge along a week, so the ring stays inside the cell.
+     The day is a `.dr-btn`; the compound selector outranks the button's
+     own :focus-visible rule. */
+  .dr-btn.dr-calendar-day-btn {
+    @apply focus-ring-inset;
   }
 
   .dr-calendar-grid {
@@ -113,7 +121,8 @@
   }
 
   .dr-calendar-nav-btn {
-    @apply pointer-events-auto aspect-square w-[var(--density-cell)] p-0 select-none aria-disabled:opacity-50;
+    @apply pointer-events-auto aspect-square w-[var(--control-height-default)] p-0 select-none aria-disabled:opacity-[var(--disabled-opacity)];
+    --btn-height: var(--control-height-default);
   }
 
   .dr-calendar-month-caption {
@@ -137,7 +146,14 @@
   }
 
   .dr-calendar-dropdown-trigger {
-    @apply h-7 w-auto gap-1 px-2 text-sm font-medium shadow-none;
+    @apply w-auto gap-1 px-2 text-sm font-medium shadow-none;
+  }
+
+  /* Two classes outrank the field height .dr-select-trigger sets, which
+     loads later: the caption row is a fixed h-8, so the dropdowns stay h-7
+     at every density. */
+  .dr-calendar-dropdown-root .dr-calendar-dropdown-trigger {
+    @apply h-7;
   }
 
   .dr-calendar-dropdown-content {
@@ -153,7 +169,7 @@
   }
 
   .dr-calendar-weekday {
-    @apply text-muted-foreground w-[var(--density-cell)] rounded-md text-center text-xs font-normal select-none;
+    @apply text-muted-foreground w-[var(--control-height-default)] rounded-md text-center text-xs font-normal select-none;
   }
 
   .dr-calendar-week {
@@ -161,7 +177,7 @@
   }
 
   .dr-calendar-week-number-header {
-    @apply w-[var(--density-cell)] select-none;
+    @apply w-[var(--control-height-default)] select-none;
   }
 
   .dr-calendar-week-number {
@@ -169,11 +185,11 @@
   }
 
   .dr-calendar-week-number-cell {
-    @apply flex aspect-square w-[var(--density-cell)] items-center justify-center text-center;
+    @apply flex aspect-square w-[var(--control-height-default)] items-center justify-center text-center;
   }
 
   .dr-calendar-day {
-    @apply relative aspect-square w-[var(--density-cell)] p-0 text-center select-none;
+    @apply relative aspect-square w-[var(--control-height-default)] p-0 text-center select-none;
   }
 
   .dr-calendar-range-start {
@@ -197,7 +213,7 @@
   }
 
   .dr-calendar-disabled {
-    @apply text-muted-foreground opacity-50;
+    @apply text-muted-foreground opacity-[var(--disabled-opacity)];
   }
 
   .dr-calendar-hidden {

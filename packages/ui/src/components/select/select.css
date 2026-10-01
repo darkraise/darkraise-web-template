@@ -1,10 +1,13 @@
 @layer components {
   .dr-select-trigger {
-    @apply glass border-input text-card-foreground focus-ring-input data-[placeholder]:text-muted-foreground flex w-full cursor-pointer items-center justify-between border px-[var(--density-input-px)] py-[var(--density-input-py)] text-sm disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1;
+    @apply glass border-input text-card-foreground focus-ring-input data-[placeholder]:text-muted-foreground flex w-full cursor-pointer items-center justify-between border px-[var(--field-px)] text-sm disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)] [&>span]:line-clamp-1;
+    height: var(--field-height);
     /* Pinned out of the surface-intensity axis on purpose: fields hold
        still while panels move around them. The rung is container-relative
        -- see `--control-surface` in theme.css. */
     background-color: hsl(var(--control-surface) / var(--surface-opacity, 1));
+    border-radius: var(--field-radius);
+    border-bottom-color: var(--field-edge);
   }
 
   .dr-select-content {
@@ -13,11 +16,11 @@
        content-available-height]` referenced a Radix CSS var that nothing
        in this in-house port ever set, so the constraint silently fell
        back to "no max" and the dropdown would just grow off-screen. */
-    @apply text-popover-foreground data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 relative z-50 max-h-80 min-w-[8rem] overflow-x-hidden overflow-y-auto rounded-md border;
-    background: var(--surface-overlay-bg);
+    @apply text-popover-foreground data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 relative z-50 max-h-80 min-w-[8rem] overflow-x-hidden overflow-y-auto rounded-[var(--overlay-radius)] border;
+    background: var(--overlay-bg);
     background-blend-mode: var(--surface-overlay-blend-mode);
-    border-color: var(--surface-overlay-border);
-    box-shadow: var(--surface-overlay-shadow);
+    border-color: var(--overlay-border);
+    box-shadow: var(--overlay-shadow);
     -webkit-backdrop-filter: var(--backdrop-filter);
     backdrop-filter: var(--backdrop-filter);
   }
@@ -39,7 +42,7 @@
   }
 
   .dr-select-item {
-    @apply focus:bg-accent focus:text-accent-foreground relative flex w-full cursor-pointer items-center rounded-sm py-[var(--density-row-py)] pr-2 pl-8 text-sm outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50;
+    @apply focus:bg-accent focus:text-accent-foreground relative flex w-full cursor-pointer items-center rounded-sm py-[var(--density-row-py)] pr-2 pl-8 text-sm outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-[var(--disabled-opacity)];
   }
 
   .dr-select-separator {
@@ -48,7 +51,8 @@
 
   [data-preset="glass"] .dr-select-trigger {
     background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
-    border: 1px solid var(--fog-15);
+    border-color: var(--fog-15);
+    border-bottom-color: var(--field-edge);
     -webkit-backdrop-filter: var(--backdrop-filter);
     backdrop-filter: var(--backdrop-filter);
     box-shadow: var(--inset-hi), var(--glass-halo-raised);
@@ -69,11 +73,11 @@
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
     box-shadow: none;
-    opacity: 0.5;
+    opacity: var(--disabled-opacity);
   }
 
   /* Keyboard focus indicator. Written as its own rule rather than an
-     `@apply focus-ring-tight` inside the base rule: prettier's Tailwind class
+     `@apply focus-ring-inset` inside the base rule: prettier's Tailwind class
      sorter reorders `@apply` lists on every commit, and for the rows whose
      base rule carries `focus:outline-none` that ordering is what decides the
      tie between two equal-specificity pseudo-class rules. An explicit rule

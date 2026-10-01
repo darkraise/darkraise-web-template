@@ -28,7 +28,7 @@
   }
 
   .dr-carousel-previous {
-    @apply absolute aspect-square w-[var(--density-cell)] rounded-full;
+    @apply absolute aspect-square w-[var(--control-height)] rounded-full;
   }
 
   .dr-carousel-previous[data-orientation="horizontal"] {
@@ -40,7 +40,7 @@
   }
 
   .dr-carousel-next {
-    @apply absolute aspect-square w-[var(--density-cell)] rounded-full;
+    @apply absolute aspect-square w-[var(--control-height)] rounded-full;
   }
 
   .dr-carousel-next[data-orientation="horizontal"] {
@@ -64,7 +64,7 @@
   }
 
   .dr-carousel-indicator {
-    @apply bg-muted hover:bg-muted-foreground/40 hit-area-24 inline-block h-2 w-2 cursor-pointer rounded-full border-0 p-0 transition-[background-color,width,height];
+    @apply focus-ring bg-muted hover:bg-muted-foreground/40 hit-area-24 inline-block h-2 w-2 cursor-pointer rounded-full border-0 p-0 transition-[background-color,width,height];
     transition-duration: var(--duration-normal);
   }
 
@@ -80,9 +80,5 @@
 
   .dr-carousel-indicator[data-readonly="true"] {
     @apply pointer-events-none cursor-default;
-  }
-
-  .dr-carousel-indicator:focus-visible {
-    @apply ring-ring ring-2 ring-offset-2 outline-none;
   }
 }

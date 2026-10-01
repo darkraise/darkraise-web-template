@@ -2,7 +2,10 @@
   .dr-toggle {
     position: relative;
     isolation: isolate;
-    @apply focus-ring-inset inline-flex cursor-pointer items-center justify-center gap-2 rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size)] [&_svg]:shrink-0;
+    /* Transparent where the variant draws no edge, so default and outline
+       toggles measure the same. */
+    border: 1px solid transparent;
+    @apply focus-ring inline-flex cursor-pointer items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)] [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size)] [&_svg]:shrink-0;
     transition:
       background-color var(--duration-fast),
       color var(--duration-fast),
@@ -19,10 +22,6 @@
     @apply bg-transparent;
   }
 
-  .dr-toggle[data-variant="default"]:hover {
-    @apply bg-muted text-muted-foreground;
-  }
-
   .dr-toggle[data-variant="default"][data-state="on"] {
     @apply bg-primary-fill text-primary-foreground;
     /* Press washes away from the label: the fill sits at its contrast floor. */
@@ -33,17 +32,9 @@
     box-shadow: var(--shadow-button), var(--affordance-glow);
   }
 
-  .dr-toggle[data-variant="default"][data-state="on"]:hover {
-    @apply bg-primary-fill text-primary-foreground;
-  }
-
   /* Outline variant — bordered, transparent on both states. */
   .dr-toggle[data-variant="outline"] {
     @apply border-input border bg-transparent;
-  }
-
-  .dr-toggle[data-variant="outline"]:hover {
-    @apply bg-accent text-accent-foreground;
   }
 
   .dr-toggle[data-variant="outline"][data-state="on"] {
@@ -54,25 +45,34 @@
     box-shadow: var(--affordance-glow);
   }
 
-  .dr-toggle[data-variant="outline"][data-state="on"]:hover {
-    @apply bg-primary/10 text-primary-text;
-  }
-
-  /* X and Y both use --density-button-py* so padding stays symmetric and
-     tracks the density axis. Both min-width AND min-height use
-     --density-cell* so icon-only toggles land on a square floor
-     (e.g. 32×32 at cozy default); text labels grow horizontally past
-     the floor as their content requires. */
+  /* Same heights as the button steps. min-width equals the height, so an
+     icon-only toggle is square (32×32 at cozy default); a text label grows
+     past it horizontally. */
   .dr-toggle[data-size="default"] {
-    @apply aspect-auto min-h-[var(--density-cell)] min-w-[var(--density-cell)] px-[var(--density-button-py)] py-[var(--density-button-py)];
+    @apply aspect-auto;
+    height: var(--btn-height);
+    min-width: var(--btn-height);
+    padding-inline: var(--btn-px-tight);
   }
 
   .dr-toggle[data-size="sm"] {
-    @apply min-h-[var(--density-cell-sm)] min-w-[var(--density-cell-sm)] px-[var(--density-button-py-sm)] py-[var(--density-button-py-sm)];
+    height: max(
+      calc(var(--btn-height) - 0.25rem),
+      var(--control-height-xs),
+      var(--control-height-min)
+    );
+    min-width: max(
+      calc(var(--btn-height) - 0.25rem),
+      var(--control-height-xs),
+      var(--control-height-min)
+    );
+    padding-inline: max(calc(var(--btn-px-tight) - 0.25rem), 0.125rem);
   }
 
   .dr-toggle[data-size="lg"] {
-    @apply min-h-[var(--density-cell-lg)] min-w-[var(--density-cell-lg)] px-[var(--density-button-py-lg)] py-[var(--density-button-py-lg)];
+    height: calc(var(--btn-height) + 0.5rem);
+    min-width: calc(var(--btn-height) + 0.5rem);
+    padding-inline: calc(var(--btn-px-tight) + 0.25rem);
   }
 
   /* Glass-preset frosted Toggle. Variant-aware to preserve the design
@@ -90,8 +90,10 @@
     box-shadow: var(--inset-hi), var(--glass-halo-raised);
   }
 
-  [data-preset="glass"] .dr-toggle[data-variant="default"]:hover,
-  [data-preset="glass"] .dr-toggle[data-variant="outline"]:hover {
+  [data-preset="glass"]
+    .dr-toggle[data-variant="default"]:where(:not(:disabled)):hover,
+  [data-preset="glass"]
+    .dr-toggle[data-variant="outline"]:where(:not(:disabled)):hover {
     background-image: linear-gradient(135deg, var(--fog-20), var(--fog-10));
     box-shadow:
       var(--inset-hi), var(--glass-halo-raised), var(--glass-state-hover-glow);
@@ -109,7 +111,7 @@
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
     box-shadow: none;
-    opacity: 0.5;
+    opacity: var(--disabled-opacity);
   }
 
   /* Interaction state layer — see theme.css. Painted by a pseudo-element so
@@ -124,9 +126,13 @@
     background: var(--state-layer-color, currentColor);
     opacity: 0;
     pointer-events: none;
-    transition: opacity var(--state-layer-out) ease-out;
+    transition: opacity var(--state-layer-out) var(--ease-out);
   }
-  .dr-toggle:active::before {
+  .dr-toggle:not(:disabled):hover::before {
+    opacity: var(--state-layer-hover);
+    transition-duration: var(--state-layer-in);
+  }
+  .dr-toggle:not(:disabled):active::before {
     opacity: var(--state-layer-press);
     transition-duration: var(--state-layer-in);
   }

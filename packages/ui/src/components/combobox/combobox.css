@@ -4,7 +4,7 @@
   }
 
   .dr-combobox[data-disabled="true"] {
-    @apply pointer-events-none opacity-60;
+    @apply pointer-events-none opacity-[var(--disabled-opacity)];
   }
 
   .dr-combobox-label {
@@ -13,26 +13,70 @@
 
   .dr-combobox-control {
     @apply relative flex w-full items-center gap-1;
+    height: var(--field-height);
   }
 
   .dr-combobox-input {
     @apply pr-16;
   }
 
+  /* The input fills the control instead of carrying its own fixed height:
+     under glass the control draws a border as well, and a full-height box
+     inside it would stand 2px taller than every other field. */
+  .dr-combobox-control > .dr-combobox-input {
+    height: 100%;
+  }
+
   .dr-combobox-clear-trigger {
-    @apply text-muted-foreground hover:text-foreground focus-ring-tight absolute top-1/2 right-9 inline-flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-sm transition-colors;
+    @apply text-muted-foreground focus-ring-inset absolute top-1/2 right-9 inline-flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-sm transition-colors;
   }
 
   .dr-combobox-trigger {
-    @apply text-muted-foreground hover:text-foreground focus-ring-tight absolute top-1/2 right-2 inline-flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-sm transition-colors;
+    @apply text-muted-foreground focus-ring-inset absolute top-1/2 right-2 inline-flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-sm transition-colors;
+  }
+
+  /* Shared interaction state layer (button.css). Both triggers are already
+     absolutely positioned, which anchors the wash; isolation keeps it
+     above the transparent background and below the icon. MultiSelect's
+     clear and toggle carry these classes too. The label rule keeps its
+     guard in :where() so it keeps the `hover:` utility's specificity. */
+  .dr-combobox-clear-trigger,
+  .dr-combobox-trigger {
+    isolation: isolate;
+  }
+  .dr-combobox-clear-trigger:where(:not(:disabled)):hover,
+  .dr-combobox-trigger:where(:not(:disabled)):hover {
+    @apply text-foreground;
+  }
+  .dr-combobox-clear-trigger::before,
+  .dr-combobox-trigger::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--state-layer-color, currentColor);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--state-layer-out) var(--ease-out);
+  }
+  .dr-combobox-clear-trigger:not(:disabled):hover::before,
+  .dr-combobox-trigger:not(:disabled):hover::before {
+    opacity: var(--state-layer-hover);
+    transition-duration: var(--state-layer-in);
+  }
+  .dr-combobox-clear-trigger:not(:disabled):active::before,
+  .dr-combobox-trigger:not(:disabled):active::before {
+    opacity: var(--state-layer-press);
+    transition-duration: var(--state-layer-in);
   }
 
   .dr-combobox-content {
-    @apply text-popover-foreground data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 absolute top-full right-0 left-0 z-50 mt-1 max-h-72 overflow-hidden rounded-md border outline-none;
-    background: var(--surface-overlay-bg);
+    @apply text-popover-foreground data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 absolute top-full right-0 left-0 z-50 mt-1 max-h-72 overflow-hidden rounded-[var(--overlay-radius)] border outline-none;
+    background: var(--overlay-bg);
     background-blend-mode: var(--surface-overlay-blend-mode);
-    border-color: var(--surface-overlay-border);
-    box-shadow: var(--surface-overlay-shadow);
+    border-color: var(--overlay-border);
+    box-shadow: var(--overlay-shadow);
     -webkit-backdrop-filter: var(--backdrop-filter);
     backdrop-filter: var(--backdrop-filter);
   }
@@ -60,7 +104,7 @@
   }
 
   .dr-combobox-item[data-disabled="true"] {
-    @apply pointer-events-none opacity-50;
+    @apply pointer-events-none opacity-[var(--disabled-opacity)];
   }
 
   .dr-combobox-item-text {
@@ -78,7 +122,7 @@
   [data-preset="glass"] .dr-combobox-control {
     background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
     border: 1px solid var(--fog-15);
-    border-radius: var(--radius);
+    border-radius: var(--field-radius);
     -webkit-backdrop-filter: var(--backdrop-filter);
     backdrop-filter: var(--backdrop-filter);
     box-shadow: var(--inset-hi), var(--glass-halo-raised);

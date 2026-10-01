@@ -4,7 +4,7 @@
   }
 
   .dr-rating-group[data-disabled="true"] {
-    @apply pointer-events-none opacity-50;
+    @apply pointer-events-none opacity-[var(--disabled-opacity)];
   }
 
   .dr-rating-group-label {
@@ -21,7 +21,6 @@
       transform var(--duration-fast),
       color var(--duration-fast);
     user-select: none;
-    touch-action: manipulation;
   }
 
   .dr-rating-group-item:hover {

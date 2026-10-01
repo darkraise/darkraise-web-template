@@ -1,10 +1,12 @@
 @layer components {
   .dr-textarea {
-    @apply glass border-input text-card-foreground focus-ring-input placeholder:text-muted-foreground flex min-h-[72px] w-full border px-[var(--density-input-px)] py-[var(--density-input-py)] text-base disabled:cursor-not-allowed disabled:opacity-50 md:text-sm;
+    @apply glass border-input text-card-foreground focus-ring-input placeholder:text-muted-foreground flex min-h-[72px] w-full border px-[var(--field-px)] py-[var(--field-py)] text-base disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)] md:text-sm;
     /* Pinned out of the surface-intensity axis on purpose: fields hold
        still while panels move around them. The rung is container-relative
        -- see `--control-surface` in theme.css. */
     background-color: hsl(var(--control-surface) / var(--surface-opacity, 1));
+    border-radius: var(--radius);
+    border-bottom-color: var(--field-edge);
   }
 
   /* Grouped form — relative wrapper hosts an absolute action button. The
@@ -35,7 +37,8 @@
      .dr-textarea-group wrapper is layout-only). */
   [data-preset="glass"] .dr-textarea {
     background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
-    border: 1px solid var(--fog-15);
+    border-color: var(--fog-15);
+    border-bottom-color: var(--field-edge);
     -webkit-backdrop-filter: var(--backdrop-filter);
     backdrop-filter: var(--backdrop-filter);
     box-shadow: var(--inset-hi), var(--glass-halo-raised);
@@ -53,7 +56,7 @@
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
     box-shadow: none;
-    opacity: 0.5;
+    opacity: var(--disabled-opacity);
   }
 
   /* Read-only is not disabled: the value is legible, selectable and

@@ -144,6 +144,15 @@ export function resolveNeutralScale(surfaceColor: SurfaceColor): ColorScale {
 /** Body-text AA, with a shade of headroom so rounding cannot drop under it. */
 /** A shape or boundary must be distinguishable from its ground. */
 const MARK_FLOOR = 3
+/**
+ * The field edge's floor under glass. A glass card is translucent over the
+ * gradient canvas, so the ground a field really sits on drifts from the
+ * opaque values the edge is solved against. 3.5 kept the rendered edge at
+ * 3:1 on medium and strong glass cards for the default accent and surface
+ * (the template's control-contract e2e spec); other accents, surfaces and
+ * background intensities are not measured.
+ */
+const GLASS_EDGE_FLOOR = 3.5
 /** Text must be readable, whatever else the colour is also used for. */
 const TEXT_FLOOR = 4.5
 /**
@@ -746,6 +755,23 @@ export function generateTokens(
   )
 
   const primaryMark = ensureContrast(primaryValue, background, MARK_FLOOR)
+  // The 3:1 edge a field draws along its bottom and an unchecked checkbox,
+  // radio or switch draws all round. It is one value per theme, so it is
+  // solved against every ground a control can sit on. It stays out of
+  // BORDER_TOKENS: borderIntensity is a taste axis, and its subtle step
+  // would pull the edge back under 3:1.
+  const fieldEdge = tierClearingAll(
+    neutral,
+    [
+      background,
+      card,
+      recipe.surfaceSunken(surface, mode),
+      controlWell.deep,
+      recipe.surfaceSidebar(surface, mode),
+      recipe.surfaceHeader(surface, mode),
+    ],
+    preset === "glass" ? GLASS_EDGE_FLOOR : MARK_FLOOR,
+  )
 
   const tokens: Record<string, string> = {
     "--primary": primaryMark,
@@ -815,6 +841,7 @@ export function generateTokens(
 
     "--border": border,
     "--input": inputValue,
+    "--field-edge-color": fieldEdge,
 
     "--surface-base": capCanvasSaturation(
       mode === "light" ? surface[50] : surface[950],

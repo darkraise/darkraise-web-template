@@ -4,7 +4,7 @@
   }
 
   .dr-date-picker[data-disabled="true"] {
-    @apply pointer-events-none opacity-60;
+    @apply pointer-events-none opacity-[var(--disabled-opacity)];
   }
 
   .dr-date-picker-label {
@@ -20,19 +20,50 @@
   }
 
   .dr-date-picker-trigger {
-    @apply text-muted-foreground hover:text-foreground focus-ring-tight absolute top-1/2 right-2 inline-flex h-6 w-6 -translate-y-1/2 cursor-pointer items-center justify-center rounded-sm transition-colors;
+    @apply text-muted-foreground focus-ring-inset absolute top-1/2 right-2 inline-flex h-6 w-6 -translate-y-1/2 cursor-pointer items-center justify-center rounded-sm transition-colors;
+  }
+
+  /* Shared interaction state layer (button.css). The trigger is already
+     absolutely positioned, which anchors the wash; isolation keeps it
+     above the transparent background and below the icon. The label rule
+     keeps its guard in :where() so it keeps the `hover:` utility's
+     specificity. */
+  .dr-date-picker-trigger {
+    isolation: isolate;
+  }
+  .dr-date-picker-trigger:where(:not(:disabled)):hover {
+    @apply text-foreground;
+  }
+  .dr-date-picker-trigger::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--state-layer-color, currentColor);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--state-layer-out) var(--ease-out);
+  }
+  .dr-date-picker-trigger:not(:disabled):hover::before {
+    opacity: var(--state-layer-hover);
+    transition-duration: var(--state-layer-in);
+  }
+  .dr-date-picker-trigger:not(:disabled):active::before {
+    opacity: var(--state-layer-press);
+    transition-duration: var(--state-layer-in);
   }
 
   .dr-date-picker-trigger[data-disabled="true"] {
-    @apply pointer-events-none opacity-50;
+    @apply pointer-events-none opacity-[var(--disabled-opacity)];
   }
 
   .dr-date-picker-content {
-    @apply text-popover-foreground data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 flex flex-col gap-2 rounded-md border p-2 outline-none;
-    background: var(--surface-overlay-bg);
+    @apply text-popover-foreground data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 flex flex-col gap-2 rounded-[var(--overlay-radius)] border p-2 outline-none;
+    background: var(--overlay-bg);
     background-blend-mode: var(--surface-overlay-blend-mode);
-    border-color: var(--surface-overlay-border);
-    box-shadow: var(--surface-overlay-shadow);
+    border-color: var(--overlay-border);
+    box-shadow: var(--overlay-shadow);
     -webkit-backdrop-filter: var(--backdrop-filter);
     backdrop-filter: var(--backdrop-filter);
   }
@@ -54,7 +85,7 @@
   }
 
   .dr-date-picker-preset {
-    @apply text-foreground hover:bg-accent hover:text-accent-foreground focus-ring-tight inline-flex items-center justify-center rounded-sm border px-2 py-1 text-xs transition-colors;
+    @apply text-foreground hover:bg-accent hover:text-accent-foreground focus-ring-inset inline-flex items-center justify-center rounded-sm border px-2 py-1 text-xs transition-colors;
   }
 
   /* The trigger is a small icon button overlaid on top of the
@@ -62,7 +93,7 @@
      glass frosting). Give it a subtle hover/open halo rather than the
      full gradient + border treatment, which would visually conflict
      with the already-frosted input chrome behind it. */
-  [data-preset="glass"] .dr-date-picker-trigger:hover {
+  [data-preset="glass"] .dr-date-picker-trigger:where(:not(:disabled)):hover {
     background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
     box-shadow: var(--glass-state-hover-glow);
   }

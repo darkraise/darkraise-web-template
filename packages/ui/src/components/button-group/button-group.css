@@ -33,4 +33,10 @@
   .dr-button-group > *:focus-visible {
     @apply z-10;
   }
+
+  /* Grouped buttons share an edge, so an outset ring would spill over the
+     neighbouring button. */
+  .dr-button-group .dr-btn {
+    @apply focus-ring-inset;
+  }
 }

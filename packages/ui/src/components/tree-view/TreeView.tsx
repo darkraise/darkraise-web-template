@@ -21,7 +21,7 @@ export type {
   TreeViewSelectionChangeDetails,
 }
 
-export type TreeViewVariant = "filled" | "outlined"
+export type TreeViewVariant = "filled" | "outline"
 
 interface TreeViewContextValue extends UseTreeViewReturn {
   data?: TreeNode
@@ -63,7 +63,7 @@ export interface TreeViewProps
   /**
    * Visual treatment for selected items.
    * - `filled` (default): solid primary background on the selected row
-   * - `outlined`: transparent background with a 1px inset ring in primary
+   * - `outline`: transparent background with a 1px inset ring in primary
    */
   variant?: TreeViewVariant
 }

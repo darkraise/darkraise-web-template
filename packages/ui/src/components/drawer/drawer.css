@@ -9,9 +9,9 @@
     @apply modal-surface text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 flex flex-col border ease-in-out;
     /* Modal-tier surface: bg + border from preset-driven tokens;
        --elevation-high stays via .modal-surface. */
-    background: var(--surface-overlay-bg);
+    background: var(--overlay-bg);
     background-blend-mode: var(--surface-overlay-blend-mode);
-    border-color: var(--surface-overlay-border);
+    border-color: var(--overlay-border);
     -webkit-backdrop-filter: var(--backdrop-filter);
     backdrop-filter: var(--backdrop-filter);
   }
@@ -30,22 +30,22 @@
      matching height cap a tall drawer simply grew past it and its footer
      became unreachable behind the locked page scroll. */
   .dr-drawer-content[data-direction="bottom"] {
-    @apply data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom inset-x-0 bottom-0 mt-24 h-auto rounded-t-[10px];
+    @apply data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom inset-x-0 bottom-0 mt-24 h-auto rounded-t-[var(--overlay-radius)];
   }
 
   /* The `mb-24` reserves a strip of page at the far edge; without a
      matching height cap a tall drawer simply grew past it and its footer
      became unreachable behind the locked page scroll. */
   .dr-drawer-content[data-direction="top"] {
-    @apply data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top inset-x-0 top-0 mb-24 h-auto rounded-b-[10px];
+    @apply data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top inset-x-0 top-0 mb-24 h-auto rounded-b-[var(--overlay-radius)];
   }
 
   .dr-drawer-content[data-direction="left"] {
-    @apply data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left inset-y-0 left-0 h-full w-3/4 rounded-r-[10px] sm:max-w-sm;
+    @apply data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left inset-y-0 left-0 h-full w-3/4 rounded-r-[var(--overlay-radius)] sm:max-w-sm;
   }
 
   .dr-drawer-content[data-direction="right"] {
-    @apply data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-3/4 rounded-l-[10px] sm:max-w-sm;
+    @apply data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-3/4 rounded-l-[var(--overlay-radius)] sm:max-w-sm;
   }
 
   .dr-drawer-content[data-direction="bottom"],

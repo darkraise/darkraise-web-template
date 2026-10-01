@@ -1,6 +1,6 @@
 @layer components {
   .dr-menubar {
-    @apply bg-background flex items-center space-x-1 rounded-md border p-1 py-[var(--density-button-py)];
+    @apply bg-background flex items-center space-x-1 rounded-md border p-1 py-[var(--btn-px-tight)];
     /* Glass-frost the menubar (no-op under Default). The dr-menu-content
        and dr-menu-sub-content rules already consume backdrop-filter for the
        popover surfaces. */
@@ -9,7 +9,7 @@
   }
 
   .dr-menubar-trigger {
-    @apply hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex cursor-pointer items-center rounded-sm px-[var(--density-button-px)] py-[var(--density-button-py)] text-sm font-medium transition-colors outline-none select-none;
+    @apply hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex cursor-pointer items-center rounded-sm px-[var(--btn-px)] py-[var(--btn-px-tight)] text-sm font-medium transition-colors outline-none select-none;
   }
 
   .dr-menubar-sub-trigger {
@@ -17,35 +17,35 @@
   }
 
   .dr-menubar-sub-content {
-    @apply text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 min-w-[8rem] origin-[--radix-menubar-content-transform-origin] overflow-hidden rounded-md border p-1;
-    background: var(--surface-overlay-bg);
+    @apply text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 min-w-[8rem] origin-[--radix-menubar-content-transform-origin] overflow-hidden rounded-[var(--overlay-radius)] border p-1;
+    background: var(--overlay-bg);
     background-blend-mode: var(--surface-overlay-blend-mode);
-    border-color: var(--surface-overlay-border);
-    box-shadow: var(--surface-overlay-shadow);
+    border-color: var(--overlay-border);
+    box-shadow: var(--overlay-shadow);
     -webkit-backdrop-filter: var(--backdrop-filter);
     backdrop-filter: var(--backdrop-filter);
   }
 
   .dr-menubar-content {
-    @apply text-popover-foreground data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 min-w-[12rem] origin-[--radix-menubar-content-transform-origin] overflow-hidden rounded-md border p-1;
-    background: var(--surface-overlay-bg);
+    @apply text-popover-foreground data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 min-w-[12rem] origin-[--radix-menubar-content-transform-origin] overflow-hidden rounded-[var(--overlay-radius)] border p-1;
+    background: var(--overlay-bg);
     background-blend-mode: var(--surface-overlay-blend-mode);
-    border-color: var(--surface-overlay-border);
-    box-shadow: var(--surface-overlay-shadow);
+    border-color: var(--overlay-border);
+    box-shadow: var(--overlay-shadow);
     -webkit-backdrop-filter: var(--backdrop-filter);
     backdrop-filter: var(--backdrop-filter);
   }
 
   .dr-menubar-item {
-    @apply hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground relative flex cursor-pointer items-center rounded-sm px-2 py-[var(--density-row-py)] text-sm transition-colors outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:cursor-default data-[disabled]:opacity-50;
+    @apply hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground relative flex cursor-pointer items-center rounded-sm px-2 py-[var(--density-row-py)] text-sm transition-colors outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:cursor-default data-[disabled]:opacity-[var(--disabled-opacity)];
   }
 
   .dr-menubar-checkbox-item {
-    @apply hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground relative flex cursor-pointer items-center rounded-sm py-[var(--density-row-py)] pr-2 pl-8 text-sm transition-colors outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:cursor-default data-[disabled]:opacity-50;
+    @apply hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground relative flex cursor-pointer items-center rounded-sm py-[var(--density-row-py)] pr-2 pl-8 text-sm transition-colors outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:cursor-default data-[disabled]:opacity-[var(--disabled-opacity)];
   }
 
   .dr-menubar-radio-item {
-    @apply hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground relative flex cursor-pointer items-center rounded-sm py-[var(--density-row-py)] pr-2 pl-8 text-sm transition-colors outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:cursor-default data-[disabled]:opacity-50;
+    @apply hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground relative flex cursor-pointer items-center rounded-sm py-[var(--density-row-py)] pr-2 pl-8 text-sm transition-colors outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:cursor-default data-[disabled]:opacity-[var(--disabled-opacity)];
   }
 
   .dr-menubar-label {
@@ -76,7 +76,7 @@
   }
 
   /* Keyboard focus indicator. Written as its own rule rather than an
-     `@apply focus-ring-tight` inside the base rule: prettier's Tailwind class
+     `@apply focus-ring-inset` inside the base rule: prettier's Tailwind class
      sorter reorders `@apply` lists on every commit, and for the rows whose
      base rule carries `focus:outline-none` that ordering is what decides the
      tie between two equal-specificity pseudo-class rules. An explicit rule

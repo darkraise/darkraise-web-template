@@ -15,11 +15,11 @@
   .dr-tabs-indicator {
     @apply pointer-events-none absolute top-0 left-0 z-0;
     transition:
-      translate var(--duration-normal) ease-out,
-      width var(--duration-normal) ease-out,
-      height var(--duration-normal) ease-out,
-      top var(--duration-normal) ease-out,
-      left var(--duration-normal) ease-out;
+      translate var(--duration-normal) var(--ease-out),
+      width var(--duration-normal) var(--ease-out),
+      height var(--duration-normal) var(--ease-out),
+      top var(--duration-normal) var(--ease-out),
+      left var(--duration-normal) var(--ease-out);
   }
 
   /* Suppress the very first transition: on mount the indicator has no
@@ -48,7 +48,7 @@
   /* z-10 keeps labels above the sliding indicator, which shares the
      strip's stacking context at z-0. */
   .dr-tabs-trigger {
-    @apply hover:text-foreground focus-ring relative z-10 inline-flex cursor-pointer items-center justify-center text-sm font-medium whitespace-nowrap disabled:pointer-events-none disabled:opacity-50;
+    @apply focus-ring relative z-10 inline-flex cursor-pointer items-center justify-center text-sm font-medium whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)];
     transition:
       background-color var(--duration-fast),
       color var(--duration-fast),
@@ -57,18 +57,25 @@
   }
 
   .dr-tabs-trigger[data-variant="default"] {
-    @apply data-[state=active]:text-primary-foreground rounded-sm border border-transparent px-[var(--density-button-px)] py-[var(--density-row-py)];
+    @apply data-[state=active]:text-primary-foreground rounded-sm border border-transparent px-[var(--btn-px)];
+    height: var(--btn-height);
   }
 
   .dr-tabs-trigger[data-variant="outline"] {
-    @apply data-[state=active]:text-primary-text rounded-sm border border-transparent bg-transparent px-[var(--density-button-px)] py-[var(--density-row-py)];
+    @apply data-[state=active]:text-primary-text rounded-sm border border-transparent bg-transparent px-[var(--btn-px)];
+    height: var(--btn-height);
   }
 
   /* The transparent bottom border stays for layout — it reserves the row
      the indicator bar occupies, so the label does not shift by 2px when
-     the tab becomes active. The visible rule is drawn by the indicator. */
+     the tab becomes active. The visible rule is drawn by the indicator.
+     The trigger reads --btn-height rather than h-full off a fixed-height
+     list: the list is items-center, and a full-height box that its -1px
+     margin shortens by a pixel would centre half a pixel low. Sized by
+     its triggers, the list comes out exactly --btn-height tall. */
   .dr-tabs-trigger[data-variant="underline"] {
-    @apply data-[state=active]:text-primary-text -mb-px h-full border-b-2 border-transparent px-[var(--density-button-px)] py-[var(--density-row-py)];
+    @apply data-[state=active]:text-primary-text -mb-px border-b-2 border-transparent px-[var(--btn-px)];
+    height: var(--btn-height);
   }
 
   .dr-tabs-indicator[data-variant="default"] {
@@ -142,7 +149,8 @@
      its neighbours. Uniform margins make every box equal and the
      centring a no-op. */
   .dr-tabs-trigger[data-variant="enclosed"][data-orientation="horizontal"] {
-    @apply border border-transparent px-[var(--density-button-px)] py-[var(--density-row-py)];
+    @apply border border-transparent px-[var(--btn-px)];
+    height: var(--btn-height);
     border-radius: var(--radius) var(--radius) 0 0;
     margin-bottom: -1px;
   }
@@ -237,7 +245,7 @@
   }
 
   .dr-tabs-trigger[data-variant="underline"][data-orientation="vertical"] {
-    @apply -mr-px mb-0 h-auto border-r-2 border-b-0;
+    @apply -mr-px mb-0 border-r-2 border-b-0;
   }
 
   /* --affordance-glow-bottom is a bottom-only halo, which on a
@@ -281,7 +289,8 @@
   }
 
   .dr-tabs-trigger[data-variant="enclosed"][data-orientation="vertical"] {
-    @apply justify-start border border-transparent px-[var(--density-button-px)] py-[var(--density-row-py)];
+    @apply justify-start border border-transparent px-[var(--btn-px)];
+    height: var(--btn-height);
     border-radius: var(--radius) 0 0 var(--radius);
     margin-right: -1px;
   }
@@ -385,50 +394,51 @@
   }
 
   .dr-tabs-content {
-    @apply focus-ring-tight mt-2;
+    @apply focus-ring-inset mt-2;
     transition: opacity var(--duration-fast);
   }
 
-  /* Hover wash on inactive triggers. A `bg-accent` fill — the usual
-     hover token elsewhere in the package — would be invisible here:
-     --accent and --muted resolve to the same surface step
-     (surface[100] light / surface[800] dark), which is exactly what the
-     default/outline strips already paint. A foreground alpha reads
-     against any track in both modes and needs no per-preset override,
-     since no preset redefines --foreground. */
-  .dr-tabs-trigger:not([data-state="active"]):hover {
-    background-color: hsl(var(--foreground) / 0.08);
+  /* Inactive triggers lift their label on hover and take the shared state
+     layer (button.css); a `currentColor` wash reads against every track in
+     both modes, where a `bg-accent` fill would match the strip. The label
+     rule keeps its guard in :where() so it keeps the specificity the
+     `hover:` utility had. */
+  .dr-tabs-trigger:where(:not([data-state="active"]):not(:disabled)):hover {
+    @apply text-foreground;
+  }
+
+  /* `relative z-10` already makes each trigger a stacking context, so the
+     wash paints above the sliding indicator and below the label. */
+  .dr-tabs-trigger::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--state-layer-color, currentColor);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--state-layer-out) var(--ease-out);
+  }
+  .dr-tabs-trigger:not([data-state="active"]):not(:disabled):hover::before {
+    opacity: var(--state-layer-hover);
+    transition-duration: var(--state-layer-in);
+  }
+  .dr-tabs-trigger:not([data-state="active"]):not(:disabled):active::before {
+    opacity: var(--state-layer-press);
+    transition-duration: var(--state-layer-in);
   }
 
   /* The underline trigger is the only variant with no radius of its own
      (its chrome is a bottom border), so the wash needs one. Top corners
      only, so the fill meets the indicator bar square. */
-  .dr-tabs-trigger[data-variant="underline"]:not([data-state="active"]):hover {
+  .dr-tabs-trigger[data-variant="underline"]:not([data-state="active"]):where(
+      :not(:disabled)
+    ):hover {
     /* @apply, not `var(--radius-sm)`: the radius aliases live in
        `@theme inline`, so they are folded into utilities at build time
        and never emitted as custom properties to reference here. */
     @apply rounded-t-sm;
-  }
-
-  /* The enclosed strip's baseline is painted by the list, and EVERY
-     trigger overhangs it by 1px so the active one can erase it into a
-     notch. An unclipped hover wash would erase it too, so hovering any
-     inactive tab would punch a false notch in the line. Clipping to the
-     padding box stops the fill at the inner edge of the trigger's 1px
-     transparent border — precisely where the overhang begins. */
-  .dr-tabs-trigger[data-variant="enclosed"]:not([data-state="active"]):hover {
-    background-clip: padding-box;
-  }
-
-  /* Hold active-tab text color on hover so the base
-     `.dr-tabs-trigger:hover { color: var(--foreground) }` does not
-     override the variant's active text color. */
-  .dr-tabs-trigger[data-variant="default"][data-state="active"]:hover {
-    @apply text-primary-foreground;
-  }
-  .dr-tabs-trigger[data-variant="outline"][data-state="active"]:hover,
-  .dr-tabs-trigger[data-variant="underline"][data-state="active"]:hover {
-    @apply text-primary-text;
   }
 
   /* Glass surface style — the moving indicator carries the glass
@@ -459,8 +469,10 @@
     backdrop-filter: var(--backdrop-filter);
   }
 
-  [data-preset="glass"] .dr-tabs-trigger[data-variant="outline"]:hover,
-  [data-preset="glass"] .dr-tabs-trigger[data-variant="underline"]:hover {
+  [data-preset="glass"]
+    .dr-tabs-trigger[data-variant="outline"]:where(:not(:disabled)):hover,
+  [data-preset="glass"]
+    .dr-tabs-trigger[data-variant="underline"]:where(:not(:disabled)):hover {
     box-shadow: var(--glass-state-hover-glow);
   }
 

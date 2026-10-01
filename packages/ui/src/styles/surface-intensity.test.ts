@@ -162,4 +162,21 @@ describe("surface intensity rules", () => {
     const decl = getBody().split("--surface-card-fill-opaque:")[1].split(";")[0]
     expect(decl).not.toContain("--surface-opacity")
   })
+
+  // Overlays forward their surfaceIntensity prop as data-surface-intensity on
+  // themselves, and each rule here recomposes --surface-overlay-bg on that
+  // element. A custom property that reads another resolves where it is
+  // declared, so --overlay-bg has to be redeclared beside it: declared on
+  // :root alone it would carry <html>'s wash into every overlay.
+  it.each([
+    [":root", () => bodyOf(":root")],
+    ["the mix block", () => mixBody()],
+    ["balanced", () => bodyOf('[data-surface-intensity="balanced"]')],
+    ["none", () => bodyOf('[data-surface-intensity="none"]')],
+  ])(
+    "redeclares --overlay-bg beside --surface-overlay-bg in %s",
+    (_label, getBody) => {
+      expect(getBody()).toContain("--overlay-bg: var(--surface-overlay-bg);")
+    },
+  )
 })

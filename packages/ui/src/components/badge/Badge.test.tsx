@@ -3,7 +3,7 @@ import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
 import { dirname, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
-import { Badge } from "@components/badge"
+import { Badge, BadgeAnchor } from "@components/badge"
 import { ACCENT_HUES } from "@lib/accent-hues"
 
 const thisDir = dirname(fileURLToPath(import.meta.url))
@@ -55,6 +55,20 @@ describe("Badge", () => {
     render(<Badge className="custom-class">Styled</Badge>)
     expect(screen.getByText("Styled")).toHaveClass("custom-class")
   })
+
+  it("defaults to the default size", () => {
+    render(<Badge>Sized</Badge>)
+    expect(screen.getByText("Sized")).toHaveAttribute("data-size", "default")
+  })
+
+  it("gives an anchored badge the default size", () => {
+    render(
+      <BadgeAnchor content="3">
+        <span>Inbox</span>
+      </BadgeAnchor>,
+    )
+    expect(screen.getByText("3")).toHaveAttribute("data-size", "default")
+  })
 })
 
 describe("badge.css", () => {
@@ -65,5 +79,13 @@ describe("badge.css", () => {
     for (const hue of ACCENT_HUES) {
       expect(css).toContain(`.dr-badge[data-variant="${hue}"]`)
     }
+  })
+
+  it("styles every size step", () => {
+    const css = readFileSync(resolve(thisDir, "./badge.css"), "utf8")
+    for (const size of ["sm", "default", "lg"]) {
+      expect(css).toContain(`.dr-badge[data-size="${size}"]`)
+    }
+    expect(css).not.toContain('[data-size="md"]')
   })
 })

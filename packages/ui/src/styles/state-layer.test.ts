@@ -15,9 +15,12 @@ import { readFileSync } from "node:fs"
 //
 // Timing is deliberately asymmetric: instant in, short fade out.
 function flat(path: string): string {
+  // Prettier wraps long selectors inside :not( … ); undo that too.
   return readFileSync(path, "utf8")
     .replace(/\/\*[\s\S]*?\*\//g, "")
     .replace(/\s+/g, " ")
+    .replace(/\(\s+/g, "(")
+    .replace(/\s+\)/g, ")")
 }
 
 const THEME = "src/styles/theme.css"
@@ -26,10 +29,12 @@ const TOGGLE = "src/components/toggle/toggle.css"
 
 // Clickable affordances that do not render a real <Button> and so have to opt
 // into the layer themselves. Everything else inherits it from `.dr-btn`.
-const HAND_ROLLED: { path: string; selector: string }[] = [
+// `selector` is the text in front of `:hover::before` (or `pseudo`), guards
+// included.
+const HAND_ROLLED: { path: string; selector: string; pseudo?: string }[] = [
   {
     path: "src/components/number-input/number-input.css",
-    selector: ".dr-number-input-stepper",
+    selector: ".dr-number-input-stepper:not(:disabled)",
   },
   {
     path: "src/components/json-tree-view/json-tree-view.css",
@@ -46,6 +51,74 @@ const HAND_ROLLED: { path: string; selector: string }[] = [
   {
     path: "src/components/image-editor/image-editor.css",
     selector: ".dr-image-editor-extension",
+  },
+  {
+    path: "src/components/tabs/tabs.css",
+    selector: '.dr-tabs-trigger:not([data-state="active"]):not(:disabled)',
+  },
+  {
+    // ::after, because the item's radio-group rule gives ::before to its
+    // 24px hit area.
+    path: "src/components/segment-group/segment-group.css",
+    selector:
+      '.dr-segment-group .dr-segment-group-item:not([data-state="checked"]):not(:disabled)',
+    pseudo: "::after",
+  },
+  {
+    path: "src/components/overlay-primitives/overlay-primitives.css",
+    selector: ".dr-overlay-close-btn:not(:disabled)",
+  },
+  {
+    path: "src/components/password-input/password-input.css",
+    selector: ".dr-password-input-trigger:not(:disabled)",
+  },
+  {
+    path: "src/components/date-picker/date-picker.css",
+    selector: ".dr-date-picker-trigger:not(:disabled)",
+  },
+  {
+    path: "src/components/combobox/combobox.css",
+    selector: ".dr-combobox-clear-trigger:not(:disabled)",
+  },
+  {
+    path: "src/components/combobox/combobox.css",
+    selector: ".dr-combobox-trigger:not(:disabled)",
+  },
+  {
+    path: "src/components/multi-select/multi-select.css",
+    selector: ".dr-multi-select-chip-remove:not(:disabled)",
+  },
+  {
+    path: "src/components/tags-input/tags-input.css",
+    selector: ".dr-tags-input-item-delete-trigger:not(:disabled)",
+  },
+  {
+    path: "src/components/file-upload/file-upload.css",
+    selector: ".dr-file-upload-item-delete-trigger:not(:disabled)",
+  },
+  {
+    path: "src/components/editable/editable.css",
+    selector: ".dr-editable-edit-trigger:not(:disabled)",
+  },
+  {
+    path: "src/components/editable/editable.css",
+    selector: ".dr-editable-submit-trigger:not(:disabled)",
+  },
+  {
+    path: "src/components/editable/editable.css",
+    selector: ".dr-editable-cancel-trigger:not(:disabled)",
+  },
+  {
+    path: "src/components/banner/banner.css",
+    selector: ".dr-banner-close:not(:disabled)",
+  },
+  {
+    path: "src/components/color-picker/color-picker.css",
+    selector: ".dr-color-picker-trigger:not(:disabled)",
+  },
+  {
+    path: "src/components/color-picker/color-picker.css",
+    selector: ".dr-color-picker-eye-dropper-trigger:not(:disabled)",
   },
 ]
 
@@ -105,19 +178,19 @@ describe("interaction state layer", () => {
     )
   })
 
-  it("gives toggles the press layer but not the hover layer", () => {
+  it("gives toggles the hover and press layers, off while disabled", () => {
     const css = flat(TOGGLE)
     expect(css).toMatch(
-      /:active::before \{ opacity: var\(--state-layer-press\)/,
+      /\.dr-toggle:not\(:disabled\):hover::before \{ opacity: var\(--state-layer-hover\)/,
     )
-    expect(css).not.toMatch(
-      /:hover::before \{ opacity: var\(--state-layer-hover\)/,
+    expect(css).toMatch(
+      /\.dr-toggle:not\(:disabled\):active::before \{ opacity: var\(--state-layer-press\)/,
     )
   })
 
-  for (const { path, selector } of HAND_ROLLED) {
+  for (const { path, selector, pseudo = "::before" } of HAND_ROLLED) {
     it(`${selector} opts into the shared layer`, () => {
-      expect(flat(path)).toContain(`${selector}:hover::before`)
+      expect(flat(path)).toContain(`${selector}:hover${pseudo}`)
     })
   }
 })

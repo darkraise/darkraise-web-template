@@ -1,10 +1,10 @@
 @layer components {
   .dr-slider {
-    @apply relative flex w-full touch-none items-center select-none data-[disabled]:opacity-50;
+    @apply relative flex w-full touch-none items-center select-none data-[disabled]:opacity-[var(--disabled-opacity)];
   }
 
   .dr-slider-track {
-    @apply bg-secondary relative h-2 w-full grow overflow-hidden rounded-full;
+    @apply bg-secondary relative h-[var(--track-height)] w-full grow overflow-hidden rounded-full;
   }
 
   .dr-slider-range {
@@ -20,7 +20,7 @@
     transition:
       background-color var(--duration-fast),
       border-color var(--duration-fast),
-      transform var(--duration-fast) ease-out;
+      transform var(--duration-fast) var(--ease-out);
   }
 
   .dr-slider-thumb:focus-visible {

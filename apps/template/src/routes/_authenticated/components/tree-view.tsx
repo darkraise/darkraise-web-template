@@ -32,7 +32,7 @@ export const Route = createFileRoute("/_authenticated/components/tree-view")({
   component: TreeViewPage,
 })
 
-const TREE_VIEW_VARIANTS = allOf<TreeViewVariant>()("filled", "outlined")
+const TREE_VIEW_VARIANTS = allOf<TreeViewVariant>()("filled", "outline")
 
 const fileTree: TreeNode = {
   id: "root",
@@ -348,7 +348,7 @@ function TreeViewPage() {
         code={`// One representative cell: every variant renders above.
 <TreeView
   data={fileTree}
-  variant="outlined"
+  variant="outline"
   defaultSelected={["Button.tsx"]}
   selectionMode="single"
 >

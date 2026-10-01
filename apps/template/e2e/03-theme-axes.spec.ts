@@ -320,7 +320,7 @@ test.describe("density axis", () => {
       await seedApp(page, { density, preset: "default" })
       await gotoApp(page, PROBE)
       expect((await readThemeAttrs(page))["data-density"]).toBe(density)
-      expect(await readToken(page, "--density-button-px")).not.toBe("")
+      expect(await readToken(page, "--btn-px")).not.toBe("")
     })
   }
 
@@ -331,9 +331,7 @@ test.describe("density axis", () => {
     for (const density of DENSITIES) {
       await applyTheme(page, { density, preset: "default" })
       await reloadApp(page)
-      values.push(
-        Number.parseFloat(await readToken(page, "--density-button-px")),
-      )
+      values.push(Number.parseFloat(await readToken(page, "--btn-px")))
     }
     for (let i = 1; i < values.length; i++) {
       expect(values[i]).toBeGreaterThan(values[i - 1])
@@ -467,7 +465,7 @@ test.describe("radius axis", () => {
   test("pill radius rounds buttons fully", async ({ page }) => {
     await seedApp(page, { radius: "pill", preset: "default" })
     await gotoApp(page, PROBE)
-    expect(await readToken(page, "--radius-button")).toBe("9999px")
+    expect(await readToken(page, "--radius-control")).toBe("9999px")
   })
 })
 

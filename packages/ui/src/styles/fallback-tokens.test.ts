@@ -27,8 +27,13 @@ function fallbackDeclarations(): Map<string, string> {
     }
   }
   const declarations = new Map<string, string>()
-  for (const match of css.slice(open + 1, close).matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) {
-    declarations.set(match[1] as string, (match[2] as string).replace(/\s+/g, " ").trim())
+  for (const match of css
+    .slice(open + 1, close)
+    .matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) {
+    declarations.set(
+      match[1] as string,
+      (match[2] as string).replace(/\s+/g, " ").trim(),
+    )
   }
   return declarations
 }
@@ -47,7 +52,9 @@ describe("pre-hydration fallback block", () => {
   it.each(Object.keys(engine).filter((key) => block.has(key)))(
     "%s equals the engine's default light value",
     (key) => {
-      expect(block.get(key)).toBe((engine[key] as string).replace(/\s+/g, " ").trim())
+      expect(block.get(key)).toBe(
+        (engine[key] as string).replace(/\s+/g, " ").trim(),
+      )
     },
   )
 
@@ -57,6 +64,7 @@ describe("pre-hydration fallback block", () => {
       "--legend",
       "--destructive-solid",
       "--destructive-solid-foreground",
+      "--field-edge-color",
     ]) {
       expect(block.has(key), key).toBe(true)
     }

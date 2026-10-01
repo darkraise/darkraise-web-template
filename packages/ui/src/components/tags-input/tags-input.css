@@ -4,7 +4,7 @@
   }
 
   .dr-tags-input[data-disabled="true"] {
-    @apply pointer-events-none opacity-60;
+    @apply pointer-events-none opacity-[var(--disabled-opacity)];
   }
 
   .dr-tags-input-label {
@@ -12,11 +12,20 @@
   }
 
   .dr-tags-input-control {
-    @apply glass border-input focus-ring-input-wrapper text-card-foreground flex min-h-[var(--density-cell)] w-full flex-wrap items-center gap-1 rounded-md border px-[var(--density-input-px)] py-[var(--density-input-py)];
+    @apply glass border-input focus-ring-input-wrapper text-card-foreground flex w-full flex-wrap items-center gap-1 rounded-[var(--radius)] border px-[var(--field-px)];
     /* Pinned out of the surface-intensity axis on purpose: fields hold
        still while panels move around them. The rung is container-relative
        -- see `--control-surface` in theme.css. */
     background-color: hsl(var(--control-surface) / var(--surface-opacity, 1));
+    min-height: var(--field-height);
+    /* Same single-row rule as the multi-select control: one row of chips
+       lands exactly on --field-height, and --field-py caps the padding
+       where the field is taller. */
+    padding-block: min(
+      var(--field-py),
+      calc((var(--field-height) - 1.75rem) / 2)
+    );
+    border-bottom-color: var(--field-edge);
   }
 
   .dr-tags-input-item {
@@ -24,7 +33,7 @@
   }
 
   .dr-tags-input-item-preview {
-    @apply bg-secondary text-secondary-foreground focus-ring-tight inline-flex items-center gap-1 rounded-sm px-2 py-0.5 text-xs font-medium transition-colors;
+    @apply bg-secondary text-secondary-foreground focus-ring-inset inline-flex items-center gap-1 rounded-sm px-2 py-0.5 text-xs font-medium transition-colors;
   }
 
   .dr-tags-input-item-preview[data-highlighted="true"] {
@@ -32,7 +41,7 @@
   }
 
   .dr-tags-input-item-preview[data-disabled="true"] {
-    @apply pointer-events-none opacity-50;
+    @apply pointer-events-none opacity-[var(--disabled-opacity)];
   }
 
   .dr-tags-input-item-text {
@@ -40,15 +49,44 @@
   }
 
   .dr-tags-input-item-delete-trigger {
-    @apply text-muted-foreground hover:text-foreground focus-ring-tight inline-flex size-[var(--icon-size)] items-center justify-center rounded-sm transition-colors;
+    @apply text-muted-foreground focus-ring-inset inline-flex size-[var(--icon-size)] items-center justify-center rounded-sm transition-colors;
+  }
+
+  /* Shared interaction state layer (button.css). The label rule keeps its
+     guard in :where() so it keeps the `hover:` utility's specificity. */
+  .dr-tags-input-item-delete-trigger {
+    position: relative;
+    isolation: isolate;
+  }
+  .dr-tags-input-item-delete-trigger:where(:not(:disabled)):hover {
+    @apply text-foreground;
+  }
+  .dr-tags-input-item-delete-trigger::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--state-layer-color, currentColor);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--state-layer-out) var(--ease-out);
+  }
+  .dr-tags-input-item-delete-trigger:not(:disabled):hover::before {
+    opacity: var(--state-layer-hover);
+    transition-duration: var(--state-layer-in);
+  }
+  .dr-tags-input-item-delete-trigger:not(:disabled):active::before {
+    opacity: var(--state-layer-press);
+    transition-duration: var(--state-layer-in);
   }
 
   .dr-tags-input-item-delete-trigger[data-disabled="true"] {
-    @apply pointer-events-none opacity-50;
+    @apply pointer-events-none opacity-[var(--disabled-opacity)];
   }
 
   .dr-tags-input-input {
-    @apply text-foreground placeholder:text-muted-foreground flex-1 border-0 bg-transparent text-sm outline-none focus:outline-none disabled:cursor-not-allowed disabled:opacity-50;
+    @apply text-foreground placeholder:text-muted-foreground flex-1 border-0 bg-transparent text-sm outline-none focus:outline-none disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)];
     min-width: 8ch;
   }
 

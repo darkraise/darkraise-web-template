@@ -1,6 +1,10 @@
 @layer components {
   .dr-checkbox {
-    @apply border-primary data-[state=checked]:bg-primary-fill data-[state=checked]:border-primary-fill data-[state=checked]:text-primary-foreground focus-ring hit-area-24 grid shrink-0 cursor-pointer place-content-center rounded-sm border disabled:cursor-not-allowed disabled:opacity-50;
+    @apply border-primary data-[state=checked]:bg-primary-fill data-[state=checked]:border-primary-fill data-[state=checked]:text-primary-foreground focus-ring hit-area-24 grid shrink-0 cursor-pointer place-content-center rounded-sm border disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)];
+  }
+
+  .dr-checkbox[data-state="unchecked"] {
+    border-color: var(--field-edge);
   }
 
   .dr-checkbox[data-size="sm"] {
@@ -18,8 +22,8 @@
   .dr-checkbox-indicator {
     @apply data-[state=checked]:scale-100 data-[state=checked]:opacity-100 data-[state=indeterminate]:scale-100 data-[state=indeterminate]:opacity-100 data-[state=unchecked]:scale-50 data-[state=unchecked]:opacity-0;
     transition:
-      opacity var(--duration-fast) ease-out,
-      transform var(--duration-fast) ease-out;
+      opacity var(--duration-fast) var(--ease-out),
+      transform var(--duration-fast) var(--ease-out);
   }
 
   /* Preset-driven affordance glow on the checked/indeterminate state.
@@ -30,13 +34,12 @@
     box-shadow: var(--affordance-glow);
   }
 
-  /* Glass-preset frosted Checkbox. Unchecked state is fog tint; the
-     checked/indeterminate states swap in a primary-tinted gradient
-     for the "on" reading. Border alpha bumps up to 20 from 15 for
-     a slightly stronger affordance at this size. */
+  /* Glass-preset frosted Checkbox. Unchecked state is fog tint inside the
+     3:1 field edge; the checked/indeterminate states swap in a
+     primary-tinted gradient for the "on" reading. */
   [data-preset="glass"] .dr-checkbox {
     background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
-    border: 1px solid var(--fog-20);
+    border-color: var(--field-edge);
     -webkit-backdrop-filter: var(--backdrop-filter);
     backdrop-filter: var(--backdrop-filter);
     box-shadow: var(--inset-hi), var(--glass-halo-raised);
@@ -62,6 +65,6 @@
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
     box-shadow: none;
-    opacity: 0.5;
+    opacity: var(--disabled-opacity);
   }
 }

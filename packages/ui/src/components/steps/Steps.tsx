@@ -353,7 +353,7 @@ function StepsTrigger({
       tabIndex={tabIndex}
       data-status={status}
       data-locked={isLinearLocked ? "true" : undefined}
-      className={cn("dr-steps-trigger", "focus-ring-tight", className)}
+      className={cn("dr-steps-trigger", "focus-ring-inset", className)}
       onClick={(event) => {
         onClick?.(event)
         if (event.defaultPrevented) return

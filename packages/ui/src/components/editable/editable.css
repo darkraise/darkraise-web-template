@@ -21,17 +21,24 @@
 
   .dr-editable-input {
     @apply w-auto;
+    /* A .dr-input; held at the density height so editable does not grow
+       under the coarse-pointer floor, like its preview and triggers. */
+    --field-height: var(--control-height-default);
   }
 
   .dr-editable-preview {
-    @apply text-foreground focus-ring inline-flex min-h-[var(--density-cell)] cursor-text items-center rounded-md px-[var(--density-input-px)] py-[var(--density-input-py)] text-sm;
+    @apply text-foreground focus-ring inline-flex min-h-[var(--control-height-default)] cursor-text items-center rounded-md px-[var(--field-px)] py-[var(--field-py)] text-sm;
   }
 
   .dr-editable-preview[data-empty="true"] {
     @apply text-muted-foreground;
   }
 
-  .dr-editable[data-disabled="true"] .dr-editable-preview,
+  .dr-editable[data-disabled="true"] .dr-editable-preview {
+    @apply cursor-not-allowed;
+    opacity: var(--disabled-opacity);
+  }
+
   .dr-editable[data-readonly="true"] .dr-editable-preview {
     @apply cursor-not-allowed opacity-70;
   }
@@ -52,6 +59,45 @@
   .dr-editable-edit-trigger,
   .dr-editable-submit-trigger,
   .dr-editable-cancel-trigger {
-    @apply text-muted-foreground hover:text-foreground focus-ring inline-flex aspect-square h-[var(--density-cell)] cursor-pointer items-center justify-center rounded-md bg-transparent transition-colors disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size)] [&_svg]:shrink-0;
+    @apply text-muted-foreground focus-ring inline-flex aspect-square h-[var(--control-height-default)] cursor-pointer items-center justify-center rounded-md bg-transparent transition-colors disabled:pointer-events-none disabled:opacity-[var(--disabled-opacity)] [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size)] [&_svg]:shrink-0;
+  }
+
+  /* Shared interaction state layer (button.css). The label rule keeps its
+     guard in :where() so it keeps the `hover:` utility's specificity. */
+  .dr-editable-edit-trigger,
+  .dr-editable-submit-trigger,
+  .dr-editable-cancel-trigger {
+    position: relative;
+    isolation: isolate;
+  }
+  .dr-editable-edit-trigger:where(:not(:disabled)):hover,
+  .dr-editable-submit-trigger:where(:not(:disabled)):hover,
+  .dr-editable-cancel-trigger:where(:not(:disabled)):hover {
+    @apply text-foreground;
+  }
+  .dr-editable-edit-trigger::before,
+  .dr-editable-submit-trigger::before,
+  .dr-editable-cancel-trigger::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--state-layer-color, currentColor);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--state-layer-out) var(--ease-out);
+  }
+  .dr-editable-edit-trigger:not(:disabled):hover::before,
+  .dr-editable-submit-trigger:not(:disabled):hover::before,
+  .dr-editable-cancel-trigger:not(:disabled):hover::before {
+    opacity: var(--state-layer-hover);
+    transition-duration: var(--state-layer-in);
+  }
+  .dr-editable-edit-trigger:not(:disabled):active::before,
+  .dr-editable-submit-trigger:not(:disabled):active::before,
+  .dr-editable-cancel-trigger:not(:disabled):active::before {
+    opacity: var(--state-layer-press);
+    transition-duration: var(--state-layer-in);
   }
 }

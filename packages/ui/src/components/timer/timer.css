@@ -34,6 +34,6 @@
   }
 
   .dr-timer-action-trigger[data-state="disabled"] {
-    @apply pointer-events-none cursor-not-allowed opacity-50;
+    @apply pointer-events-none cursor-not-allowed opacity-[var(--disabled-opacity)];
   }
 }

@@ -1,10 +1,11 @@
 @layer components {
   .dr-user-menu-trigger {
-    @apply relative h-8 w-8 rounded-full;
+    @apply relative rounded-full;
   }
 
   .dr-user-menu-avatar {
-    @apply h-8 w-8;
+    width: min(2rem, var(--btn-height));
+    height: min(2rem, var(--btn-height));
   }
 
   .dr-user-menu-content {

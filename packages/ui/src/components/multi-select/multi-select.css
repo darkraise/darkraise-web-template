@@ -4,15 +4,46 @@
   }
 
   .dr-multi-select-control {
-    @apply focus-ring-input-wrapper bg-background border-input flex min-h-9 w-full items-center gap-1 rounded-md border px-2 py-1 text-sm shadow-[var(--shadow-button)] transition-colors;
+    @apply focus-ring-input-wrapper border-input flex w-full items-center gap-1 rounded-[var(--radius)] border px-2 text-sm transition-colors;
+    /* Pinned out of the surface-intensity axis on purpose: fields hold
+       still while panels move around them. The rung is container-relative
+       -- see `--control-surface` in theme.css. */
+    background-color: hsl(var(--control-surface) / var(--surface-opacity, 1));
+    min-height: var(--field-height);
+    /* One row must land exactly on --field-height, so the padding never
+       exceeds what a 26px row leaves inside the border: the 24px toggles,
+       or the input's line box at the extra-large font size. --field-py
+       caps it where the field is taller. */
+    padding-block: min(
+      var(--field-py),
+      calc((var(--field-height) - 1.75rem) / 2)
+    );
+    border-bottom-color: var(--field-edge);
   }
 
-  .dr-multi-select-control[data-state="open"] {
-    @apply ring-ring ring-2 ring-offset-2;
+  /* The control also carries .dr-combobox-control, whose glass rule rounds
+     single-line fields; chips wrap here, so keep the surface radius. */
+  [data-preset="glass"] .dr-combobox-control.dr-multi-select-control {
+    border-radius: var(--radius);
+    border-bottom-color: var(--field-edge);
+  }
+
+  [data-preset="glass"]
+    .dr-combobox-control.dr-multi-select-control:is(
+      :focus-within,
+      [data-state="open"]
+    ) {
+    border-bottom-color: hsl(var(--primary) / 0.4);
+  }
+
+  /* Outranks the fixed height .dr-combobox-control sets: the chip row grows
+     when it wraps. */
+  .dr-multi-select .dr-multi-select-control {
+    height: auto;
   }
 
   .dr-multi-select-control[data-disabled="true"] {
-    @apply cursor-not-allowed opacity-50;
+    @apply cursor-not-allowed opacity-[var(--disabled-opacity)];
   }
 
   .dr-multi-select-chips {
@@ -28,11 +59,40 @@
   }
 
   .dr-multi-select-chip-remove {
-    @apply focus-ring-tight text-muted-foreground hover:text-foreground -mr-1 inline-flex size-[var(--icon-size)] cursor-pointer items-center justify-center rounded-sm border-0 bg-transparent p-0;
+    @apply focus-ring-inset text-muted-foreground -mr-1 inline-flex size-[var(--icon-size)] cursor-pointer items-center justify-center rounded-sm border-0 bg-transparent p-0;
+  }
+
+  /* Shared interaction state layer (button.css). The label rule keeps its
+     guard in :where() so it keeps the `hover:` utility's specificity. */
+  .dr-multi-select-chip-remove {
+    position: relative;
+    isolation: isolate;
+  }
+  .dr-multi-select-chip-remove:where(:not(:disabled)):hover {
+    @apply text-foreground;
+  }
+  .dr-multi-select-chip-remove::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--state-layer-color, currentColor);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--state-layer-out) var(--ease-out);
+  }
+  .dr-multi-select-chip-remove:not(:disabled):hover::before {
+    opacity: var(--state-layer-hover);
+    transition-duration: var(--state-layer-in);
+  }
+  .dr-multi-select-chip-remove:not(:disabled):active::before {
+    opacity: var(--state-layer-press);
+    transition-duration: var(--state-layer-in);
   }
 
   .dr-multi-select-chip-remove:disabled {
-    @apply cursor-not-allowed opacity-50;
+    @apply cursor-not-allowed opacity-[var(--disabled-opacity)];
   }
 
   /* Bare input — drop the dr-input chrome so the typeahead reads as part of
@@ -60,8 +120,12 @@
 
   .dr-multi-select-clear,
   .dr-multi-select-toggle {
-    @apply focus-ring-tight text-muted-foreground hover:text-foreground inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded-sm border-0 bg-transparent p-0;
+    @apply focus-ring-inset text-muted-foreground inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded-sm border-0 bg-transparent p-0;
   }
+
+  /* The clear and toggle buttons are ComboboxClearTrigger and
+     ComboboxTrigger, so their hover and state layer come from
+     combobox.css. */
 
   .dr-multi-select-toggle[data-state="open"] {
     @apply rotate-180;

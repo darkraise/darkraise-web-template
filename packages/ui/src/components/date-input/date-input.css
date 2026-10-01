@@ -1,15 +1,18 @@
 @layer components {
   .dr-date-input {
-    @apply border-input bg-background inline-flex items-center gap-0.5 rounded-md border px-2 py-1.5;
-  }
-  .dr-date-input:focus-within {
-    @apply ring-ring ring-2;
+    @apply focus-ring-input-wrapper border-input inline-flex items-center gap-0.5 rounded-[var(--field-radius)] border px-2;
+    /* Pinned out of the surface-intensity axis on purpose: fields hold
+       still while panels move around them. The rung is container-relative
+       -- see `--control-surface` in theme.css. */
+    background-color: hsl(var(--control-surface) / var(--surface-opacity, 1));
+    height: var(--field-height);
+    border-bottom-color: var(--field-edge);
   }
   .dr-date-input-sep {
     @apply text-muted-foreground;
   }
   .dr-date-input-segment {
-    @apply bg-transparent text-center font-mono text-sm tabular-nums focus:outline-none disabled:opacity-50;
+    @apply bg-transparent text-center font-mono text-sm tabular-nums focus:outline-none disabled:opacity-[var(--disabled-opacity)];
     width: auto;
   }
 
@@ -18,7 +21,8 @@
      inputs and separators); segments are transparent on their own. */
   [data-preset="glass"] .dr-date-input {
     background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
-    border: 1px solid var(--fog-15);
+    border-color: var(--fog-15);
+    border-bottom-color: var(--field-edge);
     -webkit-backdrop-filter: var(--backdrop-filter);
     backdrop-filter: var(--backdrop-filter);
     box-shadow: var(--inset-hi), var(--glass-halo-raised);

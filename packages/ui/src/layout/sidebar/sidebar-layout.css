@@ -25,10 +25,11 @@
     @apply justify-between px-4;
   }
 
-  /* Both dimensions must come from --density-cell so the toggle stays
+  /* Both dimensions must come from --control-height-default so the toggle stays
      square under every density and font-size step. */
   .dr-sidebar-layout-toggle {
-    @apply size-[var(--density-cell)];
+    @apply size-[var(--control-height-default)];
+    --btn-height: var(--control-height-default);
   }
 
   /* Collapsed rail: the brand mark and the toggle stack in one cell and
@@ -36,12 +37,12 @@
      by the cell itself, and the toggle comes last in the DOM so it wins
      hit-testing over the mark beneath it. */
   .dr-sidebar-layout-brand-slot {
-    @apply relative grid size-[var(--density-cell)] place-items-center;
+    @apply relative grid size-[var(--control-height-default)] place-items-center;
   }
 
   .dr-sidebar-layout-brand-slot > * {
     grid-area: 1 / 1;
-    transition: opacity var(--duration-fast) ease-in-out;
+    transition: opacity var(--duration-fast) var(--ease-in-out);
   }
 
   /* The mark is decoration here — the toggle underneath owns every click
@@ -54,7 +55,7 @@
      compact density; in this slot it tracks the cell instead. */
   .dr-sidebar-layout-brand-slot .dr-brand-logo-image,
   .dr-sidebar-layout-brand-slot .dr-brand-logo-mark {
-    @apply size-[var(--density-cell)];
+    @apply size-[var(--control-height-default)];
   }
 
   .dr-sidebar-layout-brand-slot .dr-sidebar-layout-toggle {

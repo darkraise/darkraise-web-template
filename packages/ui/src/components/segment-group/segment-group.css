@@ -11,7 +11,7 @@
   }
 
   .dr-segment-group[data-disabled="true"] {
-    @apply pointer-events-none opacity-50;
+    @apply pointer-events-none opacity-[var(--disabled-opacity)];
   }
 
   /* SegmentGroupItem renders a `RadioGroupItem`, which carries
@@ -21,8 +21,8 @@
      exceed that specificity — chaining `.dr-segment-group` parent class
      brings us to (0,2,0) and the later source order wins. */
   .dr-segment-group .dr-segment-group-item {
-    @apply focus-ring-inset text-muted-foreground relative z-10 inline-flex cursor-pointer items-center justify-center rounded-sm border-0 bg-transparent px-3 py-1.5 text-sm font-medium transition-colors;
-    height: auto;
+    @apply focus-ring-inset text-muted-foreground relative z-10 inline-flex cursor-pointer items-center justify-center rounded-sm border-0 bg-transparent px-3 text-sm font-medium transition-colors;
+    height: var(--btn-height);
     width: auto;
     aspect-ratio: auto;
     user-select: none;
@@ -33,24 +33,46 @@
   }
 
   .dr-segment-group .dr-segment-group-item[data-disabled] {
-    @apply cursor-not-allowed opacity-50;
+    @apply cursor-not-allowed opacity-[var(--disabled-opacity)];
   }
 
-  /* Hover wash on unchecked, enabled segments. A `bg-accent` fill would
-     be invisible: --accent and --muted resolve to the same surface step,
-     which is what the track already paints. A foreground alpha reads
-     against any track in both modes and survives every preset, since
-     none of them redefine --foreground.
+  /* Unchecked segments lift their label on hover and take the shared state
+     layer (button.css); a `currentColor` wash reads against the track in
+     both modes, where a `bg-accent` fill would match it. The guard is
+     needed: only the group's disabled rule sets pointer-events: none, so a
+     segment disabled on its own still receives hover. */
+  .dr-segment-group
+    .dr-segment-group-item:not([data-state="checked"]):not(:disabled):hover {
+    @apply text-foreground;
+  }
 
-     `[data-disabled]` has to be excluded explicitly — only the GROUP's
-     disabled rule sets pointer-events: none, so an individually disabled
-     segment still receives hover. */
+  /* ::after, because the item's radio-group rule gives ::before to its
+     24px hit area (hit-area-24). `relative z-10` already makes the item a
+     stacking context, so the wash paints above the sliding pill. */
+  .dr-segment-group .dr-segment-group-item::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--state-layer-color, currentColor);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--state-layer-out) var(--ease-out);
+  }
   .dr-segment-group
     .dr-segment-group-item:not([data-state="checked"]):not(
-      [data-disabled]
-    ):hover {
-    @apply text-foreground;
-    background-color: hsl(var(--foreground) / 0.08);
+      :disabled
+    ):hover::after {
+    opacity: var(--state-layer-hover);
+    transition-duration: var(--state-layer-in);
+  }
+  .dr-segment-group
+    .dr-segment-group-item:not([data-state="checked"]):not(
+      :disabled
+    ):active::after {
+    opacity: var(--state-layer-press);
+    transition-duration: var(--state-layer-in);
   }
 
   .dr-segment-group-indicator {
@@ -67,9 +89,9 @@
        (it stays visually unchanged in every shipped preset). */
     box-shadow: var(--shadow-button), var(--affordance-glow);
     transition:
-      transform var(--duration-normal) ease-out,
-      width var(--duration-normal) ease-out,
-      height var(--duration-normal) ease-out;
+      transform var(--duration-normal) var(--ease-out),
+      width var(--duration-normal) var(--ease-out),
+      height var(--duration-normal) var(--ease-out);
   }
 
   .dr-segment-group[data-mounted="false"] .dr-segment-group-indicator {
@@ -154,7 +176,7 @@
     box-shadow: var(--glass-state-active-inset);
   }
 
-  [data-preset="glass"] .dr-segment-group-item:hover {
+  [data-preset="glass"] .dr-segment-group-item:where(:not(:disabled)):hover {
     box-shadow: var(--glass-state-hover-glow);
   }
 }

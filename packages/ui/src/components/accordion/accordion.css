@@ -4,7 +4,7 @@
   }
 
   .dr-accordion-trigger {
-    @apply focus-ring-inset flex flex-1 cursor-pointer items-center justify-between py-4 font-medium transition-[color,text-decoration-color,border-bottom-color,border-bottom-width] hover:underline;
+    @apply focus-ring-inset flex flex-1 cursor-pointer items-center justify-between py-4 font-medium transition-[color,border-bottom-color,border-bottom-width];
     transition-duration: var(--duration-fast);
   }
 
@@ -22,11 +22,11 @@
   }
 
   .dr-accordion-content[data-state="closed"] {
-    animation: accordion-up var(--duration-normal) ease-out;
+    animation: accordion-up var(--duration-normal) var(--ease-out);
   }
 
   .dr-accordion-content[data-state="open"] {
-    animation: accordion-down var(--duration-normal) ease-out;
+    animation: accordion-down var(--duration-normal) var(--ease-out);
   }
 
   .dr-accordion-content-inner {

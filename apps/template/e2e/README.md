@@ -86,13 +86,13 @@ token it drives:
 | Background           | solid, gradient                | `data-background-style`                                                                                       |
 | Background intensity | neutral → intense              | `data-background-intensity`, `--canvas-blob-scale` increases monotonically, `--background` saturation capped  |
 | Gradient pattern     | blobs, aurora, spotlight, mesh | `data-gradient-pattern`                                                                                       |
-| Density              | compact → spacious             | `data-density`, `--density-button-px` increases monotonically                                                 |
+| Density              | compact → spacious             | `data-density`, `--btn-px` increases monotonically                                                            |
 | Font size            | small → extra-large            | `data-font-size`, `--text-base` increases monotonically                                                       |
 | Accent intensity     | calm, balanced, vivid, intense | `--primary-fill` / `--primary` in dark; `--focus-ring` / `--sidebar-hover-bg` in both — no `data-*` attribute |
 | Elevation            | flat → high                    | `data-elevation`, `--elevation-current`                                                                       |
 | Button elevation     | flat → high                    | `data-button-elevation`, `--shadow-button` (flat ⇒ transparent)                                               |
 | Surface intensity    | flat, subtle, balanced, bold   | `data-surface-intensity`                                                                                      |
-| Radius               | sharp, subtle, rounded, pill   | `data-radius`, exact `--radius`, pill ⇒ `--radius-button: 9999px`                                             |
+| Radius               | sharp, subtle, rounded, pill   | `data-radius`, exact `--radius`, pill ⇒ `--radius-control: 9999px`                                            |
 
 Plus one hand-built cross-axis combination for the glass preset and a
 full round-trip test that every axis survives reload and navigation.
@@ -173,6 +173,21 @@ empty state, download trigger, image cropper.
 - WCAG AA contrast for `--foreground` on `--background`, computed from the raw
   HSL tokens, for every preset × both modes.
 - The app renders under `prefers-reduced-motion: reduce`.
+
+### 16 · Control contract (`16-control-contract.spec.ts`)
+
+Runs against the standalone fixture `e2e/fixtures/control-contract.html`.
+
+- Every button variant, toggle, input, select, combobox, multi-select, date
+  input, number input, OTP slot and segment item measures exactly
+  `--control-height`, for every preset × both modes × every density × the
+  `medium` and `extra-large` font sizes.
+- With `hasTouch` (which makes Chromium match `pointer: coarse`), the same
+  controls measure at least `--control-height-xl` at compact and cozy.
+- A field's bottom edge reaches 3:1 against the page and against a card,
+  sampled from rendered pixels, for every preset and for strong glass
+  opacity × both modes.
+- The glass switch thumb sits the same distance from each end of its track.
 
 ## Regression tests for fixed defects
 

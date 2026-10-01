@@ -19,7 +19,7 @@ export const Route = createFileRoute("/_authenticated/components/pagination")({
   component: PaginationPage,
 })
 
-const PAGINATION_VARIANTS = allOf<PaginationVariant>()("filled", "outlined")
+const PAGINATION_VARIANTS = allOf<PaginationVariant>()("filled", "outline")
 
 function PaginationPage() {
   const [page, setPage] = useState(3)
@@ -92,7 +92,7 @@ function PaginationPage() {
       <ShowcaseExample
         title="Variant"
         code={`// One representative cell: every variant renders above.
-<Pagination variant="outlined">
+<Pagination variant="outline">
   <PaginationContent>
     <PaginationItem>
       <PaginationPrevious href="#" />

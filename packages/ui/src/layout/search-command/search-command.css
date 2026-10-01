@@ -1,6 +1,6 @@
 @layer components {
   .dr-search-command-trigger {
-    @apply text-muted-foreground relative h-9 w-full justify-start gap-2 text-sm md:w-64;
+    @apply text-muted-foreground relative w-full justify-start gap-2 text-sm md:w-64;
   }
 
   /* Collapsed rail — same square geometry as a collapsed nav link, so the
@@ -8,16 +8,17 @@
      is a media-query rule, so it needs overriding at the same breakpoint
      rather than by source order alone. */
   .dr-search-command-trigger[data-collapsed="true"] {
-    @apply h-[var(--density-cell)] w-[var(--density-cell)] shrink-0 justify-center p-0;
+    @apply h-[var(--control-height-default)] w-[var(--control-height-default)] shrink-0 justify-center p-0;
+    --btn-height: var(--control-height-default);
   }
 
   @media (min-width: 48rem) {
     .dr-search-command-trigger[data-collapsed="true"] {
-      @apply w-[var(--density-cell)];
+      @apply w-[var(--control-height-default)];
     }
   }
 
   .dr-search-command-shortcut {
-    @apply bg-muted pointer-events-none ml-auto hidden rounded border px-1.5 font-mono text-xs sm:inline-block;
+    @apply bg-muted pointer-events-none ml-auto hidden rounded-sm border px-1.5 font-mono text-xs sm:inline-block;
   }
 }

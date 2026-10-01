@@ -136,10 +136,7 @@ function CascadeSelect({
                     onClick={() => {
                       if (!option.disabled) onSelectAt(depth, option)
                     }}
-                    className={cn(
-                      "dr-cascade-item",
-                      option.disabled && "pointer-events-none opacity-50",
-                    )}
+                    className="dr-cascade-item"
                   >
                     <span className="flex-1">{option.label}</span>
                     {option.children?.length ? (

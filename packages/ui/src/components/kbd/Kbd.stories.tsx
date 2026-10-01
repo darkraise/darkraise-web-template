@@ -27,7 +27,7 @@ export const Sizes: Story = {
   render: () => (
     <div className="flex items-center gap-3">
       <Kbd size="sm">Esc</Kbd>
-      <Kbd size="md">Esc</Kbd>
+      <Kbd size="default">Esc</Kbd>
       <Kbd size="lg">Esc</Kbd>
     </div>
   ),

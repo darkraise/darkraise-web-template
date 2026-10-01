@@ -11,11 +11,11 @@
   .dr-data-table-toolbar-search {
     /* Full width on phones so it does not crowd the column-visibility
      * control; caps at a comfortable width from `sm` up. */
-    @apply h-9 w-full sm:w-64;
+    @apply w-full sm:w-64;
   }
 
   .dr-data-table-toolbar-reset {
-    @apply h-9 px-2;
+    @apply px-2;
   }
 
   /* Pagination */
@@ -42,7 +42,7 @@
   }
 
   .dr-data-table-pagination-page-size-trigger {
-    @apply h-8 w-[70px];
+    @apply w-[70px];
   }
 
   .dr-data-table-pagination-page-info {
@@ -51,10 +51,6 @@
      * `<p>` shrinks below its content width and the browser word-wraps
      * "Rows per page" to one word per line. */
     @apply text-sm whitespace-nowrap;
-  }
-
-  .dr-data-table-pagination-nav-btn {
-    @apply h-8 w-8;
   }
 
   /* Empty state */
@@ -80,11 +76,11 @@
   }
 
   .dr-data-table-skeleton-toolbar-search {
-    @apply h-9 w-64;
+    @apply h-[var(--field-height)] w-64;
   }
 
   .dr-data-table-skeleton-toolbar-action {
-    @apply h-9 w-24;
+    @apply h-[var(--btn-height)] w-24;
   }
 
   /* Frame around the table. `.dr-table-wrapper` already draws its own 1px
@@ -116,9 +112,13 @@
     @apply h-4 flex-1;
   }
 
-  /* Column header (sortable) */
-  .dr-data-table-column-header-btn {
-    @apply -ml-3 h-8;
+  /* Column header (sortable). Rendered size="sm" but given the default
+     control height, like the toolbar buttons below; two classes and the
+     attribute outrank `.dr-btn[data-size="sm"]` whatever order the
+     stylesheets load in. */
+  .dr-btn.dr-data-table-column-header-btn[data-size] {
+    @apply -ml-3;
+    height: var(--btn-height);
   }
 
   .dr-data-table-column-header-icon {
@@ -126,22 +126,19 @@
   }
 
   /* Row actions */
-  .dr-data-table-row-actions-trigger {
-    @apply h-8 w-8;
-  }
-
   .dr-data-table-row-actions-item[data-variant="destructive"] {
     @apply text-destructive;
   }
 
-  /* Column visibility */
-  .dr-data-table-column-visibility-trigger {
-    @apply h-9;
+  /* Column visibility and faceted filters: size="sm" buttons that share
+     the toolbar row with the search field, so they take its height. */
+  .dr-btn.dr-data-table-column-visibility-trigger[data-size] {
+    height: var(--btn-height);
   }
 
-  /* Faceted filters */
-  .dr-data-table-facet-trigger {
-    @apply h-9 border-dashed;
+  .dr-btn.dr-data-table-facet-trigger[data-size] {
+    @apply border-dashed;
+    height: var(--btn-height);
   }
 
   .dr-data-table-facet-count {

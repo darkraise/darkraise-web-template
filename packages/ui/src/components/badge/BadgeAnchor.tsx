@@ -38,7 +38,7 @@ function BadgeAnchor({
   indicatorClassName,
   content,
   variant = "default",
-  size = "md",
+  size = "default",
   position = "top-right",
   offset,
   hidden = false,
