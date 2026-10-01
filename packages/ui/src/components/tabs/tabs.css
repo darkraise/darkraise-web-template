@@ -57,18 +57,25 @@
   }
 
   .dr-tabs-trigger[data-variant="default"] {
-    @apply data-[state=active]:text-primary-foreground rounded-sm border border-transparent px-[var(--btn-px)] py-[var(--density-row-py)];
+    @apply data-[state=active]:text-primary-foreground rounded-sm border border-transparent px-[var(--btn-px)];
+    height: var(--btn-height);
   }
 
   .dr-tabs-trigger[data-variant="outline"] {
-    @apply data-[state=active]:text-primary-text rounded-sm border border-transparent bg-transparent px-[var(--btn-px)] py-[var(--density-row-py)];
+    @apply data-[state=active]:text-primary-text rounded-sm border border-transparent bg-transparent px-[var(--btn-px)];
+    height: var(--btn-height);
   }
 
   /* The transparent bottom border stays for layout — it reserves the row
      the indicator bar occupies, so the label does not shift by 2px when
-     the tab becomes active. The visible rule is drawn by the indicator. */
+     the tab becomes active. The visible rule is drawn by the indicator.
+     The trigger reads --btn-height rather than h-full off a fixed-height
+     list: the list is items-center, and a full-height box that its -1px
+     margin shortens by a pixel would centre half a pixel low. Sized by
+     its triggers, the list comes out exactly --btn-height tall. */
   .dr-tabs-trigger[data-variant="underline"] {
-    @apply data-[state=active]:text-primary-text -mb-px h-full border-b-2 border-transparent px-[var(--btn-px)] py-[var(--density-row-py)];
+    @apply data-[state=active]:text-primary-text -mb-px border-b-2 border-transparent px-[var(--btn-px)];
+    height: var(--btn-height);
   }
 
   .dr-tabs-indicator[data-variant="default"] {
@@ -142,7 +149,8 @@
      its neighbours. Uniform margins make every box equal and the
      centring a no-op. */
   .dr-tabs-trigger[data-variant="enclosed"][data-orientation="horizontal"] {
-    @apply border border-transparent px-[var(--btn-px)] py-[var(--density-row-py)];
+    @apply border border-transparent px-[var(--btn-px)];
+    height: var(--btn-height);
     border-radius: var(--radius) var(--radius) 0 0;
     margin-bottom: -1px;
   }
@@ -237,7 +245,7 @@
   }
 
   .dr-tabs-trigger[data-variant="underline"][data-orientation="vertical"] {
-    @apply -mr-px mb-0 h-auto border-r-2 border-b-0;
+    @apply -mr-px mb-0 border-r-2 border-b-0;
   }
 
   /* --affordance-glow-bottom is a bottom-only halo, which on a
@@ -281,7 +289,8 @@
   }
 
   .dr-tabs-trigger[data-variant="enclosed"][data-orientation="vertical"] {
-    @apply justify-start border border-transparent px-[var(--btn-px)] py-[var(--density-row-py)];
+    @apply justify-start border border-transparent px-[var(--btn-px)];
+    height: var(--btn-height);
     border-radius: var(--radius) 0 0 var(--radius);
     margin-right: -1px;
   }

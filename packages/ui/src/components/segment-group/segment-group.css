@@ -21,8 +21,8 @@
      exceed that specificity — chaining `.dr-segment-group` parent class
      brings us to (0,2,0) and the later source order wins. */
   .dr-segment-group .dr-segment-group-item {
-    @apply focus-ring-inset text-muted-foreground relative z-10 inline-flex cursor-pointer items-center justify-center rounded-sm border-0 bg-transparent px-3 py-1.5 text-sm font-medium transition-colors;
-    height: auto;
+    @apply focus-ring-inset text-muted-foreground relative z-10 inline-flex cursor-pointer items-center justify-center rounded-sm border-0 bg-transparent px-3 text-sm font-medium transition-colors;
+    height: var(--btn-height);
     width: auto;
     aspect-ratio: auto;
     user-select: none;

@@ -304,3 +304,97 @@ describe("field heights", () => {
     ).toMatch(/(?<![\w-])h-7(?![\w-])/)
   })
 })
+
+const TABS = "src/components/tabs/tabs.css"
+const DATA_TABLE = "src/data-table/data-table.css"
+
+describe("tabs, segment and pagination heights", () => {
+  it.each([
+    '.dr-tabs-trigger[data-variant="default"]',
+    '.dr-tabs-trigger[data-variant="outline"]',
+    '.dr-tabs-trigger[data-variant="underline"]',
+    '.dr-tabs-trigger[data-variant="enclosed"][data-orientation="horizontal"]',
+    '.dr-tabs-trigger[data-variant="enclosed"][data-orientation="vertical"]',
+  ])("%s has a fixed --btn-height", (selector) => {
+    const rule = body(TABS, selector)
+    expect(rule).toContain("height: var(--btn-height);")
+    expect(rule).not.toMatch(LEGACY_HEIGHT)
+    expect(rule).not.toMatch(/(?<![\w-])h-(?:full|auto)(?![\w-])/)
+  })
+
+  it("keeps the seam overlap on underline and folder tabs", () => {
+    expect(body(TABS, '.dr-tabs-trigger[data-variant="underline"]')).toMatch(
+      /(?<![\w-])-mb-px(?![\w-])/,
+    )
+    expect(
+      body(
+        TABS,
+        '.dr-tabs-trigger[data-variant="enclosed"][data-orientation="horizontal"]',
+      ),
+    ).toContain("margin-bottom: -1px;")
+  })
+
+  it("lets vertical underline tabs keep the fixed height", () => {
+    expect(
+      body(
+        TABS,
+        '.dr-tabs-trigger[data-variant="underline"][data-orientation="vertical"]',
+      ),
+    ).not.toMatch(/(?<![\w-])h-auto(?![\w-])/)
+  })
+
+  it("sizes every tab strip from its triggers", () => {
+    const offenders = [...flat(TABS).matchAll(/([^{}]+)\{([^{}]*)\}/g)]
+      .filter(([, sel]) => /^\.dr-tabs-list[^\s:]*$/.test(sel?.trim() ?? ""))
+      .filter(([, , decls]) =>
+        /(?<![\w-])(?:height:|(?:min-h|h)-[[\d]|h-full)/.test(decls ?? ""),
+      )
+      .map(([, sel]) => sel?.trim())
+    expect(offenders).toEqual([])
+  })
+
+  it("gives the segment item a fixed --btn-height", () => {
+    const rule = body(
+      "src/components/segment-group/segment-group.css",
+      ".dr-segment-group .dr-segment-group-item",
+    )
+    expect(rule).toContain("height: var(--btn-height);")
+    expect(rule).not.toMatch(LEGACY_HEIGHT)
+  })
+
+  it("leaves the pagination link on the .dr-btn height", () => {
+    expect(
+      readFileSync("src/components/pagination/Pagination.tsx", "utf8"),
+    ).toContain('cn("dr-btn", "dr-pagination-link", className)')
+    const css = flat("src/components/pagination/pagination.css")
+    const linkRules = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].filter(
+      ([sel]) => sel?.includes(".dr-pagination-link"),
+    )
+    expect(linkRules.length).toBeGreaterThan(0)
+    for (const [, , decls] of linkRules) {
+      expect(decls).not.toMatch(/(?<![\w-])height:/)
+      expect(decls).not.toMatch(LEGACY_HEIGHT)
+    }
+  })
+})
+
+describe("data-table control heights", () => {
+  it("forces no literal control height", () => {
+    expect(flat(DATA_TABLE)).not.toMatch(/(?<![\w-])[hw]-(?:8|9)(?![\w-])/)
+  })
+
+  it.each([
+    [".dr-data-table-skeleton-toolbar-search", "h-[var(--field-height)]"],
+    [".dr-data-table-skeleton-toolbar-action", "h-[var(--btn-height)]"],
+  ])("%s mirrors the control it stands in for", (selector, height) => {
+    expect(body(DATA_TABLE, selector)).toContain(height)
+  })
+
+  it.each([
+    ".dr-btn.dr-data-table-column-header-btn[data-size]",
+    ".dr-btn.dr-data-table-column-visibility-trigger[data-size]",
+    ".dr-btn.dr-data-table-facet-trigger[data-size]",
+  ])("%s outranks the sm step with --btn-height", (selector) => {
+    expect(body(DATA_TABLE, selector)).toContain("height: var(--btn-height);")
+  })
+})
