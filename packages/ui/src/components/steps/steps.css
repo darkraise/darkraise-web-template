@@ -36,7 +36,8 @@
   }
 
   .dr-steps-indicator[data-status="complete"] {
-    @apply bg-primary-fill text-primary-foreground;
+    background-color: var(--selected-check-bg);
+    color: var(--selected-check-fg);
     box-shadow: var(--affordance-glow);
   }
 
@@ -78,7 +79,7 @@
   }
 
   .dr-steps-separator[data-status="complete"] {
-    @apply bg-primary-fill;
+    background-color: var(--selected-check-bg);
   }
 
   .dr-steps-content {

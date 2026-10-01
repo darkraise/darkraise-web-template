@@ -57,7 +57,9 @@
   }
 
   .dr-timeline-indicator[data-status="complete"] {
-    @apply bg-primary-fill border-primary-fill text-primary-foreground;
+    background-color: var(--selected-check-bg);
+    border-color: var(--selected-check-bg);
+    color: var(--selected-check-fg);
   }
 
   .dr-timeline-indicator[data-status="current"] {
@@ -75,7 +77,7 @@
   }
 
   .dr-timeline-connector[data-status="complete"] {
-    @apply bg-primary-fill;
+    background-color: var(--selected-check-bg);
   }
 
   .dr-timeline-connector[data-variant="dashed"] {
@@ -88,7 +90,7 @@
   }
 
   .dr-timeline-connector[data-variant="dashed"][data-status="complete"] {
-    @apply text-primary-text;
+    color: var(--selected-check-bg);
   }
 
   .dr-timeline-content {

@@ -12,7 +12,8 @@
   }
 
   .dr-time-column-item[data-selected="true"] {
-    @apply bg-primary-fill text-primary-foreground;
+    background-color: var(--selected-check-bg);
+    color: var(--selected-check-fg);
     box-shadow: var(--affordance-glow);
   }
   .dr-time-column-item[data-selected="true"]:hover {

@@ -37,7 +37,8 @@
   }
 
   .dr-tags-input-item-preview[data-highlighted="true"] {
-    @apply bg-primary-fill text-primary-foreground;
+    background-color: var(--selected-check-bg);
+    color: var(--selected-check-fg);
   }
 
   .dr-tags-input-item-preview[data-disabled="true"] {

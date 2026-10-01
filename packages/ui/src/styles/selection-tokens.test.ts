@@ -198,3 +198,41 @@ describe("checked family: toggle, listbox and tree view", () => {
     expect(body).not.toMatch(/background-image:\s*none/)
   })
 })
+
+const CALENDAR = "src/components/calendar/calendar.css"
+const TIME_PICKER = "src/components/time-picker/time-picker.css"
+const TAGS_INPUT = "src/components/tags-input/tags-input.css"
+const STEPS = "src/components/steps/steps.css"
+const TIMELINE = "src/components/timeline/timeline.css"
+
+describe("checked family: calendar, time picker, tags, steps and timeline", () => {
+  it.each([
+    [
+      CALENDAR,
+      '.dr-calendar-day-btn:is([data-selected-single="true"], [data-range-start="true"], [data-range-end="true"], [data-range-single="true"])',
+    ],
+    [CALENDAR, '.dr-calendar-day-btn[data-selected-single="true"]:hover'],
+    [TIME_PICKER, '.dr-time-column-item[data-selected="true"]'],
+    [TAGS_INPUT, '.dr-tags-input-item-preview[data-highlighted="true"]'],
+    [STEPS, '.dr-steps-indicator[data-status="complete"]'],
+    [TIMELINE, '.dr-timeline-indicator[data-status="complete"]'],
+  ])("%s %s reads the checked fill and label", (path, selector) => {
+    const body = bodyOf(path, selector)
+    for (const declaration of CHECKED) expect(body).toContain(declaration)
+  })
+
+  it.each([
+    [STEPS, '.dr-steps-separator[data-status="complete"]'],
+    [TIMELINE, '.dr-timeline-connector[data-status="complete"]'],
+  ])("%s %s draws the connector in the checked fill", (path, selector) => {
+    expect(bodyOf(path, selector)).toContain(
+      "background-color: var(--selected-check-bg);",
+    )
+  })
+
+  it("puts no checked fill in the calendar day's @apply", () => {
+    expect(bodyOf(CALENDAR, ".dr-calendar-day-btn")).not.toMatch(
+      /(?<![\w-])(?:bg-primary-fill|text-primary-foreground)(?![\w-])/,
+    )
+  })
+})

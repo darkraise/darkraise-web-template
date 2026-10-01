@@ -16,21 +16,24 @@
   }
 
   .dr-calendar-day-btn {
-    @apply data-[selected-single=true]:bg-primary-fill data-[selected-single=true]:text-primary-foreground data-[range-middle=true]:bg-accent data-[range-middle=true]:text-accent-foreground data-[range-start=true]:bg-primary-fill data-[range-start=true]:text-primary-foreground data-[range-end=true]:bg-primary-fill data-[range-end=true]:text-primary-foreground data-[range-single=true]:bg-primary-fill data-[range-single=true]:text-primary-foreground flex aspect-square w-[var(--control-height-default)] flex-col gap-1 leading-none font-normal data-[range-end=true]:rounded-md data-[range-middle=true]:rounded-none data-[range-single=true]:rounded-md data-[range-start=true]:rounded-md;
+    @apply data-[range-middle=true]:bg-accent data-[range-middle=true]:text-accent-foreground flex aspect-square w-[var(--control-height-default)] flex-col gap-1 leading-none font-normal data-[range-end=true]:rounded-md data-[range-middle=true]:rounded-none data-[range-single=true]:rounded-md data-[range-start=true]:rounded-md;
     --btn-height: var(--control-height-default);
     transition:
       background-color var(--duration-fast),
       color var(--duration-fast);
   }
 
-  /* A filled day is a ghost .dr-btn, whose state layer washes toward its
-     label; toward white would drop the label under AA on the fill. */
+  /* Selected days read the checked family. A filled day is a ghost
+     .dr-btn, whose state layer washes toward its label; toward white would
+     drop the label under AA on the fill. */
   .dr-calendar-day-btn:is(
     [data-selected-single="true"],
     [data-range-start="true"],
     [data-range-end="true"],
     [data-range-single="true"]
   ) {
+    background-color: var(--selected-check-bg);
+    color: var(--selected-check-fg);
     --state-layer-color: hsl(var(--primary-fill-wash));
   }
 
@@ -40,7 +43,8 @@
   .dr-calendar-day-btn[data-range-start="true"]:hover,
   .dr-calendar-day-btn[data-range-end="true"]:hover,
   .dr-calendar-day-btn[data-range-single="true"]:hover {
-    @apply bg-primary-fill text-primary-foreground;
+    background-color: var(--selected-check-bg);
+    color: var(--selected-check-fg);
   }
   .dr-calendar-day-btn[data-range-middle="true"]:hover {
     @apply bg-accent text-accent-foreground;
