@@ -8,10 +8,10 @@ import "./pagination.css"
 
 export type PaginationVariant = "filled" | "outline"
 
-const PaginationContext = React.createContext<{ variant: PaginationVariant }>({
-  variant: "filled",
-})
-
+/**
+ * Both variants mark the current page with the checked fill; the variant
+ * stays on the root as a styling hook.
+ */
 function Pagination({
   className,
   variant = "filled",
@@ -20,14 +20,13 @@ function Pagination({
   const uiText = useUiText()
 
   return (
-    <PaginationContext.Provider value={{ variant }}>
-      <nav
-        role="navigation"
-        aria-label={uiText("pagination")}
-        className={cn("dr-pagination", className)}
-        {...props}
-      />
-    </PaginationContext.Provider>
+    <nav
+      role="navigation"
+      aria-label={uiText("pagination")}
+      className={cn("dr-pagination", className)}
+      data-variant={variant}
+      {...props}
+    />
   )
 }
 Pagination.displayName = "Pagination"
@@ -67,16 +66,13 @@ function PaginationLink({
   size = "icon",
   ...props
 }: PaginationLinkProps) {
-  const { variant } = React.useContext(PaginationContext)
-  const isOutlineActive = isActive && variant === "outline"
-
   return (
     <a
       aria-current={isActive ? "page" : undefined}
       className={cn("dr-btn", "dr-pagination-link", className)}
-      data-variant={isActive && variant === "filled" ? "default" : "ghost"}
+      data-variant="ghost"
       data-size={size}
-      data-active={isOutlineActive ? "true" : undefined}
+      data-active={isActive ? "true" : undefined}
       {...props}
     />
   )

@@ -125,6 +125,18 @@ describe("hover and press on controls with the shared state layer", () => {
     expect(offenders).toEqual([])
   })
 
+  it("paints no hover fill on a pagination link: the state layer washes it", () => {
+    const offenders = RULES.filter(
+      (rule) =>
+        rule.selectors.some(
+          (s) =>
+            styles(s, "dr-pagination-link") &&
+            /:hover(?![\w-])/.test(subject(s)),
+        ) && /background/.test(rule.body),
+    ).map((rule) => `${rule.selectors.join(", ")} (${rule.path})`)
+    expect(offenders).toEqual([])
+  })
+
   it("keeps underline-on-hover to links: the accordion trigger has none", () => {
     const offenders = RULES.filter(
       (rule) =>

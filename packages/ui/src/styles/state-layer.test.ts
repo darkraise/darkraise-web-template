@@ -188,6 +188,12 @@ describe("interaction state layer", () => {
     )
   })
 
+  it("washes the current page toward its fill's wash at the filled strengths", () => {
+    expect(flat("src/components/pagination/pagination.css")).toMatch(
+      /\.dr-pagination-link\[data-active="true"\]\[data-variant="ghost"\] \{[^}]*--state-layer-color: hsl\(var\(--primary-fill-wash\)\); --state-layer-hover: 0\.16; --state-layer-press: 0\.28;/,
+    )
+  })
+
   for (const { path, selector, pseudo = "::before" } of HAND_ROLLED) {
     it(`${selector} opts into the shared layer`, () => {
       expect(flat(path)).toContain(`${selector}:hover${pseudo}`)

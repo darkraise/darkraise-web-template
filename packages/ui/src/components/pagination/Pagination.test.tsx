@@ -27,17 +27,29 @@ function currentPage(variant?: PaginationVariant): HTMLElement {
 }
 
 describe("Pagination", () => {
-  it("fills the current page by default", () => {
-    const page = currentPage()
-    expect(page).toHaveAttribute("aria-current", "page")
-    expect(page).toHaveAttribute("data-variant", "default")
-    expect(page).not.toHaveAttribute("data-active")
+  it.each([undefined, "filled", "outline"] as const)(
+    "marks the current page as an active ghost link (variant %s)",
+    (variant) => {
+      const page = currentPage(variant)
+      expect(page).toHaveAttribute("aria-current", "page")
+      expect(page).toHaveAttribute("data-variant", "ghost")
+      expect(page).toHaveAttribute("data-active", "true")
+    },
+  )
+
+  it("leaves the other pages unmarked", () => {
+    currentPage()
+    const other = screen.getByText("1")
+    expect(other).not.toHaveAttribute("aria-current")
+    expect(other).toHaveAttribute("data-variant", "ghost")
+    expect(other).not.toHaveAttribute("data-active")
   })
 
-  it("outlines the current page under the outline variant", () => {
-    const page = currentPage("outline")
-    expect(page).toHaveAttribute("aria-current", "page")
-    expect(page).toHaveAttribute("data-variant", "ghost")
-    expect(page).toHaveAttribute("data-active", "true")
+  it("stamps the variant on the root", () => {
+    currentPage("outline")
+    expect(screen.getByRole("navigation")).toHaveAttribute(
+      "data-variant",
+      "outline",
+    )
   })
 })

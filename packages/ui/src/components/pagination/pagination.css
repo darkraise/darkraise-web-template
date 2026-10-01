@@ -18,12 +18,18 @@
       border-color var(--duration-fast);
   }
 
+  /* The current page reads the checked family in both variants. Hover and
+     press wash toward the fill's wash at the filled strengths, as a filled
+     button does: the fill sits at its label's contrast floor. */
   .dr-pagination-link[data-active="true"][data-variant="ghost"] {
-    @apply border-primary text-primary-text border bg-transparent;
-    /* Preset-driven affordance glow on the current page indicator.
-       Transparent in every shipped preset; a preset can bind a primary-color
-       glow so the active page reads independently of the border alone. */
-    box-shadow: var(--affordance-glow);
+    background-color: var(--selected-check-bg);
+    color: var(--selected-check-fg);
+    --state-layer-color: hsl(var(--primary-fill-wash));
+    --state-layer-hover: 0.16;
+    --state-layer-press: 0.28;
+    /* Button elevation as on any filled button, plus the preset-driven
+       affordance glow (transparent in every shipped preset). */
+    box-shadow: var(--shadow-button), var(--affordance-glow);
   }
 
   .dr-pagination-previous {
@@ -35,13 +41,12 @@
   }
 
   /* PaginationLink already carries .dr-btn, so the Phase 3 Glass button
-     rules frost the chrome at rest + hover. This rule swaps the active
-     (current-page) treatment from primary-border-only over to the
-     glass-selected fill so the active page reads against the frosted
-     row without losing the primary accent. */
+     rules frost the chrome at rest + hover. This rule lays the
+     glass-selected tint over the checked fill so the active page reads
+     against the frosted row; the fill stays, because the label is the
+     checked family's foreground. */
   [data-preset="glass"]
     .dr-pagination-link[data-active="true"][data-variant="ghost"] {
-    background-color: transparent;
     background-image: var(--glass-state-selected-fill);
     border-color: hsl(var(--primary) / 0.4);
     box-shadow:

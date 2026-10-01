@@ -236,3 +236,23 @@ describe("checked family: calendar, time picker, tags, steps and timeline", () =
     )
   })
 })
+
+const PAGINATION = "src/components/pagination/pagination.css"
+
+describe("checked family: pagination", () => {
+  it("fills the current page in both variants", () => {
+    const body = bodyOf(
+      PAGINATION,
+      '.dr-pagination-link[data-active="true"][data-variant="ghost"]',
+    )
+    for (const declaration of CHECKED) expect(body).toContain(declaration)
+  })
+
+  it("keeps the checked fill under the glass current page", () => {
+    const body = bodyOf(
+      PAGINATION,
+      '[data-preset="glass"] .dr-pagination-link[data-active="true"][data-variant="ghost"]',
+    )
+    expect(body).not.toMatch(/background-color:\s*transparent/)
+  })
+})
