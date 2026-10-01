@@ -4,7 +4,7 @@
   }
 
   .dr-slider-track {
-    @apply bg-secondary relative h-2 w-full grow overflow-hidden rounded-full;
+    @apply bg-secondary relative h-[var(--track-height)] w-full grow overflow-hidden rounded-full;
   }
 
   .dr-slider-range {

@@ -571,6 +571,8 @@
     --radius: 0.5rem;
     --radius-control: 0.5rem;
 
+    --track-height: 0.5rem;
+
     /* Shell chrome axis. Defaults are the welded `classic` look: no gutter,
      no radius, no detached-region paint. Each [data-shell-style] block below
      rebinds only what it changes. --shell-region-border is the colour of a
