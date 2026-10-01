@@ -86,7 +86,7 @@ token it drives:
 | Background           | solid, gradient                | `data-background-style`                                                                                       |
 | Background intensity | neutral → intense              | `data-background-intensity`, `--canvas-blob-scale` increases monotonically, `--background` saturation capped  |
 | Gradient pattern     | blobs, aurora, spotlight, mesh | `data-gradient-pattern`                                                                                       |
-| Density              | compact → spacious             | `data-density`, `--density-button-px` increases monotonically                                                 |
+| Density              | compact → spacious             | `data-density`, `--btn-px` increases monotonically                                                            |
 | Font size            | small → extra-large            | `data-font-size`, `--text-base` increases monotonically                                                       |
 | Accent intensity     | calm, balanced, vivid, intense | `--primary-fill` / `--primary` in dark; `--focus-ring` / `--sidebar-hover-bg` in both — no `data-*` attribute |
 | Elevation            | flat → high                    | `data-elevation`, `--elevation-current`                                                                       |

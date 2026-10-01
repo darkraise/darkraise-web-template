@@ -1,6 +1,6 @@
 @layer components {
   .dr-menubar {
-    @apply bg-background flex items-center space-x-1 rounded-md border p-1 py-[var(--density-button-py)];
+    @apply bg-background flex items-center space-x-1 rounded-md border p-1 py-[var(--btn-px-tight)];
     /* Glass-frost the menubar (no-op under Default). The dr-menu-content
        and dr-menu-sub-content rules already consume backdrop-filter for the
        popover surfaces. */
@@ -9,7 +9,7 @@
   }
 
   .dr-menubar-trigger {
-    @apply hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex cursor-pointer items-center rounded-sm px-[var(--density-button-px)] py-[var(--density-button-py)] text-sm font-medium transition-colors outline-none select-none;
+    @apply hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex cursor-pointer items-center rounded-sm px-[var(--btn-px)] py-[var(--btn-px-tight)] text-sm font-medium transition-colors outline-none select-none;
   }
 
   .dr-menubar-sub-trigger {

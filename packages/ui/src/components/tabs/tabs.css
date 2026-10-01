@@ -57,18 +57,18 @@
   }
 
   .dr-tabs-trigger[data-variant="default"] {
-    @apply data-[state=active]:text-primary-foreground rounded-sm border border-transparent px-[var(--density-button-px)] py-[var(--density-row-py)];
+    @apply data-[state=active]:text-primary-foreground rounded-sm border border-transparent px-[var(--btn-px)] py-[var(--density-row-py)];
   }
 
   .dr-tabs-trigger[data-variant="outline"] {
-    @apply data-[state=active]:text-primary-text rounded-sm border border-transparent bg-transparent px-[var(--density-button-px)] py-[var(--density-row-py)];
+    @apply data-[state=active]:text-primary-text rounded-sm border border-transparent bg-transparent px-[var(--btn-px)] py-[var(--density-row-py)];
   }
 
   /* The transparent bottom border stays for layout — it reserves the row
      the indicator bar occupies, so the label does not shift by 2px when
      the tab becomes active. The visible rule is drawn by the indicator. */
   .dr-tabs-trigger[data-variant="underline"] {
-    @apply data-[state=active]:text-primary-text -mb-px h-full border-b-2 border-transparent px-[var(--density-button-px)] py-[var(--density-row-py)];
+    @apply data-[state=active]:text-primary-text -mb-px h-full border-b-2 border-transparent px-[var(--btn-px)] py-[var(--density-row-py)];
   }
 
   .dr-tabs-indicator[data-variant="default"] {
@@ -142,7 +142,7 @@
      its neighbours. Uniform margins make every box equal and the
      centring a no-op. */
   .dr-tabs-trigger[data-variant="enclosed"][data-orientation="horizontal"] {
-    @apply border border-transparent px-[var(--density-button-px)] py-[var(--density-row-py)];
+    @apply border border-transparent px-[var(--btn-px)] py-[var(--density-row-py)];
     border-radius: var(--radius) var(--radius) 0 0;
     margin-bottom: -1px;
   }
@@ -281,7 +281,7 @@
   }
 
   .dr-tabs-trigger[data-variant="enclosed"][data-orientation="vertical"] {
-    @apply justify-start border border-transparent px-[var(--density-button-px)] py-[var(--density-row-py)];
+    @apply justify-start border border-transparent px-[var(--btn-px)] py-[var(--density-row-py)];
     border-radius: var(--radius) 0 0 var(--radius);
     margin-right: -1px;
   }

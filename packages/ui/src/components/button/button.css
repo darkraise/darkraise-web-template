@@ -120,7 +120,7 @@
    * the floor is a no-op there; sm/lg may add a few px to short content.
    * size="icon" keeps its explicit aspect-square w=cell behaviour. */
   .dr-btn[data-size="default"] {
-    @apply min-h-[var(--control-height)] px-[var(--density-button-px)] py-[var(--density-button-py)];
+    @apply min-h-[var(--control-height)] px-[var(--btn-px)] py-[var(--btn-px-tight)];
   }
   .dr-btn[data-size="sm"] {
     @apply min-h-[var(--density-cell-sm)] px-[var(--density-button-px-sm)] py-[var(--density-button-py-sm)];
