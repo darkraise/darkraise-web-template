@@ -6,7 +6,7 @@
   .dr-kbd[data-size="sm"] {
     @apply h-4 min-w-4 text-[length:var(--text-2xs)];
   }
-  .dr-kbd[data-size="md"] {
+  .dr-kbd[data-size="default"] {
     @apply h-5 min-w-5 text-xs;
   }
   .dr-kbd[data-size="lg"] {

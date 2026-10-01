@@ -13,7 +13,7 @@ export type BadgeVariant =
   | "outline"
   | BadgeAccentVariant
 
-export type BadgeSize = "sm" | "md" | "lg"
+export type BadgeSize = "sm" | "default" | "lg"
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: BadgeVariant
@@ -23,7 +23,7 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
 function Badge({
   className,
   variant = "default",
-  size = "md",
+  size = "default",
   ...props
 }: BadgeProps) {
   return (

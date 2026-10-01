@@ -7,7 +7,7 @@
   .dr-badge[data-size="sm"] {
     @apply px-2 py-0 text-[length:var(--text-2xs)] leading-4;
   }
-  .dr-badge[data-size="md"] {
+  .dr-badge[data-size="default"] {
     @apply px-2.5 py-0.5 text-xs;
   }
   .dr-badge[data-size="lg"] {

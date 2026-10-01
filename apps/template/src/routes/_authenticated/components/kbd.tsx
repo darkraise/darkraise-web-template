@@ -10,7 +10,7 @@ export const Route = createFileRoute("/_authenticated/components/kbd")({
   component: KbdPage,
 })
 
-const KBD_SIZES = allOf<KbdSize>()("sm", "md", "lg")
+const KBD_SIZES = allOf<KbdSize>()("sm", "default", "lg")
 
 function KbdPage() {
   return (

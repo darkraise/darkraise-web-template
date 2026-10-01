@@ -3,7 +3,7 @@ import * as React from "react"
 import { cn } from "@lib/utils"
 import "./spinner.css"
 
-export type SpinnerSize = "sm" | "md" | "lg"
+export type SpinnerSize = "sm" | "default" | "lg"
 export type SpinnerVariant = "default" | "primary" | "muted"
 
 export interface SpinnerProps extends React.HTMLAttributes<HTMLSpanElement> {
@@ -15,7 +15,7 @@ export interface SpinnerProps extends React.HTMLAttributes<HTMLSpanElement> {
 
 function Spinner({
   className,
-  size = "md",
+  size = "default",
   variant = "default",
   label,
   "aria-label": ariaLabel,

@@ -43,7 +43,7 @@ const BADGE_VARIANTS = allOf<BadgeVariant>()(
   ...ACCENT_HUES,
 )
 
-const BADGE_SIZES = allOf<BadgeSize>()("sm", "md", "lg")
+const BADGE_SIZES = allOf<BadgeSize>()("sm", "default", "lg")
 
 const BADGE_ANCHOR_POSITIONS = allOf<BadgeAnchorPosition>()(
   "top-left",

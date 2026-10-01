@@ -14,7 +14,7 @@ export const Route = createFileRoute("/_authenticated/components/spinner")({
 })
 
 const SPINNER_VARIANTS = allOf<SpinnerVariant>()("default", "primary", "muted")
-const SPINNER_SIZES = allOf<SpinnerSize>()("sm", "md", "lg")
+const SPINNER_SIZES = allOf<SpinnerSize>()("sm", "default", "lg")
 
 function SpinnerPage() {
   return (
