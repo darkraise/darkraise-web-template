@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
-import { interactiveClasses } from "./interactive-classes"
+import { interactiveClasses, parseRules } from "./interactive-classes"
 
 // Forced colours drop backgrounds and box-shadows, so a control drawn by its
 // fill vanishes unless theme.css restates its boundary; and without
@@ -171,13 +171,16 @@ const FORCED_COLORS_EXEMPT = new Map<string, string>([
 /**
  * Drag surfaces keep the touch-action they set for themselves, or that their
  * drag ancestor sets (touch-action intersects down the tree), as
- * [file, text in that file that sets it, reason].
+ * [file, owner, text the owner sets, reason]. In CSS the owner is the
+ * selector of the rule that sets it; in TSX it is the class literal of the
+ * element whose props set it, read up to the next `className=`.
  */
-const DRAG_SURFACES = new Map<string, [string, string, string]>([
+const DRAG_SURFACES = new Map<string, [string, string, string, string]>([
   [
     "dr-angle-slider",
     [
       "src/components/angle-slider/angle-slider.css",
+      ".dr-angle-slider",
       "touch-action: none",
       "a rotary drag must not pan the page",
     ],
@@ -186,6 +189,7 @@ const DRAG_SURFACES = new Map<string, [string, string, string]>([
     "dr-color-picker-sv",
     [
       "src/components/color-picker/ColorPicker.tsx",
+      "dr-color-picker-sv",
       'touchAction: "none"',
       "a two-axis drag area must not pan the page",
     ],
@@ -194,6 +198,7 @@ const DRAG_SURFACES = new Map<string, [string, string, string]>([
     "dr-color-picker-hue",
     [
       "src/components/color-picker/ColorPicker.tsx",
+      "dr-color-picker-hue",
       'touchAction: "none"',
       "a hue drag strip must not pan the page",
     ],
@@ -202,6 +207,7 @@ const DRAG_SURFACES = new Map<string, [string, string, string]>([
     "dr-floating-panel-drag-handle",
     [
       "src/components/floating-panel/floating-panel.css",
+      ".dr-floating-panel-header",
       "touch-action: none",
       "sits in the panel header, which sets touch-action: none for the move drag",
     ],
@@ -210,6 +216,7 @@ const DRAG_SURFACES = new Map<string, [string, string, string]>([
     "dr-image-cropper-selection",
     [
       "src/components/image-cropper/image-cropper.css",
+      ".dr-image-cropper-viewport",
       "touch-action: none",
       "sits in the cropper viewport, which sets touch-action: none for the drag",
     ],
@@ -218,6 +225,7 @@ const DRAG_SURFACES = new Map<string, [string, string, string]>([
     "dr-slider-thumb",
     [
       "src/components/slider/Slider.tsx",
+      "dr-slider",
       'touchAction: horizontal ? "pan-y" : "pan-x"',
       "the slider root allows only the cross-axis pan so the thumb can be dragged",
     ],
@@ -226,11 +234,26 @@ const DRAG_SURFACES = new Map<string, [string, string, string]>([
     "dr-virtualized-timeline-scrubber",
     [
       "src/components/virtualized-timeline/virtualized-timeline.css",
+      ".dr-virtualized-timeline-scrubber",
       "touch-action: none",
       "a vertical scrub drag must not pan the page",
     ],
   ],
 ])
+
+/** Whether `owner` sets `proof` in `file`; see DRAG_SURFACES. */
+function ownerSets(file: string, owner: string, proof: string): boolean {
+  const source = readFileSync(file, "utf8")
+  if (file.endsWith(".css")) {
+    return parseRules(source, file).some(
+      (rule) => rule.selectors.includes(owner) && rule.body.includes(proof),
+    )
+  }
+  const start = source.indexOf(`"${owner}"`)
+  if (start === -1) return false
+  const next = source.indexOf("className=", start + owner.length + 2)
+  return source.slice(start, next === -1 ? undefined : next).includes(proof)
+}
 
 /** Interactive classes that must not take touch-action: manipulation. */
 const TOUCH_EXEMPT = new Map<string, string>([
@@ -252,11 +275,6 @@ const TOUCH_EXEMPT = new Map<string, string>([
   ],
 ])
 
-interface Rule {
-  selectors: string[]
-  body: string
-}
-
 /** The contents of the block opened by `opener`, braces balanced. */
 function blockAfter(css: string, opener: RegExp): string {
   const match = opener.exec(css)
@@ -272,23 +290,18 @@ function blockAfter(css: string, opener: RegExp): string {
   return css.slice(start, end - 1)
 }
 
-function rulesIn(block: string): Rule[] {
-  return [...block.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((match) => ({
-    selectors: (match[1] as string)
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean),
-    body: (match[2] as string).replace(/\s+/g, " ").trim(),
-  }))
-}
-
-function classesOf(rules: Rule[]): Set<string> {
+function classesOf(rules: Array<{ selectors: string[] }>): Set<string> {
   return new Set(
     rules.flatMap((rule) => rule.selectors).map((s) => s.replace(/^\./, "")),
   )
 }
 
-const FORCED = rulesIn(blockAfter(THEME, /@media \(forced-colors: active\) \{/))
+const FORCED = parseRules(
+  blockAfter(THEME, /@media \(forced-colors: active\) \{/),
+).map((rule) => ({
+  selectors: rule.selectors,
+  body: rule.body.replace(/\s+/g, " ").trim(),
+}))
 const BORDERED = classesOf(
   FORCED.filter((rule) => rule.body === "border: 1px solid ButtonBorder;"),
 )
@@ -364,11 +377,12 @@ describe("forced colours and touch action cover every interactive class", () => 
     expect(missing).toEqual([])
   })
 
-  it("leaves drag surfaces to the touch-action they set", () => {
-    for (const [cls, [file, proof]] of DRAG_SURFACES) {
-      expect(readFileSync(file, "utf8"), `${file} no longer sets it`).toContain(
-        proof,
-      )
+  it("leaves drag surfaces to the touch-action their owner sets", () => {
+    for (const [cls, [file, owner, proof]] of DRAG_SURFACES) {
+      expect(
+        ownerSets(file, owner, proof),
+        `${owner} in ${file} no longer sets ${proof}`,
+      ).toBe(true)
       expect(MANIPULATION.has(cls), `${cls} must not take manipulation`).toBe(
         false,
       )
@@ -389,7 +403,7 @@ describe("forced colours and touch action cover every interactive class", () => 
       expect(MANIPULATION.has(cls), `${cls} now takes manipulation`).toBe(false)
       expect(reason.length, `${cls} needs a reason`).toBeGreaterThan(20)
     }
-    for (const [cls, [, , reason]] of DRAG_SURFACES) {
+    for (const [cls, [, , , reason]] of DRAG_SURFACES) {
       expect(interactive.has(cls), `${cls} is no longer interactive`).toBe(true)
       expect(reason.length, `${cls} needs a reason`).toBeGreaterThan(20)
     }
