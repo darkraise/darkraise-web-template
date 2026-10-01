@@ -2445,9 +2445,13 @@
     outline-offset: -1px;
   }
 
+  /* No outline-offset: each control's own layered offset applies (outside
+     for a standalone control, inside where a packed row or a clipping
+     wrapper would cover the ring). An unlayered offset here overrode them
+     all. The boundary outlines above keep -1px, so a control drawn by one
+     shows its focus ring 1px inside it. */
   :focus-visible {
     outline: 2px solid Highlight;
-    outline-offset: 2px;
   }
 }
 

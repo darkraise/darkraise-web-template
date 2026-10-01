@@ -338,6 +338,15 @@ describe("forced colours and touch action cover every interactive class", () => 
     expect(compound).toEqual([])
   })
 
+  // An unlayered offset here would override every control's own layered
+  // one, pushing inset rings out where a clipping wrapper cuts them off.
+  it("draws the forced-colours focus ring at each control's own offset", () => {
+    expect(FORCED[FORCED.length - 1]?.body).toBe(
+      "outline: 2px solid Highlight;",
+    )
+    expect(OUTLINED.size).toBeGreaterThan(0)
+  })
+
   it("gives every interactive class touch-action: manipulation", () => {
     const missing = [...interactive]
       .filter(

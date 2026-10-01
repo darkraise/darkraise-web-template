@@ -293,6 +293,18 @@ const INSET: Array<[string, string]> = [
     ".dr-segment-group .dr-segment-group-item",
   ],
   ["src/components/calendar/calendar.css", ".dr-btn.dr-calendar-day-btn"],
+  [
+    "src/components/image-editor/image-editor.css",
+    ".dr-image-editor-tools .dr-btn",
+  ],
+  [
+    "src/components/image-editor/image-editor.css",
+    ".dr-image-editor-annotation-kinds .dr-btn",
+  ],
+  [
+    "src/components/json-tree-view/json-tree-view.css",
+    ".dr-json-toolbar-actions .dr-btn",
+  ],
 ]
 
 describe("one focus outline pair", () => {

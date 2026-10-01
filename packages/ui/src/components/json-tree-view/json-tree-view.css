@@ -52,6 +52,10 @@
   .dr-json-toolbar-actions {
     @apply flex items-center gap-0.5;
   }
+  /* Packed at gap-0.5: an outset ring would cover the neighbouring action. */
+  .dr-json-toolbar-actions .dr-btn {
+    @apply focus-ring-inset;
+  }
 
   /* Row container. The padding-left is set inline as a function of depth
    * so the tree indent compounds linearly without a per-level utility. */

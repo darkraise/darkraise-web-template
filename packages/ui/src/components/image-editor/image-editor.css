@@ -109,6 +109,10 @@
       inset 0 0 0 1px hsl(var(--primary)),
       var(--affordance-glow);
   }
+  /* Packed at gap-0.5: an outset ring would cover the neighbouring tool. */
+  .dr-image-editor-tools .dr-btn {
+    @apply focus-ring-inset;
+  }
 
   .dr-image-editor-rotation {
     @apply grid items-center gap-2 text-xs;
@@ -186,6 +190,10 @@
     box-shadow:
       inset 0 0 0 1px hsl(var(--primary)),
       var(--affordance-glow);
+  }
+  /* Packed at gap-0.5: an outset ring would cover the neighbouring kind. */
+  .dr-image-editor-annotation-kinds .dr-btn {
+    @apply focus-ring-inset;
   }
   .dr-image-editor-annotation-toolbar-divider {
     @apply inline-block;
