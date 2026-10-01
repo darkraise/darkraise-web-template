@@ -245,6 +245,17 @@ describe("control radius readers", () => {
     ).toBe(true)
   })
 
+  it("rounds the password trigger's field-side corners with --field-radius", () => {
+    // Its hover wash inherits the trigger's radius, so at pill a square
+    // right end would poke past the field's rounded end.
+    const rule = bodyOf(
+      "password-input/password-input.css",
+      ".dr-password-input-trigger",
+    )
+    expect(rule).toContain("border-top-right-radius: var(--field-radius);")
+    expect(rule).toContain("border-bottom-right-radius: var(--field-radius);")
+  })
+
   it.each([
     ["input/input.css", ".dr-input"],
     ["input/input.css", ".dr-input-group"],
