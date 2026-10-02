@@ -49,8 +49,10 @@ const defaultConfig = {
       buttonElevation: "flat",
       radius: "rounded",
       fontSize: "medium",
-      accentVibrancy: "balanced",
-      canvasTint: "balanced",
+      outerGlow: "none",
+      innerGlow: "none",
+      shellStyle: "classic",
+      sidebarActiveBar: "default",
       contrast: "standard",
       darkAccentChroma: "standard",
       tintWithAccent: "off",
@@ -70,8 +72,10 @@ const defaultConfig = {
         buttonElevation: true,
         radius: true,
         fontSize: true,
-        accentVibrancy: true,
-        canvasTint: true,
+        outerGlow: true,
+        innerGlow: true,
+        shellStyle: true,
+        sidebarActiveBar: true,
         contrast: true,
         darkAccentChroma: true,
         tintWithAccent: true,
@@ -113,8 +117,10 @@ export const themeConfig: ThemeConfig = {
     buttonElevation: "${config.theme.defaults.buttonElevation}",
     radius: "${config.theme.defaults.radius}",
     fontSize: "${config.theme.defaults.fontSize}",
-    accentVibrancy: "${config.theme.defaults.accentVibrancy}",
-    canvasTint: "${config.theme.defaults.canvasTint}",
+    outerGlow: "${config.theme.defaults.outerGlow}",
+    innerGlow: "${config.theme.defaults.innerGlow}",
+    shellStyle: "${config.theme.defaults.shellStyle}",
+    sidebarActiveBar: "${config.theme.defaults.sidebarActiveBar}",
     contrast: "${config.theme.defaults.contrast}",
     darkAccentChroma: "${config.theme.defaults.darkAccentChroma}",
     tintWithAccent: "${config.theme.defaults.tintWithAccent}",
@@ -134,8 +140,10 @@ export const themeConfig: ThemeConfig = {
       buttonElevation: ${config.theme.switcher.axes.buttonElevation},
       radius: ${config.theme.switcher.axes.radius},
       fontSize: ${config.theme.switcher.axes.fontSize},
-      accentVibrancy: ${config.theme.switcher.axes.accentVibrancy},
-      canvasTint: ${config.theme.switcher.axes.canvasTint},
+      outerGlow: ${config.theme.switcher.axes.outerGlow},
+      innerGlow: ${config.theme.switcher.axes.innerGlow},
+      shellStyle: ${config.theme.switcher.axes.shellStyle},
+      sidebarActiveBar: ${config.theme.switcher.axes.sidebarActiveBar},
       contrast: ${config.theme.switcher.axes.contrast},
       darkAccentChroma: ${config.theme.switcher.axes.darkAccentChroma},
       tintWithAccent: ${config.theme.switcher.axes.tintWithAccent},
@@ -190,7 +198,10 @@ console.log("  Created src/app.tsx")
 
 // 3. Generate globals.css
 mkdirSync(resolve(projectDir, "src/styles"), { recursive: true })
-writeFileSync(resolve(projectDir, "src/styles/globals.css"), '@import "darkraise-ui/styles.css";\n')
+writeFileSync(
+  resolve(projectDir, "src/styles/globals.css"),
+  '@import "darkraise-ui/styles.css";\n',
+)
 console.log("  Created src/styles/globals.css")
 
 // 4. Generate vite.config.ts
