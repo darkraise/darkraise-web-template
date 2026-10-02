@@ -88,6 +88,7 @@ Breaking: the exported `generateTokens` input drops `accentIntensity` and takes 
 - Under a gradient background the field edge (`--field-edge-color`) is also solved against the page where the body canvas paints the surface hue loudest, so it reaches 3:1 on the gradient under the Glass preset; it darkens in light mode and lightens in dark mode as `backgroundIntensity` rises (a few lightness points at `balanced`, more at `intense`). Solid backgrounds are unchanged.
 - Virtualized `DataTable` body cells follow `meta.align`, as unvirtualized ones do; sortable headers carry no glass halo and place their sort icon on the inline-end side.
 - Under the default preset with a gradient background, `--primary`, `--ring`, `--focus-ring`, `--primary-text` and `--muted-foreground` are also solved against the content strip, the canvas the top 300px of the content area repaints, and `--field-edge-color` lists it too, so marks clear 3:1 and text 4.5:1 there (measured at 1440px with the blobs, aurora, mesh and spotlight patterns, and at 768px and 390px with blobs and mesh). As background intensity rises they darken in light mode and lighten slightly in dark mode. The strip paints its canvas at least 1440px wide and shows the centre of it in a narrower content area, so the blobs no longer crowd together and stack louder on small screens. Solid backgrounds and the glass preset are unchanged.
+- Dark-mode primary tints (`--primary-1` to `--primary-5`) follow dark accent chroma: their chroma cap is 0.03 at `calm`, 0.05 at `standard` and 0.0625 at `vivid`, where it was 0.05 at every setting.
 
 ### Removed
 
@@ -125,6 +126,8 @@ Breaking: the exported `generateTokens` input drops `accentIntensity` and takes 
 - In forced-colours mode every focus ring was pushed 2px outside its control, so inset rings inside clipping wrappers were cut off.
 - Packed toolbar buttons (image-editor tools and annotation kinds, JSON tree toolbar actions) drew focus rings over their neighbours.
 - CascadeSelect drew a focus ring on the active path permanently, even under the mouse.
+- In light mode the primary mark (`--primary`, `--ring`) of about one theme in five, mostly amber, green, yellow, lime, orange and coral, took the primary edge colour (`--primary-7`), and `--primary-12` took `--primary-11`, so two roles painted the same colour. Each now keeps its own hue and sits just past the step before it.
+- The toast countdown bar painted its status edge colour at 60% alpha, about 2.0:1 on the error toast. It now paints the status text colour, opaque, at 3:1 or more on the toast and on its track.
 
 ## [6.9.6] — 2026-09-30
 
