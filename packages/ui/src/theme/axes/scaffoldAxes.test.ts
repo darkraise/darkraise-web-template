@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { readFileSync } from "node:fs"
 import { scaffoldAxes } from "./scaffoldAxes"
-import { AXIS_KEYS } from "./registry"
+import { AXES, AXIS_KEYS } from "./registry"
 
 describe("scaffold axes.json", () => {
   it("matches the registry; run `pnpm --filter darkraise-ui write:scaffold-axes` after changing it", () => {
@@ -32,6 +32,16 @@ describe("scripts/init.mjs", () => {
   it("defaults every registry axis and nothing else", () => {
     expect(keysOf(/^\s{4}defaults: \{([^}]*)\}/m).sort()).toEqual(
       [...AXIS_KEYS].sort(),
+    )
+  })
+
+  it("defaults every axis to the registry default", () => {
+    const body = script.match(/^\s{4}defaults: \{([^}]*)\}/m)?.[1] ?? ""
+    const defaults = Object.fromEntries(
+      [...body.matchAll(/^\s*(\w+): "([^"]*)"/gm)].map((m) => [m[1], m[2]]),
+    )
+    expect(defaults).toEqual(
+      Object.fromEntries(AXIS_KEYS.map((key) => [key, AXES[key].default])),
     )
   })
 

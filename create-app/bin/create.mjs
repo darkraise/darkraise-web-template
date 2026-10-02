@@ -252,7 +252,7 @@ async function main() {
   const backgroundIntensity =
     argv["background-intensity"] ||
     (skipPrompts
-      ? "balanced"
+      ? "vivid"
       : cancelled(
           await p.select({
             message: "Background intensity",
@@ -260,7 +260,7 @@ async function main() {
               value: i,
               label: i,
             })),
-            initialValue: "balanced",
+            initialValue: "vivid",
           }),
         ))
 
