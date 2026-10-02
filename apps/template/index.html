@@ -49,24 +49,6 @@
         100% { transform: translateX(-100%); }
       }
     </style>
-    <script>
-      ;(function () {
-        var mode = localStorage.getItem("mode")
-        if (mode !== "light" && mode !== "dark") mode = "system"
-        var resolved =
-          mode === "system"
-            ? window.matchMedia("(prefers-color-scheme: dark)").matches
-              ? "dark"
-              : "light"
-            : mode
-        document.documentElement.setAttribute("data-mode", resolved)
-
-        ;["density", "elevation", "button-elevation", "radius", "font-size", "surface-intensity"].forEach(function (axis) {
-          var v = localStorage.getItem("theme-" + axis)
-          if (v) document.documentElement.setAttribute("data-" + axis, v)
-        })
-      })()
-    </script>
   </head>
   <body>
     <div id="root">

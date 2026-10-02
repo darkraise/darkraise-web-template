@@ -3,9 +3,11 @@ import react from "@vitejs/plugin-react"
 import tailwindcss from "@tailwindcss/vite"
 import { tanstackRouter } from "@tanstack/router-plugin/vite"
 import path from "node:path"
+import { darkraisePrerender } from "darkraise-ui/vite"
 
 export default defineConfig({
   plugins: [
+    darkraisePrerender(),
     tanstackRouter({
       routesDirectory: "./src/routes",
       generatedRouteTree: "./src/routeTree.gen.ts",

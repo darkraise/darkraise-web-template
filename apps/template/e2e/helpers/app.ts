@@ -164,11 +164,13 @@ export function watchConsole(page: Page): ConsoleWatcher {
 /**
  * The app renders only after i18n initialises, which can finish after the
  * load event that goto and reload resolve on, and #root holds a loading
- * placeholder until then. data-preset is written by ThemeProvider in the same
- * synchronous pass that emits the tokens, so its presence means both are
- * readable.
+ * placeholder until then. The pre-render script stamps data-preset from
+ * storage before the app runs, so the placeholder leaving is what shows
+ * ThemeProvider has mounted; data-preset then covers pages with no stored
+ * preset.
  */
 async function waitForTheme(page: Page) {
+  await expect(page.locator("#root .app-loading")).toHaveCount(0)
   await expect(page.locator("html")).toHaveAttribute("data-preset", /.+/)
 }
 
