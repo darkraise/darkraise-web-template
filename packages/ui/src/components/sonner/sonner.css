@@ -162,9 +162,10 @@
   }
 
   /* Status kinds. Each sets its pair: the subtle fill, the edge for the
-     icon, close button and progress bar, the text for the title, and the
-     solid action pair. The body's description stays on muted-foreground.
-     Every kind keeps the overlay border; there is no status rail. */
+     icon, close button and progress track, the text for the title and the
+     progress bar, and the solid action pair. The body's description stays
+     on muted-foreground. Every kind keeps the overlay border; there is no
+     status rail. */
   .dr-toast--success {
     --toast-subtle: var(--success-subtle);
     --toast-accent: var(--success-edge);
@@ -289,7 +290,9 @@
   }
   .dr-toast-progress-fill {
     @apply block size-full origin-left;
-    background-color: hsl(var(--toast-accent, var(--muted-foreground)) / 0.6);
+    /* The bar is a mark: the text colour holds 3:1 on the track, where the
+       edge colour drops to about 2.6:1. */
+    background-color: hsl(var(--toast-text, var(--muted-foreground)));
     /* Longhands, not the `animation` shorthand: the shorthand would reset
        animation-duration to 0s, and the per-toast duration arrives as an
        inline style. */

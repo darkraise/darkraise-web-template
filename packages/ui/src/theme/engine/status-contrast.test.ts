@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
-import { contrastRatio } from "@theme/engine/oklch"
+import { composite, contrastRatio } from "@theme/engine/oklch"
 import {
   comboName,
   finalTokens,
@@ -82,6 +82,47 @@ describe("status colours", () => {
     }
     expect(failures).toEqual([])
   })
+
+  it("the toast countdown bar clears 3:1 on its track and the toast fill", () => {
+    const css = readFileSync("src/components/sonner/sonner.css", "utf8")
+    expect(css).toMatch(
+      /\.dr-toast-progress-fill \{[^}]*background-color: hsl\(var\(--toast-text, var\(--muted-foreground\)\)\);/,
+    )
+    const track =
+      /\.dr-toast-progress \{[^}]*background-color: hsl\(var\(--toast-accent, var\(--muted-foreground\)\) \/ ([\d.]+)\);/.exec(
+        css,
+      )
+    expect(track).not.toBeNull()
+    const trackAlpha = Number(track?.[1])
+    const failures: string[] = []
+    for (const combo of reachableCombos()) {
+      const tokens = finalTokens(combo)
+      const kinds: [string, string, string, string][] = STATUSES.map(
+        (status) => [
+          status,
+          tokens[`--${status}-text`] as string,
+          tokens[`--${status}-edge`] as string,
+          tokens[`--${status}-subtle`] as string,
+        ],
+      )
+      const muted = tokens["--muted-foreground"] as string
+      kinds.push(["plain", muted, muted, tokens["--popover"] as string])
+      for (const [kind, bar, accent, ground] of kinds) {
+        if (!isOpaque(ground)) continue
+        for (const [name, under] of [
+          ["fill", ground],
+          ["track", composite(ground, accent, trackAlpha)],
+        ] as const) {
+          const ratio = contrastRatio(bar, under)
+          if (ratio < 3)
+            failures.push(
+              `${comboName(combo)} ${kind} bar on ${name}: ${ratio.toFixed(2)}`,
+            )
+        }
+      }
+    }
+    expect(failures).toEqual([])
+  }, 30_000)
 
   it("the destructive solid carries a white label at 4.5:1", () => {
     const failures: string[] = []
