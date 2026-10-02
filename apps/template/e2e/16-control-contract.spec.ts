@@ -325,6 +325,17 @@ const STRIP_CASES = [
       width: 1440,
     })),
   ),
+  ...(["blobs", "mesh"] as const).flatMap((pattern) =>
+    MODES.flatMap((mode) =>
+      [390, 768].map((width) => ({
+        surface: "slate",
+        mode,
+        intensity: "intense",
+        pattern,
+        width,
+      })),
+    ),
+  ),
 ]
 
 test.describe("gradient strip", () => {
