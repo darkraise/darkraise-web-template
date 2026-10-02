@@ -82,6 +82,7 @@ Breaking: `TableHead` and `TableCell` take `align?: "start" | "center" | "end"` 
 - Sortable `DataTable` headers start their label on the column's text edge (they sat a few pixels left of it) and read like plain headers: 12px at 500 in the header's muted colour instead of a foreground ghost button. In an end-aligned column the sort button sits at the end.
 - Under a gradient background the field edge (`--field-edge-color`) is also solved against the page where the body canvas paints the surface hue loudest, so it reaches 3:1 on the gradient under the Glass preset; it darkens in light mode and lightens in dark mode as `backgroundIntensity` rises (a few lightness points at `balanced`, more at `intense`). Solid backgrounds are unchanged. The Default preset's content header strip stacks a second blob layer that this does not yet cover.
 - Virtualized `DataTable` body cells follow `meta.align`, as unvirtualized ones do; sortable headers carry no glass halo and place their sort icon on the inline-end side.
+- Under the default preset with a gradient background, `--primary`, `--ring`, `--focus-ring`, `--primary-text` and `--muted-foreground` are also solved against the content strip, the canvas the top 300px of the content area repaints, and `--field-edge-color` lists it too, so marks clear 3:1 and text 4.5:1 there. As background intensity rises they darken in light mode and lighten slightly in dark mode. Solid backgrounds and the glass preset are unchanged.
 
 ### Removed
 

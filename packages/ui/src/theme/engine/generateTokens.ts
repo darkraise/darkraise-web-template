@@ -224,23 +224,6 @@ function tierClearingAll(
   return best
 }
 
-/**
- * `value` unchanged when it already clears `target` against `background`,
- * otherwise the nearest lightness on the same hue that does.
- *
- * A repair rather than a recomputation: a value that was already sound keeps
- * its exact place on the accent ladder, so raising a floor moves only what was
- * under it. Values carrying an alpha channel are returned untouched, because
- * their effective contrast depends on what they are composited over.
- */
-function ensureContrast(
-  value: string,
-  background: string,
-  target: number,
-): string {
-  return ensureContrastAll(value, [background], target)
-}
-
 const clearingCache = new Map<string, string>()
 
 /**
@@ -280,7 +263,15 @@ function nearestClearing(
   return result
 }
 
-/** `ensureContrast` against several grounds at once. */
+/**
+ * `value` unchanged when it already clears `target` against every ground,
+ * otherwise the nearest lightness on the same hue that does.
+ *
+ * A repair rather than a recomputation: a value that was already sound keeps
+ * its exact place on the accent ladder, so raising a floor moves only what was
+ * under it. Values carrying an alpha channel are returned untouched, because
+ * their effective contrast depends on what they are composited over.
+ */
 function ensureContrastAll(
   value: string,
   backgrounds: readonly string[],
@@ -446,6 +437,30 @@ export function gradientCanvasPeak(
   const { ink, blobs } = CANVAS_PEAK_SHARE[mode]
   const share = Math.min(1, ink + blobs * CANVAS_BLOB_SCALE[intensity])
   return composite(background, surfaceHue, share)
+}
+
+/**
+ * How much more surface hue the dark content strip is solved against than the
+ * canvas model predicts. Measured 2026-10-02 at 1440px, blue on slate at
+ * balanced: the model gave 0.0189 luminance where Chromium painted 0.021, so a
+ * field edge solved to 3:1 rendered 2.92:1. Another 4% of the hue over the
+ * modelled peak covered slate and violet at balanced and intense.
+ */
+const STRIP_DARK_EXTRA = 0.04
+
+/**
+ * The loudest point of the content strip: the canvas layers the default
+ * preset repaints over the top of `main[data-content]` (theme.css,
+ * `--content-gradient-overlay`), where the body canvas behind it renders flat.
+ */
+export function contentStripGround(
+  background: string,
+  surfaceHue: string,
+  mode: ResolvedMode,
+  intensity: BackgroundIntensity,
+): string {
+  const peak = gradientCanvasPeak(background, surfaceHue, mode, intensity)
+  return mode === "dark" ? composite(peak, surfaceHue, STRIP_DARK_EXTRA) : peak
 }
 
 /** Clamps an `H S% L%` triplet's saturation. Hue and lightness pass through. */
@@ -765,7 +780,24 @@ export function generateTokens(
     mode === "light" ? surface[50] : surface[950],
     CANVAS_SATURATION_CAP[backgroundIntensity],
   )
-  const mutedForeground = tierClearing(neutral, background, MUTED_TARGET_RATIO)
+  // The default preset repaints the canvas over the top of the content area,
+  // where page titles, toolbars and the first fields sit, so the tokens read
+  // there are also solved against that strip. Glass paints no strip.
+  const paintsStrip = backgroundStyle === "gradient" && preset !== "glass"
+  const stripGrounds = paintsStrip
+    ? [contentStripGround(background, surfaceTint, mode, backgroundIntensity)]
+    : []
+  const mutedOnPage = tierClearing(neutral, background, MUTED_TARGET_RATIO)
+  // The strip needs only the 4.5:1 text floor where the page solve aims for
+  // 7:1, so whichever result sits further from the page wins.
+  const mutedOnStrip = paintsStrip
+    ? tierClearingAll(neutral, [background, ...stripGrounds], TEXT_FLOOR)
+    : mutedOnPage
+  const mutedForeground =
+    contrastRatio(mutedOnStrip, background) >
+    contrastRatio(mutedOnPage, background)
+      ? mutedOnStrip
+      : mutedOnPage
   const card = mode === "light" ? "0 0% 100%" : surface[900]
   // Popovers paint the card rung; named so the text solves can list it.
   const popover = card
@@ -805,7 +837,11 @@ export function generateTokens(
     mode === "light" ? accentColors.blue[500] : accentColors.blue[400],
   )
 
-  const primaryMark = ensureContrast(primaryValue, background, MARK_FLOOR)
+  const primaryMark = ensureContrastAll(
+    primaryValue,
+    [background, ...stripGrounds],
+    MARK_FLOOR,
+  )
   // The 3:1 edge a field draws along its bottom and an unchecked checkbox,
   // radio or switch draws all round. It is one value per theme, so it is
   // solved against every ground a control can sit on. It stays out of
@@ -832,6 +868,7 @@ export function generateTokens(
             ),
           ]
         : []),
+      ...stripGrounds,
     ],
     preset === "glass" ? GLASS_EDGE_FLOOR : MARK_FLOOR,
   )
@@ -843,7 +880,7 @@ export function generateTokens(
     // tints and preset surfaces.
     "--primary-text": ensureContrastOnTint(
       primaryValue,
-      [background, card],
+      [background, card, ...stripGrounds],
       primaryMark,
       PRIMARY_TINT_CEILING,
       TEXT_FLOOR,
@@ -851,8 +888,16 @@ export function generateTokens(
     "--primary-fill": primaryFill,
     "--primary-foreground": primaryForeground,
     "--primary-fill-wash": washFor(primaryForeground),
-    "--ring": ensureContrast(ringValue, background, MARK_FLOOR),
-    "--focus-ring": ensureContrast(focusRingValue, background, MARK_FLOOR),
+    "--ring": ensureContrastAll(
+      ringValue,
+      [background, ...stripGrounds],
+      MARK_FLOOR,
+    ),
+    "--focus-ring": ensureContrastAll(
+      focusRingValue,
+      [background, ...stripGrounds],
+      MARK_FLOOR,
+    ),
     "--surface-tint": surfaceTint,
 
     "--chart-1": chartColors[0] ?? "",
@@ -961,10 +1006,9 @@ export function generateTokens(
     // area) where the gradient had nothing in front of it. Body bg
     // (or whatever sits behind main) is the canonical source of
     // page color under Glass; the overlay no longer adds its own.
-    "--content-gradient-overlay":
-      backgroundStyle === "gradient" && preset !== "glass"
-        ? `var(--canvas-blob-a), var(--canvas-blob-b), var(--canvas-blob-c), var(--canvas-blob-d), var(--canvas-ink)`
-        : "none",
+    "--content-gradient-overlay": paintsStrip
+      ? `var(--canvas-blob-a), var(--canvas-blob-b), var(--canvas-blob-c), var(--canvas-blob-d), var(--canvas-ink)`
+      : "none",
 
     ...sfHueTokens,
   }
