@@ -283,7 +283,7 @@ export const showcaseVietnamese: Record<keyof typeof showcaseEnglish, string> =
     "Content-only card": "Thẻ chỉ có nội dung",
     "Divided card": "Thẻ chia phần",
     "Border x elevation": "Viền × độ nổi",
-    "Surface intensity": "Cường độ bề mặt",
+    Surface: "Bề mặt",
     "Elevation prop": "Thuộc tính elevation",
     "Header with badge": "Phần đầu với nhãn",
     "Header with action menu": "Phần đầu với menu thao tác",

@@ -280,7 +280,7 @@ export const showcaseEnglish = {
   "Content-only card": "Content-only card",
   "Divided card": "Divided card",
   "Border x elevation": "Border x elevation",
-  "Surface intensity": "Surface intensity",
+  Surface: "Surface",
   "Elevation prop": "Elevation prop",
   "Header with badge": "Header with badge",
   "Header with action menu": "Header with action menu",
