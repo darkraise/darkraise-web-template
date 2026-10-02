@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { contrastRatio } from "@theme/engine/oklch"
-import { accentColors } from "@theme/palettes/accentColors"
+import { ACCENT_COLORS, ACCENT_INTENSITIES, SURFACE_COLORS } from "@theme/types"
 import {
   comboName,
   finalTokens,
@@ -8,45 +8,80 @@ import {
   type ThemeCombo,
 } from "../../test/contrast-matrix"
 
-const WHITE = "0 0% 100%"
 const INK = "222 47% 11%"
 
-/**
- * The label rule this solve must not change: white wherever white clears 3:1
- * on the unsolved light fill (shade 500, or 600 under glass), and white on
- * every dark fill.
- */
-function expectedLabel(combo: ThemeCombo): string {
-  if (combo.mode === "dark") return WHITE
-  const shade = combo.preset === "glass" ? 600 : 500
-  return contrastRatio(WHITE, accentColors[combo.accentColor][shade]) >= 3
-    ? WHITE
-    : INK
+function matrix(): ThemeCombo[] {
+  const combos: ThemeCombo[] = []
+  for (const accentColor of ACCENT_COLORS)
+    for (const surfaceColor of SURFACE_COLORS)
+      for (const mode of ["light", "dark"] as const)
+        for (const accentIntensity of ACCENT_INTENSITIES)
+          for (const preset of ["default", "glass"] as const)
+            combos.push({
+              accentColor,
+              surfaceColor,
+              mode,
+              accentIntensity,
+              preset,
+              backgroundIntensity: "balanced",
+            })
+  return combos
 }
+
+const INK_LABELLED = {
+  light: [
+    "amber",
+    "cyan",
+    "emerald",
+    "green",
+    "lime",
+    "orange",
+    "sky",
+    "teal",
+    "yellow",
+  ],
+  dark: ["amber", "lime", "yellow"],
+} as const
 
 describe("primary fill and label", () => {
   const combos = reachableCombos()
 
-  it("the label clears 4.5:1 on the fill in every reachable theme", () => {
+  it("the label clears 4.6:1 on the fill in every theme", () => {
     const failures: string[] = []
-    for (const combo of combos) {
+    for (const combo of matrix()) {
       const tokens = finalTokens(combo)
       const ratio = contrastRatio(
         tokens["--primary-foreground"] as string,
         tokens["--primary-fill"] as string,
       )
-      if (ratio < 4.5) failures.push(`${comboName(combo)}: ${ratio.toFixed(2)}`)
+      if (ratio < 4.6) failures.push(`${comboName(combo)}: ${ratio.toFixed(2)}`)
     }
     expect(failures).toEqual([])
   })
 
-  it("every hue keeps today's label colour", () => {
+  it("dark fills clear 3:1 against the card in every theme", () => {
     const failures: string[] = []
-    for (const combo of combos) {
-      const got = finalTokens(combo)["--primary-foreground"]
-      if (got !== expectedLabel(combo)) {
-        failures.push(`${comboName(combo)}: ${got}`)
-      }
+    for (const combo of matrix()) {
+      if (combo.mode !== "dark") continue
+      const tokens = finalTokens(combo)
+      const ratio = contrastRatio(
+        tokens["--primary-fill"] as string,
+        tokens["--card"] as string,
+      )
+      if (ratio < 3) failures.push(`${comboName(combo)}: ${ratio.toFixed(2)}`)
+    }
+    expect(failures).toEqual([])
+  })
+
+  it("gives an ink label to exactly the light hues in each mode", () => {
+    const failures: string[] = []
+    for (const combo of matrix()) {
+      if (combo.preset !== "default") continue
+      const ink = finalTokens(combo)["--primary-foreground"] === INK
+      const expected = (INK_LABELLED[combo.mode] as readonly string[]).includes(
+        combo.accentColor,
+      )
+      if (ink !== expected) failures.push(`${comboName(combo)}: ink ${ink}`)
     }
     expect(failures).toEqual([])
   })

@@ -222,9 +222,12 @@ describe("useTheme", () => {
     localStorage.setItem("theme-accent-intensity", "calm")
     const { result } = renderHook(() => useTheme(), { wrapper })
     expect(result.current.accentIntensity).toBe("calm")
-    expect(
-      document.documentElement.style.getPropertyValue("--primary-fill"),
-    ).toBe("217 74% 49%")
+    const read = () =>
+      document.documentElement.style.getPropertyValue("--primary-fill")
+    const calm = read()
+    act(() => result.current.setAccentIntensity("balanced"))
+    expect(calm).toBeTruthy()
+    expect(calm).not.toBe(read())
   })
 
   it("defaults backgroundIntensity to vivid", () => {

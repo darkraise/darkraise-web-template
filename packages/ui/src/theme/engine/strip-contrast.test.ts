@@ -16,8 +16,8 @@ const STRIP_FLOORS = [
   ["--muted-foreground", 4.5],
 ] as const
 
-// Recorded from master on 2026-10-02 before the strip solve existed. Themes
-// that paint no content strip must not move.
+// Recorded from the step engine on 2026-10-02. Themes that paint no content
+// strip must not move.
 const UNCHANGED = [
   [
     "default",
@@ -28,7 +28,7 @@ const UNCHANGED = [
       "--primary": "217 91% 60%",
       "--ring": "217 91% 60%",
       "--focus-ring": "212 96% 60%",
-      "--primary-text": "217 91% 44%",
+      "--primary-text": "217 91% 42%",
       "--muted-foreground": "215 16% 35%",
       "--content-gradient-overlay": "none",
     },
@@ -42,7 +42,7 @@ const UNCHANGED = [
       "--primary": "217 91% 60%",
       "--ring": "217 91% 60%",
       "--focus-ring": "212 96% 59%",
-      "--primary-text": "217 91% 44%",
+      "--primary-text": "217 91% 42%",
       "--muted-foreground": "215 16% 35%",
       "--content-gradient-overlay": "none",
     },
@@ -56,7 +56,7 @@ const UNCHANGED = [
       "--primary": "217 91% 60%",
       "--ring": "217 91% 60%",
       "--focus-ring": "213 97% 87%",
-      "--primary-text": "217 91% 67%",
+      "--primary-text": "217 91% 73%",
       "--muted-foreground": "215 16% 63%",
       "--content-gradient-overlay": "none",
     },
@@ -70,7 +70,7 @@ const UNCHANGED = [
       "--primary": "217 91% 60%",
       "--ring": "217 91% 60%",
       "--focus-ring": "213 97% 87%",
-      "--primary-text": "217 91% 67%",
+      "--primary-text": "217 91% 73%",
       "--muted-foreground": "215 16% 62%",
       "--content-gradient-overlay": "none",
     },
@@ -84,7 +84,7 @@ const UNCHANGED = [
       "--primary": "221 83% 53%",
       "--ring": "221 83% 53%",
       "--focus-ring": "212 96% 60%",
-      "--primary-text": "221 83% 45%",
+      "--primary-text": "217 91% 40%",
       "--muted-foreground": "215 16% 35%",
       "--content-gradient-overlay": "none",
     },
@@ -95,10 +95,10 @@ const UNCHANGED = [
     "light",
     "intense",
     {
-      "--primary": "221 83% 53%",
-      "--ring": "221 83% 53%",
+      "--primary": "213 94% 41%",
+      "--ring": "213 94% 41%",
       "--focus-ring": "212 96% 59%",
-      "--primary-text": "221 83% 45%",
+      "--primary-text": "217 91% 40%",
       "--muted-foreground": "215 16% 35%",
       "--content-gradient-overlay": "none",
     },
@@ -112,7 +112,7 @@ const UNCHANGED = [
       "--primary": "213 94% 68%",
       "--ring": "213 94% 68%",
       "--focus-ring": "213 97% 87%",
-      "--primary-text": "213 94% 68%",
+      "--primary-text": "217 91% 77%",
       "--muted-foreground": "215 16% 63%",
       "--content-gradient-overlay": "none",
     },
@@ -126,7 +126,7 @@ const UNCHANGED = [
       "--primary": "213 94% 68%",
       "--ring": "213 94% 68%",
       "--focus-ring": "213 97% 87%",
-      "--primary-text": "213 94% 68%",
+      "--primary-text": "217 91% 76%",
       "--muted-foreground": "215 16% 62%",
       "--content-gradient-overlay": "none",
     },

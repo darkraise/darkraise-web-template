@@ -11,19 +11,20 @@ import type {
 import { accentColors } from "@theme/palettes/accentColors"
 import { surfaceColors } from "@theme/palettes/surfaceColors"
 import { presets, type PresetName } from "@theme/presets"
-import { ACCENT_COLORS } from "@theme/types"
 import {
   contrastRatio,
   hslStringToOklch,
-  mixedContrast,
   oklchToHslString,
 } from "@theme/engine/oklch"
+import { CANVAS_SATURATION_CAP, contentStripGround } from "./canvas"
 import {
-  CANVAS_SATURATION_CAP,
-  capCanvasSaturation,
-  contentStripGround,
-  gradientCanvasPeak,
-} from "./canvas"
+  INK,
+  STATUS_NAMES,
+  WHITE,
+  placeStep,
+  solveSteps,
+  type DarkAccentChroma,
+} from "./steps"
 
 export {
   CANVAS_BLOB_SCALE,
@@ -43,24 +44,13 @@ export interface GenerateTokensInput {
   backgroundIntensity?: BackgroundIntensity
 }
 
-function getChartColors(
-  accentColor: AccentColor,
-  mode: ResolvedMode,
-): string[] {
-  const index = ACCENT_COLORS.indexOf(accentColor)
-  const count = ACCENT_COLORS.length
-  const step = Math.floor(count / 5)
-  const shade = mode === "light" ? 500 : 400
-
-  return Array.from({ length: 5 }, (_, i) => {
-    const colorIndex = (index + i * step) % count
-    const colorName = ACCENT_COLORS[colorIndex] ?? accentColor
-    return `hsl(${accentColors[colorName][shade]})`
-  })
+/** The ramp every neutral step and text tier is drawn from. */
+export function resolveNeutralScale(surfaceColor: SurfaceColor): ColorScale {
+  return surfaceColors[surfaceColor]
 }
 
 function resolveSfHueTokens(
-  surfaceColor: SurfaceColor,
+  neutral: ColorScale,
   backgroundStyle: BackgroundStyle,
 ): { "--sf-hue": string; "--sf-hue-2": string; "--sf-hue-3": string } {
   if (backgroundStyle !== "gradient") {
@@ -70,8 +60,6 @@ function resolveSfHueTokens(
       "--sf-hue-3": "transparent",
     }
   }
-
-  const neutral = resolveNeutralScale(surfaceColor)
   return {
     "--sf-hue": `hsl(${neutral[500]})`,
     "--sf-hue-2": `hsl(${neutral[400]})`,
@@ -79,59 +67,20 @@ function resolveSfHueTokens(
   }
 }
 
-/** The ramp every neutral step and text tier is drawn from. */
-export function resolveNeutralScale(surfaceColor: SurfaceColor): ColorScale {
-  return surfaceColors[surfaceColor]
-}
-
 /** A shape or boundary must be distinguishable from its ground. */
 const MARK_FLOOR = 3
-/**
- * The field edge's floor under glass. A glass card is translucent over the
- * gradient canvas, so the ground a field really sits on drifts from the
- * opaque values the edge is solved against. 3.5 kept the rendered edge at
- * 3:1 on medium and strong glass cards for the default accent and surface
- * (the template's control-contract e2e spec); other accents, surfaces and
- * background intensities are not measured.
- */
-const GLASS_EDGE_FLOOR = 3.5
-/** Text must be readable, whatever else the colour is also used for. */
-const TEXT_FLOOR = 4.5
-/**
- * Strongest --primary tint that primary-coloured text sits on: bg-primary/10
- * under selected toggle, pagination, listbox and tree items, /20 under steps,
- * timeline, highlight and the sidebar count. The ceiling keeps 24% so the
- * token does not move again now that the strongest remaining tint is 20%.
- */
-const PRIMARY_TINT_CEILING = 0.24
-/**
- * Strongest tint of its own colour that status text sits on: alert titles at
- * 6%, toast titles at 10-12%.
- */
-const STATUS_TINT_CEILING = 0.12
 const LEGEND_TARGET_RATIO = 4.6
-/** Far enough above the legend tier that the two read as different ranks. */
-const MUTED_TARGET_RATIO = 7
+const BLACK = "0 0% 0%"
+
+/** Until the darkAccentChroma axis replaces accentIntensity. */
+const CHROMA_FOR_INTENSITY: Record<AccentIntensity, DarkAccentChroma> = {
+  calm: "calm",
+  balanced: "standard",
+  vivid: "vivid",
+  intense: "vivid",
+}
 
 const tierCache = new Map<string, string>()
-
-/**
- * The quietest colour on this ramp's hue that still clears `target` against the
- * background.
- *
- * Computed rather than snapped to a ramp step, because the steps are too coarse
- * to carry three tiers: measured across the twelve neutral ramps, light step 500
- * lands at 4.31:1 and step 600 at 6.61:1, so a third tier below 500 has nowhere
- * to sit above the 4.5:1 floor. Snapping also left `--muted-foreground` itself
- * under AA on the warmer ramps.
- */
-function tierClearing(
-  ramp: ColorScale,
-  background: string,
-  target: number,
-): string {
-  return tierClearingAll(ramp, [background], target)
-}
 
 /**
  * `tierClearing` against several grounds: the quietest lightness on the
@@ -227,35 +176,6 @@ function ensureContrastAll(
   )
 }
 
-/**
- * Text that also sits on a tint of `tint` at up to `amount` over each ground,
- * as `hsl(var(--x) / amount)` backgrounds paint it. Contrast falls
- * monotonically as the tint strengthens, so clearing the ceiling clears every
- * weaker tint. `tint` null means the text's own colour.
- */
-function ensureContrastOnTint(
-  value: string,
-  grounds: readonly string[],
-  tint: string | null,
-  amount: number,
-  target: number,
-): string {
-  return nearestClearing(
-    value,
-    `tint|${grounds.join("|")}|${tint ?? "self"}|${amount}|${target}`,
-    (candidate) =>
-      grounds.every(
-        (ground) =>
-          contrastRatio(candidate, ground) >= target &&
-          mixedContrast(candidate, ground, tint ?? candidate, amount) >= target,
-      ),
-  )
-}
-
-function isSidebarDark(mode: ResolvedMode): boolean {
-  return mode === "dark"
-}
-
 // `--focus-ring` reads accent[100..500] and `--sidebar-hover-bg` reads
 // accent[50..500]. Their OKLCH chroma runs 0.03-0.18, below every ceiling in
 // VIBRANCY, so the chroma treatment `--primary` receives would return these
@@ -298,112 +218,12 @@ const SIDEBAR_ACTIVE: Record<
 }
 
 /**
- * How loud the dark-mode accent reads. The fill takes the step's lightness and
- * chroma cap; `--primary` keeps its palette lightness and takes the cap only,
- * which is what stops the bright warm accents from being dragged down.
- *
- * Each step's lightness is a ceiling, not a fixed value: `solveWhiteFill`
- * lowers any fill whose white label would miss 4.5:1, so neighbouring steps
- * can land on the same fill where a hue's 4.5:1 point sits below them (dark
- * mode on slate: orange, emerald, teal and fuchsia at `vivid` and `intense`,
- * sky at `balanced` and `vivid`). Below ~0.535 the fill would drop under 3:1
- * against `--card`; the deepest solve measured (lime at `intense`) sits about
- * 0.09 under its step and still clears that floor. A chroma cap above ~0.26 never
- * binds, because that is the sRGB gamut ceiling at these lightnesses — hence
- * the nulls rather than decorative large numbers.
- */
-const VIBRANCY: Record<
-  AccentIntensity,
-  {
-    fillLightness: number
-    fillChroma: number | null
-    primaryChroma: number | null
-  }
-> = {
-  calm: { fillLightness: 0.54, fillChroma: 0.24, primaryChroma: 0.2 },
-  balanced: { fillLightness: 0.57, fillChroma: null, primaryChroma: 0.24 },
-  vivid: { fillLightness: 0.6, fillChroma: null, primaryChroma: null },
-  intense: { fillLightness: 0.63, fillChroma: null, primaryChroma: null },
-}
-
-/**
- * Decides which label a hue keeps: white wherever white clears 3:1 on the
- * unsolved fill, ink everywhere else. The fill is then solved so the label
- * reaches LABEL_SOLVE_TARGET, which is how labels stay put per hue while
- * clearing AA for 14px text.
- */
-const FOREGROUND_MIN_RATIO = 3
-/** AA for body-size text, with headroom so integer HSL rounding cannot land under 4.5. */
-const LABEL_SOLVE_TARGET = 4.6
-const WHITE = "0 0% 100%"
-const INK = "222 47% 11%"
-const BLACK = "0 0% 0%"
-
-/**
  * What a hover or press mixes into a fill: the end of the lightness range away
  * from its label. A fill sits at its label's contrast floor, so mixing toward
- * the label (the old translucent and label-coloured hovers) dropped under AA.
+ * the label drops under AA.
  */
 function washFor(label: string): string {
   return label === WHITE ? BLACK : WHITE
-}
-
-function vibrancyFill(hsl: string, vibrancy: AccentIntensity): string {
-  const { C, h } = hslStringToOklch(hsl)
-  const { fillLightness, fillChroma } = VIBRANCY[vibrancy]
-  return oklchToHslString({
-    L: fillLightness,
-    C: fillChroma === null ? C : Math.min(C, fillChroma),
-    h,
-  })
-}
-
-function capChroma(hsl: string, max: number | null): string {
-  if (max === null) return hsl
-  const { L, C, h } = hslStringToOklch(hsl)
-  if (C <= max) return hsl
-  return oklchToHslString({ L, C: max, h })
-}
-
-const whiteFillCache = new Map<string, string>()
-
-/**
- * The fill nearest `base` that carries a white label at LABEL_SOLVE_TARGET:
- * hue and chroma kept, OKLCH lightness lowered in 0.002 steps, each candidate
- * measured as the triplet actually emitted. `base` itself when it already
- * clears.
- */
-function solveWhiteFill(base: string): string {
-  const cached = whiteFillCache.get(base)
-  if (cached !== undefined) return cached
-  let result = base
-  if (contrastRatio(WHITE, base) < LABEL_SOLVE_TARGET) {
-    const { L, C, h } = hslStringToOklch(base)
-    for (let l = L - 0.002; l > 0; l -= 0.002) {
-      const candidate = oklchToHslString({ L: l, C, h })
-      if (contrastRatio(WHITE, candidate) >= LABEL_SOLVE_TARGET) {
-        result = candidate
-        break
-      }
-    }
-  }
-  whiteFillCache.set(base, result)
-  return result
-}
-
-/**
- * Keeps today's label per hue and solves the fill to carry it: a white label
- * darkens the fill just enough; an ink label leaves it alone, because ink
- * clears at least 5.9:1 on any fill where white is under 3:1.
- */
-function primaryFillAndLabel(base: string): {
-  fill: string
-  foreground: string
-} {
-  if (contrastRatio(WHITE, base) >= FOREGROUND_MIN_RATIO) {
-    return { fill: solveWhiteFill(base), foreground: WHITE }
-  }
-  return { fill: base, foreground: INK }
 }
 
 /** White or ink, whichever reads better on `fill`; white on a tie. */
@@ -544,299 +364,146 @@ export function generateTokens(
     backgroundIntensity = "balanced",
   } = input
 
-  const sfHueTokens = resolveSfHueTokens(surfaceColor, backgroundStyle)
-
   const accent: ColorScale = accentColors[accentColor]
-  const surface: ColorScale = resolveNeutralScale(surfaceColor)
-  const neutral: ColorScale = resolveNeutralScale(surfaceColor)
-  const recipe = presets[preset].surfaceRecipe
-
-  const isRedishAccent =
+  const neutral = resolveNeutralScale(surfaceColor)
+  const dark = mode === "dark"
+  const glass = preset === "glass"
+  // The neutral's own mid-tone: the hue the gradient canvas paints and glass's
+  // inner glow follows.
+  const surfaceTint = neutral[500]
+  const gradient = backgroundStyle === "gradient"
+  // The default preset repaints the canvas over the top of the content area;
+  // glass paints no strip.
+  const paintsStrip = gradient && !glass
+  const redish =
     accentColor === "red" || accentColor === "rose" || accentColor === "pink"
 
-  const isLightGlass = mode === "light" && preset === "glass"
-  const isDarkGlass = preset === "glass" && mode === "dark"
-  // Dark non-glass picks shade 500 (same as light) rather than the brighter
-  // shade 400 it used previously. The earlier `accent[400]` value sat at
-  // L:68u201376% S:92u201395% for high-saturation pastels (blue/violet/rose),
-  // which read as glaring on every `bg-primary` surface in dark mode
-  // (default Button fill, Checkbox/Switch checked, Calendar selected day,
-  // Tabs underline, Progress track, etc.). Shade 500 keeps WCAG-fine
-  // contrast against the dark background while toning down the brightness.
-  // Glass branches stay on their original shades because translucent
-  // surfaces need the extra weight to read at all.
-  const primaryShade = isLightGlass ? 600 : isDarkGlass ? 400 : 500
-  const primaryBase = accent[primaryShade]
-  const primaryValue =
-    mode === "dark"
-      ? capChroma(primaryBase, VIBRANCY[accentIntensity].primaryChroma)
-      : primaryBase
-  const { fill: primaryFill, foreground: primaryForeground } =
-    primaryFillAndLabel(
-      mode === "dark"
-        ? vibrancyFill(primaryBase, accentIntensity)
-        : primaryBase,
-    )
-  const ringValue = primaryValue
-  const focusRingShade = FOCUS_RING_SHADE[accentIntensity][mode]
-  const focusRingValue = accent[focusRingShade]
+  const steps = solveSteps({
+    mode,
+    accent,
+    neutral,
+    contrast: "standard",
+    darkAccentChroma: CHROMA_FOR_INTENSITY[accentIntensity],
+    tintWithAccent: false,
+    gradient: gradient
+      ? {
+          surfaceHue: surfaceTint,
+          intensity: backgroundIntensity,
+          strip: paintsStrip,
+        }
+      : null,
+    pageSaturationCap: CANVAS_SATURATION_CAP[backgroundIntensity],
+    glass,
+    status: {
+      destructive: redish ? accentColors.orange : accentColors.red,
+      success: accentColors.emerald,
+      warning: accentColors.amber,
+      info: accentColors.blue,
+    },
+  })
+  const n = (step: number) => steps.neutral[step - 1] as string
+  const p = (step: number) => steps.primary[step - 1] as string
 
-  const chartColors = getChartColors(accentColor, mode)
-
-  const foreground = recipe.overrides.foreground
-    ? recipe.overrides.foreground(neutral, mode)
-    : mode === "light"
-      ? neutral[900]
-      : neutral[50]
-
-  const border = recipe.overrides.border
-    ? recipe.overrides.border(surface, mode)
-    : mode === "light"
-      ? surface[200]
-      : surface[700]
-
-  // Dark `--border` deliberately lighter than `--muted`/`--secondary`/
-  // `--accent` (all `surface[800]`) and `--border-subtle` (also 800). The
-  // earlier value of `surface[800]` collapsed the standard border into the
-  // subtle tier, so any outline drawn next to a muted surface (e.g. the
-  // FloatingPanel header sitting on its own popover body) became invisible
-  // in dark mode. Surface[700] also matches the `borderDefault` recipe step
-  // already published as `--border-default`, keeping the two tokens
-  // semantically aligned.
-
-  // Dark fields ride the subtle rung. Their fill now sits a rung BELOW the
-  // card (see `--control-surface`), so the fill already separates the field
-  // from its container and the border only has to trace the edge; at
-  // `border` it read as an outline drawn on top. Light keeps `border`,
-  // because there the field is surface[100] on a white card and the border
-  // is the only thing carrying the shape.
-  const inputValue = recipe.overrides.input
-    ? recipe.overrides.input(surface, mode)
-    : mode === "light"
-      ? border
-      : recipe.borderSubtle(surface, mode)
-
-  // Saturated mid-tone of the chosen surface color, regardless of
-  // backgroundStyle. Drives the Glass preset's inner glow (and any
-  // future surface-color-following effects) so the rim hue matches the
-  // page's color story rather than the brand accent: the chosen neutral ramp's
-  // own mid-tone, keeping a warm ground warm.
-  const surfaceTint = neutral[500]
-
-  const controlWell = controlWells(
-    recipe.surfaceRaised(surface, mode),
-    recipe.surfaceSunken(surface, mode),
-  )
-
-  const background = capCanvasSaturation(
-    mode === "light" ? surface[50] : surface[950],
-    CANVAS_SATURATION_CAP[backgroundIntensity],
-  )
-  // The default preset repaints the canvas over the top of the content area,
-  // where page titles, toolbars and the first fields sit, so the tokens read
-  // there are also solved against that strip. Glass paints no strip.
-  const paintsStrip = backgroundStyle === "gradient" && preset !== "glass"
+  const background = n(1)
+  const card = n(2)
+  const sunken = dark ? background : n(3)
+  // Glass's dark borders keep its heavier recipe (stops 600, 500, 400).
+  const glassDark = glass && dark
+  const borderSubtle = glassDark ? placeStep(neutral, 7) : n(3)
+  const borderDefault = glassDark ? placeStep(neutral, 6) : n(6)
+  const borderStrong = glassDark ? placeStep(neutral, 5) : n(8)
   const stripGrounds = paintsStrip
     ? [contentStripGround(background, surfaceTint, mode, backgroundIntensity)]
     : []
-  const mutedOnPage = tierClearing(neutral, background, MUTED_TARGET_RATIO)
-  // The strip needs only the 4.5:1 text floor where the page solve aims for
-  // 7:1, so whichever result sits further from the page wins.
-  const mutedOnStrip = paintsStrip
-    ? tierClearingAll(neutral, [background, ...stripGrounds], TEXT_FLOOR)
-    : mutedOnPage
-  const mutedForeground =
-    contrastRatio(mutedOnStrip, background) >
-    contrastRatio(mutedOnPage, background)
-      ? mutedOnStrip
-      : mutedOnPage
-  const card = mode === "light" ? "0 0% 100%" : surface[900]
-  // Popovers paint the card rung; named so the text solves can list it.
-  const popover = card
-  const muted = mode === "light" ? surface[100] : surface[800]
-  // Status colours are read mostly as text, so each clears 4.5:1 against the
-  // page and the card. In dark, ink is listed too, which makes the ink label
-  // exact on ramps whose step 900 sits darker than ink itself.
-  const statusSurfaces =
-    mode === "light" ? [background, card] : [background, card, INK]
-  // Status text also sits on its own tint, so the solve holds it there too.
-  const statusText = (source: string) =>
-    ensureContrastOnTint(
-      ensureContrastAll(source, statusSurfaces, TEXT_FLOOR),
-      [background, card],
-      null,
-      STATUS_TINT_CEILING,
-      TEXT_FLOOR,
-    )
-  const destructiveSource = isRedishAccent
-    ? mode === "light"
-      ? "25 95% 53%"
-      : "21 90% 48%"
-    : mode === "light"
-      ? "0 84% 60%"
-      : "0 72% 51%"
-  const destructive = statusText(destructiveSource)
-  // Fills (the destructive button, badge and notification count) need a
-  // white label, which a text-safe dark red cannot carry.
-  const destructiveSolid = solveWhiteFill(destructiveSource)
-  const success = statusText(
-    mode === "light" ? accentColors.emerald[500] : accentColors.emerald[400],
-  )
-  const warning = statusText(
-    mode === "light" ? accentColors.amber[500] : accentColors.amber[400],
-  )
-  const info = statusText(
-    mode === "light" ? accentColors.blue[500] : accentColors.blue[400],
-  )
+  const controlWell = controlWells(card, sunken)
+  const recipe = presets[preset].surfaceRecipe
+  const isLightGlass = glass && !dark
 
-  const primaryMark = ensureContrastAll(
-    primaryValue,
-    [background, ...stripGrounds],
-    MARK_FLOOR,
-  )
-  // The 3:1 edge a field draws along its bottom and an unchecked checkbox,
-  // radio or switch draws all round. It is one value per theme, so it is
-  // solved against every ground a control can sit on. It stays out of
-  // BORDER_TOKENS: borderIntensity is a taste axis, and its subtle step
-  // would pull the edge back under 3:1. A gradient canvas paints the surface
-  // hue over the page, so the page a field really sits on is listed at the
-  // canvas's loudest point rather than as `background` alone.
-  const fieldEdge = tierClearingAll(
-    neutral,
-    [
-      background,
-      card,
-      recipe.surfaceSunken(surface, mode),
-      controlWell.deep,
-      recipe.surfaceSidebar(surface, mode),
-      recipe.surfaceHeader(surface, mode),
-      ...(backgroundStyle === "gradient"
-        ? [
-            gradientCanvasPeak(
-              background,
-              surfaceTint,
-              mode,
-              backgroundIntensity,
-            ),
-          ]
-        : []),
-      ...stripGrounds,
-    ],
-    preset === "glass" ? GLASS_EDGE_FLOOR : MARK_FLOOR,
-  )
+  const tokens: Record<string, string> = {}
+  for (let i = 1; i <= 12; i++) {
+    tokens[`--neutral-${i}`] = n(i)
+    tokens[`--primary-${i}`] = p(i)
+  }
+  for (const name of STATUS_NAMES) {
+    const pair = steps.status[name]
+    tokens[`--${name}-subtle`] = pair.subtle
+    tokens[`--${name}-edge`] = pair.edge
+    tokens[`--${name}-text`] = pair.text
+    tokens[`--${name}-solid`] = pair.solid
+    tokens[`--${name}-solid-foreground`] = pair.solidForeground
+    tokens[`--${name}-solid-wash`] = pair.solidWash
+    // The 6.x status tokens, until their consumers move to the pairs.
+    tokens[`--${name}`] = pair.text
+    tokens[`--${name}-foreground`] = bestLabel(pair.text)
+  }
+  steps.chart.forEach((colour, i) => {
+    tokens[`--chart-${i + 1}`] = `hsl(${colour})`
+  })
 
-  const tokens: Record<string, string> = {
-    "--primary": primaryMark,
-    // Primary as text (links, selected tab and toggle labels), including on
-    // --primary tints. `--primary` keeps its 3:1 mark floor for borders,
-    // tints and preset surfaces.
-    "--primary-text": ensureContrastOnTint(
-      primaryValue,
-      [background, card, ...stripGrounds],
-      primaryMark,
-      PRIMARY_TINT_CEILING,
-      TEXT_FLOOR,
-    ),
-    "--primary-fill": primaryFill,
-    "--primary-foreground": primaryForeground,
-    "--primary-fill-wash": washFor(primaryForeground),
-    "--ring": ensureContrastAll(
-      ringValue,
-      [background, ...stripGrounds],
-      MARK_FLOOR,
-    ),
+  Object.assign(tokens, {
+    "--primary": p(8),
+    "--ring": p(8),
+    "--primary-text": p(11),
+    "--primary-fill": p(9),
+    "--primary-foreground": steps.primaryLabel,
+    "--primary-fill-wash": washFor(steps.primaryLabel),
     "--focus-ring": ensureContrastAll(
-      focusRingValue,
+      accent[FOCUS_RING_SHADE[accentIntensity][mode]],
       [background, ...stripGrounds],
       MARK_FLOOR,
     ),
     "--surface-tint": surfaceTint,
 
-    "--chart-1": chartColors[0] ?? "",
-    "--chart-2": chartColors[1] ?? "",
-    "--chart-3": chartColors[2] ?? "",
-    "--chart-4": chartColors[3] ?? "",
-    "--chart-5": chartColors[4] ?? "",
-
     "--background": background,
-    "--foreground": foreground,
-
+    "--foreground": n(12),
     "--card": card,
-    "--card-foreground": mode === "light" ? neutral[900] : neutral[50],
-
-    "--popover": popover,
-    "--popover-foreground": mode === "light" ? neutral[900] : neutral[50],
-
-    "--secondary": mode === "light" ? surface[100] : surface[800],
-    "--secondary-foreground": mode === "light" ? neutral[900] : neutral[50],
-
-    "--muted": muted,
-    "--muted-foreground": mutedForeground,
-    // Solved against every surface it is used on. Not for muted fills, where
-    // it measures 3.81–4.35:1; solving against those too left it nearly equal
-    // to --muted-foreground in dark mode.
+    "--card-foreground": n(12),
+    "--popover": card,
+    "--popover-foreground": n(12),
+    "--secondary": n(3),
+    "--secondary-foreground": n(12),
+    "--muted": n(3),
+    "--muted-foreground": n(11),
     "--legend": tierClearingAll(
       neutral,
-      [background, card, popover],
+      [background, card],
       LEGEND_TARGET_RATIO,
     ),
+    "--accent": n(3),
+    "--accent-foreground": n(12),
 
-    "--accent": mode === "light" ? surface[100] : surface[800],
-    "--accent-foreground": mode === "light" ? neutral[900] : neutral[50],
-
-    "--destructive": destructive,
-    "--destructive-foreground": bestLabel(destructive),
-    "--destructive-solid": destructiveSolid,
-    "--destructive-solid-foreground": WHITE,
-    "--destructive-solid-wash": washFor(WHITE),
-
-    "--success": success,
-    "--success-foreground": bestLabel(success),
-
-    "--warning": warning,
-    "--warning-foreground": bestLabel(warning),
-
-    "--info": info,
-    "--info-foreground": bestLabel(info),
-
-    "--border": border,
-    "--input": inputValue,
-    "--field-edge-color": fieldEdge,
-
-    "--surface-base": capCanvasSaturation(
-      mode === "light" ? surface[50] : surface[950],
-      CANVAS_SATURATION_CAP[backgroundIntensity],
+    "--border": n(6),
+    "--input": dark ? borderSubtle : n(6),
+    // The deep control-depth well sits below every other ground; the edge
+    // clears it too while that axis exists.
+    "--field-edge-color": ensureContrastAll(
+      n(7),
+      [controlWell.deep],
+      glass ? 3.5 : MARK_FLOOR,
     ),
-    "--surface-raised": recipe.surfaceRaised(surface, mode),
-    "--surface-overlay": recipe.surfaceOverlay(surface, mode),
-    "--surface-sunken": recipe.surfaceSunken(surface, mode),
-    // Derived rungs for the controlDepth axis. Emitted unconditionally so the
-    // axis itself stays a pure data attribute -- CSS picks one of these, and
-    // nothing about the axis has to reach the token engine.
+
+    "--surface-base": background,
+    "--surface-raised": card,
+    "--surface-overlay": dark ? n(3) : card,
+    "--surface-sunken": sunken,
     "--control-well-subtle": controlWell.subtle,
     "--control-well-deep": controlWell.deep,
-    "--surface-sidebar": recipe.surfaceSidebar(surface, mode),
-    "--sidebar-foreground": isSidebarDark(mode) ? neutral[300] : neutral[600],
-    "--sidebar-foreground-hover": isSidebarDark(mode)
-      ? "0 0% 100%"
-      : neutral[900],
-    // Same polarity as --muted-foreground (light → 500, dark → 400). The
-    // branches were the other way round, which put the lighter grey on the
-    // near-white light rail: sidebar group labels measured 2.43:1 in light
-    // against a 4.5:1 requirement.
-    "--sidebar-foreground-muted": mutedForeground,
-    "--sidebar-border": isSidebarDark(mode) ? "0 0% 100% / 0.1" : surface[200],
-    "--sidebar-hover-bg": isSidebarDark(mode)
+    "--surface-sidebar": dark && !glass ? card : background,
+    "--sidebar-foreground": steps.sidebarForeground,
+    "--sidebar-foreground-hover": dark ? WHITE : n(12),
+    "--sidebar-foreground-muted": n(11),
+    "--sidebar-border": dark ? "0 0% 100% / 0.1" : n(6),
+    "--sidebar-hover-bg": dark
       ? `${accent[500]} / ${SIDEBAR_HOVER[accentIntensity].darkAlpha}`
       : accent[SIDEBAR_HOVER[accentIntensity].light],
-    "--sidebar-active-bg": isSidebarDark(mode)
+    "--sidebar-active-bg": dark
       ? `${accent[500]} / ${SIDEBAR_ACTIVE[accentIntensity].darkAlpha}`
       : accent[SIDEBAR_ACTIVE[accentIntensity].light],
-    "--surface-header": recipe.surfaceHeader(surface, mode),
+    "--surface-header": card,
 
-    "--border-subtle": recipe.borderSubtle(surface, mode),
-    "--border-default": recipe.borderDefault(surface, mode),
-    "--border-strong": recipe.borderStrong(surface, mode),
+    "--border-subtle": borderSubtle,
+    "--border-default": borderDefault,
+    "--border-strong": borderStrong,
 
     "--shadow-dropdown": isLightGlass
       ? recipe.overrides.shadowDropdown.replace(
@@ -846,24 +513,13 @@ export function generateTokens(
       : recipe.overrides.shadowDropdown,
 
     "--bg-style": backgroundStyle,
-    "--noise-opacity":
-      backgroundStyle === "gradient" ? (mode === "light" ? "0.6" : "0.5") : "0",
-
-    // Glass keeps the main-content overlay neutral regardless of
-    // backgroundStyle. The previous Glass+solid linear accent fade
-    // (accent[200]/accent[800] at 0.2 alpha over the top 300px) was
-    // bleeding through main[data-content] as a colored glow at the
-    // top of pages — most visible in dark mode on the Buttons demo
-    // page (and any other page without dense Cards covering the top
-    // area) where the gradient had nothing in front of it. Body bg
-    // (or whatever sits behind main) is the canonical source of
-    // page color under Glass; the overlay no longer adds its own.
+    "--noise-opacity": gradient ? (dark ? "0.5" : "0.6") : "0",
     "--content-gradient-overlay": paintsStrip
       ? `var(--canvas-blob-a), var(--canvas-blob-b), var(--canvas-blob-c), var(--canvas-blob-d), var(--canvas-ink)`
       : "none",
 
-    ...sfHueTokens,
-  }
+    ...resolveSfHueTokens(neutral, backgroundStyle),
+  })
 
   return tokens
 }

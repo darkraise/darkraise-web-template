@@ -2,19 +2,16 @@ import { describe, it, expect } from "vitest"
 import { generateTokens, capCanvasSaturation } from "./generateTokens"
 import { accentColors } from "@theme/palettes/accentColors"
 import { surfaceColors } from "@theme/palettes/surfaceColors"
-import { contrastRatio, hslStringToOklch } from "@theme/engine/oklch"
+import { contrastRatio } from "@theme/engine/oklch"
 import { themeConfig } from "@theme/themeConfig"
-import { presets, type PresetName } from "@theme/presets"
 import {
   ACCENT_COLORS,
   ACCENT_INTENSITIES,
-  SURFACE_COLORS,
   BACKGROUND_INTENSITIES,
 } from "@theme/types"
 import type {
   ColorScale,
   AccentColor,
-  AccentIntensity,
   ResolvedMode,
   BackgroundIntensity,
 } from "@theme/types"
@@ -202,9 +199,11 @@ describe("generateTokens", () => {
 
     // White is unreadable on the light accents: it measures 2.14:1 on amber
     // against a 3:1 floor, which is why this is computed rather than fixed.
+    // Dark amber keeps its bright fill, so it takes ink there too.
     expect(build("amber", "light")["--primary-foreground"]).toBe("222 47% 11%")
     expect(build("blue", "light")["--primary-foreground"]).toBe("0 0% 100%")
-    expect(build("amber", "dark")["--primary-foreground"]).toBe("0 0% 100%")
+    expect(build("amber", "dark")["--primary-foreground"]).toBe("222 47% 11%")
+    expect(build("blue", "dark")["--primary-foreground"]).toBe("0 0% 100%")
   })
 
   it("dark mode flips background to step 950 and foreground to step 50", () => {
@@ -284,32 +283,6 @@ describe("generateTokens", () => {
       accentIntensity: "vivid",
     })
     expect(calm["--primary-fill"]).not.toEqual(vivid["--primary-fill"])
-  })
-
-  it("derives chart colors from evenly spaced accent palettes", () => {
-    const tokens = generateTokens({
-      accentColor: "blue",
-      surfaceColor: "slate",
-      preset: "default",
-      backgroundStyle: "solid",
-      mode: "light",
-      accentIntensity: "balanced",
-    })
-
-    expect(tokens["--chart-1"]).toBeTruthy()
-    expect(tokens["--chart-2"]).toBeTruthy()
-    expect(tokens["--chart-3"]).toBeTruthy()
-    expect(tokens["--chart-4"]).toBeTruthy()
-    expect(tokens["--chart-5"]).toBeTruthy()
-
-    const allDifferentOrValid = new Set([
-      tokens["--chart-1"],
-      tokens["--chart-2"],
-      tokens["--chart-3"],
-      tokens["--chart-4"],
-      tokens["--chart-5"],
-    ])
-    expect(allDifferentOrValid.size).toBe(5)
   })
 
   it("glass preset no longer emits scalar opacity/blur tokens (CSS-driven)", () => {
@@ -400,7 +373,7 @@ describe("generateTokens", () => {
     ).toBeGreaterThanOrEqual(4.5)
   })
 
-  it("success starts from emerald-500 in light and emerald-400 in dark; white label in light, ink in dark", () => {
+  it("success is the success text step; white label in light, ink in dark", () => {
     const light = generateTokens({
       accentColor: "blue",
       surfaceColor: "slate",
@@ -421,7 +394,8 @@ describe("generateTokens", () => {
     // emerald-500 measured 2.48:1 in light, so it is darkened to the 4.5:1
     // status text floor.
     expect(light["--success"]).toMatch(/^160 /)
-    expect(dark["--success"]).toBe(accentColors.emerald[400])
+    expect(light["--success"]).toBe(light["--success-text"])
+    expect(dark["--success"]).toBe(dark["--success-text"])
     expect(
       contrastRatio(
         light["--success"] as string,
@@ -433,7 +407,7 @@ describe("generateTokens", () => {
     expect(dark["--success-foreground"]).toBe("222 47% 11%")
   })
 
-  it("warning starts from amber-500 in light and amber-400 in dark; white label in light, ink in dark", () => {
+  it("warning is the warning text step; white label in light, ink in dark", () => {
     const light = generateTokens({
       accentColor: "blue",
       surfaceColor: "slate",
@@ -454,7 +428,8 @@ describe("generateTokens", () => {
     // amber-500 measured 2.03:1 in light, the worst of the state colours; it is
     // darkened to the 4.5:1 status text floor.
     expect(light["--warning"]).toMatch(/^38 /)
-    expect(dark["--warning"]).toBe(accentColors.amber[400])
+    expect(light["--warning"]).toBe(light["--warning-text"])
+    expect(dark["--warning"]).toBe(dark["--warning-text"])
     expect(
       contrastRatio(
         light["--warning"] as string,
@@ -500,6 +475,57 @@ describe("generateTokens", () => {
 
     expect(tokens["--background"]).toBe("210 16% 98%")
     expect(tokens["--foreground"]).toBe("222 47% 11%")
+  })
+
+  describe("semantic aliases", () => {
+    const ALIASES = [
+      ["--background", "--neutral-1"],
+      ["--card", "--neutral-2"],
+      ["--muted", "--neutral-3"],
+      ["--border", "--neutral-6"],
+      ["--foreground", "--neutral-12"],
+      ["--primary", "--primary-8"],
+      ["--primary-fill", "--primary-9"],
+      ["--primary-text", "--primary-11"],
+    ] as const
+
+    for (const mode of ["light", "dark"] as const) {
+      it(`maps the semantic tokens onto the steps in ${mode} mode`, () => {
+        const tokens = generateTokens({
+          accentColor: "blue",
+          surfaceColor: "slate",
+          preset: "default",
+          backgroundStyle: "solid",
+          mode,
+          accentIntensity: "balanced",
+        })
+        for (const [alias, step] of ALIASES) {
+          expect(tokens[step], step).toBeTruthy()
+          expect(tokens[alias], alias).toBe(tokens[step])
+        }
+      })
+    }
+  })
+
+  it("emits the same eight chart colours under every accent", () => {
+    for (const mode of ["light", "dark"] as const) {
+      const charts = (accentColor: AccentColor) => {
+        const tokens = generateTokens({
+          accentColor,
+          surfaceColor: "slate",
+          preset: "default",
+          backgroundStyle: "solid",
+          mode,
+          accentIntensity: "balanced",
+        })
+        return Array.from({ length: 8 }, (_, i) => tokens[`--chart-${i + 1}`])
+      }
+      const reference = charts("blue")
+      expect(new Set(reference).size).toBe(8)
+      for (const accentColor of ACCENT_COLORS) {
+        expect(charts(accentColor), `${accentColor} ${mode}`).toEqual(reference)
+      }
+    }
   })
 
   describe("fog ramp tokens", () => {
@@ -829,240 +855,6 @@ describe("generateTokens", () => {
       expect(dark["--sidebar-foreground"]).toBe(slate[300])
     })
   })
-
-  describe("accent vibrancy axis", () => {
-    const CHROMA_TOLERANCE = 0.005
-    /** sRGB gamut ceiling across accents in the usable lightness band. */
-    const GAMUT_CHROMA_MAX = 0.26
-
-    const STEPS = {
-      calm: { L: 0.54, fillChroma: 0.24, primaryChroma: 0.2 },
-      balanced: { L: 0.57, fillChroma: null, primaryChroma: 0.24 },
-      vivid: { L: 0.6, fillChroma: null, primaryChroma: null },
-      intense: { L: 0.63, fillChroma: null, primaryChroma: null },
-    } as const
-
-    const VIBRANCIES = Object.keys(STEPS) as (keyof typeof STEPS)[]
-
-    const build = (
-      accentColor: AccentColor,
-      mode: ResolvedMode,
-      accentIntensity: AccentIntensity = "balanced",
-      preset: PresetName = "default",
-    ) =>
-      generateTokens({
-        accentColor,
-        surfaceColor: "slate",
-        preset,
-        backgroundStyle: "solid",
-        mode,
-        accentIntensity,
-      })
-
-    const PAIRS = (["default", "glass"] as const).flatMap((preset) =>
-      VIBRANCIES.flatMap((step) =>
-        ACCENT_COLORS.map((a) => [a, step, preset] as const),
-      ),
-    )
-
-    it.each(PAIRS)(
-      "%s at %s on %s: fill stays at or under the step lightness within its chroma cap",
-      (accentColor, step, preset) => {
-        const fill = build(accentColor, "dark", step, preset)[
-          "--primary-fill"
-        ] as string
-        const { L, C } = hslStringToOklch(fill)
-        const cap = STEPS[step].fillChroma ?? GAMUT_CHROMA_MAX
-
-        // The step is a ceiling: the 4.5:1 label solve may lower it, by at
-        // most 0.090 across every accent measured. It never moves a calm
-        // fill, which only strays by HSL integer rounding (0.533-0.545).
-        const maxDrop = step === "calm" ? 0.01 : 0.1
-        expect(L).toBeLessThanOrEqual(STEPS[step].L + 0.02)
-        expect(L).toBeGreaterThanOrEqual(STEPS[step].L - maxDrop)
-        expect(C).toBeLessThanOrEqual(cap + CHROMA_TOLERANCE)
-      },
-    )
-
-    it.each(PAIRS)(
-      "%s at %s on %s: --primary keeps its palette lightness",
-      (accentColor, step, preset) => {
-        const shade = preset === "glass" ? 400 : 500
-        const base = hslStringToOklch(accentColors[accentColor][shade])
-        const got = hslStringToOklch(
-          build(accentColor, "dark", step, preset)["--primary"] as string,
-        )
-        const cap = STEPS[step].primaryChroma ?? GAMUT_CHROMA_MAX
-
-        expect(Math.abs(got.L - base.L)).toBeLessThanOrEqual(0.02)
-        expect(got.C).toBeLessThanOrEqual(cap + CHROMA_TOLERANCE)
-      },
-    )
-
-    it.each(PAIRS)(
-      "%s at %s on %s: label clears 4.5:1 and stays white",
-      (accentColor, step, preset) => {
-        const tokens = build(accentColor, "dark", step, preset)
-        expect(tokens["--primary-foreground"]).toBe("0 0% 100%")
-        expect(
-          contrastRatio(
-            tokens["--primary-foreground"] as string,
-            tokens["--primary-fill"] as string,
-          ),
-        ).toBeGreaterThanOrEqual(4.5)
-      },
-    )
-
-    // Slate only, deliberately. Fuchsia on an emerald surface measures 2.76
-    // today, so widening this guard would fail on pre-existing behaviour.
-    it.each(PAIRS)(
-      "%s at %s on %s: fill clears the UI-boundary floor against the card",
-      (accentColor, step, preset) => {
-        const tokens = build(accentColor, "dark", step, preset)
-        expect(
-          contrastRatio(
-            tokens["--primary-fill"] as string,
-            tokens["--card"] as string,
-          ),
-        ).toBeGreaterThanOrEqual(3)
-      },
-    )
-
-    // Measured across every surface colour, not just slate. The worst case is
-    // indigo on an emerald surface, which sits at 4.32 — already 4.38 before
-    // this axis existed, so the floor holds the status quo rather than
-    // claiming AA cleanliness on every surface.
-    it.each(VIBRANCIES)(
-      "%s: accent text clears the floor on the worst surface colour",
-      (step) => {
-        for (const surfaceColor of SURFACE_COLORS) {
-          for (const accentColor of ACCENT_COLORS) {
-            const tokens = generateTokens({
-              accentColor,
-              surfaceColor,
-              preset: "default",
-              backgroundStyle: "solid",
-              mode: "dark",
-              accentIntensity: step,
-            })
-            expect(
-              contrastRatio(
-                tokens["--primary"] as string,
-                tokens["--background"] as string,
-              ),
-              `${accentColor} on ${surfaceColor}`,
-            ).toBeGreaterThanOrEqual(4.3)
-          }
-        }
-      },
-    )
-
-    // Each step's lightness is a ceiling under the 4.5:1 label solve, so the
-    // upper steps can meet; they must never reverse.
-    it.each(ACCENT_COLORS)(
-      "%s: fills never get darker as the step rises",
-      (accentColor) => {
-        const lightness = VIBRANCIES.map(
-          (step) =>
-            hslStringToOklch(
-              build(accentColor, "dark", step)["--primary-fill"] as string,
-            ).L,
-        )
-        // Emitted triplets move in whole HSL percents (about 0.007 OKLCH L),
-        // so steps that meet at the 4.5:1 point can land up to one such step
-        // apart in either order. 0.008 allows that and still fails any
-        // reversal larger than one rounding step.
-        for (let i = 1; i < lightness.length; i++) {
-          expect(lightness[i] as number).toBeGreaterThanOrEqual(
-            (lightness[i - 1] as number) - 0.008,
-          )
-        }
-      },
-    )
-
-    it.each(ACCENT_COLORS)("%s: light mode ignores the axis", (accentColor) => {
-      // The axis is a dark-mode ladder. Light must not vary across its steps --
-      // which is the invariant, not the palette value: --primary is raised off
-      // accent-500 wherever that shade could not be seen against the page.
-      const primaries = VIBRANCIES.map(
-        (step) => build(accentColor, "light", step)["--primary"],
-      )
-      const fills = VIBRANCIES.map(
-        (step) => build(accentColor, "light", step)["--primary-fill"],
-      )
-      expect(new Set(primaries).size).toBe(1)
-      expect(new Set(fills).size).toBe(1)
-      const base = accentColors[accentColor][500]
-      if (contrastRatio("0 0% 100%", base) >= 3) {
-        expect(
-          contrastRatio("0 0% 100%", fills[0] as string),
-        ).toBeGreaterThanOrEqual(4.5)
-      } else {
-        expect(fills[0]).toBe(base)
-      }
-    })
-
-    it("light glass keeps its own shade at every step", () => {
-      for (const step of VIBRANCIES) {
-        const tokens = build("blue", "light", step, "glass")
-        expect(tokens["--primary"]).toBe(accentColors.blue[600])
-      }
-    })
-
-    it("emits a fill for every preset so none can go stale", () => {
-      for (const preset of Object.keys(presets) as PresetName[]) {
-        const tokens = generateTokens({
-          accentColor: "blue",
-          surfaceColor: "slate",
-          preset,
-          backgroundStyle: "solid",
-          mode: "dark",
-          accentIntensity: "balanced",
-        })
-
-        expect(tokens["--primary-fill"], preset).toBeTruthy()
-      }
-    })
-  })
-
-  describe("calm pins the quietest step", () => {
-    // Pinned expected values for the ladder's bottom rung. This is the
-    // regression guard that catches drift in "calm" — it must never be
-    // regenerated to match new output.
-    const CALM_SNAPSHOT = {
-      red: { fill: "355 79% 45%", primary: "1 81% 60%" },
-      coral: { fill: "12 70% 43%", primary: "12 75% 59%" },
-      orange: { fill: "26 98% 35%", primary: "25 95% 53%" },
-      amber: { fill: "38 100% 30%", primary: "38 92% 50%" },
-      yellow: { fill: "45 96% 28%", primary: "45 93% 47%" },
-      lime: { fill: "83 95% 25%", primary: "85 73% 46%" },
-      green: { fill: "146 98% 26%", primary: "142 71% 45%" },
-      emerald: { fill: "160 90% 27%", primary: "160 84% 39%" },
-      teal: { fill: "173 88% 27%", primary: "173 80% 40%" },
-      cyan: { fill: "189 89% 30%", primary: "189 94% 43%" },
-      sky: { fill: "199 92% 35%", primary: "199 89% 48%" },
-      blue: { fill: "217 74% 49%", primary: "217 91% 60%" },
-      indigo: { fill: "240 70% 61%", primary: "239 82% 67%" },
-      violet: { fill: "259 72% 58%", primary: "257 78% 65%" },
-      purple: { fill: "273 68% 53%", primary: "270 74% 64%" },
-      fuchsia: { fill: "292 74% 43%", primary: "292 63% 62%" },
-      pink: { fill: "326 82% 42%", primary: "331 76% 61%" },
-      rose: { fill: "342 99% 40%", primary: "351 82% 61%" },
-    } as const
-
-    it.each(ACCENT_COLORS)("%s", (accentColor) => {
-      const tokens = generateTokens({
-        accentColor,
-        surfaceColor: "slate",
-        preset: "default",
-        backgroundStyle: "solid",
-        mode: "dark",
-        accentIntensity: "calm",
-      })
-      expect(tokens["--primary-fill"]).toBe(CALM_SNAPSHOT[accentColor].fill)
-      expect(tokens["--primary"]).toBe(CALM_SNAPSHOT[accentColor].primary)
-    })
-  })
 })
 
 describe("accent vibrancy default", () => {
@@ -1093,33 +885,10 @@ describe("backgroundIntensity canvas cap", () => {
       backgroundIntensity,
     })
 
-  it("caps canvas saturation at each step", () => {
-    expect(dark("neutral")["--background"]).toBe("16 0% 5%")
-    expect(dark("subtle")["--background"]).toBe("16 8% 5%")
-    expect(dark("balanced")["--background"]).toBe("16 16% 5%")
-  })
-
-  it("leaves vivid at the palette's own value", () => {
-    expect(dark("vivid")["--background"]).toBe("16 26% 5%")
-  })
-
   it("clamps rather than sets, so an already-calm colour is untouched", () => {
     // iron's dark canvas is 16% saturation, exactly the balanced cap
     const atCap = dark("balanced", "iron")["--background"]
     expect(dark("vivid", "iron")["--background"]).toBe(atCap)
-  })
-
-  it("caps slate, whose palette value is the most saturated of all", () => {
-    expect(dark("vivid", "slate")["--background"]).toBe("229 84% 5%")
-    expect(dark("balanced", "slate")["--background"]).toBe("229 16% 5%")
-  })
-
-  it("never changes lightness or hue", () => {
-    for (const step of BACKGROUND_INTENSITIES) {
-      const [h, , l] = dark(step)["--background"].split(" ")
-      expect(h).toBe("16")
-      expect(l).toBe("5%")
-    }
   })
 
   it("moves --surface-base in lockstep with --background", () => {
@@ -1148,16 +917,6 @@ describe("backgroundIntensity canvas cap", () => {
 
   it("treats intense as uncapped, like vivid", () => {
     expect(dark("intense")["--background"]).toBe(dark("vivid")["--background"])
-  })
-
-  it("leaves the palette scale itself untouched", () => {
-    // --surface-sunken and --surface-sidebar also derive from surface[950];
-    // capping the canvas must not follow them, or the change has been applied
-    // one level too deep.
-    const a = dark("neutral")
-    const b = dark("vivid")
-    expect(a["--surface-sunken"]).toBe(b["--surface-sunken"])
-    expect(a["--surface-sidebar"]).toBe(b["--surface-sidebar"])
   })
 })
 

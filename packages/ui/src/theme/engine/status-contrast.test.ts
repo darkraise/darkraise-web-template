@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
-import { contrastRatio, mixedContrast } from "@theme/engine/oklch"
+import { contrastRatio } from "@theme/engine/oklch"
 import {
   comboName,
   finalTokens,
@@ -13,13 +13,17 @@ const STATUSES = ["destructive", "success", "warning", "info"] as const
 describe("status colours", () => {
   const combos = reachableCombos()
 
-  it("clear 4.5:1 against page and card, with labels at 4.5:1 on them", () => {
+  it("status text clears 4.5:1 on its subtle fill, page and card, with labels at 4.5:1 on it", () => {
     const failures: string[] = []
     for (const combo of combos) {
       const tokens = finalTokens(combo)
       for (const status of STATUSES) {
-        const value = tokens[`--${status}`] as string
-        for (const surface of ["--background", "--card"]) {
+        const value = tokens[`--${status}-text`] as string
+        for (const surface of [
+          `--${status}-subtle`,
+          "--background",
+          "--card",
+        ]) {
           const ground = tokens[surface]
           if (!isOpaque(ground)) continue
           const ratio = contrastRatio(value, ground)
@@ -31,7 +35,7 @@ describe("status colours", () => {
         }
         const label = contrastRatio(
           tokens[`--${status}-foreground`] as string,
-          value,
+          tokens[`--${status}`] as string,
         )
         if (label < 4.5) {
           failures.push(
@@ -43,23 +47,24 @@ describe("status colours", () => {
     expect(failures).toEqual([])
   })
 
-  // Alert titles sit on their own colour at 6% and toast titles at 10-12%.
-  it("clear 4.5:1 on their own tint of up to 12% over page and card", () => {
+  it("status edges clear 3:1 on page, card and their subtle fill", () => {
     const failures: string[] = []
     for (const combo of combos) {
       const tokens = finalTokens(combo)
       for (const status of STATUSES) {
-        const value = tokens[`--${status}`] as string
-        for (const surface of ["--background", "--card"]) {
+        const edge = tokens[`--${status}-edge`] as string
+        for (const surface of [
+          "--background",
+          "--card",
+          `--${status}-subtle`,
+        ]) {
           const ground = tokens[surface]
           if (!isOpaque(ground)) continue
-          for (const amount of [0.06, 0.1, 0.12]) {
-            const ratio = mixedContrast(value, ground, value, amount)
-            if (ratio < 4.5) {
-              failures.push(
-                `${comboName(combo)} ${status} on ${surface} + ${amount}: ${ratio.toFixed(2)}`,
-              )
-            }
+          const ratio = contrastRatio(edge, ground)
+          if (ratio < 3) {
+            failures.push(
+              `${comboName(combo)} ${status} edge on ${surface}: ${ratio.toFixed(2)}`,
+            )
           }
         }
       }
