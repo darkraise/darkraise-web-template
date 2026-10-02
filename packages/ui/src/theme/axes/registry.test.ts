@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest"
 import { readFileSync } from "node:fs"
-import { AXES, AXIS_KEYS, isAxisValue } from "./registry"
+import { AXES, AXIS_KEYS, isAxisValue, type AxisKey } from "./registry"
 import { KIT_VERSION } from "./version"
 import { themeConfig } from "@theme/themeConfig"
+import { PRESET_NAMES, presets } from "@theme/presets"
 
 describe("axis registry", () => {
   it("lists every axis once, in registry order", () => {
@@ -56,4 +57,16 @@ describe("axis registry", () => {
     }
     expect(KIT_VERSION).toBe(pkg.version)
   })
+
+  it.each(PRESET_NAMES)(
+    "%s preset's common axis defaults are registry values",
+    (name) => {
+      const defaults: Readonly<Record<string, string>> =
+        presets[name].commonAxisDefaults ?? {}
+      for (const [key, value] of Object.entries(defaults)) {
+        expect(AXIS_KEYS).toContain(key)
+        expect(isAxisValue(key as AxisKey, value)).toBe(true)
+      }
+    },
+  )
 })

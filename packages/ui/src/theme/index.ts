@@ -39,5 +39,6 @@ export type {
   ThemeSettings,
   ThemeSyncStatus,
 } from "./types"
+export type { AxisKey, AxisValue, AxisValues } from "./axes/registry"
 export { themeConfig } from "./themeConfig"
 export type { ThemeConfig } from "./themeConfig"
