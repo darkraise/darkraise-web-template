@@ -301,7 +301,7 @@ function CardsPage() {
     <p className="text-xs text-muted-foreground">Total Revenue</p>
     <div className="flex items-center gap-3">
       <span className="text-3xl font-semibold">$45,231</span>
-      <Badge className="gap-1 bg-success-subtle text-success-text hover:bg-success-subtle">
+      <Badge className="gap-1 bg-success-subtle text-success-text">
         <TrendingUp className="h-3 w-3" />
         +12.5%
       </Badge>
@@ -319,7 +319,7 @@ function CardsPage() {
             <p className="text-muted-foreground text-xs">Total Revenue</p>
             <div className="flex items-center gap-3">
               <span className="text-3xl font-semibold">$45,231</span>
-              <Badge className="bg-success-subtle text-success-text hover:bg-success-subtle gap-1">
+              <Badge className="bg-success-subtle text-success-text gap-1">
                 <TrendingUp className="h-3 w-3" />
                 +12.5%
               </Badge>
