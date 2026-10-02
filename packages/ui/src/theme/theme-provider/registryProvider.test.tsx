@@ -3,8 +3,9 @@ import type { ReactNode } from "react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { ThemeProvider } from "./ThemeProvider"
 import { useTheme } from "@theme/useTheme"
-import { readTokenCache } from "@theme/axes/tokenCache"
+import { TOKEN_CACHE_STORAGE_KEY, readTokenCache } from "@theme/axes/tokenCache"
 import { buildPrerenderScript } from "@theme/axes/prerender"
+import { themeConfig } from "@theme/themeConfig"
 import type { ThemePersistenceAdapter } from "@theme/types"
 
 const root = document.documentElement
@@ -37,6 +38,11 @@ function mockColorScheme(dark = false) {
 // cache id instead of a second call to the function that built it.
 function runPrerender() {
   new Function(buildPrerenderScript())()
+}
+
+function cacheWrites(spy: { mock: { calls: unknown[][] } }) {
+  return spy.mock.calls.filter(([key]) => key === TOKEN_CACHE_STORAGE_KEY)
+    .length
 }
 
 const wrap = ({ children }: { children: ReactNode }) => (
@@ -171,5 +177,27 @@ describe("ThemeProvider on the axis registry", () => {
     root.style.cssText = ""
     runPrerender()
     expect(root.style.getPropertyValue("--background")).toBe(dark)
+  })
+
+  it("paints and caches once per setter call", () => {
+    const { result } = renderHook(() => useTheme(), { wrapper: wrap })
+    const setItem = vi.spyOn(Storage.prototype, "setItem")
+    act(() => result.current.setAccentColor("rose"))
+    expect(cacheWrites(setItem)).toBe(1)
+  })
+
+  it("does not repaint when an inline config re-renders unchanged", () => {
+    const { rerender } = renderHook(() => useTheme(), {
+      wrapper: ({ children }: { children: ReactNode }) => (
+        <ThemeProvider
+          config={{ ...themeConfig, defaults: { ...themeConfig.defaults } }}
+        >
+          {children}
+        </ThemeProvider>
+      ),
+    })
+    const setItem = vi.spyOn(Storage.prototype, "setItem")
+    rerender()
+    expect(cacheWrites(setItem)).toBe(0)
   })
 })

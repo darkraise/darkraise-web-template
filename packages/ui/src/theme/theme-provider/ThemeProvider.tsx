@@ -193,7 +193,13 @@ export function ThemeProvider({
   persistenceDebounce = 500,
 }: ThemeProviderProps) {
   const cfg = config ?? themeConfig
-  const defaults = cfg.defaults
+  // An inline `config` prop is a new object on every parent render; keying the
+  // defaults on their content stops each of those renders from repainting.
+  const defaultsKey = JSON.stringify(cfg.defaults)
+  const defaults = useMemo(
+    () => JSON.parse(defaultsKey) as ThemeConfig["defaults"],
+    [defaultsKey],
+  )
 
   const [stored, setStoredState] = useState<Partial<AxisValues>>(() =>
     readStoredAxes(readStorage),
@@ -318,6 +324,29 @@ export function ThemeProvider({
     [defaults.accentIntensity],
   )
 
+  // commit paints synchronously so a setter's change lands in the same frame;
+  // the effect then sees the same inputs and must not paint or cache again.
+  const paintedRef = useRef("")
+  const paint = useCallback(
+    (
+      current: AxisValues,
+      resolved: ResolvedMode,
+      axisValues: PresetAxisValues,
+    ) => {
+      const signature = JSON.stringify([
+        current,
+        resolved,
+        axisValues,
+        defaults,
+      ])
+      if (signature === paintedRef.current) return
+      paintedRef.current = signature
+      applyAttributes(current, defaults)
+      applyTheme(current, resolved, axisValues)
+    },
+    [applyTheme, defaults],
+  )
+
   const commit = useCallback(
     (
       nextStored: Partial<AxisValues>,
@@ -330,11 +359,9 @@ export function ThemeProvider({
       setStoredState(nextStored)
       setPresetAxisValuesState(nextAxisValues)
       setResolvedMode(resolved)
-      const next = effectiveSettings(nextStored, defaults)
-      applyAttributes(next, defaults)
-      applyTheme(next, resolved, nextAxisValues)
+      paint(effectiveSettings(nextStored, defaults), resolved, nextAxisValues)
     },
-    [applyTheme, defaults],
+    [paint, defaults],
   )
 
   const debouncedSave = useDebouncedCallback(
@@ -448,9 +475,8 @@ export function ThemeProvider({
   )
 
   useEffect(() => {
-    applyAttributes(settings, defaults)
-    applyTheme(settings, resolvedMode, presetAxisValues)
-  }, [settings, resolvedMode, presetAxisValues, applyTheme, defaults])
+    paint(settings, resolvedMode, presetAxisValues)
+  }, [settings, resolvedMode, presetAxisValues, paint])
 
   useEffect(() => {
     if (settings.mode !== "system") return
