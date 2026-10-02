@@ -13,28 +13,35 @@
     @apply bg-muted text-foreground border-border;
   }
 
-  /* Tinted variants follow Alert's --alert-accent pattern: one var per
-   * variant drives the wash, the left rail and the icon; the content text
-   * stays on the foreground. Destructive must share this shape — UI
+  /* Status variants follow Alert's pattern: per-variant vars drive the
+   * fill, the left rail and the icon; the content text stays on the
+   * foreground. Destructive must share this shape — UI
    * convention requires every severity band to read parallel; the danger
    * signal comes from the saturated 4px left rail and accent icon, not
    * from a solid red fill. */
   .dr-banner[data-variant="info"] {
-    --banner-accent: var(--info);
+    --banner-subtle: var(--info-subtle);
+    --banner-edge: var(--info-edge);
+    --banner-text: var(--info-text);
   }
   .dr-banner[data-variant="success"] {
-    --banner-accent: var(--success);
+    --banner-subtle: var(--success-subtle);
+    --banner-edge: var(--success-edge);
+    --banner-text: var(--success-text);
   }
   .dr-banner[data-variant="warning"] {
-    --banner-accent: var(--warning);
+    --banner-subtle: var(--warning-subtle);
+    --banner-edge: var(--warning-edge);
+    --banner-text: var(--warning-text);
   }
   .dr-banner[data-variant="destructive"] {
-    --banner-accent: var(--destructive);
+    --banner-subtle: var(--destructive-subtle);
+    --banner-edge: var(--destructive-edge);
+    --banner-text: var(--destructive-text);
   }
   /* All four severity variants share the same shape: a 4px left rail at
    * full accent saturation (Alert's convention), the neutral 1px frame on
-   * the remaining sides, and the shared --status-tint wash painted as an
-   * image over the default variant's opaque muted base. The thick
+   * the remaining sides, and the opaque status fill. The thick
    * saturated left bar is what gives destructive its red — and warning its
    * amber, success its green, info its blue — without flooding the banner
    * with the variant colour. */
@@ -42,18 +49,15 @@
   .dr-banner[data-variant="success"],
   .dr-banner[data-variant="warning"],
   .dr-banner[data-variant="destructive"] {
-    @apply bg-muted text-foreground border-border border-l-4;
-    background-image: linear-gradient(
-      hsl(var(--banner-accent) / var(--status-tint)),
-      hsl(var(--banner-accent) / var(--status-tint))
-    );
-    border-left-color: hsl(var(--banner-accent));
+    @apply text-foreground border-border border-l-4;
+    background-color: hsl(var(--banner-subtle));
+    border-left-color: hsl(var(--banner-edge));
   }
   .dr-banner[data-variant="info"] .dr-banner-icon,
   .dr-banner[data-variant="success"] .dr-banner-icon,
   .dr-banner[data-variant="warning"] .dr-banner-icon,
   .dr-banner[data-variant="destructive"] .dr-banner-icon {
-    color: hsl(var(--banner-accent));
+    color: hsl(var(--banner-edge));
   }
 
   .dr-banner-icon {

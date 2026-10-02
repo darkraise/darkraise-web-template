@@ -6,42 +6,47 @@
     backdrop-filter: var(--backdrop-filter);
   }
 
-  /* Tinted variants share a left-accent + low-alpha bg pattern, driven by
-     --alert-accent so a single var swap retones bg / border-left / icon /
-     title. Default stays on the neutral popover/background base above. */
+  /* Status variants share a left-rail pattern, driven by --alert-subtle /
+     --alert-edge / --alert-text so one block per variant retones bg /
+     border-left + icon / title. Default stays on the neutral
+     popover/background base above. */
   .dr-alert[data-variant="destructive"] {
-    --alert-accent: var(--destructive);
+    --alert-subtle: var(--destructive-subtle);
+    --alert-edge: var(--destructive-edge);
+    --alert-text: var(--destructive-text);
   }
   .dr-alert[data-variant="success"] {
-    --alert-accent: var(--success);
+    --alert-subtle: var(--success-subtle);
+    --alert-edge: var(--success-edge);
+    --alert-text: var(--success-text);
   }
   .dr-alert[data-variant="warning"] {
-    --alert-accent: var(--warning);
+    --alert-subtle: var(--warning-subtle);
+    --alert-edge: var(--warning-edge);
+    --alert-text: var(--warning-text);
   }
   .dr-alert[data-variant="info"] {
-    --alert-accent: var(--info);
+    --alert-subtle: var(--info-subtle);
+    --alert-edge: var(--info-edge);
+    --alert-text: var(--info-text);
   }
 
-  /* The tint is a layer over the alert's opaque base (bg-background),
-     never a replacement for it: as background-color it let the page read
-     through the wash. */
+  /* The status fill is opaque and the text is solved on it, so nothing
+     reads through. */
   .dr-alert[data-variant="destructive"],
   .dr-alert[data-variant="success"],
   .dr-alert[data-variant="warning"],
   .dr-alert[data-variant="info"] {
     @apply border-l-4;
-    background-image: linear-gradient(
-      hsl(var(--alert-accent) / var(--status-tint)),
-      hsl(var(--alert-accent) / var(--status-tint))
-    );
-    border-left-color: hsl(var(--alert-accent));
+    background-color: hsl(var(--alert-subtle));
+    border-left-color: hsl(var(--alert-edge));
   }
 
   .dr-alert[data-variant="destructive"] > svg,
   .dr-alert[data-variant="success"] > svg,
   .dr-alert[data-variant="warning"] > svg,
   .dr-alert[data-variant="info"] > svg {
-    color: hsl(var(--alert-accent));
+    color: hsl(var(--alert-edge));
   }
 
   .dr-alert-title {
@@ -51,7 +56,7 @@
   .dr-alert[data-variant="success"] .dr-alert-title,
   .dr-alert[data-variant="warning"] .dr-alert-title,
   .dr-alert[data-variant="info"] .dr-alert-title {
-    color: hsl(var(--alert-accent));
+    color: hsl(var(--alert-text));
   }
 
   .dr-alert-description {

@@ -371,6 +371,24 @@
   --color-destructive-solid-foreground: hsl(
     var(--destructive-solid-foreground)
   );
+  --color-destructive-subtle: hsl(var(--destructive-subtle));
+  --color-destructive-edge: hsl(var(--destructive-edge));
+  --color-destructive-text: hsl(var(--destructive-text));
+  --color-success-subtle: hsl(var(--success-subtle));
+  --color-success-edge: hsl(var(--success-edge));
+  --color-success-text: hsl(var(--success-text));
+  --color-success-solid: hsl(var(--success-solid));
+  --color-success-solid-foreground: hsl(var(--success-solid-foreground));
+  --color-warning-subtle: hsl(var(--warning-subtle));
+  --color-warning-edge: hsl(var(--warning-edge));
+  --color-warning-text: hsl(var(--warning-text));
+  --color-warning-solid: hsl(var(--warning-solid));
+  --color-warning-solid-foreground: hsl(var(--warning-solid-foreground));
+  --color-info-subtle: hsl(var(--info-subtle));
+  --color-info-edge: hsl(var(--info-edge));
+  --color-info-text: hsl(var(--info-text));
+  --color-info-solid: hsl(var(--info-solid));
+  --color-info-solid-foreground: hsl(var(--info-solid-foreground));
   --color-success: hsl(var(--success));
   --color-success-foreground: hsl(var(--success-foreground));
   --color-warning: hsl(var(--warning));
@@ -1006,11 +1024,6 @@
     --selected-mark-fg: hsl(var(--foreground));
     --selected-nav-bg: hsl(var(--sidebar-active-bg));
     --selected-nav-fg: hsl(var(--foreground));
-
-    /* Severity wash. Alert, Banner and Toast tint their status colour at
-       this alpha in both modes, always over an opaque base. The engine
-       solves status text to 4.5:1 on its own tint up to 12%. */
-    --status-tint: 0.1;
 
     /* Default elevation-current so `<Card elevation="auto">` and other
      consumers reading `var(--elevation-current)` resolve to a real shadow

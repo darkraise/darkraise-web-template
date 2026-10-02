@@ -46,15 +46,13 @@ describe("toast action colours", () => {
   })
 
   it.each([
-    ["success", "var(--success)", "var(--success-foreground)"],
-    [
-      "error",
-      "var(--destructive-solid)",
-      "var(--destructive-solid-foreground)",
-    ],
-    ["warning", "var(--warning)", "var(--warning-foreground)"],
-    ["info", "var(--info)", "var(--info-foreground)"],
-  ])("%s sets its action pair", (variant, fill, label) => {
+    ["success", "success"],
+    ["error", "destructive"],
+    ["warning", "warning"],
+    ["info", "info"],
+  ])("%s sets the %s solid pair", (variant, status) => {
+    const fill = `var(--${status}-solid)`
+    const label = `var(--${status}-solid-foreground)`
     const block = new RegExp(
       `\\.dr-toast--${variant} \\{[^}]*--toast-action: ${fill.replace(/[()]/g, "\\$&")};[^}]*--toast-action-foreground: ${label.replace(/[()]/g, "\\$&")};`,
     )

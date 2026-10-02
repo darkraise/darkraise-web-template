@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
 
 // One rule for every floating surface and severity message: Alert, Banner
-// and Toast share a 10% status tint over an opaque base, toasts read the
+// and Toast paint the opaque status pairs, toasts read the
 // overlay tokens, the menu family agrees on its details, header chrome is
 // transparent at rest, and sheets square their viewport edge.
 
@@ -49,39 +49,71 @@ const ALERT = "src/components/alert/alert.css"
 const BANNER = "src/components/banner/banner.css"
 const SONNER = "src/components/sonner/sonner.css"
 
-/** A status colour written with a literal alpha instead of --status-tint. */
-const LITERAL_TINT =
-  /hsl\(var\(--(?:alert|banner|toast)-accent\) \/ (?:\d*\.)?\d+\)/
+const STATUSES = ["destructive", "success", "warning", "info"] as const
 
-describe("severity tint", () => {
-  it("declares one tint for every severity surface", () => {
-    expect(normalise(source(THEME))).toContain("--status-tint: 0.1;")
+describe("severity pairs", () => {
+  it("declares no shared tint", () => {
+    expect(normalise(source(THEME))).not.toContain("--status-tint")
+  })
+
+  it.each(STATUSES)("alert %s paints its pair", (status) => {
+    const variant = `.dr-alert[data-variant="${status}"]`
+    const body = bodyOf(ALERT, variant)
+    expect(body).toContain(`--alert-subtle: var(--${status}-subtle);`)
+    expect(body).toContain(`--alert-edge: var(--${status}-edge);`)
+    expect(body).toContain(`--alert-text: var(--${status}-text);`)
+    expect(body).toContain("background-color: hsl(var(--alert-subtle));")
+    expect(body).toContain("border-left-color: hsl(var(--alert-edge));")
+    expect(body).not.toContain("background-image")
+    expect(bodyOf(ALERT, `${variant} > svg`)).toContain(
+      "color: hsl(var(--alert-edge));",
+    )
+    expect(bodyOf(ALERT, `${variant} .dr-alert-title`)).toContain(
+      "color: hsl(var(--alert-text));",
+    )
+  })
+
+  it.each(STATUSES)("banner %s paints its pair", (status) => {
+    const variant = `.dr-banner[data-variant="${status}"]`
+    const body = bodyOf(BANNER, variant)
+    expect(body).toContain(`--banner-subtle: var(--${status}-subtle);`)
+    expect(body).toContain(`--banner-edge: var(--${status}-edge);`)
+    expect(body).toContain(`--banner-text: var(--${status}-text);`)
+    expect(body).toContain("background-color: hsl(var(--banner-subtle));")
+    expect(body).toContain("border-left-color: hsl(var(--banner-edge));")
+    expect(body).not.toContain("background-image")
+    expect(body).not.toMatch(/(?<![\w:-])bg-muted(?![\w-])/)
+    expect(body).toMatch(/(?<![\w:-])border-border(?![\w-])/)
+    expect(bodyOf(BANNER, `${variant} .dr-banner-icon`)).toContain(
+      "color: hsl(var(--banner-edge));",
+    )
   })
 
   it.each([
-    [ALERT, '.dr-alert[data-variant="destructive"]', "--alert-accent"],
-    [BANNER, '.dr-banner[data-variant="info"]', "--banner-accent"],
-  ])("%s %s paints the tint over its opaque base", (path, selector, accent) => {
-    const body = bodyOf(path, selector)
-    const tint = `hsl(var(${accent}) / var(--status-tint))`
-    expect(body).toContain(
-      `background-image: linear-gradient(${tint}, ${tint});`,
+    ["success", "success"],
+    ["error", "destructive"],
+    ["warning", "warning"],
+    ["info", "info"],
+  ])("toast %s paints the %s pair", (kind, status) => {
+    const toast = `.dr-toast--${kind}`
+    const body = bodyOf(SONNER, toast)
+    expect(body).toContain(`--toast-subtle: var(--${status}-subtle);`)
+    expect(body).toContain(`--toast-accent: var(--${status}-edge);`)
+    expect(body).toContain(`--toast-text: var(--${status}-text);`)
+    expect(body).toContain("background: hsl(var(--toast-subtle));")
+    expect(bodyOf(SONNER, ".dr-toast-icon")).toContain(
+      "color: hsl(var(--toast-accent, var(--popover-foreground)));",
     )
-    expect(body).not.toMatch(/background-color:/)
-    expect(body).toContain(`border-left-color: hsl(var(${accent}));`)
+    expect(bodyOf(SONNER, `${toast} .dr-toast-title`)).toContain(
+      "color: hsl(var(--toast-text));",
+    )
   })
 
-  it.each([ALERT, BANNER, SONNER])(
-    "%s writes no literal tint alpha",
-    (path) => {
-      expect(normalise(source(path))).not.toMatch(LITERAL_TINT)
-    },
-  )
-
-  it("keeps the banner on its muted base and neutral frame", () => {
-    const body = bodyOf(BANNER, '.dr-banner[data-variant="info"]')
-    expect(body).toMatch(/(?<![\w:-])bg-muted(?![\w-])/)
-    expect(body).toMatch(/(?<![\w:-])border-border(?![\w-])/)
+  it("paints no toast kind in ::before", () => {
+    const before = rulesOf(SONNER).flatMap((rule) =>
+      rule.selectors.filter((s) => /^\.dr-toast--\w+::before$/.test(s)),
+    )
+    expect(before).toEqual([])
   })
 
   it("leaves the banner's body text on the foreground in dark mode", () => {
@@ -100,7 +132,6 @@ describe("toast surface", () => {
       "background-blend-mode: var(--surface-overlay-blend-mode);",
       "border-color: var(--overlay-border);",
       "box-shadow: var(--overlay-shadow);",
-      "isolation: isolate;",
     ]) {
       expect(body).toContain(declaration)
     }
@@ -108,23 +139,6 @@ describe("toast surface", () => {
     expect(body).not.toMatch(/(?<![\w:-])(?:bg-popover|border-border)(?![\w-])/)
     expect(body).not.toContain("shadow-[var(--shadow-dropdown)]")
   })
-
-  // --overlay-bg is a multi-layer `background` value, which a later
-  // background-image on the toast would overwrite.
-  it.each(["success", "error", "warning", "info"])(
-    "paints the %s tint in ::before over the surface",
-    (kind) => {
-      const tint = bodyOf(SONNER, `.dr-toast--${kind}::before`)
-      expect(tint).toContain(
-        "background: hsl(var(--toast-accent) / var(--status-tint));",
-      )
-      expect(tint).toContain("inset: 0;")
-      expect(tint).toContain("z-index: -1;")
-      expect(bodyOf(SONNER, `.dr-toast--${kind}`)).not.toMatch(
-        /border-color|background/,
-      )
-    },
-  )
 })
 
 const MENU = "src/components/menu-primitives/menu-primitives.css"

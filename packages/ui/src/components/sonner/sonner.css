@@ -37,9 +37,6 @@
     box-shadow: var(--overlay-shadow);
     -webkit-backdrop-filter: var(--backdrop-filter);
     backdrop-filter: var(--backdrop-filter);
-    /* Keeps the status tint (::before, z-index -1) above the surface and
-       below the content. */
-    isolation: isolate;
 
     --toast-stack-gap: 12px;
     --toast-scale: calc(1 - var(--toast-index, 0) * 0.06);
@@ -164,48 +161,46 @@
     }
   }
 
-  /* Variant tints. Each kind gets its own --toast-accent var driving the
-     tint layer below and the icon + title color. The body's description
-     stays on muted-foreground so long copy remains readable on the tinted
-     surface. Every kind keeps the overlay border; there is no status rail. */
+  /* Status kinds. Each sets its pair: the subtle fill, the edge for the
+     icon, close button and progress bar, the text for the title, and the
+     solid action pair. The body's description stays on muted-foreground.
+     Every kind keeps the overlay border; there is no status rail. */
   .dr-toast--success {
-    --toast-accent: var(--success);
-    --toast-action: var(--success);
-    --toast-action-foreground: var(--success-foreground);
+    --toast-subtle: var(--success-subtle);
+    --toast-accent: var(--success-edge);
+    --toast-text: var(--success-text);
+    --toast-action: var(--success-solid);
+    --toast-action-foreground: var(--success-solid-foreground);
   }
   .dr-toast--error {
-    --toast-accent: var(--destructive);
+    --toast-subtle: var(--destructive-subtle);
+    --toast-accent: var(--destructive-edge);
+    --toast-text: var(--destructive-text);
     --toast-action: var(--destructive-solid);
     --toast-action-foreground: var(--destructive-solid-foreground);
   }
   .dr-toast--warning {
-    --toast-accent: var(--warning);
-    --toast-action: var(--warning);
-    --toast-action-foreground: var(--warning-foreground);
+    --toast-subtle: var(--warning-subtle);
+    --toast-accent: var(--warning-edge);
+    --toast-text: var(--warning-text);
+    --toast-action: var(--warning-solid);
+    --toast-action-foreground: var(--warning-solid-foreground);
   }
   .dr-toast--info {
-    --toast-accent: var(--info);
-    --toast-action: var(--info);
-    --toast-action-foreground: var(--info-foreground);
+    --toast-subtle: var(--info-subtle);
+    --toast-accent: var(--info-edge);
+    --toast-text: var(--info-text);
+    --toast-action: var(--info-solid);
+    --toast-action-foreground: var(--info-solid-foreground);
   }
 
-  /* The tint is a layer over the toast's surface, never a replacement for
-     it: as background-color it let page content read straight through.
-     --overlay-bg is a multi-layer `background` value (glass stacks noise
-     and fog over the colour), which a later background-image would
-     overwrite, so the tint paints in ::before, inside the toast's isolated
-     stacking context. */
-  .dr-toast--success::before,
-  .dr-toast--error::before,
-  .dr-toast--warning::before,
-  .dr-toast--info::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: inherit;
-    background: hsl(var(--toast-accent) / var(--status-tint));
-    pointer-events: none;
+  /* Status toasts paint their opaque fill directly; glass frost returns with
+     the style rebuild. */
+  .dr-toast--success,
+  .dr-toast--error,
+  .dr-toast--warning,
+  .dr-toast--info {
+    background: hsl(var(--toast-subtle));
   }
   .dr-toast--loading {
     --toast-accent: var(--muted-foreground);
@@ -226,7 +221,7 @@
   .dr-toast--error .dr-toast-title,
   .dr-toast--warning .dr-toast-title,
   .dr-toast--info .dr-toast-title {
-    color: hsl(var(--toast-accent));
+    color: hsl(var(--toast-text));
   }
   .dr-toast-description {
     @apply text-muted-foreground text-sm leading-snug;
