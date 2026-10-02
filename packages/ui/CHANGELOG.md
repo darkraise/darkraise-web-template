@@ -23,7 +23,7 @@ Breaking: `PaginationLink` marks the current page with `data-active="true"` and 
 
 Breaking: `TableHead` and `TableCell` take `align?: "start" | "center" | "end"` (type `TableCellAlign`), rendered as `data-align` and styled with logical `text-align`. They no longer pass the HTML `align` attribute (`"left" | "right" | …`) to the DOM; replace `align="right"` with `align="end"`. `darkraise-ui/data-table` also augments `@tanstack/react-table`'s `ColumnMeta` with `align?: TableCellAlign`; an app that declares its own `align` on `ColumnMeta` with a different type must drop that declaration or switch to `DataTableColumnMeta`, and a column whose `meta.align` is `"left"` or `"right"` takes no alignment.
 
-Breaking: every axis of `ThemeSettings` is optional, and `onChange` and a persistence adapter's `save` receive only the axes the user has set. An absent axis means the active preset's or the config's default applies. Adapters that read `settings.mode` or any other axis must handle `undefined`; `load` may return the same partial shape.
+Breaking: every axis of `ThemeSettings` is optional, and `onChange` and a persistence adapter's `save` receive only the axes the user has set. An absent axis means the active preset's or the config's default applies. Adapters that read `settings.mode` or any other axis must handle `undefined`; `load` may return the same partial shape. `ThemeSettings` is now a type alias, so augmenting it with `declare module` no longer works.
 
 ### Added
 
