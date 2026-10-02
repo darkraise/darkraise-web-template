@@ -312,24 +312,29 @@ const STRIP_CASES = [
         mode,
         intensity,
         pattern: "blobs",
+        width: 1440,
       })),
     ),
   ),
-  ...MODES.map((mode) => ({
-    surface: "slate",
-    mode,
-    intensity: "intense",
-    pattern: "aurora",
-  })),
+  ...(["aurora", "mesh", "spotlight"] as const).flatMap((pattern) =>
+    MODES.map((mode) => ({
+      surface: "slate",
+      mode,
+      intensity: "intense",
+      pattern,
+      width: 1440,
+    })),
+  ),
 ]
 
 test.describe("gradient strip", () => {
   test.use({ viewport: { width: 1440, height: 900 } })
 
-  for (const { surface, mode, intensity, pattern } of STRIP_CASES) {
-    test(`tokens clear their floor on the strip · ${surface} · ${mode} · ${intensity} · ${pattern}`, async ({
+  for (const { surface, mode, intensity, pattern, width } of STRIP_CASES) {
+    test(`tokens clear their floor on the strip · ${surface} · ${mode} · ${intensity} · ${pattern} · ${width}px`, async ({
       page,
     }) => {
+      await page.setViewportSize({ width, height: 900 })
       await seedApp(page, {
         preset: "default",
         accent: "blue",

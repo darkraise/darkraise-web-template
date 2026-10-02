@@ -194,7 +194,10 @@ Runs against the standalone fixture `e2e/fixtures/control-contract.html`.
   content area (the canvas strip) is sampled at 1440px with the content
   hidden: the field edge, `--primary` and `--focus-ring` clear 3:1 and muted
   and accent text 4.5:1 against its lowest-contrast pixel, for slate and
-  violet × both modes × balanced and intense, plus the aurora pattern.
+  violet × both modes × balanced and intense with the blobs pattern, plus
+  aurora, mesh and spotlight on slate at intense. Narrower viewports are not
+  checked: the blobs crowd together there and the dark field edge falls
+  below 3:1, a known gap the kit CHANGELOG records.
 - The glass switch thumb sits the same distance from each end of its track.
 
 ### 17 · Selection and overlays (`17-selection-overlays.spec.ts`)

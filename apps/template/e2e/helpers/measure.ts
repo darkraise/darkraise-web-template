@@ -77,8 +77,9 @@ export function computed(locator: Locator, property: string): Promise<string> {
 
 /**
  * The lowest contrast each colour reaches against the page painted in `clip`.
- * A 4px blur first averages away the canvas noise layer, and pixels the blur
- * pulled transparent at the edges are skipped; every fourth pixel is read.
+ * A 4px blur first averages away the canvas noise layer. The image is padded
+ * with its own edge pixels so the blur does not fade the outermost rows, which
+ * are the strip's loudest, toward transparent; every fourth pixel is read.
  */
 export async function minContrastOver(
   page: Page,
@@ -91,14 +92,60 @@ export async function minContrastOver(
       const img = new Image()
       img.src = `data:image/png;base64,${b64}`
       await img.decode()
+      const { width, height } = img
+      const pad = 16
+      const padded = document.createElement("canvas")
+      padded.width = width + 2 * pad
+      padded.height = height + 2 * pad
+      const source = padded.getContext("2d")
+      if (!source) throw new Error("no 2d context")
+      source.drawImage(img, pad, pad)
+      source.drawImage(img, 0, 0, width, 1, pad, 0, width, pad)
+      source.drawImage(
+        img,
+        0,
+        height - 1,
+        width,
+        1,
+        pad,
+        height + pad,
+        width,
+        pad,
+      )
+      source.drawImage(img, 0, 0, 1, height, 0, pad, pad, height)
+      source.drawImage(
+        img,
+        width - 1,
+        0,
+        1,
+        height,
+        width + pad,
+        pad,
+        pad,
+        height,
+      )
+      source.drawImage(img, 0, 0, 1, 1, 0, 0, pad, pad)
+      source.drawImage(img, width - 1, 0, 1, 1, width + pad, 0, pad, pad)
+      source.drawImage(img, 0, height - 1, 1, 1, 0, height + pad, pad, pad)
+      source.drawImage(
+        img,
+        width - 1,
+        height - 1,
+        1,
+        1,
+        width + pad,
+        height + pad,
+        pad,
+        pad,
+      )
       const canvas = document.createElement("canvas")
-      canvas.width = img.width
-      canvas.height = img.height
+      canvas.width = padded.width
+      canvas.height = padded.height
       const context = canvas.getContext("2d")
       if (!context) throw new Error("no 2d context")
       context.filter = "blur(4px)"
-      context.drawImage(img, 0, 0)
-      const { data } = context.getImageData(0, 0, img.width, img.height)
+      context.drawImage(padded, 0, 0)
+      const { data } = context.getImageData(pad, pad, width, height)
       const channel = (value: number) => {
         const c = value / 255
         return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4
@@ -107,10 +154,9 @@ export async function minContrastOver(
         0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b)
       const targets = colours.map(([r, g, b]) => luminance(r, g, b))
       const lowest = targets.map(() => Infinity)
-      for (let y = 0; y < img.height; y += 4) {
-        for (let x = 0; x < img.width; x += 4) {
-          const i = (y * img.width + x) * 4
-          if (data[i + 3] !== 255) continue
+      for (let y = 0; y < height; y += 4) {
+        for (let x = 0; x < width; x += 4) {
+          const i = (y * width + x) * 4
           const ground = luminance(
             data[i] ?? 0,
             data[i + 1] ?? 0,
