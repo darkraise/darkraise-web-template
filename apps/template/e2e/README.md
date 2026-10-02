@@ -82,8 +82,8 @@ token it drives:
 | Preset               | default, glass                 | `data-preset`, own-axis attributes set, other presets' attributes cleared, reload persistence                |
 | Preset axes          | glass opacity/blur             | `data-<preset>-<axis>` for all 7 axis × value combinations                                                   |
 | Mode                 | light, dark, system            | `data-mode`; `system` checked against both emulated `prefers-color-scheme` values                            |
-| Accent               | all 17                         | `--primary` set, and all 17 distinct                                                                         |
-| Surface              | all 18                         | `--background` set, and all 18 distinct in dark mode                                                         |
+| Accent               | all 19, including neutral      | `--primary` set, and all 19 distinct                                                                         |
+| Surface              | all 12                         | `--background` set, and all 12 distinct in dark mode                                                         |
 | Background           | solid, gradient                | `data-background-style`                                                                                      |
 | Background intensity | neutral → intense              | `data-background-intensity`, `--canvas-blob-scale` increases monotonically, `--background` saturation capped |
 | Gradient pattern     | blobs, aurora, spotlight, mesh | `data-gradient-pattern`                                                                                      |
@@ -103,16 +103,19 @@ full round-trip test that every axis survives reload and navigation.
 
 Everything above again, this time through the popover a user actually operates:
 
-- Opens from the header, closes on Escape; the default preset shows all thirteen
+- Opens from the header, closes on Escape; the default preset shows all eighteen
   common-axis sections in order.
 - Each of the 2 presets is selectable and persists across reload.
-- Each preset hides exactly the axes it takes over (`hiddenCommonAxes`).
+- Neither preset hides a common axis (`HIDDEN_COMMON_AXES` is empty for both),
+  and glass offers its own opacity and blur axes.
 - Mode radios, including System against an emulated dark scheme.
-- All 17 accent and all 18 surface swatches: clicked, `data-active` confirmed,
-  and each one produces a distinct token.
+- All 19 accent and all 12 surface swatches: clicked, `data-active` confirmed,
+  and each one produces a distinct token. Choosing the neutral accent hides Tint
+  With Accent.
 - Background toggle reveals and hides the intensity and pattern controls; all
   four gradient patterns are selectable.
-- The six 4-value axes render as stepped sliders and are walked value by value
+- The five 4-value axes (density, font size, elevation, button elevation,
+  radius) render as stepped sliders and are walked value by value
   **with the keyboard**, since a slider has no clickable cell.
 - Preset-specific axis controls for both presets, plus a check that per-preset
   axis values are remembered when switching away and back.
