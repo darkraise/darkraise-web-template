@@ -1223,13 +1223,15 @@
   --overlay-bg: var(--surface-overlay-bg);
 }
 
+/* --neutral-3 is the value --muted holds outside Glass. Glass rebinds --muted
+   to `var(--primary) / <alpha>`, and a second alpha on that is invalid CSS. */
 [data-surface-fill="muted"] {
-  --surface-card-fill: hsl(var(--muted) / var(--surface-opacity, 1));
-  --surface-popover-fill: hsl(var(--muted) / var(--surface-opacity, 1));
-  --surface-raised-fill: hsl(var(--muted) / var(--surface-opacity, 1));
-  --surface-overlay-fill: hsl(var(--muted) / var(--surface-opacity, 1));
-  --surface-card-fill-opaque: hsl(var(--muted));
-  --surface-overlay-bg: var(--surface-overlay-layers) hsl(var(--muted));
+  --surface-card-fill: hsl(var(--neutral-3) / var(--surface-opacity, 1));
+  --surface-popover-fill: hsl(var(--neutral-3) / var(--surface-opacity, 1));
+  --surface-raised-fill: hsl(var(--neutral-3) / var(--surface-opacity, 1));
+  --surface-overlay-fill: hsl(var(--neutral-3) / var(--surface-opacity, 1));
+  --surface-card-fill-opaque: hsl(var(--neutral-3));
+  --surface-overlay-bg: var(--surface-overlay-layers) hsl(var(--neutral-3));
   --overlay-bg: var(--surface-overlay-bg);
 }
 

@@ -1,6 +1,10 @@
 import { describe, it, expect } from "vitest"
-import { readFileSync } from "node:fs"
-import { resolve } from "node:path"
+import { readFileSync, readdirSync } from "node:fs"
+import { join, resolve } from "node:path"
+import { glass } from "./glass"
+import { accentColors } from "@theme/palettes/accentColors"
+import { surfaceColors } from "@theme/palettes/surfaceColors"
+import type { ColorScale } from "@theme/types"
 
 // The Glass material's CSS-only tokens (opacity/blur scalar maps, the
 // main[data-content] reset, the reduced-transparency
@@ -172,5 +176,69 @@ describe("glass.css overlay surfaces carry a real colour layer", () => {
 
   it("never declares --surface-overlay-bg itself", () => {
     expect(glassCss).not.toContain("--surface-overlay-bg:")
+  })
+})
+
+// Glass rebinds some tokens to `<colour> / <alpha>`. Adding a second alpha
+// in `hsl(var(--x) / a)` makes the declaration invalid, and the property
+// silently falls back to transparent under Glass only.
+describe("stylesheets vs Glass alpha-bound tokens", () => {
+  const generateTokens = glass.generateTokens as NonNullable<
+    typeof glass.generateTokens
+  >
+  const slate = surfaceColors.slate as ColorScale
+
+  const alphaBound = new Set(
+    (["light", "dark"] as const).flatMap((mode) =>
+      (["solid", "gradient"] as const).flatMap((backgroundStyle) =>
+        Object.entries(
+          generateTokens(
+            {
+              accentColor: "blue",
+              surfaceColor: "slate",
+              backgroundStyle,
+              mode,
+              accent: accentColors.blue,
+              surface: slate,
+              neutral: slate,
+            },
+            { opacity: "medium", blur: "medium" },
+          ),
+        )
+          .filter(
+            ([name, value]) => name.startsWith("--") && / \/ /.test(value),
+          )
+          .map(([name]) => name),
+      ),
+    ),
+  )
+
+  function stylesheets(dir: string): string[] {
+    return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+      const path = join(dir, entry.name)
+      if (entry.isDirectory()) return stylesheets(path)
+      return entry.name.endsWith(".css") ? [path] : []
+    })
+  }
+
+  it("finds the tokens Glass binds to an alpha expression", () => {
+    expect([...alphaBound]).toEqual(
+      expect.arrayContaining([
+        "--muted",
+        "--accent",
+        "--secondary",
+        "--border",
+      ]),
+    )
+  })
+
+  it("never applies a second alpha to one of them", () => {
+    const offenders = stylesheets(resolve(root, "src")).flatMap((file) => {
+      const css = readFileSync(file, "utf8").replace(/\/\*[\s\S]*?\*\//g, "")
+      return [...css.matchAll(/hsl\(\s*var\((--[\w-]+)\)\s*\//g)]
+        .filter((m) => alphaBound.has(m[1]))
+        .map((m) => `${file}: ${m[0]}`)
+    })
+    expect(offenders).toEqual([])
   })
 })

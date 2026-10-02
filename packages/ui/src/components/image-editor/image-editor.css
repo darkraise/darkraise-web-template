@@ -22,7 +22,7 @@
   .dr-image-editor-panel-header {
     @apply flex items-center justify-between gap-2 border-b px-3 py-2;
     border-color: hsl(var(--border));
-    background: hsl(var(--muted) / 0.4);
+    background: hsl(var(--neutral-3) / 0.4);
   }
   .dr-image-editor-panel-title {
     @apply text-foreground inline-flex items-center gap-2 text-[length:var(--text-2xs)] font-semibold uppercase;

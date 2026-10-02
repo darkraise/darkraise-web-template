@@ -85,7 +85,7 @@ describe("surface fill rules", () => {
 
   it.each([
     ["page", "--background"],
-    ["muted", "--muted"],
+    ["muted", "--neutral-3"],
   ] as const)("%s reads %s", (value, token) => {
     const body = fillRule(value)
     for (const fill of FILLS) {
