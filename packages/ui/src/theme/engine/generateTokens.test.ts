@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest"
 import { generateTokens, capCanvasSaturation } from "./generateTokens"
 import { surfaceColors } from "@theme/palettes/surfaceColors"
 import { contrastRatio } from "@theme/engine/oklch"
+import { STATUS_NAMES, type StatusName } from "./steps"
 import { ACCENT_COLORS, BACKGROUND_INTENSITIES } from "@theme/types"
 import type {
   ColorScale,
@@ -47,12 +48,16 @@ describe("generateTokens", () => {
       "--legend",
       "--accent",
       "--accent-foreground",
-      "--destructive",
-      "--destructive-foreground",
-      "--success",
-      "--success-foreground",
-      "--warning",
-      "--warning-foreground",
+      ...STATUS_NAMES.flatMap((status) =>
+        [
+          "subtle",
+          "edge",
+          "text",
+          "solid",
+          "solid-foreground",
+          "solid-wash",
+        ].map((role) => `--${status}-${role}`),
+      ),
       "--border",
       "--input",
       "--field-edge-color",
@@ -364,120 +369,55 @@ describe("generateTokens", () => {
     expect(tokens).not.toHaveProperty("--shadow-card")
   })
 
-  it("destructive uses red-500 for light and red-600 for dark", () => {
-    const light = generateTokens({
-      accentColor: "blue",
-      surfaceColor: "slate",
-      preset: "default",
-      backgroundStyle: "solid",
-      mode: "light",
-      contrast: "standard",
-      darkAccentChroma: "standard",
-      tintWithAccent: false,
-    })
-    const dark = generateTokens({
-      accentColor: "blue",
-      surfaceColor: "slate",
-      preset: "default",
-      backgroundStyle: "solid",
-      mode: "dark",
-      contrast: "standard",
-      darkAccentChroma: "standard",
-      tintWithAccent: false,
-    })
+  describe("status pairs", () => {
+    // The base hue survives the solve: emerald-500 measured 2.48:1 and
+    // amber-500 2.03:1 as text in light, so both move along their own ramp.
+    const HUES: Record<StatusName, string> = {
+      destructive: "0",
+      success: "160",
+      warning: "38",
+      info: "217",
+    }
 
-    // red-500 and red-600 are the base values; both are raised where they did
-    // not carry as text, which is what --destructive is used for.
-    expect(light["--destructive"]).toMatch(/^0 /)
-    expect(dark["--destructive"]).toMatch(/^0 /)
-    expect(
-      contrastRatio(
-        light["--destructive"] as string,
-        light["--background"] as string,
-      ),
-    ).toBeGreaterThanOrEqual(4.5)
-    expect(
-      contrastRatio(
-        dark["--destructive"] as string,
-        dark["--background"] as string,
-      ),
-    ).toBeGreaterThanOrEqual(4.5)
-  })
+    for (const mode of ["light", "dark"] as const) {
+      for (const status of STATUS_NAMES) {
+        it(`${status} clears its pair floors in ${mode} mode`, () => {
+          const tokens = generateTokens({
+            accentColor: "blue",
+            surfaceColor: "slate",
+            preset: "default",
+            backgroundStyle: "solid",
+            mode,
+            contrast: "standard",
+            darkAccentChroma: "standard",
+            tintWithAccent: false,
+          })
+          const ratio = (fg: string, bg: string) =>
+            contrastRatio(tokens[fg] as string, tokens[bg] as string)
 
-  it("success is the success text step; white label in light, ink in dark", () => {
-    const light = generateTokens({
-      accentColor: "blue",
-      surfaceColor: "slate",
-      preset: "default",
-      backgroundStyle: "solid",
-      mode: "light",
-      contrast: "standard",
-      darkAccentChroma: "standard",
-      tintWithAccent: false,
-    })
-    const dark = generateTokens({
-      accentColor: "blue",
-      surfaceColor: "slate",
-      preset: "default",
-      backgroundStyle: "solid",
-      mode: "dark",
-      contrast: "standard",
-      darkAccentChroma: "standard",
-      tintWithAccent: false,
-    })
-
-    // emerald-500 measured 2.48:1 in light, so it is darkened to the 4.5:1
-    // status text floor.
-    expect(light["--success"]).toMatch(/^160 /)
-    expect(light["--success"]).toBe(light["--success-text"])
-    expect(dark["--success"]).toBe(dark["--success-text"])
-    expect(
-      contrastRatio(
-        light["--success"] as string,
-        light["--background"] as string,
-      ),
-    ).toBeGreaterThanOrEqual(4.5)
-    expect(light["--success-foreground"]).toBe("0 0% 100%")
-    // A dark success readable as text is too light for a white label.
-    expect(dark["--success-foreground"]).toBe("222 47% 11%")
-  })
-
-  it("warning is the warning text step; white label in light, ink in dark", () => {
-    const light = generateTokens({
-      accentColor: "blue",
-      surfaceColor: "slate",
-      preset: "default",
-      backgroundStyle: "solid",
-      mode: "light",
-      contrast: "standard",
-      darkAccentChroma: "standard",
-      tintWithAccent: false,
-    })
-    const dark = generateTokens({
-      accentColor: "blue",
-      surfaceColor: "slate",
-      preset: "default",
-      backgroundStyle: "solid",
-      mode: "dark",
-      contrast: "standard",
-      darkAccentChroma: "standard",
-      tintWithAccent: false,
-    })
-
-    // amber-500 measured 2.03:1 in light, the worst of the state colours; it is
-    // darkened to the 4.5:1 status text floor.
-    expect(light["--warning"]).toMatch(/^38 /)
-    expect(light["--warning"]).toBe(light["--warning-text"])
-    expect(dark["--warning"]).toBe(dark["--warning-text"])
-    expect(
-      contrastRatio(
-        light["--warning"] as string,
-        light["--background"] as string,
-      ),
-    ).toBeGreaterThanOrEqual(4.5)
-    // Light warning is darkened to read as text, which makes white the better label.
-    expect(light["--warning-foreground"]).toBe("0 0% 100%")
-    expect(dark["--warning-foreground"]).toBe("222 47% 11%")
+          expect(tokens[`--${status}-text`]).toMatch(
+            new RegExp(`^${HUES[status]} `),
+          )
+          for (const ground of [
+            "--background",
+            "--card",
+            `--${status}-subtle`,
+          ]) {
+            expect(
+              ratio(`--${status}-text`, ground),
+              `text on ${ground}`,
+            ).toBeGreaterThanOrEqual(4.5)
+            expect(
+              ratio(`--${status}-edge`, ground),
+              `edge on ${ground}`,
+            ).toBeGreaterThanOrEqual(3)
+          }
+          expect(
+            ratio(`--${status}-solid-foreground`, `--${status}-solid`),
+          ).toBeGreaterThanOrEqual(4.6)
+        })
+      }
+    }
   })
 
   it("success and warning are independent of accentColor", () => {
@@ -502,8 +442,18 @@ describe("generateTokens", () => {
       tintWithAccent: false,
     })
 
-    expect(blueAccent["--success"]).toBe(redAccent["--success"])
-    expect(blueAccent["--warning"]).toBe(redAccent["--warning"])
+    for (const status of ["success", "warning"]) {
+      for (const role of [
+        "subtle",
+        "edge",
+        "text",
+        "solid",
+        "solid-foreground",
+      ]) {
+        const key = `--${status}-${role}`
+        expect(blueAccent[key], key).toBe(redAccent[key])
+      }
+    }
   })
 
   it("surfaceColor slate produces identical tokens to the original behavior", () => {

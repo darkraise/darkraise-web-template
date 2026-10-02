@@ -13,7 +13,7 @@ import { surfaceColors } from "@theme/palettes/surfaceColors"
 import { presets, type PresetName } from "@theme/presets"
 import { contrastRatio } from "@theme/engine/oklch"
 import { CANVAS_SATURATION_CAP, contentStripGround } from "./canvas"
-import { INK, STATUS_NAMES, WHITE, placeStep, solveSteps } from "./steps"
+import { STATUS_NAMES, WHITE, placeStep, solveSteps } from "./steps"
 
 export {
   CANVAS_BLOB_SCALE,
@@ -178,11 +178,6 @@ function washFor(label: string): string {
   return label === WHITE ? BLACK : WHITE
 }
 
-/** White or ink, whichever reads better on `fill`; white on a tie. */
-function bestLabel(fill: string): string {
-  return contrastRatio(WHITE, fill) >= contrastRatio(INK, fill) ? WHITE : INK
-}
-
 export function generateTokens(
   input: GenerateTokensInput,
 ): Record<string, string> {
@@ -265,9 +260,6 @@ export function generateTokens(
     tokens[`--${name}-solid`] = pair.solid
     tokens[`--${name}-solid-foreground`] = pair.solidForeground
     tokens[`--${name}-solid-wash`] = pair.solidWash
-    // The 6.x status tokens, until their consumers move to the pairs.
-    tokens[`--${name}`] = pair.text
-    tokens[`--${name}-foreground`] = bestLabel(pair.text)
   }
   steps.chart.forEach((colour, i) => {
     tokens[`--chart-${i + 1}`] = `hsl(${colour})`

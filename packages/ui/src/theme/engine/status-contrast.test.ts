@@ -13,7 +13,7 @@ const STATUSES = ["destructive", "success", "warning", "info"] as const
 describe("status colours", () => {
   const combos = reachableCombos()
 
-  it("status text clears 4.5:1 on its subtle fill, page and card, with labels at 4.5:1 on it", () => {
+  it("status text clears 4.5:1 on its subtle fill, page and card", () => {
     const failures: string[] = []
     for (const combo of combos) {
       const tokens = finalTokens(combo)
@@ -32,15 +32,6 @@ describe("status colours", () => {
               `${comboName(combo)} ${status} on ${surface}: ${ratio.toFixed(2)}`,
             )
           }
-        }
-        const label = contrastRatio(
-          tokens[`--${status}-foreground`] as string,
-          tokens[`--${status}`] as string,
-        )
-        if (label < 4.5) {
-          failures.push(
-            `${comboName(combo)} ${status} label: ${label.toFixed(2)}`,
-          )
         }
       }
     }
