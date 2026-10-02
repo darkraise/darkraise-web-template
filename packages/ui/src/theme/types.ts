@@ -99,6 +99,16 @@ export type BorderIntensity = (typeof BORDER_INTENSITIES)[number]
 export const RADII = ["sharp", "subtle", "rounded", "pill"] as const
 export type Radius = (typeof RADII)[number]
 
+export const CONTRASTS = ["low", "standard", "high"] as const
+export type Contrast = (typeof CONTRASTS)[number]
+
+export const DARK_ACCENT_CHROMAS = ["calm", "standard", "vivid"] as const
+export type DarkAccentChroma = (typeof DARK_ACCENT_CHROMAS)[number]
+
+/** A string pair rather than a boolean: registry values are strings. */
+export const TINT_WITH_ACCENT = ["off", "on"] as const
+export type TintWithAccent = (typeof TINT_WITH_ACCENT)[number]
+
 export const FONT_SIZES = ["small", "medium", "large", "extra-large"] as const
 export type FontSize = (typeof FONT_SIZES)[number]
 

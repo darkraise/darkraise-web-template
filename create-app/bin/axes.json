@@ -259,5 +259,37 @@
     "storageKey": "theme-sidebar-active-bar",
     "attribute": null,
     "layer": "advanced"
+  },
+  "contrast": {
+    "values": [
+      "low",
+      "standard",
+      "high"
+    ],
+    "default": "standard",
+    "storageKey": "theme-contrast",
+    "attribute": "data-contrast",
+    "layer": "advanced"
+  },
+  "darkAccentChroma": {
+    "values": [
+      "calm",
+      "standard",
+      "vivid"
+    ],
+    "default": "standard",
+    "storageKey": "theme-dark-accent-chroma",
+    "attribute": "data-dark-accent-chroma",
+    "layer": "advanced"
+  },
+  "tintWithAccent": {
+    "values": [
+      "off",
+      "on"
+    ],
+    "default": "off",
+    "storageKey": "theme-tint-with-accent",
+    "attribute": "data-tint-with-accent",
+    "layer": "brand"
   }
 }

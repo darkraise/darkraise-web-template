@@ -44,6 +44,30 @@ describe("axis registry", () => {
     expect(AXES.surfaceColor.attribute).toBe("data-surface")
   })
 
+  it("registers the colour engine axes", () => {
+    expect(AXES.contrast).toMatchObject({
+      values: ["low", "standard", "high"],
+      default: "standard",
+      storageKey: "theme-contrast",
+      attribute: "data-contrast",
+      layer: "advanced",
+    })
+    expect(AXES.darkAccentChroma).toMatchObject({
+      values: ["calm", "standard", "vivid"],
+      default: "standard",
+      storageKey: "theme-dark-accent-chroma",
+      attribute: "data-dark-accent-chroma",
+      layer: "advanced",
+    })
+    expect(AXES.tintWithAccent).toMatchObject({
+      values: ["off", "on"],
+      default: "off",
+      storageKey: "theme-tint-with-accent",
+      attribute: "data-tint-with-accent",
+      layer: "brand",
+    })
+  })
+
   it("validates values against the registry", () => {
     expect(isAxisValue("density", "spacious")).toBe(true)
     expect(isAxisValue("density", "huge")).toBe(false)

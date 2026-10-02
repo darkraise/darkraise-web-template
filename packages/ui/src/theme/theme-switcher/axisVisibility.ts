@@ -74,6 +74,11 @@ export const AXIS_VISIBILITY: Record<
   // recipe from the same step, so no preset hides these by default.
   outerGlow: (s) => s.axes.outerGlow && !s.isHiddenByPreset("outerGlow"),
   innerGlow: (s) => s.axes.innerGlow && !s.isHiddenByPreset("innerGlow"),
+
+  contrast: (s) => s.axes.contrast && !s.isHiddenByPreset("contrast"),
+  darkAccentChroma: (s) =>
+    s.axes.darkAccentChroma && !s.isHiddenByPreset("darkAccentChroma"),
+  tintWithAccent: (s) => s.axes.tintWithAccent,
 }
 
 export function isAxisVisible(

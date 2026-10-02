@@ -4,7 +4,9 @@ import {
   BACKGROUND_INTENSITIES,
   BACKGROUND_STYLES,
   BORDER_INTENSITIES,
+  CONTRASTS,
   CONTROL_DEPTHS,
+  DARK_ACCENT_CHROMAS,
   DENSITIES,
   ELEVATIONS,
   FONT_SIZES,
@@ -16,6 +18,7 @@ import {
   SIDEBAR_ACTIVE_BARS,
   SURFACE_COLORS,
   SURFACE_INTENSITIES,
+  TINT_WITH_ACCENT,
 } from "@theme/types"
 import { PRESET_NAMES } from "@theme/presets"
 
@@ -193,6 +196,30 @@ export const AXES = {
     default: "default",
     storageKey: "theme-sidebar-active-bar",
     layer: "advanced",
+  }),
+  /** Page-to-card separation and decorative edge strength; field edges hold 3:1 at every step. */
+  contrast: axis({
+    values: CONTRASTS,
+    default: "standard",
+    storageKey: "theme-contrast",
+    attribute: "data-contrast",
+    layer: "advanced",
+  }),
+  /** How saturated the accent reads in dark mode; fill lightness is always solved. */
+  darkAccentChroma: axis({
+    values: DARK_ACCENT_CHROMAS,
+    default: "standard",
+    storageKey: "theme-dark-accent-chroma",
+    attribute: "data-dark-accent-chroma",
+    layer: "advanced",
+  }),
+  /** Mixes the accent hue into the neutral at a capped chroma; off under the neutral accent. */
+  tintWithAccent: axis({
+    values: TINT_WITH_ACCENT,
+    default: "off",
+    storageKey: "theme-tint-with-accent",
+    attribute: "data-tint-with-accent",
+    layer: "brand",
   }),
 }
 

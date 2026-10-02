@@ -1,6 +1,8 @@
 import type {
   BackgroundIntensity,
   ColorScale,
+  Contrast,
+  DarkAccentChroma,
   ResolvedMode,
 } from "@theme/types"
 import {
@@ -16,8 +18,7 @@ import {
   gradientCanvasPeak,
 } from "./canvas"
 
-export type Contrast = "low" | "standard" | "high"
-export type DarkAccentChroma = "calm" | "standard" | "vivid"
+export type { Contrast, DarkAccentChroma }
 export type StatusName = "destructive" | "success" | "warning" | "info"
 export const STATUS_NAMES: readonly StatusName[] = [
   "destructive",
