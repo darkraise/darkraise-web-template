@@ -200,4 +200,34 @@ describe("ThemeProvider on the axis registry", () => {
     rerender()
     expect(cacheWrites(setItem)).toBe(0)
   })
+
+  it("reads storage once at mount", () => {
+    localStorage.setItem("mode", "dark")
+    const getItem = vi.spyOn(Storage.prototype, "getItem")
+    renderHook(() => useTheme(), { wrapper: wrap })
+    expect(getItem.mock.calls.filter(([key]) => key === "mode")).toHaveLength(1)
+  })
+
+  it("does not label new tokens with the old id when a write fails", () => {
+    const { result } = renderHook(() => useTheme(), { wrapper: wrap })
+    const setItem = Storage.prototype.setItem
+    vi.spyOn(Storage.prototype, "setItem").mockImplementation(function (
+      this: Storage,
+      key: string,
+      value: string,
+    ) {
+      if (key === "theme-accent") {
+        throw new DOMException("full", "QuotaExceededError")
+      }
+      setItem.call(this, key, value)
+    })
+    act(() => result.current.setAccentColor("rose"))
+    expect(localStorage.getItem("theme-accent")).toBeNull()
+    expect(readTokenCache(localStorage)?.tokens["--primary"]).toBe(
+      root.style.getPropertyValue("--primary"),
+    )
+    root.style.cssText = ""
+    runPrerender()
+    expect(root.style.getPropertyValue("--primary")).toBe("")
+  })
 })

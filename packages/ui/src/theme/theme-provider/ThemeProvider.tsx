@@ -41,7 +41,11 @@ import {
   sanitizeSettings,
   type PresetAxisValues,
 } from "@theme/axes/settings"
-import { tokenCacheId, writeTokenCache } from "@theme/axes/tokenCache"
+import {
+  cacheInputKeys,
+  tokenCacheId,
+  writeTokenCache,
+} from "@theme/axes/tokenCache"
 import { migrateGlassPresetKeys } from "./migrateGlassPresetKeys"
 import { migrateAccentIntensityKey } from "./migrateAccentIntensityKey"
 import { migrateCanvasTintKey } from "./migrateCanvasTintKey"
@@ -99,6 +103,15 @@ function getSystemMode(): ResolvedMode {
 
 function resolveMode(mode: Mode): ResolvedMode {
   return mode === "system" ? getSystemMode() : mode
+}
+
+function readCacheInputs(): Map<string, string> {
+  const out = new Map<string, string>()
+  for (const key of cacheInputKeys()) {
+    const value = readStorage(key)
+    if (value !== null) out.set(key, value)
+  }
+  return out
 }
 
 // One-time stored-key migrations. The pure, testable helpers live beside this
@@ -201,17 +214,28 @@ export function ThemeProvider({
     [defaultsKey],
   )
 
-  const [stored, setStoredState] = useState<Partial<AxisValues>>(() =>
-    readStoredAxes(readStorage),
-  )
+  // One storage read at mount. knownRef then mirrors every write this provider
+  // makes, and the token-cache id is built from it rather than read back, so a
+  // write that failed silently cannot label new tokens with the old id.
+  const [initial] = useState(() => {
+    const known = readCacheInputs()
+    const read = (key: string) => known.get(key) ?? null
+    return {
+      known,
+      stored: readStoredAxes(read),
+      presetAxisValues: readPresetAxisValues(read),
+    }
+  })
+  const knownRef = useRef(initial.known)
+  const [stored, setStoredState] = useState<Partial<AxisValues>>(initial.stored)
   const [presetAxisValues, setPresetAxisValuesState] =
-    useState<PresetAxisValues>(() => readPresetAxisValues(readStorage))
+    useState<PresetAxisValues>(initial.presetAxisValues)
   const settings = useMemo(
     () => effectiveSettings(stored, defaults),
     [stored, defaults],
   )
   const [resolvedMode, setResolvedMode] = useState<ResolvedMode>(() =>
-    resolveMode(effectiveSettings(readStoredAxes(readStorage), defaults).mode),
+    resolveMode(effectiveSettings(initial.stored, defaults).mode),
   )
   const [syncStatus, setSyncStatus] = useState<ThemeSyncStatus>("idle")
 
@@ -233,11 +257,22 @@ export function ThemeProvider({
 
   const hasUserChanged = useRef(false)
 
+  const persist = useCallback((key: string, value: string | undefined) => {
+    if (value === undefined) {
+      knownRef.current.delete(key)
+      removeStorage(key)
+    } else {
+      knownRef.current.set(key, value)
+      writeStorage(key, value)
+    }
+  }, [])
+
   const applyTheme = useCallback(
     (
       current: AxisValues,
       resolved: ResolvedMode,
       axisValues: PresetAxisValues,
+      cacheId: string,
     ) => {
       const presetName = current.preset as PresetName
       const activePreset = presets[presetName]
@@ -313,13 +348,7 @@ export function ThemeProvider({
       )
 
       const store = storage()
-      if (store) {
-        writeTokenCache(
-          store,
-          tokenCacheId(readStorage, resolved),
-          mergedTokens,
-        )
-      }
+      if (store) writeTokenCache(store, cacheId, mergedTokens)
     },
     [defaults.accentIntensity],
   )
@@ -333,16 +362,21 @@ export function ThemeProvider({
       resolved: ResolvedMode,
       axisValues: PresetAxisValues,
     ) => {
+      const cacheId = tokenCacheId(
+        (key) => knownRef.current.get(key) ?? null,
+        resolved,
+      )
       const signature = JSON.stringify([
         current,
         resolved,
         axisValues,
         defaults,
+        cacheId,
       ])
       if (signature === paintedRef.current) return
       paintedRef.current = signature
       applyAttributes(current, defaults)
-      applyTheme(current, resolved, axisValues)
+      applyTheme(current, resolved, axisValues, cacheId)
     },
     [applyTheme, defaults],
   )
@@ -397,7 +431,7 @@ export function ThemeProvider({
         }
         return
       }
-      writeStorage(AXES[key].storageKey, value)
+      persist(AXES[key].storageKey, value)
       const resolved =
         key === "mode" ? resolveMode(value as Mode) : resolvedRef.current
       commit(
@@ -407,7 +441,7 @@ export function ThemeProvider({
       )
       announce()
     },
-    [commit, announce],
+    [commit, announce, persist],
   )
 
   const setPresetAxis = useCallback(
@@ -441,11 +475,11 @@ export function ThemeProvider({
         ...current,
         [presetName]: { ...current[presetName], [axisName]: value },
       }
-      writeStorage(presetAxisStorageKey(presetName, axisName), value)
+      persist(presetAxisStorageKey(presetName, axisName), value)
       commit(storedRef.current, next, resolvedRef.current)
       announce()
     },
-    [commit, announce, defaults],
+    [commit, announce, defaults, persist],
   )
 
   const applySettings = useCallback(
@@ -453,9 +487,7 @@ export function ThemeProvider({
       const { presetAxisValues: incoming, ...axes } = sanitizeSettings(input)
       const nextStored = axes as Partial<AxisValues>
       for (const key of AXIS_KEYS) {
-        const value = nextStored[key]
-        if (value === undefined) removeStorage(AXES[key].storageKey)
-        else writeStorage(AXES[key].storageKey, value)
+        persist(AXES[key].storageKey, nextStored[key])
       }
       const nextAxisValues = incoming
         ? completePresetAxisValues({
@@ -465,13 +497,13 @@ export function ThemeProvider({
         : presetAxisValuesRef.current
       for (const [presetName, values] of Object.entries(nextAxisValues)) {
         for (const [axisName, value] of Object.entries(values)) {
-          writeStorage(presetAxisStorageKey(presetName, axisName), value)
+          persist(presetAxisStorageKey(presetName, axisName), value)
         }
       }
       const resolved = resolveMode(effectiveSettings(nextStored, defaults).mode)
       commit(nextStored, nextAxisValues, resolved)
     },
-    [commit, defaults],
+    [commit, defaults, persist],
   )
 
   useEffect(() => {
