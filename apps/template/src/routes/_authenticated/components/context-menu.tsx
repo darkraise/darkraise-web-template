@@ -223,7 +223,7 @@ const [statusBar, setStatusBar] = useState(true)
       Rename
       <ContextMenuShortcut>F2</ContextMenuShortcut>
     </ContextMenuItem>
-    <ContextMenuItem className="text-destructive">
+    <ContextMenuItem className="text-destructive-text">
       <Trash2 />
       Move to Trash
       <ContextMenuShortcut>Del</ContextMenuShortcut>
@@ -419,7 +419,7 @@ function ComplexFileMenu() {
           Rename
           <ContextMenuShortcut>F2</ContextMenuShortcut>
         </ContextMenuItem>
-        <ContextMenuItem className="text-destructive">
+        <ContextMenuItem className="text-destructive-text">
           <Trash2 />
           Move to Trash
           <ContextMenuShortcut>Del</ContextMenuShortcut>
@@ -449,7 +449,7 @@ function ContextMenuPage() {
     <ContextMenuSeparator />
     <ContextMenuItem>Select All</ContextMenuItem>
     <ContextMenuSeparator />
-    <ContextMenuItem className="text-destructive">Delete</ContextMenuItem>
+    <ContextMenuItem className="text-destructive-text">Delete</ContextMenuItem>
   </ContextMenuContent>
 </ContextMenu>`}
       >
@@ -465,7 +465,7 @@ function ContextMenuPage() {
             <ContextMenuSeparator />
             <ContextMenuItem>Select All</ContextMenuItem>
             <ContextMenuSeparator />
-            <ContextMenuItem className="text-destructive">
+            <ContextMenuItem className="text-destructive-text">
               Delete
             </ContextMenuItem>
           </ContextMenuContent>

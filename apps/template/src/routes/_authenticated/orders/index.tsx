@@ -3,7 +3,7 @@ import { useAppTranslation } from "@/i18n/useAppTranslation"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import type { ColumnDef } from "@tanstack/react-table"
 import { PageHeader } from "darkraise-ui/layout"
-import { Badge } from "darkraise-ui/components/badge"
+import { Badge, type BadgeVariant } from "darkraise-ui/components/badge"
 import { Button } from "darkraise-ui/components/button"
 import {
   DataTable,
@@ -18,12 +18,12 @@ export const Route = createFileRoute("/_authenticated/orders/")({
   component: OrdersPage,
 })
 
-const statusColors: Record<Order["status"], string> = {
-  pending: "bg-warning/15 text-warning",
-  processing: "bg-primary/15 text-primary-text",
-  shipped: "bg-accent text-accent-foreground",
-  delivered: "bg-success/15 text-success",
-  cancelled: "bg-destructive/15 text-destructive",
+const statusVariant: Record<Order["status"], BadgeVariant> = {
+  pending: "warning-subtle",
+  processing: "info-subtle",
+  shipped: "secondary",
+  delivered: "success-subtle",
+  cancelled: "destructive-subtle",
 }
 
 function OrdersPage() {
@@ -83,14 +83,7 @@ function OrdersPage() {
       ),
       cell: ({ row }) => {
         const status = row.original.status
-        return (
-          <Badge
-            variant="outline"
-            className={`border-transparent bg-none shadow-none ${statusColors[status]}`}
-          >
-            {t(status)}
-          </Badge>
-        )
+        return <Badge variant={statusVariant[status]}>{t(status)}</Badge>
       },
       filterFn: (row, _columnId, filterValue: string[]) => {
         if (!filterValue || filterValue.length === 0) return true

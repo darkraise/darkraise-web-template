@@ -226,13 +226,13 @@ function BadgesPage() {
         title="Animated pulse dot"
         code={`<div className="flex items-center gap-2">
   <div className="relative">
-    <span className="h-2 w-2 rounded-full bg-success block" />
-    <span className="absolute inset-0 h-2 w-2 rounded-full bg-success opacity-75 animate-ping" />
+    <span className="h-2 w-2 rounded-full bg-success-solid block" />
+    <span className="absolute inset-0 h-2 w-2 rounded-full bg-success-solid opacity-75 animate-ping" />
   </div>
   <span className="text-sm">Live</span>
 </div>
 <div className="flex items-center gap-2">
-  <span className="h-2 w-2 rounded-full bg-warning block" />
+  <span className="h-2 w-2 rounded-full bg-warning-solid block" />
   <span className="text-sm">Away</span>
 </div>
 <div className="flex items-center gap-2">
@@ -243,13 +243,13 @@ function BadgesPage() {
         <div className="flex flex-wrap gap-6">
           <div className="flex items-center gap-2">
             <div className="relative">
-              <span className="bg-success block h-2 w-2 rounded-full" />
-              <span className="bg-success absolute inset-0 h-2 w-2 animate-ping rounded-full opacity-75" />
+              <span className="bg-success-solid block h-2 w-2 rounded-full" />
+              <span className="bg-success-solid absolute inset-0 h-2 w-2 animate-ping rounded-full opacity-75" />
             </div>
             <span className="text-sm">Live</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="bg-warning block h-2 w-2 rounded-full" />
+            <span className="bg-warning-solid block h-2 w-2 rounded-full" />
             <span className="text-sm">Away</span>
           </div>
           <div className="flex items-center gap-2">

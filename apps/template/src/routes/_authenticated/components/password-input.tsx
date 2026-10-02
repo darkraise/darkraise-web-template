@@ -73,7 +73,7 @@ function ValidationExample() {
       </PasswordInputControl>
       <div
         aria-live="polite"
-        className="text-destructive text-xs"
+        className="text-destructive-text text-xs"
         data-invalid={tooShort ? "true" : "false"}
       >
         {tooShort ? "Password must be at least 8 characters." : " "}

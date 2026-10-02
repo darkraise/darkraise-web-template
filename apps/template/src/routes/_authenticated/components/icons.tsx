@@ -107,7 +107,7 @@ function UsagePatterns() {
 <Star className="size-5 text-muted-foreground" />
 <Star className="size-5 text-foreground" />
 <Star className="size-5 text-primary" />
-<Star className="size-5 text-destructive" />
+<Star className="size-5 text-destructive-text" />
 <Star className="size-5 text-amber-500" />`}
       >
         <div className="flex flex-wrap items-center gap-6">
@@ -130,7 +130,7 @@ function UsagePatterns() {
             </span>
           </div>
           <div className="flex flex-col items-center gap-2">
-            <Star className="text-destructive size-6" />
+            <Star className="text-destructive-text size-6" />
             <span className="text-muted-foreground font-mono text-xs">
               destructive
             </span>

@@ -83,7 +83,9 @@ function MultiFileWithSizeLimit() {
         <FileUploadHiddenInput />
       </FileUploadDropzone>
       {rejectReason ? (
-        <p className="text-destructive text-xs">Rejected: {rejectReason}</p>
+        <p className="text-destructive-text text-xs">
+          Rejected: {rejectReason}
+        </p>
       ) : null}
       <FileUploadItemGroup>
         {files.map((file) => (

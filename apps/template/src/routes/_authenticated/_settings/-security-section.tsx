@@ -106,7 +106,7 @@ export function SecuritySection() {
             <p
               id={mismatchMessageId}
               aria-live="polite"
-              className="text-destructive text-xs"
+              className="text-destructive-text text-xs"
               data-invalid={mismatch ? "true" : "false"}
             >
               {mismatch ? t("Passwords do not match.") : " "}
@@ -174,7 +174,7 @@ export function SecuritySection() {
             )}
           </div>
 
-          <div className="border-destructive/40 space-y-3 rounded-lg border p-4">
+          <div className="border-destructive-edge space-y-3 rounded-lg border p-4">
             <div>
               <p className="text-sm font-medium">{t("Delete account")}</p>
               <p className="text-muted-foreground text-sm">

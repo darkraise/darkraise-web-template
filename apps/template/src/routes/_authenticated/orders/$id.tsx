@@ -2,7 +2,7 @@ import { useUiLocale } from "darkraise-ui/i18n"
 import { useAppTranslation } from "@/i18n/useAppTranslation"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { PageHeader } from "darkraise-ui/layout"
-import { Badge } from "darkraise-ui/components/badge"
+import { Badge, type BadgeVariant } from "darkraise-ui/components/badge"
 import { Button } from "darkraise-ui/components/button"
 import {
   Card,
@@ -26,17 +26,18 @@ import {
   TableRow,
 } from "darkraise-ui/components/table"
 import { useOrder, useUpdateOrderStatus } from "@/demo/hooks"
+import type { Order } from "@/demo/types"
 
 export const Route = createFileRoute("/_authenticated/orders/$id")({
   component: OrderDetailPage,
 })
 
-const statusColors: Record<string, string> = {
-  pending: "bg-warning/15 text-warning",
-  processing: "bg-primary/15 text-primary-text",
-  shipped: "bg-accent text-accent-foreground",
-  delivered: "bg-success/15 text-success",
-  cancelled: "bg-destructive/15 text-destructive",
+const statusVariant: Record<Order["status"], BadgeVariant> = {
+  pending: "warning-subtle",
+  processing: "info-subtle",
+  shipped: "secondary",
+  delivered: "success-subtle",
+  cancelled: "destructive-subtle",
 }
 
 const statusSteps = ["pending", "processing", "shipped", "delivered"] as const
@@ -256,10 +257,7 @@ function OrderDetailPage() {
                 <CardTitle>{t("Status")}</CardTitle>
               </CardHeader>
               <CardContent>
-                <Badge
-                  variant="outline"
-                  className={`border-transparent bg-none shadow-none ${statusColors[order.status]}`}
-                >
+                <Badge variant={statusVariant[order.status]}>
                   {t(order.status)}
                 </Badge>
               </CardContent>

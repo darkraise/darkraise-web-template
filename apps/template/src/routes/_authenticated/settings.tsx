@@ -369,7 +369,7 @@ function BillingSettings() {
         <StatValue
           label={t("Monthly Price")}
           value="$49"
-          badge={<CheckCircle2 className="text-success size-5" />}
+          badge={<CheckCircle2 className="text-success-text size-5" />}
         />
         <div className="space-y-4">
           <SettingRow

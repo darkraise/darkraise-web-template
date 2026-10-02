@@ -137,7 +137,7 @@ function AvatarPage() {
     <AvatarFallback>AC</AvatarFallback>
   </Avatar>
   // ring-card cuts the status dot away from the avatar fill behind it.
-  <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-success ring-2 ring-card" />
+  <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-success-solid ring-2 ring-card" />
 </div>`}
       >
         <div className="flex flex-wrap items-start gap-6">
@@ -146,7 +146,7 @@ function AvatarPage() {
               <Avatar className="h-10 w-10">
                 <AvatarFallback>AC</AvatarFallback>
               </Avatar>
-              <span className="ring-card bg-success absolute right-0 bottom-0 h-3 w-3 rounded-full ring-2" />
+              <span className="ring-card bg-success-solid absolute right-0 bottom-0 h-3 w-3 rounded-full ring-2" />
             </div>
             <p className="text-muted-foreground mt-1 text-center text-xs">
               Online
@@ -157,7 +157,7 @@ function AvatarPage() {
               <Avatar className="h-10 w-10">
                 <AvatarFallback>BP</AvatarFallback>
               </Avatar>
-              <span className="ring-card bg-warning absolute right-0 bottom-0 h-3 w-3 rounded-full ring-2" />
+              <span className="ring-card bg-warning-solid absolute right-0 bottom-0 h-3 w-3 rounded-full ring-2" />
             </div>
             <p className="text-muted-foreground mt-1 text-center text-xs">
               Away

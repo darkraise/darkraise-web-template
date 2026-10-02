@@ -99,8 +99,8 @@ function AnimationPage() {
             <Bell className="mr-2 h-4 w-4" />
             Notifications
             <span className="absolute -top-1 -right-1 flex h-3 w-3">
-              <span className="bg-destructive absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" />
-              <span className="bg-destructive relative inline-flex h-3 w-3 rounded-full" />
+              <span className="bg-destructive-solid absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" />
+              <span className="bg-destructive-solid relative inline-flex h-3 w-3 rounded-full" />
             </span>
           </Button>
         </div>
@@ -173,7 +173,7 @@ function AnimationPage() {
           >
             Scale
           </Button>
-          <Heart className="text-destructive h-6 w-6 cursor-pointer transition-transform duration-300 hover:scale-125 hover:rotate-12" />
+          <Heart className="text-destructive-text h-6 w-6 cursor-pointer transition-transform duration-300 hover:scale-125 hover:rotate-12" />
           <Button
             variant="outline"
             className="transition-transform duration-200 hover:-translate-y-1"

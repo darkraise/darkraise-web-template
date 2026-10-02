@@ -73,7 +73,9 @@ function ContextMenuExample() {
         <ContextMenuSeparator />
         <ContextMenuItem>Select All</ContextMenuItem>
         <ContextMenuSeparator />
-        <ContextMenuItem className="text-destructive">Delete</ContextMenuItem>
+        <ContextMenuItem className="text-destructive-text">
+          Delete
+        </ContextMenuItem>
       </ContextMenuContent>
     </ContextMenu>
   )
@@ -240,7 +242,7 @@ function DropdownMenuPage() {
     <DropdownMenuItem>Profile</DropdownMenuItem>
     <DropdownMenuItem>Billing</DropdownMenuItem>
     <DropdownMenuSeparator />
-    <DropdownMenuItem className="text-destructive">Sign Out</DropdownMenuItem>
+    <DropdownMenuItem className="text-destructive-text">Sign Out</DropdownMenuItem>
   </DropdownMenuContent>
 </DropdownMenu>`}
       >
@@ -264,7 +266,7 @@ function DropdownMenuPage() {
               Settings
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive">
+            <DropdownMenuItem className="text-destructive-text">
               <LogOut className="mr-2 h-4 w-4" />
               Sign Out
             </DropdownMenuItem>
@@ -356,7 +358,7 @@ function DropdownMenuPage() {
       </DropdownMenuSubContent>
     </DropdownMenuSub>
     <DropdownMenuSeparator />
-    <DropdownMenuItem className="text-destructive">Sign Out</DropdownMenuItem>
+    <DropdownMenuItem className="text-destructive-text">Sign Out</DropdownMenuItem>
   </DropdownMenuContent>
 </DropdownMenu>`}
       >
@@ -394,7 +396,7 @@ function DropdownMenuPage() {
               </DropdownMenuSubContent>
             </DropdownMenuSub>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive">
+            <DropdownMenuItem className="text-destructive-text">
               Sign Out
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -423,7 +425,7 @@ function DropdownMenuPage() {
     <ContextMenuSeparator />
     <ContextMenuItem>Select All</ContextMenuItem>
     <ContextMenuSeparator />
-    <ContextMenuItem className="text-destructive">Delete</ContextMenuItem>
+    <ContextMenuItem className="text-destructive-text">Delete</ContextMenuItem>
   </ContextMenuContent>
 </ContextMenu>`}
       >

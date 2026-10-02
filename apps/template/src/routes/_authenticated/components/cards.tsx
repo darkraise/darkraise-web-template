@@ -301,7 +301,7 @@ function CardsPage() {
     <p className="text-xs text-muted-foreground">Total Revenue</p>
     <div className="flex items-center gap-3">
       <span className="text-3xl font-semibold">$45,231</span>
-      <Badge className="gap-1 bg-success/15 text-success hover:bg-success/25">
+      <Badge className="gap-1 bg-success-subtle text-success-text hover:bg-success-subtle">
         <TrendingUp className="h-3 w-3" />
         +12.5%
       </Badge>
@@ -319,7 +319,7 @@ function CardsPage() {
             <p className="text-muted-foreground text-xs">Total Revenue</p>
             <div className="flex items-center gap-3">
               <span className="text-3xl font-semibold">$45,231</span>
-              <Badge className="bg-success/15 text-success hover:bg-success/25 gap-1">
+              <Badge className="bg-success-subtle text-success-text hover:bg-success-subtle gap-1">
                 <TrendingUp className="h-3 w-3" />
                 +12.5%
               </Badge>
@@ -353,7 +353,7 @@ function CardsPage() {
   <CardContent>
     <ul className="space-y-2 text-sm">
       {features.map(f => (
-        <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success" />{f}</li>
+        <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success-text" />{f}</li>
       ))}
     </ul>
   </CardContent>
@@ -422,7 +422,7 @@ function CardsPage() {
                 <ul className="space-y-2 text-sm">
                   {tier.features.map((f) => (
                     <li key={f} className="flex items-center gap-2">
-                      <Check className="text-success h-4 w-4 shrink-0" />
+                      <Check className="text-success-text h-4 w-4 shrink-0" />
                       {f}
                     </li>
                   ))}
