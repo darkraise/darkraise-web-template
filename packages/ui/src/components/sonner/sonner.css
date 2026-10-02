@@ -250,12 +250,13 @@
 
   /* Custom close button — stays in the toast's stylistic family by reading
      from --toast-accent (set by the variant block; falls back to the muted
-     foreground for default + loading). Colors and hover-bg use alpha mixes
-     of the accent so the button reads as part of the toast surface rather
-     than a generic ghost button. */
+     foreground for default + loading). The hover background is an alpha
+     mix of the accent so the button reads as part of the toast surface
+     rather than a generic ghost button. The icon colour takes no alpha: the
+     -edge tokens sit at the 3:1 mark floor on their -subtle fill. */
   .dr-toast-close {
     @apply focus-ring absolute top-1.5 right-1.5 inline-flex size-6 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent p-0 opacity-0 transition-[opacity,background-color,color] duration-150 [&_svg]:size-[var(--icon-size-sm)];
-    color: hsl(var(--toast-accent, var(--muted-foreground)) / 0.7);
+    color: hsl(var(--toast-accent, var(--muted-foreground)));
   }
   .dr-toast-close:hover {
     background-color: hsl(var(--toast-accent, var(--muted-foreground)) / 0.12);

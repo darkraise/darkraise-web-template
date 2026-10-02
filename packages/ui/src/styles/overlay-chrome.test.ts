@@ -139,6 +139,21 @@ describe("toast surface", () => {
     expect(body).not.toMatch(/(?<![\w:-])(?:bg-popover|border-border)(?![\w-])/)
     expect(body).not.toContain("shadow-[var(--shadow-dropdown)]")
   })
+
+  // The -edge tokens are solved to exactly 3:1 on -subtle, so any alpha on
+  // the close icon drops it under the floor for marks.
+  it("paints the close icon at full strength", () => {
+    for (const selector of [".dr-toast-close", ".dr-toast-close:hover"]) {
+      const colours = bodyOf(SONNER, selector).match(/(?<![\w-])color:[^;]+;/g)
+      expect(colours).not.toBeNull()
+      for (const colour of colours ?? []) {
+        expect(colour).not.toMatch(/\/\s*[\d.]+\s*\)\s*;$/)
+      }
+    }
+    expect(bodyOf(SONNER, ".dr-toast-close")).toContain(
+      "color: hsl(var(--toast-accent, var(--muted-foreground)));",
+    )
+  })
 })
 
 const MENU = "src/components/menu-primitives/menu-primitives.css"
