@@ -330,13 +330,13 @@
      utility's nested rules and native CSS nesting keeps that order, so a
      zero-specificity invalid rule lost to them. */
   &:is([data-invalid], [aria-invalid="true"]) {
-    border-color: hsl(var(--destructive));
+    border-color: hsl(var(--destructive-edge));
   }
 
   &:is([data-invalid], [aria-invalid="true"]):focus,
   &:is([data-invalid], [aria-invalid="true"]):focus-visible {
-    border-color: hsl(var(--destructive));
-    box-shadow: 0 0 0 1px hsl(var(--destructive));
+    border-color: hsl(var(--destructive-edge));
+    box-shadow: 0 0 0 1px hsl(var(--destructive-edge));
   }
 }
 
@@ -347,8 +347,8 @@
   }
 
   &:focus-within:where([data-invalid], [aria-invalid="true"]) {
-    border-color: hsl(var(--destructive));
-    box-shadow: 0 0 0 1px hsl(var(--destructive));
+    border-color: hsl(var(--destructive-edge));
+    box-shadow: 0 0 0 1px hsl(var(--destructive-edge));
   }
 }
 

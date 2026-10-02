@@ -1,6 +1,6 @@
 @layer components {
   .dr-form-error-summary {
-    @apply border-destructive bg-destructive/5 text-foreground flex flex-col gap-2 rounded-md border p-4;
+    @apply border-destructive-edge bg-destructive-subtle text-foreground flex flex-col gap-2 rounded-md border p-4;
   }
 
   /* The summary is a focus destination, so it needs a visible indicator of
@@ -11,7 +11,7 @@
   }
 
   .dr-form-error-summary-title {
-    @apply text-destructive text-base font-semibold;
+    @apply text-destructive-text text-base font-semibold;
   }
 
   .dr-form-error-summary-list {
@@ -19,6 +19,6 @@
   }
 
   .dr-form-error-summary-list a {
-    @apply text-destructive underline underline-offset-4;
+    @apply text-destructive-text underline underline-offset-4;
   }
 }

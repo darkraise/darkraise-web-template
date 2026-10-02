@@ -42,18 +42,18 @@
     .dr-combobox-control.dr-multi-select-control:has(
       :is([data-invalid], [aria-invalid="true"])
     ) {
-    border-color: hsl(var(--destructive));
+    border-color: hsl(var(--destructive-edge));
   }
 
   [data-preset="glass"]
     .dr-combobox-control.dr-multi-select-control:has(
       :is([data-invalid], [aria-invalid="true"])
     ):focus-within {
-    border-color: hsl(var(--destructive));
+    border-color: hsl(var(--destructive-edge));
     box-shadow:
       var(--inset-hi),
       var(--glass-halo-raised),
-      0 0 0 1px hsl(var(--destructive));
+      0 0 0 1px hsl(var(--destructive-edge));
   }
 
   /* Outranks the fixed height .dr-combobox-control sets: the chip row grows

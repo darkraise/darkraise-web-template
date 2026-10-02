@@ -20,7 +20,7 @@
   }
 
   .dr-field {
-    @apply data-[invalid=true]:text-destructive flex w-full gap-2;
+    @apply data-[invalid=true]:text-destructive-text flex w-full gap-2;
     transition: color var(--duration-fast);
   }
 
@@ -51,7 +51,7 @@
   }
 
   .dr-field-error {
-    @apply text-destructive text-sm font-normal;
+    @apply text-destructive-text text-sm font-normal;
   }
 
   .dr-field-separator {
@@ -74,6 +74,6 @@
   }
 
   .dr-field-required-mark {
-    @apply text-destructive ml-0.5;
+    @apply text-destructive-text ml-0.5;
   }
 }

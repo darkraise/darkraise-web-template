@@ -75,13 +75,13 @@
      :focus alone: focus-scan reserves :focus-visible rings with a box-shadow
      for the primary field indicator. */
   .dr-input-otp-container[data-invalid] .dr-input-otp-slot {
-    border-color: hsl(var(--destructive));
+    border-color: hsl(var(--destructive-edge));
   }
 
   .dr-input-otp-container[data-invalid] .dr-input-otp-slot[data-active],
   .dr-input-otp-container[data-invalid] .dr-input-otp-slot-separate:focus {
-    border-color: hsl(var(--destructive));
-    box-shadow: 0 0 0 1px hsl(var(--destructive));
+    border-color: hsl(var(--destructive-edge));
+    box-shadow: 0 0 0 1px hsl(var(--destructive-edge));
   }
 
   /* Glass-preset frosted InputOTP slots. Colours only: the widths come from
@@ -108,7 +108,7 @@
   [data-preset="glass"]
     .dr-input-otp-container[data-invalid]
     .dr-input-otp-slot {
-    border-color: hsl(var(--destructive));
+    border-color: hsl(var(--destructive-edge));
   }
 
   [data-preset="glass"]
@@ -117,10 +117,10 @@
   [data-preset="glass"]
     .dr-input-otp-container[data-invalid]
     .dr-input-otp-slot-separate:focus {
-    border-color: hsl(var(--destructive));
+    border-color: hsl(var(--destructive-edge));
     box-shadow:
       var(--inset-hi),
       var(--glass-halo-raised),
-      0 0 0 1px hsl(var(--destructive));
+      0 0 0 1px hsl(var(--destructive-edge));
   }
 }

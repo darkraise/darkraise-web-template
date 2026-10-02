@@ -287,14 +287,16 @@ describe("glass invalid state", () => {
       expect(restAt, `no rest rule ${rest}`).toBeGreaterThanOrEqual(0)
       expect(companionAt, "no invalid companion").toBeGreaterThan(restAt)
       expect(rules[companionAt]?.body).toBe(
-        "border-color: hsl(var(--destructive));",
+        "border-color: hsl(var(--destructive-edge));",
       )
       const focused = rules.find((r) =>
         focus.every((f) => selectorsOf(r).includes(`${rest}${invalid}${f}`)),
       )
       expect(focused, "no focused invalid companion").toBeDefined()
-      expect(focused?.body).toContain("border-color: hsl(var(--destructive));")
-      expect(focused?.body).toContain("0 0 0 1px hsl(var(--destructive))")
+      expect(focused?.body).toContain(
+        "border-color: hsl(var(--destructive-edge));",
+      )
+      expect(focused?.body).toContain("0 0 0 1px hsl(var(--destructive-edge))")
     },
   )
 })
@@ -315,15 +317,17 @@ describe("InputOTP invalid state", () => {
   ])("draws the %s invalid border and focused ring", (_preset, prefix) => {
     const rules = rulesOf("input-otp/input-otp.css")
     const rest = rules.find((r) => r.selector === `${prefix}${OTP_INVALID}`)
-    expect(rest?.body).toBe("border-color: hsl(var(--destructive));")
+    expect(rest?.body).toBe("border-color: hsl(var(--destructive-edge));")
     const focused = rules.find((r) =>
       OTP_INVALID_FOCUSED.every((f) =>
         selectorsOf(r).includes(`${prefix}${f}`),
       ),
     )
     expect(focused, "no focused invalid rule").toBeDefined()
-    expect(focused?.body).toContain("border-color: hsl(var(--destructive));")
-    expect(focused?.body).toContain("0 0 0 1px hsl(var(--destructive))")
+    expect(focused?.body).toContain(
+      "border-color: hsl(var(--destructive-edge));",
+    )
+    expect(focused?.body).toContain("0 0 0 1px hsl(var(--destructive-edge))")
   })
 
   it("keeps the glass halo under the invalid ring, after the glass slot rules", () => {
@@ -344,7 +348,7 @@ describe("InputOTP invalid state", () => {
       ),
     )
     expect(focused?.body).toBe(
-      "border-color: hsl(var(--destructive)); box-shadow: var(--inset-hi), var(--glass-halo-raised), 0 0 0 1px hsl(var(--destructive));",
+      "border-color: hsl(var(--destructive-edge)); box-shadow: var(--inset-hi), var(--glass-halo-raised), 0 0 0 1px hsl(var(--destructive-edge));",
     )
   })
 })
