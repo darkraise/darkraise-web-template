@@ -74,3 +74,58 @@ export function computed(locator: Locator, property: string): Promise<string> {
     property,
   )
 }
+
+/**
+ * The lowest contrast each colour reaches against the page painted in `clip`.
+ * A 4px blur first averages away the canvas noise layer, and pixels the blur
+ * pulled transparent at the edges are skipped; every fourth pixel is read.
+ */
+export async function minContrastOver(
+  page: Page,
+  clip: { x: number; y: number; width: number; height: number },
+  colours: Rgb[],
+): Promise<number[]> {
+  const png = await page.screenshot({ clip })
+  return page.evaluate(
+    async ({ b64, colours }) => {
+      const img = new Image()
+      img.src = `data:image/png;base64,${b64}`
+      await img.decode()
+      const canvas = document.createElement("canvas")
+      canvas.width = img.width
+      canvas.height = img.height
+      const context = canvas.getContext("2d")
+      if (!context) throw new Error("no 2d context")
+      context.filter = "blur(4px)"
+      context.drawImage(img, 0, 0)
+      const { data } = context.getImageData(0, 0, img.width, img.height)
+      const channel = (value: number) => {
+        const c = value / 255
+        return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4
+      }
+      const luminance = (r: number, g: number, b: number) =>
+        0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b)
+      const targets = colours.map(([r, g, b]) => luminance(r, g, b))
+      const lowest = targets.map(() => Infinity)
+      for (let y = 0; y < img.height; y += 4) {
+        for (let x = 0; x < img.width; x += 4) {
+          const i = (y * img.width + x) * 4
+          if (data[i + 3] !== 255) continue
+          const ground = luminance(
+            data[i] ?? 0,
+            data[i + 1] ?? 0,
+            data[i + 2] ?? 0,
+          )
+          targets.forEach((target, k) => {
+            const ratio =
+              (Math.max(target, ground) + 0.05) /
+              (Math.min(target, ground) + 0.05)
+            if (ratio < (lowest[k] ?? Infinity)) lowest[k] = ratio
+          })
+        }
+      }
+      return lowest
+    },
+    { b64: png.toString("base64"), colours },
+  )
+}

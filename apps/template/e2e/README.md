@@ -190,6 +190,11 @@ Runs against the standalone fixture `e2e/fixtures/control-contract.html`.
 - A field's bottom edge reaches 3:1 against the page and against a card,
   sampled from rendered pixels, for every preset and for strong glass
   opacity × both modes.
+- Under the default preset with a gradient background, the top 300px of the
+  content area (the canvas strip) is sampled at 1440px with the content
+  hidden: the field edge, `--primary` and `--focus-ring` clear 3:1 and muted
+  and accent text 4.5:1 against its lowest-contrast pixel, for slate and
+  violet × both modes × balanced and intense, plus the aurora pattern.
 - The glass switch thumb sits the same distance from each end of its track.
 
 ### 17 · Selection and overlays (`17-selection-overlays.spec.ts`)

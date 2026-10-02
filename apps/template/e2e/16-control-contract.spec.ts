@@ -1,7 +1,14 @@
 import { test, expect, type Locator, type Page } from "@playwright/test"
 import { DENSITIES, PRESETS } from "./fixtures/theme"
 import { boxOf, gotoApp, seedApp, watchConsole } from "./helpers/app"
-import { computed, contrast, pixel } from "./helpers/measure"
+import {
+  computed,
+  contrast,
+  minContrastOver,
+  pixel,
+  rgbOf,
+  settle,
+} from "./helpers/measure"
 
 /**
  * The control contract: every button and field sits at --control-height, at
@@ -281,4 +288,87 @@ test("glass switch thumb sits evenly in its track", async ({ page }) => {
       )
     })
     .toBeCloseTo(offGap, 0)
+})
+
+/**
+ * Under the default preset a gradient background repaints its canvas over the
+ * top 300px of the content area, where page titles, toolbars and the first
+ * fields sit. Every token read there must clear its floor against the
+ * strip's loudest pixel.
+ */
+const STRIP_TOKENS = [
+  ["--field-edge-color", 3],
+  ["--primary", 3],
+  ["--focus-ring", 3],
+  ["--muted-foreground", 4.5],
+  ["--primary-text", 4.5],
+] as const
+
+const STRIP_CASES = [
+  ...(["slate", "violet"] as const).flatMap((surface) =>
+    MODES.flatMap((mode) =>
+      (["balanced", "intense"] as const).map((intensity) => ({
+        surface,
+        mode,
+        intensity,
+        pattern: "blobs",
+      })),
+    ),
+  ),
+  ...MODES.map((mode) => ({
+    surface: "slate",
+    mode,
+    intensity: "intense",
+    pattern: "aurora",
+  })),
+]
+
+test.describe("gradient strip", () => {
+  test.use({ viewport: { width: 1440, height: 900 } })
+
+  for (const { surface, mode, intensity, pattern } of STRIP_CASES) {
+    test(`tokens clear their floor on the strip · ${surface} · ${mode} · ${intensity} · ${pattern}`, async ({
+      page,
+    }) => {
+      await seedApp(page, {
+        preset: "default",
+        accent: "blue",
+        surface,
+        mode,
+        backgroundStyle: "gradient",
+        backgroundIntensity: intensity,
+        gradientPattern: pattern,
+      })
+      await gotoApp(page, "/components/buttons")
+      await page.addStyleTag({
+        content: "main[data-content] > * { visibility: hidden !important; }",
+      })
+      await settle(page)
+      const main = await boxOf(page.locator("main[data-content]"))
+      const colours = await page.evaluate(
+        (names) =>
+          names.map((name) => {
+            const probe = document.createElement("span")
+            probe.style.color = `hsl(var(${name}))`
+            document.body.append(probe)
+            const value = getComputedStyle(probe).color
+            probe.remove()
+            return value
+          }),
+        STRIP_TOKENS.map(([name]) => name),
+      )
+      const ratios = await minContrastOver(
+        page,
+        { x: main.x, y: main.y, width: main.width, height: 300 },
+        colours.map(rgbOf),
+      )
+      for (const [index, [name, floor]] of STRIP_TOKENS.entries()) {
+        const ratio = ratios[index] ?? 0
+        console.log(
+          `strip ${surface} ${mode} ${intensity} ${pattern} ${name}: ${ratio.toFixed(2)}:1`,
+        )
+        expect(ratio, name).toBeGreaterThanOrEqual(floor)
+      }
+    })
+  }
 })
