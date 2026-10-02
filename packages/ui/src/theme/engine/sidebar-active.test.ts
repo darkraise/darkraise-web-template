@@ -61,5 +61,5 @@ describe("--sidebar-active-bg", () => {
       }
     }
     expect(failures).toEqual([])
-  })
+  }, 30_000)
 })

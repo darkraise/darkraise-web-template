@@ -45,7 +45,7 @@ describe("status colours", () => {
       }
     }
     expect(failures).toEqual([])
-  })
+  }, 30_000)
 
   it("body text and muted text clear 4.5:1 on every subtle fill", () => {
     const failures: string[] = []

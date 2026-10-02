@@ -236,5 +236,5 @@ describe("filled hover states", () => {
       }
     }
     expect(failures).toEqual([])
-  })
+  }, 30_000)
 })

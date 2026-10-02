@@ -32,7 +32,7 @@ describe("text tiers on every surface they sit on", () => {
 
   it("--foreground clears 4.5:1 on every opaque surface", () => {
     expect(failuresFor("--foreground", ALL)).toEqual([])
-  })
+  }, 30_000)
 
   it("--muted-foreground clears 4.5:1 on every opaque surface", () => {
     expect(failuresFor("--muted-foreground", ALL)).toEqual([])

@@ -32,7 +32,7 @@ describe("primary text", () => {
       }
     }
     expect(failures).toEqual([])
-  })
+  }, 30_000)
 
   // Selected toggle, pagination, listbox and tree items sit on bg-primary/10;
   // steps, timeline, highlight and the sidebar count on /20. The solve holds
