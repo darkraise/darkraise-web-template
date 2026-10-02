@@ -78,7 +78,7 @@ describe("severity pairs", () => {
     const body = bodyOf(BANNER, variant)
     expect(body).toContain(`--banner-subtle: var(--${status}-subtle);`)
     expect(body).toContain(`--banner-edge: var(--${status}-edge);`)
-    expect(body).toContain(`--banner-text: var(--${status}-text);`)
+    expect(body).not.toContain("--banner-text")
     expect(body).toContain("background-color: hsl(var(--banner-subtle));")
     expect(body).toContain("border-left-color: hsl(var(--banner-edge));")
     expect(body).not.toContain("background-image")

@@ -76,7 +76,7 @@ export const WithForm: Story = {
   ),
 }
 
-export const SurfaceIntensity: Story = {
+export const Surface: Story = {
   render: () => (
     <div className="bg-background flex flex-wrap gap-4 p-6">
       {(["card", "page", "muted", "none"] as const).map((value) => (

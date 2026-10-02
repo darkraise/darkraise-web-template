@@ -146,9 +146,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
   const { axes } = config.switcher
 
   // Presets can declare `hiddenCommonAxes` to hide common-axis pickers
-  // they conceptually take over with their own preset-specific axes
-  // (e.g. Glass hides the two intensity axes because its fog recipe
-  // reinterprets the same surfaces).
+  // they conceptually take over with their own preset-specific axes.
   const hiddenCommonAxes = activePreset.hiddenCommonAxes ?? []
   const isCommonAxisHidden = (name: string): boolean =>
     (hiddenCommonAxes as readonly string[]).includes(name)

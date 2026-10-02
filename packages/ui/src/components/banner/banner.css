@@ -4,8 +4,8 @@
      * via --radius-lg → --radius. */
     @apply flex items-center gap-3 rounded-lg border px-4 py-2 text-sm;
     /* No-op under Default (--backdrop-filter: none); under Glass the
-     * banner picks up the preset's blur so the muted/tinted wash reads as
-     * frosted instead of flat translucent. */
+     * banner picks up the preset's blur behind its muted or opaque status
+     * fill. */
     -webkit-backdrop-filter: var(--backdrop-filter);
     backdrop-filter: var(--backdrop-filter);
   }
@@ -22,22 +22,18 @@
   .dr-banner[data-variant="info"] {
     --banner-subtle: var(--info-subtle);
     --banner-edge: var(--info-edge);
-    --banner-text: var(--info-text);
   }
   .dr-banner[data-variant="success"] {
     --banner-subtle: var(--success-subtle);
     --banner-edge: var(--success-edge);
-    --banner-text: var(--success-text);
   }
   .dr-banner[data-variant="warning"] {
     --banner-subtle: var(--warning-subtle);
     --banner-edge: var(--warning-edge);
-    --banner-text: var(--warning-text);
   }
   .dr-banner[data-variant="destructive"] {
     --banner-subtle: var(--destructive-subtle);
     --banner-edge: var(--destructive-edge);
-    --banner-text: var(--destructive-text);
   }
   /* All four severity variants share the same shape: a 4px left rail at
    * full accent saturation (Alert's convention), the neutral 1px frame on
