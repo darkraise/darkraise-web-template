@@ -284,8 +284,9 @@ describe("solveSteps ramps", () => {
       )
         strict++
     }
-    // Amber, yellow and lime keep a bright ink-label fill at the sRGB gamut
-    // edge, where vivid cannot add chroma; 13 of 18 measured on 2026-10-02.
+    // Orange, yellow, emerald, teal and cyan miss, mostly at the fill and link
+    // text, which are solved for label and text contrast: at that lightness
+    // vivid has no more chroma in sRGB. 13 of 18 measured on 2026-10-02.
     expect(strict).toBeGreaterThanOrEqual(13)
   })
 
