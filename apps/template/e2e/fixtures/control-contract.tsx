@@ -138,7 +138,7 @@ function Controls() {
         <DateInput aria-label="Date" />
       </div>
       <div data-probe="number-input" style={{ width: 160 }}>
-        <NumberInput defaultValue="1">
+        <NumberInput defaultValue={1}>
           <NumberInputControl>
             <NumberInputField aria-label="Quantity" />
             <NumberInputTriggerGroup>

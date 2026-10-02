@@ -33,7 +33,7 @@ function hslToLuminance(token: string): number | null {
     const p = 2 * l - q
     rgb = [hue(p, q, h + 1 / 3), hue(p, q, h), hue(p, q, h - 1 / 3)]
   }
-  const [r, g, b] = rgb.map((c) =>
+  const [r = 0, g = 0, b = 0] = rgb.map((c) =>
     c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4,
   )
   return 0.2126 * r + 0.7152 * g + 0.0722 * b

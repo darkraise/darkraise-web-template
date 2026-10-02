@@ -59,7 +59,6 @@ test.use({
   viewport: VIEWPORT,
   timezoneId: "UTC",
   locale: "en-US",
-  reducedMotion: "reduce",
 })
 
 // One font URL can take three 15s attempts and the font poll waits up to 30s,

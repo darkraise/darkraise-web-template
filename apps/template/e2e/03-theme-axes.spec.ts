@@ -293,7 +293,9 @@ test.describe("background style axis", () => {
       scales.push(Number(await readToken(page, "--canvas-blob-scale")))
     }
     for (let i = 1; i < scales.length; i++) {
-      expect(scales[i]).toBeGreaterThan(scales[i - 1])
+      expect(scales[i]).toBeGreaterThan(
+        scales[i - 1] ?? Number.POSITIVE_INFINITY,
+      )
     }
   })
 
@@ -334,7 +336,9 @@ test.describe("density axis", () => {
       values.push(Number.parseFloat(await readToken(page, "--btn-px")))
     }
     for (let i = 1; i < values.length; i++) {
-      expect(values[i]).toBeGreaterThan(values[i - 1])
+      expect(values[i]).toBeGreaterThan(
+        values[i - 1] ?? Number.POSITIVE_INFINITY,
+      )
     }
   })
 })
@@ -358,7 +362,9 @@ test.describe("font size axis", () => {
       values.push(Number.parseFloat(await readToken(page, "--text-base")))
     }
     for (let i = 1; i < values.length; i++) {
-      expect(values[i]).toBeGreaterThan(values[i - 1])
+      expect(values[i]).toBeGreaterThan(
+        values[i - 1] ?? Number.POSITIVE_INFINITY,
+      )
     }
   })
 })
