@@ -23,8 +23,13 @@ Breaking: `PaginationLink` marks the current page with `data-active="true"` and 
 
 Breaking: `TableHead` and `TableCell` take `align?: "start" | "center" | "end"` (type `TableCellAlign`), rendered as `data-align` and styled with logical `text-align`. They no longer pass the HTML `align` attribute (`"left" | "right" | …`) to the DOM; replace `align="right"` with `align="end"`. `darkraise-ui/data-table` also augments `@tanstack/react-table`'s `ColumnMeta` with `align?: TableCellAlign`; an app that declares its own `align` on `ColumnMeta` with a different type must drop that declaration or switch to `DataTableColumnMeta`, and a column whose `meta.align` is `"left"` or `"right"` takes no alignment.
 
+Breaking: every axis of `ThemeSettings` is optional, and `onChange` and a persistence adapter's `save` receive only the axes the user has set. An absent axis means the active preset's or the config's default applies. Adapters that read `settings.mode` or any other axis must handle `undefined`; `load` may return the same partial shape.
+
 ### Added
 
+- `darkraise-ui/vite` exports `darkraisePrerender()`, a Vite plugin that injects the theme pre-render script. Before the app loads it restores the stored mode, every attribute axis and the last painted token set, so returning users see their theme on first paint. Add it to `vite.config.ts` and delete any hand-written theme script from `index.html`. `vite` is an optional peer dependency (`>=6.0.0`).
+- `useTheme().setAxis(key, value)` sets any theme axis by name; the named setters remain.
+- `<html>` carries `data-accent` and `data-surface` with the active accent and neutral.
 - A `borderIntensity` theme axis — `subtle`, `balanced`, `strong`, `bold` — shown in the theme panel's Depth group as **Border Intensity**. It moves `--border`, `--input`, `--border-subtle`, `--border-default`, `--border-strong` and `--sidebar-border` toward the page or toward the text colour in OKLCH lightness, keeping each border's own hue and chroma; a translucent border, such as dark glass's white hairline, has its alpha scaled instead. It runs after a preset's own tokens are merged, so it applies under every preset. Elements that rebind `--border` in CSS, such as the `.dr-surface` utility, keep their own border.
 - `writeClipboardText` in `darkraise-ui/lib`: writes through the async Clipboard API and falls back to a selection copy when that API is missing or rejects.
 - `--primary-text` (utility `text-primary-text`): the accent as a text colour, solved to 4.5:1 against the page and the card. The kit's links and other accent-coloured text use it; apps that colour text with `text-primary` should move to `text-primary-text`, since `--primary` itself only clears 3:1.
@@ -96,6 +101,10 @@ Breaking: `TableHead` and `TableCell` take `align?: "start" | "center" | "end"` 
 
 ### Fixed
 
+- Synced theme payloads are validated: unknown axes, invalid values and preset axes of removed presets (such as `scifi`) are dropped instead of being applied and saved again.
+- The pre-hydration `:root` block declares every token the engine emits, including the sidebar text tokens, so the first paint is a complete light theme.
+- Menubar content plays its exit animation when it closes.
+- `create-darkraise-ui` offers all 18 accents and 12 neutrals; it listed 17 accents and only `slate`.
 - Dropdown, context-menu and menubar content and their submenus no longer draw the browser's default focus outline when the menu container takes focus without a prior click, as it does with `defaultOpen`. Focused items keep their own indicator.
 - `Clipboard`, `useClipboard` and `JsonTreeView`'s copy buttons failed with "Failed to copy" outside a secure context. `navigator.clipboard` does not exist on plain HTTP, such as a dev server opened by LAN address, so every copy threw. They now go through `writeClipboardText`.
 - A scrolling shell region lost its edge under `inset`, `island` and `floating`. Its 1px edge was an inset `box-shadow`, which paints beneath the region's children, so content scrolled toward the edge covered it. Detached regions now draw a real 1px border, which stays above scrolled content. `--shell-region-border` accordingly holds the border colour rather than a shadow.
