@@ -8,6 +8,7 @@ import { globSync, readFileSync } from "node:fs"
 const OWNERS = new Set([
   "src/styles/theme.css",
   "src/theme/theme-provider/ThemeProvider.tsx",
+  "src/theme/axes/registry.ts",
 ])
 
 function withoutComments(source: string): string {
