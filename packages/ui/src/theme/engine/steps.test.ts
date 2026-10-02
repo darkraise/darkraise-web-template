@@ -108,12 +108,13 @@ describe("solveSteps floors", () => {
 
   it("every dark chroma step keeps every floor", () => {
     const misses: string[] = []
-    for (const accent of ACCENTS)
-      for (const chroma of ["calm", "vivid"] as DarkAccentChroma[])
-        for (const m of solveSteps(
-          input(accent, "zinc", "dark", { darkAccentChroma: chroma }),
-        ).misses)
-          misses.push(`${accent}/${chroma}: ${m.step}`)
+    for (const accent of [...ACCENTS, "neutral"])
+      for (const glass of [false, true])
+        for (const chroma of ["calm", "vivid"] as DarkAccentChroma[])
+          for (const m of solveSteps(
+            input(accent, "zinc", "dark", { darkAccentChroma: chroma, glass }),
+          ).misses)
+            misses.push(`${accent}/${chroma}/glass=${glass}: ${m.step}`)
     expect(misses).toEqual([])
   })
 })
