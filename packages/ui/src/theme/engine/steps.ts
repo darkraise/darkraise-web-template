@@ -315,7 +315,9 @@ function cacheKey(input: SolveInput): string {
     input.contrast,
     input.darkAccentChroma,
     input.tintWithAccent,
-    gradient ? `${gradient.surfaceHue}/${gradient.intensity}/${gradient.strip}` : "solid",
+    gradient
+      ? `${gradient.surfaceHue}/${gradient.intensity}/${gradient.strip}`
+      : "solid",
     input.pageSaturationCap,
     input.glass,
     status.destructive[500],
@@ -403,7 +405,11 @@ function solve(input: SolveInput): Steps {
   const page = n[0]
   const card = n[1]
   if (contrastRatio(page, card) < pageFloor)
-    misses.push({ step: "neutral-2", ratio: contrastRatio(page, card), target: pageFloor })
+    misses.push({
+      step: "neutral-2",
+      ratio: contrastRatio(page, card),
+      target: pageFloor,
+    })
   const pos = NEUTRAL_POS[mode]
   const planeBase = mode === "light" ? pagePos : cardPos
   for (const i of [2, 3, 4]) n[i] = neutralAt(planeBase + (pos[i] as number))
@@ -470,7 +476,11 @@ function solve(input: SolveInput): Steps {
   )
   const onRest = quietestClearing(neutralAt(6), textGrounds, TEXT, mode)
   if (!onPage.ok || !onRest.ok)
-    misses.push({ step: "neutral-11", ratio: 0, target: SECONDARY_TEXT_ON_PAGE })
+    misses.push({
+      step: "neutral-11",
+      ratio: 0,
+      target: SECONDARY_TEXT_ON_PAGE,
+    })
   n[10] =
     contrastRatio(onPage.value, page) >= contrastRatio(onRest.value, page)
       ? onPage.value
@@ -503,7 +513,10 @@ function solve(input: SolveInput): Steps {
       p[i] =
         mode === "light"
           ? place(ppos[i] as number)
-          : darkTint(accent, i === 0 ? (ppos[0] as number) : cardPos + (ppos[i] as number))
+          : darkTint(
+              accent,
+              i === 0 ? (ppos[0] as number) : cardPos + (ppos[i] as number),
+            )
     p[5] = repair(
       "primary-6",
       place((ppos[5] as number) + edgeShift),
@@ -513,7 +526,9 @@ function solve(input: SolveInput): Steps {
     p[6] = repair("primary-7", place(ppos[6] as number), edgeGrounds, MARK)
     const markPos = input.glass ? GLASS_PRIMARY_POS[mode] : (ppos[7] as number)
     p[7] = repair("primary-8", place(markPos), edgeGrounds, MARK)
-    const base = place(input.glass ? GLASS_PRIMARY_POS[mode] : (ppos[8] as number))
+    const base = place(
+      input.glass ? GLASS_PRIMARY_POS[mode] : (ppos[8] as number),
+    )
     // Dark fills are solved down to a white label, which takes a hue whose
     // mid-tone is very light (amber, yellow, lime) to a brown that no longer
     // reads as the hue; those keep their bright fill under an ink label.

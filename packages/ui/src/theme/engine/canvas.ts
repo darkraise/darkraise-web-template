@@ -10,13 +10,14 @@ import { composite } from "@theme/engine/oklch"
  * `null` means uncapped — the palette's own value, which is what preserving the
  * pre-axis appearance requires.
  */
-export const CANVAS_SATURATION_CAP: Record<BackgroundIntensity, number | null> = {
-  neutral: 0,
-  subtle: 8,
-  balanced: 16,
-  vivid: null,
-  intense: null,
-}
+export const CANVAS_SATURATION_CAP: Record<BackgroundIntensity, number | null> =
+  {
+    neutral: 0,
+    subtle: 8,
+    balanced: 16,
+    vivid: null,
+    intense: null,
+  }
 
 /** `--canvas-blob-scale` per step: how loud the gradient canvas's blobs paint. */
 export const CANVAS_BLOB_SCALE: Record<BackgroundIntensity, number> = {

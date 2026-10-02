@@ -38,7 +38,7 @@ function input(
     accent:
       accent === "neutral"
         ? null
-        : (accentColors as Record<string, ColorScale>)[accent] ?? null,
+        : ((accentColors as Record<string, ColorScale>)[accent] ?? null),
     neutral: scale,
     contrast: "standard",
     darkAccentChroma: "standard",
@@ -79,7 +79,11 @@ describe("solveSteps floors", () => {
                     contrast,
                     glass,
                     gradient: background
-                      ? { surfaceHue: scale[500], intensity: background, strip: !glass }
+                      ? {
+                          surfaceHue: scale[500],
+                          intensity: background,
+                          strip: !glass,
+                        }
                       : null,
                   }),
                 )
@@ -143,7 +147,9 @@ describe("solveSteps ramps", () => {
     for (const mode of MODES)
       for (const contrast of CONTRASTS)
         for (const neutral of NEUTRALS) {
-          const { neutral: n } = solveSteps(input("blue", neutral, mode, { contrast }))
+          const { neutral: n } = solveSteps(
+            input("blue", neutral, mode, { contrast }),
+          )
           for (let i = 2; i <= 4; i++)
             expect(
               Math.abs(
@@ -191,8 +197,9 @@ describe("solveSteps ramps", () => {
         [7, 8, 10].map(
           (i) =>
             hslStringToOklch(
-              solveSteps(input(accent, "zinc", "dark", { darkAccentChroma: step }))
-                .primary[i] as string,
+              solveSteps(
+                input(accent, "zinc", "dark", { darkAccentChroma: step }),
+              ).primary[i] as string,
             ).C,
         )
       const [calm, standard, vivid] = (
@@ -204,7 +211,13 @@ describe("solveSteps ramps", () => {
         expect(standard[i]).toBeGreaterThanOrEqual((calm[i] as number) - 0.005)
         expect(vivid[i]).toBeGreaterThanOrEqual((standard[i] as number) - 0.005)
       }
-      if ([0, 1, 2].every((i) => calm[i]! < standard[i]! && standard[i]! < vivid[i]!))
+      if (
+        [0, 1, 2].every(
+          (i) =>
+            (calm[i] as number) < (standard[i] as number) &&
+            (standard[i] as number) < (vivid[i] as number),
+        )
+      )
         strict++
     }
     // Amber, yellow and lime keep a bright ink-label fill at the sRGB gamut
@@ -214,7 +227,9 @@ describe("solveSteps ramps", () => {
 
   it("aliases the neutral accent onto the neutral ramp", () => {
     for (const mode of MODES) {
-      const { neutral: n, primary: p } = solveSteps(input("neutral", "zinc", mode))
+      const { neutral: n, primary: p } = solveSteps(
+        input("neutral", "zinc", mode),
+      )
       expect(p.slice(0, 7)).toEqual(n.slice(0, 7))
       for (const i of [7, 8, 10, 11]) expect(p[i]).toBe(n[11])
       expect(p[9]).not.toBe(p[8])
@@ -258,7 +273,9 @@ describe("solveSteps status and chart", () => {
       for (const accent of ["blue", "red"]) {
         const { status } = solveSteps(input(accent, "zinc", mode))
         for (const pair of Object.values(status))
-          expect(contrastRatio(pair.solid, pair.solidForeground)).toBeGreaterThanOrEqual(4.6)
+          expect(
+            contrastRatio(pair.solid, pair.solidForeground),
+          ).toBeGreaterThanOrEqual(4.6)
       }
   })
 
@@ -268,8 +285,12 @@ describe("solveSteps status and chart", () => {
         for (const accent of ["blue", "red"]) {
           const { chart, status } = solveSteps(input(accent, neutral, mode))
           for (const pair of Object.values(status)) {
-            expect(distance(chart[0] as string, pair.solid)).toBeGreaterThanOrEqual(0.1)
-            expect(distance(chart[0] as string, pair.text)).toBeGreaterThanOrEqual(0.1)
+            expect(
+              distance(chart[0] as string, pair.solid),
+            ).toBeGreaterThanOrEqual(0.1)
+            expect(
+              distance(chart[0] as string, pair.text),
+            ).toBeGreaterThanOrEqual(0.1)
           }
         }
   })
