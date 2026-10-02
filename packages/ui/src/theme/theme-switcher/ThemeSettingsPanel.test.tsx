@@ -169,6 +169,14 @@ describe("ThemeSettingsPanel", () => {
     }
   })
 
+  it("tags the neutral accent swatch so dark mode can outline it", () => {
+    renderPanel(<ThemeSettingsPanel layout="page" />)
+    expect(screen.getByTitle("Neutral (near-black)")).toHaveAttribute(
+      "data-value",
+      "neutral",
+    )
+  })
+
   it("names its axis sliders so they are reachable by role and name", () => {
     renderPanel(<ThemeSettingsPanel layout="page" />)
     // A four-value axis renders as a Slider carrying the axis name.

@@ -356,6 +356,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
                     : labels.themeOptions[color]
                 }
                 className="dr-theme-switcher-swatch"
+                data-value={color}
                 data-active={accentColor === color ? "true" : undefined}
                 style={{
                   backgroundColor: `hsl(${resolveAccentScale(color, surfaceColor)[color === "neutral" ? 900 : 500]})`,

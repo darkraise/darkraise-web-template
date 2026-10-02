@@ -73,6 +73,11 @@
     @apply border-foreground scale-110;
   }
 
+  [data-mode="dark"]
+    .dr-theme-switcher-swatch[data-value="neutral"]:not([data-active="true"]) {
+    border-color: hsl(var(--border-strong));
+  }
+
   .dr-theme-switcher-toggle-group {
     @apply grid gap-1;
   }
