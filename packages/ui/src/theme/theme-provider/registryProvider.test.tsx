@@ -1,25 +1,42 @@
 import { act, renderHook } from "@testing-library/react"
 import type { ReactNode } from "react"
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { ThemeProvider } from "./ThemeProvider"
 import { useTheme } from "@theme/useTheme"
-import {
-  TOKEN_CACHE_STORAGE_KEY,
-  readTokenCache,
-  tokenCacheId,
-} from "@theme/axes/tokenCache"
+import { readTokenCache } from "@theme/axes/tokenCache"
+import { buildPrerenderScript } from "@theme/axes/prerender"
 import type { ThemePersistenceAdapter } from "@theme/types"
 
-function mockMatchMedia(dark = false) {
+const root = document.documentElement
+
+function mockColorScheme(dark = false) {
+  const listeners = new Set<() => void>()
+  let current = dark
   vi.stubGlobal(
     "matchMedia",
     vi.fn((query: string) => ({
-      matches: dark,
+      get matches() {
+        return current
+      },
       media: query,
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
+      addEventListener: (_type: string, listener: () => void) =>
+        listeners.add(listener),
+      removeEventListener: (_type: string, listener: () => void) =>
+        listeners.delete(listener),
     })),
   )
+  return {
+    setDark(next: boolean) {
+      current = next
+      for (const listener of listeners) listener()
+    },
+  }
+}
+
+// The pre-render script is the token cache's real consumer, so it checks the
+// cache id instead of a second call to the function that built it.
+function runPrerender() {
+  new Function(buildPrerenderScript())()
 }
 
 const wrap = ({ children }: { children: ReactNode }) => (
@@ -28,10 +45,15 @@ const wrap = ({ children }: { children: ReactNode }) => (
 
 beforeEach(() => {
   localStorage.clear()
-  document.documentElement.removeAttribute("data-accent")
-  document.documentElement.removeAttribute("data-surface")
-  document.documentElement.style.cssText = ""
-  mockMatchMedia()
+  for (const name of root.getAttributeNames()) root.removeAttribute(name)
+  root.style.cssText = ""
+  mockColorScheme()
+})
+
+afterEach(() => {
+  vi.useRealTimers()
+  vi.restoreAllMocks()
+  vi.unstubAllGlobals()
 })
 
 describe("ThemeProvider on the axis registry", () => {
@@ -50,10 +72,10 @@ describe("ThemeProvider on the axis registry", () => {
 
   it("stamps data-accent and data-surface", () => {
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
-    expect(document.documentElement.getAttribute("data-accent")).toBe("blue")
-    expect(document.documentElement.getAttribute("data-surface")).toBe("slate")
+    expect(root.getAttribute("data-accent")).toBe("blue")
+    expect(root.getAttribute("data-surface")).toBe("slate")
     act(() => result.current.setAccentColor("violet"))
-    expect(document.documentElement.getAttribute("data-accent")).toBe("violet")
+    expect(root.getAttribute("data-accent")).toBe("violet")
   })
 
   it("keeps every change when several setters run in one batch", () => {
@@ -77,17 +99,15 @@ describe("ThemeProvider on the axis registry", () => {
     warn.mockRestore()
   })
 
-  it("caches the painted tokens under the current settings", () => {
+  it("caches the painted tokens where the pre-render script finds them", () => {
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
     act(() => result.current.setAccentColor("rose"))
-    const cache = readTokenCache(localStorage)
-    expect(cache?.id).toBe(
-      tokenCacheId((k) => localStorage.getItem(k), "light"),
-    )
-    expect(cache?.tokens["--primary"]).toBe(
-      document.documentElement.style.getPropertyValue("--primary"),
-    )
-    expect(localStorage.getItem(TOKEN_CACHE_STORAGE_KEY)).not.toBeNull()
+    const painted = root.style.getPropertyValue("--primary")
+    expect(painted).not.toBe("")
+    expect(readTokenCache(localStorage)?.tokens["--primary"]).toBe(painted)
+    root.style.cssText = ""
+    runPrerender()
+    expect(root.style.getPropertyValue("--primary")).toBe(painted)
   })
 
   it("sanitises a synced payload and drops dead preset axes", async () => {
@@ -137,6 +157,19 @@ describe("ThemeProvider on the axis registry", () => {
         glass: { opacity: "medium", blur: "high" },
       },
     })
-    vi.useRealTimers()
+  })
+
+  it("repaints and re-caches when the system colour scheme changes", () => {
+    const scheme = mockColorScheme(false)
+    renderHook(() => useTheme(), { wrapper: wrap })
+    expect(root.getAttribute("data-mode")).toBe("light")
+    const light = root.style.getPropertyValue("--background")
+    act(() => scheme.setDark(true))
+    expect(root.getAttribute("data-mode")).toBe("dark")
+    const dark = root.style.getPropertyValue("--background")
+    expect(dark).not.toBe(light)
+    root.style.cssText = ""
+    runPrerender()
+    expect(root.style.getPropertyValue("--background")).toBe(dark)
   })
 })
