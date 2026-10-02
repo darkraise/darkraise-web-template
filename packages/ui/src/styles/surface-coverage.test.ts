@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest"
 import { readFileSync, readdirSync } from "node:fs"
 import { join } from "node:path"
 
-// The surfaceIntensity prop moves four fill tokens. A component that paints a
+// The `surface` prop moves four fill tokens. A component that paints a
 // surface from the raw `--card` / `--popover` token instead of the fill bypasses
 // the prop silently: it looks right at the default step and stops responding at
 // every other one.
@@ -27,7 +27,7 @@ function withoutComments(css: string): string {
   return css.replace(/\/\*[\s\S]*?\*\//g, "")
 }
 
-describe("surfaceIntensity coverage", () => {
+describe("surface prop coverage", () => {
   it("routes the card and popover utilities through the washable fills", () => {
     const theme = readFileSync("src/styles/theme.css", "utf8")
     expect(theme).toMatch(/--color-card:\s*var\(--surface-card-fill\)/)

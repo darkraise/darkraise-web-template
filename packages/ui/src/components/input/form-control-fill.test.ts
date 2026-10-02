@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
 
-// Form controls are deliberately outside the surface-intensity prop: fields
+// Form controls are deliberately outside the `surface` prop: fields
 // should hold still while panels move around them. They therefore must not
 // paint through `bg-card`, whose --color-card now carries the wash.
 //
