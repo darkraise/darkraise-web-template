@@ -40,7 +40,7 @@ import {
   type PresetName,
   type ThemePreset,
 } from "@theme/presets"
-import { accentColors } from "@theme/palettes/accentColors"
+import { resolveAccentScale } from "@theme/engine/generateTokens"
 import { surfaceColors } from "@theme/palettes/surfaceColors"
 import { useUiLabels } from "@labels"
 import { AxisControl } from "./AxisControl"
@@ -352,11 +352,15 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
               <button
                 key={color}
                 type="button"
-                title={labels.themeOptions[color]}
+                title={
+                  color === "neutral"
+                    ? labels.themeOptions.neutralAccent
+                    : labels.themeOptions[color]
+                }
                 className="dr-theme-switcher-swatch"
                 data-active={accentColor === color ? "true" : undefined}
                 style={{
-                  backgroundColor: `hsl(${accentColors[color][500]})`,
+                  backgroundColor: `hsl(${resolveAccentScale(color, surfaceColor)[color === "neutral" ? 900 : 500]})`,
                 }}
                 onClick={() => setAccentColor(color)}
               />

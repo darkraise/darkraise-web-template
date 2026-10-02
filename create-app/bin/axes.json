@@ -29,7 +29,8 @@
       "purple",
       "fuchsia",
       "pink",
-      "rose"
+      "rose",
+      "neutral"
     ],
     "default": "blue",
     "storageKey": "theme-accent",

@@ -20,6 +20,7 @@ export const ACCENT_COLORS = [
   "fuchsia",
   "pink",
   "rose",
+  "neutral",
 ] as const
 
 // The twelve neutral ramps the kit registers, mirroring SURFACE_COLORS in

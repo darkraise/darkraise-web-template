@@ -111,6 +111,12 @@
     @apply text-primary-text underline-offset-4 hover:underline;
   }
 
+  /* Under the neutral accent a link shares the text colour, so the underline
+     is what marks it (WCAG 1.4.1). */
+  [data-accent="neutral"] .dr-btn[data-variant="link"] {
+    text-decoration-line: underline;
+  }
+
   /* sizes
    * A fixed border-box height rather than padding around the label, so
    * every variant and every label lands on one line in a toolbar. The sm

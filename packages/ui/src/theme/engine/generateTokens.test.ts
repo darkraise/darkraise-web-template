@@ -1008,3 +1008,22 @@ describe("accentIntensity reach", () => {
     expect(calm["--chart-1"]).toBe(intense["--chart-1"])
   })
 })
+
+describe("neutral accent", () => {
+  for (const mode of ["light", "dark"] as const)
+    it(`puts the primary on neutral step 12 in ${mode}`, () => {
+      const t = generateTokens({
+        accentColor: "neutral",
+        surfaceColor: "zinc",
+        preset: "default",
+        backgroundStyle: "solid",
+        mode,
+        accentIntensity: "balanced",
+      })
+      expect(t["--primary"]).toBe(t["--neutral-12"])
+      expect(t["--primary-fill"]).toBe(t["--neutral-12"])
+      expect(t["--primary-text"]).toBe(t["--neutral-12"])
+      for (let i = 1; i <= 7; i++)
+        expect(t[`--primary-${i}`]).toBe(t[`--neutral-${i}`])
+    })
+})

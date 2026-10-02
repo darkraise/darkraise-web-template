@@ -7,11 +7,13 @@ import {
   relativeLuminance,
 } from "./oklch"
 import { accentColors } from "@theme/palettes/accentColors"
-import { ACCENT_COLORS } from "@theme/types"
+import type { ChromaticAccent } from "@theme/types"
+
+const CHROMATIC = Object.keys(accentColors) as ChromaticAccent[]
 
 describe("oklch", () => {
   it("round-trips every accent shade within one HSL unit per channel", () => {
-    for (const name of ACCENT_COLORS) {
+    for (const name of CHROMATIC) {
       const original = accentColors[name][500]
       const result = oklchToHslString(hslStringToOklch(original))
 
@@ -40,7 +42,7 @@ describe("oklch", () => {
     // Regression guard: omitting the gamma encode on the OKLCH-to-sRGB path
     // produces silently-too-dark output (L lands near 0.42 for a 0.55
     // request) while every other assertion still passes.
-    for (const name of ACCENT_COLORS) {
+    for (const name of CHROMATIC) {
       const { h } = hslStringToOklch(accentColors[name][500])
       const encoded = oklchToHslString({ L: 0.55, C: 0.19, h })
       // The tolerance is set by the token format, not by the math. These

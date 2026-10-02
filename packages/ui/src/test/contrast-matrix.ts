@@ -1,6 +1,6 @@
-import { accentColors } from "@theme/palettes/accentColors"
 import {
   generateTokens,
+  resolveAccentScale,
   resolveNeutralScale,
 } from "@theme/engine/generateTokens"
 import { presets, type PresetName } from "@theme/presets"
@@ -105,7 +105,7 @@ export function finalTokens(combo: ThemeCombo): Record<string, string> {
           surfaceColor: combo.surfaceColor,
           backgroundStyle: "solid",
           mode: combo.mode,
-          accent: accentColors[combo.accentColor],
+          accent: resolveAccentScale(combo.accentColor, combo.surfaceColor),
           surface: resolveNeutralScale(combo.surfaceColor),
           neutral: resolveNeutralScale(combo.surfaceColor),
           outerGlow: "none",

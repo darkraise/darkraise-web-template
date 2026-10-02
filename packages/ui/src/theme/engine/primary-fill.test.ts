@@ -40,7 +40,7 @@ const INK_LABELLED = {
     "teal",
     "yellow",
   ],
-  dark: ["amber", "lime", "yellow"],
+  dark: ["amber", "lime", "neutral", "yellow"],
 } as const
 
 describe("primary fill and label", () => {

@@ -18,6 +18,7 @@ export const viTheme: Record<keyof typeof themeMessages, string> = {
   fuchsia: "hồng tím",
   pink: "hồng",
   rose: "hồng đỏ",
+  neutralAccent: "Trung tính (gần đen)",
   slate: "xám đá",
   gray: "xám",
   cool: "lạnh",

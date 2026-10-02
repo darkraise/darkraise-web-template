@@ -11,6 +11,7 @@ import type {
 import {
   applyBorderIntensity,
   generateTokens,
+  resolveAccentScale,
   resolveNeutralScale,
 } from "@theme/engine/generateTokens"
 import {
@@ -19,7 +20,6 @@ import {
   type PresetName,
   type ThemePreset,
 } from "@theme/presets"
-import { accentColors } from "@theme/palettes/accentColors"
 import { ThemeContext } from "@theme/themeContext"
 import { themeConfig, type ThemeConfig } from "@theme/themeConfig"
 import { useDebouncedCallback } from "@hooks/useDebouncedCallback"
@@ -323,7 +323,10 @@ export function ThemeProvider({
             surfaceColor: current.surfaceColor,
             backgroundStyle: current.backgroundStyle,
             mode: resolved,
-            accent: accentColors[current.accentColor],
+            accent: resolveAccentScale(
+              current.accentColor,
+              current.surfaceColor,
+            ),
             surface: resolveNeutralScale(current.surfaceColor),
             neutral: resolveNeutralScale(current.surfaceColor),
             outerGlow: current.outerGlow as GlowLevel,

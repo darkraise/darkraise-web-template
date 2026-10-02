@@ -25,8 +25,10 @@ export const ACCENT_COLORS = [
   "fuchsia",
   "pink",
   "rose",
+  "neutral",
 ] as const
 export type AccentColor = (typeof ACCENT_COLORS)[number]
+export type ChromaticAccent = Exclude<AccentColor, "neutral">
 
 // The twelve neutral ramps registered in palettes/surfaceColors.ts. Spelled
 // out rather than derived from the registry because that module imports this

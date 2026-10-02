@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest"
 import { accentColors } from "@theme/palettes/accentColors"
-import { ACCENT_COLORS } from "@theme/types"
+import { ACCENT_COLORS, type ChromaticAccent } from "@theme/types"
+
+const CHROMATIC = Object.keys(accentColors) as ChromaticAccent[]
 
 const STEPS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950] as const
 
@@ -13,9 +15,10 @@ function hue(hsl: string): number {
 }
 
 describe("accent ramps", () => {
-  it("registers a scale for every name in ACCENT_COLORS", () => {
-    const missing = ACCENT_COLORS.filter((name) => !accentColors[name])
-    expect(missing).toEqual([])
+  it("registers a scale for every chromatic name in ACCENT_COLORS", () => {
+    const chromatic = ACCENT_COLORS.filter((name) => name !== "neutral")
+    expect(CHROMATIC).toHaveLength(18)
+    expect([...CHROMATIC].sort()).toEqual([...chromatic].sort())
   })
 
   it("offers coral", () => {
@@ -34,7 +37,7 @@ describe("accent ramps", () => {
     expect(names.indexOf("orange")).toBe(names.indexOf("coral") + 1)
   })
 
-  it.each(ACCENT_COLORS)("gives %s all eleven well-formed stops", (name) => {
+  it.each(CHROMATIC)("gives %s all eleven well-formed stops", (name) => {
     for (const step of STEPS) {
       expect(accentColors[name][step], `${name}[${step}]`).toMatch(
         /^\d+(\.\d+)? \d+(\.\d+)?% \d+(\.\d+)?%$/,
@@ -42,7 +45,7 @@ describe("accent ramps", () => {
     }
   })
 
-  it.each(ACCENT_COLORS)("keeps %s's lightness monotonic", (name) => {
+  it.each(CHROMATIC)("keeps %s's lightness monotonic", (name) => {
     // A reversed stop is invisible in a swatch grid but produces a fill darker
     // than its own base at exactly one intensity.
     const ls = STEPS.map((step) => lightness(accentColors[name][step]))

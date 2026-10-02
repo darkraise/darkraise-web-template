@@ -49,6 +49,16 @@ export function resolveNeutralScale(surfaceColor: SurfaceColor): ColorScale {
   return surfaceColors[surfaceColor]
 }
 
+/** The scale an accent's stops are read from; `neutral` reads the chosen neutral. */
+export function resolveAccentScale(
+  accentColor: AccentColor,
+  surfaceColor: SurfaceColor,
+): ColorScale {
+  return accentColor === "neutral"
+    ? resolveNeutralScale(surfaceColor)
+    : accentColors[accentColor]
+}
+
 function resolveSfHueTokens(
   neutral: ColorScale,
   backgroundStyle: BackgroundStyle,
@@ -364,7 +374,7 @@ export function generateTokens(
     backgroundIntensity = "balanced",
   } = input
 
-  const accent: ColorScale = accentColors[accentColor]
+  const accent = resolveAccentScale(accentColor, surfaceColor)
   const neutral = resolveNeutralScale(surfaceColor)
   const dark = mode === "dark"
   const glass = preset === "glass"
@@ -380,7 +390,7 @@ export function generateTokens(
 
   const steps = solveSteps({
     mode,
-    accent,
+    accent: accentColor === "neutral" ? null : accent,
     neutral,
     contrast: "standard",
     darkAccentChroma: CHROMA_FOR_INTENSITY[accentIntensity],

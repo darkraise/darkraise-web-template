@@ -1,4 +1,4 @@
-import type { AccentColor, ColorScale } from "@theme/types"
+import type { ChromaticAccent, ColorScale } from "@theme/types"
 
 const red: ColorScale = {
   50: "0 86% 97%",
@@ -256,7 +256,7 @@ const rose: ColorScale = {
   950: "343 88% 16%",
 }
 
-export const accentColors: Record<AccentColor, ColorScale> = {
+export const accentColors: Record<ChromaticAccent, ColorScale> = {
   red,
   coral,
   orange,

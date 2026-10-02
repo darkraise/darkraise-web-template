@@ -9,7 +9,7 @@ import {
 describe("contrast matrix support", () => {
   it("enumerates every reachable combination once", () => {
     const combos = reachableCombos()
-    expect(combos).toHaveLength(18 * 12 * 10 * 5)
+    expect(combos).toHaveLength(19 * 12 * 10 * 5)
     expect(new Set(combos.map(comboName)).size).toBe(combos.length)
     expect(
       combos

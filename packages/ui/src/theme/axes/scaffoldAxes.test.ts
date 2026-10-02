@@ -8,10 +8,11 @@ describe("scaffold axes.json", () => {
     expect(committed).toBe(`${JSON.stringify(scaffoldAxes(), null, 2)}\n`)
   })
 
-  it("lists all 18 accents and the 12 neutral surfaces", () => {
+  it("lists all 19 accents and the 12 neutral surfaces", () => {
     const axes = scaffoldAxes()
-    expect(axes.accentColor?.values).toHaveLength(18)
+    expect(axes.accentColor?.values).toHaveLength(19)
     expect(axes.accentColor?.values).toContain("coral")
+    expect(axes.accentColor?.values.at(-1)).toBe("neutral")
     expect(axes.surfaceColor?.values).toHaveLength(12)
     expect(axes.surfaceColor?.values).toContain("zinc")
   })
