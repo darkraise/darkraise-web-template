@@ -197,35 +197,36 @@ describe("useTheme", () => {
     expect(result.current.fontSize).toBe("medium")
   })
 
-  // The vibrancy axis is a dark-mode-only lever, and the token it moves is
-  // --primary-fill. Many accents' upper steps share one fill at their 4.5:1
-  // label point (blue's upper three do), which would let a missed repaint pass;
-  // violet's four steps give four fills.
-  it("repaints accent tokens when the vibrancy axis changes in dark mode", () => {
+  // The chroma axis is a dark-mode-only lever, and the tokens it moves are
+  // --primary-fill and --primary.
+  it("repaints accent tokens when the dark accent chroma changes", () => {
     const { result } = renderHook(() => useTheme(), { wrapper })
     act(() => result.current.setMode("dark"))
     act(() => result.current.setAccentColor("violet"))
-    const read = () =>
+    const fills = () =>
       document.documentElement.style.getPropertyValue("--primary-fill")
+    const marks = () =>
+      document.documentElement.style.getPropertyValue("--primary")
 
-    const balanced = read()
-    act(() => result.current.setAccentIntensity("intense"))
-    const intense = read()
-    act(() => result.current.setAccentIntensity("calm"))
-    const calm = read()
+    const standard = [fills(), marks()]
+    act(() => result.current.setDarkAccentChroma("vivid"))
+    const vivid = [fills(), marks()]
+    act(() => result.current.setDarkAccentChroma("calm"))
+    const calm = [fills(), marks()]
 
-    expect(new Set([balanced, intense, calm]).size).toBe(3)
+    expect(new Set([standard[0], vivid[0], calm[0]]).size).toBe(3)
+    expect(new Set([standard[1], vivid[1], calm[1]]).size).toBe(3)
   })
 
-  it("honours a stored vibrancy on first paint without a setter call", () => {
+  it("honours a stored dark accent chroma on first paint without a setter call", () => {
     localStorage.setItem("mode", "dark")
-    localStorage.setItem("theme-accent-intensity", "calm")
+    localStorage.setItem("theme-dark-accent-chroma", "calm")
     const { result } = renderHook(() => useTheme(), { wrapper })
-    expect(result.current.accentIntensity).toBe("calm")
+    expect(result.current.darkAccentChroma).toBe("calm")
     const read = () =>
       document.documentElement.style.getPropertyValue("--primary-fill")
     const calm = read()
-    act(() => result.current.setAccentIntensity("balanced"))
+    act(() => result.current.setDarkAccentChroma("standard"))
     expect(calm).toBeTruthy()
     expect(calm).not.toBe(read())
   })

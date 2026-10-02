@@ -78,7 +78,9 @@ describe("--control-well-* tokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode,
-      accentIntensity: "balanced",
+      contrast: "standard",
+      darkAccentChroma: "standard",
+      tintWithAccent: false,
     })
 
   it("are emitted in both modes without any axis input", () => {

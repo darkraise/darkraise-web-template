@@ -9,12 +9,14 @@ import {
 describe("contrast matrix support", () => {
   it("enumerates every reachable combination once", () => {
     const combos = reachableCombos()
-    expect(combos).toHaveLength(19 * 12 * 10 * 5)
+    expect(combos).toHaveLength(19 * 12 * 14 * 5)
     expect(new Set(combos.map(comboName)).size).toBe(combos.length)
     expect(
       combos
         .filter((c) => c.preset !== "default")
-        .every((c) => c.accentIntensity === "balanced"),
+        .every(
+          (c) => c.contrast === "standard" && c.darkAccentChroma === "standard",
+        ),
     ).toBe(true)
   })
 
@@ -29,7 +31,9 @@ describe("contrast matrix support", () => {
       accentColor: "blue",
       surfaceColor: "slate",
       mode: "light",
-      accentIntensity: "balanced",
+      contrast: "standard",
+      darkAccentChroma: "standard",
+      tintWithAccent: false,
       preset: "default",
     } as const
     expect(
@@ -44,7 +48,9 @@ describe("contrast matrix support", () => {
       accentColor: "blue",
       surfaceColor: "slate",
       mode: "light",
-      accentIntensity: "balanced",
+      contrast: "standard",
+      darkAccentChroma: "standard",
+      tintWithAccent: false,
       backgroundIntensity: "balanced",
       preset: "glass",
     })

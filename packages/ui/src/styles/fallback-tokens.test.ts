@@ -44,7 +44,9 @@ const engine = generateTokens({
   preset: "default",
   backgroundStyle: "solid",
   mode: "light",
-  accentIntensity: "balanced",
+  contrast: "standard",
+  darkAccentChroma: "standard",
+  tintWithAccent: false,
 })
 const block = fallbackDeclarations()
 

@@ -64,7 +64,9 @@ const preview: Preview = {
         preset,
         backgroundStyle: "solid",
         mode,
-        accentVibrancy: "balanced",
+        contrast: "standard",
+        darkAccentChroma: "standard",
+        tintWithAccent: false,
       })
 
       for (const [key, value] of Object.entries(tokens)) {

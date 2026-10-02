@@ -1,14 +1,9 @@
 import { describe, it, expect } from "vitest"
 import { generateTokens, capCanvasSaturation } from "./generateTokens"
-import { accentColors } from "@theme/palettes/accentColors"
 import { surfaceColors } from "@theme/palettes/surfaceColors"
 import { contrastRatio } from "@theme/engine/oklch"
 import { themeConfig } from "@theme/themeConfig"
-import {
-  ACCENT_COLORS,
-  ACCENT_INTENSITIES,
-  BACKGROUND_INTENSITIES,
-} from "@theme/types"
+import { ACCENT_COLORS, BACKGROUND_INTENSITIES } from "@theme/types"
 import type {
   ColorScale,
   AccentColor,
@@ -24,7 +19,9 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
-      accentIntensity: "balanced",
+      contrast: "standard",
+      darkAccentChroma: "standard",
+      tintWithAccent: false,
     })
 
     const expectedKeys = [
@@ -86,7 +83,9 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
-      accentIntensity: "balanced",
+      contrast: "standard",
+      darkAccentChroma: "standard",
+      tintWithAccent: false,
     })
 
     const glassOnlyKeys = [
@@ -121,7 +120,9 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
-      accentIntensity: "balanced",
+      contrast: "standard",
+      darkAccentChroma: "standard",
+      tintWithAccent: false,
     })
     const dark = generateTokens({
       accentColor: "blue",
@@ -129,7 +130,9 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "dark",
-      accentIntensity: "balanced",
+      contrast: "standard",
+      darkAccentChroma: "standard",
+      tintWithAccent: false,
     })
 
     expect(light["--primary"]).toBe("217 91% 60%")
@@ -143,7 +146,9 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
-      accentIntensity: "balanced",
+      contrast: "standard",
+      darkAccentChroma: "standard",
+      tintWithAccent: false,
     })
     expect(tokens["--focus-ring"]).toBeDefined()
     expect(tokens["--focus-ring"]).toMatch(/^\d+\s+\d+%\s+\d+%$/)
@@ -157,7 +162,9 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
-      accentIntensity: "balanced",
+      contrast: "standard",
+      darkAccentChroma: "standard",
+      tintWithAccent: false,
     })
     const darkTokens = generateTokens({
       accentColor: "blue",
@@ -165,7 +172,9 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "dark",
-      accentIntensity: "balanced",
+      contrast: "standard",
+      darkAccentChroma: "standard",
+      tintWithAccent: false,
     })
     // Derived from those shades, then raised where the shade itself could not
     // be seen: light blue-300 measured 1.58:1 against the page. The floor is
@@ -194,7 +203,9 @@ describe("generateTokens", () => {
         preset: "default",
         backgroundStyle: "solid",
         mode,
-        accentIntensity: "balanced",
+        contrast: "standard",
+        darkAccentChroma: "standard",
+        tintWithAccent: false,
       })
 
     // White is unreadable on the light accents: it measures 2.14:1 on amber
@@ -213,7 +224,9 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "dark",
-      accentIntensity: "balanced",
+      contrast: "standard",
+      darkAccentChroma: "standard",
+      tintWithAccent: false,
     })
 
     expect(tokens["--background"]).toBe("229 16% 5%")
@@ -233,7 +246,9 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "dark",
-      accentIntensity: "balanced",
+      contrast: "standard",
+      darkAccentChroma: "standard",
+      tintWithAccent: false,
     })
     expect(tokens["--border"]).not.toEqual(tokens["--muted"])
     expect(tokens["--border"]).not.toEqual(tokens["--secondary"])
@@ -251,7 +266,9 @@ describe("generateTokens", () => {
       accentColor: "blue",
       preset: "default",
       backgroundStyle: "solid",
-      accentIntensity: "balanced",
+      contrast: "standard",
+      darkAccentChroma: "standard",
+      tintWithAccent: false,
     } as const
 
     for (const mode of ["light", "dark"] as const) {
@@ -265,14 +282,16 @@ describe("generateTokens", () => {
     }
   })
 
-  it("accepts the renamed accentIntensity input", () => {
+  it("moves the dark primary with darkAccentChroma", () => {
     const calm = generateTokens({
       accentColor: "blue",
       surfaceColor: "slate",
       preset: "default",
       backgroundStyle: "solid",
       mode: "dark",
-      accentIntensity: "calm",
+      contrast: "standard",
+      darkAccentChroma: "calm",
+      tintWithAccent: false,
     })
     const vivid = generateTokens({
       accentColor: "blue",
@@ -280,9 +299,12 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "dark",
-      accentIntensity: "vivid",
+      contrast: "standard",
+      darkAccentChroma: "vivid",
+      tintWithAccent: false,
     })
     expect(calm["--primary-fill"]).not.toEqual(vivid["--primary-fill"])
+    expect(calm["--primary"]).not.toEqual(vivid["--primary"])
   })
 
   it("glass preset no longer emits scalar opacity/blur tokens (CSS-driven)", () => {
@@ -292,7 +314,9 @@ describe("generateTokens", () => {
       preset: "glass",
       backgroundStyle: "solid",
       mode: "light",
-      accentIntensity: "balanced",
+      contrast: "standard",
+      darkAccentChroma: "standard",
+      tintWithAccent: false,
     })
 
     // These tokens are now bound by glass.css attribute selectors.
@@ -315,7 +339,9 @@ describe("generateTokens", () => {
       preset: "glass",
       backgroundStyle: "solid",
       mode: "light",
-      accentIntensity: "balanced",
+      contrast: "standard",
+      darkAccentChroma: "standard",
+      tintWithAccent: false,
     })
 
     expect(tokens["--primary"]).toBe("221 83% 53%")
@@ -330,7 +356,9 @@ describe("generateTokens", () => {
       preset: "glass",
       backgroundStyle: "solid",
       mode: "light",
-      accentIntensity: "balanced",
+      contrast: "standard",
+      darkAccentChroma: "standard",
+      tintWithAccent: false,
     })
 
     expect(tokens["--shadow-dropdown"]).toContain("rgb(16 24 40")
@@ -344,7 +372,9 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
-      accentIntensity: "balanced",
+      contrast: "standard",
+      darkAccentChroma: "standard",
+      tintWithAccent: false,
     })
     const dark = generateTokens({
       accentColor: "blue",
@@ -352,7 +382,9 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "dark",
-      accentIntensity: "balanced",
+      contrast: "standard",
+      darkAccentChroma: "standard",
+      tintWithAccent: false,
     })
 
     // red-500 and red-600 are the base values; both are raised where they did
@@ -380,7 +412,9 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
-      accentIntensity: "balanced",
+      contrast: "standard",
+      darkAccentChroma: "standard",
+      tintWithAccent: false,
     })
     const dark = generateTokens({
       accentColor: "blue",
@@ -388,7 +422,9 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "dark",
-      accentIntensity: "balanced",
+      contrast: "standard",
+      darkAccentChroma: "standard",
+      tintWithAccent: false,
     })
 
     // emerald-500 measured 2.48:1 in light, so it is darkened to the 4.5:1
@@ -414,7 +450,9 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
-      accentIntensity: "balanced",
+      contrast: "standard",
+      darkAccentChroma: "standard",
+      tintWithAccent: false,
     })
     const dark = generateTokens({
       accentColor: "blue",
@@ -422,7 +460,9 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "dark",
-      accentIntensity: "balanced",
+      contrast: "standard",
+      darkAccentChroma: "standard",
+      tintWithAccent: false,
     })
 
     // amber-500 measured 2.03:1 in light, the worst of the state colours; it is
@@ -448,7 +488,9 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
-      accentIntensity: "balanced",
+      contrast: "standard",
+      darkAccentChroma: "standard",
+      tintWithAccent: false,
     })
     const redAccent = generateTokens({
       accentColor: "red",
@@ -456,7 +498,9 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
-      accentIntensity: "balanced",
+      contrast: "standard",
+      darkAccentChroma: "standard",
+      tintWithAccent: false,
     })
 
     expect(blueAccent["--success"]).toBe(redAccent["--success"])
@@ -470,7 +514,9 @@ describe("generateTokens", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
-      accentIntensity: "balanced",
+      contrast: "standard",
+      darkAccentChroma: "standard",
+      tintWithAccent: false,
     })
 
     expect(tokens["--background"]).toBe("210 16% 98%")
@@ -497,7 +543,9 @@ describe("generateTokens", () => {
           preset: "default",
           backgroundStyle: "solid",
           mode,
-          accentIntensity: "balanced",
+          contrast: "standard",
+          darkAccentChroma: "standard",
+          tintWithAccent: false,
         })
         for (const [alias, step] of ALIASES) {
           expect(tokens[step], step).toBeTruthy()
@@ -516,7 +564,9 @@ describe("generateTokens", () => {
           preset: "default",
           backgroundStyle: "solid",
           mode,
-          accentIntensity: "balanced",
+          contrast: "standard",
+          darkAccentChroma: "standard",
+          tintWithAccent: false,
         })
         return Array.from({ length: 8 }, (_, i) => tokens[`--chart-${i + 1}`])
       }
@@ -536,7 +586,9 @@ describe("generateTokens", () => {
         preset: "glass",
         backgroundStyle: "solid",
         mode: "dark",
-        accentIntensity: "balanced",
+        contrast: "standard",
+        darkAccentChroma: "standard",
+        tintWithAccent: false,
       })
 
       // Fog tokens are now computed by glass.generateTokens (the preset's
@@ -556,7 +608,9 @@ describe("generateTokens", () => {
         preset: "glass",
         backgroundStyle: "solid",
         mode: "light",
-        accentIntensity: "balanced",
+        contrast: "standard",
+        darkAccentChroma: "standard",
+        tintWithAccent: false,
       })
 
       expect(tokens["--fog-05"]).toBeUndefined()
@@ -574,7 +628,9 @@ describe("generateTokens", () => {
         preset: "default",
         backgroundStyle: "solid",
         mode: "dark",
-        accentIntensity: "balanced",
+        contrast: "standard",
+        darkAccentChroma: "standard",
+        tintWithAccent: false,
       })
       const light = generateTokens({
         accentColor: "blue",
@@ -582,7 +638,9 @@ describe("generateTokens", () => {
         preset: "default",
         backgroundStyle: "solid",
         mode: "light",
-        accentIntensity: "balanced",
+        contrast: "standard",
+        darkAccentChroma: "standard",
+        tintWithAccent: false,
       })
 
       const fogKeys = [
@@ -608,7 +666,9 @@ describe("generateTokens", () => {
         preset: "glass",
         backgroundStyle: "solid",
         mode: "dark",
-        accentIntensity: "balanced",
+        contrast: "standard",
+        darkAccentChroma: "standard",
+        tintWithAccent: false,
       })
 
       // Inset tokens are now computed by glass.generateTokens (the preset's
@@ -625,7 +685,9 @@ describe("generateTokens", () => {
         preset: "glass",
         backgroundStyle: "solid",
         mode: "light",
-        accentIntensity: "balanced",
+        contrast: "standard",
+        darkAccentChroma: "standard",
+        tintWithAccent: false,
       })
 
       expect(tokens["--inset-hi"]).toBeUndefined()
@@ -640,7 +702,9 @@ describe("generateTokens", () => {
         preset: "default",
         backgroundStyle: "solid",
         mode: "dark",
-        accentIntensity: "balanced",
+        contrast: "standard",
+        darkAccentChroma: "standard",
+        tintWithAccent: false,
       })
       const light = generateTokens({
         accentColor: "blue",
@@ -648,7 +712,9 @@ describe("generateTokens", () => {
         preset: "default",
         backgroundStyle: "solid",
         mode: "light",
-        accentIntensity: "balanced",
+        contrast: "standard",
+        darkAccentChroma: "standard",
+        tintWithAccent: false,
       })
 
       const insetKeys = ["--inset-hi", "--inset-hi-strong", "--inset-hi-button"]
@@ -667,7 +733,9 @@ describe("generateTokens", () => {
         preset: "default",
         backgroundStyle: "gradient",
         mode: "dark",
-        accentIntensity: "balanced",
+        contrast: "standard",
+        darkAccentChroma: "standard",
+        tintWithAccent: false,
       })
 
       expect(tokens["--noise-opacity"]).toBe("0.5")
@@ -680,7 +748,9 @@ describe("generateTokens", () => {
         preset: "default",
         backgroundStyle: "gradient",
         mode: "light",
-        accentIntensity: "balanced",
+        contrast: "standard",
+        darkAccentChroma: "standard",
+        tintWithAccent: false,
       })
 
       expect(tokens["--noise-opacity"]).toBe("0.6")
@@ -693,7 +763,9 @@ describe("generateTokens", () => {
         preset: "default",
         backgroundStyle: "solid",
         mode: "dark",
-        accentIntensity: "balanced",
+        contrast: "standard",
+        darkAccentChroma: "standard",
+        tintWithAccent: false,
       })
 
       expect(tokens["--noise-opacity"]).toBe("0")
@@ -706,7 +778,9 @@ describe("generateTokens", () => {
         preset: "default",
         backgroundStyle: "solid",
         mode: "light",
-        accentIntensity: "balanced",
+        contrast: "standard",
+        darkAccentChroma: "standard",
+        tintWithAccent: false,
       })
 
       expect(tokens["--noise-opacity"]).toBe("0")
@@ -720,7 +794,9 @@ describe("generateTokens", () => {
       preset: "default" as const,
       backgroundStyle: "gradient" as const,
       mode: "dark" as const,
-      accentIntensity: "balanced" as const,
+      contrast: "standard" as const,
+      darkAccentChroma: "standard" as const,
+      tintWithAccent: false,
     }
 
     it("emits hsl shade-500 for --sf-hue in gradient mode", () => {
@@ -763,7 +839,9 @@ describe("generateTokens", () => {
       preset: "default" as const,
       backgroundStyle: "gradient" as const,
       mode: "dark" as const,
-      accentIntensity: "balanced" as const,
+      contrast: "standard" as const,
+      darkAccentChroma: "standard" as const,
+      tintWithAccent: false,
     }
 
     it("gradient + default → five-layer var() composition", () => {
@@ -816,7 +894,9 @@ describe("generateTokens", () => {
       surfaceColor: "slate",
       preset: "default",
       backgroundStyle: "solid",
-      accentIntensity: "balanced",
+      contrast: "standard",
+      darkAccentChroma: "standard",
+      tintWithAccent: false,
     } as const
 
     // The branches were inverted, putting slate-400 on the near-white light
@@ -881,7 +961,9 @@ describe("backgroundIntensity canvas cap", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "dark",
-      accentIntensity: "balanced",
+      contrast: "standard",
+      darkAccentChroma: "standard",
+      tintWithAccent: false,
       backgroundIntensity,
     })
 
@@ -908,7 +990,9 @@ describe("backgroundIntensity canvas cap", () => {
         preset: "default",
         backgroundStyle: "solid",
         mode: "light",
-        accentIntensity: "balanced",
+        contrast: "standard",
+        darkAccentChroma: "standard",
+        tintWithAccent: false,
         backgroundIntensity,
       })["--background"]
     expect(light("neutral").split(" ")[1]).toBe("0%")
@@ -943,72 +1027,6 @@ describe("capCanvasSaturation", () => {
   })
 })
 
-// Chroma capping cannot drive these two tokens: accent[100..500] measure
-// 0.03-0.18 OKLCH chroma, below every cap the primary treatment applies, so
-// capChroma would return them unchanged at every step. They ramp by palette
-// shade instead. `balanced` reproducing today's values is pinned separately.
-describe("accentIntensity reach", () => {
-  const base = {
-    accentColor: "blue",
-    surfaceColor: "slate",
-    preset: "default",
-    backgroundStyle: "solid",
-  } as const
-
-  for (const mode of ["light", "dark"] as const) {
-    it(`moves --focus-ring across every step in ${mode} mode`, () => {
-      const seen = new Set(
-        ACCENT_INTENSITIES.map(
-          (accentIntensity) =>
-            generateTokens({ ...base, mode, accentIntensity })["--focus-ring"],
-        ),
-      )
-      expect(seen.size).toBe(ACCENT_INTENSITIES.length)
-    })
-
-    it(`moves --sidebar-hover-bg across every step in ${mode} mode`, () => {
-      const seen = new Set(
-        ACCENT_INTENSITIES.map(
-          (accentIntensity) =>
-            generateTokens({ ...base, mode, accentIntensity })[
-              "--sidebar-hover-bg"
-            ],
-        ),
-      )
-      expect(seen.size).toBe(ACCENT_INTENSITIES.length)
-    })
-  }
-
-  it("reproduces today's sidebar hover at balanced", () => {
-    const light = generateTokens({
-      ...base,
-      mode: "light",
-      accentIntensity: "balanced",
-    })
-    const dark = generateTokens({
-      ...base,
-      mode: "dark",
-      accentIntensity: "balanced",
-    })
-    expect(light["--sidebar-hover-bg"]).toBe(accentColors.blue[100])
-    expect(dark["--sidebar-hover-bg"]).toBe(`${accentColors.blue[500]} / 0.15`)
-  })
-
-  it("keeps chart colours out of the axis", () => {
-    const calm = generateTokens({
-      ...base,
-      mode: "dark",
-      accentIntensity: "calm",
-    })
-    const intense = generateTokens({
-      ...base,
-      mode: "dark",
-      accentIntensity: "intense",
-    })
-    expect(calm["--chart-1"]).toBe(intense["--chart-1"])
-  })
-})
-
 describe("neutral accent", () => {
   for (const mode of ["light", "dark"] as const)
     it(`puts the primary on neutral step 12 in ${mode}`, () => {
@@ -1018,7 +1036,9 @@ describe("neutral accent", () => {
         preset: "default",
         backgroundStyle: "solid",
         mode,
-        accentIntensity: "balanced",
+        contrast: "standard",
+        darkAccentChroma: "standard",
+        tintWithAccent: false,
       })
       expect(t["--primary"]).toBe(t["--neutral-12"])
       expect(t["--primary-fill"]).toBe(t["--neutral-12"])
@@ -1026,4 +1046,35 @@ describe("neutral accent", () => {
       for (let i = 1; i <= 7; i++)
         expect(t[`--primary-${i}`]).toBe(t[`--neutral-${i}`])
     })
+})
+
+describe("colour engine axes", () => {
+  const base = {
+    accentColor: "blue",
+    surfaceColor: "zinc",
+    preset: "default",
+    backgroundStyle: "solid",
+    mode: "dark",
+    contrast: "standard",
+    darkAccentChroma: "standard",
+    tintWithAccent: false,
+  } as const
+  it("moves the dark card away from the page as contrast rises", () => {
+    const ratio = (contrast: "low" | "standard" | "high") => {
+      const t = generateTokens({ ...base, contrast })
+      return contrastRatio(t["--card"] as string, t["--background"] as string)
+    }
+    expect(ratio("low")).toBeLessThan(ratio("standard"))
+    expect(ratio("standard")).toBeLessThan(ratio("high"))
+  })
+  it("tints the neutral with the accent when asked", () => {
+    const plain = generateTokens(base)
+    const tinted = generateTokens({ ...base, tintWithAccent: true })
+    expect(tinted["--card"]).not.toBe(plain["--card"])
+  })
+  it("keeps the sidebar fills on the accent at the 6.x balanced alphas", () => {
+    const t = generateTokens(base)
+    expect(t["--sidebar-hover-bg"]).toBe(`${t["--primary-8"]} / 0.15`)
+    expect(t["--sidebar-active-bg"]).toBe(`${t["--primary-8"]} / 0.25`)
+  })
 })

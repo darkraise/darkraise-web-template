@@ -19,7 +19,9 @@ function build(
     preset: "default",
     backgroundStyle: "solid",
     mode,
-    accentIntensity: "calm",
+    contrast: "standard",
+    darkAccentChroma: "calm",
+    tintWithAccent: false,
   })
 }
 

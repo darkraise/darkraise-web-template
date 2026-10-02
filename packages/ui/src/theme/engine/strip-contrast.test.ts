@@ -158,7 +158,9 @@ describe("the content strip", () => {
           preset,
           backgroundStyle,
           mode: "light",
-          accentIntensity: "balanced",
+          contrast: "standard",
+          darkAccentChroma: "standard",
+          tintWithAccent: false,
           backgroundIntensity: "balanced",
         })
         const paints = preset === "default" && backgroundStyle === "gradient"
@@ -184,7 +186,9 @@ describe("the content strip", () => {
         preset,
         backgroundStyle,
         mode,
-        accentIntensity: "balanced",
+        contrast: "standard",
+        darkAccentChroma: "standard",
+        tintWithAccent: false,
         backgroundIntensity,
       })
       const actual = Object.fromEntries(
@@ -201,7 +205,11 @@ describe("the content strip", () => {
     const failures: string[] = []
     for (const combo of reachableCombos()) {
       if (combo.preset !== "default") continue
-      const tokens = generateTokens({ ...combo, backgroundStyle: "gradient" })
+      const tokens = generateTokens({
+        ...combo,
+        tintWithAccent: false,
+        backgroundStyle: "gradient",
+      })
       const background = tokens["--background"] as string
       const strip = contentStripGround(
         background,
@@ -223,5 +231,5 @@ describe("the content strip", () => {
         failures.push(`${comboName(combo)} muted on page: ${muted.toFixed(2)}`)
     }
     expect(failures.slice(0, 20)).toEqual([])
-  })
+  }, 30_000)
 })

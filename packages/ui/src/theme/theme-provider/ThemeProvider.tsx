@@ -306,12 +306,9 @@ export function ThemeProvider({
         preset: presetName,
         backgroundStyle: current.backgroundStyle,
         mode: resolved,
-        accentIntensity: neutraliseIfHidden(
-          "accentIntensity",
-          current.accentIntensity,
-          defaults.accentIntensity,
-          activePreset.hiddenCommonAxes,
-        ),
+        contrast: current.contrast,
+        darkAccentChroma: current.darkAccentChroma,
+        tintWithAccent: current.tintWithAccent === "on",
         backgroundIntensity: current.backgroundIntensity,
       })
 
@@ -352,7 +349,7 @@ export function ThemeProvider({
       const store = storage()
       if (store) writeTokenCache(store, cacheId, mergedTokens)
     },
-    [defaults.accentIntensity],
+    [],
   )
 
   // commit paints synchronously so a setter's change lands in the same frame;

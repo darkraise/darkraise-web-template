@@ -17,7 +17,9 @@ function build(surfaceColor: (typeof NEUTRALS)[number], mode: "light" | "dark") 
     preset: "default",
     backgroundStyle: "solid",
     mode,
-    accentIntensity: "calm",
+    contrast: "standard",
+    darkAccentChroma: "calm",
+    tintWithAccent: false,
   })
 }
 

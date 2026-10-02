@@ -70,7 +70,7 @@ describe("--field-edge-color", () => {
       }
     }
     expect(failures).toEqual([])
-  })
+  }, 30_000)
 })
 
 // `--sf-hue`: the colour the gradient canvas paints over the page.
@@ -85,7 +85,9 @@ function gradientTokens(combo: ThemeCombo): Record<string, string> {
     preset: combo.preset,
     backgroundStyle: "gradient",
     mode: combo.mode,
-    accentIntensity: combo.accentIntensity,
+    contrast: combo.contrast,
+    darkAccentChroma: combo.darkAccentChroma,
+    tintWithAccent: false,
     backgroundIntensity: combo.backgroundIntensity,
   })
 }
@@ -113,7 +115,7 @@ describe("--field-edge-color under a gradient canvas", () => {
       }
     }
     expect(failures).toEqual([])
-  })
+  }, 30_000)
 
   // The page under a field in the template's control-contract fixture, as
   // Chromium painted it at 1280px for slate under the intense gradient. The
@@ -130,7 +132,9 @@ describe("--field-edge-color under a gradient canvas", () => {
         preset: "glass",
         backgroundStyle: "gradient",
         mode,
-        accentIntensity: "balanced",
+        contrast: "standard",
+        darkAccentChroma: "standard",
+        tintWithAccent: false,
         backgroundIntensity: "intense",
       })
       const edge = tokens["--field-edge-color"] as string

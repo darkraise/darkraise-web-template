@@ -6,12 +6,14 @@ import {
 import { presets, type PresetName } from "@theme/presets"
 import {
   ACCENT_COLORS,
-  ACCENT_INTENSITIES,
   BACKGROUND_INTENSITIES,
+  CONTRASTS,
+  DARK_ACCENT_CHROMAS,
   SURFACE_COLORS,
   type AccentColor,
-  type AccentIntensity,
   type BackgroundIntensity,
+  type Contrast,
+  type DarkAccentChroma,
   type ResolvedMode,
   type SurfaceColor,
 } from "@theme/types"
@@ -24,15 +26,18 @@ export interface ThemeCombo {
   accentColor: AccentColor
   surfaceColor: SurfaceColor
   mode: ResolvedMode
-  accentIntensity: AccentIntensity
+  contrast: Contrast
+  darkAccentChroma: DarkAccentChroma
   backgroundIntensity: BackgroundIntensity
   preset: PresetName
+  /** Off unless set; the reachable matrix leaves it off. */
+  tintWithAccent?: boolean
 }
 
 /**
- * Every combination a user can reach. Glass hides accentIntensity and
- * neutralises it to the default, so iterating its other steps would test
- * states nothing paints.
+ * Every combination a user can reach, with glass checked at the standard
+ * contrast and chroma steps only. Light mode ignores darkAccentChroma, so it
+ * runs at the standard step.
  *
  * backgroundStyle stays solid: it moves the decorative --sf-hue tokens and
  * the page a field edge sits on, and field-edge.test.ts covers that case
@@ -44,20 +49,26 @@ export function reachableCombos(): ThemeCombo[] {
   for (const accentColor of ACCENT_COLORS) {
     for (const surfaceColor of SURFACE_COLORS) {
       for (const mode of ["light", "dark"] as const) {
-        for (const accentIntensity of ACCENT_INTENSITIES) {
-          combos.push({
-            accentColor,
-            surfaceColor,
-            mode,
-            accentIntensity,
-            preset: "default",
-          })
+        const chromas =
+          mode === "dark" ? DARK_ACCENT_CHROMAS : (["standard"] as const)
+        for (const contrast of CONTRASTS) {
+          for (const darkAccentChroma of chromas) {
+            combos.push({
+              accentColor,
+              surfaceColor,
+              mode,
+              contrast,
+              darkAccentChroma,
+              preset: "default",
+            })
+          }
         }
         combos.push({
           accentColor,
           surfaceColor,
           mode,
-          accentIntensity: "balanced",
+          contrast: "standard",
+          darkAccentChroma: "standard",
           preset: "glass",
         })
       }
@@ -85,7 +96,9 @@ export function finalTokens(combo: ThemeCombo): Record<string, string> {
     preset: combo.preset,
     backgroundStyle: "solid",
     mode: combo.mode,
-    accentIntensity: combo.accentIntensity,
+    contrast: combo.contrast,
+    darkAccentChroma: combo.darkAccentChroma,
+    tintWithAccent: combo.tintWithAccent ?? false,
     backgroundIntensity: combo.backgroundIntensity,
   })
   const preset = presets[combo.preset]
@@ -131,5 +144,6 @@ export function isOpaque(value: string | undefined): value is string {
 }
 
 export function comboName(combo: ThemeCombo): string {
-  return `${combo.preset}/${combo.mode}/${combo.accentIntensity}/${combo.backgroundIntensity}/${combo.accentColor}/${combo.surfaceColor}`
+  const tint = combo.tintWithAccent ? "/tint" : ""
+  return `${combo.preset}/${combo.mode}/${combo.contrast}/${combo.darkAccentChroma}/${combo.backgroundIntensity}/${combo.accentColor}/${combo.surfaceColor}${tint}`
 }

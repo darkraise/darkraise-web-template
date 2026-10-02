@@ -1,6 +1,10 @@
 import { describe, it, expect } from "vitest"
 import { contrastRatio } from "@theme/engine/oklch"
-import { ACCENT_COLORS, ACCENT_INTENSITIES, SURFACE_COLORS } from "@theme/types"
+import {
+  ACCENT_COLORS,
+  DARK_ACCENT_CHROMAS,
+  SURFACE_COLORS,
+} from "@theme/types"
 import {
   comboName,
   finalTokens,
@@ -15,16 +19,19 @@ function matrix(): ThemeCombo[] {
   for (const accentColor of ACCENT_COLORS)
     for (const surfaceColor of SURFACE_COLORS)
       for (const mode of ["light", "dark"] as const)
-        for (const accentIntensity of ACCENT_INTENSITIES)
-          for (const preset of ["default", "glass"] as const)
-            combos.push({
-              accentColor,
-              surfaceColor,
-              mode,
-              accentIntensity,
-              preset,
-              backgroundIntensity: "balanced",
-            })
+        for (const darkAccentChroma of DARK_ACCENT_CHROMAS)
+          for (const tintWithAccent of [false, true])
+            for (const preset of ["default", "glass"] as const)
+              combos.push({
+                accentColor,
+                surfaceColor,
+                mode,
+                contrast: "standard",
+                darkAccentChroma,
+                tintWithAccent,
+                preset,
+                backgroundIntensity: "balanced",
+              })
   return combos
 }
 
@@ -92,7 +99,7 @@ describe("primary fill and label", () => {
   it("dark fills still clear 3:1 against the card on neutral surfaces", () => {
     const failures: string[] = []
     for (const combo of combos) {
-      if (combo.mode !== "dark" || combo.accentIntensity === "calm") continue
+      if (combo.mode !== "dark" || combo.darkAccentChroma === "calm") continue
       const tokens = finalTokens(combo)
       const ratio = contrastRatio(
         tokens["--primary-fill"] as string,

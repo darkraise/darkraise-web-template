@@ -1,9 +1,10 @@
 import type {
   AccentColor,
-  AccentIntensity,
   BackgroundStyle,
   BackgroundIntensity,
   BorderIntensity,
+  Contrast,
+  DarkAccentChroma,
   SurfaceColor,
   ResolvedMode,
   ColorScale,
@@ -17,14 +18,7 @@ import {
   oklchToHslString,
 } from "@theme/engine/oklch"
 import { CANVAS_SATURATION_CAP, contentStripGround } from "./canvas"
-import {
-  INK,
-  STATUS_NAMES,
-  WHITE,
-  placeStep,
-  solveSteps,
-  type DarkAccentChroma,
-} from "./steps"
+import { INK, STATUS_NAMES, WHITE, placeStep, solveSteps } from "./steps"
 
 export {
   CANVAS_BLOB_SCALE,
@@ -40,7 +34,9 @@ export interface GenerateTokensInput {
   preset: PresetName
   backgroundStyle: BackgroundStyle
   mode: ResolvedMode
-  accentIntensity: AccentIntensity
+  contrast: Contrast
+  darkAccentChroma: DarkAccentChroma
+  tintWithAccent: boolean
   backgroundIntensity?: BackgroundIntensity
 }
 
@@ -81,14 +77,6 @@ function resolveSfHueTokens(
 const MARK_FLOOR = 3
 const LEGEND_TARGET_RATIO = 4.6
 const BLACK = "0 0% 0%"
-
-/** Until the darkAccentChroma axis replaces accentIntensity. */
-const CHROMA_FOR_INTENSITY: Record<AccentIntensity, DarkAccentChroma> = {
-  calm: "calm",
-  balanced: "standard",
-  vivid: "vivid",
-  intense: "vivid",
-}
 
 const tierCache = new Map<string, string>()
 
@@ -184,47 +172,6 @@ function ensureContrastAll(
     (candidate) =>
       backgrounds.every((bg) => contrastRatio(candidate, bg) >= target),
   )
-}
-
-// `--focus-ring` reads accent[100..500] and `--sidebar-hover-bg` reads
-// accent[50..500]. Their OKLCH chroma runs 0.03-0.18, below every ceiling in
-// VIBRANCY, so the chroma treatment `--primary` receives would return these
-// shades unchanged at every step. The axis ramps the palette step instead.
-// `balanced` is today's value in both modes, so the default look is unchanged.
-const FOCUS_RING_SHADE: Record<
-  AccentIntensity,
-  { light: 200 | 300 | 400 | 500; dark: 100 | 200 | 300 | 400 }
-> = {
-  calm: { light: 200, dark: 100 },
-  balanced: { light: 300, dark: 200 },
-  vivid: { light: 400, dark: 300 },
-  intense: { light: 500, dark: 400 },
-}
-
-// Dark ramps alpha at a fixed shade rather than the shade itself: the token is
-// composed as `${accent[500]} / 0.15`, so the ramp has to be applied before the
-// alpha is appended, and moving both at once would double the step size.
-const SIDEBAR_HOVER: Record<
-  AccentIntensity,
-  { light: 50 | 100 | 200 | 300; darkAlpha: number }
-> = {
-  calm: { light: 50, darkAlpha: 0.1 },
-  balanced: { light: 100, darkAlpha: 0.15 },
-  vivid: { light: 200, darkAlpha: 0.22 },
-  intense: { light: 300, darkAlpha: 0.3 },
-}
-
-// The active sidebar row is one step stronger than its hover on the same
-// ramp, so hover and active always differ by fill: light takes the next shade
-// up, dark adds 0.1 alpha.
-const SIDEBAR_ACTIVE: Record<
-  AccentIntensity,
-  { light: 100 | 200 | 300 | 400; darkAlpha: number }
-> = {
-  calm: { light: 100, darkAlpha: 0.2 },
-  balanced: { light: 200, darkAlpha: 0.25 },
-  vivid: { light: 300, darkAlpha: 0.32 },
-  intense: { light: 400, darkAlpha: 0.4 },
 }
 
 /**
@@ -370,7 +317,9 @@ export function generateTokens(
     preset,
     backgroundStyle,
     mode,
-    accentIntensity,
+    contrast,
+    darkAccentChroma,
+    tintWithAccent,
     backgroundIntensity = "balanced",
   } = input
 
@@ -392,9 +341,9 @@ export function generateTokens(
     mode,
     accent: accentColor === "neutral" ? null : accent,
     neutral,
-    contrast: "standard",
-    darkAccentChroma: CHROMA_FOR_INTENSITY[accentIntensity],
-    tintWithAccent: false,
+    contrast,
+    darkAccentChroma,
+    tintWithAccent,
     gradient: gradient
       ? {
           surfaceHue: surfaceTint,
@@ -413,6 +362,7 @@ export function generateTokens(
   })
   const n = (step: number) => steps.neutral[step - 1] as string
   const p = (step: number) => steps.primary[step - 1] as string
+  const sidebarMark = accentColor === "neutral" || glass ? accent[500] : p(8)
 
   const background = n(1)
   const card = n(2)
@@ -457,7 +407,7 @@ export function generateTokens(
     "--primary-foreground": steps.primaryLabel,
     "--primary-fill-wash": washFor(steps.primaryLabel),
     "--focus-ring": ensureContrastAll(
-      accent[FOCUS_RING_SHADE[accentIntensity][mode]],
+      accent[dark ? 200 : 300],
       [background, ...stripGrounds],
       MARK_FLOOR,
     ),
@@ -502,12 +452,8 @@ export function generateTokens(
     "--sidebar-foreground-hover": dark ? WHITE : n(12),
     "--sidebar-foreground-muted": n(11),
     "--sidebar-border": dark ? "0 0% 100% / 0.1" : n(6),
-    "--sidebar-hover-bg": dark
-      ? `${accent[500]} / ${SIDEBAR_HOVER[accentIntensity].darkAlpha}`
-      : accent[SIDEBAR_HOVER[accentIntensity].light],
-    "--sidebar-active-bg": dark
-      ? `${accent[500]} / ${SIDEBAR_ACTIVE[accentIntensity].darkAlpha}`
-      : accent[SIDEBAR_ACTIVE[accentIntensity].light],
+    "--sidebar-hover-bg": dark ? `${sidebarMark} / 0.15` : accent[100],
+    "--sidebar-active-bg": dark ? `${sidebarMark} / 0.25` : accent[200],
     "--surface-header": card,
 
     "--border-subtle": borderSubtle,

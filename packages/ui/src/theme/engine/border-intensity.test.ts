@@ -13,7 +13,9 @@ const lightTokens = generateTokens({
   preset: "default",
   backgroundStyle: "solid",
   mode: "light",
-  accentIntensity: "balanced",
+  contrast: "standard",
+  darkAccentChroma: "standard",
+  tintWithAccent: false,
 })
 
 const darkTokens = generateTokens({
@@ -22,7 +24,9 @@ const darkTokens = generateTokens({
   preset: "default",
   backgroundStyle: "solid",
   mode: "dark",
-  accentIntensity: "balanced",
+  contrast: "standard",
+  darkAccentChroma: "standard",
+  tintWithAccent: false,
 })
 
 const borderAt = (tokens: Record<string, string>, intensity: BorderIntensity) =>
