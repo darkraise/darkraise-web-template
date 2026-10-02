@@ -5,8 +5,8 @@ import { composite } from "@theme/engine/oklch"
  * How much of the surface colour's hue the page canvas may carry, as a maximum
  * saturation percentage. A cap rather than a multiplier so one step means the
  * same thing for every surface colour: `slate` starts at 84% saturation while
- * every tinted option is already damped to ~30% by `tintScale`, so a multiplier
- * would leave slate visibly blue at the same setting that neutralises the rest.
+ * the other neutrals sit far lower, so a multiplier would leave slate visibly
+ * blue at the same setting that neutralises the rest.
  * `null` means uncapped — the palette's own value, which is what preserving the
  * pre-axis appearance requires.
  */
