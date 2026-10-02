@@ -168,7 +168,7 @@ function AvatarPage() {
               <Avatar className="h-10 w-10">
                 <AvatarFallback>CJ</AvatarFallback>
               </Avatar>
-              <span className="ring-card absolute right-0 bottom-0 h-3 w-3 rounded-full bg-gray-400 ring-2" />
+              <span className="ring-card bg-muted-foreground absolute right-0 bottom-0 h-3 w-3 rounded-full ring-2" />
             </div>
             <p className="text-muted-foreground mt-1 text-center text-xs">
               Offline

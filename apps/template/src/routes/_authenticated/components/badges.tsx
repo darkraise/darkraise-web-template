@@ -243,7 +243,7 @@ function BadgesPage() {
   <span className="text-sm">Away</span>
 </div>
 <div className="flex items-center gap-2">
-  <span className="h-2 w-2 rounded-full bg-gray-400 block" />
+  <span className="h-2 w-2 rounded-full bg-muted-foreground block" />
   <span className="text-sm">Offline</span>
 </div>`}
       >
@@ -260,7 +260,7 @@ function BadgesPage() {
             <span className="text-sm">Away</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="block h-2 w-2 rounded-full bg-gray-400" />
+            <span className="bg-muted-foreground block h-2 w-2 rounded-full" />
             <span className="text-sm">Offline</span>
           </div>
         </div>
