@@ -26,7 +26,9 @@ export type RegistryTypeChecks = [
   Expect<Equal<ThemeContextValue["outerGlow"], GlowLevel>>,
   Expect<Equal<ThemeContextValue["sidebarActiveBar"], SidebarActiveBarSetting>>,
   Expect<Equal<ThemeContextValue["setDensity"], (value: Density) => void>>,
-  Expect<Equal<ThemeContextValue["setAccentColor"], (value: AccentColor) => void>>,
+  Expect<
+    Equal<ThemeContextValue["setAccentColor"], (value: AccentColor) => void>
+  >,
   Expect<Equal<ThemeSettings["accentColor"], AccentColor | undefined>>,
   Expect<Record<string, never> extends ThemeSettings ? true : false>,
   Expect<Equal<ThemeConfig["defaults"]["density"], Density>>,
