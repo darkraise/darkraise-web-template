@@ -208,6 +208,52 @@ describe("solveSteps ramps", () => {
       }
   })
 
+  it("scales the dark primary tint cap with the chroma axis", () => {
+    const cap = { calm: 0.03, standard: 0.05, vivid: 0.0625 }
+    let strict = 0
+    for (const accent of ACCENTS) {
+      const tints = (step: DarkAccentChroma) =>
+        solveSteps(input(accent, "zinc", "dark", { darkAccentChroma: step }))
+          .primary.slice(0, 5)
+          .map((v) => hslStringToOklch(v).C)
+      const [calm, standard, vivid] = CHROMAS.map(tints) as [
+        number[],
+        number[],
+        number[],
+      ]
+      for (const [step, values] of [
+        ["calm", calm],
+        ["standard", standard],
+        ["vivid", vivid],
+      ] as const)
+        for (const c of values) expect(c).toBeLessThanOrEqual(cap[step] + 0.003)
+      // Step 1 sits on the near-black page, where sRGB holds little chroma.
+      // At the gamut edge the walk can land vivid a hair under standard.
+      for (let i = 1; i < 5; i++) {
+        expect(calm[i]).toBeLessThan(standard[i] as number)
+        expect(vivid[i]).toBeGreaterThanOrEqual((standard[i] as number) - 0.005)
+      }
+      if (
+        [1, 2, 3, 4].every(
+          (i) => (vivid[i] as number) > (standard[i] as number),
+        )
+      )
+        strict++
+    }
+    // Amber, yellow, teal, cyan and sky reach the dark gamut edge on one
+    // tint; 13 of 18 measured on 2026-10-02.
+    expect(strict).toBeGreaterThanOrEqual(13)
+  })
+
+  it("keeps dark status tints off the chroma axis", () => {
+    for (const step of ["calm", "vivid"] as const) {
+      const { status } = solveSteps(
+        input("blue", "zinc", "dark", { darkAccentChroma: step }),
+      )
+      expect(status).toEqual(solveSteps(input("blue", "zinc", "dark")).status)
+    }
+  })
+
   it("raises dark primary chroma from calm to vivid", () => {
     let strict = 0
     for (const accent of ACCENTS) {

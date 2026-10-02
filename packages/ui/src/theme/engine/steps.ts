@@ -385,11 +385,15 @@ function solve(input: SolveInput): Steps {
         : c,
     )
   }
-  const darkTint = (scale: ColorScale, position: number): string => {
+  const darkTint = (
+    scale: ColorScale,
+    position: number,
+    cap = DARK_TINT_CHROMA,
+  ): string => {
     const hue = sampleScale(scale, 6)
     return oklchToHslString({
       L: sampleScale(input.neutral, position).L,
-      C: Math.min(hue.C, DARK_TINT_CHROMA),
+      C: Math.min(hue.C, cap),
       h: hue.h,
     })
   }
@@ -539,6 +543,7 @@ function solve(input: SolveInput): Steps {
           : darkTint(
               accent,
               i === 0 ? (ppos[0] as number) : cardPos + (ppos[i] as number),
+              DARK_TINT_CHROMA * chroma,
             )
     p[5] = repair(
       "primary-6",
