@@ -40,36 +40,32 @@ npm create darkraise-ui my-app \
   --button-elevation flat \
   --radius rounded \
   --font-size medium \
-  --accent-vibrancy balanced \
   --theme-switcher \
-  --theme-axes mode,accentColor,surfaceColor,preset,backgroundStyle,density,elevation,radius,fontSize,accentVibrancy \
+  --theme-axes mode,accentColor,surfaceColor,preset,backgroundStyle,density,elevation,radius,fontSize \
   --host localhost \
   --port 5173
 ```
 
-| Flag                                       | Values                                                      | Default     |
-| ------------------------------------------ | ----------------------------------------------------------- | ----------- |
-| `--layout`                                 | `sidebar`, `stacked`, `top-nav`, `split-panel`              | `sidebar`   |
-| `--accent`                                 | 17 colors (`red` through `rose`)                            | `blue`      |
-| `--surface-color`                          | `slate` + 17 accent colors                                  | `slate`     |
-| `--preset`                                 | `default`, `glass`                                          | `default`   |
-| `--background`                             | `solid`, `gradient`                                         | `solid`     |
-| `--background-intensity`                   | `subtle`, `balanced`, `vivid`, `intense`                    | `balanced`  |
-| `--gradient-pattern`                       | `blobs`, `aurora`, `spotlight`, `mesh`                      | `blobs`     |
-| `--mode`                                   | `light`, `dark`, `system`                                   | `system`    |
-| `--density`                                | `compact`, `cozy`, `comfortable`, `spacious`                | `cozy`      |
-| `--elevation`                              | `flat`, `low`, `medium`, `high`                             | `medium`    |
-| `--button-elevation`                       | `flat`, `low`, `medium`, `high`                             | `flat`      |
-| `--surface-intensity`                      | `flat`, `subtle`, `balanced`, `bold`                        | `balanced`  |
-| `--radius`                                 | `sharp`, `subtle`, `rounded`, `pill`                        | `rounded`   |
-| `--font-size`                              | `small`, `medium`, `large`, `extra-large`                   | `medium`    |
-| `--accent-vibrancy`                        | `calm`, `balanced`, `vivid`, `intense`                      | `balanced`  |
-| `--canvas-tint`                            | `neutral`, `subtle`, `balanced`, `vivid`                    | `balanced`  |
-| `--theme-switcher` / `--no-theme-switcher` | boolean                                                     | enabled     |
-| `--theme-axes`                             | comma-separated axis names (see Theming for the valid keys) | all axes    |
-| `--host`                                   | hostname or IP                                              | `localhost` |
-| `--port`                                   | `1`-`65535`                                                 | `5173`      |
-| `-y`                                       | skip all prompts, use defaults                              |             |
+| Flag                                       | Values                                                                                                                           | Default     |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| `--layout`                                 | `sidebar`, `stacked`, `top-nav`, `split-panel`                                                                                   | `sidebar`   |
+| `--accent`                                 | 18 colors (`red` through `rose`) and `neutral`                                                                                   | `blue`      |
+| `--surface-color`                          | 12 neutral palettes (`slate`, `gray`, `cool`, `zinc`, `neutral`, `iron`, `mauve`, `graphite`, `stone`, `sand`, `olive`, `sepia`) | `slate`     |
+| `--preset`                                 | `default`, `glass`                                                                                                               | `default`   |
+| `--background`                             | `solid`, `gradient`                                                                                                              | `solid`     |
+| `--background-intensity`                   | `subtle`, `balanced`, `vivid`, `intense`                                                                                         | `balanced`  |
+| `--gradient-pattern`                       | `blobs`, `aurora`, `spotlight`, `mesh`                                                                                           | `blobs`     |
+| `--mode`                                   | `light`, `dark`, `system`                                                                                                        | `system`    |
+| `--density`                                | `compact`, `cozy`, `comfortable`, `spacious`                                                                                     | `cozy`      |
+| `--elevation`                              | `flat`, `low`, `medium`, `high`                                                                                                  | `medium`    |
+| `--button-elevation`                       | `flat`, `low`, `medium`, `high`                                                                                                  | `flat`      |
+| `--radius`                                 | `sharp`, `subtle`, `rounded`, `pill`                                                                                             | `rounded`   |
+| `--font-size`                              | `small`, `medium`, `large`, `extra-large`                                                                                        | `medium`    |
+| `--theme-switcher` / `--no-theme-switcher` | boolean                                                                                                                          | enabled     |
+| `--theme-axes`                             | comma-separated axis names (see Theming for the valid keys)                                                                      | all axes    |
+| `--host`                                   | hostname or IP                                                                                                                   | `localhost` |
+| `--port`                                   | `1`-`65535`                                                                                                                      | `5173`      |
+| `-y`                                       | skip all prompts, use defaults                                                                                                   |             |
 
 ## What's Included
 
@@ -102,8 +98,8 @@ Several hooks are adapted from [react-hookz/web](https://github.com/react-hookz/
 A 15-axis theming system. Scaffolded projects configure it through `src/theme.config.ts`, which imports the `ThemeConfig` type from `darkraise-ui/theme`; in this monorepo the type and defaults live in `packages/ui/src/theme/themeConfig.ts`. The axes are:
 
 - **Mode** -- light, dark, or system
-- **Accent color** -- 17 color options
-- **Surface color** -- neutral slate or one of 17 tinted surfaces
+- **Accent color** -- 18 color options plus `neutral` (near-black in light, near-white in dark)
+- **Surface color** -- one of 12 neutral palettes (slate by default)
 - **Preset** -- `default` or `glass` (glassmorphism is the `glass` preset)
 - **Background style** -- solid or gradient
 - **Background intensity** -- subtle, balanced, vivid, or intense
@@ -111,11 +107,11 @@ A 15-axis theming system. Scaffolded projects configure it through `src/theme.co
 - **Density** -- compact, cozy, comfortable, or spacious
 - **Elevation** -- flat, low, medium, or high (surface shadows)
 - **Button elevation** -- flat, low, medium, or high (button-specific shadows)
-- **Surface intensity** -- flat, subtle, balanced, or bold (how strongly card, popover, and overlay fills wash toward the page or foreground)
 - **Radius** -- sharp, subtle, rounded, or pill
 - **Font size** -- small, medium, large, or extra-large (scales type, icons, and minimum control heights)
-- **Accent vibrancy** -- calm, balanced, vivid, or intense (dark mode only; controls how loud the brand accent renders)
-- **Canvas tint** -- neutral, subtle, balanced, or vivid (dark mode only; caps how much the surface color tints the page canvas)
+- **Contrast** -- low, standard, or high (how far apart the page, card and edge steps sit)
+- **Dark accent chroma** -- calm, standard, or vivid (dark mode only; how saturated the accent fills and marks render)
+- **Tint with accent** -- off or on (tints the neutral surfaces toward the accent; hidden under the neutral accent)
 
 The switcher config also exposes a `presetAxes` master toggle that controls whether preset-specific controls (for example glass opacity and blur) appear in the switcher panel.
 
