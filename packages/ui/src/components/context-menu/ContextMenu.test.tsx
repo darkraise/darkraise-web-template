@@ -74,35 +74,35 @@ describe("ContextMenu", () => {
     expect(del).toHaveAttribute("aria-disabled", "true")
   })
 
-  it("forwards surfaceIntensity to the content surface", async () => {
+  it("forwards surface to the content surface", async () => {
     render(
       <ContextMenu>
         <ContextMenuTrigger>Right-click here</ContextMenuTrigger>
-        <ContextMenuContent surfaceIntensity="flat">
+        <ContextMenuContent surface="page">
           <ContextMenuItem>Edit</ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>,
     )
     fireEvent.contextMenu(screen.getByText("Right-click here"))
     expect(await screen.findByRole("menu")).toHaveAttribute(
-      "data-surface-intensity",
-      "flat",
+      "data-surface-fill",
+      "page",
     )
   })
 
-  it("emits the attribute for balanced, so it overrides an ancestor", async () => {
+  it("emits the attribute for card, so it overrides an ancestor", async () => {
     render(
       <ContextMenu>
         <ContextMenuTrigger>Right-click here</ContextMenuTrigger>
-        <ContextMenuContent surfaceIntensity="balanced">
+        <ContextMenuContent surface="card">
           <ContextMenuItem>Edit</ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>,
     )
     fireEvent.contextMenu(screen.getByText("Right-click here"))
     expect(await screen.findByRole("menu")).toHaveAttribute(
-      "data-surface-intensity",
-      "balanced",
+      "data-surface-fill",
+      "card",
     )
   })
 

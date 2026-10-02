@@ -3,7 +3,7 @@
 import * as React from "react"
 
 import { cn } from "@lib/utils"
-import type { SurfaceIntensityProp } from "@lib/surface-intensity"
+import type { SurfaceFill } from "@lib/surface-fill"
 import { OverlayCloseButton } from "@components/overlay-primitives"
 import { DismissableLayer } from "@primitives/dismissable-layer"
 import { useFocusTrap } from "@primitives/focus-trap"
@@ -141,13 +141,8 @@ interface DialogContentProps extends React.HTMLAttributes<HTMLDivElement> {
   onEscapeKeyDown?: (event: KeyboardEvent) => void
   onPointerDownOutside?: (event: PointerEvent) => void
   onInteractOutside?: (event: PointerEvent | FocusEvent) => void
-  /**
-   * How strongly this dialog's surface separates from the page, overriding
-   * the `surfaceIntensity` theme axis. Nested non-portalled surfaces inherit
-   * it; portalled content does not, because custom properties inherit
-   * through the DOM tree rather than the React tree.
-   */
-  surfaceIntensity?: SurfaceIntensityProp
+  /** Which plane the surface paints; nested non-portalled surfaces inherit it. */
+  surface?: SurfaceFill
   /**
    * Width ladder. `default` is the historical `max-w-lg`; the rest exist so a
    * confirmation and a data-heavy form are not forced into the same shape.
@@ -162,7 +157,7 @@ function DialogContentImpl({
   onEscapeKeyDown,
   onPointerDownOutside,
   onInteractOutside,
-  surfaceIntensity,
+  surface,
   size = "default",
   ref,
   ...rest
@@ -214,7 +209,7 @@ function DialogContentImpl({
         aria-describedby={ctx.hasDescription ? ctx.descriptionId : undefined}
         data-state={ctx.state}
         data-size={size}
-        data-surface-intensity={surfaceIntensity}
+        data-surface-fill={surface}
         tabIndex={-1}
         className={cn("dr-dialog-content", className)}
         {...rest}

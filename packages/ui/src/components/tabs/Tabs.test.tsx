@@ -497,43 +497,43 @@ describe("Tabs", () => {
     }
   })
 
-  it("forwards surfaceIntensity to the content panel", () => {
+  it("forwards surface to the content panel", () => {
     render(
       <Tabs defaultValue="tab-1">
         <TabsList>
           <TabsTrigger value="tab-1">Tab One</TabsTrigger>
         </TabsList>
-        <TabsContent value="tab-1" surfaceIntensity="bold">
+        <TabsContent value="tab-1" surface="page">
           Panel One
         </TabsContent>
       </Tabs>,
     )
     expect(screen.getByRole("tabpanel")).toHaveAttribute(
-      "data-surface-intensity",
-      "bold",
+      "data-surface-fill",
+      "page",
     )
   })
 
-  it("emits the attribute for balanced, so it overrides an ancestor", () => {
+  it("emits the attribute for card, so it overrides an ancestor", () => {
     render(
       <Tabs defaultValue="tab-1">
         <TabsList>
           <TabsTrigger value="tab-1">Tab One</TabsTrigger>
         </TabsList>
-        <TabsContent value="tab-1" surfaceIntensity="balanced">
+        <TabsContent value="tab-1" surface="card">
           Panel One
         </TabsContent>
       </Tabs>,
     )
     expect(screen.getByRole("tabpanel")).toHaveAttribute(
-      "data-surface-intensity",
-      "balanced",
+      "data-surface-fill",
+      "card",
     )
   })
 
-  it("puts data-surface-intensity on the root when set", () => {
+  it("puts data-surface-fill on the root when set", () => {
     const { container } = render(
-      <Tabs surfaceIntensity="bold" defaultValue="tab-1">
+      <Tabs surface="page" defaultValue="tab-1">
         <TabsList>
           <TabsTrigger value="tab-1">Tab One</TabsTrigger>
         </TabsList>
@@ -541,21 +541,21 @@ describe("Tabs", () => {
       </Tabs>,
     )
     expect(container.querySelector(".dr-tabs")).toHaveAttribute(
-      "data-surface-intensity",
-      "bold",
+      "data-surface-fill",
+      "page",
     )
   })
 
-  it("omits data-surface-intensity from the root when unset", () => {
+  it("omits data-surface-fill from the root when unset", () => {
     const { container } = render(<TestTabs />)
     expect(container.querySelector(".dr-tabs")).not.toHaveAttribute(
-      "data-surface-intensity",
+      "data-surface-fill",
     )
   })
 
-  it("emits the root attribute for balanced, not filtered to undefined", () => {
+  it("emits the root attribute for card, not filtered to undefined", () => {
     const { container } = render(
-      <Tabs surfaceIntensity="balanced" defaultValue="tab-1">
+      <Tabs surface="card" defaultValue="tab-1">
         <TabsList>
           <TabsTrigger value="tab-1">Tab One</TabsTrigger>
         </TabsList>
@@ -563,19 +563,19 @@ describe("Tabs", () => {
       </Tabs>,
     )
     expect(container.querySelector(".dr-tabs")).toHaveAttribute(
-      "data-surface-intensity",
-      "balanced",
+      "data-surface-fill",
+      "card",
     )
   })
 
   // The enclosed indicator is a DOM sibling of the content panel, not a
-  // descendant of it, so a `surfaceIntensity` set on `TabsContent` alone
+  // descendant of it, so a `surface` set on `TabsContent` alone
   // cannot reach it. Both sit under the root, so a root-level value is what
-  // keeps the indicator and the active panel washed as one continuous
+  // keeps the indicator and the active panel painted as one continuous
   // surface. This asserts the enclosure that justifies the root prop.
   it("encloses both the enclosed indicator and the content panel in the root", () => {
     const { container } = render(
-      <Tabs surfaceIntensity="bold" variant="enclosed" defaultValue="tab-1">
+      <Tabs surface="page" variant="enclosed" defaultValue="tab-1">
         <TabsList>
           <TabsTrigger value="tab-1">Tab One</TabsTrigger>
         </TabsList>
@@ -585,7 +585,7 @@ describe("Tabs", () => {
     const root = container.querySelector(".dr-tabs")
     const indicator = container.querySelector(".dr-tabs-indicator")
     const panel = screen.getByRole("tabpanel")
-    expect(root).toHaveAttribute("data-surface-intensity", "bold")
+    expect(root).toHaveAttribute("data-surface-fill", "page")
     expect(indicator).not.toBeNull()
     expect(root?.contains(indicator)).toBe(true)
     expect(root?.contains(panel)).toBe(true)
@@ -593,18 +593,18 @@ describe("Tabs", () => {
 
   it("lets a TabsContent-level value override the root for its own panel", () => {
     render(
-      <Tabs surfaceIntensity="bold" defaultValue="tab-1">
+      <Tabs surface="page" defaultValue="tab-1">
         <TabsList>
           <TabsTrigger value="tab-1">Tab One</TabsTrigger>
         </TabsList>
-        <TabsContent value="tab-1" surfaceIntensity="subtle">
+        <TabsContent value="tab-1" surface="muted">
           Panel One
         </TabsContent>
       </Tabs>,
     )
     expect(screen.getByRole("tabpanel")).toHaveAttribute(
-      "data-surface-intensity",
-      "subtle",
+      "data-surface-fill",
+      "muted",
     )
   })
 })

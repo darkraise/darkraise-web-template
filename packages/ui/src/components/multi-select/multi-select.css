@@ -5,7 +5,7 @@
 
   .dr-multi-select-control {
     @apply focus-ring-input-wrapper border-input flex w-full items-center gap-1 rounded-[var(--radius)] border px-2 text-sm transition-colors;
-    /* Pinned out of the surface-intensity axis on purpose: fields hold
+    /* Pinned out of the `surface` prop on purpose: fields hold
        still while panels move around them. The rung is container-relative
        -- see `--control-surface` in theme.css. */
     background-color: hsl(var(--control-surface) / var(--surface-opacity, 1));

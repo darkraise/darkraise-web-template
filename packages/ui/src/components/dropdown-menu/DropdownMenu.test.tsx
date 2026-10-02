@@ -126,33 +126,33 @@ describe("DropdownMenu", () => {
     expect(onValueChange).toHaveBeenCalledWith("b")
   })
 
-  it("forwards surfaceIntensity to the content surface", async () => {
+  it("forwards surface to the content surface", async () => {
     render(
       <DropdownMenu defaultOpen>
         <DropdownMenuTrigger>Open</DropdownMenuTrigger>
-        <DropdownMenuContent surfaceIntensity="flat">
+        <DropdownMenuContent surface="page">
           <DropdownMenuItem>Apple</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>,
     )
     expect(await screen.findByRole("menu")).toHaveAttribute(
-      "data-surface-intensity",
-      "flat",
+      "data-surface-fill",
+      "page",
     )
   })
 
-  it("emits the attribute for balanced, so it overrides an ancestor", async () => {
+  it("emits the attribute for card, so it overrides an ancestor", async () => {
     render(
       <DropdownMenu defaultOpen>
         <DropdownMenuTrigger>Open</DropdownMenuTrigger>
-        <DropdownMenuContent surfaceIntensity="balanced">
+        <DropdownMenuContent surface="card">
           <DropdownMenuItem>Apple</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>,
     )
     expect(await screen.findByRole("menu")).toHaveAttribute(
-      "data-surface-intensity",
-      "balanced",
+      "data-surface-fill",
+      "card",
     )
   })
 

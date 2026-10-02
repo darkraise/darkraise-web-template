@@ -177,27 +177,27 @@ describe("Dialog", () => {
     expect(trigger).toHaveAttribute("data-state", "open")
   })
 
-  it("forwards surfaceIntensity to the content surface", () => {
+  it("forwards surface to the content surface", () => {
     render(
       <Dialog defaultOpen>
-        <DialogContent surfaceIntensity="bold">Body</DialogContent>
+        <DialogContent surface="page">Body</DialogContent>
       </Dialog>,
     )
     expect(screen.getByRole("dialog")).toHaveAttribute(
-      "data-surface-intensity",
-      "bold",
+      "data-surface-fill",
+      "page",
     )
   })
 
-  it("emits the attribute for balanced, so it overrides an ancestor", () => {
+  it("emits the attribute for card, so it overrides an ancestor", () => {
     render(
       <Dialog defaultOpen>
-        <DialogContent surfaceIntensity="balanced">Body</DialogContent>
+        <DialogContent surface="card">Body</DialogContent>
       </Dialog>,
     )
     expect(screen.getByRole("dialog")).toHaveAttribute(
-      "data-surface-intensity",
-      "balanced",
+      "data-surface-fill",
+      "card",
     )
   })
 })

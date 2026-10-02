@@ -6,7 +6,7 @@ import { useId } from "@primitives/state"
 import { Presence } from "@primitives/presence"
 import { composeRefs } from "@primitives/slot"
 import { cn } from "@lib/utils"
-import type { SurfaceIntensityProp } from "@lib/surface-intensity"
+import type { SurfaceFill } from "@lib/surface-fill"
 import { type CardBorder } from "@components/card"
 import "./tabs.css"
 
@@ -78,15 +78,8 @@ interface TabsProps extends Omit<
   activationMode?: TabsActivationMode
   dir?: "ltr" | "rtl"
   ref?: React.Ref<HTMLDivElement>
-  /**
-   * How strongly this whole assembly's surfaces separate from the page,
-   * overriding the `surfaceIntensity` theme axis for both the content
-   * panels and, on the `enclosed` variant, the sliding indicator that reads
-   * as one continuous surface with the active panel. Nested non-portalled
-   * surfaces inherit it; a `TabsContent` may still set its own
-   * `surfaceIntensity` to override this root value for just its panel.
-   */
-  surfaceIntensity?: SurfaceIntensityProp
+  /** Which plane the surface paints; nested non-portalled surfaces inherit it. */
+  surface?: SurfaceFill
 }
 
 function Tabs({
@@ -101,7 +94,7 @@ function Tabs({
   border,
   activationMode,
   dir,
-  surfaceIntensity,
+  surface,
   children,
   ...props
 }: TabsProps) {
@@ -134,7 +127,7 @@ function Tabs({
       data-orientation={ctx.orientation}
       data-variant={variant}
       data-color={color}
-      data-surface-intensity={surfaceIntensity}
+      data-surface-fill={surface}
       dir={ctx.dir}
       className={cn("dr-tabs", className)}
       {...props}
@@ -399,13 +392,8 @@ interface TabsContentProps extends React.HTMLAttributes<HTMLDivElement> {
   value: string
   forceMount?: boolean
   ref?: React.Ref<HTMLDivElement>
-  /**
-   * How strongly this panel's surface separates from the page, overriding
-   * the `surfaceIntensity` theme axis. Nested non-portalled surfaces inherit
-   * it; portalled content does not, because custom properties inherit
-   * through the DOM tree rather than the React tree.
-   */
-  surfaceIntensity?: SurfaceIntensityProp
+  /** Which plane the surface paints; nested non-portalled surfaces inherit it. */
+  surface?: SurfaceFill
 }
 
 function TabsContent({
@@ -413,7 +401,7 @@ function TabsContent({
   ref,
   value,
   forceMount,
-  surfaceIntensity,
+  surface,
   children,
   ...props
 }: TabsContentProps) {
@@ -432,7 +420,7 @@ function TabsContent({
       data-orientation={ctx.orientation}
       data-variant={variant}
       data-color={color}
-      data-surface-intensity={surfaceIntensity}
+      data-surface-fill={surface}
       hidden={!isSelected}
       tabIndex={0}
       className={cn("dr-tabs-content", className)}

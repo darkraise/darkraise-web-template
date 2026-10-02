@@ -1,25 +1,20 @@
 import * as React from "react"
 import { cn } from "@lib/utils"
-import type { SurfaceIntensityProp } from "@lib/surface-intensity"
+import type { SurfaceFill } from "@lib/surface-fill"
 import "./toolbar.css"
 
 export type ToolbarOrientation = "horizontal" | "vertical"
 
 export interface ToolbarProps extends React.HTMLAttributes<HTMLDivElement> {
   orientation?: ToolbarOrientation
-  /**
-   * How strongly this toolbar's surface separates from the page, overriding
-   * the `surfaceIntensity` theme axis. Nested non-portalled surfaces inherit
-   * it; portalled content does not, because custom properties inherit
-   * through the DOM tree rather than the React tree.
-   */
-  surfaceIntensity?: SurfaceIntensityProp
+  /** Which plane the surface paints; nested non-portalled surfaces inherit it. */
+  surface?: SurfaceFill
 }
 
 function Toolbar({
   className,
   orientation = "horizontal",
-  surfaceIntensity,
+  surface,
   ...rest
 }: ToolbarProps) {
   return (
@@ -27,7 +22,7 @@ function Toolbar({
       role="toolbar"
       aria-orientation={orientation}
       data-orientation={orientation}
-      data-surface-intensity={surfaceIntensity}
+      data-surface-fill={surface}
       className={cn("dr-toolbar", className)}
       {...rest}
     />

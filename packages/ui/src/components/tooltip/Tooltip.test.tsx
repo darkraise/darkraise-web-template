@@ -345,33 +345,33 @@ describe("Tooltip", () => {
     expect(screen.getByRole("button", { name: "X" })).toBeInTheDocument()
   })
 
-  it("forwards surfaceIntensity to the content surface", async () => {
+  it("forwards surface to the content surface", async () => {
     const user = userEvent.setup()
     render(
       <Tooltip delayDuration={0}>
         <TooltipTrigger>Hover me</TooltipTrigger>
-        <TooltipContent surfaceIntensity="flat">Tip text</TooltipContent>
+        <TooltipContent surface="page">Tip text</TooltipContent>
       </Tooltip>,
     )
     await user.hover(screen.getByRole("button", { name: "Hover me" }))
     expect(await screen.findByRole("tooltip")).toHaveAttribute(
-      "data-surface-intensity",
-      "flat",
+      "data-surface-fill",
+      "page",
     )
   })
 
-  it("emits the attribute for balanced, so it overrides an ancestor", async () => {
+  it("emits the attribute for card, so it overrides an ancestor", async () => {
     const user = userEvent.setup()
     render(
       <Tooltip delayDuration={0}>
         <TooltipTrigger>Hover me</TooltipTrigger>
-        <TooltipContent surfaceIntensity="balanced">Tip text</TooltipContent>
+        <TooltipContent surface="card">Tip text</TooltipContent>
       </Tooltip>,
     )
     await user.hover(screen.getByRole("button", { name: "Hover me" }))
     expect(await screen.findByRole("tooltip")).toHaveAttribute(
-      "data-surface-intensity",
-      "balanced",
+      "data-surface-fill",
+      "card",
     )
   })
 })

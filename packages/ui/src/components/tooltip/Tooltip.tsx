@@ -3,7 +3,7 @@
 import * as React from "react"
 
 import { cn } from "@lib/utils"
-import type { SurfaceIntensityProp } from "@lib/surface-intensity"
+import type { SurfaceFill } from "@lib/surface-fill"
 import { DismissableLayer } from "@primitives/dismissable-layer"
 import { isProgrammaticFocus } from "@primitives/focus-trap"
 import { Portal } from "@primitives/portal"
@@ -241,13 +241,8 @@ interface TooltipContentProps extends React.HTMLAttributes<HTMLDivElement> {
   avoidCollisions?: boolean
   forceMount?: boolean
   ref?: React.Ref<HTMLDivElement>
-  /**
-   * How strongly this tooltip's surface separates from the page, overriding
-   * the `surfaceIntensity` theme axis. Nested non-portalled surfaces inherit
-   * it; portalled content does not, because custom properties inherit
-   * through the DOM tree rather than the React tree.
-   */
-  surfaceIntensity?: SurfaceIntensityProp
+  /** Which plane the surface paints; nested non-portalled surfaces inherit it. */
+  surface?: SurfaceFill
 }
 
 function TooltipContentImpl({
@@ -259,7 +254,7 @@ function TooltipContentImpl({
   alignOffset = 0,
   collisionPadding = 8,
   avoidCollisions = true,
-  surfaceIntensity,
+  surface,
   ref,
   onPointerEnter,
   onPointerLeave,
@@ -304,7 +299,7 @@ function TooltipContentImpl({
         data-state={ctx.state}
         data-side={resolvedSide}
         data-align={resolvedAlign}
-        data-surface-intensity={surfaceIntensity}
+        data-surface-fill={surface}
         style={{
           position: floating.strategy,
           top: Math.round(floating.y ?? 0),

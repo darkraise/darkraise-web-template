@@ -726,40 +726,34 @@ describe("FloatingPanel", () => {
     expect(panel.style.top).toBe("50px")
   })
 
-  it("forwards surfaceIntensity to the root", () => {
+  it("forwards surface to the root", () => {
     render(
       <FloatingPanel
         defaultPosition={{ x: 0, y: 0 }}
         defaultSize={{ width: 200, height: 150 }}
-        surfaceIntensity="bold"
+        surface="page"
         data-testid="p"
       >
         <FloatingPanelHeader>H</FloatingPanelHeader>
         <FloatingPanelContent>x</FloatingPanelContent>
       </FloatingPanel>,
     )
-    expect(screen.getByTestId("p")).toHaveAttribute(
-      "data-surface-intensity",
-      "bold",
-    )
+    expect(screen.getByTestId("p")).toHaveAttribute("data-surface-fill", "page")
   })
 
-  it("emits the attribute for balanced, so it overrides an ancestor", () => {
+  it("emits the attribute for card, so it overrides an ancestor", () => {
     render(
       <FloatingPanel
         defaultPosition={{ x: 0, y: 0 }}
         defaultSize={{ width: 200, height: 150 }}
-        surfaceIntensity="balanced"
+        surface="card"
         data-testid="p"
       >
         <FloatingPanelHeader>H</FloatingPanelHeader>
         <FloatingPanelContent>x</FloatingPanelContent>
       </FloatingPanel>,
     )
-    expect(screen.getByTestId("p")).toHaveAttribute(
-      "data-surface-intensity",
-      "balanced",
-    )
+    expect(screen.getByTestId("p")).toHaveAttribute("data-surface-fill", "card")
   })
 })
 

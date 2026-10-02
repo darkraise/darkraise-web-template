@@ -5,7 +5,7 @@ import * as React from "react"
 import { ChevronDown } from "lucide-react"
 
 import { cn } from "@lib/utils"
-import type { SurfaceIntensityProp } from "@lib/surface-intensity"
+import type { SurfaceFill } from "@lib/surface-fill"
 import { Presence } from "@primitives/presence"
 import { Slot, composeRefs } from "@primitives/slot"
 import { useControllableState, useEvent, useId } from "@primitives/state"
@@ -333,14 +333,8 @@ function NavigationMenuTrigger({
 interface NavigationMenuContentProps extends React.HTMLAttributes<HTMLDivElement> {
   forceMount?: boolean
   ref?: React.Ref<HTMLDivElement>
-  /**
-   * How strongly this navigation menu panel's surface separates from the
-   * page, overriding the `surfaceIntensity` theme axis. Nested
-   * non-portalled surfaces inherit it; portalled content does not, because
-   * custom properties inherit through the DOM tree rather than the React
-   * tree.
-   */
-  surfaceIntensity?: SurfaceIntensityProp
+  /** Which plane the surface paints; nested non-portalled surfaces inherit it. */
+  surface?: SurfaceFill
 }
 
 function NavigationMenuContent({
@@ -349,7 +343,7 @@ function NavigationMenuContent({
   ref,
   onPointerEnter,
   onPointerLeave,
-  surfaceIntensity,
+  surface,
   ...rest
 }: NavigationMenuContentProps) {
   const root = useNavigationMenuRoot("NavigationMenuContent")
@@ -362,7 +356,7 @@ function NavigationMenuContent({
         ref={ref}
         id={item.contentId}
         data-state={open ? "open" : "closed"}
-        data-surface-intensity={surfaceIntensity}
+        data-surface-fill={surface}
         aria-labelledby={item.triggerId}
         onPointerEnter={(event) => {
           onPointerEnter?.(event)

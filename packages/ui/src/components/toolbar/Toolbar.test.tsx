@@ -31,19 +31,13 @@ describe("Toolbar", () => {
     expect(sep).toHaveAttribute("data-orientation", "horizontal")
   })
 
-  it("forwards surfaceIntensity to the root", () => {
-    const { container } = render(<Toolbar surfaceIntensity="bold" />)
-    expect(container.firstChild).toHaveAttribute(
-      "data-surface-intensity",
-      "bold",
-    )
+  it("forwards surface to the root", () => {
+    const { container } = render(<Toolbar surface="page" />)
+    expect(container.firstChild).toHaveAttribute("data-surface-fill", "page")
   })
 
-  it("emits the attribute for balanced, so it overrides an ancestor", () => {
-    const { container } = render(<Toolbar surfaceIntensity="balanced" />)
-    expect(container.firstChild).toHaveAttribute(
-      "data-surface-intensity",
-      "balanced",
-    )
+  it("emits the attribute for card, so it overrides an ancestor", () => {
+    const { container } = render(<Toolbar surface="card" />)
+    expect(container.firstChild).toHaveAttribute("data-surface-fill", "card")
   })
 })

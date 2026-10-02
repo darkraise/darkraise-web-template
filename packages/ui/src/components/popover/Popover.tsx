@@ -3,7 +3,7 @@
 import * as React from "react"
 
 import { cn } from "@lib/utils"
-import type { SurfaceIntensityProp } from "@lib/surface-intensity"
+import type { SurfaceFill } from "@lib/surface-fill"
 import { DismissableLayer } from "@primitives/dismissable-layer"
 import { focusProgrammatically, useFocusTrap } from "@primitives/focus-trap"
 import { Portal } from "@primitives/portal"
@@ -137,13 +137,8 @@ interface PopoverContentProps extends React.HTMLAttributes<HTMLDivElement> {
   onPointerDownOutside?: (event: PointerEvent) => void
   onInteractOutside?: (event: PointerEvent | FocusEvent) => void
   ref?: React.Ref<HTMLDivElement>
-  /**
-   * How strongly this popover's surface separates from the page, overriding
-   * the `surfaceIntensity` theme axis. Nested non-portalled surfaces inherit
-   * it; portalled content does not, because custom properties inherit
-   * through the DOM tree rather than the React tree.
-   */
-  surfaceIntensity?: SurfaceIntensityProp
+  /** Which plane the surface paints; nested non-portalled surfaces inherit it. */
+  surface?: SurfaceFill
 }
 
 function PopoverContentImpl({
@@ -160,7 +155,7 @@ function PopoverContentImpl({
   onEscapeKeyDown,
   onPointerDownOutside,
   onInteractOutside,
-  surfaceIntensity,
+  surface,
   ref,
   ...rest
 }: Omit<PopoverContentProps, "forceMount">) {
@@ -280,7 +275,7 @@ function PopoverContentImpl({
         data-state={ctx.state}
         data-side={resolvedSide}
         data-align={resolvedAlign}
-        data-surface-intensity={surfaceIntensity}
+        data-surface-fill={surface}
         tabIndex={-1}
         style={{
           position: floating.strategy,

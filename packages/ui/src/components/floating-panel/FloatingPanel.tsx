@@ -11,7 +11,7 @@ import {
   X,
 } from "lucide-react"
 import { cn } from "@lib/utils"
-import type { SurfaceIntensityProp } from "@lib/surface-intensity"
+import type { SurfaceFill } from "@lib/surface-fill"
 import { Portal } from "@primitives/portal"
 import { useFloatingPanelStore } from "./floatingPanelStoreContext"
 import {
@@ -73,13 +73,8 @@ export interface FloatingPanelProps
    *   floating tools (devtools panels, persistent inspectors).
    */
   scope?: "local" | "global"
-  /**
-   * How strongly this panel's surface separates from the page, overriding
-   * the `surfaceIntensity` theme axis. Nested non-portalled surfaces inherit
-   * it; portalled content does not, because custom properties inherit
-   * through the DOM tree rather than the React tree.
-   */
-  surfaceIntensity?: SurfaceIntensityProp
+  /** Which plane the surface paints; nested non-portalled surfaces inherit it. */
+  surface?: SurfaceFill
 }
 
 export interface FloatingPanelAppProps<P extends Record<string, unknown>> {
@@ -136,7 +131,7 @@ function FloatingPanelImpl({
   defaultPinned,
   onPinnedChange,
   scope = "local",
-  surfaceIntensity,
+  surface,
   style,
   children,
   onPointerDown,
@@ -252,7 +247,7 @@ function FloatingPanelImpl({
         data-minimized={machine.minimized ? "true" : undefined}
         data-maximized={machine.maximized ? "true" : undefined}
         data-pinned={machine.pinned ? "true" : undefined}
-        data-surface-intensity={surfaceIntensity}
+        data-surface-fill={surface}
         // zIndex first so consumer-provided style can still override it; the
         // component-managed layout keys (left/top/width/height) come last
         // because those are the component's responsibility, not the user's.

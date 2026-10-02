@@ -135,33 +135,33 @@ describe("Drawer", () => {
     expect(dialog).toHaveAttribute("data-direction", "right")
   })
 
-  it("forwards surfaceIntensity to the content surface", async () => {
+  it("forwards surface to the content surface", async () => {
     const user = userEvent.setup()
     render(
       <Drawer>
         <DrawerTrigger>Open drawer</DrawerTrigger>
-        <DrawerContent surfaceIntensity="bold">Body</DrawerContent>
+        <DrawerContent surface="page">Body</DrawerContent>
       </Drawer>,
     )
     await user.click(screen.getByRole("button", { name: "Open drawer" }))
     expect(await screen.findByRole("dialog")).toHaveAttribute(
-      "data-surface-intensity",
-      "bold",
+      "data-surface-fill",
+      "page",
     )
   })
 
-  it("emits the attribute for balanced, so it overrides an ancestor", async () => {
+  it("emits the attribute for card, so it overrides an ancestor", async () => {
     const user = userEvent.setup()
     render(
       <Drawer>
         <DrawerTrigger>Open drawer</DrawerTrigger>
-        <DrawerContent surfaceIntensity="balanced">Body</DrawerContent>
+        <DrawerContent surface="card">Body</DrawerContent>
       </Drawer>,
     )
     await user.click(screen.getByRole("button", { name: "Open drawer" }))
     expect(await screen.findByRole("dialog")).toHaveAttribute(
-      "data-surface-intensity",
-      "balanced",
+      "data-surface-fill",
+      "card",
     )
   })
 })

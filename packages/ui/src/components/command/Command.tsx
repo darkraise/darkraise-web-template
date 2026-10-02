@@ -5,7 +5,7 @@ import { useUiText } from "../../i18n/useUiText"
 import { Search } from "lucide-react"
 
 import { cn } from "@lib/utils"
-import type { SurfaceIntensityProp } from "@lib/surface-intensity"
+import type { SurfaceFill } from "@lib/surface-fill"
 import {
   Dialog,
   DialogContent,
@@ -63,13 +63,8 @@ interface CommandProps extends React.HTMLAttributes<HTMLDivElement> {
   onValueChange?: (value: string) => void
   loop?: boolean
   ref?: React.Ref<HTMLDivElement>
-  /**
-   * How strongly this command surface separates from the page, overriding
-   * the `surfaceIntensity` theme axis. Nested non-portalled surfaces inherit
-   * it; portalled content does not, because custom properties inherit
-   * through the DOM tree rather than the React tree.
-   */
-  surfaceIntensity?: SurfaceIntensityProp
+  /** Which plane the surface paints; nested non-portalled surfaces inherit it. */
+  surface?: SurfaceFill
 }
 
 function Command({
@@ -80,7 +75,7 @@ function Command({
   defaultValue,
   value,
   onValueChange,
-  surfaceIntensity,
+  surface,
   ref,
   ...rest
 }: CommandProps) {
@@ -190,7 +185,7 @@ function Command({
             (ref as React.RefObject<HTMLDivElement | null>).current = node
         }}
         cmdk-root=""
-        data-surface-intensity={surfaceIntensity}
+        data-surface-fill={surface}
         className={cn("dr-command", className)}
         {...rest}
       >

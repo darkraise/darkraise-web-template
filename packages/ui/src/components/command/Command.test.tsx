@@ -88,34 +88,28 @@ describe("Command", () => {
     expect(screen.getByText("Veggies")).toBeInTheDocument()
   })
 
-  it("forwards surfaceIntensity to the root surface", () => {
+  it("forwards surface to the root surface", () => {
     const { container } = render(
-      <Command surfaceIntensity="flat">
+      <Command surface="page">
         <CommandInput placeholder="Type..." aria-label="Search" />
         <CommandList>
           <CommandItem value="apple">Apple</CommandItem>
         </CommandList>
       </Command>,
     )
-    expect(container.firstChild).toHaveAttribute(
-      "data-surface-intensity",
-      "flat",
-    )
+    expect(container.firstChild).toHaveAttribute("data-surface-fill", "page")
   })
 
-  it("emits the attribute for balanced, so it overrides an ancestor", () => {
+  it("emits the attribute for card, so it overrides an ancestor", () => {
     const { container } = render(
-      <Command surfaceIntensity="balanced">
+      <Command surface="card">
         <CommandInput placeholder="Type..." aria-label="Search" />
         <CommandList>
           <CommandItem value="apple">Apple</CommandItem>
         </CommandList>
       </Command>,
     )
-    expect(container.firstChild).toHaveAttribute(
-      "data-surface-intensity",
-      "balanced",
-    )
+    expect(container.firstChild).toHaveAttribute("data-surface-fill", "card")
   })
 })
 

@@ -2,7 +2,7 @@
   .dr-select-trigger {
     @apply glass border-input text-card-foreground focus-ring-input data-[placeholder]:text-muted-foreground flex w-full cursor-pointer items-center justify-between border px-[var(--field-px)] text-sm disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)] [&>span]:line-clamp-1;
     height: var(--field-height);
-    /* Pinned out of the surface-intensity axis on purpose: fields hold
+    /* Pinned out of the `surface` prop on purpose: fields hold
        still while panels move around them. The rung is container-relative
        -- see `--control-surface` in theme.css. */
     background-color: hsl(var(--control-surface) / var(--surface-opacity, 1));

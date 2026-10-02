@@ -4,7 +4,7 @@ import * as React from "react"
 import { Check, ChevronDown } from "lucide-react"
 
 import { cn } from "@lib/utils"
-import type { SurfaceIntensityProp } from "@lib/surface-intensity"
+import type { SurfaceFill } from "@lib/surface-fill"
 import { DismissableLayer } from "@primitives/dismissable-layer"
 import { Portal } from "@primitives/portal"
 import { Presence } from "@primitives/presence"
@@ -368,13 +368,8 @@ interface SelectContentProps extends React.HTMLAttributes<HTMLDivElement> {
   onEscapeKeyDown?: (event: KeyboardEvent) => void
   onPointerDownOutside?: (event: PointerEvent) => void
   ref?: React.Ref<HTMLDivElement>
-  /**
-   * How strongly this select panel's surface separates from the page,
-   * overriding the `surfaceIntensity` theme axis. Nested non-portalled
-   * surfaces inherit it; portalled content does not, because custom
-   * properties inherit through the DOM tree rather than the React tree.
-   */
-  surfaceIntensity?: SurfaceIntensityProp
+  /** Which plane the surface paints; nested non-portalled surfaces inherit it. */
+  surface?: SurfaceFill
 }
 
 function placementOf(side: Side, align: Align) {
@@ -394,7 +389,7 @@ function SelectContentImpl({
   onCloseAutoFocus,
   onEscapeKeyDown,
   onPointerDownOutside,
-  surfaceIntensity,
+  surface,
   ref,
   ...rest
 }: Omit<SelectContentProps, "forceMount">) {
@@ -508,7 +503,7 @@ function SelectContentImpl({
         data-state={ctx.open ? "open" : "closed"}
         data-side={resolvedSide}
         data-position={position}
-        data-surface-intensity={surfaceIntensity}
+        data-surface-fill={surface}
         tabIndex={-1}
         style={{
           position: floating.strategy,

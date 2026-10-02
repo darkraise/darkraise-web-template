@@ -145,40 +145,34 @@ describe("Popover", () => {
     expect(document.activeElement).not.toBe(trigger)
   })
 
-  it("forwards surfaceIntensity to the content surface", async () => {
+  it("forwards surface to the content surface", async () => {
     const user = userEvent.setup()
     render(
       <Popover>
         <PopoverTrigger>Toggle</PopoverTrigger>
-        <PopoverContent surfaceIntensity="flat">
+        <PopoverContent surface="page">
           <p>Popover content</p>
         </PopoverContent>
       </Popover>,
     )
     await user.click(screen.getByRole("button", { name: "Toggle" }))
     const content = await screen.findByText("Popover content")
-    expect(content.parentElement).toHaveAttribute(
-      "data-surface-intensity",
-      "flat",
-    )
+    expect(content.parentElement).toHaveAttribute("data-surface-fill", "page")
   })
 
-  it("emits the attribute for balanced, so it overrides an ancestor", async () => {
+  it("emits the attribute for card, so it overrides an ancestor", async () => {
     const user = userEvent.setup()
     render(
       <Popover>
         <PopoverTrigger>Toggle</PopoverTrigger>
-        <PopoverContent surfaceIntensity="balanced">
+        <PopoverContent surface="card">
           <p>Popover content</p>
         </PopoverContent>
       </Popover>,
     )
     await user.click(screen.getByRole("button", { name: "Toggle" }))
     const content = await screen.findByText("Popover content")
-    expect(content.parentElement).toHaveAttribute(
-      "data-surface-intensity",
-      "balanced",
-    )
+    expect(content.parentElement).toHaveAttribute("data-surface-fill", "card")
   })
 
   it("marks the focus it returns to the trigger as programmatic", async () => {

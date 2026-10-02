@@ -3,27 +3,27 @@ import { describe, it, expect } from "vitest"
 import { Sheet, SheetContent } from "@components/sheet"
 
 describe("Sheet", () => {
-  it("forwards surfaceIntensity to the content surface", () => {
+  it("forwards surface to the content surface", () => {
     render(
       <Sheet defaultOpen>
-        <SheetContent surfaceIntensity="bold">Body</SheetContent>
+        <SheetContent surface="page">Body</SheetContent>
       </Sheet>,
     )
     expect(screen.getByRole("dialog")).toHaveAttribute(
-      "data-surface-intensity",
-      "bold",
+      "data-surface-fill",
+      "page",
     )
   })
 
-  it("emits the attribute for balanced, so it overrides an ancestor", () => {
+  it("emits the attribute for card, so it overrides an ancestor", () => {
     render(
       <Sheet defaultOpen>
-        <SheetContent surfaceIntensity="balanced">Body</SheetContent>
+        <SheetContent surface="card">Body</SheetContent>
       </Sheet>,
     )
     expect(screen.getByRole("dialog")).toHaveAttribute(
-      "data-surface-intensity",
-      "balanced",
+      "data-surface-fill",
+      "card",
     )
   })
 })

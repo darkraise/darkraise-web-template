@@ -159,37 +159,33 @@ describe("HoverCard", () => {
     expect(screen.getByText("controlled")).toBeInTheDocument()
   })
 
-  it("forwards surfaceIntensity to the content surface", async () => {
+  it("forwards surface to the content surface", async () => {
     const user = userEvent.setup()
     render(
       <HoverCard openDelay={0} closeDelay={0}>
         <HoverCardTrigger href="#">trigger</HoverCardTrigger>
-        <HoverCardContent surfaceIntensity="flat">
-          card content
-        </HoverCardContent>
+        <HoverCardContent surface="page">card content</HoverCardContent>
       </HoverCard>,
     )
     await user.hover(screen.getByText("trigger"))
     expect(await screen.findByRole("dialog")).toHaveAttribute(
-      "data-surface-intensity",
-      "flat",
+      "data-surface-fill",
+      "page",
     )
   })
 
-  it("emits the attribute for balanced, so it overrides an ancestor", async () => {
+  it("emits the attribute for card, so it overrides an ancestor", async () => {
     const user = userEvent.setup()
     render(
       <HoverCard openDelay={0} closeDelay={0}>
         <HoverCardTrigger href="#">trigger</HoverCardTrigger>
-        <HoverCardContent surfaceIntensity="balanced">
-          card content
-        </HoverCardContent>
+        <HoverCardContent surface="card">card content</HoverCardContent>
       </HoverCard>,
     )
     await user.hover(screen.getByText("trigger"))
     expect(await screen.findByRole("dialog")).toHaveAttribute(
-      "data-surface-intensity",
-      "balanced",
+      "data-surface-fill",
+      "card",
     )
   })
 })

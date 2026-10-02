@@ -84,13 +84,13 @@ describe("Menubar", () => {
     expect(onSelect).toHaveBeenCalled()
   })
 
-  it("forwards surfaceIntensity to the content surface", async () => {
+  it("forwards surface to the content surface", async () => {
     const user = userEvent.setup()
     render(
       <Menubar>
         <MenubarMenu value="file">
           <MenubarTrigger>File</MenubarTrigger>
-          <MenubarContent surfaceIntensity="flat">
+          <MenubarContent surface="page">
             <MenubarItem>New</MenubarItem>
           </MenubarContent>
         </MenubarMenu>
@@ -98,18 +98,18 @@ describe("Menubar", () => {
     )
     await user.click(screen.getByRole("menuitem", { name: "File" }))
     expect(await screen.findByRole("menu")).toHaveAttribute(
-      "data-surface-intensity",
-      "flat",
+      "data-surface-fill",
+      "page",
     )
   })
 
-  it("emits the attribute for balanced, so it overrides an ancestor", async () => {
+  it("emits the attribute for card, so it overrides an ancestor", async () => {
     const user = userEvent.setup()
     render(
       <Menubar>
         <MenubarMenu value="file">
           <MenubarTrigger>File</MenubarTrigger>
-          <MenubarContent surfaceIntensity="balanced">
+          <MenubarContent surface="card">
             <MenubarItem>New</MenubarItem>
           </MenubarContent>
         </MenubarMenu>
@@ -117,8 +117,8 @@ describe("Menubar", () => {
     )
     await user.click(screen.getByRole("menuitem", { name: "File" }))
     expect(await screen.findByRole("menu")).toHaveAttribute(
-      "data-surface-intensity",
-      "balanced",
+      "data-surface-fill",
+      "card",
     )
   })
 })

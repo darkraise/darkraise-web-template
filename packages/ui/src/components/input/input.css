@@ -2,7 +2,7 @@
   .dr-input {
     @apply glass border-input text-card-foreground focus-ring-input file:text-foreground placeholder:text-muted-foreground flex w-full border px-[var(--field-px)] text-base file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)] md:text-sm [&::-ms-reveal]:dark:invert [&::-webkit-calendar-picker-indicator]:dark:invert;
     height: var(--field-height);
-    /* Pinned out of the surface-intensity axis on purpose: fields hold
+    /* Pinned out of the `surface` prop on purpose: fields hold
        still while panels move around them. The rung is container-relative
        -- see `--control-surface` in theme.css. */
     background-color: hsl(var(--control-surface) / var(--surface-opacity, 1));
@@ -20,7 +20,7 @@
   .dr-input-group {
     @apply glass border-input focus-ring-input-wrapper text-card-foreground flex w-full overflow-hidden border;
     height: var(--field-height);
-    /* Pinned out of the surface-intensity axis on purpose: fields hold
+    /* Pinned out of the `surface` prop on purpose: fields hold
        still while panels move around them. The rung is container-relative
        -- see `--control-surface` in theme.css. */
     background-color: hsl(var(--control-surface) / var(--surface-opacity, 1));
