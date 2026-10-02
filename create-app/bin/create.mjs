@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { execFileSync } from "child_process"
-import { existsSync, mkdirSync, writeFileSync } from "fs"
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs"
 import { resolve } from "path"
 import * as p from "@clack/prompts"
 import minimist from "minimist"
@@ -19,83 +19,31 @@ async function latestVersion(pkg) {
   }
 }
 
-const ACCENT_COLORS = [
-  "red",
-  "orange",
-  "amber",
-  "yellow",
-  "lime",
-  "green",
-  "emerald",
-  "teal",
-  "cyan",
-  "sky",
-  "blue",
-  "indigo",
-  "violet",
-  "purple",
-  "fuchsia",
-  "pink",
-  "rose",
-]
-const SURFACE_COLORS = ["slate", ...ACCENT_COLORS]
-const PRESETS = ["default", "glass"]
-const BACKGROUND_STYLES = ["solid", "gradient"]
-const BACKGROUND_INTENSITIES = [
-  "neutral",
-  "subtle",
-  "balanced",
-  "vivid",
-  "intense",
-]
-const GRADIENT_PATTERNS = ["blobs", "aurora", "spotlight", "mesh"]
-const DENSITIES = ["compact", "cozy", "comfortable", "spacious"]
-const ELEVATIONS = ["flat", "low", "medium", "high"]
-const RADII = ["sharp", "subtle", "rounded", "pill"]
-const CONTROL_DEPTHS = ["flush", "subtle", "recessed", "deep"]
-const SHELL_STYLES = [
-  "classic",
-  "inset",
-  "island",
-  "floating",
-  "framed",
-  "flat",
-]
-const SIDEBAR_ACTIVE_BARS = ["default", "bar", "ring", "both"]
-const FONT_SIZES = ["small", "medium", "large", "extra-large"]
-const ACCENT_INTENSITIES = ["calm", "balanced", "vivid", "intense"]
-const GLOW_LEVELS = ["none", "subtle", "balanced", "vivid"]
-const SURFACE_INTENSITIES = ["flat", "subtle", "balanced", "bold"]
-const BORDER_INTENSITIES = ["subtle", "balanced", "strong", "bold"]
-const MODES = ["light", "dark", "system"]
+// Generated from the kit's axis registry (pnpm --filter darkraise-ui
+// write:scaffold-axes); a kit test fails when it drifts.
+const AXES = JSON.parse(
+  readFileSync(new URL("./axes.json", import.meta.url), "utf8"),
+)
+const ACCENT_COLORS = AXES.accentColor.values
+const SURFACE_COLORS = AXES.surfaceColor.values
+const PRESETS = AXES.preset.values
+const BACKGROUND_STYLES = AXES.backgroundStyle.values
+const BACKGROUND_INTENSITIES = AXES.backgroundIntensity.values
+const GRADIENT_PATTERNS = AXES.gradientPattern.values
+const DENSITIES = AXES.density.values
+const ELEVATIONS = AXES.elevation.values
+const RADII = AXES.radius.values
+const CONTROL_DEPTHS = AXES.controlDepth.values
+const SHELL_STYLES = AXES.shellStyle.values
+const SIDEBAR_ACTIVE_BARS = AXES.sidebarActiveBar.values
+const FONT_SIZES = AXES.fontSize.values
+const ACCENT_INTENSITIES = AXES.accentIntensity.values
+const GLOW_LEVELS = AXES.outerGlow.values
+const SURFACE_INTENSITIES = AXES.surfaceIntensity.values
+const BORDER_INTENSITIES = AXES.borderIntensity.values
+const MODES = AXES.mode.values
 const LAYOUTS = ["sidebar", "stacked", "top-nav", "split-panel"]
-// Mirrors `ThemeConfig.switcher.axes` in
-// packages/ui/src/theme/themeConfig.ts. `presetAxes` is a master
-// toggle for whether the per-preset axis controls (e.g. glass opacity and
-// blur) appear in the switcher panel.
-const THEME_AXIS_KEYS = [
-  "mode",
-  "accentColor",
-  "surfaceColor",
-  "preset",
-  "backgroundStyle",
-  "backgroundIntensity",
-  "gradientPattern",
-  "density",
-  "elevation",
-  "buttonElevation",
-  "surfaceIntensity",
-  "borderIntensity",
-  "radius",
-  "fontSize",
-  "accentIntensity",
-  "controlDepth",
-  "shellStyle",
-  "sidebarActiveBar",
-  "outerGlow",
-  "innerGlow",
-  "presetAxes",
-]
+const THEME_AXIS_KEYS = [...Object.keys(AXES), "presetAxes"]
 
 const argv = minimist(process.argv.slice(2), {
   boolean: ["y"],
@@ -691,56 +639,6 @@ async function main() {
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
-    <script>
-      ;(function () {
-        var mode = localStorage.getItem("mode") || "system"
-        var resolved =
-          mode === "system"
-            ? window.matchMedia("(prefers-color-scheme: dark)").matches
-              ? "dark"
-              : "light"
-            : mode
-        document.documentElement.setAttribute("data-mode", resolved)
-
-        // Restore every attribute-driven theme axis before React mounts
-        // so the first paint matches the persisted theme. The
-        // attribute-name to localStorage-key map mirrors
-        // packages/ui/src/theme/theme-provider/ThemeProvider.tsx —
-        // note "theme-bg-style" / "theme-bg-intensity" are NOT just
-        // kebab-cased "background-*" keys.
-        var AXIS_LS_KEYS = {
-          "preset": "theme-preset",
-          "background-style": "theme-bg-style",
-          "background-intensity": "theme-bg-intensity",
-          "gradient-pattern": "theme-gradient-pattern",
-          "density": "theme-density",
-          "elevation": "theme-elevation",
-          "button-elevation": "theme-button-elevation",
-          "surface-intensity": "theme-surface-intensity",
-          "radius": "theme-radius",
-          "control-depth": "theme-control-depth",
-          "shell-style": "theme-shell-style",
-          "sidebar-active-bar": "theme-sidebar-active-bar",
-          "font-size": "theme-font-size",
-          "outer-glow": "theme-outer-glow",
-          "inner-glow": "theme-inner-glow",
-        }
-        // Presets that reinterpret an axis neutralise it rather than merely
-        // hiding its control, so restoring a stored value here would flash the
-        // wrong surface treatment before hydration corrects it. Mirrors
-        // NEUTRALISED_WHEN_HIDDEN + hiddenCommonAxes in the library.
-        var NEUTRALISED_BY_PRESET = {
-          glass: ["surface-intensity"],
-        }
-        var activePreset = localStorage.getItem("theme-preset") || ""
-        var neutralised = NEUTRALISED_BY_PRESET[activePreset] || []
-        Object.keys(AXIS_LS_KEYS).forEach(function (axis) {
-          if (neutralised.indexOf(axis) !== -1) return
-          var v = localStorage.getItem(AXIS_LS_KEYS[axis])
-          if (v) document.documentElement.setAttribute("data-" + axis, v)
-        })
-      })()
-    </script>
   </head>
   <body>
     <div id="root"></div>
@@ -755,9 +653,10 @@ async function main() {
 import react from "@vitejs/plugin-react-swc"
 import tailwindcss from "@tailwindcss/vite"
 import path from "node:path"
+import { darkraisePrerender } from "darkraise-ui/vite"
 
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [darkraisePrerender(), react(), tailwindcss()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
