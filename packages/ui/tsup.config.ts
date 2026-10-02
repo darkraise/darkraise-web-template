@@ -29,6 +29,7 @@ export default defineConfig({
     "i18n/react-i18next/index": "src/i18n/react-i18next/index.ts",
     "locales/en": "src/locales/en.ts",
     "locales/vi": "src/locales/vi.ts",
+    "vite/index": "src/vite/index.ts",
     ...componentEntries,
   },
   format: ["esm"],
@@ -43,5 +44,6 @@ export default defineConfig({
     "recharts",
     "i18next",
     "react-i18next",
+    "vite",
   ],
 })
