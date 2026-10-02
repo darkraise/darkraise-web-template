@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build && tsc --noEmit",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && pnpm typecheck:e2e",
     "typecheck:e2e": "tsc -p tsconfig.e2e.json --noEmit",
     "test": "vitest run",
     "test:e2e": "playwright test",
