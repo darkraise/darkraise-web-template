@@ -47,6 +47,26 @@ describe("status colours", () => {
     expect(failures).toEqual([])
   })
 
+  it("body text and muted text clear 4.5:1 on every subtle fill", () => {
+    const failures: string[] = []
+    for (const combo of combos) {
+      const tokens = finalTokens(combo)
+      for (const status of STATUSES) {
+        const ground = tokens[`--${status}-subtle`]
+        if (!isOpaque(ground)) continue
+        for (const token of ["--foreground", "--muted-foreground"]) {
+          const ratio = contrastRatio(tokens[token] as string, ground)
+          if (ratio < 4.5) {
+            failures.push(
+              `${comboName(combo)} ${status} ${token} on subtle: ${ratio.toFixed(2)}`,
+            )
+          }
+        }
+      }
+    }
+    expect(failures).toEqual([])
+  })
+
   it("status edges clear 3:1 on page, card and their subtle fill", () => {
     const failures: string[] = []
     for (const combo of combos) {
