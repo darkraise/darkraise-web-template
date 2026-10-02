@@ -2152,6 +2152,12 @@
     right: 0;
     height: 300px;
     background: var(--content-gradient-overlay, none);
+    /* The blob radii are fixed pixels, so a narrower strip stacks blob
+       peaks louder than the canvas model the engine solves tokens against.
+       Narrow screens show a crop of a 1440px-wide strip instead. */
+    background-size: max(100%, 1440px) 100%;
+    background-repeat: no-repeat;
+    background-position: center top;
     pointer-events: none;
     z-index: -1;
     mask-image: linear-gradient(to bottom, black, transparent);
