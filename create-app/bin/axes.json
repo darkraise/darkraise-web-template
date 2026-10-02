@@ -1,0 +1,280 @@
+{
+  "mode": {
+    "values": [
+      "light",
+      "dark",
+      "system"
+    ],
+    "default": "system",
+    "storageKey": "mode",
+    "attribute": "data-mode",
+    "layer": "brand"
+  },
+  "accentColor": {
+    "values": [
+      "red",
+      "coral",
+      "orange",
+      "amber",
+      "yellow",
+      "lime",
+      "green",
+      "emerald",
+      "teal",
+      "cyan",
+      "sky",
+      "blue",
+      "indigo",
+      "violet",
+      "purple",
+      "fuchsia",
+      "pink",
+      "rose"
+    ],
+    "default": "blue",
+    "storageKey": "theme-accent",
+    "attribute": "data-accent",
+    "layer": "brand"
+  },
+  "surfaceColor": {
+    "values": [
+      "slate",
+      "gray",
+      "cool",
+      "zinc",
+      "neutral",
+      "iron",
+      "mauve",
+      "graphite",
+      "stone",
+      "sand",
+      "olive",
+      "sepia",
+      "red",
+      "coral",
+      "orange",
+      "amber",
+      "yellow",
+      "lime",
+      "green",
+      "emerald",
+      "teal",
+      "cyan",
+      "sky",
+      "blue",
+      "indigo",
+      "violet",
+      "purple",
+      "fuchsia",
+      "pink",
+      "rose"
+    ],
+    "default": "slate",
+    "storageKey": "theme-surface-color",
+    "attribute": "data-surface",
+    "layer": "brand"
+  },
+  "preset": {
+    "values": [
+      "default",
+      "glass"
+    ],
+    "default": "default",
+    "storageKey": "theme-preset",
+    "attribute": "data-preset",
+    "layer": "style"
+  },
+  "backgroundStyle": {
+    "values": [
+      "solid",
+      "gradient"
+    ],
+    "default": "solid",
+    "storageKey": "theme-bg-style",
+    "attribute": "data-background-style",
+    "layer": "advanced"
+  },
+  "backgroundIntensity": {
+    "values": [
+      "neutral",
+      "subtle",
+      "balanced",
+      "vivid",
+      "intense"
+    ],
+    "default": "vivid",
+    "storageKey": "theme-bg-intensity",
+    "attribute": "data-background-intensity",
+    "layer": "advanced"
+  },
+  "gradientPattern": {
+    "values": [
+      "blobs",
+      "aurora",
+      "spotlight",
+      "mesh"
+    ],
+    "default": "blobs",
+    "storageKey": "theme-gradient-pattern",
+    "attribute": "data-gradient-pattern",
+    "layer": "advanced"
+  },
+  "density": {
+    "values": [
+      "compact",
+      "cozy",
+      "comfortable",
+      "spacious"
+    ],
+    "default": "cozy",
+    "storageKey": "theme-density",
+    "attribute": "data-density",
+    "layer": "brand"
+  },
+  "elevation": {
+    "values": [
+      "flat",
+      "low",
+      "medium",
+      "high"
+    ],
+    "default": "medium",
+    "storageKey": "theme-elevation",
+    "attribute": "data-elevation",
+    "layer": "advanced"
+  },
+  "buttonElevation": {
+    "values": [
+      "flat",
+      "low",
+      "medium",
+      "high"
+    ],
+    "default": "flat",
+    "storageKey": "theme-button-elevation",
+    "attribute": "data-button-elevation",
+    "layer": "advanced"
+  },
+  "surfaceIntensity": {
+    "values": [
+      "flat",
+      "subtle",
+      "balanced",
+      "bold"
+    ],
+    "default": "balanced",
+    "storageKey": "theme-surface-intensity",
+    "attribute": "data-surface-intensity",
+    "layer": "advanced"
+  },
+  "borderIntensity": {
+    "values": [
+      "subtle",
+      "balanced",
+      "strong",
+      "bold"
+    ],
+    "default": "balanced",
+    "storageKey": "theme-border-intensity",
+    "attribute": null,
+    "layer": "advanced"
+  },
+  "radius": {
+    "values": [
+      "sharp",
+      "subtle",
+      "rounded",
+      "pill"
+    ],
+    "default": "rounded",
+    "storageKey": "theme-radius",
+    "attribute": "data-radius",
+    "layer": "brand"
+  },
+  "fontSize": {
+    "values": [
+      "small",
+      "medium",
+      "large",
+      "extra-large"
+    ],
+    "default": "medium",
+    "storageKey": "theme-font-size",
+    "attribute": "data-font-size",
+    "layer": "brand"
+  },
+  "accentIntensity": {
+    "values": [
+      "calm",
+      "balanced",
+      "vivid",
+      "intense"
+    ],
+    "default": "balanced",
+    "storageKey": "theme-accent-intensity",
+    "attribute": null,
+    "layer": "advanced"
+  },
+  "controlDepth": {
+    "values": [
+      "flush",
+      "subtle",
+      "recessed",
+      "deep"
+    ],
+    "default": "recessed",
+    "storageKey": "theme-control-depth",
+    "attribute": "data-control-depth",
+    "layer": "advanced"
+  },
+  "outerGlow": {
+    "values": [
+      "none",
+      "subtle",
+      "balanced",
+      "vivid"
+    ],
+    "default": "none",
+    "storageKey": "theme-outer-glow",
+    "attribute": "data-outer-glow",
+    "layer": "advanced"
+  },
+  "innerGlow": {
+    "values": [
+      "none",
+      "subtle",
+      "balanced",
+      "vivid"
+    ],
+    "default": "none",
+    "storageKey": "theme-inner-glow",
+    "attribute": "data-inner-glow",
+    "layer": "advanced"
+  },
+  "shellStyle": {
+    "values": [
+      "classic",
+      "inset",
+      "island",
+      "floating",
+      "framed",
+      "flat"
+    ],
+    "default": "classic",
+    "storageKey": "theme-shell-style",
+    "attribute": "data-shell-style",
+    "layer": "advanced"
+  },
+  "sidebarActiveBar": {
+    "values": [
+      "default",
+      "bar",
+      "ring",
+      "both"
+    ],
+    "default": "default",
+    "storageKey": "theme-sidebar-active-bar",
+    "attribute": null,
+    "layer": "advanced"
+  }
+}

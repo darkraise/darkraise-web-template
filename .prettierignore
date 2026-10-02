@@ -5,3 +5,4 @@ coverage
 storybook-static
 pnpm-lock.yaml
 packages/ui/CONTRIBUTING.md
+create-app/bin/axes.json

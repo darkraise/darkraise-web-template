@@ -86,6 +86,7 @@
   "scripts": {
     "generate:imports": "tsx scripts/generate-component-imports.ts",
     "build:css": "tsx scripts/build-css.ts",
+    "write:scaffold-axes": "tsx scripts/write-scaffold-axes.ts",
     "build": "pnpm run generate:imports && tsup && pnpm run build:types && pnpm run build:css",
     "build:types": "tsc -p tsconfig.build.json && tsx scripts/rewrite-dts-imports.ts",
     "dev": "pnpm run generate:imports && tsup --watch",
