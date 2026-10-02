@@ -229,7 +229,7 @@ const EDGE_THEMES = [
   },
   {
     name: "glass vivid fuchsia",
-    seed: { preset: "glass", accent: "fuchsia", accentIntensity: "vivid" },
+    seed: { preset: "glass", accent: "fuchsia", darkAccentChroma: "vivid" },
   },
   { name: "glass sand surface", seed: { preset: "glass", surface: "sand" } },
   {

@@ -11,7 +11,6 @@ import {
   PRESET_LABELS,
   RADII,
   SURFACE_COLORS,
-  SURFACE_INTENSITIES,
   type Preset,
 } from "./fixtures/theme"
 import {
@@ -64,14 +63,13 @@ test.describe("theme switcher popover", () => {
       "Background Intensity",
       "Accent Color",
       "Surface Color",
+      "Tint With Accent",
       "Density",
       "Font Size",
-      "Accent Intensity",
+      "Dark Accent Chroma",
       "Elevation",
       "Button Elevation",
-      "Surface Intensity",
-      "Border Intensity",
-      "Control Depth",
+      "Contrast",
       "Outer Glow",
       "Inner Glow",
       "Shell Style",
@@ -110,7 +108,8 @@ test.describe("preset selection through the UI", () => {
         buttonElevation: "Button Elevation",
         radius: "Radius",
         density: "Density",
-        surfaceIntensity: "Surface Intensity",
+        contrast: "Contrast",
+        darkAccentChroma: "Dark Accent Chroma",
       }
       for (const axis of HIDDEN_COMMON_AXES[preset]) {
         expect(sections, `${preset} must hide ${axis}`).not.toContain(
@@ -174,12 +173,27 @@ test.describe("accent and surface swatches", () => {
 
     const seen = new Set<string>()
     for (const accent of ACCENT_COLORS) {
-      const swatch = row.locator(`.dr-theme-switcher-swatch[title="${accent}"]`)
+      const title = accent === "neutral" ? "Neutral (near-black)" : accent
+      const swatch = row.locator(`.dr-theme-switcher-swatch[title="${title}"]`)
       await swatch.click()
       await expect(swatch).toHaveAttribute("data-active", "true")
       seen.add(await readToken(page, "--primary"))
     }
     expect(seen.size).toBe(ACCENT_COLORS.length)
+  })
+
+  test("the neutral accent hides Tint With Accent", async ({ page }) => {
+    await seedApp(page, { preset: "default", mode: "light", accent: "blue" })
+    await gotoApp(page, PROBE)
+    const panel = await openThemeSwitcher(page)
+    expect(await switcherSections(page)).toContain("Tint With Accent")
+
+    await panel
+      .locator('.dr-theme-switcher-swatch[title="Neutral (near-black)"]')
+      .click()
+    await expect
+      .poll(async () => await switcherSections(page))
+      .not.toContain("Tint With Accent")
   })
 
   test("every surface swatch is offered and selectable", async ({ page }) => {
@@ -271,11 +285,6 @@ test.describe("stepped slider axes", () => {
       attr: "data-button-elevation",
     },
     { label: "Radius", values: RADII, attr: "data-radius" },
-    {
-      label: "Surface Intensity",
-      values: SURFACE_INTENSITIES,
-      attr: "data-surface-intensity",
-    },
   ]
 
   for (const axis of sliderAxes) {

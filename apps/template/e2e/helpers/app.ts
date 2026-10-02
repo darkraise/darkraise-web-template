@@ -44,8 +44,9 @@ export interface ThemeSeed {
   shellStyle?: string
   sidebarActiveBar?: string
   fontSize?: string
-  accentIntensity?: string
-  surfaceIntensity?: string
+  contrast?: string
+  darkAccentChroma?: string
+  tintWithAccent?: string
   /** Preset-specific axes: { glass: { blur: "high" } } → key `theme-glass-blur`. */
   presetAxes?: Record<string, Record<string, string>>
 }
@@ -83,8 +84,9 @@ function storageEntries(theme: ThemeSeed, authenticated: boolean) {
     ["shellStyle", LS_KEYS.shellStyle],
     ["sidebarActiveBar", LS_KEYS.sidebarActiveBar],
     ["fontSize", LS_KEYS.fontSize],
-    ["accentIntensity", LS_KEYS.accentIntensity],
-    ["surfaceIntensity", LS_KEYS.surfaceIntensity],
+    ["contrast", LS_KEYS.contrast],
+    ["darkAccentChroma", LS_KEYS.darkAccentChroma],
+    ["tintWithAccent", LS_KEYS.tintWithAccent],
   ]
   for (const [field, key] of map) {
     const value = theme[field]

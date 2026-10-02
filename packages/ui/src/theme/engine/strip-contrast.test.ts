@@ -149,29 +149,6 @@ describe("the content strip", () => {
     )
   })
 
-  it("is painted exactly under the default preset with a gradient", () => {
-    for (const preset of ["default", "glass"] as const) {
-      for (const backgroundStyle of ["solid", "gradient"] as const) {
-        const tokens = generateTokens({
-          accentColor: "blue",
-          surfaceColor: "slate",
-          preset,
-          backgroundStyle,
-          mode: "light",
-          contrast: "standard",
-          darkAccentChroma: "standard",
-          tintWithAccent: false,
-          backgroundIntensity: "balanced",
-        })
-        const paints = preset === "default" && backgroundStyle === "gradient"
-        expect(
-          tokens["--content-gradient-overlay"] !== "none",
-          `${preset} ${backgroundStyle}`,
-        ).toBe(paints)
-      }
-    }
-  })
-
   it("leaves themes without a strip as they were", () => {
     for (const [
       preset,

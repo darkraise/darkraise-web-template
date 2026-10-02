@@ -1,8 +1,8 @@
 import { test, expect } from "@playwright/test"
 import {
   ACCENT_COLORS,
-  ACCENT_INTENSITIES,
   BACKGROUND_INTENSITIES,
+  CONTRASTS,
   DENSITIES,
   ELEVATIONS,
   FONT_SIZES,
@@ -11,7 +11,6 @@ import {
   PRESET_AXES,
   RADII,
   SURFACE_COLORS,
-  SURFACE_INTENSITIES,
   type Preset,
 } from "./fixtures/theme"
 import {
@@ -159,73 +158,47 @@ test.describe("accent color axis", () => {
   })
 })
 
-test.describe("accent intensity axis", () => {
-  test("the steps emit at least three --primary-fill values in dark mode", async ({
+test.describe("dark accent chroma axis", () => {
+  test("calm and vivid emit different --primary-fill values in dark mode", async ({
     page,
   }) => {
     const consoleWatch = watchConsole(page)
-    // Fuchsia is the one accent whose --primary also moves across steps, so a
-    // single test covers both tokens. --primary-fill is the dark-only half of
-    // the axis; the focus ring and sidebar hover move in both modes.
     await seedApp(page, { accent: "fuchsia", mode: "dark" })
     await gotoApp(page, PROBE)
 
-    const seen = new Set<string>()
-    for (const intensity of ACCENT_INTENSITIES) {
-      await applyTheme(page, { accentIntensity: intensity })
-      await reloadApp(page)
-      const fill = await readToken(page, "--primary-fill")
-      expect(fill, `${intensity} must emit a fill`).not.toBe("")
-      seen.add(fill)
-    }
-    // vivid and intense can meet at fuchsia's 4.5:1 label point, because
-    // each step's lightness is now a ceiling under the label solve.
-    expect(seen.size).toBeGreaterThanOrEqual(3)
+    await applyTheme(page, { darkAccentChroma: "calm" })
+    await reloadApp(page)
+    const calm = await readToken(page, "--primary-fill")
+    expect(calm).not.toBe("")
+
+    await applyTheme(page, { darkAccentChroma: "vivid" })
+    await reloadApp(page)
+    const vivid = await readToken(page, "--primary-fill")
+    expect(vivid).not.toBe("")
+    expect(vivid).not.toBe(calm)
 
     consoleWatch.assertClean()
   })
 
   test("--primary-fill stays put in light mode", async ({ page }) => {
-    // The fill's OKLCH lightness forcing is deliberately dark-only: light mode
-    // reads the palette shade straight, so the axis must not move it there.
     await seedApp(page, { accent: "fuchsia", mode: "light" })
     await gotoApp(page, PROBE)
 
-    await applyTheme(page, { accentIntensity: "calm" })
+    await applyTheme(page, { darkAccentChroma: "calm" })
     await reloadApp(page)
     const calm = await readToken(page, "--primary-fill")
 
-    await applyTheme(page, { accentIntensity: "intense" })
+    await applyTheme(page, { darkAccentChroma: "vivid" })
     await reloadApp(page)
     expect(await readToken(page, "--primary-fill")).toBe(calm)
   })
 
-  test("each step emits a distinct --focus-ring in light mode", async ({
-    page,
-  }) => {
-    const consoleWatch = watchConsole(page)
-    await seedApp(page, { accent: "fuchsia", mode: "light" })
-    await gotoApp(page, PROBE)
-
-    const seen = new Set<string>()
-    for (const intensity of ACCENT_INTENSITIES) {
-      await applyTheme(page, { accentIntensity: intensity })
-      await reloadApp(page)
-      const ring = await readToken(page, "--focus-ring")
-      expect(ring, `${intensity} must emit a focus ring`).not.toBe("")
-      seen.add(ring)
-    }
-    expect(seen.size).toBe(ACCENT_INTENSITIES.length)
-
-    consoleWatch.assertClean()
-  })
-
-  test("no data attribute leaks for this axis", async ({ page }) => {
-    await seedApp(page, { accentIntensity: "vivid", mode: "dark" })
+  test("writes the stored value to its data attribute", async ({ page }) => {
+    await seedApp(page, { darkAccentChroma: "vivid", mode: "dark" })
     await gotoApp(page, PROBE)
 
     const attrs = await readThemeAttrs(page)
-    expect(attrs["data-accent-intensity"]).toBeUndefined()
+    expect(attrs["data-dark-accent-chroma"]).toBe("vivid")
   })
 })
 
@@ -397,16 +370,36 @@ test.describe("elevation axes", () => {
   }
 })
 
-test.describe("surface intensity axis", () => {
-  for (const surfaceIntensity of SURFACE_INTENSITIES) {
-    test(`surface intensity "${surfaceIntensity}"`, async ({ page }) => {
-      await seedApp(page, { surfaceIntensity, preset: "default" })
+test.describe("contrast axis", () => {
+  for (const contrast of CONTRASTS) {
+    test(`contrast "${contrast}"`, async ({ page }) => {
+      await seedApp(page, { contrast, preset: "default" })
       await gotoApp(page, PROBE)
-      expect((await readThemeAttrs(page))["data-surface-intensity"]).toBe(
-        surfaceIntensity,
-      )
+      expect((await readThemeAttrs(page))["data-contrast"]).toBe(contrast)
     })
   }
+
+  test("moves the page --background in light mode", async ({ page }) => {
+    // The light card stays white at every step; the page carries the axis.
+    await seedApp(page, { preset: "default", mode: "light" })
+    await gotoApp(page, PROBE)
+
+    await applyTheme(page, { contrast: "low" })
+    await reloadApp(page)
+    const low = await readToken(page, "--background")
+
+    await applyTheme(page, { contrast: "high" })
+    await reloadApp(page)
+    expect(await readToken(page, "--background")).not.toBe(low)
+  })
+})
+
+test.describe("tint with accent axis", () => {
+  test("writes the stored value to its data attribute", async ({ page }) => {
+    await seedApp(page, { tintWithAccent: "on", preset: "default" })
+    await gotoApp(page, PROBE)
+    expect((await readThemeAttrs(page))["data-tint-with-accent"]).toBe("on")
+  })
 })
 
 test.describe("background intensity canvas cap", () => {
@@ -543,7 +536,9 @@ test.describe("theme persistence", () => {
       density: "compact",
       elevation: "high",
       buttonElevation: "high",
-      surfaceIntensity: "bold",
+      contrast: "high",
+      darkAccentChroma: "vivid",
+      tintWithAccent: "on",
       radius: "sharp",
       fontSize: "large",
     }

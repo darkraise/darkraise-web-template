@@ -59,18 +59,9 @@ export const DENSITIES = ["compact", "cozy", "comfortable", "spacious"] as const
 export const ELEVATIONS = ["flat", "low", "medium", "high"] as const
 export const RADII = ["sharp", "subtle", "rounded", "pill"] as const
 export const FONT_SIZES = ["small", "medium", "large", "extra-large"] as const
-export const ACCENT_INTENSITIES = [
-  "calm",
-  "balanced",
-  "vivid",
-  "intense",
-] as const
-export const SURFACE_INTENSITIES = [
-  "flat",
-  "subtle",
-  "balanced",
-  "bold",
-] as const
+export const CONTRASTS = ["low", "standard", "high"] as const
+export const DARK_ACCENT_CHROMAS = ["calm", "standard", "vivid"] as const
+export const TINT_WITH_ACCENT = ["off", "on"] as const
 
 /** Labels the theme switcher renders for each preset. */
 export const PRESET_LABELS: Record<Preset, string> = {
@@ -126,6 +117,7 @@ export const LS_KEYS = {
   shellStyle: "theme-shell-style",
   sidebarActiveBar: "theme-sidebar-active-bar",
   fontSize: "theme-font-size",
-  accentIntensity: "theme-accent-intensity",
-  surfaceIntensity: "theme-surface-intensity",
+  contrast: "theme-contrast",
+  darkAccentChroma: "theme-dark-accent-chroma",
+  tintWithAccent: "theme-tint-with-accent",
 } as const

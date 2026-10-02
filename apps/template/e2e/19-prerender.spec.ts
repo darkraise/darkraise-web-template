@@ -16,8 +16,8 @@ const AXES = JSON.parse(
   ),
 ) as Record<string, ScaffoldAxis>
 
-// Glass hides surface intensity, which would leave that attribute to the
-// provider, so the preset stays on default. Mode must be `dark`: `system` and
+// The preset stays on default; no preset hides a common axis any more, so
+// the choice costs no coverage. Mode must be `dark`: `system` and
 // `light` both resolve to light under Playwright's scheme and would prove
 // nothing.
 const PINNED: Record<string, string> = {

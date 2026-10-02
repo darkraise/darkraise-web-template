@@ -77,23 +77,24 @@ individually, restart the server before believing them.
 Every value of every axis, seeded at boot and verified on `<html>` plus the
 token it drives:
 
-| Axis                 | Values                         | Verified through                                                                                              |
-| -------------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------- |
-| Preset               | default, glass                 | `data-preset`, own-axis attributes set, other presets' attributes cleared, reload persistence                 |
-| Preset axes          | glass opacity/blur             | `data-<preset>-<axis>` for all 7 axis × value combinations                                                    |
-| Mode                 | light, dark, system            | `data-mode`; `system` checked against both emulated `prefers-color-scheme` values                             |
-| Accent               | all 17                         | `--primary` set, and all 17 distinct                                                                          |
-| Surface              | all 18                         | `--background` set, and all 18 distinct in dark mode                                                          |
-| Background           | solid, gradient                | `data-background-style`                                                                                       |
-| Background intensity | neutral → intense              | `data-background-intensity`, `--canvas-blob-scale` increases monotonically, `--background` saturation capped  |
-| Gradient pattern     | blobs, aurora, spotlight, mesh | `data-gradient-pattern`                                                                                       |
-| Density              | compact → spacious             | `data-density`, `--btn-px` increases monotonically                                                            |
-| Font size            | small → extra-large            | `data-font-size`, `--text-base` increases monotonically                                                       |
-| Accent intensity     | calm, balanced, vivid, intense | `--primary-fill` / `--primary` in dark; `--focus-ring` / `--sidebar-hover-bg` in both — no `data-*` attribute |
-| Elevation            | flat → high                    | `data-elevation`, `--elevation-current`                                                                       |
-| Button elevation     | flat → high                    | `data-button-elevation`, `--shadow-button` (flat ⇒ transparent)                                               |
-| Surface intensity    | flat, subtle, balanced, bold   | `data-surface-intensity`                                                                                      |
-| Radius               | sharp, subtle, rounded, pill   | `data-radius`, exact `--radius`, pill ⇒ `--radius-control: 9999px`                                            |
+| Axis                 | Values                         | Verified through                                                                                             |
+| -------------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------ |
+| Preset               | default, glass                 | `data-preset`, own-axis attributes set, other presets' attributes cleared, reload persistence                |
+| Preset axes          | glass opacity/blur             | `data-<preset>-<axis>` for all 7 axis × value combinations                                                   |
+| Mode                 | light, dark, system            | `data-mode`; `system` checked against both emulated `prefers-color-scheme` values                            |
+| Accent               | all 17                         | `--primary` set, and all 17 distinct                                                                         |
+| Surface              | all 18                         | `--background` set, and all 18 distinct in dark mode                                                         |
+| Background           | solid, gradient                | `data-background-style`                                                                                      |
+| Background intensity | neutral → intense              | `data-background-intensity`, `--canvas-blob-scale` increases monotonically, `--background` saturation capped |
+| Gradient pattern     | blobs, aurora, spotlight, mesh | `data-gradient-pattern`                                                                                      |
+| Density              | compact → spacious             | `data-density`, `--btn-px` increases monotonically                                                           |
+| Font size            | small → extra-large            | `data-font-size`, `--text-base` increases monotonically                                                      |
+| Dark accent chroma   | calm, standard, vivid          | `data-dark-accent-chroma`; `--primary-fill` differs between calm and vivid in dark, and stays put in light   |
+| Elevation            | flat → high                    | `data-elevation`, `--elevation-current`                                                                      |
+| Button elevation     | flat → high                    | `data-button-elevation`, `--shadow-button` (flat ⇒ transparent)                                              |
+| Contrast             | low, standard, high            | `data-contrast`; the light page `--background` differs between low and high                                  |
+| Tint with accent     | off, on                        | `data-tint-with-accent`; the switcher hides the control under the neutral accent                             |
+| Radius               | sharp, subtle, rounded, pill   | `data-radius`, exact `--radius`, pill ⇒ `--radius-control: 9999px`                                           |
 
 Plus one hand-built cross-axis combination for the glass preset and a
 full round-trip test that every axis survives reload and navigation.
