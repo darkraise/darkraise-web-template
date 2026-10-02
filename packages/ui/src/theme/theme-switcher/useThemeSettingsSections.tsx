@@ -32,10 +32,8 @@ import type {
   SurfaceColor,
   BackgroundStyle,
   GradientPattern,
-  ColorScale,
   ShellStyle,
 } from "@theme/types"
-import { isAccentSurface } from "@theme/engine/generateTokens"
 import {
   presets,
   PRESET_NAMES,
@@ -377,11 +375,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
           </Label>
           <div className="dr-theme-switcher-swatch-grid">
             {SURFACE_COLORS.map((color: SurfaceColor) => {
-              // A neutral ramp previews from its own registry entry; only an
-              // accent used as a surface falls through to the accent scale.
-              const previewHsl = isAccentSurface(color)
-                ? accentColors[color][500]
-                : (surfaceColors[color] as ColorScale)[500]
+              const previewHsl = surfaceColors[color][500]
               return (
                 <button
                   key={color}

@@ -11,7 +11,6 @@ import type {
 import {
   applyBorderIntensity,
   generateTokens,
-  resolveSurfaceScale,
   resolveNeutralScale,
 } from "@theme/engine/generateTokens"
 import {
@@ -325,7 +324,7 @@ export function ThemeProvider({
             backgroundStyle: current.backgroundStyle,
             mode: resolved,
             accent: accentColors[current.accentColor],
-            surface: resolveSurfaceScale(current.surfaceColor, resolved),
+            surface: resolveNeutralScale(current.surfaceColor),
             neutral: resolveNeutralScale(current.surfaceColor),
             outerGlow: current.outerGlow as GlowLevel,
             innerGlow: current.innerGlow as GlowLevel,

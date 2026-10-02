@@ -1,7 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
 import { contrastRatio, mixedContrast } from "@theme/engine/oklch"
-import { isAccentSurface } from "@theme/engine/generateTokens"
 import {
   comboName,
   finalTokens,
@@ -83,11 +82,11 @@ describe("status colours", () => {
   })
 
   // If this fails, stop and report: the spec requires a decision before the
-  // solve changes. Neutral surfaces only, as for the primary fill.
+  // solve changes.
   it("the dark destructive solid clears 3:1 against the card on neutral surfaces", () => {
     const failures: string[] = []
     for (const combo of combos) {
-      if (combo.mode !== "dark" || isAccentSurface(combo.surfaceColor)) continue
+      if (combo.mode !== "dark") continue
       const tokens = finalTokens(combo)
       const ratio = contrastRatio(
         tokens["--destructive-solid"] as string,

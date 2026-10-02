@@ -257,10 +257,10 @@ describe("generateTokens", () => {
 
     for (const mode of ["light", "dark"] as const) {
       const slate = generateTokens({ ...common, surfaceColor: "slate", mode })
-      const rose = generateTokens({ ...common, surfaceColor: "rose", mode })
+      const stone = generateTokens({ ...common, surfaceColor: "stone", mode })
 
       expect(slate["--border-strong"]).toBeTruthy()
-      expect(rose["--border-strong"]).not.toEqual(slate["--border-strong"])
+      expect(stone["--border-strong"]).not.toEqual(slate["--border-strong"])
       expect(slate["--border-strong"]).not.toEqual(slate["--border-default"])
       expect(slate["--border-strong"]).not.toEqual(slate["--border-subtle"])
     }
@@ -488,20 +488,6 @@ describe("generateTokens", () => {
     expect(blueAccent["--warning"]).toBe(redAccent["--warning"])
   })
 
-  it("uses desaturated accent color scale as surface when surfaceColor is set", () => {
-    const tokens = generateTokens({
-      accentColor: "blue",
-      surfaceColor: "red",
-      preset: "default",
-      backgroundStyle: "solid",
-      mode: "light",
-      accentIntensity: "balanced",
-    })
-
-    expect(tokens["--background"]).toBe("0 16% 97%")
-    expect(tokens["--foreground"]).toBe("222 47% 11%")
-  })
-
   it("surfaceColor slate produces identical tokens to the original behavior", () => {
     const tokens = generateTokens({
       accentColor: "blue",
@@ -514,20 +500,6 @@ describe("generateTokens", () => {
 
     expect(tokens["--background"]).toBe("210 16% 98%")
     expect(tokens["--foreground"]).toBe("222 47% 11%")
-  })
-
-  it("dark mode with accent surface color uses shade 950 for background", () => {
-    const tokens = generateTokens({
-      accentColor: "blue",
-      surfaceColor: "emerald",
-      preset: "default",
-      backgroundStyle: "solid",
-      mode: "dark",
-      accentIntensity: "balanced",
-    })
-
-    expect(tokens["--background"]).toBe("166 16% 5%")
-    expect(tokens["--foreground"]).toBe("210 40% 98%")
   })
 
   describe("fog ramp tokens", () => {
@@ -718,7 +690,7 @@ describe("generateTokens", () => {
   describe("sf-hue tokens", () => {
     const baseInput = {
       accentColor: "blue" as const,
-      surfaceColor: "blue" as const,
+      surfaceColor: "stone" as const,
       preset: "default" as const,
       backgroundStyle: "gradient" as const,
       mode: "dark" as const,
@@ -727,17 +699,12 @@ describe("generateTokens", () => {
 
     it("emits hsl shade-500 for --sf-hue in gradient mode", () => {
       const tokens = generateTokens(baseInput)
-      expect(tokens["--sf-hue"]).toBe(`hsl(${accentColors.blue[500]})`)
-    })
-
-    it("emits hsl neighbor shade-500 for --sf-hue-2 (wheel +3)", () => {
-      const tokens = generateTokens(baseInput)
-      expect(tokens["--sf-hue-2"]).toBe(`hsl(${accentColors.purple[500]})`)
+      expect(tokens["--sf-hue"]).toBe(`hsl(${surfaceColors.stone[500]})`)
     })
 
     it("emits hsl shade-300 for --sf-hue-3 (lighter pastel)", () => {
       const tokens = generateTokens(baseInput)
-      expect(tokens["--sf-hue-3"]).toBe(`hsl(${accentColors.blue[300]})`)
+      expect(tokens["--sf-hue-3"]).toBe(`hsl(${surfaceColors.stone[300]})`)
     })
 
     it("emits transparent for all three hue anchors in solid mode", () => {
@@ -757,16 +724,16 @@ describe("generateTokens", () => {
 
     it("light mode uses the same hue values (ink anchor differentiates, not hue)", () => {
       const tokens = generateTokens({ ...baseInput, mode: "light" })
-      expect(tokens["--sf-hue"]).toBe(`hsl(${accentColors.blue[500]})`)
-      expect(tokens["--sf-hue-2"]).toBe(`hsl(${accentColors.purple[500]})`)
-      expect(tokens["--sf-hue-3"]).toBe(`hsl(${accentColors.blue[300]})`)
+      expect(tokens["--sf-hue"]).toBe(`hsl(${surfaceColors.stone[500]})`)
+      expect(tokens["--sf-hue-2"]).toBe(`hsl(${surfaceColors.stone[400]})`)
+      expect(tokens["--sf-hue-3"]).toBe(`hsl(${surfaceColors.stone[300]})`)
     })
   })
 
   describe("--content-gradient-overlay after merge", () => {
     const baseInput = {
       accentColor: "blue" as const,
-      surfaceColor: "blue" as const,
+      surfaceColor: "stone" as const,
       preset: "default" as const,
       backgroundStyle: "gradient" as const,
       mode: "dark" as const,
@@ -1114,7 +1081,7 @@ describe("accent vibrancy default", () => {
 describe("backgroundIntensity canvas cap", () => {
   const dark = (
     backgroundIntensity: BackgroundIntensity,
-    surfaceColor = "violet" as const,
+    surfaceColor = "sepia" as const,
   ) =>
     generateTokens({
       accentColor: "blue",
@@ -1127,19 +1094,19 @@ describe("backgroundIntensity canvas cap", () => {
     })
 
   it("caps canvas saturation at each step", () => {
-    expect(dark("neutral")["--background"]).toBe("261 0% 5%")
-    expect(dark("subtle")["--background"]).toBe("261 8% 5%")
-    expect(dark("balanced")["--background"]).toBe("261 16% 5%")
+    expect(dark("neutral")["--background"]).toBe("16 0% 5%")
+    expect(dark("subtle")["--background"]).toBe("16 8% 5%")
+    expect(dark("balanced")["--background"]).toBe("16 16% 5%")
   })
 
   it("leaves vivid at the palette's own value", () => {
-    expect(dark("vivid")["--background"]).toBe("261 26% 5%")
+    expect(dark("vivid")["--background"]).toBe("16 26% 5%")
   })
 
   it("clamps rather than sets, so an already-calm colour is untouched", () => {
-    // indigo's dark canvas is 16% saturation, exactly the balanced cap
-    const atCap = dark("balanced", "indigo")["--background"]
-    expect(dark("vivid", "indigo")["--background"]).toBe(atCap)
+    // iron's dark canvas is 16% saturation, exactly the balanced cap
+    const atCap = dark("balanced", "iron")["--background"]
+    expect(dark("vivid", "iron")["--background"]).toBe(atCap)
   })
 
   it("caps slate, whose palette value is the most saturated of all", () => {
@@ -1150,7 +1117,7 @@ describe("backgroundIntensity canvas cap", () => {
   it("never changes lightness or hue", () => {
     for (const step of BACKGROUND_INTENSITIES) {
       const [h, , l] = dark(step)["--background"].split(" ")
-      expect(h).toBe("261")
+      expect(h).toBe("16")
       expect(l).toBe("5%")
     }
   })
@@ -1168,7 +1135,7 @@ describe("backgroundIntensity canvas cap", () => {
     const light = (backgroundIntensity: BackgroundIntensity) =>
       generateTokens({
         accentColor: "blue",
-        surfaceColor: "violet",
+        surfaceColor: "sepia",
         preset: "default",
         backgroundStyle: "solid",
         mode: "light",

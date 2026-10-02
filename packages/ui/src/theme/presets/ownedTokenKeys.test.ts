@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest"
 import { presets, PRESET_NAMES } from "./index"
 import { accentColors } from "@theme/palettes/accentColors"
 import { surfaceColors } from "@theme/palettes/surfaceColors"
-import { resolveSurfaceScale } from "@theme/engine/generateTokens"
+import { resolveNeutralScale } from "@theme/engine/generateTokens"
 import type { ColorScale, ResolvedMode, BackgroundStyle } from "@theme/types"
 
 // Engine-wide invariant: every key a preset's generateTokens writes as an
@@ -59,7 +59,7 @@ describe("preset ownedTokenKeys invariant", () => {
       const owned = new Set(preset.ownedTokenKeys ?? [])
       const written = new Set<string>()
       for (const mode of modes) {
-        const surface = resolveSurfaceScale("slate", mode)
+        const surface = resolveNeutralScale("slate")
         for (const backgroundStyle of bgs) {
           for (const axes of axisCombos(preset.axes)) {
             const tokens = generate(

@@ -8,15 +8,9 @@ import {
   CANVAS_PEAK_SHARE,
   generateTokens,
   gradientCanvasPeak,
-  isAccentSurface,
 } from "@theme/engine/generateTokens"
-import { accentColors } from "@theme/palettes/accentColors"
 import { surfaceColors } from "@theme/palettes/surfaceColors"
-import {
-  BORDER_INTENSITIES,
-  type ColorScale,
-  type SurfaceColor,
-} from "@theme/types"
+import { BORDER_INTENSITIES, type SurfaceColor } from "@theme/types"
 import {
   comboName,
   finalTokens,
@@ -81,9 +75,7 @@ describe("--field-edge-color", () => {
 
 // `--sf-hue`: the colour the gradient canvas paints over the page.
 function surfaceHue(surfaceColor: SurfaceColor): string {
-  return isAccentSurface(surfaceColor)
-    ? accentColors[surfaceColor][500]
-    : (surfaceColors[surfaceColor] as ColorScale)[500]
+  return surfaceColors[surfaceColor][500]
 }
 
 function gradientTokens(combo: ThemeCombo): Record<string, string> {

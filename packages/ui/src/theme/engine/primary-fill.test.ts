@@ -1,7 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { contrastRatio } from "@theme/engine/oklch"
 import { accentColors } from "@theme/palettes/accentColors"
-import { isAccentSurface } from "@theme/engine/generateTokens"
 import {
   comboName,
   finalTokens,
@@ -52,20 +51,13 @@ describe("primary fill and label", () => {
     expect(failures).toEqual([])
   })
 
-  // Neutral surfaces only: accent-coloured surfaces already miss this today
-  // (fuchsia on emerald measured 2.76 before this change). Calm is skipped
-  // too: the solve never moves a calm fill (white clears 4.75-5.81 on every
-  // one), and calm on olive, sand and cool already measured 2.81-2.99 before
-  // this change.
+  // Calm is skipped: the solve never moves a calm fill (white clears 4.75-5.81
+  // on every one), and calm on olive, sand and cool already measured 2.81-2.99
+  // before this change.
   it("dark fills still clear 3:1 against the card on neutral surfaces", () => {
     const failures: string[] = []
     for (const combo of combos) {
-      if (
-        combo.mode !== "dark" ||
-        combo.accentIntensity === "calm" ||
-        isAccentSurface(combo.surfaceColor)
-      )
-        continue
+      if (combo.mode !== "dark" || combo.accentIntensity === "calm") continue
       const tokens = finalTokens(combo)
       const ratio = contrastRatio(
         tokens["--primary-fill"] as string,

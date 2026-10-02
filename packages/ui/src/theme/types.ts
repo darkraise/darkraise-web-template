@@ -28,10 +28,10 @@ export const ACCENT_COLORS = [
 ] as const
 export type AccentColor = (typeof ACCENT_COLORS)[number]
 
-// The twelve neutral ramps registered in palettes/surfaceColors.ts, then every
-// accent. Spelled out rather than derived from the registry because that module
-// imports this one for ColorScale, and a value-level import back would close a
-// cycle at module init. surfaceColors.test.ts keeps the two lists in step.
+// The twelve neutral ramps registered in palettes/surfaceColors.ts. Spelled
+// out rather than derived from the registry because that module imports this
+// one for ColorScale, and a value-level import back would close a cycle at
+// module init. surfaceColors.test.ts keeps the two lists in step.
 export const SURFACE_COLORS = [
   "slate",
   "gray",
@@ -45,7 +45,6 @@ export const SURFACE_COLORS = [
   "sand",
   "olive",
   "sepia",
-  ...ACCENT_COLORS,
 ] as const
 export type SurfaceColor = (typeof SURFACE_COLORS)[number]
 

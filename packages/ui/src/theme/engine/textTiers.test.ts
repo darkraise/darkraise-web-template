@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest"
 import { generateTokens } from "@theme/engine/generateTokens"
 import { contrastRatio } from "@theme/engine/oklch"
 import { surfaceColors } from "@theme/palettes/surfaceColors"
-import { SURFACE_COLORS, ACCENT_COLORS } from "@theme/types"
+import { SURFACE_COLORS } from "@theme/types"
 
 const NEUTRALS = SURFACE_COLORS.filter((name) => surfaceColors[name])
 const MODES = ["light", "dark"] as const
@@ -70,26 +70,6 @@ describe("text tiers", () => {
         const muted = contrastRatio(t["--muted-foreground"] as string, bg)
         const legend = contrastRatio(t["--legend"] as string, bg)
         expect(muted - legend, `${surfaceColor} in ${mode}`).toBeGreaterThan(1)
-      }
-    }
-  })
-
-  it("holds the tiers on an accent surface too", () => {
-    for (const mode of MODES) {
-      for (const accentColor of ACCENT_COLORS) {
-        const t = generateTokens({
-          accentColor: "coral",
-          surfaceColor: accentColor,
-          preset: "default",
-          backgroundStyle: "solid",
-          mode,
-          accentIntensity: "calm",
-        })
-        const bg = t["--background"] as string
-        expect(
-          contrastRatio(t["--legend"] as string, bg),
-          `--legend over ${accentColor} in ${mode}`,
-        ).toBeGreaterThanOrEqual(AA)
       }
     }
   })

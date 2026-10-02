@@ -38,10 +38,6 @@ describe("e2e theme fixtures mirror the package", () => {
 
   it("lists every surface colour", async () => {
     const { SURFACE_COLORS } = await import("../../e2e/fixtures/theme")
-    // The package spreads ACCENT_COLORS into SURFACE_COLORS, so the regex
-    // captures only the twelve neutral ramps written literally before it.
-    const neutrals = packageList("SURFACE_COLORS")
-    const accents = packageList("ACCENT_COLORS")
-    expect([...SURFACE_COLORS]).toEqual([...neutrals, ...accents])
+    expect([...SURFACE_COLORS]).toEqual(packageList("SURFACE_COLORS"))
   })
 })

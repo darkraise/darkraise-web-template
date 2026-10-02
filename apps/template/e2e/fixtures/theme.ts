@@ -22,10 +22,8 @@ export const ACCENT_COLORS = [
   "rose",
 ] as const
 
-// The twelve neutral ramps the kit registers, then every accent — mirroring
-// SURFACE_COLORS in packages/ui/src/theme/types.ts. The old value described
-// neither list, so the swatch tests asserted against 18 of the 30 surfaces the
-// switcher actually offers.
+// The twelve neutral ramps the kit registers, mirroring SURFACE_COLORS in
+// packages/ui/src/theme/types.ts.
 export const SURFACE_COLORS = [
   "slate",
   "gray",
@@ -39,7 +37,6 @@ export const SURFACE_COLORS = [
   "sand",
   "olive",
   "sepia",
-  ...ACCENT_COLORS,
 ] as const
 
 export const MODES = ["light", "dark", "system"] as const

@@ -59,15 +59,6 @@ function getChartColors(
   })
 }
 
-/**
- * A surface name is an accent exactly when it is not one of the neutral ramps
- * registered in palettes/surfaceColors. Written as a predicate so the accent
- * branches narrow to AccentColor instead of needing a cast.
- */
-export function isAccentSurface(name: SurfaceColor): name is AccentColor {
-  return !(name in surfaceColors)
-}
-
 function resolveSfHueTokens(
   surfaceColor: SurfaceColor,
   backgroundStyle: BackgroundStyle,
@@ -80,79 +71,17 @@ function resolveSfHueTokens(
     }
   }
 
-  if (!isAccentSurface(surfaceColor)) {
-    const registered = surfaceColors[surfaceColor] as ColorScale
-    return {
-      "--sf-hue": `hsl(${registered[500]})`,
-      "--sf-hue-2": `hsl(${registered[400]})`,
-      "--sf-hue-3": `hsl(${registered[300]})`,
-    }
-  }
-
-  const color = accentColors[surfaceColor]
-  const index = ACCENT_COLORS.indexOf(surfaceColor)
-  const neighborIndex = (index + 3) % ACCENT_COLORS.length
-  const neighborName = ACCENT_COLORS[neighborIndex] as AccentColor
-  const neighbor = accentColors[neighborName]
-
+  const neutral = resolveNeutralScale(surfaceColor)
   return {
-    "--sf-hue": `hsl(${color[500]})`,
-    "--sf-hue-2": `hsl(${neighbor[500]})`,
-    "--sf-hue-3": `hsl(${color[300]})`,
+    "--sf-hue": `hsl(${neutral[500]})`,
+    "--sf-hue-2": `hsl(${neutral[400]})`,
+    "--sf-hue-3": `hsl(${neutral[300]})`,
   }
 }
 
-export function tintScale(
-  scale: ColorScale,
-  neutral: ColorScale,
-  satFactor: number,
-  useNeutralLightness: boolean,
-): ColorScale {
-  const steps = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950] as const
-  const result = {} as Record<number, string>
-  for (const step of steps) {
-    const parts = scale[step].split(" ")
-    const h = parts[0] ?? "0"
-    const s = parseFloat(parts[1] ?? "0")
-    const l = useNeutralLightness
-      ? (neutral[step].split(" ")[2] ?? "0%")
-      : (parts[2] ?? "0%")
-    result[step] = `${h} ${(s * satFactor).toFixed(0)}% ${l}`
-  }
-  return result as ColorScale
-}
-
-/**
- * Resolves the surface color palette for the given input. Used internally
- * by generateTokens AND by ThemeProvider when building the CommonAxisInput
- * for a preset's optional generateTokens callback. Centralizing here ensures
- * common-axis tokens and preset-owned tokens see the same surface scale.
- */
-export function resolveSurfaceScale(
-  surfaceColor: SurfaceColor,
-  mode: ResolvedMode,
-): ColorScale {
-  // A registered ramp is already neutral, so it is used as-is. Tinting one
-  // against slate would drag every warm ground back toward slate's hue, which
-  // is the whole reason the other eleven were unreachable.
-  if (!isAccentSurface(surfaceColor)) {
-    return surfaceColors[surfaceColor] as ColorScale
-  }
-  return tintScale(
-    accentColors[surfaceColor],
-    surfaceColors.slate as ColorScale,
-    mode === "light" ? 0.4 : 0.35,
-    mode === "dark",
-  )
-}
-
-/**
- * The scale the text tiers and borders are measured against. A chosen neutral
- * carries its own hue here too, so a warm ground does not end up under
- * slate-derived text; an accent surface keeps slate, as it always has.
- */
+/** The ramp every neutral step and text tier is drawn from. */
 export function resolveNeutralScale(surfaceColor: SurfaceColor): ColorScale {
-  return (surfaceColors[surfaceColor] ?? surfaceColors.slate) as ColorScale
+  return surfaceColors[surfaceColor]
 }
 
 /** A shape or boundary must be distinguishable from its ground. */
@@ -618,7 +547,7 @@ export function generateTokens(
   const sfHueTokens = resolveSfHueTokens(surfaceColor, backgroundStyle)
 
   const accent: ColorScale = accentColors[accentColor]
-  const surface: ColorScale = resolveSurfaceScale(surfaceColor, mode)
+  const surface: ColorScale = resolveNeutralScale(surfaceColor)
   const neutral: ColorScale = resolveNeutralScale(surfaceColor)
   const recipe = presets[preset].surfaceRecipe
 
@@ -690,12 +619,9 @@ export function generateTokens(
   // Saturated mid-tone of the chosen surface color, regardless of
   // backgroundStyle. Drives the Glass preset's inner glow (and any
   // future surface-color-following effects) so the rim hue matches the
-  // page's color story rather than the brand accent. For any of the registered
-  // neutral ramps this resolves to that ramp's own mid-tone, keeping a warm
-  // ground warm; for an accent used as a surface it's that colour's 500 shade.
-  const surfaceTint = isAccentSurface(surfaceColor)
-    ? accentColors[surfaceColor][500]
-    : neutral[500]
+  // page's color story rather than the brand accent: the chosen neutral ramp's
+  // own mid-tone, keeping a warm ground warm.
+  const surfaceTint = neutral[500]
 
   const controlWell = controlWells(
     recipe.surfaceRaised(surface, mode),

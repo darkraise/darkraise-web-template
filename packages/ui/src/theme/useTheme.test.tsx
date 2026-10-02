@@ -97,22 +97,22 @@ describe("useTheme", () => {
 
   it("reads persisted values from localStorage on mount", () => {
     storageMock.setItem("theme-accent", "emerald")
-    storageMock.setItem("theme-surface-color", "teal")
+    storageMock.setItem("theme-surface-color", "stone")
     storageMock.setItem("theme-preset", "glass")
     storageMock.setItem("mode", "dark")
 
     const { result } = renderHook(() => useTheme(), { wrapper })
     expect(result.current.accentColor).toBe("emerald")
-    expect(result.current.surfaceColor).toBe("teal")
+    expect(result.current.surfaceColor).toBe("stone")
     expect(result.current.preset).toBe("glass")
     expect(result.current.mode).toBe("dark")
   })
 
   it("setSurfaceColor updates surfaceColor and persists to localStorage", () => {
     const { result } = renderHook(() => useTheme(), { wrapper })
-    act(() => result.current.setSurfaceColor("emerald"))
-    expect(result.current.surfaceColor).toBe("emerald")
-    expect(localStorage.getItem("theme-surface-color")).toBe("emerald")
+    act(() => result.current.setSurfaceColor("stone"))
+    expect(result.current.surfaceColor).toBe("stone")
+    expect(localStorage.getItem("theme-surface-color")).toBe("stone")
   })
 
   it("setDensity updates density and sets data-density attribute", () => {
@@ -324,7 +324,7 @@ describe("useTheme persistence", () => {
 
   const serverSettings: ThemeSettings = {
     accentColor: "rose",
-    surfaceColor: "emerald",
+    surfaceColor: "stone",
     preset: "glass",
     backgroundStyle: "gradient",
     mode: "dark",
@@ -365,7 +365,7 @@ describe("useTheme persistence", () => {
 
     expect(adapter.load).toHaveBeenCalledOnce()
     expect(result.current.accentColor).toBe("rose")
-    expect(result.current.surfaceColor).toBe("emerald")
+    expect(result.current.surfaceColor).toBe("stone")
     expect(result.current.preset).toBe("glass")
     expect(result.current.backgroundStyle).toBe("gradient")
     expect(result.current.mode).toBe("dark")
@@ -433,7 +433,7 @@ describe("useTheme persistence", () => {
     })
 
     expect(localStorage.getItem("theme-accent")).toBe("rose")
-    expect(localStorage.getItem("theme-surface-color")).toBe("emerald")
+    expect(localStorage.getItem("theme-surface-color")).toBe("stone")
     expect(localStorage.getItem("theme-preset")).toBe("glass")
     expect(localStorage.getItem("theme-bg-style")).toBe("gradient")
     expect(localStorage.getItem("mode")).toBe("dark")
