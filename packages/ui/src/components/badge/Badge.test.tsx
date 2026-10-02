@@ -113,6 +113,16 @@ describe("badge.css", () => {
     }
   })
 
+  // The warning solid misses the 3:1 mark floor on a light surface.
+  it("paints the warning anchor dot from warning-edge", () => {
+    const css = readFileSync(resolve(thisDir, "./badge.css"), "utf8")
+      .replace(/\/\*[\s\S]*?\*\//g, "")
+      .replace(/\s+/g, " ")
+    expect(css).toContain(
+      '.dr-badge-anchor-dot[data-variant="warning"] { @apply bg-warning-edge; }',
+    )
+  })
+
   it("paints the subtle status variants from the status pair", () => {
     const css = readFileSync(resolve(thisDir, "./badge.css"), "utf8")
     for (const status of ["destructive", "success", "warning", "info"]) {

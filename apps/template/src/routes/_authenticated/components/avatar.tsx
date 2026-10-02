@@ -157,7 +157,7 @@ function AvatarPage() {
               <Avatar className="h-10 w-10">
                 <AvatarFallback>BP</AvatarFallback>
               </Avatar>
-              <span className="ring-card bg-warning-solid absolute right-0 bottom-0 h-3 w-3 rounded-full ring-2" />
+              <span className="ring-card bg-warning-edge absolute right-0 bottom-0 h-3 w-3 rounded-full ring-2" />
             </div>
             <p className="text-muted-foreground mt-1 text-center text-xs">
               Away

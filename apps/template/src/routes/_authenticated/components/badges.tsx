@@ -239,7 +239,7 @@ function BadgesPage() {
   <span className="text-sm">Live</span>
 </div>
 <div className="flex items-center gap-2">
-  <span className="h-2 w-2 rounded-full bg-warning-solid block" />
+  <span className="h-2 w-2 rounded-full bg-warning-edge block" />
   <span className="text-sm">Away</span>
 </div>
 <div className="flex items-center gap-2">
@@ -256,7 +256,7 @@ function BadgesPage() {
             <span className="text-sm">Live</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="bg-warning-solid block h-2 w-2 rounded-full" />
+            <span className="bg-warning-edge block h-2 w-2 rounded-full" />
             <span className="text-sm">Away</span>
           </div>
           <div className="flex items-center gap-2">
