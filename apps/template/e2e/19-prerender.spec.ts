@@ -1,29 +1,46 @@
+import { readFileSync } from "node:fs"
 import { test, expect } from "@playwright/test"
 import { gotoApp, seedApp } from "./helpers/app"
 
-// Every registry axis that carries an attribute; add a row when the registry
-// gains one. With the app bundle blocked, an attribute present after reload
-// can only come from the pre-render script, so a default value such as
-// `theme-preset: default` proves the restore as well as any other.
-const SEED: [storageKey: string, attribute: string, value: string][] = [
-  ["mode", "data-mode", "dark"],
-  ["theme-density", "data-density", "spacious"],
-  ["theme-radius", "data-radius", "pill"],
-  ["theme-accent", "data-accent", "violet"],
-  ["theme-surface-color", "data-surface", "zinc"],
-  ["theme-preset", "data-preset", "default"],
-  ["theme-bg-style", "data-background-style", "gradient"],
-  ["theme-bg-intensity", "data-background-intensity", "subtle"],
-  ["theme-gradient-pattern", "data-gradient-pattern", "mesh"],
-  ["theme-elevation", "data-elevation", "high"],
-  ["theme-button-elevation", "data-button-elevation", "low"],
-  ["theme-surface-intensity", "data-surface-intensity", "bold"],
-  ["theme-font-size", "data-font-size", "large"],
-  ["theme-control-depth", "data-control-depth", "deep"],
-  ["theme-outer-glow", "data-outer-glow", "subtle"],
-  ["theme-inner-glow", "data-inner-glow", "subtle"],
-  ["theme-shell-style", "data-shell-style", "island"],
-]
+interface ScaffoldAxis {
+  values: string[]
+  default: string
+  storageKey: string
+  attribute: string | null
+}
+
+const AXES = JSON.parse(
+  readFileSync(
+    new URL("../../../create-app/bin/axes.json", import.meta.url),
+    "utf8",
+  ),
+) as Record<string, ScaffoldAxis>
+
+// Glass hides surface intensity, which would leave that attribute to the
+// provider, so the preset stays on default.
+const PINNED: Record<string, string> = { "theme-preset": "default" }
+
+// Every attribute axis, seeded with its last non-default value: mode gets
+// `dark`, which `system` would not resolve to under Playwright's light scheme.
+// With the app bundle blocked, an attribute present after reload can only
+// come from the pre-render script.
+const SEED: [storageKey: string, attribute: string, value: string][] =
+  Object.values(AXES).flatMap((axis) =>
+    axis.attribute
+      ? [
+          [
+            axis.storageKey,
+            axis.attribute,
+            PINNED[axis.storageKey] ??
+              [...axis.values].reverse().find((v) => v !== axis.default) ??
+              axis.default,
+          ] as [string, string, string],
+        ]
+      : [],
+  )
+
+const seeded = (storageKey: string) =>
+  SEED.find(([key]) => key === storageKey)?.[2] ?? ""
 
 test("restores the stored theme before the app mounts", async ({ page }) => {
   await seedApp(page)
@@ -34,7 +51,7 @@ test("restores the stored theme before the app mounts", async ({ page }) => {
   }, SEED)
   await gotoApp(page, "/components/buttons")
   const html = page.locator("html")
-  await expect(html).toHaveAttribute("data-accent", "violet")
+  await expect(html).toHaveAttribute("data-accent", seeded("theme-accent"))
   const primary = await page.evaluate(() =>
     document.documentElement.style.getPropertyValue("--primary"),
   )
