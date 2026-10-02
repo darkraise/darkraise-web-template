@@ -303,15 +303,26 @@ function uniq(values: readonly string[]): string[] {
   return [...new Set(values)]
 }
 
+const scaleIds = new WeakMap<ColorScale, number>()
+let nextScaleId = 0
+
+function scaleId(scale: ColorScale): number {
+  let id = scaleIds.get(scale)
+  if (id === undefined) {
+    id = nextScaleId++
+    scaleIds.set(scale, id)
+  }
+  return id
+}
+
 const solveCache = new Map<string, Steps>()
 
 function cacheKey(input: SolveInput): string {
   const { accent, neutral, gradient, status } = input
   return [
     input.mode,
-    accent ? accent[500] : "neutral",
-    neutral[500],
-    neutral[50],
+    accent ? scaleId(accent) : "neutral",
+    scaleId(neutral),
     input.contrast,
     input.darkAccentChroma,
     input.tintWithAccent,
@@ -320,7 +331,10 @@ function cacheKey(input: SolveInput): string {
       : "solid",
     input.pageSaturationCap,
     input.glass,
-    status.destructive[500],
+    scaleId(status.destructive),
+    scaleId(status.success),
+    scaleId(status.warning),
+    scaleId(status.info),
   ].join("|")
 }
 

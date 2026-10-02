@@ -301,4 +301,14 @@ describe("solveSteps status and chart", () => {
         solveSteps(input("blue", "zinc", mode)).chart,
       )
   })
+
+  it("solves each status scale it is given, not a cached sibling", () => {
+    const solve = (success: ColorScale) =>
+      solveSteps(
+        input("blue", "zinc", "light", {
+          status: { ...status("blue"), success },
+        }),
+      ).status.success
+    expect(solve(accentColors.emerald)).not.toEqual(solve(accentColors.green))
+  })
 })
