@@ -2,7 +2,6 @@ import { describe, it, expect } from "vitest"
 import { generateTokens, capCanvasSaturation } from "./generateTokens"
 import { surfaceColors } from "@theme/palettes/surfaceColors"
 import { contrastRatio } from "@theme/engine/oklch"
-import { themeConfig } from "@theme/themeConfig"
 import { ACCENT_COLORS, BACKGROUND_INTENSITIES } from "@theme/types"
 import type {
   ColorScale,
@@ -937,19 +936,6 @@ describe("generateTokens", () => {
   })
 })
 
-describe("accent vibrancy default", () => {
-  // Pinned deliberately. The default ships filled-control labels at 4.10,
-  // below AA, which the spec records as an accepted risk — a silent change
-  // to this value would change that risk without review.
-  it("is balanced", () => {
-    expect(themeConfig.defaults.accentIntensity).toBe("balanced")
-  })
-
-  it("is exposed in the switcher", () => {
-    expect(themeConfig.switcher.axes.accentIntensity).toBe(true)
-  })
-})
-
 describe("backgroundIntensity canvas cap", () => {
   const dark = (
     backgroundIntensity: BackgroundIntensity,
@@ -1077,4 +1063,40 @@ describe("colour engine axes", () => {
     expect(t["--sidebar-hover-bg"]).toBe(`${t["--primary-8"]} / 0.15`)
     expect(t["--sidebar-active-bg"]).toBe(`${t["--primary-8"]} / 0.25`)
   })
+})
+
+describe("control well", () => {
+  const base = {
+    accentColor: "blue",
+    surfaceColor: "slate",
+    preset: "default",
+    backgroundStyle: "solid",
+    contrast: "standard",
+    darkAccentChroma: "standard",
+    tintWithAccent: false,
+  } as const
+
+  it("is neutral step 3 in light and step 1 in dark", () => {
+    const light = generateTokens({ ...base, mode: "light" })
+    expect(light["--control-well"]).toBe(light["--neutral-3"])
+    const dark = generateTokens({ ...base, mode: "dark" })
+    expect(dark["--control-well"]).toBe(dark["--neutral-1"])
+  })
+
+  it.each(["light", "dark"] as const)(
+    "emits no derived well steps in %s",
+    (mode) => {
+      const t = generateTokens({ ...base, mode })
+      expect(t).not.toHaveProperty("--control-well-subtle")
+      expect(t).not.toHaveProperty("--control-well-deep")
+    },
+  )
+
+  it.each(["light", "dark"] as const)(
+    "draws the field edge from neutral step 7 in %s",
+    (mode) => {
+      const t = generateTokens({ ...base, mode })
+      expect(t["--field-edge-color"]).toBe(t["--neutral-7"])
+    },
+  )
 })

@@ -36,10 +36,8 @@ describe("axis registry", () => {
     for (const a of attrs) expect(a).toMatch(/^data-[a-z-]+$/)
   })
 
-  it("keeps the three token-only axes attribute-free", () => {
+  it("keeps the token-only axis attribute-free", () => {
     expect(AXES.sidebarActiveBar.attribute).toBeUndefined()
-    expect(AXES.borderIntensity.attribute).toBeUndefined()
-    expect(AXES.accentIntensity.attribute).toBeUndefined()
     expect(AXES.accentColor.attribute).toBe("data-accent")
     expect(AXES.surfaceColor.attribute).toBe("data-surface")
   })
@@ -66,6 +64,16 @@ describe("axis registry", () => {
       attribute: "data-tint-with-accent",
       layer: "brand",
     })
+  })
+
+  it("drops the axes the colour engine replaced", () => {
+    for (const key of [
+      "surfaceIntensity",
+      "borderIntensity",
+      "controlDepth",
+      "accentIntensity",
+    ])
+      expect(key in AXES).toBe(false)
   })
 
   it("validates values against the registry", () => {

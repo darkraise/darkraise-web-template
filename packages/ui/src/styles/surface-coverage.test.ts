@@ -2,15 +2,15 @@ import { describe, it, expect } from "vitest"
 import { readFileSync, readdirSync } from "node:fs"
 import { join } from "node:path"
 
-// The surfaceIntensity axis moves four fill tokens. A component that paints a
+// The surfaceIntensity prop moves four fill tokens. A component that paints a
 // surface from the raw `--card` / `--popover` token instead of the fill bypasses
-// the axis silently: it looks right at the default step and stops responding at
+// the prop silently: it looks right at the default step and stops responding at
 // every other one.
 //
 // The audit that produced this test found no genuine bypasses. `bg-card` and
 // `bg-popover` are safe because `@theme inline` aliases `--color-card` and
 // `--color-popover` to the fills, so the utilities already route through the
-// axis. This test exists to keep that true — it is cheap, and the failure mode
+// prop. This test exists to keep that true — it is cheap, and the failure mode
 // is invisible without it.
 function everyComponentStylesheet(): string[] {
   const roots = ["src/components", "src/layout"]
@@ -28,7 +28,7 @@ function withoutComments(css: string): string {
 }
 
 describe("surfaceIntensity coverage", () => {
-  it("routes the card and popover utilities through the axis-aware fills", () => {
+  it("routes the card and popover utilities through the washable fills", () => {
     const theme = readFileSync("src/styles/theme.css", "utf8")
     expect(theme).toMatch(/--color-card:\s*var\(--surface-card-fill\)/)
     expect(theme).toMatch(/--color-popover:\s*var\(--surface-popover-fill\)/)
@@ -41,7 +41,7 @@ describe("surfaceIntensity coverage", () => {
       for (const token of ["--card", "--popover"]) {
         // `hsl(var(--card))` paints the unwashed colour. The opaque twin
         // `--surface-card-fill-opaque` is the sanctioned escape hatch for
-        // surfaces that must stay opaque, and it still tracks the axis.
+        // surfaces that must stay opaque, and it still tracks the prop.
         const raw = new RegExp(`hsl\\(var\\(\\${token}\\)\\)`)
         if (raw.test(css)) offenders.push(`${path}: hsl(var(${token}))`)
       }

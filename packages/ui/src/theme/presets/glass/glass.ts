@@ -140,10 +140,7 @@ export const glass: ThemePreset<GlassAxes> = {
   // The glow axes default to `none` so they ship invisible on Default. Glass's
   // halo predates them and is part of its identity, so it asks for the step
   // that reproduces what it already shipped.
-  // The two intensity axes are Default-preset controls; Glass reinterprets
-  // the same surfaces through its fog recipe, so they are hidden and
-  // neutralised here (see neutralisedAxes.ts).
-  hiddenCommonAxes: ["accentIntensity", "surfaceIntensity"],
+  hiddenCommonAxes: [],
 
   commonAxisDefaults: { outerGlow: "balanced" },
 

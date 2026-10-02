@@ -9,7 +9,6 @@ import type {
   ThemeSyncStatus,
 } from "@theme/types"
 import {
-  applyBorderIntensity,
   generateTokens,
   resolveAccentScale,
   resolveNeutralScale,
@@ -46,7 +45,6 @@ import {
   writeTokenCache,
 } from "@theme/axes/tokenCache"
 import { migrateGlassPresetKeys } from "./migrateGlassPresetKeys"
-import { migrateAccentIntensityKey } from "./migrateAccentIntensityKey"
 import { migrateCanvasTintKey } from "./migrateCanvasTintKey"
 import { migratePresetGlowAxes } from "./migratePresetGlowAxes"
 import { neutraliseIfHidden } from "./neutralisedAxes"
@@ -120,7 +118,6 @@ function readCacheInputs(): Map<string, string> {
 if (isBrowser) {
   try {
     migrateGlassPresetKeys(globalThis.localStorage)
-    migrateAccentIntensityKey(globalThis.localStorage)
     migrateCanvasTintKey(globalThis.localStorage)
     migratePresetGlowAxes(globalThis.localStorage)
   } catch {
@@ -173,16 +170,10 @@ function applyAttributes(settings: AxisValues, defaults: AxisValues) {
   for (const key of AXIS_KEYS) {
     const attribute = AXES[key].attribute
     if (!attribute || key === "mode") continue
-    const value =
-      key === "surfaceIntensity"
-        ? neutraliseIfHidden(
-            "surfaceIntensity",
-            settings.surfaceIntensity,
-            defaults.surfaceIntensity,
-            hidden,
-          )
-        : settings[key]
-    root.setAttribute(attribute, value)
+    root.setAttribute(
+      attribute,
+      neutraliseIfHidden(key, settings[key], defaults[key], hidden),
+    )
   }
 }
 
@@ -337,10 +328,7 @@ export function ThemeProvider({
       const otherOwnedKeys = PRESET_NAMES.filter(
         (n) => n !== presetName,
       ).flatMap((n) => presetsAny[n]?.ownedTokenKeys ?? [])
-      const mergedTokens = applyBorderIntensity(
-        { ...commonTokens, ...presetTokens },
-        current.borderIntensity,
-      )
+      const mergedTokens = { ...commonTokens, ...presetTokens }
       applyTokens(
         mergedTokens,
         otherOwnedKeys.filter((k) => !(k in mergedTokens)),

@@ -2,7 +2,6 @@ import type {
   AccentColor,
   BackgroundStyle,
   BackgroundIntensity,
-  BorderIntensity,
   Contrast,
   DarkAccentChroma,
   SurfaceColor,
@@ -12,11 +11,7 @@ import type {
 import { accentColors } from "@theme/palettes/accentColors"
 import { surfaceColors } from "@theme/palettes/surfaceColors"
 import { presets, type PresetName } from "@theme/presets"
-import {
-  contrastRatio,
-  hslStringToOklch,
-  oklchToHslString,
-} from "@theme/engine/oklch"
+import { contrastRatio } from "@theme/engine/oklch"
 import { CANVAS_SATURATION_CAP, contentStripGround } from "./canvas"
 import { INK, STATUS_NAMES, WHITE, placeStep, solveSteps } from "./steps"
 
@@ -188,126 +183,6 @@ function bestLabel(fill: string): string {
   return contrastRatio(WHITE, fill) >= contrastRatio(INK, fill) ? WHITE : INK
 }
 
-/**
- * Linear blend of two `H S% L%` triplets. Hue is interpolated only when both
- * ends are chromatic: white is stored as `0 0% 100%`, and interpolating from
- * that hue would swing a light field's midpoint through red rather than
- * keeping it on the surface colour.
- */
-export function mixHsl(a: string, b: string, t: number): string {
-  const pa = a.split(" ")
-  const pb = b.split(" ")
-  const ha = parseFloat(pa[0] ?? "0")
-  const hb = parseFloat(pb[0] ?? "0")
-  const sa = parseFloat(pa[1] ?? "0")
-  const sb = parseFloat(pb[1] ?? "0")
-  const la = parseFloat(pa[2] ?? "0")
-  const lb = parseFloat(pb[2] ?? "0")
-  const hue = sa === 0 ? hb : sb === 0 ? ha : ha + (hb - ha) * t
-  const sat = sa + (sb - sa) * t
-  const lig = la + (lb - la) * t
-  return `${Math.round(hue)} ${Math.round(sat)}% ${round1(lig)}%`
-}
-
-function round1(n: number): number {
-  return Math.round(n * 10) / 10
-}
-
-/** Replaces a triplet's lightness, keeping its hue and saturation. */
-function withLightness(hsl: string, lightness: number): string {
-  const parts = hsl.split(" ")
-  return `${parts[0] ?? "0"} ${parts[1] ?? "0%"} ${round1(lightness)}%`
-}
-
-/**
- * The rung a form control paints when it sits inside a raised surface, one
- * step per `controlDepth`. `flush` is the container's own rung (no recess);
- * `recessed` is the sunken rung, which is what the palette bottoms out at.
- *
- * `subtle` and `deep` have no palette step of their own, so both are derived
- * from the two that do. `deep` continues past `sunken` by the same lightness
- * distance that separates it from `raised`, which in light mode lands a rung
- * below the sunken grey. In dark that subtraction goes negative — the palette
- * has almost no headroom under surface[950] — so a floor at 40% of the sunken
- * lightness keeps the well dark without collapsing it to a hueless black hole.
- */
-export function controlWells(
-  raised: string,
-  sunken: string,
-): { subtle: string; deep: string } {
-  const raisedL = parseFloat(raised.split(" ")[2] ?? "0")
-  const sunkenL = parseFloat(sunken.split(" ")[2] ?? "0")
-  const deepL = Math.max(sunkenL - (raisedL - sunkenL), sunkenL * 0.4)
-  return {
-    subtle: mixHsl(raised, sunken, 0.5),
-    deep: withLightness(sunken, deepL),
-  }
-}
-
-const BORDER_TOKENS = [
-  "--border",
-  "--input",
-  "--border-subtle",
-  "--border-default",
-  "--border-strong",
-  "--sidebar-border",
-] as const
-
-/**
- * How each `borderIntensity` step moves a border. An opaque border moves its
- * OKLCH lightness toward the page (`subtle`) or the text colour (`strong`,
- * `bold`) by `mix`, keeping its own chroma and hue: blending in HSL carried
- * the ink's saturation across and tinted a grey border blue. A translucent
- * one, such as dark glass's white hairline, has no fixed ground to move
- * against, so its alpha scales by `alpha` instead.
- */
-const BORDER_SHIFT: Record<
-  BorderIntensity,
-  { toward: "--background" | "--foreground"; mix: number; alpha: number }
-> = {
-  subtle: { toward: "--background", mix: 0.5, alpha: 0.55 },
-  balanced: { toward: "--background", mix: 0, alpha: 1 },
-  strong: { toward: "--foreground", mix: 0.2, alpha: 1.7 },
-  bold: { toward: "--foreground", mix: 0.4, alpha: 2.5 },
-}
-
-const HSL_TRIPLET = /^-?[\d.]+ [\d.]+% [\d.]+%$/
-const HSL_WITH_ALPHA = /^(-?[\d.]+ [\d.]+% [\d.]+%) \/ ([\d.]+)$/
-
-/**
- * Rewrites the border tokens of an already-merged token set. Runs after the
- * preset's own tokens are merged in, so a preset that replaces a border
- * (glass does, with a translucent one) is scaled rather than bypassed. A
- * value in any other shape, such as a `var()` reference, passes through.
- */
-export function applyBorderIntensity(
-  tokens: Record<string, string>,
-  intensity: BorderIntensity,
-): Record<string, string> {
-  // A config written before this axis existed passes `undefined` at runtime.
-  if (intensity === "balanced" || !(intensity in BORDER_SHIFT)) return tokens
-  const shift = BORDER_SHIFT[intensity]
-  const target = tokens[shift.toward]
-  const next = { ...tokens }
-  for (const key of BORDER_TOKENS) {
-    const value = tokens[key]
-    if (value === undefined) continue
-    const translucent = HSL_WITH_ALPHA.exec(value)
-    if (translucent) {
-      const alpha = Math.min(1, parseFloat(translucent[2] ?? "1") * shift.alpha)
-      next[key] = `${translucent[1]} / ${Math.round(alpha * 100) / 100}`
-    } else if (target && HSL_TRIPLET.test(value) && HSL_TRIPLET.test(target)) {
-      const from = hslStringToOklch(value)
-      const toL = hslStringToOklch(target).L
-      next[key] = oklchToHslString({
-        ...from,
-        L: from.L + (toL - from.L) * shift.mix,
-      })
-    }
-  }
-  return next
-}
-
 export function generateTokens(
   input: GenerateTokensInput,
 ): Record<string, string> {
@@ -375,7 +250,6 @@ export function generateTokens(
   const stripGrounds = paintsStrip
     ? [contentStripGround(background, surfaceTint, mode, backgroundIntensity)]
     : []
-  const controlWell = controlWells(card, sunken)
   const isLightGlass = glass && !dark
 
   const tokens: Record<string, string> = {}
@@ -433,20 +307,13 @@ export function generateTokens(
 
     "--border": n(6),
     "--input": dark ? borderSubtle : n(6),
-    // The deep control-depth well sits below every other ground; the edge
-    // clears it too while that axis exists.
-    "--field-edge-color": ensureContrastAll(
-      n(7),
-      [controlWell.deep],
-      glass ? 3.5 : MARK_FLOOR,
-    ),
+    "--field-edge-color": n(7),
 
     "--surface-base": background,
     "--surface-raised": card,
     "--surface-overlay": dark ? n(3) : card,
     "--surface-sunken": sunken,
-    "--control-well-subtle": controlWell.subtle,
-    "--control-well-deep": controlWell.deep,
+    "--control-well": sunken,
     "--surface-sidebar": dark && !glass ? card : background,
     "--sidebar-foreground": steps.sidebarForeground,
     "--sidebar-foreground-hover": dark ? WHITE : n(12),

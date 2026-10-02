@@ -554,7 +554,7 @@
     --info-solid-wash: 0 0% 0%;
     --border: 214 32% 91%;
     --input: 214 32% 91%;
-    --field-edge-color: 215 20% 54%;
+    --field-edge-color: 215 20% 57%;
     --ring: 217 91% 60%;
     --focus-ring: 212 96% 59%;
     --chart-1: hsl(258 65% 65%);
@@ -569,10 +569,7 @@
     --surface-raised: 0 0% 100%;
     --surface-overlay: 0 0% 100%;
     --surface-sunken: 210 40% 96%;
-    /* Derived control rungs; the engine overwrites both. Light-mode values,
-       matching the rest of this fallback block. */
-    --control-well-subtle: 210 20% 98%;
-    --control-well-deep: 210 40% 92%;
+    --control-well: 210 40% 96%;
     --surface-sidebar: 210 16% 98%;
     --sidebar-active-bg: 213 97% 87%;
     --surface-header: 0 0% 100%;
@@ -603,8 +600,6 @@
        read as wells cut into the surface they belong to, instead of as
        outlines drawn on top of it. */
     --control-surface: var(--card);
-    /* Which rung the recess lands on, chosen by the controlDepth axis. */
-    --control-well: var(--surface-sunken);
     /* Interaction state layer — a Material-style translucent wash of the
      element's own text colour, painted over a clickable surface as a flood
      inset shadow. `currentColor` is resolved at the consuming element, so
@@ -1065,31 +1060,6 @@
   }
 }
 
-/* controlDepth — which rung a form control paints inside a raised surface.
-   `--control-surface` (see the :root block) picks this up only within a
-   container that redeclares it; on the bare page canvas a control stays on
-   the raised rung at every step, because there is nothing to recess into.
-
-   `recessed` is the default and needs no rule: --control-well is declared as
-   --surface-sunken alongside the other tokens. Listing it anyway keeps the
-   four steps readable as one table and makes an explicit attribute win over
-   a stale inherited one. */
-[data-control-depth="flush"] {
-  --control-well: var(--card);
-}
-
-[data-control-depth="subtle"] {
-  --control-well: var(--control-well-subtle);
-}
-
-[data-control-depth="recessed"] {
-  --control-well: var(--surface-sunken);
-}
-
-[data-control-depth="deep"] {
-  --control-well: var(--control-well-deep);
-}
-
 /* Every raised surface a form can live in redeclares the control rung, so a
    field recesses into whatever contains it. `.dr-card` does the same in
    card.css, colocated with the rest of the card's chrome.
@@ -1326,10 +1296,9 @@
 /* Glass's light-mode override, [data-mode="light"][data-preset="glass"], is
    specificity (0,2,0) and declares --surface-overlay-* — higher than an
    <html>-level [data-surface-intensity="none"] (0,1,0) would be, so it would
-   outrank this blanking if `none` were ever added to the theme axis and
-   written on <html>. Unreachable today: SURFACE_INTENSITIES has no `none`,
-   the value is prop-only, and a prop lands on a component element where no
-   preset selector competes. */
+   outrank this blanking if `none` were ever written on <html>. Unreachable
+   today: no theme axis writes the attribute, the value is prop-only, and a
+   prop lands on a component element where no preset selector competes. */
 [data-surface-intensity="none"] {
   --surface-card-fill: transparent;
   --surface-popover-fill: transparent;

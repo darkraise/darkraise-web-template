@@ -75,8 +75,6 @@ describe("axis visibility table", () => {
       "radius",
       "elevation",
       "buttonElevation",
-      "accentIntensity",
-      "surfaceIntensity",
       "outerGlow",
       "innerGlow",
     ]
@@ -86,6 +84,16 @@ describe("axis visibility table", () => {
         axis,
       ).toBe(false)
     }
+  })
+
+  it("has no rule for the axes the colour engine replaced", () => {
+    for (const axis of [
+      "surfaceIntensity",
+      "borderIntensity",
+      "controlDepth",
+      "accentIntensity",
+    ])
+      expect(axis in AXIS_VISIBILITY).toBe(false)
   })
 
   it("never lets a preset hide the axes that choose the preset or its colours", () => {

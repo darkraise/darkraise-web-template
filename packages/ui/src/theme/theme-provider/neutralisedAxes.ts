@@ -1,3 +1,5 @@
+import type { AxisKey } from "@theme/axes/registry"
+
 /**
  * Common axes that are forced back to their configured default while the
  * active preset hides them, rather than merely being hidden from the switcher.
@@ -5,19 +7,10 @@
  * This is deliberately a short explicit list and not "every axis in
  * `hiddenCommonAxes`". `presets/types.ts` documents that a hidden common axis
  * still has its state and data attribute applied, so components reading it
- * outside the preset's own CSS keep working. Narrowing that contract for
- * every preset is out of scope; these two axes opt in by name.
- *
- * Why they need it: `accentIntensity` and `surfaceIntensity` are Default-preset
- * controls, and Glass reinterprets the same surfaces through its own recipe.
- * Hiding alone would leave a stored `calm` silently applying under
- * Glass with no control to change it back. The stored value is untouched, so
- * switching back to Default restores the user's choice.
+ * outside the preset's own CSS keep working. An axis opts in by name; the
+ * stored value is untouched, so switching back restores the user's choice.
  */
-export const NEUTRALISED_WHEN_HIDDEN: ReadonlySet<string> = new Set([
-  "accentIntensity",
-  "surfaceIntensity",
-])
+export const NEUTRALISED_WHEN_HIDDEN: readonly AxisKey[] = []
 
 /** Resolves an axis value to the preset-appropriate one. */
 export function neutraliseIfHidden<T extends string>(
@@ -26,6 +19,7 @@ export function neutraliseIfHidden<T extends string>(
   fallback: T,
   hiddenCommonAxes: readonly string[] | undefined,
 ): T {
-  if (!NEUTRALISED_WHEN_HIDDEN.has(axisName)) return value
+  if (!(NEUTRALISED_WHEN_HIDDEN as readonly string[]).includes(axisName))
+    return value
   return hiddenCommonAxes?.includes(axisName) ? fallback : value
 }

@@ -1,5 +1,5 @@
 import type * as React from "react"
-import { render, screen, fireEvent } from "@testing-library/react"
+import { render, screen } from "@testing-library/react"
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest"
 import { ThemeProvider } from "@theme/theme-provider"
 import { themeConfig, type ThemeConfig } from "@theme/themeConfig"
@@ -102,24 +102,27 @@ describe("ThemeSettingsPanel", () => {
   })
 
   it("thins a group without hiding its heading when only some axes are hidden", () => {
-    renderPanel(<ThemeSettingsPanel layout="page" />)
-    // Default preset — every Depth axis is visible, so the heading shows.
-    expect(screen.getByRole("heading", { name: "Depth" })).toBeInTheDocument()
+    const thinnedConfig: ThemeConfig = {
+      ...themeConfig,
+      switcher: {
+        ...themeConfig.switcher,
+        axes: { ...themeConfig.switcher.axes, elevation: false },
+      },
+    }
+    render(
+      <ThemeProvider config={thinnedConfig}>
+        <ThemeSettingsPanel layout="page" />
+      </ThemeProvider>,
+    )
 
-    // Glass hides surfaceIntensity but keeps the rest of the Depth group, so
-    // the group thins and keeps its heading.
-    fireEvent.click(screen.getByRole("radio", { name: /^glass$/i }))
-
     expect(screen.getByRole("heading", { name: "Depth" })).toBeInTheDocument()
-    expect(screen.queryByText("Surface Intensity")).not.toBeInTheDocument()
-    expect(screen.getByText("Elevation")).toBeInTheDocument()
+    expect(screen.queryByText("Elevation")).not.toBeInTheDocument()
     expect(screen.getByText("Outer Glow")).toBeInTheDocument()
   })
 
   it("omits a group heading entirely once every axis in it is hidden", () => {
     // Disable every "depth" axis at the config level (elevation,
-    // buttonElevation, surfaceIntensity, borderIntensity, controlDepth,
-    // contrast and the two glow axes)
+    // buttonElevation, contrast and the two glow axes)
     // rather than via a preset's hiddenCommonAxes, so this test doesn't depend
     // on which axes a given preset happens to reinterpret.
     const depthHiddenConfig: ThemeConfig = {
@@ -130,9 +133,6 @@ describe("ThemeSettingsPanel", () => {
           ...themeConfig.switcher.axes,
           elevation: false,
           buttonElevation: false,
-          surfaceIntensity: false,
-          borderIntensity: false,
-          controlDepth: false,
           contrast: false,
           outerGlow: false,
           innerGlow: false,

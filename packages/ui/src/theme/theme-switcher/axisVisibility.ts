@@ -56,17 +56,6 @@ export const AXIS_VISIBILITY: Record<
   fontSize: (s) => s.axes.fontSize && !s.isHiddenByPreset("fontSize"),
   radius: (s) => s.axes.radius && !s.isHiddenByPreset("radius"),
 
-  // Default-preset controls: Glass reinterprets the same surfaces through its
-  // own recipe and hides these, which also neutralises them.
-  accentIntensity: (s) =>
-    s.axes.accentIntensity && !s.isHiddenByPreset("accentIntensity"),
-  surfaceIntensity: (s) =>
-    s.axes.surfaceIntensity && !s.isHiddenByPreset("surfaceIntensity"),
-  borderIntensity: (s) =>
-    s.axes.borderIntensity && !s.isHiddenByPreset("borderIntensity"),
-  controlDepth: (s) =>
-    s.axes.controlDepth && !s.isHiddenByPreset("controlDepth"),
-
   elevation: (s) => s.axes.elevation && !s.isHiddenByPreset("elevation"),
   buttonElevation: (s) =>
     s.axes.buttonElevation && !s.isHiddenByPreset("buttonElevation"),

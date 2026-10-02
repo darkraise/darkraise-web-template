@@ -33,7 +33,7 @@ export function buildPrerenderScript(): string {
   for (const name of PRESET_NAMES) {
     const preset = presets[name]
     neutralised[name] = (preset.hiddenCommonAxes ?? [])
-      .filter((axis) => NEUTRALISED_WHEN_HIDDEN.has(axis))
+      .filter((axis) => NEUTRALISED_WHEN_HIDDEN.includes(axis))
       .flatMap((axis) => AXES[axis as AxisKey]?.attribute ?? [])
     presetAxes[name] = Object.entries(
       preset.axes as Record<string, { values: readonly string[] }>,

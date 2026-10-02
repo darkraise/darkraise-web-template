@@ -138,30 +138,6 @@
     "attribute": "data-button-elevation",
     "layer": "advanced"
   },
-  "surfaceIntensity": {
-    "values": [
-      "flat",
-      "subtle",
-      "balanced",
-      "bold"
-    ],
-    "default": "balanced",
-    "storageKey": "theme-surface-intensity",
-    "attribute": "data-surface-intensity",
-    "layer": "advanced"
-  },
-  "borderIntensity": {
-    "values": [
-      "subtle",
-      "balanced",
-      "strong",
-      "bold"
-    ],
-    "default": "balanced",
-    "storageKey": "theme-border-intensity",
-    "attribute": null,
-    "layer": "advanced"
-  },
   "radius": {
     "values": [
       "sharp",
@@ -185,30 +161,6 @@
     "storageKey": "theme-font-size",
     "attribute": "data-font-size",
     "layer": "brand"
-  },
-  "accentIntensity": {
-    "values": [
-      "calm",
-      "balanced",
-      "vivid",
-      "intense"
-    ],
-    "default": "balanced",
-    "storageKey": "theme-accent-intensity",
-    "attribute": null,
-    "layer": "advanced"
-  },
-  "controlDepth": {
-    "values": [
-      "flush",
-      "subtle",
-      "recessed",
-      "deep"
-    ],
-    "default": "recessed",
-    "storageKey": "theme-control-depth",
-    "attribute": "data-control-depth",
-    "layer": "advanced"
   },
   "outerGlow": {
     "values": [

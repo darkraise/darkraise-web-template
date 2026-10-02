@@ -60,12 +60,12 @@ describe("pre-render script", () => {
     expect(root.hasAttribute("data-sidebar-active-bar")).toBe(false)
   })
 
-  it("leaves surface intensity to the provider under glass", () => {
-    localStorage.setItem("theme-preset", "glass")
+  it("ignores the stored values of removed axes", () => {
     localStorage.setItem("theme-surface-intensity", "bold")
+    localStorage.setItem("theme-control-depth", "deep")
     run()
-    expect(root.getAttribute("data-preset")).toBe("glass")
     expect(root.hasAttribute("data-surface-intensity")).toBe(false)
+    expect(root.hasAttribute("data-control-depth")).toBe(false)
   })
 
   it("restores the active preset's own axes", () => {

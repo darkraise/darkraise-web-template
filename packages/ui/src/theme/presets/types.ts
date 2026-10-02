@@ -102,10 +102,6 @@ export interface ThemePreset<
    * that read them outside the preset's CSS continue to work), but the
    * switcher doesn't render a picker for them — the user controls the
    * affected tokens via the preset's own axes instead.
-   *
-   * Example: Glass declares ["accentIntensity", "surfaceIntensity"]
-   * because its fog recipe reinterprets the surfaces those axes tune.
-   * Exposing both would just be confusing.
    */
   /**
    * Default values this preset wants for common axes it participates in, used
@@ -132,10 +128,6 @@ export interface ThemePreset<
     | "elevation"
     | "buttonElevation"
     | "radius"
-    | "accentIntensity"
-    | "surfaceIntensity"
-    | "borderIntensity"
-    | "controlDepth"
     | "fontSize"
     | "outerGlow"
     | "innerGlow"

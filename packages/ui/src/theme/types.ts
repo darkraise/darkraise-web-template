@@ -76,26 +76,6 @@ export type Density = (typeof DENSITIES)[number]
 export const ELEVATIONS = ["flat", "low", "medium", "high"] as const
 export type Elevation = (typeof ELEVATIONS)[number]
 
-export const SURFACE_INTENSITIES = [
-  "flat",
-  "subtle",
-  "balanced",
-  "bold",
-] as const
-export type SurfaceIntensity = (typeof SURFACE_INTENSITIES)[number]
-
-/**
- * How far every border token leans away from the page (`strong`, `bold`) or
- * into it (`subtle`). `balanced` is the unmodified preset recipe.
- */
-export const BORDER_INTENSITIES = [
-  "subtle",
-  "balanced",
-  "strong",
-  "bold",
-] as const
-export type BorderIntensity = (typeof BORDER_INTENSITIES)[number]
-
 export const RADII = ["sharp", "subtle", "rounded", "pill"] as const
 export type Radius = (typeof RADII)[number]
 
@@ -135,23 +115,6 @@ export type ShellStyle = (typeof SHELL_STYLES)[number]
  */
 export const SIDEBAR_ACTIVE_BARS = ["default", "bar", "ring", "both"] as const
 export type SidebarActiveBarSetting = (typeof SIDEBAR_ACTIVE_BARS)[number]
-
-/**
- * How far a form control recesses below the surface that contains it. Only
- * meaningful inside a raised surface: a control sitting on the bare page
- * canvas keeps the raised rung at every step, because recessing it there
- * would sink it into the background rather than into a container.
- */
-export const CONTROL_DEPTHS = ["flush", "subtle", "recessed", "deep"] as const
-export type ControlDepth = (typeof CONTROL_DEPTHS)[number]
-
-export const ACCENT_INTENSITIES = [
-  "calm",
-  "balanced",
-  "vivid",
-  "intense",
-] as const
-export type AccentIntensity = (typeof ACCENT_INTENSITIES)[number]
 
 /**
  * Glow strength. Shared by both glow axes because they are two halves of one

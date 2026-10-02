@@ -143,21 +143,6 @@ describe("useTheme", () => {
     )
   })
 
-  it("defaults surfaceIntensity to balanced", () => {
-    const { result } = renderHook(() => useTheme(), { wrapper })
-    expect(result.current.surfaceIntensity).toBe("balanced")
-  })
-
-  it("writes the attribute and storage on change", () => {
-    const { result } = renderHook(() => useTheme(), { wrapper })
-    act(() => result.current.setSurfaceIntensity("bold"))
-    expect(result.current.surfaceIntensity).toBe("bold")
-    expect(
-      document.documentElement.getAttribute("data-surface-intensity"),
-    ).toBe("bold")
-    expect(localStorage.getItem("theme-surface-intensity")).toBe("bold")
-  })
-
   it("returns config defaults for new axes when localStorage is empty", () => {
     const { result } = renderHook(() => useTheme(), { wrapper })
     expect(result.current.density).toBe("cozy")
@@ -234,32 +219,6 @@ describe("useTheme", () => {
   it("defaults backgroundIntensity to vivid", () => {
     const { result } = renderHook(() => useTheme(), { wrapper })
     expect(result.current.backgroundIntensity).toBe("vivid")
-  })
-
-  it("defaults controlDepth to recessed", () => {
-    const { result } = renderHook(() => useTheme(), { wrapper })
-    expect(result.current.controlDepth).toBe("recessed")
-  })
-
-  it("persists controlDepth and writes its data attribute", () => {
-    const { result } = renderHook(() => useTheme(), { wrapper })
-    act(() => result.current.setControlDepth("deep"))
-    expect(result.current.controlDepth).toBe("deep")
-    expect(localStorage.getItem("theme-control-depth")).toBe("deep")
-    expect(document.documentElement.getAttribute("data-control-depth")).toBe(
-      "deep",
-    )
-  })
-
-  it("persists borderIntensity and repaints the border token", () => {
-    const { result } = renderHook(() => useTheme(), { wrapper })
-    const before = document.documentElement.style.getPropertyValue("--border")
-    act(() => result.current.setBorderIntensity("bold"))
-    expect(result.current.borderIntensity).toBe("bold")
-    expect(localStorage.getItem("theme-border-intensity")).toBe("bold")
-    expect(
-      document.documentElement.style.getPropertyValue("--border"),
-    ).not.toBe(before)
   })
 
   it("persists backgroundIntensity and writes its data attribute", () => {
@@ -608,25 +567,10 @@ describe("useTheme persistence", () => {
     )
   })
 
-  it("persists accent vibrancy and feeds it to the token engine", async () => {
-    const { result } = renderHook(() => useTheme(), { wrapper })
-
-    expect(result.current.accentIntensity).toBe("balanced")
-
-    act(() => result.current.setAccentIntensity("intense"))
-
-    expect(result.current.accentIntensity).toBe("intense")
-    expect(localStorage.getItem("theme-accent-intensity")).toBe("intense")
-    // The axis is token-only: it must not leak a data attribute.
-    expect(
-      document.documentElement.getAttribute("data-accent-intensity"),
-    ).toBeNull()
-  })
-
   it("falls back to the configured default for an unknown stored value", () => {
-    localStorage.setItem("theme-accent-intensity", "nonsense")
+    localStorage.setItem("theme-density", "nonsense")
     const { result } = renderHook(() => useTheme(), { wrapper })
-    expect(result.current.accentIntensity).toBe("balanced")
+    expect(result.current.density).toBe("cozy")
   })
 
   it("falls back to the default mode for an unknown stored mode", () => {

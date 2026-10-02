@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
 
-// Form controls are deliberately outside the surface-intensity axis: fields
+// Form controls are deliberately outside the surface-intensity prop: fields
 // should hold still while panels move around them. They therefore must not
 // paint through `bg-card`, whose --color-card now carries the wash.
 //
@@ -88,24 +88,16 @@ describe("--control-surface rungs", () => {
     )
   })
 
-  it("recesses to the axis-chosen well inside a card", () => {
+  it("recesses to the well inside a card", () => {
     expect(read("components/card/card.css")).toContain(
       "--control-surface: var(--control-well)",
     )
   })
 
-  it("resolves the well through the controlDepth table", () => {
+  it("reads the engine's well with no depth rules", () => {
     const css = read("styles/theme.css")
-    expect(css).toContain("--control-well: var(--surface-sunken)")
-    for (const [step, token] of [
-      ["flush", "var(--card)"],
-      ["subtle", "var(--control-well-subtle)"],
-      ["recessed", "var(--surface-sunken)"],
-      ["deep", "var(--control-well-deep)"],
-    ]) {
-      expect(css).toContain(
-        `[data-control-depth="${step}"] { --control-well: ${token}; }`,
-      )
-    }
+    expect(css).toMatch(/--control-well: [\d.]+ [\d.]+% [\d.]+%;/)
+    expect(css).not.toContain("--control-well: var(")
+    expect(css).not.toContain("data-control-depth")
   })
 })

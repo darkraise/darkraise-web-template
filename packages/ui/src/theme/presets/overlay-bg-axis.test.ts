@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
 
-// Every preset must let the surface-intensity axis reach the overlay tier.
+// Every preset must let the surface-intensity prop reach the overlay tier.
 // Several presets used to define --surface-overlay-bg straight from
-// --background, which the axis never washes, making Dialog/Popover/Tooltip/
+// --background, which the prop never washes, making Dialog/Popover/Tooltip/
 // Select/Command and every menu silent no-ops there. This is the regression
 // this test exists to prevent.
 const PRESETS = ["glass/glass.css"]

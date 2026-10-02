@@ -3,14 +3,13 @@ import { readFileSync } from "node:fs"
 import { contrastRatio } from "@theme/engine/oklch"
 import { parseRules } from "../../styles/interactive-classes"
 import {
-  applyBorderIntensity,
   CANVAS_BLOB_SCALE,
   CANVAS_PEAK_SHARE,
   generateTokens,
   gradientCanvasPeak,
 } from "@theme/engine/generateTokens"
 import { surfaceColors } from "@theme/palettes/surfaceColors"
-import { BORDER_INTENSITIES, type SurfaceColor } from "@theme/types"
+import type { SurfaceColor } from "@theme/types"
 import {
   comboName,
   finalTokens,
@@ -25,7 +24,7 @@ const GROUNDS = [
   "--background",
   "--card",
   "--surface-sunken",
-  "--control-well-deep",
+  "--control-well",
   "--surface-sidebar",
   "--surface-header",
 ] as const
@@ -36,36 +35,26 @@ const GROUNDS = [
 const floorFor = (preset: string) => (preset === "glass" ? 3.5 : 3)
 
 describe("--field-edge-color", () => {
-  it("clears 3:1 (3.5:1 under glass) on every ground at every border intensity, and never moves", () => {
+  it("clears 3:1 (3.5:1 under glass) on every ground", () => {
     const failures: string[] = []
     for (const combo of reachableCombos()) {
-      const base = finalTokens(combo)
-      const edge = base["--field-edge-color"]
+      const tokens = finalTokens(combo)
+      const edge = tokens["--field-edge-color"]
       if (!isOpaque(edge)) {
         failures.push(
           `${comboName(combo)}: edge ${String(edge)} is not an opaque triplet`,
         )
         continue
       }
-      for (const step of BORDER_INTENSITIES) {
-        const tokens = applyBorderIntensity(base, step)
-        if (tokens["--field-edge-color"] !== edge) {
-          failures.push(`${comboName(combo)} ${step}: edge moved`)
+      for (const ground of GROUNDS) {
+        const value = tokens[ground]
+        if (!isOpaque(value)) {
+          failures.push(`${comboName(combo)}: ${ground} is not opaque`)
+          continue
         }
-        for (const ground of GROUNDS) {
-          const value = tokens[ground]
-          if (!isOpaque(value)) {
-            failures.push(
-              `${comboName(combo)} ${step}: ${ground} is not opaque`,
-            )
-            continue
-          }
-          const ratio = contrastRatio(edge, value)
-          if (ratio < floorFor(combo.preset)) {
-            failures.push(
-              `${comboName(combo)} ${step}: ${ratio.toFixed(2)} on ${ground}`,
-            )
-          }
+        const ratio = contrastRatio(edge, value)
+        if (ratio < floorFor(combo.preset)) {
+          failures.push(`${comboName(combo)}: ${ratio.toFixed(2)} on ${ground}`)
         }
       }
     }

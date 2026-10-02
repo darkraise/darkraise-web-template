@@ -1,11 +1,8 @@
 import {
   ACCENT_COLORS,
-  ACCENT_INTENSITIES,
   BACKGROUND_INTENSITIES,
   BACKGROUND_STYLES,
-  BORDER_INTENSITIES,
   CONTRASTS,
-  CONTROL_DEPTHS,
   DARK_ACCENT_CHROMAS,
   DENSITIES,
   ELEVATIONS,
@@ -17,7 +14,6 @@ import {
   SHELL_STYLES,
   SIDEBAR_ACTIVE_BARS,
   SURFACE_COLORS,
-  SURFACE_INTENSITIES,
   TINT_WITH_ACCENT,
 } from "@theme/types"
 import { PRESET_NAMES } from "@theme/presets"
@@ -120,21 +116,6 @@ export const AXES = {
     attribute: "data-button-elevation",
     layer: "advanced",
   }),
-  /** How far cards and panels separate from the page. */
-  surfaceIntensity: axis({
-    values: SURFACE_INTENSITIES,
-    default: "balanced",
-    storageKey: "theme-surface-intensity",
-    attribute: "data-surface-intensity",
-    layer: "advanced",
-  }),
-  /** How far every border leans away from the page (`strong`, `bold`) or into it (`subtle`). */
-  borderIntensity: axis({
-    values: BORDER_INTENSITIES,
-    default: "balanced",
-    storageKey: "theme-border-intensity",
-    layer: "advanced",
-  }),
   /** Corner radius scale. */
   radius: axis({
     values: RADII,
@@ -150,21 +131,6 @@ export const AXES = {
     storageKey: "theme-font-size",
     attribute: "data-font-size",
     layer: "brand",
-  }),
-  /** How loud the accent reads, mainly in dark mode; in light it still sets the focus-ring shade and the sidebar hover fill. */
-  accentIntensity: axis({
-    values: ACCENT_INTENSITIES,
-    default: "balanced",
-    storageKey: "theme-accent-intensity",
-    layer: "advanced",
-  }),
-  /** How deep form controls sit inside a raised surface. */
-  controlDepth: axis({
-    values: CONTROL_DEPTHS,
-    default: "recessed",
-    storageKey: "theme-control-depth",
-    attribute: "data-control-depth",
-    layer: "advanced",
   }),
   /** Halo cast outward; the outer half of the glow effect. */
   outerGlow: axis({
