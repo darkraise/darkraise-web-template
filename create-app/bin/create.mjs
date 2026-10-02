@@ -33,14 +33,10 @@ const GRADIENT_PATTERNS = AXES.gradientPattern.values
 const DENSITIES = AXES.density.values
 const ELEVATIONS = AXES.elevation.values
 const RADII = AXES.radius.values
-const CONTROL_DEPTHS = AXES.controlDepth.values
 const SHELL_STYLES = AXES.shellStyle.values
 const SIDEBAR_ACTIVE_BARS = AXES.sidebarActiveBar.values
 const FONT_SIZES = AXES.fontSize.values
-const ACCENT_INTENSITIES = AXES.accentIntensity.values
 const GLOW_LEVELS = AXES.outerGlow.values
-const SURFACE_INTENSITIES = AXES.surfaceIntensity.values
-const BORDER_INTENSITIES = AXES.borderIntensity.values
 const MODES = AXES.mode.values
 const LAYOUTS = ["sidebar", "stacked", "top-nav", "split-panel"]
 const THEME_AXIS_KEYS = [...Object.keys(AXES), "presetAxes"]
@@ -60,12 +56,8 @@ const argv = minimist(process.argv.slice(2), {
     "density",
     "elevation",
     "button-elevation",
-    "surface-intensity",
-    "border-intensity",
     "radius",
     "font-size",
-    "accent-intensity",
-    "control-depth",
     "shell-style",
     "sidebar-active-bar",
     "outer-glow",
@@ -112,14 +104,10 @@ validate(argv.mode, MODES, "mode")
 validate(argv.density, DENSITIES, "density")
 validate(argv.elevation, ELEVATIONS, "elevation")
 validate(argv["button-elevation"], ELEVATIONS, "button-elevation")
-validate(argv["surface-intensity"], SURFACE_INTENSITIES, "surface-intensity")
-validate(argv["border-intensity"], BORDER_INTENSITIES, "border-intensity")
 validate(argv.radius, RADII, "radius")
-validate(argv["control-depth"], CONTROL_DEPTHS, "control-depth")
 validate(argv["shell-style"], SHELL_STYLES, "shell-style")
 validate(argv["sidebar-active-bar"], SIDEBAR_ACTIVE_BARS, "sidebar-active-bar")
 validate(argv["font-size"], FONT_SIZES, "font-size")
-validate(argv["accent-intensity"], ACCENT_INTENSITIES, "accent-intensity")
 validate(argv["outer-glow"], GLOW_LEVELS, "outer-glow")
 validate(argv["inner-glow"], GLOW_LEVELS, "inner-glow")
 
@@ -336,30 +324,6 @@ async function main() {
           }),
         ))
 
-  const surfaceIntensity =
-    argv["surface-intensity"] ||
-    (skipPrompts
-      ? "balanced"
-      : cancelled(
-          await p.select({
-            message: "Surface intensity",
-            options: SURFACE_INTENSITIES.map((s) => ({ value: s, label: s })),
-            initialValue: "balanced",
-          }),
-        ))
-
-  const borderIntensity =
-    argv["border-intensity"] ||
-    (skipPrompts
-      ? "balanced"
-      : cancelled(
-          await p.select({
-            message: "Border intensity",
-            options: BORDER_INTENSITIES.map((b) => ({ value: b, label: b })),
-            initialValue: "balanced",
-          }),
-        ))
-
   const radius =
     argv.radius ||
     (skipPrompts
@@ -369,18 +333,6 @@ async function main() {
             message: "Radius",
             options: RADII.map((r) => ({ value: r, label: r })),
             initialValue: "rounded",
-          }),
-        ))
-
-  const controlDepth =
-    argv["control-depth"] ||
-    (skipPrompts
-      ? "recessed"
-      : cancelled(
-          await p.select({
-            message: "Control depth",
-            options: CONTROL_DEPTHS.map((d) => ({ value: d, label: d })),
-            initialValue: "recessed",
           }),
         ))
 
@@ -417,18 +369,6 @@ async function main() {
             message: "Font size",
             options: FONT_SIZES.map((f) => ({ value: f, label: f })),
             initialValue: "medium",
-          }),
-        ))
-
-  const accentIntensity =
-    argv["accent-intensity"] ||
-    (skipPrompts
-      ? "balanced"
-      : cancelled(
-          await p.select({
-            message: "Accent intensity",
-            options: ACCENT_INTENSITIES.map((v) => ({ value: v, label: v })),
-            initialValue: "balanced",
           }),
         ))
 
@@ -472,12 +412,8 @@ async function main() {
             { value: "density", label: "Density" },
             { value: "elevation", label: "Elevation" },
             { value: "buttonElevation", label: "Button elevation" },
-            { value: "surfaceIntensity", label: "Surface intensity" },
-            { value: "borderIntensity", label: "Border intensity" },
             { value: "radius", label: "Radius" },
             { value: "fontSize", label: "Font size" },
-            { value: "accentIntensity", label: "Accent intensity" },
-            { value: "controlDepth", label: "Control depth" },
             { value: "shellStyle", label: "Shell style" },
             { value: "sidebarActiveBar", label: "Sidebar indicator" },
             { value: "outerGlow", label: "Outer glow" },
@@ -544,14 +480,10 @@ async function main() {
         density: density,
         elevation: elevation,
         buttonElevation: buttonElevation,
-        surfaceIntensity: surfaceIntensity,
-        borderIntensity: borderIntensity,
         radius: radius,
-        controlDepth: controlDepth,
         shellStyle: shellStyle,
         sidebarActiveBar: sidebarActiveBar,
         fontSize: fontSize,
-        accentIntensity: accentIntensity,
         outerGlow: outerGlow,
         innerGlow: innerGlow,
       },
@@ -744,16 +676,15 @@ export const themeConfig: ThemeConfig = {
     density: "${config.theme.defaults.density}",
     elevation: "${config.theme.defaults.elevation}",
     buttonElevation: "${config.theme.defaults.buttonElevation}",
-    surfaceIntensity: "${config.theme.defaults.surfaceIntensity}",
-    borderIntensity: "${config.theme.defaults.borderIntensity}",
     radius: "${config.theme.defaults.radius}",
-    controlDepth: "${config.theme.defaults.controlDepth}",
     shellStyle: "${config.theme.defaults.shellStyle}",
     sidebarActiveBar: "${config.theme.defaults.sidebarActiveBar}",
     fontSize: "${config.theme.defaults.fontSize}",
-    accentIntensity: "${config.theme.defaults.accentIntensity}",
     outerGlow: "${config.theme.defaults.outerGlow}",
     innerGlow: "${config.theme.defaults.innerGlow}",
+    contrast: "standard",
+    darkAccentChroma: "standard",
+    tintWithAccent: "off",
   },
   switcher: {
     enabled: ${config.theme.switcher.enabled},
@@ -768,16 +699,15 @@ export const themeConfig: ThemeConfig = {
       density: ${config.theme.switcher.axes.density},
       elevation: ${config.theme.switcher.axes.elevation},
       buttonElevation: ${config.theme.switcher.axes.buttonElevation},
-      surfaceIntensity: ${config.theme.switcher.axes.surfaceIntensity},
-      borderIntensity: ${config.theme.switcher.axes.borderIntensity},
       radius: ${config.theme.switcher.axes.radius},
-      controlDepth: ${config.theme.switcher.axes.controlDepth},
       shellStyle: ${config.theme.switcher.axes.shellStyle},
       sidebarActiveBar: ${config.theme.switcher.axes.sidebarActiveBar},
       fontSize: ${config.theme.switcher.axes.fontSize},
-      accentIntensity: ${config.theme.switcher.axes.accentIntensity},
       outerGlow: ${config.theme.switcher.axes.outerGlow},
       innerGlow: ${config.theme.switcher.axes.innerGlow},
+      contrast: true,
+      darkAccentChroma: true,
+      tintWithAccent: true,
       presetAxes: ${config.theme.switcher.axes.presetAxes},
     },
   },
