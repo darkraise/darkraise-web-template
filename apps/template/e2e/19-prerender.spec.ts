@@ -17,13 +17,17 @@ const AXES = JSON.parse(
 ) as Record<string, ScaffoldAxis>
 
 // Glass hides surface intensity, which would leave that attribute to the
-// provider, so the preset stays on default.
-const PINNED: Record<string, string> = { "theme-preset": "default" }
+// provider, so the preset stays on default. Mode must be `dark`: `system` and
+// `light` both resolve to light under Playwright's scheme and would prove
+// nothing.
+const PINNED: Record<string, string> = {
+  "theme-preset": "default",
+  mode: "dark",
+}
 
-// Every attribute axis, seeded with its last non-default value: mode gets
-// `dark`, which `system` would not resolve to under Playwright's light scheme.
-// With the app bundle blocked, an attribute present after reload can only
-// come from the pre-render script.
+// Every attribute axis, seeded with its last non-default value. With the app
+// bundle blocked, an attribute present after reload can only come from the
+// pre-render script.
 const SEED: [storageKey: string, attribute: string, value: string][] =
   Object.values(AXES).flatMap((axis) =>
     axis.attribute

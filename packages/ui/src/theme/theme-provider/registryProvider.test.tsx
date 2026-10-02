@@ -1,9 +1,13 @@
-import { act, renderHook } from "@testing-library/react"
-import type { ReactNode } from "react"
+import { act, render, renderHook } from "@testing-library/react"
+import { StrictMode, type ReactNode } from "react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { ThemeProvider } from "./ThemeProvider"
 import { useTheme } from "@theme/useTheme"
-import { TOKEN_CACHE_STORAGE_KEY, readTokenCache } from "@theme/axes/tokenCache"
+import {
+  TOKEN_CACHE_STORAGE_KEY,
+  cacheInputKeys,
+  readTokenCache,
+} from "@theme/axes/tokenCache"
 import { buildPrerenderScript } from "@theme/axes/prerender"
 import { themeConfig } from "@theme/themeConfig"
 import type { ThemePersistenceAdapter } from "@theme/types"
@@ -201,11 +205,26 @@ describe("ThemeProvider on the axis registry", () => {
     expect(cacheWrites(setItem)).toBe(0)
   })
 
-  it("reads storage once at mount", () => {
+  it("reads each stored key once at mount", () => {
     localStorage.setItem("mode", "dark")
+    const inputs = new Set(cacheInputKeys())
     const getItem = vi.spyOn(Storage.prototype, "getItem")
     renderHook(() => useTheme(), { wrapper: wrap })
-    expect(getItem.mock.calls.filter(([key]) => key === "mode")).toHaveLength(1)
+    const reads = getItem.mock.calls
+      .map(([key]) => key)
+      .filter((key) => inputs.has(key))
+    expect(reads.length).toBeGreaterThan(0)
+    expect(reads).toHaveLength(new Set(reads).size)
+  })
+
+  it("repaints when effects re-run on the same instance", () => {
+    const setItem = vi.spyOn(Storage.prototype, "setItem")
+    render(
+      <StrictMode>
+        <ThemeProvider>{null}</ThemeProvider>
+      </StrictMode>,
+    )
+    expect(cacheWrites(setItem)).toBe(2)
   })
 
   it("does not label new tokens with the old id when a write fails", () => {

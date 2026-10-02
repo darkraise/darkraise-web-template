@@ -226,7 +226,7 @@ export function ThemeProvider({
       presetAxisValues: readPresetAxisValues(read),
     }
   })
-  const knownRef = useRef(initial.known)
+  const knownRef = useRef(new Map(initial.known))
   const [stored, setStoredState] = useState<Partial<AxisValues>>(initial.stored)
   const [presetAxisValues, setPresetAxisValuesState] =
     useState<PresetAxisValues>(initial.presetAxisValues)
@@ -504,6 +504,15 @@ export function ThemeProvider({
       commit(nextStored, nextAxisValues, resolved)
     },
     [commit, defaults, persist],
+  )
+
+  // Fast Refresh and StrictMode re-run effects while keeping refs; without
+  // this reset the new run would match the old signature and skip its paint.
+  useEffect(
+    () => () => {
+      paintedRef.current = ""
+    },
+    [],
   )
 
   useEffect(() => {
