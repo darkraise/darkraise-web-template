@@ -14,6 +14,7 @@ const ACCENTS = Object.keys(accentColors) as (keyof typeof accentColors)[]
 const NEUTRALS = Object.keys(surfaceColors) as (keyof typeof surfaceColors)[]
 const MODES: ResolvedMode[] = ["light", "dark"]
 const CONTRASTS: Contrast[] = ["low", "standard", "high"]
+const CHROMAS: DarkAccentChroma[] = ["calm", "standard", "vivid"]
 
 function status(accent: string): SolveInput["status"] {
   const redish = accent === "red" || accent === "rose" || accent === "pink"
@@ -120,29 +121,45 @@ describe("solveSteps floors", () => {
 })
 
 describe("solveSteps ramps", () => {
-  it("keeps each role group in order away from the card", () => {
-    for (const mode of MODES)
-      for (const contrast of CONTRASTS)
-        for (const neutral of NEUTRALS) {
-          const { neutral: n, primary: p } = solveSteps(
-            input("blue", neutral, mode, { contrast }),
-          )
-          const cardL = hslStringToOklch(n[1] as string).L
-          const far = (v: string) => Math.abs(hslStringToOklch(v).L - cardL)
-          for (const [ramp, from, to] of [
-            [n, 1, 4],
-            [n, 5, 7],
-            [n, 10, 11],
-            [p, 1, 4],
-            [p, 5, 7],
-            [p, 10, 11],
-          ] as const)
-            for (let i = from + 1; i <= to; i++)
-              expect(far(ramp[i] as string)).toBeGreaterThanOrEqual(
-                far(ramp[i - 1] as string),
-              )
-        }
-  })
+  it("keeps each role group in order away from the card, with no step merged into the one before", () => {
+    for (const accent of [...ACCENTS, "neutral"])
+      for (const neutral of NEUTRALS)
+        for (const mode of MODES)
+          for (const contrast of CONTRASTS)
+            // Light mode ignores the chroma axis.
+            for (const darkAccentChroma of mode === "dark"
+              ? CHROMAS
+              : (["standard"] as const))
+              for (const tintWithAccent of [false, true])
+                for (const glass of [false, true]) {
+                  const { neutral: n, primary: p } = solveSteps(
+                    input(accent, neutral, mode, {
+                      contrast,
+                      darkAccentChroma,
+                      tintWithAccent,
+                      glass,
+                    }),
+                  )
+                  const cardL = hslStringToOklch(n[1] as string).L
+                  const far = (v: string) =>
+                    Math.abs(hslStringToOklch(v).L - cardL)
+                  const groups: [string[], number, number][] = [
+                    [n, 1, 4],
+                    [n, 5, 7],
+                    [n, 10, 11],
+                  ]
+                  // The neutral accent reuses neutral 12 for its mark and text by design.
+                  if (accent !== "neutral")
+                    groups.push([p, 1, 4], [p, 5, 7], [p, 10, 11])
+                  for (const [ramp, from, to] of groups)
+                    for (let i = from + 1; i <= to; i++) {
+                      expect(far(ramp[i] as string)).toBeGreaterThanOrEqual(
+                        far(ramp[i - 1] as string),
+                      )
+                      expect(ramp[i]).not.toBe(ramp[i - 1])
+                    }
+                }
+  }, 30_000)
 
   it("spaces card, hover, pressed and selected at least 0.012 L apart", () => {
     for (const mode of MODES)

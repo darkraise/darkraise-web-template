@@ -95,8 +95,8 @@ const UNCHANGED = [
     "light",
     "intense",
     {
-      "--primary": "213 94% 41%",
-      "--ring": "213 94% 41%",
+      "--primary": "221 86% 47%",
+      "--ring": "221 86% 47%",
       "--focus-ring": "212 96% 59%",
       "--primary-text": "217 91% 40%",
       "--muted-foreground": "215 16% 35%",

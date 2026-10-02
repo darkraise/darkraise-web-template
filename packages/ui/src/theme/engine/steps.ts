@@ -94,6 +94,9 @@ const GLASS_EDGE_FLOOR = 3.5
 const HOVER_STEP = 0.04
 /** Hover, pressed and selected each sit at least this OKLCH L past the previous plane. */
 const PLANE_GAP = 0.012
+/** A step out of order within its role group moves this OKLCH L past its predecessor per round. */
+const ORDER_NUDGE = 0.004
+const ORDER_ROUNDS = 8
 /**
  * Stop 500 OKLCH lightness from which a dark fill keeps an ink label: amber,
  * yellow and lime sit at 0.765-0.786, every other hue at 0.72 or below.
@@ -351,12 +354,17 @@ export function solveSteps(input: SolveInput): Steps {
 function solve(input: SolveInput): Steps {
   const { mode, contrast } = input
   const misses: Miss[] = []
+  const repairs = new Map<
+    string,
+    { grounds: readonly string[]; target: number }
+  >()
   const repair = (
     step: string,
     value: string,
     grounds: readonly string[],
     target: number,
   ): string => {
+    repairs.set(step, { grounds, target })
     const r = nearest(value, (c) => minRatio(c, grounds) >= target)
     if (!r.ok) misses.push({ step, ratio: minRatio(value, grounds), target })
     return r.value
@@ -593,21 +601,39 @@ function solve(input: SolveInput): Steps {
     })
 
   // Order within role groups: a step closer to the card than its predecessor
-  // takes the predecessor's value. Ties are allowed, and moving away from the
-  // card only raises contrast against grounds on the card's side.
+  // moves ORDER_NUDGE past it, on its own hue and chroma, and is re-repaired.
+  // Taking the predecessor's value instead would merge two roles (the light
+  // mark into the edge). Ties from the solve are allowed, and moving away from
+  // the card only raises contrast against grounds on the card's side.
   const cardL = hslStringToOklch(card).L
+  const away = mode === "light" ? -1 : 1
   const far = (v: string) => Math.abs(hslStringToOklch(v).L - cardL)
-  const order = (ramp: string[], from: number, to: number) => {
-    for (let i = from; i <= to; i++)
-      if (far(ramp[i] as string) < far(ramp[i - 1] as string))
-        ramp[i] = ramp[i - 1] as string
+  const order = (ramp: string[], name: string, from: number, to: number) => {
+    for (let i = from; i <= to; i++) {
+      const before = ramp[i - 1] as string
+      if (far(ramp[i] as string) >= far(before)) continue
+      const own = hslStringToOklch(ramp[i] as string)
+      const beforeL = hslStringToOklch(before).L
+      const rule = repairs.get(`${name}-${i + 1}`)
+      for (let round = 1; round <= ORDER_ROUNDS; round++) {
+        const placed = oklchToHslString({
+          ...own,
+          L: beforeL + away * ORDER_NUDGE * round,
+        })
+        ramp[i] = rule
+          ? nearest(placed, (c) => minRatio(c, rule.grounds) >= rule.target)
+              .value
+          : placed
+        if (far(ramp[i] as string) > far(before)) break
+      }
+    }
   }
-  order(n, 2, 4)
-  order(n, 6, 7)
-  order(n, 11, 11)
-  order(p, 2, 4)
-  order(p, 6, 7)
-  order(p, 11, 11)
+  order(n, "neutral", 2, 4)
+  order(n, "neutral", 6, 7)
+  order(n, "neutral", 11, 11)
+  order(p, "primary", 2, 4)
+  order(p, "primary", 6, 7)
+  order(p, "primary", 11, 11)
 
   const status = {} as Record<StatusName, StatusPair>
   const spos = PRIMARY_POS[mode]
