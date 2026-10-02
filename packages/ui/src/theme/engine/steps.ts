@@ -629,7 +629,7 @@ function solve(input: SolveInput): Steps {
       TEXT,
     )
     const solidBase = placeStep(scale, spos[8] as number)
-    const white = contrastRatio(WHITE, solidBase) >= MARK
+    const white = name !== "warning"
     const solid = white
       ? whiteFill(solidBase, "light")
       : repair(`${name}-solid`, solidBase, [INK], LABEL)
