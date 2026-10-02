@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { buildPrerenderScript } from "./prerender"
 import {
   TOKEN_CACHE_STORAGE_KEY,
@@ -24,6 +24,11 @@ beforeEach(() => {
   for (const name of root.getAttributeNames()) root.removeAttribute(name)
   root.style.cssText = ""
   mockMatchMedia(false)
+})
+
+afterEach(() => {
+  vi.restoreAllMocks()
+  vi.unstubAllGlobals()
 })
 
 describe("pre-render script", () => {
@@ -90,5 +95,25 @@ describe("pre-render script", () => {
   it("survives corrupt storage", () => {
     localStorage.setItem(TOKEN_CACHE_STORAGE_KEY, "{oops")
     expect(() => run()).not.toThrow()
+  })
+
+  it("sets the mode from matchMedia when storage access throws", () => {
+    mockMatchMedia(true)
+    vi.spyOn(window, "localStorage", "get").mockImplementation(() => {
+      throw new DOMException("denied", "SecurityError")
+    })
+    expect(() => run()).not.toThrow()
+    expect(root.getAttribute("data-mode")).toBe("dark")
+  })
+
+  it("sets the mode from matchMedia when reading storage throws", () => {
+    mockMatchMedia(true)
+    localStorage.setItem("theme-accent", "rose")
+    vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
+      throw new DOMException("denied", "SecurityError")
+    })
+    run()
+    expect(root.getAttribute("data-mode")).toBe("dark")
+    expect(root.hasAttribute("data-accent")).toBe(false)
   })
 })

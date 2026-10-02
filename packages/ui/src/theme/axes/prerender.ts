@@ -15,7 +15,9 @@ type Restorable = [
  * The inline script that runs before the app: it restores the resolved mode,
  * every attribute axis and the active preset's axes from storage, validating
  * each value, then applies the cached token set when its id matches. ES5 and
- * self-contained, because it runs before any bundle loads.
+ * self-contained, because it runs before any bundle loads. Storage can throw
+ * (sandboxed iframes, blocked site data), so the mode is resolved and set
+ * before anything else touches it.
  */
 export function buildPrerenderScript(): string {
   const attributes: Restorable[] = AXIS_KEYS.filter(
@@ -44,12 +46,14 @@ export function buildPrerenderScript(): string {
 
   const json = JSON.stringify
   return [
-    ";(function(){try{",
-    "var s=window.localStorage,d=document.documentElement,i,v;",
-    `var A=${json(attributes)},N=${json(neutralised)},P=${json(presetAxes)},K=${json(cacheInputKeys())};`,
-    `var m=s.getItem(${json(AXES.mode.storageKey)});if(m!=="light"&&m!=="dark")m="system";`,
-    'var r=m==="system"?(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"):m;',
+    ";(function(){var d=document.documentElement,s=null,m=null,r,i,v;",
+    `try{s=window.localStorage;m=s.getItem(${json(AXES.mode.storageKey)})}catch(e){s=null}`,
+    'if(m!=="light"&&m!=="dark")m="system";',
+    "try{",
+    'r=m==="system"?(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"):m;',
     'd.setAttribute("data-mode",r);',
+    "if(!s)return;",
+    `var A=${json(attributes)},N=${json(neutralised)},P=${json(presetAxes)},K=${json(cacheInputKeys())};`,
     `var p=s.getItem(${json(AXES.preset.storageKey)})||"",x=N[p]||[],q=P[p]||[];`,
     "for(i=0;i<A.length;i++){v=s.getItem(A[i][0]);if(v&&A[i][2].indexOf(v)!==-1&&x.indexOf(A[i][1])===-1)d.setAttribute(A[i][1],v)}",
     "for(i=0;i<q.length;i++){v=s.getItem(q[i][0]);if(v&&q[i][2].indexOf(v)!==-1)d.setAttribute(q[i][1],v)}",
