@@ -1,70 +1,10 @@
-import type {
-  AccentColor,
-  SurfaceColor,
-  BackgroundStyle,
-  BackgroundIntensity,
-  GradientPattern,
-  Density,
-  Elevation,
-  SurfaceIntensity,
-  BorderIntensity,
-  Radius,
-  FontSize,
-  AccentIntensity,
-  ControlDepth,
-  GlowLevel,
-  Mode,
-  ShellStyle,
-  SidebarActiveBarSetting,
-} from "./types"
-import type { PresetName } from "./presets"
+import type { AxisKey, AxisValues } from "./axes/registry"
 
 export interface ThemeConfig {
-  defaults: {
-    accentColor: AccentColor
-    surfaceColor: SurfaceColor
-    preset: PresetName
-    backgroundStyle: BackgroundStyle
-    backgroundIntensity: BackgroundIntensity
-    gradientPattern: GradientPattern
-    mode: Mode
-    density: Density
-    elevation: Elevation
-    buttonElevation: Elevation
-    surfaceIntensity: SurfaceIntensity
-    borderIntensity: BorderIntensity
-    radius: Radius
-    fontSize: FontSize
-    accentIntensity: AccentIntensity
-    controlDepth: ControlDepth
-    outerGlow: GlowLevel
-    innerGlow: GlowLevel
-    shellStyle: ShellStyle
-    sidebarActiveBar: SidebarActiveBarSetting
-  }
+  defaults: AxisValues
   switcher: {
     enabled: boolean
-    axes: {
-      mode: boolean
-      accentColor: boolean
-      surfaceColor: boolean
-      preset: boolean
-      backgroundStyle: boolean
-      backgroundIntensity: boolean
-      gradientPattern: boolean
-      density: boolean
-      elevation: boolean
-      buttonElevation: boolean
-      surfaceIntensity: boolean
-      borderIntensity: boolean
-      radius: boolean
-      fontSize: boolean
-      accentIntensity: boolean
-      controlDepth: boolean
-      outerGlow: boolean
-      innerGlow: boolean
-      shellStyle: boolean
-      sidebarActiveBar: boolean
+    axes: Record<AxisKey, boolean> & {
       /** Master toggle for all preset-specific axis controls. */
       presetAxes: boolean
     }
