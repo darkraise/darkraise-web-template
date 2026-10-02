@@ -1,6 +1,10 @@
 import { defineConfig } from "tsup"
-import { readdirSync } from "node:fs"
+import { readdirSync, readFileSync } from "node:fs"
 import { join } from "node:path"
+
+const { version } = JSON.parse(
+  readFileSync(join(import.meta.dirname, "package.json"), "utf8"),
+) as { version: string }
 
 const componentEntries = Object.fromEntries(
   readdirSync(join(import.meta.dirname, "src/components"), {
@@ -32,6 +36,7 @@ export default defineConfig({
     "vite/index": "src/vite/index.ts",
     ...componentEntries,
   },
+  define: { __KIT_VERSION__: JSON.stringify(version) },
   format: ["esm"],
   dts: false,
   sourcemap: true,
