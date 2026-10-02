@@ -9,9 +9,4 @@ export const presets = {
 export type PresetName = keyof typeof presets
 export const PRESET_NAMES = Object.keys(presets) as PresetName[]
 
-export type {
-  AxisDefinition,
-  CommonAxisInput,
-  PresetSurfaceRecipe,
-  ThemePreset,
-} from "./types"
+export type { AxisDefinition, CommonAxisInput, ThemePreset } from "./types"

@@ -341,15 +341,11 @@ describe("glass preset", () => {
     })
   })
 
-  describe("surfaceRecipe", () => {
-    it("matches today's surfaceStyles.glass for dark borders", () => {
-      expect(glass.surfaceRecipe.borderSubtle(slate, "dark")).toBe(slate[600])
-      expect(glass.surfaceRecipe.borderDefault(slate, "dark")).toBe(slate[500])
-    })
-
-    it("matches today's surfaceStyles.glass for light borders", () => {
-      expect(glass.surfaceRecipe.borderSubtle(slate, "light")).toBe(slate[100])
-      expect(glass.surfaceRecipe.borderDefault(slate, "light")).toBe(slate[200])
+  describe("shadowDropdown", () => {
+    it("carries the glass dropdown shadow", () => {
+      expect(glass.shadowDropdown).toBe(
+        "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+      )
     })
   })
 

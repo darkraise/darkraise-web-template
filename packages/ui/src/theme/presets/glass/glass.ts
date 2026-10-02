@@ -147,20 +147,8 @@ export const glass: ThemePreset<GlassAxes> = {
 
   commonAxisDefaults: { outerGlow: "balanced" },
 
-  surfaceRecipe: {
-    surfaceRaised: (s, m) => (m === "light" ? "0 0% 100%" : s[900]),
-    surfaceOverlay: (s, m) => (m === "light" ? "0 0% 100%" : s[800]),
-    surfaceSunken: (s, m) => (m === "light" ? s[100] : s[950]),
-    surfaceSidebar: (s, m) => (m === "light" ? s[50] : s[950]),
-    surfaceHeader: (s, m) => (m === "light" ? "0 0% 100%" : s[900]),
-    borderSubtle: (s, m) => (m === "light" ? s[100] : s[600]),
-    borderDefault: (s, m) => (m === "light" ? s[200] : s[500]),
-    borderStrong: (s, m) => (m === "light" ? s[400] : s[400]),
-    overrides: {
-      shadowDropdown:
-        "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
-    },
-  },
+  shadowDropdown:
+    "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
 
   generateTokens(common: CommonAxisInput, axes) {
     const alphas = FOG_ALPHA[axes.opacity][common.mode]

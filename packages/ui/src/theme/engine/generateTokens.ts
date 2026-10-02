@@ -416,7 +416,6 @@ export function generateTokens(
     ? [contentStripGround(background, surfaceTint, mode, backgroundIntensity)]
     : []
   const controlWell = controlWells(card, sunken)
-  const recipe = presets[preset].surfaceRecipe
   const isLightGlass = glass && !dark
 
   const tokens: Record<string, string> = {}
@@ -506,11 +505,11 @@ export function generateTokens(
     "--border-strong": borderStrong,
 
     "--shadow-dropdown": isLightGlass
-      ? recipe.overrides.shadowDropdown.replace(
+      ? presets[preset].shadowDropdown.replace(
           /rgb\(0 0 0 \//g,
           "rgb(16 24 40 /",
         )
-      : recipe.overrides.shadowDropdown,
+      : presets[preset].shadowDropdown,
 
     "--bg-style": backgroundStyle,
     "--noise-opacity": gradient ? (dark ? "0.5" : "0.6") : "0",

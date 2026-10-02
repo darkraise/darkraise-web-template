@@ -46,34 +46,6 @@ export interface CommonAxisInput {
 }
 
 /**
- * The 7 surface tokens every preset must produce, plus the optional
- * overrides for foreground / border / input / shadow tokens.
- *
- * Note: the legacy SurfaceStyleRecipe.overrides carries `radius`,
- * `backdropBlur`, and `surfaceOpacity` fields. `radius` is dead code
- * (theme.css [data-radius="…"] selectors own --radius, no one reads
- * the recipe field). `backdropBlur` and `surfaceOpacity` are moved to
- * per-axis CSS attribute selectors in glass.css. All three
- * are intentionally dropped here.
- */
-export interface PresetSurfaceRecipe {
-  surfaceRaised: (scale: ColorScale, mode: ResolvedMode) => string
-  surfaceOverlay: (scale: ColorScale, mode: ResolvedMode) => string
-  surfaceSunken: (scale: ColorScale, mode: ResolvedMode) => string
-  surfaceSidebar: (scale: ColorScale, mode: ResolvedMode) => string
-  surfaceHeader: (scale: ColorScale, mode: ResolvedMode) => string
-  borderSubtle: (scale: ColorScale, mode: ResolvedMode) => string
-  borderDefault: (scale: ColorScale, mode: ResolvedMode) => string
-  borderStrong: (scale: ColorScale, mode: ResolvedMode) => string
-  overrides: {
-    shadowDropdown: string
-    foreground?: (scale: ColorScale, mode: ResolvedMode) => string
-    border?: (scale: ColorScale, mode: ResolvedMode) => string
-    input?: (scale: ColorScale, mode: ResolvedMode) => string
-  }
-}
-
-/**
  * A theme preset: visual language (Default / Glass) plus its own discrete
  * axes that get exposed in the switcher only when the preset is active.
  *
@@ -89,7 +61,8 @@ export interface ThemePreset<
 
   axes: { [K in keyof Axes]: AxisDefinition<Axes[K]> }
 
-  surfaceRecipe: PresetSurfaceRecipe
+  /** The dropdown and popover shadow (`--shadow-dropdown`). */
+  shadowDropdown: string
 
   /**
    * Optional cross-axis token math (e.g. fog tiers tinted by mode * opacity).
@@ -115,9 +88,9 @@ export interface ThemePreset<
    * `[data-preset="..."] { --x: ... }` in <preset>.css) self-clean
    * via the CSS cascade when the preset's data attribute changes —
    * listing them here is harmless but misleading. Tokens written by
-   * the engine from `surfaceRecipe.overrides` (shadowDropdown) also
-   * don't need to be listed because the engine overwrites them on every
-   * applyTheme with the new preset's recipe.
+   * the engine from `shadowDropdown` also don't need to be listed
+   * because the engine overwrites them on every applyTheme with the new
+   * preset's value.
    */
   ownedTokenKeys?: readonly string[]
 
