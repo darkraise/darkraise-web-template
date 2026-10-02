@@ -114,8 +114,8 @@ describe("badge hover", () => {
     const hovers = badgeRules.flatMap((rule) =>
       rule.selectors.filter((s) => s.includes(":hover")),
     )
-    // default, secondary, destructive and the 17 fixed colours.
-    expect(hovers.length).toBe(20)
+    // default, secondary, the four status solids and the 17 fixed colours.
+    expect(hovers.length).toBe(23)
     expect(
       hovers.filter((s) => !s.includes(`.dr-badge${INTERACTIVE}`)),
     ).toEqual([])

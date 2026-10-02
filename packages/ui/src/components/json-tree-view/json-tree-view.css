@@ -117,13 +117,13 @@
   }
 
   .dr-json-string {
-    @apply text-success;
+    @apply text-success-text;
   }
   .dr-json-number {
-    @apply text-info;
+    @apply text-info-text;
   }
   .dr-json-boolean {
-    @apply text-warning;
+    @apply text-warning-text;
   }
   .dr-json-null {
     @apply text-muted-foreground italic;
@@ -169,7 +169,7 @@
     padding: 0;
   }
   .dr-json-row-action[data-state="copied"] {
-    @apply text-success;
+    @apply text-success-text;
   }
 
   /* Backwards-compatible: legacy `.dr-json-copy` button used by older

@@ -6,11 +6,21 @@ import "./badge.css"
 
 export type BadgeAccentVariant = AccentHue
 
+export type BadgeStatusVariant =
+  | "success"
+  | "warning"
+  | "info"
+  | "destructive-subtle"
+  | "success-subtle"
+  | "warning-subtle"
+  | "info-subtle"
+
 export type BadgeVariant =
   | "default"
   | "secondary"
   | "destructive"
   | "outline"
+  | BadgeStatusVariant
   | BadgeAccentVariant
 
 export type BadgeSize = "sm" | "default" | "lg"

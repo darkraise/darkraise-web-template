@@ -26,7 +26,7 @@
   }
 
   .dr-clipboard-trigger[data-copied="true"] {
-    @apply border-success text-success;
+    @apply border-success-edge text-success-text;
   }
 
   .dr-clipboard-indicator {
@@ -35,6 +35,6 @@
   }
 
   .dr-clipboard-indicator[data-copied="true"] {
-    @apply text-success;
+    @apply text-success-text;
   }
 }

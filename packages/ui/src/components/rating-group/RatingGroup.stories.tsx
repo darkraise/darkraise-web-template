@@ -35,7 +35,7 @@ export const Default: Story = {
               className={cn(
                 "size-5",
                 state.highlighted
-                  ? "fill-warning text-warning"
+                  ? "fill-warning-edge text-warning-edge"
                   : "text-muted-foreground",
               )}
             />
@@ -68,7 +68,7 @@ export const HalfStar: Story = {
                 <Star
                   aria-hidden="true"
                   className={cn(
-                    "fill-warning text-warning absolute inset-0 size-5",
+                    "fill-warning-edge text-warning-edge absolute inset-0 size-5",
                     state.half ? "[clip-path:inset(0_50%_0_0)]" : "",
                   )}
                 />
@@ -92,7 +92,7 @@ export const ReadOnly: Story = {
             className={cn(
               "size-5",
               state.highlighted
-                ? "fill-warning text-warning"
+                ? "fill-warning-edge text-warning-edge"
                 : "text-muted-foreground",
             )}
           />
@@ -119,7 +119,7 @@ export const CustomIcon: Story = {
               className={cn(
                 "size-5",
                 state.highlighted
-                  ? "fill-destructive text-destructive"
+                  ? "fill-destructive-edge text-destructive-edge"
                   : "text-muted-foreground",
               )}
             />

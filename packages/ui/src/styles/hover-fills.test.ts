@@ -17,6 +17,9 @@ type Rgb = [number, number, number]
 const FILLS = {
   "primary-fill": "--primary-foreground",
   "destructive-solid": "--destructive-solid-foreground",
+  "success-solid": "--success-solid-foreground",
+  "warning-solid": "--warning-solid-foreground",
+  "info-solid": "--info-solid-foreground",
 } as const
 type Fill = keyof typeof FILLS
 
@@ -83,7 +86,7 @@ function washMixes(): Array<{ file: string; fill: Fill; amount: number }> {
   const found: Array<{ file: string; fill: Fill; amount: number }> = []
   for (const [file, css] of componentStylesheets()) {
     for (const hit of css.matchAll(
-      /color-mix\(\s*in srgb,\s*hsl\(var\(--(primary-fill|destructive-solid)\)\),\s*hsl\(var\(--\1-wash\)\)\s+(\d+)%\s*\)/g,
+      /color-mix\(\s*in srgb,\s*hsl\(var\(--(primary-fill|destructive-solid|success-solid|warning-solid|info-solid)\)\),\s*hsl\(var\(--\1-wash\)\)\s+(\d+)%\s*\)/g,
     )) {
       found.push({ file, fill: hit[1] as Fill, amount: Number(hit[2]) / 100 })
     }
@@ -196,6 +199,9 @@ describe("filled hover states", () => {
     const amounts = new Map<Fill, Set<number>>([
       ["primary-fill", new Set(BUTTON_STATE_LAYER)],
       ["destructive-solid", new Set(BUTTON_STATE_LAYER)],
+      ["success-solid", new Set()],
+      ["warning-solid", new Set()],
+      ["info-solid", new Set()],
     ])
     for (const { fill, amount } of washMixes()) amounts.get(fill)?.add(amount)
 

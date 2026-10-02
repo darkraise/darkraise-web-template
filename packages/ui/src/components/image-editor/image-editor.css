@@ -214,8 +214,8 @@
     color: hsl(var(--foreground));
   }
   .dr-image-editor-annotation-clear:hover {
-    border-color: hsl(var(--destructive));
-    color: hsl(var(--destructive));
+    border-color: hsl(var(--destructive-edge));
+    color: hsl(var(--destructive-text));
   }
 
   /* Text annotation input — anchored at the click point inside the

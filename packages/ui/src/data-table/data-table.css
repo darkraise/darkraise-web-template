@@ -145,7 +145,7 @@
 
   /* Row actions */
   .dr-data-table-row-actions-item[data-variant="destructive"] {
-    @apply text-destructive;
+    @apply text-destructive-text;
   }
 
   /* Column visibility and faceted filters: size="sm" buttons that share

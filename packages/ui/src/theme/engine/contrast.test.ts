@@ -49,27 +49,27 @@ describe("state and focus colours clear their floors", () => {
       },
     )
 
-    it("--success and --warning are visible as marks", () => {
+    it("--success-text and --warning-text are visible as marks", () => {
       const t = build("blue", mode)
       const bg = t["--background"] as string
       expect(
-        contrastRatio(t["--success"] as string, bg),
-        "--success",
+        contrastRatio(t["--success-text"] as string, bg),
+        "--success-text",
       ).toBeGreaterThanOrEqual(NON_TEXT)
       expect(
-        contrastRatio(t["--warning"] as string, bg),
-        "--warning",
+        contrastRatio(t["--warning-text"] as string, bg),
+        "--warning-text",
       ).toBeGreaterThanOrEqual(NON_TEXT)
     })
 
     it.each(ACCENT_COLORS)(
-      "%s: --destructive is readable as text",
+      "%s: --destructive-text is readable as text",
       (accentColor) => {
         // Destructive is not only a fill: it labels the action it describes.
         const t = build(accentColor, mode)
         expect(
           contrastRatio(
-            t["--destructive"] as string,
+            t["--destructive-text"] as string,
             t["--background"] as string,
           ),
         ).toBeGreaterThanOrEqual(TEXT)

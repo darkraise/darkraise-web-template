@@ -12,10 +12,10 @@
     @apply inline-flex items-center gap-1 text-xs font-medium;
   }
   .dr-stat-change[data-direction="up"] {
-    @apply text-success;
+    @apply text-success-text;
   }
   .dr-stat-change[data-direction="down"] {
-    @apply text-destructive;
+    @apply text-destructive-text;
   }
   .dr-stat-change[data-direction="flat"] {
     @apply text-muted-foreground;

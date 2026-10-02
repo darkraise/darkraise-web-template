@@ -41,6 +41,20 @@ export const Outline: Story = {
   },
 }
 
+export const StatusVariants: Story = {
+  render: () => (
+    <div className="flex flex-wrap gap-3">
+      <Badge variant="success">Success</Badge>
+      <Badge variant="warning">Warning</Badge>
+      <Badge variant="info">Info</Badge>
+      <Badge variant="destructive-subtle">Destructive subtle</Badge>
+      <Badge variant="success-subtle">Success subtle</Badge>
+      <Badge variant="warning-subtle">Warning subtle</Badge>
+      <Badge variant="info-subtle">Info subtle</Badge>
+    </div>
+  ),
+}
+
 export const AllVariants: Story = {
   render: () => (
     <div className="flex flex-wrap gap-3">

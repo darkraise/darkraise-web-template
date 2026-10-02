@@ -51,6 +51,19 @@ describe("Badge", () => {
     )
   })
 
+  it.each([
+    "success",
+    "warning",
+    "info",
+    "destructive-subtle",
+    "success-subtle",
+    "warning-subtle",
+    "info-subtle",
+  ] as const)("applies the %s status variant data attribute", (variant) => {
+    render(<Badge variant={variant}>Status</Badge>)
+    expect(screen.getByText("Status")).toHaveAttribute("data-variant", variant)
+  })
+
   it("applies custom className", () => {
     render(<Badge className="custom-class">Styled</Badge>)
     expect(screen.getByText("Styled")).toHaveClass("custom-class")
@@ -87,5 +100,27 @@ describe("badge.css", () => {
       expect(css).toContain(`.dr-badge[data-size="${size}"]`)
     }
     expect(css).not.toContain('[data-size="md"]')
+  })
+
+  it("paints the solid status variants from the status solid pair", () => {
+    const css = readFileSync(resolve(thisDir, "./badge.css"), "utf8")
+    for (const status of ["success", "warning", "info"]) {
+      expect(css).toMatch(
+        new RegExp(
+          `\\.dr-badge\\[data-variant="${status}"\\]\\s*\\{\\s*@apply bg-${status}-solid text-${status}-solid-foreground border-transparent;`,
+        ),
+      )
+    }
+  })
+
+  it("paints the subtle status variants from the status pair", () => {
+    const css = readFileSync(resolve(thisDir, "./badge.css"), "utf8")
+    for (const status of ["destructive", "success", "warning", "info"]) {
+      expect(css).toMatch(
+        new RegExp(
+          `\\.dr-badge\\[data-variant="${status}-subtle"\\]\\s*\\{\\s*@apply bg-${status}-subtle text-${status}-text border-${status}-edge;`,
+        ),
+      )
+    }
   })
 })

@@ -124,7 +124,9 @@ export const WithSizeLimit: Story = {
             <FileUploadTrigger>Add files</FileUploadTrigger>
             <FileUploadHiddenInput />
           </FileUploadDropzone>
-          {error ? <p className="text-destructive text-xs">{error}</p> : null}
+          {error ? (
+            <p className="text-destructive-text text-xs">{error}</p>
+          ) : null}
           <FileUploadItemGroup>
             {files.map((file) => (
               <FileUploadItem key={`${file.name}-${file.size}`} file={file}>
