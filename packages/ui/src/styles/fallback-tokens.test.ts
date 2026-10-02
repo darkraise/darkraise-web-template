@@ -70,4 +70,9 @@ describe("pre-hydration fallback block", () => {
       expect(block.has(key), key).toBe(true)
     }
   })
+
+  it("declares every token the engine emits, so the first paint is a whole light theme", () => {
+    const missing = Object.keys(engine).filter((key) => !block.has(key))
+    expect(missing).toEqual([])
+  })
 })

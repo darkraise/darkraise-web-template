@@ -525,6 +525,17 @@
     --surface-sidebar: 210 40% 98%;
     --sidebar-active-bg: 213 97% 87%;
     --surface-header: 0 0% 100%;
+    --surface-tint: 215 16% 47%;
+    --sidebar-foreground: 215 19% 35%;
+    --sidebar-foreground-hover: 222 47% 11%;
+    --sidebar-foreground-muted: 215 16% 35%;
+    --sidebar-border: 214 32% 91%;
+    --sidebar-hover-bg: 214 95% 93%;
+    --bg-style: solid;
+    --content-gradient-overlay: none;
+    --sf-hue: transparent;
+    --sf-hue-2: transparent;
+    --sf-hue-3: transparent;
     --border-subtle: 210 40% 96%;
     --border-default: 214 32% 91%;
     --border-strong: 215 20% 65%;
