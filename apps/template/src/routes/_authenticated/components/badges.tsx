@@ -40,6 +40,13 @@ const BADGE_VARIANTS = allOf<BadgeVariant>()(
   "secondary",
   "destructive",
   "outline",
+  "success",
+  "warning",
+  "info",
+  "destructive-subtle",
+  "success-subtle",
+  "warning-subtle",
+  "info-subtle",
   ...ACCENT_HUES,
 )
 
