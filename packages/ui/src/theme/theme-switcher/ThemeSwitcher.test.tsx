@@ -158,29 +158,6 @@ describe("ThemeSwitcher preset section", () => {
     expect(screen.getByText("rounded")).toBeInTheDocument() // radius default
   })
 
-  it("renders the Accent Intensity slider reachable through all four steps", () => {
-    render(
-      <ThemeProvider>
-        <ThemeSwitcher />
-      </ThemeProvider>,
-    )
-    openSwitcher()
-    const slider = screen.getByRole("slider", { name: "Accent Intensity" })
-    const row = screen
-      .getByText("Accent Intensity")
-      .closest(".dr-theme-switcher-row") as HTMLElement
-    expect(within(row).getByText("balanced")).toBeInTheDocument()
-
-    fireEvent.keyDown(slider, { key: "Home" })
-    expect(within(row).getByText("calm")).toBeInTheDocument()
-    fireEvent.keyDown(slider, { key: "ArrowRight" })
-    expect(within(row).getByText("balanced")).toBeInTheDocument()
-    fireEvent.keyDown(slider, { key: "ArrowRight" })
-    expect(within(row).getByText("vivid")).toBeInTheDocument()
-    fireEvent.keyDown(slider, { key: "End" })
-    expect(within(row).getByText("intense")).toBeInTheDocument()
-  })
-
   it("does NOT render Gradient Pattern when backgroundStyle is solid", () => {
     render(
       <ThemeProvider>
@@ -230,21 +207,6 @@ describe("ThemeSwitcher preset section", () => {
     expect(screen.getByRole("radio", { name: /^light$/i })).toBeInTheDocument()
     expect(screen.getByRole("radio", { name: /^dark$/i })).toBeInTheDocument()
     expect(screen.getByRole("radio", { name: /^system$/i })).toBeInTheDocument()
-  })
-
-  it("hides Accent and Surface Intensity when the active preset declares hiddenCommonAxes (glass)", () => {
-    render(
-      <ThemeProvider>
-        <ThemeSwitcher />
-      </ThemeProvider>,
-    )
-    openSwitcher()
-    expect(screen.getByText("Surface Intensity")).toBeInTheDocument()
-
-    fireEvent.click(screen.getByRole("radio", { name: /^glass$/i }))
-    expect(screen.queryByText("Accent Intensity")).not.toBeInTheDocument()
-    expect(screen.queryByText("Surface Intensity")).not.toBeInTheDocument()
-    expect(screen.getByText("Elevation")).toBeInTheDocument()
   })
 
   it("switches the shell style", () => {

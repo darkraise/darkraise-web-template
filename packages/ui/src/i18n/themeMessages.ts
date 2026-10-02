@@ -69,5 +69,8 @@ export const themeMessages = {
   recessed: "recessed",
   deep: "deep",
   calm: "calm",
+  standard: "standard",
+  off: "off",
+  on: "on",
   none: "none",
 }

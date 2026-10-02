@@ -5,6 +5,7 @@ import { UiLabelsProvider } from "@labels"
 import { ThemeProvider } from "@theme"
 import { ThemeSwitcher } from "@theme/theme-switcher"
 import type { ThemeConfig } from "@theme/themeConfig"
+import { viTheme } from "../../locales/viTheme"
 
 const config: ThemeConfig = {
   defaults: {
@@ -43,7 +44,7 @@ const config: ThemeConfig = {
       radius: false,
       fontSize: false,
       accentIntensity: false,
-      contrast: false,
+      contrast: true,
       darkAccentChroma: false,
       tintWithAccent: false,
       presetAxes: false,
@@ -95,11 +96,11 @@ describe("ThemeSwitcher labels", () => {
     expect(screen.getByRole("slider", { name: "Mật độ" })).toBeInTheDocument()
   })
 
-  it("labels the surface intensity axis", async () => {
+  it("labels the contrast axis", async () => {
     const user = userEvent.setup()
     renderSwitcher()
     await user.click(screen.getByRole("button"))
-    expect(screen.getByText("Surface Intensity")).toBeInTheDocument()
+    expect(screen.getByText("Contrast")).toBeInTheDocument()
   })
 
   it("labels the background intensity axis", async () => {
@@ -107,5 +108,12 @@ describe("ThemeSwitcher labels", () => {
     renderSwitcher()
     await user.click(screen.getByRole("button"))
     expect(screen.getByText("Background Intensity")).toBeInTheDocument()
+  })
+
+  it("has Vietnamese option labels for the colour engine values", () => {
+    expect(viTheme.standard).toBe("chuẩn")
+    expect(viTheme.off).toBe("tắt")
+    expect(viTheme.on).toBe("bật")
+    expect(viTheme.neutralAccent).toBe("Trung tính (gần đen)")
   })
 })

@@ -16,15 +16,14 @@ import {
   GRADIENT_PATTERNS,
   DENSITIES,
   ELEVATIONS,
-  SURFACE_INTENSITIES,
-  BORDER_INTENSITIES,
-  CONTROL_DEPTHS,
   RADII,
   SHELL_STYLES,
   SIDEBAR_ACTIVE_BARS,
   FONT_SIZES,
-  ACCENT_INTENSITIES,
   GLOW_LEVELS,
+  CONTRASTS,
+  DARK_ACCENT_CHROMAS,
+  TINT_WITH_ACCENT,
 } from "@theme/types"
 import type {
   Mode,
@@ -95,16 +94,15 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
     density,
     elevation,
     buttonElevation,
-    surfaceIntensity,
-    borderIntensity,
-    controlDepth,
     radius,
     shellStyle,
     sidebarActiveBar,
     fontSize,
-    accentIntensity,
     outerGlow,
     innerGlow,
+    contrast,
+    darkAccentChroma,
+    tintWithAccent,
     config,
     activePreset,
     presetAxisValues,
@@ -118,16 +116,15 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
     setDensity,
     setElevation,
     setButtonElevation,
-    setSurfaceIntensity,
-    setBorderIntensity,
-    setControlDepth,
     setRadius,
     setShellStyle,
     setSidebarActiveBar,
     setFontSize,
-    setAccentIntensity,
     setOuterGlow,
     setInnerGlow,
+    setContrast,
+    setDarkAccentChroma,
+    setTintWithAccent,
     setPresetAxis,
   } = useTheme()
 
@@ -159,6 +156,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
   const visibility: AxisVisibilityInput = {
     axes,
     backgroundStyle,
+    accentColor,
     isHiddenByPreset: isCommonAxisHidden,
     presetAxisCount: Object.keys(activePreset.axes).length,
   }
@@ -398,6 +396,23 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
         </div>
       ),
     },
+    show("tintWithAccent") && {
+      key: "tintWithAccent",
+      group: "color" as const,
+      node: (
+        <div key="tintWithAccent" className="dr-theme-switcher-row">
+          <Label className="dr-theme-switcher-section-label">
+            {labels.theme.axisLabels.tintWithAccent}
+          </Label>
+          <AxisControl
+            values={TINT_WITH_ACCENT}
+            value={tintWithAccent}
+            onChange={setTintWithAccent}
+            label={labels.theme.axisLabels.tintWithAccent}
+          />
+        </div>
+      ),
+    },
     show("density") && {
       key: "density",
       group: "layout" as const,
@@ -432,19 +447,19 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
         </div>
       ),
     },
-    show("accentIntensity") && {
-      key: "accentIntensity",
+    show("darkAccentChroma") && {
+      key: "darkAccentChroma",
       group: "color" as const,
       node: (
-        <div key="accentIntensity" className="dr-theme-switcher-row">
+        <div key="darkAccentChroma" className="dr-theme-switcher-row">
           <Label className="dr-theme-switcher-section-label">
-            {labels.theme.axisLabels.accentIntensity}
+            {labels.theme.axisLabels.darkAccentChroma}
           </Label>
           <AxisControl
-            values={ACCENT_INTENSITIES}
-            value={accentIntensity}
-            onChange={setAccentIntensity}
-            label={labels.theme.axisLabels.accentIntensity}
+            values={DARK_ACCENT_CHROMAS}
+            value={darkAccentChroma}
+            onChange={setDarkAccentChroma}
+            label={labels.theme.axisLabels.darkAccentChroma}
           />
         </div>
       ),
@@ -483,53 +498,19 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
         </div>
       ),
     },
-    show("surfaceIntensity") && {
-      key: "surfaceIntensity",
+    show("contrast") && {
+      key: "contrast",
       group: "depth" as const,
       node: (
-        <div key="surfaceIntensity" className="dr-theme-switcher-row">
+        <div key="contrast" className="dr-theme-switcher-row">
           <Label className="dr-theme-switcher-section-label">
-            {labels.theme.axisLabels.surfaceIntensity}
+            {labels.theme.axisLabels.contrast}
           </Label>
           <AxisControl
-            values={SURFACE_INTENSITIES}
-            value={surfaceIntensity}
-            onChange={setSurfaceIntensity}
-            label={labels.theme.axisLabels.surfaceIntensity}
-          />
-        </div>
-      ),
-    },
-    show("borderIntensity") && {
-      key: "borderIntensity",
-      group: "depth" as const,
-      node: (
-        <div key="borderIntensity" className="dr-theme-switcher-row">
-          <Label className="dr-theme-switcher-section-label">
-            {labels.theme.axisLabels.borderIntensity}
-          </Label>
-          <AxisControl
-            values={BORDER_INTENSITIES}
-            value={borderIntensity}
-            onChange={setBorderIntensity}
-            label={labels.theme.axisLabels.borderIntensity}
-          />
-        </div>
-      ),
-    },
-    show("controlDepth") && {
-      key: "controlDepth",
-      group: "depth" as const,
-      node: (
-        <div key="controlDepth" className="dr-theme-switcher-row">
-          <Label className="dr-theme-switcher-section-label">
-            {labels.theme.axisLabels.controlDepth}
-          </Label>
-          <AxisControl
-            values={CONTROL_DEPTHS}
-            value={controlDepth}
-            onChange={setControlDepth}
-            label={labels.theme.axisLabels.controlDepth}
+            values={CONTRASTS}
+            value={contrast}
+            onChange={setContrast}
+            label={labels.theme.axisLabels.contrast}
           />
         </div>
       ),

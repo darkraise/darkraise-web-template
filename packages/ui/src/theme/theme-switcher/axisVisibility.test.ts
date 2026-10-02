@@ -11,6 +11,7 @@ function input(overrides: Partial<AxisVisibilityInput> = {}) {
   return {
     axes: themeConfig.switcher.axes,
     backgroundStyle: "solid" as const,
+    accentColor: "blue" as const,
     isHiddenByPreset: () => false,
     presetAxisCount: 0,
     ...overrides,
@@ -100,6 +101,23 @@ describe("axis visibility table", () => {
         isAxisVisible(axis, input({ isHiddenByPreset: () => true })),
         axis,
       ).toBe(true)
+    }
+  })
+
+  it("hides tint with accent under the neutral accent only", () => {
+    expect(
+      isAxisVisible("tintWithAccent", input({ accentColor: "neutral" })),
+    ).toBe(false)
+    expect(
+      isAxisVisible("tintWithAccent", input({ accentColor: "blue" })),
+    ).toBe(true)
+  })
+
+  it("shows contrast and dark accent chroma as their switcher flags say", () => {
+    for (const axis of ["contrast", "darkAccentChroma"] as AxisName[]) {
+      const axes = { ...themeConfig.switcher.axes, [axis]: false }
+      expect(isAxisVisible(axis, input()), axis).toBe(true)
+      expect(isAxisVisible(axis, input({ axes })), axis).toBe(false)
     }
   })
 })

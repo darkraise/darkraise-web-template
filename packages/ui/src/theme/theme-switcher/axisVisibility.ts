@@ -1,5 +1,5 @@
 import type { ThemeConfig } from "@theme/themeConfig"
-import type { BackgroundStyle } from "@theme/types"
+import type { AccentColor, BackgroundStyle } from "@theme/types"
 
 /**
  * Everything an axis needs to decide whether its control is shown.
@@ -14,6 +14,7 @@ import type { BackgroundStyle } from "@theme/types"
 export interface AxisVisibilityInput {
   axes: ThemeConfig["switcher"]["axes"]
   backgroundStyle: BackgroundStyle
+  accentColor: AccentColor
   /** True when the active preset lists this axis in `hiddenCommonAxes`. */
   isHiddenByPreset: (axisName: string) => boolean
   /** How many preset-specific axes the active preset declares. */
@@ -78,7 +79,8 @@ export const AXIS_VISIBILITY: Record<
   contrast: (s) => s.axes.contrast && !s.isHiddenByPreset("contrast"),
   darkAccentChroma: (s) =>
     s.axes.darkAccentChroma && !s.isHiddenByPreset("darkAccentChroma"),
-  tintWithAccent: (s) => s.axes.tintWithAccent,
+  // Under the neutral accent there is no hue to mix in.
+  tintWithAccent: (s) => s.axes.tintWithAccent && s.accentColor !== "neutral",
 }
 
 export function isAxisVisible(

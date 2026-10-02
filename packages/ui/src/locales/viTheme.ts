@@ -70,5 +70,8 @@ export const viTheme: Record<keyof typeof themeMessages, string> = {
   recessed: "lõm",
   deep: "sâu",
   calm: "dịu",
+  standard: "chuẩn",
+  off: "tắt",
+  on: "bật",
   none: "không",
 }
