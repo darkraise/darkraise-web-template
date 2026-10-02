@@ -577,7 +577,8 @@ export function ThemeProvider({
   )
 
   const applySettings = useCallback(
-    (settings: ThemeSettings) => {
+    (input: ThemeSettings) => {
+      const settings = { ...cfg.defaults, ...input }
       const resolved = resolveMode(settings.mode)
       const rawPreset = (settings.preset ?? cfgDefaultPreset) as string
       const newPreset = (
@@ -1381,6 +1382,7 @@ export function ThemeProvider({
       setControlDepth,
       setOuterGlow,
       setInnerGlow,
+      setAxis: () => {},
       setPresetAxis,
     }),
     [

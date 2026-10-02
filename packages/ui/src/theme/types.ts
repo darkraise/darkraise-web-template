@@ -1,4 +1,10 @@
-import type { PresetName, ThemePreset } from "@theme/presets"
+import type { ThemePreset } from "@theme/presets"
+import type {
+  AxisKey,
+  AxisSetters,
+  AxisValue,
+  AxisValues,
+} from "./axes/registry"
 
 export const ACCENT_COLORS = [
   "red",
@@ -155,36 +161,11 @@ export type ColorScale = Record<
   string
 >
 
-export interface ThemeSettings {
-  accentColor: AccentColor
-  surfaceColor: SurfaceColor
-  preset: PresetName
-  backgroundStyle: BackgroundStyle
-  /** How loud the gradient blob overlays are; only meaningful when
-   *  backgroundStyle === "gradient". Defaults to "balanced". */
-  backgroundIntensity?: BackgroundIntensity
-  /** Which gradient shape the page paints; only meaningful when
-   *  backgroundStyle === "gradient". Defaults to "blobs". */
-  gradientPattern?: GradientPattern
-  mode: Mode
-  density?: Density
-  elevation?: Elevation
-  buttonElevation?: Elevation
-  surfaceIntensity?: SurfaceIntensity
-  borderIntensity?: BorderIntensity
-  radius?: Radius
-  fontSize?: FontSize
-  /** How loud the accent reads, mainly in dark mode; in light it still sets
-   *  the focus-ring shade and the sidebar hover fill. Defaults to
-   *  "balanced". */
-  accentIntensity?: AccentIntensity
-  /** How deep form controls sit inside a raised surface. Defaults to
-   *  "recessed". */
-  controlDepth?: ControlDepth
-  outerGlow?: GlowLevel
-  innerGlow?: GlowLevel
-  shellStyle?: ShellStyle
-  sidebarActiveBar?: SidebarActiveBarSetting
+/**
+ * A stored or synced theme. Every axis is optional: an absent axis is one the
+ * user never set, so the active preset's or the config's default applies.
+ */
+export type ThemeSettings = Partial<AxisValues> & {
   /** Per-preset axis values; outer key = preset name, inner key = axis name. */
   presetAxisValues?: Record<string, Record<string, string>>
 }
@@ -196,27 +177,7 @@ export interface ThemePersistenceAdapter {
 
 export type ThemeSyncStatus = "idle" | "loading" | "saving" | "error"
 
-export interface ThemeContextValue {
-  accentColor: AccentColor
-  surfaceColor: SurfaceColor
-  preset: PresetName
-  backgroundStyle: BackgroundStyle
-  backgroundIntensity: BackgroundIntensity
-  gradientPattern: GradientPattern
-  mode: Mode
-  density: Density
-  elevation: Elevation
-  buttonElevation: Elevation
-  surfaceIntensity: SurfaceIntensity
-  borderIntensity: BorderIntensity
-  radius: Radius
-  shellStyle: ShellStyle
-  sidebarActiveBar: SidebarActiveBarSetting
-  fontSize: FontSize
-  accentIntensity: AccentIntensity
-  controlDepth: ControlDepth
-  outerGlow: GlowLevel
-  innerGlow: GlowLevel
+export interface ThemeContextValue extends AxisValues, AxisSetters {
   resolvedMode: ResolvedMode
   config: import("./themeConfig").ThemeConfig
   syncStatus: ThemeSyncStatus
@@ -224,26 +185,8 @@ export interface ThemeContextValue {
   activePreset: ThemePreset
   /** All preset-axis values, keyed by preset name → axis name → enum value. */
   presetAxisValues: Record<string, Record<string, string>>
-  setAccentColor: (color: AccentColor) => void
-  setSurfaceColor: (color: SurfaceColor) => void
-  setPreset: (preset: PresetName) => void
-  setBackgroundStyle: (style: BackgroundStyle) => void
-  setBackgroundIntensity: (intensity: BackgroundIntensity) => void
-  setGradientPattern: (pattern: GradientPattern) => void
-  setMode: (mode: Mode) => void
-  setDensity: (density: Density) => void
-  setElevation: (elevation: Elevation) => void
-  setButtonElevation: (elevation: Elevation) => void
-  setSurfaceIntensity: (intensity: SurfaceIntensity) => void
-  setBorderIntensity: (intensity: BorderIntensity) => void
-  setRadius: (radius: Radius) => void
-  setShellStyle: (style: ShellStyle) => void
-  setSidebarActiveBar: (value: SidebarActiveBarSetting) => void
-  setFontSize: (size: FontSize) => void
-  setAccentIntensity: (intensity: AccentIntensity) => void
-  setControlDepth: (depth: ControlDepth) => void
-  setOuterGlow: (level: GlowLevel) => void
-  setInnerGlow: (level: GlowLevel) => void
+  /** Sets any axis by key; the named setters are shorthands for it. */
+  setAxis: <K extends AxisKey>(key: K, value: AxisValue<K>) => void
   /**
    * Update one preset-specific axis on the active preset. No-ops with a
    * console.warn (dev-only) when the axis is not valid for the active preset.
