@@ -963,10 +963,10 @@
      --surface-overlay-base/-layers are the static pieces each preset
      declares (base colour + alpha, decorative layers ahead of it).
      They stay static so flattening them on <html> is harmless; the
-     axis composes them into --surface-overlay-bg itself, below, at
-     each of the same four sites the fills use — that keeps the
-     substitution on whichever element carries the attribute instead
-     of baking it in where the preset declares its colour. */
+     `surface` prop's rules compose them into --surface-overlay-bg
+     at the same sites the fills use — that keeps the substitution
+     on whichever element carries the prop instead of baking it in
+     where the preset declares its colour. */
     /* Empty by default: only Glass paints decorative layers behind its
        overlay colour. An empty custom property substitutes to nothing. */
     --surface-overlay-layers: ;
@@ -979,10 +979,10 @@
     --surface-overlay-blend-mode: normal;
 
     /* Overlay family. --overlay-bg is redeclared beside every
-     --surface-overlay-bg in the [data-surface-intensity] rules: overlays
-     forward their surfaceIntensity prop as that attribute on themselves,
-     and a custom property that reads another resolves where it is
-     declared, so a :root-only --overlay-bg would keep <html>'s wash.
+     --surface-overlay-bg in the [data-surface-fill] rules: overlays
+     forward their `surface` prop as that attribute on themselves, and
+     a custom property that reads another resolves where it is
+     declared, so a :root-only --overlay-bg would keep <html>'s fill.
      --overlay-border and --overlay-shadow stay :root-only: nothing below
      <html> re-sets --surface-overlay-border or --surface-overlay-shadow. */
     --overlay-bg: var(--surface-overlay-bg);
@@ -1020,12 +1020,11 @@
      `--elevation-medium` defines. */
     --elevation-current: var(--elevation-medium);
 
-    /* Complete fill expressions, one per washed surface. A surface-intensity
-       step redefines these wholesale rather than feeding a value into them:
-       a custom property computes with its var()s already substituted, so a
-       token that composed a wash variable would bake in the root value and
-       ignore any subtree override. `balanced` and the unset case fall
-       through to these unwashed expressions and render as they always have. */
+    /* Complete fill expressions, one per surface. A `surface` prop value
+       redefines these wholesale rather than feeding a value into them: a
+       custom property computes with its var()s already substituted, so a
+       token that composed a prop variable would bake in the root value and
+       ignore any subtree override. */
     --surface-card-fill: hsl(var(--card) / var(--surface-opacity, 1));
     --surface-popover-fill: hsl(var(--popover) / var(--surface-opacity, 1));
     --surface-raised-fill: hsl(
@@ -1036,14 +1035,9 @@
     );
 
     /* Opacity-free twin of --surface-card-fill, for surfaces that must stay
-       opaque to hide a seam behind them but should still track the axis. */
+       opaque to hide a seam behind them but should still follow the
+       `surface` prop. */
     --surface-card-fill-opaque: hsl(var(--card));
-
-    /* Fallback so a stale or hand-edited attribute value renders as
-       `balanced` instead of an invalid mix. The FOUC script writes the
-       attribute straight from localStorage without validating it. */
-    --surface-wash: 0%;
-    --surface-wash-color: var(--card);
   }
 
   /* Primary pointer only: a touch laptop driven by a mouse keeps the
@@ -1206,81 +1200,10 @@
   --elevation-current: var(--elevation-high);
 }
 
-/* Surface intensity axis. `balanced` matches no rule and inherits the
-   unwashed `:root` expressions, so the default theme is byte-identical to
-   the pre-axis build. `none` is excluded from the mix block as well —
-   without that exclusion the mix selector (0,3,0) would outrank
-   `[data-surface-intensity="none"]` (0,1,0) and the blanking would never
-   apply. */
-[data-surface-intensity]:not([data-surface-intensity="balanced"]):not(
-    [data-surface-intensity="none"]
-  ) {
-  --surface-card-fill: color-mix(
-    in oklab,
-    hsl(var(--card) / var(--surface-opacity, 1)),
-    hsl(var(--surface-wash-color) / var(--surface-opacity, 1))
-      var(--surface-wash)
-  );
-  --surface-popover-fill: color-mix(
-    in oklab,
-    hsl(var(--popover) / var(--surface-opacity, 1)),
-    hsl(var(--surface-wash-color) / var(--surface-opacity, 1))
-      var(--surface-wash)
-  );
-  --surface-raised-fill: color-mix(
-    in oklab,
-    hsl(var(--surface-raised) / var(--surface-opacity, 1)),
-    hsl(var(--surface-wash-color) / var(--surface-opacity, 1))
-      var(--surface-wash)
-  );
-  --surface-overlay-fill: color-mix(
-    in oklab,
-    hsl(var(--surface-overlay) / var(--surface-opacity, 1)),
-    hsl(var(--surface-wash-color) / var(--surface-opacity, 1))
-      var(--surface-wash)
-  );
-  --surface-card-fill-opaque: color-mix(
-    in oklab,
-    hsl(var(--card)),
-    hsl(var(--surface-wash-color)) var(--surface-wash)
-  );
-  --surface-overlay-bg: var(--surface-overlay-layers)
-    color-mix(
-      in oklab,
-      var(--surface-overlay-base),
-      hsl(var(--surface-wash-color)) var(--surface-wash)
-    );
-  --overlay-bg: var(--surface-overlay-bg);
-}
-
-/* The downward steps are large and the upward step is small on purpose.
-   `--card` is white and `--background` is surface[50] — about a point and a
-   half of lightness apart — so a small mix toward the page is invisible,
-   while `--foreground` sits at the far end of the range where 6% reads
-   clearly. Do not "correct" this into a symmetric ramp. */
-[data-surface-intensity="flat"] {
-  --surface-wash: 100%;
-  --surface-wash-color: var(--background);
-}
-
-[data-surface-intensity="subtle"] {
-  --surface-wash: 55%;
-  --surface-wash-color: var(--background);
-}
-
-[data-surface-intensity="bold"] {
-  --surface-wash: 6%;
-  --surface-wash-color: var(--foreground);
-}
-
-/* `balanced` redeclares the unwashed expressions rather than matching no rule.
-   At the root that is byte-identical — the same text as `:root` — and on a
-   component it makes `surfaceIntensity="balanced"` a true absolute override
-   that undoes an ancestor's wash. Without this rule, inheritance would make
-   `balanced` silently mean "inherit the axis", contradicting the spec, and no
-   value would restore an unwashed fill (`none` blanks it instead). It stays
-   mix-free, so the byte-identity guarantee is untouched. */
-[data-surface-intensity="balanced"] {
+/* The `surface` prop. A custom property that reads another resolves where it
+   is declared, so each value redeclares the whole fill family on the element
+   that carries it; `card` restores the plane under an ancestor's value. */
+[data-surface-fill="card"] {
   --surface-card-fill: hsl(var(--card) / var(--surface-opacity, 1));
   --surface-popover-fill: hsl(var(--popover) / var(--surface-opacity, 1));
   --surface-raised-fill: hsl(var(--surface-raised) / var(--surface-opacity, 1));
@@ -1293,13 +1216,27 @@
   --overlay-bg: var(--surface-overlay-bg);
 }
 
-/* Glass's light-mode override, [data-mode="light"][data-preset="glass"], is
-   specificity (0,2,0) and declares --surface-overlay-* — higher than an
-   <html>-level [data-surface-intensity="none"] (0,1,0) would be, so it would
-   outrank this blanking if `none` were ever written on <html>. Unreachable
-   today: no theme axis writes the attribute, the value is prop-only, and a
-   prop lands on a component element where no preset selector competes. */
-[data-surface-intensity="none"] {
+[data-surface-fill="page"] {
+  --surface-card-fill: hsl(var(--background) / var(--surface-opacity, 1));
+  --surface-popover-fill: hsl(var(--background) / var(--surface-opacity, 1));
+  --surface-raised-fill: hsl(var(--background) / var(--surface-opacity, 1));
+  --surface-overlay-fill: hsl(var(--background) / var(--surface-opacity, 1));
+  --surface-card-fill-opaque: hsl(var(--background));
+  --surface-overlay-bg: var(--surface-overlay-layers) hsl(var(--background));
+  --overlay-bg: var(--surface-overlay-bg);
+}
+
+[data-surface-fill="muted"] {
+  --surface-card-fill: hsl(var(--muted) / var(--surface-opacity, 1));
+  --surface-popover-fill: hsl(var(--muted) / var(--surface-opacity, 1));
+  --surface-raised-fill: hsl(var(--muted) / var(--surface-opacity, 1));
+  --surface-overlay-fill: hsl(var(--muted) / var(--surface-opacity, 1));
+  --surface-card-fill-opaque: hsl(var(--muted));
+  --surface-overlay-bg: var(--surface-overlay-layers) hsl(var(--muted));
+  --overlay-bg: var(--surface-overlay-bg);
+}
+
+[data-surface-fill="none"] {
   --surface-card-fill: transparent;
   --surface-popover-fill: transparent;
   --surface-raised-fill: transparent;

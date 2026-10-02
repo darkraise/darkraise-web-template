@@ -1,16 +1,13 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
 
-// Every preset must let the surface-intensity prop reach the overlay tier.
-// Several presets used to define --surface-overlay-bg straight from
-// --background, which the prop never washes, making Dialog/Popover/Tooltip/
-// Select/Command and every menu silent no-ops there. This is the regression
-// this test exists to prevent.
+// Every preset must let the `surface` prop reach the overlay tier. Several
+// presets used to define --surface-overlay-bg straight from --background,
+// which the prop never reached, making Dialog/Popover/Tooltip/Select/Command
+// and every menu silent no-ops there. This is the regression this test exists
+// to prevent.
 const PRESETS = ["glass/glass.css"]
 
-// Selector-then-brace matching, not a substring search: the mix block's own
-// selector contains the literal `[data-surface-intensity="none"]` inside its
-// :not(), so indexOf would return the wrong rule.
 function themeRuleBody(selector: string): string {
   const flat = readFileSync("src/styles/theme.css", "utf8")
     .replace(/\/\*[\s\S]*?\*\//g, "")
@@ -38,17 +35,17 @@ describe("preset overlay backgrounds", () => {
     expect(css).not.toContain("--surface-overlay-wash")
   })
 
-  // balanced and none must break inheritance for the overlay tier too, or the
+  // card and none must break inheritance for the overlay tier too, or the
   // per-component prop silently fails on dialogs, menus, tooltips and popovers
-  // nested inside a washed ancestor.
-  it("redeclares the unwashed overlay background for balanced", () => {
-    const body = themeRuleBody('[data-surface-intensity="balanced"]')
+  // nested inside an ancestor that sets it.
+  it("restores the card overlay background for card", () => {
+    const body = themeRuleBody('[data-surface-fill="card"]')
     expect(body).toContain("--surface-overlay-bg:")
     expect(body).not.toContain("color-mix")
   })
 
   it("blanks the overlay background for none", () => {
-    const body = themeRuleBody('[data-surface-intensity="none"]')
+    const body = themeRuleBody('[data-surface-fill="none"]')
     expect(body).toContain("--surface-overlay-bg: transparent")
   })
 })

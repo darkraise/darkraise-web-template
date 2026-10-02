@@ -134,36 +134,33 @@ describe("Card", () => {
     expect(inner).not.toHaveAttribute("data-divided")
   })
 
-  it("omits data-surface-intensity by default", () => {
+  it("omits data-surface-fill by default", () => {
     const { container } = render(<Card>Content</Card>)
-    expect(container.firstChild).not.toHaveAttribute("data-surface-intensity")
+    expect(container.firstChild).not.toHaveAttribute("data-surface-fill")
   })
 
-  // balanced is emitted, not omitted: it carries its own CSS rule, so a card
-  // set to balanced inside a bold theme renders unwashed instead of inheriting.
-  it.each(["flat", "subtle", "balanced", "bold", "none"] as const)(
-    "sets data-surface-intensity for %s",
+  it("renders data-surface-fill for surface", () => {
+    const { container } = render(<Card surface="muted">Content</Card>)
+    expect(container.firstChild).toHaveAttribute("data-surface-fill", "muted")
+  })
+
+  // card is emitted, not omitted: it carries its own CSS rule, so a card set
+  // to card inside a page-filled ancestor restores its own plane.
+  it.each(["card", "page", "muted", "none"] as const)(
+    "sets data-surface-fill for %s",
     (value) => {
-      const { container } = render(
-        <Card surfaceIntensity={value}>Content</Card>,
-      )
-      expect(container.firstChild).toHaveAttribute(
-        "data-surface-intensity",
-        value,
-      )
+      const { container } = render(<Card surface={value}>Content</Card>)
+      expect(container.firstChild).toHaveAttribute("data-surface-fill", value)
     },
   )
 
-  it("combines surfaceIntensity, border and divided independently", () => {
+  it("combines surface, border and divided independently", () => {
     const { container } = render(
-      <Card surfaceIntensity="bold" border="none" divided>
+      <Card surface="page" border="none" divided>
         Content
       </Card>,
     )
-    expect(container.firstChild).toHaveAttribute(
-      "data-surface-intensity",
-      "bold",
-    )
+    expect(container.firstChild).toHaveAttribute("data-surface-fill", "page")
     expect(container.firstChild).toHaveAttribute("data-border", "none")
     expect(container.firstChild).toHaveAttribute("data-divided", "true")
   })

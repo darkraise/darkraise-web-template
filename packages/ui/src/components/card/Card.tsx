@@ -1,7 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@lib/utils"
-import type { SurfaceIntensityProp } from "@lib/surface-intensity"
+import type { SurfaceFill } from "@lib/surface-fill"
 import "./card.css"
 
 import { resolveCardElevation, type CardElevation } from "./card-elevation"
@@ -25,13 +25,8 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   divided?: boolean
   /** Outer border treatment. `"default"` leaves the theme/preset border alone. */
   border?: CardBorder
-  /**
-   * How strongly this card's surface separates from the page, overriding the
-   * `surfaceIntensity` theme axis. Nested non-portalled surfaces inherit it;
-   * portalled content does not, because custom properties inherit through the
-   * DOM tree rather than the React tree.
-   */
-  surfaceIntensity?: SurfaceIntensityProp
+  /** Which plane the card paints; `card` by default. Nested non-portalled surfaces inherit it. */
+  surface?: SurfaceFill
   ref?: React.Ref<HTMLDivElement>
 }
 
@@ -40,7 +35,7 @@ function Card({
   elevation = false,
   divided,
   border,
-  surfaceIntensity,
+  surface,
   ref,
   ...props
 }: CardProps) {
@@ -51,7 +46,7 @@ function Card({
       data-card-elevation={value}
       data-divided={divided ? "true" : undefined}
       data-border={border && border !== "default" ? border : undefined}
-      data-surface-intensity={surfaceIntensity}
+      data-surface-fill={surface}
       className={cn("dr-card", className)}
       {...props}
     />
