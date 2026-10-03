@@ -695,4 +695,64 @@ describe("ThemeProvider synced payloads", () => {
     })
     expect(result.current.syncStatus).toBe("idle")
   })
+
+  it("returns to idle when the adapter is removed while an edit waits to save", async () => {
+    const { adapter } = memoryAdapter(null)
+    let persistence: ThemePersistenceAdapter | undefined = adapter
+    const wrapper = ({ children }: { children: ReactNode }) => (
+      <ThemeProvider persistence={persistence} persistenceDebounce={50}>
+        {children}
+      </ThemeProvider>
+    )
+    const { result, rerender } = renderHook(() => useTheme(), { wrapper })
+    await settle()
+
+    act(() => result.current.setDensity("compact"))
+    expect(result.current.syncStatus).toBe("saving")
+
+    persistence = undefined
+    rerender()
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(60)
+    })
+    expect(adapter.save).not.toHaveBeenCalled()
+    expect(result.current.syncStatus).toBe("idle")
+  })
+
+  it("leaves the status to a save in flight when the adapter is removed", async () => {
+    const resolvers: Array<() => void> = []
+    const { adapter } = memoryAdapter(null)
+    adapter.save.mockImplementation(
+      () => new Promise<void>((resolve) => resolvers.push(resolve)),
+    )
+    let persistence: ThemePersistenceAdapter | undefined = adapter
+    const wrapper = ({ children }: { children: ReactNode }) => (
+      <ThemeProvider persistence={persistence} persistenceDebounce={50}>
+        {children}
+      </ThemeProvider>
+    )
+    const { result, rerender } = renderHook(() => useTheme(), { wrapper })
+    await settle()
+
+    act(() => result.current.setDensity("compact"))
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(60)
+    })
+    expect(adapter.save).toHaveBeenCalledOnce()
+
+    act(() => result.current.setDensity("spacious"))
+    persistence = undefined
+    rerender()
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(60)
+    })
+    expect(adapter.save).toHaveBeenCalledOnce()
+    expect(result.current.syncStatus).toBe("saving")
+
+    await act(async () => {
+      resolvers[0]?.()
+      await vi.advanceTimersByTimeAsync(0)
+    })
+    expect(result.current.syncStatus).toBe("idle")
+  })
 })
