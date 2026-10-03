@@ -92,7 +92,6 @@ const messages: UiMessages = {
       elevation: "Độ nổi",
       buttonElevation: "Độ nổi nút",
       radius: "Bo góc",
-      shellStyle: "Kiểu khung",
       sidebarActiveBar: "Chỉ báo thanh bên",
       fontSize: "Cỡ chữ",
       outerGlow: "Phát sáng ngoài",

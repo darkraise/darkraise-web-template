@@ -186,20 +186,6 @@
     "attribute": "data-inner-glow",
     "layer": "advanced"
   },
-  "shellStyle": {
-    "values": [
-      "classic",
-      "inset",
-      "island",
-      "floating",
-      "framed",
-      "flat"
-    ],
-    "default": "classic",
-    "storageKey": "theme-shell-style",
-    "attribute": "data-shell-style",
-    "layer": "advanced"
-  },
   "sidebarActiveBar": {
     "values": [
       "default",

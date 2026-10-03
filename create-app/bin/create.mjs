@@ -33,7 +33,6 @@ const GRADIENT_PATTERNS = AXES.gradientPattern.values
 const DENSITIES = AXES.density.values
 const ELEVATIONS = AXES.elevation.values
 const RADII = AXES.radius.values
-const SHELL_STYLES = AXES.shellStyle.values
 const SIDEBAR_ACTIVE_BARS = AXES.sidebarActiveBar.values
 const FONT_SIZES = AXES.fontSize.values
 const GLOW_LEVELS = AXES.outerGlow.values
@@ -58,7 +57,6 @@ const argv = minimist(process.argv.slice(2), {
     "button-elevation",
     "radius",
     "font-size",
-    "shell-style",
     "sidebar-active-bar",
     "outer-glow",
     "inner-glow",
@@ -105,7 +103,6 @@ validate(argv.density, DENSITIES, "density")
 validate(argv.elevation, ELEVATIONS, "elevation")
 validate(argv["button-elevation"], ELEVATIONS, "button-elevation")
 validate(argv.radius, RADII, "radius")
-validate(argv["shell-style"], SHELL_STYLES, "shell-style")
 validate(argv["sidebar-active-bar"], SIDEBAR_ACTIVE_BARS, "sidebar-active-bar")
 validate(argv["font-size"], FONT_SIZES, "font-size")
 validate(argv["outer-glow"], GLOW_LEVELS, "outer-glow")
@@ -336,18 +333,6 @@ async function main() {
           }),
         ))
 
-  const shellStyle =
-    argv["shell-style"] ||
-    (skipPrompts
-      ? "classic"
-      : cancelled(
-          await p.select({
-            message: "Shell style",
-            options: SHELL_STYLES.map((v) => ({ value: v, label: v })),
-            initialValue: "classic",
-          }),
-        ))
-
   const sidebarActiveBar =
     argv["sidebar-active-bar"] ||
     (skipPrompts
@@ -414,7 +399,6 @@ async function main() {
             { value: "buttonElevation", label: "Button elevation" },
             { value: "radius", label: "Radius" },
             { value: "fontSize", label: "Font size" },
-            { value: "shellStyle", label: "Shell style" },
             { value: "sidebarActiveBar", label: "Sidebar indicator" },
             { value: "outerGlow", label: "Outer glow" },
             { value: "innerGlow", label: "Inner glow" },
@@ -484,7 +468,6 @@ async function main() {
         elevation: elevation,
         buttonElevation: buttonElevation,
         radius: radius,
-        shellStyle: shellStyle,
         sidebarActiveBar: sidebarActiveBar,
         fontSize: fontSize,
         outerGlow: outerGlow,
@@ -680,7 +663,6 @@ export const themeConfig: ThemeConfig = {
     elevation: "${config.theme.defaults.elevation}",
     buttonElevation: "${config.theme.defaults.buttonElevation}",
     radius: "${config.theme.defaults.radius}",
-    shellStyle: "${config.theme.defaults.shellStyle}",
     sidebarActiveBar: "${config.theme.defaults.sidebarActiveBar}",
     fontSize: "${config.theme.defaults.fontSize}",
     outerGlow: "${config.theme.defaults.outerGlow}",
@@ -703,7 +685,6 @@ export const themeConfig: ThemeConfig = {
       elevation: ${config.theme.switcher.axes.elevation},
       buttonElevation: ${config.theme.switcher.axes.buttonElevation},
       radius: ${config.theme.switcher.axes.radius},
-      shellStyle: ${config.theme.switcher.axes.shellStyle},
       sidebarActiveBar: ${config.theme.switcher.axes.sidebarActiveBar},
       fontSize: ${config.theme.switcher.axes.fontSize},
       outerGlow: ${config.theme.switcher.axes.outerGlow},

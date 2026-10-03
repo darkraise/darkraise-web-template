@@ -34,7 +34,6 @@ export const AXIS_VISIBILITY: Record<
 > = {
   mode: (s) => s.axes.mode,
   preset: (s) => s.axes.preset,
-  shellStyle: (s) => s.axes.shellStyle,
   sidebarActiveBar: (s) => s.axes.sidebarActiveBar,
   // The group renders nothing when the active preset declares no axes of its
   // own, rather than an empty container.

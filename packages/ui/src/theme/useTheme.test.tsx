@@ -598,15 +598,13 @@ describe("useTheme persistence", () => {
 })
 
 describe("useTheme shell style", () => {
-  it("reads the current style and sets a new one", () => {
+  it("leaves shell style to the layout", () => {
+    document.documentElement.removeAttribute("data-shell-style")
     const { result } = renderHook(() => useTheme(), { wrapper })
-    expect(result.current.shellStyle).toBe("classic")
-
-    act(() => result.current.setShellStyle("island"))
-
-    expect(result.current.shellStyle).toBe("island")
-    expect(document.documentElement.getAttribute("data-shell-style")).toBe(
-      "island",
+    expect(result.current).not.toHaveProperty("shellStyle")
+    expect(result.current).not.toHaveProperty("setShellStyle")
+    expect(document.documentElement.hasAttribute("data-shell-style")).toBe(
+      false,
     )
   })
 })

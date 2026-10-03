@@ -11,7 +11,6 @@ import {
   GRADIENT_PATTERNS,
   MODES,
   RADII,
-  SHELL_STYLES,
   SIDEBAR_ACTIVE_BARS,
   SURFACE_COLORS,
   TINT_WITH_ACCENT,
@@ -146,14 +145,6 @@ export const AXES = {
     default: "none",
     storageKey: "theme-inner-glow",
     attribute: "data-inner-glow",
-    layer: "advanced",
-  }),
-  /** Chrome treatment of the app shell, independent of the layout in use. */
-  shellStyle: axis({
-    values: SHELL_STYLES,
-    default: "classic",
-    storageKey: "theme-shell-style",
-    attribute: "data-shell-style",
     layer: "advanced",
   }),
   /** Indicator on the active sidebar item; `default` keeps the preset's own look. */

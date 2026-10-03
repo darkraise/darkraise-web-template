@@ -5,6 +5,7 @@ import {
   SIDEBAR_ACTIVE_BARS,
 } from "./types"
 import { themeConfig } from "./themeConfig"
+import { AXES } from "./axes/registry"
 
 describe("backgroundIntensity axis", () => {
   it("has five steps from neutral to intense", () => {
@@ -26,7 +27,7 @@ describe("backgroundIntensity axis", () => {
   })
 })
 
-describe("shell style axis", () => {
+describe("shell style", () => {
   it("lists the six shell styles with classic first", () => {
     expect(SHELL_STYLES).toEqual([
       "classic",
@@ -38,12 +39,10 @@ describe("shell style axis", () => {
     ])
   })
 
-  it("defaults to classic so existing apps do not move", () => {
-    expect(themeConfig.defaults.shellStyle).toBe("classic")
-  })
-
-  it("is switchable by default", () => {
-    expect(themeConfig.switcher.axes.shellStyle).toBe(true)
+  it("is a layout setting, not a theme axis", () => {
+    expect("shellStyle" in AXES).toBe(false)
+    expect("shellStyle" in themeConfig.defaults).toBe(false)
+    expect(themeConfig.switcher.axes?.shellStyle).toBeUndefined()
   })
 })
 

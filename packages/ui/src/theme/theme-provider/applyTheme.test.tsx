@@ -1,6 +1,6 @@
 // packages/ui/src/theme/theme-provider/applyTheme.test.tsx
 import { describe, it, expect, beforeEach, vi } from "vitest"
-import { renderHook, act } from "@testing-library/react"
+import { renderHook, act, waitFor } from "@testing-library/react"
 import type { ReactNode } from "react"
 import { ThemeProvider } from "./ThemeProvider"
 import { useTheme } from "../useTheme"
@@ -310,27 +310,39 @@ describe("ThemeProvider preset orchestration", () => {
   })
 })
 
-describe("shell style axis", () => {
-  it("stamps the default on the document element", () => {
+describe("shell style", () => {
+  beforeEach(() => {
+    localStorage.removeItem("theme-shell-style")
+    document.documentElement.removeAttribute("data-shell-style")
+  })
+
+  it("stamps no shell style on the document element", () => {
     renderHook(() => useTheme(), { wrapper: wrap })
-    expect(document.documentElement.getAttribute("data-shell-style")).toBe(
-      "classic",
+    expect(document.documentElement.hasAttribute("data-shell-style")).toBe(
+      false,
     )
   })
 
-  it("restores a persisted value on first render", () => {
+  it("leaves a stored shell style to the layout store", () => {
     localStorage.setItem("theme-shell-style", "island")
     renderHook(() => useTheme(), { wrapper: wrap })
-    expect(document.documentElement.getAttribute("data-shell-style")).toBe(
-      "island",
+    expect(document.documentElement.hasAttribute("data-shell-style")).toBe(
+      false,
     )
+    expect(localStorage.getItem("theme-shell-style")).toBe("island")
   })
 
-  it("ignores a persisted value that is not a known style", () => {
-    localStorage.setItem("theme-shell-style", "bogus")
-    renderHook(() => useTheme(), { wrapper: wrap })
-    expect(document.documentElement.getAttribute("data-shell-style")).toBe(
-      "classic",
-    )
+  it("keeps the stored shell style when a synced payload loads", async () => {
+    localStorage.setItem("theme-shell-style", "island")
+    const persistence = {
+      load: vi.fn().mockResolvedValue({ accentColor: "teal" }),
+      save: vi.fn().mockResolvedValue(undefined),
+    }
+    function withSync({ children }: { children: ReactNode }) {
+      return <ThemeProvider persistence={persistence}>{children}</ThemeProvider>
+    }
+    const { result } = renderHook(() => useTheme(), { wrapper: withSync })
+    await waitFor(() => expect(result.current.accentColor).toBe("teal"))
+    expect(localStorage.getItem("theme-shell-style")).toBe("island")
   })
 })
