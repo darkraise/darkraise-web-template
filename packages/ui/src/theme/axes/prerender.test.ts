@@ -163,6 +163,28 @@ describe("pre-render script", () => {
     expect(localStorage.getItem("theme-settings-version")).toBeNull()
   })
 
+  it("keeps an accent surface until its tint write lands", () => {
+    localStorage.setItem("theme-surface-color", "red")
+    const setItem = Storage.prototype.setItem
+    const spy = vi
+      .spyOn(Storage.prototype, "setItem")
+      .mockImplementation(function (this: Storage, key: string, value: string) {
+        if (key === "theme-tint-with-accent") {
+          throw new DOMException("full", "QuotaExceededError")
+        }
+        setItem.call(this, key, value)
+      })
+    run()
+    expect(localStorage.getItem("theme-surface-color")).toBe("red")
+    expect(localStorage.getItem("theme-settings-version")).toBeNull()
+
+    spy.mockRestore()
+    run()
+    expect(localStorage.getItem("theme-surface-color")).toBe("zinc")
+    expect(localStorage.getItem("theme-tint-with-accent")).toBe("on")
+    expect(localStorage.getItem("theme-settings-version")).toBe("1")
+  })
+
   it("withholds the marker when a read throws", () => {
     localStorage.setItem("theme-elevation", "medium")
     const getItem = Storage.prototype.getItem

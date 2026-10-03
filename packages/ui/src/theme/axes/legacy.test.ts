@@ -419,6 +419,29 @@ describe("migrateStorage", () => {
     expect(migrateStorage(storage).get("theme-contrast")).toBe("high")
   })
 
+  it("keeps an accent surface until its tint write lands", () => {
+    const memory = memoryStorage({ "theme-surface-color": "red" })
+    const storage: TestStorage = {
+      ...memory,
+      setItem: (key, value) => {
+        if (key === "theme-tint-with-accent") {
+          throw new DOMException("full", "QuotaExceededError")
+        }
+        memory.setItem(key, value)
+      },
+    }
+    migrateStorage(storage)
+    expect(storage.contents()).toEqual({ "theme-surface-color": "red" })
+
+    storage.setItem = memory.setItem
+    migrateStorage(storage)
+    expect(storage.contents()).toEqual({
+      "theme-surface-color": "zinc",
+      "theme-tint-with-accent": "on",
+      [LEGACY_MARKER_KEY]: MARKER,
+    })
+  })
+
   it("returns an empty map when storage cannot be read", () => {
     const storage = memoryStorage()
     storage.getItem = () => {

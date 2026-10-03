@@ -146,7 +146,9 @@ export const LEGACY_RULES: readonly LegacyRule[] = [
         values: V6_ACCENT_SURFACES,
       },
     ],
-    set: { "theme-surface-color": "zinc", "theme-tint-with-accent": "on" },
+    // Tint first: writes stop at the first failure, and once the surface holds
+    // zinc this rule no longer fires, so a tint not yet written would be lost.
+    set: { "theme-tint-with-accent": "on", "theme-surface-color": "zinc" },
   },
   // 6.9.6 glass and sci-fi painted both intensities at the config default
   // whatever was stored, so a stored value there was never the user's visible
@@ -345,6 +347,7 @@ export function runLegacyTable(
         storage.setItem(key, value)
       } catch {
         failed = true
+        break
       }
     }
   }

@@ -73,7 +73,7 @@ export function buildPrerenderScript(): string {
     'G=R.map?(typeof H[0]==="string"&&h(R.map,H[0])?R.map[H[0]]:h(R.map,"*")?R.map["*"]:null):R.set;',
     "if(G)for(k in G)if(h(G,k)&&(R.overwrite||(h(T,k)?T[k].indexOf(g(k))===-1:g(k)===null)))u(k,G[k]);",
     "if(R.remove)for(j=0;j<R.remove.length;j++)u(R.remove[j],null)}",
-    "if(!f)for(i=0;i<w.length;i++)if(o[w[i]]!==null)try{s.setItem(w[i],o[w[i]])}catch(e){f=1}",
+    "for(i=0;i<w.length&&!f;i++)if(o[w[i]]!==null)try{s.setItem(w[i],o[w[i]])}catch(e){f=1}",
     "if(!f)for(i=0;i<w.length;i++)if(o[w[i]]===null)try{s.removeItem(w[i])}catch(e){f=1}",
     `if(!f&&n<${LEGACY_REVISION})try{s.setItem(${json(LEGACY_MARKER_KEY)},${json(String(LEGACY_REVISION))})}catch(e){}`,
     `var A=${json(attributes)},N=${json(neutralised)},P=${json(presetAxes)},K=${json(cacheInputKeys())};`,
