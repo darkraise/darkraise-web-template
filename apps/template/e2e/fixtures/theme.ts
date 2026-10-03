@@ -57,7 +57,6 @@ export const GRADIENT_PATTERNS = [
 ] as const
 export const DENSITIES = ["compact", "cozy", "comfortable", "spacious"] as const
 export const ELEVATIONS = ["flat", "standard", "high"] as const
-export const BUTTON_ELEVATIONS = ["flat", "low", "medium", "high"] as const
 export const RADII = ["sharp", "subtle", "rounded", "pill"] as const
 export const FONT_SIZES = ["small", "medium", "large", "extra-large"] as const
 export const CONTRASTS = ["low", "standard", "high"] as const
@@ -113,7 +112,6 @@ export const LS_KEYS = {
   mode: "mode",
   density: "theme-density",
   elevation: "theme-elevation",
-  buttonElevation: "theme-button-elevation",
   radius: "theme-radius",
   sidebarActiveBar: "theme-sidebar-active-bar",
   fontSize: "theme-font-size",

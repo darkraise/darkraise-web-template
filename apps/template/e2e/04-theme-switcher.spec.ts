@@ -1,7 +1,6 @@
 import { test, expect, type Page } from "@playwright/test"
 import {
   ACCENT_COLORS,
-  BUTTON_ELEVATIONS,
   DENSITIES,
   ELEVATIONS,
   FONT_SIZES,
@@ -69,7 +68,6 @@ test.describe("theme switcher popover", () => {
       "Font Size",
       "Dark Accent Chroma",
       "Elevation",
-      "Button Elevation",
       "Contrast",
       "Outer Glow",
       "Inner Glow",
@@ -105,7 +103,6 @@ test.describe("preset selection through the UI", () => {
 
       const hiddenLabels: Record<string, string> = {
         elevation: "Elevation",
-        buttonElevation: "Button Elevation",
         radius: "Radius",
         density: "Density",
         contrast: "Contrast",
@@ -278,11 +275,6 @@ test.describe("stepped slider axes", () => {
   }[] = [
     { label: "Density", values: DENSITIES, attr: "data-density" },
     { label: "Font size", values: FONT_SIZES, attr: "data-font-size" },
-    {
-      label: "Button elevation",
-      values: BUTTON_ELEVATIONS,
-      attr: "data-button-elevation",
-    },
     { label: "Radius", values: RADII, attr: "data-radius" },
   ]
 

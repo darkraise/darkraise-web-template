@@ -39,7 +39,6 @@ export interface ThemeSeed {
   mode?: string
   density?: string
   elevation?: string
-  buttonElevation?: string
   radius?: string
   /** Seeds the layout store's stored pick; shell style is not a theme axis. */
   shellStyle?: string
@@ -80,7 +79,6 @@ function storageEntries(theme: ThemeSeed, authenticated: boolean) {
     ["mode", LS_KEYS.mode],
     ["density", LS_KEYS.density],
     ["elevation", LS_KEYS.elevation],
-    ["buttonElevation", LS_KEYS.buttonElevation],
     ["radius", LS_KEYS.radius],
     ["shellStyle", SHELL_STYLE_KEY],
     ["sidebarActiveBar", LS_KEYS.sidebarActiveBar],

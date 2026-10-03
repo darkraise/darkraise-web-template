@@ -91,7 +91,6 @@ token it drives:
 | Font size            | small → extra-large            | `data-font-size`, `--text-base` increases monotonically                                                      |
 | Dark accent chroma   | calm, standard, vivid          | `data-dark-accent-chroma`; `--primary-fill` differs between calm and vivid in dark, and stays put in light   |
 | Elevation            | flat → high                    | `data-elevation`, `--elevation-current`                                                                      |
-| Button elevation     | flat → high                    | `data-button-elevation`, `--shadow-button` (flat ⇒ transparent)                                              |
 | Contrast             | low, standard, high            | `data-contrast`; the light page `--background` differs between low and high                                  |
 | Tint with accent     | off, on                        | `data-tint-with-accent`; the switcher hides the control under the neutral accent                             |
 | Radius               | sharp, subtle, rounded, pill   | `data-radius`, exact `--radius`, pill ⇒ `--radius-control: 9999px`                                           |
@@ -114,10 +113,10 @@ Everything above again, this time through the popover a user actually operates:
   With Accent.
 - Background toggle reveals and hides the intensity and pattern controls; all
   four gradient patterns are selectable.
-- The four 4-value axes (density, font size, button elevation, radius)
-  render as stepped sliders and are walked value by value
-  **with the keyboard**, since a slider has no clickable cell. Elevation's
-  three levels render as a toggle group and are clicked in turn.
+- The three 4-value axes (density, font size, radius) render as stepped
+  sliders and are walked value by value **with the keyboard**, since a
+  slider has no clickable cell. Elevation's three levels render as a toggle
+  group and are clicked in turn.
 - Preset-specific axis controls for both presets, plus a check that per-preset
   axis values are remembered when switching away and back.
 - Two end-to-end proofs that switcher changes restyle real components: radius

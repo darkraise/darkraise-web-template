@@ -2,7 +2,6 @@ import { test, expect } from "@playwright/test"
 import {
   ACCENT_COLORS,
   BACKGROUND_INTENSITIES,
-  BUTTON_ELEVATIONS,
   CONTRASTS,
   DENSITIES,
   ELEVATIONS,
@@ -353,22 +352,11 @@ test.describe("elevation axes", () => {
     })
   }
 
-  for (const buttonElevation of BUTTON_ELEVATIONS) {
-    test(`button elevation "${buttonElevation}"`, async ({ page }) => {
-      await seedApp(page, { buttonElevation, preset: "default" })
-      await gotoApp(page, PROBE)
-      expect((await readThemeAttrs(page))["data-button-elevation"]).toBe(
-        buttonElevation,
-      )
-      const shadow = await readToken(page, "--shadow-button")
-      expect(shadow).not.toBe("")
-      if (buttonElevation === "flat") {
-        expect(shadow).toContain("transparent")
-      } else {
-        expect(shadow).not.toContain("transparent")
-      }
-    })
-  }
+  test("buttons keep the flat shadow", async ({ page }) => {
+    await seedApp(page, { preset: "default" })
+    await gotoApp(page, PROBE)
+    expect(await readToken(page, "--shadow-button")).toContain("transparent")
+  })
 })
 
 test.describe("contrast axis", () => {
@@ -536,7 +524,6 @@ test.describe("theme persistence", () => {
       gradientPattern: "spotlight",
       density: "compact",
       elevation: "high",
-      buttonElevation: "high",
       contrast: "high",
       darkAccentChroma: "vivid",
       tintWithAccent: "on",
