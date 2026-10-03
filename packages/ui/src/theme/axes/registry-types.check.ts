@@ -40,5 +40,5 @@ export type RegistryTypeChecks = [
       ? true
       : false
   >,
-  Expect<AxisKey extends ThemeAxisName ? true : false>,
+  Expect<Equal<ThemeAxisName, AxisKey>>,
 ]

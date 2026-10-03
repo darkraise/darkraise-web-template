@@ -99,7 +99,6 @@ const messages: UiMessages = {
       contrast: "Độ tương phản",
       darkAccentChroma: "Độ bão hòa màu nhấn (tối)",
       tintWithAccent: "Pha màu nhấn",
-      presetAxes: "Tùy chọn mẫu",
     },
     modes: { light: "Sáng", dark: "Tối", system: "Hệ thống" },
   },

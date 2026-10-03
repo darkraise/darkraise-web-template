@@ -1,10 +1,10 @@
-import type { ThemeConfig } from "@theme/themeConfig"
+import type { AxisKey } from "@theme/axes/registry"
 import type { ThemeSettingsGroup } from "@theme/theme-switcher/useThemeSettingsSections"
 
-/** Every axis the theme switcher can show, derived from the config type so a
- *  new axis is a compile error in `defaultLabels` rather than English text
- *  leaking into a translated app. */
-export type ThemeAxisName = keyof ThemeConfig["switcher"]["axes"]
+/** Every axis the theme switcher can show. A new registry axis is a compile
+ *  error in `defaultLabels` rather than English text leaking into a
+ *  translated app. */
+export type ThemeAxisName = AxisKey
 
 export interface UiLabels {
   dataTable: {
