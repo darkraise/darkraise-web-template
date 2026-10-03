@@ -655,6 +655,8 @@ export const themeConfig: ThemeConfig = {
       accentColor: ${config.theme.switcher.axes.accentColor},
       surfaceColor: ${config.theme.switcher.axes.surfaceColor},
       style: ${config.theme.switcher.axes.style},
+      glassOpacity: ${config.theme.switcher.axes.glassOpacity},
+      glassBlur: ${config.theme.switcher.axes.glassBlur},
       font: ${config.theme.switcher.axes.font},
       backgroundStyle: ${config.theme.switcher.axes.backgroundStyle},
       backgroundIntensity: ${config.theme.switcher.axes.backgroundIntensity},

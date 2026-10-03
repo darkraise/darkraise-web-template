@@ -73,4 +73,15 @@ describe("create-app/bin/create.mjs", () => {
     expect(html).toBeDefined()
     expect(html).not.toMatch(/https?:\/\//)
   })
+
+  it("writes every registry axis into the switcher config", () => {
+    const script = readFileSync("../../create-app/bin/create.mjs", "utf8")
+    const written = [
+      ...script.matchAll(/\$\{config\.theme\.switcher\.axes\.(\w+)\}/g),
+    ]
+      .map((m) => m[1] as string)
+      .filter((key) => key !== "enabled")
+      .sort()
+    expect(written).toEqual([...AXIS_KEYS].sort())
+  })
 })
