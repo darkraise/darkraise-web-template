@@ -8,6 +8,9 @@ import {
   type AxisValues,
 } from "./registry"
 
+/** Stamped on every payload the provider emits; 6.x payloads carry none. */
+export const THEME_PAYLOAD_VERSION = 7
+
 export type PresetAxisValues = Record<string, Record<string, string>>
 
 type PresetAxisDefinitions = Record<

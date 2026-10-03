@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest"
+import type { ThemeSettings } from "@theme/types"
 import {
+  THEME_PAYLOAD_VERSION,
   completePresetAxisValues,
   presetAxisStorageKey,
   readPresetAxisValues,
@@ -76,5 +78,16 @@ describe("sanitizeSettings", () => {
   it("treats a non-object payload as empty", () => {
     expect(sanitizeSettings(null)).toEqual({})
     expect(sanitizeSettings("dark")).toEqual({})
+  })
+})
+
+describe("THEME_PAYLOAD_VERSION", () => {
+  it("is 7 and never reaches the applied axes", () => {
+    const payload: ThemeSettings = {
+      version: THEME_PAYLOAD_VERSION,
+      density: "compact",
+    }
+    expect(THEME_PAYLOAD_VERSION).toBe(7)
+    expect(sanitizeSettings(payload)).toEqual({ density: "compact" })
   })
 })

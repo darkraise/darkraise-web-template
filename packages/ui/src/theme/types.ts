@@ -145,6 +145,11 @@ export type ColorScale = Record<
 export type ThemeSettings = Partial<AxisValues> & {
   /** Per-preset axis values; outer key = preset name, inner key = axis name. */
   presetAxisValues?: Record<string, Record<string, string>>
+  /**
+   * Payload format, set on every payload the provider emits. A loaded payload
+   * without it came from a 6.x kit and is migrated before it is applied.
+   */
+  version?: number
 }
 
 export interface ThemePersistenceAdapter {
