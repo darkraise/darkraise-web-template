@@ -128,6 +128,14 @@ export type SidebarActiveBarSetting = (typeof SIDEBAR_ACTIVE_BARS)[number]
 export const GLOW_LEVELS = ["none", "subtle", "balanced", "vivid"] as const
 export type GlowLevel = (typeof GLOW_LEVELS)[number]
 
+/** How much of the canvas Glass's frosted chrome lets through. */
+export const GLASS_OPACITIES = ["subtle", "medium", "strong"] as const
+export type GlassOpacity = (typeof GLASS_OPACITIES)[number]
+
+/** Backdrop blur behind Glass's frosted chrome. */
+export const GLASS_BLURS = ["none", "low", "medium", "high"] as const
+export type GlassBlur = (typeof GLASS_BLURS)[number]
+
 export const MODES = ["light", "dark", "system"] as const
 export type Mode = (typeof MODES)[number]
 
