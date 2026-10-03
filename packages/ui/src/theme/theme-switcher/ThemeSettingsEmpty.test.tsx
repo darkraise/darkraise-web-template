@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react"
 import { describe, it, expect, beforeEach, vi } from "vitest"
 import { ThemeProvider } from "@theme/theme-provider"
 import { themeConfig, type ThemeConfig } from "@theme/themeConfig"
-import { AXIS_KEYS } from "@theme/axes/registry"
+import { AXES, AXIS_KEYS } from "@theme/axes/registry"
 import { ThemeSettingsPanel } from "./ThemeSettingsPanel"
 import { ThemeSwitcher } from "./ThemeSwitcher"
 
@@ -58,5 +58,26 @@ describe("theme settings with every axis hidden", () => {
     const { container } = renderHidden(<ThemeSettingsPanel />)
     expect(container).toBeEmptyDOMElement()
     expect(container.querySelector(".dr-theme-settings")).toBeNull()
+  })
+
+  it("renders no trigger when Advanced is off and every Brand axis is hidden", () => {
+    const brandHidden: ThemeConfig = {
+      ...themeConfig,
+      switcher: {
+        ...themeConfig.switcher,
+        advanced: false,
+        axes: Object.fromEntries(
+          AXIS_KEYS.filter((axis) => AXES[axis].layer !== "advanced").map(
+            (axis) => [axis, false],
+          ),
+        ),
+      },
+    }
+    const { container } = render(
+      <ThemeProvider config={brandHidden}>
+        <ThemeSwitcher />
+      </ThemeProvider>,
+    )
+    expect(container).toBeEmptyDOMElement()
   })
 })

@@ -1,30 +1,9 @@
 import type * as React from "react"
-import { render, screen } from "@testing-library/react"
+import { fireEvent, render, screen } from "@testing-library/react"
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest"
 import { ThemeProvider } from "@theme/theme-provider"
 import { themeConfig, type ThemeConfig } from "@theme/themeConfig"
 import { ThemeSettingsPanel } from "./ThemeSettingsPanel"
-
-// Match the matchMedia mocking pattern from ThemeSwitcher.test.tsx.
-function mockMatchMedia() {
-  Object.defineProperty(window, "matchMedia", {
-    writable: true,
-    value: vi.fn().mockImplementation((query: string) => ({
-      matches: false,
-      media: query,
-      onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-    })),
-  })
-}
-
-function renderPanel(ui: React.ReactNode) {
-  return render(<ThemeProvider>{ui}</ThemeProvider>)
-}
 
 // memoryStorage is a complete Storage, installed fresh for every test here.
 //
@@ -46,18 +25,52 @@ function memoryStorage(): Storage {
   }
 }
 
+function renderPanel(ui: React.ReactNode, config?: ThemeConfig) {
+  return render(<ThemeProvider config={config}>{ui}</ThemeProvider>)
+}
+
+function withSwitcher(switcher: Partial<ThemeConfig["switcher"]>): ThemeConfig {
+  return { ...themeConfig, switcher: { ...themeConfig.switcher, ...switcher } }
+}
+
+function sectionLabels(container: HTMLElement): string[] {
+  return [
+    ...container.querySelectorAll(".dr-theme-switcher-section-label"),
+  ].map((label) => label.textContent ?? "")
+}
+
+const BRAND = [
+  "Mode",
+  "Accent Color",
+  "Surface Color",
+  "Tint With Accent",
+  "Preset",
+  "Font",
+  "Radius",
+  "Density",
+  "Font Size",
+]
+
+// Gradient Pattern is absent: the default background is solid.
+const ADVANCED = [
+  "Contrast",
+  "Dark Accent Chroma",
+  "Elevation",
+  "Outer Glow",
+  "Inner Glow",
+  "Background",
+  "Background Intensity",
+  "Sidebar Indicator",
+]
+
 describe("ThemeSettingsPanel", () => {
   beforeEach(() => {
-    mockMatchMedia()
-    // The provider persists the chosen preset, so a test that clicks a preset
-    // radio leaves every later test running under it. Glass hides the surface
-    // intensity axis, which is enough to make an unrelated assertion disappear.
+    // The provider persists every choice, so a test that picks a preset would
+    // otherwise leave every later test running under it.
     vi.stubGlobal("localStorage", memoryStorage())
   })
 
   afterEach(() => {
-    // Not left installed: this suite's storage must not become the next
-    // file's inherited surprise, which is the bug it exists to avoid.
     vi.unstubAllGlobals()
   })
 
@@ -80,77 +93,125 @@ describe("ThemeSettingsPanel", () => {
     ).toBeInTheDocument()
   })
 
-  it("groups axes under headings in the page layout", () => {
-    renderPanel(<ThemeSettingsPanel layout="page" />)
-    expect(screen.getByRole("heading", { name: "Theme" })).toBeInTheDocument()
-    expect(screen.getByRole("heading", { name: "Color" })).toBeInTheDocument()
-    expect(screen.getByRole("heading", { name: "Layout" })).toBeInTheDocument()
-  })
-
   it("renders no headings in the compact layout", () => {
     renderPanel(<ThemeSettingsPanel layout="compact" />)
+    expect(screen.queryByRole("heading")).not.toBeInTheDocument()
+  })
+
+  it("renders Brand and Advanced as headed sections in the page layout", () => {
+    const { container } = renderPanel(<ThemeSettingsPanel layout="page" />)
     expect(
-      screen.queryByRole("heading", { name: "Theme" }),
+      screen.getAllByRole("heading").map((heading) => heading.textContent),
+    ).toEqual(["Brand", "Advanced"])
+    expect(
+      screen.queryByRole("button", { name: "Advanced" }),
     ).not.toBeInTheDocument()
+    expect(sectionLabels(container)).toEqual([...BRAND, ...ADVANCED])
   })
 
-  it("still renders every control in the page layout", () => {
+  it("drops the old group headings", () => {
     renderPanel(<ThemeSettingsPanel layout="page" />)
-    expect(screen.getByText("Mode")).toBeInTheDocument()
-    expect(screen.getByText("Preset")).toBeInTheDocument()
-    expect(screen.getByText("Radius")).toBeInTheDocument()
-  })
-
-  it("thins a group without hiding its heading when only some axes are hidden", () => {
-    const thinnedConfig: ThemeConfig = {
-      ...themeConfig,
-      switcher: {
-        ...themeConfig.switcher,
-        axes: { ...themeConfig.switcher.axes, elevation: false },
-      },
+    for (const name of ["Theme", "Color", "Layout", "Depth"]) {
+      expect(
+        screen.queryByRole("heading", { name }),
+        name,
+      ).not.toBeInTheDocument()
     }
-    render(
-      <ThemeProvider config={thinnedConfig}>
-        <ThemeSettingsPanel layout="page" />
-      </ThemeProvider>,
-    )
-
-    expect(screen.getByRole("heading", { name: "Depth" })).toBeInTheDocument()
-    expect(screen.queryByText("Elevation")).not.toBeInTheDocument()
-    expect(screen.getByText("Outer Glow")).toBeInTheDocument()
   })
 
-  it("omits a group heading entirely once every axis in it is hidden", () => {
-    // Disable every "depth" axis at the config level (elevation, contrast
-    // and the two glow axes) rather than via a preset's hiddenCommonAxes, so
-    // this test doesn't depend on which axes a given preset happens to
-    // reinterpret.
-    const depthHiddenConfig: ThemeConfig = {
-      ...themeConfig,
-      switcher: {
-        ...themeConfig.switcher,
+  it.each(["compact", "page"] as const)(
+    "removes Advanced from the %s layout when switcher.advanced is false",
+    (layout) => {
+      const { container } = renderPanel(
+        <ThemeSettingsPanel layout={layout} />,
+        withSwitcher({ advanced: false }),
+      )
+      expect(sectionLabels(container)).toEqual(BRAND)
+      expect(
+        screen.queryByRole("button", { name: "Advanced" }),
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole("heading", { name: "Advanced" }),
+      ).not.toBeInTheDocument()
+    },
+  )
+
+  it("hides one control when switcher.axes sets it to false", () => {
+    const { container } = renderPanel(
+      <ThemeSettingsPanel layout="page" />,
+      withSwitcher({ axes: { radius: false } }),
+    )
+    expect(sectionLabels(container)).toEqual([
+      ...BRAND.filter((label) => label !== "Radius"),
+      ...ADVANCED,
+    ])
+  })
+
+  it("omits the Advanced heading once every Advanced axis is hidden", () => {
+    renderPanel(
+      <ThemeSettingsPanel layout="page" />,
+      withSwitcher({
         axes: {
-          ...themeConfig.switcher.axes,
-          elevation: false,
           contrast: false,
+          darkAccentChroma: false,
+          elevation: false,
           outerGlow: false,
           innerGlow: false,
+          backgroundStyle: false,
+          backgroundIntensity: false,
+          gradientPattern: false,
+          sidebarActiveBar: false,
         },
-      },
-    }
-    render(
-      <ThemeProvider config={depthHiddenConfig}>
-        <ThemeSettingsPanel layout="page" />
-      </ThemeProvider>,
+      }),
     )
-
     expect(
-      screen.queryByRole("heading", { name: "Depth" }),
+      screen.getAllByRole("heading").map((heading) => heading.textContent),
+    ).toEqual(["Brand"])
+  })
+
+  it("renders each control kind, with three-value ordinal axes as toggle groups", () => {
+    renderPanel(<ThemeSettingsPanel layout="page" />)
+    expect(screen.getByTitle("Neutral (near-black)")).toHaveAttribute(
+      "data-value",
+      "neutral",
+    )
+    expect(screen.getByRole("radiogroup", { name: "Font" })).toBeInTheDocument()
+    expect(screen.getByRole("slider", { name: "Density" })).toBeInTheDocument()
+    expect(screen.getByRole("slider", { name: "Radius" })).toBeInTheDocument()
+    for (const name of ["Elevation", "Contrast", "Dark Accent Chroma"]) {
+      expect(screen.getByRole("radiogroup", { name }), name).toBeInTheDocument()
+    }
+    expect(
+      screen.getByRole("switch", { name: "Tint With Accent" }),
+    ).toBeInTheDocument()
+  })
+
+  it("shows the gradient pattern only under the gradient background", () => {
+    const { container } = renderPanel(<ThemeSettingsPanel layout="page" />)
+    expect(sectionLabels(container)).not.toContain("Gradient Pattern")
+    fireEvent.click(screen.getByRole("radio", { name: "Gradient" }))
+    expect(sectionLabels(container)).toContain("Gradient Pattern")
+  })
+
+  it("hides Tint With Accent under the neutral accent", () => {
+    renderPanel(<ThemeSettingsPanel layout="page" />)
+    fireEvent.click(screen.getByTitle("Neutral (near-black)"))
+    expect(
+      screen.queryByRole("switch", { name: "Tint With Accent" }),
     ).not.toBeInTheDocument()
-    // Sibling groups keep their headings — this isn't the whole panel
-    // vanishing, just the one group that lost every section.
-    expect(screen.getByRole("heading", { name: "Theme" })).toBeInTheDocument()
-    expect(screen.getByRole("heading", { name: "Layout" })).toBeInTheDocument()
+  })
+
+  it("renders the active preset's own axes right after the preset control", () => {
+    localStorage.setItem("theme-preset", "glass")
+    const { container } = renderPanel(<ThemeSettingsPanel layout="page" />)
+    const labels = sectionLabels(container)
+    const at = labels.indexOf("Preset")
+    expect(labels.slice(at, at + 4)).toEqual([
+      "Preset",
+      "Opacity",
+      "Backdrop Blur",
+      "Font",
+    ])
   })
 
   it("renders the colour engine controls in place of the old intensity ones", () => {
@@ -163,23 +224,10 @@ describe("ThemeSettingsPanel", () => {
       "Surface Intensity",
       "Border Intensity",
       "Control Depth",
+      "Button Elevation",
+      "Shell Style",
     ]) {
       expect(screen.queryByText(removed), removed).not.toBeInTheDocument()
     }
-  })
-
-  it("tags the neutral accent swatch so dark mode can outline it", () => {
-    renderPanel(<ThemeSettingsPanel layout="page" />)
-    expect(screen.getByTitle("Neutral (near-black)")).toHaveAttribute(
-      "data-value",
-      "neutral",
-    )
-  })
-
-  it("names its axis sliders so they are reachable by role and name", () => {
-    renderPanel(<ThemeSettingsPanel layout="page" />)
-    // A four-value axis renders as a Slider carrying the axis name.
-    expect(screen.getByRole("slider", { name: "Density" })).toBeInTheDocument()
-    expect(screen.getByRole("slider", { name: "Radius" })).toBeInTheDocument()
   })
 })
