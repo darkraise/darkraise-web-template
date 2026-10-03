@@ -136,6 +136,8 @@
 @import "../theme/theme-switcher/theme-switcher.css";
 
 /* Style-specific CSS (manual; theme/styles/ is outside the auto-scanner) */
+@import "../theme/styles/flat/flat.css";
+@import "../theme/styles/tactile/tactile.css";
 @import "../theme/styles/glass/glass.css";
 
 @layer theme, base, components, utilities, overrides;

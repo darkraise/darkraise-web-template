@@ -504,3 +504,144 @@ describe("checkables, thumbs and the view pill", () => {
     },
   )
 })
+
+/**
+ * Every token the spec's Tactile column changes from Quiet's base;
+ * --btn-neutral-edge stays Quiet's.
+ */
+const TACTILE_TOKENS = CONTROL_TOKENS.filter(
+  (name) => name !== "--btn-neutral-edge",
+)
+
+/**
+ * The one sheen that may run the full height: over a dark label on a light
+ * fill, lightening the fill only raises the label's contrast.
+ */
+const FULL_HEIGHT_SHEEN = ['[data-style="tactile"]', "--btn-neutral-sheen"]
+
+const STYLE_SHEETS = SHEETS.filter((path) => path.startsWith(STYLES_DIR))
+const FLAT = join("src", "theme", "styles", "flat", "flat.css")
+const TACTILE = join("src", "theme", "styles", "tactile", "tactile.css")
+const READER_SHEETS = SHEETS.filter((path) =>
+  [join("src", "components") + sep, join("src", "layout") + sep].some((dir) =>
+    path.startsWith(dir),
+  ),
+)
+
+function reads(text: string, token: string): boolean {
+  return new RegExp(`var\\(${token}[,)]`).test(text)
+}
+
+/** Where a linear gradient's last colour stop sits, in percent of the box. */
+function lastStop(gradient: string): number {
+  const inner = /^linear-gradient\((.*)\)$/.exec(gradient)?.[1]
+  if (inner === undefined) throw new Error(`not a linear gradient: ${gradient}`)
+  const stops = inner.split(/,(?![^(]*\))/)
+  const at = /(\d+(?:\.\d+)?)%\s*$/.exec(stops[stops.length - 1] as string)
+  return at ? Number(at[1]) : 100
+}
+
+describe("style files", () => {
+  it("ships flat, tactile and glass; quiet is the base", () => {
+    expect(
+      STYLE_SHEETS.map((path) => path.slice(STYLES_DIR.length)).sort(),
+    ).toEqual([
+      join("flat", "flat.css"),
+      join("glass", "glass.css"),
+      join("tactile", "tactile.css"),
+    ])
+  })
+
+  it.each(STYLE_SHEETS)(
+    "%s sets only contract or private glass tokens",
+    (path) => {
+      const offenders = declarations(path)
+        .map((d) => d.property)
+        .filter(
+          (name) => !CONTRACT.includes(name) && !name.startsWith("--glass-"),
+        )
+      expect(offenders).toEqual([])
+    },
+  )
+
+  it("flattens every control token under flat, in both modes", () => {
+    const flat = declarations(FLAT)
+    expect(flat.map((d) => d.property).sort()).toEqual(
+      [...CONTROL_TOKENS].sort(),
+    )
+    for (const d of flat) {
+      expect(d.context).toEqual(['[data-style="flat"]'])
+      expect(["0 0 transparent", "none"]).toContain(d.value)
+    }
+  })
+
+  // The light block is unlayered too, so in dark mode it would beat the dark
+  // base values unless the dark block restates every token it sets.
+  it.each([
+    ['[data-style="tactile"]', LIGHT_BASE],
+    ['[data-mode="dark"][data-style="tactile"]', DARK_BASE],
+  ])(
+    "%s sets every token Tactile changes, each to a real depth",
+    (selector, baseContext) => {
+      const set = declarations(TACTILE).filter((d) =>
+        sameContext(d.context, [selector]),
+      )
+      expect(set.map((d) => d.property).sort()).toEqual(
+        [...TACTILE_TOKENS].sort(),
+      )
+      const base = declarations(THEME).filter((d) =>
+        sameContext(d.context, baseContext),
+      )
+      for (const d of set) {
+        expect(["0 0 transparent", "none"], d.property).not.toContain(d.value)
+        expect(d.value, d.property).not.toBe(
+          base.find((b) => b.property === d.property)?.value,
+        )
+      }
+    },
+  )
+
+  // Engine fills sit at their label's 4.5:1 floor, so a sheen that lightens
+  // behind a light label must fade out above the glyphs.
+  it("fades every other tactile sheen out by 20% of the height", () => {
+    const sheens = declarations(TACTILE)
+      .filter((d) => d.property.endsWith("-sheen"))
+      .filter(
+        (d) =>
+          !(
+            sameContext(d.context, [FULL_HEIGHT_SHEEN[0] as string]) &&
+            d.property === FULL_HEIGHT_SHEEN[1]
+          ),
+      )
+    expect(sheens).toHaveLength(3)
+    for (const d of sheens) {
+      expect(lastStop(d.value), where(d)).toBeLessThanOrEqual(20)
+    }
+  })
+
+  // A token counts as read when a component or layout stylesheet reads it, or
+  // when theme.css composes it into a token that is read: the overlay
+  // background inputs reach components only through --overlay-bg.
+  it("has a reader for every contract token", () => {
+    const readers = READER_SHEETS.map((path) => readFileSync(path, "utf8"))
+    const composed = declarations(THEME)
+    const names = new Set([...CONTRACT, ...composed.map((d) => d.property)])
+    const reached = new Set(
+      [...names].filter((name) => readers.some((text) => reads(text, name))),
+    )
+    let grew = true
+    while (grew) {
+      grew = false
+      for (const d of composed) {
+        if (!reached.has(d.property)) continue
+        for (const name of names) {
+          if (!reached.has(name) && reads(d.value, name)) {
+            reached.add(name)
+            grew = true
+          }
+        }
+      }
+    }
+    expect(CONTRACT.filter((name) => !reached.has(name))).toEqual([])
+  })
+})

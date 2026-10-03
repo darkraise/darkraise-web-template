@@ -1,0 +1,14 @@
+/* Flat draws no depth on controls. Unlayered, so this one block beats the
+   light and the dark base values in @layer base. */
+[data-style="flat"] {
+  --btn-edge: 0 0 transparent;
+  --btn-sheen: none;
+  --btn-shadow: 0 0 transparent;
+  --btn-neutral-edge: 0 0 transparent;
+  --btn-neutral-sheen: none;
+  --btn-neutral-shadow: 0 0 transparent;
+  --field-shadow: 0 0 transparent;
+  --check-well-shadow: 0 0 transparent;
+  --thumb-shadow: 0 0 transparent;
+  --selected-view-shadow: 0 0 transparent;
+}

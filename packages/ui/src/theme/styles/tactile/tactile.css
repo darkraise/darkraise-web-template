@@ -1,0 +1,51 @@
+/* The dark block restates every token the light block sets: the light block
+   is unlayered and would otherwise beat the dark base values. A sheen over a
+   light label fades out by 20% of the height, above the glyphs: the fills
+   sit at their label's 4.5:1 floor. */
+[data-style="tactile"] {
+  --btn-edge:
+    inset 0 1px 0 rgb(255 255 255 / 0.22), inset 0 -1px 0 rgb(0 0 0 / 0.14);
+  --btn-sheen: linear-gradient(
+    180deg,
+    rgb(255 255 255 / 0.16),
+    transparent 20%
+  );
+  --btn-shadow: 0 1px 2px rgb(0 0 0 / 0.14), 0 2px 5px -2px rgb(0 0 0 / 0.14);
+  --btn-neutral-sheen: linear-gradient(
+    180deg,
+    rgb(255 255 255 / 0.7),
+    transparent
+  );
+  --btn-neutral-shadow:
+    0 1px 2px rgb(0 0 0 / 0.14), 0 2px 5px -2px rgb(0 0 0 / 0.14);
+  --field-shadow: inset 0 1px 2px rgb(0 0 0 / 0.07);
+  --check-well-shadow: inset 0 1px 2px rgb(0 0 0 / 0.07);
+  --thumb-shadow: 0 1px 2px rgb(0 0 0 / 0.25), 0 0 0 0.5px rgb(0 0 0 / 0.08);
+  --selected-view-shadow:
+    0 1px 2px rgb(0 0 0 / 0.1), 0 0 0 0.5px rgb(0 0 0 / 0.06);
+}
+
+[data-mode="dark"][data-style="tactile"] {
+  --btn-edge:
+    inset 0 1px 0 rgb(255 255 255 / 0.16), inset 0 -1px 0 rgb(0 0 0 / 0.3);
+  --btn-sheen: linear-gradient(
+    180deg,
+    rgb(255 255 255 / 0.16),
+    transparent 20%
+  );
+  --btn-shadow: 0 1px 2px rgb(0 0 0 / 0.5), 0 2px 6px -2px rgb(0 0 0 / 0.45);
+  --btn-neutral-sheen: linear-gradient(
+    180deg,
+    rgb(255 255 255 / 0.05),
+    transparent 20%
+  );
+  --btn-neutral-shadow:
+    0 1px 2px rgb(0 0 0 / 0.5), 0 2px 6px -2px rgb(0 0 0 / 0.45);
+  --field-shadow:
+    inset 0 1px 2px rgb(0 0 0 / 0.5), inset 0 -1px 0 rgb(255 255 255 / 0.04);
+  --check-well-shadow:
+    inset 0 1px 2px rgb(0 0 0 / 0.5), inset 0 -1px 0 rgb(255 255 255 / 0.04);
+  --thumb-shadow: 0 1px 3px rgb(0 0 0 / 0.55);
+  --selected-view-shadow:
+    0 1px 2px rgb(0 0 0 / 0.5), inset 0 1px 0 rgb(255 255 255 / 0.06);
+}
