@@ -4,7 +4,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { UiLabelsProvider } from "@labels"
 import { ThemeProvider } from "@theme/theme-provider"
 import { ChoiceControl } from "./ChoiceControl"
+import { OrdinalControl } from "./OrdinalControl"
 import { SwatchControl } from "./SwatchControl"
+import { SwitchControl } from "./SwitchControl"
 
 // A complete Storage owned by this suite: the provider persists every click,
 // and sibling suites stub their own storage.
@@ -157,5 +159,56 @@ describe("ChoiceControl", () => {
     expect(group).toHaveAttribute("data-cols", "4")
     fireEvent.click(within(group).getByRole("radio", { name: "aurora" }))
     expect(html.getAttribute("data-gradient-pattern")).toBe("aurora")
+  })
+})
+
+describe("OrdinalControl", () => {
+  it("renders a four-value axis as a named slider", () => {
+    renderControl(<OrdinalControl axis="density" />)
+    expect(screen.getByRole("slider", { name: "Density" })).toBeInTheDocument()
+    expect(screen.getByText("cozy")).toBeInTheDocument()
+  })
+
+  it("renders a five-value axis as a named slider", () => {
+    renderControl(<OrdinalControl axis="backgroundIntensity" />)
+    expect(
+      screen.getByRole("slider", { name: "Background Intensity" }),
+    ).toBeInTheDocument()
+  })
+
+  it("renders the three-value elevation as a toggle group", () => {
+    renderControl(<OrdinalControl axis="elevation" />)
+    const group = screen.getByRole("radiogroup", { name: "Elevation" })
+    expect(
+      within(group)
+        .getAllByRole("radio")
+        .map((radio) => radio.textContent),
+    ).toEqual(["flat", "standard", "high"])
+    fireEvent.click(within(group).getByRole("radio", { name: "high" }))
+    expect(html.getAttribute("data-elevation")).toBe("high")
+  })
+
+  it("renders contrast as a toggle group", () => {
+    renderControl(<OrdinalControl axis="contrast" />)
+    expect(
+      screen.getByRole("radiogroup", { name: "Contrast" }),
+    ).toBeInTheDocument()
+    expect(screen.queryByRole("slider")).not.toBeInTheDocument()
+  })
+})
+
+describe("SwitchControl", () => {
+  it("maps checked and unchecked to on and off", () => {
+    renderControl(<SwitchControl axis="tintWithAccent" />)
+    const toggle = screen.getByRole("switch", { name: "Tint With Accent" })
+    expect(toggle).toHaveAttribute("aria-checked", "false")
+
+    fireEvent.click(toggle)
+    expect(toggle).toHaveAttribute("aria-checked", "true")
+    expect(html.getAttribute("data-tint-with-accent")).toBe("on")
+
+    fireEvent.click(toggle)
+    expect(toggle).toHaveAttribute("aria-checked", "false")
+    expect(html.getAttribute("data-tint-with-accent")).toBe("off")
   })
 })
