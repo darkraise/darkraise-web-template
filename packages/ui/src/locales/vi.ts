@@ -74,11 +74,6 @@ const messages: UiMessages = {
     title: "Cài đặt giao diện",
     triggerLabel: "Tùy chỉnh giao diện",
     groupLabels: {
-      theme: "Giao diện",
-      color: "Màu sắc",
-      background: "Nền",
-      layout: "Bố cục",
-      depth: "Chiều sâu",
       brand: "Thương hiệu",
       advanced: "Nâng cao",
     },

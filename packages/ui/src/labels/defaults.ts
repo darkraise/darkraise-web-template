@@ -59,11 +59,6 @@ export const defaultLabels: UiLabels = {
     title: "Theme settings",
     triggerLabel: "Customize theme",
     groupLabels: {
-      theme: "Theme",
-      color: "Color",
-      background: "Background",
-      layout: "Layout",
-      depth: "Depth",
       brand: "Brand",
       advanced: "Advanced",
     },

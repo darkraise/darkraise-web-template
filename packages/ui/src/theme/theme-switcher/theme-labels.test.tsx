@@ -117,6 +117,13 @@ describe("ThemeSwitcher labels", () => {
     }
   })
 
+  it("has Vietnamese group labels", () => {
+    expect(viLocale.messages.theme.groupLabels).toEqual({
+      brand: "Thương hiệu",
+      advanced: "Nâng cao",
+    })
+  })
+
   it("has Vietnamese option labels for the colour engine values", () => {
     expect(viTheme.standard).toBe("chuẩn")
     expect(viTheme.off).toBe("tắt")

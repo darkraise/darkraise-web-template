@@ -1,4 +1,5 @@
 import type { AxisKey } from "@theme/axes/registry"
+import type { ThemeSettingsGroup } from "@theme/theme-switcher/useThemeSettingsSections"
 
 /** Every axis the theme switcher can show. A new registry axis is a compile
  *  error in `defaultLabels` rather than English text leaking into a
@@ -66,16 +67,7 @@ export interface UiLabels {
   theme: {
     title: string
     triggerLabel: string
-    groupLabels: Record<
-      | "theme"
-      | "color"
-      | "background"
-      | "layout"
-      | "depth"
-      | "brand"
-      | "advanced",
-      string
-    >
+    groupLabels: Record<ThemeSettingsGroup, string>
     axisLabels: Record<ThemeAxisName, string>
     modes: { light: string; dark: string; system: string }
   }
