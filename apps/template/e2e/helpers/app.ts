@@ -182,7 +182,7 @@ async function waitForTheme(page: Page) {
  * renderer, and the next navigation fails with ERR_INSUFFICIENT_RESOURCES;
  * collecting before each navigation keeps one load's worth.
  */
-async function collectGarbage(page: Page) {
+export async function collectGarbage(page: Page) {
   await page.waitForLoadState("networkidle")
   const cdp = await page.context().newCDPSession(page)
   await cdp.send("HeapProfiler.collectGarbage")

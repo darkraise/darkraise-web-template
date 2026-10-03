@@ -1,6 +1,6 @@
 import { test, expect, type Page } from "@playwright/test"
 import { PRESETS } from "./fixtures/theme"
-import { gotoApp, seedApp } from "./helpers/app"
+import { collectGarbage, gotoApp, seedApp } from "./helpers/app"
 import { settle } from "./helpers/measure"
 
 /**
@@ -148,9 +148,8 @@ test.beforeAll(async ({ browser }) => {
     ]
     // Uncollected garbage from earlier routes fails a later navigation with
     // ERR_INSUFFICIENT_RESOURCES, as gotoApp guards against.
-    const cdp = await context.newCDPSession(page)
     for (const path of paths) {
-      await cdp.send("HeapProfiler.collectGarbage")
+      await collectGarbage(page)
       await page.goto(path, { waitUntil: "networkidle", timeout: 45_000 })
     }
   } finally {
