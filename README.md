@@ -113,7 +113,7 @@ A 15-axis theming system. Scaffolded projects configure it through `src/theme.co
 
 `theme.config.ts` lists only what differs from the kit's defaults. An axis left out of `switcher.axes` is shown, `switcher.advanced: false` removes the Advanced part of the panel, and a preset's own controls (for example glass opacity and blur) appear under the Preset control whenever it is shown.
 
-Monospace text always uses JetBrains Mono. Font size is adjustable via the axis above.
+Monospace text always uses JetBrains Mono. Font size is adjustable via the axis above. The four font families ship as woff2 files with `darkraise-ui/styles.css`, so no font request leaves the app's origin and no font link is needed in `index.html`.
 
 The `ThemeSwitcher` component renders controls for whichever axes are enabled in the config. The `ThemeProvider` accepts an optional `onChange` callback for persisting theme settings to a backend. Theme defaults and axis visibility are set at scaffold time and can be changed later by editing `theme.config.ts`.
 
