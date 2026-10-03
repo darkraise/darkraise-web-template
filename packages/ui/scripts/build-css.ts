@@ -26,18 +26,28 @@ function inlineRelativeImports(
 }
 
 const ABSOLUTE_IMPORT_RE = /@import\s+(?:url\(\s*)?["']?https?:/
+const ABSOLUTE_URL_RE = /url\(\s*["']?(?:https?:)?\/\//i
 
-export function buildStylesheet(): string {
-  const theme = readFileSync(themePath, "utf8")
-  const flat = inlineRelativeImports(theme, themePath)
-
-  if (ABSOLUTE_IMPORT_RE.test(flat)) {
+export function assertFirstParty(css: string): void {
+  if (ABSOLUTE_IMPORT_RE.test(css)) {
     throw new Error(
       "build-css: an absolute @import reached the bundle. Consumers must not " +
         "make third-party requests at stylesheet load time.",
     )
   }
+  const absolute = css.match(ABSOLUTE_URL_RE)
+  if (absolute) {
+    throw new Error(
+      `build-css: an absolute url() reached the bundle (${absolute[0]}…). ` +
+        "Consumers must not make third-party requests at stylesheet load time.",
+    )
+  }
+}
 
+export function buildStylesheet(): string {
+  const theme = readFileSync(themePath, "utf8")
+  const flat = inlineRelativeImports(theme, themePath)
+  assertFirstParty(flat)
   return flat
 }
 

@@ -11,5 +11,6 @@ describe("published stylesheet", () => {
     }
     const css = readFileSync(dist, "utf8")
     expect(css).not.toMatch(/@import\s+(?:url\(\s*)?["']?https?:/)
+    expect(css).not.toMatch(/url\(\s*["']?(?:https?:)?\/\//i)
   })
 })
