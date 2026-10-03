@@ -352,3 +352,41 @@ describe("InputOTP invalid state", () => {
     )
   })
 })
+
+// NumberField puts aria-invalid on the field and DateInput takes it on its
+// root, but focus-ring-input-wrapper turns a wrapper's edge only while it is
+// focused, and only for an attribute on the wrapper itself.
+describe("wrapper field invalid state", () => {
+  it("turns the number control's edge when its field is invalid", () => {
+    const rules = rulesOf("number-input/number-input.css")
+    const rest = rules.find(
+      (r) => r.selector === `.dr-number-input-control:has(${INVALID})`,
+    )
+    expect(rest?.body).toBe("border-color: hsl(var(--destructive-edge));")
+    const focused = rules.find(
+      (r) =>
+        r.selector === `.dr-number-input-control:has(${INVALID}):focus-within`,
+    )
+    expect(focused?.body).toBe(
+      "border-color: hsl(var(--destructive-edge)); box-shadow: 0 0 0 1px hsl(var(--destructive-edge));",
+    )
+  })
+
+  // The field carries .dr-input, whose invalid-focus ring is (0,3,0) and
+  // would nest inside the control's ring; naming .dr-input lifts the reset
+  // to (0,4,0).
+  it("leaves the number control one invalid ring: the control's", () => {
+    expect(
+      bodyOf(
+        "number-input/number-input.css",
+        ".dr-number-input-control .dr-number-input-field.dr-input:is(:focus, :focus-visible)",
+      ),
+    ).toBe("box-shadow: none;")
+  })
+
+  it("turns the date input's edge at rest when it is invalid", () => {
+    expect(
+      bodyOf("date-input/date-input.css", `.dr-date-input${INVALID}`),
+    ).toBe("border-color: hsl(var(--destructive-edge));")
+  })
+})

@@ -195,4 +195,26 @@
     opacity: var(--state-layer-press);
     transition-duration: var(--state-layer-in);
   }
+
+  /* NumberField puts aria-invalid on the field, so the control finds it with
+     :has(); focus-ring-input-wrapper reads only an attribute on the control
+     itself, and only while it is focused. */
+  .dr-number-input-control:has(:is([data-invalid], [aria-invalid="true"])) {
+    border-color: hsl(var(--destructive-edge));
+  }
+
+  .dr-number-input-control:has(
+      :is([data-invalid], [aria-invalid="true"])
+    ):focus-within {
+    border-color: hsl(var(--destructive-edge));
+    box-shadow: 0 0 0 1px hsl(var(--destructive-edge));
+  }
+
+  /* The control draws the invalid ring. The field's own focus reset is
+     (0,2,0) and loses to .dr-input's invalid-focus ring at (0,3,0), which
+     would nest a second ring inside the control's; this (0,4,0) wins. */
+  .dr-number-input-control
+    .dr-number-input-field.dr-input:is(:focus, :focus-visible) {
+    box-shadow: none;
+  }
 }

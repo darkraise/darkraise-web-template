@@ -49,4 +49,10 @@
       var(--glass-halo-raised),
       0 0 0 1px hsl(var(--destructive-edge));
   }
+
+  /* focus-ring-input-wrapper turns an invalid wrapper's edge only while it
+     is focused; at rest the edge has to turn too. */
+  .dr-date-input:is([data-invalid], [aria-invalid="true"]) {
+    border-color: hsl(var(--destructive-edge));
+  }
 }

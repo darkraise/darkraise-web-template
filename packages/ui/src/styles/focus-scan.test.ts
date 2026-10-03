@@ -148,9 +148,12 @@ const OUTLINE_EXEMPT = new Map<string, string>([
 /** Rules written for one preset restyle on top of the base rule. */
 const PRESET_RULE = /^\[data-style=/
 
-/** The 1px --primary edge the field utilities draw (theme.css). */
+/**
+ * The 1px edge the field utilities draw (theme.css): --primary, or
+ * --destructive-edge on an invalid field.
+ */
 const FIELD_INDICATOR =
-  /border-color:\s*hsl\(var\(--primary\)\);[\s\S]*?box-shadow:\s*0 0 0 1px hsl\(var\(--primary\)\)/
+  /border-color:\s*hsl\(var\(--(primary|destructive-edge)\)\);[\s\S]*?box-shadow:\s*0 0 0 1px hsl\(var\(--\1\)\)/
 
 const SHADOW_OR_RING =
   /box-shadow\s*:|(?<![\w-])(?:ring|shadow)-(?!0(?![\w-])|none(?![\w-]))/
