@@ -69,27 +69,37 @@
     --state-layer-color: hsl(var(--primary-fill-wash));
     --hue: hsl(var(--primary-fill));
     background-color: var(--hue);
-    box-shadow: var(--shadow-button), var(--glow-outer), var(--glow-inner);
+    background-image: var(--btn-sheen);
+    box-shadow:
+      var(--btn-edge), var(--btn-shadow), var(--glow-outer), var(--glow-inner);
   }
   .dr-btn[data-variant="destructive"] {
     @apply text-destructive-solid-foreground;
     --state-layer-color: hsl(var(--destructive-solid-wash));
     --hue: hsl(var(--destructive-solid));
     background-color: var(--hue);
-    box-shadow: var(--shadow-button), var(--glow-outer), var(--glow-inner);
+    background-image: var(--btn-sheen);
+    box-shadow:
+      var(--btn-edge), var(--btn-shadow), var(--glow-outer), var(--glow-inner);
   }
 
   /* outline + secondary: neutral filled variants (was .btn-glass-neutral) */
   .dr-btn[data-variant="outline"] {
     @apply text-foreground border bg-transparent;
-    box-shadow: var(--shadow-button), var(--glow-outer), var(--glow-inner);
+    background-image: var(--btn-neutral-sheen);
+    box-shadow:
+      var(--btn-neutral-edge), var(--btn-neutral-shadow), var(--glow-outer),
+      var(--glow-inner);
     /* The neutral edge solved to 3:1 on every ground: accent is kept for
        action, focus, checked and selected states. */
     border-color: var(--field-edge);
   }
   .dr-btn[data-variant="secondary"] {
     @apply bg-secondary text-secondary-foreground;
-    box-shadow: var(--shadow-button), var(--glow-outer), var(--glow-inner);
+    background-image: var(--btn-neutral-sheen);
+    box-shadow:
+      var(--btn-neutral-edge), var(--btn-neutral-shadow), var(--glow-outer),
+      var(--glow-inner);
   }
   /* In dark mode `--secondary` (217 33% 17%) shares the hue family of the
    * page background. Without a border the button dissolves into the page

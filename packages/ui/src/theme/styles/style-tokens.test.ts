@@ -234,3 +234,116 @@ describe("where contract tokens are declared", () => {
     ).toEqual([])
   })
 })
+
+/** Prettier wraps long values inside ( … ); undo that. */
+function normalise(text: string): string {
+  return text
+    .replace(/\s+/g, " ")
+    .replace(/\(\s+/g, "(")
+    .replace(/\s+\)/g, ")")
+    .trim()
+}
+
+interface Rule {
+  selectors: string[]
+  body: string
+}
+
+/** Innermost rules; @layer and @media are transparent. */
+function rulesOf(path: string): Rule[] {
+  const css = readFileSync(path, "utf8").replace(/\/\*[\s\S]*?\*\//g, "")
+  return [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((match) => ({
+    selectors: (match[1] as string)
+      .split(/,(?![^(]*\))/)
+      .map(normalise)
+      .filter(Boolean),
+    body: normalise(match[2] as string),
+  }))
+}
+
+/** Every rule body whose selector list holds `selector`, in source order. */
+function bodyOf(path: string, selector: string): string {
+  const bodies = rulesOf(path)
+    .filter((rule) => rule.selectors.includes(selector))
+    .map((rule) => rule.body)
+  if (bodies.length === 0) throw new Error(`no rule ${selector} in ${path}`)
+  return bodies.join(" ")
+}
+
+const BUTTON = join("src", "components", "button", "button.css")
+const TOGGLE = join("src", "components", "toggle", "toggle.css")
+const PAGINATION = join("src", "components", "pagination", "pagination.css")
+const CROPPER = join("src", "components", "image-cropper", "image-cropper.css")
+
+const FILLED_SHADOW =
+  "box-shadow: var(--btn-edge), var(--btn-shadow), var(--glow-outer), var(--glow-inner);"
+const NEUTRAL_SHADOW =
+  "box-shadow: var(--btn-neutral-edge), var(--btn-neutral-shadow), var(--glow-outer), var(--glow-inner);"
+
+describe("button families", () => {
+  it.each(["default", "destructive"])(
+    "the %s button composes the filled family with the glows",
+    (variant) => {
+      const body = bodyOf(BUTTON, `.dr-btn[data-variant="${variant}"]`)
+      expect(body).toContain("background-image: var(--btn-sheen);")
+      expect(body).toContain(FILLED_SHADOW)
+    },
+  )
+
+  it.each(["outline", "secondary"])(
+    "the %s button composes the neutral family with the glows",
+    (variant) => {
+      const body = bodyOf(BUTTON, `.dr-btn[data-variant="${variant}"]`)
+      expect(body).toContain("background-image: var(--btn-neutral-sheen);")
+      expect(body).toContain(NEUTRAL_SHADOW)
+    },
+  )
+
+  // Hover and press come from the state layer, so today no rule changes a
+  // variant's shadow; one that does must restate the whole list.
+  it("restates the whole list wherever a variant's shadow is set", () => {
+    const offenders = rulesOf(BUTTON)
+      .filter((rule) => rule.body.includes("box-shadow:"))
+      .filter((rule) => {
+        const selector = rule.selectors.join(", ")
+        const filled = /data-variant="(?:default|destructive)"/.test(selector)
+        const neutral = /data-variant="(?:outline|secondary)"/.test(selector)
+        return (
+          (filled && !rule.body.includes(FILLED_SHADOW)) ||
+          (neutral && !rule.body.includes(NEUTRAL_SHADOW))
+        )
+      })
+      .map((rule) => rule.selectors.join(", "))
+    expect(offenders).toEqual([])
+  })
+
+  it.each([
+    [
+      TOGGLE,
+      '.dr-toggle[data-variant="outline"]',
+      "box-shadow: var(--btn-neutral-edge), var(--btn-neutral-shadow);",
+    ],
+    [
+      TOGGLE,
+      '.dr-toggle[data-variant="default"][data-state="on"]',
+      "box-shadow: var(--btn-neutral-edge), var(--btn-neutral-shadow), var(--affordance-glow);",
+    ],
+    [
+      TOGGLE,
+      '.dr-toggle[data-variant="outline"][data-state="on"]',
+      "box-shadow: var(--btn-neutral-edge), var(--btn-neutral-shadow), var(--affordance-glow);",
+    ],
+    [
+      PAGINATION,
+      '.dr-pagination-link[data-active="true"][data-variant="ghost"]',
+      "box-shadow: var(--btn-neutral-edge), var(--btn-neutral-shadow), var(--affordance-glow);",
+    ],
+    [
+      CROPPER,
+      ".dr-image-cropper-dimensions",
+      "box-shadow: var(--btn-neutral-edge), var(--btn-neutral-shadow);",
+    ],
+  ])("%s %s composes the neutral family", (path, selector, declaration) => {
+    expect(bodyOf(path, selector)).toContain(declaration)
+  })
+})
