@@ -8,6 +8,8 @@ import type {
   ThemeSettings,
   ThemeSyncStatus,
 } from "@theme/types"
+import { SHELL_STYLES, type ShellStyle } from "@theme/types"
+import { useLayoutStore } from "@layout/layoutStore"
 import {
   generateTokens,
   resolveAccentScale,
@@ -36,6 +38,7 @@ import {
   type AxisValues,
 } from "@theme/axes/registry"
 import {
+  THEME_PAYLOAD_VERSION,
   completePresetAxisValues,
   presetAxisStorageKey,
   readPresetAxisValues,
@@ -44,7 +47,7 @@ import {
   type PresetAxisValues,
 } from "@theme/axes/settings"
 import { tokenCacheId, writeTokenCache } from "@theme/axes/tokenCache"
-import { migrateStorage } from "@theme/axes/legacy"
+import { migratePayload, migrateStorage } from "@theme/axes/legacy"
 import { neutraliseIfHidden } from "./neutralisedAxes"
 
 declare const process: { env: { NODE_ENV?: string } }
@@ -158,6 +161,21 @@ function applyAttributes(settings: AxisValues, defaults: AxisValues) {
 
 const setterName = (key: AxisKey) =>
   `set${key.charAt(0).toUpperCase()}${key.slice(1)}`
+
+/**
+ * 6.x payloads carried shell style, which the layout store now owns. One
+ * seeds a browser that has none, so a synced user keeps their shell style on
+ * a new device; a style already chosen here wins.
+ */
+function seedShellStyle(value: unknown) {
+  const layout = useLayoutStore.getState()
+  if (
+    layout.shellStyle === null &&
+    (SHELL_STYLES as readonly unknown[]).includes(value)
+  ) {
+    layout.setShellStyle(value as ShellStyle)
+  }
+}
 
 interface ThemeProviderProps {
   children: React.ReactNode
@@ -381,6 +399,7 @@ export function ThemeProvider({
     const next: ThemeSettings = {
       ...storedRef.current,
       presetAxisValues: presetAxisValuesRef.current,
+      version: THEME_PAYLOAD_VERSION,
     }
     onChangeRef.current?.(next)
     hasUserChanged.current = true
@@ -448,11 +467,27 @@ export function ThemeProvider({
     [commit, announce, defaults, persist],
   )
 
+  /**
+   * Applies a loaded payload. An unversioned one is from a 6.x kit: it is
+   * migrated, and the migrated settings are returned for one upgrade save.
+   */
   const applySettings = useCallback(
-    (input: ThemeSettings) => {
-      const { presetAxisValues: incoming, ...axes } = sanitizeSettings(input)
-      const nextStored = axes as Partial<AxisValues>
-      for (const key of AXIS_KEYS) {
+    (input: ThemeSettings): ThemeSettings | null => {
+      const versioned = typeof input.version === "number"
+      const source: Record<string, unknown> = versioned
+        ? input
+        : migratePayload(input as Record<string, unknown>)
+      const { presetAxisValues: incoming, ...axes } = sanitizeSettings(source)
+      const present = axes as Partial<AxisValues>
+      // A 6.x save never sent the glow axes, so an axis missing from an
+      // unversioned payload says nothing about the user's choice.
+      const nextStored = versioned
+        ? present
+        : { ...storedRef.current, ...present }
+      const written = versioned
+        ? AXIS_KEYS
+        : (Object.keys(present) as AxisKey[])
+      for (const key of written) {
         persist(AXES[key].storageKey, nextStored[key])
       }
       const nextAxisValues = incoming
@@ -468,6 +503,13 @@ export function ThemeProvider({
       }
       const resolved = resolveMode(effectiveSettings(nextStored, defaults).mode)
       commit(nextStored, nextAxisValues, resolved)
+      if (versioned) return null
+      seedShellStyle(source.shellStyle)
+      return {
+        ...nextStored,
+        presetAxisValues: nextAxisValues,
+        version: THEME_PAYLOAD_VERSION,
+      }
     },
     [commit, defaults, persist],
   )
@@ -507,8 +549,19 @@ export function ThemeProvider({
     persistenceRef.current.load().then(
       (loaded) => {
         if (cancelled) return
-        if (loaded && !hasUserChanged.current) {
-          applySettings(loaded)
+        const upgrade =
+          loaded && !hasUserChanged.current ? applySettings(loaded) : null
+        const adapter = persistenceRef.current
+        if (upgrade && adapter) {
+          // Until the remote holds a versioned payload, every load migrates it
+          // again, which would turn a solid canvas the user later chose under
+          // glass back into a gradient.
+          setSyncStatus("saving")
+          adapter.save(upgrade).then(
+            () => setSyncStatus("idle"),
+            () => setSyncStatus("error"),
+          )
+          return
         }
         setSyncStatus("idle")
       },

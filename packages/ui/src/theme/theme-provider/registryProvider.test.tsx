@@ -11,7 +11,8 @@ import {
 import { buildPrerenderScript } from "@theme/axes/prerender"
 import { LEGACY_MARKER_KEY, LEGACY_REVISION } from "@theme/axes/legacy"
 import { themeConfig } from "@theme/themeConfig"
-import type { ThemePersistenceAdapter } from "@theme/types"
+import { SHELL_STYLE_STORAGE_KEY, useLayoutStore } from "@layout/layoutStore"
+import type { ThemePersistenceAdapter, ThemeSettings } from "@theme/types"
 
 const root = document.documentElement
 
@@ -167,6 +168,7 @@ describe("ThemeProvider on the axis registry", () => {
         default: {},
         glass: { opacity: "medium", blur: "high" },
       },
+      version: 7,
     })
   })
 
@@ -278,5 +280,210 @@ describe("ThemeProvider legacy migration", () => {
     expect(root.getAttribute("data-surface")).toBe("zinc")
     expect(localStorage.getItem("theme-surface-color")).toBe("red")
     expect(localStorage.getItem(LEGACY_MARKER_KEY)).toBeNull()
+  })
+})
+
+// A remote that keeps whatever was saved last, so a later load sees it.
+function memoryAdapter(initial: Record<string, unknown> | null) {
+  let remote = initial as ThemeSettings | null
+  const adapter = {
+    load: vi.fn(() => Promise.resolve(remote)),
+    save: vi.fn((next: ThemeSettings) => {
+      remote = next
+      return Promise.resolve()
+    }),
+  }
+  return { adapter, remote: () => remote }
+}
+
+function synced(
+  adapter: ThemePersistenceAdapter,
+  onChange?: (settings: ThemeSettings) => void,
+) {
+  return ({ children }: { children: ReactNode }) => (
+    <ThemeProvider
+      persistence={adapter}
+      persistenceDebounce={50}
+      onChange={onChange}
+    >
+      {children}
+    </ThemeProvider>
+  )
+}
+
+async function settle() {
+  await act(async () => {
+    await vi.runAllTimersAsync()
+  })
+}
+
+describe("ThemeProvider synced payloads", () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+    useLayoutStore.setState({ shellStyle: null })
+  })
+
+  it("migrates an unversioned payload and keeps the axes it lacks", async () => {
+    localStorage.setItem("theme-outer-glow", "vivid")
+    localStorage.setItem("theme-inner-glow", "subtle")
+    localStorage.setItem("theme-density", "spacious")
+    const { adapter } = memoryAdapter({
+      accentColor: "rose",
+      surfaceColor: "red",
+      preset: "default",
+      backgroundStyle: "solid",
+      mode: "dark",
+      elevation: "low",
+      surfaceIntensity: "bold",
+      accentIntensity: "intense",
+      controlDepth: "deep",
+    })
+    const { result } = renderHook(() => useTheme(), {
+      wrapper: synced(adapter),
+    })
+    await settle()
+    expect(result.current.accentColor).toBe("rose")
+    expect(result.current.surfaceColor).toBe("zinc")
+    expect(result.current.tintWithAccent).toBe("on")
+    expect(result.current.elevation).toBe("standard")
+    expect(result.current.contrast).toBe("high")
+    expect(result.current.darkAccentChroma).toBe("vivid")
+    expect(result.current.outerGlow).toBe("vivid")
+    expect(result.current.innerGlow).toBe("subtle")
+    expect(result.current.density).toBe("spacious")
+    expect(localStorage.getItem("theme-outer-glow")).toBe("vivid")
+    expect(localStorage.getItem("theme-inner-glow")).toBe("subtle")
+    expect(localStorage.getItem("theme-density")).toBe("spacious")
+    expect(localStorage.getItem("theme-contrast")).toBe("high")
+  })
+
+  it("saves an unversioned payload back once, migrated and versioned", async () => {
+    const { adapter } = memoryAdapter({
+      accentColor: "rose",
+      preset: "default",
+      surfaceIntensity: "bold",
+    })
+    const { result } = renderHook(() => useTheme(), {
+      wrapper: synced(adapter),
+    })
+    await settle()
+    expect(adapter.save).toHaveBeenCalledOnce()
+    const saved = adapter.save.mock.calls[0]?.[0]
+    expect(saved).toEqual(
+      expect.objectContaining({
+        accentColor: "rose",
+        contrast: "high",
+        version: 7,
+      }),
+    )
+    expect(saved).not.toHaveProperty("surfaceIntensity")
+    expect(result.current.syncStatus).toBe("idle")
+  })
+
+  it("keeps a solid canvas chosen under glass on the next load", async () => {
+    const remote = memoryAdapter({
+      accentColor: "rose",
+      preset: "glass",
+      backgroundStyle: "solid",
+    })
+    const first = renderHook(() => useTheme(), {
+      wrapper: synced(remote.adapter),
+    })
+    await settle()
+    expect(first.result.current.backgroundStyle).toBe("gradient")
+    expect(remote.remote()).toEqual(
+      expect.objectContaining({ backgroundStyle: "gradient", version: 7 }),
+    )
+
+    act(() => first.result.current.setBackgroundStyle("solid"))
+    await settle()
+    first.unmount()
+
+    for (const fresh of [false, true]) {
+      if (fresh) localStorage.clear()
+      const next = renderHook(() => useTheme(), {
+        wrapper: synced(remote.adapter),
+      })
+      await settle()
+      expect(next.result.current.preset).toBe("glass")
+      expect(next.result.current.backgroundStyle).toBe("solid")
+      next.unmount()
+    }
+  })
+
+  it("reports an upgrade save that fails", async () => {
+    const { adapter } = memoryAdapter({ accentColor: "rose" })
+    adapter.save.mockImplementation(() => Promise.reject(new Error("offline")))
+    const { result } = renderHook(() => useTheme(), {
+      wrapper: synced(adapter),
+    })
+    await settle()
+    expect(adapter.save).toHaveBeenCalledOnce()
+    expect(result.current.syncStatus).toBe("error")
+    expect(result.current.accentColor).toBe("rose")
+  })
+
+  it("unsets the axes a versioned payload lacks and saves nothing", async () => {
+    localStorage.setItem("theme-density", "spacious")
+    const { adapter } = memoryAdapter({ version: 7, accentColor: "rose" })
+    const { result } = renderHook(() => useTheme(), {
+      wrapper: synced(adapter),
+    })
+    await settle()
+    expect(result.current.accentColor).toBe("rose")
+    expect(result.current.density).toBe("cozy")
+    expect(localStorage.getItem("theme-density")).toBeNull()
+    expect(adapter.save).not.toHaveBeenCalled()
+  })
+
+  it("stamps the payload version on onChange and save", async () => {
+    const onChange = vi.fn()
+    const { adapter } = memoryAdapter(null)
+    const { result } = renderHook(() => useTheme(), {
+      wrapper: synced(adapter, onChange),
+    })
+    await settle()
+    act(() => result.current.setDensity("compact"))
+    await settle()
+    expect(onChange).toHaveBeenLastCalledWith(
+      expect.objectContaining({ density: "compact", version: 7 }),
+    )
+    expect(adapter.save).toHaveBeenLastCalledWith(
+      expect.objectContaining({ density: "compact", version: 7 }),
+    )
+  })
+
+  it("seeds an empty shell style from an unversioned payload", async () => {
+    const { adapter } = memoryAdapter({
+      accentColor: "rose",
+      shellStyle: "island",
+    })
+    renderHook(() => useTheme(), { wrapper: synced(adapter) })
+    await settle()
+    expect(useLayoutStore.getState().shellStyle).toBe("island")
+    expect(localStorage.getItem(SHELL_STYLE_STORAGE_KEY)).toBe("island")
+  })
+
+  it("leaves a stored shell style alone", async () => {
+    useLayoutStore.getState().setShellStyle("framed")
+    const { adapter } = memoryAdapter({
+      accentColor: "rose",
+      shellStyle: "island",
+    })
+    renderHook(() => useTheme(), { wrapper: synced(adapter) })
+    await settle()
+    expect(useLayoutStore.getState().shellStyle).toBe("framed")
+    expect(localStorage.getItem(SHELL_STYLE_STORAGE_KEY)).toBe("framed")
+  })
+
+  it.each<[string, Record<string, unknown>]>([
+    ["a versioned payload", { version: 7, shellStyle: "island" }],
+    ["an unknown style", { accentColor: "rose", shellStyle: "bogus" }],
+  ])("ignores shell style in %s", async (_, payload) => {
+    const { adapter } = memoryAdapter(payload)
+    renderHook(() => useTheme(), { wrapper: synced(adapter) })
+    await settle()
+    expect(useLayoutStore.getState().shellStyle).toBeNull()
+    expect(localStorage.getItem(SHELL_STYLE_STORAGE_KEY)).toBeNull()
   })
 })
