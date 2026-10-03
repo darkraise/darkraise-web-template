@@ -65,3 +65,12 @@ describe("scripts/init.mjs", () => {
     expect(written("switcher\\.axes")).toEqual([...AXIS_KEYS].sort())
   })
 })
+
+describe("create-app/bin/create.mjs", () => {
+  it("writes an index.html that loads nothing from a third party", () => {
+    const script = readFileSync("../../create-app/bin/create.mjs", "utf8")
+    const html = script.match(/const indexHtml = `([\s\S]*?)`/)?.[1]
+    expect(html).toBeDefined()
+    expect(html).not.toMatch(/https?:\/\//)
+  })
+})
