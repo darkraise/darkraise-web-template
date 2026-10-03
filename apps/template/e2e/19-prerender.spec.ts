@@ -74,3 +74,100 @@ test("restores the stored theme before the app mounts", async ({ page }) => {
   ).toBe(primary)
   await expect(page.locator("#root .app-loading")).toHaveCount(1)
 })
+
+// 6.x storage and the attributes the migrated values paint. Each case has
+// the app bundle blocked from its first load, so nothing but the pre-render
+// script can have migrated or painted anything.
+const LEGACY_USERS: {
+  name: string
+  stored: Record<string, string>
+  painted: Record<string, string>
+  absent: string[]
+  removed: string[]
+}[] = [
+  {
+    name: "a 6.x glass user on a solid canvas",
+    stored: {
+      mode: "dark",
+      "theme-preset": "glass",
+      "theme-bg-style": "solid",
+      "theme-surface-color": "red",
+      "theme-elevation": "low",
+      "theme-surface-intensity": "bold",
+      "theme-glass-halo": "pronounced",
+      "theme-canvas-tint": "neutral",
+    },
+    painted: {
+      "data-mode": "dark",
+      "data-preset": "glass",
+      "data-background-style": "gradient",
+      "data-surface": "zinc",
+      "data-tint-with-accent": "on",
+      "data-elevation": "standard",
+      "data-outer-glow": "vivid",
+      "data-background-intensity": "neutral",
+    },
+    absent: ["data-contrast"],
+    removed: [
+      "theme-surface-intensity",
+      "theme-glass-halo",
+      "theme-canvas-tint",
+    ],
+  },
+  {
+    name: "a 6.x sci-fi user",
+    stored: {
+      mode: "dark",
+      "theme-preset": "scifi",
+      "theme-scifi-frame": "notched",
+      "theme-surface-intensity": "bold",
+      "theme-accent-intensity": "intense",
+    },
+    painted: { "data-mode": "dark" },
+    absent: [
+      "data-preset",
+      "data-scifi-frame",
+      "data-contrast",
+      "data-dark-accent-chroma",
+    ],
+    removed: [
+      "theme-preset",
+      "theme-scifi-frame",
+      "theme-surface-intensity",
+      "theme-accent-intensity",
+    ],
+  },
+  {
+    name: "a 6.0 user with accent vibrancy",
+    stored: { mode: "dark", "theme-accent-vibrancy": "intense" },
+    painted: { "data-mode": "dark", "data-dark-accent-chroma": "vivid" },
+    absent: [],
+    removed: ["theme-accent-vibrancy", "theme-accent-intensity"],
+  },
+]
+
+for (const user of LEGACY_USERS) {
+  test(`migrates ${user.name} before the app mounts`, async ({ page }) => {
+    await page.addInitScript((stored: Record<string, string>) => {
+      for (const [key, value] of Object.entries(stored)) {
+        localStorage.setItem(key, value)
+      }
+    }, user.stored)
+    await page.route(/\/src\/main\.tsx/, (route) => route.abort())
+    await page.goto("/components/buttons")
+
+    const html = page.locator("html")
+    for (const [attribute, value] of Object.entries(user.painted)) {
+      await expect(html, attribute).toHaveAttribute(attribute, value)
+    }
+    for (const attribute of user.absent) {
+      await expect(html, attribute).not.toHaveAttribute(attribute)
+    }
+    const left = await page.evaluate(
+      (keys: string[]) => keys.map((key) => localStorage.getItem(key)),
+      [...user.removed, "theme-settings-version"],
+    )
+    expect(left).toEqual([...user.removed.map(() => null), "1"])
+    await expect(page.locator("#root .app-loading")).toHaveCount(1)
+  })
+}
