@@ -128,4 +128,38 @@ describe("pre-render script", () => {
     expect(root.getAttribute("data-mode")).toBe("dark")
     expect(root.hasAttribute("data-accent")).toBe(false)
   })
+
+  it("migrates legacy keys before restoring attributes", () => {
+    localStorage.setItem("theme-surface-color", "red")
+    localStorage.setItem("theme-elevation", "medium")
+    run()
+    expect(root.getAttribute("data-surface")).toBe("zinc")
+    expect(root.getAttribute("data-tint-with-accent")).toBe("on")
+    expect(root.getAttribute("data-elevation")).toBe("standard")
+    expect(localStorage.getItem("theme-surface-color")).toBe("zinc")
+    expect(localStorage.getItem("theme-settings-version")).toBe("1")
+  })
+
+  it("paints migrated attributes when storage refuses writes", () => {
+    localStorage.setItem("theme-elevation", "medium")
+    const refuse = () => {
+      throw new DOMException("full", "QuotaExceededError")
+    }
+    vi.spyOn(Storage.prototype, "setItem").mockImplementation(refuse)
+    vi.spyOn(Storage.prototype, "removeItem").mockImplementation(refuse)
+    run()
+    expect(root.getAttribute("data-elevation")).toBe("standard")
+    expect(localStorage.getItem("theme-elevation")).toBe("medium")
+    expect(localStorage.getItem("theme-settings-version")).toBeNull()
+  })
+
+  it("keeps a legacy key when its target write is refused", () => {
+    localStorage.setItem("theme-surface-intensity", "bold")
+    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+      throw new DOMException("full", "QuotaExceededError")
+    })
+    run()
+    expect(localStorage.getItem("theme-surface-intensity")).toBe("bold")
+    expect(localStorage.getItem("theme-settings-version")).toBeNull()
+  })
 })
