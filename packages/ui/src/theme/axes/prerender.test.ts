@@ -151,7 +151,7 @@ describe("pre-render script", () => {
     expect(root.getAttribute("data-tint-with-accent")).toBe("on")
     expect(root.getAttribute("data-elevation")).toBe("standard")
     expect(localStorage.getItem("theme-surface-color")).toBe("zinc")
-    expect(localStorage.getItem("theme-settings-version")).toBe("1")
+    expect(localStorage.getItem("theme-settings-version")).toBe("2")
   })
 
   it("paints migrated attributes when storage refuses writes", () => {
@@ -196,7 +196,7 @@ describe("pre-render script", () => {
     run()
     expect(localStorage.getItem("theme-surface-color")).toBe("zinc")
     expect(localStorage.getItem("theme-tint-with-accent")).toBe("on")
-    expect(localStorage.getItem("theme-settings-version")).toBe("1")
+    expect(localStorage.getItem("theme-settings-version")).toBe("2")
   })
 
   it("embeds the legacy rules without their payload fields", () => {
@@ -219,5 +219,20 @@ describe("pre-render script", () => {
     expect(root.getAttribute("data-elevation")).toBe("standard")
     expect(localStorage.getItem("theme-elevation")).toBe("medium")
     expect(localStorage.getItem("theme-settings-version")).toBeNull()
+  })
+
+  it("runs revision 2 on a browser that ran revision 1", () => {
+    localStorage.setItem("theme-settings-version", "1")
+    localStorage.setItem("theme-preset", "default")
+    localStorage.setItem("theme-glass-opacity", "medium")
+    localStorage.setItem("theme-glass-blur", "high")
+    localStorage.setItem("theme-elevation", "low")
+    run()
+    expect(localStorage.getItem("theme-preset")).toBe("quiet")
+    expect(localStorage.getItem("theme-glass-opacity")).toBeNull()
+    expect(localStorage.getItem("theme-glass-blur")).toBe("high")
+    expect(localStorage.getItem("theme-elevation")).toBe("low")
+    expect(localStorage.getItem("theme-settings-version")).toBe("2")
+    expect(root.getAttribute("data-style")).toBe("quiet")
   })
 })

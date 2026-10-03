@@ -58,6 +58,16 @@ function legacyStates(): [string, Record<string, string>][] {
     "every legacy key, already migrated",
     { ...EVERY_LEGACY_KEY, [LEGACY_MARKER_KEY]: String(LEGACY_REVISION) },
   ])
+  states.push([
+    "a browser at revision 1",
+    {
+      [LEGACY_MARKER_KEY]: "1",
+      "theme-preset": "default",
+      "theme-glass-opacity": "medium",
+      "theme-glass-blur": "low",
+      "theme-elevation": "low",
+    },
+  ])
   return states
 }
 
@@ -92,15 +102,15 @@ function memoryStorage(state: Record<string, string>) {
 // The provider stamps every axis, defaults included, but the script restores
 // only an axis whose migrated stored value is valid.
 function restoredAttributes(stored: Record<string, string>): string[] {
-  const restorable: [attribute: string, storageKey: string][] =
-    AXIS_KEYS.filter((key) => key !== "mode" && AXES[key].attribute).map(
-      (key) => [AXES[key].attribute as string, AXES[key].storageKey],
-    )
   return [
     "data-mode",
-    ...restorable
-      .filter(([, key]) => LEGACY_TARGETS[key]?.includes(stored[key] ?? ""))
-      .map(([attribute]) => attribute),
+    ...AXIS_KEYS.filter((key) => key !== "mode" && AXES[key].attribute)
+      .filter((key) =>
+        LEGACY_TARGETS[AXES[key].storageKey]?.includes(
+          stored[AXES[key].storageKey] ?? "",
+        ),
+      )
+      .map((key) => AXES[key].attribute as string),
   ]
 }
 

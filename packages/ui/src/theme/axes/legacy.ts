@@ -1,7 +1,7 @@
-import { AXES, AXIS_KEYS } from "./registry"
+import { AXES, AXIS_KEYS, isAxisValue } from "./registry"
 
 /** The table's revision; a browser stores the one it last ran. */
-export const LEGACY_REVISION = 1
+export const LEGACY_REVISION = 2
 
 export const LEGACY_MARKER_KEY = "theme-settings-version"
 
@@ -201,6 +201,30 @@ export const LEGACY_RULES: readonly LegacyRule[] = [
       "theme-button-elevation",
     ],
   },
+  // Revision 2 runs after every revision 1 rule, so the glassmorphism renames
+  // above have already landed on the theme-glass-* keys.
+  {
+    since: 2,
+    when: [
+      { key: "theme-preset", field: "preset", values: ["default", "glass"] },
+    ],
+    map: {
+      default: { "theme-preset": "quiet" },
+      glass: { "theme-preset": "glass" },
+    },
+  },
+  // 6.x wrote both glass axes back as completed defaults, so a stored medium
+  // was never the user's choice.
+  {
+    since: 2,
+    when: [{ key: "theme-glass-opacity", values: ["medium"] }],
+    remove: ["theme-glass-opacity"],
+  },
+  {
+    since: 2,
+    when: [{ key: "theme-glass-blur", values: ["medium"] }],
+    remove: ["theme-glass-blur"],
+  },
 ]
 
 function buildTargets(): Record<string, readonly string[]> {
@@ -216,6 +240,10 @@ export const LEGACY_TARGETS: Readonly<Record<string, readonly string[]>> =
 // The payload field each storage key a rule writes or removes is synced as.
 const PAYLOAD_FIELDS: Readonly<Record<string, string>> = {
   ...Object.fromEntries(AXIS_KEYS.map((key) => [AXES[key].storageKey, key])),
+  // 6.x payloads call the style `preset`, and later rules read the field an
+  // earlier rule rewrote, so the table works on `preset` throughout;
+  // migratePayload moves it to `style` afterwards.
+  "theme-preset": "preset",
   "theme-surface-intensity": "surfaceIntensity",
   "theme-accent-intensity": "accentIntensity",
   "theme-control-depth": "controlDepth",
@@ -372,15 +400,44 @@ export function migrateStorage(
   return runLegacyTable(storage, LEGACY_RULES, LEGACY_REVISION)
 }
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null
+
+const LIFTED_GLASS_AXES = [
+  ["opacity", "glassOpacity"],
+  ["blur", "glassBlur"],
+] as const
+
+/**
+ * 6.x payloads nest glass's axes in `presetAxisValues.glass`, which the table
+ * cannot read. Lifts each valid value to its registry field and drops
+ * `presetAxisValues`. `medium` is skipped: the 6.x provider filled it in as a
+ * default, so it was never the user's choice.
+ */
+export function liftPresetAxisValues(
+  input: Record<string, unknown>,
+): Record<string, unknown> {
+  const { presetAxisValues, ...out } = input
+  const glass = isRecord(presetAxisValues) ? presetAxisValues.glass : undefined
+  if (isRecord(glass)) {
+    for (const [axis, key] of LIFTED_GLASS_AXES) {
+      const value = glass[axis]
+      if (value !== "medium" && isAxisValue(key, value)) out[key] = value
+    }
+  }
+  return out
+}
+
 /**
  * The payload form of the table, for a synced payload without a version. A
  * payload carries no marker, so every rule runs. Returns the input's fields
- * plus those a rule wrote, minus those a rule removed.
+ * with glass's nested axes lifted, plus those a rule wrote, minus those a rule
+ * removed, and 6.x's `preset` field renamed to `style`.
  */
 export function migratePayload(
   input: Record<string, unknown>,
 ): Record<string, unknown> {
-  const fields = new Map(Object.entries(input))
+  const fields = new Map(Object.entries(liftPresetAxisValues(input)))
   applyRules(
     LEGACY_RULES,
     {
@@ -396,5 +453,8 @@ export function migratePayload(
     (condition) => condition.field,
     (key) => PAYLOAD_FIELDS[key],
   )
+  const preset = fields.get("preset")
+  fields.delete("preset")
+  if (typeof preset === "string") fields.set("style", preset)
   return Object.fromEntries(fields)
 }

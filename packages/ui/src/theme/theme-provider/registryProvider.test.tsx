@@ -372,6 +372,99 @@ describe("ThemeProvider synced payloads", () => {
     expect(result.current.syncStatus).toBe("idle")
   })
 
+  it("applies a 6.x glass payload's style and lifted glass axes", async () => {
+    const { adapter } = memoryAdapter({
+      accentColor: "rose",
+      preset: "glass",
+      backgroundStyle: "gradient",
+      presetAxisValues: { glass: { opacity: "strong", blur: "medium" } },
+    })
+    const { result } = renderHook(() => useTheme(), {
+      wrapper: synced(adapter),
+    })
+    await settle()
+    expect(result.current.style).toBe("glass")
+    expect(result.current.glassOpacity).toBe("strong")
+    expect(result.current.glassBlur).toBe("medium")
+    expect(localStorage.getItem("theme-preset")).toBe("glass")
+    expect(localStorage.getItem("theme-glass-opacity")).toBe("strong")
+    expect(localStorage.getItem("theme-glass-blur")).toBeNull()
+    expect(root.getAttribute("data-style")).toBe("glass")
+    expect(root.getAttribute("data-glass-opacity")).toBe("strong")
+    const saved = adapter.save.mock.calls[0]?.[0]
+    expect(saved).toEqual(
+      expect.objectContaining({
+        style: "glass",
+        glassOpacity: "strong",
+        version: 7,
+      }),
+    )
+    expect(saved).not.toHaveProperty("preset")
+    expect(saved).not.toHaveProperty("presetAxisValues")
+    expect(saved).not.toHaveProperty("glassBlur")
+  })
+
+  it("keeps a solid canvas chosen under glass on the next load", async () => {
+    const remote = memoryAdapter({
+      accentColor: "rose",
+      preset: "glass",
+      backgroundStyle: "solid",
+    })
+    const first = renderHook(() => useTheme(), {
+      wrapper: synced(remote.adapter),
+    })
+    await settle()
+    expect(first.result.current.style).toBe("glass")
+    expect(first.result.current.backgroundStyle).toBe("gradient")
+    expect(remote.remote()).toEqual(
+      expect.objectContaining({
+        style: "glass",
+        backgroundStyle: "gradient",
+        version: 7,
+      }),
+    )
+    expect(remote.remote()).not.toHaveProperty("preset")
+
+    act(() => first.result.current.setBackgroundStyle("solid"))
+    await settle()
+    first.unmount()
+    expect(remote.remote()).toEqual(
+      expect.objectContaining({
+        style: "glass",
+        backgroundStyle: "solid",
+        version: 7,
+      }),
+    )
+
+    // The remote now holds a versioned payload, so no load migrates it again.
+    for (const fresh of [false, true]) {
+      if (fresh) localStorage.clear()
+      const next = renderHook(() => useTheme(), {
+        wrapper: synced(remote.adapter),
+      })
+      await settle()
+      expect(next.result.current.style).toBe("glass")
+      expect(next.result.current.backgroundStyle).toBe("solid")
+      next.unmount()
+    }
+  })
+
+  it("moves a 6.x default payload to the quiet style", async () => {
+    const { adapter } = memoryAdapter({
+      accentColor: "rose",
+      preset: "default",
+    })
+    const { result } = renderHook(() => useTheme(), {
+      wrapper: synced(adapter),
+    })
+    await settle()
+    expect(result.current.style).toBe("quiet")
+    expect(localStorage.getItem("theme-preset")).toBe("quiet")
+    expect(adapter.save.mock.calls[0]?.[0]).toEqual(
+      expect.objectContaining({ style: "quiet", version: 7 }),
+    )
+  })
+
   it("sends a user save only after the upgrade save settles", async () => {
     const resolvers: Array<() => void> = []
     const adapter = {

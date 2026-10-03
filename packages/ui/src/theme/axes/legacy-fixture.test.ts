@@ -4,6 +4,7 @@ import {
   PRE_V696_PAYLOAD_FIELDS,
   V696_KEYS,
   V696_PAYLOAD_FIELDS,
+  V696_PRESET_AXIS_VALUES,
 } from "./legacy-fixture"
 
 const TABLES = {
@@ -63,5 +64,15 @@ describe("6.9.6 storage baseline", () => {
         expect(V696_KEYS[key] ?? [], `${key}=${value}`).not.toContain(value)
       }
     }
+  })
+
+  it("nests the glass axes with the values of their storage keys", () => {
+    expect(Object.keys(V696_PRESET_AXIS_VALUES)).toEqual(["glass"])
+    expect(V696_PRESET_AXIS_VALUES.glass?.opacity).toEqual(
+      V696_KEYS["theme-glass-opacity"],
+    )
+    expect(V696_PRESET_AXIS_VALUES.glass?.blur).toEqual(
+      V696_KEYS["theme-glass-blur"],
+    )
   })
 })

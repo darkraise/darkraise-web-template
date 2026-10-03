@@ -1,16 +1,25 @@
 import { describe, expect, it } from "vitest"
-import { AXES, AXIS_KEYS } from "./registry"
+import { STYLE_NAMES } from "@theme/styles"
+import { AXES, AXIS_KEYS, type AxisKey } from "./registry"
 import { cacheInputKeys } from "./tokenCache"
 import {
   LEGACY_MARKER_KEY,
   LEGACY_REVISION,
   LEGACY_RULES,
   LEGACY_TARGETS,
+  liftPresetAxisValues,
   migratePayload,
   migrateStorage,
   runLegacyTable,
   type LegacyRule,
 } from "./legacy"
+import {
+  PRE_V696_KEYS,
+  PRE_V696_PAYLOAD_FIELDS,
+  V696_KEYS,
+  V696_PAYLOAD_FIELDS,
+  V696_PRESET_AXIS_VALUES,
+} from "./legacy-fixture"
 
 type TestStorage = Pick<Storage, "getItem" | "setItem" | "removeItem"> & {
   contents(): Record<string, string>
@@ -47,6 +56,21 @@ function migrated(seed: Record<string, string>): Record<string, string> {
 
 const MARKER = String(LEGACY_REVISION)
 
+// The layout store reads these; no rule touches them.
+const OUTSIDE_THEME = new Set(["theme-shell-style", "layout-variant"])
+
+function pairs(
+  tables: Readonly<Record<string, readonly string[]>>[],
+): [string, string][] {
+  return tables.flatMap((table) =>
+    Object.entries(table).flatMap(([key, values]) =>
+      values
+        .filter((value) => value !== "*")
+        .map((value): [string, string] => [key, value]),
+    ),
+  )
+}
+
 function ruleTargets(rule: LegacyRule): [string, string][] {
   const maps = rule.map ? Object.values(rule.map) : rule.set ? [rule.set] : []
   return maps.flatMap((targets) => Object.entries(targets))
@@ -64,6 +88,10 @@ describe("LEGACY_TARGETS", () => {
       )
     }
   })
+
+  it("holds the style names under the preset key", () => {
+    expect(LEGACY_TARGETS["theme-preset"]).toEqual(STYLE_NAMES)
+  })
 })
 
 describe("LEGACY_RULES", () => {
@@ -76,6 +104,14 @@ describe("LEGACY_RULES", () => {
       expect(rule.since).toBeGreaterThanOrEqual(1)
       expect(rule.since).toBeLessThanOrEqual(LEGACY_REVISION)
     }
+  })
+
+  it("end with three revision 2 rules after every revision 1 rule", () => {
+    expect(LEGACY_REVISION).toBe(2)
+    const revisions = LEGACY_RULES.map((rule) => rule.since)
+    const first = revisions.indexOf(2)
+    expect(revisions.slice(0, first).every((since) => since === 1)).toBe(true)
+    expect(revisions.slice(first)).toEqual([2, 2, 2])
   })
 
   it("write only values valid for their target, or legacy keys a later rule consumes", () => {
@@ -166,9 +202,9 @@ describe("migrateStorage", () => {
       { "theme-preset": "glass", "theme-bg-style": "gradient" },
     ],
     [
-      "leaves the default preset on a solid canvas",
+      "moves the default preset to quiet and keeps its solid canvas",
       { "theme-preset": "default", "theme-bg-style": "solid" },
-      { "theme-preset": "default", "theme-bg-style": "solid" },
+      { "theme-preset": "quiet", "theme-bg-style": "solid" },
     ],
     [
       "turns an accent-named surface into zinc tinted with the accent",
@@ -297,6 +333,16 @@ describe("migrateStorage", () => {
     expect(migrated(seed)).toEqual(expected)
   })
 
+  it.each(pairs([V696_KEYS, PRE_V696_KEYS]))(
+    "brings %s=%s to a value 7.0 accepts",
+    (key, value) => {
+      for (const [left, held] of Object.entries(migrated({ [key]: value }))) {
+        if (OUTSIDE_THEME.has(left)) continue
+        expect(LEGACY_TARGETS[left] ?? [], `${left}=${held}`).toContain(held)
+      }
+    },
+  )
+
   it("returns every target key's migrated value", () => {
     const storage = memoryStorage({
       "theme-surface-color": "red",
@@ -421,6 +467,89 @@ describe("migrateStorage", () => {
   })
 })
 
+describe("revision 2 in storage", () => {
+  it.each<[string, Record<string, string>, Record<string, string>]>([
+    [
+      "moves the default preset to quiet",
+      { "theme-preset": "default" },
+      { "theme-preset": "quiet" },
+    ],
+    [
+      "keeps the glass preset as the glass style",
+      { "theme-preset": "glass" },
+      { "theme-preset": "glass" },
+    ],
+    ["still drops the sci-fi preset", { "theme-preset": "scifi" }, {}],
+    [
+      "moves a renamed glassmorphism user to the glass style",
+      { "theme-preset": "glassmorphism" },
+      { "theme-preset": "glass" },
+    ],
+    [
+      "removes a medium glass opacity and blur",
+      { "theme-glass-opacity": "medium", "theme-glass-blur": "medium" },
+      {},
+    ],
+    [
+      "keeps a non-medium glass opacity and blur",
+      { "theme-glass-opacity": "strong", "theme-glass-blur": "low" },
+      { "theme-glass-opacity": "strong", "theme-glass-blur": "low" },
+    ],
+    [
+      "renames a medium glassmorphism opacity, then removes it",
+      { "theme-glassmorphism-opacity": "medium" },
+      {},
+    ],
+    [
+      "renames a medium glassmorphism blur, then removes it",
+      { "theme-glassmorphism-blur": "medium" },
+      {},
+    ],
+    [
+      "keeps a medium glassmorphism value's stored non-medium target",
+      {
+        "theme-glassmorphism-opacity": "medium",
+        "theme-glass-opacity": "subtle",
+      },
+      { "theme-glass-opacity": "subtle" },
+    ],
+  ])("%s", (_, seed, expected) => {
+    expect(migrated(seed)).toEqual(expected)
+  })
+
+  it.each(
+    pairs([
+      {
+        "theme-glass-opacity": V696_KEYS["theme-glass-opacity"] ?? [],
+        "theme-glass-blur": V696_KEYS["theme-glass-blur"] ?? [],
+      },
+    ]),
+  )("keeps %s=%s only when it is not medium", (key, value) => {
+    expect(migrated({ [key]: value })).toEqual(
+      value === "medium" ? {} : { [key]: value },
+    )
+  })
+
+  it("runs only revision 2 on a browser at revision 1", () => {
+    const storage = memoryStorage({
+      [LEGACY_MARKER_KEY]: "1",
+      "theme-preset": "default",
+      "theme-glass-opacity": "medium",
+      "theme-glass-blur": "high",
+      "theme-elevation": "low",
+      "theme-canvas-tint": "vivid",
+    })
+    migrateStorage(storage)
+    expect(storage.contents()).toEqual({
+      [LEGACY_MARKER_KEY]: "2",
+      "theme-preset": "quiet",
+      "theme-glass-blur": "high",
+      "theme-elevation": "low",
+      "theme-canvas-tint": "vivid",
+    })
+  })
+})
+
 describe("runLegacyTable", () => {
   const rules: LegacyRule[] = [
     { since: 1, when: [], set: { "theme-density": "compact" } },
@@ -464,9 +593,34 @@ describe("runLegacyTable", () => {
 describe("migratePayload", () => {
   it.each<[string, Record<string, unknown>, Record<string, unknown>]>([
     [
+      "renames the glassmorphism preset to the glass style",
+      { preset: "glassmorphism" },
+      { style: "glass" },
+    ],
+    [
+      "moves the default preset to the quiet style",
+      { preset: "default" },
+      { style: "quiet" },
+    ],
+    [
+      "carries the glass preset to the glass style",
+      { preset: "glass" },
+      { style: "glass" },
+    ],
+    [
+      "drops the sci-fi preset",
+      { preset: "scifi", accentColor: "rose" },
+      { accentColor: "rose" },
+    ],
+    [
       "moves glass on a solid canvas to gradient",
       { preset: "glass", backgroundStyle: "solid" },
-      { preset: "glass", backgroundStyle: "gradient" },
+      { style: "glass", backgroundStyle: "gradient" },
+    ],
+    [
+      "moves a renamed glassmorphism user to gradient too",
+      { preset: "glassmorphism", backgroundStyle: "solid" },
+      { style: "glass", backgroundStyle: "gradient" },
     ],
     [
       "turns an accent-named surface into zinc tinted with the accent",
@@ -476,7 +630,7 @@ describe("migratePayload", () => {
     [
       "maps the surface intensity to contrast",
       { preset: "default", surfaceIntensity: "bold" },
-      { preset: "default", contrast: "high" },
+      { style: "quiet", contrast: "high" },
     ],
     [
       "maps the accent intensity to dark accent chroma",
@@ -491,7 +645,27 @@ describe("migratePayload", () => {
         surfaceIntensity: "bold",
         accentIntensity: "calm",
       },
-      { preset: "glass", backgroundStyle: "gradient" },
+      { style: "glass", backgroundStyle: "gradient" },
+    ],
+    [
+      "writes nothing for either intensity under a renamed glassmorphism preset",
+      {
+        preset: "glassmorphism",
+        backgroundStyle: "gradient",
+        surfaceIntensity: "bold",
+        accentIntensity: "calm",
+      },
+      { style: "glass", backgroundStyle: "gradient" },
+    ],
+    [
+      "writes nothing for either intensity under sci-fi",
+      {
+        preset: "scifi",
+        accentColor: "rose",
+        surfaceIntensity: "bold",
+        accentIntensity: "calm",
+      },
+      { accentColor: "rose" },
     ],
     [
       "maps medium elevation to standard",
@@ -509,27 +683,110 @@ describe("migratePayload", () => {
       { "theme-glass-halo": "soft", "theme-accent-vibrancy": "calm" },
     ],
     [
+      "lifts glass's nested axes and skips medium",
+      {
+        preset: "glass",
+        backgroundStyle: "gradient",
+        presetAxisValues: { glass: { opacity: "strong", blur: "medium" } },
+      },
+      { style: "glass", backgroundStyle: "gradient", glassOpacity: "strong" },
+    ],
+    [
       "keeps the fields no rule names",
-      {
-        outerGlow: "vivid",
-        shellStyle: "island",
-        mode: "dark",
-        presetAxisValues: { glass: { blur: "high" } },
-      },
-      {
-        outerGlow: "vivid",
-        shellStyle: "island",
-        mode: "dark",
-        presetAxisValues: { glass: { blur: "high" } },
-      },
+      { outerGlow: "vivid", shellStyle: "island", mode: "dark" },
+      { outerGlow: "vivid", shellStyle: "island", mode: "dark" },
     ],
   ])("%s", (_, input, expected) => {
     expect(migratePayload(input)).toEqual(expected)
   })
 
   it("does not change its input", () => {
-    const input = Object.freeze({ preset: "scifi", surfaceIntensity: "bold" })
+    const input = Object.freeze({
+      preset: "scifi",
+      surfaceIntensity: "bold",
+      presetAxisValues: Object.freeze({
+        glass: Object.freeze({ blur: "high" }),
+      }),
+    })
     expect(() => migratePayload(input)).not.toThrow()
-    expect(input).toEqual({ preset: "scifi", surfaceIntensity: "bold" })
+    expect(input).toEqual({
+      preset: "scifi",
+      surfaceIntensity: "bold",
+      presetAxisValues: { glass: { blur: "high" } },
+    })
+  })
+
+  it.each(pairs([V696_PAYLOAD_FIELDS, PRE_V696_PAYLOAD_FIELDS]))(
+    "brings %s=%s to a value 7.0 accepts",
+    (field, value) => {
+      for (const [left, held] of Object.entries(
+        migratePayload({ [field]: value }),
+      )) {
+        // The layout store takes shellStyle; accentVibrancy is storage-only
+        // in the table, so a 6.0-6.2 payload's value is dropped by sanitising.
+        if (left === "shellStyle" || left === "accentVibrancy") continue
+        expect(AXIS_KEYS, left).toContain(left)
+        expect(AXES[left as AxisKey].values, `${left}=${held}`).toContain(held)
+      }
+    },
+  )
+})
+
+const LIFTED_FIELDS: Readonly<Record<string, string>> = {
+  opacity: "glassOpacity",
+  blur: "glassBlur",
+}
+
+describe("liftPresetAxisValues", () => {
+  it.each(pairs([V696_PRESET_AXIS_VALUES.glass ?? {}]))(
+    "lifts glass %s=%s unless it is medium",
+    (axis, value) => {
+      const lifted = liftPresetAxisValues({
+        accentColor: "rose",
+        presetAxisValues: { glass: { [axis]: value } },
+      })
+      expect(lifted).toEqual(
+        value === "medium"
+          ? { accentColor: "rose" }
+          : { accentColor: "rose", [LIFTED_FIELDS[axis] as string]: value },
+      )
+    },
+  )
+
+  it.each<[string, Record<string, unknown>, Record<string, unknown>]>([
+    [
+      "drops a value glass never had",
+      { presetAxisValues: { glass: { opacity: "foggy", blur: "low" } } },
+      { glassBlur: "low" },
+    ],
+    [
+      "drops another preset's axes",
+      { presetAxisValues: { scifi: { frame: "notched" } } },
+      {},
+    ],
+    [
+      "drops a presetAxisValues that is not an object",
+      { presetAxisValues: "glass" },
+      {},
+    ],
+    [
+      "leaves a payload without presetAxisValues alone",
+      { preset: "glass", density: "compact" },
+      { preset: "glass", density: "compact" },
+    ],
+  ])("%s", (_, input, expected) => {
+    expect(liftPresetAxisValues(input)).toEqual(expected)
+  })
+
+  it("does not change its input", () => {
+    const input = Object.freeze({
+      presetAxisValues: Object.freeze({
+        glass: Object.freeze({ opacity: "strong" }),
+      }),
+    })
+    expect(liftPresetAxisValues(input)).toEqual({ glassOpacity: "strong" })
+    expect(input).toEqual({
+      presetAxisValues: { glass: { opacity: "strong" } },
+    })
   })
 })

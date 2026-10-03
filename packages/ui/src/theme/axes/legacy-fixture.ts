@@ -102,8 +102,8 @@ export const V696_KEYS: Readonly<Record<string, readonly string[]>> = {
 /**
  * Every field a 6.9.6 synced payload could carry. Each save sent every field
  * but the glow pair, which rode along only on the save its own setter made.
- * `presetAxisValues` is an object keyed by preset, then axis, with the
- * `theme-<preset>-<axis>` values above.
+ * `presetAxisValues` is an object keyed by preset, then axis, holding the
+ * values `V696_PRESET_AXIS_VALUES` lists.
  */
 export const V696_PAYLOAD_FIELDS: Readonly<Record<string, readonly string[]>> =
   {
@@ -128,6 +128,17 @@ export const V696_PAYLOAD_FIELDS: Readonly<Record<string, readonly string[]>> =
     innerGlow: GLOW_LEVELS,
     presetAxisValues: ["*"],
   }
+
+/**
+ * What a 6.9.6 payload's `presetAxisValues` could hold: per preset, per axis,
+ * every value. The provider completed every axis to its default before saving,
+ * so `medium` was sent whether or not the user chose it.
+ */
+export const V696_PRESET_AXIS_VALUES: Readonly<
+  Record<string, Readonly<Record<string, readonly string[]>>>
+> = {
+  glass: { opacity: GLASS_OPACITIES, blur: GLASS_BLURS },
+}
 
 /**
  * Keys only kits before 6.9.6 wrote. 6.9.6 migrated them on load, but a
