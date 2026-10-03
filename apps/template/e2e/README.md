@@ -225,6 +225,13 @@ Runs against the standalone fixture `e2e/fixtures/selection-overlays.html`.
   `e2e/fixtures/baseline-overlays.html`) holds focus on its container and draws
   no outline there.
 
+### 20 · Fonts (`20-fonts.spec.ts`)
+
+- Body text paints in Inter Variable by default. Choosing Geist in the theme
+  switcher repaints it in Geist Variable, `document.fonts` reports the face
+  loaded, and its woff2 file comes from the app's own origin with a 200.
+- No request during the session leaves the app's origin.
+
 ## Regression tests for fixed defects
 
 `11-review-regressions.spec.ts` checks supported layout choices, settings form
