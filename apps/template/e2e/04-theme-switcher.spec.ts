@@ -1,6 +1,7 @@
 import { test, expect, type Page } from "@playwright/test"
 import {
   ACCENT_COLORS,
+  BUTTON_ELEVATIONS,
   DENSITIES,
   ELEVATIONS,
   FONT_SIZES,
@@ -277,10 +278,9 @@ test.describe("stepped slider axes", () => {
   }[] = [
     { label: "Density", values: DENSITIES, attr: "data-density" },
     { label: "Font size", values: FONT_SIZES, attr: "data-font-size" },
-    { label: "Elevation", values: ELEVATIONS, attr: "data-elevation" },
     {
       label: "Button elevation",
-      values: ELEVATIONS,
+      values: BUTTON_ELEVATIONS,
       attr: "data-button-elevation",
     },
     { label: "Radius", values: RADII, attr: "data-radius" },
@@ -300,6 +300,24 @@ test.describe("stepped slider axes", () => {
       }
     })
   }
+})
+
+test.describe("elevation toggle group", () => {
+  test("Elevation selects every level", async ({ page }) => {
+    await seedApp(page, { preset: "default", mode: "light" })
+    await gotoApp(page, PROBE)
+    await openThemeSwitcher(page)
+
+    for (const value of ELEVATIONS) {
+      await themeSwitcher(page)
+        .locator('[aria-label="Elevation"]')
+        .getByRole("radio", { name: value })
+        .click()
+      await expect
+        .poll(async () => (await readThemeAttrs(page))["data-elevation"])
+        .toBe(value)
+    }
+  })
 })
 
 test.describe("preset-specific axis controls", () => {

@@ -140,11 +140,9 @@ describe("ThemeSwitcher preset section", () => {
     )
     openSwitcher()
     fireEvent.click(screen.getByRole("radio", { name: /gradient/i }))
-    // 4-value ordinal axes (Background Intensity, Density, Elevation,
-    // Button Elevation, Radius) render as stepped sliders instead of
-    // 4-cell toggle groups. Default preset shows 5 of them (Density,
-    // Elevation, Button Elevation, Radius, Background Intensity once
-    // gradient bg is selected). Spot-check the count and that each
+    // 4- and 5-value ordinal axes (Background Intensity, Density, Font
+    // Size, Button Elevation, Radius and both glows) render as stepped
+    // sliders instead of toggle groups. Spot-check the count and that each
     // axis's current-value label is rendered.
     expect(screen.getAllByRole("slider").length).toBeGreaterThanOrEqual(5)
     // Each slider has its current value name to the right. Scope the
@@ -156,6 +154,28 @@ describe("ThemeSwitcher preset section", () => {
     expect(within(bgIntensityRow).getByText("vivid")).toBeInTheDocument()
     expect(screen.getByText("cozy")).toBeInTheDocument() // density default
     expect(screen.getByText("rounded")).toBeInTheDocument() // radius default
+  })
+
+  it("renders the three elevation levels as a toggle group", () => {
+    render(
+      <ThemeProvider>
+        <ThemeSwitcher />
+      </ThemeProvider>,
+    )
+    openSwitcher()
+    const group = screen.getByRole("radiogroup", { name: "Elevation" })
+    expect(
+      within(group)
+        .getAllByRole("radio")
+        .map((radio) => radio.textContent),
+    ).toEqual(["flat", "standard", "high"])
+    expect(within(group).getByRole("radio", { name: "standard" })).toHaveAttribute(
+      "aria-checked",
+      "true",
+    )
+    expect(
+      screen.queryByRole("slider", { name: "Elevation" }),
+    ).not.toBeInTheDocument()
   })
 
   it("does NOT render Gradient Pattern when backgroundStyle is solid", () => {

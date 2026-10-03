@@ -114,9 +114,10 @@ Everything above again, this time through the popover a user actually operates:
   With Accent.
 - Background toggle reveals and hides the intensity and pattern controls; all
   four gradient patterns are selectable.
-- The five 4-value axes (density, font size, elevation, button elevation,
-  radius) render as stepped sliders and are walked value by value
-  **with the keyboard**, since a slider has no clickable cell.
+- The four 4-value axes (density, font size, button elevation, radius)
+  render as stepped sliders and are walked value by value
+  **with the keyboard**, since a slider has no clickable cell. Elevation's
+  three levels render as a toggle group and are clicked in turn.
 - Preset-specific axis controls for both presets, plus a check that per-preset
   axis values are remembered when switching away and back.
 - Two end-to-end proofs that switcher changes restyle real components: radius
