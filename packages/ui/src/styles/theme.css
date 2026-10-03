@@ -301,11 +301,14 @@
 
 @utility focus-ring-input {
   outline: none;
+  box-shadow: var(--field-shadow);
 
   &:focus,
   &:focus-visible {
     border-color: hsl(var(--primary));
-    box-shadow: 0 0 0 1px hsl(var(--primary));
+    box-shadow:
+      0 0 0 1px hsl(var(--primary)),
+      var(--field-shadow);
   }
 
   /* :is, not :where. A field declares its own border colours after this
@@ -318,19 +321,27 @@
   &:is([data-invalid], [aria-invalid="true"]):focus,
   &:is([data-invalid], [aria-invalid="true"]):focus-visible {
     border-color: hsl(var(--destructive-edge));
-    box-shadow: 0 0 0 1px hsl(var(--destructive-edge));
+    box-shadow:
+      0 0 0 1px hsl(var(--destructive-edge)),
+      var(--field-shadow);
   }
 }
 
 @utility focus-ring-input-wrapper {
+  box-shadow: var(--field-shadow);
+
   &:focus-within {
     border-color: hsl(var(--primary));
-    box-shadow: 0 0 0 1px hsl(var(--primary));
+    box-shadow:
+      0 0 0 1px hsl(var(--primary)),
+      var(--field-shadow);
   }
 
   &:focus-within:where([data-invalid], [aria-invalid="true"]) {
     border-color: hsl(var(--destructive-edge));
-    box-shadow: 0 0 0 1px hsl(var(--destructive-edge));
+    box-shadow:
+      0 0 0 1px hsl(var(--destructive-edge)),
+      var(--field-shadow);
   }
 }
 

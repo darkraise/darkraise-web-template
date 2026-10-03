@@ -368,3 +368,69 @@ describe("InputOTP invalid slot", () => {
     )
   })
 })
+
+/** The contents of the first block `opener` opens, braces balanced. */
+function block(css: string, opener: RegExp): string {
+  const match = opener.exec(css)
+  if (!match) throw new Error(`no block for ${String(opener)}`)
+  const start = match.index + match[0].length
+  let depth = 1
+  let end = start
+  while (depth > 0 && end < css.length) {
+    if (css[end] === "{") depth++
+    else if (css[end] === "}") depth--
+    end++
+  }
+  return css.slice(start, end - 1)
+}
+
+const PICKER = join("src", "components", "color-picker", "color-picker.css")
+const NUMBER = join("src", "components", "number-input", "number-input.css")
+const INVALID = ':is([data-invalid], [aria-invalid="true"])'
+
+describe("fields compose --field-shadow", () => {
+  const theme = normalise(
+    readFileSync(THEME, "utf8").replace(/\/\*[\s\S]*?\*\//g, ""),
+  )
+
+  it.each(["focus-ring-input", "focus-ring-input-wrapper"])(
+    "%s paints the field shadow at rest and under each ring",
+    (utility) => {
+      const body = block(theme, new RegExp(`@utility ${utility} \\{`))
+      expect(body).toContain("box-shadow: var(--field-shadow);")
+      expect(body).toContain(
+        "box-shadow: 0 0 0 1px hsl(var(--primary)), var(--field-shadow);",
+      )
+      expect(body).toContain(
+        "box-shadow: 0 0 0 1px hsl(var(--destructive-edge)), var(--field-shadow);",
+      )
+    },
+  )
+
+  it.each([
+    [OTP, ".dr-input-otp-slot", "box-shadow: var(--field-shadow);"],
+    [
+      OTP,
+      ".dr-input-otp-slot[data-active]",
+      "box-shadow: 0 0 0 1px hsl(var(--primary)), var(--field-shadow), var(--affordance-glow);",
+    ],
+    [
+      OTP,
+      ".dr-input-otp-slot-separate:focus",
+      "box-shadow: 0 0 0 1px hsl(var(--primary)), var(--field-shadow), var(--affordance-glow);",
+    ],
+    [
+      OTP,
+      OTP_INVALID_ACTIVE,
+      "box-shadow: 0 0 0 1px hsl(var(--destructive-edge)), var(--field-shadow), var(--affordance-glow);",
+    ],
+    [PICKER, ".dr-color-picker-trigger", "box-shadow: var(--field-shadow);"],
+    [
+      NUMBER,
+      `.dr-number-input-control:has(${INVALID}):focus-within`,
+      "box-shadow: 0 0 0 1px hsl(var(--destructive-edge)), var(--field-shadow);",
+    ],
+  ])("%s %s composes the field shadow", (path, selector, declaration) => {
+    expect(bodyOf(path, selector)).toContain(declaration)
+  })
+})

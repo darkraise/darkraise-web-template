@@ -33,6 +33,7 @@
     @apply text-muted-foreground border-border focus-ring-inset inline-flex items-center justify-center rounded-md border transition-colors;
     height: var(--btn-height);
     width: var(--btn-height);
+    box-shadow: var(--field-shadow);
   }
 
   .dr-color-picker-trigger[data-disabled="true"] {

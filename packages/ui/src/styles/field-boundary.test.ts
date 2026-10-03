@@ -157,7 +157,7 @@ describe("wrapper field invalid state", () => {
         r.selector === `.dr-number-input-control:has(${INVALID}):focus-within`,
     )
     expect(focused?.body).toBe(
-      "border-color: hsl(var(--destructive-edge)); box-shadow: 0 0 0 1px hsl(var(--destructive-edge));",
+      "border-color: hsl(var(--destructive-edge)); box-shadow: 0 0 0 1px hsl(var(--destructive-edge)), var(--field-shadow);",
     )
   })
 

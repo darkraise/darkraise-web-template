@@ -135,7 +135,9 @@
       :is([data-invalid], [aria-invalid="true"])
     ):focus-within {
     border-color: hsl(var(--destructive-edge));
-    box-shadow: 0 0 0 1px hsl(var(--destructive-edge));
+    box-shadow:
+      0 0 0 1px hsl(var(--destructive-edge)),
+      var(--field-shadow);
   }
 
   /* The control draws the invalid ring. The field's own focus reset is
