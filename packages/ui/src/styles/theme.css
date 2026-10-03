@@ -911,6 +911,20 @@
     --card-elevation-high:
       0 48px 72px -10px rgb(0 0 0 / 0.45), 0 20px 36px -6px rgb(0 0 0 / 0.28);
     --shadow-button: 0 0 transparent;
+    /* Control depth, at Quiet's values; flat.css and tactile.css override
+       them. A shadow token is `0 0 transparent`, never `none`: components
+       compose it into shadow lists, where `none` invalidates the whole
+       declaration. */
+    --btn-edge:
+      inset 0 1px 0 rgb(255 255 255 / 0.22), inset 0 -1px 0 rgb(0 0 0 / 0.08);
+    --btn-sheen: none;
+    --btn-shadow: 0 1px 2px rgb(0 0 0 / 0.1);
+    --btn-neutral-edge: inset 0 -1px 0 rgb(0 0 0 / 0.07);
+    --btn-neutral-sheen: none;
+    --btn-neutral-shadow: 0 1px 1px rgb(0 0 0 / 0.05);
+    --field-shadow: 0 0 transparent;
+    --check-well-shadow: 0 0 transparent;
+    --thumb-shadow: 0 0 transparent;
 
     /* Preset-driven affordance tokens. Each preset binds these once in
      its own CSS file; components consume them as a single source of
@@ -985,7 +999,7 @@
        recessed. */
     --selected-view-bg: hsl(var(--card));
     --selected-view-fg: hsl(var(--foreground));
-    --selected-view-shadow: var(--shadow-button);
+    --selected-view-shadow: 0 0 transparent;
     --selected-check-bg: hsl(var(--primary-fill));
     --selected-check-fg: hsl(var(--primary-foreground));
     --selected-mark: hsl(var(--primary-fill));
@@ -1028,6 +1042,17 @@
   /* data-mode is set only on <html>, so this re-binds the family once. */
   :root[data-mode="dark"] {
     --selected-view-bg: hsl(var(--border));
+    --selected-view-shadow: 0 0 transparent;
+    --btn-edge:
+      inset 0 1px 0 rgb(255 255 255 / 0.16), inset 0 -1px 0 rgb(0 0 0 / 0.2);
+    --btn-sheen: none;
+    --btn-shadow: 0 1px 2px rgb(0 0 0 / 0.45);
+    --btn-neutral-edge: inset 0 1px 0 rgb(255 255 255 / 0.06);
+    --btn-neutral-sheen: none;
+    --btn-neutral-shadow: 0 1px 1px rgb(0 0 0 / 0.35);
+    --field-shadow: 0 0 transparent;
+    --check-well-shadow: 0 0 transparent;
+    --thumb-shadow: 0 0 transparent;
   }
 
   /* A gradient canvas shows through the chrome: the rails and the bar give

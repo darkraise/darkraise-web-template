@@ -68,7 +68,7 @@ const DARK_ROOT = block(THEME, /:root\[data-mode="dark"\] \{/)
 const FAMILIES: Array<[string, string]> = [
   ["--selected-view-bg", "hsl(var(--card))"],
   ["--selected-view-fg", "hsl(var(--foreground))"],
-  ["--selected-view-shadow", "var(--shadow-button)"],
+  ["--selected-view-shadow", "0 0 transparent"],
   ["--selected-check-bg", "hsl(var(--primary-fill))"],
   ["--selected-check-fg", "hsl(var(--primary-foreground))"],
   ["--selected-mark", "hsl(var(--primary-fill))"],
@@ -83,7 +83,7 @@ describe("selection family tokens", () => {
   })
 
   it("raises the view-switch pill on --border in dark mode", () => {
-    expect(DARK_ROOT.trim()).toBe("--selected-view-bg: hsl(var(--border));")
+    expect(DARK_ROOT).toContain("--selected-view-bg: hsl(var(--border));")
   })
 })
 
