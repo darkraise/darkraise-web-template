@@ -186,14 +186,6 @@ describe("shell grid", () => {
     }
   })
 
-  it("defaults to the classic treatment", () => {
-    const { container } = renderLayout()
-    expect(container.querySelector(".dr-shell")).toHaveAttribute(
-      "data-shell-style",
-      "classic",
-    )
-  })
-
   it("pins the style when the prop is given", () => {
     const { container } = renderLayout({ shellStyle: "island" })
     expect(container.querySelector(".dr-shell")).toHaveAttribute(
@@ -207,6 +199,14 @@ describe("SidebarLayout shell style", () => {
   const reset = () => useLayoutStore.setState({ shellStyle: null })
   beforeEach(reset)
   afterEach(reset)
+
+  it("defaults to the classic treatment", () => {
+    const { container } = renderLayout()
+    expect(container.querySelector(".dr-shell")).toHaveAttribute(
+      "data-shell-style",
+      "classic",
+    )
+  })
 
   it("starts from defaultShellStyle until the user picks one", () => {
     const first = renderLayout({ defaultShellStyle: "inset" })
