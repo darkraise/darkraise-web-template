@@ -93,6 +93,24 @@ describe("ThemeSettingsPanel", () => {
     ).toBeInTheDocument()
   })
 
+  it("renders the Brand controls in registry order", () => {
+    const { container } = renderPanel(<ThemeSettingsPanel />)
+    expect(sectionLabels(container)).toEqual(BRAND)
+  })
+
+  it("keeps Advanced collapsed in the compact layout until it is opened", () => {
+    const { container } = renderPanel(<ThemeSettingsPanel />)
+    const trigger = screen.getByRole("button", { name: "Advanced" })
+    expect(trigger).toHaveAttribute("aria-expanded", "false")
+    expect(screen.queryByText("Contrast")).not.toBeInTheDocument()
+
+    fireEvent.click(trigger)
+
+    expect(trigger).toHaveAttribute("aria-expanded", "true")
+    expect(screen.getByRole("region", { name: "Advanced" })).toBeInTheDocument()
+    expect(sectionLabels(container)).toEqual([...BRAND, ...ADVANCED])
+  })
+
   it("renders no headings in the compact layout", () => {
     renderPanel(<ThemeSettingsPanel layout="compact" />)
     expect(screen.queryByRole("heading")).not.toBeInTheDocument()

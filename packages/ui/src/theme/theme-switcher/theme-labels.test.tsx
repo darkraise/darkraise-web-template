@@ -9,40 +9,26 @@ import { viTheme } from "../../locales/viTheme"
 import { vi as viLocale } from "../../locales/vi"
 import { themeMessages } from "../../i18n/themeMessages"
 
+// Brand shows Mode and Density; Advanced shows Contrast and Background Intensity.
 const config: ThemeConfig = {
-  defaults: {
-    accentColor: "blue",
-    surfaceColor: "slate",
-    preset: "default",
-    backgroundStyle: "solid",
-    backgroundIntensity: "balanced",
-    gradientPattern: "blobs",
-    mode: "light",
-    density: "cozy",
-    elevation: "standard",
-    radius: "rounded",
-    fontSize: "medium",
-    contrast: "standard",
-    darkAccentChroma: "standard",
-    tintWithAccent: "off",
-  },
+  defaults: { backgroundIntensity: "balanced", mode: "light" },
   switcher: {
     enabled: true,
     axes: {
-      mode: true,
       accentColor: false,
       surfaceColor: false,
+      tintWithAccent: false,
       preset: false,
-      backgroundStyle: false,
-      backgroundIntensity: true,
-      gradientPattern: false,
-      density: true,
-      elevation: false,
+      font: false,
       radius: false,
       fontSize: false,
-      contrast: true,
       darkAccentChroma: false,
-      tintWithAccent: false,
+      elevation: false,
+      outerGlow: false,
+      innerGlow: false,
+      backgroundStyle: false,
+      gradientPattern: false,
+      sidebarActiveBar: false,
     },
   },
 }
@@ -60,25 +46,27 @@ function renderSwitcher(
   )
 }
 
+const trigger = () => screen.getByRole("button", { name: "Customize theme" })
+
 describe("ThemeSwitcher labels", () => {
   it("renders the English mode axis with no provider", async () => {
     const user = userEvent.setup()
     renderSwitcher()
-    await user.click(screen.getByRole("button"))
+    await user.click(trigger())
     expect(screen.getByText("Mode")).toBeInTheDocument()
   })
 
   it("renders an overridden axis label", async () => {
     const user = userEvent.setup()
     renderSwitcher({ theme: { axisLabels: { mode: "Chế độ" } } })
-    await user.click(screen.getByRole("button"))
+    await user.click(trigger())
     expect(screen.getByText("Chế độ")).toBeInTheDocument()
   })
 
   it("wires the mode toggle group's accessible name to axisLabels.mode", async () => {
     const user = userEvent.setup()
     renderSwitcher({ theme: { axisLabels: { mode: "Chế độ" } } })
-    await user.click(screen.getByRole("button"))
+    await user.click(trigger())
     expect(
       screen.getByRole("radiogroup", { name: "Chế độ" }),
     ).toBeInTheDocument()
@@ -87,30 +75,38 @@ describe("ThemeSwitcher labels", () => {
   it("wires the density axis control's accessible name to axisLabels.density", async () => {
     const user = userEvent.setup()
     renderSwitcher({ theme: { axisLabels: { density: "Mật độ" } } })
-    await user.click(screen.getByRole("button"))
+    await user.click(trigger())
     expect(screen.getByRole("slider", { name: "Mật độ" })).toBeInTheDocument()
   })
 
-  it("labels the contrast axis", async () => {
+  it("labels the contrast axis under Advanced", async () => {
     const user = userEvent.setup()
     renderSwitcher()
-    await user.click(screen.getByRole("button"))
+    await user.click(trigger())
+    await user.click(screen.getByRole("button", { name: "Advanced" }))
     expect(screen.getByText("Contrast")).toBeInTheDocument()
   })
 
-  it("labels the background intensity axis", async () => {
+  it("labels the background intensity axis under Advanced", async () => {
     const user = userEvent.setup()
     renderSwitcher()
-    await user.click(screen.getByRole("button"))
+    await user.click(trigger())
+    await user.click(screen.getByRole("button", { name: "Advanced" }))
     expect(screen.getByText("Background Intensity")).toBeInTheDocument()
   })
 
-  it("labels the font axis in English and Vietnamese", () => {
-    expect(defaultLabels.theme.axisLabels.font).toBe("Font")
-    expect(viLocale.messages.theme.axisLabels.font).toBe("Phông chữ")
+  it("names the Advanced trigger from groupLabels.advanced", async () => {
+    const user = userEvent.setup()
+    renderSwitcher({ theme: { groupLabels: { advanced: "Nâng cao" } } })
+    await user.click(trigger())
+    expect(
+      screen.getByRole("button", { name: "Nâng cao" }),
+    ).toBeInTheDocument()
   })
 
-  it("names the three faces in English and Vietnamese", () => {
+  it("labels the font axis and its faces in English and Vietnamese", () => {
+    expect(defaultLabels.theme.axisLabels.font).toBe("Font")
+    expect(viLocale.messages.theme.axisLabels.font).toBe("Phông chữ")
     for (const [value, label] of [
       ["inter", "Inter"],
       ["geist", "Geist"],

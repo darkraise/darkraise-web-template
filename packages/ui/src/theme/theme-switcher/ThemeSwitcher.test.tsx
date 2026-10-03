@@ -1,6 +1,11 @@
-// packages/ui/src/theme/theme-switcher/ThemeSwitcher.test.tsx
 import { describe, it, expect, beforeEach, vi } from "vitest"
-import { render, screen, fireEvent, within } from "@testing-library/react"
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  within,
+} from "@testing-library/react"
 import { ThemeProvider } from "../theme-provider/ThemeProvider"
 import { ThemeSwitcher } from "./ThemeSwitcher"
 
@@ -41,187 +46,80 @@ function mockMatchMedia() {
   })
 }
 
+function renderSwitcher() {
+  return render(
+    <ThemeProvider>
+      <ThemeSwitcher />
+    </ThemeProvider>,
+  )
+}
+
+function openSwitcher() {
+  fireEvent.click(screen.getByRole("button", { name: /customize theme/i }))
+}
+
+function openAdvanced() {
+  fireEvent.click(screen.getByRole("button", { name: "Advanced" }))
+}
+
+function sectionLabels(): string[] {
+  return [
+    ...document.querySelectorAll(".dr-theme-switcher-section-label"),
+  ].map((label) => label.textContent ?? "")
+}
+
+beforeEach(() => {
+  storageMock.clear()
+  vi.stubGlobal("localStorage", storageMock)
+  mockMatchMedia()
+  document.documentElement.removeAttribute("data-preset")
+  document.documentElement.removeAttribute("data-glass-opacity")
+  document.documentElement.removeAttribute("data-glass-blur")
+  document.documentElement.style.cssText = ""
+})
+
 describe("ThemeSwitcher preset section", () => {
-  beforeEach(() => {
-    storageMock.clear()
-    vi.stubGlobal("localStorage", storageMock)
-    mockMatchMedia()
-    document.documentElement.removeAttribute("data-preset")
-    document.documentElement.removeAttribute("data-glass-opacity")
-    document.documentElement.removeAttribute("data-glass-blur")
-    document.documentElement.style.cssText = ""
-  })
-
-  function openSwitcher() {
-    fireEvent.click(screen.getByRole("button", { name: /customize theme/i }))
-  }
-
   it("renders one toggle per registered preset", () => {
-    render(
-      <ThemeProvider>
-        <ThemeSwitcher />
-      </ThemeProvider>,
-    )
+    renderSwitcher()
     openSwitcher()
-    expect(screen.getByRole("radio", { name: /default/i })).toBeInTheDocument()
-    expect(screen.getByRole("radio", { name: /^glass$/i })).toBeInTheDocument()
+    const group = screen.getByRole("radiogroup", { name: "Preset" })
+    expect(
+      within(group)
+        .getAllByRole("radio")
+        .map((radio) => radio.textContent),
+    ).toEqual(["Default", "Glass"])
   })
 
   it("does NOT render glass axis toggles when default preset is active", () => {
-    render(
-      <ThemeProvider>
-        <ThemeSwitcher />
-      </ThemeProvider>,
-    )
+    renderSwitcher()
     openSwitcher()
     expect(screen.queryByText("Opacity")).not.toBeInTheDocument()
     expect(screen.queryByText("Backdrop Blur")).not.toBeInTheDocument()
   })
 
-  it("renders glass axis toggles when glass preset active", () => {
-    render(
-      <ThemeProvider>
-        <ThemeSwitcher />
-      </ThemeProvider>,
-    )
+  it("renders the glass axes right after the preset control", () => {
+    renderSwitcher()
     openSwitcher()
-    fireEvent.click(screen.getByRole("radio", { name: /^glass$/i }))
-    expect(screen.getByText("Opacity")).toBeInTheDocument()
-    expect(screen.getByText("Backdrop Blur")).toBeInTheDocument()
+    fireEvent.click(screen.getByRole("radio", { name: "Glass" }))
+    const labels = sectionLabels()
+    const at = labels.indexOf("Preset")
+    expect(labels.slice(at + 1, at + 3)).toEqual(["Opacity", "Backdrop Blur"])
   })
 
   it("toggling glass-opacity updates the data attribute", () => {
-    render(
-      <ThemeProvider>
-        <ThemeSwitcher />
-      </ThemeProvider>,
-    )
+    renderSwitcher()
     openSwitcher()
-    fireEvent.click(screen.getByRole("radio", { name: /^glass$/i }))
+    fireEvent.click(screen.getByRole("radio", { name: "Glass" }))
     fireEvent.click(screen.getByRole("radio", { name: /^strong$/i }))
     expect(document.documentElement.getAttribute("data-glass-opacity")).toBe(
       "strong",
     )
   })
+})
 
-  // The axis absorbed canvasTint, so under `solid` it still drives the canvas
-  // saturation cap. Only its blob-scale half is gradient-specific, and that
-  // half goes inert rather than hiding the whole control.
-  it("renders Background Intensity when backgroundStyle is solid", () => {
-    render(
-      <ThemeProvider>
-        <ThemeSwitcher />
-      </ThemeProvider>,
-    )
-    openSwitcher()
-    expect(screen.getByText("Background Intensity")).toBeInTheDocument()
-  })
-
-  it("renders Background Intensity when backgroundStyle is gradient", () => {
-    render(
-      <ThemeProvider>
-        <ThemeSwitcher />
-      </ThemeProvider>,
-    )
-    openSwitcher()
-    fireEvent.click(screen.getByRole("radio", { name: /gradient/i }))
-    expect(screen.getByText("Background Intensity")).toBeInTheDocument()
-    // Should default to vivid.
-    expect(
-      document.documentElement.getAttribute("data-background-intensity"),
-    ).toBe("vivid")
-  })
-
-  it("renders 4-value ordinal axes as sliders instead of toggle groups", () => {
-    render(
-      <ThemeProvider>
-        <ThemeSwitcher />
-      </ThemeProvider>,
-    )
-    openSwitcher()
-    fireEvent.click(screen.getByRole("radio", { name: /gradient/i }))
-    // 4- and 5-value ordinal axes (Background Intensity, Density, Font
-    // Size, Radius and both glows) render as stepped sliders instead of
-    // toggle groups. Spot-check the count and that each axis's
-    // current-value label is rendered.
-    expect(screen.getAllByRole("slider").length).toBeGreaterThanOrEqual(5)
-    // Each slider has its current value name to the right. Scope the
-    // check to the Background Intensity row: Accent Vibrancy renders
-    // unconditionally and carries its own value label.
-    const bgIntensityRow = screen
-      .getByText("Background Intensity")
-      .closest(".dr-theme-switcher-row") as HTMLElement
-    expect(within(bgIntensityRow).getByText("vivid")).toBeInTheDocument()
-    expect(screen.getByText("cozy")).toBeInTheDocument() // density default
-    expect(screen.getByText("rounded")).toBeInTheDocument() // radius default
-  })
-
-  it("renders the three elevation levels as a toggle group", () => {
-    render(
-      <ThemeProvider>
-        <ThemeSwitcher />
-      </ThemeProvider>,
-    )
-    openSwitcher()
-    const group = screen.getByRole("radiogroup", { name: "Elevation" })
-    expect(
-      within(group)
-        .getAllByRole("radio")
-        .map((radio) => radio.textContent),
-    ).toEqual(["flat", "standard", "high"])
-    expect(within(group).getByRole("radio", { name: "standard" })).toHaveAttribute(
-      "aria-checked",
-      "true",
-    )
-    expect(
-      screen.queryByRole("slider", { name: "Elevation" }),
-    ).not.toBeInTheDocument()
-  })
-
-  it("does NOT render Gradient Pattern when backgroundStyle is solid", () => {
-    render(
-      <ThemeProvider>
-        <ThemeSwitcher />
-      </ThemeProvider>,
-    )
-    openSwitcher()
-    expect(screen.queryByText("Gradient Pattern")).not.toBeInTheDocument()
-  })
-
-  it("renders Gradient Pattern when backgroundStyle is gradient", () => {
-    render(
-      <ThemeProvider>
-        <ThemeSwitcher />
-      </ThemeProvider>,
-    )
-    openSwitcher()
-    fireEvent.click(screen.getByRole("radio", { name: /gradient/i }))
-    expect(screen.getByText("Gradient Pattern")).toBeInTheDocument()
-    expect(document.documentElement.getAttribute("data-gradient-pattern")).toBe(
-      "blobs",
-    )
-  })
-
-  it("clicking a Gradient Pattern value updates the data attribute", () => {
-    render(
-      <ThemeProvider>
-        <ThemeSwitcher />
-      </ThemeProvider>,
-    )
-    openSwitcher()
-    fireEvent.click(screen.getByRole("radio", { name: /gradient/i }))
-    fireEvent.click(screen.getByRole("radio", { name: /^aurora$/i }))
-    expect(document.documentElement.getAttribute("data-gradient-pattern")).toBe(
-      "aurora",
-    )
-  })
-
+describe("ThemeSwitcher brand part", () => {
   it("always shows the Mode section", () => {
-    render(
-      <ThemeProvider>
-        <ThemeSwitcher />
-      </ThemeProvider>,
-    )
+    renderSwitcher()
     openSwitcher()
     expect(screen.getByText("Mode")).toBeInTheDocument()
     expect(screen.getByRole("radio", { name: /^light$/i })).toBeInTheDocument()
@@ -229,53 +127,132 @@ describe("ThemeSwitcher preset section", () => {
     expect(screen.getByRole("radio", { name: /^system$/i })).toBeInTheDocument()
   })
 
-  it("leaves shell style to the layout switcher", () => {
-    render(
-      <ThemeProvider>
-        <ThemeSwitcher />
-      </ThemeProvider>,
-    )
+  it("renders a Font Size section", () => {
+    renderSwitcher()
     openSwitcher()
-    expect(screen.queryByText("Shell Style")).not.toBeInTheDocument()
+    expect(screen.getByText("Font Size")).toBeInTheDocument()
+  })
+
+  it("switches the font", () => {
+    renderSwitcher()
+    openSwitcher()
+    fireEvent.click(screen.getByRole("radio", { name: "Geist" }))
+    expect(document.documentElement.getAttribute("data-font")).toBe("geist")
+  })
+
+  it("renders Tint With Accent as a switch", () => {
+    renderSwitcher()
+    openSwitcher()
+    fireEvent.click(screen.getByRole("switch", { name: "Tint With Accent" }))
     expect(
-      screen.queryByRole("radio", { name: "island" }),
-    ).not.toBeInTheDocument()
+      document.documentElement.getAttribute("data-tint-with-accent"),
+    ).toBe("on")
   })
 })
 
-describe("ThemeSwitcher font size section", () => {
-  beforeEach(() => {
-    vi.stubGlobal("localStorage", storageMock)
-    storageMock.clear()
-    mockMatchMedia()
+describe("ThemeSwitcher Advanced part", () => {
+  it("starts collapsed and opens on its trigger", () => {
+    renderSwitcher()
+    openSwitcher()
+    const trigger = screen.getByRole("button", { name: "Advanced" })
+    expect(trigger).toHaveAttribute("aria-expanded", "false")
+    expect(screen.queryByText("Contrast")).not.toBeInTheDocument()
+
+    openAdvanced()
+
+    expect(trigger).toHaveAttribute("aria-expanded", "true")
+    expect(screen.getByText("Contrast")).toBeInTheDocument()
   })
 
-  it("renders a Font Size section", () => {
-    render(
-      <ThemeProvider>
-        <ThemeSwitcher />
-      </ThemeProvider>,
+  it("starts collapsed again when the popover reopens", async () => {
+    renderSwitcher()
+    openSwitcher()
+    openAdvanced()
+    fireEvent.keyDown(document, { key: "Escape" })
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
     )
-    fireEvent.click(screen.getByRole("button", { name: /customize theme/i }))
-    expect(screen.getByText("Font Size")).toBeInTheDocument()
+
+    openSwitcher()
+
+    expect(screen.getByRole("button", { name: "Advanced" })).toHaveAttribute(
+      "aria-expanded",
+      "false",
+    )
+  })
+
+  // The axis absorbed canvasTint, so under `solid` it still drives the canvas
+  // saturation cap. Only its blob-scale half is gradient-specific, and that
+  // half goes inert rather than hiding the whole control.
+  it("renders Background Intensity when backgroundStyle is solid", () => {
+    renderSwitcher()
+    openSwitcher()
+    openAdvanced()
+    expect(screen.getByText("Background Intensity")).toBeInTheDocument()
+  })
+
+  it("renders Background Intensity when backgroundStyle is gradient", () => {
+    renderSwitcher()
+    openSwitcher()
+    openAdvanced()
+    fireEvent.click(screen.getByRole("radio", { name: "Gradient" }))
+    expect(screen.getByText("Background Intensity")).toBeInTheDocument()
+    expect(
+      document.documentElement.getAttribute("data-background-intensity"),
+    ).toBe("vivid")
+  })
+
+  it("renders four- and five-value ordinal axes as sliders and three-value ones as toggle groups", () => {
+    renderSwitcher()
+    openSwitcher()
+    openAdvanced()
+    // Radius, Density, Font Size, Outer Glow, Inner Glow, Background Intensity.
+    expect(screen.getAllByRole("slider")).toHaveLength(6)
+    for (const name of ["Elevation", "Contrast", "Dark Accent Chroma"]) {
+      expect(screen.getByRole("radiogroup", { name }), name).toBeInTheDocument()
+    }
+    const bgIntensityRow = screen
+      .getByText("Background Intensity")
+      .closest(".dr-theme-switcher-row") as HTMLElement
+    expect(within(bgIntensityRow).getByText("vivid")).toBeInTheDocument()
+    expect(screen.getByText("cozy")).toBeInTheDocument()
+    expect(screen.getByText("rounded")).toBeInTheDocument()
+  })
+
+  it("does NOT render Gradient Pattern when backgroundStyle is solid", () => {
+    renderSwitcher()
+    openSwitcher()
+    openAdvanced()
+    expect(screen.queryByText("Gradient Pattern")).not.toBeInTheDocument()
+  })
+
+  it("renders Gradient Pattern when backgroundStyle is gradient", () => {
+    renderSwitcher()
+    openSwitcher()
+    openAdvanced()
+    fireEvent.click(screen.getByRole("radio", { name: "Gradient" }))
+    expect(screen.getByText("Gradient Pattern")).toBeInTheDocument()
+    expect(document.documentElement.getAttribute("data-gradient-pattern")).toBe(
+      "blobs",
+    )
+  })
+
+  it("clicking a Gradient Pattern value updates the data attribute", () => {
+    renderSwitcher()
+    openSwitcher()
+    openAdvanced()
+    fireEvent.click(screen.getByRole("radio", { name: "Gradient" }))
+    fireEvent.click(screen.getByRole("radio", { name: /^aurora$/i }))
+    expect(document.documentElement.getAttribute("data-gradient-pattern")).toBe(
+      "aurora",
+    )
   })
 })
 
 describe("ThemeSwitcher popover props", () => {
-  beforeEach(() => {
-    storageMock.clear()
-    vi.stubGlobal("localStorage", storageMock)
-    mockMatchMedia()
-    document.documentElement.style.cssText = ""
-  })
-
   it("gives the popover a role and a default accessible name", () => {
-    render(
-      <ThemeProvider>
-        <ThemeSwitcher />
-      </ThemeProvider>,
-    )
-    fireEvent.click(screen.getByRole("button", { name: /customize theme/i }))
+    renderSwitcher()
+    openSwitcher()
     expect(
       screen.getByRole("dialog", { name: "Theme settings" }),
     ).toBeInTheDocument()
@@ -312,12 +289,9 @@ describe("ThemeSwitcher popover props", () => {
   })
 
   it("labels every toggle group it renders", () => {
-    render(
-      <ThemeProvider>
-        <ThemeSwitcher />
-      </ThemeProvider>,
-    )
-    fireEvent.click(screen.getByRole("button", { name: /customize theme/i }))
+    renderSwitcher()
+    openSwitcher()
+    openAdvanced()
     for (const group of screen.getAllByRole("radiogroup")) {
       expect(group).toHaveAccessibleName()
     }

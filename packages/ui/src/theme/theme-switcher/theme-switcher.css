@@ -183,4 +183,17 @@
   .dr-theme-settings-group-body {
     @apply space-y-3;
   }
+
+  .dr-theme-settings-advanced-trigger {
+    @apply focus-ring text-foreground flex w-full items-center gap-2 rounded-md py-1 text-sm font-medium;
+  }
+
+  .dr-theme-settings-advanced-chevron {
+    @apply text-muted-foreground size-4 shrink-0 transition-transform;
+  }
+
+  .dr-theme-settings-advanced-trigger[data-state="open"]
+    > .dr-theme-settings-advanced-chevron {
+    rotate: 90deg;
+  }
 }
