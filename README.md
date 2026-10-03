@@ -93,12 +93,13 @@ Several hooks are adapted from [react-hookz/web](https://github.com/react-hookz/
 
 ### Theming
 
-A 14-axis theming system. Scaffolded projects configure it through `src/theme.config.ts`, which imports the `ThemeConfig` type from `darkraise-ui/theme`; in this monorepo the type and defaults live in `packages/ui/src/theme/themeConfig.ts`. The axes are:
+A 15-axis theming system. Scaffolded projects configure it through `src/theme.config.ts`, which imports the `ThemeConfig` type from `darkraise-ui/theme`; in this monorepo the type and defaults live in `packages/ui/src/theme/themeConfig.ts`. The axes are:
 
 - **Mode** -- light, dark, or system
 - **Accent color** -- 18 color options plus `neutral` (near-black in light, near-white in dark)
 - **Surface color** -- one of 12 neutral palettes (slate by default)
 - **Preset** -- `default` or `glass` (glassmorphism is the `glass` preset)
+- **Font** -- Inter, Geist, or IBM Plex Sans (body and heading text)
 - **Background style** -- solid or gradient
 - **Background intensity** -- subtle, balanced, vivid, or intense
 - **Gradient pattern** -- blobs, aurora, spotlight, or mesh
@@ -112,7 +113,7 @@ A 14-axis theming system. Scaffolded projects configure it through `src/theme.co
 
 The switcher config also exposes a `presetAxes` master toggle that controls whether preset-specific controls (for example glass opacity and blur) appear in the switcher panel.
 
-Font family is fixed: Inter for sans/heading, JetBrains Mono for monospace. Font size is adjustable via the axis above.
+Monospace text always uses JetBrains Mono. Font size is adjustable via the axis above.
 
 The `ThemeSwitcher` component renders controls for whichever axes are enabled in the config. The `ThemeProvider` accepts an optional `onChange` callback for persisting theme settings to a backend. Theme defaults and axis visibility are set at scaffold time and can be changed later by editing `theme.config.ts`.
 
