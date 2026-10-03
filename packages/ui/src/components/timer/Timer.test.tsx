@@ -30,7 +30,7 @@ function renderTimer(
   )
 }
 
-function getButton(name: "Start" | "Pause" | "Resume" | "Reset") {
+function getButton(name: "Start" | "Pause" | "Resume" | "Reset" | "Restart") {
   return screen.getByRole("button", { name }) as HTMLButtonElement
 }
 
@@ -205,7 +205,9 @@ describe("Timer", () => {
       vi.advanceTimersByTime(500)
     })
     // last call should be ~500ms
-    const lastCall = onTick.mock.calls[onTick.mock.calls.length - 1][0]
+    const lastTick = onTick.mock.calls[onTick.mock.calls.length - 1]
+    if (!lastTick) throw new Error("onTick not called")
+    const lastCall = lastTick[0]
     expect(lastCall).toBeGreaterThanOrEqual(400)
     expect(lastCall).toBeLessThanOrEqual(600)
   })

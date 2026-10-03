@@ -12,7 +12,11 @@ function dividedSelectors(): string[] {
   const css = readFileSync("src/components/card/card.css", "utf8")
   const withoutComments = css.replace(/\/\*[\s\S]*?\*\//g, "")
   return [...withoutComments.matchAll(/([^{}]*\[data-divided[^{}]*)\{/g)]
-    .map((match) => match[1].replace(/\s+/g, " ").trim())
+    .map((match) => {
+      const selector = match[1]
+      if (!selector) throw new Error("selector group missing")
+      return selector.replace(/\s+/g, " ").trim()
+    })
     .flatMap((selector) => selector.split(",").map((part) => part.trim()))
     .filter(Boolean)
 }

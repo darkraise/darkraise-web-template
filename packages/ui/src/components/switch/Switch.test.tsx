@@ -84,10 +84,10 @@ describe("Switch", () => {
 
   it("participates in form submission with name and value", async () => {
     const user = userEvent.setup()
+    let submitted = null as FormDataEntryValue | null
     const onSubmit = vi.fn((e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault()
-      const fd = new FormData(e.currentTarget)
-      onSubmit.mock.calls[onSubmit.mock.calls.length - 1].push(fd.get("notify"))
+      submitted = new FormData(e.currentTarget).get("notify")
     })
     render(
       <form onSubmit={onSubmit}>
@@ -96,8 +96,7 @@ describe("Switch", () => {
       </form>,
     )
     await user.click(screen.getByText("go"))
-    const lastCall = onSubmit.mock.calls[onSubmit.mock.calls.length - 1]
-    expect(lastCall?.[1]).toBe("yes")
+    expect(submitted).toBe("yes")
   })
 
   it("omits form value when unchecked", async () => {

@@ -192,7 +192,9 @@ describe('InputOtp variant="separate"', () => {
     render(<Separate />)
     const slots = screen.getAllByRole("textbox", { name: /character/i })
     expect(slots).toHaveLength(4)
-    expect(slots[0].tagName).toBe("INPUT")
+    const first = slots[0]
+    if (!first) throw new Error("slot 0 missing")
+    expect(first.tagName).toBe("INPUT")
     // No shared "One-time password" overlay input in this variant.
     expect(
       screen.queryByRole("textbox", { name: "One-time password" }),
@@ -204,7 +206,9 @@ describe('InputOtp variant="separate"', () => {
     const onChange = vi.fn()
     render(<Separate onChange={onChange} />)
     const slots = screen.getAllByRole("textbox", { name: /character/i })
-    await user.click(slots[0])
+    const target = slots[0]
+    if (!target) throw new Error("slot 0 missing")
+    await user.click(target)
     await user.keyboard("1")
     expect(onChange).toHaveBeenCalledWith("1")
     expect(document.activeElement).toBe(slots[1])
@@ -219,7 +223,9 @@ describe('InputOtp variant="separate"', () => {
     render(<Separate value="12" onChange={onChange} />)
     const slots = screen.getAllByRole("textbox", { name: /character/i })
     // Slot 2 (index 2) is empty in value="12".
-    await user.click(slots[2])
+    const target = slots[2]
+    if (!target) throw new Error("slot 2 missing")
+    await user.click(target)
     await user.keyboard("{Backspace}")
     expect(onChange).toHaveBeenCalledWith("1")
     expect(document.activeElement).toBe(slots[1])
@@ -229,7 +235,9 @@ describe('InputOtp variant="separate"', () => {
     const user = userEvent.setup()
     render(<Separate value="1234" />)
     const slots = screen.getAllByRole("textbox", { name: /character/i })
-    await user.click(slots[2])
+    const target = slots[2]
+    if (!target) throw new Error("slot 2 missing")
+    await user.click(target)
     await user.keyboard("{ArrowLeft}")
     expect(document.activeElement).toBe(slots[1])
     await user.keyboard("{ArrowRight}{ArrowRight}")
@@ -246,7 +254,9 @@ describe('InputOtp variant="separate"', () => {
     const onComplete = vi.fn()
     render(<Separate onChange={onChange} onComplete={onComplete} />)
     const slots = screen.getAllByRole("textbox", { name: /character/i })
-    await user.click(slots[0])
+    const target = slots[0]
+    if (!target) throw new Error("slot 0 missing")
+    await user.click(target)
     await user.paste("9876")
     expect(onChange).toHaveBeenLastCalledWith("9876")
     expect(onComplete).toHaveBeenCalledWith("9876")
@@ -257,10 +267,14 @@ describe('InputOtp variant="separate"', () => {
     const slots = screen.getAllByRole("textbox", {
       name: /character/i,
     }) as HTMLInputElement[]
-    expect(slots[0].value).toBe("A")
-    expect(slots[1].value).toBe("B")
-    expect(slots[2].value).toBe("")
-    expect(slots[3].value).toBe("")
+    const [first, second, third, fourth] = slots
+    if (!first || !second || !third || !fourth) {
+      throw new Error("slots missing")
+    }
+    expect(first.value).toBe("A")
+    expect(second.value).toBe("B")
+    expect(third.value).toBe("")
+    expect(fourth.value).toBe("")
   })
 
   it("disabled separate inputs are disabled", () => {
@@ -274,7 +288,9 @@ describe('InputOtp variant="separate"', () => {
     render(<Separate />)
     const slots = screen.getAllByRole("textbox", { name: /character/i })
     // Click slot 3 — value is empty, focus should bounce back to slot 0.
-    await user.click(slots[2])
+    const target = slots[2]
+    if (!target) throw new Error("slot 2 missing")
+    await user.click(target)
     expect(document.activeElement).toBe(slots[0])
     // Slot 0 stays focused on its own focus events (no infinite redirect).
     expect(document.activeElement).toBe(slots[0])
@@ -284,7 +300,9 @@ describe('InputOtp variant="separate"', () => {
     const user = userEvent.setup()
     render(<Separate value="12" />)
     const slots = screen.getAllByRole("textbox", { name: /character/i })
-    await user.click(slots[2])
+    const target = slots[2]
+    if (!target) throw new Error("slot 2 missing")
+    await user.click(target)
     expect(document.activeElement).toBe(slots[2])
   })
 
@@ -293,7 +311,9 @@ describe('InputOtp variant="separate"', () => {
     const onChange = vi.fn()
     render(<Separate onChange={onChange} />)
     const slots = screen.getAllByRole("textbox", { name: /character/i })
-    await user.click(slots[0])
+    const target = slots[0]
+    if (!target) throw new Error("slot 0 missing")
+    await user.click(target)
     // Pasting a mixed string fans out, dropping the letter.
     await user.paste("1a2")
     const lastCall = onChange.mock.calls[onChange.mock.calls.length - 1]?.[0]

@@ -48,7 +48,9 @@ describe("RatingGroup", () => {
     const onValueChange = vi.fn<(d: RatingGroupValueChangeDetails) => void>()
     render(<Basic max={5} onValueChange={onValueChange} />)
     const items = screen.getAllByRole("radio")
-    await user.click(items[2])
+    const target = items[2]
+    if (!target) throw new Error("item 2 missing")
+    await user.click(target)
     expect(onValueChange).toHaveBeenCalledWith({ value: 3 })
     expect(screen.getByTestId("star-3")).toHaveAttribute(
       "data-highlighted",
@@ -63,7 +65,9 @@ describe("RatingGroup", () => {
       "data-highlighted",
       "false",
     )
-    fireEvent.pointerEnter(items[2])
+    const target = items[2]
+    if (!target) throw new Error("item 2 missing")
+    fireEvent.pointerEnter(target)
     expect(screen.getByTestId("star-1")).toHaveAttribute(
       "data-highlighted",
       "true",
@@ -89,7 +93,9 @@ describe("RatingGroup", () => {
   it("reverts hover preview when pointer leaves the control", () => {
     const { container } = render(<Basic max={5} defaultValue={1} />)
     const items = screen.getAllByRole("radio")
-    fireEvent.pointerEnter(items[3])
+    const target = items[3]
+    if (!target) throw new Error("item 3 missing")
+    fireEvent.pointerEnter(target)
     expect(screen.getByTestId("star-4")).toHaveAttribute(
       "data-highlighted",
       "true",
@@ -117,6 +123,7 @@ describe("RatingGroup", () => {
     render(<Basic max={5} allowHalf onValueChange={onValueChange} />)
     const items = screen.getAllByRole("radio")
     const fourth = items[3]
+    if (!fourth) throw new Error("item 3 missing")
     // Force a measurable rect; jsdom returns zeroed rects by default.
     fourth.getBoundingClientRect = () => ({
       x: 0,
@@ -154,11 +161,15 @@ describe("RatingGroup", () => {
       <Basic max={5} readOnly defaultValue={2} onValueChange={onValueChange} />,
     )
     const items = screen.getAllByRole("radio")
-    await user.click(items[4])
+    const target = items[4]
+    if (!target) throw new Error("item 4 missing")
+    await user.click(target)
     expect(onValueChange).not.toHaveBeenCalled()
     // Hovering star 4 must NOT light it up — read-only is static, so the
     // painted highlight reflects the committed value (2) only.
-    fireEvent.pointerEnter(items[3])
+    const hovered = items[3]
+    if (!hovered) throw new Error("item 3 missing")
+    fireEvent.pointerEnter(hovered)
     expect(screen.getByTestId("star-4")).toHaveAttribute(
       "data-highlighted",
       "false",

@@ -196,7 +196,9 @@ describe("useImageEditor", () => {
     expect(result.current.hasExtension("magic-wand")).toBe(true)
     // Attach a stub image so runExtension can pass it through.
     result.current.cropper.imageRef.current = document.createElement("img")
-    let output: { mask?: { points: { x: number; y: number }[] } } | null = null
+    let output = null as {
+      mask?: { points: { x: number; y: number }[] }
+    } | null
     await act(async () => {
       output = await result.current.runExtension("magic-wand")
     })
@@ -340,7 +342,9 @@ describe("useImageEditor", () => {
         ],
       }),
     )
-    expect(result.current.presets.at(-1)?.id).toBe("custom")
+    expect(result.current.presets[result.current.presets.length - 1]?.id).toBe(
+      "custom",
+    )
     act(() => result.current.applyPreset("custom"))
     expect(result.current.filters.hueRotate).toBe(90)
   })

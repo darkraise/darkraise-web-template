@@ -32,14 +32,14 @@ it("shows consumer icons in the trigger and options without changing names or ty
   const user = userEvent.setup()
   await user.click(trigger)
   expect(
-    within(
-      screen.getByRole("option", { name: "English", exact: true }),
-    ).getByTestId("en-flag"),
+    within(screen.getByRole("option", { name: "English" })).getByTestId(
+      "en-flag",
+    ),
   ).toBeVisible()
   expect(
-    within(
-      screen.getByRole("option", { name: "Français", exact: true }),
-    ).getByTestId("fr-flag"),
+    within(screen.getByRole("option", { name: "Français" })).getByTestId(
+      "fr-flag",
+    ),
   ).toBeVisible()
   await user.keyboard("f{Enter}")
   expect(changed).toHaveBeenLastCalledWith("fr")

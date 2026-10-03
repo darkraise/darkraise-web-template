@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
+import type { Mock } from "vitest"
 
 import { VirtualizedTimelineScrubber } from "./VirtualizedTimelineScrubber"
 import { computeBucketLayout } from "./useBucketLayout"
@@ -11,6 +12,8 @@ const geometry: BucketGeometry = {
   tileAspect: 1,
   headerHeight: 32,
   bucketSpacing: 16,
+  layout: "grid",
+  rowHeight: 44,
 }
 
 const buckets: TimelineBucket[] = [
@@ -28,12 +31,12 @@ const layout = computeBucketLayout({
 
 function renderScrubber(
   overrides: {
-    onScrubTo?: ReturnType<typeof vi.fn>
+    onScrubTo?: Mock<(scrollTop: number) => void>
     showLabels?: boolean
     scrollTop?: number
   } = {},
 ) {
-  const onScrubTo = overrides.onScrubTo ?? vi.fn()
+  const onScrubTo = overrides.onScrubTo ?? vi.fn<(scrollTop: number) => void>()
   const viewportHeight = 200
   const utils = render(
     <VirtualizedTimelineScrubber

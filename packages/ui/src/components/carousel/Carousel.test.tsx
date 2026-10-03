@@ -83,7 +83,7 @@ describe("Carousel", () => {
   })
 
   it("controlled setApi allows programmatic navigation", () => {
-    let capturedApi: CarouselApi | null = null
+    let capturedApi = null as CarouselApi | null
     render(
       <Carousel
         setApi={(api) => {

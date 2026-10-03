@@ -31,7 +31,9 @@ describe("Highlight", () => {
     )
     const marks = Array.from(container.querySelectorAll("mark"))
     expect(marks).toHaveLength(1)
-    expect(marks[0].textContent).toBe("foo")
+    const mark = marks[0]
+    if (!mark) throw new Error("mark missing")
+    expect(mark.textContent).toBe("foo")
   })
 
   it("only marks the first hit when matchAll=false", () => {
@@ -40,7 +42,9 @@ describe("Highlight", () => {
     )
     const marks = container.querySelectorAll("mark")
     expect(marks).toHaveLength(1)
-    expect(marks[0].textContent).toBe("foo")
+    const mark = marks[0]
+    if (!mark) throw new Error("mark missing")
+    expect(mark.textContent).toBe("foo")
   })
 
   it("renders text untouched for an empty string query", () => {
@@ -73,7 +77,9 @@ describe("Highlight", () => {
     )
     const marks = container.querySelectorAll("mark")
     expect(marks).toHaveLength(1)
-    expect(marks[0].textContent).toBe("$5.00")
+    const mark = marks[0]
+    if (!mark) throw new Error("mark missing")
+    expect(mark.textContent).toBe("$5.00")
   })
 
   it("prefers the longest matching term when terms overlap", () => {

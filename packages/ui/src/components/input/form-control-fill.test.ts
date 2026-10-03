@@ -36,7 +36,7 @@ describe("form control fills", () => {
       .replace(/\/\*[\s\S]*?\*\//g, "")
       .replace(/\s+/g, " ")
     const rule = new RegExp(
-      `[{}] ${selector.replaceAll(".", "\\.")} \\{([^}]*)\\}`,
+      `[{}] ${selector.replace(/\./g, "\\.")} \\{([^}]*)\\}`,
     ).exec(css)
     expect(rule, `${selector} has no rule`).not.toBeNull()
     expect(rule?.[1]).toContain(
@@ -54,7 +54,7 @@ describe("form control fills", () => {
       .replace(/\/\*[\s\S]*?\*\//g, "")
       .replace(/\s+/g, " ")
     const rule = new RegExp(
-      `[{}] ${selector.replaceAll(".", "\\.")} \\{([^}]*)\\}`,
+      `[{}] ${selector.replace(/\./g, "\\.")} \\{([^}]*)\\}`,
     ).exec(css)
     expect(rule, `${selector} has no rule`).not.toBeNull()
     expect(rule?.[1]).not.toMatch(/\bbg-(?:background|transparent)\b/)

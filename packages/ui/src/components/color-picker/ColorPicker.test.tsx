@@ -97,7 +97,7 @@ describe("ColorPicker", () => {
       name: /select color #ef4444/i,
     })
     await user.click(item)
-    const last = spy.mock.calls.at(-1)?.[0]
+    const last = spy.mock.calls[spy.mock.calls.length - 1]?.[0]
     expect(last?.value).toBe("#ef4444")
   })
 
@@ -110,7 +110,7 @@ describe("ColorPicker", () => {
     await user.type(input, "#10b981")
     expect(spy).not.toHaveBeenCalled()
     await user.tab()
-    const last = spy.mock.calls.at(-1)?.[0]
+    const last = spy.mock.calls[spy.mock.calls.length - 1]?.[0]
     expect(last?.value).toBe("#10b981")
   })
 
@@ -164,7 +164,7 @@ describe("ColorPicker", () => {
     await user.clear(input)
     await user.type(input, "#abc")
     await user.tab()
-    const last = spy.mock.calls.at(-1)?.[0]
+    const last = spy.mock.calls[spy.mock.calls.length - 1]?.[0]
     expect(last?.value).toBe("#aabbcc")
   })
 })

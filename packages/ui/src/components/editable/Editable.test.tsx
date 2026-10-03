@@ -15,11 +15,12 @@ import {
 } from "./Editable"
 import type {
   EditableEditChangeDetails,
+  EditableProps,
   EditableValueChangeDetails,
   EditableValueCommitDetails,
 } from "./Editable"
 
-function Basic(props: Partial<React.ComponentProps<typeof Editable>> = {}) {
+function Basic(props: Partial<EditableProps<string>> = {}) {
   return (
     <Editable placeholder="Click to edit" {...props}>
       <EditableLabel>Name</EditableLabel>

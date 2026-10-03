@@ -10,6 +10,8 @@ const geometry: BucketGeometry = {
   tileAspect: 1,
   headerHeight: 32,
   bucketSpacing: 16,
+  layout: "grid",
+  rowHeight: 44,
 }
 
 const buckets: TimelineBucket[] = [

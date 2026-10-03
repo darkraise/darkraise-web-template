@@ -47,7 +47,7 @@ describe("useControllableState", () => {
     const { result, rerender } = renderHook(
       ({ value }: { value?: number }) =>
         useControllableState<number>({ value, defaultValue: 0 }),
-      { initialProps: { value: 5 } },
+      { initialProps: { value: 5 } as { value?: number } },
     )
     expect(result.current[0]).toBe(5)
     rerender({ value: undefined })

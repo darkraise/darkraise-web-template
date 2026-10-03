@@ -81,6 +81,7 @@ describe("FormErrorSummary", () => {
       </>,
     )
     const [first, second] = screen.getAllByRole("alert")
+    if (!first || !second) throw new Error("alerts missing")
     expect(first.getAttribute("aria-labelledby")).not.toBe(
       second.getAttribute("aria-labelledby"),
     )

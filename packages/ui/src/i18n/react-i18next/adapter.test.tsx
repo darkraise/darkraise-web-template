@@ -135,7 +135,7 @@ describe("optional application integration", () => {
     })
     vi.spyOn(instance, "loadLanguages").mockImplementation(
       (_locale, callback) => {
-        callback?.(new Error("Offline"))
+        callback?.(new Error("Offline"), instance.t)
         return Promise.resolve()
       },
     )

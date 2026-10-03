@@ -21,6 +21,7 @@ describe("DateInput", () => {
     const [year, month, day] = screen.getAllByRole(
       "spinbutton",
     ) as HTMLInputElement[]
+    if (!year || !month || !day) throw new Error("date segments missing")
     expect(year.value).toBe("2024")
     expect(month.value).toBe("06")
     expect(day.value).toBe("09")
@@ -43,6 +44,7 @@ describe("DateInput", () => {
     }
     render(<Wrapper />)
     const [year] = screen.getAllByRole("spinbutton") as HTMLInputElement[]
+    if (!year) throw new Error("year segment missing")
     year.focus()
     await userEvent.keyboard("{ArrowUp}")
     expect(onValueChange).toHaveBeenLastCalledWith(new Date(2025, 0, 1))
@@ -69,6 +71,7 @@ describe("DateInput", () => {
     const [year, month, day] = screen.getAllByRole(
       "spinbutton",
     ) as HTMLInputElement[]
+    if (!year || !month || !day) throw new Error("date segments missing")
     year.focus()
     await userEvent.keyboard("2024")
     await userEvent.tab()
@@ -90,6 +93,7 @@ describe("DateInput", () => {
       />,
     )
     const [year] = screen.getAllByRole("spinbutton") as HTMLInputElement[]
+    if (!year) throw new Error("year segment missing")
     year.focus()
     await userEvent.keyboard("{Backspace}")
     expect(year.value).toBe("")
@@ -117,6 +121,7 @@ describe("DateInput", () => {
     const [year, month, day] = screen.getAllByRole(
       "spinbutton",
     ) as HTMLInputElement[]
+    if (!year || !month || !day) throw new Error("date segments missing")
     expect(year.value).toBe("2024")
     expect(month.value).toBe("06")
     expect(day.value).toBe("09")

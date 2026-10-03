@@ -1,5 +1,6 @@
 import { render } from "@testing-library/react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import type { MockInstance } from "vitest"
 import * as React from "react"
 import { Presence } from "./Presence"
 import { Slot } from "../slot/Slot"
@@ -11,7 +12,7 @@ import { Slot } from "../slot/Slot"
 // element type name, so each case uses a distinct tag.
 const REF_WARNING = /Accessing element\.ref was removed in React 19/
 
-function warned(spy: ReturnType<typeof vi.spyOn>): boolean {
+function warned(spy: MockInstance<typeof console.error>): boolean {
   return spy.mock.calls.some((args) =>
     args.some((a) => typeof a === "string" && REF_WARNING.test(a)),
   )
@@ -24,7 +25,7 @@ function BuggyReader({ children }: { children: React.ReactElement }) {
 }
 
 describe("React 19 element.ref access", () => {
-  let spy: ReturnType<typeof vi.spyOn>
+  let spy: MockInstance<typeof console.error>
 
   beforeEach(() => {
     spy = vi.spyOn(console, "error").mockImplementation(() => {})
