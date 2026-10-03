@@ -413,6 +413,7 @@ describe("migrateStorage", () => {
       throw new DOMException("denied", "SecurityError")
     }
     expect(migrateStorage(storage).size).toBe(0)
+    expect(storage.contents()).toEqual({})
   })
 })
 

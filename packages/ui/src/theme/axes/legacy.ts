@@ -296,7 +296,7 @@ function applyRules(
 
 /**
  * Runs the rules newer than the stored marker over `storage`, then stores
- * `revision` unless a write failed. Works on an in-memory copy, so the
+ * `revision` unless a read or write failed. Works on an in-memory copy, so the
  * returned map (every `LEGACY_TARGETS` key that holds a value) is migrated
  * even when storage refuses writes. Never throws.
  */
@@ -307,6 +307,7 @@ export function runLegacyTable(
 ): Map<string, string> {
   const held = new Map<string, string | null>()
   const changed: string[] = []
+  let failed = false
   const read = (key: string): string | null => {
     if (!held.has(key)) {
       let value: string | null
@@ -314,6 +315,7 @@ export function runLegacyTable(
         value = storage.getItem(key)
       } catch {
         value = null
+        failed = true
       }
       held.set(key, value)
     }
@@ -333,7 +335,6 @@ export function runLegacyTable(
     (key) => key,
   )
 
-  let failed = false
   for (const key of changed) {
     const value = held.get(key) ?? null
     try {
