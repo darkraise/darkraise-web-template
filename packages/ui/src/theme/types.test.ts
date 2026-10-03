@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 import {
   BACKGROUND_INTENSITIES,
+  FONTS,
   SHELL_STYLES,
   SIDEBAR_ACTIVE_BARS,
 } from "./types"
@@ -57,5 +58,11 @@ describe("sidebarActiveBar axis", () => {
 
   it("is switchable by default", () => {
     expect(themeConfig.switcher.axes.sidebarActiveBar).toBe(true)
+  })
+})
+
+describe("font faces", () => {
+  it("lists Inter first, then Geist and IBM Plex Sans", () => {
+    expect(FONTS).toEqual(["inter", "geist", "ibm-plex-sans"])
   })
 })

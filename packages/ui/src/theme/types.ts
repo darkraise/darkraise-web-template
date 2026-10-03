@@ -92,6 +92,9 @@ export type TintWithAccent = (typeof TINT_WITH_ACCENT)[number]
 export const FONT_SIZES = ["small", "medium", "large", "extra-large"] as const
 export type FontSize = (typeof FONT_SIZES)[number]
 
+export const FONTS = ["inter", "geist", "ibm-plex-sans"] as const
+export type Font = (typeof FONTS)[number]
+
 /**
  * Chrome treatment of the app shell, orthogonal to which structure is in
  * use. `classic` is the welded, hairline-ruled look the package shipped
