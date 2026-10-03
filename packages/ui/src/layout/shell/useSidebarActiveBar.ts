@@ -1,6 +1,6 @@
 import { useContext } from "react"
 import { ThemeContext } from "@theme/themeContext"
-import { themeConfig } from "@theme/themeConfig"
+import { AXES } from "@theme/axes/registry"
 import type { SidebarActiveBarSetting } from "@theme"
 
 /**
@@ -11,5 +11,5 @@ import type { SidebarActiveBarSetting } from "@theme"
  */
 export function useSidebarActiveBarSetting(): SidebarActiveBarSetting {
   const theme = useContext(ThemeContext)
-  return theme?.sidebarActiveBar ?? themeConfig.defaults.sidebarActiveBar
+  return theme?.sidebarActiveBar ?? AXES.sidebarActiveBar.default
 }

@@ -34,7 +34,11 @@ export type RegistryTypeChecks = [
   >,
   Expect<Equal<ThemeSettings["accentColor"], AccentColor | undefined>>,
   Expect<Record<string, never> extends ThemeSettings ? true : false>,
-  Expect<Equal<ThemeConfig["defaults"]["density"], Density>>,
-  Expect<Equal<keyof ThemeConfig["switcher"]["axes"], AxisKey | "presetAxes">>,
+  Expect<Equal<NonNullable<ThemeConfig["defaults"]["density"]>, Density>>,
+  Expect<
+    AxisKey extends keyof NonNullable<ThemeConfig["switcher"]["axes"]>
+      ? true
+      : false
+  >,
   Expect<AxisKey extends ThemeAxisName ? true : false>,
 ]

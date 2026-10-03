@@ -109,14 +109,11 @@ describe("axis registry", () => {
     expect(AXES.font.layer).toBe("brand")
   })
 
-  it("covers exactly the axes the config declares", () => {
-    expect([...AXIS_KEYS].sort()).toEqual(
-      Object.keys(themeConfig.defaults).sort(),
-    )
-  })
-
-  it.each(AXIS_KEYS)("%s defaults to the config default", (key) => {
-    expect(AXES[key].default).toBe(themeConfig.defaults[key])
+  it("holds only registry axes and their values in the kit config", () => {
+    for (const [key, value] of Object.entries(themeConfig.defaults)) {
+      expect(AXIS_KEYS).toContain(key)
+      expect(isAxisValue(key as AxisKey, value), key).toBe(true)
+    }
   })
 
   it.each(AXIS_KEYS)("%s default is one of its values", (key) => {

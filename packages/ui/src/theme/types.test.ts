@@ -5,7 +5,7 @@ import {
   SHELL_STYLES,
   SIDEBAR_ACTIVE_BARS,
 } from "./types"
-import { themeConfig } from "./themeConfig"
+import { resolveDefaults, themeConfig } from "./themeConfig"
 import { AXES } from "./axes/registry"
 
 describe("backgroundIntensity axis", () => {
@@ -20,11 +20,11 @@ describe("backgroundIntensity axis", () => {
   })
 
   it("defaults to the uncapped step", () => {
-    expect(themeConfig.defaults.backgroundIntensity).toBe("vivid")
+    expect(resolveDefaults(themeConfig).backgroundIntensity).toBe("vivid")
   })
 
   it("is switchable by default", () => {
-    expect(themeConfig.switcher.axes.backgroundIntensity).toBe(true)
+    expect(themeConfig.switcher.axes?.backgroundIntensity).not.toBe(false)
   })
 })
 
@@ -53,11 +53,11 @@ describe("sidebarActiveBar axis", () => {
   })
 
   it("defaults to the preset's own indicator so nothing moves", () => {
-    expect(themeConfig.defaults.sidebarActiveBar).toBe("default")
+    expect(resolveDefaults(themeConfig).sidebarActiveBar).toBe("default")
   })
 
   it("is switchable by default", () => {
-    expect(themeConfig.switcher.axes.sidebarActiveBar).toBe(true)
+    expect(themeConfig.switcher.axes?.sidebarActiveBar).not.toBe(false)
   })
 })
 
