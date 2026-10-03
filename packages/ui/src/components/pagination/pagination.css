@@ -27,7 +27,7 @@
     --state-layer-color: hsl(var(--primary-fill-wash));
     --state-layer-hover: 0.16;
     --state-layer-press: 0.28;
-    /* Button elevation as on any filled button, plus the preset-driven
+    /* The filled-button shadow, plus the preset-driven
        affordance glow (transparent in every shipped preset). */
     box-shadow: var(--shadow-button), var(--affordance-glow);
   }

@@ -118,8 +118,8 @@
   }
 
   /* Slider control replaces a 4-cell toggle group for ordinal axes
-     (Density, Button Elevation, Radius, Background Intensity, Glass
-     Backdrop Blur). The slider fills the row's flex area; the
+     (Density, Radius, Background Intensity, Glass Backdrop Blur). The
+     slider fills the row's flex area; the
      current value name renders on the right as a small muted label so
      the discrete position has a readable indicator. */
   .dr-theme-switcher-slider-control {

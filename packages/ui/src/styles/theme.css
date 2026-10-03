@@ -1278,36 +1278,6 @@
   --elevation-current: var(--elevation-high);
 }
 
-/* Button shadow ramp — intentionally independent from the --elevation-*
-   tokens so the buttonElevation axis works even when the global elevation
-   axis is set to flat. Geometry is tighter than --elevation-* because
-   buttons are small interactive controls, not floating panels. Light-mode
-   defaults below; dark-mode overrides come after. */
-[data-button-elevation="flat"] {
-  --shadow-button: 0 0 transparent;
-}
-[data-button-elevation="low"] {
-  --shadow-button: 0 1px 2px 0 rgb(0 0 0 / 0.08);
-}
-[data-button-elevation="medium"] {
-  --shadow-button: 0 2px 4px 0 rgb(0 0 0 / 0.12), 0 1px 2px 0 rgb(0 0 0 / 0.08);
-}
-[data-button-elevation="high"] {
-  --shadow-button:
-    0 6px 12px -2px rgb(0 0 0 / 0.2), 0 2px 4px 0 rgb(0 0 0 / 0.12);
-}
-
-[data-mode="dark"][data-button-elevation="low"] {
-  --shadow-button: 0 1px 2px 0 rgb(0 0 0 / 0.5);
-}
-[data-mode="dark"][data-button-elevation="medium"] {
-  --shadow-button: 0 2px 4px 0 rgb(0 0 0 / 0.6), 0 1px 2px 0 rgb(0 0 0 / 0.45);
-}
-[data-mode="dark"][data-button-elevation="high"] {
-  --shadow-button:
-    0 6px 12px -2px rgb(0 0 0 / 0.75), 0 2px 4px 0 rgb(0 0 0 / 0.55);
-}
-
 /* Radius axis. --radius drives Tailwind's rounded-sm/md/lg. --radius-control
    reaches buttons and single-line fields through --btn-radius and
    --field-radius, so they can go fully pill-shaped at the highest level

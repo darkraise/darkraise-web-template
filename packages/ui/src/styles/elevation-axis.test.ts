@@ -45,3 +45,16 @@ describe("elevation axis CSS", () => {
     }
   })
 })
+
+describe("button shadow", () => {
+  it("has no button elevation selector", () => {
+    const offenders = sheets
+      .filter(({ css }) => /\[data-button-elevation\b/.test(css))
+      .map(({ file }) => file)
+    expect(offenders).toEqual([])
+  })
+
+  it("keeps the flat button shadow on :root", () => {
+    expect(themeCss).toMatch(/--shadow-button:\s*0 0 transparent;/)
+  })
+})
