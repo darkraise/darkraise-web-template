@@ -64,24 +64,6 @@ describe("glass.css state suppression", () => {
     expect(glassCss).not.toContain("data-glass-halo")
     expect(themeCss).not.toMatch(/--(card-border|glow-surface|shadow-card)\s*:/)
   })
-
-  it("main[data-content] suppresses halo tiers + glow tokens but KEEPS selected-fill", () => {
-    const start = glassCss.indexOf('[data-style="glass"] main[data-content]')
-    const block = glassCss.slice(
-      start,
-      start + glassCss.slice(start).indexOf("}"),
-    )
-    for (const token of [
-      "--glass-halo-raised",
-      "--glass-halo-overlay",
-      "--glass-halo-modal",
-      "--glass-state-hover-glow",
-      "--glass-state-active-inset",
-    ]) {
-      expect(block).toContain(token)
-    }
-    expect(block).not.toContain("--glass-state-selected-fill")
-  })
 })
 
 describe("theme.css glass utilities honor the blur axis", () => {

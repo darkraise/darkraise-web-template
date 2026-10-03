@@ -43,4 +43,12 @@ describe("theme aliases", () => {
     expect(themeCss).toMatch(/@utility\s+card-surface\s*\{/)
     expect(themeCss).toMatch(/\.overlay-surface\s*\{/)
   })
+
+  // No style restyles the strong tier, so its edge is the theme border
+  // rather than a fog tint that only a .dr-surface subtree populates.
+  it("edges the strong tier with the theme border", () => {
+    expect(extractRuleBody("glass-strong")).toContain(
+      "border: 1px solid hsl(var(--border));",
+    )
+  })
 })

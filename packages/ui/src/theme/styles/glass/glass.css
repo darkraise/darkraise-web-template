@@ -155,34 +155,6 @@
   );
 }
 
-/* Halo is a floating-surface signature under Glass. Portaled overlays
-   (Dialog, Sheet, Drawer, Popover, Menu, Tooltip, etc.) carry it via
-   --surface-overlay-shadow. Chrome (Sidebar, LayoutHeader) is
-   deliberately halo-axis-INSENSITIVE since commit 58e3274 — it ends at
-   var(--inset-hi) edge specular and carries NO halo tier, so the ~32px
-   accent glow can't bleed into the page. In-page content (Cards, Buttons,
-   Inputs, etc. rendered inside main[data-content]) also drops the halo,
-   so dashboards with many surfaces don't read as visually noisy and the
-   halo axis doesn't flip the page's overall calm.
-   The main[data-content] scope is the right boundary: sidebar and
-   header sit outside it, and overlay-tier components portal to
-   body, so this reset only affects the page content that lives
-   directly inside <main>. Zero the halo tiers and the GLOW state
-   tokens (hover-glow + active-inset) so interactions inside the
-   content area stay calm. The selected-FILL is kept (not zeroed):
-   it's the accent-tinted background that the comment promises carries
-   selected/checked feedback, and it's the ONLY selection cue on
-   fill-only consumers (listbox items, the SegmentGroup indicator,
-   open Date/Color-picker triggers) when they render in-content —
-   zeroing it would drop their selected state entirely (1.4.1). */
-[data-style="glass"] main[data-content] {
-  --glass-halo-raised: 0 0 transparent;
-  --glass-halo-overlay: 0 0 transparent;
-  --glass-halo-modal: 0 0 transparent;
-  --glass-state-hover-glow: 0 0 transparent;
-  --glass-state-active-inset: 0 0 transparent;
-}
-
 [data-style="glass"] {
   --shadow-dropdown:
     0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);

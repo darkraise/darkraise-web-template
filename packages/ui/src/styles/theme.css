@@ -182,7 +182,7 @@
   background: linear-gradient(135deg, var(--fog-20), var(--fog-10));
   -webkit-backdrop-filter: var(--backdrop-filter);
   backdrop-filter: var(--backdrop-filter);
-  border: 1px solid var(--fog-20);
+  border: 1px solid hsl(var(--border));
   border-radius: var(--radius);
   box-shadow: var(--elevation-medium), var(--inset-hi-strong);
   transition:
@@ -714,6 +714,9 @@
     --chrome-shadow: 0 0 transparent;
     --chrome-backdrop: none;
     --chrome-canvas: none;
+    /* Frosted grain for Glass's overlay surfaces: glass.css layers it under
+       the fog gradient in --surface-overlay-layers. */
+    --glass-noise: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.08 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
     --noise-opacity: 0;
     --cropper-grid-line: rgba(255, 255, 255, 0.5);
     /* Dark blob peaks bumped from 8/6/4/3% to 10/8/6/5% (mid values from
@@ -1870,7 +1873,7 @@
     background: linear-gradient(135deg, var(--fog-20), var(--fog-10));
     -webkit-backdrop-filter: var(--backdrop-filter);
     backdrop-filter: var(--backdrop-filter);
-    border: 1px solid var(--fog-20);
+    border: 1px solid hsl(var(--border));
     border-radius: var(--radius);
     box-shadow: var(--elevation-medium), var(--inset-hi-strong);
     transition:
@@ -1997,11 +2000,6 @@
     filter: invert(1);
   }
 
-  :where([data-style]:not([data-style="glass"])) .glass-strong,
-  :where([data-style]:not([data-style="glass"])) .overlay-surface {
-    border-color: hsl(var(--border));
-  }
-
   /* Sidebar collapsed-state utilities. The aside (in SidebarLayout) and the
      nav (in SidebarNav) both carry data-collapsed attributes when the
      sidebar is in icon-only mode. Consumers can mark elements with
@@ -2082,12 +2080,6 @@
 }
 
 @layer overrides {
-  /* Frosted grain for Glass's overlay surfaces: glass.css layers it under
-     the fog gradient in --surface-overlay-layers. */
-  [data-style="glass"] {
-    --glass-noise: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.08 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-  }
-
   /* Exit animations need fill-mode: forwards so the element holds its end
      state (opacity 0, height 0, scale 0.95, etc.) for the one render tick
      between `animation.finished` and Presence unmounting the node. Without
