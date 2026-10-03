@@ -222,6 +222,26 @@ describe("SidebarLayout shell style", () => {
       "flat",
     )
   })
+
+  it("offers the shell-style choice, checking the painted style, only while unpinned", async () => {
+    const user = userEvent.setup()
+    const first = renderLayout({
+      showLayoutSwitcher: true,
+      defaultShellStyle: "inset",
+    })
+    await user.click(screen.getByRole("button", { name: "Switch layout" }))
+    expect(screen.getAllByRole("menuitemradio")).toHaveLength(6)
+    expect(
+      screen.getByRole("menuitemradio", { name: "inset" }),
+    ).toHaveAttribute("aria-checked", "true")
+    first.unmount()
+    renderLayout({ shellStyle: "island", showLayoutSwitcher: true })
+    await user.click(screen.getByRole("button", { name: "Switch layout" }))
+    expect(
+      screen.getByRole("menuitem", { name: "Stacked" }),
+    ).toBeInTheDocument()
+    expect(screen.queryByRole("menuitemradio")).toBeNull()
+  })
 })
 
 describe("active indicator precedence", () => {
@@ -280,25 +300,5 @@ describe("active indicator precedence", () => {
   it("still works with no ThemeProvider at all", () => {
     const { container } = renderWithTheme({ activeBar: "bar" })
     expect(wire(container)).toBe("bar")
-  })
-
-  it("offers the shell-style choice, checking the painted style, only while unpinned", async () => {
-    const user = userEvent.setup()
-    const first = renderLayout({
-      showLayoutSwitcher: true,
-      defaultShellStyle: "inset",
-    })
-    await user.click(screen.getByRole("button", { name: "Switch layout" }))
-    expect(screen.getAllByRole("menuitemradio")).toHaveLength(6)
-    expect(
-      screen.getByRole("menuitemradio", { name: "inset" }),
-    ).toHaveAttribute("aria-checked", "true")
-    first.unmount()
-    renderLayout({ shellStyle: "island", showLayoutSwitcher: true })
-    await user.click(screen.getByRole("button", { name: "Switch layout" }))
-    expect(
-      screen.getByRole("menuitem", { name: "Stacked" }),
-    ).toBeInTheDocument()
-    expect(screen.queryByRole("menuitemradio")).toBeNull()
   })
 })

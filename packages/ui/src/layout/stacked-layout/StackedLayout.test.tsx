@@ -107,6 +107,25 @@ describe("StackedLayout shell style", () => {
       "flat",
     )
   })
+
+  it("offers the shell-style choice, checking the painted style, only while unpinned", () => {
+    const first = renderLayout({
+      showLayoutSwitcher: true,
+      defaultShellStyle: "inset",
+    })
+    fireEvent.click(screen.getByRole("button", { name: "Switch layout" }))
+    expect(screen.getAllByRole("menuitemradio")).toHaveLength(6)
+    expect(
+      screen.getByRole("menuitemradio", { name: "inset" }),
+    ).toHaveAttribute("aria-checked", "true")
+    first.unmount()
+    renderLayout({ shellStyle: "framed", showLayoutSwitcher: true })
+    fireEvent.click(screen.getByRole("button", { name: "Switch layout" }))
+    expect(
+      screen.getByRole("menuitem", { name: "Stacked" }),
+    ).toBeInTheDocument()
+    expect(screen.queryByRole("menuitemradio")).toBeNull()
+  })
 })
 
 describe("active indicator setting", () => {
@@ -156,24 +175,5 @@ describe("active indicator setting", () => {
         `:is(.dr-sidebar-nav, .dr-stacked-layout-rail-nav, .dr-stacked-layout-aside-nav)[data-active-bar="${value}"]`,
       )
     }
-  })
-
-  it("offers the shell-style choice, checking the painted style, only while unpinned", () => {
-    const first = renderLayout({
-      showLayoutSwitcher: true,
-      defaultShellStyle: "inset",
-    })
-    fireEvent.click(screen.getByRole("button", { name: "Switch layout" }))
-    expect(screen.getAllByRole("menuitemradio")).toHaveLength(6)
-    expect(
-      screen.getByRole("menuitemradio", { name: "inset" }),
-    ).toHaveAttribute("aria-checked", "true")
-    first.unmount()
-    renderLayout({ shellStyle: "framed", showLayoutSwitcher: true })
-    fireEvent.click(screen.getByRole("button", { name: "Switch layout" }))
-    expect(
-      screen.getByRole("menuitem", { name: "Stacked" }),
-    ).toBeInTheDocument()
-    expect(screen.queryByRole("menuitemradio")).toBeNull()
   })
 })
