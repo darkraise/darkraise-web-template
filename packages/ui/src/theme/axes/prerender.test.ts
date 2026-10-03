@@ -162,4 +162,22 @@ describe("pre-render script", () => {
     expect(localStorage.getItem("theme-surface-intensity")).toBe("bold")
     expect(localStorage.getItem("theme-settings-version")).toBeNull()
   })
+
+  it("withholds the marker when a read throws", () => {
+    localStorage.setItem("theme-elevation", "medium")
+    const getItem = Storage.prototype.getItem
+    vi.spyOn(Storage.prototype, "getItem").mockImplementation(function (
+      this: Storage,
+      key: string,
+    ) {
+      if (key === "theme-surface-color") {
+        throw new DOMException("denied", "SecurityError")
+      }
+      return getItem.call(this, key)
+    })
+    run()
+    expect(root.getAttribute("data-elevation")).toBe("standard")
+    expect(localStorage.getItem("theme-elevation")).toBe("medium")
+    expect(localStorage.getItem("theme-settings-version")).toBeNull()
+  })
 })

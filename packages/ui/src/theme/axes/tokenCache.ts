@@ -23,8 +23,8 @@ export function cacheInputKeys(): string[] {
 }
 
 /**
- * The pre-render script builds the same string from raw storage, so the two
- * must stay byte-identical: raw values, "" for absent, joined with "|".
+ * The pre-render script builds the same string from the migrated values, so
+ * the two must stay byte-identical: raw values, "" for absent, joined with "|".
  */
 export function tokenCacheId(
   read: (key: string) => string | null,
