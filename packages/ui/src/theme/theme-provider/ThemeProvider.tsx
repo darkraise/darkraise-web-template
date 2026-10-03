@@ -20,7 +20,11 @@ import {
   type ThemePreset,
 } from "@theme/presets"
 import { ThemeContext } from "@theme/themeContext"
-import { themeConfig, type ThemeConfig } from "@theme/themeConfig"
+import {
+  resolveDefaults,
+  themeConfig,
+  type ThemeConfig,
+} from "@theme/themeConfig"
 import { useDebouncedCallback } from "@hooks/useDebouncedCallback"
 import {
   AXES,
@@ -197,11 +201,11 @@ export function ThemeProvider({
 }: ThemeProviderProps) {
   const cfg = config ?? themeConfig
   // An inline `config` prop is a new object on every parent render; keying the
-  // defaults on their content stops each of those renders from repainting.
-  const defaultsKey = JSON.stringify(cfg.defaults)
+  // defaults on its content stops each of those renders from repainting.
+  const configKey = JSON.stringify(cfg)
   const defaults = useMemo(
-    () => JSON.parse(defaultsKey) as ThemeConfig["defaults"],
-    [defaultsKey],
+    () => resolveDefaults(JSON.parse(configKey) as ThemeConfig),
+    [configKey],
   )
 
   // One storage read at mount. knownRef then mirrors every write this provider
