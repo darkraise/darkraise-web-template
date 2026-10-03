@@ -43,7 +43,7 @@
   /* Glass-preset frosted Checkbox. Unchecked state is fog tint inside the
      3:1 field edge; the checked/indeterminate states swap in a
      primary-tinted gradient for the "on" reading. */
-  [data-preset="glass"] .dr-checkbox {
+  [data-style="glass"] .dr-checkbox {
     background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
     border-color: var(--field-edge);
     -webkit-backdrop-filter: var(--backdrop-filter);
@@ -51,8 +51,8 @@
     box-shadow: var(--inset-hi), var(--glass-halo-raised);
   }
 
-  [data-preset="glass"] .dr-checkbox[data-state="checked"],
-  [data-preset="glass"] .dr-checkbox[data-state="indeterminate"] {
+  [data-style="glass"] .dr-checkbox[data-state="checked"],
+  [data-style="glass"] .dr-checkbox[data-state="indeterminate"] {
     background-image: linear-gradient(
       135deg,
       hsl(var(--primary) / 0.55),
@@ -62,12 +62,12 @@
     box-shadow: var(--inset-hi), var(--glass-halo-raised);
   }
 
-  [data-preset="glass"] .dr-checkbox:hover {
+  [data-style="glass"] .dr-checkbox:hover {
     box-shadow:
       var(--inset-hi), var(--glass-halo-raised), var(--glass-state-hover-glow);
   }
 
-  [data-preset="glass"] .dr-checkbox:disabled {
+  [data-style="glass"] .dr-checkbox:disabled {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
     box-shadow: none;

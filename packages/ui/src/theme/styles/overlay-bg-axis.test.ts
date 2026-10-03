@@ -1,12 +1,12 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
 
-// Every preset must let the `surface` prop reach the overlay tier. Several
+// Every style must let the `surface` prop reach the overlay tier. Several
 // presets used to define --surface-overlay-bg straight from --background,
 // which the prop never reached, making Dialog/Popover/Tooltip/Select/Command
 // and every menu silent no-ops there. This is the regression this test exists
 // to prevent.
-const PRESETS = ["glass/glass.css"]
+const STYLE_FILES = ["glass/glass.css"]
 
 function themeRuleBody(selector: string): string {
   const flat = readFileSync("src/styles/theme.css", "utf8")
@@ -21,9 +21,9 @@ function themeRuleBody(selector: string): string {
   return body.trim()
 }
 
-describe("preset overlay backgrounds", () => {
-  it.each(PRESETS)("%s declares a static overlay base", (file) => {
-    const css = readFileSync(`src/theme/presets/${file}`, "utf8").replace(
+describe("style overlay backgrounds", () => {
+  it.each(STYLE_FILES)("%s declares a static overlay base", (file) => {
+    const css = readFileSync(`src/theme/styles/${file}`, "utf8").replace(
       /\s+/g,
       " ",
     )

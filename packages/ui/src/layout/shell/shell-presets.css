@@ -11,9 +11,9 @@
      content region as a visible colour band. Chrome's identity comes from the
      heavy blur, the fog gradient and the edge specular; the halo axis stays
      on floating-tier surfaces. */
-  [data-preset="glass"] .dr-shell > [data-region="nav"],
-  [data-preset="glass"] .dr-shell > [data-region="subnav"],
-  [data-preset="glass"] .dr-shell > [data-region="panel"] {
+  [data-style="glass"] .dr-shell > [data-region="nav"],
+  [data-style="glass"] .dr-shell > [data-region="subnav"],
+  [data-style="glass"] .dr-shell > [data-region="panel"] {
     background-color: transparent;
     background-image: linear-gradient(135deg, var(--fog-30), var(--fog-15));
     -webkit-backdrop-filter: blur(calc(var(--backdrop-blur, 12px) * 1.5))
@@ -23,7 +23,7 @@
   }
 
   /* Top-down rather than diagonal: light falls that way on a horizontal bar. */
-  [data-preset="glass"] .dr-shell > [data-region="bar"] {
+  [data-style="glass"] .dr-shell > [data-region="bar"] {
     background-color: transparent;
     background-image: linear-gradient(180deg, var(--fog-30), var(--fog-15));
     -webkit-backdrop-filter: blur(calc(var(--backdrop-blur, 12px) * 1.5))
@@ -33,7 +33,7 @@
   }
 
   /* Welded styles keep the single seam edge the chrome has always drawn. */
-  [data-preset="glass"]
+  [data-style="glass"]
     .dr-shell:is(
       [data-shell-style="classic"],
       [data-shell-style="framed"],
@@ -43,7 +43,7 @@
     border-right: 1px solid var(--fog-20);
   }
 
-  [data-preset="glass"]
+  [data-style="glass"]
     .dr-shell:is(
       [data-shell-style="classic"],
       [data-shell-style="framed"],
@@ -56,7 +56,7 @@
   /* Detached from the shell, a region is a floating surface rather than a
      wall: every edge is drawn, and the gutter around it keeps the glow off
      the content, so the halo suppression note above stops applying. */
-  [data-preset="glass"]
+  [data-style="glass"]
     .dr-shell:is([data-shell-style="island"], [data-shell-style="floating"])
     > [data-region] {
     border-color: var(--fog-20);
@@ -64,7 +64,7 @@
   }
 
   /* The handle is a gutter, never a surface. */
-  [data-preset="glass"] .dr-shell > [data-region="handle"] {
+  [data-style="glass"] .dr-shell > [data-region="handle"] {
     background-image: none;
     box-shadow: none;
     -webkit-backdrop-filter: none;

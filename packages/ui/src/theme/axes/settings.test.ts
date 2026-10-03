@@ -37,7 +37,7 @@ describe("glass axes", () => {
           "theme-glass-opacity": "cloudy",
         }),
       ),
-    ).toEqual({ preset: "glass", glassBlur: "high" })
+    ).toEqual({ style: "glass", glassBlur: "high" })
   })
 })
 

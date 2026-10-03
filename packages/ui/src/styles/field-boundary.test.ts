@@ -33,7 +33,7 @@ function bodyOf(file: string, selector: string): string {
 
 /** The glass rule that paints the control at rest. */
 function glassRestBody(file: string, cls: string): string {
-  const subject = new RegExp(`^\\[data-preset="glass"\\] \\.${cls}(?![\\w-])`)
+  const subject = new RegExp(`^\\[data-style="glass"\\] \\.${cls}(?![\\w-])`)
   const rule = rulesOf(file).find(
     (r) =>
       subject.test(r.selector) &&
@@ -92,7 +92,7 @@ describe("field boundary", () => {
     // surface radius for wrapping chips and has to keep the edge with it.
     const body = bodyOf(
       "multi-select/multi-select.css",
-      '[data-preset="glass"] .dr-combobox-control.dr-multi-select-control',
+      '[data-style="glass"] .dr-combobox-control.dr-multi-select-control',
     )
     expect(body).toContain("border-bottom-color: var(--field-edge);")
   })
@@ -102,7 +102,7 @@ describe("field boundary", () => {
     // and loads earlier, so without this the bottom stays grey on focus.
     const body = bodyOf(
       "multi-select/multi-select.css",
-      '[data-preset="glass"] .dr-combobox-control.dr-multi-select-control:is(:focus-within, [data-state="open"])',
+      '[data-style="glass"] .dr-combobox-control.dr-multi-select-control:is(:focus-within, [data-state="open"])',
     )
     expect(body).toContain("border-bottom-color: hsl(var(--primary) / 0.4);")
   })
@@ -115,7 +115,7 @@ describe("field boundary", () => {
   it("leaves the glass combobox one border: the control's", () => {
     const body = bodyOf(
       "combobox/combobox.css",
-      '[data-preset="glass"] .dr-combobox-control > .dr-combobox-input.dr-input',
+      '[data-style="glass"] .dr-combobox-control > .dr-combobox-input.dr-input',
     )
     for (const declaration of [
       "border-width: 0;",
@@ -133,7 +133,7 @@ describe("field boundary", () => {
   it("leaves the glass number input one invalid ring: the wrapper's", () => {
     const body = bodyOf(
       "number-input/number-input.css",
-      '[data-preset="glass"] .dr-number-input-control .dr-number-input-field:is(:focus, :focus-visible)',
+      '[data-style="glass"] .dr-number-input-control .dr-number-input-field:is(:focus, :focus-visible)',
     )
     expect(body).toContain("box-shadow: none;")
   })
@@ -215,7 +215,7 @@ describe("small control edge", () => {
 })
 
 const GLASS_INPUT =
-  '[data-preset="glass"] .dr-input:not(.dr-number-input *):not(.dr-date-input *):not(.dr-password-input *):not(.dr-input-otp *):not(.dr-file-upload *):not(.dr-combobox *):not(.dr-cascade-select *)'
+  '[data-style="glass"] .dr-input:not(.dr-number-input *):not(.dr-date-input *):not(.dr-password-input *):not(.dr-input-otp *):not(.dr-file-upload *):not(.dr-combobox *):not(.dr-cascade-select *)'
 const INVALID = ':is([data-invalid], [aria-invalid="true"])'
 const HAS_INVALID = `:has(${INVALID})`
 
@@ -224,43 +224,43 @@ const INVALID_COMPANIONS: Array<[string, string, string, string[]]> = [
   ["input/input.css", GLASS_INPUT, INVALID, [":focus", ":focus-visible"]],
   [
     "select/select.css",
-    '[data-preset="glass"] .dr-select-trigger',
+    '[data-style="glass"] .dr-select-trigger',
     INVALID,
     [":focus", ":focus-visible"],
   ],
   [
     "textarea/textarea.css",
-    '[data-preset="glass"] .dr-textarea',
+    '[data-style="glass"] .dr-textarea',
     INVALID,
     [":focus", ":focus-visible"],
   ],
   [
     "number-input/number-input.css",
-    '[data-preset="glass"] .dr-number-input-control',
+    '[data-style="glass"] .dr-number-input-control',
     HAS_INVALID,
     [":focus-within"],
   ],
   [
     "date-input/date-input.css",
-    '[data-preset="glass"] .dr-date-input',
+    '[data-style="glass"] .dr-date-input',
     INVALID,
     [":focus-within"],
   ],
   [
     "password-input/password-input.css",
-    '[data-preset="glass"] .dr-password-input-field',
+    '[data-style="glass"] .dr-password-input-field',
     INVALID,
     [":focus", ":focus-visible"],
   ],
   [
     "combobox/combobox.css",
-    '[data-preset="glass"] .dr-combobox-control',
+    '[data-style="glass"] .dr-combobox-control',
     HAS_INVALID,
     [":focus-within"],
   ],
   [
     "multi-select/multi-select.css",
-    '[data-preset="glass"] .dr-combobox-control.dr-multi-select-control',
+    '[data-style="glass"] .dr-combobox-control.dr-multi-select-control',
     HAS_INVALID,
     [":focus-within"],
   ],
@@ -313,7 +313,7 @@ const OTP_INVALID_FOCUSED = [
 describe("InputOTP invalid state", () => {
   it.each([
     ["default", ""],
-    ["glass", '[data-preset="glass"] '],
+    ["glass", '[data-style="glass"] '],
   ])("draws the %s invalid border and focused ring", (_preset, prefix) => {
     const rules = rulesOf("input-otp/input-otp.css")
     const rest = rules.find((r) => r.selector === `${prefix}${OTP_INVALID}`)
@@ -334,17 +334,17 @@ describe("InputOTP invalid state", () => {
     const rules = rulesOf("input-otp/input-otp.css")
     const glassActive = rules.findIndex((r) =>
       r.selector.startsWith(
-        '[data-preset="glass"] .dr-input-otp-slot[data-active]',
+        '[data-style="glass"] .dr-input-otp-slot[data-active]',
       ),
     )
     const glassInvalid = rules.findIndex(
-      (r) => r.selector === `[data-preset="glass"] ${OTP_INVALID}`,
+      (r) => r.selector === `[data-style="glass"] ${OTP_INVALID}`,
     )
     expect(glassActive).toBeGreaterThanOrEqual(0)
     expect(glassInvalid).toBeGreaterThan(glassActive)
     const focused = rules.find((r) =>
       selectorsOf(r).includes(
-        `[data-preset="glass"] ${OTP_INVALID}[data-active]`,
+        `[data-style="glass"] ${OTP_INVALID}[data-active]`,
       ),
     )
     expect(focused?.body).toBe(

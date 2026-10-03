@@ -141,7 +141,7 @@
      which would compete with the indicator pill. The neutralizer
      below overrides the radio-group Glass background and border for
      segment-group items specifically. */
-  [data-preset="glass"] .dr-segment-group {
+  [data-style="glass"] .dr-segment-group {
     background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
     border: 1px solid var(--fog-20);
     -webkit-backdrop-filter: var(--backdrop-filter);
@@ -151,10 +151,10 @@
 
   /* Neutralize the RadioGroup-Glass surface on segment-group items so
      the indicator pill is the only selection chrome the user sees.
-     Specificity (0,3,0) beats [data-preset="glass"] .dr-radio-group-item
+     Specificity (0,3,0) beats [data-style="glass"] .dr-radio-group-item
      at (0,2,0) and its checked-state at (0,3,0) on source order. */
-  [data-preset="glass"] .dr-segment-group .dr-segment-group-item,
-  [data-preset="glass"]
+  [data-style="glass"] .dr-segment-group .dr-segment-group-item,
+  [data-style="glass"]
     .dr-segment-group
     .dr-segment-group-item[data-state="checked"] {
     background-image: linear-gradient(transparent, transparent);
@@ -164,13 +164,13 @@
     backdrop-filter: none;
   }
 
-  [data-preset="glass"]
+  [data-style="glass"]
     .dr-segment-group-indicator:not([data-variant="outline"]) {
     background-image: var(--glass-state-selected-fill);
     box-shadow: var(--glass-state-active-inset);
   }
 
-  [data-preset="glass"] .dr-segment-group-item:where(:not(:disabled)):hover {
+  [data-style="glass"] .dr-segment-group-item:where(:not(:disabled)):hover {
     box-shadow: var(--glass-state-hover-glow);
   }
 }

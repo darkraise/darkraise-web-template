@@ -2,7 +2,6 @@ import { Blend, Monitor, Moon, Square, Sun } from "lucide-react"
 import { ToggleGroup, ToggleGroupItem } from "@components/toggle-group"
 import { useUiLabels } from "@labels"
 import { AXES, type AxisKey, type AxisValue } from "@theme/axes/registry"
-import { presets, type PresetName } from "@theme/presets"
 import { useTheme } from "@theme/useTheme"
 import type { UiMessages } from "../../../i18n/types"
 
@@ -33,7 +32,6 @@ const SIDEBAR_ACTIVE_BAR_LABELS: Readonly<Record<string, string>> = {
 const OPTION_LABELS: Partial<Record<AxisKey, OptionLabel>> = {
   mode: (value, labels) =>
     labels.theme.modes[value as keyof UiMessages["theme"]["modes"]],
-  preset: (value) => presets[value as PresetName].label,
   // An untranslated value (the English map holds the bare value) gets the
   // switcher's own English word; a translation is used as given.
   sidebarActiveBar: (value, labels) => {

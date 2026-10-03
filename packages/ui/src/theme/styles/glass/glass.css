@@ -1,9 +1,9 @@
-/* packages/ui/src/theme/presets/glass/glass.css
+/* packages/ui/src/theme/styles/glass/glass.css
  * Scalar tokens for the Glass preset's three axes (opacity, blur, halo)
  * plus state-personality tokens and mode-scoped composition into
  * --surface-overlay-shadow / --card-elevation-*. Cross-axis color math
  * (fog tiers, inset highlights, halo tier tokens, dark-gradient border)
- * lives in glass.ts; this file is the no-JS bedrock for the simple
+ * lives in glassTokens.ts; this file is the no-JS bedrock for the simple
  * values and the var(--primary)-driven state tokens.
  */
 
@@ -12,25 +12,25 @@
      1. --surface-opacity here (consumed via `var(--surface-opacity, 1)` in
         @theme inline → dilutes --color-card/-popover/-surface-raised/-overlay,
         the Tailwind utility-color / "solidity" path);
-     2. the FOG_ALPHA tiers in glass.ts (→ --fog-05..--fog-50, the frosted
+     2. the FOG_ALPHA tiers in glassTokens.ts (→ --fog-05..--fog-50, the frosted
         overlay/sunken glass path, --surface-overlay-bg, .glass utilities);
-     3. the INSET_HI tiers in glass.ts (→ --inset-hi*).
+     3. the INSET_HI tiers in glassTokens.ts (→ --inset-hi*).
    They never share a numeric value (a flat scalar here vs mode-asymmetric
-   curves in glass.ts) but move the same direction with the axis: subtle =
+   curves in glassTokens.ts) but move the same direction with the axis: subtle =
    subtle glass effect = high opacity = card almost-solid; strong = strong
    glass effect = low opacity = card very see-through. The medium
    --surface-opacity 0.5 preserves the old resolveGlassOpacity solid branch
    byte-for-byte (surface alpha only; the fog/inset curves are preserved
-   separately in glass.ts). */
-[data-preset="glass"][data-glass-opacity="subtle"] {
+   separately in glassTokens.ts). */
+[data-style="glass"][data-glass-opacity="subtle"] {
   --surface-opacity: 0.78;
   --glass-overlay-base-alpha: 0.88;
 }
-[data-preset="glass"][data-glass-opacity="medium"] {
+[data-style="glass"][data-glass-opacity="medium"] {
   --surface-opacity: 0.5;
   --glass-overlay-base-alpha: 0.76;
 }
-[data-preset="glass"][data-glass-opacity="strong"] {
+[data-style="glass"][data-glass-opacity="strong"] {
   --surface-opacity: 0.3;
   --glass-overlay-base-alpha: 0.62;
 }
@@ -46,19 +46,19 @@
    blur(calc(var(--backdrop-blur) * 1.5)) so it can carry a stronger frost.
    medium = 12px matches today's surfaceStyles.glass.overrides.backdropBlur
    byte-for-byte. */
-[data-preset="glass"][data-glass-blur="none"] {
+[data-style="glass"][data-glass-blur="none"] {
   --backdrop-blur: 0;
   --backdrop-filter: none;
 }
-[data-preset="glass"][data-glass-blur="low"] {
+[data-style="glass"][data-glass-blur="low"] {
   --backdrop-blur: 6px;
   --backdrop-filter: blur(6px) saturate(140%);
 }
-[data-preset="glass"][data-glass-blur="medium"] {
+[data-style="glass"][data-glass-blur="medium"] {
   --backdrop-blur: 12px;
   --backdrop-filter: blur(12px) saturate(140%);
 }
-[data-preset="glass"][data-glass-blur="high"] {
+[data-style="glass"][data-glass-blur="high"] {
   --backdrop-blur: 24px;
   --backdrop-filter: blur(24px) saturate(140%);
 }
@@ -69,11 +69,11 @@
    overlay) fully opaque — recovering the worst-case contrast headroom that
    opacity=strong (0.3) can erode over a busy gradient canvas — and
    --backdrop-filter:none (plus --backdrop-blur:0) removes the blur on every
-   surface that consumes those vars. Scoped to [data-preset="glass"] so it
+   surface that consumes those vars. Scoped to [data-style="glass"] so it
    only touches the Glass material and leaves the default look untouched for
    everyone else. */
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
-  [data-preset="glass"] {
+  [data-style="glass"] {
     --surface-opacity: 1;
     --glass-overlay-base-alpha: 1;
     --backdrop-blur: 0;
@@ -88,7 +88,7 @@
    render with Glass's full chrome. These details used to live on
    per-`.glass-strong`-class overrides and were lost when those
    components moved to consume --surface-overlay-* directly. */
-[data-preset="glass"] {
+[data-style="glass"] {
   /* The fog gradient alone is only a background-IMAGE pair, so the shorthand
      leaves background-color transparent. In dark mode the fog tiers bottom
      out around alpha 0.14/0.07, which is see-through enough that page text
@@ -107,7 +107,7 @@
   --surface-overlay-blend-mode: overlay, normal;
   --surface-overlay-border: var(--fog-20);
 }
-[data-mode="light"][data-preset="glass"] {
+[data-mode="light"][data-style="glass"] {
   /* Lower-tier fog gradient for light overlay surfaces. The default
      fog-20/-10 (alphas 0.82/0.65 at medium opacity) reads as nearly-
      opaque white frost over light canvases, hiding the backdrop-filter
@@ -131,7 +131,7 @@
     inset 0 0 32px color-mix(in oklab, hsl(var(--surface-tint)) 2%, transparent),
     var(--glass-halo-overlay);
 }
-[data-mode="dark"][data-preset="glass"] {
+[data-mode="dark"][data-style="glass"] {
   --surface-overlay-shadow:
     var(--elevation-medium), var(--inset-hi-strong),
     inset 0 0 40px
@@ -145,7 +145,7 @@
    alpha curves like the halo tier tokens do — a single accent-
    tinted value reads cleanly in both modes thanks to the
    --primary token already being mode-tuned in generateTokens. */
-[data-preset="glass"] {
+[data-style="glass"] {
   --glass-state-hover-glow: 0 0 24px hsl(var(--primary) / 0.18);
   --glass-state-active-inset: inset 0 0 0 2px hsl(var(--primary) / 0.22);
   --glass-state-selected-fill: linear-gradient(
@@ -176,7 +176,7 @@
    fill-only consumers (listbox items, the SegmentGroup indicator,
    open Date/Color-picker triggers) when they render in-content —
    zeroing it would drop their selected state entirely (1.4.1). */
-[data-preset="glass"] main[data-content] {
+[data-style="glass"] main[data-content] {
   --glass-halo-raised: 0 0 transparent;
   --glass-halo-overlay: 0 0 transparent;
   --glass-halo-modal: 0 0 transparent;
@@ -195,7 +195,7 @@
 
    Values duplicated from the `[data-mode="dark"]` block in theme.css —
    update both if the base ramp changes. */
-[data-mode="dark"][data-preset="glass"] {
+[data-mode="dark"][data-style="glass"] {
   --card-elevation-low: 0 1px 2px 0 rgb(0 0 0 / 0.4), var(--glass-halo-raised);
   --card-elevation-medium:
     0 8px 20px -2px rgb(0 0 0 / 0.65), 0 3px 8px -1px rgb(0 0 0 / 0.5),

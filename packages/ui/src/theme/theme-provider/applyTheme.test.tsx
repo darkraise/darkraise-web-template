@@ -4,7 +4,7 @@ import { renderHook, act, waitFor } from "@testing-library/react"
 import type { ReactNode } from "react"
 import { ThemeProvider } from "./ThemeProvider"
 import { useTheme } from "../useTheme"
-import { glass } from "../presets/glass/glass"
+import { GLASS_TOKEN_KEYS } from "../styles/glass/glassTokens"
 
 function wrap({ children }: { children: ReactNode }) {
   return <ThemeProvider>{children}</ThemeProvider>
@@ -41,133 +41,114 @@ function mockMatchMedia(prefersDark = false) {
   }))
 }
 
-describe("ThemeProvider preset orchestration", () => {
+describe("ThemeProvider style orchestration", () => {
+  const root = document.documentElement
+
   beforeEach(() => {
     vi.stubGlobal("localStorage", storageMock)
     storageMock.clear()
     mockMatchMedia()
-    document.documentElement.removeAttribute("data-preset")
-    document.documentElement.removeAttribute("data-glass-opacity")
-    document.documentElement.removeAttribute("data-glass-blur")
-    document.documentElement.style.cssText = ""
+    root.removeAttribute("data-preset")
+    root.removeAttribute("data-style")
+    root.removeAttribute("data-glass-opacity")
+    root.removeAttribute("data-glass-blur")
+    root.style.cssText = ""
   })
 
-  it("writes data-preset on mount", () => {
-    renderHook(() => useTheme(), { wrapper: wrap })
-    expect(document.documentElement.getAttribute("data-preset")).toBe("default")
-  })
-
-  it("stamps the glass axes under the default preset", () => {
-    renderHook(() => useTheme(), { wrapper: wrap })
-    expect(document.documentElement.getAttribute("data-glass-opacity")).toBe(
-      "medium",
-    )
-    expect(document.documentElement.getAttribute("data-glass-blur")).toBe(
-      "medium",
-    )
-  })
-
-  it("writes glass axis attributes when switching to glass", () => {
+  it("stamps data-style and the glass axes, never data-preset", () => {
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
-    act(() => result.current.setPreset("glass"))
-    expect(document.documentElement.getAttribute("data-preset")).toBe("glass")
-    expect(document.documentElement.getAttribute("data-glass-opacity")).toBe(
-      "medium",
-    )
-    expect(document.documentElement.getAttribute("data-glass-blur")).toBe(
-      "medium",
-    )
+    for (const style of ["quiet", "flat", "tactile", "glass"] as const) {
+      act(() => result.current.setStyle(style))
+      expect(root.getAttribute("data-style")).toBe(style)
+      expect(root.getAttribute("data-glass-opacity")).toBe("medium")
+      expect(root.getAttribute("data-glass-blur")).toBe("medium")
+      expect(root.hasAttribute("data-preset")).toBe(false)
+    }
   })
 
-  it("sticky persistence: setting glass-opacity survives a round-trip through default", () => {
+  it("stamps the glass axes under every style", () => {
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
-    act(() => result.current.setPreset("glass"))
+    expect(root.getAttribute("data-glass-opacity")).toBe("medium")
+    expect(root.getAttribute("data-glass-blur")).toBe("medium")
+    act(() => result.current.setStyle("glass"))
+    expect(root.getAttribute("data-style")).toBe("glass")
+    expect(root.getAttribute("data-glass-opacity")).toBe("medium")
+    expect(root.getAttribute("data-glass-blur")).toBe("medium")
+  })
+
+  it("persists the style under the 6.x storage key", () => {
+    const { result } = renderHook(() => useTheme(), { wrapper: wrap })
+    act(() => result.current.setStyle("tactile"))
+    expect(result.current.style).toBe("tactile")
+    expect(localStorage.getItem("theme-preset")).toBe("tactile")
+  })
+
+  it("keeps a glass opacity across a round trip through another style", () => {
+    const { result } = renderHook(() => useTheme(), { wrapper: wrap })
+    act(() => result.current.setStyle("glass"))
     act(() => result.current.setGlassOpacity("strong"))
-    expect(document.documentElement.getAttribute("data-glass-opacity")).toBe(
-      "strong",
-    )
-    expect(localStorage.getItem("theme-glass-opacity")).toBe("strong")
-
-    act(() => result.current.setPreset("default"))
-    expect(document.documentElement.getAttribute("data-glass-opacity")).toBe(
-      "strong",
-    )
-
-    act(() => result.current.setPreset("glass"))
-    expect(document.documentElement.getAttribute("data-glass-opacity")).toBe(
-      "strong",
-    )
+    expect(root.getAttribute("data-glass-opacity")).toBe("strong")
+    act(() => result.current.setStyle("quiet"))
+    act(() => result.current.setStyle("glass"))
+    expect(result.current.glassOpacity).toBe("strong")
+    expect(root.getAttribute("data-glass-opacity")).toBe("strong")
   })
 
-  it("sticky persistence: glass axis values survive remount via LocalStorage", () => {
+  it("restores the glass axes from storage on remount", () => {
     {
       const { result } = renderHook(() => useTheme(), { wrapper: wrap })
-      act(() => result.current.setPreset("glass"))
+      act(() => result.current.setStyle("glass"))
       act(() => result.current.setGlassBlur("high"))
     }
     expect(localStorage.getItem("theme-glass-blur")).toBe("high")
 
-    // Fresh provider; should rehydrate from LocalStorage.
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
-    act(() => result.current.setPreset("glass"))
-    expect(document.documentElement.getAttribute("data-glass-blur")).toBe(
-      "high",
-    )
+    expect(result.current.glassBlur).toBe("high")
+    expect(root.getAttribute("data-glass-blur")).toBe("high")
   })
 
-  it("writes preset-owned tokens to documentElement.style when glass active", () => {
+  it("writes glass tokens to documentElement.style under glass", () => {
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
-    act(() => result.current.setPreset("glass"))
-    // After the accent-tint update, --fog-05 is a nested color-mix
-    // expression: outer color-mix sets alpha, inner color-mix builds an
-    // accent-tinted white base. Just assert the shape; the unit tests in
-    // glass.test.ts cover exact values per opacity × mode.
-    expect(document.documentElement.style.getPropertyValue("--fog-05")).toMatch(
+    act(() => result.current.setStyle("glass"))
+    // --fog-05 is a nested color-mix: the outer mix sets alpha, the inner one
+    // builds an accent-tinted white base.
+    expect(root.style.getPropertyValue("--fog-05")).toMatch(
       /^color-mix\(in oklab, color-mix\(in oklab, hsl\(.+\) \d+%, white\) [\d.]+%, transparent\)$/,
     )
   })
 
-  it("clears preset-owned tokens from documentElement.style when leaving glass", () => {
+  it("reads the glass opacity axis for the fog tiers", () => {
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
-    act(() => result.current.setPreset("glass"))
-    expect(
-      document.documentElement.style.getPropertyValue("--fog-05"),
-    ).not.toBe("")
-
-    act(() => result.current.setPreset("default"))
-    expect(document.documentElement.style.getPropertyValue("--fog-05")).toBe("")
+    act(() => result.current.setStyle("glass"))
+    const medium = root.style.getPropertyValue("--fog-05")
+    act(() => result.current.setGlassOpacity("strong"))
+    expect(root.style.getPropertyValue("--fog-05")).not.toBe(medium)
   })
 
-  it("self-clean: ALL glass-specific owned tokens are removed when leaving glass", () => {
+  it("removes every glass-only token when leaving glass", () => {
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
-    act(() => result.current.setPreset("glass"))
-    // Glass-specific keys: the fog/inset/halo families. (--accent/--muted/
-    // --secondary/--border are also in ownedTokenKeys but the common engine
-    // re-writes them for every preset, so they're overwritten, not removed.)
-    const ownedKeys = glass.ownedTokenKeys
-    if (!ownedKeys) throw new Error("glass has no ownedTokenKeys")
-    const glassOnly = ownedKeys.filter(
-      (k) =>
-        k.startsWith("--fog-") ||
-        k.startsWith("--inset-hi") ||
-        k.startsWith("--glass-halo-"),
+    act(() => result.current.setStyle("glass"))
+    // --accent, --muted, --secondary and --border are glass keys too, but the
+    // engine writes them under every style, so they are overwritten instead.
+    const glassOnly = GLASS_TOKEN_KEYS.filter(
+      (key) =>
+        key.startsWith("--fog-") ||
+        key.startsWith("--inset-hi") ||
+        key.startsWith("--glass-halo-"),
     )
     expect(glassOnly.length).toBeGreaterThan(0)
     for (const key of glassOnly) {
-      expect(document.documentElement.style.getPropertyValue(key)).not.toBe("")
+      expect(root.style.getPropertyValue(key), key).not.toBe("")
     }
-    act(() => result.current.setPreset("default"))
+    act(() => result.current.setStyle("quiet"))
     for (const key of glassOnly) {
-      expect(document.documentElement.style.getPropertyValue(key)).toBe("")
+      expect(root.style.getPropertyValue(key), key).toBe("")
     }
   })
 
-  it("CSS-only glass tokens are never written to inline style", () => {
+  it("never writes glass.css tokens to inline style", () => {
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
-    act(() => result.current.setPreset("glass"))
-    // These live in glass.css attribute selectors, not generateTokens, so
-    // they must never appear as inline documentElement styles (and thus are
-    // correctly excluded from ownedTokenKeys).
+    act(() => result.current.setStyle("glass"))
     for (const key of [
       "--surface-opacity",
       "--backdrop-filter",
@@ -176,36 +157,47 @@ describe("ThemeProvider preset orchestration", () => {
       "--glass-state-active-inset",
       "--glass-state-selected-fill",
     ]) {
-      // These live in glass.css attribute selectors, never in inline style.
-      expect(document.documentElement.style.getPropertyValue(key)).toBe("")
+      expect(root.style.getPropertyValue(key), key).toBe("")
     }
   })
 
   it("ignores an invalid glass opacity with a dev warning", () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {})
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
-    act(() => result.current.setPreset("glass"))
+    act(() => result.current.setStyle("glass"))
     act(() => result.current.setAxis("glassOpacity", "extreme" as never))
     expect(warn).toHaveBeenCalled()
-    expect(document.documentElement.getAttribute("data-glass-opacity")).toBe(
-      "medium",
-    )
+    expect(root.getAttribute("data-glass-opacity")).toBe("medium")
     warn.mockRestore()
+  })
+
+  it("applies a style's defaults to axes the user never set", () => {
+    const { result } = renderHook(() => useTheme(), { wrapper: wrap })
+    act(() => result.current.setStyle("glass"))
+    expect(result.current.backgroundStyle).toBe("gradient")
+    expect(result.current.outerGlow).toBe("none")
+    act(() => result.current.setStyle("flat"))
+    expect(result.current.backgroundStyle).toBe("solid")
+    expect(result.current.elevation).toBe("flat")
+    expect(root.getAttribute("data-elevation")).toBe("flat")
+  })
+
+  it("lets a user-set value beat the style's default", () => {
+    const { result } = renderHook(() => useTheme(), { wrapper: wrap })
+    act(() => result.current.setBackgroundStyle("solid"))
+    act(() => result.current.setStyle("glass"))
+    expect(result.current.backgroundStyle).toBe("solid")
   })
 
   it("writes data-background-intensity='vivid' on mount", () => {
     renderHook(() => useTheme(), { wrapper: wrap })
-    expect(
-      document.documentElement.getAttribute("data-background-intensity"),
-    ).toBe("vivid")
+    expect(root.getAttribute("data-background-intensity")).toBe("vivid")
   })
 
   it("setBackgroundIntensity updates attribute and persists", () => {
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
     act(() => result.current.setBackgroundIntensity("vivid"))
-    expect(
-      document.documentElement.getAttribute("data-background-intensity"),
-    ).toBe("vivid")
+    expect(root.getAttribute("data-background-intensity")).toBe("vivid")
     expect(localStorage.getItem("theme-bg-intensity")).toBe("vivid")
     expect(result.current.backgroundIntensity).toBe("vivid")
   })
@@ -218,24 +210,18 @@ describe("ThemeProvider preset orchestration", () => {
     // Fresh provider; should rehydrate from LocalStorage.
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
     expect(result.current.backgroundIntensity).toBe("subtle")
-    expect(
-      document.documentElement.getAttribute("data-background-intensity"),
-    ).toBe("subtle")
+    expect(root.getAttribute("data-background-intensity")).toBe("subtle")
   })
 
   it("writes data-gradient-pattern='blobs' on mount", () => {
     renderHook(() => useTheme(), { wrapper: wrap })
-    expect(document.documentElement.getAttribute("data-gradient-pattern")).toBe(
-      "blobs",
-    )
+    expect(root.getAttribute("data-gradient-pattern")).toBe("blobs")
   })
 
   it("setGradientPattern updates attribute and persists", () => {
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
     act(() => result.current.setGradientPattern("aurora"))
-    expect(document.documentElement.getAttribute("data-gradient-pattern")).toBe(
-      "aurora",
-    )
+    expect(root.getAttribute("data-gradient-pattern")).toBe("aurora")
     expect(localStorage.getItem("theme-gradient-pattern")).toBe("aurora")
     expect(result.current.gradientPattern).toBe("aurora")
   })
@@ -247,22 +233,20 @@ describe("ThemeProvider preset orchestration", () => {
     }
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
     expect(result.current.gradientPattern).toBe("mesh")
-    expect(document.documentElement.getAttribute("data-gradient-pattern")).toBe(
-      "mesh",
-    )
+    expect(root.getAttribute("data-gradient-pattern")).toBe("mesh")
   })
 
-  it("boots a stored removed preset on the default preset, keeping its mode", () => {
+  it("boots a stored removed preset on quiet, keeping its mode", () => {
     const error = vi.spyOn(console, "error").mockImplementation(() => {})
     localStorage.setItem("theme-preset", "scifi")
     localStorage.setItem("mode", "dark")
 
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
 
-    expect(result.current.preset).toBe("default")
+    expect(result.current.style).toBe("quiet")
     expect(result.current.resolvedMode).toBe("dark")
-    expect(document.documentElement.getAttribute("data-preset")).toBe("default")
-    expect(document.documentElement.getAttribute("data-mode")).toBe("dark")
+    expect(root.getAttribute("data-style")).toBe("quiet")
+    expect(root.getAttribute("data-mode")).toBe("dark")
     expect(error).not.toHaveBeenCalled()
     error.mockRestore()
   })
@@ -278,21 +262,21 @@ describe("ThemeProvider preset orchestration", () => {
     expect(localStorage.getItem("mode")).toBe("light")
   })
 
-  it("setMode('light') keeps the active preset", () => {
+  it("setMode('light') keeps the active style", () => {
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
-    act(() => result.current.setPreset("glass"))
+    act(() => result.current.setStyle("glass"))
     act(() => result.current.setMode("light"))
-    expect(result.current.preset).toBe("glass")
+    expect(result.current.style).toBe("glass")
     expect(result.current.resolvedMode).toBe("light")
     expect(localStorage.getItem("theme-preset")).toBe("glass")
   })
 
-  it("setPreset leaves the mode alone", () => {
+  it("setStyle leaves the mode alone", () => {
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
     act(() => result.current.setMode("light"))
     expect(result.current.resolvedMode).toBe("light")
-    act(() => result.current.setPreset("glass"))
-    expect(result.current.preset).toBe("glass")
+    act(() => result.current.setStyle("glass"))
+    expect(result.current.style).toBe("glass")
     expect(result.current.resolvedMode).toBe("light")
   })
 })

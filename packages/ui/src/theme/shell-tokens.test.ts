@@ -132,7 +132,7 @@ describe("preset chrome", () => {
   it("no longer duplicates chrome paint in the layout files", () => {
     // Chrome is a region concern now; a layout-class rule would sit at
     // (0,2,0) and lose to the shell-style rules.
-    expect(sidebarLayout).not.toContain('[data-preset="glass"]')
-    expect(layoutHeader).not.toContain('[data-preset="glass"]')
+    expect(sidebarLayout).not.toContain('[data-style="glass"]')
+    expect(layoutHeader).not.toContain('[data-style="glass"]')
   })
 })

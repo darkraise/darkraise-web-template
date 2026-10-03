@@ -97,26 +97,26 @@
      near-invisible primary tint under Glass). No backdrop-filter here: the
      .dr-input-group wrapper owns the blur, and a nested one would double it.
      The divider is retinted to the fog edge so it doesn't leak --border. */
-  [data-preset="glass"] .dr-input-addon {
+  [data-style="glass"] .dr-input-addon {
     background-color: transparent;
     background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
   }
-  [data-preset="glass"] .dr-input-addon[data-side="prefix"] {
+  [data-style="glass"] .dr-input-addon[data-side="prefix"] {
     border-right-color: var(--fog-15);
   }
-  [data-preset="glass"] .dr-input-addon[data-side="suffix"] {
+  [data-style="glass"] .dr-input-addon[data-side="suffix"] {
     border-left-color: var(--fog-15);
   }
 
   /* Glass-preset frosted input. Scoped to standalone inputs only via
      :not() chain that excludes compound widgets — the
      preset_input_rule_doubles_compound_inner_field memory documents
-     the bug that motivates this scoping: [data-preset] × .dr-input
+     the bug that motivates this scoping: [data-style] × .dr-input
      at (0,2,0) beats compound inner-field resets at (0,1,0) and
      re-paints chrome on top of NumberInput steppers, DatePicker
      inputs, etc. Compound widgets get their own outer-wrapper rules
      in their respective component CSS files. */
-  [data-preset="glass"]
+  [data-style="glass"]
     .dr-input:not(.dr-number-input *):not(.dr-date-input *):not(
       .dr-password-input *
     ):not(.dr-input-otp *):not(.dr-file-upload *):not(.dr-combobox *):not(
@@ -130,13 +130,13 @@
     box-shadow: var(--inset-hi), var(--glass-halo-raised);
   }
 
-  [data-preset="glass"]
+  [data-style="glass"]
     .dr-input:not(.dr-number-input *):not(.dr-date-input *):not(
       .dr-password-input *
     ):not(.dr-input-otp *):not(.dr-file-upload *):not(.dr-combobox *):not(
       .dr-cascade-select *
     ):focus,
-  [data-preset="glass"]
+  [data-style="glass"]
     .dr-input:not(.dr-number-input *):not(.dr-date-input *):not(
       .dr-password-input *
     ):not(.dr-input-otp *):not(.dr-file-upload *):not(.dr-combobox *):not(
@@ -150,7 +150,7 @@
 
   /* Invalid companion: the glass rules above outrank the field utility's
      invalid rule, so glass restates it one attribute higher, after them. */
-  [data-preset="glass"]
+  [data-style="glass"]
     .dr-input:not(.dr-number-input *):not(.dr-date-input *):not(
       .dr-password-input *
     ):not(.dr-input-otp *):not(.dr-file-upload *):not(.dr-combobox *):not(
@@ -159,13 +159,13 @@
     border-color: hsl(var(--destructive-edge));
   }
 
-  [data-preset="glass"]
+  [data-style="glass"]
     .dr-input:not(.dr-number-input *):not(.dr-date-input *):not(
       .dr-password-input *
     ):not(.dr-input-otp *):not(.dr-file-upload *):not(.dr-combobox *):not(
       .dr-cascade-select *
     ):is([data-invalid], [aria-invalid="true"]):focus,
-  [data-preset="glass"]
+  [data-style="glass"]
     .dr-input:not(.dr-number-input *):not(.dr-date-input *):not(
       .dr-password-input *
     ):not(.dr-input-otp *):not(.dr-file-upload *):not(.dr-combobox *):not(
@@ -178,7 +178,7 @@
       0 0 0 1px hsl(var(--destructive-edge));
   }
 
-  [data-preset="glass"]
+  [data-style="glass"]
     .dr-input:not(.dr-number-input *):not(.dr-date-input *):not(
       .dr-password-input *
     ):not(.dr-input-otp *):not(.dr-file-upload *):not(.dr-combobox *):not(

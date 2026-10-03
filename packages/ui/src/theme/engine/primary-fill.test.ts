@@ -21,7 +21,7 @@ function matrix(): ThemeCombo[] {
       for (const mode of ["light", "dark"] as const)
         for (const darkAccentChroma of DARK_ACCENT_CHROMAS)
           for (const tintWithAccent of [false, true])
-            for (const preset of ["default", "glass"] as const)
+            for (const style of ["quiet", "glass"] as const)
               combos.push({
                 accentColor,
                 surfaceColor,
@@ -29,7 +29,7 @@ function matrix(): ThemeCombo[] {
                 contrast: "standard",
                 darkAccentChroma,
                 tintWithAccent,
-                preset,
+                style,
                 backgroundIntensity: "balanced",
               })
   return combos
@@ -83,7 +83,7 @@ describe("primary fill and label", () => {
   it("gives an ink label to exactly the light hues in each mode", () => {
     const failures: string[] = []
     for (const combo of matrix()) {
-      if (combo.preset !== "default") continue
+      if (combo.style !== "quiet") continue
       const ink = finalTokens(combo)["--primary-foreground"] === INK
       const expected = (INK_LABELLED[combo.mode] as readonly string[]).includes(
         combo.accentColor,

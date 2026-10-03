@@ -45,7 +45,7 @@
      glass-selected tint over the checked fill so the active page reads
      against the frosted row; the fill stays, because the label is the
      checked family's foreground. */
-  [data-preset="glass"]
+  [data-style="glass"]
     .dr-pagination-link[data-active="true"][data-variant="ghost"] {
     background-image: var(--glass-state-selected-fill);
     border-color: hsl(var(--primary) / 0.4);

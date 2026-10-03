@@ -52,7 +52,7 @@
      as Checkbox: unchecked = fog tint, checked = primary-tinted
      gradient. The selected item also gets the inset highlight from
      --glass-state-active-inset to reinforce the "pressed in" state. */
-  [data-preset="glass"] .dr-radio-group-item {
+  [data-style="glass"] .dr-radio-group-item {
     background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
     border-color: var(--field-edge);
     -webkit-backdrop-filter: var(--backdrop-filter);
@@ -60,7 +60,7 @@
     box-shadow: var(--inset-hi), var(--glass-halo-raised);
   }
 
-  [data-preset="glass"] .dr-radio-group-item[data-state="checked"] {
+  [data-style="glass"] .dr-radio-group-item[data-state="checked"] {
     background-image: linear-gradient(
       135deg,
       hsl(var(--primary) / 0.55),
@@ -71,12 +71,12 @@
       var(--inset-hi), var(--glass-halo-raised), var(--glass-state-active-inset);
   }
 
-  [data-preset="glass"] .dr-radio-group-item:hover {
+  [data-style="glass"] .dr-radio-group-item:hover {
     box-shadow:
       var(--inset-hi), var(--glass-halo-raised), var(--glass-state-hover-glow);
   }
 
-  [data-preset="glass"] .dr-radio-group-item:disabled {
+  [data-style="glass"] .dr-radio-group-item:disabled {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
     box-shadow: none;

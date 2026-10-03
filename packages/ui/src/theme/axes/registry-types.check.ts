@@ -10,7 +10,7 @@ import type {
   ThemeContextValue,
   ThemeSettings,
 } from "@theme/types"
-import type { PresetName } from "@theme/presets"
+import type { StyleName } from "@theme/styles"
 import type { ThemeConfig } from "@theme/themeConfig"
 import type { ThemeAxisName } from "@labels"
 import type { AxisKey } from "./registry"
@@ -26,11 +26,11 @@ export type RegistryTypeChecks = [
   Expect<Equal<ThemeContextValue["density"], Density>>,
   Expect<Equal<ThemeContextValue["font"], Font>>,
   Expect<Equal<ThemeContextValue["setFont"], (value: Font) => void>>,
-  Expect<Equal<ThemeContextValue["preset"], PresetName>>,
+  Expect<Equal<ThemeContextValue["style"], StyleName>>,
+  Expect<Equal<ThemeContextValue["setStyle"], (value: StyleName) => void>>,
   Expect<Equal<ThemeContextValue["glassOpacity"], GlassOpacity>>,
-  Expect<
-    Equal<ThemeContextValue["setGlassBlur"], (value: GlassBlur) => void>
-  >,
+  Expect<Equal<ThemeContextValue["glassBlur"], GlassBlur>>,
+  Expect<"activePreset" extends keyof ThemeContextValue ? false : true>,
   Expect<"presetAxisValues" extends keyof ThemeContextValue ? false : true>,
   Expect<"setPresetAxis" extends keyof ThemeContextValue ? false : true>,
   Expect<"presetAxisValues" extends keyof ThemeSettings ? false : true>,

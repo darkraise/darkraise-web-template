@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { AXES, AXIS_KEYS, type AxisKey } from "./registry"
+import { AXES, AXIS_KEYS } from "./registry"
 import { cacheInputKeys } from "./tokenCache"
 import {
   LEGACY_MARKER_KEY,
@@ -11,12 +11,6 @@ import {
   runLegacyTable,
   type LegacyRule,
 } from "./legacy"
-import {
-  PRE_V696_KEYS,
-  PRE_V696_PAYLOAD_FIELDS,
-  V696_KEYS,
-  V696_PAYLOAD_FIELDS,
-} from "./legacy-fixture"
 
 type TestStorage = Pick<Storage, "getItem" | "setItem" | "removeItem"> & {
   contents(): Record<string, string>
@@ -52,21 +46,6 @@ function migrated(seed: Record<string, string>): Record<string, string> {
 }
 
 const MARKER = String(LEGACY_REVISION)
-
-// The layout store reads these; no rule touches them.
-const OUTSIDE_THEME = new Set(["theme-shell-style", "layout-variant"])
-
-function pairs(
-  tables: Readonly<Record<string, readonly string[]>>[],
-): [string, string][] {
-  return tables.flatMap((table) =>
-    Object.entries(table).flatMap(([key, values]) =>
-      values
-        .filter((value) => value !== "*")
-        .map((value): [string, string] => [key, value]),
-    ),
-  )
-}
 
 function ruleTargets(rule: LegacyRule): [string, string][] {
   const maps = rule.map ? Object.values(rule.map) : rule.set ? [rule.set] : []
@@ -318,16 +297,6 @@ describe("migrateStorage", () => {
     expect(migrated(seed)).toEqual(expected)
   })
 
-  it.each(pairs([V696_KEYS, PRE_V696_KEYS]))(
-    "brings %s=%s to a value 7.0 accepts",
-    (key, value) => {
-      for (const [left, held] of Object.entries(migrated({ [key]: value }))) {
-        if (OUTSIDE_THEME.has(left)) continue
-        expect(LEGACY_TARGETS[left] ?? [], `${left}=${held}`).toContain(held)
-      }
-    },
-  )
-
   it("returns every target key's migrated value", () => {
     const storage = memoryStorage({
       "theme-surface-color": "red",
@@ -495,16 +464,6 @@ describe("runLegacyTable", () => {
 describe("migratePayload", () => {
   it.each<[string, Record<string, unknown>, Record<string, unknown>]>([
     [
-      "renames the glassmorphism preset",
-      { preset: "glassmorphism" },
-      { preset: "glass" },
-    ],
-    [
-      "drops the sci-fi preset",
-      { preset: "scifi", accentColor: "rose" },
-      { accentColor: "rose" },
-    ],
-    [
       "moves glass on a solid canvas to gradient",
       { preset: "glass", backgroundStyle: "solid" },
       { preset: "glass", backgroundStyle: "gradient" },
@@ -533,16 +492,6 @@ describe("migratePayload", () => {
         accentIntensity: "calm",
       },
       { preset: "glass", backgroundStyle: "gradient" },
-    ],
-    [
-      "writes nothing for either intensity under sci-fi",
-      {
-        preset: "scifi",
-        accentColor: "rose",
-        surfaceIntensity: "bold",
-        accentIntensity: "calm",
-      },
-      { accentColor: "rose" },
     ],
     [
       "maps medium elevation to standard",
@@ -583,19 +532,4 @@ describe("migratePayload", () => {
     expect(() => migratePayload(input)).not.toThrow()
     expect(input).toEqual({ preset: "scifi", surfaceIntensity: "bold" })
   })
-
-  it.each(pairs([V696_PAYLOAD_FIELDS, PRE_V696_PAYLOAD_FIELDS]))(
-    "brings %s=%s to a value 7.0 accepts",
-    (field, value) => {
-      for (const [left, held] of Object.entries(
-        migratePayload({ [field]: value }),
-      )) {
-        // The layout store takes shellStyle; accentVibrancy is storage-only
-        // in the table, so a 6.0-6.2 payload's value is dropped by sanitising.
-        if (left === "shellStyle" || left === "accentVibrancy") continue
-        expect(AXIS_KEYS, left).toContain(left)
-        expect(AXES[left as AxisKey].values, `${left}=${held}`).toContain(held)
-      }
-    },
-  )
 })

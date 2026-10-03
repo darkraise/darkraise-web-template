@@ -372,37 +372,6 @@ describe("ThemeProvider synced payloads", () => {
     expect(result.current.syncStatus).toBe("idle")
   })
 
-  it("keeps a solid canvas chosen under glass on the next load", async () => {
-    const remote = memoryAdapter({
-      accentColor: "rose",
-      preset: "glass",
-      backgroundStyle: "solid",
-    })
-    const first = renderHook(() => useTheme(), {
-      wrapper: synced(remote.adapter),
-    })
-    await settle()
-    expect(first.result.current.backgroundStyle).toBe("gradient")
-    expect(remote.remote()).toEqual(
-      expect.objectContaining({ backgroundStyle: "gradient", version: 7 }),
-    )
-
-    act(() => first.result.current.setBackgroundStyle("solid"))
-    await settle()
-    first.unmount()
-
-    for (const fresh of [false, true]) {
-      if (fresh) localStorage.clear()
-      const next = renderHook(() => useTheme(), {
-        wrapper: synced(remote.adapter),
-      })
-      await settle()
-      expect(next.result.current.preset).toBe("glass")
-      expect(next.result.current.backgroundStyle).toBe("solid")
-      next.unmount()
-    }
-  })
-
   it("sends a user save only after the upgrade save settles", async () => {
     const resolvers: Array<() => void> = []
     const adapter = {

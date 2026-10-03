@@ -55,7 +55,7 @@ describe("useTheme", () => {
     const { result } = renderHook(() => useTheme(), { wrapper })
     expect(result.current.accentColor).toBe("blue")
     expect(result.current.surfaceColor).toBe("slate")
-    expect(result.current.preset).toBe("default")
+    expect(result.current.style).toBe("quiet")
     expect(result.current.mode).toBe("system")
   })
 
@@ -66,11 +66,10 @@ describe("useTheme", () => {
     expect(localStorage.getItem("theme-accent")).toBe("rose")
   })
 
-  // Re-enabled in Phase 3 with the glass preset registered
-  it("setPreset updates preset and persists to theme-preset key", () => {
+  it("setStyle updates style and persists to theme-preset key", () => {
     const { result } = renderHook(() => useTheme(), { wrapper })
-    act(() => result.current.setPreset("glass"))
-    expect(result.current.preset).toBe("glass")
+    act(() => result.current.setStyle("glass"))
+    expect(result.current.style).toBe("glass")
     expect(localStorage.getItem("theme-preset")).toBe("glass")
   })
 
@@ -104,7 +103,7 @@ describe("useTheme", () => {
     const { result } = renderHook(() => useTheme(), { wrapper })
     expect(result.current.accentColor).toBe("emerald")
     expect(result.current.surfaceColor).toBe("stone")
-    expect(result.current.preset).toBe("glass")
+    expect(result.current.style).toBe("glass")
     expect(result.current.mode).toBe("dark")
   })
 
@@ -277,7 +276,7 @@ describe("useTheme persistence", () => {
   const serverSettings: ThemeSettings = {
     accentColor: "rose",
     surfaceColor: "stone",
-    preset: "glass",
+    style: "glass",
     backgroundStyle: "gradient",
     mode: "dark",
     density: "spacious",
@@ -303,7 +302,6 @@ describe("useTheme persistence", () => {
     )
   }
 
-  // Re-enabled in Phase 3 with the glass preset registered
   it("loads settings from adapter on mount", async () => {
     const adapter = createAdapter()
     const { result } = renderHook(() => useTheme(), {
@@ -317,18 +315,18 @@ describe("useTheme persistence", () => {
     expect(adapter.load).toHaveBeenCalledOnce()
     expect(result.current.accentColor).toBe("rose")
     expect(result.current.surfaceColor).toBe("stone")
-    expect(result.current.preset).toBe("glass")
+    expect(result.current.style).toBe("glass")
     expect(result.current.backgroundStyle).toBe("gradient")
     expect(result.current.mode).toBe("dark")
     expect(result.current.density).toBe("spacious")
     expect(result.current.elevation).toBe("high")
   })
 
-  it("loads the default preset when synced settings name a removed preset", async () => {
+  it("loads quiet when synced settings name a removed preset", async () => {
     const adapter = createAdapter({
       load: vi.fn(() =>
         Promise.resolve({
-          ...serverSettings,
+          accentColor: "rose",
           preset: "scifi",
           mode: "dark",
         } as unknown as ThemeSettings),
@@ -342,7 +340,7 @@ describe("useTheme persistence", () => {
       await vi.runAllTimersAsync()
     })
 
-    expect(result.current.preset).toBe("default")
+    expect(result.current.style).toBe("quiet")
     expect(result.current.mode).toBe("dark")
     expect(result.current.accentColor).toBe("rose")
   })
@@ -351,7 +349,7 @@ describe("useTheme persistence", () => {
     const partialSettings: ThemeSettings = {
       accentColor: "violet",
       surfaceColor: "slate",
-      preset: "default",
+      style: "quiet",
       backgroundStyle: "solid",
       mode: "light",
       // density / elevation absent

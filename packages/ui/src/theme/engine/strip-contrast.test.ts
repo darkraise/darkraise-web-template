@@ -20,7 +20,7 @@ const STRIP_FLOORS = [
 // strip must not move.
 const UNCHANGED = [
   [
-    "default",
+    "quiet",
     "solid",
     "light",
     "neutral",
@@ -34,7 +34,7 @@ const UNCHANGED = [
     },
   ],
   [
-    "default",
+    "quiet",
     "solid",
     "light",
     "intense",
@@ -48,7 +48,7 @@ const UNCHANGED = [
     },
   ],
   [
-    "default",
+    "quiet",
     "solid",
     "dark",
     "neutral",
@@ -62,7 +62,7 @@ const UNCHANGED = [
     },
   ],
   [
-    "default",
+    "quiet",
     "solid",
     "dark",
     "intense",
@@ -151,7 +151,7 @@ describe("the content strip", () => {
 
   it("leaves themes without a strip as they were", () => {
     for (const [
-      preset,
+      style,
       backgroundStyle,
       mode,
       backgroundIntensity,
@@ -160,7 +160,7 @@ describe("the content strip", () => {
       const tokens = generateTokens({
         accentColor: "blue",
         surfaceColor: "slate",
-        preset,
+        style,
         backgroundStyle,
         mode,
         contrast: "standard",
@@ -173,7 +173,7 @@ describe("the content strip", () => {
       )
       expect(
         actual,
-        `${preset} ${backgroundStyle} ${mode} ${backgroundIntensity}`,
+        `${style} ${backgroundStyle} ${mode} ${backgroundIntensity}`,
       ).toEqual(expected)
     }
   })
@@ -181,7 +181,7 @@ describe("the content strip", () => {
   it("solves marks, the field edge and text against it on every default gradient theme", () => {
     const failures: string[] = []
     for (const combo of reachableCombos()) {
-      if (combo.preset !== "default") continue
+      if (combo.style !== "quiet") continue
       const tokens = generateTokens({
         ...combo,
         tintWithAccent: false,

@@ -48,7 +48,7 @@ function collectClassFacts(): Map<string, ClassFacts> {
       if (selectorText === undefined || body === undefined) {
         throw new Error("rule match is missing a group")
       }
-      // A preset override (`[data-preset="glass"] .dr-x`) restyles a control
+      // A style override (`[data-style="glass"] .dr-x`) restyles a control
       // rather than declaring a new one; attributing its sizes to the class is
       // still correct, so no special case is needed here.
       for (const match of selectorText.matchAll(/\.dr-[a-z0-9-]+/g)) {

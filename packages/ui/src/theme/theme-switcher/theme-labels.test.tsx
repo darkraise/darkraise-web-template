@@ -18,7 +18,7 @@ const config: ThemeConfig = {
       accentColor: false,
       surfaceColor: false,
       tintWithAccent: false,
-      preset: false,
+      style: false,
       font: false,
       radius: false,
       fontSize: false,

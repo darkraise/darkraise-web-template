@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import type {
-  GlowLevel,
   Mode,
   ResolvedMode,
   ThemeContextValue,
@@ -15,12 +14,8 @@ import {
   resolveAccentScale,
   resolveNeutralScale,
 } from "@theme/engine/generateTokens"
-import {
-  presets,
-  PRESET_NAMES,
-  type PresetName,
-  type ThemePreset,
-} from "@theme/presets"
+import { STYLES } from "@theme/styles"
+import { GLASS_TOKEN_KEYS, glassTokens } from "@theme/styles/glass/glassTokens"
 import { ThemeContext } from "@theme/themeContext"
 import {
   resolveDefaults,
@@ -44,7 +39,6 @@ import {
 } from "@theme/axes/settings"
 import { tokenCacheId, writeTokenCache } from "@theme/axes/tokenCache"
 import { migratePayload, migrateStorage } from "@theme/axes/legacy"
-import { neutraliseIfHidden } from "./neutralisedAxes"
 
 declare const process: { env: { NODE_ENV?: string } }
 
@@ -144,21 +138,19 @@ function applyTokens(
 }
 
 /**
- * The value each axis paints with: the user's own, else the active preset's
+ * The value each axis paints with: the user's own, else the active style's
  * default for it, else the config's. An axis the user never set stays absent
- * from `stored`, which is what lets a preset default apply to it.
+ * from `stored`, which is what lets a style default apply to it.
  */
 function effectiveSettings(
   stored: Partial<AxisValues>,
   defaults: AxisValues,
 ): AxisValues {
-  const preset = stored.preset ?? defaults.preset
-  const presetDefaults = (presets[preset]?.commonAxisDefaults ?? {}) as Partial<
-    Record<AxisKey, string>
-  >
+  const style = stored.style ?? defaults.style
+  const styleDefaults: Partial<Record<AxisKey, string>> = STYLES[style].defaults
   const out = {} as Record<AxisKey, string>
   for (const key of AXIS_KEYS) {
-    out[key] = stored[key] ?? presetDefaults[key] ?? defaults[key]
+    out[key] = stored[key] ?? styleDefaults[key] ?? defaults[key]
   }
   return out as AxisValues
 }
@@ -167,16 +159,12 @@ function effectiveSettings(
  * Stamps every attribute axis except mode, whose attribute holds the resolved
  * mode and is written by applyTheme.
  */
-function applyAttributes(settings: AxisValues, defaults: AxisValues) {
+function applyAttributes(settings: AxisValues) {
   const root = document.documentElement
-  const hidden = presets[settings.preset].hiddenCommonAxes
   for (const key of AXIS_KEYS) {
     const attribute = AXES[key].attribute
     if (!attribute || key === "mode") continue
-    root.setAttribute(
-      attribute,
-      neutraliseIfHidden(key, settings[key], defaults[key], hidden),
-    )
+    root.setAttribute(attribute, settings[key])
   }
 }
 
@@ -301,23 +289,12 @@ export function ThemeProvider({
 
   const applyTheme = useCallback(
     (current: AxisValues, resolved: ResolvedMode, cacheId: string) => {
-      const presetName = current.preset as PresetName
-      const activePreset = presets[presetName]
-      const root = document.documentElement
-
-      root.setAttribute("data-mode", resolved)
-      root.setAttribute("data-preset", presetName)
-      root.setAttribute("data-background-style", current.backgroundStyle)
-
-      const presetsAny = presets as Record<
-        string,
-        { ownedTokenKeys?: readonly string[] }
-      >
+      document.documentElement.setAttribute("data-mode", resolved)
 
       const commonTokens = generateTokens({
         accentColor: current.accentColor,
         surfaceColor: current.surfaceColor,
-        preset: presetName,
+        style: current.style,
         backgroundStyle: current.backgroundStyle,
         mode: resolved,
         contrast: current.contrast,
@@ -326,36 +303,24 @@ export function ThemeProvider({
         backgroundIntensity: current.backgroundIntensity,
       })
 
-      let presetTokens: Record<string, string> = {}
-      if (activePreset.generateTokens) {
-        presetTokens = activePreset.generateTokens(
-          {
-            accentColor: current.accentColor,
-            surfaceColor: current.surfaceColor,
-            backgroundStyle: current.backgroundStyle,
-            mode: resolved,
-            accent: resolveAccentScale(
-              current.accentColor,
-              current.surfaceColor,
-            ),
-            surface: resolveNeutralScale(current.surfaceColor),
-            neutral: resolveNeutralScale(current.surfaceColor),
-            outerGlow: current.outerGlow as GlowLevel,
-            innerGlow: current.innerGlow as GlowLevel,
-          },
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          { opacity: current.glassOpacity, blur: current.glassBlur } as any,
-        )
-      }
-
-      const otherOwnedKeys = PRESET_NAMES.filter(
-        (n) => n !== presetName,
-      ).flatMap((n) => presetsAny[n]?.ownedTokenKeys ?? [])
-      const mergedTokens = { ...commonTokens, ...presetTokens }
-      applyTokens(
-        mergedTokens,
-        otherOwnedKeys.filter((k) => !(k in mergedTokens)),
-      )
+      const glass = current.style === "glass"
+      const mergedTokens = glass
+        ? {
+            ...commonTokens,
+            ...glassTokens({
+              mode: resolved,
+              accent: resolveAccentScale(
+                current.accentColor,
+                current.surfaceColor,
+              ),
+              surface: resolveNeutralScale(current.surfaceColor),
+              backgroundStyle: current.backgroundStyle,
+              outerGlow: current.outerGlow,
+              glassOpacity: current.glassOpacity,
+            }),
+          }
+        : commonTokens
+      applyTokens(mergedTokens, glass ? [] : GLASS_TOKEN_KEYS)
 
       const store = storage()
       if (store) writeTokenCache(store, cacheId, mergedTokens)
@@ -375,7 +340,7 @@ export function ThemeProvider({
       const signature = JSON.stringify([current, resolved, defaults, cacheId])
       if (signature === paintedRef.current) return
       paintedRef.current = signature
-      applyAttributes(current, defaults)
+      applyAttributes(current)
       applyTheme(current, resolved, cacheId)
     },
     [applyTheme, defaults],
@@ -543,7 +508,6 @@ export function ThemeProvider({
       resolvedMode,
       config: cfg,
       syncStatus,
-      activePreset: presets[settings.preset] as ThemePreset,
       setAxis,
       ...setters,
     }),

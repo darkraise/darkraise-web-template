@@ -59,7 +59,7 @@ describe("primary-coloured text", () => {
     for (const path of [
       ...stylesheets("src/components"),
       ...stylesheets("src/layout"),
-      ...stylesheets("src/theme/presets"),
+      ...stylesheets("src/theme/styles"),
     ]) {
       const css = readFileSync(path, "utf8").replace(/\/\*[\s\S]*?\*\//g, "")
       for (const rule of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
@@ -87,7 +87,7 @@ describe("primary-coloured text", () => {
     for (const path of [
       ...stylesheets("src/components"),
       ...stylesheets("src/layout"),
-      ...stylesheets("src/theme/presets"),
+      ...stylesheets("src/theme/styles"),
     ]) {
       const css = readFileSync(path, "utf8").replace(/\/\*[\s\S]*?\*\//g, "")
       for (const match of css.matchAll(
@@ -117,7 +117,7 @@ describe("primary-coloured text", () => {
   })
 
   it("glass paints its accent text with --primary-text", () => {
-    const glass = readFileSync("src/theme/presets/glass/glass.ts", "utf8")
+    const glass = readFileSync("src/theme/styles/glass/glassTokens.ts", "utf8")
     expect(glass).toContain(
       `tokens["--accent-foreground"] = "var(--primary-text)"`,
     )

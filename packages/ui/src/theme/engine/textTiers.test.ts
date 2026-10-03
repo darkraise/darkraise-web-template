@@ -14,7 +14,7 @@ function build(surfaceColor: (typeof NEUTRALS)[number], mode: "light" | "dark") 
   return generateTokens({
     accentColor: "coral",
     surfaceColor,
-    preset: "default",
+    style: "quiet",
     backgroundStyle: "solid",
     mode,
     contrast: "standard",

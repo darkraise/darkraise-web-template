@@ -1,4 +1,3 @@
-import type { ThemePreset } from "@theme/presets"
 import type {
   AxisKey,
   AxisSetters,
@@ -148,7 +147,7 @@ export type ColorScale = Record<
 
 /**
  * A stored or synced theme. Every axis is optional: an absent axis is one the
- * user never set, so the active preset's or the config's default applies.
+ * user never set, so the active style's or the config's default applies.
  */
 export type ThemeSettings = Partial<AxisValues> & {
   /**
@@ -176,8 +175,6 @@ export interface ThemeContextValue extends AxisValues, AxisSetters {
   resolvedMode: ResolvedMode
   config: import("./themeConfig").ThemeConfig
   syncStatus: ThemeSyncStatus
-  /** Active preset object (config metadata + axes). */
-  activePreset: ThemePreset
   /** Sets any axis by key; the named setters are shorthands for it. */
   setAxis: <K extends AxisKey>(key: K, value: AxisValue<K>) => void
 }

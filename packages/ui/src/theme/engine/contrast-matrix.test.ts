@@ -13,7 +13,7 @@ describe("contrast matrix support", () => {
     expect(new Set(combos.map(comboName)).size).toBe(combos.length)
     expect(
       combos
-        .filter((c) => c.preset !== "default")
+        .filter((c) => c.style !== "quiet")
         .every(
           (c) => c.contrast === "standard" && c.darkAccentChroma === "standard",
         ),
@@ -34,7 +34,7 @@ describe("contrast matrix support", () => {
       contrast: "standard",
       darkAccentChroma: "standard",
       tintWithAccent: false,
-      preset: "default",
+      style: "quiet",
     } as const
     expect(
       finalTokens({ ...base, backgroundIntensity: "neutral" })["--background"],
@@ -43,7 +43,7 @@ describe("contrast matrix support", () => {
     )
   })
 
-  it("merges preset tokens over the engine's, as the provider does", () => {
+  it("merges glass tokens over the engine's, as the provider does", () => {
     const glass = finalTokens({
       accentColor: "blue",
       surfaceColor: "slate",
@@ -52,7 +52,7 @@ describe("contrast matrix support", () => {
       darkAccentChroma: "standard",
       tintWithAccent: false,
       backgroundIntensity: "balanced",
-      preset: "glass",
+      style: "glass",
     })
     expect(glass["--muted"]).toContain("var(--primary)")
     expect(isOpaque(glass["--muted"])).toBe(false)

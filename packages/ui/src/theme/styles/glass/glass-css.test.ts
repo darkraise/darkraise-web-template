@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync, readdirSync } from "node:fs"
 import { join, resolve } from "node:path"
-import { glass } from "./glass"
+import { glassTokens } from "./glassTokens"
 import { accentColors } from "@theme/palettes/accentColors"
 import { surfaceColors } from "@theme/palettes/surfaceColors"
 import type { ColorScale } from "@theme/types"
@@ -19,7 +19,7 @@ import type { ColorScale } from "@theme/types"
 // this vitest setup.
 const root = process.cwd()
 const glassCss = readFileSync(
-  resolve(root, "src/theme/presets/glass/glass.css"),
+  resolve(root, "src/theme/styles/glass/glass.css"),
   "utf8",
 )
 const themeCss = readFileSync(resolve(root, "src/styles/theme.css"), "utf8")
@@ -66,7 +66,7 @@ describe("glass.css state suppression", () => {
   })
 
   it("main[data-content] suppresses halo tiers + glow tokens but KEEPS selected-fill", () => {
-    const start = glassCss.indexOf('[data-preset="glass"] main[data-content]')
+    const start = glassCss.indexOf('[data-style="glass"] main[data-content]')
     const block = glassCss.slice(
       start,
       start + glassCss.slice(start).indexOf("}"),
@@ -184,27 +184,20 @@ describe("glass.css overlay surfaces carry a real colour layer", () => {
 // in `hsl(var(--x) / a)` makes the declaration invalid, and the property
 // silently falls back to transparent under Glass only.
 describe("stylesheets vs Glass alpha-bound tokens", () => {
-  const generateTokens = glass.generateTokens as NonNullable<
-    typeof glass.generateTokens
-  >
   const slate = surfaceColors.slate as ColorScale
 
   const alphaBound = new Set(
     (["light", "dark"] as const).flatMap((mode) =>
       (["solid", "gradient"] as const).flatMap((backgroundStyle) =>
         Object.entries(
-          generateTokens(
-            {
-              accentColor: "blue",
-              surfaceColor: "slate",
-              backgroundStyle,
-              mode,
-              accent: accentColors.blue,
-              surface: slate,
-              neutral: slate,
-            },
-            { opacity: "medium", blur: "medium" },
-          ),
+          glassTokens({
+            mode,
+            accent: accentColors.blue,
+            surface: slate,
+            backgroundStyle,
+            outerGlow: "none",
+            glassOpacity: "medium",
+          }),
         )
           .filter(
             ([name, value]) => name.startsWith("--") && / \/ /.test(value),

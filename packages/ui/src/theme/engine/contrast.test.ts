@@ -16,7 +16,7 @@ function build(
   return generateTokens({
     accentColor,
     surfaceColor: "slate",
-    preset: "default",
+    style: "quiet",
     backgroundStyle: "solid",
     mode,
     contrast: "standard",

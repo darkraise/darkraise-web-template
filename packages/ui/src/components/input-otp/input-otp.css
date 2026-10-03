@@ -89,7 +89,7 @@
      variant keeps a border on every side. The active slot (caret position
      in overlay mode, focused input in separate mode) lights up with the
      focus halo. */
-  [data-preset="glass"] .dr-input-otp-slot {
+  [data-style="glass"] .dr-input-otp-slot {
     background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
     border-color: var(--fog-15);
     border-bottom-color: var(--field-edge);
@@ -98,23 +98,23 @@
     box-shadow: var(--inset-hi), var(--glass-halo-raised);
   }
 
-  [data-preset="glass"] .dr-input-otp-slot[data-active],
-  [data-preset="glass"] .dr-input-otp-slot:focus-within {
+  [data-style="glass"] .dr-input-otp-slot[data-active],
+  [data-style="glass"] .dr-input-otp-slot:focus-within {
     border-color: hsl(var(--primary) / 0.4);
     box-shadow:
       var(--inset-hi), var(--glass-halo-raised), var(--glass-state-hover-glow);
   }
 
-  [data-preset="glass"]
+  [data-style="glass"]
     .dr-input-otp-container[data-invalid]
     .dr-input-otp-slot {
     border-color: hsl(var(--destructive-edge));
   }
 
-  [data-preset="glass"]
+  [data-style="glass"]
     .dr-input-otp-container[data-invalid]
     .dr-input-otp-slot[data-active],
-  [data-preset="glass"]
+  [data-style="glass"]
     .dr-input-otp-container[data-invalid]
     .dr-input-otp-slot-separate:focus {
     border-color: hsl(var(--destructive-edge));

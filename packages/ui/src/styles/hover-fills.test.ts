@@ -183,7 +183,7 @@ describe("filled hover states", () => {
       .replace(/\s+/g, " ")
     const glassFilled = [
       ...css.matchAll(
-        /\[data-preset="glass"\] \.dr-btn\[data-variant="default"\](?::hover)?, \[data-preset="glass"\] \.dr-btn\[data-variant="destructive"\](?::hover)? \{([^}]*)\}/g,
+        /\[data-style="glass"\] \.dr-btn\[data-variant="default"\](?::hover)?, \[data-style="glass"\] \.dr-btn\[data-variant="destructive"\](?::hover)? \{([^}]*)\}/g,
       ),
     ].map((m) => m[1] as string)
     expect(glassFilled.length).toBeGreaterThan(0)
@@ -223,7 +223,7 @@ describe("filled hover states", () => {
         const states: Array<[string, Rgb]> = [
           ...(amounts.get(fillName) ?? []),
         ].map((amount) => [`${amount * 100}%`, mix(fill, washRgb, amount)])
-        if (combo.preset === "glass") {
+        if (combo.style === "glass") {
           const hovered = mix(fill, washRgb, 0.16)
           states.push(["glass sheen", mix(fill, washRgb, GLASS_SHEEN)])
           states.push([

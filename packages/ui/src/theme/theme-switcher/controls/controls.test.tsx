@@ -106,17 +106,12 @@ describe("ChoiceControl", () => {
     expect(system).toHaveAttribute("aria-checked", "true")
   })
 
-  it("labels presets with their own names", () => {
-    renderControl(<ChoiceControl axis="preset" />)
-    const group = screen.getByRole("radiogroup", { name: "Preset" })
-    expect(group).toHaveAttribute("data-cols", "2")
-    expect(
-      within(group)
-        .getAllByRole("radio")
-        .map((radio) => radio.textContent),
-    ).toEqual(["Default", "Glass"])
-    fireEvent.click(within(group).getByRole("radio", { name: "Glass" }))
-    expect(html.getAttribute("data-preset")).toBe("glass")
+  it("switches the style", () => {
+    renderControl(<ChoiceControl axis="style" />)
+    const group = screen.getByRole("radiogroup", { name: "Style" })
+    expect(group).toHaveAttribute("data-cols", "4")
+    fireEvent.click(within(group).getByRole("radio", { name: "glass" }))
+    expect(html.getAttribute("data-style")).toBe("glass")
   })
 
   it("labels the default sidebar indicator Auto", () => {

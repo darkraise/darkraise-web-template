@@ -18,7 +18,7 @@ import {
   SURFACE_COLORS,
   TINT_WITH_ACCENT,
 } from "@theme/types"
-import { PRESET_NAMES } from "@theme/presets"
+import { STYLE_NAMES } from "@theme/styles"
 
 export type AxisLayer = "brand" | "style" | "advanced"
 
@@ -87,12 +87,12 @@ export const AXES = {
     // There is no hue to mix in under the neutral accent.
     visibleWhen: (settings) => settings.accentColor !== "neutral",
   }),
-  /** Visual preset; `glass` adds frosted surfaces and its own axes. */
-  preset: axis({
-    values: PRESET_NAMES,
-    default: "default",
+  /** Visual style: one token set for every control; `glass` frosts the shell chrome and overlays. */
+  style: axis({
+    values: STYLE_NAMES,
+    default: "quiet",
     storageKey: "theme-preset",
-    attribute: "data-preset",
+    attribute: "data-style",
     layer: "style",
     control: "choice",
   }),
@@ -104,7 +104,7 @@ export const AXES = {
     attribute: "data-glass-opacity",
     layer: "style",
     control: "ordinal",
-    visibleWhen: (settings) => settings.preset === "glass",
+    visibleWhen: (settings) => settings.style === "glass",
   }),
   /** Backdrop blur behind Glass's frosted chrome. */
   glassBlur: axis({
@@ -114,7 +114,7 @@ export const AXES = {
     attribute: "data-glass-blur",
     layer: "style",
     control: "ordinal",
-    visibleWhen: (settings) => settings.preset === "glass",
+    visibleWhen: (settings) => settings.style === "glass",
   }),
   /** Sans and heading typeface; monospace text stays JetBrains Mono. */
   font: axis({

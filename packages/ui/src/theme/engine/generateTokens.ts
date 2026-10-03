@@ -9,8 +9,8 @@ import type {
   ColorScale,
 } from "@theme/types"
 import { accentColors } from "@theme/palettes/accentColors"
+import type { StyleName } from "@theme/styles"
 import { surfaceColors } from "@theme/palettes/surfaceColors"
-import { presets, type PresetName } from "@theme/presets"
 import { contrastRatio } from "@theme/engine/oklch"
 import { CANVAS_SATURATION_CAP, contentStripGround } from "./canvas"
 import { STATUS_NAMES, WHITE, placeStep, solveSteps } from "./steps"
@@ -26,7 +26,7 @@ export {
 export interface GenerateTokensInput {
   accentColor: AccentColor
   surfaceColor: SurfaceColor
-  preset: PresetName
+  style: StyleName
   backgroundStyle: BackgroundStyle
   mode: ResolvedMode
   contrast: Contrast
@@ -34,6 +34,11 @@ export interface GenerateTokensInput {
   tintWithAccent: boolean
   backgroundIntensity?: BackgroundIntensity
 }
+
+const SHADOW_DROPDOWN =
+  "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)"
+const GLASS_SHADOW_DROPDOWN =
+  "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)"
 
 /** The ramp every neutral step and text tier is drawn from. */
 export function resolveNeutralScale(surfaceColor: SurfaceColor): ColorScale {
@@ -184,7 +189,7 @@ export function generateTokens(
   const {
     accentColor,
     surfaceColor,
-    preset,
+    style,
     backgroundStyle,
     mode,
     contrast,
@@ -196,7 +201,7 @@ export function generateTokens(
   const accent = resolveAccentScale(accentColor, surfaceColor)
   const neutral = resolveNeutralScale(surfaceColor)
   const dark = mode === "dark"
-  const glass = preset === "glass"
+  const glass = style === "glass"
   // The neutral's own mid-tone: the hue the gradient canvas paints and glass's
   // inner glow follows.
   const surfaceTint = neutral[500]
@@ -320,11 +325,10 @@ export function generateTokens(
     "--border-strong": borderStrong,
 
     "--shadow-dropdown": isLightGlass
-      ? presets[preset].shadowDropdown.replace(
-          /rgb\(0 0 0 \//g,
-          "rgb(16 24 40 /",
-        )
-      : presets[preset].shadowDropdown,
+      ? GLASS_SHADOW_DROPDOWN.replace(/rgb\(0 0 0 \//g, "rgb(16 24 40 /")
+      : glass
+        ? GLASS_SHADOW_DROPDOWN
+        : SHADOW_DROPDOWN,
 
     "--bg-style": backgroundStyle,
     "--noise-opacity": gradient ? (dark ? "0.5" : "0.6") : "0",

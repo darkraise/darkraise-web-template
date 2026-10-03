@@ -9,7 +9,6 @@ import {
 } from "./registry"
 import { KIT_VERSION } from "./version"
 import { themeConfig } from "@theme/themeConfig"
-import { PRESET_NAMES, presets } from "@theme/presets"
 
 describe("axis registry", () => {
   it("lists every axis once, in registry order", () => {
@@ -23,7 +22,7 @@ describe("axis registry", () => {
       "accentColor",
       "surfaceColor",
       "tintWithAccent",
-      "preset",
+      "style",
       "glassOpacity",
       "glassBlur",
       "font",
@@ -54,7 +53,7 @@ describe("axis registry", () => {
     expect(byKind("swatch")).toEqual(["accentColor", "surfaceColor"])
     expect(byKind("choice")).toEqual([
       "mode",
-      "preset",
+      "style",
       "font",
       "backgroundStyle",
       "gradientPattern",
@@ -98,29 +97,12 @@ describe("axis registry", () => {
     ])
   })
 
-  it("shows the glass axes only under glass", () => {
+  it("shows the glass axes only under the glass style", () => {
     for (const key of ["glassOpacity", "glassBlur"] as const) {
       const visible = AXES[key].visibleWhen
-      expect(visible?.({ preset: "glass" }), key).toBe(true)
-      expect(visible?.({ preset: "default" }), key).toBe(false)
+      expect(visible?.({ style: "glass" }), key).toBe(true)
+      expect(visible?.({ style: "quiet" }), key).toBe(false)
     }
-  })
-
-  it("keeps the 6.x storage keys for the glass axes", () => {
-    expect(AXES.glassOpacity).toMatchObject({
-      values: ["subtle", "medium", "strong"],
-      default: "medium",
-      storageKey: "theme-glass-opacity",
-      attribute: "data-glass-opacity",
-      layer: "style",
-    })
-    expect(AXES.glassBlur).toMatchObject({
-      values: ["none", "low", "medium", "high"],
-      default: "medium",
-      storageKey: "theme-glass-blur",
-      attribute: "data-glass-blur",
-      layer: "style",
-    })
   })
 
   it("shows the gradient pattern only under the gradient style", () => {
@@ -135,9 +117,31 @@ describe("axis registry", () => {
     expect(visible?.({ accentColor: "neutral" })).toBe(false)
   })
 
-  it("keeps the style layer for the preset axis", () => {
-    expect(AXES.preset.layer).toBe("style")
+  it("keeps the style axis and the glass axes in the style layer", () => {
+    expect(AXES.style.layer).toBe("style")
+    expect(AXES.glassOpacity.layer).toBe("style")
+    expect(AXES.glassBlur.layer).toBe("style")
     expect(AXES.font.layer).toBe("brand")
+  })
+
+  it("keeps the 6.x storage keys for the style and glass axes", () => {
+    expect(AXES.style).toMatchObject({
+      default: "quiet",
+      storageKey: "theme-preset",
+      attribute: "data-style",
+    })
+    expect(AXES.glassOpacity).toMatchObject({
+      values: ["subtle", "medium", "strong"],
+      default: "medium",
+      storageKey: "theme-glass-opacity",
+      attribute: "data-glass-opacity",
+    })
+    expect(AXES.glassBlur).toMatchObject({
+      values: ["none", "low", "medium", "high"],
+      default: "medium",
+      storageKey: "theme-glass-blur",
+      attribute: "data-glass-blur",
+    })
   })
 
   it("holds only registry axes and their values in the kit config", () => {
@@ -241,16 +245,4 @@ describe("axis registry", () => {
     }
     expect(KIT_VERSION).toBe(pkg.version)
   })
-
-  it.each(PRESET_NAMES)(
-    "%s preset's common axis defaults are registry values",
-    (name) => {
-      const defaults: Readonly<Record<string, string>> =
-        presets[name].commonAxisDefaults ?? {}
-      for (const [key, value] of Object.entries(defaults)) {
-        expect(AXIS_KEYS).toContain(key)
-        expect(isAxisValue(key as AxisKey, value)).toBe(true)
-      }
-    },
-  )
 })

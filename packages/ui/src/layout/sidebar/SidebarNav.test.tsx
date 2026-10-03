@@ -290,7 +290,7 @@ describe("SidebarNav activeBar", () => {
     const rule = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)].find(
       ([, selector = ""]) =>
         selector.includes('[data-active-bar="ring"]') &&
-        !selector.includes("data-preset"),
+        !selector.includes("data-style"),
     )
     expect(rule, "no activeBar=ring rule in sidebar-nav.css").toBeDefined()
     expect(rule?.[2]).toMatch(/inset 0 0 0 1px/)
@@ -302,7 +302,7 @@ describe("SidebarNav activeBar", () => {
     const rule = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)].find(
       ([, selector = ""]) =>
         selector.includes('[data-active-bar="both"]') &&
-        !selector.includes("data-preset"),
+        !selector.includes("data-style"),
     )
     expect(rule, "no activeBar=both rule in sidebar-nav.css").toBeDefined()
     expect(rule?.[2]).toMatch(/inset 0 0 0 1px/)
@@ -316,14 +316,14 @@ describe("SidebarNav activeBar", () => {
       ([, selector = ""]) =>
         selector.includes(".dr-sidebar-nav-item.active") &&
         !selector.includes("data-active-bar") &&
-        !selector.includes("data-preset"),
+        !selector.includes("data-style"),
     )
     expect(base, "no base active rule in sidebar-nav.css").toBeDefined()
     expect(base?.[2]).not.toMatch(/inset/)
     const bar = rules.find(
       ([, selector = ""]) =>
         selector.includes('[data-active-bar="bar"]') &&
-        !selector.includes("data-preset"),
+        !selector.includes("data-style"),
     )
     expect(bar, "no activeBar=bar rule in sidebar-nav.css").toBeDefined()
     expect(bar?.[2]).toMatch(/inset 3px/)
@@ -336,7 +336,7 @@ describe("SidebarNav activeBar", () => {
     for (const value of ["bar", "ring", "both"]) {
       const rule = rules.find(
         ([, selector = ""]) =>
-          selector.includes('[data-preset="glass"]') &&
+          selector.includes('[data-style="glass"]') &&
           selector.includes(`[data-active-bar="${value}"]`),
       )
       expect(rule, `no glass rule for activeBar=${value}`).toBeDefined()
@@ -347,7 +347,7 @@ describe("SidebarNav activeBar", () => {
     const withoutComments = sidebarNavCss.replace(/\/\*[\s\S]*?\*\//g, "")
     const rule = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)].find(
       ([, selector = ""]) =>
-        selector.includes('[data-preset="glass"]') &&
+        selector.includes('[data-style="glass"]') &&
         selector.includes('[data-active-bar="ring"]'),
     )
     expect(rule, "no glass activeBar=ring rule found").toBeDefined()
@@ -359,7 +359,7 @@ describe("SidebarNav activeBar", () => {
     const withoutComments = sidebarNavCss.replace(/\/\*[\s\S]*?\*\//g, "")
     const rule = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)].find(
       ([, selector = ""]) =>
-        selector.includes('[data-preset="glass"]') &&
+        selector.includes('[data-style="glass"]') &&
         selector.includes('[data-active-bar="both"]'),
     )
     expect(rule, "no glass activeBar=both rule found").toBeDefined()
@@ -378,7 +378,7 @@ describe("SidebarNav activeBar", () => {
     const withoutComments = sidebarNavCss.replace(/\/\*[\s\S]*?\*\//g, "")
     const base = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)].find(
       ([, selector = ""]) =>
-        selector.includes('[data-preset="glass"]') &&
+        selector.includes('[data-style="glass"]') &&
         selector.includes(".dr-sidebar-nav-item.active") &&
         !selector.includes("data-active-bar"),
     )

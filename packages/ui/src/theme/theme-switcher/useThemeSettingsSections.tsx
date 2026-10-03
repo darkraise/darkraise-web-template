@@ -43,10 +43,9 @@ const CONTROLS: Record<
 export function useThemeSettingsSections(): ThemeSettingsSection[] {
   const labels = useUiLabels()
   const theme = useTheme()
-  const { config, activePreset } = theme
+  const { config } = theme
 
   const showAdvanced = config.switcher.advanced !== false
-  const hiddenByPreset: readonly string[] = activePreset.hiddenCommonAxes ?? []
   const settings = Object.fromEntries(
     AXIS_KEYS.map((key) => [key, theme[key]]),
   )
@@ -59,7 +58,6 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
     if (group === "advanced" && !showAdvanced) continue
     if (config.switcher.axes?.[key] === false) continue
     if (spec.visibleWhen && !spec.visibleWhen(settings)) continue
-    if (hiddenByPreset.includes(key)) continue
 
     const Control = CONTROLS[spec.control]
     sections.push({

@@ -23,12 +23,12 @@
 
   /* The control also carries .dr-combobox-control, whose glass rule rounds
      single-line fields; chips wrap here, so keep the surface radius. */
-  [data-preset="glass"] .dr-combobox-control.dr-multi-select-control {
+  [data-style="glass"] .dr-combobox-control.dr-multi-select-control {
     border-radius: var(--radius);
     border-bottom-color: var(--field-edge);
   }
 
-  [data-preset="glass"]
+  [data-style="glass"]
     .dr-combobox-control.dr-multi-select-control:is(
       :focus-within,
       [data-state="open"]
@@ -38,14 +38,14 @@
 
   /* Invalid companion: the glass rules above outrank the field utility's
      invalid rule, so glass restates it one attribute higher, after them. */
-  [data-preset="glass"]
+  [data-style="glass"]
     .dr-combobox-control.dr-multi-select-control:has(
       :is([data-invalid], [aria-invalid="true"])
     ) {
     border-color: hsl(var(--destructive-edge));
   }
 
-  [data-preset="glass"]
+  [data-style="glass"]
     .dr-combobox-control.dr-multi-select-control:has(
       :is([data-invalid], [aria-invalid="true"])
     ):focus-within {

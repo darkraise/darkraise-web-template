@@ -17,7 +17,7 @@ describe("generateTokens", () => {
     const tokens = generateTokens({
       accentColor: "blue",
       surfaceColor: "slate",
-      preset: "default",
+      style: "quiet",
       backgroundStyle: "solid",
       mode: "light",
       contrast: "standard",
@@ -85,7 +85,7 @@ describe("generateTokens", () => {
     const tokens = generateTokens({
       accentColor: "blue",
       surfaceColor: "slate",
-      preset: "default",
+      style: "quiet",
       backgroundStyle: "solid",
       mode: "light",
       contrast: "standard",
@@ -122,7 +122,7 @@ describe("generateTokens", () => {
     const light = generateTokens({
       accentColor: "blue",
       surfaceColor: "slate",
-      preset: "default",
+      style: "quiet",
       backgroundStyle: "solid",
       mode: "light",
       contrast: "standard",
@@ -132,7 +132,7 @@ describe("generateTokens", () => {
     const dark = generateTokens({
       accentColor: "blue",
       surfaceColor: "slate",
-      preset: "default",
+      style: "quiet",
       backgroundStyle: "solid",
       mode: "dark",
       contrast: "standard",
@@ -148,7 +148,7 @@ describe("generateTokens", () => {
     const tokens = generateTokens({
       accentColor: "blue",
       surfaceColor: "slate",
-      preset: "default",
+      style: "quiet",
       backgroundStyle: "solid",
       mode: "light",
       contrast: "standard",
@@ -164,7 +164,7 @@ describe("generateTokens", () => {
     const lightTokens = generateTokens({
       accentColor: "blue",
       surfaceColor: "slate",
-      preset: "default",
+      style: "quiet",
       backgroundStyle: "solid",
       mode: "light",
       contrast: "standard",
@@ -174,7 +174,7 @@ describe("generateTokens", () => {
     const darkTokens = generateTokens({
       accentColor: "blue",
       surfaceColor: "slate",
-      preset: "default",
+      style: "quiet",
       backgroundStyle: "solid",
       mode: "dark",
       contrast: "standard",
@@ -205,7 +205,7 @@ describe("generateTokens", () => {
       generateTokens({
         accentColor,
         surfaceColor: "slate",
-        preset: "default",
+        style: "quiet",
         backgroundStyle: "solid",
         mode,
         contrast: "standard",
@@ -226,7 +226,7 @@ describe("generateTokens", () => {
     const tokens = generateTokens({
       accentColor: "blue",
       surfaceColor: "slate",
-      preset: "default",
+      style: "quiet",
       backgroundStyle: "solid",
       mode: "dark",
       contrast: "standard",
@@ -248,7 +248,7 @@ describe("generateTokens", () => {
     const tokens = generateTokens({
       accentColor: "blue",
       surfaceColor: "slate",
-      preset: "default",
+      style: "quiet",
       backgroundStyle: "solid",
       mode: "dark",
       contrast: "standard",
@@ -269,7 +269,7 @@ describe("generateTokens", () => {
     // surface-tinted — two borders on the same card in two different hues.
     const common = {
       accentColor: "blue",
-      preset: "default",
+      style: "quiet",
       backgroundStyle: "solid",
       contrast: "standard",
       darkAccentChroma: "standard",
@@ -291,7 +291,7 @@ describe("generateTokens", () => {
     const calm = generateTokens({
       accentColor: "blue",
       surfaceColor: "slate",
-      preset: "default",
+      style: "quiet",
       backgroundStyle: "solid",
       mode: "dark",
       contrast: "standard",
@@ -301,7 +301,7 @@ describe("generateTokens", () => {
     const vivid = generateTokens({
       accentColor: "blue",
       surfaceColor: "slate",
-      preset: "default",
+      style: "quiet",
       backgroundStyle: "solid",
       mode: "dark",
       contrast: "standard",
@@ -316,7 +316,7 @@ describe("generateTokens", () => {
     const tokens = generateTokens({
       accentColor: "blue",
       surfaceColor: "slate",
-      preset: "glass",
+      style: "glass",
       backgroundStyle: "solid",
       mode: "light",
       contrast: "standard",
@@ -341,7 +341,7 @@ describe("generateTokens", () => {
     const tokens = generateTokens({
       accentColor: "blue",
       surfaceColor: "slate",
-      preset: "glass",
+      style: "glass",
       backgroundStyle: "solid",
       mode: "light",
       contrast: "standard",
@@ -358,7 +358,7 @@ describe("generateTokens", () => {
     const tokens = generateTokens({
       accentColor: "blue",
       surfaceColor: "slate",
-      preset: "glass",
+      style: "glass",
       backgroundStyle: "solid",
       mode: "light",
       contrast: "standard",
@@ -386,7 +386,7 @@ describe("generateTokens", () => {
           const tokens = generateTokens({
             accentColor: "blue",
             surfaceColor: "slate",
-            preset: "default",
+            style: "quiet",
             backgroundStyle: "solid",
             mode,
             contrast: "standard",
@@ -425,7 +425,7 @@ describe("generateTokens", () => {
     const blueAccent = generateTokens({
       accentColor: "blue",
       surfaceColor: "slate",
-      preset: "default",
+      style: "quiet",
       backgroundStyle: "solid",
       mode: "light",
       contrast: "standard",
@@ -435,7 +435,7 @@ describe("generateTokens", () => {
     const redAccent = generateTokens({
       accentColor: "red",
       surfaceColor: "slate",
-      preset: "default",
+      style: "quiet",
       backgroundStyle: "solid",
       mode: "light",
       contrast: "standard",
@@ -461,7 +461,7 @@ describe("generateTokens", () => {
     const tokens = generateTokens({
       accentColor: "blue",
       surfaceColor: "slate",
-      preset: "default",
+      style: "quiet",
       backgroundStyle: "solid",
       mode: "light",
       contrast: "standard",
@@ -490,7 +490,7 @@ describe("generateTokens", () => {
         const tokens = generateTokens({
           accentColor: "blue",
           surfaceColor: "slate",
-          preset: "default",
+          style: "quiet",
           backgroundStyle: "solid",
           mode,
           contrast: "standard",
@@ -511,7 +511,7 @@ describe("generateTokens", () => {
         const tokens = generateTokens({
           accentColor,
           surfaceColor: "slate",
-          preset: "default",
+          style: "quiet",
           backgroundStyle: "solid",
           mode,
           contrast: "standard",
@@ -533,7 +533,7 @@ describe("generateTokens", () => {
       const tokens = generateTokens({
         accentColor: "blue",
         surfaceColor: "slate",
-        preset: "glass",
+        style: "glass",
         backgroundStyle: "solid",
         mode: "dark",
         contrast: "standard",
@@ -555,7 +555,7 @@ describe("generateTokens", () => {
       const tokens = generateTokens({
         accentColor: "blue",
         surfaceColor: "slate",
-        preset: "glass",
+        style: "glass",
         backgroundStyle: "solid",
         mode: "light",
         contrast: "standard",
@@ -575,7 +575,7 @@ describe("generateTokens", () => {
       const dark = generateTokens({
         accentColor: "blue",
         surfaceColor: "slate",
-        preset: "default",
+        style: "quiet",
         backgroundStyle: "solid",
         mode: "dark",
         contrast: "standard",
@@ -585,7 +585,7 @@ describe("generateTokens", () => {
       const light = generateTokens({
         accentColor: "blue",
         surfaceColor: "slate",
-        preset: "default",
+        style: "quiet",
         backgroundStyle: "solid",
         mode: "light",
         contrast: "standard",
@@ -613,7 +613,7 @@ describe("generateTokens", () => {
       const tokens = generateTokens({
         accentColor: "blue",
         surfaceColor: "slate",
-        preset: "glass",
+        style: "glass",
         backgroundStyle: "solid",
         mode: "dark",
         contrast: "standard",
@@ -632,7 +632,7 @@ describe("generateTokens", () => {
       const tokens = generateTokens({
         accentColor: "blue",
         surfaceColor: "slate",
-        preset: "glass",
+        style: "glass",
         backgroundStyle: "solid",
         mode: "light",
         contrast: "standard",
@@ -649,7 +649,7 @@ describe("generateTokens", () => {
       const dark = generateTokens({
         accentColor: "blue",
         surfaceColor: "slate",
-        preset: "default",
+        style: "quiet",
         backgroundStyle: "solid",
         mode: "dark",
         contrast: "standard",
@@ -659,7 +659,7 @@ describe("generateTokens", () => {
       const light = generateTokens({
         accentColor: "blue",
         surfaceColor: "slate",
-        preset: "default",
+        style: "quiet",
         backgroundStyle: "solid",
         mode: "light",
         contrast: "standard",
@@ -680,7 +680,7 @@ describe("generateTokens", () => {
       const tokens = generateTokens({
         accentColor: "blue",
         surfaceColor: "slate",
-        preset: "default",
+        style: "quiet",
         backgroundStyle: "gradient",
         mode: "dark",
         contrast: "standard",
@@ -695,7 +695,7 @@ describe("generateTokens", () => {
       const tokens = generateTokens({
         accentColor: "blue",
         surfaceColor: "slate",
-        preset: "default",
+        style: "quiet",
         backgroundStyle: "gradient",
         mode: "light",
         contrast: "standard",
@@ -710,7 +710,7 @@ describe("generateTokens", () => {
       const tokens = generateTokens({
         accentColor: "blue",
         surfaceColor: "slate",
-        preset: "default",
+        style: "quiet",
         backgroundStyle: "solid",
         mode: "dark",
         contrast: "standard",
@@ -725,7 +725,7 @@ describe("generateTokens", () => {
       const tokens = generateTokens({
         accentColor: "blue",
         surfaceColor: "slate",
-        preset: "default",
+        style: "quiet",
         backgroundStyle: "solid",
         mode: "light",
         contrast: "standard",
@@ -741,7 +741,7 @@ describe("generateTokens", () => {
     const baseInput = {
       accentColor: "blue" as const,
       surfaceColor: "stone" as const,
-      preset: "default" as const,
+      style: "quiet" as const,
       backgroundStyle: "gradient" as const,
       mode: "dark" as const,
       contrast: "standard" as const,
@@ -786,7 +786,7 @@ describe("generateTokens", () => {
     const baseInput = {
       accentColor: "blue" as const,
       surfaceColor: "stone" as const,
-      preset: "default" as const,
+      style: "quiet" as const,
       backgroundStyle: "gradient" as const,
       mode: "dark" as const,
       contrast: "standard" as const,
@@ -815,7 +815,7 @@ describe("generateTokens", () => {
       const tokens = generateTokens({
         ...baseInput,
         backgroundStyle: "solid",
-        preset: "glass",
+        style: "glass",
       })
       expect(tokens["--content-gradient-overlay"]).toBe("none")
     })
@@ -825,7 +825,7 @@ describe("generateTokens", () => {
       const tokens = generateTokens({
         ...baseInput,
         backgroundStyle: "gradient",
-        preset: "glass",
+        style: "glass",
       })
       expect(tokens["--content-gradient-overlay"]).toBe("none")
     })
@@ -834,7 +834,7 @@ describe("generateTokens", () => {
       const tokens = generateTokens({
         ...baseInput,
         backgroundStyle: "solid",
-        preset: "default",
+        style: "quiet",
       })
       expect(tokens["--content-gradient-overlay"]).toBe("none")
     })
@@ -844,7 +844,7 @@ describe("generateTokens", () => {
     const base = {
       accentColor: "blue",
       surfaceColor: "slate",
-      preset: "default",
+      style: "quiet",
       backgroundStyle: "solid",
       contrast: "standard",
       darkAccentChroma: "standard",
@@ -897,7 +897,7 @@ describe("backgroundIntensity canvas cap", () => {
     generateTokens({
       accentColor: "blue",
       surfaceColor,
-      preset: "default",
+      style: "quiet",
       backgroundStyle: "solid",
       mode: "dark",
       contrast: "standard",
@@ -926,7 +926,7 @@ describe("backgroundIntensity canvas cap", () => {
       generateTokens({
         accentColor: "blue",
         surfaceColor: "sepia",
-        preset: "default",
+        style: "quiet",
         backgroundStyle: "solid",
         mode: "light",
         contrast: "standard",
@@ -974,7 +974,7 @@ describe("neutral accent", () => {
       const t = generateTokens({
         accentColor: "neutral",
         surfaceColor: "zinc",
-        preset: "default",
+        style: "quiet",
         backgroundStyle: "solid",
         mode,
         contrast: "standard",
@@ -993,7 +993,7 @@ describe("colour engine axes", () => {
   const base = {
     accentColor: "blue",
     surfaceColor: "zinc",
-    preset: "default",
+    style: "quiet",
     backgroundStyle: "solid",
     mode: "dark",
     contrast: "standard",
@@ -1024,7 +1024,7 @@ describe("control well", () => {
   const base = {
     accentColor: "blue",
     surfaceColor: "slate",
-    preset: "default",
+    style: "quiet",
     backgroundStyle: "solid",
     contrast: "standard",
     darkAccentChroma: "standard",

@@ -67,14 +67,16 @@
     "attribute": "data-tint-with-accent",
     "layer": "brand"
   },
-  "preset": {
+  "style": {
     "values": [
-      "default",
+      "flat",
+      "quiet",
+      "tactile",
       "glass"
     ],
-    "default": "default",
+    "default": "quiet",
     "storageKey": "theme-preset",
-    "attribute": "data-preset",
+    "attribute": "data-style",
     "layer": "style"
   },
   "glassOpacity": {

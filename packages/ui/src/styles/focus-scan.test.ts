@@ -146,7 +146,7 @@ const OUTLINE_EXEMPT = new Map<string, string>([
 ])
 
 /** Rules written for one preset restyle on top of the base rule. */
-const PRESET_RULE = /^\[data-preset=/
+const PRESET_RULE = /^\[data-style=/
 
 /** The 1px --primary edge the field utilities draw (theme.css). */
 const FIELD_INDICATOR =

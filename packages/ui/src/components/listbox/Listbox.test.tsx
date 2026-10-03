@@ -184,7 +184,7 @@ describe("Listbox variant", () => {
       .filter(
         (selector) =>
           selector.includes('.dr-listbox[data-variant="outline"]') &&
-          !selector.startsWith("[data-preset="),
+          !selector.startsWith("[data-style="),
       )
     expect(outlineRules).toEqual([])
     expect(css).toMatch(

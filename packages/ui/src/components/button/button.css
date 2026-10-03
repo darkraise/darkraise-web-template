@@ -149,8 +149,8 @@
   /* The fill stays opaque: it sits at its label's contrast floor, and the
      translucent fill this replaced measured 2.57-2.91:1 over the light glass
      page. The sheen shades toward the wash instead of lightening. */
-  [data-preset="glass"] .dr-btn[data-variant="default"],
-  [data-preset="glass"] .dr-btn[data-variant="destructive"] {
+  [data-style="glass"] .dr-btn[data-variant="default"],
+  [data-style="glass"] .dr-btn[data-variant="destructive"] {
     border: 1px solid
       color-mix(in oklab, var(--hue) 50%, rgba(255, 255, 255, 0.25));
     -webkit-backdrop-filter: var(--backdrop-filter);
@@ -161,22 +161,22 @@
       inset 0 -1px 0 color-mix(in oklab, var(--hue) 70%, #000),
       var(--glass-halo-raised);
   }
-  [data-preset="glass"] .dr-btn[data-variant="default"] {
+  [data-style="glass"] .dr-btn[data-variant="default"] {
     background-image: linear-gradient(
       180deg,
       hsl(var(--primary-fill-wash) / 0),
       hsl(var(--primary-fill-wash) / 0.12)
     );
   }
-  [data-preset="glass"] .dr-btn[data-variant="destructive"] {
+  [data-style="glass"] .dr-btn[data-variant="destructive"] {
     background-image: linear-gradient(
       180deg,
       hsl(var(--destructive-solid-wash) / 0),
       hsl(var(--destructive-solid-wash) / 0.12)
     );
   }
-  [data-preset="glass"] .dr-btn[data-variant="default"]:hover,
-  [data-preset="glass"] .dr-btn[data-variant="destructive"]:hover {
+  [data-style="glass"] .dr-btn[data-variant="default"]:hover,
+  [data-style="glass"] .dr-btn[data-variant="destructive"]:hover {
     box-shadow:
       var(--shadow-button),
       var(--inset-hi-button),
@@ -184,8 +184,8 @@
       var(--glass-halo-raised),
       var(--glass-state-hover-glow);
   }
-  [data-preset="glass"] .dr-btn[data-variant="outline"],
-  [data-preset="glass"] .dr-btn[data-variant="secondary"] {
+  [data-style="glass"] .dr-btn[data-variant="outline"],
+  [data-style="glass"] .dr-btn[data-variant="secondary"] {
     background-image: linear-gradient(135deg, var(--fog-20), var(--fog-10));
     border: 1px solid var(--fog-20);
     -webkit-backdrop-filter: var(--backdrop-filter);
@@ -193,24 +193,24 @@
     box-shadow:
       var(--shadow-button), var(--inset-hi-button), var(--glass-halo-raised);
   }
-  [data-preset="glass"] .dr-btn[data-variant="outline"]:hover,
-  [data-preset="glass"] .dr-btn[data-variant="secondary"]:hover {
+  [data-style="glass"] .dr-btn[data-variant="outline"]:hover,
+  [data-style="glass"] .dr-btn[data-variant="secondary"]:hover {
     background-image: linear-gradient(135deg, var(--fog-30), var(--fog-15));
     box-shadow:
       var(--shadow-button), var(--inset-hi-button), var(--glass-halo-raised),
       var(--glass-state-hover-glow);
   }
-  [data-preset="glass"] .dr-btn[data-variant="ghost"]:hover {
+  [data-style="glass"] .dr-btn[data-variant="ghost"]:hover {
     background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
     border-color: var(--fog-15);
     box-shadow: var(--glass-state-hover-glow);
   }
-  [data-preset="glass"] .dr-btn:active {
+  [data-style="glass"] .dr-btn:active {
     box-shadow:
       var(--shadow-button), var(--inset-hi-button),
       var(--glass-state-active-inset), var(--glass-halo-raised);
   }
-  [data-preset="glass"] .dr-btn:disabled {
+  [data-style="glass"] .dr-btn:disabled {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
     box-shadow: none;

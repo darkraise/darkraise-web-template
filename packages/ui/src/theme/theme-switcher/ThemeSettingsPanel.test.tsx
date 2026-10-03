@@ -44,7 +44,7 @@ const BRAND = [
   "Accent Color",
   "Surface Color",
   "Tint With Accent",
-  "Preset",
+  "Style",
   "Font",
   "Radius",
   "Density",
@@ -65,7 +65,7 @@ const ADVANCED = [
 
 describe("ThemeSettingsPanel", () => {
   beforeEach(() => {
-    // The provider persists every choice, so a test that picks a preset would
+    // The provider persists every choice, so a test that picks a style would
     // otherwise leave every later test running under it.
     vi.stubGlobal("localStorage", memoryStorage())
   })
@@ -77,7 +77,7 @@ describe("ThemeSettingsPanel", () => {
   it("renders the axis controls without a popover", () => {
     renderPanel(<ThemeSettingsPanel />)
     expect(screen.getByText("Mode")).toBeInTheDocument()
-    expect(screen.getByText("Preset")).toBeInTheDocument()
+    expect(screen.getByText("Style")).toBeInTheDocument()
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
   })
 
@@ -219,13 +219,13 @@ describe("ThemeSettingsPanel", () => {
     ).not.toBeInTheDocument()
   })
 
-  it("renders the active preset's own axes right after the preset control", () => {
+  it("renders the glass axes right after the style control under glass", () => {
     localStorage.setItem("theme-preset", "glass")
     const { container } = renderPanel(<ThemeSettingsPanel layout="page" />)
     const labels = sectionLabels(container)
-    const at = labels.indexOf("Preset")
+    const at = labels.indexOf("Style")
     expect(labels.slice(at, at + 4)).toEqual([
-      "Preset",
+      "Style",
       "Opacity",
       "Backdrop Blur",
       "Font",

@@ -257,7 +257,7 @@
      surfaces, while keeping the active-state inset-left bar + bolder
      label distinguishable from hover (per sidebar_hover_active_state
      _collision memory). */
-  [data-preset="glass"] .dr-sidebar-nav-item:hover {
+  [data-style="glass"] .dr-sidebar-nav-item:hover {
     background-color: transparent;
     background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
     box-shadow: var(--glass-state-hover-glow);
@@ -273,8 +273,8 @@
      is contained to var(--glass-halo-raised) on the outer layer,
      which still vanishes at halo=none — the indicator persists,
      the spatial signature dials. */
-  [data-preset="glass"] .dr-sidebar-nav-item.active,
-  [data-preset="glass"] .dr-sidebar-nav-item[data-status="active"] {
+  [data-style="glass"] .dr-sidebar-nav-item.active,
+  [data-style="glass"] .dr-sidebar-nav-item[data-status="active"] {
     background-color: transparent;
     background-image: var(--glass-state-selected-fill);
     box-shadow:
@@ -288,10 +288,10 @@
      full primary rather than the 0.3 alpha of the default's accompanying
      ring, because as the only indicator it has to carry the selection on
      its own. */
-  [data-preset="glass"]
+  [data-style="glass"]
     .dr-sidebar-nav[data-active-bar="bar"]
     .dr-sidebar-nav-item.active,
-  [data-preset="glass"]
+  [data-style="glass"]
     .dr-sidebar-nav[data-active-bar="bar"]
     .dr-sidebar-nav-item[data-status="active"] {
     box-shadow:
@@ -299,10 +299,10 @@
       var(--glass-halo-raised);
   }
 
-  [data-preset="glass"]
+  [data-style="glass"]
     .dr-sidebar-nav[data-active-bar="ring"]
     .dr-sidebar-nav-item.active,
-  [data-preset="glass"]
+  [data-style="glass"]
     .dr-sidebar-nav[data-active-bar="ring"]
     .dr-sidebar-nav-item[data-status="active"] {
     box-shadow:
@@ -310,10 +310,10 @@
       var(--glass-halo-raised);
   }
 
-  [data-preset="glass"]
+  [data-style="glass"]
     .dr-sidebar-nav[data-active-bar="both"]
     .dr-sidebar-nav-item.active,
-  [data-preset="glass"]
+  [data-style="glass"]
     .dr-sidebar-nav[data-active-bar="both"]
     .dr-sidebar-nav-item[data-status="active"] {
     box-shadow:

@@ -57,7 +57,7 @@ describe("Card border tiers", () => {
     // Glass is the only preset that populates the fog scale, and its card rim
     // is a translucent surface tint by design. The base rule's
     // `hsl(var(--border-subtle))` would replace it with a solid line.
-    expect(bodyOf('[data-preset="glass"] .dr-card:not([data-border])')).toMatch(
+    expect(bodyOf('[data-style="glass"] .dr-card:not([data-border])')).toMatch(
       /border-color: var\(--fog-15\)/,
     )
   })

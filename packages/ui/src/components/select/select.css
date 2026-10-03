@@ -49,7 +49,7 @@
     @apply bg-border -mx-1 my-1 h-px;
   }
 
-  [data-preset="glass"] .dr-select-trigger {
+  [data-style="glass"] .dr-select-trigger {
     background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
     border-color: var(--fog-15);
     border-bottom-color: var(--field-edge);
@@ -58,12 +58,12 @@
     box-shadow: var(--inset-hi), var(--glass-halo-raised);
   }
 
-  [data-preset="glass"] .dr-select-trigger:hover {
+  [data-style="glass"] .dr-select-trigger:hover {
     box-shadow:
       var(--inset-hi), var(--glass-halo-raised), var(--glass-state-hover-glow);
   }
 
-  [data-preset="glass"] .dr-select-trigger[data-state="open"] {
+  [data-style="glass"] .dr-select-trigger[data-state="open"] {
     border-color: hsl(var(--primary) / 0.4);
     box-shadow:
       var(--inset-hi), var(--glass-halo-raised), var(--glass-state-active-inset);
@@ -71,14 +71,14 @@
 
   /* Invalid companion: the glass rules above outrank the field utility's
      invalid rule, so glass restates it one attribute higher, after them. */
-  [data-preset="glass"]
+  [data-style="glass"]
     .dr-select-trigger:is([data-invalid], [aria-invalid="true"]) {
     border-color: hsl(var(--destructive-edge));
   }
 
-  [data-preset="glass"]
+  [data-style="glass"]
     .dr-select-trigger:is([data-invalid], [aria-invalid="true"]):focus,
-  [data-preset="glass"]
+  [data-style="glass"]
     .dr-select-trigger:is([data-invalid], [aria-invalid="true"]):focus-visible {
     border-color: hsl(var(--destructive-edge));
     box-shadow:
@@ -87,7 +87,7 @@
       0 0 0 1px hsl(var(--destructive-edge));
   }
 
-  [data-preset="glass"] .dr-select-trigger:disabled {
+  [data-style="glass"] .dr-select-trigger:disabled {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
     box-shadow: none;

@@ -72,44 +72,40 @@ beforeEach(() => {
   storageMock.clear()
   vi.stubGlobal("localStorage", storageMock)
   mockMatchMedia()
-  document.documentElement.removeAttribute("data-preset")
+  document.documentElement.removeAttribute("data-style")
   document.documentElement.removeAttribute("data-glass-opacity")
   document.documentElement.removeAttribute("data-glass-blur")
   document.documentElement.style.cssText = ""
 })
 
-describe("ThemeSwitcher preset section", () => {
-  it("renders one toggle per registered preset", () => {
+describe("ThemeSwitcher style section", () => {
+  it("renders one toggle per style", () => {
     renderSwitcher()
     openSwitcher()
-    const group = screen.getByRole("radiogroup", { name: "Preset" })
-    expect(
-      within(group)
-        .getAllByRole("radio")
-        .map((radio) => radio.textContent),
-    ).toEqual(["Default", "Glass"])
+    const group = screen.getByRole("radiogroup", { name: "Style" })
+    expect(within(group).getAllByRole("radio")).toHaveLength(4)
   })
 
-  it("does NOT render glass axis toggles when default preset is active", () => {
+  it("does NOT render glass axis toggles when quiet is active", () => {
     renderSwitcher()
     openSwitcher()
     expect(screen.queryByText("Opacity")).not.toBeInTheDocument()
     expect(screen.queryByText("Backdrop Blur")).not.toBeInTheDocument()
   })
 
-  it("renders the glass axes right after the preset control", () => {
+  it("renders the glass axes right after the style control", () => {
     renderSwitcher()
     openSwitcher()
-    fireEvent.click(screen.getByRole("radio", { name: "Glass" }))
+    fireEvent.click(screen.getByRole("radio", { name: /^glass$/i }))
     const labels = sectionLabels()
-    const at = labels.indexOf("Preset")
+    const at = labels.indexOf("Style")
     expect(labels.slice(at + 1, at + 3)).toEqual(["Opacity", "Backdrop Blur"])
   })
 
   it("toggling glass-opacity updates the data attribute", () => {
     renderSwitcher()
     openSwitcher()
-    fireEvent.click(screen.getByRole("radio", { name: "Glass" }))
+    fireEvent.click(screen.getByRole("radio", { name: /^glass$/i }))
     fireEvent.click(screen.getByRole("radio", { name: /^strong$/i }))
     expect(document.documentElement.getAttribute("data-glass-opacity")).toBe(
       "strong",

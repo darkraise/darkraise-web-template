@@ -29,7 +29,7 @@
      intentionally untouched — it inherits its existing styling. Only
      the border colour changes: the base 2px border is what centres the
      16px thumb in the 20px track. */
-  [data-preset="glass"] .dr-switch {
+  [data-style="glass"] .dr-switch {
     background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
     border-color: var(--field-edge);
     -webkit-backdrop-filter: var(--backdrop-filter);
@@ -37,19 +37,19 @@
     box-shadow: var(--inset-hi), var(--glass-halo-raised);
   }
 
-  [data-preset="glass"] .dr-switch[data-state="checked"] {
+  [data-style="glass"] .dr-switch[data-state="checked"] {
     background-image: var(--glass-state-selected-fill);
     border-color: hsl(var(--primary) / 0.4);
     box-shadow:
       var(--inset-hi), var(--glass-halo-raised), var(--glass-state-active-inset);
   }
 
-  [data-preset="glass"] .dr-switch:hover {
+  [data-style="glass"] .dr-switch:hover {
     box-shadow:
       var(--inset-hi), var(--glass-halo-raised), var(--glass-state-hover-glow);
   }
 
-  [data-preset="glass"] .dr-switch:disabled {
+  [data-style="glass"] .dr-switch:disabled {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
     box-shadow: none;

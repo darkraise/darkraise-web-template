@@ -2,8 +2,9 @@ import {
   generateTokens,
   resolveAccentScale,
   resolveNeutralScale,
+  type GenerateTokensInput,
 } from "@theme/engine/generateTokens"
-import { presets, type PresetName } from "@theme/presets"
+import { glassTokens } from "@theme/styles/glass/glassTokens"
 import {
   ACCENT_COLORS,
   BACKGROUND_INTENSITIES,
@@ -29,7 +30,7 @@ export interface ThemeCombo {
   contrast: Contrast
   darkAccentChroma: DarkAccentChroma
   backgroundIntensity: BackgroundIntensity
-  preset: PresetName
+  style: GenerateTokensInput["style"]
   /** Off unless set; the reachable matrix leaves it off. */
   tintWithAccent?: boolean
 }
@@ -59,7 +60,7 @@ export function reachableCombos(): ThemeCombo[] {
               mode,
               contrast,
               darkAccentChroma,
-              preset: "default",
+              style: "quiet",
             })
           }
         }
@@ -69,7 +70,7 @@ export function reachableCombos(): ThemeCombo[] {
           mode,
           contrast: "standard",
           darkAccentChroma: "standard",
-          preset: "glass",
+          style: "glass",
         })
       }
     }
@@ -82,7 +83,7 @@ export function reachableCombos(): ThemeCombo[] {
 const tokenCache = new Map<string, Record<string, string>>()
 
 /**
- * Engine tokens with the preset's own tokens on top, as ThemeProvider merges
+ * Engine tokens with glass's own tokens on top, as ThemeProvider merges
  * them. Built once per combination: the contrast suites read the same matrix
  * many times over.
  */
@@ -93,7 +94,7 @@ export function finalTokens(combo: ThemeCombo): Record<string, string> {
   const common = generateTokens({
     accentColor: combo.accentColor,
     surfaceColor: combo.surfaceColor,
-    preset: combo.preset,
+    style: combo.style,
     backgroundStyle: "solid",
     mode: combo.mode,
     contrast: combo.contrast,
@@ -101,32 +102,17 @@ export function finalTokens(combo: ThemeCombo): Record<string, string> {
     tintWithAccent: combo.tintWithAccent ?? false,
     backgroundIntensity: combo.backgroundIntensity,
   })
-  const preset = presets[combo.preset]
-  // The provider falls back to each preset axis's declared default when
-  // nothing is stored (ThemeProvider.tsx:518); glass reads axes.opacity
-  // unconditionally, so an empty object would throw.
-  const axisDefaults = Object.fromEntries(
-    Object.entries(preset.axes ?? {}).map(([key, axis]) => [
-      key,
-      (axis as { default: string }).default,
-    ]),
-  )
-  const own = preset.generateTokens
-    ? preset.generateTokens(
-        {
-          accentColor: combo.accentColor,
-          surfaceColor: combo.surfaceColor,
-          backgroundStyle: "solid",
+  const own =
+    combo.style === "glass"
+      ? glassTokens({
           mode: combo.mode,
           accent: resolveAccentScale(combo.accentColor, combo.surfaceColor),
           surface: resolveNeutralScale(combo.surfaceColor),
-          neutral: resolveNeutralScale(combo.surfaceColor),
+          backgroundStyle: "solid",
           outerGlow: "none",
-          innerGlow: "none",
-        },
-        axisDefaults as never,
-      )
-    : {}
+          glassOpacity: "medium",
+        })
+      : {}
   const tokens = { ...common, ...own }
   tokenCache.set(key, tokens)
   return tokens
@@ -145,5 +131,5 @@ export function isOpaque(value: string | undefined): value is string {
 
 export function comboName(combo: ThemeCombo): string {
   const tint = combo.tintWithAccent ? "/tint" : ""
-  return `${combo.preset}/${combo.mode}/${combo.contrast}/${combo.darkAccentChroma}/${combo.backgroundIntensity}/${combo.accentColor}/${combo.surfaceColor}${tint}`
+  return `${combo.style}/${combo.mode}/${combo.contrast}/${combo.darkAccentChroma}/${combo.backgroundIntensity}/${combo.accentColor}/${combo.surfaceColor}${tint}`
 }

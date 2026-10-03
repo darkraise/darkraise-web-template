@@ -26,7 +26,7 @@ const AXES = JSON.parse(
 )
 const ACCENT_COLORS = AXES.accentColor.values
 const SURFACE_COLORS = AXES.surfaceColor.values
-const PRESETS = AXES.preset.values
+const PRESETS = AXES.style.values
 const BACKGROUND_STYLES = AXES.backgroundStyle.values
 const BACKGROUND_INTENSITIES = AXES.backgroundIntensity.values
 const GRADIENT_PATTERNS = AXES.gradientPattern.values

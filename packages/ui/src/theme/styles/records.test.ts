@@ -1,11 +1,20 @@
 import { describe, it, expect } from "vitest"
-import { AXIS_KEYS, isAxisValue, type AxisKey } from "@theme/axes/registry"
+import {
+  AXES,
+  AXIS_KEYS,
+  isAxisValue,
+  type AxisKey,
+} from "@theme/axes/registry"
 import { STYLE_NAMES, STYLES } from "@theme/styles"
 
 describe("style records", () => {
   it("ships the four styles in display order", () => {
     expect(STYLE_NAMES).toEqual(["flat", "quiet", "tactile", "glass"])
     expect(Object.keys(STYLES)).toEqual([...STYLE_NAMES])
+  })
+
+  it("names the style axis's values", () => {
+    expect(AXES.style.values).toEqual(STYLE_NAMES)
   })
 
   it.each(STYLE_NAMES)("%s defaults only valid registry values", (name) => {

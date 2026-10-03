@@ -456,7 +456,7 @@
      the glass SegmentGroup indicator has. The base fill stays underneath:
      inside main[data-content] glass zeroes the inset, and the tint alone
      would not read as a pill. */
-  [data-preset="glass"] .dr-tabs-indicator[data-variant="default"] {
+  [data-style="glass"] .dr-tabs-indicator[data-variant="default"] {
     background-image: var(--glass-state-selected-fill);
     box-shadow: var(--glass-state-active-inset);
   }
@@ -464,26 +464,26 @@
   /* Outline + underline variants: frost the trigger at rest and add a
      hover glow, then tint the indicator's selected fill with the
      glass-state token so all three variants share the preset identity. */
-  [data-preset="glass"] .dr-tabs-trigger[data-variant="outline"],
-  [data-preset="glass"] .dr-tabs-trigger[data-variant="underline"] {
+  [data-style="glass"] .dr-tabs-trigger[data-variant="outline"],
+  [data-style="glass"] .dr-tabs-trigger[data-variant="underline"] {
     -webkit-backdrop-filter: var(--backdrop-filter);
     backdrop-filter: var(--backdrop-filter);
   }
 
-  [data-preset="glass"]
+  [data-style="glass"]
     .dr-tabs-trigger[data-variant="outline"]:where(:not(:disabled)):hover,
-  [data-preset="glass"]
+  [data-style="glass"]
     .dr-tabs-trigger[data-variant="underline"]:where(:not(:disabled)):hover {
     box-shadow: var(--glass-state-hover-glow);
   }
 
-  [data-preset="glass"] .dr-tabs-indicator[data-variant="outline"] {
+  [data-style="glass"] .dr-tabs-indicator[data-variant="outline"] {
     background-image: var(--glass-state-selected-fill);
     box-shadow:
       var(--inset-hi), var(--glass-halo-raised), var(--glass-state-active-inset);
   }
 
-  [data-preset="glass"] .dr-tabs-indicator[data-variant="underline"] {
+  [data-style="glass"] .dr-tabs-indicator[data-variant="underline"] {
     box-shadow: var(--affordance-glow-bottom), var(--glass-state-hover-glow);
   }
 }

@@ -122,7 +122,7 @@ function contourNoise(x: number, y: number, t: number): number {
  * starfield, ripple, dotgrid, flowfield, contour). The other five variants are
  * pure CSS. Self-contained: it owns its own DPR sizing, resize observation,
  * pointer listeners, visibility pausing, and rAF loop, and reads theme tokens
- * off the canvas so it tracks mode + preset.
+ * off the canvas so it tracks mode + style.
  */
 export function BackgroundCanvas({
   variant,
@@ -996,7 +996,7 @@ export function BackgroundCanvas({
 
     if (reducedMotion) {
       // One composed static frame, no loop, no pointer. Repaint on theme
-      // change so the still frame tracks mode + preset like the CSS variants.
+      // change so the still frame tracks mode + style like the CSS variants.
       render(1)
       if (
         typeof MutationObserver !== "undefined" &&
@@ -1008,7 +1008,7 @@ export function BackgroundCanvas({
         })
         themeObserver.observe(document.documentElement, {
           attributes: true,
-          attributeFilter: ["class", "style", "data-mode", "data-preset"],
+          attributeFilter: ["class", "style", "data-mode", "data-style"],
         })
       }
     } else {

@@ -95,7 +95,7 @@ describe("view switch family", () => {
     expect(
       bodyOf(
         TABS,
-        '[data-preset="glass"] .dr-tabs-indicator[data-variant="default"]',
+        '[data-style="glass"] .dr-tabs-indicator[data-variant="default"]',
       ),
     ).toBe(
       "background-image: var(--glass-state-selected-fill); box-shadow: var(--glass-state-active-inset);",
@@ -196,7 +196,7 @@ describe("checked family: toggle, listbox and tree view", () => {
   ])("%s has no selected rule of its own under %s", (path, scope) => {
     const own = rulesOf(path).filter((rule) =>
       rule.selectors.some(
-        (s) => !s.startsWith("[data-preset=") && s.includes(scope),
+        (s) => !s.startsWith("[data-style=") && s.includes(scope),
       ),
     )
     expect(own).toEqual([])
@@ -205,7 +205,7 @@ describe("checked family: toggle, listbox and tree view", () => {
   it("keeps the checked fill under the glass outline listbox", () => {
     const body = bodyOf(
       LISTBOX,
-      '[data-preset="glass"] .dr-listbox[data-variant="outline"] .dr-listbox-item[data-selected="true"]',
+      '[data-style="glass"] .dr-listbox[data-variant="outline"] .dr-listbox-item[data-selected="true"]',
     )
     expect(body).not.toMatch(/background-color:\s*transparent/)
     expect(body).not.toMatch(/background-image:\s*none/)
@@ -264,7 +264,7 @@ describe("checked family: pagination", () => {
   it("keeps the checked fill under the glass current page", () => {
     const body = bodyOf(
       PAGINATION,
-      '[data-preset="glass"] .dr-pagination-link[data-active="true"][data-variant="ghost"]',
+      '[data-style="glass"] .dr-pagination-link[data-active="true"][data-variant="ghost"]',
     )
     expect(body).not.toMatch(/background-color:\s*transparent/)
   })
@@ -330,7 +330,7 @@ describe("nav row family: sidebar", () => {
       .flatMap((rule) => rule.selectors)
       .filter(
         (s) =>
-          !s.startsWith("[data-preset=") &&
+          !s.startsWith("[data-style=") &&
           !/\[data-active-bar="(?:bar|both)"\]/.test(s),
       )
     expect(offenders).toEqual([])
@@ -382,7 +382,7 @@ function accentStateUtilities(
   const text = css.replace(/\/\*[\s\S]*?\*\//g, "")
   for (const match of text.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
     const selector = normalise(match[1] as string)
-    if (selector.startsWith("[data-preset=")) continue
+    if (selector.startsWith("[data-style=")) continue
     for (const apply of (match[2] as string).matchAll(/@apply([^;]*);/g)) {
       for (const token of (apply[1] as string).trim().split(/\s+/)) {
         const { variants, utility } = splitToken(token)
@@ -526,7 +526,7 @@ function accentSelections(): Array<[string, string]> {
         rule.selectors
           .filter(
             (s) =>
-              !s.startsWith("[data-preset=") &&
+              !s.startsWith("[data-style=") &&
               SELECTED.test(s) &&
               PRIMARY.test(rule.body),
           )
@@ -578,7 +578,7 @@ describe("selected states read a family token", () => {
           .filter((rule) =>
             rule.selectors.some(
               (s) =>
-                !s.startsWith("[data-preset=") &&
+                !s.startsWith("[data-style=") &&
                 /\[data-variant="?outline"?\]/.test(s) &&
                 SELECTED.test(s),
             ),

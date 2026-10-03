@@ -1,11 +1,10 @@
 import type { Preview } from "@storybook/react"
 import { MockRouterAdapterProvider } from "../src/test/mock-router-adapter"
 import "../src/styles/theme.css"
-import { generateTokens } from "../src/theme/engine/generateTokens"
 import { ACCENT_COLORS } from "../src/theme/types"
-import { PRESET_NAMES } from "../src/theme/presets"
+import { STYLE_NAMES, type StyleName } from "../src/theme/styles"
 import type { AccentColor, ResolvedMode } from "../src/theme/types"
-import type { PresetName } from "../src/theme/presets"
+import { applyStoryTheme } from "./storyTheme"
 
 const preview: Preview = {
   parameters: {
@@ -26,12 +25,12 @@ const preview: Preview = {
         dynamicTitle: true,
       },
     },
-    surfaceStyle: {
-      description: "Surface style",
+    style: {
+      description: "Style",
       toolbar: {
         title: "Style",
         icon: "component",
-        items: [...PRESET_NAMES],
+        items: [...STYLE_NAMES],
         dynamicTitle: true,
       },
     },
@@ -47,32 +46,16 @@ const preview: Preview = {
   },
   initialGlobals: {
     accentColor: "blue",
-    surfaceStyle: "default",
+    style: "quiet",
     mode: "light",
   },
   decorators: [
     (Story, context) => {
-      const accentColor = (context.globals.accentColor || "blue") as AccentColor
-      const preset = (context.globals.surfaceStyle || "default") as PresetName
-      const mode = (context.globals.mode || "light") as ResolvedMode
-
-      document.documentElement.setAttribute("data-mode", mode)
-
-      const tokens = generateTokens({
-        accentColor,
-        surfaceColor: "slate",
-        preset,
-        backgroundStyle: "solid",
-        mode,
-        contrast: "standard",
-        darkAccentChroma: "standard",
-        tintWithAccent: false,
+      applyStoryTheme({
+        accentColor: (context.globals.accentColor || "blue") as AccentColor,
+        style: (context.globals.style || "quiet") as StyleName,
+        mode: (context.globals.mode || "light") as ResolvedMode,
       })
-
-      for (const [key, value] of Object.entries(tokens)) {
-        document.documentElement.style.setProperty(key, value)
-      }
-
       return <Story />
     },
     (Story) => (
