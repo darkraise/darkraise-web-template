@@ -25,9 +25,9 @@ export interface SidebarLayoutProps extends LayoutProps {
    * the style: the header toggle (if shown) reports its clicks through
    * `onActiveBarChange` instead of changing anything on its own.
    *
-   * Omitting it is NOT the same as passing a value — omitted leaves each
-   * preset's own look alone (glass shows a ring and a rail, the default
-   * preset a tint with no bar), while a value forces that look everywhere.
+   * Omitting it is NOT the same as passing a value — omitted leaves the
+   * theme's `sidebarActiveBar` in charge (by default a tint with no bar),
+   * while a value forces that look everywhere.
    *
    * `true` is shorthand for `"bar"`, `false` for `"ring"`.
    */
@@ -37,7 +37,7 @@ export interface SidebarLayoutProps extends LayoutProps {
    * alongside `showActiveBarToggle`, which is the one thing that can change
    * the style afterwards.
    *
-   * @default undefined — the active preset's own indicator
+   * @default undefined — the theme's `sidebarActiveBar` setting
    */
   defaultActiveBar?: boolean | SidebarActiveBar
   /** Fires when the header toggle picks a style. */
@@ -87,12 +87,12 @@ export function SidebarLayout({
   useRouteFocus()
   const [collapsed, setCollapsed] = useState(false)
   // Defaults to unset so nobody's sidebar changes appearance unless they ask:
-  // each preset renders its own default indicator until the control below
+  // the theme's indicator renders until the control below
   // is touched. A single-selection ToggleGroup can't hold `undefined`
   // itself, so "unset" is represented on the wire as the "default" item
   // and mapped back to `undefined` in onValueChange.
   // Three states, not two: "bar"/"ring"/"both" force a look, "default" asks
-  // for the preset's own, and `undefined` means nobody local has spoken yet —
+  // for the default tint, and `undefined` means nobody local has spoken yet —
   // only then does the theme axis get a say.
   const [localActiveBar, setLocalActiveBar] = useState<
     SidebarActiveBar | "default" | undefined

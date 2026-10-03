@@ -110,10 +110,9 @@ export const SHELL_STYLES = [
 export type ShellStyle = (typeof SHELL_STYLES)[number]
 
 /**
- * Indicator drawn on the active sidebar item. `default` leaves each preset's
- * own look alone: the default preset marks the row with a tint one step
- * stronger than hover and a bolder label, with no bar, and glass draws a ring
- * and a rail. The other three force one look everywhere.
+ * Indicator drawn on the active sidebar item. `default` marks the row with a
+ * tint one step stronger than hover and a bolder label, with no bar, under
+ * every style. The other three force a rail, a ring or both.
  */
 export const SIDEBAR_ACTIVE_BARS = ["default", "bar", "ring", "both"] as const
 export type SidebarActiveBarSetting = (typeof SIDEBAR_ACTIVE_BARS)[number]
@@ -121,8 +120,8 @@ export type SidebarActiveBarSetting = (typeof SIDEBAR_ACTIVE_BARS)[number]
 /**
  * Glow strength. Shared by both glow axes because they are two halves of one
  * effect: `outerGlow` is the halo cast outward, `innerGlow` the rim light bled
- * inward. `none` is the floor so the axes ship invisible on the Default preset
- * — presets that own a glow declare their own default via `commonAxisDefaults`.
+ * inward. `none` is the floor, and no style defaults a glow, so the axes ship
+ * invisible until the user sets one.
  */
 export const GLOW_LEVELS = ["none", "subtle", "balanced", "vivid"] as const
 export type GlowLevel = (typeof GLOW_LEVELS)[number]

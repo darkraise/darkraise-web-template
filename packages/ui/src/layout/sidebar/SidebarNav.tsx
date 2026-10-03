@@ -26,14 +26,13 @@ interface SidebarNavProps {
   /**
    * Indicator style for the active item.
    *
-   * - omitted: whatever the active preset renders today. Glass shows a ring
-   *   and a rail; the default preset shows a tint with no bar.
+   * - omitted: the default look, a tint with no bar under every style.
    * - `"bar"` / `true`: 3px left rail only.
    * - `"ring"` / `false`: uniform 1px ring only.
    * - `"both"`: 1px ring plus the 3px rail.
    *
-   * Omitting the prop is NOT the same as passing `"bar"` — omitting leaves
-   * each preset's own look alone, while `"bar"` forces a rail everywhere.
+   * Omitting the prop is NOT the same as passing `"bar"` — omitting keeps the
+   * tint with no bar, while `"bar"` forces a rail everywhere.
    */
   activeBar?: boolean | SidebarActiveBar
 }

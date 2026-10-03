@@ -258,9 +258,9 @@ export const themeConfig: ThemeConfig = {
 A default outside its axis's values falls back to the kit default. In
 development the provider warns once about such a value and about each removed
 key (`surfaceIntensity`, `borderIntensity`, `accentIntensity`, `controlDepth`,
-`buttonElevation`, `shellStyle`, and `switcher.axes.presetAxes`), naming its
-replacement, and ignores the key. A preset's own controls, such as glass
-opacity and blur, show under the Preset control whenever it is shown.
+`buttonElevation`, `shellStyle`, `preset`, and `switcher.axes.presetAxes`),
+naming its replacement, and ignores the key. The glass opacity and blur
+controls show under the Style control while the style is Glass.
 
 ## Shell styles
 
@@ -304,10 +304,9 @@ pick without any CSS specificity fight.
 
 ## Sidebar indicator
 
-`sidebarActiveBar` is a theme axis with four values. `default` leaves each
-preset's own indicator alone: the default preset marks the active row with a
-tint one step stronger than hover and a bolder label, with no bar, and glass
-draws a ring and a rail. `bar`, `ring` and `both` force one look everywhere.
+`sidebarActiveBar` is a theme axis with four values. `default` marks the
+active row with a tint one step stronger than hover and a bolder label, with no
+bar, under every style. `bar`, `ring` and `both` force one look everywhere.
 It appears in the theme panel as **Sidebar Indicator**, with `default`
 labelled "Auto".
 

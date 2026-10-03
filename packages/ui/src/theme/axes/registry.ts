@@ -225,7 +225,7 @@ export const AXES = {
     control: "choice",
     visibleWhen: (settings) => settings.backgroundStyle === "gradient",
   }),
-  /** Indicator on the active sidebar item; `default` keeps the preset's own look. */
+  /** Indicator on the active sidebar item; `default` is a tint and a bolder label with no bar. */
   sidebarActiveBar: axis({
     values: SIDEBAR_ACTIVE_BARS,
     default: "default",
