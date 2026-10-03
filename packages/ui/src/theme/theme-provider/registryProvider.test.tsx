@@ -627,4 +627,73 @@ describe("ThemeProvider synced payloads", () => {
     expect(adapter.save.mock.calls[0]?.[1]?.signal.aborted).toBe(true)
     expect(result.current.syncStatus).toBe("error")
   })
+
+  it("keeps saving while an edit made during the load waits to save", async () => {
+    let finishLoad: (loaded: ThemeSettings | null) => void = () => {}
+    const { adapter } = memoryAdapter(null)
+    adapter.load.mockImplementation(
+      () =>
+        new Promise<ThemeSettings | null>((resolve) => {
+          finishLoad = resolve
+        }),
+    )
+    const { result } = renderHook(() => useTheme(), {
+      wrapper: synced(adapter),
+    })
+    expect(result.current.syncStatus).toBe("loading")
+
+    act(() => result.current.setDensity("compact"))
+    expect(result.current.syncStatus).toBe("saving")
+
+    await act(async () => {
+      finishLoad(null)
+      await vi.advanceTimersByTimeAsync(0)
+    })
+    expect(adapter.save).not.toHaveBeenCalled()
+    expect(result.current.syncStatus).toBe("saving")
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(60)
+    })
+    expect(adapter.save).toHaveBeenCalledOnce()
+    expect(result.current.syncStatus).toBe("idle")
+  })
+
+  it("keeps saving when a save settles while the next edit waits to save", async () => {
+    const resolvers: Array<() => void> = []
+    const { adapter } = memoryAdapter(null)
+    adapter.save.mockImplementation(
+      () => new Promise<void>((resolve) => resolvers.push(resolve)),
+    )
+    const { result } = renderHook(() => useTheme(), {
+      wrapper: synced(adapter),
+    })
+    await settle()
+
+    act(() => result.current.setDensity("compact"))
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(60)
+    })
+    expect(adapter.save).toHaveBeenCalledOnce()
+
+    act(() => result.current.setDensity("spacious"))
+    await act(async () => {
+      resolvers[0]?.()
+      await vi.advanceTimersByTimeAsync(0)
+    })
+    expect(adapter.save).toHaveBeenCalledOnce()
+    expect(result.current.syncStatus).toBe("saving")
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(60)
+    })
+    expect(adapter.save).toHaveBeenCalledTimes(2)
+    expect(result.current.syncStatus).toBe("saving")
+
+    await act(async () => {
+      resolvers[1]?.()
+      await vi.advanceTimersByTimeAsync(0)
+    })
+    expect(result.current.syncStatus).toBe("idle")
+  })
 })

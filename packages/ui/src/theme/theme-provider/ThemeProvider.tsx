@@ -278,6 +278,9 @@ export function ThemeProvider({
     adapter: ThemePersistenceAdapter
     payload: ThemeSettings
   } | null>(null)
+  // True from an edit until its debounced save reaches queueSave, so a save
+  // settling in between does not report the sync as finished.
+  const saveScheduled = useRef(false)
   const queueSave = useCallback(
     (adapter: ThemePersistenceAdapter, payload: ThemeSettings) => {
       setSyncStatus("saving")
@@ -291,7 +294,7 @@ export function ThemeProvider({
           saved = await saveWithTimeout(next.adapter, next.payload)
         }
         saveRunning.current = false
-        setSyncStatus(saved ? "idle" : "error")
+        if (!saveScheduled.current) setSyncStatus(saved ? "idle" : "error")
       })()
     },
     [],
@@ -437,7 +440,11 @@ export function ThemeProvider({
 
   const debouncedSave = useDebouncedCallback(
     (next: ThemeSettings) => {
-      if (!persistenceRef.current) return
+      saveScheduled.current = false
+      if (!persistenceRef.current) {
+        if (!saveRunning.current) setSyncStatus("idle")
+        return
+      }
       queueSave(persistenceRef.current, next)
     },
     [persistence, persistenceDebounce, queueSave],
@@ -452,6 +459,10 @@ export function ThemeProvider({
     }
     onChangeRef.current?.(next)
     hasUserChanged.current = true
+    if (persistenceRef.current) {
+      saveScheduled.current = true
+      setSyncStatus("saving")
+    }
     debouncedSave(next)
   }, [debouncedSave])
 
@@ -608,7 +619,8 @@ export function ThemeProvider({
           queueSave(adapter, upgrade)
           return
         }
-        setSyncStatus("idle")
+        // After an edit the save path owns the status.
+        if (!hasUserChanged.current) setSyncStatus("idle")
       },
       () => {
         if (cancelled) return
