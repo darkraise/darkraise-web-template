@@ -175,8 +175,23 @@ async function waitForTheme(page: Page) {
   await expect(page.locator("html")).toHaveAttribute("data-preset", /.+/)
 }
 
+/**
+ * A dev-server load holds about 250 module responses whose resources Chromium
+ * frees only when the page that loaded them is garbage-collected. Under
+ * parallel workers that collection lags, three loads' worth pile up in one
+ * renderer, and the next navigation fails with ERR_INSUFFICIENT_RESOURCES;
+ * collecting before each navigation keeps one load's worth.
+ */
+async function collectGarbage(page: Page) {
+  await page.waitForLoadState("networkidle")
+  const cdp = await page.context().newCDPSession(page)
+  await cdp.send("HeapProfiler.collectGarbage")
+  await cdp.detach()
+}
+
 /** Navigate and wait for the app shell to be interactive. */
 export async function gotoApp(page: Page, path: string) {
+  await collectGarbage(page)
   await page.goto(path)
   await expect(page.locator("#root")).not.toBeEmpty()
   await waitForTheme(page)
@@ -184,18 +199,10 @@ export async function gotoApp(page: Page, path: string) {
 
 /**
  * Reload once the previous load has settled, then wait until the stored theme
- * has been painted again. A dev-server load holds about 250 module responses
- * whose resources Chromium frees only when the page that loaded them is
- * garbage-collected. Under parallel workers that collection lags, three
- * loads' worth pile up in one renderer, and the next navigation fails with
- * ERR_INSUFFICIENT_RESOURCES; collecting before each reload keeps one load's
- * worth.
+ * has been painted again.
  */
 export async function reloadApp(page: Page) {
-  await page.waitForLoadState("networkidle")
-  const cdp = await page.context().newCDPSession(page)
-  await cdp.send("HeapProfiler.collectGarbage")
-  await cdp.detach()
+  await collectGarbage(page)
   await page.reload()
   await waitForTheme(page)
 }
