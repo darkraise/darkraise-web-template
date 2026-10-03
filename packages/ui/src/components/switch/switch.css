@@ -9,10 +9,12 @@
 
   .dr-switch[data-state="unchecked"] {
     border-color: var(--field-edge);
+    box-shadow: var(--check-well-shadow);
   }
 
   .dr-switch-thumb {
-    @apply bg-background pointer-events-none block h-4 w-4 rounded-full shadow-[var(--shadow-button)] ring-0 transition-transform data-[state=checked]:translate-x-4 data-[state=unchecked]:translate-x-0;
+    @apply bg-background pointer-events-none block h-4 w-4 rounded-full ring-0 transition-transform data-[state=checked]:translate-x-4 data-[state=unchecked]:translate-x-0;
+    box-shadow: var(--thumb-shadow);
   }
 
   /* Compose the preset-driven --affordance-glow on top of the thumb's
@@ -20,6 +22,6 @@
      shipped preset (no visual change); a preset can bind a primary-color
      glow. */
   .dr-switch[data-state="checked"] .dr-switch-thumb {
-    box-shadow: var(--shadow-button), var(--affordance-glow);
+    box-shadow: var(--thumb-shadow), var(--affordance-glow);
   }
 }

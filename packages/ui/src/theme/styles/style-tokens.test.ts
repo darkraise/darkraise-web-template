@@ -434,3 +434,73 @@ describe("fields compose --field-shadow", () => {
     expect(bodyOf(path, selector)).toContain(declaration)
   })
 })
+
+const CHECKBOX = join("src", "components", "checkbox", "checkbox.css")
+const RADIO = join("src", "components", "radio-group", "radio-group.css")
+const SWITCH = join("src", "components", "switch", "switch.css")
+const SLIDER = join("src", "components", "slider", "slider.css")
+const ANGLE = join("src", "components", "angle-slider", "angle-slider.css")
+const TABS = join("src", "components", "tabs", "tabs.css")
+const SEGMENT = join("src", "components", "segment-group", "segment-group.css")
+
+describe("checkables, thumbs and the view pill", () => {
+  it.each([
+    [CHECKBOX, '.dr-checkbox[data-state="unchecked"]'],
+    [RADIO, '.dr-radio-group-item[data-state="unchecked"]'],
+    [SWITCH, '.dr-switch[data-state="unchecked"]'],
+  ])("%s %s sinks into the check well", (path, selector) => {
+    expect(bodyOf(path, selector)).toContain(
+      "box-shadow: var(--check-well-shadow);",
+    )
+  })
+
+  it.each([
+    [SWITCH, ".dr-switch-thumb", "box-shadow: var(--thumb-shadow);"],
+    [
+      SLIDER,
+      ".dr-slider-thumb",
+      "box-shadow: var(--thumb-shadow), var(--affordance-glow);",
+    ],
+    [ANGLE, ".dr-angle-slider-pointer", "box-shadow: var(--thumb-shadow);"],
+  ])("%s %s raises its thumb", (path, selector, declaration) => {
+    expect(bodyOf(path, selector)).toContain(declaration)
+  })
+
+  it.each([
+    [
+      CHECKBOX,
+      '.dr-checkbox[data-state="checked"]',
+      "box-shadow: var(--affordance-glow);",
+    ],
+    [
+      RADIO,
+      '.dr-radio-group-item[data-state="checked"]',
+      "box-shadow: var(--affordance-glow);",
+    ],
+    [
+      SWITCH,
+      '.dr-switch[data-state="checked"] .dr-switch-thumb',
+      "box-shadow: var(--thumb-shadow), var(--affordance-glow);",
+    ],
+    [
+      TABS,
+      '.dr-tabs-indicator[data-variant="default"]',
+      "box-shadow: var(--selected-view-shadow), var(--affordance-glow);",
+    ],
+    [
+      SEGMENT,
+      ".dr-segment-group-indicator",
+      "box-shadow: var(--selected-view-shadow), var(--affordance-glow);",
+    ],
+    [
+      SEGMENT,
+      '.dr-segment-group[data-color="accent"] .dr-segment-group-indicator[data-variant="default"]',
+      "box-shadow: var(--selected-view-shadow), var(--affordance-glow);",
+    ],
+  ])(
+    "%s %s keeps the affordance glow beside its family token",
+    (path, selector, declaration) => {
+      expect(bodyOf(path, selector)).toContain(declaration)
+    },
+  )
+})

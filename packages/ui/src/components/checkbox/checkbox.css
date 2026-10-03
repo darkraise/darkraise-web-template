@@ -5,6 +5,7 @@
 
   .dr-checkbox[data-state="unchecked"] {
     border-color: var(--field-edge);
+    box-shadow: var(--check-well-shadow);
   }
 
   .dr-checkbox[data-state="checked"] {

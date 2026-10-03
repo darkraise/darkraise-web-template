@@ -9,6 +9,7 @@
 
   .dr-radio-group-item[data-state="unchecked"] {
     border-color: var(--field-edge);
+    box-shadow: var(--check-well-shadow);
   }
 
   .dr-radio-group-item[data-size="sm"] {
