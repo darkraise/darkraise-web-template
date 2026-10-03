@@ -407,6 +407,18 @@ describe("migrateStorage", () => {
     }
   })
 
+  it("keeps the legacy keys when a target write is refused", () => {
+    const storage: TestStorage = {
+      ...memoryStorage({ "theme-surface-intensity": "bold" }),
+      setItem: () => {
+        throw new DOMException("full", "QuotaExceededError")
+      },
+    }
+    expect(migrateStorage(storage).get("theme-contrast")).toBe("high")
+    expect(storage.contents()).toEqual({ "theme-surface-intensity": "bold" })
+    expect(migrateStorage(storage).get("theme-contrast")).toBe("high")
+  })
+
   it("returns an empty map when storage cannot be read", () => {
     const storage = memoryStorage()
     storage.getItem = () => {

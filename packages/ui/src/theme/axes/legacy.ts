@@ -335,13 +335,27 @@ export function runLegacyTable(
     (key) => key,
   )
 
-  for (const key of changed) {
-    const value = held.get(key) ?? null
-    try {
-      if (value === null) storage.removeItem(key)
-      else storage.setItem(key, value)
-    } catch {
-      failed = true
+  // A source removed after its target failed to land would lose the setting,
+  // and a key whose read threw may hold a value this run never saw.
+  if (!failed) {
+    for (const key of changed) {
+      const value = held.get(key) ?? null
+      if (value === null) continue
+      try {
+        storage.setItem(key, value)
+      } catch {
+        failed = true
+      }
+    }
+  }
+  if (!failed) {
+    for (const key of changed) {
+      if ((held.get(key) ?? null) !== null) continue
+      try {
+        storage.removeItem(key)
+      } catch {
+        failed = true
+      }
     }
   }
   if (!failed && marker < revision) {
