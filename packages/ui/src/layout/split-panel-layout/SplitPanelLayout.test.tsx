@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react"
-import { describe, it, expect } from "vitest"
+import { afterEach, beforeEach, describe, it, expect } from "vitest"
+import { useLayoutStore } from "@layout/layoutStore"
 import { SplitPanelLayout } from "./SplitPanelLayout"
 import { RouterAdapterProvider } from "@router"
 import { UiLabelsProvider } from "@labels"
@@ -72,6 +73,27 @@ describe("SplitPanelLayout shell grid", () => {
     expect(container.querySelector(".dr-shell")).toHaveAttribute(
       "data-shell-style",
       "island",
+    )
+  })
+})
+
+describe("SplitPanelLayout shell style", () => {
+  const reset = () => useLayoutStore.setState({ shellStyle: null })
+  beforeEach(reset)
+  afterEach(reset)
+
+  it("starts from defaultShellStyle until the user picks one", () => {
+    const first = renderLayout({ defaultShellStyle: "inset" })
+    expect(first.container.querySelector(".dr-shell")).toHaveAttribute(
+      "data-shell-style",
+      "inset",
+    )
+    first.unmount()
+    useLayoutStore.setState({ shellStyle: "flat" })
+    const second = renderLayout({ defaultShellStyle: "inset" })
+    expect(second.container.querySelector(".dr-shell")).toHaveAttribute(
+      "data-shell-style",
+      "flat",
     )
   })
 })

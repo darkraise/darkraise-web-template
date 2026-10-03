@@ -39,6 +39,7 @@ export function StackedLayout({
   layoutVariants,
   showThemeSwitcher,
   shellStyle: shellStyleProp,
+  defaultShellStyle,
   user,
   onProfile,
   onSettings,
@@ -47,7 +48,7 @@ export function StackedLayout({
   const uiText = useUiText()
 
   const labels = useUiLabels()
-  const shellStyle = useShellStyle(shellStyleProp)
+  const shellStyle = useShellStyle(shellStyleProp, defaultShellStyle)
   // The sidebar* names predate the layouts that have no sidebar; both still
   // work, and the new name wins when a caller passes each.
   const resolvedNavHeader = navHeader ?? sidebarHeader

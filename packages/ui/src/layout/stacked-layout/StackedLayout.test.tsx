@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react"
-import { describe, it, expect } from "vitest"
+import { afterEach, beforeEach, describe, it, expect } from "vitest"
+import { useLayoutStore } from "@layout/layoutStore"
 import { StackedLayout } from "./StackedLayout"
 import { RouterAdapterProvider } from "@router"
 import { UiLabelsProvider } from "@labels"
@@ -84,6 +85,27 @@ describe("StackedLayout shell grid", () => {
       </UiLabelsProvider>,
     )
     expect(screen.getByRole("link", { name: "Bo qua" })).toBeInTheDocument()
+  })
+})
+
+describe("StackedLayout shell style", () => {
+  const reset = () => useLayoutStore.setState({ shellStyle: null })
+  beforeEach(reset)
+  afterEach(reset)
+
+  it("starts from defaultShellStyle until the user picks one", () => {
+    const first = renderLayout({ defaultShellStyle: "inset" })
+    expect(first.container.querySelector(".dr-shell")).toHaveAttribute(
+      "data-shell-style",
+      "inset",
+    )
+    first.unmount()
+    useLayoutStore.setState({ shellStyle: "flat" })
+    const second = renderLayout({ defaultShellStyle: "inset" })
+    expect(second.container.querySelector(".dr-shell")).toHaveAttribute(
+      "data-shell-style",
+      "flat",
+    )
   })
 })
 

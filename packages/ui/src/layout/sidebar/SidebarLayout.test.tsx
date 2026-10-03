@@ -1,6 +1,7 @@
 import { render, screen, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { describe, it, expect, vi } from "vitest"
+import { afterEach, beforeEach, describe, it, expect, vi } from "vitest"
+import { useLayoutStore } from "@layout/layoutStore"
 import { ThemeProvider, themeConfig } from "@theme"
 import type { SidebarActiveBarSetting } from "@theme"
 import { SidebarLayout } from "@layout/sidebar"
@@ -198,6 +199,27 @@ describe("shell grid", () => {
     expect(container.querySelector(".dr-shell")).toHaveAttribute(
       "data-shell-style",
       "island",
+    )
+  })
+})
+
+describe("SidebarLayout shell style", () => {
+  const reset = () => useLayoutStore.setState({ shellStyle: null })
+  beforeEach(reset)
+  afterEach(reset)
+
+  it("starts from defaultShellStyle until the user picks one", () => {
+    const first = renderLayout({ defaultShellStyle: "inset" })
+    expect(first.container.querySelector(".dr-shell")).toHaveAttribute(
+      "data-shell-style",
+      "inset",
+    )
+    first.unmount()
+    useLayoutStore.setState({ shellStyle: "flat" })
+    const second = renderLayout({ defaultShellStyle: "inset" })
+    expect(second.container.querySelector(".dr-shell")).toHaveAttribute(
+      "data-shell-style",
+      "flat",
     )
   })
 })

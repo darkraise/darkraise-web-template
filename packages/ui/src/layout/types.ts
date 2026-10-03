@@ -1,5 +1,6 @@
 import type { ReactNode } from "react"
 import type { LucideIcon } from "lucide-react"
+import type { ShellStyle } from "@theme"
 import type { LayoutVariant } from "./layoutStore"
 
 export interface NavItem {
@@ -39,6 +40,12 @@ export interface LayoutProps {
    * @default false
    */
   showActiveBarToggle?: boolean
+  /**
+   * Chrome treatment used until the user picks one in the layout switcher.
+   *
+   * @default "classic"
+   */
+  defaultShellStyle?: ShellStyle
   user?: { name: string; email: string }
   onProfile?: () => void
   onSettings?: () => void

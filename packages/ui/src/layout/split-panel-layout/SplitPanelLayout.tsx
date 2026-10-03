@@ -42,13 +42,14 @@ export function SplitPanelLayout({
   onSettings,
   onLogout,
   shellStyle: shellStyleProp,
+  defaultShellStyle,
   panel,
   defaultPanelWidth = 320,
   minPanelWidth = 240,
   maxPanelWidth = 480,
 }: SplitPanelLayoutProps) {
   const labels = useUiLabels()
-  const shellStyle = useShellStyle(shellStyleProp)
+  const shellStyle = useShellStyle(shellStyleProp, defaultShellStyle)
   // The sidebar* names predate the layouts that have no sidebar; both still
   // work, and the new name wins when a caller passes each.
   const resolvedNavHeader = navHeader ?? sidebarHeader
