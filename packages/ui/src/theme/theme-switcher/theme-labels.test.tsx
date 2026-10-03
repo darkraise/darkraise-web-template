@@ -1,11 +1,12 @@
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect } from "vitest"
-import { UiLabelsProvider } from "@labels"
+import { UiLabelsProvider, defaultLabels } from "@labels"
 import { ThemeProvider } from "@theme"
 import { ThemeSwitcher } from "@theme/theme-switcher"
 import type { ThemeConfig } from "@theme/themeConfig"
 import { viTheme } from "../../locales/viTheme"
+import { vi as viLocale } from "../../locales/vi"
 
 const config: ThemeConfig = {
   defaults: {
@@ -102,6 +103,11 @@ describe("ThemeSwitcher labels", () => {
     renderSwitcher()
     await user.click(screen.getByRole("button"))
     expect(screen.getByText("Background Intensity")).toBeInTheDocument()
+  })
+
+  it("labels the font axis in English and Vietnamese", () => {
+    expect(defaultLabels.theme.axisLabels.font).toBe("Font")
+    expect(viLocale.messages.theme.axisLabels.font).toBe("Phông chữ")
   })
 
   it("has Vietnamese option labels for the colour engine values", () => {

@@ -70,6 +70,7 @@ export const defaultLabels: UiLabels = {
       accentColor: "Accent Color",
       surfaceColor: "Surface Color",
       preset: "Preset",
+      font: "Font",
       backgroundStyle: "Background",
       backgroundIntensity: "Background Intensity",
       gradientPattern: "Gradient Pattern",

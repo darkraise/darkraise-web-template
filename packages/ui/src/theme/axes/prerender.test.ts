@@ -60,6 +60,18 @@ describe("pre-render script", () => {
     expect(root.hasAttribute("data-sidebar-active-bar")).toBe(false)
   })
 
+  it("restores the stored font before the app runs", () => {
+    localStorage.setItem("theme-font", "geist")
+    run()
+    expect(root.getAttribute("data-font")).toBe("geist")
+  })
+
+  it("skips an unknown stored font", () => {
+    localStorage.setItem("theme-font", "comic-sans")
+    run()
+    expect(root.hasAttribute("data-font")).toBe(false)
+  })
+
   it("ignores the stored values of removed axes", () => {
     localStorage.setItem("theme-surface-intensity", "bold")
     localStorage.setItem("theme-control-depth", "deep")

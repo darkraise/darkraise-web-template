@@ -82,6 +82,16 @@ describe("axis registry", () => {
     expect(themeConfig.switcher.axes?.buttonElevation).toBeUndefined()
   })
 
+  it("registers the font axis", () => {
+    expect(AXES.font).toMatchObject({
+      values: ["inter", "geist", "ibm-plex-sans"],
+      default: "inter",
+      storageKey: "theme-font",
+      attribute: "data-font",
+      layer: "brand",
+    })
+  })
+
   it("drops the axes the colour engine replaced", () => {
     for (const key of [
       "surfaceIntensity",

@@ -6,6 +6,7 @@ import {
   DARK_ACCENT_CHROMAS,
   DENSITIES,
   ELEVATIONS,
+  FONTS,
   FONT_SIZES,
   GLOW_LEVELS,
   GRADIENT_PATTERNS,
@@ -66,6 +67,14 @@ export const AXES = {
     storageKey: "theme-preset",
     attribute: "data-preset",
     layer: "style",
+  }),
+  /** Sans and heading typeface; monospace text stays JetBrains Mono. */
+  font: axis({
+    values: FONTS,
+    default: "inter",
+    storageKey: "theme-font",
+    attribute: "data-font",
+    layer: "brand",
   }),
   /** Page canvas: a `solid` fill or a `gradient`. */
   backgroundStyle: axis({

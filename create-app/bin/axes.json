@@ -67,6 +67,17 @@
     "attribute": "data-preset",
     "layer": "style"
   },
+  "font": {
+    "values": [
+      "inter",
+      "geist",
+      "ibm-plex-sans"
+    ],
+    "default": "inter",
+    "storageKey": "theme-font",
+    "attribute": "data-font",
+    "layer": "brand"
+  },
   "backgroundStyle": {
     "values": [
       "solid",
