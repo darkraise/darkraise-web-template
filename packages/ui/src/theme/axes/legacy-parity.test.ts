@@ -2,9 +2,17 @@ import { cleanup, render } from "@testing-library/react"
 import { createElement } from "react"
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import { ThemeProvider } from "@theme/theme-provider/ThemeProvider"
-import { LEGACY_MARKER_KEY, LEGACY_REVISION, migrateStorage } from "./legacy"
+import { PRESET_NAMES, presets, type PresetName } from "@theme/presets"
+import {
+  LEGACY_MARKER_KEY,
+  LEGACY_REVISION,
+  LEGACY_TARGETS,
+  migrateStorage,
+} from "./legacy"
 import { PRE_V696_KEYS, V696_KEYS } from "./legacy-fixture"
 import { buildPrerenderScript } from "./prerender"
+import { AXES, AXIS_KEYS } from "./registry"
+import { presetAxisStorageKey } from "./settings"
 import { TOKEN_CACHE_STORAGE_KEY } from "./tokenCache"
 
 const root = document.documentElement
@@ -83,6 +91,31 @@ function memoryStorage(state: Record<string, string>) {
   }
 }
 
+// The provider stamps every axis, defaults included, but the script restores
+// only an axis whose migrated stored value is valid, and preset axes only for
+// a stored preset.
+function restoredAttributes(stored: Record<string, string>): string[] {
+  const restorable: [attribute: string, storageKey: string][] =
+    AXIS_KEYS.filter((key) => key !== "mode" && AXES[key].attribute).map(
+      (key) => [AXES[key].attribute as string, AXES[key].storageKey],
+    )
+  const preset = stored[AXES.preset.storageKey]
+  if (preset && (PRESET_NAMES as readonly string[]).includes(preset)) {
+    for (const axis of Object.keys(presets[preset as PresetName].axes)) {
+      restorable.push([
+        `data-${preset}-${axis}`,
+        presetAxisStorageKey(preset, axis),
+      ])
+    }
+  }
+  return [
+    "data-mode",
+    ...restorable
+      .filter(([, key]) => LEGACY_TARGETS[key]?.includes(stored[key] ?? ""))
+      .map(([attribute]) => attribute),
+  ]
+}
+
 // Clearing the inline style leaves an empty style attribute, which the snapshot
 // of what the script painted must not pick up.
 function resetRoot() {
@@ -113,8 +146,12 @@ describe("pre-render script and migrateStorage", () => {
     resetRoot()
     seed(state)
     render(createElement(ThemeProvider, { children: null }))
-    for (const [name, value] of Object.entries(painted)) {
-      expect(root.getAttribute(name), name).toBe(value)
-    }
+    const provided = Object.fromEntries(
+      restoredAttributes(scripted).map((name) => [
+        name,
+        root.getAttribute(name),
+      ]),
+    )
+    expect(provided).toEqual(painted)
   })
 })
