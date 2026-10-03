@@ -102,7 +102,7 @@ export const AXES = {
   /** Shadow depth of raised surfaces. */
   elevation: axis({
     values: ELEVATIONS,
-    default: "medium",
+    default: "standard",
     storageKey: "theme-elevation",
     attribute: "data-elevation",
     layer: "advanced",

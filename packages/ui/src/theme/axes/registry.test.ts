@@ -77,6 +77,16 @@ describe("axis registry", () => {
     expect(AXES.buttonElevation.values).not.toBe(ELEVATIONS)
   })
 
+  it("reduces elevation to flat, standard and high", () => {
+    expect(AXES.elevation).toMatchObject({
+      values: ["flat", "standard", "high"],
+      default: "standard",
+      storageKey: "theme-elevation",
+      attribute: "data-elevation",
+      layer: "advanced",
+    })
+  })
+
   it("drops the axes the colour engine replaced", () => {
     for (const key of [
       "surfaceIntensity",

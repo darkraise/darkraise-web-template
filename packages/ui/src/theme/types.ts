@@ -73,7 +73,7 @@ export type GradientPattern = (typeof GRADIENT_PATTERNS)[number]
 export const DENSITIES = ["compact", "cozy", "comfortable", "spacious"] as const
 export type Density = (typeof DENSITIES)[number]
 
-export const ELEVATIONS = ["flat", "low", "medium", "high"] as const
+export const ELEVATIONS = ["flat", "standard", "high"] as const
 export type Elevation = (typeof ELEVATIONS)[number]
 
 export const RADII = ["sharp", "subtle", "rounded", "pill"] as const

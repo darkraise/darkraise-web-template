@@ -301,12 +301,12 @@ async function main() {
   const elevation =
     argv.elevation ||
     (skipPrompts
-      ? "medium"
+      ? "standard"
       : cancelled(
           await p.select({
             message: "Elevation",
             options: ELEVATIONS.map((e) => ({ value: e, label: e })),
-            initialValue: "medium",
+            initialValue: "standard",
           }),
         ))
 

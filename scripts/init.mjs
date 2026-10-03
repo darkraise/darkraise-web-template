@@ -45,7 +45,7 @@ const defaultConfig = {
       gradientPattern: "blobs",
       mode: "system",
       density: "cozy",
-      elevation: "medium",
+      elevation: "standard",
       buttonElevation: "flat",
       radius: "rounded",
       fontSize: "medium",

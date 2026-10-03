@@ -117,11 +117,10 @@
   "elevation": {
     "values": [
       "flat",
-      "low",
-      "medium",
+      "standard",
       "high"
     ],
-    "default": "medium",
+    "default": "standard",
     "storageKey": "theme-elevation",
     "attribute": "data-elevation",
     "layer": "advanced"

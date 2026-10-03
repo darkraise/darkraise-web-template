@@ -17,7 +17,7 @@ const config: ThemeConfig = {
     gradientPattern: "blobs",
     mode: "light",
     density: "cozy",
-    elevation: "medium",
+    elevation: "standard",
     buttonElevation: "flat",
     radius: "rounded",
     fontSize: "medium",

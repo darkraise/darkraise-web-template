@@ -146,7 +146,7 @@ describe("useTheme", () => {
   it("returns config defaults for new axes when localStorage is empty", () => {
     const { result } = renderHook(() => useTheme(), { wrapper })
     expect(result.current.density).toBe("cozy")
-    expect(result.current.elevation).toBe("medium")
+    expect(result.current.elevation).toBe("standard")
     expect(result.current.buttonElevation).toBe("flat")
   })
 
@@ -382,7 +382,7 @@ describe("useTheme persistence", () => {
 
     expect(result.current.accentColor).toBe("violet")
     expect(result.current.density).toBe("cozy")
-    expect(result.current.elevation).toBe("medium")
+    expect(result.current.elevation).toBe("standard")
     expect(result.current.buttonElevation).toBe("flat")
   })
 
