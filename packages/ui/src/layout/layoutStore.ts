@@ -22,11 +22,6 @@ interface LayoutState {
 }
 
 const getStoredLayout = (): LayoutVariant => {
-  // SSR-safe: `localStorage` is undefined on the server. Returning the
-  // static default here keeps the server's first render in sync with the
-  // client's hydration render. After hydration, consumer code can call
-  // `useLayoutStore.setState({ layout: ... })` from an effect to switch.
-  if (typeof window === "undefined") return "sidebar"
   try {
     const stored = localStorage.getItem("layout-variant")
     if (LAYOUT_VARIANTS.includes(stored as LayoutVariant)) {
@@ -39,8 +34,6 @@ const getStoredLayout = (): LayoutVariant => {
 }
 
 const getStoredShellStyle = (): ShellStyle | null => {
-  // Same SSR rule as getStoredLayout: the server renders the unset state.
-  if (typeof window === "undefined") return null
   try {
     const stored = localStorage.getItem(SHELL_STYLE_STORAGE_KEY)
     if (SHELL_STYLES.includes(stored as ShellStyle)) {
@@ -53,7 +46,7 @@ const getStoredShellStyle = (): ShellStyle | null => {
 }
 
 export const useLayoutStore = create<LayoutState>((set) => ({
-  layout: getStoredLayout(),
+  layout: "sidebar",
   setLayout: (layout) => {
     try {
       localStorage.setItem("layout-variant", layout)
@@ -63,7 +56,7 @@ export const useLayoutStore = create<LayoutState>((set) => ({
     }
     set({ layout })
   },
-  shellStyle: getStoredShellStyle(),
+  shellStyle: null,
   setShellStyle: (shellStyle) => {
     try {
       localStorage.setItem(SHELL_STYLE_STORAGE_KEY, shellStyle)
@@ -74,3 +67,13 @@ export const useLayoutStore = create<LayoutState>((set) => ({
     set({ shellStyle })
   },
 }))
+
+// zustand serves getInitialState() as the server snapshot, so hydration
+// renders these defaults as the server did and then the stored values;
+// a client-only app reads getState() and shows the stored values at once.
+if (typeof window !== "undefined") {
+  useLayoutStore.setState({
+    layout: getStoredLayout(),
+    shellStyle: getStoredShellStyle(),
+  })
+}
