@@ -122,17 +122,15 @@ describe("ThemeProvider on the axis registry", () => {
     expect(root.style.getPropertyValue("--primary")).toBe(painted)
   })
 
-  it("sanitises a synced payload and drops dead preset axes", async () => {
+  it("sanitises a synced payload and drops the removed preset axis values", async () => {
     vi.useFakeTimers()
     const adapter: ThemePersistenceAdapter = {
       load: vi.fn(() =>
         Promise.resolve({
           accentColor: "rose",
           mode: "sepia",
-          presetAxisValues: {
-            scifi: { glow: "high" },
-            glass: { blur: "high" },
-          },
+          glassBlur: "high",
+          presetAxisValues: { scifi: { glow: "high" } },
         } as never),
       ),
       save: vi.fn(() => Promise.resolve()),
@@ -150,10 +148,8 @@ describe("ThemeProvider on the axis registry", () => {
     expect(result.current.accentColor).toBe("rose")
     expect(result.current.mode).toBe("system")
     expect(localStorage.getItem("mode")).toBeNull()
-    expect(result.current.presetAxisValues).toEqual({
-      default: {},
-      glass: { opacity: "medium", blur: "high" },
-    })
+    expect(result.current.glassBlur).toBe("high")
+    expect(localStorage.getItem("theme-glass-blur")).toBe("high")
     act(() => result.current.setDensity("compact"))
     await act(async () => {
       await vi.advanceTimersByTimeAsync(60)
@@ -162,11 +158,8 @@ describe("ThemeProvider on the axis registry", () => {
     const saved = calls[calls.length - 1]?.[0]
     expect(saved).toEqual({
       accentColor: "rose",
+      glassBlur: "high",
       density: "compact",
-      presetAxisValues: {
-        default: {},
-        glass: { opacity: "medium", blur: "high" },
-      },
       version: 7,
     })
   })

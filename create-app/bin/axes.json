@@ -77,6 +77,29 @@
     "attribute": "data-preset",
     "layer": "style"
   },
+  "glassOpacity": {
+    "values": [
+      "subtle",
+      "medium",
+      "strong"
+    ],
+    "default": "medium",
+    "storageKey": "theme-glass-opacity",
+    "attribute": "data-glass-opacity",
+    "layer": "style"
+  },
+  "glassBlur": {
+    "values": [
+      "none",
+      "low",
+      "medium",
+      "high"
+    ],
+    "default": "medium",
+    "storageKey": "theme-glass-blur",
+    "attribute": "data-glass-blur",
+    "layer": "style"
+  },
   "font": {
     "values": [
       "inter",

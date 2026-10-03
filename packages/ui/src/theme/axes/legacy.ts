@@ -1,6 +1,4 @@
-import { PRESET_NAMES, presets } from "@theme/presets"
 import { AXES, AXIS_KEYS } from "./registry"
-import { presetAxisStorageKey } from "./settings"
 
 /** The table's revision; a browser stores the one it last ran. */
 export const LEGACY_REVISION = 1
@@ -208,15 +206,6 @@ export const LEGACY_RULES: readonly LegacyRule[] = [
 function buildTargets(): Record<string, readonly string[]> {
   const out: Record<string, readonly string[]> = {}
   for (const key of AXIS_KEYS) out[AXES[key].storageKey] = AXES[key].values
-  for (const name of PRESET_NAMES) {
-    const axes = presets[name].axes as Record<
-      string,
-      { values: readonly string[] }
-    >
-    for (const [axis, definition] of Object.entries(axes)) {
-      out[presetAxisStorageKey(name, axis)] = definition.values
-    }
-  }
   return out
 }
 

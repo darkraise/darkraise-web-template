@@ -24,6 +24,8 @@ describe("axis registry", () => {
       "surfaceColor",
       "tintWithAccent",
       "preset",
+      "glassOpacity",
+      "glassBlur",
       "font",
       "radius",
       "density",
@@ -59,6 +61,8 @@ describe("axis registry", () => {
       "sidebarActiveBar",
     ])
     expect(byKind("ordinal")).toEqual([
+      "glassOpacity",
+      "glassBlur",
       "radius",
       "density",
       "fontSize",
@@ -88,8 +92,35 @@ describe("axis registry", () => {
   it("declares a visibility rule only where another axis gates the control", () => {
     expect(AXIS_KEYS.filter((key) => AXES[key].visibleWhen)).toEqual([
       "tintWithAccent",
+      "glassOpacity",
+      "glassBlur",
       "gradientPattern",
     ])
+  })
+
+  it("shows the glass axes only under glass", () => {
+    for (const key of ["glassOpacity", "glassBlur"] as const) {
+      const visible = AXES[key].visibleWhen
+      expect(visible?.({ preset: "glass" }), key).toBe(true)
+      expect(visible?.({ preset: "default" }), key).toBe(false)
+    }
+  })
+
+  it("keeps the 6.x storage keys for the glass axes", () => {
+    expect(AXES.glassOpacity).toMatchObject({
+      values: ["subtle", "medium", "strong"],
+      default: "medium",
+      storageKey: "theme-glass-opacity",
+      attribute: "data-glass-opacity",
+      layer: "style",
+    })
+    expect(AXES.glassBlur).toMatchObject({
+      values: ["none", "low", "medium", "high"],
+      default: "medium",
+      storageKey: "theme-glass-blur",
+      attribute: "data-glass-blur",
+      layer: "style",
+    })
   })
 
   it("shows the gradient pattern only under the gradient style", () => {

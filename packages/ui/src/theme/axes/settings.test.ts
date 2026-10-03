@@ -2,9 +2,6 @@ import { describe, expect, it } from "vitest"
 import type { ThemeSettings } from "@theme/types"
 import {
   THEME_PAYLOAD_VERSION,
-  completePresetAxisValues,
-  presetAxisStorageKey,
-  readPresetAxisValues,
   readStoredAxes,
   sanitizeSettings,
 } from "./settings"
@@ -30,24 +27,17 @@ describe("readStoredAxes", () => {
   })
 })
 
-describe("preset axis values", () => {
-  it("names storage keys after the preset and axis", () => {
-    expect(presetAxisStorageKey("glass", "blur")).toBe("theme-glass-blur")
-  })
-
-  it("fills every preset axis with its default", () => {
-    expect(completePresetAxisValues()).toEqual({
-      default: {},
-      glass: { opacity: "medium", blur: "medium" },
-    })
-  })
-
-  it("reads valid stored preset axes", () => {
+describe("glass axes", () => {
+  it("read from their own storage keys like any axis", () => {
     expect(
-      readPresetAxisValues(
-        from({ "theme-glass-blur": "high", "theme-glass-opacity": "cloudy" }),
+      readStoredAxes(
+        from({
+          "theme-preset": "glass",
+          "theme-glass-blur": "high",
+          "theme-glass-opacity": "cloudy",
+        }),
       ),
-    ).toEqual({ default: {}, glass: { opacity: "medium", blur: "high" } })
+    ).toEqual({ preset: "glass", glassBlur: "high" })
   })
 })
 
@@ -64,15 +54,14 @@ describe("sanitizeSettings", () => {
     ).toEqual({ accentColor: "rose", surfaceColor: "slate" })
   })
 
-  it("drops preset axis entries for presets and axes that do not exist", () => {
+  it("keeps the glass axes and drops the removed preset axis values", () => {
     expect(
       sanitizeSettings({
-        presetAxisValues: {
-          scifi: { glow: "high" },
-          glass: { blur: "high", tint: "x", opacity: "nope" },
-        },
+        glassOpacity: "strong",
+        glassBlur: "cloudy",
+        presetAxisValues: { glass: { blur: "high" } },
       }),
-    ).toEqual({ presetAxisValues: { glass: { blur: "high" } } })
+    ).toEqual({ glassOpacity: "strong" })
   })
 
   it("treats a non-object payload as empty", () => {

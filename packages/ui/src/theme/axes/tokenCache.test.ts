@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest"
 import {
+  TOKEN_CACHE_SCHEMA,
   TOKEN_CACHE_STORAGE_KEY,
   cacheInputKeys,
   readTokenCache,
@@ -18,20 +19,21 @@ function memoryStorage() {
 }
 
 describe("token cache", () => {
-  it("keys on every axis and preset-axis storage key", () => {
+  it("keys on exactly the registry's storage keys, glass axes included", () => {
     const keys = cacheInputKeys()
-    for (const k of AXIS_KEYS) expect(keys).toContain(AXES[k].storageKey)
+    expect(keys).toEqual(AXIS_KEYS.map((k) => AXES[k].storageKey))
     expect(keys).toContain("theme-glass-opacity")
     expect(keys).toContain("theme-glass-blur")
   })
 
-  it("builds the id from the kit version, the resolved mode and the stored values", () => {
+  it("builds the id from the kit version, the schema, the resolved mode and the stored values", () => {
+    expect(TOKEN_CACHE_SCHEMA).toBe(2)
     const id = tokenCacheId(
       (k) => (k === "theme-density" ? "spacious" : null),
       "dark",
     )
-    expect(id.startsWith(`${KIT_VERSION}|dark|`)).toBe(true)
-    expect(id.split("|")).toHaveLength(2 + cacheInputKeys().length)
+    expect(id.startsWith(`${KIT_VERSION}|2|dark|`)).toBe(true)
+    expect(id.split("|")).toHaveLength(3 + cacheInputKeys().length)
     expect(id).toContain("spacious")
     expect(tokenCacheId(() => null, "light")).not.toBe(
       tokenCacheId(() => null, "dark"),

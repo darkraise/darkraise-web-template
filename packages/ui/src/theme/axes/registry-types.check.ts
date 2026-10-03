@@ -2,6 +2,8 @@ import type {
   AccentColor,
   Density,
   Font,
+  GlassBlur,
+  GlassOpacity,
   GlowLevel,
   Mode,
   SidebarActiveBarSetting,
@@ -25,6 +27,13 @@ export type RegistryTypeChecks = [
   Expect<Equal<ThemeContextValue["font"], Font>>,
   Expect<Equal<ThemeContextValue["setFont"], (value: Font) => void>>,
   Expect<Equal<ThemeContextValue["preset"], PresetName>>,
+  Expect<Equal<ThemeContextValue["glassOpacity"], GlassOpacity>>,
+  Expect<
+    Equal<ThemeContextValue["setGlassBlur"], (value: GlassBlur) => void>
+  >,
+  Expect<"presetAxisValues" extends keyof ThemeContextValue ? false : true>,
+  Expect<"setPresetAxis" extends keyof ThemeContextValue ? false : true>,
+  Expect<"presetAxisValues" extends keyof ThemeSettings ? false : true>,
   Expect<Equal<ThemeContextValue["mode"], Mode>>,
   Expect<Equal<ThemeContextValue["outerGlow"], GlowLevel>>,
   Expect<Equal<ThemeContextValue["sidebarActiveBar"], SidebarActiveBarSetting>>,

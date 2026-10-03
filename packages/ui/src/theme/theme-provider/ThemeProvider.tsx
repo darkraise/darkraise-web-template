@@ -39,12 +39,8 @@ import {
 } from "@theme/axes/registry"
 import {
   THEME_PAYLOAD_VERSION,
-  completePresetAxisValues,
-  presetAxisStorageKey,
-  readPresetAxisValues,
   readStoredAxes,
   sanitizeSettings,
-  type PresetAxisValues,
 } from "@theme/axes/settings"
 import { tokenCacheId, writeTokenCache } from "@theme/axes/tokenCache"
 import { migratePayload, migrateStorage } from "@theme/axes/legacy"
@@ -232,16 +228,10 @@ export function ThemeProvider({
   const [initial] = useState(() => {
     const known = readMigratedInputs()
     const read = (key: string) => known.get(key) ?? null
-    return {
-      known,
-      stored: readStoredAxes(read),
-      presetAxisValues: readPresetAxisValues(read),
-    }
+    return { known, stored: readStoredAxes(read) }
   })
   const knownRef = useRef(new Map(initial.known))
   const [stored, setStoredState] = useState<Partial<AxisValues>>(initial.stored)
-  const [presetAxisValues, setPresetAxisValuesState] =
-    useState<PresetAxisValues>(initial.presetAxisValues)
   const settings = useMemo(
     () => effectiveSettings(stored, defaults),
     [stored, defaults],
@@ -254,7 +244,6 @@ export function ThemeProvider({
   // Setters can run several times inside one React batch; reading the latest
   // values from refs keeps each call from overwriting the one before it.
   const storedRef = useRef(stored)
-  const presetAxisValuesRef = useRef(presetAxisValues)
   const resolvedRef = useRef(resolvedMode)
 
   const onChangeRef = useRef(onChange)
@@ -311,12 +300,7 @@ export function ThemeProvider({
   }, [])
 
   const applyTheme = useCallback(
-    (
-      current: AxisValues,
-      resolved: ResolvedMode,
-      axisValues: PresetAxisValues,
-      cacheId: string,
-    ) => {
+    (current: AxisValues, resolved: ResolvedMode, cacheId: string) => {
       const presetName = current.preset as PresetName
       const activePreset = presets[presetName]
       const root = document.documentElement
@@ -325,24 +309,10 @@ export function ThemeProvider({
       root.setAttribute("data-preset", presetName)
       root.setAttribute("data-background-style", current.backgroundStyle)
 
-      type AnyPreset = {
-        axes: Record<string, unknown>
-        ownedTokenKeys?: readonly string[]
-      }
-      const presetsAny = presets as Record<string, AnyPreset>
-
-      for (const otherName of PRESET_NAMES) {
-        if (otherName === presetName) continue
-        for (const axisName of Object.keys(presetsAny[otherName]?.axes ?? {})) {
-          root.removeAttribute(`data-${otherName}-${axisName}`)
-        }
-      }
-      for (const axisName of Object.keys(activePreset.axes)) {
-        root.setAttribute(
-          `data-${presetName}-${axisName}`,
-          axisValues[presetName]?.[axisName] ?? "",
-        )
-      }
+      const presetsAny = presets as Record<
+        string,
+        { ownedTokenKeys?: readonly string[] }
+      >
 
       const commonTokens = generateTokens({
         accentColor: current.accentColor,
@@ -374,7 +344,7 @@ export function ThemeProvider({
             innerGlow: current.innerGlow as GlowLevel,
           },
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (axisValues[presetName] ?? {}) as any,
+          { opacity: current.glassOpacity, blur: current.glassBlur } as any,
         )
       }
 
@@ -397,43 +367,27 @@ export function ThemeProvider({
   // the effect then sees the same inputs and must not paint or cache again.
   const paintedRef = useRef("")
   const paint = useCallback(
-    (
-      current: AxisValues,
-      resolved: ResolvedMode,
-      axisValues: PresetAxisValues,
-    ) => {
+    (current: AxisValues, resolved: ResolvedMode) => {
       const cacheId = tokenCacheId(
         (key) => knownRef.current.get(key) ?? null,
         resolved,
       )
-      const signature = JSON.stringify([
-        current,
-        resolved,
-        axisValues,
-        defaults,
-        cacheId,
-      ])
+      const signature = JSON.stringify([current, resolved, defaults, cacheId])
       if (signature === paintedRef.current) return
       paintedRef.current = signature
       applyAttributes(current, defaults)
-      applyTheme(current, resolved, axisValues, cacheId)
+      applyTheme(current, resolved, cacheId)
     },
     [applyTheme, defaults],
   )
 
   const commit = useCallback(
-    (
-      nextStored: Partial<AxisValues>,
-      nextAxisValues: PresetAxisValues,
-      resolved: ResolvedMode,
-    ) => {
+    (nextStored: Partial<AxisValues>, resolved: ResolvedMode) => {
       storedRef.current = nextStored
-      presetAxisValuesRef.current = nextAxisValues
       resolvedRef.current = resolved
       setStoredState(nextStored)
-      setPresetAxisValuesState(nextAxisValues)
       setResolvedMode(resolved)
-      paint(effectiveSettings(nextStored, defaults), resolved, nextAxisValues)
+      paint(effectiveSettings(nextStored, defaults), resolved)
     },
     [paint, defaults],
   )
@@ -454,7 +408,6 @@ export function ThemeProvider({
   const announce = useCallback(() => {
     const next: ThemeSettings = {
       ...storedRef.current,
-      presetAxisValues: presetAxisValuesRef.current,
       version: THEME_PAYLOAD_VERSION,
     }
     onChangeRef.current?.(next)
@@ -479,52 +432,10 @@ export function ThemeProvider({
       persist(AXES[key].storageKey, value)
       const resolved =
         key === "mode" ? resolveMode(value as Mode) : resolvedRef.current
-      commit(
-        { ...storedRef.current, [key]: value },
-        presetAxisValuesRef.current,
-        resolved,
-      )
+      commit({ ...storedRef.current, [key]: value }, resolved)
       announce()
     },
     [commit, announce, persist],
-  )
-
-  const setPresetAxis = useCallback(
-    (axisName: string, value: string) => {
-      const presetName = effectiveSettings(storedRef.current, defaults)
-        .preset as PresetName
-      const axisDef = (
-        presets[presetName].axes as Record<
-          string,
-          { values: readonly string[] }
-        >
-      )[axisName]
-      if (!axisDef) {
-        if (process.env.NODE_ENV !== "production") {
-          console.warn(
-            `[ThemeProvider] setPresetAxis: axis "${axisName}" is not defined on the active preset "${presetName}".`,
-          )
-        }
-        return
-      }
-      if (!axisDef.values.includes(value)) {
-        if (process.env.NODE_ENV !== "production") {
-          console.warn(
-            `[ThemeProvider] setPresetAxis: value "${value}" is not valid for axis "${axisName}" on preset "${presetName}" (expected one of: ${axisDef.values.join(", ")}).`,
-          )
-        }
-        return
-      }
-      const current = presetAxisValuesRef.current
-      const next = {
-        ...current,
-        [presetName]: { ...current[presetName], [axisName]: value },
-      }
-      persist(presetAxisStorageKey(presetName, axisName), value)
-      commit(storedRef.current, next, resolvedRef.current)
-      announce()
-    },
-    [commit, announce, defaults, persist],
   )
 
   /**
@@ -537,8 +448,7 @@ export function ThemeProvider({
       const source: Record<string, unknown> = versioned
         ? input
         : migratePayload(input as Record<string, unknown>)
-      const { presetAxisValues: incoming, ...axes } = sanitizeSettings(source)
-      const present = axes as Partial<AxisValues>
+      const present = sanitizeSettings(source) as Partial<AxisValues>
       // A 6.x save never sent the glow axes, so an axis missing from an
       // unversioned payload says nothing about the user's choice.
       const nextStored = versioned
@@ -550,26 +460,11 @@ export function ThemeProvider({
       for (const key of written) {
         persist(AXES[key].storageKey, nextStored[key])
       }
-      const nextAxisValues = incoming
-        ? completePresetAxisValues({
-            ...presetAxisValuesRef.current,
-            ...incoming,
-          })
-        : presetAxisValuesRef.current
-      for (const [presetName, values] of Object.entries(nextAxisValues)) {
-        for (const [axisName, value] of Object.entries(values)) {
-          persist(presetAxisStorageKey(presetName, axisName), value)
-        }
-      }
       const resolved = resolveMode(effectiveSettings(nextStored, defaults).mode)
-      commit(nextStored, nextAxisValues, resolved)
+      commit(nextStored, resolved)
       if (versioned) return null
       seedShellStyle(source.shellStyle)
-      return {
-        ...nextStored,
-        presetAxisValues: nextAxisValues,
-        version: THEME_PAYLOAD_VERSION,
-      }
+      return { ...nextStored, version: THEME_PAYLOAD_VERSION }
     },
     [commit, defaults, persist],
   )
@@ -584,8 +479,8 @@ export function ThemeProvider({
   )
 
   useEffect(() => {
-    paint(settings, resolvedMode, presetAxisValues)
-  }, [settings, resolvedMode, presetAxisValues, paint])
+    paint(settings, resolvedMode)
+  }, [settings, resolvedMode, paint])
 
   useEffect(() => {
     if (settings.mode !== "system") return
@@ -649,21 +544,10 @@ export function ThemeProvider({
       config: cfg,
       syncStatus,
       activePreset: presets[settings.preset] as ThemePreset,
-      presetAxisValues,
       setAxis,
-      setPresetAxis,
       ...setters,
     }),
-    [
-      settings,
-      resolvedMode,
-      cfg,
-      syncStatus,
-      presetAxisValues,
-      setAxis,
-      setPresetAxis,
-      setters,
-    ],
+    [settings, resolvedMode, cfg, syncStatus, setAxis, setters],
   )
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>

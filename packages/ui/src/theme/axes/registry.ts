@@ -8,6 +8,8 @@ import {
   ELEVATIONS,
   FONTS,
   FONT_SIZES,
+  GLASS_BLURS,
+  GLASS_OPACITIES,
   GLOW_LEVELS,
   GRADIENT_PATTERNS,
   MODES,
@@ -93,6 +95,26 @@ export const AXES = {
     attribute: "data-preset",
     layer: "style",
     control: "choice",
+  }),
+  /** How much of the canvas Glass's frosted chrome lets through. */
+  glassOpacity: axis({
+    values: GLASS_OPACITIES,
+    default: "medium",
+    storageKey: "theme-glass-opacity",
+    attribute: "data-glass-opacity",
+    layer: "style",
+    control: "ordinal",
+    visibleWhen: (settings) => settings.preset === "glass",
+  }),
+  /** Backdrop blur behind Glass's frosted chrome. */
+  glassBlur: axis({
+    values: GLASS_BLURS,
+    default: "medium",
+    storageKey: "theme-glass-blur",
+    attribute: "data-glass-blur",
+    layer: "style",
+    control: "ordinal",
+    visibleWhen: (settings) => settings.preset === "glass",
   }),
   /** Sans and heading typeface; monospace text stays JetBrains Mono. */
   font: axis({

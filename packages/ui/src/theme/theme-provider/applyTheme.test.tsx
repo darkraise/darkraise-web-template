@@ -57,12 +57,14 @@ describe("ThemeProvider preset orchestration", () => {
     expect(document.documentElement.getAttribute("data-preset")).toBe("default")
   })
 
-  it("does NOT write glass axis attributes when default preset is active", () => {
+  it("stamps the glass axes under the default preset", () => {
     renderHook(() => useTheme(), { wrapper: wrap })
     expect(document.documentElement.getAttribute("data-glass-opacity")).toBe(
-      null,
+      "medium",
     )
-    expect(document.documentElement.getAttribute("data-glass-blur")).toBe(null)
+    expect(document.documentElement.getAttribute("data-glass-blur")).toBe(
+      "medium",
+    )
   })
 
   it("writes glass axis attributes when switching to glass", () => {
@@ -77,27 +79,18 @@ describe("ThemeProvider preset orchestration", () => {
     )
   })
 
-  it("removes glass axis attributes when switching back to default", () => {
-    const { result } = renderHook(() => useTheme(), { wrapper: wrap })
-    act(() => result.current.setPreset("glass"))
-    act(() => result.current.setPreset("default"))
-    expect(document.documentElement.getAttribute("data-glass-opacity")).toBe(
-      null,
-    )
-    expect(document.documentElement.getAttribute("data-glass-blur")).toBe(null)
-  })
-
   it("sticky persistence: setting glass-opacity survives a round-trip through default", () => {
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
     act(() => result.current.setPreset("glass"))
-    act(() => result.current.setPresetAxis("opacity", "strong"))
+    act(() => result.current.setGlassOpacity("strong"))
     expect(document.documentElement.getAttribute("data-glass-opacity")).toBe(
       "strong",
     )
+    expect(localStorage.getItem("theme-glass-opacity")).toBe("strong")
 
     act(() => result.current.setPreset("default"))
     expect(document.documentElement.getAttribute("data-glass-opacity")).toBe(
-      null,
+      "strong",
     )
 
     act(() => result.current.setPreset("glass"))
@@ -110,7 +103,7 @@ describe("ThemeProvider preset orchestration", () => {
     {
       const { result } = renderHook(() => useTheme(), { wrapper: wrap })
       act(() => result.current.setPreset("glass"))
-      act(() => result.current.setPresetAxis("blur", "high"))
+      act(() => result.current.setGlassBlur("high"))
     }
     expect(localStorage.getItem("theme-glass-blur")).toBe("high")
 
@@ -188,19 +181,11 @@ describe("ThemeProvider preset orchestration", () => {
     }
   })
 
-  it("setPresetAxis on invalid axis name no-ops with dev warning", () => {
-    const warn = vi.spyOn(console, "warn").mockImplementation(() => {})
-    const { result } = renderHook(() => useTheme(), { wrapper: wrap })
-    act(() => result.current.setPresetAxis("nonexistent", "value"))
-    expect(warn).toHaveBeenCalled()
-    warn.mockRestore()
-  })
-
-  it("setPresetAxis on invalid value for known axis no-ops with dev warning", () => {
+  it("ignores an invalid glass opacity with a dev warning", () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {})
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
     act(() => result.current.setPreset("glass"))
-    act(() => result.current.setPresetAxis("opacity", "extreme"))
+    act(() => result.current.setAxis("glassOpacity", "extreme" as never))
     expect(warn).toHaveBeenCalled()
     expect(document.documentElement.getAttribute("data-glass-opacity")).toBe(
       "medium",

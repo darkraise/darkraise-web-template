@@ -1,14 +1,15 @@
-import { PRESET_NAMES, presets } from "@theme/presets"
-import { NEUTRALISED_WHEN_HIDDEN } from "@theme/theme-provider/neutralisedAxes"
 import {
   LEGACY_MARKER_KEY,
   LEGACY_REVISION,
   LEGACY_RULES,
   LEGACY_TARGETS,
 } from "./legacy"
-import { AXES, AXIS_KEYS, type AxisKey } from "./registry"
-import { presetAxisStorageKey } from "./settings"
-import { TOKEN_CACHE_STORAGE_KEY, cacheInputKeys } from "./tokenCache"
+import { AXES, AXIS_KEYS } from "./registry"
+import {
+  TOKEN_CACHE_SCHEMA,
+  TOKEN_CACHE_STORAGE_KEY,
+  cacheInputKeys,
+} from "./tokenCache"
 import { KIT_VERSION } from "./version"
 
 type Restorable = [
@@ -19,8 +20,8 @@ type Restorable = [
 
 /**
  * The inline script that runs before the app. It migrates legacy storage as
- * `migrateStorage` does, then restores the resolved mode, every attribute axis
- * and the active preset's axes from the migrated values, validating each, and
+ * `migrateStorage` does, then restores the resolved mode and every attribute
+ * axis from the migrated values, validating each, and
  * applies the cached token set when its id matches. ES5 and self-contained,
  * because it runs before any bundle loads. Storage can throw (sandboxed
  * iframes, blocked site data), so the mode is resolved and set before anything
@@ -34,22 +35,6 @@ export function buildPrerenderScript(): string {
     AXES[key].attribute as string,
     AXES[key].values,
   ])
-
-  const neutralised: Record<string, string[]> = {}
-  const presetAxes: Record<string, Restorable[]> = {}
-  for (const name of PRESET_NAMES) {
-    const preset = presets[name]
-    neutralised[name] = (preset.hiddenCommonAxes ?? [])
-      .filter((axis) => NEUTRALISED_WHEN_HIDDEN.includes(axis))
-      .flatMap((axis) => AXES[axis as AxisKey]?.attribute ?? [])
-    presetAxes[name] = Object.entries(
-      preset.axes as Record<string, { values: readonly string[] }>,
-    ).map(([axis, definition]) => [
-      presetAxisStorageKey(name, axis),
-      `data-${name}-${axis}`,
-      definition.values,
-    ])
-  }
 
   const storageRules = LEGACY_RULES.map((rule) => ({
     ...rule,
@@ -85,11 +70,9 @@ export function buildPrerenderScript(): string {
     "for(i=0;i<w.length&&!f;i++)if(o[w[i]]!==null)try{s.setItem(w[i],o[w[i]])}catch(e){f=1}",
     "if(!f)for(i=0;i<w.length;i++)if(o[w[i]]===null)try{s.removeItem(w[i])}catch(e){f=1}",
     `if(!f&&n<${LEGACY_REVISION})try{s.setItem(${json(LEGACY_MARKER_KEY)},${json(String(LEGACY_REVISION))})}catch(e){}`,
-    `var A=${json(attributes)},N=${json(neutralised)},P=${json(presetAxes)},K=${json(cacheInputKeys())};`,
-    `var p=g(${json(AXES.preset.storageKey)})||"",x=N[p]||[],q=P[p]||[];`,
-    "for(i=0;i<A.length;i++){v=g(A[i][0]);if(v&&A[i][2].indexOf(v)!==-1&&x.indexOf(A[i][1])===-1)d.setAttribute(A[i][1],v)}",
-    "for(i=0;i<q.length;i++){v=g(q[i][0]);if(v&&q[i][2].indexOf(v)!==-1)d.setAttribute(q[i][1],v)}",
-    `var id=[${json(KIT_VERSION)},r];for(i=0;i<K.length;i++)id.push(g(K[i])||"");id=id.join("|");`,
+    `var A=${json(attributes)},K=${json(cacheInputKeys())};`,
+    "for(i=0;i<A.length;i++){v=g(A[i][0]);if(v&&A[i][2].indexOf(v)!==-1)d.setAttribute(A[i][1],v)}",
+    `var id=[${json(KIT_VERSION)},${json(String(TOKEN_CACHE_SCHEMA))},r];for(i=0;i<K.length;i++)id.push(g(K[i])||"");id=id.join("|");`,
     `var c=JSON.parse(s.getItem(${json(TOKEN_CACHE_STORAGE_KEY)})||"null");`,
     "if(c&&c.id===id&&c.tokens){for(var t in c.tokens)d.style.setProperty(t,c.tokens[t])}",
     "}catch(e){}})()",

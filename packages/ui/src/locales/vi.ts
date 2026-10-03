@@ -82,6 +82,8 @@ const messages: UiMessages = {
       accentColor: "Màu nhấn",
       surfaceColor: "Màu bề mặt",
       preset: "Mẫu giao diện",
+      glassOpacity: "Độ đục",
+      glassBlur: "Độ mờ nền",
       font: "Phông chữ",
       backgroundStyle: "Nền",
       backgroundIntensity: "Cường độ nền",

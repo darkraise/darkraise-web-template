@@ -1,10 +1,14 @@
-import { PRESET_NAMES, presets } from "@theme/presets"
 import type { ResolvedMode } from "@theme/types"
 import { AXES, AXIS_KEYS } from "./registry"
-import { presetAxisStorageKey } from "./settings"
 import { KIT_VERSION } from "./version"
 
 export const TOKEN_CACHE_STORAGE_KEY = "theme-token-cache"
+
+/**
+ * Part of every cache id. Raise it when the set of tokens a paint writes
+ * changes shape, so a set cached by an older kit build never matches.
+ */
+export const TOKEN_CACHE_SCHEMA = 2
 
 export interface TokenCache {
   id: string
@@ -13,13 +17,7 @@ export interface TokenCache {
 
 /** Every stored key whose value changes the solved tokens. */
 export function cacheInputKeys(): string[] {
-  const keys: string[] = AXIS_KEYS.map((key) => AXES[key].storageKey)
-  for (const preset of PRESET_NAMES) {
-    for (const axis of Object.keys(presets[preset].axes)) {
-      keys.push(presetAxisStorageKey(preset, axis))
-    }
-  }
-  return keys
+  return AXIS_KEYS.map((key) => AXES[key].storageKey)
 }
 
 /**
@@ -32,6 +30,7 @@ export function tokenCacheId(
 ): string {
   return [
     KIT_VERSION,
+    String(TOKEN_CACHE_SCHEMA),
     resolved,
     ...cacheInputKeys().map((k) => read(k) ?? ""),
   ].join("|")

@@ -2,9 +2,11 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { buildPrerenderScript } from "./prerender"
 import {
   TOKEN_CACHE_STORAGE_KEY,
+  cacheInputKeys,
   tokenCacheId,
   writeTokenCache,
 } from "./tokenCache"
+import { KIT_VERSION } from "./version"
 
 const root = document.documentElement
 
@@ -80,8 +82,7 @@ describe("pre-render script", () => {
     expect(root.hasAttribute("data-control-depth")).toBe(false)
   })
 
-  it("restores the active preset's own axes", () => {
-    localStorage.setItem("theme-preset", "glass")
+  it("restores the glass axes like any attribute axis", () => {
     localStorage.setItem("theme-glass-blur", "high")
     run()
     expect(root.getAttribute("data-glass-blur")).toBe("high")
@@ -102,6 +103,19 @@ describe("pre-render script", () => {
     })
     run()
     expect(root.style.getPropertyValue("--primary")).toBe("")
+  })
+
+  it("ignores a token set cached under the id format before the schema", () => {
+    localStorage.setItem("theme-accent", "rose")
+    const read = (k: string) => localStorage.getItem(k)
+    const unversioned = [
+      KIT_VERSION,
+      "light",
+      ...cacheInputKeys().map((k) => read(k) ?? ""),
+    ].join("|")
+    writeTokenCache(localStorage, unversioned, { "--fog-05": "red" })
+    run()
+    expect(root.style.getPropertyValue("--fog-05")).toBe("")
   })
 
   it("survives corrupt storage", () => {

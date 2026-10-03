@@ -2,7 +2,6 @@ import { cleanup, render } from "@testing-library/react"
 import { createElement } from "react"
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import { ThemeProvider } from "@theme/theme-provider/ThemeProvider"
-import { PRESET_NAMES, presets, type PresetName } from "@theme/presets"
 import {
   LEGACY_MARKER_KEY,
   LEGACY_REVISION,
@@ -12,7 +11,6 @@ import {
 import { PRE_V696_KEYS, V696_KEYS } from "./legacy-fixture"
 import { buildPrerenderScript } from "./prerender"
 import { AXES, AXIS_KEYS } from "./registry"
-import { presetAxisStorageKey } from "./settings"
 import { TOKEN_CACHE_STORAGE_KEY } from "./tokenCache"
 
 const root = document.documentElement
@@ -92,22 +90,12 @@ function memoryStorage(state: Record<string, string>) {
 }
 
 // The provider stamps every axis, defaults included, but the script restores
-// only an axis whose migrated stored value is valid, and preset axes only for
-// a stored preset.
+// only an axis whose migrated stored value is valid.
 function restoredAttributes(stored: Record<string, string>): string[] {
   const restorable: [attribute: string, storageKey: string][] =
     AXIS_KEYS.filter((key) => key !== "mode" && AXES[key].attribute).map(
       (key) => [AXES[key].attribute as string, AXES[key].storageKey],
     )
-  const preset = stored[AXES.preset.storageKey]
-  if (preset && (PRESET_NAMES as readonly string[]).includes(preset)) {
-    for (const axis of Object.keys(presets[preset as PresetName].axes)) {
-      restorable.push([
-        `data-${preset}-${axis}`,
-        presetAxisStorageKey(preset, axis),
-      ])
-    }
-  }
   return [
     "data-mode",
     ...restorable

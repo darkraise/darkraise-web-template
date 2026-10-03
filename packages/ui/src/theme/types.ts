@@ -151,8 +151,6 @@ export type ColorScale = Record<
  * user never set, so the active preset's or the config's default applies.
  */
 export type ThemeSettings = Partial<AxisValues> & {
-  /** Per-preset axis values; outer key = preset name, inner key = axis name. */
-  presetAxisValues?: Record<string, Record<string, string>>
   /**
    * Payload format, set on every payload the provider emits. A loaded payload
    * without it came from a 6.x kit and is migrated before it is applied.
@@ -180,13 +178,6 @@ export interface ThemeContextValue extends AxisValues, AxisSetters {
   syncStatus: ThemeSyncStatus
   /** Active preset object (config metadata + axes). */
   activePreset: ThemePreset
-  /** All preset-axis values, keyed by preset name → axis name → enum value. */
-  presetAxisValues: Record<string, Record<string, string>>
   /** Sets any axis by key; the named setters are shorthands for it. */
   setAxis: <K extends AxisKey>(key: K, value: AxisValue<K>) => void
-  /**
-   * Update one preset-specific axis on the active preset. No-ops with a
-   * console.warn (dev-only) when the axis is not valid for the active preset.
-   */
-  setPresetAxis: (axisName: string, value: string) => void
 }
