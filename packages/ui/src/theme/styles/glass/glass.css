@@ -1,165 +1,342 @@
-/* packages/ui/src/theme/styles/glass/glass.css
- * Scalar tokens for the Glass preset's three axes (opacity, blur, halo)
- * plus state-personality tokens and mode-scoped composition into
- * --surface-overlay-shadow. Cross-axis color math
- * (fog tiers, inset highlights, halo tier tokens, dark-gradient border)
- * lives in glassTokens.ts; this file is the no-JS bedrock for the simple
- * values and the var(--primary)-driven state tokens.
- */
-
-/* Surface opacity. The data-glass-opacity axis is a SINGLE control that
-   drives THREE quantities, so keep them coherent on edits:
-     1. --surface-opacity here (consumed via `var(--surface-opacity, 1)` in
-        @theme inline → dilutes --color-card/-popover/-surface-raised/-overlay,
-        the Tailwind utility-color / "solidity" path);
-     2. the FOG_ALPHA tiers in glassTokens.ts (→ --fog-05..--fog-50, the frosted
-        overlay/sunken glass path, --surface-overlay-bg, .glass utilities);
-     3. the INSET_HI tiers in glassTokens.ts (→ --inset-hi*).
-   They never share a numeric value (a flat scalar here vs mode-asymmetric
-   curves in glassTokens.ts) but move the same direction with the axis: subtle =
-   subtle glass effect = high opacity = card almost-solid; strong = strong
-   glass effect = low opacity = card very see-through. The medium
-   --surface-opacity 0.5 preserves the old resolveGlassOpacity solid branch
-   byte-for-byte (surface alpha only; the fog/inset curves are preserved
-   separately in glassTokens.ts). */
-[data-style="glass"][data-glass-opacity="subtle"] {
-  --surface-opacity: 0.78;
-  --glass-overlay-base-alpha: 0.88;
-}
-[data-style="glass"][data-glass-opacity="medium"] {
-  --surface-opacity: 0.5;
-  --glass-overlay-base-alpha: 0.76;
-}
-[data-style="glass"][data-glass-opacity="strong"] {
-  --surface-opacity: 0.3;
-  --glass-overlay-base-alpha: 0.62;
-}
-
-/* Backdrop blur. --backdrop-filter is the self-cleaning value every glass
-   surface consumes via `backdrop-filter: var(--backdrop-filter)`: the base
-   .glass-thin/.glass/.glass-strong/.card-surface/.overlay-surface utilities,
-   the per-component glass rules (Input, Select, NumberInput, etc.), and the
-   overlay scrims. Using the keyword `none` at blur=none (and off-glass, via
-   the :root fallback) is important: a real `blur(0)` would still establish a
-   containing block for fixed descendants, whereas `none` does not. Layout
-   chrome (Sidebar/Header) instead scales --backdrop-blur via
-   blur(calc(var(--backdrop-blur) * 1.5)) so it can carry a stronger frost.
-   medium = 12px matches today's surfaceStyles.glass.overrides.backdropBlur
-   byte-for-byte. */
-[data-style="glass"][data-glass-blur="none"] {
-  --backdrop-blur: 0;
-  --backdrop-filter: none;
-}
-[data-style="glass"][data-glass-blur="low"] {
-  --backdrop-blur: 6px;
-  --backdrop-filter: blur(6px) saturate(140%);
-}
-[data-style="glass"][data-glass-blur="medium"] {
-  --backdrop-blur: 12px;
-  --backdrop-filter: blur(12px) saturate(140%);
-}
-[data-style="glass"][data-glass-blur="high"] {
-  --backdrop-blur: 24px;
-  --backdrop-filter: blur(24px) saturate(140%);
-}
-
-/* Accessibility accommodation. Users who request reduced transparency or
-   higher contrast at the OS level get opaque, unblurred Glass surfaces:
-   --surface-opacity:1 makes every @theme surface (card/popover/raised/
-   overlay) fully opaque — recovering the worst-case contrast headroom that
-   opacity=strong (0.3) can erode over a busy gradient canvas — and
-   --backdrop-filter:none (plus --backdrop-blur:0) removes the blur on every
-   surface that consumes those vars. Scoped to [data-style="glass"] so it
-   only touches the Glass material and leaves the default look untouched for
-   everyone else. */
-@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
-  [data-style="glass"] {
-    --surface-opacity: 1;
-    --glass-overlay-base-alpha: 1;
-    --backdrop-blur: 0;
-    --backdrop-filter: none;
-  }
-}
-
-/* Overlay-surface chrome under Glass. Includes the frosted noise
-   layer + blend-mode + mode-split inner accent glow so the migrated
-   popover-family components (Tooltip, Popover, Menu, Select,
-   Combobox, Date/Color-picker, Command, Dialog, Sheet, Drawer, etc.)
-   render with Glass's full chrome. These details used to live on
-   per-`.glass-strong`-class overrides and were lost when those
-   components moved to consume --surface-overlay-* directly. */
-[data-style="glass"] {
-  /* The fog gradient alone is only a background-IMAGE pair, so the shorthand
-     leaves background-color transparent. In dark mode the fog tiers bottom
-     out around alpha 0.14/0.07, which is see-through enough that page text
-     composites into the overlay and stays legible on top of it whenever the
-     backdrop blur is unavailable (browser without backdrop-filter support,
-     prefers-reduced-transparency, blur axis on "none", or a build pipeline
-     that dropped the declaration). The final layer therefore carries a real
-     popover-coloured base whose alpha tracks the opacity axis, so an overlay
-     is opaque enough to read against on its own and the blur becomes an
-     enhancement rather than the only thing separating the two layers. */
-  --surface-overlay-layers:
-    var(--glass-noise), linear-gradient(135deg, var(--fog-20), var(--fog-10));
-  --surface-overlay-base: hsl(
-    var(--popover) / var(--glass-overlay-base-alpha, 0.76)
-  );
-  --surface-overlay-blend-mode: overlay, normal;
-  --surface-overlay-border: var(--fog-20);
-}
-[data-mode="light"][data-style="glass"] {
-  /* Lower-tier fog gradient for light overlay surfaces. The default
-     fog-20/-10 (alphas 0.82/0.65 at medium opacity) reads as nearly-
-     opaque white frost over light canvases, hiding the backdrop-filter
-     effect — users couldn't perceive the difference between Blur=None
-     and Blur=Low/Medium/High because nothing was showing through to
-     blur. Drop to fog-15/-05 (0.72/0.55) so the surface stays visibly
-     translucent and the blur has canvas content to blur through. Dark
-     mode keeps the default fog-20/-10 because its alphas (0.14/0.07
-     at MEDIUM opacity) are already very transparent. (The 0.14/0.07
-     figures are the medium-opacity anchor; opacity=subtle raises the
-     consumed fog-20/-10 to ~0.24/0.12 in dark — still clearly
-     translucent, just intentionally a touch frostier, so no analogous
-     dark reduction is needed.) */
-  --surface-overlay-layers:
-    var(--glass-noise), linear-gradient(135deg, var(--fog-15), var(--fog-05));
-  --surface-overlay-base: hsl(
-    var(--popover) / var(--glass-overlay-base-alpha, 0.76)
-  );
-  --surface-overlay-shadow:
-    var(--elevation-medium), var(--inset-hi-strong),
-    inset 0 0 32px color-mix(in oklab, hsl(var(--surface-tint)) 2%, transparent),
-    var(--glass-halo-overlay);
-}
-[data-mode="dark"][data-style="glass"] {
-  --surface-overlay-shadow:
-    var(--elevation-medium), var(--inset-hi-strong),
-    inset 0 0 40px
-      color-mix(in oklab, hsl(var(--surface-tint)) 28%, transparent),
-    var(--glass-halo-overlay);
-}
-
-/* State-personality tokens. These compose into per-component
-   :hover, :active, [data-selected], etc. selectors. They use
-   var(--primary) directly because they don't need mode-aware
-   alpha curves like the halo tier tokens do — a single accent-
-   tinted value reads cleanly in both modes thanks to the
-   --primary token already being mode-tuned in generateTokens. */
-[data-style="glass"] {
-  --glass-state-hover-glow: 0 0 24px hsl(var(--primary) / 0.18);
-  --glass-state-active-inset: inset 0 0 0 2px hsl(var(--primary) / 0.22);
-  --glass-state-selected-fill: linear-gradient(
-    135deg,
-    hsl(var(--primary) / 0.16),
-    hsl(var(--primary) / 0.08)
-  );
-}
+/* Glass frosts shell chrome and overlays; content keeps Quiet's recipe.
+   The --glass-* tokens are private: the shared glass, glass-thin and
+   card-surface utilities read the public --fog-* scale, which stays
+   transparent under Glass. */
 
 [data-style="glass"] {
+  --glass-noise: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.08 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
   --shadow-dropdown:
     0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --chrome-rail-bg: linear-gradient(
+    135deg,
+    var(--glass-fog-5),
+    var(--glass-fog-3)
+  );
+  --chrome-bar-bg: linear-gradient(
+    180deg,
+    var(--glass-fog-5),
+    var(--glass-fog-3)
+  );
+  --chrome-edge: var(--glass-fog-4);
+  --chrome-shadow: var(--glass-inset);
+  --surface-overlay-blend-mode: overlay, normal;
+  --overlay-border: var(--glass-fog-4);
 }
+
+/* Light overlays drop one fog tier: at the dark tiers' alphas a light
+   overlay read as opaque white and hid the blur behind it. */
 [data-mode="light"][data-style="glass"] {
   --shadow-dropdown:
     0 10px 15px -3px rgb(16 24 40 / 0.1), 0 4px 6px -4px rgb(16 24 40 / 0.1);
+  --surface-overlay-layers:
+    var(--glass-noise),
+    linear-gradient(135deg, var(--glass-fog-3), var(--glass-fog-1));
+  --overlay-shadow:
+    var(--elevation-medium), var(--glass-inset-strong),
+    inset 0 0 32px color-mix(in oklab, hsl(var(--surface-tint)) 2%, transparent),
+    var(--glow-outer), var(--glow-inner);
+}
+
+[data-mode="dark"][data-style="glass"] {
+  --surface-overlay-layers:
+    var(--glass-noise),
+    linear-gradient(135deg, var(--glass-fog-4), var(--glass-fog-2));
+  --overlay-shadow:
+    var(--elevation-medium), var(--glass-inset-strong),
+    inset 0 0 40px
+      color-mix(in oklab, hsl(var(--surface-tint)) 28%, transparent),
+    var(--glow-outer), var(--glow-inner);
+}
+
+[data-mode="light"][data-style="glass"][data-glass-opacity="subtle"] {
+  --glass-fog-1: color-mix(
+    in oklab,
+    color-mix(in oklab, hsl(var(--primary-8)) 24%, white) 70%,
+    transparent
+  );
+  --glass-fog-2: color-mix(
+    in oklab,
+    color-mix(in oklab, hsl(var(--primary-8)) 24%, white) 80%,
+    transparent
+  );
+  --glass-fog-3: color-mix(
+    in oklab,
+    color-mix(in oklab, hsl(var(--primary-8)) 24%, white) 85%,
+    transparent
+  );
+  --glass-fog-4: color-mix(
+    in oklab,
+    color-mix(in oklab, hsl(var(--primary-8)) 24%, white) 90%,
+    transparent
+  );
+  --glass-fog-5: color-mix(
+    in oklab,
+    color-mix(in oklab, hsl(var(--primary-8)) 24%, white) 94%,
+    transparent
+  );
+  --glass-fog-6: color-mix(
+    in oklab,
+    color-mix(in oklab, hsl(var(--primary-8)) 24%, white) 98%,
+    transparent
+  );
+  --glass-inset:
+    inset 0 1px 0 rgba(255, 255, 255, 0.75),
+    inset 1px 0 0 rgba(255, 255, 255, 0.45);
+  --glass-inset-strong:
+    inset 0 1px 0 rgba(255, 255, 255, 0.94),
+    inset 1px 0 0 rgba(255, 255, 255, 0.56);
+}
+
+[data-mode="light"][data-style="glass"][data-glass-opacity="medium"] {
+  --glass-fog-1: color-mix(
+    in oklab,
+    color-mix(in oklab, hsl(var(--primary-8)) 24%, white) 55%,
+    transparent
+  );
+  --glass-fog-2: color-mix(
+    in oklab,
+    color-mix(in oklab, hsl(var(--primary-8)) 24%, white) 65%,
+    transparent
+  );
+  --glass-fog-3: color-mix(
+    in oklab,
+    color-mix(in oklab, hsl(var(--primary-8)) 24%, white) 72%,
+    transparent
+  );
+  --glass-fog-4: color-mix(
+    in oklab,
+    color-mix(in oklab, hsl(var(--primary-8)) 24%, white) 82%,
+    transparent
+  );
+  --glass-fog-5: color-mix(
+    in oklab,
+    color-mix(in oklab, hsl(var(--primary-8)) 24%, white) 90%,
+    transparent
+  );
+  --glass-fog-6: color-mix(
+    in oklab,
+    color-mix(in oklab, hsl(var(--primary-8)) 24%, white) 96%,
+    transparent
+  );
+  --glass-inset:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 1px 0 0 rgba(255, 255, 255, 0.36);
+  --glass-inset-strong:
+    inset 0 1px 0 rgba(255, 255, 255, 0.75),
+    inset 1px 0 0 rgba(255, 255, 255, 0.45);
+}
+
+[data-mode="light"][data-style="glass"][data-glass-opacity="strong"] {
+  --glass-fog-1: color-mix(
+    in oklab,
+    color-mix(in oklab, hsl(var(--primary-8)) 24%, white) 30%,
+    transparent
+  );
+  --glass-fog-2: color-mix(
+    in oklab,
+    color-mix(in oklab, hsl(var(--primary-8)) 24%, white) 40%,
+    transparent
+  );
+  --glass-fog-3: color-mix(
+    in oklab,
+    color-mix(in oklab, hsl(var(--primary-8)) 24%, white) 48%,
+    transparent
+  );
+  --glass-fog-4: color-mix(
+    in oklab,
+    color-mix(in oklab, hsl(var(--primary-8)) 24%, white) 58%,
+    transparent
+  );
+  --glass-fog-5: color-mix(
+    in oklab,
+    color-mix(in oklab, hsl(var(--primary-8)) 24%, white) 70%,
+    transparent
+  );
+  --glass-fog-6: color-mix(
+    in oklab,
+    color-mix(in oklab, hsl(var(--primary-8)) 24%, white) 82%,
+    transparent
+  );
+  --glass-inset:
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 1px 0 0 rgba(255, 255, 255, 0.24);
+  --glass-inset-strong:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 1px 0 0 rgba(255, 255, 255, 0.3);
+}
+
+[data-mode="dark"][data-style="glass"][data-glass-opacity="subtle"] {
+  --glass-fog-1: color-mix(
+    in oklab,
+    color-mix(in oklab, hsl(var(--primary-8)) 40%, hsl(var(--neutral-1))) 7%,
+    transparent
+  );
+  --glass-fog-2: color-mix(
+    in oklab,
+    color-mix(in oklab, hsl(var(--primary-8)) 40%, hsl(var(--neutral-1))) 12%,
+    transparent
+  );
+  --glass-fog-3: color-mix(
+    in oklab,
+    color-mix(in oklab, hsl(var(--primary-8)) 40%, hsl(var(--neutral-1))) 17%,
+    transparent
+  );
+  --glass-fog-4: color-mix(
+    in oklab,
+    color-mix(in oklab, hsl(var(--primary-8)) 40%, hsl(var(--neutral-1))) 24%,
+    transparent
+  );
+  --glass-fog-5: color-mix(
+    in oklab,
+    color-mix(in oklab, hsl(var(--primary-8)) 40%, hsl(var(--neutral-1))) 32%,
+    transparent
+  );
+  --glass-fog-6: color-mix(
+    in oklab,
+    color-mix(in oklab, hsl(var(--primary-8)) 40%, hsl(var(--neutral-1))) 50%,
+    transparent
+  );
+  --glass-inset:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 1px 0 0 rgba(255, 255, 255, 0.11);
+  --glass-inset-strong:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 1px 0 0 rgba(255, 255, 255, 0.13);
+}
+
+[data-mode="dark"][data-style="glass"][data-glass-opacity="medium"] {
+  --glass-fog-1: color-mix(
+    in oklab,
+    color-mix(in oklab, hsl(var(--primary-8)) 40%, hsl(var(--neutral-1))) 4%,
+    transparent
+  );
+  --glass-fog-2: color-mix(
+    in oklab,
+    color-mix(in oklab, hsl(var(--primary-8)) 40%, hsl(var(--neutral-1))) 7%,
+    transparent
+  );
+  --glass-fog-3: color-mix(
+    in oklab,
+    color-mix(in oklab, hsl(var(--primary-8)) 40%, hsl(var(--neutral-1))) 10%,
+    transparent
+  );
+  --glass-fog-4: color-mix(
+    in oklab,
+    color-mix(in oklab, hsl(var(--primary-8)) 40%, hsl(var(--neutral-1))) 14%,
+    transparent
+  );
+  --glass-fog-5: color-mix(
+    in oklab,
+    color-mix(in oklab, hsl(var(--primary-8)) 40%, hsl(var(--neutral-1))) 20%,
+    transparent
+  );
+  --glass-fog-6: color-mix(
+    in oklab,
+    color-mix(in oklab, hsl(var(--primary-8)) 40%, hsl(var(--neutral-1))) 38%,
+    transparent
+  );
+  --glass-inset:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 1px 0 0 rgba(255, 255, 255, 0.08);
+  --glass-inset-strong:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 1px 0 0 rgba(255, 255, 255, 0.11);
+}
+
+[data-mode="dark"][data-style="glass"][data-glass-opacity="strong"] {
+  --glass-fog-1: color-mix(
+    in oklab,
+    color-mix(in oklab, hsl(var(--primary-8)) 40%, hsl(var(--neutral-1))) 2%,
+    transparent
+  );
+  --glass-fog-2: color-mix(
+    in oklab,
+    color-mix(in oklab, hsl(var(--primary-8)) 40%, hsl(var(--neutral-1))) 4%,
+    transparent
+  );
+  --glass-fog-3: color-mix(
+    in oklab,
+    color-mix(in oklab, hsl(var(--primary-8)) 40%, hsl(var(--neutral-1))) 6%,
+    transparent
+  );
+  --glass-fog-4: color-mix(
+    in oklab,
+    color-mix(in oklab, hsl(var(--primary-8)) 40%, hsl(var(--neutral-1))) 9%,
+    transparent
+  );
+  --glass-fog-5: color-mix(
+    in oklab,
+    color-mix(in oklab, hsl(var(--primary-8)) 40%, hsl(var(--neutral-1))) 13%,
+    transparent
+  );
+  --glass-fog-6: color-mix(
+    in oklab,
+    color-mix(in oklab, hsl(var(--primary-8)) 40%, hsl(var(--neutral-1))) 24%,
+    transparent
+  );
+  --glass-inset:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 1px 0 0 rgba(255, 255, 255, 0.05);
+  --glass-inset-strong:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 1px 0 0 rgba(255, 255, 255, 0.06);
+}
+
+/* The overlay keeps a popover-coloured base under its fog, so it stays
+   readable where the blur is unavailable. */
+[data-style="glass"][data-glass-opacity="subtle"] {
+  --surface-overlay-base: hsl(var(--popover) / 0.88);
+}
+
+[data-style="glass"][data-glass-opacity="medium"] {
+  --surface-overlay-base: hsl(var(--popover) / 0.76);
+}
+
+[data-style="glass"][data-glass-opacity="strong"] {
+  --surface-overlay-base: hsl(var(--popover) / 0.62);
+}
+
+/* `none` rather than blur(0): any filter value creates a containing block
+   for fixed descendants. Chrome blurs half again as hard as overlays. */
+[data-style="glass"][data-glass-blur="none"] {
+  --overlay-backdrop: none;
+  --chrome-backdrop: none;
+}
+
+[data-style="glass"][data-glass-blur="low"] {
+  --overlay-backdrop: blur(6px) saturate(140%);
+  --chrome-backdrop: blur(9px) saturate(140%);
+}
+
+[data-style="glass"][data-glass-blur="medium"] {
+  --overlay-backdrop: blur(12px) saturate(140%);
+  --chrome-backdrop: blur(18px) saturate(140%);
+}
+
+[data-style="glass"][data-glass-blur="high"] {
+  --overlay-backdrop: blur(24px) saturate(140%);
+  --chrome-backdrop: blur(36px) saturate(140%);
+}
+
+[data-style="glass"][data-background-style="gradient"] {
+  --chrome-canvas:
+    var(--canvas-blob-a), var(--canvas-blob-b), var(--canvas-blob-c),
+    var(--canvas-blob-d), var(--canvas-ink);
+}
+
+/* Names every attribute the rules above combine, so it outranks each of
+   them; with a bare [data-style="glass"] the opacity and blur rules won. */
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  [data-style="glass"][data-mode][data-glass-opacity][data-glass-blur][data-background-style] {
+    --chrome-rail-bg: hsl(var(--surface-sidebar));
+    --chrome-bar-bg: hsl(var(--surface-header));
+    --chrome-edge: hsl(var(--sidebar-border));
+    --chrome-backdrop: none;
+    --chrome-canvas: none;
+    --surface-overlay-layers: ;
+    --surface-overlay-base: hsl(var(--popover));
+    --surface-overlay-blend-mode: normal;
+    --overlay-border: hsl(var(--border));
+    --overlay-backdrop: none;
+  }
 }

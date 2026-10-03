@@ -714,9 +714,6 @@
     --chrome-shadow: 0 0 transparent;
     --chrome-backdrop: none;
     --chrome-canvas: none;
-    /* Frosted grain for Glass's overlay surfaces: glass.css layers it under
-       the fog gradient in --surface-overlay-layers. */
-    --glass-noise: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.08 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
     --noise-opacity: 0;
     --cropper-grid-line: rgba(255, 255, 255, 0.5);
     /* Dark blob peaks bumped from 8/6/4/3% to 10/8/6/5% (mid values from
@@ -997,11 +994,14 @@
      a custom property that reads another resolves where it is
      declared, so a :root-only --overlay-bg would keep <html>'s fill.
      --overlay-border and --overlay-shadow stay :root-only: nothing below
-     <html> re-sets --surface-overlay-border or --surface-overlay-shadow. */
+     <html> re-sets --surface-overlay-border or --surface-overlay-shadow.
+     --overlay-backdrop is the keyword `none`, not blur(0): any filter
+     value creates a containing block for fixed descendants. */
     --overlay-bg: var(--surface-overlay-bg);
     --overlay-border: var(--surface-overlay-border);
     --overlay-shadow: var(--surface-overlay-shadow);
     --overlay-radius: var(--radius);
+    --overlay-backdrop: none;
 
     /* Selection families. View switches (Tabs, SegmentGroup) raise a
        neutral pill; checked and selected items take the accent fill;
