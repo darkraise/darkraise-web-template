@@ -13,7 +13,7 @@ describe("scaffold axes.json", () => {
     const axes = scaffoldAxes()
     expect(axes.accentColor?.values).toHaveLength(19)
     expect(axes.accentColor?.values).toContain("coral")
-    expect(axes.accentColor?.values.at(-1)).toBe("neutral")
+    expect(axes.accentColor?.values.slice(-1)).toEqual(["neutral"])
     expect(axes.surfaceColor?.values).toHaveLength(12)
     expect(axes.surfaceColor?.values).toContain("zinc")
   })

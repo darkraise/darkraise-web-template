@@ -45,6 +45,9 @@ function collectClassFacts(): Map<string, ClassFacts> {
     for (const rule of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
       const selectorText = rule[1]
       const body = rule[2]
+      if (selectorText === undefined || body === undefined) {
+        throw new Error("rule match is missing a group")
+      }
       // A preset override (`[data-preset="glass"] .dr-x`) restyles a control
       // rather than declaring a new one; attributing its sizes to the class is
       // still correct, so no special case is needed here.

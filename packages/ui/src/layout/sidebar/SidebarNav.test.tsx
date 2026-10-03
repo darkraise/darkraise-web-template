@@ -53,14 +53,16 @@ const nav: NavGroup[] = [
 function collapsedSquareSelector(): string {
   const withoutComments = sidebarNavCss.replace(/\/\*[\s\S]*?\*\//g, "")
   const rule = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)].find(
-    ([, selector, body]) =>
+    ([, selector = "", body = ""]) =>
       selector.includes(".dr-sidebar-nav-link") &&
       body.includes("w-[var(--control-height)]"),
   )
   if (!rule) {
     throw new Error("no collapsed square rule found in sidebar-nav.css")
   }
-  return rule[1].trim()
+  const selector = rule[1]
+  if (!selector) throw new Error("collapsed square rule has no selector")
+  return selector.trim()
 }
 
 function renderNav(collapsed: boolean) {
@@ -286,7 +288,7 @@ describe("SidebarNav activeBar", () => {
   it("has a ring rule with no 3px rail", () => {
     const withoutComments = sidebarNavCss.replace(/\/\*[\s\S]*?\*\//g, "")
     const rule = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)].find(
-      ([, selector]) =>
+      ([, selector = ""]) =>
         selector.includes('[data-active-bar="ring"]') &&
         !selector.includes("data-preset"),
     )
@@ -298,7 +300,7 @@ describe("SidebarNav activeBar", () => {
   it("has a both rule carrying the ring and the rail", () => {
     const withoutComments = sidebarNavCss.replace(/\/\*[\s\S]*?\*\//g, "")
     const rule = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)].find(
-      ([, selector]) =>
+      ([, selector = ""]) =>
         selector.includes('[data-active-bar="both"]') &&
         !selector.includes("data-preset"),
     )
@@ -311,7 +313,7 @@ describe("SidebarNav activeBar", () => {
     const withoutComments = sidebarNavCss.replace(/\/\*[\s\S]*?\*\//g, "")
     const rules = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)]
     const base = rules.find(
-      ([, selector]) =>
+      ([, selector = ""]) =>
         selector.includes(".dr-sidebar-nav-item.active") &&
         !selector.includes("data-active-bar") &&
         !selector.includes("data-preset"),
@@ -319,7 +321,7 @@ describe("SidebarNav activeBar", () => {
     expect(base, "no base active rule in sidebar-nav.css").toBeDefined()
     expect(base?.[2]).not.toMatch(/inset/)
     const bar = rules.find(
-      ([, selector]) =>
+      ([, selector = ""]) =>
         selector.includes('[data-active-bar="bar"]') &&
         !selector.includes("data-preset"),
     )
@@ -333,7 +335,7 @@ describe("SidebarNav activeBar", () => {
     const rules = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)]
     for (const value of ["bar", "ring", "both"]) {
       const rule = rules.find(
-        ([, selector]) =>
+        ([, selector = ""]) =>
           selector.includes('[data-preset="glass"]') &&
           selector.includes(`[data-active-bar="${value}"]`),
       )
@@ -344,7 +346,7 @@ describe("SidebarNav activeBar", () => {
   it("gives glass a full-opacity standalone ring with no rail", () => {
     const withoutComments = sidebarNavCss.replace(/\/\*[\s\S]*?\*\//g, "")
     const rule = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)].find(
-      ([, selector]) =>
+      ([, selector = ""]) =>
         selector.includes('[data-preset="glass"]') &&
         selector.includes('[data-active-bar="ring"]'),
     )
@@ -356,7 +358,7 @@ describe("SidebarNav activeBar", () => {
   it("gives glass both the rail and a tinted ring, rail painted first", () => {
     const withoutComments = sidebarNavCss.replace(/\/\*[\s\S]*?\*\//g, "")
     const rule = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)].find(
-      ([, selector]) =>
+      ([, selector = ""]) =>
         selector.includes('[data-preset="glass"]') &&
         selector.includes('[data-active-bar="both"]'),
     )
@@ -375,7 +377,7 @@ describe("SidebarNav activeBar", () => {
   it("keeps the glass default carrying both layers", () => {
     const withoutComments = sidebarNavCss.replace(/\/\*[\s\S]*?\*\//g, "")
     const base = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)].find(
-      ([, selector]) =>
+      ([, selector = ""]) =>
         selector.includes('[data-preset="glass"]') &&
         selector.includes(".dr-sidebar-nav-item.active") &&
         !selector.includes("data-active-bar"),

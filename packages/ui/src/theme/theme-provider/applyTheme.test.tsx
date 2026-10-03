@@ -151,7 +151,9 @@ describe("ThemeProvider preset orchestration", () => {
     // Glass-specific keys: the fog/inset/halo families. (--accent/--muted/
     // --secondary/--border are also in ownedTokenKeys but the common engine
     // re-writes them for every preset, so they're overwritten, not removed.)
-    const glassOnly = glass.ownedTokenKeys.filter(
+    const ownedKeys = glass.ownedTokenKeys
+    if (!ownedKeys) throw new Error("glass has no ownedTokenKeys")
+    const glassOnly = ownedKeys.filter(
       (k) =>
         k.startsWith("--fog-") ||
         k.startsWith("--inset-hi") ||

@@ -45,7 +45,7 @@ describe("removed status tokens and axes", () => {
     const hits: string[] = []
     for (const dir of DIRS)
       for (const file of files(join(ROOT, dir))) {
-        const rel = file.slice(ROOT.length + 1).replaceAll("\\", "/")
+        const rel = file.slice(ROOT.length + 1).replace(/\\/g, "/")
         readFileSync(file, "utf8")
           .split("\n")
           .forEach((line, i) => {

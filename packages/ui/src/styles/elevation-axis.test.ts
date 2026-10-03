@@ -5,12 +5,10 @@ function withoutComments(source: string): string {
   return source.replace(/\/\*[\s\S]*?\*\//g, "")
 }
 
-const sheets = globSync("src/**/*.css", { cwd: process.cwd() }).map(
-  (file) => ({
-    file: file.replaceAll("\\", "/"),
-    css: withoutComments(readFileSync(file, "utf8")),
-  }),
-)
+const sheets = globSync("src/**/*.css", { cwd: process.cwd() }).map((file) => ({
+  file: file.replace(/\\/g, "/"),
+  css: withoutComments(readFileSync(file, "utf8")),
+}))
 const themeCss =
   sheets.find(({ file }) => file === "src/styles/theme.css")?.css ?? ""
 
@@ -40,7 +38,9 @@ describe("elevation axis CSS", () => {
         new RegExp(`(?:^|\\n)\\[data-elevation="${level}"\\]\\s*\\{`),
       )
       expect(themeCss).toMatch(
-        new RegExp(`\\[data-mode="dark"\\]\\[data-elevation="${level}"\\]\\s*\\{`),
+        new RegExp(
+          `\\[data-mode="dark"\\]\\[data-elevation="${level}"\\]\\s*\\{`,
+        ),
       )
     }
   })

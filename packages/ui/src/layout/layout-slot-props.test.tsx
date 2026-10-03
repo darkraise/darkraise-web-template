@@ -39,7 +39,6 @@ const layouts = [
 function renderWith(Layout: (typeof layouts)[number][1], props: object) {
   return render(
     <RouterAdapterProvider value={adapter}>
-      {/* @ts-expect-error - panel is required only on SplitPanelLayout */}
       <Layout nav={nav} showThemeSwitcher={false} panel={null} {...props}>
         <div>Content</div>
       </Layout>

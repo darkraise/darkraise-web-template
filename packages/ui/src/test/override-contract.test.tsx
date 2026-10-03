@@ -45,7 +45,9 @@ describe("override contract", () => {
     const layerDeclMatch = themeCss.match(/@layer\s+([^;]+);/)
     expect(layerDeclMatch).not.toBeNull()
     if (!layerDeclMatch) return
-    const layers = layerDeclMatch[1].split(",").map((s) => s.trim())
+    const declared = layerDeclMatch[1]
+    if (declared === undefined) throw new Error("layer list missing")
+    const layers = declared.split(",").map((s) => s.trim())
     const componentsIdx = layers.indexOf("components")
     const utilitiesIdx = layers.indexOf("utilities")
     expect(componentsIdx).toBeGreaterThanOrEqual(0)

@@ -9,6 +9,7 @@ import type {
   AccentColor,
   ResolvedMode,
   BackgroundIntensity,
+  SurfaceColor,
 } from "@theme/types"
 
 describe("generateTokens", () => {
@@ -795,9 +796,11 @@ describe("generateTokens", () => {
 
     it("gradient + default → five-layer var() composition", () => {
       const tokens = generateTokens(baseInput)
-      expect(
-        tokens["--content-gradient-overlay"].replace(/\s+/g, " ").trim(),
-      ).toBe(
+      const overlay = tokens["--content-gradient-overlay"]
+      if (overlay === undefined) {
+        throw new Error("--content-gradient-overlay missing")
+      }
+      expect(overlay.replace(/\s+/g, " ").trim()).toBe(
         "var(--canvas-blob-a), var(--canvas-blob-b), var(--canvas-blob-c), var(--canvas-blob-d), var(--canvas-ink)",
       )
     })
@@ -889,7 +892,7 @@ describe("generateTokens", () => {
 describe("backgroundIntensity canvas cap", () => {
   const dark = (
     backgroundIntensity: BackgroundIntensity,
-    surfaceColor = "sepia" as const,
+    surfaceColor: SurfaceColor = "sepia",
   ) =>
     generateTokens({
       accentColor: "blue",
@@ -931,7 +934,9 @@ describe("backgroundIntensity canvas cap", () => {
         tintWithAccent: false,
         backgroundIntensity,
       })["--background"]
-    expect(light("neutral").split(" ")[1]).toBe("0%")
+    const neutral = light("neutral")
+    if (neutral === undefined) throw new Error("--background missing")
+    expect(neutral.split(" ")[1]).toBe("0%")
     expect(light("neutral")).not.toBe(light("vivid"))
   })
 

@@ -174,7 +174,7 @@ describe("axis registry", () => {
   it("drops the button elevation axis", () => {
     expect("buttonElevation" in AXES).toBe(false)
     expect("buttonElevation" in themeConfig.defaults).toBe(false)
-    expect(themeConfig.switcher.axes?.buttonElevation).toBeUndefined()
+    expect("buttonElevation" in (themeConfig.switcher.axes ?? {})).toBe(false)
   })
 
   it("registers the font axis", () => {

@@ -43,7 +43,7 @@ describe("shell style", () => {
   it("is a layout setting, not a theme axis", () => {
     expect("shellStyle" in AXES).toBe(false)
     expect("shellStyle" in themeConfig.defaults).toBe(false)
-    expect(themeConfig.switcher.axes?.shellStyle).toBeUndefined()
+    expect("shellStyle" in (themeConfig.switcher.axes ?? {})).toBe(false)
   })
 })
 

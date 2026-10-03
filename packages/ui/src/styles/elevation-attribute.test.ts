@@ -18,7 +18,7 @@ function withoutComments(source: string): string {
 describe("data-elevation attribute", () => {
   it("is used only by the theme axis owners", () => {
     const files = globSync("src/**/*.{css,ts,tsx}", { cwd: process.cwd() })
-      .map((file) => file.replaceAll("\\", "/"))
+      .map((file) => file.replace(/\\/g, "/"))
       .filter((file) => !/\.(test|stories)\.tsx?$/.test(file))
     expect(files.length).toBeGreaterThan(0)
     const offenders = files.filter(

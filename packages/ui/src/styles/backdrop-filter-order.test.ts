@@ -20,7 +20,11 @@ function declaredProperties(css: string): string[] {
   const withoutComments = css.replace(/\/\*[\s\S]*?\*\//g, "")
   return [
     ...withoutComments.matchAll(/(?:(^|[;{}])\s*(-?[\w-]+)\s*:)|(\})/g),
-  ].map((match) => match[3] ?? match[2])
+  ].map((match) => {
+    const token = match[3] ?? match[2]
+    if (!token) throw new Error("declaration token missing")
+    return token
+  })
 }
 
 function stylesheets(): { file: string; properties: string[] }[] {

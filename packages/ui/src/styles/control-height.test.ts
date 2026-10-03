@@ -42,7 +42,7 @@ function densityBlock(step: string): string {
 /** Source files, tests excluded, whose text matches `pattern`. */
 function readersOf(pattern: RegExp): string[] {
   const files = globSync("src/**/*.{css,ts,tsx}")
-    .map((file) => file.replaceAll("\\", "/"))
+    .map((file) => file.replace(/\\/g, "/"))
     .filter((file) => !/\.test\.tsx?$/.test(file))
   // Run from anywhere but packages/ui, the glob finds nothing and every
   // "no reader" case would pass on an empty list.

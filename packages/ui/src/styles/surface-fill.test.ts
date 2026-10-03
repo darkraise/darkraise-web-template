@@ -40,10 +40,14 @@ function rules(): Rule[] {
   const flat = source()
     .replace(/\/\*[\s\S]*?\*\//g, "")
     .replace(/\s+/g, " ")
-  return [...flat.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((m) => ({
-    selector: m[1].trim(),
-    body: m[2].trim(),
-  }))
+  return [...flat.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map(
+    ([, selector, body]) => {
+      if (selector === undefined || body === undefined) {
+        throw new Error("rule match is missing a group")
+      }
+      return { selector: selector.trim(), body: body.trim() }
+    },
+  )
 }
 
 function bodyOf(selector: string): string {
@@ -57,12 +61,11 @@ function fillRule(value: (typeof VALUES)[number]): string {
 }
 
 function decl(body: string, name: string): string {
-  return body
-    .split(`${name}:`)[1]
-    .split(";")[0]
-    .replace(/\(\s+/g, "(")
-    .replace(/\s+\)/g, ")")
-    .trim()
+  const afterName = body.split(`${name}:`)[1]
+  if (afterName === undefined) throw new Error(`no ${name} declaration`)
+  const value = afterName.split(";")[0]
+  if (value === undefined) throw new Error(`no ${name} value`)
+  return value.replace(/\(\s+/g, "(").replace(/\s+\)/g, ")").trim()
 }
 
 describe("surface fill rules", () => {

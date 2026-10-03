@@ -33,13 +33,12 @@ type LoosePreset = {
 function axisCombos(
   axes: Record<string, { values: readonly string[]; default: string }>,
 ): Record<string, string>[] {
-  const names = Object.keys(axes)
   const base: Record<string, string> = {}
-  for (const n of names) base[n] = axes[n].default
+  for (const [n, axis] of Object.entries(axes)) base[n] = axis.default
   // All-defaults, plus each axis swept across all its values (others default).
   const combos: Record<string, string>[] = [{ ...base }]
-  for (const n of names) {
-    for (const v of axes[n].values) combos.push({ ...base, [n]: v })
+  for (const [n, axis] of Object.entries(axes)) {
+    for (const v of axis.values) combos.push({ ...base, [n]: v })
   }
   return combos
 }

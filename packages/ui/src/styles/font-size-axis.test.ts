@@ -198,7 +198,7 @@ function allCssFiles(): [string, string][] {
       if (entry.isDirectory()) walk(full)
       else if (entry.name.endsWith(".css"))
         out.push([
-          relative(srcDir, full).replaceAll("\\", "/"),
+          relative(srcDir, full).replace(/\\/g, "/"),
           readFileSync(full, "utf8"),
         ])
     }
@@ -316,7 +316,7 @@ describe("density and font-size composition", () => {
 
   it("leaves no reader of --density-cell or --density-cell-base", () => {
     const files = globSync("src/**/*.{css,ts,tsx}")
-      .map((file) => file.replaceAll("\\", "/"))
+      .map((file) => file.replace(/\\/g, "/"))
       .filter((file) => !/\.test\.tsx?$/.test(file))
     expect(files.length).toBeGreaterThan(0)
     const offenders = files.filter((file) =>

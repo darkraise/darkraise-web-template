@@ -108,7 +108,8 @@ describe("glass dark --card-elevation-* stays in sync with the base ramp", () =>
   // `@layer base` also contains the bare selector.
   const darkBaseBlock = themeCss
     .split(/^\[data-mode="dark"\] \{/m)[1]
-    .split("}")[0]
+    ?.split("}")[0]
+  if (darkBaseBlock === undefined) throw new Error("dark base block missing")
 
   for (const tier of ["low", "medium", "high"] as const) {
     it(`dark ${tier} = base ramp + halo`, () => {
@@ -236,7 +237,7 @@ describe("stylesheets vs Glass alpha-bound tokens", () => {
     const offenders = stylesheets(resolve(root, "src")).flatMap((file) => {
       const css = readFileSync(file, "utf8").replace(/\/\*[\s\S]*?\*\//g, "")
       return [...css.matchAll(/hsl\(\s*var\((--[\w-]+)\)\s*\//g)]
-        .filter((m) => alphaBound.has(m[1]))
+        .filter((m) => m[1] !== undefined && alphaBound.has(m[1]))
         .map((m) => `${file}: ${m[0]}`)
     })
     expect(offenders).toEqual([])

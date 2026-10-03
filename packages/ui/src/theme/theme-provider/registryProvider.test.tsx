@@ -158,9 +158,8 @@ describe("ThemeProvider on the axis registry", () => {
     await act(async () => {
       await vi.advanceTimersByTimeAsync(60)
     })
-    const saved = (adapter.save as ReturnType<typeof vi.fn>).mock.calls.at(
-      -1,
-    )?.[0]
+    const calls = (adapter.save as ReturnType<typeof vi.fn>).mock.calls
+    const saved = calls[calls.length - 1]?.[0]
     expect(saved).toEqual({
       accentColor: "rose",
       density: "compact",

@@ -13,10 +13,12 @@ function themeRuleBody(selector: string): string {
     .replace(/\/\*[\s\S]*?\*\//g, "")
     .replace(/\s+/g, " ")
   const found = [...flat.matchAll(/([^{}]+)\{([^{}]*)\}/g)].find(
-    (m) => m[1].trim() === selector,
+    (m) => m[1]?.trim() === selector,
   )
   if (!found) throw new Error(`no rule with selector ${selector}`)
-  return found[2].trim()
+  const body = found[2]
+  if (body === undefined) throw new Error(`rule ${selector} has no body`)
+  return body.trim()
 }
 
 describe("preset overlay backgrounds", () => {

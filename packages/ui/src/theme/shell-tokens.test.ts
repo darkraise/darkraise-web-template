@@ -39,7 +39,7 @@ describe("shell tokens", () => {
   it("does not round shell regions into lozenges under the pill radius", () => {
     const scaleOf = (selector: string) => {
       const block = css.slice(css.indexOf(selector))
-      return /--shell-radius-scale:\s*([^;]+);/.exec(block)?.[1].trim()
+      return /--shell-radius-scale:\s*([^;]+);/.exec(block)?.[1]?.trim()
     }
     expect(scaleOf('[data-radius="pill"] {')).toBe(
       scaleOf('[data-radius="rounded"] {'),
