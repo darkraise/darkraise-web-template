@@ -236,8 +236,8 @@ wins over the provider.
 
 ## Theme config
 
-`ThemeProvider` takes an optional `config`. Only `switcher.enabled` is
-required:
+`ThemeProvider` takes an optional `config`. `defaults` and `switcher.enabled`
+are required; `defaults` may be empty (`{}`):
 
 ```ts
 import type { ThemeConfig } from "darkraise-ui/theme"
