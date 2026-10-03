@@ -141,9 +141,9 @@ describe("ThemeSwitcher preset section", () => {
     openSwitcher()
     fireEvent.click(screen.getByRole("radio", { name: /gradient/i }))
     // 4- and 5-value ordinal axes (Background Intensity, Density, Font
-    // Size, Button Elevation, Radius and both glows) render as stepped
-    // sliders instead of toggle groups. Spot-check the count and that each
-    // axis's current-value label is rendered.
+    // Size, Radius and both glows) render as stepped sliders instead of
+    // toggle groups. Spot-check the count and that each axis's
+    // current-value label is rendered.
     expect(screen.getAllByRole("slider").length).toBeGreaterThanOrEqual(5)
     // Each slider has its current value name to the right. Scope the
     // check to the Background Intensity row: Accent Vibrancy renders

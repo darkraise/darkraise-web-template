@@ -4,7 +4,6 @@ import { AXES, AXIS_KEYS, isAxisValue, type AxisKey } from "./registry"
 import { KIT_VERSION } from "./version"
 import { themeConfig } from "@theme/themeConfig"
 import { PRESET_NAMES, presets } from "@theme/presets"
-import { ELEVATIONS } from "@theme/types"
 
 describe("axis registry", () => {
   it("lists every axis once, in registry order", () => {
@@ -67,16 +66,6 @@ describe("axis registry", () => {
     })
   })
 
-  it("gives button elevation its own four levels", () => {
-    expect(AXES.buttonElevation.values).toEqual([
-      "flat",
-      "low",
-      "medium",
-      "high",
-    ])
-    expect(AXES.buttonElevation.values).not.toBe(ELEVATIONS)
-  })
-
   it("reduces elevation to flat, standard and high", () => {
     expect(AXES.elevation).toMatchObject({
       values: ["flat", "standard", "high"],
@@ -85,6 +74,12 @@ describe("axis registry", () => {
       attribute: "data-elevation",
       layer: "advanced",
     })
+  })
+
+  it("drops the button elevation axis", () => {
+    expect("buttonElevation" in AXES).toBe(false)
+    expect("buttonElevation" in themeConfig.defaults).toBe(false)
+    expect(themeConfig.switcher.axes?.buttonElevation).toBeUndefined()
   })
 
   it("drops the axes the colour engine replaced", () => {

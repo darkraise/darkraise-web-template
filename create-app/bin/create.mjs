@@ -32,7 +32,6 @@ const BACKGROUND_INTENSITIES = AXES.backgroundIntensity.values
 const GRADIENT_PATTERNS = AXES.gradientPattern.values
 const DENSITIES = AXES.density.values
 const ELEVATIONS = AXES.elevation.values
-const BUTTON_ELEVATIONS = AXES.buttonElevation.values
 const RADII = AXES.radius.values
 const SIDEBAR_ACTIVE_BARS = AXES.sidebarActiveBar.values
 const FONT_SIZES = AXES.fontSize.values
@@ -55,7 +54,6 @@ const argv = minimist(process.argv.slice(2), {
     "theme-axes",
     "density",
     "elevation",
-    "button-elevation",
     "radius",
     "font-size",
     "sidebar-active-bar",
@@ -102,7 +100,6 @@ validate(argv["gradient-pattern"], GRADIENT_PATTERNS, "gradient-pattern")
 validate(argv.mode, MODES, "mode")
 validate(argv.density, DENSITIES, "density")
 validate(argv.elevation, ELEVATIONS, "elevation")
-validate(argv["button-elevation"], BUTTON_ELEVATIONS, "button-elevation")
 validate(argv.radius, RADII, "radius")
 validate(argv["sidebar-active-bar"], SIDEBAR_ACTIVE_BARS, "sidebar-active-bar")
 validate(argv["font-size"], FONT_SIZES, "font-size")
@@ -310,18 +307,6 @@ async function main() {
           }),
         ))
 
-  const buttonElevation =
-    argv["button-elevation"] ||
-    (skipPrompts
-      ? "flat"
-      : cancelled(
-          await p.select({
-            message: "Button elevation",
-            options: BUTTON_ELEVATIONS.map((e) => ({ value: e, label: e })),
-            initialValue: "flat",
-          }),
-        ))
-
   const radius =
     argv.radius ||
     (skipPrompts
@@ -397,7 +382,6 @@ async function main() {
             { value: "gradientPattern", label: "Gradient pattern" },
             { value: "density", label: "Density" },
             { value: "elevation", label: "Elevation" },
-            { value: "buttonElevation", label: "Button elevation" },
             { value: "radius", label: "Radius" },
             { value: "fontSize", label: "Font size" },
             { value: "sidebarActiveBar", label: "Sidebar indicator" },
@@ -467,7 +451,6 @@ async function main() {
         mode: mode,
         density: density,
         elevation: elevation,
-        buttonElevation: buttonElevation,
         radius: radius,
         sidebarActiveBar: sidebarActiveBar,
         fontSize: fontSize,
@@ -662,7 +645,6 @@ export const themeConfig: ThemeConfig = {
     mode: "${config.theme.defaults.mode}",
     density: "${config.theme.defaults.density}",
     elevation: "${config.theme.defaults.elevation}",
-    buttonElevation: "${config.theme.defaults.buttonElevation}",
     radius: "${config.theme.defaults.radius}",
     sidebarActiveBar: "${config.theme.defaults.sidebarActiveBar}",
     fontSize: "${config.theme.defaults.fontSize}",
@@ -684,7 +666,6 @@ export const themeConfig: ThemeConfig = {
       gradientPattern: ${config.theme.switcher.axes.gradientPattern},
       density: ${config.theme.switcher.axes.density},
       elevation: ${config.theme.switcher.axes.elevation},
-      buttonElevation: ${config.theme.switcher.axes.buttonElevation},
       radius: ${config.theme.switcher.axes.radius},
       sidebarActiveBar: ${config.theme.switcher.axes.sidebarActiveBar},
       fontSize: ${config.theme.switcher.axes.fontSize},

@@ -125,18 +125,6 @@
     "attribute": "data-elevation",
     "layer": "advanced"
   },
-  "buttonElevation": {
-    "values": [
-      "flat",
-      "low",
-      "medium",
-      "high"
-    ],
-    "default": "flat",
-    "storageKey": "theme-button-elevation",
-    "attribute": "data-button-elevation",
-    "layer": "advanced"
-  },
   "radius": {
     "values": [
       "sharp",

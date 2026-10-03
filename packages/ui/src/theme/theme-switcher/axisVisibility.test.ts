@@ -74,7 +74,6 @@ describe("axis visibility table", () => {
       "fontSize",
       "radius",
       "elevation",
-      "buttonElevation",
       "outerGlow",
       "innerGlow",
     ]

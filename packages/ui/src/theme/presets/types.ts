@@ -126,7 +126,6 @@ export interface ThemePreset<
     | "surfaceColor"
     | "density"
     | "elevation"
-    | "buttonElevation"
     | "radius"
     | "fontSize"
     | "outerGlow"

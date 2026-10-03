@@ -90,7 +90,6 @@ const messages: UiMessages = {
       gradientPattern: "Kiểu chuyển màu",
       density: "Mật độ",
       elevation: "Độ nổi",
-      buttonElevation: "Độ nổi nút",
       radius: "Bo góc",
       sidebarActiveBar: "Chỉ báo thanh bên",
       fontSize: "Cỡ chữ",

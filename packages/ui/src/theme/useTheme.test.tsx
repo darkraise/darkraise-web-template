@@ -133,21 +133,10 @@ describe("useTheme", () => {
     expect(document.documentElement.getAttribute("data-elevation")).toBe("high")
   })
 
-  it("setButtonElevation updates buttonElevation and sets data-button-elevation attribute", () => {
-    const { result } = renderHook(() => useTheme(), { wrapper })
-    act(() => result.current.setButtonElevation("medium"))
-    expect(result.current.buttonElevation).toBe("medium")
-    expect(localStorage.getItem("theme-button-elevation")).toBe("medium")
-    expect(document.documentElement.getAttribute("data-button-elevation")).toBe(
-      "medium",
-    )
-  })
-
   it("returns config defaults for new axes when localStorage is empty", () => {
     const { result } = renderHook(() => useTheme(), { wrapper })
     expect(result.current.density).toBe("cozy")
     expect(result.current.elevation).toBe("standard")
-    expect(result.current.buttonElevation).toBe("flat")
   })
 
   it("syncStatus is idle when no persistence adapter is provided", () => {
@@ -293,7 +282,6 @@ describe("useTheme persistence", () => {
     mode: "dark",
     density: "spacious",
     elevation: "high",
-    buttonElevation: "low",
     radius: "pill",
   }
 
@@ -334,7 +322,6 @@ describe("useTheme persistence", () => {
     expect(result.current.mode).toBe("dark")
     expect(result.current.density).toBe("spacious")
     expect(result.current.elevation).toBe("high")
-    expect(result.current.buttonElevation).toBe("low")
   })
 
   it("loads the default preset when synced settings name a removed preset", async () => {
@@ -367,7 +354,7 @@ describe("useTheme persistence", () => {
       preset: "default",
       backgroundStyle: "solid",
       mode: "light",
-      // density / elevation / buttonElevation absent
+      // density / elevation absent
     }
     const adapter = createAdapter({
       load: vi.fn(() => Promise.resolve(partialSettings)),
@@ -383,7 +370,6 @@ describe("useTheme persistence", () => {
     expect(result.current.accentColor).toBe("violet")
     expect(result.current.density).toBe("cozy")
     expect(result.current.elevation).toBe("standard")
-    expect(result.current.buttonElevation).toBe("flat")
   })
 
   // Re-enabled in Phase 3 with the glass preset registered
@@ -402,7 +388,6 @@ describe("useTheme persistence", () => {
     expect(localStorage.getItem("mode")).toBe("dark")
     expect(localStorage.getItem("theme-density")).toBe("spacious")
     expect(localStorage.getItem("theme-elevation")).toBe("high")
-    expect(localStorage.getItem("theme-button-elevation")).toBe("low")
   })
 
   it("keeps defaults when load returns null", async () => {

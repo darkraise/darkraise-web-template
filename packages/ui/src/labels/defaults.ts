@@ -75,7 +75,6 @@ export const defaultLabels: UiLabels = {
       gradientPattern: "Gradient Pattern",
       density: "Density",
       elevation: "Elevation",
-      buttonElevation: "Button Elevation",
       radius: "Radius",
       sidebarActiveBar: "Sidebar Indicator",
       fontSize: "Font Size",

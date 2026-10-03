@@ -107,14 +107,6 @@ export const AXES = {
     attribute: "data-elevation",
     layer: "advanced",
   }),
-  /** Shadow depth of buttons, set apart from surface elevation. */
-  buttonElevation: axis({
-    values: ["flat", "low", "medium", "high"],
-    default: "flat",
-    storageKey: "theme-button-elevation",
-    attribute: "data-button-elevation",
-    layer: "advanced",
-  }),
   /** Corner radius scale. */
   radius: axis({
     values: RADII,

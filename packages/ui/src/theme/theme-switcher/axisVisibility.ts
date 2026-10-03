@@ -56,8 +56,6 @@ export const AXIS_VISIBILITY: Record<
   radius: (s) => s.axes.radius && !s.isHiddenByPreset("radius"),
 
   elevation: (s) => s.axes.elevation && !s.isHiddenByPreset("elevation"),
-  buttonElevation: (s) =>
-    s.axes.buttonElevation && !s.isHiddenByPreset("buttonElevation"),
 
   // Global: every preset either consumes the composed tokens or drives its own
   // recipe from the same step, so no preset hides these by default.

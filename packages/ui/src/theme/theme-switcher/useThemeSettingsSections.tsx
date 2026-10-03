@@ -34,7 +34,6 @@ import {
 } from "@theme/presets"
 import { resolveAccentScale } from "@theme/engine/generateTokens"
 import { surfaceColors } from "@theme/palettes/surfaceColors"
-import { AXES } from "@theme/axes/registry"
 import { useUiLabels } from "@labels"
 import { AxisControl } from "./AxisControl"
 import { isAxisVisible, type AxisVisibilityInput } from "./axisVisibility"
@@ -87,7 +86,6 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
     mode,
     density,
     elevation,
-    buttonElevation,
     radius,
     sidebarActiveBar,
     fontSize,
@@ -108,7 +106,6 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
     setMode,
     setDensity,
     setElevation,
-    setButtonElevation,
     setRadius,
     setSidebarActiveBar,
     setFontSize,
@@ -468,23 +465,6 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
             value={elevation}
             onChange={setElevation}
             label={labels.theme.axisLabels.elevation}
-          />
-        </div>
-      ),
-    },
-    show("buttonElevation") && {
-      key: "buttonElevation",
-      group: "depth" as const,
-      node: (
-        <div key="buttonElevation" className="dr-theme-switcher-row">
-          <Label className="dr-theme-switcher-section-label">
-            {labels.theme.axisLabels.buttonElevation}
-          </Label>
-          <AxisControl
-            values={AXES.buttonElevation.values}
-            value={buttonElevation}
-            onChange={setButtonElevation}
-            label={labels.theme.axisLabels.buttonElevation}
           />
         </div>
       ),
