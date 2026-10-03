@@ -1,11 +1,6 @@
 @layer components {
   .dr-menubar {
     @apply flex items-center space-x-1 rounded-md border bg-transparent p-1 py-[var(--btn-px-tight)];
-    /* Glass-frost the menubar (no-op under Default). The dr-menu-content
-       and dr-menu-sub-content rules already consume backdrop-filter for the
-       popover surfaces. */
-    -webkit-backdrop-filter: var(--backdrop-filter);
-    backdrop-filter: var(--backdrop-filter);
   }
 
   .dr-menubar-trigger {
@@ -22,8 +17,8 @@
     background-blend-mode: var(--surface-overlay-blend-mode);
     border-color: var(--overlay-border);
     box-shadow: var(--overlay-shadow);
-    -webkit-backdrop-filter: var(--backdrop-filter);
-    backdrop-filter: var(--backdrop-filter);
+    -webkit-backdrop-filter: var(--overlay-backdrop);
+    backdrop-filter: var(--overlay-backdrop);
   }
 
   .dr-menubar-content {
@@ -32,8 +27,8 @@
     background-blend-mode: var(--surface-overlay-blend-mode);
     border-color: var(--overlay-border);
     box-shadow: var(--overlay-shadow);
-    -webkit-backdrop-filter: var(--backdrop-filter);
-    backdrop-filter: var(--backdrop-filter);
+    -webkit-backdrop-filter: var(--overlay-backdrop);
+    backdrop-filter: var(--overlay-backdrop);
   }
 
   .dr-menubar-item {

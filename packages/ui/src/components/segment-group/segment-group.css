@@ -1,9 +1,6 @@
 @layer components {
   .dr-segment-group {
     @apply bg-muted relative inline-flex rounded-md p-1;
-    /* Glass-frost the segmented control container (no-op under Default). */
-    -webkit-backdrop-filter: var(--backdrop-filter);
-    backdrop-filter: var(--backdrop-filter);
   }
 
   .dr-segment-group[data-orientation="vertical"] {

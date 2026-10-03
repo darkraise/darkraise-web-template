@@ -30,10 +30,26 @@ describe("theme aliases", () => {
     expect(cardSurface).toBe(glass)
   })
 
-  it(".overlay-surface ruleset matches .glass-strong verbatim", () => {
-    const glassStrong = extractRuleBody("glass-strong")
-    const overlaySurface = extractRuleBody(".overlay-surface")
-    expect(overlaySurface).toBe(glassStrong)
+  it(".overlay-surface ruleset is .glass-strong plus the overlay backdrop", () => {
+    const backdrop = [
+      "-webkit-backdrop-filter: var(--overlay-backdrop);",
+      "backdrop-filter: var(--overlay-backdrop);",
+    ]
+    const lines = extractRuleBody(".overlay-surface").split("\n")
+    for (const line of backdrop) expect(lines).toContain(line)
+    expect(lines.filter((line) => !backdrop.includes(line)).join("\n")).toBe(
+      extractRuleBody("glass-strong"),
+    )
+  })
+
+  it.each([
+    "glass-thin",
+    "glass",
+    "glass-strong",
+    "card-surface",
+    "modal-surface",
+  ])("%s draws no backdrop", (name) => {
+    expect(extractRuleBody(name)).not.toContain("backdrop-filter")
   })
 
   it("all four tier classes are present in theme.css", () => {

@@ -35,8 +35,8 @@
     background-blend-mode: var(--surface-overlay-blend-mode);
     border-color: var(--overlay-border);
     box-shadow: var(--overlay-shadow);
-    -webkit-backdrop-filter: var(--backdrop-filter);
-    backdrop-filter: var(--backdrop-filter);
+    -webkit-backdrop-filter: var(--overlay-backdrop);
+    backdrop-filter: var(--overlay-backdrop);
 
     --toast-stack-gap: 12px;
     --toast-scale: calc(1 - var(--toast-index, 0) * 0.06);

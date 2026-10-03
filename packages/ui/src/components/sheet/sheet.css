@@ -6,8 +6,8 @@
     background: var(--overlay-bg);
     background-blend-mode: var(--surface-overlay-blend-mode);
     border-color: var(--overlay-border);
-    -webkit-backdrop-filter: var(--backdrop-filter);
-    backdrop-filter: var(--backdrop-filter);
+    -webkit-backdrop-filter: var(--overlay-backdrop);
+    backdrop-filter: var(--overlay-backdrop);
   }
 
   .dr-sheet-content[data-state="closed"] {

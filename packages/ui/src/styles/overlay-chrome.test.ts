@@ -315,3 +315,64 @@ describe("sheet edges", () => {
     },
   )
 })
+
+describe("overlay backdrop", () => {
+  const FROSTED =
+    "-webkit-backdrop-filter: var(--overlay-backdrop); backdrop-filter: var(--overlay-backdrop);"
+
+  it.each([
+    [
+      "src/components/color-picker/color-picker.css",
+      ".dr-color-picker-content",
+    ],
+    ["src/components/combobox/combobox.css", ".dr-combobox-content"],
+    ["src/components/command/command.css", ".dr-command"],
+    ["src/components/date-picker/date-picker.css", ".dr-date-picker-content"],
+    ["src/components/dialog/dialog.css", ".dr-dialog-content"],
+    ["src/components/drawer/drawer.css", ".dr-drawer-overlay"],
+    ["src/components/drawer/drawer.css", ".dr-drawer-content"],
+    ["src/components/floating-panel/floating-panel.css", ".dr-floating-panel"],
+    ["src/components/hover-card/hover-card.css", ".dr-hover-card-content"],
+    ["src/components/menu-primitives/menu-primitives.css", ".dr-menu-content"],
+    [
+      "src/components/menu-primitives/menu-primitives.css",
+      ".dr-menu-sub-content",
+    ],
+    ["src/components/menubar/menubar.css", ".dr-menubar-content"],
+    ["src/components/menubar/menubar.css", ".dr-menubar-sub-content"],
+    [
+      "src/components/navigation-menu/navigation-menu.css",
+      ".dr-navigation-menu-content",
+    ],
+    [
+      "src/components/overlay-primitives/overlay-primitives.css",
+      ".dr-overlay-backdrop",
+    ],
+    ["src/components/popover/popover.css", ".dr-popover-content"],
+    ["src/components/select/select.css", ".dr-select-content"],
+    ["src/components/sheet/sheet.css", ".dr-sheet-content"],
+    ["src/components/sonner/sonner.css", ".dr-toast"],
+    ["src/components/tooltip/tooltip.css", ".dr-tooltip-content"],
+    ["src/components/tour/tour.css", ".dr-tour-backdrop"],
+    [
+      "src/components/virtualized-dropdown-menu/virtualized-dropdown-menu.css",
+      ".dr-vdm-content",
+    ],
+    [THEME, ".overlay-surface"],
+  ])("%s %s frosts through --overlay-backdrop", (path, selector) => {
+    expect(bodyOf(path, selector)).toContain(FROSTED)
+  })
+
+  // Page content keeps Quiet's recipe under every style.
+  it.each([
+    [ALERT, ".dr-alert"],
+    [BANNER, ".dr-banner"],
+    ["src/components/file-upload/file-upload.css", ".dr-file-upload-dropzone"],
+    ["src/components/file-upload/file-upload.css", ".dr-file-upload-item"],
+    ["src/components/menubar/menubar.css", ".dr-menubar"],
+    ["src/components/segment-group/segment-group.css", ".dr-segment-group"],
+    ["src/components/toolbar/toolbar.css", ".dr-toolbar"],
+  ])("%s %s draws no backdrop", (path, selector) => {
+    expect(bodyOf(path, selector)).not.toContain("backdrop-filter")
+  })
+})

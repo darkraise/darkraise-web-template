@@ -152,8 +152,6 @@
 
 @utility glass-thin {
   background: var(--fog-05);
-  -webkit-backdrop-filter: var(--backdrop-filter);
-  backdrop-filter: var(--backdrop-filter);
   border: 1px solid var(--fog-10);
   border-radius: var(--radius);
   box-shadow: var(--inset-hi);
@@ -166,8 +164,6 @@
 
 @utility glass {
   background: linear-gradient(135deg, var(--fog-10), var(--fog-05));
-  -webkit-backdrop-filter: var(--backdrop-filter);
-  backdrop-filter: var(--backdrop-filter);
   border: 1px solid var(--fog-15);
   border-radius: var(--radius);
   box-shadow: var(--inset-hi);
@@ -180,8 +176,6 @@
 
 @utility glass-strong {
   background: linear-gradient(135deg, var(--fog-20), var(--fog-10));
-  -webkit-backdrop-filter: var(--backdrop-filter);
-  backdrop-filter: var(--backdrop-filter);
   border: 1px solid hsl(var(--border));
   border-radius: var(--radius);
   box-shadow: var(--elevation-medium), var(--inset-hi-strong);
@@ -194,8 +188,6 @@
 
 @utility card-surface {
   background: linear-gradient(135deg, var(--fog-10), var(--fog-05));
-  -webkit-backdrop-filter: var(--backdrop-filter);
-  backdrop-filter: var(--backdrop-filter);
   border: 1px solid var(--fog-15);
   border-radius: var(--radius);
   box-shadow: var(--inset-hi);
@@ -592,8 +584,6 @@
     --border-strong: 215 16% 45%;
     --shadow-dropdown:
       0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --backdrop-blur: none;
-    --backdrop-filter: none;
     --surface-opacity: 1;
     /* Which surface a form control paints, resolved relative to whatever
        contains it rather than fixed to one rung. On the page canvas a
@@ -1871,8 +1861,8 @@
 
   .overlay-surface {
     background: linear-gradient(135deg, var(--fog-20), var(--fog-10));
-    -webkit-backdrop-filter: var(--backdrop-filter);
-    backdrop-filter: var(--backdrop-filter);
+    -webkit-backdrop-filter: var(--overlay-backdrop);
+    backdrop-filter: var(--overlay-backdrop);
     border: 1px solid hsl(var(--border));
     border-radius: var(--radius);
     box-shadow: var(--elevation-medium), var(--inset-hi-strong);
