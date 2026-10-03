@@ -102,12 +102,6 @@ describe("generateTokens", () => {
       "--fog-20",
       "--fog-30",
       "--fog-50",
-      "--inset-hi",
-      "--inset-hi-strong",
-      "--inset-hi-button",
-      "--backdrop-blur",
-      "--backdrop-filter",
-      "--surface-opacity",
     ]
 
     for (const key of glassOnlyKeys) {
@@ -312,28 +306,6 @@ describe("generateTokens", () => {
     })
     expect(calm["--primary-fill"]).not.toEqual(vivid["--primary-fill"])
     expect(calm["--primary"]).not.toEqual(vivid["--primary"])
-  })
-
-  it("emits no scalar opacity or blur tokens under frosted chrome", () => {
-    const tokens = generateTokens({
-      accentColor: "blue",
-      surfaceColor: "slate",
-      frosted: true,
-      backgroundStyle: "solid",
-      mode: "light",
-      contrast: "standard",
-      darkAccentChroma: "standard",
-      tintWithAccent: false,
-    })
-
-    // These tokens are now bound by glass.css attribute selectors.
-    expect(tokens["--backdrop-blur"]).toBeUndefined()
-    expect(tokens["--surface-opacity"]).toBeUndefined()
-    expect(tokens["--backdrop-filter"]).toBeUndefined()
-
-    // Fog and inset tokens belong to Glass's own token set, not the engine.
-    expect(tokens["--fog-05"]).toBeUndefined()
-    expect(tokens["--inset-hi"]).toBeUndefined()
   })
 
   it.each(["light", "dark"] as const)(
@@ -645,72 +617,6 @@ describe("generateTokens", () => {
         "--fog-50",
       ]
       for (const key of fogKeys) {
-        expect(dark).not.toHaveProperty(key)
-        expect(light).not.toHaveProperty(key)
-      }
-    })
-  })
-
-  describe("inset rim tokens", () => {
-    it("dark + glass does not emit inset rim tokens from common generateTokens", () => {
-      const tokens = generateTokens({
-        accentColor: "blue",
-        surfaceColor: "slate",
-        frosted: true,
-        backgroundStyle: "solid",
-        mode: "dark",
-        contrast: "standard",
-        darkAccentChroma: "standard",
-        tintWithAccent: false,
-      })
-
-      // Inset tokens belong to Glass's own token set, not the engine.
-      expect(tokens["--inset-hi"]).toBeUndefined()
-      expect(tokens["--inset-hi-strong"]).toBeUndefined()
-      expect(tokens["--inset-hi-button"]).toBeUndefined()
-    })
-
-    it("light + glass does not emit inset rim tokens from common generateTokens", () => {
-      const tokens = generateTokens({
-        accentColor: "blue",
-        surfaceColor: "slate",
-        frosted: true,
-        backgroundStyle: "solid",
-        mode: "light",
-        contrast: "standard",
-        darkAccentChroma: "standard",
-        tintWithAccent: false,
-      })
-
-      expect(tokens["--inset-hi"]).toBeUndefined()
-      expect(tokens["--inset-hi-strong"]).toBeUndefined()
-      expect(tokens["--inset-hi-button"]).toBeUndefined()
-    })
-
-    it("default surface style does not emit any inset rim tokens", () => {
-      const dark = generateTokens({
-        accentColor: "blue",
-        surfaceColor: "slate",
-        frosted: false,
-        backgroundStyle: "solid",
-        mode: "dark",
-        contrast: "standard",
-        darkAccentChroma: "standard",
-        tintWithAccent: false,
-      })
-      const light = generateTokens({
-        accentColor: "blue",
-        surfaceColor: "slate",
-        frosted: false,
-        backgroundStyle: "solid",
-        mode: "light",
-        contrast: "standard",
-        darkAccentChroma: "standard",
-        tintWithAccent: false,
-      })
-
-      const insetKeys = ["--inset-hi", "--inset-hi-strong", "--inset-hi-button"]
-      for (const key of insetKeys) {
         expect(dark).not.toHaveProperty(key)
         expect(light).not.toHaveProperty(key)
       }

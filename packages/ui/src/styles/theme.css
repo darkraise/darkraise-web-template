@@ -152,9 +152,7 @@
 
 @utility glass-thin {
   background: var(--fog-05);
-  border: 1px solid var(--fog-10);
   border-radius: var(--radius);
-  box-shadow: var(--inset-hi);
   transition:
     background-color var(--duration-fast) var(--ease-in-out),
     color var(--duration-fast) var(--ease-in-out),
@@ -164,9 +162,7 @@
 
 @utility glass {
   background: linear-gradient(135deg, var(--fog-10), var(--fog-05));
-  border: 1px solid var(--fog-15);
   border-radius: var(--radius);
-  box-shadow: var(--inset-hi);
   transition:
     background-color var(--duration-fast) var(--ease-in-out),
     color var(--duration-fast) var(--ease-in-out),
@@ -178,7 +174,7 @@
   background: linear-gradient(135deg, var(--fog-20), var(--fog-10));
   border: 1px solid hsl(var(--border));
   border-radius: var(--radius);
-  box-shadow: var(--elevation-medium), var(--inset-hi-strong);
+  box-shadow: var(--elevation-medium);
   transition:
     background-color var(--duration-fast) var(--ease-in-out),
     color var(--duration-fast) var(--ease-in-out),
@@ -188,9 +184,7 @@
 
 @utility card-surface {
   background: linear-gradient(135deg, var(--fog-10), var(--fog-05));
-  border: 1px solid var(--fog-15);
   border-radius: var(--radius);
-  box-shadow: var(--inset-hi);
   transition:
     background-color var(--duration-fast) var(--ease-in-out),
     color var(--duration-fast) var(--ease-in-out),
@@ -199,9 +193,7 @@
 }
 
 @utility modal-surface {
-  box-shadow:
-    var(--elevation-high), var(--inset-hi-strong), var(--glow-outer),
-    var(--glow-inner);
+  box-shadow: var(--elevation-high), var(--glow-outer), var(--glow-inner);
 }
 
 @utility focus-ring {
@@ -662,14 +654,6 @@
     --fog-20: transparent;
     --fog-30: transparent;
     --fog-50: transparent;
-    /* No-op shadow values (must be syntactically valid <shadow>, not the
-     `none` keyword, because they get composed into multi-shadow lists like
-     `box-shadow: var(--elevation-medium), var(--inset-hi-strong)`. The `none`
-     keyword is only valid as a complete box-shadow value, never as a list
-     item — using it here invalidates the entire declaration. */
-    --inset-hi: 0 0 transparent;
-    --inset-hi-strong: 0 0 transparent;
-    --inset-hi-button: 0 0 transparent;
 
     /* Radius axis. --radius is the surface radius and drives Tailwind's
      rounded-sm/md/lg: cards, overlays and multi-line fields.
@@ -913,7 +897,7 @@
 
      `flat` uses `0 0 transparent` (a syntactically valid no-op shadow)
      instead of `none`, so it composes cleanly into multi-shadow lists
-     like `box-shadow: var(--elevation-medium), var(--inset-hi-strong)`.
+     like `box-shadow: var(--elevation-high), var(--glow-outer)`.
      The `none` keyword is only valid as a complete box-shadow value. */
     --elevation-flat: 0 0 transparent;
     --elevation-low: 0 2px 4px 0 rgb(0 0 0 / 0.1);
@@ -1856,7 +1840,7 @@
     backdrop-filter: var(--overlay-backdrop);
     border: 1px solid hsl(var(--border));
     border-radius: var(--radius);
-    box-shadow: var(--elevation-medium), var(--inset-hi-strong);
+    box-shadow: var(--elevation-medium);
     transition:
       background-color var(--duration-fast) var(--ease-in-out),
       color var(--duration-fast) var(--ease-in-out),

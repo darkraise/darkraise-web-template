@@ -1,14 +1,7 @@
 @layer components {
   .dr-card {
     @apply glass bg-card text-card-foreground border;
-    /* `glass` writes the shorthand `border: 1px solid var(--fog-15)`, and the
-       fog scale is `transparent` outside a `.dr-surface` subtree. That
-       declaration sits at (0,1,0) and so outranks the global
-       `* { @apply border-border }`, which left the default card painting the
-       same invisible box as `border="none"`. Restating the theme border here
-       keeps the edge without depending on the fog scale being populated.
-
-       The subtle rung rather than `--border`: the card's own background
+    /* The subtle rung rather than `--border`: the card's own background
        already separates it from the canvas, so the edge only has to trace
        the shape. `--border` sits two palette steps above the card fill and
        reads as a drawn outline rather than an edge. */

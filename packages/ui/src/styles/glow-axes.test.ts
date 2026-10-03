@@ -3,11 +3,6 @@ import { readFileSync } from "node:fs"
 import { GLOW_LEVELS } from "@theme/types"
 
 // jsdom never parses CSS, so the rules themselves are what this asserts.
-//
-// The Default preset consumes two composed tokens rather than a per-component
-// recipe. Glass drives its own multi-layer glow from the same axis steps
-// instead, because a single composed layer cannot express a three-layer
-// directional halo — see the preset re-expression in glow-baseline.test.ts.
 const theme = readFileSync("src/styles/theme.css", "utf8").replace(/\s+/g, " ")
 const card = readFileSync("src/components/card/card.css", "utf8").replace(
   /\s+/g,
@@ -51,7 +46,7 @@ describe("glow axes — composed tokens", () => {
 describe("glow axes — adoption", () => {
   it("reaches the modal tier through its shared utility", () => {
     expect(theme).toMatch(
-      /@utility modal-surface \{ box-shadow: var\(--elevation-high\), var\(--inset-hi-strong\), var\(--glow-outer\), var\(--glow-inner\); \}/,
+      /@utility modal-surface \{ box-shadow: var\(--elevation-high\), var\(--glow-outer\), var\(--glow-inner\); \}/,
     )
   })
 
