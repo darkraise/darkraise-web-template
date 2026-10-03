@@ -114,10 +114,12 @@ export const LS_KEYS = {
   elevation: "theme-elevation",
   buttonElevation: "theme-button-elevation",
   radius: "theme-radius",
-  shellStyle: "theme-shell-style",
   sidebarActiveBar: "theme-sidebar-active-bar",
   fontSize: "theme-font-size",
   contrast: "theme-contrast",
   darkAccentChroma: "theme-dark-accent-chroma",
   tintWithAccent: "theme-tint-with-accent",
 } as const
+
+/** localStorage key the layout store reads on boot for the user's shell style. */
+export const SHELL_STYLE_KEY = "theme-shell-style"

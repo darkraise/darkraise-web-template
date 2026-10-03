@@ -96,6 +96,19 @@ test.describe("shell style axis", () => {
     await expect(shell(page)).toHaveAttribute("data-shell-style", "framed")
   })
 
+  test("the document element carries no shell style", async ({ page }) => {
+    // The layout root is the only carrier; neither the provider nor the
+    // pre-render script stamps it on <html> any more.
+    await seedApp(page, { shellStyle: "island" })
+    await gotoApp(page, "/")
+    await expect(shell(page)).toHaveAttribute("data-shell-style", "island")
+    expect(
+      await page.evaluate(() =>
+        document.documentElement.hasAttribute("data-shell-style"),
+      ),
+    ).toBe(false)
+  })
+
   for (const style of SHELL_STYLES) {
     test(`the dashboard shell renders under ${style}`, async ({ page }) => {
       await seedApp(page, { shellStyle: style })

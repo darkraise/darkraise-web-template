@@ -4,7 +4,7 @@ import {
   type Locator,
   type ConsoleMessage,
 } from "@playwright/test"
-import { LS_KEYS } from "../fixtures/theme"
+import { LS_KEYS, SHELL_STYLE_KEY } from "../fixtures/theme"
 
 export interface Box {
   x: number
@@ -41,6 +41,7 @@ export interface ThemeSeed {
   elevation?: string
   buttonElevation?: string
   radius?: string
+  /** Seeds the layout store's stored pick; shell style is not a theme axis. */
   shellStyle?: string
   sidebarActiveBar?: string
   fontSize?: string
@@ -81,7 +82,7 @@ function storageEntries(theme: ThemeSeed, authenticated: boolean) {
     ["elevation", LS_KEYS.elevation],
     ["buttonElevation", LS_KEYS.buttonElevation],
     ["radius", LS_KEYS.radius],
-    ["shellStyle", LS_KEYS.shellStyle],
+    ["shellStyle", SHELL_STYLE_KEY],
     ["sidebarActiveBar", LS_KEYS.sidebarActiveBar],
     ["fontSize", LS_KEYS.fontSize],
     ["contrast", LS_KEYS.contrast],
