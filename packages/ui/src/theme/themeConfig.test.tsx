@@ -1,7 +1,7 @@
 import { StrictMode } from "react"
 import { render } from "@testing-library/react"
 import { afterEach, describe, expect, it, vi } from "vitest"
-import { AXES, AXIS_KEYS } from "@theme/axes/registry"
+import { AXES, AXIS_KEYS, type AxisKey } from "@theme/axes/registry"
 import { ThemeProvider } from "@theme/theme-provider"
 import { resolveDefaults, themeConfig, type ThemeConfig } from "./themeConfig"
 
@@ -133,5 +133,17 @@ describe("resolveDefaults", () => {
     expect(document.documentElement.getAttribute("data-density")).toBe(
       "compact",
     )
+  })
+})
+
+describe("kit theme config", () => {
+  it("lists only defaults that differ from the registry", () => {
+    for (const [key, value] of Object.entries(themeConfig.defaults)) {
+      expect(value, key).not.toBe(AXES[key as AxisKey].default)
+    }
+  })
+
+  it("lists no switcher axis, so every axis is shown", () => {
+    expect(themeConfig.switcher.axes).toBeUndefined()
   })
 })

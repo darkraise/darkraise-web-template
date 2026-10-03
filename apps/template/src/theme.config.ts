@@ -1,48 +1,8 @@
 import type { ThemeConfig } from "darkraise-ui/theme"
 
+// List only what differs from the kit's defaults; every other axis keeps its
+// registry default and stays in the theme switcher.
 export const themeConfig: ThemeConfig = {
-  defaults: {
-    accentColor: "blue",
-    surfaceColor: "slate",
-    preset: "default",
-    font: "inter",
-    backgroundStyle: "solid",
-    backgroundIntensity: "vivid",
-    gradientPattern: "blobs",
-    mode: "system",
-    density: "cozy",
-    elevation: "standard",
-    radius: "rounded",
-    sidebarActiveBar: "default",
-    contrast: "standard",
-    darkAccentChroma: "standard",
-    tintWithAccent: "off",
-    fontSize: "medium",
-    outerGlow: "none",
-    innerGlow: "none",
-  },
-  switcher: {
-    enabled: true,
-    axes: {
-      mode: true,
-      accentColor: true,
-      surfaceColor: true,
-      preset: true,
-      font: true,
-      backgroundStyle: true,
-      backgroundIntensity: true,
-      gradientPattern: true,
-      density: true,
-      elevation: true,
-      radius: true,
-      sidebarActiveBar: true,
-      contrast: true,
-      darkAccentChroma: true,
-      tintWithAccent: true,
-      fontSize: true,
-      outerGlow: true,
-      innerGlow: true,
-      presetAxes: true,
-    },
-  },
+  defaults: {},
+  switcher: { enabled: true },
 }

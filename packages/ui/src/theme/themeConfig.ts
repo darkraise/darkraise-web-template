@@ -9,61 +9,20 @@ import {
 declare const process: { env: { NODE_ENV?: string } }
 
 export interface ThemeConfig {
-  defaults: AxisValues
+  /** Default per axis; an axis left out takes the registry default. */
+  defaults: Partial<AxisValues>
   switcher: {
     enabled: boolean
-    axes: Record<AxisKey, boolean> & {
-      /** Master toggle for all preset-specific axis controls. */
-      presetAxes: boolean
-    }
+    /** `false` hides an axis's control; an axis left out is shown. */
+    axes?: Partial<Record<AxisKey, boolean>>
+    /** `false` removes the Advanced part of the switcher. */
+    advanced?: boolean
   }
 }
 
 export const themeConfig: ThemeConfig = {
-  defaults: {
-    accentColor: "blue",
-    surfaceColor: "slate",
-    preset: "default",
-    font: "inter",
-    backgroundStyle: "solid",
-    backgroundIntensity: "vivid",
-    gradientPattern: "blobs",
-    mode: "system",
-    density: "cozy",
-    elevation: "standard",
-    radius: "rounded",
-    fontSize: "medium",
-    outerGlow: "none",
-    innerGlow: "none",
-    sidebarActiveBar: "default",
-    contrast: "standard",
-    darkAccentChroma: "standard",
-    tintWithAccent: "off",
-  },
-  switcher: {
-    enabled: true,
-    axes: {
-      mode: true,
-      accentColor: true,
-      surfaceColor: true,
-      preset: true,
-      font: true,
-      backgroundStyle: true,
-      backgroundIntensity: true,
-      gradientPattern: true,
-      density: true,
-      elevation: true,
-      radius: true,
-      fontSize: true,
-      outerGlow: true,
-      innerGlow: true,
-      sidebarActiveBar: true,
-      contrast: true,
-      darkAccentChroma: true,
-      tintWithAccent: true,
-      presetAxes: true,
-    },
-  },
+  defaults: {},
+  switcher: { enabled: true },
 }
 
 const REMOVED_DEFAULTS = new Map<string, string | null>([
