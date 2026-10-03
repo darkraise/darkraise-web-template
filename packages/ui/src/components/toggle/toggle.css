@@ -76,45 +76,6 @@
     padding-inline: calc(var(--btn-px-tight) + 0.25rem);
   }
 
-  /* Glass-preset frosted Toggle. Variant-aware to preserve the design
-     distinction (default = filled-on-active, outline = bordered with
-     transparent fill on active). Specificity has to match the
-     variant-scoped base rules (0,3,0) so the Glass rule wins on
-     source order without flattening variants — see
-     preset_selected_state_must_be_variant_aware memory. */
-  [data-style="glass"] .dr-toggle[data-variant="default"],
-  [data-style="glass"] .dr-toggle[data-variant="outline"] {
-    background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
-    border: 1px solid var(--fog-15);
-    -webkit-backdrop-filter: var(--backdrop-filter);
-    backdrop-filter: var(--backdrop-filter);
-    box-shadow: var(--inset-hi), var(--glass-halo-raised);
-  }
-
-  [data-style="glass"]
-    .dr-toggle[data-variant="default"]:where(:not(:disabled)):hover,
-  [data-style="glass"]
-    .dr-toggle[data-variant="outline"]:where(:not(:disabled)):hover {
-    background-image: linear-gradient(135deg, var(--fog-20), var(--fog-10));
-    box-shadow:
-      var(--inset-hi), var(--glass-halo-raised), var(--glass-state-hover-glow);
-  }
-
-  [data-style="glass"] .dr-toggle[data-variant="default"][data-state="on"],
-  [data-style="glass"] .dr-toggle[data-variant="outline"][data-state="on"] {
-    background-image: var(--glass-state-selected-fill);
-    border-color: hsl(var(--primary) / 0.4);
-    box-shadow:
-      var(--inset-hi), var(--glass-halo-raised), var(--glass-state-active-inset);
-  }
-
-  [data-style="glass"] .dr-toggle:disabled {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    box-shadow: none;
-    opacity: var(--disabled-opacity);
-  }
-
   /* Interaction state layer — see theme.css. Painted by a pseudo-element so
      the wash can apply instantly; `opacity` is composited, unlike the flood
      inset shadow this replaced. */

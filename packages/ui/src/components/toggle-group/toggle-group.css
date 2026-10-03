@@ -7,11 +7,4 @@
   .dr-toggle-group .dr-toggle {
     @apply focus-ring-inset;
   }
-
-  /* Glass-preset ToggleGroup. The group itself is transparent — each
-     toggle item carries its own frosted surface (see toggle.css). */
-  [data-style="glass"] .dr-toggle-group {
-    background: transparent;
-    box-shadow: none;
-  }
 }

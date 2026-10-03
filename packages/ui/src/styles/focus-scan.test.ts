@@ -37,6 +37,10 @@ const EXEMPT = new Map<string, string>([
     "dr-sidebar-nav-popover-parent",
     "shares its element with dr-sidebar-popover-child, which draws the ring",
   ],
+  [
+    "dr-file-upload-dropzone",
+    "a role=presentation div that takes no focus; its trigger button inside draws the ring",
+  ],
 ])
 
 const FOCUS_STATE =
@@ -145,9 +149,6 @@ const OUTLINE_EXEMPT = new Map<string, string>([
   ],
 ])
 
-/** Rules written for one preset restyle on top of the base rule. */
-const PRESET_RULE = /^\[data-style=/
-
 /**
  * The 1px edge the field utilities draw (theme.css): --primary, or
  * --destructive-edge on an invalid field.
@@ -176,7 +177,6 @@ describe("focus indicators are outlines", () => {
       }
       const focused = rule.selectors.filter((s) => FOCUS_STATE.test(s))
       if (focused.length === 0) continue
-      if (rule.selectors.every((s) => PRESET_RULE.test(s))) continue
       if (rule.selectors.some((s) => s.includes(":hover"))) continue
       if (FIELD_INDICATOR.test(drawn)) continue
       if (SHADOW_OR_RING.test(drawn)) {

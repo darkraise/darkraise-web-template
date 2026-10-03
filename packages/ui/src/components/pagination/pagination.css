@@ -39,17 +39,4 @@
   .dr-pagination-next {
     @apply gap-1 pr-2.5;
   }
-
-  /* PaginationLink already carries .dr-btn, so the Phase 3 Glass button
-     rules frost the chrome at rest + hover. This rule lays the
-     glass-selected tint over the checked fill so the active page reads
-     against the frosted row; the fill stays, because the label is the
-     checked family's foreground. */
-  [data-style="glass"]
-    .dr-pagination-link[data-active="true"][data-variant="ghost"] {
-    background-image: var(--glass-state-selected-fill);
-    border-color: hsl(var(--primary) / 0.4);
-    box-shadow:
-      var(--inset-hi), var(--glass-halo-raised), var(--glass-state-active-inset);
-  }
 }

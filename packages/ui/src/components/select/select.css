@@ -49,51 +49,6 @@
     @apply bg-border -mx-1 my-1 h-px;
   }
 
-  [data-style="glass"] .dr-select-trigger {
-    background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
-    border-color: var(--fog-15);
-    border-bottom-color: var(--field-edge);
-    -webkit-backdrop-filter: var(--backdrop-filter);
-    backdrop-filter: var(--backdrop-filter);
-    box-shadow: var(--inset-hi), var(--glass-halo-raised);
-  }
-
-  [data-style="glass"] .dr-select-trigger:hover {
-    box-shadow:
-      var(--inset-hi), var(--glass-halo-raised), var(--glass-state-hover-glow);
-  }
-
-  [data-style="glass"] .dr-select-trigger[data-state="open"] {
-    border-color: hsl(var(--primary) / 0.4);
-    box-shadow:
-      var(--inset-hi), var(--glass-halo-raised), var(--glass-state-active-inset);
-  }
-
-  /* Invalid companion: the glass rules above outrank the field utility's
-     invalid rule, so glass restates it one attribute higher, after them. */
-  [data-style="glass"]
-    .dr-select-trigger:is([data-invalid], [aria-invalid="true"]) {
-    border-color: hsl(var(--destructive-edge));
-  }
-
-  [data-style="glass"]
-    .dr-select-trigger:is([data-invalid], [aria-invalid="true"]):focus,
-  [data-style="glass"]
-    .dr-select-trigger:is([data-invalid], [aria-invalid="true"]):focus-visible {
-    border-color: hsl(var(--destructive-edge));
-    box-shadow:
-      var(--inset-hi),
-      var(--glass-halo-raised),
-      0 0 0 1px hsl(var(--destructive-edge));
-  }
-
-  [data-style="glass"] .dr-select-trigger:disabled {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    box-shadow: none;
-    opacity: var(--disabled-opacity);
-  }
-
   /* Keyboard focus indicator. Written as its own rule rather than an
      `@apply focus-ring-inset` inside the base rule: prettier's Tailwind class
      sorter reorders `@apply` lists on every commit, and for the rows whose

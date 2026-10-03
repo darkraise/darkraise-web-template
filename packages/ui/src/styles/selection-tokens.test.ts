@@ -91,17 +91,6 @@ const TABS = "src/components/tabs/tabs.css"
 const SEGMENT = "src/components/segment-group/segment-group.css"
 
 describe("view switch family", () => {
-  it("gives the glass default Tabs pill the glass selected tint", () => {
-    expect(
-      bodyOf(
-        TABS,
-        '[data-style="glass"] .dr-tabs-indicator[data-variant="default"]',
-      ),
-    ).toBe(
-      "background-image: var(--glass-state-selected-fill); box-shadow: var(--glass-state-active-inset);",
-    )
-  })
-
   it.each([
     [
       TABS,
@@ -195,20 +184,9 @@ describe("checked family: toggle, listbox and tree view", () => {
     [TREE, '.dr-tree-view[data-variant="outline"]'],
   ])("%s has no selected rule of its own under %s", (path, scope) => {
     const own = rulesOf(path).filter((rule) =>
-      rule.selectors.some(
-        (s) => !s.startsWith("[data-style=") && s.includes(scope),
-      ),
+      rule.selectors.some((s) => s.includes(scope)),
     )
     expect(own).toEqual([])
-  })
-
-  it("keeps the checked fill under the glass outline listbox", () => {
-    const body = bodyOf(
-      LISTBOX,
-      '[data-style="glass"] .dr-listbox[data-variant="outline"] .dr-listbox-item[data-selected="true"]',
-    )
-    expect(body).not.toMatch(/background-color:\s*transparent/)
-    expect(body).not.toMatch(/background-image:\s*none/)
   })
 })
 
@@ -259,14 +237,6 @@ describe("checked family: pagination", () => {
       '.dr-pagination-link[data-active="true"][data-variant="ghost"]',
     )
     for (const declaration of CHECKED) expect(body).toContain(declaration)
-  })
-
-  it("keeps the checked fill under the glass current page", () => {
-    const body = bodyOf(
-      PAGINATION,
-      '[data-style="glass"] .dr-pagination-link[data-active="true"][data-variant="ghost"]',
-    )
-    expect(body).not.toMatch(/background-color:\s*transparent/)
   })
 })
 
@@ -328,11 +298,7 @@ describe("nav row family: sidebar", () => {
     const offenders = rulesOf(SIDEBAR)
       .filter((rule) => rule.body.includes("inset 3px"))
       .flatMap((rule) => rule.selectors)
-      .filter(
-        (s) =>
-          !s.startsWith("[data-style=") &&
-          !/\[data-active-bar="(?:bar|both)"\]/.test(s),
-      )
+      .filter((s) => !/\[data-active-bar="(?:bar|both)"\]/.test(s))
     expect(offenders).toEqual([])
   })
 })
@@ -372,7 +338,7 @@ const STATE_VARIANT =
 
 /**
  * @apply utilities that paint a checked or selected state with the accent,
- * outside glass, as [file, "<selector> <token>"].
+ * as [file, "<selector> <token>"].
  */
 function accentStateUtilities(
   path: string,
@@ -382,7 +348,6 @@ function accentStateUtilities(
   const text = css.replace(/\/\*[\s\S]*?\*\//g, "")
   for (const match of text.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
     const selector = normalise(match[1] as string)
-    if (selector.startsWith("[data-style=")) continue
     for (const apply of (match[2] as string).matchAll(/@apply([^;]*);/g)) {
       for (const token of (apply[1] as string).trim().split(/\s+/)) {
         const { variants, utility } = splitToken(token)
@@ -517,19 +482,14 @@ function stylesheets(dir: string): string[] {
   })
 }
 
-/** Selected rules outside glass that read the accent, as [file, selector]. */
+/** Selected rules that read the accent, as [file, selector]. */
 function accentSelections(): Array<[string, string]> {
   const paths = ["src/components", "src/layout"].flatMap(stylesheets)
   return [
     ...paths.flatMap((path) =>
       rulesOf(path).flatMap((rule) =>
         rule.selectors
-          .filter(
-            (s) =>
-              !s.startsWith("[data-style=") &&
-              SELECTED.test(s) &&
-              PRIMARY.test(rule.body),
-          )
+          .filter((s) => SELECTED.test(s) && PRIMARY.test(rule.body))
           .map((s): [string, string] => [path.replace(/^src\//, ""), s]),
       ),
     ),
@@ -577,10 +537,7 @@ describe("selected states read a family token", () => {
         rulesOf(path)
           .filter((rule) =>
             rule.selectors.some(
-              (s) =>
-                !s.startsWith("[data-style=") &&
-                /\[data-variant="?outline"?\]/.test(s) &&
-                SELECTED.test(s),
+              (s) => /\[data-variant="?outline"?\]/.test(s) && SELECTED.test(s),
             ),
           )
           .filter((rule) =>

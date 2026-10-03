@@ -218,8 +218,7 @@
   /* `activeBar="both"` — ring and rail together. Box-shadow layers paint
      front-to-back, so the rail is listed FIRST to own the left edge: the
      result reads as one clean 3px edge rather than a 3px bar abutting a
-     1px line. Both layers are the same colour here, but the glass variant
-     pairs a tinted ring with a solid rail, where the order is visible. */
+     1px line. */
   :is(
       .dr-sidebar-nav,
       .dr-stacked-layout-rail-nav,
@@ -250,75 +249,5 @@
   .dr-sidebar-popover-child.active {
     background-color: var(--selected-nav-bg);
     color: var(--selected-nav-fg);
-  }
-
-  /* Glass-preset sidebar items: replace the solid hover-bg + active-bg
-     with frosted gradients so the chrome consistent with other Glass
-     surfaces, while keeping the active-state inset-left bar + bolder
-     label distinguishable from hover (per sidebar_hover_active_state
-     _collision memory). */
-  [data-style="glass"] .dr-sidebar-nav-item:hover {
-    background-color: transparent;
-    background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
-    box-shadow: var(--glass-state-hover-glow);
-  }
-
-  /* Selected indicator stays visible at every halo setting. The
-     inset 3px primary bar (left edge) + inset 1px primary-tinted
-     ring around the whole item are hardcoded — they do NOT consume
-     --glass-state-active-inset because that token zeros out at
-     halo=none, which would make the "selected border" disappear on
-     the very setting where users want the chrome to stay calm but
-     still clearly identify the active route. Halo-axis-aware glow
-     is contained to var(--glass-halo-raised) on the outer layer,
-     which still vanishes at halo=none — the indicator persists,
-     the spatial signature dials. */
-  [data-style="glass"] .dr-sidebar-nav-item.active,
-  [data-style="glass"] .dr-sidebar-nav-item[data-status="active"] {
-    background-color: transparent;
-    background-image: var(--glass-state-selected-fill);
-    box-shadow:
-      inset 3px 0 0 0 hsl(var(--primary)),
-      inset 0 0 0 1px hsl(var(--primary) / 0.3),
-      var(--glass-halo-raised);
-  }
-
-  /* Glass honours an explicit activeBar. Its unset default above stays the
-     ring-and-rail combination it has always had. The standalone ring uses
-     full primary rather than the 0.3 alpha of the default's accompanying
-     ring, because as the only indicator it has to carry the selection on
-     its own. */
-  [data-style="glass"]
-    .dr-sidebar-nav[data-active-bar="bar"]
-    .dr-sidebar-nav-item.active,
-  [data-style="glass"]
-    .dr-sidebar-nav[data-active-bar="bar"]
-    .dr-sidebar-nav-item[data-status="active"] {
-    box-shadow:
-      inset 3px 0 0 0 hsl(var(--primary)),
-      var(--glass-halo-raised);
-  }
-
-  [data-style="glass"]
-    .dr-sidebar-nav[data-active-bar="ring"]
-    .dr-sidebar-nav-item.active,
-  [data-style="glass"]
-    .dr-sidebar-nav[data-active-bar="ring"]
-    .dr-sidebar-nav-item[data-status="active"] {
-    box-shadow:
-      inset 0 0 0 1px hsl(var(--primary)),
-      var(--glass-halo-raised);
-  }
-
-  [data-style="glass"]
-    .dr-sidebar-nav[data-active-bar="both"]
-    .dr-sidebar-nav-item.active,
-  [data-style="glass"]
-    .dr-sidebar-nav[data-active-bar="both"]
-    .dr-sidebar-nav-item[data-status="active"] {
-    box-shadow:
-      inset 3px 0 0 0 hsl(var(--primary)),
-      inset 0 0 0 1px hsl(var(--primary) / 0.3),
-      var(--glass-halo-raised);
   }
 }

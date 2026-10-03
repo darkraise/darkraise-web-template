@@ -265,7 +265,6 @@ describe("control radius readers", () => {
     ["select/select.css", ".dr-select-trigger"],
     ["date-input/date-input.css", ".dr-date-input"],
     ["number-input/number-input.css", ".dr-number-input-control"],
-    ["combobox/combobox.css", '[data-style="glass"] .dr-combobox-control'],
     [
       "input-otp/input-otp.css",
       '.dr-input-otp-container[data-variant="separate"] .dr-input-otp-slot',
@@ -287,10 +286,6 @@ describe("control radius readers", () => {
     ["textarea/textarea.css", ".dr-textarea"],
     ["tags-input/tags-input.css", ".dr-tags-input-control"],
     ["multi-select/multi-select.css", ".dr-multi-select-control"],
-    [
-      "multi-select/multi-select.css",
-      '[data-style="glass"] .dr-combobox-control.dr-multi-select-control',
-    ],
   ])("keeps the multi-line field %s %s on --radius", (file, selector) => {
     expect(readsRadius(bodyOf(file, selector), "--radius")).toBe(true)
   })

@@ -177,14 +177,12 @@ describe("Listbox variant", () => {
 
   it("selects with the checked fill in both variants", () => {
     // Outline rows have no outline at rest, so the checked family's fill is
-    // their selected style too; only glass scopes a rule by the variant.
+    // their selected style too, and no rule scopes by the variant.
     const css = listboxCss.replace(/\/\*[\s\S]*?\*\//g, "")
     const outlineRules = [...css.matchAll(/([^{}]+)\{[^}]*\}/g)]
       .map((match) => (match[1] as string).trim())
-      .filter(
-        (selector) =>
-          selector.includes('.dr-listbox[data-variant="outline"]') &&
-          !selector.startsWith("[data-style="),
+      .filter((selector) =>
+        selector.includes('.dr-listbox[data-variant="outline"]'),
       )
     expect(outlineRules).toEqual([])
     expect(css).toMatch(

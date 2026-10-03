@@ -26,9 +26,6 @@ type Fill = keyof typeof FILLS
 /** Hover and press strengths of the filled button state layer. */
 const BUTTON_STATE_LAYER = [0.16, 0.28]
 
-/** Strongest stop of the glass badge sheen. */
-const GLASS_SHEEN = 0.12
-
 function hslToRgb(triplet: string): Rgb {
   const match = /^(-?[\d.]+)\s+([\d.]+)%\s+([\d.]+)%$/.exec(triplet.trim())
   if (!match)
@@ -166,36 +163,7 @@ describe("filled hover states", () => {
     }
   })
 
-  it("the glass badge sheen is drawn from the wash", () => {
-    const css = readFileSync("src/components/badge/badge.css", "utf8")
-    for (const fill of ["primary-fill", "destructive-solid"]) {
-      expect(css).toContain(`hsl(var(--${fill}-wash) / ${GLASS_SHEEN})`)
-    }
-    expect(css).not.toMatch(/hsl\(var\(--(primary|destructive)\) \/ 0\.[24]5\)/)
-  })
-
-  // A glass filled button was 55-70% of its fill mixed toward white over the
-  // page, which measured 2.57-2.91:1 in light: translucency cannot work on a
-  // fill that sits at its label's contrast floor.
-  it("glass filled buttons paint an opaque fill under a wash sheen", () => {
-    const css = readFileSync("src/components/button/button.css", "utf8")
-      .replace(/\/\*[\s\S]*?\*\//g, "")
-      .replace(/\s+/g, " ")
-    const glassFilled = [
-      ...css.matchAll(
-        /\[data-style="glass"\] \.dr-btn\[data-variant="default"\](?::hover)?, \[data-style="glass"\] \.dr-btn\[data-variant="destructive"\](?::hover)? \{([^}]*)\}/g,
-      ),
-    ].map((m) => m[1] as string)
-    expect(glassFilled.length).toBeGreaterThan(0)
-    for (const body of glassFilled) {
-      expect(body).not.toMatch(/background-color:\s*transparent/)
-      expect(body).not.toMatch(/background-image:[^;]*rgba\(255, 255, 255/)
-    }
-    expect(css).toContain(`hsl(var(--primary-fill-wash) / ${GLASS_SHEEN})`)
-    expect(css).toContain(`hsl(var(--destructive-solid-wash) / ${GLASS_SHEEN})`)
-  })
-
-  it("every hover, press and sheen keeps the label at 4.5:1 and above rest", () => {
+  it("every hover and press keeps the label at 4.5:1 and above rest", () => {
     const amounts = new Map<Fill, Set<number>>([
       ["primary-fill", new Set(BUTTON_STATE_LAYER)],
       ["destructive-solid", new Set(BUTTON_STATE_LAYER)],
@@ -223,14 +191,6 @@ describe("filled hover states", () => {
         const states: Array<[string, Rgb]> = [
           ...(amounts.get(fillName) ?? []),
         ].map((amount) => [`${amount * 100}%`, mix(fill, washRgb, amount)])
-        if (combo.frosted) {
-          const hovered = mix(fill, washRgb, 0.16)
-          states.push(["glass sheen", mix(fill, washRgb, GLASS_SHEEN)])
-          states.push([
-            "glass sheen on hover",
-            mix(hovered, washRgb, GLASS_SHEEN),
-          ])
-        }
         for (const [state, painted] of states) {
           const ratio = contrast(label, painted)
           if (ratio < 4.5 || ratio < rest) {

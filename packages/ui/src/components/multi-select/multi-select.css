@@ -21,41 +21,6 @@
     border-bottom-color: var(--field-edge);
   }
 
-  /* The control also carries .dr-combobox-control, whose glass rule rounds
-     single-line fields; chips wrap here, so keep the surface radius. */
-  [data-style="glass"] .dr-combobox-control.dr-multi-select-control {
-    border-radius: var(--radius);
-    border-bottom-color: var(--field-edge);
-  }
-
-  [data-style="glass"]
-    .dr-combobox-control.dr-multi-select-control:is(
-      :focus-within,
-      [data-state="open"]
-    ) {
-    border-bottom-color: hsl(var(--primary) / 0.4);
-  }
-
-  /* Invalid companion: the glass rules above outrank the field utility's
-     invalid rule, so glass restates it one attribute higher, after them. */
-  [data-style="glass"]
-    .dr-combobox-control.dr-multi-select-control:has(
-      :is([data-invalid], [aria-invalid="true"])
-    ) {
-    border-color: hsl(var(--destructive-edge));
-  }
-
-  [data-style="glass"]
-    .dr-combobox-control.dr-multi-select-control:has(
-      :is([data-invalid], [aria-invalid="true"])
-    ):focus-within {
-    border-color: hsl(var(--destructive-edge));
-    box-shadow:
-      var(--inset-hi),
-      var(--glass-halo-raised),
-      0 0 0 1px hsl(var(--destructive-edge));
-  }
-
   /* Outranks the fixed height .dr-combobox-control sets: the chip row grows
      when it wraps. */
   .dr-multi-select .dr-multi-select-control {

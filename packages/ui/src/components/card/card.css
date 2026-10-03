@@ -6,9 +6,7 @@
        declaration sits at (0,1,0) and so outranks the global
        `* { @apply border-border }`, which left the default card painting the
        same invisible box as `border="none"`. Restating the theme border here
-       keeps the fog rim for glass surfaces (the preset rebinds
-       `--border-subtle` itself) without depending on the fog scale being
-       populated.
+       keeps the edge without depending on the fog scale being populated.
 
        The subtle rung rather than `--border`: the card's own background
        already separates it from the canvas, so the edge only has to trace
@@ -108,14 +106,5 @@
     /* Contextual glow hue: this card's identity is already the brand colour,
        so its halo follows --primary rather than the surface tint. */
     --glow-hue: var(--primary);
-  }
-
-  /* Glass preset — the only preset that populates the fog scale, and its
-     card rim is meant to be a translucent tint of the surface rather than a
-     solid line. The base rule above restates `hsl(var(--border))` because fog
-     is `transparent` under every other preset; here the fog rim is real, so
-     hand it back. */
-  [data-style="glass"] .dr-card:not([data-border]) {
-    border-color: var(--fog-15);
   }
 }

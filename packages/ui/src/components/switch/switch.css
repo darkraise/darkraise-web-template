@@ -22,37 +22,4 @@
   .dr-switch[data-state="checked"] .dr-switch-thumb {
     box-shadow: var(--shadow-button), var(--affordance-glow);
   }
-
-  /* Glass-preset frosted Switch. Track gains fog tinting + halo;
-     checked state swaps in the accent-tinted glass selected-fill so
-     it reads as "on" against the unchecked frosted neutral. Thumb
-     intentionally untouched — it inherits its existing styling. Only
-     the border colour changes: the base 2px border is what centres the
-     16px thumb in the 20px track. */
-  [data-style="glass"] .dr-switch {
-    background-image: linear-gradient(135deg, var(--fog-15), var(--fog-05));
-    border-color: var(--field-edge);
-    -webkit-backdrop-filter: var(--backdrop-filter);
-    backdrop-filter: var(--backdrop-filter);
-    box-shadow: var(--inset-hi), var(--glass-halo-raised);
-  }
-
-  [data-style="glass"] .dr-switch[data-state="checked"] {
-    background-image: var(--glass-state-selected-fill);
-    border-color: hsl(var(--primary) / 0.4);
-    box-shadow:
-      var(--inset-hi), var(--glass-halo-raised), var(--glass-state-active-inset);
-  }
-
-  [data-style="glass"] .dr-switch:hover {
-    box-shadow:
-      var(--inset-hi), var(--glass-halo-raised), var(--glass-state-hover-glow);
-  }
-
-  [data-style="glass"] .dr-switch:disabled {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    box-shadow: none;
-    opacity: var(--disabled-opacity);
-  }
 }

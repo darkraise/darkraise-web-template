@@ -53,13 +53,10 @@ describe("Card border tiers", () => {
     expect(strong).not.toMatch(/--foreground/)
   })
 
-  it("hands the fog rim back to the glass preset", () => {
-    // Glass is the only preset that populates the fog scale, and its card rim
-    // is a translucent surface tint by design. The base rule's
-    // `hsl(var(--border-subtle))` would replace it with a solid line.
-    expect(bodyOf('[data-style="glass"] .dr-card:not([data-border])')).toMatch(
-      /border-color: var\(--fog-15\)/,
-    )
+  // No style restyles content, so no rule hands the card's rim to the fog
+  // scale; the subtle border holds under every style.
+  it("keeps the subtle rim under every style", () => {
+    expect(flatCss()).not.toContain("var(--fog-")
   })
 
   it("keeps the accent tier on the brand hue", () => {
