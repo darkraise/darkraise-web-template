@@ -4,6 +4,7 @@ import { resolve } from "node:path"
 import {
   FONT_PACKAGES,
   assertFirstParty,
+  buildStylesheet,
   readFontPackages,
 } from "../../scripts/build-css"
 
@@ -38,5 +39,19 @@ describe("kit font packages", () => {
         .sort()
       expect(font.faces.map((face) => face.file).sort()).toEqual(published)
     }
+  })
+
+  it("appends the four families after everything else", () => {
+    const css = buildStylesheet()
+    const tail = css.slice(css.indexOf("@font-face"))
+    expect(tail.replace(/@font-face\s*\{[^}]*\}/g, "").trim()).toBe("")
+    expect([
+      ...new Set([...tail.matchAll(/font-family: "([^"]+)"/g)].map((m) => m[1])),
+    ]).toEqual([
+      "Inter Variable",
+      "Geist Variable",
+      "IBM Plex Sans Variable",
+      "JetBrains Mono Variable",
+    ])
   })
 })

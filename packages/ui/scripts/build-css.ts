@@ -1,13 +1,20 @@
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs"
+import {
+  copyFileSync,
+  mkdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs"
 import { createRequire } from "node:module"
 import { dirname, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
-import { parseFontFaces, type FontFaceRule } from "./font-faces"
+import { fontFaceCss, parseFontFaces, type FontFaceRule } from "./font-faces"
 
 const thisFile = fileURLToPath(import.meta.url)
 const packageRoot = resolve(dirname(thisFile), "..")
 export const themePath = resolve(packageRoot, "src/styles/theme.css")
 const outPath = resolve(packageRoot, "dist/styles.css")
+const fontsOutDir = resolve(packageRoot, "dist/fonts")
 
 /** `@fontsource-variable/<name>` packages whose faces ship in `dist/fonts/`. */
 export const FONT_PACKAGES = [
@@ -82,18 +89,43 @@ export function readFontPackages(): FontPackage[] {
   })
 }
 
-export function buildStylesheet(): string {
+export function buildStylesheet(
+  fonts: readonly FontPackage[] = readFontPackages(),
+): string {
   const theme = readFileSync(themePath, "utf8")
   const flat = inlineRelativeImports(theme, themePath)
-  assertFirstParty(flat)
-  return flat
+  const css = `${flat.trimEnd()}\n\n${fontFaceCss(fonts.flatMap((font) => font.faces))}`
+  assertFirstParty(css)
+  return css
+}
+
+function copyFonts(fonts: readonly FontPackage[]) {
+  rmSync(fontsOutDir, { recursive: true, force: true })
+  mkdirSync(fontsOutDir, { recursive: true })
+  for (const font of fonts) {
+    for (const face of font.faces) {
+      copyFileSync(
+        resolve(font.dir, "files", face.file),
+        resolve(fontsOutDir, face.file),
+      )
+    }
+    copyFileSync(
+      resolve(font.dir, "LICENSE"),
+      resolve(fontsOutDir, `${font.name}-LICENSE`),
+    )
+  }
 }
 
 function main() {
-  const flat = buildStylesheet()
+  const fonts = readFontPackages()
+  const css = buildStylesheet(fonts)
   mkdirSync(dirname(outPath), { recursive: true })
-  writeFileSync(outPath, flat)
-  console.log(`[build-css] wrote ${outPath} (${flat.length} bytes)`)
+  writeFileSync(outPath, css)
+  copyFonts(fonts)
+  const faceCount = fonts.reduce((count, font) => count + font.faces.length, 0)
+  console.log(
+    `[build-css] wrote ${outPath} (${css.length} bytes) and ${faceCount} font files to ${fontsOutDir}`,
+  )
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === thisFile) {
