@@ -247,8 +247,8 @@ control. `headerSlot` remains available for other header content.
 
 Every app shell structure — `SidebarLayout`, `TopNavLayout`, `StackedLayout`
 and `SplitPanelLayout` — is laid out on one CSS grid whose regions carry
-`data-region`. The `shellStyle` theme axis repaints those regions without
-changing which structure is in use:
+`data-region`. The shell style repaints those regions without changing which
+structure is in use:
 
 | Style      | Treatment                                                               |
 | ---------- | ----------------------------------------------------------------------- |
@@ -259,17 +259,25 @@ changing which structure is in use:
 | `framed`   | The whole shell insets from the viewport as a window.                   |
 | `flat`     | No rules; regions separated by background tone alone.                   |
 
-Set it globally through `themeConfig.defaults.shellStyle` or
-`useTheme().setShellStyle`, or pin one shell with the prop:
+Users pick a style under "Shell style" in the layout switcher, which a layout
+shows when it sets `showLayoutSwitcher`. The pick is stored under
+`theme-shell-style` in `useLayoutStore`. An app sets its starting style with
+`defaultShellStyle`, or pins one shell with `shellStyle`, which also hides the
+choice in that layout's switcher:
 
 ```tsx
+<SidebarLayout nav={nav} showLayoutSwitcher defaultShellStyle="inset">
+  <Outlet />
+</SidebarLayout>
+
 <SidebarLayout nav={nav} shellStyle="island">
   <Outlet />
 </SidebarLayout>
 ```
 
-A layout resolves `prop ?? theme value` and stamps the result on its own root,
-so a pinned shell ignores the axis without any CSS specificity fight.
+A layout resolves `shellStyle ?? stored pick ?? defaultShellStyle ?? "classic"`
+and stamps the result on its own root, so a pinned shell ignores the stored
+pick without any CSS specificity fight.
 
 ## Sidebar indicator
 
