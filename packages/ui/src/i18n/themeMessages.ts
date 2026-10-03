@@ -73,4 +73,7 @@ export const themeMessages = {
   off: "off",
   on: "on",
   none: "none",
+  inter: "Inter",
+  geist: "Geist",
+  "ibm-plex-sans": "IBM Plex Sans",
 }

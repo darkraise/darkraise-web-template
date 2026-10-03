@@ -74,4 +74,7 @@ export const viTheme: Record<keyof typeof themeMessages, string> = {
   off: "tắt",
   on: "bật",
   none: "không",
+  inter: "Inter",
+  geist: "Geist",
+  "ibm-plex-sans": "IBM Plex Sans",
 }

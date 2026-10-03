@@ -7,6 +7,7 @@ import { ThemeSwitcher } from "@theme/theme-switcher"
 import type { ThemeConfig } from "@theme/themeConfig"
 import { viTheme } from "../../locales/viTheme"
 import { vi as viLocale } from "../../locales/vi"
+import { themeMessages } from "../../i18n/themeMessages"
 
 const config: ThemeConfig = {
   defaults: {
@@ -108,6 +109,17 @@ describe("ThemeSwitcher labels", () => {
   it("labels the font axis in English and Vietnamese", () => {
     expect(defaultLabels.theme.axisLabels.font).toBe("Font")
     expect(viLocale.messages.theme.axisLabels.font).toBe("Phông chữ")
+  })
+
+  it("names the three faces in English and Vietnamese", () => {
+    for (const [value, label] of [
+      ["inter", "Inter"],
+      ["geist", "Geist"],
+      ["ibm-plex-sans", "IBM Plex Sans"],
+    ] as const) {
+      expect(themeMessages[value]).toBe(label)
+      expect(viTheme[value]).toBe(label)
+    }
   })
 
   it("has Vietnamese option labels for the colour engine values", () => {
