@@ -215,7 +215,7 @@ describe("glass preset", () => {
     })
 
     describe("halo tier tokens", () => {
-      it("emits --glass-halo-raised for halo=soft, light mode, with rim+tight+mid layers", () => {
+      it("emits --glass-halo-raised at the default outerGlow, light mode, with rim+tight+mid layers", () => {
         const tokens = generateTokens(buildCommon(), {
           opacity: "medium",
           blur: "medium",
@@ -225,7 +225,7 @@ describe("glass preset", () => {
         )
       })
 
-      it("emits --glass-halo-overlay for halo=soft, light mode", () => {
+      it("emits --glass-halo-overlay at the default outerGlow, light mode", () => {
         const tokens = generateTokens(buildCommon(), {
           opacity: "medium",
           blur: "medium",
@@ -235,7 +235,7 @@ describe("glass preset", () => {
         )
       })
 
-      it("emits --glass-halo-modal for halo=soft, light mode", () => {
+      it("emits --glass-halo-modal at the default outerGlow, light mode", () => {
         const tokens = generateTokens(buildCommon(), {
           opacity: "medium",
           blur: "medium",
