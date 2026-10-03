@@ -4,16 +4,8 @@ import {
   type AxisKey,
   type AxisValues,
 } from "../src/theme/axes/registry"
-import {
-  generateTokens,
-  resolveAccentScale,
-  resolveNeutralScale,
-} from "../src/theme/engine/generateTokens"
+import { generateTokens } from "../src/theme/engine/generateTokens"
 import { STYLES, type StyleName } from "../src/theme/styles"
-import {
-  GLASS_TOKEN_KEYS,
-  glassTokens,
-} from "../src/theme/styles/glass/glassTokens"
 import type { AccentColor, ResolvedMode } from "../src/theme/types"
 
 /**
@@ -40,7 +32,7 @@ export function applyStoryTheme(choice: {
     if (attribute) root.setAttribute(attribute, current[key])
   }
 
-  const tokens: Record<string, string> = generateTokens({
+  const tokens = generateTokens({
     accentColor: current.accentColor,
     surfaceColor: current.surfaceColor,
     frosted: STYLES[current.style].frosted,
@@ -51,22 +43,6 @@ export function applyStoryTheme(choice: {
     tintWithAccent: current.tintWithAccent === "on",
     backgroundIntensity: current.backgroundIntensity,
   })
-  if (current.style === "glass") {
-    Object.assign(
-      tokens,
-      glassTokens({
-        mode: choice.mode,
-        accent: resolveAccentScale(current.accentColor, current.surfaceColor),
-        surface: resolveNeutralScale(current.surfaceColor),
-        backgroundStyle: current.backgroundStyle,
-        outerGlow: current.outerGlow,
-        glassOpacity: current.glassOpacity,
-      }),
-    )
-  }
-  for (const key of GLASS_TOKEN_KEYS) {
-    if (!(key in tokens)) root.style.removeProperty(key)
-  }
   for (const [key, value] of Object.entries(tokens)) {
     root.style.setProperty(key, value)
   }

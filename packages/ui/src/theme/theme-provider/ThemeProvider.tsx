@@ -9,13 +9,8 @@ import type {
 } from "@theme/types"
 import { SHELL_STYLES, type ShellStyle } from "@theme/types"
 import { useLayoutStore } from "@layout/layoutStore"
-import {
-  generateTokens,
-  resolveAccentScale,
-  resolveNeutralScale,
-} from "@theme/engine/generateTokens"
+import { generateTokens } from "@theme/engine/generateTokens"
 import { STYLES } from "@theme/styles"
-import { GLASS_TOKEN_KEYS, glassTokens } from "@theme/styles/glass/glassTokens"
 import { ThemeContext } from "@theme/themeContext"
 import {
   resolveDefaults,
@@ -122,16 +117,8 @@ function readMigratedInputs(): Map<string, string> {
 // script has already run, the marker is set and this finds nothing to do.
 if (isBrowser) readMigratedInputs()
 
-function applyTokens(
-  tokens: Record<string, string>,
-  keysToClear: readonly string[],
-) {
+function applyTokens(tokens: Record<string, string>) {
   const style = document.documentElement.style
-  for (const key of keysToClear) {
-    if (!(key in tokens)) {
-      style.removeProperty(key)
-    }
-  }
   for (const [key, value] of Object.entries(tokens)) {
     style.setProperty(key, value)
   }
@@ -291,7 +278,7 @@ export function ThemeProvider({
     (current: AxisValues, resolved: ResolvedMode, cacheId: string) => {
       document.documentElement.setAttribute("data-mode", resolved)
 
-      const commonTokens = generateTokens({
+      const tokens = generateTokens({
         accentColor: current.accentColor,
         surfaceColor: current.surfaceColor,
         frosted: STYLES[current.style].frosted,
@@ -303,27 +290,10 @@ export function ThemeProvider({
         backgroundIntensity: current.backgroundIntensity,
       })
 
-      const glass = current.style === "glass"
-      const mergedTokens = glass
-        ? {
-            ...commonTokens,
-            ...glassTokens({
-              mode: resolved,
-              accent: resolveAccentScale(
-                current.accentColor,
-                current.surfaceColor,
-              ),
-              surface: resolveNeutralScale(current.surfaceColor),
-              backgroundStyle: current.backgroundStyle,
-              outerGlow: current.outerGlow,
-              glassOpacity: current.glassOpacity,
-            }),
-          }
-        : commonTokens
-      applyTokens(mergedTokens, glass ? [] : GLASS_TOKEN_KEYS)
+      applyTokens(tokens)
 
       const store = storage()
-      if (store) writeTokenCache(store, cacheId, mergedTokens)
+      if (store) writeTokenCache(store, cacheId, tokens)
     },
     [],
   )

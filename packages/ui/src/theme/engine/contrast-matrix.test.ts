@@ -47,8 +47,8 @@ describe("contrast matrix support", () => {
     )
   })
 
-  it("merges Glass's own tokens over the engine's when frosted, as the provider does", () => {
-    const frosted = finalTokens({
+  it("paints the engine's tokens alone when frosted, as the provider does", () => {
+    const combo = {
       accentColor: "blue",
       surfaceColor: "slate",
       mode: "light",
@@ -56,10 +56,11 @@ describe("contrast matrix support", () => {
       darkAccentChroma: "standard",
       tintWithAccent: false,
       backgroundIntensity: "balanced",
-      frosted: true,
-    })
-    expect(frosted["--muted"]).toContain("var(--primary)")
-    expect(isOpaque(frosted["--muted"])).toBe(false)
-    expect(isOpaque(frosted["--card"])).toBe(true)
+    } as const
+    const frosted = finalTokens({ ...combo, frosted: true })
+    const plain = finalTokens({ ...combo, frosted: false })
+    expect(isOpaque(frosted["--muted"])).toBe(true)
+    expect(frosted["--muted"]).toBe(plain["--muted"])
+    expect(frosted["--fog-05"]).toBeUndefined()
   })
 })

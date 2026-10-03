@@ -4,7 +4,6 @@ import { renderHook, act, waitFor } from "@testing-library/react"
 import type { ReactNode } from "react"
 import { ThemeProvider } from "./ThemeProvider"
 import { useTheme } from "../useTheme"
-import { GLASS_TOKEN_KEYS } from "../styles/glass/glassTokens"
 
 function wrap({ children }: { children: ReactNode }) {
   return <ThemeProvider>{children}</ThemeProvider>
@@ -107,57 +106,31 @@ describe("ThemeProvider style orchestration", () => {
     expect(root.getAttribute("data-glass-blur")).toBe("high")
   })
 
-  it("writes glass tokens to documentElement.style under glass", () => {
+  it("paints engine tokens alone under glass: glass.css owns its tokens", () => {
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
-    act(() => result.current.setStyle("glass"))
-    // --fog-05 is a nested color-mix: the outer mix sets alpha, the inner one
-    // builds an accent-tinted white base.
-    expect(root.style.getPropertyValue("--fog-05")).toMatch(
-      /^color-mix\(in oklab, color-mix\(in oklab, hsl\(.+\) \d+%, white\) [\d.]+%, transparent\)$/,
-    )
-  })
+    // Glass defaults the background to gradient; pin it so only the style
+    // differs between the two reads.
+    act(() => result.current.setBackgroundStyle("solid"))
+    const style = document.documentElement.style
+    const shared = ["--accent", "--muted", "--secondary", "--border"]
+    const quiet = shared.map((key) => style.getPropertyValue(key))
 
-  it("reads the glass opacity axis for the fog tiers", () => {
-    const { result } = renderHook(() => useTheme(), { wrapper: wrap })
     act(() => result.current.setStyle("glass"))
-    const medium = root.style.getPropertyValue("--fog-05")
-    act(() => result.current.setGlassOpacity("strong"))
-    expect(root.style.getPropertyValue("--fog-05")).not.toBe(medium)
-  })
 
-  it("removes every glass-only token when leaving glass", () => {
-    const { result } = renderHook(() => useTheme(), { wrapper: wrap })
-    act(() => result.current.setStyle("glass"))
-    // --accent, --muted, --secondary and --border are glass keys too, but the
-    // engine writes them under every style, so they are overwritten instead.
-    const glassOnly = GLASS_TOKEN_KEYS.filter(
-      (key) =>
-        key.startsWith("--fog-") ||
-        key.startsWith("--inset-hi") ||
-        key.startsWith("--glass-halo-"),
-    )
-    expect(glassOnly.length).toBeGreaterThan(0)
-    for (const key of glassOnly) {
-      expect(root.style.getPropertyValue(key), key).not.toBe("")
-    }
-    act(() => result.current.setStyle("quiet"))
-    for (const key of glassOnly) {
-      expect(root.style.getPropertyValue(key), key).toBe("")
-    }
-  })
-
-  it("never writes glass.css tokens to inline style", () => {
-    const { result } = renderHook(() => useTheme(), { wrapper: wrap })
-    act(() => result.current.setStyle("glass"))
+    expect(shared.map((key) => style.getPropertyValue(key))).toEqual(quiet)
     for (const key of [
-      "--surface-opacity",
-      "--backdrop-filter",
-      "--backdrop-blur",
-      "--glass-state-hover-glow",
-      "--glass-state-active-inset",
-      "--glass-state-selected-fill",
+      "--fog-05",
+      "--fog-10",
+      "--fog-15",
+      "--fog-20",
+      "--fog-30",
+      "--fog-50",
+      "--glass-fog-1",
+      "--glass-inset",
+      "--glass-inset-strong",
+      "--glass-noise",
     ]) {
-      expect(root.style.getPropertyValue(key), key).toBe("")
+      expect(style.getPropertyValue(key), key).toBe("")
     }
   })
 

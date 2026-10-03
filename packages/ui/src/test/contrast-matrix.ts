@@ -1,9 +1,4 @@
-import {
-  generateTokens,
-  resolveAccentScale,
-  resolveNeutralScale,
-} from "@theme/engine/generateTokens"
-import { glassTokens } from "@theme/styles/glass/glassTokens"
+import { generateTokens } from "@theme/engine/generateTokens"
 import {
   ACCENT_COLORS,
   BACKGROUND_INTENSITIES,
@@ -78,15 +73,14 @@ export function reachableCombos(): ThemeCombo[] {
 const tokenCache = new Map<string, Record<string, string>>()
 
 /**
- * Engine tokens with Glass's own tokens on top when frosted, as ThemeProvider
- * merges them. Built once per combination: the contrast suites read the same
- * matrix many times over.
+ * Engine tokens, as ThemeProvider paints them. Built once per combination:
+ * the contrast suites read the same matrix many times over.
  */
 export function finalTokens(combo: ThemeCombo): Record<string, string> {
   const key = comboName(combo)
   const cached = tokenCache.get(key)
   if (cached) return cached
-  const engine = generateTokens({
+  const tokens = generateTokens({
     accentColor: combo.accentColor,
     surfaceColor: combo.surfaceColor,
     frosted: combo.frosted,
@@ -97,17 +91,6 @@ export function finalTokens(combo: ThemeCombo): Record<string, string> {
     tintWithAccent: combo.tintWithAccent ?? false,
     backgroundIntensity: combo.backgroundIntensity,
   })
-  const own = combo.frosted
-    ? glassTokens({
-        mode: combo.mode,
-        accent: resolveAccentScale(combo.accentColor, combo.surfaceColor),
-        surface: resolveNeutralScale(combo.surfaceColor),
-        backgroundStyle: "solid",
-        outerGlow: "none",
-        glassOpacity: "medium",
-      })
-    : {}
-  const tokens = { ...engine, ...own }
   tokenCache.set(key, tokens)
   return tokens
 }

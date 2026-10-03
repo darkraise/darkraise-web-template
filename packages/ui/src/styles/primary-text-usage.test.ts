@@ -115,14 +115,4 @@ describe("primary-coloured text", () => {
     }
     expect(offenders).toEqual([])
   })
-
-  it("glass paints its accent text with --primary-text", () => {
-    const glass = readFileSync("src/theme/styles/glass/glassTokens.ts", "utf8")
-    expect(glass).toContain(
-      `tokens["--accent-foreground"] = "var(--primary-text)"`,
-    )
-    expect(glass).toContain(
-      `tokens["--secondary-foreground"] = "var(--primary-text)"`,
-    )
-  })
 })
