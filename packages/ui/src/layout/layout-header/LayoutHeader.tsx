@@ -11,6 +11,7 @@ import { flattenNavItems } from "@layout/navTree"
 import type { NavGroup } from "@layout/types"
 import type { SidebarActiveBar } from "@layout/sidebar"
 import type { LayoutVariant } from "@layout/layoutStore"
+import type { ShellStyle } from "@theme"
 
 interface LayoutHeaderProps extends React.HTMLAttributes<HTMLElement> {
   nav: NavGroup[]
@@ -28,6 +29,10 @@ interface LayoutHeaderProps extends React.HTMLAttributes<HTMLElement> {
   children?: ReactNode
   showLayoutSwitcher?: boolean
   layoutVariants?: LayoutVariant[]
+  /** Forwarded to LayoutSwitcher; true when the layout's `shellStyle` prop is set. */
+  shellStylePinned?: boolean
+  /** Forwarded to LayoutSwitcher: the style the layout resolved and painted. */
+  currentShellStyle?: ShellStyle
   showThemeSwitcher?: boolean
   /**
    * Render the search trigger in the header. `SidebarLayout` sets this to
@@ -54,6 +59,8 @@ export function LayoutHeader({
   children,
   showLayoutSwitcher = false,
   layoutVariants,
+  shellStylePinned = false,
+  currentShellStyle,
   showThemeSwitcher = true,
   showSearch = true,
   user,
@@ -78,7 +85,13 @@ export function LayoutHeader({
         (showSearch ? <SearchCommand navItems={flatNavItems} /> : null)}
       <div className="dr-layout-header-end">
         {headerSlot}
-        {showLayoutSwitcher && <LayoutSwitcher variants={layoutVariants} />}
+        {showLayoutSwitcher && (
+          <LayoutSwitcher
+            variants={layoutVariants}
+            shellStylePinned={shellStylePinned}
+            currentShellStyle={currentShellStyle}
+          />
+        )}
         {showThemeSwitcher && <ThemeSwitcher />}
         {notificationSlot === undefined ? (
           <NotificationBell />

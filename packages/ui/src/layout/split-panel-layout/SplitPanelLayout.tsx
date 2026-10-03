@@ -14,7 +14,10 @@ import type { CSSProperties, ReactNode } from "react"
 
 export interface SplitPanelLayoutProps extends LayoutProps {
   panel: ReactNode
-  /** Pins this shell's chrome treatment, overriding the theme axis. */
+  /**
+   * Pins this shell's chrome treatment over the user's pick, and hides the
+   * shell-style choice in this layout's switcher.
+   */
   shellStyle?: ShellStyle
   defaultPanelWidth?: number
   minPanelWidth?: number
@@ -125,6 +128,8 @@ export function SplitPanelLayout({
         className="gap-4"
         showLayoutSwitcher={showLayoutSwitcher}
         layoutVariants={layoutVariants}
+        shellStylePinned={shellStyleProp !== undefined}
+        currentShellStyle={shellStyle}
         showThemeSwitcher={showThemeSwitcher}
         user={user}
         onProfile={onProfile}

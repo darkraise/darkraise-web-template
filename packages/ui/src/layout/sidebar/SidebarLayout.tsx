@@ -42,7 +42,10 @@ export interface SidebarLayoutProps extends LayoutProps {
   defaultActiveBar?: boolean | SidebarActiveBar
   /** Fires when the header toggle picks a style. */
   onActiveBarChange?: (activeBar: SidebarActiveBar | undefined) => void
-  /** Pins this shell's chrome treatment, overriding the theme axis. */
+  /**
+   * Pins this shell's chrome treatment over the user's pick, and hides the
+   * shell-style choice in this layout's switcher.
+   */
   shellStyle?: ShellStyle
 }
 
@@ -244,6 +247,8 @@ export function SidebarLayout({
             className="header-gradient-overlay theme-transition"
             showLayoutSwitcher={showLayoutSwitcher}
             layoutVariants={layoutVariants}
+            shellStylePinned={shellStyleProp !== undefined}
+            currentShellStyle={shellStyle}
             showThemeSwitcher={showThemeSwitcher}
             /* Search lives in the rail for this layout. */
             showSearch={false}

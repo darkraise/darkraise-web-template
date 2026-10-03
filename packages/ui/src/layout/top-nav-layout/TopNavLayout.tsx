@@ -19,7 +19,10 @@ import type { ShellStyle } from "@theme"
 import { useUiLabels } from "@labels"
 
 export interface TopNavLayoutProps extends LayoutProps {
-  /** Pins this shell's chrome treatment, overriding the theme axis. */
+  /**
+   * Pins this shell's chrome treatment over the user's pick, and hides the
+   * shell-style choice in this layout's switcher.
+   */
   shellStyle?: ShellStyle
 }
 
@@ -83,6 +86,8 @@ export function TopNavLayout({
         className="gap-4"
         showLayoutSwitcher={showLayoutSwitcher}
         layoutVariants={layoutVariants}
+        shellStylePinned={shellStyleProp !== undefined}
+        currentShellStyle={shellStyle}
         showThemeSwitcher={showThemeSwitcher}
         user={user}
         onProfile={onProfile}
