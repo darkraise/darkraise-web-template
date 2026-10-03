@@ -411,6 +411,55 @@ describe("ThemeProvider synced payloads", () => {
     }
   })
 
+  it("sends a user save only after the upgrade save settles", async () => {
+    const resolvers: Array<() => void> = []
+    const adapter = {
+      load: vi.fn(() =>
+        Promise.resolve({
+          accentColor: "rose",
+          preset: "glass",
+          backgroundStyle: "solid",
+        } as ThemeSettings),
+      ),
+      save: vi.fn<(next: ThemeSettings) => Promise<void>>(
+        () => new Promise((resolve) => resolvers.push(resolve)),
+      ),
+    }
+    const { result } = renderHook(() => useTheme(), {
+      wrapper: synced(adapter),
+    })
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(0)
+    })
+    expect(adapter.save).toHaveBeenCalledOnce()
+    expect(adapter.save.mock.calls[0]?.[0]).toEqual(
+      expect.objectContaining({ backgroundStyle: "gradient", version: 7 }),
+    )
+
+    act(() => result.current.setBackgroundStyle("solid"))
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(200)
+    })
+    expect(adapter.save).toHaveBeenCalledOnce()
+    expect(result.current.syncStatus).toBe("saving")
+
+    await act(async () => {
+      resolvers[0]?.()
+      await vi.advanceTimersByTimeAsync(0)
+    })
+    expect(adapter.save).toHaveBeenCalledTimes(2)
+    expect(adapter.save.mock.calls[1]?.[0]).toEqual(
+      expect.objectContaining({ backgroundStyle: "solid", version: 7 }),
+    )
+    expect(result.current.syncStatus).toBe("saving")
+
+    await act(async () => {
+      resolvers[1]?.()
+      await vi.advanceTimersByTimeAsync(0)
+    })
+    expect(result.current.syncStatus).toBe("idle")
+  })
+
   it("reports an upgrade save that fails", async () => {
     const { adapter } = memoryAdapter({ accentColor: "rose" })
     adapter.save.mockImplementation(() => Promise.reject(new Error("offline")))

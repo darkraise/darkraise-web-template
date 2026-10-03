@@ -244,6 +244,28 @@ export function ThemeProvider({
 
   const hasUserChanged = useRef(false)
 
+  // Adapters may settle out of order, so saves run one at a time: otherwise
+  // the load's upgrade save could land after the user's newer save.
+  const saveChain = useRef<Promise<unknown>>(Promise.resolve())
+  const queueSave = useCallback(
+    (adapter: ThemePersistenceAdapter, payload: ThemeSettings) => {
+      setSyncStatus("saving")
+      const run = saveChain.current
+        .catch(() => {})
+        .then(() => adapter.save(payload))
+      saveChain.current = run
+      run.then(
+        () => {
+          if (saveChain.current === run) setSyncStatus("idle")
+        },
+        () => {
+          if (saveChain.current === run) setSyncStatus("error")
+        },
+      )
+    },
+    [],
+  )
+
   const persist = useCallback((key: string, value: string | undefined) => {
     if (value === undefined) {
       knownRef.current.delete(key)
@@ -385,13 +407,9 @@ export function ThemeProvider({
   const debouncedSave = useDebouncedCallback(
     (next: ThemeSettings) => {
       if (!persistenceRef.current) return
-      setSyncStatus("saving")
-      persistenceRef.current.save(next).then(
-        () => setSyncStatus("idle"),
-        () => setSyncStatus("error"),
-      )
+      queueSave(persistenceRef.current, next)
     },
-    [persistence, persistenceDebounce],
+    [persistence, persistenceDebounce, queueSave],
     persistenceDebounce,
   )
 
@@ -556,11 +574,7 @@ export function ThemeProvider({
           // Until the remote holds a versioned payload, every load migrates it
           // again, which would turn a solid canvas the user later chose under
           // glass back into a gradient.
-          setSyncStatus("saving")
-          adapter.save(upgrade).then(
-            () => setSyncStatus("idle"),
-            () => setSyncStatus("error"),
-          )
+          queueSave(adapter, upgrade)
           return
         }
         setSyncStatus("idle")
