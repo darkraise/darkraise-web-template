@@ -55,6 +55,7 @@ export function SwatchControl({ axis }: { axis: AxisKey }) {
           className="dr-theme-switcher-swatch"
           data-value={spec.tagValue ? value : undefined}
           data-active={current === value ? "true" : undefined}
+          aria-pressed={current === value}
           style={{
             backgroundColor: `hsl(${spec.color(value, theme.surfaceColor)})`,
           }}

@@ -58,6 +58,15 @@ describe("SwatchControl", () => {
     expect(screen.getByTitle("rose")).toHaveAttribute("data-active", "true")
   })
 
+  it("marks only the selected swatch as pressed", () => {
+    renderControl(<SwatchControl axis="accentColor" />)
+    expect(screen.getByTitle("blue")).toHaveAttribute("aria-pressed", "true")
+    expect(screen.getByTitle("rose")).toHaveAttribute("aria-pressed", "false")
+    fireEvent.click(screen.getByTitle("rose"))
+    expect(screen.getByTitle("rose")).toHaveAttribute("aria-pressed", "true")
+    expect(screen.getByTitle("blue")).toHaveAttribute("aria-pressed", "false")
+  })
+
   it("renders the neutral surfaces untagged and sets one on click", () => {
     const { container } = renderControl(<SwatchControl axis="surfaceColor" />)
     const swatches = container.querySelectorAll(".dr-theme-switcher-swatch")
