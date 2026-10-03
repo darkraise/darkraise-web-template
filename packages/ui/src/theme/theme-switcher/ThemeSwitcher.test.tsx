@@ -83,7 +83,11 @@ describe("ThemeSwitcher style section", () => {
     renderSwitcher()
     openSwitcher()
     const group = screen.getByRole("radiogroup", { name: "Style" })
-    expect(within(group).getAllByRole("radio")).toHaveLength(4)
+    expect(
+      within(group)
+        .getAllByRole("radio")
+        .map((radio) => radio.textContent),
+    ).toEqual(["Flat", "Quiet", "Tactile", "Glass"])
   })
 
   it("does NOT render glass axis toggles when quiet is active", () => {
@@ -96,7 +100,7 @@ describe("ThemeSwitcher style section", () => {
   it("renders the glass axes right after the style control", () => {
     renderSwitcher()
     openSwitcher()
-    fireEvent.click(screen.getByRole("radio", { name: /^glass$/i }))
+    fireEvent.click(screen.getByRole("radio", { name: "Glass" }))
     const labels = sectionLabels()
     const at = labels.indexOf("Style")
     expect(labels.slice(at + 1, at + 3)).toEqual(["Opacity", "Backdrop Blur"])
@@ -105,7 +109,7 @@ describe("ThemeSwitcher style section", () => {
   it("toggling glass-opacity updates the data attribute", () => {
     renderSwitcher()
     openSwitcher()
-    fireEvent.click(screen.getByRole("radio", { name: /^glass$/i }))
+    fireEvent.click(screen.getByRole("radio", { name: "Glass" }))
     fireEvent.click(screen.getByRole("radio", { name: /^strong$/i }))
     expect(document.documentElement.getAttribute("data-glass-opacity")).toBe(
       "strong",

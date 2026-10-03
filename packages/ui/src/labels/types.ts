@@ -1,4 +1,5 @@
 import type { AxisKey } from "@theme/axes/registry"
+import type { StyleName } from "@theme/styles"
 import type { ThemeSettingsGroup } from "@theme/theme-switcher/useThemeSettingsSections"
 
 /** Every axis the theme switcher can show. A new registry axis is a compile
@@ -70,6 +71,8 @@ export interface UiLabels {
     groupLabels: Record<ThemeSettingsGroup, string>
     axisLabels: Record<ThemeAxisName, string>
     modes: { light: string; dark: string; system: string }
+    /** Option labels of the style axis. */
+    styles: Record<StyleName, string>
   }
   errors: {
     notFoundTitle: string

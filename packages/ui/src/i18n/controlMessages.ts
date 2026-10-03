@@ -135,8 +135,6 @@ export const controlMessages = {
   Rectangle: "Rectangle",
   Ellipse: "Ellipse",
   Text: "Text",
-  Opacity: "Opacity",
-  "Backdrop Blur": "Backdrop Blur",
   Frame: "Frame",
   Freeform: "Freeform",
   Highlight: "Highlight",

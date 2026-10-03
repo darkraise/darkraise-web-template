@@ -136,8 +136,6 @@ export const viControls: Record<UiTextKey, string> = {
   Rectangle: "Hình chữ nhật",
   Ellipse: "Hình elip",
   Text: "Văn bản",
-  Opacity: "Độ đục",
-  "Backdrop Blur": "Độ mờ nền",
   Frame: "Khung",
   Freeform: "Tự do",
   Highlight: "Tô sáng",

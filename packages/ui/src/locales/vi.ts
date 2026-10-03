@@ -100,6 +100,12 @@ const messages: UiMessages = {
       tintWithAccent: "Pha màu nhấn",
     },
     modes: { light: "Sáng", dark: "Tối", system: "Hệ thống" },
+    styles: {
+      flat: "Phẳng",
+      quiet: "Nhẹ nhàng",
+      tactile: "Nổi khối",
+      glass: "Kính mờ",
+    },
   },
   errors: {
     notFoundTitle: "Không tìm thấy trang",

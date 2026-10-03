@@ -12,8 +12,7 @@
   }
 
   /* Narrow container: label stacked above a full-width control. */
-  .dr-theme-switcher-row,
-  .dr-theme-switcher-preset-axis {
+  .dr-theme-switcher-row {
     display: flex;
     flex-direction: column;
     align-items: stretch;
@@ -24,8 +23,7 @@
     @apply text-muted-foreground text-xs font-medium;
   }
 
-  .dr-theme-switcher-row > .dr-theme-switcher-section-label,
-  .dr-theme-switcher-preset-axis > .dr-theme-switcher-section-label {
+  .dr-theme-switcher-row > .dr-theme-switcher-section-label {
     margin: 0;
     line-height: 1.3;
   }
@@ -33,8 +31,7 @@
   @container (min-width: 26rem) {
     /* Horizontal axis row: label on the left at a fixed column width,
        control fills the rest. Keeps the panel compact vertically. */
-    .dr-theme-switcher-row,
-    .dr-theme-switcher-preset-axis {
+    .dr-theme-switcher-row {
       flex-direction: row;
       align-items: center;
       gap: 0.75rem;
@@ -43,8 +40,7 @@
     /* Label column — fixed width so labels align across rows. Sized for
        the longest label in the system ("Background Intensity", "Button
        Elevation") so nothing wraps at text-xs. */
-    .dr-theme-switcher-row > .dr-theme-switcher-section-label,
-    .dr-theme-switcher-preset-axis > .dr-theme-switcher-section-label {
+    .dr-theme-switcher-row > .dr-theme-switcher-section-label {
       flex: 0 0 8rem;
       min-width: 8rem;
     }
@@ -93,14 +89,12 @@
   }
 
   /* Toggle group fills the remaining row width. */
-  .dr-theme-switcher-row > .dr-theme-switcher-toggle-group,
-  .dr-theme-switcher-preset-axis > .dr-theme-switcher-toggle-group {
+  .dr-theme-switcher-row > .dr-theme-switcher-toggle-group {
     min-width: 0;
   }
 
   @container (min-width: 26rem) {
-    .dr-theme-switcher-row > .dr-theme-switcher-toggle-group,
-    .dr-theme-switcher-preset-axis > .dr-theme-switcher-toggle-group {
+    .dr-theme-switcher-row > .dr-theme-switcher-toggle-group {
       flex: 1 1 0;
     }
   }
@@ -150,26 +144,9 @@
      be a height. */
   @container (min-width: 26rem) {
     .dr-theme-switcher-row > .dr-theme-switcher-swatch-grid,
-    .dr-theme-switcher-row > .dr-theme-switcher-slider-control,
-    .dr-theme-switcher-preset-axis > .dr-theme-switcher-slider-control {
+    .dr-theme-switcher-row > .dr-theme-switcher-slider-control {
       flex: 1 1 0;
     }
-  }
-
-  /* Preset-axes-group wraps multiple preset-specific axis rows. The
-     container stacks vertically; each child row uses the horizontal
-     layout above. No indent / border on the left — preset rows align
-     flush with the common axis rows so labels in the left column line
-     up regardless of which preset is active. */
-  .dr-theme-switcher-preset-axes-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .dr-theme-switcher-preset-axes-group > .dr-theme-switcher-preset-axis {
-    /* Reset any default child spacing — the parent gap handles it. */
-    margin: 0;
   }
 
   .dr-theme-settings-page {

@@ -85,6 +85,7 @@ export const defaultLabels: UiLabels = {
       tintWithAccent: "Tint With Accent",
     },
     modes: { light: "Light", dark: "Dark", system: "System" },
+    styles: { flat: "Flat", quiet: "Quiet", tactile: "Tactile", glass: "Glass" },
   },
   errors: {
     notFoundTitle: "Page not found",

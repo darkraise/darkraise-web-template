@@ -106,11 +106,16 @@ describe("ChoiceControl", () => {
     expect(system).toHaveAttribute("aria-checked", "true")
   })
 
-  it("switches the style", () => {
+  it("labels the styles from the labels", () => {
     renderControl(<ChoiceControl axis="style" />)
     const group = screen.getByRole("radiogroup", { name: "Style" })
     expect(group).toHaveAttribute("data-cols", "4")
-    fireEvent.click(within(group).getByRole("radio", { name: "glass" }))
+    expect(
+      within(group)
+        .getAllByRole("radio")
+        .map((radio) => radio.textContent),
+    ).toEqual(["Flat", "Quiet", "Tactile", "Glass"])
+    fireEvent.click(within(group).getByRole("radio", { name: "Glass" }))
     expect(html.getAttribute("data-style")).toBe("glass")
   })
 

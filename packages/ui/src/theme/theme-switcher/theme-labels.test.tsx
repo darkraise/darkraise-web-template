@@ -117,6 +117,27 @@ describe("ThemeSwitcher labels", () => {
     }
   })
 
+  it("labels the style axes and the styles in English and Vietnamese", () => {
+    expect(defaultLabels.theme.axisLabels.style).toBe("Style")
+    expect(defaultLabels.theme.axisLabels.glassOpacity).toBe("Opacity")
+    expect(defaultLabels.theme.axisLabels.glassBlur).toBe("Backdrop Blur")
+    expect(defaultLabels.theme.styles).toEqual({
+      flat: "Flat",
+      quiet: "Quiet",
+      tactile: "Tactile",
+      glass: "Glass",
+    })
+    expect(viLocale.messages.theme.axisLabels.style).toBe("Phong cách")
+    expect(viLocale.messages.theme.axisLabels.glassOpacity).toBe("Độ đục")
+    expect(viLocale.messages.theme.axisLabels.glassBlur).toBe("Độ mờ nền")
+    expect(viLocale.messages.theme.styles).toEqual({
+      flat: "Phẳng",
+      quiet: "Nhẹ nhàng",
+      tactile: "Nổi khối",
+      glass: "Kính mờ",
+    })
+  })
+
   it("has Vietnamese group labels", () => {
     expect(viLocale.messages.theme.groupLabels).toEqual({
       brand: "Thương hiệu",
