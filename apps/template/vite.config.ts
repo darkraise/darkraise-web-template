@@ -4,10 +4,11 @@ import tailwindcss from "@tailwindcss/vite"
 import { tanstackRouter } from "@tanstack/router-plugin/vite"
 import path from "node:path"
 import { darkraisePrerender } from "darkraise-ui/vite"
+import { themeConfig } from "./src/theme.config"
 
 export default defineConfig({
   plugins: [
-    darkraisePrerender(),
+    darkraisePrerender({ defaults: themeConfig.defaults }),
     tanstackRouter({
       routesDirectory: "./src/routes",
       generatedRouteTree: "./src/routeTree.gen.ts",
