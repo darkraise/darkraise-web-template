@@ -9,6 +9,7 @@ import {
   readTokenCache,
 } from "@theme/axes/tokenCache"
 import { buildPrerenderScript } from "@theme/axes/prerender"
+import { LEGACY_MARKER_KEY, LEGACY_REVISION } from "@theme/axes/legacy"
 import { themeConfig } from "@theme/themeConfig"
 import type { ThemePersistenceAdapter } from "@theme/types"
 
@@ -248,5 +249,34 @@ describe("ThemeProvider on the axis registry", () => {
     root.style.cssText = ""
     runPrerender()
     expect(root.style.getPropertyValue("--primary")).toBe("")
+  })
+})
+
+describe("ThemeProvider legacy migration", () => {
+  it("paints a 6.x store's migrated values and marks the browser", () => {
+    localStorage.setItem("theme-surface-color", "red")
+    localStorage.setItem("theme-surface-intensity", "bold")
+    const { result } = renderHook(() => useTheme(), { wrapper: wrap })
+    expect(result.current.surfaceColor).toBe("zinc")
+    expect(result.current.tintWithAccent).toBe("on")
+    expect(result.current.contrast).toBe("high")
+    expect(localStorage.getItem("theme-surface-intensity")).toBeNull()
+    expect(localStorage.getItem(LEGACY_MARKER_KEY)).toBe(
+      String(LEGACY_REVISION),
+    )
+  })
+
+  it("paints migrated values from memory when storage refuses writes", () => {
+    localStorage.setItem("theme-surface-color", "red")
+    const refuse = () => {
+      throw new DOMException("full", "QuotaExceededError")
+    }
+    vi.spyOn(Storage.prototype, "setItem").mockImplementation(refuse)
+    vi.spyOn(Storage.prototype, "removeItem").mockImplementation(refuse)
+    const { result } = renderHook(() => useTheme(), { wrapper: wrap })
+    expect(result.current.surfaceColor).toBe("zinc")
+    expect(root.getAttribute("data-surface")).toBe("zinc")
+    expect(localStorage.getItem("theme-surface-color")).toBe("red")
+    expect(localStorage.getItem(LEGACY_MARKER_KEY)).toBeNull()
   })
 })

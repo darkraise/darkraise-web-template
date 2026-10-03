@@ -43,14 +43,8 @@ import {
   sanitizeSettings,
   type PresetAxisValues,
 } from "@theme/axes/settings"
-import {
-  cacheInputKeys,
-  tokenCacheId,
-  writeTokenCache,
-} from "@theme/axes/tokenCache"
-import { migrateGlassPresetKeys } from "./migrateGlassPresetKeys"
-import { migrateCanvasTintKey } from "./migrateCanvasTintKey"
-import { migratePresetGlowAxes } from "./migratePresetGlowAxes"
+import { tokenCacheId, writeTokenCache } from "@theme/axes/tokenCache"
+import { migrateStorage } from "@theme/axes/legacy"
 import { neutraliseIfHidden } from "./neutralisedAxes"
 
 declare const process: { env: { NODE_ENV?: string } }
@@ -66,14 +60,6 @@ function storage(): Storage | null {
   if (!isBrowser) return null
   try {
     return globalThis.localStorage
-  } catch {
-    return null
-  }
-}
-
-function readStorage(key: string): string | null {
-  try {
-    return storage()?.getItem(key) ?? null
   } catch {
     return null
   }
@@ -106,28 +92,17 @@ function resolveMode(mode: Mode): ResolvedMode {
   return mode === "system" ? getSystemMode() : mode
 }
 
-function readCacheInputs(): Map<string, string> {
-  const out = new Map<string, string>()
-  for (const key of cacheInputKeys()) {
-    const value = readStorage(key)
-    if (value !== null) out.set(key, value)
-  }
-  return out
+// Initial settings come from the migrated map, not from storage, so storage
+// that reads but refuses writes still paints migrated values. Such a browser
+// migrates again on every load, because its marker never lands.
+function readMigratedInputs(): Map<string, string> {
+  const store = storage()
+  return store ? migrateStorage(store) : new Map()
 }
 
-// One-time stored-key migrations. The pure, testable helpers live beside this
-// file; run them once at module load, guarded for SSR (no window) and runtime
-// storage failures (private-browsing / quota / security). Worst case on
-// failure: the user gets default settings on first load.
-if (isBrowser) {
-  try {
-    migrateGlassPresetKeys(globalThis.localStorage)
-    migrateCanvasTintKey(globalThis.localStorage)
-    migratePresetGlowAxes(globalThis.localStorage)
-  } catch {
-    // ignore
-  }
-}
+// Migrates before anything else reads theme storage. When the pre-render
+// script has already run, the marker is set and this finds nothing to do.
+if (isBrowser) readMigratedInputs()
 
 function applyTokens(
   tokens: Record<string, string>,
@@ -212,7 +187,7 @@ export function ThemeProvider({
   // makes, and the token-cache id is built from it rather than read back, so a
   // write that failed silently cannot label new tokens with the old id.
   const [initial] = useState(() => {
-    const known = readCacheInputs()
+    const known = readMigratedInputs()
     const read = (key: string) => known.get(key) ?? null
     return {
       known,
