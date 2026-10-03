@@ -1,7 +1,11 @@
 import { render, screen, fireEvent } from "@testing-library/react"
-import { describe, it, expect, beforeEach } from "vitest"
+import { afterEach, describe, it, expect, beforeEach, vi } from "vitest"
 import { LayoutSwitcher } from "./LayoutSwitcher"
-import { useLayoutStore, LAYOUT_VARIANTS } from "@layout/layoutStore"
+import {
+  useLayoutStore,
+  LAYOUT_VARIANTS,
+  SHELL_STYLE_STORAGE_KEY,
+} from "@layout/layoutStore"
 
 function open() {
   fireEvent.click(screen.getByRole("button", { name: /switch layout/i }))
@@ -39,6 +43,15 @@ describe("LayoutSwitcher", () => {
 })
 
 describe("layout store", () => {
+  beforeEach(() => localStorage.clear())
+  afterEach(() => vi.restoreAllMocks())
+
+  // The store reads storage once, when its module loads.
+  async function freshStore() {
+    vi.resetModules()
+    return (await import("@layout/layoutStore")).useLayoutStore
+  }
+
   it("lists every variant, so a persisted split-panel survives the guard", () => {
     expect(LAYOUT_VARIANTS).toEqual([
       "sidebar",
@@ -51,5 +64,41 @@ describe("layout store", () => {
   it("accepts split-panel as a value", () => {
     useLayoutStore.getState().setLayout("split-panel")
     expect(useLayoutStore.getState().layout).toBe("split-panel")
+  })
+
+  it("persists the shell style under its 6.x key", () => {
+    expect(SHELL_STYLE_STORAGE_KEY).toBe("theme-shell-style")
+    useLayoutStore.getState().setShellStyle("framed")
+    expect(useLayoutStore.getState().shellStyle).toBe("framed")
+    expect(localStorage.getItem("theme-shell-style")).toBe("framed")
+  })
+
+  it("restores a stored shell style on load", async () => {
+    localStorage.setItem("theme-shell-style", "island")
+    expect((await freshStore()).getState().shellStyle).toBe("island")
+  })
+
+  it("reads an unset shell style as null", async () => {
+    expect((await freshStore()).getState().shellStyle).toBeNull()
+  })
+
+  it("reads an unknown stored shell style as null", async () => {
+    localStorage.setItem("theme-shell-style", "bogus")
+    expect((await freshStore()).getState().shellStyle).toBeNull()
+  })
+
+  it("reads null when storage cannot be read", async () => {
+    vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
+      throw new Error("blocked")
+    })
+    expect((await freshStore()).getState().shellStyle).toBeNull()
+  })
+
+  it("keeps a picked shell style in memory when storage throws", () => {
+    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+      throw new Error("quota")
+    })
+    useLayoutStore.getState().setShellStyle("flat")
+    expect(useLayoutStore.getState().shellStyle).toBe("flat")
   })
 })

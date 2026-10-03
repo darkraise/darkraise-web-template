@@ -24,6 +24,7 @@ export { SkipLink } from "./skip-link"
 export {
   useLayoutStore,
   LAYOUT_VARIANTS,
+  SHELL_STYLE_STORAGE_KEY,
   type LayoutVariant,
 } from "./layoutStore"
 
