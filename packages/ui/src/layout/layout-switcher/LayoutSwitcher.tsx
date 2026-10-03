@@ -5,9 +5,15 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@components/dropdown-menu"
 import { useLayoutStore, type LayoutVariant } from "@layout/layoutStore"
+import { SHELL_STYLES, type ShellStyle } from "@theme/types"
+import { useUiLabels } from "@labels"
 
 type LayoutEntry = {
   value: LayoutVariant
@@ -35,12 +41,29 @@ export interface LayoutSwitcherProps {
    * build. Defaults to all four.
    */
   variants?: LayoutVariant[]
+  /**
+   * Hides the shell-style choice. A layout sets it when its `shellStyle` prop
+   * pins the style, because a stored pick could not change that shell.
+   *
+   * @default false
+   */
+  shellStylePinned?: boolean
+  /**
+   * The style the layout resolved and painted, so the choice shows it checked
+   * even when nothing is stored. Outside a layout, the stored pick is checked.
+   */
+  currentShellStyle?: ShellStyle
 }
 
-export function LayoutSwitcher({ variants }: LayoutSwitcherProps = {}) {
+export function LayoutSwitcher({
+  variants,
+  shellStylePinned = false,
+  currentShellStyle,
+}: LayoutSwitcherProps = {}) {
   const uiText = useUiText()
+  const { themeOptions } = useUiLabels()
 
-  const { layout, setLayout } = useLayoutStore()
+  const { layout, setLayout, shellStyle, setShellStyle } = useLayoutStore()
   const entries = variants
     ? LAYOUTS.filter((entry) => variants.includes(entry.value))
     : LAYOUTS
@@ -67,6 +90,22 @@ export function LayoutSwitcher({ variants }: LayoutSwitcherProps = {}) {
             {uiText(label)}
           </DropdownMenuItem>
         ))}
+        {!shellStylePinned && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel>{uiText("Shell style")}</DropdownMenuLabel>
+            <DropdownMenuRadioGroup
+              value={currentShellStyle ?? shellStyle ?? undefined}
+              onValueChange={(value) => setShellStyle(value as ShellStyle)}
+            >
+              {SHELL_STYLES.map((style) => (
+                <DropdownMenuRadioItem key={style} value={style}>
+                  {themeOptions[style]}
+                </DropdownMenuRadioItem>
+              ))}
+            </DropdownMenuRadioGroup>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   )

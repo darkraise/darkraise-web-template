@@ -119,6 +119,7 @@ export const controlMessages = {
   "Top Navigation": "Top Navigation",
   Stacked: "Stacked",
   "Split Panel": "Split Panel",
+  "Shell style": "Shell style",
   Brightness: "Brightness",
   Contrast: "Contrast",
   Saturation: "Saturation",

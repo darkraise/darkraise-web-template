@@ -120,6 +120,7 @@ export const viControls: Record<UiTextKey, string> = {
   "Top Navigation": "Điều hướng trên",
   Stacked: "Xếp chồng",
   "Split Panel": "Chia bảng",
+  "Shell style": "Kiểu khung",
   Brightness: "Độ sáng",
   Contrast: "Độ tương phản",
   Saturation: "Độ bão hòa",

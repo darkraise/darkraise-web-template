@@ -6,13 +6,17 @@ import {
   LAYOUT_VARIANTS,
   SHELL_STYLE_STORAGE_KEY,
 } from "@layout/layoutStore"
+import { UiI18nProvider } from "../../i18n"
+import { vi as vietnamese } from "../../locales/vi"
 
-function open() {
-  fireEvent.click(screen.getByRole("button", { name: /switch layout/i }))
+function open(name: RegExp | string = /switch layout/i) {
+  fireEvent.click(screen.getByRole("button", { name }))
 }
 
 describe("LayoutSwitcher", () => {
-  beforeEach(() => useLayoutStore.setState({ layout: "sidebar" }))
+  beforeEach(() =>
+    useLayoutStore.setState({ layout: "sidebar", shellStyle: null }),
+  )
 
   it("offers every variant by default", () => {
     render(<LayoutSwitcher />)
@@ -39,6 +43,73 @@ describe("LayoutSwitcher", () => {
     open()
     fireEvent.click(screen.getByRole("menuitem", { name: "Split Panel" }))
     expect(useLayoutStore.getState().layout).toBe("split-panel")
+  })
+
+  it("lists the six shell styles below the layout variants", () => {
+    render(<LayoutSwitcher />)
+    open()
+    expect(screen.getByText("Shell style")).toBeInTheDocument()
+    expect(
+      screen.getAllByRole("menuitemradio").map((item) => item.textContent),
+    ).toEqual(["classic", "inset", "island", "floating", "framed", "flat"])
+    const roles = Array.from(
+      document.querySelectorAll('[role="menuitem"], [role="menuitemradio"]'),
+      (item) => item.getAttribute("role"),
+    )
+    expect(roles).toEqual([
+      ...Array<string>(4).fill("menuitem"),
+      ...Array<string>(6).fill("menuitemradio"),
+    ])
+  })
+
+  it("checks the style the layout painted even when nothing is stored", () => {
+    render(<LayoutSwitcher currentShellStyle="inset" />)
+    open()
+    expect(
+      screen.getByRole("menuitemradio", { name: "inset" }),
+    ).toHaveAttribute("aria-checked", "true")
+    expect(
+      screen.getByRole("menuitemradio", { name: "classic" }),
+    ).toHaveAttribute("aria-checked", "false")
+  })
+
+  it("stores a new pick", () => {
+    render(<LayoutSwitcher currentShellStyle="classic" />)
+    open()
+    fireEvent.click(screen.getByRole("menuitemradio", { name: "island" }))
+    expect(useLayoutStore.getState().shellStyle).toBe("island")
+  })
+
+  it("falls back to the stored pick outside a layout", () => {
+    useLayoutStore.setState({ shellStyle: "framed" })
+    render(<LayoutSwitcher />)
+    open()
+    expect(
+      screen.getByRole("menuitemradio", { name: "framed" }),
+    ).toHaveAttribute("aria-checked", "true")
+  })
+
+  it("hides the shell styles when the layout pins one", () => {
+    render(<LayoutSwitcher shellStylePinned />)
+    open()
+    expect(
+      screen.getByRole("menuitem", { name: "Sidebar" }),
+    ).toBeInTheDocument()
+    expect(screen.queryByRole("menuitemradio")).toBeNull()
+    expect(screen.queryByText("Shell style")).toBeNull()
+  })
+
+  it("translates the shell-style heading and labels", () => {
+    render(
+      <UiI18nProvider locale="vi" locales={[vietnamese]}>
+        <LayoutSwitcher />
+      </UiI18nProvider>,
+    )
+    open("Đổi bố cục")
+    expect(screen.getByText("Kiểu khung")).toBeInTheDocument()
+    expect(
+      screen.getByRole("menuitemradio", { name: "đảo" }),
+    ).toBeInTheDocument()
   })
 })
 
