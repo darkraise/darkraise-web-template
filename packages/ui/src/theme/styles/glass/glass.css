@@ -1,7 +1,7 @@
 /* packages/ui/src/theme/styles/glass/glass.css
  * Scalar tokens for the Glass preset's three axes (opacity, blur, halo)
  * plus state-personality tokens and mode-scoped composition into
- * --surface-overlay-shadow / --card-elevation-*. Cross-axis color math
+ * --surface-overlay-shadow. Cross-axis color math
  * (fog tiers, inset highlights, halo tier tokens, dark-gradient border)
  * lives in glassTokens.ts; this file is the no-JS bedrock for the simple
  * values and the var(--primary)-driven state tokens.
@@ -157,8 +157,7 @@
 
 /* Halo is a floating-surface signature under Glass. Portaled overlays
    (Dialog, Sheet, Drawer, Popover, Menu, Tooltip, etc.) carry it via
-   --surface-overlay-shadow / .modal-surface, and floating in-flow Cards
-   carry it via --card-elevation-*. Chrome (Sidebar, LayoutHeader) is
+   --surface-overlay-shadow. Chrome (Sidebar, LayoutHeader) is
    deliberately halo-axis-INSENSITIVE since commit 58e3274 — it ends at
    var(--inset-hi) edge specular and carries NO halo tier, so the ~32px
    accent glow can't bleed into the page. In-page content (Cards, Buttons,
@@ -182,27 +181,6 @@
   --glass-halo-modal: 0 0 transparent;
   --glass-state-hover-glow: 0 0 transparent;
   --glass-state-active-inset: 0 0 transparent;
-}
-
-/* Glass-scoped dark-mode card elevation — lives here (unlayered)
-   rather than in theme.css's `@layer overrides` because the dark-mode
-   `--card-elevation-*` defaults at theme.css ~line 730 are themselves
-   unlayered. Unlayered rules beat any `@layer`-wrapped rule regardless
-   of specificity, so an `@layer overrides` attempt would be silently
-   defeated. Light-mode equivalent lives in theme.css's `@layer
-   overrides` block because the light defaults are inside `@layer base`
-   (the `:root` block).
-
-   Values duplicated from the `[data-mode="dark"]` block in theme.css —
-   update both if the base ramp changes. */
-[data-mode="dark"][data-style="glass"] {
-  --card-elevation-low: 0 1px 2px 0 rgb(0 0 0 / 0.4), var(--glass-halo-raised);
-  --card-elevation-medium:
-    0 8px 20px -2px rgb(0 0 0 / 0.65), 0 3px 8px -1px rgb(0 0 0 / 0.5),
-    var(--glass-halo-raised);
-  --card-elevation-high:
-    0 48px 72px -10px rgb(0 0 0 / 0.9), 0 20px 36px -6px rgb(0 0 0 / 0.6),
-    var(--glass-halo-raised);
 }
 
 [data-style="glass"] {

@@ -99,35 +99,6 @@ describe("theme.css glass utilities honor the blur axis", () => {
   })
 })
 
-describe("glass dark --card-elevation-* stays in sync with the base ramp", () => {
-  // glass.css duplicates the theme.css [data-mode="dark"] card-elevation ramp
-  // (unlayered constraint) and only appends ", var(--glass-halo-raised)".
-  // This converts the "update both if the base ramp changes" comment into an
-  // enforced invariant.
-  // Anchored to a line start: `:root[data-mode="dark"] {` inside
-  // `@layer base` also contains the bare selector.
-  const darkBaseBlock = themeCss
-    .split(/^\[data-mode="dark"\] \{/m)[1]
-    ?.split("}")[0]
-  if (darkBaseBlock === undefined) throw new Error("dark base block missing")
-
-  for (const tier of ["low", "medium", "high"] as const) {
-    it(`dark ${tier} = base ramp + halo`, () => {
-      const base = darkBaseBlock.match(
-        new RegExp(`--card-elevation-${tier}:\\s*([^;]+);`),
-      )?.[1]
-      const glass = glassCss.match(
-        new RegExp(`--card-elevation-${tier}:\\s*([^;]+);`),
-      )?.[1]
-      expect(base, `base dark --card-elevation-${tier}`).toBeTruthy()
-      expect(glass, `glass dark --card-elevation-${tier}`).toBeTruthy()
-      expect(norm(glass as string)).toBe(
-        `${norm(base as string)}, var(--glass-halo-raised)`,
-      )
-    })
-  }
-})
-
 describe("glass.css overlay surfaces carry a real colour layer", () => {
   // The fog gradient is a background-IMAGE pair, so it leaves
   // background-color transparent. Without a colour in the final layer an

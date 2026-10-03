@@ -58,3 +58,16 @@ describe("button shadow", () => {
     expect(themeCss).toMatch(/--shadow-button:\s*0 0 transparent;/)
   })
 })
+
+describe("card elevation", () => {
+  // A card is content, and content looks the same under every style; the
+  // glow axes, not a style, add a halo.
+  it("composes no glass halo into a card elevation token", () => {
+    const offenders = sheets
+      .filter(({ css }) =>
+        /--card-elevation-[a-z]+:[^;]*--glass-halo/.test(css),
+      )
+      .map(({ file }) => file)
+    expect(offenders).toEqual([])
+  })
+})
