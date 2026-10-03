@@ -188,7 +188,7 @@ function CardsPage() {
 <Card elevation="high">...</Card>
 
 // "auto" (boolean true) tracks the active theme elevation: switching the
-// axis to "low" flattens the card's shadow, "high" deepens it. Explicit
+// axis to "flat" removes the card's shadow, "high" deepens it. Explicit
 // levels ignore the axis and keep their shadow under data-elevation="flat".`}
       >
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">

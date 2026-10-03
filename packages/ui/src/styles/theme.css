@@ -898,18 +898,17 @@
     /* Two parallel shadow ramps.
 
      `--elevation-{low,medium,high}` is theme-axis-tracking. The :root
-     values represent the default (theme=medium-equivalent) intensity, and
-     each `[data-elevation="..."]` block overrides them with a scaled ramp
+     values are the `standard` level's intensity, and the `flat` and
+     `high` `[data-elevation]` blocks override them with a scaled ramp
      so theme-aware utilities like `glass-strong`
      (`box-shadow: var(--elevation-medium)`) and the Card's `auto` mode
      (`var(--elevation-current)`) follow the picker.
 
      `--card-elevation-{low,medium,high}` is theme-axis-immune. Components
      that opt into an explicit level (e.g. `<Card elevation="medium">`)
-     consume these. Each level is calibrated to match the
-     `[data-elevation="<level>"]` ramp's same-named token in the same
-     mode — `<Card elevation="low">` looks like an auto card under
-     theme=low, `medium` matches theme=medium, `high` matches theme=high.
+     consume these. `medium` matches an auto card under theme=standard
+     and `high` one under theme=high, in the same mode; `low` is a lighter
+     step with no theme level of its own.
      Light and dark are deliberately NOT unified (dark surfaces need
      higher opacity to register the shadow); dark-mode variants live on
      `[data-mode="dark"]`.
@@ -1013,8 +1012,8 @@
      consumers reading `var(--elevation-current)` resolve to a real shadow
      when no `[data-elevation]` attribute is set on any ancestor. Themes
      that opt into the axis override this via the `[data-elevation="..."]`
-     selectors below. Mirrors the medium-equivalent ramp that the same root
-     `--elevation-medium` defines. */
+     selectors below. Mirrors the `standard` level, which keeps the root
+     `--elevation-medium`. */
     --elevation-current: var(--elevation-medium);
 
     /* Complete fill expressions, one per surface. A `surface` prop value
@@ -1175,15 +1174,8 @@
   --elevation-current: 0 0 transparent;
 }
 
-[data-elevation="low"] {
-  --elevation-flat: 0 0 transparent;
-  --elevation-low: 0 1px 2px 0 rgb(0 0 0 / 0.07);
-  --elevation-medium: 0 4px 10px -1px rgb(0 0 0 / 0.13);
-  --elevation-high: 0 12px 24px -4px rgb(0 0 0 / 0.2);
-  --elevation-current: var(--elevation-low);
-}
-
-[data-elevation="medium"] {
+/* `standard` keeps the :root ramps in both modes. */
+[data-elevation="standard"] {
   --elevation-current: var(--elevation-medium);
 }
 
@@ -1258,8 +1250,9 @@
     0 8px 20px -2px rgb(0 0 0 / 0.65), 0 3px 8px -1px rgb(0 0 0 / 0.5);
   --elevation-high:
     0 32px 48px -8px rgb(0 0 0 / 0.8), 0 12px 24px -4px rgb(0 0 0 / 0.55);
-  /* Card-elevation ramp matches the dark theme axis: low = dark theme=low's
-     low, medium = dark default medium, high = dark theme=high's high. */
+  /* Card-elevation ramp matches the dark theme axis: medium = dark
+     theme=standard's medium, high = dark theme=high's high; low is a
+     lighter step of its own. */
   --card-elevation-low: 0 1px 2px 0 rgb(0 0 0 / 0.4);
   --card-elevation-medium:
     0 8px 20px -2px rgb(0 0 0 / 0.65), 0 3px 8px -1px rgb(0 0 0 / 0.5);
@@ -1273,14 +1266,6 @@
   --elevation-medium: 0 0 transparent;
   --elevation-high: 0 0 transparent;
   --elevation-current: 0 0 transparent;
-}
-
-[data-mode="dark"][data-elevation="low"] {
-  --elevation-flat: 0 0 transparent;
-  --elevation-low: 0 1px 2px 0 rgb(0 0 0 / 0.4);
-  --elevation-medium: 0 4px 10px -1px rgb(0 0 0 / 0.55);
-  --elevation-high: 0 12px 24px -4px rgb(0 0 0 / 0.65);
-  --elevation-current: var(--elevation-low);
 }
 
 [data-mode="dark"][data-elevation="high"] {
