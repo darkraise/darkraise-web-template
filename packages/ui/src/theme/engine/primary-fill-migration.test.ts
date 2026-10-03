@@ -20,7 +20,7 @@ const OPAQUE_FILL = new RegExp(
     // Only a background whose whole value is one hsl() counts. Gradient stops
     // are deliberately out of scope: glass paints its checked checkbox and
     // slider range from stops at 0.55 and 0.35 that average below the
-    // threshold, and the preset's identity needs that weight.
+    // threshold, and Glass's identity needs that weight.
     String.raw`background(?:-color)?:\s*hsl\(\s*${PRIMARY_VAR}\s*(?:\/\s*${CSS_FILL_ALPHA}\s*)?\)`,
   ].join("|"),
 )

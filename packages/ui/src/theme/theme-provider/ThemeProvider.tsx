@@ -294,7 +294,7 @@ export function ThemeProvider({
       const commonTokens = generateTokens({
         accentColor: current.accentColor,
         surfaceColor: current.surfaceColor,
-        style: current.style,
+        frosted: STYLES[current.style].frosted,
         backgroundStyle: current.backgroundStyle,
         mode: resolved,
         contrast: current.contrast,

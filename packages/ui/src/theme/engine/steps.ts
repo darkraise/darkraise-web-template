@@ -57,7 +57,8 @@ export interface SolveInput {
     strip: boolean
   } | null
   pageSaturationCap: number | null
-  glass: boolean
+  /** Frosted chrome: the sidebar is painted on the page ground in both modes. */
+  frosted: boolean
   status: Record<StatusName, ColorScale>
 }
 
@@ -334,7 +335,7 @@ function cacheKey(input: SolveInput): string {
       ? `${gradient.surfaceHue}/${gradient.intensity}/${gradient.strip}`
       : "solid",
     input.pageSaturationCap,
-    input.glass,
+    input.frosted,
     scaleId(status.destructive),
     scaleId(status.success),
     scaleId(status.warning),
@@ -458,7 +459,7 @@ function solve(input: SolveInput): Steps {
   }
 
   const sunken = mode === "light" ? (n[2] as string) : page
-  const sidebar = mode === "light" || input.glass ? page : card
+  const sidebar = mode === "light" || input.frosted ? page : card
   const canvasGrounds: string[] = []
   const stripGrounds: string[] = []
   if (input.gradient) {
@@ -488,7 +489,7 @@ function solve(input: SolveInput): Steps {
     "neutral-7",
     neutralAt(pos[6] as number),
     edgeGrounds,
-    input.glass ? GLASS_EDGE_FLOOR : MARK,
+    input.frosted ? GLASS_EDGE_FLOOR : MARK,
   )
   n[7] = repair("neutral-8", neutralAt(pos[7] as number), edgeGrounds, TEXT)
   n[8] = neutralAt(pos[8] as number)
@@ -552,10 +553,12 @@ function solve(input: SolveInput): Steps {
       EDGE_FLOOR[contrast],
     )
     p[6] = repair("primary-7", place(ppos[6] as number), edgeGrounds, MARK)
-    const markPos = input.glass ? GLASS_PRIMARY_POS[mode] : (ppos[7] as number)
+    const markPos = input.frosted
+      ? GLASS_PRIMARY_POS[mode]
+      : (ppos[7] as number)
     p[7] = repair("primary-8", place(markPos), edgeGrounds, MARK)
     const base = place(
-      input.glass ? GLASS_PRIMARY_POS[mode] : (ppos[8] as number),
+      input.frosted ? GLASS_PRIMARY_POS[mode] : (ppos[8] as number),
     )
     // Dark fills are solved down to a white label, which takes a hue whose
     // mid-tone is very light (amber, yellow, lime) to a brown that no longer

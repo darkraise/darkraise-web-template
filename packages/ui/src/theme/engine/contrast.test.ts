@@ -16,7 +16,7 @@ function build(
   return generateTokens({
     accentColor,
     surfaceColor: "slate",
-    style: "quiet",
+    frosted: false,
     backgroundStyle: "solid",
     mode,
     contrast: "standard",

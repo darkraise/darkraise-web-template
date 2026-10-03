@@ -20,7 +20,7 @@ const STRIP_FLOORS = [
 // strip must not move.
 const UNCHANGED = [
   [
-    "quiet",
+    false,
     "solid",
     "light",
     "neutral",
@@ -34,7 +34,7 @@ const UNCHANGED = [
     },
   ],
   [
-    "quiet",
+    false,
     "solid",
     "light",
     "intense",
@@ -48,7 +48,7 @@ const UNCHANGED = [
     },
   ],
   [
-    "quiet",
+    false,
     "solid",
     "dark",
     "neutral",
@@ -62,7 +62,7 @@ const UNCHANGED = [
     },
   ],
   [
-    "quiet",
+    false,
     "solid",
     "dark",
     "intense",
@@ -76,7 +76,7 @@ const UNCHANGED = [
     },
   ],
   [
-    "glass",
+    true,
     "gradient",
     "light",
     "neutral",
@@ -90,7 +90,7 @@ const UNCHANGED = [
     },
   ],
   [
-    "glass",
+    true,
     "gradient",
     "light",
     "intense",
@@ -104,7 +104,7 @@ const UNCHANGED = [
     },
   ],
   [
-    "glass",
+    true,
     "gradient",
     "dark",
     "neutral",
@@ -118,7 +118,7 @@ const UNCHANGED = [
     },
   ],
   [
-    "glass",
+    true,
     "gradient",
     "dark",
     "intense",
@@ -151,7 +151,7 @@ describe("the content strip", () => {
 
   it("leaves themes without a strip as they were", () => {
     for (const [
-      style,
+      frosted,
       backgroundStyle,
       mode,
       backgroundIntensity,
@@ -160,7 +160,7 @@ describe("the content strip", () => {
       const tokens = generateTokens({
         accentColor: "blue",
         surfaceColor: "slate",
-        style,
+        frosted,
         backgroundStyle,
         mode,
         contrast: "standard",
@@ -173,7 +173,7 @@ describe("the content strip", () => {
       )
       expect(
         actual,
-        `${style} ${backgroundStyle} ${mode} ${backgroundIntensity}`,
+        `${frosted ? "frosted" : "plain"} ${backgroundStyle} ${mode} ${backgroundIntensity}`,
       ).toEqual(expected)
     }
   })
@@ -181,7 +181,7 @@ describe("the content strip", () => {
   it("solves marks, the field edge and text against it on every default gradient theme", () => {
     const failures: string[] = []
     for (const combo of reachableCombos()) {
-      if (combo.style !== "quiet") continue
+      if (combo.frosted) continue
       const tokens = generateTokens({
         ...combo,
         tintWithAccent: false,

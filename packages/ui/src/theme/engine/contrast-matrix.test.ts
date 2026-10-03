@@ -13,7 +13,7 @@ describe("contrast matrix support", () => {
     expect(new Set(combos.map(comboName)).size).toBe(combos.length)
     expect(
       combos
-        .filter((c) => c.style !== "quiet")
+        .filter((c) => c.frosted)
         .every(
           (c) => c.contrast === "standard" && c.darkAccentChroma === "standard",
         ),
@@ -34,7 +34,7 @@ describe("contrast matrix support", () => {
       contrast: "standard",
       darkAccentChroma: "standard",
       tintWithAccent: false,
-      style: "quiet",
+      frosted: false,
     } as const
     expect(
       finalTokens({ ...base, backgroundIntensity: "neutral" })["--background"],
@@ -43,8 +43,8 @@ describe("contrast matrix support", () => {
     )
   })
 
-  it("merges glass tokens over the engine's, as the provider does", () => {
-    const glass = finalTokens({
+  it("merges Glass's own tokens over the engine's when frosted, as the provider does", () => {
+    const frosted = finalTokens({
       accentColor: "blue",
       surfaceColor: "slate",
       mode: "light",
@@ -52,10 +52,10 @@ describe("contrast matrix support", () => {
       darkAccentChroma: "standard",
       tintWithAccent: false,
       backgroundIntensity: "balanced",
-      style: "glass",
+      frosted: true,
     })
-    expect(glass["--muted"]).toContain("var(--primary)")
-    expect(isOpaque(glass["--muted"])).toBe(false)
-    expect(isOpaque(glass["--card"])).toBe(true)
+    expect(frosted["--muted"]).toContain("var(--primary)")
+    expect(isOpaque(frosted["--muted"])).toBe(false)
+    expect(isOpaque(frosted["--card"])).toBe(true)
   })
 })

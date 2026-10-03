@@ -41,7 +41,7 @@ function fallbackDeclarations(): Map<string, string> {
 const engine = generateTokens({
   accentColor: "blue",
   surfaceColor: "slate",
-  style: "quiet",
+  frosted: false,
   backgroundStyle: "solid",
   mode: "light",
   contrast: "standard",

@@ -223,7 +223,7 @@ describe("filled hover states", () => {
         const states: Array<[string, Rgb]> = [
           ...(amounts.get(fillName) ?? []),
         ].map((amount) => [`${amount * 100}%`, mix(fill, washRgb, amount)])
-        if (combo.style === "glass") {
+        if (combo.frosted) {
           const hovered = mix(fill, washRgb, 0.16)
           states.push(["glass sheen", mix(fill, washRgb, GLASS_SHEEN)])
           states.push([

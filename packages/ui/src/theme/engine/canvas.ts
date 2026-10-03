@@ -67,8 +67,8 @@ export function gradientCanvasPeak(
 const STRIP_DARK_EXTRA = 0.04
 
 /**
- * The loudest point of the content strip: the canvas layers the default
- * preset repaints over the top of `main[data-content]` (theme.css,
+ * The loudest point of the content strip: the canvas layers unfrosted chrome
+ * repaints over the top of `main[data-content]` (theme.css,
  * `--content-gradient-overlay`), where the body canvas behind it renders flat.
  */
 export function contentStripGround(

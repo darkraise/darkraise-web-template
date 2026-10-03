@@ -46,7 +46,7 @@ function input(
     tintWithAccent: false,
     gradient: null,
     pageSaturationCap: 16,
-    glass: false,
+    frosted: false,
     status: status(accent),
     ...overrides,
   }
@@ -71,25 +71,27 @@ describe("solveSteps floors", () => {
           const misses: string[] = []
           for (const accent of [...ACCENTS, "neutral"])
             for (const neutral of NEUTRALS)
-              for (const glass of [false, true]) {
+              for (const frosted of [false, true]) {
                 const scale = (surfaceColors as Record<string, ColorScale>)[
                   neutral
                 ] as ColorScale
                 const result = solveSteps(
                   input(accent, neutral, mode, {
                     contrast,
-                    glass,
+                    frosted,
                     gradient: background
                       ? {
                           surfaceHue: scale[500],
                           intensity: background,
-                          strip: !glass,
+                          strip: !frosted,
                         }
                       : null,
                   }),
                 )
                 for (const m of result.misses)
-                  misses.push(`${accent}/${neutral}/glass=${glass}: ${m.step}`)
+                  misses.push(
+                    `${accent}/${neutral}/frosted=${frosted}: ${m.step}`,
+                  )
               }
           expect(misses).toEqual([])
         })
@@ -110,12 +112,15 @@ describe("solveSteps floors", () => {
   it("every dark chroma step keeps every floor", () => {
     const misses: string[] = []
     for (const accent of [...ACCENTS, "neutral"])
-      for (const glass of [false, true])
+      for (const frosted of [false, true])
         for (const chroma of ["calm", "vivid"] as DarkAccentChroma[])
           for (const m of solveSteps(
-            input(accent, "zinc", "dark", { darkAccentChroma: chroma, glass }),
+            input(accent, "zinc", "dark", {
+              darkAccentChroma: chroma,
+              frosted,
+            }),
           ).misses)
-            misses.push(`${accent}/${chroma}/glass=${glass}: ${m.step}`)
+            misses.push(`${accent}/${chroma}/frosted=${frosted}: ${m.step}`)
     expect(misses).toEqual([])
   })
 })
@@ -131,13 +136,13 @@ describe("solveSteps ramps", () => {
               ? CHROMAS
               : (["standard"] as const))
               for (const tintWithAccent of [false, true])
-                for (const glass of [false, true]) {
+                for (const frosted of [false, true]) {
                   const { neutral: n, primary: p } = solveSteps(
                     input(accent, neutral, mode, {
                       contrast,
                       darkAccentChroma,
                       tintWithAccent,
-                      glass,
+                      frosted,
                     }),
                   )
                   const cardL = hslStringToOklch(n[1] as string).L

@@ -2,7 +2,6 @@ import {
   generateTokens,
   resolveAccentScale,
   resolveNeutralScale,
-  type GenerateTokensInput,
 } from "@theme/engine/generateTokens"
 import { glassTokens } from "@theme/styles/glass/glassTokens"
 import {
@@ -30,15 +29,16 @@ export interface ThemeCombo {
   contrast: Contrast
   darkAccentChroma: DarkAccentChroma
   backgroundIntensity: BackgroundIntensity
-  style: GenerateTokensInput["style"]
+  /** The only engine input a style sets: true under Glass. */
+  frosted: boolean
   /** Off unless set; the reachable matrix leaves it off. */
   tintWithAccent?: boolean
 }
 
 /**
- * Every combination a user can reach, with glass checked at the standard
- * contrast and chroma steps only. Light mode ignores darkAccentChroma, so it
- * runs at the standard step.
+ * Every combination a user can reach, with frosted chrome checked at the
+ * standard contrast and chroma steps only. Light mode ignores
+ * darkAccentChroma, so it runs at the standard step.
  *
  * backgroundStyle stays solid: it moves the decorative --sf-hue tokens and
  * the page a field edge sits on, and field-edge.test.ts covers that case
@@ -60,7 +60,7 @@ export function reachableCombos(): ThemeCombo[] {
               mode,
               contrast,
               darkAccentChroma,
-              style: "quiet",
+              frosted: false,
             })
           }
         }
@@ -70,7 +70,7 @@ export function reachableCombos(): ThemeCombo[] {
           mode,
           contrast: "standard",
           darkAccentChroma: "standard",
-          style: "glass",
+          frosted: true,
         })
       }
     }
@@ -83,18 +83,18 @@ export function reachableCombos(): ThemeCombo[] {
 const tokenCache = new Map<string, Record<string, string>>()
 
 /**
- * Engine tokens with glass's own tokens on top, as ThemeProvider merges
- * them. Built once per combination: the contrast suites read the same matrix
- * many times over.
+ * Engine tokens with Glass's own tokens on top when frosted, as ThemeProvider
+ * merges them. Built once per combination: the contrast suites read the same
+ * matrix many times over.
  */
 export function finalTokens(combo: ThemeCombo): Record<string, string> {
   const key = comboName(combo)
   const cached = tokenCache.get(key)
   if (cached) return cached
-  const common = generateTokens({
+  const engine = generateTokens({
     accentColor: combo.accentColor,
     surfaceColor: combo.surfaceColor,
-    style: combo.style,
+    frosted: combo.frosted,
     backgroundStyle: "solid",
     mode: combo.mode,
     contrast: combo.contrast,
@@ -102,18 +102,17 @@ export function finalTokens(combo: ThemeCombo): Record<string, string> {
     tintWithAccent: combo.tintWithAccent ?? false,
     backgroundIntensity: combo.backgroundIntensity,
   })
-  const own =
-    combo.style === "glass"
-      ? glassTokens({
-          mode: combo.mode,
-          accent: resolveAccentScale(combo.accentColor, combo.surfaceColor),
-          surface: resolveNeutralScale(combo.surfaceColor),
-          backgroundStyle: "solid",
-          outerGlow: "none",
-          glassOpacity: "medium",
-        })
-      : {}
-  const tokens = { ...common, ...own }
+  const own = combo.frosted
+    ? glassTokens({
+        mode: combo.mode,
+        accent: resolveAccentScale(combo.accentColor, combo.surfaceColor),
+        surface: resolveNeutralScale(combo.surfaceColor),
+        backgroundStyle: "solid",
+        outerGlow: "none",
+        glassOpacity: "medium",
+      })
+    : {}
+  const tokens = { ...engine, ...own }
   tokenCache.set(key, tokens)
   return tokens
 }
@@ -131,5 +130,6 @@ export function isOpaque(value: string | undefined): value is string {
 
 export function comboName(combo: ThemeCombo): string {
   const tint = combo.tintWithAccent ? "/tint" : ""
-  return `${combo.style}/${combo.mode}/${combo.contrast}/${combo.darkAccentChroma}/${combo.backgroundIntensity}/${combo.accentColor}/${combo.surfaceColor}${tint}`
+  const chrome = combo.frosted ? "frosted" : "plain"
+  return `${chrome}/${combo.mode}/${combo.contrast}/${combo.darkAccentChroma}/${combo.backgroundIntensity}/${combo.accentColor}/${combo.surfaceColor}${tint}`
 }

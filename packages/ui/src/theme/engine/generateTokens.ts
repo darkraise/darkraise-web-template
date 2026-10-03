@@ -9,7 +9,6 @@ import type {
   ColorScale,
 } from "@theme/types"
 import { accentColors } from "@theme/palettes/accentColors"
-import type { StyleName } from "@theme/styles"
 import { surfaceColors } from "@theme/palettes/surfaceColors"
 import { contrastRatio } from "@theme/engine/oklch"
 import { CANVAS_SATURATION_CAP, contentStripGround } from "./canvas"
@@ -26,7 +25,8 @@ export {
 export interface GenerateTokensInput {
   accentColor: AccentColor
   surfaceColor: SurfaceColor
-  style: StyleName
+  /** Frosted chrome over the canvas: no content strip, chrome on the page ground. */
+  frosted: boolean
   backgroundStyle: BackgroundStyle
   mode: ResolvedMode
   contrast: Contrast
@@ -184,7 +184,7 @@ export function generateTokens(
   const {
     accentColor,
     surfaceColor,
-    style,
+    frosted,
     backgroundStyle,
     mode,
     contrast,
@@ -196,14 +196,12 @@ export function generateTokens(
   const accent = resolveAccentScale(accentColor, surfaceColor)
   const neutral = resolveNeutralScale(surfaceColor)
   const dark = mode === "dark"
-  const glass = style === "glass"
-  // The neutral's own mid-tone: the hue the gradient canvas paints and glass's
-  // inner glow follows.
+  // The neutral's own mid-tone: the hue the gradient canvas paints.
   const surfaceTint = neutral[500]
   const gradient = backgroundStyle === "gradient"
-  // The default preset repaints the canvas over the top of the content area;
-  // glass paints no strip.
-  const paintsStrip = gradient && !glass
+  // Unfrosted chrome repaints the canvas over the top of the content area;
+  // frosted chrome shows the canvas through itself, so no strip is painted.
+  const paintsStrip = gradient && !frosted
   const redish =
     accentColor === "red" || accentColor === "rose" || accentColor === "pink"
 
@@ -222,7 +220,7 @@ export function generateTokens(
         }
       : null,
     pageSaturationCap: CANVAS_SATURATION_CAP[backgroundIntensity],
-    glass,
+    frosted,
     status: {
       destructive: redish ? accentColors.orange : accentColors.red,
       success: accentColors.emerald,
@@ -232,13 +230,13 @@ export function generateTokens(
   })
   const n = (step: number) => steps.neutral[step - 1] as string
   const p = (step: number) => steps.primary[step - 1] as string
-  const sidebarMark = accentColor === "neutral" || glass ? accent[500] : p(8)
+  const sidebarMark = accentColor === "neutral" || frosted ? accent[500] : p(8)
 
   const background = n(1)
   const card = n(2)
   const sunken = dark ? background : n(3)
   // Glass's dark borders keep its heavier recipe (stops 600, 500, 400).
-  const glassDark = glass && dark
+  const glassDark = frosted && dark
   const borderSubtle = glassDark ? placeStep(neutral, 7) : n(3)
   const borderDefault = glassDark ? placeStep(neutral, 6) : n(6)
   const borderStrong = glassDark ? placeStep(neutral, 5) : n(8)
@@ -304,7 +302,7 @@ export function generateTokens(
     "--surface-overlay": dark ? n(3) : card,
     "--surface-sunken": sunken,
     "--control-well": sunken,
-    "--surface-sidebar": dark && !glass ? card : background,
+    "--surface-sidebar": dark && !frosted ? card : background,
     "--sidebar-foreground": steps.sidebarForeground,
     "--sidebar-foreground-hover": dark ? WHITE : n(12),
     "--sidebar-foreground-muted": n(11),

@@ -32,7 +32,7 @@ const GROUNDS = [
 // A glass card is translucent over the gradient canvas, so the rendered ground
 // under a field drifts from these opaque values. The margin keeps the rendered
 // edge at 3:1 (measured by the template's control-contract e2e spec).
-const floorFor = (style: string) => (style === "glass" ? 3.5 : 3)
+const floorFor = (frosted: boolean) => (frosted ? 3.5 : 3)
 
 describe("--field-edge-color", () => {
   it("clears 3:1 (3.5:1 under glass) on every ground", () => {
@@ -53,7 +53,7 @@ describe("--field-edge-color", () => {
           continue
         }
         const ratio = contrastRatio(edge, value)
-        if (ratio < floorFor(combo.style)) {
+        if (ratio < floorFor(combo.frosted)) {
           failures.push(`${comboName(combo)}: ${ratio.toFixed(2)} on ${ground}`)
         }
       }
@@ -71,7 +71,7 @@ function gradientTokens(combo: ThemeCombo): Record<string, string> {
   return generateTokens({
     accentColor: combo.accentColor,
     surfaceColor: combo.surfaceColor,
-    style: combo.style,
+    frosted: combo.frosted,
     backgroundStyle: "gradient",
     mode: combo.mode,
     contrast: combo.contrast,
@@ -99,7 +99,7 @@ describe("--field-edge-color under a gradient canvas", () => {
         combo.backgroundIntensity,
       )
       const ratio = contrastRatio(edge, peak)
-      if (ratio < floorFor(combo.style)) {
+      if (ratio < floorFor(combo.frosted)) {
         failures.push(`${comboName(combo)}: ${ratio.toFixed(2)} on ${peak}`)
       }
     }
@@ -118,7 +118,7 @@ describe("--field-edge-color under a gradient canvas", () => {
       const tokens = generateTokens({
         accentColor: "blue",
         surfaceColor: "slate",
-        style: "glass",
+        frosted: true,
         backgroundStyle: "gradient",
         mode,
         contrast: "standard",
