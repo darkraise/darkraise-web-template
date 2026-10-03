@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest"
-import { assertFirstParty } from "../../scripts/build-css"
+import { readdirSync } from "node:fs"
+import { resolve } from "node:path"
+import {
+  FONT_PACKAGES,
+  assertFirstParty,
+  readFontPackages,
+} from "../../scripts/build-css"
 
 describe("assertFirstParty", () => {
   it.each([
@@ -19,5 +25,18 @@ describe("assertFirstParty", () => {
           "@font-face { src: url(./fonts/a.woff2); }",
       ),
     ).not.toThrow()
+  })
+})
+
+describe("kit font packages", () => {
+  it("takes every wght-normal subset each package publishes", () => {
+    const fonts = readFontPackages()
+    expect(fonts.map((font) => font.name)).toEqual([...FONT_PACKAGES])
+    for (const font of fonts) {
+      const published = readdirSync(resolve(font.dir, "files"))
+        .filter((file) => file.endsWith("-wght-normal.woff2"))
+        .sort()
+      expect(font.faces.map((face) => face.file).sort()).toEqual(published)
+    }
   })
 })

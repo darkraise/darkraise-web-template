@@ -1,11 +1,29 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs"
+import { createRequire } from "node:module"
 import { dirname, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
+import { parseFontFaces, type FontFaceRule } from "./font-faces"
 
 const thisFile = fileURLToPath(import.meta.url)
 const packageRoot = resolve(dirname(thisFile), "..")
 export const themePath = resolve(packageRoot, "src/styles/theme.css")
 const outPath = resolve(packageRoot, "dist/styles.css")
+
+/** `@fontsource-variable/<name>` packages whose faces ship in `dist/fonts/`. */
+export const FONT_PACKAGES = [
+  "inter",
+  "geist",
+  "ibm-plex-sans",
+  "jetbrains-mono",
+] as const
+
+export interface FontPackage {
+  name: (typeof FONT_PACKAGES)[number]
+  dir: string
+  faces: FontFaceRule[]
+}
+
+const requireFromHere = createRequire(import.meta.url)
 
 const RELATIVE_IMPORT_RE = /^@import\s+"((?:\.\.?\/)[^"]+)";\s*$/gm
 
@@ -42,6 +60,26 @@ export function assertFirstParty(css: string): void {
         "Consumers must not make third-party requests at stylesheet load time.",
     )
   }
+}
+
+export function readFontPackages(): FontPackage[] {
+  return FONT_PACKAGES.map((name) => {
+    const dir = dirname(
+      requireFromHere.resolve(`@fontsource-variable/${name}/package.json`),
+    )
+    const faces = parseFontFaces(
+      readFileSync(resolve(dir, "index.css"), "utf8"),
+    ).filter(
+      (face) =>
+        face.style === "normal" && face.file.endsWith("-wght-normal.woff2"),
+    )
+    if (faces.length === 0) {
+      throw new Error(
+        `build-css: @fontsource-variable/${name} declares no wght-normal face`,
+      )
+    }
+    return { name, dir, faces }
+  })
 }
 
 export function buildStylesheet(): string {
