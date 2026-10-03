@@ -64,6 +64,8 @@ export const defaultLabels: UiLabels = {
       background: "Background",
       layout: "Layout",
       depth: "Depth",
+      brand: "Brand",
+      advanced: "Advanced",
     },
     axisLabels: {
       mode: "Mode",

@@ -78,7 +78,8 @@ describe("mergeLabels", () => {
     })
     expect(merged.theme.modes.dark).toBe("Tối")
     expect(merged.theme.modes.light).toBe("Light")
-    expect(merged.theme.groupLabels.color).toBe("Color")
+    expect(merged.theme.groupLabels.brand).toBe("Brand")
+    expect(merged.theme.groupLabels.advanced).toBe("Advanced")
   })
 
   it("does not mutate the base object", () => {

@@ -79,6 +79,8 @@ const messages: UiMessages = {
       background: "Nền",
       layout: "Bố cục",
       depth: "Chiều sâu",
+      brand: "Thương hiệu",
+      advanced: "Nâng cao",
     },
     axisLabels: {
       mode: "Chế độ",
