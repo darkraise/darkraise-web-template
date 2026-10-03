@@ -3,11 +3,6 @@ import type * as React from "react"
 import { Moon, Sun, Monitor, Square, Blend } from "lucide-react"
 import { Label } from "@components/label"
 import { ToggleGroup, ToggleGroupItem } from "@components/toggle-group"
-import {
-  SegmentGroup,
-  SegmentGroupIndicator,
-  SegmentGroupItem,
-} from "@components/segment-group"
 import { useTheme } from "@theme/useTheme"
 import {
   ACCENT_COLORS,
@@ -17,7 +12,6 @@ import {
   DENSITIES,
   ELEVATIONS,
   RADII,
-  SHELL_STYLES,
   SIDEBAR_ACTIVE_BARS,
   FONT_SIZES,
   GLOW_LEVELS,
@@ -31,7 +25,6 @@ import type {
   SurfaceColor,
   BackgroundStyle,
   GradientPattern,
-  ShellStyle,
 } from "@theme/types"
 import {
   presets,
@@ -95,7 +88,6 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
     elevation,
     buttonElevation,
     radius,
-    shellStyle,
     sidebarActiveBar,
     fontSize,
     outerGlow,
@@ -117,7 +109,6 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
     setElevation,
     setButtonElevation,
     setRadius,
-    setShellStyle,
     setSidebarActiveBar,
     setFontSize,
     setOuterGlow,
@@ -545,34 +536,6 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
             onChange={setInnerGlow}
             label={labels.theme.axisLabels.innerGlow}
           />
-        </div>
-      ),
-    },
-    show("shellStyle") && {
-      key: "shellStyle",
-      group: "layout" as const,
-      node: (
-        <div key="shellStyle" className="dr-theme-switcher-row">
-          <Label className="dr-theme-switcher-section-label">
-            {labels.theme.axisLabels.shellStyle}
-          </Label>
-          {/* Not AxisControl: six categorical values would fall through to
-              a toggle grid with no six-column rule and stack vertically. */}
-          <SegmentGroup
-            value={shellStyle}
-            onValueChange={(value) => {
-              if (value) setShellStyle(value as ShellStyle)
-            }}
-            aria-label={labels.theme.axisLabels.shellStyle}
-            className="dr-theme-switcher-segment-group"
-          >
-            <SegmentGroupIndicator />
-            {SHELL_STYLES.map((value) => (
-              <SegmentGroupItem key={value} value={value}>
-                {labels.themeOptions[value]}
-              </SegmentGroupItem>
-            ))}
-          </SegmentGroup>
         </div>
       ),
     },

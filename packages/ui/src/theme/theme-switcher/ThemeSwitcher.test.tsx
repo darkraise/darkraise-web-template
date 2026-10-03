@@ -209,18 +209,17 @@ describe("ThemeSwitcher preset section", () => {
     expect(screen.getByRole("radio", { name: /^system$/i })).toBeInTheDocument()
   })
 
-  it("switches the shell style", () => {
+  it("leaves shell style to the layout switcher", () => {
     render(
       <ThemeProvider>
         <ThemeSwitcher />
       </ThemeProvider>,
     )
     openSwitcher()
-    // Six values, so AxisControl renders a toggle group rather than a slider.
-    fireEvent.click(screen.getByRole("radio", { name: "island" }))
-    expect(document.documentElement.getAttribute("data-shell-style")).toBe(
-      "island",
-    )
+    expect(screen.queryByText("Shell Style")).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole("radio", { name: "island" }),
+    ).not.toBeInTheDocument()
   })
 })
 
