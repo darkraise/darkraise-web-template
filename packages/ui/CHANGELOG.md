@@ -4,6 +4,10 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 
 ## [Unreleased]
 
+`ThemePersistenceAdapter.save` receives an optional second argument, `{ signal }`. The provider runs one save at a time and gives up on a save after 15 seconds: it aborts the signal, moves on to the newest waiting save, and reports `syncStatus` `error` when none is waiting. An adapter can pass the signal to `fetch` to cancel the request; cancelling stops the client waiting but cannot undo a write the server already received, so an adapter that needs strict ordering must enforce it on the server. Saves requested while one is running collapse into the newest, and `syncStatus` reads `saving` from the moment a change is scheduled to be saved.
+
+Under server rendering, the layout store renders its defaults (the `sidebar` layout, no shell style) until hydration finishes and then applies the stored `layout-variant` and `theme-shell-style`, so hydration no longer mismatches. Client-only apps still show the stored values on their first render.
+
 Breaking: `ThemeConfig.defaults` is a partial map, and a key left out falls back to the registry default. `ThemeConfig.switcher` is `{ enabled, axes?, advanced? }`: an axis missing from `axes` is shown, and `advanced: false` removes the Advanced part of the theme switcher. `switcher.axes.presetAxes` is removed; a preset's own axes show under the style control whenever it is visible. In development, a removed key (`surfaceIntensity`, `borderIntensity`, `accentIntensity`, `controlDepth`, `buttonElevation`, `shellStyle`, `presetAxes`) passed in a config warns once with its replacement and is ignored.
 
 Breaking: `buttonElevation` is removed from `ThemeSettings`, `ThemeConfig`, the context and the switcher, and buttons keep the flat shadow. `elevation` takes `flat`, `standard` or `high`; `standard` is the old `medium` depth and the default, and `low` is gone. Stored and synced `low` and `medium` become `standard`.
