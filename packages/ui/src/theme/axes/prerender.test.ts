@@ -1,6 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import type { ThemeConfig } from "@theme/themeConfig"
+import { LEGACY_MARKER_KEY, LEGACY_REVISION } from "./legacy"
 import { buildPrerenderScript } from "./prerender"
+import { AXES, AXIS_KEYS } from "./registry"
 import {
+  TOKEN_CACHE_SCHEMA,
   TOKEN_CACHE_STORAGE_KEY,
   cacheInputKeys,
   tokenCacheId,
@@ -10,8 +14,16 @@ import { KIT_VERSION } from "./version"
 
 const root = document.documentElement
 
-function run() {
-  new Function(buildPrerenderScript())()
+function run(defaults: ThemeConfig["defaults"] = {}) {
+  new Function(buildPrerenderScript(defaults))()
+}
+
+// A current user's choices: the marker says the legacy table already ran.
+function storeCurrent(values: Record<string, string>) {
+  localStorage.setItem(LEGACY_MARKER_KEY, String(LEGACY_REVISION))
+  for (const [key, value] of Object.entries(values)) {
+    localStorage.setItem(key, value)
+  }
 }
 
 function mockMatchMedia(dark: boolean) {
@@ -50,7 +62,7 @@ describe("pre-render script", () => {
     expect(root.getAttribute("data-mode")).toBe("light")
   })
 
-  it("restores every valid attribute axis and skips invalid values", () => {
+  it("restores every valid attribute axis and paints the default for an invalid one", () => {
     localStorage.setItem("theme-density", "spacious")
     localStorage.setItem("theme-accent", "violet")
     localStorage.setItem("theme-radius", "huge")
@@ -58,7 +70,7 @@ describe("pre-render script", () => {
     run()
     expect(root.getAttribute("data-density")).toBe("spacious")
     expect(root.getAttribute("data-accent")).toBe("violet")
-    expect(root.hasAttribute("data-radius")).toBe(false)
+    expect(root.getAttribute("data-radius")).toBe(AXES.radius.default)
     expect(root.hasAttribute("data-sidebar-active-bar")).toBe(false)
   })
 
@@ -68,10 +80,10 @@ describe("pre-render script", () => {
     expect(root.getAttribute("data-font")).toBe("geist")
   })
 
-  it("skips an unknown stored font", () => {
+  it("paints the default font for an unknown stored font", () => {
     localStorage.setItem("theme-font", "comic-sans")
     run()
-    expect(root.hasAttribute("data-font")).toBe(false)
+    expect(root.getAttribute("data-font")).toBe(AXES.font.default)
   })
 
   it("ignores the stored values of removed axes", () => {
@@ -132,7 +144,7 @@ describe("pre-render script", () => {
     expect(root.getAttribute("data-mode")).toBe("dark")
   })
 
-  it("sets the mode from matchMedia when reading storage throws", () => {
+  it("sets the mode from matchMedia and paints defaults when reading storage throws", () => {
     mockMatchMedia(true)
     localStorage.setItem("theme-accent", "rose")
     vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
@@ -140,7 +152,8 @@ describe("pre-render script", () => {
     })
     run()
     expect(root.getAttribute("data-mode")).toBe("dark")
-    expect(root.hasAttribute("data-accent")).toBe(false)
+    expect(root.getAttribute("data-accent")).toBe(AXES.accentColor.default)
+    expect(root.style.cssText).toBe("")
   })
 
   it("migrates legacy keys before restoring attributes", () => {
@@ -234,5 +247,97 @@ describe("pre-render script", () => {
     expect(localStorage.getItem("theme-elevation")).toBe("low")
     expect(localStorage.getItem("theme-settings-version")).toBe("2")
     expect(root.getAttribute("data-style")).toBe("quiet")
+  })
+})
+
+describe("pre-render script defaults", () => {
+  it("paints every attribute axis at its registry default when nothing is stored", () => {
+    run()
+    for (const key of AXIS_KEYS) {
+      const attribute = AXES[key].attribute
+      if (!attribute || key === "mode") continue
+      expect(root.getAttribute(attribute), key).toBe(AXES[key].default)
+    }
+  })
+
+  it("resolves an unstored mode from the config default", () => {
+    run({ mode: "dark" })
+    expect(root.getAttribute("data-mode")).toBe("dark")
+    storeCurrent({ mode: "light" })
+    run({ mode: "dark" })
+    expect(root.getAttribute("data-mode")).toBe("light")
+  })
+
+  it("paints the config defaults when storage access throws", () => {
+    vi.spyOn(window, "localStorage", "get").mockImplementation(() => {
+      throw new DOMException("denied", "SecurityError")
+    })
+    expect(() =>
+      run({ mode: "dark", style: "flat", accentColor: "rose" }),
+    ).not.toThrow()
+    expect(root.getAttribute("data-mode")).toBe("dark")
+    expect(root.getAttribute("data-style")).toBe("flat")
+    expect(root.getAttribute("data-elevation")).toBe("flat")
+    expect(root.getAttribute("data-accent")).toBe("rose")
+    expect(root.getAttribute("data-radius")).toBe(AXES.radius.default)
+    expect(root.style.cssText).toBe("")
+  })
+
+  it("takes the style from the config default when none is stored", () => {
+    run({ style: "glass" })
+    expect(root.getAttribute("data-style")).toBe("glass")
+    expect(root.getAttribute("data-background-style")).toBe("gradient")
+  })
+
+  it("lets a style default beat a config default", () => {
+    storeCurrent({ "theme-preset": "flat" })
+    run({ elevation: "high" })
+    expect(root.getAttribute("data-elevation")).toBe("flat")
+    storeCurrent({ "theme-preset": "tactile" })
+    run({ elevation: "high" })
+    expect(root.getAttribute("data-elevation")).toBe("high")
+  })
+
+  it("lets a stored value beat the style default", () => {
+    storeCurrent({ "theme-preset": "glass", "theme-bg-style": "solid" })
+    run()
+    expect(root.getAttribute("data-background-style")).toBe("solid")
+  })
+
+  it("still migrates an unmarked glass user on a solid canvas", () => {
+    localStorage.setItem("theme-preset", "glass")
+    localStorage.setItem("theme-bg-style", "solid")
+    run()
+    expect(root.getAttribute("data-background-style")).toBe("gradient")
+    expect(localStorage.getItem("theme-bg-style")).toBe("gradient")
+  })
+
+  it("ignores a config default that is not a value of its axis", () => {
+    run({ radius: "huge", mode: "sepia" } as unknown as ThemeConfig["defaults"])
+    expect(root.getAttribute("data-radius")).toBe(AXES.radius.default)
+    expect(root.getAttribute("data-mode")).toBe("light")
+  })
+
+  it("finds the cache the provider wrote under a config default mode", () => {
+    const read = (k: string) => localStorage.getItem(k)
+    writeTokenCache(localStorage, tokenCacheId(read, "dark"), {
+      "--primary": "1 2% 3%",
+    })
+    run({ mode: "dark" })
+    expect(root.style.getPropertyValue("--primary")).toBe("1 2% 3%")
+  })
+
+  it("misses a cache written under an older schema", () => {
+    const read = (k: string) => localStorage.getItem(k)
+    const id = tokenCacheId(read, "light")
+    const prefix = `${KIT_VERSION}|${TOKEN_CACHE_SCHEMA}|`
+    expect(id.startsWith(`${prefix}light|`)).toBe(true)
+    writeTokenCache(
+      localStorage,
+      id.replace(prefix, `${KIT_VERSION}|${TOKEN_CACHE_SCHEMA - 1}|`),
+      { "--primary": "1 2% 3%" },
+    )
+    run()
+    expect(root.style.getPropertyValue("--primary")).toBe("")
   })
 })

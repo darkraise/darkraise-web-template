@@ -2,12 +2,7 @@ import { cleanup, render } from "@testing-library/react"
 import { createElement } from "react"
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import { ThemeProvider } from "@theme/theme-provider/ThemeProvider"
-import {
-  LEGACY_MARKER_KEY,
-  LEGACY_REVISION,
-  LEGACY_TARGETS,
-  migrateStorage,
-} from "./legacy"
+import { LEGACY_MARKER_KEY, LEGACY_REVISION, migrateStorage } from "./legacy"
 import { PRE_V696_KEYS, V696_KEYS } from "./legacy-fixture"
 import { buildPrerenderScript } from "./prerender"
 import { AXES, AXIS_KEYS } from "./registry"
@@ -99,20 +94,8 @@ function memoryStorage(state: Record<string, string>) {
   }
 }
 
-// The provider stamps every axis, defaults included, but the script restores
-// only an axis whose migrated stored value is valid.
-function restoredAttributes(stored: Record<string, string>): string[] {
-  return [
-    "data-mode",
-    ...AXIS_KEYS.filter((key) => key !== "mode" && AXES[key].attribute)
-      .filter((key) =>
-        LEGACY_TARGETS[AXES[key].storageKey]?.includes(
-          stored[AXES[key].storageKey] ?? "",
-        ),
-      )
-      .map((key) => AXES[key].attribute as string),
-  ]
-}
+// The script and the provider both stamp every attribute axis.
+const ATTRIBUTES = AXIS_KEYS.flatMap((key) => AXES[key].attribute ?? [])
 
 // Clearing the inline style leaves an empty style attribute, which the snapshot
 // of what the script painted must not pick up.
@@ -145,10 +128,7 @@ describe("pre-render script and migrateStorage", () => {
     seed(state)
     render(createElement(ThemeProvider, { children: null }))
     const provided = Object.fromEntries(
-      restoredAttributes(scripted).map((name) => [
-        name,
-        root.getAttribute(name),
-      ]),
+      ATTRIBUTES.map((name) => [name, root.getAttribute(name)]),
     )
     expect(provided).toEqual(painted)
   })
