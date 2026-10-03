@@ -20,6 +20,14 @@ const UTILITY =
 const REMOVED_AXES =
   /\b(surfaceIntensity|controlDepth|borderIntensity|accentIntensity)\b|data-(surface-intensity|control-depth|border-intensity|accent-intensity)/
 
+// These files name the removed axes on purpose: the 6.9.6 storage fixture,
+// the removed-key warnings and the legacy migration table.
+const AXIS_NAMES_ALLOWED = new Set([
+  "packages/ui/src/theme/axes/legacy-fixture.ts",
+  "packages/ui/src/theme/axes/legacy.ts",
+  "packages/ui/src/theme/themeConfig.ts",
+])
+
 function files(dir: string): string[] {
   return readdirSync(dir).flatMap((name) => {
     const path = join(dir, name)
@@ -36,19 +44,19 @@ describe("removed status tokens and axes", () => {
   it("are not referenced anywhere", () => {
     const hits: string[] = []
     for (const dir of DIRS)
-      for (const file of files(join(ROOT, dir)))
+      for (const file of files(join(ROOT, dir))) {
+        const rel = file.slice(ROOT.length + 1).replaceAll("\\", "/")
         readFileSync(file, "utf8")
           .split("\n")
           .forEach((line, i) => {
             if (
               TOKEN.test(line) ||
               UTILITY.test(line) ||
-              REMOVED_AXES.test(line)
+              (!AXIS_NAMES_ALLOWED.has(rel) && REMOVED_AXES.test(line))
             )
-              hits.push(
-                `${file.slice(ROOT.length + 1)}:${i + 1}: ${line.trim()}`,
-              )
+              hits.push(`${rel}:${i + 1}: ${line.trim()}`)
           })
+      }
     expect(hits).toEqual([])
   })
 })
