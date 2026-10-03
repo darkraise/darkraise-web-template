@@ -443,6 +443,7 @@ describe("useTheme persistence", () => {
     expect(adapter.save).toHaveBeenCalledOnce()
     expect(adapter.save).toHaveBeenCalledWith(
       expect.objectContaining({ accentColor: "pink" }),
+      expect.anything(),
     )
   })
 
@@ -471,6 +472,7 @@ describe("useTheme persistence", () => {
     expect(adapter.save).toHaveBeenCalledOnce()
     expect(adapter.save).toHaveBeenCalledWith(
       expect.objectContaining({ accentColor: "violet" }),
+      expect.anything(),
     )
   })
 

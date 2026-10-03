@@ -54,6 +54,31 @@ declare const process: { env: { NODE_ENV?: string } }
 
 const isBrowser = typeof window !== "undefined"
 
+const SAVE_TIMEOUT_MS = 15_000
+
+// Resolves false on a rejection or once the timeout aborts the save, so the
+// queue moves on either way.
+function saveWithTimeout(
+  adapter: ThemePersistenceAdapter,
+  payload: ThemeSettings,
+): Promise<boolean> {
+  const controller = new AbortController()
+  let timer: ReturnType<typeof setTimeout> | undefined
+  const timedOut = new Promise<boolean>((resolve) => {
+    timer = setTimeout(() => {
+      controller.abort()
+      resolve(false)
+    }, SAVE_TIMEOUT_MS)
+  })
+  const saved = Promise.resolve()
+    .then(() => adapter.save(payload, { signal: controller.signal }))
+    .then(
+      () => true,
+      () => false,
+    )
+  return Promise.race([saved, timedOut]).finally(() => clearTimeout(timer))
+}
+
 // localStorage access guarded for SSR (window undefined) and for runtime
 // failures (private-browsing, quota exceeded, security errors). Reads return
 // null when storage is unavailable so the consumer falls back to the
@@ -244,24 +269,30 @@ export function ThemeProvider({
 
   const hasUserChanged = useRef(false)
 
-  // Adapters may settle out of order, so saves run one at a time: otherwise
-  // the load's upgrade save could land after the user's newer save.
-  const saveChain = useRef<Promise<unknown>>(Promise.resolve())
+  // Adapters may settle out of order, so one save runs at a time: otherwise
+  // the load's upgrade save could land after the user's newer save. A save
+  // asked for meanwhile replaces any waiting one, since every payload is the
+  // full settings set.
+  const saveRunning = useRef(false)
+  const pendingSave = useRef<{
+    adapter: ThemePersistenceAdapter
+    payload: ThemeSettings
+  } | null>(null)
   const queueSave = useCallback(
     (adapter: ThemePersistenceAdapter, payload: ThemeSettings) => {
       setSyncStatus("saving")
-      const run = saveChain.current
-        .catch(() => {})
-        .then(() => adapter.save(payload))
-      saveChain.current = run
-      run.then(
-        () => {
-          if (saveChain.current === run) setSyncStatus("idle")
-        },
-        () => {
-          if (saveChain.current === run) setSyncStatus("error")
-        },
-      )
+      pendingSave.current = { adapter, payload }
+      if (saveRunning.current) return
+      saveRunning.current = true
+      void (async () => {
+        let saved = true
+        for (let next = pendingSave.current; next; next = pendingSave.current) {
+          pendingSave.current = null
+          saved = await saveWithTimeout(next.adapter, next.payload)
+        }
+        saveRunning.current = false
+        setSyncStatus(saved ? "idle" : "error")
+      })()
     },
     [],
   )

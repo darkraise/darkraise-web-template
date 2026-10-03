@@ -288,7 +288,7 @@ function memoryAdapter(initial: Record<string, unknown> | null) {
   let remote = initial as ThemeSettings | null
   const adapter = {
     load: vi.fn(() => Promise.resolve(remote)),
-    save: vi.fn((next: ThemeSettings) => {
+    save: vi.fn<ThemePersistenceAdapter["save"]>((next) => {
       remote = next
       return Promise.resolve()
     }),
@@ -499,6 +499,7 @@ describe("ThemeProvider synced payloads", () => {
     )
     expect(adapter.save).toHaveBeenLastCalledWith(
       expect.objectContaining({ density: "compact", version: 7 }),
+      expect.anything(),
     )
   })
 
@@ -534,5 +535,96 @@ describe("ThemeProvider synced payloads", () => {
     await settle()
     expect(useLayoutStore.getState().shellStyle).toBeNull()
     expect(localStorage.getItem(SHELL_STYLE_STORAGE_KEY)).toBeNull()
+  })
+
+  it("moves past a save that never settles and aborts it", async () => {
+    const { adapter } = memoryAdapter(null)
+    adapter.save.mockImplementationOnce(() => new Promise<void>(() => {}))
+    const { result } = renderHook(() => useTheme(), {
+      wrapper: synced(adapter),
+    })
+    await settle()
+
+    act(() => result.current.setDensity("compact"))
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(60)
+    })
+    expect(adapter.save).toHaveBeenCalledOnce()
+
+    act(() => result.current.setDensity("spacious"))
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(60)
+    })
+    expect(adapter.save).toHaveBeenCalledOnce()
+    expect(result.current.syncStatus).toBe("saving")
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(15_000)
+    })
+    expect(adapter.save.mock.calls[0]?.[1]?.signal.aborted).toBe(true)
+    expect(adapter.save).toHaveBeenCalledTimes(2)
+    expect(adapter.save.mock.calls[1]?.[0]).toEqual(
+      expect.objectContaining({ density: "spacious" }),
+    )
+    expect(result.current.syncStatus).toBe("idle")
+  })
+
+  it("sends only the newest of the saves waiting behind one in flight", async () => {
+    const resolvers: Array<() => void> = []
+    const { adapter } = memoryAdapter(null)
+    adapter.save.mockImplementation(
+      () => new Promise<void>((resolve) => resolvers.push(resolve)),
+    )
+    const { result } = renderHook(() => useTheme(), {
+      wrapper: synced(adapter),
+    })
+    await settle()
+
+    for (const accent of ["red", "green", "violet", "pink"] as const) {
+      act(() => result.current.setAccentColor(accent))
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(60)
+      })
+    }
+    expect(adapter.save).toHaveBeenCalledOnce()
+
+    await act(async () => {
+      resolvers[0]?.()
+      await vi.advanceTimersByTimeAsync(0)
+    })
+    expect(adapter.save).toHaveBeenCalledTimes(2)
+    expect(adapter.save.mock.calls[1]?.[0]).toEqual(
+      expect.objectContaining({ accentColor: "pink" }),
+    )
+    expect(result.current.syncStatus).toBe("saving")
+
+    await act(async () => {
+      resolvers[1]?.()
+      await vi.advanceTimersByTimeAsync(0)
+    })
+    expect(adapter.save).toHaveBeenCalledTimes(2)
+    expect(result.current.syncStatus).toBe("idle")
+  })
+
+  it("reports a save that times out with nothing waiting", async () => {
+    const { adapter } = memoryAdapter(null)
+    adapter.save.mockImplementation(() => new Promise<void>(() => {}))
+    const { result } = renderHook(() => useTheme(), {
+      wrapper: synced(adapter),
+    })
+    await settle()
+
+    act(() => result.current.setDensity("compact"))
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(60)
+    })
+    expect(result.current.syncStatus).toBe("saving")
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(15_000)
+    })
+    expect(adapter.save).toHaveBeenCalledOnce()
+    expect(adapter.save.mock.calls[0]?.[1]?.signal.aborted).toBe(true)
+    expect(result.current.syncStatus).toBe("error")
   })
 })

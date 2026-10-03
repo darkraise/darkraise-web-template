@@ -154,7 +154,14 @@ export type ThemeSettings = Partial<AxisValues> & {
 
 export interface ThemePersistenceAdapter {
   load(): Promise<ThemeSettings | null>
-  save(settings: ThemeSettings): Promise<void>
+  /**
+   * `signal` aborts when the provider gives up on the save after 15 seconds.
+   * An adapter that ignores it may land a timed-out save after a newer one.
+   */
+  save(
+    settings: ThemeSettings,
+    options?: { signal: AbortSignal },
+  ): Promise<void>
 }
 
 export type ThemeSyncStatus = "idle" | "loading" | "saving" | "error"
