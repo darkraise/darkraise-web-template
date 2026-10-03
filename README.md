@@ -37,7 +37,6 @@ npm create darkraise-ui my-app \
   --mode system \
   --density cozy \
   --elevation standard \
-  --button-elevation flat \
   --radius rounded \
   --font-size medium \
   --theme-switcher \
@@ -58,7 +57,6 @@ npm create darkraise-ui my-app \
 | `--mode`                                   | `light`, `dark`, `system`                                                                                                        | `system`    |
 | `--density`                                | `compact`, `cozy`, `comfortable`, `spacious`                                                                                     | `cozy`      |
 | `--elevation`                              | `flat`, `standard`, `high`                                                                                                       | `standard`  |
-| `--button-elevation`                       | `flat`, `low`, `medium`, `high`                                                                                                  | `flat`      |
 | `--radius`                                 | `sharp`, `subtle`, `rounded`, `pill`                                                                                             | `rounded`   |
 | `--font-size`                              | `small`, `medium`, `large`, `extra-large`                                                                                        | `medium`    |
 | `--theme-switcher` / `--no-theme-switcher` | boolean                                                                                                                          | enabled     |
@@ -95,7 +93,7 @@ Several hooks are adapted from [react-hookz/web](https://github.com/react-hookz/
 
 ### Theming
 
-A 15-axis theming system. Scaffolded projects configure it through `src/theme.config.ts`, which imports the `ThemeConfig` type from `darkraise-ui/theme`; in this monorepo the type and defaults live in `packages/ui/src/theme/themeConfig.ts`. The axes are:
+A 14-axis theming system. Scaffolded projects configure it through `src/theme.config.ts`, which imports the `ThemeConfig` type from `darkraise-ui/theme`; in this monorepo the type and defaults live in `packages/ui/src/theme/themeConfig.ts`. The axes are:
 
 - **Mode** -- light, dark, or system
 - **Accent color** -- 18 color options plus `neutral` (near-black in light, near-white in dark)
@@ -106,7 +104,6 @@ A 15-axis theming system. Scaffolded projects configure it through `src/theme.co
 - **Gradient pattern** -- blobs, aurora, spotlight, or mesh
 - **Density** -- compact, cozy, comfortable, or spacious
 - **Elevation** -- flat, standard, or high (surface shadows)
-- **Button elevation** -- flat, low, medium, or high (button-specific shadows)
 - **Radius** -- sharp, subtle, rounded, or pill
 - **Font size** -- small, medium, large, or extra-large (scales type, icons, and minimum control heights)
 - **Contrast** -- low, standard, or high (how far apart the page, card and edge steps sit)
