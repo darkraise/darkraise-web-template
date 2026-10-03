@@ -1,4 +1,4 @@
-import { test, expect, type BrowserContext, type Page } from "@playwright/test"
+import { test, expect, type Page } from "@playwright/test"
 import { PRESETS } from "./fixtures/theme"
 import { gotoApp, seedApp } from "./helpers/app"
 import { settle } from "./helpers/measure"
@@ -61,58 +61,18 @@ test.use({
   locale: "en-US",
 })
 
-// One font URL can take three 15s attempts and the font poll waits up to 30s,
-// so a test needs more than the suite's 45s for the poll's own message to fire.
+// The font poll waits up to 30s after a page load, so a test needs more than
+// the suite's 45s for the poll's own message to fire.
 test.describe.configure({ timeout: 90_000 })
-
-interface CachedFont {
-  headers: Record<string, string>
-  body: Buffer
-}
-
-const FONT_HOSTS = /^https:\/\/fonts\.(googleapis|gstatic)\.com\//
-const fontCache = new Map<string, CachedFont>()
-
-/**
- * Google Fonts is the only network the captured pages depend on. A slow
- * request holds the app's first paint and a failed one leaves a fallback face
- * in the image, so each font URL is fetched once, retried on failure, and
- * replayed from memory.
- */
-async function serveFontsFromCache(context: BrowserContext) {
-  await context.route(FONT_HOSTS, async (route) => {
-    const url = route.request().url()
-    let font = fontCache.get(url)
-    for (let attempt = 0; !font && attempt < 3; attempt++) {
-      const response = await route.fetch({ timeout: 15_000 }).catch(() => null)
-      if (response?.ok()) {
-        const headers = Object.fromEntries(
-          Object.entries(response.headers()).filter(
-            ([name]) =>
-              name !== "content-encoding" && name !== "content-length",
-          ),
-        )
-        font = { headers, body: await response.body() }
-      }
-    }
-    if (!font) return route.abort()
-    fontCache.set(url, font)
-    return route.fulfill({
-      status: 200,
-      headers: font.headers,
-      body: font.body,
-    })
-  })
-}
 
 /** The faces the app text and code samples use, as `fonts.load` specs. */
 const FACES = [
-  "400 1em Inter",
-  "500 1em Inter",
-  "600 1em Inter",
-  "700 1em Inter",
-  '400 1em "JetBrains Mono"',
-  '500 1em "JetBrains Mono"',
+  '400 1em "Inter Variable"',
+  '500 1em "Inter Variable"',
+  '600 1em "Inter Variable"',
+  '700 1em "Inter Variable"',
+  '400 1em "JetBrains Mono Variable"',
+  '500 1em "JetBrains Mono Variable"',
 ]
 
 /**
@@ -179,7 +139,6 @@ test.beforeAll(async ({ browser }) => {
   test.setTimeout(600_000)
   const context = await browser.newContext({ viewport: VIEWPORT })
   try {
-    await serveFontsFromCache(context)
     const page = await context.newPage()
     await seedApp(page, { preset: "default", mode: "light" })
     const paths = [
@@ -187,7 +146,11 @@ test.beforeAll(async ({ browser }) => {
       ...SHOWCASE_PAGES.map(([, path]) => path),
       "/e2e/fixtures/baseline-overlays.html?show=dialog",
     ]
+    // Uncollected garbage from earlier routes fails a later navigation with
+    // ERR_INSUFFICIENT_RESOURCES, as gotoApp guards against.
+    const cdp = await context.newCDPSession(page)
     for (const path of paths) {
+      await cdp.send("HeapProfiler.collectGarbage")
       await page.goto(path, { waitUntil: "networkidle", timeout: 45_000 })
     }
   } finally {
@@ -199,7 +162,6 @@ for (const preset of PRESETS) {
   for (const mode of MODES) {
     test.describe(`${preset} · ${mode}`, () => {
       test.beforeEach(async ({ page }) => {
-        await serveFontsFromCache(page.context())
         await seedApp(page, { preset, mode })
       })
 
