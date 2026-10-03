@@ -234,10 +234,33 @@ arrows, the week-number header and the two view-switch captions) comes from
 An explicit `aria-label` on `DatePickerTrigger` or `DatePickerPresets` still
 wins over the provider.
 
-`theme.axisLabels.presetAxes` is a reserved key with no current effect —
-translating it will not change anything rendered today; it is kept so that a
-future wiring stays backward-compatible for anyone already providing a
-complete `UiLabels`.
+## Theme config
+
+`ThemeProvider` takes an optional `config`. Only `switcher.enabled` is
+required:
+
+```ts
+import type { ThemeConfig } from "darkraise-ui/theme"
+
+export const themeConfig: ThemeConfig = {
+  // Only the axes whose default you change; the rest keep the kit's.
+  defaults: { accentColor: "violet", radius: "pill" },
+  switcher: {
+    enabled: true,
+    // An axis left out is shown; `false` hides its control.
+    axes: { sidebarActiveBar: false },
+    // `false` removes the Advanced part of the theme switcher.
+    advanced: true,
+  },
+}
+```
+
+A default outside its axis's values falls back to the kit default. In
+development the provider warns once about such a value and about each removed
+key (`surfaceIntensity`, `borderIntensity`, `accentIntensity`, `controlDepth`,
+`buttonElevation`, `shellStyle`, and `switcher.axes.presetAxes`), naming its
+replacement, and ignores the key. A preset's own controls, such as glass
+opacity and blur, show under the Preset control whenever it is shown.
 
 ## Shell styles
 

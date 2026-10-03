@@ -111,7 +111,7 @@ A 15-axis theming system. Scaffolded projects configure it through `src/theme.co
 - **Dark accent chroma** -- calm, standard, or vivid (dark mode only; how saturated the accent fills and marks render)
 - **Tint with accent** -- off or on (tints the neutral surfaces toward the accent; hidden under the neutral accent)
 
-The switcher config also exposes a `presetAxes` master toggle that controls whether preset-specific controls (for example glass opacity and blur) appear in the switcher panel.
+`theme.config.ts` lists only what differs from the kit's defaults. An axis left out of `switcher.axes` is shown, `switcher.advanced: false` removes the Advanced part of the panel, and a preset's own controls (for example glass opacity and blur) appear under the Preset control whenever it is shown.
 
 Monospace text always uses JetBrains Mono. Font size is adjustable via the axis above.
 
