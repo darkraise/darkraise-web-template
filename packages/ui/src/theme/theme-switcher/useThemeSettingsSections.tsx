@@ -34,6 +34,7 @@ import {
 } from "@theme/presets"
 import { resolveAccentScale } from "@theme/engine/generateTokens"
 import { surfaceColors } from "@theme/palettes/surfaceColors"
+import { AXES } from "@theme/axes/registry"
 import { useUiLabels } from "@labels"
 import { AxisControl } from "./AxisControl"
 import { isAxisVisible, type AxisVisibilityInput } from "./axisVisibility"
@@ -480,7 +481,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
             {labels.theme.axisLabels.buttonElevation}
           </Label>
           <AxisControl
-            values={ELEVATIONS}
+            values={AXES.buttonElevation.values}
             value={buttonElevation}
             onChange={setButtonElevation}
             label={labels.theme.axisLabels.buttonElevation}

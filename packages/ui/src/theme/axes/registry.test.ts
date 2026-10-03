@@ -4,6 +4,7 @@ import { AXES, AXIS_KEYS, isAxisValue, type AxisKey } from "./registry"
 import { KIT_VERSION } from "./version"
 import { themeConfig } from "@theme/themeConfig"
 import { PRESET_NAMES, presets } from "@theme/presets"
+import { ELEVATIONS } from "@theme/types"
 
 describe("axis registry", () => {
   it("lists every axis once, in registry order", () => {
@@ -64,6 +65,16 @@ describe("axis registry", () => {
       attribute: "data-tint-with-accent",
       layer: "brand",
     })
+  })
+
+  it("gives button elevation its own four levels", () => {
+    expect(AXES.buttonElevation.values).toEqual([
+      "flat",
+      "low",
+      "medium",
+      "high",
+    ])
+    expect(AXES.buttonElevation.values).not.toBe(ELEVATIONS)
   })
 
   it("drops the axes the colour engine replaced", () => {

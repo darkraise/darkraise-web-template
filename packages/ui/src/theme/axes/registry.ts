@@ -109,7 +109,7 @@ export const AXES = {
   }),
   /** Shadow depth of buttons, set apart from surface elevation. */
   buttonElevation: axis({
-    values: ELEVATIONS,
+    values: ["flat", "low", "medium", "high"],
     default: "flat",
     storageKey: "theme-button-elevation",
     attribute: "data-button-elevation",

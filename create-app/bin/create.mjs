@@ -32,6 +32,7 @@ const BACKGROUND_INTENSITIES = AXES.backgroundIntensity.values
 const GRADIENT_PATTERNS = AXES.gradientPattern.values
 const DENSITIES = AXES.density.values
 const ELEVATIONS = AXES.elevation.values
+const BUTTON_ELEVATIONS = AXES.buttonElevation.values
 const RADII = AXES.radius.values
 const SIDEBAR_ACTIVE_BARS = AXES.sidebarActiveBar.values
 const FONT_SIZES = AXES.fontSize.values
@@ -101,7 +102,7 @@ validate(argv["gradient-pattern"], GRADIENT_PATTERNS, "gradient-pattern")
 validate(argv.mode, MODES, "mode")
 validate(argv.density, DENSITIES, "density")
 validate(argv.elevation, ELEVATIONS, "elevation")
-validate(argv["button-elevation"], ELEVATIONS, "button-elevation")
+validate(argv["button-elevation"], BUTTON_ELEVATIONS, "button-elevation")
 validate(argv.radius, RADII, "radius")
 validate(argv["sidebar-active-bar"], SIDEBAR_ACTIVE_BARS, "sidebar-active-bar")
 validate(argv["font-size"], FONT_SIZES, "font-size")
@@ -316,7 +317,7 @@ async function main() {
       : cancelled(
           await p.select({
             message: "Button elevation",
-            options: ELEVATIONS.map((e) => ({ value: e, label: e })),
+            options: BUTTON_ELEVATIONS.map((e) => ({ value: e, label: e })),
             initialValue: "flat",
           }),
         ))
