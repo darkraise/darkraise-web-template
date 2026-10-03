@@ -102,21 +102,22 @@ full round-trip test that every axis survives reload and navigation.
 
 Everything above again, this time through the popover a user actually operates:
 
-- Opens from the header, closes on Escape; the default preset shows all eighteen
-  common-axis sections in order.
+- Opens from the header, closes on Escape; the default preset shows the nine
+  Brand sections in order, then the eight Advanced sections once the Advanced
+  disclosure is opened (`openAdvanced` in `helpers/app.ts`).
 - Each of the 2 presets is selectable and persists across reload.
 - Neither preset hides a common axis (`HIDDEN_COMMON_AXES` is empty for both),
-  and glass offers its own opacity and blur axes.
+  and glass offers its own opacity and blur axes right after the Preset control.
 - Mode radios, including System against an emulated dark scheme.
 - All 19 accent and all 12 surface swatches: clicked, `data-active` confirmed,
   and each one produces a distinct token. Choosing the neutral accent hides Tint
   With Accent.
 - Background toggle reveals and hides the intensity and pattern controls; all
   four gradient patterns are selectable.
-- The three 4-value axes (density, font size, radius) render as stepped
+- The three 4-value Brand axes (density, font size, radius) render as stepped
   sliders and are walked value by value **with the keyboard**, since a
-  slider has no clickable cell. Elevation's three levels render as a toggle
-  group and are clicked in turn.
+  slider has no clickable cell. Elevation, contrast and dark accent chroma
+  render as three-cell toggle groups under Advanced and are clicked in turn.
 - Preset-specific axis controls for both presets, plus a check that per-preset
   axis values are remembered when switching away and back.
 - Two end-to-end proofs that switcher changes restyle real components: radius

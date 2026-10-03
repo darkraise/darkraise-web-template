@@ -1,6 +1,8 @@
 import { test, expect, type Page } from "@playwright/test"
 import {
   ACCENT_COLORS,
+  CONTRASTS,
+  DARK_ACCENT_CHROMAS,
   DENSITIES,
   ELEVATIONS,
   FONT_SIZES,
@@ -16,6 +18,7 @@ import {
 import {
   closeThemeSwitcher,
   gotoApp,
+  openAdvanced,
   openThemeSwitcher,
   readThemeAttrs,
   readToken,
@@ -28,6 +31,52 @@ import {
 } from "./helpers/app"
 
 const PROBE = "/components/buttons"
+
+const BRAND_SECTIONS = [
+  "Mode",
+  "Accent Color",
+  "Surface Color",
+  "Tint With Accent",
+  "Preset",
+  "Font",
+  "Radius",
+  "Density",
+  "Font Size",
+]
+
+// Gradient Pattern is absent: these cases seed a solid background.
+const ADVANCED_SECTIONS = [
+  "Contrast",
+  "Dark Accent Chroma",
+  "Elevation",
+  "Outer Glow",
+  "Inner Glow",
+  "Background",
+  "Background Intensity",
+  "Sidebar Indicator",
+]
+
+/** Switcher label per registry axis, for the preset-hidden checks. */
+const AXIS_LABELS: Record<string, string> = {
+  mode: "Mode",
+  accentColor: "Accent Color",
+  surfaceColor: "Surface Color",
+  tintWithAccent: "Tint With Accent",
+  preset: "Preset",
+  font: "Font",
+  radius: "Radius",
+  density: "Density",
+  fontSize: "Font Size",
+  contrast: "Contrast",
+  darkAccentChroma: "Dark Accent Chroma",
+  elevation: "Elevation",
+  outerGlow: "Outer Glow",
+  innerGlow: "Inner Glow",
+  backgroundStyle: "Background",
+  backgroundIntensity: "Background Intensity",
+  gradientPattern: "Gradient Pattern",
+  sidebarActiveBar: "Sidebar Indicator",
+}
 
 async function selectPreset(page: Page, preset: Preset) {
   await themeSwitcher(page)
@@ -50,29 +99,18 @@ test.describe("theme switcher popover", () => {
     consoleWatch.assertClean()
   })
 
-  test("renders every common axis section under the default preset", async ({
+  test("renders the Brand axes, then the Advanced axes once opened", async ({
     page,
   }) => {
     await seedApp(page, { preset: "default", mode: "light" })
     await gotoApp(page, PROBE)
-    await openThemeSwitcher(page)
+    const panel = await openThemeSwitcher(page)
+    await expect(panel.locator(".dr-theme-switcher-section-label")).toHaveText(
+      BRAND_SECTIONS,
+    )
     expect(await switcherSections(page)).toEqual([
-      "Mode",
-      "Preset",
-      "Background",
-      "Background Intensity",
-      "Accent Color",
-      "Surface Color",
-      "Tint With Accent",
-      "Density",
-      "Font Size",
-      "Dark Accent Chroma",
-      "Elevation",
-      "Contrast",
-      "Outer Glow",
-      "Inner Glow",
-      "Sidebar Indicator",
-      "Radius",
+      ...BRAND_SECTIONS,
+      ...ADVANCED_SECTIONS,
     ])
   })
 })
@@ -101,23 +139,17 @@ test.describe("preset selection through the UI", () => {
       await openThemeSwitcher(page)
       const sections = await switcherSections(page)
 
-      const hiddenLabels: Record<string, string> = {
-        elevation: "Elevation",
-        radius: "Radius",
-        density: "Density",
-        contrast: "Contrast",
-        darkAccentChroma: "Dark Accent Chroma",
-      }
       for (const axis of HIDDEN_COMMON_AXES[preset]) {
         expect(sections, `${preset} must hide ${axis}`).not.toContain(
-          hiddenLabels[axis],
+          AXIS_LABELS[axis],
         )
       }
       expect(sections).toContain("Mode")
-      // Preset-specific axes must be offered.
-      for (const axis of PRESET_AXES[preset]) {
-        expect(sections).toContain(axis.label)
-      }
+      expect(sections).toContain("Contrast")
+      // The preset's own axes render right after the Preset control.
+      const own = PRESET_AXES[preset].map((axis) => axis.label)
+      const at = sections.indexOf("Preset")
+      expect(sections.slice(at + 1, at + 1 + own.length)).toEqual(own)
     })
   }
 })
@@ -222,6 +254,7 @@ test.describe("background controls", () => {
     await seedApp(page, { preset: "default", backgroundStyle: "solid" })
     await gotoApp(page, PROBE)
     await openThemeSwitcher(page)
+    await openAdvanced(page)
 
     expect(await switcherSections(page)).not.toContain("Gradient Pattern")
 
@@ -241,6 +274,7 @@ test.describe("background controls", () => {
       await seedApp(page, { preset: "default", backgroundStyle: "gradient" })
       await gotoApp(page, PROBE)
       await openThemeSwitcher(page)
+      await openAdvanced(page)
       await themeSwitcher(page)
         .locator('[aria-label="Gradient Pattern"]')
         .getByRole("radio", { name: pattern })
@@ -257,6 +291,7 @@ test.describe("background controls", () => {
     await seedApp(page, { preset: "default", backgroundStyle: "gradient" })
     await gotoApp(page, PROBE)
     await openThemeSwitcher(page)
+    await openAdvanced(page)
     await themeSwitcher(page)
       .locator('[aria-label="Background"]')
       .getByRole("radio", { name: "Solid" })
@@ -294,22 +329,40 @@ test.describe("stepped slider axes", () => {
   }
 })
 
-test.describe("elevation toggle group", () => {
-  test("Elevation selects every level", async ({ page }) => {
-    await seedApp(page, { preset: "default", mode: "light" })
-    await gotoApp(page, PROBE)
-    await openThemeSwitcher(page)
+test.describe("advanced toggle-group axes", () => {
+  const toggleAxes: {
+    label: string
+    values: readonly string[]
+    attr: string
+  }[] = [
+    { label: "Elevation", values: ELEVATIONS, attr: "data-elevation" },
+    { label: "Contrast", values: CONTRASTS, attr: "data-contrast" },
+    {
+      label: "Dark Accent Chroma",
+      values: DARK_ACCENT_CHROMAS,
+      attr: "data-dark-accent-chroma",
+    },
+  ]
 
-    for (const value of ELEVATIONS) {
-      await themeSwitcher(page)
-        .locator('[aria-label="Elevation"]')
-        .getByRole("radio", { name: value })
-        .click()
-      await expect
-        .poll(async () => (await readThemeAttrs(page))["data-elevation"])
-        .toBe(value)
-    }
-  })
+  for (const axis of toggleAxes) {
+    test(`${axis.label} toggle group sets every value`, async ({ page }) => {
+      await seedApp(page, { preset: "default", mode: "dark" })
+      await gotoApp(page, PROBE)
+      await openThemeSwitcher(page)
+      await openAdvanced(page)
+      const group = themeSwitcher(page).getByRole("radiogroup", {
+        name: axis.label,
+        exact: true,
+      })
+
+      for (const value of axis.values) {
+        await group.getByRole("radio", { name: value, exact: true }).click()
+        await expect
+          .poll(async () => (await readThemeAttrs(page))[axis.attr])
+          .toBe(value)
+      }
+    })
+  }
 })
 
 test.describe("preset-specific axis controls", () => {

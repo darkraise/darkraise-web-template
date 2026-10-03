@@ -253,8 +253,29 @@ export async function closeThemeSwitcher(page: Page) {
   await expect(themeSwitcher(page)).toHaveCount(0)
 }
 
-/** Section labels currently rendered in the theme switcher popover. */
+/**
+ * Open the Advanced disclosure in the open theme panel. It starts closed each
+ * time the popover mounts, so callers open it rather than track its state.
+ */
+export async function openAdvanced(page: Page) {
+  const trigger = themeSwitcher(page).getByRole("button", {
+    name: "Advanced",
+    exact: true,
+  })
+  if ((await trigger.getAttribute("aria-expanded")) === "true") return
+  await trigger.click()
+  await expect(trigger).toHaveAttribute("aria-expanded", "true")
+  await expect(
+    themeSwitcher(page)
+      .getByRole("region", { name: "Advanced", exact: true })
+      .locator(".dr-theme-switcher-section-label")
+      .first(),
+  ).toBeVisible()
+}
+
+/** Section labels in the theme switcher popover: Brand, then Advanced. */
 export async function switcherSections(page: Page) {
+  await openAdvanced(page)
   return themeSwitcher(page)
     .locator(".dr-theme-switcher-section-label")
     .allTextContents()
