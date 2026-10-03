@@ -36,7 +36,7 @@ npm create darkraise-ui my-app \
   --gradient-pattern blobs \
   --mode system \
   --density cozy \
-  --elevation medium \
+  --elevation standard \
   --button-elevation flat \
   --radius rounded \
   --font-size medium \
@@ -57,7 +57,7 @@ npm create darkraise-ui my-app \
 | `--gradient-pattern`                       | `blobs`, `aurora`, `spotlight`, `mesh`                                                                                           | `blobs`     |
 | `--mode`                                   | `light`, `dark`, `system`                                                                                                        | `system`    |
 | `--density`                                | `compact`, `cozy`, `comfortable`, `spacious`                                                                                     | `cozy`      |
-| `--elevation`                              | `flat`, `low`, `medium`, `high`                                                                                                  | `medium`    |
+| `--elevation`                              | `flat`, `standard`, `high`                                                                                                       | `standard`  |
 | `--button-elevation`                       | `flat`, `low`, `medium`, `high`                                                                                                  | `flat`      |
 | `--radius`                                 | `sharp`, `subtle`, `rounded`, `pill`                                                                                             | `rounded`   |
 | `--font-size`                              | `small`, `medium`, `large`, `extra-large`                                                                                        | `medium`    |
@@ -105,7 +105,7 @@ A 15-axis theming system. Scaffolded projects configure it through `src/theme.co
 - **Background intensity** -- subtle, balanced, vivid, or intense
 - **Gradient pattern** -- blobs, aurora, spotlight, or mesh
 - **Density** -- compact, cozy, comfortable, or spacious
-- **Elevation** -- flat, low, medium, or high (surface shadows)
+- **Elevation** -- flat, standard, or high (surface shadows)
 - **Button elevation** -- flat, low, medium, or high (button-specific shadows)
 - **Radius** -- sharp, subtle, rounded, or pill
 - **Font size** -- small, medium, large, or extra-large (scales type, icons, and minimum control heights)
