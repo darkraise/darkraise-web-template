@@ -48,11 +48,11 @@ describe("shell style", () => {
 })
 
 describe("sidebarActiveBar axis", () => {
-  it("leads with the preset's own indicator", () => {
+  it("leads with the default indicator", () => {
     expect(SIDEBAR_ACTIVE_BARS).toEqual(["default", "bar", "ring", "both"])
   })
 
-  it("defaults to the preset's own indicator so nothing moves", () => {
+  it("defaults to the default indicator so nothing moves", () => {
     expect(resolveDefaults(themeConfig).sidebarActiveBar).toBe("default")
   })
 

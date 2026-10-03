@@ -82,7 +82,7 @@ export const viControls: Record<UiTextKey, string> = {
   Notifications: "Thông báo",
   "Page sections": "Các phần của trang",
   "Sidebar active-item indicator": "Chỉ báo mục đang chọn ở thanh bên",
-  "Each preset's own indicator": "Chỉ báo riêng của từng mẫu",
+  "Tint with no bar": "Tô nền, không có thanh",
   Default: "Mặc định",
   "Left rail only": "Chỉ thanh bên trái",
   Bar: "Thanh",

@@ -131,10 +131,7 @@ export function SidebarLayout({
       variant="outline"
       aria-label={uiText("Sidebar active-item indicator")}
     >
-      <ToggleGroupItem
-        value="default"
-        aria-label={uiText("Each preset's own indicator")}
-      >
+      <ToggleGroupItem value="default" aria-label={uiText("Tint with no bar")}>
         {uiText("Default")}
       </ToggleGroupItem>
       <ToggleGroupItem value="bar" aria-label={uiText("Left rail only")}>

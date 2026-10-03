@@ -16,6 +16,7 @@ const REMOVED: [key: string, replacement: string][] = [
   ["controlDepth", "no replacement"],
   ["buttonElevation", "no replacement"],
   ["shellStyle", "defaultShellStyle"],
+  ["preset", "use style"],
 ]
 
 function silenceWarnings() {
@@ -103,8 +104,8 @@ describe("resolveDefaults", () => {
     vi.stubEnv("NODE_ENV", "production")
     const warn = silenceWarnings()
     const config = cast({
-      defaults: { controlDepth: "deep", elevation: "medium" },
-      switcher: { enabled: true, axes: { presetAxes: false } },
+      defaults: { controlDepth: "deep", elevation: "medium", preset: "glass" },
+      switcher: { enabled: true, axes: { presetAxes: false, preset: false } },
     })
     expect(resolveDefaults(config)).toEqual(REGISTRY_DEFAULTS)
     expect(warn).not.toHaveBeenCalled()

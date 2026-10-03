@@ -91,7 +91,7 @@ describe("SidebarLayout collapsed brand slot", () => {
 })
 
 describe("SidebarLayout activeBar", () => {
-  it("leaves the preset's own indicator alone when unset", () => {
+  it("keeps the default indicator when unset", () => {
     const { container } = renderLayout()
     expect(railNav(container)?.dataset.activeBar).toBeUndefined()
   })
@@ -149,7 +149,7 @@ describe("SidebarLayout activeBar", () => {
     })
 
     await user.click(
-      screen.getByRole("radio", { name: "Each preset's own indicator" }),
+      screen.getByRole("radio", { name: "Tint with no bar" }),
     )
 
     expect(onActiveBarChange).toHaveBeenCalledWith(undefined)
@@ -277,7 +277,7 @@ describe("active indicator precedence", () => {
       .querySelector(".dr-sidebar-nav")
       ?.getAttribute("data-active-bar") ?? null
 
-  it("leaves the preset's own indicator alone by default", () => {
+  it("keeps the default indicator by default", () => {
     const { container } = renderWithTheme({}, "default")
     expect(wire(container)).toBeNull()
   })

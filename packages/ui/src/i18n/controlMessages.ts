@@ -81,7 +81,7 @@ export const controlMessages = {
   Notifications: "Notifications",
   "Page sections": "Page sections",
   "Sidebar active-item indicator": "Sidebar active-item indicator",
-  "Each preset's own indicator": "Each preset's own indicator",
+  "Tint with no bar": "Tint with no bar",
   Default: "Default",
   "Left rail only": "Left rail only",
   Bar: "Bar",

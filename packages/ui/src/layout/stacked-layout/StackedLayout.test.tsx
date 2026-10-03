@@ -158,7 +158,7 @@ describe("active indicator setting", () => {
     },
   )
 
-  it("leaves the preset's own indicator alone by default", () => {
+  it("keeps the default indicator by default", () => {
     const { container } = renderWithAxis("default")
     expect(wire(container, "dr-stacked-layout-rail-nav")).toBeNull()
     expect(wire(container, "dr-stacked-layout-aside-nav")).toBeNull()

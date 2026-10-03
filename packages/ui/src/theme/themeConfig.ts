@@ -32,6 +32,7 @@ const REMOVED_DEFAULTS = new Map<string, string | null>([
   ["controlDepth", null],
   ["buttonElevation", null],
   ["shellStyle", "the layout's defaultShellStyle prop"],
+  ["preset", "style"],
 ])
 
 const REMOVED_SWITCHER_AXES = new Map<string, string | null>([
