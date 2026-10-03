@@ -1,6 +1,11 @@
 import { test, expect, type Page } from "@playwright/test"
 import { PRESETS, type Preset } from "./fixtures/theme"
-import { gotoApp, openThemeSwitcher, seedApp } from "./helpers/app"
+import {
+  gotoApp,
+  openAdvanced,
+  openThemeSwitcher,
+  seedApp,
+} from "./helpers/app"
 
 /**
  * Every prior test for the sidebar active-item indicator reads the stylesheet
@@ -57,6 +62,7 @@ const ACTIVE_BAR_LABELS = {
 
 async function setActiveBar(page: Page, value: keyof typeof ACTIVE_BAR_LABELS) {
   const panel = await openThemeSwitcher(page)
+  await openAdvanced(page)
   await panel
     .locator('[aria-label="Sidebar Indicator"]')
     .getByRole("radio", { name: ACTIVE_BAR_LABELS[value], exact: true })

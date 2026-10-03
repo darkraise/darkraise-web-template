@@ -1,5 +1,11 @@
 import { test, expect, type Page } from "@playwright/test"
-import { gotoApp, openThemeSwitcher, seedApp } from "./helpers/app"
+import {
+  gotoApp,
+  openAdvanced,
+  openThemeSwitcher,
+  seedApp,
+  themeSwitcher,
+} from "./helpers/app"
 
 /**
  * The theme panel's axis controls must fit the width they are given. The page
@@ -97,6 +103,13 @@ test("theme switcher popover controls fit", async ({ page }) => {
   })
   await gotoApp(page, "/settings")
   await openThemeSwitcher(page)
+  // The widest toggle group, Gradient Pattern, sits under Advanced.
+  await openAdvanced(page)
+  await expect(
+    themeSwitcher(page).locator(".dr-theme-switcher-row", {
+      hasText: "Gradient Pattern",
+    }),
+  ).toBeVisible()
 
   const found = await overflowingControls(page, '[aria-label="Theme settings"]')
   expect(found, describeOverflow(found)).toEqual([])

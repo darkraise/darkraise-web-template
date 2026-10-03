@@ -1,6 +1,7 @@
 import { test, expect, type Page } from "@playwright/test"
 import {
   gotoApp,
+  openAdvanced,
   openThemeSwitcher,
   seedApp,
   themeSwitcher,
@@ -277,6 +278,7 @@ test.describe("sidebar indicator axis", () => {
     await seedApp(page)
     await gotoApp(page, "/")
     await openThemeSwitcher(page)
+    await openAdvanced(page)
     await themeSwitcher(page)
       .locator('[aria-label="Sidebar Indicator"]')
       .getByRole("radio", { name: "Both", exact: true })
