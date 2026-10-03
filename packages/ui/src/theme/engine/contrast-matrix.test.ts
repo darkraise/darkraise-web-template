@@ -9,15 +9,19 @@ import {
 describe("contrast matrix support", () => {
   it("enumerates every reachable combination once", () => {
     const combos = reachableCombos()
-    expect(combos).toHaveLength(19 * 12 * 14 * 5)
+    expect(combos).toHaveLength(19 * 12 * (3 + 3 * 3) * 2 * 5)
     expect(new Set(combos.map(comboName)).size).toBe(combos.length)
-    expect(
-      combos
-        .filter((c) => c.frosted)
-        .every(
-          (c) => c.contrast === "standard" && c.darkAccentChroma === "standard",
-        ),
-    ).toBe(true)
+  })
+
+  it("runs frosted chrome at every contrast and chroma step", () => {
+    const steps = (frosted: boolean) =>
+      new Set(
+        reachableCombos()
+          .filter((c) => c.frosted === frosted)
+          .map((c) => `${c.mode}/${c.contrast}/${c.darkAccentChroma}`),
+      )
+    expect(steps(true)).toEqual(steps(false))
+    expect(steps(true).size).toBe(3 + 3 * 3)
   })
 
   it("builds each combination's tokens once", () => {

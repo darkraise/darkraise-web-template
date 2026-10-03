@@ -90,8 +90,6 @@ const LABEL = 4.6
 const SECONDARY_TEXT_ON_PAGE = 7
 /** Strongest --primary tint primary-coloured text sits on (bg-primary/20 today). */
 const PRIMARY_TINT_CEILING = 0.24
-/** Glass cards are translucent over the canvas, so the field edge keeps headroom. */
-const GLASS_EDGE_FLOOR = 3.5
 const HOVER_STEP = 0.04
 /** Hover, pressed and selected each sit at least this OKLCH L past the previous plane. */
 const PLANE_GAP = 0.012
@@ -141,8 +139,6 @@ const PRIMARY_POS = {
   light: [0.6, 1.0, 1.6, 2.4, 3.2, 4.0, 5.0, 6.0, 6.0, null, 6.0, 9.0],
   dark: [10.8, -0.2, -0.6, -1.0, -1.4, 8.0, 7.0, 6.0, 6.0, null, 6.0, 3.0],
 } as const
-/** Glass's mark and fill keep today's heavier shades (stop 600 light, 400 dark). */
-const GLASS_PRIMARY_POS = { light: 7.0, dark: 5.0 } as const
 
 /** OKLCH hue in degrees and chroma; lightness starts at CHART_L. */
 const CHART = [
@@ -485,12 +481,7 @@ function solve(input: SolveInput): Steps {
     [card],
     EDGE_FLOOR[contrast],
   )
-  n[6] = repair(
-    "neutral-7",
-    neutralAt(pos[6] as number),
-    edgeGrounds,
-    input.frosted ? GLASS_EDGE_FLOOR : MARK,
-  )
+  n[6] = repair("neutral-7", neutralAt(pos[6] as number), edgeGrounds, MARK)
   n[7] = repair("neutral-8", neutralAt(pos[7] as number), edgeGrounds, TEXT)
   n[8] = neutralAt(pos[8] as number)
   n[9] = neutralAt(pos[9] as number)
@@ -553,13 +544,8 @@ function solve(input: SolveInput): Steps {
       EDGE_FLOOR[contrast],
     )
     p[6] = repair("primary-7", place(ppos[6] as number), edgeGrounds, MARK)
-    const markPos = input.frosted
-      ? GLASS_PRIMARY_POS[mode]
-      : (ppos[7] as number)
-    p[7] = repair("primary-8", place(markPos), edgeGrounds, MARK)
-    const base = place(
-      input.frosted ? GLASS_PRIMARY_POS[mode] : (ppos[8] as number),
-    )
+    p[7] = repair("primary-8", place(ppos[7] as number), edgeGrounds, MARK)
+    const base = place(ppos[8] as number)
     // Dark fills are solved down to a white label, which takes a hue whose
     // mid-tone is very light (amber, yellow, lime) to a brown that no longer
     // reads as the hue; those keep their bright fill under an ink label.

@@ -336,21 +336,33 @@ describe("generateTokens", () => {
     expect(tokens["--inset-hi"]).toBeUndefined()
   })
 
-  it("light + glass shifts primary from accent-500 to accent-600 for AA contrast", () => {
-    const tokens = generateTokens({
-      accentColor: "blue",
-      surfaceColor: "slate",
-      frosted: true,
-      backgroundStyle: "solid",
-      mode: "light",
-      contrast: "standard",
-      darkAccentChroma: "standard",
-      tintWithAccent: false,
-    })
-
-    expect(tokens["--primary"]).toBe("221 83% 53%")
-    expect(tokens["--ring"]).toBe("221 83% 53%")
-  })
+  it.each(["light", "dark"] as const)(
+    "solves content the same with frosted chrome (%s)",
+    (mode) => {
+      for (const accentColor of ["blue", "amber", "neutral"] as const) {
+        for (const contrast of ["low", "standard", "high"] as const) {
+          const input = {
+            accentColor,
+            surfaceColor: "slate",
+            backgroundStyle: "solid",
+            mode,
+            contrast,
+            darkAccentChroma: "standard",
+            tintWithAccent: false,
+          } as const
+          const plain = generateTokens({ ...input, frosted: false })
+          const frosted = generateTokens({ ...input, frosted: true })
+          expect(Object.keys(frosted).sort()).toEqual(Object.keys(plain).sort())
+          const moved = Object.keys(plain).filter(
+            (key) => plain[key] !== frosted[key],
+          )
+          expect(moved, `${accentColor} ${contrast}`).toEqual(
+            mode === "dark" ? ["--surface-sidebar"] : [],
+          )
+        }
+      }
+    },
+  )
 
   it("leaves --shadow-dropdown to the stylesheets", () => {
     const tokens = generateTokens({

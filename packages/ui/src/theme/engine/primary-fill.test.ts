@@ -83,7 +83,6 @@ describe("primary fill and label", () => {
   it("gives an ink label to exactly the light hues in each mode", () => {
     const failures: string[] = []
     for (const combo of matrix()) {
-      if (combo.frosted) continue
       const ink = finalTokens(combo)["--primary-foreground"] === INK
       const expected = (INK_LABELLED[combo.mode] as readonly string[]).includes(
         combo.accentColor,

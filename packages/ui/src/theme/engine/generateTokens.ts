@@ -12,7 +12,7 @@ import { accentColors } from "@theme/palettes/accentColors"
 import { surfaceColors } from "@theme/palettes/surfaceColors"
 import { contrastRatio } from "@theme/engine/oklch"
 import { CANVAS_SATURATION_CAP, contentStripGround } from "./canvas"
-import { STATUS_NAMES, WHITE, placeStep, solveSteps } from "./steps"
+import { STATUS_NAMES, WHITE, solveSteps } from "./steps"
 
 export {
   CANVAS_BLOB_SCALE,
@@ -230,16 +230,11 @@ export function generateTokens(
   })
   const n = (step: number) => steps.neutral[step - 1] as string
   const p = (step: number) => steps.primary[step - 1] as string
-  const sidebarMark = accentColor === "neutral" || frosted ? accent[500] : p(8)
+  const sidebarMark = accentColor === "neutral" ? accent[500] : p(8)
 
   const background = n(1)
   const card = n(2)
   const sunken = dark ? background : n(3)
-  // Glass's dark borders keep its heavier recipe (stops 600, 500, 400).
-  const glassDark = frosted && dark
-  const borderSubtle = glassDark ? placeStep(neutral, 7) : n(3)
-  const borderDefault = glassDark ? placeStep(neutral, 6) : n(6)
-  const borderStrong = glassDark ? placeStep(neutral, 5) : n(8)
   const stripGrounds = paintsStrip
     ? [contentStripGround(background, surfaceTint, mode, backgroundIntensity)]
     : []
@@ -294,7 +289,7 @@ export function generateTokens(
     "--accent-foreground": n(12),
 
     "--border": n(6),
-    "--input": dark ? borderSubtle : n(6),
+    "--input": dark ? n(3) : n(6),
     "--field-edge-color": n(7),
 
     "--surface-base": background,
@@ -311,9 +306,9 @@ export function generateTokens(
     "--sidebar-active-bg": dark ? `${sidebarMark} / 0.25` : accent[200],
     "--surface-header": card,
 
-    "--border-subtle": borderSubtle,
-    "--border-default": borderDefault,
-    "--border-strong": borderStrong,
+    "--border-subtle": n(3),
+    "--border-default": n(6),
+    "--border-strong": n(8),
 
     "--bg-style": backgroundStyle,
     "--noise-opacity": gradient ? (dark ? "0.5" : "0.6") : "0",

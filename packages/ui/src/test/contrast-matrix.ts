@@ -36,8 +36,9 @@ export interface ThemeCombo {
 }
 
 /**
- * Every combination a user can reach, with frosted chrome checked at the
- * standard contrast and chroma steps only. Light mode ignores
+ * Every combination a user can reach. A style reaches the engine only through
+ * `frosted`, so Flat, Quiet and Tactile share the unfrosted half and Glass is
+ * the frosted half, at every contrast and chroma step. Light mode ignores
  * darkAccentChroma, so it runs at the standard step.
  *
  * backgroundStyle stays solid: it moves the decorative --sf-hue tokens and
@@ -54,24 +55,18 @@ export function reachableCombos(): ThemeCombo[] {
           mode === "dark" ? DARK_ACCENT_CHROMAS : (["standard"] as const)
         for (const contrast of CONTRASTS) {
           for (const darkAccentChroma of chromas) {
-            combos.push({
-              accentColor,
-              surfaceColor,
-              mode,
-              contrast,
-              darkAccentChroma,
-              frosted: false,
-            })
+            for (const frosted of [false, true]) {
+              combos.push({
+                accentColor,
+                surfaceColor,
+                mode,
+                contrast,
+                darkAccentChroma,
+                frosted,
+              })
+            }
           }
         }
-        combos.push({
-          accentColor,
-          surfaceColor,
-          mode,
-          contrast: "standard",
-          darkAccentChroma: "standard",
-          frosted: true,
-        })
       }
     }
   }

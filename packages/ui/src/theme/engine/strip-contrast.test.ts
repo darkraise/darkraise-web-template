@@ -6,6 +6,7 @@ import {
   gradientCanvasPeak,
 } from "@theme/engine/generateTokens"
 import { comboName, reachableCombos } from "../../test/contrast-matrix"
+import { surfaceColors } from "@theme/palettes/surfaceColors"
 
 const STRIP_FLOORS = [
   ["--field-edge-color", 3],
@@ -16,8 +17,8 @@ const STRIP_FLOORS = [
   ["--muted-foreground", 4.5],
 ] as const
 
-// Recorded from the step engine on 2026-10-02. Themes that paint no content
-// strip must not move.
+// Recorded from the step engine on 2026-10-02. Solid themes paint no content
+// strip and must not move.
 const UNCHANGED = [
   [
     false,
@@ -75,62 +76,6 @@ const UNCHANGED = [
       "--content-gradient-overlay": "none",
     },
   ],
-  [
-    true,
-    "gradient",
-    "light",
-    "neutral",
-    {
-      "--primary": "221 83% 53%",
-      "--ring": "221 83% 53%",
-      "--focus-ring": "212 96% 60%",
-      "--primary-text": "217 91% 40%",
-      "--muted-foreground": "215 16% 35%",
-      "--content-gradient-overlay": "none",
-    },
-  ],
-  [
-    true,
-    "gradient",
-    "light",
-    "intense",
-    {
-      "--primary": "221 86% 47%",
-      "--ring": "221 86% 47%",
-      "--focus-ring": "212 96% 59%",
-      "--primary-text": "217 91% 40%",
-      "--muted-foreground": "215 16% 35%",
-      "--content-gradient-overlay": "none",
-    },
-  ],
-  [
-    true,
-    "gradient",
-    "dark",
-    "neutral",
-    {
-      "--primary": "213 94% 68%",
-      "--ring": "213 94% 68%",
-      "--focus-ring": "213 97% 87%",
-      "--primary-text": "217 91% 77%",
-      "--muted-foreground": "215 16% 63%",
-      "--content-gradient-overlay": "none",
-    },
-  ],
-  [
-    true,
-    "gradient",
-    "dark",
-    "intense",
-    {
-      "--primary": "213 94% 68%",
-      "--ring": "213 94% 68%",
-      "--focus-ring": "213 97% 87%",
-      "--primary-text": "217 91% 76%",
-      "--muted-foreground": "215 16% 62%",
-      "--content-gradient-overlay": "none",
-    },
-  ],
 ] as const
 
 describe("the content strip", () => {
@@ -178,7 +123,7 @@ describe("the content strip", () => {
     }
   })
 
-  it("solves marks, the field edge and text against it on every default gradient theme", () => {
+  it("solves marks, the field edge and text against it on every unfrosted gradient theme", () => {
     const failures: string[] = []
     for (const combo of reachableCombos()) {
       if (combo.frosted) continue
@@ -206,6 +151,31 @@ describe("the content strip", () => {
       )
       if (muted < 7)
         failures.push(`${comboName(combo)} muted on page: ${muted.toFixed(2)}`)
+    }
+    expect(failures.slice(0, 20)).toEqual([])
+  }, 30_000)
+
+  it("solves marks and the field edge against the canvas peak on every frosted gradient theme", () => {
+    const failures: string[] = []
+    for (const combo of reachableCombos()) {
+      if (!combo.frosted) continue
+      const tokens = generateTokens({
+        ...combo,
+        tintWithAccent: false,
+        backgroundStyle: "gradient",
+      })
+      expect(tokens["--content-gradient-overlay"]).toBe("none")
+      const peak = gradientCanvasPeak(
+        tokens["--background"] as string,
+        surfaceColors[combo.surfaceColor][500],
+        combo.mode,
+        combo.backgroundIntensity,
+      )
+      for (const name of ["--field-edge-color", "--primary", "--ring"]) {
+        const ratio = contrastRatio(tokens[name] as string, peak)
+        if (ratio < 3)
+          failures.push(`${comboName(combo)} ${name}: ${ratio.toFixed(2)}`)
+      }
     }
     expect(failures.slice(0, 20)).toEqual([])
   }, 30_000)
