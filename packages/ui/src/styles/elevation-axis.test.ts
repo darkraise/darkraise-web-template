@@ -53,10 +53,6 @@ describe("button shadow", () => {
       .map(({ file }) => file)
     expect(offenders).toEqual([])
   })
-
-  it("keeps the flat button shadow on :root", () => {
-    expect(themeCss).toMatch(/--shadow-button:\s*0 0 transparent;/)
-  })
 })
 
 describe("card elevation", () => {

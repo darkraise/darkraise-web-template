@@ -317,13 +317,13 @@ describe("field heights", () => {
     ).toContain("height: auto;")
   })
 
-  it("keeps a drop shadow off the multi-select control", () => {
+  it("keeps a button drop shadow off the multi-select control", () => {
     expect(
       body(
         "src/components/multi-select/multi-select.css",
         ".dr-multi-select-control",
       ),
-    ).not.toContain("--shadow-button")
+    ).not.toMatch(/--btn-(?:neutral-)?shadow/)
   })
 
   it("pads the textarea from the field tokens", () => {

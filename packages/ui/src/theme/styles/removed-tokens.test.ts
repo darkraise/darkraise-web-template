@@ -5,6 +5,7 @@ import { join } from "node:path"
 // Tokens that styles replaced. Each is gone from every kit stylesheet, module
 // and test, comments included, so nothing reads one or brings it back.
 const REMOVED = [
+  "--shadow-button",
   "--backdrop-filter",
   "--backdrop-blur",
   "--surface-opacity",

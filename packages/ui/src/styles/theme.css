@@ -416,7 +416,6 @@
   --shadow-low: var(--elevation-low);
   --shadow-medium: var(--elevation-medium);
   --shadow-high: var(--elevation-high);
-  --shadow-button: var(--shadow-button);
 
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
@@ -921,7 +920,6 @@
       0 8px 20px -2px rgb(0 0 0 / 0.18), 0 3px 8px -1px rgb(0 0 0 / 0.1);
     --card-elevation-high:
       0 48px 72px -10px rgb(0 0 0 / 0.45), 0 20px 36px -6px rgb(0 0 0 / 0.28);
-    --shadow-button: 0 0 transparent;
     /* Control depth, at Quiet's values; flat.css and tactile.css override
        them. A shadow token is `0 0 transparent`, never `none`: components
        compose it into shadow lists, where `none` invalidates the whole
