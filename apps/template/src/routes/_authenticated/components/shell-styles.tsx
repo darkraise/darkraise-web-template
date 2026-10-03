@@ -59,7 +59,7 @@ function ShellStylesPage() {
   return (
     <ShowcasePage
       title="Shell Styles"
-      description="One theme axis, six chrome treatments, each composing with all four shell structures. Switch the axis in the theme panel to move every shell in the app at once, or pin one shell with the shellStyle prop."
+      description="Six chrome treatments, each composing with all four shell structures. Pick one under Shell style in the layout switcher to move every shell in the app at once, set the app's starting style with the defaultShellStyle prop, or pin one shell with the shellStyle prop."
     >
       {STRUCTURES.map(({ id, label, blurb }) => (
         <ShowcaseExample
@@ -67,12 +67,12 @@ function ShellStylesPage() {
           title={label}
           code={`import { SidebarLayout } from "darkraise-ui/layout"
 
-// Follows the theme axis:
-<SidebarLayout nav={nav}>
+// Follows the user's pick in the layout switcher, else the default:
+<SidebarLayout nav={nav} showLayoutSwitcher defaultShellStyle="inset">
   <Outlet />
 </SidebarLayout>
 
-// Or pin one shell, ignoring the axis:
+// Or pin one shell, ignoring the user's pick:
 <SidebarLayout nav={nav} shellStyle="island">
   <Outlet />
 </SidebarLayout>`}

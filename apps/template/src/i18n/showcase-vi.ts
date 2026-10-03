@@ -150,8 +150,8 @@ export const showcaseVietnamese: Record<keyof typeof showcaseEnglish, string> =
       "Đường phân cách ngang và dọc để tách các vùng nội dung.",
     "Edge-anchored modal panel — slides in from the left, right, top, or bottom. Use for contextual detail views, settings panels, and side forms.":
       "Bảng hộp thoại gắn cạnh, trượt từ trái, phải, trên hoặc dưới. Dùng cho chi tiết ngữ cảnh, bảng cài đặt và biểu mẫu bên.",
-    "One theme axis, six chrome treatments, each composing with all four shell structures. Switch the axis in the theme panel to move every shell in the app at once, or pin one shell with the shellStyle prop.":
-      "Một trục giao diện với sáu kiểu khung, kết hợp cùng cả bốn cấu trúc bố cục. Chuyển trong bảng giao diện để đổi toàn ứng dụng hoặc đặt shellStyle cho một bố cục riêng.",
+    "Six chrome treatments, each composing with all four shell structures. Pick one under Shell style in the layout switcher to move every shell in the app at once, set the app's starting style with the defaultShellStyle prop, or pin one shell with the shellStyle prop.":
+      "Sáu kiểu khung, kết hợp cùng cả bốn cấu trúc bố cục. Chọn trong mục Kiểu khung của bộ chuyển bố cục để đổi toàn ứng dụng, đặt kiểu ban đầu bằng defaultShellStyle hoặc đặt shellStyle cho một bố cục riêng.",
     "A canvas-based signature primitive with pointer-event drawing, imperative clear and export, and customizable stroke styling.":
       "Vùng ký tên trên canvas với thao tác con trỏ, lệnh xóa và xuất, cùng kiểu nét tùy chỉnh.",
     "Animated loading placeholders that mimic the shape of the content they replace.":

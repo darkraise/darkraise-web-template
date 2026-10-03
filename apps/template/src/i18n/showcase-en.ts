@@ -147,8 +147,8 @@ export const showcaseEnglish = {
     "Horizontal and vertical visual dividers for separating content regions.",
   "Edge-anchored modal panel — slides in from the left, right, top, or bottom. Use for contextual detail views, settings panels, and side forms.":
     "Edge-anchored modal panel — slides in from the left, right, top, or bottom. Use for contextual detail views, settings panels, and side forms.",
-  "One theme axis, six chrome treatments, each composing with all four shell structures. Switch the axis in the theme panel to move every shell in the app at once, or pin one shell with the shellStyle prop.":
-    "One theme axis, six chrome treatments, each composing with all four shell structures. Switch the axis in the theme panel to move every shell in the app at once, or pin one shell with the shellStyle prop.",
+  "Six chrome treatments, each composing with all four shell structures. Pick one under Shell style in the layout switcher to move every shell in the app at once, set the app's starting style with the defaultShellStyle prop, or pin one shell with the shellStyle prop.":
+    "Six chrome treatments, each composing with all four shell structures. Pick one under Shell style in the layout switcher to move every shell in the app at once, set the app's starting style with the defaultShellStyle prop, or pin one shell with the shellStyle prop.",
   "A canvas-based signature primitive with pointer-event drawing, imperative clear and export, and customizable stroke styling.":
     "A canvas-based signature primitive with pointer-event drawing, imperative clear and export, and customizable stroke styling.",
   "Animated loading placeholders that mimic the shape of the content they replace.":
