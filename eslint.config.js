@@ -15,6 +15,7 @@ export default tseslint.config(
       "**/coverage/**",
       "**/routeTree.gen.ts",
       "**/.claude/**",
+      "docs/superpowers/**",
     ],
   },
   js.configs.recommended,
