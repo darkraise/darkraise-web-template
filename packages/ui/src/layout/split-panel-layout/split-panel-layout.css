@@ -1,10 +1,6 @@
 @layer components {
-  /* `bg-card` lifts the panel one tier above the page background so the list
-     and the reading pane read as two distinct surfaces, especially in dark
-     mode where the page and an untreated aside would otherwise sit at the
-     same near-black lightness. */
   .dr-split-panel-layout-aside {
-    @apply bg-card border-border overflow-y-auto border-r;
+    @apply overflow-y-auto;
     width: var(--panel-width);
   }
 

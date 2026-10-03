@@ -1,7 +1,12 @@
 @layer components {
+  /* The header paints its own chrome so it stands alone outside a shell.
+     Inside .dr-shell the region rule (shell.css) swaps this background for
+     the canvas, paints the same fill on ::before and sets the same bottom
+     border, so nothing is painted twice. */
   .dr-layout-header {
-    @apply bg-surface-header flex h-14 items-center gap-2 border-b px-4;
-    border-color: hsl(var(--sidebar-border));
+    @apply flex h-14 items-center gap-2 border-b px-4;
+    background: var(--chrome-bar-bg);
+    border-color: var(--chrome-edge);
   }
 
   .dr-layout-header-end {

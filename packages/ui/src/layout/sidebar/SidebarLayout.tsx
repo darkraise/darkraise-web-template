@@ -180,7 +180,7 @@ export function SidebarLayout({
             aria-label={uiText("Primary")}
             aria-expanded={!collapsed}
             data-region="nav"
-            className="dr-sidebar-layout-aside sidebar-gradient-overlay theme-transition bg-surface-sidebar"
+            className="dr-sidebar-layout-aside theme-transition"
             data-collapsed={collapsed ? "true" : undefined}
           >
             <div data-seam className="dr-sidebar-layout-aside-header">
@@ -241,7 +241,7 @@ export function SidebarLayout({
                 {headerSlot}
               </>
             }
-            className="header-gradient-overlay theme-transition"
+            className="theme-transition"
             showLayoutSwitcher={showLayoutSwitcher}
             layoutVariants={layoutVariants}
             shellStylePinned={shellStyleProp !== undefined}

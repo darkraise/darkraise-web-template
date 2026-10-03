@@ -1,9 +1,8 @@
 @layer components {
   .dr-sidebar-layout-aside {
-    @apply hidden flex-col overflow-hidden border-r transition-[width] md:flex;
+    @apply hidden flex-col overflow-hidden transition-[width] md:flex;
     transition-duration: var(--duration-slow);
     width: var(--sidebar-width-expanded, 16rem);
-    border-color: hsl(var(--sidebar-border));
   }
 
   .dr-sidebar-layout-aside[data-collapsed="true"] {
@@ -12,7 +11,6 @@
 
   .dr-sidebar-layout-aside-header {
     @apply flex h-14 items-center border-b;
-    border-color: hsl(var(--sidebar-border));
   }
 
   .dr-sidebar-layout-aside[data-collapsed="true"]
@@ -106,7 +104,6 @@
 
   .dr-sidebar-layout-aside-section {
     @apply border-y;
-    border-color: hsl(var(--sidebar-border));
   }
 
   .dr-sidebar-layout-aside-section[data-position="footer"] {

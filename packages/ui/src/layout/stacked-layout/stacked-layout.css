@@ -1,6 +1,6 @@
 @layer components {
   .dr-stacked-layout-rail {
-    @apply border-border-default bg-surface-sidebar hidden w-16 flex-col items-center overflow-hidden border-r py-4 md:flex;
+    @apply hidden w-16 flex-col items-center overflow-hidden py-4 md:flex;
   }
 
   .dr-stacked-layout-rail-logo {
@@ -17,11 +17,11 @@
   }
 
   .dr-stacked-layout-aside {
-    @apply border-border bg-background hidden w-56 flex-col overflow-hidden border-r md:flex;
+    @apply hidden w-56 flex-col overflow-hidden md:flex;
   }
 
   .dr-stacked-layout-aside-header {
-    @apply border-border border-b px-4 py-3;
+    @apply border-b px-4 py-3;
   }
 
   .dr-stacked-layout-aside-label {

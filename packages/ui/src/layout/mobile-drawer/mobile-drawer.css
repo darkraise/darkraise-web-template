@@ -16,7 +16,7 @@
 
   .dr-mobile-drawer-section {
     @apply border-y py-3;
-    border-color: hsl(var(--sidebar-border));
+    border-color: var(--chrome-edge);
   }
 
   .dr-mobile-drawer-section[data-position="footer"] {

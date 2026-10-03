@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs"
+import { existsSync, readFileSync } from "node:fs"
 import { resolve } from "node:path"
 import { describe, it, expect } from "vitest"
 import { SHELL_STYLES } from "./types"
@@ -287,41 +287,83 @@ describe("region chrome", () => {
   })
 })
 
-const shellPresets = readFileSync(
-  resolve(process.cwd(), "src/layout/shell/shell-presets.css"),
-  "utf8",
-)
-const sidebarLayout = readFileSync(
-  resolve(process.cwd(), "src/layout/sidebar/sidebar-layout.css"),
-  "utf8",
-)
-const layoutHeader = readFileSync(
-  resolve(process.cwd(), "src/layout/layout-header/layout-header.css"),
-  "utf8",
-)
+/** A layout stylesheet with its comments dropped. */
+function layoutCss(path: string): string {
+  return readFileSync(
+    resolve(process.cwd(), "src/layout", path),
+    "utf8",
+  ).replace(/\/\*[\s\S]*?\*\//g, "")
+}
 
-describe("preset chrome", () => {
-  it("paints glass chrome on every chrome region", () => {
-    for (const region of ["nav", "subnav", "bar", "panel"]) {
-      expect(shellPresets).toContain(`[data-region="${region}"]`)
-    }
+const LAYOUT_SHEETS = [
+  "sidebar/sidebar-layout.css",
+  "layout-header/layout-header.css",
+  "stacked-layout/stacked-layout.css",
+  "split-panel-layout/split-panel-layout.css",
+]
+
+describe("layouts leave chrome to the region", () => {
+  it.each(LAYOUT_SHEETS)("%s paints no surface or edge colour", (path) => {
+    const source = layoutCss(path)
+    expect(source).not.toMatch(
+      /(?<![\w-])bg-(?:surface-sidebar|surface-header|background|card)(?![\w-])/,
+    )
+    expect(source).not.toMatch(/(?<![\w-])border-border(?:-default)?(?![\w-])/)
+    expect(source).not.toContain("--sidebar-border")
   })
 
-  it("gives a detached glass region its fog edge back", () => {
-    // The generic shell-style rule is (0,3,0) and would otherwise replace
-    // the fog border and the specular with a neutral one.
-    expect(shellPresets).toMatch(/island[\s\S]*?border-color: var\(--fog-20\)/)
+  it.each([
+    ["sidebar/sidebar-layout.css", ".dr-sidebar-layout-aside"],
+    ["stacked-layout/stacked-layout.css", ".dr-stacked-layout-rail"],
+    ["stacked-layout/stacked-layout.css", ".dr-stacked-layout-aside"],
+    [
+      "split-panel-layout/split-panel-layout.css",
+      ".dr-split-panel-layout-aside",
+    ],
+  ])("%s %s draws no region edge of its own", (path, selector) => {
+    const rule = rulesOf(layoutCss(path)).find((r) => r.selector === selector)
+    expect(rule, `no rule ${selector} in ${path}`).toBeDefined()
+    expect(rule?.body).not.toMatch(
+      /(?<![\w-])border-[rb](?![\w-])|border-(?:right|bottom)\s*:/,
+    )
   })
 
-  it("keeps the seam edge on the welded styles", () => {
-    expect(shellPresets).toContain("border-right: 1px solid var(--fog-20)")
-    expect(shellPresets).toContain("border-bottom: 1px solid var(--fog-20)")
+  // A LayoutHeader also renders outside a shell, so it keeps its own fill
+  // and bottom edge, read from the tokens the region rule paints; inside a
+  // shell both rules set the same element's one border, so nothing doubles.
+  it("lets a standalone header paint itself from the chrome tokens", () => {
+    const rule = rulesOf(layoutCss("layout-header/layout-header.css")).find(
+      (r) => r.selector === ".dr-layout-header",
+    )
+    expect(rule, "no rule .dr-layout-header").toBeDefined()
+    expect(rule?.body).toMatch(/(?<![\w-])border-b(?![\w-])/)
+    expect(rule?.body).toContain("background: var(--chrome-bar-bg);")
+    expect(rule?.body).toContain("border-color: var(--chrome-edge);")
   })
 
-  it("no longer duplicates chrome paint in the layout files", () => {
-    // Chrome is a region concern now; a layout-class rule would sit at
-    // (0,2,0) and lose to the shell-style rules.
-    expect(sidebarLayout).not.toContain('[data-style="glass"]')
-    expect(layoutHeader).not.toContain('[data-style="glass"]')
+  it("drops the per-layout gradient overlay classes", () => {
+    const sidebarLayout = readFileSync(
+      resolve(process.cwd(), "src/layout/sidebar/SidebarLayout.tsx"),
+      "utf8",
+    )
+    expect(sidebarLayout).not.toMatch(/gradient-overlay|bg-surface-/)
+    expect(uncommented).not.toMatch(/\.(?:sidebar|header)-gradient-overlay/)
+  })
+
+  it("retires the preset chrome sheet", () => {
+    expect(
+      existsSync(resolve(process.cwd(), "src/layout/shell/shell-presets.css")),
+    ).toBe(false)
+    expect(css).not.toContain("shell-presets.css")
+  })
+
+  // The drawer is an overlay over page content, so it keeps its overlay
+  // fill; only its seams follow the chrome.
+  it("draws the mobile drawer's seams in the chrome edge", () => {
+    const drawer = layoutCss("mobile-drawer/mobile-drawer.css")
+    expect(drawer).toContain("border-color: var(--chrome-edge);")
+    expect(drawer).not.toContain("--sidebar-border")
+    expect(drawer).not.toContain("--chrome-rail-bg")
+    expect(drawer).not.toMatch(/(?<![\w-])(?:bg-|background(?:-color)?\s*:)/)
   })
 })

@@ -41,10 +41,10 @@ function Preview({ structure, style }: { structure: string; style: string }) {
         data-structure={structure}
         data-shell-style={style}
       >
-        <div data-region="nav" className="bg-surface-sidebar w-10" />
-        <div data-region="subnav" className="bg-background w-14" />
-        <div data-region="bar" className="bg-surface-header h-8" />
-        <div data-region="panel" className="bg-card w-16" />
+        <div data-region="nav" className="w-10" />
+        <div data-region="subnav" className="w-14" />
+        <div data-region="bar" className="h-8" />
+        <div data-region="panel" className="w-16" />
         <div data-region="handle" className="w-1" />
         <div data-region="content" className="bg-muted/40" />
       </div>
