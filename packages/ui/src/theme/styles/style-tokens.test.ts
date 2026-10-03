@@ -347,3 +347,24 @@ describe("button families", () => {
     expect(bodyOf(path, selector)).toContain(declaration)
   })
 })
+
+const OTP = join("src", "components", "input-otp", "input-otp.css")
+const OTP_INVALID_ACTIVE =
+  ".dr-input-otp-container[data-invalid] .dr-input-otp-slot[data-active]"
+
+describe("InputOTP invalid slot", () => {
+  // Both selectors share one rule: the overlay variant's active slot and the
+  // separate variant's focused input.
+  it("keeps the affordance glow after the destructive ring", () => {
+    const body = bodyOf(OTP, OTP_INVALID_ACTIVE)
+    expect(body).toMatch(
+      /box-shadow: 0 0 0 1px hsl\(var\(--destructive-edge\)\),[^;]*var\(--affordance-glow\);/,
+    )
+    expect(
+      rulesOf(OTP).find((rule) => rule.selectors.includes(OTP_INVALID_ACTIVE))
+        ?.selectors,
+    ).toContain(
+      ".dr-input-otp-container[data-invalid] .dr-input-otp-slot-separate:focus",
+    )
+  })
+})

@@ -81,6 +81,8 @@
   .dr-input-otp-container[data-invalid] .dr-input-otp-slot[data-active],
   .dr-input-otp-container[data-invalid] .dr-input-otp-slot-separate:focus {
     border-color: hsl(var(--destructive-edge));
-    box-shadow: 0 0 0 1px hsl(var(--destructive-edge));
+    box-shadow:
+      0 0 0 1px hsl(var(--destructive-edge)),
+      var(--affordance-glow);
   }
 }
