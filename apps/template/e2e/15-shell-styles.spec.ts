@@ -2,7 +2,6 @@ import { test, expect, type Page } from "@playwright/test"
 import {
   gotoApp,
   openThemeSwitcher,
-  readThemeAttrs,
   seedApp,
   themeSwitcher,
 } from "./helpers/app"
@@ -15,18 +14,16 @@ const SHELL_STYLES = [
   "framed",
   "flat",
 ] as const
+type ShellStyle = (typeof SHELL_STYLES)[number]
 
 const shell = (page: Page) => page.locator(".dr-shell").first()
 
-async function pickShellStyle(page: Page, style: string) {
-  await openThemeSwitcher(page)
-  await themeSwitcher(page)
-    .locator('[aria-label="Shell Style"]')
-    .getByRole("radio", { name: style, exact: true })
+async function pickShellStyle(page: Page, style: ShellStyle) {
+  await page.getByRole("button", { name: "Switch layout" }).click()
+  await page
+    .getByRole("menuitemradio", { name: style, exact: true })
     .click()
-  await expect
-    .poll(async () => (await readThemeAttrs(page))["data-shell-style"])
-    .toBe(style)
+  await expect(shell(page)).toHaveAttribute("data-shell-style", style)
 }
 
 test.describe("shell style axis", () => {
@@ -54,11 +51,11 @@ test.describe("shell style axis", () => {
     await expect(nav).not.toHaveCSS("border-radius", "0px")
   })
 
-  test("a mounted shell follows the axis, not a raw document attribute", async ({
+  test("a mounted shell follows the stored choice, not a raw document attribute", async ({
     page,
   }) => {
-    // Layouts resolve prop ?? theme value and stamp their own root, so poking
-    // the document element must not move a shell that is already mounted.
+    // Layouts resolve prop ?? stored choice ?? default and stamp their own
+    // root, so poking the document element must not move a mounted shell.
     await seedApp(page)
     await gotoApp(page, "/")
     await page.evaluate(() =>
@@ -67,10 +64,33 @@ test.describe("shell style axis", () => {
     await expect(shell(page)).toHaveAttribute("data-shell-style", "classic")
   })
 
+  test("the layout switcher checks the painted style", async ({ page }) => {
+    await seedApp(page)
+    await gotoApp(page, "/")
+    await page.getByRole("button", { name: "Switch layout" }).click()
+    await expect(
+      page.getByRole("menuitemradio", { name: "classic", exact: true }),
+    ).toHaveAttribute("aria-checked", "true")
+  })
+
+  test("the layout switcher marks the stored style", async ({ page }) => {
+    await seedApp(page, { shellStyle: "inset" })
+    await gotoApp(page, "/")
+    await page.getByRole("button", { name: "Switch layout" }).click()
+    await expect(
+      page.getByRole("menuitemradio", { name: "inset", exact: true }),
+    ).toHaveAttribute("aria-checked", "true")
+  })
+
   test("the choice survives a reload", async ({ page }) => {
     await seedApp(page)
     await gotoApp(page, "/")
     await pickShellStyle(page, "framed")
+    await expect
+      .poll(() =>
+        page.evaluate(() => localStorage.getItem("theme-shell-style")),
+      )
+      .toBe("framed")
 
     await page.reload()
     await expect(shell(page)).toHaveAttribute("data-shell-style", "framed")
