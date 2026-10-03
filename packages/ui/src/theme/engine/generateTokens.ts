@@ -35,11 +35,6 @@ export interface GenerateTokensInput {
   backgroundIntensity?: BackgroundIntensity
 }
 
-const SHADOW_DROPDOWN =
-  "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)"
-const GLASS_SHADOW_DROPDOWN =
-  "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)"
-
 /** The ramp every neutral step and text tier is drawn from. */
 export function resolveNeutralScale(surfaceColor: SurfaceColor): ColorScale {
   return surfaceColors[surfaceColor]
@@ -250,8 +245,6 @@ export function generateTokens(
   const stripGrounds = paintsStrip
     ? [contentStripGround(background, surfaceTint, mode, backgroundIntensity)]
     : []
-  const isLightGlass = glass && !dark
-
   const tokens: Record<string, string> = {}
   for (let i = 1; i <= 12; i++) {
     tokens[`--neutral-${i}`] = n(i)
@@ -323,12 +316,6 @@ export function generateTokens(
     "--border-subtle": borderSubtle,
     "--border-default": borderDefault,
     "--border-strong": borderStrong,
-
-    "--shadow-dropdown": isLightGlass
-      ? GLASS_SHADOW_DROPDOWN.replace(/rgb\(0 0 0 \//g, "rgb(16 24 40 /")
-      : glass
-        ? GLASS_SHADOW_DROPDOWN
-        : SHADOW_DROPDOWN,
 
     "--bg-style": backgroundStyle,
     "--noise-opacity": gradient ? (dark ? "0.5" : "0.6") : "0",

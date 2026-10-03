@@ -1,5 +1,7 @@
 import { describe, it, expect } from "vitest"
+import { readFileSync } from "node:fs"
 import { generateTokens, capCanvasSaturation } from "./generateTokens"
+import { parseRules } from "../../styles/interactive-classes"
 import { surfaceColors } from "@theme/palettes/surfaceColors"
 import { contrastRatio } from "@theme/engine/oklch"
 import { STATUS_NAMES, type StatusName } from "./steps"
@@ -72,13 +74,13 @@ describe("generateTokens", () => {
       "--border-subtle",
       "--border-default",
       "--border-strong",
-      "--shadow-dropdown",
     ]
 
     for (const key of expectedKeys) {
       expect(tokens).toHaveProperty(key)
       expect(tokens[key]).toBeTruthy()
     }
+    expect(tokens).not.toHaveProperty("--shadow-dropdown")
   })
 
   it("does not emit glass-only tokens for the default surface style", () => {
@@ -353,8 +355,7 @@ describe("generateTokens", () => {
     expect(tokens["--ring"]).toBe("221 83% 53%")
   })
 
-  // Re-enabled in Phase 3 with the glass preset registered
-  it("light + glass tints dropdown shadow drops with blue-black (16 24 40)", () => {
+  it("leaves --shadow-dropdown to the stylesheets", () => {
     const tokens = generateTokens({
       accentColor: "blue",
       surfaceColor: "slate",
@@ -365,9 +366,27 @@ describe("generateTokens", () => {
       darkAccentChroma: "standard",
       tintWithAccent: false,
     })
-
-    expect(tokens["--shadow-dropdown"]).toContain("rgb(16 24 40")
+    expect(tokens).not.toHaveProperty("--shadow-dropdown")
     expect(tokens).not.toHaveProperty("--shadow-card")
+
+    const declared = (path: string, selector: string) =>
+      parseRules(readFileSync(path, "utf8"))
+        .filter((rule) => rule.selectors.includes(selector))
+        .map((rule) => /--shadow-dropdown:\s*([^;]+);/.exec(rule.body)?.[1])
+        .filter(Boolean)
+        .map((value) => (value as string).replace(/\s+/g, " ").trim())
+    expect(declared("src/styles/theme.css", ":root")).toContain(
+      "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+    )
+    const glassCss = "src/theme/styles/glass/glass.css"
+    expect(declared(glassCss, '[data-style="glass"]')).toEqual([
+      "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+    ])
+    expect(
+      declared(glassCss, '[data-mode="light"][data-style="glass"]'),
+    ).toEqual([
+      "0 10px 15px -3px rgb(16 24 40 / 0.1), 0 4px 6px -4px rgb(16 24 40 / 0.1)",
+    ])
   })
 
   describe("status pairs", () => {
