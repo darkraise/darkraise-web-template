@@ -185,6 +185,10 @@ describe("pre-render script", () => {
     expect(localStorage.getItem("theme-settings-version")).toBe("1")
   })
 
+  it("embeds the legacy rules without their payload fields", () => {
+    expect(buildPrerenderScript()).not.toContain('"field"')
+  })
+
   it("withholds the marker when a read throws", () => {
     localStorage.setItem("theme-elevation", "medium")
     const getItem = Storage.prototype.getItem

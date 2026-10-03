@@ -51,6 +51,15 @@ export function buildPrerenderScript(): string {
     ])
   }
 
+  const storageRules = LEGACY_RULES.map((rule) => ({
+    ...rule,
+    when: rule.when.map((condition) => {
+      const copy = { ...condition }
+      delete copy.field
+      return copy
+    }),
+  }))
+
   const json = JSON.stringify
   return [
     ";(function(){var d=document.documentElement,s=null,m=null,r,i,v;",
@@ -62,7 +71,7 @@ export function buildPrerenderScript(): string {
     "if(!s)return;",
     // runLegacyTable in ES5: o holds every value read or written, w the keys
     // changed in first-change order, f whether a read or write threw.
-    `var L=${json(LEGACY_RULES)},T=${json(LEGACY_TARGETS)},o={},w=[],f=0,j,k,R,W,H,G,`,
+    `var L=${json(storageRules)},T=${json(LEGACY_TARGETS)},o={},w=[],f=0,j,k,R,W,H,G,`,
     "h=function(a,b){return Object.prototype.hasOwnProperty.call(a,b)},",
     "g=function(a){var y=null;if(!h(o,a)){try{y=s.getItem(a)}catch(e){f=1}o[a]=y}return o[a]},",
     "u=function(a,b){if(g(a)!==b){o[a]=b;if(w.indexOf(a)===-1)w.push(a)}},",
