@@ -584,7 +584,6 @@
     --border-strong: 215 16% 45%;
     --shadow-dropdown:
       0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --surface-opacity: 1;
     /* Which surface a form control paints, resolved relative to whatever
        contains it rather than fixed to one rung. On the page canvas a
        control sits one rung UP (`--card`) so it stays legible against the
@@ -1023,14 +1022,10 @@
        custom property computes with its var()s already substituted, so a
        token that composed a prop variable would bake in the root value and
        ignore any subtree override. */
-    --surface-card-fill: hsl(var(--card) / var(--surface-opacity, 1));
-    --surface-popover-fill: hsl(var(--popover) / var(--surface-opacity, 1));
-    --surface-raised-fill: hsl(
-      var(--surface-raised) / var(--surface-opacity, 1)
-    );
-    --surface-overlay-fill: hsl(
-      var(--surface-overlay) / var(--surface-opacity, 1)
-    );
+    --surface-card-fill: hsl(var(--card));
+    --surface-popover-fill: hsl(var(--popover));
+    --surface-raised-fill: hsl(var(--surface-raised));
+    --surface-overlay-fill: hsl(var(--surface-overlay));
 
     /* Opacity-free twin of --surface-card-fill, for surfaces that must stay
        opaque to hide a seam behind them but should still follow the
@@ -1215,12 +1210,10 @@
    is declared, so each value redeclares the whole fill family on the element
    that carries it; `card` restores the plane under an ancestor's value. */
 [data-surface-fill="card"] {
-  --surface-card-fill: hsl(var(--card) / var(--surface-opacity, 1));
-  --surface-popover-fill: hsl(var(--popover) / var(--surface-opacity, 1));
-  --surface-raised-fill: hsl(var(--surface-raised) / var(--surface-opacity, 1));
-  --surface-overlay-fill: hsl(
-    var(--surface-overlay) / var(--surface-opacity, 1)
-  );
+  --surface-card-fill: hsl(var(--card));
+  --surface-popover-fill: hsl(var(--popover));
+  --surface-raised-fill: hsl(var(--surface-raised));
+  --surface-overlay-fill: hsl(var(--surface-overlay));
   --surface-card-fill-opaque: hsl(var(--card));
   --surface-overlay-bg: var(--surface-overlay-layers)
     var(--surface-overlay-base);
@@ -1228,24 +1221,22 @@
 }
 
 [data-surface-fill="page"] {
-  --surface-card-fill: hsl(var(--background) / var(--surface-opacity, 1));
-  --surface-popover-fill: hsl(var(--background) / var(--surface-opacity, 1));
-  --surface-raised-fill: hsl(var(--background) / var(--surface-opacity, 1));
-  --surface-overlay-fill: hsl(var(--background) / var(--surface-opacity, 1));
+  --surface-card-fill: hsl(var(--background));
+  --surface-popover-fill: hsl(var(--background));
+  --surface-raised-fill: hsl(var(--background));
+  --surface-overlay-fill: hsl(var(--background));
   --surface-card-fill-opaque: hsl(var(--background));
   --surface-overlay-bg: var(--surface-overlay-layers) hsl(var(--background));
   --overlay-bg: var(--surface-overlay-bg);
 }
 
-/* --neutral-3 is the value --muted holds outside Glass. Glass rebinds --muted
-   to `var(--primary) / <alpha>`, and a second alpha on that is invalid CSS. */
 [data-surface-fill="muted"] {
-  --surface-card-fill: hsl(var(--neutral-3) / var(--surface-opacity, 1));
-  --surface-popover-fill: hsl(var(--neutral-3) / var(--surface-opacity, 1));
-  --surface-raised-fill: hsl(var(--neutral-3) / var(--surface-opacity, 1));
-  --surface-overlay-fill: hsl(var(--neutral-3) / var(--surface-opacity, 1));
-  --surface-card-fill-opaque: hsl(var(--neutral-3));
-  --surface-overlay-bg: var(--surface-overlay-layers) hsl(var(--neutral-3));
+  --surface-card-fill: hsl(var(--muted));
+  --surface-popover-fill: hsl(var(--muted));
+  --surface-raised-fill: hsl(var(--muted));
+  --surface-overlay-fill: hsl(var(--muted));
+  --surface-card-fill-opaque: hsl(var(--muted));
+  --surface-overlay-bg: var(--surface-overlay-layers) hsl(var(--muted));
   --overlay-bg: var(--surface-overlay-bg);
 }
 

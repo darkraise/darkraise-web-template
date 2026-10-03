@@ -88,13 +88,11 @@ describe("surface fill rules", () => {
 
   it.each([
     ["page", "--background"],
-    ["muted", "--neutral-3"],
+    ["muted", "--muted"],
   ] as const)("%s reads %s", (value, token) => {
     const body = fillRule(value)
     for (const fill of FILLS) {
-      expect(decl(body, fill)).toBe(
-        `hsl(var(${token}) / var(--surface-opacity, 1))`,
-      )
+      expect(decl(body, fill)).toBe(`hsl(var(${token}))`)
     }
     expect(decl(body, "--surface-card-fill-opaque")).toBe(`hsl(var(${token}))`)
     expect(decl(body, "--surface-overlay-bg")).toBe(
@@ -114,11 +112,11 @@ describe("surface fill rules", () => {
   // translucent fill cannot erase the baseline under it and the seam ghosts
   // through.
   it.each([":root", ...VALUES.map((v) => `[data-surface-fill="${v}"]`)])(
-    "keeps --surface-card-fill-opaque opaque in %s",
+    "keeps every fill opaque in %s",
     (selector) => {
-      expect(
-        decl(bodyOf(selector), "--surface-card-fill-opaque"),
-      ).not.toContain("--surface-opacity")
+      for (const name of [...FILLS, "--surface-card-fill-opaque"]) {
+        expect(decl(bodyOf(selector), name)).not.toContain(" / ")
+      }
     },
   )
 

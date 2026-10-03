@@ -40,7 +40,7 @@ describe("form control fills", () => {
     ).exec(css)
     expect(rule, `${selector} has no rule`).not.toBeNull()
     expect(rule?.[1]).toContain(
-      "background-color: hsl(var(--control-surface) / var(--surface-opacity, 1));",
+      "background-color: hsl(var(--control-surface));",
     )
   })
 

@@ -8,7 +8,7 @@
     /* Pinned out of the `surface` prop on purpose: fields hold
        still while panels move around them. The rung is container-relative
        -- see `--control-surface` in theme.css. */
-    background-color: hsl(var(--control-surface) / var(--surface-opacity, 1));
+    background-color: hsl(var(--control-surface));
     min-height: var(--field-height);
     /* One row must land exactly on --field-height, so the padding never
        exceeds what a 26px row leaves inside the border: the 24px toggles,

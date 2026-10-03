@@ -4,7 +4,7 @@
     /* Pinned out of the `surface` prop on purpose: fields hold
        still while panels move around them. The rung is container-relative
        -- see `--control-surface` in theme.css. */
-    background-color: hsl(var(--control-surface) / var(--surface-opacity, 1));
+    background-color: hsl(var(--control-surface));
     border-radius: var(--radius);
     border-bottom-color: var(--field-edge);
   }

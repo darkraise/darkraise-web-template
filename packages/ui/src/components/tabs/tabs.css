@@ -186,13 +186,9 @@
   }
 
   /* The folder chrome rides the indicator, so the notch slides with the
-     selection instead of jumping between tabs.
-
-     hsl(var(--card)) deliberately, NOT the bg-card utility: that resolves
-     through --color-card, which multiplies in --surface-opacity — 0.78 to
-     0.3 under glass. A translucent fill cannot erase
-     the baseline and the seam would ghost through, so this tracks the axis
-     through the opaque fill variable rather than --color-card. */
+     selection instead of jumping between tabs. The fill must stay opaque to
+     erase the baseline under the notch, so it reads the opaque card fill,
+     which still follows the `surface` prop. */
   .dr-tabs-indicator[data-variant="enclosed"][data-orientation="horizontal"] {
     @apply border-border border;
     border-radius: var(--radius) var(--radius) 0 0;
