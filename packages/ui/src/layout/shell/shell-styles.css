@@ -10,9 +10,21 @@
   .dr-shell[data-shell-style="island"] > [data-region],
   .dr-shell[data-shell-style="floating"] > [data-region],
   .dr-shell[data-shell-style="inset"] > [data-region="content"] {
-    border: 1px solid var(--shell-region-border);
+    border: 1px solid var(--chrome-edge);
     border-radius: var(--shell-radius);
     box-shadow: var(--shell-region-shadow);
+  }
+
+  /* The rule above replaces the region rule's box-shadow, so detached
+     chrome restates its own chrome shadow under the separation shadow. */
+  .dr-shell:is([data-shell-style="island"], [data-shell-style="floating"])
+    > :is(
+      [data-region="nav"],
+      [data-region="subnav"],
+      [data-region="panel"],
+      [data-region="bar"]
+    ) {
+    box-shadow: var(--chrome-shadow), var(--shell-region-shadow);
   }
 
   /* Chrome that stays welded but gives up its surface (inset) or its rules
@@ -45,7 +57,12 @@
   .dr-shell[data-shell-style="inset"] > [data-region="nav"],
   .dr-shell[data-shell-style="inset"] > [data-region="subnav"],
   .dr-shell[data-shell-style="inset"] > [data-region="bar"],
-  .dr-shell[data-shell-style="inset"] > [data-region="panel"],
+  .dr-shell[data-shell-style="inset"] > [data-region="panel"] {
+    --chrome-rail-bg: transparent;
+    --chrome-bar-bg: transparent;
+    --chrome-canvas: none;
+  }
+
   .dr-shell[data-shell-style="inset"] > [data-region="handle"] {
     background-color: transparent;
   }
@@ -72,8 +89,8 @@
     position: relative;
     z-index: 1;
     margin: var(--shell-float-inset, 0.75rem);
-    -webkit-backdrop-filter: var(--backdrop-filter);
-    backdrop-filter: var(--backdrop-filter);
+    -webkit-backdrop-filter: var(--chrome-backdrop);
+    backdrop-filter: var(--chrome-backdrop);
   }
 
   /* Neighbouring chrome would otherwise double the gutter between them. */
@@ -153,6 +170,8 @@
   .dr-shell[data-shell-style="flat"] > [data-region="subnav"],
   .dr-shell[data-shell-style="flat"] > [data-region="bar"],
   .dr-shell[data-shell-style="flat"] > [data-region="panel"] {
-    background-color: hsl(var(--muted));
+    --chrome-rail-bg: hsl(var(--muted));
+    --chrome-bar-bg: hsl(var(--muted));
+    --chrome-canvas: none;
   }
 }

@@ -63,6 +63,80 @@
     grid-area: handle;
   }
 
+  /* Chrome paint belongs to the region, not the layout, so every layout
+     draws the same chrome and a style changes it through the --chrome-*
+     tokens alone. A region paints two layers: its own background is the
+     canvas it stands on (--chrome-canvas), and ::before lays the fill over
+     it (--chrome-rail-bg or --chrome-bar-bg, a colour or any background
+     list, so a translucent fill shows the canvas through). Isolation keeps
+     the fill's z-index: -1 above the region's background and below its
+     content whether or not a backdrop filter makes the region a stacking
+     context. These sit at (0,2,0); the shell styles (shell-styles.css,
+     (0,3,0)) decide which edges draw and rebind the fill tokens where a
+     region gives up or tones its surface. */
+  .dr-shell
+    > :is(
+      [data-region="nav"],
+      [data-region="subnav"],
+      [data-region="panel"],
+      [data-region="bar"]
+    ) {
+    position: relative;
+    isolation: isolate;
+    background: var(--chrome-canvas);
+    box-shadow: var(--chrome-shadow);
+    -webkit-backdrop-filter: var(--chrome-backdrop);
+    backdrop-filter: var(--chrome-backdrop);
+  }
+
+  .dr-shell
+    > :is(
+      [data-region="nav"],
+      [data-region="subnav"],
+      [data-region="panel"],
+      [data-region="bar"]
+    )::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+  }
+
+  .dr-shell
+    > :is([data-region="nav"], [data-region="subnav"], [data-region="panel"]) {
+    border-right: 1px solid var(--chrome-edge);
+  }
+
+  .dr-shell
+    > :is(
+      [data-region="nav"],
+      [data-region="subnav"],
+      [data-region="panel"]
+    )::before {
+    background: var(--chrome-rail-bg);
+  }
+
+  .dr-shell > [data-region="bar"] {
+    border-bottom: 1px solid var(--chrome-edge);
+  }
+
+  .dr-shell > [data-region="bar"]::before {
+    background: var(--chrome-bar-bg);
+  }
+
+  .dr-shell
+    > :is(
+      [data-region="nav"],
+      [data-region="subnav"],
+      [data-region="panel"],
+      [data-region="bar"]
+    )
+    [data-seam] {
+    border-color: var(--chrome-edge);
+  }
+
   /* Below md the rails are hidden, so every structure collapses to a bar over
      content. Declared explicitly because a `display: none` rail still leaves
      its auto-sized column in the template. */

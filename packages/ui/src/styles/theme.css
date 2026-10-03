@@ -697,16 +697,24 @@
 
     /* Shell chrome axis. Defaults are the welded `classic` look: no gutter,
      no radius, no detached-region paint. Each [data-shell-style] block below
-     rebinds only what it changes. --shell-region-border is the colour of a
-     detached region's 1px border. --shell-region-shadow is deliberately a
+     rebinds only what it changes. --shell-region-shadow is deliberately a
      constant rather than var(--elevation-*): a shell's separation from the
      page belongs to the shell style, not to the page's elevation setting. */
     --shell-gap: 0px;
     --shell-pad: 0px;
     --shell-radius: 0px;
-    --shell-region-border: transparent;
     --shell-region-shadow: 0 0 transparent;
     --shell-ground: var(--background);
+    /* Chrome paint, read by the region rule in shell.css; a style changes
+       chrome by rebinding these and nothing else. --chrome-canvas is what a
+       region paints between its fill and its content, --chrome-backdrop what
+       it does to the page behind it. */
+    --chrome-rail-bg: hsl(var(--surface-sidebar));
+    --chrome-bar-bg: hsl(var(--surface-header));
+    --chrome-edge: hsl(var(--sidebar-border));
+    --chrome-shadow: 0 0 transparent;
+    --chrome-backdrop: none;
+    --chrome-canvas: none;
     --noise-opacity: 0;
     --cropper-grid-line: rgba(255, 255, 255, 0.5);
     /* Dark blob peaks bumped from 8/6/4/3% to 10/8/6/5% (mid values from
@@ -1050,6 +1058,15 @@
   :root[data-mode="dark"] {
     --selected-view-bg: hsl(var(--border));
   }
+
+  /* A gradient canvas shows through the chrome: the rails and the bar give
+     up their fill, and the seam takes a translucent neutral that holds on
+     the blobs in both modes. */
+  [data-background-style="gradient"] {
+    --chrome-rail-bg: transparent;
+    --chrome-bar-bg: transparent;
+    --chrome-edge: hsl(var(--neutral-7) / 0.6);
+  }
 }
 
 /* Every raised surface a form can live in redeclares the control rung, so a
@@ -1322,14 +1339,12 @@
    the :root defaults already describe. */
 [data-shell-style="inset"] {
   --shell-radius: var(--shell-radius-scale, 0.5rem);
-  --shell-region-border: hsl(var(--border));
 }
 
 [data-shell-style="island"] {
   --shell-gap: 0.5rem;
   --shell-pad: 0.5rem;
   --shell-radius: var(--shell-radius-scale, 0.5rem);
-  --shell-region-border: hsl(var(--border));
   --shell-region-shadow:
     0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.06);
 }
@@ -1342,7 +1357,6 @@
   --shell-pad: 0px;
   --shell-float-inset: 0.75rem;
   --shell-radius: var(--shell-radius-scale, 0.5rem);
-  --shell-region-border: hsl(var(--border));
   --shell-region-shadow:
     0 12px 28px -8px rgb(0 0 0 / 0.28), 0 4px 10px -4px rgb(0 0 0 / 0.16);
 }
@@ -1353,7 +1367,6 @@
   --shell-pad: 0px;
   --shell-frame-gutter: 0.75rem;
   --shell-radius: var(--shell-radius-scale, 0.5rem);
-  --shell-region-border: hsl(var(--border));
   --shell-region-shadow: 0 8px 24px -10px rgb(0 0 0 / 0.24);
 }
 
