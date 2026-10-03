@@ -4,6 +4,16 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 
 ## [Unreleased]
 
+Breaking: `ThemeConfig.defaults` is a partial map, and a key left out falls back to the registry default. `ThemeConfig.switcher` is `{ enabled, axes?, advanced? }`: an axis missing from `axes` is shown, and `advanced: false` removes the Advanced part of the theme switcher. `switcher.axes.presetAxes` is removed; a preset's own axes show under the style control whenever it is visible. In development, a removed key (`surfaceIntensity`, `borderIntensity`, `accentIntensity`, `controlDepth`, `buttonElevation`, `shellStyle`, `presetAxes`) passed in a config warns once with its replacement and is ignored.
+
+Breaking: `buttonElevation` is removed from `ThemeSettings`, `ThemeConfig`, the context and the switcher, and buttons keep the flat shadow. `elevation` takes `flat`, `standard` or `high`; `standard` is the old `medium` depth and the default, and `low` is gone. Stored and synced `low` and `medium` become `standard`.
+
+Breaking: shell style is a layout setting. `shellStyle` is removed from `ThemeConfig`, `ThemeSettings`, the theme context and synced payloads, and `<html>` no longer carries `data-shell-style`; each layout stamps it on its own root, as before. The layout store persists the choice under the same `theme-shell-style` key, the layouts take a `defaultShellStyle` prop used when nothing is stored, and the `shellStyle` prop still pins the style. The control moves from the theme switcher to the layout switcher, so an app shows it only when it sets `showLayoutSwitcher`.
+
+Breaking: the theme switcher shows two parts, Brand and Advanced, generated from the axis registry. `labels.theme.groupLabels` is `{ brand, advanced }`, `ThemeAxisName` is `AxisKey`, and `axisLabels.buttonElevation`, `axisLabels.shellStyle` and `axisLabels.presetAxes` are removed.
+
+Breaking: synced theme payloads carry `version: 7`. A payload without a version is treated as one saved by 6.x: it is migrated, settings it does not mention keep their local values instead of being cleared, and the provider saves the migrated payload back once through `persistence.save`. Stored settings from 6.x are migrated once per browser, in the pre-render script when the app uses it and otherwise when the provider loads. Every setting a 6.x user had stored stays user-set, so a synced 6.x user keeps `slate` and `elevation: standard` rather than later defaults. The migration cannot see app config, so in an app whose 6.x config defaulted to the glass preset, a user with no stored preset has any stored surface or accent intensity carried into contrast and dark accent chroma, although glass never painted it.
+
 Breaking: the Sci-fi preset is removed, and with it the `supportedModes` field on presets. `PresetName` is now `"default" | "glass"`, so a config or call naming `"scifi"` fails to type-check. A user whose stored or synced settings name `scifi` loads the configured default preset and keeps its stored mode: dark, unless the user chose System, which follows the OS.
 
 Breaking: `Card` and card-variant `AccordionItem` expose their elevation as `data-card-elevation` instead of `data-elevation`, so a selector such as `.dr-card[data-elevation="high"]` must become `.dr-card[data-card-elevation="high"]`. Also removed: the `--shadow-card`, `--card-border` and `--glow-surface` tokens, `PresetSurfaceRecipe.overrides.shadowCard`, and the `data-sidebar-active-bar` attribute on `<html>`; see Removed.
@@ -28,6 +38,7 @@ Breaking: the exported `generateTokens` input drops `accentIntensity` and takes 
 
 ### Added
 
+- A `font` axis (`inter`, `geist`, `ibm-plex-sans`; default `inter`), stored under `theme-font` and stamped as `data-font`. The kit ships the four variable faces it uses, Inter, Geist, IBM Plex Sans and JetBrains Mono, as woff2 files in `dist/fonts/` with their OFL licences, declared in `styles.css`. Browsers download a face only when text uses it, and no font request leaves the app's origin; apps can drop any Google Fonts link for these families. `--font-sans` and `--font-heading` read `--font-family-sans`, which `[data-font]` sets.
 - `darkraise-ui/vite` exports `darkraisePrerender()`, a Vite plugin that injects the theme pre-render script. Before the app loads it restores the stored mode, every attribute axis and the last painted token set, so returning users see their theme on first paint. Add it to `vite.config.ts` and delete any hand-written theme script from `index.html`. `vite` is an optional peer dependency (`>=6.0.0`).
 - `useTheme().setAxis(key, value)` sets any theme axis by name; the named setters remain.
 - `<html>` carries `data-accent` and `data-surface` with the active accent and neutral.
