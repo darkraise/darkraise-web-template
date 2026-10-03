@@ -46,11 +46,9 @@ describe("scripts/init.mjs", () => {
   })
 
   it("lists every registry axis in the switcher and nothing else", () => {
-    expect(
-      keysOf(/^\s{6}axes: \{([^}]*)\}/m)
-        .filter((key) => key !== "presetAxes")
-        .sort(),
-    ).toEqual([...AXIS_KEYS].sort())
+    expect(keysOf(/^\s{6}axes: \{([^}]*)\}/m).sort()).toEqual(
+      [...AXIS_KEYS].sort(),
+    )
   })
 
   it("writes exactly the registry axes into theme.config.ts", () => {
@@ -61,7 +59,7 @@ describe("scripts/init.mjs", () => {
         ),
       ]
         .map((m) => m[1] as string)
-        .filter((key) => key !== "presetAxes" && key !== "enabled")
+        .filter((key) => key !== "enabled")
         .sort()
     expect(written("defaults")).toEqual([...AXIS_KEYS].sort())
     expect(written("switcher\\.axes")).toEqual([...AXIS_KEYS].sort())

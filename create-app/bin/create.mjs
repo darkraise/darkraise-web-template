@@ -38,7 +38,7 @@ const FONT_SIZES = AXES.fontSize.values
 const GLOW_LEVELS = AXES.outerGlow.values
 const MODES = AXES.mode.values
 const LAYOUTS = ["sidebar", "stacked", "top-nav", "split-panel"]
-const THEME_AXIS_KEYS = [...Object.keys(AXES), "presetAxes"]
+const THEME_AXIS_KEYS = Object.keys(AXES)
 
 const argv = minimist(process.argv.slice(2), {
   boolean: ["y"],
@@ -391,10 +391,6 @@ async function main() {
             { value: "contrast", label: "Contrast" },
             { value: "darkAccentChroma", label: "Dark accent chroma" },
             { value: "tintWithAccent", label: "Tint with accent" },
-            {
-              value: "presetAxes",
-              label: "Preset-specific axes (e.g. glass opacity, blur)",
-            },
           ],
           initialValues: THEME_AXIS_KEYS,
         }),
@@ -677,7 +673,6 @@ export const themeConfig: ThemeConfig = {
       contrast: ${config.theme.switcher.axes.contrast},
       darkAccentChroma: ${config.theme.switcher.axes.darkAccentChroma},
       tintWithAccent: ${config.theme.switcher.axes.tintWithAccent},
-      presetAxes: ${config.theme.switcher.axes.presetAxes},
     },
   },
 }

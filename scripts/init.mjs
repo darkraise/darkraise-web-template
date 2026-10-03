@@ -77,7 +77,6 @@ const defaultConfig = {
         contrast: true,
         darkAccentChroma: true,
         tintWithAccent: true,
-        presetAxes: true,
       },
     },
   },
@@ -143,7 +142,6 @@ export const themeConfig: ThemeConfig = {
       contrast: ${config.theme.switcher.axes.contrast},
       darkAccentChroma: ${config.theme.switcher.axes.darkAccentChroma},
       tintWithAccent: ${config.theme.switcher.axes.tintWithAccent},
-      presetAxes: ${config.theme.switcher.axes.presetAxes},
     },
   },
 }
