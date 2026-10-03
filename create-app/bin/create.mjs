@@ -26,7 +26,7 @@ const AXES = JSON.parse(
 )
 const ACCENT_COLORS = AXES.accentColor.values
 const SURFACE_COLORS = AXES.surfaceColor.values
-const PRESETS = AXES.style.values
+const STYLES = AXES.style.values
 const BACKGROUND_STYLES = AXES.backgroundStyle.values
 const BACKGROUND_INTENSITIES = AXES.backgroundIntensity.values
 const GRADIENT_PATTERNS = AXES.gradientPattern.values
@@ -46,7 +46,7 @@ const argv = minimist(process.argv.slice(2), {
     "layout",
     "accent",
     "surface-color",
-    "preset",
+    "style",
     "background",
     "background-intensity",
     "gradient-pattern",
@@ -89,7 +89,7 @@ function validate(value, allowed, label) {
 validate(argv.layout, LAYOUTS, "layout")
 validate(argv.accent, ACCENT_COLORS, "accent color")
 validate(argv["surface-color"], SURFACE_COLORS, "surface color")
-validate(argv.preset, PRESETS, "preset")
+validate(argv.style, STYLES, "style")
 validate(argv.background, BACKGROUND_STYLES, "background")
 validate(
   argv["background-intensity"],
@@ -220,15 +220,15 @@ async function main() {
           }),
         ))
 
-  const preset =
-    argv.preset ||
+  const style =
+    argv.style ||
     (skipPrompts
-      ? "default"
+      ? "quiet"
       : cancelled(
           await p.select({
-            message: "Preset",
-            options: PRESETS.map((s) => ({ value: s, label: s })),
-            initialValue: "default",
+            message: "Style",
+            options: STYLES.map((s) => ({ value: s, label: s })),
+            initialValue: "quiet",
           }),
         ))
 
@@ -344,7 +344,7 @@ async function main() {
         ))
 
   // Glow ships at "none" so a new project looks the same as before the axes
-  // existed; presets that own a glow supply their own default at runtime.
+  // existed; no style supplies a glow default.
   // Flag-only rather than prompted, to keep the interactive flow short.
   const outerGlow = argv["outer-glow"] || "none"
   const innerGlow = argv["inner-glow"] || "none"
@@ -376,7 +376,9 @@ async function main() {
             { value: "mode", label: "Mode (light/dark/system)" },
             { value: "accentColor", label: "Accent color" },
             { value: "surfaceColor", label: "Surface color" },
-            { value: "preset", label: "Preset (default/glass)" },
+            { value: "style", label: "Style (flat/quiet/tactile/glass)" },
+            { value: "glassOpacity", label: "Glass opacity" },
+            { value: "glassBlur", label: "Glass blur" },
             { value: "font", label: "Font" },
             { value: "backgroundStyle", label: "Background style" },
             { value: "backgroundIntensity", label: "Background intensity" },
@@ -441,7 +443,7 @@ async function main() {
       defaults: {
         accentColor: accent,
         surfaceColor: surfaceColor,
-        preset: preset,
+        style: style,
         backgroundStyle: background,
         backgroundIntensity: backgroundIntensity,
         gradientPattern: gradientPattern,
@@ -629,7 +631,7 @@ export const themeConfig: ThemeConfig = {
   defaults: {
     accentColor: "${config.theme.defaults.accentColor}",
     surfaceColor: "${config.theme.defaults.surfaceColor}",
-    preset: "${config.theme.defaults.preset}",
+    style: "${config.theme.defaults.style}",
     font: "inter",
     backgroundStyle: "${config.theme.defaults.backgroundStyle}",
     backgroundIntensity: "${config.theme.defaults.backgroundIntensity}",
@@ -652,7 +654,7 @@ export const themeConfig: ThemeConfig = {
       mode: ${config.theme.switcher.axes.mode},
       accentColor: ${config.theme.switcher.axes.accentColor},
       surfaceColor: ${config.theme.switcher.axes.surfaceColor},
-      preset: ${config.theme.switcher.axes.preset},
+      style: ${config.theme.switcher.axes.style},
       font: ${config.theme.switcher.axes.font},
       backgroundStyle: ${config.theme.switcher.axes.backgroundStyle},
       backgroundIntensity: ${config.theme.switcher.axes.backgroundIntensity},
