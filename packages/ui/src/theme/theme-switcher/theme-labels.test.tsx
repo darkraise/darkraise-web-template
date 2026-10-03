@@ -43,7 +43,6 @@ const config: ThemeConfig = {
       contrast: true,
       darkAccentChroma: false,
       tintWithAccent: false,
-      presetAxes: false,
     },
   },
 }

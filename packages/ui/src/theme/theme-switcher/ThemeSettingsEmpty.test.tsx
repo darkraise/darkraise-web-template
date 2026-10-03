@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react"
 import { describe, it, expect, beforeEach, vi } from "vitest"
 import { ThemeProvider } from "@theme/theme-provider"
 import { themeConfig, type ThemeConfig } from "@theme/themeConfig"
+import { AXIS_KEYS } from "@theme/axes/registry"
 import { ThemeSettingsPanel } from "./ThemeSettingsPanel"
 import { ThemeSwitcher } from "./ThemeSwitcher"
 
@@ -23,16 +24,14 @@ function mockMatchMedia() {
   })
 }
 
-// Derived from the real config rather than hand-listed, so a newly added axis
+// Derived from the registry rather than hand-listed, so a newly added axis
 // is switched off here automatically instead of quietly re-populating the
 // panel and making these tests pass for the wrong reason.
 const allAxesHidden: ThemeConfig = {
   ...themeConfig,
   switcher: {
     ...themeConfig.switcher,
-    axes: Object.fromEntries(
-      Object.keys(themeConfig.switcher.axes).map((axis) => [axis, false]),
-    ) as ThemeConfig["switcher"]["axes"],
+    axes: Object.fromEntries(AXIS_KEYS.map((axis) => [axis, false])),
   },
 }
 

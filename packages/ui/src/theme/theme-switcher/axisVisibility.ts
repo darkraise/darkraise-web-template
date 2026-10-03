@@ -1,4 +1,5 @@
 import type { ThemeConfig } from "@theme/themeConfig"
+import type { AxisKey } from "@theme/axes/registry"
 import type { AccentColor, BackgroundStyle } from "@theme/types"
 
 /**
@@ -21,53 +22,62 @@ export interface AxisVisibilityInput {
   presetAxisCount: number
 }
 
-export type AxisName = keyof ThemeConfig["switcher"]["axes"]
+/** Every registry axis, plus the active preset's own axes as one group. */
+export type AxisName = AxisKey | "presetAxes"
+
+// An axis missing from `switcher.axes` is shown.
+const enabled = (s: AxisVisibilityInput, axis: AxisKey): boolean =>
+  s.axes?.[axis] !== false
 
 /**
- * One predicate per axis. Every key in `themeConfig.switcher.axes` must appear
- * here — a test asserts it, so a newly added axis cannot ship without stating
- * when it is visible.
+ * One predicate per axis. Every registry axis must appear here — a test
+ * asserts it, so a newly added axis cannot ship without stating when it is
+ * visible.
  */
 export const AXIS_VISIBILITY: Record<
   AxisName,
   (input: AxisVisibilityInput) => boolean
 > = {
-  mode: (s) => s.axes.mode,
-  preset: (s) => s.axes.preset,
-  font: (s) => s.axes.font,
-  sidebarActiveBar: (s) => s.axes.sidebarActiveBar,
-  // The group renders nothing when the active preset declares no axes of its
-  // own, rather than an empty container.
-  presetAxes: (s) => s.axes.presetAxes && s.presetAxisCount > 0,
+  mode: (s) => enabled(s, "mode"),
+  preset: (s) => enabled(s, "preset"),
+  sidebarActiveBar: (s) => enabled(s, "sidebarActiveBar"),
+  // The preset's own axes follow the preset control, and the group renders
+  // nothing when the active preset declares no axes of its own.
+  presetAxes: (s) => enabled(s, "preset") && s.presetAxisCount > 0,
 
-  backgroundStyle: (s) => s.axes.backgroundStyle,
+  backgroundStyle: (s) => enabled(s, "backgroundStyle"),
   // No gradient gate: this axis absorbed canvasTint, so under `solid` it still
   // drives the canvas saturation cap. Only its blob-scale half is
   // gradient-specific, and that half goes inert rather than hiding the control.
-  backgroundIntensity: (s) => s.axes.backgroundIntensity,
+  backgroundIntensity: (s) => enabled(s, "backgroundIntensity"),
   // Genuinely gradient-only — there is no pattern to choose under `solid`.
   gradientPattern: (s) =>
-    s.axes.gradientPattern && s.backgroundStyle === "gradient",
+    enabled(s, "gradientPattern") && s.backgroundStyle === "gradient",
 
-  accentColor: (s) => s.axes.accentColor,
-  surfaceColor: (s) => s.axes.surfaceColor,
+  accentColor: (s) => enabled(s, "accentColor"),
+  surfaceColor: (s) => enabled(s, "surfaceColor"),
+  font: (s) => enabled(s, "font"),
 
-  density: (s) => s.axes.density && !s.isHiddenByPreset("density"),
-  fontSize: (s) => s.axes.fontSize && !s.isHiddenByPreset("fontSize"),
-  radius: (s) => s.axes.radius && !s.isHiddenByPreset("radius"),
+  density: (s) => enabled(s, "density") && !s.isHiddenByPreset("density"),
+  fontSize: (s) => enabled(s, "fontSize") && !s.isHiddenByPreset("fontSize"),
+  radius: (s) => enabled(s, "radius") && !s.isHiddenByPreset("radius"),
 
-  elevation: (s) => s.axes.elevation && !s.isHiddenByPreset("elevation"),
+  elevation: (s) =>
+    enabled(s, "elevation") && !s.isHiddenByPreset("elevation"),
 
   // Global: every preset either consumes the composed tokens or drives its own
   // recipe from the same step, so no preset hides these by default.
-  outerGlow: (s) => s.axes.outerGlow && !s.isHiddenByPreset("outerGlow"),
-  innerGlow: (s) => s.axes.innerGlow && !s.isHiddenByPreset("innerGlow"),
+  outerGlow: (s) =>
+    enabled(s, "outerGlow") && !s.isHiddenByPreset("outerGlow"),
+  innerGlow: (s) =>
+    enabled(s, "innerGlow") && !s.isHiddenByPreset("innerGlow"),
 
-  contrast: (s) => s.axes.contrast && !s.isHiddenByPreset("contrast"),
+  contrast: (s) => enabled(s, "contrast") && !s.isHiddenByPreset("contrast"),
   darkAccentChroma: (s) =>
-    s.axes.darkAccentChroma && !s.isHiddenByPreset("darkAccentChroma"),
+    enabled(s, "darkAccentChroma") && !s.isHiddenByPreset("darkAccentChroma"),
   // Under the neutral accent there is no hue to mix in.
-  tintWithAccent: (s) => s.axes.tintWithAccent && s.accentColor !== "neutral",
+  tintWithAccent: (s) =>
+    enabled(s, "tintWithAccent") && s.accentColor !== "neutral",
 }
 
 export function isAxisVisible(
