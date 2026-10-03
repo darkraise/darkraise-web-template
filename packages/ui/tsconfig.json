@@ -49,8 +49,6 @@
   },
   "include": ["src"],
   "exclude": [
-    "src/**/*.test.ts",
-    "src/**/*.test.tsx",
     "src/**/*.stories.tsx",
     "src/styles/interactive-classes.ts"
   ]
