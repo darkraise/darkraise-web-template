@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest"
 import { readFileSync } from "node:fs"
-import { AXES, AXIS_KEYS, isAxisValue, type AxisKey } from "./registry"
+import {
+  AXES,
+  AXIS_KEYS,
+  isAxisValue,
+  type AxisControlKind,
+  type AxisKey,
+} from "./registry"
 import { KIT_VERSION } from "./version"
 import { themeConfig } from "@theme/themeConfig"
 import { PRESET_NAMES, presets } from "@theme/presets"
@@ -9,6 +15,98 @@ describe("axis registry", () => {
   it("lists every axis once, in registry order", () => {
     expect(AXIS_KEYS).toEqual(Object.keys(AXES))
     expect(new Set(AXIS_KEYS).size).toBe(AXIS_KEYS.length)
+  })
+
+  it("lists the axes in switcher display order", () => {
+    expect(AXIS_KEYS).toEqual([
+      "mode",
+      "accentColor",
+      "surfaceColor",
+      "tintWithAccent",
+      "preset",
+      "font",
+      "radius",
+      "density",
+      "fontSize",
+      "contrast",
+      "darkAccentChroma",
+      "elevation",
+      "outerGlow",
+      "innerGlow",
+      "backgroundStyle",
+      "backgroundIntensity",
+      "gradientPattern",
+      "sidebarActiveBar",
+    ])
+  })
+
+  it.each(AXIS_KEYS)("%s names a control kind", (key) => {
+    expect(["swatch", "choice", "ordinal", "switch"]).toContain(
+      AXES[key].control,
+    )
+  })
+
+  it("assigns each axis its control kind", () => {
+    const byKind = (kind: AxisControlKind) =>
+      AXIS_KEYS.filter((key) => AXES[key].control === kind)
+    expect(byKind("swatch")).toEqual(["accentColor", "surfaceColor"])
+    expect(byKind("choice")).toEqual([
+      "mode",
+      "preset",
+      "font",
+      "backgroundStyle",
+      "gradientPattern",
+      "sidebarActiveBar",
+    ])
+    expect(byKind("ordinal")).toEqual([
+      "radius",
+      "density",
+      "fontSize",
+      "contrast",
+      "darkAccentChroma",
+      "elevation",
+      "outerGlow",
+      "innerGlow",
+      "backgroundIntensity",
+    ])
+    expect(byKind("switch")).toEqual(["tintWithAccent"])
+  })
+
+  it("gives every choice axis two to four values", () => {
+    for (const key of AXIS_KEYS.filter((k) => AXES[k].control === "choice")) {
+      expect(AXES[key].values.length, key).toBeGreaterThanOrEqual(2)
+      expect(AXES[key].values.length, key).toBeLessThanOrEqual(4)
+    }
+  })
+
+  it("gives every switch axis exactly off and on", () => {
+    for (const key of AXIS_KEYS.filter((k) => AXES[k].control === "switch")) {
+      expect(AXES[key].values, key).toEqual(["off", "on"])
+    }
+  })
+
+  it("declares a visibility rule only where another axis gates the control", () => {
+    expect(AXIS_KEYS.filter((key) => AXES[key].visibleWhen)).toEqual([
+      "tintWithAccent",
+      "gradientPattern",
+    ])
+  })
+
+  it("shows the gradient pattern only under the gradient style", () => {
+    const visible = AXES.gradientPattern.visibleWhen
+    expect(visible?.({ backgroundStyle: "gradient" })).toBe(true)
+    expect(visible?.({ backgroundStyle: "solid" })).toBe(false)
+  })
+
+  it("hides tint with accent under the neutral accent", () => {
+    const visible = AXES.tintWithAccent.visibleWhen
+    expect(visible?.({ accentColor: "blue" })).toBe(true)
+    expect(visible?.({ accentColor: "neutral" })).toBe(false)
+  })
+
+  it("keeps the style layer for the preset axis", () => {
+    expect(AXES.preset.layer).toBe("style")
+    expect(AXES.font.layer).toBe("brand")
   })
 
   it("covers exactly the axes the config declares", () => {

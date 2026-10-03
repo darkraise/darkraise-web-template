@@ -57,6 +57,16 @@
     "attribute": "data-surface",
     "layer": "brand"
   },
+  "tintWithAccent": {
+    "values": [
+      "off",
+      "on"
+    ],
+    "default": "off",
+    "storageKey": "theme-tint-with-accent",
+    "attribute": "data-tint-with-accent",
+    "layer": "brand"
+  },
   "preset": {
     "values": [
       "default",
@@ -77,6 +87,99 @@
     "storageKey": "theme-font",
     "attribute": "data-font",
     "layer": "brand"
+  },
+  "radius": {
+    "values": [
+      "sharp",
+      "subtle",
+      "rounded",
+      "pill"
+    ],
+    "default": "rounded",
+    "storageKey": "theme-radius",
+    "attribute": "data-radius",
+    "layer": "brand"
+  },
+  "density": {
+    "values": [
+      "compact",
+      "cozy",
+      "comfortable",
+      "spacious"
+    ],
+    "default": "cozy",
+    "storageKey": "theme-density",
+    "attribute": "data-density",
+    "layer": "brand"
+  },
+  "fontSize": {
+    "values": [
+      "small",
+      "medium",
+      "large",
+      "extra-large"
+    ],
+    "default": "medium",
+    "storageKey": "theme-font-size",
+    "attribute": "data-font-size",
+    "layer": "brand"
+  },
+  "contrast": {
+    "values": [
+      "low",
+      "standard",
+      "high"
+    ],
+    "default": "standard",
+    "storageKey": "theme-contrast",
+    "attribute": "data-contrast",
+    "layer": "advanced"
+  },
+  "darkAccentChroma": {
+    "values": [
+      "calm",
+      "standard",
+      "vivid"
+    ],
+    "default": "standard",
+    "storageKey": "theme-dark-accent-chroma",
+    "attribute": "data-dark-accent-chroma",
+    "layer": "advanced"
+  },
+  "elevation": {
+    "values": [
+      "flat",
+      "standard",
+      "high"
+    ],
+    "default": "standard",
+    "storageKey": "theme-elevation",
+    "attribute": "data-elevation",
+    "layer": "advanced"
+  },
+  "outerGlow": {
+    "values": [
+      "none",
+      "subtle",
+      "balanced",
+      "vivid"
+    ],
+    "default": "none",
+    "storageKey": "theme-outer-glow",
+    "attribute": "data-outer-glow",
+    "layer": "advanced"
+  },
+  "innerGlow": {
+    "values": [
+      "none",
+      "subtle",
+      "balanced",
+      "vivid"
+    ],
+    "default": "none",
+    "storageKey": "theme-inner-glow",
+    "attribute": "data-inner-glow",
+    "layer": "advanced"
   },
   "backgroundStyle": {
     "values": [
@@ -113,77 +216,6 @@
     "attribute": "data-gradient-pattern",
     "layer": "advanced"
   },
-  "density": {
-    "values": [
-      "compact",
-      "cozy",
-      "comfortable",
-      "spacious"
-    ],
-    "default": "cozy",
-    "storageKey": "theme-density",
-    "attribute": "data-density",
-    "layer": "brand"
-  },
-  "elevation": {
-    "values": [
-      "flat",
-      "standard",
-      "high"
-    ],
-    "default": "standard",
-    "storageKey": "theme-elevation",
-    "attribute": "data-elevation",
-    "layer": "advanced"
-  },
-  "radius": {
-    "values": [
-      "sharp",
-      "subtle",
-      "rounded",
-      "pill"
-    ],
-    "default": "rounded",
-    "storageKey": "theme-radius",
-    "attribute": "data-radius",
-    "layer": "brand"
-  },
-  "fontSize": {
-    "values": [
-      "small",
-      "medium",
-      "large",
-      "extra-large"
-    ],
-    "default": "medium",
-    "storageKey": "theme-font-size",
-    "attribute": "data-font-size",
-    "layer": "brand"
-  },
-  "outerGlow": {
-    "values": [
-      "none",
-      "subtle",
-      "balanced",
-      "vivid"
-    ],
-    "default": "none",
-    "storageKey": "theme-outer-glow",
-    "attribute": "data-outer-glow",
-    "layer": "advanced"
-  },
-  "innerGlow": {
-    "values": [
-      "none",
-      "subtle",
-      "balanced",
-      "vivid"
-    ],
-    "default": "none",
-    "storageKey": "theme-inner-glow",
-    "attribute": "data-inner-glow",
-    "layer": "advanced"
-  },
   "sidebarActiveBar": {
     "values": [
       "default",
@@ -195,37 +227,5 @@
     "storageKey": "theme-sidebar-active-bar",
     "attribute": null,
     "layer": "advanced"
-  },
-  "contrast": {
-    "values": [
-      "low",
-      "standard",
-      "high"
-    ],
-    "default": "standard",
-    "storageKey": "theme-contrast",
-    "attribute": "data-contrast",
-    "layer": "advanced"
-  },
-  "darkAccentChroma": {
-    "values": [
-      "calm",
-      "standard",
-      "vivid"
-    ],
-    "default": "standard",
-    "storageKey": "theme-dark-accent-chroma",
-    "attribute": "data-dark-accent-chroma",
-    "layer": "advanced"
-  },
-  "tintWithAccent": {
-    "values": [
-      "off",
-      "on"
-    ],
-    "default": "off",
-    "storageKey": "theme-tint-with-accent",
-    "attribute": "data-tint-with-accent",
-    "layer": "brand"
   }
 }
