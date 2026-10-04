@@ -6,14 +6,13 @@ import {
   DENSITIES,
   ELEVATIONS,
   FONT_SIZES,
+  GLASS_BLURS,
+  GLASS_OPACITIES,
   GRADIENT_PATTERNS,
-  HIDDEN_COMMON_AXES,
-  PRESETS,
-  PRESET_AXES,
-  PRESET_LABELS,
   RADII,
+  STYLES,
   SURFACE_COLORS,
-  type Preset,
+  type Style,
 } from "./fixtures/theme"
 import {
   closeThemeSwitcher,
@@ -37,7 +36,7 @@ const BRAND_SECTIONS = [
   "Accent Color",
   "Surface Color",
   "Tint With Accent",
-  "Preset",
+  "Style",
   "Font",
   "Radius",
   "Density",
@@ -56,36 +55,31 @@ const ADVANCED_SECTIONS = [
   "Sidebar Indicator",
 ]
 
-/** Switcher label per registry axis, for the preset-hidden checks. */
-const AXIS_LABELS: Record<string, string> = {
-  mode: "Mode",
-  accentColor: "Accent Color",
-  surfaceColor: "Surface Color",
-  tintWithAccent: "Tint With Accent",
-  preset: "Preset",
-  font: "Font",
-  radius: "Radius",
-  density: "Density",
-  fontSize: "Font Size",
-  contrast: "Contrast",
-  darkAccentChroma: "Dark Accent Chroma",
-  elevation: "Elevation",
-  outerGlow: "Outer Glow",
-  innerGlow: "Inner Glow",
-  backgroundStyle: "Background",
-  backgroundIntensity: "Background Intensity",
-  gradientPattern: "Gradient Pattern",
-  sidebarActiveBar: "Sidebar Indicator",
+/** The switcher's option label for each style. */
+const STYLE_LABELS: Record<Style, string> = {
+  flat: "Flat",
+  quiet: "Quiet",
+  tactile: "Tactile",
+  glass: "Glass",
 }
 
-async function selectPreset(page: Page, preset: Preset) {
+const GLASS_OPACITY_LABEL = "Opacity"
+const GLASS_BLUR_LABEL = "Backdrop Blur"
+
+async function selectStyle(page: Page, style: Style) {
   await themeSwitcher(page)
-    .locator('[aria-label="Preset"]')
-    .getByRole("radio", { name: PRESET_LABELS[preset], exact: true })
+    .locator('[aria-label="Style"]')
+    .getByRole("radio", { name: STYLE_LABELS[style], exact: true })
     .click()
   await expect
-    .poll(async () => (await readThemeAttrs(page))["data-preset"])
-    .toBe(preset)
+    .poll(async () => (await readThemeAttrs(page))["data-style"])
+    .toBe(style)
+}
+
+function glassOpacityOption(page: Page, value: string) {
+  return themeSwitcher(page)
+    .locator(`[aria-label="${GLASS_OPACITY_LABEL}"]`)
+    .getByRole("radio", { name: value, exact: true })
 }
 
 test.describe("theme switcher popover", () => {
@@ -102,7 +96,7 @@ test.describe("theme switcher popover", () => {
   test("renders the Brand axes, then the Advanced axes once opened", async ({
     page,
   }) => {
-    await seedApp(page, { preset: "default", mode: "light" })
+    await seedApp(page, { style: "quiet", mode: "light" })
     await gotoApp(page, PROBE)
     const panel = await openThemeSwitcher(page)
     await expect(panel.locator(".dr-theme-switcher-section-label")).toHaveText(
@@ -115,41 +109,44 @@ test.describe("theme switcher popover", () => {
   })
 })
 
-test.describe("preset selection through the UI", () => {
-  for (const preset of PRESETS) {
-    test(`selecting "${PRESET_LABELS[preset]}" applies and persists`, async ({
+
+test.describe("style selection through the UI", () => {
+  for (const style of STYLES) {
+    test(`selecting "${STYLE_LABELS[style]}" applies and persists`, async ({
       page,
     }) => {
       const consoleWatch = watchConsole(page)
-      await seedApp(page, { preset: "default", mode: "dark" })
+      await seedApp(page, { style: "quiet", mode: "dark" })
       await gotoApp(page, PROBE)
       await openThemeSwitcher(page)
-      await selectPreset(page, preset)
+      await selectStyle(page, style)
 
       await reloadApp(page)
-      expect((await readThemeAttrs(page))["data-preset"]).toBe(preset)
+      expect((await readThemeAttrs(page))["data-style"]).toBe(style)
       consoleWatch.assertClean()
     })
 
-    test(`"${PRESET_LABELS[preset]}" hides the axes it takes over`, async ({
+    test(`"${STYLE_LABELS[style]}" shows the glass axes only under glass`, async ({
       page,
     }) => {
-      await seedApp(page, { preset, mode: "dark" })
+      await seedApp(page, { style, mode: "dark" })
       await gotoApp(page, PROBE)
       await openThemeSwitcher(page)
       const sections = await switcherSections(page)
 
-      for (const axis of HIDDEN_COMMON_AXES[preset]) {
-        expect(sections, `${preset} must hide ${axis}`).not.toContain(
-          AXIS_LABELS[axis],
-        )
-      }
       expect(sections).toContain("Mode")
       expect(sections).toContain("Contrast")
-      // The preset's own axes render right after the Preset control.
-      const own = PRESET_AXES[preset].map((axis) => axis.label)
-      const at = sections.indexOf("Preset")
-      expect(sections.slice(at + 1, at + 1 + own.length)).toEqual(own)
+      const at = sections.indexOf("Style")
+      expect(at).toBeGreaterThan(-1)
+      if (style === "glass") {
+        expect(sections.slice(at + 1, at + 3)).toEqual([
+          GLASS_OPACITY_LABEL,
+          GLASS_BLUR_LABEL,
+        ])
+      } else {
+        expect(sections).not.toContain(GLASS_OPACITY_LABEL)
+        expect(sections).not.toContain(GLASS_BLUR_LABEL)
+      }
     })
   }
 })
@@ -160,7 +157,7 @@ test.describe("mode selection through the UI", () => {
     ["Dark", "dark"],
   ] as const) {
     test(`mode "${label}" applies`, async ({ page }) => {
-      await seedApp(page, { preset: "default" })
+      await seedApp(page, { style: "quiet" })
       await gotoApp(page, PROBE)
       await openThemeSwitcher(page)
       await themeSwitcher(page)
@@ -175,7 +172,7 @@ test.describe("mode selection through the UI", () => {
 
   test('mode "System" follows the emulated color scheme', async ({ page }) => {
     await page.emulateMedia({ colorScheme: "dark" })
-    await seedApp(page, { preset: "default", mode: "light" })
+    await seedApp(page, { style: "quiet", mode: "light" })
     await gotoApp(page, PROBE)
     await openThemeSwitcher(page)
     await themeSwitcher(page)
@@ -190,7 +187,7 @@ test.describe("mode selection through the UI", () => {
 
 test.describe("accent and surface swatches", () => {
   test("every accent swatch is offered and selectable", async ({ page }) => {
-    await seedApp(page, { preset: "default", mode: "light" })
+    await seedApp(page, { style: "quiet", mode: "light" })
     await gotoApp(page, PROBE)
     const panel = await openThemeSwitcher(page)
     const row = panel.locator(".dr-theme-switcher-row", {
@@ -212,7 +209,7 @@ test.describe("accent and surface swatches", () => {
   })
 
   test("the neutral accent hides Tint With Accent", async ({ page }) => {
-    await seedApp(page, { preset: "default", mode: "light", accent: "blue" })
+    await seedApp(page, { style: "quiet", mode: "light", accent: "blue" })
     await gotoApp(page, PROBE)
     const panel = await openThemeSwitcher(page)
     expect(await switcherSections(page)).toContain("Tint With Accent")
@@ -226,7 +223,7 @@ test.describe("accent and surface swatches", () => {
   })
 
   test("every surface swatch is offered and selectable", async ({ page }) => {
-    await seedApp(page, { preset: "default", mode: "dark" })
+    await seedApp(page, { style: "quiet", mode: "dark" })
     await gotoApp(page, PROBE)
     const panel = await openThemeSwitcher(page)
     const row = panel.locator(".dr-theme-switcher-row", {
@@ -251,7 +248,7 @@ test.describe("accent and surface swatches", () => {
 
 test.describe("background controls", () => {
   test("gradient reveals intensity and pattern controls", async ({ page }) => {
-    await seedApp(page, { preset: "default", backgroundStyle: "solid" })
+    await seedApp(page, { style: "quiet", backgroundStyle: "solid" })
     await gotoApp(page, PROBE)
     await openThemeSwitcher(page)
     await openAdvanced(page)
@@ -271,7 +268,7 @@ test.describe("background controls", () => {
 
   for (const pattern of GRADIENT_PATTERNS) {
     test(`gradient pattern "${pattern}" selectable`, async ({ page }) => {
-      await seedApp(page, { preset: "default", backgroundStyle: "gradient" })
+      await seedApp(page, { style: "quiet", backgroundStyle: "gradient" })
       await gotoApp(page, PROBE)
       await openThemeSwitcher(page)
       await openAdvanced(page)
@@ -288,7 +285,7 @@ test.describe("background controls", () => {
   test("switching back to solid hides the gradient controls", async ({
     page,
   }) => {
-    await seedApp(page, { preset: "default", backgroundStyle: "gradient" })
+    await seedApp(page, { style: "quiet", backgroundStyle: "gradient" })
     await gotoApp(page, PROBE)
     await openThemeSwitcher(page)
     await openAdvanced(page)
@@ -315,7 +312,7 @@ test.describe("stepped slider axes", () => {
 
   for (const axis of sliderAxes) {
     test(`${axis.label} slider walks every value`, async ({ page }) => {
-      await seedApp(page, { preset: "default", mode: "light" })
+      await seedApp(page, { style: "quiet", mode: "light" })
       await gotoApp(page, PROBE)
       await openThemeSwitcher(page)
 
@@ -346,7 +343,7 @@ test.describe("advanced toggle-group axes", () => {
 
   for (const axis of toggleAxes) {
     test(`${axis.label} toggle group sets every value`, async ({ page }) => {
-      await seedApp(page, { preset: "default", mode: "dark" })
+      await seedApp(page, { style: "quiet", mode: "dark" })
       await gotoApp(page, PROBE)
       await openThemeSwitcher(page)
       await openAdvanced(page)
@@ -365,67 +362,75 @@ test.describe("advanced toggle-group axes", () => {
   }
 })
 
-test.describe("preset-specific axis controls", () => {
-  for (const preset of PRESETS) {
-    for (const axis of PRESET_AXES[preset]) {
-      test(`${PRESET_LABELS[preset]} · ${axis.label} control`, async ({
-        page,
-      }) => {
-        await seedApp(page, { preset, mode: "dark" })
-        await gotoApp(page, PROBE)
-        await openThemeSwitcher(page)
-        const attr = `data-${preset}-${axis.name}`
 
-        if (axis.values.length === 4) {
-          for (let i = 0; i < axis.values.length; i++) {
-            await setAxisSlider(page, axis.label, i)
-            await expect
-              .poll(async () => (await readThemeAttrs(page))[attr])
-              .toBe(axis.values[i])
-          }
-        } else {
-          for (const value of axis.values) {
-            await themeSwitcher(page)
-              .locator(`[aria-label="${axis.label}"]`)
-              .getByRole("radio", { name: value, exact: true })
-              .click()
-            await expect
-              .poll(async () => (await readThemeAttrs(page))[attr])
-              .toBe(value)
-          }
-        }
-      })
+test.describe("glass axis controls", () => {
+  test(`${GLASS_OPACITY_LABEL} toggle group sets every value`, async ({
+    page,
+  }) => {
+    await seedApp(page, { style: "glass", mode: "dark" })
+    await gotoApp(page, PROBE)
+    await openThemeSwitcher(page)
+    for (const value of GLASS_OPACITIES) {
+      await glassOpacityOption(page, value).click()
+      await expect
+        .poll(async () => (await readThemeAttrs(page))["data-glass-opacity"])
+        .toBe(value)
     }
-  }
+  })
 
-  test("preset axis values are remembered per preset", async ({ page }) => {
-    await seedApp(page, { preset: "glass", mode: "dark" })
+  test(`${GLASS_BLUR_LABEL} slider walks every value`, async ({ page }) => {
+    await seedApp(page, { style: "glass", mode: "dark" })
+    await gotoApp(page, PROBE)
+    await openThemeSwitcher(page)
+    for (let i = 0; i < GLASS_BLURS.length; i++) {
+      await setAxisSlider(page, GLASS_BLUR_LABEL, i)
+      await expect
+        .poll(async () => (await readThemeAttrs(page))["data-glass-blur"])
+        .toBe(GLASS_BLURS[i])
+    }
+  })
+
+  test("glass axis values survive switching style away and back", async ({
+    page,
+  }) => {
+    await seedApp(page, { style: "glass", mode: "dark" })
     await gotoApp(page, PROBE)
     await openThemeSwitcher(page)
 
-    // Glass Opacity is still a genuine preset-owned axis — Halo moved to the
-    // shared glow axes, so this exercises per-preset memory with one that
-    // remains scoped to a single preset.
-    await themeSwitcher(page)
-      .locator('[aria-label="Opacity"]')
-      .getByRole("radio", { name: "strong", exact: true })
-      .click()
+    await glassOpacityOption(page, "strong").click()
+    await setAxisSlider(page, GLASS_BLUR_LABEL, GLASS_BLURS.indexOf("low"))
     await expect
-      .poll(async () => (await readThemeAttrs(page))["data-glass-opacity"])
-      .toBe("strong")
+      .poll(async () => {
+        const attrs = await readThemeAttrs(page)
+        return [attrs["data-glass-opacity"], attrs["data-glass-blur"]]
+      })
+      .toEqual(["strong", "low"])
 
-    await selectPreset(page, "default")
-    await selectPreset(page, "glass")
-
+    await selectStyle(page, "quiet")
     await expect
-      .poll(async () => (await readThemeAttrs(page))["data-glass-opacity"])
-      .toBe("strong")
+      .poll(async () => await switcherSections(page))
+      .not.toContain(GLASS_OPACITY_LABEL)
+    // Hidden, not cleared: the attributes stay stamped under every style.
+    const underQuiet = await readThemeAttrs(page)
+    expect(underQuiet["data-glass-opacity"]).toBe("strong")
+    expect(underQuiet["data-glass-blur"]).toBe("low")
+
+    await selectStyle(page, "glass")
+    await expect(glassOpacityOption(page, "strong")).toBeChecked()
+    await expect(
+      themeSwitcher(page).getByRole("slider", { name: GLASS_BLUR_LABEL }),
+    ).toHaveAttribute("aria-valuenow", String(GLASS_BLURS.indexOf("low")))
+
+    await reloadApp(page)
+    const reloaded = await readThemeAttrs(page)
+    expect(reloaded["data-glass-opacity"]).toBe("strong")
+    expect(reloaded["data-glass-blur"]).toBe("low")
   })
 })
 
 test.describe("theme changes reach rendered components", () => {
   test("radius change restyles a real button", async ({ page }) => {
-    await seedApp(page, { preset: "default", mode: "light", radius: "sharp" })
+    await seedApp(page, { style: "quiet", mode: "light", radius: "sharp" })
     await gotoApp(page, PROBE)
     const button = page.locator("main button.dr-btn").first()
     const sharp = await button.evaluate(
@@ -444,7 +449,7 @@ test.describe("theme changes reach rendered components", () => {
   })
 
   test("font size change restyles body copy", async ({ page }) => {
-    await seedApp(page, { preset: "default", fontSize: "small" })
+    await seedApp(page, { style: "quiet", fontSize: "small" })
     await gotoApp(page, PROBE)
     const copy = page.locator("main p").first()
     const before = await copy.evaluate((el) => getComputedStyle(el).fontSize)
