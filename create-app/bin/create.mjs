@@ -156,7 +156,18 @@ function validate(value, allowed, label) {
   }
 }
 
+function isValidPort(value) {
+  const n = Number(value)
+  return Number.isInteger(n) && n >= 1 && n <= 65535
+}
+
 validate(argv.layout, LAYOUTS, "layout")
+if (argv.port !== undefined && !isValidPort(argv.port)) {
+  console.error(
+    `Error: invalid --port "${argv.port}". Must be an integer from 1 to 65535`,
+  )
+  process.exit(1)
+}
 for (const key of AXIS_KEYS) {
   validate(argv[flagOf(key)], AXES[key].values, `--${flagOf(key)}`)
 }
@@ -331,24 +342,23 @@ async function main() {
           }),
         ))
 
-  const port = argv.port
-    ? Number(argv.port)
-    : skipPrompts
-      ? 5173
-      : Number(
-          cancelled(
-            await p.text({
-              message: "Dev server port",
-              placeholder: "5173",
-              initialValue: "5173",
-              validate: (v) => {
-                const n = Number(v)
-                if (!Number.isInteger(n) || n < 1 || n > 65535)
-                  return "Must be a valid port (1-65535)"
-              },
-            }),
-          ),
-        )
+  const port =
+    argv.port !== undefined
+      ? Number(argv.port)
+      : skipPrompts
+        ? 5173
+        : Number(
+            cancelled(
+              await p.text({
+                message: "Dev server port",
+                placeholder: "5173",
+                initialValue: "5173",
+                validate: (v) => {
+                  if (!isValidPort(v)) return "Must be a valid port (1-65535)"
+                },
+              }),
+            ),
+          )
 
   // --- Scaffold ---
   const config = {

@@ -149,6 +149,7 @@ Breaking: the exported `generateTokens` input drops `accentIntensity` and `prese
 - The pre-hydration `:root` block declares every token the engine emits, including the sidebar text tokens, so the first paint is a complete light theme.
 - Menubar content plays its exit animation when it closes.
 - `create-darkraise-ui` offers all 18 accents and 12 neutrals; it listed 17 accents and only `slate`.
+- `create-darkraise-ui --port` accepts only an integer from 1 to 65535 and exits with an error otherwise. `--port abc` wrote `port: NaN` into the generated `vite.config.ts`, and `--port 0` was ignored.
 - Dropdown, context-menu and menubar content and their submenus no longer draw the browser's default focus outline when the menu container takes focus without a prior click, as it does with `defaultOpen`. Focused items keep their own indicator.
 - `Clipboard`, `useClipboard` and `JsonTreeView`'s copy buttons failed with "Failed to copy" outside a secure context. `navigator.clipboard` does not exist on plain HTTP, such as a dev server opened by LAN address, so every copy threw. They now go through `writeClipboardText`.
 - A scrolling shell region lost its edge under `inset`, `island` and `floating`. Its 1px edge was an inset `box-shadow`, which paints beneath the region's children, so content scrolled toward the edge covered it. Detached regions now draw a real 1px border, which stays above scrolled content. `--shell-region-border` accordingly holds the border colour rather than a shadow.

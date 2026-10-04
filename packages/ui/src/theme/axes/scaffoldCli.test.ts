@@ -188,6 +188,17 @@ describe("rejected input", () => {
     TIMEOUT,
   )
 
+  it.each(["abc", "0", "70000", "80.5"])(
+    "rejects --port %s",
+    async (port) => {
+      const { code, stderr } = await scaffold("--port", port)
+      expect(code).toBe(1)
+      expect(stderr).toContain(`invalid --port "${port}"`)
+      expect(readdirSync(cwd)).toEqual([])
+    },
+    TIMEOUT,
+  )
+
   it(
     "rejects an invalid value for a new axis flag",
     async () => {
@@ -223,6 +234,16 @@ describe("generated project", () => {
       expect(vite).toContain(
         "darkraisePrerender({ defaults: themeConfig.defaults })",
       )
+    },
+    TIMEOUT,
+  )
+
+  it(
+    "writes the port given by flag",
+    async () => {
+      expect((await scaffold("--port", "3000")).code).toBe(0)
+      const vite = readFileSync(join(cwd, "app/vite.config.ts"), "utf8")
+      expect(vite).toContain("port: 3000,")
     },
     TIMEOUT,
   )
