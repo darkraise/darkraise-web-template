@@ -1,5 +1,5 @@
 import { test, expect, type Page } from "@playwright/test"
-import { PRESETS } from "./fixtures/theme"
+import { BASELINE_STYLES } from "./fixtures/theme"
 import { collectGarbage, gotoApp, seedApp } from "./helpers/app"
 import { settle } from "./helpers/measure"
 
@@ -140,7 +140,7 @@ test.beforeAll(async ({ browser }) => {
   const context = await browser.newContext({ viewport: VIEWPORT })
   try {
     const page = await context.newPage()
-    await seedApp(page, { preset: "default", mode: "light" })
+    await seedApp(page, { style: "quiet", mode: "light" })
     const paths = [
       ...APP_PAGES.map(([, path]) => path),
       ...SHOWCASE_PAGES.map(([, path]) => path),
@@ -157,11 +157,11 @@ test.beforeAll(async ({ browser }) => {
   }
 })
 
-for (const preset of PRESETS) {
+for (const style of BASELINE_STYLES) {
   for (const mode of MODES) {
-    test.describe(`${preset} · ${mode}`, () => {
+    test.describe(`${style} · ${mode}`, () => {
       test.beforeEach(async ({ page }) => {
-        await seedApp(page, { preset, mode })
+        await seedApp(page, { style, mode })
       })
 
       for (const [name, path, ready] of APP_PAGES) {
@@ -175,7 +175,7 @@ for (const preset of PRESETS) {
           await expect(page.locator(".dr-skeleton")).toHaveCount(0)
           await waitForFonts(page)
           await fitContent(page)
-          await capture(page, `${preset}-${mode}-${name}`)
+          await capture(page, `${style}-${mode}-${name}`)
         })
       }
 
@@ -184,7 +184,7 @@ for (const preset of PRESETS) {
           await gotoApp(page, path)
           // Routes are code-split: the shell paints before the page module.
           await expect(page.locator(".dr-page-header-title")).toBeVisible()
-          await capture(page, `${preset}-${mode}-${name}`)
+          await capture(page, `${style}-${mode}-${name}`)
         })
       }
 
@@ -192,11 +192,11 @@ for (const preset of PRESETS) {
         test(`overlay ${name}`, async ({ page }) => {
           await page.goto(`/e2e/fixtures/baseline-overlays.html?show=${name}`)
           await expect(page.locator("html")).toHaveAttribute(
-            "data-preset",
-            preset,
+            "data-style",
+            style,
           )
           await expect(page.locator(selector).first()).toBeVisible()
-          await capture(page, `${preset}-${mode}-overlay-${name}`)
+          await capture(page, `${style}-${mode}-overlay-${name}`)
         })
       }
     })
