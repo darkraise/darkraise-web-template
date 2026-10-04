@@ -176,6 +176,11 @@
     .dr-sidebar-nav-indicator[data-animate="true"] {
       transition: none;
     }
+
+    .dr-sidebar-nav-indicator,
+    .dr-sidebar-nav-indicator::before {
+      transition: none;
+    }
   }
 
   .dr-sidebar-nav-indicator::before {

@@ -141,6 +141,9 @@ describe("sidebar selection looks", () => {
     expect(media("(prefers-reduced-motion: reduce)")).toContain(
       '.dr-sidebar-nav-indicator[data-animate="true"] { transition: none; }',
     )
+    expect(media("(prefers-reduced-motion: reduce)")).toContain(
+      ".dr-sidebar-nav-indicator, .dr-sidebar-nav-indicator::before { transition: none; }",
+    )
   })
 
   it("is imported after the sidebar nav stylesheet", () => {
