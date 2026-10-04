@@ -1,6 +1,7 @@
 import { test, expect, type Page } from "@playwright/test"
 import {
   boxOf,
+  expectNoErrorBoundary,
   gotoApp,
   seedApp,
   wrappedTableText,
@@ -283,4 +284,46 @@ test.describe("floating shell", () => {
     await page.getByRole("button", { name: "Back" }).click()
     await expect(page.locator('[data-region="panel"]')).toBeVisible()
   })
+})
+
+/** Each route's sign of having loaded its data; measuring before it would
+ *  pass on a loading placeholder. */
+const APP_ROUTES = [
+  { path: "/", ready: ".dr-chart" },
+  { path: "/analytics", ready: ".dr-chart" },
+  { path: "/orders", ready: "tbody tr" },
+  { path: "/orders/ord-1", ready: "[data-order-steps]" },
+  { path: "/products", ready: "tbody tr" },
+  { path: "/products/new", ready: "main form" },
+  { path: "/categories", ready: "tbody tr" },
+  { path: "/customers", ready: "tbody tr" },
+  // A loaded order row has several cells; the empty-state row has one.
+  { path: "/customers/cust-1", ready: "main tbody tr:has(td + td)" },
+  { path: "/inbox", ready: '[data-region="panel"] button' },
+  { path: "/settings", ready: "main form" },
+] as const
+
+const GUEST_ROUTES = ["/login", "/register", "/forgot-password"] as const
+
+test.describe("every route fits 390px", () => {
+  for (const route of APP_ROUTES) {
+    test(`app route ${route.path}`, async ({ page }) => {
+      await seedApp(page)
+      await gotoApp(page, route.path)
+      await expect(page.locator(route.ready).first()).toBeVisible()
+      await expect(page.locator(".dr-skeleton")).toHaveCount(0)
+      await expectNoErrorBoundary(page)
+      await expectFits(page)
+    })
+  }
+
+  for (const path of GUEST_ROUTES) {
+    test(`guest route ${path}`, async ({ page }) => {
+      await seedApp(page, {}, { authenticated: false })
+      await gotoApp(page, path)
+      await expect(page.locator("form").first()).toBeVisible()
+      await expectNoErrorBoundary(page)
+      await expectFits(page)
+    })
+  }
 })
