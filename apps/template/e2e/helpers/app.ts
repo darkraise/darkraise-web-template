@@ -313,3 +313,24 @@ export async function expectNoErrorBoundary(page: Page) {
     page.getByText(/Something went wrong|Unexpected Application Error/i),
   ).toHaveCount(0)
 }
+
+/** Text inside table cells that the layout broke across lines. */
+export async function wrappedTableText(scope: Locator): Promise<string[]> {
+  return scope.evaluate((root) => {
+    const wrapped: string[] = []
+    for (const cell of root.querySelectorAll("th, td")) {
+      const walker = document.createTreeWalker(cell, NodeFilter.SHOW_TEXT)
+      for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+        const text = node.textContent?.trim() ?? ""
+        if (!text) continue
+        const range = document.createRange()
+        range.selectNodeContents(node)
+        const tops = new Set(
+          [...range.getClientRects()].map((rect) => Math.round(rect.top)),
+        )
+        if (tops.size > 1) wrapped.push(text)
+      }
+    }
+    return wrapped
+  })
+}

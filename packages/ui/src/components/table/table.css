@@ -15,8 +15,14 @@
     @apply [&_tr:last-child]:border-0;
   }
 
+  /* Opaque so a sticky footer hides the rows scrolled beneath it. */
   .dr-table-footer {
-    @apply bg-muted/50 border-t font-medium [&>tr]:last:border-b-0;
+    @apply border-t font-medium [&>tr]:last:border-b-0;
+    background-color: color-mix(
+      in oklab,
+      var(--color-muted) 50%,
+      var(--color-surface-header)
+    );
   }
 
   .dr-table-row {
@@ -26,13 +32,17 @@
   .dr-table-head {
     @apply type-caption text-muted-foreground px-[var(--density-container-p)] py-[var(--density-row-py)] text-start align-middle tabular-nums [&:has([role=checkbox])]:pr-0;
     height: calc(var(--control-height) + 0.5rem);
+    white-space: nowrap;
   }
 
   /* The height is a minimum on a table cell: one line of text sits at the
-     control height plus 8px at every density, and wrapped content grows. */
+     control height plus 8px at every density. Cells do not wrap: a table
+     wider than its container scrolls inside the wrapper, and a column meant
+     to wrap opts back in with `whitespace-normal`. */
   .dr-table-cell {
     @apply px-[var(--density-container-p)] py-[var(--density-row-py)] align-middle tabular-nums [&:has([role=checkbox])]:pr-0;
     height: calc(var(--control-height) + 0.5rem);
+    white-space: nowrap;
   }
 
   .dr-table-head[data-align="center"],

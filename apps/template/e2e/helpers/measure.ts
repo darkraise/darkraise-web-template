@@ -175,3 +175,12 @@ export async function minContrastOver(
     { b64: png.toString("base64"), colours },
   )
 }
+
+/** Alpha of a computed colour: an `rgba()` fourth value or a `/ a` part. */
+export function alphaOf(value: string): number {
+  const slash = /\/\s*([\d.]+)(%?)\s*\)$/.exec(value)
+  if (slash) return Number(slash[1]) / (slash[2] ? 100 : 1)
+  const rgba = /^rgba\([^,]+,[^,]+,[^,]+,\s*([\d.]+)\s*\)$/.exec(value)
+  if (rgba) return Number(rgba[1])
+  return 1
+}

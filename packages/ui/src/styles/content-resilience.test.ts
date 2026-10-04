@@ -26,7 +26,6 @@ describe("long-token wrapping", () => {
       ".dr-alert-description",
       ".dr-overlay-description",
       ".dr-field-error",
-      ".dr-table-cell",
       ".dr-tooltip-content",
     ]) {
       expect(selectors, `${surface} can still overflow`).toContain(surface)
