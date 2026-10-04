@@ -164,12 +164,18 @@ for (const mode of MODES) {
       '[data-probe="sidebar"] .dr-sidebar-nav-current',
     )
     await expect(active).toHaveCount(1)
+    // A placed indicator paints the current row's fill, so the hover is
+    // compared with it rather than with the transparent row.
+    const surface = page.locator(
+      '[data-probe="sidebar"] .dr-sidebar-nav[data-indicator="ready"] > .dr-sidebar-nav-indicator',
+    )
+    await expect(surface).toHaveCount(1)
     const idle = items.filter({ hasText: "Settings" })
     await idle.hover()
     await settle(page)
     const hovered = await computed(idle, "background-color")
     expect(hovered).not.toBe("rgba(0, 0, 0, 0)")
-    expect(hovered).not.toBe(await computed(active, "background-color"))
+    expect(hovered).not.toBe(await computed(surface, "background-color"))
   })
 }
 
