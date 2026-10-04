@@ -330,6 +330,11 @@ export const nav: NavGroup[] = [
         icon: Braces,
       },
       { label: "Kbd", href: "/components/kbd", icon: Keyboard },
+      {
+        label: "Kitchen Sink",
+        href: "/components/kitchen-sink",
+        icon: LayoutGrid,
+      },
       { label: "Label", href: "/components/label", icon: Bookmark },
       { label: "Layouts", href: "/components/layouts", icon: LayoutPanelLeft },
       {

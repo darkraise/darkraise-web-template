@@ -85,6 +85,8 @@ const DESCRIPTIONS: Record<string, string> = {
   "/components/input-otp": "One-time-code entry with per-digit slots and paste",
   "/components/json-tree-view": "Collapsible, syntax-highlighted JSON explorer",
   "/components/kbd": "Keyboard key and shortcut display elements",
+  "/components/kitchen-sink":
+    "Every control family on one screen, for comparing styles",
   "/components/label": "Accessible labels associated with form controls",
   "/components/layouts":
     "Sidebar, top-nav, stacked, and split-panel layout shells",
