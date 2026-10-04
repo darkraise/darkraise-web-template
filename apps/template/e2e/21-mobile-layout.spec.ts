@@ -1,5 +1,11 @@
 import { test, expect, type Page } from "@playwright/test"
-import { boxOf, gotoApp, seedApp, wrappedTableText } from "./helpers/app"
+import {
+  boxOf,
+  gotoApp,
+  seedApp,
+  wrappedTableText,
+  type Box,
+} from "./helpers/app"
 
 /**
  * The shell clips its own overflow and the content region scrolls inside it,
@@ -184,5 +190,62 @@ test.describe("inbox", () => {
     await expect(panel).toBeVisible()
     await expect(panel).toBeFocused()
     await expect(back).toBeHidden()
+  })
+})
+
+test.describe("order detail", () => {
+  const STATUSES = ["Pending", "Processing", "Shipped", "Delivered"]
+
+  async function stepBoxes(page: Page) {
+    const steps = page.locator("[data-order-steps] > *")
+    await expect(steps).toHaveCount(4)
+    await expect(steps).toContainText(STATUSES)
+    const boxes = []
+    for (const step of await steps.all()) boxes.push(await boxOf(step))
+    return boxes
+  }
+
+  async function connectorBoxes(page: Page) {
+    const connectors = page.locator("[data-order-connector]")
+    await expect(connectors).toHaveCount(3)
+    const boxes = []
+    for (const connector of await connectors.all()) {
+      boxes.push(await boxOf(connector))
+    }
+    return boxes
+  }
+
+  test("stacks every status step on a phone", async ({ page }) => {
+    await seedApp(page)
+    await gotoApp(page, "/orders/ord-1")
+    const width = await page.evaluate(
+      () => document.documentElement.clientWidth,
+    )
+    const boxes = await stepBoxes(page)
+    for (const box of boxes) {
+      expect(box.x).toBeGreaterThanOrEqual(0)
+      expect(box.x + box.width).toBeLessThanOrEqual(width)
+    }
+    for (let i = 1; i < boxes.length; i++) {
+      expect((boxes[i] as Box).y).toBeGreaterThan((boxes[i - 1] as Box).y)
+    }
+    for (const box of await connectorBoxes(page)) {
+      expect(box.height).toBeGreaterThan(box.width)
+    }
+  })
+
+  test("lays the steps in a row from 640px", async ({ page }) => {
+    await page.setViewportSize({ width: 700, height: 844 })
+    await seedApp(page)
+    await gotoApp(page, "/orders/ord-1")
+    const boxes = await stepBoxes(page)
+    const centres = boxes.map((box) => box.y + box.height / 2)
+    expect(Math.max(...centres) - Math.min(...centres)).toBeLessThanOrEqual(2)
+    for (let i = 1; i < boxes.length; i++) {
+      expect((boxes[i] as Box).x).toBeGreaterThan((boxes[i - 1] as Box).x)
+    }
+    for (const box of await connectorBoxes(page)) {
+      expect(box.width).toBeGreaterThan(box.height)
+    }
   })
 })

@@ -126,30 +126,39 @@ function OrderDetailPage() {
 
       <div className="space-y-6">
         {order.status !== "cancelled" && (
-          <div className="flex items-center gap-2 overflow-x-auto pb-2">
+          <div
+            data-order-steps
+            className="flex flex-col gap-2 pb-2 sm:flex-row sm:items-center"
+          >
             {statusSteps.map((step, i) => (
-              <div key={step} className="flex shrink-0 items-center gap-2">
-                <div
-                  className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-medium ${
-                    i <= currentStepIndex
-                      ? "bg-primary-fill text-primary-foreground"
-                      : "bg-muted text-muted-foreground"
-                  }`}
-                >
-                  {i + 1}
+              <div
+                key={step}
+                className="flex shrink-0 flex-col gap-2 sm:flex-row sm:items-center"
+              >
+                <div className="flex items-center gap-2">
+                  <div
+                    className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-medium ${
+                      i <= currentStepIndex
+                        ? "bg-primary-fill text-primary-foreground"
+                        : "bg-muted text-muted-foreground"
+                    }`}
+                  >
+                    {i + 1}
+                  </div>
+                  <span
+                    className={`text-sm whitespace-nowrap ${
+                      i <= currentStepIndex
+                        ? "text-foreground font-medium"
+                        : "text-muted-foreground"
+                    }`}
+                  >
+                    {t(step)}
+                  </span>
                 </div>
-                <span
-                  className={`text-sm whitespace-nowrap ${
-                    i <= currentStepIndex
-                      ? "text-foreground font-medium"
-                      : "text-muted-foreground"
-                  }`}
-                >
-                  {t(step)}
-                </span>
                 {i < statusSteps.length - 1 && (
                   <div
-                    className={`h-0.5 w-8 ${
+                    data-order-connector
+                    className={`ms-[0.9375rem] h-4 w-0.5 sm:ms-0 sm:h-0.5 sm:w-8 ${
                       i < currentStepIndex ? "bg-primary-fill" : "bg-muted"
                     }`}
                   />
