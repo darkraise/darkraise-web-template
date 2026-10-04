@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest"
 
-import { coversPath, flattenNavItems, isPathMatch } from "./navTree"
+import {
+  containsItem,
+  coversPath,
+  findActiveItem,
+  flattenNavItems,
+  isPathMatch,
+} from "./navTree"
 import type { NavGroup, NavItem } from "./types"
 
 describe("isPathMatch", () => {
@@ -122,5 +128,97 @@ describe("flattenNavItems", () => {
       { label: "Catalog", href: "/products" },
       { label: "Categories", href: "/categories" },
     ])
+  })
+})
+
+describe("findActiveItem", () => {
+  const items: NavItem[] = [
+    { label: "Dashboard", href: "/" },
+    { label: "Orders", href: "/orders" },
+    {
+      label: "Products",
+      href: "/products",
+      children: [
+        { label: "All products", href: "/products" },
+        { label: "Categories", href: "/products/categories" },
+      ],
+    },
+    { label: "Settings", href: "/settings" },
+  ]
+  const active = (path: string) => findActiveItem(items, path)?.label
+
+  it("matches the root only on the root", () => {
+    expect(active("/")).toBe("Dashboard")
+    expect(active("/orders")).toBe("Orders")
+  })
+
+  it("keeps a detail route on its list item", () => {
+    expect(active("/orders/ord-1")).toBe("Orders")
+  })
+
+  it("prefers the longest match", () => {
+    expect(active("/products/categories/42")).toBe("Categories")
+  })
+
+  it("lets an index child beat its parent on a shared href", () => {
+    expect(active("/products")).toBe("All products")
+  })
+
+  it("respects segment boundaries", () => {
+    expect(active("/settings-old")).toBeUndefined()
+  })
+
+  it("returns undefined when nothing matches", () => {
+    expect(active("/nowhere")).toBeUndefined()
+  })
+
+  it("finds a grandchild", () => {
+    const deep: NavItem[] = [
+      {
+        label: "Settings",
+        href: "/settings",
+        children: [
+          {
+            label: "Billing",
+            href: "/settings/billing",
+            children: [
+              { label: "Invoices", href: "/settings/billing/invoices" },
+            ],
+          },
+        ],
+      },
+    ]
+    expect(findActiveItem(deep, "/settings/billing/invoices/7")?.label).toBe(
+      "Invoices",
+    )
+  })
+})
+
+describe("containsItem", () => {
+  const invoices: NavItem = { label: "Invoices", href: "/billing/invoices" }
+  const billing: NavItem = {
+    label: "Billing",
+    href: "/billing",
+    children: [invoices],
+  }
+  const settings: NavItem = {
+    label: "Settings",
+    href: "/settings",
+    children: [billing],
+  }
+
+  it("holds for the item itself and every descendant", () => {
+    expect(containsItem(settings, settings)).toBe(true)
+    expect(containsItem(settings, billing)).toBe(true)
+    expect(containsItem(settings, invoices)).toBe(true)
+  })
+
+  it("compares by identity, not by href", () => {
+    expect(containsItem(settings, { ...invoices })).toBe(false)
+  })
+
+  it("does not hold upwards or for nothing", () => {
+    expect(containsItem(invoices, settings)).toBe(false)
+    expect(containsItem(settings, undefined)).toBe(false)
   })
 })

@@ -19,6 +19,47 @@ export function coversPath(item: NavItem, currentPath: string): boolean {
 }
 
 /**
+ * The one item the current path selects: the longest `href` that is the path
+ * or a whole-segment prefix of it. On a tie the deeper item wins, so an index
+ * child sharing its parent's `href` is the active one, not both.
+ */
+export function findActiveItem(
+  items: readonly NavItem[],
+  currentPath: string,
+): NavItem | undefined {
+  let active: NavItem | undefined
+  let activeDepth = -1
+  const queue = items.map((item) => ({ item, depth: 0 }))
+  for (const { item, depth } of queue) {
+    if (isPathMatch(currentPath, item.href)) {
+      const longer = !active || item.href.length > active.href.length
+      const deeperTie =
+        active !== undefined &&
+        item.href.length === active.href.length &&
+        depth > activeDepth
+      if (longer || deeperTie) {
+        active = item
+        activeDepth = depth
+      }
+    }
+    for (const child of item.children ?? []) {
+      queue.push({ item: child, depth: depth + 1 })
+    }
+  }
+  return active
+}
+
+/** Whether `target` is `item` or sits anywhere below it. */
+export function containsItem(
+  item: NavItem,
+  target: NavItem | undefined,
+): boolean {
+  if (!target) return false
+  if (item === target) return true
+  return item.children?.some((child) => containsItem(child, target)) ?? false
+}
+
+/**
  * Every reachable destination in the tree, depth-first, for the command
  * palette. Nested items are real pages, so leaving them out would make
  * nesting an item the same as hiding it from search.
