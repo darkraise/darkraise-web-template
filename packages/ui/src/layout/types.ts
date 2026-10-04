@@ -34,13 +34,6 @@ export interface LayoutProps {
   layoutVariants?: LayoutVariant[]
   showThemeSwitcher?: boolean
   /**
-   * Show a header toggle for the sidebar's active-item left bar.
-   * `SidebarLayout` only; the other layouts have no sidebar to drive.
-   *
-   * @default false
-   */
-  showActiveBarToggle?: boolean
-  /**
    * Chrome treatment used until the user picks one in the layout switcher.
    *
    * @default "classic"

@@ -73,21 +73,21 @@ describe("MobileDrawer", () => {
     expect(await screen.findByText("Main menu")).toBeInTheDocument()
   })
 
-  // The drawer replaces the rail below md, so an indicator style set on the
-  // layout has to reach here too or the two disagree at the breakpoint.
-  it("passes the active-item indicator through to the nav", async () => {
+  // The drawer replaces the rail below md, so a look pinned on the layout has
+  // to reach here too or the two disagree at the breakpoint.
+  it("passes the selection through to the nav", async () => {
     const user = userEvent.setup()
-    renderDrawer({ activeBar: "ring" })
+    renderDrawer({ selection: "frosted" })
     await user.click(screen.getByRole("button", { name: /open menu/i }))
     const nav = await screen.findByRole("navigation")
-    expect(nav.dataset.activeBar).toBe("ring")
+    expect(nav.dataset.sidebarSelection).toBe("frosted")
   })
 
-  it("leaves the indicator unset when no style is given", async () => {
+  it("follows the theme when no selection is given", async () => {
     const user = userEvent.setup()
     renderDrawer({})
     await user.click(screen.getByRole("button", { name: /open menu/i }))
     const nav = await screen.findByRole("navigation")
-    expect(nav.dataset.activeBar).toBeUndefined()
+    expect(nav.dataset.sidebarSelection).toBe("chip")
   })
 })

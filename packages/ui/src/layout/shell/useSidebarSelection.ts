@@ -21,3 +21,13 @@ export function useSidebarSelection(
     theme?.style ?? AXES.style.default,
   )
 }
+
+/**
+ * `"none"` under Flat, which draws no shadows whichever look is picked. A nav
+ * stamps it as `data-sidebar-shadow`, because only theme/styles may name a
+ * style in CSS.
+ */
+export function useSidebarShadow(): "none" | undefined {
+  const theme = useContext(ThemeContext)
+  return (theme?.style ?? AXES.style.default) === "flat" ? "none" : undefined
+}

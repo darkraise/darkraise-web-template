@@ -2,7 +2,6 @@ import { useUiText } from "../../i18n/useUiText"
 import { useState } from "react"
 import { PanelLeftClose, PanelLeft } from "lucide-react"
 import { Button } from "@components/button"
-import { ToggleGroup, ToggleGroupItem } from "@components/toggle-group"
 import { TooltipProvider } from "@components/tooltip"
 import { BrandLogo } from "@layout/brand-logo"
 import { LayoutHeader } from "@layout/layout-header"
@@ -11,37 +10,18 @@ import { SkipLink } from "@layout/skip-link"
 import { useRouteFocus } from "@layout/useRouteFocus"
 import { flattenNavItems } from "@layout/navTree"
 import { SidebarNav } from "./SidebarNav"
-import { resolveActiveBar } from "./sidebar-active-bar"
-import type { SidebarActiveBar } from "./sidebar-active-bar"
 import { SidebarProvider } from "./SidebarContext"
 import type { LayoutProps } from "@layout/types"
-import { useShellStyle, useSidebarActiveBarSetting } from "@layout/shell"
-import type { ShellStyle } from "@theme"
+import { useShellStyle } from "@layout/shell"
+import type { ShellStyle, SidebarSelection } from "@theme"
 import { useUiLabels } from "@labels"
 
 export interface SidebarLayoutProps extends LayoutProps {
   /**
-   * Indicator style for the active nav item, controlled. Passing this pins
-   * the style: the header toggle (if shown) reports its clicks through
-   * `onActiveBarChange` instead of changing anything on its own.
-   *
-   * Omitting it is NOT the same as passing a value — omitted leaves the
-   * theme's `sidebarActiveBar` in charge (by default a tint with no bar),
-   * while a value forces that look everywhere.
-   *
-   * `true` is shorthand for `"bar"`, `false` for `"ring"`.
+   * Look of the active nav row, pinned for this shell. Omitted, the theme's
+   * `sidebarSelection` setting decides.
    */
-  activeBar?: boolean | SidebarActiveBar
-  /**
-   * Initial indicator style when `activeBar` is not supplied. Only useful
-   * alongside `showActiveBarToggle`, which is the one thing that can change
-   * the style afterwards.
-   *
-   * @default undefined — the theme's `sidebarActiveBar` setting
-   */
-  defaultActiveBar?: boolean | SidebarActiveBar
-  /** Fires when the header toggle picks a style. */
-  onActiveBarChange?: (activeBar: SidebarActiveBar | undefined) => void
+  selection?: SidebarSelection
   /**
    * Pins this shell's chrome treatment over the user's pick, and hides the
    * shell-style choice in this layout's switcher.
@@ -65,10 +45,7 @@ export function SidebarLayout({
   showLayoutSwitcher,
   layoutVariants,
   showThemeSwitcher,
-  showActiveBarToggle = false,
-  activeBar: activeBarProp,
-  defaultActiveBar,
-  onActiveBarChange,
+  selection,
   shellStyle: shellStyleProp,
   defaultShellStyle,
   user,
@@ -86,65 +63,7 @@ export function SidebarLayout({
   const resolvedNavFooter = navFooter ?? sidebarFooter
   useRouteFocus()
   const [collapsed, setCollapsed] = useState(false)
-  // Defaults to unset so nobody's sidebar changes appearance unless they ask:
-  // the theme's indicator renders until the control below
-  // is touched. A single-selection ToggleGroup can't hold `undefined`
-  // itself, so "unset" is represented on the wire as the "default" item
-  // and mapped back to `undefined` in onValueChange.
-  // Three states, not two: "bar"/"ring"/"both" force a look, "default" asks
-  // for the default tint, and `undefined` means nobody local has spoken yet —
-  // only then does the theme axis get a say.
-  const [localActiveBar, setLocalActiveBar] = useState<
-    SidebarActiveBar | "default" | undefined
-  >(() =>
-    defaultActiveBar === undefined
-      ? undefined
-      : (resolveActiveBar(defaultActiveBar) ?? "default"),
-  )
-  const themeActiveBar = useSidebarActiveBarSetting()
-
-  const settingToWire = (value: SidebarActiveBar | "default") =>
-    value === "default" ? undefined : value
-
-  const activeBar =
-    activeBarProp !== undefined
-      ? resolveActiveBar(activeBarProp)
-      : localActiveBar !== undefined
-        ? settingToWire(localActiveBar)
-        : settingToWire(themeActiveBar)
-
   const flatNavItems = flattenNavItems(nav)
-
-  const activeBarToggle = showActiveBarToggle ? (
-    <ToggleGroup
-      type="single"
-      size="sm"
-      value={localActiveBar ?? themeActiveBar}
-      onValueChange={(value) => {
-        // A single-selection group emits "" on deselect; that must not
-        // reach state, or the control would end up with no active item.
-        if (!value) return
-        const next = value as SidebarActiveBar | "default"
-        if (activeBarProp === undefined) setLocalActiveBar(next)
-        onActiveBarChange?.(settingToWire(next))
-      }}
-      variant="outline"
-      aria-label={uiText("Sidebar active-item indicator")}
-    >
-      <ToggleGroupItem value="default" aria-label={uiText("Tint with no bar")}>
-        {uiText("Default")}
-      </ToggleGroupItem>
-      <ToggleGroupItem value="bar" aria-label={uiText("Left rail only")}>
-        {uiText("Bar")}
-      </ToggleGroupItem>
-      <ToggleGroupItem value="ring" aria-label={uiText("Uniform ring only")}>
-        {uiText("Ring")}
-      </ToggleGroupItem>
-      <ToggleGroupItem value="both" aria-label={uiText("Ring and left rail")}>
-        {uiText("Both")}
-      </ToggleGroupItem>
-    </ToggleGroup>
-  ) : null
 
   const toggleButton = (
     <Button
@@ -214,7 +133,7 @@ export function SidebarLayout({
             )}
 
             <div className="dr-sidebar-layout-nav-scroll">
-              <SidebarNav nav={nav} activeBar={activeBar} />
+              <SidebarNav nav={nav} selection={selection} />
             </div>
 
             {resolvedNavFooter && (
@@ -234,13 +153,8 @@ export function SidebarLayout({
             nav={nav}
             sidebarHeader={resolvedNavHeader}
             sidebarFooter={resolvedNavFooter}
-            sidebarActiveBar={activeBar}
-            headerSlot={
-              <>
-                {activeBarToggle}
-                {headerSlot}
-              </>
-            }
+            sidebarSelection={selection}
+            headerSlot={headerSlot}
             className="theme-transition"
             showLayoutSwitcher={showLayoutSwitcher}
             layoutVariants={layoutVariants}

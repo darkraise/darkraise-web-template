@@ -1,3 +1,2 @@
 export { useShellStyle } from "./useShellStyle"
-export { useSidebarActiveBarSetting } from "./useSidebarActiveBar"
-export { useSidebarSelection } from "./useSidebarSelection"
+export { useSidebarSelection, useSidebarShadow } from "./useSidebarSelection"

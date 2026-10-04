@@ -7,9 +7,9 @@ import { UiLabelsProvider } from "@labels"
 import type { RouterAdapter, RouterLinkProps } from "@router"
 import type { NavGroup } from "@layout/types"
 import { readFileSync } from "node:fs"
-import { CreditCard, Settings, ShoppingCart, Users } from "lucide-react"
+import { CreditCard, Home, Settings, ShoppingCart, Users } from "lucide-react"
 import { ThemeProvider, themeConfig } from "@theme"
-import type { SidebarActiveBarSetting } from "@theme"
+import type { SidebarSelectionSetting } from "@theme"
 
 function StubLink({ to, className, children }: RouterLinkProps) {
   return (
@@ -129,17 +129,17 @@ describe("StackedLayout shell style", () => {
   })
 })
 
-describe("active indicator setting", () => {
-  // Drive the axis through the provider's config rather than storage, as
+describe("sidebar selection", () => {
+  // Drive the setting through the provider's config rather than storage, as
   // SidebarLayout.test.tsx does: this suite runs without a localStorage stub.
-  const withAxis = (value: SidebarActiveBarSetting) => ({
-    ...themeConfig,
-    defaults: { ...themeConfig.defaults, sidebarActiveBar: value },
-  })
-
-  const renderWithAxis = (axis: SidebarActiveBarSetting) =>
+  const renderWith = (setting: SidebarSelectionSetting) =>
     render(
-      <ThemeProvider config={withAxis(axis)}>
+      <ThemeProvider
+        config={{
+          ...themeConfig,
+          defaults: { ...themeConfig.defaults, sidebarSelection: setting },
+        }}
+      >
         <RouterAdapterProvider value={adapter}>
           <StackedLayout nav={nav} showThemeSwitcher={false}>
             <div>Content</div>
@@ -148,33 +148,86 @@ describe("active indicator setting", () => {
       </ThemeProvider>,
     )
 
-  const wire = (container: HTMLElement, cls: string) =>
-    container.querySelector(`.${cls}`)?.getAttribute("data-active-bar") ?? null
+  const look = (container: HTMLElement, cls: string) =>
+    container.querySelector<HTMLElement>(`.${cls}`)?.dataset.sidebarSelection
 
   it.each(["dr-stacked-layout-rail-nav", "dr-stacked-layout-aside-nav"])(
-    "stamps the theme's bar setting on .%s",
+    "stamps the theme's look on .%s",
     (cls) => {
-      const { container } = renderWithAxis("bar")
-      expect(wire(container, cls)).toBe("bar")
+      expect(look(renderWith("pill").container, cls)).toBe("pill")
     },
   )
 
-  it("keeps the default indicator by default", () => {
-    const { container } = renderWithAxis("default")
-    expect(wire(container, "dr-stacked-layout-rail-nav")).toBeNull()
-    expect(wire(container, "dr-stacked-layout-aside-nav")).toBeNull()
+  it("resolves auto against the style", () => {
+    const { container } = renderWith("auto")
+    expect(look(container, "dr-stacked-layout-rail-nav")).toBe("chip")
+    expect(look(container, "dr-stacked-layout-aside-nav")).toBe("chip")
   })
 
-  it("lets the sidebar's bar, ring and both rules reach the stacked navs", () => {
-    // Prettier wraps a long :is() list across lines; compare on one line.
-    const css = readFileSync("src/layout/sidebar/sidebar-nav.css", "utf8")
-      .replace(/\s+/g, " ")
-      .replace(/\(\s+/g, "(")
-      .replace(/\s+\)/g, ")")
-    for (const value of ["bar", "ring", "both"]) {
-      expect(css).toContain(
-        `:is(.dr-sidebar-nav, .dr-stacked-layout-rail-nav, .dr-stacked-layout-aside-nav)[data-active-bar="${value}"]`,
+  it.each(["dr-stacked-layout-rail-nav", "dr-stacked-layout-aside-nav"])(
+    "gives .%s an indicator",
+    (cls) => {
+      const { container } = renderWith("auto")
+      expect(container.querySelector(`.${cls}`)?.firstElementChild).toHaveClass(
+        "dr-sidebar-nav-indicator",
       )
+    },
+  )
+
+  it("gives the rail icon a sidebar row's icon markup", () => {
+    const { container } = render(
+      <RouterAdapterProvider value={adapter}>
+        <StackedLayout
+          nav={[
+            {
+              label: "Overview",
+              items: [{ label: "Dashboard", href: "/", icon: Home }],
+            },
+          ]}
+          showThemeSwitcher={false}
+        >
+          <div>Content</div>
+        </StackedLayout>
+      </RouterAdapterProvider>,
+    )
+    expect(
+      container.querySelector(
+        ".dr-stacked-layout-rail-item > .dr-sidebar-nav-icon > .dr-sidebar-nav-icon-svg",
+      ),
+    ).not.toBeNull()
+  })
+
+  it("positions the indicator against both stacked navs", () => {
+    const css = readFileSync("src/layout/sidebar/sidebar-selection.css", "utf8")
+    expect(css).toContain(".dr-stacked-layout-rail-nav[data-sidebar-selection]")
+    expect(css).toContain(
+      ".dr-stacked-layout-aside-nav[data-sidebar-selection]",
+    )
+  })
+
+  it("stamps Flat's shadow drop on both stacked navs", () => {
+    const { container } = render(
+      <ThemeProvider
+        config={{
+          ...themeConfig,
+          defaults: { ...themeConfig.defaults, style: "flat" },
+        }}
+      >
+        <RouterAdapterProvider value={adapter}>
+          <StackedLayout nav={nav} showThemeSwitcher={false}>
+            <div>Content</div>
+          </StackedLayout>
+        </RouterAdapterProvider>
+      </ThemeProvider>,
+    )
+    for (const cls of [
+      "dr-stacked-layout-rail-nav",
+      "dr-stacked-layout-aside-nav",
+    ]) {
+      expect(
+        container.querySelector<HTMLElement>(`.${cls}`)?.dataset.sidebarShadow,
+        cls,
+      ).toBe("none")
     }
   })
 })

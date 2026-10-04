@@ -15,7 +15,7 @@ export {
   SidebarProvider,
   useSidebar,
 } from "./sidebar"
-export type { SidebarActiveBar, SidebarLayoutProps } from "./sidebar"
+export type { SidebarLayoutProps } from "./sidebar"
 export { TopNavLayout } from "./top-nav-layout"
 export { StackedLayout } from "./stacked-layout"
 export { SplitPanelLayout } from "./split-panel-layout"

@@ -1,3 +1,4 @@
+import { useRef } from "react"
 import { useUiText } from "../../i18n/useUiText"
 import { useRouterAdapter } from "@router"
 import { cn } from "@lib/utils"
@@ -13,9 +14,14 @@ import { SkipLink } from "@layout/skip-link"
 import { useRouteFocus } from "@layout/useRouteFocus"
 import { containsItem, findActiveItem } from "@layout/navTree"
 import { ActiveNavItemContext } from "@layout/sidebar/active-nav-context"
+import { useNavIndicator } from "@layout/sidebar/useNavIndicator"
 import type { LayoutProps } from "@layout/types"
 import { BrandLogo } from "@layout/brand-logo"
-import { useShellStyle, useSidebarActiveBarSetting } from "@layout/shell"
+import {
+  useShellStyle,
+  useSidebarSelection,
+  useSidebarShadow,
+} from "@layout/shell"
 import type { ShellStyle } from "@theme"
 import { useUiLabels } from "@labels"
 
@@ -63,10 +69,15 @@ export function StackedLayout({
   const currentPath = usePathname()
 
   // The rail and aside items are sidebar nav items without a SidebarNav
-  // ancestor, so the layout stamps the bar setting itself.
-  const activeBarSetting = useSidebarActiveBarSetting()
-  const activeBar =
-    activeBarSetting === "default" ? undefined : activeBarSetting
+  // ancestor, so the layout stamps the look and runs the indicators itself.
+  const look = useSidebarSelection()
+  const shadow = useSidebarShadow()
+  const railRef = useRef<HTMLElement>(null)
+  const railIndicatorRef = useRef<HTMLSpanElement>(null)
+  const asideRef = useRef<HTMLElement>(null)
+  const asideIndicatorRef = useRef<HTMLSpanElement>(null)
+  useNavIndicator(railRef, railIndicatorRef, currentPath)
+  useNavIndicator(asideRef, asideIndicatorRef, currentPath)
   // One active item across every group, so two groups with overlapping
   // prefixes never both claim the route and the longest match picks the
   // sub-nav.
@@ -103,9 +114,17 @@ export function StackedLayout({
             </div>
             <nav
               aria-label={uiText("Primary")}
+              ref={railRef}
               className="dr-stacked-layout-rail-nav"
-              data-active-bar={activeBar}
+              data-sidebar-selection={look}
+              data-sidebar-shadow={shadow}
+              data-indicator="pending"
             >
+              <span
+                ref={railIndicatorRef}
+                className="dr-sidebar-nav-indicator"
+                aria-hidden="true"
+              />
               {nav.map((group, gi) => {
                 const firstItem = group.items[0]
                 if (!firstItem) return null
@@ -129,7 +148,9 @@ export function StackedLayout({
                         aria-current={isActive ? "page" : undefined}
                       >
                         {Icon && (
-                          <Icon className="size-[var(--icon-size-lg)]" />
+                          <span className="dr-sidebar-nav-icon size-[var(--icon-size-lg)]">
+                            <Icon className="dr-sidebar-nav-icon-svg size-[var(--icon-size-lg)]" />
+                          </span>
                         )}
                       </Link>
                     </TooltipTrigger>
@@ -155,9 +176,17 @@ export function StackedLayout({
               <div className="dr-stacked-layout-aside-scroll">
                 <nav
                   aria-label={uiText("Secondary")}
+                  ref={asideRef}
                   className="dr-stacked-layout-aside-nav"
-                  data-active-bar={activeBar}
+                  data-sidebar-selection={look}
+                  data-sidebar-shadow={shadow}
+                  data-indicator="pending"
                 >
+                  <span
+                    ref={asideIndicatorRef}
+                    className="dr-sidebar-nav-indicator"
+                    aria-hidden="true"
+                  />
                   <ActiveNavItemContext.Provider value={activeItem}>
                     {activeGroup.items.map((item) => (
                       <SidebarItem key={item.href} item={item} />

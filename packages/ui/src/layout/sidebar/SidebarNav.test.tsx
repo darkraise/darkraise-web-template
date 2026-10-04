@@ -15,6 +15,8 @@ import { RouterAdapterProvider } from "@router"
 import type { RouterAdapter, RouterLinkProps } from "@router"
 import { SidebarNav } from "./SidebarNav"
 import { SidebarProvider } from "./SidebarContext"
+import { ThemeProvider, themeConfig } from "@theme"
+import type { SidebarSelection } from "@theme"
 import type { NavGroup } from "@layout/types"
 
 const thisDir = dirname(fileURLToPath(import.meta.url))
@@ -249,104 +251,89 @@ describe("SidebarNav parent items follow the route", () => {
   })
 })
 
-describe("SidebarNav activeBar", () => {
-  function renderWithActiveBar(activeBar?: boolean | "bar" | "ring" | "both") {
-    const { container } = render(
-      <RouterAdapterProvider value={strictAdapter}>
+describe("SidebarNav selection", () => {
+  const navOf = (selection?: SidebarSelection) =>
+    render(
+      <RouterAdapterProvider value={makeAdapter("/")}>
         <SidebarProvider collapsed={false}>
-          <SidebarNav nav={nav} activeBar={activeBar} />
+          <SidebarNav nav={nav} selection={selection} />
+        </SidebarProvider>
+      </RouterAdapterProvider>,
+    ).container.querySelector<HTMLElement>(".dr-sidebar-nav")
+
+  it("draws the default style's look without a theme", () => {
+    expect(navOf()?.dataset.sidebarSelection).toBe("chip")
+  })
+
+  it("draws the look it is given", () => {
+    expect(navOf("frosted")?.dataset.sidebarSelection).toBe("frosted")
+  })
+
+  it("renders one hidden indicator as the nav's first child", () => {
+    const first = navOf()?.firstElementChild
+    expect(first).toHaveClass("dr-sidebar-nav-indicator")
+    expect(first).toHaveAttribute("aria-hidden", "true")
+  })
+
+  it("carries the look into the collapsed rail's popover", async () => {
+    const user = userEvent.setup()
+    render(
+      <RouterAdapterProvider value={makeAdapter("/products/drafts")}>
+        <SidebarProvider collapsed>
+          <SidebarNav nav={nestedNav} selection="pill" />
         </SidebarProvider>
       </RouterAdapterProvider>,
     )
-    const el = container.querySelector(".dr-sidebar-nav")
-    if (!el) throw new Error("no sidebar nav rendered")
-    return el
-  }
-
-  it("emits no attribute when the prop is omitted", () => {
-    expect(renderWithActiveBar().getAttribute("data-active-bar")).toBeNull()
+    await user.click(screen.getByRole("button", { name: "Products" }))
+    expect(
+      document.querySelector(".dr-sidebar-nav-popover-content"),
+    ).toHaveAttribute("data-sidebar-selection", "pill")
   })
 
-  it("maps true to bar", () => {
-    expect(renderWithActiveBar(true).getAttribute("data-active-bar")).toBe(
-      "bar",
+  it("drops the shadows under Flat even for a pinned look", () => {
+    const { container } = render(
+      <ThemeProvider
+        config={{
+          ...themeConfig,
+          defaults: { ...themeConfig.defaults, style: "flat" },
+        }}
+      >
+        <RouterAdapterProvider value={makeAdapter("/")}>
+          <SidebarProvider collapsed={false}>
+            <SidebarNav nav={nav} selection="tile" />
+          </SidebarProvider>
+        </RouterAdapterProvider>
+      </ThemeProvider>,
     )
+    const el = container.querySelector<HTMLElement>(".dr-sidebar-nav")
+    expect(el?.dataset.sidebarSelection).toBe("tile")
+    expect(el?.dataset.sidebarShadow).toBe("none")
   })
 
-  it("maps false to ring", () => {
-    expect(renderWithActiveBar(false).getAttribute("data-active-bar")).toBe(
-      "ring",
-    )
+  it("keeps the shadows outside Flat", () => {
+    expect(navOf("tile")?.hasAttribute("data-sidebar-shadow")).toBe(false)
   })
 
-  it("passes through each explicit value", () => {
-    expect(renderWithActiveBar("bar").getAttribute("data-active-bar")).toBe(
-      "bar",
+  it("carries Flat's shadow drop into the collapsed rail's popover", async () => {
+    const user = userEvent.setup()
+    render(
+      <ThemeProvider
+        config={{
+          ...themeConfig,
+          defaults: { ...themeConfig.defaults, style: "flat" },
+        }}
+      >
+        <RouterAdapterProvider value={makeAdapter("/products/drafts")}>
+          <SidebarProvider collapsed>
+            <SidebarNav nav={nestedNav} selection="tile" />
+          </SidebarProvider>
+        </RouterAdapterProvider>
+      </ThemeProvider>,
     )
-    expect(renderWithActiveBar("ring").getAttribute("data-active-bar")).toBe(
-      "ring",
-    )
-    expect(renderWithActiveBar("both").getAttribute("data-active-bar")).toBe(
-      "both",
-    )
-  })
-
-  it("has a ring rule with no 3px rail", () => {
-    const withoutComments = sidebarNavCss.replace(/\/\*[\s\S]*?\*\//g, "")
-    const rule = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)].find(
-      ([, selector = ""]) => selector.includes('[data-active-bar="ring"]'),
-    )
-    expect(rule, "no activeBar=ring rule in sidebar-nav.css").toBeDefined()
-    expect(rule?.[2]).toMatch(/inset 0 0 0 1px/)
-    expect(rule?.[2]).not.toMatch(/inset 3px/)
-  })
-
-  it("has a both rule carrying the ring and the rail", () => {
-    const withoutComments = sidebarNavCss.replace(/\/\*[\s\S]*?\*\//g, "")
-    const rule = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)].find(
-      ([, selector = ""]) => selector.includes('[data-active-bar="both"]'),
-    )
-    expect(rule, "no activeBar=both rule in sidebar-nav.css").toBeDefined()
-    expect(rule?.[2]).toMatch(/inset 0 0 0 1px/)
-    expect(rule?.[2]).toMatch(/inset 3px/)
-  })
-
-  it("draws no rail on the active row unless activeBar asks for one", () => {
-    const withoutComments = sidebarNavCss.replace(/\/\*[\s\S]*?\*\//g, "")
-    const rules = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)]
-    const base = rules.find(
-      ([, selector = ""]) =>
-        selector.includes(".dr-sidebar-nav-current") &&
-        !selector.includes("data-active-bar"),
-    )
-    expect(base, "no base active rule in sidebar-nav.css").toBeDefined()
-    expect(base?.[2]).not.toMatch(/inset/)
-    const bar = rules.find(([, selector = ""]) =>
-      selector.includes('[data-active-bar="bar"]'),
-    )
-    expect(bar, "no activeBar=bar rule in sidebar-nav.css").toBeDefined()
-    expect(bar?.[2]).toMatch(/inset 3px/)
-    expect(bar?.[2]).not.toMatch(/inset 0 0 0 1px/)
-  })
-
-  // The sidebar nav and both stacked-layout navs share one rule per value,
-  // under every style.
-  it("styles each activeBar value in one rule shared by every nav", () => {
-    const withoutComments = sidebarNavCss.replace(/\/\*[\s\S]*?\*\//g, "")
-    const rules = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)]
-    for (const value of ["bar", "ring", "both"]) {
-      const matching = rules.filter(([, selector = ""]) =>
-        selector.includes(`[data-active-bar="${value}"]`),
-      )
-      expect(matching, `rules for activeBar=${value}`).toHaveLength(1)
-      for (const nav of [
-        /\.dr-sidebar-nav(?![\w-])/,
-        /\.dr-stacked-layout-rail-nav(?![\w-])/,
-        /\.dr-stacked-layout-aside-nav(?![\w-])/,
-      ]) {
-        expect(matching[0]?.[1]).toMatch(nav)
-      }
-    }
+    await user.click(screen.getByRole("button", { name: "Products" }))
+    expect(
+      document.querySelector(".dr-sidebar-nav-popover-content"),
+    ).toHaveAttribute("data-sidebar-shadow", "none")
   })
 })
 

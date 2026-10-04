@@ -10,7 +10,7 @@ import {
   SheetTrigger,
 } from "@components/sheet"
 import { SidebarNav, SidebarProvider } from "@layout/sidebar"
-import type { SidebarActiveBar } from "@layout/sidebar"
+import type { SidebarSelection } from "@theme"
 import type { NavGroup } from "@layout/types"
 
 interface MobileDrawerProps {
@@ -31,11 +31,11 @@ interface MobileDrawerProps {
   /** Accessible label of the trigger button. */
   triggerLabel?: string
   /**
-   * Active-item indicator for the nav, matching `SidebarLayout`'s own. The
-   * drawer stands in for the rail below `md`, so leaving it unset would show
-   * the theme's setting there while the rail shows something else.
+   * Look of the nav's active row, matching `SidebarLayout`'s own. The drawer
+   * stands in for the rail below `md`, so leaving it unset shows the theme's
+   * setting, as the rail does.
    */
-  activeBar?: boolean | SidebarActiveBar
+  selection?: SidebarSelection
 }
 
 export function MobileDrawer({
@@ -45,7 +45,7 @@ export function MobileDrawer({
   children,
   title: titleLocaleProp,
   triggerLabel: triggerLabelLocaleProp,
-  activeBar,
+  selection,
 }: MobileDrawerProps) {
   const uiText = useUiText()
   const title = titleLocaleProp ?? uiText("Navigation")
@@ -72,7 +72,7 @@ export function MobileDrawer({
         <SidebarProvider collapsed={false}>
           {header && <div className="dr-mobile-drawer-section">{header}</div>}
           <div className="dr-mobile-drawer-body">
-            <SidebarNav nav={nav} activeBar={activeBar} />
+            <SidebarNav nav={nav} selection={selection} />
             {children}
           </div>
           {footer && (

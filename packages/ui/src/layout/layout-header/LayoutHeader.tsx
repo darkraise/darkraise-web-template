@@ -9,9 +9,8 @@ import { MobileDrawer } from "@layout/mobile-drawer"
 import { LayoutSwitcher } from "@layout/layout-switcher"
 import { flattenNavItems } from "@layout/navTree"
 import type { NavGroup } from "@layout/types"
-import type { SidebarActiveBar } from "@layout/sidebar"
 import type { LayoutVariant } from "@layout/layoutStore"
-import type { ShellStyle } from "@theme"
+import type { ShellStyle, SidebarSelection } from "@theme"
 
 interface LayoutHeaderProps extends React.HTMLAttributes<HTMLElement> {
   nav: NavGroup[]
@@ -21,10 +20,10 @@ interface LayoutHeaderProps extends React.HTMLAttributes<HTMLElement> {
   sidebarHeader?: ReactNode
   sidebarFooter?: ReactNode
   /**
-   * Forwarded to MobileDrawer's nav so the drawer's active indicator matches
-   * the rail it stands in for below `md`.
+   * Forwarded to MobileDrawer's nav so the drawer's active row matches the
+   * rail it stands in for below `md`.
    */
-  sidebarActiveBar?: boolean | SidebarActiveBar
+  sidebarSelection?: SidebarSelection
   className?: string
   children?: ReactNode
   showLayoutSwitcher?: boolean
@@ -54,7 +53,7 @@ export function LayoutHeader({
   notificationSlot,
   sidebarHeader,
   sidebarFooter,
-  sidebarActiveBar,
+  sidebarSelection,
   className,
   children,
   showLayoutSwitcher = false,
@@ -77,7 +76,7 @@ export function LayoutHeader({
         nav={nav}
         header={sidebarHeader}
         footer={sidebarFooter}
-        activeBar={sidebarActiveBar}
+        selection={sidebarSelection}
       />
       {/* `.dr-layout-header-end` is `ml-auto`, so omitting search entirely
           keeps the trailing cluster right-aligned without a spacer. */}

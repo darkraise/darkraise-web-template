@@ -3,7 +3,7 @@ import { renderHook } from "@testing-library/react"
 import { describe, expect, it } from "vitest"
 import { ThemeProvider, themeConfig } from "@theme"
 import type { AxisValues } from "@theme"
-import { useSidebarSelection } from "./useSidebarSelection"
+import { useSidebarSelection, useSidebarShadow } from "./useSidebarSelection"
 
 const withDefaults =
   (defaults: Partial<AxisValues>) =>
@@ -42,5 +42,22 @@ describe("useSidebarSelection", () => {
       wrapper: withDefaults({ sidebarSelection: "pill" }),
     })
     expect(result.current).toBe("tile")
+  })
+})
+
+describe("useSidebarShadow", () => {
+  it("drops the shadows under Flat, whatever the look", () => {
+    const { result } = renderHook(() => useSidebarShadow(), {
+      wrapper: withDefaults({ style: "flat", sidebarSelection: "tile" }),
+    })
+    expect(result.current).toBe("none")
+  })
+
+  it("keeps them under another style and without a provider", () => {
+    expect(renderHook(() => useSidebarShadow()).result.current).toBeUndefined()
+    const { result } = renderHook(() => useSidebarShadow(), {
+      wrapper: withDefaults({ style: "tactile" }),
+    })
+    expect(result.current).toBeUndefined()
   })
 })

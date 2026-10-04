@@ -1,9 +1,9 @@
 import { render, screen, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { afterEach, beforeEach, describe, it, expect, vi } from "vitest"
+import { afterEach, beforeEach, describe, it, expect } from "vitest"
 import { useLayoutStore } from "@layout/layoutStore"
 import { ThemeProvider, themeConfig } from "@theme"
-import type { SidebarActiveBarSetting } from "@theme"
+import type { AxisValues } from "@theme"
 import { SidebarLayout } from "@layout/sidebar"
 import type { SidebarLayoutProps } from "@layout/sidebar"
 import { RouterAdapterProvider } from "@router"
@@ -87,72 +87,6 @@ describe("SidebarLayout collapsed brand slot", () => {
       screen.getByRole("button", { name: "Collapse sidebar" }),
     ).toBeInTheDocument()
     expect(brandSlot(container)).toBeNull()
-  })
-})
-
-describe("SidebarLayout activeBar", () => {
-  it("keeps the default indicator when unset", () => {
-    const { container } = renderLayout()
-    expect(railNav(container)?.dataset.activeBar).toBeUndefined()
-  })
-
-  it("applies an explicit style without the toggle being shown", () => {
-    const { container } = renderLayout({ activeBar: "ring" })
-    expect(railNav(container)?.dataset.activeBar).toBe("ring")
-  })
-
-  it.each([
-    [true, "bar"],
-    [false, "ring"],
-  ])("maps the %s shorthand to %s", (input, expected) => {
-    const { container } = renderLayout({ activeBar: input })
-    expect(railNav(container)?.dataset.activeBar).toBe(expected)
-  })
-
-  it("seeds the toggle from defaultActiveBar and lets it take over", async () => {
-    const user = userEvent.setup()
-    const { container } = renderLayout({
-      defaultActiveBar: "both",
-      showActiveBarToggle: true,
-    })
-    expect(railNav(container)?.dataset.activeBar).toBe("both")
-
-    await user.click(screen.getByRole("radio", { name: "Left rail only" }))
-    expect(railNav(container)?.dataset.activeBar).toBe("bar")
-  })
-
-  // Controlled means the prop wins: the toggle reports the click and waits
-  // for the consumer to feed a new value back, exactly like a controlled
-  // input. Without this the two sources of truth would fight.
-  it("keeps a controlled activeBar pinned and reports toggle clicks", async () => {
-    const user = userEvent.setup()
-    const onActiveBarChange = vi.fn()
-    const { container } = renderLayout({
-      activeBar: "ring",
-      showActiveBarToggle: true,
-      onActiveBarChange,
-    })
-
-    await user.click(screen.getByRole("radio", { name: "Left rail only" }))
-
-    expect(onActiveBarChange).toHaveBeenCalledWith("bar")
-    expect(railNav(container)?.dataset.activeBar).toBe("ring")
-  })
-
-  it("reports the default item as undefined", async () => {
-    const user = userEvent.setup()
-    const onActiveBarChange = vi.fn()
-    renderLayout({
-      defaultActiveBar: "bar",
-      showActiveBarToggle: true,
-      onActiveBarChange,
-    })
-
-    await user.click(
-      screen.getByRole("radio", { name: "Tint with no bar" }),
-    )
-
-    expect(onActiveBarChange).toHaveBeenCalledWith(undefined)
   })
 })
 
@@ -244,17 +178,12 @@ describe("SidebarLayout shell style", () => {
   })
 })
 
-describe("active indicator precedence", () => {
-  // Drive the axis through the provider's config rather than storage: this
-  // suite runs without a localStorage stub.
-  const withAxis = (value: SidebarActiveBarSetting) => ({
-    ...themeConfig,
-    defaults: { ...themeConfig.defaults, sidebarActiveBar: value },
-  })
-
-  const renderWithTheme = (
-    props: Partial<SidebarLayoutProps> = {},
-    axis?: SidebarActiveBarSetting,
+describe("sidebar selection precedence", () => {
+  // Drive the setting through the provider's config rather than storage:
+  // this suite runs without a localStorage stub.
+  const look = (
+    props: Partial<SidebarLayoutProps>,
+    defaults?: Partial<AxisValues>,
   ) => {
     const tree = (
       <RouterAdapterProvider value={adapter}>
@@ -263,42 +192,38 @@ describe("active indicator precedence", () => {
         </SidebarLayout>
       </RouterAdapterProvider>
     )
-    return render(
-      axis === undefined ? (
-        tree
+    const { container } = render(
+      defaults ? (
+        <ThemeProvider
+          config={{
+            ...themeConfig,
+            defaults: { ...themeConfig.defaults, ...defaults },
+          }}
+        >
+          {tree}
+        </ThemeProvider>
       ) : (
-        <ThemeProvider config={withAxis(axis)}>{tree}</ThemeProvider>
+        tree
       ),
     )
+    return railNav(container)?.dataset.sidebarSelection
   }
 
-  const wire = (container: HTMLElement) =>
-    container
-      .querySelector(".dr-sidebar-nav")
-      ?.getAttribute("data-active-bar") ?? null
-
-  it("keeps the default indicator by default", () => {
-    const { container } = renderWithTheme({}, "default")
-    expect(wire(container)).toBeNull()
+  it("follows the style under auto", () => {
+    expect(look({}, { style: "tactile" })).toBe("tile")
   })
 
-  it("follows the theme axis when nothing more specific is set", () => {
-    const { container } = renderWithTheme({}, "ring")
-    expect(wire(container)).toBe("ring")
+  it("follows an explicit theme setting", () => {
+    expect(look({}, { sidebarSelection: "pill" })).toBe("pill")
   })
 
-  it("lets the prop beat the theme axis", () => {
-    const { container } = renderWithTheme({ activeBar: "both" }, "ring")
-    expect(wire(container)).toBe("both")
-  })
-
-  it("lets defaultActiveBar beat the theme axis", () => {
-    const { container } = renderWithTheme({ defaultActiveBar: "bar" }, "ring")
-    expect(wire(container)).toBe("bar")
+  it("lets the prop beat the theme setting", () => {
+    expect(look({ selection: "frosted" }, { sidebarSelection: "pill" })).toBe(
+      "frosted",
+    )
   })
 
   it("still works with no ThemeProvider at all", () => {
-    const { container } = renderWithTheme({ activeBar: "bar" })
-    expect(wire(container)).toBe("bar")
+    expect(look({})).toBe("chip")
   })
 })

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 import { useRouterAdapter } from "@router"
 import { cn } from "@lib/utils"
 import { ChevronRight } from "lucide-react"
@@ -14,8 +14,10 @@ import { SidebarProvider } from "./SidebarContext"
 import { useSidebar } from "./sidebar-context"
 import { containsItem, findActiveItem } from "@layout/navTree"
 import { ActiveNavItemContext, useActiveNavItem } from "./active-nav-context"
-import { resolveActiveBar } from "./sidebar-active-bar"
-import type { SidebarActiveBar } from "./sidebar-active-bar"
+import { useSidebarSelection, useSidebarShadow } from "@layout/shell"
+import { SidebarSelectionContext } from "./sidebar-selection"
+import { useNavIndicator } from "./useNavIndicator"
+import type { SidebarSelection } from "@theme"
 import type { NavGroup, NavItem } from "@layout/types"
 
 interface SidebarNavProps {
@@ -26,48 +28,57 @@ interface SidebarNavProps {
    */
   collapsed?: boolean
   /**
-   * Indicator style for the active item.
-   *
-   * - omitted: the default look, a tint with no bar under every style.
-   * - `"bar"` / `true`: 3px left rail only.
-   * - `"ring"` / `false`: uniform 1px ring only.
-   * - `"both"`: 1px ring plus the 3px rail.
-   *
-   * Omitting the prop is NOT the same as passing `"bar"` — omitting keeps the
-   * tint with no bar, while `"bar"` forces a rail everywhere.
+   * Look of the active row. Omitted, the theme's `sidebarSelection` setting
+   * decides, and its `auto` follows the style.
    */
-  activeBar?: boolean | SidebarActiveBar
+  selection?: SidebarSelection
 }
 
 function SidebarNav({
   nav,
   collapsed: collapsedProp,
-  activeBar,
+  selection,
 }: SidebarNavProps) {
   const ctx = useSidebar()
   const collapsed = collapsedProp ?? ctx.collapsed
   const { usePathname } = useRouterAdapter()
+  const pathname = usePathname()
   const activeItem = findActiveItem(
     nav.flatMap((group) => group.items),
-    usePathname(),
+    pathname,
   )
+  const look = useSidebarSelection(selection)
+  const shadow = useSidebarShadow()
+  const navRef = useRef<HTMLElement>(null)
+  const indicatorRef = useRef<HTMLSpanElement>(null)
+  useNavIndicator(navRef, indicatorRef, pathname)
 
   const tree = (
-    <ActiveNavItemContext.Provider value={activeItem}>
-      <nav
-        className="dr-sidebar-nav"
-        data-collapsed={collapsed || undefined}
-        data-active-bar={resolveActiveBar(activeBar)}
-      >
-        {nav.map((group, gi) => (
-          <SidebarGroup
-            key={gi}
-            group={group}
-            position={gi > 0 ? "subsequent" : undefined}
+    <SidebarSelectionContext.Provider value={look}>
+      <ActiveNavItemContext.Provider value={activeItem}>
+        <nav
+          ref={navRef}
+          className="dr-sidebar-nav"
+          data-collapsed={collapsed || undefined}
+          data-sidebar-selection={look}
+          data-sidebar-shadow={shadow}
+          data-indicator="pending"
+        >
+          <span
+            ref={indicatorRef}
+            className="dr-sidebar-nav-indicator"
+            aria-hidden="true"
           />
-        ))}
-      </nav>
-    </ActiveNavItemContext.Provider>
+          {nav.map((group, gi) => (
+            <SidebarGroup
+              key={gi}
+              group={group}
+              position={gi > 0 ? "subsequent" : undefined}
+            />
+          ))}
+        </nav>
+      </ActiveNavItemContext.Provider>
+    </SidebarSelectionContext.Provider>
   )
 
   // Only wrap in a SidebarProvider when the consumer explicitly overrides
@@ -175,6 +186,8 @@ function CollapsedParentItem({ item }: { item: NavItem }) {
   // Collapsed, one icon stands in for the whole group, so it has to carry the
   // active state on its children's behalf — nothing else on the rail can.
   const active = containsItem(item, activeItem)
+  const look = useContext(SidebarSelectionContext)
+  const shadow = useSidebarShadow()
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -198,6 +211,8 @@ function CollapsedParentItem({ item }: { item: NavItem }) {
         side="right"
         align="start"
         className="dr-sidebar-nav-popover-content"
+        data-sidebar-selection={look}
+        data-sidebar-shadow={shadow}
         sideOffset={8}
       >
         {/* The parent's own route. Rendered as the first entry rather than a
