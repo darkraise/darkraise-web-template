@@ -183,6 +183,7 @@ describe("rejected input", () => {
       expect(code).toBe(1)
       expect(stderr).toContain('theme axis "preset" was removed')
       expect(stderr).toContain("use style")
+      expect(readdirSync(cwd)).toEqual([])
     },
     TIMEOUT,
   )
