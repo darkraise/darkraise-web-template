@@ -63,10 +63,12 @@ individually, restart the server before believing them.
 
 - All 9 application routes render with the expected `h1`, no error boundary and
   no horizontal overflow.
-- All 97 component showcase routes, driven from `fixtures/component-routes.ts`
+- All 100 component showcase routes, driven from `fixtures/component-routes.ts`
   (regenerate it when pages are added — see _Maintenance_).
 - `/components/image-editor-playground` and `/inbox`, which have no showcase
   header, get their own shape-specific checks.
+- `/components/kitchen-sink` fits one 1440×900 viewport with its focused text
+  field still focused, because the style screenshots in `18` capture it whole.
 - Detail routes are reached the way a user reaches them: the row-action menu on
   `/products`, `/orders` and `/customers`.
 - Sidebar integrity: every sidebar link resolves to a known route, and clicking

@@ -89,6 +89,15 @@ Enforcement is **not** blanket. These remain uncovered by `allOf`:
 
 ## Deliberate exceptions
 
+### kitchen-sink — one instance per family by design
+
+`kitchen-sink` shows each control family once, at rest, so the whole page
+fits one 1440×900 viewport for the style screenshots in
+`e2e/18-baseline.spec.ts`. It is not a coverage page: its button row
+deliberately omits `link`, and the per-component pages keep the enforced
+matrices. Its card row still uses `allOf<CardElevation>()`, so a new card
+elevation has to appear there as well.
+
 ### background-page — no matrix by design
 
 `background-page` has 12 variants but intentionally has **no** `VariantMatrix`.

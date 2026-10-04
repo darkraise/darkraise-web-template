@@ -57,6 +57,7 @@ export const COMPONENT_ROUTES: ComponentRoute[] = [
   { path: "/components/inputs", title: "Inputs" },
   { path: "/components/json-tree-view", title: "JSON Tree View" },
   { path: "/components/kbd", title: "Kbd" },
+  { path: "/components/kitchen-sink", title: "Kitchen Sink" },
   { path: "/components/label", title: "Label" },
   { path: "/components/layouts", title: "Layouts" },
   { path: "/components/shell-styles", title: "Shell Styles" },

@@ -50,6 +50,24 @@ test("localized showcase controls and root error pages use the shared locale", a
   ).toBeVisible()
 })
 
+test("the kitchen sink title, breadcrumb and nav label follow the locale", async ({
+  page,
+}) => {
+  await seedApp(page)
+  await page.goto("/components/kitchen-sink")
+  await page.getByRole("combobox", { name: "Language" }).click()
+  await page.getByRole("option", { name: "Tiếng Việt" }).click()
+  await expect(page.locator("main h1").first()).toHaveText(
+    "Tổng hợp điều khiển",
+  )
+  await expect(
+    page.locator(".dr-page-header .dr-breadcrumb-page"),
+  ).toHaveText("Tổng hợp điều khiển")
+  await expect(
+    page.locator('aside a[href="/components/kitchen-sink"]'),
+  ).toContainText("Tổng hợp điều khiển")
+})
+
 test("the language control remains usable with translated labels on mobile", async ({
   page,
 }) => {

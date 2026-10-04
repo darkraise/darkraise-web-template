@@ -53,6 +53,47 @@ test.describe("component showcase routes render", () => {
   }
 })
 
+/**
+ * The kitchen sink is the style screenshots' ground truth, so every control
+ * family has to sit inside one 1440×900 capture, with the text field it
+ * focuses on load still focused.
+ */
+const KITCHEN_SINK_FAMILIES = [
+  "buttons",
+  "fields",
+  "choices",
+  "slider-toggle",
+  "tabs-segments",
+  "badges-pagination",
+  "cards",
+]
+
+test.describe("kitchen sink", () => {
+  test.use({ viewport: { width: 1440, height: 900 } })
+
+  test("shows every control family in one 1440×900 viewport", async ({
+    page,
+  }) => {
+    const consoleWatch = watchConsole(page)
+    await seedApp(page)
+    await gotoApp(page, "/components/kitchen-sink")
+    await expect(page.locator("main h1").first()).toHaveText("Kitchen Sink")
+    await expect(page.getByLabel("Focused field")).toBeFocused()
+
+    const overflow = await page
+      .locator("#main-content")
+      .evaluate((main) => main.scrollHeight - main.clientHeight)
+    expect(overflow, "main region overflow in px").toBeLessThanOrEqual(0)
+    for (const family of KITCHEN_SINK_FAMILIES) {
+      await expect(
+        page.locator(`[data-family="${family}"]`),
+        family,
+      ).toBeInViewport({ ratio: 1 })
+    }
+    consoleWatch.assertClean()
+  })
+})
+
 test.describe("routes without a showcase header", () => {
   test("image editor playground renders", async ({ page }) => {
     const consoleWatch = watchConsole(page)
