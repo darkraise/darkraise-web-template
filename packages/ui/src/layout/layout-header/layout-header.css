@@ -12,4 +12,29 @@
   .dr-layout-header-end {
     @apply ml-auto flex items-center gap-1;
   }
+
+  /* A phone-width bar has no room for the brand and a full search field
+     beside the header controls. The sidebar layout's phone header already
+     carries no brand (its drawer does), and the search label stays as the
+     button's accessible name. */
+  @media (width < 48rem) {
+    .dr-layout-header .dr-brand-logo {
+      @apply hidden;
+    }
+
+    .dr-layout-header .dr-search-command-trigger:not([data-collapsed="true"]) {
+      @apply h-[var(--control-height)] w-[var(--control-height)] shrink-0 justify-center p-0;
+      --btn-height: var(--control-height);
+    }
+
+    .dr-layout-header
+      .dr-search-command-trigger:not([data-collapsed="true"])
+      > span {
+      @apply sr-only;
+    }
+
+    .dr-layout-header .dr-search-command-trigger > kbd {
+      @apply hidden;
+    }
+  }
 }
