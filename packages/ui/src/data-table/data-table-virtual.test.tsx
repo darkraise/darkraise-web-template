@@ -1,4 +1,4 @@
-import { render, screen, within, fireEvent } from "@testing-library/react"
+import { act, render, screen, within, fireEvent } from "@testing-library/react"
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest"
 import { DataTable } from "@data-table"
 
@@ -99,5 +99,62 @@ describe("DataTable virtualization", () => {
     render(<DataTable columns={columns} data={rows.slice(0, 30)} />)
     expect(scroller()).toBeNull()
     expect(screen.getByText("Rows per page")).toBeInTheDocument()
+  })
+})
+
+describe("DataTable virtual viewport scroll edges", () => {
+  let observers: { target: Element; callback: () => void }[] = []
+  let viewportScrollWidth = 320
+
+  beforeEach(() => {
+    observers = []
+    viewportScrollWidth = 320
+    vi.spyOn(Element.prototype, "scrollWidth", "get").mockImplementation(
+      function (this: Element) {
+        return this.classList.contains("dr-data-table-viewport")
+          ? viewportScrollWidth
+          : 0
+      },
+    )
+    vi.spyOn(Element.prototype, "clientWidth", "get").mockReturnValue(320)
+    vi.stubGlobal(
+      "ResizeObserver",
+      class {
+        callback: () => void
+        constructor(callback: () => void) {
+          this.callback = callback
+        }
+        observe(target: Element) {
+          observers.push({ target, callback: this.callback })
+        }
+        disconnect() {}
+        unobserve() {}
+      },
+    )
+  })
+  afterEach(() => {
+    vi.restoreAllMocks()
+    vi.unstubAllGlobals()
+  })
+
+  it("watches its table and flags the viewport when columns widen", () => {
+    render(<DataTable columns={columns} data={rows} virtualize={VIRTUAL} />)
+    const viewport = scroller()
+    const table = viewport.querySelector("table")
+    expect(viewport).toHaveClass("dr-scroll-edges")
+    expect(viewport).not.toHaveAttribute("data-overflow-end")
+    const own = observers.filter(
+      (entry) =>
+        entry.target === table &&
+        observers.some(
+          (other) =>
+            other.callback === entry.callback && other.target === viewport,
+        ),
+    )
+    expect(own).toHaveLength(1)
+
+    viewportScrollWidth = 640
+    act(() => own[0]?.callback())
+    expect(viewport).toHaveAttribute("data-overflow-end", "")
   })
 })

@@ -21,6 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "@components/table"
+import { useScrollEdges } from "@components/table/useScrollEdges"
 import { DataTableToolbar } from "@data-table/components/data-table-toolbar"
 import { DataTablePagination } from "@data-table/components/data-table-pagination"
 import { DataTableSkeleton } from "@data-table/components/data-table-skeleton"
@@ -46,6 +47,7 @@ function VirtualViewport({
 }) {
   const viewportRef = useRef<HTMLDivElement>(null)
   const isVirtual = !!virtualize
+  useScrollEdges(viewportRef, isVirtual)
   useEffect(() => {
     const header = viewportRef.current?.querySelector("thead")
     if (!header) return
@@ -62,7 +64,7 @@ function VirtualViewport({
   return (
     <div
       ref={viewportRef}
-      className="dr-data-table-viewport"
+      className="dr-data-table-viewport dr-scroll-edges"
       style={
         {
           height: virtualize.height,

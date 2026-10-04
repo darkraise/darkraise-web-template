@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest"
+import { afterEach, describe, it, expect, vi } from "vitest"
 import { render, screen } from "@testing-library/react"
 import {
   Table,
@@ -43,5 +43,26 @@ describe("Table align", () => {
     const { head, cell } = renderTable()
     expect(head).not.toHaveAttribute("data-align")
     expect(cell).not.toHaveAttribute("data-align")
+  })
+})
+
+describe("Table scroll edges", () => {
+  afterEach(() => vi.restoreAllMocks())
+
+  it("flags the wrapper when columns overflow its end edge", () => {
+    vi.spyOn(Element.prototype, "scrollWidth", "get").mockReturnValue(600)
+    vi.spyOn(Element.prototype, "clientWidth", "get").mockReturnValue(300)
+    const { container } = render(
+      <Table>
+        <TableBody>
+          <TableRow>
+            <TableCell>Wide</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>,
+    )
+    const wrapper = container.querySelector(".dr-table-wrapper")
+    expect(wrapper).toHaveClass("dr-scroll-edges")
+    expect(wrapper).toHaveAttribute("data-overflow-end", "")
   })
 })

@@ -2,6 +2,7 @@ import * as React from "react"
 
 import { cn } from "@lib/utils"
 import "./table.css"
+import { useScrollEdges } from "./useScrollEdges"
 
 /** Inline alignment of a column's header and cells; "end" suits numbers. */
 type TableCellAlign = "start" | "center" | "end"
@@ -13,8 +14,10 @@ function Table({
 }: React.HTMLAttributes<HTMLTableElement> & {
   ref?: React.Ref<HTMLTableElement>
 }) {
+  const wrapperRef = React.useRef<HTMLDivElement>(null)
+  useScrollEdges(wrapperRef)
   return (
-    <div className="dr-table-wrapper">
+    <div ref={wrapperRef} className="dr-table-wrapper dr-scroll-edges">
       <table ref={ref} className={cn("dr-table", className)} {...props} />
     </div>
   )

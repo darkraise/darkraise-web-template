@@ -58,4 +58,40 @@
   .dr-table-caption {
     @apply text-muted-foreground mt-4 text-sm;
   }
+
+  /* The flags come from useScrollEdges. A mask rather than a painted
+     gradient, because the wrapper's background is translucent under Glass;
+     it fades the element's own border at that edge too. */
+  .dr-scroll-edges {
+    --scroll-fade-start: 0px;
+    --scroll-fade-end: 0px;
+  }
+
+  .dr-scroll-edges[data-overflow-start] {
+    --scroll-fade-start: 2rem;
+  }
+
+  .dr-scroll-edges[data-overflow-end] {
+    --scroll-fade-end: 2rem;
+  }
+
+  .dr-scroll-edges:is([data-overflow-start], [data-overflow-end]) {
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 var(--scroll-fade-start),
+      #000 calc(100% - var(--scroll-fade-end)),
+      transparent
+    );
+  }
+
+  .dr-scroll-edges:is([data-overflow-start], [data-overflow-end]):dir(rtl) {
+    mask-image: linear-gradient(
+      to left,
+      transparent,
+      #000 var(--scroll-fade-start),
+      #000 calc(100% - var(--scroll-fade-end)),
+      transparent
+    );
+  }
 }
