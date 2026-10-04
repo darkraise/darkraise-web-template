@@ -34,7 +34,14 @@
      * the selection summary renders. Without it, a lone controls child in a
      * `justify-between` parent hugs the start edge when no rows are
      * selected. */
-    @apply ml-auto flex items-center gap-3 sm:gap-6;
+    @apply ml-auto flex flex-wrap items-center justify-end gap-x-3 gap-y-2 sm:gap-x-6;
+  }
+
+  /* `.dr-pagination` is full width for standalone use; as one item of this
+     wrapping row, full width would put it on a line of its own at every
+     viewport. */
+  .dr-data-table-pagination-controls > .dr-pagination {
+    @apply mx-0 w-auto;
   }
 
   .dr-data-table-pagination-page-size {

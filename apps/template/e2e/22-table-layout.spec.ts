@@ -69,3 +69,20 @@ test.describe("kit table", () => {
     expect(await read()).toEqual(first)
   })
 })
+
+test.describe("data table pagination", () => {
+  test("stays on one row on a desktop", async ({ page }) => {
+    await seedApp(page)
+    await gotoApp(page, "/orders")
+    const controls = page.locator(".dr-data-table-pagination-controls > *")
+    await expect(controls.first()).toBeVisible()
+    const centres = await controls.evaluateAll((items) =>
+      items.map((item) => {
+        const box = item.getBoundingClientRect()
+        return box.top + box.height / 2
+      }),
+    )
+    expect(centres.length).toBe(3)
+    expect(Math.max(...centres) - Math.min(...centres)).toBeLessThanOrEqual(2)
+  })
+})

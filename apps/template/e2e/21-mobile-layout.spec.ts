@@ -1,5 +1,5 @@
 import { test, expect, type Page } from "@playwright/test"
-import { gotoApp, seedApp } from "./helpers/app"
+import { boxOf, gotoApp, seedApp, wrappedTableText } from "./helpers/app"
 
 /**
  * The shell clips its own overflow and the content region scrolls inside it,
@@ -47,5 +47,46 @@ test.describe("dashboard", () => {
     await gotoApp(page, "/")
     await expect(page.locator(".dr-chart").first()).toBeVisible()
     await expectFits(page)
+  })
+})
+
+test.describe("orders table", () => {
+  test("scrolls sideways behind an edge fade, one line per row", async ({
+    page,
+  }) => {
+    await seedApp(page)
+    await gotoApp(page, "/orders")
+    const scroller = page.locator(".dr-data-table-frame .dr-table-wrapper")
+    await expect(scroller.locator("tbody tr").first()).toBeVisible()
+    expect(
+      await scroller.evaluate((el) => el.scrollWidth > el.clientWidth),
+    ).toBe(true)
+    await expect(scroller).toHaveAttribute("data-overflow-end", "")
+    await expect(scroller).not.toHaveAttribute("data-overflow-start")
+    expect(
+      await scroller.evaluate((el) => getComputedStyle(el).maskImage),
+    ).toContain("linear-gradient")
+
+    await scroller.evaluate((el) => {
+      el.scrollLeft = el.scrollWidth
+    })
+    await expect(scroller).toHaveAttribute("data-overflow-start", "")
+    await expect(scroller).not.toHaveAttribute("data-overflow-end")
+    expect(await wrappedTableText(scroller)).toEqual([])
+  })
+
+  test("keeps every pagination button on screen", async ({ page }) => {
+    await seedApp(page)
+    await gotoApp(page, "/orders")
+    const buttons = page.locator(".dr-data-table-pagination-nav-btn")
+    await expect(buttons).toHaveCount(4)
+    const width = await page.evaluate(
+      () => document.documentElement.clientWidth,
+    )
+    for (const button of await buttons.all()) {
+      const box = await boxOf(button)
+      expect(box.x).toBeGreaterThanOrEqual(0)
+      expect(box.x + box.width).toBeLessThanOrEqual(width)
+    }
   })
 })
