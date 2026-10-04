@@ -76,8 +76,8 @@ export function StackedLayout({
   const railIndicatorRef = useRef<HTMLSpanElement>(null)
   const asideRef = useRef<HTMLElement>(null)
   const asideIndicatorRef = useRef<HTMLSpanElement>(null)
-  useNavIndicator(railRef, railIndicatorRef, currentPath)
-  useNavIndicator(asideRef, asideIndicatorRef, currentPath)
+  useNavIndicator(railRef, railIndicatorRef, currentPath, nav)
+  useNavIndicator(asideRef, asideIndicatorRef, currentPath, nav)
   // One active item across every group, so two groups with overlapping
   // prefixes never both claim the route and the longest match picks the
   // sub-nav.

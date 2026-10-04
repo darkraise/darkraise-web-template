@@ -14,14 +14,16 @@ function Harness({
   path,
   showC = false,
   mounted = true,
+  items,
 }: {
   path: string
   showC?: boolean
   mounted?: boolean
+  items?: unknown
 }) {
   const nav = useRef<HTMLElement>(null)
   const indicator = useRef<HTMLSpanElement>(null)
-  useNavIndicator(nav, indicator, path)
+  useNavIndicator(nav, indicator, path, items)
   if (!mounted) return null
   return (
     <nav ref={nav} data-testid="nav" data-indicator="pending">
@@ -172,5 +174,26 @@ describe("useNavIndicator", () => {
     const indicator = screen.getByTestId("indicator")
     expect(indicator.style.transform).toBe("translate(8px, 50px)")
     expect(indicator.dataset.animate).toBe("false")
+  })
+
+  it("re-places at once when the items change under the same path", () => {
+    const first = [{}]
+    const { rerender } = render(<Harness path="/b" items={first} />)
+    // The rows swap places: same pathname, same nav size.
+    boxes.a = [18, 150, 184, 36]
+    boxes.b = [18, 110, 184, 36]
+    rerender(<Harness path="/b" items={[{}]} />)
+    const indicator = screen.getByTestId("indicator")
+    expect(indicator.style.transform).toBe("translate(8px, 10px)")
+    expect(indicator.dataset.animate).toBe("false")
+  })
+
+  it("keeps a running slide when a re-render moves nothing", () => {
+    const { rerender } = render(<Harness path="/a" items={[{}]} />)
+    rerender(<Harness path="/b" items={[{}]} />)
+    rerender(<Harness path="/b" items={[{}]} />)
+    const indicator = screen.getByTestId("indicator")
+    expect(indicator.dataset.animate).toBe("true")
+    expect(indicator.style.transform).toBe("translate(8px, 50px)")
   })
 })

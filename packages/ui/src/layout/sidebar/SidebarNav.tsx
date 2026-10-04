@@ -51,7 +51,7 @@ function SidebarNav({
   const shadow = useSidebarShadow()
   const navRef = useRef<HTMLElement>(null)
   const indicatorRef = useRef<HTMLSpanElement>(null)
-  useNavIndicator(navRef, indicatorRef, pathname)
+  useNavIndicator(navRef, indicatorRef, pathname, nav)
 
   const tree = (
     <SidebarSelectionContext.Provider value={look}>
