@@ -1,11 +1,18 @@
 import type { NavGroup, NavItem } from "./types"
 
+function withoutTrailingSlash(path: string): string {
+  return path.length > 1 && path.endsWith("/") ? path.slice(0, -1) : path
+}
+
 /**
  * Exact match, or a strict path-segment prefix — the trailing slash guards
- * against `/settings` claiming `/settings-old`.
+ * against `/settings` claiming `/settings-old`. A trailing slash on either
+ * side is ignored, as the router ignores it.
  */
 export function isPathMatch(currentPath: string, href: string): boolean {
-  return currentPath === href || currentPath.startsWith(href + "/")
+  const path = withoutTrailingSlash(currentPath)
+  const base = withoutTrailingSlash(href)
+  return path === base || path.startsWith(base + "/")
 }
 
 /**
@@ -32,11 +39,13 @@ export function findActiveItem(
   const queue = items.map((item) => ({ item, depth: 0 }))
   for (const { item, depth } of queue) {
     if (isPathMatch(currentPath, item.href)) {
-      const longer = !active || item.href.length > active.href.length
+      const length = withoutTrailingSlash(item.href).length
+      const activeLength = active
+        ? withoutTrailingSlash(active.href).length
+        : -1
+      const longer = !active || length > activeLength
       const deeperTie =
-        active !== undefined &&
-        item.href.length === active.href.length &&
-        depth > activeDepth
+        active !== undefined && length === activeLength && depth > activeDepth
       if (longer || deeperTie) {
         active = item
         activeDepth = depth

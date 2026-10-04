@@ -25,6 +25,13 @@ describe("isPathMatch", () => {
   it("does not let the root swallow every path", () => {
     expect(isPathMatch("/orders", "/")).toBe(false)
   })
+
+  it("ignores a trailing slash on either side", () => {
+    expect(isPathMatch("/orders", "/orders/")).toBe(true)
+    expect(isPathMatch("/orders/", "/orders")).toBe(true)
+    expect(isPathMatch("/orders/ord-1", "/orders/")).toBe(true)
+    expect(isPathMatch("/orders-old", "/orders/")).toBe(false)
+  })
 })
 
 describe("coversPath", () => {
@@ -166,6 +173,18 @@ describe("findActiveItem", () => {
 
   it("respects segment boundaries", () => {
     expect(active("/settings-old")).toBeUndefined()
+  })
+
+  it("selects an item whose href ends in a slash", () => {
+    const slashed: NavItem[] = [
+      { label: "Dashboard", href: "/" },
+      { label: "Orders", href: "/orders/" },
+      { label: "Order lines", href: "/orders/lines" },
+    ]
+    expect(findActiveItem(slashed, "/orders")?.label).toBe("Orders")
+    expect(findActiveItem(slashed, "/orders/ord-1")?.label).toBe("Orders")
+    expect(findActiveItem(slashed, "/orders/lines")?.label).toBe("Order lines")
+    expect(findActiveItem(slashed, "/")?.label).toBe("Dashboard")
   })
 
   it("returns undefined when nothing matches", () => {
