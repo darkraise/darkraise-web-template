@@ -21,8 +21,10 @@ const REMOVED_AXES =
   /\b(surfaceIntensity|controlDepth|borderIntensity|accentIntensity)\b|data-(surface-intensity|control-depth|border-intensity|accent-intensity)/
 
 // These files name the removed axes on purpose: the 6.9.6 storage fixture,
-// the removed-key warnings and the legacy migration table.
+// the removed-key warnings, the legacy migration table and the scaffold's
+// retired-name table.
 const AXIS_NAMES_ALLOWED = new Set([
+  "create-app/bin/create.mjs",
   "packages/ui/src/theme/axes/legacy-fixture.ts",
   "packages/ui/src/theme/axes/legacy.ts",
   "packages/ui/src/theme/themeConfig.ts",
