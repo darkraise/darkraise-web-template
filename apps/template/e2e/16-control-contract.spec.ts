@@ -1,5 +1,5 @@
 import { test, expect, type Locator, type Page } from "@playwright/test"
-import { DENSITIES, PRESETS } from "./fixtures/theme"
+import { DENSITIES, MATRIX_STYLES, STYLES } from "./fixtures/theme"
 import { boxOf, gotoApp, seedApp, watchConsole } from "./helpers/app"
 import {
   computed,
@@ -12,9 +12,10 @@ import {
 
 /**
  * The control contract: every button and field sits at --control-height, at
- * every density and font size, in both modes and under both presets; on a
- * coarse pointer they floor at --control-height-xl; and a field's bottom edge
- * reaches 3:1 against what it sits on (WCAG 1.4.11).
+ * every density and font size, in both modes and under every style, since a
+ * style changes only shadows; on a coarse pointer they floor at
+ * --control-height-xl; and a field's bottom edge reaches 3:1 against what it
+ * sits on (WCAG 1.4.11).
  *
  * Heights are compared against probe elements sized with the tokens rather
  * than hard-coded pixels, because --control-scale moves them with the
@@ -50,7 +51,7 @@ async function openFixture(page: Page) {
   // appear; a pixel sampled then is a blend of the two themes. Wait for the
   // theme, give its transitions a frame to start, then let them finish (a
   // transition cut short by a later style change rejects, which is fine).
-  await expect(page.locator("html")).toHaveAttribute("data-preset", /.+/)
+  await expect(page.locator("html")).toHaveAttribute("data-style", /.+/)
   await page.evaluate(async () => {
     await new Promise((resolve) =>
       requestAnimationFrame(() => requestAnimationFrame(resolve)),
@@ -90,15 +91,15 @@ async function textLeft(locator: Locator): Promise<number> {
   })
 }
 
-for (const preset of PRESETS) {
+for (const style of STYLES) {
   for (const mode of MODES) {
     for (const density of DENSITIES) {
       for (const fontSize of FONT_SIZES) {
-        test(`heights · ${preset} · ${mode} · ${density} · ${fontSize}`, async ({
+        test(`heights · ${style} · ${mode} · ${density} · ${fontSize}`, async ({
           page,
         }) => {
           const consoleWatch = watchConsole(page)
-          await seedApp(page, { preset, mode, density, fontSize })
+          await seedApp(page, { style, mode, density, fontSize })
           await openFixture(page)
           const expected = (await boxOf(page.getByTestId("control-height")))
             .height
@@ -122,7 +123,7 @@ test.describe("coarse pointer", () => {
     test(`floors controls at --control-height-xl · ${density}`, async ({
       page,
     }) => {
-      await seedApp(page, { preset: "default", mode: "light", density })
+      await seedApp(page, { style: "quiet", mode: "light", density })
       await openFixture(page)
       expect(
         await page.evaluate(() => matchMedia("(pointer: coarse)").matches),
@@ -148,7 +149,7 @@ test.describe("coarse pointer", () => {
   test("floors the collapsed sidebar rail at --control-height-xl", async ({
     page,
   }) => {
-    await seedApp(page, { preset: "default", mode: "light", density: "cozy" })
+    await seedApp(page, { style: "quiet", mode: "light", density: "cozy" })
     await gotoApp(page, "/")
     await page.getByRole("button", { name: /collapse sidebar/i }).click()
     const aside = page.locator(".dr-sidebar-layout-aside")
@@ -181,13 +182,13 @@ test.describe("coarse pointer", () => {
   })
 })
 
-for (const preset of PRESETS) {
+for (const style of MATRIX_STYLES) {
   for (const mode of MODES) {
     for (const density of DENSITIES) {
-      test(`table rows and headers · ${preset} · ${mode} · ${density}`, async ({
+      test(`table rows and headers · ${style} · ${mode} · ${density}`, async ({
         page,
       }) => {
-        await seedApp(page, { preset, mode, density })
+        await seedApp(page, { style, mode, density })
         await openFixture(page)
         await page.mouse.move(0, 0)
         const expected =
@@ -219,23 +220,20 @@ for (const preset of PRESETS) {
   }
 }
 
-// Strong glass is the most see-through card, so the most canvas shows under
-// the field; the engine's glass margin is sized for it.
+// Fields are opaque under every style, so one 3:1 floor holds everywhere.
+// The glass cases add the loudest grounds frosted chrome sits over: a vivid
+// accent, a warm surface and an intense gradient.
 const EDGE_THEMES = [
-  ...PRESETS.map((preset) => ({ name: preset, seed: { preset } })),
-  {
-    name: "glass strong",
-    seed: { preset: "glass", presetAxes: { glass: { opacity: "strong" } } },
-  },
+  ...STYLES.map((style) => ({ name: style, seed: { style } })),
   {
     name: "glass vivid fuchsia",
-    seed: { preset: "glass", accent: "fuchsia", darkAccentChroma: "vivid" },
+    seed: { style: "glass", accent: "fuchsia", darkAccentChroma: "vivid" },
   },
-  { name: "glass sand surface", seed: { preset: "glass", surface: "sand" } },
+  { name: "glass sand surface", seed: { style: "glass", surface: "sand" } },
   {
     name: "glass intense gradient",
     seed: {
-      preset: "glass",
+      style: "glass",
       backgroundStyle: "gradient",
       backgroundIntensity: "intense",
     },
@@ -270,28 +268,31 @@ for (const { name, seed } of EDGE_THEMES) {
   }
 }
 
-test("glass switch thumb sits evenly in its track", async ({ page }) => {
-  await seedApp(page, { preset: "glass", mode: "light" })
-  await openFixture(page)
-  const track = page.locator('[data-probe="switch"] .dr-switch')
-  const thumb = page.locator('[data-probe="switch"] .dr-switch-thumb')
-  const trackBox = await boxOf(track)
-  const offGap = (await boxOf(thumb)).x - trackBox.x
-  await track.click()
-  await expect(track).toHaveAttribute("data-state", "checked")
-  await expect
-    .poll(async () => {
-      const box = await boxOf(thumb)
-      return (
-        Math.round((trackBox.x + trackBox.width - (box.x + box.width)) * 10) /
-        10
-      )
-    })
-    .toBeCloseTo(offGap, 0)
-})
+for (const style of STYLES) {
+  test(`switch thumb sits evenly in its track · ${style}`, async ({ page }) => {
+    await seedApp(page, { style, mode: "light" })
+    await openFixture(page)
+    const track = page.locator('[data-probe="switch"] .dr-switch')
+    const thumb = page.locator('[data-probe="switch"] .dr-switch-thumb')
+    const trackBox = await boxOf(track)
+    const offGap = (await boxOf(thumb)).x - trackBox.x
+    await track.click()
+    await expect(track).toHaveAttribute("data-state", "checked")
+    await expect
+      .poll(async () => {
+        const box = await boxOf(thumb)
+        return (
+          Math.round(
+            (trackBox.x + trackBox.width - (box.x + box.width)) * 10,
+          ) / 10
+        )
+      })
+      .toBeCloseTo(offGap, 0)
+  })
+}
 
 /**
- * Under the default preset a gradient background repaints its canvas over the
+ * Under a non-frosted style a gradient background repaints its canvas over the
  * top 300px of the content area, where page titles, toolbars and the first
  * fields sit. Every token read there must clear its floor against the
  * strip's loudest pixel.
@@ -347,7 +348,7 @@ test.describe("gradient strip", () => {
     }) => {
       await page.setViewportSize({ width, height: 900 })
       await seedApp(page, {
-        preset: "default",
+        style: "quiet",
         accent: "blue",
         surface,
         mode,
@@ -387,4 +388,102 @@ test.describe("gradient strip", () => {
       }
     })
   }
+})
+
+/**
+ * Every style composes its control tokens with the glow layers rather than
+ * replacing them. Each probe is set inline on <html>, which outranks every
+ * stylesheet declaration of the same property there, and carries a colour no
+ * real token uses, so a computed shadow contains it only if the rule reads
+ * the token. A field reads no glow, so the focused field is probed through
+ * its own family token, under its focus ring.
+ */
+const PROBES = {
+  "--glow-outer": { value: "0 0 0 3px rgb(1, 2, 3)", colour: "rgb(1, 2, 3)" },
+  "--glow-inner": {
+    value: "inset 0 0 0 4px rgb(4, 5, 6)",
+    colour: "rgb(4, 5, 6)",
+  },
+  "--affordance-glow": {
+    value: "0 0 0 5px rgb(7, 8, 9)",
+    colour: "rgb(7, 8, 9)",
+  },
+  "--field-shadow": {
+    value: "inset 0 0 0 6px rgb(10, 11, 12)",
+    colour: "rgb(10, 11, 12)",
+  },
+} as const
+
+type Probe = keyof typeof PROBES
+
+/** An outset 1px layer: the field focus ring and the destructive OTP ring. */
+const OUTSET_RING = /0px 0px 0px 1px(?! inset)/
+
+async function setProbes(page: Page) {
+  const pairs = Object.entries(PROBES).map(
+    ([name, { value }]) => [name, value] as [string, string],
+  )
+  await page.evaluate((entries) => {
+    for (const [name, value] of entries) {
+      document.documentElement.style.setProperty(name, value)
+    }
+  }, pairs)
+}
+
+for (const style of STYLES) {
+  test(`controls compose the glow probes · ${style}`, async ({ page }) => {
+    await seedApp(page, { style, mode: "light" })
+    await gotoApp(page, "/components/kitchen-sink")
+    await page.mouse.move(0, 0)
+    const field = page.getByLabel("Focused field")
+    await field.focus()
+    await expect(field).toBeFocused()
+    await setProbes(page)
+
+    const cases: [string, Locator, Probe[]][] = [
+      [
+        "filled button",
+        page.locator('main .dr-btn[data-variant="default"]').first(),
+        ["--glow-outer", "--glow-inner"],
+      ],
+      [
+        "checked checkbox",
+        page.locator('main .dr-checkbox[data-state="checked"]').first(),
+        ["--affordance-glow"],
+      ],
+      [
+        "active tab",
+        page.locator('main .dr-tabs-indicator[data-variant="default"]').first(),
+        ["--affordance-glow"],
+      ],
+      ["focused field", field, ["--field-shadow"]],
+    ]
+    for (const [name, locator, probes] of cases) {
+      for (const probe of probes) {
+        await expect
+          .poll(() => computed(locator, "box-shadow"), {
+            message: `${name} reads ${probe}`,
+          })
+          .toContain(PROBES[probe].colour)
+      }
+    }
+    expect(await computed(field, "box-shadow")).toMatch(OUTSET_RING)
+  })
+}
+
+test("an invalid active OTP slot keeps the affordance glow", async ({
+  page,
+}) => {
+  await seedApp(page, { style: "quiet", mode: "light" })
+  await openFixture(page)
+  await setProbes(page)
+  await page.locator('[data-probe="otp-invalid"] input').first().focus()
+  const slot = page.locator(
+    '[data-probe="otp-invalid"] .dr-input-otp-slot[data-active]',
+  )
+  await expect(slot).toHaveCount(1)
+  await expect
+    .poll(() => computed(slot, "box-shadow"))
+    .toContain(PROBES["--affordance-glow"].colour)
+  expect(await computed(slot, "box-shadow")).toMatch(OUTSET_RING)
 })

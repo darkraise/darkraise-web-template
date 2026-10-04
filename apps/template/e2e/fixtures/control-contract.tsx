@@ -157,6 +157,15 @@ function Controls() {
           </InputOTPGroup>
         </InputOTP>
       </div>
+      <div data-probe="otp-invalid">
+        <InputOTP maxLength={3} aria-invalid aria-label="Invalid code">
+          <InputOTPGroup>
+            <InputOTPSlot index={0} />
+            <InputOTPSlot index={1} />
+            <InputOTPSlot index={2} />
+          </InputOTPGroup>
+        </InputOTP>
+      </div>
       <div data-probe="segment">
         <SegmentGroup defaultValue="day" aria-label="Range">
           <SegmentGroupIndicator />
