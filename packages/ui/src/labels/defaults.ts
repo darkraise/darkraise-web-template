@@ -87,6 +87,13 @@ export const defaultLabels: UiLabels = {
     },
     modes: { light: "Light", dark: "Dark", system: "System" },
     styles: { flat: "Flat", quiet: "Quiet", tactile: "Tactile", glass: "Glass" },
+    sidebarSelections: {
+      auto: "Auto",
+      chip: "Chip",
+      pill: "Pill",
+      tile: "Tile",
+      frosted: "Frosted",
+    },
   },
   errors: {
     notFoundTitle: "Page not found",

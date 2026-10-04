@@ -169,6 +169,34 @@ describe("ChoiceControl", () => {
     fireEvent.click(within(group).getByRole("radio", { name: "aurora" }))
     expect(html.getAttribute("data-gradient-pattern")).toBe("aurora")
   })
+
+  it("labels the sidebar selection looks", () => {
+    renderControl(<ChoiceControl axis="sidebarSelection" />)
+    const group = screen.getByRole("radiogroup", { name: "Sidebar Selection" })
+    expect(
+      within(group)
+        .getAllByRole("radio")
+        .map((radio) => radio.textContent),
+    ).toEqual(["Auto", "Chip", "Pill", "Tile", "Frosted"])
+  })
+
+  it("takes sidebar selection labels from their own group", () => {
+    render(
+      <UiLabelsProvider
+        value={{
+          theme: { sidebarSelections: { pill: "Vạch chỉ báo" } },
+          themeOptions: { pill: "viên thuốc" },
+        }}
+      >
+        <ThemeProvider>
+          <ChoiceControl axis="sidebarSelection" />
+        </ThemeProvider>
+      </UiLabelsProvider>,
+    )
+    expect(
+      screen.getByRole("radio", { name: "Vạch chỉ báo" }),
+    ).toBeInTheDocument()
+  })
 })
 
 describe("OrdinalControl", () => {

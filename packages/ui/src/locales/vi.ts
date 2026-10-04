@@ -107,6 +107,13 @@ const messages: UiMessages = {
       tactile: "Nổi khối",
       glass: "Kính mờ",
     },
+    sidebarSelections: {
+      auto: "Tự động",
+      chip: "Thẻ nổi",
+      pill: "Vạch chỉ báo",
+      tile: "Ô biểu tượng",
+      frosted: "Kính mờ",
+    },
   },
   errors: {
     notFoundTitle: "Không tìm thấy trang",

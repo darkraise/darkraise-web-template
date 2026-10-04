@@ -1,5 +1,6 @@
 import type { AxisKey } from "@theme/axes/registry"
 import type { StyleName } from "@theme/styles"
+import type { SidebarSelectionSetting } from "@theme/types"
 import type { ThemeSettingsGroup } from "@theme/theme-switcher/useThemeSettingsSections"
 
 /** Every axis the theme switcher can show. A new registry axis is a compile
@@ -73,6 +74,8 @@ export interface UiLabels {
     modes: { light: string; dark: string; system: string }
     /** Option labels of the style axis. */
     styles: Record<StyleName, string>
+    /** Option labels of the sidebar selection setting. */
+    sidebarSelections: Record<SidebarSelectionSetting, string>
   }
   errors: {
     notFoundTitle: string

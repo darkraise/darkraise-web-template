@@ -3,6 +3,7 @@ import { ToggleGroup, ToggleGroupItem } from "@components/toggle-group"
 import { useUiLabels } from "@labels"
 import { AXES, type AxisKey, type AxisValue } from "@theme/axes/registry"
 import type { StyleName } from "@theme/styles"
+import type { SidebarSelectionSetting } from "@theme/types"
 import { useTheme } from "@theme/useTheme"
 import type { UiMessages } from "../../../i18n/types"
 
@@ -34,6 +35,10 @@ const OPTION_LABELS: Partial<Record<AxisKey, OptionLabel>> = {
   mode: (value, labels) =>
     labels.theme.modes[value as keyof UiMessages["theme"]["modes"]],
   style: (value, labels) => labels.theme.styles[value as StyleName],
+  // "pill" is also a radius value, so the shared option map would label it
+  // as a shape; the looks carry their own group.
+  sidebarSelection: (value, labels) =>
+    labels.theme.sidebarSelections[value as SidebarSelectionSetting],
   // An untranslated value (the English map holds the bare value) gets the
   // switcher's own English word; a translation is used as given.
   sidebarActiveBar: (value, labels) => {
