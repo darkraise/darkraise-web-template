@@ -164,7 +164,9 @@ describe("pre-render script", () => {
     expect(root.getAttribute("data-tint-with-accent")).toBe("on")
     expect(root.getAttribute("data-elevation")).toBe("standard")
     expect(localStorage.getItem("theme-surface-color")).toBe("zinc")
-    expect(localStorage.getItem("theme-settings-version")).toBe("2")
+    expect(localStorage.getItem("theme-settings-version")).toBe(
+      String(LEGACY_REVISION),
+    )
   })
 
   it("paints migrated attributes when storage refuses writes", () => {
@@ -209,7 +211,9 @@ describe("pre-render script", () => {
     run()
     expect(localStorage.getItem("theme-surface-color")).toBe("zinc")
     expect(localStorage.getItem("theme-tint-with-accent")).toBe("on")
-    expect(localStorage.getItem("theme-settings-version")).toBe("2")
+    expect(localStorage.getItem("theme-settings-version")).toBe(
+      String(LEGACY_REVISION),
+    )
   })
 
   it("embeds the legacy rules without their payload fields", () => {
@@ -245,7 +249,9 @@ describe("pre-render script", () => {
     expect(localStorage.getItem("theme-glass-opacity")).toBeNull()
     expect(localStorage.getItem("theme-glass-blur")).toBe("high")
     expect(localStorage.getItem("theme-elevation")).toBe("low")
-    expect(localStorage.getItem("theme-settings-version")).toBe("2")
+    expect(localStorage.getItem("theme-settings-version")).toBe(
+      String(LEGACY_REVISION),
+    )
     expect(root.getAttribute("data-style")).toBe("quiet")
   })
 })

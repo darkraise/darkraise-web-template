@@ -1,7 +1,7 @@
 import { AXES, AXIS_KEYS, isAxisValue } from "./registry"
 
 /** The table's revision; a browser stores the one it last ran. */
-export const LEGACY_REVISION = 2
+export const LEGACY_REVISION = 3
 
 export const LEGACY_MARKER_KEY = "theme-settings-version"
 
@@ -225,6 +225,20 @@ export const LEGACY_RULES: readonly LegacyRule[] = [
     when: [{ key: "theme-glass-blur", values: ["medium"] }],
     remove: ["theme-glass-blur"],
   },
+  // 7.0 replaced the sidebar indicator with a selection look. A stored
+  // "default" maps to nothing: it was the indicator's own default, which Auto
+  // already is, and writing it would pin Auto as the user's choice. The rule
+  // still removes the key, since `remove` runs whether or not `map` matched.
+  {
+    since: 3,
+    when: [{ key: "theme-sidebar-active-bar", field: "sidebarActiveBar" }],
+    map: {
+      bar: { "theme-sidebar-selection": "pill" },
+      ring: { "theme-sidebar-selection": "chip" },
+      both: { "theme-sidebar-selection": "pill" },
+    },
+    remove: ["theme-sidebar-active-bar"],
+  },
 ]
 
 function buildTargets(): Record<string, readonly string[]> {
@@ -248,6 +262,7 @@ const PAYLOAD_FIELDS: Readonly<Record<string, string>> = {
   "theme-accent-intensity": "accentIntensity",
   "theme-control-depth": "controlDepth",
   "theme-button-elevation": "buttonElevation",
+  "theme-sidebar-active-bar": "sidebarActiveBar",
 }
 
 interface Slots {

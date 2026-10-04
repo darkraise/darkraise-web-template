@@ -106,12 +106,12 @@ describe("LEGACY_RULES", () => {
     }
   })
 
-  it("end with three revision 2 rules after every revision 1 rule", () => {
-    expect(LEGACY_REVISION).toBe(2)
+  it("run revision 1, then three revision 2 rules, then one revision 3 rule", () => {
+    expect(LEGACY_REVISION).toBe(3)
     const revisions = LEGACY_RULES.map((rule) => rule.since)
     const first = revisions.indexOf(2)
     expect(revisions.slice(0, first).every((since) => since === 1)).toBe(true)
-    expect(revisions.slice(first)).toEqual([2, 2, 2])
+    expect(revisions.slice(first)).toEqual([2, 2, 2, 3])
   })
 
   it("write only values valid for their target, or legacy keys a later rule consumes", () => {
@@ -530,7 +530,7 @@ describe("revision 2 in storage", () => {
     )
   })
 
-  it("runs only revision 2 on a browser at revision 1", () => {
+  it("runs revisions 2 and 3 on a browser at revision 1", () => {
     const storage = memoryStorage({
       [LEGACY_MARKER_KEY]: "1",
       "theme-preset": "default",
@@ -541,7 +541,7 @@ describe("revision 2 in storage", () => {
     })
     migrateStorage(storage)
     expect(storage.contents()).toEqual({
-      [LEGACY_MARKER_KEY]: "2",
+      [LEGACY_MARKER_KEY]: String(LEGACY_REVISION),
       "theme-preset": "quiet",
       "theme-glass-blur": "high",
       "theme-elevation": "low",
@@ -788,5 +788,33 @@ describe("liftPresetAxisValues", () => {
     expect(input).toEqual({
       presetAxisValues: { glass: { opacity: "strong" } },
     })
+  })
+})
+
+describe("sidebar indicator migration", () => {
+  it.each([
+    ["bar", "pill"],
+    ["ring", "chip"],
+    ["both", "pill"],
+  ])("maps a stored %s to %s", (indicator, look) => {
+    expect(migrated({ "theme-sidebar-active-bar": indicator })).toEqual({
+      "theme-sidebar-selection": look,
+    })
+  })
+
+  it("drops a stored default without pinning a look", () => {
+    expect(migrated({ "theme-sidebar-active-bar": "default" })).toEqual({})
+  })
+
+  it("leaves a stored selection alone", () => {
+    expect(migrated({ "theme-sidebar-selection": "tile" })).toEqual({
+      "theme-sidebar-selection": "tile",
+    })
+  })
+
+  it("moves a synced payload's indicator the same way", () => {
+    const payload = migratePayload({ sidebarActiveBar: "ring" })
+    expect(payload).toMatchObject({ sidebarSelection: "chip" })
+    expect(payload).not.toHaveProperty("sidebarActiveBar")
   })
 })
