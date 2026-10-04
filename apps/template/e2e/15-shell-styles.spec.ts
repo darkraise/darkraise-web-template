@@ -4,7 +4,6 @@ import {
   openAdvanced,
   openThemeSwitcher,
   seedApp,
-  themeSwitcher,
 } from "./helpers/app"
 
 const SHELL_STYLES = [
@@ -255,38 +254,37 @@ test.describe("shell style geometry", () => {
   })
 })
 
-test.describe("sidebar indicator axis", () => {
-  test("omits the indicator attribute by default", async ({ page }) => {
-    await seedApp(page)
+test.describe("sidebar selection setting", () => {
+  test("auto follows the style", async ({ page }) => {
+    await seedApp(page, { style: "flat" })
     await gotoApp(page, "/")
-    await expect(page.locator(".dr-sidebar-nav").first()).not.toHaveAttribute(
-      "data-active-bar",
-      /.+/,
+    await expect(page.locator(".dr-sidebar-nav").first()).toHaveAttribute(
+      "data-sidebar-selection",
+      "pill",
     )
   })
 
-  test("a chosen indicator reaches the sidebar", async ({ page }) => {
-    await seedApp(page, { sidebarActiveBar: "ring" })
+  test("a chosen look reaches the sidebar", async ({ page }) => {
+    await seedApp(page, { sidebarSelection: "tile" })
     await gotoApp(page, "/")
     await expect(page.locator(".dr-sidebar-nav").first()).toHaveAttribute(
-      "data-active-bar",
-      "ring",
+      "data-sidebar-selection",
+      "tile",
     )
   })
 
   test("the theme panel switches it live", async ({ page }) => {
     await seedApp(page)
     await gotoApp(page, "/")
-    await openThemeSwitcher(page)
+    const panel = await openThemeSwitcher(page)
     await openAdvanced(page)
-    await themeSwitcher(page)
-      .locator('[aria-label="Sidebar Indicator"]')
-      .getByRole("radio", { name: "Both", exact: true })
+    await panel
+      .locator('[aria-label="Sidebar Selection"]')
+      .getByRole("radio", { name: "Frosted", exact: true })
       .click()
-
     await expect(page.locator(".dr-sidebar-nav").first()).toHaveAttribute(
-      "data-active-bar",
-      "both",
+      "data-sidebar-selection",
+      "frosted",
     )
   })
 })

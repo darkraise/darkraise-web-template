@@ -52,7 +52,7 @@ const ADVANCED_SECTIONS = [
   "Inner Glow",
   "Background",
   "Background Intensity",
-  "Sidebar Indicator",
+  "Sidebar Selection",
 ]
 
 /** The switcher's option label for each style. */

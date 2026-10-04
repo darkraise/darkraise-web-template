@@ -96,7 +96,6 @@ export const LS_KEYS = {
   density: "theme-density",
   elevation: "theme-elevation",
   radius: "theme-radius",
-  sidebarActiveBar: "theme-sidebar-active-bar",
   sidebarSelection: "theme-sidebar-selection",
   fontSize: "theme-font-size",
   contrast: "theme-contrast",
