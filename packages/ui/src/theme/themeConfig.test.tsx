@@ -135,6 +135,20 @@ describe("resolveDefaults", () => {
       "compact",
     )
   })
+
+  it("warns that sidebarActiveBar moved to sidebarSelection", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {})
+    resolveDefaults({
+      ...themeConfig,
+      defaults: { sidebarActiveBar: "bar" } as never,
+    })
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining(
+        "themeConfig.defaults.sidebarActiveBar was removed; use sidebarSelection instead",
+      ),
+    )
+    warn.mockRestore()
+  })
 })
 
 describe("kit theme config", () => {

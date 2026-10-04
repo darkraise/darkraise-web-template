@@ -66,12 +66,12 @@ describe("pre-render script", () => {
     localStorage.setItem("theme-density", "spacious")
     localStorage.setItem("theme-accent", "violet")
     localStorage.setItem("theme-radius", "huge")
-    localStorage.setItem("theme-sidebar-active-bar", "bar")
+    localStorage.setItem("theme-sidebar-selection", "pill")
     run()
     expect(root.getAttribute("data-density")).toBe("spacious")
     expect(root.getAttribute("data-accent")).toBe("violet")
     expect(root.getAttribute("data-radius")).toBe(AXES.radius.default)
-    expect(root.hasAttribute("data-sidebar-active-bar")).toBe(false)
+    expect(root.hasAttribute("data-sidebar-selection")).toBe(false)
   })
 
   it("restores the stored font before the app runs", () => {

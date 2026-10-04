@@ -3,7 +3,6 @@ import {
   BACKGROUND_INTENSITIES,
   FONTS,
   SHELL_STYLES,
-  SIDEBAR_ACTIVE_BARS,
   SIDEBAR_SELECTIONS,
 } from "./types"
 import { resolveDefaults, themeConfig } from "./themeConfig"
@@ -45,20 +44,6 @@ describe("shell style", () => {
     expect("shellStyle" in AXES).toBe(false)
     expect("shellStyle" in themeConfig.defaults).toBe(false)
     expect("shellStyle" in (themeConfig.switcher.axes ?? {})).toBe(false)
-  })
-})
-
-describe("sidebarActiveBar axis", () => {
-  it("leads with the default indicator", () => {
-    expect(SIDEBAR_ACTIVE_BARS).toEqual(["default", "bar", "ring", "both"])
-  })
-
-  it("defaults to the default indicator so nothing moves", () => {
-    expect(resolveDefaults(themeConfig).sidebarActiveBar).toBe("default")
-  })
-
-  it("is switchable by default", () => {
-    expect(themeConfig.switcher.axes?.sidebarActiveBar).not.toBe(false)
   })
 })
 

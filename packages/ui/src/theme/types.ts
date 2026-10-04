@@ -110,14 +110,6 @@ export const SHELL_STYLES = [
 export type ShellStyle = (typeof SHELL_STYLES)[number]
 
 /**
- * Indicator drawn on the active sidebar item. `default` marks the row with a
- * tint one step stronger than hover and a bolder label, with no bar, under
- * every style. The other three force a rail, a ring or both.
- */
-export const SIDEBAR_ACTIVE_BARS = ["default", "bar", "ring", "both"] as const
-export type SidebarActiveBarSetting = (typeof SIDEBAR_ACTIVE_BARS)[number]
-
-/**
  * How the active sidebar row is drawn. `auto` follows the style: Quiet draws
  * a chip, Flat a pill, Tactile a tile and Glass a frosted chip.
  */

@@ -91,7 +91,6 @@ const messages: UiMessages = {
       density: "Mật độ",
       elevation: "Độ nổi",
       radius: "Bo góc",
-      sidebarActiveBar: "Chỉ báo thanh bên",
       sidebarSelection: "Kiểu chọn thanh bên",
       fontSize: "Cỡ chữ",
       outerGlow: "Phát sáng ngoài",

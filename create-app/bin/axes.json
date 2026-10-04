@@ -279,20 +279,6 @@
     "label": "Gradient Pattern",
     "groupLabel": "Advanced"
   },
-  "sidebarActiveBar": {
-    "values": [
-      "default",
-      "bar",
-      "ring",
-      "both"
-    ],
-    "default": "default",
-    "storageKey": "theme-sidebar-active-bar",
-    "attribute": null,
-    "layer": "advanced",
-    "label": "Sidebar Indicator",
-    "groupLabel": "Advanced"
-  },
   "sidebarSelection": {
     "values": [
       "auto",

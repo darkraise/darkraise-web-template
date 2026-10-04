@@ -28,7 +28,6 @@ const config: ThemeConfig = {
       innerGlow: false,
       backgroundStyle: false,
       gradientPattern: false,
-      sidebarActiveBar: false,
       sidebarSelection: false,
     },
   },

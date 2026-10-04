@@ -47,7 +47,7 @@ describe("useTheme", () => {
     mockMatchMedia()
     document.documentElement.removeAttribute("data-mode")
     document.documentElement.removeAttribute("data-font-size")
-    document.documentElement.removeAttribute("data-sidebar-active-bar")
+    document.documentElement.removeAttribute("data-sidebar-selection")
     document.documentElement.style.cssText = ""
   })
 
@@ -246,15 +246,12 @@ describe("useTheme", () => {
     expect(readSurfaceBase()).toBe(readBackground())
   })
 
-  it("keeps the sidebar indicator off the document element", () => {
+  it("keeps the sidebar selection off the document element", () => {
     const { result } = renderHook(() => useTheme(), { wrapper })
+    act(() => result.current.setSidebarSelection("pill"))
+    expect(result.current.sidebarSelection).toBe("pill")
     expect(
-      document.documentElement.hasAttribute("data-sidebar-active-bar"),
-    ).toBe(false)
-    act(() => result.current.setSidebarActiveBar("ring"))
-    expect(result.current.sidebarActiveBar).toBe("ring")
-    expect(
-      document.documentElement.hasAttribute("data-sidebar-active-bar"),
+      document.documentElement.hasAttribute("data-sidebar-selection"),
     ).toBe(false)
   })
 })

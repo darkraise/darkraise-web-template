@@ -119,28 +119,6 @@ describe("ChoiceControl", () => {
     expect(html.getAttribute("data-style")).toBe("glass")
   })
 
-  it("labels the default sidebar indicator Auto", () => {
-    renderControl(<ChoiceControl axis="sidebarActiveBar" />)
-    const group = screen.getByRole("radiogroup", { name: "Sidebar Indicator" })
-    expect(
-      within(group)
-        .getAllByRole("radio")
-        .map((radio) => radio.textContent),
-    ).toEqual(["Auto", "Bar", "Ring", "Both"])
-  })
-
-  it("uses a translated sidebar indicator label as given", () => {
-    render(
-      <UiLabelsProvider value={{ themeOptions: { default: "tự động" } }}>
-        <ThemeProvider>
-          <ChoiceControl axis="sidebarActiveBar" />
-        </ThemeProvider>
-      </UiLabelsProvider>,
-    )
-    expect(screen.getByRole("radio", { name: "tự động" })).toBeInTheDocument()
-    expect(screen.getByRole("radio", { name: "Bar" })).toBeInTheDocument()
-  })
-
   it("offers the three fonts and sets one", () => {
     renderControl(<ChoiceControl axis="font" />)
     const group = screen.getByRole("radiogroup", { name: "Font" })

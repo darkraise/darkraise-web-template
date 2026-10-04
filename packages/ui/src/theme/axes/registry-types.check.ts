@@ -6,7 +6,6 @@ import type {
   GlassOpacity,
   GlowLevel,
   Mode,
-  SidebarActiveBarSetting,
   SidebarSelectionSetting,
   ThemeContextValue,
   ThemeSettings,
@@ -37,7 +36,6 @@ export type RegistryTypeChecks = [
   Expect<"presetAxisValues" extends keyof ThemeSettings ? false : true>,
   Expect<Equal<ThemeContextValue["mode"], Mode>>,
   Expect<Equal<ThemeContextValue["outerGlow"], GlowLevel>>,
-  Expect<Equal<ThemeContextValue["sidebarActiveBar"], SidebarActiveBarSetting>>,
   Expect<Equal<ThemeContextValue["sidebarSelection"], SidebarSelectionSetting>>,
   Expect<Equal<ThemeContextValue["setDensity"], (value: Density) => void>>,
   Expect<

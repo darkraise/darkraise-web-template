@@ -60,7 +60,6 @@ const ADVANCED = [
   "Inner Glow",
   "Background",
   "Background Intensity",
-  "Sidebar Indicator",
   "Sidebar Selection",
 ]
 
@@ -179,7 +178,6 @@ describe("ThemeSettingsPanel", () => {
           backgroundStyle: false,
           backgroundIntensity: false,
           gradientPattern: false,
-          sidebarActiveBar: false,
           sidebarSelection: false,
         },
       }),

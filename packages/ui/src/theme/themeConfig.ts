@@ -33,6 +33,7 @@ const REMOVED_DEFAULTS = new Map<string, string | null>([
   ["buttonElevation", null],
   ["shellStyle", "the layout's defaultShellStyle prop"],
   ["preset", "style"],
+  ["sidebarActiveBar", "sidebarSelection"],
 ])
 
 const REMOVED_SWITCHER_AXES = new Map<string, string | null>([

@@ -37,7 +37,6 @@ describe("axis registry", () => {
       "backgroundStyle",
       "backgroundIntensity",
       "gradientPattern",
-      "sidebarActiveBar",
       "sidebarSelection",
     ])
   })
@@ -58,7 +57,6 @@ describe("axis registry", () => {
       "font",
       "backgroundStyle",
       "gradientPattern",
-      "sidebarActiveBar",
       "sidebarSelection",
     ])
     expect(byKind("ordinal")).toEqual([
@@ -166,12 +164,6 @@ describe("axis registry", () => {
     const attrs = AXIS_KEYS.flatMap((k) => AXES[k].attribute ?? [])
     expect(new Set(attrs).size).toBe(attrs.length)
     for (const a of attrs) expect(a).toMatch(/^data-[a-z-]+$/)
-  })
-
-  it("keeps the token-only axis attribute-free", () => {
-    expect(AXES.sidebarActiveBar.attribute).toBeUndefined()
-    expect(AXES.accentColor.attribute).toBe("data-accent")
-    expect(AXES.surfaceColor.attribute).toBe("data-surface")
   })
 
   it("keeps the sidebar selection off the document element", () => {

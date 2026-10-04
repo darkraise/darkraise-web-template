@@ -17,7 +17,6 @@ export {
   RADII,
   MODES,
   SHELL_STYLES,
-  SIDEBAR_ACTIVE_BARS,
   SIDEBAR_SELECTIONS,
 } from "./types"
 export type {
@@ -29,7 +28,6 @@ export type {
   Font,
   Radius,
   ShellStyle,
-  SidebarActiveBarSetting,
   SidebarSelection,
   SidebarSelectionSetting,
   Mode,
