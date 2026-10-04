@@ -329,7 +329,8 @@ browser-only app the first render is already correct. Under SSR the server has
 no `localStorage`, so it returns the default `sidebar` and the client swaps
 after hydration. If you server-render, read the persisted variant in your
 document template and hand it to `useLayoutStore.setState` before the app
-mounts, the way the scaffolder's inline theme script does for theme axes.
+mounts, the way the `darkraisePrerender` Vite plugin's script does for theme
+axes.
 
 ## Upgrading to 7.0
 
