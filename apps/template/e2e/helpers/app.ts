@@ -32,7 +32,6 @@ export async function attrOf(locator: Locator, name: string): Promise<string> {
 export interface ThemeSeed {
   accent?: string
   surface?: string
-  preset?: string
   style?: string
   glassOpacity?: string
   glassBlur?: string
@@ -50,8 +49,6 @@ export interface ThemeSeed {
   contrast?: string
   darkAccentChroma?: string
   tintWithAccent?: string
-  /** Preset-specific axes: { glass: { blur: "high" } } → key `theme-glass-blur`. */
-  presetAxes?: Record<string, Record<string, string>>
 }
 
 const AUTH_USER = JSON.stringify({
@@ -75,7 +72,6 @@ function storageEntries(theme: ThemeSeed, authenticated: boolean) {
   const map: [keyof ThemeSeed, string][] = [
     ["accent", LS_KEYS.accent],
     ["surface", LS_KEYS.surface],
-    ["preset", LS_KEYS.preset],
     ["style", LS_KEYS.style],
     ["glassOpacity", LS_KEYS.glassOpacity],
     ["glassBlur", LS_KEYS.glassBlur],
@@ -96,11 +92,6 @@ function storageEntries(theme: ThemeSeed, authenticated: boolean) {
   for (const [field, key] of map) {
     const value = theme[field]
     if (typeof value === "string") entries.push([key, value])
-  }
-  for (const [preset, axes] of Object.entries(theme.presetAxes ?? {})) {
-    for (const [axis, value] of Object.entries(axes)) {
-      entries.push([`theme-${preset}-${axis}`, value])
-    }
   }
   return entries
 }
