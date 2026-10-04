@@ -45,6 +45,7 @@ export interface ThemeSeed {
   /** Seeds the layout store's stored pick; shell style is not a theme axis. */
   shellStyle?: string
   sidebarActiveBar?: string
+  sidebarSelection?: string
   fontSize?: string
   contrast?: string
   darkAccentChroma?: string
@@ -84,6 +85,7 @@ function storageEntries(theme: ThemeSeed, authenticated: boolean) {
     ["radius", LS_KEYS.radius],
     ["shellStyle", SHELL_STYLE_KEY],
     ["sidebarActiveBar", LS_KEYS.sidebarActiveBar],
+    ["sidebarSelection", LS_KEYS.sidebarSelection],
     ["fontSize", LS_KEYS.fontSize],
     ["contrast", LS_KEYS.contrast],
     ["darkAccentChroma", LS_KEYS.darkAccentChroma],
