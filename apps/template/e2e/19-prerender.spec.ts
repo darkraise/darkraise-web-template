@@ -16,12 +16,11 @@ const AXES = JSON.parse(
   ),
 ) as Record<string, ScaffoldAxis>
 
-// The preset stays on default; no preset hides a common axis any more, so
-// the choice costs no coverage. Mode must be `dark`: `system` and
-// `light` both resolve to light under Playwright's scheme and would prove
-// nothing.
+// Mode must be `dark`: `system` and `light` both resolve to light under
+// Playwright's scheme and would prove nothing. Every other axis takes its
+// last non-default value, which puts the style on glass and both glass axes
+// off their defaults.
 const PINNED: Record<string, string> = {
-  "theme-preset": "default",
   mode: "dark",
 }
 
@@ -77,13 +76,17 @@ test("restores the stored theme before the app mounts", async ({ page }) => {
 
 // 6.x storage and the attributes the migrated values paint. Each case has
 // the app bundle blocked from its first load, so nothing but the pre-render
-// script can have migrated or painted anything.
+// script can have migrated or painted anything. The script stamps every
+// attribute axis, so an axis the migration left alone paints its default;
+// `removed` lists keys that must be absent from storage afterwards, and
+// `kept` the values storage must hold.
 const LEGACY_USERS: {
   name: string
   stored: Record<string, string>
   painted: Record<string, string>
   absent: string[]
   removed: string[]
+  kept: Record<string, string>
 }[] = [
   {
     name: "a 6.x glass user on a solid canvas",
@@ -99,20 +102,25 @@ const LEGACY_USERS: {
     },
     painted: {
       "data-mode": "dark",
-      "data-preset": "glass",
+      "data-style": "glass",
       "data-background-style": "gradient",
       "data-surface": "zinc",
       "data-tint-with-accent": "on",
       "data-elevation": "standard",
       "data-outer-glow": "vivid",
       "data-background-intensity": "neutral",
+      "data-contrast": "standard",
+      "data-glass-opacity": "medium",
+      "data-glass-blur": "medium",
     },
-    absent: ["data-contrast"],
+    absent: ["data-preset"],
     removed: [
       "theme-surface-intensity",
       "theme-glass-halo",
       "theme-canvas-tint",
+      "theme-contrast",
     ],
+    kept: { "theme-preset": "glass" },
   },
   {
     name: "a 6.x sci-fi user",
@@ -123,26 +131,74 @@ const LEGACY_USERS: {
       "theme-surface-intensity": "bold",
       "theme-accent-intensity": "intense",
     },
-    painted: { "data-mode": "dark" },
-    absent: [
-      "data-preset",
-      "data-scifi-frame",
-      "data-contrast",
-      "data-dark-accent-chroma",
-    ],
+    painted: {
+      "data-mode": "dark",
+      "data-style": "quiet",
+      "data-contrast": "standard",
+      "data-dark-accent-chroma": "standard",
+    },
+    absent: ["data-preset", "data-scifi-frame"],
     removed: [
       "theme-preset",
       "theme-scifi-frame",
       "theme-surface-intensity",
       "theme-accent-intensity",
+      "theme-contrast",
+      "theme-dark-accent-chroma",
     ],
+    kept: {},
   },
   {
     name: "a 6.0 user with accent vibrancy",
     stored: { mode: "dark", "theme-accent-vibrancy": "intense" },
-    painted: { "data-mode": "dark", "data-dark-accent-chroma": "vivid" },
-    absent: [],
+    painted: {
+      "data-mode": "dark",
+      "data-style": "quiet",
+      "data-dark-accent-chroma": "vivid",
+    },
+    absent: ["data-preset"],
     removed: ["theme-accent-vibrancy", "theme-accent-intensity"],
+    kept: { "theme-dark-accent-chroma": "vivid" },
+  },
+  {
+    // 6.x wrote `medium` as a completed default, never as a choice.
+    name: "a 6.x default user with glass axes stored at medium",
+    stored: {
+      mode: "dark",
+      "theme-preset": "default",
+      "theme-glass-opacity": "medium",
+      "theme-glass-blur": "high",
+    },
+    painted: {
+      "data-mode": "dark",
+      "data-style": "quiet",
+      "data-glass-opacity": "medium",
+      "data-glass-blur": "high",
+    },
+    absent: ["data-preset"],
+    removed: ["theme-glass-opacity"],
+    kept: { "theme-preset": "quiet", "theme-glass-blur": "high" },
+  },
+  {
+    // At marker 1 only revision 2 runs: the vibrancy key, which a revision 1
+    // rule would migrate, is left as it is.
+    name: "a browser that already ran revision 1",
+    stored: {
+      "theme-settings-version": "1",
+      mode: "dark",
+      "theme-preset": "default",
+      "theme-glass-blur": "medium",
+      "theme-accent-vibrancy": "intense",
+    },
+    painted: {
+      "data-mode": "dark",
+      "data-style": "quiet",
+      "data-glass-blur": "medium",
+      "data-dark-accent-chroma": "standard",
+    },
+    absent: ["data-preset"],
+    removed: ["theme-glass-blur", "theme-dark-accent-chroma"],
+    kept: { "theme-preset": "quiet", "theme-accent-vibrancy": "intense" },
   },
 ]
 
@@ -165,9 +221,13 @@ for (const user of LEGACY_USERS) {
     }
     const left = await page.evaluate(
       (keys: string[]) => keys.map((key) => localStorage.getItem(key)),
-      [...user.removed, "theme-settings-version"],
+      [...user.removed, ...Object.keys(user.kept), "theme-settings-version"],
     )
-    expect(left).toEqual([...user.removed.map(() => null), "1"])
+    expect(left).toEqual([
+      ...user.removed.map(() => null),
+      ...Object.values(user.kept),
+      "2",
+    ])
     await expect(page.locator("#root .app-loading")).toHaveCount(1)
   })
 }
