@@ -10,7 +10,7 @@ cd my-app
 npm run dev
 ```
 
-The CLI walks you through choosing a layout, theme defaults, and theme switcher visibility. Pass `-y` to accept all defaults.
+The CLI walks you through choosing a layout, the brand axes (mode, accent, surface, tint, font, radius, density and font size), the style, and theme switcher visibility. Pass `-y` to accept all defaults, and `--help` to list every flag.
 
 Add `--multilingual` to generate English/Vietnamese switching, persisted language
 preferences, and app-owned translations using the optional `darkraise-ui` adapter.
@@ -23,47 +23,40 @@ you. `--ui-version` accepts a package version or local tarball for consumer chec
 
 ### CLI Flags
 
-All options can also be passed as flags to skip prompts:
+Every theme axis has a flag, and a flag skips its prompt:
 
 ```bash
 npm create darkraise-ui my-app \
   --layout sidebar \
   --accent blue \
-  --surface-color slate \
-  --preset glass \
-  --background solid \
-  --background-intensity balanced \
-  --gradient-pattern blobs \
+  --surface-color zinc \
+  --style quiet \
+  --font inter \
   --mode system \
   --density cozy \
-  --elevation standard \
   --radius rounded \
-  --font-size medium \
+  --contrast standard \
   --theme-switcher \
-  --theme-axes mode,accentColor,surfaceColor,preset,backgroundStyle,density,elevation,radius,fontSize \
+  --theme-axes mode,accentColor,surfaceColor,style,font,density,radius,fontSize \
   --host localhost \
   --port 5173
 ```
 
-| Flag                                       | Values                                                                                                                           | Default     |
-| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| `--layout`                                 | `sidebar`, `stacked`, `top-nav`, `split-panel`                                                                                   | `sidebar`   |
-| `--accent`                                 | 18 colors (`red` through `rose`) and `neutral`                                                                                   | `blue`      |
-| `--surface-color`                          | 12 neutral palettes (`slate`, `gray`, `cool`, `zinc`, `neutral`, `iron`, `mauve`, `graphite`, `stone`, `sand`, `olive`, `sepia`) | `slate`     |
-| `--preset`                                 | `default`, `glass`                                                                                                               | `default`   |
-| `--background`                             | `solid`, `gradient`                                                                                                              | `solid`     |
-| `--background-intensity`                   | `subtle`, `balanced`, `vivid`, `intense`                                                                                         | `balanced`  |
-| `--gradient-pattern`                       | `blobs`, `aurora`, `spotlight`, `mesh`                                                                                           | `blobs`     |
-| `--mode`                                   | `light`, `dark`, `system`                                                                                                        | `system`    |
-| `--density`                                | `compact`, `cozy`, `comfortable`, `spacious`                                                                                     | `cozy`      |
-| `--elevation`                              | `flat`, `standard`, `high`                                                                                                       | `standard`  |
-| `--radius`                                 | `sharp`, `subtle`, `rounded`, `pill`                                                                                             | `rounded`   |
-| `--font-size`                              | `small`, `medium`, `large`, `extra-large`                                                                                        | `medium`    |
-| `--theme-switcher` / `--no-theme-switcher` | boolean                                                                                                                          | enabled     |
-| `--theme-axes`                             | comma-separated axis names (see Theming for the valid keys)                                                                      | all axes    |
-| `--host`                                   | hostname or IP                                                                                                                   | `localhost` |
-| `--port`                                   | `1`-`65535`                                                                                                                      | `5173`      |
-| `-y`                                       | skip all prompts, use defaults                                                                                                   |             |
+| Flag                                       | Values                                         | Default     |
+| ------------------------------------------ | ---------------------------------------------- | ----------- |
+| `--layout`                                 | `sidebar`, `stacked`, `top-nav`, `split-panel` | `sidebar`   |
+| `--<axis>`                                 | one per theme axis; see below                  | kit default |
+| `--multilingual` / `--no-multilingual`     | boolean                                        | off         |
+| `--theme-switcher` / `--no-theme-switcher` | boolean                                        | enabled     |
+| `--theme-axes`                             | comma-separated axis keys (see Theming)        | all axes    |
+| `--host`                                   | hostname or IP                                 | `localhost` |
+| `--port`                                   | `1`-`65535`                                    | `5173`      |
+| `--ui-version`                             | a `darkraise-ui` version or tarball            | latest      |
+| `--no-install`, `--no-git`                 | skip `npm install` or `git init`               |             |
+| `-y`                                       | skip all prompts, use defaults                 |             |
+| `-h`, `--help`                             | print every flag with its values and defaults  |             |
+
+An axis flag is the axis key in kebab case (`--surface-color`, `--font-size`, `--dark-accent-chroma`), except `--accent` for `accentColor` and `--background` for `backgroundStyle`. The generated `src/theme.config.ts` lists only the axes you chose, by prompt or by flag. A style's own defaults still win over a flag for users with nothing stored: under `--style glass` the background stays a gradient even with `--background solid`. The 6.x flags `--preset`, `--surface-intensity`, `--accent-intensity`, `--shell-style`, `--control-depth` and `--button-elevation` exit with an error naming their replacement.
 
 ## What's Included
 
@@ -93,25 +86,36 @@ Several hooks are adapted from [react-hookz/web](https://github.com/react-hookz/
 
 ### Theming
 
-A 15-axis theming system. Scaffolded projects configure it through `src/theme.config.ts`, which imports the `ThemeConfig` type from `darkraise-ui/theme`; in this monorepo the type and defaults live in `packages/ui/src/theme/themeConfig.ts`. The axes are:
+A 20-axis theming system in three layers. Scaffolded projects configure it through `src/theme.config.ts`, which imports the `ThemeConfig` type from `darkraise-ui/theme`; in this monorepo the type and defaults live in `packages/ui/src/theme/themeConfig.ts`.
 
-- **Mode** -- light, dark, or system
-- **Accent color** -- 18 color options plus `neutral` (near-black in light, near-white in dark)
-- **Surface color** -- one of 12 neutral palettes (slate by default)
-- **Preset** -- `default` or `glass` (glassmorphism is the `glass` preset)
-- **Font** -- Inter, Geist, or IBM Plex Sans (body and heading text)
-- **Background style** -- solid or gradient
-- **Background intensity** -- subtle, balanced, vivid, or intense
-- **Gradient pattern** -- blobs, aurora, spotlight, or mesh
-- **Density** -- compact, cozy, comfortable, or spacious
-- **Elevation** -- flat, standard, or high (surface shadows)
-- **Radius** -- sharp, subtle, rounded, or pill
-- **Font size** -- small, medium, large, or extra-large (scales type, icons, and minimum control heights)
-- **Contrast** -- low, standard, or high (how far apart the page, card and edge steps sit)
-- **Dark accent chroma** -- calm, standard, or vivid (dark mode only; how saturated the accent fills and marks render)
-- **Tint with accent** -- off or on (tints the neutral surfaces toward the accent; hidden under the neutral accent)
+Brand:
 
-`theme.config.ts` lists only what differs from the kit's defaults. An axis left out of `switcher.axes` is shown, `switcher.advanced: false` removes the Advanced part of the panel, and a preset's own controls (for example glass opacity and blur) appear under the Preset control whenever it is shown.
+- **Mode** (`mode`) -- light, dark, or system
+- **Accent color** (`accentColor`) -- 18 colors plus `neutral` (near-black in light, near-white in dark); blue by default
+- **Surface color** (`surfaceColor`) -- one of 12 neutral palettes; zinc by default
+- **Tint with accent** (`tintWithAccent`) -- off or on (tints the neutral surfaces toward the accent; hidden under the neutral accent)
+- **Font** (`font`) -- Inter, Geist, or IBM Plex Sans (body and heading text)
+- **Radius** (`radius`) -- sharp, subtle, rounded, or pill
+- **Density** (`density`) -- compact, cozy, comfortable, or spacious
+- **Font size** (`fontSize`) -- small, medium, large, or extra-large (scales type, icons, and minimum control heights)
+
+Style:
+
+- **Style** (`style`) -- flat, quiet, tactile, or glass; quiet by default. Glass frosts the shell chrome and overlays.
+- **Glass opacity** (`glassOpacity`) and **glass blur** (`glassBlur`) -- shown under the Style control while Glass is chosen
+
+Advanced:
+
+- **Contrast** (`contrast`) -- low, standard, or high (how far apart the page, card and edge steps sit)
+- **Dark accent chroma** (`darkAccentChroma`) -- calm, standard, or vivid (dark mode only; how saturated the accent fills and marks render)
+- **Elevation** (`elevation`) -- flat, standard, or high (surface shadows)
+- **Outer glow** and **inner glow** (`outerGlow`, `innerGlow`) -- none, subtle, balanced, or vivid
+- **Background style** (`backgroundStyle`) -- solid or gradient
+- **Background intensity** (`backgroundIntensity`) -- neutral, subtle, balanced, vivid, or intense
+- **Gradient pattern** (`gradientPattern`) -- blobs, aurora, spotlight, or mesh
+- **Sidebar indicator** (`sidebarActiveBar`) -- default, bar, ring, or both
+
+An axis left out of `theme.config.ts` keeps the kit's default, and a style's own defaults (Glass's gradient background, for example) win over the config's for users with nothing stored. An axis left out of `switcher.axes` is shown, and `switcher.advanced: false` removes the Advanced part of the panel.
 
 Monospace text always uses JetBrains Mono. Font size is adjustable via the axis above. The four font families ship as woff2 files with `darkraise-ui/styles.css`, so no font request leaves the app's origin and no font link is needed in `index.html`.
 
