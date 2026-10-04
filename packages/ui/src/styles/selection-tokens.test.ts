@@ -277,35 +277,34 @@ describe("underline family", () => {
 
 const SIDEBAR = "src/layout/sidebar/sidebar-nav.css"
 
-describe("nav row family: sidebar", () => {
-  const active = ".dr-sidebar-nav-current"
+const SELECTION = "src/layout/sidebar/sidebar-selection.css"
 
-  it("tints the active link with the nav-row fill and keeps its own text", () => {
-    const body = bodyOf(SIDEBAR, active)
-    expect(body).toContain("background-color: var(--selected-nav-bg);")
+describe("nav row family: sidebar", () => {
+  const current = "[data-sidebar-selection] .dr-sidebar-nav-current"
+
+  it("paints the current row from the look's tokens and keeps its own text", () => {
+    const body = bodyOf(SELECTION, current)
+    expect(body).toContain("background: var(--sidebar-active-surface);")
     expect(body).toContain("color: hsl(var(--sidebar-foreground-hover));")
     expect(body).toContain("font-weight: 600;")
   })
 
-  it("keeps the hover fill apart from the active fill", () => {
+  it("keeps the hover fill apart from the current row", () => {
     expect(bodyOf(SIDEBAR, ".dr-sidebar-nav-item:hover")).toContain(
       "hsl(var(--sidebar-hover-bg))",
     )
-    expect(bodyOf(SIDEBAR, active)).not.toContain("--sidebar-hover-bg")
+    expect(bodyOf(SELECTION, current)).not.toContain("--sidebar-hover-bg")
   })
 
-  it("draws the 3px bar only under bar and both", () => {
-    const offenders = rulesOf(SIDEBAR)
-      .filter((rule) => rule.body.includes("inset 3px"))
-      .flatMap((rule) => rule.selectors)
-      .filter((s) => !/\[data-active-bar="(?:bar|both)"\]/.test(s))
-    expect(offenders).toEqual([])
+  it("leaves no tint, rail or ring of the old indicator", () => {
+    const css = readFileSync(SIDEBAR, "utf8")
+    expect(css).not.toContain("data-active-bar")
+    expect(css).not.toContain(".dr-sidebar-nav-current")
   })
 })
 
-describe("nav row family: popover, top nav and layout switcher", () => {
+describe("nav row family: top nav and layout switcher", () => {
   it.each([
-    [SIDEBAR, ".dr-sidebar-popover-child.dr-sidebar-nav-current"],
     [
       "src/layout/top-nav-layout/top-nav-layout.css",
       '.dr-top-nav-layout-nav-item[data-active="true"]',
