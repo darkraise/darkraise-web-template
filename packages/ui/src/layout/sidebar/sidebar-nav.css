@@ -170,7 +170,7 @@
   }
 
   .dr-sidebar-nav-ancestor .dr-sidebar-nav-icon-svg {
-    color: hsl(var(--primary));
+    color: hsl(var(--primary-text));
   }
 
   .dr-sidebar-popover-child {
