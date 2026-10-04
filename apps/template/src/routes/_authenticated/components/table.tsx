@@ -80,13 +80,24 @@ const products = [
   },
 ]
 
+// Seeded so the totals, and the screenshot baselines, match between loads.
+function seededRandom(seed: number) {
+  let state = seed
+  return () => {
+    state = (state * 1103515245 + 12345) % 2147483648
+    return state / 2147483648
+  }
+}
+
+const random = seededRandom(7)
+
 const manyProducts = Array.from({ length: 50 }, (_, i) => ({
   id: String(i + 1),
   name: `Product ${i + 1}`,
   category:
     ["Electronics", "Clothing", "Food", "Books", "Home"][i % 5] ?? "Other",
-  price: Math.round((10 + Math.random() * 90) * 100) / 100,
-  stock: Math.floor(Math.random() * 500),
+  price: Math.round((10 + random() * 90) * 100) / 100,
+  stock: Math.floor(random() * 500),
   status: i % 7 === 0 ? "out" : i % 3 === 0 ? "low" : "active",
 }))
 
@@ -632,7 +643,7 @@ function TablePage() {
                 </tr>
               ))}
             </tbody>
-            <tfoot className="bg-muted/50 sticky bottom-0 z-10 border-t font-medium">
+            <tfoot className="dr-table-footer sticky bottom-0 z-10">
               <tr>
                 <td className="p-4" colSpan={4}>
                   Total Items
