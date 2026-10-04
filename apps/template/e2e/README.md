@@ -36,8 +36,9 @@ individually, restart the server before believing them.
   `helpers/app.ts::seedApp`, which registers an init script so state exists
   before the first paint. `01-auth.spec.ts` covers the real login form.
 - **Theme** is seeded the same way, using the exact keys `ThemeProvider` reads
-  (`theme-preset`, `mode`, `theme-accent`, `theme-<preset>-<axis>`, …). This
-  covers the boot-time read path, which UI-driven switching never touches.
+  (`theme-preset` for the style, `mode`, `theme-accent`, `theme-glass-opacity`,
+  …). This covers the boot-time read path, which UI-driven switching never
+  touches.
   `seedApp` deliberately **never overwrites** an existing key, so persistence
   assertions stay meaningful; use `applyTheme` to walk several values inside one
   test.
@@ -81,8 +82,8 @@ token it drives:
 
 | Axis                 | Values                         | Verified through                                                                                             |
 | -------------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------ |
-| Preset               | default, glass                 | `data-preset`, own-axis attributes set, other presets' attributes cleared, reload persistence                |
-| Preset axes          | glass opacity/blur             | `data-<preset>-<axis>` for all 7 axis × value combinations                                                   |
+| Style                | flat, quiet, tactile, glass    | `data-style` and never `data-preset`; the glass axes stamped under every style; content tokens identical across styles; `--btn-shadow` transparent only under flat; reload persistence |
+| Glass axes           | opacity, blur                  | `data-glass-opacity` and `data-glass-blur` for all 7 axis × value combinations under glass                    |
 | Mode                 | light, dark, system            | `data-mode`; `system` checked against both emulated `prefers-color-scheme` values                            |
 | Accent               | all 19, including neutral      | `--primary` set, and all 19 distinct                                                                         |
 | Surface              | all 12                         | `--background` set, and all 12 distinct in dark mode                                                         |
@@ -97,19 +98,19 @@ token it drives:
 | Tint with accent     | off, on                        | `data-tint-with-accent`; the switcher hides the control under the neutral accent                             |
 | Radius               | sharp, subtle, rounded, pill   | `data-radius`, exact `--radius`, pill ⇒ `--radius-control: 9999px`                                           |
 
-Plus one hand-built cross-axis combination for the glass preset and a
-full round-trip test that every axis survives reload and navigation.
+Plus one hand-built cross-axis combination under glass and a full round-trip
+test that every axis, the glass axes included, survives reload and navigation.
 
 ### 04 · Theme switcher UI (`04-theme-switcher.spec.ts`)
 
 Everything above again, this time through the popover a user actually operates:
 
-- Opens from the header, closes on Escape; the default preset shows the nine
+- Opens from the header, closes on Escape; under Quiet it shows the nine
   Brand sections in order, then the eight Advanced sections once the Advanced
   disclosure is opened (`openAdvanced` in `helpers/app.ts`).
-- Each of the 2 presets is selectable and persists across reload.
-- Neither preset hides a common axis (`HIDDEN_COMMON_AXES` is empty for both),
-  and glass offers its own opacity and blur axes right after the Preset control.
+- Each of the 4 styles is selectable and persists across reload.
+- The glass Opacity and Backdrop Blur controls render right after the Style
+  control under glass, and under no other style.
 - Mode radios, including System against an emulated dark scheme.
 - All 19 accent and all 12 surface swatches: clicked, `data-active` confirmed,
   and each one produces a distinct token. Choosing the neutral accent hides Tint
@@ -120,16 +121,19 @@ Everything above again, this time through the popover a user actually operates:
   sliders and are walked value by value **with the keyboard**, since a
   slider has no clickable cell. Elevation, contrast and dark accent chroma
   render as three-cell toggle groups under Advanced and are clicked in turn.
-- Preset-specific axis controls for both presets, plus a check that per-preset
-  axis values are remembered when switching away and back.
+- The glass axis controls: Opacity as a toggle group and Backdrop Blur as a
+  stepped slider, plus a check that both values survive switching to another
+  style and back and stay stamped on `<html>` meanwhile.
 - Two end-to-end proofs that switcher changes restyle real components: radius
   changes a button's computed `border-radius`, font size changes body copy.
 
-### 05 · Component × preset matrix (`05-component-preset-matrix.spec.ts`)
+### 05 · Component × style matrix (`05-component-preset-matrix.spec.ts`)
 
-All 97 component routes × 2 presets × 2 modes. Per page: the theme attributes applied, the expected heading, no error
+All 100 component routes × 2 styles (`MATRIX_STYLES`: quiet, glass) × 2 modes.
+Per page: the theme attributes applied, the expected heading, no error
 boundary, no horizontal overflow, and a clean console. This is the check that
-catches a component that only breaks under one preset.
+catches a page that only breaks inside Glass's frosted chrome. Flat and Tactile
+change only control shadows, which `16` and the kitchen sink baseline cover.
 
 ### 06 · Overlays and menus (`06-overlays.spec.ts`)
 
@@ -167,7 +171,7 @@ empty state, download trigger, image cropper.
 - Mobile: desktop sidebar hidden, drawer opens the nav, theme popover stays
   inside the viewport.
 - Sidebar collapse, active-route marking, search opening the palette.
-- The dashboard shell under each of the 2 presets.
+- The dashboard shell under each of the 4 styles.
 
 ### 10 · Accessibility (`10-accessibility.spec.ts`)
 
@@ -179,7 +183,7 @@ empty state, download trigger, image cropper.
 - Landmarks (`banner`, `main`, `complementary`), accessible names on every
   icon-only header button, labels on every non-hidden form input.
 - WCAG AA contrast for `--foreground` on `--background`, computed from the raw
-  HSL tokens, for every preset × both modes.
+  HSL tokens, for quiet and glass × both modes.
 - The app renders under `prefers-reduced-motion: reduce`.
 
 ### 16 · Control contract (`16-control-contract.spec.ts`)
@@ -188,39 +192,47 @@ Runs against the standalone fixture `e2e/fixtures/control-contract.html`.
 
 - Every button variant, toggle, input, select, combobox, multi-select, date
   input, number input, OTP slot and segment item measures exactly
-  `--control-height`, for every preset × both modes × every density × the
+  `--control-height`, for every style × both modes × every density × the
   `medium` and `extra-large` font sizes.
 - With `hasTouch` (which makes Chromium match `pointer: coarse`), the same
   controls measure at least `--control-height-xl` at compact and cozy, and so
   does every square on the app's collapsed sidebar rail (brand slot, toggle,
   search trigger, nav links and group triggers).
 - A field's bottom edge reaches 3:1 against the page and against a card,
-  sampled from rendered pixels, for every preset and for strong glass
-  opacity × both modes.
-- Under the default preset with a gradient background, the top 300px of the
-  content area (the canvas strip) is sampled at 1440px with the content
-  hidden: the field edge, `--primary` and `--focus-ring` clear 3:1 and muted
-  and accent text 4.5:1 against its lowest-contrast pixel, for slate and
-  violet × both modes × balanced and intense with the blobs pattern, plus
-  aurora, mesh and spotlight on slate at intense. Narrower viewports are not
-  checked: the blobs crowd together there and the dark field edge falls
-  below 3:1, a known gap the kit CHANGELOG records.
-- The glass switch thumb sits the same distance from each end of its track.
+  sampled from rendered pixels, for every style and for glass with a vivid
+  fuchsia accent, a sand surface and an intense gradient × both modes.
+- Under Quiet with a gradient background, the top 300px of the content area
+  (the canvas strip) is sampled at 1440px with the content hidden: the field
+  edge, `--primary` and `--focus-ring` clear 3:1 and muted and accent text
+  4.5:1 against its lowest-contrast pixel, for slate and violet × both modes ×
+  balanced and intense with the blobs pattern, plus aurora, mesh and
+  spotlight on slate at intense. Narrower viewports are not checked: the blobs
+  crowd together there and the dark field edge falls below 3:1, a known gap
+  the kit CHANGELOG records.
+- The switch thumb sits the same distance from each end of its track, under
+  every style.
+- On the kitchen sink, under every style, probe values set on `<html>` reach
+  the computed shadows: `--glow-outer` and `--glow-inner` on a filled button,
+  `--affordance-glow` on a checked checkbox and the active tab pill, and
+  `--field-shadow` on a focused field, under its 1px focus ring.
+- An invalid OTP's active slot keeps the `--affordance-glow` probe next to its
+  destructive ring.
 
 ### 17 · Selection and overlays (`17-selection-overlays.spec.ts`)
 
 Runs against the standalone fixture `e2e/fixtures/selection-overlays.html`.
 
 - At a 375px viewport the AlertDialog's stacked Cancel and Action buttons sit
-  8px apart, the footer gap alone, under both presets.
+  8px apart, the footer gap alone, under quiet and glass.
 - A right Sheet squares its two right-hand corners and draws no right border,
-  under both presets.
-- The selected default Tabs pill is not the accent fill; under the default
-  preset it is the view-switch pill (`--selected-view-bg`). Under glass in
-  light mode, the selected label reads at 4.5:1 on its pill, sampled from
-  rendered pixels.
-- Under glass, grouped OTP slots share one 1px seam and the combobox draws one
-  border, on its control.
+  under quiet and glass.
+- The selected default Tabs pill is not the accent fill but the view-switch
+  pill (`--selected-view-bg`), and its label reads at 4.5:1 on it, sampled
+  from rendered pixels for blue, yellow and lime × both modes, under quiet and
+  glass.
+- Grouped OTP slots share one 1px seam, under quiet and glass.
+- The combobox draws one border, on its input, and none on the control around
+  it, under every style.
 - A hovered idle sidebar link and the active link have different backgrounds,
   in both modes.
 - A dropdown menu opened with `defaultOpen` (from
@@ -270,7 +282,8 @@ If a future defect can't be fixed immediately, tag its test `@known-issue` so
   Or add the `{ path, title }` entry by hand. `02` and `05` pick it up
   automatically, and the sidebar-integrity test fails if a link has no entry.
 
-- **New theme axis or preset** → add it to `e2e/fixtures/theme.ts`. `03`, `04`,
-  `05`, `09` and `10` all derive their matrices from that file.
+- **New theme axis or style** → add it to `e2e/fixtures/theme.ts`. `03`, `04`,
+  `05`, `09`, `10`, `11`, `13`, `16`, `17` and `18` derive their matrices from
+  that file.
 - **New localStorage key in `ThemeProvider`** → add it to `LS_KEYS` and to
   `ThemeSeed` in `helpers/app.ts`.
