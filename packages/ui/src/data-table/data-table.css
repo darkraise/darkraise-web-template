@@ -62,7 +62,7 @@
 
   /* Empty state */
   .dr-data-table-empty {
-    @apply text-muted-foreground flex flex-col items-center justify-center py-12;
+    @apply text-muted-foreground flex flex-col items-center justify-center py-12 whitespace-normal;
   }
 
   .dr-data-table-empty-icon {
