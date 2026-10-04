@@ -249,6 +249,26 @@ describe("generated project", () => {
   )
 
   it(
+    "writes an eslint config whose imports are all devDependencies",
+    async () => {
+      expect((await scaffold()).code).toBe(0)
+      const config = readFileSync(join(cwd, "app/eslint.config.js"), "utf8")
+      const pkg = JSON.parse(
+        readFileSync(join(cwd, "app/package.json"), "utf8"),
+      ) as { devDependencies: Record<string, string> }
+      const imported = Array.from(
+        config.matchAll(/from "(@[^/"]+\/[^/"]+|[^/"]+)/g),
+        (m) => m[1] ?? "",
+      )
+      expect(imported.length).toBeGreaterThan(0)
+      for (const name of imported) {
+        expect(pkg.devDependencies).toHaveProperty([name])
+      }
+    },
+    TIMEOUT,
+  )
+
+  it(
     "writes every axis given by flag",
     async () => {
       const last = (key: (typeof AXIS_KEYS)[number]) => {

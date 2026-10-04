@@ -5,7 +5,11 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs"
 import { resolve } from "path"
 import * as p from "@clack/prompts"
 import minimist from "minimist"
-import { i18nTemplate, multilingualMain } from "./i18n-template.mjs"
+import {
+  i18nTemplate,
+  languageSwitcherTemplate,
+  multilingualMain,
+} from "./i18n-template.mjs"
 
 async function latestVersion(pkg) {
   try {
@@ -415,10 +419,15 @@ async function main() {
       "@types/node": "^22.0.0",
       "@types/react": "^19.0.0",
       "@types/react-dom": "^19.0.0",
+      "@eslint/js": "^10.0.1",
       "@vitejs/plugin-react-swc": "^4.0.0",
-      eslint: "^9.0.0",
+      eslint: "^10.2.0",
+      "eslint-plugin-react-hooks": "^7.0.1",
+      "eslint-plugin-react-refresh": "^0.5.2",
+      globals: "^17.4.0",
       tailwindcss: "^4.0.0",
       typescript: "~5.7.0",
+      "typescript-eslint": "^8.58.0",
       vite: "^6.0.0",
     },
   }
@@ -428,8 +437,13 @@ async function main() {
     pkg.devDependencies.typescript = "~6.0.3"
     writeProjectFile(
       targetDir,
-      "src/i18n.tsx",
+      "src/i18n.ts",
       i18nTemplate(`${projectName}.language`),
+    )
+    writeProjectFile(
+      targetDir,
+      "src/language-switcher.tsx",
+      languageSwitcherTemplate,
     )
   }
   writeProjectFile(
@@ -481,6 +495,32 @@ export default defineConfig({
 })
 `
   writeProjectFile(targetDir, "vite.config.ts", viteConfig)
+
+  // --- eslint.config.js ---
+  const eslintConfig = `import js from "@eslint/js"
+import globals from "globals"
+import reactHooks from "eslint-plugin-react-hooks"
+import reactRefresh from "eslint-plugin-react-refresh"
+import tseslint from "typescript-eslint"
+import { defineConfig, globalIgnores } from "eslint/config"
+
+export default defineConfig([
+  globalIgnores(["dist"]),
+  {
+    files: ["**/*.{ts,tsx}"],
+    extends: [
+      js.configs.recommended,
+      tseslint.configs.recommended,
+      reactHooks.configs.flat.recommended,
+      reactRefresh.configs.vite,
+    ],
+    languageOptions: {
+      globals: globals.browser,
+    },
+  },
+])
+`
+  writeProjectFile(targetDir, "eslint.config.js", eslintConfig)
 
   // --- tsconfig.json ---
   const tsconfig = {
@@ -584,7 +624,7 @@ export const themeConfig: ThemeConfig = {
   if (multilingual)
     imports.push(
       'import { useTranslation } from "react-i18next"',
-      'import { AppLanguageSwitcher } from "./i18n"',
+      'import { AppLanguageSwitcher } from "./language-switcher"',
     )
 
   const appTsx = `${imports.join("\n")}

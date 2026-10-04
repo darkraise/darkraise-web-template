@@ -1,15 +1,10 @@
-export const i18nTemplate = (storageKey) => `import { useState } from "react"
-import { useTranslation } from "react-i18next"
-import { createDarkraiseI18n, resolveBrowserLocale, changeAppLanguage } from "darkraise-ui/i18n/react-i18next"
-import { LocaleSwitcher, UnitedStatesFlagIcon, VietnamFlagIcon } from "darkraise-ui/components/locale-switcher"
+export const i18nTemplate = (
+  storageKey,
+) => `import { createDarkraiseI18n, resolveBrowserLocale } from "darkraise-ui/i18n/react-i18next"
 import { en } from "darkraise-ui/locales/en"
 import { vi } from "darkraise-ui/locales/vi"
 
 export const locales = [en, vi]
-const languageOptions = [
-  { locale: en.locale, label: en.label, icon: <UnitedStatesFlagIcon /> },
-  { locale: vi.locale, label: vi.label, icon: <VietnamFlagIcon /> },
-]
 export const storageKey = ${JSON.stringify(storageKey)}
 export function initializeI18n() {
   return createDarkraiseI18n({
@@ -21,6 +16,21 @@ export function initializeI18n() {
     },
   })
 }
+`
+
+// Its own file: react-refresh hot-swaps a module only when every export is
+// a component, so the switcher cannot share src/i18n.ts.
+export const languageSwitcherTemplate = `import { useState } from "react"
+import { useTranslation } from "react-i18next"
+import { changeAppLanguage } from "darkraise-ui/i18n/react-i18next"
+import { LocaleSwitcher, UnitedStatesFlagIcon, VietnamFlagIcon } from "darkraise-ui/components/locale-switcher"
+import { en } from "darkraise-ui/locales/en"
+import { vi } from "darkraise-ui/locales/vi"
+
+const languageOptions = [
+  { locale: en.locale, label: en.label, icon: <UnitedStatesFlagIcon /> },
+  { locale: vi.locale, label: vi.label, icon: <VietnamFlagIcon /> },
+]
 
 export function AppLanguageSwitcher() {
   const {i18n, t} = useTranslation()
