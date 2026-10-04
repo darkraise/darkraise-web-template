@@ -64,6 +64,10 @@ Breaking: `SIDEBAR_ACTIVE_BARS`, `SidebarActiveBarSetting`, `SidebarActiveBar` a
 
 Breaking: the kit, not the router adapter, decides the active nav row. `SidebarItem` marks its row current only inside `SidebarNav` or `StackedLayout`, which pick one active item per nav, and the kit no longer passes `activeClassName` to the adapter's `Link`.
 
+Breaking: table heads and cells no longer wrap. A table wider than its container scrolls inside its wrapper, which fades the edge that has columns beyond it. A column that should wrap adds `whitespace-normal`; long unbroken strings in cells widen their column instead of breaking mid-word.
+
+Breaking: below 768px `SplitPanelLayout` shows the panel in the content area and hides the content. Pass `contentActive` once the user opens an item to show the content instead, and `onBack` to render a Back button above it. Focus moves to the content when it opens and back to the panel when it closes.
+
 ### Added
 
 - Four styles, chosen with the `style` axis: `flat` (no control shadows; cards default to elevation `flat`), `quiet` (the default: a soft edge and a light shadow on buttons), `tactile` (a sheen across the top fifth of filled buttons, stopping above the label because the fill sits at its label's contrast floor; a sheen on outline and secondary buttons; inset wells on fields, checkboxes, radios and switch tracks; and shadows on thumbs and the selected tab or segment pill) and `glass` (frosted chrome and overlays over the gradient canvas, which it defaults to). A style sets only token values, so every component follows it without rules of its own.
@@ -90,6 +94,8 @@ Breaking: the kit, not the router adapter, decides the active nav row. `SidebarI
 - `DataTable` aligns a column's header and cells from `meta.align` (`"start" | "center" | "end"`) on its column definition. `DataTableColumnMeta` types it, and `@tanstack/react-table`'s `ColumnMeta` is augmented with it.
 - `--neutral-1…12`, `--primary-1…12`, the status pairs, Badge `success`, `warning`, `info` and `*-subtle` variants, and `--chart-6…8`; the chart palette no longer follows the accent.
 - The active sidebar row slides between rows as the route changes (instantly under reduced motion).
+- `SplitPanelLayout` `contentActive` and `onBack`, and the `labels.layout.back` label ("Back"; Vietnamese "Quay lại").
+- Kit tables and the virtualized data table viewport fade an inline edge while columns lie beyond it.
 
 ### Changed
 
@@ -184,6 +190,11 @@ Breaking: the kit, not the router adapter, decides the active nav row. `SidebarI
 - The toast countdown bar painted its status edge colour at 60% alpha, about 2.0:1 on the error toast. It now paints the status text colour, opaque, at 3:1 or more on the toast and on its track.
 - A detail route such as `/orders/ord-1` keeps its list item active in the sidebar, the stacked layout and the mobile drawer; one row is active per nav.
 - The active sidebar row is visible on Glass light, where its fill matched the rail.
+- The table footer is opaque, so a sticky footer hides the rows scrolled beneath it.
+- Data table pagination wraps on narrow screens instead of pushing its page buttons off-screen.
+- Under the floating shell, content clears a collapsed sidebar by the same gutter as an expanded one.
+- Below 768px the layout header hides the brand mark and shows the search trigger as an icon, so the header controls fit a phone.
+- Under the floating shell, content drops the rail and panel offsets below 768px, where the rails are hidden.
 
 ## [6.9.6] — 2026-09-30
 

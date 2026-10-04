@@ -75,6 +75,12 @@ The `preset` axis is now `style`, with the values `flat`, `quiet`, `tactile` and
 
 `sidebarActiveBar` is now `sidebarSelection`, with the looks `auto`, `chip`, `pill`, `tile` and `frosted`. Stored values migrate on first load. Rename the props: `activeBar` → `selection` on `SidebarLayout`, `SidebarNav` and `MobileDrawer`, and `sidebarActiveBar` → `sidebarSelection` on `LayoutHeader`. Remove `showActiveBarToggle`, `defaultActiveBar` and `onActiveBarChange`; the theme panel offers the setting. The kit no longer passes `activeClassName` to the router's `Link`, so a stylesheet that relies on `.dr-sidebar-nav-item.active` should select `.dr-sidebar-nav-current`, and a `SidebarItem` used outside `SidebarNav` and `StackedLayout` marks no row.
 
+## Tables and the split panel
+
+Table heads and cells no longer wrap; a wide table scrolls sideways. Add `whitespace-normal` to a `TableHead` or `TableCell` whose column should wrap.
+
+Below 768px `SplitPanelLayout` shows its panel first. Pass `contentActive` when the user opens an item, and `onBack` to show a Back button that returns to the panel; an app that passes neither shows only the panel on phones.
+
 ## Fonts
 
 The `font` axis takes `inter`, `geist` or `ibm-plex-sans`, with `inter` the default. The four faces the kit uses (Inter, Geist, IBM Plex Sans and JetBrains Mono) ship as woff2 files declared in `darkraise-ui/styles.css`, and no font request leaves the app's origin. Delete any Google Fonts link for these families from `index.html`.

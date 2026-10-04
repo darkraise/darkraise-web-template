@@ -282,6 +282,22 @@ structure is in use:
 | `framed`   | The whole shell insets from the viewport as a window.                   |
 | `flat`     | No rules; regions separated by background tone alone.                   |
 
+Below 768px every structure collapses to the header over the content.
+`SplitPanelLayout` then shows its panel in the content area until you pass
+`contentActive`; pass `onBack` as well for a Back button that clears your
+selection:
+
+```tsx
+<SplitPanelLayout
+  nav={nav}
+  panel={<MessageList onSelect={setSelectedId} />}
+  contentActive={selectedId !== null}
+  onBack={() => setSelectedId(null)}
+>
+  <MessageView id={selectedId} />
+</SplitPanelLayout>
+```
+
 Users pick a style under "Shell style" in the layout switcher, which a layout
 shows when it sets `showLayoutSwitcher`. The pick is stored under
 `theme-shell-style` in `useLayoutStore`. An app sets its starting style with
