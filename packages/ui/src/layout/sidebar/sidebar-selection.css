@@ -12,7 +12,7 @@
       0 3px 6px -2px hsl(0 0% 0% / 0.14);
     --sidebar-tint: hsl(0 0% 0% / 0.09);
     --sidebar-frost: hsl(0 0% 100% / 0.72);
-    --sidebar-frost-edge: hsl(0 0% 100% / 0.8);
+    --sidebar-frost-edge: hsl(0 0% 0% / 0.1);
     --sidebar-frost-highlight: inset 0 1px 0 hsl(0 0% 100% / 0.9);
   }
 
@@ -46,7 +46,7 @@
     --sidebar-active-backdrop: none;
     --sidebar-active-marker: transparent;
     --sidebar-active-tile: transparent;
-    --sidebar-active-icon: hsl(var(--primary));
+    --sidebar-active-icon: hsl(var(--primary-text));
   }
 
   /* A neutral tint, so it clears the rail by the same step on any accent or
@@ -57,9 +57,9 @@
     --sidebar-active-shadow: 0 0 transparent;
     --sidebar-active-glow: 0 0 transparent;
     --sidebar-active-backdrop: none;
-    --sidebar-active-marker: hsl(var(--primary));
+    --sidebar-active-marker: hsl(var(--primary-text));
     --sidebar-active-tile: transparent;
-    --sidebar-active-icon: hsl(var(--primary));
+    --sidebar-active-icon: hsl(var(--primary-text));
   }
 
   [data-sidebar-selection="tile"] {
@@ -73,6 +73,11 @@
     --sidebar-active-icon: hsl(var(--primary-foreground));
   }
 
+  [data-mode="dark"] [data-sidebar-selection="tile"] {
+    --sidebar-active-tile: hsl(var(--primary-text));
+    --sidebar-active-icon: hsl(var(--background));
+  }
+
   [data-sidebar-selection="frosted"] {
     --sidebar-active-surface: var(--sidebar-frost);
     --sidebar-active-edge: var(--sidebar-frost-edge);
@@ -81,7 +86,7 @@
     --sidebar-active-backdrop: blur(10px) saturate(1.3);
     --sidebar-active-marker: transparent;
     --sidebar-active-tile: transparent;
-    --sidebar-active-icon: hsl(var(--primary));
+    --sidebar-active-icon: hsl(var(--primary-text));
   }
 
   /* In an icon-only rail the square row is the item, so Tile shows the tile
