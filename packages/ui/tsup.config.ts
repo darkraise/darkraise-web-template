@@ -17,7 +17,7 @@ const componentEntries = Object.fromEntries(
     ]),
 )
 
-export default defineConfig({
+export default defineConfig((options) => ({
   entry: {
     index: "src/index.ts",
     "hooks/index": "src/hooks/index.ts",
@@ -40,7 +40,9 @@ export default defineConfig({
   format: ["esm"],
   dts: false,
   sourcemap: true,
-  clean: true,
+  // A watch rebuild cleans the whole outDir, which would delete the
+  // build:css output (styles.css, fonts) that apps consume from dist.
+  clean: !options.watch,
   external: [
     "react",
     "react-dom",
@@ -51,4 +53,4 @@ export default defineConfig({
     "react-i18next",
     "vite",
   ],
-})
+}))
