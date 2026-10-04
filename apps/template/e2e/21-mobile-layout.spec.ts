@@ -11,7 +11,7 @@ import {
 /**
  * The shell clips its own overflow and the content region scrolls inside it,
  * so a document-level check passes while cards run off-screen. This measures
- * the content region and every card as well.
+ * the visible content and panel regions and every card as well.
  */
 async function expectFits(page: Page): Promise<void> {
   const problems = await page.evaluate(() => {
@@ -21,13 +21,23 @@ async function expectFits(page: Page): Promise<void> {
     if (documentOverflow > 1) {
       found.push(`page scrolls sideways by ${documentOverflow}px`)
     }
-    const region = document.querySelector<HTMLElement>(
-      '[data-region="content"]',
-    )
-    if (region && region.scrollWidth - region.clientWidth > 1) {
-      found.push(
-        `content region scrolls sideways by ${region.scrollWidth - region.clientWidth}px`,
+    for (const name of ["content", "panel"]) {
+      const region = document.querySelector<HTMLElement>(
+        `[data-region="${name}"]`,
       )
+      // A region the phone view hides has no boxes; measuring it would pass.
+      if (!region || region.getClientRects().length === 0) continue
+      const box = region.getBoundingClientRect()
+      if (region.scrollWidth - region.clientWidth > 1) {
+        found.push(
+          `${name} region scrolls sideways by ${region.scrollWidth - region.clientWidth}px`,
+        )
+      }
+      if (box.left < -1 || box.right > viewport + 1) {
+        found.push(
+          `${name} region spans ${Math.round(box.left)}..${Math.round(box.right)}`,
+        )
+      }
     }
     for (const card of document.querySelectorAll<HTMLElement>(".dr-card")) {
       const box = card.getBoundingClientRect()
@@ -191,6 +201,18 @@ test.describe("inbox", () => {
     await expect(panel).toBeVisible()
     await expect(panel).toBeFocused()
     await expect(back).toBeHidden()
+  })
+
+  test("the skip link lands on the list", async ({ page }) => {
+    await seedApp(page)
+    await gotoApp(page, "/inbox")
+    const panel = page.locator('[data-region="panel"]')
+    await expect(panel.getByRole("button").first()).toBeVisible()
+    await page.keyboard.press("Tab")
+    const skip = page.getByRole("link", { name: "Skip to content" })
+    await expect(skip).toBeFocused()
+    await page.keyboard.press("Enter")
+    await expect(panel).toBeFocused()
   })
 })
 
