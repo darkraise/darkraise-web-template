@@ -73,7 +73,7 @@ The `preset` axis is now `style`, with the values `flat`, `quiet`, `tactile` and
 
 ## Sidebar selection
 
-`sidebarActiveBar` is now `sidebarSelection`, with the looks `auto`, `chip`, `pill`, `tile` and `frosted`. Stored values migrate on first load. Rename the props: `activeBar` → `selection` on `SidebarLayout`, `SidebarNav` and `MobileDrawer`, and `sidebarActiveBar` → `sidebarSelection` on `LayoutHeader`. Remove `showActiveBarToggle`, `defaultActiveBar` and `onActiveBarChange`; the theme panel offers the setting.
+`sidebarActiveBar` is now `sidebarSelection`, with the looks `auto`, `chip`, `pill`, `tile` and `frosted`. Stored values migrate on first load. Rename the props: `activeBar` → `selection` on `SidebarLayout`, `SidebarNav` and `MobileDrawer`, and `sidebarActiveBar` → `sidebarSelection` on `LayoutHeader`. Remove `showActiveBarToggle`, `defaultActiveBar` and `onActiveBarChange`; the theme panel offers the setting. The kit no longer passes `activeClassName` to the router's `Link`, so a stylesheet that relies on `.dr-sidebar-nav-item.active` should select `.dr-sidebar-nav-current`, and a `SidebarItem` used outside `SidebarNav` and `StackedLayout` marks no row.
 
 ## Fonts
 

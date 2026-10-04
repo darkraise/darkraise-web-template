@@ -119,7 +119,7 @@ Breaking: the kit, not the router adapter, decides the active nav row. `SidebarI
 - Every interactive control opts out of double-tap zoom and draws a boundary in forced-colours mode.
 - Transitions use the kit's easing curves instead of CSS keywords, so short fades such as the 120ms hover wash feel sharper.
 - Selected states use four families. Tabs (`default` and `outline`) and SegmentGroup select with a neutral raised pill and foreground text instead of the accent, including the default Tabs pill; their `outline` pills carry a 1px neutral ring so the variant still differs from `default`. Toggle, Listbox, TreeView, Calendar, TimePicker, TagsInput, Pagination, Steps and Timeline fill checked and selected items with the accent, outline variants included: an on outline toggle, a selected outline listbox or tree row and the outline current page now take the filled variant's fill instead of an accent border and accent text. Underline tabs and PageHeader tabs keep an accent bar under foreground text. The dashed completed-step connector in `Timeline` draws in the accent fill instead of `--primary-text`. `Listbox`, `TreeView` and `Pagination` now render `outline` and `filled` the same way.
-- The sidebar's active row is drawn in the look the `sidebarSelection` setting picks (see Breaking), and the stacked layout's rail and sub-navigation follow it too. The sidebar popover's active child, the top-nav active item and the layout switcher's active option use the same tint.
+- The sidebar's active row is drawn in the look the `sidebarSelection` setting picks (see Breaking), and the stacked layout's rail and sub-navigation follow it too. The sidebar popover's current entry is drawn in the same look with its label in the accent. The top-nav active item and the layout switcher's active option keep the `--selected-nav-bg` tint.
 - Outline buttons and FloatingPanel header triggers rest on the neutral 3:1 field edge instead of the accent, and ghost buttons rest on foreground text; hover on all of them comes from the state layer, and the FloatingPanel trigger rim no longer changes on hover. Search triggers, AlertDialog Cancel and the CascadeSelect trigger are outline buttons and follow.
 - Scrollbars, the ScrollArea thumb and Skeleton are neutral (a foreground alpha) instead of accent-tinted.
 - Badges react to hover only when they are a link, a button or `role="button"`.
@@ -177,7 +177,6 @@ Breaking: the kit, not the router adapter, decides the active nav row. `SidebarI
 - Under the glass preset the combobox drew two nested borders, and grouped OTP slots drew a 2px seam between each pair.
 - Under the glass preset fields never showed the invalid state.
 - InputOTP showed no invalid state. `aria-invalid` on `InputOTP` now draws its slots in the destructive colour, with a destructive ring on the active slot, under both presets, and reaches every slot input in the separate variant.
-- The stacked layout ignored the sidebar's Bar, Ring and Both indicator settings.
 - In forced-colours mode every focus ring was pushed 2px outside its control, so inset rings inside clipping wrappers were cut off.
 - Packed toolbar buttons (image-editor tools and annotation kinds, JSON tree toolbar actions) drew focus rings over their neighbours.
 - CascadeSelect drew a focus ring on the active path permanently, even under the mouse.
