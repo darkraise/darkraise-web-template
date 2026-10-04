@@ -33,7 +33,7 @@ interface MobileDrawerProps {
   /**
    * Active-item indicator for the nav, matching `SidebarLayout`'s own. The
    * drawer stands in for the rail below `md`, so leaving it unset would show
-   * the preset default there while the rail shows something else.
+   * the theme's setting there while the rail shows something else.
    */
   activeBar?: boolean | SidebarActiveBar
 }

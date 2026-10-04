@@ -3,7 +3,7 @@ export type SidebarActiveBar = "bar" | "ring" | "both"
 /**
  * Collapses the prop's boolean shorthands onto the three-way vocabulary.
  * `undefined` survives as `undefined` — the caller must be able to tell
- * "leave the preset alone" apart from any of the three explicit looks.
+ * "leave the theme's setting alone" apart from any of the three explicit looks.
  */
 export function resolveActiveBar(
   activeBar: boolean | SidebarActiveBar | undefined,

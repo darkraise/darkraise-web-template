@@ -77,7 +77,7 @@ export function buildPrerenderScript(
     AXIS_KEYS.map((key) => [key, configDefault(given, key)]),
   ) as AxisValues
 
-  const storageRules =LEGACY_RULES.map((rule) => ({
+  const storageRules = LEGACY_RULES.map((rule) => ({
     ...rule,
     when: rule.when.map((condition) => {
       const copy = { ...condition }

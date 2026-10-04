@@ -138,8 +138,8 @@ describe("status colours", () => {
     expect(failures).toEqual([])
   })
 
-  // If this fails, stop and report: the spec requires a decision before the
-  // solve changes.
+  // The destructive fill is a mark, so it needs 3:1 on the card. A failure
+  // here is a palette decision, not something to tune the solve around.
   it("the dark destructive solid clears 3:1 against the card on neutral surfaces", () => {
     const failures: string[] = []
     for (const combo of combos) {

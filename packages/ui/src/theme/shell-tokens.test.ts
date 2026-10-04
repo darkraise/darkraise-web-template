@@ -46,8 +46,8 @@ describe("shell tokens", () => {
   })
 
   it("keeps the region shadow off the elevation axis", () => {
-    // The spec pins this: a shell's separation from the page belongs to the
-    // shell style, not to the page's elevation setting.
+    // A shell's separation from the page belongs to the shell style, not to
+    // the page's elevation setting.
     const styleBlocks = css.slice(css.indexOf('[data-shell-style="'))
     expect(styleBlocks).not.toMatch(
       /--shell-region-shadow:[^;]*var\(--elevation-/,
