@@ -56,6 +56,8 @@ const OVERLAYS = [
 
 const KITCHEN_SINK = "/components/kitchen-sink"
 
+const SPLIT_PANEL = "/e2e/fixtures/split-panel.html"
+
 /** Accent on surface: the default pair, a warm pair and the neutral accent. */
 const SAMPLE_PAIRS = [
   { name: "blue-zinc", accent: "blue", surface: "zinc" },
@@ -156,6 +158,7 @@ test.beforeAll(async ({ browser }) => {
       ...APP_PAGES.map(([, path]) => path),
       ...SHOWCASE_PAGES.map(([, path]) => path),
       KITCHEN_SINK,
+      SPLIT_PANEL,
       "/e2e/fixtures/baseline-overlays.html?show=dialog",
     ]
     // Uncollected garbage from earlier routes fails a later navigation with
@@ -199,6 +202,23 @@ for (const style of BASELINE_STYLES) {
           await capture(page, `${style}-${mode}-${name}`)
         })
       }
+
+      // The split panel is its own scrollport, so its fill has to stay put
+      // while the panel scrolls.
+      test("split panel scrolled", async ({ page }) => {
+        await page.goto(SPLIT_PANEL)
+        await expect(page.locator("html")).toHaveAttribute("data-style", style)
+        const panel = page.locator('.dr-shell > [data-region="panel"]')
+        await expect(panel.getByText("Thread 40")).toBeAttached()
+        const overflow = await panel.evaluate(
+          (el) => el.scrollHeight - el.clientHeight,
+        )
+        expect(overflow, "panel overflow in px").toBeGreaterThan(0)
+        await panel.evaluate((el) => {
+          el.scrollTop = el.scrollHeight
+        })
+        await capture(page, `${style}-${mode}-split-panel-scrolled`)
+      })
 
       for (const [name, selector] of OVERLAYS) {
         test(`overlay ${name}`, async ({ page }) => {
