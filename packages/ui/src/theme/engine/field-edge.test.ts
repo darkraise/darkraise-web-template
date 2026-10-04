@@ -58,7 +58,47 @@ describe("--field-edge-color", () => {
     }
     expect(failures).toEqual([])
   }, 30_000)
+
+  it("still clears 3:1 once a browser rounds both colours to 8-bit sRGB", () => {
+    const failures: string[] = []
+    for (const combo of reachableCombos()) {
+      const tokens = finalTokens(combo)
+      const edge = tokens["--field-edge-color"]
+      if (!isOpaque(edge)) continue
+      for (const ground of GROUNDS) {
+        const value = tokens[ground]
+        if (!isOpaque(value)) continue
+        const ratio = renderedContrast(edge, value)
+        if (ratio < FLOOR) {
+          failures.push(`${comboName(combo)}: ${ratio.toFixed(3)} on ${ground}`)
+        }
+      }
+    }
+    expect(failures).toEqual([])
+  }, 30_000)
 })
+
+function renderedLuminance(hsl: string): number {
+  const [h = 0, s = 0, l = 0] = hsl.match(/[\d.]+/g)?.map(Number) ?? []
+  const sat = s / 100
+  const light = l / 100
+  const chroma = sat * Math.min(light, 1 - light)
+  const channel = (n: number) => {
+    const k = (n + h / 30) % 12
+    const value =
+      light - chroma * Math.max(-1, Math.min(k - 3, 9 - k, 1))
+    const byte = Math.round(value * 255) / 255
+    return byte <= 0.04045 ? byte / 12.92 : ((byte + 0.055) / 1.055) ** 2.4
+  }
+  return 0.2126 * channel(0) + 0.7152 * channel(8) + 0.0722 * channel(4)
+}
+
+function renderedContrast(a: string, b: string): number {
+  const [hi, lo] = [renderedLuminance(a), renderedLuminance(b)].sort(
+    (x, y) => y - x,
+  ) as [number, number]
+  return (hi + 0.05) / (lo + 0.05)
+}
 
 // `--sf-hue`: the colour the gradient canvas paints over the page.
 function surfaceHue(surfaceColor: SurfaceColor): string {
