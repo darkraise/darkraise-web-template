@@ -211,12 +211,12 @@ async function main() {
   const surfaceColor =
     argv["surface-color"] ||
     (skipPrompts
-      ? "slate"
+      ? AXES.surfaceColor.default
       : cancelled(
           await p.select({
             message: "Surface color",
             options: SURFACE_COLORS.map((c) => ({ value: c, label: c })),
-            initialValue: "slate",
+            initialValue: AXES.surfaceColor.default,
           }),
         ))
 

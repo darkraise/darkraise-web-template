@@ -54,7 +54,7 @@ describe("useTheme", () => {
   it("returns default axis values", () => {
     const { result } = renderHook(() => useTheme(), { wrapper })
     expect(result.current.accentColor).toBe("blue")
-    expect(result.current.surfaceColor).toBe("slate")
+    expect(result.current.surfaceColor).toBe("zinc")
     expect(result.current.style).toBe("quiet")
     expect(result.current.mode).toBe("system")
   })
@@ -222,11 +222,10 @@ describe("useTheme", () => {
   })
 
   // backgroundIntensity caps how much of the surface hue's saturation the
-  // canvas may carry (see CANVAS_SATURATION_CAP in generateTokens.ts).
-  // --background
+  // canvas may carry (see CANVAS_SATURATION_CAP in canvas.ts). --background
   // and --surface-base share the exact same formula, so they must move
-  // together. Default settings resolve slate's surface[950] ("229 84% 5%");
-  // the default "vivid" step is uncapped, "neutral" caps it at 0%.
+  // together. The default "vivid" step leaves the neutral's saturation
+  // uncapped; "neutral" caps it at 0%.
   it("moves --background and --surface-base when backgroundIntensity changes in dark mode", () => {
     const { result } = renderHook(() => useTheme(), { wrapper })
     act(() => result.current.setMode("dark"))
@@ -234,14 +233,15 @@ describe("useTheme", () => {
       document.documentElement.style.getPropertyValue("--background")
     const readSurfaceBase = () =>
       document.documentElement.style.getPropertyValue("--surface-base")
+    const saturation = (hsl: string) => parseFloat(hsl.split(" ")[1] ?? "")
 
     const vividBackground = readBackground()
-    expect(vividBackground).toBe("229 84% 5%")
+    expect(saturation(vividBackground)).toBeGreaterThan(0)
     expect(readSurfaceBase()).toBe(vividBackground)
 
     act(() => result.current.setBackgroundIntensity("neutral"))
 
-    expect(readBackground()).toBe("229 0% 5%")
+    expect(saturation(readBackground())).toBe(0)
     expect(readBackground()).not.toBe(vividBackground)
     expect(readSurfaceBase()).toBe(readBackground())
   })

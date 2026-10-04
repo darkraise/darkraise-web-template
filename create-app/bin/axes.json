@@ -52,7 +52,7 @@
       "olive",
       "sepia"
     ],
-    "default": "slate",
+    "default": "zinc",
     "storageKey": "theme-surface-color",
     "attribute": "data-surface",
     "layer": "brand"

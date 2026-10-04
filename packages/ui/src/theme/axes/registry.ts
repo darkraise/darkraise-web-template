@@ -70,7 +70,7 @@ export const AXES = {
   /** Neutral ramp the page, cards and borders are drawn from; an accent name gives a tinted neutral. */
   surfaceColor: axis({
     values: SURFACE_COLORS,
-    default: "slate",
+    default: "zinc",
     storageKey: "theme-surface-color",
     attribute: "data-surface",
     layer: "brand",

@@ -38,7 +38,7 @@ const defaultConfig = {
   theme: {
     defaults: {
       accentColor: "blue",
-      surfaceColor: "slate",
+      surfaceColor: "zinc",
       style: "quiet",
       glassOpacity: "medium",
       glassBlur: "medium",

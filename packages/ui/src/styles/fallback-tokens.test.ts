@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
 import { generateTokens } from "@theme/engine/generateTokens"
+import { AXES } from "@theme/axes/registry"
+import { STYLES } from "@theme/styles"
 
 /**
  * The `:root` block the page paints before the provider hydrates. Every
@@ -39,14 +41,15 @@ function fallbackDeclarations(): Map<string, string> {
 }
 
 const engine = generateTokens({
-  accentColor: "blue",
-  surfaceColor: "slate",
-  frosted: false,
-  backgroundStyle: "solid",
+  accentColor: AXES.accentColor.default,
+  surfaceColor: AXES.surfaceColor.default,
+  frosted: STYLES[AXES.style.default].frosted,
+  backgroundStyle: AXES.backgroundStyle.default,
   mode: "light",
-  contrast: "standard",
-  darkAccentChroma: "standard",
-  tintWithAccent: false,
+  contrast: AXES.contrast.default,
+  darkAccentChroma: AXES.darkAccentChroma.default,
+  tintWithAccent: AXES.tintWithAccent.default === "on",
+  backgroundIntensity: AXES.backgroundIntensity.default,
 })
 const block = fallbackDeclarations()
 

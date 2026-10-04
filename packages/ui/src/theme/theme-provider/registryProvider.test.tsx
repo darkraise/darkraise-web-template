@@ -85,7 +85,7 @@ describe("ThemeProvider on the axis registry", () => {
   it("stamps data-accent and data-surface", () => {
     const { result } = renderHook(() => useTheme(), { wrapper: wrap })
     expect(root.getAttribute("data-accent")).toBe("blue")
-    expect(root.getAttribute("data-surface")).toBe("slate")
+    expect(root.getAttribute("data-surface")).toBe("zinc")
     act(() => result.current.setAccentColor("violet"))
     expect(root.getAttribute("data-accent")).toBe("violet")
   })
