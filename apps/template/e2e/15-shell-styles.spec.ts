@@ -5,6 +5,7 @@ import {
   openThemeSwitcher,
   seedApp,
 } from "./helpers/app"
+import { settle } from "./helpers/measure"
 
 const SHELL_STYLES = [
   "classic",
@@ -198,6 +199,31 @@ test.describe("shell style geometry", () => {
     expect(geom.content.w).toBe(geom.viewport.w)
     expect(geom.nav.x).toBeGreaterThan(0)
     expect(geom.nav.y).toBeGreaterThan(0)
+  })
+
+  test("floating content clears a collapsed sidebar by its gutter", async ({
+    page,
+  }) => {
+    await seedApp(page, { shellStyle: "floating" })
+    await gotoApp(page, "/")
+    await page.getByRole("button", { name: "Collapse sidebar" }).click()
+    await settle(page)
+
+    const gutterInRem = () =>
+      page.evaluate(() => {
+        const nav = document.querySelector('[data-region="nav"]') as HTMLElement
+        const content = document.querySelector(
+          '[data-region="content"]',
+        ) as HTMLElement
+        const textStart =
+          content.getBoundingClientRect().left +
+          parseFloat(getComputedStyle(content).paddingInlineStart)
+        const rem = parseFloat(
+          getComputedStyle(document.documentElement).fontSize,
+        )
+        return (textStart - nav.getBoundingClientRect().right) / rem
+      })
+    await expect.poll(gutterInRem).toBeCloseTo(1.5, 1)
   })
 
   test("a scrolling region keeps its edge above its content", async ({

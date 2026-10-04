@@ -111,6 +111,20 @@
     );
   }
 
+  /* Scoped to md and up: this selector outranks the phone-width reset
+     below, where the rail is hidden whatever its collapsed state. */
+  @media (width >= 48rem) {
+    .dr-shell[data-shell-style="floating"][data-structure="sidebar"]:has(
+        > [data-region="nav"][data-collapsed="true"]
+      )
+      > [data-region="content"] {
+      padding-inline-start: calc(
+        var(--sidebar-width-collapsed, 4rem) +
+          var(--shell-float-inset, 0.75rem) + 1.5rem
+      );
+    }
+  }
+
   .dr-shell[data-shell-style="floating"][data-structure="top-nav"]
     > [data-region="content"] {
     padding-block-start: calc(
@@ -138,9 +152,12 @@
     );
   }
 
-  /* Below md the rails are gone, so only the bar's height is reserved. */
+  /* Below md the rails are gone, so only the bar's height is reserved. The
+     structure attribute matches the specificity of the per-structure rules
+     above, and source order then lets this win. */
   @media (width < 48rem) {
-    .dr-shell[data-shell-style="floating"] > [data-region="content"] {
+    .dr-shell[data-shell-style="floating"][data-structure]
+      > [data-region="content"] {
       padding-inline-start: 1.5rem;
     }
   }

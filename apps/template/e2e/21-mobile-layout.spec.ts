@@ -249,3 +249,38 @@ test.describe("order detail", () => {
     }
   })
 })
+
+test.describe("floating shell", () => {
+  const paddingInRem = (page: Page) =>
+    page.locator('[data-region="content"]').evaluate((el) => {
+      const rem = parseFloat(
+        getComputedStyle(document.documentElement).fontSize,
+      )
+      return parseFloat(getComputedStyle(el).paddingInlineStart) / rem
+    })
+
+  test("dashboard content keeps only its phone padding", async ({ page }) => {
+    await seedApp(page, { shellStyle: "floating" })
+    await gotoApp(page, "/")
+    await expect(page.locator(".dr-chart").first()).toBeVisible()
+    expect(await paddingInRem(page)).toBeCloseTo(1.5, 1)
+    await expectFits(page)
+  })
+
+  test("an opened inbox message keeps only its phone padding", async ({
+    page,
+  }) => {
+    await seedApp(page, { shellStyle: "floating" })
+    await gotoApp(page, "/inbox")
+    await page
+      .locator('[data-region="panel"]')
+      .getByRole("button")
+      .first()
+      .click()
+    await expect(page.locator("main h1")).toBeVisible()
+    expect(await paddingInRem(page)).toBeCloseTo(1.5, 1)
+    await expectFits(page)
+    await page.getByRole("button", { name: "Back" }).click()
+    await expect(page.locator('[data-region="panel"]')).toBeVisible()
+  })
+})
