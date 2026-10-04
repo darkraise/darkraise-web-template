@@ -56,6 +56,14 @@ Breaking: the `surfaceIntensity` prop on Card, Tabs and every overlay is replace
 
 Breaking: the exported `generateTokens` input drops `accentIntensity` and `preset` and takes `contrast`, `darkAccentChroma`, `tintWithAccent` (a boolean) and `frosted` (a boolean, true under Glass). It no longer returns `--shadow-dropdown`, which the stylesheet declares.
 
+Breaking: the `sidebarActiveBar` theme setting is replaced by `sidebarSelection` (`auto`, `chip`, `pill`, `tile`, `frosted`). `auto`, the default, follows the style: Quiet draws a chip, Flat a pill, Tactile a tile and Glass a frosted chip. Stored values migrate once (`bar` and `both` become `pill`, `ring` becomes `chip`, `default` becomes Auto), and a `themeConfig.defaults.sidebarActiveBar` key warns and is ignored.
+
+Breaking: `SidebarLayout`, `SidebarNav` and `MobileDrawer` take `selection` in place of `activeBar`, and `LayoutHeader` takes `sidebarSelection` in place of `sidebarActiveBar`. `SidebarLayout`'s `showActiveBarToggle`, `defaultActiveBar` and `onActiveBarChange` are removed; the theme panel's Sidebar Selection control replaces the header toggle.
+
+Breaking: `SIDEBAR_ACTIVE_BARS`, `SidebarActiveBarSetting`, `SidebarActiveBar` and `useSidebarActiveBarSetting` are removed; use `SIDEBAR_SELECTIONS`, `SidebarSelectionSetting` and `SidebarSelection`.
+
+Breaking: the kit, not the router adapter, decides the active nav row. `SidebarItem` marks its row current only inside `SidebarNav` or `StackedLayout`, which pick one active item per nav, and the kit no longer passes `activeClassName` to the adapter's `Link`.
+
 ### Added
 
 - Four styles, chosen with the `style` axis: `flat` (no control shadows; cards default to elevation `flat`), `quiet` (the default: a soft edge and a light shadow on buttons), `tactile` (a sheen across the top fifth of filled buttons, stopping above the label because the fill sits at its label's contrast floor; a sheen on outline and secondary buttons; inset wells on fields, checkboxes, radios and switch tracks; and shadows on thumbs and the selected tab or segment pill) and `glass` (frosted chrome and overlays over the gradient canvas, which it defaults to). A style sets only token values, so every component follows it without rules of its own.
@@ -81,6 +89,7 @@ Breaking: the exported `generateTokens` input drops `accentIntensity` and `prese
 - `--btn-px-sm` on every `.dr-btn`: the small size's inline padding, for rules that line a small button's label up with neighbouring text.
 - `DataTable` aligns a column's header and cells from `meta.align` (`"start" | "center" | "end"`) on its column definition. `DataTableColumnMeta` types it, and `@tanstack/react-table`'s `ColumnMeta` is augmented with it.
 - `--neutral-1…12`, `--primary-1…12`, the status pairs, Badge `success`, `warning`, `info` and `*-subtle` variants, and `--chart-6…8`; the chart palette no longer follows the accent.
+- The active sidebar row slides between rows as the route changes (instantly under reduced motion).
 
 ### Changed
 
@@ -110,7 +119,7 @@ Breaking: the exported `generateTokens` input drops `accentIntensity` and `prese
 - Every interactive control opts out of double-tap zoom and draws a boundary in forced-colours mode.
 - Transitions use the kit's easing curves instead of CSS keywords, so short fades such as the 120ms hover wash feel sharper.
 - Selected states use four families. Tabs (`default` and `outline`) and SegmentGroup select with a neutral raised pill and foreground text instead of the accent, including the default Tabs pill; their `outline` pills carry a 1px neutral ring so the variant still differs from `default`. Toggle, Listbox, TreeView, Calendar, TimePicker, TagsInput, Pagination, Steps and Timeline fill checked and selected items with the accent, outline variants included: an on outline toggle, a selected outline listbox or tree row and the outline current page now take the filled variant's fill instead of an accent border and accent text. Underline tabs and PageHeader tabs keep an accent bar under foreground text. The dashed completed-step connector in `Timeline` draws in the accent fill instead of `--primary-text`. `Listbox`, `TreeView` and `Pagination` now render `outline` and `filled` the same way.
-- The sidebar's active row is a tint one step stronger than hover, plus its bolder label and primary icon. The 3px bar is opt-in through `sidebarActiveBar` (`bar` or `both`): "Auto" no longer draws it under any style, and the stacked layout's rail and sub-navigation follow the setting too. The sidebar popover's active child, the top-nav active item and the layout switcher's active option use the same tint.
+- The sidebar's active row is drawn in the look the `sidebarSelection` setting picks (see Breaking), and the stacked layout's rail and sub-navigation follow it too. The sidebar popover's active child, the top-nav active item and the layout switcher's active option use the same tint.
 - Outline buttons and FloatingPanel header triggers rest on the neutral 3:1 field edge instead of the accent, and ghost buttons rest on foreground text; hover on all of them comes from the state layer, and the FloatingPanel trigger rim no longer changes on hover. Search triggers, AlertDialog Cancel and the CascadeSelect trigger are outline buttons and follow.
 - Scrollbars, the ScrollArea thumb and Skeleton are neutral (a foreground alpha) instead of accent-tinted.
 - Badges react to hover only when they are a link, a button or `role="button"`.
@@ -133,11 +142,11 @@ Breaking: the exported `generateTokens` input drops `accentIntensity` and `prese
 - The `default` preset name, replaced by the `quiet` style; stored and synced `default` becomes `quiet`.
 - The `sidebar-gradient-overlay` and `header-gradient-overlay` classes. Shell regions paint the canvas behind frosted chrome through `--chrome-canvas`.
 - The tokens listed in the Breaking note on removed tokens above.
-- The `labels.controls` key `"Each preset's own indicator"`, renamed `"Tint with no bar"` (the sidebar indicator's `default` option, matching "Left rail only" and "Uniform ring only"); an app that overrides it must rename its key.
+- The `labels.controls` key `"Each preset's own indicator"` (the sidebar indicator's `default` option in 6.x), with the rest of the sidebar indicator's option labels. The Sidebar Selection options are labelled by `labels.theme.sidebarSelections`.
 - The Sci-fi preset, its `frame` axis and its stylesheet. The theme switcher and `create-darkraise-ui` no longer offer it.
 - `supportedModes` on presets, which only Sci-fi used, and the provider and switcher logic that enforced it.
 - The `--shadow-card`, `--card-border` and `--glow-surface` tokens, which no stylesheet read, and `PresetSurfaceRecipe.overrides.shadowCard` on the preset type.
-- The `data-sidebar-active-bar` attribute on `<html>`. Read the setting from `useTheme().sidebarActiveBar`; the sidebar still writes its own `data-active-bar`.
+- The `data-sidebar-active-bar` attribute on `<html>`. Read the setting from `useTheme().sidebarSelection`.
 - The glass `[data-glass-halo="none"]` rule, which nothing could trigger since the halo axis moved to the global glow axes.
 - The `.dr-image-editor-history-trigger` and `.dr-image-editor-extension` rules, which no component rendered.
 - The tokens and utility listed in the Breaking note above: `--density-cell`, `--density-cell-base`, `--density-cell-sm`, `--density-cell-lg`, `--density-button-px`, `--density-button-py` and their `-sm` / `-lg` forms, `--density-input-px`, `--density-input-py`, `--radius-button`, and `focus-ring-tight`.
@@ -174,6 +183,8 @@ Breaking: the exported `generateTokens` input drops `accentIntensity` and `prese
 - CascadeSelect drew a focus ring on the active path permanently, even under the mouse.
 - In light mode the primary mark (`--primary`, `--ring`) of about one theme in five, mostly amber, green, yellow, lime, orange and coral, took the primary edge colour (`--primary-7`), and `--primary-12` took `--primary-11`, so two roles painted the same colour. Each now keeps its own hue and sits just past the step before it.
 - The toast countdown bar painted its status edge colour at 60% alpha, about 2.0:1 on the error toast. It now paints the status text colour, opaque, at 3:1 or more on the toast and on its track.
+- A detail route such as `/orders/ord-1` keeps its list item active in the sidebar, the stacked layout and the mobile drawer; one row is active per nav.
+- The active sidebar row is visible on Glass light, where its fill matched the rail.
 
 ## [6.9.6] — 2026-09-30
 

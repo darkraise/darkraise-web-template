@@ -248,7 +248,7 @@ export const themeConfig: ThemeConfig = {
   switcher: {
     enabled: true,
     // An axis left out is shown; `false` hides its control.
-    axes: { sidebarActiveBar: false },
+    axes: { sidebarSelection: false },
     // `false` removes the Advanced part of the theme switcher.
     advanced: true,
   },
@@ -302,24 +302,24 @@ A layout resolves `shellStyle ?? stored pick ?? defaultShellStyle ?? "classic"`
 and stamps the result on its own root, so a pinned shell ignores the stored
 pick without any CSS specificity fight.
 
-## Sidebar indicator
+## Sidebar selection
 
-`sidebarActiveBar` is a theme axis with four values. `default` marks the
-active row with a tint one step stronger than hover and a bolder label, with no
-bar, under every style. `bar`, `ring` and `both` force one look everywhere.
-It appears in the theme panel as **Sidebar Indicator**, with `default`
-labelled "Auto".
+`sidebarSelection` is a theme axis with five values: `auto`, `chip`, `pill`,
+`tile` and `frosted`. The active row is drawn as one surface that slides
+between rows as the route changes. `auto`, the default, follows the style:
+Quiet draws a chip, Flat a pill, Tactile a tile and Glass a frosted chip; the
+other four force one look everywhere. It appears in the theme panel as
+**Sidebar Selection**.
 
-`SidebarLayout` resolves it most-specific-first: the `activeBar` prop pins it,
-otherwise the header toggle's value once someone has used it, otherwise the
-theme axis.
+`SidebarLayout`, `SidebarNav` and `MobileDrawer` take a `selection` prop that
+pins one look and ignores the axis.
 
 ```tsx
 // Follows the axis:
 <SidebarLayout nav={nav} />
 
 // Pins one sidebar, ignoring the axis:
-<SidebarLayout nav={nav} activeBar="ring" />
+<SidebarLayout nav={nav} selection="pill" />
 ```
 
 ## Server rendering the layout variant

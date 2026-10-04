@@ -115,7 +115,7 @@ Advanced:
 - **Background style** (`backgroundStyle`) -- solid or gradient
 - **Background intensity** (`backgroundIntensity`) -- neutral, subtle, balanced, vivid, or intense
 - **Gradient pattern** (`gradientPattern`) -- blobs, aurora, spotlight, or mesh
-- **Sidebar indicator** (`sidebarActiveBar`) -- default, bar, ring, or both
+- **Sidebar selection** (`sidebarSelection`) -- auto, chip, pill, tile, or frosted
 
 An axis left out of `theme.config.ts` keeps the kit's default, and a style's own defaults (Glass's gradient background, for example) win over the config's for users with nothing stored. An axis left out of `switcher.axes` is shown, and `switcher.advanced: false` removes the Advanced part of the panel.
 

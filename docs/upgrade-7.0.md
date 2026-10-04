@@ -57,7 +57,7 @@ Synced payloads migrate the same way. A payload without a version is treated as 
 | the `sidebar-gradient-overlay` and `header-gradient-overlay` classes                                                                                                                                                                               | `--chrome-canvas`                                                                                                                  |
 | `data-preset` on `<html>`                                                                                                                                                                                                                          | `data-style`                                                                                                                       |
 | `data-shell-style` on `<html>`                                                                                                                                                                                                                     | the same attribute on each layout's root                                                                                           |
-| `data-sidebar-active-bar` on `<html>`                                                                                                                                                                                                              | `useTheme().sidebarActiveBar`                                                                                                      |
+| `data-sidebar-active-bar` on `<html>`                                                                                                                                                                                                              | `useTheme().sidebarSelection`                                                                                                      |
 | `data-elevation` on `Card` and card-variant `AccordionItem`                                                                                                                                                                                        | `data-card-elevation`                                                                                                              |
 
 ## Presets become styles
@@ -70,6 +70,10 @@ The `preset` axis is now `style`, with the values `flat`, `quiet`, `tactile` and
 - The default style is `quiet`, which is 6.x's default look with a soft edge and a light shadow on buttons. The default neutral is `zinc` (was `slate`); a user who stored `slate` keeps it, and an app that wants `slate` sets `defaults.surfaceColor`.
 - Glass frosts only the shell chrome and overlays. Content under Glass follows Quiet, and nothing under Glass glows unless the user sets the outer glow axis.
 - The Sci-fi preset is removed; a config naming `"scifi"` fails to type-check.
+
+## Sidebar selection
+
+`sidebarActiveBar` is now `sidebarSelection`, with the looks `auto`, `chip`, `pill`, `tile` and `frosted`. Stored values migrate on first load. Rename the props: `activeBar` → `selection` on `SidebarLayout`, `SidebarNav` and `MobileDrawer`, and `sidebarActiveBar` → `sidebarSelection` on `LayoutHeader`. Remove `showActiveBarToggle`, `defaultActiveBar` and `onActiveBarChange`; the theme panel offers the setting.
 
 ## Fonts
 
