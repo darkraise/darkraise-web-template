@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from "react"
 import { ChevronLeft } from "lucide-react"
 import { Button } from "@components/button"
-import { useEventListener, useSeparatorA11y } from "@hooks"
+import { useEventListener, useMediaQuery, useSeparatorA11y } from "@hooks"
 import { SearchCommand } from "@layout/search-command"
 import { BrandLogo } from "@layout/brand-logo"
 import { LayoutHeader } from "@layout/layout-header"
@@ -69,7 +69,11 @@ export function SplitPanelLayout({
   const resolvedNavHeader = navHeader ?? sidebarHeader
   const resolvedNavFooter = navFooter ?? sidebarFooter
   const [panelWidth, setPanelWidth] = useState(defaultPanelWidth)
-  useRouteFocus()
+  const phone = useMediaQuery("(width < 48rem)")
+  // The content is hidden while the phone view shows the list, so the skip
+  // link and route changes land on the list instead.
+  const skipTarget = phone && !contentActive ? "panel-region" : "main-content"
+  useRouteFocus({ targetId: skipTarget })
   const [isDragging, setIsDragging] = useState(false)
   const docRef = useRef(typeof document !== "undefined" ? document : null)
   const shellRef = useRef<HTMLDivElement | null>(null)
@@ -140,7 +144,7 @@ export function SplitPanelLayout({
       data-mobile-view={contentActive ? "content" : "panel"}
       style={{ "--panel-width": `${panelWidth}px` } as CSSProperties}
     >
-      <SkipLink>{labels.layout.skipToContent}</SkipLink>
+      <SkipLink targetId={skipTarget}>{labels.layout.skipToContent}</SkipLink>
       <LayoutHeader
         notificationSlot={notificationSlot}
         data-region="bar"
@@ -165,6 +169,7 @@ export function SplitPanelLayout({
 
       <div
         ref={panelRef}
+        id="panel-region"
         tabIndex={-1}
         data-region="panel"
         className="dr-split-panel-layout-aside"

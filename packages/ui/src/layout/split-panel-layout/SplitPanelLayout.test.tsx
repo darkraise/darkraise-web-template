@@ -240,6 +240,26 @@ describe("SplitPanelLayout phone view", () => {
     )
   })
 
+  it("points the skip link at the panel while the phone list shows", () => {
+    stubPhoneWidth(true)
+    const { container, rerender } = render(phoneTree())
+    const link = () => screen.getByRole("link", { name: "Skip to content" })
+    expect(link()).toHaveAttribute("href", "#panel-region")
+    expect(container.querySelector("#panel-region")).toBe(
+      container.querySelector('[data-region="panel"]'),
+    )
+    rerender(phoneTree({ contentActive: true }))
+    expect(link()).toHaveAttribute("href", "#main-content")
+  })
+
+  it("keeps the skip link on the content side by side", () => {
+    stubPhoneWidth(false)
+    render(phoneTree())
+    expect(
+      screen.getByRole("link", { name: "Skip to content" }),
+    ).toHaveAttribute("href", "#main-content")
+  })
+
   it("leaves focus alone side by side", () => {
     stubPhoneWidth(false)
     const { rerender } = render(phoneTree())
