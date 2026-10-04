@@ -18,7 +18,7 @@ import {
   YAxis,
   CartesianGrid,
 } from "recharts"
-import { PageHeader } from "darkraise-ui/layout"
+import { Grid, PageHeader } from "darkraise-ui/layout"
 import { Button } from "darkraise-ui/components/button"
 import { Skeleton } from "darkraise-ui/components/skeleton"
 import { toast } from "darkraise-ui/components/sonner"
@@ -251,7 +251,7 @@ function DashboardPage() {
           />
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
+        <Grid cols={2} gap="md">
           <ChartCard
             title={t("Revenue Trend")}
             description={t("Daily revenue over the last 30 days")}
@@ -308,7 +308,7 @@ function DashboardPage() {
               </BarChart>
             </ChartContainer>
           </ChartCard>
-        </div>
+        </Grid>
 
         <div className="grid gap-4 md:grid-cols-3">
           <ProgressCard

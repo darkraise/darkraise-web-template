@@ -1,10 +1,13 @@
 import { defineConfig, devices } from "@playwright/test"
 
+const baselineIgnore = process.env.BASELINE ? [] : ["**/18-baseline.spec.ts"]
+const mobileSpec = "**/21-mobile-layout.spec.ts"
+
 export default defineConfig({
   testDir: "./e2e",
   /* The visual baseline records committed screenshots; it runs only when
      asked (`pnpm test:e2e:visual`). */
-  testIgnore: process.env.BASELINE ? [] : ["**/18-baseline.spec.ts"],
+  testIgnore: baselineIgnore,
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   /* One local retry: on a host where Docker containers come and go, each
@@ -24,7 +27,25 @@ export default defineConfig({
     trace: "on-first-retry",
     screenshot: "only-on-failure",
   },
-  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+  /* A project's testIgnore replaces the top-level one, so the baseline
+     exclusion is repeated here. */
+  projects: [
+    {
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"] },
+      testIgnore: [...baselineIgnore, mobileSpec],
+    },
+    {
+      name: "mobile",
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: { width: 390, height: 844 },
+        isMobile: true,
+        hasTouch: true,
+      },
+      testMatch: mobileSpec,
+    },
+  ],
   webServer: {
     command: "pnpm dev",
     url: "http://localhost:5176",
