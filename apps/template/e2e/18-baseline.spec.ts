@@ -260,3 +260,36 @@ for (const style of STYLES) {
     }
   }
 }
+
+/**
+ * The sidebar's active row: Auto under every style in both modes, and each
+ * explicit look on Quiet light.
+ */
+const SIDEBAR_CASES = [
+  ...STYLES.flatMap((style) =>
+    MODES.map((mode) => ({ style, mode, look: "auto" as const })),
+  ),
+  ...(["chip", "pill", "tile", "frosted"] as const).map((look) => ({
+    style: "quiet" as const,
+    mode: "light" as const,
+    look,
+  })),
+]
+
+for (const { style, mode, look } of SIDEBAR_CASES) {
+  test(`sidebar selection · ${look} · ${style} · ${mode}`, async ({ page }) => {
+    await seedApp(page, { style, mode, sidebarSelection: look })
+    await gotoApp(page, "/orders")
+    const rail = page.locator(".dr-sidebar-layout-aside")
+    await expect(
+      rail.locator(".dr-sidebar-nav[data-indicator='ready']"),
+    ).toHaveCount(1)
+    // The file's own guard: a crop must not record fallback fonts.
+    await waitForFonts(page)
+    await page.mouse.move(0, 0)
+    await settle(page)
+    await expect(rail).toHaveScreenshot(
+      `sidebar-selection-${look}-${style}-${mode}.png`,
+    )
+  })
+}
