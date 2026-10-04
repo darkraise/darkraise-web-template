@@ -103,21 +103,49 @@ describe("scripts/init.mjs", () => {
 })
 
 describe("create-app/bin/create.mjs", () => {
+  const script = readFileSync("../../create-app/bin/create.mjs", "utf8")
+
   it("writes an index.html that loads nothing from a third party", () => {
-    const script = readFileSync("../../create-app/bin/create.mjs", "utf8")
     const html = script.match(/const indexHtml = `([\s\S]*?)`/)?.[1]
     expect(html).toBeDefined()
     expect(html).not.toMatch(/https?:\/\//)
   })
 
-  it("writes every registry axis into the switcher config", () => {
-    const script = readFileSync("../../create-app/bin/create.mjs", "utf8")
-    const written = [
-      ...script.matchAll(/\$\{config\.theme\.switcher\.axes\.(\w+)\}/g),
+  it("takes every axis label from axes.json", () => {
+    // The labels the hand-kept picker list and prompts used before 7.0.
+    const oldLabels = [
+      "Mode (light/dark/system)",
+      "Accent color",
+      "Surface color",
+      "Style (flat/quiet/tactile/glass)",
+      "Glass opacity",
+      "Glass blur",
+      "Background style",
+      "Background intensity",
+      "Gradient pattern",
+      "Font size",
+      "Sidebar indicator",
+      "Outer glow",
+      "Inner glow",
+      "Dark accent chroma",
+      "Tint with accent",
     ]
-      .map((m) => m[1] as string)
-      .filter((key) => key !== "enabled")
-      .sort()
-    expect(written).toEqual([...AXIS_KEYS].sort())
+    const labels = [
+      ...Object.values(defaultLabels.theme.axisLabels),
+      ...oldLabels,
+    ]
+    for (const label of labels) expect(script).not.toContain(`"${label}"`)
+  })
+
+  it("seeds no axis prompt from a literal", () => {
+    const literals = [...script.matchAll(/initialValue: "([^"]*)"/g)].map(
+      (m) => m[1],
+    )
+    expect(literals.sort()).toEqual(["5173", "localhost", "sidebar"])
+  })
+
+  it("groups the axis picker", () => {
+    expect(script).toContain("p.groupMultiselect(")
+    expect(script).not.toContain("p.multiselect(")
   })
 })

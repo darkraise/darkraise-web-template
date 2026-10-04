@@ -24,46 +24,116 @@ async function latestVersion(pkg) {
 const AXES = JSON.parse(
   readFileSync(new URL("./axes.json", import.meta.url), "utf8"),
 )
-const ACCENT_COLORS = AXES.accentColor.values
-const SURFACE_COLORS = AXES.surfaceColor.values
-const STYLES = AXES.style.values
-const BACKGROUND_STYLES = AXES.backgroundStyle.values
-const BACKGROUND_INTENSITIES = AXES.backgroundIntensity.values
-const GRADIENT_PATTERNS = AXES.gradientPattern.values
-const DENSITIES = AXES.density.values
-const ELEVATIONS = AXES.elevation.values
-const RADII = AXES.radius.values
-const SIDEBAR_ACTIVE_BARS = AXES.sidebarActiveBar.values
-const FONT_SIZES = AXES.fontSize.values
-const GLOW_LEVELS = AXES.outerGlow.values
-const MODES = AXES.mode.values
+const AXIS_KEYS = Object.keys(AXES)
 const LAYOUTS = ["sidebar", "stacked", "top-nav", "split-panel"]
-const THEME_AXIS_KEYS = Object.keys(AXES)
+
+// Two axes kept their 6.x flag names when the axis key changed.
+const FLAG_ALIASES = { accentColor: "accent", backgroundStyle: "background" }
+
+function flagOf(key) {
+  return (
+    FLAG_ALIASES[key] ?? key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)
+  )
+}
+
+const PROMPTED_KEYS = AXIS_KEYS.filter(
+  (key) => AXES[key].layer === "brand" || key === "style",
+)
+
+// The 6.9.6 flags and --theme-axes names that 7.0 dropped. This is history,
+// so the lists do not grow with the registry.
+const RETIRED_FLAGS = {
+  preset: "use --style",
+  "surface-intensity": "use --contrast",
+  "accent-intensity": "use --dark-accent-chroma",
+  "shell-style": "set the layout's defaultShellStyle prop instead",
+  "control-depth": "it has no replacement",
+  "button-elevation": "it has no replacement",
+}
+const RETIRED_AXES = {
+  preset: "use style",
+  surfaceIntensity: "use contrast",
+  borderIntensity: "use contrast",
+  accentIntensity: "use darkAccentChroma",
+  shellStyle: "set the layout's defaultShellStyle prop instead",
+  controlDepth: "it has no replacement",
+  buttonElevation: "it has no replacement",
+  presetAxes: "use glassOpacity and glassBlur",
+}
 
 const argv = minimist(process.argv.slice(2), {
-  boolean: ["y"],
+  boolean: ["y", "help"],
   string: [
     "layout",
-    "accent",
-    "surface-color",
-    "style",
-    "background",
-    "background-intensity",
-    "gradient-pattern",
-    "mode",
     "theme-axes",
-    "density",
-    "elevation",
-    "radius",
-    "font-size",
-    "sidebar-active-bar",
-    "outer-glow",
-    "inner-glow",
     "host",
     "port",
+    "ui-version",
+    ...AXIS_KEYS.map(flagOf),
   ],
-  alias: { y: "yes" },
+  alias: { y: "yes", h: "help" },
 })
+
+function usage() {
+  const option = (flag, text) => `  ${flag.padEnd(40)} ${text}`
+  return [
+    "Usage: create-darkraise-ui [project-name] [options]",
+    "",
+    "Options:",
+    option(
+      "-y, --yes",
+      "skip every prompt; unanswered axes keep the kit defaults",
+    ),
+    option("--layout <name>", `${LAYOUTS.join(", ")} [default: sidebar]`),
+    option(
+      "--multilingual / --no-multilingual",
+      "English and Vietnamese switching [default: off]",
+    ),
+    option(
+      "--theme-switcher / --no-theme-switcher",
+      "include the theme switcher [default: on]",
+    ),
+    option(
+      "--theme-axes <keys>",
+      "comma-separated axes the switcher shows [default: all]",
+    ),
+    option("--host <host>", "dev server host [default: localhost]"),
+    option("--port <port>", "dev server port [default: 5173]"),
+    option(
+      "--ui-version <version>",
+      "darkraise-ui version or tarball [default: latest]",
+    ),
+    option("--no-install", "skip npm install"),
+    option("--no-git", "skip git init"),
+    option("-h, --help", "show this help"),
+    "",
+    "Theme axes; those marked prompted are asked unless their flag is given:",
+    ...AXIS_KEYS.map((key) =>
+      option(
+        `--${flagOf(key)} <value>`,
+        `${AXES[key].values.join(", ")} [default: ${AXES[key].default}]` +
+          (PROMPTED_KEYS.includes(key) ? " (prompted)" : ""),
+      ),
+    ),
+    "",
+    "A style's own defaults win over these flags for users with nothing stored,",
+    "so --style glass --background solid still paints glass's gradient.",
+  ].join("\n")
+}
+
+if (argv.help) {
+  console.log(usage())
+  process.exit(0)
+}
+
+for (const [flag, hint] of Object.entries(RETIRED_FLAGS)) {
+  if (argv[flag] !== undefined) {
+    console.error(
+      `Error: --${flag} was removed in create-darkraise-ui 7.0; ${hint}.`,
+    )
+    process.exit(1)
+  }
+}
 
 const skipPrompts = argv.y || argv.yes
 
@@ -87,31 +157,21 @@ function validate(value, allowed, label) {
 }
 
 validate(argv.layout, LAYOUTS, "layout")
-validate(argv.accent, ACCENT_COLORS, "accent color")
-validate(argv["surface-color"], SURFACE_COLORS, "surface color")
-validate(argv.style, STYLES, "style")
-validate(argv.background, BACKGROUND_STYLES, "background")
-validate(
-  argv["background-intensity"],
-  BACKGROUND_INTENSITIES,
-  "background-intensity",
-)
-validate(argv["gradient-pattern"], GRADIENT_PATTERNS, "gradient-pattern")
-validate(argv.mode, MODES, "mode")
-validate(argv.density, DENSITIES, "density")
-validate(argv.elevation, ELEVATIONS, "elevation")
-validate(argv.radius, RADII, "radius")
-validate(argv["sidebar-active-bar"], SIDEBAR_ACTIVE_BARS, "sidebar-active-bar")
-validate(argv["font-size"], FONT_SIZES, "font-size")
-validate(argv["outer-glow"], GLOW_LEVELS, "outer-glow")
-validate(argv["inner-glow"], GLOW_LEVELS, "inner-glow")
+for (const key of AXIS_KEYS) {
+  validate(argv[flagOf(key)], AXES[key].values, `--${flagOf(key)}`)
+}
 
 if (argv["theme-axes"] !== undefined) {
-  const axes = argv["theme-axes"].split(",")
-  for (const axis of axes) {
-    if (!THEME_AXIS_KEYS.includes(axis)) {
+  for (const axis of argv["theme-axes"].split(",")) {
+    if (Object.hasOwn(RETIRED_AXES, axis)) {
       console.error(
-        `Error: invalid theme axis "${axis}". Allowed: ${THEME_AXIS_KEYS.join(", ")}`,
+        `Error: theme axis "${axis}" was removed in create-darkraise-ui 7.0; ${RETIRED_AXES[axis]}.`,
+      )
+      process.exit(1)
+    }
+    if (!AXIS_KEYS.includes(axis)) {
+      console.error(
+        `Error: invalid theme axis "${axis}". Allowed: ${AXIS_KEYS.join(", ")}`,
       )
       process.exit(1)
     }
@@ -196,158 +256,27 @@ async function main() {
         ))
 
   // --- Theme defaults ---
-  const accent =
-    argv.accent ||
-    (skipPrompts
-      ? "blue"
-      : cancelled(
-          await p.select({
-            message: "Accent color",
-            options: ACCENT_COLORS.map((c) => ({ value: c, label: c })),
-            initialValue: "blue",
-          }),
-        ))
-
-  const surfaceColor =
-    argv["surface-color"] ||
-    (skipPrompts
-      ? AXES.surfaceColor.default
-      : cancelled(
-          await p.select({
-            message: "Surface color",
-            options: SURFACE_COLORS.map((c) => ({ value: c, label: c })),
-            initialValue: AXES.surfaceColor.default,
-          }),
-        ))
-
-  const style =
-    argv.style ||
-    (skipPrompts
-      ? "quiet"
-      : cancelled(
-          await p.select({
-            message: "Style",
-            options: STYLES.map((s) => ({ value: s, label: s })),
-            initialValue: "quiet",
-          }),
-        ))
-
-  const background =
-    argv.background ||
-    (skipPrompts
-      ? "solid"
-      : cancelled(
-          await p.select({
-            message: "Background",
-            options: BACKGROUND_STYLES.map((b) => ({ value: b, label: b })),
-            initialValue: "solid",
-          }),
-        ))
-
-  const backgroundIntensity =
-    argv["background-intensity"] ||
-    (skipPrompts
-      ? "vivid"
-      : cancelled(
-          await p.select({
-            message: "Background intensity",
-            options: BACKGROUND_INTENSITIES.map((i) => ({
-              value: i,
-              label: i,
-            })),
-            initialValue: "vivid",
-          }),
-        ))
-
-  const gradientPattern =
-    argv["gradient-pattern"] ||
-    (skipPrompts
-      ? "blobs"
-      : cancelled(
-          await p.select({
-            message: "Gradient pattern",
-            options: GRADIENT_PATTERNS.map((g) => ({ value: g, label: g })),
-            initialValue: "blobs",
-          }),
-        ))
-
-  const mode =
-    argv.mode ||
-    (skipPrompts
-      ? "system"
-      : cancelled(
-          await p.select({
-            message: "Mode",
-            options: MODES.map((m) => ({ value: m, label: m })),
-            initialValue: "system",
-          }),
-        ))
-
-  const density =
-    argv.density ||
-    (skipPrompts
-      ? "cozy"
-      : cancelled(
-          await p.select({
-            message: "Density",
-            options: DENSITIES.map((d) => ({ value: d, label: d })),
-            initialValue: "cozy",
-          }),
-        ))
-
-  const elevation =
-    argv.elevation ||
-    (skipPrompts
-      ? "standard"
-      : cancelled(
-          await p.select({
-            message: "Elevation",
-            options: ELEVATIONS.map((e) => ({ value: e, label: e })),
-            initialValue: "standard",
-          }),
-        ))
-
-  const radius =
-    argv.radius ||
-    (skipPrompts
-      ? "rounded"
-      : cancelled(
-          await p.select({
-            message: "Radius",
-            options: RADII.map((r) => ({ value: r, label: r })),
-            initialValue: "rounded",
-          }),
-        ))
-
-  const sidebarActiveBar =
-    argv["sidebar-active-bar"] ||
-    (skipPrompts
-      ? "default"
-      : cancelled(
-          await p.select({
-            message: "Sidebar indicator",
-            options: SIDEBAR_ACTIVE_BARS.map((v) => ({ value: v, label: v })),
-            initialValue: "default",
-          }),
-        ))
-
-  const fontSize =
-    argv["font-size"] ||
-    (skipPrompts
-      ? "medium"
-      : cancelled(
-          await p.select({
-            message: "Font size",
-            options: FONT_SIZES.map((f) => ({ value: f, label: f })),
-            initialValue: "medium",
-          }),
-        ))
-
-  // Glow ships at "none" so a new project looks the same as before the axes
-  // existed; no style supplies a glow default.
-  // Flag-only rather than prompted, to keep the interactive flow short.
-  const outerGlow = argv["outer-glow"] || "none"
-  const innerGlow = argv["inner-glow"] || "none"
+  // Only flags given and prompts answered are written; every other axis keeps
+  // the kit's default.
+  const defaults = {}
+  for (const key of AXIS_KEYS) {
+    if (argv[flagOf(key)] !== undefined) defaults[key] = argv[flagOf(key)]
+  }
+  if (!skipPrompts) {
+    for (const key of PROMPTED_KEYS) {
+      if (key in defaults) continue
+      // The kit hides tint under the neutral accent: there is no hue to mix in.
+      const accent = defaults.accentColor ?? AXES.accentColor.default
+      if (key === "tintWithAccent" && accent === "neutral") continue
+      defaults[key] = cancelled(
+        await p.select({
+          message: AXES[key].label,
+          options: AXES[key].values.map((v) => ({ value: v, label: v })),
+          initialValue: AXES[key].default,
+        }),
+      )
+    }
+  }
 
   // --- Theme switcher ---
   let themeSwitcherEnabled
@@ -364,37 +293,22 @@ async function main() {
     )
   }
 
-  let themeAxes = THEME_AXIS_KEYS
+  let themeAxes = AXIS_KEYS
   if (themeSwitcherEnabled) {
     if (argv["theme-axes"] !== undefined) {
       themeAxes = argv["theme-axes"].split(",")
     } else if (!skipPrompts) {
+      const groups = {}
+      for (const key of AXIS_KEYS) {
+        const group = AXES[key].groupLabel
+        groups[group] ??= []
+        groups[group].push({ value: key, label: AXES[key].label })
+      }
       themeAxes = cancelled(
-        await p.multiselect({
+        await p.groupMultiselect({
           message: "Configurable theme axes",
-          options: [
-            { value: "mode", label: "Mode (light/dark/system)" },
-            { value: "accentColor", label: "Accent color" },
-            { value: "surfaceColor", label: "Surface color" },
-            { value: "style", label: "Style (flat/quiet/tactile/glass)" },
-            { value: "glassOpacity", label: "Glass opacity" },
-            { value: "glassBlur", label: "Glass blur" },
-            { value: "font", label: "Font" },
-            { value: "backgroundStyle", label: "Background style" },
-            { value: "backgroundIntensity", label: "Background intensity" },
-            { value: "gradientPattern", label: "Gradient pattern" },
-            { value: "density", label: "Density" },
-            { value: "elevation", label: "Elevation" },
-            { value: "radius", label: "Radius" },
-            { value: "fontSize", label: "Font size" },
-            { value: "sidebarActiveBar", label: "Sidebar indicator" },
-            { value: "outerGlow", label: "Outer glow" },
-            { value: "innerGlow", label: "Inner glow" },
-            { value: "contrast", label: "Contrast" },
-            { value: "darkAccentChroma", label: "Dark accent chroma" },
-            { value: "tintWithAccent", label: "Tint with accent" },
-          ],
-          initialValues: THEME_AXIS_KEYS,
+          options: groups,
+          initialValues: AXIS_KEYS,
         }),
       )
     }
@@ -440,30 +354,18 @@ async function main() {
   const config = {
     layout,
     theme: {
-      defaults: {
-        accentColor: accent,
-        surfaceColor: surfaceColor,
-        style: style,
-        backgroundStyle: background,
-        backgroundIntensity: backgroundIntensity,
-        gradientPattern: gradientPattern,
-        mode: mode,
-        density: density,
-        elevation: elevation,
-        radius: radius,
-        sidebarActiveBar: sidebarActiveBar,
-        fontSize: fontSize,
-        outerGlow: outerGlow,
-        innerGlow: innerGlow,
-      },
+      // Registry order, so the generated file reads like the switcher.
+      defaults: Object.fromEntries(
+        AXIS_KEYS.filter((key) => key in defaults).map((key) => [
+          key,
+          defaults[key],
+        ]),
+      ),
       switcher: {
         enabled: themeSwitcherEnabled,
-        axes: Object.fromEntries(
-          THEME_AXIS_KEYS.map((key) => [
-            key,
-            themeSwitcherEnabled && themeAxes.includes(key),
-          ]),
-        ),
+        hidden: themeSwitcherEnabled
+          ? AXIS_KEYS.filter((key) => !themeAxes.includes(key))
+          : [],
       },
     },
     server: { host, port },
@@ -549,9 +451,14 @@ import react from "@vitejs/plugin-react-swc"
 import tailwindcss from "@tailwindcss/vite"
 import path from "node:path"
 import { darkraisePrerender } from "darkraise-ui/vite"
+import { themeConfig } from "./src/theme.config"
 
 export default defineConfig({
-  plugins: [darkraisePrerender(), react(), tailwindcss()],
+  plugins: [
+    darkraisePrerender({ defaults: themeConfig.defaults }),
+    react(),
+    tailwindcss(),
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -620,58 +527,29 @@ createRoot(document.getElementById("root")!).render(
   )
 
   // --- src/theme.config.ts ---
-  // Matches ThemeConfig in packages/ui/src/theme/themeConfig.ts.
-  // The full type is re-exported by `darkraise-ui/theme` so consumers
-  // import it directly rather than restating it here — that keeps the
-  // scaffolded app schema-locked to whichever UI package version is
-  // installed (the create script's defaults are just initial values).
+  // The ThemeConfig type comes from the installed darkraise-ui, which keeps
+  // the app checked against the kit it runs. It stays an `import type`:
+  // vite.config.ts imports this file, and a value import would make Vite
+  // load the kit in Node.
+  const defaultEntries = Object.entries(config.theme.defaults).map(
+    ([key, value]) => `    ${key}: "${value}",`,
+  )
+  const defaultsBlock =
+    defaultEntries.length > 0 ? `{\n${defaultEntries.join("\n")}\n  }` : "{}"
+  const axesBlock =
+    config.theme.switcher.hidden.length > 0
+      ? `\n    axes: {\n${config.theme.switcher.hidden
+          .map((key) => `      ${key}: false,`)
+          .join("\n")}\n    },`
+      : ""
   const themeConfigContent = `import type { ThemeConfig } from "darkraise-ui/theme"
 
+// The choices made at scaffold time. Every other axis keeps the kit's
+// default, and an axis left out of switcher.axes stays in the switcher.
 export const themeConfig: ThemeConfig = {
-  defaults: {
-    accentColor: "${config.theme.defaults.accentColor}",
-    surfaceColor: "${config.theme.defaults.surfaceColor}",
-    style: "${config.theme.defaults.style}",
-    font: "inter",
-    backgroundStyle: "${config.theme.defaults.backgroundStyle}",
-    backgroundIntensity: "${config.theme.defaults.backgroundIntensity}",
-    gradientPattern: "${config.theme.defaults.gradientPattern}",
-    mode: "${config.theme.defaults.mode}",
-    density: "${config.theme.defaults.density}",
-    elevation: "${config.theme.defaults.elevation}",
-    radius: "${config.theme.defaults.radius}",
-    sidebarActiveBar: "${config.theme.defaults.sidebarActiveBar}",
-    fontSize: "${config.theme.defaults.fontSize}",
-    outerGlow: "${config.theme.defaults.outerGlow}",
-    innerGlow: "${config.theme.defaults.innerGlow}",
-    contrast: "standard",
-    darkAccentChroma: "standard",
-    tintWithAccent: "off",
-  },
+  defaults: ${defaultsBlock},
   switcher: {
-    enabled: ${config.theme.switcher.enabled},
-    axes: {
-      mode: ${config.theme.switcher.axes.mode},
-      accentColor: ${config.theme.switcher.axes.accentColor},
-      surfaceColor: ${config.theme.switcher.axes.surfaceColor},
-      style: ${config.theme.switcher.axes.style},
-      glassOpacity: ${config.theme.switcher.axes.glassOpacity},
-      glassBlur: ${config.theme.switcher.axes.glassBlur},
-      font: ${config.theme.switcher.axes.font},
-      backgroundStyle: ${config.theme.switcher.axes.backgroundStyle},
-      backgroundIntensity: ${config.theme.switcher.axes.backgroundIntensity},
-      gradientPattern: ${config.theme.switcher.axes.gradientPattern},
-      density: ${config.theme.switcher.axes.density},
-      elevation: ${config.theme.switcher.axes.elevation},
-      radius: ${config.theme.switcher.axes.radius},
-      sidebarActiveBar: ${config.theme.switcher.axes.sidebarActiveBar},
-      fontSize: ${config.theme.switcher.axes.fontSize},
-      outerGlow: ${config.theme.switcher.axes.outerGlow},
-      innerGlow: ${config.theme.switcher.axes.innerGlow},
-      contrast: ${config.theme.switcher.axes.contrast},
-      darkAccentChroma: ${config.theme.switcher.axes.darkAccentChroma},
-      tintWithAccent: ${config.theme.switcher.axes.tintWithAccent},
-    },
+    enabled: ${config.theme.switcher.enabled},${axesBlock}
   },
 }
 `
