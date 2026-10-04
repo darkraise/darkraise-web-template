@@ -22,12 +22,42 @@
     @apply overflow-y-auto p-6;
   }
 
+  .dr-split-panel-layout-back {
+    @apply -ms-2 mb-4;
+  }
+
+  .dr-split-panel-layout-back-icon:dir(rtl) {
+    transform: scaleX(-1);
+  }
+
+  .dr-split-panel-layout-aside:focus {
+    outline: none;
+  }
+
   /* Below md the shared shell rule collapses this structure to bar over
-     content, so the panel and its handle step out rather than crushing the
-     reading pane into a few pixels. */
+     content, so the panel takes the content's place until the consumer
+     marks the content active. The handle has nothing to resize. */
   @media (width < 48rem) {
-    .dr-split-panel-layout-aside,
-    .dr-split-panel-layout-handle {
+    .dr-split-panel-layout-handle,
+    .dr-split-panel-layout[data-mobile-view="panel"]
+      > .dr-split-panel-layout-content,
+    .dr-split-panel-layout[data-mobile-view="content"]
+      > .dr-split-panel-layout-aside {
+      @apply hidden;
+    }
+
+    .dr-split-panel-layout[data-mobile-view="panel"]
+      > .dr-split-panel-layout-aside {
+      grid-area: content;
+      width: auto;
+      border-right: 0;
+    }
+  }
+
+  /* Qualified by the content region so it outranks the button's own display
+     whatever order the two stylesheets load in. */
+  @media (width >= 48rem) {
+    .dr-split-panel-layout-content > .dr-split-panel-layout-back {
       @apply hidden;
     }
   }

@@ -1,7 +1,10 @@
 import { render, screen, fireEvent } from "@testing-library/react"
-import { afterEach, beforeEach, describe, it, expect } from "vitest"
+import { afterEach, beforeEach, describe, it, expect, vi } from "vitest"
 import { useLayoutStore } from "@layout/layoutStore"
-import { SplitPanelLayout } from "./SplitPanelLayout"
+import {
+  SplitPanelLayout,
+  type SplitPanelLayoutProps,
+} from "./SplitPanelLayout"
 import { RouterAdapterProvider } from "@router"
 import { UiLabelsProvider } from "@labels"
 import type { RouterAdapter, RouterLinkProps } from "@router"
@@ -28,18 +31,7 @@ const nav: NavGroup[] = [
 ]
 
 function renderLayout(props = {}) {
-  return render(
-    <RouterAdapterProvider value={adapter}>
-      <SplitPanelLayout
-        nav={nav}
-        showThemeSwitcher={false}
-        panel={<p>Records</p>}
-        {...props}
-      >
-        <div>Content</div>
-      </SplitPanelLayout>
-    </RouterAdapterProvider>,
-  )
+  return render(phoneTree(props))
 }
 
 const panelWidth = (container: HTMLElement) =>
@@ -174,5 +166,84 @@ describe("SplitPanelLayout resize handle", () => {
     expect(
       screen.getByRole("link", { name: "Naar inhoud" }),
     ).toBeInTheDocument()
+  })
+})
+
+function phoneTree(props: Partial<SplitPanelLayoutProps> = {}) {
+  return (
+    <RouterAdapterProvider value={adapter}>
+      <SplitPanelLayout
+        nav={nav}
+        showThemeSwitcher={false}
+        panel={<p>Records</p>}
+        {...props}
+      >
+        <div>Content</div>
+      </SplitPanelLayout>
+    </RouterAdapterProvider>
+  )
+}
+
+const PHONE_QUERY = "(width < 48rem)"
+
+function stubPhoneWidth(narrow: boolean) {
+  window.matchMedia = vi.fn((query: string) => ({
+    matches: narrow && query === PHONE_QUERY,
+    media: query,
+    onchange: null,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })) as unknown as typeof window.matchMedia
+}
+
+describe("SplitPanelLayout phone view", () => {
+  const originalMatchMedia = window.matchMedia
+  afterEach(() => {
+    window.matchMedia = originalMatchMedia
+  })
+
+  it("shows the panel until the content is active", () => {
+    const { container, rerender } = render(phoneTree())
+    const shell = container.querySelector(".dr-shell")
+    expect(shell).toHaveAttribute("data-mobile-view", "panel")
+    rerender(phoneTree({ contentActive: true }))
+    expect(shell).toHaveAttribute("data-mobile-view", "content")
+  })
+
+  it("renders no Back button without onBack", () => {
+    render(phoneTree({ contentActive: true }))
+    expect(screen.queryByRole("button", { name: "Back" })).toBeNull()
+  })
+
+  it("renders a Back button that calls onBack", () => {
+    const onBack = vi.fn()
+    render(phoneTree({ contentActive: true, onBack }))
+    const back = screen.getByRole("button", { name: "Back" })
+    expect(back).toHaveClass("dr-split-panel-layout-back")
+    fireEvent.click(back)
+    expect(onBack).toHaveBeenCalledTimes(1)
+  })
+
+  it("moves focus between content and panel on a phone", () => {
+    stubPhoneWidth(true)
+    const { container, rerender } = render(phoneTree())
+    rerender(phoneTree({ contentActive: true }))
+    expect(document.activeElement).toBe(
+      container.querySelector("main#main-content"),
+    )
+    rerender(phoneTree({ contentActive: false }))
+    expect(document.activeElement).toBe(
+      container.querySelector('[data-region="panel"]'),
+    )
+  })
+
+  it("leaves focus alone side by side", () => {
+    stubPhoneWidth(false)
+    const { rerender } = render(phoneTree())
+    rerender(phoneTree({ contentActive: true }))
+    expect(document.activeElement).toBe(document.body)
   })
 })

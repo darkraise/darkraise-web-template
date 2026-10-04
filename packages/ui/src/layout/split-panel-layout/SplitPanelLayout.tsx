@@ -1,4 +1,6 @@
-import { useState, useCallback, useRef } from "react"
+import { useState, useCallback, useEffect, useRef } from "react"
+import { ChevronLeft } from "lucide-react"
+import { Button } from "@components/button"
 import { useEventListener, useSeparatorA11y } from "@hooks"
 import { SearchCommand } from "@layout/search-command"
 import { BrandLogo } from "@layout/brand-logo"
@@ -22,6 +24,13 @@ export interface SplitPanelLayoutProps extends LayoutProps {
   defaultPanelWidth?: number
   minPanelWidth?: number
   maxPanelWidth?: number
+  /**
+   * Below 768px, whether the content replaces the panel. The panel shows
+   * first; pass true once the user opens an item.
+   */
+  contentActive?: boolean
+  /** Below 768px, renders a Back button above the content that calls this. */
+  onBack?: () => void
 }
 
 export function SplitPanelLayout({
@@ -50,6 +59,8 @@ export function SplitPanelLayout({
   defaultPanelWidth = 320,
   minPanelWidth = 240,
   maxPanelWidth = 480,
+  contentActive = false,
+  onBack,
 }: SplitPanelLayoutProps) {
   const labels = useUiLabels()
   const shellStyle = useShellStyle(shellStyleProp, defaultShellStyle)
@@ -62,6 +73,17 @@ export function SplitPanelLayout({
   const [isDragging, setIsDragging] = useState(false)
   const docRef = useRef(typeof document !== "undefined" ? document : null)
   const shellRef = useRef<HTMLDivElement | null>(null)
+  const panelRef = useRef<HTMLDivElement | null>(null)
+  const mainRef = useRef<HTMLElement | null>(null)
+  const previousContentActive = useRef(contentActive)
+
+  useEffect(() => {
+    if (previousContentActive.current === contentActive) return
+    previousContentActive.current = contentActive
+    // Only the phone view swaps the regions; side by side, focus stays put.
+    if (!window.matchMedia("(width < 48rem)").matches) return
+    ;(contentActive ? mainRef.current : panelRef.current)?.focus()
+  }, [contentActive])
 
   const clampWidth = useCallback(
     (width: number) => Math.min(Math.max(width, minPanelWidth), maxPanelWidth),
@@ -115,6 +137,7 @@ export function SplitPanelLayout({
       className="dr-shell dr-split-panel-layout"
       data-structure="split-panel"
       data-shell-style={shellStyle}
+      data-mobile-view={contentActive ? "content" : "panel"}
       style={{ "--panel-width": `${panelWidth}px` } as CSSProperties}
     >
       <SkipLink>{labels.layout.skipToContent}</SkipLink>
@@ -140,7 +163,12 @@ export function SplitPanelLayout({
         <SearchCommand navItems={flattenNavItems(nav)} />
       </LayoutHeader>
 
-      <div data-region="panel" className="dr-split-panel-layout-aside">
+      <div
+        ref={panelRef}
+        tabIndex={-1}
+        data-region="panel"
+        className="dr-split-panel-layout-aside"
+      >
         {panel}
       </div>
 
@@ -156,12 +184,27 @@ export function SplitPanelLayout({
       />
 
       <main
+        ref={mainRef}
         id="main-content"
         tabIndex={-1}
         data-region="content"
         data-content
         className="dr-split-panel-layout-content"
       >
+        {onBack && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="dr-split-panel-layout-back"
+            onClick={onBack}
+          >
+            <ChevronLeft
+              className="dr-split-panel-layout-back-icon size-[var(--icon-size)]"
+              aria-hidden="true"
+            />
+            {labels.layout.back}
+          </Button>
+        )}
         {children}
       </main>
     </div>
