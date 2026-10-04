@@ -682,6 +682,55 @@ describe("ThemeProvider synced payloads", () => {
     expect(result.current.syncStatus).toBe("error")
   })
 
+  it("treats a save that throws synchronously as failed and keeps saving", async () => {
+    const { adapter } = memoryAdapter(null)
+    adapter.save.mockImplementationOnce(() => {
+      throw new Error("sync failure")
+    })
+    const { result } = renderHook(() => useTheme(), {
+      wrapper: synced(adapter),
+    })
+    await settle()
+
+    act(() => result.current.setDensity("compact"))
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(60)
+    })
+    expect(adapter.save).toHaveBeenCalledOnce()
+    expect(result.current.syncStatus).toBe("error")
+
+    act(() => result.current.setDensity("spacious"))
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(60)
+    })
+    expect(adapter.save).toHaveBeenCalledTimes(2)
+    expect(adapter.save.mock.calls[1]?.[0]).toEqual(
+      expect.objectContaining({ density: "spacious" }),
+    )
+    expect(result.current.syncStatus).toBe("idle")
+  })
+
+  it("clears the timeout of a save that settles in time", async () => {
+    const { adapter } = memoryAdapter(null)
+    const { result } = renderHook(() => useTheme(), {
+      wrapper: synced(adapter),
+    })
+    await settle()
+
+    act(() => result.current.setDensity("compact"))
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(60)
+    })
+    expect(adapter.save).toHaveBeenCalledOnce()
+    expect(result.current.syncStatus).toBe("idle")
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(15_000)
+    })
+    expect(adapter.save.mock.calls[0]?.[1]?.signal.aborted).toBe(false)
+    expect(result.current.syncStatus).toBe("idle")
+  })
+
   it("keeps saving while an edit made during the load waits to save", async () => {
     let finishLoad: (loaded: ThemeSettings | null) => void = () => {}
     const { adapter } = memoryAdapter(null)
