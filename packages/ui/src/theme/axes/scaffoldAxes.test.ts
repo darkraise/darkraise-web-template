@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest"
 import { readFileSync } from "node:fs"
 import { scaffoldAxes } from "./scaffoldAxes"
 import { AXES, AXIS_KEYS } from "./registry"
+import { defaultLabels } from "../../labels/defaults"
 
 describe("scaffold axes.json", () => {
   it("matches the registry; run `pnpm --filter darkraise-ui write:scaffold-axes` after changing it", () => {
@@ -16,6 +17,41 @@ describe("scaffold axes.json", () => {
     expect(axes.accentColor?.values.slice(-1)).toEqual(["neutral"])
     expect(axes.surfaceColor?.values).toHaveLength(12)
     expect(axes.surfaceColor?.values).toContain("zinc")
+  })
+
+  it("labels every axis from the English switcher labels", () => {
+    const { axisLabels, groupLabels } = defaultLabels.theme
+    const groupOf = {
+      brand: groupLabels.brand,
+      style: axisLabels.style,
+      advanced: groupLabels.advanced,
+    }
+    const axes = scaffoldAxes()
+    for (const key of AXIS_KEYS) {
+      expect(axes[key]).toMatchObject({
+        label: axisLabels[key],
+        groupLabel: groupOf[AXES[key].layer],
+      })
+    }
+  })
+
+  it("leaves nine axes to prompt: the brand layer and the style axis", () => {
+    const axes = scaffoldAxes()
+    expect(
+      Object.keys(axes).filter(
+        (key) => axes[key]?.layer === "brand" || key === "style",
+      ),
+    ).toEqual([
+      "mode",
+      "accentColor",
+      "surfaceColor",
+      "tintWithAccent",
+      "style",
+      "font",
+      "radius",
+      "density",
+      "fontSize",
+    ])
   })
 })
 
