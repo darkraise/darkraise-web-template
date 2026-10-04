@@ -6,18 +6,18 @@
 
 A removed key in `defaults` or `switcher.axes` is ignored. It also warns once per distinct config, naming the replacement, outside production builds.
 
-| 6.x key                                             | 7.0                                                                         |
-| --------------------------------------------------- | --------------------------------------------------------------------------- |
-| `surfaceIntensity`                                  | `contrast`                                                                  |
-| `borderIntensity`                                   | `contrast`                                                                  |
-| `accentIntensity`                                   | `darkAccentChroma`                                                          |
-| `controlDepth`                                      | removed, no replacement                                                     |
-| `buttonElevation`                                   | removed, no replacement                                                     |
-| `shellStyle`                                        | the layout's `defaultShellStyle` prop                                       |
-| `preset`                                            | `style`                                                                     |
-| `switcher.axes.presetAxes`, `axisLabels.presetAxes` | removed; glass opacity and blur are the `glassOpacity` and `glassBlur` axes |
+| 6.x key                    | 7.0                                                                         |
+| -------------------------- | --------------------------------------------------------------------------- |
+| `surfaceIntensity`         | `contrast`                                                                  |
+| `borderIntensity`          | `contrast`                                                                  |
+| `accentIntensity`          | `darkAccentChroma`                                                          |
+| `controlDepth`             | removed, no replacement                                                     |
+| `buttonElevation`          | removed, no replacement                                                     |
+| `shellStyle`               | the layout's `defaultShellStyle` prop                                       |
+| `preset`                   | `style`                                                                     |
+| `switcher.axes.presetAxes` | removed; glass opacity and blur are the `glassOpacity` and `glassBlur` axes |
 
-`ThemeConfig.defaults` is now a partial map: a key left out falls back to the registry default.
+`labels.theme.axisLabels.presetAxes` is removed from the labels type as well. `ThemeConfig.defaults` is now a partial map: a key left out falls back to the registry default.
 
 ## Stored settings
 
@@ -29,7 +29,7 @@ The kit rewrites these browser storage keys once per browser, in the pre-render 
 - Exceptions: a user whose stored preset is glass or sci-fi keeps no contrast or dark accent chroma from the two keys above, because those presets painted both intensities at the config default whatever was stored.
 - `theme-control-depth` and `theme-button-elevation` are removed.
 - `theme-elevation`: `low` and `medium` become `standard`.
-- `theme-surface-color`: a stored accent name (the 6.x accent surfaces) becomes `zinc`, and `theme-tint-with-accent` is set to `on`, which keeps the tint.
+- `theme-surface-color`: a stored accent name (the 6.x accent surfaces) becomes `zinc`, and `theme-tint-with-accent` is set to `on` unless a valid tint is already stored, which keeps the tint.
 - `theme-bg-style`: `solid` under the glass preset becomes `gradient`, because glass painted a gradient.
 - `theme-glassmorphism-opacity` and `theme-glassmorphism-blur` move to `theme-glass-opacity` and `theme-glass-blur`; a stored `medium` in either is removed, because 6.x wrote it as a default rather than a choice.
 - `theme-canvas-tint` becomes `theme-bg-intensity`, `theme-accent-vibrancy` goes through the accent intensity mapping above, and `theme-glass-halo` becomes `theme-outer-glow` (`soft` to `balanced`, `pronounced` to `vivid`).
@@ -94,13 +94,13 @@ Passing `themeConfig.defaults` lets an axis the user never set resolve as the pr
 
 The scaffold asks only for the brand axes and the style, every theme axis has a flag, and `--help` lists them. The generated `theme.config.ts` lists only the choices made. These 6.x flags now exit with an error naming the replacement:
 
-| 6.x flag                                | 7.0                                   |
-| --------------------------------------- | ------------------------------------- |
-| `--preset`                              | `--style`                             |
-| `--surface-intensity`                   | `--contrast`                          |
-| `--accent-intensity`                    | `--dark-accent-chroma`                |
-| `--shell-style`                         | the layout's `defaultShellStyle` prop |
-| `--control-depth`, `--button-elevation` | removed, no replacement               |
+| 6.x flag                                | 7.0                                                   |
+| --------------------------------------- | ----------------------------------------------------- |
+| `--preset`                              | `--style` (`--preset default` is now `--style quiet`) |
+| `--surface-intensity`                   | `--contrast`                                          |
+| `--accent-intensity`                    | `--dark-accent-chroma`                                |
+| `--shell-style`                         | the layout's `defaultShellStyle` prop                 |
+| `--control-depth`, `--button-elevation` | removed, no replacement                               |
 
 The same names are rejected inside `--theme-axes`, with their camelCase form (for example `preset`, `surfaceIntensity`).
 
@@ -108,4 +108,3 @@ Some flags kept their name but lost 6.x values:
 
 - `--elevation low` and `--elevation medium`: use `--elevation standard`.
 - `--surface-color` given an accent name: use a neutral such as `zinc`, plus `--tint-with-accent on`.
-- `--preset default`: now `--style quiet`.
