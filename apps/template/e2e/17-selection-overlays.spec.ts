@@ -161,7 +161,7 @@ for (const mode of MODES) {
     await openFixture(page)
     const items = page.locator('[data-probe="sidebar"] .dr-sidebar-nav-item')
     const active = page.locator(
-      '[data-probe="sidebar"] .dr-sidebar-nav-item:is(.active, [data-status="active"])',
+      '[data-probe="sidebar"] .dr-sidebar-nav-current',
     )
     await expect(active).toHaveCount(1)
     const idle = items.filter({ hasText: "Settings" })

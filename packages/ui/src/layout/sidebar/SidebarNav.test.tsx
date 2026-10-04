@@ -23,9 +23,15 @@ const sidebarNavCss = readFileSync(
   "utf8",
 )
 
-function StrictLink({ to, className, style, children }: RouterLinkProps) {
+function StrictLink({
+  to,
+  className,
+  style,
+  children,
+  "aria-current": ariaCurrent,
+}: RouterLinkProps) {
   return (
-    <a href={to} className={className} style={style}>
+    <a href={to} className={className} style={style} aria-current={ariaCurrent}>
       {children}
     </a>
   )
@@ -310,7 +316,7 @@ describe("SidebarNav activeBar", () => {
     const rules = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)]
     const base = rules.find(
       ([, selector = ""]) =>
-        selector.includes(".dr-sidebar-nav-item.active") &&
+        selector.includes(".dr-sidebar-nav-current") &&
         !selector.includes("data-active-bar"),
     )
     expect(base, "no base active rule in sidebar-nav.css").toBeDefined()
@@ -341,5 +347,189 @@ describe("SidebarNav activeBar", () => {
         expect(matching[0]?.[1]).toMatch(nav)
       }
     }
+  })
+})
+
+describe("SidebarNav active row", () => {
+  const detailNav: NavGroup[] = [
+    {
+      label: "Sales",
+      items: [
+        { label: "Orders", href: "/orders" },
+        { label: "Customers", href: "/customers" },
+      ],
+    },
+  ]
+  const indexNav: NavGroup[] = [
+    {
+      label: "Catalog",
+      items: [
+        {
+          label: "Products",
+          href: "/products",
+          children: [
+            { label: "All products", href: "/products" },
+            { label: "Drafts", href: "/products/drafts" },
+          ],
+        },
+      ],
+    },
+  ]
+  // Two parents whose hrefs overlap: "/settings" is a whole-segment prefix
+  // of everything under "/settings/billing".
+  const overlapNav: NavGroup[] = [
+    {
+      label: "Admin",
+      items: [
+        {
+          label: "Settings",
+          href: "/settings",
+          children: [{ label: "Profile", href: "/settings/profile" }],
+        },
+        {
+          label: "Billing",
+          href: "/settings/billing",
+          children: [{ label: "Invoices", href: "/settings/billing/invoices" }],
+        },
+      ],
+    },
+  ]
+  const deepNav: NavGroup[] = [
+    {
+      label: "Admin",
+      items: [
+        {
+          label: "Settings",
+          href: "/settings",
+          children: [
+            { label: "Profile", href: "/settings/profile" },
+            {
+              label: "Billing",
+              href: "/settings/billing",
+              children: [
+                { label: "Invoices", href: "/settings/billing/invoices" },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ]
+  const renderAt = (
+    groups: NavGroup[],
+    path: string,
+    collapsed = false,
+    adapter: RouterAdapter = makeAdapter(path),
+  ) =>
+    render(
+      <RouterAdapterProvider value={adapter}>
+        <SidebarProvider collapsed={collapsed}>
+          <SidebarNav nav={groups} />
+        </SidebarProvider>
+      </RouterAdapterProvider>,
+    )
+
+  it("keeps a detail route on its list item", () => {
+    const { container } = renderAt(detailNav, "/orders/ord-1")
+    const current = container.querySelectorAll(".dr-sidebar-nav-current")
+    expect(current).toHaveLength(1)
+    expect(current[0]).toHaveTextContent("Orders")
+  })
+
+  it("marks the current link for assistive technology", () => {
+    const { container } = renderAt(detailNav, "/orders/ord-1")
+    expect(container.querySelector(".dr-sidebar-nav-current")).toHaveAttribute(
+      "aria-current",
+      "page",
+    )
+  })
+
+  it("marks one row when an index child shares its parent's href", () => {
+    const { container } = renderAt(indexNav, "/products")
+    const current = container.querySelectorAll(".dr-sidebar-nav-current")
+    expect(current).toHaveLength(1)
+    expect(current[0]).toHaveTextContent("All products")
+    expect(
+      container.querySelector(".dr-sidebar-nav-collapsible-row"),
+    ).toHaveClass("dr-sidebar-nav-ancestor")
+    expect(
+      container.querySelector(".dr-sidebar-nav-collapsible-link"),
+    ).not.toHaveAttribute("aria-current")
+  })
+
+  it("marks only the expanded parent that holds the longest match", () => {
+    const { container } = renderAt(overlapNav, "/settings/billing/invoices")
+    const rows = container.querySelectorAll(".dr-sidebar-nav-collapsible-row")
+    expect(rows[0]).not.toHaveClass("dr-sidebar-nav-ancestor")
+    expect(rows[1]).toHaveClass("dr-sidebar-nav-ancestor")
+    expect(container.querySelectorAll(".dr-sidebar-nav-current")).toHaveLength(
+      1,
+    )
+  })
+
+  it("marks only the collapsed parent that holds the longest match", () => {
+    const { container } = renderAt(
+      overlapNav,
+      "/settings/billing/invoices",
+      true,
+    )
+    const current = container.querySelectorAll(".dr-sidebar-nav-current")
+    expect(current).toHaveLength(1)
+    expect(current[0]).toBe(screen.getByRole("button", { name: "Billing" }))
+  })
+
+  it("marks the popover entry that leads to a grandchild route", async () => {
+    const user = userEvent.setup()
+    renderAt(deepNav, "/settings/billing/invoices", true)
+    await user.click(screen.getByRole("button", { name: "Settings" }))
+    const billing = screen.getByRole("link", { name: "Billing" })
+    expect(billing).toHaveClass("dr-sidebar-nav-current")
+    expect(billing).toHaveAttribute("aria-current", "page")
+    expect(
+      document.querySelectorAll(
+        ".dr-sidebar-nav-popover-content .dr-sidebar-nav-current",
+      ),
+    ).toHaveLength(1)
+  })
+
+  it("asks the router for an exact match and no class on every link", async () => {
+    const seen: RouterLinkProps[] = []
+    const RecordingLink = (props: RouterLinkProps) => {
+      seen.push(props)
+      return <StrictLink {...props} />
+    }
+    const recording = (path: string): RouterAdapter => ({
+      ...makeAdapter(path),
+      Link: RecordingLink,
+    })
+    const user = userEvent.setup()
+    // Unmounted first: the expanded chevron is also named "Products".
+    renderAt(indexNav, "/products", false, recording("/products")).unmount()
+    renderAt(indexNav, "/products", true, recording("/products"))
+    await user.click(screen.getByRole("button", { name: "Products" }))
+    expect(seen.length).toBeGreaterThan(0)
+    for (const props of seen) {
+      expect(props.activeExact, props.to).toBe(true)
+      expect(props.activeClassName, props.to).toBeUndefined()
+    }
+  })
+
+  it("marks the collapsed parent current for a child route", () => {
+    renderAt(indexNav, "/products/drafts", true)
+    expect(screen.getByRole("button", { name: "Products" })).toHaveClass(
+      "dr-sidebar-nav-current",
+    )
+  })
+
+  it("marks only the current popover entry", async () => {
+    const user = userEvent.setup()
+    renderAt(indexNav, "/products/drafts", true)
+    await user.click(screen.getByRole("button", { name: "Products" }))
+    expect(screen.getByRole("link", { name: "Drafts" })).toHaveClass(
+      "dr-sidebar-nav-current",
+    )
+    expect(screen.getByRole("link", { name: "Products" })).not.toHaveClass(
+      "dr-sidebar-nav-current",
+    )
   })
 })

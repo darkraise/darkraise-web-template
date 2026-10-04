@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { useRouterAdapter } from "@router"
+import { cn } from "@lib/utils"
 import { ChevronRight } from "lucide-react"
 import "./sidebar-nav.css"
 import {
@@ -11,7 +12,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@components/popover"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/tooltip"
 import { SidebarProvider } from "./SidebarContext"
 import { useSidebar } from "./sidebar-context"
-import { coversPath } from "@layout/navTree"
+import { containsItem, findActiveItem } from "@layout/navTree"
+import { ActiveNavItemContext, useActiveNavItem } from "./active-nav-context"
 import { resolveActiveBar } from "./sidebar-active-bar"
 import type { SidebarActiveBar } from "./sidebar-active-bar"
 import type { NavGroup, NavItem } from "@layout/types"
@@ -44,21 +46,28 @@ function SidebarNav({
 }: SidebarNavProps) {
   const ctx = useSidebar()
   const collapsed = collapsedProp ?? ctx.collapsed
+  const { usePathname } = useRouterAdapter()
+  const activeItem = findActiveItem(
+    nav.flatMap((group) => group.items),
+    usePathname(),
+  )
 
   const tree = (
-    <nav
-      className="dr-sidebar-nav"
-      data-collapsed={collapsed || undefined}
-      data-active-bar={resolveActiveBar(activeBar)}
-    >
-      {nav.map((group, gi) => (
-        <SidebarGroup
-          key={gi}
-          group={group}
-          position={gi > 0 ? "subsequent" : undefined}
-        />
-      ))}
-    </nav>
+    <ActiveNavItemContext.Provider value={activeItem}>
+      <nav
+        className="dr-sidebar-nav"
+        data-collapsed={collapsed || undefined}
+        data-active-bar={resolveActiveBar(activeBar)}
+      >
+        {nav.map((group, gi) => (
+          <SidebarGroup
+            key={gi}
+            group={group}
+            position={gi > 0 ? "subsequent" : undefined}
+          />
+        ))}
+      </nav>
+    </ActiveNavItemContext.Provider>
   )
 
   // Only wrap in a SidebarProvider when the consumer explicitly overrides
@@ -104,6 +113,7 @@ function SidebarItem({ item, depth = 0 }: SidebarItemProps) {
   const { Link } = useRouterAdapter()
   const { collapsed } = useSidebar()
   const hasChildren = item.children && item.children.length > 0
+  const current = useActiveNavItem() === item
 
   if (hasChildren && !collapsed) {
     return <CollapsibleSidebarItem item={item} depth={depth} />
@@ -116,12 +126,17 @@ function SidebarItem({ item, depth = 0 }: SidebarItemProps) {
   const linkContent = (
     <Link
       to={item.href}
-      className="dr-sidebar-nav-item dr-sidebar-nav-link"
+      className={cn(
+        "dr-sidebar-nav-item dr-sidebar-nav-link",
+        current && "dr-sidebar-nav-current",
+      )}
       data-collapsed={collapsed ? "true" : undefined}
       data-depth={depth > 0 ? "nested" : undefined}
       style={depth > 0 ? { paddingLeft: `${depth * 12 + 12}px` } : undefined}
+      // Kept so a router's own (often fuzzy) match never marks a second row;
+      // the kit decides which row is current.
       activeExact
-      activeClassName="active"
+      aria-current={current ? "page" : undefined}
     >
       {item.icon && (
         <span className="dr-sidebar-nav-icon">
@@ -155,16 +170,20 @@ function SidebarItem({ item, depth = 0 }: SidebarItemProps) {
 }
 
 function CollapsedParentItem({ item }: { item: NavItem }) {
-  const { Link, usePathname } = useRouterAdapter()
+  const { Link } = useRouterAdapter()
+  const activeItem = useActiveNavItem()
   // Collapsed, one icon stands in for the whole group, so it has to carry the
   // active state on its children's behalf — nothing else on the rail can.
-  const active = coversPath(item, usePathname())
+  const active = containsItem(item, activeItem)
   return (
     <Popover>
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="dr-sidebar-nav-item dr-sidebar-nav-popover-trigger"
+          className={cn(
+            "dr-sidebar-nav-item dr-sidebar-nav-popover-trigger",
+            active && "dr-sidebar-nav-current",
+          )}
           aria-label={item.label}
           data-status={active ? "active" : undefined}
         >
@@ -187,9 +206,12 @@ function CollapsedParentItem({ item }: { item: NavItem }) {
             collapsed. */}
         <Link
           to={item.href}
-          className="dr-sidebar-popover-child dr-sidebar-nav-popover-parent"
+          className={cn(
+            "dr-sidebar-popover-child dr-sidebar-nav-popover-parent",
+            activeItem === item && "dr-sidebar-nav-current",
+          )}
           activeExact
-          activeClassName="active"
+          aria-current={activeItem === item ? "page" : undefined}
         >
           {item.label}
         </Link>
@@ -198,8 +220,14 @@ function CollapsedParentItem({ item }: { item: NavItem }) {
           <Link
             key={child.href}
             to={child.href}
-            className="dr-sidebar-popover-child"
-            activeClassName="active"
+            // The popover lists one level, so a deeper route marks the child
+            // that leads to it.
+            className={cn(
+              "dr-sidebar-popover-child",
+              containsItem(child, activeItem) && "dr-sidebar-nav-current",
+            )}
+            activeExact
+            aria-current={containsItem(child, activeItem) ? "page" : undefined}
           >
             {child.label}
           </Link>
@@ -216,9 +244,10 @@ function CollapsibleSidebarItem({
   item: NavItem
   depth: number
 }) {
-  const { Link, usePathname } = useRouterAdapter()
-  const currentPath = usePathname()
-  const covered = coversPath(item, currentPath)
+  const { Link } = useRouterAdapter()
+  const activeItem = useActiveNavItem()
+  const current = activeItem === item
+  const covered = containsItem(item, activeItem)
   const [open, setOpen] = useState(covered)
 
   // Opens on the way in, but never closes on the way out: navigating into a
@@ -237,11 +266,15 @@ function CollapsibleSidebarItem({
       {/* The row, not the link, is the item: it owns the hover fill and the
           active indicator so both span the toggle too, exactly as a leaf row
           fills end to end. That puts the active state out of the router's
-          reach — `activeClassName` lands on the anchor — so it is resolved
-          here instead, matching the `activeExact` the leaf branch asks for. */}
+          reach, so the row takes the kit's own current marker. */}
       <div
-        className="dr-sidebar-nav-item dr-sidebar-nav-collapsible-row"
-        data-status={currentPath === item.href ? "active" : undefined}
+        className={cn(
+          "dr-sidebar-nav-item dr-sidebar-nav-collapsible-row",
+          current
+            ? "dr-sidebar-nav-current"
+            : covered && "dr-sidebar-nav-ancestor",
+        )}
+        data-status={current ? "active" : undefined}
       >
         {/* The depth indent sits on the link, not on the row: the link carries
             its own padding, so indenting the row would stack the two and push
@@ -253,6 +286,8 @@ function CollapsibleSidebarItem({
           style={
             depth > 0 ? { paddingLeft: `${depth * 12 + 12}px` } : undefined
           }
+          activeExact
+          aria-current={current ? "page" : undefined}
         >
           {item.icon && (
             <span className="dr-sidebar-nav-icon">

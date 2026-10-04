@@ -7,6 +7,7 @@ import { UiLabelsProvider } from "@labels"
 import type { RouterAdapter, RouterLinkProps } from "@router"
 import type { NavGroup } from "@layout/types"
 import { readFileSync } from "node:fs"
+import { CreditCard, Settings, ShoppingCart, Users } from "lucide-react"
 import { ThemeProvider, themeConfig } from "@theme"
 import type { SidebarActiveBarSetting } from "@theme"
 
@@ -175,5 +176,77 @@ describe("active indicator setting", () => {
         `:is(.dr-sidebar-nav, .dr-stacked-layout-rail-nav, .dr-stacked-layout-aside-nav)[data-active-bar="${value}"]`,
       )
     }
+  })
+})
+
+describe("stacked layout active row", () => {
+  const groups: NavGroup[] = [
+    {
+      label: "Sales",
+      items: [
+        { label: "Orders", href: "/orders", icon: ShoppingCart },
+        { label: "Customers", href: "/customers", icon: Users },
+      ],
+    },
+  ]
+  const at = (path: string): RouterAdapter => ({
+    Link: ({ to, className, children, "aria-current": ariaCurrent }) => (
+      <a href={to} className={className} aria-current={ariaCurrent}>
+        {children}
+      </a>
+    ),
+    useNavigate: () => () => {},
+    usePathname: () => path,
+    useBack: () => () => {},
+    useInvalidate: () => () => {},
+  })
+
+  it("keeps a detail route on its sub-nav item and marks the rail", () => {
+    const { container } = render(
+      <RouterAdapterProvider value={at("/orders/ord-1")}>
+        <StackedLayout nav={groups} showThemeSwitcher={false}>
+          <div>Content</div>
+        </StackedLayout>
+      </RouterAdapterProvider>,
+    )
+    const aside = container.querySelector(".dr-stacked-layout-aside-nav")
+    expect(aside?.querySelector(".dr-sidebar-nav-current")).toHaveTextContent(
+      "Orders",
+    )
+    expect(
+      container.querySelector(
+        ".dr-stacked-layout-rail-nav .dr-sidebar-nav-current",
+      ),
+    ).not.toBeNull()
+  })
+
+  it("picks the group that holds the longest match", () => {
+    const overlapping: NavGroup[] = [
+      {
+        label: "Settings",
+        items: [{ label: "Settings", href: "/settings", icon: Settings }],
+      },
+      {
+        label: "Billing",
+        items: [
+          { label: "Billing", href: "/settings/billing", icon: CreditCard },
+        ],
+      },
+    ]
+    const { container } = render(
+      <RouterAdapterProvider value={at("/settings/billing/42")}>
+        <StackedLayout nav={overlapping} showThemeSwitcher={false}>
+          <div>Content</div>
+        </StackedLayout>
+      </RouterAdapterProvider>,
+    )
+    const rail = container.querySelectorAll(
+      ".dr-stacked-layout-rail-nav .dr-sidebar-nav-current",
+    )
+    expect(rail).toHaveLength(1)
+    expect(rail[0]).toHaveAttribute("href", "/settings/billing")
+    expect(
+      container.querySelector(".dr-stacked-layout-aside-label"),
+    ).toHaveTextContent("Billing")
   })
 })

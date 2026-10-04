@@ -278,7 +278,7 @@ describe("underline family", () => {
 const SIDEBAR = "src/layout/sidebar/sidebar-nav.css"
 
 describe("nav row family: sidebar", () => {
-  const active = '.dr-sidebar-nav-item[data-status="active"]'
+  const active = ".dr-sidebar-nav-current"
 
   it("tints the active link with the nav-row fill and keeps its own text", () => {
     const body = bodyOf(SIDEBAR, active)
@@ -305,7 +305,7 @@ describe("nav row family: sidebar", () => {
 
 describe("nav row family: popover, top nav and layout switcher", () => {
   it.each([
-    [SIDEBAR, ".dr-sidebar-popover-child.active"],
+    [SIDEBAR, ".dr-sidebar-popover-child.dr-sidebar-nav-current"],
     [
       "src/layout/top-nav-layout/top-nav-layout.css",
       '.dr-top-nav-layout-nav-item[data-active="true"]',
@@ -461,16 +461,6 @@ const ALLOWED: Array<[string, string, string]> = [
     "components/virtualized-timeline/virtualized-timeline.css",
     '[data-selected="true"]',
     "a selected timeline tile or row is timeline chrome",
-  ],
-  [
-    "layout/sidebar/sidebar-nav.css",
-    "[data-active-bar=",
-    "the bar and ring are the opt-in sidebarActiveBar indicators",
-  ],
-  [
-    "layout/sidebar/sidebar-nav.css",
-    ".dr-sidebar-nav-icon-svg",
-    "the active sidebar row keeps its primary icon",
   ],
 ]
 

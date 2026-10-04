@@ -1,5 +1,6 @@
 import { useUiText } from "../../i18n/useUiText"
 import { useRouterAdapter } from "@router"
+import { cn } from "@lib/utils"
 import { SidebarItem, SidebarProvider } from "@layout/sidebar"
 import {
   Tooltip,
@@ -10,7 +11,8 @@ import {
 import { LayoutHeader } from "@layout/layout-header"
 import { SkipLink } from "@layout/skip-link"
 import { useRouteFocus } from "@layout/useRouteFocus"
-import { coversPath } from "@layout/navTree"
+import { containsItem, findActiveItem } from "@layout/navTree"
+import { ActiveNavItemContext } from "@layout/sidebar/active-nav-context"
 import type { LayoutProps } from "@layout/types"
 import { BrandLogo } from "@layout/brand-logo"
 import { useShellStyle, useSidebarActiveBarSetting } from "@layout/shell"
@@ -65,8 +67,15 @@ export function StackedLayout({
   const activeBarSetting = useSidebarActiveBarSetting()
   const activeBar =
     activeBarSetting === "default" ? undefined : activeBarSetting
+  // One active item across every group, so two groups with overlapping
+  // prefixes never both claim the route and the longest match picks the
+  // sub-nav.
+  const activeItem = findActiveItem(
+    nav.flatMap((group) => group.items),
+    currentPath,
+  )
   const activeGroupIndex = nav.findIndex((group) =>
-    group.items.some((item) => coversPath(item, currentPath)),
+    group.items.some((item) => containsItem(item, activeItem)),
   )
   // When the current route does not match any nav group, don't fall back
   // to nav[0] — that surfaces the first group's items in the sub-nav
@@ -108,7 +117,11 @@ export function StackedLayout({
                     <TooltipTrigger asChild>
                       <Link
                         to={firstItem.href}
-                        className="dr-sidebar-nav-item dr-stacked-layout-rail-item"
+                        className={cn(
+                          "dr-sidebar-nav-item dr-stacked-layout-rail-item",
+                          isActive && "dr-sidebar-nav-current",
+                        )}
+                        activeExact
                         data-status={isActive ? "active" : undefined}
                         // This layout resolves active state itself, so it
                         // states the current page rather than relying on
@@ -145,9 +158,11 @@ export function StackedLayout({
                   className="dr-stacked-layout-aside-nav"
                   data-active-bar={activeBar}
                 >
-                  {activeGroup.items.map((item) => (
-                    <SidebarItem key={item.href} item={item} />
-                  ))}
+                  <ActiveNavItemContext.Provider value={activeItem}>
+                    {activeGroup.items.map((item) => (
+                      <SidebarItem key={item.href} item={item} />
+                    ))}
+                  </ActiveNavItemContext.Provider>
                 </nav>
               </div>
             </aside>
