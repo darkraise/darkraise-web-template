@@ -263,6 +263,24 @@ describe("region chrome", () => {
     )
   })
 
+  // The panel is its own scrollport, so an absolute fill would scroll away
+  // and leave the canvas bare below the first screen.
+  it("keeps the panel's fill on its scrollport", () => {
+    const body = shellBodies('.dr-shell > [data-region="panel"]::before')
+    expect(body).toContain("position: sticky;")
+    expect(body).toContain("top: 0;")
+    expect(body).toContain("height: 100%;")
+  })
+
+  // The bar's dropdowns render inline, so the bar must stack above the
+  // content region (itself an isolated stacking context) or the content
+  // paints over an open menu.
+  it("stacks the bar above the content", () => {
+    expect(shellBodies('.dr-shell > [data-region="bar"]')).toContain(
+      "z-index: 1;",
+    )
+  })
+
   it("fills the bar and edges it on the content side", () => {
     expect(shellBodies('.dr-shell > [data-region="bar"]')).toContain(
       "border-bottom: 1px solid var(--chrome-edge);",

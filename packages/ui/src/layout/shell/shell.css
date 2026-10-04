@@ -118,7 +118,23 @@
     background: var(--chrome-rail-bg);
   }
 
+  /* The panel scrolls itself, and an absolute fill would scroll away with
+     its content. A sticky float stays on the scrollport without taking
+     flow space: the negative margin leaves its margin box zero wide, so no
+     line wraps around it. */
+  .dr-shell > [data-region="panel"]::before {
+    position: sticky;
+    top: 0;
+    float: left;
+    width: 100%;
+    height: 100%;
+    margin-right: -100%;
+  }
+
+  /* A bar's dropdowns render inline, so they only clear the content region
+     if the bar's own stacking context sits above it. */
   .dr-shell > [data-region="bar"] {
+    z-index: 1;
     border-bottom: 1px solid var(--chrome-edge);
   }
 
