@@ -109,7 +109,7 @@ function InboxPage() {
         label: group.label ? t(group.label) : undefined,
         items: group.items.map((item) => ({ ...item, label: t(item.label) })),
       }))}
-      headerSlot={<AppLocaleSwitcher />}
+      headerSlot={<AppLocaleSwitcher compact />}
       panel={panel}
       showLayoutSwitcher
       user={user ? { name: user.name, email: user.email } : undefined}

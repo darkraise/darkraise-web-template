@@ -90,3 +90,77 @@ test.describe("orders table", () => {
     }
   })
 })
+
+const HEADER_CASES = [
+  { name: "sidebar", path: "/", layout: "sidebar", search: false },
+  { name: "top-nav", path: "/", layout: "top-nav", search: true },
+  { name: "stacked", path: "/", layout: "stacked", search: true },
+  { name: "split-panel", path: "/inbox", layout: null, search: true },
+] as const
+
+test.describe("header", () => {
+  for (const entry of HEADER_CASES) {
+    test(`${entry.name} keeps every control on screen`, async ({ page }) => {
+      await seedApp(page)
+      if (entry.layout) {
+        await page.addInitScript((value) => {
+          localStorage.setItem("layout-variant", value)
+        }, entry.layout)
+      }
+      await gotoApp(page, entry.path)
+      await expect(
+        page.locator(`.dr-shell[data-structure="${entry.name}"]`),
+      ).toBeVisible()
+      const header = page.locator("header.dr-layout-header").first()
+      const required = [
+        header.getByRole("button", { name: "Open menu" }),
+        header.getByRole("combobox", { name: "Language" }),
+        header.getByRole("button", { name: "Switch layout" }),
+        header.getByRole("button", { name: "Customize theme" }),
+        header.getByRole("button", { name: "Notifications" }),
+      ]
+      if (entry.search) {
+        required.push(header.getByRole("button", { name: /^Search/ }))
+      }
+      for (const control of required) await expect(control).toBeVisible()
+
+      const offscreen = await header.evaluate((el) => {
+        const width = document.documentElement.clientWidth
+        return [
+          ...el.querySelectorAll<HTMLElement>("button, a, [role='combobox']"),
+        ]
+          .filter((control) => control.getClientRects().length > 0)
+          .map((control) => ({
+            label:
+              control.getAttribute("aria-label") ??
+              control.textContent?.trim() ??
+              control.tagName,
+            box: control.getBoundingClientRect(),
+          }))
+          .filter(
+            ({ box }) =>
+              box.width > 0 && (box.left < -1 || box.right > width + 1),
+          )
+          .map(
+            ({ label, box }) =>
+              `${label}: ${Math.round(box.left)}..${Math.round(box.right)}`,
+          )
+      })
+      expect(offscreen).toEqual([])
+    })
+  }
+
+  test("search is an icon and the brand is hidden at 700px", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 700, height: 844 })
+    await seedApp(page)
+    await gotoApp(page, "/inbox")
+    const header = page.locator("header.dr-layout-header").first()
+    const trigger = header.locator(".dr-search-command-trigger")
+    const box = await boxOf(trigger)
+    expect(Math.abs(box.width - box.height)).toBeLessThanOrEqual(1)
+    await expect(trigger.locator("kbd")).toBeHidden()
+    await expect(header.locator(".dr-brand-logo")).toBeHidden()
+  })
+})

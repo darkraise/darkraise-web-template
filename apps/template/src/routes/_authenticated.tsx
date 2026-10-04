@@ -488,7 +488,7 @@ export const Route = createFileRoute("/_authenticated")({
         label: group.label ? t(group.label) : undefined,
         items: translateItems(group.items),
       })),
-      headerSlot: <AppLocaleSwitcher />,
+      headerSlot: <AppLocaleSwitcher compact />,
       showLayoutSwitcher: true,
       layoutVariants: ["sidebar", "top-nav", "stacked"] as LayoutVariant[],
       user: user ? { name: user.name, email: user.email } : undefined,
