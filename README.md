@@ -21,6 +21,8 @@ override individual UI messages or register additional languages; see the
 `--no-install` and `--no-git` leave installation and repository initialization to
 you. `--ui-version` accepts a package version or local tarball for consumer checks.
 
+Upgrading a 6.x app? Follow the [7.0 upgrade guide](https://github.com/darkraise/darkraise-web-template/blob/master/docs/upgrade-7.0.md).
+
 ### CLI Flags
 
 Every theme axis has a flag, and a flag skips its prompt:

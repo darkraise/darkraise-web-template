@@ -4,6 +4,8 @@ All notable changes to `darkraise-ui` are documented in this file. The format fo
 
 ## [Unreleased]
 
+7.0 is a major release. The [upgrade guide](https://github.com/darkraise/darkraise-web-template/blob/master/docs/upgrade-7.0.md) lists every breaking change with its replacement.
+
 Breaking: `create-darkraise-ui` asks only for the brand axes and the style: mode, accent, surface, tint with accent (skipped under the neutral accent), style, font, radius, density and font size. Every theme axis has a flag, and `--help` lists them with their values and defaults. The 6.x flags `--preset`, `--surface-intensity`, `--accent-intensity`, `--shell-style`, `--control-depth` and `--button-elevation`, and retired names in `--theme-axes`, exit with an error naming the replacement instead of being ignored. The generated `theme.config.ts` lists only the choices made, the generated `vite.config.ts` passes them to `darkraisePrerender({ defaults })`, and `--ui-version 7.0` is kept as written rather than read as a number.
 
 `ThemePersistenceAdapter.save` receives an optional second argument, `{ signal }`. The provider runs one save at a time and gives up on a save after 15 seconds: it aborts the signal, moves on to the newest waiting save, and reports `syncStatus` `error` when none is waiting. An adapter can pass the signal to `fetch` to cancel the request; cancelling stops the client waiting but cannot undo a write the server already received, so an adapter that needs strict ordering must enforce it on the server. Saves requested while one is running collapse into the newest, and `syncStatus` reads `saving` from the moment a change is scheduled to be saved.

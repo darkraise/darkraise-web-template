@@ -331,6 +331,10 @@ after hydration. If you server-render, read the persisted variant in your
 document template and hand it to `useLayoutStore.setState` before the app
 mounts, the way the scaffolder's inline theme script does for theme axes.
 
+## Upgrading to 7.0
+
+Presets became styles, several theme axes were replaced, and the scaffold's flags changed. The [7.0 upgrade guide](https://github.com/darkraise/darkraise-web-template/blob/master/docs/upgrade-7.0.md) lists every change with its replacement.
+
 ## Migrating to 2.0.0
 
 Component DOM now carries `dr-*` classes plus `data-variant` /
