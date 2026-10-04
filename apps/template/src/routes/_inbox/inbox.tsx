@@ -111,6 +111,8 @@ function InboxPage() {
       }))}
       headerSlot={<AppLocaleSwitcher compact />}
       panel={panel}
+      contentActive={selectedMessage !== null}
+      onBack={() => setSelectedId(null)}
       showLayoutSwitcher
       user={user ? { name: user.name, email: user.email } : undefined}
       onSettings={() => void navigate({ to: "/settings" })}

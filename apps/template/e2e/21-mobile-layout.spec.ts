@@ -164,3 +164,25 @@ test.describe("header", () => {
     await expect(header.locator(".dr-brand-logo")).toBeHidden()
   })
 })
+
+test.describe("inbox", () => {
+  test("opens a message and goes back to the list", async ({ page }) => {
+    await seedApp(page)
+    await gotoApp(page, "/inbox")
+    const panel = page.locator('[data-region="panel"]')
+    const message = panel.getByRole("button").first()
+    await expect(message).toBeVisible()
+    const subject = (await message.locator("p").first().innerText()).trim()
+
+    await message.click()
+    await expect(panel).toBeHidden()
+    await expect(page.locator("main h1")).toHaveText(subject)
+    await expect(page.locator("main")).toBeFocused()
+
+    const back = page.getByRole("button", { name: "Back" })
+    await back.click()
+    await expect(panel).toBeVisible()
+    await expect(panel).toBeFocused()
+    await expect(back).toBeHidden()
+  })
+})
