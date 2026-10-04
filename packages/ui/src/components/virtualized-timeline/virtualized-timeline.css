@@ -203,7 +203,7 @@
      a second alpha onto it here produced an invalid doubly-sliced hsl() that
      the browser silently discarded, leaving the rail untinted while dragging
      under Glass. --primary is set in exactly one place
-     (generateTokens.ts) and no preset ever redefines it, so it is always a
+     (generateTokens.ts) and no style ever redefines it, so it is always a
      plain HSL triplet and safe to slice -- and it matches the caret
      hairline and bracket, which are already --primary. Do not change this
      back to --muted; it looks idiomatic but reproduces the bug. */

@@ -58,8 +58,8 @@
 
   /* Selected — the checked family's fill, in both variants: outline rows
      have no outline at rest, so the checked fill is their selected style
-     too. Affordance glow composes on top so a preset can give the selected
-     row a primary-color halo; transparent in every shipped preset. */
+     too. Affordance glow composes on top so a style can give the selected
+     row a primary-color halo; transparent in every shipped style. */
   .dr-tree-view-branch-control[data-selected="true"],
   .dr-tree-view-item[data-selected="true"] {
     background-color: var(--selected-check-bg);

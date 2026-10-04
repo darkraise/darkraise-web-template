@@ -23,7 +23,7 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   elevation?: boolean | CardElevation
   /** Draw full-width rules between the header, content, and footer. */
   divided?: boolean
-  /** Outer border treatment. `"default"` leaves the theme/preset border alone. */
+  /** Outer border treatment. `"default"` leaves the theme/style border alone. */
   border?: CardBorder
   /** Which plane the card paints; `card` by default. Nested non-portalled surfaces inherit it. */
   surface?: SurfaceFill

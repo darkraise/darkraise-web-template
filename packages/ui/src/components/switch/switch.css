@@ -17,9 +17,9 @@
     box-shadow: var(--thumb-shadow);
   }
 
-  /* Compose the preset-driven --affordance-glow on top of the thumb's
+  /* Compose the style-driven --affordance-glow on top of the thumb's
      base shadow when the switch is checked. Transparent in every
-     shipped preset (no visual change); a preset can bind a primary-color
+     shipped style (no visual change); a style can bind a primary-color
      glow. */
   .dr-switch[data-state="checked"] .dr-switch-thumb {
     box-shadow: var(--thumb-shadow), var(--affordance-glow);

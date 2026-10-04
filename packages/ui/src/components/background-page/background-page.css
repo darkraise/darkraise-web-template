@@ -1,6 +1,6 @@
 /* BackgroundPage — full-page decorative backgrounds for auth-style screens
    (five CSS-driven here; the other seven paint to <canvas>). Every variant is theme-token driven (base = hsl(var(--background)),
-   accents = hsl(var(--primary) / a)) so it tracks mode + preset. Pointer
+   accents = hsl(var(--primary) / a)) so it tracks mode + style. Pointer
    reactivity reads --dr-bg-mx / --dr-bg-my (0..1, set in JS); smoothing comes
    from transitions on the consuming properties, so no @property is required. */
 

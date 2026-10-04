@@ -23,8 +23,8 @@
   }
 
   .dr-slider-thumb:focus-visible {
-    /* An outline, so preset rules that restyle box-shadow (glass's halo)
-       add to the focused thumb without removing its ring. */
+    /* An outline, so a box-shadow on the thumb (the affordance glow) adds to
+       the focused thumb without removing its ring. */
     outline: 2px solid hsl(var(--focus-ring));
     outline-offset: 2px;
   }

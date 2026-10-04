@@ -80,9 +80,9 @@
        instead of recessed. */
     @apply absolute z-0 rounded-sm;
     background-color: var(--selected-view-bg);
-    /* Compose the family shadow with the preset-driven --affordance-glow so
-       the sliding indicator pill can gain a primary halo from a preset
-       (it stays visually unchanged in every shipped preset). */
+    /* Compose the family shadow with the style-driven --affordance-glow so
+       the sliding indicator pill can gain a primary halo from a style
+       (it stays visually unchanged in every shipped style). */
     box-shadow: var(--selected-view-shadow), var(--affordance-glow);
     transition:
       transform var(--duration-normal) var(--ease-out),
@@ -97,7 +97,7 @@
   /* Outline variant — the same raised pill plus a 1px neutral ring, so the
      variant still reads apart from default. --border-strong, not --border:
      in dark mode the pill itself is --border. background-image is reset
-     defensively: preset rules paint this pill with a gradient. */
+     defensively so the pill stays a flat fill. */
   .dr-segment-group-indicator[data-variant="outline"] {
     background-image: none;
     box-shadow:

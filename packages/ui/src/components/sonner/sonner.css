@@ -282,7 +282,7 @@
   .dr-toast-progress {
     @apply pointer-events-none absolute right-0 bottom-0 left-0 overflow-hidden;
     height: 3px;
-    /* Only the bottom corners follow the toast's radius; presets that square
+    /* Only the bottom corners follow the toast's radius; styles that square
        the toast off flow through for free. */
     border-end-start-radius: inherit;
     border-end-end-radius: inherit;

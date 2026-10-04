@@ -2,7 +2,7 @@
  * The twelve predefined full-page background styles. Five are CSS-driven
  * (aurora, mesh, grid, orbs, spotlight) and seven paint to a <canvas> via
  * requestAnimationFrame (constellation, waves, starfield, ripple, dotgrid,
- * flowfield, contour). All read theme tokens so they adapt to mode and preset.
+ * flowfield, contour). All read theme tokens so they adapt to mode and style.
  */
 export type BackgroundPageVariant =
   | "aurora"

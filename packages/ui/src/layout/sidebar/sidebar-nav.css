@@ -168,8 +168,8 @@
    * page. This rule follows the hover rule at the same specificity, so a
    * hovered active link keeps the active fill. The 3px left bar is opt-in
    * (`activeBar` "bar" or "both"). Affordance glow composed as outer layer
-   * so a preset can add a primary halo around the active item (transparent
-   * in every shipped preset). */
+   * so a style can add a primary halo around the active item (transparent
+   * in every shipped style). */
   .dr-sidebar-nav-item.active,
   .dr-sidebar-nav-item[data-status="active"] {
     background-color: var(--selected-nav-bg);

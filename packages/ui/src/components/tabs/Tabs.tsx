@@ -194,7 +194,7 @@ function TabsList({
     // color="accent", where the line is the brand hue rather than --border.
     //
     // The other variants stay on offset*: those report the untransformed
-    // layout box, and a preset may scale the active trigger. A rect would fold
+    // layout box, and a style may scale the active trigger. A rect would fold
     // that scale into the indicator's measured size on top of the scale the
     // indicator already carries for itself, compounding to ~8%.
     if (variant === "enclosed") {
@@ -302,9 +302,9 @@ function indicatorStyle(
 
   // The travel uses the `translate` property rather than `transform`. In
   // the transform chain (translate, rotate, scale, transform) translate is
-  // applied outermost, so a preset that pops the indicator with `scale`
+  // applied outermost, so a style that pops the indicator with `scale`
   // cannot multiply the distance travelled. Expressed as
-  // `transform: translateX(...)` instead, a preset scale of 1.04 stretched
+  // `transform: translateX(...)` instead, a scale of 1.04 stretched
   // every offset by 4% and pushed the pill off its tab.
   if (vertical) {
     return {

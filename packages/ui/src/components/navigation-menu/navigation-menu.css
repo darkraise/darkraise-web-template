@@ -18,7 +18,7 @@
   }
 
   /* Popover-style panel. Reads the --overlay-* tokens so the
-     navigation dropdown gets the same preset-driven chrome as every
+     navigation dropdown gets the same style-driven chrome as every
      other overlay (Tooltip, Popover, Menu, Select, etc.). Positioned
      `absolute top-full` relative to the menu item (which carries
      `position: relative`), so the panel anchors directly under its

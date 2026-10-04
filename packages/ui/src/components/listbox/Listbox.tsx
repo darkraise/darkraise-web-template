@@ -18,7 +18,7 @@ function useListboxContext(consumer: string): UseListboxReturn {
 
 /**
  * How a selected item is painted. Both variants fill it with the checked
- * fill; under the glass preset `outline` also keeps a 1px primary ring.
+ * fill, so a selected row reads the same in either.
  */
 export type ListboxVariant = "filled" | "outline"
 

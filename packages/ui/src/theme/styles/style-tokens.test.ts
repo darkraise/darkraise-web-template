@@ -506,7 +506,7 @@ describe("checkables, thumbs and the view pill", () => {
 })
 
 /**
- * Every token the spec's Tactile column changes from Quiet's base;
+ * Every control token Tactile rebinds from Quiet's base;
  * --btn-neutral-edge stays Quiet's.
  */
 const TACTILE_TOKENS = CONTROL_TOKENS.filter(

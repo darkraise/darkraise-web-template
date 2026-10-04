@@ -101,8 +101,8 @@
   /* Outline keeps the same pill and adds a 1px neutral ring, so it still
      reads apart from default. --border-strong, not --border: in dark mode
      the pill itself is --border, which would hide the ring. Underline takes
-     the bottom-only affordance glow (preset-driven, transparent in every
-     shipped preset) so the halo emanates downward from the bar. */
+     the bottom-only affordance glow (style-driven, transparent in every
+     shipped style) so the halo emanates downward from the bar. */
   .dr-tabs-indicator[data-variant="outline"] {
     @apply rounded-sm;
     background-color: var(--selected-view-bg);
@@ -266,7 +266,7 @@
   /* --affordance-glow-bottom is a bottom-only halo, which on a
      right-hand border would emanate off the wrong edge. There is no
      right-hand token, so the omni-directional glow stands in — it
-     still reads as a halo around the active tab under a glowing preset. */
+     still reads as a halo around the active tab under a glowing style. */
   .dr-tabs-trigger[data-variant="underline"][data-orientation="vertical"][data-state="active"] {
     box-shadow: var(--affordance-glow);
   }

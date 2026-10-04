@@ -470,13 +470,13 @@
   }
 }
 
-/* :root token defaults live in @layer base so unlayered preset bindings
+/* :root token defaults live in @layer base so unlayered style bindings
    in glass.css / @layer overrides win the cascade. Without
    this wrapper, `:root` (specificity 0,1,0, unlayered, source-order
-   LATER than the preset @imports) was overriding every preset's CSS
-   token overrides at runtime, such as Glass's --surface-overlay-bg with
-   frosted noise. Inline-style writes from generateTokens were the only
-   preset overrides that worked, because they win regardless of
+   LATER than the style @imports) was overriding every style's CSS
+   token overrides at runtime, such as Glass's --surface-overlay-layers.
+   Inline-style writes from generateTokens were the only
+   style overrides that worked, because they win regardless of
    stylesheet layer. */
 @layer base {
   :root {
@@ -604,7 +604,7 @@
     /* Glow axes. `--glow-hue` is contextual: a surface glows in the surface
      colour, while an element whose identity is already accent-coloured
      overrides it to --primary. Both resolve to a no-op shadow at `none`, which
-     is the default, so the axes ship invisible on this preset. `none` uses a
+     is the default, so the axes ship invisible. `none` uses a
      transparent shadow rather than the `none` keyword, which is invalid as a
      list item and would invalidate the whole declaration. */
     --glow-hue: var(--surface-tint);
@@ -937,12 +937,12 @@
     --check-well-shadow: 0 0 transparent;
     --thumb-shadow: 0 0 transparent;
 
-    /* Preset-driven affordance tokens. Each preset binds these once in
+    /* Style-driven affordance tokens. Each style binds these once in
      its own CSS file; components consume them as a single source of
-     truth, so adding a new preset is a
-     one-file change in that preset's CSS and every consumer
+     truth, so adding a new style is a
+     one-file change in that style's CSS and every consumer
      automatically participates. Defaults below preserve today's
-     behaviour for the Default preset. Tokenize the affordance, not
+     behaviour for the default style. Tokenize the affordance, not
      the implementation. */
 
     /* --affordance-glow — outer box-shadow on active/checked/selected
@@ -954,7 +954,7 @@
     /* --affordance-glow-bottom — directional bottom-only variant for
      components whose active treatment is a bottom border (Tabs
      underline variant, future stepper bottom-bar indicators, etc.).
-     A preset binds it to a primary glow with positive Y-offset and
+     A style binds it to a primary glow with positive Y-offset and
      negative spread so the halo emanates downward only without
      wrapping the element's left/right/top edges. */
     --affordance-glow-bottom: 0 0 transparent;
@@ -964,17 +964,17 @@
      Overlays read them through the --overlay-* family below instead
      of hard-coding bg-popover + border + shadow-dropdown. Default values
      reproduce the current overlay look. The blend-mode token lets
-     presets (e.g. Glass) layer multiple background images with a
+     styles (e.g. Glass) layer multiple background images with a
      specific blending recipe; defaults to `normal` (no-op for
      single-layer backgrounds).
 
-     --surface-overlay-base/-layers are the static pieces each preset
+     --surface-overlay-base/-layers are the static pieces each style
      declares (base colour + alpha, decorative layers ahead of it).
      They stay static so flattening them on <html> is harmless; the
      `surface` prop's rules compose them into --surface-overlay-bg
      at the same sites the fills use — that keeps the substitution
      on whichever element carries the prop instead of baking it in
-     where the preset declares its colour. */
+     where the style declares its colour. */
     /* Empty by default: only Glass paints decorative layers behind its
        overlay colour. An empty custom property substitutes to nothing. */
     --surface-overlay-layers: ;
