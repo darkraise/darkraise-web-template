@@ -169,6 +169,8 @@ describe("axis registry", () => {
   it("keeps the sidebar selection off the document element", () => {
     expect(AXES.sidebarSelection.attribute).toBeUndefined()
     expect(AXES.sidebarSelection.storageKey).toBe("theme-sidebar-selection")
+    expect(AXES.accentColor.attribute).toBe("data-accent")
+    expect(AXES.surfaceColor.attribute).toBe("data-surface")
   })
 
   it("registers the colour engine axes", () => {

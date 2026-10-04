@@ -238,7 +238,7 @@ describe("pre-render script", () => {
     expect(localStorage.getItem("theme-settings-version")).toBeNull()
   })
 
-  it("runs revision 2 on a browser that ran revision 1", () => {
+  it("runs every later revision on a browser that ran revision 1", () => {
     localStorage.setItem("theme-settings-version", "1")
     localStorage.setItem("theme-preset", "default")
     localStorage.setItem("theme-glass-opacity", "medium")

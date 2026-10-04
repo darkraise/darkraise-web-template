@@ -27,6 +27,7 @@ const EVERY_LEGACY_KEY: Record<string, string> = {
   "theme-glassmorphism-blur": "high",
   "theme-scifi-intensity": "bright",
   "theme-scifi-frame": "bracketed",
+  "theme-sidebar-active-bar": "ring",
 }
 
 function legacyStates(): [string, Record<string, string>][] {
