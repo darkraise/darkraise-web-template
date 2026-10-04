@@ -1,10 +1,10 @@
 @layer components {
   .dr-calendar {
-    @apply glass bg-card p-3;
+    @apply glass bg-card border p-3;
   }
 
   .dr-calendar-grid-container {
-    @apply glass bg-card w-[16rem] p-3;
+    @apply glass bg-card w-[16rem] border p-3;
   }
 
   .dr-calendar-grid-header {

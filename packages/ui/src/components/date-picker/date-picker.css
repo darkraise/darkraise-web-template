@@ -69,7 +69,7 @@
   }
 
   .dr-date-picker-calendar {
-    @apply rounded-sm;
+    @apply rounded-sm border-0;
   }
 
   .dr-date-picker-presets {
