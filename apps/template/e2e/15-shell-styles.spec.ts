@@ -256,7 +256,7 @@ test.describe("shell style geometry", () => {
 })
 
 test.describe("sidebar indicator axis", () => {
-  test("defers to the preset's own indicator by default", async ({ page }) => {
+  test("omits the indicator attribute by default", async ({ page }) => {
     await seedApp(page)
     await gotoApp(page, "/")
     await expect(page.locator(".dr-sidebar-nav").first()).not.toHaveAttribute(

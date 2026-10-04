@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test"
-import { PRESETS } from "./fixtures/theme"
+import { MATRIX_STYLES } from "./fixtures/theme"
 import {
   gotoApp,
   openThemeSwitcher,
@@ -118,7 +118,7 @@ test.describe("keyboard navigation", () => {
   test("theme switcher is reachable and operable by keyboard", async ({
     page,
   }) => {
-    await seedApp(page, { preset: "default", mode: "light" })
+    await seedApp(page, { style: "quiet", mode: "light" })
     await gotoApp(page, "/")
     await openThemeSwitcher(page)
     const dark = page
@@ -186,12 +186,12 @@ test.describe("landmarks and labels", () => {
 })
 
 test.describe("colour contrast of core tokens", () => {
-  for (const preset of PRESETS) {
+  for (const style of MATRIX_STYLES) {
     const modes = ["light", "dark"] as const
 
     for (const mode of modes) {
-      test(`${preset} · ${mode}: body text meets WCAG AA`, async ({ page }) => {
-        await seedApp(page, { preset, mode })
+      test(`${style} · ${mode}: body text meets WCAG AA`, async ({ page }) => {
+        await seedApp(page, { style, mode })
         await gotoApp(page, "/components/buttons")
 
         const background = await readToken(page, "--background")
@@ -208,7 +208,7 @@ test.describe("colour contrast of core tokens", () => {
         const ratio = contrastRatio(bgLuminance, fgLuminance)
         expect(
           ratio,
-          `${preset}/${mode} body contrast ${ratio.toFixed(2)}:1`,
+          `${style}/${mode} body contrast ${ratio.toFixed(2)}:1`,
         ).toBeGreaterThanOrEqual(4.5)
       })
     }

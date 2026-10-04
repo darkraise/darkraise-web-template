@@ -1,12 +1,11 @@
 import { test, expect, type Page } from "@playwright/test"
-import { PRESETS } from "./fixtures/theme"
+import { MATRIX_STYLES } from "./fixtures/theme"
 import { gotoApp, seedApp, watchConsole } from "./helpers/app"
 
 /**
  * Card `divided` / `border` and the Accordion card variant are pure CSS
- * behaviour, so jsdom unit tests can only assert the data attributes. These
- * rules are also the ones presets are most likely to defeat: presets can re-tint
- * `.dr-card`'s border. Every assertion below therefore runs under every preset.
+ * behaviour, so jsdom unit tests can only assert the data attributes. Every
+ * assertion below runs under each matrix style in both modes.
  */
 
 const TRANSPARENT = "rgba(0, 0, 0, 0)"
@@ -39,16 +38,16 @@ async function expectSettledStyle(
     .toBe(value)
 }
 
-for (const preset of PRESETS) {
+for (const style of MATRIX_STYLES) {
   const modes = ["light", "dark"] as const
 
   for (const mode of modes) {
-    test.describe(`${preset} · ${mode}`, () => {
+    test.describe(`${style} · ${mode}`, () => {
       test("divided card draws a rule and restores padding", async ({
         page,
       }) => {
         const consoleWatch = watchConsole(page)
-        await seedApp(page, { preset, mode })
+        await seedApp(page, { style, mode })
         await gotoApp(page, "/components/cards")
 
         const header = ".dr-card[data-divided='true'] > .dr-card-header"
@@ -74,7 +73,7 @@ for (const preset of PRESETS) {
         page,
       }) => {
         const consoleWatch = watchConsole(page)
-        await seedApp(page, { preset, mode })
+        await seedApp(page, { style, mode })
         await gotoApp(page, "/components/cards")
 
         const card = ".dr-card[data-card-elevation='high']"
@@ -91,30 +90,24 @@ for (const preset of PRESETS) {
         consoleWatch.assertClean()
       })
 
-      test("border variants survive the preset and keep geometry", async ({
+      test("border variants keep their colour and geometry", async ({
         page,
       }) => {
         const consoleWatch = watchConsole(page)
-        await seedApp(page, { preset, mode })
+        await seedApp(page, { style, mode })
         await gotoApp(page, "/components/cards")
 
         expect(
           await styleOf(page, ".dr-card[data-border='none']", "border-color"),
         ).toBe(TRANSPARENT)
 
-        // The default tier has to paint a real line. `.dr-card` composes
-        // `@apply glass`, whose `border: 1px solid var(--fog-15)` shorthand
-        // outranks the global `* { @apply border-border }`, and the fog scale
-        // is transparent under every preset but Glass — which left the default
-        // card indistinguishable from `border="none"`.
+        // The default tier has to paint a real line, or a card without a
+        // `border` prop reads the same as `border="none"`.
         expect(
           await styleOf(page, ".dr-card:not([data-border])", "border-color"),
         ).not.toBe(TRANSPARENT)
 
-        // The whole point of the `:not([data-border])` guards: an explicit
-        // prop must win over the preset's own .dr-card border rules, which may be
-        // unlayered and would then outrank @layer components on specificity
-        // alone.
+        // An explicit prop must win over the card's default border colour.
         const strong = await styleOf(
           page,
           ".dr-card[data-border='strong']",
@@ -164,7 +157,7 @@ for (const preset of PRESETS) {
 
       test("accordion card variant stacks real cards", async ({ page }) => {
         const consoleWatch = watchConsole(page)
-        await seedApp(page, { preset, mode })
+        await seedApp(page, { style, mode })
         await gotoApp(page, "/components/accordion")
 
         const root = ".dr-accordion[data-variant='card']"
@@ -203,7 +196,7 @@ for (const preset of PRESETS) {
         page,
       }) => {
         const consoleWatch = watchConsole(page)
-        await seedApp(page, { preset, mode })
+        await seedApp(page, { style, mode })
         await gotoApp(page, "/components/accordion")
 
         // Every ShowcaseExample renders its own default-variant Accordion for

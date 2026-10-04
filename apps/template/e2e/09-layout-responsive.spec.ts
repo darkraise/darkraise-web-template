@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test"
-import { PRESETS } from "./fixtures/theme"
+import { STYLES } from "./fixtures/theme"
 import {
   boxOf,
   expectNoHorizontalOverflow,
@@ -154,11 +154,11 @@ test.describe("sidebar behaviour", () => {
   })
 })
 
-test.describe("layout under every preset", () => {
-  for (const preset of PRESETS) {
-    test(`dashboard shell renders under ${preset}`, async ({ page }) => {
+test.describe("layout under every style", () => {
+  for (const style of STYLES) {
+    test(`dashboard shell renders under ${style}`, async ({ page }) => {
       const consoleWatch = watchConsole(page)
-      await seedApp(page, { preset, mode: "dark" })
+      await seedApp(page, { style, mode: "dark" })
       await gotoApp(page, "/")
       await expect(page.locator("aside")).toBeVisible()
       await expect(

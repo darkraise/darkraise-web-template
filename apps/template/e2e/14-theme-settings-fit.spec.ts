@@ -78,7 +78,7 @@ for (const width of [1024, 1280, 1600]) {
     // Gradient background so the Gradient Pattern row (the widest toggle
     // group, at four cells) is rendered.
     await seedApp(page, {
-      preset: "default",
+      style: "quiet",
       mode: "dark",
       backgroundStyle: "gradient",
     })
@@ -97,7 +97,7 @@ for (const width of [1024, 1280, 1600]) {
 
 test("theme switcher popover controls fit", async ({ page }) => {
   await seedApp(page, {
-    preset: "default",
+    style: "quiet",
     mode: "dark",
     backgroundStyle: "gradient",
   })

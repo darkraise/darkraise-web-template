@@ -21,7 +21,7 @@ test.describe("kit fonts", () => {
       if (url.origin !== origin) foreign.push(url.href)
     })
 
-    await seedApp(page, { preset: "default", mode: "light" })
+    await seedApp(page, { style: "quiet", mode: "light" })
     await gotoApp(page, PROBE)
 
     const bodyFont = () =>
