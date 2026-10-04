@@ -1,38 +1,26 @@
 import { test, expect, type Page } from "@playwright/test"
-import { PRESETS, type Preset } from "./fixtures/theme"
+import { STYLES } from "./fixtures/theme"
 import {
   gotoApp,
   openAdvanced,
   openThemeSwitcher,
+  reloadApp,
   seedApp,
 } from "./helpers/app"
+import { computed } from "./helpers/measure"
 
 /**
- * Every prior test for the sidebar active-item indicator reads the stylesheet
- * as TEXT (jsdom parses no CSS), so none of them prove a rule actually applies
- * to an element. This drives a real browser: it walks the four-way
- * `sidebarActiveBar` theme axis per preset and counts `inset` layers in the active
- * item's COMPUTED box-shadow. A preset whose rules never left `@layer
- * components` would return the same count for "bar" and "both", which is
- * exactly what the `both > bar` comparison below is built to catch.
+ * The sidebar active-item indicator, in a real browser: jsdom parses no CSS,
+ * so only here does a rule provably reach an element. The spec walks the
+ * four-way `sidebarActiveBar` axis and counts `inset` layers in the active
+ * item's COMPUTED box-shadow; a rule that never applied returns the same
+ * count for "bar" and "both", which the `both > bar` comparison catches.
  *
- * The layer COUNT alone cannot tell "bar" apart from "ring" — both produce
- * exactly one inset layer in every preset, so a broken "ring" that silently
- * fell back to a rail would still pass a count-only check. The geometry
- * differs, though: a rail layer carries a 3px horizontal offset
- * (`inset 3px 0 0 0`), a ring layer carries no offset and a 1px spread
- * (`inset 0 0 0 1px`). Chrome's computed `box-shadow` serialises each layer
- * as "color offsetX offsetY blurRadius spreadRadius inset", e.g.
- * "rgb(60, 131, 246) 3px 0px 0px 0px inset" for a rail and
- * "rgb(60, 131, 246) 0px 0px 0px 1px inset" for a ring (observed directly —
- * see RAIL_GEOMETRY / RING_GEOMETRY below). Matching the whole layer text is
- * fragile (color format varies between rgb()/rgba(), and layer order and
- * color position vary by preset), so the geometry regexes below match only
- * the numeric+inset tail, which is stable across all of it. Some presets'
- * OWN glow tokens contain the same "0 0 0 1px" shape as an OUTER (non-inset)
- * layer — e.g. glass's `--glass-halo-raised` — but since that layer has no
- * trailing "inset" keyword, RING_GEOMETRY (which requires "1px inset"
- * contiguous) does not match it.
+ * The count alone cannot tell "bar" from "ring" (one inset layer each), so
+ * the geometry is matched too. Chrome serialises a layer as "color offsetX
+ * offsetY blur spread inset": a rail is "… 3px 0px 0px 0px inset" and a ring
+ * "… 0px 0px 0px 1px inset". Matching only that numeric tail keeps the check
+ * independent of the colour format and of the layer order.
  */
 const RAIL_GEOMETRY = /3px 0px 0px 0px inset/
 const RING_GEOMETRY = /0px 0px 0px 1px inset/
@@ -60,7 +48,9 @@ const ACTIVE_BAR_LABELS = {
   both: "Both",
 } as const
 
-async function setActiveBar(page: Page, value: keyof typeof ACTIVE_BAR_LABELS) {
+type ActiveBar = keyof typeof ACTIVE_BAR_LABELS
+
+async function setActiveBar(page: Page, value: ActiveBar) {
   const panel = await openThemeSwitcher(page)
   await openAdvanced(page)
   await panel
@@ -76,92 +66,81 @@ async function setActiveBar(page: Page, value: keyof typeof ACTIVE_BAR_LABELS) {
 }
 
 /**
- * Unset ("Default" item / pre-interaction) inset-layer count per preset,
- * measured on `master` before this branch existed — `SidebarLayout` there
- * held `useState(true)` and `SidebarNav` mapped that to an OMITTED
- * `data-active-bar` attribute, so every preset rendered its own default
- * indicator. Re-measured directly rather than assumed:
- *
- *   git checkout master && pnpm --filter darkraise-ui build
- *   (drive gotoApp("/") per preset/mode, read insetLayers() with no
- *   interaction — master's initial state is already "unset")
- *
- *   MASTER default light unset=1
- *   MASTER glass light unset=2
- *
- * This branch's Task 4 regressed that: `SidebarLayout` started at the
- * literal `"bar"` value instead of `undefined`, which forced a rail
- * everywhere the demo mounted — glass silently dropped from ring+rail (2)
- * to rail-only (1) before anyone touched the control. The fix restores an
- * actual unset state (`undefined`), exposed on the wire as a fourth
- * "Default" control item since a single-selection ToggleGroup can't hold
- * `undefined` itself.
+ * Inset layers on the active item per indicator value. Every style shares one
+ * set of active-item rules, so one table serves them all: unset, the row is
+ * marked by its tint alone (17-selection-overlays measures it); "bar" and
+ * "ring" add one layer; "both" adds two.
  */
-// The default preset's unset count dropped from 1 to 0 when its 3px rail
-// became opt-in ("bar" or "both"): the active row is marked by a tint one
-// step stronger than hover, which 17-selection-overlays.spec.ts measures.
-const UNSET_LAYERS: Record<Preset, number> = {
+const INSET_LAYERS: Record<ActiveBar, number> = {
   default: 0,
-  glass: 2,
+  bar: 1,
+  ring: 1,
+  both: 2,
 }
 
-/**
- * Explicit "bar"/"ring" baseline inset-layer count per preset, measured in
- * a real browser on this branch. Glass drops to 1 here (below its own unset
- * default of 2) because its dedicated
- * `data-active-bar="bar"`/`"ring"` overrides intentionally show a single
- * indicator when the caller asks for one explicitly. "both" always adds
- * exactly one more inset layer than "bar"/"ring" alone, on every preset.
- */
-const EXPLICIT_LAYERS: Record<Preset, number> = {
-  default: 1,
-  glass: 1,
-}
-
-for (const preset of PRESETS) {
+for (const style of STYLES) {
   const mode = "light"
-  const unset = UNSET_LAYERS[preset]
-  const explicit = EXPLICIT_LAYERS[preset]
 
-  test.describe(`${preset} · ${mode}`, () => {
+  test.describe(`${style} · ${mode}`, () => {
     test(`sidebar indicator axis changes computed box-shadow layers`, async ({
       page,
     }) => {
-      await seedApp(page, { preset, mode })
+      await seedApp(page, { style, mode })
       await gotoApp(page, "/")
-
-      // With the axis at its default, `activeBar` is unset — each preset
-      // renders its own pre-existing default, matching master.
-      expect((await activeItemShadow(page)).count).toBe(unset)
+      expect((await activeItemShadow(page)).count).toBe(INSET_LAYERS.default)
 
       await setActiveBar(page, "bar")
       const bar = await activeItemShadow(page)
-      expect(bar.count).toBe(explicit)
+      expect(bar.count).toBe(INSET_LAYERS.bar)
       // "bar" must carry the rail geometry and NOT the ring geometry, or a
-      // "ring" that silently fell back to a rail would still pass the count
-      // checks above on every preset.
+      // "ring" that silently fell back to a rail would pass the counts.
       expect(bar.shadow).toMatch(RAIL_GEOMETRY)
       expect(bar.shadow).not.toMatch(RING_GEOMETRY)
 
       await setActiveBar(page, "ring")
       const ring = await activeItemShadow(page)
-      expect(ring.count).toBe(explicit)
+      expect(ring.count).toBe(INSET_LAYERS.ring)
       expect(ring.shadow).toMatch(RING_GEOMETRY)
       expect(ring.shadow).not.toMatch(RAIL_GEOMETRY)
 
       await setActiveBar(page, "both")
       const both = await activeItemShadow(page)
-      expect(both.count).toBe(explicit + 1)
+      expect(both.count).toBe(INSET_LAYERS.both)
       expect(both.shadow).toMatch(RAIL_GEOMETRY)
       expect(both.shadow).toMatch(RING_GEOMETRY)
-
-      // The comparison that actually catches an unconverted preset: an
-      // unconverted preset returns the same count for "bar" and "both".
       expect(both.count).toBeGreaterThan(bar.count)
 
       // Setting "default" again round-trips back to the unset baseline.
       await setActiveBar(page, "default")
-      expect((await activeItemShadow(page)).count).toBe(unset)
+      expect((await activeItemShadow(page)).count).toBe(INSET_LAYERS.default)
     })
+  })
+}
+
+/**
+ * The stacked layout's rail stamps the indicator setting itself rather than
+ * through a SidebarNav, so under Glass, whose chrome is the most restyled, its
+ * active item must still compute exactly the sidebar's shadow.
+ */
+for (const activeBar of Object.keys(ACTIVE_BAR_LABELS) as ActiveBar[]) {
+  test(`glass · the stacked rail paints the sidebar's active shadow · ${activeBar}`, async ({
+    page,
+  }) => {
+    await seedApp(page, {
+      style: "glass",
+      mode: "light",
+      sidebarActiveBar: activeBar,
+    })
+    await gotoApp(page, "/")
+    const sidebar = await activeItemShadow(page)
+    expect(sidebar.count).toBe(INSET_LAYERS[activeBar])
+
+    await page.evaluate(() => localStorage.setItem("layout-variant", "stacked"))
+    await reloadApp(page)
+    const rail = page.locator(
+      '.dr-stacked-layout-rail-nav .dr-sidebar-nav-item[data-status="active"]',
+    )
+    await expect(rail).toHaveCount(1)
+    expect(await computed(rail, "box-shadow")).toBe(sidebar.shadow)
   })
 }
