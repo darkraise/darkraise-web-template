@@ -33,6 +33,9 @@ export interface ThemeSeed {
   accent?: string
   surface?: string
   preset?: string
+  style?: string
+  glassOpacity?: string
+  glassBlur?: string
   backgroundStyle?: string
   backgroundIntensity?: string
   gradientPattern?: string
@@ -73,6 +76,9 @@ function storageEntries(theme: ThemeSeed, authenticated: boolean) {
     ["accent", LS_KEYS.accent],
     ["surface", LS_KEYS.surface],
     ["preset", LS_KEYS.preset],
+    ["style", LS_KEYS.style],
+    ["glassOpacity", LS_KEYS.glassOpacity],
+    ["glassBlur", LS_KEYS.glassBlur],
     ["backgroundStyle", LS_KEYS.backgroundStyle],
     ["backgroundIntensity", LS_KEYS.backgroundIntensity],
     ["gradientPattern", LS_KEYS.gradientPattern],

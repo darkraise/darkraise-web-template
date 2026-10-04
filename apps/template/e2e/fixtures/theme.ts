@@ -1,3 +1,25 @@
+export const STYLES = ["flat", "quiet", "tactile", "glass"] as const
+export type Style = (typeof STYLES)[number]
+
+/**
+ * Styles the per-page matrices (05, 12) run under. Flat and Tactile differ
+ * from Quiet only in control shadows, which the kitchen sink baseline and 16
+ * check.
+ */
+export const MATRIX_STYLES = [
+  "quiet",
+  "glass",
+] as const satisfies readonly Style[]
+
+/** Styles the screenshot baseline (18) records every page under. */
+export const BASELINE_STYLES = [
+  "quiet",
+  "glass",
+] as const satisfies readonly Style[]
+
+export const GLASS_OPACITIES = ["subtle", "medium", "strong"] as const
+export const GLASS_BLURS = ["none", "low", "medium", "high"] as const
+
 export const PRESETS = ["default", "glass"] as const
 export type Preset = (typeof PRESETS)[number]
 
@@ -106,6 +128,9 @@ export const LS_KEYS = {
   accent: "theme-accent",
   surface: "theme-surface-color",
   preset: "theme-preset",
+  style: "theme-preset",
+  glassOpacity: "theme-glass-opacity",
+  glassBlur: "theme-glass-blur",
   backgroundStyle: "theme-bg-style",
   backgroundIntensity: "theme-bg-intensity",
   gradientPattern: "theme-gradient-pattern",
