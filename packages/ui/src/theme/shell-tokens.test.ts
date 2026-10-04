@@ -272,13 +272,24 @@ describe("region chrome", () => {
     expect(body).toContain("height: 100%;")
   })
 
-  // The bar's dropdowns render inline, so the bar must stack above the
-  // content region (itself an isolated stacking context) or the content
-  // paints over an open menu.
-  it("stacks the bar above the content", () => {
+  // A region's inline overlays must stack above the content region (itself
+  // an isolated stacking context) or the content paints over them. The bar
+  // sits one higher because split-panel puts the panel after it in the DOM,
+  // and an equal z-index would let the panel cover the bar's open menus.
+  it("stacks the rails above the content", () => {
+    expect(shellBodies(`.dr-shell > :is(${RAILS})`)).toContain("z-index: 1;")
+  })
+
+  it("stacks the bar above the rails", () => {
     expect(shellBodies('.dr-shell > [data-region="bar"]')).toContain(
-      "z-index: 1;",
+      "z-index: 2;",
     )
+  })
+
+  // Shell-style rules sit at (0,3,0), so a z-index there would flatten the
+  // order above for that style.
+  it("leaves the region stacking order to shell.css", () => {
+    expect(shellStyles).not.toMatch(/z-index\s*:/)
   })
 
   it("fills the bar and edges it on the content side", () => {

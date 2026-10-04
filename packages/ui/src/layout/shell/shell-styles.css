@@ -87,7 +87,6 @@
   .dr-shell[data-shell-style="floating"] > [data-region="bar"],
   .dr-shell[data-shell-style="floating"] > [data-region="panel"] {
     position: relative;
-    z-index: 1;
     margin: var(--shell-float-inset, 0.75rem);
     -webkit-backdrop-filter: var(--chrome-backdrop);
     backdrop-filter: var(--chrome-backdrop);

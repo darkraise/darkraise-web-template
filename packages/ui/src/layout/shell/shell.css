@@ -104,8 +104,13 @@
     pointer-events: none;
   }
 
+  /* A region's inline overlays only clear the content region if the
+     region's own stacking context sits above it. The bar sits one higher
+     because split-panel puts the panel after it in the DOM, where an equal
+     z-index would let the panel cover the bar's open menus. */
   .dr-shell
     > :is([data-region="nav"], [data-region="subnav"], [data-region="panel"]) {
+    z-index: 1;
     border-right: 1px solid var(--chrome-edge);
   }
 
@@ -131,10 +136,8 @@
     margin-right: -100%;
   }
 
-  /* A bar's dropdowns render inline, so they only clear the content region
-     if the bar's own stacking context sits above it. */
   .dr-shell > [data-region="bar"] {
-    z-index: 1;
+    z-index: 2;
     border-bottom: 1px solid var(--chrome-edge);
   }
 
