@@ -87,6 +87,8 @@ const MARK = 3
 const TEXT = 4.5
 /** AA for body-size text, with headroom so integer HSL rounding cannot land under 4.5. */
 const LABEL = 4.6
+/** 3:1 with headroom so 8-bit sRGB rendering of integer HSL cannot land under 3. */
+const MARK_EDGE = 3.05
 const SECONDARY_TEXT_ON_PAGE = 7
 /** Strongest --primary tint primary-coloured text sits on (bg-primary/20 today). */
 const PRIMARY_TINT_CEILING = 0.24
@@ -481,7 +483,12 @@ function solve(input: SolveInput): Steps {
     [card],
     EDGE_FLOOR[contrast],
   )
-  n[6] = repair("neutral-7", neutralAt(pos[6] as number), edgeGrounds, MARK)
+  n[6] = repair(
+    "neutral-7",
+    neutralAt(pos[6] as number),
+    edgeGrounds,
+    MARK_EDGE,
+  )
   n[7] = repair("neutral-8", neutralAt(pos[7] as number), edgeGrounds, TEXT)
   n[8] = neutralAt(pos[8] as number)
   n[9] = neutralAt(pos[9] as number)
