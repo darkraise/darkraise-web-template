@@ -121,6 +121,28 @@ describe("pre-render script and provider under config defaults", () => {
   })
 })
 
+describe("token cache across a redeploy that changes the config defaults", () => {
+  it("is not applied when the style default changed", () => {
+    renderProvider({ style: "quiet" })
+    const painted = root.style.getPropertyValue("--background")
+    expect(painted).not.toBe("")
+    const quietId = readTokenCache(localStorage)?.id
+
+    cleanup()
+    resetRoot()
+    runScript({ style: "glass" })
+    expect(root.style.getPropertyValue("--background")).toBe("")
+
+    resetRoot()
+    runScript({ style: "quiet" })
+    expect(root.style.getPropertyValue("--background")).toBe(painted)
+
+    resetRoot()
+    renderProvider({ style: "glass" })
+    expect(readTokenCache(localStorage)?.id).not.toBe(quietId)
+  })
+})
+
 describe("pre-render script and provider with storage blocked", () => {
   it.each(STYLE_NAMES)("agree on config style %s", (style) => {
     const defaults: Defaults = { style, mode: "dark", elevation: "high" }

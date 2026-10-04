@@ -1,5 +1,5 @@
 import type { ResolvedMode } from "@theme/types"
-import { AXES, AXIS_KEYS } from "./registry"
+import { AXES, AXIS_KEYS, type AxisValues } from "./registry"
 import { KIT_VERSION } from "./version"
 
 export const TOKEN_CACHE_STORAGE_KEY = "theme-token-cache"
@@ -20,19 +20,42 @@ export function cacheInputKeys(): string[] {
   return AXIS_KEYS.map((key) => AXES[key].storageKey)
 }
 
+const REGISTRY_DEFAULTS = Object.fromEntries(
+  AXIS_KEYS.map((key) => [key, AXES[key].default]),
+) as AxisValues
+
+/**
+ * A short hash of the resolved config defaults. An axis the user never set
+ * paints from these, so a redeploy that changes one must not match a token
+ * set cached under the old ones. The pre-render script calls this same
+ * function while it is built and embeds the result, so the two cannot drift.
+ */
+export function defaultsHash(defaults: Readonly<AxisValues>): string {
+  const text = AXIS_KEYS.map((key) => defaults[key]).join("|")
+  let hash = 0x811c9dc5
+  for (let i = 0; i < text.length; i++) {
+    hash ^= text.charCodeAt(i)
+    hash = Math.imul(hash, 0x01000193)
+  }
+  return (hash >>> 0).toString(36)
+}
+
 /**
  * The pre-render script builds the same string from the migrated values, so
- * the two must stay byte-identical: raw values, "" for absent, joined with "|".
+ * the two must stay byte-identical: raw values, "" for absent, then the
+ * defaults hash, joined with "|".
  */
 export function tokenCacheId(
   read: (key: string) => string | null,
   resolved: ResolvedMode,
+  defaults: Readonly<AxisValues> = REGISTRY_DEFAULTS,
 ): string {
   return [
     KIT_VERSION,
     String(TOKEN_CACHE_SCHEMA),
     resolved,
     ...cacheInputKeys().map((k) => read(k) ?? ""),
+    defaultsHash(defaults),
   ].join("|")
 }
 

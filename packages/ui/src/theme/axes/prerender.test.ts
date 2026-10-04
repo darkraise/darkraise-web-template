@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import type { ThemeConfig } from "@theme/themeConfig"
 import { LEGACY_MARKER_KEY, LEGACY_REVISION } from "./legacy"
 import { buildPrerenderScript } from "./prerender"
-import { AXES, AXIS_KEYS } from "./registry"
+import { AXES, AXIS_KEYS, type AxisValues } from "./registry"
 import {
   TOKEN_CACHE_SCHEMA,
   TOKEN_CACHE_STORAGE_KEY,
@@ -320,9 +320,14 @@ describe("pre-render script defaults", () => {
 
   it("finds the cache the provider wrote under a config default mode", () => {
     const read = (k: string) => localStorage.getItem(k)
-    writeTokenCache(localStorage, tokenCacheId(read, "dark"), {
-      "--primary": "1 2% 3%",
-    })
+    const defaults = Object.fromEntries(
+      AXIS_KEYS.map((key) => [key, AXES[key].default]),
+    ) as AxisValues
+    writeTokenCache(
+      localStorage,
+      tokenCacheId(read, "dark", { ...defaults, mode: "dark" }),
+      { "--primary": "1 2% 3%" },
+    )
     run({ mode: "dark" })
     expect(root.style.getPropertyValue("--primary")).toBe("1 2% 3%")
   })

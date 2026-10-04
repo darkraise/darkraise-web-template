@@ -306,6 +306,7 @@ export function ThemeProvider({
       const cacheId = tokenCacheId(
         (key) => knownRef.current.get(key) ?? null,
         resolved,
+        defaults,
       )
       const signature = JSON.stringify([current, resolved, defaults, cacheId])
       if (signature === paintedRef.current) return

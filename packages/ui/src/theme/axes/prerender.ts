@@ -6,11 +6,18 @@ import {
   LEGACY_RULES,
   LEGACY_TARGETS,
 } from "./legacy"
-import { AXES, AXIS_KEYS, isAxisValue, type AxisKey } from "./registry"
+import {
+  AXES,
+  AXIS_KEYS,
+  isAxisValue,
+  type AxisKey,
+  type AxisValues,
+} from "./registry"
 import {
   TOKEN_CACHE_SCHEMA,
   TOKEN_CACHE_STORAGE_KEY,
   cacheInputKeys,
+  defaultsHash,
 } from "./tokenCache"
 import { KIT_VERSION } from "./version"
 
@@ -66,7 +73,11 @@ export function buildPrerenderScript(
     ]
   })
 
-  const storageRules = LEGACY_RULES.map((rule) => ({
+  const configDefaults = Object.fromEntries(
+    AXIS_KEYS.map((key) => [key, configDefault(given, key)]),
+  ) as AxisValues
+
+  const storageRules =LEGACY_RULES.map((rule) => ({
     ...rule,
     when: rule.when.map((condition) => {
       const copy = { ...condition }
@@ -105,9 +116,10 @@ export function buildPrerenderScript(
     `d.setAttribute(${json(AXES.style.attribute)},p);`,
     `var A=${json(attributes)};`,
     "for(i=0;i<A.length;i++){v=g(A[i][0]);if(A[i][2].indexOf(v)===-1)v=A[i][3][p];d.setAttribute(A[i][1],v)}",
-    // tokenCacheId's form: kit version, schema, resolved mode, raw values.
+    // tokenCacheId's form: kit version, schema, resolved mode, raw values,
+    // the defaults hash.
     `if(s){var K=${json(cacheInputKeys())},id=[${json(KIT_VERSION)},${json(String(TOKEN_CACHE_SCHEMA))},r],c;`,
-    'for(i=0;i<K.length;i++)id.push(g(K[i])||"");id=id.join("|");',
+    `for(i=0;i<K.length;i++)id.push(g(K[i])||"");id.push(${json(defaultsHash(configDefaults))});id=id.join("|");`,
     `c=JSON.parse(s.getItem(${json(TOKEN_CACHE_STORAGE_KEY)})||"null");`,
     "if(c&&c.id===id&&c.tokens){for(var t in c.tokens)d.style.setProperty(t,c.tokens[t])}}",
     "}catch(e){}})()",

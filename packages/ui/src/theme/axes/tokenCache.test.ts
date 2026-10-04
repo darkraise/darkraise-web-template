@@ -3,11 +3,12 @@ import {
   TOKEN_CACHE_SCHEMA,
   TOKEN_CACHE_STORAGE_KEY,
   cacheInputKeys,
+  defaultsHash,
   readTokenCache,
   tokenCacheId,
   writeTokenCache,
 } from "./tokenCache"
-import { AXES, AXIS_KEYS } from "./registry"
+import { AXES, AXIS_KEYS, type AxisValues } from "./registry"
 import { KIT_VERSION } from "./version"
 
 function memoryStorage() {
@@ -26,17 +27,31 @@ describe("token cache", () => {
     expect(keys).toContain("theme-glass-blur")
   })
 
-  it("builds the id from the kit version, the schema, the resolved mode and the stored values", () => {
+  it("builds the id from the kit version, the schema, the resolved mode, the stored values and the defaults hash", () => {
     expect(TOKEN_CACHE_SCHEMA).toBe(2)
     const id = tokenCacheId(
       (k) => (k === "theme-density" ? "spacious" : null),
       "dark",
     )
     expect(id.startsWith(`${KIT_VERSION}|2|dark|`)).toBe(true)
-    expect(id.split("|")).toHaveLength(3 + cacheInputKeys().length)
+    expect(id.split("|")).toHaveLength(4 + cacheInputKeys().length)
     expect(id).toContain("spacious")
     expect(tokenCacheId(() => null, "light")).not.toBe(
       tokenCacheId(() => null, "dark"),
+    )
+  })
+
+  it("changes the id when a config default changes", () => {
+    const registry = Object.fromEntries(
+      AXIS_KEYS.map((k) => [k, AXES[k].default]),
+    ) as AxisValues
+    const other = { ...registry, style: "glass" } as AxisValues
+    expect(defaultsHash(registry)).not.toBe(defaultsHash(other))
+    expect(tokenCacheId(() => null, "light", registry)).toBe(
+      tokenCacheId(() => null, "light"),
+    )
+    expect(tokenCacheId(() => null, "light", other)).not.toBe(
+      tokenCacheId(() => null, "light", registry),
     )
   })
 
