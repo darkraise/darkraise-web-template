@@ -7,6 +7,7 @@ import type {
   GlowLevel,
   Mode,
   SidebarActiveBarSetting,
+  SidebarSelectionSetting,
   ThemeContextValue,
   ThemeSettings,
 } from "@theme/types"
@@ -37,6 +38,7 @@ export type RegistryTypeChecks = [
   Expect<Equal<ThemeContextValue["mode"], Mode>>,
   Expect<Equal<ThemeContextValue["outerGlow"], GlowLevel>>,
   Expect<Equal<ThemeContextValue["sidebarActiveBar"], SidebarActiveBarSetting>>,
+  Expect<Equal<ThemeContextValue["sidebarSelection"], SidebarSelectionSetting>>,
   Expect<Equal<ThemeContextValue["setDensity"], (value: Density) => void>>,
   Expect<
     Equal<ThemeContextValue["setAccentColor"], (value: AccentColor) => void>

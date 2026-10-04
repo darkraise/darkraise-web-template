@@ -292,5 +292,20 @@
     "layer": "advanced",
     "label": "Sidebar Indicator",
     "groupLabel": "Advanced"
+  },
+  "sidebarSelection": {
+    "values": [
+      "auto",
+      "chip",
+      "pill",
+      "tile",
+      "frosted"
+    ],
+    "default": "auto",
+    "storageKey": "theme-sidebar-selection",
+    "attribute": null,
+    "layer": "advanced",
+    "label": "Sidebar Selection",
+    "groupLabel": "Advanced"
   }
 }

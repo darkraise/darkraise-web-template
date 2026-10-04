@@ -18,6 +18,7 @@ export {
   MODES,
   SHELL_STYLES,
   SIDEBAR_ACTIVE_BARS,
+  SIDEBAR_SELECTIONS,
 } from "./types"
 export type {
   AccentColor,
@@ -29,6 +30,8 @@ export type {
   Radius,
   ShellStyle,
   SidebarActiveBarSetting,
+  SidebarSelection,
+  SidebarSelectionSetting,
   Mode,
   ResolvedMode,
   ColorScale,

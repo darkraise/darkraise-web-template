@@ -38,6 +38,7 @@ describe("axis registry", () => {
       "backgroundIntensity",
       "gradientPattern",
       "sidebarActiveBar",
+      "sidebarSelection",
     ])
   })
 
@@ -58,6 +59,7 @@ describe("axis registry", () => {
       "backgroundStyle",
       "gradientPattern",
       "sidebarActiveBar",
+      "sidebarSelection",
     ])
     expect(byKind("ordinal")).toEqual([
       "glassOpacity",
@@ -75,10 +77,10 @@ describe("axis registry", () => {
     expect(byKind("switch")).toEqual(["tintWithAccent"])
   })
 
-  it("gives every choice axis two to four values", () => {
+  it("gives every choice axis two to five values", () => {
     for (const key of AXIS_KEYS.filter((k) => AXES[k].control === "choice")) {
       expect(AXES[key].values.length, key).toBeGreaterThanOrEqual(2)
-      expect(AXES[key].values.length, key).toBeLessThanOrEqual(4)
+      expect(AXES[key].values.length, key).toBeLessThanOrEqual(5)
     }
   })
 
@@ -170,6 +172,11 @@ describe("axis registry", () => {
     expect(AXES.sidebarActiveBar.attribute).toBeUndefined()
     expect(AXES.accentColor.attribute).toBe("data-accent")
     expect(AXES.surfaceColor.attribute).toBe("data-surface")
+  })
+
+  it("keeps the sidebar selection off the document element", () => {
+    expect(AXES.sidebarSelection.attribute).toBeUndefined()
+    expect(AXES.sidebarSelection.storageKey).toBe("theme-sidebar-selection")
   })
 
   it("registers the colour engine axes", () => {

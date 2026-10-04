@@ -15,6 +15,7 @@ import {
   MODES,
   RADII,
   SIDEBAR_ACTIVE_BARS,
+  SIDEBAR_SELECTIONS,
   SURFACE_COLORS,
   TINT_WITH_ACCENT,
 } from "@theme/types"
@@ -230,6 +231,14 @@ export const AXES = {
     values: SIDEBAR_ACTIVE_BARS,
     default: "default",
     storageKey: "theme-sidebar-active-bar",
+    layer: "advanced",
+    control: "choice",
+  }),
+  /** Look of the active sidebar row; `auto` follows the style. */
+  sidebarSelection: axis({
+    values: SIDEBAR_SELECTIONS,
+    default: "auto",
+    storageKey: "theme-sidebar-selection",
     layer: "advanced",
     control: "choice",
   }),

@@ -61,6 +61,7 @@ const ADVANCED = [
   "Background",
   "Background Intensity",
   "Sidebar Indicator",
+  "Sidebar Selection",
 ]
 
 describe("ThemeSettingsPanel", () => {
@@ -179,6 +180,7 @@ describe("ThemeSettingsPanel", () => {
           backgroundIntensity: false,
           gradientPattern: false,
           sidebarActiveBar: false,
+          sidebarSelection: false,
         },
       }),
     )

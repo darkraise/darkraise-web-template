@@ -4,6 +4,7 @@ import {
   FONTS,
   SHELL_STYLES,
   SIDEBAR_ACTIVE_BARS,
+  SIDEBAR_SELECTIONS,
 } from "./types"
 import { resolveDefaults, themeConfig } from "./themeConfig"
 import { AXES } from "./axes/registry"
@@ -58,6 +59,26 @@ describe("sidebarActiveBar axis", () => {
 
   it("is switchable by default", () => {
     expect(themeConfig.switcher.axes?.sidebarActiveBar).not.toBe(false)
+  })
+})
+
+describe("sidebarSelection axis", () => {
+  it("leads with auto, then the four looks", () => {
+    expect(SIDEBAR_SELECTIONS).toEqual([
+      "auto",
+      "chip",
+      "pill",
+      "tile",
+      "frosted",
+    ])
+  })
+
+  it("defaults to auto so the style decides", () => {
+    expect(resolveDefaults(themeConfig).sidebarSelection).toBe("auto")
+  })
+
+  it("is switchable by default", () => {
+    expect(themeConfig.switcher.axes?.sidebarSelection).not.toBe(false)
   })
 })
 

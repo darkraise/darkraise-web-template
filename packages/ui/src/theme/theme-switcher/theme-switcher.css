@@ -111,6 +111,13 @@
     @apply grid-cols-4;
   }
 
+  /* Five cells in one row clip the longer Vietnamese labels in both the
+     popover and the settings page's narrow column, so five values wrap
+     into rows of three. */
+  .dr-theme-switcher-toggle-group[data-cols="5"] {
+    @apply grid-cols-3;
+  }
+
   /* Slider control replaces a 4-cell toggle group for ordinal axes
      (Density, Radius, Background Intensity, Glass Backdrop Blur). The
      slider fills the row's flex area; the

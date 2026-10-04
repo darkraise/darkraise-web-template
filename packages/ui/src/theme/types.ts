@@ -118,6 +118,21 @@ export const SIDEBAR_ACTIVE_BARS = ["default", "bar", "ring", "both"] as const
 export type SidebarActiveBarSetting = (typeof SIDEBAR_ACTIVE_BARS)[number]
 
 /**
+ * How the active sidebar row is drawn. `auto` follows the style: Quiet draws
+ * a chip, Flat a pill, Tactile a tile and Glass a frosted chip.
+ */
+export const SIDEBAR_SELECTIONS = [
+  "auto",
+  "chip",
+  "pill",
+  "tile",
+  "frosted",
+] as const
+export type SidebarSelectionSetting = (typeof SIDEBAR_SELECTIONS)[number]
+/** A look a nav can draw; `auto` is resolved to one of these first. */
+export type SidebarSelection = Exclude<SidebarSelectionSetting, "auto">
+
+/**
  * Glow strength. Shared by both glow axes because they are two halves of one
  * effect: `outerGlow` is the halo cast outward, `innerGlow` the rim light bled
  * inward. `none` is the floor, and no style defaults a glow, so the axes ship

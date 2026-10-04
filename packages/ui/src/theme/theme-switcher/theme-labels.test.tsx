@@ -29,6 +29,7 @@ const config: ThemeConfig = {
       backgroundStyle: false,
       gradientPattern: false,
       sidebarActiveBar: false,
+      sidebarSelection: false,
     },
   },
 }
