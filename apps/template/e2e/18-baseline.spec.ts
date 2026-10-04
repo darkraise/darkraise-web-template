@@ -1,10 +1,12 @@
 import { test, expect, type Page } from "@playwright/test"
-import { BASELINE_STYLES } from "./fixtures/theme"
+import { BASELINE_STYLES, STYLES } from "./fixtures/theme"
 import { collectGarbage, gotoApp, seedApp } from "./helpers/app"
 import { settle } from "./helpers/measure"
 
 /**
- * The screenshot baseline the phase 3 and 4 restyles are compared against.
+ * The screenshot baseline the phase 3 and 4 restyles are compared against:
+ * the app, showcase and overlay pages under each baseline style, and the
+ * kitchen sink under every style with three accent and surface pairs.
  * Runs only with BASELINE set (playwright.config.ts): compare with
  * `pnpm test:e2e:visual`, re-record with `--update-snapshots`. The images
  * are Linux Chromium renders from the pinned Playwright; a Playwright upgrade
@@ -50,6 +52,15 @@ const OVERLAYS = [
   ["dialog", '[role="dialog"]'],
   ["menu", '[role="menu"]'],
   ["popover", ".dr-popover-content"],
+] as const
+
+const KITCHEN_SINK = "/components/kitchen-sink"
+
+/** Accent on surface: the default pair, a warm pair and the neutral accent. */
+const SAMPLE_PAIRS = [
+  { name: "blue-zinc", accent: "blue", surface: "zinc" },
+  { name: "green-neutral", accent: "green", surface: "neutral" },
+  { name: "neutral-stone", accent: "neutral", surface: "stone" },
 ] as const
 
 const VIEWPORT = { width: 1440, height: 900 }
@@ -144,6 +155,7 @@ test.beforeAll(async ({ browser }) => {
     const paths = [
       ...APP_PAGES.map(([, path]) => path),
       ...SHOWCASE_PAGES.map(([, path]) => path),
+      KITCHEN_SINK,
       "/e2e/fixtures/baseline-overlays.html?show=dialog",
     ]
     // Uncollected garbage from earlier routes fails a later navigation with
@@ -200,5 +212,31 @@ for (const style of BASELINE_STYLES) {
         })
       }
     })
+  }
+}
+
+for (const style of STYLES) {
+  for (const mode of MODES) {
+    for (const pair of SAMPLE_PAIRS) {
+      test(`kitchen sink · ${style} · ${mode} · ${pair.name}`, async ({
+        page,
+      }) => {
+        await seedApp(page, {
+          style,
+          mode,
+          accent: pair.accent,
+          surface: pair.surface,
+        })
+        await gotoApp(page, KITCHEN_SINK)
+        await expect(page.locator(".dr-page-header-title")).toBeVisible()
+        await expect(page.getByLabel("Focused field")).toBeFocused()
+        // A clipped page would record without failing, so check the fit first.
+        const overflow = await page
+          .locator("#main-content")
+          .evaluate((main) => main.scrollHeight - main.clientHeight)
+        expect(overflow, "main region overflow in px").toBeLessThanOrEqual(0)
+        await capture(page, `kitchen-sink-${style}-${mode}-${pair.name}`)
+      })
+    }
   }
 }
