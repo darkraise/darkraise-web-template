@@ -26,6 +26,7 @@ export const defaultLabels: UiLabels = {
     navigationHeading: "Navigation",
     expandSidebar: "Expand sidebar",
     collapseSidebar: "Collapse sidebar",
+    back: "Back",
   },
   userMenu: {
     profile: "Profile",

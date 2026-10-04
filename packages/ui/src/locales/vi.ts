@@ -48,6 +48,7 @@ const messages: UiMessages = {
     navigationHeading: "Điều hướng",
     expandSidebar: "Mở rộng thanh bên",
     collapseSidebar: "Thu gọn thanh bên",
+    back: "Quay lại",
   },
   userMenu: { profile: "Hồ sơ", settings: "Cài đặt", logout: "Đăng xuất" },
   passwordInput: {

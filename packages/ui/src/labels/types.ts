@@ -33,6 +33,7 @@ export interface UiLabels {
     navigationHeading: string
     expandSidebar: string
     collapseSidebar: string
+    back: string
   }
   userMenu: {
     profile: string
