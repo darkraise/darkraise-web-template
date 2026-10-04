@@ -97,6 +97,7 @@
 /* Layout component imports (not picked up by generate:imports — layout/ is outside components/) */
 @import "../layout/shell/shell.css";
 @import "../layout/sidebar/sidebar-nav.css";
+@import "../layout/sidebar/sidebar-selection.css";
 @import "../layout/sidebar/sidebar-layout.css";
 @import "../layout/brand-logo/brand-logo.css";
 @import "../layout/user-menu/user-menu.css";
