@@ -132,9 +132,19 @@ describe("sidebar selection looks", () => {
   })
 
   it("hands the row's surface to a ready indicator", () => {
-    expect(rule('[data-indicator="ready"] .dr-sidebar-nav-current')).toContain(
-      "background: transparent;",
-    )
+    expect(
+      rule(
+        ':is(.dr-sidebar-nav, .dr-stacked-layout-rail-nav, .dr-stacked-layout-aside-nav)[data-indicator="ready"] .dr-sidebar-nav-current',
+      ),
+    ).toContain("background: transparent;")
+  })
+
+  it("gives a popover entry an accent label, as it has no icon", () => {
+    expect(
+      rule(
+        "[data-sidebar-selection] .dr-sidebar-popover-child.dr-sidebar-nav-current",
+      ),
+    ).toContain("color: hsl(var(--primary-text));")
   })
 
   it("does not transition under reduced motion", () => {

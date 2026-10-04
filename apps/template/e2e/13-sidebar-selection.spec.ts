@@ -85,6 +85,44 @@ for (const style of STYLES) {
   }
 }
 
+for (const [style, mode] of [
+  ["quiet", "light"],
+  ["glass", "dark"],
+] as const) {
+  for (const look of LOOKS) {
+    test(`${look} keeps an accent cue in the collapsed rail's popover · ${style} ${mode}`, async ({
+      page,
+    }) => {
+      // No collapse or fade animation: frosted blur re-rendered every frame
+      // starves a loaded worker, and a fading popover has no stable pixels.
+      await page.emulateMedia({ reducedMotion: "reduce" })
+      await seedApp(page, { style, mode, sidebarSelection: look })
+      await gotoApp(page, "/categories")
+      await page.getByRole("button", { name: "Collapse sidebar" }).click()
+      await settle(page)
+      await nav(page).getByRole("button", { name: "Products" }).click()
+      const entry = page.locator(
+        ".dr-sidebar-nav-popover-content .dr-sidebar-nav-current",
+      )
+      await expect(entry).toHaveCount(1)
+      await settle(page)
+      const row = await box(entry)
+      const surface = await pixel(
+        page,
+        Math.round(row.x + row.width - 8),
+        Math.round(row.y + row.height / 2),
+      )
+      const label = rgbOf(
+        await entry.evaluate((el) => getComputedStyle(el).color),
+      )
+      expect(
+        contrast(label, surface),
+        "label against the surface",
+      ).toBeGreaterThanOrEqual(CUE_FLOOR)
+    })
+  }
+}
+
 /** Starts recording the indicator's transitions; read them with `runs`. */
 async function recordTransitions(page: Page) {
   await indicator(page).evaluate((el) => {

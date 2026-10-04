@@ -230,7 +230,17 @@
     font-weight: 600;
   }
 
-  [data-indicator="ready"] .dr-sidebar-nav-current {
+  /* A popover entry has no icon to carry the accent cue, so its label does. */
+  [data-sidebar-selection] .dr-sidebar-popover-child.dr-sidebar-nav-current {
+    color: hsl(var(--primary-text));
+  }
+
+  :is(
+      .dr-sidebar-nav,
+      .dr-stacked-layout-rail-nav,
+      .dr-stacked-layout-aside-nav
+    )[data-indicator="ready"]
+    .dr-sidebar-nav-current {
     background: transparent;
     box-shadow: none;
     -webkit-backdrop-filter: none;
