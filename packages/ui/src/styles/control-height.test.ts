@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { globSync, readFileSync } from "node:fs"
+import { resolveFieldTrigger } from "../test/fieldTrigger"
 
 // jsdom never lays anything out, so the height contract is asserted on the
 // stylesheet text. Controls take a fixed border-box height from their family
@@ -244,7 +245,7 @@ describe("field heights", () => {
     ],
     ["src/components/input-otp/input-otp.css", ".dr-input-otp-slot"],
   ])("%s → %s has a fixed --field-height", (path, selector) => {
-    const rule = body(path, selector)
+    const rule = resolveFieldTrigger(body(path, selector))
     expect(rule).toContain("height: var(--field-height);")
     expect(rule).not.toMatch(LEGACY_HEIGHT)
   })

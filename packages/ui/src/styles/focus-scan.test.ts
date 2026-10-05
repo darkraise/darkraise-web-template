@@ -4,6 +4,7 @@ import {
   TSX,
   classGroups,
   interactiveClasses,
+  resolved,
   subjectClasses,
 } from "./interactive-classes"
 
@@ -70,7 +71,7 @@ function hasFocusRule(cls: string): boolean {
   for (const rule of RULES) {
     for (const selector of rule.selectors) {
       if (!subjectClasses(selector).includes(cls)) continue
-      if (/(?<![\w-])focus-ring/.test(rule.body)) return true
+      if (/(?<![\w-])focus-ring/.test(resolved(rule.body))) return true
       const variantRing = rule.body
         .replace(REMOVALS, "")
         .match(

@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
+import { resolveFieldTrigger } from "../test/fieldTrigger"
 
 // A field keeps its faint --input border on the sides and top and draws the
 // 3:1 --field-edge along its bottom; an unchecked checkbox, radio or switch
@@ -52,7 +53,7 @@ describe("field boundary", () => {
   it.each(FIELDS)(
     "%s .%s draws a faint border and a 3:1 bottom edge",
     (file, cls) => {
-      const body = bodyOf(file, `.${cls}`)
+      const body = resolveFieldTrigger(bodyOf(file, `.${cls}`))
       expect(body).toMatch(
         /(?<![\w:-])border-input(?![\w-])|border-color:\s*hsl\(var\(--input\)\)/,
       )

@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync, readdirSync } from "node:fs"
 import { join } from "node:path"
+import { resolveFieldTrigger } from "../test/fieldTrigger"
 
 // Two axes own every corner: --radius for surfaces and --radius-control for
 // buttons and single-line fields. A literal radius follows neither, and
@@ -272,7 +273,10 @@ describe("control radius readers", () => {
   ])(
     "rounds the single-line field %s %s with --field-radius",
     (file, selector) => {
-      expect(readsRadius(bodyOf(file, selector), "--field-radius")).toBe(true)
+      const body = resolveFieldTrigger(
+        bodyOf(file, selector).replace(/\s+/g, " ").trim(),
+      )
+      expect(readsRadius(body, "--field-radius")).toBe(true)
     },
   )
 

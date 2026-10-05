@@ -1,5 +1,6 @@
 import { readFileSync, readdirSync } from "node:fs"
 import { join } from "node:path"
+import { resolveFieldTrigger } from "../test/fieldTrigger"
 
 // Shared by the focus scan and the forced-colours / touch-action coverage
 // test. Paths are relative to packages/ui, where Vitest runs.
@@ -43,6 +44,11 @@ export function parseRules(css: string, path = ""): Rule[] {
 
 function rulesOf(path: string): Rule[] {
   return parseRules(readFileSync(path, "utf8"), path)
+}
+
+/** A rule's body with an applied `field-trigger` replaced by the utility's. */
+export function resolved(body: string): string {
+  return resolveFieldTrigger(body.replace(/\s+/g, " ").trim())
 }
 
 /** The dr-* classes on a selector's last compound: the element the rule styles. */
@@ -97,7 +103,7 @@ const INTERACTIVE_ATTRS = /\btabIndex=(?!\{\s*-1\s*\})/
 export function interactiveClasses(): Map<string, string> {
   const found = new Map<string, string>()
   for (const rule of RULES) {
-    if (!/cursor-pointer|cursor:\s*pointer/.test(rule.body)) continue
+    if (!/cursor-pointer|cursor:\s*pointer/.test(resolved(rule.body))) continue
     for (const selector of rule.selectors) {
       for (const cls of subjectClasses(selector)) found.set(cls, rule.path)
     }

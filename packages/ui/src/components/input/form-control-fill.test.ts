@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
+import { resolveFieldTrigger } from "../../test/fieldTrigger"
 
 // Form controls are deliberately outside the `surface` prop: fields
 // should hold still while panels move around them. They therefore must not
@@ -39,7 +40,7 @@ describe("form control fills", () => {
       `[{}] ${selector.replace(/\./g, "\\.")} \\{([^}]*)\\}`,
     ).exec(css)
     expect(rule, `${selector} has no rule`).not.toBeNull()
-    expect(rule?.[1]).toContain(
+    expect(resolveFieldTrigger((rule?.[1] ?? "").trim())).toContain(
       "background-color: hsl(var(--control-surface));",
     )
   })
