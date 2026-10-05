@@ -218,29 +218,6 @@ function DashboardPage() {
           />
         </MetricGrid>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <KPICard
-            label={t("Average Order Value")}
-            value={`${avgOrderValue.toLocaleString(uiLocale.locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
-            comparison={
-              priorAov > 0
-                ? t("vs {{amount}} prior period", {
-                    amount: `$${priorAov.toLocaleString(uiLocale.locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-                  })
-                : undefined
-            }
-            sparklineData={aovSparkline}
-          />
-          <KPICard
-            label={t("Returning Customers")}
-            value={`${returningPct}%`}
-            comparison={t("{{returning}} of {{total}} customers", {
-              returning: returningCustomers,
-              total: totalCustomers,
-            })}
-          />
-        </div>
-
         <Grid cols={2} gap="md">
           <ChartCard
             title={t("Revenue Trend")}
@@ -278,12 +255,34 @@ function DashboardPage() {
         </Grid>
 
         <div className="grid gap-4 md:grid-cols-3">
-          <ProgressCard
-            label={t("Monthly Sales Target")}
-            value={currentMonthRevenue}
-            target={monthlySalesTarget}
-            formatValue={currency}
-          />
+          <div data-dashboard-kpis className="flex flex-col gap-4">
+            <ProgressCard
+              label={t("Monthly Sales Target")}
+              value={currentMonthRevenue}
+              target={monthlySalesTarget}
+              formatValue={currency}
+            />
+            <KPICard
+              label={t("Average Order Value")}
+              value={`${avgOrderValue.toLocaleString(uiLocale.locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+              comparison={
+                priorAov > 0
+                  ? t("vs {{amount}} prior period", {
+                      amount: `$${priorAov.toLocaleString(uiLocale.locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+                    })
+                  : undefined
+              }
+              sparklineData={aovSparkline}
+            />
+            <KPICard
+              label={t("Returning Customers")}
+              value={`${returningPct}%`}
+              comparison={t("{{returning}} of {{total}} customers", {
+                returning: returningCustomers,
+                total: totalCustomers,
+              })}
+            />
+          </div>
           <div className="md:col-span-2">
             <ActivityFeed items={recentActivity} title={t("Recent Orders")} />
           </div>
@@ -309,12 +308,16 @@ function DashboardSkeleton() {
           ))}
         </MetricGrid>
         <div className="grid gap-4 md:grid-cols-2">
-          <Skeleton className="h-[104px] w-full rounded-xl" />
-          <Skeleton className="h-[104px] w-full rounded-xl" />
+          <Skeleton className="h-[360px] w-full rounded-xl" />
+          <Skeleton className="h-[360px] w-full rounded-xl" />
         </div>
-        <div className="grid gap-4 md:grid-cols-2">
-          <Skeleton className="h-[360px] w-full rounded-xl" />
-          <Skeleton className="h-[360px] w-full rounded-xl" />
+        <div className="grid gap-4 md:grid-cols-3">
+          <div className="flex flex-col gap-4">
+            <Skeleton className="h-[96px] w-full rounded-xl" />
+            <Skeleton className="h-[104px] w-full rounded-xl" />
+            <Skeleton className="h-[104px] w-full rounded-xl" />
+          </div>
+          <Skeleton className="h-[336px] w-full rounded-xl md:col-span-2" />
         </div>
       </div>
     </>

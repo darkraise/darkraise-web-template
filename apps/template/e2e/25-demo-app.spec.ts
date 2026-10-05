@@ -1,5 +1,5 @@
 import { test, expect, type Locator, type Page } from "@playwright/test"
-import { gotoApp, seedApp } from "./helpers/app"
+import { boxOf, gotoApp, seedApp } from "./helpers/app"
 import { computed } from "./helpers/measure"
 
 /**
@@ -168,5 +168,33 @@ test.describe("charts", () => {
         ".recharts-bar-rectangle path",
       ),
     ).not.toBe(revenue)
+  })
+})
+
+test.describe("dashboard", () => {
+  test.beforeEach(async ({ page }) => {
+    await seedApp(page, { style: "quiet", mode: "light" })
+  })
+
+  test("the sales target keeps its height beside Recent Orders", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await gotoApp(page, "/")
+    const cards = page.locator("[data-dashboard-kpis] > .dr-card")
+    await expect(cards).toHaveCount(3)
+    await expect(cards.nth(0)).toContainText("Monthly Sales Target")
+    const target = await boxOf(cards.nth(0))
+    const average = await boxOf(cards.nth(1))
+    const returning = await boxOf(cards.nth(2))
+    const feed = await boxOf(
+      page.locator(".dr-card", {
+        has: page.getByText("Recent Orders", { exact: true }),
+      }),
+    )
+    expect(target.height).toBeLessThan(160)
+    expect(average.y).toBeGreaterThanOrEqual(target.y + target.height)
+    expect(returning.y).toBeGreaterThanOrEqual(average.y + average.height)
+    expect(feed.x).toBeGreaterThan(target.x + target.width)
   })
 })
