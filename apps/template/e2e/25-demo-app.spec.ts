@@ -388,3 +388,25 @@ test.describe("auth decoration", () => {
     })
   }
 })
+
+test.describe("inbox", () => {
+  test.beforeEach(async ({ page }) => {
+    await seedApp(page, { style: "quiet", mode: "light" })
+  })
+
+  test("the list is 360px wide and its scrollbar clears the unread dots", async ({
+    page,
+  }) => {
+    await gotoApp(page, "/inbox")
+    const aside = page.locator(".dr-split-panel-layout-aside")
+    const dots = aside.locator("[data-unread-dot]")
+    await expect(dots.first()).toBeVisible()
+    expect(Math.abs((await boxOf(aside)).width - 360)).toBeLessThanOrEqual(1)
+    await aside.hover()
+    const bar = await boxOf(aside.locator(".dr-scroll-bar").first())
+    for (const dot of await dots.all()) {
+      const box = await boxOf(dot)
+      expect(bar.x - (box.x + box.width)).toBeGreaterThanOrEqual(8)
+    }
+  })
+})

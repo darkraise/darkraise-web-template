@@ -44,7 +44,7 @@ function InboxPage() {
             key={message.id}
             onClick={() => handleSelect(message.id)}
             className={cn(
-              "hover:bg-accent w-full px-4 py-3 text-left transition-colors",
+              "hover:bg-accent w-full py-3 ps-4 pe-6 text-left transition-colors",
               selectedId === message.id && "bg-accent",
               !message.isRead && "bg-accent/50",
             )}
@@ -93,7 +93,10 @@ function InboxPage() {
                 </p>
               </div>
               {!message.isRead && (
-                <div className="bg-primary-fill mt-2 h-2 w-2 shrink-0 rounded-full" />
+                <div
+                  data-unread-dot
+                  className="bg-primary-fill mt-2 h-2 w-2 shrink-0 rounded-full"
+                />
               )}
             </div>
           </button>
@@ -104,6 +107,7 @@ function InboxPage() {
 
   return (
     <SplitPanelLayout
+      defaultPanelWidth={360}
       nav={inboxNav.map((group) => ({
         ...group,
         label: group.label ? t(group.label) : undefined,
