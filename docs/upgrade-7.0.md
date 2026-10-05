@@ -91,7 +91,7 @@ Disabled controls keep receiving pointer events and show `cursor: not-allowed`. 
 
 A disabled compound control fades once, at its root; its parts, and the controls inside a disabled `Fieldset`, no longer fade a second time. Remove any rule you added to fade such a part again.
 
-`Alert`'s default fill is `--muted`. Badge icons get a 4px gap from the badge itself; remove `mr-1` or `ml-1` spacers from icons inside `Badge`.
+`Alert`'s default fill is `--muted`. `.dr-badge` lays out its children with a 4px gap; remove `mr-1` or `ml-1` spacers from icons inside `Badge`.
 
 ## Fonts
 
