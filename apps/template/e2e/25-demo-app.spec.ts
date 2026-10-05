@@ -1,6 +1,6 @@
 import { test, expect, type Locator, type Page } from "@playwright/test"
 import { boxOf, gotoApp, seedApp } from "./helpers/app"
-import { computed } from "./helpers/measure"
+import { alphaOf, computed } from "./helpers/measure"
 
 /**
  * Demo app consistency. Each block checks one page-level rule through
@@ -196,5 +196,28 @@ test.describe("dashboard", () => {
     expect(average.y).toBeGreaterThanOrEqual(target.y + target.height)
     expect(returning.y).toBeGreaterThanOrEqual(average.y + average.height)
     expect(feed.x).toBeGreaterThan(target.x + target.width)
+  })
+})
+
+test.describe("KPI sparkline", () => {
+  test.beforeEach(async ({ page }) => {
+    await seedApp(page, { style: "quiet", mode: "light" })
+  })
+
+  test("the average order value sparkline has an area and a baseline", async ({
+    page,
+  }) => {
+    await gotoApp(page, "/")
+    const spark = page
+      .locator(".dr-card", { hasText: "Average Order Value" })
+      .locator("[data-sparkline]")
+    await expect(spark).toBeVisible()
+    expect((await boxOf(spark)).height).toBeGreaterThanOrEqual(40)
+    const fill = alphaOf(
+      await computed(spark.locator("[data-sparkline-area]"), "fill"),
+    )
+    expect(fill).toBeGreaterThan(0)
+    expect(fill).toBeLessThan(1)
+    await expect(spark.locator("line")).toHaveCount(1)
   })
 })
