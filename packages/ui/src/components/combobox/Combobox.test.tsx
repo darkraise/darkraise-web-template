@@ -26,6 +26,7 @@ import {
   type ComboboxInputValueChangeDetails,
   type ComboboxValueChangeDetails,
 } from "./Combobox"
+import { Dialog, DialogContent, DialogTitle } from "@components/dialog"
 
 const COUNTRIES: ComboboxItemData[] = [
   { value: "us", label: "United States" },
@@ -270,5 +271,65 @@ describe("Combobox disabled item", () => {
       await screen.findByRole("option", { name: /United States/ }),
     )
     expect(spy).not.toHaveBeenCalled()
+  })
+})
+
+describe("Combobox popup", () => {
+  it("renders its list outside the combobox root", async () => {
+    const user = userEvent.setup()
+    const { container } = render(<Basic />)
+    await user.click(screen.getByRole("combobox"))
+    const list = screen.getByRole("listbox")
+    expect(container.querySelector(".dr-combobox")?.contains(list)).toBe(false)
+    expect(list.closest(".dr-combobox-content")).toHaveAttribute(
+      "data-state",
+      "open",
+    )
+  })
+
+  it("keeps focus on the input when an item is pressed", async () => {
+    const user = userEvent.setup()
+    render(<Basic />)
+    const input = screen.getByRole("combobox")
+    await user.click(input)
+    await user.click(screen.getByRole("option", { name: /Canada/ }))
+    expect(input).toHaveFocus()
+  })
+
+  it("keeps focus on the input when the list padding is pressed", async () => {
+    const user = userEvent.setup()
+    render(<Basic />)
+    await user.click(screen.getByRole("combobox"))
+    const content = screen.getByRole("listbox").closest(".dr-combobox-content")
+    expect(content).not.toBeNull()
+    // fireEvent returns false when a handler called preventDefault.
+    expect(fireEvent.mouseDown(content as Element)).toBe(false)
+  })
+
+  it("stays open when the input is pressed again", async () => {
+    const user = userEvent.setup()
+    render(<Basic />)
+    const input = screen.getByRole("combobox")
+    await user.click(input)
+    fireEvent.pointerDown(input)
+    expect(input).toHaveAttribute("aria-expanded", "true")
+  })
+
+  it("closes only itself on Escape inside a dialog", async () => {
+    const user = userEvent.setup()
+    render(
+      <Dialog defaultOpen>
+        <DialogContent>
+          <DialogTitle>Pick a country</DialogTitle>
+          <Basic />
+        </DialogContent>
+      </Dialog>,
+    )
+    const input = screen.getByRole("combobox")
+    await user.click(input)
+    expect(input).toHaveAttribute("aria-expanded", "true")
+    await user.keyboard("{Escape}")
+    expect(input).toHaveAttribute("aria-expanded", "false")
+    expect(screen.getByRole("dialog")).toBeInTheDocument()
   })
 })

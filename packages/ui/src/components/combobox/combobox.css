@@ -63,17 +63,21 @@
   }
 
   .dr-combobox-content {
-    @apply text-popover-foreground data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 absolute top-full right-0 left-0 z-50 mt-1 max-h-72 overflow-hidden rounded-[var(--overlay-radius)] border outline-none;
+    @apply text-popover-foreground data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 z-50 overflow-hidden rounded-[var(--overlay-radius)] border outline-none;
     background: var(--overlay-bg);
     background-blend-mode: var(--surface-overlay-blend-mode);
     border-color: var(--overlay-border);
     box-shadow: var(--overlay-shadow);
     -webkit-backdrop-filter: var(--overlay-backdrop);
     backdrop-filter: var(--overlay-backdrop);
+    width: var(--popup-anchor-width, auto);
   }
 
   .dr-combobox-list {
-    @apply m-0 flex max-h-72 list-none flex-col gap-0.5 overflow-y-auto p-1;
+    @apply m-0 flex list-none flex-col gap-0.5 overflow-y-auto p-1;
+    /* The content's two border pixels come off the cap, so the list's last
+       row is not hidden behind the bottom border. */
+    max-height: calc(min(18rem, var(--popup-available-height, 100dvh)) - 2px);
   }
 
   .dr-combobox-item {

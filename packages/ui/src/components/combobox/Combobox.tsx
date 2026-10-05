@@ -4,8 +4,12 @@ import { useUiText } from "../../i18n/useUiText"
 import * as React from "react"
 
 import { cn } from "@lib/utils"
-import { useClickOutside } from "@hooks/useClickOutside"
+import type { SurfaceFill } from "@lib/surface-fill"
+import { DismissableLayer } from "@primitives/dismissable-layer"
+import { useFloating } from "@primitives/floating"
+import { Portal } from "@primitives/portal"
 import { Presence } from "@primitives/presence"
+import { composeRefs } from "@primitives/slot"
 import {
   type ComboboxInputValueChangeDetails,
   type ComboboxItemData,
@@ -24,6 +28,7 @@ export type {
 
 interface ComboboxContextValue extends UseComboboxReturn {
   rootRef: React.RefObject<HTMLDivElement | null>
+  controlRef: React.RefObject<HTMLDivElement | null>
   inputRef: React.RefObject<HTMLInputElement | null>
   contentId: string
   name?: string
@@ -94,16 +99,14 @@ function Combobox({
 
   const rootRef = React.useRef<HTMLDivElement | null>(null)
   const inputRef = React.useRef<HTMLInputElement | null>(null)
+  const controlRef = React.useRef<HTMLDivElement | null>(null)
   const contentId = `${state.baseId}-content`
-
-  useClickOutside(rootRef, () => {
-    if (state.open) state.setOpen(false)
-  })
 
   const ctx = React.useMemo<ComboboxContextValue>(
     () => ({
       ...state,
       rootRef,
+      controlRef,
       inputRef,
       contentId,
       name,
@@ -152,12 +155,15 @@ function ComboboxLabel({ className, ...props }: ComboboxLabelProps) {
   )
 }
 
-export type ComboboxControlProps = React.HTMLAttributes<HTMLDivElement>
+export interface ComboboxControlProps extends React.HTMLAttributes<HTMLDivElement> {
+  ref?: React.Ref<HTMLDivElement>
+}
 
-function ComboboxControl({ className, ...props }: ComboboxControlProps) {
-  const { open, disabled } = useComboboxContext("ComboboxControl")
+function ComboboxControl({ className, ref, ...props }: ComboboxControlProps) {
+  const { open, disabled, controlRef } = useComboboxContext("ComboboxControl")
   return (
     <div
+      ref={composeRefs(controlRef, ref)}
       className={cn("dr-combobox-control", className)}
       data-state={open ? "open" : "closed"}
       data-disabled={disabled ? "true" : undefined}
@@ -469,24 +475,76 @@ function ComboboxTrigger({
   )
 }
 
-export type ComboboxContentProps = React.HTMLAttributes<HTMLDivElement>
+export interface ComboboxContentProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** Which plane the list paints; it no longer inherits the field's, being portalled. */
+  surface?: SurfaceFill
+  ref?: React.Ref<HTMLDivElement>
+}
 
-function ComboboxContent({
+// Portal outside Presence: Presence hands its direct child the ref it reads
+// for the exit animation, and neither Portal nor DismissableLayer forwards it.
+function ComboboxContent(props: ComboboxContentProps) {
+  const { open } = useComboboxContext("ComboboxContent")
+  return (
+    <Portal>
+      <Presence present={open}>
+        <ComboboxContentImpl {...props} />
+      </Presence>
+    </Portal>
+  )
+}
+
+function ComboboxContentImpl({
   className,
   children,
+  surface,
+  onMouseDown,
+  ref,
   ...props
 }: ComboboxContentProps) {
-  const { open, contentId } = useComboboxContext("ComboboxContent")
+  const { open, setOpen, contentId, rootRef, controlRef } =
+    useComboboxContext("ComboboxContent")
+  const floating = useFloating({ placement: "bottom-start", sideOffset: 4 })
+  const setReference = floating.refs.setReference
+  React.useLayoutEffect(() => {
+    setReference(controlRef.current ?? rootRef.current)
+  }, [controlRef, rootRef, setReference])
+
   return (
-    <Presence present={open}>
+    <DismissableLayer
+      active={open}
+      onPointerDownOutside={(event) => {
+        if (
+          event.target instanceof Node &&
+          rootRef.current?.contains(event.target)
+        )
+          return
+        setOpen(false)
+      }}
+      onEscapeKeyDown={() => setOpen(false)}
+    >
       <div
+        ref={composeRefs(floating.refs.setFloating, ref)}
         id={contentId}
+        data-side={floating.placement.split("-")[0]}
+        data-surface-fill={surface}
         className={cn("dr-combobox-content", className)}
+        style={{
+          position: floating.strategy,
+          top: Math.round(floating.y ?? 0),
+          left: Math.round(floating.x ?? 0),
+        }}
+        // The list sits outside the field and any dialog's focus trap, so a
+        // press anywhere on it must not take focus from the input.
+        onMouseDown={(event) => {
+          onMouseDown?.(event)
+          event.preventDefault()
+        }}
         {...props}
       >
         {children}
       </div>
-    </Presence>
+    </DismissableLayer>
   )
 }
 
