@@ -7,6 +7,11 @@ import { PageHeader } from "darkraise-ui/layout"
 import { Button } from "darkraise-ui/components/button"
 import { Badge } from "darkraise-ui/components/badge"
 import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "darkraise-ui/components/avatar"
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -25,6 +30,14 @@ export const Route = createFileRoute("/_authenticated/products/")({
   component: ProductsPage,
 })
 
+function initialsOf(name: string) {
+  const words = name.trim().split(/\s+/).filter(Boolean)
+  const [first = "", second = ""] = words
+  return (
+    second ? first.charAt(0) + second.charAt(0) : first.slice(0, 2)
+  ).toUpperCase()
+}
+
 function ProductsPage() {
   const uiLocale = useUiLocale()
 
@@ -40,11 +53,18 @@ function ProductsPage() {
       accessorKey: "image",
       header: t("Image"),
       cell: ({ row }) => (
-        <img
-          src={row.original.image}
-          alt={row.original.name}
-          className="h-10 w-10 rounded-md object-cover"
-        />
+        <Avatar data-product-thumbnail className="h-10 w-10 rounded-md">
+          {row.original.image && (
+            <AvatarImage
+              src={row.original.image}
+              alt={row.original.name}
+              className="rounded-md object-cover"
+            />
+          )}
+          <AvatarFallback className="rounded-md text-xs font-medium">
+            {initialsOf(row.original.name)}
+          </AvatarFallback>
+        </Avatar>
       ),
       enableSorting: false,
     },

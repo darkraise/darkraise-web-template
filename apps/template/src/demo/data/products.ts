@@ -12,7 +12,6 @@ export const products: Product[] = [
     status: "active",
     stock: 142,
     sku: "APL-IP15P-256",
-    image: "https://placehold.co/80x80/e2e8f0/64748b?text=iPhone",
     createdAt: "2025-12-01T10:00:00Z",
   },
   {
@@ -26,7 +25,6 @@ export const products: Product[] = [
     status: "active",
     stock: 89,
     sku: "SAM-GS24U-256",
-    image: "https://placehold.co/80x80/e2e8f0/64748b?text=Galaxy",
     createdAt: "2025-12-05T14:30:00Z",
   },
   {
@@ -39,7 +37,6 @@ export const products: Product[] = [
     status: "active",
     stock: 67,
     sku: "GOO-PX9P-128",
-    image: "https://placehold.co/80x80/e2e8f0/64748b?text=Pixel",
     createdAt: "2025-12-10T09:15:00Z",
   },
   {
@@ -53,7 +50,6 @@ export const products: Product[] = [
     status: "draft",
     stock: 0,
     sku: "OPL-OP12-256",
-    image: "https://placehold.co/80x80/e2e8f0/64748b?text=OnePlus",
     createdAt: "2025-12-12T11:00:00Z",
   },
   {
@@ -66,7 +62,6 @@ export const products: Product[] = [
     status: "active",
     stock: 34,
     sku: "APL-MBP16-512",
-    image: "https://placehold.co/80x80/e2e8f0/64748b?text=MacBook",
     createdAt: "2025-11-20T08:00:00Z",
   },
   {
@@ -80,7 +75,6 @@ export const products: Product[] = [
     status: "active",
     stock: 52,
     sku: "LEN-X1C12-512",
-    image: "https://placehold.co/80x80/e2e8f0/64748b?text=ThinkPad",
     createdAt: "2025-11-25T16:45:00Z",
   },
   {
@@ -93,7 +87,6 @@ export const products: Product[] = [
     status: "archived",
     stock: 8,
     sku: "DEL-XPS15-1TB",
-    image: "https://placehold.co/80x80/e2e8f0/64748b?text=XPS",
     createdAt: "2025-10-15T12:00:00Z",
   },
   {
@@ -107,7 +100,6 @@ export const products: Product[] = [
     status: "active",
     stock: 210,
     sku: "SNY-WH1KXM5-B",
-    image: "https://placehold.co/80x80/e2e8f0/64748b?text=Sony",
     createdAt: "2025-11-01T10:00:00Z",
   },
   {
@@ -120,7 +112,6 @@ export const products: Product[] = [
     status: "active",
     stock: 384,
     sku: "APL-APP2-USBC",
-    image: "https://placehold.co/80x80/e2e8f0/64748b?text=AirPods",
     createdAt: "2025-11-05T13:30:00Z",
   },
   {
@@ -133,7 +124,6 @@ export const products: Product[] = [
     status: "active",
     stock: 156,
     sku: "BSE-QCULT-BLK",
-    image: "https://placehold.co/80x80/e2e8f0/64748b?text=Bose",
     createdAt: "2025-11-10T09:00:00Z",
   },
   {
@@ -146,7 +136,6 @@ export const products: Product[] = [
     status: "active",
     stock: 73,
     sku: "APL-AWU2-49MM",
-    image: "https://placehold.co/80x80/e2e8f0/64748b?text=Watch",
     createdAt: "2025-11-15T10:00:00Z",
   },
   {
@@ -160,7 +149,6 @@ export const products: Product[] = [
     status: "active",
     stock: 195,
     sku: "SAM-GW6-44MM",
-    image: "https://placehold.co/80x80/e2e8f0/64748b?text=GWatch",
     createdAt: "2025-11-18T14:00:00Z",
   },
   {
@@ -173,7 +161,6 @@ export const products: Product[] = [
     status: "active",
     stock: 320,
     sku: "PAT-BTSW-M-NVY",
-    image: "https://placehold.co/80x80/e2e8f0/64748b?text=Fleece",
     createdAt: "2025-10-01T08:00:00Z",
   },
   {
@@ -187,7 +174,6 @@ export const products: Product[] = [
     status: "active",
     stock: 456,
     sku: "LEV-501-32-BLU",
-    image: "https://placehold.co/80x80/e2e8f0/64748b?text=Levis",
     createdAt: "2025-10-05T11:00:00Z",
   },
   {
@@ -200,7 +186,6 @@ export const products: Product[] = [
     status: "draft",
     stock: 0,
     sku: "TNF-NUPT-L-BLK",
-    image: "https://placehold.co/80x80/e2e8f0/64748b?text=Nuptse",
     createdAt: "2025-10-10T15:30:00Z",
   },
   {
@@ -213,7 +198,6 @@ export const products: Product[] = [
     status: "active",
     stock: 278,
     sku: "NKE-AM90-10-WHT",
-    image: "https://placehold.co/80x80/e2e8f0/64748b?text=Nike",
     createdAt: "2025-09-20T10:00:00Z",
   },
   {
@@ -227,7 +211,6 @@ export const products: Product[] = [
     status: "active",
     stock: 189,
     sku: "ADI-UBL-11-BLK",
-    image: "https://placehold.co/80x80/e2e8f0/64748b?text=Adidas",
     createdAt: "2025-09-25T14:00:00Z",
   },
   {
@@ -240,7 +223,6 @@ export const products: Product[] = [
     status: "active",
     stock: 534,
     sku: "RBN-WF-CLS-BLK",
-    image: "https://placehold.co/80x80/e2e8f0/64748b?text=RayBan",
     createdAt: "2025-09-15T09:00:00Z",
   },
   {
@@ -254,7 +236,6 @@ export const products: Product[] = [
     status: "active",
     stock: 167,
     sku: "HER-RETR-BLK",
-    image: "https://placehold.co/80x80/e2e8f0/64748b?text=Herschel",
     createdAt: "2025-09-18T11:30:00Z",
   },
   {
@@ -267,7 +248,6 @@ export const products: Product[] = [
     status: "archived",
     stock: 12,
     sku: "DYS-V15D-ABS",
-    image: "https://placehold.co/80x80/e2e8f0/64748b?text=Dyson",
     createdAt: "2025-08-01T10:00:00Z",
   },
 ]

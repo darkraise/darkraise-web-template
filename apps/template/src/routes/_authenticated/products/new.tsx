@@ -57,7 +57,6 @@ function ProductCreatePage() {
             sku: value.sku,
             stock: value.stock,
             status,
-            image: `https://placehold.co/80x80/e2e8f0/64748b?text=${encodeURIComponent(value.name.slice(0, 6))}`,
           })
           navigate({ to: "/products" })
         }}

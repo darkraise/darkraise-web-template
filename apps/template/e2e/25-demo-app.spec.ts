@@ -221,3 +221,28 @@ test.describe("KPI sparkline", () => {
     await expect(spark.locator("line")).toHaveCount(1)
   })
 })
+
+test.describe("product thumbnails", () => {
+  test.beforeEach(async ({ page }) => {
+    await seedApp(page, { style: "quiet", mode: "light" })
+  })
+
+  test("thumbnails are local and their initials legible", async ({ page }) => {
+    const external: string[] = []
+    page.on("request", (request) => {
+      if (request.url().includes("placehold.co")) external.push(request.url())
+    })
+    await gotoApp(page, "/products")
+    const fallbacks = page.locator(
+      "[data-product-thumbnail] .dr-avatar-fallback",
+    )
+    await expect(fallbacks.first()).toBeVisible()
+    for (const fallback of await fallbacks.all()) {
+      await expect(fallback).toHaveText(/^[A-Z0-9]{2}$/)
+      expect(
+        parseFloat(await computed(fallback, "font-size")),
+      ).toBeGreaterThanOrEqual(12)
+    }
+    expect(external).toEqual([])
+  })
+})

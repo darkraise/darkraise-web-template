@@ -8,7 +8,7 @@ export interface Product {
   status: "active" | "draft" | "archived"
   stock: number
   sku: string
-  image: string
+  image?: string
   createdAt: string
 }
 
