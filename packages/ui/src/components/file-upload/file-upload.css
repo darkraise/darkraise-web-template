@@ -12,7 +12,11 @@
   }
 
   .dr-file-upload-dropzone {
-    @apply border-input bg-card text-card-foreground hover:border-primary flex w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-md border-2 border-dashed px-6 py-10 text-center text-sm transition-colors;
+    @apply border-input bg-card text-card-foreground flex w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-md border-2 border-dashed px-6 py-10 text-center text-sm transition-colors;
+  }
+
+  .dr-file-upload-dropzone:where(:not([data-disabled])):hover {
+    @apply border-primary;
   }
 
   .dr-file-upload-dropzone[data-dragover="true"] {
@@ -73,6 +77,10 @@
   }
 
   .dr-file-upload-clear-trigger {
-    @apply text-muted-foreground hover:text-foreground focus-ring-inset inline-flex h-8 cursor-pointer items-center gap-1 self-start rounded-sm px-2 text-xs underline transition-colors disabled:pointer-events-none disabled:opacity-[var(--disabled-opacity)];
+    @apply text-muted-foreground focus-ring-inset inline-flex h-8 cursor-pointer items-center gap-1 self-start rounded-sm px-2 text-xs underline transition-colors disabled:pointer-events-none disabled:opacity-[var(--disabled-opacity)];
+  }
+
+  .dr-file-upload-clear-trigger:where(:not(:disabled)):hover {
+    @apply text-foreground;
   }
 }

@@ -165,7 +165,10 @@ describe("checked family: toggle, listbox and tree view", () => {
     [LISTBOX, '.dr-listbox-item[data-selected="true"]'],
     [LISTBOX, '.dr-listbox-item[data-selected="true"]:hover'],
     [TREE, '.dr-tree-view-item[data-selected="true"]'],
-    [TREE, '.dr-tree-view-item[data-selected="true"]:hover'],
+    [
+      TREE,
+      '.dr-tree-view-item[data-selected="true"]:not([data-disabled]):hover',
+    ],
   ])("%s %s reads the checked fill and label", (path, selector) => {
     const body = bodyOf(path, selector)
     for (const declaration of CHECKED) expect(body).toContain(declaration)

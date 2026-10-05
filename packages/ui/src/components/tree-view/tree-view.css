@@ -46,8 +46,8 @@
     list-style: none;
   }
 
-  .dr-tree-view-branch-control:hover,
-  .dr-tree-view-item:hover {
+  .dr-tree-view-branch-control:not([data-disabled]):hover,
+  .dr-tree-view-item:not([data-disabled]):hover {
     @apply bg-accent text-accent-foreground;
   }
 
@@ -67,8 +67,8 @@
     box-shadow: var(--affordance-glow);
   }
 
-  .dr-tree-view-branch-control[data-selected="true"]:hover,
-  .dr-tree-view-item[data-selected="true"]:hover {
+  .dr-tree-view-branch-control[data-selected="true"]:not([data-disabled]):hover,
+  .dr-tree-view-item[data-selected="true"]:not([data-disabled]):hover {
     background-color: var(--selected-check-bg);
     color: var(--selected-check-fg);
     box-shadow: var(--affordance-glow);

@@ -36,6 +36,17 @@ const CONTROLS: Array<[string, string]> = [
   ["dr-color-picker-trigger", ":not(:disabled)"],
   ["dr-color-picker-eye-dropper-trigger", ":not(:disabled)"],
   ["dr-floating-panel-trigger", ":not(:disabled)"],
+  // Rows and fields: a disabled one keeps its pointer events, so its hover
+  // needs the guard too.
+  ["dr-cascade-item", ':not([aria-disabled="true"])'],
+  ["dr-file-upload-dropzone", ":not([data-disabled])"],
+  ["dr-file-upload-clear-trigger", ":not(:disabled)"],
+  ["dr-menubar-item", ":not([data-disabled])"],
+  ["dr-menubar-checkbox-item", ":not([data-disabled])"],
+  ["dr-menubar-radio-item", ":not([data-disabled])"],
+  ["dr-tree-view-branch-control", ":not([data-disabled])"],
+  ["dr-tree-view-item", ":not([data-disabled])"],
+  ["dr-timer-action-trigger", ":not(:disabled)"],
 ]
 
 function stylesheets(dir: string): string[] {

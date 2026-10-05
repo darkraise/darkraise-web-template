@@ -25,7 +25,7 @@
   /* The active item (the one whose subtree shows in the next column) takes
      the highlighted-row treatment its hover uses. Keyboard focus adds a ring
      only on :focus-visible, so a pointer-driven active path shows none. */
-  .dr-cascade-item:hover,
+  .dr-cascade-item:not([aria-disabled="true"]):hover,
   .dr-cascade-item[data-active="true"] {
     @apply bg-accent text-accent-foreground;
   }
