@@ -1,8 +1,8 @@
 import { test, expect, type Locator, type Page } from "@playwright/test"
 import { STYLES } from "./fixtures/theme"
-import { boxOf, readToken, seedApp } from "./helpers/app"
+import { applyTheme, boxOf, readToken, seedApp } from "./helpers/app"
 import { openControlFixture } from "./helpers/controls"
-import { computed, contrast, pixel } from "./helpers/measure"
+import { computed, contrast, pixel, rgbOf } from "./helpers/measure"
 
 // Tall enough that every probe renders on screen: pixel() clips its
 // screenshot to the viewport.
@@ -262,6 +262,109 @@ test.describe("file upload trigger", () => {
           await computed(button, property),
         )
       }
+    })
+  }
+})
+
+test.describe("number input steppers", () => {
+  async function dividerRatio(page: Page): Promise<number> {
+    const divider = rgbOf(
+      await computed(
+        probe(page, "number-input", ".dr-number-input-trigger-group"),
+        "border-left-color",
+      ),
+    )
+    const fill = rgbOf(
+      await computed(
+        probe(page, "number-input", ".dr-number-input-control"),
+        "background-color",
+      ),
+    )
+    return contrast(divider, fill)
+  }
+
+  for (const mode of MODES) {
+    test(`steppers draw --icon-size-sm icons and --input dividers · ${mode}`, async ({
+      page,
+    }) => {
+      await openInMode(page, mode)
+      const group = probe(
+        page,
+        "number-input",
+        ".dr-number-input-trigger-group",
+      )
+      const iconSize = await group.evaluate((element) => {
+        const ruler = document.createElement("div")
+        ruler.style.width = "var(--icon-size-sm)"
+        element.append(ruler)
+        const width = ruler.getBoundingClientRect().width
+        ruler.remove()
+        return width
+      })
+      const icons = await probe(
+        page,
+        "number-input",
+        ".dr-number-input-stepper svg",
+      ).all()
+      expect(icons).toHaveLength(2)
+      for (const icon of icons) {
+        expect((await boxOf(icon)).width).toBeCloseTo(iconSize, 1)
+      }
+      const divider = await tokenColour(page, "--input")
+      expect(await computed(group, "border-left-color")).toBe(divider)
+      expect(
+        await computed(
+          probe(page, "number-input", ".dr-number-input-stepper-increment"),
+          "border-bottom-color",
+        ),
+      ).toBe(divider)
+    })
+  }
+
+  test("the dividers read alike in light and dark", async ({
+    page,
+    context,
+  }) => {
+    await openInMode(page, "light")
+    const light = await dividerRatio(page)
+    await applyTheme(page, { mode: "dark" })
+    // A second load of the unbundled fixture in one page renders an empty
+    // root; a sibling page shares localStorage and boots in the new mode.
+    const darkPage = await context.newPage()
+    await openControlFixture(darkPage)
+    await expect(darkPage.locator("html")).toHaveAttribute("data-mode", "dark")
+    const dark = await dividerRatio(darkPage)
+    expect(
+      Math.abs(light - dark),
+      `light ${light.toFixed(2)}:1, dark ${dark.toFixed(2)}:1`,
+    ).toBeLessThanOrEqual(0.5)
+  })
+
+  for (const fontSize of ["medium", "extra-large"] as const) {
+    test(`steppers share the control's inner height · compact · ${fontSize}`, async ({
+      page,
+    }) => {
+      await seedApp(page, {
+        style: "quiet",
+        mode: "light",
+        density: "compact",
+        fontSize,
+      })
+      await openControlFixture(page)
+      const control = await boxOf(
+        probe(page, "number-input", ".dr-number-input-control"),
+      )
+      const increment = await boxOf(
+        probe(page, "number-input", ".dr-number-input-stepper-increment"),
+      )
+      const decrement = await boxOf(
+        probe(page, "number-input", ".dr-number-input-stepper-decrement"),
+      )
+      expect(increment.y - control.y, "increment top").toBeCloseTo(1, 0)
+      expect(
+        control.y + control.height - (decrement.y + decrement.height),
+        "decrement bottom",
+      ).toBeCloseTo(1, 0)
     })
   }
 })

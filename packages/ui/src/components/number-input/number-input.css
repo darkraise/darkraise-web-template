@@ -81,8 +81,8 @@
    * overflow:hidden clips the group's corners against the control's
    * rounded radius — no per-group border-radius needed. */
   .dr-number-input-trigger-group {
-    @apply flex w-7 shrink-0 flex-col;
-    border-left: 1px solid hsl(var(--border));
+    @apply flex w-8 shrink-0 flex-col;
+    border-left: 1px solid hsl(var(--input));
   }
 
   /* Steppers inside the group: each takes half the height, no per-stepper
@@ -93,11 +93,15 @@
     position: static;
     width: 100%;
     height: auto;
+    /* A flex item's min-height is its content: an icon taller than half
+       the field would hold the stepper open and push the decrement out of
+       the clipped control. */
+    min-height: 0;
     border-left: 0;
     border-radius: 0;
   }
   .dr-number-input-trigger-group .dr-number-input-stepper-increment {
-    border-bottom: 1px solid hsl(var(--border));
+    border-bottom: 1px solid hsl(var(--input));
   }
 
   /* Stepper visual chrome — text colour, focus ring, disabled state; hover
@@ -106,7 +110,7 @@
   .dr-number-input-stepper {
     position: relative;
     isolation: isolate;
-    @apply text-muted-foreground focus-ring-inset inline-flex cursor-pointer items-center justify-center bg-transparent transition-colors disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)] [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size-xs)] [&_svg]:shrink-0;
+    @apply text-muted-foreground focus-ring-inset inline-flex cursor-pointer items-center justify-center bg-transparent transition-colors disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)] [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size-sm)] [&_svg]:shrink-0;
   }
 
   /* Interaction state layer — see theme.css. Painted by a pseudo-element so
