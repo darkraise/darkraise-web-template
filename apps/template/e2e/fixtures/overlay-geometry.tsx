@@ -356,6 +356,52 @@ function TourCase() {
   )
 }
 
+// The chart, contribution-graph and timeline surfaces appear only on hover;
+// their rules apply to the class, so a bare element carrying it is enough.
+function RecipeCase() {
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: 24, padding: 24 }}>
+      <Popover defaultOpen>
+        <PopoverTrigger asChild>
+          <Button>Reference</Button>
+        </PopoverTrigger>
+        <PopoverContent data-testid="reference-popover">
+          Reference
+        </PopoverContent>
+      </Popover>
+      <div className="dr-chart-tooltip">Chart tooltip</div>
+      <div style={{ position: "relative", width: 200, height: 60 }}>
+        <div className="dr-contribution-graph-tooltip">
+          Contribution tooltip
+        </div>
+      </div>
+      <div style={{ position: "relative", width: 200, height: 60 }}>
+        <div className="dr-virtualized-timeline-scrubber-label">2026</div>
+      </div>
+      <div id="recipe-target" style={{ width: 120, height: 40 }}>
+        Tour target
+      </div>
+      <FloatingPanel
+        scope="global"
+        defaultPosition={{ x: 600, y: 300 }}
+        defaultSize={{ width: 240, height: 160 }}
+      >
+        <FloatingPanelHeader>
+          <FloatingPanelTitle>Panel</FloatingPanelTitle>
+        </FloatingPanelHeader>
+        <FloatingPanelContent>Panel body</FloatingPanelContent>
+      </FloatingPanel>
+      <Tour
+        open
+        current={0}
+        onChange={() => undefined}
+        onClose={() => undefined}
+        steps={[{ targetSelector: "#recipe-target", title: "Recipe" }]}
+      />
+    </div>
+  )
+}
+
 // One scenario per page load, chosen by ?case=, so a case's fixed triggers
 // and open overlays never shift another case's geometry.
 // Three global panels that all cover the viewport centre, where the dialog
@@ -399,6 +445,7 @@ const CASES: Record<string, () => ReactElement> = {
   combobox: ComboboxCase,
   panels: PanelsCase,
   tour: TourCase,
+  recipe: RecipeCase,
   sheets: SheetsCase,
 }
 

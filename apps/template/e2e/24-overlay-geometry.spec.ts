@@ -255,3 +255,34 @@ test.describe("the tour popover stays on screen", () => {
     expect(box.y + box.height).toBeLessThanOrEqual(target.y)
   })
 })
+
+test.describe("floating surfaces paint the overlay fill", () => {
+  for (const mode of ["light", "dark"] as const) {
+    test(`every surface matches a popover · glass · ${mode}`, async ({
+      page,
+    }) => {
+      await seedApp(page, { style: "glass", mode })
+      await openOverlayCase(page, "recipe")
+      const reference = page.getByTestId("reference-popover")
+      await expect(reference).toBeVisible()
+      await expect(page.locator(".dr-tour-popover")).toBeVisible()
+      await settle(page)
+      const paint = (locator: Locator) =>
+        Promise.all(
+          ["background-color", "background-image", "border-top-color"].map(
+            (property) => computed(locator, property),
+          ),
+        )
+      const expected = await paint(reference)
+      for (const selector of [
+        ".dr-floating-panel",
+        ".dr-tour-popover",
+        ".dr-chart-tooltip",
+        ".dr-contribution-graph-tooltip",
+        ".dr-virtualized-timeline-scrubber-label",
+      ]) {
+        expect(await paint(page.locator(selector)), selector).toEqual(expected)
+      }
+    })
+  }
+})
