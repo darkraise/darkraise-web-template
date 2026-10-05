@@ -1,6 +1,9 @@
 @layer components {
   .dr-floating-panel {
-    @apply bg-popover text-popover-foreground border-border flex flex-col overflow-hidden rounded-[var(--overlay-radius)] border shadow-[var(--elevation-medium)];
+    @apply text-popover-foreground flex flex-col overflow-hidden rounded-[var(--overlay-radius)] border shadow-[var(--elevation-medium)];
+    background: var(--overlay-bg);
+    background-blend-mode: var(--surface-overlay-blend-mode);
+    border-color: var(--overlay-border);
     -webkit-backdrop-filter: var(--overlay-backdrop);
     backdrop-filter: var(--overlay-backdrop);
     /* Default: parent-scoped. Switched to `fixed` for global scope below.
@@ -9,11 +12,7 @@
        Note: z-index is set inline from the panel's place in one recency
        order shared by local and global panels — see `useFloatingPanel.ts`.
        Stacking ladder: page chrome (auto) < panels (10–49) < popups and
-       modals (50) < tour (80, 81) < toasts (100).
-       The dark-mode `--border == --muted` collision was fixed at the
-       token level in `generateTokens.ts` (dark border is now surface[700],
-       muted stays at 800), so `border-border` reads correctly against the
-       header here in both modes. */
+       modals (50) < tour (80, 81) < toasts (100). */
     position: absolute;
   }
 

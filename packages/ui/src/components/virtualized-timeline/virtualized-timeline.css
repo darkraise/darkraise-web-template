@@ -164,9 +164,13 @@
   }
 
   .dr-virtualized-timeline-scrubber-label {
-    @apply bg-popover text-popover-foreground pointer-events-none absolute right-4 w-max rounded-[var(--radius-sm)] border px-2 py-1 text-xs;
-    border-color: var(--surface-overlay-border);
-    box-shadow: var(--surface-overlay-shadow);
+    @apply text-popover-foreground pointer-events-none absolute right-4 w-max rounded-[var(--radius-sm)] border px-2 py-1 text-xs;
+    background: var(--overlay-bg);
+    background-blend-mode: var(--surface-overlay-blend-mode);
+    border-color: var(--overlay-border);
+    -webkit-backdrop-filter: var(--overlay-backdrop);
+    backdrop-filter: var(--overlay-backdrop);
+    box-shadow: var(--overlay-shadow);
     transform: translateY(-50%);
   }
 

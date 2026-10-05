@@ -358,6 +358,16 @@ describe("overlay backdrop", () => {
       "src/components/virtualized-dropdown-menu/virtualized-dropdown-menu.css",
       ".dr-vdm-content",
     ],
+    ["src/components/tour/tour.css", ".dr-tour-popover"],
+    ["src/components/chart/chart.css", ".dr-chart-tooltip"],
+    [
+      "src/components/contribution-graph/contribution-graph.css",
+      ".dr-contribution-graph-tooltip",
+    ],
+    [
+      "src/components/virtualized-timeline/virtualized-timeline.css",
+      ".dr-virtualized-timeline-scrubber-label",
+    ],
     [THEME, ".overlay-surface"],
   ])("%s %s frosts through --overlay-backdrop", (path, selector) => {
     expect(bodyOf(path, selector)).toContain(FROSTED)
