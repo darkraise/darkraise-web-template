@@ -1,7 +1,7 @@
 import { test, expect, type Locator, type Page } from "@playwright/test"
 import { boxOf, seedApp } from "./helpers/app"
 import { computed, settle } from "./helpers/measure"
-import { expectInViewport, openOverlayCase } from "./helpers/overlays"
+import { expectInViewport, hitsAt, openOverlayCase } from "./helpers/overlays"
 
 /**
  * Overlay geometry: popups stay attached to their trigger and inside the
@@ -102,5 +102,49 @@ test.describe("list popups fit the viewport", () => {
     await openOverlayCase(page, "menus")
     await page.getByRole("menuitem", { name: "File" }).click()
     await expectCappedAndScrolling(page, page.locator(".dr-menubar-content"))
+  })
+})
+
+async function expectListUncut(page: Page, input: Locator) {
+  const content = page.locator(".dr-combobox-content")
+  await expect(content).toBeVisible()
+  await settle(page)
+  await expectInViewport(page, content)
+  const box = await boxOf(content)
+  const option = await boxOf(content.getByRole("option").first())
+  for (const [x, y] of [
+    [box.x + box.width / 2, box.y + box.height / 2],
+    [option.x + option.width / 2, option.y + option.height / 2],
+  ] as const) {
+    expect(await hitsAt(page, x, y, ".dr-combobox-content")).toBe(true)
+  }
+  expect(box.y + box.height).toBeLessThanOrEqual((await boxOf(input)).y + 1)
+}
+
+test.describe("combobox lists escape their container", () => {
+  test("a combobox at the bottom of a dialog opens above it, uncut", async ({
+    page,
+  }) => {
+    await seedApp(page, { style: "quiet", mode: "light" })
+    await openOverlayCase(page, "combobox")
+    await page.getByRole("button", { name: "Open dialog" }).click()
+    const dialog = page.getByRole("dialog")
+    await expect(dialog).toBeVisible()
+    await dialog.evaluate((element) => {
+      element.scrollTop = element.scrollHeight
+    })
+    const input = dialog.getByRole("combobox")
+    await input.click()
+    await expectListUncut(page, input)
+  })
+
+  test("a multi-select in a short scroll box opens above it, uncut", async ({
+    page,
+  }) => {
+    await seedApp(page, { style: "quiet", mode: "light" })
+    await openOverlayCase(page, "combobox")
+    const input = page.getByTestId("scroll-box").getByRole("combobox")
+    await input.click()
+    await expectListUncut(page, input)
   })
 })

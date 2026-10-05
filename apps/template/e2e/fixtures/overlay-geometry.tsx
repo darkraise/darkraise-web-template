@@ -1,6 +1,24 @@
 import type { ReactElement } from "react"
 import { createRoot } from "react-dom/client"
+import { ChevronDown } from "lucide-react"
 import { Button } from "darkraise-ui/components/button"
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxControl,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxItemText,
+  ComboboxLabel,
+  ComboboxList,
+  ComboboxTrigger,
+} from "darkraise-ui/components/combobox"
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from "darkraise-ui/components/dialog"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +35,7 @@ import {
   MenubarMenu,
   MenubarTrigger,
 } from "darkraise-ui/components/menubar"
+import { MultiSelect } from "darkraise-ui/components/multi-select"
 import {
   Popover,
   PopoverContent,
@@ -155,12 +174,84 @@ function MenusCase() {
   )
 }
 
+const COUNTRIES = [
+  "Argentina",
+  "Brazil",
+  "Canada",
+  "Denmark",
+  "Egypt",
+  "France",
+  "Germany",
+  "Hungary",
+  "India",
+  "Japan",
+  "Kenya",
+  "Mexico",
+].map((label) => ({ value: label.toLowerCase(), label }))
+
+function CountryCombobox() {
+  return (
+    <Combobox items={COUNTRIES} placeholder="Country">
+      <ComboboxLabel>Country</ComboboxLabel>
+      <ComboboxControl>
+        <ComboboxInput />
+        <ComboboxTrigger aria-label="Show countries">
+          <ChevronDown className="size-4" aria-hidden="true" />
+        </ComboboxTrigger>
+      </ComboboxControl>
+      <ComboboxContent>
+        <ComboboxList>
+          {COUNTRIES.map((item) => (
+            <ComboboxItem key={item.value} item={item}>
+              <ComboboxItemText>{item.label}</ComboboxItemText>
+            </ComboboxItem>
+          ))}
+        </ComboboxList>
+      </ComboboxContent>
+    </Combobox>
+  )
+}
+
+// A combobox at the bottom of a scrolled dialog, and a multi-select in a
+// short scroll box pinned to the viewport's bottom edge: neither list has
+// room below its field.
+function ComboboxCase() {
+  return (
+    <>
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button>Open dialog</Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogTitle>Shipping</DialogTitle>
+          <div style={{ height: 900 }} />
+          <CountryCombobox />
+        </DialogContent>
+      </Dialog>
+      <div
+        data-testid="scroll-box"
+        style={{
+          position: "fixed",
+          left: 24,
+          right: 24,
+          bottom: 24,
+          height: 120,
+          overflow: "auto",
+        }}
+      >
+        <MultiSelect items={COUNTRIES} placeholder="Tags" />
+      </div>
+    </>
+  )
+}
+
 // One scenario per page load, chosen by ?case=, so a case's fixed triggers
 // and open overlays never shift another case's geometry.
 const CASES: Record<string, () => ReactElement> = {
   follow: FollowCase,
   origin: OriginCase,
   menus: MenusCase,
+  combobox: ComboboxCase,
 }
 
 const name = new URLSearchParams(window.location.search).get("case") ?? ""
