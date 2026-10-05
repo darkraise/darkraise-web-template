@@ -40,6 +40,7 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "darkraise-ui/components/input-otp"
+import { Kbd } from "darkraise-ui/components/kbd"
 import { MultiSelect } from "darkraise-ui/components/multi-select"
 import {
   NumberInput,
@@ -322,6 +323,14 @@ function ControlStates() {
             </Banner>
           </div>
         ))}
+      </div>
+      <div
+        data-probe="kbd"
+        style={{ display: "flex", gap: 8, alignItems: "center", padding: 4 }}
+      >
+        <Kbd size="sm">Ctrl</Kbd>
+        <Kbd>K</Kbd>
+        <Kbd size="lg">Esc</Kbd>
       </div>
     </div>
   )

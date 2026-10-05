@@ -311,3 +311,23 @@ for (const style of BASELINE_STYLES) {
     })
   }
 }
+
+/**
+ * The Kbd keycap on the page canvas. The computed-style test proves the
+ * bottom edge's colour; only a picture shows the key still reads as a key.
+ */
+for (const style of BASELINE_STYLES) {
+  for (const mode of MODES) {
+    test(`kbd keycap · ${style} · ${mode}`, async ({ page }) => {
+      await seedApp(page, { style, mode })
+      await openControlFixture(page)
+      await waitForFonts(page)
+      await page.mouse.move(0, 0)
+      await settle(page)
+      await expect(page.locator('[data-probe="kbd"]')).toHaveScreenshot(
+        `kbd-${style}-${mode}.png`,
+        { animations: "disabled" },
+      )
+    })
+  }
+}

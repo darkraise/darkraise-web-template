@@ -657,3 +657,19 @@ test.describe("alert and banner recipe", () => {
     })
   }
 })
+
+test.describe("kbd keycap edge", () => {
+  for (const mode of MODES) {
+    test(`kbd draws the field edge along its bottom · ${mode}`, async ({
+      page,
+    }) => {
+      await openInMode(page, mode)
+      const keys = await probe(page, "kbd", ".dr-kbd").all()
+      expect(keys).toHaveLength(3)
+      const edge = await resolvedColour(page, "var(--field-edge)")
+      for (const key of keys) {
+        expect(await computed(key, "border-bottom-color")).toBe(edge)
+      }
+    })
+  }
+})
