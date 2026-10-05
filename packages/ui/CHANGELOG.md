@@ -82,7 +82,7 @@ Breaking: `ComboboxContent`, and with it `MultiSelect`'s list, renders in a port
 
 Breaking: `SheetContent` scrolls as a whole when its content is taller than the sheet, instead of clipping it, and top and bottom sheets stop at the viewport height minus 2rem. To keep the header and footer pinned, wrap the middle in the new `SheetBody`.
 
-Breaking: `FloatingPanel` z-indexes run from 10 to 49 by recency (the most recently opened or pressed panel is highest), so popups, dialogs and sheets at z-50 always cover panels. A panel that must rise above them needs an explicit `style.zIndex`.
+Breaking: `FloatingPanel` z-indexes run from 10 to 49 by recency (the most recently mounted or pressed panel is highest), so popups, dialogs and sheets at z-50 always cover panels. A panel that must rise above them needs an explicit `style.zIndex`.
 
 ### Added
 
@@ -116,7 +116,7 @@ Breaking: `FloatingPanel` z-indexes run from 10 to 49 by recency (the most recen
 - `labels.dateInputPlaceholder` (`{ year, month, day }`), `YYYY`, `MM` and `DD` in English and Vietnamese.
 - `UseListboxOptions.disabled` and `UseListboxReturn.disabled`.
 - `SheetBody`: the scrolling middle of a sheet; rendering one pins the sheet's header and footer, as `DialogBody` does for a dialog.
-- `ComboboxContent` takes `surface`, forwarded as `data-surface-fill` like the other popups.
+- `ComboboxContent` takes `surface`, forwarded as `data-surface-fill` like the other popups, and `ComboboxControl` takes a `ref`.
 - Every popup positioned by the kit sets `--popup-available-width`, `--popup-available-height`, `--popup-anchor-width`, `--popup-anchor-height` (all in px) and `--popup-transform-origin` on itself, for consumer styles that size or animate a popup.
 
 ### Changed

@@ -7,7 +7,7 @@
     @apply w-72;
   }
 
-  /* The sheet is a flex column with `overflow: hidden`, so the nav takes the
+  /* The sheet is a flex column, so the nav takes the
      free space and scrolls while the optional header/footer sections stay
      pinned — the same arrangement as the `aside` this drawer stands in for. */
   .dr-mobile-drawer-body {

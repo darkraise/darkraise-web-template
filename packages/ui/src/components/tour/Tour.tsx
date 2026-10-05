@@ -47,8 +47,8 @@ function Tour({
 
   const [rect, setRect] = React.useState<Rect | null>(null)
   const [targetEl, setTargetEl] = React.useState<HTMLElement | null>(null)
-  // The offsets keep the popover where it sat before: 12px outside the
-  // spotlight ring, aligned with the ring's start edge.
+  // The popover sits 12px outside the spotlight ring, aligned with the
+  // ring's start edge.
   const floating = useFloating({
     placement: "bottom-start",
     sideOffset: 12 + spotlightPadding,
