@@ -26,6 +26,28 @@ describe("CascadeSelect", () => {
     expect(screen.getByRole("button", { name: /pick/i })).toBeInTheDocument()
   })
 
+  it("renders a field trigger that marks its placeholder", () => {
+    const { rerender } = render(
+      <CascadeSelect options={OPTIONS} placeholder="Pick" />,
+    )
+    const trigger = screen.getByRole("button", { name: "Pick" })
+    expect(trigger).toHaveClass("dr-cascade-trigger")
+    expect(trigger).not.toHaveClass("dr-btn")
+    expect(trigger).toHaveAttribute("data-placeholder", "")
+    expect(trigger.firstElementChild?.tagName).toBe("SPAN")
+    expect(trigger.lastElementChild?.tagName.toLowerCase()).toBe("svg")
+    rerender(
+      <CascadeSelect
+        options={OPTIONS}
+        value={["us", "ny"]}
+        placeholder="Pick"
+      />,
+    )
+    expect(
+      screen.getByRole("button", { name: "New York" }),
+    ).not.toHaveAttribute("data-placeholder")
+  })
+
   it("opens the root listbox on trigger click", async () => {
     render(<CascadeSelect options={OPTIONS} placeholder="Pick" />)
     await userEvent.click(screen.getByRole("button", { name: /pick/i }))

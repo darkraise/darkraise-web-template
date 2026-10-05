@@ -2,7 +2,6 @@ import { useUiText } from "../../i18n/useUiText"
 import * as React from "react"
 import { ChevronDown, ChevronRight } from "lucide-react"
 import { cn } from "@lib/utils"
-import { Button } from "@components/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@components/popover"
 import { useControllableState } from "@primitives/state"
 import "./cascade-select.css"
@@ -208,23 +207,23 @@ function CascadeSelect({
     }
   }
 
-  const label =
-    (path.length > 0 && findLabelByPath(options, path)) || placeholder
+  const chosen = path.length > 0 ? findLabelByPath(options, path) : null
 
   return (
     <Popover open={open} onOpenChange={onOpenChange}>
       <PopoverTrigger asChild>
-        <Button
-          variant="outline"
+        <button
+          type="button"
           disabled={disabled}
+          data-placeholder={chosen ? undefined : ""}
           className={cn("dr-cascade-trigger", className)}
         >
-          <span>{label}</span>
+          <span>{chosen || placeholder}</span>
           <ChevronDown
-            className="ml-auto size-[var(--icon-size)] opacity-60"
+            className="size-[var(--icon-size)] opacity-60"
             aria-hidden="true"
           />
-        </Button>
+        </button>
       </PopoverTrigger>
       <PopoverContent
         className="dr-cascade-popover"

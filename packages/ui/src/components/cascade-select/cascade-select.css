@@ -1,6 +1,10 @@
 @layer components {
+  /* Sized to its value rather than its container: the utility's w-full
+     suits a Select inside a sized wrapper, not a picker placed inline. A
+     width utility on the trigger widens it. */
   .dr-cascade-trigger {
-    @apply min-w-48 justify-start gap-2;
+    @apply field-trigger min-w-48;
+    width: fit-content;
   }
   /* Compound selector outranks the base `.dr-popover-content` rule
      (`w-72`, `p-4`) regardless of @import order, so the popover sizes

@@ -35,6 +35,7 @@ const FIELDS: Array<[string, string]> = [
   ["input/input.css", "dr-input"],
   ["input/input.css", "dr-input-group"],
   ["select/select.css", "dr-select-trigger"],
+  ["cascade-select/cascade-select.css", "dr-cascade-trigger"],
   ["textarea/textarea.css", "dr-textarea"],
   ["number-input/number-input.css", "dr-number-input-control"],
   ["date-input/date-input.css", "dr-date-input"],
