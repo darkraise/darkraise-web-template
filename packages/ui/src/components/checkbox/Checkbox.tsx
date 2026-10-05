@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Check } from "lucide-react"
+import { Check, Minus } from "lucide-react"
 
 import { composeRefs } from "@primitives/slot"
 import { cn } from "@lib/utils"
@@ -108,8 +108,11 @@ function Checkbox({
           data-state={state}
           className="dr-checkbox-indicator grid place-content-center text-current"
         >
-          {(checked === true || isIndeterminate(checked)) && (
+          {checked === true && (
             <Check className={checkIconSize[size]} aria-hidden="true" />
+          )}
+          {isIndeterminate(checked) && (
+            <Minus className={checkIconSize[size]} aria-hidden="true" />
           )}
         </span>
       </button>

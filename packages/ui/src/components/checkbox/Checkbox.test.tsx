@@ -41,6 +41,20 @@ describe("Checkbox", () => {
     expect(cb).toHaveAttribute("data-state", "indeterminate")
   })
 
+  it("draws a minus, not a check, when indeterminate", () => {
+    render(<Checkbox checked="indeterminate" />)
+    const cb = screen.getByRole("checkbox")
+    expect(cb.querySelector("svg.lucide-minus")).not.toBeNull()
+    expect(cb.querySelector("svg.lucide-check")).toBeNull()
+  })
+
+  it("draws a check, not a minus, when checked", () => {
+    render(<Checkbox checked />)
+    const cb = screen.getByRole("checkbox")
+    expect(cb.querySelector("svg.lucide-check")).not.toBeNull()
+    expect(cb.querySelector("svg.lucide-minus")).toBeNull()
+  })
+
   it("indeterminate -> click -> checked=true", async () => {
     const user = userEvent.setup()
     const onChange = vi.fn()

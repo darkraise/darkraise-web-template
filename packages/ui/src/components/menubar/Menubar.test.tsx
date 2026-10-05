@@ -6,6 +6,7 @@ import {
   MenubarMenu,
   MenubarTrigger,
   MenubarContent,
+  MenubarCheckboxItem,
   MenubarItem,
 } from "@components/menubar"
 
@@ -120,5 +121,35 @@ describe("Menubar", () => {
       "data-surface-fill",
       "card",
     )
+  })
+})
+
+describe("MenubarCheckboxItem mark", () => {
+  function marks(item: Element): string[] {
+    return [...item.querySelectorAll("svg.lucide-check, svg.lucide-minus")].map(
+      (svg) => (svg.classList.contains("lucide-minus") ? "minus" : "check"),
+    )
+  }
+
+  it.each([
+    [true, ["check"]],
+    ["indeterminate", ["minus"]],
+    [false, []],
+  ] as const)("checked=%s draws %j", async (checked, expected) => {
+    const user = userEvent.setup()
+    render(
+      <Menubar>
+        <MenubarMenu value="view">
+          <MenubarTrigger>View</MenubarTrigger>
+          <MenubarContent>
+            <MenubarCheckboxItem checked={checked}>
+              Status bar
+            </MenubarCheckboxItem>
+          </MenubarContent>
+        </MenubarMenu>
+      </Menubar>,
+    )
+    await user.click(screen.getByRole("menuitem", { name: "View" }))
+    expect(marks(await screen.findByRole("menuitemcheckbox"))).toEqual(expected)
   })
 })

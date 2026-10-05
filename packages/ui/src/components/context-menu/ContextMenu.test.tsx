@@ -5,6 +5,7 @@ import {
   ContextMenu,
   ContextMenuTrigger,
   ContextMenuContent,
+  ContextMenuCheckboxItem,
   ContextMenuItem,
   ContextMenuSeparator,
   ContextMenuSub,
@@ -231,5 +232,35 @@ describe("ContextMenu", () => {
           .every((m) => m.getAttribute("data-state") === "closed"),
       ).toBe(true)
     })
+  })
+})
+
+describe("ContextMenuCheckboxItem mark", () => {
+  function marks(item: Element): string[] {
+    return [...item.querySelectorAll("svg.lucide-check, svg.lucide-minus")].map(
+      (svg) => (svg.classList.contains("lucide-minus") ? "minus" : "check"),
+    )
+  }
+
+  it.each([
+    [true, ["check"]],
+    ["indeterminate", ["minus"]],
+    [false, []],
+  ] as const)("checked=%s draws %j", async (checked, expected) => {
+    render(
+      <ContextMenu>
+        <ContextMenuTrigger>Right-click here</ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuCheckboxItem checked={checked}>
+            Apple
+          </ContextMenuCheckboxItem>
+        </ContextMenuContent>
+      </ContextMenu>,
+    )
+    fireEvent.contextMenu(screen.getByText("Right-click here"), {
+      clientX: 100,
+      clientY: 200,
+    })
+    expect(marks(await screen.findByRole("menuitemcheckbox"))).toEqual(expected)
   })
 })

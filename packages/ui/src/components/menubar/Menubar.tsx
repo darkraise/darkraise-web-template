@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Check, ChevronRight, Circle } from "lucide-react"
+import { Check, ChevronRight, Circle, Minus } from "lucide-react"
 
 import { cn } from "@lib/utils"
 import type { SurfaceFill } from "@lib/surface-fill"
@@ -751,7 +751,9 @@ function MenubarCheckboxItem({
       {...rest}
     >
       <span className="absolute left-2 flex size-[var(--icon-size-sm)] items-center justify-center">
-        {isChecked ? (
+        {checked === "indeterminate" ? (
+          <Minus className="size-[var(--icon-size)]" aria-hidden="true" />
+        ) : isChecked ? (
           <Check className="size-[var(--icon-size)]" aria-hidden="true" />
         ) : null}
       </span>

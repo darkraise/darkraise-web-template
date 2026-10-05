@@ -291,3 +291,29 @@ describe("DropdownMenu", () => {
     expect(marks).toEqual([true])
   })
 })
+
+describe("DropdownMenuCheckboxItem mark", () => {
+  function marks(item: Element): string[] {
+    return [...item.querySelectorAll("svg.lucide-check, svg.lucide-minus")].map(
+      (svg) => (svg.classList.contains("lucide-minus") ? "minus" : "check"),
+    )
+  }
+
+  it.each([
+    [true, ["check"]],
+    ["indeterminate", ["minus"]],
+    [false, []],
+  ] as const)("checked=%s draws %j", async (checked, expected) => {
+    render(
+      <DropdownMenu defaultOpen>
+        <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuCheckboxItem checked={checked}>
+            Apple
+          </DropdownMenuCheckboxItem>
+        </DropdownMenuContent>
+      </DropdownMenu>,
+    )
+    expect(marks(await screen.findByRole("menuitemcheckbox"))).toEqual(expected)
+  })
+})

@@ -8,7 +8,8 @@
     box-shadow: var(--check-well-shadow);
   }
 
-  .dr-checkbox[data-state="checked"] {
+  .dr-checkbox[data-state="checked"],
+  .dr-checkbox[data-state="indeterminate"] {
     background-color: var(--selected-check-bg);
     border-color: var(--selected-check-bg);
     color: var(--selected-check-fg);

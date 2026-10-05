@@ -5,6 +5,7 @@ import { AngleSlider } from "darkraise-ui/components/angle-slider"
 import { Button, type ButtonVariant } from "darkraise-ui/components/button"
 import { Calendar } from "darkraise-ui/components/calendar"
 import { Card, CardContent } from "darkraise-ui/components/card"
+import { Checkbox } from "darkraise-ui/components/checkbox"
 import {
   ColorPicker,
   ColorPickerSwatch,
@@ -283,6 +284,10 @@ function ControlStates() {
           defaultValue={[25, 75]}
           aria-label="Vertical range"
         />
+      </div>
+      <div data-probe="checkbox-states" style={{ display: "flex", gap: 8 }}>
+        <Checkbox aria-label="Checked" defaultChecked />
+        <Checkbox aria-label="Indeterminate" defaultChecked="indeterminate" />
       </div>
     </div>
   )

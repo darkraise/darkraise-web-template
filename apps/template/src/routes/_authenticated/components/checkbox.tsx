@@ -29,6 +29,9 @@ function CheckboxPage() {
 <Checkbox id="terms" checked={checked} onCheckedChange={(v) => setChecked(v === true)} />
 <Label htmlFor="terms">Accept terms and conditions</Label>
 
+<Checkbox id="some-selected" defaultChecked="indeterminate" />
+<Label htmlFor="some-selected">Some items selected</Label>
+
 <Checkbox id="disabled-cb" disabled />
 <Label htmlFor="disabled-cb">Disabled</Label>
 
@@ -43,6 +46,15 @@ function CheckboxPage() {
               onCheckedChange={(v) => setChecked(v === true)}
             />
             <Label htmlFor="demo-checkbox">Accept terms and conditions</Label>
+          </div>
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="demo-checkbox-indeterminate"
+              defaultChecked="indeterminate"
+            />
+            <Label htmlFor="demo-checkbox-indeterminate">
+              Some items selected
+            </Label>
           </div>
           <div className="flex items-center gap-2">
             <Checkbox id="demo-checkbox-disabled" disabled />

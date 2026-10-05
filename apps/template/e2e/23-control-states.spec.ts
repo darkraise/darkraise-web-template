@@ -553,3 +553,38 @@ test.describe("vertical slider", () => {
     ).toBeLessThanOrEqual(1)
   })
 })
+
+test.describe("indeterminate checkbox", () => {
+  for (const style of STYLES) {
+    for (const mode of MODES) {
+      test(`takes the checked fill and a minus · ${style} · ${mode}`, async ({
+        page,
+      }) => {
+        await seedApp(page, { style, mode })
+        await openControlFixture(page)
+        const checked = probe(
+          page,
+          "checkbox-states",
+          '.dr-checkbox[data-state="checked"]',
+        )
+        const mixed = probe(
+          page,
+          "checkbox-states",
+          '.dr-checkbox[data-state="indeterminate"]',
+        )
+        const fill = await computed(checked, "background-color")
+        expect(fill, "checked fill is painted").not.toBe("rgba(0, 0, 0, 0)")
+        for (const property of [
+          "background-color",
+          "border-top-color",
+          "color",
+        ]) {
+          expect(await computed(mixed, property), property).toBe(
+            await computed(checked, property),
+          )
+        }
+        await expect(mixed.locator("svg.lucide-minus")).toHaveCount(1)
+      })
+    }
+  }
+})
