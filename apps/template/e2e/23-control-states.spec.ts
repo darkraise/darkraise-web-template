@@ -588,3 +588,22 @@ test.describe("indeterminate checkbox", () => {
     }
   }
 })
+
+test.describe("badge icon gap", () => {
+  test("a leading icon sits 4px before the label", async ({ page }) => {
+    await openInMode(page, "light")
+    const badge = probe(page, "badge-icon", ".dr-badge")
+    const icon = await boxOf(badge.locator("svg"))
+    const textLeft = await badge.evaluate((element) => {
+      const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT)
+      for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+        if (!node.textContent?.trim()) continue
+        const range = document.createRange()
+        range.selectNodeContents(node)
+        return range.getBoundingClientRect().left
+      }
+      throw new Error("no text in badge")
+    })
+    expect(textLeft - (icon.x + icon.width)).toBeGreaterThanOrEqual(3.5)
+  })
+})

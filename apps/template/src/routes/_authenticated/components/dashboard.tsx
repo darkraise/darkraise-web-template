@@ -194,7 +194,7 @@ function DashboardPage() {
         <p className="text-xl font-semibold">$12,450</p>
       </div>
       <Badge className="bg-success-subtle text-success-text border-0">
-        <TrendingUp className="mr-1 h-3 w-3" />
+        <TrendingUp className="h-3 w-3" />
         +22%
       </Badge>
       <div className="text-right">
@@ -209,7 +209,7 @@ function DashboardPage() {
         <p className="text-xl font-semibold">342</p>
       </div>
       <Badge className="bg-success-subtle text-success-text border-0">
-        <TrendingUp className="mr-1 h-3 w-3" />
+        <TrendingUp className="h-3 w-3" />
         +14.7%
       </Badge>
       <div className="text-right">
@@ -231,7 +231,7 @@ function DashboardPage() {
                 <p className="text-xl font-semibold">$12,450</p>
               </div>
               <Badge className="bg-success-subtle text-success-text border-0">
-                <TrendingUp className="mr-1 h-3 w-3" />
+                <TrendingUp className="h-3 w-3" />
                 +22%
               </Badge>
               <div className="text-right">
@@ -246,7 +246,7 @@ function DashboardPage() {
                 <p className="text-xl font-semibold">342</p>
               </div>
               <Badge className="bg-success-subtle text-success-text border-0">
-                <TrendingUp className="mr-1 h-3 w-3" />
+                <TrendingUp className="h-3 w-3" />
                 +14.7%
               </Badge>
               <div className="text-right">

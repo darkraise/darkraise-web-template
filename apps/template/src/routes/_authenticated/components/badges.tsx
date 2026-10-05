@@ -111,33 +111,33 @@ function BadgesPage() {
       <ShowcaseExample
         title="With icons"
         code={`<Badge variant="default">
-  <CheckCircle className="mr-1 h-3 w-3" /> Active
+  <CheckCircle className="h-3 w-3" /> Active
 </Badge>
 <Badge variant="secondary">
-  <Clock className="mr-1 h-3 w-3" /> Pending
+  <Clock className="h-3 w-3" /> Pending
 </Badge>
 <Badge variant="destructive">
-  <XCircle className="mr-1 h-3 w-3" /> Failed
+  <XCircle className="h-3 w-3" /> Failed
 </Badge>
 <Badge variant="outline">
-  <AlertTriangle className="mr-1 h-3 w-3" /> Warning
+  <AlertTriangle className="h-3 w-3" /> Warning
 </Badge>`}
       >
         <div className="flex flex-wrap gap-3">
           <Badge variant="default">
-            <CheckCircle className="mr-1 h-3 w-3" />
+            <CheckCircle className="h-3 w-3" />
             Active
           </Badge>
           <Badge variant="secondary">
-            <Clock className="mr-1 h-3 w-3" />
+            <Clock className="h-3 w-3" />
             Pending
           </Badge>
           <Badge variant="destructive">
-            <XCircle className="mr-1 h-3 w-3" />
+            <XCircle className="h-3 w-3" />
             Failed
           </Badge>
           <Badge variant="outline">
-            <AlertTriangle className="mr-1 h-3 w-3" />
+            <AlertTriangle className="h-3 w-3" />
             Warning
           </Badge>
         </div>
