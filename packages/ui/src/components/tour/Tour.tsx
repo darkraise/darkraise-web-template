@@ -1,8 +1,10 @@
 import { useUiText } from "../../i18n/useUiText"
 import * as React from "react"
 import { Button } from "@components/button"
+import { useFloating } from "@primitives/floating"
 import { Portal } from "@primitives/portal"
 import { useFocusTrap } from "@primitives/focus-trap"
+import { composeRefs } from "@primitives/slot"
 import { useId } from "@primitives/state"
 import { useReducedMotion } from "@hooks/useReducedMotion"
 import { cn } from "@lib/utils"
@@ -44,6 +46,20 @@ function Tour({
   const uiText = useUiText()
 
   const [rect, setRect] = React.useState<Rect | null>(null)
+  const [targetEl, setTargetEl] = React.useState<HTMLElement | null>(null)
+  // The offsets keep the popover where it sat before: 12px outside the
+  // spotlight ring, aligned with the ring's start edge.
+  const floating = useFloating({
+    placement: "bottom-start",
+    sideOffset: 12 + spotlightPadding,
+    alignOffset: -spotlightPadding,
+    collisionPadding: 16,
+    strategy: "fixed",
+  })
+  const setReference = floating.refs.setReference
+  React.useEffect(() => {
+    setReference(targetEl)
+  }, [targetEl, setReference])
   const popoverRef = React.useRef<HTMLDivElement | null>(null)
   const previousFocusRef = React.useRef<HTMLElement | null>(null)
   const titleId = useId()
@@ -66,8 +82,10 @@ function Tour({
     const target = document.querySelector<HTMLElement>(step.targetSelector)
     if (!target) {
       setRect(null)
+      setTargetEl(null)
       return
     }
+    setTargetEl(target)
     target.scrollIntoView?.({
       block: "center",
       behavior: reducedMotion ? "auto" : "smooth",
@@ -121,21 +139,12 @@ function Tour({
       )`
     : "none"
 
-  // Flip the popover above the target when there isn't enough room below it,
-  // so it doesn't render off-screen for steps near the viewport bottom. The
-  // 200px estimate covers a typical title + description + footer.
-  const popoverStyle: React.CSSProperties = rect
-    ? window.innerHeight - (rect.top + rect.height) >= 200
-      ? {
-          position: "fixed",
-          top: rect.top + rect.height + 12,
-          left: rect.left,
-        }
-      : {
-          position: "fixed",
-          bottom: window.innerHeight - rect.top + 12,
-          left: rect.left,
-        }
+  const popoverStyle: React.CSSProperties = targetEl
+    ? {
+        position: floating.strategy,
+        top: Math.round(floating.y ?? 0),
+        left: Math.round(floating.x ?? 0),
+      }
     : {
         position: "fixed",
         top: "50%",
@@ -151,7 +160,7 @@ function Tour({
         onClick={onClose}
       />
       <div
-        ref={popoverRef}
+        ref={composeRefs(popoverRef, floating.refs.setFloating)}
         role="dialog"
         aria-modal="false"
         aria-labelledby={titleId}
