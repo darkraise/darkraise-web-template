@@ -501,6 +501,10 @@ function ContextMenuItem({
       onClick={(event: React.MouseEvent<HTMLDivElement>) => {
         onClick?.(event)
         if (event.defaultPrevented) return
+        if (disabled) {
+          event.preventDefault()
+          return
+        }
         triggerSelect(event)
       }}
       onKeyDown={(event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -726,6 +730,7 @@ function ContextMenuSubTrigger({
   onPointerEnter,
   onClick,
   onKeyDown,
+  disabled,
   ref,
   ...rest
 }: ContextMenuSubTriggerProps) {
@@ -751,21 +756,22 @@ function ContextMenuSubTrigger({
     <ContextMenuItem
       ref={composeRefs(localRef, ref ?? undefined)}
       aria-haspopup="menu"
+      disabled={disabled}
       aria-expanded={ctx.open}
       data-state={ctx.state}
       onPointerEnter={(event) => {
         onPointerEnter?.(event)
-        if (event.defaultPrevented) return
+        if (event.defaultPrevented || disabled) return
         if (!ctx.open) openSelf()
       }}
       onClick={(event) => {
         onClick?.(event)
-        if (event.defaultPrevented) return
+        if (event.defaultPrevented || disabled) return
         openSelf()
       }}
       onKeyDown={(event) => {
         onKeyDown?.(event)
-        if (event.defaultPrevented) return
+        if (event.defaultPrevented || disabled) return
         if (
           event.key === "ArrowRight" ||
           event.key === "Enter" ||

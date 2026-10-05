@@ -693,6 +693,10 @@ function MenubarItem({
       onClick={(event: React.MouseEvent<HTMLDivElement>) => {
         onClick?.(event)
         if (event.defaultPrevented) return
+        if (disabled) {
+          event.preventDefault()
+          return
+        }
         triggerSelect(event)
       }}
       onKeyDown={(event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -903,6 +907,7 @@ function MenubarSubTrigger({
   onPointerEnter,
   onClick,
   onKeyDown,
+  disabled,
   ref,
   ...rest
 }: MenubarSubTriggerProps) {
@@ -917,21 +922,22 @@ function MenubarSubTrigger({
     <MenubarItem
       ref={composeRefs(localRef, ref ?? undefined)}
       aria-haspopup="menu"
+      disabled={disabled}
       aria-expanded={ctx.open}
       data-state={ctx.state}
       onPointerEnter={(event) => {
         onPointerEnter?.(event)
-        if (event.defaultPrevented) return
+        if (event.defaultPrevented || disabled) return
         if (!ctx.open) ctx.setOpen(true)
       }}
       onClick={(event) => {
         onClick?.(event)
-        if (event.defaultPrevented) return
+        if (event.defaultPrevented || disabled) return
         if (!ctx.open) ctx.setOpen(true)
       }}
       onKeyDown={(event) => {
         onKeyDown?.(event)
-        if (event.defaultPrevented) return
+        if (event.defaultPrevented || disabled) return
         if (
           event.key === "ArrowRight" ||
           event.key === "Enter" ||

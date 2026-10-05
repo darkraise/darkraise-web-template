@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react"
+import {
+  createEvent,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi } from "vitest"
 import {
@@ -8,6 +14,9 @@ import {
   MenubarContent,
   MenubarCheckboxItem,
   MenubarItem,
+  MenubarSub,
+  MenubarSubContent,
+  MenubarSubTrigger,
 } from "@components/menubar"
 
 function Basic({
@@ -177,5 +186,61 @@ describe("Menubar disabled item", () => {
     fireEvent.keyDown(close, { key: " " })
     expect(onSelect).not.toHaveBeenCalled()
     expect(screen.getByRole("menu")).toBeInTheDocument()
+  })
+})
+
+describe("Menubar disabled item and sub-trigger", () => {
+  it("does not follow a disabled asChild link", async () => {
+    const user = userEvent.setup()
+    const onSelect = vi.fn()
+    const onLinkClick = vi.fn()
+    render(
+      <Menubar>
+        <MenubarMenu value="file">
+          <MenubarTrigger>File</MenubarTrigger>
+          <MenubarContent>
+            <MenubarItem disabled asChild onSelect={onSelect}>
+              <a href="#target" onClick={onLinkClick}>
+                Docs
+              </a>
+            </MenubarItem>
+          </MenubarContent>
+        </MenubarMenu>
+      </Menubar>,
+    )
+    await user.click(screen.getByRole("menuitem", { name: "File" }))
+    const link = await screen.findByRole("menuitem", { name: "Docs" })
+    const click = createEvent.click(link)
+    fireEvent(link, click)
+    expect(click.defaultPrevented).toBe(true)
+    expect(onSelect).not.toHaveBeenCalled()
+    expect(onLinkClick).not.toHaveBeenCalled()
+  })
+
+  it("does not open a disabled sub-trigger", async () => {
+    const user = userEvent.setup()
+    render(
+      <Menubar>
+        <MenubarMenu value="file">
+          <MenubarTrigger>File</MenubarTrigger>
+          <MenubarContent>
+            <MenubarSub>
+              <MenubarSubTrigger disabled>More</MenubarSubTrigger>
+              <MenubarSubContent>
+                <MenubarItem>Hidden</MenubarItem>
+              </MenubarSubContent>
+            </MenubarSub>
+          </MenubarContent>
+        </MenubarMenu>
+      </Menubar>,
+    )
+    await user.click(screen.getByRole("menuitem", { name: "File" }))
+    const more = await screen.findByRole("menuitem", { name: "More" })
+    fireEvent.pointerEnter(more)
+    fireEvent.click(more)
+    fireEvent.keyDown(more, { key: "ArrowRight" })
+    fireEvent.keyDown(more, { key: "Enter" })
+    expect(more).toHaveAttribute("aria-expanded", "false")
+    expect(screen.queryByText("Hidden")).toBeNull()
   })
 })

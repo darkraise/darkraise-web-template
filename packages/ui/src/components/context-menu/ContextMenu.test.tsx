@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react"
+import { createEvent, render, screen, fireEvent } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi } from "vitest"
 import {
@@ -285,5 +285,55 @@ describe("ContextMenu disabled item", () => {
     fireEvent.keyDown(del, { key: " " })
     expect(onSelect).not.toHaveBeenCalled()
     expect(screen.getByRole("menu")).toBeInTheDocument()
+  })
+})
+
+describe("ContextMenu disabled item and sub-trigger", () => {
+  it("does not follow a disabled asChild link", async () => {
+    const onSelect = vi.fn()
+    const onLinkClick = vi.fn()
+    render(
+      <ContextMenu>
+        <ContextMenuTrigger>Right-click here</ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuItem disabled asChild onSelect={onSelect}>
+            <a href="#target" onClick={onLinkClick}>
+              Docs
+            </a>
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>,
+    )
+    fireEvent.contextMenu(screen.getByText("Right-click here"))
+    const link = await screen.findByRole("menuitem", { name: "Docs" })
+    const click = createEvent.click(link)
+    fireEvent(link, click)
+    expect(click.defaultPrevented).toBe(true)
+    expect(onSelect).not.toHaveBeenCalled()
+    expect(onLinkClick).not.toHaveBeenCalled()
+  })
+
+  it("does not open a disabled sub-trigger", async () => {
+    render(
+      <ContextMenu>
+        <ContextMenuTrigger>Right-click here</ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuSub>
+            <ContextMenuSubTrigger disabled>More</ContextMenuSubTrigger>
+            <ContextMenuSubContent>
+              <ContextMenuItem>Hidden</ContextMenuItem>
+            </ContextMenuSubContent>
+          </ContextMenuSub>
+        </ContextMenuContent>
+      </ContextMenu>,
+    )
+    fireEvent.contextMenu(screen.getByText("Right-click here"))
+    const more = await screen.findByRole("menuitem", { name: "More" })
+    fireEvent.pointerEnter(more)
+    fireEvent.click(more)
+    fireEvent.keyDown(more, { key: "ArrowRight" })
+    fireEvent.keyDown(more, { key: "Enter" })
+    expect(more).toHaveAttribute("aria-expanded", "false")
+    expect(screen.queryByText("Hidden")).toBeNull()
   })
 })
