@@ -76,12 +76,12 @@
 
   .dr-tree-view-branch-control[data-disabled="true"],
   .dr-tree-view-item[data-disabled="true"] {
-    @apply pointer-events-none cursor-default opacity-[var(--disabled-opacity)];
+    @apply cursor-not-allowed opacity-[var(--disabled-opacity)];
   }
 
   .dr-tree-view[data-disabled="true"] .dr-tree-view-branch-control,
   .dr-tree-view[data-disabled="true"] .dr-tree-view-item {
-    @apply pointer-events-none cursor-default opacity-[var(--disabled-opacity)];
+    @apply cursor-not-allowed opacity-[var(--disabled-opacity)];
   }
 
   .dr-tree-view-branch-indicator {

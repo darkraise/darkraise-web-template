@@ -10,7 +10,7 @@
        the whole page — and because pointer-events stay enabled so iOS
        one-time-code autofill keeps working, the input always wins the
        hit-test. */
-    @apply relative flex items-center gap-2 has-[:disabled]:opacity-[var(--disabled-opacity)];
+    @apply relative flex items-center gap-2 has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-[var(--disabled-opacity)];
   }
 
   .dr-input-otp-group {

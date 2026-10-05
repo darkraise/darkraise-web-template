@@ -39,7 +39,7 @@
   }
 
   .dr-cascade-item[aria-disabled="true"] {
-    @apply pointer-events-none;
+    @apply cursor-not-allowed;
     opacity: var(--disabled-opacity);
   }
 }

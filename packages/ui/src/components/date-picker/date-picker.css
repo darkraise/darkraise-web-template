@@ -4,7 +4,7 @@
   }
 
   .dr-date-picker[data-disabled="true"] {
-    @apply pointer-events-none opacity-[var(--disabled-opacity)];
+    @apply cursor-not-allowed opacity-[var(--disabled-opacity)];
   }
 
   .dr-date-picker-label {
@@ -47,7 +47,7 @@
   }
 
   .dr-date-picker-trigger[data-disabled="true"] {
-    @apply pointer-events-none opacity-[var(--disabled-opacity)];
+    @apply cursor-not-allowed opacity-[var(--disabled-opacity)];
   }
 
   .dr-date-picker-content {

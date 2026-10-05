@@ -7,6 +7,6 @@
   }
   .dr-fieldset:disabled,
   .dr-fieldset[disabled] {
-    @apply opacity-[var(--disabled-opacity)];
+    @apply cursor-not-allowed opacity-[var(--disabled-opacity)];
   }
 }

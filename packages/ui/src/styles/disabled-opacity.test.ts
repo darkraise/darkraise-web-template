@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest"
 import { readFileSync, readdirSync } from "node:fs"
 import { join } from "node:path"
 import { splitToken } from "./interactive-classes"
+import { resolveFieldTrigger } from "../test/fieldTrigger"
 
 // Disabled controls faded by three amounts — 0.5 on most, 0.6 on compound
 // roots, 0.7 on the label and Editable — so two unavailable controls side by
@@ -15,6 +16,355 @@ import { splitToken } from "./interactive-classes"
 
 const TOKEN_DECLARATION = "var(--disabled-opacity)"
 const TOKEN_UTILITY = "opacity-[var(--disabled-opacity)]"
+
+const NOT_ALLOWED = "cursor-not-allowed"
+const BLOCKERS = ["pointer-events-none", "cursor-default"]
+const DECLARED_AS: Record<string, string> = {
+  "opacity: var(--disabled-opacity)": TOKEN_UTILITY,
+  "cursor: not-allowed": NOT_ALLOWED,
+  "cursor: default": "cursor-default",
+  "pointer-events: none": "pointer-events-none",
+}
+
+const C = "src/components/"
+
+/**
+ * Where each control draws its disabled state: [file, selector, variant
+ * chain ("" for the selector itself), what it must set]. A "fade" sets the
+ * token and the not-allowed cursor; a "cursor" sets only the cursor, because
+ * an ancestor fades. Listing them makes a deleted or renamed rule fail here
+ * instead of passing the scan by absence.
+ */
+const REQUIRED: Array<[string, string, string, "fade" | "cursor"]> = [
+  [`${C}button/button.css`, ".dr-btn", "disabled", "fade"],
+  [
+    `${C}calendar/calendar.css`,
+    ".dr-calendar-nav-btn",
+    "aria-disabled",
+    "fade",
+  ],
+  [
+    `${C}cascade-select/cascade-select.css`,
+    '.dr-cascade-item[aria-disabled="true"]',
+    "",
+    "fade",
+  ],
+  [`${C}checkbox/checkbox.css`, ".dr-checkbox", "disabled", "fade"],
+  [
+    `${C}color-picker/color-picker.css`,
+    '.dr-color-picker[data-disabled="true"]',
+    "",
+    "fade",
+  ],
+  [
+    `${C}color-picker/color-picker.css`,
+    '.dr-color-picker-swatch[data-disabled="true"]',
+    "",
+    "fade",
+  ],
+  [
+    `${C}color-picker/color-picker.css`,
+    '.dr-color-picker-trigger[data-disabled="true"]',
+    "",
+    "fade",
+  ],
+  [
+    `${C}color-picker/color-picker.css`,
+    '.dr-color-picker-area[data-disabled="true"]',
+    "",
+    "fade",
+  ],
+  [
+    `${C}color-picker/color-picker.css`,
+    '.dr-color-picker-swatch-item[data-disabled="true"]',
+    "",
+    "fade",
+  ],
+  [
+    `${C}color-picker/color-picker.css`,
+    '.dr-color-picker-eye-dropper-trigger[data-disabled="true"]',
+    "",
+    "fade",
+  ],
+  [
+    `${C}combobox/combobox.css`,
+    '.dr-combobox[data-disabled="true"]',
+    "",
+    "fade",
+  ],
+  [
+    `${C}combobox/combobox.css`,
+    '.dr-combobox-item[data-disabled="true"]',
+    "",
+    "fade",
+  ],
+  [`${C}command/command.css`, ".dr-command-input", "disabled", "fade"],
+  [
+    `${C}command/command.css`,
+    ".dr-command-item",
+    "data-[disabled=true]",
+    "fade",
+  ],
+  [
+    `${C}date-input/date-input.css`,
+    ".dr-date-input-segment",
+    "disabled",
+    "fade",
+  ],
+  [
+    `${C}date-picker/date-picker.css`,
+    '.dr-date-picker[data-disabled="true"]',
+    "",
+    "fade",
+  ],
+  [
+    `${C}date-picker/date-picker.css`,
+    '.dr-date-picker-trigger[data-disabled="true"]',
+    "",
+    "fade",
+  ],
+  [
+    `${C}editable/editable.css`,
+    '.dr-editable[data-disabled="true"] .dr-editable-preview',
+    "",
+    "fade",
+  ],
+  [
+    `${C}editable/editable.css`,
+    ".dr-editable-edit-trigger, .dr-editable-submit-trigger, .dr-editable-cancel-trigger",
+    "disabled",
+    "fade",
+  ],
+  [
+    `${C}field/field.css`,
+    ".dr-field-title",
+    "group-data-[disabled=true]/field",
+    "fade",
+  ],
+  [
+    `${C}field/field.css`,
+    ".dr-field-label",
+    "group-data-[disabled=true]/field",
+    "fade",
+  ],
+  [
+    `${C}fieldset/fieldset.css`,
+    ".dr-fieldset:disabled, .dr-fieldset[disabled]",
+    "",
+    "fade",
+  ],
+  [
+    `${C}file-upload/file-upload.css`,
+    '.dr-file-upload[data-disabled="true"]',
+    "",
+    "fade",
+  ],
+  [
+    `${C}file-upload/file-upload.css`,
+    '.dr-file-upload-dropzone[data-disabled="true"]',
+    "",
+    "fade",
+  ],
+  [
+    `${C}file-upload/file-upload.css`,
+    ".dr-file-upload-item-delete-trigger",
+    "disabled",
+    "fade",
+  ],
+  [
+    `${C}file-upload/file-upload.css`,
+    ".dr-file-upload-clear-trigger",
+    "disabled",
+    "fade",
+  ],
+  [`${C}input/input.css`, ".dr-input", "disabled", "fade"],
+  [
+    `${C}input/input.css`,
+    ".dr-input-group:has(> .dr-input-grouped:disabled)",
+    "",
+    "fade",
+  ],
+  [
+    `${C}input-otp/input-otp.css`,
+    ".dr-input-otp-container",
+    "has-[:disabled]",
+    "fade",
+  ],
+  [
+    `${C}input-otp/input-otp.css`,
+    ".dr-input-otp-slot-separate:disabled",
+    "",
+    "fade",
+  ],
+  [`${C}label/label.css`, ".dr-label", "peer-disabled", "fade"],
+  [`${C}listbox/listbox.css`, ".dr-listbox[data-disabled]", "", "fade"],
+  [
+    `${C}listbox/listbox.css`,
+    ".dr-listbox[data-disabled] .dr-listbox-item",
+    "",
+    "cursor",
+  ],
+  [`${C}listbox/listbox.css`, ".dr-listbox-item[data-disabled]", "", "fade"],
+  [
+    `${C}menu-primitives/menu-primitives.css`,
+    ".dr-menu-item",
+    "data-[disabled]",
+    "fade",
+  ],
+  [
+    `${C}menu-primitives/menu-primitives.css`,
+    ".dr-menu-checkbox-item",
+    "data-[disabled]",
+    "fade",
+  ],
+  [
+    `${C}menu-primitives/menu-primitives.css`,
+    ".dr-menu-radio-item",
+    "data-[disabled]",
+    "fade",
+  ],
+  [`${C}menubar/menubar.css`, ".dr-menubar-item", "data-[disabled]", "fade"],
+  [
+    `${C}menubar/menubar.css`,
+    ".dr-menubar-checkbox-item",
+    "data-[disabled]",
+    "fade",
+  ],
+  [
+    `${C}menubar/menubar.css`,
+    ".dr-menubar-radio-item",
+    "data-[disabled]",
+    "fade",
+  ],
+  [
+    `${C}multi-select/multi-select.css`,
+    '.dr-multi-select-control[data-disabled="true"]',
+    "",
+    "fade",
+  ],
+  [
+    `${C}multi-select/multi-select.css`,
+    ".dr-multi-select-chip-remove:disabled",
+    "",
+    "fade",
+  ],
+  [
+    `${C}multi-select/multi-select.css`,
+    ".dr-multi-select-clear, .dr-multi-select-toggle",
+    "disabled",
+    "cursor",
+  ],
+  [
+    `${C}navigation-menu/navigation-menu.css`,
+    ".dr-navigation-menu-trigger",
+    "disabled",
+    "fade",
+  ],
+  [
+    `${C}number-input/number-input.css`,
+    ".dr-number-input-stepper",
+    "disabled",
+    "fade",
+  ],
+  [
+    `${C}overlay-primitives/overlay-primitives.css`,
+    ".dr-overlay-close-btn",
+    "disabled",
+    "fade",
+  ],
+  [
+    `${C}password-input/password-input.css`,
+    ".dr-password-input-trigger",
+    "disabled",
+    "fade",
+  ],
+  [
+    `${C}radio-group/radio-group.css`,
+    ".dr-radio-group-item",
+    "disabled",
+    "fade",
+  ],
+  [
+    `${C}rating-group/rating-group.css`,
+    '.dr-rating-group[data-disabled="true"]',
+    "",
+    "fade",
+  ],
+  [
+    `${C}rating-group/rating-group.css`,
+    '.dr-rating-group-item[data-disabled="true"]',
+    "",
+    "cursor",
+  ],
+  [
+    `${C}resizable/resizable.css`,
+    ".dr-resizable-handle[data-disabled]",
+    "",
+    "fade",
+  ],
+  [
+    `${C}segment-group/segment-group.css`,
+    '.dr-segment-group[data-disabled="true"]',
+    "",
+    "fade",
+  ],
+  [
+    `${C}segment-group/segment-group.css`,
+    ".dr-segment-group .dr-segment-group-item[data-disabled]",
+    "",
+    "fade",
+  ],
+  [`${C}select/select.css`, ".dr-select-item", "data-[disabled]", "fade"],
+  [`${C}slider/slider.css`, ".dr-slider", "data-[disabled]", "fade"],
+  [`${C}slider/slider.css`, ".dr-slider-thumb", "data-[disabled]", "cursor"],
+  [`${C}switch/switch.css`, ".dr-switch", "disabled", "fade"],
+  [`${C}tabs/tabs.css`, ".dr-tabs-trigger", "disabled", "fade"],
+  [
+    `${C}tags-input/tags-input.css`,
+    '.dr-tags-input[data-disabled="true"]',
+    "",
+    "fade",
+  ],
+  [
+    `${C}tags-input/tags-input.css`,
+    '.dr-tags-input-item-preview[data-disabled="true"]',
+    "",
+    "fade",
+  ],
+  [
+    `${C}tags-input/tags-input.css`,
+    '.dr-tags-input-item-delete-trigger[data-disabled="true"]',
+    "",
+    "fade",
+  ],
+  [`${C}tags-input/tags-input.css`, ".dr-tags-input-input", "disabled", "fade"],
+  [`${C}textarea/textarea.css`, ".dr-textarea", "disabled", "fade"],
+  [
+    `${C}timer/timer.css`,
+    '.dr-timer-action-trigger:disabled, .dr-timer-action-trigger[data-state="disabled"]',
+    "",
+    "fade",
+  ],
+  [`${C}toggle/toggle.css`, ".dr-toggle", "disabled", "fade"],
+  [
+    `${C}tree-view/tree-view.css`,
+    '.dr-tree-view-branch-control[data-disabled="true"], .dr-tree-view-item[data-disabled="true"]',
+    "",
+    "fade",
+  ],
+  [
+    `${C}tree-view/tree-view.css`,
+    '.dr-tree-view[data-disabled="true"] .dr-tree-view-branch-control, .dr-tree-view[data-disabled="true"] .dr-tree-view-item',
+    "",
+    "fade",
+  ],
+  [
+    `${C}virtualized-dropdown-menu/virtualized-dropdown-menu.css`,
+    ".dr-vdm-item",
+    "data-[disabled]",
+    "fade",
+  ],
+]
 
 function filesUnder(dir: string, pattern: RegExp): string[] {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
@@ -51,6 +401,48 @@ function rulesOf(path: string): Rule[] {
 
 function isDisabledSelector(selector: string): boolean {
   return /disabled/.test(selector.replace(/:not\((?:[^()]|\([^()]*\))*\)/g, ""))
+}
+
+/** Prettier wraps long selectors inside :not( … ); undo that before comparing. */
+function normalise(selector: string): string {
+  return selector
+    .replace(/\s+/g, " ")
+    .replace(/\(\s+/g, "(")
+    .replace(/\s+\)/g, ")")
+    .trim()
+}
+
+/**
+ * What a rule sets for each disabled state it names, keyed by the variant
+ * chain ("" for the rule's own selector). A declaration counts as the
+ * utility that writes it; a field trigger's `@apply field-trigger` counts
+ * as the utility's body.
+ */
+function disabledStates(rule: Rule): Map<string, string[]> {
+  const states = new Map<string, string[]>()
+  const add = (chain: string, utility: string) =>
+    states.set(chain, [...(states.get(chain) ?? []), utility])
+  const selectorDisabled = isDisabledSelector(rule.selector)
+  const body = resolveFieldTrigger(rule.body.replace(/\s+/g, " ").trim())
+  for (const apply of body.matchAll(/@apply([^;]*);/g)) {
+    for (const token of (apply[1] as string).trim().split(/\s+/)) {
+      const { variants, utility } = splitToken(token)
+      if (variants.some((v) => /disabled/.test(v))) {
+        add(variants.join(":"), utility)
+      } else if (selectorDisabled && variants.length === 0) {
+        add("", utility)
+      }
+    }
+  }
+  if (selectorDisabled) {
+    for (const decl of body.matchAll(
+      /(?<![\w-])(opacity|cursor|pointer-events)\s*:\s*([^;]+);/g,
+    )) {
+      const text = `${decl[1]}: ${(decl[2] as string).trim()}`
+      add("", DECLARED_AS[text] ?? text)
+    }
+  }
+  return states
 }
 
 const RULES = filesUnder("src", /\.css$/).flatMap(rulesOf)
@@ -159,6 +551,58 @@ describe("disabled opacity", () => {
     const body = ruleBody(path, selector)
     expect(body).not.toMatch(/(?<![\w-])disabled:pointer-events-none/)
     expect(body).toMatch(/(?<![\w-])disabled:cursor-not-allowed(?![\w-])/)
+  })
+
+  it("pairs every disabled fade with the not-allowed cursor", () => {
+    const offenders = RULES.flatMap((rule) =>
+      [...disabledStates(rule)]
+        .filter(
+          ([, set]) =>
+            set.includes(TOKEN_UTILITY) && !set.includes(NOT_ALLOWED),
+        )
+        .map(([chain]) => `${chain || rule.selector} at ${rule.where}`),
+    )
+    expect(offenders).toEqual([])
+  })
+
+  it("never blocks pointer events or resets the cursor on a disabled control", () => {
+    // Each component ignores activation itself; pointer-events: none only
+    // hid the not-allowed cursor and any tooltip explaining why.
+    const offenders = RULES.flatMap((rule) =>
+      [...disabledStates(rule)].flatMap(([chain, set]) =>
+        set
+          .filter((utility) => BLOCKERS.includes(utility))
+          .map((u) => `${chain ? `${chain}:` : ""}${u} at ${rule.where}`),
+      ),
+    )
+    expect(offenders).toEqual([])
+  })
+
+  it.each(REQUIRED)(
+    "%s %s keeps its disabled %s rule (%s)",
+    (path, selector, chain, kind) => {
+      const set = RULES.filter(
+        (rule) =>
+          rule.where.startsWith(`${path}:`) &&
+          normalise(rule.selector) === normalise(selector),
+      ).flatMap((rule) => disabledStates(rule).get(chain) ?? [])
+      expect(set, `no disabled rule for ${selector} in ${path}`).toContain(
+        NOT_ALLOWED,
+      )
+      if (kind === "fade") expect(set).toContain(TOKEN_UTILITY)
+      else expect(set).not.toContain(TOKEN_UTILITY)
+    },
+  )
+
+  it("gives the field-trigger utility the disabled recipe", () => {
+    const body = resolveFieldTrigger("@apply field-trigger;")
+    expect(body).toMatch(/:disabled\s*\{[^}]*cursor:\s*not-allowed/)
+    expect(body).toMatch(
+      /:disabled\s*\{[^}]*opacity:\s*var\(--disabled-opacity\)/,
+    )
+    expect(body).not.toMatch(
+      /pointer-events-none|pointer-events:\s*none|cursor-default/,
+    )
   })
 
   it("keeps the navigation-menu trigger's hover off a disabled trigger", () => {

@@ -39,7 +39,10 @@
     @apply bg-muted;
   }
 
+  /* Both: an explicit `disabled` prop sets only the native attribute, and
+     `data-state` follows whether the action is available. */
+  .dr-timer-action-trigger:disabled,
   .dr-timer-action-trigger[data-state="disabled"] {
-    @apply pointer-events-none cursor-not-allowed opacity-[var(--disabled-opacity)];
+    @apply cursor-not-allowed opacity-[var(--disabled-opacity)];
   }
 }

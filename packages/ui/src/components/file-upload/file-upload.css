@@ -4,7 +4,7 @@
   }
 
   .dr-file-upload[data-disabled="true"] {
-    @apply pointer-events-none opacity-[var(--disabled-opacity)];
+    @apply cursor-not-allowed opacity-[var(--disabled-opacity)];
   }
 
   .dr-file-upload-label {
@@ -24,7 +24,7 @@
   }
 
   .dr-file-upload-dropzone[data-disabled="true"] {
-    @apply pointer-events-none opacity-[var(--disabled-opacity)];
+    @apply cursor-not-allowed opacity-[var(--disabled-opacity)];
   }
 
   .dr-file-upload-item-group {
@@ -52,7 +52,7 @@
   }
 
   .dr-file-upload-item-delete-trigger {
-    @apply text-muted-foreground focus-ring-inset inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-sm transition-colors disabled:pointer-events-none disabled:opacity-[var(--disabled-opacity)];
+    @apply text-muted-foreground focus-ring-inset inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-sm transition-colors disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)];
   }
 
   /* Shared interaction state layer (theme.css). The label rule keeps its
@@ -77,7 +77,7 @@
   }
 
   .dr-file-upload-clear-trigger {
-    @apply text-muted-foreground focus-ring-inset inline-flex h-8 cursor-pointer items-center gap-1 self-start rounded-sm px-2 text-xs underline transition-colors disabled:pointer-events-none disabled:opacity-[var(--disabled-opacity)];
+    @apply text-muted-foreground focus-ring-inset inline-flex h-8 cursor-pointer items-center gap-1 self-start rounded-sm px-2 text-xs underline transition-colors disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)];
   }
 
   .dr-file-upload-clear-trigger:where(:not(:disabled)):hover {

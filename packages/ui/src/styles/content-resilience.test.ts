@@ -52,16 +52,37 @@ describe("read-only is distinct from disabled", () => {
     ["src/components/textarea/textarea.css", ".dr-textarea"],
   ])("%s styles :read-only separately", (path, selector) => {
     const css = readFileSync(path, "utf8")
+    // A disabled field matches :read-only too; it keeps the disabled look.
     const rule = new RegExp(
-      `${selector.replace(".", "\\.")}:read-only(?::not\\(:disabled\\))? \\{([^}]*)\\}`,
+      `${selector.replace(".", "\\.")}:read-only:not\\(:disabled\\) \\{([^}]*)\\}`,
     ).exec(css)
-    expect(rule, `${selector}:read-only has no rule`).not.toBeNull()
+    expect(
+      rule,
+      `${selector}:read-only:not(:disabled) has no rule`,
+    ).not.toBeNull()
     const body = rule?.[1] ?? ""
     // The point is that it reads as fixed, not unavailable — so no opacity
     // drop and no not-allowed cursor, which is how disabled is drawn.
     expect(body).not.toMatch(/opacity/)
     expect(body).not.toContain("not-allowed")
     expect(body).toContain("cursor: default")
+  })
+
+  it("reads a read-only Editable as fixed, unless it is also disabled", () => {
+    const css = readFileSync("src/components/editable/editable.css", "utf8")
+    // Disabled wins when both are set, so the read-only rule excludes it.
+    const rule =
+      /\.dr-editable\[data-readonly="true"\]:not\(\[data-disabled="true"\]\)\s+\.dr-editable-preview \{([^}]*)\}/.exec(
+        css,
+      )
+    expect(
+      rule,
+      "no read-only Editable rule that excludes disabled",
+    ).not.toBeNull()
+    const body = rule?.[1] ?? ""
+    expect(body).not.toMatch(/opacity/)
+    expect(body).not.toContain("not-allowed")
+    expect(body).toMatch(/(?<![\w-])cursor-default(?![\w-])/)
   })
 
   it("keeps the read-only treatment off a disabled input", () => {

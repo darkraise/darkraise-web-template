@@ -38,7 +38,15 @@
     color: var(--selected-check-fg);
   }
 
+  .dr-listbox[data-disabled] {
+    @apply cursor-not-allowed opacity-[var(--disabled-opacity)];
+  }
+
+  .dr-listbox[data-disabled] .dr-listbox-item {
+    @apply cursor-not-allowed;
+  }
+
   .dr-listbox-item[data-disabled] {
-    @apply pointer-events-none opacity-[var(--disabled-opacity)];
+    @apply cursor-not-allowed opacity-[var(--disabled-opacity)];
   }
 }

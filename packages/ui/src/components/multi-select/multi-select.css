@@ -105,7 +105,7 @@
 
   .dr-multi-select-clear,
   .dr-multi-select-toggle {
-    @apply focus-ring-inset text-muted-foreground inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded-sm border-0 bg-transparent p-0;
+    @apply focus-ring-inset text-muted-foreground inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded-sm border-0 bg-transparent p-0 disabled:cursor-not-allowed;
   }
 
   /* The clear and toggle buttons are ComboboxClearTrigger and

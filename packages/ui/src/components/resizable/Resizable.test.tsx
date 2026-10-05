@@ -182,3 +182,18 @@ describe("Resizable", () => {
     expect(handle.classList.contains("dr-resizable-panel-group")).toBe(false)
   })
 })
+
+describe("ResizableHandle disabled", () => {
+  it("shows the not-allowed cursor", () => {
+    render(
+      <ResizablePanelGroup orientation="horizontal">
+        <ResizablePanel defaultSize={50}>A</ResizablePanel>
+        <ResizableHandle disabled />
+        <ResizablePanel defaultSize={50}>B</ResizablePanel>
+      </ResizablePanelGroup>,
+    )
+    expect(screen.getByRole("separator")).toHaveStyle({
+      cursor: "not-allowed",
+    })
+  })
+})

@@ -125,7 +125,7 @@
   }
 
   .dr-calendar-nav-btn {
-    @apply pointer-events-auto aspect-square w-[var(--control-height-default)] p-0 select-none aria-disabled:opacity-[var(--disabled-opacity)];
+    @apply pointer-events-auto aspect-square w-[var(--control-height-default)] p-0 select-none aria-disabled:cursor-not-allowed aria-disabled:opacity-[var(--disabled-opacity)];
     --btn-height: var(--control-height-default);
   }
 
@@ -216,8 +216,10 @@
     @apply text-muted-foreground aria-selected:text-muted-foreground opacity-50;
   }
 
+  /* The day's Button is natively disabled and fades itself; fading the
+     cell as well would compound to a quarter. */
   .dr-calendar-disabled {
-    @apply text-muted-foreground opacity-[var(--disabled-opacity)];
+    @apply text-muted-foreground;
   }
 
   .dr-calendar-hidden {

@@ -22,7 +22,7 @@
   }
 
   .dr-overlay-close-btn {
-    @apply text-muted-foreground focus-ring absolute top-4 right-4 flex h-7 w-7 cursor-pointer items-center justify-center rounded-md transition-colors disabled:pointer-events-none;
+    @apply text-muted-foreground focus-ring absolute top-4 right-4 flex h-7 w-7 cursor-pointer items-center justify-center rounded-md transition-colors disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)];
   }
 
   /* Shared interaction state layer (theme.css). The button is already

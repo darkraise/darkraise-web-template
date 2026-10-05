@@ -168,3 +168,15 @@ describe("ColorPicker", () => {
     expect(last?.value).toBe("#aabbcc")
   })
 })
+
+describe("ColorPicker disabled area", () => {
+  it("shows the not-allowed cursor on both planes", () => {
+    render(<Harness disabled open />)
+    expect(
+      screen.getByRole("application", { name: "Saturation and brightness" }),
+    ).toHaveStyle({ cursor: "not-allowed" })
+    expect(screen.getByRole("slider", { name: "Hue" })).toHaveStyle({
+      cursor: "not-allowed",
+    })
+  })
+})

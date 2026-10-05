@@ -1,6 +1,6 @@
 @layer components {
   .dr-slider {
-    @apply relative flex w-full touch-none items-center select-none data-[disabled]:opacity-[var(--disabled-opacity)];
+    @apply relative flex w-full touch-none items-center select-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-[var(--disabled-opacity)];
   }
 
   .dr-slider-track {
@@ -26,7 +26,7 @@
   }
 
   .dr-slider-thumb {
-    @apply border-primary bg-primary-foreground hit-area-24 block h-5 w-5 cursor-pointer rounded-full border-2 disabled:pointer-events-none disabled:cursor-default;
+    @apply border-primary bg-primary-foreground hit-area-24 block h-5 w-5 cursor-pointer rounded-full border-2 data-[disabled]:cursor-not-allowed;
     /* The thumb's lift, then the affordance glow, which marks the current
        value as the active one without a focus event. */
     box-shadow: var(--thumb-shadow), var(--affordance-glow);

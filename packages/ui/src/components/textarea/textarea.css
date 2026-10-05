@@ -37,7 +37,7 @@
      (half opacity, not-allowed cursor) says the opposite, and the two states
      were indistinguishable here before. The well-coloured fill reads as
      "fixed" while text stays at full contrast. */
-  .dr-textarea:read-only {
+  .dr-textarea:read-only:not(:disabled) {
     background-color: hsl(var(--muted));
     cursor: default;
   }

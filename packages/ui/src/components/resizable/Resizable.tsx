@@ -359,7 +359,7 @@ function ResizableHandle({
       className={cn("dr-resizable-handle", className)}
       style={{
         cursor: disabled
-          ? "default"
+          ? "not-allowed"
           : ctx.orientation === "horizontal"
             ? "col-resize"
             : "row-resize",

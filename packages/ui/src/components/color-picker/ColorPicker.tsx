@@ -516,7 +516,7 @@ function ColorPickerArea({ className, style, ...props }: ColorPickerAreaProps) {
           backgroundImage:
             "linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, transparent)",
           touchAction: "none",
-          cursor: disabled ? "default" : "crosshair",
+          cursor: disabled ? "not-allowed" : "crosshair",
         }}
       >
         <div
@@ -567,7 +567,7 @@ function ColorPickerArea({ className, style, ...props }: ColorPickerAreaProps) {
           background:
             "linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)",
           touchAction: "none",
-          cursor: disabled ? "default" : "ew-resize",
+          cursor: disabled ? "not-allowed" : "ew-resize",
         }}
       >
         <div
