@@ -11,6 +11,7 @@ import {
   type UseFloatingOptions,
   type UseFloatingReturn,
 } from "@floating-ui/react"
+import { transformOrigin } from "./transformOrigin"
 import * as React from "react"
 
 export interface UseFloatingProps {
@@ -76,6 +77,7 @@ export function useFloating(
           },
         }),
         arrow({ element: arrowEl, padding: arrowPadding }),
+        transformOrigin(arrowEl),
       ].filter(Boolean) as NonNullable<UseFloatingOptions["middleware"]>,
     [
       alignOffset,
