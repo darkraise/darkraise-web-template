@@ -214,21 +214,18 @@ function TimePicker({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button
-          variant="outline"
+        <button
+          type="button"
           disabled={disabled}
-          className={cn(
-            "justify-between text-left font-normal",
-            !value && "text-muted-foreground",
-            className,
-          )}
+          data-placeholder={value ? undefined : ""}
+          className={cn("dr-time-picker-trigger", className)}
         >
-          {value ? displayValue : placeholder}
+          <span>{value ? displayValue : placeholder}</span>
           <Clock
-            className="text-muted-foreground ml-2 size-[var(--icon-size-sm)]"
+            className="text-muted-foreground size-[var(--icon-size-sm)]"
             aria-hidden="true"
           />
-        </Button>
+        </button>
       </PopoverTrigger>
       <PopoverContent className="w-auto overflow-hidden p-0" align="start">
         <div className="flex border-b">

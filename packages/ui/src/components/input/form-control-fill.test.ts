@@ -16,6 +16,7 @@ const CONTROLS = [
   ["components/tags-input/tags-input.css", ".dr-tags-input-control"],
   ["components/select/select.css", ".dr-select-trigger"],
   ["components/cascade-select/cascade-select.css", ".dr-cascade-trigger"],
+  ["components/time-picker/time-picker.css", ".dr-time-picker-trigger"],
   ["components/multi-select/multi-select.css", ".dr-multi-select-control"],
   ["components/date-input/date-input.css", ".dr-date-input"],
   ["components/input-otp/input-otp.css", ".dr-input-otp-slot"],

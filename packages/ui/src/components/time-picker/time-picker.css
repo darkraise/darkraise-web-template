@@ -1,4 +1,12 @@
 @layer components {
+  /* Sized to its value rather than its container: the utility's w-full
+     suits a Select inside a sized wrapper, not a picker placed inline beside
+     a label. A width utility on the trigger widens it. */
+  .dr-time-picker-trigger {
+    @apply field-trigger;
+    width: fit-content;
+  }
+
   .dr-time-column {
     @apply flex flex-col;
   }
