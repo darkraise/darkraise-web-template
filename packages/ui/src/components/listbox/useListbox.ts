@@ -15,11 +15,13 @@ export interface UseListboxOptions {
   value?: string | string[]
   defaultValue?: string | string[]
   onValueChange?: (value: string | string[]) => void
+  disabled?: boolean
 }
 
 export interface UseListboxReturn {
   mode: ListboxMode
   value: string | string[] | undefined
+  disabled: boolean
   isSelected: (val: string) => boolean
   toggle: (val: string) => void
   focusedIndex: number
@@ -32,6 +34,7 @@ export interface UseListboxReturn {
 
 export function useListbox(options: UseListboxOptions): UseListboxReturn {
   const mode = options.mode ?? "single"
+  const disabled = options.disabled ?? false
   const [value, setValue] = useControllableState<string | string[] | undefined>(
     {
       value: options.value,
@@ -62,7 +65,7 @@ export function useListbox(options: UseListboxOptions): UseListboxReturn {
 
   const toggle = (val: string) => {
     const target = itemsRef.current.find((i) => i.value === val)
-    if (!target || target.disabled) return
+    if (disabled || !target || target.disabled) return
     if (mode === "multi") {
       const cur = (value as string[] | undefined) ?? []
       const next = cur.includes(val)
@@ -153,6 +156,7 @@ export function useListbox(options: UseListboxOptions): UseListboxReturn {
   return {
     mode,
     value,
+    disabled,
     isSelected,
     toggle,
     focusedIndex,

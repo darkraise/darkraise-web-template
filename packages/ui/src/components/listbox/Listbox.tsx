@@ -46,7 +46,13 @@ function Listbox({
   children,
   ...rest
 }: ListboxProps) {
-  const ctx = useListbox({ mode, value, defaultValue, onValueChange })
+  const ctx = useListbox({
+    mode,
+    value,
+    defaultValue,
+    onValueChange,
+    disabled,
+  })
   const focusedItem = ctx.items()[ctx.focusedIndex]
   return (
     <ListboxContext.Provider value={ctx}>
@@ -135,7 +141,9 @@ function ListboxItem({
         ctx.toggle(value)
       }}
       onPointerEnter={() => {
-        if (myIndex >= 0 && !disabled) ctx.setFocusedIndex(myIndex)
+        if (myIndex >= 0 && !disabled && !ctx.disabled) {
+          ctx.setFocusedIndex(myIndex)
+        }
       }}
       className={cn("dr-listbox-item", className)}
       {...rest}

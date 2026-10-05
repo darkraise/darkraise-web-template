@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest"
-import { render, screen } from "@testing-library/react"
+import { fireEvent, render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import * as React from "react"
 import { readFileSync } from "node:fs"
@@ -188,5 +188,46 @@ describe("Listbox variant", () => {
     expect(css).toMatch(
       /\.dr-listbox-item\[data-selected="true"\] \{[^}]*background-color: var\(--selected-check-bg\);/,
     )
+  })
+})
+
+describe("Listbox disabled", () => {
+  it("ignores clicks on its options", async () => {
+    const onValueChange = vi.fn()
+    render(
+      <Listbox disabled onValueChange={onValueChange} aria-label="x">
+        <ListboxItem value="a">Apple</ListboxItem>
+      </Listbox>,
+    )
+    await userEvent.click(screen.getByText("Apple"))
+    expect(onValueChange).not.toHaveBeenCalled()
+  })
+
+  it("does not highlight an option under the pointer", async () => {
+    const tree = () => (
+      <Listbox disabled aria-label="x">
+        <ListboxItem value="a">Apple</ListboxItem>
+      </Listbox>
+    )
+    const { rerender } = render(tree())
+    // An item learns its index on the render after it registers.
+    rerender(tree())
+    await userEvent.hover(screen.getByText("Apple"))
+    expect(screen.getByRole("option")).not.toHaveAttribute("data-focused")
+  })
+
+  it("leaves the tab order and ignores arrows, Enter and Space", () => {
+    const onValueChange = vi.fn()
+    render(
+      <Listbox disabled onValueChange={onValueChange} aria-label="x">
+        <ListboxItem value="a">Apple</ListboxItem>
+      </Listbox>,
+    )
+    const listbox = screen.getByRole("listbox")
+    expect(listbox).toHaveAttribute("tabindex", "-1")
+    fireEvent.keyDown(listbox, { key: "ArrowDown" })
+    fireEvent.keyDown(listbox, { key: "Enter" })
+    fireEvent.keyDown(listbox, { key: " " })
+    expect(onValueChange).not.toHaveBeenCalled()
   })
 })
