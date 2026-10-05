@@ -3,7 +3,6 @@ import { useAppTranslation } from "@/i18n/useAppTranslation"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import type { ColumnDef } from "@tanstack/react-table"
 import { PageHeader } from "darkraise-ui/layout"
-import { Badge, type BadgeVariant } from "darkraise-ui/components/badge"
 import { Button } from "darkraise-ui/components/button"
 import {
   DataTable,
@@ -13,18 +12,11 @@ import {
 } from "darkraise-ui/data-table"
 import { useOrders } from "@/demo/hooks"
 import type { Order } from "@/demo/types"
+import { StatusBadge } from "@/features/status"
 
 export const Route = createFileRoute("/_authenticated/orders/")({
   component: OrdersPage,
 })
-
-const statusVariant: Record<Order["status"], BadgeVariant> = {
-  pending: "warning-subtle",
-  processing: "info-subtle",
-  shipped: "secondary",
-  delivered: "success-subtle",
-  cancelled: "destructive-subtle",
-}
 
 function OrdersPage() {
   const uiLocale = useUiLocale()
@@ -81,10 +73,7 @@ function OrdersPage() {
       header: ({ column }) => (
         <ColumnHeader column={column} title={t("Status")} />
       ),
-      cell: ({ row }) => {
-        const status = row.original.status
-        return <Badge variant={statusVariant[status]}>{t(status)}</Badge>
-      },
+      cell: ({ row }) => <StatusBadge status={row.original.status} />,
       filterFn: (row, _columnId, filterValue: string[]) => {
         if (!filterValue || filterValue.length === 0) return true
         return filterValue.includes(row.original.status)

@@ -2,7 +2,6 @@ import { useUiLocale } from "darkraise-ui/i18n"
 import { useAppTranslation } from "@/i18n/useAppTranslation"
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { PageHeader } from "darkraise-ui/layout"
-import { Badge, type BadgeVariant } from "darkraise-ui/components/badge"
 import { Button } from "darkraise-ui/components/button"
 import {
   Card,
@@ -26,19 +25,11 @@ import {
   TableRow,
 } from "darkraise-ui/components/table"
 import { useOrder, useUpdateOrderStatus } from "@/demo/hooks"
-import type { Order } from "@/demo/types"
+import { StatusBadge } from "@/features/status"
 
 export const Route = createFileRoute("/_authenticated/orders/$id")({
   component: OrderDetailPage,
 })
-
-const statusVariant: Record<Order["status"], BadgeVariant> = {
-  pending: "warning-subtle",
-  processing: "info-subtle",
-  shipped: "secondary",
-  delivered: "success-subtle",
-  cancelled: "destructive-subtle",
-}
 
 const statusSteps = ["pending", "processing", "shipped", "delivered"] as const
 
@@ -266,9 +257,7 @@ function OrderDetailPage() {
                 <CardTitle>{t("Status")}</CardTitle>
               </CardHeader>
               <CardContent>
-                <Badge variant={statusVariant[order.status]}>
-                  {t(order.status)}
-                </Badge>
+                <StatusBadge status={order.status} />
               </CardContent>
             </Card>
 

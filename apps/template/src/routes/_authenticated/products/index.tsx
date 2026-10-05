@@ -19,6 +19,7 @@ import {
 import { DataTable, ColumnHeader, RowActions } from "darkraise-ui/data-table"
 import { useProducts, useDeleteProduct } from "@/demo/hooks"
 import type { Product } from "@/demo/types"
+import { StatusBadge } from "@/features/status"
 
 export const Route = createFileRoute("/_authenticated/products/")({
   component: ProductsPage,
@@ -83,16 +84,7 @@ function ProductsPage() {
       header: ({ column }) => (
         <ColumnHeader column={column} title={t("Status")} />
       ),
-      cell: ({ row }) => {
-        const status = row.original.status
-        const variant =
-          status === "active"
-            ? "default"
-            : status === "draft"
-              ? "secondary"
-              : "outline"
-        return <Badge variant={variant}>{t(status)}</Badge>
-      },
+      cell: ({ row }) => <StatusBadge status={row.original.status} />,
     },
     {
       id: "actions",

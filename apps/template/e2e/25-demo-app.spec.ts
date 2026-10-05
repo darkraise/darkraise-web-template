@@ -57,3 +57,44 @@ test.describe("customers table", () => {
     })
   })
 })
+
+const STATUS_VARIANT: Record<string, string> = {
+  active: "success-subtle",
+  delivered: "success-subtle",
+  shipped: "info-subtle",
+  processing: "warning-subtle",
+  cancelled: "destructive-subtle",
+  pending: "secondary",
+  draft: "secondary",
+  inactive: "secondary",
+  archived: "outline",
+}
+
+test.describe("status badges", () => {
+  test.beforeEach(async ({ page }) => {
+    await seedApp(page, { style: "quiet", mode: "light" })
+  })
+
+  for (const path of [
+    "/orders",
+    "/orders/ord-3",
+    "/products",
+    "/categories",
+    "/customers/cust-1",
+  ]) {
+    test(`${path} uses the shared status map`, async ({ page }) => {
+      await gotoApp(page, path)
+      const badges = page.locator("#main-content .dr-badge[data-status]")
+      await expect(badges.first()).toBeVisible()
+      const pairs = await badges.evaluateAll((elements) =>
+        elements.map((element) => [
+          element.getAttribute("data-status") ?? "",
+          element.getAttribute("data-variant") ?? "",
+        ]),
+      )
+      for (const [status, variant] of pairs) {
+        expect(variant, status).toBe(STATUS_VARIANT[status ?? ""])
+      }
+    })
+  }
+})

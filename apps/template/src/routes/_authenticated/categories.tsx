@@ -6,7 +6,6 @@ import { z } from "zod"
 import type { ColumnDef } from "@tanstack/react-table"
 import { PageHeader } from "darkraise-ui/layout"
 import { Button } from "darkraise-ui/components/button"
-import { Badge } from "darkraise-ui/components/badge"
 import {
   Dialog,
   DialogContent,
@@ -38,6 +37,7 @@ import {
   useDeleteCategory,
 } from "@/demo/hooks"
 import type { Category } from "@/demo/types"
+import { StatusBadge } from "@/features/status"
 
 export const Route = createFileRoute("/_authenticated/categories")({
   component: CategoriesPage,
@@ -101,14 +101,7 @@ function CategoriesPage() {
       header: ({ column }) => (
         <ColumnHeader column={column} title={t("Status")} />
       ),
-      cell: ({ row }) => {
-        const status = row.original.status
-        return (
-          <Badge variant={status === "active" ? "default" : "secondary"}>
-            {status}
-          </Badge>
-        )
-      },
+      cell: ({ row }) => <StatusBadge status={row.original.status} />,
     },
     {
       id: "actions",

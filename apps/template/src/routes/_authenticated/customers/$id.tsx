@@ -17,6 +17,7 @@ import {
   TabsTrigger,
 } from "darkraise-ui/components/tabs"
 import { KPICard } from "@/features/dashboard"
+import { StatusBadge } from "@/features/status"
 import { DataTable, ColumnHeader } from "darkraise-ui/data-table"
 import { useCustomer, useOrders } from "@/demo/hooks"
 import type { Order } from "@/demo/types"
@@ -82,7 +83,7 @@ function CustomerDetailPage() {
       header: ({ column }) => (
         <ColumnHeader column={column} title={t("Status")} />
       ),
-      cell: ({ row }) => <span>{t(row.original.status)}</span>,
+      cell: ({ row }) => <StatusBadge status={row.original.status} />,
     },
     {
       accessorKey: "total",
