@@ -61,6 +61,44 @@
     outline: none;
   }
 
+  /* The inner input carries aria-invalid, so the group finds it with :has();
+     focus-ring-input-wrapper reads only an attribute on the group itself. */
+  .dr-input-group:has(
+    > .dr-input-grouped:is([data-invalid], [aria-invalid="true"])
+  ) {
+    border-color: hsl(var(--destructive-edge));
+  }
+
+  .dr-input-group:has(
+      > .dr-input-grouped:is([data-invalid], [aria-invalid="true"])
+    ):focus-within {
+    border-color: hsl(var(--destructive-edge));
+    box-shadow:
+      0 0 0 1px hsl(var(--destructive-edge)),
+      var(--field-shadow);
+  }
+
+  /* The group draws the invalid ring. The input's own focus reset above is
+     (0,2,0) and loses to .dr-input's invalid-focus ring at (0,3,0), which
+     would nest a second ring inside the group's; this (0,4,0) wins. */
+  .dr-input-group .dr-input-grouped.dr-input:is(:focus, :focus-visible) {
+    box-shadow: none;
+  }
+
+  /* A disabled input fades its whole group, addons included. */
+  .dr-input-group:has(> .dr-input-grouped:disabled) {
+    opacity: var(--disabled-opacity);
+    cursor: not-allowed;
+  }
+
+  /* The group fades once. Every disabled rule reads the token, so resetting
+     it on the group's children stops the input, and any action button
+     disabled with it, fading a second time. An Input outside a group, or an
+     action disabled on its own in an enabled group, still fades. */
+  .dr-input-group:has(> .dr-input-grouped:disabled) > * {
+    --disabled-opacity: 1;
+  }
+
   /* Action slot: transparent slot for interactive elements (buttons,
    * clickable icons) sitting flush against the input. No background, no
    * divider — visually distinct from .dr-input-addon (muted bg, divider)
@@ -96,8 +134,9 @@
      focusable, it simply cannot be edited. Reusing the disabled treatment
      (half opacity, not-allowed cursor) says the opposite, and the two states
      were indistinguishable here before. The well-coloured fill reads as
-     "fixed" while text stays at full contrast. */
-  .dr-input:read-only {
+     "fixed" while text stays at full contrast. A disabled input also
+     matches :read-only, so the guard keeps this off disabled inputs. */
+  .dr-input:read-only:not(:disabled) {
     background-color: hsl(var(--muted));
     cursor: default;
   }

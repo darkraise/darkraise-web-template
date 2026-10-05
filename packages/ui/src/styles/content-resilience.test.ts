@@ -53,7 +53,7 @@ describe("read-only is distinct from disabled", () => {
   ])("%s styles :read-only separately", (path, selector) => {
     const css = readFileSync(path, "utf8")
     const rule = new RegExp(
-      `${selector.replace(".", "\\.")}:read-only \\{([^}]*)\\}`,
+      `${selector.replace(".", "\\.")}:read-only(?::not\\(:disabled\\))? \\{([^}]*)\\}`,
     ).exec(css)
     expect(rule, `${selector}:read-only has no rule`).not.toBeNull()
     const body = rule?.[1] ?? ""
@@ -62,5 +62,13 @@ describe("read-only is distinct from disabled", () => {
     expect(body).not.toMatch(/opacity/)
     expect(body).not.toContain("not-allowed")
     expect(body).toContain("cursor: default")
+  })
+
+  it("keeps the read-only treatment off a disabled input", () => {
+    // A disabled input also matches :read-only, which gave it the default
+    // cursor and the muted fill.
+    const css = readFileSync("src/components/input/input.css", "utf8")
+    expect(css).toContain(".dr-input:read-only:not(:disabled) {")
+    expect(css).not.toMatch(/\.dr-input:read-only \{/)
   })
 })

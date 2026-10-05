@@ -237,6 +237,16 @@ function ControlStates() {
       <div data-probe="time-picker-empty">
         <TimePicker value="" placeholder="Time" />
       </div>
+      <div data-probe="input-group-invalid" style={{ width: 200 }}>
+        <Input aria-label="Invalid amount" aria-invalid prefix="$" />
+      </div>
+      <div
+        data-probe="input-group-disabled"
+        style={{ width: 200, display: "flex", flexDirection: "column", gap: 8 }}
+      >
+        <Input aria-label="Disabled amount" disabled prefix="$" />
+        <Input aria-label="Disabled name" disabled />
+      </div>
     </div>
   )
 }

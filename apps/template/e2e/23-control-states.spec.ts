@@ -1,6 +1,6 @@
 import { test, expect, type Locator, type Page } from "@playwright/test"
 import { STYLES } from "./fixtures/theme"
-import { boxOf, seedApp } from "./helpers/app"
+import { boxOf, readToken, seedApp } from "./helpers/app"
 import { openControlFixture } from "./helpers/controls"
 import { computed, contrast, pixel } from "./helpers/measure"
 
@@ -159,5 +159,82 @@ test.describe("chip fills", () => {
         }
       })
     }
+  }
+})
+
+/** A CSS colour as the browser resolves it on the page. */
+async function resolvedColour(page: Page, value: string): Promise<string> {
+  return page.evaluate((colour) => {
+    const sample = document.createElement("span")
+    sample.style.color = colour
+    document.body.append(sample)
+    const resolved = getComputedStyle(sample).color
+    sample.remove()
+    return resolved
+  }, value)
+}
+
+/** A colour token holding an `H S% L%` triple, as the browser resolves it. */
+function tokenColour(page: Page, token: string): Promise<string> {
+  return resolvedColour(page, `hsl(var(${token}))`)
+}
+
+/** Opacity as painted: the element's own times every ancestor's. */
+function effectiveOpacity(locator: Locator): Promise<number> {
+  return locator.evaluate((element) => {
+    let value = 1
+    for (let node: Element | null = element; node; node = node.parentElement) {
+      value *= Number(getComputedStyle(node).opacity)
+    }
+    return value
+  })
+}
+
+test.describe("grouped input states", () => {
+  for (const mode of MODES) {
+    test(`an invalid group draws the destructive edge and ring · ${mode}`, async ({
+      page,
+    }) => {
+      await openInMode(page, mode)
+      const group = probe(page, "input-group-invalid", ".dr-input-group")
+      const input = group.locator("input")
+      const edge = await tokenColour(page, "--destructive-edge")
+      for (const side of ["top", "right", "bottom", "left"]) {
+        expect(await computed(group, `border-${side}-color`), side).toBe(edge)
+      }
+      await input.focus()
+      await expect
+        .poll(() => computed(group, "box-shadow"))
+        .toContain(`${edge} 0px 0px 0px 1px`)
+      await expect.poll(() => computed(input, "box-shadow")).toBe("none")
+    })
+
+    test(`a disabled group fades as one surface · ${mode}`, async ({
+      page,
+    }) => {
+      await openInMode(page, mode)
+      const group = probe(page, "input-group-disabled", ".dr-input-group")
+      const input = group.locator("input")
+      const token = Number(await readToken(page, "--disabled-opacity"))
+      expect(token).toBeGreaterThan(0)
+      expect(token).toBeLessThan(1)
+      expect(Number(await computed(group, "opacity"))).toBeCloseTo(token, 3)
+      expect(await computed(group, "cursor")).toBe("not-allowed")
+      // The input inside fades once, through its group, not a second time.
+      expect(await computed(input, "opacity")).toBe("1")
+      expect(await effectiveOpacity(input)).toBeCloseTo(token, 3)
+      expect(await computed(input, "cursor")).toBe("not-allowed")
+
+      // An Input disabled on its own, with no group, still fades itself and
+      // takes the disabled cursor, not the read-only one.
+      const bare = probe(
+        page,
+        "input-group-disabled",
+        '[aria-label="Disabled name"]',
+      )
+      expect(Number(await computed(bare, "opacity"))).toBeCloseTo(token, 3)
+      expect(await effectiveOpacity(bare)).toBeCloseTo(token, 3)
+      expect(await computed(bare, "cursor")).toBe("not-allowed")
+    })
   }
 })
