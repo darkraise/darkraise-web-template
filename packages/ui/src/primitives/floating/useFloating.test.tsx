@@ -45,4 +45,41 @@ describe("useFloating", () => {
       ),
     )
   })
+
+  it("writes the anchor and available-space variables onto the popup", async () => {
+    // jsdom lays nothing out, so give the anchor a size to read back.
+    const rect = vi
+      .spyOn(HTMLButtonElement.prototype, "getBoundingClientRect")
+      .mockReturnValue({
+        x: 0,
+        y: 0,
+        top: 0,
+        left: 0,
+        right: 120,
+        bottom: 32,
+        width: 120,
+        height: 32,
+        toJSON: () => ({}),
+      } as DOMRect)
+    const { getByTestId } = render(<Anchored />)
+    const popup = getByTestId("floating")
+    await waitFor(() =>
+      expect(popup.style.getPropertyValue("--popup-anchor-width")).toBe(
+        "120px",
+      ),
+    )
+    expect(popup.style.getPropertyValue("--popup-anchor-height")).toBe("32px")
+    rect.mockRestore()
+    for (const name of [
+      "--popup-available-width",
+      "--popup-available-height",
+    ]) {
+      expect(popup.style.getPropertyValue(name)).toMatch(/^\d+(\.\d+)?px$/)
+    }
+  })
+
+  it("passes the positioning strategy through", () => {
+    const { result } = renderHook(() => useFloating({ strategy: "fixed" }))
+    expect(result.current.strategy).toBe("fixed")
+  })
 })

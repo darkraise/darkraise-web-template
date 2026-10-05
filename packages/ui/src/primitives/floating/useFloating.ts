@@ -7,6 +7,7 @@ import {
   size,
   useFloating as useFloatingUI,
   type Placement,
+  type Strategy,
   type UseFloatingOptions,
   type UseFloatingReturn,
 } from "@floating-ui/react"
@@ -14,6 +15,8 @@ import * as React from "react"
 
 export interface UseFloatingProps {
   placement?: Placement
+  /** `fixed` keeps the popup in place over a scrolling page. */
+  strategy?: Strategy
   sideOffset?: number
   alignOffset?: number
   arrowPadding?: number
@@ -32,6 +35,7 @@ export function useFloating(
 ): UseFloatingReturnExtended {
   const {
     placement = "bottom",
+    strategy = "absolute",
     sideOffset = 4,
     alignOffset = 0,
     arrowPadding = 4,
@@ -47,7 +51,30 @@ export function useFloating(
         offset({ mainAxis: sideOffset, crossAxis: alignOffset }),
         avoidCollisions ? flip({ padding: collisionPadding }) : undefined,
         avoidCollisions ? shift({ padding: collisionPadding }) : undefined,
-        size({ padding: collisionPadding }),
+        // Written inline so the popup's own stylesheet can cap its height to
+        // the room left on its side and match its anchor's width.
+        size({
+          padding: collisionPadding,
+          apply({ availableWidth, availableHeight, elements, rects }) {
+            const style = elements.floating.style
+            style.setProperty(
+              "--popup-available-width",
+              `${Math.max(0, availableWidth)}px`,
+            )
+            style.setProperty(
+              "--popup-available-height",
+              `${Math.max(0, availableHeight)}px`,
+            )
+            style.setProperty(
+              "--popup-anchor-width",
+              `${rects.reference.width}px`,
+            )
+            style.setProperty(
+              "--popup-anchor-height",
+              `${rects.reference.height}px`,
+            )
+          },
+        }),
         arrow({ element: arrowEl, padding: arrowPadding }),
       ].filter(Boolean) as NonNullable<UseFloatingOptions["middleware"]>,
     [
@@ -62,6 +89,7 @@ export function useFloating(
 
   const floating = useFloatingUI({
     placement,
+    strategy,
     middleware,
     whileElementsMounted: autoUpdate,
   })
