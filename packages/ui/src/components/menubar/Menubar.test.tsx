@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react"
+import { fireEvent, render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi } from "vitest"
 import {
@@ -151,5 +151,31 @@ describe("MenubarCheckboxItem mark", () => {
     )
     await user.click(screen.getByRole("menuitem", { name: "View" }))
     expect(marks(await screen.findByRole("menuitemcheckbox"))).toEqual(expected)
+  })
+})
+
+describe("Menubar disabled item", () => {
+  it("ignores click, Enter and Space", async () => {
+    const user = userEvent.setup()
+    const onSelect = vi.fn()
+    render(
+      <Menubar>
+        <MenubarMenu value="file">
+          <MenubarTrigger>File</MenubarTrigger>
+          <MenubarContent>
+            <MenubarItem disabled onSelect={onSelect}>
+              Close
+            </MenubarItem>
+          </MenubarContent>
+        </MenubarMenu>
+      </Menubar>,
+    )
+    await user.click(screen.getByRole("menuitem", { name: "File" }))
+    const close = await screen.findByRole("menuitem", { name: "Close" })
+    fireEvent.click(close)
+    fireEvent.keyDown(close, { key: "Enter" })
+    fireEvent.keyDown(close, { key: " " })
+    expect(onSelect).not.toHaveBeenCalled()
+    expect(screen.getByRole("menu")).toBeInTheDocument()
   })
 })

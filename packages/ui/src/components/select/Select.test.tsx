@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react"
+import { fireEvent, render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi } from "vitest"
 import { isProgrammaticFocus } from "@primitives/focus-trap"
@@ -194,5 +194,17 @@ describe("Select", () => {
     await waitFor(() => expect(document.activeElement).toBe(trigger))
 
     expect(marks).toEqual([true])
+  })
+})
+
+describe("Select disabled item", () => {
+  it("ignores a click", async () => {
+    const user = userEvent.setup()
+    const onChange = vi.fn()
+    render(<Basic onChange={onChange} />)
+    await user.click(screen.getByRole("combobox"))
+    fireEvent.click(await screen.findByRole("option", { name: "Cherry" }))
+    expect(onChange).not.toHaveBeenCalled()
+    expect(screen.getByRole("listbox")).toBeInTheDocument()
   })
 })

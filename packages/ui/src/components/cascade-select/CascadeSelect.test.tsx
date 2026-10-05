@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest"
-import { render, screen, waitFor } from "@testing-library/react"
+import { fireEvent, render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import * as React from "react"
 import { CascadeSelect, type CascadeOption } from "./CascadeSelect"
@@ -249,5 +249,24 @@ describe("CascadeSelect keyboard", () => {
     screen.getByLabelText("Other").focus()
     rerender(tree())
     expect(screen.getByLabelText("Other")).toHaveFocus()
+  })
+})
+
+describe("CascadeSelect disabled item", () => {
+  it("ignores a click", async () => {
+    const onValueChange = vi.fn()
+    render(
+      <CascadeSelect
+        options={[
+          { value: "a", label: "Alpha", disabled: true },
+          { value: "b", label: "Beta" },
+        ]}
+        onValueChange={onValueChange}
+        placeholder="Pick"
+      />,
+    )
+    await userEvent.click(screen.getByRole("button", { name: /pick/i }))
+    fireEvent.click(await screen.findByRole("option", { name: "Alpha" }))
+    expect(onValueChange).not.toHaveBeenCalled()
   })
 })

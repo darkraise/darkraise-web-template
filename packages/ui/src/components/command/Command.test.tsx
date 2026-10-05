@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react"
+import { fireEvent, render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi } from "vitest"
 import { readFileSync } from "node:fs"
@@ -153,5 +153,23 @@ describe("CommandDialog close-button alignment", () => {
     expect(body).toMatch(/--dr-command-row-h:/)
     expect(body).toMatch(/--text-sm/)
     expect(body).toMatch(/--field-py/)
+  })
+})
+
+describe("Command disabled item", () => {
+  it("ignores a click", () => {
+    const onSelect = vi.fn()
+    render(
+      <Command>
+        <CommandInput aria-label="Search" />
+        <CommandList>
+          <CommandItem value="apple" disabled onSelect={onSelect}>
+            Apple
+          </CommandItem>
+        </CommandList>
+      </Command>,
+    )
+    fireEvent.click(screen.getByRole("option", { name: "Apple" }))
+    expect(onSelect).not.toHaveBeenCalled()
   })
 })

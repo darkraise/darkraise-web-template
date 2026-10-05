@@ -1,5 +1,11 @@
 import * as React from "react"
-import { render, screen, waitFor, within } from "@testing-library/react"
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi } from "vitest"
 
@@ -243,5 +249,26 @@ describe("Combobox", () => {
     expect(input).toHaveAttribute("aria-expanded", "true")
     await user.click(screen.getByRole("button", { name: "outside" }))
     expect(input).toHaveAttribute("aria-expanded", "false")
+  })
+})
+
+describe("Combobox disabled item", () => {
+  it("ignores a click", async () => {
+    const user = userEvent.setup()
+    const spy = vi.fn()
+    render(
+      <Basic
+        initialItems={[
+          { value: "us", label: "United States", disabled: true },
+          { value: "ca", label: "Canada" },
+        ]}
+        onValueChangeSpy={spy}
+      />,
+    )
+    await user.click(screen.getByRole("combobox"))
+    fireEvent.click(
+      await screen.findByRole("option", { name: /United States/ }),
+    )
+    expect(spy).not.toHaveBeenCalled()
   })
 })

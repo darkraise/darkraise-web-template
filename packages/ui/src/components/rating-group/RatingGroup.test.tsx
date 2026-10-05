@@ -223,3 +223,15 @@ describe("RatingGroup", () => {
     )
   })
 })
+
+describe("RatingGroup disabled", () => {
+  it("ignores clicks and arrow keys", () => {
+    const onValueChange = vi.fn()
+    render(<Basic max={5} disabled onValueChange={onValueChange} />)
+    const items = screen.getAllByRole("radio")
+    fireEvent.click(items[2] as HTMLElement)
+    fireEvent.keyDown(items[0] as HTMLElement, { key: "ArrowRight" })
+    fireEvent.keyDown(items[0] as HTMLElement, { key: "Enter" })
+    expect(onValueChange).not.toHaveBeenCalled()
+  })
+})

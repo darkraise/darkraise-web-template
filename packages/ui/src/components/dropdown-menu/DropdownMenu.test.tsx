@@ -317,3 +317,25 @@ describe("DropdownMenuCheckboxItem mark", () => {
     expect(marks(await screen.findByRole("menuitemcheckbox"))).toEqual(expected)
   })
 })
+
+describe("DropdownMenu disabled item", () => {
+  it("ignores click, Enter and Space", async () => {
+    const onSelect = vi.fn()
+    render(
+      <DropdownMenu defaultOpen>
+        <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem disabled onSelect={onSelect}>
+            Cherry
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>,
+    )
+    const cherry = await screen.findByRole("menuitem", { name: "Cherry" })
+    fireEvent.click(cherry)
+    fireEvent.keyDown(cherry, { key: "Enter" })
+    fireEvent.keyDown(cherry, { key: " " })
+    expect(onSelect).not.toHaveBeenCalled()
+    expect(screen.getByRole("menu")).toBeInTheDocument()
+  })
+})

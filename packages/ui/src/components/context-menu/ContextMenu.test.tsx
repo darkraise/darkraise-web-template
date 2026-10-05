@@ -264,3 +264,26 @@ describe("ContextMenuCheckboxItem mark", () => {
     expect(marks(await screen.findByRole("menuitemcheckbox"))).toEqual(expected)
   })
 })
+
+describe("ContextMenu disabled item", () => {
+  it("ignores click, Enter and Space", async () => {
+    const onSelect = vi.fn()
+    render(
+      <ContextMenu>
+        <ContextMenuTrigger>Right-click here</ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuItem disabled onSelect={onSelect}>
+            Delete
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>,
+    )
+    fireEvent.contextMenu(screen.getByText("Right-click here"))
+    const del = await screen.findByRole("menuitem", { name: "Delete" })
+    fireEvent.click(del)
+    fireEvent.keyDown(del, { key: "Enter" })
+    fireEvent.keyDown(del, { key: " " })
+    expect(onSelect).not.toHaveBeenCalled()
+    expect(screen.getByRole("menu")).toBeInTheDocument()
+  })
+})
