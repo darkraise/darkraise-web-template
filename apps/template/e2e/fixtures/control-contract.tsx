@@ -183,6 +183,34 @@ function Controls() {
   )
 }
 
+// Probes for control states. They sit after the table so the edge probes
+// above keep their positions on screen.
+function ControlStates() {
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexWrap: "wrap",
+        gap: 12,
+        alignItems: "flex-start",
+      }}
+    >
+      <div data-probe="select-long" style={{ width: 160 }}>
+        <Select defaultValue="long">
+          <SelectTrigger aria-label="Long fruit">
+            <SelectValue placeholder="Fruit" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="long">
+              Supercalifragilisticexpialidocious
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+    </div>
+  )
+}
+
 const root = document.getElementById("root")
 if (!root) throw new Error("Missing test fixture root")
 createRoot(root).render(
@@ -212,6 +240,9 @@ createRoot(root).render(
       </Card>
       <div data-probe="table" style={{ width: 360, marginTop: 24 }}>
         <DataTable columns={INVOICE_COLUMNS} data={INVOICES} />
+      </div>
+      <div style={{ marginTop: 24 }}>
+        <ControlStates />
       </div>
     </div>
   </ThemeProvider>,

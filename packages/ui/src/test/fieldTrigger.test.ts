@@ -77,4 +77,13 @@ describe("field-trigger resolution", () => {
   ])("leaves %s unchanged: it overrides the utility", (body) => {
     expect(resolveFieldTriggerIn(body, SHEET)).toBe(body)
   })
+
+  it("resolves a rule that applies the utility to theme.css's body", () => {
+    const body = resolveFieldTrigger("@apply field-trigger;")
+    expect(body).toContain("background-color: hsl(var(--control-surface));")
+    expect(body).toContain(
+      "&:disabled { cursor: not-allowed; opacity: var(--disabled-opacity); }",
+    )
+    expect(body).toMatch(/border-bottom-color: var\(--field-edge\);$/)
+  })
 })
