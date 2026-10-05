@@ -77,3 +77,24 @@ test.describe("cascade trigger", () => {
     })
   }
 })
+
+test.describe("time picker trigger", () => {
+  for (const mode of MODES) {
+    test(`paints like the Select trigger and marks an empty value · ${mode}`, async ({
+      page,
+    }) => {
+      await openInMode(page, mode)
+      const select = probe(page, "select", ".dr-select-trigger")
+      const filled = probe(page, "time-picker", ".dr-time-picker-trigger")
+      const empty = probe(page, "time-picker-empty", ".dr-time-picker-trigger")
+      await expect(filled.locator(":scope > span")).toHaveText(/12:00/)
+      await expect(filled).not.toHaveAttribute("data-placeholder")
+      await expect(empty).toHaveAttribute("data-placeholder", "")
+      for (const property of TRIGGER_PAINT) {
+        expect(await computed(empty, property), property).toBe(
+          await computed(select, property),
+        )
+      }
+    })
+  }
+})

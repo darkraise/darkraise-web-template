@@ -43,6 +43,7 @@ import {
   SelectValue,
 } from "darkraise-ui/components/select"
 import { Switch } from "darkraise-ui/components/switch"
+import { TimePicker } from "darkraise-ui/components/time-picker"
 import { Toggle } from "darkraise-ui/components/toggle"
 import { ColumnHeader, DataTable } from "darkraise-ui/data-table"
 import { ThemeProvider } from "darkraise-ui/theme"
@@ -221,6 +222,12 @@ function ControlStates() {
       </div>
       <div data-probe="cascade">
         <CascadeSelect options={REGIONS} placeholder="Region" />
+      </div>
+      <div data-probe="time-picker">
+        <TimePicker />
+      </div>
+      <div data-probe="time-picker-empty">
+        <TimePicker value="" placeholder="Time" />
       </div>
     </div>
   )
