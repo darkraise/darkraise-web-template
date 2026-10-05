@@ -93,6 +93,14 @@ A disabled compound control fades once, at its root; its parts, and the controls
 
 `Alert`'s default fill is `--muted`. `.dr-badge` lays out its children with a 4px gap; remove `mr-1` or `ml-1` spacers from icons inside `Badge`.
 
+## Overlays
+
+`ComboboxContent` (and `MultiSelect`'s list) renders in a portal at the end of `<body>`. Stylesheets that styled the list through its field, for example `.dr-combobox .dr-combobox-content`, must select `.dr-combobox-content` directly or pass a `className` to `ComboboxContent`.
+
+`SheetContent` now scrolls when its content is too tall, and top and bottom sheets are capped at the viewport height minus 2rem. If you wrapped the middle of a sheet in a `flex-1 overflow-y-auto` element to pin the header and footer, it keeps working; `SheetBody` does the same with less markup.
+
+`FloatingPanel` z-indexes stay between 10 and 49, ordered by recency, so dialogs, sheets and popups always cover panels. If a panel must stay above them, set `style={{ zIndex: … }}` on it.
+
 ## Fonts
 
 The `font` axis takes `inter`, `geist` or `ibm-plex-sans`, with `inter` the default. The four faces the kit uses (Inter, Geist, IBM Plex Sans and JetBrains Mono) ship as woff2 files declared in `darkraise-ui/styles.css`, and no font request leaves the app's origin. Delete any Google Fonts link for these families from `index.html`.

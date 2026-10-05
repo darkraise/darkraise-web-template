@@ -78,6 +78,12 @@ Breaking: a disabled compound control fades once, at its root. Its parts used to
 
 Breaking: `Alert`'s `default` variant fills with `--muted` instead of `--background`, matching `Banner`, so it no longer disappears into the page canvas. `.dr-badge` lays out its children with a 4px gap; remove `mr-1` or `ml-1` spacers from badge icons.
 
+Breaking: `ComboboxContent`, and with it `MultiSelect`'s list, renders in a portal at the end of `<body>`, positioned against its field and flipped or shifted to stay on screen. Selectors that reach the list through the field, such as `.dr-combobox .dr-combobox-content` or `.dr-multi-select .dr-combobox-item`, no longer match; select `.dr-combobox-content` directly, or pass a `className`.
+
+Breaking: `SheetContent` scrolls as a whole when its content is taller than the sheet, instead of clipping it, and top and bottom sheets stop at the viewport height minus 2rem. To keep the header and footer pinned, wrap the middle in the new `SheetBody`.
+
+Breaking: `FloatingPanel` z-indexes run from 10 to 49 by recency (the most recently opened or pressed panel is highest), so popups, dialogs and sheets at z-50 always cover panels. A panel that must rise above them needs an explicit `style.zIndex`.
+
 ### Added
 
 - Four styles, chosen with the `style` axis: `flat` (no control shadows; cards default to elevation `flat`), `quiet` (the default: a soft edge and a light shadow on buttons), `tactile` (a sheen across the top fifth of filled buttons, stopping above the label because the fill sits at its label's contrast floor; a sheen on outline and secondary buttons; inset wells on fields, checkboxes, radios and switch tracks; and shadows on thumbs and the selected tab or segment pill) and `glass` (frosted chrome and overlays over the gradient canvas, which it defaults to). A style sets only token values, so every component follows it without rules of its own.
@@ -109,6 +115,9 @@ Breaking: `Alert`'s `default` variant fills with `--muted` instead of `--backgro
 - `field-trigger` utility in the kit stylesheet: the field recipe for a picker's closed trigger, with its value in a direct child `<span>` and its icon in a direct child `<svg>`. `Select`, `CascadeSelect` and `TimePicker` use it.
 - `labels.dateInputPlaceholder` (`{ year, month, day }`), `YYYY`, `MM` and `DD` in English and Vietnamese.
 - `UseListboxOptions.disabled` and `UseListboxReturn.disabled`.
+- `SheetBody`: the scrolling middle of a sheet; rendering one pins the sheet's header and footer, as `DialogBody` does for a dialog.
+- `ComboboxContent` takes `surface`, forwarded as `data-surface-fill` like the other popups.
+- Every popup positioned by the kit sets `--popup-available-width`, `--popup-available-height`, `--popup-anchor-width`, `--popup-anchor-height` (all in px) and `--popup-transform-origin` on itself, for consumer styles that size or animate a popup.
 
 ### Changed
 
@@ -225,6 +234,12 @@ Breaking: `Alert`'s `default` variant fills with `--muted` instead of `--backgro
 - A read-only `Editable` no longer fades and shows the default cursor, like a read-only `Input`.
 - Calendar disabled days no longer fade twice, `TimerActionTrigger` fades when `disabled` is passed, and the overlay close button fades when disabled.
 - The slider thumb, TreeView rows, Menubar items, RatingGroup items, the ColorPicker area and the Resizable handle show the not-allowed cursor when disabled, and hover no longer paints on disabled CascadeSelect, TreeView and Menubar rows, the FileUpload dropzone and clear trigger, or Timer actions.
+- Popups (Popover, Tooltip, HoverCard, menus, Select and the pickers built on Popover) follow their trigger when the page or a container scrolls or the window resizes.
+- Dropdown, context and menubar menus, their submenus, Select, Combobox and VirtualizedDropdownMenu lists stop at the edge of the viewport and scroll, instead of running off screen.
+- Popups grow from the edge facing their trigger instead of from their centre, and a Select popup is at least as wide as its trigger.
+- The Tour popover stays inside the viewport for targets near an edge and flips above a target by its measured height.
+- FloatingPanel, the Tour popover and the chart, contribution-graph and timeline tooltips paint the overlay fill, so they follow Glass and the `surface` prop like every other popup.
+- Pressing Escape in an open Combobox inside a dialog closes only the Combobox.
 
 ## [6.9.6] — 2026-09-30
 
