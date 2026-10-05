@@ -43,6 +43,7 @@ const REQUIRED: Array<[string, string, string, "fade" | "cursor"]> = [
     "fade",
   ],
   [`${C}button/button.css`, ".dr-btn", "disabled", "fade"],
+  [`${C}button/button.css`, ".dr-btn", "aria-disabled", "fade"],
   [
     `${C}calendar/calendar.css`,
     ".dr-calendar-nav-btn",

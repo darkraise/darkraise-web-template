@@ -456,6 +456,22 @@ function ControlStates() {
             <ResizablePanel defaultSize={50}>B</ResizablePanel>
           </ResizablePanelGroup>
         </div>
+        <div data-case="select">
+          <Select disabled>
+            <SelectTrigger aria-label="Disabled fruit">
+              <SelectValue placeholder="Fruit" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="apple">Apple</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div data-case="cascade">
+          <CascadeSelect options={REGIONS} placeholder="Region" disabled />
+        </div>
+        <div data-case="time-picker">
+          <TimePicker disabled />
+        </div>
       </div>
       <div
         data-probe="compound-disabled"

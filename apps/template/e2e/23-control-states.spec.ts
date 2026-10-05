@@ -684,6 +684,9 @@ test.describe("disabled recipe", () => {
     ["number-input", ".dr-number-input"],
     ["editable-locked", ".dr-editable-preview"],
     ["resizable", ".dr-resizable-handle"],
+    ["select", ".dr-select-trigger"],
+    ["cascade", ".dr-cascade-trigger"],
+    ["time-picker", ".dr-time-picker-trigger"],
   ]
   const UNFADED: Array<[string, string]> = [
     ["date-input", ".dr-date-input-segment"],
