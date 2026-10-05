@@ -72,6 +72,26 @@ test.describe("text entry", () => {
     await expect(main.getByText("edited value").first()).toBeVisible()
   })
 
+  test("editable keeps its edit trigger on the value row", async ({ page }) => {
+    const main = await open(page, "/components/editable")
+    const trigger = main.getByRole("button", { name: "Rename document" })
+    const preview = main
+      .locator(".dr-editable")
+      .filter({ has: page.getByRole("button", { name: "Rename document" }) })
+      .locator(".dr-editable-preview")
+    const previewBox = await boxOf(preview)
+    const triggerBox = await boxOf(trigger)
+    const centre = (box: { y: number; height: number }) =>
+      box.y + box.height / 2
+    expect(
+      Math.abs(centre(triggerBox) - centre(previewBox)),
+      "trigger centred on the value row",
+    ).toBeLessThanOrEqual(1)
+    expect(triggerBox.x, "trigger after the value").toBeGreaterThanOrEqual(
+      previewBox.x + previewBox.width,
+    )
+  })
+
   test("tags input adds and removes a tag", async ({ page }) => {
     const main = await open(page, "/components/tags-input")
     const input = main.locator("input").first()

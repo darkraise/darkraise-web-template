@@ -1,10 +1,12 @@
 @layer components {
+  /* The label takes its own line; the area and its control share the next,
+     and a full-width area pushes the control onto a line of its own. */
   .dr-editable {
-    @apply flex flex-col gap-2;
+    @apply flex flex-wrap items-center gap-x-1 gap-y-2;
   }
 
   .dr-editable-label {
-    @apply type-label text-foreground;
+    @apply type-label text-foreground basis-full;
   }
 
   .dr-editable-area {
