@@ -1,5 +1,6 @@
 import {
   arrow,
+  autoUpdate,
   flip,
   offset,
   shift,
@@ -59,13 +60,12 @@ export function useFloating(
     ],
   )
 
-  const floating = useFloatingUI({ placement, middleware })
+  const floating = useFloatingUI({
+    placement,
+    middleware,
+    whileElementsMounted: autoUpdate,
+  })
 
-  // @floating-ui/react does not always expose a manual `update()` on `useFloating`'s return.
-  // Consumers that need eager re-positioning should call `autoUpdate` themselves with
-  // `floating.refs.reference.current` and `floating.refs.floating.current`. The spec's mention
-  // of `update` in the surface table refers to that consumer-side capability, not a method
-  // on this hook's return — so we do not synthesize one here.
   return {
     ...floating,
     arrowRef: setArrowEl,
