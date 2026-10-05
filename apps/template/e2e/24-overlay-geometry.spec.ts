@@ -148,3 +148,40 @@ test.describe("combobox lists escape their container", () => {
     await expectListUncut(page, input)
   })
 })
+
+test.describe("floating panels stay under modal layers", () => {
+  test("a dialog covers panels after a hundred presses", async ({ page }) => {
+    await seedApp(page, { style: "quiet", mode: "light" })
+    await openOverlayCase(page, "panels")
+    await page.evaluate(() => {
+      const panels = ["a", "b", "c"].map(
+        (id) =>
+          document.querySelector(`[data-testid="panel-${id}"]`) as Element,
+      )
+      for (let i = 0; i < 100; i += 1) {
+        ;(panels[i % 3] as Element).dispatchEvent(
+          new PointerEvent("pointerdown", { bubbles: true }),
+        )
+      }
+    })
+    for (const id of ["a", "b", "c"]) {
+      const z = Number(
+        await computed(page.getByTestId(`panel-${id}`), "z-index"),
+      )
+      expect(z).toBeLessThan(50)
+    }
+    await page.getByRole("button", { name: "Open dialog" }).click()
+    const dialog = page.getByRole("dialog")
+    await expect(dialog).toBeVisible()
+    await settle(page)
+    const box = await boxOf(dialog)
+    expect(
+      await hitsAt(
+        page,
+        box.x + box.width / 2,
+        box.y + box.height / 2,
+        '[role="dialog"]',
+      ),
+    ).toBe(true)
+  })
+})

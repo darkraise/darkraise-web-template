@@ -35,6 +35,12 @@ import {
   MenubarMenu,
   MenubarTrigger,
 } from "darkraise-ui/components/menubar"
+import {
+  FloatingPanel,
+  FloatingPanelContent,
+  FloatingPanelHeader,
+  FloatingPanelTitle,
+} from "darkraise-ui/components/floating-panel"
 import { MultiSelect } from "darkraise-ui/components/multi-select"
 import {
   Popover,
@@ -247,11 +253,46 @@ function ComboboxCase() {
 
 // One scenario per page load, chosen by ?case=, so a case's fixed triggers
 // and open overlays never shift another case's geometry.
+// Three global panels that all cover the viewport centre, where the dialog
+// opens; the dialog trigger sits in a corner no panel covers.
+function PanelsCase() {
+  return (
+    <>
+      <div style={{ position: "fixed", top: 8, left: 8 }}>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button>Open dialog</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogTitle>Above the panels</DialogTitle>
+            <p>The dialog covers every panel.</p>
+          </DialogContent>
+        </Dialog>
+      </div>
+      {(["a", "b", "c"] as const).map((id, i) => (
+        <FloatingPanel
+          key={id}
+          scope="global"
+          defaultPosition={{ x: 400 + i * 40, y: 200 + i * 20 }}
+          defaultSize={{ width: 400, height: 300 }}
+          data-testid={`panel-${id}`}
+        >
+          <FloatingPanelHeader>
+            <FloatingPanelTitle>{`Panel ${id}`}</FloatingPanelTitle>
+          </FloatingPanelHeader>
+          <FloatingPanelContent>{`Panel ${id} body`}</FloatingPanelContent>
+        </FloatingPanel>
+      ))}
+    </>
+  )
+}
+
 const CASES: Record<string, () => ReactElement> = {
   follow: FollowCase,
   origin: OriginCase,
   menus: MenusCase,
   combobox: ComboboxCase,
+  panels: PanelsCase,
 }
 
 const name = new URLSearchParams(window.location.search).get("case") ?? ""
