@@ -190,8 +190,9 @@ empty state, download trigger, image cropper.
 
 Runs against the standalone fixture `e2e/fixtures/control-contract.html`.
 
-- Every button variant, toggle, input, select, combobox, multi-select, date
-  input, number input, OTP slot and segment item measures exactly
+- Every button variant, toggle, input, select, cascade select and time picker
+  trigger, file upload trigger, combobox, multi-select, date input, number
+  input, OTP slot and segment item measures exactly
   `--control-height`, for every style × both modes × every density × the
   `medium` and `extra-large` font sizes.
 - With `hasTouch` (which makes Chromium match `pointer: coarse`), the same
@@ -238,6 +239,26 @@ Runs against the standalone fixture `e2e/fixtures/selection-overlays.html`.
 - A dropdown menu opened with `defaultOpen` (from
   `e2e/fixtures/baseline-overlays.html`) holds focus on its container and draws
   no outline there.
+
+### 23 · Control states (`23-control-states.spec.ts`)
+
+Runs against the control-contract fixture, one `data-probe` per case.
+
+- Field triggers: a long Select value ends in an ellipsis clear of the
+  chevron; CascadeSelect and TimePicker triggers paint like the Select trigger
+  and show a muted placeholder when empty; DateInput placeholders are muted.
+- Edges and indicators, in both modes and under every style where the edge is
+  a style token: colour swatches and the angle slider's dial reach 3:1
+  against what they sit on; chips separate from a card's field well; the
+  switch's off thumb reaches 2.5:1 against its track (default theme); the
+  active swatch draws its ring; an indeterminate checkbox paints like a
+  checked one; a vertical slider is upright and its range spans its thumbs.
+- Geometry: number input steppers fill the field, badge icons keep their gap,
+  Alert and Banner share fill, start edge and icon colour per variant, and
+  Kbd and the grouped Input carry their edges and invalid state.
+- Disabled: every disabled probe and compound control has an effective
+  opacity of `--disabled-opacity` (the product of its own and its ancestors'
+  opacity) and `cursor: not-allowed`; a read-only Editable does not fade.
 
 ### 20 · Fonts (`20-fonts.spec.ts`)
 

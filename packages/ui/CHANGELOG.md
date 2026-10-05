@@ -68,6 +68,16 @@ Breaking: table heads and cells no longer wrap. A table wider than its container
 
 Breaking: below 768px `SplitPanelLayout` shows the panel in the content area and hides the content. Pass `contentActive` once the user opens an item to show the content instead, and `onBack` to render a Back button above it. Focus moves to the content when it opens and back to the panel when it closes.
 
+Breaking: `CascadeSelect` and `TimePicker` triggers render a plain `<button>` styled as a field — the control-well fill, the 3:1 `--field-edge` bottom edge and a muted placeholder — instead of an outline `Button`, so they no longer carry `.dr-btn` or its `data-variant` and `data-size`. They still size to their content; add a width utility to widen them. TimePicker's trigger text sits in a `<span>`.
+
+Breaking: `FileUploadTrigger` renders as a default `Button` (`.dr-btn` with `data-variant="default"` and `data-size="default"`), so it follows density, radius and the style's button edge and shadow. Its own size, radius, fill and hover rules are removed; restyle it as a Button.
+
+Breaking: disabled controls no longer set `pointer-events: none`. They show `cursor: not-allowed` at `--disabled-opacity`, and pointer events (hover, `title` tooltips, consumer handlers) now reach disabled kit elements, which ignore activation themselves. Code that relied on a disabled kit element swallowing pointer events must check the state itself. Moving the pointer onto a disabled `DropdownMenu` or `ContextMenu` item now closes an open submenu, as moving onto any other item does.
+
+Breaking: a disabled compound control fades once, at its root. Its parts used to fade again inside it, reaching a quarter or an eighth of full opacity. A disabled `Fieldset` still fades as a whole, and the controls inside it no longer fade a second time.
+
+Breaking: `Alert`'s `default` variant fills with `--muted` instead of `--background`, matching `Banner`, so it no longer disappears into the page canvas. `.dr-badge` lays out its children with a 4px gap; remove `mr-1` or `ml-1` spacers from badge icons.
+
 ### Added
 
 - Four styles, chosen with the `style` axis: `flat` (no control shadows; cards default to elevation `flat`), `quiet` (the default: a soft edge and a light shadow on buttons), `tactile` (a sheen across the top fifth of filled buttons, stopping above the label because the fill sits at its label's contrast floor; a sheen on outline and secondary buttons; inset wells on fields, checkboxes, radios and switch tracks; and shadows on thumbs and the selected tab or segment pill) and `glass` (frosted chrome and overlays over the gradient canvas, which it defaults to). A style sets only token values, so every component follows it without rules of its own.
@@ -96,6 +106,9 @@ Breaking: below 768px `SplitPanelLayout` shows the panel in the content area and
 - The active sidebar row slides between rows as the route changes (instantly under reduced motion).
 - `SplitPanelLayout` `contentActive` and `onBack`, and the `labels.layout.back` label ("Back"; Vietnamese "Quay lại").
 - Kit tables and the virtualized data table viewport fade an inline edge while columns lie beyond it.
+- `field-trigger` utility in the kit stylesheet: the field recipe for a picker's closed trigger, with its value in a direct child `<span>` and its icon in a direct child `<svg>`. `Select`, `CascadeSelect` and `TimePicker` use it.
+- `labels.dateInputPlaceholder` (`{ year, month, day }`), `YYYY`, `MM` and `DD` in English and Vietnamese.
+- `UseListboxOptions.disabled` and `UseListboxReturn.disabled`.
 
 ### Changed
 
@@ -195,6 +208,23 @@ Breaking: below 768px `SplitPanelLayout` shows the panel in the content area and
 - Under the floating shell, content clears a collapsed sidebar by the same gutter as an expanded one.
 - Below 768px the layout header hides the brand mark and shows the search trigger as an icon, so the header controls fit a phone.
 - Under the floating shell, content drops the rail and panel offsets below 768px, where the rails are hidden.
+- A long `Select` value ends in an ellipsis, and the chevron keeps its gap and never shrinks.
+- `DateInput` segments show `YYYY`, `MM` and `DD` placeholders in segment order, so its year-month-day, month-day-year and day-month-year forms read differently when empty.
+- `Editable`'s edit, submit and cancel controls sit on the value's row.
+- `MultiSelect` and `TagsInput` chips separate from the field on card wells in light mode.
+- A grouped `Input` (prefix, suffix or actions) shows its invalid edge and ring on the group and fades as one surface when disabled; a disabled `Input` or `Textarea` no longer takes the read-only fill and default cursor.
+- `NumberInput` steppers use `--icon-size-sm` icons and `--input` dividers in a 32px column, and no longer overflow the field at compact density.
+- Colour picker swatches carry a 3:1 edge, the selected swatch draws a primary ring, and the trigger swatch's border uses `--field-edge`.
+- The switch's off thumb takes `--field-edge`, so its position reads against the track; its colour change animates.
+- The angle slider's dial has a 3:1 edge on the field fill, and its pointer is a round knob like the slider thumb.
+- A vertical `Slider` lays out upright without a className, and a two-thumb range spans exactly between its thumbs.
+- An indeterminate `Checkbox` takes the checked fill and draws a minus; `MenubarCheckboxItem`, `ContextMenuCheckboxItem` and `DropdownMenuCheckboxItem` draw a minus for `checked="indeterminate"`.
+- A `Badge` icon no longer touches its label, and `Alert` icons are sized with `--icon-size`.
+- `Kbd` draws the 3:1 `--field-edge` along its bottom.
+- A disabled `Listbox` ignores pointer selection and fades; disabled `Accordion` triggers fade and show the not-allowed cursor; `DateInput` and `NumberInput` fade once at the root; a disabled tag in `TagsInput` fades; `Button asChild` with `disabled` fades, shows the not-allowed cursor and no longer reacts to hover.
+- A read-only `Editable` no longer fades and shows the default cursor, like a read-only `Input`.
+- Calendar disabled days no longer fade twice, `TimerActionTrigger` fades when `disabled` is passed, and the overlay close button fades when disabled.
+- The slider thumb, TreeView rows, Menubar items, RatingGroup items, the ColorPicker area and the Resizable handle show the not-allowed cursor when disabled, and hover no longer paints on disabled CascadeSelect, TreeView and Menubar rows, the FileUpload dropzone and clear trigger, or Timer actions.
 
 ## [6.9.6] — 2026-09-30
 

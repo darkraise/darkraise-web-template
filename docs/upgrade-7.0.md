@@ -81,6 +81,18 @@ Table heads and cells no longer wrap; a wide table scrolls sideways. Add `whites
 
 Below 768px `SplitPanelLayout` shows its panel first. Pass `contentActive` when the user opens an item, and `onBack` to show a Back button that returns to the panel; an app that passes neither shows only the panel on phones.
 
+## Controls
+
+`CascadeSelect` and `TimePicker` triggers are fields, not outline buttons: they render a plain `<button>` with `.dr-cascade-trigger` or `.dr-time-picker-trigger` and no `.dr-btn`. A stylesheet that targeted `.dr-btn` inside them must target those classes. Add a width utility to widen a trigger; it sizes to its content.
+
+`FileUploadTrigger` renders with Button's default look (`.dr-btn`, `data-variant="default"`, `data-size="default"`); it takes no `variant` or `size` prop. Restyle it through `className`; rules that set its size, radius, fill or hover on `.dr-file-upload-trigger` now compete with `.dr-btn`.
+
+Disabled controls keep receiving pointer events and show `cursor: not-allowed`. If your code put a handler on a disabled kit element and relied on `pointer-events: none` to silence it, check the disabled state in the handler.
+
+A disabled compound control fades once, at its root; its parts, and the controls inside a disabled `Fieldset`, no longer fade a second time. Remove any rule you added to fade such a part again.
+
+`Alert`'s default fill is `--muted`. Badge icons get a 4px gap from the badge itself; remove `mr-1` or `ml-1` spacers from icons inside `Badge`.
+
 ## Fonts
 
 The `font` axis takes `inter`, `geist` or `ibm-plex-sans`, with `inter` the default. The four faces the kit uses (Inter, Geist, IBM Plex Sans and JetBrains Mono) ship as woff2 files declared in `darkraise-ui/styles.css`, and no font request leaves the app's origin. Delete any Google Fonts link for these families from `index.html`.
