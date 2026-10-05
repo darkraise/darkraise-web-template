@@ -476,7 +476,7 @@ function ComboboxTrigger({
 }
 
 export interface ComboboxContentProps extends React.HTMLAttributes<HTMLDivElement> {
-  /** Which plane the list paints; it no longer inherits the field's, being portalled. */
+  /** Which plane the list paints, written as `data-surface-fill`. */
   surface?: SurfaceFill
   ref?: React.Ref<HTMLDivElement>
 }
@@ -500,6 +500,7 @@ function ComboboxContentImpl({
   surface,
   onMouseDown,
   ref,
+  style,
   ...props
 }: ComboboxContentProps) {
   const { open, setOpen, contentId, rootRef, controlRef } =
@@ -530,6 +531,7 @@ function ComboboxContentImpl({
         data-surface-fill={surface}
         className={cn("dr-combobox-content", className)}
         style={{
+          ...style,
           position: floating.strategy,
           top: Math.round(floating.y ?? 0),
           left: Math.round(floating.x ?? 0),

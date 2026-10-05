@@ -38,6 +38,7 @@ const COUNTRIES: ComboboxItemData[] = [
 interface BasicProps {
   multiple?: boolean
   initialItems?: ComboboxItemData[]
+  contentStyle?: React.CSSProperties
   onValueChangeSpy?: (details: ComboboxValueChangeDetails) => void
   onInputValueChangeSpy?: (details: ComboboxInputValueChangeDetails) => void
 }
@@ -45,6 +46,7 @@ interface BasicProps {
 function Basic({
   multiple = false,
   initialItems = COUNTRIES,
+  contentStyle,
   onValueChangeSpy,
   onInputValueChangeSpy,
 }: BasicProps) {
@@ -86,7 +88,7 @@ function Basic({
         <ComboboxClearTrigger>x</ComboboxClearTrigger>
         <ComboboxTrigger>v</ComboboxTrigger>
       </ComboboxControl>
-      <ComboboxContent>
+      <ComboboxContent style={contentStyle}>
         <ComboboxList>
           {filtered.map((item) => (
             <ComboboxItem key={item.value} item={item}>
@@ -306,6 +308,18 @@ describe("Combobox popup", () => {
     expect(fireEvent.mouseDown(content as Element)).toBe(false)
   })
 
+  it("keeps its positioning when a consumer passes a style", async () => {
+    const user = userEvent.setup()
+    render(<Basic contentStyle={{ maxHeight: 120 }} />)
+    await user.click(screen.getByRole("combobox"))
+    const content = screen
+      .getByRole("listbox")
+      .closest<HTMLElement>(".dr-combobox-content")
+    expect(content?.style.maxHeight).toBe("120px")
+    expect(content?.style.position).toBe("absolute")
+    expect(content?.style.top).not.toBe("")
+  })
+
   it("stays open when the input is pressed again", async () => {
     const user = userEvent.setup()
     render(<Basic />)
@@ -330,6 +344,6 @@ describe("Combobox popup", () => {
     expect(input).toHaveAttribute("aria-expanded", "true")
     await user.keyboard("{Escape}")
     expect(input).toHaveAttribute("aria-expanded", "false")
-    expect(screen.getByRole("dialog")).toBeInTheDocument()
+    expect(screen.getByRole("dialog")).toHaveAttribute("data-state", "open")
   })
 })
