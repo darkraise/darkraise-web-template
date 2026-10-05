@@ -246,3 +246,37 @@ test.describe("product thumbnails", () => {
     expect(external).toEqual([])
   })
 })
+
+test.describe("product form", () => {
+  test.beforeEach(async ({ page }) => {
+    await seedApp(page, { style: "quiet", mode: "light" })
+  })
+
+  test("every section's fields sit in a card", async ({ page }) => {
+    await gotoApp(page, "/products/new")
+    const fields: [string, string][] = [
+      ["Basic Information", "Product Name"],
+      ["Pricing", "Compare-at Price"],
+      ["Inventory", "Stock Quantity"],
+      ["Status", "Active"],
+    ]
+    for (const [section, label] of fields) {
+      const control = page.getByLabel(label, { exact: true })
+      await expect(control, section).toBeVisible()
+      await expect(
+        page.locator(".dr-card").filter({ has: control }),
+        section,
+      ).toHaveCount(1)
+    }
+  })
+
+  test("price and stock pairs share a row", async ({ page }) => {
+    await gotoApp(page, "/products/new")
+    const price = await boxOf(page.getByLabel("Price", { exact: true }))
+    const compare = await boxOf(
+      page.getByLabel("Compare-at Price", { exact: true }),
+    )
+    expect(Math.abs(price.y - compare.y)).toBeLessThanOrEqual(1)
+    expect(compare.x).toBeGreaterThan(price.x + price.width)
+  })
+})

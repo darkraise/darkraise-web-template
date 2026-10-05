@@ -6,10 +6,12 @@ import {
   TextareaField,
   NumberField,
   SelectField,
-  SwitchField,
   FormSection,
   FormActions,
 } from "darkraise-ui/forms"
+import { Card, CardContent } from "darkraise-ui/components/card"
+import { Label } from "darkraise-ui/components/label"
+import { Switch } from "darkraise-ui/components/switch"
 import { fieldProps } from "@/lib/field-props"
 import { productSchema } from "./schema"
 
@@ -61,103 +63,131 @@ export function ProductForm({
       className="max-w-2xl space-y-8"
     >
       <FormSection title={t("Basic Information")}>
-        <form.Field
-          name="name"
-          children={(field) => (
-            <TextField
-              {...fieldProps<string>(field, t)}
-              label={t("Product Name")}
-              placeholder={t("Enter product name")}
+        <Card>
+          <CardContent className="space-y-4 pt-6">
+            <form.Field
+              name="name"
+              children={(field) => (
+                <TextField
+                  {...fieldProps<string>(field, t)}
+                  label={t("Product Name")}
+                  placeholder={t("Enter product name")}
+                />
+              )}
             />
-          )}
-        />
-        <form.Field
-          name="description"
-          children={(field) => (
-            <TextareaField
-              {...fieldProps<string>(field, t)}
-              label={t("Description")}
-              placeholder={t("Describe your product")}
-              rows={4}
+            <form.Field
+              name="description"
+              children={(field) => (
+                <TextareaField
+                  {...fieldProps<string>(field, t)}
+                  label={t("Description")}
+                  placeholder={t("Describe your product")}
+                  rows={4}
+                />
+              )}
             />
-          )}
-        />
-        <form.Field
-          name="category"
-          children={(field) => (
-            <SelectField
-              {...fieldProps<string>(field, t)}
-              label={t("Category")}
-              placeholder={t("Select a category")}
-              options={categoryOptions}
+            <form.Field
+              name="category"
+              children={(field) => (
+                <SelectField
+                  {...fieldProps<string>(field, t)}
+                  label={t("Category")}
+                  placeholder={t("Select a category")}
+                  options={categoryOptions}
+                />
+              )}
             />
-          )}
-        />
+          </CardContent>
+        </Card>
       </FormSection>
 
       <FormSection title={t("Pricing")}>
-        <form.Field
-          name="price"
-          children={(field) => (
-            <NumberField
-              {...fieldProps<number | undefined>(field, t)}
-              label={t("Price")}
-              placeholder="0.00"
-              min={0}
-              step={0.01}
-            />
-          )}
-        />
-        <form.Field
-          name="compareAtPrice"
-          children={(field) => (
-            <NumberField
-              {...fieldProps<number | undefined>(field, t)}
-              label={t("Compare-at Price")}
-              placeholder="0.00"
-              min={0}
-              step={0.01}
-            />
-          )}
-        />
+        <Card>
+          <CardContent className="space-y-4 pt-6">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <form.Field
+                name="price"
+                children={(field) => (
+                  <NumberField
+                    {...fieldProps<number | undefined>(field, t)}
+                    label={t("Price")}
+                    placeholder="0.00"
+                    min={0}
+                    step={0.01}
+                  />
+                )}
+              />
+              <form.Field
+                name="compareAtPrice"
+                children={(field) => (
+                  <NumberField
+                    {...fieldProps<number | undefined>(field, t)}
+                    label={t("Compare-at Price")}
+                    placeholder="0.00"
+                    min={0}
+                    step={0.01}
+                  />
+                )}
+              />
+            </div>
+          </CardContent>
+        </Card>
       </FormSection>
 
       <FormSection title={t("Inventory")}>
-        <form.Field
-          name="sku"
-          children={(field) => (
-            <TextField
-              {...fieldProps<string>(field, t)}
-              label="SKU"
-              placeholder="e.g. APL-IP15-256"
-            />
-          )}
-        />
-        <form.Field
-          name="stock"
-          children={(field) => (
-            <NumberField
-              {...fieldProps<number | undefined>(field, t)}
-              label={t("Stock Quantity")}
-              placeholder="0"
-              min={0}
-              step={1}
-            />
-          )}
-        />
+        <Card>
+          <CardContent className="space-y-4 pt-6">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <form.Field
+                name="sku"
+                children={(field) => (
+                  <TextField
+                    {...fieldProps<string>(field, t)}
+                    label="SKU"
+                    placeholder="e.g. APL-IP15-256"
+                  />
+                )}
+              />
+              <form.Field
+                name="stock"
+                children={(field) => (
+                  <NumberField
+                    {...fieldProps<number | undefined>(field, t)}
+                    label={t("Stock Quantity")}
+                    placeholder="0"
+                    min={0}
+                    step={1}
+                  />
+                )}
+              />
+            </div>
+          </CardContent>
+        </Card>
       </FormSection>
 
       <FormSection title={t("Status")}>
-        <form.Field
-          name="isActive"
-          children={(field) => (
-            <SwitchField
-              {...fieldProps<boolean>(field, t)}
-              label={t("Active")}
-              description={t("Make this product visible in the store")}
+        <Card>
+          <CardContent className="pt-6">
+            <form.Field
+              name="isActive"
+              children={(field) => (
+                <div className="flex items-center justify-between gap-4">
+                  <div className="space-y-0.5">
+                    <Label htmlFor="product-active">{t("Active")}</Label>
+                    <p className="text-muted-foreground text-sm">
+                      {t("Make this product visible in the store")}
+                    </p>
+                  </div>
+                  <Switch
+                    id="product-active"
+                    checked={field.state.value}
+                    onCheckedChange={(checked) => field.handleChange(checked)}
+                  />
+                </div>
+              )}
             />
-          )}
-        />
+          </CardContent>
+        </Card>
       </FormSection>
 
       <FormActions
