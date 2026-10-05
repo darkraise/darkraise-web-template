@@ -151,4 +151,15 @@
     .dr-number-input-field.dr-input:is(:focus, :focus-visible) {
     box-shadow: none;
   }
+
+  .dr-number-input[data-disabled] {
+    @apply cursor-not-allowed opacity-[var(--disabled-opacity)];
+  }
+
+  /* A disabled number input fades once, at its root. Every disabled rule
+     reads the token, so resetting it on the root's children stops the field
+     (a .dr-input) and the steppers fading a second time. */
+  .dr-number-input[data-disabled] > * {
+    --disabled-opacity: 1;
+  }
 }

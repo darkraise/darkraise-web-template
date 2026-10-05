@@ -673,3 +673,60 @@ test.describe("kbd keycap edge", () => {
     })
   }
 })
+
+test.describe("disabled recipe", () => {
+  // A disabled control fades once, at the element that carries the state;
+  // its segments, field and steppers keep full opacity so the fade does not
+  // compound, and every part shows the not-allowed cursor.
+  const FADED: Array<[string, string]> = [
+    ["accordion", ".dr-accordion-trigger"],
+    ["date-input", ".dr-date-input"],
+    ["number-input", ".dr-number-input"],
+    ["editable-locked", ".dr-editable-preview"],
+    ["resizable", ".dr-resizable-handle"],
+  ]
+  const UNFADED: Array<[string, string]> = [
+    ["date-input", ".dr-date-input-segment"],
+    ["number-input", ".dr-number-input-field"],
+    ["number-input", ".dr-number-input-stepper"],
+  ]
+
+  for (const mode of MODES) {
+    test(`disabled controls fade once with a not-allowed cursor · ${mode}`, async ({
+      page,
+    }) => {
+      await openInMode(page, mode)
+      const token = Number(await readToken(page, "--disabled-opacity"))
+      expect(token).toBeGreaterThan(0)
+      expect(token).toBeLessThan(1)
+      const part = (name: string, selector: string) =>
+        probe(page, "disabled-states", `[data-case="${name}"] ${selector}`)
+
+      for (const [name, selector] of FADED) {
+        const control = part(name, selector)
+        await expect(control, name).toHaveCount(1)
+        expect(Number(await computed(control, "opacity")), name).toBeCloseTo(
+          token,
+          3,
+        )
+        expect(await computed(control, "cursor"), name).toBe("not-allowed")
+      }
+
+      let parts = 0
+      for (const [name, selector] of UNFADED) {
+        for (const inner of await part(name, selector).all()) {
+          parts++
+          expect(await computed(inner, "opacity"), selector).toBe("1")
+          expect(await computed(inner, "cursor"), selector).toBe("not-allowed")
+        }
+      }
+      // Three date segments, one field, two steppers.
+      expect(parts).toBe(6)
+
+      // Read-only is not disabled: no fade, and the default cursor.
+      const readOnly = part("editable-read-only", ".dr-editable-preview")
+      expect(await computed(readOnly, "opacity")).toBe("1")
+      expect(await computed(readOnly, "cursor")).toBe("default")
+    })
+  }
+})

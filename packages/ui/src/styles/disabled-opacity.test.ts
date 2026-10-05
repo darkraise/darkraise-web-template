@@ -111,11 +111,18 @@ const REQUIRED: Array<[string, string, string, "fade" | "cursor"]> = [
     "data-[disabled=true]",
     "fade",
   ],
+  [`${C}accordion/accordion.css`, ".dr-accordion-trigger:disabled", "", "fade"],
+  [
+    `${C}date-input/date-input.css`,
+    ".dr-date-input[data-disabled]",
+    "",
+    "fade",
+  ],
   [
     `${C}date-input/date-input.css`,
     ".dr-date-input-segment",
     "disabled",
-    "fade",
+    "cursor",
   ],
   [
     `${C}date-picker/date-picker.css`,
@@ -268,6 +275,12 @@ const REQUIRED: Array<[string, string, string, "fade" | "cursor"]> = [
   ],
   [
     `${C}number-input/number-input.css`,
+    ".dr-number-input[data-disabled]",
+    "",
+    "fade",
+  ],
+  [
+    `${C}number-input/number-input.css`,
     ".dr-number-input-stepper",
     "disabled",
     "fade",
@@ -370,6 +383,21 @@ const REQUIRED: Array<[string, string, string, "fade" | "cursor"]> = [
     "data-[disabled]",
     "fade",
   ],
+]
+
+/**
+ * Rules that stop a faded root's descendants fading a second time: each
+ * sets the token to 1 on the root's children, so every disabled rule
+ * beneath reads 1 and the control fades once, at its root. A child
+ * disabled on its own, under an enabled root, still reads the real token.
+ * [file, selector]
+ */
+const INHERITED_FADE_RESETS: Array<[string, string]> = [
+  [
+    `${C}input/input.css`,
+    ".dr-input-group:has(> .dr-input-grouped:disabled) > *",
+  ],
+  [`${C}number-input/number-input.css`, ".dr-number-input[data-disabled] > *"],
 ]
 
 function filesUnder(dir: string, pattern: RegExp): string[] {
@@ -599,6 +627,24 @@ describe("disabled opacity", () => {
       else expect(set).not.toContain(TOKEN_UTILITY)
     },
   )
+
+  it("resets the token only in the named inherited-fade rules", () => {
+    const resets = RULES.filter(
+      (rule) =>
+        !rule.where.startsWith("src/styles/theme.css:") &&
+        /(?<![\w-])--disabled-opacity\s*:/.test(rule.body),
+    )
+    expect(
+      resets
+        .map((r) => `${r.where.replace(/:\d+$/, "")} ${normalise(r.selector)}`)
+        .sort(),
+    ).toEqual(
+      INHERITED_FADE_RESETS.map(([p, sel]) => `${p} ${normalise(sel)}`).sort(),
+    )
+    for (const rule of resets) {
+      expect(rule.body.trim(), rule.where).toBe("--disabled-opacity: 1;")
+    }
+  })
 
   it("gives the field-trigger utility the disabled recipe", () => {
     const body = resolveFieldTrigger("@apply field-trigger;")

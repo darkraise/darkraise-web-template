@@ -50,6 +50,7 @@ function DateInput({
       role="group"
       aria-labelledby={groupId}
       className={cn("dr-date-input", className)}
+      data-disabled={disabled || undefined}
       {...rest}
     >
       <span id={groupId} className="sr-only">

@@ -8,11 +8,15 @@
     height: var(--field-height);
     border-bottom-color: var(--field-edge);
   }
+
+  .dr-date-input[data-disabled] {
+    @apply cursor-not-allowed opacity-[var(--disabled-opacity)];
+  }
   .dr-date-input-sep {
     @apply text-muted-foreground;
   }
   .dr-date-input-segment {
-    @apply placeholder:text-muted-foreground bg-transparent text-center font-mono text-sm tabular-nums focus:outline-none disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)];
+    @apply placeholder:text-muted-foreground bg-transparent text-center font-mono text-sm tabular-nums focus:outline-none disabled:cursor-not-allowed;
     width: auto;
   }
 

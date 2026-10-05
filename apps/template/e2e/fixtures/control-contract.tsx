@@ -2,6 +2,12 @@ import { createRoot } from "react-dom/client"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Check, ChevronDown, Info } from "lucide-react"
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "darkraise-ui/components/accordion"
+import {
   Alert,
   AlertTitle,
   type AlertVariant,
@@ -31,6 +37,12 @@ import {
 } from "darkraise-ui/components/combobox"
 import { DateInput } from "darkraise-ui/components/date-input"
 import {
+  Editable,
+  EditableArea,
+  EditableInput,
+  EditablePreview,
+} from "darkraise-ui/components/editable"
+import {
   FileUpload,
   FileUploadTrigger,
 } from "darkraise-ui/components/file-upload"
@@ -55,6 +67,11 @@ import {
   SegmentGroupIndicator,
   SegmentGroupItem,
 } from "darkraise-ui/components/segment-group"
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "darkraise-ui/components/resizable"
 import {
   Select,
   SelectContent,
@@ -331,6 +348,56 @@ function ControlStates() {
         <Kbd size="sm">Ctrl</Kbd>
         <Kbd>K</Kbd>
         <Kbd size="lg">Esc</Kbd>
+      </div>
+      <div
+        data-probe="disabled-states"
+        style={{ display: "flex", flexDirection: "column", gap: 8, width: 240 }}
+      >
+        <div data-case="accordion">
+          <Accordion type="single" collapsible>
+            <AccordionItem value="locked" disabled>
+              <AccordionTrigger>Locked section</AccordionTrigger>
+              <AccordionContent>Hidden</AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
+        <div data-case="date-input">
+          <DateInput disabled aria-label="Disabled date" />
+        </div>
+        <div data-case="number-input">
+          <NumberInput defaultValue={1} disabled>
+            <NumberInputControl>
+              <NumberInputField aria-label="Disabled quantity" />
+              <NumberInputTriggerGroup>
+                <NumberInputIncrementTrigger />
+                <NumberInputDecrementTrigger />
+              </NumberInputTriggerGroup>
+            </NumberInputControl>
+          </NumberInput>
+        </div>
+        <div data-case="editable-read-only">
+          <Editable defaultValue="Read-only title" readOnly>
+            <EditableArea>
+              <EditablePreview />
+              <EditableInput aria-label="Read-only title" />
+            </EditableArea>
+          </Editable>
+        </div>
+        <div data-case="editable-locked">
+          <Editable defaultValue="Locked title" readOnly disabled>
+            <EditableArea>
+              <EditablePreview />
+              <EditableInput aria-label="Locked title" />
+            </EditableArea>
+          </Editable>
+        </div>
+        <div data-case="resizable">
+          <ResizablePanelGroup orientation="horizontal" style={{ height: 40 }}>
+            <ResizablePanel defaultSize={50}>A</ResizablePanel>
+            <ResizableHandle disabled />
+            <ResizablePanel defaultSize={50}>B</ResizablePanel>
+          </ResizablePanelGroup>
+        </div>
       </div>
     </div>
   )

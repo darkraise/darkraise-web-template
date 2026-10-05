@@ -161,4 +161,11 @@ describe("DateInput", () => {
       "YYYY",
     ])
   })
+
+  it("marks its root data-disabled only when disabled", () => {
+    const { rerender } = render(<DateInput aria-label="dob" />)
+    expect(screen.getByRole("group")).not.toHaveAttribute("data-disabled")
+    rerender(<DateInput disabled aria-label="dob" />)
+    expect(screen.getByRole("group")).toHaveAttribute("data-disabled", "true")
+  })
 })
