@@ -15,6 +15,7 @@ import {
 } from "darkraise-ui/components/dialog"
 import {
   Sheet,
+  SheetBody,
   SheetClose,
   SheetContent,
   SheetDescription,
@@ -822,10 +823,9 @@ function DialogsPage() {
 
       <ShowcaseExample
         title="Sheet — scrollable content"
-        code={`// SheetContent is a flex column. Wrap the middle region in a
-// flex-1 overflow-y-auto div so it scrolls while header and footer
-// stay pinned. Negative margin + matching padding lets the scroll
-// area reach the sheet edges visually without losing inner padding.
+        code={`// SheetBody scrolls while the header and footer stay pinned.
+// Negative margin + matching padding lets the scroll area reach the
+// sheet edges visually without losing inner padding.
 
 <Sheet>
   <SheetTrigger asChild>
@@ -836,9 +836,9 @@ function DialogsPage() {
       <SheetTitle>Terms of Service</SheetTitle>
       <SheetDescription>Scroll through the agreement.</SheetDescription>
     </SheetHeader>
-    <div className="-mx-6 flex-1 overflow-y-auto px-6">
+    <SheetBody className="-mx-6 px-6">
       {/* long content */}
-    </div>
+    </SheetBody>
     <SheetFooter>
       <SheetClose asChild>
         <Button variant="outline">Decline</Button>
@@ -859,7 +859,7 @@ function DialogsPage() {
                 Scroll through the agreement. Header and footer stay pinned.
               </SheetDescription>
             </SheetHeader>
-            <div className="-mx-6 flex-1 overflow-y-auto px-6">
+            <SheetBody className="-mx-6 px-6">
               <div className="space-y-4 py-4">
                 {Array.from({ length: 14 }, (_, i) => (
                   <p
@@ -878,7 +878,7 @@ function DialogsPage() {
                   </p>
                 ))}
               </div>
-            </div>
+            </SheetBody>
             <SheetFooter>
               <SheetClose asChild>
                 <Button variant="outline">Decline</Button>
