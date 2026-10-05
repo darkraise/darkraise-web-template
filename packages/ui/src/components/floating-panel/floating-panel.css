@@ -6,14 +6,10 @@
     /* Default: parent-scoped. Switched to `fixed` for global scope below.
        Spelled out as a literal declaration (not `@apply absolute`) so the
        overriding rule beats it without any Tailwind layer/cascade quirks.
-       Note: z-index is set inline by the component as the panel's
-       activation slot — see `FloatingPanel.tsx`. Both local and global
-       panels share a single activation counter, so a panel opened or
-       clicked later always stacks above earlier ones regardless of
-       scope. Stacking ladder: page chrome (auto) < panels (1+) <
-       modal-tier overlays (50) < tour (80) < toasts (100). Modals
-       continue to win until ~49 panels are open in a session, which is
-       fine in practice.
+       Note: z-index is set inline from the panel's place in one recency
+       order shared by local and global panels — see `useFloatingPanel.ts`.
+       Stacking ladder: page chrome (auto) < panels (10–49) < popups and
+       modals (50) < tour (80, 81) < toasts (100).
        The dark-mode `--border == --muted` collision was fixed at the
        token level in `generateTokens.ts` (dark border is now surface[700],
        muted stays at 800), so `border-border` reads correctly against the

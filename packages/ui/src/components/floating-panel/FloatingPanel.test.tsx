@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest"
-import { render, screen, act } from "@testing-library/react"
+import { render, screen, act, fireEvent } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import * as React from "react"
 import { useSyncExternalStore } from "react"
@@ -754,6 +754,69 @@ describe("FloatingPanel", () => {
       </FloatingPanel>,
     )
     expect(screen.getByTestId("p")).toHaveAttribute("data-surface-fill", "card")
+  })
+
+  function Panel({ id, x }: { id: string; x: number }) {
+    return (
+      <FloatingPanel
+        scope="global"
+        defaultPosition={{ x, y: 0 }}
+        defaultSize={{ width: 200, height: 150 }}
+        data-testid={id}
+      >
+        <FloatingPanelHeader>{id}</FloatingPanelHeader>
+        <FloatingPanelContent>x</FloatingPanelContent>
+      </FloatingPanel>
+    )
+  }
+
+  const zOf = (id: string) => Number(screen.getByTestId(id).style.zIndex)
+
+  it("keeps panels in the 10–12 band after a hundred presses", () => {
+    render(
+      <>
+        <Panel key="a" id="a" x={0} />
+        <Panel key="b" id="b" x={50} />
+        <Panel key="c" id="c" x={100} />
+      </>,
+    )
+    const ids = ["a", "b", "c"]
+    for (let i = 0; i < 100; i += 1) {
+      fireEvent.pointerDown(screen.getByTestId(ids[i % 3] as string))
+    }
+    expect(ids.map(zOf).sort((p, q) => p - q)).toEqual([10, 11, 12])
+    expect(zOf("a")).toBe(12)
+  })
+
+  it("closes the gap when a panel unmounts", () => {
+    const { rerender } = render(
+      <>
+        <Panel key="a" id="a" x={0} />
+        <Panel key="b" id="b" x={50} />
+        <Panel key="c" id="c" x={100} />
+      </>,
+    )
+    rerender(
+      <>
+        <Panel key="a" id="a" x={0} />
+        <Panel key="c" id="c" x={100} />
+      </>,
+    )
+    expect([zOf("a"), zOf("c")]).toEqual([10, 11])
+  })
+
+  it("caps the band at 49", () => {
+    const ids = Array.from({ length: 41 }, (_, i) => `p${i}`)
+    render(
+      <>
+        {ids.map((id, i) => (
+          <Panel key={id} id={id} x={i} />
+        ))}
+      </>,
+    )
+    expect(zOf("p0")).toBe(10)
+    expect(zOf("p39")).toBe(49)
+    expect(zOf("p40")).toBe(49)
   })
 })
 

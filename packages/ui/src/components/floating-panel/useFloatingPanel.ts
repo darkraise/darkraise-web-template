@@ -76,18 +76,37 @@ interface DragState {
   direction?: ResizeDirection
 }
 
-// Monotonic counter shared across all FloatingPanel instances. Each panel
-// reserves a slot at mount and can advance to a fresh (higher) slot via
-// `bringToFront`. The slot is added to the scope's z-index base in the
-// component, so a later-opened or just-clicked panel always stacks above
-// earlier ones — matches OS window-manager / browser-window UX. Slots are
-// counted, not capped: in practice you'll never have enough panels open to
-// breach the next tier, and the order is what matters, not the absolute
-// value.
-let panelActivationCounter = 0
-function nextPanelActivation(): number {
-  panelActivationCounter += 1
-  return panelActivationCounter
+// Every mounted panel, back to front. Local and global panels share it, so a
+// panel opened or pressed later stacks above earlier ones, as windows do. The
+// z-index is the panel's place in this order rather than a running count, so
+// it stays in a band below the popup and modal tier (z-50) however many
+// presses a session makes.
+const PANEL_Z_MIN = 10
+const PANEL_Z_MAX = 49
+let panelOrder: readonly symbol[] = []
+const panelOrderListeners = new Set<() => void>()
+
+function setPanelOrder(next: readonly symbol[]): void {
+  panelOrder = next
+  for (const listener of panelOrderListeners) listener()
+}
+
+function subscribePanelOrder(listener: () => void): () => void {
+  panelOrderListeners.add(listener)
+  return () => {
+    panelOrderListeners.delete(listener)
+  }
+}
+
+// A panel on its first render is not registered yet; it counts as newest.
+function panelRank(id: symbol): number {
+  const index = panelOrder.indexOf(id)
+  return index === -1 ? panelOrder.length : index
+}
+
+function raisePanel(id: symbol): void {
+  if (panelOrder[panelOrder.length - 1] === id) return
+  setPanelOrder([...panelOrder.filter((entry) => entry !== id), id])
 }
 
 export function useFloatingPanel(options: UseFloatingPanelOptions) {
@@ -276,13 +295,20 @@ export function useFloatingPanel(options: UseFloatingPanelOptions) {
 
   React.useEffect(() => detach, [detach])
 
-  // Activation slot — reserved at mount so each panel starts above the
-  // previously-opened one. `bringToFront` advances to a fresh slot when the
-  // user interacts with this panel.
-  const [zOrder, setZOrder] = React.useState(() => nextPanelActivation())
-  const bringToFront = useEvent(() => {
-    setZOrder(nextPanelActivation())
-  })
+  // Registered in an effect, not at render, so a StrictMode double mount
+  // leaves one entry.
+  const [panelId] = React.useState(() => Symbol("floating-panel"))
+  React.useEffect(() => {
+    raisePanel(panelId)
+    return () => setPanelOrder(panelOrder.filter((entry) => entry !== panelId))
+  }, [panelId])
+  const rank = React.useSyncExternalStore(
+    subscribePanelOrder,
+    () => panelRank(panelId),
+    () => 0,
+  )
+  const zOrder = Math.min(PANEL_Z_MIN + rank, PANEL_Z_MAX)
+  const bringToFront = useEvent(() => raisePanel(panelId))
 
   const close = useEvent(() => setOpen(false))
   const toggleMinimized = useEvent(() => {

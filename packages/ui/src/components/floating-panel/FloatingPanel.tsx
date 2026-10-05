@@ -92,20 +92,6 @@ export interface FloatingPanelAppProps<P extends Record<string, unknown>> {
   defaultPinned?: boolean
 }
 
-// All panels — local and global — share a single z-index pool driven
-// purely by activation order. A scope-aware Z_BASE was tried earlier
-// (local at 50, global at 40) but the 10-unit tier offset dominated the
-// activation slot, so a global panel opened *after* a local one still
-// rendered behind it until enough drags accumulated slot value to bridge
-// the gap. With a unified base of zero, the inline z-index is just the
-// activation slot, so the most recently activated panel always wins
-// regardless of scope.
-//
-// Slot 1 starts above page chrome (which has no explicit z-index ≈ 0).
-// Modal-tier overlays at z-50 stay above panels until ~49 panels have
-// been opened in a session — fine in practice.
-const Z_BASE = 0
-
 function FloatingPanelImpl({
   className,
   position,
@@ -252,7 +238,7 @@ function FloatingPanelImpl({
         // component-managed layout keys (left/top/width/height) come last
         // because those are the component's responsibility, not the user's.
         style={{
-          zIndex: Z_BASE + machine.zOrder,
+          zIndex: machine.zOrder,
           ...style,
           ...layoutStyle,
         }}
