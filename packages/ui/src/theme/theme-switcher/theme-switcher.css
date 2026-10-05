@@ -118,6 +118,30 @@
     @apply grid-cols-3;
   }
 
+  /* The settings page column is far narrower than the popover, and a small
+     toggle pads its label by as little as 2px, so a long label such as "IBM
+     Plex Sans" filled its cell edge to edge. In the page layout a track is
+     never narrower than its label plus a 0.5rem inset; tracks stay equal
+     while every label fits. */
+  .dr-theme-settings-page .dr-theme-switcher-toggle-group[data-cols="2"] {
+    grid-template-columns: repeat(2, minmax(max-content, 1fr));
+  }
+
+  .dr-theme-settings-page .dr-theme-switcher-toggle-group[data-cols="3"],
+  .dr-theme-settings-page .dr-theme-switcher-toggle-group[data-cols="5"] {
+    grid-template-columns: repeat(3, minmax(max-content, 1fr));
+  }
+
+  .dr-theme-settings-page .dr-theme-switcher-toggle-group[data-cols="4"] {
+    grid-template-columns: repeat(4, minmax(max-content, 1fr));
+  }
+
+  .dr-theme-settings-page
+    .dr-theme-switcher-toggle-group
+    > .dr-toggle[data-size] {
+    padding-inline: max(var(--btn-px-tight), 0.5rem);
+  }
+
   /* Slider control replaces a 4-cell toggle group for ordinal axes
      (Density, Radius, Background Intensity, Glass Backdrop Blur). The
      slider fills the row's flex area; the

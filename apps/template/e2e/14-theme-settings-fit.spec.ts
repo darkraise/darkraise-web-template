@@ -45,6 +45,18 @@ async function overflowingControls(
         })
     }
 
+    for (const group of panel.querySelectorAll<HTMLElement>(
+      ".dr-theme-switcher-toggle-group",
+    )) {
+      if (group.scrollWidth > group.clientWidth + 1)
+        found.push({
+          where: "toggle group",
+          text: group.getAttribute("aria-label") ?? "",
+          box: group.clientWidth,
+          content: group.scrollWidth,
+        })
+    }
+
     for (const grid of panel.querySelectorAll<HTMLElement>(
       ".dr-theme-switcher-swatch-grid",
     )) {
@@ -70,6 +82,27 @@ const describeOverflow = (found: Overflow[]) =>
     .map((f) => `${f.where} "${f.text}": ${f.content}px in ${f.box}px`)
     .join("\n")
 
+/** Toggle labels inset less than 6px from either inline edge of their cell. */
+async function crampedLabels(page: Page, root: string): Promise<string[]> {
+  return page.evaluate((selector) => {
+    const panel = document.querySelector(selector)
+    if (!panel) throw new Error(`no element matched ${selector}`)
+    const found: string[] = []
+    for (const item of panel.querySelectorAll<HTMLElement>(
+      ".dr-theme-switcher-toggle-group > .dr-toggle",
+    )) {
+      const range = document.createRange()
+      range.selectNodeContents(item)
+      const content = range.getBoundingClientRect()
+      const box = item.getBoundingClientRect()
+      const inset = Math.min(content.left - box.left, box.right - content.right)
+      if (inset < 6)
+        found.push(`"${item.textContent?.trim()}": ${inset.toFixed(1)}px`)
+    }
+    return found
+  }, root)
+}
+
 for (const width of [1024, 1280, 1600]) {
   test(`settings appearance panel fits its columns at ${width}px`, async ({
     page,
@@ -92,6 +125,8 @@ for (const width of [1024, 1280, 1600]) {
 
     const found = await overflowingControls(page, ".dr-theme-settings-page")
     expect(found, describeOverflow(found)).toEqual([])
+    const cramped = await crampedLabels(page, ".dr-theme-settings-page")
+    expect(cramped, cramped.join("\n")).toEqual([])
   })
 }
 

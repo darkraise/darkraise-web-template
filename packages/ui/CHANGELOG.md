@@ -240,6 +240,7 @@ Breaking: `FloatingPanel` z-indexes run from 10 to 49 by recency (the most recen
 - The Tour popover stays inside the viewport for targets near an edge and flips above a target by its measured height.
 - FloatingPanel, the Tour popover and the chart, contribution-graph and timeline tooltips paint the overlay fill, so they follow Glass and the `surface` prop like every other popup.
 - Pressing Escape in an open Combobox inside a dialog closes only the Combobox.
+- In the theme settings page layout, segmented controls keep a 0.5rem inset around each label, and a column whose label would not fit widens instead of the label filling its cell edge to edge.
 
 ## [6.9.6] — 2026-09-30
 
