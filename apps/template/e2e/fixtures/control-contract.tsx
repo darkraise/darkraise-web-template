@@ -1,6 +1,7 @@
 import { createRoot } from "react-dom/client"
 import type { ColumnDef } from "@tanstack/react-table"
 import { ChevronDown } from "lucide-react"
+import { AngleSlider } from "darkraise-ui/components/angle-slider"
 import { Button, type ButtonVariant } from "darkraise-ui/components/button"
 import { Calendar } from "darkraise-ui/components/calendar"
 import { Card, CardContent } from "darkraise-ui/components/card"
@@ -271,6 +272,9 @@ function ControlStates() {
           </ColorPickerSwatchGroup>
           <ColorPickerSwatch />
         </ColorPicker>
+      </div>
+      <div data-probe="angle">
+        <AngleSlider defaultValue={45} aria-label="Angle" />
       </div>
     </div>
   )

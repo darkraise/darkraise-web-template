@@ -469,3 +469,43 @@ test.describe("switch off thumb", () => {
     )
   })
 })
+
+test.describe("angle slider dial", () => {
+  for (const style of STYLES) {
+    for (const mode of MODES) {
+      test(`dial edge reaches 3:1 and the knob is round · ${style} · ${mode}`, async ({
+        page,
+      }) => {
+        await seedApp(page, { style, mode })
+        await openControlFixture(page)
+        await page.mouse.move(0, 0)
+        const dial = probe(page, "angle", ".dr-angle-slider")
+        await dial.scrollIntoViewIfNeeded()
+        const box = await boxOf(dial)
+        // The knob sits at 45°, so the dial's top centre is bare edge.
+        const x = Math.round(box.x + box.width / 2)
+        const top = Math.round(box.y)
+        const edge = await pixel(page, x, top)
+        const ground = await pixel(page, x, top - 4)
+        expect(
+          contrast(edge, ground),
+          `edge rgb(${edge.join(",")}) on rgb(${ground.join(",")})`,
+        ).toBeGreaterThanOrEqual(3)
+
+        const knob = dial.locator(".dr-angle-slider-pointer")
+        const width = await computed(knob, "width")
+        expect(await computed(knob, "height"), "knob is as tall as wide").toBe(
+          width,
+        )
+        expect(parseFloat(width)).toBeGreaterThanOrEqual(12)
+        expect(await computed(knob, "border-top-width")).toBe("2px")
+        expect(await computed(knob, "border-top-color")).toBe(
+          await resolvedColour(page, "hsl(var(--primary))"),
+        )
+        expect(await computed(knob, "background-color")).toBe(
+          await resolvedColour(page, "hsl(var(--primary-foreground))"),
+        )
+      })
+    }
+  }
+})

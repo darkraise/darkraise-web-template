@@ -1,6 +1,8 @@
 @layer components {
   .dr-angle-slider {
-    @apply focus-ring bg-muted relative inline-flex h-16 w-16 cursor-pointer items-center justify-center rounded-full border;
+    @apply focus-ring relative inline-flex h-16 w-16 cursor-pointer items-center justify-center rounded-full border;
+    border-color: var(--field-edge);
+    background-color: hsl(var(--control-surface));
     touch-action: none;
   }
   .dr-angle-slider[data-disabled] {
@@ -10,7 +12,7 @@
     @apply absolute inset-0 origin-center;
   }
   .dr-angle-slider-pointer {
-    @apply bg-primary-fill absolute top-1 left-1/2 h-3 w-1 -translate-x-1/2 rounded-full;
+    @apply border-primary bg-primary-foreground absolute top-1 left-1/2 h-3.5 w-3.5 -translate-x-1/2 rounded-full border-2;
     box-shadow: var(--thumb-shadow);
   }
 }

@@ -1,6 +1,7 @@
 import { test, expect, type Page } from "@playwright/test"
 import { BASELINE_STYLES, STYLES } from "./fixtures/theme"
 import { collectGarbage, gotoApp, seedApp } from "./helpers/app"
+import { openControlFixture } from "./helpers/controls"
 import { settle } from "./helpers/measure"
 
 /**
@@ -292,4 +293,21 @@ for (const { style, mode, look } of SIDEBAR_CASES) {
       `sidebar-selection-${look}-${style}-${mode}.png`,
     )
   })
+}
+
+/** The angle slider's round knob on its dial, at 45°. */
+for (const style of BASELINE_STYLES) {
+  for (const mode of MODES) {
+    test(`angle slider knob · ${style} · ${mode}`, async ({ page }) => {
+      await seedApp(page, { style, mode })
+      await openControlFixture(page)
+      await page.mouse.move(0, 0)
+      await settle(page)
+      await expect(
+        page.locator('[data-probe="angle"] .dr-angle-slider'),
+      ).toHaveScreenshot(`angle-slider-knob-${style}-${mode}.png`, {
+        animations: "disabled",
+      })
+    })
+  }
 }

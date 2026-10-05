@@ -19,7 +19,7 @@ const EXEMPT_DIRS = new Set(["background-page"])
 /** Classes drawn as a circle or a capsule on purpose, with the reason. */
 const FULL_ROUND = new Map<string, string>([
   ["dr-angle-slider", "a circular dial"],
-  ["dr-angle-slider-pointer", "the dial's needle is a capsule"],
+  ["dr-angle-slider-pointer", "the dial's knob is a circle"],
   ["dr-avatar", "avatars are circles"],
   ["dr-avatar-fallback", "fills the circular avatar"],
   ["dr-badge-anchor-dot", "status dot"],
