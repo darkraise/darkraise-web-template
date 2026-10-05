@@ -23,6 +23,7 @@ import { Input } from "darkraise-ui/components/input"
 import { Label } from "darkraise-ui/components/label"
 import { Textarea } from "darkraise-ui/components/textarea"
 import { FormSection } from "darkraise-ui/forms"
+import { DemoSaveForm } from "./-settings-primitives"
 
 function initialsOf(name: string) {
   const parts = name.trim().split(/\s+/).filter(Boolean)
@@ -63,81 +64,85 @@ export function ProfileSection() {
       )}
     >
       <Card>
-        <CardContent className="space-y-6 pt-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-            <Avatar className="h-20 w-20 shrink-0">
-              {avatarUrl ? (
-                <AvatarImage src={avatarUrl} alt={displayName} />
-              ) : null}
-              <AvatarFallback className="text-xl">
-                {initialsOf(displayName) || "?"}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1">
-              <FileUpload
-                acceptedFiles={avatarFiles}
-                onFileChange={(d) => setAvatarFiles(d.acceptedFiles)}
-                accept="image/*"
-                multiple={false}
-                maxFiles={1}
-              >
-                <FileUploadLabel>{t("Profile picture")}</FileUploadLabel>
-                <FileUploadDropzone>
-                  <Upload className="text-muted-foreground h-6 w-6" />
-                  <p className="text-muted-foreground text-sm">
-                    {t("Drop an image here or")}
-                  </p>
-                  <FileUploadTrigger>{t("Change picture")}</FileUploadTrigger>
-                  <FileUploadHiddenInput />
-                </FileUploadDropzone>
-                <FileUploadItemGroup>
-                  {avatarFiles.map((file) => (
-                    <FileUploadItem
-                      key={`${file.name}-${file.size}`}
-                      file={file}
-                    >
-                      <FileUploadItemName />
-                      <FileUploadItemSizeText />
-                      <FileUploadItemDeleteTrigger>
-                        <X className="h-4 w-4" />
-                      </FileUploadItemDeleteTrigger>
-                    </FileUploadItem>
-                  ))}
-                </FileUploadItemGroup>
-              </FileUpload>
+        <CardContent className="pt-6">
+          <DemoSaveForm submitLabel={t("Save Profile")}>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+              <Avatar className="h-20 w-20 shrink-0">
+                {avatarUrl ? (
+                  <AvatarImage src={avatarUrl} alt={displayName} />
+                ) : null}
+                <AvatarFallback className="text-xl">
+                  {initialsOf(displayName) || "?"}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1">
+                <FileUpload
+                  acceptedFiles={avatarFiles}
+                  onFileChange={(d) => setAvatarFiles(d.acceptedFiles)}
+                  accept="image/*"
+                  multiple={false}
+                  maxFiles={1}
+                >
+                  <FileUploadLabel>{t("Profile picture")}</FileUploadLabel>
+                  <FileUploadDropzone>
+                    <Upload className="text-muted-foreground h-6 w-6" />
+                    <p className="text-muted-foreground text-sm">
+                      {t("Drop an image here or")}
+                    </p>
+                    <FileUploadTrigger>{t("Change picture")}</FileUploadTrigger>
+                    <FileUploadHiddenInput />
+                  </FileUploadDropzone>
+                  <FileUploadItemGroup>
+                    {avatarFiles.map((file) => (
+                      <FileUploadItem
+                        key={`${file.name}-${file.size}`}
+                        file={file}
+                      >
+                        <FileUploadItemName />
+                        <FileUploadItemSizeText />
+                        <FileUploadItemDeleteTrigger>
+                          <X className="h-4 w-4" />
+                        </FileUploadItemDeleteTrigger>
+                      </FileUploadItem>
+                    ))}
+                  </FileUploadItemGroup>
+                </FileUpload>
+              </div>
             </div>
-          </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label htmlFor="profile-display-name">
+                  {t("Display name")}
+                </Label>
+                <Input
+                  id="profile-display-name"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="profile-email">{t("Email")}</Label>
+                <Input
+                  id="profile-email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+            </div>
+
             <div className="space-y-1.5">
-              <Label htmlFor="profile-display-name">{t("Display name")}</Label>
-              <Input
-                id="profile-display-name"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
+              <Label htmlFor="profile-bio">{t("Bio")}</Label>
+              <Textarea
+                id="profile-bio"
+                rows={3}
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                placeholder={t("Tell us about yourself...")}
               />
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="profile-email">{t("Email")}</Label>
-              <Input
-                id="profile-email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="profile-bio">{t("Bio")}</Label>
-            <Textarea
-              id="profile-bio"
-              rows={3}
-              value={bio}
-              onChange={(e) => setBio(e.target.value)}
-              placeholder={t("Tell us about yourself...")}
-            />
-          </div>
+          </DemoSaveForm>
         </CardContent>
       </Card>
     </FormSection>

@@ -44,7 +44,7 @@ export function NotificationsSection() {
     <FormSection
       title={t("Notification channels")}
       description={t(
-        "Email and digest frequency are managed above — choose which other channels reach you and which events they cover.",
+        "Email and digest frequency are managed above — choose which other channels reach you and which events they cover. Changes apply immediately.",
       )}
     >
       <Card>

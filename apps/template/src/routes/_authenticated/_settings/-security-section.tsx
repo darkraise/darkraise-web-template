@@ -32,6 +32,7 @@ import {
 import { toast } from "darkraise-ui/components/sonner"
 import { Switch } from "darkraise-ui/components/switch"
 import { FormSection } from "darkraise-ui/forms"
+import { DemoSaveForm } from "./-settings-primitives"
 
 export function SecuritySection() {
   const t = useAppTranslation()
@@ -55,63 +56,72 @@ export function SecuritySection() {
     >
       <Card>
         <CardContent className="space-y-8 pt-6">
-          <div className="space-y-2.5">
-            <p id={changePasswordHeadingId} className="text-sm font-medium">
-              {t("Change password")}
-            </p>
-            <div
-              role="group"
-              aria-labelledby={changePasswordHeadingId}
-              className="grid gap-4 sm:grid-cols-2"
-            >
-              <PasswordInput>
-                <PasswordInputLabel>{t("New password")}</PasswordInputLabel>
-                <PasswordInputControl>
-                  <PasswordInputField
-                    placeholder={t("At least 8 characters")}
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    autoComplete="new-password"
-                  />
-                  <PasswordInputVisibilityTrigger>
-                    <PasswordInputIndicator
-                      visible={<EyeOff />}
-                      hidden={<Eye />}
+          <DemoSaveForm
+            submitLabel={t("Update Password")}
+            canSubmit={
+              newPassword.length > 0 && newPassword === confirmPassword
+            }
+          >
+            <div className="space-y-2.5">
+              <p id={changePasswordHeadingId} className="text-sm font-medium">
+                {t("Change password")}
+              </p>
+              <div
+                role="group"
+                aria-labelledby={changePasswordHeadingId}
+                className="grid gap-4 sm:grid-cols-2"
+              >
+                <PasswordInput>
+                  <PasswordInputLabel>{t("New password")}</PasswordInputLabel>
+                  <PasswordInputControl>
+                    <PasswordInputField
+                      placeholder={t("At least 8 characters")}
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      autoComplete="new-password"
                     />
-                  </PasswordInputVisibilityTrigger>
-                </PasswordInputControl>
-              </PasswordInput>
-              <PasswordInput>
-                <PasswordInputLabel>
-                  {t("Confirm new password")}
-                </PasswordInputLabel>
-                <PasswordInputControl>
-                  <PasswordInputField
-                    placeholder={t("Re-enter password")}
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    autoComplete="new-password"
-                    aria-invalid={mismatch || undefined}
-                    aria-describedby={mismatch ? mismatchMessageId : undefined}
-                  />
-                  <PasswordInputVisibilityTrigger>
-                    <PasswordInputIndicator
-                      visible={<EyeOff />}
-                      hidden={<Eye />}
+                    <PasswordInputVisibilityTrigger>
+                      <PasswordInputIndicator
+                        visible={<EyeOff />}
+                        hidden={<Eye />}
+                      />
+                    </PasswordInputVisibilityTrigger>
+                  </PasswordInputControl>
+                </PasswordInput>
+                <PasswordInput>
+                  <PasswordInputLabel>
+                    {t("Confirm new password")}
+                  </PasswordInputLabel>
+                  <PasswordInputControl>
+                    <PasswordInputField
+                      placeholder={t("Re-enter password")}
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      autoComplete="new-password"
+                      aria-invalid={mismatch || undefined}
+                      aria-describedby={
+                        mismatch ? mismatchMessageId : undefined
+                      }
                     />
-                  </PasswordInputVisibilityTrigger>
-                </PasswordInputControl>
-              </PasswordInput>
+                    <PasswordInputVisibilityTrigger>
+                      <PasswordInputIndicator
+                        visible={<EyeOff />}
+                        hidden={<Eye />}
+                      />
+                    </PasswordInputVisibilityTrigger>
+                  </PasswordInputControl>
+                </PasswordInput>
+              </div>
+              <p
+                id={mismatchMessageId}
+                aria-live="polite"
+                className="text-destructive-text text-xs"
+                data-invalid={mismatch ? "true" : "false"}
+              >
+                {mismatch ? t("Passwords do not match.") : " "}
+              </p>
             </div>
-            <p
-              id={mismatchMessageId}
-              aria-live="polite"
-              className="text-destructive-text text-xs"
-              data-invalid={mismatch ? "true" : "false"}
-            >
-              {mismatch ? t("Passwords do not match.") : " "}
-            </p>
-          </div>
+          </DemoSaveForm>
 
           <div className="space-y-3">
             <div className="flex items-center justify-between gap-4">

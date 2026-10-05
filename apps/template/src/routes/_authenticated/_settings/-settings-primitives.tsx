@@ -1,10 +1,13 @@
-import type { ReactNode } from "react"
+import { useState, type ReactNode } from "react"
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from "darkraise-ui/components/card"
+import { Button } from "darkraise-ui/components/button"
+import { toast } from "darkraise-ui/components/sonner"
+import { useAppTranslation } from "@/i18n/useAppTranslation"
 
 interface SettingsCardProps {
   icon: ReactNode
@@ -102,5 +105,45 @@ export function StatValue({ label, value, badge }: StatValueProps) {
         {badge}
       </p>
     </div>
+  )
+}
+
+interface DemoSaveFormProps {
+  submitLabel: string
+  canSubmit?: boolean
+  children: ReactNode
+}
+
+/** A section form whose submit is simulated, like the page's other saves. */
+export function DemoSaveForm({
+  submitLabel,
+  canSubmit = true,
+  children,
+}: DemoSaveFormProps) {
+  const t = useAppTranslation()
+  const [saving, setSaving] = useState(false)
+
+  const submit = async () => {
+    setSaving(true)
+    await new Promise((resolve) => setTimeout(resolve, 500))
+    setSaving(false)
+    toast.success(t("Demo settings submitted"))
+  }
+
+  return (
+    <form
+      className="space-y-6"
+      onSubmit={(event) => {
+        event.preventDefault()
+        void submit()
+      }}
+    >
+      {children}
+      <div className="flex justify-end">
+        <Button type="submit" size="sm" disabled={saving || !canSubmit}>
+          {saving ? t("Saving…") : submitLabel}
+        </Button>
+      </div>
+    </form>
   )
 }

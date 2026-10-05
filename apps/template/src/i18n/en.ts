@@ -178,14 +178,10 @@ export const en = {
   "Security alerts": "Security alerts",
   "Team mentions": "Team mentions",
   "Notification channels": "Notification channels",
-  "Email and digest frequency are managed above — choose which other channels reach you and which events they cover.":
-    "Email and digest frequency are managed above — choose which other channels reach you and which events they cover.",
   Channels: "Channels",
   "Notify me about": "Notify me about",
   Inbox: "Inbox",
   Preferences: "Preferences",
-  "Language is saved on this device. Other preferences are interactive examples and are not saved.":
-    "Language is saved on this device. Other preferences are interactive examples and are not saved.",
   Language: "Language",
   "Language applies immediately and is remembered on this device.":
     "Language applies immediately and is remembered on this device.",
@@ -194,8 +190,6 @@ export const en = {
   "No pages match.": "No pages match.",
   "Items per page": "Items per page",
   "Autosave interval": "Autosave interval",
-  Every: "Every",
-  min: "min",
   "This information is displayed publicly, so be careful what you share.":
     "This information is displayed publicly, so be careful what you share.",
   "Profile picture": "Profile picture",
@@ -402,4 +396,11 @@ export const en = {
   "Store name is required": "Store name is required",
   "Currency is required": "Currency is required",
   "Timezone is required": "Timezone is required",
+  "Save Profile": "Save Profile",
+  "Update Password": "Update Password",
+  "Every {{count}} min": "Every {{count}} min",
+  "Language applies immediately and is saved on this device. Saving the other preferences is simulated.":
+    "Language applies immediately and is saved on this device. Saving the other preferences is simulated.",
+  "Email and digest frequency are managed above — choose which other channels reach you and which events they cover. Changes apply immediately.":
+    "Email and digest frequency are managed above — choose which other channels reach you and which events they cover. Changes apply immediately.",
 }

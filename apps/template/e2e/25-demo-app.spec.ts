@@ -280,3 +280,56 @@ test.describe("product form", () => {
     expect(compare.x).toBeGreaterThan(price.x + price.width)
   })
 })
+
+test.describe("settings", () => {
+  test.beforeEach(async ({ page }) => {
+    await seedApp(page, { style: "quiet", mode: "light" })
+  })
+
+  const TYPED =
+    'input:is([type="text"], [type="email"], [type="password"], :not([type])):not([hidden]):not([aria-hidden="true"]), textarea'
+
+  test("every General card with typed fields can be submitted", async ({
+    page,
+  }) => {
+    await gotoApp(page, "/settings")
+    const cards = page.getByRole("tabpanel").locator(".dr-card")
+    await expect(cards.first()).toBeVisible()
+    const typed: string[] = []
+    const missing: string[] = []
+    for (const card of await cards.all()) {
+      if ((await card.locator(TYPED).count()) === 0) continue
+      const firstLine = (await card.innerText()).split("\n")[0] ?? ""
+      typed.push(firstLine)
+      if ((await card.locator('button[type="submit"]').count()) === 0)
+        missing.push(firstLine)
+    }
+    expect(typed, `cards with typed fields: ${typed.join(" | ")}`).toHaveLength(
+      4,
+    )
+    expect(missing).toEqual([])
+  })
+
+  test("saving the profile shows the demo toast", async ({ page }) => {
+    await gotoApp(page, "/settings")
+    await page.getByRole("button", { name: "Save Profile" }).click()
+    await expect(
+      page.locator(".dr-toast-title", { hasText: "Demo settings submitted" }),
+    ).toBeVisible()
+  })
+
+  test("the autosave interval reads as one phrase", async ({ page }) => {
+    await gotoApp(page, "/settings")
+    await expect(page.getByText("Every 5 min", { exact: true })).toBeVisible()
+  })
+
+  test("the autosave interval reads as one phrase in Vietnamese", async ({
+    page,
+  }) => {
+    await page.addInitScript(() =>
+      localStorage.setItem("darkraise-demo.language", "vi"),
+    )
+    await gotoApp(page, "/settings")
+    await expect(page.getByText("Mỗi 5 phút", { exact: true })).toBeVisible()
+  })
+})

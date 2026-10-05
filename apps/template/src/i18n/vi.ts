@@ -183,14 +183,10 @@ export const vi: Record<keyof typeof en, string> = {
   "Security alerts": "Cảnh báo bảo mật",
   "Team mentions": "Nhắc tên trong nhóm",
   "Notification channels": "Kênh thông báo",
-  "Email and digest frequency are managed above — choose which other channels reach you and which events they cover.":
-    "Email và tần suất tổng hợp được quản lý phía trên. Chọn các kênh khác và sự kiện cần thông báo.",
   Channels: "Kênh",
   "Notify me about": "Thông báo cho tôi về",
   Inbox: "Hộp thư",
   Preferences: "Tùy chọn",
-  "Language is saved on this device. Other preferences are interactive examples and are not saved.":
-    "Ngôn ngữ được lưu trên thiết bị này. Các tùy chọn khác chỉ là ví dụ tương tác và không được lưu.",
   Language: "Ngôn ngữ",
   "Language applies immediately and is remembered on this device.":
     "Ngôn ngữ được áp dụng ngay và ghi nhớ trên thiết bị này.",
@@ -199,8 +195,6 @@ export const vi: Record<keyof typeof en, string> = {
   "No pages match.": "Không có trang phù hợp.",
   "Items per page": "Số mục mỗi trang",
   "Autosave interval": "Khoảng thời gian tự động lưu",
-  Every: "Mỗi",
-  min: "phút",
   "This information is displayed publicly, so be careful what you share.":
     "Thông tin này được hiển thị công khai. Hãy cân nhắc nội dung bạn chia sẻ.",
   "Profile picture": "Ảnh hồ sơ",
@@ -405,4 +399,11 @@ export const vi: Record<keyof typeof en, string> = {
   "Store name is required": "Vui lòng nhập tên cửa hàng",
   "Currency is required": "Vui lòng chọn tiền tệ",
   "Timezone is required": "Vui lòng chọn múi giờ",
+  "Save Profile": "Lưu hồ sơ",
+  "Update Password": "Cập nhật mật khẩu",
+  "Every {{count}} min": "Mỗi {{count}} phút",
+  "Language applies immediately and is saved on this device. Saving the other preferences is simulated.":
+    "Ngôn ngữ được áp dụng ngay và lưu trên thiết bị này. Việc lưu các tùy chọn khác chỉ là mô phỏng.",
+  "Email and digest frequency are managed above — choose which other channels reach you and which events they cover. Changes apply immediately.":
+    "Email và tần suất tổng hợp được quản lý phía trên. Chọn các kênh khác và sự kiện cần thông báo. Thay đổi được áp dụng ngay.",
 }
