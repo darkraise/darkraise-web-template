@@ -17,6 +17,7 @@ export interface UiMessages extends UiLabels {
     contributions: (count: number, date: string) => string
   }
   dateInput: { year: string; month: string; day: string }
+  dateInputPlaceholder: { year: string; month: string; day: string }
   common: {
     language: string
   }

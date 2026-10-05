@@ -6,6 +6,7 @@ const messages: UiMessages = {
   controls: viControls,
   themeOptions: viTheme,
   dateInput: { year: "Năm", month: "Tháng", day: "Ngày" },
+  dateInputPlaceholder: { year: "YYYY", month: "MM", day: "DD" },
   announcements: {
     remove: (name) => `Xóa ${name}`,
     select: (name) => `Chọn ${name}`,

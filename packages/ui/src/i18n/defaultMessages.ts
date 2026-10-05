@@ -10,6 +10,7 @@ export const defaultMessages: UiMessages = {
   themeOptions: themeMessages,
   imageCropper: DEFAULT_TRANSLATIONS,
   dateInput: { year: "Year", month: "Month", day: "Day" },
+  dateInputPlaceholder: { year: "YYYY", month: "MM", day: "DD" },
   announcements: {
     remove: (name) => `Remove ${name}`,
     select: (name) => `Select ${name}`,

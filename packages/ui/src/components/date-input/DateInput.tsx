@@ -73,6 +73,7 @@ function DateInput({
               role="spinbutton"
               inputMode="numeric"
               aria-label={labels.dateInput[key]}
+              placeholder={labels.dateInputPlaceholder[key]}
               aria-valuemin={limits.min}
               aria-valuemax={limits.max}
               aria-valuenow={Number.parseInt(valStr, 10) || undefined}

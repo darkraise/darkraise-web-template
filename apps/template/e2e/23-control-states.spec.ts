@@ -98,3 +98,31 @@ test.describe("time picker trigger", () => {
     })
   }
 })
+
+test.describe("date input placeholders", () => {
+  for (const mode of MODES) {
+    test(`segments show YYYY, MM and DD in the muted colour · ${mode}`, async ({
+      page,
+    }) => {
+      await openInMode(page, mode)
+      const segments = probe(page, "date-input", ".dr-date-input-segment")
+      await expect(segments).toHaveCount(3)
+      expect(
+        await segments.evaluateAll((elements) =>
+          elements.map((element) => (element as HTMLInputElement).placeholder),
+        ),
+      ).toEqual(["YYYY", "MM", "DD"])
+      const muted = await computed(
+        probe(page, "select", ".dr-select-trigger"),
+        "color",
+      )
+      for (const segment of await segments.all()) {
+        expect(
+          await segment.evaluate(
+            (element) => getComputedStyle(element, "::placeholder").color,
+          ),
+        ).toBe(muted)
+      }
+    })
+  }
+})

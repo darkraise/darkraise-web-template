@@ -2,6 +2,8 @@ import { describe, expect, it, vi } from "vitest"
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import * as React from "react"
+import { UiI18nProvider } from "../../i18n"
+import { vi as vietnamese } from "../../locales/vi"
 import { DateInput } from "./DateInput"
 
 describe("DateInput", () => {
@@ -131,5 +133,32 @@ describe("DateInput", () => {
     expect(year.value).toBe("")
     expect(month.value).toBe("")
     expect(day.value).toBe("")
+  })
+
+  it.each([
+    ["ymd", ["YYYY", "MM", "DD"]],
+    ["mdy", ["MM", "DD", "YYYY"]],
+    ["dmy", ["DD", "MM", "YYYY"]],
+  ] as const)(
+    "labels the %s segments with their placeholders",
+    (format, expected) => {
+      render(<DateInput format={format} aria-label="dob" />)
+      const segments = screen.getAllByRole("spinbutton") as HTMLInputElement[]
+      expect(segments.map((segment) => segment.placeholder)).toEqual(expected)
+    },
+  )
+
+  it("follows the locale's segment order with the same placeholders", () => {
+    render(
+      <UiI18nProvider locale="vi" locales={[vietnamese]}>
+        <DateInput aria-label="dob" />
+      </UiI18nProvider>,
+    )
+    const segments = screen.getAllByRole("spinbutton") as HTMLInputElement[]
+    expect(segments.map((segment) => segment.placeholder)).toEqual([
+      "DD",
+      "MM",
+      "YYYY",
+    ])
   })
 })
