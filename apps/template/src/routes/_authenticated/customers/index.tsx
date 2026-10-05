@@ -51,6 +51,7 @@ function CustomersPage() {
     },
     {
       accessorKey: "totalOrders",
+      meta: { align: "end" },
       header: ({ column }) => (
         <ColumnHeader column={column} title={t("Orders")} />
       ),
