@@ -129,7 +129,9 @@ function VirtualizedDropdownMenuContent<T>({
         <div
           ref={setScrollElement}
           style={{
-            maxHeight,
+            // The popup stylesheet's variable is set on the content and
+            // inherited here, so the list also stops at the viewport.
+            maxHeight: `min(${maxHeight}px, var(--popup-available-height, 100dvh))`,
             overflowY: "auto",
             overflowX: "hidden",
           }}
