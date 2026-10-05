@@ -1,6 +1,7 @@
 import { test, expect, type Locator, type Page } from "@playwright/test"
 import { DENSITIES, MATRIX_STYLES, STYLES } from "./fixtures/theme"
 import { boxOf, gotoApp, seedApp, watchConsole } from "./helpers/app"
+import { openControlFixture } from "./helpers/controls"
 import {
   computed,
   contrast,
@@ -22,7 +23,6 @@ import {
  * font-size axis.
  */
 
-const FIXTURE = "/e2e/fixtures/control-contract.html"
 const MODES = ["light", "dark"] as const
 const FONT_SIZES = ["medium", "extra-large"] as const
 
@@ -38,32 +38,6 @@ const SIZED = [
   '[data-probe="otp"] .dr-input-otp-slot',
   '[data-probe="segment"] .dr-segment-group-item',
 ]
-
-async function openFixture(page: Page) {
-  await page.goto(FIXTURE)
-  await page.getByTestId("control-height").waitFor({ state: "attached" })
-  await page
-    .locator('[data-probe="segment"] .dr-segment-group-item')
-    .first()
-    .waitFor()
-  // The fixture paints the light fallback before ThemeProvider applies the
-  // seeded theme, so colours are still transitioning when the controls first
-  // appear; a pixel sampled then is a blend of the two themes. Wait for the
-  // theme, give its transitions a frame to start, then let them finish (a
-  // transition cut short by a later style change rejects, which is fine).
-  await expect(page.locator("html")).toHaveAttribute("data-style", /.+/)
-  await page.evaluate(async () => {
-    await new Promise((resolve) =>
-      requestAnimationFrame(() => requestAnimationFrame(resolve)),
-    )
-    await Promise.all(
-      document
-        .getAnimations()
-        .filter((animation) => animation instanceof CSSTransition)
-        .map((animation) => animation.finished.catch(() => undefined)),
-    )
-  })
-}
 
 async function measuredHeights(page: Page) {
   const rows: { selector: string; index: number; height: number }[] = []
@@ -100,7 +74,7 @@ for (const style of STYLES) {
         }) => {
           const consoleWatch = watchConsole(page)
           await seedApp(page, { style, mode, density, fontSize })
-          await openFixture(page)
+          await openControlFixture(page)
           const expected = (await boxOf(page.getByTestId("control-height")))
             .height
           for (const row of await measuredHeights(page)) {
@@ -124,7 +98,7 @@ test.describe("coarse pointer", () => {
       page,
     }) => {
       await seedApp(page, { style: "quiet", mode: "light", density })
-      await openFixture(page)
+      await openControlFixture(page)
       expect(
         await page.evaluate(() => matchMedia("(pointer: coarse)").matches),
         "hasTouch must make Chromium match (pointer: coarse)",
@@ -189,7 +163,7 @@ for (const style of MATRIX_STYLES) {
         page,
       }) => {
         await seedApp(page, { style, mode, density })
-        await openFixture(page)
+        await openControlFixture(page)
         await page.mouse.move(0, 0)
         const expected =
           (await boxOf(page.getByTestId("control-height"))).height + 8
@@ -246,7 +220,7 @@ for (const { name, seed } of EDGE_THEMES) {
       page,
     }) => {
       await seedApp(page, { ...seed, mode })
-      await openFixture(page)
+      await openControlFixture(page)
       await page.mouse.move(0, 0)
       for (const probe of ["edge-page", "edge-card"]) {
         const field = page.locator(`[data-probe="${probe}"] .dr-input`)
@@ -271,7 +245,7 @@ for (const { name, seed } of EDGE_THEMES) {
 for (const style of STYLES) {
   test(`switch thumb sits evenly in its track · ${style}`, async ({ page }) => {
     await seedApp(page, { style, mode: "light" })
-    await openFixture(page)
+    await openControlFixture(page)
     const track = page.locator('[data-probe="switch"] .dr-switch')
     const thumb = page.locator('[data-probe="switch"] .dr-switch-thumb')
     const trackBox = await boxOf(track)
@@ -282,9 +256,8 @@ for (const style of STYLES) {
       .poll(async () => {
         const box = await boxOf(thumb)
         return (
-          Math.round(
-            (trackBox.x + trackBox.width - (box.x + box.width)) * 10,
-          ) / 10
+          Math.round((trackBox.x + trackBox.width - (box.x + box.width)) * 10) /
+          10
         )
       })
       .toBeCloseTo(offGap, 0)
@@ -475,7 +448,7 @@ test("an invalid active OTP slot keeps the affordance glow", async ({
   page,
 }) => {
   await seedApp(page, { style: "quiet", mode: "light" })
-  await openFixture(page)
+  await openControlFixture(page)
   await setProbes(page)
   await page.locator('[data-probe="otp-invalid"] input').first().focus()
   const slot = page.locator(
