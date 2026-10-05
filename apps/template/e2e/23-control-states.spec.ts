@@ -51,3 +51,29 @@ test.describe("select trigger", () => {
     })
   }
 })
+
+/** What a field trigger paints, compared against the Select trigger's. */
+const TRIGGER_PAINT = [
+  "background-color",
+  "border-top-color",
+  "border-bottom-color",
+  "border-top-left-radius",
+  "color",
+  "height",
+] as const
+
+test.describe("cascade trigger", () => {
+  for (const mode of MODES) {
+    test(`paints like the Select trigger · ${mode}`, async ({ page }) => {
+      await openInMode(page, mode)
+      const select = probe(page, "select", ".dr-select-trigger")
+      const cascade = probe(page, "cascade", ".dr-cascade-trigger")
+      await expect(cascade).toHaveAttribute("data-placeholder", "")
+      for (const property of TRIGGER_PAINT) {
+        expect(await computed(cascade, property), property).toBe(
+          await computed(select, property),
+        )
+      }
+    })
+  }
+})

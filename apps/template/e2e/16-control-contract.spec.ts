@@ -31,6 +31,7 @@ const SIZED = [
   '[data-probe="toggles"] .dr-toggle',
   '[data-probe="input"] .dr-input',
   '[data-probe="select"] .dr-select-trigger',
+  '[data-probe="cascade"] .dr-cascade-trigger',
   '[data-probe="combobox"] .dr-combobox-control',
   '[data-probe="multi-select"] .dr-multi-select-control',
   '[data-probe="date-input"] .dr-date-input',

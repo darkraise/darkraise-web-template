@@ -5,6 +5,10 @@ import { Button, type ButtonVariant } from "darkraise-ui/components/button"
 import { Calendar } from "darkraise-ui/components/calendar"
 import { Card, CardContent } from "darkraise-ui/components/card"
 import {
+  CascadeSelect,
+  type CascadeOption,
+} from "darkraise-ui/components/cascade-select"
+import {
   Combobox,
   ComboboxControl,
   ComboboxInput,
@@ -56,6 +60,14 @@ const VARIANTS: ButtonVariant[] = [
 const ITEMS = [
   { value: "apple", label: "Apple" },
   { value: "banana", label: "Banana" },
+]
+
+const REGIONS: CascadeOption[] = [
+  {
+    value: "us",
+    label: "United States",
+    children: [{ value: "ny", label: "New York" }],
+  },
 ]
 
 interface Invoice {
@@ -206,6 +218,9 @@ function ControlStates() {
             </SelectItem>
           </SelectContent>
         </Select>
+      </div>
+      <div data-probe="cascade">
+        <CascadeSelect options={REGIONS} placeholder="Region" />
       </div>
     </div>
   )
