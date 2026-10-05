@@ -54,6 +54,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "darkraise-ui/components/select"
+import {
+  Sheet,
+  SheetBody,
+  SheetContent,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "darkraise-ui/components/sheet"
 import { ThemeProvider } from "darkraise-ui/theme"
 import "../../src/styles/globals.css"
 
@@ -251,6 +260,56 @@ function ComboboxCase() {
   )
 }
 
+const ROWS = Array.from({ length: 100 }, (_, i) => `Row ${i + 1}`)
+
+function RowList() {
+  return (
+    <div>
+      {ROWS.map((row) => (
+        <p key={row} style={{ padding: "8px 0" }}>
+          {row}
+        </p>
+      ))}
+    </div>
+  )
+}
+
+function SheetsCase() {
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: 16, padding: 24 }}>
+      {(["top", "bottom"] as const).map((side) => (
+        <Sheet key={side}>
+          <SheetTrigger asChild>
+            <Button>{`Open ${side} sheet`}</Button>
+          </SheetTrigger>
+          <SheetContent side={side}>
+            <SheetHeader>
+              <SheetTitle>{`Long ${side} sheet`}</SheetTitle>
+            </SheetHeader>
+            <RowList />
+          </SheetContent>
+        </Sheet>
+      ))}
+      <Sheet>
+        <SheetTrigger asChild>
+          <Button>Open pinned sheet</Button>
+        </SheetTrigger>
+        <SheetContent side="bottom">
+          <SheetHeader>
+            <SheetTitle>Pinned sheet</SheetTitle>
+          </SheetHeader>
+          <SheetBody>
+            <RowList />
+          </SheetBody>
+          <SheetFooter>
+            <Button>Done</Button>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
+    </div>
+  )
+}
+
 // One scenario per page load, chosen by ?case=, so a case's fixed triggers
 // and open overlays never shift another case's geometry.
 // Three global panels that all cover the viewport centre, where the dialog
@@ -293,6 +352,7 @@ const CASES: Record<string, () => ReactElement> = {
   menus: MenusCase,
   combobox: ComboboxCase,
   panels: PanelsCase,
+  sheets: SheetsCase,
 }
 
 const name = new URLSearchParams(window.location.search).get("case") ?? ""

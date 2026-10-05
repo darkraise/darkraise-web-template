@@ -7,6 +7,8 @@ import {
   wrappedTableText,
   type Box,
 } from "./helpers/app"
+import { settle } from "./helpers/measure"
+import { expectInViewport, openOverlayCase } from "./helpers/overlays"
 
 /**
  * The shell clips its own overflow and the content region scrolls inside it,
@@ -346,6 +348,25 @@ test.describe("every route fits 390px", () => {
       await expect(page.locator("form").first()).toBeVisible()
       await expectNoErrorBoundary(page)
       await expectFits(page)
+    })
+  }
+})
+
+test.describe("sheets", () => {
+  for (const side of ["top", "bottom"] as const) {
+    test(`a long ${side} sheet fits a phone and reaches its last row`, async ({
+      page,
+    }) => {
+      await seedApp(page, { style: "quiet", mode: "light" })
+      await openOverlayCase(page, "sheets")
+      await page.getByRole("button", { name: `Open ${side} sheet` }).click()
+      const sheet = page.getByRole("dialog")
+      await expect(sheet).toBeVisible()
+      await settle(page)
+      expect((await boxOf(sheet)).height).toBeLessThanOrEqual(844 - 32 + 1)
+      const last = sheet.getByText("Row 100", { exact: true })
+      await last.scrollIntoViewIfNeeded()
+      await expectInViewport(page, last)
     })
   }
 })

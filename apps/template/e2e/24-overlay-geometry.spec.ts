@@ -185,3 +185,53 @@ test.describe("floating panels stay under modal layers", () => {
     ).toBe(true)
   })
 })
+
+test.describe("long sheets scroll", () => {
+  for (const side of ["top", "bottom"] as const) {
+    test(`a long ${side} sheet fits the viewport and reaches its last row`, async ({
+      page,
+    }) => {
+      await seedApp(page, { style: "quiet", mode: "light" })
+      await openOverlayCase(page, "sheets")
+      await page.getByRole("button", { name: `Open ${side} sheet` }).click()
+      const sheet = page.getByRole("dialog")
+      await expect(sheet).toBeVisible()
+      await settle(page)
+      const viewport = page.viewportSize()
+      if (!viewport) throw new Error("The page has no viewport size")
+      expect((await boxOf(sheet)).height).toBeLessThanOrEqual(
+        viewport.height - 32 + 1,
+      )
+      const last = sheet.getByText("Row 100", { exact: true })
+      await last.scrollIntoViewIfNeeded()
+      await expectInViewport(page, last)
+      await last.click()
+    })
+  }
+
+  test("a sheet body scrolls under a pinned header", async ({ page }) => {
+    await seedApp(page, { style: "quiet", mode: "light" })
+    await openOverlayCase(page, "sheets")
+    await page.getByRole("button", { name: "Open pinned sheet" }).click()
+    const sheet = page.getByRole("dialog")
+    await expect(sheet).toBeVisible()
+    await settle(page)
+    const header = sheet.getByRole("heading", { name: "Pinned sheet" })
+    const before = (await boxOf(header)).y
+    const body = sheet.locator(".dr-sheet-body")
+    await body.evaluate((element) => {
+      element.scrollTop = 400
+    })
+    expect(await body.evaluate((element) => element.scrollTop)).toBeGreaterThan(
+      0,
+    )
+    expect((await boxOf(header)).y).toBeCloseTo(before, 0)
+    // The pinned rule hands scrolling to the body; the sheet itself must not
+    // scroll as well.
+    expect(
+      await sheet.evaluate(
+        (element) => element.scrollHeight <= element.clientHeight,
+      ),
+    ).toBe(true)
+  })
+})
