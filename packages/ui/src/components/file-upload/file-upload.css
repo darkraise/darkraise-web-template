@@ -23,18 +23,6 @@
     @apply pointer-events-none opacity-[var(--disabled-opacity)];
   }
 
-  .dr-file-upload-trigger {
-    @apply bg-primary-fill text-primary-foreground focus-ring-inset inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-md px-3 text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-[var(--disabled-opacity)];
-  }
-
-  .dr-file-upload-trigger:hover {
-    background-color: color-mix(
-      in srgb,
-      hsl(var(--primary-fill)),
-      hsl(var(--primary-fill-wash)) 16%
-    );
-  }
-
   .dr-file-upload-item-group {
     @apply flex flex-col gap-2;
   }

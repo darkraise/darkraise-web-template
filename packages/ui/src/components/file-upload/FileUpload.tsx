@@ -295,7 +295,9 @@ function FileUploadTrigger({
       type={type}
       disabled={disabled}
       data-disabled={disabled ? "true" : undefined}
-      className={cn("dr-file-upload-trigger", className)}
+      className={cn("dr-btn", "dr-file-upload-trigger", className)}
+      data-variant="default"
+      data-size="default"
       onClick={(event) => {
         onClick?.(event)
         if (event.defaultPrevented) return

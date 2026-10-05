@@ -106,6 +106,14 @@ describe("FileUpload", () => {
     expect(clickSpy).toHaveBeenCalled()
   })
 
+  it("renders the trigger as a default-size default button", () => {
+    render(<Basic />)
+    const trigger = screen.getByTestId("trigger")
+    expect(trigger).toHaveClass("dr-btn", "dr-file-upload-trigger")
+    expect(trigger).toHaveAttribute("data-variant", "default")
+    expect(trigger).toHaveAttribute("data-size", "default")
+  })
+
   it("drop event with valid file adds to acceptedFiles", () => {
     const onFileChange = vi.fn()
     render(<Basic onFileChange={onFileChange} />)

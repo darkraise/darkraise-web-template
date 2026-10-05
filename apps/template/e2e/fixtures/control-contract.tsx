@@ -15,6 +15,10 @@ import {
   ComboboxTrigger,
 } from "darkraise-ui/components/combobox"
 import { DateInput } from "darkraise-ui/components/date-input"
+import {
+  FileUpload,
+  FileUploadTrigger,
+} from "darkraise-ui/components/file-upload"
 import { Input } from "darkraise-ui/components/input"
 import {
   InputOTP,
@@ -246,6 +250,11 @@ function ControlStates() {
       >
         <Input aria-label="Disabled amount" disabled prefix="$" />
         <Input aria-label="Disabled name" disabled />
+      </div>
+      <div data-probe="file-upload">
+        <FileUpload>
+          <FileUploadTrigger>Browse</FileUploadTrigger>
+        </FileUpload>
       </div>
     </div>
   )

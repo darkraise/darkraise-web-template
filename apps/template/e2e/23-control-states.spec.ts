@@ -238,3 +238,30 @@ test.describe("grouped input states", () => {
     })
   }
 })
+
+test.describe("file upload trigger", () => {
+  for (const mode of MODES) {
+    test(`the trigger draws as a default button · ${mode}`, async ({
+      page,
+    }) => {
+      await seedApp(page, { style: "quiet", mode, radius: "pill" })
+      await openControlFixture(page)
+      await page.mouse.move(0, 0)
+      const trigger = probe(page, "file-upload", ".dr-file-upload-trigger")
+      const button = probe(page, "buttons", '.dr-btn[data-variant="default"]')
+      for (const property of [
+        "border-top-left-radius",
+        "background-color",
+        "color",
+        "height",
+        "padding-left",
+        "font-size",
+        "cursor",
+      ]) {
+        expect(await computed(trigger, property), property).toBe(
+          await computed(button, property),
+        )
+      }
+    })
+  }
+})

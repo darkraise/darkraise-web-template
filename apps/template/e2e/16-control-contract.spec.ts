@@ -40,6 +40,7 @@ const SIZED = [
   '[data-probe="number-input"] .dr-number-input-control',
   '[data-probe="otp"] .dr-input-otp-slot',
   '[data-probe="segment"] .dr-segment-group-item',
+  '[data-probe="file-upload"] .dr-file-upload-trigger',
 ]
 
 async function measuredHeights(page: Page) {

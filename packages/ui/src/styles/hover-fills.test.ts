@@ -114,13 +114,9 @@ describe("filled hover states", () => {
     expect(offenders).toEqual([])
   })
 
-  it("badge, time-picker and file-upload hovers mix toward the wash", () => {
+  it("badge and time-picker hovers mix toward the wash", () => {
     const files = new Set(washMixes().map((m) => m.file.replace(/.*\//, "")))
-    expect([...files].sort()).toEqual([
-      "badge.css",
-      "file-upload.css",
-      "time-picker.css",
-    ])
+    expect([...files].sort()).toEqual(["badge.css", "time-picker.css"])
   })
 
   it("filled buttons wash toward their fill's wash, not their label", () => {
