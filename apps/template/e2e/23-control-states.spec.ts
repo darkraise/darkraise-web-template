@@ -425,3 +425,47 @@ test.describe("colour picker swatches", () => {
     }
   }
 })
+
+test.describe("switch off thumb", () => {
+  for (const style of STYLES) {
+    for (const mode of MODES) {
+      test(`off thumb reaches 2.5:1 on its track · ${style} · ${mode}`, async ({
+        page,
+      }) => {
+        await seedApp(page, { style, mode })
+        await openControlFixture(page)
+        await page.mouse.move(0, 0)
+        const track = probe(page, "switch", ".dr-switch")
+        await expect(track).toHaveAttribute("data-state", "unchecked")
+        await track.scrollIntoViewIfNeeded()
+        const trackBox = await boxOf(track)
+        const thumbBox = await boxOf(track.locator(".dr-switch-thumb"))
+        const y = Math.round(trackBox.y + trackBox.height / 2)
+        const thumb = await pixel(
+          page,
+          Math.round(thumbBox.x + thumbBox.width / 2),
+          y,
+        )
+        // The off thumb fills the start half; 6px in from the end is the
+        // track's own fill, inside its 2px border.
+        const ground = await pixel(
+          page,
+          Math.round(trackBox.x + trackBox.width - 6),
+          y,
+        )
+        expect(
+          contrast(thumb, ground),
+          `thumb rgb(${thumb.join(",")}) on track rgb(${ground.join(",")})`,
+        ).toBeGreaterThanOrEqual(2.5)
+      })
+    }
+  }
+
+  test("the thumb transitions its colour", async ({ page }) => {
+    await openInMode(page, "light")
+    const thumb = probe(page, "switch", ".dr-switch-thumb")
+    expect(await computed(thumb, "transition-property")).toContain(
+      "background-color",
+    )
+  })
+})
