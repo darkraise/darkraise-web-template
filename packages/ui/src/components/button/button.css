@@ -1,6 +1,6 @@
 @layer components {
   .dr-btn {
-    @apply focus-ring inline-flex cursor-pointer items-center justify-center gap-2 rounded-[var(--btn-radius)] text-sm font-medium whitespace-nowrap transition-[background-image,background-color,border-color,color,text-decoration-color,box-shadow] disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)] [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size)] [&_svg]:shrink-0;
+    @apply focus-ring inline-flex cursor-pointer items-center justify-center gap-2 rounded-[var(--btn-radius)] text-sm font-medium whitespace-nowrap transition-[background-image,background-color,border-color,color,text-decoration-color,box-shadow] disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)] aria-disabled:cursor-not-allowed aria-disabled:opacity-[var(--disabled-opacity)] [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size)] [&_svg]:shrink-0;
     transition-duration: var(--duration-fast);
     position: relative;
     isolation: isolate;
@@ -25,7 +25,8 @@
      button ignores clicks by itself, so suppressing pointer events bought
      nothing and cost the cursor — and with it any chance of a tooltip
      explaining why the button is unavailable. The state layer below opts out
-     of :disabled explicitly, since hover can now reach it. */
+     of :disabled and aria-disabled explicitly, since hover can now reach
+     both. */
 
   /* One wash for every variant, carried by a pseudo-element rather than a
      flood inset shadow.
@@ -42,11 +43,15 @@
   .dr-btn:not([data-variant="link"]) {
     @apply state-layer;
   }
-  .dr-btn:not([data-variant="link"]):not(:disabled):hover::before {
+  .dr-btn:not([data-variant="link"]):not(:disabled):not(
+      [aria-disabled="true"]
+    ):hover::before {
     opacity: var(--state-layer-hover);
     transition-duration: var(--state-layer-in);
   }
-  .dr-btn:not([data-variant="link"]):not(:disabled):active::before {
+  .dr-btn:not([data-variant="link"]):not(:disabled):not(
+      [aria-disabled="true"]
+    ):active::before {
     opacity: var(--state-layer-press);
     transition-duration: var(--state-layer-in);
   }
@@ -118,7 +123,13 @@
 
   /* link */
   .dr-btn[data-variant="link"] {
-    @apply text-primary-text underline-offset-4 hover:underline;
+    @apply text-primary-text underline-offset-4;
+  }
+
+  .dr-btn[data-variant="link"]:where(
+      :not(:disabled):not([aria-disabled="true"])
+    ):hover {
+    text-decoration-line: underline;
   }
 
   /* Under the neutral accent a link shares the text colour, so the underline

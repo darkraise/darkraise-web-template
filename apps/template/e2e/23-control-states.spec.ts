@@ -845,3 +845,76 @@ test.describe("compound disabled fades", () => {
     })
   }
 })
+
+test.describe("disabled Button asChild", () => {
+  const wash = (target: Locator) =>
+    target.evaluate((el) => getComputedStyle(el, "::before").opacity)
+
+  for (const mode of MODES) {
+    test(`an aria-disabled button link fades and stays inert · ${mode}`, async ({
+      page,
+    }) => {
+      await openInMode(page, mode)
+      const token = Number(await readToken(page, "--disabled-opacity"))
+
+      // Default variant: faded, not-allowed, and no wash at rest, under the
+      // pointer or pressed.
+      const button = probe(
+        page,
+        "button-as-child",
+        '.dr-btn[data-variant="default"]',
+      )
+      await expect(button).toHaveAttribute("aria-disabled", "true")
+      expect(Number(await computed(button, "opacity"))).toBeCloseTo(token, 3)
+      expect(await computed(button, "cursor")).toBe("not-allowed")
+      expect(await wash(button), "disabled at rest").toBe("0")
+      await button.hover()
+      await settle(page)
+      expect(await wash(button), "disabled under the pointer").toBe("0")
+      await page.mouse.down()
+      await settle(page)
+      expect(await wash(button), "disabled while pressed").toBe("0")
+      await page.mouse.up()
+      await page.mouse.move(0, 0)
+
+      // Link variant: faded, not-allowed, and no underline added on hover.
+      const link = probe(
+        page,
+        "button-as-child",
+        '.dr-btn[data-variant="link"]',
+      )
+      await expect(link).toHaveAttribute("aria-disabled", "true")
+      expect(Number(await computed(link, "opacity"))).toBeCloseTo(token, 3)
+      expect(await computed(link, "cursor")).toBe("not-allowed")
+      const underlineAtRest = await computed(link, "text-decoration-line")
+      await link.hover()
+      await settle(page)
+      expect(await computed(link, "text-decoration-line")).toBe(underlineAtRest)
+      await page.mouse.move(0, 0)
+
+      // The guards must not reach enabled buttons (the `buttons` probe): the
+      // wash rises on hover and rises further when pressed.
+      const enabled = probe(page, "buttons", '.dr-btn[data-variant="default"]')
+      expect(await wash(enabled), "enabled at rest").toBe("0")
+      await enabled.hover()
+      await settle(page)
+      const hovered = Number(await wash(enabled))
+      expect(hovered, "enabled under the pointer").toBeGreaterThan(0)
+      await page.mouse.down()
+      await settle(page)
+      expect(
+        Number(await wash(enabled)),
+        "enabled while pressed",
+      ).toBeGreaterThan(hovered)
+      await page.mouse.up()
+      await page.mouse.move(0, 0)
+      const enabledLink = probe(page, "buttons", '.dr-btn[data-variant="link"]')
+      await enabledLink.hover()
+      await settle(page)
+      expect(await computed(enabledLink, "text-decoration-line")).toBe(
+        "underline",
+      )
+      await page.mouse.move(0, 0)
+    })
+  }
+})

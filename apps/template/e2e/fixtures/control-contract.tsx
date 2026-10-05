@@ -660,6 +660,14 @@ function ControlStates() {
           </Listbox>
         </div>
       </div>
+      <div data-probe="button-as-child" style={{ display: "flex", gap: 8 }}>
+        <Button asChild disabled>
+          <a href="#docs">Docs</a>
+        </Button>
+        <Button asChild disabled variant="link">
+          <a href="#more">More</a>
+        </Button>
+      </div>
     </div>
   )
 }
