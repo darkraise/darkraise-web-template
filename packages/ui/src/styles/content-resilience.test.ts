@@ -85,6 +85,24 @@ describe("read-only is distinct from disabled", () => {
     expect(body).toMatch(/(?<![\w-])cursor-default(?![\w-])/)
   })
 
+  it("keeps a read-only rating group's default cursor off a disabled one", () => {
+    const css = readFileSync(
+      "src/components/rating-group/rating-group.css",
+      "utf8",
+    )
+    // The read-only group rule outranks the item's own disabled rule, so
+    // without the exclusion a disabled read-only group lost not-allowed.
+    const rules = [
+      ...css.matchAll(
+        /\.dr-rating-group\[data-readonly="true"\]([^{]*)\.dr-rating-group-item[^{]*\{/g,
+      ),
+    ]
+    expect(rules.length, "no read-only rating group rule").toBeGreaterThan(0)
+    for (const rule of rules) {
+      expect(rule[1]).toContain(':not([data-disabled="true"])')
+    }
+  })
+
   it("keeps the read-only treatment off a disabled input", () => {
     // A disabled input also matches :read-only, which gave it the default
     // cursor and the muted fill.

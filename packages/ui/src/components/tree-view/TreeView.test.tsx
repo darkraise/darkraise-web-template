@@ -1,11 +1,16 @@
 import { render, screen, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { describe, it, expect } from "vitest"
+import { describe, it, expect, vi } from "vitest"
 import { readFileSync } from "node:fs"
 import { dirname, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 import {
   TreeView,
+  TreeViewBranch,
+  TreeViewBranchContent,
+  TreeViewBranchControl,
+  TreeViewBranchText,
+  TreeViewItem,
   TreeViewLabel,
   TreeViewNode,
   TreeViewTree,
@@ -201,6 +206,51 @@ describe("TreeView", () => {
     await user.click(resume)
     // Selection should not change on disabled tree.
     expect(resume).toHaveAttribute("aria-selected", "false")
+  })
+
+  it("does not call onClick or select a disabled item", async () => {
+    const user = userEvent.setup()
+    const onClick = vi.fn()
+    render(
+      <TreeView data={tree} selectionMode="single">
+        <TreeViewLabel>Files</TreeViewLabel>
+        <TreeViewTree>
+          <TreeViewItem value="3" nodeDisabled onClick={onClick}>
+            todo.txt
+          </TreeViewItem>
+        </TreeViewTree>
+      </TreeView>,
+    )
+    const item = screen.getByText("todo.txt").closest("li") as HTMLElement
+    await user.click(item)
+    expect(onClick).not.toHaveBeenCalled()
+    expect(item).toHaveAttribute("aria-selected", "false")
+  })
+
+  it("does not call onClick or expand a disabled branch control", async () => {
+    const user = userEvent.setup()
+    const onClick = vi.fn()
+    render(
+      <TreeView data={tree} selectionMode="single">
+        <TreeViewLabel>Files</TreeViewLabel>
+        <TreeViewTree>
+          <TreeViewBranch value="1" nodeDisabled>
+            <TreeViewBranchControl onClick={onClick}>
+              <TreeViewBranchText>Documents</TreeViewBranchText>
+            </TreeViewBranchControl>
+            <TreeViewBranchContent>
+              <TreeViewItem value="1-1">Resume.pdf</TreeViewItem>
+            </TreeViewBranchContent>
+          </TreeViewBranch>
+        </TreeViewTree>
+      </TreeView>,
+    )
+    const row = screen.getByRole("treeitem", { name: "Documents" })
+    await user.click(screen.getByText("Documents"))
+    expect(onClick).not.toHaveBeenCalled()
+    expect(screen.queryByText("Resume.pdf")).toBeNull()
+    expect(row).toHaveAttribute("aria-expanded", "false")
+    expect(row).toHaveAttribute("aria-selected", "false")
   })
 
   it("Enter and Space toggle selection on focused node", async () => {

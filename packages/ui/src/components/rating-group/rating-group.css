@@ -40,11 +40,13 @@
     transform: none;
   }
 
-  .dr-rating-group[data-readonly="true"] .dr-rating-group-item {
+  .dr-rating-group[data-readonly="true"]:not([data-disabled="true"])
+    .dr-rating-group-item {
     @apply cursor-default;
   }
 
-  .dr-rating-group[data-readonly="true"] .dr-rating-group-item:hover {
+  .dr-rating-group[data-readonly="true"]:not([data-disabled="true"])
+    .dr-rating-group-item:hover {
     transform: none;
   }
 }

@@ -36,6 +36,12 @@ const C = "src/components/"
  * instead of passing the scan by absence.
  */
 const REQUIRED: Array<[string, string, string, "fade" | "cursor"]> = [
+  [
+    `${C}angle-slider/angle-slider.css`,
+    ".dr-angle-slider[data-disabled]",
+    "",
+    "fade",
+  ],
   [`${C}button/button.css`, ".dr-btn", "disabled", "fade"],
   [
     `${C}calendar/calendar.css`,

@@ -402,9 +402,9 @@ function TreeViewBranchControl({
   const finalTabIndex = isCurrentlyFocused ? 0 : -1
 
   const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (isDisabled) return
     onClick?.(event)
     if (event.defaultPrevented) return
-    if (isDisabled) return
     ctx.focusRow(branch.value)
     ctx.toggleExpanded(branch.value)
     ctx.toggleSelected(branch.value)
@@ -552,9 +552,9 @@ function TreeViewItem({
   const finalTabIndex = isCurrentlyFocused ? 0 : -1
 
   const handleClick = (event: React.MouseEvent<HTMLLIElement>) => {
+    if (isDisabled) return
     onClick?.(event)
     if (event.defaultPrevented) return
-    if (isDisabled) return
     ctx.focusRow(value)
     ctx.toggleSelected(value)
   }
