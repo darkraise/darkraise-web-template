@@ -607,3 +607,53 @@ test.describe("badge icon gap", () => {
     expect(textLeft - (icon.x + icon.width)).toBeGreaterThanOrEqual(3.5)
   })
 })
+
+test.describe("alert and banner recipe", () => {
+  const VARIANTS = [
+    "default",
+    "info",
+    "success",
+    "warning",
+    "destructive",
+  ] as const
+
+  for (const mode of MODES) {
+    test(`alert and banner share fill, start edge and icon · ${mode}`, async ({
+      page,
+    }) => {
+      await openInMode(page, mode)
+      for (const variant of VARIANTS) {
+        const alert = probe(
+          page,
+          "alerts",
+          `.dr-alert[data-variant="${variant}"]`,
+        )
+        const banner = probe(
+          page,
+          "alerts",
+          `.dr-banner[data-variant="${variant}"]`,
+        )
+        for (const property of [
+          "background-color",
+          "border-left-color",
+          "border-left-width",
+        ]) {
+          expect(
+            await computed(alert, property),
+            `${variant} ${property}`,
+          ).toBe(await computed(banner, property))
+        }
+        const alertIcon = alert.locator(":scope > svg")
+        const bannerIcon = banner.locator(".dr-banner-icon svg")
+        expect(
+          await computed(alertIcon, "color"),
+          `${variant} icon colour`,
+        ).toBe(await computed(bannerIcon, "color"))
+        expect(
+          (await boxOf(alertIcon)).width,
+          `${variant} icon size`,
+        ).toBeCloseTo((await boxOf(bannerIcon)).width, 1)
+      }
+    })
+  }
+})

@@ -45,7 +45,7 @@ function AlertBanner({
   const Icon = alertIconByVariant[variant]
   return (
     <Alert variant={variant}>
-      <Icon className="h-4 w-4" />
+      <Icon />
       <AlertTitle>{title}</AlertTitle>
       <AlertDescription>{description}</AlertDescription>
     </Alert>
@@ -65,7 +65,7 @@ function DismissibleAlert() {
 
   return (
     <Alert variant="info" className="pr-10">
-      <Info className="h-4 w-4" />
+      <Info />
       <AlertTitle>New feature available</AlertTitle>
       <AlertDescription>
         You can now export your data as CSV from the settings page.
@@ -94,7 +94,7 @@ function AlertPage() {
         title="Variants"
         code={`// One representative cell: every variant renders above.
 <Alert variant="warning">
-  <TriangleAlert className="h-4 w-4" />
+  <TriangleAlert />
   <AlertTitle>Heads up</AlertTitle>
   <AlertDescription>This is an example alert message.</AlertDescription>
 </Alert>`}
@@ -120,7 +120,7 @@ function AlertPage() {
   // top-right keeps it aligned with the title row. pr-10 reserves space
   // so long descriptions don't run under the button.
   <Alert variant="info" className="pr-10">
-    <Info className="h-4 w-4" />
+    <Info />
     <AlertTitle>New feature available</AlertTitle>
     <AlertDescription>
       You can now export your data as CSV from the settings page.

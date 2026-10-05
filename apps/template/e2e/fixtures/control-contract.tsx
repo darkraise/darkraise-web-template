@@ -1,7 +1,13 @@
 import { createRoot } from "react-dom/client"
 import type { ColumnDef } from "@tanstack/react-table"
-import { Check, ChevronDown } from "lucide-react"
+import { Check, ChevronDown, Info } from "lucide-react"
+import {
+  Alert,
+  AlertTitle,
+  type AlertVariant,
+} from "darkraise-ui/components/alert"
 import { Badge } from "darkraise-ui/components/badge"
+import { Banner } from "darkraise-ui/components/banner"
 import { AngleSlider } from "darkraise-ui/components/angle-slider"
 import { Button, type ButtonVariant } from "darkraise-ui/components/button"
 import { Calendar } from "darkraise-ui/components/calendar"
@@ -83,6 +89,14 @@ const VARIANTS: ButtonVariant[] = [
 const ITEMS = [
   { value: "apple", label: "Apple" },
   { value: "banana", label: "Banana" },
+]
+
+const STATUS_VARIANTS: AlertVariant[] = [
+  "default",
+  "info",
+  "success",
+  "warning",
+  "destructive",
 ]
 
 const REGIONS: CascadeOption[] = [
@@ -295,6 +309,19 @@ function ControlStates() {
           <Check className="size-3" />
           Verified
         </Badge>
+      </div>
+      <div data-probe="alerts" style={{ width: 320, display: "grid", gap: 8 }}>
+        {STATUS_VARIANTS.map((variant) => (
+          <div key={variant} style={{ display: "grid", gap: 8 }}>
+            <Alert variant={variant}>
+              <Info />
+              <AlertTitle>Alert</AlertTitle>
+            </Alert>
+            <Banner variant={variant} icon={<Info />}>
+              Banner
+            </Banner>
+          </div>
+        ))}
       </div>
     </div>
   )

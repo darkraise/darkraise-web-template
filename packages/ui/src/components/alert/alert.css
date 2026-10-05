@@ -1,12 +1,12 @@
 @layer components {
   .dr-alert {
-    @apply bg-background text-foreground [&>svg]:text-foreground relative w-full rounded-lg border p-4 [&>svg]:absolute [&>svg]:top-4 [&>svg]:left-4 [&>svg+div]:translate-y-[-3px] [&>svg~*]:pl-7;
+    @apply bg-muted text-foreground [&>svg]:text-foreground relative w-full rounded-lg border p-4 [&>svg]:absolute [&>svg]:top-4 [&>svg]:left-4 [&>svg]:size-[var(--icon-size)] [&>svg+div]:translate-y-[-3px] [&>svg~*]:pl-7;
   }
 
   /* Status variants share a left-rail pattern, driven by --alert-subtle /
      --alert-edge / --alert-text so one block per variant retones bg /
-     border-left + icon / title. Default stays on the neutral
-     popover/background base above. */
+     border-left + icon / title. Default stays on the neutral muted base
+     above, as Banner's does. */
   .dr-alert[data-variant="destructive"] {
     --alert-subtle: var(--destructive-subtle);
     --alert-edge: var(--destructive-edge);
