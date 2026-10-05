@@ -114,7 +114,7 @@ function OrderDetailPage() {
 
       <div className="space-y-6">
         {order.status !== "cancelled" && (
-          <div
+          <ol
             data-order-steps
             className="flex flex-col gap-2 pb-2 sm:flex-row sm:items-center"
           >
@@ -122,7 +122,7 @@ function OrderDetailPage() {
               const state = stepState(i, order.status)
               const reached = state !== "upcoming"
               return (
-                <div
+                <li
                   key={step}
                   data-state={state}
                   aria-current={state === "current" ? "step" : undefined}
@@ -154,6 +154,9 @@ function OrderDetailPage() {
                       )}
                     >
                       {t(step)}
+                      {state === "complete" && (
+                        <span className="sr-only"> {t("Completed")}</span>
+                      )}
                     </span>
                   </div>
                   {i < ORDER_STEPS.length - 1 && (
@@ -167,10 +170,10 @@ function OrderDetailPage() {
                       )}
                     />
                   )}
-                </div>
+                </li>
               )
             })}
-          </div>
+          </ol>
         )}
 
         <div className="grid gap-6 md:grid-cols-3">

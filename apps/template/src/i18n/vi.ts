@@ -406,4 +406,5 @@ export const vi: Record<keyof typeof en, string> = {
     "Ngôn ngữ được áp dụng ngay và lưu trên thiết bị này. Việc lưu các tùy chọn khác chỉ là mô phỏng.",
   "Email and digest frequency are managed above — choose which other channels reach you and which events they cover. Changes apply immediately.":
     "Email và tần suất tổng hợp được quản lý phía trên. Chọn các kênh khác và sự kiện cần thông báo. Thay đổi được áp dụng ngay.",
+  Completed: "Hoàn thành",
 }

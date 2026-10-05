@@ -1,3 +1,4 @@
+import { useId } from "react"
 import { useAppTranslation } from "@/i18n/useAppTranslation"
 import { useForm } from "@tanstack/react-form"
 import { z } from "zod"
@@ -42,6 +43,7 @@ export function ProductForm({
   onCancel,
 }: ProductFormProps) {
   const t = useAppTranslation()
+  const activeId = useId()
 
   const form = useForm({
     defaultValues,
@@ -173,13 +175,18 @@ export function ProductForm({
               children={(field) => (
                 <div className="flex items-center justify-between gap-4">
                   <div className="space-y-0.5">
-                    <Label htmlFor="product-active">{t("Active")}</Label>
-                    <p className="text-muted-foreground text-sm">
+                    <Label htmlFor={activeId}>{t("Active")}</Label>
+                    <p
+                      id={`${activeId}-description`}
+                      className="text-muted-foreground text-sm"
+                    >
                       {t("Make this product visible in the store")}
                     </p>
                   </div>
                   <Switch
-                    id="product-active"
+                    id={activeId}
+                    aria-describedby={`${activeId}-description`}
+                    onBlur={field.handleBlur}
                     checked={field.state.value}
                     onCheckedChange={(checked) => field.handleChange(checked)}
                   />

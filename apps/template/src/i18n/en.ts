@@ -403,4 +403,5 @@ export const en = {
     "Language applies immediately and is saved on this device. Saving the other preferences is simulated.",
   "Email and digest frequency are managed above — choose which other channels reach you and which events they cover. Changes apply immediately.":
     "Email and digest frequency are managed above — choose which other channels reach you and which events they cover. Changes apply immediately.",
+  Completed: "Completed",
 }
