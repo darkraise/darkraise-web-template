@@ -5,6 +5,12 @@ import { Button, type ButtonVariant } from "darkraise-ui/components/button"
 import { Calendar } from "darkraise-ui/components/calendar"
 import { Card, CardContent } from "darkraise-ui/components/card"
 import {
+  ColorPicker,
+  ColorPickerSwatch,
+  ColorPickerSwatchGroup,
+  ColorPickerSwatchItem,
+} from "darkraise-ui/components/color-picker"
+import {
   CascadeSelect,
   type CascadeOption,
 } from "darkraise-ui/components/cascade-select"
@@ -255,6 +261,16 @@ function ControlStates() {
         <FileUpload>
           <FileUploadTrigger>Browse</FileUploadTrigger>
         </FileUpload>
+      </div>
+      <div data-probe="swatches" style={{ width: 200 }}>
+        <ColorPicker defaultValue="#2563eb">
+          <ColorPickerSwatchGroup>
+            <ColorPickerSwatchItem value="#ffffff" />
+            <ColorPickerSwatchItem value="#000000" />
+            <ColorPickerSwatchItem value="#2563eb" />
+          </ColorPickerSwatchGroup>
+          <ColorPickerSwatch />
+        </ColorPicker>
       </div>
     </div>
   )

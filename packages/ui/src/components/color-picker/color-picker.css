@@ -16,7 +16,8 @@
   }
 
   .dr-color-picker-swatch {
-    @apply border-border focus-ring-inset inline-block cursor-pointer rounded-md border transition-shadow;
+    @apply focus-ring-inset inline-block cursor-pointer rounded-md border transition-shadow;
+    border-color: var(--field-edge);
     height: var(--field-height);
     width: var(--field-height);
   }
@@ -73,13 +74,25 @@
     @apply flex flex-wrap gap-2;
   }
 
+  /* The inset edge keeps a white or black swatch visible on any ground. */
   .dr-color-picker-swatch-item {
-    @apply focus-ring ring-ring/0 inline-block h-6 w-6 cursor-pointer rounded-sm ring-2 ring-offset-1 transition-shadow;
+    @apply focus-ring inline-block h-6 w-6 cursor-pointer rounded-sm transition-shadow;
+    box-shadow: inset 0 0 0 1px var(--field-edge);
   }
 
+  /* An outline rather than a ring shadow, so the 2px gap shows whatever is
+     behind the group (the translucent overlay under Glass). */
   .dr-color-picker-swatch-item[data-active="true"] {
-    @apply ring-primary;
-    box-shadow: var(--affordance-glow);
+    box-shadow:
+      inset 0 0 0 1px var(--field-edge),
+      var(--affordance-glow);
+    outline: 2px solid hsl(var(--primary));
+    outline-offset: 2px;
+  }
+
+  /* The selection outline outranks focus-ring's, so restate focus. */
+  .dr-color-picker-swatch-item[data-active="true"]:focus-visible {
+    outline-color: hsl(var(--focus-ring));
   }
 
   .dr-color-picker-swatch-item[data-disabled="true"] {

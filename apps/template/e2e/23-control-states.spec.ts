@@ -368,3 +368,60 @@ test.describe("number input steppers", () => {
     })
   }
 })
+
+test.describe("colour picker swatches", () => {
+  for (const style of STYLES) {
+    for (const mode of MODES) {
+      test(`swatch edges and the active ring reach 3:1 · ${style} · ${mode}`, async ({
+        page,
+      }) => {
+        await seedApp(page, { style, mode })
+        await openControlFixture(page)
+        await page.mouse.move(0, 0)
+        const items = probe(page, "swatches", ".dr-color-picker-swatch-item")
+        await expect(items).toHaveCount(3)
+        await items.first().scrollIntoViewIfNeeded()
+
+        // The white (0) and black (1) swatches: the left edge column against
+        // the ground 4px to its left.
+        for (const index of [0, 1]) {
+          const box = await boxOf(items.nth(index))
+          const x = Math.round(box.x)
+          const y = Math.round(box.y + box.height / 2)
+          const edge = await pixel(page, x, y)
+          const ground = await pixel(page, x - 4, y)
+          expect(
+            contrast(edge, ground),
+            `swatch ${index}: edge rgb(${edge.join(",")}) on rgb(${ground.join(",")})`,
+          ).toBeGreaterThanOrEqual(3)
+        }
+
+        // The ring is a 2px outline 2px out: x + 3 past the right edge sits
+        // inside it, x + 8 is clear of it.
+        const active = probe(
+          page,
+          "swatches",
+          '.dr-color-picker-swatch-item[data-active="true"]',
+        )
+        await expect(active).toHaveCount(1)
+        const box = await boxOf(active)
+        const right = Math.round(box.x + box.width)
+        const y = Math.round(box.y + box.height / 2)
+        const ring = await pixel(page, right + 3, y)
+        const ground = await pixel(page, right + 8, y)
+        expect(
+          contrast(ring, ground),
+          `ring rgb(${ring.join(",")}) on rgb(${ground.join(",")})`,
+        ).toBeGreaterThanOrEqual(3)
+
+        expect(
+          await computed(
+            probe(page, "swatches", ".dr-color-picker-swatch"),
+            "border-top-color",
+          ),
+          "trigger swatch edge",
+        ).toBe(await resolvedColour(page, "var(--field-edge)"))
+      })
+    }
+  }
+})
