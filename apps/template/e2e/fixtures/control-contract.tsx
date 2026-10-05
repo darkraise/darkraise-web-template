@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { createRoot } from "react-dom/client"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Check, ChevronDown, Info } from "lucide-react"
@@ -21,9 +22,15 @@ import { Card, CardContent } from "darkraise-ui/components/card"
 import { Checkbox } from "darkraise-ui/components/checkbox"
 import {
   ColorPicker,
+  ColorPickerArea,
+  ColorPickerContent,
+  ColorPickerControl,
+  ColorPickerEyeDropperTrigger,
+  ColorPickerInput,
   ColorPickerSwatch,
   ColorPickerSwatchGroup,
   ColorPickerSwatchItem,
+  ColorPickerTrigger,
 } from "darkraise-ui/components/color-picker"
 import {
   CascadeSelect,
@@ -37,13 +44,32 @@ import {
 } from "darkraise-ui/components/combobox"
 import { DateInput } from "darkraise-ui/components/date-input"
 import {
+  DatePicker,
+  DatePickerControl,
+  DatePickerInput,
+  DatePickerTrigger,
+} from "darkraise-ui/components/date-picker"
+import {
   Editable,
   EditableArea,
   EditableInput,
   EditablePreview,
 } from "darkraise-ui/components/editable"
 import {
+  Field,
+  FieldContent,
+  FieldLabel,
+  FieldTitle,
+} from "darkraise-ui/components/field"
+import { Fieldset, FieldsetLegend } from "darkraise-ui/components/fieldset"
+import {
   FileUpload,
+  FileUploadClearTrigger,
+  FileUploadDropzone,
+  FileUploadItem,
+  FileUploadItemDeleteTrigger,
+  FileUploadItemGroup,
+  FileUploadItemName,
   FileUploadTrigger,
 } from "darkraise-ui/components/file-upload"
 import { Input } from "darkraise-ui/components/input"
@@ -53,6 +79,7 @@ import {
   InputOTPSlot,
 } from "darkraise-ui/components/input-otp"
 import { Kbd } from "darkraise-ui/components/kbd"
+import { Listbox, ListboxItem } from "darkraise-ui/components/listbox"
 import { MultiSelect } from "darkraise-ui/components/multi-select"
 import {
   NumberInput,
@@ -83,9 +110,11 @@ import { Slider } from "darkraise-ui/components/slider"
 import { Switch } from "darkraise-ui/components/switch"
 import {
   TagsInput,
+  TagsInputClearTrigger,
   TagsInputControl,
   TagsInputInput,
   TagsInputItem,
+  TagsInputItemDeleteTrigger,
   TagsInputItemPreview,
   TagsInputItemText,
 } from "darkraise-ui/components/tags-input"
@@ -108,6 +137,35 @@ const ITEMS = [
   { value: "apple", label: "Apple" },
   { value: "banana", label: "Banana" },
 ]
+
+const NOTE = new File(["notes"], "notes.txt", { type: "text/plain" })
+
+// A disabled picker whose popover the test opens: its parts render in a
+// portal, outside the faded root, and must fade on their own. Closed until
+// asked, so it never covers another probe.
+function PortalledPicker() {
+  const [open, setOpen] = useState(false)
+  return (
+    <div data-case="color-picker-portal">
+      <button type="button" onClick={() => setOpen(true)}>
+        Open portalled picker
+      </button>
+      <ColorPicker defaultValue="#3b82f6" disabled open={open}>
+        <ColorPickerControl>
+          <ColorPickerSwatch />
+          <ColorPickerTrigger>Pick</ColorPickerTrigger>
+        </ColorPickerControl>
+        <ColorPickerContent className="compound-portal">
+          <ColorPickerArea />
+          <ColorPickerSwatchGroup>
+            <ColorPickerSwatchItem value="#ef4444" />
+          </ColorPickerSwatchGroup>
+          <ColorPickerEyeDropperTrigger aria-label="Pick from screen" />
+        </ColorPickerContent>
+      </ColorPicker>
+    </div>
+  )
+}
 
 const STATUS_VARIANTS: AlertVariant[] = [
   "default",
@@ -397,6 +455,209 @@ function ControlStates() {
             <ResizableHandle disabled />
             <ResizablePanel defaultSize={50}>B</ResizablePanel>
           </ResizablePanelGroup>
+        </div>
+      </div>
+      <div
+        data-probe="compound-disabled"
+        style={{ display: "flex", flexDirection: "column", gap: 8, width: 280 }}
+      >
+        <div data-case="color-picker">
+          <ColorPicker defaultValue="#3b82f6" disabled>
+            <ColorPickerControl>
+              <ColorPickerSwatch />
+              <ColorPickerInput aria-label="Disabled colour" />
+              <ColorPickerTrigger>Pick</ColorPickerTrigger>
+            </ColorPickerControl>
+            <ColorPickerArea />
+            <ColorPickerSwatchGroup>
+              <ColorPickerSwatchItem value="#10b981" />
+            </ColorPickerSwatchGroup>
+            <ColorPickerEyeDropperTrigger aria-label="Pick from screen" />
+          </ColorPicker>
+        </div>
+        <div data-case="color-picker-input-one">
+          <ColorPicker defaultValue="#3b82f6">
+            <ColorPickerControl>
+              <ColorPickerSwatch />
+              <ColorPickerInput disabled aria-label="Locked colour" />
+            </ColorPickerControl>
+          </ColorPicker>
+        </div>
+        <PortalledPicker />
+        <div data-case="combobox">
+          <Combobox items={ITEMS} disabled placeholder="Search">
+            <ComboboxControl>
+              <ComboboxInput aria-label="Disabled search" />
+              <ComboboxTrigger>
+                <ChevronDown className="h-3.5 w-3.5" />
+              </ComboboxTrigger>
+            </ComboboxControl>
+          </Combobox>
+        </div>
+        <div data-case="combobox-input-one">
+          <Combobox items={ITEMS} placeholder="Search">
+            <ComboboxControl>
+              <ComboboxInput disabled aria-label="Locked search" />
+              <ComboboxTrigger>
+                <ChevronDown className="h-3.5 w-3.5" />
+              </ComboboxTrigger>
+            </ComboboxControl>
+          </Combobox>
+        </div>
+        <div data-case="multi-select">
+          <MultiSelect items={ITEMS} defaultValue={["apple"]} disabled />
+        </div>
+        <div data-case="date-picker">
+          <DatePicker disabled>
+            <DatePickerControl>
+              <DatePickerInput aria-label="Disabled due date" />
+              <DatePickerTrigger>Pick</DatePickerTrigger>
+            </DatePickerControl>
+          </DatePicker>
+        </div>
+        <div data-case="date-picker-input-one">
+          <DatePicker>
+            <DatePickerControl>
+              <DatePickerInput disabled aria-label="Locked due date" />
+              <DatePickerTrigger>Pick</DatePickerTrigger>
+            </DatePickerControl>
+          </DatePicker>
+        </div>
+        <div data-case="file-upload">
+          <FileUpload disabled defaultAcceptedFiles={[NOTE]}>
+            <FileUploadDropzone>
+              Drop files
+              <FileUploadTrigger>Choose file</FileUploadTrigger>
+            </FileUploadDropzone>
+            <FileUploadItemGroup>
+              <FileUploadItem file={NOTE}>
+                <FileUploadItemName />
+                <FileUploadItemDeleteTrigger>×</FileUploadItemDeleteTrigger>
+              </FileUploadItem>
+            </FileUploadItemGroup>
+            <FileUploadClearTrigger>Clear</FileUploadClearTrigger>
+          </FileUpload>
+        </div>
+        <div data-case="file-upload-one">
+          <FileUpload>
+            <FileUploadDropzone>
+              Drop files
+              <FileUploadTrigger disabled>Choose file</FileUploadTrigger>
+            </FileUploadDropzone>
+          </FileUpload>
+        </div>
+        <div data-case="segment">
+          <SegmentGroup defaultValue="day" disabled aria-label="Disabled range">
+            <SegmentGroupIndicator />
+            <SegmentGroupItem value="day">Day</SegmentGroupItem>
+            <SegmentGroupItem value="week">Week</SegmentGroupItem>
+          </SegmentGroup>
+        </div>
+        <div data-case="segment-one">
+          <SegmentGroup defaultValue="day" aria-label="Range with one disabled">
+            <SegmentGroupIndicator />
+            <SegmentGroupItem value="day">Day</SegmentGroupItem>
+            <SegmentGroupItem value="week" disabled>
+              Week
+            </SegmentGroupItem>
+          </SegmentGroup>
+        </div>
+        <div data-case="tags">
+          <TagsInput defaultValue={["react"]} disabled>
+            <TagsInputControl>
+              <TagsInputItem index={0} value="react">
+                <TagsInputItemPreview>
+                  <TagsInputItemText>react</TagsInputItemText>
+                  <TagsInputItemDeleteTrigger>×</TagsInputItemDeleteTrigger>
+                </TagsInputItemPreview>
+              </TagsInputItem>
+              <TagsInputInput aria-label="Disabled tags" />
+            </TagsInputControl>
+          </TagsInput>
+        </div>
+        <div data-case="tags-one">
+          <TagsInput defaultValue={["react"]}>
+            <TagsInputControl>
+              <TagsInputItem index={0} value="react" disabled>
+                <TagsInputItemPreview>
+                  <TagsInputItemText>react</TagsInputItemText>
+                  <TagsInputItemDeleteTrigger>×</TagsInputItemDeleteTrigger>
+                </TagsInputItemPreview>
+              </TagsInputItem>
+              <TagsInputInput aria-label="Tags with one disabled" />
+            </TagsInputControl>
+          </TagsInput>
+        </div>
+        <div data-case="tags-read-only">
+          <TagsInput defaultValue={["react"]} readOnly>
+            <TagsInputControl>
+              <TagsInputItem index={0} value="react">
+                <TagsInputItemPreview>
+                  <TagsInputItemText>react</TagsInputItemText>
+                </TagsInputItemPreview>
+              </TagsInputItem>
+              <TagsInputInput aria-label="Read-only tags" />
+              <TagsInputClearTrigger>×</TagsInputClearTrigger>
+            </TagsInputControl>
+          </TagsInput>
+        </div>
+        <div data-case="otp">
+          <InputOTP
+            maxLength={3}
+            variant="separate"
+            disabled
+            aria-label="Disabled code"
+          >
+            <InputOTPGroup>
+              <InputOTPSlot index={0} />
+              <InputOTPSlot index={1} />
+              <InputOTPSlot index={2} />
+            </InputOTPGroup>
+          </InputOTP>
+        </div>
+        <div data-case="fieldset">
+          <Fieldset disabled>
+            <FieldsetLegend>Shipping</FieldsetLegend>
+            <Input aria-label="Fieldset name" />
+            <Button>Save</Button>
+            <Combobox items={ITEMS} disabled placeholder="Search">
+              <ComboboxControl>
+                <ComboboxInput aria-label="Fieldset search" />
+              </ComboboxControl>
+            </Combobox>
+          </Fieldset>
+        </div>
+        <div data-case="field">
+          <Field data-disabled="true">
+            <FieldLabel htmlFor="compound-field-name">Name</FieldLabel>
+            <Input id="compound-field-name" disabled />
+          </Field>
+        </div>
+        <div data-case="field-choice">
+          <Field data-disabled="true">
+            <FieldLabel>
+              <Checkbox disabled aria-label="Accept terms" />
+              <FieldContent>
+                <FieldTitle>Accept terms</FieldTitle>
+              </FieldContent>
+            </FieldLabel>
+          </Field>
+        </div>
+        <div data-case="listbox">
+          <Listbox disabled aria-label="Disabled fruit">
+            <ListboxItem value="apple">Apple</ListboxItem>
+            <ListboxItem value="banana" disabled>
+              Banana
+            </ListboxItem>
+          </Listbox>
+        </div>
+        <div data-case="listbox-one">
+          <Listbox aria-label="Fruit with one disabled">
+            <ListboxItem value="apple">Apple</ListboxItem>
+            <ListboxItem value="banana" disabled>
+              Banana
+            </ListboxItem>
+          </Listbox>
         </div>
       </div>
     </div>

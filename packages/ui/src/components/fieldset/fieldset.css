@@ -9,4 +9,12 @@
   .dr-fieldset[disabled] {
     @apply cursor-not-allowed opacity-[var(--disabled-opacity)];
   }
+
+  /* A disabled fieldset fades once, as a whole: it disables every control
+     inside it, and each of those, and any compound root nested in it, reads
+     the token as 1. */
+  .dr-fieldset:disabled > *,
+  .dr-fieldset[disabled] > * {
+    --disabled-opacity: 1;
+  }
 }

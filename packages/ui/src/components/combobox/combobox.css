@@ -109,4 +109,10 @@
   .dr-combobox-empty {
     @apply text-muted-foreground px-3 py-6 text-center text-sm;
   }
+
+  /* A disabled combobox fades once, at its root; its input (a .dr-input),
+     and a multi-select's control and chips, read the token as 1. */
+  .dr-combobox[data-disabled="true"] > * {
+    --disabled-opacity: 1;
+  }
 }

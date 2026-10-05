@@ -133,4 +133,12 @@
   .dr-color-picker-eye-dropper-trigger[data-disabled="true"] {
     @apply cursor-not-allowed opacity-[var(--disabled-opacity)];
   }
+
+  /* A disabled picker fades once, at its root: every disabled rule reads the
+     token, so resetting it on the root's children stops the swatch, input,
+     trigger and any inline area or swatch from fading again. The popover
+     renders in a portal, outside the root, and keeps its own fades. */
+  .dr-color-picker[data-disabled="true"] > * {
+    --disabled-opacity: 1;
+  }
 }

@@ -49,4 +49,10 @@
   .dr-listbox-item[data-disabled] {
     @apply cursor-not-allowed opacity-[var(--disabled-opacity)];
   }
+
+  /* A disabled listbox fades once, at its root; a disabled item inside it
+     reads the token as 1. */
+  .dr-listbox[data-disabled] > * {
+    --disabled-opacity: 1;
+  }
 }

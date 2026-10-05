@@ -83,4 +83,11 @@
   .dr-file-upload-clear-trigger:where(:not(:disabled)):hover {
     @apply text-foreground;
   }
+
+  /* A disabled upload fades once, at its root; the dropzone, the trigger
+     inside it and the item and clear triggers read the token as 1. A
+     trigger disabled on its own, under an enabled root, still fades. */
+  .dr-file-upload[data-disabled="true"] > * {
+    --disabled-opacity: 1;
+  }
 }

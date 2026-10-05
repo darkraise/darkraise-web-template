@@ -76,4 +76,10 @@
   .dr-field-required-mark {
     @apply text-destructive-text ml-0.5;
   }
+
+  /* A label that wraps a control (a choice card) fades once, as a whole;
+     the control and title inside it read the token as 1. */
+  .dr-field[data-disabled="true"] .dr-field-label > * {
+    --disabled-opacity: 1;
+  }
 }

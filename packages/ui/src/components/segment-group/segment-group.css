@@ -129,4 +129,10 @@
     .dr-segment-group-item[data-variant="default"][data-state="checked"] {
     color: var(--selected-check-fg);
   }
+
+  /* A disabled group fades once, at its root; its items read the token as
+     1. An item disabled on its own still fades. */
+  .dr-segment-group[data-disabled="true"] > * {
+    --disabled-opacity: 1;
+  }
 }

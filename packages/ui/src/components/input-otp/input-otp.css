@@ -89,4 +89,10 @@
       var(--field-shadow),
       var(--affordance-glow);
   }
+
+  /* The container fades once any slot is disabled; the separate variant's
+     slots, each a disabled input, read the token as 1. */
+  .dr-input-otp-container:has(:disabled) > * {
+    --disabled-opacity: 1;
+  }
 }

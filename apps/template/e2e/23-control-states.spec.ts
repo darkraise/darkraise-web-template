@@ -2,7 +2,7 @@ import { test, expect, type Locator, type Page } from "@playwright/test"
 import { STYLES } from "./fixtures/theme"
 import { applyTheme, boxOf, readToken, seedApp } from "./helpers/app"
 import { openControlFixture } from "./helpers/controls"
-import { computed, contrast, pixel, rgbOf } from "./helpers/measure"
+import { computed, contrast, pixel, rgbOf, settle } from "./helpers/measure"
 
 // Tall enough that every probe renders on screen: pixel() clips its
 // screenshot to the viewport.
@@ -727,6 +727,121 @@ test.describe("disabled recipe", () => {
       const readOnly = part("editable-read-only", ".dr-editable-preview")
       expect(await computed(readOnly, "opacity")).toBe("1")
       expect(await computed(readOnly, "cursor")).toBe("default")
+    })
+  }
+})
+
+test.describe("compound disabled fades", () => {
+  // [case, selector inside it, count]: each part a user sees as disabled
+  // lands at --disabled-opacity once its own opacity is multiplied by every
+  // ancestor's: never a compounded 0.25 or 0.125.
+  const FADED: Array<[string, string, number]> = [
+    ["color-picker", ".dr-color-picker-swatch", 1],
+    ["color-picker", ".dr-color-picker-input", 1],
+    ["color-picker", ".dr-color-picker-trigger", 1],
+    ["color-picker", ".dr-color-picker-area", 1],
+    ["color-picker", ".dr-color-picker-swatch-item", 1],
+    ["color-picker-input-one", ".dr-color-picker-input", 1],
+    ["combobox", ".dr-combobox-input", 1],
+    ["combobox-input-one", ".dr-combobox-input", 1],
+    ["multi-select", ".dr-multi-select-chip-remove", 1],
+    ["multi-select", ".dr-combobox-input", 1],
+    ["date-picker", ".dr-date-picker-input", 1],
+    ["date-picker", ".dr-date-picker-trigger", 1],
+    ["date-picker-input-one", ".dr-date-picker-input", 1],
+    ["file-upload", ".dr-file-upload-dropzone", 1],
+    ["file-upload", ".dr-file-upload-dropzone .dr-btn", 1],
+    ["file-upload", ".dr-file-upload-item-delete-trigger", 1],
+    ["file-upload", ".dr-file-upload-clear-trigger", 1],
+    ["file-upload-one", ".dr-file-upload-dropzone .dr-btn", 1],
+    ["segment", ".dr-segment-group-item", 2],
+    ["segment-one", ".dr-segment-group-item[data-disabled]", 1],
+    ["tags", ".dr-tags-input-item-preview", 1],
+    ["tags", ".dr-tags-input-item-delete-trigger", 1],
+    ["tags", ".dr-tags-input-input", 1],
+    ["tags-one", ".dr-tags-input-item-preview", 1],
+    ["tags-one", ".dr-tags-input-item-delete-trigger", 1],
+    ["tags-read-only", '[aria-label="Clear all tags"]', 1],
+    ["otp", ".dr-input-otp-slot-separate", 3],
+    ["fieldset", ".dr-fieldset-legend", 1],
+    ["fieldset", ".dr-input", 2],
+    ["fieldset", ".dr-btn", 1],
+    ["field", ".dr-field-label", 1],
+    ["field", ".dr-input", 1],
+    ["field-choice", ".dr-checkbox", 1],
+    ["field-choice", ".dr-field-title", 1],
+    ["listbox", ".dr-listbox-item", 2],
+    ["listbox-one", ".dr-listbox-item[data-disabled]", 1],
+  ]
+  // Enabled parts beside a part disabled on its own: no fade at all.
+  const UNFADED: Array<[string, string]> = [
+    ["color-picker-input-one", ".dr-color-picker-swatch"],
+    ["combobox-input-one", ".dr-combobox-trigger"],
+    ["date-picker-input-one", ".dr-date-picker-trigger"],
+    ["file-upload-one", ".dr-file-upload-dropzone"],
+    ["segment-one", ".dr-segment-group-item:not([data-disabled])"],
+    ["tags-one", ".dr-tags-input-input"],
+    ["listbox-one", ".dr-listbox-item:not([data-disabled])"],
+  ]
+
+  async function expectFadedOnce(
+    target: Locator,
+    label: string,
+    token: number,
+  ) {
+    expect(await effectiveOpacity(target), label).toBeCloseTo(token, 3)
+    expect(await computed(target, "cursor"), label).toBe("not-allowed")
+  }
+
+  for (const mode of MODES) {
+    test(`a disabled compound control fades once · ${mode}`, async ({
+      page,
+    }) => {
+      await openInMode(page, mode)
+      const token = Number(await readToken(page, "--disabled-opacity"))
+      const part = (name: string, selector: string) =>
+        probe(page, "compound-disabled", `[data-case="${name}"] ${selector}`)
+
+      for (const [name, selector, count] of FADED) {
+        const parts = part(name, selector)
+        await expect(parts, `${name} ${selector}`).toHaveCount(count)
+        for (const each of await parts.all()) {
+          await expectFadedOnce(each, `${name} ${selector}`, token)
+        }
+      }
+      for (const [name, selector] of UNFADED) {
+        const each = part(name, selector)
+        await expect(each, `${name} ${selector}`).toHaveCount(1)
+        expect(await effectiveOpacity(each), `${name} ${selector}`).toBe(1)
+      }
+      // The eye dropper renders only where the EyeDropper API exists.
+      for (const each of await part(
+        "color-picker",
+        ".dr-color-picker-eye-dropper-trigger",
+      ).all()) {
+        await expectFadedOnce(each, "inline eye dropper", token)
+      }
+
+      // Portalled parts sit outside the faded root and fade on their own.
+      await part("color-picker-portal", "> button").click()
+      const content = page.locator(".compound-portal")
+      await expect(content).toBeVisible()
+      await settle(page)
+      await expectFadedOnce(
+        content.locator(".dr-color-picker-area"),
+        "portalled area",
+        token,
+      )
+      await expectFadedOnce(
+        content.locator(".dr-color-picker-swatch-item"),
+        "portalled swatch item",
+        token,
+      )
+      for (const each of await content
+        .locator(".dr-color-picker-eye-dropper-trigger")
+        .all()) {
+        await expectFadedOnce(each, "portalled eye dropper", token)
+      }
     })
   }
 })

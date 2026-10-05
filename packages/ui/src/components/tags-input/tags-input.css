@@ -48,7 +48,8 @@
     color: var(--selected-check-fg);
   }
 
-  .dr-tags-input-item-preview[data-disabled="true"] {
+  /* TagsInputItem carries the state on its display: contents wrapper. */
+  .dr-tags-input-item[data-disabled="true"] > .dr-tags-input-item-preview {
     @apply cursor-not-allowed opacity-[var(--disabled-opacity)];
   }
 
@@ -88,5 +89,17 @@
   .dr-tags-input-input {
     @apply text-foreground placeholder:text-muted-foreground flex-1 border-0 bg-transparent text-sm outline-none focus:outline-none disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)];
     min-width: 8ch;
+  }
+
+  /* A disabled field fades once, at its root; a tag disabled on its own
+     fades its preview once, and the delete trigger inside reads the token
+     as 1. The clear trigger shares the delete trigger's class and still
+     fades when read-only, beneath no faded ancestor. */
+  .dr-tags-input[data-disabled="true"] > * {
+    --disabled-opacity: 1;
+  }
+
+  .dr-tags-input-item[data-disabled="true"] > .dr-tags-input-item-preview > * {
+    --disabled-opacity: 1;
   }
 }

@@ -79,4 +79,10 @@
   .dr-date-picker-preset {
     @apply text-foreground hover:bg-accent hover:text-accent-foreground focus-ring-inset inline-flex items-center justify-center rounded-sm border px-2 py-1 text-xs transition-colors;
   }
+
+  /* A disabled picker fades once, at its root; its input and trigger read
+     the token as 1. The calendar renders in a portal and keeps its own. */
+  .dr-date-picker[data-disabled="true"] > * {
+    --disabled-opacity: 1;
+  }
 }

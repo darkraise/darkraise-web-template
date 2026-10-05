@@ -346,7 +346,7 @@ const REQUIRED: Array<[string, string, string, "fade" | "cursor"]> = [
   ],
   [
     `${C}tags-input/tags-input.css`,
-    '.dr-tags-input-item-preview[data-disabled="true"]',
+    '.dr-tags-input-item[data-disabled="true"] > .dr-tags-input-item-preview',
     "",
     "fade",
   ],
@@ -398,6 +398,38 @@ const INHERITED_FADE_RESETS: Array<[string, string]> = [
     ".dr-input-group:has(> .dr-input-grouped:disabled) > *",
   ],
   [`${C}number-input/number-input.css`, ".dr-number-input[data-disabled] > *"],
+  [
+    `${C}color-picker/color-picker.css`,
+    '.dr-color-picker[data-disabled="true"] > *',
+  ],
+  [`${C}combobox/combobox.css`, '.dr-combobox[data-disabled="true"] > *'],
+  [
+    `${C}date-picker/date-picker.css`,
+    '.dr-date-picker[data-disabled="true"] > *',
+  ],
+  [
+    `${C}field/field.css`,
+    '.dr-field[data-disabled="true"] .dr-field-label > *',
+  ],
+  [
+    `${C}fieldset/fieldset.css`,
+    ".dr-fieldset:disabled > *, .dr-fieldset[disabled] > *",
+  ],
+  [
+    `${C}file-upload/file-upload.css`,
+    '.dr-file-upload[data-disabled="true"] > *',
+  ],
+  [`${C}input-otp/input-otp.css`, ".dr-input-otp-container:has(:disabled) > *"],
+  [`${C}listbox/listbox.css`, ".dr-listbox[data-disabled] > *"],
+  [
+    `${C}segment-group/segment-group.css`,
+    '.dr-segment-group[data-disabled="true"] > *',
+  ],
+  [`${C}tags-input/tags-input.css`, '.dr-tags-input[data-disabled="true"] > *'],
+  [
+    `${C}tags-input/tags-input.css`,
+    '.dr-tags-input-item[data-disabled="true"] > .dr-tags-input-item-preview > *',
+  ],
 ]
 
 function filesUnder(dir: string, pattern: RegExp): string[] {
