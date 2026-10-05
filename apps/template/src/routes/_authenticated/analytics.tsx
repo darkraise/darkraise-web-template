@@ -2,8 +2,6 @@ import { AppText } from "@/i18n/AppText"
 import { useAppTranslation } from "@/i18n/useAppTranslation"
 import { createFileRoute } from "@tanstack/react-router"
 import {
-  LineChart,
-  Line,
   AreaChart,
   Area,
   BarChart,
@@ -22,6 +20,8 @@ import {
   ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
+  RevenueTrendChart,
+  metricColors,
   type ChartConfig,
 } from "@/features/charts"
 import { useAnalytics, useOrders } from "@/demo/hooks"
@@ -30,10 +30,6 @@ import { useReducedMotion } from "darkraise-ui/hooks"
 export const Route = createFileRoute("/_authenticated/analytics")({
   component: AnalyticsPage,
 })
-
-const revenueConfig = {
-  revenue: { label: <AppText text="Revenue" />, color: "var(--chart-1)" },
-} satisfies ChartConfig
 
 const trafficConfig = {
   "Organic Search": {
@@ -58,12 +54,15 @@ const trafficColors = [
 ]
 
 const ordersVisitorsConfig = {
-  orders: { label: <AppText text="Orders" />, color: "var(--chart-1)" },
-  visitors: { label: <AppText text="Visitors" />, color: "var(--chart-2)" },
+  orders: { label: <AppText text="Orders" />, color: metricColors.orders },
+  visitors: {
+    label: <AppText text="Visitors" />,
+    color: metricColors.visitors,
+  },
 } satisfies ChartConfig
 
 const productRevenueConfig = {
-  revenue: { label: <AppText text="Revenue" />, color: "var(--chart-3)" },
+  revenue: { label: <AppText text="Revenue" />, color: metricColors.revenue },
 } satisfies ChartConfig
 
 function AnalyticsPage() {
@@ -133,30 +132,7 @@ function AnalyticsPage() {
             title={t("Revenue Trend")}
             description={t("Daily revenue over the last 30 days")}
           >
-            <ChartContainer
-              config={revenueConfig}
-              className="min-h-[300px] w-full"
-            >
-              <LineChart data={revenueData}>
-                <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="date"
-                  tickLine={false}
-                  axisLine={false}
-                  className="text-xs"
-                />
-                <YAxis tickLine={false} axisLine={false} className="text-xs" />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Line
-                  isAnimationActive={!reducedMotion}
-                  type="monotone"
-                  dataKey="revenue"
-                  stroke="var(--color-revenue)"
-                  strokeWidth={2}
-                  dot={false}
-                />
-              </LineChart>
-            </ChartContainer>
+            <RevenueTrendChart data={revenueData} />
           </ChartCard>
           <ChartCard
             title={t("Traffic Sources")}
@@ -205,6 +181,7 @@ function AnalyticsPage() {
                 />
                 <YAxis tickLine={false} axisLine={false} className="text-xs" />
                 <ChartTooltip content={<ChartTooltipContent />} />
+                <ChartLegend content={<ChartLegendContent />} />
                 <Area
                   isAnimationActive={!reducedMotion}
                   type="monotone"

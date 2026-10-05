@@ -1,5 +1,6 @@
-import { test, expect, type Page } from "@playwright/test"
+import { test, expect, type Locator, type Page } from "@playwright/test"
 import { gotoApp, seedApp } from "./helpers/app"
+import { computed } from "./helpers/measure"
 
 /**
  * Demo app consistency. Each block checks one page-level rule through
@@ -97,4 +98,75 @@ test.describe("status badges", () => {
       }
     })
   }
+})
+
+test.describe("charts", () => {
+  test.beforeEach(async ({ page }) => {
+    await seedApp(page, { style: "quiet", mode: "light" })
+  })
+
+  // Recharts replaces its mark nodes while the data settles, and a detached
+  // node reports an empty computed style.
+  const settledStyle = async (mark: Locator, property: string) => {
+    let value = ""
+    await expect
+      .poll(async () => {
+        value = await computed(mark, property)
+        return value
+      })
+      .not.toBe("")
+    return value
+  }
+
+  const chartCard = (page: Page, title: string) =>
+    page.locator(".dr-card", {
+      has: page.getByText(title, { exact: true }),
+    })
+
+  test("Orders & Visitors has a two-item legend", async ({ page }) => {
+    await gotoApp(page, "/analytics")
+    const items = chartCard(page, "Orders & Visitors").locator(
+      ".dr-chart-legend > div",
+    )
+    await expect(items).toHaveText(["Orders", "Visitors"])
+  })
+
+  test("Revenue Trend is the same area chart on both pages", async ({
+    page,
+  }) => {
+    const revenueStroke = async () => {
+      const card = chartCard(page, "Revenue Trend")
+      const curve = card.locator(".recharts-area-curve").first()
+      await expect(curve).toBeVisible()
+      await expect(card.locator(".recharts-line-curve")).toHaveCount(0)
+      return settledStyle(curve, "stroke")
+    }
+    await gotoApp(page, "/")
+    const dashboard = await revenueStroke()
+    await gotoApp(page, "/analytics")
+    expect(await revenueStroke()).toBe(dashboard)
+  })
+
+  test("each metric keeps one colour", async ({ page }) => {
+    const firstFill = async (title: string, selector: string) => {
+      const mark = chartCard(page, title).locator(selector).first()
+      await expect(mark).toBeVisible()
+      return settledStyle(mark, "fill")
+    }
+    await gotoApp(page, "/analytics")
+    const revenue = await firstFill("Revenue Trend", ".recharts-area-area")
+    expect(
+      await firstFill(
+        "Top Products by Revenue",
+        ".recharts-bar-rectangle path",
+      ),
+    ).toBe(revenue)
+    await gotoApp(page, "/")
+    expect(
+      await firstFill(
+        "Top Products by Quantity",
+        ".recharts-bar-rectangle path",
+      ),
+    ).not.toBe(revenue)
+  })
 })

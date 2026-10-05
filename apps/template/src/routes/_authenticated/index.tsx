@@ -9,15 +9,7 @@ import {
   TrendingUp,
   Download,
 } from "lucide-react"
-import {
-  AreaChart,
-  Area,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-} from "recharts"
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts"
 import { Grid, PageHeader } from "darkraise-ui/layout"
 import { Button } from "darkraise-ui/components/button"
 import { Skeleton } from "darkraise-ui/components/skeleton"
@@ -34,6 +26,8 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  RevenueTrendChart,
+  metricColors,
   type ChartConfig,
 } from "@/features/charts"
 import { useOrders, useCustomers, useAnalytics } from "@/demo/hooks"
@@ -43,12 +37,8 @@ export const Route = createFileRoute("/_authenticated/")({
   component: DashboardPage,
 })
 
-const revenueConfig = {
-  revenue: { label: <AppText text="Revenue" />, color: "var(--chart-1)" },
-} satisfies ChartConfig
-
 const topProductsConfig = {
-  count: { label: <AppText text="Count" />, color: "var(--chart-1)" },
+  count: { label: <AppText text="Count" />, color: metricColors.units },
 } satisfies ChartConfig
 
 const sumOf = (values: number[]) => values.reduce((acc, n) => acc + n, 0)
@@ -256,30 +246,7 @@ function DashboardPage() {
             title={t("Revenue Trend")}
             description={t("Daily revenue over the last 30 days")}
           >
-            <ChartContainer
-              config={revenueConfig}
-              className="min-h-[300px] w-full"
-            >
-              <AreaChart data={revenueChartData}>
-                <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="date"
-                  tickLine={false}
-                  axisLine={false}
-                  className="text-xs"
-                />
-                <YAxis tickLine={false} axisLine={false} className="text-xs" />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Area
-                  isAnimationActive={!reducedMotion}
-                  type="monotone"
-                  dataKey="revenue"
-                  stroke="var(--color-revenue)"
-                  fill="var(--color-revenue)"
-                  fillOpacity={0.1}
-                />
-              </AreaChart>
-            </ChartContainer>
+            <RevenueTrendChart data={revenueChartData} />
           </ChartCard>
           <ChartCard
             title={t("Top Products by Quantity")}

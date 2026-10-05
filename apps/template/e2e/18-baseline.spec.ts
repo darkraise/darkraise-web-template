@@ -24,7 +24,6 @@ const MODES = ["light", "dark"] as const
  */
 const AREA = ".recharts-area-area"
 const BAR = ".recharts-bar-rectangle"
-const LINE = ".recharts-line-curve"
 const PIE = ".recharts-pie-sector"
 
 /**
@@ -36,7 +35,7 @@ const APP_PAGES = [
   ["orders", "/orders", ["tbody tr td"]],
   ["order-detail", "/orders/ord-1", [".dr-card-title"]],
   ["settings", "/settings", [".dr-card-title"]],
-  ["analytics", "/analytics", [LINE, PIE, AREA, BAR]],
+  ["analytics", "/analytics", [PIE, AREA, BAR]],
 ] as const
 
 /** Showcase pages, captured at the viewport. */
