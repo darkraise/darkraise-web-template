@@ -32,8 +32,15 @@
     @apply contents;
   }
 
+  /* Same chip fill as MultiSelect: mixed from the field's own fill, since
+     --secondary equals --control-well in light mode. */
   .dr-tags-input-item-preview {
-    @apply bg-secondary text-secondary-foreground focus-ring-inset inline-flex items-center gap-1 rounded-sm px-2 py-0.5 text-xs font-medium transition-colors;
+    @apply text-secondary-foreground focus-ring-inset inline-flex items-center gap-1 rounded-sm px-2 py-0.5 text-xs font-medium transition-colors;
+    background-color: color-mix(
+      in srgb,
+      hsl(var(--control-surface)),
+      hsl(var(--foreground)) 8%
+    );
   }
 
   .dr-tags-input-item-preview[data-highlighted="true"] {

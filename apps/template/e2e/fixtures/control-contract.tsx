@@ -43,6 +43,14 @@ import {
   SelectValue,
 } from "darkraise-ui/components/select"
 import { Switch } from "darkraise-ui/components/switch"
+import {
+  TagsInput,
+  TagsInputControl,
+  TagsInputInput,
+  TagsInputItem,
+  TagsInputItemPreview,
+  TagsInputItemText,
+} from "darkraise-ui/components/tags-input"
 import { TimePicker } from "darkraise-ui/components/time-picker"
 import { Toggle } from "darkraise-ui/components/toggle"
 import { ColumnHeader, DataTable } from "darkraise-ui/data-table"
@@ -257,6 +265,22 @@ createRoot(root).render(
         <CardContent>
           <div data-probe="edge-card" style={{ paddingBottom: 12 }}>
             <Input aria-label="On card" placeholder="On card" />
+          </div>
+          <div
+            data-probe="chips-card"
+            style={{ display: "grid", gap: 8, paddingBottom: 12 }}
+          >
+            <MultiSelect items={ITEMS} defaultValue={["apple"]} />
+            <TagsInput defaultValue={["react"]}>
+              <TagsInputControl>
+                <TagsInputItem index={0} value="react">
+                  <TagsInputItemPreview>
+                    <TagsInputItemText>react</TagsInputItemText>
+                  </TagsInputItemPreview>
+                </TagsInputItem>
+                <TagsInputInput aria-label="Tags" />
+              </TagsInputControl>
+            </TagsInput>
           </div>
         </CardContent>
       </Card>

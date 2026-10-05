@@ -1,7 +1,8 @@
 import { test, expect, type Locator, type Page } from "@playwright/test"
+import { STYLES } from "./fixtures/theme"
 import { boxOf, seedApp } from "./helpers/app"
 import { openControlFixture } from "./helpers/controls"
-import { computed } from "./helpers/measure"
+import { computed, contrast, pixel } from "./helpers/measure"
 
 // Tall enough that every probe renders on screen: pixel() clips its
 // screenshot to the viewport.
@@ -124,5 +125,39 @@ test.describe("date input placeholders", () => {
         ).toBe(muted)
       }
     })
+  }
+})
+
+test.describe("chip fills", () => {
+  const CHIPS = [".dr-multi-select-chip", ".dr-tags-input-item-preview"]
+
+  for (const style of STYLES) {
+    for (const mode of MODES) {
+      test(`chips separate from the card well · ${style} · ${mode}`, async ({
+        page,
+      }) => {
+        await seedApp(page, { style, mode })
+        await openControlFixture(page)
+        await page.mouse.move(0, 0)
+        for (const chip of CHIPS) {
+          const target = probe(page, "chips-card", chip).first()
+          await target.scrollIntoViewIfNeeded()
+          const box = await boxOf(target)
+          const y = Math.round(box.y + box.height / 2)
+          // The well is read in the empty input beside the chip, away from
+          // the field's edges.
+          const well = await pixel(page, Math.round(box.x + box.width + 12), y)
+          const fill = await pixel(page, Math.round(box.x + 3), y)
+          const ratio = contrast(fill, well)
+          console.log(
+            `chip ${style} · ${mode} · ${chip}: ${ratio.toFixed(2)}:1`,
+          )
+          expect(
+            ratio,
+            `${chip}: rgb(${fill.join(",")}) on rgb(${well.join(",")})`,
+          ).toBeGreaterThanOrEqual(1.1)
+        }
+      })
+    }
   }
 })

@@ -35,8 +35,16 @@
     @apply flex min-w-0 flex-1 flex-wrap items-center gap-1;
   }
 
+  /* Mixed from the field's own fill rather than a palette step: in light
+     mode --muted and --secondary equal --control-well, so a chip on a card
+     well had no edge at all. */
   .dr-multi-select-chip {
-    @apply bg-muted text-foreground inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs;
+    @apply text-foreground inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs;
+    background-color: color-mix(
+      in srgb,
+      hsl(var(--control-surface)),
+      hsl(var(--foreground)) 8%
+    );
   }
 
   .dr-multi-select-chip-label {
