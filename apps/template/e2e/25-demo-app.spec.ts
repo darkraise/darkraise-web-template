@@ -410,3 +410,42 @@ test.describe("inbox", () => {
     }
   })
 })
+
+test.describe("order stepper", () => {
+  test.beforeEach(async ({ page }) => {
+    await seedApp(page, { style: "quiet", mode: "light" })
+  })
+
+  const states = (page: Page) =>
+    page
+      .locator("[data-order-steps] > [data-state]")
+      .evaluateAll((steps) => steps.map((s) => s.getAttribute("data-state")))
+
+  test("a delivered order shows every step complete", async ({ page }) => {
+    await gotoApp(page, "/orders/ord-1")
+    await expect(page.locator("[data-order-steps] > *")).toHaveCount(4)
+    expect(await states(page)).toEqual([
+      "complete",
+      "complete",
+      "complete",
+      "complete",
+    ])
+    await expect(page.locator("[data-order-steps] [aria-current]")).toHaveCount(
+      0,
+    )
+  })
+
+  test("a processing order marks its current step", async ({ page }) => {
+    await gotoApp(page, "/orders/ord-5")
+    await expect(page.locator("[data-order-steps] > *")).toHaveCount(4)
+    expect(await states(page)).toEqual([
+      "complete",
+      "current",
+      "upcoming",
+      "upcoming",
+    ])
+    await expect(
+      page.locator("[data-order-steps] > [data-state]").nth(1),
+    ).toHaveAttribute("aria-current", "step")
+  })
+})

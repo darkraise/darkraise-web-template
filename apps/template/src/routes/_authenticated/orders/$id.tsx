@@ -1,7 +1,9 @@
 import { useUiLocale } from "darkraise-ui/i18n"
 import { useAppTranslation } from "@/i18n/useAppTranslation"
 import { createFileRoute, Link } from "@tanstack/react-router"
+import { Check } from "lucide-react"
 import { PageHeader } from "darkraise-ui/layout"
+import { cn } from "darkraise-ui/lib"
 import { Button } from "darkraise-ui/components/button"
 import {
   Card,
@@ -26,12 +28,11 @@ import {
 } from "darkraise-ui/components/table"
 import { useOrder, useUpdateOrderStatus } from "@/demo/hooks"
 import { StatusBadge } from "@/features/status"
+import { ORDER_STEPS, stepState } from "@/features/orders"
 
 export const Route = createFileRoute("/_authenticated/orders/$id")({
   component: OrderDetailPage,
 })
-
-const statusSteps = ["pending", "processing", "shipped", "delivered"] as const
 
 function OrderDetailPage() {
   const uiLocale = useUiLocale()
@@ -57,10 +58,6 @@ function OrderDetailPage() {
       </div>
     )
   }
-
-  const currentStepIndex = statusSteps.indexOf(
-    order.status as (typeof statusSteps)[number],
-  )
 
   return (
     <>
@@ -121,41 +118,58 @@ function OrderDetailPage() {
             data-order-steps
             className="flex flex-col gap-2 pb-2 sm:flex-row sm:items-center"
           >
-            {statusSteps.map((step, i) => (
-              <div
-                key={step}
-                className="flex shrink-0 flex-col gap-2 sm:flex-row sm:items-center"
-              >
-                <div className="flex items-center gap-2">
-                  <div
-                    className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-medium ${
-                      i <= currentStepIndex
-                        ? "bg-primary-fill text-primary-foreground"
-                        : "bg-muted text-muted-foreground"
-                    }`}
-                  >
-                    {i + 1}
+            {ORDER_STEPS.map((step, i) => {
+              const state = stepState(i, order.status)
+              const reached = state !== "upcoming"
+              return (
+                <div
+                  key={step}
+                  data-state={state}
+                  aria-current={state === "current" ? "step" : undefined}
+                  className="flex shrink-0 flex-col gap-2 sm:flex-row sm:items-center"
+                >
+                  <div className="flex items-center gap-2">
+                    <div
+                      className={cn(
+                        "flex h-8 w-8 items-center justify-center rounded-full text-xs font-medium",
+                        reached
+                          ? "bg-primary-fill text-primary-foreground"
+                          : "bg-muted text-muted-foreground",
+                        state === "current" &&
+                          "ring-ring ring-offset-background ring-2 ring-offset-2",
+                      )}
+                    >
+                      {state === "complete" ? (
+                        <Check className="h-4 w-4" aria-hidden="true" />
+                      ) : (
+                        i + 1
+                      )}
+                    </div>
+                    <span
+                      className={cn(
+                        "text-sm whitespace-nowrap",
+                        reached
+                          ? "text-foreground font-medium"
+                          : "text-muted-foreground",
+                      )}
+                    >
+                      {t(step)}
+                    </span>
                   </div>
-                  <span
-                    className={`text-sm whitespace-nowrap ${
-                      i <= currentStepIndex
-                        ? "text-foreground font-medium"
-                        : "text-muted-foreground"
-                    }`}
-                  >
-                    {t(step)}
-                  </span>
+                  {i < ORDER_STEPS.length - 1 && (
+                    <div
+                      data-order-connector
+                      className={cn(
+                        "ms-[0.9375rem] h-4 w-0.5 sm:ms-0 sm:h-0.5 sm:w-8",
+                        stepState(i + 1, order.status) === "upcoming"
+                          ? "bg-muted"
+                          : "bg-primary-fill",
+                      )}
+                    />
+                  )}
                 </div>
-                {i < statusSteps.length - 1 && (
-                  <div
-                    data-order-connector
-                    className={`ms-[0.9375rem] h-4 w-0.5 sm:ms-0 sm:h-0.5 sm:w-8 ${
-                      i < currentStepIndex ? "bg-primary-fill" : "bg-muted"
-                    }`}
-                  />
-                )}
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
 
