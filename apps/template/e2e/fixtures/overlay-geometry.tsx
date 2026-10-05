@@ -6,6 +6,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "darkraise-ui/components/popover"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "darkraise-ui/components/select"
 import { ThemeProvider } from "darkraise-ui/theme"
 import "../../src/styles/globals.css"
 
@@ -45,10 +52,50 @@ function FollowCase() {
   )
 }
 
+function OriginCase() {
+  return (
+    <div
+      style={{
+        display: "flex",
+        gap: 48,
+        justifyContent: "center",
+        paddingTop: 300,
+      }}
+    >
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button>Open above</Button>
+        </PopoverTrigger>
+        <PopoverContent side="top" data-testid="popover-top">
+          Opens above its trigger
+        </PopoverContent>
+      </Popover>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button>Open below</Button>
+        </PopoverTrigger>
+        <PopoverContent side="bottom" data-testid="popover-bottom">
+          Opens below its trigger
+        </PopoverContent>
+      </Popover>
+      <Select>
+        <SelectTrigger style={{ width: 320 }} aria-label="Fruit">
+          <SelectValue placeholder="Fruit" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="fig">Fig</SelectItem>
+          <SelectItem value="kiwi">Kiwi</SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
+  )
+}
+
 // One scenario per page load, chosen by ?case=, so a case's fixed triggers
 // and open overlays never shift another case's geometry.
 const CASES: Record<string, () => ReactElement> = {
   follow: FollowCase,
+  origin: OriginCase,
 }
 
 const name = new URLSearchParams(window.location.search).get("case") ?? ""

@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test"
 import { boxOf, seedApp } from "./helpers/app"
-import { settle } from "./helpers/measure"
+import { computed, settle } from "./helpers/measure"
 import { openOverlayCase } from "./helpers/overlays"
 
 /**
@@ -36,5 +36,40 @@ test.describe("popups follow their trigger", () => {
     await expect.poll(drift).toBeLessThanOrEqual(1)
     await page.setViewportSize({ width: 1080, height: 720 })
     await expect.poll(drift).toBeLessThanOrEqual(1)
+  })
+})
+
+test.describe("popup origin and width", () => {
+  for (const [name, side] of [
+    ["Open above", "top"],
+    ["Open below", "bottom"],
+  ] as const) {
+    test(`a popover opened ${side} scales from its trigger's edge`, async ({
+      page,
+    }) => {
+      await seedApp(page, { style: "quiet", mode: "light" })
+      await openOverlayCase(page, "origin")
+      await page.getByRole("button", { name }).click()
+      const content = page.getByTestId(`popover-${side}`)
+      await expect(content).toBeVisible()
+      await settle(page)
+      const origin = (await computed(content, "transform-origin"))
+        .split(" ")
+        .map(parseFloat)
+      const { height } = await boxOf(content)
+      expect(origin[1]).toBeCloseTo(side === "top" ? height : 0, 0)
+    })
+  }
+
+  test("a popper select is at least as wide as its trigger", async ({
+    page,
+  }) => {
+    await seedApp(page, { style: "quiet", mode: "light" })
+    await openOverlayCase(page, "origin")
+    await page.getByRole("combobox", { name: "Fruit" }).click()
+    const content = page.locator(".dr-select-content")
+    await expect(content).toBeVisible()
+    await settle(page)
+    expect((await boxOf(content)).width).toBeGreaterThanOrEqual(319.5)
   })
 })
