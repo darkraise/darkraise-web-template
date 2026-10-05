@@ -9,7 +9,7 @@
        content-available-height]` referenced a Radix CSS var that nothing
        in this in-house port ever set, so the constraint silently fell
        back to "no max" and the dropdown would just grow off-screen. */
-    @apply text-popover-foreground data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 relative z-50 max-h-80 min-w-[8rem] overflow-x-hidden overflow-y-auto rounded-[var(--overlay-radius)] border;
+    @apply text-popover-foreground data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 relative z-50 max-h-80 min-w-[8rem] origin-[var(--popup-transform-origin)] overflow-x-hidden overflow-y-auto rounded-[var(--overlay-radius)] border;
     background: var(--overlay-bg);
     background-blend-mode: var(--surface-overlay-blend-mode);
     border-color: var(--overlay-border);
@@ -27,7 +27,7 @@
   }
 
   .dr-select-viewport[data-position="popper"] {
-    @apply h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)];
+    @apply w-full min-w-[var(--popup-anchor-width)];
   }
 
   .dr-select-label {

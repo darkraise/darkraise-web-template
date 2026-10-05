@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { readFileSync } from "node:fs"
+import { readdirSync, readFileSync } from "node:fs"
 
 // One rule for every floating surface and severity message: Alert, Banner
 // and Toast paint the opaque status pairs, toasts read the
@@ -374,5 +374,16 @@ describe("overlay backdrop", () => {
     ["src/components/toolbar/toolbar.css", ".dr-toolbar"],
   ])("%s %s draws no backdrop", (path, selector) => {
     expect(bodyOf(path, selector)).not.toContain("backdrop-filter")
+  })
+})
+
+describe("popup variables", () => {
+  it("no component stylesheet reads a Radix variable", () => {
+    const offenders = (
+      readdirSync("src/components", { recursive: true }) as string[]
+    )
+      .filter((path) => path.endsWith(".css"))
+      .filter((path) => source(`src/components/${path}`).includes("--radix-"))
+    expect(offenders).toEqual([])
   })
 })
