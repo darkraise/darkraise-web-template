@@ -68,6 +68,18 @@ const SheetHeader = ({
 )
 SheetHeader.displayName = "SheetHeader"
 
+/**
+ * Scrolling middle region. Rendering one pins the header and footer and
+ * scrolls only this part (see sheet.css); without it the whole sheet scrolls.
+ */
+const SheetBody = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div className={cn("dr-sheet-body", className)} {...props} />
+)
+SheetBody.displayName = "SheetBody"
+
 const SheetFooter = ({
   className,
   ...props
@@ -102,6 +114,7 @@ export {
   SheetClose,
   SheetContent,
   SheetHeader,
+  SheetBody,
   SheetFooter,
   SheetTitle,
   SheetDescription,

@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react"
 import { describe, it, expect } from "vitest"
-import { Sheet, SheetContent } from "@components/sheet"
+import { Sheet, SheetBody, SheetContent } from "@components/sheet"
 
 describe("Sheet", () => {
   it("forwards surface to the content surface", () => {
@@ -25,5 +25,16 @@ describe("Sheet", () => {
       "data-surface-fill",
       "card",
     )
+  })
+
+  it("renders a body part", () => {
+    render(
+      <Sheet defaultOpen>
+        <SheetContent>
+          <SheetBody>Rows</SheetBody>
+        </SheetContent>
+      </Sheet>,
+    )
+    expect(screen.getByText("Rows")).toHaveClass("dr-sheet-body")
   })
 })

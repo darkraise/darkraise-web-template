@@ -44,13 +44,13 @@
     transform: none;
     translate: none;
     max-width: none;
-    /* Layout: flex column instead of the dialog's grid, with overflow
-       clipped at the sheet edge. Children of <SheetContent> can then use
-       `flex-1 overflow-y-auto` to create a scrollable middle region while
-       header / footer stay pinned. */
+    /* Layout: flex column instead of the dialog's grid. The sheet scrolls
+       as a whole unless it holds a <SheetBody>, which pins the header and
+       footer (see the :has() rule below). */
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
     /* Neutralise the dialog base's centering translate by resetting the
        Tailwind translate variables it reads (`translate: var(--tw-translate-x)
        var(--tw-translate-y)`), not just the `translate` shorthand. Production
@@ -80,12 +80,14 @@
     @apply data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top inset-x-0 top-0;
     border-width: 0 0 1px;
     border-radius: 0 0 var(--overlay-radius) var(--overlay-radius);
+    max-height: calc(100dvh - 2rem);
   }
 
   .dr-sheet-content[data-side="bottom"] {
     @apply data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom inset-x-0 bottom-0;
     border-width: 1px 0 0;
     border-radius: var(--overlay-radius) var(--overlay-radius) 0 0;
+    max-height: calc(100dvh - 2rem);
   }
 
   .dr-sheet-content[data-side="left"] {
@@ -98,6 +100,16 @@
     @apply data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-3/4 sm:max-w-sm;
     border-width: 0 0 0 1px;
     border-radius: var(--overlay-radius) 0 0 var(--overlay-radius);
+  }
+
+  /* Pinned layout, opted into by rendering a <SheetBody>: header and footer
+     hold still and only the body scrolls, as with <DialogBody>. */
+  .dr-dialog-content.dr-sheet-content:has(> .dr-sheet-body) {
+    overflow: hidden;
+  }
+
+  .dr-sheet-body {
+    @apply min-h-0 flex-1 overflow-y-auto;
   }
 
   /* Safe areas. An edge-anchored surface on a phone lands under the notch or
