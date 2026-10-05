@@ -57,7 +57,7 @@ function Tour({
     strategy: "fixed",
   })
   const setReference = floating.refs.setReference
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     setReference(targetEl)
   }, [targetEl, setReference])
   const popoverRef = React.useRef<HTMLDivElement | null>(null)
