@@ -1,4 +1,5 @@
 import { test, expect, type Locator, type Page } from "@playwright/test"
+import { STYLES } from "./fixtures/theme"
 import { boxOf, gotoApp, seedApp } from "./helpers/app"
 import { alphaOf, computed } from "./helpers/measure"
 
@@ -332,4 +333,58 @@ test.describe("settings", () => {
     await gotoApp(page, "/settings")
     await expect(page.getByText("Mỗi 5 phút", { exact: true })).toBeVisible()
   })
+})
+
+test.describe("auth language picker", () => {
+  test.beforeEach(async ({ page }) => {
+    await seedApp(
+      page,
+      { style: "quiet", mode: "light" },
+      { authenticated: false },
+    )
+  })
+
+  for (const width of [1440, 390]) {
+    for (const path of ["/login", "/register"]) {
+      test(`${path} at ${width}px keeps the picker in the corner`, async ({
+        page,
+      }) => {
+        await page.setViewportSize({ width, height: 900 })
+        await gotoApp(page, path)
+        const column = await boxOf(page.locator("[data-auth-form-column]"))
+        const picker = await boxOf(page.locator("[data-auth-locale]"))
+        const heading = await boxOf(page.getByRole("heading", { level: 1 }))
+        expect(
+          column.x + column.width - (picker.x + picker.width),
+        ).toBeLessThanOrEqual(32)
+        expect(picker.y - column.y).toBeLessThanOrEqual(32)
+        expect(picker.y + picker.height).toBeLessThanOrEqual(heading.y)
+      })
+    }
+  }
+})
+
+test.describe("auth decoration", () => {
+  for (const style of STYLES) {
+    test(`renders its mesh and shapes under ${style}`, async ({ page }) => {
+      await seedApp(page, { style, mode: "dark" }, { authenticated: false })
+      await page.setViewportSize({ width: 1440, height: 900 })
+      await gotoApp(page, "/login")
+      const decor = page.locator("[data-auth-decor]")
+      await expect(decor).toBeVisible()
+      expect(
+        await computed(decor.locator("[data-auth-mesh]"), "background-image"),
+      ).not.toBe("none")
+      const shapes = await decor.locator("[data-auth-shape]").all()
+      expect(shapes.length).toBe(4)
+      for (const shape of shapes) {
+        expect(
+          alphaOf(await computed(shape, "background-color")),
+        ).toBeGreaterThan(0)
+      }
+      expect(
+        parseFloat(await computed(decor, "border-inline-start-width")),
+      ).toBeGreaterThanOrEqual(1)
+    })
+  }
 })

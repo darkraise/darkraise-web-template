@@ -330,3 +330,21 @@ for (const style of BASELINE_STYLES) {
     })
   }
 }
+
+test.describe("login decoration", () => {
+  test("glass · dark", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" })
+    await seedApp(
+      page,
+      { style: "glass", mode: "dark" },
+      { authenticated: false },
+    )
+    await gotoApp(page, "/login")
+    const decor = page.locator("[data-auth-decor]")
+    await expect(decor).toBeVisible()
+    await settle(page)
+    await expect(decor).toHaveScreenshot("glass-dark-login-decor.png", {
+      animations: "disabled",
+    })
+  })
+})

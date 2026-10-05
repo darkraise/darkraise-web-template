@@ -2,6 +2,11 @@ import type { ReactNode } from "react"
 import { AppLocaleSwitcher } from "@/i18n/AppLocaleSwitcher"
 import { Center, Stack } from "darkraise-ui/layout"
 
+// --chart-N tokens hold complete colours, so alpha is mixed in rather than
+// passed through hsl(), which would make the whole declaration invalid.
+const chart = (n: number, percent: number) =>
+  `color-mix(in srgb, var(--chart-${n}) ${percent}%, transparent)`
+
 function FloatingShape({
   className,
   style,
@@ -11,6 +16,7 @@ function FloatingShape({
 }) {
   return (
     <div
+      data-auth-shape
       className={className}
       style={{
         position: "absolute",
@@ -24,22 +30,33 @@ function FloatingShape({
 export function AuthLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-dvh">
-      <Center className="flex-1 p-8">
-        <Stack gap="lg" className="w-full max-w-sm">
-          <AppLocaleSwitcher />
-          {children}
-        </Stack>
-      </Center>
+      <div data-auth-form-column className="relative flex flex-1">
+        <div
+          data-auth-locale
+          className="absolute end-4 top-4 z-10 lg:end-6 lg:top-6"
+        >
+          <AppLocaleSwitcher compact />
+        </div>
+        <Center className="flex-1 p-8 pt-20">
+          <Stack gap="lg" className="w-full max-w-sm">
+            {children}
+          </Stack>
+        </Center>
+      </div>
 
-      <div className="relative hidden flex-1 overflow-hidden lg:block">
+      <div
+        data-auth-decor
+        className="border-border relative hidden flex-1 overflow-hidden border-s lg:block"
+      >
         {/* Gradient mesh background */}
         <div
+          data-auth-mesh
           className="absolute inset-0"
           style={{
             background: `
               radial-gradient(ellipse at 20% 50%, hsl(var(--primary) / 0.3) 0%, transparent 50%),
-              radial-gradient(ellipse at 80% 20%, hsl(var(--chart-2) / 0.25) 0%, transparent 50%),
-              radial-gradient(ellipse at 40% 80%, hsl(var(--chart-3) / 0.2) 0%, transparent 50%),
+              radial-gradient(ellipse at 80% 20%, ${chart(2, 25)} 0%, transparent 50%),
+              radial-gradient(ellipse at 40% 80%, ${chart(3, 20)} 0%, transparent 50%),
               hsl(var(--primary) / 0.05)
             `,
           }}
@@ -76,8 +93,8 @@ export function AuthLayout({ children }: { children: ReactNode }) {
             right: "15%",
             width: "180px",
             height: "180px",
-            background: "hsl(var(--chart-2) / 0.1)",
-            border: "1px solid hsl(var(--chart-2) / 0.15)",
+            background: chart(2, 10),
+            border: `1px solid ${chart(2, 15)}`,
             animationDelay: "1s",
             borderRadius: "70% 30% 30% 70% / 60% 40% 60% 40%",
           }}
@@ -89,8 +106,8 @@ export function AuthLayout({ children }: { children: ReactNode }) {
             left: "30%",
             width: "80px",
             height: "80px",
-            background: "hsl(var(--chart-3) / 0.12)",
-            border: "1px solid hsl(var(--chart-3) / 0.18)",
+            background: chart(3, 12),
+            border: `1px solid ${chart(3, 18)}`,
             animationDelay: "0.5s",
             borderRadius: "50%",
           }}
@@ -113,7 +130,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
             <div
               className="h-32 w-32 rounded-2xl"
               style={{
-                background: `linear-gradient(135deg, hsl(var(--primary) / 0.2), hsl(var(--chart-2) / 0.2))`,
+                background: `linear-gradient(135deg, hsl(var(--primary) / 0.2), ${chart(2, 20)})`,
                 border: "1px solid hsl(var(--primary) / 0.15)",
                 backdropFilter: "blur(8px)",
               }}
@@ -121,8 +138,8 @@ export function AuthLayout({ children }: { children: ReactNode }) {
             <div
               className="absolute -right-3 -bottom-3 h-20 w-20 rounded-xl"
               style={{
-                background: `linear-gradient(135deg, hsl(var(--chart-2) / 0.15), hsl(var(--chart-3) / 0.15))`,
-                border: "1px solid hsl(var(--chart-2) / 0.1)",
+                background: `linear-gradient(135deg, ${chart(2, 15)}, ${chart(3, 15)})`,
+                border: `1px solid ${chart(2, 10)}`,
               }}
             />
             <div
