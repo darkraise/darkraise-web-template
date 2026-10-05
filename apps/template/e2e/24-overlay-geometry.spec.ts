@@ -235,3 +235,23 @@ test.describe("long sheets scroll", () => {
     ).toBe(true)
   })
 })
+
+test.describe("the tour popover stays on screen", () => {
+  test("for targets at the right and bottom edges", async ({ page }) => {
+    await seedApp(page, { style: "quiet", mode: "light" })
+    await openOverlayCase(page, "tour")
+    const popover = page.locator(".dr-tour-popover")
+    await expect(popover.getByText("Right edge", { exact: true })).toBeVisible()
+    await settle(page)
+    await expectInViewport(page, popover)
+    await popover.getByRole("button", { name: "Next" }).click()
+    await expect(
+      popover.getByText("Bottom edge", { exact: true }),
+    ).toBeVisible()
+    await settle(page)
+    await expectInViewport(page, popover)
+    const target = await boxOf(page.locator("#tour-bottom"))
+    const box = await boxOf(popover)
+    expect(box.y + box.height).toBeLessThanOrEqual(target.y)
+  })
+})

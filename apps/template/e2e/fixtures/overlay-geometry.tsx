@@ -1,4 +1,4 @@
-import type { ReactElement } from "react"
+import { useState, type ReactElement } from "react"
 import { createRoot } from "react-dom/client"
 import { ChevronDown } from "lucide-react"
 import { Button } from "darkraise-ui/components/button"
@@ -63,6 +63,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "darkraise-ui/components/sheet"
+import { Tour } from "darkraise-ui/components/tour"
 import { ThemeProvider } from "darkraise-ui/theme"
 import "../../src/styles/globals.css"
 
@@ -310,6 +311,51 @@ function SheetsCase() {
   )
 }
 
+function TourCase() {
+  const [current, setCurrent] = useState(0)
+  const [open, setOpen] = useState(true)
+  return (
+    <>
+      <div
+        id="tour-right"
+        style={{ position: "fixed", top: 120, right: 8, width: 80, height: 40 }}
+      >
+        Right target
+      </div>
+      <div
+        id="tour-bottom"
+        style={{
+          position: "fixed",
+          bottom: 8,
+          left: 600,
+          width: 80,
+          height: 40,
+        }}
+      >
+        Bottom target
+      </div>
+      <Tour
+        open={open}
+        current={current}
+        onChange={setCurrent}
+        onClose={() => setOpen(false)}
+        steps={[
+          {
+            targetSelector: "#tour-right",
+            title: "Right edge",
+            description: "This target sits against the right edge.",
+          },
+          {
+            targetSelector: "#tour-bottom",
+            title: "Bottom edge",
+            description: "This target sits against the bottom edge.",
+          },
+        ]}
+      />
+    </>
+  )
+}
+
 // One scenario per page load, chosen by ?case=, so a case's fixed triggers
 // and open overlays never shift another case's geometry.
 // Three global panels that all cover the viewport centre, where the dialog
@@ -352,6 +398,7 @@ const CASES: Record<string, () => ReactElement> = {
   menus: MenusCase,
   combobox: ComboboxCase,
   panels: PanelsCase,
+  tour: TourCase,
   sheets: SheetsCase,
 }
 
