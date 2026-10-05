@@ -67,7 +67,6 @@ function SliderPage() {
     max={100}
     step={1}
     orientation="vertical"
-    className="h-full w-2 flex-col"
   />
 </div>`}
       >
@@ -93,7 +92,6 @@ function SliderPage() {
                   max={100}
                   step={1}
                   orientation={orientation}
-                  className="h-full w-2 flex-col"
                 />
               </div>
             )

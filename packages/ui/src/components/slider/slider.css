@@ -11,6 +11,20 @@
     @apply bg-primary-fill absolute h-full;
   }
 
+  .dr-slider[data-orientation="vertical"] {
+    @apply h-full w-auto flex-col;
+  }
+
+  .dr-slider-track[data-orientation="vertical"] {
+    @apply h-full w-[var(--track-height)];
+  }
+
+  /* Height comes from the inline top and bottom, so a two-thumb range ends
+     at its lower thumb as well as its upper one. */
+  .dr-slider-range[data-orientation="vertical"] {
+    @apply h-auto w-full;
+  }
+
   .dr-slider-thumb {
     @apply border-primary bg-primary-foreground hit-area-24 block h-5 w-5 cursor-pointer rounded-full border-2 disabled:pointer-events-none disabled:cursor-default;
     /* The thumb's lift, then the affordance glow, which marks the current

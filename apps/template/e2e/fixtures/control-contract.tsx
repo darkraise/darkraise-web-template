@@ -53,6 +53,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "darkraise-ui/components/select"
+import { Slider } from "darkraise-ui/components/slider"
 import { Switch } from "darkraise-ui/components/switch"
 import {
   TagsInput,
@@ -275,6 +276,13 @@ function ControlStates() {
       </div>
       <div data-probe="angle">
         <AngleSlider defaultValue={45} aria-label="Angle" />
+      </div>
+      <div data-probe="slider-vertical" style={{ width: 40, height: 160 }}>
+        <Slider
+          orientation="vertical"
+          defaultValue={[25, 75]}
+          aria-label="Vertical range"
+        />
       </div>
     </div>
   )

@@ -8,6 +8,10 @@ import { computed, contrast, pixel, rgbOf } from "./helpers/measure"
 // screenshot to the viewport.
 test.use({ viewport: { width: 1440, height: 2400 } })
 
+// Two pages this tall rendering the glass probes at once crash the renderer
+// (page.goto: Page crashed), so the file's tests share one worker.
+test.describe.configure({ mode: "default" })
+
 /**
  * Control states on the control-contract fixture: each control's boundary,
  * indicator and state, read from computed style, geometry or rendered pixels
@@ -508,4 +512,44 @@ test.describe("angle slider dial", () => {
       })
     }
   }
+})
+
+test.describe("vertical slider", () => {
+  test("the track stands upright and the range spans its thumbs", async ({
+    page,
+  }) => {
+    await openInMode(page, "light")
+    const track = await boxOf(
+      probe(page, "slider-vertical", ".dr-slider-track"),
+    )
+    expect(track.height, "track height").toBeGreaterThan(track.width)
+    expect(track.height, "track fills the box").toBeCloseTo(
+      (await boxOf(page.locator('[data-probe="slider-vertical"]'))).height,
+      0,
+    )
+
+    const centres: number[] = []
+    for (const thumb of await probe(
+      page,
+      "slider-vertical",
+      ".dr-slider-thumb",
+    ).all()) {
+      const box = await boxOf(thumb)
+      centres.push(box.y + box.height / 2)
+    }
+    expect(centres).toHaveLength(2)
+    const upper = Math.min(...centres)
+    const lower = Math.max(...centres)
+    const range = await boxOf(
+      probe(page, "slider-vertical", ".dr-slider-range"),
+    )
+    expect(
+      Math.abs(range.y - upper),
+      "range top at the upper thumb",
+    ).toBeLessThanOrEqual(1)
+    expect(
+      Math.abs(range.y + range.height - lower),
+      "range bottom at the lower thumb",
+    ).toBeLessThanOrEqual(1)
+  })
 })
