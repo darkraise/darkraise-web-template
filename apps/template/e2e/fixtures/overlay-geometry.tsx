@@ -2,6 +2,22 @@ import type { ReactElement } from "react"
 import { createRoot } from "react-dom/client"
 import { Button } from "darkraise-ui/components/button"
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "darkraise-ui/components/dropdown-menu"
+import {
+  Menubar,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarTrigger,
+} from "darkraise-ui/components/menubar"
+import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -91,11 +107,60 @@ function OriginCase() {
   )
 }
 
+const SIXTY = Array.from({ length: 60 }, (_, i) => `Item ${i + 1}`)
+
+// Triggers pinned to the bottom edge, so every list is taller than the room
+// on either side of its trigger.
+function MenusCase() {
+  return (
+    <div
+      style={{
+        position: "fixed",
+        left: 24,
+        right: 24,
+        bottom: 24,
+        display: "flex",
+        gap: 24,
+      }}
+    >
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button>Long menu</Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>More items</DropdownMenuSubTrigger>
+            <DropdownMenuSubContent>
+              {SIXTY.map((label) => (
+                <DropdownMenuItem key={label}>{label}</DropdownMenuItem>
+              ))}
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
+          {SIXTY.map((label) => (
+            <DropdownMenuItem key={label}>{label}</DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <Menubar>
+        <MenubarMenu>
+          <MenubarTrigger>File</MenubarTrigger>
+          <MenubarContent>
+            {SIXTY.map((label) => (
+              <MenubarItem key={label}>{label}</MenubarItem>
+            ))}
+          </MenubarContent>
+        </MenubarMenu>
+      </Menubar>
+    </div>
+  )
+}
+
 // One scenario per page load, chosen by ?case=, so a case's fixed triggers
 // and open overlays never shift another case's geometry.
 const CASES: Record<string, () => ReactElement> = {
   follow: FollowCase,
   origin: OriginCase,
+  menus: MenusCase,
 }
 
 const name = new URLSearchParams(window.location.search).get("case") ?? ""

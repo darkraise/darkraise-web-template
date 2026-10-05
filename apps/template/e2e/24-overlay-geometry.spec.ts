@@ -1,7 +1,7 @@
-import { test, expect } from "@playwright/test"
+import { test, expect, type Locator, type Page } from "@playwright/test"
 import { boxOf, seedApp } from "./helpers/app"
 import { computed, settle } from "./helpers/measure"
-import { openOverlayCase } from "./helpers/overlays"
+import { expectInViewport, openOverlayCase } from "./helpers/overlays"
 
 /**
  * Overlay geometry: popups stay attached to their trigger and inside the
@@ -71,5 +71,36 @@ test.describe("popup origin and width", () => {
     await expect(content).toBeVisible()
     await settle(page)
     expect((await boxOf(content)).width).toBeGreaterThanOrEqual(319.5)
+  })
+})
+
+async function expectCappedAndScrolling(page: Page, list: Locator) {
+  await expect(list).toBeVisible()
+  await settle(page)
+  await expectInViewport(page, list)
+  expect(
+    await list.evaluate(
+      (element) => element.scrollHeight > element.clientHeight,
+    ),
+  ).toBe(true)
+}
+
+test.describe("list popups fit the viewport", () => {
+  test("a long menu and its submenu stay on screen and scroll", async ({
+    page,
+  }) => {
+    await seedApp(page, { style: "quiet", mode: "light" })
+    await openOverlayCase(page, "menus")
+    await page.getByRole("button", { name: "Long menu" }).click()
+    await expectCappedAndScrolling(page, page.locator(".dr-menu-content"))
+    await page.getByRole("menuitem", { name: "More items" }).click()
+    await expectCappedAndScrolling(page, page.locator(".dr-menu-sub-content"))
+  })
+
+  test("a long menubar menu stays on screen and scrolls", async ({ page }) => {
+    await seedApp(page, { style: "quiet", mode: "light" })
+    await openOverlayCase(page, "menus")
+    await page.getByRole("menuitem", { name: "File" }).click()
+    await expectCappedAndScrolling(page, page.locator(".dr-menubar-content"))
   })
 })
