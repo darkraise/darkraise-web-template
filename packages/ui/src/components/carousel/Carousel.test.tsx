@@ -113,6 +113,74 @@ describe("Carousel", () => {
   })
 })
 
+describe("Carousel scroll targets", () => {
+  // jsdom lays nothing out, so each test supplies the geometry a 240px
+  // viewport with three 240px slides and a 16px gap would have.
+  function layout(container: HTMLElement, dir: "ltr" | "rtl") {
+    const define = (el: Element, values: Record<string, number>) => {
+      for (const [key, value] of Object.entries(values)) {
+        Object.defineProperty(el, key, { configurable: true, value })
+      }
+    }
+    const viewport = container.querySelector(
+      ".dr-carousel-content-wrapper",
+    ) as HTMLElement
+    const content = container.querySelector(
+      ".dr-carousel-content",
+    ) as HTMLElement
+    define(viewport, { clientWidth: 240, scrollWidth: 752 })
+    define(content, { offsetLeft: 0, offsetWidth: 240, scrollWidth: 752 })
+    Array.from(content.children).forEach((slide, i) =>
+      define(slide, {
+        offsetLeft: dir === "rtl" ? -256 * i : 256 * i,
+        offsetWidth: 240,
+      }),
+    )
+    const scrollTo = vi.fn()
+    viewport.scrollTo = scrollTo
+    return scrollTo
+  }
+
+  it("scrolls to a positive offset left to right", async () => {
+    const user = userEvent.setup()
+    const { container } = render(<Basic />)
+    const scrollTo = layout(container, "ltr")
+    await user.click(screen.getByRole("button", { name: /next/i }))
+    expect(scrollTo).toHaveBeenLastCalledWith({ left: 256, behavior: "smooth" })
+  })
+
+  it("scrolls to a negative offset right to left", async () => {
+    const user = userEvent.setup()
+    const { container } = render(
+      <div dir="rtl">
+        <Basic />
+      </div>,
+    )
+    const scrollTo = layout(container, "rtl")
+    await user.click(screen.getByRole("button", { name: /next/i }))
+    expect(scrollTo).toHaveBeenLastCalledWith({
+      left: -256,
+      behavior: "smooth",
+    })
+  })
+
+  it("ArrowLeft moves to the next slide right to left", async () => {
+    const user = userEvent.setup()
+    const { container } = render(
+      <div dir="rtl">
+        <Basic />
+      </div>,
+    )
+    const scrollTo = layout(container, "rtl")
+    screen.getByRole("button", { name: /next/i }).focus()
+    await user.keyboard("{ArrowLeft}")
+    expect(scrollTo).toHaveBeenLastCalledWith({
+      left: -256,
+      behavior: "smooth",
+    })
+  })
+})
+
 describe("Carousel autoplay is stoppable", () => {
   function mockReducedMotion(reduce: boolean) {
     Object.defineProperty(window, "matchMedia", {

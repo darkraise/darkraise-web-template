@@ -32,7 +32,7 @@
   }
 
   .dr-carousel-previous[data-orientation="horizontal"] {
-    @apply top-1/2 -left-12 -translate-y-1/2;
+    @apply -start-12 top-1/2 -translate-y-1/2;
   }
 
   .dr-carousel-previous[data-orientation="vertical"] {
@@ -44,7 +44,7 @@
   }
 
   .dr-carousel-next[data-orientation="horizontal"] {
-    @apply top-1/2 -right-12 -translate-y-1/2;
+    @apply -end-12 top-1/2 -translate-y-1/2;
   }
 
   .dr-carousel-next[data-orientation="vertical"] {
@@ -60,7 +60,7 @@
   }
 
   .dr-carousel-indicator-group[data-orientation="vertical"] {
-    @apply mt-0 ml-3 flex-col;
+    @apply ms-3 mt-0 flex-col;
   }
 
   .dr-carousel-indicator {

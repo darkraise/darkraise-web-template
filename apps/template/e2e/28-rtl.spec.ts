@@ -338,3 +338,33 @@ test.describe("resizable", () => {
       .toBe(20)
   })
 })
+
+test.describe("carousel", () => {
+  test("next moves the viewport to slide 2", async ({ page }) => {
+    await openFixture(page)
+    const probe = page.locator('[data-probe="carousel"]')
+    const viewport = await boxOf(probe.locator(".dr-carousel-content-wrapper"))
+    const slide = probe.getByRole("group").nth(1)
+    const next = probe.getByRole("button", { name: "Next slide" })
+    await next.click()
+    await expect
+      .poll(async () => Math.round((await boxOf(slide)).x - viewport.x))
+      .toBe(0)
+  })
+
+  test("the buttons sit at the inline sides and their arrows mirror", async ({
+    page,
+  }) => {
+    await openFixture(page)
+    const probe = page.locator('[data-probe="carousel"]')
+    const viewport = await boxOf(probe.locator(".dr-carousel-content-wrapper"))
+    const next = probe.getByRole("button", { name: "Next slide" })
+    const previous = probe.getByRole("button", { name: "Previous slide" })
+    const nextBox = await boxOf(next)
+    expect(nextBox.x + nextBox.width).toBeLessThanOrEqual(viewport.x)
+    expect((await boxOf(previous)).x).toBeGreaterThanOrEqual(
+      viewport.x + viewport.width,
+    )
+    expect(await computed(next.locator("svg"), "scale")).toBe("-1 1")
+  })
+})

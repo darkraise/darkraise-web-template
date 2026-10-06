@@ -1,6 +1,7 @@
 import * as React from "react"
 import { useEvent } from "@primitives/state"
 import { useReducedMotion } from "@hooks/useReducedMotion"
+import { getDirection, type Direction } from "@lib/direction"
 
 export type CarouselOrientation = "horizontal" | "vertical"
 export type CarouselAlign = "start" | "center" | "end"
@@ -62,12 +63,55 @@ function getSlideEls(content: HTMLElement | null): HTMLElement[] {
   )
 }
 
+/**
+ * The distance of a slide from the inline-start edge of the content. Under
+ * RTL it is measured from the right edge of the content box itself, because
+ * the scrollWidth of the content also counts the slides that overflow to the
+ * left.
+ */
+function inlineStartOffset(
+  slide: HTMLElement,
+  content: HTMLElement,
+  direction: Direction,
+): number {
+  if (direction === "rtl") {
+    return (
+      content.offsetLeft +
+      content.offsetWidth -
+      slide.offsetLeft -
+      slide.offsetWidth
+    )
+  }
+  return slide.offsetLeft
+}
+
+/** The scroll distance from the start that aligns a slide, always >= 0. */
+function alignedOffset(
+  slide: HTMLElement,
+  content: HTMLElement,
+  axis: "x" | "y",
+  align: CarouselAlign,
+  viewportSize: number,
+  direction: Direction,
+): number {
+  const slidePos =
+    axis === "x"
+      ? inlineStartOffset(slide, content, direction)
+      : slide.offsetTop
+  const slideSize = axis === "x" ? slide.offsetWidth : slide.offsetHeight
+  if (align === "center") return slidePos - (viewportSize - slideSize) / 2
+  if (align === "end") return slidePos - (viewportSize - slideSize)
+  return slidePos
+}
+
 function findIndexForOffset(
   slides: HTMLElement[],
+  content: HTMLElement,
   offset: number,
   axis: "x" | "y",
   align: CarouselAlign,
   viewportSize: number,
+  direction: Direction,
 ): number {
   if (slides.length === 0) return 0
   let bestIndex = 0
@@ -75,12 +119,15 @@ function findIndexForOffset(
   for (let i = 0; i < slides.length; i++) {
     const slide = slides[i]
     if (!slide) continue
-    const slidePos = axis === "x" ? slide.offsetLeft : slide.offsetTop
-    const slideSize = axis === "x" ? slide.offsetWidth : slide.offsetHeight
-    let target = slidePos
-    if (align === "center") target = slidePos - (viewportSize - slideSize) / 2
-    else if (align === "end") target = slidePos - (viewportSize - slideSize)
-    const delta = Math.abs(target - offset)
+    const target = alignedOffset(
+      slide,
+      content,
+      axis,
+      align,
+      viewportSize,
+      direction,
+    )
+    const delta = Math.abs(target - Math.abs(offset))
     if (delta < bestDelta) {
       bestDelta = delta
       bestIndex = i
@@ -89,20 +136,27 @@ function findIndexForOffset(
   return bestIndex
 }
 
+/** The scrollLeft or scrollTop that shows a slide; negative under RTL. */
 function targetForIndex(
   slides: HTMLElement[],
+  content: HTMLElement,
   index: number,
   axis: "x" | "y",
   align: CarouselAlign,
   viewportSize: number,
+  direction: Direction,
 ): number {
   const slide = slides[index]
   if (!slide) return 0
-  const slidePos = axis === "x" ? slide.offsetLeft : slide.offsetTop
-  const slideSize = axis === "x" ? slide.offsetWidth : slide.offsetHeight
-  if (align === "center") return slidePos - (viewportSize - slideSize) / 2
-  if (align === "end") return slidePos - (viewportSize - slideSize)
-  return slidePos
+  const offset = alignedOffset(
+    slide,
+    content,
+    axis,
+    align,
+    viewportSize,
+    direction,
+  )
+  return axis === "x" && direction === "rtl" ? -offset : offset
 }
 
 export function useCarousel(
@@ -138,35 +192,48 @@ export function useCarousel(
     listenersRef.current[kind].forEach((handler) => handler())
   })
 
-  const measure = useEvent(() => {
-    const content = contentRef.current
-    if (!content) return { slides: [] as HTMLElement[], viewportSize: 0 }
-    const viewport = viewportRef.current
-    if (!viewport) return { slides: [], viewportSize: 0 }
-    const slides = getSlideEls(content)
-    const viewportSize =
-      axis === "x" ? viewport.clientWidth : viewport.clientHeight
-    return { slides, viewportSize }
-  })
-
   const scrollToIndex = useEvent((index: number, smooth = true) => {
     const viewport = viewportRef.current
-    if (!viewport) return
-    const { slides, viewportSize } = measure()
+    const content = contentRef.current
+    if (!viewport || !content) return
+    const slides = getSlideEls(content)
     if (slides.length === 0) return
     const next = loop
       ? ((index % slides.length) + slides.length) % slides.length
       : Math.max(0, Math.min(slides.length - 1, index))
-    const target = targetForIndex(slides, next, axis, align, viewportSize)
+    const behavior = smooth ? "smooth" : "auto"
     if (axis === "x") {
+      const direction = getDirection(viewport)
+      const target = targetForIndex(
+        slides,
+        content,
+        next,
+        axis,
+        align,
+        viewport.clientWidth,
+        direction,
+      )
+      // Under RTL scrollLeft runs from 0 at the start to -range at the end.
+      const range = Math.max(0, viewport.scrollWidth - viewport.clientWidth)
+      const [low, high] = direction === "rtl" ? [-range, 0] : [0, range]
       viewport.scrollTo({
-        left: Math.max(0, target),
-        behavior: smooth ? "smooth" : "auto",
+        left: Math.min(high, Math.max(low, target)),
+        behavior,
       })
     } else {
+      const target = targetForIndex(
+        slides,
+        content,
+        next,
+        axis,
+        align,
+        viewport.clientHeight,
+        "ltr",
+      )
+      const range = Math.max(0, viewport.scrollHeight - viewport.clientHeight)
       viewport.scrollTo({
-        top: Math.max(0, target),
-        behavior: smooth ? "smooth" : "auto",
+        top: Math.min(range, Math.max(0, target)),
+        behavior,
       })
     }
     setSelectedIndex(next)
@@ -229,15 +296,21 @@ export function useCarousel(
     const onScroll = () => {
       cancelAnimationFrame(raf)
       raf = requestAnimationFrame(() => {
-        const offset = axis === "x" ? viewport.scrollLeft : viewport.scrollTop
-        const { slides, viewportSize } = measure()
+        const content = contentRef.current
+        if (!content) return
+        const slides = getSlideEls(content)
         if (slides.length === 0) return
+        const offset = axis === "x" ? viewport.scrollLeft : viewport.scrollTop
+        const viewportSize =
+          axis === "x" ? viewport.clientWidth : viewport.clientHeight
         const idx = findIndexForOffset(
           slides,
+          content,
           offset,
           axis,
           align,
           viewportSize,
+          getDirection(viewport),
         )
         setSelectedIndex((prev) => {
           if (prev !== idx) {
@@ -253,7 +326,7 @@ export function useCarousel(
       cancelAnimationFrame(raf)
       viewport.removeEventListener("scroll", onScroll)
     }
-  }, [axis, align, fire, measure])
+  }, [axis, align, fire])
 
   // Pointer drag.
   React.useEffect(() => {
@@ -263,6 +336,7 @@ export function useCarousel(
     let startCoord = 0
     let startScroll = 0
     let lastDelta = 0
+    let rtl = false
 
     const down = (event: PointerEvent) => {
       if (event.button !== 0) return
@@ -270,6 +344,7 @@ export function useCarousel(
       startCoord = axis === "x" ? event.clientX : event.clientY
       startScroll = axis === "x" ? viewport.scrollLeft : viewport.scrollTop
       lastDelta = 0
+      rtl = axis === "x" && getDirection(viewport) === "rtl"
       viewport.setPointerCapture(event.pointerId)
     }
     const move = (event: PointerEvent) => {
@@ -293,7 +368,10 @@ export function useCarousel(
         scrollToIndex(selectedIndex)
         return
       }
-      if (lastDelta > 0) scrollNext()
+      // A positive delta is a swipe toward the left. Under RTL that is
+      // toward the inline end, which brings back the previous slide.
+      const forward = rtl ? lastDelta < 0 : lastDelta > 0
+      if (forward) scrollNext()
       else scrollPrev()
     }
     viewport.addEventListener("pointerdown", down)

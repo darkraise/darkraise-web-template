@@ -3,6 +3,7 @@ import * as React from "react"
 import { useUiLabels } from "../../labels"
 import { ArrowLeft, ArrowRight, Pause, Play } from "lucide-react"
 
+import { inlineArrow } from "@lib/direction"
 import { cn } from "@lib/utils"
 import { Button } from "@components/button"
 import {
@@ -75,13 +76,18 @@ function Carousel({
   }, [setApi, carousel.api])
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    const isHorizontal = orientation === "horizontal"
-    const prevKey = isHorizontal ? "ArrowLeft" : "ArrowUp"
-    const nextKey = isHorizontal ? "ArrowRight" : "ArrowDown"
-    if (event.key === prevKey) {
+    const step =
+      orientation === "horizontal"
+        ? inlineArrow(event.key, event.currentTarget)
+        : event.key === "ArrowDown"
+          ? "next"
+          : event.key === "ArrowUp"
+            ? "prev"
+            : null
+    if (step === "prev") {
       event.preventDefault()
       carousel.scrollPrev()
-    } else if (event.key === nextKey) {
+    } else if (step === "next") {
       event.preventDefault()
       carousel.scrollNext()
     }
@@ -266,7 +272,13 @@ function CarouselPrevious({
       onClick={ctx.scrollPrev}
       {...props}
     >
-      <ArrowLeft className="size-[var(--icon-size)]" aria-hidden="true" />
+      <ArrowLeft
+        className={cn(
+          "size-[var(--icon-size)]",
+          ctx.orientation === "horizontal" && "dr-icon-inline",
+        )}
+        aria-hidden="true"
+      />
       <span className="sr-only">{uiText("Previous slide")}</span>
     </Button>
   )
@@ -294,7 +306,13 @@ function CarouselNext({
       onClick={ctx.scrollNext}
       {...props}
     >
-      <ArrowRight className="size-[var(--icon-size)]" aria-hidden="true" />
+      <ArrowRight
+        className={cn(
+          "size-[var(--icon-size)]",
+          ctx.orientation === "horizontal" && "dr-icon-inline",
+        )}
+        aria-hidden="true"
+      />
       <span className="sr-only">{uiText("Next slide")}</span>
     </Button>
   )

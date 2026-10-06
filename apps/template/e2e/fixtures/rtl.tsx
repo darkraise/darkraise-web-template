@@ -61,6 +61,13 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "darkraise-ui/components/resizable"
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "darkraise-ui/components/carousel"
 import "../../src/styles/globals.css"
 
 function SidebarLink({
@@ -262,6 +269,19 @@ createRoot(root).render(
             Second
           </ResizablePanel>
         </ResizablePanelGroup>
+      </div>
+      <div data-probe="carousel" style={{ width: 240, marginInline: 64 }}>
+        <Carousel>
+          <CarouselContent>
+            {[1, 2, 3].map((n) => (
+              <CarouselItem key={n}>
+                <div style={{ height: 80 }}>Slide {n}</div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
       </div>
     </div>
   </ThemeProvider>,
