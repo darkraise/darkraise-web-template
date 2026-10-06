@@ -38,10 +38,10 @@
     @apply bg-muted text-muted-foreground flex shrink-0 items-center px-3 text-sm;
   }
   .dr-input-addon[data-side="prefix"] {
-    border-right: 1px solid hsl(var(--border));
+    border-inline-end: 1px solid hsl(var(--border));
   }
   .dr-input-addon[data-side="suffix"] {
-    border-left: 1px solid hsl(var(--border));
+    border-inline-start: 1px solid hsl(var(--border));
   }
 
   /* The input inside a group strips its own chrome — border, focus ring,
@@ -109,10 +109,10 @@
     @apply inline-flex shrink-0 items-center;
   }
   .dr-input-action[data-side="leading"] {
-    padding-left: 0.25rem;
+    padding-inline-start: 0.25rem;
   }
   .dr-input-action[data-side="trailing"] {
-    padding-right: 0.25rem;
+    padding-inline-end: 0.25rem;
   }
   /* Tighten icon buttons inside the slot. The Button component's
    * size="icon" renders a --btn-height square, as tall as the whole field;

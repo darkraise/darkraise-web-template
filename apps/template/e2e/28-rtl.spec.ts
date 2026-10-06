@@ -445,3 +445,43 @@ test.describe("badge anchor corners", () => {
     expect(badge.y + badge.height / 2).toBeCloseTo(anchor.y, 0)
   })
 })
+
+test.describe("field and control edges", () => {
+  test("the switch thumb stays inside its track", async ({ page }) => {
+    await openFixture(page)
+    const probe = page.locator('[data-probe="switch"]')
+    for (const name of ["Unchecked", "Checked"]) {
+      const track = probe.getByRole("switch", { name, exact: true })
+      const outer = await boxOf(track)
+      const thumb = await boxOf(track.locator(".dr-switch-thumb"))
+      expect(thumb.x).toBeGreaterThanOrEqual(outer.x)
+      expect(thumb.x + thumb.width).toBeLessThanOrEqual(outer.x + outer.width)
+    }
+  })
+
+  test("a button group squares its joins and rounds its outer ends", async ({
+    page,
+  }) => {
+    await openFixture(page)
+    const group = page.locator('[data-probe="button-group"]')
+    const first = group.getByRole("button", { name: "One" })
+    const middle = group.getByRole("button", { name: "Two" })
+    const last = group.getByRole("button", { name: "Three" })
+    expect(await computed(first, "border-top-right-radius")).not.toBe("0px")
+    expect(await computed(first, "border-top-left-radius")).toBe("0px")
+    expect(await computed(middle, "border-top-right-radius")).toBe("0px")
+    expect(await computed(middle, "border-top-left-radius")).toBe("0px")
+    expect(await computed(last, "border-top-left-radius")).not.toBe("0px")
+    expect(await computed(last, "border-top-right-radius")).toBe("0px")
+    const firstBox = await boxOf(first)
+    const middleBox = await boxOf(middle)
+    expect(middleBox.x + middleBox.width - firstBox.x).toBeCloseTo(1, 0)
+  })
+
+  test("the input prefix divider faces the field", async ({ page }) => {
+    await openFixture(page)
+    const addon = page.locator('[data-probe="input-prefix"] .dr-input-addon')
+    expect(await computed(addon, "border-left-width")).toBe("1px")
+    expect(await computed(addon, "border-right-width")).toBe("0px")
+  })
+})

@@ -74,6 +74,10 @@ import {
   type TimelineBucket,
 } from "darkraise-ui/components/virtualized-timeline"
 import { BadgeAnchor } from "darkraise-ui/components/badge"
+import { Button } from "darkraise-ui/components/button"
+import { ButtonGroup } from "darkraise-ui/components/button-group"
+import { Input } from "darkraise-ui/components/input"
+import { Switch } from "darkraise-ui/components/switch"
 import "../../src/styles/globals.css"
 
 function SidebarLink({
@@ -335,6 +339,20 @@ createRoot(root).render(
         <BadgeAnchor content="3">
           <span style={{ display: "block", width: 40, height: 40 }} />
         </BadgeAnchor>
+      </div>
+      <div data-probe="switch" style={{ display: "flex", gap: 16 }}>
+        <Switch aria-label="Unchecked" />
+        <Switch aria-label="Checked" defaultChecked />
+      </div>
+      <div data-probe="button-group">
+        <ButtonGroup>
+          <Button variant="outline">One</Button>
+          <Button variant="outline">Two</Button>
+          <Button variant="outline">Three</Button>
+        </ButtonGroup>
+      </div>
+      <div data-probe="input-prefix" style={{ width: 240 }}>
+        <Input prefix="https://" aria-label="Site" />
       </div>
     </div>
   </ThemeProvider>,
