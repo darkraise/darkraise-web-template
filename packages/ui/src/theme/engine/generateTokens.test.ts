@@ -300,8 +300,11 @@ describe("generateTokens", () => {
           const plain = generateTokens({ ...input, frosted: false })
           const frosted = generateTokens({ ...input, frosted: true })
           expect(Object.keys(frosted).sort()).toEqual(Object.keys(plain).sort())
+          // The lifted edge is solved against a brighter face under Glass.
           const moved = Object.keys(plain).filter(
-            (key) => plain[key] !== frosted[key],
+            (key) =>
+              key !== "--field-edge-lifted-color" &&
+              plain[key] !== frosted[key],
           )
           expect(moved, `${accentColor} ${contrast}`).toEqual(
             mode === "dark" ? ["--surface-sidebar"] : [],
