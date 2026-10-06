@@ -18,6 +18,7 @@
   .dr-image-editor-panel {
     @apply bg-card overflow-hidden rounded-md border shadow-[var(--card-elevation-low)];
     border-color: hsl(var(--border));
+    --field-edge: var(--field-edge-lifted);
   }
   .dr-image-editor-panel-header {
     @apply flex items-center justify-between gap-2 border-b px-3 py-2;
@@ -92,6 +93,7 @@
   .dr-image-editor-tools {
     @apply inline-flex items-center gap-0.5 rounded-md border p-1 shadow-[var(--card-elevation-low)];
     border-color: hsl(var(--border));
+    --field-edge: var(--field-edge-lifted);
     background: var(--surface-card-fill-opaque);
   }
   /* Two-class selector wins specificity over `.dr-btn[data-size="icon"]`
@@ -156,6 +158,7 @@
   .dr-image-editor-annotation-toolbar {
     @apply flex flex-wrap items-center gap-1.5 rounded-md border p-1 shadow-[var(--card-elevation-low)];
     border-color: hsl(var(--border));
+    --field-edge: var(--field-edge-lifted);
     background: var(--surface-card-fill-opaque);
   }
   .dr-image-editor-annotation-kinds {

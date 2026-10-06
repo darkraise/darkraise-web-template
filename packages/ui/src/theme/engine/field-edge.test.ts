@@ -1,10 +1,11 @@
 import { describe, it, expect } from "vitest"
-import { readFileSync } from "node:fs"
+import { readdirSync, readFileSync } from "node:fs"
 import { composite, contrastRatio } from "@theme/engine/oklch"
 import { parseRules } from "../../styles/interactive-classes"
 import {
   CANVAS_BLOB_SCALE,
   CANVAS_PEAK_SHARE,
+  FROSTED_LIFTED_FACE_TINT,
   LIFTED_FACE_TINT,
   generateTokens,
   gradientCanvasPeak,
@@ -178,7 +179,7 @@ describe("--field-edge", () => {
 })
 
 describe("--field-edge-lifted-color", () => {
-  it("clears 3:1 on the brightest lifted card face in dark", () => {
+  it("clears 3:1 on the brightest lifted face in dark", () => {
     const failures: string[] = []
     for (const combo of reachableCombos()) {
       if (combo.mode !== "dark") continue
@@ -189,7 +190,8 @@ describe("--field-edge-lifted-color", () => {
         failures.push(`${comboName(combo)}: edge or card is not opaque`)
         continue
       }
-      const face = composite(card, "0 0% 100%", LIFTED_FACE_TINT)
+      const tint = combo.frosted ? FROSTED_LIFTED_FACE_TINT : LIFTED_FACE_TINT
+      const face = composite(card, "0 0% 100%", tint)
       const ratio = renderedContrast(edge, face)
       if (ratio < FLOOR) {
         failures.push(`${comboName(combo)}: ${ratio.toFixed(3)} on ${face}`)
@@ -214,7 +216,10 @@ describe("--field-edge-lifted-color", () => {
     const alphas = (css: string, pattern: RegExp) =>
       [...css.matchAll(pattern)].map((m) => Number(m[1]))
     const lift = Math.max(
-      ...alphas(theme, /inset 0 0 0 100vmax rgb\(255 255 255 \/ ([\d.]+)\)/g),
+      ...alphas(
+        theme,
+        /--elevation-lift-tint-\w+: rgb\(255 255 255 \/ ([\d.]+)\)/g,
+      ),
     )
     const sheen = Math.max(
       ...alphas(
@@ -242,6 +247,26 @@ describe("--field-edge-lifted-color", () => {
       const rule = card.slice(start, card.indexOf("}", start))
       expect(rule, level).toContain("--field-edge: var(--field-edge-lifted);")
     }
+  })
+
+  // Any other rule that draws a lifted shadow lightens its face the same way.
+  it("is what every other lifted surface gives its fields", () => {
+    const lifted =
+      /shadow-\[var\(--(?:card-elevation|elevation|shadow)-(?:low|medium|high)\)\]|box-shadow:[^;]*var\(--(?:card-elevation|elevation|shadow)-(?:low|medium|high)\)/
+    const missing: string[] = []
+    for (const path of componentStylesheets()) {
+      const css = readFileSync(path, "utf8").replace(/\/\*[\s\S]*?\*\//g, "")
+      for (const [, selector, body] of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+        if (!lifted.test(body as string)) continue
+        if (/@apply[^;]*\boverlay-surface\b/.test(body as string)) continue
+        if (
+          (body as string).includes("--field-edge: var(--field-edge-lifted);")
+        )
+          continue
+        missing.push(`${path}: ${(selector as string).trim()}`)
+      }
+    }
+    expect(missing).toEqual([])
   })
 })
 
@@ -311,3 +336,10 @@ describe("the gradient canvas model against theme.css", () => {
     },
   )
 })
+
+function componentStylesheets(): string[] {
+  return readdirSync("src/components", { recursive: true })
+    .map(String)
+    .filter((file) => file.endsWith(".css"))
+    .map((file) => `src/components/${file}`)
+}

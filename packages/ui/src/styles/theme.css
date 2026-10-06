@@ -896,6 +896,11 @@
     --elevation-lift-low: 0 0 transparent;
     --elevation-lift-medium: 0 0 transparent;
     --elevation-lift-high: 0 0 transparent;
+    /* The overlay colour of each lift, for an opaque layer inside a lifted
+       surface that has to match its face. */
+    --elevation-lift-tint-low: transparent;
+    --elevation-lift-tint-medium: transparent;
+    --elevation-lift-tint-high: transparent;
     --elevation-low: 0 2px 4px 0 rgb(0 0 0 / 0.1);
     --elevation-medium:
       0 8px 20px -2px rgb(0 0 0 / 0.18), 0 3px 8px -1px rgb(0 0 0 / 0.1);
@@ -1016,6 +1021,7 @@
      selectors below. Mirrors the `standard` level, which keeps the root
      `--elevation-medium`. */
     --elevation-current: var(--elevation-medium);
+    --elevation-current-lift-tint: var(--elevation-lift-tint-medium);
 
     /* Complete fill expressions, one per surface. A `surface` prop value
        redefines these wholesale rather than feeding a value into them: a
@@ -1201,11 +1207,13 @@
   --elevation-medium: 0 0 transparent;
   --elevation-high: 0 0 transparent;
   --elevation-current: 0 0 transparent;
+  --elevation-current-lift-tint: transparent;
 }
 
 /* `standard` keeps the :root ramps in both modes. */
 [data-elevation="standard"] {
   --elevation-current: var(--elevation-medium);
+  --elevation-current-lift-tint: var(--elevation-lift-tint-medium);
 }
 
 [data-elevation="high"] {
@@ -1216,6 +1224,7 @@
   --elevation-high:
     0 48px 72px -10px rgb(0 0 0 / 0.45), 0 20px 36px -6px rgb(0 0 0 / 0.28);
   --elevation-current: var(--elevation-high);
+  --elevation-current-lift-tint: var(--elevation-lift-tint-high);
 }
 
 /* The `surface` prop. A custom property that reads another resolves where it
@@ -1271,15 +1280,18 @@
 [data-mode="dark"] {
   color-scheme: dark;
   --cropper-grid-line: rgba(255, 255, 255, 0.45);
+  --elevation-lift-tint-low: rgb(255 255 255 / 0.025);
+  --elevation-lift-tint-medium: rgb(255 255 255 / 0.05);
+  --elevation-lift-tint-high: rgb(255 255 255 / 0.08);
   --elevation-lift-low:
     inset 0 1px 0 rgb(255 255 255 / 0.05),
-    inset 0 0 0 100vmax rgb(255 255 255 / 0.025);
+    inset 0 0 0 100vmax var(--elevation-lift-tint-low);
   --elevation-lift-medium:
     inset 0 1px 0 rgb(255 255 255 / 0.07),
-    inset 0 0 0 100vmax rgb(255 255 255 / 0.05);
+    inset 0 0 0 100vmax var(--elevation-lift-tint-medium);
   --elevation-lift-high:
     inset 0 1px 0 rgb(255 255 255 / 0.09),
-    inset 0 0 0 100vmax rgb(255 255 255 / 0.08);
+    inset 0 0 0 100vmax var(--elevation-lift-tint-high);
   --elevation-low: var(--elevation-lift-low), 0 2px 4px 0 rgb(0 0 0 / 0.5);
   --elevation-medium:
     var(--elevation-lift-medium), 0 8px 20px -2px rgb(0 0 0 / 0.65),

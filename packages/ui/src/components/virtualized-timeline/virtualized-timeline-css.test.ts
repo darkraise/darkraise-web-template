@@ -17,7 +17,28 @@ describe("timeline bucket header", () => {
     const header = body(".dr-virtualized-timeline-bucket-header")
     expect(header).not.toMatch(/backdrop/)
     expect(header).not.toMatch(/bg-background\/\d+/)
-    expect(header).toContain("background-color: var(--timeline-header-bg);")
+    expect(header.replace(/\(\s+/g, "(").replace(/\s+\)/g, ")")).toContain(
+      "background: linear-gradient(var(--card-lift-tint, transparent), var(--card-lift-tint, transparent)), var(--timeline-header-bg);",
+    )
+  })
+
+  // An elevated dark card lifts its face with an inset overlay; the opaque
+  // header paints the same overlay so it does not read as a darker band.
+  it("publishes each card's lift for the header to paint", () => {
+    const card = readFileSync("src/components/card/card.css", "utf8")
+    const rule = (selector: string) => {
+      const start = card.indexOf(`${selector} {`)
+      return card.slice(start, card.indexOf("}", start))
+    }
+    expect(rule(".dr-card")).toContain("--card-lift-tint: transparent;")
+    expect(rule('.dr-card[data-card-elevation="auto"]')).toContain(
+      "--card-lift-tint: var(--elevation-current-lift-tint);",
+    )
+    for (const level of ["low", "medium", "high"]) {
+      expect(rule(`.dr-card[data-card-elevation="${level}"]`)).toContain(
+        `--card-lift-tint: var(--elevation-lift-tint-${level});`,
+      )
+    }
   })
 
   it("matches the page, or the card it sits in", () => {

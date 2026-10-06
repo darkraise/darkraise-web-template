@@ -13,6 +13,7 @@
   .dr-json-toolbar {
     @apply bg-card flex items-center gap-1 rounded-md border px-1.5 py-1 font-sans text-sm shadow-[var(--card-elevation-low)];
     border-color: hsl(var(--border));
+    --field-edge: var(--field-edge-lifted);
   }
   .dr-json-toolbar:focus-within {
     border-color: hsl(var(--primary));

@@ -28,7 +28,7 @@ describe("elevation axis CSS", () => {
       /(?:^|\n)\[data-elevation="standard"\]\s*\{([^}]*)\}/,
     )?.[1]
     expect(body?.replace(/\s+/g, " ").trim()).toBe(
-      "--elevation-current: var(--elevation-medium);",
+      "--elevation-current: var(--elevation-medium); --elevation-current-lift-tint: var(--elevation-lift-tint-medium);",
     )
   })
 

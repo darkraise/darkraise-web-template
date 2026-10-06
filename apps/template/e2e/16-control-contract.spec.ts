@@ -235,12 +235,12 @@ for (const { name, seed } of EDGE_THEMES) {
 }
 
 // In dark, an elevated card or a popup lightens its face with a tonal lift,
-// so fields on it take the lifted edge.
-for (const style of STYLES) {
-  test(`field bottom edge reaches 3:1 on lifted surfaces · ${style} · dark`, async ({
+// so fields on it take the lifted edge. A modal takes the high step.
+for (const { name, seed } of EDGE_THEMES) {
+  test(`field bottom edge reaches 3:1 on lifted surfaces · ${name} · dark`, async ({
     page,
   }) => {
-    await seedApp(page, { style, mode: "dark" })
+    await seedApp(page, { ...seed, mode: "dark" })
     await openControlFixture(page)
     for (const level of ["low", "medium", "high"]) {
       const probe = `edge-card-${level}`
@@ -248,7 +248,8 @@ for (const style of STYLES) {
         .locator(`[data-probe="${probe}"]`)
         .evaluate((el) => el.scrollIntoView({ block: "center" }))
       await page.mouse.move(0, 0)
-      await expectEdgeFloor(page, probe, `${style} · dark`)
+      await settle(page)
+      await expectEdgeFloor(page, probe, `${name} · dark`)
     }
     await page.getByRole("button", { name: "Open field popover" }).click()
     const popover = page.locator('[data-probe="edge-popover"]')
@@ -257,7 +258,16 @@ for (const style of STYLES) {
     await popover.locator("input").blur()
     await page.mouse.move(0, 0)
     await settle(page)
-    await expectEdgeFloor(page, "edge-popover", `${style} · dark`)
+    await expectEdgeFloor(page, "edge-popover", `${name} · dark`)
+    await page.keyboard.press("Escape")
+    await expect(popover).toBeHidden()
+    await page.getByRole("button", { name: "Open field dialog" }).click()
+    const dialog = page.locator('[data-probe="edge-dialog"]')
+    await dialog.waitFor()
+    await dialog.locator("input").blur()
+    await page.mouse.move(0, 0)
+    await settle(page)
+    await expectEdgeFloor(page, "edge-dialog", `${name} · dark`)
   })
 }
 

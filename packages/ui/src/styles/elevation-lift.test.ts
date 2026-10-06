@@ -26,15 +26,18 @@ describe("dark elevation lift", () => {
 
   it("lightens each dark level by its own step", () => {
     const dark = block('[data-mode="dark"]')
-    expect(value(dark, "--elevation-lift-low")).toBe(
-      "inset 0 1px 0 rgb(255 255 255 / 0.05), inset 0 0 0 100vmax rgb(255 255 255 / 0.025)",
-    )
-    expect(value(dark, "--elevation-lift-medium")).toBe(
-      "inset 0 1px 0 rgb(255 255 255 / 0.07), inset 0 0 0 100vmax rgb(255 255 255 / 0.05)",
-    )
-    expect(value(dark, "--elevation-lift-high")).toBe(
-      "inset 0 1px 0 rgb(255 255 255 / 0.09), inset 0 0 0 100vmax rgb(255 255 255 / 0.08)",
-    )
+    for (const [level, edge, tint] of [
+      ["low", "0.05", "0.025"],
+      ["medium", "0.07", "0.05"],
+      ["high", "0.09", "0.08"],
+    ]) {
+      expect(value(dark, `--elevation-lift-tint-${level}`)).toBe(
+        `rgb(255 255 255 / ${tint})`,
+      )
+      expect(value(dark, `--elevation-lift-${level}`)).toBe(
+        `inset 0 1px 0 rgb(255 255 255 / ${edge}), inset 0 0 0 100vmax var(--elevation-lift-tint-${level})`,
+      )
+    }
   })
 
   it("puts the lift first in every dark elevation token", () => {

@@ -57,7 +57,14 @@
      long as its own bucket is on screen. */
   .dr-virtualized-timeline-bucket-header {
     @apply text-foreground sticky top-0 z-10 flex items-center text-sm font-medium;
-    background-color: var(--timeline-header-bg);
+    /* Over the opaque fill, the lift its card paints, so the header
+       matches an elevated dark card's face. */
+    background:
+      linear-gradient(
+        var(--card-lift-tint, transparent),
+        var(--card-lift-tint, transparent)
+      ),
+      var(--timeline-header-bg);
   }
 
   .dr-virtualized-timeline-bucket-body {

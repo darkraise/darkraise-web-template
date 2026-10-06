@@ -12,6 +12,7 @@
     --control-surface: var(--control-well);
     background-image: var(--card-sheen);
     box-shadow: var(--card-edge);
+    --card-lift-tint: transparent;
     transition: box-shadow var(--duration-normal) var(--ease-in-out);
   }
 
@@ -27,6 +28,7 @@
     box-shadow:
       var(--card-edge), var(--elevation-current), var(--glow-outer),
       var(--glow-inner);
+    --card-lift-tint: var(--elevation-current-lift-tint);
     --field-edge: var(--field-edge-lifted);
   }
   .dr-card[data-card-elevation="flat"] {
@@ -36,18 +38,21 @@
     box-shadow:
       var(--card-edge), var(--card-elevation-low), var(--glow-outer),
       var(--glow-inner);
+    --card-lift-tint: var(--elevation-lift-tint-low);
     --field-edge: var(--field-edge-lifted);
   }
   .dr-card[data-card-elevation="medium"] {
     box-shadow:
       var(--card-edge), var(--card-elevation-medium), var(--glow-outer),
       var(--glow-inner);
+    --card-lift-tint: var(--elevation-lift-tint-medium);
     --field-edge: var(--field-edge-lifted);
   }
   .dr-card[data-card-elevation="high"] {
     box-shadow:
       var(--card-edge), var(--card-elevation-high), var(--glow-outer),
       var(--glow-inner);
+    --card-lift-tint: var(--elevation-lift-tint-high);
     --field-edge: var(--field-edge-lifted);
   }
 

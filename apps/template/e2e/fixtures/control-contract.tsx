@@ -79,6 +79,12 @@ import {
   PopoverTrigger,
 } from "darkraise-ui/components/popover"
 import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from "darkraise-ui/components/dialog"
+import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
@@ -767,6 +773,19 @@ createRoot(root).render(
           </div>
         </PopoverContent>
       </Popover>
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button variant="outline" style={{ marginTop: 24 }}>
+            Open field dialog
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogTitle>Field dialog</DialogTitle>
+          <div data-probe="edge-dialog" style={{ paddingBottom: 12 }}>
+            <Input aria-label="In a dialog" placeholder="In a dialog" />
+          </div>
+        </DialogContent>
+      </Dialog>
       <div data-probe="table" style={{ width: 360, marginTop: 24 }}>
         <DataTable columns={INVOICE_COLUMNS} data={INVOICES} />
       </div>

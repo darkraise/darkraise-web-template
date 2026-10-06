@@ -77,6 +77,12 @@ const LEGEND_TARGET_RATIO = 4.6
  * field-edge.test.ts reads both values from the stylesheets.
  */
 export const LIFTED_FACE_TINT = 0.095
+/**
+ * Glass overlays paint noise and fog over a translucent popover, so a
+ * lifted Glass dialog reads brighter than the opaque model above: about 11%
+ * white over the card for the sand surface (e2e 16), with headroom here.
+ */
+export const FROSTED_LIFTED_FACE_TINT = 0.13
 const BLACK = "0 0% 0%"
 
 const tierCache = new Map<string, string>()
@@ -85,8 +91,12 @@ const tierCache = new Map<string, string>()
  * The first neutral step from the field edge's own (7) that clears the mark
  * floor on a card face carrying the brightest lift.
  */
-function liftedFieldEdge(n: (step: number) => string, card: string): string {
-  const face = composite(card, WHITE, LIFTED_FACE_TINT)
+function liftedFieldEdge(
+  n: (step: number) => string,
+  card: string,
+  tint: number,
+): string {
+  const face = composite(card, WHITE, tint)
   for (let step = 7; step < 12; step++) {
     if (contrastRatio(n(step), face) >= MARK_FLOOR) return n(step)
   }
@@ -309,7 +319,13 @@ export function generateTokens(
     "--border": n(6),
     "--input": dark ? n(3) : n(6),
     "--field-edge-color": n(7),
-    "--field-edge-lifted-color": dark ? liftedFieldEdge(n, card) : n(7),
+    "--field-edge-lifted-color": dark
+      ? liftedFieldEdge(
+          n,
+          card,
+          frosted ? FROSTED_LIFTED_FACE_TINT : LIFTED_FACE_TINT,
+        )
+      : n(7),
 
     "--surface-base": background,
     "--surface-raised": card,
