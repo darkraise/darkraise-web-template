@@ -23,6 +23,20 @@ function Frame({ className, head, children, ...rest }: FrameProps) {
     return () => node.removeEventListener("load", update)
   }, [])
 
+  React.useEffect(() => {
+    if (!doc) return
+    const host = document.documentElement
+    const sync = () => {
+      const mode = host.getAttribute("data-mode")
+      doc.documentElement.style.colorScheme =
+        mode === "light" || mode === "dark" ? mode : ""
+    }
+    sync()
+    const observer = new MutationObserver(sync)
+    observer.observe(host, { attributes: true, attributeFilter: ["data-mode"] })
+    return () => observer.disconnect()
+  }, [doc])
+
   return (
     <iframe ref={ref} className={cn("dr-frame", className)} {...rest}>
       {doc

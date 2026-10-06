@@ -1,6 +1,13 @@
-import { test, expect, type Page } from "@playwright/test"
+import { test, expect, type Frame, type Page } from "@playwright/test"
 import { gotoApp, seedApp } from "./helpers/app"
-import { contrast, luminance, settle, type Rgb } from "./helpers/measure"
+import {
+  contrast,
+  luminance,
+  pixel,
+  rgbOf,
+  settle,
+  type Rgb,
+} from "./helpers/measure"
 
 /**
  * Style and theme tokens. Each block measures one rule through computed
@@ -80,5 +87,41 @@ test.describe("colour scheme", () => {
     const [low, high] = await extremes(page, clip)
     expect(luminance(high)).toBeGreaterThan(0.25)
     expect(contrast(high, low)).toBeGreaterThanOrEqual(3)
+  })
+})
+
+test.describe("frame", () => {
+  test("dark frame text reads against the card behind it", async ({ page }) => {
+    await seedApp(page, { style: "quiet", mode: "dark" })
+    await gotoApp(page, "/components/frame")
+    const text = page
+      .frameLocator(".dr-frame")
+      .first()
+      .getByText("Hello inside iframe")
+    await expect(text).toBeVisible()
+    await settle(page)
+    const colour = rgbOf(
+      await text.evaluate((el) => getComputedStyle(el).color),
+    )
+    const box = await text.boundingBox()
+    if (!box) throw new Error("no text box")
+    const behind = await pixel(
+      page,
+      Math.round(box.x + box.width + 4),
+      Math.round(box.y + box.height / 2),
+    )
+    expect(contrast(colour, behind)).toBeGreaterThanOrEqual(4.5)
+    let inner: Frame | undefined
+    for (const frame of page.frames()) {
+      if (frame === page.mainFrame()) continue
+      if ((await frame.getByText("Hello inside iframe").count()) > 0)
+        inner = frame
+    }
+    if (!inner) throw new Error("no frame holds the Basic demo")
+    expect(
+      await inner.evaluate(
+        () => getComputedStyle(document.documentElement).colorScheme,
+      ),
+    ).toBe("dark")
   })
 })
