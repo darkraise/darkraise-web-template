@@ -26,10 +26,6 @@
     @apply -ms-2 mb-4;
   }
 
-  .dr-split-panel-layout-back-icon:dir(rtl) {
-    transform: scaleX(-1);
-  }
-
   .dr-split-panel-layout-aside:focus {
     outline: none;
   }

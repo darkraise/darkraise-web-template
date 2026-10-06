@@ -26,3 +26,11 @@ test.describe("fixture", () => {
     expect(await computed(page.getByTestId("rtl"), "direction")).toBe("rtl")
   })
 })
+
+test.describe("inline icons", () => {
+  test("mirror under a right-to-left document", async ({ page }) => {
+    await openFixture(page)
+    const icon = page.locator('[data-probe="icon-inline"] svg')
+    expect(await computed(icon, "scale")).toBe("-1 1")
+  })
+})

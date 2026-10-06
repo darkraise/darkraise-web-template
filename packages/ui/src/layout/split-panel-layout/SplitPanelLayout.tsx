@@ -204,7 +204,7 @@ export function SplitPanelLayout({
             onClick={onBack}
           >
             <ChevronLeft
-              className="dr-split-panel-layout-back-icon size-[var(--icon-size)]"
+              className="dr-split-panel-layout-back-icon dr-icon-inline size-[var(--icon-size)]"
               aria-hidden="true"
             />
             {labels.layout.back}

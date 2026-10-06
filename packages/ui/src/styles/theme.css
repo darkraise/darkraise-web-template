@@ -2028,6 +2028,20 @@
   }
 }
 
+/* Inline-direction icons.
+
+   An arrow or chevron that points along the reading order (next page,
+   breadcrumb separator, back) must point the other way in a right-to-left
+   document. `scale` is the individual transform property, so it composes
+   with a component's own `translate` or `rotate` instead of replacing a
+   `transform`. An icon that also rotates to show an open state cannot use
+   this class: mirroring before the rotation turns "down" into "up". */
+@layer components {
+  .dr-icon-inline:dir(rtl) {
+    scale: -1 1;
+  }
+}
+
 /* Tap latency.
 
    `touch-action: manipulation` opts an element out of the double-tap-to-zoom

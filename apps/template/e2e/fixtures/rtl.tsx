@@ -1,4 +1,5 @@
 import { createRoot } from "react-dom/client"
+import { ChevronRight } from "lucide-react"
 import { ThemeProvider } from "darkraise-ui/theme"
 import "../../src/styles/globals.css"
 
@@ -17,6 +18,9 @@ createRoot(root).render(
       }}
     >
       <p style={{ flexBasis: "100%", margin: 0 }}>Right to left</p>
+      <div data-probe="icon-inline">
+        <ChevronRight className="dr-icon-inline size-4" />
+      </div>
     </div>
   </ThemeProvider>,
 )
