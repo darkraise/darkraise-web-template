@@ -2,6 +2,7 @@
 
 import * as React from "react"
 
+import { getDirection, type Direction } from "@lib/direction"
 import { cn } from "@lib/utils"
 import "./slider.css"
 
@@ -77,6 +78,7 @@ function Slider({
   const draggingRef = React.useRef<{
     pointerId: number
     thumbIndex: number
+    direction: Direction
   } | null>(null)
 
   const handleRef = React.useCallback(
@@ -94,12 +96,22 @@ function Slider({
     const root = rootRef.current
     if (!root) return
     const rect = root.getBoundingClientRect()
-    const target = slider.pointerToValue(rect, event.clientX, event.clientY)
+    const direction = getDirection(root)
+    const target = slider.pointerToValue(
+      rect,
+      event.clientX,
+      event.clientY,
+      direction,
+    )
     const idx = slider.closestThumbIndex(target)
     slider.setActiveThumbIndex(idx)
     slider.setValueAtIndex(idx, target)
     root.setPointerCapture(event.pointerId)
-    draggingRef.current = { pointerId: event.pointerId, thumbIndex: idx }
+    draggingRef.current = {
+      pointerId: event.pointerId,
+      thumbIndex: idx,
+      direction,
+    }
   }
 
   const onPointerMove = (event: React.PointerEvent<HTMLSpanElement>) => {
@@ -108,7 +120,12 @@ function Slider({
     const root = rootRef.current
     if (!root) return
     const rect = root.getBoundingClientRect()
-    const target = slider.pointerToValue(rect, event.clientX, event.clientY)
+    const target = slider.pointerToValue(
+      rect,
+      event.clientX,
+      event.clientY,
+      drag.direction,
+    )
     slider.setValueAtIndex(drag.thumbIndex, target)
   }
 
@@ -155,8 +172,8 @@ function Slider({
   const rangeStyle: React.CSSProperties = horizontal
     ? {
         position: "absolute",
-        left: `${rangeStart * 100}%`,
-        right: `${(1 - rangeEnd) * 100}%`,
+        insetInlineStart: `${rangeStart * 100}%`,
+        insetInlineEnd: `${(1 - rangeEnd) * 100}%`,
         top: 0,
         bottom: 0,
       }
@@ -164,8 +181,8 @@ function Slider({
         position: "absolute",
         bottom: `${rangeStart * 100}%`,
         top: `${(1 - rangeEnd) * 100}%`,
-        left: 0,
-        right: 0,
+        insetInlineStart: 0,
+        insetInlineEnd: 0,
       }
 
   return (
@@ -201,9 +218,9 @@ function Slider({
           const dotStyle: React.CSSProperties = horizontal
             ? {
                 position: "absolute",
-                left: `${pct}%`,
+                insetInlineStart: `${pct}%`,
                 top: "50%",
-                transform: "translate(-50%, -50%)",
+                transform: "translate(var(--slider-center-x, -50%), -50%)",
               }
             : {
                 position: "absolute",
@@ -227,8 +244,8 @@ function Slider({
         const thumbStyle: React.CSSProperties = horizontal
           ? {
               position: "absolute",
-              left: `${pct}%`,
-              transform: "translate(-50%, -50%)",
+              insetInlineStart: `${pct}%`,
+              transform: "translate(var(--slider-center-x, -50%), -50%)",
               top: "50%",
             }
           : {

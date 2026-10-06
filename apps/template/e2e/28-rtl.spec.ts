@@ -255,3 +255,17 @@ test.describe("tree chevrons", () => {
     expect(await computed(toggle("closed"), "rotate")).toBe("180deg")
   })
 })
+
+test.describe("slider", () => {
+  test("the range fills from the track's right edge", async ({ page }) => {
+    await openFixture(page)
+    const probe = page.locator('[data-probe="slider"]')
+    const track = await boxOf(probe.locator(".dr-slider-track"))
+    const range = await boxOf(probe.locator(".dr-slider-range"))
+    const thumb = await boxOf(probe.getByRole("slider"))
+    const trackRight = track.x + track.width
+    expect(Math.abs(range.x + range.width - trackRight)).toBeLessThanOrEqual(1)
+    expect(Math.abs(range.width - track.width * 0.3)).toBeLessThanOrEqual(1)
+    expect(Math.abs(thumb.x + thumb.width / 2 - range.x)).toBeLessThanOrEqual(1)
+  })
+})

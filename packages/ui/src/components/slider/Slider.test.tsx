@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react"
+import { fireEvent, render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi } from "vitest"
 import { useState } from "react"
@@ -154,6 +154,69 @@ describe("Slider", () => {
     thumb.focus()
     await user.keyboard("{ArrowUp}")
     expect(onChange).toHaveBeenLastCalledWith([51])
+  })
+
+  describe("right to left", () => {
+    it("ArrowLeft increments and ArrowRight decrements", async () => {
+      const user = userEvent.setup()
+      const onChange = vi.fn()
+      render(
+        <div dir="rtl">
+          <Slider defaultValue={[50]} step={5} onValueChange={onChange} />
+        </div>,
+      )
+      screen.getByRole("slider").focus()
+      await user.keyboard("{ArrowLeft}")
+      expect(onChange).toHaveBeenLastCalledWith([55])
+      await user.keyboard("{ArrowRight}")
+      expect(onChange).toHaveBeenLastCalledWith([50])
+    })
+
+    it("inverted swaps the mirrored keys back", async () => {
+      const user = userEvent.setup()
+      const onChange = vi.fn()
+      render(
+        <div dir="rtl">
+          <Slider
+            defaultValue={[50]}
+            step={5}
+            inverted
+            onValueChange={onChange}
+          />
+        </div>,
+      )
+      screen.getByRole("slider").focus()
+      await user.keyboard("{ArrowRight}")
+      expect(onChange).toHaveBeenLastCalledWith([55])
+    })
+
+    it("measures the pointer value from the right edge", () => {
+      const onChange = vi.fn()
+      const { container } = render(
+        <div dir="rtl">
+          <Slider defaultValue={[50]} onValueChange={onChange} />
+        </div>,
+      )
+      const root = container.querySelector(".dr-slider") as HTMLElement
+      root.getBoundingClientRect = () =>
+        ({ left: 0, top: 0, width: 100, height: 20 }) as DOMRect
+      root.setPointerCapture = vi.fn()
+      fireEvent.pointerDown(root, { pointerId: 1, clientX: 25, clientY: 10 })
+      expect(onChange).toHaveBeenLastCalledWith([75])
+      fireEvent.pointerMove(root, { pointerId: 1, clientX: 90, clientY: 10 })
+      expect(onChange).toHaveBeenLastCalledWith([10])
+    })
+
+    it("places the range and thumbs from the inline start", () => {
+      const { container } = render(<Slider defaultValue={[20, 75]} />)
+      const range = container.querySelector(".dr-slider-range") as HTMLElement
+      expect(range.style.insetInlineStart).toBe("20%")
+      expect(range.style.insetInlineEnd).toBe("25%")
+      expect(range.style.left).toBe("")
+      const thumb = container.querySelector(".dr-slider-thumb") as HTMLElement
+      expect(thumb.style.insetInlineStart).toBe("20%")
+      expect(thumb.style.left).toBe("")
+    })
   })
 
   describe("showSteps", () => {

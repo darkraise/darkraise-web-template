@@ -36,6 +36,13 @@
       transform var(--duration-fast) var(--ease-out);
   }
 
+  /* Thumbs and step dots sit at an inline-start offset, which under RTL is
+     their right edge, so centring them moves them right instead of left. */
+  .dr-slider-thumb:dir(rtl),
+  .dr-slider-step:dir(rtl) {
+    --slider-center-x: 50%;
+  }
+
   .dr-slider-thumb:focus-visible {
     /* An outline, so a box-shadow on the thumb (the affordance glow) adds to
        the focused thumb without removing its ring. */

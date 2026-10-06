@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { useControllableState, useEvent } from "@primitives/state"
+import { inlineArrow, type Direction } from "@lib/direction"
 
 export type SliderOrientation = "horizontal" | "vertical"
 
@@ -30,7 +31,12 @@ export interface UseSliderReturn {
   setValueAtIndex: (idx: number, next: number) => void
   commit: () => void
   handleThumbKeyDown: (event: React.KeyboardEvent, thumbIndex: number) => void
-  pointerToValue: (rect: DOMRect, clientX: number, clientY: number) => number
+  pointerToValue: (
+    rect: DOMRect,
+    clientX: number,
+    clientY: number,
+    direction?: Direction,
+  ) => number
   closestThumbIndex: (target: number) => number
   percent: (value: number) => number
 }
@@ -92,27 +98,20 @@ export function useSlider(options: UseSliderOptions): UseSliderReturn {
       const current = values[thumbIndex] ?? min
       let next: number | null = null
       const big = step * 10
-      const incrementKey =
+      const arrow =
         orientation === "horizontal"
-          ? inverted
-            ? "ArrowLeft"
-            : "ArrowRight"
-          : inverted
-            ? "ArrowDown"
-            : "ArrowUp"
-      const decrementKey =
-        orientation === "horizontal"
-          ? inverted
-            ? "ArrowRight"
-            : "ArrowLeft"
-          : inverted
-            ? "ArrowUp"
-            : "ArrowDown"
+          ? inlineArrow(event.key, event.currentTarget)
+          : event.key === "ArrowUp"
+            ? "next"
+            : event.key === "ArrowDown"
+              ? "prev"
+              : null
+      const increase = inverted ? arrow === "prev" : arrow === "next"
 
-      if (event.key === incrementKey) {
-        next = current + (event.shiftKey ? big : step)
-      } else if (event.key === decrementKey) {
-        next = current - (event.shiftKey ? big : step)
+      if (arrow !== null) {
+        next = increase
+          ? current + (event.shiftKey ? big : step)
+          : current - (event.shiftKey ? big : step)
       } else if (event.key === "Home") {
         next = min
       } else if (event.key === "End") {
@@ -130,13 +129,18 @@ export function useSlider(options: UseSliderOptions): UseSliderReturn {
   )
 
   const pointerToValue = useEvent(
-    (rect: DOMRect, clientX: number, clientY: number) => {
+    (
+      rect: DOMRect,
+      clientX: number,
+      clientY: number,
+      direction: Direction = "ltr",
+    ) => {
       const horizontal = orientation === "horizontal"
       const length = horizontal ? rect.width : rect.height
       if (length === 0) return min
       const offset = horizontal ? clientX - rect.left : clientY - rect.top
       let pct = offset / length
-      if (!horizontal) pct = 1 - pct
+      if (!horizontal || direction === "rtl") pct = 1 - pct
       if (inverted) pct = 1 - pct
       const raw = min + pct * (max - min)
       return clamp(snap(raw, step, min), min, max)
