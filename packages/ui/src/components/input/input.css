@@ -1,6 +1,6 @@
 @layer components {
   .dr-input {
-    @apply border-input text-card-foreground focus-ring-input file:text-foreground placeholder:text-muted-foreground flex w-full border px-[var(--field-px)] text-base file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)] md:text-sm [&::-ms-reveal]:dark:invert [&::-webkit-calendar-picker-indicator]:dark:invert;
+    @apply border-input text-card-foreground focus-ring-input file:text-foreground placeholder:text-muted-foreground flex w-full border px-[var(--field-px)] text-base file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)] md:text-sm;
     height: var(--field-height);
     /* Pinned out of the `surface` prop on purpose: fields hold
        still while panels move around them. The rung is container-relative

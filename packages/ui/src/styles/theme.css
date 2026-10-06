@@ -1268,6 +1268,7 @@
    the plain single-attribute selectors above. */
 
 [data-mode="dark"] {
+  color-scheme: dark;
   --cropper-grid-line: rgba(255, 255, 255, 0.45);
   --elevation-low: 0 2px 4px 0 rgb(0 0 0 / 0.5);
   --elevation-medium:
@@ -1574,6 +1575,7 @@
 }
 
 [data-mode="light"] {
+  color-scheme: light;
   /* Light-mode blob recipes; same --canvas-blob-scale mechanism as
      the dark defaults so the backgroundIntensity axis affects both
      modes through one knob. */
