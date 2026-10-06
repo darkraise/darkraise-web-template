@@ -4,7 +4,14 @@
   }
 
   .dr-scroll-bar {
-    @apply absolute right-0 flex touch-none transition-colors select-none;
+    @apply absolute right-0 flex touch-none select-none;
+    transition-property: opacity, background-color, border-color;
+    transition-duration: var(--duration-normal);
+  }
+
+  .dr-scroll-bar[data-state="hidden"] {
+    opacity: 0;
+    pointer-events: none;
   }
 
   .dr-scroll-bar[data-orientation="vertical"] {

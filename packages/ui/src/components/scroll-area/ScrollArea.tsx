@@ -12,6 +12,8 @@ type Orientation = "vertical" | "horizontal"
 // package barrel re-exports every component and several declare their own.
 export type ScrollAreaOrientation = Orientation
 
+type Visibility = "auto" | "always" | "scroll" | "hover"
+
 interface ScrollAreaContextValue {
   viewportRef: React.RefObject<HTMLDivElement | null>
   rootRef: React.RefObject<HTMLDivElement | null>
@@ -19,6 +21,11 @@ interface ScrollAreaContextValue {
   metricsNonce: number
   bumpMetrics: () => void
   setViewport: (node: HTMLDivElement | null) => void
+  type: Visibility
+  /** Whether a `scroll` or `hover` scrollbar is showing right now. */
+  active: boolean
+  /** Called on every viewport scroll. */
+  onScrollActivity: () => void
 }
 
 const ScrollAreaContext = React.createContext<ScrollAreaContextValue | null>(
@@ -32,13 +39,30 @@ function useScrollAreaContext(consumer: string): ScrollAreaContextValue {
 }
 
 interface ScrollAreaProps extends React.HTMLAttributes<HTMLDivElement> {
-  type?: "auto" | "always" | "scroll" | "hover"
+  /**
+   * When the scrollbars show. `auto` (the default): while their axis
+   * overflows. `always`: even when nothing overflows. `scroll`: while the
+   * user scrolls, hiding `scrollHideDelay` ms after scrolling stops.
+   * `hover`: while the pointer is over the area or the user scrolls, hiding
+   * `scrollHideDelay` ms after both stop.
+   */
+  type?: Visibility
+  /** Milliseconds a `scroll` or `hover` scrollbar stays after activity ends. */
   scrollHideDelay?: number
   dir?: "ltr" | "rtl"
   ref?: React.Ref<HTMLDivElement>
 }
 
-function ScrollArea({ className, children, ref, ...rest }: ScrollAreaProps) {
+function ScrollArea({
+  className,
+  children,
+  type = "auto",
+  scrollHideDelay = 600,
+  onPointerEnter,
+  onPointerLeave,
+  ref,
+  ...rest
+}: ScrollAreaProps) {
   const viewportRef = React.useRef<HTMLDivElement | null>(null)
   const rootRef = React.useRef<HTMLDivElement | null>(null)
   const [metricsNonce, setMetricsNonce] = React.useState(0)
@@ -49,9 +73,39 @@ function ScrollArea({ className, children, ref, ...rest }: ScrollAreaProps) {
     viewportRef.current = node
   }, [])
 
+  const [active, setActive] = React.useState(false)
+  const hoveredRef = React.useRef(false)
+  const hideTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+  const cancelHide = React.useCallback(() => {
+    if (hideTimerRef.current) {
+      clearTimeout(hideTimerRef.current)
+      hideTimerRef.current = null
+    }
+  }, [])
+  const hideLater = React.useCallback(() => {
+    cancelHide()
+    hideTimerRef.current = setTimeout(() => setActive(false), scrollHideDelay)
+  }, [cancelHide, scrollHideDelay])
+  React.useEffect(() => cancelHide, [cancelHide])
+
+  const onScrollActivity = React.useCallback(() => {
+    if (type !== "scroll" && type !== "hover") return
+    setActive(true)
+    if (type === "scroll" || !hoveredRef.current) hideLater()
+  }, [type, hideLater])
+
   const ctx = React.useMemo<ScrollAreaContextValue>(
-    () => ({ viewportRef, rootRef, metricsNonce, bumpMetrics, setViewport }),
-    [metricsNonce, bumpMetrics, setViewport],
+    () => ({
+      viewportRef,
+      rootRef,
+      metricsNonce,
+      bumpMetrics,
+      setViewport,
+      type,
+      active,
+      onScrollActivity,
+    }),
+    [metricsNonce, bumpMetrics, setViewport, type, active, onScrollActivity],
   )
 
   return (
@@ -59,6 +113,19 @@ function ScrollArea({ className, children, ref, ...rest }: ScrollAreaProps) {
       <div
         ref={composeRefs(rootRef, ref)}
         className={cn("dr-scroll-area", className)}
+        onPointerEnter={(event) => {
+          onPointerEnter?.(event)
+          if (type !== "hover") return
+          hoveredRef.current = true
+          cancelHide()
+          setActive(true)
+        }}
+        onPointerLeave={(event) => {
+          onPointerLeave?.(event)
+          if (type !== "hover") return
+          hoveredRef.current = false
+          hideLater()
+        }}
         {...rest}
       >
         <ScrollAreaViewport>{children}</ScrollAreaViewport>
@@ -99,6 +166,7 @@ function ScrollAreaViewport({
   )
 
   const bumpMetrics = ctx.bumpMetrics
+  const onScrollActivity = ctx.onScrollActivity
   React.useEffect(() => {
     const node = localRef.current
     if (!node) return
@@ -124,6 +192,7 @@ function ScrollAreaViewport({
       onScroll={(event) => {
         onScroll?.(event)
         bumpMetrics()
+        onScrollActivity()
       }}
       {...rest}
     >
@@ -152,7 +221,16 @@ function ScrollBar({
     const isVert = orientation === "vertical"
     const client = isVert ? node.clientHeight : node.clientWidth
     const scroll = isVert ? node.scrollHeight : node.scrollWidth
-    if (scroll <= client) return null
+    if (scroll <= client) {
+      if (ctx.type !== "always") return null
+      return {
+        thumbSize: client,
+        thumbOffset: 0,
+        trackSize: client,
+        maxScroll: 0,
+        isVert,
+      }
+    }
     const ratio = client / scroll
     const thumbSize = Math.max(20, Math.round(client * ratio))
     const trackSize = client
@@ -166,7 +244,7 @@ function ScrollBar({
     // metricsNonce is part of the dependency list so this recomputes on viewport
     // resize and scroll events emitted from the Viewport element.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ctx.metricsNonce, orientation, ctx.viewportRef])
+  }, [ctx.metricsNonce, ctx.type, orientation, ctx.viewportRef])
 
   const onThumbPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
     if (event.button !== 0) return
@@ -196,11 +274,13 @@ function ScrollBar({
   }
 
   if (!metrics) return null
+  const visible = ctx.type === "auto" || ctx.type === "always" || ctx.active
 
   return (
     <div
       ref={composeRefs(trackRef, ref)}
       data-orientation={orientation}
+      data-state={visible ? "visible" : "hidden"}
       className={cn("dr-scroll-bar", className)}
       {...rest}
     >

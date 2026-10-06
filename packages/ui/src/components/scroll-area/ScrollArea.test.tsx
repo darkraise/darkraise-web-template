@@ -1,5 +1,5 @@
-import { render, screen } from "@testing-library/react"
-import { describe, it, expect } from "vitest"
+import { act, fireEvent, render, screen } from "@testing-library/react"
+import { afterEach, describe, it, expect, vi } from "vitest"
 import {
   ScrollArea,
   ScrollAreaViewport,
@@ -73,5 +73,98 @@ describe("ScrollArea", () => {
     // Explicit ScrollBar still gates on metrics; verify the data marker
     // doesn't crash the render.
     expect(screen.getByTestId("root")).toBeInTheDocument()
+  })
+})
+
+describe("ScrollArea type", () => {
+  afterEach(() => {
+    vi.useRealTimers()
+    vi.restoreAllMocks()
+  })
+
+  /** jsdom lays nothing out; make every element 100px tall over 400px of
+   *  content so the vertical axis overflows. */
+  function overflow() {
+    vi.spyOn(Element.prototype, "clientHeight", "get").mockReturnValue(100)
+    vi.spyOn(Element.prototype, "scrollHeight", "get").mockReturnValue(400)
+  }
+
+  function bar() {
+    return screen.getByTestId("root").querySelector(".dr-scroll-bar")
+  }
+
+  function viewport() {
+    return screen
+      .getByTestId("root")
+      .querySelector("[data-darkraise-scroll-viewport]") as HTMLElement
+  }
+
+  it("shows the bar under always even when nothing overflows", () => {
+    render(
+      <ScrollArea data-testid="root" type="always">
+        <p>tiny</p>
+      </ScrollArea>,
+    )
+    expect(bar()).toHaveAttribute("data-state", "visible")
+  })
+
+  it("shows an overflowing bar under auto", () => {
+    overflow()
+    render(
+      <ScrollArea data-testid="root">
+        <p>tall</p>
+      </ScrollArea>,
+    )
+    expect(bar()).toHaveAttribute("data-state", "visible")
+  })
+
+  it("shows the bar under scroll only while scrolling, then hides it after the delay", () => {
+    vi.useFakeTimers()
+    overflow()
+    render(
+      <ScrollArea data-testid="root" type="scroll" scrollHideDelay={300}>
+        <p>tall</p>
+      </ScrollArea>,
+    )
+    expect(bar()).toHaveAttribute("data-state", "hidden")
+    fireEvent.scroll(viewport())
+    expect(bar()).toHaveAttribute("data-state", "visible")
+    act(() => vi.advanceTimersByTime(299))
+    expect(bar()).toHaveAttribute("data-state", "visible")
+    act(() => vi.advanceTimersByTime(1))
+    expect(bar()).toHaveAttribute("data-state", "hidden")
+  })
+
+  it("shows the bar under hover while the pointer is over the area", () => {
+    vi.useFakeTimers()
+    overflow()
+    render(
+      <ScrollArea data-testid="root" type="hover">
+        <p>tall</p>
+      </ScrollArea>,
+    )
+    expect(bar()).toHaveAttribute("data-state", "hidden")
+    fireEvent.pointerEnter(screen.getByTestId("root"))
+    expect(bar()).toHaveAttribute("data-state", "visible")
+    fireEvent.scroll(viewport())
+    act(() => vi.advanceTimersByTime(1000))
+    expect(bar()).toHaveAttribute("data-state", "visible")
+    fireEvent.pointerLeave(screen.getByTestId("root"))
+    act(() => vi.advanceTimersByTime(599))
+    expect(bar()).toHaveAttribute("data-state", "visible")
+    act(() => vi.advanceTimersByTime(1))
+    expect(bar()).toHaveAttribute("data-state", "hidden")
+  })
+
+  it("keeps type and scrollHideDelay off the DOM", () => {
+    render(
+      <ScrollArea data-testid="root" type="scroll" scrollHideDelay={200}>
+        <p>x</p>
+      </ScrollArea>,
+    )
+    const root = screen.getByTestId("root")
+    expect(root).not.toHaveAttribute("type")
+    expect(root).not.toHaveAttribute("scrollhidedelay")
+    expect(root).not.toHaveAttribute("scrollHideDelay")
   })
 })
