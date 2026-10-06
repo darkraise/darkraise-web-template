@@ -16,8 +16,11 @@ const PHYSICAL_UTILITY = [
   /^border-[lr](?:-|$)/,
   /^rounded-(?:l|r|tl|tr|bl|br)(?:-|$)/,
   /^text-(?:left|right)$/,
-  /^origin-(?:left|right)$/,
+  /^origin-(?:(?:top|bottom)-)?(?:left|right)$/,
   /^-?translate-x-/,
+  /^(?:float|clear)-(?:left|right)$/,
+  /^(?:bg|object)-(?:left|right)(?:-|$)/,
+  /^scroll-[mp][lr]-/,
 ]
 const PHYSICAL_STYLE_KEY =
   /^(?:left|right|marginLeft|marginRight|paddingLeft|paddingRight|borderLeft\w*|borderRight\w*)$/
@@ -448,6 +451,22 @@ describe("the logical CSS readers", () => {
       ".c { -translate-x-1/2 }",
       ".d &::after { right: 0 }",
       ".d { padding-right: 1px }",
+    ])
+  })
+
+  it("flag float, clear, origin corner, background and scroll utilities", () => {
+    expect(
+      cssFindings(`
+        @layer components {
+          .e { @apply float-left clear-right origin-top-left bg-right-top scroll-pl-2 float-start origin-top; }
+        }
+      `),
+    ).toEqual([
+      ".e { float-left }",
+      ".e { clear-right }",
+      ".e { origin-top-left }",
+      ".e { bg-right-top }",
+      ".e { scroll-pl-2 }",
     ])
   })
 
