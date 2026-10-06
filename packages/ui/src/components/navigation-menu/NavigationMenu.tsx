@@ -20,11 +20,8 @@ interface NavigationMenuRootContextValue {
   /** Whether the menu is in a "viewport" rendering mode. */
   hasViewport: boolean
   setHasViewport: (next: boolean) => void
-  /** Hover-intent timer used when switching menus. */
-  hoverDelay: number
   closeDelay: number
-  /** Schedule open/close with debounced timing. */
-  scheduleOpen: (id: string) => void
+  /** Close after `closeDelay`, unless cancelled first. */
   scheduleClose: () => void
   cancelSchedule: () => void
   rootId: string
@@ -41,16 +38,11 @@ function useNavigationMenuRoot(
   return ctx
 }
 
-export type NavigationMenuOrientation = "horizontal" | "vertical"
-
 interface NavigationMenuProps extends React.HTMLAttributes<HTMLElement> {
   value?: string
   defaultValue?: string
   onValueChange?: (value: string) => void
-  delayDuration?: number
-  skipDelayDuration?: number
   dir?: "ltr" | "rtl"
-  orientation?: NavigationMenuOrientation
   ref?: React.Ref<HTMLElement>
 }
 
@@ -59,8 +51,6 @@ function NavigationMenu({
   value: valueProp,
   defaultValue,
   onValueChange,
-  delayDuration = 200,
-  skipDelayDuration = 300,
   ref,
   children,
   ...rest
@@ -80,43 +70,18 @@ function NavigationMenu({
   const [hasViewport, setHasViewport] = React.useState(false)
   const rootId = useId()
 
-  const openTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
   const closeTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
-  const lastInteractionRef = React.useRef<number>(0)
 
   const cancelSchedule = useEvent(() => {
-    if (openTimerRef.current) {
-      clearTimeout(openTimerRef.current)
-      openTimerRef.current = null
-    }
     if (closeTimerRef.current) {
       clearTimeout(closeTimerRef.current)
       closeTimerRef.current = null
     }
   })
 
-  const scheduleOpen = useEvent((id: string) => {
-    cancelSchedule()
-    const now = Date.now()
-    const elapsed = now - lastInteractionRef.current
-    const delay = elapsed < skipDelayDuration ? 0 : delayDuration
-    // Always defer through a timer (or microtask) so that a synchronous
-    // click handler firing later in the same tick can override.
-    openTimerRef.current = setTimeout(
-      () => {
-        setValue(id)
-        lastInteractionRef.current = Date.now()
-      },
-      Math.max(delay, 0),
-    )
-  })
-
   const scheduleClose = useEvent(() => {
     cancelSchedule()
-    closeTimerRef.current = setTimeout(() => {
-      setValue("")
-      lastInteractionRef.current = Date.now()
-    }, 150)
+    closeTimerRef.current = setTimeout(() => setValue(""), 150)
   })
 
   const registerTriggerRef = React.useCallback(
@@ -138,9 +103,7 @@ function NavigationMenu({
       registerTriggerRef,
       hasViewport,
       setHasViewport,
-      hoverDelay: delayDuration,
       closeDelay: 150,
-      scheduleOpen,
       scheduleClose,
       cancelSchedule,
       rootId,
@@ -151,8 +114,6 @@ function NavigationMenu({
       triggerRefs,
       registerTriggerRef,
       hasViewport,
-      delayDuration,
-      scheduleOpen,
       scheduleClose,
       cancelSchedule,
       rootId,

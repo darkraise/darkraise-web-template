@@ -1,3 +1,4 @@
+import type * as React from "react"
 import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect } from "vitest"
@@ -11,7 +12,7 @@ import {
 
 function Basic() {
   return (
-    <NavigationMenu delayDuration={0}>
+    <NavigationMenu>
       <NavigationMenuList>
         <NavigationMenuItem value="docs">
           <NavigationMenuTrigger>Docs</NavigationMenuTrigger>
@@ -31,6 +32,15 @@ function Basic() {
 }
 
 describe("NavigationMenu", () => {
+  it("takes no orientation or delay props", () => {
+    type Removed = Extract<
+      keyof React.ComponentProps<typeof NavigationMenu>,
+      "orientation" | "delayDuration" | "skipDelayDuration"
+    >
+    const removed: [Removed] extends [never] ? true : false = true
+    expect(removed).toBe(true)
+  })
+
   it("renders trigger buttons with the right ARIA wiring", () => {
     render(<Basic />)
     const docs = screen.getByRole("button", { name: /docs/i })
@@ -79,7 +89,7 @@ describe("NavigationMenu", () => {
   it("forwards surface to the content surface", async () => {
     const user = userEvent.setup()
     render(
-      <NavigationMenu delayDuration={0}>
+      <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem value="docs">
             <NavigationMenuTrigger>Docs</NavigationMenuTrigger>
@@ -98,7 +108,7 @@ describe("NavigationMenu", () => {
   it("emits the attribute for card, so it overrides an ancestor", async () => {
     const user = userEvent.setup()
     render(
-      <NavigationMenu delayDuration={0}>
+      <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem value="docs">
             <NavigationMenuTrigger>Docs</NavigationMenuTrigger>

@@ -54,14 +54,13 @@ demo compiling, which is the exact decay this branch exists to prevent. The
 following aliases were added beside the inline declarations and the demo pages
 now import them:
 
-| Type                                     | Declared in                          | Used by               |
-| ---------------------------------------- | ------------------------------------ | --------------------- |
-| `TooltipSide`, `TooltipAlign`            | `tooltip/Tooltip.tsx`                | `tooltip.tsx`         |
-| `ToolbarOrientation`                     | `toolbar/Toolbar.tsx`                | `toolbar.tsx`         |
-| `ButtonGroupOrientation`                 | `button-group/ButtonGroup.tsx`       | `button-group.tsx`    |
-| `NavigationMenuOrientation`              | `navigation-menu/NavigationMenu.tsx` | `navigation-menu.tsx` |
-| `FieldLegendVariant`, `FieldOrientation` | `field/Field.tsx`                    | `field.tsx`           |
-| `PaginationVariant`                      | `pagination/Pagination.tsx`          | `pagination.tsx`      |
+| Type                                     | Declared in                    | Used by            |
+| ---------------------------------------- | ------------------------------ | ------------------ |
+| `TooltipSide`, `TooltipAlign`            | `tooltip/Tooltip.tsx`          | `tooltip.tsx`      |
+| `ToolbarOrientation`                     | `toolbar/Toolbar.tsx`          | `toolbar.tsx`      |
+| `ButtonGroupOrientation`                 | `button-group/ButtonGroup.tsx` | `button-group.tsx` |
+| `FieldLegendVariant`, `FieldOrientation` | `field/Field.tsx`              | `field.tsx`        |
+| `PaginationVariant`                      | `pagination/Pagination.tsx`    | `pagination.tsx`   |
 
 Adding `export` to a type that is **also** declared elsewhere in the same
 component folder triggers `TS2308` through that folder's barrel, and because
@@ -109,19 +108,6 @@ array the package exports rather than a copy duplicated into the demo. A
 `VariantMatrix` was built for this page during the sweep and then deliberately
 removed — it would have added 12 more animated background instances to the
 page for zero coverage gain over what the carousel already proves.
-
-### navigation-menu — orientation axis kept despite a dead prop
-
-The `orientation` axis is present in `navigation-menu`'s matrix and both
-`"horizontal"` and `"vertical"` values render, but they currently look
-identical. The component's `orientation` prop is dead: it is declared at
-`packages/ui/src/components/navigation-menu/NavigationMenu.tsx:49` but never
-destructured, and `data-orientation="horizontal"` is hardcoded at lines 162
-and 185 regardless of the prop's value. The demo page carries a footnote
-stating this. The axis was deliberately kept in the matrix rather than
-dropped to one value, so that once the component bug is fixed, `allOf`
-continues enforcing both values are shown. This dead-prop bug in
-`packages/ui` is tracked as separate follow-up work, not fixed by this sweep.
 
 ### contribution-graph and carousel — axes shown separately, not crossed
 
