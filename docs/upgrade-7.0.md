@@ -99,13 +99,15 @@ A disabled compound control fades once, at its root; its parts, and the controls
 
 `TimePicker`: rename `onChange` to `onValueChange`. An uncontrolled picker takes `defaultValue` and keeps the user's picks.
 
-`QrCode` is black on white with a 4-module quiet zone by default. For the 6.x look pass `fgColor="currentColor" bgColor="transparent" margin={0}`, but a light-on-dark code scans poorly. Pass `fallback` and `onError` to handle a value longer than the encoder holds (119 bytes at level H, 213 at the default M).
+`QrCode` is black on white with a 4-module quiet zone by default. For the 6.x look pass `fgColor="currentColor" bgColor="transparent" margin={0}`, but a light-on-dark code scans poorly. Pass `fallback` and `onError` to handle a value longer than the encoder holds (119 bytes at level H, 213 at the default M). The quiet zone is carved out of `size`, so a logo overlay covers more of the code than before: use level H with `QrCodeOverlay`.
 
 `Calendar` no longer accepts `components`; remove it.
 
+`ScrollArea`'s `type` and `scrollHideDelay` now work. If you passed `type="scroll"` or `type="hover"` while they were ignored, the scrollbars used to stay visible and now hide until the user scrolls or hovers; remove `type`, or pass `type="auto"`, to keep the old look.
+
 The `outline` variant of `Listbox` and `TreeView` now rings the selected row instead of filling it, and `Pagination`'s outline variant edges its links. Use `variant="filled"` (the default) for the checked fill.
 
-`TreeView` rows indent through `--tree-depth`; a `style` prop that set `paddingInlineStart` on a row to indent it should set `--tree-view-indent` on the tree instead. Remove spacer elements added to line leaves up with branches.
+`TreeView` rows indent through `--tree-depth`; a `style` prop that set `paddingInlineStart` on a row to indent it should set `--tree-view-indent` on the tree instead. Remove spacer elements added to line leaves up with branches. A tree of leaves only now indents each leaf by an indicator's width plus its gap, even with no branch beside it.
 
 ## Overlays
 

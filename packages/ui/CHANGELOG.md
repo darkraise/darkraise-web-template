@@ -88,6 +88,8 @@ Breaking: `QrCode` draws black modules on white (`fgColor="#000"`, `bgColor="#ff
 
 Breaking: `Calendar`'s `components` prop is removed; it was never read.
 
+Breaking: `ScrollArea`'s `type` and `scrollHideDelay` take effect. Callers that passed `type="scroll"` or `type="hover"` used to get permanently visible scrollbars, because the prop was ignored; those bars now hide until the user scrolls or hovers, and a hidden bar ignores pointer events. Remove `type`, or pass `type="auto"`, to keep the old look.
+
 Breaking: `TreeView` rows indent through a `--tree-depth` custom property instead of an inline `padding-inline-start`. Depth-0 rows gain a 0.5rem inline-start inset, and leaves also clear a branch indicator's width plus its gap, so their text lines up with sibling branches.
 
 Breaking: `ComboboxContent`, and with it `MultiSelect`'s list, renders in a portal at the end of `<body>`, positioned against its field and flipped or shifted to stay on screen. Selectors that reach the list through the field, such as `.dr-combobox .dr-combobox-content` or `.dr-multi-select .dr-combobox-item`, no longer match; select `.dr-combobox-content` directly, or pass a `className`.
@@ -133,7 +135,7 @@ Breaking: `FloatingPanel` z-indexes run from 10 to 49 by recency (the most recen
 - `QrCode` `margin`, `label`, `onError` and `fallback`. Its `<svg>` is `role="img"`, named by `label` or `labels.qrCode.label` ("QR code"; Vietnamese "Mã QR").
 - `TimePicker` `defaultValue`.
 - `NavigationMenu` keyboard navigation (see the Breaking note above).
-- `ScrollArea` `type` (`auto`, `always`, `scroll`, `hover`) and `scrollHideDelay` (default 600ms) now work, with Radix semantics; scrollbars carry `data-state="visible"` or `"hidden"`, and a hidden bar fades out.
+- `ScrollArea` `type` (`auto`, `always`, `scroll`, `hover`) and `scrollHideDelay` (default 600ms) now work; scrollbars carry `data-state="visible"` or `"hidden"`, and a hidden bar fades out.
 
 ### Changed
 
@@ -257,6 +259,9 @@ Breaking: `FloatingPanel` z-indexes run from 10 to 49 by recency (the most recen
 - FloatingPanel, the Tour popover and the chart, contribution-graph and timeline tooltips paint the overlay fill, so they follow Glass and the `surface` prop like every other popup.
 - Pressing Escape in an open Combobox inside a dialog closes only the Combobox.
 - In the theme settings page layout, segmented controls keep a 0.5rem inset around each label, and a column whose label would not fit widens instead of the label filling its cell edge to edge.
+- The virtualized timeline rail draws every tick mark in one column at its edge, centred on its date, so unlabelled marks no longer cross the labels; a group header spaces its checkbox, toggle and label 8px apart.
+- A vertical `Toolbar` is as wide as its widest item instead of its container.
+- A `SegmentGroup` disabled through a disabled `Fieldset` shows the not-allowed cursor.
 
 Breaking: `.dr-surface`, its `--flat` modifier and its `dr-surface-{brand,cyan,success,warning,danger,info}` hue classes are removed, with the `--fog-05` … `--fog-50` tokens they alone gave values to. The `glass`, `glass-thin`, `glass-strong` and `card-surface` utilities are removed: outside `.dr-surface` they painted nothing. Replace one with `rounded-[var(--radius)]` and, if you relied on it, `transition-[background-color,color,border-color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-in-out)]`.
 
@@ -275,10 +280,6 @@ The root declares `color-scheme` per mode, so native scrollbars, date pickers an
 The neutral accent swatch shows near-white in dark mode, as the accent renders, with the title "Neutral (near-white)"; the active swatch takes a ring outside its edge.
 
 Fixed: the virtualized timeline's sticky header is opaque and follows the page or card it sits in (`--timeline-header-bg`); toast action buttons hover toward their fill's wash, so a dark label keeps its contrast; sidebar groups animate open and closed.
-
-- The virtualized timeline rail draws every tick mark in one column at its edge, centred on its date, so unlabelled marks no longer cross the labels; a group header spaces its checkbox, toggle and label 8px apart.
-- A vertical `Toolbar` is as wide as its widest item instead of its container.
-- A `SegmentGroup` disabled through a disabled `Fieldset` shows the not-allowed cursor.
 
 ## [6.9.6] — 2026-09-30
 
