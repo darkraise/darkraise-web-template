@@ -248,7 +248,7 @@ Breaking: `.overlay-surface` is now a utility that applies the overlay recipe (`
 
 Breaking: the `collapsible-down` and `collapsible-up` keyframes are removed; use Collapsible, whose `dr-collapsible-*` animation reads `--collapsible-content-height`.
 
-In dark mode each elevation level now lightens its surface as well as shadowing it: `--elevation-lift-low`, `--elevation-lift-medium` and `--elevation-lift-high` hold the step and lead every dark `--elevation-*` and `--card-elevation-*` value, and popups lift by the medium step.
+In dark mode each elevation level now lightens its surface as well as shadowing it: `--elevation-lift-low`, `--elevation-lift-medium` and `--elevation-lift-high` hold the step and lead every dark `--elevation-*` and `--card-elevation-*` value, and popups lift by the medium step. Fields and other `--field-edge` marks inside an elevated card or a popup take `--field-edge-lifted` (from the new engine token `--field-edge-lifted-color`), a neutral step solved to 3:1 against the brightest lifted card face; in light mode it equals `--field-edge-color`.
 
 Tactile gives surfaces a material: cards take a raised edge (a lit top edge and sheen in dark) and the default and outline tab tracks and the segment group recess. New tokens `--card-edge`, `--card-sheen` and `--track-well` are no-ops in the other styles. Dark Tactile buttons, fields and selected segments have stronger edges.
 

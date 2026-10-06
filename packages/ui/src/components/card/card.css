@@ -21,11 +21,13 @@
      constants that the theme axis never overrides, so a `<Card
      elevation="medium">` renders the same shadow regardless of the theme
      picker. `flat` drops the elevation shadow even under theme=high; the
-     style's `--card-edge` still applies. */
+     style's `--card-edge` still applies. In dark the elevation tokens
+     lift the card face, so fields inside take the lifted edge. */
   .dr-card[data-card-elevation="auto"] {
     box-shadow:
       var(--card-edge), var(--elevation-current), var(--glow-outer),
       var(--glow-inner);
+    --field-edge: var(--field-edge-lifted);
   }
   .dr-card[data-card-elevation="flat"] {
     box-shadow: var(--card-edge), var(--glow-outer), var(--glow-inner);
@@ -34,16 +36,19 @@
     box-shadow:
       var(--card-edge), var(--card-elevation-low), var(--glow-outer),
       var(--glow-inner);
+    --field-edge: var(--field-edge-lifted);
   }
   .dr-card[data-card-elevation="medium"] {
     box-shadow:
       var(--card-edge), var(--card-elevation-medium), var(--glow-outer),
       var(--glow-inner);
+    --field-edge: var(--field-edge-lifted);
   }
   .dr-card[data-card-elevation="high"] {
     box-shadow:
       var(--card-edge), var(--card-elevation-high), var(--glow-outer),
       var(--glow-inner);
+    --field-edge: var(--field-edge-lifted);
   }
 
   .dr-card-header {

@@ -10,7 +10,7 @@ import type {
 } from "@theme/types"
 import { accentColors } from "@theme/palettes/accentColors"
 import { surfaceColors } from "@theme/palettes/surfaceColors"
-import { contrastRatio } from "@theme/engine/oklch"
+import { composite, contrastRatio } from "@theme/engine/oklch"
 import { CANVAS_SATURATION_CAP, contentStripGround } from "./canvas"
 import { STATUS_NAMES, WHITE, solveSteps } from "./steps"
 
@@ -71,9 +71,27 @@ function resolveSfHueTokens(
 /** A shape or boundary must be distinguishable from its ground. */
 const MARK_FLOOR = 3
 const LEGEND_TARGET_RATIO = 4.6
+/**
+ * The white a dark card face can carry: the high tonal lift (8%,
+ * `--elevation-lift-high` in theme.css) under Tactile's card sheen (1.5%).
+ * field-edge.test.ts reads both values from the stylesheets.
+ */
+export const LIFTED_FACE_TINT = 0.095
 const BLACK = "0 0% 0%"
 
 const tierCache = new Map<string, string>()
+
+/**
+ * The first neutral step from the field edge's own (7) that clears the mark
+ * floor on a card face carrying the brightest lift.
+ */
+function liftedFieldEdge(n: (step: number) => string, card: string): string {
+  const face = composite(card, WHITE, LIFTED_FACE_TINT)
+  for (let step = 7; step < 12; step++) {
+    if (contrastRatio(n(step), face) >= MARK_FLOOR) return n(step)
+  }
+  return n(11)
+}
 
 /**
  * `tierClearing` against several grounds: the quietest lightness on the
@@ -291,6 +309,7 @@ export function generateTokens(
     "--border": n(6),
     "--input": dark ? n(3) : n(6),
     "--field-edge-color": n(7),
+    "--field-edge-lifted-color": dark ? liftedFieldEdge(n, card) : n(7),
 
     "--surface-base": background,
     "--surface-raised": card,

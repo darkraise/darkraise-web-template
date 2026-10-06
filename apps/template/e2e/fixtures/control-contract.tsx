@@ -74,6 +74,11 @@ import {
 } from "darkraise-ui/components/file-upload"
 import { Input } from "darkraise-ui/components/input"
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "darkraise-ui/components/popover"
+import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
@@ -731,6 +736,37 @@ createRoot(root).render(
           </div>
         </CardContent>
       </Card>
+      {(["low", "medium", "high"] as const).map((level) => (
+        <Card
+          key={level}
+          elevation={level}
+          style={{ width: 280, marginTop: 24 }}
+        >
+          <CardContent>
+            <div
+              data-probe={`edge-card-${level}`}
+              style={{ paddingBottom: 12 }}
+            >
+              <Input
+                aria-label={`On a ${level} card`}
+                placeholder={`On a ${level} card`}
+              />
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button variant="outline" style={{ marginTop: 24 }}>
+            Open field popover
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent>
+          <div data-probe="edge-popover" style={{ paddingBottom: 12 }}>
+            <Input aria-label="In a popover" placeholder="In a popover" />
+          </div>
+        </PopoverContent>
+      </Popover>
       <div data-probe="table" style={{ width: 360, marginTop: 24 }}>
         <DataTable columns={INVOICE_COLUMNS} data={INVOICES} />
       </div>

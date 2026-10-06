@@ -228,23 +228,52 @@ for (const { name, seed } of EDGE_THEMES) {
       await openControlFixture(page)
       await page.mouse.move(0, 0)
       for (const probe of ["edge-page", "edge-card"]) {
-        const field = page.locator(`[data-probe="${probe}"] .dr-input`)
-        const box = await boxOf(field)
-        const x = Math.round(box.x + box.width / 2)
-        const bottom = Math.floor(box.y + box.height)
-        const edge = await pixel(page, x, bottom - 1)
-        const ground = await pixel(page, x, bottom + 4)
-        const ratio = contrast(edge, ground)
-        console.log(
-          `edge contrast ${name} · ${mode} · ${probe}: ${ratio.toFixed(2)}:1`,
-        )
-        expect(
-          ratio,
-          `${probe}: edge rgb(${edge.join(",")}) on rgb(${ground.join(",")})`,
-        ).toBeGreaterThanOrEqual(3)
+        await expectEdgeFloor(page, probe, `${name} · ${mode}`)
       }
     })
   }
+}
+
+// In dark, an elevated card or a popup lightens its face with a tonal lift,
+// so fields on it take the lifted edge.
+for (const style of STYLES) {
+  test(`field bottom edge reaches 3:1 on lifted surfaces · ${style} · dark`, async ({
+    page,
+  }) => {
+    await seedApp(page, { style, mode: "dark" })
+    await openControlFixture(page)
+    for (const level of ["low", "medium", "high"]) {
+      const probe = `edge-card-${level}`
+      await page
+        .locator(`[data-probe="${probe}"]`)
+        .evaluate((el) => el.scrollIntoView({ block: "center" }))
+      await page.mouse.move(0, 0)
+      await expectEdgeFloor(page, probe, `${style} · dark`)
+    }
+    await page.getByRole("button", { name: "Open field popover" }).click()
+    const popover = page.locator('[data-probe="edge-popover"]')
+    await popover.waitFor()
+    // The popover focuses its field, and a focused field draws its ring.
+    await popover.locator("input").blur()
+    await page.mouse.move(0, 0)
+    await settle(page)
+    await expectEdgeFloor(page, "edge-popover", `${style} · dark`)
+  })
+}
+
+async function expectEdgeFloor(page: Page, probe: string, label: string) {
+  const field = page.locator(`[data-probe="${probe}"] .dr-input`)
+  const box = await boxOf(field)
+  const x = Math.round(box.x + box.width / 2)
+  const bottom = Math.floor(box.y + box.height)
+  const edge = await pixel(page, x, bottom - 1)
+  const ground = await pixel(page, x, bottom + 4)
+  const ratio = contrast(edge, ground)
+  console.log(`edge contrast ${label} · ${probe}: ${ratio.toFixed(2)}:1`)
+  expect(
+    ratio,
+    `${probe}: edge rgb(${edge.join(",")}) on rgb(${ground.join(",")})`,
+  ).toBeGreaterThanOrEqual(3)
 }
 
 for (const style of STYLES) {

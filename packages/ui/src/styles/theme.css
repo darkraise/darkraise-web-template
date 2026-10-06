@@ -157,12 +157,15 @@
   box-shadow: var(--elevation-high), var(--glow-outer), var(--glow-inner);
 }
 
+/* Popups and modals carry the dark tonal lift, so fields in them take the
+   lifted edge. */
 @utility overlay-surface {
   background: var(--overlay-bg);
   background-blend-mode: var(--surface-overlay-blend-mode);
   border-color: var(--overlay-border);
   -webkit-backdrop-filter: var(--overlay-backdrop);
   backdrop-filter: var(--overlay-backdrop);
+  --field-edge: var(--field-edge-lifted);
 }
 
 @utility focus-ring {
@@ -534,6 +537,7 @@
     --border: 240 6% 90%;
     --input: 240 6% 90%;
     --field-edge-color: 240 5% 56%;
+    --field-edge-lifted-color: 240 5% 56%;
     --ring: 217 91% 60%;
     --focus-ring: 212 96% 60%;
     --chart-1: hsl(258 65% 65%);
@@ -799,6 +803,7 @@
     --field-height: var(--control-height);
     --field-radius: var(--radius-control);
     --field-edge: hsl(var(--field-edge-color));
+    --field-edge-lifted: hsl(var(--field-edge-lifted-color));
     --density-container-p: 1rem;
     --density-row-py: 0.375rem;
     --density-stack-gap: 0.5rem;

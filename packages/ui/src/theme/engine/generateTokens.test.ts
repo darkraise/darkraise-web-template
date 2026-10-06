@@ -64,6 +64,7 @@ describe("generateTokens", () => {
       "--border",
       "--input",
       "--field-edge-color",
+      "--field-edge-lifted-color",
       "--surface-base",
       "--surface-raised",
       "--surface-overlay",

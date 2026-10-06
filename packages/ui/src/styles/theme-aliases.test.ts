@@ -41,6 +41,7 @@ describe("theme aliases", () => {
       "border-color: var(--overlay-border);",
       "-webkit-backdrop-filter: var(--overlay-backdrop);",
       "backdrop-filter: var(--overlay-backdrop);",
+      "--field-edge: var(--field-edge-lifted);",
     ])
     expect(themeCss).toMatch(/@utility\s+overlay-surface\s*\{/)
     expect(themeCss).not.toMatch(/\.overlay-surface\s*\{/)

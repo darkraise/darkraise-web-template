@@ -1,10 +1,11 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
-import { contrastRatio } from "@theme/engine/oklch"
+import { composite, contrastRatio } from "@theme/engine/oklch"
 import { parseRules } from "../../styles/interactive-classes"
 import {
   CANVAS_BLOB_SCALE,
   CANVAS_PEAK_SHARE,
+  LIFTED_FACE_TINT,
   generateTokens,
   gradientCanvasPeak,
 } from "@theme/engine/generateTokens"
@@ -85,8 +86,7 @@ function renderedLuminance(hsl: string): number {
   const chroma = sat * Math.min(light, 1 - light)
   const channel = (n: number) => {
     const k = (n + h / 30) % 12
-    const value =
-      light - chroma * Math.max(-1, Math.min(k - 3, 9 - k, 1))
+    const value = light - chroma * Math.max(-1, Math.min(k - 3, 9 - k, 1))
     const byte = Math.round(value * 255) / 255
     return byte <= 0.04045 ? byte / 12.92 : ((byte + 0.055) / 1.055) ** 2.4
   }
@@ -174,6 +174,74 @@ describe("--field-edge", () => {
   it("wraps the engine triplet for the field family", () => {
     const theme = readFileSync("src/styles/theme.css", "utf8")
     expect(theme).toMatch(/--field-edge:\s*hsl\(var\(--field-edge-color\)\);/)
+  })
+})
+
+describe("--field-edge-lifted-color", () => {
+  it("clears 3:1 on the brightest lifted card face in dark", () => {
+    const failures: string[] = []
+    for (const combo of reachableCombos()) {
+      if (combo.mode !== "dark") continue
+      const tokens = finalTokens(combo)
+      const edge = tokens["--field-edge-lifted-color"]
+      const card = tokens["--card"]
+      if (!isOpaque(edge) || !isOpaque(card)) {
+        failures.push(`${comboName(combo)}: edge or card is not opaque`)
+        continue
+      }
+      const face = composite(card, "0 0% 100%", LIFTED_FACE_TINT)
+      const ratio = renderedContrast(edge, face)
+      if (ratio < FLOOR) {
+        failures.push(`${comboName(combo)}: ${ratio.toFixed(3)} on ${face}`)
+      }
+    }
+    expect(failures).toEqual([])
+  }, 30_000)
+
+  it("matches the plain edge in light, where nothing lifts", () => {
+    for (const combo of reachableCombos()) {
+      if (combo.mode !== "light") continue
+      const tokens = finalTokens(combo)
+      expect(tokens["--field-edge-lifted-color"]).toBe(
+        tokens["--field-edge-color"],
+      )
+    }
+  }, 30_000)
+
+  it("covers the stylesheet's brightest lift under Tactile's card sheen", () => {
+    const theme = readFileSync("src/styles/theme.css", "utf8")
+    const tactile = readFileSync("src/theme/styles/tactile/tactile.css", "utf8")
+    const alphas = (css: string, pattern: RegExp) =>
+      [...css.matchAll(pattern)].map((m) => Number(m[1]))
+    const lift = Math.max(
+      ...alphas(theme, /inset 0 0 0 100vmax rgb\(255 255 255 \/ ([\d.]+)\)/g),
+    )
+    const sheen = Math.max(
+      ...alphas(
+        tactile.replace(/\s+/g, " "),
+        /--card-sheen: linear-gradient\( 180deg, rgb\(255 255 255 \/ ([\d.]+)\)/g,
+      ),
+    )
+    expect(lift).toBeGreaterThan(0)
+    expect(sheen).toBeGreaterThan(0)
+    expect(1 - (1 - lift) * (1 - sheen)).toBeLessThanOrEqual(LIFTED_FACE_TINT)
+  })
+
+  it("is what elevated cards and popups give their fields", () => {
+    const theme = readFileSync("src/styles/theme.css", "utf8")
+    const card = readFileSync("src/components/card/card.css", "utf8")
+    expect(theme).toMatch(
+      /--field-edge-lifted:\s*hsl\(var\(--field-edge-lifted-color\)\);/,
+    )
+    const utility = theme.slice(theme.indexOf("@utility overlay-surface"))
+    expect(utility.slice(0, utility.indexOf("}"))).toContain(
+      "--field-edge: var(--field-edge-lifted);",
+    )
+    for (const level of ["auto", "low", "medium", "high"]) {
+      const start = card.indexOf(`.dr-card[data-card-elevation="${level}"]`)
+      const rule = card.slice(start, card.indexOf("}", start))
+      expect(rule, level).toContain("--field-edge: var(--field-edge-lifted);")
+    }
   })
 })
 
