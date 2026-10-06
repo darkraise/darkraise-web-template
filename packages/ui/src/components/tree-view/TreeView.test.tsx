@@ -295,4 +295,18 @@ describe("TreeView", () => {
     expect(css).not.toContain('data-variant="outlined"')
     expect(css).toContain("background-color: var(--selected-check-bg);")
   })
+
+  it("indents rows through --tree-depth instead of an inline padding", () => {
+    const { container } = render(<Basic />)
+    const rows = container.querySelectorAll<HTMLElement>(
+      ".dr-tree-view-branch-control, .dr-tree-view-item",
+    )
+    expect(rows.length).toBeGreaterThan(0)
+    for (const row of rows) {
+      expect(row.style.getPropertyValue("--tree-depth")).toBe(
+        row.getAttribute("data-depth"),
+      )
+      expect(row.style.paddingInlineStart).toBe("")
+    }
+  })
 })

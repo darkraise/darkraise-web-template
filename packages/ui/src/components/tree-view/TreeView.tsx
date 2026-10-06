@@ -431,10 +431,7 @@ function TreeViewBranchControl({
       data-disabled={isDisabled ? "true" : undefined}
       data-depth={branch.depth}
       className={cn("dr-tree-view-branch-control", className)}
-      style={{
-        paddingInlineStart: `calc(${branch.depth} * var(--tree-view-indent, 1rem))`,
-        ...style,
-      }}
+      style={{ "--tree-depth": branch.depth, ...style } as React.CSSProperties}
       onClick={handleClick}
       onFocus={handleFocus}
       {...props}
@@ -578,10 +575,7 @@ function TreeViewItem({
       data-disabled={isDisabled ? "true" : undefined}
       data-depth={depth}
       className={cn("dr-tree-view-item", className)}
-      style={{
-        paddingInlineStart: `calc(${depth} * var(--tree-view-indent, 1rem))`,
-        ...style,
-      }}
+      style={{ "--tree-depth": depth, ...style } as React.CSSProperties}
       onClick={handleClick}
       onFocus={handleFocus}
       {...props}
@@ -621,10 +615,9 @@ function TreeViewNode({ node }: TreeViewNodeProps) {
 }
 
 function DefaultChevron() {
-  // Pinned literal width/height, not --icon-size-sm: rendered inside
-  // .dr-tree-view-branch-indicator's fixed h-4 w-4 slot (tree-view.css),
-  // which does not follow the font-size axis. A scaling token would
-  // overflow the slot at large/extra-large.
+  // Pinned literal width/height: the .dr-tree-view-branch-indicator slot
+  // (tree-view.css) is --icon-size, 16px at the smallest font size, so a
+  // fixed 14px glyph fits at every size.
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

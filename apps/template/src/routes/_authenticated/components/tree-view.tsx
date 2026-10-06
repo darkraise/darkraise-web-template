@@ -104,7 +104,6 @@ function FileExplorerExample() {
     const Icon = pickIcon(node.name)
     return (
       <TreeViewItem key={node.id} value={node.id}>
-        <span className="size-4 shrink-0" aria-hidden />
         <Icon className="size-4 shrink-0" />
         <span className="truncate">{node.name}</span>
       </TreeViewItem>

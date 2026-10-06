@@ -46,6 +46,22 @@
     list-style: none;
   }
 
+  /* Rows indent by depth from an inset of their own. A leaf also clears the
+     width of a branch's indicator and its gap, so its text lines up with a
+     sibling branch's text. */
+  .dr-tree-view-branch-control {
+    padding-inline-start: calc(
+      0.5rem + var(--tree-depth, 0) * var(--tree-view-indent, 1rem)
+    );
+  }
+
+  .dr-tree-view-item {
+    padding-inline-start: calc(
+      0.5rem + var(--tree-depth, 0) * var(--tree-view-indent, 1rem) +
+        var(--icon-size) + 0.5rem
+    );
+  }
+
   .dr-tree-view-branch-control:not([data-disabled]):hover,
   .dr-tree-view-item:not([data-disabled]):hover {
     @apply bg-accent text-accent-foreground;
