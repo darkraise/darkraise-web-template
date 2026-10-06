@@ -72,6 +72,7 @@ const messages: UiMessages = {
     switchToDecadeView: (year) => `${year}, chuyển sang chế độ xem thập kỷ`,
   },
   datePicker: { trigger: "Mở bộ chọn ngày", presets: "Lựa chọn có sẵn" },
+  qrCode: { label: "Mã QR" },
   theme: {
     title: "Cài đặt giao diện",
     triggerLabel: "Tùy chỉnh giao diện",

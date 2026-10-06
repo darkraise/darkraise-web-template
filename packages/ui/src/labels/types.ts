@@ -67,6 +67,10 @@ export interface UiLabels {
     trigger: string
     presets: string
   }
+  qrCode: {
+    /** Accessible name of the rendered code. */
+    label: string
+  }
   theme: {
     title: string
     triggerLabel: string

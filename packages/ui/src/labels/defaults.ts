@@ -56,6 +56,9 @@ export const defaultLabels: UiLabels = {
     trigger: "Open date picker",
     presets: "Presets",
   },
+  qrCode: {
+    label: "QR code",
+  },
   theme: {
     title: "Theme settings",
     triggerLabel: "Customize theme",

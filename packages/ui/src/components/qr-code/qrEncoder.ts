@@ -4,8 +4,8 @@
  * Adapted in spirit from Project Nayuki's qrcodegen reference implementation
  * (MIT). Re-rolled by hand for the in-house template — covers Byte mode (any
  * UTF-8 string), error-correction levels L/M/Q/H, version auto-selection up
- * to v10 (capacity ~120 ASCII bytes at level M, more than enough for typical
- * URLs and short messages).
+ * to v10: 271 bytes at level L, 213 at M, 151 at Q and 119 at H, enough for
+ * typical URLs and short messages.
  *
  * The output is a 2D matrix of dark/light modules; the caller wraps it in
  * <svg>.
