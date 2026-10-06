@@ -1,6 +1,11 @@
 @layer components {
   .dr-virtualized-timeline {
     @apply relative flex min-h-0 flex-col;
+    --timeline-header-bg: hsl(var(--background));
+  }
+
+  .dr-card .dr-virtualized-timeline {
+    --timeline-header-bg: var(--surface-card-fill-opaque);
   }
 
   .dr-virtualized-timeline-toolbar {
@@ -51,7 +56,8 @@
   /* Sticky inside the bucket wrapper, so a header stays pinned for exactly as
      long as its own bucket is on screen. */
   .dr-virtualized-timeline-bucket-header {
-    @apply bg-background/85 text-foreground sticky top-0 z-10 flex items-center text-sm font-medium backdrop-blur-sm;
+    @apply text-foreground sticky top-0 z-10 flex items-center text-sm font-medium;
+    background-color: var(--timeline-header-bg);
   }
 
   .dr-virtualized-timeline-bucket-body {
