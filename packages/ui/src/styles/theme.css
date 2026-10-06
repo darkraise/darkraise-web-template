@@ -2445,6 +2445,68 @@
   .dr-input-otp-slot .animate-caret-blink {
     background-color: CanvasText;
   }
+
+  /* Structural marks drawn as fills: separators, tracks, thumbs, handles
+     and connectors. */
+  .dr-separator,
+  .dr-menu-separator,
+  .dr-select-separator,
+  .dr-command-separator,
+  .dr-menubar-separator,
+  .dr-image-editor-annotation-toolbar-divider,
+  .dr-json-toolbar-divider,
+  .dr-toolbar-separator,
+  .dr-sidebar-nav-popover-separator,
+  .dr-time-divider,
+  .dr-slider-track,
+  .dr-progress,
+  .dr-scroll-thumb,
+  .dr-resizable-handle,
+  .dr-split-panel-layout-handle:hover,
+  .dr-split-panel-layout-handle[data-dragging="true"],
+  .dr-navigation-menu-indicator-arrow,
+  .dr-steps-separator,
+  .dr-timeline-connector {
+    background-color: CanvasText;
+  }
+
+  /* The scroll bar reserves a transparent edge beside the content. */
+  .dr-scroll-bar {
+    border-color: Canvas;
+  }
+
+  /* Step dots sit inside the track, which is CanvasText now. */
+  .dr-slider-step {
+    background-color: Canvas;
+  }
+
+  .dr-skeleton,
+  .dr-chart-placeholder {
+    background-color: GrayText;
+  }
+
+  /* Filled portion of a track or a connector. */
+  .dr-slider-range,
+  .dr-progress-indicator,
+  .dr-steps-separator[data-status="complete"],
+  .dr-timeline-connector[data-status="complete"],
+  .dr-resizable-handle[data-dragging="true"] {
+    background-color: Highlight;
+  }
+
+  /* Elements bounded only by their fill. */
+  .dr-avatar-fallback,
+  .dr-multi-select-chip,
+  .dr-sidebar-nav-badge,
+  .dr-notification-bell-badge,
+  .dr-command:not(.dr-command-dialog),
+  .dr-time-column-input {
+    border: 1px solid CanvasText;
+  }
+
+  .dr-spinner-circle {
+    border-top-color: Canvas;
+  }
 }
 
 /* Reduced motion, applied once for the whole kit.

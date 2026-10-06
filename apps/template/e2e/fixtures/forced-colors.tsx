@@ -5,6 +5,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "darkraise-ui/components/dropdown-menu"
 import { DateInput } from "darkraise-ui/components/date-input"
@@ -20,11 +21,31 @@ import {
   PaginationItem,
   PaginationLink,
 } from "darkraise-ui/components/pagination"
+import { Progress } from "darkraise-ui/components/progress"
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "darkraise-ui/components/resizable"
+import { ScrollArea } from "darkraise-ui/components/scroll-area"
 import {
   SegmentGroup,
   SegmentGroupIndicator,
   SegmentGroupItem,
 } from "darkraise-ui/components/segment-group"
+import { Separator } from "darkraise-ui/components/separator"
+import { Skeleton } from "darkraise-ui/components/skeleton"
+import { Slider } from "darkraise-ui/components/slider"
+import { Spinner } from "darkraise-ui/components/spinner"
+import {
+  Steps,
+  StepsIndicator,
+  StepsItem,
+  StepsList,
+  StepsSeparator,
+  StepsTitle,
+  StepsTrigger,
+} from "darkraise-ui/components/steps"
 import { Switch } from "darkraise-ui/components/switch"
 import {
   Tabs,
@@ -257,6 +278,8 @@ createRoot(root).render(
           <DropdownMenuContent>
             <DropdownMenuItem>Edit</DropdownMenuItem>
             <DropdownMenuItem>Delete</DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>Archive</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -285,6 +308,60 @@ createRoot(root).render(
           renderItem={() => <Shot />}
           style={{ width: 320, height: 200 }}
         />
+      </div>
+      <div
+        data-probe="ref-highlight-on-text"
+        style={{ padding: 4, backgroundColor: "CanvasText" }}
+      >
+        <div style={{ width: 16, height: 16, backgroundColor: "Highlight" }} />
+      </div>
+      <div data-probe="separator" style={{ width: 120 }}>
+        <Separator />
+      </div>
+      <div data-probe="slider" style={{ width: 160 }}>
+        <Slider defaultValue={[50]} aria-label="Volume" />
+      </div>
+      <div data-probe="progress" style={{ width: 160 }}>
+        <Progress value={50} aria-label="Upload" />
+      </div>
+      <div data-probe="scroll-area">
+        <ScrollArea style={{ width: 120, height: 60 }}>
+          <div style={{ height: 240 }}>Scrolling content</div>
+        </ScrollArea>
+      </div>
+      {/* Panels that fill the group squeeze the 1px handle to nothing;
+          narrower panels leave it its width. */}
+      <div data-probe="resizable" style={{ width: 160, height: 60 }}>
+        <ResizablePanelGroup orientation="horizontal">
+          <ResizablePanel defaultSize={50} style={{ width: "49%" }}>
+            Left
+          </ResizablePanel>
+          <ResizableHandle />
+          <ResizablePanel defaultSize={50} style={{ width: "49%" }}>
+            Right
+          </ResizablePanel>
+        </ResizablePanelGroup>
+      </div>
+      <div data-probe="steps" style={{ width: 360 }}>
+        <Steps count={3} defaultStep={1}>
+          <StepsList>
+            {["Account", "Profile", "Confirm"].map((title, index) => (
+              <StepsItem key={title} index={index}>
+                <StepsTrigger>
+                  <StepsIndicator>{index + 1}</StepsIndicator>
+                  <StepsTitle>{title}</StepsTitle>
+                </StepsTrigger>
+                {index < 2 ? <StepsSeparator /> : null}
+              </StepsItem>
+            ))}
+          </StepsList>
+        </Steps>
+      </div>
+      <div data-probe="skeleton">
+        <Skeleton style={{ width: 40, height: 16 }} />
+      </div>
+      <div data-probe="spinner">
+        <Spinner size="lg" />
       </div>
     </div>
   </ThemeProvider>,

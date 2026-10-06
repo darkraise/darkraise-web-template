@@ -48,8 +48,15 @@ async function centrePixel(page: Page, locator: Locator): Promise<Rgb> {
   return pixelIn(page, locator, box.width / 2, box.height / 2)
 }
 
-/** A system colour as painted, read from its reference probe. */
-function refColour(page: Page, name: "highlight" | "canvas"): Promise<Rgb> {
+/**
+ * A system colour as painted, read from its reference probe. Emulated
+ * Highlight is translucent, so a fill inside a CanvasText track is read
+ * against `highlight-on-text`, Highlight painted over CanvasText.
+ */
+function refColour(
+  page: Page,
+  name: "highlight" | "canvas" | "highlight-on-text",
+): Promise<Rgb> {
   return centrePixel(page, page.locator(`[data-probe="ref-${name}"]`))
 }
 
@@ -374,6 +381,94 @@ test.describe("menus, pickers and navigation", () => {
         ".dr-sidebar-nav-current",
         ".dr-sidebar-nav-item:not(.dr-sidebar-nav-current)",
       )
+    })
+  }
+})
+
+test.describe("structural marks, fills and boundaries", () => {
+  /** A point at a fraction of the element's width, on its middle row. */
+  const across =
+    (fraction: number): At =>
+    (box) => [box.width * fraction, box.height / 2]
+
+  for (const scheme of SCHEMES) {
+    test(`marks differ from Canvas · ${scheme}`, async ({ page }) => {
+      await openForced(page, scheme)
+      const canvas = await refColour(page, "canvas")
+      const marks: Array<[string, At]> = [
+        ['[data-probe="separator"] .dr-separator', across(0.5)],
+        ['[data-probe="slider"] .dr-slider-track', across(0.85)],
+        ['[data-probe="progress"] .dr-progress', across(0.85)],
+        ['[data-probe="scroll-area"] .dr-scroll-thumb', across(0.5)],
+        ['[data-probe="resizable"] .dr-resizable-handle', across(0.5)],
+        [
+          '[data-probe="steps"] .dr-steps-separator:not([data-status="complete"])',
+          across(0.5),
+        ],
+        ['[data-probe="skeleton"] .dr-skeleton', across(0.5)],
+      ]
+      for (const [selector, at] of marks) {
+        const mark = page.locator(selector).first()
+        const [dx, dy] = at(await boxOf(mark))
+        const colour = await pixelIn(page, mark, dx, dy)
+        expect(near(colour, canvas), `${selector}: ${colour}`).toBe(false)
+      }
+    })
+
+    test(`fills paint Highlight · ${scheme}`, async ({ page }) => {
+      await openForced(page, scheme)
+      const onCanvas = await refColour(page, "highlight")
+      const onText = await refColour(page, "highlight-on-text")
+      const fills: Array<[string, At, Rgb]> = [
+        ['[data-probe="slider"] .dr-slider-range', across(0.25), onText],
+        ['[data-probe="progress"] .dr-progress', across(0.25), onText],
+        [
+          '[data-probe="steps"] .dr-steps-separator[data-status="complete"]',
+          across(0.5),
+          onCanvas,
+        ],
+      ]
+      for (const [selector, at, expected] of fills) {
+        const fill = page.locator(selector).first()
+        const [dx, dy] = at(await boxOf(fill))
+        const colour = await pixelIn(page, fill, dx, dy)
+        expect(near(colour, expected), `${selector}: ${colour}`).toBe(true)
+      }
+    })
+
+    test(`a menu separator differs from Canvas · ${scheme}`, async ({
+      page,
+    }) => {
+      await openForced(page, scheme)
+      await page.locator('[data-probe="menu"] button').focus()
+      await page.keyboard.press("ArrowDown")
+      const separator = page.locator(".dr-menu-content .dr-menu-separator")
+      await separator.waitFor()
+      await settle(page)
+      const colour = await centrePixel(page, separator)
+      expect(near(colour, await refColour(page, "canvas"))).toBe(false)
+    })
+
+    test(`the scroll bar's reserved edge paints Canvas · ${scheme}`, async ({
+      page,
+    }) => {
+      await openForced(page, scheme)
+      const bar = page.locator(
+        '[data-probe="scroll-area"] .dr-scroll-bar[data-orientation="vertical"]',
+      )
+      const box = await boxOf(bar)
+      const edge = await pixelIn(page, bar, 0, box.height / 2)
+      const canvas = await refColour(page, "canvas")
+      expect(near(edge, canvas), `${edge} vs ${canvas}`).toBe(true)
+    })
+
+    test(`the spinner gap paints Canvas · ${scheme}`, async ({ page }) => {
+      await openForced(page, scheme)
+      const circle = page.locator('[data-probe="spinner"] .dr-spinner-circle')
+      const box = await boxOf(circle)
+      const gap = await pixelIn(page, circle, box.width / 2, 1)
+      const canvas = await refColour(page, "canvas")
+      expect(near(gap, canvas), `${gap} vs ${canvas}`).toBe(true)
     })
   }
 })
