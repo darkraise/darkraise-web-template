@@ -10,6 +10,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
+  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "darkraise-ui/components/dropdown-menu"
 import { Highlight } from "darkraise-ui/components/highlight"
@@ -103,7 +104,7 @@ const NAV: NavGroup[] = [
   {
     label: "Main",
     items: [
-      { label: "Dashboard", href: "/" },
+      { label: "Dashboard", href: "/", badge: "3" },
       { label: "Settings", href: "/settings" },
     ],
   },
@@ -281,7 +282,10 @@ createRoot(root).render(
             <Button>Actions</Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem>Edit</DropdownMenuItem>
+            <DropdownMenuItem>
+              Edit
+              <DropdownMenuShortcut>⌘E</DropdownMenuShortcut>
+            </DropdownMenuItem>
             <DropdownMenuItem>Delete</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>Archive</DropdownMenuItem>
@@ -371,6 +375,15 @@ createRoot(root).render(
       <div
         data-probe="ref-mark"
         style={{ width: 24, height: 24, backgroundColor: "Mark" }}
+      />
+      <div
+        data-probe="ref-highlight-text"
+        style={{
+          width: 24,
+          height: 24,
+          backgroundColor: "HighlightText",
+          forcedColorAdjust: "none",
+        }}
       />
       <div data-probe="color-picker">
         <ColorPicker defaultValue="#ff0000">

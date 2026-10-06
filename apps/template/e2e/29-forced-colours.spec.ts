@@ -55,7 +55,12 @@ async function centrePixel(page: Page, locator: Locator): Promise<Rgb> {
  */
 function refColour(
   page: Page,
-  name: "highlight" | "canvas" | "highlight-on-text" | "mark",
+  name:
+    | "highlight"
+    | "highlight-text"
+    | "canvas"
+    | "highlight-on-text"
+    | "mark",
 ): Promise<Rgb> {
   return centrePixel(page, page.locator(`[data-probe="ref-${name}"]`))
 }
@@ -205,17 +210,25 @@ test.describe("selection controls", () => {
     test(`chosen labels stay legible · ${scheme}`, async ({ page }) => {
       await openForced(page, scheme)
       const highlight = await refColour(page, "highlight")
+      const glyphs = await refColour(page, "highlight-text")
       for (const selector of [
         `[data-probe="tabs-default"] ${ACTIVE_TAB}`,
         '[data-probe="segment-group"] .dr-segment-group-item[data-state="checked"]',
         '[data-probe="listbox-filled"] .dr-listbox-item[data-selected="true"]',
         '[data-probe="tree-filled"] .dr-tree-view-item[data-selected="true"]',
         '[data-probe="toggle"] .dr-toggle[data-state="on"]',
-        '[data-probe="pagination"] .dr-pagination-link[data-active="true"]',
       ]) {
-        const share = await textShare(page, page.locator(selector), highlight)
+        const label = page.locator(selector)
+        const share = await textShare(page, label, highlight)
         expect(share, selector).toBeGreaterThan(0.2)
+        const ink = await textShare(page, label, glyphs)
+        expect(ink, `${selector} glyphs`).toBeGreaterThan(0.02)
       }
+      // A one-digit label gives the sampler too few pixels to count glyphs.
+      const page1 = page.locator(
+        '[data-probe="pagination"] .dr-pagination-link[data-active="true"]',
+      )
+      expect(await textShare(page, page1, highlight)).toBeGreaterThan(0.2)
     })
 
     test(`switch thumbs read on their tracks · ${scheme}`, async ({ page }) => {
@@ -492,6 +505,73 @@ test.describe("data colours and marked text", () => {
       const mark = await refColour(page, "mark")
       expect(near(colour, mark), `${colour} vs ${mark}`).toBe(true)
       expect(await textShare(page, match, mark)).toBeGreaterThan(0.2)
+    })
+  }
+})
+
+test.describe("chosen items under focus and with children", () => {
+  const RING_CASES: Array<[string, string]> = [
+    ["tree-filled", '.dr-tree-view-item[data-selected="true"]'],
+    ["calendar", '.dr-calendar-day-btn[data-selected-single="true"]'],
+    ["toggle", '.dr-toggle[data-state="on"]'],
+    ["sidebar", ".dr-sidebar-nav-current"],
+    ["tabs-enclosed", '.dr-tabs-trigger[data-state="active"]'],
+  ]
+
+  for (const scheme of SCHEMES) {
+    for (const [probe, selector] of RING_CASES) {
+      test(`a focused chosen item keeps a visible ring · ${probe} · ${scheme}`, async ({
+        page,
+      }) => {
+        await openForced(page, scheme)
+        const item = page.locator(`[data-probe="${probe}"] ${selector}`).first()
+        await item.scrollIntoViewIfNeeded()
+        await page.keyboard.press("Shift")
+        await item.focus()
+        await expect(item).toBeFocused()
+        const ring = await item.evaluate((node) => {
+          const style = getComputedStyle(node)
+          return {
+            focusVisible: node.matches(":focus-visible"),
+            offset: parseFloat(style.outlineOffset),
+            width: parseFloat(style.outlineWidth),
+          }
+        })
+        expect(ring.focusVisible).toBe(true)
+        const box = await boxOf(item)
+        const y = box.height / 2
+        const onRing = await pixelIn(
+          page,
+          item,
+          -(ring.offset + ring.width / 2),
+          y,
+        )
+        const fill = await pixelIn(page, item, 5, y)
+        const gap = Math.max(
+          ...onRing.map((channel, i) => Math.abs(channel - (fill[i] ?? 0))),
+        )
+        expect(gap, `ring ${onRing} on fill ${fill}`).toBeGreaterThan(120)
+      })
+    }
+
+    test(`secondary text in a chosen row takes the row colour · ${scheme}`, async ({
+      page,
+    }) => {
+      await openForced(page, scheme)
+      await page.locator('[data-probe="menu"] button').focus()
+      await page.keyboard.press("ArrowDown")
+      const row = page.locator(".dr-menu-content .dr-menu-item:focus")
+      await expect(row).toHaveCount(1)
+      await settle(page)
+      expect(await computed(row.locator(".dr-menu-shortcut"), "color")).toBe(
+        await computed(row, "color"),
+      )
+      const current = page.locator(
+        '[data-probe="sidebar"] .dr-sidebar-nav-current',
+      )
+      expect(
+        await computed(current.locator(".dr-sidebar-nav-badge"), "color"),
+      ).toBe(await computed(current, "color"))
     })
   }
 })

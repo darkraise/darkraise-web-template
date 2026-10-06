@@ -2322,6 +2322,7 @@
     forced-color-adjust: none;
     color: CanvasText;
     border-color: transparent;
+    box-shadow: none;
   }
 
   .dr-tabs-trigger[data-variant="underline"][data-state="active"] {
@@ -2369,6 +2370,20 @@
     color: HighlightText;
     forced-color-adjust: none;
     box-shadow: none;
+  }
+
+  /* Forced-colour opt-out is inherited, so secondary text inside a chosen
+     row would keep its muted author colour on the Highlight fill. */
+  .dr-menu-item:focus .dr-menu-shortcut,
+  .dr-menu-checkbox-item:focus .dr-menu-shortcut,
+  .dr-menu-radio-item:focus .dr-menu-shortcut,
+  .dr-menu-sub-trigger:is(:focus, [data-state="open"]) .dr-menu-shortcut,
+  .dr-menubar-item:focus .dr-menubar-shortcut,
+  .dr-menubar-checkbox-item:focus .dr-menubar-shortcut,
+  .dr-menubar-radio-item:focus .dr-menubar-shortcut,
+  .dr-menubar-sub-trigger:is(:focus, [data-state="open"]) .dr-menubar-shortcut,
+  .dr-sidebar-nav-current .dr-sidebar-nav-badge {
+    color: inherit;
   }
 
   /* A selected tile's own content covers any fill, so the tile marks the
@@ -2523,6 +2538,36 @@
   .dr-highlight-match-strong {
     background-color: Mark;
     color: MarkText;
+  }
+}
+
+/* Forced colours: focus on chosen items.
+
+   A chosen item is filled with Highlight, and the layered offset of these
+   items draws the focus ring inside that fill, where a Highlight ring is
+   invisible, so the ring takes the fill's text colour. Items whose ring sits
+   outside on Canvas keep Highlight. This is its own block because the two
+   above pin the focus rule to the end of the first and keep `outline` out of
+   the second; the selectors here outrank the single-class `:focus-visible`
+   rule on purpose, and only the ring colour changes. */
+@media (forced-colors: active) {
+  .dr-tree-view-item[data-selected="true"]:focus-visible,
+  .dr-tree-view-branch-control[data-selected="true"]:focus-visible,
+  .dr-calendar-day-btn:is(
+      [data-selected-single="true"],
+      [data-range-start="true"],
+      [data-range-end="true"],
+      [data-range-single="true"]
+    ):focus-visible,
+  .dr-toggle[data-state="on"]:focus-visible,
+  .dr-tabs-trigger[data-variant="enclosed"][data-state="active"]:focus-visible,
+  .dr-time-column-item[data-selected="true"]:focus-visible,
+  .dr-carousel-indicator[data-current="true"]:focus-visible,
+  .dr-sidebar-nav-current:focus-visible,
+  .dr-floating-panel-trigger[data-active="true"]:focus-visible,
+  .dr-tags-input-item-preview[data-highlighted="true"]:focus-visible,
+  .dr-listbox-item[data-selected="true"][data-focused="true"] {
+    outline-color: HighlightText;
   }
 }
 
