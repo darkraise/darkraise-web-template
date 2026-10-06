@@ -74,6 +74,7 @@ test.describe("cascade trigger", () => {
       const select = probe(page, "select", ".dr-select-trigger")
       const cascade = probe(page, "cascade", ".dr-cascade-trigger")
       await expect(cascade).toHaveAttribute("data-placeholder", "")
+      await settle(page)
       for (const property of TRIGGER_PAINT) {
         expect(await computed(cascade, property), property).toBe(
           await computed(select, property),
@@ -95,6 +96,7 @@ test.describe("time picker trigger", () => {
       await expect(filled.locator(":scope > span")).toHaveText(/12:00/)
       await expect(filled).not.toHaveAttribute("data-placeholder")
       await expect(empty).toHaveAttribute("data-placeholder", "")
+      await settle(page)
       for (const property of TRIGGER_PAINT) {
         expect(await computed(empty, property), property).toBe(
           await computed(select, property),
