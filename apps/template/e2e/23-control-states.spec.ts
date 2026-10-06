@@ -117,6 +117,7 @@ test.describe("date input placeholders", () => {
           elements.map((element) => (element as HTMLInputElement).placeholder),
         ),
       ).toEqual(["YYYY", "MM", "DD"])
+      await settle(page)
       const muted = await computed(
         probe(page, "select", ".dr-select-trigger"),
         "color",

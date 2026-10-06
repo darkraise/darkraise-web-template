@@ -169,6 +169,7 @@ for (const style of MATRIX_STYLES) {
         await seedApp(page, { style, mode, density })
         await openControlFixture(page)
         await page.mouse.move(0, 0)
+        await settle(page)
         const expected =
           (await boxOf(page.getByTestId("control-height"))).height + 8
         const table = page.locator('[data-probe="table"]')
