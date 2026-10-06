@@ -1,6 +1,6 @@
-import { render, screen, waitFor } from "@testing-library/react"
+import { fireEvent, render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { describe, it, expect, vi } from "vitest"
+import { afterEach, describe, it, expect, vi } from "vitest"
 import { useState } from "react"
 import {
   Drawer,
@@ -11,6 +11,7 @@ import {
   DrawerFooter,
   DrawerTitle,
   DrawerDescription,
+  type DrawerDirection,
 } from "@components/drawer"
 
 function Basic({
@@ -18,7 +19,7 @@ function Basic({
   direction = "bottom",
 }: {
   onChange?: (open: boolean) => void
-  direction?: "top" | "right" | "bottom" | "left"
+  direction?: DrawerDirection
 } = {}) {
   return (
     <Drawer onOpenChange={onChange} direction={direction}>
@@ -163,5 +164,48 @@ describe("Drawer", () => {
       "data-surface-fill",
       "card",
     )
+  })
+
+  describe("logical directions", () => {
+    afterEach(() => {
+      document.documentElement.removeAttribute("dir")
+    })
+
+    it.each([
+      ["ltr", "start", "left"],
+      ["ltr", "end", "right"],
+      ["rtl", "start", "right"],
+      ["rtl", "end", "left"],
+    ] as const)(
+      "under %s, %s resolves to data-direction %s",
+      async (dir, direction, physical) => {
+        document.documentElement.dir = dir
+        render(
+          <Drawer defaultOpen direction={direction}>
+            <DrawerContent>Body</DrawerContent>
+          </Drawer>,
+        )
+        expect(await screen.findByRole("dialog")).toHaveAttribute(
+          "data-direction",
+          physical,
+        )
+      },
+    )
+
+    it("drags an end drawer toward the left edge under RTL", async () => {
+      document.documentElement.dir = "rtl"
+      render(
+        <Drawer defaultOpen direction="end">
+          <DrawerContent>Body</DrawerContent>
+        </Drawer>,
+      )
+      const dialog = await screen.findByRole("dialog")
+      const handle = dialog.querySelector(".dr-drawer-handle")
+      if (!handle) throw new Error("missing drawer handle")
+      fireEvent.pointerDown(handle, { pointerId: 1, clientX: 100, clientY: 0 })
+      fireEvent.pointerMove(window, { pointerId: 1, clientX: 60, clientY: 0 })
+      expect(dialog.style.transform).toBe("translateX(-40px)")
+      fireEvent.pointerUp(window, { pointerId: 1, clientX: 100, clientY: 0 })
+    })
   })
 })

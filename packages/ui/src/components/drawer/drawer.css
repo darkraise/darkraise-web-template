@@ -67,7 +67,7 @@
   }
 
   .dr-drawer-header {
-    @apply grid gap-1.5 p-4 text-center sm:text-left;
+    @apply grid gap-1.5 p-4 text-center sm:text-start;
   }
 
   .dr-drawer-footer {

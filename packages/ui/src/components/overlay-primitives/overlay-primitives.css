@@ -6,7 +6,7 @@
   }
 
   .dr-overlay-header {
-    @apply flex flex-col space-y-1.5 text-center sm:text-left;
+    @apply flex flex-col space-y-1.5 text-center sm:text-start;
   }
 
   .dr-overlay-footer {
@@ -22,7 +22,7 @@
   }
 
   .dr-overlay-close-btn {
-    @apply text-muted-foreground focus-ring absolute top-4 right-4 flex h-7 w-7 cursor-pointer items-center justify-center rounded-md transition-colors disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)];
+    @apply text-muted-foreground focus-ring absolute end-4 top-4 flex h-7 w-7 cursor-pointer items-center justify-center rounded-md transition-colors disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)];
   }
 
   /* Shared interaction state layer (theme.css). The button is already

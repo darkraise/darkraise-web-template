@@ -2,6 +2,7 @@
 
 import * as React from "react"
 
+import { getDirection } from "@lib/direction"
 import { cn } from "@lib/utils"
 import type { SurfaceFill } from "@lib/surface-fill"
 import { OverlayCloseButton } from "@components/overlay-primitives"
@@ -14,7 +15,24 @@ import { useDialog, type UseDialogReturn } from "@components/dialog/useDialog"
 import { lockScroll, unlockScroll } from "@components/dialog/scrollLock"
 import "./drawer.css"
 
-export type DrawerDirection = "top" | "right" | "bottom" | "left"
+export type DrawerDirection =
+  | "top"
+  | "right"
+  | "bottom"
+  | "left"
+  | "start"
+  | "end"
+
+type PhysicalDrawerDirection = Exclude<DrawerDirection, "start" | "end">
+
+function physicalDirection(
+  direction: DrawerDirection,
+  element: Element | null,
+): PhysicalDrawerDirection {
+  if (direction !== "start" && direction !== "end") return direction
+  const atLeft = (direction === "start") === (getDirection(element) === "ltr")
+  return atLeft ? "left" : "right"
+}
 
 interface DrawerContextValue extends UseDialogReturn {
   direction: DrawerDirection
@@ -89,6 +107,7 @@ function Drawer({
         "[data-drawer-content]",
       ) as HTMLElement | null
       if (!root) return
+      const physical = physicalDirection(direction, root)
       const startX = event.clientX
       const startY = event.clientY
       const startTime = performance.now()
@@ -109,7 +128,7 @@ function Drawer({
         const dx = e.clientX - startX
         const dy = e.clientY - startY
         let translate = ""
-        switch (direction) {
+        switch (physical) {
           case "bottom":
             translate = `translateY(${Math.max(0, dy)}px)`
             break
@@ -146,11 +165,11 @@ function Drawer({
         const dx = e.clientX - drag.startX
         const dy = e.clientY - drag.startY
         const displacement =
-          direction === "bottom"
+          physical === "bottom"
             ? dy
-            : direction === "top"
+            : physical === "top"
               ? -dy
-              : direction === "right"
+              : physical === "right"
                 ? dx
                 : -dx
         const velocity = elapsed > 0 ? displacement / elapsed : 0
@@ -280,6 +299,13 @@ function DrawerContentImpl({
 }: Omit<DrawerContentProps, "forceMount">) {
   const ctx = useDrawerContext("DrawerContent")
   const localRef = React.useRef<HTMLDivElement | null>(null)
+  const [direction, setDirection] = React.useState<PhysicalDrawerDirection>()
+
+  // start and end depend on the content's computed direction, which only
+  // exists once it is mounted; layout effects run before the first paint.
+  React.useLayoutEffect(() => {
+    setDirection(physicalDirection(ctx.direction, localRef.current))
+  }, [ctx.direction])
 
   React.useEffect(() => {
     if (!ctx.modal || !ctx.open) return
@@ -318,7 +344,7 @@ function DrawerContentImpl({
         aria-describedby={ctx.descriptionId}
         data-state={ctx.state}
         data-drawer-content
-        data-direction={ctx.direction}
+        data-direction={direction}
         data-surface-fill={surface}
         tabIndex={-1}
         className={cn("dr-drawer-content", className)}
