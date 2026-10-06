@@ -254,7 +254,7 @@ Tactile gives surfaces a material: cards take a raised edge (a lit top edge and 
 
 Glass light chrome shows an accent-tinted canvas through lighter fog at rest.
 
-The root declares `color-scheme` per mode, so native scrollbars, date pickers and form controls follow dark mode; the date indicator no longer inverts. Frame passes the host's colour scheme into its document.
+The root declares `color-scheme` per mode, so native scrollbars, date pickers and form controls follow dark mode; the date and password-reveal indicators no longer invert. Frame passes the host's colour scheme into its document.
 
 The neutral accent swatch shows near-white in dark mode, as the accent renders, with the title "Neutral (near-white)"; the active swatch takes a ring outside its edge.
 

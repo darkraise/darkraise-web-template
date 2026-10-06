@@ -1886,11 +1886,6 @@
       border-color var(--duration-fast) var(--ease-in-out);
   }
 
-  [data-mode="dark"] input::-ms-reveal,
-  [data-mode="dark"] input::-ms-clear {
-    filter: invert(1);
-  }
-
   /* Sidebar collapsed-state utilities. The aside (in SidebarLayout) and the
      nav (in SidebarNav) both carry data-collapsed attributes when the
      sidebar is in icon-only mode. Consumers can mark elements with

@@ -18,5 +18,6 @@ describe("colour scheme", () => {
 
   it("leaves native indicators to the scheme", () => {
     expect(INPUT).not.toContain("dark:invert")
+    expect(THEME).not.toMatch(/::-ms-(?:reveal|clear)[^{]*\{[^}]*invert/)
   })
 })
