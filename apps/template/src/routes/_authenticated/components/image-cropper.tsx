@@ -428,7 +428,7 @@ function DimensionsBadgeExample() {
             ))}
             <ImageCropperGrid axis="horizontal" />
             <ImageCropperGrid axis="vertical" />
-            <ImageCropperDimensions />
+            <ImageCropperDimensions always />
           </ImageCropperSelection>
         </ImageCropperViewport>
       </ImageCropper>
@@ -744,7 +744,7 @@ const DIMENSIONS_CODE = `<ImageCropper>
       ))}
       <ImageCropperGrid axis="horizontal" />
       <ImageCropperGrid axis="vertical" />
-      <ImageCropperDimensions />
+      <ImageCropperDimensions always />
     </ImageCropperSelection>
   </ImageCropperViewport>
 </ImageCropper>`

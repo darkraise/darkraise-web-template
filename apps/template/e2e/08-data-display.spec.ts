@@ -326,4 +326,13 @@ test.describe("content components", () => {
     const main = await open(page, "/components/image-cropper")
     await expect(main.locator("canvas, img").first()).toBeVisible()
   })
+
+  test("image cropper shows its live dimensions badge at rest", async ({
+    page,
+  }) => {
+    const main = await open(page, "/components/image-cropper")
+    await expect(
+      main.locator(".dr-image-cropper-dimensions").first(),
+    ).toHaveText(/^\d+ × \d+$/)
+  })
 })
