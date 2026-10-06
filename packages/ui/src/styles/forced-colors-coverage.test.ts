@@ -25,6 +25,10 @@ const FORCED_COLORS_EXEMPT = new Map<string, string>([
   ],
   ["dr-cascade-item", "a menu row; the popover's border bounds the list"],
   [
+    "dr-color-picker-swatch-item",
+    "a data colour left unforced; its own edge and active outline show",
+  ],
+  [
     "dr-combobox-clear-trigger",
     "an icon-only trigger inside the bordered field",
   ],
@@ -33,6 +37,10 @@ const FORCED_COLORS_EXEMPT = new Map<string, string>([
   [
     "dr-command-item",
     "a menu row; the command palette's surface bounds the list",
+  ],
+  [
+    "dr-contribution-graph-cell",
+    "a data colour left unforced; its own hover outline shows",
   ],
   ["dr-date-picker-trigger", "an icon-only trigger inside the bordered field"],
   [

@@ -2,12 +2,17 @@ import { createRoot } from "react-dom/client"
 import { Button } from "darkraise-ui/components/button"
 import { Calendar } from "darkraise-ui/components/calendar"
 import {
+  ColorPicker,
+  ColorPickerSwatch,
+} from "darkraise-ui/components/color-picker"
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "darkraise-ui/components/dropdown-menu"
+import { Highlight } from "darkraise-ui/components/highlight"
 import { DateInput } from "darkraise-ui/components/date-input"
 import { Listbox, ListboxItem } from "darkraise-ui/components/listbox"
 import {
@@ -363,6 +368,18 @@ createRoot(root).render(
       <div data-probe="spinner">
         <Spinner size="lg" />
       </div>
+      <div
+        data-probe="ref-mark"
+        style={{ width: 24, height: 24, backgroundColor: "Mark" }}
+      />
+      <div data-probe="color-picker">
+        <ColorPicker defaultValue="#ff0000">
+          <ColorPickerSwatch />
+        </ColorPicker>
+      </div>
+      <p data-probe="highlight" style={{ margin: 0 }}>
+        <Highlight text="Find the match" query="match" />
+      </p>
     </div>
   </ThemeProvider>,
 )

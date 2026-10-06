@@ -2179,9 +2179,7 @@
   .dr-color-picker-hue,
   .dr-color-picker-sv,
   .dr-color-picker-swatch,
-  .dr-color-picker-swatch-item,
   .dr-color-picker-trigger,
-  .dr-contribution-graph-cell,
   .dr-date-picker-preset,
   .dr-file-upload-dropzone,
   .dr-floating-panel-trigger,
@@ -2506,6 +2504,25 @@
 
   .dr-spinner-circle {
     border-top-color: Canvas;
+  }
+
+  /* Data colours: the colour is the content, so it is not forced, and the
+     element keeps its own edge and selection ring. The property is
+     inherited, so the area's and the hue strip's pointers keep their white
+     edge too, which is drawn to read on any colour. */
+  .dr-color-picker-swatch,
+  .dr-color-picker-swatch-item,
+  .dr-color-picker-sv,
+  .dr-color-picker-hue,
+  .dr-theme-switcher-swatch,
+  .dr-contribution-graph-cell {
+    forced-color-adjust: none;
+  }
+
+  .dr-highlight-match,
+  .dr-highlight-match-strong {
+    background-color: Mark;
+    color: MarkText;
   }
 }
 

@@ -55,7 +55,7 @@ async function centrePixel(page: Page, locator: Locator): Promise<Rgb> {
  */
 function refColour(
   page: Page,
-  name: "highlight" | "canvas" | "highlight-on-text",
+  name: "highlight" | "canvas" | "highlight-on-text" | "mark",
 ): Promise<Rgb> {
   return centrePixel(page, page.locator(`[data-probe="ref-${name}"]`))
 }
@@ -469,6 +469,29 @@ test.describe("structural marks, fills and boundaries", () => {
       const gap = await pixelIn(page, circle, box.width / 2, 1)
       const canvas = await refColour(page, "canvas")
       expect(near(gap, canvas), `${gap} vs ${canvas}`).toBe(true)
+    })
+  }
+})
+
+test.describe("data colours and marked text", () => {
+  for (const scheme of SCHEMES) {
+    test(`a colour swatch keeps its colour · ${scheme}`, async ({ page }) => {
+      await openForced(page, scheme)
+      const swatch = page.locator(
+        '[data-probe="color-picker"] .dr-color-picker-swatch',
+      )
+      const colour = await centrePixel(page, swatch)
+      expect(near(colour, [255, 0, 0]), `${colour}`).toBe(true)
+    })
+
+    test(`a highlight match paints Mark · ${scheme}`, async ({ page }) => {
+      await openForced(page, scheme)
+      const match = page.locator('[data-probe="highlight"] .dr-highlight-match')
+      const box = await boxOf(match)
+      const colour = await pixelIn(page, match, 1, box.height / 2)
+      const mark = await refColour(page, "mark")
+      expect(near(colour, mark), `${colour} vs ${mark}`).toBe(true)
+      expect(await textShare(page, match, mark)).toBeGreaterThan(0.2)
     })
   }
 })
