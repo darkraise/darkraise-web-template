@@ -632,12 +632,13 @@ describe("style files", () => {
 
   // The card sheen lightens a fill under body text, not a label at its
   // 4.5:1 floor; e2e 26 measures muted text on the brightest Tactile card.
+  // Above 0.015 a field at the card's top edge drops below 3:1 (e2e 16).
   it("keeps the dark card sheen faint", () => {
     const sheen = declarations(TACTILE).find(
       (d) => d.property === "--card-sheen",
     )
     expect(normalise(sheen?.value ?? "")).toBe(
-      "linear-gradient(180deg, rgb(255 255 255 / 0.03), transparent 70%)",
+      "linear-gradient(180deg, rgb(255 255 255 / 0.015), transparent 70%)",
     )
   })
 
