@@ -107,8 +107,7 @@ const DESCRIPTIONS: Record<string, string> = {
   "/components/popover": "Floating content anchored to a trigger",
   "/components/progress":
     "Horizontal progress bar with value and animation support",
-  "/components/qr-code":
-    "SVG QR generator with logo overlay and theme-aware colors",
+  "/components/qr-code": "SVG QR generator with a quiet zone and logo overlay",
   "/components/radio-group": "Mutually exclusive option selection",
   "/components/rating-group":
     "Star ratings with hover preview and half-star support",

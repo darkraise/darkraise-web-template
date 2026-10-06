@@ -129,8 +129,8 @@ export const showcaseEnglish = {
     "Anchored floating panel for short forms, secondary actions, and contextual content. Closes on outside click and Escape by default.",
   "Horizontal progress bar with value and animation support.":
     "Horizontal progress bar with value and animation support.",
-  "An SVG QR code generator that wraps react-qr-code. Supports four error-correction levels, theme-aware foreground via currentColor, and an absolutely-centered overlay slot for logos.":
-    "An SVG QR code generator that wraps react-qr-code. Supports four error-correction levels, theme-aware foreground via currentColor, and an absolutely-centered overlay slot for logos.",
+  "An SVG QR code generator with a built-in encoder. Draws dark modules on white inside a four-module quiet zone so it scans in either theme, supports four error-correction levels, and has an absolutely-centered overlay slot for logos.":
+    "An SVG QR code generator with a built-in encoder. Draws dark modules on white inside a four-module quiet zone so it scans in either theme, supports four error-correction levels, and has an absolutely-centered overlay slot for logos.",
   "Exclusive selection across two or more options. The group owns the value; each RadioGroupItem provides one choice.":
     "Exclusive selection across two or more options. The group owns the value; each RadioGroupItem provides one choice.",
   "Star rating control with hover preview, optional half-star precision, and full keyboard support. Modeled as an ARIA radio group.":
@@ -569,7 +569,7 @@ export const showcaseEnglish = {
   URL: "URL",
   vCard: "vCard",
   "With logo overlay": "With logo overlay",
-  "Theme-aware foreground": "Theme-aware foreground",
+  "Custom colors": "Custom colors",
   "Vertical group": "Vertical group",
   "Disabled group": "Disabled group",
   "Size x orientation": "Size x orientation",
@@ -806,8 +806,8 @@ export const showcaseEnglish = {
     "Floating content anchored to a trigger",
   "Horizontal progress bar with value and animation support":
     "Horizontal progress bar with value and animation support",
-  "SVG QR generator with logo overlay and theme-aware colors":
-    "SVG QR generator with logo overlay and theme-aware colors",
+  "SVG QR generator with a quiet zone and logo overlay":
+    "SVG QR generator with a quiet zone and logo overlay",
   "Mutually exclusive option selection": "Mutually exclusive option selection",
   "Star ratings with hover preview and half-star support":
     "Star ratings with hover preview and half-star support",

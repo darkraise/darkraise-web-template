@@ -41,11 +41,9 @@ function LogoOverlayExample() {
   )
 }
 
-function ThemeAwareExample() {
+function CustomColorsExample() {
   return (
-    <div className="text-primary">
-      <QrCode value="https://example.com" />
-    </div>
+    <QrCode value="https://example.com" fgColor="#1e3a8a" bgColor="#eff6ff" />
   )
 }
 
@@ -53,7 +51,7 @@ function QrCodePage() {
   return (
     <ShowcasePage
       title="QrCode"
-      description="An SVG QR code generator that wraps react-qr-code. Supports four error-correction levels, theme-aware foreground via currentColor, and an absolutely-centered overlay slot for logos."
+      description="An SVG QR code generator with a built-in encoder. Draws dark modules on white inside a four-module quiet zone so it scans in either theme, supports four error-correction levels, and has an absolutely-centered overlay slot for logos."
     >
       <ShowcaseExample
         title="URL"
@@ -93,12 +91,11 @@ function QrCodePage() {
       </ShowcaseExample>
 
       <ShowcaseExample
-        title="Theme-aware foreground"
-        code={`<div className="text-primary">
-  <QrCode value="https://example.com" />
-</div>`}
+        title="Custom colors"
+        code={`// Keep dark modules on a light ground: most scanners cannot read the inverse.
+<QrCode value="https://example.com" fgColor="#1e3a8a" bgColor="#eff6ff" />`}
       >
-        <ThemeAwareExample />
+        <CustomColorsExample />
       </ShowcaseExample>
     </ShowcasePage>
   )

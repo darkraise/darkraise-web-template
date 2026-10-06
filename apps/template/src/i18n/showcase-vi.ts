@@ -132,8 +132,8 @@ export const showcaseVietnamese: Record<keyof typeof showcaseEnglish, string> =
       "Vùng nổi gắn với phần tử kích hoạt cho biểu mẫu ngắn, thao tác phụ và nội dung ngữ cảnh. Mặc định đóng khi nhấp bên ngoài hoặc nhấn Escape.",
     "Horizontal progress bar with value and animation support.":
       "Thanh tiến trình ngang hỗ trợ giá trị và chuyển động.",
-    "An SVG QR code generator that wraps react-qr-code. Supports four error-correction levels, theme-aware foreground via currentColor, and an absolutely-centered overlay slot for logos.":
-      "Tạo mã QR dạng SVG bằng react-qr-code. Hỗ trợ bốn mức sửa lỗi, màu theo giao diện qua currentColor và vùng logo đặt chính giữa.",
+    "An SVG QR code generator with a built-in encoder. Draws dark modules on white inside a four-module quiet zone so it scans in either theme, supports four error-correction levels, and has an absolutely-centered overlay slot for logos.":
+      "Tạo mã QR dạng SVG bằng bộ mã hóa tích hợp. Vẽ mô-đun tối trên nền trắng trong vùng trống rộng bốn mô-đun để quét được ở cả hai giao diện, hỗ trợ bốn mức sửa lỗi và có vùng logo đặt chính giữa.",
     "Exclusive selection across two or more options. The group owns the value; each RadioGroupItem provides one choice.":
       "Chọn duy nhất một trong từ hai tùy chọn trở lên. Nhóm quản lý giá trị; mỗi RadioGroupItem cung cấp một lựa chọn.",
     "Star rating control with hover preview, optional half-star precision, and full keyboard support. Modeled as an ARIA radio group.":
@@ -572,7 +572,7 @@ export const showcaseVietnamese: Record<keyof typeof showcaseEnglish, string> =
     URL: "URL",
     vCard: "vCard",
     "With logo overlay": "Có logo phủ lên",
-    "Theme-aware foreground": "Màu nội dung theo giao diện",
+    "Custom colors": "Màu tùy chỉnh",
     "Vertical group": "Nhóm dọc",
     "Disabled group": "Nhóm vô hiệu hóa",
     "Size x orientation": "Kích thước × hướng",
@@ -807,8 +807,8 @@ export const showcaseVietnamese: Record<keyof typeof showcaseEnglish, string> =
       "Nội dung nổi gắn với phần tử kích hoạt",
     "Horizontal progress bar with value and animation support":
       "Thanh tiến trình ngang hỗ trợ giá trị và chuyển động",
-    "SVG QR generator with logo overlay and theme-aware colors":
-      "Tạo mã QR dạng SVG với logo và màu theo giao diện",
+    "SVG QR generator with a quiet zone and logo overlay":
+      "Tạo mã QR dạng SVG với vùng trống và logo",
     "Mutually exclusive option selection":
       "Chọn duy nhất một trong các tùy chọn",
     "Star ratings with hover preview and half-star support":
