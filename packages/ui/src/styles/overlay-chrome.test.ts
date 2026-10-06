@@ -101,6 +101,11 @@ describe("severity pairs", () => {
     expect(body).toContain(`--toast-accent: var(--${status}-edge);`)
     expect(body).toContain(`--toast-text: var(--${status}-text);`)
     expect(body).toContain("background: hsl(var(--toast-subtle));")
+    // The pair is solved on the bare -subtle fill; the dark tonal lift that
+    // leads --overlay-shadow would lighten it under the edge and text floors.
+    expect(body).toContain(
+      "box-shadow: var(--shadow-dropdown), var(--glow-outer), var(--glow-inner);",
+    )
     expect(bodyOf(SONNER, ".dr-toast-icon")).toContain(
       "color: hsl(var(--toast-accent, var(--popover-foreground)));",
     )

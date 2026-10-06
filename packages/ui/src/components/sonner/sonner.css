@@ -196,12 +196,14 @@
   }
 
   /* Status toasts paint their opaque fill directly; glass frost returns with
-     the style rebuild. */
+     the style rebuild. Their pairs are solved on the bare -subtle fill, so
+     they drop the dark tonal lift that leads --overlay-shadow. */
   .dr-toast--success,
   .dr-toast--error,
   .dr-toast--warning,
   .dr-toast--info {
     background: hsl(var(--toast-subtle));
+    box-shadow: var(--shadow-dropdown), var(--glow-outer), var(--glow-inner);
   }
   .dr-toast--loading {
     --toast-accent: var(--muted-foreground);
