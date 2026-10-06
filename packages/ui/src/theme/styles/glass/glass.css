@@ -33,6 +33,18 @@
     var(--elevation-medium), var(--glass-inset-strong),
     inset 0 0 32px color-mix(in oklab, hsl(var(--surface-tint)) 2%, transparent),
     var(--glow-outer), var(--glow-inner);
+  /* At rest nothing scrolls under the chrome, so the light fog has to let
+     its own canvas through to read as glass. */
+  --chrome-rail-bg: linear-gradient(
+    135deg,
+    var(--glass-fog-3),
+    var(--glass-fog-1)
+  );
+  --chrome-bar-bg: linear-gradient(
+    180deg,
+    var(--glass-fog-3),
+    var(--glass-fog-1)
+  );
 }
 
 [data-mode="dark"][data-style="glass"] {
@@ -320,6 +332,30 @@
   --chrome-canvas:
     var(--canvas-blob-a), var(--canvas-blob-b), var(--canvas-blob-c),
     var(--canvas-blob-d), var(--canvas-ink);
+}
+
+/* Pinned to the viewport so the rail and the bar show one field. */
+[data-mode="light"][data-style="glass"][data-background-style="gradient"] {
+  --chrome-canvas:
+    radial-gradient(
+        520px 380px at 0% 0%,
+        color-mix(in oklab, hsl(var(--primary-8)) 50%, transparent),
+        transparent 70%
+      )
+      fixed,
+    radial-gradient(
+        700px 300px at 60% 0%,
+        color-mix(in oklab, hsl(var(--primary-6)) 40%, transparent),
+        transparent 70%
+      )
+      fixed,
+    radial-gradient(
+        480px 520px at 0% 85%,
+        color-mix(in oklab, hsl(var(--primary-9)) 40%, transparent),
+        transparent 70%
+      )
+      fixed,
+    var(--canvas-ink);
 }
 
 /* Names every attribute the rules above combine, so it outranks each of

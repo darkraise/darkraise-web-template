@@ -259,3 +259,63 @@ test.describe("tactile surfaces", () => {
     expect(contrast(colour, behind)).toBeGreaterThanOrEqual(4.5)
   })
 })
+
+test.describe("glass light chrome", () => {
+  test("the canvas shows through the rail and bar", async ({ page }) => {
+    await seedApp(page, { style: "glass", mode: "light", accent: "blue" })
+    await gotoApp(page, "/")
+    await settle(page)
+    const rail = await boxOf(page.locator(".dr-sidebar-layout-aside").first())
+    const bar = await boxOf(page.locator("header").first())
+    const samples: Rgb[] = []
+    for (const x of [rail.x + 5, rail.x + rail.width - 6]) {
+      for (
+        let y = bar.y + bar.height + 4;
+        y < rail.y + rail.height - 4;
+        y += 8
+      ) {
+        samples.push(await pixel(page, Math.round(x), Math.round(y)))
+      }
+    }
+    for (let x = rail.x + rail.width + 4; x < bar.x + bar.width - 4; x += 20) {
+      samples.push(await pixel(page, Math.round(x), Math.round(bar.y + 3)))
+    }
+    const lums = samples.map(luminance)
+    const range = (Math.max(...lums) + 0.05) / (Math.min(...lums) + 0.05)
+    expect(range).toBeGreaterThanOrEqual(1.18)
+  })
+
+  for (const accent of ["blue", "violet", "green", "neutral"] as const) {
+    test(`sidebar labels read on the ${accent} canvas`, async ({ page }) => {
+      await seedApp(page, { style: "glass", mode: "light", accent })
+      await gotoApp(page, "/")
+      await settle(page)
+      for (const label of await page.locator(".dr-sidebar-nav-label").all()) {
+        if (!(await label.isVisible())) continue
+        const colour = rgbOf(await computed(label, "color"))
+        // The nav scrolls inside its aside and pixel() can only read inside
+        // the viewport; the accent blobs are fixed, so this is what a user sees.
+        await label.scrollIntoViewIfNeeded()
+        const box = await boxOf(label)
+        const behind = await pixel(
+          page,
+          Math.round(box.x + box.width + 3),
+          Math.round(box.y + box.height / 2),
+        )
+        expect(contrast(colour, behind)).toBeGreaterThanOrEqual(4.5)
+      }
+    })
+  }
+
+  test("high contrast keeps the chrome solid", async ({ page }) => {
+    await page.emulateMedia({ contrast: "more" })
+    await seedApp(page, { style: "glass", mode: "light", accent: "blue" })
+    await gotoApp(page, "/")
+    const canvas = await page.evaluate(() =>
+      getComputedStyle(document.documentElement)
+        .getPropertyValue("--chrome-canvas")
+        .trim(),
+    )
+    expect(canvas).toBe("none")
+  })
+})
