@@ -2382,7 +2382,9 @@
   .dr-menubar-checkbox-item:focus .dr-menubar-shortcut,
   .dr-menubar-radio-item:focus .dr-menubar-shortcut,
   .dr-menubar-sub-trigger:is(:focus, [data-state="open"]) .dr-menubar-shortcut,
-  .dr-sidebar-nav-current .dr-sidebar-nav-badge {
+  .dr-sidebar-nav-current .dr-sidebar-nav-badge,
+  .dr-field-label:has(> [data-slot="field"]):has([data-state="checked"])
+    .dr-field-description {
     color: inherit;
   }
 
@@ -2558,7 +2560,7 @@
       [data-range-start="true"],
       [data-range-end="true"],
       [data-range-single="true"]
-    ):focus-visible,
+    ):not([data-range-preview="true"]):focus-visible,
   .dr-toggle[data-state="on"]:focus-visible,
   .dr-tabs-trigger[data-variant="enclosed"][data-state="active"]:focus-visible,
   .dr-time-column-item[data-selected="true"]:focus-visible,
