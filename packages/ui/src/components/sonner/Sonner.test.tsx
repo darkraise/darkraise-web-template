@@ -186,6 +186,33 @@ describe("Sonner / Toaster", () => {
     }
   })
 
+  it("mounts the first toast once under RTL", async () => {
+    document.documentElement.dir = "rtl"
+    const records: MutationRecord[] = []
+    const observer = new MutationObserver((batch) => records.push(...batch))
+    try {
+      render(<Toaster />)
+      observer.observe(document.body, { childList: true, subtree: true })
+      act(() => {
+        toast("Hello", { duration: Number.POSITIVE_INFINITY })
+      })
+      await screen.findByRole("status")
+      records.push(...observer.takeRecords())
+      const mounted = records
+        .flatMap((record) => Array.from(record.addedNodes))
+        .filter((node): node is Element => node instanceof Element)
+        .flatMap((node) =>
+          node.matches('[role="status"]')
+            ? [node]
+            : Array.from(node.querySelectorAll('[role="status"]')),
+        )
+      expect(mounted).toHaveLength(1)
+    } finally {
+      observer.disconnect()
+      document.documentElement.removeAttribute("dir")
+    }
+  })
+
   it("auto-dismissing toasts render a countdown bar timed to their duration", async () => {
     render(<Toaster />)
     act(() => {

@@ -116,11 +116,12 @@ function Toaster({
   closeButton = false,
 }: ToasterProps) {
   const toasts = useToasts()
-  const [direction, setDirection] = React.useState<Direction>("ltr")
+  const [direction, setDirection] = React.useState<Direction | null>(null)
 
   // Logical positions resolve against the direction the stacks render in,
   // which only an element inside the portal can report. The portal mounts
-  // one commit after the Toaster, so this reads it from a ref callback.
+  // one commit after the Toaster, so this reads it from a ref callback, and
+  // the stacks wait for it so a toast never mounts in the wrong corner.
   const measureDirection = React.useCallback((node: HTMLElement | null) => {
     if (node) setDirection(getDirection(node))
   }, [])
@@ -133,7 +134,7 @@ function Toaster({
   const grouped = React.useMemo(() => {
     const groups = new Map<PhysicalToastPosition, Toast[]>()
     for (const t of toasts) {
-      const pos = physicalPosition(t.position ?? position, direction)
+      const pos = physicalPosition(t.position ?? position, direction ?? "ltr")
       const list = groups.get(pos)
       if (list) list.push(t)
       else groups.set(pos, [t])
@@ -146,18 +147,19 @@ function Toaster({
   return (
     <Portal>
       <span ref={measureDirection} hidden />
-      {Array.from(grouped.entries()).map(([pos, list]) => (
-        <PositionedStack
-          key={pos}
-          position={pos}
-          toasts={list}
-          className={className}
-          style={style}
-          gap={gap}
-          visibleToasts={visibleToasts}
-          closeButton={closeButton}
-        />
-      ))}
+      {direction &&
+        Array.from(grouped.entries()).map(([pos, list]) => (
+          <PositionedStack
+            key={pos}
+            position={pos}
+            toasts={list}
+            className={className}
+            style={style}
+            gap={gap}
+            visibleToasts={visibleToasts}
+            closeButton={closeButton}
+          />
+        ))}
     </Portal>
   )
 }
