@@ -216,4 +216,47 @@ describe("NavigationMenu keyboard", () => {
     expect(screen.getByRole("link", { name: "Docs" })).toHaveFocus()
     expect(products).toHaveAttribute("aria-expanded", "false")
   })
+
+  it("mirrors Left and Right in a right-to-left list", async () => {
+    const user = userEvent.setup()
+    render(
+      <NavigationMenu>
+        <NavigationMenuList style={{ direction: "rtl" }}>
+          <NavigationMenuItem>
+            <NavigationMenuLink href="#one">One</NavigationMenuLink>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
+            <NavigationMenuLink href="#two">Two</NavigationMenuLink>
+          </NavigationMenuItem>
+        </NavigationMenuList>
+      </NavigationMenu>,
+    )
+    await user.tab()
+    expect(screen.getByRole("link", { name: "One" })).toHaveFocus()
+    await user.keyboard("{ArrowLeft}")
+    expect(screen.getByRole("link", { name: "Two" })).toHaveFocus()
+    await user.keyboard("{ArrowRight}")
+    expect(screen.getByRole("link", { name: "One" })).toHaveFocus()
+  })
+
+  it("focuses the first link of a force-mounted panel on ArrowDown", async () => {
+    const user = userEvent.setup()
+    render(
+      <NavigationMenu>
+        <NavigationMenuList>
+          <NavigationMenuItem value="products">
+            <NavigationMenuTrigger>Products</NavigationMenuTrigger>
+            <NavigationMenuContent forceMount>
+              <NavigationMenuLink href="#overview">Overview</NavigationMenuLink>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+        </NavigationMenuList>
+      </NavigationMenu>,
+    )
+    await user.tab()
+    await user.keyboard("{ArrowDown}")
+    await waitFor(() =>
+      expect(screen.getByRole("link", { name: "Overview" })).toHaveFocus(),
+    )
+  })
 })
