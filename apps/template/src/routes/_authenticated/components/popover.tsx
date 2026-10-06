@@ -17,7 +17,14 @@ export const Route = createFileRoute("/_authenticated/components/popover")({
   component: PopoverPage,
 })
 
-const POPOVER_SIDES = allOf<PopoverSide>()("top", "right", "bottom", "left")
+const POPOVER_SIDES = allOf<PopoverSide>()(
+  "top",
+  "right",
+  "bottom",
+  "left",
+  "start",
+  "end",
+)
 
 const POPOVER_ALIGNS = allOf<PopoverAlign>()("start", "center", "end")
 

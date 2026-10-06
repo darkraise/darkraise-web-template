@@ -190,3 +190,31 @@ describe("Popover", () => {
     expect(marks).toEqual([true])
   })
 })
+
+describe("Popover logical sides", () => {
+  it.each([
+    ["ltr", "right"],
+    ["rtl", "left"],
+  ] as const)(
+    'resolves side="end" under %s to data-side %s',
+    async (dir, physical) => {
+      render(
+        <div dir={dir}>
+          <Popover defaultOpen>
+            <PopoverTrigger>Toggle</PopoverTrigger>
+            <PopoverContent side="end" avoidCollisions={false}>
+              Side content
+            </PopoverContent>
+          </Popover>
+        </div>,
+      )
+      const content = await screen.findByText("Side content")
+      await waitFor(() =>
+        expect(content.closest("[data-side]")).toHaveAttribute(
+          "data-side",
+          physical,
+        ),
+      )
+    },
+  )
+})

@@ -9,14 +9,21 @@ import { DismissableLayer } from "@primitives/dismissable-layer"
 import { Portal } from "@primitives/portal"
 import { Presence } from "@primitives/presence"
 import { Slot, composeRefs } from "@primitives/slot"
-import { useFloating } from "@primitives/floating"
+import {
+  placementOf,
+  resolveSide,
+  useFloating,
+  type LogicalSide,
+  type PhysicalSide,
+  type PopupAlign,
+} from "@primitives/floating"
 import { useControllableState } from "@primitives/state"
 import { focusProgrammatically } from "@primitives/focus-trap"
 import { useMenu } from "@components/_internal/useMenu"
 import "./select.css"
 
-type Side = "top" | "right" | "bottom" | "left"
-type Align = "start" | "center" | "end"
+type Side = LogicalSide
+type Align = PopupAlign
 type Position = "item-aligned" | "popper"
 
 // Component-qualified public aliases. The bare names cannot be exported: the
@@ -41,6 +48,9 @@ interface SelectContextValue {
   contentId: string
   /** Trigger anchor for floating positioning. */
   triggerRef: React.RefObject<HTMLButtonElement | null>
+  /** The mounted trigger, as state so popup content can read it in render. */
+  trigger: HTMLButtonElement | null
+  setTrigger: (node: HTMLButtonElement | null) => void
   registerItem: (item: SelectItemRecord) => () => void
   items: () => SelectItemRecord[]
   focusedIndex: number
@@ -143,6 +153,7 @@ function Select({
     onChange: onValueChange,
   })
   const triggerRef = React.useRef<HTMLButtonElement | null>(null)
+  const [trigger, setTrigger] = React.useState<HTMLButtonElement | null>(null)
   const [selectedLabel, setSelectedLabel] = React.useState<string | null>(null)
 
   const setValueAndClose = React.useCallback(
@@ -162,6 +173,8 @@ function Select({
       triggerId: menu.triggerId,
       contentId: menu.contentId,
       triggerRef,
+      trigger,
+      setTrigger,
       registerItem: menu.registerItem as unknown as (
         item: SelectItemRecord,
       ) => () => void,
@@ -183,6 +196,7 @@ function Select({
       menu,
       value,
       setValueAndClose,
+      trigger,
       selectedLabel,
       disabled,
       required,
@@ -301,7 +315,11 @@ function SelectTrigger({
   const disabled = disabledProp ?? ctx.disabled
   return (
     <Comp
-      ref={composeRefs(ctx.triggerRef as React.Ref<HTMLButtonElement>, ref)}
+      ref={composeRefs(
+        ctx.triggerRef as React.Ref<HTMLButtonElement>,
+        ctx.setTrigger,
+        ref,
+      )}
       type={resolvedType}
       role="combobox"
       id={ctx.triggerId}
@@ -372,10 +390,6 @@ interface SelectContentProps extends React.HTMLAttributes<HTMLDivElement> {
   surface?: SurfaceFill
 }
 
-function placementOf(side: Side, align: Align) {
-  return align === "center" ? side : (`${side}-${align}` as const)
-}
-
 function SelectContentImpl({
   className,
   children,
@@ -395,9 +409,9 @@ function SelectContentImpl({
 }: Omit<SelectContentProps, "forceMount">) {
   const ctx = useSelectContext("SelectContent")
 
-  const placement = placementOf(side, align)
+  const placement = placementOf(resolveSide(side, ctx.trigger), align)
   const floating = useFloating({
-    placement: placement as never,
+    placement,
     sideOffset,
     alignOffset,
     avoidCollisions,
@@ -468,7 +482,7 @@ function SelectContentImpl({
 
   const [resolvedSide] = React.useMemo(() => {
     const p = floating.placement
-    const [s] = p.split("-") as [Side]
+    const [s] = p.split("-") as [PhysicalSide]
     return [s] as const
   }, [floating.placement])
 

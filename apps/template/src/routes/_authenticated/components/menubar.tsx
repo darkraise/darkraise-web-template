@@ -17,7 +17,14 @@ export const Route = createFileRoute("/_authenticated/components/menubar")({
   component: MenubarPage,
 })
 
-const MENUBAR_SIDES = allOf<MenubarSide>()("top", "right", "bottom", "left")
+const MENUBAR_SIDES = allOf<MenubarSide>()(
+  "top",
+  "right",
+  "bottom",
+  "left",
+  "start",
+  "end",
+)
 
 const MENUBAR_ALIGNS = allOf<MenubarAlign>()("start", "center", "end")
 

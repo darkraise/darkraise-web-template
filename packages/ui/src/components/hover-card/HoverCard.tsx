@@ -8,7 +8,13 @@ import { DismissableLayer } from "@primitives/dismissable-layer"
 import { Portal } from "@primitives/portal"
 import { Presence } from "@primitives/presence"
 import { Slot, composeRefs } from "@primitives/slot"
-import { useFloating } from "@primitives/floating"
+import {
+  placementOf,
+  resolveSide,
+  useFloating,
+  type LogicalSide,
+  type PopupAlign,
+} from "@primitives/floating"
 import { isProgrammaticFocus } from "@primitives/focus-trap"
 import { useHoverCard, type UseHoverCardReturn } from "./useHoverCard"
 import "./hover-card.css"
@@ -119,8 +125,8 @@ function HoverCardTrigger({
   )
 }
 
-export type HoverCardSide = "top" | "right" | "bottom" | "left"
-export type HoverCardAlign = "start" | "center" | "end"
+export type HoverCardSide = LogicalSide
+export type HoverCardAlign = PopupAlign
 
 interface HoverCardContentProps extends React.HTMLAttributes<HTMLDivElement> {
   side?: HoverCardSide
@@ -153,9 +159,7 @@ function HoverCardContentImpl({
   const ctx = useHoverCardContext("HoverCardContent")
   const localRef = React.useRef<HTMLDivElement | null>(null)
 
-  const placement = (
-    align === "center" ? side : `${side}-${align}`
-  ) as import("@floating-ui/react").Placement
+  const placement = placementOf(resolveSide(side, ctx.reference), align)
   const floating = useFloating({
     placement,
     sideOffset,

@@ -16,7 +16,14 @@ export const Route = createFileRoute("/_authenticated/components/tooltip")({
   component: TooltipPage,
 })
 
-const TOOLTIP_SIDES = allOf<TooltipSide>()("top", "right", "bottom", "left")
+const TOOLTIP_SIDES = allOf<TooltipSide>()(
+  "top",
+  "right",
+  "bottom",
+  "left",
+  "start",
+  "end",
+)
 
 const TOOLTIP_ALIGNS = allOf<TooltipAlign>()("start", "center", "end")
 

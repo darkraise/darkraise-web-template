@@ -45,6 +45,8 @@ const DROPDOWN_MENU_SIDES = allOf<DropdownMenuSide>()(
   "right",
   "bottom",
   "left",
+  "start",
+  "end",
 )
 
 const DROPDOWN_MENU_ALIGNS = allOf<DropdownMenuAlign>()(

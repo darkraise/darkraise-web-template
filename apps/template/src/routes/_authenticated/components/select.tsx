@@ -18,7 +18,14 @@ import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
-const SELECT_SIDES = allOf<SelectSide>()("top", "right", "bottom", "left")
+const SELECT_SIDES = allOf<SelectSide>()(
+  "top",
+  "right",
+  "bottom",
+  "left",
+  "start",
+  "end",
+)
 
 const SELECT_ALIGNS = allOf<SelectAlign>()("start", "center", "end")
 

@@ -9,7 +9,14 @@ import { DismissableLayer } from "@primitives/dismissable-layer"
 import { Portal } from "@primitives/portal"
 import { Presence } from "@primitives/presence"
 import { Slot, composeRefs } from "@primitives/slot"
-import { useFloating } from "@primitives/floating"
+import {
+  placementOf,
+  resolveSide,
+  useFloating,
+  type LogicalSide,
+  type PhysicalSide,
+  type PopupAlign,
+} from "@primitives/floating"
 import { useControllableState, useId } from "@primitives/state"
 import {
   useMenu,
@@ -18,8 +25,8 @@ import {
 } from "@components/_internal/useMenu"
 import "./menubar.css"
 
-type Side = "top" | "right" | "bottom" | "left"
-type Align = "start" | "center" | "end"
+type Side = LogicalSide
+type Align = PopupAlign
 
 // Component-qualified public aliases. The bare names cannot be exported: the
 // package barrel re-exports every component and several declare their own.
@@ -384,10 +391,6 @@ interface MenubarContentProps extends React.HTMLAttributes<HTMLDivElement> {
   surface?: SurfaceFill
 }
 
-function placementOf(side: Side, align: Align) {
-  return align === "center" ? side : (`${side}-${align}` as const)
-}
-
 function MenubarContentImpl({
   className,
   children,
@@ -408,9 +411,9 @@ function MenubarContentImpl({
   const ctx = useMenubarMenu("MenubarContent")
   const root = useMenubarRoot("MenubarContent")
 
-  const placement = placementOf(side, align)
+  const placement = placementOf(resolveSide(side, ctx.reference), align)
   const floating = useFloating({
-    placement: placement as never,
+    placement,
     sideOffset,
     alignOffset,
     avoidCollisions,
@@ -492,7 +495,7 @@ function MenubarContentImpl({
 
   const [resolvedSide] = React.useMemo(() => {
     const p = floating.placement
-    const [s] = p.split("-") as [Side]
+    const [s] = p.split("-") as [PhysicalSide]
     return [s] as const
   }, [floating.placement])
 

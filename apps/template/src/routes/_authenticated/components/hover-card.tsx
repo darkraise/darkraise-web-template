@@ -29,6 +29,8 @@ const HOVER_CARD_SIDES = allOf<HoverCardSide>()(
   "right",
   "bottom",
   "left",
+  "start",
+  "end",
 )
 
 const HOVER_CARD_ALIGNS = allOf<HoverCardAlign>()("start", "center", "end")

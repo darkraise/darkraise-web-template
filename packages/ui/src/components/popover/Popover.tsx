@@ -9,7 +9,7 @@ import { focusProgrammatically, useFocusTrap } from "@primitives/focus-trap"
 import { Portal } from "@primitives/portal"
 import { Presence } from "@primitives/presence"
 import { Slot, composeRefs } from "@primitives/slot"
-import { useFloating, FloatingArrow } from "@primitives/floating"
+import { useFloating, FloatingArrow, resolveSide } from "@primitives/floating"
 import {
   usePopover,
   placementFromSideAlign,
@@ -162,7 +162,10 @@ function PopoverContentImpl({
   const ctx = usePopoverContext("PopoverContent")
   const localRef = React.useRef<HTMLDivElement | null>(null)
 
-  const placement = placementFromSideAlign(side, align)
+  const placement = placementFromSideAlign(
+    resolveSide(side, ctx.reference),
+    align,
+  )
   const floating = useFloating({
     placement,
     sideOffset,

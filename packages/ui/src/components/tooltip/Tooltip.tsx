@@ -9,7 +9,13 @@ import { isProgrammaticFocus } from "@primitives/focus-trap"
 import { Portal } from "@primitives/portal"
 import { Presence } from "@primitives/presence"
 import { Slot, composeRefs } from "@primitives/slot"
-import { useFloating } from "@primitives/floating"
+import {
+  placementOf,
+  resolveSide,
+  useFloating,
+  type LogicalSide,
+  type PopupAlign,
+} from "@primitives/floating"
 import { useEvent } from "@primitives/state"
 import {
   useTooltip,
@@ -229,8 +235,8 @@ function TooltipTrigger({
   )
 }
 
-export type TooltipSide = "top" | "right" | "bottom" | "left"
-export type TooltipAlign = "start" | "center" | "end"
+export type TooltipSide = LogicalSide
+export type TooltipAlign = PopupAlign
 
 interface TooltipContentProps extends React.HTMLAttributes<HTMLDivElement> {
   side?: TooltipSide
@@ -263,9 +269,7 @@ function TooltipContentImpl({
   const ctx = useTooltipContext("TooltipContent")
   const localRef = React.useRef<HTMLDivElement | null>(null)
 
-  const placement = (
-    align === "center" ? side : `${side}-${align}`
-  ) as import("@floating-ui/react").Placement
+  const placement = placementOf(resolveSide(side, ctx.reference), align)
   const floating = useFloating({
     placement,
     sideOffset,

@@ -1,7 +1,13 @@
+import {
+  placementOf,
+  type LogicalSide,
+  type PhysicalSide,
+  type PopupAlign,
+} from "@primitives/floating"
 import { useControllableState, useEvent, useId } from "@primitives/state"
 
-export type PopoverSide = "top" | "right" | "bottom" | "left"
-export type PopoverAlign = "start" | "center" | "end"
+export type PopoverSide = LogicalSide
+export type PopoverAlign = PopupAlign
 
 export interface UsePopoverOptions {
   open?: boolean
@@ -45,10 +51,11 @@ export function usePopover(options: UsePopoverOptions = {}): UsePopoverReturn {
   }
 }
 
+/** The floating-ui placement for a physical side; resolve `start`/`end`
+ *  with `resolveSide` first. */
 export function placementFromSideAlign(
-  side: PopoverSide,
+  side: PhysicalSide,
   align: PopoverAlign,
 ): import("@floating-ui/react").Placement {
-  const alignSuffix = align === "center" ? "" : `-${align}`
-  return `${side}${alignSuffix}` as import("@floating-ui/react").Placement
+  return placementOf(side, align)
 }
