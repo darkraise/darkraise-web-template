@@ -4,7 +4,7 @@ import * as React from "react"
 import { Check, ChevronRight, Circle, Minus } from "lucide-react"
 
 import { cn } from "@lib/utils"
-import { getDirection } from "@lib/direction"
+import { getDirection, inlineArrow } from "@lib/direction"
 import type { SurfaceFill } from "@lib/surface-fill"
 import { DismissableLayer } from "@primitives/dismissable-layer"
 import { Portal } from "@primitives/portal"
@@ -352,7 +352,10 @@ function DropdownMenuContentImpl({
     } else if (event.key === "Tab") {
       event.preventDefault()
       ctx.closeAll()
-    } else if (event.key === "ArrowLeft" && ctx.isSubmenu) {
+    } else if (
+      ctx.isSubmenu &&
+      inlineArrow(event.key, event.currentTarget) === "prev"
+    ) {
       event.preventDefault()
       ctx.closeSelf()
     } else if (
@@ -851,7 +854,7 @@ function DropdownMenuSubTrigger({
         onKeyDown?.(event)
         if (event.defaultPrevented || disabled) return
         if (
-          event.key === "ArrowRight" ||
+          inlineArrow(event.key, event.currentTarget) === "next" ||
           event.key === "Enter" ||
           event.key === " "
         ) {
@@ -868,7 +871,7 @@ function DropdownMenuSubTrigger({
       {...rest}
     >
       {children}
-      <ChevronRight className="ml-auto" aria-hidden="true" />
+      <ChevronRight className="dr-icon-inline ml-auto" aria-hidden="true" />
     </DropdownMenuItem>
   )
 }
@@ -877,7 +880,7 @@ type DropdownMenuSubContentProps = DropdownMenuContentProps
 
 function DropdownMenuSubContent({
   className,
-  side = "right",
+  side = "end",
   align = "start",
   sideOffset = 0,
   ...rest

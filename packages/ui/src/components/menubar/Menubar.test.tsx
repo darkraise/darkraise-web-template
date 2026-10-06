@@ -257,3 +257,61 @@ describe("Menubar direction", () => {
     expect(await screen.findByRole("menu")).toHaveAttribute("dir", "rtl")
   })
 })
+
+describe("Menubar keys under RTL", () => {
+  it("moves to the next menu with ArrowLeft", async () => {
+    const user = userEvent.setup()
+    render(
+      <div dir="rtl">
+        <Menubar>
+          {["File", "Edit", "View"].map((name) => (
+            <MenubarMenu key={name} value={name}>
+              <MenubarTrigger>{name}</MenubarTrigger>
+              <MenubarContent>
+                <MenubarItem>{name} item</MenubarItem>
+              </MenubarContent>
+            </MenubarMenu>
+          ))}
+        </Menubar>
+      </div>,
+    )
+    await user.click(screen.getByRole("menuitem", { name: "File" }))
+    fireEvent.keyDown(screen.getByRole("menuitem", { name: "File" }), {
+      key: "ArrowLeft",
+    })
+    expect(screen.getByRole("menuitem", { name: "Edit" })).toHaveAttribute(
+      "aria-expanded",
+      "true",
+    )
+  })
+
+  it("opens a submenu with ArrowLeft and closes it with ArrowRight", async () => {
+    const user = userEvent.setup()
+    render(
+      <div dir="rtl">
+        <Menubar>
+          <MenubarMenu value="file">
+            <MenubarTrigger>File</MenubarTrigger>
+            <MenubarContent>
+              <MenubarSub>
+                <MenubarSubTrigger>More</MenubarSubTrigger>
+                <MenubarSubContent>
+                  <MenubarItem>Nested</MenubarItem>
+                </MenubarSubContent>
+              </MenubarSub>
+            </MenubarContent>
+          </MenubarMenu>
+        </Menubar>
+      </div>,
+    )
+    await user.click(screen.getByRole("menuitem", { name: "File" }))
+    const more = await screen.findByRole("menuitem", { name: "More" })
+    fireEvent.keyDown(more, { key: "ArrowRight" })
+    expect(more).toHaveAttribute("aria-expanded", "false")
+    fireEvent.keyDown(more, { key: "ArrowLeft" })
+    expect(more).toHaveAttribute("aria-expanded", "true")
+    const nested = await screen.findByRole("menuitem", { name: "Nested" })
+    fireEvent.keyDown(nested, { key: "ArrowRight" })
+    expect(more).toHaveAttribute("aria-expanded", "false")
+  })
+})

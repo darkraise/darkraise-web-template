@@ -364,3 +364,32 @@ describe("ContextMenu direction", () => {
     expect(await screen.findByRole("menu")).toHaveAttribute("dir", "rtl")
   })
 })
+
+describe("ContextMenu submenus under RTL", () => {
+  it("open with ArrowLeft and close with ArrowRight", async () => {
+    render(
+      <div dir="rtl">
+        <ContextMenu>
+          <ContextMenuTrigger>Right-click here</ContextMenuTrigger>
+          <ContextMenuContent>
+            <ContextMenuSub>
+              <ContextMenuSubTrigger>More</ContextMenuSubTrigger>
+              <ContextMenuSubContent>
+                <ContextMenuItem>Nested</ContextMenuItem>
+              </ContextMenuSubContent>
+            </ContextMenuSub>
+          </ContextMenuContent>
+        </ContextMenu>
+      </div>,
+    )
+    fireEvent.contextMenu(screen.getByText("Right-click here"))
+    const more = await screen.findByRole("menuitem", { name: "More" })
+    fireEvent.keyDown(more, { key: "ArrowRight" })
+    expect(more).toHaveAttribute("aria-expanded", "false")
+    fireEvent.keyDown(more, { key: "ArrowLeft" })
+    expect(more).toHaveAttribute("aria-expanded", "true")
+    const nested = await screen.findByRole("menuitem", { name: "Nested" })
+    fireEvent.keyDown(nested, { key: "ArrowRight" })
+    expect(more).toHaveAttribute("aria-expanded", "false")
+  })
+})

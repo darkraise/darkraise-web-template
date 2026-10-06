@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "@playwright/test"
+import { test, expect, type Locator, type Page } from "@playwright/test"
 import { boxOf, seedApp } from "./helpers/app"
 import { computed, settle } from "./helpers/measure"
 
@@ -98,5 +98,73 @@ test.describe("scroll area", () => {
       .evaluate((el) => el.scrollTo({ left: -200 }))
     await settle(page)
     expect((await boxOf(thumb)).x).toBeLessThan(start.x - 10)
+  })
+})
+
+test.describe("submenus", () => {
+  /** The box once it has held still for three frames: popups position
+   *  asynchronously, and a submenu anchors to its row where it is at open. */
+  async function steadyBox(locator: Locator) {
+    await locator.evaluate(async (el) => {
+      let last = ""
+      let same = 0
+      for (let i = 0; i < 120 && same < 3; i++) {
+        await new Promise((resolve) => requestAnimationFrame(resolve))
+        const r = el.getBoundingClientRect()
+        const key = [r.x, r.y, r.width, r.height].join()
+        same = key === last ? same + 1 : 0
+        last = key
+      }
+    })
+    return boxOf(locator)
+  }
+
+  async function opensToTheLeft(page: Page, open: () => Promise<void>) {
+    await open()
+    await page.mouse.move(0, 0)
+    const more = page.getByRole("menuitem", { name: "More" })
+    const trigger = await steadyBox(more)
+    await more.focus()
+    await expect(more).toHaveAttribute("aria-expanded", "false")
+    await page.keyboard.press("ArrowLeft")
+    await expect(more).toHaveAttribute("aria-expanded", "true")
+    const nested = page.getByRole("menuitem", { name: "Nested" })
+    await expect(nested).toBeVisible()
+    const menu = await steadyBox(page.getByRole("menu").filter({ has: nested }))
+    const viewport = page.viewportSize()
+    if (!viewport) throw new Error("no viewport")
+    expect(menu.x + menu.width).toBeLessThanOrEqual(trigger.x + 1)
+    expect(menu.x).toBeGreaterThanOrEqual(0)
+    expect(menu.y + menu.height).toBeLessThanOrEqual(viewport.height)
+  }
+
+  test("a dropdown submenu opens toward the left", async ({ page }) => {
+    await openFixture(page)
+    await opensToTheLeft(page, () =>
+      page
+        .locator('[data-probe="dropdown-submenu"]')
+        .getByRole("button", { name: "Dropdown" })
+        .click(),
+    )
+  })
+
+  test("a context submenu opens toward the left", async ({ page }) => {
+    await openFixture(page)
+    await opensToTheLeft(page, () =>
+      page
+        .locator('[data-probe="context-submenu"]')
+        .getByText("Context area")
+        .click({ button: "right", position: { x: 300, y: 8 } }),
+    )
+  })
+
+  test("a menubar submenu opens toward the left", async ({ page }) => {
+    await openFixture(page)
+    await opensToTheLeft(page, () =>
+      page
+        .locator('[data-probe="menubar-submenu"]')
+        .getByRole("menuitem", { name: "File" })
+        .click(),
+    )
   })
 })

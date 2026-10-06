@@ -4,7 +4,7 @@ import * as React from "react"
 import { Check, ChevronRight, Circle, Minus } from "lucide-react"
 
 import { cn } from "@lib/utils"
-import { getDirection } from "@lib/direction"
+import { getDirection, inlineArrow } from "@lib/direction"
 import type { SurfaceFill } from "@lib/surface-fill"
 import { DismissableLayer } from "@primitives/dismissable-layer"
 import { Portal } from "@primitives/portal"
@@ -348,12 +348,10 @@ function MenubarTrigger({
       onKeyDown={(event) => {
         onKeyDown?.(event)
         if (event.defaultPrevented) return
-        if (event.key === "ArrowRight") {
+        const step = inlineArrow(event.key, event.currentTarget)
+        if (step) {
           event.preventDefault()
-          handleArrowNav(1)
-        } else if (event.key === "ArrowLeft") {
-          event.preventDefault()
-          handleArrowNav(-1)
+          handleArrowNav(step === "next" ? 1 : -1)
         } else if (
           event.key === "ArrowDown" ||
           event.key === "Enter" ||
@@ -469,11 +467,11 @@ function MenubarContentImpl({
     } else if (event.key === "End") {
       event.preventDefault()
       ctx.focusLast()
-    } else if (event.key === "ArrowRight") {
+    } else if (inlineArrow(event.key, event.currentTarget) === "next") {
       if (ctx.isSubmenu) return
       event.preventDefault()
       handleArrowNav(1)
-    } else if (event.key === "ArrowLeft") {
+    } else if (inlineArrow(event.key, event.currentTarget) === "prev") {
       if (ctx.isSubmenu) {
         event.preventDefault()
         ctx.closeSelf()
@@ -944,7 +942,7 @@ function MenubarSubTrigger({
         onKeyDown?.(event)
         if (event.defaultPrevented || disabled) return
         if (
-          event.key === "ArrowRight" ||
+          inlineArrow(event.key, event.currentTarget) === "next" ||
           event.key === "Enter" ||
           event.key === " "
         ) {
@@ -961,7 +959,7 @@ function MenubarSubTrigger({
     >
       {children}
       <ChevronRight
-        className="ml-auto size-[var(--icon-size)]"
+        className="dr-icon-inline ml-auto size-[var(--icon-size)]"
         aria-hidden="true"
       />
     </MenubarItem>
@@ -972,7 +970,7 @@ type MenubarSubContentProps = MenubarContentProps
 
 function MenubarSubContent({
   className,
-  side = "right",
+  side = "end",
   align = "start",
   sideOffset = 0,
   ...rest

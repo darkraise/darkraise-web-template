@@ -422,3 +422,31 @@ describe("DropdownMenu direction", () => {
     expect(await screen.findByRole("menu")).toHaveAttribute("dir", "rtl")
   })
 })
+
+describe("DropdownMenu submenus under RTL", () => {
+  it("open with ArrowLeft and close with ArrowRight", async () => {
+    render(
+      <div dir="rtl">
+        <DropdownMenu defaultOpen>
+          <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>More</DropdownMenuSubTrigger>
+              <DropdownMenuSubContent>
+                <DropdownMenuItem>Nested</DropdownMenuItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>,
+    )
+    const more = await screen.findByRole("menuitem", { name: "More" })
+    fireEvent.keyDown(more, { key: "ArrowRight" })
+    expect(more).toHaveAttribute("aria-expanded", "false")
+    fireEvent.keyDown(more, { key: "ArrowLeft" })
+    expect(more).toHaveAttribute("aria-expanded", "true")
+    const nested = await screen.findByRole("menuitem", { name: "Nested" })
+    fireEvent.keyDown(nested, { key: "ArrowRight" })
+    expect(more).toHaveAttribute("aria-expanded", "false")
+  })
+})

@@ -4,7 +4,7 @@ import * as React from "react"
 import { Check, ChevronRight, Circle, Minus } from "lucide-react"
 
 import { cn } from "@lib/utils"
-import { getDirection } from "@lib/direction"
+import { getDirection, inlineArrow } from "@lib/direction"
 import type { SurfaceFill } from "@lib/surface-fill"
 import { DismissableLayer } from "@primitives/dismissable-layer"
 import { Portal } from "@primitives/portal"
@@ -316,7 +316,10 @@ function ContextMenuContentImpl({
     } else if (event.key === "Tab") {
       event.preventDefault()
       ctx.closeAll()
-    } else if (event.key === "ArrowLeft" && ctx.isSubmenu) {
+    } else if (
+      ctx.isSubmenu &&
+      inlineArrow(event.key, event.currentTarget) === "prev"
+    ) {
       event.preventDefault()
       ctx.closeSelf()
     } else if (
@@ -761,8 +764,14 @@ function ContextMenuSubTrigger({
 
   const parent = ctx.parent
   const openSelf = () => {
-    const rect = localRef.current?.getBoundingClientRect()
-    if (rect) ctx.setPoint({ x: rect.right, y: rect.top })
+    const node = localRef.current
+    const rect = node?.getBoundingClientRect()
+    // The submenu opens from the row's inline-end edge; its bottom-start
+    // placement aligns to that edge from the inline start in both directions.
+    if (rect) {
+      const rtl = getDirection(node) === "rtl"
+      ctx.setPoint({ x: rtl ? rect.left : rect.right, y: rect.top })
+    }
     parent?.closeOpenSubmenu(localRef.current)
     parent?.registerOpenSubmenu({
       trigger: localRef.current,
@@ -792,7 +801,7 @@ function ContextMenuSubTrigger({
         onKeyDown?.(event)
         if (event.defaultPrevented || disabled) return
         if (
-          event.key === "ArrowRight" ||
+          inlineArrow(event.key, event.currentTarget) === "next" ||
           event.key === "Enter" ||
           event.key === " "
         ) {
@@ -808,7 +817,7 @@ function ContextMenuSubTrigger({
       {...rest}
     >
       {children}
-      <ChevronRight className="ml-auto" aria-hidden="true" />
+      <ChevronRight className="dr-icon-inline ml-auto" aria-hidden="true" />
     </ContextMenuItem>
   )
 }
