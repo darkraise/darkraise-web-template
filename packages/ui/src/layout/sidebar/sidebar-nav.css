@@ -141,12 +141,10 @@
     @apply overflow-hidden;
   }
 
-  .dr-sidebar-nav-collapsible-content[data-state="closed"] {
-    animation: collapsible-up var(--duration-fast) var(--ease-out);
-  }
-
-  .dr-sidebar-nav-collapsible-content[data-state="open"] {
-    animation: collapsible-down var(--duration-fast) var(--ease-out);
+  /* Collapsible runs the height animation; the sidebar only shortens it.
+     Three classes outrank collapsible.css whatever the import order. */
+  .dr-sidebar-nav-collapsible-content.dr-collapsible-content[data-state] {
+    animation-duration: var(--duration-fast);
   }
 
   .dr-sidebar-nav-collapsible-children {

@@ -444,9 +444,9 @@
   .dr-tabs-trigger[data-variant="underline"]:not([data-state="active"]):where(
       :not(:disabled)
     ):hover {
-    /* @apply, not `var(--radius-sm)`: the radius aliases live in
-       `@theme inline`, so they are folded into utilities at build time
-       and never emitted as custom properties to reference here. */
+    /* The `rounded-t-sm` utility rounds only the top corners; the radius
+       aliases are `@theme inline` values, emitted as custom properties
+       only where some rule reads them through var(). */
     @apply rounded-t-sm;
   }
 }

@@ -410,3 +410,39 @@ test.describe("toast action hover", () => {
     }
   }
 })
+
+test.describe("sidebar collapsible", () => {
+  test("a group's height passes through in-between frames", async ({
+    page,
+  }) => {
+    await page.emulateMedia({ reducedMotion: "no-preference" })
+    await seedApp(page, { style: "quiet", mode: "light" })
+    await gotoApp(page, "/")
+    const toggle = page.locator(
+      '.dr-sidebar-nav-chevron-button[aria-label="Products"]',
+    )
+    if ((await toggle.getAttribute("aria-expanded")) === "true") {
+      await toggle.click()
+      await page.waitForTimeout(500)
+    }
+    const heights = await page.evaluate(async () => {
+      const button = document.querySelector<HTMLElement>(
+        '.dr-sidebar-nav-chevron-button[aria-label="Products"]',
+      )
+      if (!button) throw new Error("no Products toggle")
+      const samples: number[] = []
+      button.click()
+      for (let i = 0; i < 40; i++) {
+        await new Promise((resolve) => requestAnimationFrame(resolve))
+        const content = document.querySelector(
+          ".dr-sidebar-nav-collapsible-content",
+        )
+        samples.push(content ? content.getBoundingClientRect().height : 0)
+      }
+      return samples
+    })
+    const final = heights[heights.length - 1] ?? 0
+    expect(final).toBeGreaterThan(0)
+    expect(heights.some((h) => h > 0.5 && h < final - 0.5)).toBe(true)
+  })
+})
