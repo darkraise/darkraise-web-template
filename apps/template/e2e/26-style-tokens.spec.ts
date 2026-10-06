@@ -1,5 +1,5 @@
 import { test, expect, type Frame, type Page } from "@playwright/test"
-import { gotoApp, seedApp } from "./helpers/app"
+import { boxOf, gotoApp, seedApp } from "./helpers/app"
 import {
   contrast,
   luminance,
@@ -123,5 +123,82 @@ test.describe("frame", () => {
         () => getComputedStyle(document.documentElement).colorScheme,
       ),
     ).toBe("dark")
+  })
+})
+
+async function cardFill(page: Page, level: string): Promise<Rgb> {
+  const box = await boxOf(
+    page.locator(`[data-card-elevation="${level}"]`).first(),
+  )
+  return pixel(
+    page,
+    // The next sibling card's outer shadow paints over this card's right
+    // edge; earlier siblings' shadows sit beneath it, so sample the left.
+    Math.round(box.x + 20),
+    Math.round(box.y + box.height - 6),
+  )
+}
+
+test.describe("dark elevation", () => {
+  for (const style of ["quiet", "tactile"] as const) {
+    test(`${style} dark cards step lighter with each level`, async ({
+      page,
+    }) => {
+      await seedApp(page, { style, mode: "dark" })
+      await gotoApp(page, "/components/kitchen-sink")
+      const first = page.locator('[data-card-elevation="auto"]').first()
+      await first.scrollIntoViewIfNeeded()
+      await settle(page)
+      const firstBox = await boxOf(first)
+      const pageFill = await pixel(
+        page,
+        Math.round(firstBox.x - 8),
+        Math.round(firstBox.y + firstBox.height / 2),
+      )
+      const fills = []
+      for (const level of ["flat", "low", "medium", "high"]) {
+        fills.push(await cardFill(page, level))
+      }
+      for (let i = 1; i < fills.length; i++) {
+        const [a, b] = [fills[i - 1] as Rgb, fills[i] as Rgb]
+        expect(luminance(b)).toBeGreaterThan(luminance(a))
+        expect(contrast(a, b)).toBeGreaterThanOrEqual(1.04)
+      }
+      expect(contrast(fills[3] as Rgb, pageFill)).toBeGreaterThanOrEqual(1.3)
+    })
+  }
+
+  test("light cards keep one fill at every level", async ({ page }) => {
+    await seedApp(page, { style: "quiet", mode: "light" })
+    await gotoApp(page, "/components/kitchen-sink")
+    await page
+      .locator('[data-card-elevation="auto"]')
+      .first()
+      .scrollIntoViewIfNeeded()
+    await settle(page)
+    const fills = []
+    for (const level of ["flat", "low", "medium", "high"]) {
+      fills.push((await cardFill(page, level)).join(","))
+    }
+    expect(new Set(fills).size).toBe(1)
+  })
+
+  test("a dark popover is lighter than its own fill", async ({ page }) => {
+    await seedApp(page, { style: "quiet", mode: "dark" })
+    await gotoApp(page, "/components/popover")
+    await page.getByRole("button", { name: "Open Popover" }).first().click()
+    const content = page.locator(".dr-popover-content").first()
+    await expect(content).toBeVisible()
+    await settle(page)
+    const fill = rgbOf(
+      await content.evaluate((el) => getComputedStyle(el).backgroundColor),
+    )
+    const box = await boxOf(content)
+    const painted = await pixel(
+      page,
+      Math.round(box.x + box.width - 6),
+      Math.round(box.y + box.height - 6),
+    )
+    expect(luminance(painted)).toBeGreaterThan(luminance(fill))
   })
 })

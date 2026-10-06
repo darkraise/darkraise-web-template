@@ -902,6 +902,12 @@
      like `box-shadow: var(--elevation-high), var(--glow-outer)`.
      The `none` keyword is only valid as a complete box-shadow value. */
     --elevation-flat: 0 0 transparent;
+    /* Dark surfaces cannot darken a near-black page further, so dark mode
+       raises a surface by lightening it: an inset overlay paints over the
+       fill and under the content. */
+    --elevation-lift-low: 0 0 transparent;
+    --elevation-lift-medium: 0 0 transparent;
+    --elevation-lift-high: 0 0 transparent;
     --elevation-low: 0 2px 4px 0 rgb(0 0 0 / 0.1);
     --elevation-medium:
       0 8px 20px -2px rgb(0 0 0 / 0.18), 0 3px 8px -1px rgb(0 0 0 / 0.1);
@@ -973,7 +979,8 @@
       var(--surface-overlay-base);
     --surface-overlay-border: hsl(var(--border));
     --surface-overlay-shadow:
-      var(--shadow-dropdown), var(--glow-outer), var(--glow-inner);
+      var(--elevation-lift-medium), var(--shadow-dropdown), var(--glow-outer),
+      var(--glow-inner);
     --surface-overlay-blend-mode: normal;
 
     /* Overlay family. --overlay-bg is redeclared beside every
@@ -1270,19 +1277,32 @@
 [data-mode="dark"] {
   color-scheme: dark;
   --cropper-grid-line: rgba(255, 255, 255, 0.45);
-  --elevation-low: 0 2px 4px 0 rgb(0 0 0 / 0.5);
+  --elevation-lift-low:
+    inset 0 1px 0 rgb(255 255 255 / 0.05),
+    inset 0 0 0 100vmax rgb(255 255 255 / 0.025);
+  --elevation-lift-medium:
+    inset 0 1px 0 rgb(255 255 255 / 0.07),
+    inset 0 0 0 100vmax rgb(255 255 255 / 0.05);
+  --elevation-lift-high:
+    inset 0 1px 0 rgb(255 255 255 / 0.09),
+    inset 0 0 0 100vmax rgb(255 255 255 / 0.08);
+  --elevation-low: var(--elevation-lift-low), 0 2px 4px 0 rgb(0 0 0 / 0.5);
   --elevation-medium:
-    0 8px 20px -2px rgb(0 0 0 / 0.65), 0 3px 8px -1px rgb(0 0 0 / 0.5);
+    var(--elevation-lift-medium), 0 8px 20px -2px rgb(0 0 0 / 0.65),
+    0 3px 8px -1px rgb(0 0 0 / 0.5);
   --elevation-high:
-    0 32px 48px -8px rgb(0 0 0 / 0.8), 0 12px 24px -4px rgb(0 0 0 / 0.55);
+    var(--elevation-lift-high), 0 32px 48px -8px rgb(0 0 0 / 0.8),
+    0 12px 24px -4px rgb(0 0 0 / 0.55);
   /* Card-elevation ramp matches the dark theme axis: medium = dark
      theme=standard's medium, high = dark theme=high's high; low is a
      lighter step of its own. */
-  --card-elevation-low: 0 1px 2px 0 rgb(0 0 0 / 0.4);
+  --card-elevation-low: var(--elevation-lift-low), 0 1px 2px 0 rgb(0 0 0 / 0.4);
   --card-elevation-medium:
-    0 8px 20px -2px rgb(0 0 0 / 0.65), 0 3px 8px -1px rgb(0 0 0 / 0.5);
+    var(--elevation-lift-medium), 0 8px 20px -2px rgb(0 0 0 / 0.65),
+    0 3px 8px -1px rgb(0 0 0 / 0.5);
   --card-elevation-high:
-    0 48px 72px -10px rgb(0 0 0 / 0.9), 0 20px 36px -6px rgb(0 0 0 / 0.6);
+    var(--elevation-lift-high), 0 48px 72px -10px rgb(0 0 0 / 0.9),
+    0 20px 36px -6px rgb(0 0 0 / 0.6);
 }
 
 [data-mode="dark"][data-elevation="flat"] {
@@ -1295,11 +1315,13 @@
 
 [data-mode="dark"][data-elevation="high"] {
   --elevation-flat: 0 0 transparent;
-  --elevation-low: 0 4px 8px 0 rgb(0 0 0 / 0.6);
+  --elevation-low: var(--elevation-lift-low), 0 4px 8px 0 rgb(0 0 0 / 0.6);
   --elevation-medium:
-    0 14px 32px -3px rgb(0 0 0 / 0.75), 0 5px 12px -2px rgb(0 0 0 / 0.55);
+    var(--elevation-lift-medium), 0 14px 32px -3px rgb(0 0 0 / 0.75),
+    0 5px 12px -2px rgb(0 0 0 / 0.55);
   --elevation-high:
-    0 48px 72px -10px rgb(0 0 0 / 0.9), 0 20px 36px -6px rgb(0 0 0 / 0.6);
+    var(--elevation-lift-high), 0 48px 72px -10px rgb(0 0 0 / 0.9),
+    0 20px 36px -6px rgb(0 0 0 / 0.6);
   --elevation-current: var(--elevation-high);
 }
 

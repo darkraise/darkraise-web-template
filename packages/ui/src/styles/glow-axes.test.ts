@@ -52,7 +52,7 @@ describe("glow axes — adoption", () => {
 
   it("reaches the overlay tier through its shared token", () => {
     expect(theme).toMatch(
-      /--surface-overlay-shadow: var\(--shadow-dropdown\), var\(--glow-outer\), var\(--glow-inner\)/,
+      /--surface-overlay-shadow: var\(--elevation-lift-medium\), var\(--shadow-dropdown\), var\(--glow-outer\), var\(--glow-inner\)/,
     )
   })
 
