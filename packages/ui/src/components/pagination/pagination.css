@@ -39,10 +39,10 @@
   }
 
   .dr-pagination-previous {
-    @apply gap-1 pl-2.5;
+    @apply gap-1 ps-2.5;
   }
 
   .dr-pagination-next {
-    @apply gap-1 pr-2.5;
+    @apply gap-1 pe-2.5;
   }
 }

@@ -1,6 +1,6 @@
 @layer components {
   .dr-alert {
-    @apply bg-muted text-foreground [&>svg]:text-foreground relative w-full rounded-lg border p-4 [&>svg]:absolute [&>svg]:top-4 [&>svg]:left-4 [&>svg]:size-[var(--icon-size)] [&>svg+div]:translate-y-[-3px] [&>svg~*]:pl-7;
+    @apply bg-muted text-foreground [&>svg]:text-foreground relative w-full rounded-lg border p-4 [&>svg]:absolute [&>svg]:start-4 [&>svg]:top-4 [&>svg]:size-[var(--icon-size)] [&>svg+div]:translate-y-[-3px] [&>svg~*]:ps-7;
   }
 
   /* Status variants share a left-rail pattern, driven by --alert-subtle /
@@ -34,9 +34,9 @@
   .dr-alert[data-variant="success"],
   .dr-alert[data-variant="warning"],
   .dr-alert[data-variant="info"] {
-    @apply border-l-4;
+    @apply border-s-4;
     background-color: hsl(var(--alert-subtle));
-    border-left-color: hsl(var(--alert-edge));
+    border-inline-start-color: hsl(var(--alert-edge));
   }
 
   .dr-alert[data-variant="destructive"] > svg,

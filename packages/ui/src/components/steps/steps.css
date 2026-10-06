@@ -75,7 +75,7 @@
   }
 
   .dr-steps-separator[data-orientation="vertical"] {
-    @apply ml-4 h-12 w-px flex-none;
+    @apply ms-4 h-12 w-px flex-none;
   }
 
   .dr-steps-separator[data-status="complete"] {

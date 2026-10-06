@@ -34,7 +34,7 @@
      * the selection summary renders. Without it, a lone controls child in a
      * `justify-between` parent hugs the start edge when no rows are
      * selected. */
-    @apply ml-auto flex flex-wrap items-center justify-end gap-x-3 gap-y-2 sm:gap-x-6;
+    @apply ms-auto flex flex-wrap items-center justify-end gap-x-3 gap-y-2 sm:gap-x-6;
   }
 
   /* `.dr-pagination` is full width for standalone use; as one item of this
@@ -167,7 +167,7 @@
   }
 
   .dr-data-table-facet-count {
-    @apply bg-secondary ml-2 rounded-sm px-1.5 text-xs;
+    @apply bg-secondary ms-2 rounded-sm px-1.5 text-xs;
   }
 
   .dr-data-table-facet-value {
@@ -175,7 +175,7 @@
   }
 
   .dr-data-table-facet-tally {
-    @apply ml-4 font-mono text-xs text-[hsl(var(--legend))];
+    @apply ms-4 font-mono text-xs text-[hsl(var(--legend))];
   }
 
   /* Virtualized viewport. The header stays put while the body scrolls under

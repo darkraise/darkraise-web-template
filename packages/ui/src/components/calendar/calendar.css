@@ -138,7 +138,7 @@
   }
 
   .dr-calendar-caption-label--interactive {
-    @apply [&>svg]:text-muted-foreground flex h-8 items-center gap-1 rounded-md pr-1 pl-2 [&>svg]:size-[var(--icon-size-sm)];
+    @apply [&>svg]:text-muted-foreground flex h-8 items-center gap-1 rounded-md ps-2 pe-1 [&>svg]:size-[var(--icon-size-sm)];
   }
 
   .dr-calendar-dropdowns {
@@ -197,7 +197,7 @@
   }
 
   .dr-calendar-range-start {
-    @apply bg-accent rounded-l-md;
+    @apply bg-accent rounded-s-md;
   }
 
   .dr-calendar-range-middle {
@@ -205,7 +205,7 @@
   }
 
   .dr-calendar-range-end {
-    @apply bg-accent rounded-r-md;
+    @apply bg-accent rounded-e-md;
   }
 
   .dr-calendar-today {

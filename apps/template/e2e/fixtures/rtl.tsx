@@ -83,6 +83,12 @@ import { Button } from "darkraise-ui/components/button"
 import { ButtonGroup } from "darkraise-ui/components/button-group"
 import { Input } from "darkraise-ui/components/input"
 import { Switch } from "darkraise-ui/components/switch"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+} from "darkraise-ui/components/table"
 import "../../src/styles/globals.css"
 
 function SidebarLink({
@@ -370,6 +376,22 @@ createRoot(root).render(
           <TabsContent value="two">Second panel</TabsContent>
           <TabsContent value="three">Third panel</TabsContent>
         </Tabs>
+      </div>
+      <div data-probe="table" style={{ width: 240 }}>
+        <Table>
+          <TableBody>
+            <TableRow>
+              {Array.from({ length: 6 }, (_, i) => (
+                <TableCell
+                  key={i}
+                  style={{ minWidth: 120, backgroundColor: "rgb(0, 0, 0)" }}
+                >
+                  Cell {i + 1}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableBody>
+        </Table>
       </div>
     </div>
   </ThemeProvider>,

@@ -40,9 +40,9 @@
   .dr-banner[data-variant="success"],
   .dr-banner[data-variant="warning"],
   .dr-banner[data-variant="destructive"] {
-    @apply text-foreground border-border border-l-4;
+    @apply text-foreground border-border border-s-4;
     background-color: hsl(var(--banner-subtle));
-    border-left-color: hsl(var(--banner-edge));
+    border-inline-start-color: hsl(var(--banner-edge));
   }
   .dr-banner[data-variant="info"] .dr-banner-icon,
   .dr-banner[data-variant="success"] .dr-banner-icon,

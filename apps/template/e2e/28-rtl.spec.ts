@@ -509,3 +509,25 @@ test.describe("tabs edges", () => {
     expect(near(await pixel(page, x, await middle("Two")), line)).toBe(false)
   })
 })
+
+test.describe("table edge fade", () => {
+  test("fades the edge the content overflows toward", async ({ page }) => {
+    await openFixture(page)
+    const wrapper = page.locator('[data-probe="table"] .dr-table-wrapper')
+    await wrapper.scrollIntoViewIfNeeded()
+    const box = await boxOf(wrapper)
+    const y = Math.round(box.y + box.height / 2)
+    const left = () => pixel(page, Math.round(box.x) + 3, y)
+    const right = () => pixel(page, Math.round(box.x + box.width) - 4, y)
+    const dark = (rgb: number[]) => rgb.every((value) => value < 60)
+    expect(dark(await left())).toBe(false)
+    expect(dark(await right())).toBe(true)
+    await wrapper.evaluate((el) => {
+      el.scrollLeft = -(el.scrollWidth - el.clientWidth)
+    })
+    await expect(wrapper).not.toHaveAttribute("data-overflow-end")
+    await settle(page)
+    expect(dark(await left())).toBe(true)
+    expect(dark(await right())).toBe(false)
+  })
+})

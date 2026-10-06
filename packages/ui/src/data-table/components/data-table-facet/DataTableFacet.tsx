@@ -45,7 +45,7 @@ export function DataTableFacet<TData>({ column }: DataTableFacetProps<TData>) {
           aria-label={labels.dataTable.filterBy(title)}
         >
           <ListFilter
-            className="mr-2 size-[var(--icon-size)]"
+            className="me-2 size-[var(--icon-size)]"
             aria-hidden="true"
           />
           {title}

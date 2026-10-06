@@ -36,7 +36,7 @@
   }
 
   .dr-timeline-meta {
-    @apply text-muted-foreground text-right text-xs;
+    @apply text-muted-foreground text-end text-xs;
     grid-column: meta;
     grid-row: 1;
     line-height: var(--timeline-dot-size);
@@ -164,21 +164,21 @@
   .dr-timeline[data-variant="alternating"]
     > .dr-timeline-item:nth-child(odd)
     > .dr-timeline-meta {
-    @apply text-right;
+    @apply text-end;
     grid-column: start;
   }
 
   .dr-timeline[data-variant="alternating"]
     > .dr-timeline-item:nth-child(even)
     > .dr-timeline-content {
-    @apply items-end text-right;
+    @apply items-end text-end;
     grid-column: start;
   }
 
   .dr-timeline[data-variant="alternating"]
     > .dr-timeline-item:nth-child(even)
     > .dr-timeline-meta {
-    @apply text-left;
+    @apply text-start;
     grid-column: end;
   }
 
@@ -188,28 +188,28 @@
   .dr-timeline[data-variant="alternating"]
     > .dr-timeline-item[data-side="start"]
     > .dr-timeline-content {
-    @apply items-end text-right;
+    @apply items-end text-end;
     grid-column: start;
   }
 
   .dr-timeline[data-variant="alternating"]
     > .dr-timeline-item[data-side="start"]
     > .dr-timeline-meta {
-    @apply text-left;
+    @apply text-start;
     grid-column: end;
   }
 
   .dr-timeline[data-variant="alternating"]
     > .dr-timeline-item[data-side="end"]
     > .dr-timeline-content {
-    @apply items-start text-left;
+    @apply items-start text-start;
     grid-column: end;
   }
 
   .dr-timeline[data-variant="alternating"]
     > .dr-timeline-item[data-side="end"]
     > .dr-timeline-meta {
-    @apply text-right;
+    @apply text-end;
     grid-column: start;
   }
 
@@ -238,7 +238,7 @@
     .dr-timeline[data-variant="alternating"]
       > .dr-timeline-item[data-side]
       > .dr-timeline-content {
-      @apply items-start text-left;
+      @apply items-start text-start;
       grid-column: content;
     }
 
@@ -248,7 +248,7 @@
     .dr-timeline[data-variant="alternating"]
       > .dr-timeline-item[data-side]
       > .dr-timeline-meta {
-      @apply text-right;
+      @apply text-end;
       grid-column: meta;
     }
   }

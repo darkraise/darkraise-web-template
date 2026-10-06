@@ -63,7 +63,7 @@ describe("severity pairs", () => {
     expect(body).toContain(`--alert-edge: var(--${status}-edge);`)
     expect(body).toContain(`--alert-text: var(--${status}-text);`)
     expect(body).toContain("background-color: hsl(var(--alert-subtle));")
-    expect(body).toContain("border-left-color: hsl(var(--alert-edge));")
+    expect(body).toContain("border-inline-start-color: hsl(var(--alert-edge));")
     expect(body).not.toContain("background-image")
     expect(bodyOf(ALERT, `${variant} > svg`)).toContain(
       "color: hsl(var(--alert-edge));",
@@ -80,7 +80,9 @@ describe("severity pairs", () => {
     expect(body).toContain(`--banner-edge: var(--${status}-edge);`)
     expect(body).not.toContain("--banner-text")
     expect(body).toContain("background-color: hsl(var(--banner-subtle));")
-    expect(body).toContain("border-left-color: hsl(var(--banner-edge));")
+    expect(body).toContain(
+      "border-inline-start-color: hsl(var(--banner-edge));",
+    )
     expect(body).not.toContain("background-image")
     expect(body).not.toMatch(/(?<![\w:-])bg-muted(?![\w-])/)
     expect(body).toMatch(/(?<![\w:-])border-border(?![\w-])/)
