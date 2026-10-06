@@ -2225,6 +2225,75 @@
    `:focus-visible` rule above, so an outline here would replace the focus
    ring on that element. */
 @media (forced-colors: active) {
+  /* Chosen item: the selection keeps the system selection colours.
+
+     Forced colours paint text on a Canvas backplate, on which HighlightText
+     vanishes, so every rule that sets HighlightText also opts its element
+     out of forcing and drops the shadows forcing used to strip.
+
+     The underline bar is drawn by the active trigger's own edge below, which
+     paints over the indicator; emulated Highlight is translucent, so
+     painting both would darken it. */
+  .dr-tabs-indicator:not([data-variant="underline"]),
+  .dr-segment-group-indicator,
+  .dr-switch[data-state="checked"] {
+    background-color: Highlight;
+  }
+
+  .dr-listbox-item[data-selected="true"],
+  .dr-tree-view-branch-control[data-selected="true"],
+  .dr-tree-view-item[data-selected="true"],
+  .dr-toggle[data-state="on"],
+  .dr-pagination-link[data-active="true"] {
+    background-color: Highlight;
+    color: HighlightText;
+    forced-color-adjust: none;
+    box-shadow: none;
+  }
+
+  /* The underline indicator sits on Canvas below its label, so only the
+     variants whose indicator fills behind the label recolour it. */
+  .dr-tabs-trigger:is(
+      [data-variant="default"],
+      [data-variant="outline"],
+      [data-variant="enclosed"]
+    )[data-state="active"],
+  .dr-segment-group-item[data-state="checked"] {
+    color: HighlightText;
+    forced-color-adjust: none;
+    box-shadow: none;
+  }
+
+  .dr-switch[data-state="checked"] .dr-switch-thumb {
+    background-color: HighlightText;
+  }
+
+  .dr-switch[data-state="unchecked"] .dr-switch-thumb {
+    background-color: CanvasText;
+  }
+
+  /* Reserved transparent borders. Forced colours paint `transparent` as
+     CanvasText, which would draw a frame or an underline on every item;
+     the boundary outlines above already frame the triggers. */
+  .dr-tabs-list:is([data-variant="default"], [data-variant="outline"]):not(
+      [data-border]
+    ),
+  .dr-tabs-list[data-border="none"],
+  .dr-tabs-trigger {
+    border-color: Canvas;
+  }
+
+  .dr-tabs-trigger[data-variant="underline"][data-state="active"] {
+    border-color: Highlight;
+  }
+
+  .dr-tabs-indicator[data-variant="enclosed"][data-orientation="horizontal"] {
+    border-bottom-color: Canvas;
+  }
+
+  .dr-tabs-indicator[data-variant="enclosed"][data-orientation="vertical"] {
+    border-inline-end-color: Canvas;
+  }
 }
 
 /* Reduced motion, applied once for the whole kit.
