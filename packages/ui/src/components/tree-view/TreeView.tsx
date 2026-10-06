@@ -2,6 +2,7 @@
 
 import * as React from "react"
 
+import { inlineArrow } from "@lib/direction"
 import { cn } from "@lib/utils"
 import {
   type TreeNode,
@@ -207,7 +208,7 @@ function TreeViewTree({ className, onKeyDown, ...props }: TreeViewTreeProps) {
       }
     }
 
-    switch (event.key) {
+    switch (inlineArrow(event.key, event.currentTarget) ?? event.key) {
       case "ArrowDown": {
         event.preventDefault()
         moveFocus(1)
@@ -218,7 +219,7 @@ function TreeViewTree({ className, onKeyDown, ...props }: TreeViewTreeProps) {
         moveFocus(-1)
         return
       }
-      case "ArrowRight": {
+      case "next": {
         event.preventDefault()
         if (focusedIndex < 0) return
         const node = visible[focusedIndex]
@@ -235,7 +236,7 @@ function TreeViewTree({ className, onKeyDown, ...props }: TreeViewTreeProps) {
         }
         return
       }
-      case "ArrowLeft": {
+      case "prev": {
         event.preventDefault()
         if (focusedIndex < 0) return
         const node = visible[focusedIndex]

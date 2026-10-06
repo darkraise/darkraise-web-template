@@ -45,6 +45,13 @@ import {
   StepsTitle,
   StepsTrigger,
 } from "darkraise-ui/components/steps"
+import {
+  TreeView,
+  TreeViewNode,
+  TreeViewTree,
+  type TreeNode,
+} from "darkraise-ui/components/tree-view"
+import { JsonTreeView } from "darkraise-ui/components/json-tree-view"
 import "../../src/styles/globals.css"
 
 function SidebarLink({
@@ -83,6 +90,15 @@ const SIDEBAR_NAV = [
     ],
   },
 ]
+
+const FOLDERS: TreeNode = {
+  id: "root",
+  name: "Files",
+  children: [
+    { id: "open", name: "Open", children: [{ id: "a", name: "a.txt" }] },
+    { id: "closed", name: "Closed", children: [{ id: "b", name: "b.txt" }] },
+  ],
+}
 
 const root = document.getElementById("root")
 if (!root) throw new Error("Missing test fixture root")
@@ -200,6 +216,16 @@ createRoot(root).render(
             ))}
           </StepsList>
         </Steps>
+      </div>
+      <div data-probe="tree-chevrons" style={{ width: 240 }}>
+        <TreeView data={FOLDERS} defaultExpanded={["open"]}>
+          <TreeViewTree>
+            {FOLDERS.children?.map((node) => (
+              <TreeViewNode key={node.id} node={node} />
+            ))}
+          </TreeViewTree>
+        </TreeView>
+        <JsonTreeView data={{ open: { a: 1 }, closed: { b: 2 } }} />
       </div>
     </div>
   </ThemeProvider>,

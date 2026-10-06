@@ -177,6 +177,22 @@ describe("CascadeSelect keyboard", () => {
     expect(option("California")).toHaveFocus()
   })
 
+  it("opens a child column with Left and returns with Right under RTL", async () => {
+    // The columns are portalled to the body, so the document carries the
+    // direction rather than a wrapper.
+    document.documentElement.setAttribute("dir", "rtl")
+    try {
+      await openKeyed()
+      await waitFor(() => expect(option("United States")).toHaveFocus())
+      await userEvent.keyboard("{ArrowLeft}")
+      expect(option("California")).toHaveFocus()
+      await userEvent.keyboard("{ArrowRight}")
+      expect(option("United States")).toHaveFocus()
+    } finally {
+      document.documentElement.removeAttribute("dir")
+    }
+  })
+
   it("selects a leaf with Enter and returns focus to the trigger", async () => {
     const onValueChange = vi.fn()
     await openKeyed({ onValueChange })

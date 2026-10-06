@@ -91,6 +91,10 @@
   .dr-json-chevron {
     @apply text-muted-foreground hover:text-foreground inline-flex size-[var(--icon-size)] cursor-pointer items-center justify-center rounded-sm transition-colors;
   }
+  /* A collapsed chevron points along the reading order. */
+  .dr-json-chevron[aria-expanded="false"]:dir(rtl) > svg {
+    rotate: 180deg;
+  }
   .dr-json-chevron-spacer {
     @apply inline-block size-[var(--icon-size)] shrink-0;
   }
@@ -108,7 +112,7 @@
     @apply text-muted-foreground;
   }
   .dr-json-preview {
-    @apply text-muted-foreground/70 ml-2 truncate;
+    @apply text-muted-foreground/70 ms-2 truncate;
     max-width: 32rem;
   }
 
@@ -136,14 +140,14 @@
   }
   .dr-json-color-swatch {
     @apply inline-block size-[var(--icon-size-xs)] align-middle;
-    margin-right: 0.25rem;
+    margin-inline-end: 0.25rem;
     border: 1px solid hsl(var(--border));
     border-radius: calc(var(--radius) / 4);
   }
   .dr-json-show-more {
     position: relative;
     isolation: isolate;
-    @apply focus-ring text-primary-text ml-1 cursor-pointer text-[length:var(--text-2xs)] tracking-wide uppercase;
+    @apply focus-ring text-primary-text ms-1 cursor-pointer text-[length:var(--text-2xs)] tracking-wide uppercase;
     background: transparent;
     border: 0;
     padding: 0;
@@ -161,7 +165,7 @@
   /* Row action toolbar (Copy path / Copy value). Hidden by default;
    * revealed on hover or when the row is focused. */
   .dr-json-row-actions {
-    @apply ml-auto inline-flex items-center gap-0.5 opacity-0 transition-opacity;
+    @apply ms-auto inline-flex items-center gap-0.5 opacity-0 transition-opacity;
   }
   .dr-json-row-actions .dr-json-row-action {
     height: 1.25rem;
@@ -177,7 +181,7 @@
    * consumers that called the component before this expansion. Mirrors
    * .dr-json-row-action's hover-reveal behaviour. */
   .dr-json-copy {
-    @apply text-muted-foreground hover:text-foreground ml-1 opacity-0 transition-opacity;
+    @apply text-muted-foreground hover:text-foreground ms-1 opacity-0 transition-opacity;
   }
   .dr-json-line:hover .dr-json-copy,
   .dr-json-copy:focus-visible {

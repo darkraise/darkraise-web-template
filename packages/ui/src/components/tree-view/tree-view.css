@@ -128,6 +128,11 @@
     @apply rotate-90;
   }
 
+  /* A closed branch's chevron points along the reading order. */
+  .dr-tree-view-branch-indicator[data-state="closed"]:dir(rtl) {
+    rotate: 180deg;
+  }
+
   .dr-tree-view-branch-text {
     @apply inline-flex flex-1 items-center gap-2 truncate;
   }

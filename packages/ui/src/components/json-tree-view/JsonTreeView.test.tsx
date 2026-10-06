@@ -24,6 +24,31 @@ describe("JsonTreeView", () => {
     expect(screen.getByText("deep")).toBeInTheDocument()
   })
 
+  it("ArrowLeft expands and ArrowRight collapses under RTL", async () => {
+    const user = userEvent.setup()
+    render(
+      <div dir="rtl">
+        <JsonTreeView data={{ deep: 1 }} defaultExpandLevel={0} />
+      </div>,
+    )
+    const [root] = screen.getAllByRole("treeitem")
+    if (!root) throw new Error("root row missing")
+    root.focus()
+    await user.keyboard("{ArrowLeft}")
+    expect(root).toHaveAttribute("aria-expanded", "true")
+    await user.keyboard("{ArrowRight}")
+    expect(root).toHaveAttribute("aria-expanded", "false")
+  })
+
+  it("indents rows from the inline start", () => {
+    render(<JsonTreeView data={{ inner: { deep: 1 } }} />)
+    const row = screen
+      .getByText("inner")
+      .closest('[role="treeitem"]') as HTMLElement
+    expect(row.style.paddingInlineStart).toBe("18px")
+    expect(row.style.paddingLeft).toBe("")
+  })
+
   it("defaultExpandLevel respected", () => {
     render(
       <JsonTreeView data={{ a: { b: { c: 1 } } }} defaultExpandLevel={2} />,

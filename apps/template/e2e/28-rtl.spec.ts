@@ -236,3 +236,22 @@ test.describe("steps", () => {
     await expect(triggers.nth(0)).toBeFocused()
   })
 })
+
+test.describe("tree chevrons", () => {
+  test("point along the reading order when closed and down when open", async ({
+    page,
+  }) => {
+    await openFixture(page)
+    const probe = page.locator('[data-probe="tree-chevrons"]')
+    const indicator = (name: string) =>
+      probe
+        .locator(".dr-tree-view-branch-control", { hasText: name })
+        .locator(".dr-tree-view-branch-indicator")
+    expect(await computed(indicator("Closed"), "rotate")).toBe("180deg")
+    expect(await computed(indicator("Open"), "rotate")).toBe("90deg")
+    const toggle = (name: string) =>
+      probe.getByRole("button", { name: `Toggle ${name}` }).locator("svg")
+    expect(await computed(toggle("root"), "rotate")).toBe("90deg")
+    expect(await computed(toggle("closed"), "rotate")).toBe("180deg")
+  })
+})

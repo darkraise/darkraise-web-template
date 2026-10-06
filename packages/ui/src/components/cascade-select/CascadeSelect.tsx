@@ -1,6 +1,7 @@
 import { useUiText } from "../../i18n/useUiText"
 import * as React from "react"
 import { ChevronDown, ChevronRight } from "lucide-react"
+import { inlineArrow } from "@lib/direction"
 import { cn } from "@lib/utils"
 import { Popover, PopoverContent, PopoverTrigger } from "@components/popover"
 import { useControllableState } from "@primitives/state"
@@ -172,7 +173,7 @@ function CascadeSelect({
         : undefined
       if (child) setHoverPath([...hoverPath, child.value])
     }
-    switch (event.key) {
+    switch (inlineArrow(event.key, event.currentTarget) ?? event.key) {
       case "ArrowDown":
         event.preventDefault()
         moveTo(enabled[index + 1])
@@ -189,11 +190,11 @@ function CascadeSelect({
         event.preventDefault()
         moveTo(enabled[enabled.length - 1])
         break
-      case "ArrowRight":
+      case "next":
         event.preventDefault()
         openChild()
         break
-      case "ArrowLeft":
+      case "prev":
         event.preventDefault()
         if (depth > 0) setHoverPath(hoverPath.slice(0, -1))
         break
@@ -273,7 +274,7 @@ function CascadeSelect({
                     <span className="flex-1">{option.label}</span>
                     {option.children?.length ? (
                       <ChevronRight
-                        className="size-[var(--icon-size)] opacity-60"
+                        className="dr-icon-inline size-[var(--icon-size)] opacity-60"
                         aria-hidden="true"
                       />
                     ) : null}

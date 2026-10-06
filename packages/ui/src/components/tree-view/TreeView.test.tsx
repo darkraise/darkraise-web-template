@@ -178,6 +178,30 @@ describe("TreeView", () => {
     expect(screen.queryByText("Resume.pdf")).toBeNull()
   })
 
+  it("ArrowLeft expands and ArrowRight collapses under RTL", async () => {
+    const user = userEvent.setup()
+    render(
+      <div dir="rtl">
+        <Basic />
+      </div>,
+    )
+    const documentsRow = screen
+      .getByText("Documents")
+      .closest(".dr-tree-view-branch-control") as HTMLElement
+    documentsRow.focus()
+
+    await user.keyboard("{ArrowLeft}")
+    expect(screen.getByText("Resume.pdf")).toBeInTheDocument()
+    await user.keyboard("{ArrowLeft}")
+    const resume = screen.getByText("Resume.pdf").closest("li") as HTMLElement
+    expect(resume).toHaveFocus()
+
+    await user.keyboard("{ArrowRight}")
+    expect(documentsRow).toHaveFocus()
+    await user.keyboard("{ArrowRight}")
+    expect(screen.queryByText("Resume.pdf")).toBeNull()
+  })
+
   it("Home moves to first node; End to last", async () => {
     const user = userEvent.setup()
     render(<Basic defaultExpanded={["1", "2"]} />)

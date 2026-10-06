@@ -9,6 +9,7 @@ import {
   Search,
   X,
 } from "lucide-react"
+import { inlineArrow } from "@lib/direction"
 import { cn } from "@lib/utils"
 import { writeClipboardText } from "@lib/clipboard"
 import { Button } from "@components/button"
@@ -414,7 +415,7 @@ function JsonTreeView({
     const focusedRowIsContainer =
       focusedRow?.getAttribute("aria-expanded") !== null
 
-    switch (event.key) {
+    switch (inlineArrow(event.key, event.currentTarget) ?? event.key) {
       case "ArrowDown":
         event.preventDefault()
         focusRow(currentIdx < 0 ? 0 : currentIdx + 1)
@@ -423,7 +424,7 @@ function JsonTreeView({
         event.preventDefault()
         focusRow(currentIdx < 0 ? 0 : currentIdx - 1)
         break
-      case "ArrowRight":
+      case "next":
         event.preventDefault()
         if (focusedRowIsContainer && !focusedRowExpanded && focusedRowPath) {
           toggleExpand(focusedRowPath)
@@ -431,7 +432,7 @@ function JsonTreeView({
           focusRow(currentIdx + 1)
         }
         break
-      case "ArrowLeft":
+      case "prev":
         event.preventDefault()
         if (focusedRowIsContainer && focusedRowExpanded && focusedRowPath) {
           toggleExpand(focusedRowPath)
@@ -796,7 +797,7 @@ function Node({ value, keyName, path, depth }: NodeProps) {
       data-matching={isMatch ? "true" : undefined}
       data-focused={rowFocused ? "true" : undefined}
       className="dr-json-row"
-      style={{ paddingLeft: depth * 14 + 4 }}
+      style={{ paddingInlineStart: depth * 14 + 4 }}
       onFocus={() => ctx.setFocusedPath(path)}
     >
       <div className="dr-json-line">
