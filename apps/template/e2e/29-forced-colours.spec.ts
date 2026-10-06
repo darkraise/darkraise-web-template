@@ -135,7 +135,7 @@ test.describe("fixture", () => {
 test.describe("selection controls", () => {
   const ACTIVE_TAB = '.dr-tabs-trigger[data-state="active"]'
   const INACTIVE_TAB = '.dr-tabs-trigger[data-state="inactive"]'
-  /** The upper row of the underline's 2px bar; the boundary outline paints the lower one. */
+  /** The upper row of the underline's 2px bar; the lower one lies over the baseline. */
   const UNDERLINE_BAR: At = (box) => [box.width / 2, box.height - 2]
   const CASES: Array<[string, string, string, At?]> = [
     ["tabs-default", ACTIVE_TAB, INACTIVE_TAB],
@@ -243,6 +243,51 @@ test.describe("selection controls", () => {
         ),
       )
       expect(near(seam, canvas), `${seam} vs ${canvas}`).toBe(true)
+    })
+  }
+})
+
+test.describe("tab edges", () => {
+  /** The trigger's bottom row, which lies on the strip's baseline. */
+  const BASELINE: At = (box) => [box.width / 2, box.height - 1]
+
+  for (const scheme of SCHEMES) {
+    test(`the enclosed baseline opens under the active tab · ${scheme}`, async ({
+      page,
+    }) => {
+      await openForced(page, scheme)
+      const canvas = await refColour(page, "canvas")
+      const probe = page.locator('[data-probe="tabs-enclosed"]')
+      const list = probe.locator(".dr-tabs-list")
+      const listBox = await boxOf(list)
+      const tail = await pixelIn(
+        page,
+        list,
+        listBox.width - 4,
+        listBox.height - 1,
+      )
+      expect(near(tail, canvas), `baseline past the tabs: ${tail}`).toBe(false)
+      for (const [state, open] of [
+        ["active", true],
+        ["inactive", false],
+      ] as const) {
+        const trigger = probe.locator(`.dr-tabs-trigger[data-state="${state}"]`)
+        const [dx, dy] = BASELINE(await boxOf(trigger))
+        const seam = await pixelIn(page, trigger, dx, dy)
+        expect(near(seam, canvas), `${state} tab: ${seam}`).toBe(open)
+      }
+    })
+
+    test(`the underline baseline runs under every tab · ${scheme}`, async ({
+      page,
+    }) => {
+      await openForced(page, scheme)
+      const trigger = page.locator(
+        '[data-probe="tabs-underline"] .dr-tabs-trigger[data-state="inactive"]',
+      )
+      const [dx, dy] = BASELINE(await boxOf(trigger))
+      const colour = await pixelIn(page, trigger, dx, dy)
+      expect(near(colour, await refColour(page, "canvas"))).toBe(false)
     })
   }
 })

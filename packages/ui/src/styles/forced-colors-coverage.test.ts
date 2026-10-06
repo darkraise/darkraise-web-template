@@ -151,6 +151,10 @@ const FORCED_COLORS_EXEMPT = new Map<string, string>([
   ["dr-sidebar-popover-child", "a navigation row inside the sidebar popover"],
   ["dr-stacked-layout-rail-item", "a navigation rail row, drawn like a link"],
   ["dr-steps-trigger", "a text-only trigger with a transparent background"],
+  [
+    "dr-tabs-trigger",
+    "framed by its own border in the state block, which can open the enclosed seam",
+  ],
   ["dr-tabs-content", "a focusable tab panel, not a control"],
   ["dr-tags-input-item-delete-trigger", "an icon-only trigger inside a chip"],
   ["dr-time-column-item", "a list row inside the time picker column"],

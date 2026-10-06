@@ -2192,7 +2192,6 @@
   .dr-select-trigger,
   .dr-sidebar-nav-current,
   .dr-slider-thumb,
-  .dr-tabs-trigger,
   .dr-tags-input-item-preview,
   .dr-theme-switcher-swatch,
   .dr-time-picker-trigger,
@@ -2273,26 +2272,62 @@
   }
 
   /* Reserved transparent borders. Forced colours paint `transparent` as
-     CanvasText, which would draw a frame or an underline on every item;
-     the boundary outlines above already frame the triggers. */
+     CanvasText, which would draw a frame on every strip. */
   .dr-tabs-list:is([data-variant="default"], [data-variant="outline"]):not(
       [data-border]
     ),
-  .dr-tabs-list[data-border="none"],
-  .dr-tabs-trigger {
+  .dr-tabs-list[data-border="none"] {
     border-color: Canvas;
   }
 
-  .dr-tabs-trigger[data-variant="underline"][data-state="active"] {
-    border-color: Highlight;
+  /* Tab triggers frame themselves with their reserved 1px border instead of
+     a boundary outline, which would draw across the enclosed seam. */
+  .dr-tabs-trigger:not([data-variant="underline"]) {
+    border-color: ButtonBorder;
   }
 
+  /* The enclosed seam: the active tab and the indicator under it erase the
+     baseline on the panel side. */
+  .dr-tabs-trigger[data-variant="enclosed"][data-orientation="horizontal"][data-state="active"],
   .dr-tabs-indicator[data-variant="enclosed"][data-orientation="horizontal"] {
     border-bottom-color: Canvas;
   }
 
+  .dr-tabs-trigger[data-variant="enclosed"][data-orientation="vertical"][data-state="active"],
   .dr-tabs-indicator[data-variant="enclosed"][data-orientation="vertical"] {
     border-inline-end-color: Canvas;
+  }
+
+  /* The enclosed baseline is a gradient, which forced colours drop. The
+     strip opts out of forcing to keep it, painted CanvasText, and its
+     children opt back in. */
+  .dr-tabs-list[data-variant="enclosed"] {
+    forced-color-adjust: none;
+    background-image: linear-gradient(CanvasText, CanvasText);
+  }
+
+  .dr-tabs-list[data-variant="enclosed"][data-border]:not(
+      [data-border="none"]
+    ) {
+    border-color: CanvasText;
+  }
+
+  .dr-tabs-list[data-variant="enclosed"] > * {
+    forced-color-adjust: auto;
+  }
+
+  /* An underline trigger's reserved edge lies over the strip's baseline,
+     and forced colours have no transparent, so the trigger opts out of
+     forcing and restates its label. The active trigger's own edge is the
+     bar. */
+  .dr-tabs-trigger[data-variant="underline"] {
+    forced-color-adjust: none;
+    color: CanvasText;
+    border-color: transparent;
+  }
+
+  .dr-tabs-trigger[data-variant="underline"][data-state="active"] {
+    border-color: Highlight;
   }
 }
 
