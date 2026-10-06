@@ -330,6 +330,12 @@ const REQUIRED: Array<[string, string, string, "fade" | "cursor"]> = [
   ],
   [
     `${C}segment-group/segment-group.css`,
+    ".dr-segment-group .dr-segment-group-item:disabled",
+    "",
+    "fade",
+  ],
+  [
+    `${C}segment-group/segment-group.css`,
     ".dr-segment-group .dr-segment-group-item[data-disabled]",
     "",
     "fade",

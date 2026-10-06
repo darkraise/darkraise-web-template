@@ -30,6 +30,13 @@
     color: var(--selected-view-fg);
   }
 
+  /* An item disabled by a disabled Fieldset matches :disabled without
+     data-disabled; the Fieldset resets --disabled-opacity to 1 for its
+     children, so this sets the cursor without fading twice. */
+  .dr-segment-group .dr-segment-group-item:disabled {
+    @apply cursor-not-allowed opacity-[var(--disabled-opacity)];
+  }
+
   .dr-segment-group .dr-segment-group-item[data-disabled] {
     @apply cursor-not-allowed opacity-[var(--disabled-opacity)];
   }
