@@ -120,6 +120,19 @@ describe("useScrollEdges", () => {
     expect(scroller()).not.toHaveAttribute("data-overflow-end")
   })
 
+  it("reads the direction once per mount and resize, not per scroll", () => {
+    const spy = vi.spyOn(window, "getComputedStyle")
+    render(<Harness rtl />)
+    const afterMount = spy.mock.calls.length
+    for (const left of [-50, -100, -150]) {
+      dims.scrollLeft = left
+      fireEvent.scroll(scroller())
+    }
+    expect(spy.mock.calls.length).toBe(afterMount)
+    act(() => resize?.())
+    expect(spy.mock.calls.length).toBe(afterMount + 1)
+  })
+
   it("sets nothing while disabled", () => {
     render(<Harness enabled={false} />)
     expect(scroller()).not.toHaveAttribute("data-overflow-end")

@@ -1,4 +1,5 @@
 import { useEffect, type RefObject } from "react"
+import { getDirection } from "@lib/direction"
 
 const TOLERANCE_PX = 1
 
@@ -20,10 +21,10 @@ export function useScrollEdges(
     const element = ref.current
     if (!enabled || !element) return
 
+    let rtl = getDirection(element) === "rtl"
     const update = () => {
       const hidden = element.scrollWidth - element.clientWidth
       // Under RTL, scrollLeft is 0 at the start edge and negative past it.
-      const rtl = getComputedStyle(element).direction === "rtl"
       const scrolled = rtl ? -element.scrollLeft : element.scrollLeft
       setFlag(element, "data-overflow-start", scrolled > TOLERANCE_PX)
       setFlag(element, "data-overflow-end", hidden - scrolled > TOLERANCE_PX)
@@ -33,7 +34,10 @@ export function useScrollEdges(
     element.addEventListener("scroll", update, { passive: true })
     let observer: ResizeObserver | undefined
     if (typeof ResizeObserver !== "undefined") {
-      observer = new ResizeObserver(update)
+      observer = new ResizeObserver(() => {
+        rtl = getDirection(element) === "rtl"
+        update()
+      })
       observer.observe(element)
       // A virtualized viewport wraps a full-width wrapper around its table,
       // so the table is the box whose width tracks the columns.

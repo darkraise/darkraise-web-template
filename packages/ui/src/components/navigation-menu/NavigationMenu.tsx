@@ -5,6 +5,7 @@ import * as React from "react"
 import { ChevronDown } from "lucide-react"
 
 import { cn } from "@lib/utils"
+import { inlineArrow } from "@lib/direction"
 import type { SurfaceFill } from "@lib/surface-fill"
 import { Presence } from "@primitives/presence"
 import { Slot, composeRefs } from "@primitives/slot"
@@ -193,11 +194,11 @@ function NavigationMenuList({
         const items = topLevelItems(event.currentTarget)
         const index = items.indexOf(event.target as HTMLElement)
         if (index < 0) return
-        const rtl = getComputedStyle(event.currentTarget).direction === "rtl"
+        const step = inlineArrow(event.key, event.currentTarget)
         let next: HTMLElement | undefined
-        if (event.key === (rtl ? "ArrowLeft" : "ArrowRight")) {
+        if (step === "next") {
           next = items[index + 1]
-        } else if (event.key === (rtl ? "ArrowRight" : "ArrowLeft")) {
+        } else if (step === "prev") {
           next = items[index - 1]
         } else if (event.key === "Home") {
           next = items[0]
