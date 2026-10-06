@@ -4,6 +4,7 @@ import * as React from "react"
 import { Check, ChevronDown } from "lucide-react"
 
 import { cn } from "@lib/utils"
+import { getDirection } from "@lib/direction"
 import type { SurfaceFill } from "@lib/surface-fill"
 import { DismissableLayer } from "@primitives/dismissable-layer"
 import { Portal } from "@primitives/portal"
@@ -51,6 +52,7 @@ interface SelectContextValue {
   /** The mounted trigger, as state so popup content can read it in render. */
   trigger: HTMLButtonElement | null
   setTrigger: (node: HTMLButtonElement | null) => void
+  dir: "ltr" | "rtl" | undefined
   registerItem: (item: SelectItemRecord) => () => void
   items: () => SelectItemRecord[]
   focusedIndex: number
@@ -144,6 +146,7 @@ function Select({
   required = false,
   name,
   form,
+  dir,
   children,
 }: SelectProps) {
   const menu = useMenu({ open: openProp, defaultOpen, onOpenChange })
@@ -175,6 +178,7 @@ function Select({
       triggerRef,
       trigger,
       setTrigger,
+      dir,
       registerItem: menu.registerItem as unknown as (
         item: SelectItemRecord,
       ) => () => void,
@@ -197,6 +201,7 @@ function Select({
       value,
       setValueAndClose,
       trigger,
+      dir,
       selectedLabel,
       disabled,
       required,
@@ -323,6 +328,7 @@ function SelectTrigger({
       type={resolvedType}
       role="combobox"
       id={ctx.triggerId}
+      dir={ctx.dir}
       aria-haspopup="listbox"
       aria-expanded={ctx.open}
       aria-controls={ctx.open ? ctx.contentId : undefined}
@@ -513,6 +519,7 @@ function SelectContentImpl({
         )}
         role="listbox"
         id={ctx.contentId}
+        dir={ctx.dir ?? getDirection(ctx.trigger)}
         aria-labelledby={ctx.triggerId}
         data-state={ctx.open ? "open" : "closed"}
         data-side={resolvedSide}

@@ -3,6 +3,7 @@
 import * as React from "react"
 
 import { cn } from "@lib/utils"
+import { getDirection } from "@lib/direction"
 import type { SurfaceFill } from "@lib/surface-fill"
 import { DismissableLayer } from "@primitives/dismissable-layer"
 import { focusProgrammatically, useFocusTrap } from "@primitives/focus-trap"
@@ -275,6 +276,7 @@ function PopoverContentImpl({
       <div
         ref={composeRefs(localRef, floating.refs.setFloating, ref)}
         id={ctx.contentId}
+        dir={getDirection(ctx.reference)}
         data-state={ctx.state}
         data-side={resolvedSide}
         data-align={resolvedAlign}

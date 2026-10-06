@@ -4,6 +4,7 @@ import * as React from "react"
 import { Check, ChevronRight, Circle, Minus } from "lucide-react"
 
 import { cn } from "@lib/utils"
+import { getDirection } from "@lib/direction"
 import type { SurfaceFill } from "@lib/surface-fill"
 import { DismissableLayer } from "@primitives/dismissable-layer"
 import { Portal } from "@primitives/portal"
@@ -42,6 +43,7 @@ interface DropdownMenuContextValue extends UseMenuReturn {
   closeAll: () => void
   /** Close this menu and any descendant submenus. */
   closeSelf: () => void
+  dir: "ltr" | "rtl" | undefined
 }
 
 const DropdownMenuContext =
@@ -75,6 +77,7 @@ function DropdownMenu({
   open,
   defaultOpen,
   onOpenChange,
+  dir,
   children,
 }: DropdownMenuProps) {
   return (
@@ -82,6 +85,7 @@ function DropdownMenu({
       open={open}
       defaultOpen={defaultOpen}
       onOpenChange={onOpenChange}
+      dir={dir}
       isSubmenu={false}
     >
       {children}
@@ -98,6 +102,7 @@ function DropdownMenuRoot({
   defaultOpen,
   onOpenChange,
   isSubmenu,
+  dir,
   children,
 }: DropdownMenuRootInternalProps) {
   const menu = useMenu({ open, defaultOpen, onOpenChange })
@@ -134,8 +139,18 @@ function DropdownMenuRoot({
       isSubmenu,
       closeAll,
       closeSelf,
+      dir,
     }),
-    [menu, reference, parent, isSubmenu, closeAll, closeSelf, setReference],
+    [
+      menu,
+      reference,
+      parent,
+      isSubmenu,
+      closeAll,
+      closeSelf,
+      setReference,
+      dir,
+    ],
   )
 
   return (
@@ -191,6 +206,7 @@ function DropdownMenuTrigger({
       ref={composeRefs(ctx.setReference as React.Ref<HTMLButtonElement>, ref)}
       type={resolvedType}
       id={ctx.triggerId}
+      dir={ctx.dir}
       aria-haspopup="menu"
       aria-expanded={ctx.open}
       aria-controls={ctx.open ? ctx.contentId : undefined}
@@ -388,6 +404,7 @@ function DropdownMenuContentImpl({
         )}
         role="menu"
         id={ctx.contentId}
+        dir={ctx.dir ?? getDirection(ctx.reference)}
         data-state={ctx.state}
         data-side={resolvedSide}
         data-surface-fill={surface}

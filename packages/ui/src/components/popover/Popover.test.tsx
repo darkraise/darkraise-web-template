@@ -218,3 +218,17 @@ describe("Popover logical sides", () => {
     },
   )
 })
+
+describe("Popover direction", () => {
+  it("gives the content its trigger's direction", async () => {
+    const user = userEvent.setup()
+    render(
+      <div dir="rtl">
+        <Basic />
+      </div>,
+    )
+    await user.click(screen.getByRole("button", { name: "Toggle" }))
+    const content = await screen.findByText("Popover content")
+    expect(content.closest(".dr-popover-content")).toHaveAttribute("dir", "rtl")
+  })
+})

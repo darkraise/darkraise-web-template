@@ -4,6 +4,7 @@ import * as React from "react"
 import { Check, ChevronRight, Circle, Minus } from "lucide-react"
 
 import { cn } from "@lib/utils"
+import { getDirection } from "@lib/direction"
 import type { SurfaceFill } from "@lib/surface-fill"
 import { DismissableLayer } from "@primitives/dismissable-layer"
 import { Portal } from "@primitives/portal"
@@ -33,6 +34,10 @@ interface ContextMenuContextValue extends UseMenuReturn {
   /** Reference element for submenus. */
   setSubmenuReference: (node: HTMLElement | null) => void
   submenuReference: HTMLElement | null
+  /** The trigger area, as state so popup content can read it in render. */
+  setTriggerArea: (node: HTMLElement | null) => void
+  triggerArea: HTMLElement | null
+  dir: "ltr" | "rtl" | undefined
 }
 
 const ContextMenuContext = React.createContext<ContextMenuContextValue | null>(
@@ -67,6 +72,7 @@ function ContextMenu({
   open,
   defaultOpen,
   onOpenChange,
+  dir,
   children,
 }: ContextMenuProps) {
   return (
@@ -74,6 +80,7 @@ function ContextMenu({
       open={open}
       defaultOpen={defaultOpen}
       onOpenChange={onOpenChange}
+      dir={dir}
       isSubmenu={false}
     >
       {children}
@@ -90,6 +97,7 @@ function ContextMenuRoot({
   defaultOpen,
   onOpenChange,
   isSubmenu,
+  dir,
   children,
 }: ContextMenuRootInternalProps) {
   const menu = useMenu({ open, defaultOpen, onOpenChange })
@@ -97,6 +105,7 @@ function ContextMenuRoot({
   const [point, setPoint] = React.useState<VirtualPoint | null>(null)
   const [submenuReference, setSubmenuReferenceState] =
     React.useState<HTMLElement | null>(null)
+  const [triggerArea, setTriggerArea] = React.useState<HTMLElement | null>(null)
   const contentRef = React.useRef<HTMLDivElement | null>(null)
 
   const setSubmenuReference = React.useCallback((node: HTMLElement | null) => {
@@ -128,6 +137,9 @@ function ContextMenuRoot({
       closeSelf,
       setSubmenuReference,
       submenuReference,
+      setTriggerArea,
+      triggerArea,
+      dir,
     }),
     [
       menu,
@@ -138,6 +150,8 @@ function ContextMenuRoot({
       closeSelf,
       setSubmenuReference,
       submenuReference,
+      triggerArea,
+      dir,
     ],
   )
 
@@ -165,7 +179,8 @@ function ContextMenuTrigger({
   const Comp = asChild ? Slot : "span"
   return (
     <Comp
-      ref={ref}
+      ref={composeRefs(ctx.setTriggerArea, ref)}
+      dir={ctx.dir}
       data-state={ctx.state}
       data-disabled={disabled || undefined}
       onContextMenu={(event: React.MouseEvent<HTMLSpanElement>) => {
@@ -340,6 +355,10 @@ function ContextMenuContentImpl({
         )}
         role="menu"
         id={ctx.contentId}
+        dir={
+          ctx.dir ??
+          getDirection(ctx.isSubmenu ? ctx.submenuReference : ctx.triggerArea)
+        }
         data-state={ctx.state}
         data-surface-fill={surface}
         tabIndex={-1}

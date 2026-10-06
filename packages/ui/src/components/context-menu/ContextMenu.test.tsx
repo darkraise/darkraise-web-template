@@ -337,3 +337,30 @@ describe("ContextMenu disabled item and sub-trigger", () => {
     expect(screen.queryByText("Hidden")).toBeNull()
   })
 })
+
+describe("ContextMenu direction", () => {
+  it("gives the content its trigger area's direction when dir is omitted", async () => {
+    render(
+      <div dir="rtl">
+        <Basic />
+      </div>,
+    )
+    fireEvent.contextMenu(screen.getByText("Right-click here"))
+    expect(await screen.findByRole("menu")).toHaveAttribute("dir", "rtl")
+  })
+
+  it("writes the dir prop on the trigger area and the content", async () => {
+    render(
+      <ContextMenu dir="rtl">
+        <ContextMenuTrigger>Right-click here</ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuItem>Edit</ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>,
+    )
+    const trigger = screen.getByText("Right-click here")
+    expect(trigger).toHaveAttribute("dir", "rtl")
+    fireEvent.contextMenu(trigger)
+    expect(await screen.findByRole("menu")).toHaveAttribute("dir", "rtl")
+  })
+})

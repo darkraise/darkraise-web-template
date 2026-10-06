@@ -208,3 +208,34 @@ describe("Select disabled item", () => {
     expect(screen.getByRole("listbox")).toBeInTheDocument()
   })
 })
+
+describe("Select direction", () => {
+  it("gives the content its trigger's direction when dir is omitted", async () => {
+    const user = userEvent.setup()
+    render(
+      <div dir="rtl">
+        <Basic />
+      </div>,
+    )
+    await user.click(screen.getByRole("combobox"))
+    expect(await screen.findByRole("listbox")).toHaveAttribute("dir", "rtl")
+  })
+
+  it("writes the dir prop on the trigger and the content", async () => {
+    const user = userEvent.setup()
+    render(
+      <Select dir="rtl">
+        <SelectTrigger>
+          <SelectValue placeholder="Pick one" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="apple">Apple</SelectItem>
+        </SelectContent>
+      </Select>,
+    )
+    const trigger = screen.getByRole("combobox")
+    expect(trigger).toHaveAttribute("dir", "rtl")
+    await user.click(trigger)
+    expect(await screen.findByRole("listbox")).toHaveAttribute("dir", "rtl")
+  })
+})

@@ -244,3 +244,16 @@ describe("Menubar disabled item and sub-trigger", () => {
     expect(screen.queryByText("Hidden")).toBeNull()
   })
 })
+
+describe("Menubar direction", () => {
+  it("gives the content its trigger's direction", async () => {
+    const user = userEvent.setup()
+    render(
+      <div dir="rtl">
+        <Basic />
+      </div>,
+    )
+    await user.click(screen.getByRole("menuitem", { name: "File" }))
+    expect(await screen.findByRole("menu")).toHaveAttribute("dir", "rtl")
+  })
+})

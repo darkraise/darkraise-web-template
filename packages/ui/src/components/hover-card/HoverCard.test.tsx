@@ -189,3 +189,19 @@ describe("HoverCard", () => {
     )
   })
 })
+
+describe("HoverCard direction", () => {
+  it("gives the content its trigger's direction", async () => {
+    render(
+      <div dir="rtl">
+        <HoverCard defaultOpen>
+          <HoverCardTrigger href="#">trigger</HoverCardTrigger>
+          <HoverCardContent>card content</HoverCardContent>
+        </HoverCard>
+      </div>,
+    )
+    await waitFor(() =>
+      expect(screen.getByRole("dialog")).toHaveAttribute("dir", "rtl"),
+    )
+  })
+})

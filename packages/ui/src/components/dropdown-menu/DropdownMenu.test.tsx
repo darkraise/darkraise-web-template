@@ -393,3 +393,32 @@ describe("DropdownMenu disabled item and sub-trigger", () => {
     expect(screen.queryByText("Hidden")).toBeNull()
   })
 })
+
+describe("DropdownMenu direction", () => {
+  it("gives the content its trigger's direction when dir is omitted", async () => {
+    const user = userEvent.setup()
+    render(
+      <div dir="rtl">
+        <Basic />
+      </div>,
+    )
+    await user.click(screen.getByRole("button", { name: "Open" }))
+    expect(await screen.findByRole("menu")).toHaveAttribute("dir", "rtl")
+  })
+
+  it("writes the dir prop on the trigger and the content", async () => {
+    const user = userEvent.setup()
+    render(
+      <DropdownMenu dir="rtl">
+        <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem>Apple</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>,
+    )
+    const trigger = screen.getByRole("button", { name: "Open" })
+    expect(trigger).toHaveAttribute("dir", "rtl")
+    await user.click(trigger)
+    expect(await screen.findByRole("menu")).toHaveAttribute("dir", "rtl")
+  })
+})

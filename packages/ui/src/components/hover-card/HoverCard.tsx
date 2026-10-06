@@ -3,6 +3,7 @@
 import * as React from "react"
 
 import { cn } from "@lib/utils"
+import { getDirection } from "@lib/direction"
 import type { SurfaceFill } from "@lib/surface-fill"
 import { DismissableLayer } from "@primitives/dismissable-layer"
 import { Portal } from "@primitives/portal"
@@ -189,6 +190,7 @@ function HoverCardContentImpl({
       <div
         ref={composeRefs(localRef, floating.refs.setFloating, ref)}
         id={ctx.contentId}
+        dir={getDirection(ctx.reference)}
         role="dialog"
         aria-labelledby={ctx.triggerId}
         data-state={ctx.state}

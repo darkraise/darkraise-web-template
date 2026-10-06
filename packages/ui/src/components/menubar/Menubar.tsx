@@ -4,6 +4,7 @@ import * as React from "react"
 import { Check, ChevronRight, Circle, Minus } from "lucide-react"
 
 import { cn } from "@lib/utils"
+import { getDirection } from "@lib/direction"
 import type { SurfaceFill } from "@lib/surface-fill"
 import { DismissableLayer } from "@primitives/dismissable-layer"
 import { Portal } from "@primitives/portal"
@@ -535,6 +536,7 @@ function MenubarContentImpl({
         )}
         role="menu"
         id={ctx.contentId}
+        dir={getDirection(ctx.reference)}
         data-state={ctx.state}
         data-side={resolvedSide}
         data-surface-fill={surface}

@@ -375,3 +375,19 @@ describe("Tooltip", () => {
     )
   })
 })
+
+describe("Tooltip direction", () => {
+  it("gives the content its trigger's direction", async () => {
+    render(
+      <div dir="rtl">
+        <Tooltip defaultOpen>
+          <TooltipTrigger>Hover me</TooltipTrigger>
+          <TooltipContent>Tip text</TooltipContent>
+        </Tooltip>
+      </div>,
+    )
+    await waitFor(() =>
+      expect(screen.getByRole("tooltip")).toHaveAttribute("dir", "rtl"),
+    )
+  })
+})
