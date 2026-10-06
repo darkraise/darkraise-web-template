@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react"
+import { act, render, screen, fireEvent } from "@testing-library/react"
 import { afterEach, beforeEach, describe, it, expect, vi } from "vitest"
 import { useLayoutStore } from "@layout/layoutStore"
 import {
@@ -151,6 +151,31 @@ describe("SplitPanelLayout resize handle", () => {
       fireEvent.keyDown(handle, { key: "ArrowRight" })
     }
     expect(panelWidth(container)).toBe("480px")
+  })
+
+  it("sizes the panel from the inline-start edge of the shell when dragged", () => {
+    const drag = (dir: "ltr" | "rtl", clientX: number) => {
+      const { container, unmount } = render(
+        <div dir={dir}>{phoneTree({ defaultPanelWidth: 320 })}</div>,
+      )
+      const shell = container.querySelector(".dr-shell") as HTMLElement
+      shell.getBoundingClientRect = () =>
+        ({ left: 100, right: 1100, width: 1000, top: 0 }) as DOMRect
+      fireEvent.pointerDown(screen.getByRole("separator"), { pointerId: 1 })
+      act(() => {
+        document.dispatchEvent(
+          new PointerEvent("pointermove", { pointerId: 1, clientX }),
+        )
+      })
+      const width = panelWidth(container)
+      act(() => {
+        document.dispatchEvent(new PointerEvent("pointerup", { pointerId: 1 }))
+      })
+      unmount()
+      return width
+    }
+    expect(drag("ltr", 450)).toBe("350px")
+    expect(drag("rtl", 750)).toBe("350px")
   })
 
   it("routes its skip link through the label system", () => {

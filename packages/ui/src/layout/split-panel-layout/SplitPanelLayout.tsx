@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useRef } from "react"
 import { ChevronLeft } from "lucide-react"
 import { Button } from "@components/button"
 import { useEventListener, useMediaQuery, useSeparatorA11y } from "@hooks"
+import { getDirection, type Direction } from "@lib/direction"
 import { SearchCommand } from "@layout/search-command"
 import { BrandLogo } from "@layout/brand-logo"
 import { LayoutHeader } from "@layout/layout-header"
@@ -75,6 +76,7 @@ export function SplitPanelLayout({
   const skipTarget = phone && !contentActive ? "panel-region" : "main-content"
   useRouteFocus({ targetId: skipTarget })
   const [isDragging, setIsDragging] = useState(false)
+  const dragDirectionRef = useRef<Direction>("ltr")
   const docRef = useRef(typeof document !== "undefined" ? document : null)
   const shellRef = useRef<HTMLDivElement | null>(null)
   const panelRef = useRef<HTMLDivElement | null>(null)
@@ -98,11 +100,16 @@ export function SplitPanelLayout({
     if (!isDragging) return
     const shell = shellRef.current
     if (!shell) return
-    // Width is measured from the shell's left edge, not the viewport, so the
-    // drag works correctly when the layout is offset by padding or by any
-    // horizontally-scrolled ancestor.
-    const left = shell.getBoundingClientRect().left
-    setPanelWidth(clampWidth(e.clientX - left))
+    // Width is measured from the inline-start edge of the shell, not the
+    // viewport, so the drag works correctly when the layout is offset by
+    // padding or by any horizontally-scrolled ancestor. Under RTL the panel
+    // column starts at the right edge of the shell.
+    const rect = shell.getBoundingClientRect()
+    const width =
+      dragDirectionRef.current === "rtl"
+        ? rect.right - e.clientX
+        : e.clientX - rect.left
+    setPanelWidth(clampWidth(width))
   })
 
   const stopDragging = useCallback(() => {
@@ -130,6 +137,7 @@ export function SplitPanelLayout({
   const handlePointerDown = useCallback(
     (event: React.PointerEvent<HTMLDivElement>) => {
       event.currentTarget.setPointerCapture?.(event.pointerId)
+      dragDirectionRef.current = getDirection(shellRef.current)
       setIsDragging(true)
     },
     [],
