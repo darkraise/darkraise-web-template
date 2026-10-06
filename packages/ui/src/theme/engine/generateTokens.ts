@@ -89,16 +89,20 @@ const tierCache = new Map<string, string>()
 
 /**
  * The first neutral step from the field edge's own (7) that clears the mark
- * floor on a card face carrying the brightest lift.
+ * floor on every lifted face: the card, and the muted step a popup's
+ * `surface` prop can paint, each carrying the brightest lift.
  */
 function liftedFieldEdge(
   n: (step: number) => string,
-  card: string,
+  grounds: readonly string[],
   tint: number,
 ): string {
-  const face = composite(card, WHITE, tint)
+  const faces = grounds.map((ground) => composite(ground, WHITE, tint))
   for (let step = 7; step < 12; step++) {
-    if (contrastRatio(n(step), face) >= MARK_FLOOR) return n(step)
+    const edge = n(step)
+    if (faces.every((face) => contrastRatio(edge, face) >= MARK_FLOOR)) {
+      return edge
+    }
   }
   return n(11)
 }
@@ -322,7 +326,7 @@ export function generateTokens(
     "--field-edge-lifted-color": dark
       ? liftedFieldEdge(
           n,
-          card,
+          [card, n(3)],
           frosted ? FROSTED_LIFTED_FACE_TINT : LIFTED_FACE_TINT,
         )
       : n(7),

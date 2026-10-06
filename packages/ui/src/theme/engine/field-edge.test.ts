@@ -185,16 +185,25 @@ describe("--field-edge-lifted-color", () => {
       if (combo.mode !== "dark") continue
       const tokens = finalTokens(combo)
       const edge = tokens["--field-edge-lifted-color"]
-      const card = tokens["--card"]
-      if (!isOpaque(edge) || !isOpaque(card)) {
-        failures.push(`${comboName(combo)}: edge or card is not opaque`)
+      if (!isOpaque(edge)) {
+        failures.push(`${comboName(combo)}: edge is not opaque`)
         continue
       }
       const tint = combo.frosted ? FROSTED_LIFTED_FACE_TINT : LIFTED_FACE_TINT
-      const face = composite(card, "0 0% 100%", tint)
-      const ratio = renderedContrast(edge, face)
-      if (ratio < FLOOR) {
-        failures.push(`${comboName(combo)}: ${ratio.toFixed(3)} on ${face}`)
+      // A popup's `surface` prop can paint it muted, a step above the card.
+      for (const ground of ["--card", "--muted"]) {
+        const value = tokens[ground]
+        if (!isOpaque(value)) {
+          failures.push(`${comboName(combo)}: ${ground} is not opaque`)
+          continue
+        }
+        const face = composite(value, "0 0% 100%", tint)
+        const ratio = renderedContrast(edge, face)
+        if (ratio < FLOOR) {
+          failures.push(
+            `${comboName(combo)}: ${ratio.toFixed(3)} on ${ground} ${face}`,
+          )
+        }
       }
     }
     expect(failures).toEqual([])

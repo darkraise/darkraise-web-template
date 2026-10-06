@@ -786,6 +786,22 @@ createRoot(root).render(
           </div>
         </DialogContent>
       </Dialog>
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button variant="outline" style={{ marginTop: 24 }}>
+            Open muted field dialog
+          </Button>
+        </DialogTrigger>
+        <DialogContent surface="muted">
+          <DialogTitle>Muted field dialog</DialogTitle>
+          <div data-probe="edge-dialog-muted" style={{ paddingBottom: 12 }}>
+            <Input
+              aria-label="In a muted dialog"
+              placeholder="In a muted dialog"
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
       <div data-probe="table" style={{ width: 360, marginTop: 24 }}>
         <DataTable columns={INVOICE_COLUMNS} data={INVOICES} />
       </div>

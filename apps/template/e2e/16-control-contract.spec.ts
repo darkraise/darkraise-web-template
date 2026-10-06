@@ -268,6 +268,16 @@ for (const { name, seed } of EDGE_THEMES) {
     await page.mouse.move(0, 0)
     await settle(page)
     await expectEdgeFloor(page, "edge-dialog", `${name} · dark`)
+    await page.keyboard.press("Escape")
+    await expect(dialog).toBeHidden()
+    // A muted face is a step lighter than the card the engine solves against.
+    await page.getByRole("button", { name: "Open muted field dialog" }).click()
+    const muted = page.locator('[data-probe="edge-dialog-muted"]')
+    await muted.waitFor()
+    await muted.locator("input").blur()
+    await page.mouse.move(0, 0)
+    await settle(page)
+    await expectEdgeFloor(page, "edge-dialog-muted", `${name} · dark`)
   })
 }
 
