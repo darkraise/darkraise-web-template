@@ -1,6 +1,8 @@
 import { useCallback } from "react"
 import type { KeyboardEvent } from "react"
 
+import { inlineArrow } from "@lib/direction"
+
 const DEFAULT_STEP_PERCENT = 5
 
 export interface SeparatorA11yOptions {
@@ -45,13 +47,22 @@ export function useSeparatorA11y({
   const onKeyDown = useCallback(
     (event: KeyboardEvent<HTMLElement>) => {
       if (disabled) return
-      const decrease = orientation === "horizontal" ? "ArrowLeft" : "ArrowUp"
-      const increase = orientation === "horizontal" ? "ArrowRight" : "ArrowDown"
+      // A positive nudge grows the DOM-first panel, which sits at the inline
+      // start, so the inline-end arrow sends it and the divider follows the
+      // arrow in both directions.
+      const arrow =
+        orientation === "horizontal"
+          ? inlineArrow(event.key, event.currentTarget)
+          : event.key === "ArrowDown"
+            ? "next"
+            : event.key === "ArrowUp"
+              ? "prev"
+              : null
 
-      if (event.key === decrease) {
+      if (arrow === "prev") {
         event.preventDefault()
         onNudge(-step)
-      } else if (event.key === increase) {
+      } else if (arrow === "next") {
         event.preventDefault()
         onNudge(step)
       } else if (onJump && event.key === "Home") {

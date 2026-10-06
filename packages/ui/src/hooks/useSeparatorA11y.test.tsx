@@ -42,6 +42,22 @@ describe("useSeparatorA11y", () => {
     expect(onNudge).toHaveBeenCalledWith(-5)
   })
 
+  it("moves the divider in the arrow's direction under RTL", () => {
+    const onNudge = vi.fn()
+    render(
+      <div dir="rtl">
+        <Handle onNudge={onNudge} />
+      </div>,
+    )
+    const handle = screen.getByRole("separator")
+
+    fireEvent.keyDown(handle, { key: "ArrowRight" })
+    expect(onNudge).toHaveBeenLastCalledWith(-5)
+
+    fireEvent.keyDown(handle, { key: "ArrowLeft" })
+    expect(onNudge).toHaveBeenLastCalledWith(5)
+  })
+
   it("ignores the cross-axis arrows", () => {
     const onNudge = vi.fn()
     render(<Handle onNudge={onNudge} />)

@@ -303,3 +303,38 @@ test.describe("background page", () => {
     })
   }
 })
+
+test.describe("resizable", () => {
+  test("dragging the handle toward the left grows the panel on the right", async ({
+    page,
+  }) => {
+    await openFixture(page)
+    const probe = page.locator('[data-probe="resizable"]')
+    const first = probe.locator('[data-panel-id="first"]')
+    const before = await boxOf(first)
+    const second = await boxOf(probe.locator('[data-panel-id="second"]'))
+    expect(before.x).toBeGreaterThan(second.x)
+    const handle = await boxOf(probe.getByRole("separator"))
+    const x = handle.x + handle.width / 2
+    const y = handle.y + handle.height / 2
+    await page.mouse.move(x, y)
+    await page.mouse.down()
+    await page.mouse.move(x - 40, y, { steps: 4 })
+    await page.mouse.up()
+    await expect
+      .poll(async () => Math.round((await boxOf(first)).width - before.width))
+      .toBe(40)
+  })
+
+  test("the left arrow grows the panel on the right", async ({ page }) => {
+    await openFixture(page)
+    const probe = page.locator('[data-probe="resizable"]')
+    const first = probe.locator('[data-panel-id="first"]')
+    const before = await boxOf(first)
+    await probe.getByRole("separator").focus()
+    await page.keyboard.press("ArrowLeft")
+    await expect
+      .poll(async () => Math.round((await boxOf(first)).width - before.width))
+      .toBe(20)
+  })
+})

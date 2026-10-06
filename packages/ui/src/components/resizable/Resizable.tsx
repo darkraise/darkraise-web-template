@@ -3,6 +3,7 @@
 import * as React from "react"
 import { GripVertical } from "lucide-react"
 
+import { getDirection } from "@lib/direction"
 import { cn } from "@lib/utils"
 import { useSeparatorA11y } from "@hooks/useSeparatorA11y"
 import { useEvent } from "@primitives/state"
@@ -176,12 +177,16 @@ function ResizablePanelGroup({
       const totalSize = orientation === "horizontal" ? rect.width : rect.height
       if (totalSize <= 0) return
       const startCoord = orientation === "horizontal" ? pointer.x : pointer.y
+      // Under RTL the DOM-first panel sits on the right, so a rightward drag
+      // must shrink it.
+      const sign =
+        orientation === "horizontal" && getDirection(rootEl) === "rtl" ? -1 : 1
       let lastCoord = startCoord
       const move = (event: PointerEvent) => {
         if (event.pointerId !== pointer.pointerId) return
         const coord =
           orientation === "horizontal" ? event.clientX : event.clientY
-        const deltaPx = coord - lastCoord
+        const deltaPx = (coord - lastCoord) * sign
         lastCoord = coord
         const deltaPercent = (deltaPx / totalSize) * 100
         applyDelta(handleIndex, deltaPercent)

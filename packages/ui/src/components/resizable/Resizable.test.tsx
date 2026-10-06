@@ -152,6 +152,33 @@ describe("Resizable", () => {
       expect(handle).toHaveAttribute("data-dragging", "true")
     })
 
+    it("grows the DOM-first panel when dragged toward the left under RTL", () => {
+      const { container } = render(
+        <div dir="rtl">
+          <Basic />
+        </div>,
+      )
+      const group = container.querySelector(
+        ".dr-resizable-panel-group",
+      ) as HTMLElement
+      group.getBoundingClientRect = () =>
+        ({ left: 0, top: 0, width: 1000, height: 100 }) as DOMRect
+      const handle = screen.getByRole("separator")
+      fireEvent.pointerDown(handle, { pointerId: 5, clientX: 500, clientY: 0 })
+      act(() => {
+        window.dispatchEvent(
+          new PointerEvent("pointermove", { pointerId: 5, clientX: 450 }),
+        )
+      })
+      const first = container.querySelector(
+        '[data-panel-id="left"]',
+      ) as HTMLElement
+      expect(first.style.width).toBe("55%")
+      act(() => {
+        window.dispatchEvent(new PointerEvent("pointerup", { pointerId: 5 }))
+      })
+    })
+
     it("a disabled handle never enters the dragging state", () => {
       render(
         <ResizablePanelGroup orientation="horizontal">

@@ -56,6 +56,11 @@ import { JsonTreeView } from "darkraise-ui/components/json-tree-view"
 import { Slider } from "darkraise-ui/components/slider"
 import { Progress } from "darkraise-ui/components/progress"
 import { BackgroundPage } from "darkraise-ui/components/background-page"
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "darkraise-ui/components/resizable"
 import "../../src/styles/globals.css"
 
 function SidebarLink({
@@ -247,6 +252,17 @@ createRoot(root).render(
           />
         </div>
       ))}
+      <div data-probe="resizable" style={{ width: 400, height: 120 }}>
+        <ResizablePanelGroup orientation="horizontal">
+          <ResizablePanel id="first" defaultSize={50}>
+            First
+          </ResizablePanel>
+          <ResizableHandle withHandle />
+          <ResizablePanel id="second" defaultSize={50}>
+            Second
+          </ResizablePanel>
+        </ResizablePanelGroup>
+      </div>
     </div>
   </ThemeProvider>,
 )
