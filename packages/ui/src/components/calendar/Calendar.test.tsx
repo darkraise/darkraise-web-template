@@ -1,13 +1,19 @@
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi } from "vitest"
-import { useState } from "react"
+import { useState, type ComponentProps } from "react"
 import { Calendar, type DateRange } from "@components/calendar"
 
 // Fix the month so tests don't shift with real time.
 const FIXED_MONTH = new Date(2024, 5, 1) // June 2024
 
 describe("Calendar", () => {
+  it("takes no components prop", () => {
+    type Removed = Extract<keyof ComponentProps<typeof Calendar>, "components">
+    const removed: [Removed] extends [never] ? true : false = true
+    expect(removed).toBe(true)
+  })
+
   it("renders a grid of day buttons", () => {
     render(<Calendar defaultMonth={FIXED_MONTH} />)
     const grid = screen.getByRole("grid")
