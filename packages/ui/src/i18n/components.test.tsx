@@ -146,4 +146,37 @@ describe("localized component behavior", () => {
       )
     },
   )
+  it("writes no direction into a portal when the pack has none", () => {
+    render(
+      <UiI18nProvider
+        locale="xx"
+        locales={[{ locale: "xx", label: "Plain", messages: {} }]}
+      >
+        <Portal>
+          <button>Portal action</button>
+        </Portal>
+      </UiI18nProvider>,
+    )
+    const wrapper = screen.getByRole("button").closest("[lang]")
+    expect(wrapper).toHaveAttribute("lang", "xx")
+    expect(wrapper).not.toHaveAttribute("dir")
+  })
+  it("inherits the parent provider's direction when the pack has none", () => {
+    render(
+      <UiI18nProvider dir="rtl">
+        <UiI18nProvider
+          locale="xx"
+          locales={[{ locale: "xx", label: "Plain", messages: {} }]}
+        >
+          <Portal>
+            <button>Portal action</button>
+          </Portal>
+        </UiI18nProvider>
+      </UiI18nProvider>,
+    )
+    expect(screen.getByRole("button").closest("[lang]")).toHaveAttribute(
+      "dir",
+      "rtl",
+    )
+  })
 })

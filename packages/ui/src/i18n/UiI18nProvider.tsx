@@ -28,7 +28,7 @@ export function UiI18nProvider({
         locale === undefined ? parent.messageLocale : resolved.pack.locale,
       dir:
         dir ??
-        (locale === undefined ? parent.dir : (resolved.pack.dir ?? "ltr")),
+        (locale === undefined ? parent.dir : (resolved.pack.dir ?? parent.dir)),
       enabled: true,
       locales: registered,
       formats: { ...parent.formats, ...formats },

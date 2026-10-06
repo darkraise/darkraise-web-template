@@ -162,7 +162,7 @@ function Calendar(props: CalendarProps) {
     disabled,
     weekStartsOn = DEFAULT_WEEK_STARTS_ON,
     autoFocus,
-    dir = uiLocale.dir,
+    dir = uiLocale.dir ?? "ltr",
     fromYear,
     toYear,
     locale = uiLocale.enabled ? uiLocale.locale : undefined,

@@ -45,7 +45,8 @@ export interface UiI18nProviderProps {
 export interface UiLocaleState {
   locale: string
   messageLocale: string
-  dir: "ltr" | "rtl"
+  /** Undefined means the direction is inherited from the DOM. */
+  dir: "ltr" | "rtl" | undefined
   enabled: boolean
   locales: readonly UiLocaleDefinition[]
   formats: UiFormattingOptions

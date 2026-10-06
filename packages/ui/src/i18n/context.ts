@@ -5,7 +5,7 @@ import type { UiLocaleState } from "./types"
 export const UiLocaleContext = createContext<UiLocaleState>({
   locale: "en",
   messageLocale: "en",
-  dir: "ltr",
+  dir: undefined,
   enabled: false,
   locales: [en],
   formats: {},
