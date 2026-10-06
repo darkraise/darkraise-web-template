@@ -99,9 +99,7 @@ describe("ThemeSwitcher labels", () => {
     const user = userEvent.setup()
     renderSwitcher({ theme: { groupLabels: { advanced: "Nâng cao" } } })
     await user.click(trigger())
-    expect(
-      screen.getByRole("button", { name: "Nâng cao" }),
-    ).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "Nâng cao" })).toBeInTheDocument()
   })
 
   it("labels the font axis and its faces in English and Vietnamese", () => {
@@ -150,5 +148,6 @@ describe("ThemeSwitcher labels", () => {
     expect(viTheme.off).toBe("tắt")
     expect(viTheme.on).toBe("bật")
     expect(viTheme.neutralAccent).toBe("Trung tính (gần đen)")
+    expect(viTheme.neutralAccentDark).toBe("Trung tính (gần trắng)")
   })
 })

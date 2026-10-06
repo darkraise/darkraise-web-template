@@ -2,6 +2,7 @@ import type * as React from "react"
 import { fireEvent, render, screen, within } from "@testing-library/react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { UiLabelsProvider } from "@labels"
+import { resolveAccentScale } from "@theme/engine/generateTokens"
 import { ThemeProvider } from "@theme/theme-provider"
 import { ChoiceControl } from "./ChoiceControl"
 import { OrdinalControl } from "./OrdinalControl"
@@ -39,16 +40,35 @@ afterEach(() => {
 })
 
 describe("SwatchControl", () => {
-  it("renders one accent swatch per accent and tags the neutral one", () => {
+  it("renders one accent swatch per accent with no value tag", () => {
     const { container } = renderControl(<SwatchControl axis="accentColor" />)
-    expect(
-      container.querySelectorAll(".dr-theme-switcher-swatch"),
-    ).toHaveLength(19)
-    expect(screen.getByTitle("Neutral (near-black)")).toHaveAttribute(
-      "data-value",
-      "neutral",
-    )
+    const swatches = container.querySelectorAll(".dr-theme-switcher-swatch")
+    expect(swatches).toHaveLength(19)
+    for (const swatch of swatches)
+      expect(swatch).not.toHaveAttribute("data-value")
     expect(screen.getByTitle("blue")).toHaveAttribute("data-active", "true")
+  })
+
+  function painted(hsl: string): string {
+    const probe = document.createElement("i")
+    probe.style.backgroundColor = `hsl(${hsl})`
+    return probe.style.backgroundColor
+  }
+
+  it("paints the neutral accent near-black in light", () => {
+    localStorage.setItem("mode", "light")
+    renderControl(<SwatchControl axis="accentColor" />)
+    expect(
+      screen.getByTitle("Neutral (near-black)").style.backgroundColor,
+    ).toBe(painted(resolveAccentScale("neutral", "zinc")[900]))
+  })
+
+  it("paints the neutral accent near-white in dark", () => {
+    localStorage.setItem("mode", "dark")
+    renderControl(<SwatchControl axis="accentColor" />)
+    expect(
+      screen.getByTitle("Neutral (near-white)").style.backgroundColor,
+    ).toBe(painted(resolveAccentScale("neutral", "zinc")[50]))
   })
 
   it("sets the accent on click", () => {

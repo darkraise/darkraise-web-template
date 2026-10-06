@@ -18,6 +18,7 @@ export const themeMessages = {
   pink: "pink",
   rose: "rose",
   neutralAccent: "Neutral (near-black)",
+  neutralAccentDark: "Neutral (near-white)",
   slate: "slate",
   gray: "gray",
   cool: "cool",

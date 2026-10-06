@@ -19,6 +19,7 @@ export const viTheme: Record<keyof typeof themeMessages, string> = {
   pink: "hồng",
   rose: "hồng đỏ",
   neutralAccent: "Trung tính (gần đen)",
+  neutralAccentDark: "Trung tính (gần trắng)",
   slate: "xám đá",
   gray: "xám",
   cool: "lạnh",

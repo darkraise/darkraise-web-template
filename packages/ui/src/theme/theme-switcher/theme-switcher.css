@@ -65,13 +65,12 @@
     @apply focus-ring h-6 w-6 cursor-pointer rounded-full border-2 border-transparent transition-transform hover:scale-110;
   }
 
+  /* A ring outside the swatch, so it reads on a near-white swatch too. */
   .dr-theme-switcher-swatch[data-active="true"] {
-    @apply border-foreground scale-110;
-  }
-
-  [data-mode="dark"]
-    .dr-theme-switcher-swatch[data-value="neutral"]:not([data-active="true"]) {
-    border-color: hsl(var(--border-strong));
+    @apply scale-110;
+    box-shadow:
+      0 0 0 2px hsl(var(--background)),
+      0 0 0 4px hsl(var(--foreground));
   }
 
   .dr-theme-switcher-toggle-group {

@@ -189,10 +189,7 @@ describe("ThemeSettingsPanel", () => {
 
   it("renders each control kind, with three-value ordinal axes as toggle groups", () => {
     renderPanel(<ThemeSettingsPanel layout="page" />)
-    expect(screen.getByTitle("Neutral (near-black)")).toHaveAttribute(
-      "data-value",
-      "neutral",
-    )
+    expect(screen.getByTitle("Neutral (near-black)")).toBeInTheDocument()
     expect(screen.getByRole("radiogroup", { name: "Font" })).toBeInTheDocument()
     expect(screen.getByRole("slider", { name: "Density" })).toBeInTheDocument()
     expect(screen.getByRole("slider", { name: "Radius" })).toBeInTheDocument()

@@ -319,3 +319,40 @@ test.describe("glass light chrome", () => {
     expect(canvas).toBe("none")
   })
 })
+
+test.describe("neutral swatch", () => {
+  test("reads in dark, and so does the active ring", async ({ page }) => {
+    await seedApp(page, { style: "quiet", mode: "dark", accent: "neutral" })
+    await gotoApp(page, "/settings")
+    const swatch = page.getByTitle("Neutral (near-white)").first()
+    await swatch.scrollIntoViewIfNeeded()
+    await settle(page)
+    const box = await boxOf(swatch)
+    const fill = await pixel(
+      page,
+      Math.round(box.x + box.width / 2),
+      Math.round(box.y + box.height / 2),
+    )
+    // Neutral is the 19th of 19 swatches in a 9-column grid, so it starts
+    // its row: the panel is to its left, never another swatch.
+    const first = await boxOf(page.locator(".dr-theme-switcher-swatch").first())
+    // The active swatch is scaled 1.1, which moves its box 1.2px left; a
+    // neighbour would be 30px away.
+    expect(Math.abs(box.x - first.x)).toBeLessThanOrEqual(2)
+    const panel = await pixel(
+      page,
+      Math.round(box.x - 10),
+      Math.round(box.y + box.height / 2),
+    )
+    expect(contrast(fill, panel)).toBeGreaterThanOrEqual(3)
+    // The ring is foreground on the panel; against the near-white swatch it
+    // reads through the background gap, so measure it against the panel.
+    const ring = await extremes(page, {
+      x: Math.round(box.x - 5),
+      y: Math.round(box.y + box.height / 2 - 2),
+      width: 4,
+      height: 4,
+    })
+    expect(contrast(ring[1], panel)).toBeGreaterThanOrEqual(3)
+  })
+})
