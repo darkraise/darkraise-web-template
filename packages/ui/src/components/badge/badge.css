@@ -222,6 +222,14 @@
     @apply pointer-events-none absolute z-10 transition-opacity transition-transform;
     transition-duration: var(--duration-fast);
     /* Inline style may set --badge-anchor-offset-{x,y} for fine-tuning. */
+    --badge-anchor-inline-sign: 1;
+  }
+
+  /* translate() is physical, so the logical corners flip their horizontal
+     shift, offset included, in a right-to-left context. */
+  .dr-badge-anchor-indicator:dir(rtl),
+  .dr-badge-anchor-dot:dir(rtl) {
+    --badge-anchor-inline-sign: -1;
   }
 
   .dr-badge-anchor-indicator[data-position="top-right"],
@@ -257,6 +265,54 @@
     left: 0;
     transform: translate(
       calc(-50% + var(--badge-anchor-offset-x, 0px)),
+      calc(50% + var(--badge-anchor-offset-y, 0px))
+    );
+  }
+  .dr-badge-anchor-indicator[data-position="top-end"],
+  .dr-badge-anchor-dot[data-position="top-end"] {
+    top: 0;
+    inset-inline-end: 0;
+    transform: translate(
+      calc(
+        (50% + var(--badge-anchor-offset-x, 0px)) *
+          var(--badge-anchor-inline-sign)
+      ),
+      calc(-50% + var(--badge-anchor-offset-y, 0px))
+    );
+  }
+  .dr-badge-anchor-indicator[data-position="top-start"],
+  .dr-badge-anchor-dot[data-position="top-start"] {
+    top: 0;
+    inset-inline-start: 0;
+    transform: translate(
+      calc(
+        (-50% + var(--badge-anchor-offset-x, 0px)) *
+          var(--badge-anchor-inline-sign)
+      ),
+      calc(-50% + var(--badge-anchor-offset-y, 0px))
+    );
+  }
+  .dr-badge-anchor-indicator[data-position="bottom-end"],
+  .dr-badge-anchor-dot[data-position="bottom-end"] {
+    bottom: 0;
+    inset-inline-end: 0;
+    transform: translate(
+      calc(
+        (50% + var(--badge-anchor-offset-x, 0px)) *
+          var(--badge-anchor-inline-sign)
+      ),
+      calc(50% + var(--badge-anchor-offset-y, 0px))
+    );
+  }
+  .dr-badge-anchor-indicator[data-position="bottom-start"],
+  .dr-badge-anchor-dot[data-position="bottom-start"] {
+    bottom: 0;
+    inset-inline-start: 0;
+    transform: translate(
+      calc(
+        (-50% + var(--badge-anchor-offset-x, 0px)) *
+          var(--badge-anchor-inline-sign)
+      ),
       calc(50% + var(--badge-anchor-offset-y, 0px))
     );
   }

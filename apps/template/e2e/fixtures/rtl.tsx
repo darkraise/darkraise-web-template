@@ -73,6 +73,7 @@ import {
   VirtualizedTimeline,
   type TimelineBucket,
 } from "darkraise-ui/components/virtualized-timeline"
+import { BadgeAnchor } from "darkraise-ui/components/badge"
 import "../../src/styles/globals.css"
 
 function SidebarLink({
@@ -329,6 +330,11 @@ createRoot(root).render(
         <ShellRouter>
           <MobileDrawer nav={[]} />
         </ShellRouter>
+      </div>
+      <div data-probe="badge-anchor" style={{ padding: 16 }}>
+        <BadgeAnchor content="3">
+          <span style={{ display: "block", width: 40, height: 40 }} />
+        </BadgeAnchor>
       </div>
     </div>
   </ThemeProvider>,

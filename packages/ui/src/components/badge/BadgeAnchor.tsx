@@ -9,6 +9,10 @@ export type BadgeAnchorPosition =
   | "top-right"
   | "bottom-left"
   | "bottom-right"
+  | "top-start"
+  | "top-end"
+  | "bottom-start"
+  | "bottom-end"
 
 export interface BadgeAnchorProps extends Omit<
   React.HTMLAttributes<HTMLSpanElement>,
@@ -18,7 +22,10 @@ export interface BadgeAnchorProps extends Omit<
   content?: React.ReactNode
   variant?: BadgeVariant
   size?: BadgeSize
-  /** Corner where the indicator anchors to the wrapped element. */
+  /**
+   * Corner where the indicator anchors to the wrapped element. The start and
+   * end corners follow the reading direction, and so does `offset.x` on them.
+   */
   position?: BadgeAnchorPosition
   /** Pixel offset applied on top of the corner anchor. Useful for visually fine-tuning over irregular icons. */
   offset?: { x?: number; y?: number }
@@ -39,7 +46,7 @@ function BadgeAnchor({
   content,
   variant = "default",
   size = "default",
-  position = "top-right",
+  position = "top-end",
   offset,
   hidden = false,
   dot = false,

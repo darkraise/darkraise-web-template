@@ -431,3 +431,17 @@ test.describe("sheet and drawer sides", () => {
     expect(box.x).toBeGreaterThan(0)
   })
 })
+
+test.describe("badge anchor corners", () => {
+  test("the default corner is the top left", async ({ page }) => {
+    await openFixture(page)
+    const anchor = await boxOf(
+      page.locator('[data-probe="badge-anchor"] .dr-badge-anchor'),
+    )
+    const badge = await boxOf(
+      page.locator('[data-probe="badge-anchor"] .dr-badge-anchor-indicator'),
+    )
+    expect(badge.x + badge.width / 2).toBeCloseTo(anchor.x, 0)
+    expect(badge.y + badge.height / 2).toBeCloseTo(anchor.y, 0)
+  })
+})

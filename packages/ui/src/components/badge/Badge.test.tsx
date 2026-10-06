@@ -82,6 +82,15 @@ describe("Badge", () => {
     )
     expect(screen.getByText("3")).toHaveAttribute("data-size", "default")
   })
+
+  it("anchors at the top inline end by default", () => {
+    render(
+      <BadgeAnchor content="3">
+        <span>Inbox</span>
+      </BadgeAnchor>,
+    )
+    expect(screen.getByText("3")).toHaveAttribute("data-position", "top-end")
+  })
 })
 
 describe("badge.css", () => {
@@ -91,6 +100,26 @@ describe("badge.css", () => {
     const css = readFileSync(resolve(thisDir, "./badge.css"), "utf8")
     for (const hue of ACCENT_HUES) {
       expect(css).toContain(`.dr-badge[data-variant="${hue}"]`)
+    }
+  })
+
+  it("places every anchor corner, physical and logical", () => {
+    const css = readFileSync(resolve(thisDir, "./badge.css"), "utf8")
+    const corners = [
+      "top-left",
+      "top-right",
+      "bottom-left",
+      "bottom-right",
+      "top-start",
+      "top-end",
+      "bottom-start",
+      "bottom-end",
+    ]
+    for (const corner of corners) {
+      expect(css).toContain(
+        `.dr-badge-anchor-indicator[data-position="${corner}"]`,
+      )
+      expect(css).toContain(`.dr-badge-anchor-dot[data-position="${corner}"]`)
     }
   })
 

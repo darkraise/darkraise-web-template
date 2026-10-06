@@ -57,6 +57,10 @@ const BADGE_ANCHOR_POSITIONS = allOf<BadgeAnchorPosition>()(
   "top-right",
   "bottom-left",
   "bottom-right",
+  "top-start",
+  "top-end",
+  "bottom-start",
+  "bottom-end",
 )
 
 function ClosableBadgesExample() {
