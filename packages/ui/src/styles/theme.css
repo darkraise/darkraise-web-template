@@ -2214,6 +2214,19 @@
   }
 }
 
+/* Forced colours: states and marks.
+
+   The block above restates boundaries and focus; this one restates what a
+   fill or a shadow used to say: which item is chosen or current, which part
+   of a track is filled, where a separator runs. System colours are the only
+   palette here, and the kit's own state attributes pick the element.
+
+   It never sets `outline`. Every selector here outranks the single-class
+   `:focus-visible` rule above, so an outline here would replace the focus
+   ring on that element. */
+@media (forced-colors: active) {
+}
+
 /* Reduced motion, applied once for the whole kit.
 
    Every overlay in the library animates through tw-animate-css's
