@@ -119,6 +119,16 @@ The `outline` variant of `Listbox` and `TreeView` now rings the selected row ins
 
 `.overlay-surface` is now a Tailwind utility that applies the overlay recipe: `background: var(--overlay-bg)`, its blend mode, `border-color: var(--overlay-border)` and the overlay backdrop filter. It no longer sets a border width, radius or shadow, so if you apply it to your own markup, add those yourself. Every kit popup applies it. It also sets `--field-edge: var(--field-edge-lifted)`, as elevated cards do, so an override of `--field-edge` on `:root` or an ancestor no longer reaches fields inside popups and elevated cards: override `--field-edge-lifted` too. Your own surfaces that take a dark lifted shadow (`--card-elevation-*`, `--elevation-*`, `--shadow-low/medium/high`) should set `--field-edge: var(--field-edge-lifted)` the same way.
 
+## Right to left and forced colours
+
+Components read their direction from the DOM. Put `dir="rtl"` on `<html>` (`AppI18nProvider` does this for a right-to-left locale) or on the element that wraps a right-to-left region; a component's `dir` prop is only needed to override its surroundings. `Tabs` no longer forces `ltr`, `Calendar` no longer copies `UiI18nProvider`'s direction, and a locale pack without `dir` no longer makes portals left-to-right. If you relied on a component staying left-to-right inside a right-to-left page, pass `dir="ltr"` to it.
+
+`SheetContent`, `Toaster`, `BadgeAnchor` and `VirtualizedTimeline` default to the logical `end` side or corner, which is the same as before in a left-to-right page. Pass `"right"`, `"bottom-right"` or `"top-right"` to keep a physical placement in both directions. New `start`/`end` values exist for every side and position prop; prefer them in code that must work in both directions.
+
+In a right-to-left page, horizontal arrow keys, sliders, progress bars, resizable handles, carousels and submenus follow the reading order. Tests that press `ArrowRight` to move forward in a right-to-left fixture must press `ArrowLeft`.
+
+In forced-colours mode chosen items are painted `Highlight`. A stylesheet that set its own background on a selected kit item inside `@media (forced-colors: active)` competes with the kit's unlayered rules there; select the item with at least the kit's specificity, or remove the override.
+
 ## Fonts
 
 The `font` axis takes `inter`, `geist` or `ibm-plex-sans`, with `inter` the default. The four faces the kit uses (Inter, Geist, IBM Plex Sans and JetBrains Mono) ship as woff2 files declared in `darkraise-ui/styles.css`, and no font request leaves the app's origin. Delete any Google Fonts link for these families from `index.html`.

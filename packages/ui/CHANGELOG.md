@@ -98,6 +98,12 @@ Breaking: `SheetContent` scrolls as a whole when its content is taller than the 
 
 Breaking: `FloatingPanel` z-indexes run from 10 to 49 by recency (the most recently mounted or pressed panel is highest), so popups, dialogs and sheets at z-50 always cover panels. A panel that must rise above them needs an explicit `style.zIndex`.
 
+Breaking: kit components take their direction from the DOM. Keys, pointer math and popup sides read the computed `direction` of the element they act on, so a `dir="rtl"` on `<html>` or on any ancestor is enough, and a `dir` prop only writes the `dir` attribute. `Tabs` no longer writes `dir="ltr"` when the prop is omitted, so a Tabs inside a right-to-left page is right-to-left. `Calendar` (with its year and decade views) no longer defaults its direction to `UiI18nProvider`'s and writes `dir` only when the prop is given. `UiLocaleState.dir` (from `useUiLocale()`) is `"ltr" | "rtl" | undefined`: a locale pack without `dir` inherits the parent provider's direction instead of forcing `"ltr"`, and `Portal` writes no `dir` attribute while it is undefined. The built-in `en` and `vi` packs declare `"ltr"` and are unchanged.
+
+Breaking: these defaults are logical: `SheetContent` `side` is `"end"` (was `"right"`), `Toaster` `position` is `"bottom-end"` (was `"bottom-right"`), `BadgeAnchor` `position` is `"top-end"` (was `"top-right"`) and `VirtualizedTimeline` `scrubberSide` is `"end"` (was `"right"`). Nothing moves in a left-to-right document; in a right-to-left one they sit on the left. Pass the physical value to keep the old placement everywhere. Toasts with `bottom-right` and `bottom-end` share one stack, and each stack's `data-position` carries the physical corner.
+
+Breaking: under `dir="rtl"`, horizontal arrow keys follow the reading order. `ArrowLeft` moves to the next item in ToggleGroup, RadioGroup, horizontal Accordion, Steps, Carousel, TagsInput, InputOtp, ContributionGraph, RatingGroup and the Menubar triggers, and increases a horizontal Slider. It expands a TreeView or JsonTreeView row, opens a CascadeSelect column and opens a submenu in DropdownMenu, ContextMenu and Menubar; `ArrowRight` collapses or closes. Resizable and the SplitPanelLayout handle move the divider in the arrow's direction. A horizontal Slider and Progress fill from the right edge, Resizable and SplitPanelLayout drags follow the pointer, and submenus open to the left.
+
 ### Added
 
 - Four styles, chosen with the `style` axis: `flat` (no control shadows; cards default to elevation `flat`), `quiet` (the default: a soft edge and a light shadow on buttons), `tactile` (a sheen across the top fifth of filled buttons, stopping above the label because the fill sits at its label's contrast floor; a sheen on outline and secondary buttons; inset wells on fields, checkboxes, radios and switch tracks; and shadows on thumbs and the selected tab or segment pill) and `glass` (frosted chrome and overlays over the gradient canvas, which it defaults to). A style sets only token values, so every component follows it without rules of its own.
@@ -136,6 +142,9 @@ Breaking: `FloatingPanel` z-indexes run from 10 to 49 by recency (the most recen
 - `TimePicker` `defaultValue`.
 - `NavigationMenu` keyboard navigation (see the Breaking note above).
 - `ScrollArea` `type` (`auto`, `always`, `scroll`, `hover`) and `scrollHideDelay` (default 600ms) now work; scrollbars carry `data-state="visible"` or `"hidden"`, and a hidden bar fades out.
+- `"start"` and `"end"` for `SheetContent` `side`, `Drawer` `direction`, `VirtualizedTimeline` `scrubberSide` and the `side` of `TooltipContent`, `PopoverContent`, `HoverCardContent`, `SelectContent`, `DropdownMenuContent` and `MenubarContent`; `"top-start"`, `"top-end"`, `"bottom-start"` and `"bottom-end"` for `Toaster` and toast `position` and for `BadgeAnchor` `position`. They resolve from the computed direction: `start` is the left side in a left-to-right document and the right side in a right-to-left one. A popup's `data-side` and a Drawer's `data-direction` carry the resolved physical side.
+- The `dr-icon-inline` class mirrors an icon that points along the reading order (a next arrow, a breadcrumb chevron) in a right-to-left document. Do not put it on a chevron that also rotates to show an open state.
+- `useSlider().pointerToValue` takes an optional fourth argument, the direction to measure in.
 
 ### Changed
 
@@ -182,6 +191,7 @@ Breaking: `FloatingPanel` z-indexes run from 10 to 49 by recency (the most recen
 - Virtualized `DataTable` body cells follow `meta.align`, as unvirtualized ones do; sortable headers carry no glass halo and place their sort icon on the inline-end side.
 - Under every style but Glass, with a gradient background, `--primary`, `--ring`, `--focus-ring`, `--primary-text` and `--muted-foreground` are also solved against the content strip, the canvas the top 300px of the content area repaints, and `--field-edge-color` lists it too, so marks clear 3:1 and text 4.5:1 there (measured at 1440px with the blobs, aurora, mesh and spotlight patterns, and at 768px and 390px with blobs and mesh). As background intensity rises they darken in light mode and lighten slightly in dark mode. The strip paints its canvas at least 1440px wide and shows the centre of it in a narrower content area, so the blobs no longer crowd together and stack louder on small screens. Solid backgrounds and Glass are unchanged.
 - Dark-mode primary tints (`--primary-1` to `--primary-5`) follow dark accent chroma: their chroma cap is 0.03 at `calm`, 0.05 at `standard` and 0.0625 at `vivid`, where it was 0.05 at every setting.
+- In forced-colours mode (Windows contrast themes) every selected, checked, pressed, current or open item is painted `Highlight` with `HighlightText`, ranges get a dashed Highlight border, today is underlined, invalid fields get a dashed border, and separators, tracks, thumbs, handles and connectors are drawn in `CanvasText`. Colour swatches, the colour picker's area and hue strip and ContributionGraph cells keep their real colours (`forced-color-adjust: none`), and Tabs triggers draw their own frame there instead of the shared boundary outline.
 
 ### Removed
 
@@ -262,6 +272,10 @@ Breaking: `FloatingPanel` z-indexes run from 10 to 49 by recency (the most recen
 - The virtualized timeline rail draws every tick mark in one column at its edge, centred on its date, so unlabelled marks no longer cross the labels; a group header spaces its checkbox, toggle and label 8px apart.
 - A vertical `Toolbar` is as wide as its widest item instead of its container.
 - A `SegmentGroup` disabled through a disabled `Fieldset` shows the not-allowed cursor.
+- Right-to-left layout: the Switch thumb stays in its track, ButtonGroup joins, Input and NumberInput addons, field end slots, menu insets and indicators, alert and banner rails, timeline and calendar text, OTP slots, enclosed and vertical Tabs, the ScrollArea bar, NavigationMenu content, carousel buttons, toasts and the shell rails all use logical sides; breadcrumb, pagination, calendar, carousel, submenu and cascade arrows point the right way; `Select`, `DropdownMenu` and `ContextMenu` honour `dir`; portalled popups take their trigger's direction; the mobile navigation drawer and collapsed-sidebar tooltips open from the inline side.
+- Forced-colours mode no longer hides the selected tab, segment, list or tree row, toggle, page, switch state, calendar day or menu row, and no longer erases separators, slider and progress tracks, scroll thumbs and resize handles.
+- The BackgroundPage spotlight follows the pointer in a right-to-left document.
+- The table's scroll-edge state reads the direction once per mount and resize instead of on every scroll event.
 
 Breaking: `.dr-surface`, its `--flat` modifier and its `dr-surface-{brand,cyan,success,warning,danger,info}` hue classes are removed, with the `--fog-05` … `--fog-50` tokens they alone gave values to. The `glass`, `glass-thin`, `glass-strong` and `card-surface` utilities are removed: outside `.dr-surface` they painted nothing. Replace one with `rounded-[var(--radius)]` and, if you relied on it, `transition-[background-color,color,border-color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-in-out)]`.
 
