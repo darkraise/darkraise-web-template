@@ -199,6 +199,11 @@
     @apply text-muted-foreground size-4 shrink-0 transition-transform;
   }
 
+  /* Closed, the chevron points along the reading order. */
+  .dr-theme-settings-advanced-chevron:dir(rtl) {
+    rotate: 180deg;
+  }
+
   .dr-theme-settings-advanced-trigger[data-state="open"]
     > .dr-theme-settings-advanced-chevron {
     rotate: 90deg;

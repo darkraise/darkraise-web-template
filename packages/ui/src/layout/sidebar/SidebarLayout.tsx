@@ -76,10 +76,13 @@ export function SidebarLayout({
       }
     >
       {collapsed ? (
-        <PanelLeft className="size-[var(--icon-size)]" aria-hidden="true" />
+        <PanelLeft
+          className="dr-icon-inline size-[var(--icon-size)]"
+          aria-hidden="true"
+        />
       ) : (
         <PanelLeftClose
-          className="size-[var(--icon-size)]"
+          className="dr-icon-inline size-[var(--icon-size)]"
           aria-hidden="true"
         />
       )}

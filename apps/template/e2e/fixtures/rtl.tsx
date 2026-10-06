@@ -84,9 +84,24 @@ import {
   type TimelineBucket,
 } from "darkraise-ui/components/virtualized-timeline"
 import { BadgeAnchor } from "darkraise-ui/components/badge"
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "darkraise-ui/components/breadcrumb"
 import { Button } from "darkraise-ui/components/button"
 import { ButtonGroup } from "darkraise-ui/components/button-group"
 import { Input } from "darkraise-ui/components/input"
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "darkraise-ui/components/pagination"
 import { Switch } from "darkraise-ui/components/switch"
 import {
   Table,
@@ -407,6 +422,31 @@ createRoot(root).render(
             <p>Select a thread</p>
           </SplitPanelLayout>
         </ShellRouter>
+      </div>
+      <div data-probe="breadcrumb">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="#">Home</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Orders</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
+      <div data-probe="pagination">
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious href="#" />
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationNext href="#" />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       </div>
     </div>
   </ThemeProvider>,

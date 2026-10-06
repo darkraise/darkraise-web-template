@@ -543,3 +543,17 @@ test.describe("shell edges", () => {
     expect(await computed(rail, "border-right-width")).toBe("0px")
   })
 })
+
+test.describe("directional icons", () => {
+  test("breadcrumb and pagination chevrons mirror", async ({ page }) => {
+    await openFixture(page)
+    const icons = [
+      page.locator('[data-probe="breadcrumb"] .dr-breadcrumb-separator svg'),
+      page.locator('[data-probe="pagination"] .dr-pagination-previous svg'),
+      page.locator('[data-probe="pagination"] .dr-pagination-next svg'),
+    ]
+    for (const icon of icons) {
+      expect(await computed(icon, "scale")).toBe("-1 1")
+    }
+  })
+})

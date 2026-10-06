@@ -90,7 +90,7 @@ export function DataTablePagination<TData>({
                 disabled={!table.getCanPreviousPage()}
               >
                 <ChevronsLeft
-                  className="size-[var(--icon-size)]"
+                  className="dr-icon-inline size-[var(--icon-size)]"
                   aria-hidden="true"
                 />
               </Button>
@@ -108,7 +108,7 @@ export function DataTablePagination<TData>({
                 disabled={!table.getCanPreviousPage()}
               >
                 <ChevronLeft
-                  className="size-[var(--icon-size)]"
+                  className="dr-icon-inline size-[var(--icon-size)]"
                   aria-hidden="true"
                 />
               </Button>
@@ -125,7 +125,7 @@ export function DataTablePagination<TData>({
                 disabled={!table.getCanNextPage()}
               >
                 <ChevronRight
-                  className="size-[var(--icon-size)]"
+                  className="dr-icon-inline size-[var(--icon-size)]"
                   aria-hidden="true"
                 />
               </Button>
@@ -144,7 +144,7 @@ export function DataTablePagination<TData>({
                 }
               >
                 <ChevronsRight
-                  className="size-[var(--icon-size)]"
+                  className="dr-icon-inline size-[var(--icon-size)]"
                   aria-hidden="true"
                 />
               </Button>

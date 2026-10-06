@@ -80,7 +80,9 @@ function BreadcrumbSeparator({
       className={cn("dr-breadcrumb-separator", className)}
       {...props}
     >
-      {children ?? <ChevronRight aria-hidden="true" />}
+      {children ?? (
+        <ChevronRight className="dr-icon-inline" aria-hidden="true" />
+      )}
     </li>
   )
 }

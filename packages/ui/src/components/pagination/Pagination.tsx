@@ -92,7 +92,10 @@ function PaginationPrevious({
       className={cn("dr-pagination-previous", className)}
       {...props}
     >
-      <ChevronLeft className="size-[var(--icon-size)]" aria-hidden="true" />
+      <ChevronLeft
+        className="dr-icon-inline size-[var(--icon-size)]"
+        aria-hidden="true"
+      />
       <span>{uiText("Previous")}</span>
     </PaginationLink>
   )
@@ -113,7 +116,10 @@ function PaginationNext({
       {...props}
     >
       <span>{uiText("Next")}</span>
-      <ChevronRight className="size-[var(--icon-size)]" aria-hidden="true" />
+      <ChevronRight
+        className="dr-icon-inline size-[var(--icon-size)]"
+        aria-hidden="true"
+      />
     </PaginationLink>
   )
 }
