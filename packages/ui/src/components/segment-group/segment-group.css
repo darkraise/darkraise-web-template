@@ -1,6 +1,7 @@
 @layer components {
   .dr-segment-group {
     @apply bg-muted relative inline-flex rounded-md p-1;
+    box-shadow: var(--track-well);
   }
 
   .dr-segment-group[data-orientation="vertical"] {

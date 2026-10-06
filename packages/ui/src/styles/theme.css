@@ -933,6 +933,12 @@
     --check-well-shadow: 0 0 transparent;
     --thumb-shadow: 0 0 transparent;
 
+    /* Surface depth, flat by default; a style that gives surfaces a
+       material (Tactile) binds these. */
+    --card-edge: 0 0 transparent;
+    --card-sheen: none;
+    --track-well: 0 0 transparent;
+
     /* Style-driven affordance tokens. Each style binds these once in
      its own CSS file; components consume them as a single source of
      truth, so adding a new style is a

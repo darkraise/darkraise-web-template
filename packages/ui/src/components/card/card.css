@@ -10,6 +10,8 @@
        sitting flush. Inherited, so nested content picks it up without
        every control needing to know it is in a card. */
     --control-surface: var(--control-well);
+    background-image: var(--card-sheen);
+    box-shadow: var(--card-edge);
     transition: box-shadow var(--duration-normal) var(--ease-in-out);
   }
 
@@ -18,26 +20,30 @@
      levels (`flat | low | medium | high`) consume `--card-elevation-*`
      constants that the theme axis never overrides, so a `<Card
      elevation="medium">` renders the same shadow regardless of the theme
-     picker. `flat` is hard-zeroed so theme=high can't accidentally lift it. */
+     picker. `flat` drops the elevation shadow even under theme=high; the
+     style's `--card-edge` still applies. */
   .dr-card[data-card-elevation="auto"] {
-    box-shadow: var(--elevation-current), var(--glow-outer), var(--glow-inner);
-  }
-  .dr-card[data-card-elevation="flat"] {
     box-shadow:
-      0 0 transparent,
-      var(--glow-outer),
+      var(--card-edge), var(--elevation-current), var(--glow-outer),
       var(--glow-inner);
   }
+  .dr-card[data-card-elevation="flat"] {
+    box-shadow: var(--card-edge), var(--glow-outer), var(--glow-inner);
+  }
   .dr-card[data-card-elevation="low"] {
-    box-shadow: var(--card-elevation-low), var(--glow-outer), var(--glow-inner);
+    box-shadow:
+      var(--card-edge), var(--card-elevation-low), var(--glow-outer),
+      var(--glow-inner);
   }
   .dr-card[data-card-elevation="medium"] {
     box-shadow:
-      var(--card-elevation-medium), var(--glow-outer), var(--glow-inner);
+      var(--card-edge), var(--card-elevation-medium), var(--glow-outer),
+      var(--glow-inner);
   }
   .dr-card[data-card-elevation="high"] {
     box-shadow:
-      var(--card-elevation-high), var(--glow-outer), var(--glow-inner);
+      var(--card-edge), var(--card-elevation-high), var(--glow-outer),
+      var(--glow-inner);
   }
 
   .dr-card-header {

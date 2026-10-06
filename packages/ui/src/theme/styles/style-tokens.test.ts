@@ -22,6 +22,9 @@ const CONTROL_TOKENS = [
   "--selected-view-shadow",
 ]
 
+/** Surface depth a style may bind; no-ops at :root, so Flat sets none. */
+const SURFACE_TOKENS = ["--card-edge", "--card-sheen", "--track-well"]
+
 const CHROME_TOKENS = [
   "--chrome-rail-bg",
   "--chrome-bar-bg",
@@ -43,6 +46,7 @@ const OVERLAY_TOKENS = [
 
 const CONTRACT = [
   ...CONTROL_TOKENS,
+  ...SURFACE_TOKENS,
   ...CHROME_TOKENS,
   ...OVERLAY_TOKENS,
   "--shadow-dropdown",
@@ -648,5 +652,40 @@ describe("style files", () => {
       }
     }
     expect(CONTRACT.filter((name) => !reached.has(name))).toEqual([])
+  })
+
+  it("declares the surface tokens as no-ops and reads them", () => {
+    const theme = readFileSync(THEME, "utf8")
+    expect(theme).toContain("--card-edge: 0 0 transparent;")
+    expect(theme).toContain("--card-sheen: none;")
+    expect(theme).toContain("--track-well: 0 0 transparent;")
+    const card = readFileSync(
+      join("src", "components", "card", "card.css"),
+      "utf8",
+    ).replace(/\s+/g, " ")
+    expect(card).toContain("background-image: var(--card-sheen);")
+    expect(card).toContain("box-shadow: var(--card-edge);")
+    for (const level of ["low", "medium", "high"]) {
+      expect(card).toContain(
+        `box-shadow: var(--card-edge), var(--card-elevation-${level}), var(--glow-outer), var(--glow-inner);`,
+      )
+    }
+    expect(card).toContain(
+      "box-shadow: var(--card-edge), var(--elevation-current), var(--glow-outer), var(--glow-inner);",
+    )
+    expect(card).toContain(
+      "box-shadow: var(--card-edge), var(--glow-outer), var(--glow-inner);",
+    )
+    const tabs = readFileSync(
+      join("src", "components", "tabs", "tabs.css"),
+      "utf8",
+    )
+    expect(tabs.match(/box-shadow: var\(--track-well\);/g)).toHaveLength(2)
+    expect(
+      readFileSync(
+        join("src", "components", "segment-group", "segment-group.css"),
+        "utf8",
+      ),
+    ).toContain("box-shadow: var(--track-well);")
   })
 })
