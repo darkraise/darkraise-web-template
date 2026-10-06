@@ -148,6 +148,27 @@ test.describe("menus", () => {
     )
   })
 
+  test("navigation menu roves with the arrows and opens with ArrowDown", async ({
+    page,
+  }) => {
+    const main = await open(page, "/components/navigation-menu")
+    const products = main.getByRole("button", { name: "Products" })
+    await products.focus()
+    await expect(products).toHaveAttribute("aria-expanded", "false")
+    await page.keyboard.press("ArrowRight")
+    await expect(main.getByRole("link", { name: "Docs" })).toBeFocused()
+    await page.keyboard.press("ArrowLeft")
+    await expect(products).toBeFocused()
+    await page.keyboard.press("ArrowDown")
+    await expect(products).toHaveAttribute("aria-expanded", "true")
+    await expect(main.getByRole("link", { name: "Overview" })).toBeFocused()
+    await page.keyboard.press("ArrowDown")
+    await expect(main.getByRole("link", { name: "Pricing" })).toBeFocused()
+    await page.keyboard.press("Escape")
+    await expect(products).toHaveAttribute("aria-expanded", "false")
+    await expect(products).toBeFocused()
+  })
+
   test("virtualized dropdown menu renders a windowed list", async ({
     page,
   }) => {

@@ -24,6 +24,11 @@ interface NavigationMenuRootContextValue {
   /** Close after `closeDelay`, unless cancelled first. */
   scheduleClose: () => void
   cancelSchedule: () => void
+  /** Marks an item whose content takes focus once it mounts (ArrowDown on
+   *  its trigger opens it and moves focus into it). */
+  requestContentFocus: (id: string) => void
+  /** True once for an item marked by `requestContentFocus`. */
+  takeContentFocus: (id: string) => boolean
   rootId: string
 }
 
@@ -71,6 +76,7 @@ function NavigationMenu({
   const rootId = useId()
 
   const closeTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+  const pendingFocusRef = React.useRef<string | null>(null)
 
   const cancelSchedule = useEvent(() => {
     if (closeTimerRef.current) {
@@ -82,6 +88,16 @@ function NavigationMenu({
   const scheduleClose = useEvent(() => {
     cancelSchedule()
     closeTimerRef.current = setTimeout(() => setValue(""), 150)
+  })
+
+  const requestContentFocus = useEvent((id: string) => {
+    pendingFocusRef.current = id
+  })
+
+  const takeContentFocus = useEvent((id: string) => {
+    if (pendingFocusRef.current !== id) return false
+    pendingFocusRef.current = null
+    return true
   })
 
   const registerTriggerRef = React.useCallback(
@@ -106,6 +122,8 @@ function NavigationMenu({
       closeDelay: 150,
       scheduleClose,
       cancelSchedule,
+      requestContentFocus,
+      takeContentFocus,
       rootId,
     }),
     [
@@ -116,6 +134,8 @@ function NavigationMenu({
       hasViewport,
       scheduleClose,
       cancelSchedule,
+      requestContentFocus,
+      takeContentFocus,
       rootId,
     ],
   )
@@ -140,9 +160,26 @@ interface NavigationMenuListProps extends React.HTMLAttributes<HTMLUListElement>
   ref?: React.Ref<HTMLUListElement>
 }
 
+/** Each top-level item's trigger or link, in DOM order. */
+function topLevelItems(list: HTMLElement): HTMLElement[] {
+  return Array.from(
+    list.querySelectorAll<HTMLElement>(
+      ":scope > li > button:not(:disabled), :scope > li > a[href]",
+    ),
+  )
+}
+
+/** The links and enabled buttons inside a content panel, in DOM order. */
+function contentItems(content: HTMLElement): HTMLElement[] {
+  return Array.from(
+    content.querySelectorAll<HTMLElement>("a[href], button:not(:disabled)"),
+  )
+}
+
 function NavigationMenuList({
   className,
   ref,
+  onKeyDown,
   ...rest
 }: NavigationMenuListProps) {
   return (
@@ -150,6 +187,28 @@ function NavigationMenuList({
       ref={ref}
       className={cn("dr-navigation-menu-list group", className)}
       data-orientation="horizontal"
+      onKeyDown={(event) => {
+        onKeyDown?.(event)
+        if (event.defaultPrevented) return
+        const items = topLevelItems(event.currentTarget)
+        const index = items.indexOf(event.target as HTMLElement)
+        if (index < 0) return
+        const rtl = getComputedStyle(event.currentTarget).direction === "rtl"
+        let next: HTMLElement | undefined
+        if (event.key === (rtl ? "ArrowLeft" : "ArrowRight")) {
+          next = items[index + 1]
+        } else if (event.key === (rtl ? "ArrowRight" : "ArrowLeft")) {
+          next = items[index - 1]
+        } else if (event.key === "Home") {
+          next = items[0]
+        } else if (event.key === "End") {
+          next = items[items.length - 1]
+        } else {
+          return
+        }
+        event.preventDefault()
+        next?.focus()
+      }}
       {...rest}
     />
   )
@@ -216,7 +275,7 @@ function NavigationMenuTrigger({
   onClick,
   onPointerEnter,
   onPointerLeave,
-  onFocus,
+  onKeyDown,
   ref,
   children,
   ...rest
@@ -241,7 +300,6 @@ function NavigationMenuTrigger({
       ref={composeRefs(setRef as React.RefCallback<HTMLButtonElement>, ref)}
       type={resolvedType}
       id={item.triggerId}
-      aria-haspopup="menu"
       aria-expanded={open}
       aria-controls={open ? item.contentId : undefined}
       data-state={open ? "open" : "closed"}
@@ -271,12 +329,22 @@ function NavigationMenuTrigger({
         // Trigger leave does not auto-close. Content owns the close behaviour
         // so the user can move from trigger to its content without flicker.
       }}
-      onFocus={(event: React.FocusEvent<HTMLButtonElement>) => {
-        onFocus?.(event)
+      onKeyDown={(event: React.KeyboardEvent<HTMLButtonElement>) => {
+        onKeyDown?.(event)
         if (event.defaultPrevented) return
-        if (event.currentTarget.matches(":focus-visible")) {
+        if (event.key === "ArrowDown") {
+          event.preventDefault()
           root.cancelSchedule()
-          root.setValue(item.itemId)
+          const content = open ? document.getElementById(item.contentId) : null
+          if (content) {
+            contentItems(content)[0]?.focus()
+          } else {
+            root.requestContentFocus(item.itemId)
+            root.setValue(item.itemId)
+          }
+        } else if (event.key === "Escape" && open) {
+          event.preventDefault()
+          root.setValue("")
         }
       }}
       className={cn("dr-navigation-menu-trigger group", className)}
@@ -304,6 +372,8 @@ function NavigationMenuContent({
   ref,
   onPointerEnter,
   onPointerLeave,
+  onKeyDown,
+  onBlur,
   surface,
   ...rest
 }: NavigationMenuContentProps) {
@@ -311,10 +381,20 @@ function NavigationMenuContent({
   const item = useNavigationMenuItem("NavigationMenuContent")
   const open = root.value === item.itemId
 
+  const takeContentFocus = root.takeContentFocus
+  // A ref callback, not an effect: Presence mounts the panel a render after
+  // `open` turns true, so an effect keyed on `open` runs before it exists.
+  const focusOnMount = React.useCallback(
+    (node: HTMLDivElement | null) => {
+      if (node && takeContentFocus(item.itemId)) contentItems(node)[0]?.focus()
+    },
+    [takeContentFocus, item.itemId],
+  )
+
   return (
     <Presence present={open} forceMount={forceMount}>
       <div
-        ref={ref}
+        ref={composeRefs(focusOnMount, ref)}
         id={item.contentId}
         data-state={open ? "open" : "closed"}
         data-surface-fill={surface}
@@ -328,6 +408,32 @@ function NavigationMenuContent({
           onPointerLeave?.(event)
           if (event.defaultPrevented) return
           root.scheduleClose()
+        }}
+        onKeyDown={(event) => {
+          onKeyDown?.(event)
+          if (event.defaultPrevented) return
+          if (event.key === "Escape") {
+            event.preventDefault()
+            root.setValue("")
+            root.triggerRefs.get(item.itemId)?.focus()
+            return
+          }
+          if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return
+          const items = contentItems(event.currentTarget)
+          const index = items.indexOf(event.target as HTMLElement)
+          if (index < 0) return
+          event.preventDefault()
+          items[event.key === "ArrowDown" ? index + 1 : index - 1]?.focus()
+        }}
+        onBlur={(event) => {
+          onBlur?.(event)
+          if (event.defaultPrevented) return
+          // Focus leaving the panel, other than back to its own trigger,
+          // closes it: Tab past the last link lands on the next item.
+          const next = event.relatedTarget as Node | null
+          if (!next || event.currentTarget.contains(next)) return
+          if (root.triggerRefs.get(item.itemId)?.contains(next)) return
+          root.setValue("")
         }}
         className={cn("dr-navigation-menu-content", className)}
         {...rest}
