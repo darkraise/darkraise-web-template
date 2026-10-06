@@ -24,7 +24,7 @@
      `position: relative`), so the panel anchors directly under its
      trigger instead of floating to the nav root's origin. */
   .dr-navigation-menu-content {
-    @apply text-popover-foreground data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=open]:slide-in-from-top-2 data-[state=closed]:slide-out-to-top-2 absolute top-full left-0 z-50 mt-1.5 min-w-[8rem] rounded-[var(--overlay-radius)] border outline-none;
+    @apply text-popover-foreground data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=open]:slide-in-from-top-2 data-[state=closed]:slide-out-to-top-2 absolute start-0 top-full z-50 mt-1.5 min-w-[8rem] rounded-[var(--overlay-radius)] border outline-none;
     @apply overlay-surface;
     box-shadow: var(--overlay-shadow);
   }
@@ -34,7 +34,7 @@
      doesn't because it doesn't measure content the way Radix's portal
      does). Hidden so it can't intercept pointer events under the panel. */
   .dr-navigation-menu-viewport-wrapper {
-    @apply pointer-events-none absolute top-full left-0 flex justify-center;
+    @apply pointer-events-none absolute start-0 top-full flex justify-center;
   }
 
   .dr-navigation-menu-viewport {

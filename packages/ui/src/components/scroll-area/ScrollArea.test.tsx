@@ -74,6 +74,21 @@ describe("ScrollArea", () => {
     // doesn't crash the render.
     expect(screen.getByTestId("root")).toBeInTheDocument()
   })
+
+  it("writes dir to the root only when it is given", () => {
+    const { rerender } = render(
+      <ScrollArea data-testid="root">
+        <p>x</p>
+      </ScrollArea>,
+    )
+    expect(screen.getByTestId("root")).not.toHaveAttribute("dir")
+    rerender(
+      <ScrollArea data-testid="root" dir="rtl">
+        <p>x</p>
+      </ScrollArea>,
+    )
+    expect(screen.getByTestId("root")).toHaveAttribute("dir", "rtl")
+  })
 })
 
 describe("ScrollArea type", () => {

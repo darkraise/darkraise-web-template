@@ -69,3 +69,34 @@ test.describe("tabs", () => {
     expect(Math.abs(indicator.width - tab.width)).toBeLessThanOrEqual(1)
   })
 })
+
+test.describe("scroll area", () => {
+  test("puts the vertical bar on the left edge", async ({ page }) => {
+    await openFixture(page)
+    const probe = page.locator('[data-probe="scroll-area"]')
+    const root = await boxOf(probe.locator(".dr-scroll-area"))
+    const bar = await boxOf(
+      probe.locator('.dr-scroll-bar[data-orientation="vertical"]'),
+    )
+    expect(Math.abs(bar.x - root.x)).toBeLessThanOrEqual(1)
+  })
+
+  test("moves the horizontal thumb left as content scrolls", async ({
+    page,
+  }) => {
+    await openFixture(page)
+    const probe = page.locator('[data-probe="scroll-area"]')
+    const bar = probe.locator('.dr-scroll-bar[data-orientation="horizontal"]')
+    const thumb = bar.locator(".dr-scroll-thumb")
+    const track = await boxOf(bar)
+    const start = await boxOf(thumb)
+    expect(
+      Math.abs(start.x + start.width - (track.x + track.width)),
+    ).toBeLessThanOrEqual(2)
+    await probe
+      .locator("[data-darkraise-scroll-viewport]")
+      .evaluate((el) => el.scrollTo({ left: -200 }))
+    await settle(page)
+    expect((await boxOf(thumb)).x).toBeLessThan(start.x - 10)
+  })
+})

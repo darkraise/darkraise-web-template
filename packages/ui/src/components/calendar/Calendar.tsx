@@ -5,6 +5,7 @@ import { useUiLocale } from "../../i18n/context"
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 
 import { cn } from "@lib/utils"
+import { inlineArrow } from "@lib/direction"
 import { useUiLabels } from "@labels"
 import { Button } from "@components/button"
 import {
@@ -50,7 +51,7 @@ interface BaseProps {
   disabled?: CalendarMatcher | CalendarMatcher[]
   weekStartsOn?: number
   autoFocus?: boolean
-  /** RTL support — reverses arrow-key direction */
+  /** Written to the root as the `dir` attribute; omitted, it inherits. */
   dir?: "ltr" | "rtl"
   fromYear?: number
   toYear?: number
@@ -162,7 +163,7 @@ function Calendar(props: CalendarProps) {
     disabled,
     weekStartsOn = DEFAULT_WEEK_STARTS_ON,
     autoFocus,
-    dir = uiLocale.dir ?? "ltr",
+    dir,
     fromYear,
     toYear,
     locale = uiLocale.enabled ? uiLocale.locale : undefined,
@@ -194,6 +195,7 @@ function Calendar(props: CalendarProps) {
     return (
       <YearGrid
         className={className}
+        dir={dir}
         buttonVariant={buttonVariant}
         month={month}
         locale={locale}
@@ -215,6 +217,7 @@ function Calendar(props: CalendarProps) {
     return (
       <DecadeGrid
         className={className}
+        dir={dir}
         buttonVariant={buttonVariant}
         month={month}
         onPrev={() =>
@@ -271,7 +274,7 @@ interface DayViewProps {
   disabled?: CalendarMatcher | CalendarMatcher[]
   weekStartsOn: number
   autoFocus?: boolean
-  dir: "ltr" | "rtl"
+  dir?: "ltr" | "rtl"
   fromYear?: number
   toYear?: number
   locale?: string | string[]
@@ -434,14 +437,12 @@ function DayView({
   }
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    const isRtl = dir === "rtl"
+    const step = inlineArrow(event.key, event.currentTarget)
     let next: Date | null
     switch (event.key) {
       case "ArrowLeft":
-        next = addDays(focusedDate, isRtl ? 1 : -1)
-        break
       case "ArrowRight":
-        next = addDays(focusedDate, isRtl ? -1 : 1)
+        next = addDays(focusedDate, step === "next" ? 1 : -1)
         break
       case "ArrowUp":
         next = addDays(focusedDate, -7)
@@ -722,7 +723,7 @@ function MonthBlock({
             )}
           >
             <ChevronLeftIcon
-              className="size-[var(--icon-size)]"
+              className="dr-icon-inline size-[var(--icon-size)]"
               aria-hidden="true"
             />
           </button>
@@ -743,7 +744,7 @@ function MonthBlock({
             )}
           >
             <ChevronRightIcon
-              className="size-[var(--icon-size)]"
+              className="dr-icon-inline size-[var(--icon-size)]"
               aria-hidden="true"
             />
           </button>
@@ -986,7 +987,7 @@ function GridHeader({
         aria-label={prevLabel}
       >
         <ChevronLeftIcon
-          className="size-[var(--icon-size)]"
+          className="dr-icon-inline size-[var(--icon-size)]"
           aria-hidden="true"
         />
       </Button>
@@ -1000,7 +1001,7 @@ function GridHeader({
         aria-label={nextLabel}
       >
         <ChevronRightIcon
-          className="size-[var(--icon-size)]"
+          className="dr-icon-inline size-[var(--icon-size)]"
           aria-hidden="true"
         />
       </Button>
@@ -1010,6 +1011,7 @@ function GridHeader({
 
 function YearGrid({
   className,
+  dir,
   buttonVariant,
   month,
   locale,
@@ -1019,6 +1021,7 @@ function YearGrid({
   onSelect,
 }: {
   className?: string
+  dir?: "ltr" | "rtl"
   buttonVariant: React.ComponentProps<typeof Button>["variant"]
   month: Date
   locale?: string | string[]
@@ -1039,6 +1042,7 @@ function YearGrid({
   return (
     <div
       data-slot="calendar"
+      dir={dir}
       className={cn("dr-calendar-grid-container", className)}
     >
       <GridHeader
@@ -1083,6 +1087,7 @@ function YearGrid({
 
 function DecadeGrid({
   className,
+  dir,
   buttonVariant,
   month,
   onPrev,
@@ -1090,6 +1095,7 @@ function DecadeGrid({
   onSelect,
 }: {
   className?: string
+  dir?: "ltr" | "rtl"
   buttonVariant: React.ComponentProps<typeof Button>["variant"]
   month: Date
   onPrev: () => void
@@ -1105,6 +1111,7 @@ function DecadeGrid({
   return (
     <div
       data-slot="calendar"
+      dir={dir}
       className={cn("dr-calendar-grid-container", className)}
     >
       <GridHeader

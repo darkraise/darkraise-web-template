@@ -4,7 +4,7 @@
   }
 
   .dr-scroll-bar {
-    @apply absolute right-0 flex touch-none select-none;
+    @apply absolute end-0 flex touch-none select-none;
     transition-property: opacity, background-color, border-color;
     transition-duration: var(--duration-normal);
   }
@@ -15,11 +15,11 @@
   }
 
   .dr-scroll-bar[data-orientation="vertical"] {
-    @apply top-0 h-full w-2.5 border-l border-l-transparent p-[1px];
+    @apply top-0 h-full w-2.5 border-s border-s-transparent p-[1px];
   }
 
   .dr-scroll-bar[data-orientation="horizontal"] {
-    @apply right-0 bottom-0 left-0 h-2.5 flex-col border-t border-t-transparent p-[1px];
+    @apply inset-x-0 bottom-0 h-2.5 flex-col border-t border-t-transparent p-[1px];
   }
 
   /* Neutral, like the global scrollbar in theme.css. */

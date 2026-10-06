@@ -1,5 +1,6 @@
 import { createRoot } from "react-dom/client"
 import { ChevronRight } from "lucide-react"
+import { ScrollArea, ScrollBar } from "darkraise-ui/components/scroll-area"
 import { Tabs, TabsList, TabsTrigger } from "darkraise-ui/components/tabs"
 import { ThemeProvider } from "darkraise-ui/theme"
 import "../../src/styles/globals.css"
@@ -32,6 +33,12 @@ createRoot(root).render(
             ))}
           </TabsList>
         </Tabs>
+      </div>
+      <div data-probe="scroll-area">
+        <ScrollArea type="always" style={{ width: 200, height: 120 }}>
+          <div style={{ width: 600, height: 400 }}>Scrolled content</div>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
       </div>
     </div>
   </ThemeProvider>,

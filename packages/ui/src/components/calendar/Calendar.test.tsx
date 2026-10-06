@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi } from "vitest"
 import { useState, type ComponentProps } from "react"
 import { Calendar, type DateRange } from "@components/calendar"
+import { UiI18nProvider } from "../../i18n"
 
 // Fix the month so tests don't shift with real time.
 const FIXED_MONTH = new Date(2024, 5, 1) // June 2024
@@ -145,5 +146,67 @@ describe("Calendar", () => {
     expect(
       document.querySelector("[aria-current='date']") ?? today,
     ).toBeDefined()
+  })
+
+  it("writes dir only from its own prop, not the locale provider", () => {
+    const { container, rerender } = render(
+      <UiI18nProvider dir="rtl">
+        <Calendar defaultMonth={FIXED_MONTH} />
+      </UiI18nProvider>,
+    )
+    const root = () => container.querySelector('[data-slot="calendar"]')
+    expect(root()).not.toHaveAttribute("dir")
+    rerender(<Calendar defaultMonth={FIXED_MONTH} dir="rtl" />)
+    expect(root()).toHaveAttribute("dir", "rtl")
+  })
+
+  it("writes dir on the year and decade views only when it is given", async () => {
+    const user = userEvent.setup()
+    const { container, rerender } = render(
+      <Calendar defaultMonth={FIXED_MONTH} dir="rtl" />,
+    )
+    const root = () => container.querySelector('[data-slot="calendar"]')
+    await user.click(
+      screen.getByRole("button", { name: /switch to year view/i }),
+    )
+    expect(root()).toHaveClass("dr-calendar-grid-container")
+    expect(root()).toHaveAttribute("dir", "rtl")
+    await user.click(
+      screen.getByRole("button", { name: /switch to decade view/i }),
+    )
+    expect(screen.getByRole("button", { name: "2029" })).toBeInTheDocument()
+    expect(root()).toHaveAttribute("dir", "rtl")
+    rerender(<Calendar defaultMonth={FIXED_MONTH} />)
+    expect(root()).toHaveClass("dr-calendar-grid-container")
+    expect(root()).not.toHaveAttribute("dir")
+  })
+
+  it("moves to the next day with ArrowLeft under an RTL ancestor", async () => {
+    const user = userEvent.setup()
+    render(
+      <div dir="rtl">
+        <Calendar defaultMonth={FIXED_MONTH} />
+      </div>,
+    )
+    await user.click(screen.getByRole("button", { name: /june 12th/i }))
+    await user.keyboard("{ArrowLeft}")
+    expect(screen.getByRole("button", { name: /june 13th/i })).toHaveAttribute(
+      "data-focused",
+      "true",
+    )
+    await user.keyboard("{ArrowRight}{ArrowRight}")
+    expect(screen.getByRole("button", { name: /june 11th/i })).toHaveAttribute(
+      "data-focused",
+      "true",
+    )
+  })
+
+  it("mirrors the month navigation chevrons", () => {
+    render(<Calendar defaultMonth={FIXED_MONTH} />)
+    for (const name of [/previous month/i, /next month/i]) {
+      expect(
+        screen.getByRole("button", { name }).querySelector("svg"),
+      ).toHaveClass("dr-icon-inline")
+    }
   })
 })
