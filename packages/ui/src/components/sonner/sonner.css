@@ -168,6 +168,7 @@
     --toast-text: var(--success-text);
     --toast-action: var(--success-solid);
     --toast-action-foreground: var(--success-solid-foreground);
+    --toast-action-wash: var(--success-solid-wash);
   }
   .dr-toast--error {
     --toast-subtle: var(--destructive-subtle);
@@ -175,6 +176,7 @@
     --toast-text: var(--destructive-text);
     --toast-action: var(--destructive-solid);
     --toast-action-foreground: var(--destructive-solid-foreground);
+    --toast-action-wash: var(--destructive-solid-wash);
   }
   .dr-toast--warning {
     --toast-subtle: var(--warning-subtle);
@@ -182,6 +184,7 @@
     --toast-text: var(--warning-text);
     --toast-action: var(--warning-solid);
     --toast-action-foreground: var(--warning-solid-foreground);
+    --toast-action-wash: var(--warning-solid-wash);
   }
   .dr-toast--info {
     --toast-subtle: var(--info-subtle);
@@ -189,6 +192,7 @@
     --toast-text: var(--info-text);
     --toast-action: var(--info-solid);
     --toast-action-foreground: var(--info-solid-foreground);
+    --toast-action-wash: var(--info-solid-wash);
   }
 
   /* Status toasts paint their opaque fill directly; glass frost returns with
@@ -234,11 +238,14 @@
     background-color: hsl(var(--toast-action, var(--primary-fill)));
     color: hsl(var(--toast-action-foreground, var(--primary-foreground)));
   }
+  /* 16% toward the fill's own wash, Button's filled-variant hover step:
+     toward black under a light label and white under a dark one, so the
+     label keeps its contrast. */
   .dr-toast-action:hover {
     background-color: color-mix(
       in srgb,
-      hsl(var(--toast-action, var(--primary-fill))) 88%,
-      black
+      hsl(var(--toast-action, var(--primary-fill))) 84%,
+      hsl(var(--toast-action-wash, var(--primary-fill-wash)))
     );
   }
   .dr-toast-cancel {

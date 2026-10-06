@@ -356,3 +356,57 @@ test.describe("neutral swatch", () => {
     expect(contrast(ring[1], panel)).toBeGreaterThanOrEqual(3)
   })
 })
+
+const TOASTS = [
+  { trigger: "Delete item", action: "Undo" },
+  { trigger: "Success — rich", action: "View report" },
+  { trigger: "Error — rich", action: "Retry" },
+  { trigger: "Warning — rich", action: "Upgrade" },
+  { trigger: "Info — rich", action: "Reload" },
+]
+
+test.describe("toast action hover", () => {
+  for (const mode of ["light", "dark"] as const) {
+    for (const { trigger, action } of TOASTS) {
+      test(`${trigger} · ${mode}: hover keeps the label's contrast`, async ({
+        page,
+      }) => {
+        await page.emulateMedia({ reducedMotion: "reduce" })
+        await seedApp(page, { style: "quiet", mode })
+        await gotoApp(page, "/components/feedback")
+        await page.getByRole("button", { name: trigger, exact: true }).click()
+        const button = page
+          .locator(".dr-toast-action")
+          .filter({ hasText: action })
+          .first()
+        await expect(button).toBeVisible()
+        // Chromium serialises a color-mix() result as color(srgb …), which
+        // rgbOf does not parse, so the fill is read from pixels.
+        const fillAt = async () => {
+          const box = await boxOf(button)
+          return pixel(
+            page,
+            Math.round(box.x + 3),
+            Math.round(box.y + box.height / 2),
+          )
+        }
+        await settle(page)
+        const label = rgbOf(await computed(button, "color"))
+        const resting = contrast(await fillAt(), label)
+        await button.hover()
+        // Sonner pauses the countdown animation while the toast is hovered,
+        // so settle() would wait on it forever; reduced motion leaves only
+        // the 0.01ms colour transition, which two frames cover.
+        await page.evaluate(
+          () =>
+            new Promise((resolve) =>
+              requestAnimationFrame(() => requestAnimationFrame(resolve)),
+            ),
+        )
+        const hovered = contrast(await fillAt(), label)
+        expect(hovered).toBeGreaterThanOrEqual(4.5)
+        expect(hovered).toBeGreaterThanOrEqual(resting)
+      })
+    }
+  }
+})
