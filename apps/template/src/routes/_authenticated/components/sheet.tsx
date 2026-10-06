@@ -22,7 +22,14 @@ export const Route = createFileRoute("/_authenticated/components/sheet")({
   component: SheetPage,
 })
 
-const SHEET_SIDES = allOf<SheetSide>()("top", "right", "bottom", "left")
+const SHEET_SIDES = allOf<SheetSide>()(
+  "top",
+  "right",
+  "bottom",
+  "left",
+  "start",
+  "end",
+)
 
 function SheetPage() {
   return (

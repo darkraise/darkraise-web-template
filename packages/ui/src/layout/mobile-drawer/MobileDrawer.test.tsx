@@ -90,4 +90,14 @@ describe("MobileDrawer", () => {
     const nav = await screen.findByRole("navigation")
     expect(nav.dataset.sidebarSelection).toBe("chip")
   })
+
+  it("opens from the inline start", async () => {
+    const user = userEvent.setup()
+    renderDrawer({})
+    await user.click(screen.getByRole("button", { name: /open menu/i }))
+    expect(await screen.findByRole("dialog")).toHaveAttribute(
+      "data-side",
+      "start",
+    )
+  })
 })

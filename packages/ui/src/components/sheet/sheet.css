@@ -98,6 +98,26 @@
     border-radius: var(--overlay-radius) 0 0 var(--overlay-radius);
   }
 
+  /* The logical sides take their slide from tw-animate's :dir() rules, whose
+     specificity beats the variable reset above. */
+  .dr-sheet-content[data-side="start"] {
+    @apply data-[state=closed]:slide-out-to-start data-[state=open]:slide-in-from-start inset-y-0 start-0 h-full w-3/4 sm:max-w-sm;
+    border-width: 0;
+    border-inline-end-width: 1px;
+    border-radius: 0;
+    border-start-end-radius: var(--overlay-radius);
+    border-end-end-radius: var(--overlay-radius);
+  }
+
+  .dr-sheet-content[data-side="end"] {
+    @apply data-[state=closed]:slide-out-to-end data-[state=open]:slide-in-from-end inset-y-0 end-0 h-full w-3/4 sm:max-w-sm;
+    border-width: 0;
+    border-inline-start-width: 1px;
+    border-radius: 0;
+    border-start-start-radius: var(--overlay-radius);
+    border-end-start-radius: var(--overlay-radius);
+  }
+
   /* Pinned layout, opted into by rendering a <SheetBody>: header and footer
      hold still and only the body scrolls, as with <DialogBody>. */
   .dr-dialog-content.dr-sheet-content:has(> .dr-sheet-body) {
@@ -127,5 +147,21 @@
 
   .dr-sheet-content[data-side="right"] {
     padding-right: max(1.5rem, env(safe-area-inset-right));
+  }
+
+  .dr-sheet-content[data-side="start"] {
+    padding-inline-start: max(1.5rem, env(safe-area-inset-left));
+  }
+
+  .dr-sheet-content[data-side="start"]:dir(rtl) {
+    padding-inline-start: max(1.5rem, env(safe-area-inset-right));
+  }
+
+  .dr-sheet-content[data-side="end"] {
+    padding-inline-end: max(1.5rem, env(safe-area-inset-right));
+  }
+
+  .dr-sheet-content[data-side="end"]:dir(rtl) {
+    padding-inline-end: max(1.5rem, env(safe-area-inset-left));
   }
 }

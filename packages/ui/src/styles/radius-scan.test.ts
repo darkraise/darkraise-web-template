@@ -392,11 +392,17 @@ describe("overlay family", () => {
         rule.path.endsWith("sheet/sheet.css") &&
         /(?<![\w-])rounded|border(?:-[a-z]+)*-radius/.test(rule.body),
     )
-    expect(own.map(label)).toHaveLength(4)
+    expect(own.map(label)).toHaveLength(6)
     for (const rule of own) {
-      expect(rule.body.replace(/\s+/g, " ")).toMatch(
-        /border-radius: (?:0|var\(--overlay-radius\))(?: (?:0|var\(--overlay-radius\))){3};/,
-      )
+      const radii = [
+        ...rule.body.replace(/\s+/g, " ").matchAll(/-radius: ([^;]+);/g),
+      ].map((match) => match[1])
+      expect(radii.length).toBeGreaterThan(0)
+      for (const value of radii) {
+        expect(value).toMatch(
+          /^(?:0|var\(--overlay-radius\))(?: (?:0|var\(--overlay-radius\))){0,3}$/,
+        )
+      }
     }
   })
 

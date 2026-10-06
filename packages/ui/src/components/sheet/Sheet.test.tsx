@@ -37,4 +37,13 @@ describe("Sheet", () => {
     )
     expect(screen.getByText("Rows")).toHaveClass("dr-sheet-body")
   })
+
+  it("sits at the inline end by default", () => {
+    render(
+      <Sheet defaultOpen>
+        <SheetContent>Body</SheetContent>
+      </Sheet>,
+    )
+    expect(screen.getByRole("dialog")).toHaveAttribute("data-side", "end")
+  })
 })

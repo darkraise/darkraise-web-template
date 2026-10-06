@@ -63,7 +63,7 @@ export function MobileDrawer({
           <span className="sr-only">{triggerLabel}</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="dr-mobile-drawer-content">
+      <SheetContent side="start" className="dr-mobile-drawer-content">
         <SheetHeader>
           <SheetTitle>{title}</SheetTitle>
         </SheetHeader>

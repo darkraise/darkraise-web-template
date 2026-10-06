@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react"
+import type { CSSProperties, ReactNode } from "react"
 import { createRoot } from "react-dom/client"
 import { ChevronRight, House, Package } from "lucide-react"
 import {
@@ -32,9 +32,10 @@ import {
 } from "darkraise-ui/components/menubar"
 import { ScrollArea, ScrollBar } from "darkraise-ui/components/scroll-area"
 import { Tabs, TabsList, TabsTrigger } from "darkraise-ui/components/tabs"
-import { SidebarNav, SidebarProvider } from "darkraise-ui/layout"
+import { MobileDrawer, SidebarNav, SidebarProvider } from "darkraise-ui/layout"
 import {
   RouterAdapterProvider,
+  useOptionalRouterAdapter,
   type RouterAdapter,
   type RouterLinkProps,
 } from "darkraise-ui/router"
@@ -133,6 +134,16 @@ const MONTHS: TimelineBucket<{ id: string }>[] = Array.from(
     }
   },
 )
+
+// Outside any provider this returns the kit's stub adapter, which is all a
+// static layout needs.
+function ShellRouter({ children }: { children: ReactNode }) {
+  return (
+    <RouterAdapterProvider value={useOptionalRouterAdapter()}>
+      {children}
+    </RouterAdapterProvider>
+  )
+}
 
 const root = document.getElementById("root")
 if (!root) throw new Error("Missing test fixture root")
@@ -314,6 +325,11 @@ createRoot(root).render(
           />
         </div>
       ))}
+      <div data-probe="mobile-drawer">
+        <ShellRouter>
+          <MobileDrawer nav={[]} />
+        </ShellRouter>
+      </div>
     </div>
   </ThemeProvider>,
 )

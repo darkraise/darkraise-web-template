@@ -31,7 +31,7 @@ function SheetOverlay({ className, ref, ...props }: SheetOverlayProps) {
   )
 }
 
-export type SheetSide = "top" | "right" | "bottom" | "left"
+export type SheetSide = "top" | "right" | "bottom" | "left" | "start" | "end"
 
 interface SheetContentProps extends Omit<
   React.ComponentProps<typeof DialogContent>,
@@ -42,7 +42,7 @@ interface SheetContentProps extends Omit<
 }
 
 function SheetContent({
-  side = "right",
+  side = "end",
   className,
   children,
   ref,

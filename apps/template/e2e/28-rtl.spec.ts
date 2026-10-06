@@ -414,3 +414,20 @@ test.describe("virtualized timeline", () => {
     })
   }
 })
+
+test.describe("sheet and drawer sides", () => {
+  test("the mobile drawer opens from the right edge", async ({ page }) => {
+    await page.setViewportSize({ width: 600, height: 800 })
+    await openFixture(page)
+    await page
+      .locator('[data-probe="mobile-drawer"]')
+      .getByRole("button", { name: "Open menu" })
+      .click()
+    const sheet = page.getByRole("dialog", { name: "Navigation" })
+    await expect(sheet).toHaveAttribute("data-state", "open")
+    await settle(page)
+    const box = await boxOf(sheet)
+    expect(box.x + box.width).toBeCloseTo(600, 0)
+    expect(box.x).toBeGreaterThan(0)
+  })
+})
