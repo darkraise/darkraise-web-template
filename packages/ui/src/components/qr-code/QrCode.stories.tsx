@@ -41,10 +41,8 @@ export const WithLogoOverlay: Story = {
   ),
 }
 
-export const ThemeAwareForeground: Story = {
+export const CustomColors: Story = {
   render: () => (
-    <div className="text-primary">
-      <QrCode value="https://example.com" />
-    </div>
+    <QrCode value="https://example.com" fgColor="#1e3a8a" bgColor="#eff6ff" />
   ),
 }

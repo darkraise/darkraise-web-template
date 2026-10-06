@@ -71,6 +71,18 @@ describe("QrCode", () => {
     )
   })
 
+  it("treats a negative or fractional margin as a whole, non-negative count", () => {
+    const { container, rerender } = render(<QrCode value="quiet" margin={-3} />)
+    const modules = encodeQr("quiet", "M").size
+    expect(container.querySelector("svg")?.getAttribute("viewBox")).toBe(
+      `0 0 ${modules} ${modules}`,
+    )
+    rerender(<QrCode value="quiet" margin={2.4} />)
+    expect(container.querySelector("svg")?.getAttribute("viewBox")).toBe(
+      `0 0 ${modules + 4} ${modules + 4}`,
+    )
+  })
+
   it("paints black modules on an opaque white ground by default", () => {
     const { container } = render(<QrCode value="ground" />)
     const [ground, modules] = container.querySelectorAll("svg path")

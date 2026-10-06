@@ -20,13 +20,14 @@ export interface QrCodeProps extends Omit<
    *  dark modules on a light ground. */
   bgColor?: string
   fgColor?: string
-  /** Quiet zone around the code, in modules. Defaults to 4, the width the
-   *  QR specification requires for reliable scanning. */
+  /** Quiet zone around the code, in modules (rounded, never negative).
+   *  Defaults to 4, the width the QR specification requires for reliable
+   *  scanning. */
   margin?: number
   /** Accessible name of the code. Defaults to `labels.qrCode.label`. */
   label?: string
-  /** Called once for each value and level the encoder cannot fit (the
-   *  in-house encoder stops at version 10). */
+  /** Called once each time the value or level changes to one the encoder
+   *  cannot fit (the in-house encoder stops at version 10). */
   onError?: (error: Error) => void
   /** Rendered in place of the code when the value cannot be encoded. */
   fallback?: React.ReactNode
@@ -82,17 +83,18 @@ function QrCode({
   }, [error, reportError])
 
   const resolvedLabel = label ?? labels.label
+  const quietZone = Math.max(0, Math.round(margin))
   const ctx = React.useMemo<QrCodeContextValue>(
     () => ({
       size,
       bgColor,
       fgColor,
-      margin,
+      margin: quietZone,
       label: resolvedLabel,
       matrix,
       fallback,
     }),
-    [size, bgColor, fgColor, margin, resolvedLabel, matrix, fallback],
+    [size, bgColor, fgColor, quietZone, resolvedLabel, matrix, fallback],
   )
 
   const hasChildren = React.Children.count(children) > 0
