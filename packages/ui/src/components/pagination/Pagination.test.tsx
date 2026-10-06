@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest"
 import { render, screen } from "@testing-library/react"
+import { readFileSync } from "node:fs"
+import { dirname, resolve } from "node:path"
+import { fileURLToPath } from "node:url"
 import {
   Pagination,
   PaginationContent,
@@ -50,6 +53,16 @@ describe("Pagination", () => {
     expect(screen.getByRole("navigation")).toHaveAttribute(
       "data-variant",
       "outline",
+    )
+  })
+
+  it("edges every link but the current page under outline", () => {
+    const css = readFileSync(
+      resolve(dirname(fileURLToPath(import.meta.url)), "pagination.css"),
+      "utf8",
+    ).replace(/\s+/g, " ")
+    expect(css).toContain(
+      '.dr-pagination[data-variant="outline"] .dr-pagination-link:not([data-active="true"]) { border-color: var(--field-edge); }',
     )
   })
 })

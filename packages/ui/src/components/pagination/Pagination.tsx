@@ -9,8 +9,8 @@ import "./pagination.css"
 export type PaginationVariant = "filled" | "outline"
 
 /**
- * Both variants mark the current page with the checked fill; the variant
- * stays on the root as a styling hook.
+ * Both variants mark the current page with the checked fill; `outline` also
+ * draws the neutral field edge around every other link.
  */
 function Pagination({
   className,

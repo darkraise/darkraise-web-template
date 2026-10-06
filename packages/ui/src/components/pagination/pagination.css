@@ -31,6 +31,13 @@
       var(--btn-neutral-edge), var(--btn-neutral-shadow), var(--affordance-glow);
   }
 
+  /* Outline gives every other link Button's outline edge, the neutral line
+     solved to 3:1 on every ground; the current page keeps its fill. */
+  .dr-pagination[data-variant="outline"]
+    .dr-pagination-link:not([data-active="true"]) {
+    border-color: var(--field-edge);
+  }
+
   .dr-pagination-previous {
     @apply gap-1 pl-2.5;
   }

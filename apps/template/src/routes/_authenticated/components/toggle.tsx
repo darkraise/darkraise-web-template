@@ -53,7 +53,8 @@ function TogglePage() {
 
       <ShowcaseExample
         title="Variant x size"
-        code={`// One representative cell: every variant x size combination renders above.
+        code={`// One representative cell: every variant x size combination renders above,
+// pressed and unpressed.
 <Toggle variant="outline" size="lg" defaultPressed>
   <Bold className="h-4 w-4" />
   Toggle
@@ -63,10 +64,16 @@ function TogglePage() {
           rows={{ label: "variant", values: TOGGLE_VARIANTS }}
           cols={{ label: "size", values: TOGGLE_SIZES }}
           render={(variant, size) => (
-            <Toggle variant={variant} size={size} defaultPressed>
-              <Bold className="h-4 w-4" />
-              Toggle
-            </Toggle>
+            <div className="flex gap-2">
+              <Toggle variant={variant} size={size} defaultPressed>
+                <Bold className="h-4 w-4" />
+                Toggle
+              </Toggle>
+              <Toggle variant={variant} size={size}>
+                <Bold className="h-4 w-4" />
+                Toggle
+              </Toggle>
+            </div>
           )}
         />
       </ShowcaseExample>
