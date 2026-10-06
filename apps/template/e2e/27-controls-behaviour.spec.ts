@@ -1,6 +1,6 @@
 import { test, expect, type Locator, type Page } from "@playwright/test"
 import { boxOf, seedApp } from "./helpers/app"
-import { settle } from "./helpers/measure"
+import { contrast, pixel, settle } from "./helpers/measure"
 
 /**
  * Component behaviour on the controls-behaviour fixture: row geometry and
@@ -108,4 +108,57 @@ test.describe("vertical toolbar", () => {
     expect(widest).toBeGreaterThan(0)
     expect((await boxOf(bar)).width).toBeLessThanOrEqual(widest + chrome + 0.5)
   })
+})
+
+test.describe("outline variants", () => {
+  /** Contrast between a row's 1px inline-start edge and the row's own fill
+   *  4px further in, both sampled at mid-height. The fixture lays rows out
+   *  on whole pixels. */
+  async function edgeAgainstFill(page: Page, row: Locator): Promise<number> {
+    await row.scrollIntoViewIfNeeded()
+    const box = await boxOf(row)
+    const x = Math.floor(box.x)
+    const y = Math.floor(box.y + box.height / 2)
+    return contrast(await pixel(page, x, y), await pixel(page, x + 4, y))
+  }
+
+  for (const mode of MODES) {
+    test(`listbox rings its selected row · ${mode}`, async ({ page }) => {
+      await openInMode(page, mode)
+      const row = probe(
+        page,
+        "listbox-outline",
+        '[role="option"][aria-selected="true"]',
+      )
+      await expect(row).toHaveText("Cherry")
+      expect(await edgeAgainstFill(page, row)).toBeGreaterThanOrEqual(3)
+    })
+
+    test(`tree view rings its selected row · ${mode}`, async ({ page }) => {
+      await openInMode(page, mode)
+      const row = probe(
+        page,
+        "tree-outline",
+        '.dr-tree-view-item[aria-selected="true"]',
+      )
+      await expect(row).toHaveText("todo.txt")
+      expect(await edgeAgainstFill(page, row)).toBeGreaterThanOrEqual(3)
+    })
+
+    test(`pagination edges its other links · ${mode}`, async ({ page }) => {
+      await openInMode(page, mode)
+      const link = probe(
+        page,
+        "pagination-outline",
+        ".dr-pagination-link",
+      ).first()
+      await expect(link).toHaveText("1")
+      const box = await boxOf(link)
+      const x = Math.floor(box.x)
+      const y = Math.floor(box.y + box.height / 2)
+      const edge = await pixel(page, x, y)
+      const ground = await pixel(page, x - 3, y)
+      expect(contrast(edge, ground)).toBeGreaterThanOrEqual(3)
+    })
+  }
 })

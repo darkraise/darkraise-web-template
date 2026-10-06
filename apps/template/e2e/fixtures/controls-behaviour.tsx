@@ -1,5 +1,12 @@
 import { createRoot } from "react-dom/client"
 import { Bold, Italic, Underline } from "lucide-react"
+import { Listbox, ListboxItem } from "darkraise-ui/components/listbox"
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+} from "darkraise-ui/components/pagination"
 import { Toggle } from "darkraise-ui/components/toggle"
 import { Toolbar, ToolbarSeparator } from "darkraise-ui/components/toolbar"
 import {
@@ -73,6 +80,32 @@ createRoot(root).render(
             <Underline className="size-4" />
           </Toggle>
         </Toolbar>
+      </div>
+      <div data-probe="listbox-outline" style={{ width: 200 }}>
+        <Listbox variant="outline" defaultValue="cherry" aria-label="Fruit">
+          <ListboxItem value="apple">Apple</ListboxItem>
+          <ListboxItem value="cherry">Cherry</ListboxItem>
+        </Listbox>
+      </div>
+      <div data-probe="tree-outline" style={{ width: 240 }}>
+        <Tree variant="outline" />
+      </div>
+      <div data-probe="pagination-outline">
+        <Pagination variant="outline">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationLink href="#1">1</PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink href="#2" isActive>
+                2
+              </PaginationLink>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationLink href="#3">3</PaginationLink>
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       </div>
     </div>
   </ThemeProvider>,
