@@ -7,6 +7,10 @@ export interface FrameProps extends React.IframeHTMLAttributes<HTMLIFrameElement
   head?: React.ReactNode
 }
 
+/**
+ * Renders children into an isolated iframe document. Only the host's colour
+ * scheme crosses in; style the content through `head`.
+ */
 function Frame({ className, head, children, ...rest }: FrameProps) {
   const ref = React.useRef<HTMLIFrameElement | null>(null)
   const [doc, setDoc] = React.useState<Document | null>(null)

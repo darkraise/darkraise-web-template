@@ -242,6 +242,24 @@ Breaking: `FloatingPanel` z-indexes run from 10 to 49 by recency (the most recen
 - Pressing Escape in an open Combobox inside a dialog closes only the Combobox.
 - In the theme settings page layout, segmented controls keep a 0.5rem inset around each label, and a column whose label would not fit widens instead of the label filling its cell edge to edge.
 
+Breaking: `.dr-surface`, its `--flat` modifier and its `dr-surface-{brand,cyan,success,warning,danger,info}` hue classes are removed, with the `--fog-05` … `--fog-50` tokens they alone gave values to. The `glass`, `glass-thin`, `glass-strong` and `card-surface` utilities are removed: outside `.dr-surface` they painted nothing. Replace one with `rounded-[var(--radius)]` and, if you relied on it, `transition-[background-color,color,border-color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-in-out)]`.
+
+Breaking: `.overlay-surface` is now a utility that applies the overlay recipe (`background: var(--overlay-bg)`, its blend mode, `border-color: var(--overlay-border)` and the overlay backdrop filter). It no longer sets a border width, radius or shadow. Every kit popup applies it.
+
+Breaking: the `collapsible-down` and `collapsible-up` keyframes are removed; use Collapsible, whose `dr-collapsible-*` animation reads `--collapsible-content-height`.
+
+In dark mode each elevation level now lightens its surface as well as shadowing it: `--elevation-lift-low`, `--elevation-lift-medium` and `--elevation-lift-high` hold the step and lead every dark `--elevation-*` and `--card-elevation-*` value, and popups lift by the medium step.
+
+Tactile gives surfaces a material: cards take a raised edge (a lit top edge and sheen in dark) and the default and outline tab tracks and the segment group recess. New tokens `--card-edge`, `--card-sheen` and `--track-well` are no-ops in the other styles. Dark Tactile buttons, fields and selected segments have stronger edges.
+
+Glass light chrome shows an accent-tinted canvas through lighter fog at rest.
+
+The root declares `color-scheme` per mode, so native scrollbars, date pickers and form controls follow dark mode; the date indicator no longer inverts. Frame passes the host's colour scheme into its document.
+
+The neutral accent swatch shows near-white in dark mode, as the accent renders, with the title "Neutral (near-white)"; the active swatch takes a ring outside its edge.
+
+Fixed: the virtualized timeline's sticky header is opaque and follows the page or card it sits in (`--timeline-header-bg`); toast action buttons hover toward their fill's wash, so a dark label keeps its contrast; sidebar groups animate open and closed.
+
 ## [6.9.6] — 2026-09-30
 
 ## [6.9.5] — 2026-09-25

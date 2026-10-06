@@ -58,6 +58,8 @@ Synced payloads migrate the same way. A payload without a version is treated as 
 | `data-preset` on `<html>`                                                                                                                                                                                                                          | `data-style`                                                                                                                       |
 | `data-shell-style` on `<html>`                                                                                                                                                                                                                     | the same attribute on each layout's root                                                                                           |
 | `data-sidebar-active-bar` on `<html>`                                                                                                                                                                                                              | `useTheme().sidebarSelection`                                                                                                      |
+| `--fog-05`, `--fog-10`, `--fog-15`, `--fog-20`, `--fog-30`, `--fog-50` and the `glass`, `glass-thin`, `glass-strong` and `card-surface` utilities                                                                                                  | nothing: they painted nothing outside `.dr-surface`; use `rounded-[var(--radius)]` (the changelog has the transition)              |
+| `.dr-surface`, `.dr-surface--flat` and the `dr-surface-{brand,cyan,success,warning,danger,info}` classes                                                                                                                                           | nothing: no kit component applied them                                                                                             |
 | `data-elevation` on `Card` and card-variant `AccordionItem`                                                                                                                                                                                        | `data-card-elevation`                                                                                                              |
 
 ## Presets become styles
@@ -100,6 +102,8 @@ A disabled compound control fades once, at its root; its parts, and the controls
 `SheetContent` now scrolls when its content is too tall, and top and bottom sheets are capped at the viewport height minus 2rem. If you wrapped the middle of a sheet in a `flex-1 overflow-y-auto` element to pin the header and footer, it keeps working; `SheetBody` does the same with less markup.
 
 `FloatingPanel` z-indexes stay between 10 and 49, ordered by recency, so dialogs, sheets and popups always cover panels. If a panel must stay above them, set `style={{ zIndex: … }}` on it.
+
+`.overlay-surface` is now a Tailwind utility that applies the overlay recipe: `background: var(--overlay-bg)`, its blend mode, `border-color: var(--overlay-border)` and the overlay backdrop filter. It no longer sets a border width, radius or shadow, so if you apply it to your own markup, add those yourself. Every kit popup applies it.
 
 ## Fonts
 
