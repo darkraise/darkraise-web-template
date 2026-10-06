@@ -111,14 +111,9 @@
      the accent fill and the checked label its foreground. The track is
      untouched.
 
-     box-shadow is re-declared rather than left to the base rule: the
-     glass rule below also sets box-shadow, and at (0,3,0) it beats the
-     base indicator's (0,1,0). Without this line the accent pill under
-     glass gets a primary inset on a primary fill — invisible — or, where
-     that token is zeroed inside the page content area, no elevation at
-     all. background-image is reset for the same reason: glass paints a
-     gradient, so clearing only background-color leaves the pill
-     fillable. */
+     box-shadow and background-image are restated rather than left to the
+     base rule, so a more specific style rule that paints the default
+     indicator cannot put an inset or a gradient on the accent fill. */
   .dr-segment-group[data-color="accent"]
     .dr-segment-group-indicator[data-variant="default"] {
     background-color: var(--selected-check-bg);

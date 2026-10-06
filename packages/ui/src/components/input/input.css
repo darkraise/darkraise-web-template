@@ -45,7 +45,7 @@
   }
 
   /* The input inside a group strips its own chrome — border, focus ring,
-   * radius, glass, fixed height — so the group's chrome shows through
+   * radius, fill, fixed height — so the group's chrome shows through
    * unobstructed and the input stretches to the group's inner height.
    * `dr-input` is still applied for typography, placeholder, density
    * padding, and disabled handling. */

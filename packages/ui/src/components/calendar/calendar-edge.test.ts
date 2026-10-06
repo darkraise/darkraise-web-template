@@ -11,8 +11,8 @@ function appliedBy(path: string, selector: string): string[] {
 }
 
 describe("calendar edge", () => {
-  // The glass utility draws no border in any style, so a standalone
-  // calendar draws its own edge, as Card does.
+  // No shared surface utility draws a border, so a standalone calendar
+  // draws its own edge, as Card does.
   it.each([".dr-calendar", ".dr-calendar-grid-container"])(
     "%s draws a border",
     (selector) => {

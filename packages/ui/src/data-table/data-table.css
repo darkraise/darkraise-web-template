@@ -93,8 +93,8 @@
   /* Frame around the table. `.dr-table-wrapper` already draws its own 1px
      border, so this frame owning a second one stacked two hairlines and
      read as a doubled edge. The frame owns the rounding and clips the
-     wrapper, which the glass utility also rounds, and the wrapper's border
-     is dropped below. */
+     wrapper, which table.css also rounds, and the wrapper's border is
+     dropped below. */
   .dr-data-table-frame {
     @apply border-border overflow-hidden rounded-md border;
   }
