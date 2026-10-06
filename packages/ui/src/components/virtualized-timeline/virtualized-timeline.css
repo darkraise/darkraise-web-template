@@ -56,7 +56,7 @@
   /* Sticky inside the bucket wrapper, so a header stays pinned for exactly as
      long as its own bucket is on screen. */
   .dr-virtualized-timeline-bucket-header {
-    @apply text-foreground sticky top-0 z-10 flex items-center text-sm font-medium;
+    @apply text-foreground sticky top-0 z-10 flex items-center gap-2 text-sm font-medium;
     /* Over the opaque fill, the lift its card paints, so the header
        matches an elevated dark card's face. */
     background:
@@ -143,10 +143,11 @@
     }
   }
 
-  /* Positioned by the rail's own arithmetic, so `top` is inline. The tick
-     mark is the ::before; the label is the span beside it. */
+  /* Positioned by the rail's own arithmetic, so `top` is inline and the
+     tick centres on it. The tick mark is the ::before; reversed, every mark
+     sits in one column at the rail's edge and a label sits before it. */
   .dr-virtualized-timeline-scrubber-tick {
-    @apply absolute right-0 flex items-center gap-1;
+    @apply absolute right-0 flex -translate-y-1/2 flex-row-reverse items-center gap-1;
   }
 
   .dr-virtualized-timeline-scrubber-tick::before {

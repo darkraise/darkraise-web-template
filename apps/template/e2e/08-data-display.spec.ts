@@ -219,6 +219,72 @@ test.describe("visualisation", () => {
     expect(count).toBeLessThan(500)
   })
 
+  test("virtualized timeline rail centres its ticks, clear of the labels", async ({
+    page,
+  }) => {
+    const main = await open(page, "/components/virtualized-timeline")
+    const rail = main.locator(".dr-virtualized-timeline-scrubber").first()
+    await expect(
+      rail.locator(".dr-virtualized-timeline-scrubber-tick > span").first(),
+    ).toBeVisible()
+    const ticks = await rail.evaluate((el) => {
+      const top = el.getBoundingClientRect().top
+      const rect = (r: DOMRect) => ({
+        left: r.left,
+        right: r.right,
+        top: r.top,
+        bottom: r.bottom,
+      })
+      return Array.from(
+        el.querySelectorAll<HTMLElement>(
+          ".dr-virtualized-timeline-scrubber-tick",
+        ),
+      ).map((tick) => {
+        const box = tick.getBoundingClientRect()
+        const label = tick.querySelector("span")
+        return {
+          kind: tick.dataset.tickKind,
+          offset: parseFloat(tick.style.top),
+          centre: box.top + box.height / 2 - top,
+          box: rect(box),
+          label: label ? rect(label.getBoundingClientRect()) : null,
+        }
+      })
+    })
+    expect(ticks.length).toBeGreaterThan(1)
+    for (const tick of ticks) {
+      expect(Math.abs(tick.centre - tick.offset)).toBeLessThanOrEqual(1)
+    }
+    const labels = ticks.flatMap((tick) => (tick.label ? [tick.label] : []))
+    const marks = ticks.filter((tick) => !tick.label && tick.kind === "sub")
+    for (const { box } of marks) {
+      for (const label of labels) {
+        const overlaps =
+          box.left < label.right &&
+          label.left < box.right &&
+          box.top < label.bottom &&
+          label.top < box.bottom
+        expect(overlaps).toBe(false)
+      }
+    }
+  })
+
+  test("virtualized timeline group checkbox stands clear of the next control", async ({
+    page,
+  }) => {
+    const main = await open(page, "/components/virtualized-timeline")
+    const header = main
+      .locator(".dr-virtualized-timeline-bucket-header")
+      .first()
+    const checkbox = header.getByRole("checkbox")
+    const toggle = header.getByRole("button").first()
+    await expect(checkbox).toBeVisible()
+    const box = await boxOf(checkbox)
+    expect(
+      (await boxOf(toggle)).x - (box.x + box.width),
+    ).toBeGreaterThanOrEqual(6)
+  })
+
   test("marquee animates its track", async ({ page }) => {
     const main = await open(page, "/components/marquee")
     const track = main.locator('[class*="marquee"]').first()

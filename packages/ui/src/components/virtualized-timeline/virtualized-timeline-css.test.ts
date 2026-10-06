@@ -12,7 +12,19 @@ function body(selector: string): string {
   return CSS.slice(start, CSS.indexOf("}", start))
 }
 
+describe("timeline rail ticks", () => {
+  it("centres each tick on its offset with the mark at the rail's edge", () => {
+    const tick = body(".dr-virtualized-timeline-scrubber-tick")
+    expect(tick).toContain("-translate-y-1/2")
+    expect(tick).toContain("flex-row-reverse")
+  })
+})
+
 describe("timeline bucket header", () => {
+  it("spaces its checkbox, toggle and label", () => {
+    expect(body(".dr-virtualized-timeline-bucket-header")).toContain("gap-2")
+  })
+
   it("paints an opaque fill with no backdrop", () => {
     const header = body(".dr-virtualized-timeline-bucket-header")
     expect(header).not.toMatch(/backdrop/)
