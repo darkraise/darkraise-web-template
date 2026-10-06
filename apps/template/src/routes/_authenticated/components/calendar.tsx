@@ -77,11 +77,11 @@ function DateTimePicker() {
       <div className="space-y-2 border-t p-3">
         <div className="flex items-center justify-between gap-2">
           <Label className="text-xs">Start Time</Label>
-          <TimePicker value={startTime} onChange={setStartTime} />
+          <TimePicker value={startTime} onValueChange={setStartTime} />
         </div>
         <div className="flex items-center justify-between gap-2">
           <Label className="text-xs">End Time</Label>
-          <TimePicker value={endTime} onChange={setEndTime} />
+          <TimePicker value={endTime} onValueChange={setEndTime} />
         </div>
       </div>
     </div>
@@ -337,11 +337,11 @@ function CalendarPage() {
       <div className="border-t p-3 space-y-2">
         <div className="flex items-center justify-between gap-2">
           <Label className="text-xs">Start Time</Label>
-          <TimePicker value={startTime} onChange={setStartTime} />
+          <TimePicker value={startTime} onValueChange={setStartTime} />
         </div>
         <div className="flex items-center justify-between gap-2">
           <Label className="text-xs">End Time</Label>
-          <TimePicker value={endTime} onChange={setEndTime} />
+          <TimePicker value={endTime} onValueChange={setEndTime} />
         </div>
       </div>
     </div>

@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback, useMemo } from "react"
 import { Clock } from "lucide-react"
 import { cn } from "@lib/utils"
 import { useReducedMotion } from "@hooks/useReducedMotion"
+import { useControllableState } from "@primitives/state"
 import { Button } from "@components/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@components/popover"
 import { ScrollArea } from "@components/scroll-area"
@@ -12,8 +13,11 @@ import "./time-picker.css"
 type TimePickerFormat = "12h" | "24h"
 
 interface TimePickerProps {
+  /** The time as 24-hour `HH:mm`, or `""` for none (shows the placeholder). */
   value?: string
-  onChange?: (value: string) => void
+  /** The starting time when uncontrolled. Defaults to `"12:00"`. */
+  defaultValue?: string
+  onValueChange?: (value: string) => void
   /**
    * Display format for the picker. `"12h"` shows an AM/PM column and a
    * 12-hour clock; `"24h"` hides the period column and uses a 24-hour clock.
@@ -121,8 +125,9 @@ function TimeColumn({
 }
 
 function TimePicker({
-  value = "12:00",
-  onChange,
+  value: valueProp,
+  defaultValue = "12:00",
+  onValueChange,
   format: formatProp,
   minuteStep = 1,
   disabled = false,
@@ -141,6 +146,11 @@ function TimePicker({
       : "12h")
   const placeholder = placeholderLocaleProp ?? uiText("Select time")
 
+  const [value, setValue] = useControllableState<string>({
+    value: valueProp,
+    defaultValue,
+    onChange: onValueChange,
+  })
   const [open, setOpen] = useState(false)
   const is12Hour = format === "12h"
 
@@ -208,7 +218,7 @@ function TimePicker({
     const now = new Date()
     const h = String(now.getHours()).padStart(2, "0")
     const m = String(now.getMinutes()).padStart(2, "0")
-    onChange?.(`${h}:${m}`)
+    setValue(`${h}:${m}`)
   }
 
   return (
@@ -233,14 +243,14 @@ function TimePicker({
             label={uiText("Hour")}
             items={hours}
             value={parsed.hour}
-            onChange={(h) => onChange?.(to24(h, parsed.minute, parsed.period))}
+            onChange={(h) => setValue(to24(h, parsed.minute, parsed.period))}
           />
           <div className="dr-time-divider" />
           <TimeColumn
             label={uiText("Minute")}
             items={minutes}
             value={parsed.minute}
-            onChange={(m) => onChange?.(to24(parsed.hour, m, parsed.period))}
+            onChange={(m) => setValue(to24(parsed.hour, m, parsed.period))}
           />
           {is12Hour && (
             <>
@@ -249,9 +259,7 @@ function TimePicker({
                 label={uiText("Period")}
                 items={["AM", "PM"]}
                 value={parsed.period}
-                onChange={(p) =>
-                  onChange?.(to24(parsed.hour, parsed.minute, p))
-                }
+                onChange={(p) => setValue(to24(parsed.hour, parsed.minute, p))}
                 showInput={false}
               />
             </>
