@@ -19,6 +19,12 @@ const REMOVED = [
   "--glass-state-hover-glow",
   "--glass-state-active-inset",
   "--glass-state-selected-fill",
+  "--fog-05",
+  "--fog-10",
+  "--fog-15",
+  "--fog-20",
+  "--fog-30",
+  "--fog-50",
 ]
 
 const SELF = join("src", "theme", "styles", "removed-tokens.test.ts")
@@ -45,4 +51,16 @@ describe("removed tokens", () => {
     )
     expect(offenders).toEqual([])
   })
+})
+
+it("leaves no .dr-surface rule in kit or template styles", () => {
+  const files = [
+    ...SOURCES,
+    ...everySourceFile(join("..", "..", "apps", "template", "src")),
+  ].filter((path) => path.endsWith(".css") || path.endsWith(".tsx"))
+  for (const path of files) {
+    expect(readFileSync(path, "utf8"), path).not.toMatch(
+      /\.dr-surface\b|"dr-surface\b|\sdr-surface\b/,
+    )
+  }
 })

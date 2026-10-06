@@ -125,9 +125,9 @@ describe("pre-render script", () => {
       "light",
       ...cacheInputKeys().map((k) => read(k) ?? ""),
     ].join("|")
-    writeTokenCache(localStorage, unversioned, { "--fog-05": "red" })
+    writeTokenCache(localStorage, unversioned, { "--retired-token": "red" })
     run()
-    expect(root.style.getPropertyValue("--fog-05")).toBe("")
+    expect(root.style.getPropertyValue("--retired-token")).toBe("")
   })
 
   it("survives corrupt storage", () => {

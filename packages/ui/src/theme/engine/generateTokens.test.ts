@@ -83,32 +83,6 @@ describe("generateTokens", () => {
     expect(tokens).not.toHaveProperty("--shadow-dropdown")
   })
 
-  it("does not emit glass-only tokens for the default surface style", () => {
-    const tokens = generateTokens({
-      accentColor: "blue",
-      surfaceColor: "slate",
-      frosted: false,
-      backgroundStyle: "solid",
-      mode: "light",
-      contrast: "standard",
-      darkAccentChroma: "standard",
-      tintWithAccent: false,
-    })
-
-    const glassOnlyKeys = [
-      "--fog-05",
-      "--fog-10",
-      "--fog-15",
-      "--fog-20",
-      "--fog-30",
-      "--fog-50",
-    ]
-
-    for (const key of glassOnlyKeys) {
-      expect(tokens).not.toHaveProperty(key)
-    }
-  })
-
   it("uses shade 500 for primary in both light and dark modes (non-glass)", () => {
     // Dark mode used to brighten primary to shade 400, but that read as
     // glaring on every `bg-primary` surface (Button default, Checkbox,
@@ -542,85 +516,6 @@ describe("generateTokens", () => {
         expect(charts(accentColor), `${accentColor} ${mode}`).toEqual(reference)
       }
     }
-  })
-
-  describe("fog ramp tokens", () => {
-    it("dark + glass does not emit fog tokens from common generateTokens", () => {
-      const tokens = generateTokens({
-        accentColor: "blue",
-        surfaceColor: "slate",
-        frosted: true,
-        backgroundStyle: "solid",
-        mode: "dark",
-        contrast: "standard",
-        darkAccentChroma: "standard",
-        tintWithAccent: false,
-      })
-
-      // Fog tokens belong to Glass's own token set, not the engine.
-      expect(tokens["--fog-05"]).toBeUndefined()
-      expect(tokens["--fog-10"]).toBeUndefined()
-      expect(tokens["--fog-15"]).toBeUndefined()
-      expect(tokens["--fog-20"]).toBeUndefined()
-      expect(tokens["--fog-30"]).toBeUndefined()
-      expect(tokens["--fog-50"]).toBeUndefined()
-    })
-
-    it("light + glass does not emit fog tokens from common generateTokens", () => {
-      const tokens = generateTokens({
-        accentColor: "blue",
-        surfaceColor: "slate",
-        frosted: true,
-        backgroundStyle: "solid",
-        mode: "light",
-        contrast: "standard",
-        darkAccentChroma: "standard",
-        tintWithAccent: false,
-      })
-
-      expect(tokens["--fog-05"]).toBeUndefined()
-      expect(tokens["--fog-10"]).toBeUndefined()
-      expect(tokens["--fog-15"]).toBeUndefined()
-      expect(tokens["--fog-20"]).toBeUndefined()
-      expect(tokens["--fog-30"]).toBeUndefined()
-      expect(tokens["--fog-50"]).toBeUndefined()
-    })
-
-    it("default surface style does not emit any fog tokens", () => {
-      const dark = generateTokens({
-        accentColor: "blue",
-        surfaceColor: "slate",
-        frosted: false,
-        backgroundStyle: "solid",
-        mode: "dark",
-        contrast: "standard",
-        darkAccentChroma: "standard",
-        tintWithAccent: false,
-      })
-      const light = generateTokens({
-        accentColor: "blue",
-        surfaceColor: "slate",
-        frosted: false,
-        backgroundStyle: "solid",
-        mode: "light",
-        contrast: "standard",
-        darkAccentChroma: "standard",
-        tintWithAccent: false,
-      })
-
-      const fogKeys = [
-        "--fog-05",
-        "--fog-10",
-        "--fog-15",
-        "--fog-20",
-        "--fog-30",
-        "--fog-50",
-      ]
-      for (const key of fogKeys) {
-        expect(dark).not.toHaveProperty(key)
-        expect(light).not.toHaveProperty(key)
-      }
-    })
   })
 
   describe("noise opacity token", () => {

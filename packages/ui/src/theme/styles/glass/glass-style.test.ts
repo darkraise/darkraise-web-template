@@ -102,10 +102,6 @@ describe("glass fog and specular", () => {
       specular(strongTop, strongSide),
     )
   })
-
-  it("keeps the public fog scale transparent under glass", () => {
-    expect(GLASS).not.toMatch(/--fog-\d/)
-  })
 })
 
 describe("glass overlays", () => {

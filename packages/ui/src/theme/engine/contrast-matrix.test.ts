@@ -61,6 +61,5 @@ describe("contrast matrix support", () => {
     const plain = finalTokens({ ...combo, frosted: false })
     expect(isOpaque(frosted["--muted"])).toBe(true)
     expect(frosted["--muted"]).toBe(plain["--muted"])
-    expect(frosted["--fog-05"]).toBeUndefined()
   })
 })

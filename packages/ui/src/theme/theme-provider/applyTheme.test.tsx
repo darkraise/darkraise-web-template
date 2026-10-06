@@ -119,12 +119,6 @@ describe("ThemeProvider style orchestration", () => {
 
     expect(shared.map((key) => style.getPropertyValue(key))).toEqual(quiet)
     for (const key of [
-      "--fog-05",
-      "--fog-10",
-      "--fog-15",
-      "--fog-20",
-      "--fog-30",
-      "--fog-50",
       "--glass-fog-1",
       "--glass-inset",
       "--glass-inset-strong",

@@ -49,12 +49,6 @@ describe("Card border tiers", () => {
     expect(strong).not.toMatch(/--foreground/)
   })
 
-  // No style restyles content, so no rule hands the card's rim to the fog
-  // scale; the subtle border holds under every style.
-  it("keeps the subtle rim under every style", () => {
-    expect(flatCss()).not.toContain("var(--fog-")
-  })
-
   it("keeps the accent tier on the brand hue", () => {
     expect(bodyOf('.dr-card[data-border="accent"]')).toMatch(
       /border-color: hsl\(var\(--primary\) \/ 0\.35\)/,
