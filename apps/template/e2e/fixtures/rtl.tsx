@@ -38,6 +38,13 @@ import {
   type RouterLinkProps,
 } from "darkraise-ui/router"
 import { ThemeProvider } from "darkraise-ui/theme"
+import {
+  Steps,
+  StepsItem,
+  StepsList,
+  StepsTitle,
+  StepsTrigger,
+} from "darkraise-ui/components/steps"
 import "../../src/styles/globals.css"
 
 function SidebarLink({
@@ -180,6 +187,19 @@ createRoot(root).render(
             <SidebarNav nav={SIDEBAR_NAV} />
           </SidebarProvider>
         </RouterAdapterProvider>
+      </div>
+      <div data-probe="steps" style={{ width: 360 }}>
+        <Steps count={3}>
+          <StepsList>
+            {["Account", "Profile", "Done"].map((title, index) => (
+              <StepsItem key={title} index={index}>
+                <StepsTrigger>
+                  <StepsTitle>{title}</StepsTitle>
+                </StepsTrigger>
+              </StepsItem>
+            ))}
+          </StepsList>
+        </Steps>
       </div>
     </div>
   </ThemeProvider>,

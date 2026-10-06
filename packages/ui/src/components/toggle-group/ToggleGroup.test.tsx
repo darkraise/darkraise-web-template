@@ -131,6 +131,24 @@ describe("ToggleGroup", () => {
     expect(screen.getByText("B")).toHaveFocus()
   })
 
+  it("ArrowLeft focuses the next item under RTL", async () => {
+    const user = userEvent.setup()
+    render(
+      <div dir="rtl">
+        <ToggleGroup type="single">
+          <ToggleGroupItem value="a">A</ToggleGroupItem>
+          <ToggleGroupItem value="b">B</ToggleGroupItem>
+          <ToggleGroupItem value="c">C</ToggleGroupItem>
+        </ToggleGroup>
+      </div>,
+    )
+    screen.getByText("A").focus()
+    await user.keyboard("{ArrowLeft}")
+    expect(screen.getByText("B")).toHaveFocus()
+    await user.keyboard("{ArrowRight}")
+    expect(screen.getByText("A")).toHaveFocus()
+  })
+
   it("ArrowLeft loops to last with default loop", async () => {
     const user = userEvent.setup()
     render(

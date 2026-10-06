@@ -69,6 +69,34 @@ describe("Accordion", () => {
     )
     expect(screen.getByText("Content for section two")).toBeInTheDocument()
   })
+
+  it("horizontal ArrowLeft moves to the next trigger under RTL", async () => {
+    const user = userEvent.setup()
+    render(
+      <div dir="rtl">
+        <Accordion type="single" orientation="horizontal">
+          <AccordionItem value="item-1">
+            <AccordionTrigger>Section One</AccordionTrigger>
+            <AccordionContent>Content for section one</AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="item-2">
+            <AccordionTrigger>Section Two</AccordionTrigger>
+            <AccordionContent>Content for section two</AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="item-3">
+            <AccordionTrigger>Section Three</AccordionTrigger>
+            <AccordionContent>Content for section three</AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </div>,
+    )
+    const one = screen.getByRole("button", { name: "Section One" })
+    one.focus()
+    await user.keyboard("{ArrowLeft}")
+    expect(screen.getByRole("button", { name: "Section Two" })).toHaveFocus()
+    await user.keyboard("{ArrowRight}")
+    expect(one).toHaveFocus()
+  })
 })
 
 describe("Accordion card variant", () => {

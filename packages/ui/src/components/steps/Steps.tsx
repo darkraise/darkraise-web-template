@@ -3,6 +3,7 @@
 import * as React from "react"
 
 import { Button } from "@components/button"
+import { inlineArrow } from "@lib/direction"
 import { cn } from "@lib/utils"
 import "./steps.css"
 
@@ -203,17 +204,22 @@ function StepsList({ className, onKeyDown, ...props }: StepsListProps) {
     const last = indices[indices.length - 1]
     if (first === undefined || last === undefined) return
 
-    const isVertical = orientation === "vertical"
-    const nextKey = isVertical ? "ArrowDown" : "ArrowRight"
-    const prevKey = isVertical ? "ArrowUp" : "ArrowLeft"
+    const step =
+      orientation === "vertical"
+        ? event.key === "ArrowDown"
+          ? "next"
+          : event.key === "ArrowUp"
+            ? "prev"
+            : null
+        : inlineArrow(event.key, event.currentTarget)
 
     const focusAt = (i: number) => {
       const target = indices[i]
       if (target !== undefined) focusTrigger(target)
     }
 
-    switch (event.key) {
-      case nextKey: {
+    switch (step ?? event.key) {
+      case "next": {
         event.preventDefault()
         if (currentIndex === undefined) {
           focusTrigger(first)
@@ -223,7 +229,7 @@ function StepsList({ className, onKeyDown, ...props }: StepsListProps) {
         focusAt(Math.min(pos + 1, indices.length - 1))
         return
       }
-      case prevKey: {
+      case "prev": {
         event.preventDefault()
         if (currentIndex === undefined) {
           focusTrigger(first)

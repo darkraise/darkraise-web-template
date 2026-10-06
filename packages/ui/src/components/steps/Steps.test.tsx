@@ -160,6 +160,21 @@ describe("Steps", () => {
     expect(triggers[0]).toHaveFocus()
   })
 
+  it("ArrowLeft moves focus to the next trigger under RTL", async () => {
+    const user = userEvent.setup()
+    render(
+      <div dir="rtl">
+        <Basic defaultStep={0} />
+      </div>,
+    )
+    const triggers = screen.getAllByRole("tab")
+    ;(triggers[0] as HTMLElement).focus()
+    await user.keyboard("{ArrowLeft}")
+    expect(triggers[1]).toHaveFocus()
+    await user.keyboard("{ArrowRight}")
+    expect(triggers[0]).toHaveFocus()
+  })
+
   it("only the current step's content is visible", () => {
     const { rerender } = render(<Basic defaultStep={1} />)
     const accountPanel = screen

@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { useControllableState, useEvent } from "@primitives/state"
+import { inlineArrow } from "@lib/direction"
 
 export type RadioGroupOrientation = "horizontal" | "vertical"
 
@@ -105,13 +106,18 @@ export function useRadioGroup(
       const idx = list.findIndex((i) => i.value === itemValue)
       if (idx === -1) return
 
-      const horiz = orientation === "horizontal"
-      const next = horiz ? "ArrowRight" : "ArrowDown"
-      const prev = horiz ? "ArrowLeft" : "ArrowUp"
+      const step =
+        orientation === "horizontal"
+          ? inlineArrow(event.key, event.currentTarget)
+          : event.key === "ArrowDown"
+            ? "next"
+            : event.key === "ArrowUp"
+              ? "prev"
+              : null
 
       let nextIdx: number | null = null
-      if (event.key === next) nextIdx = idx + 1
-      else if (event.key === prev) nextIdx = idx - 1
+      if (step === "next") nextIdx = idx + 1
+      else if (step === "prev") nextIdx = idx - 1
       else if (event.key === "Home") nextIdx = 0
       else if (event.key === "End") nextIdx = list.length - 1
 

@@ -221,3 +221,18 @@ test.describe("sidebar", () => {
     expect(await computed(chevron, "rotate")).toBe("90deg")
   })
 })
+
+test.describe("steps", () => {
+  test("the left arrow moves to the visually next step", async ({ page }) => {
+    await openFixture(page)
+    const triggers = page.locator('[data-probe="steps"] [role="tab"]')
+    const first = await boxOf(triggers.nth(0))
+    const second = await boxOf(triggers.nth(1))
+    expect(second.x).toBeLessThan(first.x)
+    await triggers.nth(0).focus()
+    await page.keyboard.press("ArrowLeft")
+    await expect(triggers.nth(1)).toBeFocused()
+    await page.keyboard.press("ArrowRight")
+    await expect(triggers.nth(0)).toBeFocused()
+  })
+})

@@ -130,6 +130,43 @@ describe("RadioGroup", () => {
     expect(radios[1]).toHaveFocus()
   })
 
+  it("orientation=horizontal mirrors ArrowLeft/Right under RTL", async () => {
+    const user = userEvent.setup()
+    render(
+      <div dir="rtl">
+        <RadioGroup orientation="horizontal">
+          <RadioGroupItem value="a" />
+          <RadioGroupItem value="b" />
+          <RadioGroupItem value="c" />
+        </RadioGroup>
+      </div>,
+    )
+    const radios = screen.getAllByRole("radio")
+    ;(radios[0] as HTMLElement).focus()
+    await user.keyboard("{ArrowLeft}")
+    expect(radios[1]).toHaveFocus()
+    await user.keyboard("{ArrowRight}")
+    expect(radios[0]).toHaveFocus()
+  })
+
+  it("vertical ignores ArrowLeft/Right under RTL", async () => {
+    const user = userEvent.setup()
+    render(
+      <div dir="rtl">
+        <RadioGroup>
+          <RadioGroupItem value="a" />
+          <RadioGroupItem value="b" />
+        </RadioGroup>
+      </div>,
+    )
+    const radios = screen.getAllByRole("radio")
+    ;(radios[0] as HTMLElement).focus()
+    await user.keyboard("{ArrowLeft}")
+    expect(radios[0]).toHaveFocus()
+    await user.keyboard("{ArrowRight}")
+    expect(radios[0]).toHaveFocus()
+  })
+
   it("emits aria-required on the group", () => {
     render(
       <RadioGroup required>
