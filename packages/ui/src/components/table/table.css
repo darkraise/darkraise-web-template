@@ -1,6 +1,6 @@
 @layer components {
   .dr-table-wrapper {
-    @apply glass border-border relative w-full overflow-auto border;
+    @apply border-border relative w-full overflow-auto rounded-[var(--radius)] border transition-[background-color,color,border-color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-in-out)];
   }
 
   .dr-table {

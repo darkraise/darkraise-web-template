@@ -1,10 +1,10 @@
 @layer components {
   .dr-calendar {
-    @apply glass bg-card border p-3;
+    @apply bg-card rounded-[var(--radius)] border p-3 transition-[background-color,color,border-color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-in-out)];
   }
 
   .dr-calendar-grid-container {
-    @apply glass bg-card w-[16rem] border p-3;
+    @apply bg-card w-[16rem] rounded-[var(--radius)] border p-3 transition-[background-color,color,border-color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-in-out)];
   }
 
   .dr-calendar-grid-header {

@@ -24,47 +24,13 @@ function extractRuleBody(selector: string): string {
 }
 
 describe("theme aliases", () => {
-  it(".card-surface ruleset matches .glass verbatim", () => {
-    const glass = extractRuleBody("glass")
-    const cardSurface = extractRuleBody("card-surface")
-    expect(cardSurface).toBe(glass)
+  it("modal-surface draws no backdrop", () => {
+    expect(extractRuleBody("modal-surface")).not.toContain("backdrop-filter")
   })
 
-  it(".overlay-surface ruleset is .glass-strong plus the overlay backdrop", () => {
-    const backdrop = [
-      "-webkit-backdrop-filter: var(--overlay-backdrop);",
-      "backdrop-filter: var(--overlay-backdrop);",
-    ]
-    const lines = extractRuleBody(".overlay-surface").split("\n")
-    for (const line of backdrop) expect(lines).toContain(line)
-    expect(lines.filter((line) => !backdrop.includes(line)).join("\n")).toBe(
-      extractRuleBody("glass-strong"),
-    )
-  })
-
-  it.each([
-    "glass-thin",
-    "glass",
-    "glass-strong",
-    "card-surface",
-    "modal-surface",
-  ])("%s draws no backdrop", (name) => {
-    expect(extractRuleBody(name)).not.toContain("backdrop-filter")
-  })
-
-  it("all four tier classes are present in theme.css", () => {
-    expect(themeCss).toMatch(/@utility\s+glass-thin\s*\{/)
-    expect(themeCss).toMatch(/@utility\s+glass\s*\{/)
-    expect(themeCss).toMatch(/@utility\s+glass-strong\s*\{/)
-    expect(themeCss).toMatch(/@utility\s+card-surface\s*\{/)
-    expect(themeCss).toMatch(/\.overlay-surface\s*\{/)
-  })
-
-  // No style restyles the strong tier, so its edge is the theme border
-  // rather than a fog tint that only a .dr-surface subtree populates.
-  it("edges the strong tier with the theme border", () => {
-    expect(extractRuleBody("glass-strong")).toContain(
-      "border: 1px solid hsl(var(--border));",
+  it("defines none of the removed fog utilities", () => {
+    expect(themeCss).not.toMatch(
+      /@utility\s+(?:glass|glass-thin|glass-strong|card-surface)\s*\{/,
     )
   })
 })

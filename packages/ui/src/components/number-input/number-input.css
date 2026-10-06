@@ -12,7 +12,7 @@
    * trigger group) renders inside this single surface and is therefore
    * borderless on its own. */
   .dr-number-input-control {
-    @apply glass border-input focus-ring-input-wrapper text-card-foreground flex w-full items-stretch overflow-hidden border;
+    @apply border-input focus-ring-input-wrapper text-card-foreground flex w-full items-stretch overflow-hidden border;
     height: var(--field-height);
     /* Pinned out of the `surface` prop on purpose: fields hold
        still while panels move around them. The rung is container-relative

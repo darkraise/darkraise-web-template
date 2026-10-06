@@ -153,48 +153,6 @@
   }
 }
 
-@utility glass-thin {
-  background: var(--fog-05);
-  border-radius: var(--radius);
-  transition:
-    background-color var(--duration-fast) var(--ease-in-out),
-    color var(--duration-fast) var(--ease-in-out),
-    border-color var(--duration-fast) var(--ease-in-out),
-    box-shadow var(--duration-fast) var(--ease-in-out);
-}
-
-@utility glass {
-  background: linear-gradient(135deg, var(--fog-10), var(--fog-05));
-  border-radius: var(--radius);
-  transition:
-    background-color var(--duration-fast) var(--ease-in-out),
-    color var(--duration-fast) var(--ease-in-out),
-    border-color var(--duration-fast) var(--ease-in-out),
-    box-shadow var(--duration-fast) var(--ease-in-out);
-}
-
-@utility glass-strong {
-  background: linear-gradient(135deg, var(--fog-20), var(--fog-10));
-  border: 1px solid hsl(var(--border));
-  border-radius: var(--radius);
-  box-shadow: var(--elevation-medium);
-  transition:
-    background-color var(--duration-fast) var(--ease-in-out),
-    color var(--duration-fast) var(--ease-in-out),
-    border-color var(--duration-fast) var(--ease-in-out),
-    box-shadow var(--duration-fast) var(--ease-in-out);
-}
-
-@utility card-surface {
-  background: linear-gradient(135deg, var(--fog-10), var(--fog-05));
-  border-radius: var(--radius);
-  transition:
-    background-color var(--duration-fast) var(--ease-in-out),
-    color var(--duration-fast) var(--ease-in-out),
-    border-color var(--duration-fast) var(--ease-in-out),
-    box-shadow var(--duration-fast) var(--ease-in-out);
-}
-
 @utility modal-surface {
   box-shadow: var(--elevation-high), var(--glow-outer), var(--glow-inner);
 }
@@ -352,10 +310,9 @@
    child span, which truncates with an ellipsis, and its icon in a direct
    child svg, which never shrinks. border-bottom-color stays the last
    declaration so no border shorthand after it takes the bottom edge back,
-   which is why the nested rules come first; `glass` sets --radius, so the
-   field radius follows it. */
+   which is why the nested rules come first. */
 @utility field-trigger {
-  @apply glass border-input text-card-foreground focus-ring-input data-[placeholder]:text-muted-foreground flex w-full cursor-pointer items-center justify-between gap-2 border px-[var(--field-px)] text-sm;
+  @apply border-input text-card-foreground focus-ring-input data-[placeholder]:text-muted-foreground flex w-full cursor-pointer items-center justify-between gap-2 border px-[var(--field-px)] text-sm transition-[background-color,color,border-color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-in-out)];
 
   &:disabled {
     cursor: not-allowed;
@@ -926,8 +883,7 @@
      `--elevation-{low,medium,high}` is theme-axis-tracking. The :root
      values are the `standard` level's intensity, and the `flat` and
      `high` `[data-elevation]` blocks override them with a scaled ramp
-     so theme-aware utilities like `glass-strong`
-     (`box-shadow: var(--elevation-medium)`) and the Card's `auto` mode
+     so the `shadow-*` utilities and the Card's `auto` mode
      (`var(--elevation-current)`) follow the picker.
 
      `--card-elevation-{low,medium,high}` is theme-axis-immune. Components

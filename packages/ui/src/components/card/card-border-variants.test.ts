@@ -3,13 +3,9 @@ import { readFileSync } from "node:fs"
 
 // jsdom never parses CSS, so the rules themselves are what this asserts.
 //
-// `.dr-card` composes `@apply glass`, and the `glass` utility writes the
-// shorthand `border: 1px solid var(--fog-15)`. The fog scale resolves to
-// `transparent` everywhere except inside a `.dr-surface` subtree, and a
-// declaration on `.dr-card` (0,1,0) outranks the global
-// `* { @apply border-border }` rule (0,0,0). Without a border-color of its
-// own the default card therefore paints the same invisible 1px box as
-// `border="none"`.
+// `.dr-card` declares its own border-color, a (0,1,0) declaration that
+// outranks the global `* { @apply border-border }` rule (0,0,0), so the
+// default card traces its shape with the subtle rung rather than --border.
 //
 // Prettier wraps long values across lines on commit, so every assertion is
 // made against whitespace-collapsed source.

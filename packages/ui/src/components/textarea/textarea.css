@@ -1,6 +1,6 @@
 @layer components {
   .dr-textarea {
-    @apply glass border-input text-card-foreground focus-ring-input placeholder:text-muted-foreground flex min-h-[72px] w-full border px-[var(--field-px)] py-[var(--field-py)] text-base disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)] md:text-sm;
+    @apply border-input text-card-foreground focus-ring-input placeholder:text-muted-foreground flex min-h-[72px] w-full border px-[var(--field-px)] py-[var(--field-py)] text-base transition-[background-color,color,border-color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-in-out)] disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)] md:text-sm;
     /* Pinned out of the `surface` prop on purpose: fields hold
        still while panels move around them. The rung is container-relative
        -- see `--control-surface` in theme.css. */

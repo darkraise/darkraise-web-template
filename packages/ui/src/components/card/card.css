@@ -1,6 +1,6 @@
 @layer components {
   .dr-card {
-    @apply glass bg-card text-card-foreground border;
+    @apply bg-card text-card-foreground rounded-[var(--radius)] border;
     /* The subtle rung rather than `--border`: the card's own background
        already separates it from the canvas, so the edge only has to trace
        the shape. `--border` sits two palette steps above the card fill and
