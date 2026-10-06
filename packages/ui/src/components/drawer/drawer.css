@@ -9,11 +9,7 @@
     @apply modal-surface text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 flex flex-col border ease-in-out;
     /* Modal-tier surface: bg + border from style-driven tokens;
        --elevation-high stays via .modal-surface. */
-    background: var(--overlay-bg);
-    background-blend-mode: var(--surface-overlay-blend-mode);
-    border-color: var(--overlay-border);
-    -webkit-backdrop-filter: var(--overlay-backdrop);
-    backdrop-filter: var(--overlay-backdrop);
+    @apply overlay-surface;
   }
 
   .dr-drawer-overlay[data-state="closed"],

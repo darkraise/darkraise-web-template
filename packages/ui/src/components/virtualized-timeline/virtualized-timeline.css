@@ -165,11 +165,7 @@
 
   .dr-virtualized-timeline-scrubber-label {
     @apply text-popover-foreground pointer-events-none absolute right-4 w-max rounded-[var(--radius-sm)] border px-2 py-1 text-xs;
-    background: var(--overlay-bg);
-    background-blend-mode: var(--surface-overlay-blend-mode);
-    border-color: var(--overlay-border);
-    -webkit-backdrop-filter: var(--overlay-backdrop);
-    backdrop-filter: var(--overlay-backdrop);
+    @apply overlay-surface;
     box-shadow: var(--overlay-shadow);
     transform: translateY(-50%);
   }

@@ -408,7 +408,8 @@ describe("overlay family", () => {
         "",
       )
       expect(css).not.toMatch(/var\(--surface-overlay-(?:bg|border|shadow)\)/)
-      expect(css).toContain("var(--overlay-bg)")
+      expect(css).toMatch(/@apply overlay-surface;/)
+      expect(css).not.toContain("background: var(--overlay-bg)")
     },
   )
 })

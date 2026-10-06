@@ -204,11 +204,7 @@
 
   .dr-contribution-graph-tooltip {
     @apply text-popover-foreground pointer-events-none absolute z-10 w-max max-w-56 rounded-[var(--radius-sm)] border px-2 py-1 text-xs;
-    background: var(--overlay-bg);
-    background-blend-mode: var(--surface-overlay-blend-mode);
-    border-color: var(--overlay-border);
-    -webkit-backdrop-filter: var(--overlay-backdrop);
-    backdrop-filter: var(--overlay-backdrop);
+    @apply overlay-surface;
     box-shadow: var(--overlay-shadow);
     /* Sits above the cell it describes, horizontally centred on it. */
     transform: translate(-50%, calc(-100% - 0.375rem));

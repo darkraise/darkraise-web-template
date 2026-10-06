@@ -624,6 +624,11 @@ describe("style files", () => {
   // background inputs reach components only through --overlay-bg.
   it("has a reader for every contract token", () => {
     const readers = READER_SHEETS.map((path) => readFileSync(path, "utf8"))
+    // Popups read the overlay tokens through this utility, not by hand.
+    const utility = /@utility overlay-surface \{[^}]*\}/.exec(
+      readFileSync(THEME, "utf8"),
+    )
+    readers.push(utility?.[0] ?? "")
     const composed = declarations(THEME)
     const names = new Set([...CONTRACT, ...composed.map((d) => d.property)])
     const reached = new Set(

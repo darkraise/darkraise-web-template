@@ -6,11 +6,7 @@
        but shadow stays owned by .modal-surface (--elevation-high)
        because modals should sit a tier above tooltips/popovers in
        the depth hierarchy. */
-    background: var(--overlay-bg);
-    background-blend-mode: var(--surface-overlay-blend-mode);
-    border-color: var(--overlay-border);
-    -webkit-backdrop-filter: var(--overlay-backdrop);
-    backdrop-filter: var(--overlay-backdrop);
+    @apply overlay-surface;
   }
 
   /* Height cap and scroll.

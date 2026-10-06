@@ -33,4 +33,16 @@ describe("theme aliases", () => {
       /@utility\s+(?:glass|glass-thin|glass-strong|card-surface)\s*\{/,
     )
   })
+
+  it("overlay-surface applies the overlay recipe and nothing else", () => {
+    expect(extractRuleBody("overlay-surface").split("\n")).toEqual([
+      "background: var(--overlay-bg);",
+      "background-blend-mode: var(--surface-overlay-blend-mode);",
+      "border-color: var(--overlay-border);",
+      "-webkit-backdrop-filter: var(--overlay-backdrop);",
+      "backdrop-filter: var(--overlay-backdrop);",
+    ])
+    expect(themeCss).toMatch(/@utility\s+overlay-surface\s*\{/)
+    expect(themeCss).not.toMatch(/\.overlay-surface\s*\{/)
+  })
 })

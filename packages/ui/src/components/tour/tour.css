@@ -6,11 +6,7 @@
   }
   .dr-tour-popover {
     @apply text-popover-foreground z-[81] w-80 max-w-[calc(100vw-2rem)] rounded-[var(--overlay-radius)] border p-4 shadow-[var(--elevation-medium)];
-    background: var(--overlay-bg);
-    background-blend-mode: var(--surface-overlay-blend-mode);
-    border-color: var(--overlay-border);
-    -webkit-backdrop-filter: var(--overlay-backdrop);
-    backdrop-filter: var(--overlay-backdrop);
+    @apply overlay-surface;
   }
   .dr-tour-title {
     @apply text-base font-semibold;

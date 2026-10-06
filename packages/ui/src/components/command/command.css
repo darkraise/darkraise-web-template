@@ -1,11 +1,8 @@
 @layer components {
   .dr-command {
     @apply text-popover-foreground flex h-full w-full flex-col overflow-hidden rounded-[var(--overlay-radius)];
-    background: var(--overlay-bg);
-    background-blend-mode: var(--surface-overlay-blend-mode);
+    @apply overlay-surface;
     box-shadow: var(--overlay-shadow);
-    -webkit-backdrop-filter: var(--overlay-backdrop);
-    backdrop-filter: var(--overlay-backdrop);
   }
 
   .dr-command-input-wrapper {

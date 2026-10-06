@@ -31,12 +31,8 @@
   .dr-toast {
     @apply text-popover-foreground pointer-events-auto absolute flex w-full items-start gap-3 rounded-[var(--overlay-radius)] border p-4 pr-9;
     /* The overlay family, read as every other overlay reads it. */
-    background: var(--overlay-bg);
-    background-blend-mode: var(--surface-overlay-blend-mode);
-    border-color: var(--overlay-border);
+    @apply overlay-surface;
     box-shadow: var(--overlay-shadow);
-    -webkit-backdrop-filter: var(--overlay-backdrop);
-    backdrop-filter: var(--overlay-backdrop);
 
     --toast-stack-gap: 12px;
     --toast-scale: calc(1 - var(--toast-index, 0) * 0.06);

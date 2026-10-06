@@ -127,14 +127,8 @@ describe("severity pairs", () => {
 describe("toast surface", () => {
   it("reads the overlay tokens and blend mode like every other overlay", () => {
     const body = bodyOf(SONNER, ".dr-toast")
-    for (const declaration of [
-      "background: var(--overlay-bg);",
-      "background-blend-mode: var(--surface-overlay-blend-mode);",
-      "border-color: var(--overlay-border);",
-      "box-shadow: var(--overlay-shadow);",
-    ]) {
-      expect(body).toContain(declaration)
-    }
+    expect(body).toMatch(/@apply overlay-surface;/)
+    expect(body).toContain("box-shadow: var(--overlay-shadow);")
     expect(body).toContain("rounded-[var(--overlay-radius)]")
     expect(body).not.toMatch(/(?<![\w:-])(?:bg-popover|border-border)(?![\w-])/)
     expect(body).not.toContain("shadow-[var(--shadow-dropdown)]")
@@ -321,6 +315,17 @@ describe("overlay backdrop", () => {
     "-webkit-backdrop-filter: var(--overlay-backdrop); backdrop-filter: var(--overlay-backdrop);"
 
   it.each([
+    ["src/components/drawer/drawer.css", ".dr-drawer-overlay"],
+    [
+      "src/components/overlay-primitives/overlay-primitives.css",
+      ".dr-overlay-backdrop",
+    ],
+    ["src/components/tour/tour.css", ".dr-tour-backdrop"],
+  ])("%s %s frosts through --overlay-backdrop", (path, selector) => {
+    expect(bodyOf(path, selector)).toContain(FROSTED)
+  })
+
+  it.each([
     [
       "src/components/color-picker/color-picker.css",
       ".dr-color-picker-content",
@@ -329,7 +334,6 @@ describe("overlay backdrop", () => {
     ["src/components/command/command.css", ".dr-command"],
     ["src/components/date-picker/date-picker.css", ".dr-date-picker-content"],
     ["src/components/dialog/dialog.css", ".dr-dialog-content"],
-    ["src/components/drawer/drawer.css", ".dr-drawer-overlay"],
     ["src/components/drawer/drawer.css", ".dr-drawer-content"],
     ["src/components/floating-panel/floating-panel.css", ".dr-floating-panel"],
     ["src/components/hover-card/hover-card.css", ".dr-hover-card-content"],
@@ -344,16 +348,11 @@ describe("overlay backdrop", () => {
       "src/components/navigation-menu/navigation-menu.css",
       ".dr-navigation-menu-content",
     ],
-    [
-      "src/components/overlay-primitives/overlay-primitives.css",
-      ".dr-overlay-backdrop",
-    ],
     ["src/components/popover/popover.css", ".dr-popover-content"],
     ["src/components/select/select.css", ".dr-select-content"],
     ["src/components/sheet/sheet.css", ".dr-sheet-content"],
     ["src/components/sonner/sonner.css", ".dr-toast"],
     ["src/components/tooltip/tooltip.css", ".dr-tooltip-content"],
-    ["src/components/tour/tour.css", ".dr-tour-backdrop"],
     [
       "src/components/virtualized-dropdown-menu/virtualized-dropdown-menu.css",
       ".dr-vdm-content",
@@ -368,9 +367,10 @@ describe("overlay backdrop", () => {
       "src/components/virtualized-timeline/virtualized-timeline.css",
       ".dr-virtualized-timeline-scrubber-label",
     ],
-    [THEME, ".overlay-surface"],
-  ])("%s %s frosts through --overlay-backdrop", (path, selector) => {
-    expect(bodyOf(path, selector)).toContain(FROSTED)
+  ])("%s %s applies the overlay surface", (path, selector) => {
+    const body = bodyOf(path, selector)
+    expect(body).toMatch(/@apply overlay-surface;/)
+    expect(body).not.toContain("backdrop-filter")
   })
 
   // Page content keeps Quiet's recipe under every style.
