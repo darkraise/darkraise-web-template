@@ -269,3 +269,37 @@ test.describe("slider", () => {
     expect(Math.abs(thumb.x + thumb.width / 2 - range.x)).toBeLessThanOrEqual(1)
   })
 })
+
+test.describe("progress", () => {
+  test("the value fills from the track's right edge", async ({ page }) => {
+    await openFixture(page)
+    const probe = page.locator('[data-probe="progress"]')
+    const track = await boxOf(probe.getByRole("progressbar"))
+    const fill = await boxOf(probe.locator(".dr-progress-indicator"))
+    expect(
+      Math.abs(fill.x - (track.x + track.width * 0.7)),
+    ).toBeLessThanOrEqual(1)
+  })
+})
+
+test.describe("background page", () => {
+  for (const [variant, glow] of [
+    ["mesh", ".dr-bg-mesh-cursor"],
+    ["spotlight", ".dr-bg-spotlight-glow"],
+  ] as const) {
+    test(`the ${variant} glow follows the physical pointer x`, async ({
+      page,
+    }) => {
+      await openFixture(page)
+      const root = page.locator(
+        `[data-probe="background-${variant}"] .dr-background-page`,
+      )
+      const box = await boxOf(root)
+      const glowBox = await boxOf(root.locator(glow))
+      const centre = glowBox.x + glowBox.width / 2
+      expect(Math.abs(centre - (box.x + box.width * 0.2))).toBeLessThanOrEqual(
+        1,
+      )
+    })
+  }
+})

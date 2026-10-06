@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react"
 import { createRoot } from "react-dom/client"
 import { ChevronRight, House, Package } from "lucide-react"
 import {
@@ -53,6 +54,8 @@ import {
 } from "darkraise-ui/components/tree-view"
 import { JsonTreeView } from "darkraise-ui/components/json-tree-view"
 import { Slider } from "darkraise-ui/components/slider"
+import { Progress } from "darkraise-ui/components/progress"
+import { BackgroundPage } from "darkraise-ui/components/background-page"
 import "../../src/styles/globals.css"
 
 function SidebarLink({
@@ -231,6 +234,19 @@ createRoot(root).render(
       <div data-probe="slider" style={{ width: 240 }}>
         <Slider defaultValue={[30]} aria-label="Volume" />
       </div>
+      <div data-probe="progress" style={{ width: 240 }}>
+        <Progress value={30} />
+      </div>
+      {(["mesh", "spotlight"] as const).map((variant) => (
+        <div key={variant} data-probe={`background-${variant}`}>
+          <BackgroundPage
+            variant={variant}
+            style={
+              { "--dr-bg-mx": 0.2, width: 400, height: 160 } as CSSProperties
+            }
+          />
+        </div>
+      ))}
     </div>
   </ThemeProvider>,
 )

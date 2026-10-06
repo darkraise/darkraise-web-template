@@ -7,4 +7,10 @@
     @apply bg-primary-fill h-full w-full flex-1 transition-transform;
     transition-duration: var(--duration-fast);
   }
+
+  /* The fill is translated toward the left by the unfilled share; mirroring
+     the indicator keeps it anchored at the inline start under RTL. */
+  .dr-progress-indicator:dir(rtl) {
+    scale: -1 1;
+  }
 }
