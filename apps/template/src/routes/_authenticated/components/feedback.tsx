@@ -378,8 +378,9 @@ toast.error("Deploy failed", {
         code={`// Default position is set on the Toaster — usually mounted once at
 // the app root. Each toast can override via options.position.
 
-// Default for the whole app (defaults to "bottom-right" when omitted):
-<Toaster position="bottom-right" />
+// Default for the whole app (defaults to "bottom-end" when omitted; start
+// and end follow the reading direction):
+<Toaster position="bottom-end" />
 
 // Per-message override:
 toast.success("Saved", { position: "top-right" })

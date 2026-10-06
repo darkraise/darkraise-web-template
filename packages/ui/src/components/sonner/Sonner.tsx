@@ -11,6 +11,7 @@ import {
   X,
 } from "lucide-react"
 
+import { getDirection, type Direction } from "@lib/direction"
 import { cn } from "@lib/utils"
 import { announce } from "@primitives/aria"
 import { Portal } from "@primitives/portal"
@@ -26,6 +27,25 @@ import {
 import "./sonner.css"
 
 export type { Toast, ToastKind, ToastPosition } from "./toastStore"
+
+type PhysicalToastPosition = Exclude<
+  ToastPosition,
+  "top-start" | "top-end" | "bottom-start" | "bottom-end"
+>
+
+function physicalPosition(
+  position: ToastPosition,
+  direction: Direction,
+): PhysicalToastPosition {
+  const [block, inline] = position.split("-") as ["top" | "bottom", string]
+  if (inline === "start") {
+    return `${block}-${direction === "ltr" ? "left" : "right"}`
+  }
+  if (inline === "end") {
+    return `${block}-${direction === "ltr" ? "right" : "left"}`
+  }
+  return position as PhysicalToastPosition
+}
 
 const DEFAULT_DURATION_BY_KIND: Record<ToastKind, number> = {
   default: 4000,
@@ -58,7 +78,7 @@ interface ToasterProps {
   /**
    * Default position for toasts that do not specify their own. Per-toast
    * override via `toast(message, { position: "top-left" })`. Defaults to
-   * `bottom-right`.
+   * `bottom-end`, which is the bottom right in a left-to-right document.
    */
   position?: ToastPosition
   /** Sonner-compat placeholder; not implemented */
@@ -88,7 +108,7 @@ function useToasts(): Toast[] {
 }
 
 function Toaster({
-  position = "bottom-right",
+  position = "bottom-end",
   className,
   style,
   gap = 14,
@@ -96,26 +116,36 @@ function Toaster({
   closeButton = false,
 }: ToasterProps) {
   const toasts = useToasts()
+  const [direction, setDirection] = React.useState<Direction>("ltr")
 
-  // Group by effective position: toast-level override falls back to the
-  // Toaster's default. Each group renders an independent stack so toasts
-  // bound to different corners don't interfere with each other's height
-  // animations or hover-expand state.
+  // Logical positions resolve against the direction the stacks render in,
+  // which only an element inside the portal can report. The portal mounts
+  // one commit after the Toaster, so this reads it from a ref callback.
+  const measureDirection = React.useCallback((node: HTMLElement | null) => {
+    if (node) setDirection(getDirection(node))
+  }, [])
+
+  // Group by effective physical position: toast-level override falls back
+  // to the Toaster's default, so bottom-right and bottom-end share a stack
+  // in a left-to-right document. Each group renders an independent stack so
+  // toasts bound to different corners don't interfere with each other's
+  // height animations or hover-expand state.
   const grouped = React.useMemo(() => {
-    const groups = new Map<ToastPosition, Toast[]>()
+    const groups = new Map<PhysicalToastPosition, Toast[]>()
     for (const t of toasts) {
-      const pos = t.position ?? position
+      const pos = physicalPosition(t.position ?? position, direction)
       const list = groups.get(pos)
       if (list) list.push(t)
       else groups.set(pos, [t])
     }
     return groups
-  }, [toasts, position])
+  }, [toasts, position, direction])
 
   if (toasts.length === 0) return null
 
   return (
     <Portal>
+      <span ref={measureDirection} hidden />
       {Array.from(grouped.entries()).map(([pos, list]) => (
         <PositionedStack
           key={pos}
@@ -134,7 +164,7 @@ function Toaster({
 Toaster.displayName = "Toaster"
 
 interface PositionedStackProps {
-  position: ToastPosition
+  position: PhysicalToastPosition
   toasts: Toast[]
   className?: string
   style?: React.CSSProperties

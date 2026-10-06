@@ -155,6 +155,37 @@ describe("Sonner / Toaster", () => {
     expect(positions).toEqual(["bottom-right", "top-left"])
   })
 
+  it("bottom-right and bottom-end share one stack under LTR", async () => {
+    render(<Toaster position="bottom-right" />)
+    act(() => {
+      toast("Physical", { duration: Number.POSITIVE_INFINITY })
+      toast("Logical", {
+        position: "bottom-end",
+        duration: Number.POSITIVE_INFINITY,
+      })
+    })
+    await waitFor(() => expect(screen.queryAllByRole("status")).toHaveLength(2))
+    const lists = document.querySelectorAll(".dr-toaster")
+    expect(lists).toHaveLength(1)
+    expect(lists[0]).toHaveAttribute("data-position", "bottom-right")
+  })
+
+  it("places the default bottom-end stack at the bottom left under RTL", async () => {
+    document.documentElement.dir = "rtl"
+    try {
+      render(<Toaster />)
+      act(() => {
+        toast("Hello", { duration: Number.POSITIVE_INFINITY })
+      })
+      await screen.findByRole("status")
+      const lists = document.querySelectorAll(".dr-toaster")
+      expect(lists).toHaveLength(1)
+      expect(lists[0]).toHaveAttribute("data-position", "bottom-left")
+    } finally {
+      document.documentElement.removeAttribute("dir")
+    }
+  })
+
   it("auto-dismissing toasts render a countdown bar timed to their duration", async () => {
     render(<Toaster />)
     act(() => {

@@ -29,7 +29,7 @@
 
   /* Each toast — absolute positioned within the toaster, transformed by index. */
   .dr-toast {
-    @apply text-popover-foreground pointer-events-auto absolute flex w-full items-start gap-3 rounded-[var(--overlay-radius)] border p-4 pr-9;
+    @apply text-popover-foreground pointer-events-auto absolute flex w-full items-start gap-3 rounded-[var(--overlay-radius)] border p-4 pe-9;
     /* The overlay family, read as every other overlay reads it. */
     @apply overlay-surface;
     box-shadow: var(--overlay-shadow);
@@ -261,7 +261,7 @@
      rather than a generic ghost button. The icon colour takes no alpha: the
      -edge tokens sit at the 3:1 mark floor on their -subtle fill. */
   .dr-toast-close {
-    @apply focus-ring absolute top-1.5 right-1.5 inline-flex size-6 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent p-0 opacity-0 transition-[opacity,background-color,color] duration-150 [&_svg]:size-[var(--icon-size-sm)];
+    @apply focus-ring absolute end-1.5 top-1.5 inline-flex size-6 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent p-0 opacity-0 transition-[opacity,background-color,color] duration-150 [&_svg]:size-[var(--icon-size-sm)];
     color: hsl(var(--toast-accent, var(--muted-foreground)));
   }
   .dr-toast-close:hover {
@@ -285,7 +285,7 @@
      `duration: 0` toasts never get one. Absolute positioning resolves
      against the padding box, so the bar sits flush inside the border. */
   .dr-toast-progress {
-    @apply pointer-events-none absolute right-0 bottom-0 left-0 overflow-hidden;
+    @apply pointer-events-none absolute inset-x-0 bottom-0 overflow-hidden;
     height: 3px;
     /* Only the bottom corners follow the toast's radius; styles that square
        the toast off flow through for free. */
@@ -294,7 +294,8 @@
     background-color: hsl(var(--toast-accent, var(--muted-foreground)) / 0.15);
   }
   .dr-toast-progress-fill {
-    @apply block size-full origin-left;
+    @apply block size-full;
+    transform-origin: left;
     /* The bar is a mark: the text colour holds 3:1 on the track, where the
        edge colour drops to about 2.6:1. */
     background-color: hsl(var(--toast-text, var(--muted-foreground)));
@@ -304,6 +305,9 @@
     animation-name: dr-toast-countdown;
     animation-timing-function: linear;
     animation-fill-mode: forwards;
+  }
+  .dr-toast-progress-fill:dir(rtl) {
+    transform-origin: right;
   }
   /* The stack pauses its dismiss timers while hovered or focus-within; the
      bar freezes with them so the two never drift apart. */

@@ -15,6 +15,10 @@ export type ToastPosition =
   | "bottom-left"
   | "bottom-right"
   | "bottom-center"
+  | "top-start"
+  | "top-end"
+  | "bottom-start"
+  | "bottom-end"
 
 export interface ToastAction {
   label: string
@@ -54,7 +58,7 @@ export interface ToastOptions {
   closeButton?: boolean
   /**
    * Render this toast in a specific corner. Falls back to the Toaster's
-   * `position` prop (default `bottom-right`) when omitted.
+   * `position` prop (default `bottom-end`) when omitted.
    */
   position?: ToastPosition
 }
