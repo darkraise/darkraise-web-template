@@ -78,6 +78,18 @@ Breaking: a disabled compound control fades once, at its root. Its parts used to
 
 Breaking: `Alert`'s `default` variant fills with `--muted` instead of `--background`, matching `Banner`, so it no longer disappears into the page canvas. `.dr-badge` lays out its children with a 4px gap; remove `mr-1` or `ml-1` spacers from badge icons.
 
+Breaking: `NavigationMenu` no longer takes `orientation`, `delayDuration` or `skipDelayDuration`, and the `NavigationMenuOrientation` type is removed; none of them had any effect. Items no longer open when their trigger takes keyboard focus, and triggers drop `aria-haspopup="menu"` (they keep `aria-expanded` and `aria-controls`). Left and Right (mirrored right to left), Home and End move between top-level items; Enter or Space toggles an item; ArrowDown opens it and focuses its first link; Up and Down move between its links; Escape closes it and returns focus to its trigger; and focus leaving the panel closes it.
+
+Breaking: the `outline` variant of `Listbox` and `TreeView` marks a selected row with a 1px ring and text in `--primary-text` over a transparent row instead of the checked fill, and `Pagination`'s `outline` variant draws the neutral `--field-edge` border around every link but the current page. Each used to look the same as `filled`.
+
+Breaking: `TimePicker`'s `onChange` is renamed `onValueChange`, and `defaultValue` (default `"12:00"`) is added; without `value`, the picker now keeps the time the user picks.
+
+Breaking: `QrCode` draws black modules on white (`fgColor="#000"`, `bgColor="#fff"`) inside a 4-module quiet zone (the new `margin` prop), so it scans in dark mode; pass `fgColor="currentColor" bgColor="transparent" margin={0}` for the 6.x look. A value too long to encode no longer renders an empty code: the frame sets `data-state="error"` and renders `fallback`, `onError` is called, and `QrCodeOverlay` renders nothing.
+
+Breaking: `Calendar`'s `components` prop is removed; it was never read.
+
+Breaking: `TreeView` rows indent through a `--tree-depth` custom property instead of an inline `padding-inline-start`. Depth-0 rows gain a 0.5rem inline-start inset, and leaves also clear a branch indicator's width plus its gap, so their text lines up with sibling branches.
+
 Breaking: `ComboboxContent`, and with it `MultiSelect`'s list, renders in a portal at the end of `<body>`, positioned against its field and flipped or shifted to stay on screen. Selectors that reach the list through the field, such as `.dr-combobox .dr-combobox-content` or `.dr-multi-select .dr-combobox-item`, no longer match; select `.dr-combobox-content` directly, or pass a `className`.
 
 Breaking: `SheetContent` scrolls as a whole when its content is taller than the sheet, instead of clipping it, and top and bottom sheets stop at the viewport height minus 2rem. To keep the header and footer pinned, wrap the middle in the new `SheetBody`.
@@ -118,6 +130,10 @@ Breaking: `FloatingPanel` z-indexes run from 10 to 49 by recency (the most recen
 - `SheetBody`: the scrolling middle of a sheet; rendering one pins the sheet's header and footer, as `DialogBody` does for a dialog.
 - `ComboboxContent` takes `surface`, forwarded as `data-surface-fill` like the other popups, and `ComboboxControl` takes a `ref`.
 - Every popup positioned by the kit sets `--popup-available-width`, `--popup-available-height`, `--popup-anchor-width`, `--popup-anchor-height` (all in px) and `--popup-transform-origin` on itself, for consumer styles that size or animate a popup.
+- `QrCode` `margin`, `label`, `onError` and `fallback`. Its `<svg>` is `role="img"`, named by `label` or `labels.qrCode.label` ("QR code"; Vietnamese "Mã QR").
+- `TimePicker` `defaultValue`.
+- `NavigationMenu` keyboard navigation (see the Breaking note above).
+- `ScrollArea` `type` (`auto`, `always`, `scroll`, `hover`) and `scrollHideDelay` (default 600ms) now work, with Radix semantics; scrollbars carry `data-state="visible"` or `"hidden"`, and a hidden bar fades out.
 
 ### Changed
 
@@ -259,6 +275,10 @@ The root declares `color-scheme` per mode, so native scrollbars, date pickers an
 The neutral accent swatch shows near-white in dark mode, as the accent renders, with the title "Neutral (near-white)"; the active swatch takes a ring outside its edge.
 
 Fixed: the virtualized timeline's sticky header is opaque and follows the page or card it sits in (`--timeline-header-bg`); toast action buttons hover toward their fill's wash, so a dark label keeps its contrast; sidebar groups animate open and closed.
+
+- The virtualized timeline rail draws every tick mark in one column at its edge, centred on its date, so unlabelled marks no longer cross the labels; a group header spaces its checkbox, toggle and label 8px apart.
+- A vertical `Toolbar` is as wide as its widest item instead of its container.
+- A `SegmentGroup` disabled through a disabled `Fieldset` shows the not-allowed cursor.
 
 ## [6.9.6] — 2026-09-30
 

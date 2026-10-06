@@ -95,6 +95,18 @@ A disabled compound control fades once, at its root; its parts, and the controls
 
 `Alert`'s default fill is `--muted`. `.dr-badge` lays out its children with a 4px gap; remove `mr-1` or `ml-1` spacers from icons inside `Badge`.
 
+`NavigationMenu` drops `orientation`, `delayDuration`, `skipDelayDuration` and the `NavigationMenuOrientation` type; delete them where you pass them. Items no longer open on keyboard focus: press ArrowDown, Enter or Space on a trigger. Tests that waited for a panel after tabbing to a trigger must press one of those keys.
+
+`TimePicker`: rename `onChange` to `onValueChange`. An uncontrolled picker takes `defaultValue` and keeps the user's picks.
+
+`QrCode` is black on white with a 4-module quiet zone by default. For the 6.x look pass `fgColor="currentColor" bgColor="transparent" margin={0}`, but a light-on-dark code scans poorly. Pass `fallback` and `onError` to handle a value longer than the encoder holds (119 bytes at level H, 213 at the default M).
+
+`Calendar` no longer accepts `components`; remove it.
+
+The `outline` variant of `Listbox` and `TreeView` now rings the selected row instead of filling it, and `Pagination`'s outline variant edges its links. Use `variant="filled"` (the default) for the checked fill.
+
+`TreeView` rows indent through `--tree-depth`; a `style` prop that set `paddingInlineStart` on a row to indent it should set `--tree-view-indent` on the tree instead. Remove spacer elements added to line leaves up with branches.
+
 ## Overlays
 
 `ComboboxContent` (and `MultiSelect`'s list) renders in a portal at the end of `<body>`. Stylesheets that styled the list through its field, for example `.dr-combobox .dr-combobox-content`, must select `.dr-combobox-content` directly or pass a `className` to `ComboboxContent`.

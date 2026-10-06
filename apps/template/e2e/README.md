@@ -139,7 +139,7 @@ change only control shadows, which `16` and the kitchen sink baseline cover.
 
 Accordion, collapsible, dialog (open → focus inside → Escape), alert dialog,
 drawer, sheet, popover, tooltip, hover card, floating panel, dropdown menu,
-context menu (right click), menubar, navigation menu, virtualized dropdown menu
+context menu (right click), menubar, navigation menu (and its arrow-key, ArrowDown and Escape handling), virtualized dropdown menu
 (asserts the list is actually windowed), the global ⌘/Ctrl-K command palette,
 the command showcase filter, Sonner toasts, banner dismissal, and the guided
 tour.
@@ -159,8 +159,8 @@ by reading canvas pixels), clipboard copy.
 Table, data table sorting, product search filtering, pagination; tabs, steps,
 carousel, tree view, JSON tree view, scroll area, resizable (real mouse drag);
 progress, timer, spinner, skeleton; charts, dashboard chart sizing, contribution
-graph, QR code, virtualized timeline, marquee; breadcrumb, avatar, highlight,
-empty state, download trigger, image cropper.
+graph, QR code, virtualized timeline (ticks centred on their dates and clear of the labels, and the group checkbox's gap), marquee; breadcrumb, avatar, highlight,
+empty state, download trigger, image cropper (its dimensions badge shows at rest).
 
 ### 09 · Layout and responsive (`09-layout-responsive.spec.ts`)
 
@@ -259,6 +259,14 @@ Runs against the control-contract fixture, one `data-probe` per case.
 - Disabled: every disabled probe and compound control has an effective
   opacity of `--disabled-opacity` (the product of its own and its ancestors'
   opacity) and `cursor: not-allowed`; a read-only Editable does not fade.
+
+### 27 · Controls behaviour (`27-controls-behaviour.spec.ts`)
+
+Runs against the controls-behaviour fixture (`fixtures/controls-behaviour.html`), one `data-probe` per case.
+
+- Tree view: a leaf's text lines up with a sibling branch's text, nested leaves indent by `--tree-view-indent`, and depth-0 rows keep their inset.
+- A vertical toolbar is as wide as its widest item.
+- Outline variants, in both modes: the selected Listbox and TreeView row's ring reaches 3:1 against the row's fill, and Pagination's link edge reaches 3:1 against the page.
 
 ### 20 · Fonts (`20-fonts.spec.ts`)
 
