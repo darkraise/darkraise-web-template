@@ -46,7 +46,6 @@ function InboxPage() {
             className={cn(
               "hover:bg-accent w-full py-3 ps-4 pe-6 text-left transition-colors",
               selectedId === message.id && "bg-accent",
-              !message.isRead && "bg-accent/50",
             )}
           >
             <div className="flex items-start gap-3">

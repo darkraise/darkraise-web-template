@@ -1,6 +1,6 @@
 import { test, expect, type Locator, type Page } from "@playwright/test"
 import { STYLES } from "./fixtures/theme"
-import { boxOf, gotoApp, seedApp } from "./helpers/app"
+import { applyTheme, boxOf, gotoApp, reloadApp, seedApp } from "./helpers/app"
 import { alphaOf, computed } from "./helpers/measure"
 
 /**
@@ -409,6 +409,33 @@ test.describe("inbox", () => {
       expect(bar.x - (box.x + box.width)).toBeGreaterThanOrEqual(8)
     }
   })
+
+  for (const style of ["quiet", "glass"] as const) {
+    test(`unread rows keep the read rows' background under ${style}`, async ({
+      page,
+    }) => {
+      await gotoApp(page, "/inbox")
+      if (style === "glass") {
+        await applyTheme(page, { style: "glass" })
+        await reloadApp(page)
+      }
+      const rows = page.locator(".dr-split-panel-layout-aside button")
+      const unread = rows
+        .filter({ has: page.locator("[data-unread-dot]") })
+        .first()
+      const read = rows
+        .filter({ hasNot: page.locator("[data-unread-dot]") })
+        .first()
+      await expect(unread).toBeVisible()
+      expect(await computed(unread, "background-color")).toBe(
+        await computed(read, "background-color"),
+      )
+      const sender = unread.locator(".font-semibold").first()
+      expect(
+        Number(await computed(sender, "font-weight")),
+      ).toBeGreaterThanOrEqual(600)
+    })
+  }
 })
 
 test.describe("order stepper", () => {
