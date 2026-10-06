@@ -120,6 +120,26 @@ describe("ContributionGraph", () => {
     expect(document.activeElement).toHaveAttribute("data-date", "2026-07-28")
   })
 
+  it("moves to the next week with ArrowLeft under RTL", () => {
+    render(
+      <div dir="rtl">
+        <ContributionGraph
+          startDate="2026-07-20"
+          endDate="2026-08-02"
+          data={data}
+        />
+      </div>,
+    )
+    const monday = cellFor("2026-07-20")
+    monday.focus()
+    fireEvent.keyDown(monday, { key: "ArrowLeft" })
+    expect(document.activeElement).toHaveAttribute("data-date", "2026-07-27")
+    fireEvent.keyDown(document.activeElement as HTMLElement, {
+      key: "ArrowRight",
+    })
+    expect(document.activeElement).toHaveAttribute("data-date", "2026-07-20")
+  })
+
   it("does not move focus past the edge of the grid", () => {
     renderGraph()
     // 2026-07-20 is in the first week column, so there is nowhere to go left.

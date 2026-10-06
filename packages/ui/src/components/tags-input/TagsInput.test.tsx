@@ -140,6 +140,27 @@ describe("TagsInput", () => {
     expect(last.value).toEqual(["green"])
   })
 
+  it("arrow keys follow the reading order under RTL", async () => {
+    const user = userEvent.setup()
+    render(
+      <div dir="rtl">
+        <Basic defaultValue={["red", "green", "blue"]} />
+      </div>,
+    )
+    const tag = (name: string) =>
+      screen.getByRole("button", { name: `${name}, press Backspace to delete` })
+    const input = getInput()
+    await user.click(input)
+    await user.keyboard("{ArrowLeft}")
+    expect(input).toHaveFocus()
+    await user.keyboard("{ArrowRight}")
+    expect(tag("blue")).toHaveFocus()
+    await user.keyboard("{ArrowRight}")
+    expect(tag("green")).toHaveFocus()
+    await user.keyboard("{ArrowLeft}{ArrowLeft}")
+    expect(input).toHaveFocus()
+  })
+
   it("validation rejects invalid input — onValueChange not called", async () => {
     const user = userEvent.setup()
     const spy = vi.fn()

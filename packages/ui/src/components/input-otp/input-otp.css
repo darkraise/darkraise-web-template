@@ -18,7 +18,7 @@
   }
 
   .dr-input-otp-slot {
-    @apply border-input relative flex items-center justify-center border-y border-r text-sm transition-[border-color,box-shadow] first:rounded-l-[var(--field-radius)] first:border-l last:rounded-r-[var(--field-radius)];
+    @apply border-input relative flex items-center justify-center border-y border-e text-sm transition-[border-color,box-shadow] first:rounded-s-[var(--field-radius)] first:border-s last:rounded-e-[var(--field-radius)];
     /* Pinned out of the `surface` prop on purpose: fields hold
        still while panels move around them. The rung is container-relative
        -- see `--control-surface` in theme.css. */

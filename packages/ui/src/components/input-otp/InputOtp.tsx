@@ -2,6 +2,7 @@ import { useUiText } from "../../i18n/useUiText"
 import * as React from "react"
 import { Dot } from "lucide-react"
 
+import { inlineArrow } from "@lib/direction"
 import { cn } from "@lib/utils"
 import { useEvent } from "@primitives/state"
 import {
@@ -420,12 +421,13 @@ function InputOTPSlotSeparate({
       }
       return
     }
-    if (event.key === "ArrowLeft") {
+    const arrow = inlineArrow(event.key, event.currentTarget)
+    if (arrow === "prev") {
       if (index > 0) ctx.focusIndex(index - 1)
       event.preventDefault()
       return
     }
-    if (event.key === "ArrowRight") {
+    if (arrow === "next") {
       if (index < ctx.maxLength - 1) ctx.focusIndex(index + 1)
       event.preventDefault()
       return

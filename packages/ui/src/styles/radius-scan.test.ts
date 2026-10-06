@@ -284,8 +284,8 @@ describe("control radius readers", () => {
 
   it("rounds the outer corners of grouped OTP slots with --field-radius", () => {
     const body = bodyOf("input-otp/input-otp.css", ".dr-input-otp-slot")
-    expect(body).toContain("first:rounded-l-[var(--field-radius)]")
-    expect(body).toContain("last:rounded-r-[var(--field-radius)]")
+    expect(body).toContain("first:rounded-s-[var(--field-radius)]")
+    expect(body).toContain("last:rounded-e-[var(--field-radius)]")
   })
 
   it.each([

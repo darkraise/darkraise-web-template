@@ -134,7 +134,7 @@
     grid-column: 1;
     grid-row: 2;
     gap: var(--contrib-cell-gap);
-    margin-right: var(--contrib-cell-gap);
+    margin-inline-end: var(--contrib-cell-gap);
   }
 
   .dr-contribution-graph-weekdays > span {
@@ -206,9 +206,9 @@
     @apply text-popover-foreground pointer-events-none absolute z-10 w-max max-w-56 rounded-[var(--radius-sm)] border px-2 py-1 text-xs;
     @apply overlay-surface;
     box-shadow: var(--overlay-shadow);
-    /* Sits above the cell it describes, horizontally centred on it. */
+    /* Sits above the cell it describes, horizontally centred on it: the
+       inline left is the cell's centre, measured in JS. */
     transform: translate(-50%, calc(-100% - 0.375rem));
-    margin-left: calc(var(--contrib-cell-size) / 2);
   }
 
   /* Flipped under the cell when there is not enough room above it. Consumers

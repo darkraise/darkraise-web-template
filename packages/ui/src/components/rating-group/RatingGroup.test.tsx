@@ -154,6 +154,48 @@ describe("RatingGroup", () => {
     expect(onValueChange).toHaveBeenLastCalledWith({ value: 2 })
   })
 
+  it("commits a half value from the right half of an item under RTL", () => {
+    const onValueChange = vi.fn<(d: RatingGroupValueChangeDetails) => void>()
+    render(
+      <div dir="rtl">
+        <Basic max={5} allowHalf onValueChange={onValueChange} />
+      </div>,
+    )
+    const fourth = screen.getAllByRole("radio")[3]
+    if (!fourth) throw new Error("item 3 missing")
+    fourth.getBoundingClientRect = () => ({
+      x: 0,
+      y: 0,
+      left: 0,
+      top: 0,
+      right: 20,
+      bottom: 20,
+      width: 20,
+      height: 20,
+      toJSON: () => "",
+    })
+    fireEvent.click(fourth, { clientX: 16 })
+    expect(onValueChange).toHaveBeenLastCalledWith({ value: 3.5 })
+    fireEvent.click(fourth, { clientX: 4 })
+    expect(onValueChange).toHaveBeenLastCalledWith({ value: 4 })
+  })
+
+  it("increments with ArrowLeft and decrements with ArrowRight under RTL", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn<(d: RatingGroupValueChangeDetails) => void>()
+    render(
+      <div dir="rtl">
+        <Basic max={5} defaultValue={3} onValueChange={onValueChange} />
+      </div>,
+    )
+    const third = screen.getByTestId("star-3").parentElement as HTMLElement
+    third.focus()
+    await user.keyboard("{ArrowLeft}")
+    expect(onValueChange).toHaveBeenLastCalledWith({ value: 4 })
+    await user.keyboard("{ArrowRight}")
+    expect(onValueChange).toHaveBeenLastCalledWith({ value: 3 })
+  })
+
   it("blocks click commits while readOnly and shows no hover preview", async () => {
     const user = userEvent.setup()
     const onValueChange = vi.fn<(d: RatingGroupValueChangeDetails) => void>()

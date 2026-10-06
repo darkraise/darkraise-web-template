@@ -248,6 +248,23 @@ describe('InputOtp variant="separate"', () => {
     expect(document.activeElement).toBe(slots[3])
   })
 
+  it("arrow keys follow the reading order under RTL", async () => {
+    const user = userEvent.setup()
+    render(
+      <div dir="rtl">
+        <Separate value="1234" />
+      </div>,
+    )
+    const slots = screen.getAllByRole("textbox", { name: /character/i })
+    const target = slots[1]
+    if (!target) throw new Error("slot 1 missing")
+    await user.click(target)
+    await user.keyboard("{ArrowLeft}")
+    expect(document.activeElement).toBe(slots[2])
+    await user.keyboard("{ArrowRight}{ArrowRight}")
+    expect(document.activeElement).toBe(slots[0])
+  })
+
   it("paste fans out across slots starting at the focused one", async () => {
     const user = userEvent.setup()
     const onChange = vi.fn()

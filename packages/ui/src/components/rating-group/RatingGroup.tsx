@@ -2,6 +2,7 @@
 
 import * as React from "react"
 
+import { getDirection, inlineArrow } from "@lib/direction"
 import { cn } from "@lib/utils"
 import "./rating-group.css"
 
@@ -54,6 +55,13 @@ function clamp(n: number, min: number, max: number): number {
   if (n < min) return min
   if (n > max) return max
   return n
+}
+
+/** Whether the pointer is over the half of the item at its inline start. */
+function isStartHalf(event: React.MouseEvent<HTMLElement>): boolean {
+  const rect = event.currentTarget.getBoundingClientRect()
+  const leftHalf = event.clientX - rect.left < rect.width / 2
+  return getDirection(event.currentTarget) === "rtl" ? !leftHalf : leftHalf
 }
 
 function snap(n: number, allowHalf: boolean): number {
@@ -348,10 +356,9 @@ function RatingGroupItem({
       if (hoverValue !== index || hoverHalf) setHover(index, false)
       return
     }
-    const rect = event.currentTarget.getBoundingClientRect()
-    const isLeftHalf = event.clientX - rect.left < rect.width / 2
-    if (hoverValue !== index || hoverHalf !== isLeftHalf) {
-      setHover(index, isLeftHalf)
+    const startHalf = isStartHalf(event)
+    if (hoverValue !== index || hoverHalf !== startHalf) {
+      setHover(index, startHalf)
     }
   }
 
@@ -362,9 +369,7 @@ function RatingGroupItem({
     if (!allowHalf) {
       setHover(index, false)
     } else {
-      const rect = event.currentTarget.getBoundingClientRect()
-      const isLeftHalf = event.clientX - rect.left < rect.width / 2
-      setHover(index, isLeftHalf)
+      setHover(index, isStartHalf(event))
     }
   }
 
@@ -376,9 +381,7 @@ function RatingGroupItem({
       commit(index)
       return
     }
-    const rect = event.currentTarget.getBoundingClientRect()
-    const isLeftHalf = event.clientX - rect.left < rect.width / 2
-    commit(isLeftHalf ? index - 0.5 : index)
+    commit(isStartHalf(event) ? index - 0.5 : index)
   }
 
   const step = allowHalf ? 0.5 : 1
@@ -387,8 +390,8 @@ function RatingGroupItem({
     onKeyDown?.(event)
     if (event.defaultPrevented) return
     if (disabled) return
-    switch (event.key) {
-      case "ArrowRight":
+    switch (inlineArrow(event.key, event.currentTarget) ?? event.key) {
+      case "next":
       case "ArrowUp": {
         if (readOnly) return
         event.preventDefault()
@@ -398,7 +401,7 @@ function RatingGroupItem({
         focusItem(focusTarget)
         return
       }
-      case "ArrowLeft":
+      case "prev":
       case "ArrowDown": {
         if (readOnly) return
         event.preventDefault()

@@ -64,11 +64,11 @@ describe("field boundary", () => {
     },
   )
 
-  // The base rule gives grouped slots top, bottom and right borders and the
-  // first slot its left, so neighbouring slots share one seam.
+  // The base rule gives grouped slots top, bottom and inline-end borders and
+  // the first slot its inline start, so neighbouring slots share one seam.
   it("lets grouped OTP slots share one seam", () => {
     expect(bodyOf("input-otp/input-otp.css", ".dr-input-otp-slot")).toMatch(
-      /(?<![\w:-])border-y border-r(?![\w-])/,
+      /(?<![\w:-])border-y border-e(?![\w-])/,
     )
   })
 

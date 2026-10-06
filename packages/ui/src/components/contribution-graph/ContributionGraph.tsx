@@ -5,6 +5,7 @@ import { useUiLabels } from "../../labels"
 
 import * as React from "react"
 
+import { inlineArrow } from "@lib/direction"
 import { cn } from "@lib/utils"
 import type { AccentHue } from "@lib/accent-hues"
 import {
@@ -212,12 +213,12 @@ function ContributionGraph({
     event: React.KeyboardEvent<HTMLDivElement>,
     cell: ContributionGraphCell,
   ) {
-    switch (event.key) {
-      case "ArrowLeft":
+    switch (inlineArrow(event.key, event.currentTarget) ?? event.key) {
+      case "prev":
         event.preventDefault()
         moveFocus(cell, -1, 0)
         return
-      case "ArrowRight":
+      case "next":
         event.preventDefault()
         moveFocus(cell, 1, 0)
         return
@@ -254,7 +255,8 @@ function ContributionGraph({
     const top = element.offsetTop
     setHovered({
       cell,
-      left: element.offsetLeft,
+      // The centre of the cell: the tooltip centres itself on this point.
+      left: element.offsetLeft + element.offsetWidth / 2,
       top,
       // Provisional: guessed from the previous tooltip's measured height
       // (0 before any tooltip has ever rendered). The layout effect below

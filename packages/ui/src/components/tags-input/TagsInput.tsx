@@ -3,6 +3,7 @@ import { useUiText } from "../../i18n/useUiText"
 
 import * as React from "react"
 
+import { inlineArrow } from "@lib/direction"
 import { cn } from "@lib/utils"
 import {
   type TagsInputValueChangeDetails,
@@ -303,7 +304,7 @@ function TagsInputItemPreview({
     onKeyDown?.(event)
     if (event.defaultPrevented) return
     if (itemDisabled || ctx.readOnly) return
-    switch (event.key) {
+    switch (inlineArrow(event.key, event.currentTarget) ?? event.key) {
       case "Backspace":
       case "Delete": {
         event.preventDefault()
@@ -316,14 +317,14 @@ function TagsInputItemPreview({
         }
         return
       }
-      case "ArrowLeft": {
+      case "prev": {
         if (index > 0) {
           event.preventDefault()
           ctx.focusTag(index - 1)
         }
         return
       }
-      case "ArrowRight": {
+      case "next": {
         event.preventDefault()
         if (index < ctx.value.length - 1) {
           ctx.focusTag(index + 1)
@@ -625,7 +626,9 @@ function TagsInputInput({
       return
     }
 
-    if (event.key === "ArrowLeft") {
+    // The tags sit before the input, so the key pointing back along the
+    // reading order (ArrowRight under RTL) jumps to the last one.
+    if (inlineArrow(event.key, event.currentTarget) === "prev") {
       const caret = event.currentTarget.selectionStart ?? 0
       if (caret === 0 && value.length > 0) {
         event.preventDefault()
