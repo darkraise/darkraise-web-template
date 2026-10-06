@@ -1,5 +1,6 @@
 import * as React from "react"
 
+import { inlineArrow } from "@lib/direction"
 import { useControllableState, useEvent } from "@primitives/state"
 
 export type TabsOrientation = "horizontal" | "vertical"
@@ -25,7 +26,7 @@ export interface TabsContextValue {
   setValue: (next: string) => void
   orientation: TabsOrientation
   activationMode: TabsActivationMode
-  dir: "ltr" | "rtl"
+  dir: "ltr" | "rtl" | undefined
   registerTrigger: (
     value: string,
     el: HTMLElement | null,
@@ -41,7 +42,7 @@ export function useTabs(options: UseTabsOptions): TabsContextValue {
     onValueChange,
     orientation = "horizontal",
     activationMode = "automatic",
-    dir = "ltr",
+    dir,
   } = options
 
   const [value, setValue] = useControllableState<string>({
@@ -89,15 +90,21 @@ export function useTabs(options: UseTabsOptions): TabsContextValue {
       const idx = list.findIndex((i) => i.value === itemValue)
       if (idx === -1) return
 
-      const horiz = orientation === "horizontal"
-      const ltr = dir === "ltr"
-      const next = horiz ? (ltr ? "ArrowRight" : "ArrowLeft") : "ArrowDown"
-      const prev = horiz ? (ltr ? "ArrowLeft" : "ArrowRight") : "ArrowUp"
+      const step =
+        orientation === "horizontal"
+          ? inlineArrow(
+              event.key,
+              (event.currentTarget as Element).closest('[role="tablist"]'),
+            )
+          : event.key === "ArrowDown"
+            ? "next"
+            : event.key === "ArrowUp"
+              ? "prev"
+              : null
 
       let nextIdx: number | null = null
-      if (event.key === next) nextIdx = (idx + 1) % list.length
-      else if (event.key === prev)
-        nextIdx = (idx - 1 + list.length) % list.length
+      if (step === "next") nextIdx = (idx + 1) % list.length
+      else if (step === "prev") nextIdx = (idx - 1 + list.length) % list.length
       else if (event.key === "Home") nextIdx = 0
       else if (event.key === "End") nextIdx = list.length - 1
 

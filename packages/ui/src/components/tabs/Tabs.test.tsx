@@ -607,4 +607,74 @@ describe("Tabs", () => {
       "muted",
     )
   })
+
+  it("writes no dir attribute unless the prop is given", () => {
+    const { container, rerender } = render(<TestTabs />)
+    expect(container.querySelector(".dr-tabs")).not.toHaveAttribute("dir")
+    rerender(
+      <Tabs defaultValue="tab-1" dir="rtl">
+        <TabsList>
+          <TabsTrigger value="tab-1">Tab One</TabsTrigger>
+        </TabsList>
+      </Tabs>,
+    )
+    expect(container.querySelector(".dr-tabs")).toHaveAttribute("dir", "rtl")
+  })
+
+  it("keeps an ancestor's right-to-left direction", () => {
+    render(
+      <div dir="rtl">
+        <TestTabs />
+      </div>,
+    )
+    expect(getComputedStyle(screen.getByRole("tablist")).direction).toBe("rtl")
+  })
+
+  it("mirrors the horizontal arrow keys under an RTL ancestor", async () => {
+    const user = userEvent.setup()
+    render(
+      <div dir="rtl">
+        <Tabs defaultValue="tab-1">
+          <TabsList>
+            <TabsTrigger value="tab-1">Tab One</TabsTrigger>
+            <TabsTrigger value="tab-2">Tab Two</TabsTrigger>
+            <TabsTrigger value="tab-3">Tab Three</TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>,
+    )
+    await user.click(screen.getByRole("tab", { name: "Tab One" }))
+    await user.keyboard("{ArrowLeft}")
+    expect(screen.getByRole("tab", { name: "Tab Two" })).toHaveFocus()
+    await user.keyboard("{ArrowRight}")
+    expect(screen.getByRole("tab", { name: "Tab One" })).toHaveFocus()
+  })
+
+  it("puts the vertical underline bar on the inline-end edge", () => {
+    const width = vi
+      .spyOn(HTMLElement.prototype, "offsetWidth", "get")
+      .mockReturnValue(100)
+    const tabs = (
+      <Tabs orientation="vertical" variant="underline" defaultValue="tab-1">
+        <TabsList>
+          <TabsTrigger value="tab-1">Tab One</TabsTrigger>
+        </TabsList>
+      </Tabs>
+    )
+    try {
+      const ltr = render(tabs)
+      expect(
+        ltr.container.querySelector<HTMLElement>(".dr-tabs-indicator")?.style
+          .left,
+      ).toBe("98px")
+      ltr.unmount()
+      const rtl = render(<div dir="rtl">{tabs}</div>)
+      expect(
+        rtl.container.querySelector<HTMLElement>(".dr-tabs-indicator")?.style
+          .left,
+      ).toBe("0px")
+    } finally {
+      width.mockRestore()
+    }
+  })
 })

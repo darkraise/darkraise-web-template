@@ -6,6 +6,7 @@ import { useId } from "@primitives/state"
 import { Presence } from "@primitives/presence"
 import { composeRefs } from "@primitives/slot"
 import { cn } from "@lib/utils"
+import { getDirection } from "@lib/direction"
 import type { SurfaceFill } from "@lib/surface-fill"
 import { type CardBorder } from "@components/card"
 import "./tabs.css"
@@ -158,6 +159,7 @@ interface IndicatorRect {
   top: number
   width: number
   height: number
+  rtl: boolean
 }
 
 function TabsList({
@@ -216,6 +218,7 @@ function TabsList({
           list.scrollTop,
         width: activeBox.width / zoom,
         height: activeBox.height / zoom,
+        rtl: getDirection(list) === "rtl",
       })
       return
     }
@@ -224,6 +227,7 @@ function TabsList({
       top: active.offsetTop,
       width: active.offsetWidth,
       height: active.offsetHeight,
+      rtl: getDirection(list) === "rtl",
     })
   }, [variant])
 
@@ -307,10 +311,15 @@ function indicatorStyle(
   // `transform: translateX(...)` instead, a scale of 1.04 stretched
   // every offset by 4% and pushed the pill off its tab.
   if (vertical) {
+    // The underline bar sits on the trigger's inline-end edge, facing the panel.
+    const left =
+      thickness === null || rect.rtl
+        ? rect.left
+        : rect.left + rect.width - thickness
     return {
       translate: `0 ${rect.top}px`,
       height: `${rect.height}px`,
-      left: `${thickness === null ? rect.left : rect.left + rect.width - thickness}px`,
+      left: `${left}px`,
       width: `${thickness ?? rect.width}px`,
     }
   }
