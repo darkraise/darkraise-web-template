@@ -368,3 +368,49 @@ test.describe("carousel", () => {
     expect(await computed(next.locator("svg"), "scale")).toBe("-1 1")
   })
 })
+
+test.describe("virtualized timeline", () => {
+  test("mirrors the grid and the collapsed chevron", async ({ page }) => {
+    await openFixture(page)
+    const probe = page.locator('[data-probe="timeline-end"]')
+    const cells = probe.getByRole("gridcell")
+    expect((await boxOf(cells.nth(1))).x).toBeLessThan(
+      (await boxOf(cells.nth(0))).x,
+    )
+    const collapsed = probe.locator(
+      '.dr-virtualized-timeline-disclosure[data-collapsed="true"]',
+    )
+    expect(await computed(collapsed, "rotate")).toBe("90deg")
+  })
+
+  for (const side of ["end", "start"] as const) {
+    test(`puts the ${side} rail on its edge with marks outboard`, async ({
+      page,
+    }) => {
+      await openFixture(page)
+      const probe = page.locator(`[data-probe="timeline-${side}"]`)
+      const viewport = await boxOf(
+        probe.locator(".dr-virtualized-timeline-viewport"),
+      )
+      const rail = await boxOf(probe.getByRole("slider"))
+      const tick = probe
+        .locator(".dr-virtualized-timeline-scrubber-tick")
+        .first()
+      const tickBox = await boxOf(tick)
+      const label = await boxOf(tick.locator("span"))
+      if (side === "end") {
+        expect(rail.x + rail.width).toBeLessThanOrEqual(viewport.x + 1)
+        expect(Math.abs(tickBox.x - rail.x)).toBeLessThanOrEqual(1)
+        expect(label.x - tickBox.x).toBeGreaterThanOrEqual(5)
+      } else {
+        expect(rail.x).toBeGreaterThanOrEqual(viewport.x + viewport.width - 1)
+        expect(
+          Math.abs(tickBox.x + tickBox.width - (rail.x + rail.width)),
+        ).toBeLessThanOrEqual(1)
+        expect(
+          tickBox.x + tickBox.width - (label.x + label.width),
+        ).toBeGreaterThanOrEqual(5)
+      }
+    })
+  }
+})

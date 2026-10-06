@@ -121,10 +121,10 @@ export function VirtualizedTimelineBucket<T>({
         ? { top: row * (tileHeight + gap) }
         : {
             top: row * (tileHeight + gap),
-            left: `calc(${column} * (var(--vtimeline-tile-width) + ${gap}px))`,
+            insetInlineStart: `calc(${column} * (var(--vtimeline-tile-width) + ${gap}px))`,
           }
       // A row spans the content width from the stylesheet, so it needs neither
-      // the inline left offset above nor the tile-width variable.
+      // the inline-start offset above nor the tile-width variable.
       const cellClass = list
         ? "dr-virtualized-timeline-list-item"
         : "dr-virtualized-timeline-tile"

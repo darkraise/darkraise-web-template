@@ -8,6 +8,7 @@ import { useUiLabels } from "../../labels"
 
 import { ChevronDown } from "lucide-react"
 
+import { getDirection, inlineArrow, type Direction } from "@lib/direction"
 import { cn } from "@lib/utils"
 import { Button } from "@components/button"
 import { Checkbox } from "@components/checkbox"
@@ -132,10 +133,9 @@ export interface VirtualizedTimelineProps<T> extends Omit<
   /** Replaces the native DOM `onError` (omitted above); does not layer on it. */
   onError?: (error: unknown, bucket: TimelineBucket<T>) => void
   showScrubber?: boolean
-  /** Which edge the scrubber rail occupies. Physical rather than logical:
-   *  the package has no RTL or `dir` handling anywhere, and `Tooltip`,
-   *  `Sheet`, `Select`, and `Menubar` all take a physical `side` too. */
-  scrubberSide?: "left" | "right"
+  /** Which edge the scrubber rail occupies. `start` and `end` follow the
+   *  direction of the timeline; `left` and `right` are physical. */
+  scrubberSide?: "start" | "end" | "left" | "right"
   selectable?: boolean
   selectedIds?: Iterable<string>
   defaultSelectedIds?: Iterable<string>
@@ -187,7 +187,7 @@ export function VirtualizedTimeline<T>({
   renderSkeleton,
   onError,
   showScrubber = true,
-  scrubberSide = "right",
+  scrubberSide = "end",
   selectable = false,
   selectedIds,
   defaultSelectedIds,
@@ -218,6 +218,22 @@ export function VirtualizedTimeline<T>({
 
   const scrollRef = React.useRef<HTMLDivElement | null>(null)
   const scrollAreaRef = React.useRef<HTMLDivElement | null>(null)
+  const rootRef = React.useRef<HTMLDivElement | null>(null)
+  // Read once after mount: the rail CSS is keyed on a physical side.
+  const [direction, setDirection] = React.useState<Direction>("ltr")
+  React.useLayoutEffect(() => {
+    setDirection(getDirection(rootRef.current))
+  }, [])
+  const physicalScrubberSide =
+    scrubberSide === "start"
+      ? direction === "rtl"
+        ? "right"
+        : "left"
+      : scrubberSide === "end"
+        ? direction === "rtl"
+          ? "left"
+          : "right"
+        : scrubberSide
   const idBase = useId()
   const [contentWidth, setContentWidth] = React.useState(0)
   const [viewportHeight, setViewportHeight] = React.useState(0)
@@ -681,8 +697,8 @@ export function VirtualizedTimeline<T>({
         1,
         Math.floor(viewportHeight / (layout.tileHeight + gap)),
       )
-      switch (event.key) {
-        case "ArrowRight":
+      switch (inlineArrow(event.key, event.currentTarget) ?? event.key) {
+        case "next":
           // A listbox reserves nothing for the horizontal axis, and with one
           // column a horizontal step would just duplicate ArrowDown. Returning
           // without preventDefault leaves horizontal scrolling to the browser.
@@ -690,7 +706,7 @@ export function VirtualizedTimeline<T>({
           event.preventDefault()
           moveFocus(id, 1)
           return
-        case "ArrowLeft":
+        case "prev":
           if (list) return
           event.preventDefault()
           moveFocus(id, -1)
@@ -1062,8 +1078,9 @@ export function VirtualizedTimeline<T>({
 
   return (
     <div
+      ref={rootRef}
       className={cn("dr-virtualized-timeline", className)}
-      data-scrubber-side={scrubberSide}
+      data-scrubber-side={physicalScrubberSide}
       // The consumer's style spreads after the variables, but must never
       // replace the object wholesale: the tile CSS resolves its size from
       // these variables, and a plain `style={{ height: 500 }}` would

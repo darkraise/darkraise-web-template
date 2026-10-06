@@ -126,6 +126,11 @@
     @apply -rotate-90;
   }
 
+  /* A collapsed chevron points along the reading order. */
+  .dr-virtualized-timeline-disclosure[data-collapsed="true"]:dir(rtl) {
+    rotate: 90deg;
+  }
+
   /* touch-action: none, or the browser claims pointerdown for page panning
      and the drag never starts on touch. */
   .dr-virtualized-timeline-scrubber {
@@ -259,5 +264,23 @@
   .dr-virtualized-timeline[data-scrubber-side="left"]
     .dr-virtualized-timeline-scrubber-label {
     @apply right-auto left-4;
+  }
+
+  /* data-scrubber-side is physical, but a flex row starts at the right under
+     RTL. Each side therefore takes the opposite flex direction there, which
+     keeps the rail on its named edge and each tick's mark at the rail's
+     outer edge. */
+  .dr-virtualized-timeline[data-scrubber-side="right"]
+    .dr-virtualized-timeline-scroll-area:dir(rtl),
+  .dr-virtualized-timeline[data-scrubber-side="left"]
+    .dr-virtualized-timeline-scrubber-tick:dir(rtl) {
+    @apply flex-row-reverse;
+  }
+
+  .dr-virtualized-timeline[data-scrubber-side="left"]
+    .dr-virtualized-timeline-scroll-area:dir(rtl),
+  .dr-virtualized-timeline[data-scrubber-side="right"]
+    .dr-virtualized-timeline-scrubber-tick:dir(rtl) {
+    @apply flex-row;
   }
 }

@@ -265,6 +265,39 @@ describe("VirtualizedTimeline", () => {
     )
   })
 
+  it("resolves the default end side to the left under RTL", () => {
+    const { container } = render(<div dir="rtl">{timelineElement()}</div>)
+    expect(container.querySelector(".dr-virtualized-timeline")).toHaveAttribute(
+      "data-scrubber-side",
+      "left",
+    )
+  })
+
+  it("resolves the start side from the direction", () => {
+    const ltr = renderTimeline({ scrubberSide: "start" })
+    expect(
+      ltr.container.querySelector(".dr-virtualized-timeline"),
+    ).toHaveAttribute("data-scrubber-side", "left")
+    ltr.unmount()
+    const { container } = render(
+      <div dir="rtl">{timelineElement({ scrubberSide: "start" })}</div>,
+    )
+    expect(container.querySelector(".dr-virtualized-timeline")).toHaveAttribute(
+      "data-scrubber-side",
+      "right",
+    )
+  })
+
+  it("keeps a physical side under RTL", () => {
+    const { container } = render(
+      <div dir="rtl">{timelineElement({ scrubberSide: "right" })}</div>,
+    )
+    expect(container.querySelector(".dr-virtualized-timeline")).toHaveAttribute(
+      "data-scrubber-side",
+      "right",
+    )
+  })
+
   it("keeps the layout arithmetic identical whichever side the rail is on", () => {
     // jsdom applies none of this package's CSS and performs no layout, so the
     // rail has no rendered width here and contentWidth comes from the stubbed
@@ -784,6 +817,25 @@ describe("VirtualizedTimeline", () => {
     expect(document.activeElement).toBe(cells[1])
     fireEvent.keyDown(cells[1]!, { key: "ArrowLeft" })
     expect(document.activeElement).toBe(cells[0])
+  })
+
+  it("moves focus one item with the mirrored arrows under RTL", () => {
+    render(<div dir="rtl">{timelineElement()}</div>)
+    const cells = screen.getAllByRole("gridcell")
+    act(() => cells[0]!.focus())
+    fireEvent.keyDown(cells[0]!, { key: "ArrowLeft" })
+    expect(document.activeElement).toBe(cells[1])
+    fireEvent.keyDown(cells[1]!, { key: "ArrowRight" })
+    expect(document.activeElement).toBe(cells[0])
+  })
+
+  it("places tiles from the inline start", () => {
+    renderTimeline()
+    const tile = screen.getAllByRole("gridcell")[1]!
+    expect(tile.style.insetInlineStart).toBe(
+      "calc(1 * (var(--vtimeline-tile-width) + 4px))",
+    )
+    expect(tile.style.left).toBe("")
   })
 
   it("moves focus a column with up and down", () => {

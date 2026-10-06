@@ -68,6 +68,10 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "darkraise-ui/components/carousel"
+import {
+  VirtualizedTimeline,
+  type TimelineBucket,
+} from "darkraise-ui/components/virtualized-timeline"
 import "../../src/styles/globals.css"
 
 function SidebarLink({
@@ -115,6 +119,20 @@ const FOLDERS: TreeNode = {
     { id: "closed", name: "Closed", children: [{ id: "b", name: "b.txt" }] },
   ],
 }
+
+const MONTHS: TimelineBucket<{ id: string }>[] = Array.from(
+  { length: 14 },
+  (_, month) => {
+    const date = new Date(2026, 1 - month, 1)
+    const id = `${date.getFullYear()}-${date.getMonth() + 1}`
+    return {
+      id,
+      date,
+      count: 6,
+      items: Array.from({ length: 6 }, (_, n) => ({ id: `${id}-${n}` })),
+    }
+  },
+)
 
 const root = document.getElementById("root")
 if (!root) throw new Error("Missing test fixture root")
@@ -283,6 +301,19 @@ createRoot(root).render(
           <CarouselNext />
         </Carousel>
       </div>
+      {(["end", "start"] as const).map((side) => (
+        <div key={side} data-probe={`timeline-${side}`} style={{ width: 560 }}>
+          <VirtualizedTimeline
+            style={{ height: 280 }}
+            buckets={MONTHS}
+            minTileWidth={80}
+            scrubberSide={side}
+            collapsible
+            defaultCollapsedIds={[MONTHS[1]?.id ?? ""]}
+            renderItem={({ item }) => <span>{item.id}</span>}
+          />
+        </div>
+      ))}
     </div>
   </ThemeProvider>,
 )
