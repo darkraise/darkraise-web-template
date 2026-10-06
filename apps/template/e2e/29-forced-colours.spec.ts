@@ -291,3 +291,89 @@ test.describe("tab edges", () => {
     })
   }
 })
+
+test.describe("menus, pickers and navigation", () => {
+  for (const scheme of SCHEMES) {
+    test(`calendar marks the selected day · ${scheme}`, async ({ page }) => {
+      await openForced(page, scheme)
+      await expectChosen(
+        page,
+        page.locator('[data-probe="calendar"]'),
+        '.dr-calendar-day-btn[data-selected-single="true"]',
+        ".dr-calendar-day-btn:not([data-selected-single]):not([aria-current])",
+      )
+    })
+
+    test(`a focused menu row is marked · ${scheme}`, async ({ page }) => {
+      await openForced(page, scheme)
+      await page.locator('[data-probe="menu"] button').focus()
+      await page.keyboard.press("ArrowDown")
+      const first = page.locator(".dr-menu-content .dr-menu-item").first()
+      await expect(first).toBeFocused()
+      await settle(page)
+      await expectChosen(
+        page,
+        page.locator(".dr-menu-content"),
+        ".dr-menu-item:focus",
+        ".dr-menu-item:not(:focus)",
+      )
+    })
+
+    test(`chosen rows stay legible · ${scheme}`, async ({ page }) => {
+      await openForced(page, scheme)
+      const highlight = await refColour(page, "highlight")
+      for (const selector of [
+        '[data-probe="calendar"] .dr-calendar-day-btn[data-selected-single="true"]',
+        '[data-probe="sidebar"] .dr-sidebar-nav-current',
+      ]) {
+        const share = await textShare(page, page.locator(selector), highlight)
+        expect(share, selector).toBeGreaterThan(0.2)
+      }
+      await page.locator('[data-probe="menu"] button').focus()
+      await page.keyboard.press("ArrowDown")
+      const row = page.locator(".dr-menu-content .dr-menu-item:focus")
+      await expect(row).toHaveCount(1)
+      await settle(page)
+      expect(await textShare(page, row, highlight)).toBeGreaterThan(0.2)
+    })
+
+    test(`a selected timeline tile is marked over its content · ${scheme}`, async ({
+      page,
+    }) => {
+      await openForced(page, scheme)
+      await page.locator(".dr-virtualized-timeline-tile").first().waitFor()
+      await expectChosen(
+        page,
+        page.locator('[data-probe="timeline"]'),
+        '.dr-virtualized-timeline-tile[data-selected="true"]',
+        '.dr-virtualized-timeline-tile:not([data-selected="true"])',
+        (box) => [1, box.height / 2],
+      )
+    })
+
+    test(`invalid number and date inputs dash their edge · ${scheme}`, async ({
+      page,
+    }) => {
+      await openForced(page, scheme)
+      for (const selector of [
+        '[data-probe="number-input"] .dr-number-input-control',
+        '[data-probe="date-input"] .dr-date-input',
+      ]) {
+        expect(
+          await computed(page.locator(selector), "border-top-style"),
+          selector,
+        ).toBe("dashed")
+      }
+    })
+
+    test(`the sidebar current row is marked · ${scheme}`, async ({ page }) => {
+      await openForced(page, scheme)
+      await expectChosen(
+        page,
+        page.locator('[data-probe="sidebar"]'),
+        ".dr-sidebar-nav-current",
+        ".dr-sidebar-nav-item:not(.dr-sidebar-nav-current)",
+      )
+    })
+  }
+})

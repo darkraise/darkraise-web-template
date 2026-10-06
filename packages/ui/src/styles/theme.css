@@ -2329,6 +2329,122 @@
   .dr-tabs-trigger[data-variant="underline"][data-state="active"] {
     border-color: Highlight;
   }
+
+  /* Chosen rows and items in menus, pickers and navigation. A menu row is
+     highlighted by focus, which follows the pointer. */
+  .dr-time-column-item[data-selected="true"],
+  .dr-table-row[data-state="selected"],
+  .dr-virtualized-timeline-list-item[data-selected="true"],
+  .dr-steps-indicator[data-status="complete"],
+  .dr-timeline-indicator[data-status="complete"],
+  .dr-carousel-indicator[data-current="true"],
+  .dr-calendar-day-btn:is(
+      [data-selected-single="true"],
+      [data-range-start="true"],
+      [data-range-end="true"],
+      [data-range-single="true"]
+    ):not([data-range-preview="true"]),
+  .dr-menu-item:focus,
+  .dr-menu-checkbox-item:focus,
+  .dr-menu-radio-item:focus,
+  .dr-menu-sub-trigger:focus,
+  .dr-menu-sub-trigger[data-state="open"],
+  .dr-menubar-item:focus,
+  .dr-menubar-checkbox-item:focus,
+  .dr-menubar-radio-item:focus,
+  .dr-menubar-sub-trigger:focus,
+  .dr-menubar-sub-trigger[data-state="open"],
+  .dr-menubar-trigger[data-state="open"],
+  .dr-navigation-menu-trigger[data-state="open"],
+  .dr-select-item:focus,
+  .dr-cascade-item[data-active="true"],
+  .dr-sidebar-nav-current,
+  .dr-top-nav-layout-nav-item.active,
+  .dr-top-nav-layout-nav-item[data-active="true"],
+  .dr-layout-switcher-item[data-active="true"],
+  .dr-tags-input-item-preview[data-highlighted="true"],
+  .dr-image-editor-tool[data-state="active"],
+  .dr-image-editor-annotation-kind[data-state="active"],
+  .dr-floating-panel-trigger[data-active="true"],
+  .dr-field-label:has(> [data-slot="field"]):has([data-state="checked"]) {
+    background-color: Highlight;
+    color: HighlightText;
+    forced-color-adjust: none;
+    box-shadow: none;
+  }
+
+  /* A selected tile's own content covers any fill, so the tile marks the
+     selection with a border inside its box, where content cannot reach. */
+  .dr-virtualized-timeline-tile[data-selected="true"] {
+    border: 2px solid Highlight;
+  }
+
+  /* The current row's icon tile would otherwise paint a Canvas square
+     inside the Highlight row. */
+  .dr-sidebar-nav-current .dr-sidebar-nav-icon {
+    background-color: transparent;
+  }
+
+  .dr-sidebar-nav-current .dr-sidebar-nav-icon-svg {
+    color: HighlightText;
+  }
+
+  /* Current, but not chosen: the item keeps Canvas and its edge turns. */
+  .dr-steps-indicator[data-status="current"],
+  .dr-timeline-indicator[data-status="current"],
+  .dr-input-otp-slot[data-active],
+  .dr-input-otp-slot-separate:focus {
+    border-color: Highlight;
+  }
+
+  .dr-page-header-tab {
+    border-bottom-color: Canvas;
+  }
+
+  .dr-page-header-tab.active,
+  .dr-page-header-tab[data-active="true"] {
+    border-bottom-color: Highlight;
+  }
+
+  .dr-image-dropzone[data-state="active"],
+  .dr-file-upload-dropzone[data-dragover="true"] {
+    border-color: Highlight;
+    border-style: solid;
+  }
+
+  /* A range in progress, or the days between its ends. */
+  .dr-calendar-day-btn:is(
+    [data-range-middle="true"],
+    [data-range-preview="true"]
+  ) {
+    border-style: dashed;
+    border-color: Highlight;
+  }
+
+  .dr-calendar-day-btn[aria-current="date"],
+  .dr-calendar-grid-cell[data-current="true"] {
+    text-decoration: underline 2px;
+  }
+
+  /* Invalid fields: the destructive edge colour is gone, so the edge
+     changes style instead. */
+  .dr-input:is([data-invalid], [aria-invalid="true"]),
+  .dr-textarea:is([data-invalid], [aria-invalid="true"]),
+  .dr-input-group:has(
+    > .dr-input-grouped:is([data-invalid], [aria-invalid="true"])
+  ),
+  .dr-tags-input-control:is([data-invalid], [aria-invalid="true"]),
+  .dr-multi-select-control:is([data-invalid], [aria-invalid="true"]),
+  .dr-number-input-control:has(:is([data-invalid], [aria-invalid="true"])),
+  .dr-date-input:is([data-invalid], [aria-invalid="true"]),
+  .dr-input-otp-container[data-invalid] .dr-input-otp-slot {
+    border-style: dashed;
+  }
+
+  /* The overlay variant's fake caret has no kit class of its own. */
+  .dr-input-otp-slot .animate-caret-blink {
+    background-color: CanvasText;
+  }
 }
 
 /* Reduced motion, applied once for the whole kit.

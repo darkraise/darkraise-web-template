@@ -1,5 +1,19 @@
 import { createRoot } from "react-dom/client"
+import { Button } from "darkraise-ui/components/button"
+import { Calendar } from "darkraise-ui/components/calendar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "darkraise-ui/components/dropdown-menu"
+import { DateInput } from "darkraise-ui/components/date-input"
 import { Listbox, ListboxItem } from "darkraise-ui/components/listbox"
+import {
+  NumberInput,
+  NumberInputControl,
+  NumberInputField,
+} from "darkraise-ui/components/number-input"
 import {
   Pagination,
   PaginationContent,
@@ -25,11 +39,21 @@ import {
   ToggleGroupItem,
 } from "darkraise-ui/components/toggle-group"
 import {
+  VirtualizedTimeline,
+  type TimelineBucket,
+} from "darkraise-ui/components/virtualized-timeline"
+import {
   TreeView,
   TreeViewNode,
   TreeViewTree,
   type TreeNode,
 } from "darkraise-ui/components/tree-view"
+import { SidebarNav, SidebarProvider, type NavGroup } from "darkraise-ui/layout"
+import {
+  RouterAdapterProvider,
+  type RouterAdapter,
+  type RouterLinkProps,
+} from "darkraise-ui/router"
 import { ThemeProvider } from "darkraise-ui/theme"
 import "../../src/styles/globals.css"
 
@@ -47,6 +71,70 @@ const FILES: TreeNode = {
     { id: "todo", name: "todo.txt" },
     { id: "notes", name: "notes.txt" },
   ],
+}
+
+const NAV: NavGroup[] = [
+  {
+    label: "Main",
+    items: [
+      { label: "Dashboard", href: "/" },
+      { label: "Settings", href: "/settings" },
+    ],
+  },
+]
+
+// The adapter applies the active class itself, as a router would, so
+// "Dashboard" (the current path) is the current row and "Settings" is idle.
+const PATHNAME = "/"
+const ADAPTER: RouterAdapter = {
+  Link: ({
+    to,
+    className,
+    activeClassName,
+    style,
+    children,
+  }: RouterLinkProps) => (
+    <a
+      href={to}
+      className={
+        to === PATHNAME
+          ? [className, activeClassName].filter(Boolean).join(" ")
+          : className
+      }
+      aria-current={to === PATHNAME ? "page" : undefined}
+      style={style}
+      onClick={(event) => event.preventDefault()}
+    >
+      {children}
+    </a>
+  ),
+  useNavigate: () => () => {},
+  usePathname: () => PATHNAME,
+  useBack: () => () => {},
+  useInvalidate: () => () => {},
+}
+
+const SHOTS: TimelineBucket<{ id: string }>[] = [
+  {
+    id: "2026-01",
+    date: new Date(2026, 0, 1),
+    count: 2,
+    items: [{ id: "first" }, { id: "second" }],
+  },
+]
+
+// An opaque tile, as a photo would be; content colours are not forced.
+function Shot() {
+  return (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        backgroundColor: "#808080",
+        forcedColorAdjust: "none",
+      }}
+    />
+  )
 }
 
 const root = document.getElementById("root")
@@ -153,6 +241,50 @@ createRoot(root).render(
       <div data-probe="switch" style={{ display: "flex", gap: 8 }}>
         <Switch defaultChecked aria-label="On" />
         <Switch aria-label="Off" />
+      </div>
+      <div data-probe="calendar">
+        <Calendar
+          mode="single"
+          selected={new Date(2026, 0, 14)}
+          defaultMonth={new Date(2026, 0, 1)}
+        />
+      </div>
+      <div data-probe="menu">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button>Actions</Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem>Edit</DropdownMenuItem>
+            <DropdownMenuItem>Delete</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+      <div data-probe="sidebar" style={{ width: 240 }}>
+        <RouterAdapterProvider value={ADAPTER}>
+          <SidebarProvider collapsed={false}>
+            <SidebarNav nav={NAV} />
+          </SidebarProvider>
+        </RouterAdapterProvider>
+      </div>
+      <div data-probe="number-input" style={{ width: 160 }}>
+        <NumberInput defaultValue={1}>
+          <NumberInputControl>
+            <NumberInputField aria-label="Quantity" aria-invalid="true" />
+          </NumberInputControl>
+        </NumberInput>
+      </div>
+      <div data-probe="date-input">
+        <DateInput aria-label="Start date" aria-invalid="true" />
+      </div>
+      <div data-probe="timeline">
+        <VirtualizedTimeline
+          buckets={SHOTS}
+          selectable
+          defaultSelectedIds={["first"]}
+          renderItem={() => <Shot />}
+          style={{ width: 320, height: 200 }}
+        />
       </div>
     </div>
   </ThemeProvider>,
