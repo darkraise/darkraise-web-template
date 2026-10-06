@@ -61,8 +61,8 @@ export interface TreeViewProps
   data?: TreeNode
   children?: React.ReactNode
   /**
-   * Visual treatment for selected items. Both variants fill the selected row
-   * with the checked fill; `outline` no longer differs from `filled`.
+   * Visual treatment for selected items. `filled` paints the checked fill;
+   * `outline` draws a 1px accent ring over a transparent row.
    */
   variant?: TreeViewVariant
 }

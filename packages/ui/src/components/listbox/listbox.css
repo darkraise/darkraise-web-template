@@ -22,9 +22,7 @@
      row. The bare `font-medium` this used to carry was indistinguishable
      from an idle item, so selection was effectively invisible outside
      Glass. Ordered after the [data-focused] rule so a focused selected
-     item still reads as selected. Both variants select this way: outline
-     rows have no outline at rest, so the checked fill is their selected
-     style too. */
+     item still reads as selected. */
   .dr-listbox-item[data-selected="true"] {
     @apply font-medium;
     background-color: var(--selected-check-bg);
@@ -36,6 +34,21 @@
   .dr-listbox-item[data-selected="true"][data-focused="true"] {
     background-color: var(--selected-check-bg);
     color: var(--selected-check-fg);
+  }
+
+  /* Outline selects with a ring instead of the fill: an inset ring over the
+     selected fill would vanish, --primary sitting near 1:1 on --primary-fill.
+     --primary-text is solved to 4.5:1 on the page and the card. */
+  .dr-listbox[data-variant="outline"] .dr-listbox-item[data-selected="true"],
+  .dr-listbox[data-variant="outline"]
+    .dr-listbox-item[data-selected="true"]:hover,
+  .dr-listbox[data-variant="outline"]
+    .dr-listbox-item[data-selected="true"][data-focused="true"] {
+    background-color: transparent;
+    color: hsl(var(--primary-text));
+    box-shadow:
+      inset 0 0 0 1px hsl(var(--primary-text)),
+      var(--affordance-glow);
   }
 
   .dr-listbox[data-disabled] {

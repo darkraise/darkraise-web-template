@@ -182,14 +182,26 @@ describe("checked family: toggle, listbox and tree view", () => {
     ).toContain("--state-layer-color: hsl(var(--primary-fill-wash));")
   })
 
+  // Outline rows select with a ring instead of the fill: a ring over the
+  // selected fill would vanish (--primary on --primary-fill is near 1:1).
   it.each([
-    [LISTBOX, '.dr-listbox[data-variant="outline"]'],
-    [TREE, '.dr-tree-view[data-variant="outline"]'],
-  ])("%s has no selected rule of its own under %s", (path, scope) => {
-    const own = rulesOf(path).filter((rule) =>
-      rule.selectors.some((s) => s.includes(scope)),
-    )
-    expect(own).toEqual([])
+    [
+      LISTBOX,
+      '.dr-listbox[data-variant="outline"] .dr-listbox-item[data-selected="true"]',
+    ],
+    [
+      TREE,
+      '.dr-tree-view[data-variant="outline"] .dr-tree-view-item[data-selected="true"]',
+    ],
+    [
+      TREE,
+      '.dr-tree-view[data-variant="outline"] .dr-tree-view-branch-control[data-selected="true"]',
+    ],
+  ])("%s %s rings the selected row over no fill", (path, selector) => {
+    const body = bodyOf(path, selector)
+    expect(body).toContain("background-color: transparent;")
+    expect(body).toContain("color: hsl(var(--primary-text));")
+    expect(body).toContain("inset 0 0 0 1px hsl(var(--primary-text))")
   })
 })
 
@@ -435,6 +447,11 @@ const ALLOWED: Array<[string, string, string]> = [
     "the focused JSON row is a keyboard position, not a selection",
   ],
   [
+    "components/listbox/listbox.css",
+    '.dr-listbox[data-variant="outline"]',
+    "the outline variant rings the selected row in the accent text colour over no fill; the checked fill would hide a ring",
+  ],
+  [
     "components/progress/progress.css",
     ".dr-progress-indicator",
     "a progress bar shows a value, not a selection",
@@ -458,6 +475,11 @@ const ALLOWED: Array<[string, string, string]> = [
     "components/timeline/timeline.css",
     '.dr-timeline-indicator[data-status="current"]',
     "the current event is in progress, not selected",
+  ],
+  [
+    "components/tree-view/tree-view.css",
+    '.dr-tree-view[data-variant="outline"]',
+    "the outline variant rings the selected row in the accent text colour over no fill; the checked fill would hide a ring",
   ],
   [
     "components/virtualized-timeline/virtualized-timeline.css",

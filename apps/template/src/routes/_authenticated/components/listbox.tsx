@@ -118,9 +118,9 @@ function ListboxPage() {
       >
         <div className="space-y-3">
           <p className="text-muted-foreground text-sm">
-            Outside the Glass preset the outline variant selects with the same
-            checked fill as the default. Under Glass it adds a 1px primary ring
-            inside the item&apos;s box, so switching variants shifts no layout.
+            The outline variant marks a selected item with a 1px accent ring and
+            accent text instead of the checked fill. The ring sits inside the
+            item&apos;s box, so switching variants shifts no layout.
           </p>
           <div className="flex flex-wrap gap-6">
             <div className="space-y-2">
