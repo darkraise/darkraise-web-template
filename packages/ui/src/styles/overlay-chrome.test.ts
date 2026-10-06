@@ -198,7 +198,7 @@ describe("menu family", () => {
 
   it.each([
     [MENU, ".dr-menu-label", "px-2"],
-    [SELECT, ".dr-select-label", "pl-8"],
+    [SELECT, ".dr-select-label", "ps-8"],
     [MENUBAR, ".dr-menubar-label", "px-2"],
   ])("%s %s is a muted caption", (path, selector, padding) => {
     const utilities = applied(bodyOf(path, selector))

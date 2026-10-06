@@ -30,11 +30,11 @@
   }
 
   .dr-menubar-checkbox-item {
-    @apply focus:bg-accent focus:text-accent-foreground relative flex cursor-pointer items-center rounded-sm py-[var(--density-row-py)] pr-2 pl-8 text-sm transition-colors outline-none select-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-[var(--disabled-opacity)];
+    @apply focus:bg-accent focus:text-accent-foreground relative flex cursor-pointer items-center rounded-sm py-[var(--density-row-py)] ps-8 pe-2 text-sm transition-colors outline-none select-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-[var(--disabled-opacity)];
   }
 
   .dr-menubar-radio-item {
-    @apply focus:bg-accent focus:text-accent-foreground relative flex cursor-pointer items-center rounded-sm py-[var(--density-row-py)] pr-2 pl-8 text-sm transition-colors outline-none select-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-[var(--disabled-opacity)];
+    @apply focus:bg-accent focus:text-accent-foreground relative flex cursor-pointer items-center rounded-sm py-[var(--density-row-py)] ps-8 pe-2 text-sm transition-colors outline-none select-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-[var(--disabled-opacity)];
   }
 
   /* Checkbox and radio items render MenubarItem, so they carry this class. */
@@ -51,7 +51,7 @@
   }
 
   .dr-menubar-shortcut {
-    @apply text-muted-foreground ml-auto text-xs tracking-widest;
+    @apply text-muted-foreground ms-auto text-xs tracking-widest;
   }
 
   /* Keyboard focus indicator. Written as its own rule rather than an

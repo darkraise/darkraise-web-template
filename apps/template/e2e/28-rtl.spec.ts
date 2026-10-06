@@ -168,3 +168,21 @@ test.describe("submenus", () => {
     )
   })
 })
+
+test.describe("menu rows", () => {
+  test("an inset item's indicator sits at the inline start", async ({
+    page,
+  }) => {
+    await openFixture(page)
+    await page
+      .locator('[data-probe="menu-indicator"]')
+      .getByRole("button", { name: "Options" })
+      .click()
+    const item = page.getByRole("menuitemcheckbox", { name: "Show grid" })
+    await expect(item).toBeVisible()
+    await settle(page)
+    const row = await boxOf(item)
+    const indicator = await boxOf(item.locator("svg"))
+    expect(indicator.x).toBeGreaterThan(row.x + row.width - 32)
+  })
+})

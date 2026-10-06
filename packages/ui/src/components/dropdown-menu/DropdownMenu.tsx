@@ -595,7 +595,7 @@ function DropdownMenuItem({
           triggerSelect(event)
         }
       }}
-      className={cn("dr-menu-item", inset && "pl-8", className)}
+      className={cn("dr-menu-item", inset && "ps-8", className)}
       {...rest}
     >
       {children}
@@ -646,7 +646,7 @@ function DropdownMenuCheckboxItem({
       className={cn("dr-menu-checkbox-item", className)}
       {...rest}
     >
-      <span className="absolute left-2 flex size-[var(--icon-size-sm)] items-center justify-center">
+      <span className="absolute start-2 flex size-[var(--icon-size-sm)] items-center justify-center">
         {checked === "indeterminate" ? (
           <Minus className="size-[var(--icon-size)]" aria-hidden="true" />
         ) : isChecked ? (
@@ -711,7 +711,7 @@ function DropdownMenuRadioItem({
       className={cn("dr-menu-radio-item", className)}
       {...rest}
     >
-      <span className="absolute left-2 flex size-[var(--icon-size-sm)] items-center justify-center">
+      <span className="absolute start-2 flex size-[var(--icon-size-sm)] items-center justify-center">
         {checked ? (
           <Circle
             className="size-[calc(var(--icon-size)*0.5)] fill-current"
@@ -739,7 +739,7 @@ function DropdownMenuLabel({
     <div
       ref={ref}
       role="presentation"
-      className={cn("dr-menu-label", inset && "pl-8", className)}
+      className={cn("dr-menu-label", inset && "ps-8", className)}
       {...rest}
     />
   )
@@ -867,11 +867,11 @@ function DropdownMenuSubTrigger({
         // Submenu items don't close the parent on select.
         ;(event as Event & { preventDefault: () => void }).preventDefault?.()
       }}
-      className={cn("dr-menu-sub-trigger", inset && "pl-8", className)}
+      className={cn("dr-menu-sub-trigger", inset && "ps-8", className)}
       {...rest}
     >
       {children}
-      <ChevronRight className="dr-icon-inline ml-auto" aria-hidden="true" />
+      <ChevronRight className="dr-icon-inline ms-auto" aria-hidden="true" />
     </DropdownMenuItem>
   )
 }

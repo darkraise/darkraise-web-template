@@ -11,6 +11,7 @@ import {
 } from "darkraise-ui/components/context-menu"
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSub,
@@ -112,6 +113,16 @@ createRoot(root).render(
             </MenubarContent>
           </MenubarMenu>
         </Menubar>
+      </div>
+      <div data-probe="menu-indicator">
+        <DropdownMenu>
+          <DropdownMenuTrigger>Options</DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuCheckboxItem checked>
+              Show grid
+            </DropdownMenuCheckboxItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   </ThemeProvider>,

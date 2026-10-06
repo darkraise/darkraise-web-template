@@ -25,11 +25,11 @@
   }
 
   .dr-select-label {
-    @apply type-caption text-muted-foreground py-[var(--density-row-py)] pr-2 pl-8;
+    @apply type-caption text-muted-foreground py-[var(--density-row-py)] ps-8 pe-2;
   }
 
   .dr-select-item {
-    @apply focus:bg-accent focus:text-accent-foreground relative flex w-full cursor-pointer items-center rounded-sm py-[var(--density-row-py)] pr-2 pl-8 text-sm outline-none select-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-[var(--disabled-opacity)];
+    @apply focus:bg-accent focus:text-accent-foreground relative flex w-full cursor-pointer items-center rounded-sm py-[var(--density-row-py)] ps-8 pe-2 text-sm outline-none select-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-[var(--disabled-opacity)];
   }
 
   .dr-select-separator {

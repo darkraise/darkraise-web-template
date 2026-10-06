@@ -710,7 +710,7 @@ function MenubarItem({
           triggerSelect(event)
         }
       }}
-      className={cn("dr-menubar-item", inset && "pl-8", className)}
+      className={cn("dr-menubar-item", inset && "ps-8", className)}
       {...rest}
     >
       {children}
@@ -757,7 +757,7 @@ function MenubarCheckboxItem({
       className={cn("dr-menubar-checkbox-item", className)}
       {...rest}
     >
-      <span className="absolute left-2 flex size-[var(--icon-size-sm)] items-center justify-center">
+      <span className="absolute start-2 flex size-[var(--icon-size-sm)] items-center justify-center">
         {checked === "indeterminate" ? (
           <Minus className="size-[var(--icon-size)]" aria-hidden="true" />
         ) : isChecked ? (
@@ -819,7 +819,7 @@ function MenubarRadioItem({
       className={cn("dr-menubar-radio-item", className)}
       {...rest}
     >
-      <span className="absolute left-2 flex size-[var(--icon-size-sm)] items-center justify-center">
+      <span className="absolute start-2 flex size-[var(--icon-size-sm)] items-center justify-center">
         {checked ? (
           <Circle
             className="size-[calc(var(--icon-size)*0.5)] fill-current"
@@ -842,7 +842,7 @@ function MenubarLabel({ className, inset, ref, ...rest }: MenubarLabelProps) {
     <div
       ref={ref}
       role="presentation"
-      className={cn("dr-menubar-label", inset && "pl-8", className)}
+      className={cn("dr-menubar-label", inset && "ps-8", className)}
       {...rest}
     />
   )
@@ -954,12 +954,12 @@ function MenubarSubTrigger({
       onSelect={(event) => {
         ;(event as Event & { preventDefault: () => void }).preventDefault?.()
       }}
-      className={cn("dr-menubar-sub-trigger", inset && "pl-8", className)}
+      className={cn("dr-menubar-sub-trigger", inset && "ps-8", className)}
       {...rest}
     >
       {children}
       <ChevronRight
-        className="dr-icon-inline ml-auto size-[var(--icon-size)]"
+        className="dr-icon-inline ms-auto size-[var(--icon-size)]"
         aria-hidden="true"
       />
     </MenubarItem>

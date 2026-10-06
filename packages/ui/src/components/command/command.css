@@ -49,7 +49,7 @@
   }
 
   .dr-command-shortcut {
-    @apply text-muted-foreground ml-auto text-xs tracking-widest;
+    @apply text-muted-foreground ms-auto text-xs tracking-widest;
   }
 
   /* CommandDialog drops DialogContent's `p-6`, so the search row starts at
@@ -73,7 +73,7 @@
      wrapper's px-3 so the glyph mirrors the search icon's left inset. */
   .dr-command-dialog-content > .dr-overlay-close-btn {
     top: calc((var(--dr-command-row-h) - 1.75rem) / 2);
-    right: 0.75rem;
+    inset-inline-end: 0.75rem;
   }
 
   .dr-command-dialog {

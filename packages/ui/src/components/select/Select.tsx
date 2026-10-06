@@ -671,7 +671,7 @@ function SelectItem({
       className={cn("dr-select-item", className)}
       {...rest}
     >
-      <span className="absolute left-2 flex size-[var(--icon-size-sm)] items-center justify-center">
+      <span className="absolute start-2 flex size-[var(--icon-size-sm)] items-center justify-center">
         {selected ? (
           <Check className="size-[var(--icon-size)]" aria-hidden="true" />
         ) : null}
