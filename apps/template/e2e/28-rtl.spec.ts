@@ -1,6 +1,6 @@
 import { test, expect, type Locator, type Page } from "@playwright/test"
 import { boxOf, seedApp } from "./helpers/app"
-import { computed, settle } from "./helpers/measure"
+import { computed, pixel, rgbOf, settle } from "./helpers/measure"
 
 /**
  * Kit components inside a right-to-left document, read from layout, computed
@@ -483,5 +483,29 @@ test.describe("field and control edges", () => {
     const addon = page.locator('[data-probe="input-prefix"] .dr-input-addon')
     expect(await computed(addon, "border-left-width")).toBe("1px")
     expect(await computed(addon, "border-right-width")).toBe("0px")
+  })
+})
+
+test.describe("tabs edges", () => {
+  const near = (a: number[], b: number[]) =>
+    a.every((value, i) => Math.abs(value - (b[i] ?? 0)) <= 8)
+
+  test("the vertical enclosed seam sits on the panel side", async ({
+    page,
+  }) => {
+    await openFixture(page)
+    const probe = page.locator('[data-probe="tabs-enclosed"]')
+    await probe.scrollIntoViewIfNeeded()
+    const list = await boxOf(probe.getByRole("tablist"))
+    const panel = probe.getByRole("tabpanel")
+    expect(list.x).toBeGreaterThan((await boxOf(panel)).x)
+    const line = rgbOf(await computed(panel, "border-top-color"))
+    const x = Math.round(list.x)
+    const middle = async (name: string) => {
+      const box = await boxOf(probe.getByRole("tab", { name }))
+      return Math.round(box.y + box.height / 2)
+    }
+    expect(near(await pixel(page, x, await middle("One")), line)).toBe(true)
+    expect(near(await pixel(page, x, await middle("Two")), line)).toBe(false)
   })
 })

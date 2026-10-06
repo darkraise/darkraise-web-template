@@ -119,9 +119,9 @@
     box-shadow: var(--affordance-glow-bottom);
   }
 
-  /* Vertical underline runs down the right edge, so the halo has to come
-     off that edge instead of the bottom one. There is no right-hand
-     token, so the omni-directional glow stands in. */
+  /* Vertical underline runs down the inline-end edge, so the halo has to
+     come off that edge instead of the bottom one. There is no side token,
+     so the omni-directional glow stands in. */
   .dr-tabs-indicator[data-variant="underline"][data-orientation="vertical"] {
     box-shadow: var(--affordance-glow);
   }
@@ -253,30 +253,30 @@
     @apply mt-0 min-w-0 flex-1;
   }
 
-  /* Underline runs down the list's right edge instead of across its
+  /* Underline runs down the list's inline-end edge instead of across its
      bottom. Widths and margins flip axis; the active border colour is
      left to the orientation-agnostic base rule, which paints all four
      sides. */
   .dr-tabs-list[data-variant="underline"][data-orientation="vertical"] {
-    @apply gap-1 border-r border-b-0;
+    @apply gap-1 border-e border-b-0;
   }
 
   .dr-tabs-trigger[data-variant="underline"][data-orientation="vertical"] {
-    @apply -mr-px mb-0 border-r-2 border-b-0;
+    @apply -me-px mb-0 border-e-2 border-b-0;
   }
 
   /* --affordance-glow-bottom is a bottom-only halo, which on a
-     right-hand border would emanate off the wrong edge. There is no
-     right-hand token, so the omni-directional glow stands in — it
+     side border would emanate off the wrong edge. There is no
+     side token, so the omni-directional glow stands in — it
      still reads as a halo around the active tab under a glowing style. */
   .dr-tabs-trigger[data-variant="underline"][data-orientation="vertical"][data-state="active"] {
     box-shadow: var(--affordance-glow);
   }
 
   /* Enclosed, vertical: the folder seam rotated a quarter turn. The
-     baseline runs down the list's right edge, the active trigger
+     baseline runs down the list's inline-end edge, the active trigger
      overhangs it by 1px and erases it across its own height, and the
-     panel's left edge is that same line — so tab and panel read as one
+     panel's inline-start edge is that same line — so tab and panel read as one
      surface. Root gap must be 0 and items stretched, or the two halves
      of the seam never touch and the list is too short to carry the
      line the full height of the panel. */
@@ -290,15 +290,20 @@
     /* Same reasoning as the horizontal variant: overflow makes this a
        scroll container, which clips descendant painting at the padding
        edge, so the line has to live inside the padding box (via
-       padding-right plus a right-anchored fill) to stay within reach of
-       the active trigger's overhang. */
-    padding-right: 1px;
+       inline-end padding plus a fill anchored on that side) to stay within
+       reach of the active trigger's overhang. background-position has no
+       logical keyword, hence the right-to-left override. */
+    padding-inline-end: 1px;
     background-image: linear-gradient(hsl(var(--border)), hsl(var(--border)));
     background-size: 1px 100%;
     background-repeat: no-repeat;
     background-position: right;
     overflow-y: auto;
     scrollbar-width: none;
+  }
+
+  .dr-tabs-list[data-variant="enclosed"][data-orientation="vertical"]:dir(rtl) {
+    background-position: left;
   }
 
   .dr-tabs-list[data-variant="enclosed"][data-orientation="vertical"]::-webkit-scrollbar {
@@ -308,8 +313,10 @@
   .dr-tabs-trigger[data-variant="enclosed"][data-orientation="vertical"] {
     @apply justify-start border border-transparent px-[var(--btn-px)];
     height: var(--btn-height);
-    border-radius: var(--radius) 0 0 var(--radius);
-    margin-right: -1px;
+    border-radius: 0;
+    border-start-start-radius: var(--radius);
+    border-end-start-radius: var(--radius);
+    margin-inline-end: -1px;
   }
 
   .dr-tabs-trigger[data-variant="enclosed"][data-orientation="vertical"]:focus-visible {
@@ -322,14 +329,18 @@
 
   .dr-tabs-indicator[data-variant="enclosed"][data-orientation="vertical"] {
     @apply border-border border;
-    border-radius: var(--radius) 0 0 var(--radius);
+    border-radius: 0;
+    border-start-start-radius: var(--radius);
+    border-end-start-radius: var(--radius);
     background-color: var(--surface-card-fill-opaque);
-    border-right-color: transparent;
+    border-inline-end-color: transparent;
   }
 
   .dr-tabs-content[data-variant="enclosed"][data-orientation="vertical"] {
-    @apply border-border mt-0 border border-l-0 p-4;
-    border-radius: 0 var(--radius) var(--radius) 0;
+    @apply border-border mt-0 border border-s-0 p-4;
+    border-radius: 0;
+    border-start-end-radius: var(--radius);
+    border-end-end-radius: var(--radius);
     background-color: var(--surface-card-fill-opaque);
   }
 
@@ -345,7 +356,7 @@
      notch exists to remove. */
   .dr-tabs-indicator[data-variant="enclosed"][data-orientation="vertical"][data-color="accent"] {
     @apply border-primary;
-    border-right-color: transparent;
+    border-inline-end-color: transparent;
   }
 
   .dr-tabs-content[data-variant="enclosed"][data-orientation="vertical"][data-color="accent"] {
@@ -400,9 +411,11 @@
   }
 
   .dr-tabs-list[data-variant="enclosed"][data-orientation="vertical"][data-border] {
-    @apply py-1 pl-1;
-    border-right-width: 0;
-    border-radius: var(--radius) 0 0 var(--radius);
+    @apply py-1 ps-1;
+    border-inline-end-width: 0;
+    border-radius: 0;
+    border-start-start-radius: var(--radius);
+    border-end-start-radius: var(--radius);
   }
 
   /* Underline's labels would otherwise sit flush against the frame. */

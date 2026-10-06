@@ -31,7 +31,12 @@ import {
   MenubarTrigger,
 } from "darkraise-ui/components/menubar"
 import { ScrollArea, ScrollBar } from "darkraise-ui/components/scroll-area"
-import { Tabs, TabsList, TabsTrigger } from "darkraise-ui/components/tabs"
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "darkraise-ui/components/tabs"
 import { MobileDrawer, SidebarNav, SidebarProvider } from "darkraise-ui/layout"
 import {
   RouterAdapterProvider,
@@ -353,6 +358,18 @@ createRoot(root).render(
       </div>
       <div data-probe="input-prefix" style={{ width: 240 }}>
         <Input prefix="https://" aria-label="Site" />
+      </div>
+      <div data-probe="tabs-enclosed" style={{ width: 360 }}>
+        <Tabs defaultValue="two" orientation="vertical" variant="enclosed">
+          <TabsList style={{ width: 120 }}>
+            <TabsTrigger value="one">One</TabsTrigger>
+            <TabsTrigger value="two">Two</TabsTrigger>
+            <TabsTrigger value="three">Three</TabsTrigger>
+          </TabsList>
+          <TabsContent value="one">First panel</TabsContent>
+          <TabsContent value="two">Second panel</TabsContent>
+          <TabsContent value="three">Third panel</TabsContent>
+        </Tabs>
       </div>
     </div>
   </ThemeProvider>,
