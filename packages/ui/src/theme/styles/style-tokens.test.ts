@@ -510,8 +510,8 @@ describe("checkables, thumbs and the view pill", () => {
 })
 
 /**
- * Every control token Tactile rebinds from Quiet's base;
- * --btn-neutral-edge stays Quiet's.
+ * Every control token Tactile rebinds from Quiet's base in light mode;
+ * --btn-neutral-edge stays Quiet's in light and is strengthened in dark.
  */
 const TACTILE_TOKENS = CONTROL_TOKENS.filter(
   (name) => name !== "--btn-neutral-edge",
@@ -582,17 +582,23 @@ describe("style files", () => {
   // The light block is unlayered too, so in dark mode it would beat the dark
   // base values unless the dark block restates every token it sets.
   it.each([
-    ['[data-style="tactile"]', LIGHT_BASE],
-    ['[data-mode="dark"][data-style="tactile"]', DARK_BASE],
+    [
+      '[data-style="tactile"]',
+      LIGHT_BASE,
+      [...TACTILE_TOKENS, "--card-edge", "--track-well"],
+    ],
+    [
+      '[data-mode="dark"][data-style="tactile"]',
+      DARK_BASE,
+      [...TACTILE_TOKENS, ...SURFACE_TOKENS, "--btn-neutral-edge"],
+    ],
   ])(
     "%s sets every token Tactile changes, each to a real depth",
-    (selector, baseContext) => {
+    (selector, baseContext, expected) => {
       const set = declarations(TACTILE).filter((d) =>
         sameContext(d.context, [selector]),
       )
-      expect(set.map((d) => d.property).sort()).toEqual(
-        [...TACTILE_TOKENS].sort(),
-      )
+      expect(set.map((d) => d.property).sort()).toEqual([...expected].sort())
       const base = declarations(THEME).filter((d) =>
         sameContext(d.context, baseContext),
       )
@@ -617,10 +623,22 @@ describe("style files", () => {
             d.property === FULL_HEIGHT_SHEEN[1]
           ),
       )
+      .filter((d) => d.property !== "--card-sheen")
     expect(sheens).toHaveLength(3)
     for (const d of sheens) {
       expect(lastStop(d.value), where(d)).toBeLessThanOrEqual(20)
     }
+  })
+
+  // The card sheen lightens a fill under body text, not a label at its
+  // 4.5:1 floor; e2e 26 measures muted text on the brightest Tactile card.
+  it("keeps the dark card sheen faint", () => {
+    const sheen = declarations(TACTILE).find(
+      (d) => d.property === "--card-sheen",
+    )
+    expect(normalise(sheen?.value ?? "")).toBe(
+      "linear-gradient(180deg, rgb(255 255 255 / 0.03), transparent 70%)",
+    )
   })
 
   // A token counts as read when a component or layout stylesheet reads it, or

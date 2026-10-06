@@ -1,6 +1,7 @@
 import { test, expect, type Frame, type Page } from "@playwright/test"
 import { boxOf, gotoApp, seedApp } from "./helpers/app"
 import {
+  computed,
   contrast,
   luminance,
   pixel,
@@ -200,5 +201,61 @@ test.describe("dark elevation", () => {
       Math.round(box.y + box.height - 6),
     )
     expect(luminance(painted)).toBeGreaterThan(luminance(fill))
+  })
+})
+
+function isAllTransparent(shadow: string): boolean {
+  return shadow
+    .split(/,(?![^(]*\))/)
+    .every((layer) =>
+      /rgba\(0, 0, 0, 0\)|transparent|^none$/.test(layer.trim()),
+    )
+}
+
+test.describe("tactile surfaces", () => {
+  for (const mode of ["light", "dark"] as const) {
+    test(`tactile ${mode} raises cards and recesses tab tracks`, async ({
+      page,
+    }) => {
+      await seedApp(page, { style: "tactile", mode })
+      await gotoApp(page, "/components/kitchen-sink")
+      const card = page.locator(".dr-card:not([data-card-elevation])").first()
+      const track = page
+        .locator('.dr-tabs-list[data-variant="default"]')
+        .first()
+      expect(isAllTransparent(await computed(card, "box-shadow"))).toBe(false)
+      expect(await computed(track, "box-shadow")).toContain("inset")
+    })
+
+    test(`quiet ${mode} keeps flat cards and tracks`, async ({ page }) => {
+      await seedApp(page, { style: "quiet", mode })
+      await gotoApp(page, "/components/kitchen-sink")
+      const card = page.locator(".dr-card:not([data-card-elevation])").first()
+      const track = page
+        .locator('.dr-tabs-list[data-variant="default"]')
+        .first()
+      expect(isAllTransparent(await computed(card, "box-shadow"))).toBe(true)
+      expect(isAllTransparent(await computed(track, "box-shadow"))).toBe(true)
+    })
+  }
+
+  test("muted text on the brightest tactile dark card stays at 4.5:1", async ({
+    page,
+  }) => {
+    await seedApp(page, { style: "tactile", mode: "dark" })
+    await gotoApp(page, "/components/kitchen-sink")
+    const text = page
+      .locator('[data-card-elevation="high"] .text-muted-foreground')
+      .first()
+    await text.scrollIntoViewIfNeeded()
+    await settle(page)
+    const colour = rgbOf(await computed(text, "color"))
+    const box = await boxOf(text)
+    const behind = await pixel(
+      page,
+      Math.round(box.x + box.width + 4),
+      Math.round(box.y + box.height / 2),
+    )
+    expect(contrast(colour, behind)).toBeGreaterThanOrEqual(4.5)
   })
 })
