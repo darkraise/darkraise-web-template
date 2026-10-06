@@ -235,13 +235,11 @@
     @apply flex-row-reverse;
   }
 
-  /* Tick stays on the content-facing edge, label stays outboard toward the
-     container edge: flex-row-reverse preserves that relationship once the
-     rail is on the left, so the mark never ends up between the label and
-     the content. */
+  /* Mirrors the right rail: every mark sits in one column at the rail's
+     outer edge and a label sits inboard of it. */
   .dr-virtualized-timeline[data-scrubber-side="left"]
     .dr-virtualized-timeline-scrubber-tick {
-    @apply right-auto left-0 flex-row-reverse;
+    @apply right-auto left-0 flex-row;
   }
 
   /* The caret needs no mirror rule: its only child is the ::before hairline

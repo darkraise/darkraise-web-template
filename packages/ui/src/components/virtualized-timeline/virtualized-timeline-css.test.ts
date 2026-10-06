@@ -18,6 +18,14 @@ describe("timeline rail ticks", () => {
     expect(tick).toContain("-translate-y-1/2")
     expect(tick).toContain("flex-row-reverse")
   })
+
+  it("mirrors the mark column to the left edge on a left-hand rail", () => {
+    const tick = body(
+      '.dr-virtualized-timeline[data-scrubber-side="left"] .dr-virtualized-timeline-scrubber-tick',
+    )
+    expect(tick).toContain("left-0")
+    expect(tick).toMatch(/\bflex-row(?!-reverse)/)
+  })
 })
 
 describe("timeline bucket header", () => {
