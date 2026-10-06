@@ -74,7 +74,7 @@
   }
 
   .dr-sidebar-nav-badge {
-    @apply bg-primary/20 text-primary-text ml-auto rounded-full px-2 py-0.5 text-xs;
+    @apply bg-primary/20 text-primary-text ms-auto rounded-full px-2 py-0.5 text-xs;
   }
 
   .dr-sidebar-nav-popover-trigger {
@@ -131,6 +131,12 @@
     @apply size-[var(--icon-size)] shrink-0 transition-transform;
     transition-duration: var(--duration-normal);
     color: hsl(var(--sidebar-foreground-muted));
+  }
+
+  /* Closed, the chevron points along the reading order; open, it points
+     down in both directions. */
+  .dr-sidebar-nav-collapsible-chevron:dir(rtl) {
+    rotate: 180deg;
   }
 
   .dr-sidebar-nav-collapsible-chevron[data-open="true"] {

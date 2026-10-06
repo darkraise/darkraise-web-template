@@ -7,7 +7,7 @@ import { readFileSync } from "node:fs"
 import { dirname, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 
-import { render, screen } from "@testing-library/react"
+import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, it } from "vitest"
 
@@ -517,6 +517,36 @@ describe("SidebarNav active row", () => {
     )
     expect(screen.getByRole("link", { name: "Products" })).not.toHaveClass(
       "dr-sidebar-nav-current",
+    )
+  })
+})
+
+describe("SidebarNav direction", () => {
+  it("indents nested rows from the inline start", () => {
+    const { container } = renderNested(false)
+    const nested = container.querySelector<HTMLElement>(
+      'a[href="/products/all"]',
+    )
+    expect(nested?.style.paddingInlineStart).toBe("24px")
+    expect(nested?.style.paddingLeft).toBe("")
+  })
+
+  it("opens the collapsed rail's popover toward the inline end", async () => {
+    const user = userEvent.setup()
+    render(
+      <div dir="rtl">
+        <RouterAdapterProvider value={makeAdapter("/products/all")}>
+          <SidebarProvider collapsed>
+            <SidebarNav nav={nestedNav} />
+          </SidebarProvider>
+        </RouterAdapterProvider>
+      </div>,
+    )
+    await user.click(screen.getByRole("button", { name: "Products" }))
+    await waitFor(() =>
+      expect(
+        document.querySelector(".dr-sidebar-nav-popover-content"),
+      ).toHaveAttribute("data-side", "left"),
     )
   })
 })

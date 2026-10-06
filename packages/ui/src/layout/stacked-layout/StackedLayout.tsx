@@ -154,7 +154,7 @@ export function StackedLayout({
                         )}
                       </Link>
                     </TooltipTrigger>
-                    <TooltipContent side="right">
+                    <TooltipContent side="end">
                       {group.label || firstItem.label}
                     </TooltipContent>
                   </Tooltip>

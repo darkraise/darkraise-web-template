@@ -143,7 +143,9 @@ function SidebarItem({ item, depth = 0 }: SidebarItemProps) {
       )}
       data-collapsed={collapsed ? "true" : undefined}
       data-depth={depth > 0 ? "nested" : undefined}
-      style={depth > 0 ? { paddingLeft: `${depth * 12 + 12}px` } : undefined}
+      style={
+        depth > 0 ? { paddingInlineStart: `${depth * 12 + 12}px` } : undefined
+      }
       // Kept so a router's own (often fuzzy) match never marks a second row;
       // the kit decides which row is current.
       activeExact
@@ -172,7 +174,7 @@ function SidebarItem({ item, depth = 0 }: SidebarItemProps) {
     return (
       <Tooltip>
         <TooltipTrigger asChild>{linkContent}</TooltipTrigger>
-        <TooltipContent side="right">{item.label}</TooltipContent>
+        <TooltipContent side="end">{item.label}</TooltipContent>
       </Tooltip>
     )
   }
@@ -208,7 +210,7 @@ function CollapsedParentItem({ item }: { item: NavItem }) {
         </button>
       </PopoverTrigger>
       <PopoverContent
-        side="right"
+        side="end"
         align="start"
         className="dr-sidebar-nav-popover-content"
         data-sidebar-selection={look}
@@ -299,7 +301,9 @@ function CollapsibleSidebarItem({
           className="dr-sidebar-nav-link dr-sidebar-nav-collapsible-link"
           data-depth={depth > 0 ? "nested" : undefined}
           style={
-            depth > 0 ? { paddingLeft: `${depth * 12 + 12}px` } : undefined
+            depth > 0
+              ? { paddingInlineStart: `${depth * 12 + 12}px` }
+              : undefined
           }
           activeExact
           aria-current={current ? "page" : undefined}

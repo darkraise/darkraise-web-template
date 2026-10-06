@@ -186,3 +186,38 @@ test.describe("menu rows", () => {
     expect(indicator.x).toBeGreaterThan(row.x + row.width - 32)
   })
 })
+
+test.describe("sidebar", () => {
+  test("the collapsed rail's pill sits on the rail's right edge", async ({
+    page,
+  }) => {
+    await openFixture(page)
+    const nav = page.locator('[data-probe="sidebar-rail"] .dr-sidebar-nav')
+    await expect(nav).toHaveAttribute("data-indicator", "ready")
+    const { pillRight, navRight } = await nav.evaluate((el) => {
+      const indicator = el.querySelector(".dr-sidebar-nav-indicator")
+      if (!indicator) throw new Error("no indicator")
+      const pill = getComputedStyle(indicator, "::before")
+      const left =
+        indicator.getBoundingClientRect().left + parseFloat(pill.left)
+      return {
+        pillRight: left + parseFloat(pill.width),
+        navRight: el.getBoundingClientRect().right,
+      }
+    })
+    expect(Math.abs(pillRight - navRight)).toBeLessThanOrEqual(1)
+  })
+
+  test("a closed group's chevron points left and turns down when open", async ({
+    page,
+  }) => {
+    await openFixture(page)
+    const probe = page.locator('[data-probe="sidebar-tree"]')
+    const chevron = probe.locator(".dr-sidebar-nav-collapsible-chevron")
+    expect(await computed(chevron, "rotate")).toBe("180deg")
+    await probe.getByRole("button", { name: "Products" }).click()
+    await expect(chevron).toHaveAttribute("data-open", "true")
+    await settle(page)
+    expect(await computed(chevron, "rotate")).toBe("90deg")
+  })
+})

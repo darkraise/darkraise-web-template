@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client"
-import { ChevronRight } from "lucide-react"
+import { ChevronRight, House, Package } from "lucide-react"
 import {
   ContextMenu,
   ContextMenuContent,
@@ -31,8 +31,51 @@ import {
 } from "darkraise-ui/components/menubar"
 import { ScrollArea, ScrollBar } from "darkraise-ui/components/scroll-area"
 import { Tabs, TabsList, TabsTrigger } from "darkraise-ui/components/tabs"
+import { SidebarNav, SidebarProvider } from "darkraise-ui/layout"
+import {
+  RouterAdapterProvider,
+  type RouterAdapter,
+  type RouterLinkProps,
+} from "darkraise-ui/router"
 import { ThemeProvider } from "darkraise-ui/theme"
 import "../../src/styles/globals.css"
+
+function SidebarLink({
+  to,
+  className,
+  style,
+  children,
+  "aria-current": ariaCurrent,
+}: RouterLinkProps) {
+  return (
+    <a href={to} className={className} style={style} aria-current={ariaCurrent}>
+      {children}
+    </a>
+  )
+}
+
+const SIDEBAR_ADAPTER: RouterAdapter = {
+  Link: SidebarLink,
+  useNavigate: () => () => {},
+  usePathname: () => "/",
+  useBack: () => () => {},
+  useInvalidate: () => () => {},
+}
+
+const SIDEBAR_NAV = [
+  {
+    label: "Main",
+    items: [
+      { label: "Home", href: "/", icon: House },
+      {
+        label: "Products",
+        href: "/products",
+        icon: Package,
+        children: [{ label: "Drafts", href: "/products/drafts" }],
+      },
+    ],
+  },
+]
 
 const root = document.getElementById("root")
 if (!root) throw new Error("Missing test fixture root")
@@ -123,6 +166,20 @@ createRoot(root).render(
             </DropdownMenuCheckboxItem>
           </DropdownMenuContent>
         </DropdownMenu>
+      </div>
+      <div data-probe="sidebar-rail" style={{ width: 64 }}>
+        <RouterAdapterProvider value={SIDEBAR_ADAPTER}>
+          <SidebarProvider collapsed>
+            <SidebarNav nav={SIDEBAR_NAV} selection="pill" />
+          </SidebarProvider>
+        </RouterAdapterProvider>
+      </div>
+      <div data-probe="sidebar-tree" style={{ width: 240 }}>
+        <RouterAdapterProvider value={SIDEBAR_ADAPTER}>
+          <SidebarProvider collapsed={false}>
+            <SidebarNav nav={SIDEBAR_NAV} />
+          </SidebarProvider>
+        </RouterAdapterProvider>
       </div>
     </div>
   </ThemeProvider>,
