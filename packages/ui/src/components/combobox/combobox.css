@@ -17,7 +17,7 @@
   }
 
   .dr-combobox-input {
-    @apply pr-16;
+    @apply pe-16;
   }
 
   /* The input fills the control instead of carrying its own fixed height,
@@ -27,11 +27,11 @@
   }
 
   .dr-combobox-clear-trigger {
-    @apply text-muted-foreground focus-ring-inset absolute top-1/2 right-9 inline-flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-sm transition-colors;
+    @apply text-muted-foreground focus-ring-inset absolute end-9 top-1/2 inline-flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-sm transition-colors;
   }
 
   .dr-combobox-trigger {
-    @apply text-muted-foreground focus-ring-inset absolute top-1/2 right-2 inline-flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-sm transition-colors;
+    @apply text-muted-foreground focus-ring-inset absolute end-2 top-1/2 inline-flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-sm transition-colors;
   }
 
   /* Shared interaction state layer (theme.css). Both triggers are already

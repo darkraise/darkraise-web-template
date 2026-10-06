@@ -16,11 +16,11 @@
   }
 
   .dr-date-picker-input {
-    @apply pr-10;
+    @apply pe-10;
   }
 
   .dr-date-picker-trigger {
-    @apply text-muted-foreground focus-ring-inset absolute top-1/2 right-2 inline-flex h-6 w-6 -translate-y-1/2 cursor-pointer items-center justify-center rounded-sm transition-colors;
+    @apply text-muted-foreground focus-ring-inset absolute end-2 top-1/2 inline-flex h-6 w-6 -translate-y-1/2 cursor-pointer items-center justify-center rounded-sm transition-colors;
   }
 
   /* Shared interaction state layer (theme.css). The trigger is already

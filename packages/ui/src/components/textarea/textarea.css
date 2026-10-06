@@ -21,12 +21,12 @@
   .dr-textarea-grouped {
     /* Reserve corner space so wrapped text doesn't slide under the
      * action. 2.5rem accommodates a size="icon" ghost button. */
-    padding-right: 2.5rem;
+    padding-inline-end: 2.5rem;
   }
   .dr-textarea-action {
     position: absolute;
     top: 0.25rem;
-    right: 0.25rem;
+    inset-inline-end: 0.25rem;
     display: inline-flex;
     align-items: center;
     z-index: 1;

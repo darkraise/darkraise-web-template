@@ -49,10 +49,10 @@
     @apply bg-muted text-muted-foreground flex shrink-0 items-center px-3 text-sm;
   }
   .dr-number-input-addon[data-side="prefix"] {
-    border-right: 1px solid hsl(var(--border));
+    border-inline-end: 1px solid hsl(var(--border));
   }
   .dr-number-input-addon[data-side="suffix"] {
-    border-left: 1px solid hsl(var(--border));
+    border-inline-start: 1px solid hsl(var(--border));
   }
 
   /* Action slot — transparent container for an in-field button (clear,
@@ -75,14 +75,14 @@
     @apply focus-ring-inset;
   }
 
-  /* Trigger group — a flex column at the right edge of the control. The
-   * left border draws the divider against the field (or the suffix, if
-   * one is rendered between the field and the group). The wrapper's
+  /* Trigger group — a flex column at the inline-end edge of the control.
+   * The inline-start border draws the divider against the field (or the
+   * suffix, if one is rendered between the field and the group). The wrapper's
    * overflow:hidden clips the group's corners against the control's
    * rounded radius — no per-group border-radius needed. */
   .dr-number-input-trigger-group {
     @apply flex w-8 shrink-0 flex-col;
-    border-left: 1px solid hsl(var(--input));
+    border-inline-start: 1px solid hsl(var(--input));
   }
 
   /* Steppers inside the group: each takes half the height, no per-stepper
@@ -97,7 +97,7 @@
        the field would hold the stepper open and push the decrement out of
        the clipped control. */
     min-height: 0;
-    border-left: 0;
+    border-inline-start: 0;
     border-radius: 0;
   }
   .dr-number-input-trigger-group .dr-number-input-stepper-increment {

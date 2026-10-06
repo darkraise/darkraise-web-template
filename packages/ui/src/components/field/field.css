@@ -74,7 +74,7 @@
   }
 
   .dr-field-required-mark {
-    @apply text-destructive-text ml-0.5;
+    @apply text-destructive-text ms-0.5;
   }
 
   /* A label that wraps a control (a choice card) fades once, as a whole;
