@@ -77,3 +77,35 @@ test.describe("tree view rows", () => {
     ).toBeGreaterThanOrEqual(7.5)
   })
 })
+
+test.describe("vertical toolbar", () => {
+  test("is as wide as its widest item, not its container", async ({ page }) => {
+    await openInMode(page, "light")
+    const bar = probe(page, "toolbar-vertical", ".dr-toolbar")
+    // Each item's own width: a stretched item is as wide as the bar, so the
+    // item is measured with align-self: flex-start for one read.
+    const { widest, chrome } = await bar.evaluate((el) => {
+      const items = Array.from(
+        el.querySelectorAll<HTMLElement>(":scope > .dr-toggle"),
+      )
+      const widths = items.map((item) => {
+        const previous = item.style.alignSelf
+        item.style.alignSelf = "flex-start"
+        const width = item.getBoundingClientRect().width
+        item.style.alignSelf = previous
+        return width
+      })
+      const style = getComputedStyle(el)
+      return {
+        widest: Math.max(...widths),
+        chrome:
+          parseFloat(style.paddingLeft) +
+          parseFloat(style.paddingRight) +
+          parseFloat(style.borderLeftWidth) +
+          parseFloat(style.borderRightWidth),
+      }
+    })
+    expect(widest).toBeGreaterThan(0)
+    expect((await boxOf(bar)).width).toBeLessThanOrEqual(widest + chrome + 0.5)
+  })
+})

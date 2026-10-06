@@ -1,4 +1,7 @@
 import { createRoot } from "react-dom/client"
+import { Bold, Italic, Underline } from "lucide-react"
+import { Toggle } from "darkraise-ui/components/toggle"
+import { Toolbar, ToolbarSeparator } from "darkraise-ui/components/toolbar"
 import {
   TreeView,
   TreeViewNode,
@@ -56,6 +59,20 @@ createRoot(root).render(
       <p style={{ flexBasis: "100%", margin: 0 }}>Controls behaviour</p>
       <div data-probe="tree" style={{ width: 240 }}>
         <Tree variant="filled" />
+      </div>
+      <div data-probe="toolbar-vertical" style={{ width: 320 }}>
+        <Toolbar orientation="vertical" aria-label="Formatting">
+          <Toggle aria-label="Bold">
+            <Bold className="size-4" />
+          </Toggle>
+          <Toggle aria-label="Italic">
+            <Italic className="size-4" />
+          </Toggle>
+          <ToolbarSeparator orientation="horizontal" />
+          <Toggle aria-label="Underline">
+            <Underline className="size-4" />
+          </Toggle>
+        </Toolbar>
       </div>
     </div>
   </ThemeProvider>,

@@ -3,7 +3,7 @@
     @apply bg-card flex items-center gap-1 rounded-md border p-1;
   }
   .dr-toolbar[data-orientation="vertical"] {
-    @apply flex-col items-stretch;
+    @apply w-fit flex-col items-stretch;
   }
   .dr-toolbar-separator {
     @apply bg-border;
