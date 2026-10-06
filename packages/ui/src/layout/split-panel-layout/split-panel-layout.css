@@ -46,7 +46,7 @@
       > .dr-split-panel-layout-aside {
       grid-area: content;
       width: auto;
-      border-right: 0;
+      border-inline-end: 0;
     }
   }
 

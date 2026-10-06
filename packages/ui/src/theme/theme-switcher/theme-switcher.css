@@ -47,7 +47,7 @@
   }
 
   .dr-theme-switcher-row-icon {
-    @apply mr-1.5 size-[var(--icon-size-sm)];
+    @apply me-1.5 size-[var(--icon-size-sm)];
   }
 
   /* Nine swatches per row wherever nine fit, wrapping to fewer instead of
@@ -158,7 +158,7 @@
     @apply text-foreground text-xs font-medium capitalize;
     flex: 0 0 auto;
     min-width: 5rem;
-    text-align: right;
+    text-align: end;
   }
 
   /* Swatch-grid rows (Accent Color, Surface Color) share the same

@@ -29,6 +29,6 @@
   }
 
   .dr-user-menu-item-icon {
-    @apply mr-2 size-[var(--icon-size)];
+    @apply me-2 size-[var(--icon-size)];
   }
 }

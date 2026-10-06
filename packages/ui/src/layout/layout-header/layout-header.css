@@ -10,7 +10,7 @@
   }
 
   .dr-layout-header-end {
-    @apply ml-auto flex items-center gap-1;
+    @apply ms-auto flex items-center gap-1;
   }
 
   /* A phone-width bar has no room for the brand and a full search field

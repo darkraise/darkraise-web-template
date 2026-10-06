@@ -68,12 +68,13 @@
   }
 
   .dr-shell[data-shell-style="inset"] > [data-region="content"] {
-    margin: 0 0.5rem 0.5rem 0;
+    margin-block: 0 0.5rem;
+    margin-inline: 0 0.5rem;
   }
 
   .dr-shell[data-shell-style="inset"][data-structure="top-nav"]
     > [data-region="content"] {
-    margin-left: 0.5rem;
+    margin-inline-start: 0.5rem;
   }
 
   /* floating — the content plane runs the full grid and the chrome hovers
@@ -95,7 +96,7 @@
   /* Neighbouring chrome would otherwise double the gutter between them. */
   .dr-shell[data-shell-style="floating"] > [data-region="nav"],
   .dr-shell[data-shell-style="floating"] > [data-region="subnav"] {
-    margin-right: 0;
+    margin-inline-end: 0;
   }
 
   /* The content reserves its own room so the background bleeds under the

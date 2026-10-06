@@ -111,7 +111,7 @@
   .dr-shell
     > :is([data-region="nav"], [data-region="subnav"], [data-region="panel"]) {
     z-index: 1;
-    border-right: 1px solid var(--chrome-edge);
+    border-inline-end: 1px solid var(--chrome-edge);
   }
 
   .dr-shell
@@ -130,10 +130,10 @@
   .dr-shell > [data-region="panel"]::before {
     position: sticky;
     top: 0;
-    float: left;
+    float: inline-start;
     width: 100%;
     height: 100%;
-    margin-right: -100%;
+    margin-inline-end: -100%;
   }
 
   .dr-shell > [data-region="bar"] {

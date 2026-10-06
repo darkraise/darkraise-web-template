@@ -531,3 +531,15 @@ test.describe("table edge fade", () => {
     expect(dark(await right())).toBe(false)
   })
 })
+
+test.describe("shell edges", () => {
+  test("the rail border faces the content", async ({ page }) => {
+    await openFixture(page)
+    const shell = page.locator('[data-probe="shell"]')
+    const rail = shell.locator('[data-region="panel"]')
+    const content = shell.locator('[data-region="content"]')
+    expect((await boxOf(rail)).x).toBeGreaterThan((await boxOf(content)).x)
+    expect(await computed(rail, "border-left-width")).toBe("1px")
+    expect(await computed(rail, "border-right-width")).toBe("0px")
+  })
+})

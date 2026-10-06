@@ -256,7 +256,7 @@ describe("region chrome", () => {
 
   it("fills the rails and edges them on the content side", () => {
     expect(shellBodies(`.dr-shell > :is(${RAILS})`)).toContain(
-      "border-right: 1px solid var(--chrome-edge);",
+      "border-inline-end: 1px solid var(--chrome-edge);",
     )
     expect(shellBodies(`.dr-shell > :is(${RAILS})::before`)).toBe(
       "background: var(--chrome-rail-bg);",

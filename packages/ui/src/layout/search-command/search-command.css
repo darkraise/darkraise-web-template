@@ -19,6 +19,6 @@
   }
 
   .dr-search-command-shortcut {
-    @apply bg-muted pointer-events-none ml-auto hidden rounded-sm border px-1.5 font-mono text-xs sm:inline-block;
+    @apply bg-muted pointer-events-none ms-auto hidden rounded-sm border px-1.5 font-mono text-xs sm:inline-block;
   }
 }

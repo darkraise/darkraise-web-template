@@ -37,7 +37,12 @@ import {
   TabsList,
   TabsTrigger,
 } from "darkraise-ui/components/tabs"
-import { MobileDrawer, SidebarNav, SidebarProvider } from "darkraise-ui/layout"
+import {
+  MobileDrawer,
+  SidebarNav,
+  SidebarProvider,
+  SplitPanelLayout,
+} from "darkraise-ui/layout"
 import {
   RouterAdapterProvider,
   useOptionalRouterAdapter,
@@ -392,6 +397,16 @@ createRoot(root).render(
             </TableRow>
           </TableBody>
         </Table>
+      </div>
+      <div
+        data-probe="shell"
+        style={{ width: 800, height: 400, overflow: "hidden" }}
+      >
+        <ShellRouter>
+          <SplitPanelLayout nav={[]} panel={<p>Threads</p>}>
+            <p>Select a thread</p>
+          </SplitPanelLayout>
+        </ShellRouter>
       </div>
     </div>
   </ThemeProvider>,

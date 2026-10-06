@@ -15,7 +15,7 @@
   }
 
   .dr-form-error-summary-list {
-    @apply ml-4 flex list-disc flex-col gap-1 text-sm;
+    @apply ms-4 flex list-disc flex-col gap-1 text-sm;
   }
 
   .dr-form-error-summary-list a {
