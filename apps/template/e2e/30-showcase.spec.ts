@@ -614,3 +614,55 @@ test.describe("row 62: stacked avatars keep their initials whole", () => {
     })
   }
 })
+
+test.describe("row 67: the app-scope panel starts closed", () => {
+  test("no app-scope panel covers the title or the sidebar after load", async ({
+    page,
+  }) => {
+    // A fresh page: the app-scope registry lives for the page session, so a
+    // panel opened by an earlier navigation would still be on screen.
+    await openShowcase(page, "/components/floating-panel")
+    const overlaps = await page.evaluate(() => {
+      const panels = [
+        ...document.querySelectorAll(".dr-floating-panel"),
+      ].filter((panel) => !panel.closest("#main-content"))
+      const targets = [
+        { name: "page title", el: document.querySelector("main h1") },
+        { name: "sidebar", el: document.querySelector("aside") },
+      ]
+      const hits: string[] = []
+      for (const panel of panels) {
+        const a = panel.getBoundingClientRect()
+        for (const { name, el } of targets) {
+          if (!el) {
+            hits.push(`no ${name} found`)
+            continue
+          }
+          const b = el.getBoundingClientRect()
+          const intersects =
+            a.left < b.right &&
+            b.left < a.right &&
+            a.top < b.bottom &&
+            b.top < a.bottom
+          if (intersects) {
+            hits.push(
+              `app-scope panel "${panel.textContent?.trim().slice(0, 30)}" overlaps the ${name}`,
+            )
+          }
+        }
+      }
+      return hits
+    })
+    expect(overlaps, overlaps.join("\n")).toEqual([])
+
+    const example = page.locator("[data-showcase-example]").filter({
+      has: page.getByText("Scope: app (survives route changes)", {
+        exact: true,
+      }),
+    })
+    await example.getByRole("button", { name: "Open", exact: true }).click()
+    await expect(
+      page.locator(".dr-floating-panel:not(#main-content *)"),
+    ).toHaveCount(1)
+  })
+})

@@ -235,6 +235,7 @@ const nextId = useRef(1)
   id="inspector"
   component={InspectorContent}
   componentProps={{ label: "Inspector" }}
+  defaultOpen={false} // starts closed; panels.open("inspector") shows it
   defaultPosition={{ x: 80, y: 80 }}
   persist // optional: position/size persist across full reloads
 />
@@ -366,12 +367,14 @@ function AppScopeDemo() {
         id="demo-inspector"
         component={InspectorContent}
         componentProps={{ label: "App-scope inspector" }}
+        defaultOpen={false}
         defaultPosition={{ x: 120, y: 120 }}
         defaultSize={{ width: 280, height: 200 }}
       />
       <p className="text-muted-foreground text-xs">
-        The panel above is rendered by the app-shell host. Navigate to another
-        components page and back — it stays open at the same coordinates.
+        Open shows the inspector, which the app-shell host renders outside this
+        page. Navigate to another components page and back: it stays open and
+        keeps its place.
       </p>
       <div className="flex gap-2">
         <Button variant="outline" onClick={() => panels.open("demo-inspector")}>
