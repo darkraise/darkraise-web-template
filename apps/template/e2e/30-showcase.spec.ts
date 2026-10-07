@@ -15,8 +15,7 @@ import {
  * Showcase pages at full height. The sweep applies three geometry rules to
  * every demo through the showcase hooks (data-showcase-preview on each demo
  * card, data-showcase-matrix on each VariantMatrix wrapper), so content below
- * the fold is covered without a screenshot. Pages that still fail are listed
- * in SWEEP_PENDING and run as expected failures until their fix lands.
+ * the fold is covered without a screenshot.
  */
 
 const DESKTOP = { width: 1440, height: 900 }
@@ -57,8 +56,6 @@ async function openShowcase(
   }
   await settle(page)
 }
-
-const SWEEP_PENDING: Record<string, string> = {}
 
 test.describe("showcase sweep", () => {
   const routes = [
@@ -290,8 +287,6 @@ test.describe("showcase sweep", () => {
 
   for (const path of routes) {
     test(path, async ({ page }) => {
-      const pending = SWEEP_PENDING[path]
-      test.fail(pending !== undefined, pending)
       await openShowcase(page, path)
       const violations = await sweep(page)
       expect(
