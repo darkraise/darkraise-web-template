@@ -92,10 +92,10 @@ grepped across `packages/ui/src` first and confirmed to occur exactly once.
 
 Enforcement is **not** blanket. These remain uncovered by `allOf`:
 
-- **accordion's `orientation`** is still a local copy. The package declares it
-  inline on `AccordionCommonProps` (`Accordion.tsx:75`) with no named export,
-  and unlike the six types above it was not in scope for the export pass. The
-  demo constant carries a comment saying so.
+- **accordion's `orientation`** has no matrix. It changes only which arrow
+  keys move between triggers, so every cell looked the same; the page states
+  that in its description instead. The package still declares it inline on
+  `AccordionCommonProps` with no named export.
 - **`TimelineConnectorVariant`** (`"solid" | "dashed"`, exported at
   `Timeline.tsx:11`) has both values rendering in `timeline.tsx`'s "Dashed
   connectors" example, but there is no `allOf` call naming the type, so a third

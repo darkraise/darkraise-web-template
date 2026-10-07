@@ -355,12 +355,12 @@ function CalendarPage() {
         title="Custom cell size"
         code={`<Calendar
   mode="single"
-  className="rounded-md border [--cell-size:2.75rem]"
+  className="rounded-md border [--control-height-default:2.75rem]"
 />`}
       >
         <Calendar
           mode="single"
-          className="rounded-md border [--cell-size:2.75rem]"
+          className="rounded-md border [--control-height-default:2.75rem]"
         />
       </ShowcaseExample>
 

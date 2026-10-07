@@ -760,3 +760,21 @@ test.describe("row 91: kitchen-sink radio alignment", () => {
     }
   })
 })
+
+test.describe("row 92: calendar custom cell size", () => {
+  test("custom-size day cells are wider than the basic calendar cells", async ({
+    page,
+  }) => {
+    await openShowcase(page, "/components/calendar")
+    const dayWidth = (title: string) =>
+      page
+        .locator("[data-showcase-example]")
+        .filter({ hasText: title })
+        .locator("[data-showcase-preview] .dr-calendar-day")
+        .first()
+        .evaluate((cell) => cell.getBoundingClientRect().width)
+    const basic = await dayWidth("Basic calendar")
+    const custom = await dayWidth("Custom cell size")
+    expect(custom).toBeGreaterThan(basic)
+  })
+})

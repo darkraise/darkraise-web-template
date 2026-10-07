@@ -2,8 +2,8 @@ import type { showcaseEnglish } from "./showcase-en"
 
 export const showcaseVietnamese: Record<keyof typeof showcaseEnglish, string> =
   {
-    "Collapsible content sections for progressive disclosure of information.":
-      "Các phần nội dung có thể thu gọn để hiển thị thông tin từng bước.",
+    "Collapsible content sections for progressive disclosure of information. The orientation prop changes only which arrow keys move between triggers, not the layout.":
+      "Các phần nội dung có thể thu gọn để hiển thị thông tin từng bước. Thuộc tính orientation chỉ đổi phím mũi tên dùng để di chuyển giữa các nút mở, không đổi bố cục.",
     "Modal dialogs that interrupt the user and require an explicit confirmation or cancellation.":
       "Hộp thoại ngắt thao tác và yêu cầu người dùng xác nhận hoặc hủy rõ ràng.",
     "Inline status banner with a leading icon, title, and description. Use for page-level notices, validation summaries, or status callouts.":
@@ -201,6 +201,8 @@ export const showcaseVietnamese: Record<keyof typeof showcaseEnglish, string> =
     "Variant x elevation": "Biến thể × độ nổi",
     Border: "Viền",
     Orientation: "Hướng",
+    "Child variant x size": "Biến thể × kích thước của nút con",
+    "Disabled child": "Nút con bị vô hiệu hóa",
     'type="multiple" — any number of items open simultaneously':
       'type="multiple" — mở đồng thời nhiều mục',
     "FAQ pattern": "Mẫu câu hỏi thường gặp",

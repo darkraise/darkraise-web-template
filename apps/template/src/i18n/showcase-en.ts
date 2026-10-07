@@ -1,6 +1,6 @@
 export const showcaseEnglish = {
-  "Collapsible content sections for progressive disclosure of information.":
-    "Collapsible content sections for progressive disclosure of information.",
+  "Collapsible content sections for progressive disclosure of information. The orientation prop changes only which arrow keys move between triggers, not the layout.":
+    "Collapsible content sections for progressive disclosure of information. The orientation prop changes only which arrow keys move between triggers, not the layout.",
   "Modal dialogs that interrupt the user and require an explicit confirmation or cancellation.":
     "Modal dialogs that interrupt the user and require an explicit confirmation or cancellation.",
   "Inline status banner with a leading icon, title, and description. Use for page-level notices, validation summaries, or status callouts.":
@@ -198,6 +198,8 @@ export const showcaseEnglish = {
   "Variant x elevation": "Variant x elevation",
   Border: "Border",
   Orientation: "Orientation",
+  "Child variant x size": "Child variant x size",
+  "Disabled child": "Disabled child",
   'type="multiple" — any number of items open simultaneously':
     'type="multiple" — any number of items open simultaneously',
   "FAQ pattern": "FAQ pattern",

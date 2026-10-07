@@ -43,14 +43,6 @@ const ACCORDION_BORDERS = allOf<CardBorder>()(
   "accent",
 )
 
-// The package declares `orientation` inline on AccordionCommonProps rather
-// than as a named export, so this list is a local copy: it catches a removed
-// value but not an added one.
-const ACCORDION_ORIENTATIONS = allOf<"horizontal" | "vertical">()(
-  "horizontal",
-  "vertical",
-)
-
 function AccordionMatrixCell({
   variant,
   elevation,
@@ -59,30 +51,22 @@ function AccordionMatrixCell({
   elevation: CardElevation
 }) {
   return (
-    <div className="min-w-0 space-y-2">
-      <Accordion
-        type="single"
-        collapsible
-        variant={variant}
-        elevation={elevation}
-        className="w-full max-w-xs"
-      >
-        <AccordionItem value="shipping">
-          <AccordionTrigger>Shipping</AccordionTrigger>
-          <AccordionContent>Free over $50.</AccordionContent>
-        </AccordionItem>
-        <AccordionItem value="returns">
-          <AccordionTrigger>Returns</AccordionTrigger>
-          <AccordionContent>30 days, no questions asked.</AccordionContent>
-        </AccordionItem>
-      </Accordion>
-      {variant === "default" ? (
-        <p className="text-muted-foreground/70 max-w-[20rem] text-[length:var(--text-2xs)]">
-          Identical across the row — the default variant paints no card surface,
-          so it has nothing to raise.
-        </p>
-      ) : null}
-    </div>
+    <Accordion
+      type="single"
+      collapsible
+      variant={variant}
+      elevation={elevation}
+      className="w-full max-w-xs"
+    >
+      <AccordionItem value="shipping">
+        <AccordionTrigger>Shipping</AccordionTrigger>
+        <AccordionContent>Free over $50.</AccordionContent>
+      </AccordionItem>
+      <AccordionItem value="returns">
+        <AccordionTrigger>Returns</AccordionTrigger>
+        <AccordionContent>30 days, no questions asked.</AccordionContent>
+      </AccordionItem>
+    </Accordion>
   )
 }
 
@@ -90,7 +74,7 @@ function AccordionPage() {
   return (
     <ShowcasePage
       title="Accordion"
-      description="Collapsible content sections for progressive disclosure of information."
+      description="Collapsible content sections for progressive disclosure of information. The orientation prop changes only which arrow keys move between triggers, not the layout."
     >
       <ShowcaseExample
         title='type="single" — only one item open at a time'
@@ -150,13 +134,19 @@ function AccordionPage() {
   </AccordionItem>
 </Accordion>`}
       >
-        <VariantMatrix
-          rows={{ label: "variant", values: ACCORDION_VARIANTS }}
-          cols={{ label: "elevation", values: ACCORDION_ELEVATIONS }}
-          render={(variant, elevation) => (
-            <AccordionMatrixCell variant={variant} elevation={elevation} />
-          )}
-        />
+        <div className="space-y-3">
+          <VariantMatrix
+            rows={{ label: "variant", values: ACCORDION_VARIANTS }}
+            cols={{ label: "elevation", values: ACCORDION_ELEVATIONS }}
+            render={(variant, elevation) => (
+              <AccordionMatrixCell variant={variant} elevation={elevation} />
+            )}
+          />
+          <p className="text-muted-foreground text-xs">
+            The default variant paints no card surface, so its row is identical
+            at every elevation.
+          </p>
+        </div>
       </ShowcaseExample>
 
       <ShowcaseExample
@@ -182,41 +172,6 @@ function AccordionPage() {
               <AccordionItem value="shipping">
                 <AccordionTrigger>Shipping</AccordionTrigger>
                 <AccordionContent>Free over $50.</AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          )}
-        />
-      </ShowcaseExample>
-
-      <ShowcaseExample
-        title="Orientation"
-        code={`// One representative cell: every orientation renders above.
-// Orientation drives arrow-key navigation between triggers, not layout.
-<Accordion type="single" collapsible orientation="vertical">
-  <AccordionItem value="shipping">
-    <AccordionTrigger>Shipping</AccordionTrigger>
-    <AccordionContent>Free over $50.</AccordionContent>
-  </AccordionItem>
-</Accordion>`}
-      >
-        <VariantMatrix
-          rows={{ label: "orientation", values: ACCORDION_ORIENTATIONS }}
-          render={(orientation) => (
-            <Accordion
-              type="single"
-              collapsible
-              orientation={orientation}
-              className="w-full max-w-sm"
-            >
-              <AccordionItem value="shipping">
-                <AccordionTrigger>Shipping</AccordionTrigger>
-                <AccordionContent>Free over $50.</AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="returns">
-                <AccordionTrigger>Returns</AccordionTrigger>
-                <AccordionContent>
-                  30 days, no questions asked.
-                </AccordionContent>
               </AccordionItem>
             </Accordion>
           )}
