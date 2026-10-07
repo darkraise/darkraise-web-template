@@ -394,15 +394,9 @@ test.describe("toast action hover", () => {
         const label = rgbOf(await computed(button, "color"))
         const resting = contrast(await fillAt(), label)
         await button.hover()
-        // Sonner pauses the countdown animation while the toast is hovered,
-        // so settle() would wait on it forever; reduced motion leaves only
-        // the 0.01ms colour transition, which two frames cover.
-        await page.evaluate(
-          () =>
-            new Promise((resolve) =>
-              requestAnimationFrame(() => requestAnimationFrame(resolve)),
-            ),
-        )
+        // Sonner pauses its countdown animation while the toast is hovered,
+        // and settle() ignores paused animations.
+        await settle(page)
         const hovered = contrast(await fillAt(), label)
         expect(hovered).toBeGreaterThanOrEqual(4.5)
         expect(hovered).toBeGreaterThanOrEqual(resting)

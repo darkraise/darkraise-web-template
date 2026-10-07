@@ -2,27 +2,58 @@ import type { Locator, Page } from "@playwright/test"
 
 export type Rgb = [number, number, number]
 
+const SETTLE_TIMEOUT = 5_000
+
 /**
- * Wait two frames, then for every finite animation and transition to end.
- * Fixtures paint the light fallback before ThemeProvider applies the seeded
- * theme, and overlays animate in, so a value read before this is a blend of
- * two states.
+ * Wait until no finite animation or transition has been running for two
+ * consecutive frames. Fixtures paint the light fallback before ThemeProvider
+ * applies the seeded theme, and overlays animate in, so a value read before
+ * this is a blend of two states. The set is read again every frame because a
+ * transition retargeted mid-flight is cancelled and replaced by a new one.
+ * Paused, finished and infinite animations never end on their own, so they
+ * are ignored. So are animations shorter than a millisecond, which is what
+ * the reduced-motion rule makes of every transition: one ends in the frame
+ * it starts in, and Chromium can leave one pending without a start time
+ * indefinitely, which would hold this wait to its deadline.
  */
 export async function settle(page: Page) {
-  await page.evaluate(async () => {
-    await new Promise((resolve) =>
-      requestAnimationFrame(() => requestAnimationFrame(resolve)),
-    )
-    await Promise.all(
-      document
-        .getAnimations()
-        .filter(
-          (animation) =>
-            animation.effect?.getComputedTiming().iterations !== Infinity,
+  const running = await page.evaluate(async (timeout) => {
+    const busy = () =>
+      document.getAnimations().filter((animation) => {
+        const timing = animation.effect?.getComputedTiming()
+        return (
+          timing !== undefined &&
+          timing.iterations !== Infinity &&
+          Number(timing.activeDuration) >= 1 &&
+          (animation.playState === "running" || animation.pending)
         )
-        .map((animation) => animation.finished.catch(() => undefined)),
+      })
+    const deadline = performance.now() + timeout
+    let quiet = 0
+    while (quiet < 2) {
+      await new Promise((resolve) => requestAnimationFrame(resolve))
+      const animations = busy()
+      if (animations.length === 0) {
+        quiet += 1
+      } else if (performance.now() > deadline) {
+        return animations.map((animation) =>
+          animation instanceof CSSAnimation
+            ? animation.animationName
+            : animation instanceof CSSTransition
+              ? animation.transitionProperty
+              : animation.id,
+        )
+      } else {
+        quiet = 0
+      }
+    }
+    return []
+  }, SETTLE_TIMEOUT)
+  if (running.length > 0) {
+    throw new Error(
+      `settle: still running after ${SETTLE_TIMEOUT}ms: ${running.join(", ")}`,
     )
-  })
+  }
 }
 
 export function rgbOf(value: string): Rgb {

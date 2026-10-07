@@ -96,8 +96,11 @@ test.describe("scroll area", () => {
     await probe
       .locator("[data-darkraise-scroll-viewport]")
       .evaluate((el) => el.scrollTo({ left: -200 }))
-    await settle(page)
-    expect((await boxOf(thumb)).x).toBeLessThan(start.x - 10)
+    // The thumb follows the scroll event, which lands a frame or more after
+    // scrollTo returns, so poll rather than read once.
+    await expect
+      .poll(async () => (await boxOf(thumb)).x)
+      .toBeLessThan(start.x - 10)
   })
 })
 
