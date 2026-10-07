@@ -581,3 +581,36 @@ test.describe("row 61: dual-series charts use the plot height", () => {
     })
   }
 })
+
+test.describe("row 62: stacked avatars keep their initials whole", () => {
+  const GROUPS = ["Avatar group (stacked)", "Group with +N overflow"]
+
+  for (const title of GROUPS) {
+    test(title, async ({ page }) => {
+      await openShowcase(page, "/components/avatar")
+      const preview = page
+        .locator("[data-showcase-example]")
+        .filter({ has: page.getByText(title, { exact: true }) })
+        .locator("[data-showcase-preview]")
+      const problems = await preview.evaluate((card) => {
+        const row = card.querySelector(".dr-avatar")?.parentElement
+        if (!row) return ["no avatar row"]
+        const members = [...row.children]
+        const range = document.createRange()
+        return members.slice(0, -1).flatMap((member, index) => {
+          const fallback = member.querySelector(".dr-avatar-fallback")
+          if (!fallback) return []
+          range.selectNodeContents(fallback)
+          const textRight = range.getBoundingClientRect().right
+          const nextLeft = members[index + 1]?.getBoundingClientRect().left ?? 0
+          return textRight <= nextLeft
+            ? []
+            : [
+                `"${fallback.textContent}" ends at ${textRight.toFixed(1)}, under the next avatar from ${nextLeft.toFixed(1)}`,
+              ]
+        })
+      })
+      expect(problems, problems.join("\n")).toEqual([])
+    })
+  }
+})
