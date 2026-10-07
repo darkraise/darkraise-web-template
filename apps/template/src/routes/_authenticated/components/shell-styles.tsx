@@ -31,9 +31,80 @@ const STRUCTURES = [
   },
 ] as const
 
+type Structure = (typeof STRUCTURES)[number]["id"]
+
+// Only the areas the grid of each structure declares: a region the template
+// does not name lands in an implicit track and leaves a blank strip.
+const REGIONS: Record<Structure, readonly string[]> = {
+  sidebar: ["nav", "bar", "content"],
+  "top-nav": ["bar", "content"],
+  stacked: ["nav", "subnav", "bar", "content"],
+  "split-panel": ["bar", "panel", "handle", "content"],
+}
+
+const RAIL_WIDTHS: Record<string, string> = {
+  nav: "w-10",
+  subnav: "w-14",
+  panel: "w-16",
+}
+
+function Lines({ widths }: { widths: readonly string[] }) {
+  return (
+    <div className="space-y-1.5">
+      {widths.map((width, index) => (
+        <div
+          key={index}
+          className={`bg-muted-foreground/20 h-1.5 rounded-full ${width}`}
+        />
+      ))}
+    </div>
+  )
+}
+
+// Floating runs the content under its chrome and pads it by the app-sized
+// rails, which outgrow a thumbnail; these clear the preview-sized chrome.
+const FLOATING_CLEARANCE: Record<Structure, string> = {
+  sidebar: "ps-16 pt-16",
+  "top-nav": "pt-16",
+  stacked: "ps-33 pt-16",
+  "split-panel": "ps-26 pt-16",
+}
+
+function Region({
+  region,
+  structure,
+  style,
+}: {
+  region: string
+  structure: Structure
+  style: string
+}) {
+  if (region === "bar") return <div data-region="bar" className="h-8" />
+  if (region === "handle") return <div data-region="handle" className="w-1" />
+  if (region === "content") {
+    const clearance = style === "floating" ? FLOATING_CLEARANCE[structure] : ""
+    return (
+      <div data-region="content" className={`p-3 ${clearance}`}>
+        <Lines widths={["w-3/4", "w-1/2"]} />
+      </div>
+    )
+  }
+  return (
+    <div data-region={region} className={`${RAIL_WIDTHS[region]} p-2`}>
+      <Lines widths={["w-full", "w-2/3", "w-full"]} />
+    </div>
+  )
+}
+
 // The previews mount the real .dr-shell CSS rather than a redrawing of it, so
 // a broken style shows up here instead of only in a running app.
-function Preview({ structure, style }: { structure: string; style: string }) {
+function Preview({
+  structure,
+  style,
+}: {
+  structure: Structure
+  style: string
+}) {
   return (
     <figure className="space-y-2">
       <div
@@ -41,12 +112,14 @@ function Preview({ structure, style }: { structure: string; style: string }) {
         data-structure={structure}
         data-shell-style={style}
       >
-        <div data-region="nav" className="w-10" />
-        <div data-region="subnav" className="w-14" />
-        <div data-region="bar" className="h-8" />
-        <div data-region="panel" className="w-16" />
-        <div data-region="handle" className="w-1" />
-        <div data-region="content" className="bg-muted/40" />
+        {REGIONS[structure].map((region) => (
+          <Region
+            key={region}
+            region={region}
+            structure={structure}
+            style={style}
+          />
+        ))}
       </div>
       <figcaption className="text-muted-foreground font-mono text-xs">
         {style}

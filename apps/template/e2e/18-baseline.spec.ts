@@ -56,6 +56,9 @@ const OVERLAYS = [
 
 const KITCHEN_SINK = "/components/kitchen-sink"
 
+/** Captured to full height, in the default style only. */
+const SHELL_STYLES_PAGE = "/components/shell-styles"
+
 const SPLIT_PANEL = "/e2e/fixtures/split-panel.html"
 
 /** Accent on surface: the default pair, a warm pair and the neutral accent. */
@@ -132,7 +135,11 @@ async function fitContent(page: Page) {
   }
 }
 
-async function capture(page: Page, name: string) {
+/**
+ * `threshold` is the per-pixel colour distance (0 to 1) below which two pixels
+ * count as equal; Playwright defaults it to 0.2 when it is left out.
+ */
+async function capture(page: Page, name: string, threshold?: number) {
   await waitForFonts(page)
   await expect(page.locator(".dr-skeleton")).toHaveCount(0)
   await page.mouse.move(0, 0)
@@ -140,6 +147,7 @@ async function capture(page: Page, name: string) {
   await expect(page).toHaveScreenshot(`${name}.png`, {
     animations: "disabled",
     caret: "hide",
+    ...(threshold === undefined ? {} : { threshold }),
   })
 }
 
@@ -158,6 +166,7 @@ test.beforeAll(async ({ browser }) => {
       ...APP_PAGES.map(([, path]) => path),
       ...SHOWCASE_PAGES.map(([, path]) => path),
       KITCHEN_SINK,
+      SHELL_STYLES_PAGE,
       SPLIT_PANEL,
       "/e2e/fixtures/baseline-overlays.html?show=dialog",
     ]
@@ -233,6 +242,19 @@ for (const style of BASELINE_STYLES) {
       }
     })
   }
+}
+
+for (const mode of MODES) {
+  test(`shell styles · quiet · ${mode}`, async ({ page }) => {
+    await seedApp(page, { style: "quiet", mode })
+    await gotoApp(page, SHELL_STYLES_PAGE)
+    await expect(page.locator(".dr-page-header-title")).toBeVisible()
+    await waitForFonts(page)
+    await fitContent(page)
+    // The placeholder lines sit about 0.11 from their ground in either mode,
+    // under the default threshold, so a moved or missing line would pass.
+    await capture(page, `quiet-${mode}-shell-styles`, 0.05)
+  })
 }
 
 for (const style of STYLES) {

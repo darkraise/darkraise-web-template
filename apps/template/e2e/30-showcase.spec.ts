@@ -666,3 +666,51 @@ test.describe("row 67: the app-scope panel starts closed", () => {
     ).toHaveCount(1)
   })
 })
+
+test.describe("row 73: shell-style previews", () => {
+  const REGIONS: Record<string, string[]> = {
+    sidebar: ["bar", "content", "nav"],
+    "top-nav": ["bar", "content"],
+    stacked: ["bar", "content", "nav", "subnav"],
+    "split-panel": ["bar", "content", "handle", "panel"],
+  }
+
+  test("each preview renders exactly the regions of its structure, inside it", async ({
+    page,
+  }) => {
+    await openShowcase(page, "/components/shell-styles")
+    const previews = await page
+      .locator("[data-showcase-preview] .dr-shell")
+      .evaluateAll((shells) =>
+        shells.map((shell) => {
+          const box = shell.getBoundingClientRect()
+          const regions = [...shell.querySelectorAll(":scope > [data-region]")]
+          return {
+            structure: shell.getAttribute("data-structure") ?? "",
+            style: shell.getAttribute("data-shell-style") ?? "",
+            regions: regions.map((r) => r.getAttribute("data-region")).sort(),
+            outside: regions
+              .filter((region) => {
+                const r = region.getBoundingClientRect()
+                return (
+                  r.width < 1 ||
+                  r.height < 1 ||
+                  r.left < box.left - 1 ||
+                  r.top < box.top - 1 ||
+                  r.right > box.right + 1 ||
+                  r.bottom > box.bottom + 1
+                )
+              })
+              .map((region) => region.getAttribute("data-region")),
+          }
+        }),
+      )
+    expect(previews).toHaveLength(24)
+    for (const { structure, style, regions, outside } of previews) {
+      expect(regions, `${structure} · ${style} regions`).toEqual(
+        REGIONS[structure],
+      )
+      expect(outside, `${structure} · ${style} regions outside`).toEqual([])
+    }
+  })
+})
