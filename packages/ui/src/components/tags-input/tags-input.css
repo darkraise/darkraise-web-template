@@ -61,9 +61,10 @@
     @apply text-muted-foreground focus-ring-inset inline-flex size-[var(--icon-size)] items-center justify-center rounded-sm transition-colors;
   }
 
-  /* Sized by its content: a text label stays on one line. */
+  /* Sized by its content, never below the icon square it replaced: a text
+     label stays on one line and a lone glyph keeps its hit area. */
   .dr-tags-input-clear-trigger {
-    @apply text-muted-foreground focus-ring-inset inline-flex items-center justify-center gap-1 rounded-sm whitespace-nowrap transition-colors;
+    @apply text-muted-foreground focus-ring-inset inline-flex min-h-[var(--icon-size)] min-w-[var(--icon-size)] items-center justify-center gap-1 rounded-sm whitespace-nowrap transition-colors;
   }
 
   /* Shared interaction state layer (theme.css). The label rule keeps its
