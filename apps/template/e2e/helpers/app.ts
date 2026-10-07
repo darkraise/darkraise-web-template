@@ -4,7 +4,7 @@ import {
   type Locator,
   type ConsoleMessage,
 } from "@playwright/test"
-import { LS_KEYS, SHELL_STYLE_KEY } from "../fixtures/theme"
+import { LS_KEYS, SHELL_STYLE_KEY, type Font } from "../fixtures/theme"
 
 export interface Box {
   x: number
@@ -49,6 +49,7 @@ export interface ThemeSeed {
   contrast?: string
   darkAccentChroma?: string
   tintWithAccent?: string
+  font?: Font
 }
 
 const AUTH_USER = JSON.stringify({
@@ -88,6 +89,7 @@ function storageEntries(theme: ThemeSeed, authenticated: boolean) {
     ["contrast", LS_KEYS.contrast],
     ["darkAccentChroma", LS_KEYS.darkAccentChroma],
     ["tintWithAccent", LS_KEYS.tintWithAccent],
+    ["font", LS_KEYS.font],
   ]
   for (const [field, key] of map) {
     const value = theme[field]
