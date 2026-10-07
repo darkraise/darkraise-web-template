@@ -115,7 +115,7 @@ const [strokeWidth, setStrokeWidth] = useState(2)
   strokeWidth={4}
 />`}
       >
-        <div className="space-y-3">
+        <div className="flex flex-col items-start gap-3">
           <div className="border-border inline-block rounded-md border">
             <SignaturePad
               ref={customRef}

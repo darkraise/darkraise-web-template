@@ -714,3 +714,22 @@ test.describe("row 73: shell-style previews", () => {
     }
   })
 })
+
+test.describe("row 74: signature pad Clear button", () => {
+  test("Clear sits at least 8px below the custom-stroke canvas", async ({
+    page,
+  }) => {
+    await openShowcase(page, "/components/signature-pad")
+    const preview = page
+      .locator("[data-showcase-example]")
+      .filter({ hasText: "Custom stroke" })
+      .locator("[data-showcase-preview]")
+    const canvasBottom = await preview
+      .locator("canvas")
+      .evaluate((el) => el.getBoundingClientRect().bottom)
+    const clearTop = await preview
+      .getByRole("button", { name: "Clear" })
+      .evaluate((el) => el.getBoundingClientRect().top)
+    expect(clearTop).toBeGreaterThanOrEqual(canvasBottom + 8)
+  })
+})
