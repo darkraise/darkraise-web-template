@@ -1,18 +1,43 @@
-import { test, expect } from "@playwright/test"
+import { test, expect, type Page } from "@playwright/test"
 import { STYLES } from "./fixtures/theme"
 import {
   boxOf,
   expectNoHorizontalOverflow,
   gotoApp,
+  reloadApp,
   seedApp,
   watchConsole,
 } from "./helpers/app"
 
 const LAYOUTS = [
-  { label: "Sidebar", value: "sidebar" },
-  { label: "Top Navigation", value: "top-nav" },
-  { label: "Stacked", value: "stacked" },
+  { label: "Sidebar", value: "sidebar", shell: ".dr-sidebar-layout-content" },
+  {
+    label: "Top Navigation",
+    value: "top-nav",
+    shell: ".dr-top-nav-layout-content",
+  },
+  { label: "Stacked", value: "stacked", shell: ".dr-stacked-layout-content" },
 ] as const
+
+type Layout = (typeof LAYOUTS)[number]
+
+async function expectShell(page: Page, layout: Layout) {
+  for (const other of LAYOUTS) {
+    await expect(page.locator(other.shell)).toHaveCount(
+      other === layout ? 1 : 0,
+    )
+  }
+}
+
+async function switchLayout(page: Page, layout: Layout) {
+  await page.getByRole("button", { name: "Switch layout" }).click()
+  await page.getByRole("menuitem", { name: layout.label }).click()
+  await expect
+    .poll(async () =>
+      page.evaluate(() => localStorage.getItem("layout-variant")),
+    )
+    .toBe(layout.value)
+}
 
 const VIEWPORTS = [
   { name: "mobile", width: 390, height: 844 },
@@ -29,15 +54,13 @@ test.describe("layout variants", () => {
       const consoleWatch = watchConsole(page)
       await seedApp(page)
       await gotoApp(page, "/components/buttons")
+      // Sidebar is the default shell, so its own case starts from another.
+      const start = layout === LAYOUTS[0] ? LAYOUTS[1] : LAYOUTS[0]
+      if (start !== LAYOUTS[0]) await switchLayout(page, start)
+      await expectShell(page, start)
 
-      await page.getByRole("button", { name: "Switch layout" }).click()
-      await page.getByRole("menuitem", { name: layout.label }).click()
-
-      await expect
-        .poll(async () =>
-          page.evaluate(() => localStorage.getItem("layout-variant")),
-        )
-        .toBe(layout.value)
+      await switchLayout(page, layout)
+      await expectShell(page, layout)
       await expect(page.locator("main h1").first()).toBeVisible()
       await expectNoHorizontalOverflow(page)
       consoleWatch.assertClean()
@@ -47,10 +70,15 @@ test.describe("layout variants", () => {
       page,
     }) => {
       await seedApp(page)
-      await page.addInitScript((value: string) => {
-        localStorage.setItem("layout-variant", value)
-      }, layout.value)
       await gotoApp(page, "/")
+      if (layout === LAYOUTS[0]) await switchLayout(page, LAYOUTS[1])
+      await switchLayout(page, layout)
+
+      await reloadApp(page)
+      expect(
+        await page.evaluate(() => localStorage.getItem("layout-variant")),
+      ).toBe(layout.value)
+      await expectShell(page, layout)
 
       // The stacked layout reaches component pages through its icon rail:
       // pick the /components group first, then the sub-nav link.
