@@ -458,8 +458,12 @@ test.describe("structural marks, fills and boundaries", () => {
       const separator = page.locator(".dr-menu-content .dr-menu-separator")
       await separator.waitFor()
       await settle(page)
-      const colour = await centrePixel(page, separator)
-      expect(near(colour, await refColour(page, "canvas"))).toBe(false)
+      const canvas = await refColour(page, "canvas")
+      await expect
+        .poll(async () => near(await centrePixel(page, separator), canvas), {
+          message: "the separator paints Canvas",
+        })
+        .toBe(false)
     })
 
     test(`the scroll bar's reserved edge paints Canvas · ${scheme}`, async ({
