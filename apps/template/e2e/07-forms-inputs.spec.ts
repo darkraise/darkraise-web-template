@@ -7,6 +7,12 @@ async function open(page: Page, path: string) {
   return page.locator("main")
 }
 
+function example(page: Page, title: string) {
+  return page.locator("main [data-showcase-example]").filter({
+    has: page.getByText(title, { exact: true }),
+  })
+}
+
 test.describe("text entry", () => {
   test("text input accepts and reflects typing", async ({ page }) => {
     const main = await open(page, "/components/inputs")
@@ -47,19 +53,20 @@ test.describe("text entry", () => {
   })
 
   test("OTP input fills across cells", async ({ page }) => {
-    const main = await open(page, "/components/input-otp")
-    const cells = main.locator("input")
-    await cells.first().click()
+    await open(page, "/components/input-otp")
+    const otp = example(page, "6-digit code")
+    const input = otp.getByRole("textbox", { name: "One-time password" })
+    await input.click()
     await page.keyboard.type("123456")
-    await expect
-      .poll(async () =>
-        (
-          await cells.evaluateAll((els) =>
-            els.map((e) => (e as HTMLInputElement).value).join(""),
-          )
-        ).replace(/\s/g, ""),
-      )
-      .toContain("1")
+    await expect(input).toHaveValue("123456")
+    await expect(otp.locator(".dr-input-otp-slot")).toHaveText([
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+    ])
   })
 
   test("editable switches to an input and commits", async ({ page }) => {
@@ -143,11 +150,16 @@ test.describe("choice controls", () => {
   })
 
   test("segment group switches segments", async ({ page }) => {
-    const main = await open(page, "/components/segment-group")
-    const items = main.getByRole("radio")
-    const target = items.nth(1)
-    await target.click()
-    await expect(target).toHaveAttribute("aria-checked", "true")
+    await open(page, "/components/segment-group")
+    const range = example(page, "Date range picker")
+    const week = range.getByRole("radio", { name: "Week" })
+    const month = range.getByRole("radio", { name: "Month" })
+    await expect(week).toHaveAttribute("aria-checked", "true")
+    await expect(month).toHaveAttribute("aria-checked", "false")
+
+    await month.click()
+    await expect(month).toHaveAttribute("aria-checked", "true")
+    await expect(week).toHaveAttribute("aria-checked", "false")
   })
 
   test("rating group sets a rating", async ({ page }) => {
@@ -158,11 +170,18 @@ test.describe("choice controls", () => {
   })
 
   test("swap flips between its two faces", async ({ page }) => {
-    const main = await open(page, "/components/swap")
-    const swap = main.locator("button").first()
-    const before = await swap.getAttribute("aria-pressed")
-    await swap.click()
-    await expect(swap).not.toHaveAttribute("aria-pressed", before ?? "")
+    await open(page, "/components/swap")
+    const hamburger = example(page, "Hamburger to close")
+    const button = hamburger.getByRole("button", { name: "Open menu" })
+    const swap = hamburger.locator(".dr-swap")
+    await expect(swap).toHaveAttribute("data-pressed", "false")
+
+    await button.click()
+    await expect(
+      hamburger.getByRole("button", { name: "Close menu" }),
+    ).toBeVisible()
+    await expect(button).toHaveCount(0)
+    await expect(swap).toHaveAttribute("data-pressed", "true")
   })
 })
 
@@ -179,29 +198,29 @@ test.describe("selection menus", () => {
   })
 
   test("combobox filters and selects", async ({ page }) => {
-    const main = await open(page, "/components/combobox")
-    const trigger = main.getByRole("combobox").first()
-    await trigger.click()
-    const input = page.locator("input").last()
-    await input.fill("a")
-    const option = page.getByRole("option").first()
-    await expect(option).toBeVisible()
-    await option.click()
+    await open(page, "/components/combobox")
+    const input = example(page, "Country picker with filtering").getByRole(
+      "combobox",
+    )
+    await input.fill("can")
+    const options = page.getByRole("option")
+    await expect(options).toHaveText(["Canada"])
+    await options.first().click()
+    await expect(input).toHaveValue("Canada")
+    await expect(options).toHaveCount(0)
   })
 
   test("multi select keeps several values", async ({ page }) => {
-    const main = await open(page, "/components/multi-select")
-    await main.getByRole("combobox").first().click()
-    await page.getByRole("option").nth(0).click()
-    await page.getByRole("option").nth(1).click()
+    await open(page, "/components/multi-select")
+    const fruit = example(page, "Basic")
+    const chips = fruit.locator(".dr-multi-select-chip-label")
+    await expect(chips).toHaveText(["Apple", "Mango"])
+
+    await fruit.getByRole("combobox").click()
+    await page.getByRole("option", { name: "Banana" }).click()
+    await page.getByRole("option", { name: "Grape" }).click()
     await page.keyboard.press("Escape")
-    await expect(
-      main
-        .locator(
-          '[class*="multi-select"] [class*="chip"], [class*="multi-select"] [class*="tag"]',
-        )
-        .first(),
-    ).toBeVisible()
+    await expect(chips).toHaveText(["Apple", "Mango", "Banana", "Grape"])
   })
 
   test("cascade select drills into a child level", async ({ page }) => {
@@ -225,10 +244,22 @@ test.describe("selection menus", () => {
 
 test.describe("date and time", () => {
   test("calendar selects a day", async ({ page }) => {
-    const main = await open(page, "/components/calendar")
-    const day = main.locator('[role="gridcell"] button:not([disabled])').nth(10)
-    await day.click()
-    await expect(day).toHaveAttribute("aria-pressed", "true")
+    await open(page, "/components/calendar")
+    const basic = example(page, "Basic calendar")
+    const readout = basic.getByText(/^Selected: /)
+    const before = await readout.innerText()
+    const target = basic
+      .locator(
+        ".dr-calendar-day:not(.dr-calendar-outside) button:not([disabled]):not([aria-pressed])",
+      )
+      .first()
+    const label = await attrOf(target, "aria-label")
+
+    await target.click()
+    const picked = basic.getByRole("button", { name: label, exact: true })
+    await expect(picked).toHaveAttribute("aria-pressed", "true")
+    await expect(basic.locator('button[aria-pressed="true"]')).toHaveCount(1)
+    await expect(readout).not.toHaveText(before)
   })
 
   test("date picker opens a calendar and picks a date", async ({ page }) => {
@@ -240,19 +271,37 @@ test.describe("date and time", () => {
   })
 
   test("date input accepts a typed date", async ({ page }) => {
-    const main = await open(page, "/components/date-input")
-    const input = main.locator("input").first()
-    await input.click()
-    await page.keyboard.type("12252025")
-    await expect(input).not.toHaveValue("")
+    await open(page, "/components/date-input")
+    const us = example(page, "Month-day-year (US)").getByRole("group", {
+      name: "US date",
+    })
+    const month = us.getByRole("spinbutton", { name: "Month" })
+    await month.click()
+    await page.keyboard.type("12")
+    await page.keyboard.press("Tab")
+    await page.keyboard.type("25")
+    await page.keyboard.press("Tab")
+    await page.keyboard.type("2025")
+    await expect(month).toHaveValue("12")
+    await expect(us.getByRole("spinbutton", { name: "Day" })).toHaveValue("25")
+    await expect(us.getByRole("spinbutton", { name: "Year" })).toHaveValue(
+      "2025",
+    )
   })
 
   test("time picker opens and selects a time", async ({ page }) => {
-    const main = await open(page, "/components/time-picker")
-    await main.getByRole("button").first().click()
-    await expect(
-      page.getByRole("option").or(page.locator("li")).first(),
-    ).toBeVisible()
+    await open(page, "/components/time-picker")
+    const trigger = example(page, "Single value (12-hour, default)").locator(
+      "button.dr-time-picker-trigger",
+    )
+    await expect(trigger).not.toHaveText("10:30 AM")
+    await trigger.click()
+    const popover = page.locator(".dr-popover-content")
+    await popover.getByRole("button", { name: "Hour 10" }).click()
+    await popover.getByRole("button", { name: "Minute 30" }).click()
+    await popover.getByRole("button", { name: "OK" }).click()
+    await expect(popover).toHaveCount(0)
+    await expect(trigger).toHaveText("10:30 AM")
   })
 })
 
