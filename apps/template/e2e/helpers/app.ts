@@ -103,20 +103,28 @@ export async function seedApp(
 ) {
   const entries = storageEntries(theme, options.authenticated ?? true)
 
-  // Seed only what is missing: the init script re-runs on every navigation and
-  // reload, so an unconditional write would clobber changes a test just made
-  // through the UI and make persistence assertions meaningless.
+  // The init script re-runs on every navigation, reload and frame, so it seeds
+  // once per tab: the sessionStorage flag survives reloads and same-origin
+  // navigations, and a new page starts without it. What the app stores or
+  // erases afterwards therefore survives a reload, which persistence tests
+  // depend on. A second seedApp call before the first navigation is skipped.
+  // Same-origin frames share the top document storage, and a cross-origin
+  // frame that failed to load has an opaque origin whose storage access
+  // throws, so only the top frame seeds.
   await page.addInitScript((pairs: [string, string][]) => {
+    if (window !== window.top) return
+    if (sessionStorage.getItem("e2e-seeded") !== null) return
     for (const [k, v] of pairs) {
       if (localStorage.getItem(k) === null) localStorage.setItem(k, v)
     }
+    sessionStorage.setItem("e2e-seeded", "1")
   }, entries)
 }
 
 /**
  * Overwrite the stored theme on an already-loaded page. Use this when one test
- * walks several axis values in a row — `seedApp` deliberately never overwrites,
- * so a second call inside the same test would be a no-op.
+ * walks several axis values in a row: `seedApp` seeds once per tab, so a
+ * second call inside the same test would be a no-op.
  */
 export async function applyTheme(page: Page, theme: ThemeSeed) {
   await page.evaluate(

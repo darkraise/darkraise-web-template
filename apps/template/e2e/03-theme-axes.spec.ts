@@ -9,6 +9,7 @@ import {
   GLASS_BLURS,
   GLASS_OPACITIES,
   GRADIENT_PATTERNS,
+  LS_KEYS,
   RADII,
   STYLES,
   SURFACE_COLORS,
@@ -23,6 +24,7 @@ import {
   reloadApp,
   seedApp,
   watchConsole,
+  type ThemeSeed,
 } from "./helpers/app"
 
 /** A page that renders enough chrome to prove tokens reach real components. */
@@ -538,14 +540,14 @@ test.describe("theme persistence", () => {
   // "background intensity canvas cap" describe block above.
   test("all axes round-trip through localStorage", async ({ page }) => {
     const seed = {
-      style: "glass" as Style,
+      style: "glass",
       glassOpacity: "subtle",
       glassBlur: "low",
       mode: "dark",
       accent: "teal",
-      surface: "rose",
+      surface: "sand",
       backgroundStyle: "gradient",
-      backgroundIntensity: "vivid",
+      backgroundIntensity: "balanced",
       gradientPattern: "spotlight",
       density: "compact",
       elevation: "high",
@@ -554,15 +556,44 @@ test.describe("theme persistence", () => {
       tintWithAccent: "on",
       radius: "sharp",
       fontSize: "large",
+    } satisfies ThemeSeed
+    const attributes: Record<keyof typeof seed, string> = {
+      style: "data-style",
+      glassOpacity: "data-glass-opacity",
+      glassBlur: "data-glass-blur",
+      mode: "data-mode",
+      accent: "data-accent",
+      surface: "data-surface",
+      backgroundStyle: "data-background-style",
+      backgroundIntensity: "data-background-intensity",
+      gradientPattern: "data-gradient-pattern",
+      density: "data-density",
+      elevation: "data-elevation",
+      contrast: "data-contrast",
+      darkAccentChroma: "data-dark-accent-chroma",
+      tintWithAccent: "data-tint-with-accent",
+      radius: "data-radius",
+      fontSize: "data-font-size",
     }
+    const fields = Object.keys(seed) as (keyof typeof seed)[]
+    const stored = () =>
+      page.evaluate(
+        (keys) => keys.map((key) => localStorage.getItem(key)),
+        fields.map((field) => LS_KEYS[field]),
+      )
+    const seeded = fields.map((field) => seed[field])
+
     await seedApp(page, seed)
     await gotoApp(page, PROBE)
     const before = await readThemeAttrs(page)
+    expect(fields.map((field) => before[attributes[field]])).toEqual(seeded)
+    expect(await stored()).toEqual(seeded)
 
     await reloadApp(page)
     await gotoApp(page, "/settings")
     await gotoApp(page, PROBE)
 
     expect(await readThemeAttrs(page)).toEqual(before)
+    expect(await stored()).toEqual(seeded)
   })
 })
