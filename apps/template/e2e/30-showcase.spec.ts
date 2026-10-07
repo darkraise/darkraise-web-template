@@ -857,3 +857,64 @@ test.describe("row 93: showcase nits", () => {
     )
   })
 })
+
+test.describe("row 96: menubar matrix cells fit their trigger", () => {
+  test("each side x align Menubar is no wider than its trigger plus 16px", async ({
+    page,
+  }) => {
+    await openShowcase(page, "/components/menubar")
+    const cells = await page
+      .locator("[data-showcase-example]")
+      .filter({ has: page.getByText("Side x align", { exact: true }) })
+      .locator("[data-showcase-matrix] .dr-menubar")
+      .evaluateAll((bars) =>
+        bars.map((bar) => {
+          const trigger = bar.querySelector(".dr-menubar-trigger")
+          return {
+            label: trigger?.textContent ?? "",
+            bar: bar.getBoundingClientRect().width,
+            trigger: trigger?.getBoundingClientRect().width ?? 0,
+          }
+        }),
+      )
+    expect(cells).toHaveLength(18)
+    const wide = cells.filter((cell) => cell.bar > cell.trigger + 16)
+    expect(
+      wide,
+      wide
+        .map(
+          (cell) =>
+            `${cell.label}: menubar ${cell.bar}px, trigger ${cell.trigger}px`,
+        )
+        .join("\n"),
+    ).toEqual([])
+  })
+})
+
+test.describe("row 98: stock ticker deltas", () => {
+  test("gains and losses use subtle status badges with arrows", async ({
+    page,
+  }) => {
+    await openShowcase(page, "/components/marquee")
+    const badges = await page
+      .locator("[data-showcase-example]")
+      .filter({ has: page.getByText("Stock ticker", { exact: true }) })
+      .locator(".dr-badge")
+      .evaluateAll((elements) =>
+        elements.map((badge) => ({
+          text: (badge.textContent ?? "").trim(),
+          variant: badge.getAttribute("data-variant"),
+          icon: badge.querySelector("svg") !== null,
+        })),
+      )
+    expect(badges.length).toBeGreaterThan(0)
+    for (const badge of badges) {
+      const gain = !badge.text.startsWith("-")
+      expect(badge, badge.text).toEqual({
+        text: badge.text,
+        variant: gain ? "success-subtle" : "destructive-subtle",
+        icon: true,
+      })
+    }
+  })
+})

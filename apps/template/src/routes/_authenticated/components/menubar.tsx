@@ -38,7 +38,7 @@ function MenubarPage() {
         title="Side x align"
         code={`// One representative cell: every side x align combination renders above.
 // Each cell is a live Menubar; click its trigger to see that placement.
-<Menubar>
+<Menubar className="w-fit">
   <MenubarMenu>
     <MenubarTrigger>right/end</MenubarTrigger>
     <MenubarContent side="right" align="end">
@@ -51,7 +51,7 @@ function MenubarPage() {
           rows={{ label: "side", values: MENUBAR_SIDES }}
           cols={{ label: "align", values: MENUBAR_ALIGNS }}
           render={(side, align) => (
-            <Menubar>
+            <Menubar className="w-fit">
               <MenubarMenu>
                 <MenubarTrigger>
                   {side}/{align}

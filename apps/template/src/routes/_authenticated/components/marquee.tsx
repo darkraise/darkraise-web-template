@@ -249,7 +249,7 @@ const LOGO_BRANDS = [
       <span className="font-semibold">{t.symbol}</span>
       <span>{t.price}</span>
       <Badge
-        variant={t.up ? "secondary" : "destructive"}
+        variant={t.up ? "success-subtle" : "destructive-subtle"}
         className="gap-1 px-1.5 py-0 font-mono text-[length:var(--text-2xs)]"
       >
         {t.up ? (
@@ -270,7 +270,7 @@ const LOGO_BRANDS = [
               <span className="font-semibold">{t.symbol}</span>
               <span>{t.price}</span>
               <Badge
-                variant={t.up ? "secondary" : "destructive"}
+                variant={t.up ? "success-subtle" : "destructive-subtle"}
                 className="gap-1 px-1.5 py-0 font-mono text-[length:var(--text-2xs)]"
               >
                 {t.up ? (
