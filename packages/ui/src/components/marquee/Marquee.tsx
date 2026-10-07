@@ -38,10 +38,15 @@ function Marquee({
     // The track moves by one step per loop, so the copies must still cover
     // the container when it has moved a whole step: one copy beyond
     // ceil(container / step).
+    // Computed width is layout size. A bounding rect reports the size after
+    // transforms, so inside an overlay that scales while it opens it would
+    // write a scaled step that nothing corrects afterwards.
+    const layoutWidth = (element: Element) =>
+      parseFloat(window.getComputedStyle(element).width) || 0
     const measure = () => {
-      const container = root.getBoundingClientRect().width
+      const container = layoutWidth(root)
       const gap = parseFloat(window.getComputedStyle(track).columnGap) || 0
-      const step = group.getBoundingClientRect().width + gap
+      const step = layoutWidth(group) + gap
       if (container <= 0 || step <= gap) return
       const copies = Math.max(2, Math.ceil(container / step) + 1)
       setLayout((current) =>

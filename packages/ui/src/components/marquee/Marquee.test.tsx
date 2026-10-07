@@ -12,16 +12,22 @@ class FakeResizeObserver {
   disconnect() {}
 }
 
-/** jsdom lays nothing out, so widths come from the class each box carries. */
+/**
+ * jsdom lays nothing out, so widths come from the class each box carries. The
+ * bounding rect reports 95% of the layout width, as it does inside an overlay
+ * that scales while it opens; the component must read layout size instead.
+ */
 function stubLayout(container: number, copy: number, gap: number) {
   vi.stubGlobal("ResizeObserver", FakeResizeObserver)
+  const layoutWidth = (element: Element) =>
+    element.classList.contains("dr-marquee")
+      ? container
+      : element.classList.contains("dr-marquee-group")
+        ? copy
+        : 0
   vi.spyOn(Element.prototype, "getBoundingClientRect").mockImplementation(
     function (this: Element) {
-      const width = this.classList.contains("dr-marquee")
-        ? container
-        : this.classList.contains("dr-marquee-group")
-          ? copy
-          : 0
+      const width = layoutWidth(this) * 0.95
       return {
         x: 0,
         y: 0,
@@ -38,7 +44,10 @@ function stubLayout(container: number, copy: number, gap: number) {
   vi.spyOn(window, "getComputedStyle").mockImplementation((element, pseudo) =>
     element.classList.contains("dr-marquee-track")
       ? ({ columnGap: `${gap}px` } as CSSStyleDeclaration)
-      : realStyle(element, pseudo),
+      : element.classList.contains("dr-marquee") ||
+          element.classList.contains("dr-marquee-group")
+        ? ({ width: `${layoutWidth(element)}px` } as CSSStyleDeclaration)
+        : realStyle(element, pseudo),
   )
 }
 
