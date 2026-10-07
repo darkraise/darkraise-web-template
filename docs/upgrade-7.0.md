@@ -109,6 +109,10 @@ The `outline` variant of `Listbox` and `TreeView` now rings the selected row ins
 
 `TreeView` rows indent through `--tree-depth`; a `style` prop that set `paddingInlineStart` on a row to indent it should set `--tree-view-indent` on the tree instead. Remove spacer elements added to line leaves up with branches. A tree of leaves only now indents each leaf by an indicator's width plus its gap, even with no branch beside it.
 
+`TagsInputClearTrigger` carries `.dr-tags-input-clear-trigger` instead of `.dr-tags-input-item-delete-trigger`. Move any rule that styled the clear trigger through the delete trigger's class to the new class; rules on `.dr-tags-input-item-delete-trigger` now reach only the delete buttons inside tags.
+
+`ToggleGroup` sizes to its items and starts at the inline-start edge instead of filling its row with the items centred. Add `className="w-full justify-center"` to a group that should keep the old full-width, centred row.
+
 ## Overlays
 
 `ComboboxContent` (and `MultiSelect`'s list) renders in a portal at the end of `<body>`. Stylesheets that styled the list through its field, for example `.dr-combobox .dr-combobox-content`, must select `.dr-combobox-content` directly or pass a `className` to `ComboboxContent`.
