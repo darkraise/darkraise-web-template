@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "darkraise-ui/components/card"
 import { Separator } from "darkraise-ui/components/separator"
+import { useUiLocale } from "darkraise-ui/i18n"
 import {
   StatCard,
   KPICard,
@@ -51,6 +52,10 @@ const activityItems: ActivityItem[] = [
 ]
 
 function DashboardPage() {
+  const uiLocale = useUiLocale()
+  const currency = (n: number) =>
+    `$${Math.round(n).toLocaleString(uiLocale.locale)}`
+
   return (
     <ShowcasePage
       title="Dashboard Components"
@@ -140,11 +145,15 @@ function DashboardPage() {
 
       <ShowcaseExample
         title="ProgressCard — value vs target"
-        code={`<ProgressCard
+        code={`const uiLocale = useUiLocale()
+const currency = (n: number) =>
+  \`$\${Math.round(n).toLocaleString(uiLocale.locale)}\`
+
+<ProgressCard
   label="Sales Target"
   value={72000}
   target={100000}
-  unit="$"
+  formatValue={currency}
 />
 <ProgressCard
   label="New Users"
@@ -157,7 +166,7 @@ function DashboardPage() {
             label="Sales Target"
             value={72000}
             target={100000}
-            unit="$"
+            formatValue={currency}
           />
           <ProgressCard label="New Users" value={840} target={1000} />
         </div>

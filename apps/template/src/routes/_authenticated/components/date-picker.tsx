@@ -73,7 +73,7 @@ function SingleWithMask() {
 function RangeTwoMonths() {
   const [value, setValue] = useState<DatePickerRangeValue>({})
   return (
-    <div className="w-80">
+    <div className="w-72">
       <DatePicker
         mode="range"
         value={value}
@@ -143,6 +143,7 @@ function ConstrainedRange() {
         onValueChange={(d) => setValue(d.value)}
         min={addDays(today, -7)}
         max={addDays(today, 14)}
+        placeholder="Pick a date"
       >
         <DatePickerLabel>Bookable date</DatePickerLabel>
         <DatePickerControl>
@@ -260,6 +261,7 @@ function DatePickerPage() {
   onValueChange={(d) => setValue(d.value)}
   min={addDays(today, -7)}
   max={addDays(today, 14)}
+  placeholder="Pick a date"
 >
   ...
   <DatePickerContent>

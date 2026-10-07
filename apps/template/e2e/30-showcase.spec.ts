@@ -778,3 +778,82 @@ test.describe("row 92: calendar custom cell size", () => {
     expect(custom).toBeGreaterThan(basic)
   })
 })
+
+test.describe("row 93: showcase nits", () => {
+  const example = (page: Page, title: string) =>
+    page.locator("[data-showcase-example]").filter({
+      has: page.getByText(title, { exact: true }),
+    })
+
+  test("the dashboard progress card formats its value as currency", async ({
+    page,
+  }) => {
+    await openShowcase(page, "/components/dashboard")
+    await expect(
+      example(page, "ProgressCard — value vs target").getByText(/72,000/),
+    ).toHaveText("$72,000 / $100,000")
+  })
+
+  test("date-picker fields share one width and a picked range fits", async ({
+    page,
+  }) => {
+    await openShowcase(page, "/components/date-picker")
+    const widths = await page
+      .locator(".dr-date-picker-control")
+      .evaluateAll((controls) =>
+        controls.map((control) => control.getBoundingClientRect().width),
+      )
+    expect(widths).toHaveLength(5)
+    expect(new Set(widths).size, `field widths ${widths.join(", ")}`).toBe(1)
+
+    await expect(
+      example(page, "Min/max constraints").locator("input"),
+    ).toHaveAttribute("placeholder", "Pick a date")
+
+    const range = example(page, "Range with two-month view")
+    await range.locator(".dr-date-picker-trigger").click()
+    const days = page.locator(
+      ".dr-date-picker-content [role=gridcell]:not(.dr-calendar-outside) button",
+    )
+    await days.filter({ hasText: /^10$/ }).first().click()
+    await days.filter({ hasText: /^28$/ }).last().click()
+    await page.keyboard.press("Escape")
+    const input = range.locator("input")
+    await expect(input).toHaveValue(/ – /)
+    const { scrollWidth, clientWidth } = await input.evaluate((el) => ({
+      scrollWidth: el.scrollWidth,
+      clientWidth: el.clientWidth,
+    }))
+    expect(
+      scrollWidth,
+      `range text "${await input.inputValue()}" overflows its field`,
+    ).toBeLessThanOrEqual(clientWidth)
+  })
+
+  test("the three aspect-ratio boxes share one gradient fill", async ({
+    page,
+  }) => {
+    await openShowcase(page, "/components/aspect-ratio")
+    const fills = await page
+      .locator(".dr-aspect-ratio > div")
+      .evaluateAll((boxes) =>
+        boxes.map((box) => getComputedStyle(box).backgroundImage),
+      )
+    expect(fills).toHaveLength(3)
+    expect(fills[0]).toContain("gradient")
+    expect(new Set(fills).size, fills.join("\n")).toBe(1)
+  })
+
+  test("the transition demos read as hover targets", async ({ page }) => {
+    await openShowcase(page, "/components/animation")
+    const demo = example(page, "Color and opacity transitions")
+    const link = demo.getByRole("link", { name: "Transition colors" })
+    expect(
+      await link.evaluate((el) => getComputedStyle(el).textDecorationLine),
+    ).toBe("underline")
+    await expect(demo.getByText("Transition opacity")).toHaveAttribute(
+      "data-variant",
+      "outline",
+    )
+  })
+})

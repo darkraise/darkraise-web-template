@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import { Loader2, RefreshCw, Bell, Heart, Zap } from "lucide-react"
+import { Badge } from "darkraise-ui/components/badge"
 import { Button } from "darkraise-ui/components/button"
 import {
   Card,
@@ -185,24 +186,27 @@ function AnimationPage() {
 
       <ShowcaseExample
         title="Color and opacity transitions"
-        code={`<a className="text-muted-foreground hover:text-primary-text transition-colors duration-200">
+        code={`<a className="text-muted-foreground hover:text-primary-text underline underline-offset-4 transition-colors duration-200">
   Transition colors
 </a>
-<span className="transition-opacity duration-200 hover:opacity-50">
+<Badge variant="outline" className="cursor-pointer transition-opacity duration-200 hover:opacity-50">
   Transition opacity
-</span>`}
+</Badge>`}
       >
         <div className="flex items-center gap-8">
           <a
             href="#"
             onClick={(e) => e.preventDefault()}
-            className="text-muted-foreground hover:text-primary-text text-sm transition-colors duration-200"
+            className="text-muted-foreground hover:text-primary-text text-sm underline underline-offset-4 transition-colors duration-200"
           >
             Transition colors
           </a>
-          <span className="cursor-pointer text-sm transition-opacity duration-200 hover:opacity-50">
+          <Badge
+            variant="outline"
+            className="cursor-pointer transition-opacity duration-200 hover:opacity-50"
+          >
             Transition opacity
-          </span>
+          </Badge>
         </div>
       </ShowcaseExample>
     </ShowcasePage>
