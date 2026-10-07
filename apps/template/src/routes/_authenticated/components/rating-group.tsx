@@ -85,13 +85,14 @@ function RatingGroupPage() {
       <span className="relative inline-flex">
         <Star aria-hidden="true" className="text-muted-foreground size-5" />
         {state.highlighted ? (
-          <Star
-            aria-hidden="true"
+          <span
             className={cn(
-              "fill-warning-edge text-warning-edge absolute inset-0 size-5",
-              state.half ? "[clip-path:inset(0_50%_0_0)]" : "",
+              "absolute inset-y-0 start-0 overflow-hidden",
+              state.half ? "w-1/2" : "w-full",
             )}
-          />
+          >
+            <Star aria-hidden="true" className="fill-warning-edge text-warning-edge size-5" />
+          </span>
         ) : null}
       </span>
     )}
@@ -113,13 +114,17 @@ function RatingGroupPage() {
                   className="text-muted-foreground size-5"
                 />
                 {state.highlighted ? (
-                  <Star
-                    aria-hidden="true"
+                  <span
                     className={cn(
-                      "fill-warning-edge text-warning-edge absolute inset-0 size-5",
-                      state.half ? "[clip-path:inset(0_50%_0_0)]" : "",
+                      "absolute inset-y-0 start-0 overflow-hidden",
+                      state.half ? "w-1/2" : "w-full",
                     )}
-                  />
+                  >
+                    <Star
+                      aria-hidden="true"
+                      className="fill-warning-edge text-warning-edge size-5"
+                    />
+                  </span>
                 ) : null}
               </span>
             )}

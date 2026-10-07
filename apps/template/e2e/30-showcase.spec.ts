@@ -1,12 +1,14 @@
 import { test, expect, type Page } from "@playwright/test"
 import { COMPONENT_ROUTES } from "./fixtures/component-routes"
-import { gotoApp, seedApp } from "./helpers/app"
+import { boxOf, gotoApp, seedApp } from "./helpers/app"
 import {
   alphaOf,
   contrast,
+  pixel,
   rgbOf,
   settle,
   textContrast,
+  type Rgb,
 } from "./helpers/measure"
 
 /**
@@ -1128,4 +1130,47 @@ test.describe("row 208: tree-view empty placeholder", () => {
       `placeholder text at ${placeholderStart}px, leaf text at ${leafStart}px`,
     ).toBeLessThanOrEqual(1)
   })
+})
+
+test.describe("row 223: rating half star under right-to-left", () => {
+  for (const rtl of [true, false]) {
+    const [startName, endName] = rtl ? ["right", "left"] : ["left", "right"]
+    test(`${rtl ? "rtl" : "ltr"}: the filled half lies on the inline-start (${startName}) side`, async ({
+      page,
+    }) => {
+      await openShowcase(page, "/components/rating-group", { rtl })
+      const demo = page
+        .locator("[data-showcase-example]")
+        .filter({ has: page.getByText("Half-star precision", { exact: true }) })
+      const half = demo.locator('[role=radio][data-half="true"]')
+      await expect(half).toHaveCount(1)
+      const box = await boxOf(half.locator("svg").first())
+      const fill = rgbOf(
+        await half
+          .locator(".fill-warning-edge")
+          .evaluate((el) => getComputedStyle(el).fill),
+      )
+      const ground = rgbOf(
+        await demo
+          .locator("[data-showcase-preview]")
+          .evaluate((el) => getComputedStyle(el).backgroundColor),
+      )
+      const distance = (a: Rgb, b: Rgb) =>
+        Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2])
+      // Inside the star body on either side of its vertical centre line,
+      // clear of the outline stroke.
+      const y = Math.round(box.y + box.height * 0.5)
+      const right = await pixel(page, Math.round(box.x + box.width * 0.62), y)
+      const left = await pixel(page, Math.round(box.x + box.width * 0.38), y)
+      const [start, end] = rtl ? [right, left] : [left, right]
+      expect(
+        distance(start, fill),
+        `inline-start (${startName}) sample ${start} should be the fill ${fill}`,
+      ).toBeLessThan(40)
+      expect(
+        distance(end, ground),
+        `inline-end (${endName}) sample ${end} should be the card ${ground}`,
+      ).toBeLessThan(40)
+    })
+  }
 })
