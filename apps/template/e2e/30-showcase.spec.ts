@@ -1,7 +1,7 @@
 import { test, expect, type Page } from "@playwright/test"
 import { COMPONENT_ROUTES } from "./fixtures/component-routes"
 import { gotoApp, seedApp } from "./helpers/app"
-import { settle } from "./helpers/measure"
+import { alphaOf, contrast, rgbOf, settle } from "./helpers/measure"
 
 /**
  * Showcase pages at full height. The sweep applies three geometry rules to
@@ -915,6 +915,92 @@ test.describe("row 98: stock ticker deltas", () => {
         variant: gain ? "success-subtle" : "destructive-subtle",
         icon: true,
       })
+    }
+  })
+})
+
+test.describe("row 100: password strength meter", () => {
+  for (const mode of ["light", "dark"] as const) {
+    test(`${mode}: the meter shows at rest and its empty segments read against the card`, async ({
+      page,
+    }) => {
+      await openShowcase(page, "/components/password-input", { mode })
+      const demo = page
+        .locator("[data-showcase-example]")
+        .filter({ has: page.getByText("With strength meter", { exact: true }) })
+      const meter = demo.locator("[data-strength-meter]")
+      await expect(meter).toBeVisible()
+      await expect(meter).toHaveAttribute("aria-hidden", "true")
+      const segments = meter.locator("[data-segment]")
+      await expect(segments).toHaveCount(3)
+
+      const { edge, card } = await meter
+        .locator("[data-segment]:not([data-filled])")
+        .first()
+        .evaluate((segment) => ({
+          edge: getComputedStyle(segment).borderTopColor,
+          card: getComputedStyle(
+            segment.closest("[data-showcase-preview]") ?? document.body,
+          ).backgroundColor,
+        }))
+      expect(alphaOf(card), `card background ${card}`).toBe(1)
+      const ratio = contrast(rgbOf(edge), rgbOf(card))
+      test.info().annotations.push({
+        type: "contrast",
+        description: `${mode}: empty segment border ${edge} on card ${card} is ${ratio.toFixed(2)}:1`,
+      })
+      expect(ratio, `${edge} on ${card}`).toBeGreaterThanOrEqual(3)
+
+      const field = demo.locator("input")
+      const filled = meter.locator("[data-segment][data-filled]")
+      await expect(filled).toHaveCount(1)
+      await field.fill("abcdefgh")
+      await expect(filled).toHaveCount(2)
+      await field.fill("Abcdefgh1234")
+      await expect(filled).toHaveCount(3)
+      await expect(demo.locator("[data-strength]")).toHaveText(
+        "Strength: strong",
+      )
+      await expect(demo.locator("[data-strength]")).toHaveAttribute(
+        "aria-live",
+        "polite",
+      )
+    })
+  }
+
+  test("forced colours keep the segment borders and drop the fills", async ({
+    page,
+  }) => {
+    await page.emulateMedia({ forcedColors: "active" })
+    await openShowcase(page, "/components/password-input")
+    const segments = await page
+      .locator("[data-strength-meter] [data-segment]")
+      .evaluateAll((elements) =>
+        elements.map((segment) => {
+          const style = getComputedStyle(segment)
+          return {
+            filled: segment.hasAttribute("data-filled"),
+            border: style.borderTopColor,
+            borderWidth: style.borderTopWidth,
+            background: style.backgroundColor,
+            card: getComputedStyle(
+              segment.closest("[data-showcase-preview]") ?? document.body,
+            ).backgroundColor,
+          }
+        }),
+      )
+    expect(segments.map((segment) => segment.filled)).toEqual([
+      true,
+      false,
+      false,
+    ])
+    for (const segment of segments) {
+      expect(segment.borderWidth).toBe("1px")
+      expect(
+        contrast(rgbOf(segment.border), rgbOf(segment.card)),
+        `${segment.border} on ${segment.card}`,
+      ).toBeGreaterThanOrEqual(3)
+      expect(rgbOf(segment.background)).toEqual(rgbOf(segment.card))
     }
   })
 })
