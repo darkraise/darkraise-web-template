@@ -28,6 +28,7 @@ const CONTROLS: Array<[string, string]> = [
   ["dr-multi-select-toggle", ":not(:disabled)"],
   ["dr-multi-select-chip-remove", ":not(:disabled)"],
   ["dr-tags-input-item-delete-trigger", ":not(:disabled)"],
+  ["dr-tags-input-clear-trigger", ":not(:disabled)"],
   ["dr-file-upload-item-delete-trigger", ":not(:disabled)"],
   ["dr-editable-edit-trigger", ":not(:disabled)"],
   ["dr-editable-submit-trigger", ":not(:disabled)"],

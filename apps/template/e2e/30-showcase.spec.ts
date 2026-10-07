@@ -353,3 +353,37 @@ test.describe("row 68 and 76: matrix columns fit their content", () => {
     })
   }
 })
+
+test.describe("row 69: tags input clear trigger fits its label", () => {
+  test("the clear label sits on one line inside its trigger", async ({
+    page,
+  }) => {
+    await openShowcase(page, "/components/tags-input")
+    const trigger = page.getByRole("button", { name: "Clear all tags" })
+    await expect(trigger).toHaveCount(1)
+    const { lines, box } = await trigger.evaluate((button) => {
+      const plain = (r: DOMRect) => ({
+        left: r.left,
+        top: r.top,
+        right: r.right,
+        bottom: r.bottom,
+      })
+      const text = [...button.childNodes].find(
+        (node) => node.nodeType === Node.TEXT_NODE && node.textContent?.trim(),
+      )
+      const range = document.createRange()
+      if (text) range.selectNodeContents(text)
+      return {
+        lines: text ? [...range.getClientRects()].map(plain) : [],
+        box: plain(button.getBoundingClientRect()),
+      }
+    })
+    expect(lines, "the label lies on exactly one line").toHaveLength(1)
+    for (const line of lines) {
+      expect(line.left).toBeGreaterThanOrEqual(box.left - 0.5)
+      expect(line.top).toBeGreaterThanOrEqual(box.top - 0.5)
+      expect(line.right).toBeLessThanOrEqual(box.right + 0.5)
+      expect(line.bottom).toBeLessThanOrEqual(box.bottom + 0.5)
+    }
+  })
+})

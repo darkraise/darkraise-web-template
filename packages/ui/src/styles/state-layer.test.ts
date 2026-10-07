@@ -73,7 +73,7 @@ const LAYER_HOSTS: Array<[string, string]> = [
   ["src/components/tabs/tabs.css", ".dr-tabs-trigger"],
   [
     "src/components/tags-input/tags-input.css",
-    ".dr-tags-input-item-delete-trigger",
+    ".dr-tags-input-item-delete-trigger, .dr-tags-input-clear-trigger",
   ],
   ["src/components/toggle/toggle.css", ".dr-toggle"],
 ]
@@ -142,6 +142,10 @@ const HAND_ROLLED: { path: string; selector: string; pseudo?: string }[] = [
   {
     path: "src/components/tags-input/tags-input.css",
     selector: ".dr-tags-input-item-delete-trigger:not(:disabled)",
+  },
+  {
+    path: "src/components/tags-input/tags-input.css",
+    selector: ".dr-tags-input-clear-trigger:not(:disabled)",
   },
   {
     path: "src/components/file-upload/file-upload.css",

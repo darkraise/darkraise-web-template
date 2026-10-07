@@ -249,6 +249,13 @@ describe("TagsInput", () => {
     expect(last.value).toEqual([])
   })
 
+  it("gives the clear trigger its own class, not the delete trigger's", () => {
+    render(<Basic defaultValue={["a"]} />)
+    const clear = screen.getByRole("button", { name: /clear all tags/i })
+    expect(clear).toHaveClass("dr-tags-input-clear-trigger")
+    expect(clear).not.toHaveClass("dr-tags-input-item-delete-trigger")
+  })
+
   it("delete trigger on a tag removes it", async () => {
     const user = userEvent.setup()
     const spy = vi.fn()

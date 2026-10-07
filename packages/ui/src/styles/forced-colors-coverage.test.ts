@@ -169,6 +169,10 @@ const FORCED_COLORS_EXEMPT = new Map<string, string>([
     "framed by its own border in the state block, which can open the enclosed seam",
   ],
   ["dr-tabs-content", "a focusable tab panel, not a control"],
+  [
+    "dr-tags-input-clear-trigger",
+    "a text trigger inside the field's bounded block",
+  ],
   ["dr-tags-input-item-delete-trigger", "an icon-only trigger inside a chip"],
   ["dr-time-column-item", "a list row inside the time picker column"],
   ["dr-toast-close", "an icon-only trigger with no fill or border of its own"],

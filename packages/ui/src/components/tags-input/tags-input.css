@@ -61,28 +61,39 @@
     @apply text-muted-foreground focus-ring-inset inline-flex size-[var(--icon-size)] items-center justify-center rounded-sm transition-colors;
   }
 
+  /* Sized by its content: a text label stays on one line. */
+  .dr-tags-input-clear-trigger {
+    @apply text-muted-foreground focus-ring-inset inline-flex items-center justify-center gap-1 rounded-sm whitespace-nowrap transition-colors;
+  }
+
   /* Shared interaction state layer (theme.css). The label rule keeps its
      guard in :where() so it keeps the `hover:` utility's specificity. */
-  .dr-tags-input-item-delete-trigger {
+  .dr-tags-input-item-delete-trigger,
+  .dr-tags-input-clear-trigger {
     position: relative;
     isolation: isolate;
   }
-  .dr-tags-input-item-delete-trigger:where(:not(:disabled)):hover {
+  .dr-tags-input-item-delete-trigger:where(:not(:disabled)):hover,
+  .dr-tags-input-clear-trigger:where(:not(:disabled)):hover {
     @apply text-foreground;
   }
-  .dr-tags-input-item-delete-trigger {
+  .dr-tags-input-item-delete-trigger,
+  .dr-tags-input-clear-trigger {
     @apply state-layer;
   }
-  .dr-tags-input-item-delete-trigger:not(:disabled):hover::before {
+  .dr-tags-input-item-delete-trigger:not(:disabled):hover::before,
+  .dr-tags-input-clear-trigger:not(:disabled):hover::before {
     opacity: var(--state-layer-hover);
     transition-duration: var(--state-layer-in);
   }
-  .dr-tags-input-item-delete-trigger:not(:disabled):active::before {
+  .dr-tags-input-item-delete-trigger:not(:disabled):active::before,
+  .dr-tags-input-clear-trigger:not(:disabled):active::before {
     opacity: var(--state-layer-press);
     transition-duration: var(--state-layer-in);
   }
 
-  .dr-tags-input-item-delete-trigger[data-disabled="true"] {
+  .dr-tags-input-item-delete-trigger[data-disabled="true"],
+  .dr-tags-input-clear-trigger[data-disabled="true"] {
     @apply cursor-not-allowed opacity-[var(--disabled-opacity)];
   }
 
@@ -93,8 +104,8 @@
 
   /* A disabled field fades once, at its root; a tag disabled on its own
      fades its preview once, and the delete trigger inside reads the token
-     as 1. The clear trigger shares the delete trigger's class and still
-     fades when read-only, beneath no faded ancestor. */
+     as 1. The clear trigger carries the same disabled rule under its own
+     class, so it still fades when read-only, beneath no faded ancestor. */
   .dr-tags-input[data-disabled="true"] > * {
     --disabled-opacity: 1;
   }

@@ -720,7 +720,7 @@ function TagsInputClearTrigger({
       aria-label={uiText("Clear all tags")}
       disabled={disabled || readOnly}
       data-disabled={disabled || readOnly ? "true" : undefined}
-      className={cn("dr-tags-input-item-delete-trigger", className)}
+      className={cn("dr-tags-input-clear-trigger", className)}
       onClick={(event) => {
         onClick?.(event)
         if (event.defaultPrevented) return

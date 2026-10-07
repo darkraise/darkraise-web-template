@@ -359,7 +359,7 @@ const REQUIRED: Array<[string, string, string, "fade" | "cursor"]> = [
   ],
   [
     `${C}tags-input/tags-input.css`,
-    '.dr-tags-input-item-delete-trigger[data-disabled="true"]',
+    '.dr-tags-input-item-delete-trigger[data-disabled="true"], .dr-tags-input-clear-trigger[data-disabled="true"]',
     "",
     "fade",
   ],
