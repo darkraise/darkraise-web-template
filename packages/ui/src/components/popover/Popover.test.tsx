@@ -231,4 +231,17 @@ describe("Popover direction", () => {
     const content = await screen.findByText("Popover content")
     expect(content.closest(".dr-popover-content")).toHaveAttribute("dir", "rtl")
   })
+
+  it("lets a dir on the content override its trigger's direction", async () => {
+    render(
+      <div dir="rtl">
+        <Popover defaultOpen>
+          <PopoverTrigger>Toggle</PopoverTrigger>
+          <PopoverContent dir="ltr">Left to right</PopoverContent>
+        </Popover>
+      </div>,
+    )
+    const content = await screen.findByText("Left to right")
+    expect(content.closest(".dr-popover-content")).toHaveAttribute("dir", "ltr")
+  })
 })

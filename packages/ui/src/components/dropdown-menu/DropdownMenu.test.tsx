@@ -449,4 +449,27 @@ describe("DropdownMenu submenus under RTL", () => {
     fireEvent.keyDown(nested, { key: "ArrowRight" })
     expect(more).toHaveAttribute("aria-expanded", "false")
   })
+
+  it("takes the submenu direction from its sub-trigger", async () => {
+    render(
+      <DropdownMenu defaultOpen>
+        <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <div dir="rtl">
+            <DropdownMenuSub defaultOpen>
+              <DropdownMenuSubTrigger>More</DropdownMenuSubTrigger>
+              <DropdownMenuSubContent>
+                <DropdownMenuItem>Nested</DropdownMenuItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+          </div>
+        </DropdownMenuContent>
+      </DropdownMenu>,
+    )
+    const nested = await screen.findByRole("menuitem", { name: "Nested" })
+    const [root, submenu] = screen.getAllByRole("menu")
+    expect(root).toHaveAttribute("dir", "ltr")
+    expect(submenu).toContainElement(nested)
+    expect(submenu).toHaveAttribute("dir", "rtl")
+  })
 })

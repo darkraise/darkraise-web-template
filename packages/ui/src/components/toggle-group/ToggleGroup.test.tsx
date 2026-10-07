@@ -149,6 +149,24 @@ describe("ToggleGroup", () => {
     expect(screen.getByText("A")).toHaveFocus()
   })
 
+  it("keeps ArrowDown and ArrowUp on a vertical group under RTL", async () => {
+    const user = userEvent.setup()
+    render(
+      <div dir="rtl">
+        <ToggleGroup type="single" orientation="vertical">
+          <ToggleGroupItem value="a">A</ToggleGroupItem>
+          <ToggleGroupItem value="b">B</ToggleGroupItem>
+          <ToggleGroupItem value="c">C</ToggleGroupItem>
+        </ToggleGroup>
+      </div>,
+    )
+    screen.getByText("A").focus()
+    await user.keyboard("{ArrowDown}")
+    expect(screen.getByText("B")).toHaveFocus()
+    await user.keyboard("{ArrowUp}")
+    expect(screen.getByText("A")).toHaveFocus()
+  })
+
   it("ArrowLeft loops to last with default loop", async () => {
     const user = userEvent.setup()
     render(

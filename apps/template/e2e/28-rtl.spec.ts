@@ -545,6 +545,72 @@ test.describe("shell edges", () => {
     expect(await computed(rail, "border-left-width")).toBe("1px")
     expect(await computed(rail, "border-right-width")).toBe("0px")
   })
+
+  test("the inset content keeps its gutter on the left", async ({ page }) => {
+    await openFixture(page)
+    const content = page.locator(
+      '[data-probe="shell-inset"] [data-region="content"]',
+    )
+    expect(await computed(content, "margin-left")).toBe("8px")
+    expect(await computed(content, "margin-right")).toBe("0px")
+  })
+
+  test("the floating content reserves the panel side on the right", async ({
+    page,
+  }) => {
+    await openFixture(page)
+    const shell = page.locator('[data-probe="shell-floating"]')
+    const panel = shell.locator('[data-region="panel"]')
+    const content = shell.locator('[data-region="content"]')
+    const shellBox = await boxOf(shell)
+    const panelBox = await boxOf(panel)
+    // The panel floats at the inline start, one 0.75rem inset in.
+    expect(shellBox.x + shellBox.width - (panelBox.x + panelBox.width)).toBe(12)
+    // Its reserve is the panel, the inset and the 1.5rem content gutter.
+    expect(parseFloat(await computed(content, "padding-right"))).toBe(
+      panelBox.width + 12 + 24,
+    )
+    expect(await computed(content, "padding-left")).not.toBe(
+      await computed(content, "padding-right"),
+    )
+  })
+})
+
+test.describe("skip link", () => {
+  test("lands at the top right when focused", async ({ page }) => {
+    await openFixture(page)
+    const link = page.locator('[data-probe="skip-link"] a')
+    await link.focus()
+    const width = await page.evaluate(
+      () => document.documentElement.clientWidth,
+    )
+    // The link slides in on focus; poll until it lands.
+    await expect
+      .poll(async () => {
+        const box = await boxOf(link)
+        return [Math.round(width - (box.x + box.width)), Math.round(box.y)]
+      })
+      .toEqual([16, 16])
+  })
+})
+
+test.describe("theme switcher", () => {
+  test("a slider value hugs the inline end, on the left", async ({ page }) => {
+    await openFixture(page)
+    const value = page
+      .locator('[data-probe="theme-settings"] .dr-theme-switcher-slider-value')
+      .first()
+    await value.scrollIntoViewIfNeeded()
+    const gaps = await value.evaluate((el) => {
+      const range = document.createRange()
+      range.selectNodeContents(el)
+      const text = range.getBoundingClientRect()
+      const box = el.getBoundingClientRect()
+      return { left: text.left - box.left, right: box.right - text.right }
+    })
+    expect(gaps.right, "free space after the text").toBeGreaterThan(4)
+    expect(gaps.left, "text against the left edge").toBeLessThanOrEqual(1)
+  })
 })
 
 test.describe("directional icons", () => {

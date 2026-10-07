@@ -41,6 +41,7 @@ import {
   MobileDrawer,
   SidebarNav,
   SidebarProvider,
+  SkipLink,
   SplitPanelLayout,
 } from "darkraise-ui/layout"
 import {
@@ -49,7 +50,7 @@ import {
   type RouterAdapter,
   type RouterLinkProps,
 } from "darkraise-ui/router"
-import { ThemeProvider } from "darkraise-ui/theme"
+import { ThemeProvider, ThemeSettingsPanel } from "darkraise-ui/theme"
 import {
   Steps,
   StepsItem,
@@ -422,6 +423,29 @@ createRoot(root).render(
             <p>Select a thread</p>
           </SplitPanelLayout>
         </ShellRouter>
+      </div>
+      {(["inset", "floating"] as const).map((shellStyle) => (
+        <div
+          key={shellStyle}
+          data-probe={`shell-${shellStyle}`}
+          style={{ width: 800, height: 400, overflow: "hidden" }}
+        >
+          <ShellRouter>
+            <SplitPanelLayout
+              nav={[]}
+              panel={<p>Threads</p>}
+              shellStyle={shellStyle}
+            >
+              <p>Select a thread</p>
+            </SplitPanelLayout>
+          </ShellRouter>
+        </div>
+      ))}
+      <div data-probe="skip-link">
+        <SkipLink />
+      </div>
+      <div data-probe="theme-settings" style={{ width: 360 }}>
+        <ThemeSettingsPanel />
       </div>
       <div data-probe="breadcrumb">
         <Breadcrumb>
