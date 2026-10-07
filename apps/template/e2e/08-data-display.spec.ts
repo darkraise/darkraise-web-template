@@ -192,7 +192,7 @@ test.describe("visualisation", () => {
     const bars = chart.locator(".recharts-bar-rectangle")
     await expect(bars).toHaveCount(6)
     await expect
-      .poll(async () => (await boxOf(bars.first())).height)
+      .poll(async () => (await bars.first().boundingBox())?.height ?? 0)
       .toBeGreaterThan(0)
   })
 
