@@ -543,3 +543,41 @@ test.describe("row 60: carousel arrows stay inside their card", () => {
     expect(hit, "the vertical next arrow is the topmost element").toBe(true)
   })
 })
+
+test.describe("row 61: dual-series charts use the plot height", () => {
+  const CHARTS = ["Revenue vs Orders", "Visitors vs Conversions"]
+
+  for (const title of CHARTS) {
+    test(`${title}: each series spans at least a quarter of the plot`, async ({
+      page,
+    }) => {
+      await openShowcase(page, "/components/charts")
+      const chart = page
+        .locator(".dr-card")
+        .filter({ has: page.getByText(title, { exact: true }) })
+        .filter({ has: page.locator(".recharts-surface") })
+        .last()
+      const measure = () =>
+        chart.evaluate((card) => {
+          const plot = card.querySelector("defs clipPath rect")
+          const plotHeight = Number(plot?.getAttribute("height") ?? 0)
+          const series = [
+            ...card.querySelectorAll<SVGPathElement>(".recharts-line-curve"),
+          ].map((path) => path.getBBox().height)
+          return { plotHeight, series }
+        })
+      await expect.poll(async () => (await measure()).series.length).toBe(2)
+      const { plotHeight, series } = await measure()
+      expect(plotHeight).toBeGreaterThan(0)
+      const shares = series.map((height) =>
+        Math.round((height / plotHeight) * 100),
+      )
+      for (const share of shares) {
+        expect(
+          share,
+          `series span ${shares.join("%, ")}% of a ${plotHeight}px plot`,
+        ).toBeGreaterThanOrEqual(25)
+      }
+    })
+  }
+})

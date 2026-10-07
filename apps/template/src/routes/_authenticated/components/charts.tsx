@@ -270,7 +270,8 @@ const ordersConfig = {
 
       <ShowcaseExample
         title="LineChart — multiple series comparison"
-        code={`// Multiple dataKey Lines renders multiple series
+        code={`// Multiple dataKey Lines renders multiple series. Series with different
+// ranges each get their own Y axis (yAxisId), or the smaller one draws flat.
 import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts"
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/features/charts"
 
@@ -284,10 +285,11 @@ const revenueOrdersConfig = {
     <LineChart data={data}>
       <CartesianGrid vertical={false} strokeDasharray="3 3" />
       <XAxis dataKey="month" tickLine={false} axisLine={false} />
-      <YAxis tickLine={false} axisLine={false} />
+      <YAxis yAxisId="revenue" tickLine={false} axisLine={false} />
+      <YAxis yAxisId="orders" orientation="right" tickLine={false} axisLine={false} />
       <ChartTooltip content={<ChartTooltipContent />} />
-      <Line type="monotone" dataKey="revenue" stroke="var(--color-revenue)" strokeWidth={2} dot={false} />
-      <Line type="monotone" dataKey="orders" stroke="var(--color-orders)" strokeWidth={2} dot={false} />
+      <Line yAxisId="revenue" type="monotone" dataKey="revenue" stroke="var(--color-revenue)" strokeWidth={2} dot={false} />
+      <Line yAxisId="orders" type="monotone" dataKey="orders" stroke="var(--color-orders)" strokeWidth={2} dot={false} />
     </LineChart>
   </ChartContainer>
 </ChartCard>`}
@@ -308,9 +310,22 @@ const revenueOrdersConfig = {
                 axisLine={false}
                 className="text-xs"
               />
-              <YAxis tickLine={false} axisLine={false} className="text-xs" />
+              <YAxis
+                yAxisId="revenue"
+                tickLine={false}
+                axisLine={false}
+                className="text-xs"
+              />
+              <YAxis
+                yAxisId="orders"
+                orientation="right"
+                tickLine={false}
+                axisLine={false}
+                className="text-xs"
+              />
               <ChartTooltip content={<ChartTooltipContent />} />
               <Line
+                yAxisId="revenue"
                 type="monotone"
                 dataKey="revenue"
                 stroke="var(--color-revenue)"
@@ -318,6 +333,7 @@ const revenueOrdersConfig = {
                 dot={false}
               />
               <Line
+                yAxisId="orders"
                 type="monotone"
                 dataKey="orders"
                 stroke="var(--color-orders)"
@@ -434,15 +450,16 @@ const coloredPieData = pieData.map((entry, i) => ({ ...entry, fill: pieColors[i 
       </BarChart>
     </ChartContainer>
   </ChartCard>
-  <ChartCard title="Revenue vs Orders">
-    <ChartContainer config={revenueOrdersConfig} className="min-h-[200px] w-full">
-      <LineChart data={data}>
+  <ChartCard title="Visitors vs Conversions">
+    <ChartContainer config={visitorsConversionsConfig} className="min-h-[200px] w-full">
+      <LineChart data={weeklyData}>
         <CartesianGrid vertical={false} strokeDasharray="3 3" />
-        <XAxis dataKey="month" tickLine={false} axisLine={false} />
-        <YAxis tickLine={false} axisLine={false} />
+        <XAxis dataKey="day" tickLine={false} axisLine={false} />
+        <YAxis yAxisId="visitors" tickLine={false} axisLine={false} />
+        <YAxis yAxisId="conversions" orientation="right" tickLine={false} axisLine={false} />
         <ChartTooltip content={<ChartTooltipContent />} />
-        <Line type="monotone" dataKey="revenue" stroke="var(--color-revenue)" strokeWidth={2} dot={false} />
-        <Line type="monotone" dataKey="orders" stroke="var(--color-orders)" strokeWidth={2} dot={false} />
+        <Line yAxisId="visitors" type="monotone" dataKey="visitors" stroke="var(--color-visitors)" strokeWidth={2} dot={false} />
+        <Line yAxisId="conversions" type="monotone" dataKey="conversions" stroke="var(--color-conversions)" strokeWidth={2} dot={false} />
       </LineChart>
     </ChartContainer>
   </ChartCard>
@@ -521,9 +538,22 @@ const coloredPieData = pieData.map((entry, i) => ({ ...entry, fill: pieColors[i 
                   axisLine={false}
                   className="text-xs"
                 />
-                <YAxis tickLine={false} axisLine={false} className="text-xs" />
+                <YAxis
+                  yAxisId="visitors"
+                  tickLine={false}
+                  axisLine={false}
+                  className="text-xs"
+                />
+                <YAxis
+                  yAxisId="conversions"
+                  orientation="right"
+                  tickLine={false}
+                  axisLine={false}
+                  className="text-xs"
+                />
                 <ChartTooltip content={<ChartTooltipContent />} />
                 <Line
+                  yAxisId="visitors"
                   type="monotone"
                   dataKey="visitors"
                   stroke="var(--color-visitors)"
@@ -531,6 +561,7 @@ const coloredPieData = pieData.map((entry, i) => ({ ...entry, fill: pieColors[i 
                   dot={false}
                 />
                 <Line
+                  yAxisId="conversions"
                   type="monotone"
                   dataKey="conversions"
                   stroke="var(--color-conversions)"
