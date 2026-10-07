@@ -19,7 +19,7 @@ import {
  */
 
 const DESKTOP = { width: 1440, height: 900 }
-/** Chromium's largest screenshot dimension. */
+/** The largest screenshot dimension in Chromium. */
 const MAX_HEIGHT = 16384
 
 /** Pages whose skeletons are the demo, so they never go away. */

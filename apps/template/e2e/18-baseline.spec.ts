@@ -70,7 +70,7 @@ const SAMPLE_PAIRS = [
 ] as const
 
 const VIEWPORT = { width: 1440, height: 900 }
-/** Chromium's largest screenshot dimension. */
+/** The largest screenshot dimension in Chromium. */
 const MAX_HEIGHT = 16384
 
 test.use({

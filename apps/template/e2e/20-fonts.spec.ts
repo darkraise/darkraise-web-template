@@ -12,7 +12,7 @@ import {
 // loads none, so any foreign request is the kit's or the shell's.
 const PROBE = "/components/buttons"
 
-/** Every request the page makes outside the app's own origin. */
+/** Every request the page makes outside the origin of the app. */
 function foreignRequests(page: Page, origin: string): string[] {
   const foreign: string[] = []
   page.on("request", (request) => {
