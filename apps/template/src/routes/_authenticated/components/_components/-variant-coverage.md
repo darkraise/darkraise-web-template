@@ -6,6 +6,26 @@ see `-variant-axes.ts` and `-variant-matrix.tsx`). It exists so nobody
 re-audits the same components looking for missed matrix work. `.md` extension
 so TanStack Router ignores this file despite the `-` prefix.
 
+## Column rules
+
+`VariantMatrix` lays out every matrix the same way, and no cell can push the
+table past its card:
+
+- The row-header column is `w-px whitespace-nowrap`, so it shrinks to its
+  widest label.
+- The content columns share the remaining width equally: a single-axis cell is
+  `w-full`, and each dual-axis cell gets `100% / columns` as an inline width.
+- Content cells are `max-w-0`, so a child never widens its column. Content is
+  start-aligned.
+- The wrapper keeps `overflow` visible, so it never scrolls and never clips an
+  indicator that overhangs its cell, such as an anchored badge.
+
+A child that does not handle its own overflow therefore spills out of its cell
+instead of widening the table. Fix such a cell by sizing its child (a width
+that fits the cell, or a ScrollArea that scrolls inside it), not by loosening
+these rules. Rule C of `e2e/30-showcase.spec.ts` reports any cell whose content
+spills at 1440px.
+
 ## Enforcement is real, not aspirational
 
 Verified end to end: temporarily adding `"warning"` to `ButtonVariant` in

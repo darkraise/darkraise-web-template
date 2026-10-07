@@ -60,7 +60,7 @@ function SliderPage() {
       <ShowcaseExample
         title="Orientation"
         code={`// One representative cell: every orientation renders above.
-<div className="flex h-40 justify-center">
+<div className="flex h-40">
   <Slider
     defaultValue={[50]}
     min={0}
@@ -85,7 +85,7 @@ function SliderPage() {
                 />
               </div>
             ) : (
-              <div className="flex h-40 justify-center">
+              <div className="flex h-40">
                 <Slider
                   defaultValue={[50]}
                   min={0}

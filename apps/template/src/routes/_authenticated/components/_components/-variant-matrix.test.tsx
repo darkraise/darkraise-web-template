@@ -64,7 +64,7 @@ describe("VariantMatrix", () => {
     ).toBeInTheDocument()
   })
 
-  it("keeps wide content inside a horizontally scrollable container", () => {
+  it("shrinks the header column to its labels", () => {
     const { container } = render(
       <VariantMatrix
         rows={{ label: "variant", values: VARIANTS }}
@@ -72,10 +72,14 @@ describe("VariantMatrix", () => {
         render={(variant, size) => <span>{`${variant}/${size}`}</span>}
       />,
     )
-    expect(container.querySelector(".overflow-x-auto")).toBeInTheDocument()
+    const headers = container.querySelectorAll("tr > th:first-child")
+    expect(headers).toHaveLength(3)
+    for (const header of headers) {
+      expect(header).toHaveClass("w-px", "whitespace-nowrap")
+    }
   })
 
-  it("marks the scroll wrapper with the showcase matrix hook", () => {
+  it("shares the remaining width equally and never lets a cell widen it", () => {
     const dual = render(
       <VariantMatrix
         rows={{ label: "variant", values: VARIANTS }}
@@ -83,9 +87,12 @@ describe("VariantMatrix", () => {
         render={(variant, size) => <span>{`${variant}/${size}`}</span>}
       />,
     )
-    expect(
-      dual.container.querySelector(".overflow-x-auto[data-showcase-matrix]"),
-    ).toBeInTheDocument()
+    const cells = dual.container.querySelectorAll("td")
+    expect(cells).toHaveLength(4)
+    for (const cell of cells) {
+      expect(cell).toHaveClass("max-w-0")
+      expect(cell).toHaveStyle({ width: "50%" })
+    }
     dual.unmount()
 
     const single = render(
@@ -94,8 +101,32 @@ describe("VariantMatrix", () => {
         render={(orientation) => <span>{`sample-${orientation}`}</span>}
       />,
     )
-    expect(
-      single.container.querySelector(".overflow-x-auto[data-showcase-matrix]"),
-    ).toBeInTheDocument()
+    for (const cell of single.container.querySelectorAll("td")) {
+      expect(cell).toHaveClass("w-full", "max-w-0")
+    }
+  })
+
+  it("marks its wrapper with the showcase matrix hook and does not clip", () => {
+    const dual = render(
+      <VariantMatrix
+        rows={{ label: "variant", values: VARIANTS }}
+        cols={{ label: "size", values: SIZES }}
+        render={(variant, size) => <span>{`${variant}/${size}`}</span>}
+      />,
+    )
+    const dualWrapper = dual.container.firstElementChild
+    expect(dualWrapper).toHaveAttribute("data-showcase-matrix", "")
+    expect(dualWrapper).not.toHaveClass("overflow-x-auto")
+    dual.unmount()
+
+    const single = render(
+      <VariantMatrix
+        rows={{ label: "orientation", values: ["horizontal", "vertical"] }}
+        render={(orientation) => <span>{`sample-${orientation}`}</span>}
+      />,
+    )
+    const singleWrapper = single.container.firstElementChild
+    expect(singleWrapper).toHaveAttribute("data-showcase-matrix", "")
+    expect(singleWrapper).not.toHaveClass("overflow-x-auto")
   })
 })

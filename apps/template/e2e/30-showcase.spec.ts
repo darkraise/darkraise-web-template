@@ -51,12 +51,8 @@ async function openShowcase(
 }
 
 const SWEEP_PENDING: Record<string, string> = {
-  "/components/badges":
-    "row 237: the anchor-position matrix wrapper clips the top-left and bottom-end indicators by 2px",
   "/components/carousel":
     "row 60: carousel arrows sit outside the card; the vertical demo hides its next arrow",
-  "/components/scroll-area":
-    "row 68: the orientation matrix wrapper scrolls because the ScrollArea widens its cell",
 }
 
 test.describe("showcase sweep", () => {
@@ -192,12 +188,16 @@ test.describe("showcase sweep", () => {
           }
         }
 
-        // overflow-x: auto computes overflow-y to auto as well, so a matrix
-        // wrapper also scrolls vertically when a cell overflows its bottom.
+        // A wrapper with any overflow but visible clips on both axes, since
+        // overflow-x: auto computes overflow-y to auto as well, so content
+        // that overhangs a cell bottom, such as an anchored badge, is cut.
         for (const matrix of document.querySelectorAll(
           "[data-showcase-matrix]",
         )) {
-          if (matrix.scrollHeight > matrix.clientHeight + 1) {
+          if (
+            getComputedStyle(matrix).overflowY !== "visible" &&
+            matrix.scrollHeight > matrix.clientHeight + 1
+          ) {
             violations.push(
               `rule A: matrix wrapper ${describe(matrix, false)} scrolls: scrollHeight ${matrix.scrollHeight} > clientHeight ${matrix.clientHeight}`,
             )
@@ -293,6 +293,63 @@ test.describe("showcase sweep", () => {
         violations,
         `${path}: ${violations.length} sweep violations\n${violations.join("\n")}`,
       ).toEqual([])
+    })
+  }
+})
+
+test.describe("row 68 and 76: matrix columns fit their content", () => {
+  const PAGES = [
+    "/components/scroll-area",
+    "/components/slider",
+    "/components/checkbox",
+  ]
+
+  for (const path of PAGES) {
+    test(path, async ({ page }) => {
+      await openShowcase(page, path)
+      const problems = await page
+        .locator("[data-showcase-matrix]")
+        .evaluateAll((wrappers) =>
+          wrappers.flatMap((wrapper, index) => {
+            const found: string[] = []
+            const name = `matrix ${index + 1}`
+            if (wrapper.scrollWidth > wrapper.clientWidth + 1) {
+              found.push(
+                `${name} scrolls: scrollWidth ${wrapper.scrollWidth} > clientWidth ${wrapper.clientWidth}`,
+              )
+            }
+            if (wrapper.scrollHeight > wrapper.clientHeight + 1) {
+              found.push(
+                `${name} scrolls: scrollHeight ${wrapper.scrollHeight} > clientHeight ${wrapper.clientHeight}`,
+              )
+            }
+            const headers = [
+              ...wrapper.querySelectorAll(
+                ":scope > table > * > tr > th:first-child",
+              ),
+            ]
+            const range = document.createRange()
+            const widest = Math.max(
+              ...headers.map((header) => {
+                range.selectNodeContents(header)
+                return range.getBoundingClientRect().width
+              }),
+            )
+            const [first] = headers
+            if (!first) return [...found, `${name} has no header column`]
+            const style = getComputedStyle(first)
+            const padding =
+              parseFloat(style.paddingLeft) + parseFloat(style.paddingRight)
+            const column = first.getBoundingClientRect().width
+            if (column > widest + padding + 1) {
+              found.push(
+                `${name} header column is ${Math.round(column)}px for a ${Math.round(widest)}px label and ${padding}px padding`,
+              )
+            }
+            return found
+          }),
+        )
+      expect(problems, problems.join("\n")).toEqual([])
     })
   }
 })
