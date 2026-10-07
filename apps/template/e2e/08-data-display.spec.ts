@@ -7,6 +7,17 @@ async function open(page: Page, path: string) {
   return page.locator("main")
 }
 
+function example(page: Page, title: string) {
+  return page.locator("main [data-showcase-example]").filter({
+    has: page.getByText(title, { exact: true }),
+  })
+}
+
+const ONE_PIXEL_PNG = Buffer.from(
+  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=",
+  "base64",
+)
+
 test.describe("tabular data", () => {
   test("table renders header and body rows", async ({ page }) => {
     const main = await open(page, "/components/table")
@@ -78,18 +89,19 @@ test.describe("panels and structure", () => {
   })
 
   test("carousel moves to the next slide", async ({ page }) => {
-    const main = await open(page, "/components/carousel")
-    const next = main.getByRole("button", { name: /next/i }).first()
-    const track = main.locator('[class*="carousel"]').first()
-    const before = await track.evaluate(
-      (el) => el.scrollLeft + el.innerHTML.length,
-    )
-    await next.click()
+    await open(page, "/components/carousel")
+    const carousel = example(page, "With indicators (dot pagination)")
+    const firstSlide = carousel.locator(".dr-carousel-item").first()
+    const indicators = carousel.locator(".dr-carousel-indicator")
+    await expect(indicators.nth(0)).toHaveAttribute("aria-current", "true")
+    const before = (await boxOf(firstSlide)).x
+
+    await carousel.getByRole("button", { name: "Next slide" }).click()
+    await expect(indicators.nth(1)).toHaveAttribute("aria-current", "true")
+    await expect(indicators.nth(0)).not.toHaveAttribute("aria-current", "true")
     await expect
-      .poll(async () =>
-        track.evaluate((el) => el.scrollLeft + el.innerHTML.length),
-      )
-      .not.toBe(before)
+      .poll(async () => (await boxOf(firstSlide)).x)
+      .toBeLessThan(before - 100)
   })
 
   test("tree view expands a node", async ({ page }) => {
@@ -136,20 +148,24 @@ test.describe("panels and structure", () => {
 
 test.describe("progress and time", () => {
   test("progress bar exposes a value", async ({ page }) => {
-    const main = await open(page, "/components/progress")
-    const bar = main.getByRole("progressbar").first()
+    await open(page, "/components/progress")
+    const bar = example(page, "Basic progress").getByRole("progressbar")
     await expect(bar).toBeVisible()
+    await expect(bar).toHaveAttribute("aria-valuenow", "60")
   })
 
   test("timer counts", async ({ page }) => {
     const consoleWatch = watchConsole(page)
-    const main = await open(page, "/components/timer")
-    const start = main
-      .getByRole("button", { name: /start|play|resume/i })
-      .first()
-    if ((await start.count()) > 0) await start.click()
-    const readout = main.locator("text=/\\d+/").first()
-    await expect(readout).toBeVisible()
+    await open(page, "/components/timer")
+    const stopwatch = example(page, "Stopwatch counting up from zero")
+    const timer = stopwatch.locator(".dr-timer")
+    const seconds = stopwatch.locator('.dr-timer-item[data-type="seconds"]')
+    await expect(timer).toHaveAttribute("data-state", "idle")
+    await expect(seconds).toHaveText("00")
+
+    await stopwatch.getByRole("button", { name: "Start" }).click()
+    await expect(timer).toHaveAttribute("data-state", "running")
+    await expect(seconds).not.toHaveText("00")
     consoleWatch.assertClean()
   })
 
@@ -166,12 +182,18 @@ test.describe("progress and time", () => {
 
 test.describe("visualisation", () => {
   test("charts render an SVG surface with data", async ({ page }) => {
-    const main = await open(page, "/components/charts")
-    const svg = main.locator("svg.recharts-surface").first()
+    await open(page, "/components/charts")
+    const chart = example(page, "BarChart — discrete category comparison")
+    const svg = chart.locator("svg.recharts-surface")
     await expect(svg).toBeVisible()
     const box = await boxOf(svg)
     expect(box.width).toBeGreaterThan(0)
     expect(box.height).toBeGreaterThan(0)
+    const bars = chart.locator(".recharts-bar-rectangle")
+    await expect(bars).toHaveCount(6)
+    await expect
+      .poll(async () => (await boxOf(bars.first())).height)
+      .toBeGreaterThan(0)
   })
 
   test("dashboard charts size correctly", async ({ page }) => {
@@ -191,32 +213,56 @@ test.describe("visualisation", () => {
   })
 
   test("contribution graph renders cells", async ({ page }) => {
-    const main = await open(page, "/components/contribution-graph")
-    // Poll rather than count once: `count()` reads a single instant, so under
-    // parallel load it can run before the route has finished rendering.
-    await expect
-      .poll(async () =>
-        main
-          .locator('[class*="contribution"] rect, [class*="contribution"] div')
-          .count(),
-      )
-      .toBeGreaterThan(10)
+    await open(page, "/components/contribution-graph")
+    // The legend reuses the cell class, so only the grid is counted; the
+    // demo spans 2025-07-25 to 2026-07-24, one dated cell per day.
+    const days = example(page, "Default").locator(
+      ".dr-contribution-graph-grid .dr-contribution-graph-cell[data-date]",
+    )
+    await expect(days).toHaveCount(365)
+    await expect(
+      days.and(page.locator('[data-date="2025-07-25"]')),
+    ).toHaveCount(1)
+    await expect(
+      days.and(page.locator('[data-date="2026-07-24"]')),
+    ).toHaveCount(1)
   })
 
   test("qr code renders", async ({ page }) => {
     const main = await open(page, "/components/qr-code")
-    await expect(main.locator("svg, canvas").first()).toBeVisible()
+    await expect(main.locator(".dr-qr-code")).toHaveCount(4)
+    const frame = example(page, "vCard").getByRole("img")
+    await expect(frame).toBeVisible()
+    const box = await boxOf(frame)
+    expect(Math.abs(box.width - 220)).toBeLessThanOrEqual(1)
+    expect(Math.abs(box.height - 220)).toBeLessThanOrEqual(1)
+    await expect(frame.locator("path").nth(1)).toHaveAttribute("d", /^M\d/)
   })
 
   test("virtualized timeline windows its rows", async ({ page }) => {
-    const main = await open(page, "/components/virtualized-timeline")
-    const viewport = main.locator(".dr-virtualized-timeline-viewport").first()
+    await open(page, "/components/virtualized-timeline")
+    const viewport = example(page, "Photo timeline").locator(
+      ".dr-virtualized-timeline-viewport",
+    )
     await expect(viewport).toBeVisible()
-    const count = await viewport
-      .locator(".dr-virtualized-timeline-bucket")
-      .count()
-    expect(count).toBeGreaterThan(0)
-    expect(count).toBeLessThan(500)
+    const grids = () =>
+      viewport.evaluate((el) =>
+        Array.from(el.querySelectorAll('[role="grid"]'), (grid) => ({
+          rendered: grid.querySelectorAll(".dr-virtualized-timeline-row")
+            .length,
+          total: Number(grid.getAttribute("aria-rowcount")),
+        })),
+      )
+    await expect
+      .poll(async () => (await grids()).some((grid) => grid.rendered > 0))
+      .toBe(true)
+    const mounted = await grids()
+    for (const grid of mounted) {
+      expect(grid.rendered).toBeLessThanOrEqual(grid.total)
+    }
+    const rendered = mounted.reduce((sum, grid) => sum + grid.rendered, 0)
+    const total = mounted.reduce((sum, grid) => sum + grid.total, 0)
+    expect(rendered, `${rendered} of ${total} rows mounted`).toBeLessThan(total)
   })
 
   for (const side of ["right", "left"] as const) {
@@ -292,12 +338,42 @@ test.describe("visualisation", () => {
 test.describe("content components", () => {
   test("breadcrumb links back to the components index", async ({ page }) => {
     const main = await open(page, "/components/breadcrumb")
-    await expect(main.getByRole("navigation").first()).toBeVisible()
+    await main
+      .getByRole("navigation", { name: "breadcrumb" })
+      .first()
+      .getByRole("link", { name: "Components", exact: true })
+      .click()
+    await expect(page).toHaveURL(/\/components$/)
+    await expect(
+      page.getByRole("heading", { level: 1, name: "Component Library" }),
+    ).toBeVisible()
   })
 
   test("avatar falls back to initials", async ({ page }) => {
-    const main = await open(page, "/components/avatar")
-    await expect(main.locator('[class*="avatar"]').first()).toBeVisible()
+    // The demo loads a remote photo; serving it locally keeps the load
+    // event, and so the test, independent of the network.
+    await page.route("https://github.com/shadcn.png", (route) =>
+      route.fulfill({ contentType: "image/png", body: ONE_PIXEL_PNG }),
+    )
+    const brokenSettled = page.waitForEvent("requestfinished", (request) =>
+      request.url().endsWith("/broken-image.jpg"),
+    )
+    await open(page, "/components/avatar")
+    const avatars = example(
+      page,
+      "With image (falling back to initials on broken src)",
+    ).locator(".dr-avatar")
+    await expect(avatars.nth(0).locator("img")).toBeVisible()
+    await brokenSettled
+    await page.evaluate(
+      () =>
+        new Promise((resolve) =>
+          requestAnimationFrame(() => requestAnimationFrame(resolve)),
+        ),
+    )
+    const broken = avatars.nth(1)
+    await expect(broken.locator(".dr-avatar-fallback")).toHaveText("FB")
+    await expect(broken.locator("img")).toHaveCount(0)
   })
 
   test("highlight marks the search term", async ({ page }) => {
