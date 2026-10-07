@@ -8,6 +8,9 @@ export default defineConfig({
   /* The visual baseline records committed screenshots; it runs only when
      asked (`pnpm test:e2e:visual`). */
   testIgnore: baselineIgnore,
+  /* With E2E_WARM=1 (the test:e2e script) one page visits every route first,
+     so Vite has compiled each route before the tests time their loads. */
+  globalSetup: "./e2e/global-setup.ts",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   /* One local retry: on a host where Docker containers come and go, each
