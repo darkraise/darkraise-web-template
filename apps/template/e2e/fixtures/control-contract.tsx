@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { createRoot } from "react-dom/client"
 import type { ColumnDef } from "@tanstack/react-table"
-import { Check, ChevronDown, Info } from "lucide-react"
+import { Check, ChevronDown, Eye, EyeOff, Info } from "lucide-react"
 import {
   Accordion,
   AccordionContent,
@@ -74,6 +74,13 @@ import {
 } from "darkraise-ui/components/file-upload"
 import { Input } from "darkraise-ui/components/input"
 import {
+  PasswordInput,
+  PasswordInputControl,
+  PasswordInputField,
+  PasswordInputIndicator,
+  PasswordInputVisibilityTrigger,
+} from "darkraise-ui/components/password-input"
+import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -129,6 +136,7 @@ import {
   TagsInputItemPreview,
   TagsInputItemText,
 } from "darkraise-ui/components/tags-input"
+import { Textarea } from "darkraise-ui/components/textarea"
 import { TimePicker } from "darkraise-ui/components/time-picker"
 import { Toggle } from "darkraise-ui/components/toggle"
 import { ColumnHeader, DataTable } from "darkraise-ui/data-table"
@@ -694,6 +702,36 @@ function ControlStates() {
         <Button asChild disabled variant="link">
           <a href="#more">More</a>
         </Button>
+      </div>
+      <div data-probe="password" style={{ width: 200 }}>
+        <PasswordInput>
+          <PasswordInputControl>
+            <PasswordInputField aria-label="Password" placeholder="Password" />
+            <PasswordInputVisibilityTrigger>
+              <PasswordInputIndicator visible={<EyeOff />} hidden={<Eye />} />
+            </PasswordInputVisibilityTrigger>
+          </PasswordInputControl>
+        </PasswordInput>
+      </div>
+      <div data-probe="textarea" style={{ width: 240, paddingBottom: 12 }}>
+        <Textarea aria-label="Notes" placeholder="Notes" rows={2} />
+      </div>
+      <div
+        data-probe="surface-fill"
+        style={{ display: "grid", gap: 8, width: 280 }}
+      >
+        {(["card", "page", "muted", "none"] as const).map((surface) => (
+          <Card key={surface} data-case={surface} surface={surface}>
+            <CardContent>{surface}</CardContent>
+          </Card>
+        ))}
+        <Card surface="muted">
+          <CardContent>
+            <Card data-case="card-in-muted" surface="card">
+              <CardContent>card in muted</CardContent>
+            </Card>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )

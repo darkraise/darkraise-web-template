@@ -1,5 +1,5 @@
 import { test, expect, type Locator, type Page } from "@playwright/test"
-import { DENSITIES, MATRIX_STYLES, STYLES } from "./fixtures/theme"
+import { DENSITIES, LS_KEYS, MATRIX_STYLES, STYLES } from "./fixtures/theme"
 import { boxOf, gotoApp, seedApp, watchConsole } from "./helpers/app"
 import { openControlFixture } from "./helpers/controls"
 import {
@@ -41,6 +41,7 @@ const SIZED = [
   '[data-probe="otp"] .dr-input-otp-slot',
   '[data-probe="segment"] .dr-segment-group-item',
   '[data-probe="file-upload"] .dr-file-upload-trigger',
+  '[data-probe="password"] .dr-password-input-field',
 ]
 
 async function measuredHeights(page: Page) {
@@ -53,6 +54,32 @@ async function measuredHeights(page: Page) {
     }
   }
   return rows
+}
+
+/**
+ * Values a token resolves to in a container, read from a probe element
+ * placed inside it, since a container can rebind the token for its children.
+ */
+async function resolvedIn(
+  container: Locator,
+  styles: Record<string, string>,
+): Promise<Record<string, string>> {
+  return container.evaluate((el, declarations) => {
+    const probe = document.createElement("div")
+    for (const [name, value] of Object.entries(declarations)) {
+      probe.style.setProperty(name, value)
+    }
+    el.append(probe)
+    const computedStyle = getComputedStyle(probe)
+    const out = Object.fromEntries(
+      Object.keys(declarations).map((name) => [
+        name,
+        computedStyle.getPropertyValue(name),
+      ]),
+    )
+    probe.remove()
+    return out
+  }, styles)
 }
 
 /** Left edge of the first non-empty text run inside an element. */
@@ -282,10 +309,14 @@ for (const { name, seed } of EDGE_THEMES) {
 }
 
 async function expectEdgeFloor(page: Page, probe: string, label: string) {
-  const field = page.locator(`[data-probe="${probe}"] .dr-input`)
+  const field = page.locator(
+    `[data-probe="${probe}"] :is(.dr-input, .dr-textarea)`,
+  )
   const box = await boxOf(field)
   const x = Math.round(box.x + box.width / 2)
-  const bottom = Math.floor(box.y + box.height)
+  // A box centred by scrollIntoView can sit on a half pixel; its bottom
+  // border paints on the row the bottom edge rounds into.
+  const bottom = Math.round(box.y + box.height)
   const edge = await pixel(page, x, bottom - 1)
   const ground = await pixel(page, x, bottom + 4)
   const ratio = contrast(edge, ground)
@@ -303,19 +334,124 @@ for (const style of STYLES) {
     const track = page.locator('[data-probe="switch"] .dr-switch')
     const thumb = page.locator('[data-probe="switch"] .dr-switch-thumb')
     const trackBox = await boxOf(track)
-    const offGap = (await boxOf(thumb)).x - trackBox.x
+    const gaps = async () => {
+      const box = await boxOf(thumb)
+      const round = (value: number) => Math.round(value * 10) / 10
+      return {
+        start: round(box.x - trackBox.x),
+        end: round(trackBox.x + trackBox.width - (box.x + box.width)),
+        top: round(box.y - trackBox.y),
+        bottom: round(trackBox.y + trackBox.height - (box.y + box.height)),
+      }
+    }
+    const off = await gaps()
+    expect(
+      Math.abs(off.top - off.bottom),
+      `off: top ${off.top}px, bottom ${off.bottom}px`,
+    ).toBeLessThanOrEqual(1)
     await track.click()
     await expect(track).toHaveAttribute("data-state", "checked")
-    await expect
-      .poll(async () => {
-        const box = await boxOf(thumb)
-        return (
-          Math.round((trackBox.x + trackBox.width - (box.x + box.width)) * 10) /
-          10
-        )
-      })
-      .toBeCloseTo(offGap, 0)
+    await expect.poll(async () => (await gaps()).end).toBeCloseTo(off.start, 0)
+    const on = await gaps()
+    expect(
+      Math.abs(on.top - on.bottom),
+      `on: top ${on.top}px, bottom ${on.bottom}px`,
+    ).toBeLessThanOrEqual(1)
   })
+}
+
+for (const style of MATRIX_STYLES) {
+  for (const mode of MODES) {
+    test(`a card paints the plane its surface prop names · ${style} · ${mode}`, async ({
+      page,
+    }) => {
+      await seedApp(page, { style, mode })
+      await openControlFixture(page)
+      const probe = page.locator('[data-probe="surface-fill"]')
+      const plane = async (token: string) =>
+        (
+          await resolvedIn(probe, {
+            "background-color": `hsl(var(${token}))`,
+          })
+        )["background-color"]
+      const expected: [string, string | undefined][] = [
+        ["card", await plane("--card")],
+        ["page", await plane("--background")],
+        ["muted", await plane("--muted")],
+        ["none", "rgba(0, 0, 0, 0)"],
+        // An explicit value restores the card plane under a muted ancestor.
+        ["card-in-muted", await plane("--card")],
+      ]
+      for (const [name, colour] of expected) {
+        await expect(probe.locator(`[data-case="${name}"]`), name).toHaveCSS(
+          "background-color",
+          colour ?? "",
+        )
+      }
+    })
+  }
+}
+
+for (const radius of ["sharp", "pill"] as const) {
+  test(`password input keeps the control contract · ${radius}`, async ({
+    page,
+  }) => {
+    await seedApp(page, { style: "quiet", mode: "light", radius })
+    await openControlFixture(page)
+    const probe = page.locator('[data-probe="password"]')
+    const field = probe.locator(".dr-password-input-field")
+    const reveal = probe.getByRole("button", { name: "Show password" })
+    const fieldBox = await boxOf(field)
+    const revealBox = await boxOf(reveal)
+    expect(fieldBox.height, "field height").toBeCloseTo(
+      (await boxOf(page.getByTestId("control-height"))).height,
+      0,
+    )
+    // The reveal button fills the field height at its inline end.
+    expect(revealBox.y, "reveal top").toBeCloseTo(fieldBox.y, 0)
+    expect(revealBox.height, "reveal height").toBeCloseTo(fieldBox.height, 0)
+    expect(revealBox.x + revealBox.width, "reveal end").toBeCloseTo(
+      fieldBox.x + fieldBox.width,
+      0,
+    )
+    expect(revealBox.x, "reveal start").toBeGreaterThan(fieldBox.x)
+    const { "border-radius": controlRadius } = await resolvedIn(probe, {
+      "border-radius": "var(--radius-control)",
+    })
+    await expect(field).toHaveCSS("border-radius", controlRadius ?? "")
+  })
+}
+
+// --radius-control rounds single-line fields only; a multi-line field takes
+// --radius, so at pill it rounds like a card rather than a lozenge.
+for (const mode of MODES) {
+  for (const radius of ["sharp", "pill"] as const) {
+    test(`textarea takes the field edge and the radius · ${radius} · ${mode}`, async ({
+      page,
+    }) => {
+      await seedApp(page, { style: "quiet", mode, radius })
+      await openControlFixture(page)
+      const probe = page.locator('[data-probe="textarea"]')
+      await probe.evaluate((el) => el.scrollIntoView({ block: "center" }))
+      await page.mouse.move(0, 0)
+      await settle(page)
+      const textarea = probe.locator(".dr-textarea")
+      const expected = await resolvedIn(probe, {
+        "border-bottom-color": "var(--field-edge)",
+        "border-bottom-style": "solid",
+        "border-radius": "var(--radius)",
+      })
+      await expect(textarea).toHaveCSS(
+        "border-bottom-color",
+        expected["border-bottom-color"] ?? "",
+      )
+      await expect(textarea).toHaveCSS(
+        "border-radius",
+        expected["border-radius"] ?? "",
+      )
+      await expectEdgeFloor(page, "textarea", `textarea · ${radius} · ${mode}`)
+    })
+  }
 }
 
 /**
@@ -333,7 +469,7 @@ const STRIP_TOKENS = [
 ] as const
 
 const STRIP_CASES = [
-  ...(["slate", "violet"] as const).flatMap((surface) =>
+  ...(["slate", "mauve"] as const).flatMap((surface) =>
     MODES.flatMap((mode) =>
       (["balanced", "intense"] as const).map((intensity) => ({
         surface,
@@ -382,8 +518,20 @@ test.describe("gradient strip", () => {
         backgroundStyle: "gradient",
         backgroundIntensity: intensity,
         gradientPattern: pattern,
+        tintWithAccent: "off",
       })
       await gotoApp(page, "/components/buttons")
+      expect(
+        await page.evaluate(
+          (key) => localStorage.getItem(key),
+          LS_KEYS.surface,
+        ),
+        "stored surface",
+      ).toBe(surface)
+      await expect(page.locator("html")).toHaveAttribute(
+        "data-surface",
+        surface,
+      )
       await page.addStyleTag({
         content: "main[data-content] > * { visibility: hidden !important; }",
       })
