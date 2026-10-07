@@ -100,11 +100,22 @@ test.describe("text entry", () => {
   })
 
   test("tags input adds and removes a tag", async ({ page }) => {
-    const main = await open(page, "/components/tags-input")
-    const input = main.locator("input").first()
-    await input.fill("playwright")
+    await open(page, "/components/tags-input")
+    const tags = example(page, "Free-form tags")
+    const texts = tags.locator(".dr-tags-input-item-text")
+    await expect(texts).toHaveText(["react", "typescript", "tailwind"])
+
+    await tags.getByPlaceholder("Add framework...").fill("playwright")
     await page.keyboard.press("Enter")
-    await expect(main.getByText("playwright").first()).toBeVisible()
+    await expect(texts).toHaveText([
+      "react",
+      "typescript",
+      "tailwind",
+      "playwright",
+    ])
+
+    await tags.getByRole("button", { name: "Remove playwright" }).click()
+    await expect(texts).toHaveText(["react", "typescript", "tailwind"])
   })
 })
 
@@ -263,11 +274,31 @@ test.describe("date and time", () => {
   })
 
   test("date picker opens a calendar and picks a date", async ({ page }) => {
-    const main = await open(page, "/components/date-picker")
-    await main.getByRole("button").first().click()
-    const day = page.locator('[role="gridcell"] button:not([disabled])').nth(10)
-    await expect(day).toBeVisible()
+    await open(page, "/components/date-picker")
+    const picker = example(page, "Single date with input mask")
+    const input = picker.getByRole("textbox", { name: "Date" })
+    await expect(input).toHaveValue("")
+    await picker.getByRole("button", { name: "Open date picker" }).click()
+    const popover = page.getByRole("dialog")
+    const day = popover
+      .locator(
+        ".dr-calendar-day:not(.dr-calendar-outside) button:not([disabled])",
+      )
+      .nth(14)
+    const stamp = await attrOf(day, "data-day")
+
     await day.click()
+    await expect(popover).toHaveCount(0)
+    await expect(input).toHaveValue(/^\d{4}-\d{2}-\d{2}$/)
+    // data-day is the browser locale date string, so the comparison is made
+    // in the browser rather than by parsing it here.
+    const picked = await input.inputValue()
+    expect(
+      await page.evaluate(
+        (iso) => new Date(`${iso}T00:00:00`).toLocaleDateString(),
+        picked,
+      ),
+    ).toBe(stamp)
   })
 
   test("date input accepts a typed date", async ({ page }) => {
@@ -329,23 +360,38 @@ test.describe("range controls", () => {
   })
 
   test("color picker opens and reports a value", async ({ page }) => {
-    const main = await open(page, "/components/color-picker")
-    await main.getByRole("button").first().click()
-    await expect(page.locator(".dr-color-picker-content").first()).toBeVisible()
+    await open(page, "/components/color-picker")
+    const picker = example(page, "Brand color with swatches")
+    const input = picker.getByRole("textbox", { name: "Brand color" })
+    const swatch = picker.locator(".dr-color-picker-swatch")
+    await expect(input).toHaveValue("#3b82f6")
+
+    await picker
+      .getByRole("button", { name: "Open color picker", exact: true })
+      .click()
+    const content = page.locator(".dr-color-picker-content")
+    await expect(content).toBeVisible()
+    await content.getByRole("button", { name: "Select color #ef4444" }).click()
+    await expect(input).toHaveValue("#ef4444")
+    await expect(swatch).toHaveCSS("background-color", "rgb(239, 68, 68)")
+    await expect(swatch).toHaveAccessibleName(
+      "Open color picker, current color #ef4444",
+    )
   })
 })
 
 test.describe("form validation", () => {
   test("form fields surface validation errors on submit", async ({ page }) => {
     const consoleWatch = watchConsole(page)
-    const main = await open(page, "/components/form-fields")
-    const submit = main
-      .getByRole("button", { name: /submit|save|create/i })
-      .first()
-    await submit.click()
-    await expect(
-      main.locator('[data-invalid="true"], [aria-invalid="true"]').first(),
-    ).toBeVisible()
+    await open(page, "/components/form-fields")
+    const form = example(
+      page,
+      "TextField, TextareaField, NumberField, SelectField, SwitchField, RadioGroupField, CheckboxField",
+    )
+    const invalid = form.locator('[data-invalid="true"], [aria-invalid="true"]')
+    await expect(invalid).toHaveCount(0)
+    await form.getByRole("button", { name: "Submit Demo Form" }).click()
+    await expect(invalid.first()).toBeVisible()
     consoleWatch.assertClean()
   })
 
@@ -362,11 +408,25 @@ test.describe("form validation", () => {
   test("field component links label, description and error", async ({
     page,
   }) => {
-    const main = await open(page, "/components/field")
-    const input = main.locator("input").first()
-    const id = await input.getAttribute("id")
-    expect(id).toBeTruthy()
-    await expect(main.locator(`label[for="${id}"]`)).toHaveCount(1)
+    await open(page, "/components/field")
+    const field = example(page, "Description and error")
+    const input = field.getByRole("textbox", { name: "Username" })
+    await expect(input).toHaveAccessibleDescription("3 to 20 characters.")
+    await expect(input).not.toHaveAttribute("aria-invalid", "true")
+    await expect(field.getByRole("alert")).toHaveCount(0)
+
+    await input.fill("not valid!")
+    await expect(input).toHaveAttribute("aria-invalid", "true")
+    await expect(field.getByRole("alert")).toHaveText(
+      "Use only letters, digits and hyphens.",
+    )
+    await expect(input).toHaveAccessibleDescription(
+      "3 to 20 characters. Use only letters, digits and hyphens.",
+    )
+
+    await input.fill("valid-name")
+    await expect(input).not.toHaveAttribute("aria-invalid", "true")
+    await expect(input).toHaveAccessibleDescription("3 to 20 characters.")
   })
 })
 

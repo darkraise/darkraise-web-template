@@ -435,6 +435,7 @@ export const showcaseEnglish = {
   "Single field": "Single field",
   "Legend variant": "Legend variant",
   "Two-column grid": "Two-column grid",
+  "Description and error": "Description and error",
   "Toggle disabled propagation": "Toggle disabled propagation",
   "Single image with preview": "Single image with preview",
   "Multi-file with size limit": "Multi-file with size limit",

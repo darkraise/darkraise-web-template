@@ -437,6 +437,7 @@ export const showcaseVietnamese: Record<keyof typeof showcaseEnglish, string> =
     "Single field": "Trường đơn",
     "Legend variant": "Biến thể chú giải",
     "Two-column grid": "Lưới hai cột",
+    "Description and error": "Mô tả và lỗi",
     "Toggle disabled propagation": "Bật tắt việc vô hiệu hóa trường con",
     "Single image with preview": "Ảnh đơn với xem trước",
     "Multi-file with size limit": "Nhiều tệp với giới hạn kích thước",

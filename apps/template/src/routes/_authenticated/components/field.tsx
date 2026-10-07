@@ -1,6 +1,9 @@
+import { useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import {
   Field,
+  FieldDescription,
+  FieldError,
   FieldLabel,
   FieldLegend,
   FieldSet,
@@ -27,6 +30,37 @@ const FIELD_ORIENTATIONS = allOf<FieldOrientation>()(
   "horizontal",
   "responsive",
 )
+
+const USERNAME_PATTERN = /^[a-z0-9-]{3,20}$/i
+
+function UsernameField() {
+  const [username, setUsername] = useState("")
+  const invalid = username !== "" && !USERNAME_PATTERN.test(username)
+  return (
+    <Field className="max-w-sm">
+      <FieldLabel htmlFor="field-username">Username</FieldLabel>
+      <Input
+        id="field-username"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        aria-invalid={invalid || undefined}
+        aria-describedby={
+          invalid
+            ? "field-username-description field-username-error"
+            : "field-username-description"
+        }
+      />
+      <FieldDescription id="field-username-description">
+        3 to 20 characters.
+      </FieldDescription>
+      {invalid ? (
+        <FieldError id="field-username-error">
+          Use only letters, digits and hyphens.
+        </FieldError>
+      ) : null}
+    </Field>
+  )
+}
 
 function FieldPage() {
   return (
@@ -140,6 +174,36 @@ function FieldPage() {
             />
           </Field>
         </div>
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Description and error"
+        code={`// Field leaves id wiring to you: point aria-describedby at the
+// description, and at the error while it shows.
+const invalid = username !== "" && !/^[a-z0-9-]{3,20}$/i.test(username)
+
+<Field>
+  <FieldLabel htmlFor="username">Username</FieldLabel>
+  <Input
+    id="username"
+    value={username}
+    onChange={(e) => setUsername(e.target.value)}
+    aria-invalid={invalid || undefined}
+    aria-describedby={
+      invalid ? "username-description username-error" : "username-description"
+    }
+  />
+  <FieldDescription id="username-description">
+    3 to 20 characters.
+  </FieldDescription>
+  {invalid ? (
+    <FieldError id="username-error">
+      Use only letters, digits and hyphens.
+    </FieldError>
+  ) : null}
+</Field>`}
+      >
+        <UsernameField />
       </ShowcaseExample>
     </ShowcasePage>
   )
