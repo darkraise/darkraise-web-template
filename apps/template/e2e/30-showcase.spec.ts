@@ -19,7 +19,8 @@ import {
  */
 
 const DESKTOP = { width: 1440, height: 900 }
-const MAX_HEIGHT = 4000
+/** Chromium's largest screenshot dimension. */
+const MAX_HEIGHT = 16384
 
 /** Pages whose skeletons are the demo, so they never go away. */
 const SKELETON_DEMOS = new Set([
@@ -49,10 +50,13 @@ async function openShowcase(
     .locator("#main-content")
     .evaluate((main) => main.scrollHeight - main.clientHeight)
   if (overflow > 0) {
-    await page.setViewportSize({
-      width: DESKTOP.width,
-      height: Math.min(DESKTOP.height + overflow, MAX_HEIGHT),
-    })
+    const height = DESKTOP.height + overflow
+    if (height > MAX_HEIGHT) {
+      throw new Error(
+        `${path} is ${height}px tall, above the ${MAX_HEIGHT}px capture cap`,
+      )
+    }
+    await page.setViewportSize({ width: DESKTOP.width, height })
   }
   await settle(page)
 }

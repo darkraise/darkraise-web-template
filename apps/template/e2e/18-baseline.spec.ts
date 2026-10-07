@@ -6,8 +6,9 @@ import { settle } from "./helpers/measure"
 
 /**
  * The screenshot baseline the phase 3 and 4 restyles are compared against:
- * the app, showcase and overlay pages under each baseline style, and the
- * kitchen sink under every style with three accent and surface pairs.
+ * the app and overlay pages under each baseline style, the showcase pages to
+ * full height and the kitchen sink with three accent and surface pairs under
+ * every style.
  * Runs only with BASELINE set (playwright.config.ts): compare with
  * `pnpm test:e2e:visual`, re-record with `--update-snapshots`. The images
  * are Linux Chromium renders from the pinned Playwright; a Playwright upgrade
@@ -38,7 +39,7 @@ const APP_PAGES = [
   ["analytics", "/analytics", [PIE, AREA, BAR]],
 ] as const
 
-/** Showcase pages, captured at the viewport. */
+/** Showcase pages, captured to full height under every style. */
 const SHOWCASE_PAGES = [
   ["buttons", "/components/buttons"],
   ["inputs", "/components/inputs"],
@@ -69,7 +70,8 @@ const SAMPLE_PAIRS = [
 ] as const
 
 const VIEWPORT = { width: 1440, height: 900 }
-const MAX_HEIGHT = 4000
+/** Chromium's largest screenshot dimension. */
+const MAX_HEIGHT = 16384
 
 test.use({
   viewport: VIEWPORT,
@@ -120,19 +122,26 @@ async function waitForFonts(page: Page) {
 }
 
 /** Grows the viewport so the app shell's scrolling region shows whole. */
-async function fitContent(page: Page) {
-  const overflow = await page
-    .locator("#main-content")
-    .evaluate((main) => main.scrollHeight - main.clientHeight)
-  if (VIEWPORT.height + overflow > MAX_HEIGHT) {
-    throw new Error(`main region needs ${VIEWPORT.height + overflow}px`)
+async function fitContent(page: Page, path: string) {
+  const main = page.locator("#main-content")
+  const overflow = await main.evaluate(
+    (el) => el.scrollHeight - el.clientHeight,
+  )
+  const height = VIEWPORT.height + overflow
+  if (height > MAX_HEIGHT) {
+    throw new Error(
+      `${path} is ${height}px tall, above the ${MAX_HEIGHT}px capture cap`,
+    )
   }
   if (overflow > 0) {
-    await page.setViewportSize({
-      width: VIEWPORT.width,
-      height: VIEWPORT.height + overflow,
-    })
+    await page.setViewportSize({ width: VIEWPORT.width, height })
   }
+  // A clipped page would record without failing.
+  await expect
+    .poll(() => main.evaluate((el) => el.scrollHeight - el.clientHeight), {
+      message: `${path} main region overflow in px`,
+    })
+    .toBeLessThanOrEqual(0)
 }
 
 /**
@@ -198,16 +207,7 @@ for (const style of BASELINE_STYLES) {
           await expect(page.getByText("Loading order...")).toHaveCount(0)
           await expect(page.locator(".dr-skeleton")).toHaveCount(0)
           await waitForFonts(page)
-          await fitContent(page)
-          await capture(page, `${style}-${mode}-${name}`)
-        })
-      }
-
-      for (const [name, path] of SHOWCASE_PAGES) {
-        test(name, async ({ page }) => {
-          await gotoApp(page, path)
-          // Routes are code-split: the shell paints before the page module.
-          await expect(page.locator(".dr-page-header-title")).toBeVisible()
+          await fitContent(page, path)
           await capture(page, `${style}-${mode}-${name}`)
         })
       }
@@ -244,13 +244,37 @@ for (const style of BASELINE_STYLES) {
   }
 }
 
+// Flat and Tactile restyle controls the showcase pages hold, so these run
+// under every style, not only the baseline ones.
+for (const style of STYLES) {
+  for (const mode of MODES) {
+    test.describe(`showcase · ${style} · ${mode}`, () => {
+      test.beforeEach(async ({ page }) => {
+        await seedApp(page, { style, mode })
+      })
+
+      for (const [name, path] of SHOWCASE_PAGES) {
+        test(name, async ({ page }) => {
+          await gotoApp(page, path)
+          // Routes are code-split: the shell paints before the page module.
+          await expect(page.locator(".dr-page-header-title")).toBeVisible()
+          await expect(page.locator(".dr-skeleton")).toHaveCount(0)
+          await waitForFonts(page)
+          await fitContent(page, path)
+          await capture(page, `${style}-${mode}-${name}`)
+        })
+      }
+    })
+  }
+}
+
 for (const mode of MODES) {
   test(`shell styles · quiet · ${mode}`, async ({ page }) => {
     await seedApp(page, { style: "quiet", mode })
     await gotoApp(page, SHELL_STYLES_PAGE)
     await expect(page.locator(".dr-page-header-title")).toBeVisible()
     await waitForFonts(page)
-    await fitContent(page)
+    await fitContent(page, SHELL_STYLES_PAGE)
     // The placeholder lines sit about 0.11 from their ground in either mode,
     // under the default threshold, so a moved or missing line would pass.
     await capture(page, `quiet-${mode}-shell-styles`, 0.05)
