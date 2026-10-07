@@ -17,6 +17,7 @@ import {
 } from "./fixtures/theme"
 import {
   applyTheme,
+  boxOf,
   gotoApp,
   readThemeAttrs,
   readToken,
@@ -24,8 +25,10 @@ import {
   reloadApp,
   seedApp,
   watchConsole,
+  type Box,
   type ThemeSeed,
 } from "./helpers/app"
+import { alphaOf, minContrastOver, settle } from "./helpers/measure"
 
 /** A page that renders enough chrome to prove tokens reach real components. */
 const PROBE = "/components/buttons"
@@ -93,6 +96,40 @@ async function expectSurface(page: Page, surface: string) {
     "stored surface",
   ).toBe(surface)
   await expect(page.locator("html")).toHaveAttribute("data-surface", surface)
+}
+
+/**
+ * Contrast between the lightest and the darkest pixel in `clip`, after the
+ * blur minContrastOver applies. The lowest contrast against black gives the
+ * darkest luminance and the lowest against white the lightest, so the spread
+ * between them is 21 / (black ratio x white ratio).
+ */
+async function luminanceSpread(page: Page, clip: Box): Promise<number> {
+  const [againstBlack = 0, againstWhite = 0] = await minContrastOver(
+    page,
+    clip,
+    [
+      [0, 0, 0],
+      [255, 255, 255],
+    ],
+  )
+  return 21 / (againstBlack * againstWhite)
+}
+
+/** Blur radii of the outset shadow layers that paint, in order. */
+function dropShadowBlurs(shadow: string): number[] {
+  if (shadow === "none") return []
+  return shadow
+    .split(/,(?![^(]*\))/)
+    .map((layer) => layer.trim())
+    .filter(
+      (layer) =>
+        !layer.endsWith("inset") &&
+        alphaOf(layer.slice(0, layer.indexOf(")") + 1)) > 0,
+    )
+    .map((layer) =>
+      Number(/\)\s+-?[\d.]+px\s+-?[\d.]+px\s+([\d.]+)px/.exec(layer)?.[1]),
+    )
 }
 
 /** The first background layer the body paints: the pattern's opening blob. */
@@ -170,17 +207,56 @@ test.describe("style axis", () => {
 })
 
 test.describe("glass axes", () => {
-  for (const glassOpacity of GLASS_OPACITIES) {
-    test(`glass opacity = ${glassOpacity}`, async ({ page }) => {
-      const consoleWatch = watchConsole(page)
-      await seedApp(page, { style: "glass", glassOpacity })
-      await gotoApp(page, PROBE)
-      const attrs = await readThemeAttrs(page)
-      expect(attrs["data-glass-opacity"]).toBe(glassOpacity)
-      consoleWatch.assertClean()
-    })
-  }
+  test("glass opacity thins the chrome fog from subtle to strong", async ({
+    page,
+  }) => {
+    // Light glass pins a loud accent canvas under its chrome fog. The thinner
+    // the fog, the more of that canvas shows, so the nav's luminance spread
+    // grows with each step. Dark fog over the dark canvas moves too little to
+    // order the steps.
+    const consoleWatch = watchConsole(page)
+    await seedApp(page, { style: "glass", mode: "light" })
+    await gotoApp(page, PROBE)
+    const nav = page.locator('.dr-shell > [data-region="nav"]')
+    const spreads: number[] = []
+    for (const glassOpacity of GLASS_OPACITIES) {
+      await applyTheme(page, { glassOpacity })
+      await reloadApp(page)
+      expect((await readThemeAttrs(page))["data-glass-opacity"]).toBe(
+        glassOpacity,
+      )
+      await page.addStyleTag({
+        content:
+          '.dr-shell > [data-region="nav"] > * { visibility: hidden !important; }',
+      })
+      await settle(page)
+      const box = await boxOf(nav)
+      spreads.push(
+        await luminanceSpread(page, {
+          x: box.x + 8,
+          y: box.y + 8,
+          width: box.width - 16,
+          height: box.height - 16,
+        }),
+      )
+    }
+    const readings = spreads.map((spread) => spread.toFixed(3)).join(", ")
+    for (let i = 1; i < spreads.length; i++) {
+      expect(
+        spreads[i],
+        `${GLASS_OPACITIES[i]} spread above ${GLASS_OPACITIES[i - 1]}: ${readings}`,
+      ).toBeGreaterThan(spreads[i - 1] ?? Number.POSITIVE_INFINITY)
+    }
+    consoleWatch.assertClean()
+  })
 
+  // Chrome blurs half again as hard as overlays (glass.css).
+  const chromeBlur: Record<(typeof GLASS_BLURS)[number], string> = {
+    none: "none",
+    low: "blur(9px) saturate(1.4)",
+    medium: "blur(18px) saturate(1.4)",
+    high: "blur(36px) saturate(1.4)",
+  }
   for (const glassBlur of GLASS_BLURS) {
     test(`glass blur = ${glassBlur}`, async ({ page }) => {
       const consoleWatch = watchConsole(page)
@@ -188,6 +264,12 @@ test.describe("glass axes", () => {
       await gotoApp(page, PROBE)
       const attrs = await readThemeAttrs(page)
       expect(attrs["data-glass-blur"]).toBe(glassBlur)
+      for (const name of ["nav", "bar"]) {
+        await expect(
+          page.locator(`.dr-shell > [data-region="${name}"]`),
+          name,
+        ).toHaveCSS("backdrop-filter", chromeBlur[glassBlur])
+      }
       consoleWatch.assertClean()
     })
   }
@@ -475,12 +557,29 @@ test.describe("font size axis", () => {
 })
 
 test.describe("elevation axes", () => {
+  // Light-mode drop shadows of the axis ramp (theme.css): flat paints none.
+  const shadowBlurs: Record<(typeof ELEVATIONS)[number], number[]> = {
+    flat: [],
+    standard: [20, 8],
+    high: [72, 36],
+  }
   for (const elevation of ELEVATIONS) {
     test(`elevation "${elevation}"`, async ({ page }) => {
-      await seedApp(page, { elevation, style: "quiet" })
-      await gotoApp(page, PROBE)
+      await seedApp(page, { elevation, style: "quiet", mode: "light" })
+      await gotoApp(page, "/components/cards")
       expect((await readThemeAttrs(page))["data-elevation"]).toBe(elevation)
-      expect(await readToken(page, "--elevation-current")).not.toBe("")
+      // The one card that follows the axis; explicit levels ignore it.
+      const card = page
+        .locator('.dr-card[data-card-elevation="auto"]')
+        .filter({ hasText: "Auto (theme)" })
+      await expect(card).toHaveCount(1)
+      await expect
+        .poll(async () =>
+          dropShadowBlurs(
+            await card.evaluate((el) => getComputedStyle(el).boxShadow),
+          ),
+        )
+        .toEqual(shadowBlurs[elevation])
     })
   }
 
