@@ -461,3 +461,29 @@ test.describe("row 75: marquee copies cover the container", () => {
     })
   }
 })
+
+test.describe("row 93: toggle bar starts at the content edge", () => {
+  test("the first toggle sits at its preview card's content start", async ({
+    page,
+  }) => {
+    await openShowcase(page, "/components/buttons")
+    const preview = page
+      .locator("[data-showcase-example]")
+      .filter({ hasText: "Toggle button bar" })
+      .locator("[data-showcase-preview]")
+    const firstToggle = preview.locator(".dr-toggle-group > .dr-toggle").first()
+    await expect(firstToggle).toBeVisible()
+    const contentStart = await preview.evaluate((card) => {
+      const style = getComputedStyle(card)
+      return (
+        card.getBoundingClientRect().left +
+        card.clientLeft +
+        parseFloat(style.paddingLeft)
+      )
+    })
+    const toggleStart = await firstToggle.evaluate(
+      (toggle) => toggle.getBoundingClientRect().left,
+    )
+    expect(Math.abs(toggleStart - contentStart)).toBeLessThanOrEqual(0.5)
+  })
+})

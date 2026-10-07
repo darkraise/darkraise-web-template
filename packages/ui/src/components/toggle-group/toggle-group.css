@@ -1,6 +1,6 @@
 @layer components {
   .dr-toggle-group {
-    @apply flex items-center justify-center gap-1;
+    @apply inline-flex items-center gap-1;
   }
 
   /* Items sit 4px apart, too close for an outset ring. */
