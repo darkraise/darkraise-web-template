@@ -38,8 +38,15 @@ const FIXTURES = [
 ].map((name) => `/e2e/fixtures/${name}.html`)
 
 async function visit(page: Page, path: string) {
-  await collectGarbage(page)
-  await page.goto(path, { waitUntil: "networkidle", timeout: 45_000 })
+  // A failed load only costs the warm-up of that route, and global setup has
+  // no retry, so one dropped request must not stop the whole run.
+  try {
+    await collectGarbage(page)
+    await page.goto(path, { waitUntil: "networkidle", timeout: 45_000 })
+  } catch (error) {
+    const reason = error instanceof Error ? error.message.split("\n")[0] : error
+    console.warn(`globalSetup: warm-up of ${path} failed: ${reason}`)
+  }
 }
 
 /**
