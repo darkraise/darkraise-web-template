@@ -15,14 +15,14 @@ export const Route = createFileRoute("/_authenticated/components/frame")({
 type Viewport = "375" | "768" | "1280"
 
 const responsivePageCss = `
-  body { margin: 0; padding: 1rem; font-family: system-ui, sans-serif; color: #1f2937; }
-  header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 0.75rem; border-bottom: 1px solid #e5e7eb; }
+  body { margin: 0; padding: 1rem; font-family: system-ui, sans-serif; background: Canvas; color: CanvasText; }
+  header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 0.75rem; border-bottom: 1px solid light-dark(#e5e7eb, #3f3f46); }
   header h1 { font-size: 1rem; margin: 0; }
-  header nav { font-size: 0.85rem; color: #6b7280; }
+  header nav { font-size: 0.85rem; color: color-mix(in srgb, CanvasText 70%, Canvas); }
   .layout { display: grid; gap: 1rem; padding-top: 1rem; }
-  .card { background: #f3f4f6; padding: 1rem; border-radius: 8px; }
+  .card { background: light-dark(#f3f4f6, #27272a); padding: 1rem; border-radius: 8px; }
   .card h2 { margin: 0 0 0.5rem; font-size: 0.95rem; }
-  .card p { margin: 0; font-size: 0.85rem; color: #4b5563; }
+  .card p { margin: 0; font-size: 0.85rem; color: color-mix(in srgb, CanvasText 70%, Canvas); }
   @media (min-width: 700px) {
     .layout { grid-template-columns: 200px 1fr; }
   }
@@ -83,7 +83,7 @@ function EmailTemplatePreviewExample() {
       style={{ width: "100%", height: 520 }}
       className="border-border rounded-md border"
       head={
-        <style>{`body { margin: 0; background: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }`}</style>
+        <style>{`body { margin: 0; background: #f3f4f6; color: #111827; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }`}</style>
       }
     >
       <table
@@ -220,14 +220,14 @@ function StyleIsolationContrastExample() {
           style={{ width: "100%", height: 160 }}
           className="border-border rounded-md border"
           head={
-            <style>{`body { margin: 0; padding: 1rem; font-family: system-ui, sans-serif; color: #1f2937; }`}</style>
+            <style>{`body { margin: 0; padding: 1rem; font-family: system-ui, sans-serif; background: Canvas; color: CanvasText; }`}</style>
           }
         >
           <p
             style={{
               margin: "0 0 0.5rem",
               fontSize: 12,
-              color: "#6b7280",
+              color: "color-mix(in srgb, CanvasText 70%, Canvas)",
             }}
           >
             Inside Frame (isolated)
@@ -265,8 +265,48 @@ function useDocumentStyles(): ReactNode {
   return <>{nodes}</>
 }
 
+/**
+ * Copies the theme state the host keeps on its root element (the data-*
+ * axis attributes, data-mode among them, and the generated tokens, which
+ * the theme writes as inline custom properties) onto the root of the frame
+ * document that holds `node`, and keeps it in step with the host.
+ */
+function useMirrorHostTheme(node: HTMLElement | null) {
+  useEffect(() => {
+    const target = node?.ownerDocument.documentElement
+    const host = document.documentElement
+    if (!target || target === host) return
+    const sync = () => {
+      for (const { name } of Array.from(target.attributes)) {
+        if (name.startsWith("data-") && !host.hasAttribute(name)) {
+          target.removeAttribute(name)
+        }
+      }
+      for (const { name, value } of Array.from(host.attributes)) {
+        if (name.startsWith("data-")) target.setAttribute(name, value)
+      }
+      for (const name of Array.from(target.style)) {
+        if (name.startsWith("--") && !host.style.getPropertyValue(name)) {
+          target.style.removeProperty(name)
+        }
+      }
+      for (const name of Array.from(host.style)) {
+        if (name.startsWith("--")) {
+          target.style.setProperty(name, host.style.getPropertyValue(name))
+        }
+      }
+    }
+    sync()
+    const observer = new MutationObserver(sync)
+    observer.observe(host, { attributes: true })
+    return () => observer.disconnect()
+  }, [node])
+}
+
 function TailwindInFrameExample() {
   const parentStyles = useDocumentStyles()
+  const [root, setRoot] = useState<HTMLDivElement | null>(null)
+  useMirrorHostTheme(root)
 
   return (
     <Frame
@@ -274,7 +314,10 @@ function TailwindInFrameExample() {
       className="border-border rounded-md border"
       head={parentStyles}
     >
-      <div className="bg-background text-foreground flex h-full items-center justify-center p-6">
+      <div
+        ref={setRoot}
+        className="bg-background text-foreground flex h-full items-center justify-center p-6"
+      >
         <div className="border-border bg-card rounded-lg border p-6 text-center shadow-sm">
           <h3 className="text-base font-semibold">Inside the Frame</h3>
           <p className="text-muted-foreground mt-1 text-sm">
@@ -326,7 +369,12 @@ function FramePage() {
             }}
           >
             <p>Hello inside iframe</p>
-            <p style={{ color: "#666", fontSize: "0.85rem" }}>
+            <p
+              style={{
+                color: "color-mix(in srgb, CanvasText 70%, Canvas)",
+                fontSize: "0.85rem",
+              }}
+            >
               Nothing from the parent document leaks in here.
             </p>
           </div>
@@ -338,7 +386,7 @@ function FramePage() {
         code={`<Frame
   style={{ width: 300, height: 200 }}
   head={
-    <style>{\`body { background: lavender; font-family: sans-serif; }\`}</style>
+    <style>{\`body { background: light-dark(lavender, #2b2a4c); color: CanvasText; font-family: sans-serif; }\`}</style>
   }
 >
   <h2>Styled inside</h2>
@@ -349,7 +397,7 @@ function FramePage() {
           style={{ width: 300, height: 200 }}
           className="border-border rounded-md border"
           head={
-            <style>{`body { background: lavender; font-family: sans-serif; margin: 0; padding: 1rem; }`}</style>
+            <style>{`body { background: light-dark(lavender, #2b2a4c); color: CanvasText; font-family: sans-serif; margin: 0; padding: 1rem; }`}</style>
           }
         >
           <h2 style={{ marginTop: 0 }}>Styled inside</h2>
@@ -392,7 +440,7 @@ function FramePage() {
 // resets can't interfere with the email HTML.
 <Frame
   style={{ width: "100%", height: 520 }}
-  head={<style>{\`body { margin: 0; background: #f3f4f6; font-family: -apple-system, sans-serif; }\`}</style>}
+  head={<style>{\`body { margin: 0; background: #f3f4f6; color: #111827; font-family: -apple-system, sans-serif; }\`}</style>}
 >
   <table width="100%" cellPadding={0} cellSpacing={0}>
     <tr><td align="center">
@@ -429,7 +477,7 @@ function FramePage() {
       <h3>Welcome back</h3>
       <p>This content inherits the aggressive parent override.</p>
     </div>
-    <Frame head={<style>{\`body { margin: 0; padding: 1rem; font-family: system-ui; }\`}</style>}>
+    <Frame head={<style>{\`body { margin: 0; padding: 1rem; font-family: system-ui; background: Canvas; color: CanvasText; }\`}</style>}>
       <h3>Welcome back</h3>
       <p>The same content inside the iframe is unaffected.</p>
     </Frame>
@@ -444,7 +492,9 @@ function FramePage() {
         code={`// Mirror the parent document's stylesheets into the iframe head so
 // the design system's utilities and tokens work inside the isolated
 // document. Use this when you want the frame for layout/style isolation
-// but still need your component library available.
+// but still need your component library available. useMirrorHostTheme
+// copies the host root's data-* theme attributes and inline token custom
+// properties onto the frame root, so the tokens resolve as in the app.
 
 function useDocumentStyles(): ReactNode {
   const [nodes, setNodes] = useState<ReactNode[]>([])
@@ -463,11 +513,39 @@ function useDocumentStyles(): ReactNode {
   return <>{nodes}</>
 }
 
+function useMirrorHostTheme(node: HTMLElement | null) {
+  useEffect(() => {
+    const target = node?.ownerDocument.documentElement
+    const host = document.documentElement
+    if (!target || target === host) return
+    const sync = () => {
+      for (const { name } of Array.from(target.attributes)) {
+        if (name.startsWith("data-") && !host.hasAttribute(name)) target.removeAttribute(name)
+      }
+      for (const { name, value } of Array.from(host.attributes)) {
+        if (name.startsWith("data-")) target.setAttribute(name, value)
+      }
+      for (const name of Array.from(target.style)) {
+        if (name.startsWith("--") && !host.style.getPropertyValue(name)) target.style.removeProperty(name)
+      }
+      for (const name of Array.from(host.style)) {
+        if (name.startsWith("--")) target.style.setProperty(name, host.style.getPropertyValue(name))
+      }
+    }
+    sync()
+    const observer = new MutationObserver(sync)
+    observer.observe(host, { attributes: true })
+    return () => observer.disconnect()
+  }, [node])
+}
+
 function TailwindInFrameExample() {
   const parentStyles = useDocumentStyles()
+  const [root, setRoot] = useState<HTMLDivElement | null>(null)
+  useMirrorHostTheme(root)
   return (
     <Frame style={{ width: "100%", height: 280 }} head={parentStyles}>
-      <div className="bg-background text-foreground flex h-full items-center justify-center p-6">
+      <div ref={setRoot} className="bg-background text-foreground flex h-full items-center justify-center p-6">
         <div className="border-border bg-card rounded-lg border p-6 shadow-sm">
           <h3 className="font-semibold">Inside the Frame</h3>
           <button className="bg-primary-fill text-primary-foreground rounded-md px-4 py-2">Action</button>

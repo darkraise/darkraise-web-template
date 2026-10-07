@@ -1,7 +1,13 @@
 import { test, expect, type Page } from "@playwright/test"
 import { COMPONENT_ROUTES } from "./fixtures/component-routes"
 import { gotoApp, seedApp } from "./helpers/app"
-import { alphaOf, contrast, rgbOf, settle } from "./helpers/measure"
+import {
+  alphaOf,
+  contrast,
+  rgbOf,
+  settle,
+  textContrast,
+} from "./helpers/measure"
 
 /**
  * Showcase pages at full height. The sweep applies three geometry rules to
@@ -1002,5 +1008,89 @@ test.describe("row 100: password strength meter", () => {
       ).toBeGreaterThanOrEqual(3)
       expect(rgbOf(segment.background)).toEqual(rgbOf(segment.card))
     }
+  })
+})
+
+test.describe("row 197: frame demos follow the colour scheme", () => {
+  /** The cross-origin External site demo is the only frame with a src. */
+  const SAME_ORIGIN_FRAMES = "iframe.dr-frame:not([src])"
+
+  for (const mode of ["light", "dark"] as const) {
+    test(`${mode}: every text node in a same-origin frame meets 4.5:1`, async ({
+      page,
+    }) => {
+      await openShowcase(page, "/components/frame", { mode })
+      const frames = page.locator(SAME_ORIGIN_FRAMES)
+      await expect(frames).toHaveCount(6)
+      const failures: string[] = []
+      let checked = 0
+      for (const frame of await frames.all()) {
+        const title = await frame.evaluate(
+          (el) =>
+            el
+              .closest("[data-showcase-example]")
+              ?.querySelector("p")
+              ?.textContent?.trim() ?? "",
+        )
+        const body = frame.contentFrame().locator("body")
+        await expect(body).not.toBeEmpty()
+        for (const element of await body.locator("*").all()) {
+          const text = await element.evaluate((el) =>
+            el.checkVisibility()
+              ? [...el.childNodes]
+                  .filter((node) => node.nodeType === Node.TEXT_NODE)
+                  .map((node) => node.textContent ?? "")
+                  .join("")
+                  .trim()
+              : "",
+          )
+          if (!text) continue
+          checked += 1
+          const ratio = await textContrast(element)
+          if (ratio < 4.5) {
+            failures.push(
+              `${title}: "${text.slice(0, 40)}" ${ratio.toFixed(2)}:1`,
+            )
+          }
+        }
+      }
+      expect(checked).toBeGreaterThan(20)
+      expect(failures, failures.join("\n")).toEqual([])
+    })
+  }
+
+  test("the design-system frame mirrors the host theme attributes", async ({
+    page,
+  }) => {
+    await openShowcase(page, "/components/frame", { mode: "dark" })
+    const root = page
+      .locator("[data-showcase-example]")
+      .filter({
+        has: page.getByText("Design system inside the frame", { exact: true }),
+      })
+      .locator("iframe")
+      .contentFrame()
+      .locator("html")
+    const hostAttributes = await page.evaluate(() =>
+      Object.fromEntries(
+        [...document.documentElement.attributes]
+          .filter((attribute) => attribute.name.startsWith("data-"))
+          .map((attribute) => [attribute.name, attribute.value]),
+      ),
+    )
+    expect(hostAttributes["data-mode"]).toBe("dark")
+    for (const [name, value] of Object.entries(hostAttributes)) {
+      await expect(root).toHaveAttribute(name, value)
+    }
+    const token = (el: Element) =>
+      getComputedStyle(el).getPropertyValue("--background")
+    expect(await root.evaluate(token)).toBe(
+      await page.locator("html").evaluate(token),
+    )
+
+    await page.evaluate(() =>
+      document.documentElement.setAttribute("data-mode", "light"),
+    )
+    await expect(root).toHaveAttribute("data-mode", "light")
   })
 })

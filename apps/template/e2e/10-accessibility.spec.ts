@@ -7,6 +7,7 @@ import {
   seedApp,
   watchConsole,
 } from "./helpers/app"
+import { textContrast } from "./helpers/measure"
 
 /** WCAG relative luminance from an `H S% L%` token value. */
 function hslToLuminance(token: string): number | null {
@@ -214,36 +215,6 @@ test.describe("colour contrast of core tokens", () => {
     }
   }
 })
-
-/** WCAG relative luminance from a computed `rgb()`/`rgba()` colour. */
-function rgbToLuminance(color: string): number {
-  const match = color.match(/^rgba?\(([\d.]+),\s*([\d.]+),\s*([\d.]+)/)
-  if (!match) throw new Error(`expected an rgb() colour, got "${color}"`)
-  const [r = 0, g = 0, b = 0] = match
-    .slice(1, 4)
-    .map((c) => Number(c) / 255)
-    .map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4))
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b
-}
-
-/** Text colour against the nearest opaque background behind it. */
-async function textContrast(locator: import("@playwright/test").Locator) {
-  const { color, background } = await locator.evaluate((el) => {
-    let node: Element | null = el
-    let bg = "rgb(255, 255, 255)"
-    while (node) {
-      const value = getComputedStyle(node).backgroundColor
-      const alpha = value.match(/^rgba\([^)]*,\s*([\d.]+)\)$/)?.[1]
-      if (alpha === undefined || Number(alpha) === 1) {
-        bg = value
-        break
-      }
-      node = node.parentElement
-    }
-    return { color: getComputedStyle(el).color, background: bg }
-  })
-  return contrastRatio(rgbToLuminance(color), rgbToLuminance(background))
-}
 
 test.describe("colour contrast of template text", () => {
   const AUTH_LINKS = [

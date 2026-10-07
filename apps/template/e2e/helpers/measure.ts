@@ -184,3 +184,53 @@ export function alphaOf(value: string): number {
   if (rgba) return Number(rgba[1])
   return 1
 }
+
+/**
+ * Contrast of the text colour of an element against the nearest opaque background
+ * behind it, walking `parentElement`. At the root of a same-origin iframe the
+ * walk continues from `frameElement` in the host document: Frame mirrors the
+ * host colour scheme, so the frame canvas is transparent and the host paints
+ * the ground. Colours are read back through a canvas, so every computed syntax
+ * (`rgb()`, `color(srgb …)` from `color-mix()`, `oklab()`) resolves to sRGB,
+ * and translucent text is blended over its ground.
+ */
+export async function textContrast(locator: Locator): Promise<number> {
+  const { color, background } = await locator.evaluate((el) => {
+    const canvas = document.createElement("canvas")
+    canvas.width = 1
+    canvas.height = 1
+    const context = canvas.getContext("2d", { willReadFrequently: true })
+    if (!context) throw new Error("no 2d context")
+    const rgba = (value: string): [number, number, number, number] => {
+      context.clearRect(0, 0, 1, 1)
+      context.fillStyle = value
+      context.fillRect(0, 0, 1, 1)
+      const [r = 0, g = 0, b = 0, a = 0] = context.getImageData(0, 0, 1, 1).data
+      return [r, g, b, a]
+    }
+    const styleOf = (node: Element) =>
+      (node.ownerDocument.defaultView ?? window).getComputedStyle(node)
+
+    let ground: [number, number, number, number] = [255, 255, 255, 255]
+    let node: Element | null = el
+    while (node) {
+      const value = rgba(styleOf(node).backgroundColor)
+      if (value[3] === 255) {
+        ground = value
+        break
+      }
+      node =
+        node.parentElement ??
+        node.ownerDocument.defaultView?.frameElement ??
+        null
+    }
+    const [r, g, b, a] = rgba(styleOf(el).color)
+    const mix = (fg: number, bg: number) =>
+      Math.round((fg * a + bg * (255 - a)) / 255)
+    return {
+      color: [mix(r, ground[0]), mix(g, ground[1]), mix(b, ground[2])] as Rgb,
+      background: [ground[0], ground[1], ground[2]] as Rgb,
+    }
+  })
+  return contrast(color, background)
+}
