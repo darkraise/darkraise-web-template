@@ -132,7 +132,7 @@ function dropShadowBlurs(shadow: string): number[] {
     )
 }
 
-/** The first background layer the body paints: the pattern's opening blob. */
+/** The first background layer the body paints: the opening blob of the pattern. */
 function bodyImage(page: Page) {
   return page.evaluate(() => getComputedStyle(document.body).backgroundImage)
 }
@@ -211,7 +211,7 @@ test.describe("glass axes", () => {
     page,
   }) => {
     // Light glass pins a loud accent canvas under its chrome fog. The thinner
-    // the fog, the more of that canvas shows, so the nav's luminance spread
+    // the fog, the more of that canvas shows, so the luminance spread of the nav
     // grows with each step. Dark fog over the dark canvas moves too little to
     // order the steps.
     const consoleWatch = watchConsole(page)
@@ -835,5 +835,18 @@ test.describe("theme persistence", () => {
 
     expect(await readThemeAttrs(page)).toEqual(before)
     expect(await stored()).toEqual(seeded)
+  })
+
+  test("a seeded key the app erased is not seeded again on reload", async ({
+    page,
+  }) => {
+    await seedApp(page, { accent: "violet", style: "quiet" })
+    await gotoApp(page, PROBE)
+    await page.evaluate((key) => localStorage.removeItem(key), LS_KEYS.accent)
+
+    await reloadApp(page)
+    expect(
+      await page.evaluate((key) => localStorage.getItem(key), LS_KEYS.accent),
+    ).not.toBe("violet")
   })
 })
