@@ -1,5 +1,6 @@
 import * as React from "react"
 import {
+  act,
   fireEvent,
   render,
   screen,
@@ -345,5 +346,70 @@ describe("Combobox popup", () => {
     await user.keyboard("{Escape}")
     expect(input).toHaveAttribute("aria-expanded", "false")
     expect(screen.getByRole("dialog")).toHaveAttribute("data-state", "open")
+  })
+
+  it("keeps the dialog open when an option is picked inside it", async () => {
+    const user = userEvent.setup()
+    const onDialogOpenChange = vi.fn()
+    const onValueChange = vi.fn()
+    render(
+      <Dialog defaultOpen onOpenChange={onDialogOpenChange}>
+        <DialogContent>
+          <DialogTitle>Pick a country</DialogTitle>
+          <Basic onValueChangeSpy={onValueChange} />
+        </DialogContent>
+      </Dialog>,
+    )
+    await user.click(screen.getByRole("combobox"))
+    await user.click(screen.getByRole("option", { name: /Canada/ }))
+    expect(onValueChange).toHaveBeenCalledWith(
+      expect.objectContaining({ value: ["ca"] }),
+    )
+    // A closed dialog stays mounted through its exit animation, so its
+    // presence alone would not show that it stayed open.
+    expect(onDialogOpenChange).not.toHaveBeenCalledWith(false)
+    expect(screen.getByRole("dialog")).toHaveAttribute("data-state", "open")
+  })
+
+  it("stays mounted as closed until its exit animation finishes", async () => {
+    let finish: () => void = () => {}
+    const finished = new Promise<void>((resolve) => {
+      finish = resolve
+    })
+    const exit = { finished } as unknown as Animation
+    // jsdom runs no animations; report one on the popup only.
+    Object.defineProperty(HTMLElement.prototype, "getAnimations", {
+      configurable: true,
+      value(this: HTMLElement) {
+        return this.classList.contains("dr-combobox-content") ? [exit] : []
+      },
+    })
+    try {
+      const user = userEvent.setup()
+      render(<Basic />)
+      const input = screen.getByRole("combobox")
+      await user.click(input)
+      const content = screen
+        .getByRole("listbox")
+        .closest(".dr-combobox-content")
+      expect(content).toHaveAttribute("data-state", "open")
+      await user.keyboard("{Escape}")
+      expect(input).toHaveAttribute("aria-expanded", "false")
+      // Two frames: Presence reads the animations one frame after closing.
+      await act(async () => {
+        await new Promise((resolve) => requestAnimationFrame(resolve))
+        await new Promise((resolve) => requestAnimationFrame(resolve))
+      })
+      expect(content).toBeInTheDocument()
+      expect(content).toHaveAttribute("data-state", "closed")
+      await act(async () => {
+        finish()
+        await finished
+      })
+      await waitFor(() => expect(content).not.toBeInTheDocument())
+    } finally {
+      delete (HTMLElement.prototype as { getAnimations?: unknown })
+        .getAnimations
+    }
   })
 })

@@ -61,20 +61,23 @@ describe("useFloating", () => {
         height: 32,
         toJSON: () => ({}),
       } as DOMRect)
-    const { getByTestId } = render(<Anchored />)
-    const popup = getByTestId("floating")
-    await waitFor(() =>
-      expect(popup.style.getPropertyValue("--popup-anchor-width")).toBe(
-        "120px",
-      ),
-    )
-    expect(popup.style.getPropertyValue("--popup-anchor-height")).toBe("32px")
-    rect.mockRestore()
-    for (const name of [
-      "--popup-available-width",
-      "--popup-available-height",
-    ]) {
-      expect(popup.style.getPropertyValue(name)).toMatch(/^\d+(\.\d+)?px$/)
+    try {
+      const { getByTestId } = render(<Anchored />)
+      const popup = getByTestId("floating")
+      await waitFor(() =>
+        expect(popup.style.getPropertyValue("--popup-anchor-width")).toBe(
+          "120px",
+        ),
+      )
+      expect(popup.style.getPropertyValue("--popup-anchor-height")).toBe("32px")
+      for (const name of [
+        "--popup-available-width",
+        "--popup-available-height",
+      ]) {
+        expect(popup.style.getPropertyValue(name)).toMatch(/^\d+(\.\d+)?px$/)
+      }
+    } finally {
+      rect.mockRestore()
     }
   })
 

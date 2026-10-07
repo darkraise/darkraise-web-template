@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { describe, it, expect } from "vitest"
+import { describe, it, expect, vi } from "vitest"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,9 +11,9 @@ import {
   AlertDialogTrigger,
 } from "@components/alert-dialog"
 
-function Basic() {
+function Basic({ onOpenChange }: { onOpenChange?: (open: boolean) => void }) {
   return (
-    <AlertDialog>
+    <AlertDialog onOpenChange={onOpenChange}>
       <AlertDialogTrigger>Delete</AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogTitle>Are you sure?</AlertDialogTitle>
@@ -61,11 +61,17 @@ describe("AlertDialog", () => {
     const outside = document.createElement("button")
     outside.textContent = "outside"
     document.body.append(root, outside)
-    render(<Basic />, { container: root })
+    const onOpenChange = vi.fn()
+    render(<Basic onOpenChange={onOpenChange} />, { container: root })
     await user.click(screen.getByRole("button", { name: "Delete" }))
     await screen.findByRole("alertdialog")
     await user.click(outside)
-    expect(screen.queryByRole("alertdialog")).toBeInTheDocument()
+    // A closed dialog unmounts a frame later, so presence alone proves nothing.
+    expect(onOpenChange).not.toHaveBeenCalledWith(false)
+    expect(screen.getByRole("alertdialog")).toHaveAttribute(
+      "data-state",
+      "open",
+    )
     root.remove()
     outside.remove()
   })
