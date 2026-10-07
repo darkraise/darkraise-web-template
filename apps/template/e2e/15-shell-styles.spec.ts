@@ -1,11 +1,13 @@
-import { test, expect, type Page } from "@playwright/test"
+import { test, expect, type Locator, type Page } from "@playwright/test"
+import { STYLES, type Style } from "./fixtures/theme"
 import {
+  boxOf,
   gotoApp,
   openAdvanced,
   openThemeSwitcher,
   seedApp,
 } from "./helpers/app"
-import { settle } from "./helpers/measure"
+import { contrast, pixel, settle } from "./helpers/measure"
 
 const SHELL_STYLES = [
   "classic",
@@ -17,13 +19,118 @@ const SHELL_STYLES = [
 ] as const
 type ShellStyle = (typeof SHELL_STYLES)[number]
 
+const MODES = ["light", "dark"] as const
+
 const shell = (page: Page) => page.locator(".dr-shell").first()
+
+const region = (page: Page, name: string) =>
+  shell(page).locator(`:scope > [data-region="${name}"]`)
+
+/** What a shell style paints on the nav and the content region. */
+interface RegionPaint {
+  /** The token the nav fill resolves to; null where the nav drops its fill. */
+  navFill: string | null
+  navBorder: string
+  contentBorder: string
+  navRadius: string
+  contentRadius: string
+  /** The separation layer both regions cast; null where they cast none. */
+  separation: string | null
+}
+
+const WELDED = "0px 0px 0px 0px"
+const DETACHED = "1px 1px 1px 1px"
+const RAIL_RULE = "0px 1px 0px 0px"
+
+// Radii are the default rounded axis, which the shell takes as 0.5rem.
+const REGION_PAINT: Record<ShellStyle, RegionPaint> = {
+  classic: {
+    navFill: "--surface-sidebar",
+    navBorder: RAIL_RULE,
+    contentBorder: WELDED,
+    navRadius: "0px",
+    contentRadius: "0px",
+    separation: null,
+  },
+  inset: {
+    navFill: null,
+    navBorder: WELDED,
+    contentBorder: DETACHED,
+    navRadius: "0px",
+    contentRadius: "8px",
+    separation: null,
+  },
+  island: {
+    navFill: "--surface-sidebar",
+    navBorder: DETACHED,
+    contentBorder: DETACHED,
+    navRadius: "8px",
+    contentRadius: "8px",
+    separation: "rgba(0, 0, 0, 0.08) 0px 1px 3px 0px",
+  },
+  floating: {
+    navFill: "--surface-sidebar",
+    navBorder: DETACHED,
+    contentBorder: DETACHED,
+    navRadius: "8px",
+    contentRadius: "8px",
+    separation: "rgba(0, 0, 0, 0.28) 0px 12px 28px -8px",
+  },
+  framed: {
+    navFill: "--surface-sidebar",
+    navBorder: RAIL_RULE,
+    contentBorder: WELDED,
+    navRadius: "0px",
+    contentRadius: "0px",
+    separation: null,
+  },
+  flat: {
+    navFill: "--muted",
+    navBorder: WELDED,
+    contentBorder: WELDED,
+    navRadius: "0px",
+    contentRadius: "0px",
+    separation: null,
+  },
+}
+
+/** Box-shadow layers that paint, leaving out fully transparent ones. */
+function paintedLayers(shadow: string): string[] {
+  if (shadow === "none") return []
+  return shadow
+    .split(/,(?![^(]*\))/)
+    .map((layer) => layer.trim())
+    .filter((layer) => !layer.startsWith("rgba(0, 0, 0, 0) "))
+}
+
+/** Border widths in top, right, bottom, left order. */
+function borderWidths(locator: Locator): Promise<string> {
+  return locator.evaluate((el) => {
+    const style = getComputedStyle(el)
+    return [
+      style.borderTopWidth,
+      style.borderRightWidth,
+      style.borderBottomWidth,
+      style.borderLeftWidth,
+    ].join(" ")
+  })
+}
+
+/** A colour token resolved to the rgb() a computed background reports. */
+function resolvedFill(page: Page, token: string): Promise<string> {
+  return page.evaluate((name) => {
+    const probe = document.createElement("div")
+    probe.style.backgroundColor = `hsl(var(${name}))`
+    document.body.append(probe)
+    const value = getComputedStyle(probe).backgroundColor
+    probe.remove()
+    return value
+  }, token)
+}
 
 async function pickShellStyle(page: Page, style: ShellStyle) {
   await page.getByRole("button", { name: "Switch layout" }).click()
-  await page
-    .getByRole("menuitemradio", { name: style, exact: true })
-    .click()
+  await page.getByRole("menuitemradio", { name: style, exact: true }).click()
   await expect(shell(page)).toHaveAttribute("data-shell-style", style)
 }
 
@@ -45,11 +152,16 @@ test.describe("shell style axis", () => {
     await pickShellStyle(page, "island")
 
     await expect(shell(page)).toHaveAttribute("data-shell-style", "island")
-    await expect(shell(page)).not.toHaveCSS("gap", "0px")
-    await expect(shell(page)).not.toHaveCSS("padding", "0px")
+    await expect(shell(page)).toHaveCSS("gap", "8px")
+    await expect(shell(page)).toHaveCSS("padding", "8px")
 
-    const nav = shell(page).locator('[data-region="nav"]')
-    await expect(nav).not.toHaveCSS("border-radius", "0px")
+    const names = ["nav", "bar", "content"]
+    await expect(shell(page).locator(":scope > [data-region]")).toHaveCount(
+      names.length,
+    )
+    for (const name of names) {
+      await expect(region(page, name), name).toHaveCSS("border-radius", "8px")
+    }
   })
 
   test("a mounted shell follows the stored choice, not a raw document attribute", async ({
@@ -111,39 +223,165 @@ test.describe("shell style axis", () => {
   })
 
   for (const style of SHELL_STYLES) {
-    test(`the dashboard shell renders under ${style}`, async ({ page }) => {
-      await seedApp(page, { shellStyle: style })
-      await gotoApp(page, "/")
+    for (const mode of MODES) {
+      test(`the dashboard shell renders under ${style} · ${mode}`, async ({
+        page,
+      }) => {
+        await seedApp(page, { shellStyle: style, style: "quiet", mode })
+        await gotoApp(page, "/")
 
-      await expect(shell(page)).toHaveAttribute("data-shell-style", style)
-      await expect(page.locator("main#main-content")).toBeVisible()
-      // The content region must still own its own scroll, whatever the style.
-      await expect(page.locator('[data-region="content"]')).toHaveCSS(
-        "overflow-y",
-        "auto",
-      )
-    })
+        await expect(shell(page)).toHaveAttribute("data-shell-style", style)
+        await expect(page.locator("main#main-content")).toBeVisible()
+        // The content region must still own its own scroll, whatever the style.
+        await expect(page.locator('[data-region="content"]')).toHaveCSS(
+          "overflow-y",
+          "auto",
+        )
+
+        const paint = REGION_PAINT[style]
+        const nav = region(page, "nav")
+        const content = region(page, "content")
+        // The nav paints its fill on ::before, over its own canvas.
+        const navFill = paint.navFill
+          ? await resolvedFill(page, paint.navFill)
+          : "rgba(0, 0, 0, 0)"
+        await expect
+          .poll(() =>
+            nav.evaluate(
+              (el) => getComputedStyle(el, "::before").backgroundColor,
+            ),
+          )
+          .toBe(navFill)
+        await expect(content).toHaveCSS("background-color", "rgba(0, 0, 0, 0)")
+        await expect
+          .poll(() => borderWidths(nav), { message: "nav border" })
+          .toBe(paint.navBorder)
+        await expect
+          .poll(() => borderWidths(content), { message: "content border" })
+          .toBe(paint.contentBorder)
+        await expect(nav).toHaveCSS("border-radius", paint.navRadius)
+        await expect(content).toHaveCSS("border-radius", paint.contentRadius)
+        for (const [name, locator] of [
+          ["nav", nav],
+          ["content", content],
+        ] as const) {
+          const layers = paintedLayers(
+            await locator.evaluate((el) => getComputedStyle(el).boxShadow),
+          )
+          if (paint.separation) {
+            expect(layers, `${name} shadow`).toContain(paint.separation)
+          } else {
+            expect(layers, `${name} shadow`).toEqual([])
+          }
+        }
+      })
+    }
+  }
+
+  // Inset gives up the chrome surface so the ground shows through it, and
+  // classic and flat have no gutter, so only these three set one apart.
+  // Detached chrome may share its fill with the ground: the separation is
+  // its edge (a border under island and floating, an outset ring under
+  // framed), so the probe walks across the edge rather than into the fill.
+  for (const style of ["island", "floating", "framed"] as const) {
+    for (const mode of MODES) {
+      test(`the ${style} chrome edge stands apart from the gutter · ${mode}`, async ({
+        page,
+      }) => {
+        await seedApp(page, { shellStyle: style, style: "quiet", mode })
+        await gotoApp(page, "/")
+        await expect(shell(page)).toHaveAttribute("data-shell-style", style)
+        await page.addStyleTag({
+          content:
+            '.dr-shell > [data-region="nav"] > * { visibility: hidden !important; }',
+        })
+        await settle(page)
+
+        const nav = await boxOf(region(page, "nav"))
+        // The nav sits one gutter in from the viewport edge under all three.
+        expect(nav.x, "gutter left of the nav").toBeGreaterThan(4)
+        const y = Math.round(nav.y + nav.height / 2)
+        const gutter = await pixel(page, Math.round(nav.x / 2), y)
+        const edgeX = Math.floor(nav.x)
+        let strongest = 0
+        for (let x = edgeX - 2; x <= edgeX + 2; x++) {
+          strongest = Math.max(
+            strongest,
+            contrast(gutter, await pixel(page, x, y)),
+          )
+        }
+        expect(
+          strongest,
+          `strongest edge pixel against gutter rgb(${gutter.join(",")})`,
+        ).toBeGreaterThanOrEqual(1.1)
+      })
+    }
   }
 
   test("the content gradient clips to the rounded corner", async ({ page }) => {
     // main[data-content]::before is a 300px absolutely-positioned gradient
     // anchored to main's edges; once the region rounds it has to clip.
-    await seedApp(page, { shellStyle: "island" })
+    await seedApp(page, {
+      shellStyle: "island",
+      style: "quiet",
+      mode: "light",
+      backgroundStyle: "gradient",
+      backgroundIntensity: "intense",
+    })
     await gotoApp(page, "/")
 
     const content = page.locator('[data-region="content"]')
-    await expect(content).not.toHaveCSS("border-radius", "0px")
+    await expect(content).toHaveCSS("border-radius", "8px")
     await expect(content).not.toHaveCSS("overflow-x", "visible")
+    await page.mouse.move(0, 0)
+    await settle(page)
+
+    const box = await boxOf(content)
+    const at = (dx: number, dy: number) =>
+      pixel(page, Math.round(box.x + dx), Math.round(box.y + dy))
+    const ground = await at(-4, 30)
+    // The strip must paint inside the curve, or a clipped corner proves nothing.
+    expect(
+      contrast(await at(12, 12), ground),
+      "strip inside the curve against the ground",
+    ).toBeGreaterThanOrEqual(1.2)
+    expect(
+      contrast(await at(1, 1), ground),
+      "corner pixel outside the curve against the ground",
+    ).toBeLessThan(1.05)
   })
 
   test("every structure keeps its regions under island", async ({ page }) => {
     await seedApp(page, { shellStyle: "island" })
     await gotoApp(page, "/components/shell-styles")
 
-    for (const structure of ["sidebar", "top-nav", "stacked", "split-panel"]) {
-      await expect(
-        page.locator(`.dr-shell[data-structure="${structure}"]`).first(),
-      ).toBeVisible()
+    const regions: Record<string, string[]> = {
+      sidebar: ["nav", "bar", "content"],
+      "top-nav": ["bar", "content"],
+      stacked: ["nav", "subnav", "bar", "content"],
+      "split-panel": ["bar", "panel", "handle", "content"],
+    }
+    for (const [structure, names] of Object.entries(regions)) {
+      const preview = page.locator(
+        `main .dr-shell[data-structure="${structure}"][data-shell-style="island"]`,
+      )
+      await expect(preview, structure).toHaveCount(1)
+      const children = preview.locator(":scope > [data-region]")
+      await expect(children, structure).toHaveCount(names.length)
+      expect(
+        await children.evaluateAll((els) =>
+          els.map((el) => el.getAttribute("data-region")),
+        ),
+        structure,
+      ).toEqual(names)
+      for (const name of names) {
+        const part = preview.locator(`:scope > [data-region="${name}"]`)
+        await expect(part, `${structure} ${name}`).toBeVisible()
+        await expect(part, `${structure} ${name}`).toHaveCSS(
+          "border-radius",
+          "8px",
+        )
+      }
     }
   })
 })
@@ -281,14 +519,22 @@ test.describe("shell style geometry", () => {
 })
 
 test.describe("sidebar selection setting", () => {
-  test("auto follows the style", async ({ page }) => {
-    await seedApp(page, { style: "flat" })
-    await gotoApp(page, "/")
-    await expect(page.locator(".dr-sidebar-nav").first()).toHaveAttribute(
-      "data-sidebar-selection",
-      "pill",
-    )
-  })
+  const autoLook: Record<Style, string> = {
+    quiet: "chip",
+    flat: "pill",
+    tactile: "tile",
+    glass: "frosted",
+  }
+  for (const style of STYLES) {
+    test(`auto follows the style · ${style}`, async ({ page }) => {
+      await seedApp(page, { style, sidebarSelection: "auto" })
+      await gotoApp(page, "/")
+      await expect(page.locator(".dr-sidebar-nav").first()).toHaveAttribute(
+        "data-sidebar-selection",
+        autoLook[style],
+      )
+    })
+  }
 
   test("a chosen look reaches the sidebar", async ({ page }) => {
     await seedApp(page, { sidebarSelection: "tile" })
