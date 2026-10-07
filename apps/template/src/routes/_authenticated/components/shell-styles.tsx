@@ -35,14 +35,16 @@ type Structure = (typeof STRUCTURES)[number]["id"]
 
 // Only the areas the grid of each structure declares: a region the template
 // does not name lands in an implicit track and leaves a blank strip.
-const REGIONS: Record<Structure, readonly string[]> = {
+type RegionName = "nav" | "subnav" | "bar" | "content" | "panel" | "handle"
+
+const REGIONS: Record<Structure, readonly RegionName[]> = {
   sidebar: ["nav", "bar", "content"],
   "top-nav": ["bar", "content"],
   stacked: ["nav", "subnav", "bar", "content"],
   "split-panel": ["bar", "panel", "handle", "content"],
 }
 
-const RAIL_WIDTHS: Record<string, string> = {
+const RAIL_WIDTHS: Record<"nav" | "subnav" | "panel", string> = {
   nav: "w-10",
   subnav: "w-14",
   panel: "w-16",
@@ -75,7 +77,7 @@ function Region({
   structure,
   style,
 }: {
-  region: string
+  region: RegionName
   structure: Structure
   style: string
 }) {
