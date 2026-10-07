@@ -417,7 +417,17 @@ test.describe("sidebar collapsible", () => {
     )
     if ((await toggle.getAttribute("aria-expanded")) === "true") {
       await toggle.click()
-      await page.waitForTimeout(500)
+      await expect(toggle).toHaveAttribute("aria-expanded", "false")
+      await expect
+        .poll(() =>
+          page.evaluate(
+            () =>
+              document
+                .querySelector(".dr-sidebar-nav-collapsible-content")
+                ?.getBoundingClientRect().height ?? 0,
+          ),
+        )
+        .toBe(0)
     }
     const heights = await page.evaluate(async () => {
       const button = document.querySelector<HTMLElement>(

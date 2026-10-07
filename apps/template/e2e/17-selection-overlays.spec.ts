@@ -188,16 +188,42 @@ test("a resting pointer leaves keyboard focus on a scrolled cascade column", asy
   const item = (n: number) =>
     page.getByRole("option", { name: `Item ${String(n).padStart(2, "0")}` })
   await expect(item(1)).toBeFocused()
+  // hover() rests the pointer on the centre of the row.
+  const rest = await boxOf(item(3))
+  const pointer = { x: rest.x + rest.width / 2, y: rest.y + rest.height / 2 }
   await item(3).hover()
   await expect(item(3)).toBeFocused()
   for (let i = 0; i < 15; i++) await page.keyboard.press("ArrowDown")
+  await expect(item(18)).toBeFocused()
   await settle(page)
-  // Chromium refreshes hover after a scroll on a timer, not in the same
-  // frame, so a stray pointerenter arrives after the keys have settled.
-  await page.waitForTimeout(300)
-  expect(await page.evaluate(() => document.activeElement?.textContent)).toBe(
-    "Item 18",
+
+  const column = page.locator(".dr-cascade-column")
+  await expect(column).toHaveCount(1)
+  expect(
+    await column.evaluate((el) => el.scrollTop),
+    "the keys scrolled the column",
+  ).toBeGreaterThan(0)
+  const rowUnderPointer = await page.evaluate(
+    ({ x, y }) =>
+      document.elementFromPoint(x, y)?.closest('[role="option"]')?.textContent,
+    pointer,
   )
+  expect(rowUnderPointer, "the row under the resting pointer").toMatch(
+    /^Item \d{2}$/,
+  )
+  expect(rowUnderPointer).not.toBe("Item 18")
+  // Chromium refreshes hover after a scroll on a timer, not in the same
+  // frame, so the stray pointer event arrives after the keys have settled.
+  // It can settle on a row the column scrolled past, so only the move off
+  // the hovered row is awaited.
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () => document.querySelector('[role="option"]:hover')?.textContent,
+      ),
+    )
+    .not.toBe("Item 03")
+  await expect(item(18)).toBeFocused()
 })
 
 test("a focused menu container draws no outline", async ({ page }) => {
@@ -208,5 +234,9 @@ test("a focused menu container draws no outline", async ({ page }) => {
   // Opened with defaultOpen and no prior click, so the container takes focus
   // and matches :focus-visible, which is when the browser default draws.
   await expect(menu).toBeFocused()
+  expect(
+    await menu.evaluate((el) => el.matches(":focus-visible")),
+    "the menu matches :focus-visible",
+  ).toBe(true)
   expect(await computed(menu, "outline-style")).toBe("none")
 })
