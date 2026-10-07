@@ -37,15 +37,16 @@ test.describe("dialogs", () => {
     const main = await open(page, "/components/dialogs")
     await main.getByRole("button", { name: "Open Dialog" }).first().click()
 
-    const dialog = page.getByRole("dialog").first()
+    const dialog = page.getByRole("dialog", { name: "Dialog Title" })
     await expect(dialog).toBeVisible()
-    expect(
-      await page.evaluate(() => {
-        const active = document.activeElement
-        const dialogEl = document.querySelector('[role="dialog"]')
-        return dialogEl?.contains(active) ?? false
-      }),
-    ).toBe(true)
+    const buttons = dialog.getByRole("button")
+    await expect(buttons.first()).toBeFocused()
+
+    await buttons.last().focus()
+    await page.keyboard.press("Tab")
+    await expect(buttons.first()).toBeFocused()
+    await page.keyboard.press("Shift+Tab")
+    await expect(buttons.last()).toBeFocused()
 
     await page.keyboard.press("Escape")
     await expect(dialog).toBeHidden()
@@ -54,11 +55,41 @@ test.describe("dialogs", () => {
 
   test("alert dialog confirms and cancels", async ({ page }) => {
     const main = await open(page, "/components/alert-dialog")
-    await main.getByRole("button").first().click()
-    const dialog = page.getByRole("alertdialog").first()
+    const trigger = main.getByRole("button", { name: "Open Dialog" })
+    const dialog = page.getByRole("alertdialog", { name: "Are you sure?" })
+
+    await trigger.click()
     await expect(dialog).toBeVisible()
-    await dialog.getByRole("button", { name: /cancel/i }).click()
+    await dialog.getByRole("button", { name: "Cancel" }).click()
     await expect(dialog).toBeHidden()
+    await expect(trigger).toBeFocused()
+
+    await trigger.click()
+    await expect(dialog).toBeVisible()
+    await dialog.getByRole("button", { name: "Continue" }).click()
+    await expect(dialog).toBeHidden()
+    await expect(trigger).toBeFocused()
+  })
+
+  test("alert dialog confirm runs the action", async ({ page }) => {
+    await seedApp(page)
+    await gotoApp(page, "/categories")
+    const firstRow = page.locator("tbody tr").first()
+    await expect(firstRow).toBeVisible()
+    const name = (await firstRow.locator("td").first().innerText()).trim()
+    const rowNamed = page.locator("tbody tr", {
+      has: page.getByText(name, { exact: true }),
+    })
+    await expect(rowNamed).toHaveCount(1)
+
+    await firstRow.getByRole("button", { name: "Actions" }).click()
+    await page.getByRole("menuitem", { name: "Delete" }).click()
+    const dialog = page.getByRole("alertdialog", { name: "Delete category?" })
+    await expect(dialog).toBeVisible()
+    await dialog.getByRole("button", { name: "Delete" }).click()
+
+    await expect(dialog).toBeHidden()
+    await expect(rowNamed).toHaveCount(0)
   })
 
   test("drawer opens and closes", async ({ page }) => {
@@ -104,10 +135,20 @@ test.describe("floating surfaces", () => {
 
   test("floating panel opens", async ({ page }) => {
     const main = await open(page, "/components/floating-panel")
-    await main.getByRole("button").first().click()
-    await expect(
-      page.locator('[class*="floating-panel"]').first(),
-    ).toBeVisible()
+    const example = main.locator("[data-showcase-example]").filter({
+      has: page.getByText("Scope: global (viewport-bound, multi-instance)", {
+        exact: true,
+      }),
+    })
+    const panel = page
+      .locator(".dr-floating-panel")
+      .filter({ hasText: "Global panel #1" })
+    await expect(panel).toHaveCount(0)
+
+    await example
+      .getByRole("button", { name: "Open another global panel" })
+      .click()
+    await expect(panel).toBeVisible()
   })
 })
 
@@ -192,19 +233,27 @@ test.describe("command palette", () => {
     await page.keyboard.press("Control+k")
     const palette = page.getByRole("dialog").first()
     await expect(palette).toBeVisible()
+    const options = palette.getByRole("option")
+    const dashboard = options.filter({ hasText: "Dashboard" })
+    await expect(dashboard.first()).toBeVisible()
 
-    const input = palette.getByRole("combobox").or(palette.locator("input"))
-    await input.first().fill("analy")
-    await expect(palette.getByText(/analytics/i).first()).toBeVisible()
+    await palette.getByRole("combobox").fill("analy")
+    await expect(dashboard).toHaveCount(0)
+    await expect(options).toHaveText(["Analytics"])
     await page.keyboard.press("Escape")
     await expect(palette).toBeHidden()
   })
 
   test("command showcase filters its list", async ({ page }) => {
     const main = await open(page, "/components/command")
-    const input = main.locator("input").first()
-    await input.fill("dash")
-    await expect(main.getByText(/dashboard/i).first()).toBeVisible()
+    const example = main.locator("[data-showcase-example]").filter({
+      has: page.getByText("Basic command palette", { exact: true }),
+    })
+    const options = example.getByRole("option")
+    await expect(options).toHaveCount(8)
+
+    await example.getByRole("combobox").fill("dash")
+    await expect(options).toHaveText(["Dashboard"])
   })
 })
 
@@ -229,15 +278,18 @@ test.describe("toasts and banners", () => {
 test.describe("tour", () => {
   test("tour advances through steps", async ({ page }) => {
     const main = await open(page, "/components/tour")
-    await main
-      .getByRole("button", { name: /start|begin|tour/i })
-      .first()
-      .click()
-    const next = page.getByRole("button", { name: /next/i }).first()
-    await expect(next).toBeVisible()
-    await next.click()
-    await expect(
-      page.getByRole("button", { name: /next|finish|done/i }).first(),
-    ).toBeVisible()
+    await main.getByRole("button", { name: "Start tour" }).click()
+
+    const first = page.getByRole("dialog", { name: "Welcome" })
+    await expect(first).toBeVisible()
+    await expect(first.locator(".dr-tour-progress")).toHaveText("1 / 3")
+    await expect(first.getByRole("button", { name: "Previous" })).toBeDisabled()
+
+    await first.getByRole("button", { name: "Next" }).click()
+    const second = page.getByRole("dialog", { name: "Save your work" })
+    await expect(second).toBeVisible()
+    await expect(first).toHaveCount(0)
+    await expect(second.locator(".dr-tour-progress")).toHaveText("2 / 3")
+    await expect(second.getByRole("button", { name: "Previous" })).toBeEnabled()
   })
 })
