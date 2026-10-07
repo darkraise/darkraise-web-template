@@ -387,3 +387,77 @@ test.describe("row 69: tags input clear trigger fits its label", () => {
     }
   })
 })
+
+test.describe("row 75: marquee copies cover the container", () => {
+  const PROGRESS = [0, 0.5, 0.99]
+
+  /** Pauses every marquee at each progress and reports what is left bare. */
+  async function gaps(page: Page): Promise<string[]> {
+    return page.evaluate((progress) => {
+      const failures: string[] = []
+      const marquees = [
+        ...document.querySelectorAll<HTMLElement>("#main-content .dr-marquee"),
+      ]
+      marquees.forEach((marquee, index) => {
+        const track = marquee.querySelector<HTMLElement>(".dr-marquee-track")
+        const animation = track?.getAnimations()[0]
+        if (!track || !animation) {
+          failures.push(`marquee ${index}: no running track animation`)
+          return
+        }
+        const duration = Number(
+          animation.effect?.getComputedTiming().duration ?? 0,
+        )
+        const label = `marquee ${index}${marquee.dataset.reverse ? " (reversed)" : ""}`
+        animation.pause()
+        const starts: number[] = []
+        for (const p of progress) {
+          animation.currentTime = p * duration
+          const box = marquee.getBoundingClientRect()
+          const copies = [
+            ...track.querySelectorAll(":scope > .dr-marquee-group"),
+          ].map((group) => group.getBoundingClientRect())
+          const left = Math.min(...copies.map((rect) => rect.left))
+          const right = Math.max(...copies.map((rect) => rect.right))
+          if (left > box.left + 1 || right < box.right - 1) {
+            failures.push(
+              `${label} at ${p}: copies span ${Math.round(left)}-${Math.round(right)}, container ${Math.round(box.left)}-${Math.round(box.right)}`,
+            )
+          }
+          starts.push(copies[0]?.left ?? 0)
+        }
+        // One loop moves the track by exactly one copy and its gap, so the
+        // restart is seamless.
+        const [first, second] = [
+          ...track.querySelectorAll(":scope > .dr-marquee-group"),
+        ].map((group) => group.getBoundingClientRect().left)
+        const step = Math.abs((second ?? 0) - (first ?? 0))
+        progress.forEach((p, i) => {
+          const moved = Math.abs((starts[i] ?? 0) - (starts[0] ?? 0))
+          const expected = (p - (progress[0] ?? 0)) * step
+          if (Math.abs(moved - expected) > 1) {
+            failures.push(
+              `${label} at ${p}: moved ${moved.toFixed(1)}px, expected ${expected.toFixed(1)}px of a ${step.toFixed(1)}px step`,
+            )
+          }
+        })
+        animation.play()
+      })
+      return failures
+    }, PROGRESS)
+  }
+
+  for (const rtl of [false, true]) {
+    test(`forwards and reversed marquees stay covered${rtl ? " under right-to-left" : ""}`, async ({
+      page,
+    }) => {
+      await openShowcase(page, "/components/marquee", { rtl })
+      await expect(page.locator("#main-content .dr-marquee")).toHaveCount(7)
+      await expect(
+        page.locator('#main-content .dr-marquee[data-reverse="true"]'),
+      ).toHaveCount(2)
+      const failures = await gaps(page)
+      expect(failures, failures.join("\n")).toEqual([])
+    })
+  }
+})

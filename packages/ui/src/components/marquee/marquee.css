@@ -2,6 +2,11 @@
   .dr-marquee {
     @apply relative flex overflow-hidden;
   }
+  /* The track starts at the inline-start edge, so under right-to-left the
+     copies extend leftwards and the loop has to travel right. */
+  .dr-marquee:where(:dir(rtl)) {
+    --marquee-dir: 1;
+  }
   .dr-marquee-track {
     @apply flex w-max gap-8;
     animation: dr-marquee-scroll var(--marquee-duration, 18s) linear infinite;
@@ -19,8 +24,12 @@
     from {
       transform: translateX(0);
     }
+    /* --marquee-step is one copy plus the gap, measured by Marquee; before
+       that, half the two-copy track. */
     to {
-      transform: translateX(-50%);
+      transform: translateX(
+        calc(var(--marquee-dir, -1) * var(--marquee-step, 50%))
+      );
     }
   }
   @media (prefers-reduced-motion: reduce) {

@@ -287,12 +287,6 @@ test.describe("visualisation", () => {
       (await boxOf(toggle)).x - (box.x + box.width),
     ).toBeGreaterThanOrEqual(6)
   })
-
-  test("marquee animates its track", async ({ page }) => {
-    const main = await open(page, "/components/marquee")
-    const track = main.locator('[class*="marquee"]').first()
-    await expect(track).toBeVisible()
-  })
 })
 
 test.describe("content components", () => {
