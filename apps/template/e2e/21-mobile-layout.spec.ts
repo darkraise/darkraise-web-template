@@ -60,6 +60,13 @@ async function expectFits(page: Page): Promise<void> {
   expect(problems).toEqual([])
 }
 
+/** The project viewport height, so a width change keeps the phone height. */
+function viewportHeight(page: Page): number {
+  const size = page.viewportSize()
+  if (!size) throw new Error("the page has no fixed viewport")
+  return size.height
+}
+
 test.describe("dashboard", () => {
   test("chart cards fit the viewport", async ({ page }) => {
     await seedApp(page)
@@ -172,7 +179,7 @@ test.describe("header", () => {
   test("search is an icon and the brand is hidden at 700px", async ({
     page,
   }) => {
-    await page.setViewportSize({ width: 700, height: 844 })
+    await page.setViewportSize({ width: 700, height: viewportHeight(page) })
     await seedApp(page)
     await gotoApp(page, "/inbox")
     const header = page.locator("header.dr-layout-header").first()
@@ -260,7 +267,7 @@ test.describe("order detail", () => {
   })
 
   test("lays the steps in a row from 640px", async ({ page }) => {
-    await page.setViewportSize({ width: 700, height: 844 })
+    await page.setViewportSize({ width: 700, height: viewportHeight(page) })
     await seedApp(page)
     await gotoApp(page, "/orders/ord-1")
     const boxes = await stepBoxes(page)
@@ -289,6 +296,27 @@ test.describe("floating shell", () => {
     await gotoApp(page, "/")
     await expect(page.locator(".dr-chart").first()).toBeVisible()
     expect(await paddingInRem(page)).toBeCloseTo(1.5, 1)
+    await expectFits(page)
+  })
+
+  test("the inbox list keeps only its float inset", async ({ page }) => {
+    await seedApp(page, { shellStyle: "floating" })
+    await gotoApp(page, "/inbox")
+    const panel = page.locator('[data-region="panel"]')
+    await expect(panel.getByRole("button").first()).toBeVisible()
+    await expect(page.locator('[data-region="content"]')).toBeHidden()
+    const insets = await panel.evaluate((el) => {
+      const rem = parseFloat(
+        getComputedStyle(document.documentElement).fontSize,
+      )
+      const box = el.getBoundingClientRect()
+      return {
+        start: box.left / rem,
+        end: (document.documentElement.clientWidth - box.right) / rem,
+      }
+    })
+    expect(insets.start, "panel inset from the left edge").toBeCloseTo(0.75, 1)
+    expect(insets.end, "panel inset from the right edge").toBeCloseTo(0.75, 1)
     await expectFits(page)
   })
 
@@ -327,7 +355,13 @@ const APP_ROUTES = [
   { path: "/settings", ready: "main form" },
 ] as const
 
-const GUEST_ROUTES = ["/login", "/register", "/forgot-password"] as const
+const GUEST_ROUTES = [
+  "/login",
+  "/register",
+  "/forgot-password",
+  // Without a token the page shows an invalid-link notice instead of a form.
+  "/reset-password?token=e2e",
+] as const
 
 test.describe("every route fits 390px", () => {
   for (const route of APP_ROUTES) {
@@ -363,7 +397,9 @@ test.describe("sheets", () => {
       const sheet = page.getByRole("dialog")
       await expect(sheet).toBeVisible()
       await settle(page)
-      expect((await boxOf(sheet)).height).toBeLessThanOrEqual(844 - 32 + 1)
+      expect((await boxOf(sheet)).height).toBeLessThanOrEqual(
+        viewportHeight(page) - 32 + 1,
+      )
       const last = sheet.getByText("Row 100", { exact: true })
       await last.scrollIntoViewIfNeeded()
       await expectInViewport(page, last)
