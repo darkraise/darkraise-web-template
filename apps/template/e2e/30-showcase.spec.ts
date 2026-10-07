@@ -50,10 +50,7 @@ async function openShowcase(
   await settle(page)
 }
 
-const SWEEP_PENDING: Record<string, string> = {
-  "/components/carousel":
-    "row 60: carousel arrows sit outside the card; the vertical demo hides its next arrow",
-}
+const SWEEP_PENDING: Record<string, string> = {}
 
 test.describe("showcase sweep", () => {
   const routes = [
@@ -485,5 +482,64 @@ test.describe("row 93: toggle bar starts at the content edge", () => {
       (toggle) => toggle.getBoundingClientRect().left,
     )
     expect(Math.abs(toggleStart - contentStart)).toBeLessThanOrEqual(0.5)
+  })
+})
+
+test.describe("row 60: carousel arrows stay inside their card", () => {
+  test("every arrow lies inside its card and the vertical slide fills its viewport", async ({
+    page,
+  }) => {
+    await openShowcase(page, "/components/carousel")
+    const arrows = await page
+      .locator(".dr-carousel-previous, .dr-carousel-next")
+      .evaluateAll((buttons) =>
+        buttons.map((button) => {
+          const rect = button.getBoundingClientRect()
+          const card = button
+            .closest("[data-showcase-preview]")
+            ?.getBoundingClientRect()
+          const example = button
+            .closest("[data-showcase-example]")
+            ?.querySelector("p")
+            ?.textContent?.trim()
+          const inside =
+            card !== undefined &&
+            rect.left >= card.left - 1 &&
+            rect.top >= card.top - 1 &&
+            rect.right <= card.right + 1 &&
+            rect.bottom <= card.bottom + 1
+          return inside
+            ? null
+            : `"${button.textContent?.trim()}" in "${example}" at (${Math.round(rect.left)},${Math.round(rect.top)})-(${Math.round(rect.right)},${Math.round(rect.bottom)}) outside its card`
+        }),
+      )
+    expect(arrows.length).toBeGreaterThan(0)
+    const outside = arrows.filter((problem) => problem !== null)
+    expect(outside, outside.join("\n")).toEqual([])
+
+    const vertical = page.locator(
+      ".dr-carousel-content[data-orientation=vertical]",
+    )
+    const heights = await vertical.evaluate((content) => ({
+      viewport: content.parentElement?.getBoundingClientRect().height ?? 0,
+      card:
+        content
+          .querySelector(".dr-carousel-item .dr-card")
+          ?.getBoundingClientRect().height ?? 0,
+    }))
+    expect(heights.viewport).toBeGreaterThan(0)
+    expect(Math.abs(heights.card - heights.viewport)).toBeLessThanOrEqual(1)
+
+    const next = page.locator(".dr-carousel-next[data-orientation=vertical]")
+    await expect(next).toBeVisible()
+    const hit = await next.evaluate((button) => {
+      const rect = button.getBoundingClientRect()
+      const top = document.elementFromPoint(
+        rect.left + rect.width / 2,
+        rect.top + rect.height / 2,
+      )
+      return top !== null && button.contains(top)
+    })
+    expect(hit, "the vertical next arrow is the topmost element").toBe(true)
   })
 })

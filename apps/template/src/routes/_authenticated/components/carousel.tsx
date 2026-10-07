@@ -53,21 +53,23 @@ function CarouselPage() {
   <CarouselNext />
 </Carousel>`}
       >
-        <Carousel className="w-full max-w-sm">
-          <CarouselContent>
-            {Array.from({ length: SLIDE_COUNT }, (_, i) => (
-              <CarouselItem key={i}>
-                <Card>
-                  <CardContent className="flex aspect-square items-center justify-center p-6">
-                    <span className="text-4xl font-semibold">{i + 1}</span>
-                  </CardContent>
-                </Card>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
-        </Carousel>
+        <div className="mx-12">
+          <Carousel className="w-full max-w-sm">
+            <CarouselContent>
+              {Array.from({ length: SLIDE_COUNT }, (_, i) => (
+                <CarouselItem key={i}>
+                  <Card>
+                    <CardContent className="flex aspect-square items-center justify-center p-6">
+                      <span className="text-4xl font-semibold">{i + 1}</span>
+                    </CardContent>
+                  </Card>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
+        </div>
       </ShowcaseExample>
 
       <ShowcaseExample
@@ -96,26 +98,28 @@ function CarouselPage() {
   </CarouselIndicatorGroup>
 </Carousel>`}
       >
-        <Carousel className="w-full max-w-sm">
-          <CarouselContent>
-            {Array.from({ length: SLIDE_COUNT }, (_, i) => (
-              <CarouselItem key={i}>
-                <Card>
-                  <CardContent className="flex aspect-square items-center justify-center p-6">
-                    <span className="text-4xl font-semibold">{i + 1}</span>
-                  </CardContent>
-                </Card>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
-          <CarouselIndicatorGroup>
-            {Array.from({ length: SLIDE_COUNT }, (_, i) => (
-              <CarouselIndicator key={i} index={i} />
-            ))}
-          </CarouselIndicatorGroup>
-        </Carousel>
+        <div className="mx-12">
+          <Carousel className="w-full max-w-sm">
+            <CarouselContent>
+              {Array.from({ length: SLIDE_COUNT }, (_, i) => (
+                <CarouselItem key={i}>
+                  <Card>
+                    <CardContent className="flex aspect-square items-center justify-center p-6">
+                      <span className="text-4xl font-semibold">{i + 1}</span>
+                    </CardContent>
+                  </Card>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+            <CarouselIndicatorGroup>
+              {Array.from({ length: SLIDE_COUNT }, (_, i) => (
+                <CarouselIndicator key={i} index={i} />
+              ))}
+            </CarouselIndicatorGroup>
+          </Carousel>
+        </div>
       </ShowcaseExample>
 
       <ShowcaseExample
@@ -128,28 +132,30 @@ function CarouselPage() {
   ))}
 </CarouselIndicatorGroup>`}
       >
-        <Carousel
-          className="w-full max-w-sm"
-          autoplay={{ delay: 2500, pauseOnHover: true }}
-          opts={{ loop: true }}
-        >
-          <CarouselContent>
-            {Array.from({ length: SLIDE_COUNT }, (_, i) => (
-              <CarouselItem key={i}>
-                <Card>
-                  <CardContent className="flex aspect-square items-center justify-center p-6">
-                    <span className="text-4xl font-semibold">{i + 1}</span>
-                  </CardContent>
-                </Card>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselIndicatorGroup>
-            {Array.from({ length: SLIDE_COUNT }, (_, i) => (
-              <CarouselIndicator key={i} index={i} readOnly />
-            ))}
-          </CarouselIndicatorGroup>
-        </Carousel>
+        <div className="mx-12">
+          <Carousel
+            className="w-full max-w-sm"
+            autoplay={{ delay: 2500, pauseOnHover: true }}
+            opts={{ loop: true }}
+          >
+            <CarouselContent>
+              {Array.from({ length: SLIDE_COUNT }, (_, i) => (
+                <CarouselItem key={i}>
+                  <Card>
+                    <CardContent className="flex aspect-square items-center justify-center p-6">
+                      <span className="text-4xl font-semibold">{i + 1}</span>
+                    </CardContent>
+                  </Card>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselIndicatorGroup>
+              {Array.from({ length: SLIDE_COUNT }, (_, i) => (
+                <CarouselIndicator key={i} index={i} readOnly />
+              ))}
+            </CarouselIndicatorGroup>
+          </Carousel>
+        </div>
       </ShowcaseExample>
 
       <ShowcaseExample
@@ -176,24 +182,28 @@ function CarouselPage() {
         <VariantMatrix
           rows={{ label: "align", values: CAROUSEL_ALIGNS }}
           render={(align) => (
-            <Carousel
-              opts={{ align, startIndex: 2 }}
-              className="w-full max-w-sm"
-            >
-              <CarouselContent>
-                {Array.from({ length: ALIGN_SLIDE_COUNT }, (_, i) => (
-                  <CarouselItem key={i} className="basis-2/5">
-                    <Card>
-                      <CardContent className="flex aspect-square items-center justify-center p-6">
-                        <span className="text-4xl font-semibold">{i + 1}</span>
-                      </CardContent>
-                    </Card>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious />
-              <CarouselNext />
-            </Carousel>
+            <div className="mx-12">
+              <Carousel
+                opts={{ align, startIndex: 2 }}
+                className="w-full max-w-sm"
+              >
+                <CarouselContent>
+                  {Array.from({ length: ALIGN_SLIDE_COUNT }, (_, i) => (
+                    <CarouselItem key={i} className="basis-2/5">
+                      <Card>
+                        <CardContent className="flex aspect-square items-center justify-center p-6">
+                          <span className="text-4xl font-semibold">
+                            {i + 1}
+                          </span>
+                        </CardContent>
+                      </Card>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious />
+                <CarouselNext />
+              </Carousel>
+            </div>
           )}
         />
       </ShowcaseExample>
@@ -202,14 +212,15 @@ function CarouselPage() {
         title="Orientation"
         code={`// One representative cell: both orientations render above. Vertical
 // needs an explicit height on the wrapper and on CarouselContent, or
-// the column layout collapses to zero height.
-<div className="h-64">
-  <Carousel orientation="vertical">
+// the column layout collapses to zero height. The arrows sit 48px above
+// and below the carousel, so the wrapper keeps that room with my-12.
+<div className="my-12 h-64">
+  <Carousel orientation="vertical" className="max-w-sm">
     <CarouselContent className="h-64">
       {Array.from({ length: 5 }, (_, i) => (
         <CarouselItem key={i}>
-          <Card>
-            <CardContent className="flex h-20 items-center justify-center p-6">
+          <Card className="h-full">
+            <CardContent className="flex h-full items-center justify-center p-6">
               <span className="text-2xl font-semibold">{i + 1}</span>
             </CardContent>
           </Card>
@@ -225,13 +236,13 @@ function CarouselPage() {
           rows={{ label: "orientation", values: CAROUSEL_ORIENTATIONS }}
           render={(orientation) =>
             orientation === "vertical" ? (
-              <div className="h-64">
-                <Carousel orientation="vertical">
+              <div className="my-12 h-64">
+                <Carousel orientation="vertical" className="max-w-sm">
                   <CarouselContent className="h-64">
                     {Array.from({ length: SLIDE_COUNT }, (_, i) => (
                       <CarouselItem key={i}>
-                        <Card>
-                          <CardContent className="flex h-20 items-center justify-center p-6">
+                        <Card className="h-full">
+                          <CardContent className="flex h-full items-center justify-center p-6">
                             <span className="text-2xl font-semibold">
                               {i + 1}
                             </span>
@@ -245,23 +256,25 @@ function CarouselPage() {
                 </Carousel>
               </div>
             ) : (
-              <Carousel className="w-full max-w-sm">
-                <CarouselContent>
-                  {Array.from({ length: SLIDE_COUNT }, (_, i) => (
-                    <CarouselItem key={i}>
-                      <Card>
-                        <CardContent className="flex aspect-square items-center justify-center p-6">
-                          <span className="text-4xl font-semibold">
-                            {i + 1}
-                          </span>
-                        </CardContent>
-                      </Card>
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious />
-                <CarouselNext />
-              </Carousel>
+              <div className="mx-12">
+                <Carousel className="w-full max-w-sm">
+                  <CarouselContent>
+                    {Array.from({ length: SLIDE_COUNT }, (_, i) => (
+                      <CarouselItem key={i}>
+                        <Card>
+                          <CardContent className="flex aspect-square items-center justify-center p-6">
+                            <span className="text-4xl font-semibold">
+                              {i + 1}
+                            </span>
+                          </CardContent>
+                        </Card>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious />
+                  <CarouselNext />
+                </Carousel>
+              </div>
             )
           }
         />
