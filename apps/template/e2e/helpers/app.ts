@@ -127,8 +127,13 @@ export async function applyTheme(page: Page, theme: ThemeSeed) {
   )
 }
 
-/** Console messages that are expected and must not fail a test. */
-const ALLOWED_CONSOLE = [/\[vite\]/i, /Download the React DevTools/i]
+/**
+ * Console errors and warnings that are expected and must not fail a test.
+ * The Vite client logs its routine messages at debug, info or log level; a
+ * `[vite]` error, such as an internal server error or a lost websocket, is
+ * a real failure.
+ */
+const ALLOWED_CONSOLE = [/Download the React DevTools/i]
 
 export interface ConsoleWatcher {
   errors: string[]
@@ -142,10 +147,12 @@ export function watchConsole(page: Page): ConsoleWatcher {
   const warnings: string[] = []
 
   const record = (msg: ConsoleMessage) => {
+    const type = msg.type()
+    if (type !== "error" && type !== "warning") return
     const text = msg.text()
     if (ALLOWED_CONSOLE.some((re) => re.test(text))) return
-    if (msg.type() === "error") errors.push(text)
-    else if (msg.type() === "warning") warnings.push(text)
+    if (type === "error") errors.push(text)
+    else warnings.push(text)
   }
   page.on("console", record)
   page.on("pageerror", (err) => errors.push(`pageerror: ${err.message}`))
