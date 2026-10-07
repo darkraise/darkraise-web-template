@@ -25,7 +25,7 @@ export function VariantMatrix<R extends string, C extends string = never>(
   if (!props.cols) {
     const { render } = props
     return (
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto" data-showcase-matrix="">
         <table className="w-full border-collapse">
           <tbody>
             {rows.values.map((row) => (
@@ -45,7 +45,7 @@ export function VariantMatrix<R extends string, C extends string = never>(
   const { cols, render } = props
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto" data-showcase-matrix="">
       <table className="w-full border-collapse">
         <thead>
           <tr>

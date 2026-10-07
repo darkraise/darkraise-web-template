@@ -24,7 +24,7 @@ export function ShowcaseExample({
   const t = useAppTranslation()
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3" data-showcase-example="">
       <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
         {t(title)}
       </p>
@@ -32,7 +32,9 @@ export function ShowcaseExample({
           rung from the surface that contains them, so an example floating on
           the bare page canvas demoed them against a background no real screen
           uses. */}
-      <Card className="p-4">{children}</Card>
+      <Card className="p-4" data-showcase-preview="">
+        {children}
+      </Card>
       <Accordion type="single" collapsible>
         <AccordionItem value="code" className="border-none">
           <div className="flex items-center justify-between">

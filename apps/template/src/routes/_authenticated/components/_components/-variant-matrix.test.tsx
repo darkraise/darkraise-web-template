@@ -74,4 +74,28 @@ describe("VariantMatrix", () => {
     )
     expect(container.querySelector(".overflow-x-auto")).toBeInTheDocument()
   })
+
+  it("marks the scroll wrapper with the showcase matrix hook", () => {
+    const dual = render(
+      <VariantMatrix
+        rows={{ label: "variant", values: VARIANTS }}
+        cols={{ label: "size", values: SIZES }}
+        render={(variant, size) => <span>{`${variant}/${size}`}</span>}
+      />,
+    )
+    expect(
+      dual.container.querySelector(".overflow-x-auto[data-showcase-matrix]"),
+    ).toBeInTheDocument()
+    dual.unmount()
+
+    const single = render(
+      <VariantMatrix
+        rows={{ label: "orientation", values: ["horizontal", "vertical"] }}
+        render={(orientation) => <span>{`sample-${orientation}`}</span>}
+      />,
+    )
+    expect(
+      single.container.querySelector(".overflow-x-auto[data-showcase-matrix]"),
+    ).toBeInTheDocument()
+  })
 })
