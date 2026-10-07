@@ -402,8 +402,6 @@ function RecipeCase() {
   )
 }
 
-// One scenario per page load, chosen by ?case=, so a case's fixed triggers
-// and open overlays never shift another case's geometry.
 // Three global panels that all cover the viewport centre, where the dialog
 // opens; the dialog trigger sits in a corner no panel covers.
 function PanelsCase() {
@@ -438,6 +436,8 @@ function PanelsCase() {
   )
 }
 
+// One scenario per page load, chosen by ?case=, so a case's fixed triggers
+// and open overlays never shift another case's geometry.
 const CASES: Record<string, () => ReactElement> = {
   follow: FollowCase,
   origin: OriginCase,

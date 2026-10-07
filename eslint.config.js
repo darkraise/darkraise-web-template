@@ -48,6 +48,14 @@ export default tseslint.config(
     },
   },
   {
+    // Each e2e fixture is a standalone page entry that mounts itself with
+    // createRoot and exports nothing, so fast refresh has no boundary to keep.
+    files: ["apps/template/e2e/fixtures/**/*.tsx"],
+    rules: {
+      "react-refresh/only-export-components": "off",
+    },
+  },
+  {
     files: ["**/*.{js,mjs,cjs}", "scripts/**/*.{ts,mts}", "create-app/bin/**"],
     languageOptions: {
       globals: { ...globals.node },
