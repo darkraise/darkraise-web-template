@@ -106,17 +106,36 @@ for (const [style, mode] of [
       )
       await expect(entry).toHaveCount(1)
       await settle(page)
+      const seen = await entry.evaluate((el) => {
+        const resolve = (value: string) => {
+          const probe = document.createElement("span")
+          probe.style.color = value
+          el.append(probe)
+          const color = getComputedStyle(probe).color
+          probe.remove()
+          return color
+        }
+        return {
+          label: getComputedStyle(el).color,
+          foreground: resolve("hsl(var(--sidebar-foreground))"),
+          foregroundHover: resolve("hsl(var(--sidebar-foreground-hover))"),
+        }
+      })
+      // The plain nav label colours: an entry painted in either carries no cue.
+      expect(seen.label, "label against --sidebar-foreground").not.toBe(
+        seen.foreground,
+      )
+      expect(seen.label, "label against --sidebar-foreground-hover").not.toBe(
+        seen.foregroundHover,
+      )
       const row = await box(entry)
       const surface = await pixel(
         page,
         Math.round(row.x + row.width - 8),
         Math.round(row.y + row.height / 2),
       )
-      const label = rgbOf(
-        await entry.evaluate((el) => getComputedStyle(el).color),
-      )
       expect(
-        contrast(label, surface),
+        contrast(rgbOf(seen.label), surface),
         "label against the surface",
       ).toBeGreaterThanOrEqual(CUE_FLOOR)
     })
