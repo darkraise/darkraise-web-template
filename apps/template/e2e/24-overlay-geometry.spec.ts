@@ -217,7 +217,10 @@ test.describe("long sheets scroll", () => {
     await expect(sheet).toBeVisible()
     await settle(page)
     const header = sheet.getByRole("heading", { name: "Pinned sheet" })
+    const footer = sheet.getByRole("button", { name: "Done" })
+    await expectInViewport(page, footer)
     const before = (await boxOf(header)).y
+    const footerBefore = (await boxOf(footer)).y
     const body = sheet.locator(".dr-sheet-body")
     await body.evaluate((element) => {
       element.scrollTop = 400
@@ -226,6 +229,8 @@ test.describe("long sheets scroll", () => {
       0,
     )
     expect((await boxOf(header)).y).toBeCloseTo(before, 0)
+    expect((await boxOf(footer)).y).toBeCloseTo(footerBefore, 0)
+    await expectInViewport(page, footer)
     // The pinned rule hands scrolling to the body; the sheet itself must not
     // scroll as well.
     expect(

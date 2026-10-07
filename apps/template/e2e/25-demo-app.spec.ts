@@ -193,7 +193,26 @@ test.describe("dashboard", () => {
         has: page.getByText("Recent Orders", { exact: true }),
       }),
     )
-    expect(target.height).toBeLessThan(160)
+    const fit = await cards.nth(0).evaluate((card) => {
+      const style = getComputedStyle(card)
+      const content = [...card.children].reduce(
+        (sum, child) => sum + child.scrollHeight,
+        0,
+      )
+      return {
+        height: card.getBoundingClientRect().height,
+        natural:
+          content +
+          parseFloat(style.paddingTop) +
+          parseFloat(style.paddingBottom) +
+          parseFloat(style.borderTopWidth) +
+          parseFloat(style.borderBottomWidth),
+      }
+    })
+    expect(
+      Math.abs(fit.height - fit.natural),
+      `card ${fit.height}px against content and padding ${fit.natural}px`,
+    ).toBeLessThanOrEqual(2)
     expect(average.y).toBeGreaterThanOrEqual(target.y + target.height)
     expect(returning.y).toBeGreaterThanOrEqual(average.y + average.height)
     expect(feed.x).toBeGreaterThan(target.x + target.width)
@@ -279,6 +298,13 @@ test.describe("product form", () => {
     )
     expect(Math.abs(price.y - compare.y)).toBeLessThanOrEqual(1)
     expect(compare.x).toBeGreaterThan(price.x + price.width)
+  })
+
+  test("the status switch is described by its hint", async ({ page }) => {
+    await gotoApp(page, "/products/new")
+    await expect(
+      page.getByRole("switch", { name: "Active", exact: true }),
+    ).toHaveAccessibleDescription("Make this product visible in the store")
   })
 })
 
@@ -474,5 +500,17 @@ test.describe("order stepper", () => {
     await expect(
       page.locator("[data-order-steps] > [data-state]").nth(1),
     ).toHaveAttribute("aria-current", "step")
+  })
+
+  test("a completed step tells screen readers it is complete", async ({
+    page,
+  }) => {
+    await gotoApp(page, "/orders/ord-5")
+    const steps = page.locator("[data-order-steps] > [data-state]")
+    await expect(steps).toHaveCount(4)
+    await expect(steps.nth(0)).toMatchAriaSnapshot(
+      "- listitem: Pending Completed",
+    )
+    await expect(steps.nth(1)).toMatchAriaSnapshot("- listitem: 2 Processing")
   })
 })
