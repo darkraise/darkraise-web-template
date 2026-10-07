@@ -11,11 +11,22 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "darkraise-ui/components/dropdown-menu"
 import { Highlight } from "darkraise-ui/components/highlight"
 import { DateInput } from "darkraise-ui/components/date-input"
 import { Listbox, ListboxItem } from "darkraise-ui/components/listbox"
+import {
+  Menubar,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarShortcut,
+  MenubarTrigger,
+} from "darkraise-ui/components/menubar"
 import {
   NumberInput,
   NumberInputControl,
@@ -255,12 +266,12 @@ createRoot(root).render(
         <Pagination>
           <PaginationContent>
             <PaginationItem>
-              <PaginationLink href="#1" isActive>
-                1
+              <PaginationLink href="#10" isActive>
+                10
               </PaginationLink>
             </PaginationItem>
             <PaginationItem>
-              <PaginationLink href="#2">2</PaginationLink>
+              <PaginationLink href="#11">11</PaginationLink>
             </PaginationItem>
           </PaginationContent>
         </Pagination>
@@ -291,6 +302,37 @@ createRoot(root).render(
             <DropdownMenuItem>Archive</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+      </div>
+      <div data-probe="submenu">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button>More</Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem>Copy</DropdownMenuItem>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>Share</DropdownMenuSubTrigger>
+              <DropdownMenuSubContent>
+                <DropdownMenuItem>Email</DropdownMenuItem>
+                <DropdownMenuItem>Link</DropdownMenuItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+      <div data-probe="menubar">
+        <Menubar>
+          <MenubarMenu>
+            <MenubarTrigger>File</MenubarTrigger>
+            <MenubarContent>
+              <MenubarItem>
+                New
+                <MenubarShortcut>⌘N</MenubarShortcut>
+              </MenubarItem>
+              <MenubarItem>Open</MenubarItem>
+            </MenubarContent>
+          </MenubarMenu>
+        </Menubar>
       </div>
       <div data-probe="sidebar" style={{ width: 240 }}>
         <RouterAdapterProvider value={ADAPTER}>

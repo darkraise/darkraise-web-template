@@ -104,12 +104,13 @@ async function expectChosen(
 
 /**
  * The share of pixels along the middle row of an element's text that paint
- * `colour`, every second pixel. Text forced onto a Canvas backplate reads 0.
+ * `colour`, every `step` pixels. Text forced onto a Canvas backplate reads 0.
  */
 async function textShare(
   page: Page,
   locator: Locator,
   colour: Rgb,
+  step = 2,
 ): Promise<number> {
   await locator.scrollIntoViewIfNeeded()
   const text = await locator.evaluate((el) => {
@@ -121,7 +122,7 @@ async function textShare(
   const y = Math.floor(text.y + text.height / 2)
   let hits = 0
   let total = 0
-  for (let x = Math.ceil(text.x); x < text.x + text.width; x += 2) {
+  for (let x = Math.ceil(text.x); x < text.x + text.width; x += step) {
     total++
     if (near(await pixel(page, x, y), colour)) hits++
   }
@@ -224,11 +225,17 @@ test.describe("selection controls", () => {
         const ink = await textShare(page, label, glyphs)
         expect(ink, `${selector} glyphs`).toBeGreaterThan(0.02)
       }
-      // A one-digit label gives the sampler too few pixels to count glyphs.
-      const page1 = page.locator(
+      // Two narrow digits: every pixel, or their 1px stems fall between samples.
+      const pageLabel = page.locator(
         '[data-probe="pagination"] .dr-pagination-link[data-active="true"]',
       )
-      expect(await textShare(page, page1, highlight)).toBeGreaterThan(0.2)
+      expect(await textShare(page, pageLabel, highlight, 1)).toBeGreaterThan(
+        0.2,
+      )
+      expect(
+        await textShare(page, pageLabel, glyphs, 1),
+        "page label glyphs",
+      ).toBeGreaterThan(0.02)
     })
 
     test(`switch thumbs read on their tracks · ${scheme}`, async ({ page }) => {
@@ -336,6 +343,46 @@ test.describe("menus, pickers and navigation", () => {
         page.locator(".dr-menu-content"),
         ".dr-menu-item:focus",
         ".dr-menu-item:not(:focus)",
+      )
+    })
+
+    test(`an open sub-trigger is marked · ${scheme}`, async ({ page }) => {
+      await openForced(page, scheme)
+      await page.locator('[data-probe="submenu"] button').focus()
+      await page.keyboard.press("ArrowDown")
+      const content = page.locator(".dr-menu-content:not(.dr-menu-sub-content)")
+      const share = content.getByRole("menuitem", { name: "Share" })
+      await share.hover()
+      await expect(share).toHaveAttribute("data-state", "open")
+      // Over the submenu, the sub-trigger is neither hovered nor focused, so
+      // only its open state can paint it.
+      await page.getByRole("menuitem", { name: "Email" }).hover()
+      await expect(share).toHaveAttribute("data-state", "open")
+      await expect(share).not.toBeFocused()
+      await settle(page)
+      await expectChosen(
+        page,
+        content,
+        ".dr-menu-sub-trigger",
+        ".dr-menu-item:not(.dr-menu-sub-trigger):not(:focus)",
+      )
+    })
+
+    test(`a focused menubar row is marked · ${scheme}`, async ({ page }) => {
+      await openForced(page, scheme)
+      await page
+        .locator('[data-probe="menubar"]')
+        .getByRole("menuitem", { name: "File" })
+        .click()
+      const row = page.locator(".dr-menubar-content .dr-menubar-item").first()
+      await page.keyboard.press("ArrowDown")
+      await expect(row).toBeFocused()
+      await settle(page)
+      await expectChosen(
+        page,
+        page.locator(".dr-menubar-content"),
+        ".dr-menubar-item:focus",
+        ".dr-menubar-item:not(:focus)",
       )
     })
 
@@ -514,34 +561,59 @@ test.describe("data colours and marked text", () => {
 })
 
 test.describe("chosen items under focus and with children", () => {
-  const RING_CASES: Array<[string, string]> = [
-    ["tree-filled", '.dr-tree-view-item[data-selected="true"]'],
-    ["calendar", '.dr-calendar-day-btn[data-selected-single="true"]'],
-    ["toggle", '.dr-toggle[data-state="on"]'],
-    ["sidebar", ".dr-sidebar-nav-current"],
-    ["tabs-enclosed", '.dr-tabs-trigger[data-state="active"]'],
+  type Focus = (page: Page, item: Locator) => Promise<void>
+
+  const focusItem: Focus = async (page, item) => {
+    await page.keyboard.press("Shift")
+    await item.focus()
+    await expect(item).toBeFocused()
+    expect(await item.evaluate((node) => node.matches(":focus-visible"))).toBe(
+      true,
+    )
+  }
+
+  /** A listbox keeps DOM focus and marks its active row with data-focused. */
+  const focusListboxRow: Focus = async (page, item) => {
+    await page.keyboard.press("Shift")
+    await page.locator('[data-probe="listbox-filled"] [role="listbox"]').focus()
+    await page.keyboard.press("Home")
+    await expect(item).toHaveAttribute("data-focused", "true")
+  }
+
+  const RING_CASES: Array<[string, string, Focus]> = [
+    ["tree-filled", '.dr-tree-view-item[data-selected="true"]', focusItem],
+    [
+      "calendar",
+      '.dr-calendar-day-btn[data-selected-single="true"]',
+      focusItem,
+    ],
+    ["toggle", '.dr-toggle[data-state="on"]', focusItem],
+    ["sidebar", ".dr-sidebar-nav-current", focusItem],
+    ["tabs-enclosed", '.dr-tabs-trigger[data-state="active"]', focusItem],
+    [
+      "listbox-filled",
+      '.dr-listbox-item[data-selected="true"]',
+      focusListboxRow,
+    ],
   ]
 
   for (const scheme of SCHEMES) {
-    for (const [probe, selector] of RING_CASES) {
+    for (const [probe, selector, focus] of RING_CASES) {
       test(`a focused chosen item keeps a visible ring · ${probe} · ${scheme}`, async ({
         page,
       }) => {
         await openForced(page, scheme)
         const item = page.locator(`[data-probe="${probe}"] ${selector}`).first()
         await item.scrollIntoViewIfNeeded()
-        await page.keyboard.press("Shift")
-        await item.focus()
-        await expect(item).toBeFocused()
+        await focus(page, item)
+        await settle(page)
         const ring = await item.evaluate((node) => {
           const style = getComputedStyle(node)
           return {
-            focusVisible: node.matches(":focus-visible"),
             offset: parseFloat(style.outlineOffset),
             width: parseFloat(style.outlineWidth),
           }
         })
-        expect(ring.focusVisible).toBe(true)
         const box = await boxOf(item)
         const y = box.height / 2
         const onRing = await pixelIn(
@@ -576,6 +648,31 @@ test.describe("chosen items under focus and with children", () => {
       expect(
         await computed(current.locator(".dr-sidebar-nav-badge"), "color"),
       ).toBe(await computed(current, "color"))
+    })
+
+    test(`a menubar shortcut in a chosen row takes the row colour · ${scheme}`, async ({
+      page,
+    }) => {
+      await openForced(page, scheme)
+      await page
+        .locator('[data-probe="menubar"]')
+        .getByRole("menuitem", { name: "File" })
+        .click()
+      const row = page.locator(".dr-menubar-content .dr-menubar-item").first()
+      await page.keyboard.press("ArrowDown")
+      await expect(row).toBeFocused()
+      await settle(page)
+      const highlight = await refColour(page, "highlight")
+      const glyphs = await refColour(page, "highlight-text")
+      const shortcut = row.locator(".dr-menubar-shortcut")
+      expect(await computed(shortcut, "color")).toBe(
+        await computed(row, "color"),
+      )
+      expect(await textShare(page, shortcut, highlight)).toBeGreaterThan(0.2)
+      expect(
+        await textShare(page, shortcut, glyphs),
+        "shortcut glyphs",
+      ).toBeGreaterThan(0.02)
     })
   }
 })
