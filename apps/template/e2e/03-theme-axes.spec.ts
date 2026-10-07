@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test"
+import { test, expect, type Page } from "@playwright/test"
 import {
   ACCENT_COLORS,
   BACKGROUND_INTENSITIES,
@@ -40,6 +40,66 @@ const CONTENT_TOKENS = [
   "--card",
 ]
 
+/**
+ * What each style changes on its own: its control and chrome tokens in light
+ * mode, and the axis defaults its record carries for axes the user never set.
+ */
+const STYLE_SIGNATURES: Record<
+  Style,
+  { tokens: Record<string, string>; attrs: Record<string, string> }
+> = {
+  flat: {
+    tokens: {
+      "--btn-shadow": "0 0 transparent",
+      "--field-shadow": "0 0 transparent",
+      "--chrome-backdrop": "none",
+    },
+    attrs: { "data-elevation": "flat", "data-background-style": "solid" },
+  },
+  quiet: {
+    tokens: {
+      "--btn-shadow": "0 1px 2px rgb(0 0 0 / 0.1)",
+      "--field-shadow": "0 0 transparent",
+      "--chrome-backdrop": "none",
+    },
+    attrs: { "data-elevation": "standard", "data-background-style": "solid" },
+  },
+  tactile: {
+    tokens: {
+      "--btn-shadow":
+        "0 1px 2px rgb(0 0 0 / 0.14), 0 2px 5px -2px rgb(0 0 0 / 0.14)",
+      "--field-shadow": "inset 0 1px 2px rgb(0 0 0 / 0.07)",
+      "--chrome-backdrop": "none",
+    },
+    attrs: { "data-elevation": "standard", "data-background-style": "solid" },
+  },
+  glass: {
+    tokens: {
+      "--btn-shadow": "0 1px 2px rgb(0 0 0 / 0.1)",
+      "--field-shadow": "0 0 transparent",
+      "--chrome-backdrop": "blur(18px) saturate(140%)",
+    },
+    attrs: {
+      "data-elevation": "standard",
+      "data-background-style": "gradient",
+    },
+  },
+}
+
+/** The surface in storage and on <html>: a retired name migrates to zinc. */
+async function expectSurface(page: Page, surface: string) {
+  expect(
+    await page.evaluate((key) => localStorage.getItem(key), LS_KEYS.surface),
+    "stored surface",
+  ).toBe(surface)
+  await expect(page.locator("html")).toHaveAttribute("data-surface", surface)
+}
+
+/** The first background layer the body paints: the pattern's opening blob. */
+function bodyImage(page: Page) {
+  return page.evaluate(() => getComputedStyle(document.body).backgroundImage)
+}
+
 test.describe("style axis", () => {
   for (const style of STYLES) {
     test(`style "${style}" applies its attributes and tokens`, async ({
@@ -56,8 +116,14 @@ test.describe("style axis", () => {
       expect(attrs["data-glass-opacity"]).toBe("medium")
       expect(attrs["data-glass-blur"]).toBe("medium")
 
-      expect(await readToken(page, "--primary")).not.toBe("")
-      expect(await readToken(page, "--background")).not.toBe("")
+      const signature = STYLE_SIGNATURES[style]
+      for (const [name, value] of Object.entries(signature.attrs)) {
+        expect(attrs[name], name).toBe(value)
+      }
+      const names = Object.keys(signature.tokens)
+      await expect
+        .poll(() => readTokens(page, names), { message: "style tokens" })
+        .toEqual(signature.tokens)
       consoleWatch.assertClean()
     })
 
@@ -232,9 +298,21 @@ test.describe("surface color axis", () => {
   for (const surface of SURFACE_COLORS) {
     test(`surface "${surface}" applies`, async ({ page }) => {
       const consoleWatch = watchConsole(page)
+      // zinc is the default surface, so it is compared with sand instead.
+      const reference = surface === "zinc" ? "sand" : "zinc"
       await seedApp(page, { surface, style: "quiet", mode: "dark" })
       await gotoApp(page, PROBE)
-      expect(await readToken(page, "--background")).not.toBe("")
+      await expectSurface(page, surface)
+      const background = await readToken(page, "--background")
+
+      await applyTheme(page, { surface: reference })
+      await reloadApp(page)
+      await expectSurface(page, reference)
+      await expect
+        .poll(() => readToken(page, "--background"), {
+          message: `--background moves from ${surface} to ${reference}`,
+        })
+        .not.toBe(background)
       consoleWatch.assertClean()
     })
   }
@@ -259,7 +337,16 @@ test.describe("background style axis", () => {
     await seedApp(page, { backgroundStyle: "solid", style: "quiet" })
     await gotoApp(page, PROBE)
     expect((await readThemeAttrs(page))["data-background-style"]).toBe("solid")
+    await expect.poll(() => bodyImage(page)).toBe("none")
   })
+
+  const blobScale: Record<string, string> = {
+    neutral: "0.25",
+    subtle: "0.5",
+    balanced: "1",
+    vivid: "1.5",
+    intense: "2",
+  }
 
   for (const intensity of BACKGROUND_INTENSITIES) {
     test(`gradient · intensity "${intensity}"`, async ({ page }) => {
@@ -273,7 +360,9 @@ test.describe("background style axis", () => {
       const attrs = await readThemeAttrs(page)
       expect(attrs["data-background-style"]).toBe("gradient")
       expect(attrs["data-background-intensity"]).toBe(intensity)
-      expect(await readToken(page, "--canvas-blob-scale")).not.toBe("")
+      expect(await readToken(page, "--canvas-blob-scale")).toBe(
+        blobScale[intensity],
+      )
       consoleWatch.assertClean()
     })
   }
@@ -298,6 +387,13 @@ test.describe("background style axis", () => {
     }
   })
 
+  const firstLayer: Record<string, string> = {
+    blobs: "radial-gradient(1400px 900px at 10% -5%,",
+    aurora: "radial-gradient(1600px 280px at 20% 22%,",
+    spotlight: "radial-gradient(2000px 1200px at 50% -15%,",
+    mesh: "radial-gradient(700px 600px at 18% 18%,",
+  }
+
   for (const pattern of GRADIENT_PATTERNS) {
     test(`gradient · pattern "${pattern}"`, async ({ page }) => {
       const consoleWatch = watchConsole(page)
@@ -310,18 +406,28 @@ test.describe("background style axis", () => {
       expect((await readThemeAttrs(page))["data-gradient-pattern"]).toBe(
         pattern,
       )
+      const expected = firstLayer[pattern] ?? ""
+      await expect
+        .poll(async () => (await bodyImage(page)).slice(0, expected.length))
+        .toBe(expected)
       consoleWatch.assertClean()
     })
   }
 })
 
 test.describe("density axis", () => {
+  const buttonPadding: Record<string, string> = {
+    compact: "0.5rem",
+    cozy: "0.75rem",
+    comfortable: "1rem",
+    spacious: "1.25rem",
+  }
   for (const density of DENSITIES) {
     test(`density "${density}"`, async ({ page }) => {
       await seedApp(page, { density, style: "quiet" })
       await gotoApp(page, PROBE)
       expect((await readThemeAttrs(page))["data-density"]).toBe(density)
-      expect(await readToken(page, "--btn-px")).not.toBe("")
+      expect(await readToken(page, "--btn-px")).toBe(buttonPadding[density])
     })
   }
 
@@ -415,12 +521,37 @@ test.describe("tint with accent axis", () => {
     await gotoApp(page, PROBE)
     expect((await readThemeAttrs(page))["data-tint-with-accent"]).toBe("on")
   })
+
+  test("on moves the page --background toward the accent", async ({ page }) => {
+    await seedApp(page, {
+      tintWithAccent: "off",
+      accent: "violet",
+      surface: "zinc",
+      style: "quiet",
+      mode: "dark",
+    })
+    await gotoApp(page, PROBE)
+    const untinted = await readToken(page, "--background")
+
+    await applyTheme(page, { tintWithAccent: "on" })
+    await reloadApp(page)
+    await expect(page.locator("html")).toHaveAttribute(
+      "data-tint-with-accent",
+      "on",
+    )
+    await expect.poll(() => readToken(page, "--background")).not.toBe(untinted)
+  })
 })
 
 test.describe("background intensity canvas cap", () => {
   test("each step yields a distinct background", async ({ page }) => {
-    await seedApp(page, { surface: "violet", mode: "dark" })
+    await seedApp(page, {
+      surface: "mauve",
+      tintWithAccent: "off",
+      mode: "dark",
+    })
     await gotoApp(page, PROBE)
+    await expectSurface(page, "mauve")
 
     const seen = new Set<string>()
     for (const step of BACKGROUND_INTENSITIES) {
@@ -437,8 +568,13 @@ test.describe("background intensity canvas cap", () => {
   test("caps the canvas in light mode too", async ({ page }) => {
     // The tint half of this axis used to be dark-only, which made it silently
     // inert in half the themes.
-    await seedApp(page, { surface: "violet", mode: "light" })
+    await seedApp(page, {
+      surface: "sand",
+      tintWithAccent: "off",
+      mode: "light",
+    })
     await gotoApp(page, PROBE)
+    await expectSurface(page, "sand")
 
     await applyTheme(page, { backgroundIntensity: "neutral" })
     await reloadApp(page)
@@ -501,7 +637,8 @@ test.describe("axis combinations", () => {
         radius: "pill",
         fontSize: "extra-large",
         accent: "violet",
-        surface: "indigo",
+        surface: "sand",
+        tintWithAccent: "off",
         glassOpacity: "strong",
         glassBlur: "high",
       },
@@ -514,6 +651,9 @@ test.describe("axis combinations", () => {
         "data-density": "spacious",
         "data-radius": "pill",
         "data-font-size": "extra-large",
+        "data-accent": "violet",
+        "data-surface": "sand",
+        "data-tint-with-accent": "off",
         "data-glass-opacity": "strong",
         "data-glass-blur": "high",
       },
@@ -525,6 +665,7 @@ test.describe("axis combinations", () => {
       const consoleWatch = watchConsole(page)
       await seedApp(page, combo.seed)
       await gotoApp(page, PROBE)
+      await expectSurface(page, combo.seed?.surface ?? "")
       const attrs = await readThemeAttrs(page)
       for (const [key, value] of Object.entries(combo.expect)) {
         expect(attrs[key], key).toBe(value)
