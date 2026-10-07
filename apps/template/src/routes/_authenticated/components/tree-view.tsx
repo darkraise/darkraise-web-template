@@ -22,7 +22,7 @@ import {
   Image,
   Loader2,
 } from "lucide-react"
-import { useCallback, useState } from "react"
+import { useCallback, useState, type CSSProperties } from "react"
 import { allOf } from "./_components/-variant-axes"
 import { VariantMatrix } from "./_components/-variant-matrix"
 import { ShowcaseExample } from "./_components/-showcase-example"
@@ -197,6 +197,7 @@ const lazyTree: TreeNode = {
   children: [
     { id: "users", name: "users", children: [] },
     { id: "posts", name: "posts", children: [] },
+    { id: "archive", name: "archive", children: [] },
     { id: "settings.json", name: "settings.json" },
   ],
 }
@@ -228,7 +229,7 @@ function LazyLoadExample() {
     [expanded, ensureLoaded],
   )
 
-  const renderNode = (node: TreeNode) => {
+  const renderNode = (node: TreeNode, depth: number) => {
     if (node.children) {
       const isLoading = loadingId === node.id
       return (
@@ -243,9 +244,22 @@ function LazyLoadExample() {
           </TreeViewBranchControl>
           <TreeViewBranchContent>
             {node.children.length === 0 && !isLoading ? (
-              <li className="text-muted-foreground py-1 pl-8 text-xs">Empty</li>
+              <li
+                className="text-muted-foreground py-1 text-xs"
+                style={
+                  {
+                    "--tree-depth": depth + 1,
+                    // The item padding plus the leaf icon (size-4) and the
+                    // item gap (gap-2), so the text lines up with leaf text.
+                    paddingInlineStart:
+                      "calc(0.5rem + var(--tree-depth) * var(--tree-view-indent, 1rem) + var(--icon-size) + 0.5rem + 1rem + 0.5rem)",
+                  } as CSSProperties
+                }
+              >
+                Empty
+              </li>
             ) : (
-              node.children.map((child) => renderNode(child))
+              node.children.map((child) => renderNode(child, depth + 1))
             )}
           </TreeViewBranchContent>
         </TreeViewBranch>
@@ -267,7 +281,7 @@ function LazyLoadExample() {
     >
       <TreeViewLabel>Remote (lazy)</TreeViewLabel>
       <TreeViewTree>
-        {data.children?.map((node) => renderNode(node))}
+        {data.children?.map((node) => renderNode(node, 0))}
       </TreeViewTree>
     </TreeView>
   )

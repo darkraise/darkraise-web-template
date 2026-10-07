@@ -1094,3 +1094,38 @@ test.describe("row 197: frame demos follow the colour scheme", () => {
     await expect(root).toHaveAttribute("data-mode", "light")
   })
 })
+
+test.describe("row 208: tree-view empty placeholder", () => {
+  /** Left edge of the first non-blank text node inside the element. */
+  const textStart = (el: Element) => {
+    const walker = el.ownerDocument.createTreeWalker(el, NodeFilter.SHOW_TEXT)
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      if (!node.textContent?.trim()) continue
+      const range = el.ownerDocument.createRange()
+      range.selectNodeContents(node)
+      return range.getBoundingClientRect().left
+    }
+    throw new Error("no text")
+  }
+
+  test("the lazy Empty placeholder text starts where a sibling leaf text starts", async ({
+    page,
+  }) => {
+    await openShowcase(page, "/components/tree-view")
+    const demo = page
+      .locator("[data-showcase-example]")
+      .filter({ has: page.getByText("Lazy-load children", { exact: true }) })
+    await demo.getByText("users", { exact: true }).click()
+    const leaf = demo.getByText("alice.json", { exact: true })
+    await expect(leaf).toBeVisible()
+    await demo.getByText("archive", { exact: true }).click()
+    const placeholder = demo.getByText("Empty", { exact: true })
+    await expect(placeholder).toBeVisible()
+    const leafStart = await leaf.evaluate(textStart)
+    const placeholderStart = await placeholder.evaluate(textStart)
+    expect(
+      Math.abs(placeholderStart - leafStart),
+      `placeholder text at ${placeholderStart}px, leaf text at ${leafStart}px`,
+    ).toBeLessThanOrEqual(1)
+  })
+})
