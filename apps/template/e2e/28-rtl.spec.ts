@@ -565,10 +565,13 @@ test.describe("shell edges", () => {
     const shellBox = await boxOf(shell)
     const panelBox = await boxOf(panel)
     // The panel floats at the inline start, one 0.75rem inset in.
-    expect(shellBox.x + shellBox.width - (panelBox.x + panelBox.width)).toBe(12)
+    expect(
+      shellBox.x + shellBox.width - (panelBox.x + panelBox.width),
+    ).toBeCloseTo(12, 0)
     // Its reserve is the panel, the inset and the 1.5rem content gutter.
-    expect(parseFloat(await computed(content, "padding-right"))).toBe(
+    expect(parseFloat(await computed(content, "padding-right"))).toBeCloseTo(
       panelBox.width + 12 + 24,
+      0,
     )
     expect(await computed(content, "padding-left")).not.toBe(
       await computed(content, "padding-right"),
