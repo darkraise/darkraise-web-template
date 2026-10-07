@@ -733,3 +733,30 @@ test.describe("row 74: signature pad Clear button", () => {
     expect(clearTop).toBeGreaterThanOrEqual(canvasBottom + 8)
   })
 })
+
+test.describe("row 91: kitchen-sink radio alignment", () => {
+  test("each radio row centres on a checkbox row", async ({ page }) => {
+    await openShowcase(page, "/components/kitchen-sink")
+    const choices = page.locator('[data-family="choices"]')
+    const centre = (rows: Element[]) =>
+      rows.map((row) => {
+        const r = row.getBoundingClientRect()
+        return r.top + r.height / 2
+      })
+    const checkboxRows = await choices
+      .locator('[role="checkbox"]')
+      .locator("xpath=..")
+      .evaluateAll(centre)
+    const radioRows = await choices
+      .locator('[role="radiogroup"] > div')
+      .evaluateAll(centre)
+    expect(checkboxRows).toHaveLength(2)
+    expect(radioRows).toHaveLength(2)
+    for (const radio of radioRows) {
+      const nearest = Math.min(
+        ...checkboxRows.map((checkbox) => Math.abs(checkbox - radio)),
+      )
+      expect(nearest, `radio row centre ${radio}`).toBeLessThanOrEqual(2)
+    }
+  })
+})

@@ -165,7 +165,11 @@ function KitchenSinkPage() {
                 <Label htmlFor="kitchen-sink-switch-off">{t("Off")}</Label>
               </div>
             </div>
-            <RadioGroup defaultValue="on" aria-label={t("Choices")}>
+            <RadioGroup
+              defaultValue="on"
+              aria-label={t("Choices")}
+              className="content-start gap-3"
+            >
               <div className="flex items-center gap-2">
                 <RadioGroupItem value="on" id="kitchen-sink-radio-on" />
                 <Label htmlFor="kitchen-sink-radio-on">{t("Checked")}</Label>
