@@ -16,6 +16,16 @@ const AXES = JSON.parse(
   ),
 ) as Record<string, ScaffoldAxis>
 
+// The kit does not export its migration revision, and its source cannot be
+// imported here: its path aliases do not resolve under the e2e tsconfig.
+const LEGACY_REVISION = /export const LEGACY_REVISION = (\d+)/.exec(
+  readFileSync(
+    new URL("../../../packages/ui/src/theme/axes/legacy.ts", import.meta.url),
+    "utf8",
+  ),
+)?.[1]
+if (!LEGACY_REVISION) throw new Error("LEGACY_REVISION not found in legacy.ts")
+
 // Mode must be `dark`: `system` and `light` both resolve to light under
 // Playwright's scheme and would prove nothing. Every other axis takes its
 // last non-default value, which puts the style on glass and both glass axes
@@ -226,7 +236,7 @@ for (const user of LEGACY_USERS) {
     expect(left).toEqual([
       ...user.removed.map(() => null),
       ...Object.values(user.kept),
-      "2",
+      LEGACY_REVISION,
     ])
     await expect(page.locator("#root .app-loading")).toHaveCount(1)
   })
