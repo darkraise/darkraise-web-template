@@ -105,6 +105,10 @@ Enforcement is **not** blanket. These remain uncovered by `allOf`:
   carries the full enforced `variant` x `size` matrix, so enforcement exists
   indirectly — a new toggle variant breaks `toggle.tsx`, not
   `toggle-group.tsx`.
+- **`ButtonGroup`'s "Child variant x size" matrix** is a sample of three
+  variants and three sizes, checked with `satisfies` against `ButtonVariant`
+  and `ButtonSize` rather than `allOf`. A removed value breaks the build; an
+  added one does not. The buttons page carries the full enforced matrix.
 
 ## Deliberate exceptions
 
