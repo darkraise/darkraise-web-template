@@ -112,10 +112,23 @@ export function computed(locator: Locator, property: string): Promise<string> {
  * with its own edge pixels so the blur does not fade the outermost rows, which
  * are the strip's loudest, toward transparent; every fourth pixel is read.
  */
-export async function minContrastOver(
+export function minContrastOver(
   page: Page,
   clip: { x: number; y: number; width: number; height: number },
   colours: Rgb[],
+): Promise<number[]> {
+  return lowestContrastOver(
+    page,
+    clip,
+    colours.map(([r, g, b]) => [r, g, b, 1]),
+  )
+}
+
+/** `minContrastOver` for colours with an alpha, each blended over the ground. */
+async function lowestContrastOver(
+  page: Page,
+  clip: { x: number; y: number; width: number; height: number },
+  colours: [number, number, number, number][],
 ): Promise<number[]> {
   const png = await page.screenshot({ clip })
   return page.evaluate(
@@ -183,17 +196,18 @@ export async function minContrastOver(
       }
       const luminance = (r: number, g: number, b: number) =>
         0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b)
-      const targets = colours.map(([r, g, b]) => luminance(r, g, b))
-      const lowest = targets.map(() => Infinity)
+      const lowest = colours.map(() => Infinity)
       for (let y = 0; y < height; y += 4) {
         for (let x = 0; x < width; x += 4) {
           const i = (y * width + x) * 4
-          const ground = luminance(
-            data[i] ?? 0,
-            data[i + 1] ?? 0,
-            data[i + 2] ?? 0,
-          )
-          targets.forEach((target, k) => {
+          const [gr = 0, gg = 0, gb = 0] = [data[i], data[i + 1], data[i + 2]]
+          const ground = luminance(gr, gg, gb)
+          colours.forEach(([r, g, b, a], k) => {
+            const target = luminance(
+              r * a + gr * (1 - a),
+              g * a + gg * (1 - a),
+              b * a + gb * (1 - a),
+            )
             const ratio =
               (Math.max(target, ground) + 0.05) /
               (Math.min(target, ground) + 0.05)
@@ -217,16 +231,21 @@ export function alphaOf(value: string): number {
 }
 
 /**
- * Contrast of the text colour of an element against the nearest opaque background
- * behind it, walking `parentElement`. At the root of a same-origin iframe the
- * walk continues from `frameElement` in the host document: Frame mirrors the
- * host colour scheme, so the frame canvas is transparent and the host paints
- * the ground. Colours are read back through a canvas, so every computed syntax
- * (`rgb()`, `color(srgb …)` from `color-mix()`, `oklab()`) resolves to sRGB,
- * and translucent text is blended over its ground.
+ * Contrast of the text colour of an element against what is painted behind
+ * it, walking `parentElement`. At the root of a same-origin iframe the walk
+ * continues from `frameElement` in the host document: Frame mirrors the host
+ * colour scheme, so the frame canvas is transparent and the host paints the
+ * ground. Translucent backgrounds are composited over the layers beneath them
+ * until an opaque one is reached, and each layer and the text are faded by
+ * the opacity of their ancestors. A background image or a backdrop filter
+ * cannot be resolved from computed style, so when the walk meets one first
+ * the ground is read from one screenshot of the element with its text hidden,
+ * and the lowest contrast over it is returned. Colours are read back through
+ * a canvas, so every computed syntax (`rgb()`, `color(srgb …)` from
+ * `color-mix()`, `oklab()`) resolves to sRGB.
  */
 export async function textContrast(locator: Locator): Promise<number> {
-  const { color, background } = await locator.evaluate((el) => {
+  const result = await locator.evaluate((el) => {
     const canvas = document.createElement("canvas")
     canvas.width = 1
     canvas.height = 1
@@ -243,31 +262,95 @@ export async function textContrast(locator: Locator): Promise<number> {
       }
       context.fillRect(0, 0, 1, 1)
       const [r = 0, g = 0, b = 0, a = 0] = context.getImageData(0, 0, 1, 1).data
-      return [r, g, b, a]
+      return [r, g, b, a / 255]
     }
     const styleOf = (node: Element) =>
       (node.ownerDocument.defaultView ?? window).getComputedStyle(node)
+    const parentOf = (node: Element) =>
+      node.parentElement ?? node.ownerDocument.defaultView?.frameElement ?? null
+    const opacityOf = (node: Element) => {
+      let opacity = 1
+      for (let n: Element | null = node; n; n = parentOf(n)) {
+        opacity *= Number(styleOf(n).opacity)
+      }
+      return opacity
+    }
 
-    let ground: [number, number, number, number] = [255, 255, 255, 255]
-    let node: Element | null = el
-    while (node) {
-      const value = rgba(styleOf(node).backgroundColor)
-      if (value[3] === 255) {
-        ground = value
+    const [tr, tg, tb, ta] = rgba(styleOf(el).color)
+    const text: [number, number, number, number] = [
+      tr,
+      tg,
+      tb,
+      ta * opacityOf(el),
+    ]
+    const layers: [number, number, number, number][] = []
+    let ground: [number, number, number] = [255, 255, 255]
+    for (let node: Element | null = el; node; node = parentOf(node)) {
+      const style = styleOf(node)
+      if (
+        style.backgroundImage !== "none" ||
+        (style.backdropFilter !== "" && style.backdropFilter !== "none")
+      ) {
+        return { kind: "pixels" as const, text }
+      }
+      const [r, g, b, a] = rgba(style.backgroundColor)
+      const alpha = a * opacityOf(node)
+      if (alpha >= 1) {
+        ground = [r, g, b]
         break
       }
-      node =
-        node.parentElement ??
-        node.ownerDocument.defaultView?.frameElement ??
-        null
+      if (alpha > 0) layers.push([r, g, b, alpha])
     }
-    const [r, g, b, a] = rgba(styleOf(el).color)
-    const mix = (fg: number, bg: number) =>
-      Math.round((fg * a + bg * (255 - a)) / 255)
+    const over = (
+      [r, g, b, a]: [number, number, number, number],
+      [br, bg, bb]: [number, number, number],
+    ): [number, number, number] => [
+      Math.round(r * a + br * (1 - a)),
+      Math.round(g * a + bg * (1 - a)),
+      Math.round(b * a + bb * (1 - a)),
+    ]
+    for (const layer of layers.reverse()) ground = over(layer, ground)
     return {
-      color: [mix(r, ground[0]), mix(g, ground[1]), mix(b, ground[2])] as Rgb,
-      background: [ground[0], ground[1], ground[2]] as Rgb,
+      kind: "computed" as const,
+      color: over(text, ground) as Rgb,
+      background: ground as Rgb,
     }
   })
-  return contrast(color, background)
+  if (result.kind === "computed") {
+    return contrast(result.color, result.background)
+  }
+
+  const attribute = "data-e2e-text-hidden"
+  await locator.scrollIntoViewIfNeeded()
+  // Transitions are held off while the text is hidden and while it comes
+  // back, or the restored colour would fade in and the next reading with it.
+  await locator.evaluate((el, name) => {
+    const style = el.ownerDocument.createElement("style")
+    style.id = name
+    style.textContent = `[${name}], [${name}] * { transition: none !important }
+      [${name}="hidden"], [${name}="hidden"] * {
+        color: transparent !important;
+        -webkit-text-fill-color: transparent !important;
+        text-shadow: none !important;
+        text-decoration-color: transparent !important;
+      }`
+    el.ownerDocument.head.append(style)
+    el.setAttribute(name, "hidden")
+  }, attribute)
+  try {
+    const box = await locator.boundingBox()
+    if (!box) throw new Error("textContrast: the element has no box")
+    const [lowest = 0] = await lowestContrastOver(locator.page(), box, [
+      result.text,
+    ])
+    return lowest
+  } finally {
+    await locator.evaluate((el, name) => {
+      el.setAttribute(name, "shown")
+      // Layout flushes the restored colour while transitions are still off.
+      el.getBoundingClientRect()
+      el.removeAttribute(name)
+      el.ownerDocument.getElementById(name)?.remove()
+    }, attribute)
+  }
 }

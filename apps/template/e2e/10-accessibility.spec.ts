@@ -7,7 +7,7 @@ import {
   seedApp,
   watchConsole,
 } from "./helpers/app"
-import { textContrast } from "./helpers/measure"
+import { settle, textContrast } from "./helpers/measure"
 
 /** WCAG relative luminance from an `H S% L%` token value. */
 function hslToLuminance(token: string): number | null {
@@ -253,6 +253,8 @@ test.describe("colour contrast of template text", () => {
         .getByRole("alertdialog")
         .getByRole("button", { name: "Delete Account" })
       expect(await action.evaluate(paint)).toEqual(expected)
+      // The dialog fades in, and textContrast composites its opacity.
+      await settle(page)
       expect(await textContrast(action)).toBeGreaterThanOrEqual(4.5)
     })
   }
