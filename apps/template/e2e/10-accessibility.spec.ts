@@ -1,12 +1,6 @@
-import { test, expect } from "@playwright/test"
+import { test, expect, type Locator, type Page } from "@playwright/test"
 import { MATRIX_STYLES } from "./fixtures/theme"
-import {
-  gotoApp,
-  openThemeSwitcher,
-  readToken,
-  seedApp,
-  watchConsole,
-} from "./helpers/app"
+import { gotoApp, readToken, seedApp, watchConsole } from "./helpers/app"
 import { settle, textContrast } from "./helpers/measure"
 
 /** WCAG relative luminance from an `H S% L%` token value. */
@@ -45,6 +39,14 @@ function contrastRatio(a: number, b: number) {
   return (hi + 0.05) / (lo + 0.05)
 }
 
+async function tabUntilFocused(page: Page, target: Locator, limit = 150) {
+  for (let i = 0; i < limit; i++) {
+    await page.keyboard.press("Tab")
+    if (await target.evaluate((el) => el === document.activeElement)) return
+  }
+  throw new Error(`Tab did not reach the target in ${limit} presses`)
+}
+
 test.describe("keyboard navigation", () => {
   test("skip link moves focus to the main region", async ({ page }) => {
     await seedApp(page)
@@ -54,6 +56,7 @@ test.describe("keyboard navigation", () => {
     await expect(skip).toBeFocused()
     await page.keyboard.press("Enter")
     await expect(page).toHaveURL(/#main-content$/)
+    await expect(page.locator("#main-content")).toBeFocused()
   })
 
   test("dialog traps Tab and restores focus on close", async ({ page }) => {
@@ -86,15 +89,24 @@ test.describe("keyboard navigation", () => {
   test("dropdown menu supports arrow-key navigation", async ({ page }) => {
     await seedApp(page)
     await gotoApp(page, "/components/dropdown-menu")
-    await page.locator("main").getByRole("button").first().click()
-    const menu = page.getByRole("menu").first()
+    await page
+      .locator("main [data-showcase-example]")
+      .filter({
+        has: page.getByText("Basic menu with sections", { exact: true }),
+      })
+      .getByRole("button")
+      .first()
+      .click()
+    const menu = page.getByRole("menu")
     await expect(menu).toBeVisible()
+    const items = menu.getByRole("menuitem")
 
     await page.keyboard.press("ArrowDown")
-    const focusedInMenu = await page.evaluate(() =>
-      document.querySelector('[role="menu"]')?.contains(document.activeElement),
-    )
-    expect(focusedInMenu).toBe(true)
+    await expect(items.nth(0)).toBeFocused()
+    await expect(items.nth(0)).toHaveText("Profile")
+    await page.keyboard.press("ArrowDown")
+    await expect(items.nth(1)).toBeFocused()
+    await expect(items.nth(1)).toHaveText("Billing")
   })
 
   test("tabs move with arrow keys", async ({ page }) => {
@@ -121,12 +133,20 @@ test.describe("keyboard navigation", () => {
   }) => {
     await seedApp(page, { style: "quiet", mode: "light" })
     await gotoApp(page, "/")
-    await openThemeSwitcher(page)
-    const dark = page
-      .locator('[aria-label="Theme settings"] [aria-label="Mode"]')
-      .getByRole("radio", { name: "Dark" })
-    await dark.focus()
+    const trigger = page.getByRole("button", { name: "Customize theme" })
+    await tabUntilFocused(page, trigger)
     await page.keyboard.press("Enter")
+    const panel = page.locator('[aria-label="Theme settings"]')
+    await expect(panel).toBeVisible()
+
+    const mode = panel.locator('[aria-label="Mode"]')
+    const light = mode.getByRole("radio", { name: "Light" })
+    const dark = mode.getByRole("radio", { name: "Dark" })
+    await tabUntilFocused(page, light)
+    await page.keyboard.press("ArrowRight")
+    await expect(dark).toBeFocused()
+    await page.keyboard.press("Enter")
+    await expect(dark).toHaveAttribute("aria-checked", "true")
     await expect
       .poll(async () =>
         page.evaluate(() => document.documentElement.getAttribute("data-mode")),
@@ -151,38 +171,31 @@ test.describe("landmarks and labels", () => {
   }) => {
     await seedApp(page)
     await gotoApp(page, "/")
-    const unnamed = await page.locator("header button").evaluateAll((buttons) =>
-      buttons
-        .filter((b) => {
-          const label =
-            b.getAttribute("aria-label") ?? b.textContent?.trim() ?? ""
-          return label.length === 0
-        })
-        .map((b) => b.outerHTML.slice(0, 120)),
-    )
-    expect(unnamed).toEqual([])
+    // Hidden buttons, such as the phone drawer trigger at this width, are out
+    // of the accessibility tree and have no name to check.
+    const buttons = page.locator("header button:visible")
+    await expect.poll(() => buttons.count()).toBeGreaterThanOrEqual(5)
+    for (const button of await buttons.all()) {
+      await expect(button).toHaveAccessibleName(/\S/)
+    }
   })
 
   test("form inputs on the fields showcase are labelled", async ({ page }) => {
     await seedApp(page)
     await gotoApp(page, "/components/form-fields")
-    const unlabelled = await page
-      // Component-internal proxy inputs are aria-hidden and out of the
-      // accessibility tree, so they need no label of their own.
-      .locator('main input:not([type=hidden]):not([aria-hidden="true"])')
-      .evaluateAll((inputs) =>
-        inputs
-          .filter((input) => {
-            const id = input.getAttribute("id")
-            const labelled =
-              input.getAttribute("aria-label") ??
-              input.getAttribute("aria-labelledby") ??
-              (id ? document.querySelector(`label[for="${id}"]`) : null)
-            return !labelled
-          })
-          .map((i) => i.outerHTML.slice(0, 120)),
-      )
-    expect(unlabelled).toEqual([])
+    // Component-internal proxy inputs are aria-hidden, and an editable in
+    // preview hides its input; neither is in the accessibility tree, so
+    // neither needs a label of its own.
+    const inputs = page.locator(
+      'main input:not([type=hidden]):not([aria-hidden="true"]):visible',
+    )
+    await expect.poll(() => inputs.count()).toBeGreaterThanOrEqual(2)
+    for (const input of await inputs.all()) {
+      await expect(input).toHaveAccessibleName(/\S/)
+      // A placeholder is only the accessible name of last resort, not a label.
+      const placeholder = await input.getAttribute("placeholder")
+      if (placeholder) await expect(input).not.toHaveAccessibleName(placeholder)
+    }
   })
 })
 
@@ -267,6 +280,29 @@ test.describe("reduced motion", () => {
     await seedApp(page)
     await gotoApp(page, "/components/animation")
     await expect(page.locator("main h1").first()).toBeVisible()
+    // Computed durations, not getAnimations(): the reduced-motion rule
+    // finishes every animation within a frame, so an empty animation list
+    // would pass whether or not the rule applied.
+    const animated = await page.locator("main *").evaluateAll((elements) =>
+      elements
+        .map((el) => getComputedStyle(el))
+        .filter((style) => style.animationName !== "none")
+        .map((style) => ({
+          name: style.animationName,
+          durations: [
+            ...style.animationDuration.split(","),
+            ...style.transitionDuration.split(","),
+          ].map(
+            (value) =>
+              parseFloat(value) * (value.trim().endsWith("ms") ? 1 : 1000),
+          ),
+        })),
+    )
+    expect(animated.length).toBeGreaterThanOrEqual(17)
+    const slow = animated.filter(({ durations }) =>
+      durations.some((ms) => ms > 0.01),
+    )
+    expect(slow).toEqual([])
     consoleWatch.assertClean()
   })
 })
