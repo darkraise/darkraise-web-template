@@ -203,7 +203,13 @@ export async function textContrast(locator: Locator): Promise<number> {
     if (!context) throw new Error("no 2d context")
     const rgba = (value: string): [number, number, number, number] => {
       context.clearRect(0, 0, 1, 1)
+      // An unparsable value leaves fillStyle unchanged, so a sentinel tells
+      // a rejected colour from an accepted one.
+      context.fillStyle = "#010203"
       context.fillStyle = value
+      if (context.fillStyle === "#010203" && value.trim() !== "#010203") {
+        throw new Error(`the canvas could not parse the colour "${value}"`)
+      }
       context.fillRect(0, 0, 1, 1)
       const [r = 0, g = 0, b = 0, a = 0] = context.getImageData(0, 0, 1, 1).data
       return [r, g, b, a]

@@ -190,9 +190,9 @@ test.describe("showcase sweep", () => {
           }
         }
 
-        // A wrapper with any overflow but visible clips on both axes, since
-        // overflow-x: auto computes overflow-y to auto as well, so content
-        // that overhangs a cell bottom, such as an anchored badge, is cut.
+        // Any overflow other than visible clips both axes: overflow-x auto
+        // makes overflow-y compute to auto, so content that overhangs a cell
+        // bottom, such as an anchored badge, would be cut.
         for (const matrix of document.querySelectorAll(
           "[data-showcase-matrix]",
         )) {
@@ -318,7 +318,10 @@ test.describe("row 68 and 76: matrix columns fit their content", () => {
                 `${name} scrolls: scrollWidth ${wrapper.scrollWidth} > clientWidth ${wrapper.clientWidth}`,
               )
             }
-            if (wrapper.scrollHeight > wrapper.clientHeight + 1) {
+            if (
+              getComputedStyle(wrapper).overflowY !== "visible" &&
+              wrapper.scrollHeight > wrapper.clientHeight + 1
+            ) {
               found.push(
                 `${name} scrolls: scrollHeight ${wrapper.scrollHeight} > clientHeight ${wrapper.clientHeight}`,
               )
