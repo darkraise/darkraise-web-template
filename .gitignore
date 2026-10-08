@@ -19,6 +19,7 @@ test-results
 playwright-report
 storybook-static
 apps/template/src/routeTree.gen.ts
+.tanstack/
 .superpowers
 .claude/**
 docs/superpowers/
