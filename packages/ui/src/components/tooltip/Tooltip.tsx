@@ -270,6 +270,7 @@ function TooltipContentImpl({
   ref,
   onPointerEnter,
   onPointerLeave,
+  style,
   ...rest
 }: Omit<TooltipContentProps, "forceMount">) {
   const ctx = useTooltipContext("TooltipContent")
@@ -314,6 +315,7 @@ function TooltipContentImpl({
         data-align={resolvedAlign}
         data-surface-fill={surface}
         style={{
+          ...style,
           position: floating.strategy,
           top: Math.round(floating.y ?? 0),
           left: Math.round(floating.x ?? 0),

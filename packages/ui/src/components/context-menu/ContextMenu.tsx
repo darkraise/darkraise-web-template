@@ -265,6 +265,7 @@ function ContextMenuContentImpl({
   onInteractOutside,
   surface,
   ref,
+  style,
   ...rest
 }: Omit<ContextMenuContentProps, "forceMount" | "loop">) {
   const ctx = useContextMenuContext("ContextMenuContent")
@@ -370,6 +371,7 @@ function ContextMenuContentImpl({
         data-surface-fill={surface}
         tabIndex={-1}
         style={{
+          ...style,
           position: floating.strategy,
           top: Math.round(floating.y ?? 0),
           left: Math.round(floating.x ?? 0),

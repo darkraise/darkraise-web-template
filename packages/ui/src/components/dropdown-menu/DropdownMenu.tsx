@@ -282,6 +282,7 @@ function DropdownMenuContentImpl({
   onInteractOutside,
   surface,
   ref,
+  style,
   ...rest
 }: Omit<DropdownMenuContentProps, "forceMount" | "loop">) {
   const ctx = useDropdownContext("DropdownMenuContent")
@@ -420,6 +421,7 @@ function DropdownMenuContentImpl({
         data-surface-fill={surface}
         tabIndex={-1}
         style={{
+          ...style,
           position: floating.strategy,
           top: Math.round(floating.y ?? 0),
           left: Math.round(floating.x ?? 0),

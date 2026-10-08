@@ -413,6 +413,7 @@ function SelectContentImpl({
   onPointerDownOutside,
   surface,
   ref,
+  style,
   ...rest
 }: Omit<SelectContentProps, "forceMount">) {
   const ctx = useSelectContext("SelectContent")
@@ -531,6 +532,7 @@ function SelectContentImpl({
         data-surface-fill={surface}
         tabIndex={-1}
         style={{
+          ...style,
           position: floating.strategy,
           top: Math.round(floating.y ?? 0),
           left: Math.round(floating.x ?? 0),

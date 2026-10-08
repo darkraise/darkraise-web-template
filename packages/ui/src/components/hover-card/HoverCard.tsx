@@ -160,6 +160,7 @@ function HoverCardContentImpl({
   ref,
   onPointerEnter,
   onPointerLeave,
+  style,
   ...rest
 }: Omit<HoverCardContentProps, "forceMount">) {
   const ctx = useHoverCardContext("HoverCardContent")
@@ -205,6 +206,7 @@ function HoverCardContentImpl({
         data-align={resolvedAlign}
         data-surface-fill={surface}
         style={{
+          ...style,
           position: floating.strategy,
           top: Math.round(floating.y ?? 0),
           left: Math.round(floating.x ?? 0),

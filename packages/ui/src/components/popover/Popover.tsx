@@ -163,6 +163,7 @@ function PopoverContentImpl({
   onInteractOutside,
   surface,
   ref,
+  style,
   ...rest
 }: Omit<PopoverContentProps, "forceMount">) {
   const ctx = usePopoverContext("PopoverContent")
@@ -290,6 +291,7 @@ function PopoverContentImpl({
         data-surface-fill={surface}
         tabIndex={-1}
         style={{
+          ...style,
           position: floating.strategy,
           // Snap to integer pixels to avoid subpixel anti-aliasing on
           // borders (especially border-bottom of any descendant) when

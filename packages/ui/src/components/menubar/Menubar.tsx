@@ -410,6 +410,7 @@ function MenubarContentImpl({
   onInteractOutside,
   surface,
   ref,
+  style,
   ...rest
 }: Omit<MenubarContentProps, "forceMount" | "loop">) {
   const ctx = useMenubarMenu("MenubarContent")
@@ -547,6 +548,7 @@ function MenubarContentImpl({
         data-surface-fill={surface}
         tabIndex={-1}
         style={{
+          ...style,
           position: floating.strategy,
           top: Math.round(floating.y ?? 0),
           left: Math.round(floating.x ?? 0),
