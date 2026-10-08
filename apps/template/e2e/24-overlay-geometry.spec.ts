@@ -131,8 +131,7 @@ test.describe("submenus anchor to their row", () => {
     await page
       .getByText("Context area")
       .click({ button: "right", position: { x: 40, y: 40 } })
-    // Off the menu, so no row is hovered while the menu is laid out.
-    await page.mouse.move(600, 600)
+    await expect(page.getByRole("menu")).toBeFocused()
     await page.keyboard.press("ArrowDown")
     await page.keyboard.press("ArrowDown")
     await page.keyboard.press("ArrowRight")
@@ -143,6 +142,57 @@ test.describe("submenus anchor to their row", () => {
     const submenu = await boxOf(page.locator(".dr-menu-sub-content"))
     expect(Math.abs(submenu.x - (share.x + share.width))).toBeLessThanOrEqual(2)
     expect(Math.abs(submenu.y - share.y)).toBeLessThanOrEqual(2)
+  })
+})
+
+interface Point {
+  x: number
+  y: number
+}
+
+test.describe("context menus open at the pointer", () => {
+  test("the root menu is first shown at the pointer", async ({ page }) => {
+    await seedApp(page, { style: "quiet", mode: "light" })
+    await openOverlayCase(page, "context-submenu")
+    // Every DOM change is checked, not only animation frames: whether a frame
+    // lands while the menu still sits elsewhere depends on timing.
+    await page.evaluate(() => {
+      const log: { pointer?: Point; shown: Point[] } = { shown: [] }
+      ;(window as unknown as { menuLog: typeof log }).menuLog = log
+      const record = () => {
+        const menu = document.querySelector(".dr-menu-content")
+        if (!menu || getComputedStyle(menu).visibility === "hidden") return
+        const box = menu.getBoundingClientRect()
+        log.shown.push({ x: box.x, y: box.y })
+      }
+      new MutationObserver(record).observe(document.body, {
+        subtree: true,
+        childList: true,
+        attributes: true,
+        attributeFilter: ["style"],
+      })
+      window.addEventListener(
+        "contextmenu",
+        (event) => {
+          log.pointer = { x: event.clientX, y: event.clientY }
+        },
+        { capture: true, once: true },
+      )
+    })
+    await page
+      .getByText("Context area")
+      .click({ button: "right", position: { x: 40, y: 40 } })
+    await expect(page.getByRole("menu")).toBeVisible()
+    const { pointer, shown } = await page.evaluate(
+      () =>
+        (window as unknown as { menuLog: { pointer?: Point; shown: Point[] } })
+          .menuLog,
+    )
+    if (!pointer) throw new Error("no contextmenu event was recorded")
+    const [first] = shown
+    if (!first) throw new Error("the menu was never shown")
+    expect(Math.abs(first.x - pointer.x)).toBeLessThanOrEqual(1)
+    expect(Math.abs(first.y - pointer.y)).toBeLessThanOrEqual(1)
   })
 })
 
