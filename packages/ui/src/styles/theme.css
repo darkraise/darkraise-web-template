@@ -1075,9 +1075,13 @@
   /* The flat shell separates its chrome by tone alone, and light --muted sits
      at 1.05:1 against the page. A fixed step below the page lightness reads
      as a tone (1.2:1) while staying under the classic rail edge (1.22:1), so
-     it never looks like a border. Dark flat keeps --muted. */
-  :root:not([data-mode="dark"]) {
-    --shell-flat-chrome: hsl(from hsl(var(--background)) h s calc(l - 8.25));
+     it never looks like a border. Dark flat keeps --muted. A browser without
+     relative colour syntax must leave the variable undefined: an invalid
+     value would skip the --muted fallback and paint the chrome transparent. */
+  @supports (color: hsl(from red h s calc(l - 1))) {
+    :root:not([data-mode="dark"]) {
+      --shell-flat-chrome: hsl(from hsl(var(--background)) h s calc(l - 8.25));
+    }
   }
 }
 

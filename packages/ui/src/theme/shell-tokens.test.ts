@@ -203,6 +203,14 @@ describe("shell style rules", () => {
       "--shell-flat-chrome: hsl(from hsl(var(--background)) h s calc(l - 8.25));",
     )
   })
+
+  // An unsupported relative colour is invalid at computed-value time, which
+  // skips the --muted fallback and paints the chrome transparent.
+  it("guards the flat chrome tone behind relative colour support", () => {
+    expect(css).toMatch(
+      /@supports \(color: hsl\(from red h s calc\(l - 1\)\)\) \{\s*:root:not\(\[data-mode="dark"\]\) \{\s*--shell-flat-chrome:/,
+    )
+  })
 })
 
 const shell = readFileSync(
