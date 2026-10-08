@@ -64,8 +64,13 @@
   }
 
   .dr-carousel-indicator {
-    @apply focus-ring bg-muted hover:bg-muted-foreground/40 hit-area-24 inline-block h-2 w-2 cursor-pointer rounded-full border-0 p-0 transition-[background-color,width,height];
+    @apply focus-ring bg-muted hit-area-24 inline-block h-2 w-2 cursor-pointer rounded-full border-0 p-0 transition-[background-color,width,height];
     transition-duration: var(--duration-normal);
+  }
+  @media (hover: hover) {
+    .dr-carousel-indicator:hover {
+      @apply bg-muted-foreground/40;
+    }
   }
 
   .dr-carousel-indicator[data-current="true"] {

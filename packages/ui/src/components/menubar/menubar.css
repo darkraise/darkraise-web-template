@@ -4,11 +4,21 @@
   }
 
   .dr-menubar-trigger {
-    @apply hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex cursor-pointer items-center rounded-sm px-[var(--btn-px)] py-[var(--btn-px-tight)] text-sm font-medium transition-colors outline-none select-none;
+    @apply focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex cursor-pointer items-center rounded-sm px-[var(--btn-px)] py-[var(--btn-px-tight)] text-sm font-medium transition-colors outline-none select-none;
+  }
+  @media (hover: hover) {
+    .dr-menubar-trigger:hover {
+      @apply bg-accent text-accent-foreground;
+    }
   }
 
   .dr-menubar-sub-trigger {
-    @apply hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex cursor-pointer items-center rounded-sm px-2 py-[var(--density-row-py)] text-sm transition-colors outline-none select-none;
+    @apply focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex cursor-pointer items-center rounded-sm px-2 py-[var(--density-row-py)] text-sm transition-colors outline-none select-none;
+  }
+  @media (hover: hover) {
+    .dr-menubar-sub-trigger:hover {
+      @apply bg-accent text-accent-foreground;
+    }
   }
 
   .dr-menubar-sub-content {

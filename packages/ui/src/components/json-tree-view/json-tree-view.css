@@ -94,7 +94,12 @@
   }
 
   .dr-json-chevron {
-    @apply text-muted-foreground hover:text-foreground inline-flex size-[var(--icon-size)] cursor-pointer items-center justify-center rounded-sm transition-colors;
+    @apply text-muted-foreground inline-flex size-[var(--icon-size)] cursor-pointer items-center justify-center rounded-sm transition-colors;
+  }
+  @media (hover: hover) {
+    .dr-json-chevron:hover {
+      @apply text-foreground;
+    }
   }
   /* A collapsed chevron points along the reading order. */
   .dr-json-chevron[aria-expanded="false"]:dir(rtl) > svg {
@@ -197,7 +202,12 @@
    * consumers that called the component before this expansion. Mirrors
    * .dr-json-row-action's hover-reveal behaviour. */
   .dr-json-copy {
-    @apply text-muted-foreground hover:text-foreground ms-1 opacity-0 transition-opacity;
+    @apply text-muted-foreground ms-1 opacity-0 transition-opacity;
+  }
+  @media (hover: hover) {
+    .dr-json-copy:hover {
+      @apply text-foreground;
+    }
   }
   @media (hover: none) {
     .dr-json-copy {

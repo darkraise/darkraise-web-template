@@ -62,7 +62,12 @@
   }
 
   .dr-theme-switcher-swatch {
-    @apply focus-ring h-6 w-6 cursor-pointer rounded-full border-2 border-transparent transition-transform hover:scale-110;
+    @apply focus-ring h-6 w-6 cursor-pointer rounded-full border-2 border-transparent transition-transform;
+  }
+  @media (hover: hover) {
+    .dr-theme-switcher-swatch:hover {
+      @apply scale-110;
+    }
   }
 
   /* A ring outside the swatch, so it reads on a near-white swatch too. */

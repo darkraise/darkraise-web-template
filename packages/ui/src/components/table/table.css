@@ -26,7 +26,15 @@
   }
 
   .dr-table-row {
-    @apply hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors;
+    @apply border-b transition-colors;
+  }
+  @media (hover: hover) {
+    .dr-table-row:hover {
+      @apply bg-muted/50;
+    }
+  }
+  .dr-table-row[data-state="selected"] {
+    @apply bg-muted;
   }
 
   .dr-table-head {

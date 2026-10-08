@@ -1,7 +1,12 @@
 @layer components {
   .dr-image-dropzone {
-    @apply focus-ring text-muted-foreground hover:text-foreground hover:border-primary flex cursor-pointer items-center justify-center rounded-md border-2 border-dashed p-6 text-sm transition-colors select-none;
+    @apply focus-ring text-muted-foreground flex cursor-pointer items-center justify-center rounded-md border-2 border-dashed p-6 text-sm transition-colors select-none;
     position: relative;
+  }
+  @media (hover: hover) {
+    .dr-image-dropzone:hover {
+      @apply text-foreground border-primary;
+    }
   }
   .dr-image-dropzone[data-state="active"] {
     @apply border-primary text-foreground bg-primary/5;

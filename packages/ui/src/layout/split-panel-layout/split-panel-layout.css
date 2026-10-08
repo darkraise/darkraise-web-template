@@ -5,7 +5,12 @@
   }
 
   .dr-split-panel-layout-handle {
-    @apply hover:bg-primary/20 w-1 cursor-col-resize bg-transparent transition-colors;
+    @apply w-1 cursor-col-resize bg-transparent transition-colors;
+  }
+  @media (hover: hover) {
+    .dr-split-panel-layout-handle:hover {
+      @apply bg-primary/20;
+    }
   }
 
   .dr-split-panel-layout-handle[data-dragging="true"] {

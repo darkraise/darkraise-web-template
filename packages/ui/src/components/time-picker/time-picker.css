@@ -16,7 +16,12 @@
   }
 
   .dr-time-column-item {
-    @apply hover:bg-accent mx-1 rounded-md px-3 py-1.5 text-sm transition-colors;
+    @apply mx-1 rounded-md px-3 py-1.5 text-sm transition-colors;
+  }
+  @media (hover: hover) {
+    .dr-time-column-item:hover {
+      @apply bg-accent;
+    }
   }
 
   .dr-time-column-item[data-selected="true"] {

@@ -8,7 +8,12 @@
   }
 
   .dr-breadcrumb-link {
-    @apply hover:text-foreground transition-colors;
+    @apply transition-colors;
+  }
+  @media (hover: hover) {
+    .dr-breadcrumb-link:hover {
+      @apply text-foreground;
+    }
   }
 
   .dr-breadcrumb-page {

@@ -101,6 +101,13 @@ function gated(rule: StyleRule): boolean {
 
 const HOVER = /:hover(?![\w-])/
 
+/**
+ * A Tailwind variant chain that hovers: `hover:`, `group-hover:`,
+ * `peer-hover/name:`, or an arbitrary variant such as `[&>a:hover]:`.
+ */
+const HOVER_VARIANT =
+  /(?:^|:)(?:group-|peer-)?hover(?:\/[\w-]+)?:|\[[^\]]*:hover(?![\w-])[^\]]*\]:/
+
 function stylesheets(dir: string): string[] {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const path = join(dir, entry.name)
@@ -165,6 +172,16 @@ function hoverDrivenOpacities(): Array<[string, string, number]> {
   })
 }
 
+function ungatedHoverUtilities(): string[] {
+  return RULES.filter((rule) => !gated(rule)).flatMap((rule) =>
+    rule.statements
+      .filter((statement) => statement.startsWith("@apply "))
+      .flatMap((statement) => statement.slice("@apply ".length).split(" "))
+      .filter((token) => HOVER_VARIANT.test(token))
+      .map((token) => `${rule.path}: ${rule.selectors.join(", ")} ${token}`),
+  )
+}
+
 describe("hover rules apply only on devices that can hover", () => {
   it("sees media nesting around a rule", () => {
     const rules = parse(
@@ -200,6 +217,28 @@ describe("hover rules apply only on devices that can hover", () => {
 
   it("keeps every :hover selector inside @media (hover: hover)", () => {
     expect(ungatedHoverSelectors()).toEqual([])
+  })
+
+  it("recognises every way a utility can hover", () => {
+    const hovering = [
+      "hover:bg-accent",
+      "dark:hover:bg-accent",
+      "group-hover:opacity-100",
+      "peer-hover/field:text-foreground",
+      "[&>a:hover]:text-primary-text",
+    ]
+    const resting = [
+      "bg-accent",
+      "data-[state=hover]:bg-accent",
+      "[&_.dr-hover-card]:hidden",
+      "hover-none",
+    ]
+    expect(hovering.filter((token) => !HOVER_VARIANT.test(token))).toEqual([])
+    expect(resting.filter((token) => HOVER_VARIANT.test(token))).toEqual([])
+  })
+
+  it("keeps every hover utility in @apply inside @media (hover: hover)", () => {
+    expect(ungatedHoverUtilities()).toEqual([])
   })
 
   it("allows only exceptions that still exist outside the media block", () => {

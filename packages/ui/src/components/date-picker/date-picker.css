@@ -77,7 +77,12 @@
   }
 
   .dr-date-picker-preset {
-    @apply text-foreground hover:bg-accent hover:text-accent-foreground focus-ring-inset inline-flex items-center justify-center rounded-sm border px-2 py-1 text-xs transition-colors;
+    @apply text-foreground focus-ring-inset inline-flex items-center justify-center rounded-sm border px-2 py-1 text-xs transition-colors;
+  }
+  @media (hover: hover) {
+    .dr-date-picker-preset:hover {
+      @apply bg-accent text-accent-foreground;
+    }
   }
 
   /* A disabled picker fades once, at its root; its input and trigger read

@@ -26,8 +26,13 @@
   }
 
   .dr-page-header-tab {
-    @apply focus-ring-inset text-muted-foreground hover:text-foreground border-b-2 border-transparent px-1 pb-2 text-sm transition-colors;
+    @apply focus-ring-inset text-muted-foreground border-b-2 border-transparent px-1 pb-2 text-sm transition-colors;
     transition-duration: var(--duration-fast);
+  }
+  @media (hover: hover) {
+    .dr-page-header-tab:hover {
+      @apply text-foreground;
+    }
   }
 
   .dr-page-header-tab.active,

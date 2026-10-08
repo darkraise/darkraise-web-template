@@ -4,8 +4,13 @@
   }
 
   .dr-top-nav-layout-nav-item {
-    @apply focus-ring-inset text-muted-foreground hover:text-foreground flex shrink-0 items-center gap-2 rounded-md px-3 py-1.5 text-sm transition-colors;
+    @apply focus-ring-inset text-muted-foreground flex shrink-0 items-center gap-2 rounded-md px-3 py-1.5 text-sm transition-colors;
     transition-duration: var(--duration-fast);
+  }
+  @media (hover: hover) {
+    .dr-top-nav-layout-nav-item:hover {
+      @apply text-foreground;
+    }
   }
 
   .dr-top-nav-layout-nav-item.active,
