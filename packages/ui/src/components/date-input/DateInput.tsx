@@ -89,6 +89,14 @@ function DateInput({
                   .replace(/\D/g, "")
                   .slice(0, limits.len)
                 setSegment(key, next)
+                // A full segment hands the next digit to the next segment,
+                // selected so typing replaces what it holds.
+                const following = order[idx + 1]
+                const target = following && inputsRef.current[following]
+                if (next.length === limits.len && target) {
+                  target.focus()
+                  target.select()
+                }
               }}
               onKeyDown={(event) => {
                 if (event.key === "ArrowUp") {
@@ -97,15 +105,11 @@ function DateInput({
                 } else if (event.key === "ArrowDown") {
                   event.preventDefault()
                   adjustSegment(key, -1)
-                } else if (event.key === "Backspace") {
+                } else if (event.key === "Backspace" && valStr.length === 0) {
+                  // A segment with digits lets the browser delete one.
                   event.preventDefault()
-                  if (valStr.length > 0) {
-                    setSegment(key, "")
-                  } else {
-                    const segIdx = order.indexOf(key)
-                    const prev = order[segIdx - 1]
-                    if (prev) inputsRef.current[prev]?.focus()
-                  }
+                  const prev = order[idx - 1]
+                  if (prev) inputsRef.current[prev]?.focus()
                 }
               }}
             />

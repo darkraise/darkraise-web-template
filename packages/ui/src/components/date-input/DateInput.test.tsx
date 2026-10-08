@@ -54,7 +54,7 @@ describe("DateInput", () => {
     expect(onValueChange).toHaveBeenLastCalledWith(new Date(2023, 0, 1))
   })
 
-  it("typing in a segment updates the value when complete", async () => {
+  it("typing a full date fills each segment in turn", async () => {
     const onValueChange = vi.fn()
     function Wrapper() {
       const [d, setD] = React.useState<Date | null>(null)
@@ -75,30 +75,29 @@ describe("DateInput", () => {
     ) as HTMLInputElement[]
     if (!year || !month || !day) throw new Error("date segments missing")
     year.focus()
-    await userEvent.keyboard("2024")
-    await userEvent.tab()
-    await userEvent.keyboard("12")
-    await userEvent.tab()
-    await userEvent.keyboard("31")
-    expect(onValueChange).toHaveBeenLastCalledWith(new Date(2024, 11, 31))
-    expect(year.value).toBe("2024")
+    await userEvent.keyboard("20261231")
+    expect(onValueChange).toHaveBeenLastCalledWith(new Date(2026, 11, 31))
+    expect(year.value).toBe("2026")
     expect(month.value).toBe("12")
     expect(day.value).toBe("31")
+    expect(day).toHaveFocus()
   })
 
-  it("Backspace clears the segment", async () => {
-    render(
-      <DateInput
-        value={new Date(2024, 5, 9)}
-        onValueChange={() => {}}
-        aria-label="dob"
-      />,
-    )
-    const [year] = screen.getAllByRole("spinbutton") as HTMLInputElement[]
-    if (!year) throw new Error("year segment missing")
-    year.focus()
+  it("Backspace removes one digit and moves back from an empty segment", async () => {
+    render(<DateInput defaultValue={new Date(2024, 11, 9)} aria-label="dob" />)
+    const [year, month] = screen.getAllByRole(
+      "spinbutton",
+    ) as HTMLInputElement[]
+    if (!year || !month) throw new Error("date segments missing")
+    month.focus()
     await userEvent.keyboard("{Backspace}")
-    expect(year.value).toBe("")
+    expect(month.value).toBe("1")
+    await userEvent.keyboard("{Backspace}")
+    expect(month.value).toBe("")
+    expect(month).toHaveFocus()
+    await userEvent.keyboard("{Backspace}")
+    expect(year).toHaveFocus()
+    expect(year.value).toBe("2024")
   })
 
   it("disabled prevents focus and ignores keys", () => {

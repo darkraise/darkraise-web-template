@@ -303,11 +303,7 @@ test.describe("date and time", () => {
     })
     const month = us.getByRole("spinbutton", { name: "Month" })
     await month.click()
-    await page.keyboard.type("12")
-    await page.keyboard.press("Tab")
-    await page.keyboard.type("25")
-    await page.keyboard.press("Tab")
-    await page.keyboard.type("2025")
+    await page.keyboard.type("12252025")
     await expect(month).toHaveValue("12")
     await expect(us.getByRole("spinbutton", { name: "Day" })).toHaveValue("25")
     await expect(us.getByRole("spinbutton", { name: "Year" })).toHaveValue(
