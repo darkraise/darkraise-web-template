@@ -1,4 +1,4 @@
-import { useState, type ReactElement } from "react"
+import { useLayoutEffect, useState, type ReactElement } from "react"
 import { createRoot } from "react-dom/client"
 import { ChevronDown } from "lucide-react"
 import { Button } from "darkraise-ui/components/button"
@@ -28,6 +28,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "darkraise-ui/components/dialog"
+import {
+  Drawer,
+  DrawerContent,
+  DrawerTitle,
+  DrawerTrigger,
+} from "darkraise-ui/components/drawer"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -278,6 +284,52 @@ function NavigationCase({ dir }: { dir: "ltr" | "rtl" }) {
         Following content
       </p>
     </div>
+  )
+}
+
+// The kit stylesheet keeps html and body at full height with hidden
+// overflow; a page that lets the document scroll undoes that, so the root
+// has a scrollbar for the scroll lock to compensate. The last header
+// control sits at the inline end.
+function ScrollLockCase({ dir }: { dir: "ltr" | "rtl" }) {
+  useLayoutEffect(() => {
+    const { documentElement: html, body } = document
+    html.dir = dir
+    for (const element of [html, body]) {
+      element.style.height = "auto"
+      element.style.overflow = "visible"
+    }
+  }, [dir])
+  return (
+    <>
+      <header
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          padding: 8,
+          borderBottom: "1px solid",
+        }}
+      >
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button>Open dialog</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogTitle>Locked by a dialog</DialogTitle>
+          </DialogContent>
+        </Dialog>
+        <Drawer>
+          <DrawerTrigger asChild>
+            <Button>Open drawer</Button>
+          </DrawerTrigger>
+          <DrawerContent>
+            <DrawerTitle>Locked by a drawer</DrawerTitle>
+          </DrawerContent>
+        </Drawer>
+        <Button data-testid="inline-end">Account</Button>
+      </header>
+      <div style={{ height: 3000 }} />
+    </>
   )
 }
 
@@ -536,6 +588,8 @@ const CASES: Record<string, () => ReactElement> = {
   "context-submenu": ContextSubmenuCase,
   navigation: () => <NavigationCase dir="ltr" />,
   "navigation-rtl": () => <NavigationCase dir="rtl" />,
+  "scroll-lock": () => <ScrollLockCase dir="ltr" />,
+  "scroll-lock-rtl": () => <ScrollLockCase dir="rtl" />,
   combobox: ComboboxCase,
   panels: PanelsCase,
   tour: TourCase,

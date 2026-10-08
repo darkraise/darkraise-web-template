@@ -13,6 +13,9 @@ type LockToken = {
 }
 
 const lockStack: LockToken[] = []
+// The snapshot taken by the first lock, which the last unlock restores
+// whichever order the locks are released in.
+let original: LockToken | null = null
 
 export function lockScroll(): LockToken | null {
   if (typeof document === "undefined") return null
@@ -22,6 +25,7 @@ export function lockScroll(): LockToken | null {
     paddingRight: body.style.paddingRight,
   }
   if (lockStack.length === 0) {
+    original = token
     const docEl = document.documentElement
     const scrollbarWidth = window.innerWidth - docEl.clientWidth
     body.style.overflow = "hidden"
@@ -40,9 +44,10 @@ export function unlockScroll(token: LockToken | null): void {
   const index = lockStack.lastIndexOf(token)
   if (index === -1) return
   lockStack.splice(index, 1)
-  if (lockStack.length === 0) {
+  if (lockStack.length === 0 && original) {
     const body = document.body
-    body.style.overflow = token.overflow
-    body.style.paddingRight = token.paddingRight
+    body.style.overflow = original.overflow
+    body.style.paddingRight = original.paddingRight
+    original = null
   }
 }
