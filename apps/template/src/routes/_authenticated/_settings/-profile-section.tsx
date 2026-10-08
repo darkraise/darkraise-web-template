@@ -57,7 +57,7 @@ export function ProfileSection() {
     >
       <Card>
         <CardContent className="pt-6">
-          <DemoSaveForm submitLabel={t("Save Profile")}>
+          <DemoSaveForm submitLabel={t("Save profile")}>
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
               <Avatar className="h-20 w-20 shrink-0">
                 {avatarUrl ? (

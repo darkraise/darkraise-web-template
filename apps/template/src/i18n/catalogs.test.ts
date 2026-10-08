@@ -81,3 +81,137 @@ describe("demo translation catalogs", () => {
     expect(missing).toEqual([])
   })
 })
+
+/** Capitalised words a sentence-case label may still contain. */
+const PROPER_WORDS = new Set([
+  "CSV",
+  "PDF",
+  "KPI",
+  "Darkraise",
+  "English",
+  "Vietnamese",
+  "Tiếng",
+  "Việt",
+])
+
+/** Elements whose text is the label of a button, link or other action. */
+const ACTION_TAGS = new Set([
+  "Button",
+  "AlertDialogAction",
+  "AlertDialogCancel",
+  "FileUploadTrigger",
+  "Link",
+])
+
+interface DemoLabels {
+  /** Keys rendered as action labels, with the place each one is used. */
+  actions: Map<string, string>
+  /** Keys rendered as field placeholders. */
+  placeholders: Set<string>
+}
+
+/** Translated literals in the demo app, outside the component showcase. */
+function demoLabels(): DemoLabels {
+  const directory = new URL("../", import.meta.url)
+  const actions = new Map<string, string>()
+  const placeholders = new Set<string>()
+  const files = readdirSync(directory, { recursive: true, encoding: "utf8" })
+    .map((file) => file.split("\\").join("/"))
+    .filter((file) => file.endsWith(".tsx") && !file.includes(".test."))
+    .filter((file) => !file.startsWith("routes/_authenticated/components/"))
+  for (const file of files) {
+    const source = ts.createSourceFile(
+      file,
+      readFileSync(new URL(file, directory), "utf8"),
+      ts.ScriptTarget.Latest,
+      true,
+      ts.ScriptKind.TSX,
+    )
+    const role = (call: ts.Node): "action" | "placeholder" | null => {
+      for (let node = call.parent; node; node = node.parent) {
+        if (ts.isFunctionLike(node)) return null
+        if (ts.isJsxAttribute(node)) {
+          const name = node.name.getText(source)
+          if (/placeholder/i.test(name)) return "placeholder"
+          if (name === "submitLabel") return "action"
+          const tag = node.parent.parent.tagName.getText(source)
+          return name === "aria-label" && ACTION_TAGS.has(tag) ? "action" : null
+        }
+        if (ts.isPropertyAssignment(node)) {
+          const object = node.parent
+          const isAction =
+            node.name.getText(source) === "label" &&
+            object.properties.some(
+              (property) => property.name?.getText(source) === "onClick",
+            )
+          return isAction ? "action" : null
+        }
+        if (
+          ts.isJsxElement(node) &&
+          ACTION_TAGS.has(node.openingElement.tagName.getText(source))
+        )
+          return "action"
+      }
+      return null
+    }
+    const visit = (node: ts.Node) => {
+      if (
+        ts.isCallExpression(node) &&
+        node.expression.getText(source) === "t" &&
+        node.arguments[0] &&
+        ts.isStringLiteral(node.arguments[0])
+      ) {
+        const key = node.arguments[0].text
+        const kind = role(node)
+        const line =
+          source.getLineAndCharacterOfPosition(node.getStart()).line + 1
+        if (kind === "action") actions.set(key, `${file}:${line}`)
+        if (kind === "placeholder") placeholders.add(key)
+      }
+      ts.forEachChild(node, visit)
+    }
+    visit(source)
+  }
+  return { actions, placeholders }
+}
+
+describe("demo action labels", () => {
+  const { actions, placeholders } = demoLabels()
+
+  it("finds the action labels of the demo app", () => {
+    for (const key of ["Save profile", "Update password", "Export CSV"]) {
+      expect(actions.has(key), key).toBe(true)
+    }
+    expect(actions.size).toBeGreaterThan(30)
+  })
+
+  it("registers every action label in the English catalog", () => {
+    const missing = [...actions]
+      .filter(([key]) => !Object.prototype.hasOwnProperty.call(en, key))
+      .map(([key, where]) => `${where}: ${key}`)
+    expect(missing).toEqual([])
+  })
+
+  it("writes every action label in sentence case", () => {
+    const capitalised = [...actions].flatMap(([key, where]) => {
+      const text = en[key as keyof typeof en] ?? key
+      const words = text
+        .replace(/\{\{.*?\}\}/g, "")
+        .split(/\s+/)
+        .slice(1)
+        .map((word) => word.replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, ""))
+      const proper = words.filter(
+        (word) => /^\p{Lu}/u.test(word) && !PROPER_WORDS.has(word),
+      )
+      return proper.length > 0 ? [`${where}: "${text}"`] : []
+    })
+    expect(capitalised).toEqual([])
+  })
+
+  it("ends progress labels with the ellipsis character", () => {
+    const dotted = Object.entries(en)
+      .filter(([key, text]) => text.includes("...") && !placeholders.has(key))
+      .map(([key]) => key)
+    expect(dotted).toEqual([])
+  })
+})

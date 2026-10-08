@@ -97,7 +97,7 @@ export function ForgotPasswordForm() {
                 className="w-full"
                 disabled={!canSubmit || isSubmitting}
               >
-                {isSubmitting ? t("Sending...") : t("Send reset link")}
+                {isSubmitting ? t("Sending…") : t("Send reset link")}
               </Button>
             )}
           />

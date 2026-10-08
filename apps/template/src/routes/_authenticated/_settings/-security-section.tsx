@@ -57,7 +57,7 @@ export function SecuritySection() {
       <Card>
         <CardContent className="space-y-8 pt-6">
           <DemoSaveForm
-            submitLabel={t("Update Password")}
+            submitLabel={t("Update password")}
             canSubmit={
               newPassword.length > 0 && newPassword === confirmPassword
             }

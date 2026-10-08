@@ -72,7 +72,7 @@ export function PreferencesSection() {
     >
       <Card>
         <CardContent className="pt-6">
-          <DemoSaveForm submitLabel={t("Save Preferences")}>
+          <DemoSaveForm submitLabel={t("Save preferences")}>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label htmlFor="preferences-language">{t("Language")}</Label>

@@ -104,7 +104,7 @@ export function RegisterForm() {
                 className="w-full"
                 disabled={!canSubmit || isSubmitting}
               >
-                {isSubmitting ? t("Creating account...") : t("Create account")}
+                {isSubmitting ? t("Creating account…") : t("Create account")}
               </Button>
             )}
           />

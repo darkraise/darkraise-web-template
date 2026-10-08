@@ -105,7 +105,7 @@ export function LoginForm() {
                 className="w-full"
                 disabled={!canSubmit || isSubmitting}
               >
-                {isSubmitting ? t("Signing in...") : t("Sign in")}
+                {isSubmitting ? t("Signing in…") : t("Sign in")}
               </Button>
             )}
           />

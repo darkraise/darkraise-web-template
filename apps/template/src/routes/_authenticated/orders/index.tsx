@@ -94,7 +94,7 @@ function OrdersPage() {
         <RowActions
           actions={[
             {
-              label: t("View Details"),
+              label: t("View details"),
               onClick: () =>
                 navigate({
                   to: "/orders/$id",

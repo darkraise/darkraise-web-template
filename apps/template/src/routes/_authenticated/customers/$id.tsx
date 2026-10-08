@@ -40,7 +40,7 @@ function CustomerDetailPage() {
   if (customerLoading) {
     return (
       <Center className="p-12">
-        <p className="text-muted-foreground">{t("Loading customer...")}</p>
+        <p className="text-muted-foreground">{t("Loading customer…")}</p>
       </Center>
     )
   }

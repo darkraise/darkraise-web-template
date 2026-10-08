@@ -83,7 +83,7 @@ function CustomersPage() {
         <RowActions
           actions={[
             {
-              label: t("View Profile"),
+              label: t("View profile"),
               onClick: () =>
                 navigate({
                   to: "/customers/$id",

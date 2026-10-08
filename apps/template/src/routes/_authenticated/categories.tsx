@@ -129,7 +129,7 @@ function CategoriesPage() {
         ]}
         title={t("Categories")}
         description={t("Organize your product catalog")}
-        actions={<Button onClick={openCreate}>{t("Add Category")}</Button>}
+        actions={<Button onClick={openCreate}>{t("Add category")}</Button>}
       />
       <DataTable
         columns={columns}
@@ -280,7 +280,7 @@ function CategoryForm({
         )}
       />
       <FormActions
-        submitLabel={category ? t("Save Changes") : t("Create Category")}
+        submitLabel={category ? t("Save changes") : t("Create category")}
         onCancel={onCancel}
         isSubmitting={isSubmitting}
         canSubmit={form.state.canSubmit}

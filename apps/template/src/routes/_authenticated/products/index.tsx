@@ -134,7 +134,7 @@ function ProductsPage() {
         description={t("Manage your product catalog")}
         actions={
           <Button onClick={() => navigate({ to: "/products/new" })}>
-            {t("Add Product")}
+            {t("Add product")}
           </Button>
         }
       />

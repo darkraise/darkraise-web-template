@@ -46,7 +46,7 @@ function OrderDetailPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-12">
-        <p className="text-muted-foreground">{t("Loading order...")}</p>
+        <p className="text-muted-foreground">{t("Loading order…")}</p>
       </div>
     )
   }
@@ -84,7 +84,7 @@ function OrderDetailPage() {
                   updateStatus.mutate({ id: order.id, status: "shipped" })
                 }
               >
-                {t("Mark as Shipped")}
+                {t("Mark as shipped")}
               </Button>
             )}
             {order.status === "pending" && (
@@ -94,7 +94,7 @@ function OrderDetailPage() {
                   updateStatus.mutate({ id: order.id, status: "processing" })
                 }
               >
-                {t("Start Processing")}
+                {t("Start processing")}
               </Button>
             )}
             {order.status !== "cancelled" && order.status !== "delivered" && (
@@ -105,7 +105,7 @@ function OrderDetailPage() {
                   updateStatus.mutate({ id: order.id, status: "cancelled" })
                 }
               >
-                {t("Cancel Order")}
+                {t("Cancel order")}
               </Button>
             )}
           </div>

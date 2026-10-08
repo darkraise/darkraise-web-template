@@ -204,7 +204,7 @@ for (const style of BASELINE_STYLES) {
           for (const marker of ready) {
             await expect(page.locator(marker).first()).toBeVisible()
           }
-          await expect(page.getByText("Loading order...")).toHaveCount(0)
+          await expect(page.getByText("Loading order…")).toHaveCount(0)
           await expect(page.locator(".dr-skeleton")).toHaveCount(0)
           await waitForFonts(page)
           await fitContent(page, path)

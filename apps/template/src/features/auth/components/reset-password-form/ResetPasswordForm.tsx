@@ -101,7 +101,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
                 className="w-full"
                 disabled={!canSubmit || isSubmitting}
               >
-                {isSubmitting ? t("Resetting...") : t("Reset password")}
+                {isSubmitting ? t("Resetting…") : t("Reset password")}
               </Button>
             )}
           />

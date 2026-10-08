@@ -354,7 +354,7 @@ test.describe("settings", () => {
 
   test("saving the profile shows the demo toast", async ({ page }) => {
     await gotoApp(page, "/settings")
-    await page.getByRole("button", { name: "Save Profile" }).click()
+    await page.getByRole("button", { name: "Save profile" }).click()
     await expect(
       page.locator(".dr-toast-title", { hasText: "Demo settings submitted" }),
     ).toBeVisible()

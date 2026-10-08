@@ -26,7 +26,7 @@ function ProductEditPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-12">
-        <p className="text-muted-foreground">{t("Loading product...")}</p>
+        <p className="text-muted-foreground">{t("Loading product…")}</p>
       </div>
     )
   }
@@ -62,7 +62,7 @@ function ProductEditPage() {
           isActive: product.status === "active",
         }}
         categoryOptions={categoryOptions}
-        submitLabel={t("Save Changes")}
+        submitLabel={t("Save changes")}
         isSubmitting={updateProduct.isPending}
         onSubmit={async (value) => {
           const status: Product["status"] = value.isActive ? "active" : "draft"

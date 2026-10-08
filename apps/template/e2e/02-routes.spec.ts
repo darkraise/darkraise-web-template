@@ -122,8 +122,8 @@ test.describe("split-panel routes render", () => {
 test.describe("detail routes reachable from list pages", () => {
   for (const [list, action, urlPattern] of [
     ["/products", "Edit", /\/products\/[^/]+\/edit$/],
-    ["/orders", "View Details", /\/orders\/[^/]+$/],
-    ["/customers", "View Profile", /\/customers\/[^/]+$/],
+    ["/orders", "View details", /\/orders\/[^/]+$/],
+    ["/customers", "View profile", /\/customers\/[^/]+$/],
   ] as const) {
     test(`${list} row action "${action}" opens the detail route`, async ({
       page,

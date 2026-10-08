@@ -44,7 +44,7 @@ function ProductCreatePage() {
           isActive: true,
         }}
         categoryOptions={categoryOptions}
-        submitLabel={t("Create Product")}
+        submitLabel={t("Create product")}
         isSubmitting={createProduct.isPending}
         onSubmit={async (value) => {
           const status: Product["status"] = value.isActive ? "active" : "draft"

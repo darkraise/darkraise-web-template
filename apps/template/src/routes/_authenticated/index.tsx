@@ -185,7 +185,7 @@ function DashboardPage() {
         actions={
           <Button variant="outline" size="sm" onClick={handleDownloadReport}>
             <Download className="h-4 w-4" />
-            {t("Download Report")}
+            {t("Download report")}
           </Button>
         }
       />
@@ -307,7 +307,7 @@ function DashboardSkeleton() {
           <Skeleton className="flex">
             <Button variant="outline" size="sm" className="invisible">
               <Download className="h-4 w-4" />
-              {t("Download Report")}
+              {t("Download report")}
             </Button>
           </Skeleton>
         }

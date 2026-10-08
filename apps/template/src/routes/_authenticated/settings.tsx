@@ -147,7 +147,7 @@ function GeneralSettings() {
                   size="sm"
                   disabled={!canSubmit || isSubmitting}
                 >
-                  {isSubmitting ? t("Saving…") : t("Save Changes")}
+                  {isSubmitting ? t("Saving…") : t("Save changes")}
                 </Button>
               )}
             </form.Subscribe>
@@ -269,7 +269,7 @@ function NotificationSettings() {
                   size="sm"
                   disabled={!canSubmit || isSubmitting}
                 >
-                  {isSubmitting ? t("Saving…") : t("Save Preferences")}
+                  {isSubmitting ? t("Saving…") : t("Save preferences")}
                 </Button>
               )}
             </form.Subscribe>
@@ -356,7 +356,7 @@ function BillingSettings() {
         title={t("Pro Plan")}
         action={
           <Button variant="outline" size="sm">
-            {t("Upgrade Plan")}
+            {t("Upgrade plan")}
           </Button>
         }
       >
