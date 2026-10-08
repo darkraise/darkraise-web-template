@@ -63,10 +63,20 @@ test.describe("tabs", () => {
     await expect(last).toHaveAttribute("data-state", "active")
     await settle(page)
     expect(await list.evaluate((el) => el.scrollLeft)).toBeLessThan(0)
-    const tab = await boxOf(last)
-    const indicator = await boxOf(list.locator(".dr-tabs-indicator"))
-    expect(Math.abs(indicator.x - tab.x)).toBeLessThanOrEqual(1)
-    expect(Math.abs(indicator.width - tab.width)).toBeLessThanOrEqual(1)
+    // Two separate box reads can straddle a scroll frame, so both rectangles
+    // come from one evaluate and the pair is polled until it agrees.
+    await expect
+      .poll(() =>
+        list.evaluate((el) => {
+          const tab = el.querySelector('[role="tab"][data-state="active"]')
+          const indicator = el.querySelector(".dr-tabs-indicator")
+          if (!tab || !indicator) return null
+          const t = tab.getBoundingClientRect()
+          const i = indicator.getBoundingClientRect()
+          return Math.max(Math.abs(i.x - t.x), Math.abs(i.width - t.width))
+        }),
+      )
+      .toBeLessThanOrEqual(1)
   })
 })
 
