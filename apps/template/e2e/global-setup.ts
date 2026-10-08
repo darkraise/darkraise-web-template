@@ -1,3 +1,5 @@
+import { statfsSync } from "node:fs"
+import { tmpdir } from "node:os"
 import { chromium, type FullConfig, type Page } from "@playwright/test"
 import { COMPONENT_ROUTES } from "./fixtures/component-routes"
 import { collectGarbage, seedApp } from "./helpers/app"
@@ -37,6 +39,23 @@ const FIXTURES = [
   "virtual-table",
 ].map((name) => `/e2e/fixtures/${name}.html`)
 
+/**
+ * Chromium writes its temporary files under TMPDIR and crashes on every
+ * navigation once that fills, which surfaces as pages whose app never mounts.
+ * Failing here names the cause instead.
+ */
+function assertTempSpace() {
+  const dir = tmpdir()
+  const { bavail, bsize } = statfsSync(dir)
+  const free = bavail * bsize
+  if (free < 1024 ** 3) {
+    throw new Error(
+      `globalSetup: ${dir} has ${Math.floor(free / 1024 ** 2)} MiB free, under 1 GiB. ` +
+        'Point TMPDIR at a directory on disk; see "Keep temporary files on disk" in e2e/README.md.',
+    )
+  }
+}
+
 async function visit(page: Page, path: string) {
   // A failed load only costs the warm-up of that route, and global setup has
   // no retry, so one dropped request must not stop the whole run.
@@ -56,6 +75,7 @@ async function visit(page: Page, path: string) {
  * One browser page walks every route once instead.
  */
 export default async function globalSetup(config: FullConfig) {
+  assertTempSpace()
   if (process.env.E2E_WARM !== "1") return
   const baseURL = config.projects[0]?.use.baseURL
   if (!baseURL) throw new Error("globalSetup: no baseURL in the config")

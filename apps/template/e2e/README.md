@@ -39,6 +39,9 @@ mkdir -p /root/.cache/pw-tmp
 TMPDIR=/root/.cache/pw-tmp pnpm test:e2e
 ```
 
+`e2e/global-setup.ts` stops the run before any test starts when the
+temporary directory has less than 1 GiB free.
+
 **Warm-up.** Vite transforms a route chunk only when the router first imports
 it, so on a cold server the first tests spend their time compiling. `pnpm
 test:e2e` sets `E2E_WARM=1`, and `e2e/global-setup.ts` then drives one page
