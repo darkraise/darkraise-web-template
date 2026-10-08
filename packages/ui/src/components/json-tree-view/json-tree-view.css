@@ -177,6 +177,12 @@
   .dr-json-row-actions {
     @apply ms-auto inline-flex items-center gap-0.5 opacity-0 transition-opacity;
   }
+  /* Nothing hovers on a touch screen, so the row actions show at rest. */
+  @media (hover: none) {
+    .dr-json-row-actions {
+      opacity: 1;
+    }
+  }
   .dr-json-row-actions .dr-json-row-action {
     height: 1.25rem;
     width: 1.25rem;
@@ -192,6 +198,11 @@
    * .dr-json-row-action's hover-reveal behaviour. */
   .dr-json-copy {
     @apply text-muted-foreground hover:text-foreground ms-1 opacity-0 transition-opacity;
+  }
+  @media (hover: none) {
+    .dr-json-copy {
+      @apply opacity-100;
+    }
   }
   .dr-json-copy:focus-visible {
     @apply opacity-100;

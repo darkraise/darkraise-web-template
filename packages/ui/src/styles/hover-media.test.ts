@@ -82,14 +82,18 @@ function parse(path: string, source: string): StyleRule[] {
   return rules
 }
 
-/** True for `@media (hover: hover)`, alone or joined to others with `and`. */
-function isHoverGate(prelude: string): boolean {
+/** True for `@media <feature>`, alone or joined to others with `and`. */
+function mediaRequires(prelude: string, feature: string): boolean {
   const match = /^@media\s+(.+)$/.exec(prelude)
   if (!match) return false
   const query = match[1] as string
   if (/,|\bor\b|\bnot\b|\bonly\b/.test(query)) return false
-  return query.split(/\s+and\s+/).some((part) => part === "(hover: hover)")
+  return query.split(/\s+and\s+/).some((part) => part === feature)
 }
+
+const isHoverGate = (prelude: string) =>
+  mediaRequires(prelude, "(hover: hover)")
+const isHoverNone = (prelude: string) => mediaRequires(prelude, "(hover: none)")
 
 function gated(rule: StyleRule): boolean {
   return rule.ancestors.some(isHoverGate)
@@ -118,6 +122,47 @@ function ungatedHoverSelectors(): string[] {
       .filter((s) => HOVER.test(s) && !allowed(rule.path, s))
       .map((s) => `${rule.path}: ${s}`),
   )
+}
+
+/** The last compound selector: the element the rule styles. */
+function subject(selector: string): string {
+  let depth = 0
+  let start = 0
+  for (let i = 0; i < selector.length; i++) {
+    const ch = selector[i] as string
+    if (ch === "(" || ch === "[") depth++
+    else if (ch === ")" || ch === "]") depth--
+    else if (depth === 0 && /[\s>+~]/.test(ch)) start = i + 1
+  }
+  return selector.slice(start)
+}
+
+/** The opacity a rule sets, from `opacity: N` or an applied `opacity-N`. */
+function opacityOf(rule: StyleRule): number | null {
+  let found: number | null = null
+  for (const statement of rule.statements) {
+    const plain = /^opacity: ([\d.]+)$/.exec(statement)
+    if (plain) found = Number(plain[1])
+    const applied = /^@apply\b.*(?<![\w-])opacity-(\d+)(?![\w-])/.exec(
+      statement,
+    )
+    if (applied) found = Number(applied[1]) / 100
+  }
+  return found
+}
+
+/**
+ * What hovering an ancestor does to an element's opacity, as
+ * [stylesheet, the element's compound selector, opacity].
+ */
+function hoverDrivenOpacities(): Array<[string, string, number]> {
+  return RULES.filter(gated).flatMap((rule) => {
+    const opacity = opacityOf(rule)
+    if (opacity === null) return []
+    return rule.selectors
+      .filter((s) => HOVER.test(s) && !HOVER.test(subject(s)))
+      .map((s): [string, string, number] => [rule.path, subject(s), opacity])
+  })
 }
 
 describe("hover rules apply only on devices that can hover", () => {
@@ -168,5 +213,52 @@ describe("hover rules apply only on devices that can hover", () => {
         ),
     ).map(([file, selector]) => `${file}: ${selector}`)
     expect(stale).toEqual([])
+  })
+})
+
+// A control that appears only while its row or toast is hovered would never
+// appear on a touch screen, so a device without hover shows it at rest.
+describe("controls revealed on hover show at rest without hover", () => {
+  it("finds every element whose opacity an ancestor's hover changes", () => {
+    expect(
+      hoverDrivenOpacities().map(([path, element, opacity]) =>
+        [path, element, opacity].join(" "),
+      ),
+    ).toEqual([
+      "src/components/json-tree-view/json-tree-view.css .dr-json-row-actions 1",
+      "src/components/json-tree-view/json-tree-view.css .dr-json-copy 1",
+      "src/components/sonner/sonner.css .dr-toast-close 1",
+      "src/layout/sidebar/sidebar-layout.css .dr-brand-logo 0",
+      "src/layout/sidebar/sidebar-layout.css .dr-sidebar-layout-toggle 1",
+    ])
+  })
+
+  it("gives each the same opacity inside @media (hover: none)", () => {
+    const where = (match: (rule: StyleRule) => boolean) =>
+      RULES.flatMap((rule, index) => (match(rule) ? [index] : []))
+    const missing = hoverDrivenOpacities()
+      .filter(([path, element, opacity]) => {
+        const styles = (rule: StyleRule) =>
+          rule.path === path &&
+          rule.selectors.some((s) => subject(s) === element)
+        const touch = where(
+          (rule) =>
+            styles(rule) &&
+            rule.ancestors.some(isHoverNone) &&
+            opacityOf(rule) === opacity,
+        )
+        // Equal specificity: the touch rule wins only after the resting one.
+        const resting = where(
+          (rule) =>
+            styles(rule) &&
+            !gated(rule) &&
+            !rule.ancestors.some(isHoverNone) &&
+            opacityOf(rule) !== null &&
+            opacityOf(rule) !== opacity,
+        )
+        return !touch.some((at) => resting.every((rest) => rest < at))
+      })
+      .map(([path, element, opacity]) => `${path}: ${element} ${opacity}`)
+    expect(missing).toEqual([])
   })
 })

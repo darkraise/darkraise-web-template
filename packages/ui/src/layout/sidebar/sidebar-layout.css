@@ -81,6 +81,17 @@
     }
   }
 
+  /* Nothing hovers on a touch screen, so the slot shows the toggle in place
+     of the mark at rest. */
+  @media (hover: none) {
+    .dr-sidebar-layout-brand-slot .dr-brand-logo {
+      @apply opacity-0;
+    }
+    .dr-sidebar-layout-brand-slot .dr-sidebar-layout-toggle {
+      @apply opacity-100;
+    }
+  }
+
   /* Search sits directly under the brand row, above the nav scroller. It
      owns its padding rather than reusing -aside-section so it does not
      draw that section's top border immediately below the header rule. */

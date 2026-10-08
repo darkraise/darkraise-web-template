@@ -283,6 +283,12 @@
       @apply opacity-100;
     }
   }
+  /* Nothing hovers on a touch screen, so the close button shows at rest. */
+  @media (hover: none) {
+    .dr-toast-close {
+      @apply opacity-100;
+    }
+  }
 
   /* Persistent close button when the toast opts in via [data-close-button]. */
   .dr-toast[data-close-button="true"] .dr-toast-close {
