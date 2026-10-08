@@ -33,7 +33,15 @@ function StrictLink({
   "aria-current": ariaCurrent,
 }: RouterLinkProps) {
   return (
-    <a href={to} className={className} style={style} aria-current={ariaCurrent}>
+    <a
+      href={to}
+      className={className}
+      style={style}
+      aria-current={ariaCurrent}
+      // A router link handles the click itself; jsdom cannot load another
+      // document and logs an error when an anchor tries.
+      onClick={(event) => event.preventDefault()}
+    >
       {children}
     </a>
   )
