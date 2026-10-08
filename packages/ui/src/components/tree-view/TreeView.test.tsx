@@ -232,7 +232,7 @@ describe("TreeView", () => {
     expect(resume).toHaveAttribute("aria-selected", "false")
   })
 
-  it("does not call onClick or select a disabled item", async () => {
+  it("calls onClick but does not select a disabled item", async () => {
     const user = userEvent.setup()
     const onClick = vi.fn()
     render(
@@ -247,11 +247,11 @@ describe("TreeView", () => {
     )
     const item = screen.getByText("todo.txt").closest("li") as HTMLElement
     await user.click(item)
-    expect(onClick).not.toHaveBeenCalled()
+    expect(onClick).toHaveBeenCalledTimes(1)
     expect(item).toHaveAttribute("aria-selected", "false")
   })
 
-  it("does not call onClick or expand a disabled branch control", async () => {
+  it("calls onClick but does not expand a disabled branch control", async () => {
     const user = userEvent.setup()
     const onClick = vi.fn()
     render(
@@ -271,7 +271,7 @@ describe("TreeView", () => {
     )
     const row = screen.getByRole("treeitem", { name: "Documents" })
     await user.click(screen.getByText("Documents"))
-    expect(onClick).not.toHaveBeenCalled()
+    expect(onClick).toHaveBeenCalledTimes(1)
     expect(screen.queryByText("Resume.pdf")).toBeNull()
     expect(row).toHaveAttribute("aria-expanded", "false")
     expect(row).toHaveAttribute("aria-selected", "false")

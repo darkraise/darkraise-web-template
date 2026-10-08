@@ -72,7 +72,7 @@ Breaking: `CascadeSelect` and `TimePicker` triggers render a plain `<button>` st
 
 Breaking: `FileUploadTrigger` renders as a default `Button` (`.dr-btn` with `data-variant="default"` and `data-size="default"`), so it follows density, radius and the style's button edge and shadow. Its own size, radius, fill and hover rules are removed; restyle it as a Button.
 
-Breaking: disabled controls no longer set `pointer-events: none`. They show `cursor: not-allowed` at `--disabled-opacity`, and pointer events (hover, `title` tooltips, consumer handlers) now reach disabled kit elements, which ignore activation themselves. Code that relied on a disabled kit element swallowing pointer events must check the state itself. Moving the pointer onto a disabled `DropdownMenu` or `ContextMenu` item now closes an open submenu, as moving onto any other item does.
+Breaking: disabled controls no longer set `pointer-events: none`. They show `cursor: not-allowed` at `--disabled-opacity`, and pointer events (hover, `title` tooltips, consumer handlers) now reach disabled kit elements, which ignore activation themselves. The one exception is `Button asChild` with `disabled`, which swallows the click so a disabled link does not navigate. Code that relied on a disabled kit element swallowing pointer events must check the state itself. Moving the pointer onto a disabled `DropdownMenu` or `ContextMenu` item now closes an open submenu, as moving onto any other item does.
 
 Breaking: a disabled compound control fades once, at its root. Its parts used to fade again inside it, reaching a quarter or an eighth of full opacity. A disabled `Fieldset` still fades as a whole, and the controls inside it no longer fade a second time.
 
@@ -298,6 +298,7 @@ Breaking: `ToggleGroup` sizes to its content. `.dr-toggle-group` is `inline-flex
 - The `Combobox` list grows from the edge facing its input, like the other popups; it scaled from its centre.
 - `VirtualizedDropdownMenu` announces the highlighted row: the menu points `aria-activedescendant` at it. Its content caps its own height, border and padding included, so the popup stays inside the collision padding; the list used to take all the room left and the border and padding ran past it.
 - Under browser zoom, a re-render of the sidebar nav no longer cuts the active row's slide short. The indicator compares the row's position and size as numbers, with half a pixel of tolerance, instead of reading back its inline style, which rounds a fractional pixel to six significant digits.
+- A disabled `TreeView` row calls the consumer `onClick` on `TreeViewItem` and `TreeViewBranchControl`, as other disabled kit elements do, and still does not focus, select or expand.
 
 Breaking: `.dr-surface`, its `--flat` modifier and its `dr-surface-{brand,cyan,success,warning,danger,info}` hue classes are removed, with the `--fog-05` … `--fog-50` tokens they alone gave values to. The `glass`, `glass-thin`, `glass-strong` and `card-surface` utilities are removed: outside `.dr-surface` they painted nothing. Replace one with `rounded-[var(--radius)]` and, if you relied on it, `transition-[background-color,color,border-color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-in-out)]`.
 

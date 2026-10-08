@@ -91,7 +91,7 @@ Below 768px the layout header hides the `BrandLogo` that `TopNavLayout` and `Spl
 
 `FileUploadTrigger` renders with Button's default look (`.dr-btn`, `data-variant="default"`, `data-size="default"`); it takes no `variant` or `size` prop. Restyle it through `className`; rules that set its size, radius, fill or hover on `.dr-file-upload-trigger` now compete with `.dr-btn`.
 
-Disabled controls keep receiving pointer events and show `cursor: not-allowed`. If your code put a handler on a disabled kit element and relied on `pointer-events: none` to silence it, check the disabled state in the handler.
+Disabled controls keep receiving pointer events and show `cursor: not-allowed`. If your code put a handler on a disabled kit element and relied on `pointer-events: none` to silence it, check the disabled state in the handler. This includes `TreeViewItem` and `TreeViewBranchControl`, whose `onClick` now runs on a disabled row. The one exception is `Button asChild` with `disabled`: it swallows the click, so a disabled link does not navigate.
 
 A disabled compound control fades once, at its root; its parts, and the controls inside a disabled `Fieldset`, no longer fade a second time. Remove any rule you added to fade such a part again.
 
