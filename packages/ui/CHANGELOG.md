@@ -250,7 +250,7 @@ Breaking: `ToggleGroup` sizes to its content. `.dr-toggle-group` is `inline-flex
 - The table footer is opaque, so a sticky footer hides the rows scrolled beneath it.
 - Data table pagination wraps on narrow screens instead of pushing its page buttons off-screen.
 - Under the floating shell, content clears a collapsed sidebar by the same gutter as an expanded one.
-- Below 768px the layout header hides the brand mark and shows the search trigger as an icon, so the header controls fit a phone.
+- Breaking: below 768px the layout header hides its own brand mark, the `BrandLogo` that `TopNavLayout` and `SplitPanelLayout` place directly in it, and shows the search trigger as an icon, so the header controls fit a phone. A `BrandLogo` passed in `headerSlot` stays visible.
 - Under the floating shell, content drops the rail and panel offsets below 768px, where the rails are hidden.
 - A long `Select` value ends in an ellipsis, and the chevron keeps its gap and never shrinks.
 - `DateInput` segments show `YYYY`, `MM` and `DD` placeholders in segment order, so its year-month-day, month-day-year and day-month-year forms read differently when empty.

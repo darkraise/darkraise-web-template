@@ -83,6 +83,8 @@ Table heads and cells no longer wrap; a wide table scrolls sideways. Add `whites
 
 Below 768px `SplitPanelLayout` shows its panel first. Pass `contentActive` when the user opens an item, and `onBack` to show a Back button that returns to the panel; an app that passes neither shows only the panel on phones.
 
+Below 768px the layout header hides the `BrandLogo` that `TopNavLayout` and `SplitPanelLayout` place directly in it. A `BrandLogo` you pass in `headerSlot` stays visible; hide it below 768px yourself if your header runs out of room.
+
 ## Controls
 
 `CascadeSelect` and `TimePicker` triggers are fields, not outline buttons: they render a plain `<button>` with `.dr-cascade-trigger` or `.dr-time-picker-trigger` and no `.dr-btn`. A stylesheet that targeted `.dr-btn` inside them must target those classes. Add a width utility to widen a trigger; it sizes to its content.

@@ -202,6 +202,24 @@ test.describe("header", () => {
     const name = await boxOf(trigger.locator(".dr-locale-option-label"))
     expect(name.width).toBeLessThanOrEqual(1)
   })
+
+  test("a brand logo in the header slot stays visible", async ({ page }) => {
+    await seedApp(page)
+    await page.addInitScript(() => {
+      localStorage.setItem("layout-variant", "top-nav")
+    })
+    await gotoApp(page, "/")
+    const header = page.locator("header.dr-layout-header").first()
+    await expect(header.locator(":scope > .dr-brand-logo")).toBeHidden()
+    // A copy of the mark of the header stands in for a logo from the app.
+    await header.evaluate((el) => {
+      const logo = el.querySelector(":scope > .dr-brand-logo")?.cloneNode(true)
+      if (!(logo instanceof HTMLElement)) throw new Error("no brand logo")
+      logo.dataset.testid = "slot-logo"
+      el.querySelector(".dr-layout-header-end")?.append(logo)
+    })
+    await expect(header.getByTestId("slot-logo")).toBeVisible()
+  })
 })
 
 test.describe("inbox", () => {

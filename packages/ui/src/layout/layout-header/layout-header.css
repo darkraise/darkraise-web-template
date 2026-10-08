@@ -16,9 +16,10 @@
   /* A phone-width bar has no room for the brand and a full search field
      beside the header controls. The sidebar layout's phone header already
      carries no brand (its drawer does), and the search label stays as the
-     button's accessible name. */
+     button's accessible name. Only the header's own mark hides: a logo the
+     app puts in the header slot is its choice to keep. */
   @media (width < 48rem) {
-    .dr-layout-header .dr-brand-logo {
+    .dr-layout-header > .dr-brand-logo {
       @apply hidden;
     }
 
