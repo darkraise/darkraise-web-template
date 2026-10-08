@@ -92,13 +92,13 @@ describe("primary fill and label", () => {
     expect(failures).toEqual([])
   })
 
-  // Calm is skipped: the solve never moves a calm fill (white clears 4.75-5.81
-  // on every one), and calm on olive, sand and cool already measured 2.81-2.99
-  // before this change.
+  // The matrix above holds contrast and background intensity at their
+  // defaults. The white-label solve darkens calm fills too, and their
+  // narrowest margin over the card is at high contrast.
   it("dark fills still clear 3:1 against the card on neutral surfaces", () => {
     const failures: string[] = []
     for (const combo of combos) {
-      if (combo.mode !== "dark" || combo.darkAccentChroma === "calm") continue
+      if (combo.mode !== "dark") continue
       const tokens = finalTokens(combo)
       const ratio = contrastRatio(
         tokens["--primary-fill"] as string,
