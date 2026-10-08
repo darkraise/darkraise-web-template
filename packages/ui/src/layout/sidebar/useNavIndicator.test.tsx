@@ -196,4 +196,14 @@ describe("useNavIndicator", () => {
     expect(indicator.dataset.animate).toBe("true")
     expect(indicator.style.transform).toBe("translate(8px, 50px)")
   })
+
+  it("keeps a running slide when the row moves under half a pixel", () => {
+    const { rerender } = render(<Harness path="/a" items={[{}]} />)
+    rerender(<Harness path="/b" items={[{}]} />)
+    boxes.b = [18.3, 150.25, 184.4, 36.2]
+    rerender(<Harness path="/b" items={[{}]} />)
+    const indicator = screen.getByTestId("indicator")
+    expect(indicator.dataset.animate).toBe("true")
+    expect(indicator.style.transform).toBe("translate(8px, 50px)")
+  })
 })

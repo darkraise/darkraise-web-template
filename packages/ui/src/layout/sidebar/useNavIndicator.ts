@@ -1,5 +1,18 @@
 import { useLayoutEffect, useRef, type RefObject } from "react"
 
+interface Box {
+  x: number
+  y: number
+  width: number
+  height: number
+}
+
+const sameBox = (a: Box, b: Box) =>
+  Math.abs(a.x - b.x) < 0.5 &&
+  Math.abs(a.y - b.y) < 0.5 &&
+  Math.abs(a.width - b.width) < 0.5 &&
+  Math.abs(a.height - b.height) < 0.5
+
 /**
  * Moves one indicator element onto the nav's current row. A change of `key`
  * (the pathname) slides it there; anything that resizes the nav, such as a
@@ -16,6 +29,7 @@ export function useNavIndicator(
 ): void {
   const placed = useRef(false)
   const lastKey = useRef(key)
+  const last = useRef<Box | null>(null)
 
   useLayoutEffect(() => {
     const nav = navRef.current
@@ -24,6 +38,7 @@ export function useNavIndicator(
       // A nav that is not rendered (the stacked layout's aside off every
       // group) must not slide in from the corner when it comes back.
       placed.current = false
+      last.current = null
       return
     }
 
@@ -37,28 +52,31 @@ export function useNavIndicator(
       const navBox = nav.getBoundingClientRect()
       const rowBox = row.getBoundingClientRect()
       // The first placement has nowhere to slide from.
-      const x = rowBox.left - navBox.left
-      const width = `${rowBox.width}px`
-      const height = `${rowBox.height}px`
-      const transform = `translate(${x}px, ${rowBox.top - navBox.top}px)`
+      const box: Box = {
+        x: rowBox.left - navBox.left,
+        y: rowBox.top - navBox.top,
+        width: rowBox.width,
+        height: rowBox.height,
+      }
       // A re-render that moved nothing must not switch off a slide that is
-      // still running.
+      // still running. The numbers are compared rather than the inline
+      // style, which reads back rounded to six significant digits.
       if (
         !animate &&
         nav.dataset.indicator === "ready" &&
-        indicator.style.width === width &&
-        indicator.style.height === height &&
-        indicator.style.transform === transform
+        last.current &&
+        sameBox(last.current, box)
       ) {
         return
       }
       indicator.dataset.animate = String(animate && placed.current)
-      indicator.style.width = width
-      indicator.style.height = height
-      indicator.style.transform = transform
-      indicator.style.setProperty("--indicator-x", `${x}px`)
+      indicator.style.width = `${box.width}px`
+      indicator.style.height = `${box.height}px`
+      indicator.style.transform = `translate(${box.x}px, ${box.y}px)`
+      indicator.style.setProperty("--indicator-x", `${box.x}px`)
       nav.dataset.indicator = "ready"
       placed.current = true
+      last.current = box
     }
 
     const keyChanged = lastKey.current !== key

@@ -226,6 +226,24 @@ test.describe("the indicator", () => {
     expect(await runs(page)).toEqual([])
   })
 
+  test("keeps a slide when the nav re-renders under zoom", async ({ page }) => {
+    await arriveAtOrders(page)
+    // Zoom puts the rows on fractions of a pixel that an inline style reads
+    // back rounded to six significant digits.
+    await page.evaluate(() => {
+      document.documentElement.style.zoom = "1.25"
+    })
+    await settle(page)
+    await nav(page).getByRole("link", { name: "Customers" }).click()
+    await expect(indicator(page)).toHaveAttribute("data-animate", "true")
+    // A new language rebuilds the nav items under the same pathname.
+    await page.getByRole("combobox", { name: "Language" }).click()
+    await page.getByRole("option", { name: "Tiếng Việt" }).click()
+    await expect(page.locator("html")).toHaveAttribute("lang", "vi")
+    await settle(page)
+    await expect(indicator(page)).toHaveAttribute("data-animate", "true")
+  })
+
   test("does not transition under reduced motion", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" })
     await arriveAtOrders(page)
