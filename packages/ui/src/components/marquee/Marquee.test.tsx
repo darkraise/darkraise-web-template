@@ -105,6 +105,17 @@ describe("Marquee", () => {
     },
   )
 
+  it("makes every copy after the first inert", () => {
+    render(
+      <Marquee data-testid="m">
+        <a href="#news">News</a>
+      </Marquee>,
+    )
+    const groups = screen.getByTestId("m").querySelectorAll(".dr-marquee-group")
+    expect(groups[0]).not.toHaveAttribute("inert")
+    expect(groups[1]).toHaveAttribute("inert")
+  })
+
   it("applies pauseOnHover via data attribute", () => {
     render(
       <Marquee pauseOnHover data-testid="m">

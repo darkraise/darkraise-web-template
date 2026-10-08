@@ -189,6 +189,17 @@ test.describe("button group", () => {
   }
 })
 
+test.describe("marquee", () => {
+  test("Tab leaves the first copy for the next control", async ({ page }) => {
+    await openInMode(page, "light")
+    await probe(page, "marquee", ".dr-marquee-group a").first().focus()
+    await page.keyboard.press("Tab")
+    await expect(
+      page.getByRole("button", { name: "After the marquee" }),
+    ).toBeFocused()
+  })
+})
+
 test.describe("resizable", () => {
   test("a handle between full panels keeps its divider", async ({ page }) => {
     await openInMode(page, "light")

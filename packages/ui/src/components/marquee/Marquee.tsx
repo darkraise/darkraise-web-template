@@ -87,6 +87,9 @@ function Marquee({
             ref={index === 0 ? groupRef : undefined}
             className="dr-marquee-group"
             aria-hidden={index === 0 ? undefined : "true"}
+            // aria-hidden leaves the links of a copy in the tab order;
+            // inert takes them out.
+            inert={index === 0 ? undefined : true}
           >
             {children}
           </div>

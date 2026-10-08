@@ -3,6 +3,7 @@ import { Bold, Italic, Underline } from "lucide-react"
 import { Button } from "darkraise-ui/components/button"
 import { ButtonGroup } from "darkraise-ui/components/button-group"
 import { Listbox, ListboxItem } from "darkraise-ui/components/listbox"
+import { Marquee } from "darkraise-ui/components/marquee"
 import {
   ResizableHandle,
   ResizablePanel,
@@ -124,6 +125,12 @@ createRoot(root).render(
             <Button variant={variant}>Week</Button>
           </ButtonGroup>
         ))}
+      </div>
+      <div data-probe="marquee" style={{ width: 320 }}>
+        <Marquee>
+          <a href="#news">News</a>
+        </Marquee>
+        <button type="button">After the marquee</button>
       </div>
       <div data-probe="resizable" style={{ width: 200, height: 60 }}>
         <ResizablePanelGroup orientation="horizontal">
