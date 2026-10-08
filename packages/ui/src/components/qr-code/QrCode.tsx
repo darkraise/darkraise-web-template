@@ -54,6 +54,8 @@ function useQrCodeContext(part: string): QrCodeContextValue {
   return ctx
 }
 
+const DEFAULT_MARGIN = 4
+
 function QrCode({
   className,
   value,
@@ -61,7 +63,7 @@ function QrCode({
   size = 200,
   bgColor = "#fff",
   fgColor = "#000",
-  margin = 4,
+  margin = DEFAULT_MARGIN,
   label,
   onError,
   fallback,
@@ -83,7 +85,9 @@ function QrCode({
   }, [error, reportError])
 
   const resolvedLabel = label ?? labels.label
-  const quietZone = Math.max(0, Math.round(margin))
+  const quietZone = Number.isFinite(margin)
+    ? Math.max(0, Math.round(margin))
+    : DEFAULT_MARGIN
   const ctx = React.useMemo<QrCodeContextValue>(
     () => ({
       size,

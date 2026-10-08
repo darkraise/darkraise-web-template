@@ -83,6 +83,17 @@ describe("QrCode", () => {
     )
   })
 
+  it("falls back to the default quiet zone for a non-finite margin", () => {
+    const { container, rerender } = render(<QrCode value="quiet" />)
+    const viewBox = () =>
+      container.querySelector("svg")?.getAttribute("viewBox")
+    const standard = viewBox()
+    for (const margin of [Number.NaN, Number.POSITIVE_INFINITY]) {
+      rerender(<QrCode value="quiet" margin={margin} />)
+      expect(viewBox(), String(margin)).toBe(standard)
+    }
+  })
+
   it("paints black modules on an opaque white ground by default", () => {
     const { container } = render(<QrCode value="ground" />)
     const [ground, modules] = container.querySelectorAll("svg path")

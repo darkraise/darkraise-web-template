@@ -306,6 +306,7 @@ Breaking: `ToggleGroup` sizes to its content. `.dr-toggle-group` is `inline-flex
 - `VirtualizedTimeline` tiles and list rows draw the focus ring inside their box, where the list's clipping cannot cut it off, and take `touch-action: manipulation`.
 - `VirtualizedTimeline` places a `start` or `end` scrubber by the current direction, so a locale switch after mount moves the rail to the other side. `data-scrubber-side` carries the `scrubberSide` value as given instead of the side resolved at mount.
 - `DateInput` moves to the next segment when one is full, so a whole date can be typed without Tab, and Backspace removes one digit; it moves back to the previous segment only from an empty one.
+- `QrCode` treats a `margin` of `NaN` or `Infinity` as the default four-module quiet zone instead of breaking its viewBox.
 
 Breaking: `.dr-surface`, its `--flat` modifier and its `dr-surface-{brand,cyan,success,warning,danger,info}` hue classes are removed, with the `--fog-05` … `--fog-50` tokens they alone gave values to. The `glass`, `glass-thin`, `glass-strong` and `card-surface` utilities are removed: outside `.dr-surface` they painted nothing. Replace one with `rounded-[var(--radius)]` and, if you relied on it, `transition-[background-color,color,border-color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-in-out)]`.
 
