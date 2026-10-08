@@ -301,6 +301,7 @@ Breaking: `ToggleGroup` sizes to its content. `.dr-toggle-group` is `inline-flex
 - A disabled `TreeView` row calls the consumer `onClick` on `TreeViewItem` and `TreeViewBranchControl`, as other disabled kit elements do, and still does not focus, select or expand.
 - A read-only `Editable` renders no edit trigger, and its preview is plain text instead of a button that does nothing. A read-only `Editable` that is also disabled keeps its disabled trigger.
 - `JsonTreeView` arrow keys work on nested rows: Up and Down moved from the root row and Left collapsed the whole tree, because the focused row was taken to be the first row containing it. Each expanded row's children carry `role="group"`, and the focused toolbar keeps its dark-mode lift under the focus ring.
+- A `ResizableHandle` without a grip between panels that fill their group no longer shrinks to 0px, so its divider paints.
 
 Breaking: `.dr-surface`, its `--flat` modifier and its `dr-surface-{brand,cyan,success,warning,danger,info}` hue classes are removed, with the `--fog-05` … `--fog-50` tokens they alone gave values to. The `glass`, `glass-thin`, `glass-strong` and `card-surface` utilities are removed: outside `.dr-surface` they painted nothing. Replace one with `rounded-[var(--radius)]` and, if you relied on it, `transition-[background-color,color,border-color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-in-out)]`.
 

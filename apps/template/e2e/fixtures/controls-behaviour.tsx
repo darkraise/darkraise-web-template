@@ -2,6 +2,11 @@ import { createRoot } from "react-dom/client"
 import { Bold, Italic, Underline } from "lucide-react"
 import { Listbox, ListboxItem } from "darkraise-ui/components/listbox"
 import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "darkraise-ui/components/resizable"
+import {
   Pagination,
   PaginationContent,
   PaginationItem,
@@ -106,6 +111,17 @@ createRoot(root).render(
             </PaginationItem>
           </PaginationContent>
         </Pagination>
+      </div>
+      <div data-probe="resizable" style={{ width: 200, height: 60 }}>
+        <ResizablePanelGroup orientation="horizontal">
+          <ResizablePanel id="start" defaultSize={50}>
+            Start
+          </ResizablePanel>
+          <ResizableHandle />
+          <ResizablePanel id="end" defaultSize={50}>
+            End
+          </ResizablePanel>
+        </ResizablePanelGroup>
       </div>
     </div>
   </ThemeProvider>,

@@ -162,3 +162,14 @@ test.describe("outline variants", () => {
     })
   }
 })
+
+test.describe("resizable", () => {
+  test("a handle between full panels keeps its divider", async ({ page }) => {
+    await openInMode(page, "light")
+    const box = await boxOf(probe(page, "resizable", ".dr-resizable-handle"))
+    expect(box.width).toBeGreaterThanOrEqual(1)
+    const x = Math.floor(box.x)
+    const y = Math.floor(box.y + box.height / 2)
+    expect(await pixel(page, x, y)).not.toEqual(await pixel(page, x - 4, y))
+  })
+})
