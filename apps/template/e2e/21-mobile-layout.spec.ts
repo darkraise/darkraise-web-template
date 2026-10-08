@@ -189,6 +189,19 @@ test.describe("header", () => {
     await expect(trigger.locator("kbd")).toBeHidden()
     await expect(header.locator(".dr-brand-logo")).toBeHidden()
   })
+
+  test("the language picker shows only its flag", async ({ page }) => {
+    await seedApp(page)
+    await gotoApp(page, "/")
+    const trigger = page
+      .locator("header.dr-layout-header")
+      .first()
+      .getByRole("combobox", { name: "Language" })
+    await expect(trigger).toHaveAttribute("data-compact", "true")
+    await expect(trigger.locator(".dr-locale-option-icon")).toBeVisible()
+    const name = await boxOf(trigger.locator(".dr-locale-option-label"))
+    expect(name.width).toBeLessThanOrEqual(1)
+  })
 })
 
 test.describe("inbox", () => {

@@ -39,11 +39,8 @@ export function AppLocaleSwitcher({
         value={i18n.resolvedLanguage ?? i18n.language}
         options={languageOptions}
         pending={pending}
-        className={cn(
-          "w-auto min-w-28",
-          compact &&
-            "max-sm:min-w-0 max-sm:[&_.dr-locale-option>span:last-child]:sr-only",
-        )}
+        compact={compact}
+        className={cn("w-auto min-w-28", compact && "max-sm:min-w-0")}
         onValueChange={(locale) => {
           setPending(true)
           setError(false)

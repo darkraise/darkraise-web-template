@@ -73,3 +73,32 @@ it("offers consumer-defined languages and prevents changes while pending", async
   expect(screen.getByRole("combobox")).toBeDisabled()
   expect(screen.getByRole("combobox")).toHaveTextContent("Français")
 })
+
+it("marks a compact trigger and classes every language name", async () => {
+  const options = [
+    { locale: "en", label: "English" },
+    { locale: "fr", label: "Français" },
+  ]
+  const view = (compact?: boolean) => (
+    <LocaleSwitcher
+      value="en"
+      options={options}
+      onValueChange={vi.fn()}
+      compact={compact}
+    />
+  )
+  const { rerender } = render(view(true))
+  const trigger = screen.getByRole("combobox", { name: "Language" })
+  expect(trigger).toHaveAttribute("data-compact", "true")
+  expect(within(trigger).getByText("English")).toHaveClass(
+    "dr-locale-option-label",
+  )
+  await userEvent.setup().click(trigger)
+  expect(
+    within(screen.getByRole("option", { name: "Français" })).getByText(
+      "Français",
+    ),
+  ).toHaveClass("dr-locale-option-label")
+  rerender(view())
+  expect(trigger).not.toHaveAttribute("data-compact")
+})

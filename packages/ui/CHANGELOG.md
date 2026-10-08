@@ -147,6 +147,7 @@ Breaking: `ToggleGroup` sizes to its content. `.dr-toggle-group` is `inline-flex
 - `"start"` and `"end"` for `SheetContent` `side`, `Drawer` `direction`, `VirtualizedTimeline` `scrubberSide` and the `side` of `TooltipContent`, `PopoverContent`, `HoverCardContent`, `SelectContent`, `DropdownMenuContent` and `MenubarContent`; `"top-start"`, `"top-end"`, `"bottom-start"` and `"bottom-end"` for `Toaster` and toast `position` and for `BadgeAnchor` `position`. They resolve from the computed direction: `start` is the left side in a left-to-right document and the right side in a right-to-left one. A popup's `data-side` and a Drawer's `data-direction` carry the resolved physical side.
 - The `dr-icon-inline` class mirrors an icon that points along the reading order (a next arrow, a breadcrumb chevron) in a right-to-left document. Do not put it on a chevron that also rotates to show an open state.
 - `useSlider().pointerToValue` takes an optional fourth argument, the direction to measure in.
+- `LocaleSwitcher` takes `compact`: below 640px the trigger shows only the option icon, and the language name stays as text for assistive technology. The trigger carries `data-compact`, and every option name carries `dr-locale-option-label`.
 - `VirtualizedDropdownMenuContent` takes `isItemDisabled(item, index)`. A disabled row is skipped by the arrow keys, Home and End, ignores clicks, Enter and the pointer, and carries `data-disabled` and `aria-disabled`; the item render function receives `disabled`, and `VirtualizedDropdownMenuItem` takes `disabled`.
 
 ### Changed

@@ -23,4 +23,10 @@
     height: 100%;
     object-fit: contain;
   }
+
+  @media (width < 40rem) {
+    [data-compact] .dr-locale-option-label {
+      @apply sr-only;
+    }
+  }
 }

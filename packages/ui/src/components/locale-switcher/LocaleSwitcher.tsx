@@ -23,7 +23,7 @@ function OptionLabel({ option }: { option: LocaleSwitcherOption }) {
           {option.icon}
         </span>
       )}
-      <span>{option.label}</span>
+      <span className="dr-locale-option-label">{option.label}</span>
     </span>
   )
 }
@@ -37,6 +37,9 @@ export interface LocaleSwitcherProps {
   id?: string
   className?: string
   "aria-label"?: string
+  /** Below 640px the trigger shows only the icon; the name stays readable to
+   * assistive technology. */
+  compact?: boolean
 }
 export function LocaleSwitcher({
   value,
@@ -47,6 +50,7 @@ export function LocaleSwitcher({
   id,
   className,
   "aria-label": label,
+  compact = false,
 }: LocaleSwitcherProps) {
   const labels = useUiLabels()
   const selected = options.find((option) => option.locale === value)
@@ -61,6 +65,7 @@ export function LocaleSwitcher({
         className={className}
         aria-label={label ?? labels.common.language}
         aria-busy={pending || undefined}
+        data-compact={compact ? "true" : undefined}
       >
         <SelectValue>
           {selected ? <OptionLabel option={selected} /> : undefined}
