@@ -17,6 +17,24 @@ const lockStack: LockToken[] = []
 // whichever order the locks are released in.
 let original: LockToken | null = null
 
+/**
+ * Whether the root scrollbar sits on the left edge of the viewport. Browsers
+ * disagree on its side under a right-to-left page (Chromium keeps it on the
+ * right; Firefox can follow the page direction), so it is measured: a fixed
+ * box pinned to the left edge starts after a left-side scrollbar. Read it
+ * before the page's overflow is hidden, since the probe reads 0 once the
+ * scrollbar is gone.
+ */
+export function isScrollbarOnLeft(): boolean {
+  const probe = document.createElement("div")
+  probe.style.cssText =
+    "position: fixed; left: 0; top: 0; width: 0; height: 0; visibility: hidden"
+  document.body.appendChild(probe)
+  const onLeft = probe.getBoundingClientRect().left > 0
+  probe.remove()
+  return onLeft
+}
+
 export function lockScroll(): LockToken | null {
   if (typeof document === "undefined") return null
   const body = document.body
