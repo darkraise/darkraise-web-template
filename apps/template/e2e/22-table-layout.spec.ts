@@ -1,15 +1,7 @@
-import { test, expect, type Locator, type Page } from "@playwright/test"
+import { test, expect } from "@playwright/test"
 import { gotoApp, reloadApp, seedApp, wrappedTableText } from "./helpers/app"
 import { alphaOf } from "./helpers/measure"
-
-/** Ancestors precede descendants in document order, so the last match is
- *  the example's own wrapper. */
-function example(page: Page, title: string): Locator {
-  return page
-    .locator("div.space-y-3")
-    .filter({ has: page.getByText(title, { exact: true }) })
-    .last()
-}
+import { example } from "./helpers/showcase"
 
 test.describe("kit table", () => {
   test.beforeEach(async ({ page }) => {
