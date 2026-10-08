@@ -107,7 +107,10 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
   // Items are stored in a ref to allow imperative reads without re-renders.
   const itemsRef = React.useRef<MenuItemDescriptor[]>([])
   // Bumping nonce forces consumers (sortItems) to recompute when items change.
-  const [, setItemsNonce] = React.useState(0)
+  const [itemsNonce, setItemsNonce] = React.useState(0)
+  // A keyboard open can ask for the first or last row before the content
+  // has mounted any; the request waits for the rows instead of being dropped.
+  const pendingFocusRef = React.useRef<"first" | "last" | null>(null)
 
   const sortItems = React.useCallback((): MenuItemDescriptor[] => {
     const list = itemsRef.current.filter((it) => it.ref.current != null)
@@ -163,6 +166,7 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
   )
 
   const focusFirst = React.useCallback(() => {
+    pendingFocusRef.current = null
     const list = sortItems()
     for (let i = 0; i < list.length; i += 1) {
       if (!isSkipped(list[i])) {
@@ -170,10 +174,12 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
         return
       }
     }
+    if (list.length === 0) pendingFocusRef.current = "first"
     setFocusedIndex(-1)
   }, [setFocusedIndex, sortItems])
 
   const focusLast = React.useCallback(() => {
+    pendingFocusRef.current = null
     const list = sortItems()
     for (let i = list.length - 1; i >= 0; i -= 1) {
       if (!isSkipped(list[i])) {
@@ -181,8 +187,17 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
         return
       }
     }
+    if (list.length === 0) pendingFocusRef.current = "last"
     setFocusedIndex(-1)
   }, [setFocusedIndex, sortItems])
+
+  React.useEffect(() => {
+    const pending = pendingFocusRef.current
+    if (!pending || sortItems().length === 0) return
+    pendingFocusRef.current = null
+    if (pending === "first") focusFirst()
+    else focusLast()
+  }, [itemsNonce, focusFirst, focusLast, sortItems])
 
   const focusNext = React.useCallback(() => {
     const list = sortItems()
@@ -265,6 +280,7 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
   // unmounting the React tree that owns it. Each level closes the next.
   React.useEffect(() => {
     if (!open) {
+      pendingFocusRef.current = null
       setFocusedIndexState(-1)
       const entry = openSubmenuRef.current
       openSubmenuRef.current = null

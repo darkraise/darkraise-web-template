@@ -90,6 +90,21 @@ describe("useMenu", () => {
     b.cleanup()
   })
 
+  it("focusFirst before any row registers focuses the first row once rows register", () => {
+    const { result } = renderHook(() => useMenu({ defaultOpen: true }))
+    act(() => result.current.focusFirst())
+    expect(result.current.focusedIndex).toBe(-1)
+    const a = makeItem("a")
+    const b = makeItem("b")
+    act(() => {
+      result.current.registerItem(a)
+      result.current.registerItem(b)
+    })
+    expect(result.current.focusedIndex).toBe(0)
+    a.cleanup()
+    b.cleanup()
+  })
+
   it("focusLast skips disabled items", () => {
     const { result } = renderHook(() => useMenu())
     const a = makeItem("a")
