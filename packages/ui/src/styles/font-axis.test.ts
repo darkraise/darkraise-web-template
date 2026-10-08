@@ -59,9 +59,7 @@ describe("font axis tokens", () => {
   it("routes the sans, heading and mono utilities through the face tokens", () => {
     const theme = body("@theme inline")
     expect(declaration(theme, "--font-sans")).toBe("var(--font-family-sans)")
-    expect(declaration(theme, "--font-heading")).toBe(
-      "var(--font-family-sans)",
-    )
+    expect(declaration(theme, "--font-heading")).toBe("var(--font-family-sans)")
     expect(declaration(theme, "--font-mono")).toBe(
       '"JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace',
     )

@@ -9,11 +9,10 @@ import type { UiMessages } from "../../../i18n/types"
 
 type OptionLabel = (value: string, labels: UiMessages) => string
 
-const ICONS: Partial<Record<AxisKey, Readonly<Record<string, typeof Sun>>>> =
-  {
-    mode: { light: Sun, dark: Moon, system: Monitor },
-    backgroundStyle: { solid: Square, gradient: Blend },
-  }
+const ICONS: Partial<Record<AxisKey, Readonly<Record<string, typeof Sun>>>> = {
+  mode: { light: Sun, dark: Moon, system: Monitor },
+  backgroundStyle: { solid: Square, gradient: Blend },
+}
 
 const themeOption: OptionLabel = (value, labels) =>
   labels.themeOptions[value as keyof UiMessages["themeOptions"]] ?? value

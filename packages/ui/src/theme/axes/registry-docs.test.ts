@@ -5,12 +5,16 @@ import { describe, expect, it } from "vitest"
 import { AXIS_KEYS } from "./registry"
 
 function undocumentedAxes(): string[] {
-  const config = ts.getParsedCommandLineOfConfigFile("tsconfig.json", {}, {
-    ...ts.sys,
-    onUnRecoverableConfigFileDiagnostic: (d) => {
-      throw new Error(ts.flattenDiagnosticMessageText(d.messageText, "\n"))
+  const config = ts.getParsedCommandLineOfConfigFile(
+    "tsconfig.json",
+    {},
+    {
+      ...ts.sys,
+      onUnRecoverableConfigFileDiagnostic: (d) => {
+        throw new Error(ts.flattenDiagnosticMessageText(d.messageText, "\n"))
+      },
     },
-  })
+  )
   if (!config) throw new Error("tsconfig.json did not parse")
   const file = path.resolve("src/theme/types.ts")
   const program = ts.createProgram([file], config.options)

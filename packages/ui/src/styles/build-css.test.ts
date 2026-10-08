@@ -46,7 +46,9 @@ describe("kit font packages", () => {
     const tail = css.slice(css.indexOf("@font-face"))
     expect(tail.replace(/@font-face\s*\{[^}]*\}/g, "").trim()).toBe("")
     expect([
-      ...new Set([...tail.matchAll(/font-family: "([^"]+)"/g)].map((m) => m[1])),
+      ...new Set(
+        [...tail.matchAll(/font-family: "([^"]+)"/g)].map((m) => m[1]),
+      ),
     ]).toEqual([
       "Inter Variable",
       "Geist Variable",

@@ -109,7 +109,6 @@ test.describe("theme switcher popover", () => {
   })
 })
 
-
 test.describe("style selection through the UI", () => {
   for (const style of STYLES) {
     test(`selecting "${STYLE_LABELS[style]}" applies and persists`, async ({
@@ -361,7 +360,6 @@ test.describe("advanced toggle-group axes", () => {
     })
   }
 })
-
 
 test.describe("glass axis controls", () => {
   test(`${GLASS_OPACITY_LABEL} toggle group sets every value`, async ({

@@ -48,5 +48,7 @@ export function isTargetInLayerOrAbove(id: symbol, target: Node): boolean {
 export function isTopLayer(id: symbol): boolean {
   const target = stack.find((entry) => entry.id === id)
   if (!target || !target.isActive()) return false
-  return !stack.some((entry) => entry.isActive() && entry.ancestors.includes(id))
+  return !stack.some(
+    (entry) => entry.isActive() && entry.ancestors.includes(id),
+  )
 }

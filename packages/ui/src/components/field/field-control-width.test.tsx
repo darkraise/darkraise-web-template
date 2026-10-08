@@ -195,7 +195,9 @@ describe("Field control top offset", () => {
           </FieldContent>
         </Field>,
       )
-      expect(matching(getByTestId("nested")).map((rule) => rule.selector)).toEqual([])
+      expect(
+        matching(getByTestId("nested")).map((rule) => rule.selector),
+      ).toEqual([])
     })
   }
 })

@@ -51,7 +51,11 @@ export function ThemeSettingsPanel({
       label: string
       sections: ThemeSettingsSection[]
     }[] = [
-      { group: "brand", label: labels.theme.groupLabels.brand, sections: brand },
+      {
+        group: "brand",
+        label: labels.theme.groupLabels.brand,
+        sections: brand,
+      },
       {
         group: "advanced",
         label: labels.theme.groupLabels.advanced,
@@ -68,9 +72,7 @@ export function ThemeSettingsPanel({
           .filter((entry) => entry.sections.length > 0)
           .map((entry) => (
             <section key={entry.group} className="dr-theme-settings-group">
-              <h3 className="dr-theme-settings-group-heading">
-                {entry.label}
-              </h3>
+              <h3 className="dr-theme-settings-group-heading">{entry.label}</h3>
               <div className="dr-theme-settings-group-body">
                 {entry.sections.map((section) => (
                   <div key={section.key}>{section.node}</div>

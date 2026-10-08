@@ -32,7 +32,10 @@ describe("state and focus colours clear their floors", () => {
       (accentColor) => {
         const t = build(accentColor, mode)
         expect(
-          contrastRatio(t["--focus-ring"] as string, t["--background"] as string),
+          contrastRatio(
+            t["--focus-ring"] as string,
+            t["--background"] as string,
+          ),
         ).toBeGreaterThanOrEqual(NON_TEXT)
       },
     )

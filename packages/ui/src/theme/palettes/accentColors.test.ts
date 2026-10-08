@@ -22,7 +22,7 @@ describe("accent ramps", () => {
   })
 
   it("offers coral", () => {
-    expect((ACCENT_COLORS as readonly string[])).toContain("coral")
+    expect(ACCENT_COLORS as readonly string[]).toContain("coral")
   })
 
   it("pins coral's mid-tone to the brand value", () => {

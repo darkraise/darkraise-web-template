@@ -91,7 +91,13 @@ describe("oklch", () => {
       contrastRatio("0 0% 0%", "0 0% 50%"),
       6,
     )
-    expect(mixedContrast("0 0% 0%", "0 0% 100%", "0 0% 0%", 0)).toBeCloseTo(21, 1)
-    expect(mixedContrast("0 0% 0%", "0 0% 100%", "0 0% 0%", 1)).toBeCloseTo(1, 5)
+    expect(mixedContrast("0 0% 0%", "0 0% 100%", "0 0% 0%", 0)).toBeCloseTo(
+      21,
+      1,
+    )
+    expect(mixedContrast("0 0% 0%", "0 0% 100%", "0 0% 0%", 1)).toBeCloseTo(
+      1,
+      5,
+    )
   })
 })

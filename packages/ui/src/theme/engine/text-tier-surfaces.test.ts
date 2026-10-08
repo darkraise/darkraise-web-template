@@ -7,10 +7,7 @@ import {
   reachableCombos,
 } from "../../test/contrast-matrix"
 
-function failuresFor(
-  token: string,
-  surfaces: readonly string[],
-): string[] {
+function failuresFor(token: string, surfaces: readonly string[]): string[] {
   const failures: string[] = []
   for (const combo of reachableCombos()) {
     const tokens = finalTokens(combo)
@@ -20,7 +17,9 @@ function failuresFor(
       if (!isOpaque(ground)) continue
       const ratio = contrastRatio(text, ground)
       if (ratio < 4.5) {
-        failures.push(`${comboName(combo)} ${token} on ${surface}: ${ratio.toFixed(2)}`)
+        failures.push(
+          `${comboName(combo)} ${token} on ${surface}: ${ratio.toFixed(2)}`,
+        )
       }
     }
   }

@@ -10,7 +10,10 @@ const MODES = ["light", "dark"] as const
 /** AA for body-sized text. Every tier carries text, so none is held to 3:1. */
 const AA = 4.5
 
-function build(surfaceColor: (typeof NEUTRALS)[number], mode: "light" | "dark") {
+function build(
+  surfaceColor: (typeof NEUTRALS)[number],
+  mode: "light" | "dark",
+) {
   return generateTokens({
     accentColor: "coral",
     surfaceColor,

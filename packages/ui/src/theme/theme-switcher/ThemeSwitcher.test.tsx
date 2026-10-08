@@ -63,9 +63,9 @@ function openAdvanced() {
 }
 
 function sectionLabels(): string[] {
-  return [
-    ...document.querySelectorAll(".dr-theme-switcher-section-label"),
-  ].map((label) => label.textContent ?? "")
+  return [...document.querySelectorAll(".dr-theme-switcher-section-label")].map(
+    (label) => label.textContent ?? "",
+  )
 }
 
 beforeEach(() => {
@@ -144,9 +144,9 @@ describe("ThemeSwitcher brand part", () => {
     renderSwitcher()
     openSwitcher()
     fireEvent.click(screen.getByRole("switch", { name: "Tint With Accent" }))
-    expect(
-      document.documentElement.getAttribute("data-tint-with-accent"),
-    ).toBe("on")
+    expect(document.documentElement.getAttribute("data-tint-with-accent")).toBe(
+      "on",
+    )
   })
 })
 

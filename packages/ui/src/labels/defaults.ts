@@ -89,7 +89,12 @@ export const defaultLabels: UiLabels = {
       tintWithAccent: "Tint With Accent",
     },
     modes: { light: "Light", dark: "Dark", system: "System" },
-    styles: { flat: "Flat", quiet: "Quiet", tactile: "Tactile", glass: "Glass" },
+    styles: {
+      flat: "Flat",
+      quiet: "Quiet",
+      tactile: "Tactile",
+      glass: "Glass",
+    },
     sidebarSelections: {
       auto: "Auto",
       chip: "Chip",

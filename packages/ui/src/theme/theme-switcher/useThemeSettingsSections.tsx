@@ -46,9 +46,7 @@ export function useThemeSettingsSections(): ThemeSettingsSection[] {
   const { config } = theme
 
   const showAdvanced = config.switcher.advanced !== false
-  const settings = Object.fromEntries(
-    AXIS_KEYS.map((key) => [key, theme[key]]),
-  )
+  const settings = Object.fromEntries(AXIS_KEYS.map((key) => [key, theme[key]]))
 
   const sections: ThemeSettingsSection[] = []
   for (const key of AXIS_KEYS) {

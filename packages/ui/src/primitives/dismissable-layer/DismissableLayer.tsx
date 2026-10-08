@@ -38,12 +38,7 @@ export function DismissableLayer({
   const isActive = useEvent(() => active)
 
   React.useEffect(() => {
-    pushLayer(
-      id,
-      ancestors,
-      () => ref.current,
-      isActive,
-    )
+    pushLayer(id, ancestors, () => ref.current, isActive)
     const onPointerDown = (e: PointerEvent) => {
       if (!ref.current) return
       if (e.target instanceof Node && isTargetInLayerOrAbove(id, e.target))
