@@ -1,6 +1,7 @@
 import { render } from "@testing-library/react"
 import { describe, expect, it } from "vitest"
-import { StatusBadge, statusVariant, type DemoStatus } from "./StatusBadge"
+import { StatusBadge } from "./StatusBadge"
+import { statusVariant, type DemoStatus } from "./statusVariant"
 
 const STATUSES: DemoStatus[] = [
   "pending",

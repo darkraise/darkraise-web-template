@@ -1,1 +1,2 @@
-export { StatusBadge, statusVariant, type DemoStatus } from "./StatusBadge"
+export { StatusBadge } from "./StatusBadge"
+export { statusVariant, type DemoStatus } from "./statusVariant"
