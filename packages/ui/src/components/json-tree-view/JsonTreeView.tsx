@@ -397,9 +397,11 @@ function JsonTreeView({
     )
     if (rows.length === 0) return
     const active = document.activeElement as HTMLElement | null
-    const currentIdx = active
-      ? rows.findIndex((row) => row === active || row.contains(active))
-      : -1
+    // Every row contains the rows nested under it, so the focused row is the
+    // nearest row around the focused element (closest matches the element
+    // itself), not the first row that contains it.
+    const activeRow = active?.closest<HTMLDivElement>('[role="treeitem"]')
+    const currentIdx = activeRow ? rows.indexOf(activeRow) : -1
 
     const focusRow = (idx: number) => {
       const target = rows[Math.max(0, Math.min(rows.length - 1, idx))]
@@ -886,7 +888,7 @@ function Node({ value, keyName, path, depth }: NodeProps) {
         ) : null}
       </div>
       {showChildren ? (
-        <div className="dr-json-children">
+        <div className="dr-json-children" role="group">
           {t === "array"
             ? (value as unknown[]).map((item, i) => (
                 <Node

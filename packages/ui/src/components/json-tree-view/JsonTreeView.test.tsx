@@ -40,6 +40,49 @@ describe("JsonTreeView", () => {
     expect(root).toHaveAttribute("aria-expanded", "false")
   })
 
+  describe("arrow keys below the top level", () => {
+    const rowAt = (path: string) => {
+      const row = screen
+        .getAllByRole("treeitem")
+        .find((item) => item.getAttribute("data-path") === path)
+      if (!row) throw new Error(`no row at ${path}`)
+      return row
+    }
+    const renderTree = () =>
+      render(
+        <JsonTreeView
+          data={{ a: { b: 1, c: 2 }, d: 3 }}
+          defaultExpandLevel={2}
+        />,
+      )
+
+    it("ArrowDown and ArrowUp move between nested siblings", async () => {
+      const user = userEvent.setup()
+      renderTree()
+      rowAt("$.a.b").focus()
+      await user.keyboard("{ArrowDown}")
+      expect(rowAt("$.a.c")).toHaveFocus()
+      await user.keyboard("{ArrowUp}")
+      expect(rowAt("$.a.b")).toHaveFocus()
+    })
+
+    it("ArrowLeft on a nested leaf moves to its parent", async () => {
+      const user = userEvent.setup()
+      renderTree()
+      rowAt("$.a.b").focus()
+      await user.keyboard("{ArrowLeft}")
+      expect(rowAt("$.a")).toHaveFocus()
+      expect(rowAt("$")).toHaveAttribute("aria-expanded", "true")
+    })
+
+    it("groups each expanded row's children", () => {
+      renderTree()
+      expect(
+        rowAt("$.a").querySelector(":scope > .dr-json-children"),
+      ).toHaveAttribute("role", "group")
+    })
+  })
+
   it("indents rows from the inline start", () => {
     render(<JsonTreeView data={{ inner: { deep: 1 } }} />)
     const row = screen

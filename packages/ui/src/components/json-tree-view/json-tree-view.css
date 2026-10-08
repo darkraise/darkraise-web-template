@@ -17,7 +17,10 @@
   }
   .dr-json-toolbar:focus-within {
     border-color: hsl(var(--primary));
-    box-shadow: 0 0 0 1px hsl(var(--primary));
+    box-shadow:
+      0 0 0 1px hsl(var(--primary)),
+      var(--card-elevation-low);
+    --field-edge: var(--field-edge-lifted);
   }
   .dr-json-toolbar-search {
     @apply flex flex-1 items-center gap-1.5 px-1;
