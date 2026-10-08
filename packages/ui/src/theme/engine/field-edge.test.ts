@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { readdirSync, readFileSync } from "node:fs"
+import { join } from "node:path"
 import { composite, contrastRatio } from "@theme/engine/oklch"
 import { parseRules } from "../../styles/interactive-classes"
 import {
@@ -220,14 +221,26 @@ describe("--field-edge-lifted-color", () => {
   }, 30_000)
 
   it("covers the stylesheet's brightest lift under Tactile's card sheen", () => {
-    const theme = readFileSync("src/styles/theme.css", "utf8")
     const tactile = readFileSync("src/theme/styles/tactile/tactile.css", "utf8")
     const alphas = (css: string, pattern: RegExp) =>
       [...css.matchAll(pattern)].map((m) => Number(m[1]))
+    // A style file may declare a lift of its own, so every one is read.
+    const liftSheets = [
+      join("src", "styles", "theme.css"),
+      ...readdirSync(join("src", "theme", "styles"), { recursive: true })
+        .map(String)
+        .filter((file) => file.endsWith(".css"))
+        .map((file) => join("src", "theme", "styles", file)),
+    ]
+    expect(liftSheets).toContain(
+      join("src", "theme", "styles", "tactile", "tactile.css"),
+    )
     const lift = Math.max(
-      ...alphas(
-        theme,
-        /--elevation-lift-tint-\w+: rgb\(255 255 255 \/ ([\d.]+)\)/g,
+      ...liftSheets.flatMap((path) =>
+        alphas(
+          readFileSync(path, "utf8"),
+          /--elevation-lift-tint-\w+: rgb\(255 255 255 \/ ([\d.]+)\)/g,
+        ),
       ),
     )
     const sheen = Math.max(

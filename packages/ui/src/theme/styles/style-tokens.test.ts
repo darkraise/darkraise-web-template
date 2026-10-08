@@ -642,14 +642,18 @@ describe("style files", () => {
     )
   })
 
-  // A token counts as read when a component or layout stylesheet reads it, or
-  // when theme.css composes it into a token that is read: the overlay
-  // background inputs reach components only through --overlay-bg.
+  // A token counts as read when a component or layout stylesheet reads it,
+  // when the overlay-surface utility in theme.css reads it, or when theme.css
+  // composes it into a token that is read: the overlay background inputs
+  // reach components only through --overlay-bg.
   it("has a reader for every contract token", () => {
     const readers = READER_SHEETS.map((path) => readFileSync(path, "utf8"))
     // Popups read the overlay tokens through this utility, not by hand.
     const utility = /@utility overlay-surface \{[^}]*\}/.exec(
       readFileSync(THEME, "utf8"),
+    )
+    expect(utility, "no @utility overlay-surface block in theme.css").not.toBe(
+      null,
     )
     readers.push(utility?.[0] ?? "")
     const composed = declarations(THEME)
@@ -674,10 +678,14 @@ describe("style files", () => {
   })
 
   it("declares the surface tokens as no-ops and reads them", () => {
-    const theme = readFileSync(THEME, "utf8")
-    expect(theme).toContain("--card-edge: 0 0 transparent;")
-    expect(theme).toContain("--card-sheen: none;")
-    expect(theme).toContain("--track-well: 0 0 transparent;")
+    const lightBase = Object.fromEntries(
+      declarations(THEME)
+        .filter((d) => sameContext(d.context, LIGHT_BASE))
+        .map((d) => [d.property, d.value]),
+    )
+    expect(lightBase["--card-edge"]).toBe("0 0 transparent")
+    expect(lightBase["--card-sheen"]).toBe("none")
+    expect(lightBase["--track-well"]).toBe("0 0 transparent")
     const card = readFileSync(
       join("src", "components", "card", "card.css"),
       "utf8",

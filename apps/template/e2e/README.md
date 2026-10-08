@@ -378,7 +378,8 @@ except where a page is named.
   cell text and matches a plain header's font and colour.
 - A field's bottom edge reaches 3:1 against the page and against a card,
   sampled from rendered pixels, for every style and for glass with a vivid
-  fuchsia accent, a sand surface and an intense gradient × both modes; in dark
+  fuchsia accent, a sand surface, an intense gradient, and subtle and strong
+  opacity × both modes; in dark
   also on low, medium and high cards, in a popover, a dialog and a muted
   dialog.
 - A card paints the plane its `surface` prop names (card, page, muted, none,
