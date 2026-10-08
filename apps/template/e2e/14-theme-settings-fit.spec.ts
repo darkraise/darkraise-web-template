@@ -111,6 +111,7 @@ const PAGE_CASES = [
   { width: 1024, language: "vi" },
   { width: 1280, language: "vi" },
   { width: 1024, language: "en", density: "spacious" },
+  { width: 1024, language: "vi", density: "spacious" },
 ] as const
 
 const GRADIENT_PATTERN = { en: "Gradient Pattern", vi: "Kiểu chuyển màu" }
