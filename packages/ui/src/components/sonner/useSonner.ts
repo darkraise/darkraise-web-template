@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 
 import { toast, toastStore, type Toast } from "./toastStore"

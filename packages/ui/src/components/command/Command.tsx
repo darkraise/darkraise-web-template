@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 import { useUiText } from "../../i18n/useUiText"
 import { Search } from "lucide-react"

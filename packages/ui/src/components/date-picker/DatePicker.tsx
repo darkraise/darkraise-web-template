@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 import { useUiLocale } from "../../i18n/context"
 import { useUiFormatters } from "../../i18n/useUiFormatters"

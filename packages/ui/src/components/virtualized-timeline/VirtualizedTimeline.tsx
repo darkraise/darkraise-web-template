@@ -1,5 +1,3 @@
-"use client"
-
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import * as React from "react"

@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 import { useFloatingPanelStore } from "./floatingPanelStoreContext"
 import type { AppPanelEntry } from "./floatingPanelStore"

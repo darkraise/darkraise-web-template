@@ -170,6 +170,9 @@ jobs:
       - name: Build the package
         run: pnpm --filter "$UI_PACKAGE" build
 
+      - name: Check the client banner
+        run: pnpm --filter "$UI_PACKAGE" check:client-banner
+
       - name: Build the demo app
         run: pnpm --filter darkraise-web-template exec vite build
 

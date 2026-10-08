@@ -1,5 +1,3 @@
-"use client"
-
 import {
   useDialog,
   type UseDialogOptions,

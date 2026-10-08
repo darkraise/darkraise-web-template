@@ -1,5 +1,3 @@
-"use client"
-
 import { useControllableState, useEvent } from "@primitives/state"
 
 export type DatePickerMode = "single" | "range"

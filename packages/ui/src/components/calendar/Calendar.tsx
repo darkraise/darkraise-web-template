@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 import { useUiLocale } from "../../i18n/context"
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"

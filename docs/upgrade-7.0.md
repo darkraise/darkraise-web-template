@@ -154,6 +154,10 @@ export default defineConfig({
 
 Passing `themeConfig.defaults` lets an axis the user never set resolve as the provider resolves it: the active style's default, then the config default, then the registry default. `vite` is an optional peer dependency (`>=6.0.0`).
 
+## React Server Components
+
+Every kit entry except `darkraise-ui/lib`, `darkraise-ui/locales/en`, `darkraise-ui/locales/vi` and `darkraise-ui/vite` starts with `"use client"`. A server component can render kit components and pass them serialisable props, but cannot call kit hooks such as `useTheme` or pass functions to kit components; move that code into a file of your own that starts with `"use client"`. Import helpers such as `cn` from `darkraise-ui/lib`, which is safe on the server.
+
 ## create-darkraise-ui
 
 The scaffold asks only for the brand axes and the style, every theme axis has a flag, and `--help` lists them. The generated `theme.config.ts` lists only the choices made. These 6.x flags now exit with an error naming the replacement:

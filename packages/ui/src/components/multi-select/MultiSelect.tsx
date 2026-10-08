@@ -1,4 +1,3 @@
-"use client"
 import { useUiText } from "../../i18n/useUiText"
 
 import * as React from "react"

@@ -1,4 +1,3 @@
-"use client"
 import { useUiText } from "../../i18n/useUiText"
 import { useUiLocale } from "../../i18n/context"
 import { useUiLabels } from "../../labels"

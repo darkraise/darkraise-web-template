@@ -26,6 +26,8 @@ jobs:
         timeout-minutes: 5
       - run: pnpm --filter darkraise-ui build
         timeout-minutes: 5
+      - run: pnpm --filter darkraise-ui check:client-banner
+        timeout-minutes: 1
       - run: pnpm --filter darkraise-web-template build
         timeout-minutes: 5
       - run: pnpm -r typecheck
