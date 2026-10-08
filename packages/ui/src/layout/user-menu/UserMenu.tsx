@@ -53,7 +53,12 @@ export function UserMenu({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="dr-user-menu-trigger">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="dr-user-menu-trigger"
+          aria-label={labels.userMenu.trigger}
+        >
           <Avatar className="dr-user-menu-avatar">
             <AvatarFallback>{initials}</AvatarFallback>
           </Avatar>

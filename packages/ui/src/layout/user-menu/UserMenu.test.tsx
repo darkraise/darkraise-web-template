@@ -14,6 +14,13 @@ describe("UserMenu", () => {
     useLayoutStore.setState({ layout: "sidebar", shellStyle: null }),
   )
 
+  it("names its trigger Account menu rather than the initials", () => {
+    render(<UserMenu user={{ name: "Jane Doe", email: "jane@example.com" }} />)
+    expect(
+      screen.getByRole("button", { name: "Account menu" }),
+    ).toHaveTextContent("JD")
+  })
+
   it("offers no Layout entry without layoutSwitcher", () => {
     const { container } = render(<UserMenu onLogout={() => {}} />)
     openMenu(container)

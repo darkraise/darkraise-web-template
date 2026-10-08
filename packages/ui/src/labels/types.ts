@@ -36,6 +36,7 @@ export interface UiLabels {
     back: string
   }
   userMenu: {
+    trigger: string
     profile: string
     settings: string
     logout: string

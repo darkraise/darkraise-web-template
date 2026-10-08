@@ -29,6 +29,7 @@ export const defaultLabels: UiLabels = {
     back: "Back",
   },
   userMenu: {
+    trigger: "Account menu",
     profile: "Profile",
     settings: "Settings",
     logout: "Log out",

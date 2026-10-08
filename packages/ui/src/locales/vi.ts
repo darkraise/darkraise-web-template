@@ -51,7 +51,12 @@ const messages: UiMessages = {
     collapseSidebar: "Thu gọn thanh bên",
     back: "Quay lại",
   },
-  userMenu: { profile: "Hồ sơ", settings: "Cài đặt", logout: "Đăng xuất" },
+  userMenu: {
+    trigger: "Menu tài khoản",
+    profile: "Hồ sơ",
+    settings: "Cài đặt",
+    logout: "Đăng xuất",
+  },
   passwordInput: {
     show: "Hiện mật khẩu",
     hide: "Ẩn mật khẩu",
