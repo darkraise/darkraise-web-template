@@ -380,17 +380,11 @@ createRoot(root).render(
           <div style={{ height: 240 }}>Scrolling content</div>
         </ScrollArea>
       </div>
-      {/* Panels that fill the group squeeze the 1px handle to nothing;
-          narrower panels leave it its width. */}
       <div data-probe="resizable" style={{ width: 160, height: 60 }}>
         <ResizablePanelGroup orientation="horizontal">
-          <ResizablePanel defaultSize={50} style={{ width: "49%" }}>
-            Left
-          </ResizablePanel>
+          <ResizablePanel defaultSize={50}>Left</ResizablePanel>
           <ResizableHandle />
-          <ResizablePanel defaultSize={50} style={{ width: "49%" }}>
-            Right
-          </ResizablePanel>
+          <ResizablePanel defaultSize={50}>Right</ResizablePanel>
         </ResizablePanelGroup>
       </div>
       <div data-probe="steps" style={{ width: 360 }}>

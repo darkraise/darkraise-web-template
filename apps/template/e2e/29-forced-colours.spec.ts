@@ -462,6 +462,14 @@ test.describe("structural marks, fills and boundaries", () => {
     (fraction: number): At =>
     (box) => [box.width * fraction, box.height / 2]
 
+  test("the resize handle keeps its width between filling panels", async ({
+    page,
+  }) => {
+    await openForced(page, "light")
+    const handle = page.locator('[data-probe="resizable"] .dr-resizable-handle')
+    expect((await boxOf(handle)).width).toBeGreaterThanOrEqual(1)
+  })
+
   for (const scheme of SCHEMES) {
     test(`marks differ from Canvas · ${scheme}`, async ({ page }) => {
       await openForced(page, scheme)
