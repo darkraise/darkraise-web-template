@@ -36,15 +36,61 @@ describe("scrollbar side", () => {
   })
 })
 
+function giveScrollbar(width: number, side: "left" | "right") {
+  vi.spyOn(document.documentElement, "clientWidth", "get").mockReturnValue(
+    window.innerWidth - width,
+  )
+  placeScrollbar(side === "left" ? width : 0)
+}
+
 describe("scroll lock", () => {
+  // A test that fails while holding a lock would leave it held for the next.
+  const held: ReturnType<typeof lockScroll>[] = []
+  const lock = () => {
+    const token = lockScroll()
+    held.push(token)
+    return token
+  }
+
   afterEach(() => {
+    for (const token of held.splice(0)) unlockScroll(token)
+    vi.restoreAllMocks()
     document.body.removeAttribute("style")
+  })
+
+  it("pads the right beside a right-side scrollbar, then restores it", () => {
+    giveScrollbar(15, "right")
+    document.body.style.paddingRight = "4px"
+    const token = lock()
+    expect(document.body.style.paddingRight).toBe("19px")
+    expect(document.body.style.paddingLeft).toBe("")
+    unlockScroll(token)
+    expect(document.body.style.paddingRight).toBe("4px")
+  })
+
+  it("pads the left beside a left-side scrollbar, then restores it", () => {
+    giveScrollbar(12, "left")
+    document.body.style.paddingLeft = "4px"
+    const token = lock()
+    expect(document.body.style.paddingLeft).toBe("16px")
+    expect(document.body.style.paddingRight).toBe("")
+    unlockScroll(token)
+    expect(document.body.style.paddingLeft).toBe("4px")
+  })
+
+  it("writes no padding when the page has no scrollbar", () => {
+    giveScrollbar(0, "right")
+    const token = lock()
+    expect(document.body.style.overflow).toBe("hidden")
+    expect(document.body.style.paddingLeft).toBe("")
+    expect(document.body.style.paddingRight).toBe("")
+    unlockScroll(token)
   })
 
   it("restores the page once the last lock is released, in any order", () => {
     document.body.style.overflow = "scroll"
-    const outer = lockScroll()
-    const inner = lockScroll()
+    const outer = lock()
+    const inner = lock()
     unlockScroll(outer)
     expect(document.body.style.overflow).toBe("hidden")
     unlockScroll(inner)

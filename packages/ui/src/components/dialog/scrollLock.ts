@@ -1,5 +1,5 @@
 // Token-stack scroll lock. Each `lockScroll()` call returns an opaque token
-// that snapshots the body's pre-lock overflow/paddingRight. Calling
+// that snapshots the body's pre-lock overflow and inline paddings. Calling
 // `unlockScroll(token)` pops that snapshot from the stack; the body is only
 // restored when the stack is empty, and it is restored to the snapshot
 // captured by the *first* lock — not whatever the body currently looks like.
@@ -9,6 +9,7 @@
 // (empty) values as the "original".
 type LockToken = {
   overflow: string
+  paddingLeft: string
   paddingRight: string
 }
 
@@ -40,17 +41,19 @@ export function lockScroll(): LockToken | null {
   const body = document.body
   const token: LockToken = {
     overflow: body.style.overflow,
+    paddingLeft: body.style.paddingLeft,
     paddingRight: body.style.paddingRight,
   }
   if (lockStack.length === 0) {
     original = token
     const docEl = document.documentElement
     const scrollbarWidth = window.innerWidth - docEl.clientWidth
+    const padding =
+      scrollbarWidth > 0 && isScrollbarOnLeft() ? "paddingLeft" : "paddingRight"
     body.style.overflow = "hidden"
     if (scrollbarWidth > 0) {
-      const current =
-        parseFloat(window.getComputedStyle(body).paddingRight) || 0
-      body.style.paddingRight = `${current + scrollbarWidth}px`
+      const current = parseFloat(window.getComputedStyle(body)[padding]) || 0
+      body.style[padding] = `${current + scrollbarWidth}px`
     }
   }
   lockStack.push(token)
@@ -65,6 +68,7 @@ export function unlockScroll(token: LockToken | null): void {
   if (lockStack.length === 0 && original) {
     const body = document.body
     body.style.overflow = original.overflow
+    body.style.paddingLeft = original.paddingLeft
     body.style.paddingRight = original.paddingRight
     original = null
   }
