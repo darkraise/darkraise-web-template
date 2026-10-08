@@ -9,6 +9,7 @@ import {
 } from "./helpers/app"
 import { settle } from "./helpers/measure"
 import { expectInViewport, openOverlayCase } from "./helpers/overlays"
+import { example } from "./helpers/showcase"
 
 /**
  * The shell clips its own overflow and the content region scrolls inside it,
@@ -526,4 +527,33 @@ test.describe("auth language picker", () => {
       expect(picker.y + picker.height).toBeLessThanOrEqual(heading.y)
     })
   }
+})
+
+test.describe("touch", () => {
+  test("a tapped button keeps no hover wash", async ({ page }) => {
+    await seedApp(page)
+    await gotoApp(page, "/components/buttons")
+    expect(
+      await page.evaluate(() => matchMedia("(hover: none)").matches),
+      "the project emulates a device that cannot hover",
+    ).toBe(true)
+    const button = example(page, "With icons").getByRole("button", {
+      name: "New Item",
+    })
+    const wash = () =>
+      button.evaluate((el) => getComputedStyle(el, "::before").opacity)
+    await button.scrollIntoViewIfNeeded()
+    await settle(page)
+    expect(await wash(), "at rest").toBe("0")
+
+    await button.tap()
+    // The press wash is shown for a moment after the finger lifts.
+    await expect
+      .poll(() => button.evaluate((el) => el.matches(":active")))
+      .toBe(false)
+    await settle(page)
+    // A touch screen leaves :hover on the tapped element until the next tap.
+    expect(await button.evaluate((el) => el.matches(":hover"))).toBe(true)
+    expect(await wash(), "after the tap").toBe("0")
+  })
 })
