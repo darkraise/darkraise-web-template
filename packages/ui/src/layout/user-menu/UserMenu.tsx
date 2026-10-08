@@ -73,7 +73,13 @@ export function UserMenu({
                 <p className="dr-user-menu-email">{user.email}</p>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator
+              className={
+                layoutSwitcher && !onProfile && !onSettings && !onLogout
+                  ? "dr-user-menu-layout-separator"
+                  : undefined
+              }
+            />
           </>
         )}
         {onProfile && (

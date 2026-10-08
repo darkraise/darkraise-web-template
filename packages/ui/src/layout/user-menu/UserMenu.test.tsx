@@ -79,4 +79,31 @@ describe("UserMenu", () => {
       "dr-user-menu-layout-separator",
     )
   })
+
+  it("marks the identity separator when Layout is the only entry", () => {
+    const { container } = render(
+      <UserMenu
+        user={{ name: "Jane Doe", email: "jane@example.com" }}
+        layoutSwitcher={{}}
+      />,
+    )
+    openMenu(container)
+    expect(screen.getByRole("separator")).toHaveClass(
+      "dr-user-menu-layout-separator",
+    )
+  })
+
+  it("leaves the identity separator unmarked when Log out follows", () => {
+    const { container } = render(
+      <UserMenu
+        user={{ name: "Jane Doe", email: "jane@example.com" }}
+        onLogout={() => {}}
+        layoutSwitcher={{}}
+      />,
+    )
+    openMenu(container)
+    const [identity, beforeLogout] = screen.getAllByRole("separator")
+    expect(identity).not.toHaveClass("dr-user-menu-layout-separator")
+    expect(beforeLogout).toHaveClass("dr-user-menu-layout-separator")
+  })
 })
