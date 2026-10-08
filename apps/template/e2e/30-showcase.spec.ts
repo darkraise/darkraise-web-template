@@ -1270,3 +1270,27 @@ test.describe("showcase pages fit a 390px phone", () => {
     })
   }
 })
+
+test.describe("select side x align triggers show their whole label", () => {
+  for (const width of [1024, 1440]) {
+    test(`no trigger label is cut at ${width}px`, async ({ page }) => {
+      await openShowcase(page, "/components/select", {
+        viewport: { width, height: 900 },
+      })
+      const labels = page
+        .locator("[data-showcase-example]")
+        .filter({ has: page.getByText("Side x align", { exact: true }) })
+        .locator(".dr-select-trigger > span")
+      await expect(labels).toHaveCount(18)
+      const cut = await labels.evaluateAll((spans) =>
+        spans
+          .filter((span) => span.scrollWidth > span.clientWidth)
+          .map(
+            (span) =>
+              `"${span.textContent}" scrollWidth ${span.scrollWidth} > clientWidth ${span.clientWidth}`,
+          ),
+      )
+      expect(cut, cut.join("\n")).toEqual([])
+    })
+  }
+})

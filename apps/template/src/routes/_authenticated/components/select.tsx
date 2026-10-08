@@ -102,7 +102,7 @@ function SelectPage() {
         code={`// One representative cell: every side x align combination renders above.
 // Each cell is a live Select; click its trigger to see that placement.
 <Select>
-  <SelectTrigger className="w-32">
+  <SelectTrigger className="w-40">
     <SelectValue placeholder="right/end" />
   </SelectTrigger>
   <SelectContent side="right" align="end" position="popper">
@@ -116,7 +116,7 @@ function SelectPage() {
           cols={{ label: "align", values: SELECT_ALIGNS }}
           render={(side, align) => (
             <Select>
-              <SelectTrigger className="w-32">
+              <SelectTrigger className="w-40">
                 <SelectValue placeholder={`${side}/${align}`} />
               </SelectTrigger>
               <SelectContent side={side} align={align} position="popper">
