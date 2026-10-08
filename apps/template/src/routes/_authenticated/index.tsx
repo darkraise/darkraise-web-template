@@ -300,6 +300,17 @@ function DashboardSkeleton() {
       <PageHeader
         title={t("Dashboard")}
         description={t("Overview of your store performance")}
+        actions={
+          // An invisible copy of the action sizes the block like the button
+          // at every density and pointer type, so the header keeps its
+          // height when the data arrives.
+          <Skeleton className="flex">
+            <Button variant="outline" size="sm" className="invisible">
+              <Download className="h-4 w-4" />
+              {t("Download Report")}
+            </Button>
+          </Skeleton>
+        }
       />
       <div className="space-y-6">
         <MetricGrid columns={4}>

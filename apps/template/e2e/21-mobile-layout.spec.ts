@@ -74,6 +74,30 @@ test.describe("dashboard", () => {
     await expect(page.locator(".dr-chart").first()).toBeVisible()
     await expectFits(page)
   })
+
+  test("the page header keeps its height while the data loads", async ({
+    page,
+  }) => {
+    await seedApp(page)
+    // A paused clock holds the simulated data latency, so the skeleton
+    // stays until the clock resumes.
+    await page.clock.install()
+    await page.clock.pauseAt(Date.now() + 1000)
+    await gotoApp(page, "/")
+    const header = page.locator("#main-content .dr-page-header")
+    await expect(page.locator(".dr-skeleton").first()).toBeVisible()
+    const loading = (await boxOf(header)).height
+    await page.clock.resume()
+    await expect(page.locator(".dr-skeleton")).toHaveCount(0)
+    await expect(
+      header.getByRole("button", { name: /download report/i }),
+    ).toBeVisible()
+    const loaded = (await boxOf(header)).height
+    expect(
+      Math.abs(loaded - loading),
+      `header ${loading}px while loading, ${loaded}px loaded`,
+    ).toBeLessThanOrEqual(1)
+  })
 })
 
 test.describe("orders table", () => {
