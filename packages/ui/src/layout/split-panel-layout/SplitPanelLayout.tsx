@@ -87,9 +87,9 @@ export function SplitPanelLayout({
     if (previousContentActive.current === contentActive) return
     previousContentActive.current = contentActive
     // Only the phone view swaps the regions; side by side, focus stays put.
-    if (!window.matchMedia("(width < 48rem)").matches) return
+    if (!phone) return
     ;(contentActive ? mainRef.current : panelRef.current)?.focus()
-  }, [contentActive])
+  }, [contentActive, phone])
 
   const clampWidth = useCallback(
     (width: number) => Math.min(Math.max(width, minPanelWidth), maxPanelWidth),

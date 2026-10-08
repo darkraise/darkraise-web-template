@@ -265,6 +265,17 @@ describe("SplitPanelLayout phone view", () => {
     )
   })
 
+  it("moves focus on the phone match the layout already holds", () => {
+    stubPhoneWidth(true)
+    const { container, rerender } = render(phoneTree())
+    vi.mocked(window.matchMedia).mockClear()
+    rerender(phoneTree({ contentActive: true }))
+    expect(document.activeElement).toBe(
+      container.querySelector("main#main-content"),
+    )
+    expect(window.matchMedia).not.toHaveBeenCalled()
+  })
+
   it("points the skip link at the panel while the phone list shows", () => {
     stubPhoneWidth(true)
     const { container, rerender } = render(phoneTree())
