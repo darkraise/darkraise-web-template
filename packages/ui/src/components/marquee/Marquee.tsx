@@ -1,5 +1,6 @@
 import * as React from "react"
 import { cn } from "@lib/utils"
+import { getTabbables } from "@primitives/focus-trap"
 import "./marquee.css"
 
 export interface MarqueeProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -63,6 +64,19 @@ function Marquee({
     return () => observer.disconnect()
   }, [])
 
+  // aria-hidden leaves a copy's links and buttons in the tab order, and inert
+  // would also block clicks on them. The copies render `children`, so each
+  // render can bring new focusable content: this runs after every render.
+  React.useLayoutEffect(() => {
+    const track = trackRef.current
+    if (!track) return
+    for (const copy of Array.from(track.children).slice(1)) {
+      for (const element of getTabbables(copy as HTMLElement)) {
+        element.setAttribute("tabindex", "-1")
+      }
+    }
+  })
+
   const copies = layout?.copies ?? 2
 
   return (
@@ -87,9 +101,6 @@ function Marquee({
             ref={index === 0 ? groupRef : undefined}
             className="dr-marquee-group"
             aria-hidden={index === 0 ? undefined : "true"}
-            // aria-hidden leaves the links of a copy in the tab order;
-            // inert takes them out.
-            inert={index === 0 ? undefined : true}
           >
             {children}
           </div>

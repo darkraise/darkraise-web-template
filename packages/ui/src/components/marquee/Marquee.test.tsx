@@ -105,15 +105,29 @@ describe("Marquee", () => {
     },
   )
 
-  it("makes every copy after the first inert", () => {
-    render(
+  it("takes the copies' controls out of the tab order without making them inert", () => {
+    const { rerender } = render(
       <Marquee data-testid="m">
         <a href="#news">News</a>
       </Marquee>,
     )
-    const groups = screen.getByTestId("m").querySelectorAll(".dr-marquee-group")
-    expect(groups[0]).not.toHaveAttribute("inert")
-    expect(groups[1]).toHaveAttribute("inert")
+    const groups = () =>
+      screen.getByTestId("m").querySelectorAll(".dr-marquee-group")
+    expect(groups()[1]).not.toHaveAttribute("inert")
+    expect(groups()[0]?.querySelector("a")).not.toHaveAttribute("tabindex")
+    expect(groups()[1]?.querySelector("a")).toHaveAttribute("tabindex", "-1")
+
+    rerender(
+      <Marquee data-testid="m">
+        <a href="#news">News</a>
+        <button type="button">More</button>
+      </Marquee>,
+    )
+    expect(groups()[0]?.querySelector("button")).not.toHaveAttribute("tabindex")
+    expect(groups()[1]?.querySelector("button")).toHaveAttribute(
+      "tabindex",
+      "-1",
+    )
   })
 
   it("applies pauseOnHover via data attribute", () => {

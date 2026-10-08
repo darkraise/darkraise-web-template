@@ -198,6 +198,16 @@ test.describe("marquee", () => {
       page.getByRole("button", { name: "After the marquee" }),
     ).toBeFocused()
   })
+
+  test("a click on a link in a copy follows it", async ({ page }) => {
+    // Reduced motion stops the loop, so the copy holds still under the pointer.
+    await page.emulateMedia({ reducedMotion: "reduce" })
+    await openInMode(page, "light")
+    const link = probe(page, "marquee", ".dr-marquee-group").nth(1).locator("a")
+    const box = await boxOf(link)
+    await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2)
+    await expect(page).toHaveURL(/#news$/)
+  })
 })
 
 test.describe("resizable", () => {
