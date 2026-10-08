@@ -10,7 +10,7 @@
     "test": "pnpm --filter \"./packages/*\" --filter \"./apps/*\" test",
     "test:template": "pnpm --filter darkraise-web-template test",
     "lint": "eslint",
-    "format": "prettier --write \"**/*.{ts,tsx,css,json,md}\"",
+    "format": "prettier --write \"**/*.{ts,tsx,css,json,md,mjs,html}\"",
     "typecheck": "pnpm -r typecheck",
     "storybook": "pnpm --filter darkraise-ui storybook",
     "publish:ui": "pnpm --filter darkraise-ui publish",
@@ -36,7 +36,7 @@
       "eslint --fix",
       "prettier --write"
     ],
-    "*.{json,css,md}": [
+    "*.{json,css,md,mjs,html}": [
       "prettier --write"
     ],
     "packages/ui/src/components/**/*.css": [
