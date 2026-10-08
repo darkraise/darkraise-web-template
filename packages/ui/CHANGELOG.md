@@ -204,6 +204,7 @@ Breaking: `ToggleGroup` sizes to its content. `.dr-toggle-group` is `inline-flex
 - Breaking: under `prefers-reduced-motion: reduce`, transitions take `0s` instead of `0.01ms`, so no transition starts: `transitionrun`, `transitionstart` and `transitionend` no longer fire, and a computed-style read right after a change returns the new value. Animations keep `0.01ms`, so `animationend` still fires.
 - Below 48rem `LayoutHeader` hides its layout switcher and passes the same choices to the user menu's Layout submenu, so a phone-width bar keeps every control inside it under the floating and island shells.
 - In light mode the `flat` shell style paints its rail and bar with `--shell-flat-chrome`, a fixed 8.25-point step below `--background` lightness, instead of `--muted`, which sat at 1.05:1 against the page. The tone reads at about 1.2:1 and stays below the classic rail edge, so it does not look like a border. Dark mode keeps `--muted`.
+- On the settings page (`.dr-theme-settings-page`) a toggle group with four values (Style, Gradient pattern) lays out as 2x2 instead of one row of four, so the longer Vietnamese labels fit the column at 1024 and 1280px. The theme switcher popover keeps its single row.
 
 ### Removed
 

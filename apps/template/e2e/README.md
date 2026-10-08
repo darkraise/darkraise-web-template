@@ -329,10 +329,12 @@ horizontal overflow and a clean console.
 
 ### 14 · Theme settings fit (`14-theme-settings-fit.spec.ts`)
 
-- At 1024, 1280 and 1600px, the appearance panel on `/settings` (gradient
-  background, so the four-cell Gradient Pattern row renders): no toggle item,
-  toggle group or swatch grid is wider than its box, and every toggle label
-  sits at least 6px from both edges of its cell.
+- At 1024, 1280 and 1600px, in Vietnamese at 1024 and 1280px, and at spacious
+  density at 1024px, the appearance panel on `/settings` (gradient background,
+  so the four-value Gradient Pattern row renders, 2x2 like every four-value
+  group on that page): no toggle item, toggle group or swatch grid is wider
+  than its box, and every toggle label sits at least 6px from both edges of
+  its cell.
 - The theme switcher popover, with Advanced open, has no overflowing control
   either.
 

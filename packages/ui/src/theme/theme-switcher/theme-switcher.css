@@ -131,8 +131,11 @@
     grid-template-columns: repeat(3, minmax(max-content, 1fr));
   }
 
+  /* Four cells in one row overflow the column with the longer Vietnamese
+     labels at 1024 and 1280px, so four values lay out as 2x2 here. The
+     popover keeps its single row. */
   .dr-theme-settings-page .dr-theme-switcher-toggle-group[data-cols="4"] {
-    grid-template-columns: repeat(4, minmax(max-content, 1fr));
+    grid-template-columns: repeat(2, minmax(max-content, 1fr));
   }
 
   .dr-theme-settings-page

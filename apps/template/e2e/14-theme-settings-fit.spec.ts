@@ -103,24 +103,50 @@ async function crampedLabels(page: Page, root: string): Promise<string[]> {
   }, root)
 }
 
-for (const width of [1024, 1280, 1600]) {
-  test(`settings appearance panel fits its columns at ${width}px`, async ({
+// Vietnamese labels are the longest; spacious density pads every cell most.
+const PAGE_CASES = [
+  { width: 1024, language: "en" },
+  { width: 1280, language: "en" },
+  { width: 1600, language: "en" },
+  { width: 1024, language: "vi" },
+  { width: 1280, language: "vi" },
+  { width: 1024, language: "en", density: "spacious" },
+] as const
+
+const GRADIENT_PATTERN = { en: "Gradient Pattern", vi: "Kiểu chuyển màu" }
+
+for (const entry of PAGE_CASES) {
+  const density = "density" in entry ? entry.density : undefined
+  const suffix = [
+    entry.language === "en" ? "" : ` in ${entry.language}`,
+    density ? ` at ${density} density` : "",
+  ].join("")
+  test(`settings appearance panel fits its columns at ${entry.width}px${suffix}`, async ({
     page,
   }) => {
-    await page.setViewportSize({ width, height: 900 })
+    await page.setViewportSize({ width: entry.width, height: 900 })
     // Gradient background so the Gradient Pattern row (the widest toggle
     // group, at four cells) is rendered.
     await seedApp(page, {
       style: "quiet",
       mode: "dark",
       backgroundStyle: "gradient",
+      ...(density ? { density } : {}),
     })
+    if (entry.language !== "en") {
+      await page.addInitScript(
+        (language) => localStorage.setItem("darkraise-demo.language", language),
+        entry.language,
+      )
+    }
     await gotoApp(page, "/settings")
 
     const panel = page.locator(".dr-theme-settings-page")
     await expect(panel).toBeVisible()
     await expect(
-      panel.locator(".dr-theme-switcher-row", { hasText: "Gradient Pattern" }),
+      panel.locator(".dr-theme-switcher-row", {
+        hasText: GRADIENT_PATTERN[entry.language],
+      }),
     ).toBeVisible()
 
     const found = await overflowingControls(page, ".dr-theme-settings-page")
