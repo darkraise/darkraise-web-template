@@ -20,6 +20,7 @@ const PHYSICAL_UTILITY = [
   /^-?translate-x-/,
   /^(?:float|clear)-(?:left|right)$/,
   /^(?:bg|object)-(?:left|right)(?:-|$)/,
+  /^(?:bg|object)-(?:top|bottom)-(?:left|right)$/,
   /^scroll-[mp][lr]-/,
 ]
 const PHYSICAL_STYLE_KEY =
@@ -457,6 +458,20 @@ describe("the logical CSS readers", () => {
       ".e { origin-top-left }",
       ".e { bg-right-top }",
       ".e { scroll-pl-2 }",
+    ])
+  })
+
+  it("flag background and object corners named vertical side first", () => {
+    expect(
+      cssFindings(`
+        @layer components {
+          .f { @apply bg-top-left bg-bottom-right object-top-left bg-top object-bottom; }
+        }
+      `),
+    ).toEqual([
+      ".f { bg-top-left }",
+      ".f { bg-bottom-right }",
+      ".f { object-top-left }",
     ])
   })
 

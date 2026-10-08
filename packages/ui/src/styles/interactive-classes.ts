@@ -1,5 +1,6 @@
 import { readFileSync, readdirSync } from "node:fs"
 import { join } from "node:path"
+import ts from "typescript"
 import { resolveFieldTrigger } from "../test/fieldTrigger"
 
 // Shared by the focus scan and the forced-colours / touch-action coverage
@@ -62,25 +63,52 @@ export function subjectClasses(selector: string): string[] {
  * the literals of one cn() call together, since cn() joins its arguments.
  */
 export function classGroups(source: string): string[][] {
-  const literal = /["'`]([^"'`]*)["'`]/g
-  const groups = [...source.matchAll(literal)].map((m) =>
-    (m[1] as string).split(/\s+/),
+  const file = ts.createSourceFile(
+    "scan.tsx",
+    source,
+    ts.ScriptTarget.Latest,
+    false,
+    ts.ScriptKind.TSX,
   )
-  for (const call of source.matchAll(/(?<![\w.])cn\(/g)) {
-    let depth = 1
-    let end = (call.index as number) + call[0].length
-    while (depth > 0 && end < source.length) {
-      const ch = source[end]
-      if (ch === "(") depth++
-      else if (ch === ")") depth--
-      end++
+  const words = (text: string) => text.split(/\s+/).filter(Boolean)
+  const literalText = (node: ts.Node): string | undefined => {
+    if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) {
+      return node.text
     }
-    const args = source.slice((call.index as number) + call[0].length, end - 1)
-    groups.push(
-      [...args.matchAll(literal)].flatMap((m) => (m[1] as string).split(/\s+/)),
-    )
+    if (ts.isTemplateExpression(node)) {
+      return [node.head, ...node.templateSpans.map((s) => s.literal)]
+        .map((part) => part.text)
+        .join(" ")
+    }
+    return undefined
   }
-  return groups
+  const literalsIn = (node: ts.Node): string[] => {
+    const found: string[] = []
+    const visit = (child: ts.Node) => {
+      const text = literalText(child)
+      if (text !== undefined) found.push(...words(text))
+      ts.forEachChild(child, visit)
+    }
+    visit(node)
+    return found
+  }
+
+  const groups: string[][] = []
+  const cnGroups: string[][] = []
+  const visit = (node: ts.Node) => {
+    const text = literalText(node)
+    if (text !== undefined) groups.push(words(text))
+    if (
+      ts.isCallExpression(node) &&
+      ts.isIdentifier(node.expression) &&
+      node.expression.text === "cn"
+    ) {
+      cnGroups.push(node.arguments.flatMap(literalsIn))
+    }
+    ts.forEachChild(node, visit)
+  }
+  visit(file)
+  return [...groups, ...cnGroups]
 }
 
 export const RULES = ROOTS.flatMap((root) => filesUnder(root, ".css")).flatMap(
@@ -122,7 +150,8 @@ export function interactiveClasses(): Map<string, string> {
     for (const tag of source.matchAll(/<[a-z][\w-]*\b((?:=>|[^>])*?)>/g)) {
       const attrs = tag[1] as string
       if (!INTERACTIVE_ATTRS.test(attrs)) continue
-      for (const cls of classGroups(attrs).flat()) {
+      // An attribute list alone is not valid TSX; inside a tag it parses.
+      for (const cls of classGroups(`<x ${attrs}>`).flat()) {
         if (cls.startsWith("dr-")) found.set(cls, path)
       }
     }

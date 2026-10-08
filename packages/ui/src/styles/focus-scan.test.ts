@@ -97,6 +97,22 @@ function hasFocusRule(cls: string): boolean {
   return false
 }
 
+describe("classGroups", () => {
+  it("skips quote characters in comments", () => {
+    expect(
+      classGroups(`// don't\n<button className="dr-x focus-ring" />`),
+    ).toEqual([["dr-x", "focus-ring"]])
+  })
+
+  it("groups the literals of one cn() call and reads template strings", () => {
+    expect(
+      classGroups(
+        "const a = cn(\"dr-a\", open && 'dr-b')\nconst b = `dr-c ${a} dr-d`",
+      ),
+    ).toEqual([["dr-a"], ["dr-b"], ["dr-c", "dr-d"], ["dr-a", "dr-b"]])
+  })
+})
+
 describe("every interactive class draws a focus indicator", () => {
   const interactive = interactiveClasses()
 
