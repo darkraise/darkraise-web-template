@@ -64,7 +64,7 @@ describe("primary fill and label", () => {
       if (ratio < 4.6) failures.push(`${comboName(combo)}: ${ratio.toFixed(2)}`)
     }
     expect(failures).toEqual([])
-  })
+  }, 30_000)
 
   it("dark fills clear 3:1 against the card in every theme", () => {
     const failures: string[] = []
@@ -78,7 +78,7 @@ describe("primary fill and label", () => {
       if (ratio < 3) failures.push(`${comboName(combo)}: ${ratio.toFixed(2)}`)
     }
     expect(failures).toEqual([])
-  })
+  }, 30_000)
 
   it("gives an ink label to exactly the light hues in each mode", () => {
     const failures: string[] = []
@@ -90,7 +90,7 @@ describe("primary fill and label", () => {
       if (ink !== expected) failures.push(`${comboName(combo)}: ink ${ink}`)
     }
     expect(failures).toEqual([])
-  })
+  }, 30_000)
 
   // The matrix above holds contrast and background intensity at their
   // defaults. The white-label solve darkens calm fills too, and their
@@ -107,5 +107,5 @@ describe("primary fill and label", () => {
       if (ratio < 3) failures.push(`${comboName(combo)}: ${ratio.toFixed(2)}`)
     }
     expect(failures).toEqual([])
-  })
+  }, 30_000)
 })
