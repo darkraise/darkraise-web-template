@@ -481,6 +481,9 @@ Runs in the `mobile` project: 390×844 with touch.
 - The header keeps every control on screen in the sidebar, top-nav, stacked
   and split-panel shells; at 700px search shrinks to an icon and the brand
   hides.
+- The inbox bar does not scroll sideways under the floating and island shells.
+  The header's layout switcher is hidden, and the user menu's Layout submenu
+  changes the layout and the shell style instead.
 - Inbox: opening a message hides the list and focuses the message, and Back
   returns focus to the list; the skip link lands on the list.
 - Order detail steps stack on a phone and lie in one row from 640px.

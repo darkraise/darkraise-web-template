@@ -1,38 +1,14 @@
 import { useUiText } from "../../i18n/useUiText"
-import { PanelLeft, PanelTop, Columns3, Columns2 } from "lucide-react"
 import { Button } from "@components/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@components/dropdown-menu"
 import { useLayoutStore, type LayoutVariant } from "@layout/layoutStore"
-import { SHELL_STYLES, type ShellStyle } from "@theme/types"
-import { useUiLabels } from "@labels"
-
-type LayoutEntry = {
-  value: LayoutVariant
-  label: string
-  icon: typeof PanelLeft
-}
-
-const DEFAULT_LAYOUT: LayoutEntry = {
-  value: "sidebar",
-  label: "Sidebar",
-  icon: PanelLeft,
-}
-
-const LAYOUTS: LayoutEntry[] = [
-  DEFAULT_LAYOUT,
-  { value: "top-nav", label: "Top Navigation", icon: PanelTop },
-  { value: "stacked", label: "Stacked", icon: Columns3 },
-  { value: "split-panel", label: "Split Panel", icon: Columns2 },
-]
+import type { ShellStyle } from "@theme/types"
+import { LayoutChoices } from "./LayoutChoices"
+import { DEFAULT_LAYOUT, layoutEntries } from "./layoutEntries"
 
 export interface LayoutSwitcherProps {
   /**
@@ -61,51 +37,29 @@ export function LayoutSwitcher({
   currentShellStyle,
 }: LayoutSwitcherProps = {}) {
   const uiText = useUiText()
-  const { themeOptions } = useUiLabels()
-
-  const { layout, setLayout, shellStyle, setShellStyle } = useLayoutStore()
-  const entries = variants
-    ? LAYOUTS.filter((entry) => variants.includes(entry.value))
-    : LAYOUTS
-  const current = entries.find((l) => l.value === layout) ?? DEFAULT_LAYOUT
+  const { layout } = useLayoutStore()
+  const current =
+    layoutEntries(variants).find((l) => l.value === layout) ?? DEFAULT_LAYOUT
   const CurrentIcon = current.icon
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="dr-layout-switcher-trigger"
+        >
           <CurrentIcon className="size-[var(--icon-size)]" />
           <span className="sr-only">{uiText("Switch layout")}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        {entries.map(({ value, label, icon: Icon }) => (
-          <DropdownMenuItem
-            key={value}
-            onClick={() => setLayout(value)}
-            className="dr-layout-switcher-item"
-            data-active={layout === value ? "true" : undefined}
-          >
-            <Icon className="dr-layout-switcher-item-icon" />
-            {uiText(label)}
-          </DropdownMenuItem>
-        ))}
-        {!shellStylePinned && (
-          <>
-            <DropdownMenuSeparator />
-            <DropdownMenuLabel>{uiText("Shell style")}</DropdownMenuLabel>
-            <DropdownMenuRadioGroup
-              value={currentShellStyle ?? shellStyle ?? undefined}
-              onValueChange={(value) => setShellStyle(value as ShellStyle)}
-            >
-              {SHELL_STYLES.map((style) => (
-                <DropdownMenuRadioItem key={style} value={style}>
-                  {themeOptions[style]}
-                </DropdownMenuRadioItem>
-              ))}
-            </DropdownMenuRadioGroup>
-          </>
-        )}
+        <LayoutChoices
+          variants={variants}
+          shellStylePinned={shellStylePinned}
+          currentShellStyle={currentShellStyle}
+        />
       </DropdownMenuContent>
     </DropdownMenu>
   )

@@ -37,5 +37,10 @@
     .dr-layout-header .dr-search-command-trigger > kbd {
       @apply hidden;
     }
+
+    /* The user menu carries the layout choices at this width. */
+    .dr-layout-header .dr-layout-switcher-trigger {
+      @apply hidden;
+    }
   }
 }

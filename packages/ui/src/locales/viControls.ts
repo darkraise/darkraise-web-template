@@ -76,6 +76,7 @@ export const viControls: Record<UiTextKey, string> = {
   "Jump to date": "Chuyển đến ngày",
   "Scroll through the timeline by date": "Cuộn dòng thời gian theo ngày",
   "Switch layout": "Đổi bố cục",
+  Layout: "Bố cục",
   Navigation: "Điều hướng",
   "Open menu": "Mở menu",
   "No new notifications": "Không có thông báo mới",

@@ -102,6 +102,15 @@ export function LayoutHeader({
           onProfile={onProfile}
           onSettings={onSettings}
           onLogout={onLogout}
+          layoutSwitcher={
+            showLayoutSwitcher
+              ? {
+                  variants: layoutVariants,
+                  shellStylePinned,
+                  currentShellStyle,
+                }
+              : undefined
+          }
         />
       </div>
     </header>

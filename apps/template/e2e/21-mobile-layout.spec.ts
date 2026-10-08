@@ -141,7 +141,7 @@ test.describe("header", () => {
       const required = [
         header.getByRole("button", { name: "Open menu" }),
         header.getByRole("combobox", { name: "Language" }),
-        header.getByRole("button", { name: "Switch layout" }),
+        header.locator(".dr-user-menu-trigger"),
         header.getByRole("button", { name: "Customize theme" }),
         header.getByRole("button", { name: "Notifications" }),
       ]
@@ -175,6 +175,48 @@ test.describe("header", () => {
       expect(offscreen).toEqual([])
     })
   }
+
+  for (const shellStyle of ["floating", "island"]) {
+    test(`the inbox bar fits in the ${shellStyle} shell`, async ({ page }) => {
+      await seedApp(page, { shellStyle })
+      await gotoApp(page, "/inbox")
+      const header = page.locator("header.dr-layout-header").first()
+      await expect(header.locator(".dr-user-menu-trigger")).toBeVisible()
+      const bar = await header.evaluate((el) => ({
+        scrollWidth: el.scrollWidth,
+        clientWidth: el.clientWidth,
+      }))
+      expect(bar.scrollWidth, JSON.stringify(bar)).toBeLessThanOrEqual(
+        bar.clientWidth,
+      )
+    })
+  }
+
+  test("the layout is chosen from the user menu", async ({ page }) => {
+    await seedApp(page)
+    await gotoApp(page, "/")
+    await expect(
+      page.locator('.dr-shell[data-structure="sidebar"]'),
+    ).toBeVisible()
+    const header = page.locator("header.dr-layout-header").first()
+    const switcher = header.locator(".dr-layout-switcher-trigger")
+    await expect(switcher).toHaveCount(1)
+    await expect(switcher).toBeHidden()
+    await header.locator(".dr-user-menu-trigger").click()
+    const menu = page.locator(".dr-user-menu-content")
+    await menu.getByRole("menuitem", { name: "Layout" }).click()
+    await page.getByRole("menuitem", { name: "Top Navigation" }).click()
+    await expect(
+      page.locator('.dr-shell[data-structure="top-nav"]'),
+    ).toBeVisible()
+
+    await header.locator(".dr-user-menu-trigger").click()
+    await menu.getByRole("menuitem", { name: "Layout" }).click()
+    await page.getByRole("menuitemradio", { name: "Island" }).click()
+    await expect(
+      page.locator('.dr-shell[data-shell-style="island"]'),
+    ).toBeVisible()
+  })
 
   test("search is an icon and the brand is hidden at 700px", async ({
     page,

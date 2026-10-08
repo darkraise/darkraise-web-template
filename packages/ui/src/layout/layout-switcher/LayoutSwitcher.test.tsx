@@ -18,6 +18,13 @@ describe("LayoutSwitcher", () => {
     useLayoutStore.setState({ layout: "sidebar", shellStyle: null }),
   )
 
+  it("marks its trigger for the phone header rule", () => {
+    render(<LayoutSwitcher />)
+    expect(screen.getByRole("button", { name: /switch layout/i })).toHaveClass(
+      "dr-layout-switcher-trigger",
+    )
+  })
+
   it("offers every variant by default", () => {
     render(<LayoutSwitcher />)
     open()

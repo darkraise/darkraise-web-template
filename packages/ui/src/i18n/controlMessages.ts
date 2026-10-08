@@ -75,6 +75,7 @@ export const controlMessages = {
   "Jump to date": "Jump to date",
   "Scroll through the timeline by date": "Scroll through the timeline by date",
   "Switch layout": "Switch layout",
+  Layout: "Layout",
   Navigation: "Navigation",
   "Open menu": "Open menu",
   "No new notifications": "No new notifications",

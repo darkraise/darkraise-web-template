@@ -1,21 +1,36 @@
-import { LogOut, Settings, User } from "lucide-react"
+import { LayoutTemplate, LogOut, Settings, User } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@components/dropdown-menu"
 import { Avatar, AvatarFallback } from "@components/avatar"
 import { Button } from "@components/button"
 import { useUiLabels } from "@labels"
+import type { LayoutSwitcherProps } from "@layout/layout-switcher"
+import { LayoutChoices } from "@layout/layout-switcher/LayoutChoices"
+import { useUiText } from "../../i18n/useUiText"
 
 interface UserMenuProps {
   user?: { name: string; email: string }
   onProfile?: () => void
   onSettings?: () => void
   onLogout?: () => void
+  /**
+   * Adds a Layout submenu with the choices `LayoutSwitcher` shows. It is
+   * shown below 48rem only, where `LayoutHeader` hides its switcher to fit
+   * a phone-width bar.
+   */
+  layoutSwitcher?: Pick<
+    LayoutSwitcherProps,
+    "variants" | "shellStylePinned" | "currentShellStyle"
+  >
 }
 
 export function UserMenu({
@@ -23,8 +38,10 @@ export function UserMenu({
   onProfile,
   onSettings,
   onLogout,
+  layoutSwitcher,
 }: UserMenuProps) {
   const labels = useUiLabels()
+  const uiText = useUiText()
   const initials = user?.name
     ? user.name
         .split(" ")
@@ -66,7 +83,23 @@ export function UserMenu({
             {labels.userMenu.settings}
           </DropdownMenuItem>
         )}
-        {(onProfile || onSettings) && onLogout && <DropdownMenuSeparator />}
+        {layoutSwitcher && (
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger className="dr-user-menu-layout">
+              <LayoutTemplate
+                className="dr-user-menu-item-icon"
+                aria-hidden="true"
+              />
+              {uiText("Layout")}
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent>
+              <LayoutChoices {...layoutSwitcher} />
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
+        )}
+        {(onProfile || onSettings || layoutSwitcher) && onLogout && (
+          <DropdownMenuSeparator />
+        )}
         {onLogout && (
           <DropdownMenuItem onClick={onLogout}>
             <LogOut className="dr-user-menu-item-icon" aria-hidden="true" />

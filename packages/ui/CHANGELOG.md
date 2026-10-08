@@ -149,6 +149,7 @@ Breaking: `ToggleGroup` sizes to its content. `.dr-toggle-group` is `inline-flex
 - `useSlider().pointerToValue` takes an optional fourth argument, the direction to measure in.
 - `LocaleSwitcher` takes `compact`: below 640px the trigger shows only the option icon, and the language name stays as text for assistive technology. The trigger carries `data-compact`, and every option name carries `dr-locale-option-label`.
 - `VirtualizedDropdownMenuContent` takes `isItemDisabled(item, index)`. A disabled row is skipped by the arrow keys, Home and End, ignores clicks, Enter and the pointer, and carries `data-disabled` and `aria-disabled`; the item render function receives `disabled`, and `VirtualizedDropdownMenuItem` takes `disabled`.
+- `UserMenu` takes `layoutSwitcher` (the `variants`, `shellStylePinned` and `currentShellStyle` of `LayoutSwitcherProps`) and then shows a Layout submenu with the same layout and shell-style choices as `LayoutSwitcher`. Its trigger carries `.dr-user-menu-layout` and shows below 48rem only. `LayoutSwitcher`'s trigger carries `.dr-layout-switcher-trigger`.
 
 ### Changed
 
@@ -201,6 +202,7 @@ Breaking: `ToggleGroup` sizes to its content. `.dr-toggle-group` is `inline-flex
 - In a `ButtonGroup`, a filled button (`default`, `secondary` or `destructive`) that follows another child paints its inline-start border (block-start in a vertical group) as a 1px seam, the page colour at 35% over its fill, so adjacent filled buttons no longer read as one block. Outline buttons keep their shared edge; ghost and link buttons are unchanged.
 - Breaking: every entry that uses React state or context starts with a `"use client"` directive: `darkraise-ui`, each `darkraise-ui/components/*` entry, `hooks`, `theme`, `layout`, `forms`, `data-table`, `errors`, `router`, `i18n`, `i18n/react-i18next` and `labels`. Under React Server Components these are client modules: a server component can render their components but cannot call their hooks. `darkraise-ui/lib`, `darkraise-ui/locales/en`, `darkraise-ui/locales/vi` and `darkraise-ui/vite` carry no directive and import nothing from React, so server code can use them. The directives that 75 source files carried never reached `dist`, because the bundler drops them; they are removed.
 - Breaking: under `prefers-reduced-motion: reduce`, transitions take `0s` instead of `0.01ms`, so no transition starts: `transitionrun`, `transitionstart` and `transitionend` no longer fire, and a computed-style read right after a change returns the new value. Animations keep `0.01ms`, so `animationend` still fires.
+- Below 48rem `LayoutHeader` hides its layout switcher and passes the same choices to the user menu's Layout submenu, so a phone-width bar keeps every control inside it under the floating and island shells.
 
 ### Removed
 
