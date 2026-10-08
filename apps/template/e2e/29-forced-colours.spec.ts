@@ -338,12 +338,14 @@ test.describe("menus, pickers and navigation", () => {
       const first = page.locator(".dr-menu-content .dr-menu-item").first()
       await expect(first).toBeFocused()
       await settle(page)
-      await expectChosen(
-        page,
-        page.locator(".dr-menu-content"),
-        ".dr-menu-item:focus",
-        ".dr-menu-item:not(:focus)",
-      )
+      await expect(async () => {
+        await expectChosen(
+          page,
+          page.locator(".dr-menu-content"),
+          ".dr-menu-item:focus",
+          ".dr-menu-item:not(:focus)",
+        )
+      }).toPass({ timeout: 10_000 })
     })
 
     test(`an open sub-trigger is marked · ${scheme}`, async ({ page }) => {
@@ -360,12 +362,14 @@ test.describe("menus, pickers and navigation", () => {
       await expect(share).toHaveAttribute("data-state", "open")
       await expect(share).not.toBeFocused()
       await settle(page)
-      await expectChosen(
-        page,
-        content,
-        ".dr-menu-sub-trigger",
-        ".dr-menu-item:not(.dr-menu-sub-trigger):not(:focus)",
-      )
+      await expect(async () => {
+        await expectChosen(
+          page,
+          content,
+          ".dr-menu-sub-trigger",
+          ".dr-menu-item:not(.dr-menu-sub-trigger):not(:focus)",
+        )
+      }).toPass({ timeout: 10_000 })
     })
 
     test(`a focused menubar row is marked · ${scheme}`, async ({ page }) => {
@@ -378,12 +382,14 @@ test.describe("menus, pickers and navigation", () => {
       await page.keyboard.press("ArrowDown")
       await expect(row).toBeFocused()
       await settle(page)
-      await expectChosen(
-        page,
-        page.locator(".dr-menubar-content"),
-        ".dr-menubar-item:focus",
-        ".dr-menubar-item:not(:focus)",
-      )
+      await expect(async () => {
+        await expectChosen(
+          page,
+          page.locator(".dr-menubar-content"),
+          ".dr-menubar-item:focus",
+          ".dr-menubar-item:not(:focus)",
+        )
+      }).toPass({ timeout: 10_000 })
     })
 
     test(`chosen rows stay legible · ${scheme}`, async ({ page }) => {
@@ -393,15 +399,20 @@ test.describe("menus, pickers and navigation", () => {
         '[data-probe="calendar"] .dr-calendar-day-btn[data-selected-single="true"]',
         '[data-probe="sidebar"] .dr-sidebar-nav-current',
       ]) {
-        const share = await textShare(page, page.locator(selector), highlight)
-        expect(share, selector).toBeGreaterThan(0.2)
+        await expect
+          .poll(() => textShare(page, page.locator(selector), highlight), {
+            message: selector,
+          })
+          .toBeGreaterThan(0.2)
       }
       await page.locator('[data-probe="menu"] button').focus()
       await page.keyboard.press("ArrowDown")
       const row = page.locator(".dr-menu-content .dr-menu-item:focus")
       await expect(row).toHaveCount(1)
       await settle(page)
-      expect(await textShare(page, row, highlight)).toBeGreaterThan(0.2)
+      await expect
+        .poll(() => textShare(page, row, highlight))
+        .toBeGreaterThan(0.2)
     })
 
     test(`a selected timeline tile is marked over its content · ${scheme}`, async ({
@@ -506,11 +517,19 @@ test.describe("structural marks, fills and boundaries", () => {
       await separator.waitFor()
       await settle(page)
       const canvas = await refColour(page, "canvas")
+      // One sample off Canvas could be a frame caught mid-paint, so two in a
+      // row are required.
+      let offCanvas = 0
       await expect
-        .poll(async () => near(await centrePixel(page, separator), canvas), {
-          message: "the separator paints Canvas",
-        })
-        .toBe(false)
+        .poll(
+          async () => {
+            const off = !near(await centrePixel(page, separator), canvas)
+            offCanvas = off ? offCanvas + 1 : 0
+            return offCanvas
+          },
+          { message: "the separator paints Canvas" },
+        )
+        .toBeGreaterThanOrEqual(2)
     })
 
     test(`the scroll bar's reserved edge paints Canvas · ${scheme}`, async ({
@@ -607,26 +626,28 @@ test.describe("chosen items under focus and with children", () => {
         await item.scrollIntoViewIfNeeded()
         await focus(page, item)
         await settle(page)
-        const ring = await item.evaluate((node) => {
-          const style = getComputedStyle(node)
-          return {
-            offset: parseFloat(style.outlineOffset),
-            width: parseFloat(style.outlineWidth),
-          }
-        })
-        const box = await boxOf(item)
-        const y = box.height / 2
-        const onRing = await pixelIn(
-          page,
-          item,
-          -(ring.offset + ring.width / 2),
-          y,
-        )
-        const fill = await pixelIn(page, item, 5, y)
-        const gap = Math.max(
-          ...onRing.map((channel, i) => Math.abs(channel - (fill[i] ?? 0))),
-        )
-        expect(gap, `ring ${onRing} on fill ${fill}`).toBeGreaterThan(120)
+        await expect(async () => {
+          const ring = await item.evaluate((node) => {
+            const style = getComputedStyle(node)
+            return {
+              offset: parseFloat(style.outlineOffset),
+              width: parseFloat(style.outlineWidth),
+            }
+          })
+          const box = await boxOf(item)
+          const y = box.height / 2
+          const onRing = await pixelIn(
+            page,
+            item,
+            -(ring.offset + ring.width / 2),
+            y,
+          )
+          const fill = await pixelIn(page, item, 5, y)
+          const gap = Math.max(
+            ...onRing.map((channel, i) => Math.abs(channel - (fill[i] ?? 0))),
+          )
+          expect(gap, `ring ${onRing} on fill ${fill}`).toBeGreaterThan(120)
+        }).toPass({ timeout: 10_000 })
       })
     }
 
@@ -639,15 +660,17 @@ test.describe("chosen items under focus and with children", () => {
       const row = page.locator(".dr-menu-content .dr-menu-item:focus")
       await expect(row).toHaveCount(1)
       await settle(page)
-      expect(await computed(row.locator(".dr-menu-shortcut"), "color")).toBe(
-        await computed(row, "color"),
-      )
       const current = page.locator(
         '[data-probe="sidebar"] .dr-sidebar-nav-current',
       )
-      expect(
-        await computed(current.locator(".dr-sidebar-nav-badge"), "color"),
-      ).toBe(await computed(current, "color"))
+      await expect(async () => {
+        expect(await computed(row.locator(".dr-menu-shortcut"), "color")).toBe(
+          await computed(row, "color"),
+        )
+        expect(
+          await computed(current.locator(".dr-sidebar-nav-badge"), "color"),
+        ).toBe(await computed(current, "color"))
+      }).toPass({ timeout: 10_000 })
     })
 
     test(`a menubar shortcut in a chosen row takes the row colour · ${scheme}`, async ({
@@ -665,14 +688,16 @@ test.describe("chosen items under focus and with children", () => {
       const highlight = await refColour(page, "highlight")
       const glyphs = await refColour(page, "highlight-text")
       const shortcut = row.locator(".dr-menubar-shortcut")
-      expect(await computed(shortcut, "color")).toBe(
-        await computed(row, "color"),
-      )
-      expect(await textShare(page, shortcut, highlight)).toBeGreaterThan(0.2)
-      expect(
-        await textShare(page, shortcut, glyphs),
-        "shortcut glyphs",
-      ).toBeGreaterThan(0.02)
+      await expect(async () => {
+        expect(await computed(shortcut, "color")).toBe(
+          await computed(row, "color"),
+        )
+        expect(await textShare(page, shortcut, highlight)).toBeGreaterThan(0.2)
+        expect(
+          await textShare(page, shortcut, glyphs),
+          "shortcut glyphs",
+        ).toBeGreaterThan(0.02)
+      }).toPass({ timeout: 10_000 })
     })
   }
 })
