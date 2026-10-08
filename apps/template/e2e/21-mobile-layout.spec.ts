@@ -568,3 +568,24 @@ test.describe("touch", () => {
     expect(await wash(), "after the tap").toBe("0")
   })
 })
+
+test.describe("pagination", () => {
+  test("every showcase link stays inside the viewport", async ({ page }) => {
+    await seedApp(page)
+    await gotoApp(page, "/components/pagination")
+    const links = page.locator("#main-content .dr-pagination-link")
+    await expect(links.first()).toBeVisible()
+    const outside = await links.evaluateAll((els) => {
+      const width = document.documentElement.clientWidth
+      return els.flatMap((el) => {
+        const box = el.getBoundingClientRect()
+        return box.left < 0 || box.right > width
+          ? [
+              `${el.textContent?.trim()}: ${Math.round(box.left)}..${Math.round(box.right)}`,
+            ]
+          : []
+      })
+    })
+    expect(outside).toEqual([])
+  })
+})
