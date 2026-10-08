@@ -1426,3 +1426,29 @@ test.describe("date input page", () => {
     })
   })
 })
+
+test.describe("table pagination buttons", () => {
+  test("each icon button and the code sample name the page they open", async ({
+    page,
+  }) => {
+    await openShowcase(page, "/components/table")
+    const demo = page.locator("[data-showcase-example]").filter({
+      has: page.getByText("Pagination", { exact: true }),
+    })
+    for (const name of [
+      "First page",
+      "Previous page",
+      "Next page",
+      "Last page",
+    ]) {
+      await expect(
+        demo.getByRole("button", { name, exact: true }),
+        name,
+      ).toHaveCount(1)
+    }
+    await demo.getByRole("button", { name: "View code" }).click()
+    await expect(demo.locator("pre code")).toContainText(
+      'aria-label="Previous page"',
+    )
+  })
+})

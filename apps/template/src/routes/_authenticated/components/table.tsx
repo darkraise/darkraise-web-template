@@ -202,6 +202,7 @@ function PaginatedTable() {
               variant="outline"
               size="icon"
               className="h-8 w-8"
+              aria-label="First page"
               onClick={() => setPage(0)}
               disabled={page === 0}
             >
@@ -211,6 +212,7 @@ function PaginatedTable() {
               variant="outline"
               size="icon"
               className="h-8 w-8"
+              aria-label="Previous page"
               onClick={() => setPage(page - 1)}
               disabled={page === 0}
             >
@@ -220,6 +222,7 @@ function PaginatedTable() {
               variant="outline"
               size="icon"
               className="h-8 w-8"
+              aria-label="Next page"
               onClick={() => setPage(page + 1)}
               disabled={page >= totalPages - 1}
             >
@@ -229,6 +232,7 @@ function PaginatedTable() {
               variant="outline"
               size="icon"
               className="h-8 w-8"
+              aria-label="Last page"
               onClick={() => setPage(totalPages - 1)}
               disabled={page >= totalPages - 1}
             >
@@ -691,7 +695,11 @@ function TablePage() {
         title="Pagination"
         code={`const paged = data.slice(page * pageSize, (page + 1) * pageSize)
 
-<Button onClick={() => setPage(page - 1)} disabled={page === 0}>
+<Button
+  aria-label="Previous page"
+  onClick={() => setPage(page - 1)}
+  disabled={page === 0}
+>
   <ChevronLeft />
 </Button>
 <span>Page {page + 1} of {totalPages}</span>`}
