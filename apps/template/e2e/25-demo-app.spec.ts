@@ -253,6 +253,8 @@ test.describe("product thumbnails", () => {
       if (request.url().includes("placehold.co")) external.push(request.url())
     })
     await gotoApp(page, "/products")
+    // The one seeded image replaces its fallback once it loads.
+    await expect(page.locator("[data-product-thumbnail] img")).toHaveCount(1)
     const fallbacks = page.locator(
       "[data-product-thumbnail] .dr-avatar-fallback",
     )
@@ -264,6 +266,19 @@ test.describe("product thumbnails", () => {
       ).toBeGreaterThanOrEqual(12)
     }
     expect(external).toEqual([])
+  })
+
+  test("a seeded product image renders in its thumbnail", async ({ page }) => {
+    await gotoApp(page, "/products")
+    const image = page
+      .getByRole("row")
+      .filter({ hasText: "iPhone 15 Pro" })
+      .locator("[data-product-thumbnail] img")
+    await expect(image).toBeVisible()
+    await expect(image).toHaveAttribute("alt", "iPhone 15 Pro")
+    expect(
+      await image.evaluate((img) => (img as HTMLImageElement).naturalWidth),
+    ).toBeGreaterThan(0)
   })
 })
 

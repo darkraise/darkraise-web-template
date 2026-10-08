@@ -25,18 +25,11 @@ import { DataTable, ColumnHeader, RowActions } from "darkraise-ui/data-table"
 import { useProducts, useDeleteProduct } from "@/demo/hooks"
 import type { Product } from "@/demo/types"
 import { StatusBadge } from "@/features/status"
+import { initialsOf } from "@/lib/initials"
 
 export const Route = createFileRoute("/_authenticated/products/")({
   component: ProductsPage,
 })
-
-function initialsOf(name: string) {
-  const words = name.trim().split(/\s+/).filter(Boolean)
-  const [first = "", second = ""] = words
-  return (
-    second ? first.charAt(0) + second.charAt(0) : first.slice(0, 2)
-  ).toUpperCase()
-}
 
 function ProductsPage() {
   const uiLocale = useUiLocale()
@@ -62,7 +55,7 @@ function ProductsPage() {
             />
           )}
           <AvatarFallback className="rounded-md text-xs font-medium">
-            {initialsOf(row.original.name)}
+            {initialsOf(row.original.name, 2)}
           </AvatarFallback>
         </Avatar>
       ),

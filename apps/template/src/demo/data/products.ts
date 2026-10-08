@@ -12,6 +12,7 @@ export const products: Product[] = [
     status: "active",
     stock: 142,
     sku: "APL-IP15P-256",
+    image: "/images/products/iphone-15-pro.svg",
     createdAt: "2025-12-01T10:00:00Z",
   },
   {

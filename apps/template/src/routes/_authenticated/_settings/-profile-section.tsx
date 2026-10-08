@@ -23,16 +23,8 @@ import { Input } from "darkraise-ui/components/input"
 import { Label } from "darkraise-ui/components/label"
 import { Textarea } from "darkraise-ui/components/textarea"
 import { FormSection } from "darkraise-ui/forms"
+import { initialsOf } from "@/lib/initials"
 import { DemoSaveForm } from "./-settings-primitives"
-
-function initialsOf(name: string) {
-  const parts = name.trim().split(/\s+/).filter(Boolean)
-  if (parts.length === 0) return ""
-  return parts
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join("")
-}
 
 export function ProfileSection() {
   const t = useAppTranslation()
@@ -72,7 +64,7 @@ export function ProfileSection() {
                   <AvatarImage src={avatarUrl} alt={displayName} />
                 ) : null}
                 <AvatarFallback className="text-xl">
-                  {initialsOf(displayName) || "?"}
+                  {initialsOf(displayName, 1) || "?"}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1">
