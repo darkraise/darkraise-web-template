@@ -210,6 +210,20 @@ const LEGACY_USERS: {
     removed: ["theme-glass-blur", "theme-dark-accent-chroma"],
     kept: { "theme-preset": "quiet", "theme-accent-vibrancy": "intense" },
   },
+  {
+    // At marker 2 only revision 3 runs: the sidebar indicator becomes a look.
+    // The look reaches the DOM only on the sidebar, which needs the app.
+    name: "a browser that already ran revision 2",
+    stored: {
+      "theme-settings-version": "2",
+      mode: "dark",
+      "theme-sidebar-active-bar": "ring",
+    },
+    painted: { "data-mode": "dark", "data-style": "quiet" },
+    absent: ["data-preset"],
+    removed: ["theme-sidebar-active-bar"],
+    kept: { "theme-sidebar-selection": "chip" },
+  },
 ]
 
 for (const user of LEGACY_USERS) {
