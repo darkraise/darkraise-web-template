@@ -3,7 +3,7 @@ import { ChevronDown } from "lucide-react"
 
 import { useId } from "@primitives/state"
 import { Presence } from "@primitives/presence"
-import { composeRefs } from "@primitives/slot"
+import { useComposedRefs } from "@primitives/slot"
 import { cn } from "@lib/utils"
 import "./accordion.css"
 
@@ -225,7 +225,7 @@ function AccordionTrigger({
   const ctx = useAccordionContext("AccordionTrigger")
   const item = useAccordionItemContext("AccordionTrigger")
   const buttonRef = React.useRef<HTMLButtonElement>(null)
-  const composedRef = composeRefs(ref, buttonRef)
+  const composedRef = useComposedRefs(ref, buttonRef)
 
   const register = ctx.registerTrigger
   React.useEffect(() => {

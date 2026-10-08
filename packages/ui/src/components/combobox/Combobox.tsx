@@ -8,7 +8,7 @@ import { DismissableLayer } from "@primitives/dismissable-layer"
 import { useFloating } from "@primitives/floating"
 import { Portal } from "@primitives/portal"
 import { Presence } from "@primitives/presence"
-import { composeRefs, useComposedRefs } from "@primitives/slot"
+import { useComposedRefs } from "@primitives/slot"
 import {
   type ComboboxInputValueChangeDetails,
   type ComboboxItemData,
@@ -160,9 +160,11 @@ export interface ComboboxControlProps extends React.HTMLAttributes<HTMLDivElemen
 
 function ComboboxControl({ className, ref, ...props }: ComboboxControlProps) {
   const { open, disabled, controlRef } = useComboboxContext("ComboboxControl")
+  const composedRef = useComposedRefs(controlRef, ref)
+
   return (
     <div
-      ref={composeRefs(controlRef, ref)}
+      ref={composedRef}
       className={cn("dr-combobox-control", className)}
       data-state={open ? "open" : "closed"}
       data-disabled={disabled ? "true" : undefined}

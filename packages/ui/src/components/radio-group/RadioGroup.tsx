@@ -1,7 +1,7 @@
 import * as React from "react"
 import { Circle } from "lucide-react"
 
-import { composeRefs } from "@primitives/slot"
+import { useComposedRefs } from "@primitives/slot"
 import { cn } from "@lib/utils"
 import "./radio-group.css"
 
@@ -123,7 +123,7 @@ function RadioGroupItem({
   const isChecked = ctx.value === value
 
   const buttonRef = React.useRef<HTMLButtonElement>(null)
-  const composedRef = composeRefs(ref, buttonRef)
+  const composedRef = useComposedRefs(ref, buttonRef)
 
   const register = ctx.registerItem
   React.useEffect(() => {

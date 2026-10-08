@@ -7,7 +7,7 @@ import { DismissableLayer } from "@primitives/dismissable-layer"
 import { useFocusTrap } from "@primitives/focus-trap"
 import { Portal } from "@primitives/portal"
 import { Presence } from "@primitives/presence"
-import { Slot, composeRefs } from "@primitives/slot"
+import { Slot, useComposedRefs } from "@primitives/slot"
 import { useDialog, type DialogRole, type UseDialogReturn } from "./useDialog"
 
 export type DialogSize = "sm" | "default" | "lg" | "xl" | "full"
@@ -175,6 +175,8 @@ function DialogContentImpl({
     restoreFocus: true,
   })
 
+  const composedRef = useComposedRefs(localRef, ref)
+
   return (
     <DismissableLayer
       active={ctx.open}
@@ -196,7 +198,7 @@ function DialogContentImpl({
       }}
     >
       <div
-        ref={composeRefs(localRef, ref)}
+        ref={composedRef}
         role={ctx.role}
         id={ctx.contentId}
         aria-modal={ctx.modal ? "true" : undefined}

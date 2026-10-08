@@ -1,7 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@lib/utils"
-import { composeRefs, useComposedRefs } from "@primitives/slot"
+import { useComposedRefs } from "@primitives/slot"
 import "./scroll-area.css"
 
 type Orientation = "vertical" | "horizontal"
@@ -106,10 +106,12 @@ function ScrollArea({
     [metricsNonce, bumpMetrics, setViewport, type, active, onScrollActivity],
   )
 
+  const composedRef = useComposedRefs(rootRef, ref)
+
   return (
     <ScrollAreaContext.Provider value={ctx}>
       <div
-        ref={composeRefs(rootRef, ref)}
+        ref={composedRef}
         className={cn("dr-scroll-area", className)}
         onPointerEnter={(event) => {
           onPointerEnter?.(event)
@@ -276,12 +278,14 @@ function ScrollBar({
     window.addEventListener("pointerup", onUp)
   }
 
+  const composedRef = useComposedRefs(trackRef, ref)
+
   if (!metrics) return null
   const visible = ctx.type === "auto" || ctx.type === "always" || ctx.active
 
   return (
     <div
-      ref={composeRefs(trackRef, ref)}
+      ref={composedRef}
       data-orientation={orientation}
       data-state={visible ? "visible" : "hidden"}
       className={cn("dr-scroll-bar", className)}

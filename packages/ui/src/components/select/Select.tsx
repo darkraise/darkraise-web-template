@@ -7,7 +7,7 @@ import type { SurfaceFill } from "@lib/surface-fill"
 import { DismissableLayer } from "@primitives/dismissable-layer"
 import { Portal } from "@primitives/portal"
 import { Presence } from "@primitives/presence"
-import { Slot, composeRefs, useComposedRefs } from "@primitives/slot"
+import { Slot, useComposedRefs } from "@primitives/slot"
 import {
   placementOf,
   resolveSide,
@@ -651,9 +651,11 @@ function SelectItem({
     [selected, textValue],
   )
 
+  const composedRef = useComposedRefs(localRef, ref)
+
   return (
     <div
-      ref={composeRefs(localRef, ref)}
+      ref={composedRef}
       role="option"
       tabIndex={isFocused ? 0 : -1}
       aria-selected={selected}

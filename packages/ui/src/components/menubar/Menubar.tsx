@@ -7,7 +7,7 @@ import type { SurfaceFill } from "@lib/surface-fill"
 import { DismissableLayer } from "@primitives/dismissable-layer"
 import { Portal } from "@primitives/portal"
 import { Presence } from "@primitives/presence"
-import { Slot, composeRefs, useComposedRefs } from "@primitives/slot"
+import { Slot, useComposedRefs } from "@primitives/slot"
 import {
   placementOf,
   resolveSide,
@@ -111,10 +111,12 @@ function Menubar({
     [value, setValueStable, registerMenu, menus, loop],
   )
 
+  const composedRef = useComposedRefs(rootRef, ref)
+
   return (
     <MenubarRootContext.Provider value={ctx}>
       <div
-        ref={composeRefs(rootRef, ref ?? undefined)}
+        ref={composedRef}
         role="menubar"
         className={cn("dr-menubar", className)}
         {...rest}
@@ -644,9 +646,11 @@ function useMenuItem({
     if (isFocused) localRef.current?.focus({ preventScroll: true })
   }, [isFocused])
 
+  const composedRef = useComposedRefs(localRef, ref)
+
   return {
     localRef,
-    composedRef: composeRefs(localRef, ref ?? undefined),
+    composedRef,
     isFocused,
     myIndex,
     ctx,
@@ -947,12 +951,14 @@ function MenubarSubTrigger({
     ctx.setOpen(true)
   }
 
+  const composedRef = useComposedRefs(localRef, ref)
+
   // The row is an item of the parent menu: registered there, the arrow keys
   // of the parent reach it and the submenu lists only its own items.
   return (
     <MenubarMenuContext.Provider value={parent ?? ctx}>
       <MenubarItem
-        ref={composeRefs(localRef, ref ?? undefined)}
+        ref={composedRef}
         aria-haspopup="menu"
         disabled={disabled}
         aria-expanded={ctx.open}

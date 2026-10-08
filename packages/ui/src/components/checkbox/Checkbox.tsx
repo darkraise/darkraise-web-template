@@ -1,7 +1,7 @@
 import * as React from "react"
 import { Check, Minus } from "lucide-react"
 
-import { composeRefs } from "@primitives/slot"
+import { useComposedRefs } from "@primitives/slot"
 import { cn } from "@lib/utils"
 import "./checkbox.css"
 
@@ -53,7 +53,7 @@ function Checkbox({
   ...props
 }: CheckboxProps) {
   const buttonRef = React.useRef<HTMLButtonElement>(null)
-  const composedRef = composeRefs(ref, buttonRef)
+  const composedRef = useComposedRefs(ref, buttonRef)
   const inputRef = React.useRef<HTMLInputElement>(null)
 
   const {

@@ -2,7 +2,7 @@ import * as React from "react"
 
 import { useId } from "@primitives/state"
 import { Presence } from "@primitives/presence"
-import { composeRefs } from "@primitives/slot"
+import { useComposedRefs } from "@primitives/slot"
 import { cn } from "@lib/utils"
 import { getDirection } from "@lib/direction"
 import type { SurfaceFill } from "@lib/surface-fill"
@@ -170,7 +170,7 @@ function TabsList({
   const ctx = useTabsContext("TabsList")
   const { variant, color, border } = React.useContext(TabsStyleContext)
   const listRef = React.useRef<HTMLDivElement>(null)
-  const composedRef = composeRefs(ref, listRef)
+  const composedRef = useComposedRefs(ref, listRef)
   const [rect, setRect] = React.useState<IndicatorRect | null>(null)
   const [mounted, setMounted] = React.useState(false)
   void _loop
@@ -350,7 +350,7 @@ function TabsTrigger({
   const ids = useTabsIdContext()
   const { variant, color } = React.useContext(TabsStyleContext)
   const buttonRef = React.useRef<HTMLButtonElement>(null)
-  const composedRef = composeRefs(ref, buttonRef)
+  const composedRef = useComposedRefs(ref, buttonRef)
 
   const isSelected = ctx.value === value
   const isDisabled = disabled === true

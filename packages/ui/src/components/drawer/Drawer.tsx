@@ -8,7 +8,7 @@ import { DismissableLayer } from "@primitives/dismissable-layer"
 import { useFocusTrap } from "@primitives/focus-trap"
 import { Portal } from "@primitives/portal"
 import { Presence } from "@primitives/presence"
-import { Slot, composeRefs } from "@primitives/slot"
+import { Slot, useComposedRefs } from "@primitives/slot"
 import { useDialog, type UseDialogReturn } from "@components/dialog/useDialog"
 import { lockScroll, unlockScroll } from "@components/dialog/scrollLock"
 import "./drawer.css"
@@ -317,6 +317,8 @@ function DrawerContentImpl({
     restoreFocus: true,
   })
 
+  const composedRef = useComposedRefs(localRef, ref)
+
   return (
     <DismissableLayer
       active={ctx.open}
@@ -334,7 +336,7 @@ function DrawerContentImpl({
       }}
     >
       <div
-        ref={composeRefs(localRef, ref)}
+        ref={composedRef}
         role="dialog"
         id={ctx.contentId}
         aria-modal={ctx.modal ? "true" : undefined}

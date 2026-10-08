@@ -7,7 +7,7 @@ import type { SurfaceFill } from "@lib/surface-fill"
 import { DismissableLayer } from "@primitives/dismissable-layer"
 import { Portal } from "@primitives/portal"
 import { Presence } from "@primitives/presence"
-import { Slot, composeRefs, useComposedRefs } from "@primitives/slot"
+import { Slot, useComposedRefs } from "@primitives/slot"
 import { placementOf, resolveSide, useFloating } from "@primitives/floating"
 import {
   useMenu,
@@ -472,9 +472,11 @@ function useMenuItem({
     if (isFocused) localRef.current?.focus({ preventScroll: true })
   }, [isFocused])
 
+  const composedRef = useComposedRefs(localRef, ref)
+
   return {
     localRef,
-    composedRef: composeRefs(localRef, ref ?? undefined),
+    composedRef,
     isFocused,
     myIndex,
     ctx,
@@ -789,12 +791,14 @@ function ContextMenuSubTrigger({
     ctx.setOpen(true)
   }
 
+  const composedRef = useComposedRefs(localRef, ref)
+
   // The row is an item of the parent menu: registered there, the arrow keys
   // of the parent reach it and the submenu lists only its own items.
   return (
     <ContextMenuContext.Provider value={parent ?? ctx}>
       <ContextMenuItem
-        ref={composeRefs(localRef, ref ?? undefined)}
+        ref={composedRef}
         aria-haspopup="menu"
         disabled={disabled}
         aria-expanded={ctx.open}

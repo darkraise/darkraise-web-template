@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { composeRefs } from "@primitives/slot"
+import { useComposedRefs } from "@primitives/slot"
 import { cn } from "@lib/utils"
 import type { ToggleVariant, ToggleSize } from "@components/toggle"
 import "./toggle-group.css"
@@ -174,7 +174,7 @@ function ToggleGroupItem({
   const isDisabled = ctx.disabled || disabled === true
 
   const buttonRef = React.useRef<HTMLButtonElement>(null)
-  const composedRef = composeRefs(ref, buttonRef)
+  const composedRef = useComposedRefs(ref, buttonRef)
 
   const register = ctx.registerItem
   React.useEffect(() => {
