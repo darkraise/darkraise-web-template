@@ -59,7 +59,10 @@ directly, such as a single spec, skip the warm-up unless `E2E_WARM=1` is set;
 that passes on retry is reported as flaky. The known source of local flakes is
 host network churn: when Docker adds or removes a container's network
 interface, Chromium aborts in-flight requests with `net::ERR_NETWORK_CHANGED`,
-and a page whose module load was cut never renders. The one retry covers it.
+and a page whose module load was cut never renders. `gotoApp` navigates again
+once when the app stays unmounted after a `net::ERR_*` request failure, and
+records the first attempt's failed requests in a `gotoApp retry` annotation;
+the test retry covers pages loaded without `gotoApp`.
 
 **Traces.** Local runs record a trace only on the retry (`on-first-retry`),
 so a test that fails once and then passes leaves no trace of the failure. Set

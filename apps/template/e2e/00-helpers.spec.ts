@@ -137,4 +137,49 @@ test.describe("e2e helpers", () => {
     await expect.poll(() => page.frames().length).toBe(2)
     expect(pageErrors).toEqual([])
   })
+
+  test("gotoApp navigates again once after a module request fails", async ({
+    page,
+  }, testInfo) => {
+    const consoleWatch = watchConsole(page)
+    let entryRequests = 0
+    await page.route("**/src/main.tsx", async (route) => {
+      entryRequests += 1
+      if (entryRequests === 1) await route.abort("connectionreset")
+      else await route.continue()
+    })
+    await seedApp(page)
+    await gotoApp(page, "/")
+    expect(entryRequests).toBe(2)
+    const retry = testInfo.annotations.find(
+      (annotation) => annotation.type === "gotoApp retry",
+    )
+    expect(retry?.description).toContain("net::ERR_CONNECTION_RESET")
+    consoleWatch.assertClean()
+  })
+
+  test("gotoApp reports the first failure when the retry fails too", async ({
+    page,
+  }) => {
+    await page.route("**/src/main.tsx", (route) =>
+      route.abort("connectionreset"),
+    )
+    await seedApp(page)
+    await expect(gotoApp(page, "/")).rejects.toThrow(
+      /net::ERR_CONNECTION_RESET .*\/src\/main\.tsx/,
+    )
+  })
+
+  test("gotoApp does not retry after an HTTP error status", async ({
+    page,
+  }) => {
+    let entryRequests = 0
+    await page.route("**/src/main.tsx", (route) => {
+      entryRequests += 1
+      return route.fulfill({ status: 500, body: "" })
+    })
+    await seedApp(page)
+    await expect(gotoApp(page, "/")).rejects.toThrow()
+    expect(entryRequests).toBe(1)
+  })
 })

@@ -1,8 +1,10 @@
 import {
   expect,
+  test,
   type Page,
   type Locator,
   type ConsoleMessage,
+  type Request,
 } from "@playwright/test"
 import { LS_KEYS, SHELL_STYLE_KEY, type Font } from "../fixtures/theme"
 
@@ -152,6 +154,8 @@ export interface ConsoleWatcher {
   assertClean(): void
 }
 
+const consoleWatchers = new WeakMap<Page, ConsoleWatcher[]>()
+
 export function watchConsole(page: Page): ConsoleWatcher {
   const errors: string[] = []
   const warnings: string[] = []
@@ -167,13 +171,15 @@ export function watchConsole(page: Page): ConsoleWatcher {
   page.on("console", record)
   page.on("pageerror", (err) => errors.push(`pageerror: ${err.message}`))
 
-  return {
+  const watcher: ConsoleWatcher = {
     errors,
     warnings,
     assertClean() {
       expect(errors, `console errors:\n${errors.join("\n")}`).toEqual([])
     },
   }
+  consoleWatchers.set(page, [...(consoleWatchers.get(page) ?? []), watcher])
+  return watcher
 }
 
 /**
@@ -202,11 +208,76 @@ export async function collectGarbage(page: Page) {
   await cdp.detach()
 }
 
-/** Navigate and wait for the app shell to be interactive. */
-export async function gotoApp(page: Page, path: string) {
-  await collectGarbage(page)
+async function loadRoot(page: Page, path: string) {
   await page.goto(path)
   await expect(page.locator("#root")).not.toBeEmpty()
+}
+
+/**
+ * The request's network error, or null when it failed for another reason.
+ * Chromium cancels a module script answered with an HTTP error status and
+ * reports it as net::ERR_ABORTED; that response is a broken build, not a
+ * dropped request, so it does not count.
+ */
+async function networkFailure(request: Request): Promise<string | null> {
+  const errorText = request.failure()?.errorText ?? ""
+  if (!errorText.startsWith("net::ERR_")) return null
+  const response = await request.response()
+  if (response && !response.ok()) return null
+  return `${errorText} ${request.url()}`
+}
+
+/**
+ * Navigate and wait for the app shell to be interactive.
+ *
+ * A dropped module request (a Docker veth change aborts in-flight requests
+ * with net::ERR_NETWORK_CHANGED) leaves #root on its placeholder for good, so
+ * a load that stays empty after a net::ERR_* failure navigates once more.
+ * Console output recorded during the abandoned load is dropped, since it
+ * belongs to a page the test never uses.
+ */
+export async function gotoApp(page: Page, path: string) {
+  await collectGarbage(page)
+  const pending: Promise<string | null>[] = []
+  const recordFailure = (request: Request) => {
+    pending.push(networkFailure(request))
+  }
+  const consoleMarks = (consoleWatchers.get(page) ?? []).map((watcher) => ({
+    watcher,
+    errors: watcher.errors.length,
+    warnings: watcher.warnings.length,
+  }))
+  page.on("requestfailed", recordFailure)
+  try {
+    await loadRoot(page, path)
+  } catch (error) {
+    page.off("requestfailed", recordFailure)
+    const failures = (await Promise.all(pending)).filter(
+      (failure) => failure !== null,
+    )
+    if (failures.length === 0) throw error
+    const firstAttempt = failures.join("\n")
+    for (const mark of consoleMarks) {
+      mark.watcher.errors.length = mark.errors
+      mark.watcher.warnings.length = mark.warnings
+    }
+    try {
+      await loadRoot(page, path)
+    } catch (retryError) {
+      if (retryError instanceof Error) {
+        retryError.message =
+          `gotoApp: #root stayed empty after one retry. ` +
+          `Failed requests of the first attempt:\n${firstAttempt}\n\n` +
+          retryError.message
+      }
+      throw retryError
+    }
+    test
+      .info()
+      .annotations.push({ type: "gotoApp retry", description: firstAttempt })
+  } finally {
+    page.off("requestfailed", recordFailure)
+  }
   await waitForTheme(page)
 }
 
