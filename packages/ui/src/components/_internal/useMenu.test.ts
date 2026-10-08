@@ -185,6 +185,29 @@ describe("useMenu", () => {
     c.cleanup()
   })
 
+  it("navigation leaves a focused row that stops being displayed", () => {
+    const { result } = renderHook(() => useMenu())
+    const a = makeItem("a")
+    const b = makeItem("b")
+    const c = makeItem("c")
+    act(() => {
+      result.current.registerItem(a)
+      result.current.registerItem(b)
+      result.current.registerItem(c)
+    })
+    act(() => result.current.focusFirst())
+    act(() => result.current.focusNext())
+    expect(result.current.focusedIndex).toBe(1)
+    b.ref.current?.style.setProperty("display", "none")
+    act(() => result.current.focusNext())
+    expect(result.current.focusedIndex).toBe(2)
+    act(() => result.current.focusPrev())
+    expect(result.current.focusedIndex).toBe(0)
+    a.cleanup()
+    b.cleanup()
+    c.cleanup()
+  })
+
   it("typeahead matches first letter", () => {
     const { result } = renderHook(() => useMenu())
     const apple = { ...makeItem("apple") }
