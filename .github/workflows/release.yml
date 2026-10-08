@@ -162,11 +162,9 @@ jobs:
           done
 
       # Both builds run before the gates, not after, because a fresh clone is
-      # missing two things the typecheck needs and .gitignore excludes:
-      # packages/ui/dist, which is where the template resolves darkraise-ui's
-      # types from, and src/routeTree.gen.ts, which the TanStack router plugin
-      # only writes during a Vite run and without which every createFileRoute
-      # call loses its typing.
+      # missing packages/ui/dist, which .gitignore excludes and which is where
+      # the template resolves darkraise-ui's types from. The template typecheck
+      # generates src/routeTree.gen.ts itself.
       - name: Build the package
         run: pnpm --filter "$UI_PACKAGE" build
 
