@@ -105,6 +105,31 @@ test.describe("list popups fit the viewport", () => {
   })
 })
 
+test.describe("submenus anchor to their row", () => {
+  test("a context submenu opened at once from the keyboard sits beside its sub-trigger", async ({
+    page,
+  }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" })
+    await seedApp(page, { style: "quiet", mode: "light" })
+    await openOverlayCase(page, "context-submenu")
+    await page
+      .getByText("Context area")
+      .click({ button: "right", position: { x: 40, y: 40 } })
+    // Off the menu, so no row is hovered while the menu is laid out.
+    await page.mouse.move(600, 600)
+    await page.keyboard.press("ArrowDown")
+    await page.keyboard.press("ArrowDown")
+    await page.keyboard.press("ArrowRight")
+    const email = page.getByRole("menuitem", { name: "Email" })
+    await expect(email).toBeVisible()
+    await settle(page)
+    const share = await boxOf(page.getByRole("menuitem", { name: "Share" }))
+    const submenu = await boxOf(page.locator(".dr-menu-sub-content"))
+    expect(Math.abs(submenu.x - (share.x + share.width))).toBeLessThanOrEqual(2)
+    expect(Math.abs(submenu.y - share.y)).toBeLessThanOrEqual(2)
+  })
+})
+
 async function expectListUncut(page: Page, input: Locator) {
   const content = page.locator(".dr-combobox-content")
   await expect(content).toBeVisible()

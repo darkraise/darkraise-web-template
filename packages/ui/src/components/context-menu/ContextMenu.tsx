@@ -10,7 +10,7 @@ import { DismissableLayer } from "@primitives/dismissable-layer"
 import { Portal } from "@primitives/portal"
 import { Presence } from "@primitives/presence"
 import { Slot, composeRefs, useComposedRefs } from "@primitives/slot"
-import { useFloating } from "@primitives/floating"
+import { placementOf, resolveSide, useFloating } from "@primitives/floating"
 import {
   useMenu,
   type MenuItemDescriptor,
@@ -270,8 +270,12 @@ function ContextMenuContentImpl({
 }: Omit<ContextMenuContentProps, "forceMount" | "loop">) {
   const ctx = useContextMenuContext("ContextMenuContent")
 
+  // The root menu opens at the pointer; a submenu anchors to its live
+  // sub-trigger, so it follows the row wherever the parent menu settles.
   const floating = useFloating({
-    placement: "bottom-start",
+    placement: ctx.isSubmenu
+      ? placementOf(resolveSide("end", ctx.submenuReference), "start")
+      : "bottom-start",
     sideOffset: 0,
     alignOffset: 0,
     avoidCollisions,
@@ -280,9 +284,13 @@ function ContextMenuContentImpl({
 
   const setReferenceFloat = floating.refs.setReference
   React.useEffect(() => {
+    if (ctx.isSubmenu) {
+      setReferenceFloat(ctx.submenuReference)
+      return
+    }
     if (!ctx.point) return
     setReferenceFloat(buildVirtualReference(ctx.point))
-  }, [ctx.point, setReferenceFloat])
+  }, [ctx.isSubmenu, ctx.submenuReference, ctx.point, setReferenceFloat])
 
   React.useEffect(() => {
     if (!ctx.open) return
@@ -769,14 +777,6 @@ function ContextMenuSubTrigger({
 
   const parent = ctx.parent
   const openSelf = () => {
-    const node = localRef.current
-    const rect = node?.getBoundingClientRect()
-    // The submenu opens from the row's inline-end edge; its bottom-start
-    // placement aligns to that edge from the inline start in both directions.
-    if (rect) {
-      const rtl = getDirection(node) === "rtl"
-      ctx.setPoint({ x: rtl ? rect.left : rect.right, y: rect.top })
-    }
     parent?.closeOpenSubmenu(localRef.current)
     parent?.registerOpenSubmenu({
       trigger: localRef.current,

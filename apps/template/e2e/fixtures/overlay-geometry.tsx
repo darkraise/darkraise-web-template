@@ -14,6 +14,15 @@ import {
   ComboboxTrigger,
 } from "darkraise-ui/components/combobox"
 import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
+  ContextMenuTrigger,
+} from "darkraise-ui/components/context-menu"
+import {
   Dialog,
   DialogContent,
   DialogTitle,
@@ -187,6 +196,35 @@ function MenusCase() {
         </MenubarMenu>
       </Menubar>
     </div>
+  )
+}
+
+function ContextSubmenuCase() {
+  return (
+    <ContextMenu>
+      <ContextMenuTrigger
+        style={{
+          display: "block",
+          width: 320,
+          height: 160,
+          margin: 48,
+          border: "1px dashed",
+        }}
+      >
+        Context area
+      </ContextMenuTrigger>
+      <ContextMenuContent>
+        <ContextMenuItem>Copy</ContextMenuItem>
+        <ContextMenuSub>
+          <ContextMenuSubTrigger>Share</ContextMenuSubTrigger>
+          <ContextMenuSubContent>
+            <ContextMenuItem>Email</ContextMenuItem>
+            <ContextMenuItem>Link</ContextMenuItem>
+          </ContextMenuSubContent>
+        </ContextMenuSub>
+        <ContextMenuItem>Last</ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
   )
 }
 
@@ -442,6 +480,7 @@ const CASES: Record<string, () => ReactElement> = {
   follow: FollowCase,
   origin: OriginCase,
   menus: MenusCase,
+  "context-submenu": ContextSubmenuCase,
   combobox: ComboboxCase,
   panels: PanelsCase,
   tour: TourCase,
