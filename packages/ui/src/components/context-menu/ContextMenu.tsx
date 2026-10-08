@@ -9,7 +9,7 @@ import type { SurfaceFill } from "@lib/surface-fill"
 import { DismissableLayer } from "@primitives/dismissable-layer"
 import { Portal } from "@primitives/portal"
 import { Presence } from "@primitives/presence"
-import { Slot, composeRefs } from "@primitives/slot"
+import { Slot, composeRefs, useComposedRefs } from "@primitives/slot"
 import { useFloating } from "@primitives/floating"
 import {
   useMenu,
@@ -177,9 +177,11 @@ function ContextMenuTrigger({
 }: ContextMenuTriggerProps) {
   const ctx = useContextMenuContext("ContextMenuTrigger")
   const Comp = asChild ? Slot : "span"
+  const composedRef = useComposedRefs(ctx.setTriggerArea, ref)
+
   return (
     <Comp
-      ref={composeRefs(ctx.setTriggerArea, ref)}
+      ref={composedRef}
       dir={ctx.dir}
       data-state={ctx.state}
       data-disabled={disabled || undefined}
@@ -332,6 +334,12 @@ function ContextMenuContentImpl({
     }
   }
 
+  const composedRef = useComposedRefs(
+    ctx.contentRef as React.Ref<HTMLDivElement>,
+    floating.refs.setFloating,
+    ref,
+  )
+
   return (
     <DismissableLayer
       active={ctx.open}
@@ -351,11 +359,7 @@ function ContextMenuContentImpl({
       }}
     >
       <div
-        ref={composeRefs(
-          ctx.contentRef as React.Ref<HTMLDivElement>,
-          floating.refs.setFloating,
-          ref,
-        )}
+        ref={composedRef}
         role="menu"
         id={ctx.contentId}
         dir={

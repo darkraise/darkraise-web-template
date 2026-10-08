@@ -4,7 +4,7 @@ import { Button } from "@components/button"
 import { useFloating } from "@primitives/floating"
 import { Portal } from "@primitives/portal"
 import { useFocusTrap } from "@primitives/focus-trap"
-import { composeRefs } from "@primitives/slot"
+import { useComposedRefs } from "@primitives/slot"
 import { useId } from "@primitives/state"
 import { useReducedMotion } from "@hooks/useReducedMotion"
 import { cn } from "@lib/utils"
@@ -126,6 +126,8 @@ function Tour({
     }
   }, [open])
 
+  const composedRef = useComposedRefs(popoverRef, floating.refs.setFloating)
+
   if (!open || !step) return null
 
   const clipPath = rect
@@ -160,7 +162,7 @@ function Tour({
         onClick={onClose}
       />
       <div
-        ref={composeRefs(popoverRef, floating.refs.setFloating)}
+        ref={composedRef}
         role="dialog"
         aria-modal="false"
         aria-labelledby={titleId}

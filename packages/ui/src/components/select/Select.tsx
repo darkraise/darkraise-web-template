@@ -9,7 +9,7 @@ import type { SurfaceFill } from "@lib/surface-fill"
 import { DismissableLayer } from "@primitives/dismissable-layer"
 import { Portal } from "@primitives/portal"
 import { Presence } from "@primitives/presence"
-import { Slot, composeRefs } from "@primitives/slot"
+import { Slot, composeRefs, useComposedRefs } from "@primitives/slot"
 import {
   placementOf,
   resolveSide,
@@ -318,13 +318,15 @@ function SelectTrigger({
   const Comp = asChild ? Slot : "button"
   const resolvedType = asChild ? type : (type ?? "button")
   const disabled = disabledProp ?? ctx.disabled
+  const composedRef = useComposedRefs(
+    ctx.triggerRef as React.Ref<HTMLButtonElement>,
+    ctx.setTrigger,
+    ref,
+  )
+
   return (
     <Comp
-      ref={composeRefs(
-        ctx.triggerRef as React.Ref<HTMLButtonElement>,
-        ctx.setTrigger,
-        ref,
-      )}
+      ref={composedRef}
       type={resolvedType}
       role="combobox"
       id={ctx.triggerId}
@@ -492,6 +494,12 @@ function SelectContentImpl({
     return [s] as const
   }, [floating.placement])
 
+  const composedRef = useComposedRefs(
+    localContentRef,
+    floating.refs.setFloating as React.Ref<HTMLDivElement>,
+    ref,
+  )
+
   return (
     <DismissableLayer
       active={ctx.open}
@@ -512,11 +520,7 @@ function SelectContentImpl({
       }}
     >
       <div
-        ref={composeRefs(
-          localContentRef,
-          floating.refs.setFloating as React.Ref<HTMLDivElement>,
-          ref,
-        )}
+        ref={composedRef}
         role="listbox"
         id={ctx.contentId}
         dir={ctx.dir ?? getDirection(ctx.trigger)}

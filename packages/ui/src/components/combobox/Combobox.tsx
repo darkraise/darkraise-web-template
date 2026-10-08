@@ -9,7 +9,7 @@ import { DismissableLayer } from "@primitives/dismissable-layer"
 import { useFloating } from "@primitives/floating"
 import { Portal } from "@primitives/portal"
 import { Presence } from "@primitives/presence"
-import { composeRefs } from "@primitives/slot"
+import { composeRefs, useComposedRefs } from "@primitives/slot"
 import {
   type ComboboxInputValueChangeDetails,
   type ComboboxItemData,
@@ -511,6 +511,8 @@ function ComboboxContentImpl({
     setReference(controlRef.current ?? rootRef.current)
   }, [controlRef, rootRef, setReference])
 
+  const composedRef = useComposedRefs(floating.refs.setFloating, ref)
+
   return (
     <DismissableLayer
       active={open}
@@ -525,7 +527,7 @@ function ComboboxContentImpl({
       onEscapeKeyDown={() => setOpen(false)}
     >
       <div
-        ref={composeRefs(floating.refs.setFloating, ref)}
+        ref={composedRef}
         id={contentId}
         data-side={floating.placement.split("-")[0]}
         data-surface-fill={surface}

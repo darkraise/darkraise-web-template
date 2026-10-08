@@ -8,7 +8,7 @@ import { cn } from "@lib/utils"
 import { inlineArrow } from "@lib/direction"
 import type { SurfaceFill } from "@lib/surface-fill"
 import { Presence } from "@primitives/presence"
-import { Slot, composeRefs } from "@primitives/slot"
+import { Slot, useComposedRefs } from "@primitives/slot"
 import { useControllableState, useEvent, useId } from "@primitives/state"
 import "./navigation-menu.css"
 
@@ -288,17 +288,23 @@ function NavigationMenuTrigger({
   const open = root.value === item.itemId
 
   const localRef = React.useRef<HTMLButtonElement | null>(null)
+  const registerTriggerRef = root.registerTriggerRef
   const setRef = React.useCallback(
     (node: HTMLButtonElement | null) => {
       localRef.current = node
-      root.registerTriggerRef(item.itemId, node)
+      registerTriggerRef(item.itemId, node)
     },
-    [root, item.itemId],
+    [registerTriggerRef, item.itemId],
+  )
+
+  const composedRef = useComposedRefs(
+    setRef as React.RefCallback<HTMLButtonElement>,
+    ref,
   )
 
   return (
     <Comp
-      ref={composeRefs(setRef as React.RefCallback<HTMLButtonElement>, ref)}
+      ref={composedRef}
       type={resolvedType}
       id={item.triggerId}
       aria-expanded={open}
@@ -391,11 +397,19 @@ function NavigationMenuContent({
     },
     [takeContentFocus, item.itemId],
   )
+  // A force-mounted panel is already in the DOM when `open` turns true, so
+  // its ref callback does not run again.
+  const panelRef = React.useRef<HTMLDivElement | null>(null)
+  React.useEffect(() => {
+    if (open) focusOnMount(panelRef.current)
+  }, [open, focusOnMount])
+
+  const composedRef = useComposedRefs(focusOnMount, panelRef, ref)
 
   return (
     <Presence present={open} forceMount={forceMount}>
       <div
-        ref={composeRefs(focusOnMount, ref)}
+        ref={composedRef}
         id={item.contentId}
         data-state={open ? "open" : "closed"}
         data-surface-fill={surface}

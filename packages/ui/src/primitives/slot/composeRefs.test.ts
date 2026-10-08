@@ -1,5 +1,6 @@
+import { renderHook } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest"
-import { composeRefs } from "./composeRefs"
+import { composeRefs, useComposedRefs } from "./composeRefs"
 
 describe("composeRefs", () => {
   it("invokes a single function ref", () => {
@@ -44,5 +45,35 @@ describe("composeRefs", () => {
     composeRefs(a, b)(null)
     expect(a).toHaveBeenCalledWith(null)
     expect(b.current).toBe(null)
+  })
+})
+
+describe("useComposedRefs", () => {
+  it("keeps its identity while every ref keeps its identity", () => {
+    const a = vi.fn()
+    const b: { current: HTMLDivElement | null } = { current: null }
+    const { result, rerender } = renderHook(() =>
+      useComposedRefs<HTMLDivElement>(a, b),
+    )
+    const first = result.current
+    rerender()
+    expect(result.current).toBe(first)
+  })
+
+  it("returns a new callback when a ref changes", () => {
+    const b: { current: HTMLDivElement | null } = { current: null }
+    const { result, rerender } = renderHook(
+      ({ a }: { a: (node: HTMLDivElement | null) => void }) =>
+        useComposedRefs<HTMLDivElement>(a, b),
+      { initialProps: { a: vi.fn() } },
+    )
+    const first = result.current
+    const next = vi.fn()
+    rerender({ a: next })
+    expect(result.current).not.toBe(first)
+    const node = document.createElement("div")
+    result.current(node)
+    expect(next).toHaveBeenCalledWith(node)
+    expect(b.current).toBe(node)
   })
 })

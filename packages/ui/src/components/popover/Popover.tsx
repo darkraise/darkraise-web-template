@@ -9,7 +9,7 @@ import { DismissableLayer } from "@primitives/dismissable-layer"
 import { focusProgrammatically, useFocusTrap } from "@primitives/focus-trap"
 import { Portal } from "@primitives/portal"
 import { Presence } from "@primitives/presence"
-import { Slot, composeRefs } from "@primitives/slot"
+import { Slot, useComposedRefs } from "@primitives/slot"
 import { useFloating, FloatingArrow, resolveSide } from "@primitives/floating"
 import {
   usePopover,
@@ -66,12 +66,12 @@ interface PopoverAnchorProps extends React.HTMLAttributes<HTMLDivElement> {
 function PopoverAnchor({ ref, asChild, ...props }: PopoverAnchorProps) {
   const ctx = usePopoverContext("PopoverAnchor")
   const Comp = asChild ? Slot : "div"
-  return (
-    <Comp
-      ref={composeRefs(ctx.setAnchor as React.Ref<HTMLDivElement>, ref)}
-      {...props}
-    />
+  const composedRef = useComposedRefs(
+    ctx.setAnchor as React.Ref<HTMLDivElement>,
+    ref,
   )
+
+  return <Comp ref={composedRef} {...props} />
 }
 
 interface PopoverTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -89,9 +89,14 @@ function PopoverTrigger({
   const ctx = usePopoverContext("PopoverTrigger")
   const Comp = asChild ? Slot : "button"
   const resolvedType = asChild ? type : (type ?? "button")
+  const composedRef = useComposedRefs(
+    ctx.setReference as React.Ref<HTMLButtonElement>,
+    ref,
+  )
+
   return (
     <Comp
-      ref={composeRefs(ctx.setReference as React.Ref<HTMLButtonElement>, ref)}
+      ref={composedRef}
       type={resolvedType}
       id={ctx.triggerId}
       aria-haspopup="dialog"
@@ -250,6 +255,8 @@ function PopoverContentImpl({
     return [s, a]
   }, [floating.placement])
 
+  const composedRef = useComposedRefs(localRef, floating.refs.setFloating, ref)
+
   return (
     <DismissableLayer
       active={ctx.open}
@@ -274,7 +281,7 @@ function PopoverContentImpl({
       }}
     >
       <div
-        ref={composeRefs(localRef, floating.refs.setFloating, ref)}
+        ref={composedRef}
         id={ctx.contentId}
         dir={getDirection(ctx.reference)}
         data-state={ctx.state}
@@ -355,9 +362,14 @@ interface PopoverArrowProps extends React.SVGAttributes<SVGSVGElement> {
 function PopoverArrow({ ref, ...props }: PopoverArrowProps) {
   const floating = React.useContext(FloatingContext)
   const arrowData = floating?.middlewareData.arrow
+  const composedRef = useComposedRefs(
+    floating?.arrowRef as React.Ref<SVGSVGElement>,
+    ref,
+  )
+
   return (
     <FloatingArrow
-      ref={composeRefs(floating?.arrowRef as React.Ref<SVGSVGElement>, ref)}
+      ref={composedRef}
       style={{
         position: "absolute",
         left: arrowData?.x,

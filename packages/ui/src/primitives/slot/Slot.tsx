@@ -1,6 +1,6 @@
 import * as React from "react"
 import { cn } from "@lib/utils"
-import { composeRefs } from "./composeRefs"
+import { useComposedRefs } from "./composeRefs"
 
 export interface SlotProps extends React.HTMLAttributes<HTMLElement> {
   children?: React.ReactNode
@@ -13,6 +13,14 @@ export function Slot({
   ref,
   ...rest
 }: SlotProps & { ref?: React.Ref<HTMLElement> }) {
+  // In React 19 the ref of a child is a regular prop (`child.props.ref`).
+  // Reading the legacy `child.ref` accessor logs a removal warning, so
+  // pull it from props instead.
+  const childRef = React.isValidElement(children)
+    ? (children.props as { ref?: React.Ref<HTMLElement> }).ref
+    : undefined
+  const composedRef = useComposedRefs<HTMLElement>(ref, childRef)
+
   if (!React.isValidElement(children)) {
     throw new Error("Slot expects a single React element child")
   }
@@ -39,10 +47,7 @@ export function Slot({
     ...(definedChildProps as ChildProps),
     className: cn(className, childProps.className),
     style: { ...style, ...childProps.style },
-    // In React 19 a child's ref is a regular prop (`child.props.ref`).
-    // Reading the legacy `child.ref` accessor logs a removal warning, so
-    // pull it from props instead.
-    ref: composeRefs<HTMLElement>(ref, childProps.ref),
+    ref: composedRef,
   }
 
   // Compose event handlers — parent runs first; child runs unless parent preventDefaults.

@@ -9,7 +9,7 @@ import { DismissableLayer } from "@primitives/dismissable-layer"
 import { isProgrammaticFocus } from "@primitives/focus-trap"
 import { Portal } from "@primitives/portal"
 import { Presence } from "@primitives/presence"
-import { Slot, composeRefs } from "@primitives/slot"
+import { Slot, useComposedRefs } from "@primitives/slot"
 import {
   placementOf,
   resolveSide,
@@ -185,9 +185,14 @@ function TooltipTrigger({
   const ctx = useTooltipContext("TooltipTrigger")
   const Comp = asChild ? Slot : "button"
   const resolvedType = asChild ? type : (type ?? "button")
+  const composedRef = useComposedRefs(
+    ctx.setReference as React.Ref<HTMLButtonElement>,
+    ref,
+  )
+
   return (
     <Comp
-      ref={composeRefs(ctx.setReference as React.Ref<HTMLButtonElement>, ref)}
+      ref={composedRef}
       type={resolvedType}
       id={ctx.triggerId}
       aria-describedby={ctx.open ? ctx.contentId : undefined}
@@ -290,6 +295,8 @@ function TooltipContentImpl({
     return [s, a]
   }, [floating.placement])
 
+  const composedRef = useComposedRefs(localRef, floating.refs.setFloating, ref)
+
   // Non-modal, but still a layer: a tooltip inside a dialog must take the
   // Escape that would otherwise close the dialog too.
   return (
@@ -298,7 +305,7 @@ function TooltipContentImpl({
       onEscapeKeyDown={() => ctx.setOpen(false)}
     >
       <div
-        ref={composeRefs(localRef, floating.refs.setFloating, ref)}
+        ref={composedRef}
         role="tooltip"
         id={ctx.contentId}
         dir={getDirection(ctx.reference)}

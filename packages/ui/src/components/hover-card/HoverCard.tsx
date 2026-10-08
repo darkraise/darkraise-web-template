@@ -8,7 +8,7 @@ import type { SurfaceFill } from "@lib/surface-fill"
 import { DismissableLayer } from "@primitives/dismissable-layer"
 import { Portal } from "@primitives/portal"
 import { Presence } from "@primitives/presence"
-import { Slot, composeRefs } from "@primitives/slot"
+import { Slot, useComposedRefs } from "@primitives/slot"
 import {
   placementOf,
   resolveSide,
@@ -88,9 +88,14 @@ function HoverCardTrigger({
 }: HoverCardTriggerProps) {
   const ctx = useHoverCardContext("HoverCardTrigger")
   const Comp = asChild ? Slot : "a"
+  const composedRef = useComposedRefs(
+    ctx.setReference as React.Ref<HTMLAnchorElement>,
+    ref,
+  )
+
   return (
     <Comp
-      ref={composeRefs(ctx.setReference as React.Ref<HTMLAnchorElement>, ref)}
+      ref={composedRef}
       id={ctx.triggerId}
       // Wire `aria-describedby` only while the card is open so screen
       // readers do not chase a not-yet-mounted node when the card is
@@ -180,6 +185,8 @@ function HoverCardContentImpl({
     return [s, a]
   }, [floating.placement])
 
+  const composedRef = useComposedRefs(localRef, floating.refs.setFloating, ref)
+
   // Non-modal, but still a layer: a card inside a dialog must take the
   // Escape that would otherwise close the dialog too.
   return (
@@ -188,7 +195,7 @@ function HoverCardContentImpl({
       onEscapeKeyDown={() => ctx.setOpen(false)}
     >
       <div
-        ref={composeRefs(localRef, floating.refs.setFloating, ref)}
+        ref={composedRef}
         id={ctx.contentId}
         dir={getDirection(ctx.reference)}
         role="dialog"

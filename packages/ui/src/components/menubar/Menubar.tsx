@@ -9,7 +9,7 @@ import type { SurfaceFill } from "@lib/surface-fill"
 import { DismissableLayer } from "@primitives/dismissable-layer"
 import { Portal } from "@primitives/portal"
 import { Presence } from "@primitives/presence"
-import { Slot, composeRefs } from "@primitives/slot"
+import { Slot, composeRefs, useComposedRefs } from "@primitives/slot"
 import {
   placementOf,
   resolveSide,
@@ -326,9 +326,14 @@ function MenubarTrigger({
     if (nextId !== undefined) root.setValue(nextId)
   }
 
+  const composedRef = useComposedRefs(
+    ctx.setReference as React.Ref<HTMLButtonElement>,
+    ref,
+  )
+
   return (
     <Comp
-      ref={composeRefs(ctx.setReference as React.Ref<HTMLButtonElement>, ref)}
+      ref={composedRef}
       type={resolvedType}
       role="menuitem"
       id={ctx.triggerId}
@@ -498,6 +503,12 @@ function MenubarContentImpl({
     return [s] as const
   }, [floating.placement])
 
+  const composedRef = useComposedRefs(
+    ctx.contentRef as React.Ref<HTMLDivElement>,
+    floating.refs.setFloating,
+    ref,
+  )
+
   return (
     <DismissableLayer
       active={ctx.open}
@@ -527,11 +538,7 @@ function MenubarContentImpl({
       }}
     >
       <div
-        ref={composeRefs(
-          ctx.contentRef as React.Ref<HTMLDivElement>,
-          floating.refs.setFloating,
-          ref,
-        )}
+        ref={composedRef}
         role="menu"
         id={ctx.contentId}
         dir={getDirection(ctx.reference)}

@@ -9,7 +9,7 @@ import type { SurfaceFill } from "@lib/surface-fill"
 import { DismissableLayer } from "@primitives/dismissable-layer"
 import { Portal } from "@primitives/portal"
 import { Presence } from "@primitives/presence"
-import { Slot, composeRefs } from "@primitives/slot"
+import { Slot, composeRefs, useComposedRefs } from "@primitives/slot"
 import {
   placementOf,
   resolveSide,
@@ -201,9 +201,14 @@ function DropdownMenuTrigger({
   const ctx = useDropdownContext("DropdownMenuTrigger")
   const Comp = asChild ? Slot : "button"
   const resolvedType = asChild ? type : (type ?? "button")
+  const composedRef = useComposedRefs(
+    ctx.setReference as React.Ref<HTMLButtonElement>,
+    ref,
+  )
+
   return (
     <Comp
-      ref={composeRefs(ctx.setReference as React.Ref<HTMLButtonElement>, ref)}
+      ref={composedRef}
       type={resolvedType}
       id={ctx.triggerId}
       dir={ctx.dir}
@@ -375,6 +380,13 @@ function DropdownMenuContentImpl({
     return [s] as const
   }, [floating.placement])
 
+  const composedRef = useComposedRefs(
+    ctx.contentRef as React.Ref<HTMLDivElement>,
+    floating.refs.setFloating,
+    lastFocusRef,
+    ref,
+  )
+
   return (
     <DismissableLayer
       active={ctx.open}
@@ -399,12 +411,7 @@ function DropdownMenuContentImpl({
       }}
     >
       <div
-        ref={composeRefs(
-          ctx.contentRef as React.Ref<HTMLDivElement>,
-          floating.refs.setFloating,
-          lastFocusRef,
-          ref,
-        )}
+        ref={composedRef}
         role="menu"
         id={ctx.contentId}
         dir={ctx.dir ?? getDirection(ctx.reference)}

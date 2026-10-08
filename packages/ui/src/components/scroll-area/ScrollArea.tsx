@@ -3,7 +3,7 @@
 import * as React from "react"
 
 import { cn } from "@lib/utils"
-import { composeRefs } from "@primitives/slot"
+import { composeRefs, useComposedRefs } from "@primitives/slot"
 import "./scroll-area.css"
 
 type Orientation = "vertical" | "horizontal"
@@ -183,9 +183,14 @@ function ScrollAreaViewport({
     return () => ro.disconnect()
   }, [bumpMetrics])
 
+  const composedRef = useComposedRefs(
+    setNode as React.RefCallback<HTMLDivElement>,
+    ref,
+  )
+
   return (
     <div
-      ref={composeRefs(setNode as React.RefCallback<HTMLDivElement>, ref)}
+      ref={composedRef}
       data-darkraise-scroll-viewport=""
       className={cn("h-full w-full overflow-auto rounded-[inherit]", className)}
       style={{ ...VIEWPORT_HIDE_NATIVE_SCROLLBAR_STYLE, ...style }}

@@ -1,5 +1,5 @@
 import * as React from "react"
-import { composeRefs } from "../slot/composeRefs"
+import { useComposedRefs } from "../slot/composeRefs"
 import { usePresence } from "./usePresence"
 
 export interface PresenceProps {
@@ -22,12 +22,12 @@ export function Presence({
     nodeRef.current = node
   }, [node])
   const { isPresent, state } = usePresence(present, nodeRef)
-  if (!isPresent && !forceMount) return null
-  // In React 19 a child's ref is a regular prop (`children.props.ref`).
+  // In React 19 the ref of a child is a regular prop (`children.props.ref`).
   // Reading the legacy `children.ref` accessor logs a removal warning.
-  const childRef = children.props.ref
+  const composedRef = useComposedRefs<HTMLElement>(setNode, children.props.ref)
+  if (!isPresent && !forceMount) return null
   return React.cloneElement(children, {
-    ref: composeRefs<HTMLElement>(setNode, childRef),
+    ref: composedRef,
     "data-state": state,
   })
 }
