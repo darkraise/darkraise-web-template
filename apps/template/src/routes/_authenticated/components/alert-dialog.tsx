@@ -31,7 +31,7 @@ function AlertDialogPage() {
         title="Basic alert dialog"
         code={`<AlertDialog>
   <AlertDialogTrigger asChild>
-    <Button variant="outline">Open Dialog</Button>
+    <Button variant="outline">Open dialog</Button>
   </AlertDialogTrigger>
   <AlertDialogContent>
     <AlertDialogHeader>
@@ -49,7 +49,7 @@ function AlertDialogPage() {
       >
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <Button variant="outline">Open Dialog</Button>
+            <Button variant="outline">Open dialog</Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
@@ -73,7 +73,7 @@ function AlertDialogPage() {
   <AlertDialogTrigger asChild>
     <Button variant="destructive">
       <Trash2 className="mr-2 h-4 w-4" />
-      Delete Account
+      Delete account
     </Button>
   </AlertDialogTrigger>
   <AlertDialogContent>
@@ -87,7 +87,7 @@ function AlertDialogPage() {
     <AlertDialogFooter>
       <AlertDialogCancel>Cancel</AlertDialogCancel>
       <AlertDialogAction data-variant="destructive">
-        Delete Account
+        Delete account
       </AlertDialogAction>
     </AlertDialogFooter>
   </AlertDialogContent>
@@ -97,7 +97,7 @@ function AlertDialogPage() {
           <AlertDialogTrigger asChild>
             <Button variant="destructive">
               <Trash2 className="mr-2 h-4 w-4" />
-              Delete Account
+              Delete account
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
@@ -111,7 +111,7 @@ function AlertDialogPage() {
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction data-variant="destructive">
-                Delete Account
+                Delete account
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
@@ -122,7 +122,7 @@ function AlertDialogPage() {
         title="Custom content with detailed description"
         code={`<AlertDialog>
   <AlertDialogTrigger asChild>
-    <Button variant="outline">Publish Changes</Button>
+    <Button variant="outline">Publish changes</Button>
   </AlertDialogTrigger>
   <AlertDialogContent>
     <AlertDialogHeader>
@@ -135,15 +135,15 @@ function AlertDialogPage() {
       </AlertDialogDescription>
     </AlertDialogHeader>
     <AlertDialogFooter>
-      <AlertDialogCancel>Review First</AlertDialogCancel>
-      <AlertDialogAction>Publish Now</AlertDialogAction>
+      <AlertDialogCancel>Review first</AlertDialogCancel>
+      <AlertDialogAction>Publish now</AlertDialogAction>
     </AlertDialogFooter>
   </AlertDialogContent>
 </AlertDialog>`}
       >
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <Button variant="outline">Publish Changes</Button>
+            <Button variant="outline">Publish changes</Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
@@ -156,8 +156,8 @@ function AlertDialogPage() {
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Review First</AlertDialogCancel>
-              <AlertDialogAction>Publish Now</AlertDialogAction>
+              <AlertDialogCancel>Review first</AlertDialogCancel>
+              <AlertDialogAction>Publish now</AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

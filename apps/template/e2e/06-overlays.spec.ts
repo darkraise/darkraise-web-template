@@ -35,7 +35,7 @@ test.describe("dialogs", () => {
   test("dialog opens, traps focus and closes with Escape", async ({ page }) => {
     const consoleWatch = watchConsole(page)
     const main = await open(page, "/components/dialogs")
-    await main.getByRole("button", { name: "Open Dialog" }).first().click()
+    await main.getByRole("button", { name: "Open dialog" }).first().click()
 
     const dialog = page.getByRole("dialog", { name: "Dialog Title" })
     await expect(dialog).toBeVisible()
@@ -55,7 +55,7 @@ test.describe("dialogs", () => {
 
   test("alert dialog confirms and cancels", async ({ page }) => {
     const main = await open(page, "/components/alert-dialog")
-    const trigger = main.getByRole("button", { name: "Open Dialog" })
+    const trigger = main.getByRole("button", { name: "Open dialog" })
     const dialog = page.getByRole("alertdialog", { name: "Are you sure?" })
 
     await trigger.click()
@@ -94,7 +94,7 @@ test.describe("dialogs", () => {
 
   test("drawer opens and closes", async ({ page }) => {
     const main = await open(page, "/components/drawer")
-    await main.getByRole("button", { name: "Open Drawer" }).first().click()
+    await main.getByRole("button", { name: "Open drawer" }).first().click()
     const drawer = page.getByRole("dialog").first()
     await expect(drawer).toBeVisible()
     await page.keyboard.press("Escape")
@@ -114,7 +114,7 @@ test.describe("dialogs", () => {
 test.describe("floating surfaces", () => {
   test("popover opens on click and closes on Escape", async ({ page }) => {
     const main = await open(page, "/components/popover")
-    await main.getByRole("button", { name: "Open Popover" }).first().click()
+    await main.getByRole("button", { name: "Open popover" }).first().click()
     const popover = page.locator(".dr-popover-content").first()
     await expect(popover).toBeVisible()
     await page.keyboard.press("Escape")

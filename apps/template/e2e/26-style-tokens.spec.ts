@@ -190,7 +190,7 @@ test.describe("dark elevation", () => {
   test("a dark popover is lighter than its own fill", async ({ page }) => {
     await seedApp(page, { style: "quiet", mode: "dark" })
     await gotoApp(page, "/components/popover")
-    await page.getByRole("button", { name: "Open Popover" }).first().click()
+    await page.getByRole("button", { name: "Open popover" }).first().click()
     const content = page.locator(".dr-popover-content").first()
     await expect(content).toBeVisible()
     await settle(page)

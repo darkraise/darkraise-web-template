@@ -6,6 +6,7 @@ import { en as appEnglish } from "./en"
 import { vi as appVietnamese } from "./vi"
 import { showcaseEnglish } from "./showcase-en"
 import { showcaseVietnamese } from "./showcase-vi"
+import { capitalisedWords } from "@/test/sentence-case"
 
 const en = { ...showcaseEnglish, ...appEnglish }
 const vi = { ...showcaseVietnamese, ...appVietnamese }
@@ -81,18 +82,6 @@ describe("demo translation catalogs", () => {
     expect(missing).toEqual([])
   })
 })
-
-/** Capitalised words a sentence-case label may still contain. */
-const PROPER_WORDS = new Set([
-  "CSV",
-  "PDF",
-  "KPI",
-  "Darkraise",
-  "English",
-  "Vietnamese",
-  "Tiếng",
-  "Việt",
-])
 
 /** Elements whose text is the label of a button, link or other action. */
 const ACTION_TAGS = new Set([
@@ -195,15 +184,7 @@ describe("demo action labels", () => {
   it("writes every action label in sentence case", () => {
     const capitalised = [...actions].flatMap(([key, where]) => {
       const text = en[key as keyof typeof en] ?? key
-      const words = text
-        .replace(/\{\{.*?\}\}/g, "")
-        .split(/\s+/)
-        .slice(1)
-        .map((word) => word.replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, ""))
-      const proper = words.filter(
-        (word) => /^\p{Lu}/u.test(word) && !PROPER_WORDS.has(word),
-      )
-      return proper.length > 0 ? [`${where}: "${text}"`] : []
+      return capitalisedWords(text).length > 0 ? [`${where}: "${text}"`] : []
     })
     expect(capitalised).toEqual([])
   })

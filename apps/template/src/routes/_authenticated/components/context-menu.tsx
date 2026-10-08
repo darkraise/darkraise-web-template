@@ -265,7 +265,7 @@ function ComplexFileMenu() {
           </ContextMenuSubTrigger>
           <ContextMenuSubContent className="w-48">
             <ContextMenuItem>Preview</ContextMenuItem>
-            <ContextMenuItem>Text Editor</ContextMenuItem>
+            <ContextMenuItem>Text editor</ContextMenuItem>
             <ContextMenuSeparator />
             <ContextMenuSub>
               <ContextMenuSubTrigger>
@@ -421,7 +421,7 @@ function ComplexFileMenu() {
         </ContextMenuItem>
         <ContextMenuItem className="text-destructive-text">
           <Trash2 />
-          Move to Trash
+          Move to trash
           <ContextMenuShortcut>Del</ContextMenuShortcut>
         </ContextMenuItem>
       </ContextMenuContent>
@@ -447,7 +447,7 @@ function ContextMenuPage() {
     <ContextMenuItem>Copy</ContextMenuItem>
     <ContextMenuItem>Paste</ContextMenuItem>
     <ContextMenuSeparator />
-    <ContextMenuItem>Select All</ContextMenuItem>
+    <ContextMenuItem>Select all</ContextMenuItem>
     <ContextMenuSeparator />
     <ContextMenuItem className="text-destructive-text">Delete</ContextMenuItem>
   </ContextMenuContent>
@@ -463,7 +463,7 @@ function ContextMenuPage() {
             <ContextMenuItem>Copy</ContextMenuItem>
             <ContextMenuItem>Paste</ContextMenuItem>
             <ContextMenuSeparator />
-            <ContextMenuItem>Select All</ContextMenuItem>
+            <ContextMenuItem>Select all</ContextMenuItem>
             <ContextMenuSeparator />
             <ContextMenuItem className="text-destructive-text">
               Delete

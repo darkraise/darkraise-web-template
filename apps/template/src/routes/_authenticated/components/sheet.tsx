@@ -87,7 +87,7 @@ function SheetPage() {
         title="With a form"
         code={`<Sheet>
   <SheetTrigger asChild>
-    <Button variant="outline">Edit Profile</Button>
+    <Button variant="outline">Edit profile</Button>
   </SheetTrigger>
   <SheetContent>
     <SheetHeader>
@@ -108,14 +108,14 @@ function SheetPage() {
       <SheetClose asChild>
         <Button variant="outline">Cancel</Button>
       </SheetClose>
-      <Button>Save Changes</Button>
+      <Button>Save changes</Button>
     </SheetFooter>
   </SheetContent>
 </Sheet>`}
       >
         <Sheet>
           <SheetTrigger asChild>
-            <Button variant="outline">Edit Profile</Button>
+            <Button variant="outline">Edit profile</Button>
           </SheetTrigger>
           <SheetContent>
             <SheetHeader>
@@ -142,7 +142,7 @@ function SheetPage() {
               <SheetClose asChild>
                 <Button variant="outline">Cancel</Button>
               </SheetClose>
-              <Button>Save Changes</Button>
+              <Button>Save changes</Button>
             </SheetFooter>
           </SheetContent>
         </Sheet>

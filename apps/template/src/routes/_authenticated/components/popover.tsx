@@ -71,7 +71,7 @@ function PopoverPage() {
         title="Basic"
         code={`<Popover>
   <PopoverTrigger asChild>
-    <Button variant="outline">Open Popover</Button>
+    <Button variant="outline">Open popover</Button>
   </PopoverTrigger>
   <PopoverContent className="w-64">
     <p className="text-sm font-medium">Popover Title</p>
@@ -83,7 +83,7 @@ function PopoverPage() {
       >
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline">Open Popover</Button>
+            <Button variant="outline">Open popover</Button>
           </PopoverTrigger>
           <PopoverContent className="w-64">
             <div className="space-y-2">

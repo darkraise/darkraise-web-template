@@ -29,7 +29,7 @@ function DrawerPage() {
         title="Basic drawer"
         code={`<Drawer>
   <DrawerTrigger asChild>
-    <Button variant="outline">Open Drawer</Button>
+    <Button variant="outline">Open drawer</Button>
   </DrawerTrigger>
   <DrawerContent>
     <DrawerHeader>
@@ -51,7 +51,7 @@ function DrawerPage() {
       >
         <Drawer>
           <DrawerTrigger asChild>
-            <Button variant="outline">Open Drawer</Button>
+            <Button variant="outline">Open drawer</Button>
           </DrawerTrigger>
           <DrawerContent>
             <DrawerHeader>
@@ -79,7 +79,7 @@ function DrawerPage() {
         title="Drawer with form"
         code={`<Drawer>
   <DrawerTrigger asChild>
-    <Button>Edit Profile</Button>
+    <Button>Edit profile</Button>
   </DrawerTrigger>
   <DrawerContent>
     <DrawerHeader>
@@ -101,7 +101,7 @@ function DrawerPage() {
         <Button variant="outline">Cancel</Button>
       </DrawerClose>
       <DrawerClose asChild>
-        <Button>Save Changes</Button>
+        <Button>Save changes</Button>
       </DrawerClose>
     </DrawerFooter>
   </DrawerContent>
@@ -109,7 +109,7 @@ function DrawerPage() {
       >
         <Drawer>
           <DrawerTrigger asChild>
-            <Button>Edit Profile</Button>
+            <Button>Edit profile</Button>
           </DrawerTrigger>
           <DrawerContent>
             <DrawerHeader>
@@ -137,7 +137,7 @@ function DrawerPage() {
                 <Button variant="outline">Cancel</Button>
               </DrawerClose>
               <DrawerClose asChild>
-                <Button>Save Changes</Button>
+                <Button>Save changes</Button>
               </DrawerClose>
             </DrawerFooter>
           </DrawerContent>
@@ -155,7 +155,7 @@ function DrawerPage() {
 
 <Drawer>
   <DrawerTrigger asChild>
-    <Button variant="outline">View Terms</Button>
+    <Button variant="outline">View terms</Button>
   </DrawerTrigger>
   <DrawerContent className="max-h-[80vh]">
     <DrawerHeader>
@@ -176,7 +176,7 @@ function DrawerPage() {
       >
         <Drawer>
           <DrawerTrigger asChild>
-            <Button variant="outline">View Terms</Button>
+            <Button variant="outline">View terms</Button>
           </DrawerTrigger>
           <DrawerContent className="max-h-[80vh]">
             <DrawerHeader>

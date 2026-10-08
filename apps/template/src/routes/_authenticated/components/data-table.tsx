@@ -257,10 +257,10 @@ function BulkActionsTableExample() {
             size="sm"
             onClick={() => setSelectedIds(new Set())}
           >
-            Delete Selected
+            Delete selected
           </Button>
           <Button variant="outline" size="sm">
-            Export Selected
+            Export selected
           </Button>
         </div>
       )}
@@ -491,8 +491,8 @@ function DataTablePage() {
 {selectedIds.size > 0 && (
   <div className="mb-2 flex items-center gap-2 rounded-md bg-muted p-2">
     <span className="text-sm">{selectedIds.size} selected</span>
-    <Button variant="destructive" size="sm">Delete Selected</Button>
-    <Button variant="outline" size="sm">Export Selected</Button>
+    <Button variant="destructive" size="sm">Delete selected</Button>
+    <Button variant="outline" size="sm">Export selected</Button>
   </div>
 )}
 <Table>

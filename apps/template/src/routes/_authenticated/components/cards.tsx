@@ -538,8 +538,8 @@ function CardsPage() {
     <CardDescription>A stunning view of the mountains at dawn.</CardDescription>
   </CardHeader>
   <CardFooter className="gap-2">
-    <Button variant="outline" size="sm">Learn More</Button>
-    <Button size="sm">Get Started</Button>
+    <Button variant="outline" size="sm">Learn more</Button>
+    <Button size="sm">Get started</Button>
   </CardFooter>
 </Card>`}
       >
@@ -555,9 +555,9 @@ function CardsPage() {
           </CardHeader>
           <CardFooter className="gap-2">
             <Button variant="outline" size="sm">
-              Learn More
+              Learn more
             </Button>
-            <Button size="sm">Get Started</Button>
+            <Button size="sm">Get started</Button>
           </CardFooter>
         </Card>
       </ShowcaseExample>

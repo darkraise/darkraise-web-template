@@ -279,7 +279,7 @@ Under quiet and glass × both modes, on `/components/cards` and
 
 - The layout menu offers no Split Panel, and a chosen Stacked layout is still
   marked active after reload.
-- Settings: Save Changes is disabled while Store Name is empty and while saving
+- Settings: Save changes is disabled while Store Name is empty and while saving
   (`Saving…`), then enabled again.
 - On the virtual-table fixture (long cell content, spacious density): rows are
   40px tall, scrolling reaches item 490 and the last row, and filtering to one

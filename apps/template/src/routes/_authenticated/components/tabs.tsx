@@ -400,7 +400,7 @@ function TabsPage() {
                     defaultValue="jane@example.com"
                   />
                 </div>
-                <Button size="sm">Save Account</Button>
+                <Button size="sm">Save account</Button>
               </CardContent>
             </Card>
           </TabsContent>
@@ -419,7 +419,7 @@ function TabsPage() {
                   <Label htmlFor="tab-new-pw">New password</Label>
                   <Input id="tab-new-pw" type="password" />
                 </div>
-                <Button size="sm">Update Password</Button>
+                <Button size="sm">Update password</Button>
               </CardContent>
             </Card>
           </TabsContent>
@@ -586,7 +586,7 @@ function TabsPage() {
   <TabsContent value="users">
     <div className="flex items-center justify-between mb-4">
       <h3 className="font-semibold">Users</h3>
-      <Button size="sm"><Plus className="h-4 w-4 mr-1" />Add User</Button>
+      <Button size="sm"><Plus className="h-4 w-4 mr-1" />Add user</Button>
     </div>
   </TabsContent>
 </Tabs>`}
@@ -602,7 +602,7 @@ function TabsPage() {
               <h3 className="text-sm font-semibold">Users</h3>
               <Button size="sm">
                 <Plus className="mr-1 h-4 w-4" />
-                Add User
+                Add user
               </Button>
             </div>
             <p className="text-muted-foreground text-sm">
@@ -614,7 +614,7 @@ function TabsPage() {
               <h3 className="text-sm font-semibold">Roles</h3>
               <Button size="sm">
                 <Plus className="mr-1 h-4 w-4" />
-                Create Role
+                Create role
               </Button>
             </div>
             <p className="text-muted-foreground text-sm">

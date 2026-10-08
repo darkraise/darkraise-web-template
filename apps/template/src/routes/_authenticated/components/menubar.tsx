@@ -73,7 +73,7 @@ function MenubarPage() {
   <MenubarMenu>
     <MenubarTrigger>File</MenubarTrigger>
     <MenubarContent>
-      <MenubarItem>New File</MenubarItem>
+      <MenubarItem>New file</MenubarItem>
       <MenubarItem>Open...</MenubarItem>
       <MenubarSeparator />
       <MenubarItem>Save</MenubarItem>
@@ -93,10 +93,10 @@ function MenubarPage() {
   <MenubarMenu>
     <MenubarTrigger>View</MenubarTrigger>
     <MenubarContent>
-      <MenubarItem>Zoom In</MenubarItem>
-      <MenubarItem>Zoom Out</MenubarItem>
+      <MenubarItem>Zoom in</MenubarItem>
+      <MenubarItem>Zoom out</MenubarItem>
       <MenubarSeparator />
-      <MenubarItem>Toggle Sidebar</MenubarItem>
+      <MenubarItem>Toggle sidebar</MenubarItem>
     </MenubarContent>
   </MenubarMenu>
 </Menubar>`}
@@ -105,7 +105,7 @@ function MenubarPage() {
           <MenubarMenu>
             <MenubarTrigger>File</MenubarTrigger>
             <MenubarContent>
-              <MenubarItem>New File</MenubarItem>
+              <MenubarItem>New file</MenubarItem>
               <MenubarItem>Open...</MenubarItem>
               <MenubarSeparator />
               <MenubarItem>Save</MenubarItem>
@@ -125,10 +125,10 @@ function MenubarPage() {
           <MenubarMenu>
             <MenubarTrigger>View</MenubarTrigger>
             <MenubarContent>
-              <MenubarItem>Zoom In</MenubarItem>
-              <MenubarItem>Zoom Out</MenubarItem>
+              <MenubarItem>Zoom in</MenubarItem>
+              <MenubarItem>Zoom out</MenubarItem>
               <MenubarSeparator />
-              <MenubarItem>Toggle Sidebar</MenubarItem>
+              <MenubarItem>Toggle sidebar</MenubarItem>
             </MenubarContent>
           </MenubarMenu>
         </Menubar>

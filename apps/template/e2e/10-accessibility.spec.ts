@@ -64,7 +64,7 @@ test.describe("keyboard navigation", () => {
     await gotoApp(page, "/components/dialogs")
     const trigger = page
       .locator("main")
-      .getByRole("button", { name: "Open Dialog" })
+      .getByRole("button", { name: "Open dialog" })
       .first()
     await trigger.click()
 
@@ -258,13 +258,13 @@ test.describe("colour contrast of template text", () => {
         return [style.color, style.backgroundColor]
       }
       const trigger = page
-        .getByRole("button", { name: "Delete Account" })
+        .getByRole("button", { name: "Delete account" })
         .first()
       const expected = await trigger.evaluate(paint)
       await trigger.click()
       const action = page
         .getByRole("alertdialog")
-        .getByRole("button", { name: "Delete Account" })
+        .getByRole("button", { name: "Delete account" })
       expect(await action.evaluate(paint)).toEqual(expected)
       // The dialog fades in, and textContrast composites its opacity.
       await settle(page)

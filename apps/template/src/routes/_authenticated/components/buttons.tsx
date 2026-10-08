@@ -77,7 +77,7 @@ function ButtonsPage() {
         title="With icons"
         code={`// Button applies gap-2 between flex children, so icons don't need mr-2 / ml-2.
 <Button><Mail className="h-4 w-4" />Email</Button>
-<Button variant="outline"><Plus className="h-4 w-4" />New Item</Button>
+<Button variant="outline"><Plus className="h-4 w-4" />New item</Button>
 <Button variant="destructive"><Trash2 className="h-4 w-4" />Delete</Button>
 <Button variant="secondary">Continue<ChevronRight className="h-4 w-4" /></Button>`}
       >
@@ -88,7 +88,7 @@ function ButtonsPage() {
           </Button>
           <Button variant="outline">
             <Plus className="h-4 w-4" />
-            New Item
+            New item
           </Button>
           <Button variant="destructive">
             <Trash2 className="h-4 w-4" />
@@ -118,25 +118,25 @@ function ButtonsPage() {
 
       <ShowcaseExample
         title="Disabled state"
-        code={`<Button disabled>Disabled Default</Button>
-<Button variant="outline" disabled>Disabled Outline</Button>
-<Button variant="destructive" disabled>Disabled Destructive</Button>
-<Button variant="secondary" disabled>Disabled Secondary</Button>
-<Button variant="ghost" disabled>Disabled Ghost</Button>`}
+        code={`<Button disabled>Disabled default</Button>
+<Button variant="outline" disabled>Disabled outline</Button>
+<Button variant="destructive" disabled>Disabled destructive</Button>
+<Button variant="secondary" disabled>Disabled secondary</Button>
+<Button variant="ghost" disabled>Disabled ghost</Button>`}
       >
         <div className="flex flex-wrap gap-3">
-          <Button disabled>Disabled Default</Button>
+          <Button disabled>Disabled default</Button>
           <Button variant="outline" disabled>
-            Disabled Outline
+            Disabled outline
           </Button>
           <Button variant="destructive" disabled>
-            Disabled Destructive
+            Disabled destructive
           </Button>
           <Button variant="secondary" disabled>
-            Disabled Secondary
+            Disabled secondary
           </Button>
           <Button variant="ghost" disabled>
-            Disabled Ghost
+            Disabled ghost
           </Button>
         </div>
       </ShowcaseExample>
@@ -152,8 +152,8 @@ function ButtonsPage() {
       </Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end">
-      <DropdownMenuItem>Save as Draft</DropdownMenuItem>
-      <DropdownMenuItem>Save &amp; Publish</DropdownMenuItem>
+      <DropdownMenuItem>Save as draft</DropdownMenuItem>
+      <DropdownMenuItem>Save &amp; publish</DropdownMenuItem>
     </DropdownMenuContent>
   </DropdownMenu>
 </div>`}
@@ -167,8 +167,8 @@ function ButtonsPage() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>Save as Draft</DropdownMenuItem>
-              <DropdownMenuItem>Save &amp; Publish</DropdownMenuItem>
+              <DropdownMenuItem>Save as draft</DropdownMenuItem>
+              <DropdownMenuItem>Save &amp; publish</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

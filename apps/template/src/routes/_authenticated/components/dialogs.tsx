@@ -82,7 +82,7 @@ function MultiStepDialogExample() {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline">Open Multi-step Dialog</Button>
+        <Button variant="outline">Open multi-step dialog</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -197,7 +197,7 @@ function TypeToConfirmExample() {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="destructive">Delete Project</Button>
+        <Button variant="destructive">Delete project</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -249,7 +249,7 @@ function DialogsPage() {
         title="Dialog — modal confirmation"
         code={`<Dialog>
   <DialogTrigger asChild>
-    <Button variant="outline">Open Dialog</Button>
+    <Button variant="outline">Open dialog</Button>
   </DialogTrigger>
   <DialogContent>
     <DialogHeader>
@@ -271,7 +271,7 @@ function DialogsPage() {
         <div className="flex flex-wrap gap-3">
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="outline">Open Dialog</Button>
+              <Button variant="outline">Open dialog</Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
@@ -294,7 +294,7 @@ function DialogsPage() {
 
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="destructive">Delete Item</Button>
+              <Button variant="destructive">Delete item</Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
@@ -313,7 +313,7 @@ function DialogsPage() {
 
           <Dialog>
             <DialogTrigger asChild>
-              <Button>Edit Profile</Button>
+              <Button>Edit profile</Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
@@ -338,7 +338,7 @@ function DialogsPage() {
               </div>
               <DialogFooter>
                 <Button variant="outline">Cancel</Button>
-                <Button>Save Changes</Button>
+                <Button>Save changes</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
@@ -350,7 +350,7 @@ function DialogsPage() {
         code={`// Default side is "right"; also accepts "left", "top", "bottom"
 <Sheet>
   <SheetTrigger asChild>
-    <Button variant="outline">Open Sheet (right)</Button>
+    <Button variant="outline">Open sheet (right)</Button>
   </SheetTrigger>
   <SheetContent>
     <SheetHeader>
@@ -371,7 +371,7 @@ function DialogsPage() {
         <div className="flex flex-wrap gap-3">
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="outline">Open Sheet (right)</Button>
+              <Button variant="outline">Open sheet (right)</Button>
             </SheetTrigger>
             <SheetContent>
               <SheetHeader>
@@ -392,7 +392,7 @@ function DialogsPage() {
 
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="outline">Open Sheet (left)</Button>
+              <Button variant="outline">Open sheet (left)</Button>
             </SheetTrigger>
             <SheetContent side="left">
               <SheetHeader>
@@ -413,7 +413,7 @@ function DialogsPage() {
         title="Popover — anchored floating panel"
         code={`<Popover>
   <PopoverTrigger asChild>
-    <Button variant="outline">Open Popover</Button>
+    <Button variant="outline">Open popover</Button>
   </PopoverTrigger>
   <PopoverContent className="w-64">
     <p className="text-sm font-medium">Popover Title</p>
@@ -426,7 +426,7 @@ function DialogsPage() {
         <div className="flex flex-wrap gap-3">
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline">Open Popover</Button>
+              <Button variant="outline">Open popover</Button>
             </PopoverTrigger>
             <PopoverContent className="w-64">
               <div className="space-y-2">
@@ -441,7 +441,7 @@ function DialogsPage() {
 
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline">Form Popover</Button>
+              <Button variant="outline">Form popover</Button>
             </PopoverTrigger>
             <PopoverContent className="w-72">
               <div className="space-y-3">
@@ -476,7 +476,7 @@ function DialogsPage() {
           <div className="flex flex-wrap gap-3">
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="outline">Hover for Tooltip</Button>
+                <Button variant="outline">Hover for tooltip</Button>
               </TooltipTrigger>
               <TooltipContent>
                 <p>This is a tooltip</p>
@@ -517,7 +517,7 @@ function DialogsPage() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">Open Multi-step Dialog</Button>
+        <Button variant="outline">Open multi-step dialog</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -547,7 +547,7 @@ function DialogsPage() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="destructive">Delete Project</Button>
+        <Button variant="destructive">Delete project</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -576,7 +576,7 @@ function DialogsPage() {
         title="Dialog — full-screen scrollable"
         code={`<Dialog>
   <DialogTrigger asChild>
-    <Button variant="outline">Open Full Dialog</Button>
+    <Button variant="outline">Open full dialog</Button>
   </DialogTrigger>
   <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
     <DialogHeader>
@@ -593,7 +593,7 @@ function DialogsPage() {
       >
         <Dialog>
           <DialogTrigger asChild>
-            <Button variant="outline">Open Full Dialog</Button>
+            <Button variant="outline">Open full dialog</Button>
           </DialogTrigger>
           <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
             <DialogHeader>
@@ -703,7 +703,7 @@ function DialogsPage() {
         title="Sheet — edit profile form"
         code={`<Sheet>
   <SheetTrigger asChild>
-    <Button variant="outline">Edit Profile</Button>
+    <Button variant="outline">Edit profile</Button>
   </SheetTrigger>
   <SheetContent side="right">
     <SheetHeader>
@@ -725,14 +725,14 @@ function DialogsPage() {
     </div>
     <SheetFooter>
       <Button variant="outline">Cancel</Button>
-      <Button>Save Changes</Button>
+      <Button>Save changes</Button>
     </SheetFooter>
   </SheetContent>
 </Sheet>`}
       >
         <Sheet>
           <SheetTrigger asChild>
-            <Button variant="outline">Edit Profile</Button>
+            <Button variant="outline">Edit profile</Button>
           </SheetTrigger>
           <SheetContent side="right">
             <SheetHeader>
@@ -761,7 +761,7 @@ function DialogsPage() {
             </div>
             <SheetFooter>
               <Button variant="outline">Cancel</Button>
-              <Button>Save Changes</Button>
+              <Button>Save changes</Button>
             </SheetFooter>
           </SheetContent>
         </Sheet>

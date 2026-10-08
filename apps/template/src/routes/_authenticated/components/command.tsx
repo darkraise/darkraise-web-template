@@ -52,7 +52,7 @@ function CommandPage() {
     </CommandGroup>
     <CommandSeparator />
     <CommandGroup heading="Actions">
-      <CommandItem>Create Product</CommandItem>
+      <CommandItem>Create product</CommandItem>
     </CommandGroup>
   </CommandList>
 </Command>`}
@@ -87,7 +87,7 @@ function CommandPage() {
             <CommandGroup heading="Actions">
               <CommandItem>
                 <Plus className="mr-2 h-4 w-4" />
-                Create Product
+                Create product
               </CommandItem>
               <CommandItem>
                 <Download className="mr-2 h-4 w-4" />
@@ -95,7 +95,7 @@ function CommandPage() {
               </CommandItem>
               <CommandItem>
                 <UserPlus className="mr-2 h-4 w-4" />
-                Invite Team Member
+                Invite team member
               </CommandItem>
             </CommandGroup>
           </CommandList>

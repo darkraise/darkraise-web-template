@@ -549,7 +549,7 @@ test.describe("touch", () => {
       "the project emulates a device that cannot hover",
     ).toBe(true)
     const button = example(page, "With icons").getByRole("button", {
-      name: "New Item",
+      name: "New item",
     })
     const wash = () =>
       button.evaluate((el) => getComputedStyle(el, "::before").opacity)

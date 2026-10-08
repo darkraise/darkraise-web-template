@@ -73,7 +73,7 @@ function ContextMenuExample() {
         <ContextMenuItem>Copy</ContextMenuItem>
         <ContextMenuItem>Paste</ContextMenuItem>
         <ContextMenuSeparator />
-        <ContextMenuItem>Select All</ContextMenuItem>
+        <ContextMenuItem>Select all</ContextMenuItem>
         <ContextMenuSeparator />
         <ContextMenuItem className="text-destructive-text">
           Delete
@@ -94,7 +94,7 @@ function SearchableDropdownExample() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline">Select Team</Button>
+        <Button variant="outline">Select team</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-48">
         <div
@@ -236,7 +236,7 @@ function DropdownMenuPage() {
         title="Basic menu with sections"
         code={`<DropdownMenu>
   <DropdownMenuTrigger asChild>
-    <Button variant="outline">Open Menu</Button>
+    <Button variant="outline">Open menu</Button>
   </DropdownMenuTrigger>
   <DropdownMenuContent className="w-48">
     <DropdownMenuLabel>My Account</DropdownMenuLabel>
@@ -244,13 +244,13 @@ function DropdownMenuPage() {
     <DropdownMenuItem>Profile</DropdownMenuItem>
     <DropdownMenuItem>Billing</DropdownMenuItem>
     <DropdownMenuSeparator />
-    <DropdownMenuItem className="text-destructive-text">Sign Out</DropdownMenuItem>
+    <DropdownMenuItem className="text-destructive-text">Sign out</DropdownMenuItem>
   </DropdownMenuContent>
 </DropdownMenu>`}
       >
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline">Open Menu</Button>
+            <Button variant="outline">Open menu</Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-48">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
@@ -270,7 +270,7 @@ function DropdownMenuPage() {
             <DropdownMenuSeparator />
             <DropdownMenuItem className="text-destructive-text">
               <LogOut className="mr-2 h-4 w-4" />
-              Sign Out
+              Sign out
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -335,7 +335,7 @@ function DropdownMenuPage() {
         title="Full menu with submenu"
         code={`<DropdownMenu>
   <DropdownMenuTrigger asChild>
-    <Button variant="outline">Full Demo</Button>
+    <Button variant="outline">Full demo</Button>
   </DropdownMenuTrigger>
   <DropdownMenuContent className="w-56">
     <DropdownMenuLabel>My Account</DropdownMenuLabel>
@@ -344,7 +344,7 @@ function DropdownMenuPage() {
     <DropdownMenuItem>Billing</DropdownMenuItem>
     <DropdownMenuSeparator />
     <DropdownMenuCheckboxItem checked={checked} onCheckedChange={setChecked}>
-      Show Notifications
+      Show notifications
     </DropdownMenuCheckboxItem>
     <DropdownMenuSeparator />
     <DropdownMenuRadioGroup value={radio} onValueChange={setRadio}>
@@ -353,20 +353,20 @@ function DropdownMenuPage() {
     </DropdownMenuRadioGroup>
     <DropdownMenuSeparator />
     <DropdownMenuSub>
-      <DropdownMenuSubTrigger>More Options</DropdownMenuSubTrigger>
+      <DropdownMenuSubTrigger>More options</DropdownMenuSubTrigger>
       <DropdownMenuSubContent>
-        <DropdownMenuItem>Sub Item 1</DropdownMenuItem>
-        <DropdownMenuItem>Sub Item 2</DropdownMenuItem>
+        <DropdownMenuItem>Sub item 1</DropdownMenuItem>
+        <DropdownMenuItem>Sub item 2</DropdownMenuItem>
       </DropdownMenuSubContent>
     </DropdownMenuSub>
     <DropdownMenuSeparator />
-    <DropdownMenuItem className="text-destructive-text">Sign Out</DropdownMenuItem>
+    <DropdownMenuItem className="text-destructive-text">Sign out</DropdownMenuItem>
   </DropdownMenuContent>
 </DropdownMenu>`}
       >
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline">Full Demo</Button>
+            <Button variant="outline">Full demo</Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
@@ -378,7 +378,7 @@ function DropdownMenuPage() {
               checked={checked}
               onCheckedChange={setChecked}
             >
-              Show Notifications
+              Show notifications
             </DropdownMenuCheckboxItem>
             <DropdownMenuSeparator />
             <DropdownMenuRadioGroup value={radio} onValueChange={setRadio}>
@@ -391,15 +391,15 @@ function DropdownMenuPage() {
             </DropdownMenuRadioGroup>
             <DropdownMenuSeparator />
             <DropdownMenuSub>
-              <DropdownMenuSubTrigger>More Options</DropdownMenuSubTrigger>
+              <DropdownMenuSubTrigger>More options</DropdownMenuSubTrigger>
               <DropdownMenuSubContent>
-                <DropdownMenuItem>Sub Item 1</DropdownMenuItem>
-                <DropdownMenuItem>Sub Item 2</DropdownMenuItem>
+                <DropdownMenuItem>Sub item 1</DropdownMenuItem>
+                <DropdownMenuItem>Sub item 2</DropdownMenuItem>
               </DropdownMenuSubContent>
             </DropdownMenuSub>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="text-destructive-text">
-              Sign Out
+              Sign out
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -425,7 +425,7 @@ function DropdownMenuPage() {
     <ContextMenuItem>Copy</ContextMenuItem>
     <ContextMenuItem>Paste</ContextMenuItem>
     <ContextMenuSeparator />
-    <ContextMenuItem>Select All</ContextMenuItem>
+    <ContextMenuItem>Select all</ContextMenuItem>
     <ContextMenuSeparator />
     <ContextMenuItem className="text-destructive-text">Delete</ContextMenuItem>
   </ContextMenuContent>
@@ -446,7 +446,7 @@ function DropdownMenuPage() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline">Select Team</Button>
+        <Button variant="outline">Select team</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-48">
         <div
