@@ -9,6 +9,7 @@ import { Portal } from "@primitives/portal"
 import { Presence } from "@primitives/presence"
 import { Slot, useComposedRefs } from "@primitives/slot"
 import {
+  FloatingArrow,
   placementOf,
   resolveSide,
   useFloating,
@@ -102,6 +103,10 @@ interface TooltipContextValue extends UseTooltipReturn {
 }
 
 const TooltipContext = React.createContext<TooltipContextValue | null>(null)
+
+const TooltipFloatingContext = React.createContext<ReturnType<
+  typeof useFloating
+> | null>(null)
 
 function useTooltipContext(consumer: string): TooltipContextValue {
   const ctx = React.useContext(TooltipContext)
@@ -331,7 +336,9 @@ function TooltipContentImpl({
         }}
         {...rest}
       >
-        {children}
+        <TooltipFloatingContext.Provider value={floating}>
+          {children}
+        </TooltipFloatingContext.Provider>
       </div>
     </DismissableLayer>
   )
@@ -354,17 +361,25 @@ interface TooltipArrowProps extends React.SVGAttributes<SVGSVGElement> {
   ref?: React.Ref<SVGSVGElement>
 }
 
-function TooltipArrow({ width = 8, height = 4, ...props }: TooltipArrowProps) {
+function TooltipArrow({ ref, style, ...props }: TooltipArrowProps) {
+  const floating = React.useContext(TooltipFloatingContext)
+  const arrowData = floating?.middlewareData.arrow
+  const composedRef = useComposedRefs(
+    floating?.arrowRef as React.Ref<SVGSVGElement>,
+    ref,
+  )
+
   return (
-    <svg
-      width={width}
-      height={height}
-      viewBox={`0 0 ${width} ${height}`}
-      fill="currentColor"
+    <FloatingArrow
+      ref={composedRef}
       {...props}
-    >
-      <path d={`M0,0 L${width / 2},${height} L${width},0 Z`} />
-    </svg>
+      style={{
+        ...style,
+        position: "absolute",
+        left: arrowData?.x,
+        top: arrowData?.y,
+      }}
+    />
   )
 }
 

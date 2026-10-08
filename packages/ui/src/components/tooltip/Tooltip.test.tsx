@@ -7,6 +7,7 @@ import {
   TooltipTrigger,
   TooltipContent,
   TooltipProvider,
+  TooltipArrow,
   TOOLTIP_DEFAULT_DELAY,
 } from "@components/tooltip"
 import {
@@ -389,5 +390,23 @@ describe("Tooltip direction", () => {
     await waitFor(() =>
       expect(screen.getByRole("tooltip")).toHaveAttribute("dir", "rtl"),
     )
+  })
+})
+
+describe("TooltipArrow", () => {
+  it("is positioned by the arrow middleware", async () => {
+    render(
+      <Tooltip defaultOpen>
+        <TooltipTrigger>Hover me</TooltipTrigger>
+        <TooltipContent>
+          Tip text
+          <TooltipArrow data-testid="arrow" style={{ color: "red" }} />
+        </TooltipContent>
+      </Tooltip>,
+    )
+    const arrow = await screen.findByTestId("arrow")
+    expect(arrow.style.color).toBe("red")
+    expect(arrow.style.position).toBe("absolute")
+    await waitFor(() => expect(arrow.style.left).toMatch(/^-?\d+(\.\d+)?px$/))
   })
 })

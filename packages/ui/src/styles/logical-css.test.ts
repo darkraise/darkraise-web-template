@@ -236,7 +236,7 @@ const ALLOWED: readonly (readonly [string, string, readonly string[]])[] = [
   [
     "src/components/tooltip/Tooltip.tsx",
     FLOATING,
-    ["left: Math.round(floating.x ?? 0)"],
+    ["left: Math.round(floating.x ?? 0)", "left: arrowData?.x"],
   ],
   [
     "src/components/virtualized-dropdown-menu/VirtualizedDropdownMenu.tsx",
