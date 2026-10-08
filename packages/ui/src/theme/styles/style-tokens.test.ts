@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync, readdirSync } from "node:fs"
 import { join, sep } from "node:path"
+import { stripCssComments } from "../../test/strip-css-comments"
 
 // Every control and chrome token has its base value in @layer base, and only
 // the unlayered style files under theme/styles/ override it, so a style file
@@ -92,12 +93,13 @@ interface Declaration {
  * in. Comments are dropped; a semicolon or brace inside a string or inside
  * parentheses (a data: URL) splits nothing.
  */
-function declarations(path: string): Declaration[] {
-  const source = readFileSync(path, "utf8").replace(/\/\*[\s\S]*?\*\//g, "")
+function declarationsIn(path: string, css: string): Declaration[] {
+  const source = stripCssComments(css)
   const found: Declaration[] = []
   const context: string[] = []
   let text = ""
   let quote = ""
+  let escaped = false
   let parens = 0
   const flush = () => {
     const match = /^\s*(--[\w-]+)\s*:([\s\S]*)$/.exec(text)
@@ -114,7 +116,9 @@ function declarations(path: string): Declaration[] {
   for (const ch of source) {
     if (quote) {
       text += ch
-      if (ch === quote) quote = ""
+      if (escaped) escaped = false
+      else if (ch === "\\") escaped = true
+      else if (ch === quote) quote = ""
     } else if (ch === '"' || ch === "'") {
       quote = ch
       text += ch
@@ -136,6 +140,10 @@ function declarations(path: string): Declaration[] {
     }
   }
   return found
+}
+
+function declarations(path: string): Declaration[] {
+  return declarationsIn(path, readFileSync(path, "utf8"))
 }
 
 function stylesheets(dir: string): string[] {
@@ -161,6 +169,27 @@ function sameContext(a: string[], b: string[]): boolean {
 function where(d: Declaration): string {
   return `${d.property} in ${d.context.join(" > ") || "(top level)"} (${d.path})`
 }
+
+describe("the declaration scanner", () => {
+  it("reads comment markers and escaped quotes inside strings as text", () => {
+    const found = declarationsIn(
+      "fixture.css",
+      `
+        .a { --open: "/*"; --quote: "\\""; --next: 1; }
+        .b { --kept: 2; }
+        /* .c { --dropped: 3; } */
+        .d { --close: '*/'; }
+      `,
+    )
+    expect(found.map((d) => [d.property, d.value])).toEqual([
+      ["--open", '"/*"'],
+      ["--quote", '"\\""'],
+      ["--next", "1"],
+      ["--kept", "2"],
+      ["--close", "'*/'"],
+    ])
+  })
+})
 
 describe("contract base values", () => {
   const base = declarations(THEME)
@@ -255,7 +284,7 @@ interface Rule {
 
 /** Innermost rules; @layer and @media are transparent. */
 function rulesOf(path: string): Rule[] {
-  const css = readFileSync(path, "utf8").replace(/\/\*[\s\S]*?\*\//g, "")
+  const css = stripCssComments(readFileSync(path, "utf8"))
   return [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((match) => ({
     selectors: (match[1] as string)
       .split(/,(?![^(]*\))/)
@@ -393,9 +422,7 @@ const NUMBER = join("src", "components", "number-input", "number-input.css")
 const INVALID = ':is([data-invalid], [aria-invalid="true"])'
 
 describe("fields compose --field-shadow", () => {
-  const theme = normalise(
-    readFileSync(THEME, "utf8").replace(/\/\*[\s\S]*?\*\//g, ""),
-  )
+  const theme = normalise(stripCssComments(readFileSync(THEME, "utf8")))
 
   it.each(["focus-ring-input", "focus-ring-input-wrapper"])(
     "%s paints the field shadow at rest and under each ring",

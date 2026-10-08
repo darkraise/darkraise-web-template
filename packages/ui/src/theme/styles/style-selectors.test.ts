@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest"
 import { existsSync, readFileSync, readdirSync } from "node:fs"
 import { dirname, join, resolve, sep } from "node:path"
 import { STYLE_NAMES } from "@theme/styles"
+import { stripCssComments } from "../../test/strip-css-comments"
 
 // Styles are token sets. A style file under theme/styles/ sets custom
 // properties and nothing else, and no other stylesheet names a style, so a
@@ -19,7 +20,7 @@ interface Block {
  * inside a string or parentheses (a data: URL) splits nothing.
  */
 function parse(css: string): Block {
-  const source = css.replace(/\/\*[\s\S]*?\*\//g, "")
+  const source = stripCssComments(css)
   const root: Block = { prelude: "", declarations: [], children: [] }
   const stack: Block[] = [root]
   let text = ""
@@ -128,6 +129,17 @@ describe("style selectors", () => {
       "&:where([data-preset])",
       "@apply [[data-style=glass]_&]:bg-red-500",
     ])
+  })
+
+  it("reads a comment marker inside a string as text", () => {
+    expect(
+      styleSelectors(`
+        .a { --open: "/*"; }
+        [data-style="glass"] .b { color: red; }
+        /* [data-style="flat"] .c { color: red; } */
+        .d { --close: '*/'; }
+      `),
+    ).toEqual(['[data-style="glass"] .b'])
   })
 })
 
