@@ -88,6 +88,12 @@ import {
   SheetTrigger,
 } from "darkraise-ui/components/sheet"
 import { Tour } from "darkraise-ui/components/tour"
+import {
+  VirtualizedDropdownMenu,
+  VirtualizedDropdownMenuContent,
+  VirtualizedDropdownMenuItem,
+  VirtualizedDropdownMenuTrigger,
+} from "darkraise-ui/components/virtualized-dropdown-menu"
 import { ThemeProvider } from "darkraise-ui/theme"
 import "../../src/styles/globals.css"
 
@@ -330,6 +336,32 @@ function ScrollLockCase({ dir }: { dir: "ltr" | "rtl" }) {
       </header>
       <div style={{ height: 3000 }} />
     </>
+  )
+}
+
+const THOUSAND = Array.from({ length: 1000 }, (_, i) => `Row ${i + 1}`)
+
+// A tall list under a trigger near the top: the list is taller than the
+// room below, so the popup is capped by the room left.
+function VirtualizedCase() {
+  return (
+    <div style={{ padding: 16 }}>
+      <VirtualizedDropdownMenu>
+        <VirtualizedDropdownMenuTrigger asChild>
+          <Button>Many rows</Button>
+        </VirtualizedDropdownMenuTrigger>
+        <VirtualizedDropdownMenuContent items={THOUSAND} maxHeight={600}>
+          {(item, { isActive, disabled }) => (
+            <VirtualizedDropdownMenuItem
+              isActive={isActive}
+              disabled={disabled}
+            >
+              {item}
+            </VirtualizedDropdownMenuItem>
+          )}
+        </VirtualizedDropdownMenuContent>
+      </VirtualizedDropdownMenu>
+    </div>
   )
 }
 
@@ -590,6 +622,7 @@ const CASES: Record<string, () => ReactElement> = {
   "navigation-rtl": () => <NavigationCase dir="rtl" />,
   "scroll-lock": () => <ScrollLockCase dir="ltr" />,
   "scroll-lock-rtl": () => <ScrollLockCase dir="rtl" />,
+  virtualized: VirtualizedCase,
   combobox: ComboboxCase,
   panels: PanelsCase,
   tour: TourCase,

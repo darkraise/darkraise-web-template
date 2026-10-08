@@ -5,6 +5,17 @@
     box-shadow: var(--overlay-shadow);
   }
 
+  /* Compound selector outranks the base `.dr-popover-content` rule (`w-72`,
+     `p-4`) regardless of @import order. Virtual rows are absolutely
+     positioned and give the list no width of its own, so it takes its
+     trigger's width, never under 8rem. The content caps its own height,
+     border and padding included, and the list inside shrinks to fit. */
+  .dr-popover-content.dr-vdm-content {
+    @apply flex flex-col p-1;
+    width: var(--popup-anchor-width, auto);
+    max-height: var(--popup-available-height, 100dvh);
+  }
+
   .dr-vdm-item {
     @apply data-[active]:bg-accent data-[active]:text-accent-foreground relative flex cursor-pointer items-center gap-2 rounded-sm px-2 py-[var(--density-row-py)] text-sm transition-colors outline-none select-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-[var(--disabled-opacity)] [&_svg]:pointer-events-none [&_svg]:size-[var(--icon-size)] [&_svg]:shrink-0;
   }

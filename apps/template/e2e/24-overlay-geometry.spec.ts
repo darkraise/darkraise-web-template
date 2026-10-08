@@ -97,6 +97,22 @@ test.describe("list popups fit the viewport", () => {
     await expectCappedAndScrolling(page, page.locator(".dr-menu-sub-content"))
   })
 
+  test("a virtualized menu stays inside the collision padding", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 800, height: 360 })
+    await seedApp(page, { style: "quiet", mode: "light" })
+    await openOverlayCase(page, "virtualized")
+    const trigger = page.getByRole("button", { name: "Many rows" })
+    await trigger.click()
+    const menu = page.locator(".dr-vdm-content")
+    await expect(menu).toBeVisible()
+    await settle(page)
+    const [box, anchor] = [await boxOf(menu), await boxOf(trigger)]
+    expect(box.y + box.height).toBeLessThanOrEqual(360 - 8 + 0.5)
+    expect(box.width).toBeCloseTo(Math.max(anchor.width, 128), 0)
+  })
+
   test("a long menubar menu stays on screen and scrolls", async ({ page }) => {
     await seedApp(page, { style: "quiet", mode: "light" })
     await openOverlayCase(page, "menus")

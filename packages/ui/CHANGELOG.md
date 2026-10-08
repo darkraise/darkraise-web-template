@@ -147,6 +147,7 @@ Breaking: `ToggleGroup` sizes to its content. `.dr-toggle-group` is `inline-flex
 - `"start"` and `"end"` for `SheetContent` `side`, `Drawer` `direction`, `VirtualizedTimeline` `scrubberSide` and the `side` of `TooltipContent`, `PopoverContent`, `HoverCardContent`, `SelectContent`, `DropdownMenuContent` and `MenubarContent`; `"top-start"`, `"top-end"`, `"bottom-start"` and `"bottom-end"` for `Toaster` and toast `position` and for `BadgeAnchor` `position`. They resolve from the computed direction: `start` is the left side in a left-to-right document and the right side in a right-to-left one. A popup's `data-side` and a Drawer's `data-direction` carry the resolved physical side.
 - The `dr-icon-inline` class mirrors an icon that points along the reading order (a next arrow, a breadcrumb chevron) in a right-to-left document. Do not put it on a chevron that also rotates to show an open state.
 - `useSlider().pointerToValue` takes an optional fourth argument, the direction to measure in.
+- `VirtualizedDropdownMenuContent` takes `isItemDisabled(item, index)`. A disabled row is skipped by the arrow keys, Home and End, ignores clicks, Enter and the pointer, and carries `data-disabled` and `aria-disabled`; the item render function receives `disabled`, and `VirtualizedDropdownMenuItem` takes `disabled`.
 
 ### Changed
 
@@ -195,6 +196,7 @@ Breaking: `ToggleGroup` sizes to its content. `.dr-toggle-group` is `inline-flex
 - Dark-mode primary tints (`--primary-1` to `--primary-5`) follow dark accent chroma: their chroma cap is 0.03 at `calm`, 0.05 at `standard` and 0.0625 at `vivid`, where it was 0.05 at every setting.
 - In forced-colours mode (Windows contrast themes) every selected, checked, pressed, current or open item is painted `Highlight` with `HighlightText`, ranges get a dashed Highlight border, today is underlined, invalid fields get a dashed border, and separators, tracks, thumbs, handles and connectors are drawn in `CanvasText`. Colour swatches, the colour picker's area and hue strip and ContributionGraph cells keep their real colours (`forced-color-adjust: none`), and Tabs triggers draw their own frame there instead of the shared boundary outline.
 - `TagsInputClearTrigger` renders with its own class, `.dr-tags-input-clear-trigger`, instead of the delete trigger's `.dr-tags-input-item-delete-trigger`. It sizes to its content, never below the icon square it replaced, and keeps a text label on one line, where the label used to wrap inside the 16px icon square and spill past the field; it keeps the delete trigger's hover wash, hover colour and disabled fade. Styles aimed at the clear trigger through `.dr-tags-input-item-delete-trigger` must move to `.dr-tags-input-clear-trigger`.
+- A `VirtualizedDropdownMenu` row is the menu item: it carries `role="menuitem"` and an id, and `VirtualizedDropdownMenuItem` inside it no longer carries the role. Without a width class the content takes its trigger's width, at least 8rem, instead of the popover's 18rem.
 
 ### Removed
 
@@ -293,6 +295,7 @@ Breaking: `ToggleGroup` sizes to its content. `.dr-toggle-group` is `inline-flex
 - When scroll locks are released in a different order from the one they were taken in, for example a drawer closed before the dialog it opened, the page scrolls again once the last one is released. It used to stay locked.
 - A middle-click on a disabled `DropdownMenuItem`, `ContextMenuItem` or `MenubarItem` rendered as a link with `asChild` no longer opens the link; the item's `onAuxClick` still runs.
 - The `Combobox` list grows from the edge facing its input, like the other popups; it scaled from its centre.
+- `VirtualizedDropdownMenu` announces the highlighted row: the menu points `aria-activedescendant` at it. Its content caps its own height, border and padding included, so the popup stays inside the collision padding; the list used to take all the room left and the border and padding ran past it.
 
 Breaking: `.dr-surface`, its `--flat` modifier and its `dr-surface-{brand,cyan,success,warning,danger,info}` hue classes are removed, with the `--fog-05` … `--fog-50` tokens they alone gave values to. The `glass`, `glass-thin`, `glass-strong` and `card-surface` utilities are removed: outside `.dr-surface` they painted nothing. Replace one with `rounded-[var(--radius)]` and, if you relied on it, `transition-[background-color,color,border-color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-in-out)]`.
 
