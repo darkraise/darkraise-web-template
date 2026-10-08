@@ -1,5 +1,13 @@
 import { act, render, screen, within } from "@testing-library/react"
-import { beforeEach, afterEach, describe, expect, it, vi } from "vitest"
+import {
+  beforeEach,
+  afterEach,
+  describe,
+  expect,
+  it,
+  onTestFinished,
+  vi,
+} from "vitest"
 import { useTranslation } from "react-i18next"
 import { useUiLabels } from "../../labels"
 import { vi as vietnamese } from "../../locales/vi"
@@ -90,6 +98,25 @@ describe("optional application integration", () => {
     expect(localStorage.getItem("test.language")).toBe("vi")
     unmount()
     expect(document.documentElement.lang).toBe("fr")
+  })
+  it("keeps the document direction for a locale pack without one", async () => {
+    const plain = { ...en, locale: "x-plain", label: "Plain", dir: undefined }
+    const instance = await createDarkraiseI18n({
+      locale: "x-plain",
+      locales: [plain],
+      resources: { "x-plain": { translation: { greeting: "Hi" } } },
+    })
+    const root = document.documentElement
+    root.dir = "rtl"
+    onTestFinished(() => root.removeAttribute("dir"))
+    const { unmount } = render(
+      <AppI18nProvider instance={instance} locales={[plain]} syncDocument>
+        <Probe />
+      </AppI18nProvider>,
+    )
+    expect(root.dir).toBe("rtl")
+    unmount()
+    expect(root.dir).toBe("rtl")
   })
   it("resolves explicit, stored, browser, and fallback preferences", () => {
     localStorage.setItem("test.language", "vi")

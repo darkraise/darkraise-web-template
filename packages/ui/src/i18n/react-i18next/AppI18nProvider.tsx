@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useSyncExternalStore } from "react"
+import { useCallback, useEffect, useRef, useSyncExternalStore } from "react"
 import { I18nextProvider } from "react-i18next"
 import type { i18n } from "i18next"
 import { UiI18nProvider } from "../UiI18nProvider"
@@ -35,8 +35,8 @@ export function AppI18nProvider({
   )
   const snapshot = useCallback(() => instance.language || "en", [instance])
   const locale = useSyncExternalStore(subscribe, snapshot, snapshot)
-  const dir =
-    props.dir ?? resolveLocale(locale, props.locales ?? []).pack.dir ?? "ltr"
+  const dir = props.dir ?? resolveLocale(locale, props.locales ?? []).pack.dir
+  const before = useRef<{ lang: string | null; dir: string | null }>(null)
   useEffect(() => {
     if (!storageKey) return
     try {
@@ -55,6 +55,7 @@ export function AppI18nProvider({
       lang: root.getAttribute("lang"),
       dir: root.getAttribute("dir"),
     }
+    before.current = previous
     return () => {
       for (const key of ["lang", "dir"] as const) {
         const value = previous[key]
@@ -66,8 +67,13 @@ export function AppI18nProvider({
   }, [syncDocument])
   useEffect(() => {
     if (!syncDocument) return
-    document.documentElement.lang = locale
-    document.documentElement.dir = dir
+    const root = document.documentElement
+    root.lang = locale
+    // A pack without a direction keeps the direction the document had
+    // before this provider took it over.
+    const next = dir ?? before.current?.dir ?? null
+    if (next === null) root.removeAttribute("dir")
+    else root.setAttribute("dir", next)
   }, [locale, dir, syncDocument])
   return (
     <I18nextProvider i18n={instance}>
