@@ -249,6 +249,8 @@ export function alphaOf(value: string): number {
  * a canvas, so every computed syntax (`rgb()`, `color(srgb …)` from
  * `color-mix()`, `oklab()`) resolves to sRGB.
  */
+let hiddenTextCalls = 0
+
 export async function textContrast(locator: Locator): Promise<number> {
   const result = await locator.evaluate((el) => {
     const canvas = document.createElement("canvas")
@@ -273,12 +275,14 @@ export async function textContrast(locator: Locator): Promise<number> {
       (node.ownerDocument.defaultView ?? window).getComputedStyle(node)
     const parentOf = (node: Element) =>
       node.parentElement ?? node.ownerDocument.defaultView?.frameElement ?? null
-    const opacityOf = (node: Element) => {
-      let opacity = 1
-      for (let n: Element | null = node; n; n = parentOf(n)) {
-        opacity *= Number(styleOf(n).opacity)
-      }
-      return opacity
+    const chain: Element[] = []
+    for (let n: Element | null = el; n; n = parentOf(n)) chain.push(n)
+    // Each node is faded by its own opacity times that of every ancestor.
+    const opacity = new Map<Element, number>()
+    let running = 1
+    for (const node of [...chain].reverse()) {
+      running *= Number(styleOf(node).opacity)
+      opacity.set(node, running)
     }
 
     const [tr, tg, tb, ta] = rgba(styleOf(el).color)
@@ -286,11 +290,11 @@ export async function textContrast(locator: Locator): Promise<number> {
       tr,
       tg,
       tb,
-      ta * opacityOf(el),
+      ta * (opacity.get(el) ?? 1),
     ]
     const layers: [number, number, number, number][] = []
     let ground: [number, number, number] = [255, 255, 255]
-    for (let node: Element | null = el; node; node = parentOf(node)) {
+    for (const node of chain) {
       const style = styleOf(node)
       if (
         style.backgroundImage !== "none" ||
@@ -299,7 +303,7 @@ export async function textContrast(locator: Locator): Promise<number> {
         return { kind: "pixels" as const, text }
       }
       const [r, g, b, a] = rgba(style.backgroundColor)
-      const alpha = a * opacityOf(node)
+      const alpha = a * (opacity.get(node) ?? 1)
       if (alpha >= 1) {
         ground = [r, g, b]
         break
@@ -325,37 +329,46 @@ export async function textContrast(locator: Locator): Promise<number> {
     return contrast(result.color, result.background)
   }
 
-  const attribute = "data-e2e-text-hidden"
+  hiddenTextCalls += 1
+  const names = {
+    attribute: "data-e2e-text-hidden",
+    styleId: `data-e2e-text-hidden-${hiddenTextCalls}`,
+  }
   await locator.scrollIntoViewIfNeeded()
   // Transitions are held off while the text is hidden and while it comes
   // back, or the restored colour would fade in and the next reading with it.
-  await locator.evaluate((el, name) => {
+  await locator.evaluate((el, { attribute, styleId }) => {
     const style = el.ownerDocument.createElement("style")
-    style.id = name
-    style.textContent = `[${name}], [${name}] * { transition: none !important }
-      [${name}="hidden"], [${name}="hidden"] * {
+    style.id = styleId
+    style.textContent = `[${attribute}], [${attribute}] * { transition: none !important }
+      [${attribute}="hidden"], [${attribute}="hidden"] * {
         color: transparent !important;
         -webkit-text-fill-color: transparent !important;
         text-shadow: none !important;
         text-decoration-color: transparent !important;
       }`
     el.ownerDocument.head.append(style)
-    el.setAttribute(name, "hidden")
-  }, attribute)
+    el.setAttribute(attribute, "hidden")
+  }, names)
+  const restore = () =>
+    locator.evaluate((el, { attribute, styleId }) => {
+      el.setAttribute(attribute, "shown")
+      // Layout flushes the restored colour while transitions are still off.
+      el.getBoundingClientRect()
+      el.removeAttribute(attribute)
+      el.ownerDocument.getElementById(styleId)?.remove()
+    }, names)
+  let lowest: number
   try {
     const box = await locator.boundingBox()
     if (!box) throw new Error("textContrast: the element has no box")
-    const [lowest = 0] = await lowestContrastOver(locator.page(), box, [
-      result.text,
-    ])
-    return lowest
-  } finally {
-    await locator.evaluate((el, name) => {
-      el.setAttribute(name, "shown")
-      // Layout flushes the restored colour while transitions are still off.
-      el.getBoundingClientRect()
-      el.removeAttribute(name)
-      el.ownerDocument.getElementById(name)?.remove()
-    }, attribute)
+    ;[lowest = 0] = await lowestContrastOver(locator.page(), box, [result.text])
+  } catch (error) {
+    // The measurement error explains the failure; a restore that fails on
+    // the same detached element would only hide it.
+    await restore().catch(() => undefined)
+    throw error
   }
+  await restore()
+  return lowest
 }
