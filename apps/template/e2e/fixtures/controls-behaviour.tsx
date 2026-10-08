@@ -23,6 +23,7 @@ import {
   TreeViewTree,
   type TreeNode,
 } from "darkraise-ui/components/tree-view"
+import { UserMenu } from "darkraise-ui/layout"
 import { ThemeProvider } from "darkraise-ui/theme"
 import "../../src/styles/globals.css"
 
@@ -142,6 +143,12 @@ createRoot(root).render(
             End
           </ResizablePanel>
         </ResizablePanelGroup>
+      </div>
+      <div data-probe="user-menu">
+        <UserMenu
+          onLogout={() => {}}
+          layoutSwitcher={{ variants: ["sidebar", "top-nav"] }}
+        />
       </div>
     </div>
   </ThemeProvider>,

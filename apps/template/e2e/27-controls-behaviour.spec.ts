@@ -210,3 +210,28 @@ test.describe("resizable", () => {
     expect(await pixel(page, x, y)).not.toEqual(await pixel(page, x - 4, y))
   })
 })
+
+test.describe("user menu", () => {
+  test("the Layout entry and its separator show below 48rem only", async ({
+    page,
+  }) => {
+    await openInMode(page, "light")
+    const trigger = probe(page, "user-menu", ".dr-user-menu-trigger")
+    const menu = page.locator(".dr-user-menu-content")
+    const entry = menu.locator(".dr-user-menu-layout")
+    const separator = menu.locator(".dr-user-menu-layout-separator")
+
+    await trigger.click()
+    await expect(menu.getByRole("menuitem", { name: "Log out" })).toBeVisible()
+    await expect(entry).toHaveCount(1)
+    await expect(entry).toBeHidden()
+    await expect(separator).toHaveCount(1)
+    await expect(separator).toBeHidden()
+    await page.keyboard.press("Escape")
+
+    await page.setViewportSize({ width: 390, height: 844 })
+    await trigger.click()
+    await expect(entry).toBeVisible()
+    await expect(separator).toBeVisible()
+  })
+})
