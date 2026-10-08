@@ -25,6 +25,12 @@
   }
 
   @media (width < 40rem) {
+    /* The field padding sized for a written value is too wide beside a
+       phone header's icon buttons at the larger densities. */
+    .dr-select-trigger[data-compact] {
+      padding-inline: var(--btn-px-tight);
+    }
+
     [data-compact-icon] .dr-locale-option-label {
       @apply sr-only;
     }
