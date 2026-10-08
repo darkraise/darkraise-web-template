@@ -1,26 +1,6 @@
 import { render, screen } from "@testing-library/react"
-import { describe, it, expect, vi } from "vitest"
+import { describe, it, expect } from "vitest"
 import { ShowcaseExample } from "./-showcase-example"
-
-// The kit resolves its own React copy under Vitest, so its stateful parts
-// cannot render here; the code disclosure is not what this test is about.
-vi.mock("darkraise-ui/components/accordion", () => {
-  const Pass = ({ children }: { children?: React.ReactNode }) => <>{children}</>
-  return {
-    Accordion: Pass,
-    AccordionItem: Pass,
-    AccordionTrigger: Pass,
-    AccordionContent: Pass,
-  }
-})
-vi.mock("darkraise-ui/components/clipboard", () => {
-  const Pass = ({ children }: { children?: React.ReactNode }) => <>{children}</>
-  return {
-    Clipboard: Pass,
-    ClipboardTrigger: Pass,
-    ClipboardIndicator: () => null,
-  }
-})
 
 describe("ShowcaseExample", () => {
   it("marks its wrapper and its preview card with the showcase hooks", () => {
