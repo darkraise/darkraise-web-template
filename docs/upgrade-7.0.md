@@ -125,6 +125,8 @@ The `outline` variant of `Listbox` and `TreeView` now rings the selected row ins
 
 `.overlay-surface` is now a Tailwind utility that applies the overlay recipe: `background: var(--overlay-bg)`, its blend mode, `border-color: var(--overlay-border)` and the overlay backdrop filter. It no longer sets a border width, radius or shadow, so if you apply it to your own markup, add those yourself. Every kit popup applies it. It also sets `--field-edge: var(--field-edge-lifted)`, as elevated cards do, so an override of `--field-edge` on `:root` or an ancestor no longer reaches fields inside popups and elevated cards: override `--field-edge-lifted` too. Your own surfaces that take a dark lifted shadow (`--card-elevation-*`, `--elevation-*`, `--shadow-low/medium/high`) should set `--field-edge: var(--field-edge-lifted)` the same way.
 
+`VirtualizedDropdownMenuContent` now takes its trigger's width, never under 8rem, where it used to take the popover's 18rem, so a menu opened from an icon button narrows and clips longer labels. Pass a width class such as `w-72` to keep the old width. The `menuitem` role moved from `VirtualizedDropdownMenuItem` to its row, so a selector or test that queries `[role=menuitem]` now matches the row wrapper.
+
 ## Reduced motion
 
 Under `prefers-reduced-motion: reduce` transitions take `0s`, so no transition starts and `transitionend` never fires. Code that waits for `transitionend` to finish a state change must also finish it when the user prefers reduced motion; read the preference with `useReducedMotion` or check `getComputedStyle(element).transitionDuration`. Animations still run for `0.01ms` and fire `animationend`.
@@ -160,7 +162,7 @@ Passing `themeConfig.defaults` lets an axis the user never set resolve as the pr
 
 ## React Server Components
 
-Every kit entry except `darkraise-ui/lib`, `darkraise-ui/locales/en`, `darkraise-ui/locales/vi` and `darkraise-ui/vite` starts with `"use client"`. A server component can render kit components and pass them serialisable props, but cannot call kit hooks such as `useTheme` or pass functions to kit components; move that code into a file of your own that starts with `"use client"`. Import helpers such as `cn` from `darkraise-ui/lib`, which is safe on the server.
+Every kit entry except `darkraise-ui/lib`, `darkraise-ui/locales/en`, `darkraise-ui/locales/vi` and `darkraise-ui/vite` starts with `"use client"`. A server component can render kit components and pass them serialisable props, but cannot call kit hooks such as `useTheme`, read values such as `generateTokens` or `ACCENT_COLORS` imported from `darkraise-ui/theme` (a client entry exports them as opaque references), or pass functions to kit components; move that code into a file of your own that starts with `"use client"`. Import helpers such as `cn` from `darkraise-ui/lib`, which is safe on the server.
 
 ## create-darkraise-ui
 
