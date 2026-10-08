@@ -1337,3 +1337,92 @@ test.describe("tree-view lazy placeholder", () => {
     await expect(group.getByRole("listitem")).toHaveCount(0)
   })
 })
+
+test.describe("frame demos stay on this origin", () => {
+  test("the page requests nothing outside localhost until asked", async ({
+    page,
+  }) => {
+    const outside: string[] = []
+    page.on("request", (request) => {
+      const { hostname } = new URL(request.url())
+      if (!["localhost", "127.0.0.1"].includes(hostname)) {
+        outside.push(request.url())
+      }
+    })
+    await page.route("https://example.com/**", (route) => route.abort())
+    await openShowcase(page, "/components/frame")
+    expect(outside, outside.join("\n")).toEqual([])
+
+    const demo = page.locator("[data-showcase-example]").filter({
+      has: page.getByText("External site (cross-origin src)", { exact: true }),
+    })
+    await expect(demo.locator("iframe")).toHaveCount(0)
+    await demo.getByRole("button", { name: "Load example.com" }).click()
+    await expect(demo.locator("iframe")).toHaveAttribute(
+      "src",
+      "https://example.com",
+    )
+  })
+
+  test("the email footer reads at 7:1", async ({ page }) => {
+    await openShowcase(page, "/components/frame")
+    const footer = page
+      .locator("[data-showcase-example]")
+      .filter({
+        has: page.getByText("Email template preview", { exact: true }),
+      })
+      .locator("iframe")
+      .contentFrame()
+      .getByText("Acme Inc · 1 Infinite Loop · Cupertino, CA")
+    await expect(footer).toBeVisible()
+    expect(await textContrast(footer)).toBeGreaterThanOrEqual(7)
+  })
+})
+
+test.describe("date input page", () => {
+  const segmentsOf = (page: Page, title: string) =>
+    page
+      .locator("[data-showcase-example]")
+      .filter({ has: page.getByText(title, { exact: true }) })
+      .locator("[data-segment]")
+      .evaluateAll((segments) =>
+        segments.map((segment) => segment.getAttribute("data-segment")),
+      )
+
+  test("the default follows the English locale and ymd is explicit", async ({
+    page,
+  }) => {
+    await openShowcase(page, "/components/date-input")
+    expect(await segmentsOf(page, "Default (follows the UI locale)")).toEqual([
+      "month",
+      "day",
+      "year",
+    ])
+    expect(await segmentsOf(page, "Year-month-day")).toEqual([
+      "year",
+      "month",
+      "day",
+    ])
+  })
+
+  test.describe("east of UTC", () => {
+    test.use({ timezoneId: "Asia/Ho_Chi_Minh" })
+
+    test("the committed readout shows the local date", async ({ page }) => {
+      await openShowcase(page, "/components/date-input")
+      const demo = page.locator("[data-showcase-example]").filter({
+        has: page.getByText("Default (follows the UI locale)", {
+          exact: true,
+        }),
+      })
+      await demo.getByRole("spinbutton", { name: "Month" }).click()
+      await page.keyboard.type("10")
+      await page.keyboard.type("08")
+      await page.keyboard.type("2026")
+      await page.keyboard.press("Tab")
+      await expect(demo.getByText(/^Committed:/)).toHaveText(
+        "Committed: 2026-10-08",
+      )
+    })
+  })
+})

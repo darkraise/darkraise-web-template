@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react"
 import { createFileRoute } from "@tanstack/react-router"
+import { Button } from "darkraise-ui/components/button"
 import { Frame } from "darkraise-ui/components/frame"
 import {
   ToggleGroup,
@@ -178,7 +179,7 @@ function EmailTemplatePreviewExample() {
                         padding: "16px 24px",
                         background: "#f9fafb",
                         fontSize: 12,
-                        color: "#6b7280",
+                        color: "#4b5563",
                       }}
                     >
                       Acme Inc · 1 Infinite Loop · Cupertino, CA
@@ -335,7 +336,22 @@ function TailwindInFrameExample() {
   )
 }
 
+// The remote page loads only on request, so visiting the showcase never
+// depends on network access outside this origin.
 function ExternalSiteExample() {
+  const [loaded, setLoaded] = useState(false)
+  if (!loaded) {
+    return (
+      <div className="border-border flex h-80 flex-col items-center justify-center gap-3 rounded-md border border-dashed p-4 text-center">
+        <p className="text-muted-foreground text-sm">
+          This example loads a page from another origin.
+        </p>
+        <Button variant="outline" onClick={() => setLoaded(true)}>
+          Load example.com
+        </Button>
+      </div>
+    )
+  }
   return (
     <Frame
       src="https://example.com"

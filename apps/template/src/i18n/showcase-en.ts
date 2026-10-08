@@ -55,8 +55,8 @@ export const showcaseEnglish = {
     "High-level metric cards, KPI displays, progress indicators, and activity feeds.",
   "Feature-rich table built on TanStack Table with column sorting, text search, and pagination.":
     "Feature-rich table built on TanStack Table with column sorting, text search, and pagination.",
-  "Three independent numeric segments for entering a date. Supports year-month-day, month-day-year, and day-month-year formats with arrow-key adjustments and per-segment validation.":
-    "Three independent numeric segments for entering a date. Supports year-month-day, month-day-year, and day-month-year formats with arrow-key adjustments and per-segment validation.",
+  "Three independent numeric segments for entering a date. The segment order follows the UI locale unless format sets year-month-day, month-day-year or day-month-year, with arrow-key adjustments and per-segment validation.":
+    "Three independent numeric segments for entering a date. The segment order follows the UI locale unless format sets year-month-day, month-day-year or day-month-year, with arrow-key adjustments and per-segment validation.",
   "A date input with a calendar popover. Composes Popover, Input, and Calendar with single-date plus range plus preset support.":
     "A date input with a calendar popover. Composes Popover, Input, and Calendar with single-date plus range plus preset support.",
   "Modal dialogs, side sheets, anchored popovers, and hover tooltips.":
@@ -365,7 +365,8 @@ export const showcaseEnglish = {
   "Expandable row detail": "Expandable row detail",
   "Bulk actions toolbar": "Bulk actions toolbar",
   "Faceted filters": "Faceted filters",
-  "Default (year-month-day)": "Default (year-month-day)",
+  "Default (follows the UI locale)": "Default (follows the UI locale)",
+  "Year-month-day": "Year-month-day",
   "Month-day-year (US)": "Month-day-year (US)",
   "Day-month-year (EU) with external clear":
     "Day-month-year (EU) with external clear",

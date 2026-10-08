@@ -58,8 +58,8 @@ export const showcaseVietnamese: Record<keyof typeof showcaseEnglish, string> =
       "Thẻ chỉ số, hiển thị KPI, chỉ báo tiến trình và danh sách hoạt động.",
     "Feature-rich table built on TanStack Table with column sorting, text search, and pagination.":
       "Bảng dữ liệu dựa trên TanStack Table với sắp xếp cột, tìm kiếm văn bản và phân trang.",
-    "Three independent numeric segments for entering a date. Supports year-month-day, month-day-year, and day-month-year formats with arrow-key adjustments and per-segment validation.":
-      "Ba phần số độc lập để nhập ngày. Hỗ trợ thứ tự năm-tháng-ngày, tháng-ngày-năm và ngày-tháng-năm, điều chỉnh bằng phím mũi tên và kiểm tra từng phần.",
+    "Three independent numeric segments for entering a date. The segment order follows the UI locale unless format sets year-month-day, month-day-year or day-month-year, with arrow-key adjustments and per-segment validation.":
+      "Ba phần số độc lập để nhập ngày. Thứ tự các phần theo ngôn ngữ giao diện, trừ khi format đặt năm-tháng-ngày, tháng-ngày-năm hoặc ngày-tháng-năm, điều chỉnh bằng phím mũi tên và kiểm tra từng phần.",
     "A date input with a calendar popover. Composes Popover, Input, and Calendar with single-date plus range plus preset support.":
       "Ô nhập ngày với lịch bật lên. Kết hợp Popover, Input và Calendar, hỗ trợ ngày đơn, khoảng ngày và cấu hình sẵn.",
     "Modal dialogs, side sheets, anchored popovers, and hover tooltips.":
@@ -367,7 +367,8 @@ export const showcaseVietnamese: Record<keyof typeof showcaseEnglish, string> =
     "Expandable row detail": "Chi tiết dòng có thể mở rộng",
     "Bulk actions toolbar": "Thanh thao tác hàng loạt",
     "Faceted filters": "Bộ lọc theo thuộc tính",
-    "Default (year-month-day)": "Mặc định (năm-tháng-ngày)",
+    "Default (follows the UI locale)": "Mặc định (theo ngôn ngữ giao diện)",
+    "Year-month-day": "Năm-tháng-ngày",
     "Month-day-year (US)": "Tháng-ngày-năm (Mỹ)",
     "Day-month-year (EU) with external clear":
       "Ngày-tháng-năm (châu Âu) với nút xóa bên ngoài",

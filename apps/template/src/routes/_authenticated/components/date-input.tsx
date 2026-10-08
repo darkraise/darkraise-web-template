@@ -10,9 +10,18 @@ export const Route = createFileRoute("/_authenticated/components/date-input")({
   component: DateInputPage,
 })
 
+// toISOString reads the date in UTC, which east of UTC is the day before a
+// local-midnight Date.
+function localIsoDate(date: Date) {
+  const pad = (value: number, length: number) =>
+    String(value).padStart(length, "0")
+  return `${pad(date.getFullYear(), 4)}-${pad(date.getMonth() + 1, 2)}-${pad(date.getDate(), 2)}`
+}
+
 function DateInputPage() {
   const uiLocale = useUiLocale()
 
+  const [localeDate, setLocaleDate] = useState<Date | null>(null)
   const [ymd, setYmd] = useState<Date | null>(null)
   const [mdy, setMdy] = useState<Date | null>(null)
   const [dmy, setDmy] = useState<Date | null>(null)
@@ -20,23 +29,44 @@ function DateInputPage() {
   return (
     <ShowcasePage
       title="Date Input"
-      description="Three independent numeric segments for entering a date. Supports year-month-day, month-day-year, and day-month-year formats with arrow-key adjustments and per-segment validation."
+      description="Three independent numeric segments for entering a date. The segment order follows the UI locale unless format sets year-month-day, month-day-year or day-month-year, with arrow-key adjustments and per-segment validation."
     >
       <ShowcaseExample
-        title="Default (year-month-day)"
+        title="Default (follows the UI locale)"
         code={`const [date, setDate] = useState<Date | null>(null)
 
 <DateInput value={date} onValueChange={setDate} aria-label="Date" />`}
       >
         <div className="space-y-2">
-          <DateInput value={ymd} onValueChange={setYmd} aria-label="Date" />
+          <DateInput
+            value={localeDate}
+            onValueChange={setLocaleDate}
+            aria-label="Date"
+          />
           <p className="text-muted-foreground text-xs">
             Committed:{" "}
             <span className="font-medium">
-              {ymd ? ymd.toISOString().slice(0, 10) : "(none)"}
+              {localeDate ? localIsoDate(localeDate) : "(none)"}
             </span>
           </p>
         </div>
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="Year-month-day"
+        code={`<DateInput
+  format="ymd"
+  value={date}
+  onValueChange={setDate}
+  aria-label="ISO date"
+/>`}
+      >
+        <DateInput
+          format="ymd"
+          value={ymd}
+          onValueChange={setYmd}
+          aria-label="ISO date"
+        />
       </ShowcaseExample>
 
       <ShowcaseExample
