@@ -30,6 +30,13 @@ const EVERY_LEGACY_KEY: Record<string, string> = {
   "theme-sidebar-active-bar": "ring",
 }
 
+// A browser that ran revision 2, so only the revision 3 rule has work to do.
+const REVISION_2_BROWSER: Record<string, string> = {
+  [LEGACY_MARKER_KEY]: "2",
+  mode: "dark",
+  "theme-sidebar-active-bar": "ring",
+}
+
 function legacyStates(): [string, Record<string, string>][] {
   const states: [string, Record<string, string>][] = [["nothing stored", {}]]
   for (const table of [V696_KEYS, PRE_V696_KEYS]) {
@@ -64,6 +71,7 @@ function legacyStates(): [string, Record<string, string>][] {
       "theme-elevation": "low",
     },
   ])
+  states.push(["a browser at revision 2", REVISION_2_BROWSER])
   return states
 }
 
@@ -132,5 +140,15 @@ describe("pre-render script and migrateStorage", () => {
       ATTRIBUTES.map((name) => [name, root.getAttribute(name)]),
     )
     expect(provided).toEqual(painted)
+  })
+
+  it("migrates the sidebar indicator for a browser at revision 2", () => {
+    seed(REVISION_2_BROWSER)
+    new Function(buildPrerenderScript())()
+    expect(storedContents()).toEqual({
+      [LEGACY_MARKER_KEY]: String(LEGACY_REVISION),
+      mode: "dark",
+      "theme-sidebar-selection": "chip",
+    })
   })
 })
