@@ -10,9 +10,11 @@ import {
 const ITEMS = ["Alpha", "Beta", "Gamma", "Delta"]
 
 function Menu({
+  items = ITEMS,
   onItemSelect,
   isItemDisabled = (item: string) => item === "Beta" || item === "Delta",
 }: {
+  items?: string[]
   onItemSelect?: (item: string, index: number) => void
   isItemDisabled?: (item: string, index: number) => boolean
 }) {
@@ -20,7 +22,7 @@ function Menu({
     <VirtualizedDropdownMenu defaultOpen>
       <VirtualizedDropdownMenuTrigger>Open</VirtualizedDropdownMenuTrigger>
       <VirtualizedDropdownMenuContent
-        items={ITEMS}
+        items={items}
         onItemSelect={onItemSelect}
         isItemDisabled={isItemDisabled}
       >
@@ -49,6 +51,24 @@ describe("VirtualizedDropdownMenu", () => {
     expect(activeRow(menu)).toHaveAttribute("role", "menuitem")
     fireEvent.keyDown(menu, { key: "ArrowDown" })
     await waitFor(() => expect(activeRow(menu)).toHaveTextContent("Beta"))
+  })
+
+  it("points aria-activedescendant only at a rendered row", async () => {
+    const items = Array.from({ length: 100 }, (_, i) => `Item ${i + 1}`)
+    render(<Menu items={items} isItemDisabled={() => false} />)
+    const menu = await screen.findByRole("menu")
+    const dangling = () => {
+      const id = menu.getAttribute("aria-activedescendant")
+      return id !== null && document.getElementById(id) === null ? id : null
+    }
+    fireEvent.keyDown(menu, { key: "End" })
+    expect(dangling()).toBeNull()
+    // jsdom lays nothing out, so the End row renders only once the list
+    // reports a scroll position near it.
+    const list = menu.firstElementChild as HTMLElement
+    list.scrollTop = 99 * 32
+    fireEvent.scroll(list)
+    await waitFor(() => expect(activeRow(menu)).toHaveTextContent("Item 100"))
   })
 
   it("skips disabled rows with the arrows, Home and End", async () => {

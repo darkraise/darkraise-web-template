@@ -140,15 +140,19 @@ function VirtualizedDropdownMenuContent<T>({
     }
   }, [activeIndex, virtualizer])
 
+  // Home or End can name a row the virtualizer renders only after the
+  // scroll that follows, and an id with no element is a broken reference.
+  const activeRendered = virtualizer.virtualItems.some(
+    (virtualRow) => virtualRow.index === activeIndex,
+  )
+
   return (
     <PopoverPrimitivePortal>
       <PopoverPrimitiveContent
         ref={contentRef}
         role="menu"
         tabIndex={-1}
-        aria-activedescendant={
-          activeIndex >= 0 ? rowId(activeIndex) : undefined
-        }
+        aria-activedescendant={activeRendered ? rowId(activeIndex) : undefined}
         sideOffset={sideOffset}
         align={align}
         className={cn("dr-vdm-content", className)}
