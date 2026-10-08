@@ -144,10 +144,6 @@ const OUTLINE_EXEMPT = new Map<string, string>([
     "dr-contribution-graph-cell",
     "a chart cell whose hover outline and level colours are chart chrome; keyboard focus is focus-ring-inset on the cell",
   ],
-  [
-    "dr-virtualized-timeline-tile",
-    "a tile marks its selected state with a ring; that is selection chrome, not a focus indicator",
-  ],
 ])
 
 /**

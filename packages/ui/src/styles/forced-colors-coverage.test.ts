@@ -184,8 +184,16 @@ const FORCED_COLORS_EXEMPT = new Map<string, string>([
   ["dr-tree-view-item", "a tree row; rows are marked by their focus outline"],
   ["dr-vdm-item", "a menu row; the menu content's border bounds the list"],
   [
+    "dr-virtualized-timeline-list-item",
+    "a full-width row; a selected row takes the Highlight fill",
+  ],
+  [
     "dr-virtualized-timeline-scrubber",
     "a tick rail with no fill or border; the ticks are its shape",
+  ],
+  [
+    "dr-virtualized-timeline-tile",
+    "a cell whose rendered item is its shape; a selected tile draws a Highlight border",
   ],
 ])
 

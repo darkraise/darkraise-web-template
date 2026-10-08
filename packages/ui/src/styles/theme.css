@@ -2138,7 +2138,9 @@
   .dr-top-nav-layout-nav-item,
   .dr-tree-view-branch-control,
   .dr-tree-view-item,
-  .dr-vdm-item {
+  .dr-vdm-item,
+  .dr-virtualized-timeline-list-item,
+  .dr-virtualized-timeline-tile {
     touch-action: manipulation;
   }
 }

@@ -1,5 +1,6 @@
 import { test, expect, type Page } from "@playwright/test"
 import { attrOf, boxOf, gotoApp, seedApp, watchConsole } from "./helpers/app"
+import { pixel, rgbOf, settle } from "./helpers/measure"
 import { example } from "./helpers/showcase"
 
 async function open(page: Page, path: string) {
@@ -312,6 +313,49 @@ test.describe("visualisation", () => {
       }
     })
   }
+
+  test("virtualized timeline rings a focused tile inside its box", async ({
+    page,
+  }) => {
+    await open(page, "/components/virtualized-timeline")
+    const tile = example(page, "Photo timeline")
+      .locator(".dr-virtualized-timeline-tile[tabindex]")
+      .first()
+    await tile.focus()
+    expect(await tile.evaluate((el) => el.matches(":focus-visible"))).toBe(true)
+    await settle(page)
+    const ring = rgbOf(
+      await tile.evaluate((el) => getComputedStyle(el).outlineColor),
+    )
+    const box = await boxOf(tile)
+    // The whole pixel nearest each edge inside the 2px ring band, at the
+    // middle of the edge, away from the rounded corners.
+    const midX = Math.round(box.x + box.width / 2)
+    const midY = Math.round(box.y + box.height / 2)
+    const points: Array<[number, number]> = [
+      [Math.ceil(box.x), midY],
+      [Math.floor(box.x + box.width - 1), midY],
+      [midX, Math.ceil(box.y)],
+      [midX, Math.floor(box.y + box.height - 1)],
+    ]
+    for (const [x, y] of points) {
+      const onTop = await page.evaluate(
+        ([px, py]) =>
+          document
+            .elementFromPoint(px, py)
+            ?.closest(".dr-virtualized-timeline-tile") != null,
+        [x, y] as const,
+      )
+      expect(onTop, `the tile is uncovered at ${x},${y}`).toBe(true)
+      const seen = await pixel(page, x, y)
+      for (const [i, channel] of seen.entries()) {
+        expect(
+          Math.abs(channel - (ring[i] as number)),
+          `ring pixel at ${x},${y}`,
+        ).toBeLessThanOrEqual(8)
+      }
+    }
+  })
 
   test("virtualized timeline group checkbox stands clear of the next control", async ({
     page,

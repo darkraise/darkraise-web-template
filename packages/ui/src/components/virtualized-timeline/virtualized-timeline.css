@@ -82,8 +82,10 @@
     @apply contents;
   }
 
+  /* The ring is drawn inside the cell: the tile clips its content and the
+     list clips the tiles, so an outset ring would be cut off. */
   .dr-virtualized-timeline-tile {
-    @apply absolute overflow-hidden rounded-[var(--radius-sm)];
+    @apply focus-ring-inset absolute overflow-hidden rounded-[var(--radius-sm)];
     width: var(--vtimeline-tile-width);
     height: var(--vtimeline-tile-height);
   }
@@ -102,7 +104,7 @@
      arithmetic. Height reuses the tile variable, which holds `rowHeight` in
      this layout. */
   .dr-virtualized-timeline-list-item {
-    @apply absolute inset-x-0 overflow-hidden;
+    @apply focus-ring-inset absolute inset-x-0 overflow-hidden;
     height: var(--vtimeline-tile-height);
   }
 

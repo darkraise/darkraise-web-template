@@ -124,10 +124,8 @@ export function VirtualizedTimelineBucket<T>({
             insetInlineStart: `calc(${column} * (var(--vtimeline-tile-width) + ${gap}px))`,
           }
       // A row spans the content width from the stylesheet, so it needs neither
-      // the inline-start offset above nor the tile-width variable.
-      const cellClass = list
-        ? "dr-virtualized-timeline-list-item"
-        : "dr-virtualized-timeline-tile"
+      // the inline-start offset above nor the tile-width variable. The class
+      // is written out on each cell so the focus scan can read it.
       const item = items?.[itemIndex]
       if (item !== undefined) {
         const id = getItemId(item, itemIndex, bucket)
@@ -146,7 +144,11 @@ export function VirtualizedTimelineBucket<T>({
             data-selected={selectable && selected ? "true" : undefined}
             data-item-id={id}
             tabIndex={id === activeId ? 0 : -1}
-            className={cellClass}
+            className={
+              list
+                ? "dr-virtualized-timeline-list-item"
+                : "dr-virtualized-timeline-tile"
+            }
             style={style}
             // Fires for focus landing anywhere inside the cell (focusin
             // bubbles), which is wanted: pinning must protect a focused
@@ -198,7 +200,11 @@ export function VirtualizedTimelineBucket<T>({
           <div
             key={`skeleton-${itemIndex}`}
             aria-hidden="true"
-            className={cellClass}
+            className={
+              list
+                ? "dr-virtualized-timeline-list-item"
+                : "dr-virtualized-timeline-tile"
+            }
             style={style}
           >
             {renderSkeleton ? (
