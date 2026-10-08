@@ -299,6 +299,7 @@ Breaking: `ToggleGroup` sizes to its content. `.dr-toggle-group` is `inline-flex
 - `VirtualizedDropdownMenu` announces the highlighted row: the menu points `aria-activedescendant` at it. Its content caps its own height, border and padding included, so the popup stays inside the collision padding; the list used to take all the room left and the border and padding ran past it.
 - Under browser zoom, a re-render of the sidebar nav no longer cuts the active row's slide short. The indicator compares the row's position and size as numbers, with half a pixel of tolerance, instead of reading back its inline style, which rounds a fractional pixel to six significant digits.
 - A disabled `TreeView` row calls the consumer `onClick` on `TreeViewItem` and `TreeViewBranchControl`, as other disabled kit elements do, and still does not focus, select or expand.
+- A read-only `Editable` renders no edit trigger, and its preview is plain text instead of a button that does nothing. A read-only `Editable` that is also disabled keeps its disabled trigger.
 
 Breaking: `.dr-surface`, its `--flat` modifier and its `dr-surface-{brand,cyan,success,warning,danger,info}` hue classes are removed, with the `--fog-05` … `--fog-50` tokens they alone gave values to. The `glass`, `glass-thin`, `glass-strong` and `card-surface` utilities are removed: outside `.dr-surface` they painted nothing. Replace one with `rounded-[var(--radius)]` and, if you relied on it, `transition-[background-color,color,border-color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-in-out)]`.
 

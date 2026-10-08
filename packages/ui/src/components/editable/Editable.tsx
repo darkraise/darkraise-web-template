@@ -367,13 +367,15 @@ function EditablePreview({
         : String(value)
   const isEmpty = stringValue.length === 0
   const interactive = !disabled && !readOnly
-  const tabIndex = interactive ? 0 : -1
+  // Read-only text is not an action; a disabled one is announced as an
+  // unavailable button.
+  const isText = readOnly && !disabled
 
   return (
     <div
       ref={ref}
-      role="button"
-      tabIndex={tabIndex}
+      role={isText ? undefined : "button"}
+      tabIndex={isText ? undefined : interactive ? 0 : -1}
       aria-disabled={disabled || undefined}
       data-state={state}
       data-empty={isEmpty ? "true" : undefined}
@@ -427,7 +429,10 @@ function EditableEditTrigger({
   const { state, startEdit, disabled, readOnly } = useEditableContext<unknown>(
     "EditableEditTrigger",
   )
-  const isDisabled = disabledProp ?? (disabled || readOnly)
+  // Read-only text offers no edit at all; a disabled field keeps its faded
+  // trigger so the unavailable action stays visible.
+  if (readOnly && !disabled) return null
+  const isDisabled = disabledProp ?? disabled
   return (
     <button
       ref={ref}

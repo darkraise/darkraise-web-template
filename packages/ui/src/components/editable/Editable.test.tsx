@@ -127,6 +127,26 @@ describe("Editable", () => {
     expect(preview).toHaveAttribute("tabindex", "-1")
   })
 
+  it("renders read-only text with no edit trigger or button", () => {
+    const view = (disabled: boolean) => (
+      <Editable defaultValue="Ada" readOnly disabled={disabled}>
+        <EditableArea>
+          <EditableInput aria-label="name-input" />
+          <EditablePreview data-testid="preview" />
+        </EditableArea>
+        <EditableControl>
+          <EditableEditTrigger>Edit</EditableEditTrigger>
+        </EditableControl>
+      </Editable>
+    )
+    const { rerender } = render(view(false))
+    expect(screen.getByTestId("preview")).toHaveTextContent("Ada")
+    expect(screen.queryByText("Edit")).toBeNull()
+    expect(screen.queryByRole("button")).toBeNull()
+    rerender(view(true))
+    expect(screen.getByRole("button", { name: "Edit" })).toBeDisabled()
+  })
+
   it("honors the controlled `edit` prop and fires onEditChange", async () => {
     const user = userEvent.setup()
     const onEditChange = vi.fn<(d: EditableEditChangeDetails) => void>()
