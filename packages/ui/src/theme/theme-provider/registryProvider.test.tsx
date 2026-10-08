@@ -487,6 +487,25 @@ describe("ThemeProvider synced payloads", () => {
     )
   })
 
+  it("keeps the local style when a synced payload names a retired preset", async () => {
+    localStorage.setItem("theme-preset", "glass")
+    const { adapter } = memoryAdapter({
+      accentColor: "rose",
+      preset: "scifi",
+    })
+    const { result } = renderHook(() => useTheme(), {
+      wrapper: synced(adapter),
+    })
+    await settle()
+    expect(result.current.style).toBe("glass")
+    expect(result.current.accentColor).toBe("rose")
+    expect(localStorage.getItem("theme-preset")).toBe("glass")
+    expect(root.getAttribute("data-style")).toBe("glass")
+    expect(adapter.save.mock.calls[0]?.[0]).toEqual(
+      expect.objectContaining({ style: "glass", version: 7 }),
+    )
+  })
+
   it("sends a user save only after the upgrade save settles", async () => {
     const resolvers: Array<() => void> = []
     const adapter = {
