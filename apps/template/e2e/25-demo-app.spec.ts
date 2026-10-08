@@ -345,6 +345,20 @@ test.describe("settings", () => {
     ).toBeVisible()
   })
 
+  test("updating the password clears both fields", async ({ page }) => {
+    await gotoApp(page, "/settings")
+    const password = page.getByLabel("New password", { exact: true })
+    const confirm = page.getByLabel("Confirm new password", { exact: true })
+    await password.fill("correct horse battery")
+    await confirm.fill("correct horse battery")
+    await page.getByRole("button", { name: /^update password$/i }).click()
+    await expect(
+      page.locator(".dr-toast-title", { hasText: "Demo settings submitted" }),
+    ).toBeVisible()
+    await expect(password).toHaveValue("")
+    await expect(confirm).toHaveValue("")
+  })
+
   test("the autosave interval reads as one phrase", async ({ page }) => {
     await gotoApp(page, "/settings")
     await expect(page.getByText("Every 5 min", { exact: true })).toBeVisible()

@@ -108,9 +108,21 @@ export function StatValue({ label, value, badge }: StatValueProps) {
   )
 }
 
+/**
+ * The demo stand-in for a save request: it waits as a request would, then
+ * confirms. The toast still shows if the user has left the page, as a real
+ * save would still complete.
+ */
+export async function simulateSave(message: string): Promise<void> {
+  await new Promise((resolve) => setTimeout(resolve, 500))
+  toast.success(message)
+}
+
 interface DemoSaveFormProps {
   submitLabel: string
   canSubmit?: boolean
+  /** Called once the simulated save has completed. */
+  onSaved?: () => void
   children: ReactNode
 }
 
@@ -118,6 +130,7 @@ interface DemoSaveFormProps {
 export function DemoSaveForm({
   submitLabel,
   canSubmit = true,
+  onSaved,
   children,
 }: DemoSaveFormProps) {
   const t = useAppTranslation()
@@ -125,9 +138,9 @@ export function DemoSaveForm({
 
   const submit = async () => {
     setSaving(true)
-    await new Promise((resolve) => setTimeout(resolve, 500))
+    await simulateSave(t("Demo settings submitted"))
     setSaving(false)
-    toast.success(t("Demo settings submitted"))
+    onSaved?.()
   }
 
   return (

@@ -18,7 +18,6 @@ import {
   AlertTitle,
 } from "darkraise-ui/components/alert"
 import { Button } from "darkraise-ui/components/button"
-import { toast } from "darkraise-ui/components/sonner"
 import {
   Tabs,
   TabsContent,
@@ -45,6 +44,7 @@ import {
   SettingsCard,
   StatValue,
   StatusPanel,
+  simulateSave,
 } from "./_settings/-settings-primitives"
 
 export const Route = createFileRoute("/_authenticated/settings")({
@@ -121,10 +121,7 @@ function GeneralSettings() {
     validators: {
       onChange: generalSchema,
     },
-    onSubmit: async () => {
-      await new Promise((r) => setTimeout(r, 500))
-      toast.success(t("Demo settings submitted"))
-    },
+    onSubmit: () => simulateSave(t("Demo settings submitted")),
   })
 
   return (
@@ -247,10 +244,7 @@ function NotificationSettings() {
     validators: {
       onChange: notificationsSchema,
     },
-    onSubmit: async () => {
-      await new Promise((r) => setTimeout(r, 500))
-      toast.success(t("Demo preferences submitted"))
-    },
+    onSubmit: () => simulateSave(t("Demo preferences submitted")),
   })
 
   return (

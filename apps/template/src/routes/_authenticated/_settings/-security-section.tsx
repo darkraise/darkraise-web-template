@@ -61,6 +61,10 @@ export function SecuritySection() {
             canSubmit={
               newPassword.length > 0 && newPassword === confirmPassword
             }
+            onSaved={() => {
+              setNewPassword("")
+              setConfirmPassword("")
+            }}
           >
             <div className="space-y-2.5">
               <p id={changePasswordHeadingId} className="text-sm font-medium">
