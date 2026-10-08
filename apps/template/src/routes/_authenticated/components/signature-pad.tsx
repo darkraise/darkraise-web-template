@@ -45,7 +45,7 @@ const [strokeWidth, setStrokeWidth] = useState(2)
 
 <SignaturePad
   ref={ref}
-  width={400}
+  width={300}
   height={150}
   strokeWidth={strokeWidth}
 />
@@ -68,7 +68,7 @@ const [strokeWidth, setStrokeWidth] = useState(2)
           <div className="border-border inline-block rounded-md border">
             <SignaturePad
               ref={defaultRef}
-              width={400}
+              width={300}
               height={150}
               strokeWidth={strokeWidth}
             />
@@ -109,7 +109,7 @@ const [strokeWidth, setStrokeWidth] = useState(2)
         title="Custom stroke"
         code={`<SignaturePad
   ref={ref}
-  width={400}
+  width={300}
   height={150}
   strokeColor="rebeccapurple"
   strokeWidth={4}
@@ -119,7 +119,7 @@ const [strokeWidth, setStrokeWidth] = useState(2)
           <div className="border-border inline-block rounded-md border">
             <SignaturePad
               ref={customRef}
-              width={400}
+              width={300}
               height={150}
               strokeColor="rebeccapurple"
               strokeWidth={4}

@@ -1220,3 +1220,53 @@ test.describe("matrices reflow into a list when a cell spills", () => {
     await expect(matrix.locator("dt").first()).toHaveText("default · default")
   })
 })
+
+test.describe("showcase pages fit a 390px phone", () => {
+  const PHONE = { width: 390, height: 844 }
+
+  for (const { path } of COMPONENT_ROUTES) {
+    test(path, async ({ page }) => {
+      await openShowcase(page, path, { viewport: PHONE })
+      const { scrollWidth, clientWidth, culprits } = await page
+        .locator("#main-content")
+        .evaluate((main) => {
+          const edge =
+            main.getBoundingClientRect().left +
+            main.clientLeft +
+            main.clientWidth
+          const clipped = (el: Element) => {
+            for (
+              let node = el.parentElement;
+              node && node !== main;
+              node = node.parentElement
+            ) {
+              if (getComputedStyle(node).overflowX !== "visible") return true
+            }
+            return false
+          }
+          const over = (el: Element) =>
+            el.getBoundingClientRect().right > edge + 1 && !clipped(el)
+          const culprits = [...main.querySelectorAll("*")]
+            .filter((el) => over(el) && ![...el.children].some(over))
+            .slice(0, 5)
+            .map((el) => {
+              const classes = [...el.classList].slice(0, 3).join(".")
+              const example = el
+                .closest("[data-showcase-example]")
+                ?.querySelector("p")
+                ?.textContent?.trim()
+              return `${el.tagName.toLowerCase()}${classes ? `.${classes}` : ""} ends ${Math.round(el.getBoundingClientRect().right - edge)}px past the edge${example ? ` in "${example}"` : ""}`
+            })
+          return {
+            scrollWidth: main.scrollWidth,
+            clientWidth: main.clientWidth,
+            culprits,
+          }
+        })
+      expect(
+        scrollWidth,
+        `${path}: #main-content scrollWidth ${scrollWidth} > clientWidth ${clientWidth}\n${culprits.join("\n")}`,
+      ).toBeLessThanOrEqual(clientWidth + 1)
+    })
+  }
+})

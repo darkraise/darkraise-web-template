@@ -380,7 +380,7 @@ const coloredPieData = pieData.map((entry, i) => ({ ...entry, fill: pieColors[i 
   </ChartContainer>
 </ChartCard>`}
       >
-        <div className="grid gap-6 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
           <ChartCard
             title="Category Breakdown (donut)"
             description="Revenue by category"
@@ -427,7 +427,7 @@ const coloredPieData = pieData.map((entry, i) => ({ ...entry, fill: pieColors[i 
 
       <ShowcaseExample
         title="All four charts in a 2×2 grid"
-        code={`<div className="grid gap-6 sm:grid-cols-2">
+        code={`<div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
   <ChartCard title="Revenue">
     <ChartContainer config={revenueConfig} className="min-h-[200px] w-full">
       <AreaChart data={data}>
@@ -473,7 +473,7 @@ const coloredPieData = pieData.map((entry, i) => ({ ...entry, fill: pieColors[i 
   </ChartCard>
 </div>`}
       >
-        <div className="grid gap-6 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
           <ChartCard title="Revenue" description="Monthly revenue trend">
             <ChartContainer
               config={revenueConfig}

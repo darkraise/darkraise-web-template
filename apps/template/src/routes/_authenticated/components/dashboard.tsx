@@ -270,8 +270,8 @@ const currency = (n: number) =>
       <ShowcaseExample
         title="Compact stat row — inline metrics in a single card"
         code={`<Card>
-  <CardContent className="flex items-center divide-x py-4">
-    <div className="px-4 first:pl-0 last:pr-0">
+  <CardContent className="grid grid-cols-2 gap-4 py-4 sm:flex sm:items-center sm:gap-0 sm:divide-x">
+    <div className="sm:px-4 sm:first:pl-0 sm:last:pr-0">
       <p className="text-xs text-muted-foreground">Revenue</p>
       <p className="text-sm font-medium">$12.4k</p>
     </div>
@@ -280,7 +280,7 @@ const currency = (n: number) =>
 </Card>`}
       >
         <Card>
-          <CardContent className="flex items-center divide-x py-4">
+          <CardContent className="grid grid-cols-2 gap-4 py-4 sm:flex sm:items-center sm:gap-0 sm:divide-x">
             {[
               { label: "Revenue", value: "$12.4k" },
               { label: "Orders", value: "342" },
@@ -288,7 +288,10 @@ const currency = (n: number) =>
               { label: "AOV", value: "$36.20" },
               { label: "Conversion", value: "3.2%" },
             ].map((metric) => (
-              <div key={metric.label} className="px-4 first:pl-0 last:pr-0">
+              <div
+                key={metric.label}
+                className="sm:px-4 sm:first:pl-0 sm:last:pr-0"
+              >
                 <p className="text-muted-foreground text-xs">{metric.label}</p>
                 <p className="text-sm font-medium">{metric.value}</p>
               </div>

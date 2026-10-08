@@ -9,7 +9,7 @@ import type {
   SegmentGroupOrientation,
   SegmentGroupVariant,
 } from "darkraise-ui/components/segment-group"
-import { CalendarDays, Grid3x3, Layers, List } from "lucide-react"
+import { CalendarDays, Grid3x3, List } from "lucide-react"
 import { useState } from "react"
 import { allOf } from "./_components/-variant-axes"
 import { VariantMatrix } from "./_components/-variant-matrix"
@@ -158,10 +158,6 @@ function SegmentGroupPage() {
     <Grid3x3 className="mr-2 h-4 w-4" />
     Grid
   </SegmentGroupItem>
-  <SegmentGroupItem value="layers">
-    <Layers className="mr-2 h-4 w-4" />
-    Layers
-  </SegmentGroupItem>
   <SegmentGroupItem value="list">
     <List className="mr-2 h-4 w-4" />
     List
@@ -177,10 +173,6 @@ function SegmentGroupPage() {
           <SegmentGroupItem value="grid">
             <Grid3x3 className="mr-2 h-4 w-4" />
             Grid
-          </SegmentGroupItem>
-          <SegmentGroupItem value="layers">
-            <Layers className="mr-2 h-4 w-4" />
-            Layers
           </SegmentGroupItem>
           <SegmentGroupItem value="list">
             <List className="mr-2 h-4 w-4" />
