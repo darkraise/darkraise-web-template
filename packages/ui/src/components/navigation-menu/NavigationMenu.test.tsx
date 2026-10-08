@@ -260,3 +260,20 @@ describe("NavigationMenu keyboard", () => {
     )
   })
 })
+
+describe("NavigationMenu panel position", () => {
+  it("positions the open panel with inline coordinates", async () => {
+    const user = userEvent.setup()
+    render(<Keyboard />)
+    const trigger = screen.getByRole("button", { name: "Products" })
+    await user.click(trigger)
+    const panel = document.getElementById(
+      trigger.getAttribute("aria-controls") ?? "",
+    )
+    if (!panel) throw new Error("no panel")
+    await waitFor(() => expect(panel.style.position).toBe("fixed"))
+    expect(panel.style.top).not.toBe("")
+    expect(panel.style.left).not.toBe("")
+    expect(panel).toHaveAttribute("data-side", "bottom")
+  })
+})

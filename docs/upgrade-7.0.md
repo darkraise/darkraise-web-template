@@ -95,7 +95,7 @@ A disabled compound control fades once, at its root; its parts, and the controls
 
 `Alert`'s default fill is `--muted`. `.dr-badge` lays out its children with a 4px gap; remove `mr-1` or `ml-1` spacers from icons inside `Badge`.
 
-`NavigationMenu` drops `orientation`, `delayDuration`, `skipDelayDuration` and the `NavigationMenuOrientation` type; delete them where you pass them. Items no longer open on keyboard focus: press ArrowDown, Enter or Space on a trigger. Tests that waited for a panel after tabbing to a trigger must press one of those keys.
+`NavigationMenu` drops `orientation`, `delayDuration`, `skipDelayDuration` and the `NavigationMenuOrientation` type; delete them where you pass them. Items no longer open on keyboard focus: press ArrowDown, Enter or Space on a trigger. Tests that waited for a panel after tabbing to a trigger must press one of those keys. `NavigationMenuViewport` is removed: it rendered an always-hidden element, so delete it where you render it.
 
 `TimePicker`: rename `onChange` to `onValueChange`. An uncontrolled picker takes `defaultValue` and keeps the user's picks.
 

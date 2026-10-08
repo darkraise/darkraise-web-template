@@ -164,6 +164,11 @@ const ALLOWED: readonly (readonly [string, string, readonly string[]])[] = [
     ["left: Math.round(floating.x ?? 0)"],
   ],
   [
+    "src/components/navigation-menu/NavigationMenu.tsx",
+    FLOATING,
+    ["left: Math.round(floating.x ?? 0)"],
+  ],
+  [
     "src/components/navigation-menu/navigation-menu.css",
     "the arrow is a rotated square; its rounded corner is the tip",
     [".dr-navigation-menu-indicator-arrow { rounded-tl-sm }"],

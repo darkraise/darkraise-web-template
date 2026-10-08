@@ -19,30 +19,19 @@
 
   /* Popover-style panel. Reads the --overlay-* tokens so the
      navigation dropdown gets the same style-driven chrome as every
-     other overlay (Tooltip, Popover, Menu, Select, etc.). Positioned
-     `absolute top-full` relative to the menu item (which carries
-     `position: relative`), so the panel anchors directly under its
-     trigger instead of floating to the nav root's origin. */
+     other overlay (Tooltip, Popover, Menu, Select, etc.). The component
+     positions it with fixed coordinates under its trigger, and the size
+     middleware caps it to the room left in the viewport. */
   .dr-navigation-menu-content {
-    @apply text-popover-foreground data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=open]:slide-in-from-top-2 data-[state=closed]:slide-out-to-top-2 absolute start-0 top-full z-50 mt-1.5 min-w-[8rem] rounded-[var(--overlay-radius)] border outline-none;
+    @apply text-popover-foreground data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2 z-50 min-w-[8rem] origin-[var(--popup-transform-origin)] overflow-y-auto rounded-[var(--overlay-radius)] border outline-none;
     @apply overlay-surface;
     box-shadow: var(--overlay-shadow);
-  }
-
-  /* Viewport machinery is kept for back-compat — it's a no-op visual when
-     the consumer doesn't supply width/height vars (the in-house menu
-     doesn't because it doesn't measure content the way Radix's portal
-     does). Hidden so it can't intercept pointer events under the panel. */
-  .dr-navigation-menu-viewport-wrapper {
-    @apply pointer-events-none absolute start-0 top-full flex justify-center;
-  }
-
-  .dr-navigation-menu-viewport {
-    @apply hidden;
+    max-width: var(--popup-available-width, 100vw);
+    max-height: var(--popup-available-height, 100dvh);
   }
 
   .dr-navigation-menu-indicator {
-    @apply data-[state=visible]:animate-in data-[state=hidden]:animate-out data-[state=hidden]:fade-out data-[state=visible]:fade-in top-full z-[1] flex h-1.5 items-end justify-center overflow-hidden;
+    @apply data-[state=visible]:animate-in data-[state=hidden]:animate-out data-[state=hidden]:fade-out data-[state=visible]:fade-in absolute top-full z-[1] flex h-1.5 items-end justify-center overflow-hidden;
   }
 
   .dr-navigation-menu-indicator-arrow {

@@ -209,6 +209,7 @@ Breaking: `ToggleGroup` sizes to its content. `.dr-toggle-group` is `inline-flex
 - The glass `[data-glass-halo="none"]` rule, which nothing could trigger since the halo axis moved to the global glow axes.
 - The `.dr-image-editor-history-trigger` and `.dr-image-editor-extension` rules, which no component rendered.
 - The tokens and utility listed in the Breaking note above: `--density-cell`, `--density-cell-base`, `--density-cell-sm`, `--density-cell-lg`, `--density-button-px`, `--density-button-py` and their `-sm` / `-lg` forms, `--density-input-px`, `--density-input-py`, `--radius-button`, and `focus-ring-tight`.
+- Breaking: `NavigationMenuViewport`, which rendered an always-hidden element and had no effect; delete it where you render it.
 
 ### Fixed
 
@@ -286,6 +287,8 @@ Breaking: `ToggleGroup` sizes to its content. `.dr-toggle-group` is `inline-flex
 - Arrow keys, Home, End and typeahead in `DropdownMenu`, `ContextMenu` and `Menubar` pass over a row whose element computes to `display: none`, as they pass over a disabled row.
 - `DropdownMenuContent`, `ContextMenuContent`, `MenubarContent`, `SelectContent`, `PopoverContent`, `TooltipContent` and `HoverCardContent` keep their position when given a `style` prop. A consumer style used to replace the inline `position`, `top` and `left`, which detached the popup from its trigger.
 - A `ContextMenu` submenu anchors to its sub-trigger, as a `DropdownMenu` submenu does. It used to open at a point read from the row when it opened, so a submenu opened from the keyboard before the menu had settled at the pointer stayed at that stale point.
+- `NavigationMenu` panels are positioned like the other popups: below their trigger with a 6px gap, flipping above it and shifting to stay 8px inside the viewport when there is no room, capped to the room left, and following the trigger when the page scrolls or the window resizes. A panel used to hang from its item with `position: absolute`, so one near the inline end of the viewport ran off screen and an ancestor with `overflow: hidden` cut it off. The panel stays inside the nav in the DOM and is placed with `position: fixed`, so a `NavigationMenu` inside an ancestor with `transform`, `filter` or `backdrop-filter` (for example a Glass shell bar) is clipped by that ancestor, which becomes the containing block of fixed descendants.
+- `NavigationMenuIndicator` sits under the open trigger in both directions and follows it when the window resizes. It wrote a physical `left` without being positioned, so it never moved.
 
 Breaking: `.dr-surface`, its `--flat` modifier and its `dr-surface-{brand,cyan,success,warning,danger,info}` hue classes are removed, with the `--fog-05` … `--fog-50` tokens they alone gave values to. The `glass`, `glass-thin`, `glass-strong` and `card-surface` utilities are removed: outside `.dr-surface` they painted nothing. Replace one with `rounded-[var(--radius)]` and, if you relied on it, `transition-[background-color,color,border-color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-in-out)]`.
 

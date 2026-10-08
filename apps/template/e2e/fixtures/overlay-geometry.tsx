@@ -52,6 +52,15 @@ import {
 } from "darkraise-ui/components/floating-panel"
 import { MultiSelect } from "darkraise-ui/components/multi-select"
 import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuIndicator,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "darkraise-ui/components/navigation-menu"
+import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -225,6 +234,50 @@ function ContextSubmenuCase() {
         <ContextMenuItem>Last</ContextMenuItem>
       </ContextMenuContent>
     </ContextMenu>
+  )
+}
+
+// The nav sits at the inline end of a header that clips its overflow, with
+// page content below, so a panel hanging from its item runs off screen and
+// is cut off by the header.
+function NavigationCase({ dir }: { dir: "ltr" | "rtl" }) {
+  return (
+    <div dir={dir}>
+      <header
+        style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          alignItems: "center",
+          height: 48,
+          padding: "0 16px",
+          overflow: "hidden",
+          borderBottom: "1px solid",
+        }}
+      >
+        <NavigationMenu>
+          <NavigationMenuList>
+            {["Products", "Company"].map((label) => (
+              <NavigationMenuItem key={label} value={label.toLowerCase()}>
+                <NavigationMenuTrigger>{label}</NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <div style={{ display: "grid", width: 320, padding: 12 }}>
+                    {["Overview", "Pricing", "Changelog"].map((link) => (
+                      <NavigationMenuLink key={link} href={`#${link}`}>
+                        {label} {link}
+                      </NavigationMenuLink>
+                    ))}
+                  </div>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+            ))}
+          </NavigationMenuList>
+          <NavigationMenuIndicator data-testid="nav-indicator" />
+        </NavigationMenu>
+      </header>
+      <p data-testid="after-nav" style={{ height: 400, margin: 16 }}>
+        Following content
+      </p>
+    </div>
   )
 }
 
@@ -481,6 +534,8 @@ const CASES: Record<string, () => ReactElement> = {
   origin: OriginCase,
   menus: MenusCase,
   "context-submenu": ContextSubmenuCase,
+  navigation: () => <NavigationCase dir="ltr" />,
+  "navigation-rtl": () => <NavigationCase dir="rtl" />,
   combobox: ComboboxCase,
   panels: PanelsCase,
   tour: TourCase,

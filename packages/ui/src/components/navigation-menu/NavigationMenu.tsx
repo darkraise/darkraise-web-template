@@ -5,8 +5,9 @@ import * as React from "react"
 import { ChevronDown } from "lucide-react"
 
 import { cn } from "@lib/utils"
-import { inlineArrow } from "@lib/direction"
+import { getDirection, inlineArrow } from "@lib/direction"
 import type { SurfaceFill } from "@lib/surface-fill"
+import { placementOf, resolveSide, useFloating } from "@primitives/floating"
 import { Presence } from "@primitives/presence"
 import { Slot, useComposedRefs } from "@primitives/slot"
 import { useControllableState, useEvent, useId } from "@primitives/state"
@@ -18,9 +19,6 @@ interface NavigationMenuRootContextValue {
   /** Currently focus-visible (keyboard) item, for indicator. */
   triggerRefs: Map<string, HTMLElement | null>
   registerTriggerRef: (id: string, node: HTMLElement | null) => void
-  /** Whether the menu is in a "viewport" rendering mode. */
-  hasViewport: boolean
-  setHasViewport: (next: boolean) => void
   closeDelay: number
   /** Close after `closeDelay`, unless cancelled first. */
   scheduleClose: () => void
@@ -73,7 +71,6 @@ function NavigationMenu({
   const [triggerRefs] = React.useState(
     () => new Map<string, HTMLElement | null>(),
   )
-  const [hasViewport, setHasViewport] = React.useState(false)
   const rootId = useId()
 
   const closeTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -118,8 +115,6 @@ function NavigationMenu({
       setValue,
       triggerRefs,
       registerTriggerRef,
-      hasViewport,
-      setHasViewport,
       closeDelay: 150,
       scheduleClose,
       cancelSchedule,
@@ -132,7 +127,6 @@ function NavigationMenu({
       setValue,
       triggerRefs,
       registerTriggerRef,
-      hasViewport,
       scheduleClose,
       cancelSchedule,
       requestContentFocus,
@@ -151,7 +145,6 @@ function NavigationMenu({
         {...rest}
       >
         {children}
-        <NavigationMenuViewport />
       </nav>
     </NavigationMenuRootContext.Provider>
   )
@@ -219,6 +212,9 @@ interface NavigationMenuItemContextValue {
   itemId: string
   triggerId: string
   contentId: string
+  /** The trigger element, as state so the panel can anchor to it. */
+  trigger: HTMLElement | null
+  setTrigger: (node: HTMLElement | null) => void
 }
 
 const NavigationMenuItemContext =
@@ -249,10 +245,11 @@ function NavigationMenuItem({
   const itemId = valueProp ?? generatedId
   const triggerId = useId()
   const contentId = useId()
+  const [trigger, setTrigger] = React.useState<HTMLElement | null>(null)
 
   const ctx = React.useMemo(
-    () => ({ itemId, triggerId, contentId }),
-    [itemId, triggerId, contentId],
+    () => ({ itemId, triggerId, contentId, trigger, setTrigger }),
+    [itemId, triggerId, contentId, trigger],
   )
 
   return (
@@ -289,12 +286,14 @@ function NavigationMenuTrigger({
 
   const localRef = React.useRef<HTMLButtonElement | null>(null)
   const registerTriggerRef = root.registerTriggerRef
+  const setTrigger = item.setTrigger
   const setRef = React.useCallback(
     (node: HTMLButtonElement | null) => {
       localRef.current = node
       registerTriggerRef(item.itemId, node)
+      setTrigger(node)
     },
-    [registerTriggerRef, item.itemId],
+    [registerTriggerRef, setTrigger, item.itemId],
   )
 
   const composedRef = useComposedRefs(
@@ -382,11 +381,24 @@ function NavigationMenuContent({
   onKeyDown,
   onBlur,
   surface,
+  style,
   ...rest
 }: NavigationMenuContentProps) {
   const root = useNavigationMenuRoot("NavigationMenuContent")
   const item = useNavigationMenuItem("NavigationMenuContent")
   const open = root.value === item.itemId
+
+  // The panel stays inside its item in the DOM and is placed with fixed
+  // coordinates, so no ancestor overflow clips it and it stays on screen.
+  const floating = useFloating({
+    strategy: "fixed",
+    placement: placementOf(resolveSide("bottom", item.trigger), "start"),
+    sideOffset: 6,
+  })
+  const setReferenceFloat = floating.refs.setReference
+  React.useLayoutEffect(() => {
+    setReferenceFloat(item.trigger)
+  }, [item.trigger, setReferenceFloat])
 
   const takeContentFocus = root.takeContentFocus
   // A ref callback, not an effect: Presence mounts the panel a render after
@@ -404,7 +416,12 @@ function NavigationMenuContent({
     if (open) focusOnMount(panelRef.current)
   }, [open, focusOnMount])
 
-  const composedRef = useComposedRefs(focusOnMount, panelRef, ref)
+  const composedRef = useComposedRefs(
+    focusOnMount,
+    panelRef,
+    floating.refs.setFloating,
+    ref,
+  )
 
   return (
     <Presence present={open} forceMount={forceMount}>
@@ -412,8 +429,15 @@ function NavigationMenuContent({
         ref={composedRef}
         id={item.contentId}
         data-state={open ? "open" : "closed"}
+        data-side={floating.placement.split("-")[0]}
         data-surface-fill={surface}
         aria-labelledby={item.triggerId}
+        style={{
+          ...style,
+          position: floating.strategy,
+          top: Math.round(floating.y ?? 0),
+          left: Math.round(floating.x ?? 0),
+        }}
         onPointerEnter={(event) => {
           onPointerEnter?.(event)
           if (event.defaultPrevented) return
@@ -481,39 +505,6 @@ function NavigationMenuLink({
   )
 }
 
-interface NavigationMenuViewportProps extends React.HTMLAttributes<HTMLDivElement> {
-  forceMount?: boolean
-  ref?: React.Ref<HTMLDivElement>
-}
-
-function NavigationMenuViewport({
-  className,
-  forceMount,
-  ref,
-  ...rest
-}: NavigationMenuViewportProps) {
-  const root = useNavigationMenuRoot("NavigationMenuViewport")
-  const open = root.value !== ""
-  const setHasViewport = root.setHasViewport
-  React.useEffect(() => {
-    setHasViewport(true)
-    return () => setHasViewport(false)
-  }, [setHasViewport])
-
-  return (
-    <div className="dr-navigation-menu-viewport-wrapper">
-      <Presence present={open} forceMount={forceMount}>
-        <div
-          ref={ref}
-          data-state={open ? "open" : "closed"}
-          className={cn("dr-navigation-menu-viewport", className)}
-          {...rest}
-        />
-      </Presence>
-    </div>
-  )
-}
-
 interface NavigationMenuIndicatorProps extends React.HTMLAttributes<HTMLDivElement> {
   ref?: React.Ref<HTMLDivElement>
 }
@@ -521,37 +512,56 @@ interface NavigationMenuIndicatorProps extends React.HTMLAttributes<HTMLDivEleme
 function NavigationMenuIndicator({
   className,
   ref,
+  style,
   ...rest
 }: NavigationMenuIndicatorProps) {
   const root = useNavigationMenuRoot("NavigationMenuIndicator")
   const visible = root.value !== ""
+  const localRef = React.useRef<HTMLDivElement | null>(null)
+  const composedRef = useComposedRefs(localRef, ref)
 
   const [position, setPosition] = React.useState<{
-    left: number
+    start: number
     width: number
   } | null>(null)
 
-  React.useEffect(() => {
+  // Measured against the padding box of the element the indicator is
+  // absolutely positioned in, as an offset from its inline start.
+  React.useLayoutEffect(() => {
     if (!visible) {
       setPosition(null)
       return
     }
-    const node = root.triggerRefs.get(root.value)
-    if (!node) return
-    const rect = node.getBoundingClientRect()
-    const parent = node.offsetParent as HTMLElement | null
-    const parentRect = parent?.getBoundingClientRect()
-    setPosition({
-      left: parentRect ? rect.left - parentRect.left : rect.left,
-      width: rect.width,
-    })
+    const measure = () => {
+      const trigger = root.triggerRefs.get(root.value)
+      const host = localRef.current?.offsetParent
+      if (!trigger || !(host instanceof HTMLElement)) return
+      const rect = trigger.getBoundingClientRect()
+      const hostRect = host.getBoundingClientRect()
+      const start =
+        getDirection(host) === "rtl"
+          ? hostRect.left + host.clientLeft + host.clientWidth - rect.right
+          : rect.left - hostRect.left - host.clientLeft
+      setPosition({ start, width: rect.width })
+    }
+    measure()
+    window.addEventListener("resize", measure)
+    return () => window.removeEventListener("resize", measure)
   }, [root.value, root.triggerRefs, visible])
 
   return (
     <div
-      ref={ref}
+      ref={composedRef}
       data-state={visible ? "visible" : "hidden"}
-      style={position ? { left: position.left, width: position.width } : {}}
+      style={
+        position
+          ? {
+              ...style,
+              insetInlineStart: position.start,
+              width: position.width,
+            }
+          : style
+      }
       className={cn("dr-navigation-menu-indicator", className)}
       {...rest}
     >
@@ -568,5 +578,4 @@ export {
   NavigationMenuTrigger,
   NavigationMenuLink,
   NavigationMenuIndicator,
-  NavigationMenuViewport,
 }

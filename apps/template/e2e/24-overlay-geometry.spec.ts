@@ -130,6 +130,51 @@ test.describe("submenus anchor to their row", () => {
   })
 })
 
+test.describe("navigation menu panels", () => {
+  for (const [name, dir] of [
+    ["navigation", "ltr"],
+    ["navigation-rtl", "rtl"],
+  ] as const) {
+    test(`a panel at the inline end stays on screen and on top · ${dir}`, async ({
+      page,
+    }) => {
+      await seedApp(page, { style: "quiet", mode: "light" })
+      await openOverlayCase(page, name)
+      const trigger = page.getByRole("button", { name: "Company" })
+      await trigger.click()
+      const panel = page.locator(".dr-navigation-menu-content")
+      await expect(panel).toBeVisible()
+      await settle(page)
+      const box = await boxOf(panel)
+      const viewport = page.viewportSize()
+      if (!viewport) throw new Error("no viewport")
+      expect(box.x).toBeGreaterThanOrEqual(8 - 0.5)
+      expect(box.x + box.width).toBeLessThanOrEqual(viewport.width - 8 + 0.5)
+      const below = await boxOf(page.getByTestId("after-nav"))
+      const x = box.x + box.width / 2
+      const y = Math.max(box.y, below.y) + 4
+      expect(y).toBeLessThan(box.y + box.height)
+      expect(await hitsAt(page, x, y, ".dr-navigation-menu-content")).toBe(true)
+    })
+
+    test(`the indicator sits under the open trigger · ${dir}`, async ({
+      page,
+    }) => {
+      await seedApp(page, { style: "quiet", mode: "light" })
+      await openOverlayCase(page, name)
+      const trigger = page.getByRole("button", { name: "Company" })
+      await trigger.click()
+      const indicator = page.getByTestId("nav-indicator")
+      await expect(indicator).toHaveAttribute("data-state", "visible")
+      await settle(page)
+      const [under, over] = [await boxOf(indicator), await boxOf(trigger)]
+      expect(under.x).toBeLessThan(over.x + over.width)
+      expect(under.x + under.width).toBeGreaterThan(over.x)
+      expect(under.y).toBeGreaterThanOrEqual(over.y + over.height - 1)
+    })
+  }
+})
+
 async function expectListUncut(page: Page, input: Locator) {
   const content = page.locator(".dr-combobox-content")
   await expect(content).toBeVisible()
