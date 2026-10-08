@@ -187,8 +187,8 @@
   .dr-shell[data-shell-style="flat"] > [data-region="subnav"],
   .dr-shell[data-shell-style="flat"] > [data-region="bar"],
   .dr-shell[data-shell-style="flat"] > [data-region="panel"] {
-    --chrome-rail-bg: hsl(var(--muted));
-    --chrome-bar-bg: hsl(var(--muted));
+    --chrome-rail-bg: var(--shell-flat-chrome, hsl(var(--muted)));
+    --chrome-bar-bg: var(--shell-flat-chrome, hsl(var(--muted)));
     --chrome-canvas: none;
   }
 }

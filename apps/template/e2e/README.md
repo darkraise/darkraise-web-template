@@ -350,6 +350,9 @@ horizontal overflow and a clean console.
   gutter (1.1:1, from pixels); under island with an intense gradient the
   content's gradient strip clips to the rounded corner; every structure on
   `/components/shell-styles` keeps its regions, in order and rounded.
+- Flat in light mode, under every style: the nav's tone reaches 1.2:1 against
+  the content, from pixels, and stays below the contrast the same theme's
+  classic nav border reaches against the content.
 - Geometry: inset leaves no seam border in the nav; floating runs the content
   full-bleed and clears a collapsed sidebar by 1.5rem; island's content edge is
   a real border, not an inset shadow; framed insets the whole shell behind an

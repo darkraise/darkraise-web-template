@@ -1,10 +1,12 @@
 import { test, expect, type Locator, type Page } from "@playwright/test"
 import { STYLES, type Style } from "./fixtures/theme"
 import {
+  applyTheme,
   boxOf,
   gotoApp,
   openAdvanced,
   openThemeSwitcher,
+  reloadApp,
   seedApp,
 } from "./helpers/app"
 import { contrast, pixel, settle } from "./helpers/measure"
@@ -31,6 +33,8 @@ const region = (page: Page, name: string) =>
 interface RegionPaint {
   /** The token the nav fill resolves to; null where the nav drops its fill. */
   navFill: string | null
+  /** A colour that replaces navFill in light mode. */
+  lightNavColor?: string
   navBorder: string
   contentBorder: string
   navRadius: string
@@ -87,6 +91,7 @@ const REGION_PAINT: Record<ShellStyle, RegionPaint> = {
   },
   flat: {
     navFill: "--muted",
+    lightNavColor: "var(--shell-flat-chrome)",
     navBorder: WELDED,
     contentBorder: WELDED,
     navRadius: "0px",
@@ -116,16 +121,21 @@ function borderWidths(locator: Locator): Promise<string> {
   })
 }
 
+/** A CSS colour resolved to the rgb() a computed background reports. */
+function resolvedColor(page: Page, colour: string): Promise<string> {
+  return page.evaluate((value) => {
+    const probe = document.createElement("div")
+    probe.style.backgroundColor = value
+    document.body.append(probe)
+    const resolved = getComputedStyle(probe).backgroundColor
+    probe.remove()
+    return resolved
+  }, colour)
+}
+
 /** A colour token resolved to the rgb() a computed background reports. */
 function resolvedFill(page: Page, token: string): Promise<string> {
-  return page.evaluate((name) => {
-    const probe = document.createElement("div")
-    probe.style.backgroundColor = `hsl(var(${name}))`
-    document.body.append(probe)
-    const value = getComputedStyle(probe).backgroundColor
-    probe.remove()
-    return value
-  }, token)
+  return resolvedColor(page, `hsl(var(${token}))`)
 }
 
 async function pickShellStyle(page: Page, style: ShellStyle) {
@@ -242,9 +252,12 @@ test.describe("shell style axis", () => {
         const nav = region(page, "nav")
         const content = region(page, "content")
         // The nav paints its fill on ::before, over its own canvas.
-        const navFill = paint.navFill
-          ? await resolvedFill(page, paint.navFill)
-          : "rgba(0, 0, 0, 0)"
+        const navFill =
+          mode === "light" && paint.lightNavColor
+            ? await resolvedColor(page, paint.lightNavColor)
+            : paint.navFill
+              ? await resolvedFill(page, paint.navFill)
+              : "rgba(0, 0, 0, 0)"
         await expect
           .poll(() =>
             nav.evaluate(
@@ -384,6 +397,51 @@ test.describe("shell style axis", () => {
       }
     }
   })
+})
+
+// Flat separates its chrome by tone alone. The tone must read (1.2:1 against
+// the content) without becoming an edge: it stays below what the theme's own
+// Classic nav border reaches against the same content.
+test.describe("flat light chrome tone", () => {
+  for (const style of STYLES) {
+    test(`flat nav reads as a tone, not an edge · ${style}`, async ({
+      page,
+    }) => {
+      await seedApp(page, { shellStyle: "classic", style, mode: "light" })
+      await gotoApp(page, "/")
+      const measure = async (shellStyle: ShellStyle) => {
+        await expect(shell(page)).toHaveAttribute(
+          "data-shell-style",
+          shellStyle,
+        )
+        await page.addStyleTag({
+          content:
+            '.dr-shell > [data-region="nav"] > * { visibility: hidden !important; }',
+        })
+        await page.mouse.move(0, 0)
+        await settle(page)
+        const nav = await boxOf(region(page, "nav"))
+        const content = await boxOf(region(page, "content"))
+        const y = Math.round(nav.y + nav.height / 2)
+        const ground = await pixel(page, Math.round(content.x + 4), y)
+        const fill = await pixel(page, Math.round(nav.x + nav.width / 2), y)
+        let edge = 0
+        const right = Math.round(nav.x + nav.width)
+        for (let x = right - 2; x <= right; x++) {
+          edge = Math.max(edge, contrast(ground, await pixel(page, x, y)))
+        }
+        return { fill: contrast(fill, ground), edge }
+      }
+      const classic = await measure("classic")
+      await applyTheme(page, { shellStyle: "flat" })
+      await reloadApp(page)
+      const flat = await measure("flat")
+      const report = `${style}: flat fill ${flat.fill.toFixed(3)}:1, classic edge ${classic.edge.toFixed(3)}:1`
+      console.log(report)
+      expect(flat.fill, report).toBeGreaterThanOrEqual(1.2)
+      expect(flat.fill, report).toBeLessThan(classic.edge)
+    })
+  }
 })
 
 test.describe("shell style geometry", () => {

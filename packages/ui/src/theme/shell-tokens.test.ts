@@ -178,7 +178,7 @@ describe("shell style rules", () => {
         ) && r.body.includes("--chrome-rail-bg"),
     )
     expect(flat?.body).toBe(
-      "--chrome-rail-bg: hsl(var(--muted)); --chrome-bar-bg: hsl(var(--muted)); --chrome-canvas: none;",
+      "--chrome-rail-bg: var(--shell-flat-chrome, hsl(var(--muted))); --chrome-bar-bg: var(--shell-flat-chrome, hsl(var(--muted))); --chrome-canvas: none;",
     )
     const painted = rulesOf(shellStyles).filter((r) =>
       /background(?:-color|-image)?\s*:/.test(r.body),
@@ -188,6 +188,20 @@ describe("shell style rules", () => {
         /^(?:\.dr-shell\[data-shell-style="[a-z]+"\] > \[data-region="handle"\](?:, )?)+$/,
       )
     }
+  })
+
+  // Dark flat keeps --muted through the fallback above, so the tone is
+  // declared for light mode only.
+  it("declares the flat chrome tone for light mode only", () => {
+    const declared = rulesOf(css).filter((r) =>
+      r.body.includes("--shell-flat-chrome:"),
+    )
+    expect(declared.map((r) => r.selector)).toEqual([
+      ':root:not([data-mode="dark"])',
+    ])
+    expect(declared[0]?.body).toBe(
+      "--shell-flat-chrome: hsl(from hsl(var(--background)) h s calc(l - 8.25));",
+    )
   })
 })
 
