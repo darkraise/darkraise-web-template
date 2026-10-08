@@ -195,6 +195,10 @@
     @apply border-border border;
     border-radius: var(--radius) var(--radius) 0 0;
     background-color: var(--surface-card-fill-opaque);
+    background-image: linear-gradient(
+      var(--card-lift-tint, transparent),
+      var(--card-lift-tint, transparent)
+    );
     border-bottom-color: transparent;
   }
 
@@ -202,6 +206,10 @@
     @apply border-border mt-0 border border-t-0 p-4;
     border-radius: 0 0 var(--radius) var(--radius);
     background-color: var(--surface-card-fill-opaque);
+    background-image: linear-gradient(
+      var(--card-lift-tint, transparent),
+      var(--card-lift-tint, transparent)
+    );
   }
 
   /* Accent colour on the folder variant — the three borders retint to
@@ -333,6 +341,10 @@
     border-start-start-radius: var(--radius);
     border-end-start-radius: var(--radius);
     background-color: var(--surface-card-fill-opaque);
+    background-image: linear-gradient(
+      var(--card-lift-tint, transparent),
+      var(--card-lift-tint, transparent)
+    );
     border-inline-end-color: transparent;
   }
 
@@ -342,6 +354,10 @@
     border-start-end-radius: var(--radius);
     border-end-end-radius: var(--radius);
     background-color: var(--surface-card-fill-opaque);
+    background-image: linear-gradient(
+      var(--card-lift-tint, transparent),
+      var(--card-lift-tint, transparent)
+    );
   }
 
   .dr-tabs-list[data-variant="enclosed"][data-orientation="vertical"][data-color="accent"] {

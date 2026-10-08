@@ -21,4 +21,19 @@ describe("tabs enclosed fill", () => {
   it("never routes through the opacity-bearing fill", () => {
     expect(css).not.toContain("var(--surface-card-fill)")
   })
+
+  // An elevated dark card lifts its face with an overlay tint; the opaque
+  // fill paints the same tint so the panel does not read as recessed.
+  it("paints the card lift over every enclosed fill", () => {
+    const fills = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].filter(
+      ([, , body]) =>
+        body?.includes("background-color: var(--surface-card-fill-opaque);"),
+    )
+    expect(fills).toHaveLength(4)
+    for (const [, selector, body] of fills) {
+      expect(body, selector).toContain(
+        "background-image: linear-gradient( var(--card-lift-tint, transparent), var(--card-lift-tint, transparent) );",
+      )
+    }
+  })
 })
