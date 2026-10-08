@@ -8,6 +8,7 @@ import {
   PopoverTrigger,
   PopoverContent,
   PopoverClose,
+  PopoverArrow,
 } from "@components/popover"
 
 function Basic({ onChange }: { onChange?: (open: boolean) => void } = {}) {
@@ -243,5 +244,23 @@ describe("Popover direction", () => {
     )
     const content = await screen.findByText("Left to right")
     expect(content.closest(".dr-popover-content")).toHaveAttribute("dir", "ltr")
+  })
+})
+
+describe("PopoverArrow", () => {
+  it("keeps its position under a consumer style", async () => {
+    render(
+      <Popover defaultOpen>
+        <PopoverTrigger>Toggle</PopoverTrigger>
+        <PopoverContent>
+          Arrow content
+          <PopoverArrow data-testid="arrow" style={{ color: "red" }} />
+        </PopoverContent>
+      </Popover>,
+    )
+    const arrow = await screen.findByTestId("arrow")
+    expect(arrow.style.color).toBe("red")
+    expect(arrow.style.position).toBe("absolute")
+    await waitFor(() => expect(arrow.style.left).toMatch(/^-?\d+(\.\d+)?px$/))
   })
 })

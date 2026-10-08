@@ -359,7 +359,7 @@ interface PopoverArrowProps extends React.SVGAttributes<SVGSVGElement> {
   ref?: React.Ref<SVGSVGElement>
 }
 
-function PopoverArrow({ ref, ...props }: PopoverArrowProps) {
+function PopoverArrow({ ref, style, ...props }: PopoverArrowProps) {
   const floating = React.useContext(FloatingContext)
   const arrowData = floating?.middlewareData.arrow
   const composedRef = useComposedRefs(
@@ -370,12 +370,13 @@ function PopoverArrow({ ref, ...props }: PopoverArrowProps) {
   return (
     <FloatingArrow
       ref={composedRef}
+      {...props}
       style={{
+        ...style,
         position: "absolute",
         left: arrowData?.x,
         top: arrowData?.y,
       }}
-      {...props}
     />
   )
 }
