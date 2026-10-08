@@ -367,7 +367,8 @@ describe("useTheme persistence", () => {
     expect(result.current.elevation).toBe("standard")
   })
 
-  // Re-enabled in Phase 3 with the glass preset registered
+  // The adapter payload names glass, not the default style, so the stored
+  // theme-preset shows the loaded value was written back.
   it("updates localStorage when loading from adapter", async () => {
     const adapter = createAdapter()
     renderHook(() => useTheme(), { wrapper: wrapperWith(adapter) })

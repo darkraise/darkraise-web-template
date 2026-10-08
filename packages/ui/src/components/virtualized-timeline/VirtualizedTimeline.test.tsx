@@ -302,8 +302,9 @@ describe("VirtualizedTimeline", () => {
     // jsdom applies none of this package's CSS and performs no layout, so the
     // rail has no rendered width here and contentWidth comes from the stubbed
     // clientWidth regardless of side -- this does not prove the rail costs
-    // the same width in a real browser (Task 7 owns that). It proves only
-    // that the prop does not perturb the layout arithmetic itself.
+    // the same width in a real browser, which needs a layout engine. It
+    // proves only that the prop does not perturb the layout arithmetic
+    // itself.
     const right = renderTimeline()
     const rightCols = screen
       .getAllByRole("grid")[0]

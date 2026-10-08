@@ -94,10 +94,9 @@ describe("icon size token", () => {
   //      numbers and asking what they size.
   //
   // A green run here proves only that mechanism #1 is clean. It says
-  // nothing about #2–#6. See the Task 3 report for the full manual audit,
-  // including which sites in each mechanism were converted to a token and
-  // which were pinned as literals because a fixed-size control box (not
-  // the font-size axis) bounds the glyph.
+  // nothing about #2–#6: those sites were audited by hand, and each was
+  // either converted to a token or pinned as a literal because a
+  // fixed-size control box (not the font-size axis) bounds the glyph.
   //
   // One trap worth knowing before you write a sweep of your own: a regex
   // that matches JSX tags cannot see a tag nested inside an attribute

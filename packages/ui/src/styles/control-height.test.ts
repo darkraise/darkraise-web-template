@@ -136,7 +136,7 @@ describe("button heights", () => {
 
 describe("chrome buttons stay off the coarse-pointer floor", () => {
   // These are .dr-btn elements whose own sizing reads
-  // --control-height-default (Task 1). The (0,2,0) size rules above read
+  // --control-height-default. The (0,2,0) size rules above read
   // --btn-height, which floors at 40px on a coarse pointer, and would
   // otherwise outrank them: calendar days would overflow their 32px cells.
   it.each([

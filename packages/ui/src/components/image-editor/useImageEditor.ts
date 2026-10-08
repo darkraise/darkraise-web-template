@@ -137,9 +137,10 @@ export interface UseImageEditorReturn {
   hasExtension: (name: string) => boolean
   runExtension: (name: string) => Promise<ExtensionOutput | null>
 
-  /** Output the cropped + transformed + filtered + annotated image. The
-   *  full canvas pipeline lands in phase 2; this placeholder returns null
-   *  so callers wired up early degrade gracefully. */
+  /** Output the cropped, transformed, filtered and annotated image, with
+   *  the perspective warp and freeform clip applied. Resolves null when
+   *  there is nothing to draw: no image, an empty crop or no canvas
+   *  context. */
   getEditedImage: (
     options?: GetCroppedImageOptions,
   ) => Promise<Blob | string | null>
@@ -578,10 +579,9 @@ export function useImageEditor(
 
   // ── Edited-image output ──────────────────────────────────────────────────
   //
-  // Phase 2: bake the live filter chain into the cropper's canvas pipeline
-  // by passing filterCss through to getCroppedImage. Phases 5-7 will extend
-  // this with annotation compositing, freeform mask clipping, and
-  // perspective transforms; we factor that out then.
+  // The cropper canvas pipeline draws the crop with the live filter chain;
+  // postDraw then layers the perspective warp, the freeform clip and the
+  // annotations on top, in that order.
 
   const getEditedImage = React.useCallback(
     async (

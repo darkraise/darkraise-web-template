@@ -284,7 +284,7 @@ function quietestClearing(
 /**
  * Light: `base` when it carries white at LABEL, otherwise the lightest fill
  * below it that does. Dark: the lightest fill on the hue that carries white at
- * LABEL, so the fill sits as far above the card as the label allows (row 12).
+ * LABEL, so the fill sits as far above the card as the label allows.
  */
 function whiteFill(base: string, mode: ResolvedMode): string {
   const { L, C, h } = hslStringToOklch(base)

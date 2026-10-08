@@ -203,9 +203,9 @@ function ImageEditorContextConsumer({ children }: ImageEditorContextProps) {
 
 // ── Re-exported geometry parts ──────────────────────────────────────────────
 //
-// Viewport / Selection / Handle / Grid don't need editor-specific behaviour
-// in phase 2 — they read from the cropper context that ImageEditor's Root
-// already provides. Renamed exports below give consumers a consistent
+// Viewport, Selection, Handle and Grid need no editor-specific behaviour:
+// they read from the cropper context that the ImageEditor root already
+// provides. Renamed exports below give consumers a consistent
 // import surface (everything for editor work comes from image-editor).
 
 const ImageEditorViewport = ImageCropperViewport

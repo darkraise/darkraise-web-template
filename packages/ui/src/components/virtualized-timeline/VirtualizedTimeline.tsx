@@ -809,10 +809,10 @@ export function VirtualizedTimeline<T>({
     if (!element) return
     // Assign, then read the value back. The browser is the single clamping
     // authority: computing a JavaScript clamp here and storing that would be a
-    // second source of truth, which is exactly how the scrubber ended up
-    // rendering an aria-valuenow above its own aria-valuemax in Task 5. An
-    // out-of-range assignment is clamped by the DOM, and reading it back is
-    // the only way to know what actually happened.
+    // second source of truth, which once let the scrubber render an
+    // aria-valuenow above its own aria-valuemax. An out-of-range assignment
+    // is clamped by the DOM, and reading it back is the only way to know
+    // what actually happened.
     element.scrollTop = offset
     setScrollTop(element.scrollTop)
   }, [])
