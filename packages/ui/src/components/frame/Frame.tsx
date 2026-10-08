@@ -27,26 +27,36 @@ function Frame({ className, head, children, ...rest }: FrameProps) {
     return () => node.removeEventListener("load", update)
   }, [])
 
+  const [mode, setMode] = React.useState<"light" | "dark" | null>(null)
+
   React.useEffect(() => {
-    if (!doc) return
     const host = document.documentElement
     const sync = () => {
-      const mode = host.getAttribute("data-mode")
-      doc.documentElement.style.colorScheme =
-        mode === "light" || mode === "dark" ? mode : ""
+      const value = host.getAttribute("data-mode")
+      setMode(value === "light" || value === "dark" ? value : null)
     }
     sync()
     const observer = new MutationObserver(sync)
     observer.observe(host, { attributes: true, attributeFilter: ["data-mode"] })
     return () => observer.disconnect()
-  }, [doc])
+  }, [])
 
   return (
     <iframe ref={ref} className={cn("dr-frame", className)} {...rest}>
       {doc
         ? createPortal(
             <>
-              {head ? createPortal(head, doc.head) : null}
+              {createPortal(
+                <>
+                  {/* :where keeps the rule at zero specificity, so any frame
+                      stylesheet can set its own scheme. */}
+                  {mode ? (
+                    <style>{":where(:root){color-scheme:" + mode + "}"}</style>
+                  ) : null}
+                  {head}
+                </>,
+                doc.head,
+              )}
               {children}
             </>,
             doc.body,

@@ -280,6 +280,7 @@ Breaking: `ToggleGroup` sizes to its content. `.dr-toggle-group` is `inline-flex
 - The BackgroundPage spotlight follows the pointer in a right-to-left document.
 - The table's scroll-edge state reads the direction once per mount and resize instead of on every scroll event.
 - `Marquee` renders as many copies as it takes to cover its container, so no blank band shows at any point in the loop, and each loop moves exactly one copy and its gap, so it no longer jumps when it restarts. Under right-to-left it travels toward the right; it used to move left and leave the container empty for part of each loop. Every copy after the first is hidden from assistive technology, so the content is read once.
+- `Frame` passes the host colour scheme as a zero-specificity `:where(:root)` rule in the frame head instead of an inline style on the frame root, so a stylesheet passed through `head` can set its own `color-scheme`.
 
 Breaking: `.dr-surface`, its `--flat` modifier and its `dr-surface-{brand,cyan,success,warning,danger,info}` hue classes are removed, with the `--fog-05` … `--fog-50` tokens they alone gave values to. The `glass`, `glass-thin`, `glass-strong` and `card-surface` utilities are removed: outside `.dr-surface` they painted nothing. Replace one with `rounded-[var(--radius)]` and, if you relied on it, `transition-[background-color,color,border-color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-in-out)]`.
 

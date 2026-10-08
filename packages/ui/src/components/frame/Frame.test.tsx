@@ -27,14 +27,18 @@ describe("Frame", () => {
     document.documentElement.removeAttribute("data-mode")
   })
 
+  /** Text of the colour-scheme rule Frame renders into the frame head. */
+  const schemeRule = (iframe: HTMLIFrameElement) =>
+    [...(iframe.contentDocument?.head.querySelectorAll("style") ?? [])]
+      .map((style) => style.textContent ?? "")
+      .find((text) => text.startsWith(":where(:root)"))
+
   it("copies the host mode into the frame document", async () => {
     document.documentElement.setAttribute("data-mode", "dark")
     render(<Frame data-testid="f">x</Frame>)
     const iframe = screen.getByTestId("f") as HTMLIFrameElement
     await waitFor(() => {
-      expect(iframe.contentDocument?.documentElement.style.colorScheme).toBe(
-        "dark",
-      )
+      expect(schemeRule(iframe)).toBe(":where(:root){color-scheme:dark}")
     })
   })
 
@@ -43,15 +47,11 @@ describe("Frame", () => {
     render(<Frame data-testid="f">x</Frame>)
     const iframe = screen.getByTestId("f") as HTMLIFrameElement
     await waitFor(() => {
-      expect(iframe.contentDocument?.documentElement.style.colorScheme).toBe(
-        "light",
-      )
+      expect(schemeRule(iframe)).toBe(":where(:root){color-scheme:light}")
     })
     document.documentElement.setAttribute("data-mode", "dark")
     await waitFor(() => {
-      expect(iframe.contentDocument?.documentElement.style.colorScheme).toBe(
-        "dark",
-      )
+      expect(schemeRule(iframe)).toBe(":where(:root){color-scheme:dark}")
     })
   })
 
@@ -59,6 +59,28 @@ describe("Frame", () => {
     render(<Frame data-testid="f">x</Frame>)
     const iframe = screen.getByTestId("f") as HTMLIFrameElement
     await waitFor(() => expect(iframe.contentDocument).not.toBeNull())
+    expect(schemeRule(iframe)).toBeUndefined()
     expect(iframe.contentDocument?.documentElement.style.colorScheme).toBe("")
+  })
+
+  it("lets a frame stylesheet override the host scheme", async () => {
+    document.documentElement.setAttribute("data-mode", "dark")
+    render(
+      <Frame
+        data-testid="f"
+        head={<style>{":root{color-scheme:light}"}</style>}
+      >
+        x
+      </Frame>,
+    )
+    const iframe = screen.getByTestId("f") as HTMLIFrameElement
+    await waitFor(() => {
+      expect(iframe.contentDocument?.head.textContent).toContain(
+        ":root{color-scheme:light}",
+      )
+    })
+    const frameDocument = iframe.contentDocument as Document
+    expect(frameDocument.documentElement.style.colorScheme).toBe("")
+    expect(schemeRule(iframe)).toBe(":where(:root){color-scheme:dark}")
   })
 })
