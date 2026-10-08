@@ -98,7 +98,13 @@ export function UserMenu({
           </DropdownMenuSub>
         )}
         {(onProfile || onSettings || layoutSwitcher) && onLogout && (
-          <DropdownMenuSeparator />
+          <DropdownMenuSeparator
+            className={
+              !onProfile && !onSettings
+                ? "dr-user-menu-layout-separator"
+                : undefined
+            }
+          />
         )}
         {onLogout && (
           <DropdownMenuItem onClick={onLogout}>

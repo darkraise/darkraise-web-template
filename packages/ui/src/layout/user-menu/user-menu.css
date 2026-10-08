@@ -35,7 +35,8 @@
   /* The header shows its own layout switcher from 48rem; below that the
      switcher is hidden and this entry stands in for it. */
   @media (width >= 48rem) {
-    .dr-user-menu-layout {
+    .dr-user-menu-layout,
+    .dr-user-menu-layout-separator {
       @apply hidden;
     }
   }

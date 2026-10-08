@@ -48,4 +48,28 @@ describe("UserMenu", () => {
     ).toBeInTheDocument()
     expect(screen.queryAllByRole("menuitemradio")).toHaveLength(0)
   })
+
+  it("marks the separator before Log out when Layout is its only neighbour", () => {
+    const { container } = render(
+      <UserMenu onLogout={() => {}} layoutSwitcher={{}} />,
+    )
+    openMenu(container)
+    expect(screen.getByRole("separator")).toHaveClass(
+      "dr-user-menu-layout-separator",
+    )
+  })
+
+  it("leaves the separator unmarked when Settings precedes it", () => {
+    const { container } = render(
+      <UserMenu
+        onSettings={() => {}}
+        onLogout={() => {}}
+        layoutSwitcher={{}}
+      />,
+    )
+    openMenu(container)
+    expect(screen.getByRole("separator")).not.toHaveClass(
+      "dr-user-menu-layout-separator",
+    )
+  })
 })
