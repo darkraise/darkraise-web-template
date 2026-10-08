@@ -281,8 +281,8 @@ test.describe("reduced motion", () => {
     await gotoApp(page, "/components/animation")
     await expect(page.locator("main h1").first()).toBeVisible()
     // Computed durations, not getAnimations(): the reduced-motion rule
-    // finishes every animation within a frame, so an empty animation list
-    // would pass whether or not the rule applied.
+    // finishes every animation within a frame and starts no transition, so
+    // an empty animation list would pass whether or not the rule applied.
     const animated = await page.locator("main *").evaluateAll((elements) =>
       elements
         .map((el) => getComputedStyle(el))
@@ -304,5 +304,44 @@ test.describe("reduced motion", () => {
     )
     expect(slow).toEqual([])
     consoleWatch.assertClean()
+  })
+
+  test("a tab change runs no transition", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" })
+    await seedApp(page)
+    await gotoApp(page, "/components/tabs")
+    const list = page.locator(".dr-tabs-list[data-mounted='true']").first()
+    await expect(list.locator(".dr-tabs-indicator")).toHaveAttribute(
+      "data-active",
+      "true",
+    )
+    // One evaluate, read before the next frame: a 0.01ms transition is still
+    // pending then, so it shows up in getAnimations(). The await lets React
+    // commit the click, which it flushes in a microtask.
+    const result = await list.evaluate(async (strip) => {
+      const tab = strip.querySelector<HTMLElement>(
+        "[role='tab'][aria-selected='false']:not([disabled])",
+      )
+      if (!tab) throw new Error("no inactive tab in the first strip")
+      tab.click()
+      await Promise.resolve()
+      const indicator = strip.querySelector(".dr-tabs-indicator")
+      if (!indicator) throw new Error("no tab indicator")
+      const duration = getComputedStyle(indicator).transitionDuration
+      return {
+        selected: tab.getAttribute("aria-selected"),
+        duration,
+        transitions: document
+          .getAnimations()
+          .filter((animation) => animation instanceof CSSTransition)
+          .map((animation) => (animation as CSSTransition).transitionProperty),
+      }
+    })
+    expect(result.selected).toBe("true")
+    expect(result.transitions).toEqual([])
+    expect(
+      result.duration.split(",").every((value) => value.trim() === "0s"),
+      result.duration,
+    ).toBe(true)
   })
 })

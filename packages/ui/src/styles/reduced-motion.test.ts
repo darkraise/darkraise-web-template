@@ -40,7 +40,7 @@ describe("reduced motion", () => {
     const body = guard?.[1] ?? ""
     expect(body).toMatch(/animation-duration:\s*0\.01ms\s*!important/)
     expect(body).toMatch(/animation-iteration-count:\s*1\s*!important/)
-    expect(body).toMatch(/transition-duration:\s*0\.01ms\s*!important/)
+    expect(body).toMatch(/transition-duration:\s*0s\s*!important/)
     expect(body).toMatch(/scroll-behavior:\s*auto\s*!important/)
   })
 

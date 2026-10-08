@@ -2598,14 +2598,19 @@
    Two motions live outside CSS's reach and are handled in JS instead:
    `scrollIntoView({ behavior: "smooth" })` takes its behaviour from the call
    option rather than the `scroll-behavior` property, and Carousel autoplay is
-   a timer. Both read the preference through the `useReducedMotion` hook. */
+   a timer. Both read the preference through the `useReducedMotion` hook.
+
+   Transitions take 0s, not 0.01ms: any positive duration still starts a
+   transition, and until the element repaints a computed-style read can
+   return the value it is leaving. No transition starts at 0s, so
+   `transitionend` does not fire. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    transition-duration: 0s !important;
     scroll-behavior: auto !important;
   }
 }

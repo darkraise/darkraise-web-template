@@ -241,6 +241,93 @@ describe("VirtualizedTimeline", () => {
     ).toBeNull()
   })
 
+  it("keeps the rail out once it alone makes the content fit", () => {
+    // 432px gives 105px tiles and a 415px column, which overflows a 410px
+    // viewport; the 20px rail narrows the viewport to 412px, 100px tiles and
+    // 400px, which fits. Each resize below stands for the browser reporting
+    // the viewport width the last commit produced.
+    const callbacks = new Set<() => void>()
+    vi.stubGlobal(
+      "ResizeObserver",
+      class {
+        constructor(callback: () => void) {
+          callbacks.add(callback)
+        }
+        observe() {}
+        unobserve() {}
+        disconnect() {}
+      },
+    )
+    const offsetWidth = Object.getOwnPropertyDescriptor(
+      HTMLElement.prototype,
+      "offsetWidth",
+    )
+    const railOf = (el: HTMLElement) =>
+      el
+        .closest(".dr-virtualized-timeline-scroll-area")
+        ?.querySelector(".dr-virtualized-timeline-scrubber")
+    Object.defineProperty(HTMLElement.prototype, "clientWidth", {
+      configurable: true,
+      get(this: HTMLElement) {
+        if (!this.classList.contains("dr-virtualized-timeline-viewport")) {
+          return 432
+        }
+        return railOf(this) ? 412 : 432
+      },
+    })
+    Object.defineProperty(HTMLElement.prototype, "offsetWidth", {
+      configurable: true,
+      get(this: HTMLElement) {
+        return this.classList.contains("dr-virtualized-timeline-scrubber")
+          ? 20
+          : 0
+      },
+    })
+    Object.defineProperty(HTMLElement.prototype, "clientHeight", {
+      configurable: true,
+      get() {
+        return 410
+      },
+    })
+    try {
+      const { container } = renderTimeline()
+      const railShown: boolean[] = []
+      for (let i = 0; i < 6; i += 1) {
+        act(() => {
+          for (const callback of callbacks) callback()
+        })
+        railShown.push(
+          container.querySelector(".dr-virtualized-timeline-scrubber") !== null,
+        )
+      }
+      expect(railShown.slice(2)).toEqual([false, false, false, false])
+    } finally {
+      Object.defineProperty(HTMLElement.prototype, "clientWidth", {
+        configurable: true,
+        get() {
+          return 412
+        },
+      })
+      Object.defineProperty(HTMLElement.prototype, "clientHeight", {
+        configurable: true,
+        get() {
+          return 300
+        },
+      })
+      if (offsetWidth) {
+        Object.defineProperty(HTMLElement.prototype, "offsetWidth", offsetWidth)
+      }
+      vi.stubGlobal(
+        "ResizeObserver",
+        class {
+          observe() {}
+          unobserve() {}
+          disconnect() {}
+        },
+      )
+    }
+  })
+
   it("renders no rail when showScrubber is false, even with room to scrub", () => {
     // The two-bucket default fixture totals 400px against the 300px stubbed
     // viewport, so maxScroll is clearly positive here; showScrubber is the

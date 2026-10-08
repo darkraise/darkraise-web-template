@@ -125,6 +125,10 @@ The `outline` variant of `Listbox` and `TreeView` now rings the selected row ins
 
 `.overlay-surface` is now a Tailwind utility that applies the overlay recipe: `background: var(--overlay-bg)`, its blend mode, `border-color: var(--overlay-border)` and the overlay backdrop filter. It no longer sets a border width, radius or shadow, so if you apply it to your own markup, add those yourself. Every kit popup applies it. It also sets `--field-edge: var(--field-edge-lifted)`, as elevated cards do, so an override of `--field-edge` on `:root` or an ancestor no longer reaches fields inside popups and elevated cards: override `--field-edge-lifted` too. Your own surfaces that take a dark lifted shadow (`--card-elevation-*`, `--elevation-*`, `--shadow-low/medium/high`) should set `--field-edge: var(--field-edge-lifted)` the same way.
 
+## Reduced motion
+
+Under `prefers-reduced-motion: reduce` transitions take `0s`, so no transition starts and `transitionend` never fires. Code that waits for `transitionend` to finish a state change must also finish it when the user prefers reduced motion; read the preference with `useReducedMotion` or check `getComputedStyle(element).transitionDuration`. Animations still run for `0.01ms` and fire `animationend`.
+
 ## Right to left and forced colours
 
 Components read their direction from the DOM. Put `dir="rtl"` on `<html>` (`AppI18nProvider` does this for a right-to-left locale when `syncDocument` is set) or on the element that wraps a right-to-left region; a component's `dir` prop is only needed to override its surroundings. `Tabs` no longer forces `ltr`, `Calendar` no longer copies `UiI18nProvider`'s direction, and a locale pack without `dir` no longer makes portals left-to-right. If you relied on a component staying left-to-right inside a right-to-left page, pass `dir="ltr"` to it.

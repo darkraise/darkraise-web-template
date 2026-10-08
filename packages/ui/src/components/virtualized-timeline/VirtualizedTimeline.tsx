@@ -220,6 +220,10 @@ export function VirtualizedTimeline<T>({
   const [contentWidth, setContentWidth] = React.useState(0)
   const [viewportHeight, setViewportHeight] = React.useState(0)
   const [scrollAreaWidth, setScrollAreaWidth] = React.useState(0)
+  // The width of the rail as last measured, and whether it was mounted then. Kept
+  // after the rail unmounts, so the rail decision can read the narrower
+  // content width it would cause.
+  const [rail, setRail] = React.useState({ width: 0, mounted: false })
   const [scrollTop, setScrollTop] = React.useState(0)
 
   // The cell holding the roving tab stop, with its owning bucket carried
@@ -301,6 +305,17 @@ export function VirtualizedTimeline<T>({
   const layout = useBucketLayout({
     buckets,
     contentWidth,
+    collapsedIds,
+    geometry,
+    getBucketHeight,
+  })
+  // The rail takes its width from the viewport, which can shrink tiles until
+  // the content fits. Deciding from the width the viewport has with the rail
+  // in place keeps the rail from mounting and unmounting on every measure.
+  const railWidthWithheld = rail.mounted ? 0 : rail.width
+  const layoutBesideRail = useBucketLayout({
+    buckets,
+    contentWidth: Math.max(0, contentWidth - railWidthWithheld),
     collapsedIds,
     geometry,
     getBucketHeight,
@@ -757,6 +772,16 @@ export function VirtualizedTimeline<T>({
       // adding it back would be circular.
       const area = scrollAreaRef.current
       if (area) setScrollAreaWidth(area.clientWidth)
+      const railElement = area?.querySelector<HTMLElement>(
+        ".dr-virtualized-timeline-scrubber",
+      )
+      setRail((previous) => {
+        const width = railElement ? railElement.offsetWidth : previous.width
+        const mounted = Boolean(railElement)
+        return previous.width === width && previous.mounted === mounted
+          ? previous
+          : { width, mounted }
+      })
     }
     measure()
     if (typeof ResizeObserver === "undefined") return
@@ -1040,6 +1065,7 @@ export function VirtualizedTimeline<T>({
   // no unit test can stand in for the browser pass that verifies it.
   const measured = contentWidth > 0
   const maxScroll = Math.max(0, layout.totalSize - viewportHeight)
+  const overflowsBesideRail = layoutBesideRail.totalSize > viewportHeight
 
   const mounted: React.ReactNode[] = []
   // A pinned bucket above the window precedes it so DOM order matches
@@ -1106,7 +1132,7 @@ export function VirtualizedTimeline<T>({
         </div>
         {/* A date index over a range of zero indexes nothing, and leaving it
             mounted leaves a focusable slider that cannot move. */}
-        {showScrubber && measured && maxScroll > 0 ? (
+        {showScrubber && measured && maxScroll > 0 && overflowsBesideRail ? (
           <VirtualizedTimelineScrubber<T>
             buckets={buckets}
             layout={layout}

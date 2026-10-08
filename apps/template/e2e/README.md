@@ -254,7 +254,10 @@ download trigger, image cropper (its dimensions badge shows at rest).
   alert dialog's destructive action paints like its trigger and reads at 4.5:1.
 - Under `prefers-reduced-motion: reduce`, every animated element on
   `/components/animation` (at least 17) runs no animation or transition longer
-  than 0.01ms.
+  than 0.01ms (transitions take 0s), and a tab change on `/components/tabs`
+  starts no CSS transition: read in the same task as the click, the
+  indicator's transition duration is 0s and `getAnimations()` holds no
+  `CSSTransition`.
 
 ### 11 · Card and accordion variants (`11-card-accordion-variants.spec.ts`)
 

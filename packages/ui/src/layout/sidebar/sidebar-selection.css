@@ -170,8 +170,8 @@
     transition-timing-function: var(--ease-out);
   }
 
-  /* The global reduced-motion guard only shortens durations, which still
-     runs a transition; the indicator must not move at all. */
+  /* The indicator must not move at all under reduced motion; this holds
+     without relying on the global guard's zero transition duration. */
   @media (prefers-reduced-motion: reduce) {
     .dr-sidebar-nav-indicator[data-animate="true"] {
       transition: none;
