@@ -395,6 +395,30 @@ describe("overlay backdrop", () => {
 })
 
 describe("popup variables", () => {
+  it.each([
+    [MENU, ".dr-menu-content"],
+    [MENU, ".dr-menu-sub-content"],
+    [MENUBAR, ".dr-menubar-content"],
+    [MENUBAR, ".dr-menubar-sub-content"],
+    [SELECT, ".dr-select-content"],
+    ["src/components/popover/popover.css", ".dr-popover-content"],
+    ["src/components/tooltip/tooltip.css", ".dr-tooltip-content"],
+    ["src/components/hover-card/hover-card.css", ".dr-hover-card-content"],
+    [
+      "src/components/virtualized-dropdown-menu/virtualized-dropdown-menu.css",
+      ".dr-vdm-content",
+    ],
+    [
+      "src/components/navigation-menu/navigation-menu.css",
+      ".dr-navigation-menu-content",
+    ],
+    ["src/components/combobox/combobox.css", ".dr-combobox-content"],
+  ])("%s %s grows from its trigger", (path, selector) => {
+    expect(applied(bodyOf(path, selector))).toContain(
+      "origin-[var(--popup-transform-origin)]",
+    )
+  })
+
   it("no component stylesheet reads a Radix variable", () => {
     const offenders = (
       readdirSync("src/components", { recursive: true }) as string[]

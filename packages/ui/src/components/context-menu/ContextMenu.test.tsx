@@ -319,6 +319,35 @@ describe("ContextMenu disabled item and sub-trigger", () => {
     expect(onLinkClick).not.toHaveBeenCalled()
   })
 
+  it("blocks a middle-click on a disabled asChild link only", async () => {
+    const onAuxClick = vi.fn()
+    render(
+      <ContextMenu>
+        <ContextMenuTrigger>Right-click here</ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuItem disabled asChild onAuxClick={onAuxClick}>
+            <a href="#docs">Docs</a>
+          </ContextMenuItem>
+          <ContextMenuItem asChild>
+            <a href="#blog">Blog</a>
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>,
+    )
+    fireEvent.contextMenu(screen.getByText("Right-click here"))
+    const docs = await screen.findByRole("menuitem", { name: "Docs" })
+    const blog = screen.getByRole("menuitem", { name: "Blog" })
+    const middle = () =>
+      new MouseEvent("auxclick", { bubbles: true, cancelable: true, button: 1 })
+    const blocked = middle()
+    fireEvent(docs, blocked)
+    expect(onAuxClick).toHaveBeenCalledTimes(1)
+    expect(blocked.defaultPrevented).toBe(true)
+    const allowed = middle()
+    fireEvent(blog, allowed)
+    expect(allowed.defaultPrevented).toBe(false)
+  })
+
   it("does not open a disabled sub-trigger", async () => {
     render(
       <ContextMenu>

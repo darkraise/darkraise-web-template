@@ -370,6 +370,34 @@ describe("DropdownMenu disabled item and sub-trigger", () => {
     expect(onLinkClick).not.toHaveBeenCalled()
   })
 
+  it("blocks a middle-click on a disabled asChild link only", async () => {
+    const onAuxClick = vi.fn()
+    render(
+      <DropdownMenu defaultOpen>
+        <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem disabled asChild onAuxClick={onAuxClick}>
+            <a href="#docs">Docs</a>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <a href="#blog">Blog</a>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>,
+    )
+    const docs = await screen.findByRole("menuitem", { name: "Docs" })
+    const blog = screen.getByRole("menuitem", { name: "Blog" })
+    const middle = () =>
+      new MouseEvent("auxclick", { bubbles: true, cancelable: true, button: 1 })
+    const blocked = middle()
+    fireEvent(docs, blocked)
+    expect(onAuxClick).toHaveBeenCalledTimes(1)
+    expect(blocked.defaultPrevented).toBe(true)
+    const allowed = middle()
+    fireEvent(blog, allowed)
+    expect(allowed.defaultPrevented).toBe(false)
+  })
+
   it("does not open a disabled sub-trigger", async () => {
     render(
       <DropdownMenu defaultOpen>

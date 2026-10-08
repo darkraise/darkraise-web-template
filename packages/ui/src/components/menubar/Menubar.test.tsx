@@ -217,6 +217,38 @@ describe("Menubar disabled item and sub-trigger", () => {
     expect(onLinkClick).not.toHaveBeenCalled()
   })
 
+  it("blocks a middle-click on a disabled asChild link only", async () => {
+    const user = userEvent.setup()
+    const onAuxClick = vi.fn()
+    render(
+      <Menubar>
+        <MenubarMenu value="file">
+          <MenubarTrigger>File</MenubarTrigger>
+          <MenubarContent>
+            <MenubarItem disabled asChild onAuxClick={onAuxClick}>
+              <a href="#docs">Docs</a>
+            </MenubarItem>
+            <MenubarItem asChild>
+              <a href="#blog">Blog</a>
+            </MenubarItem>
+          </MenubarContent>
+        </MenubarMenu>
+      </Menubar>,
+    )
+    await user.click(screen.getByRole("menuitem", { name: "File" }))
+    const docs = await screen.findByRole("menuitem", { name: "Docs" })
+    const blog = screen.getByRole("menuitem", { name: "Blog" })
+    const middle = () =>
+      new MouseEvent("auxclick", { bubbles: true, cancelable: true, button: 1 })
+    const blocked = middle()
+    fireEvent(docs, blocked)
+    expect(onAuxClick).toHaveBeenCalledTimes(1)
+    expect(blocked.defaultPrevented).toBe(true)
+    const allowed = middle()
+    fireEvent(blog, allowed)
+    expect(allowed.defaultPrevented).toBe(false)
+  })
+
   it("does not open a disabled sub-trigger", async () => {
     const user = userEvent.setup()
     render(

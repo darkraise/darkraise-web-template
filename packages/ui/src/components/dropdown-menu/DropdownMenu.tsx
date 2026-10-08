@@ -543,6 +543,7 @@ function DropdownMenuItem({
   textValue,
   onSelect,
   onClick,
+  onAuxClick,
   onPointerEnter,
   onKeyDown,
   asChild,
@@ -594,6 +595,11 @@ function DropdownMenuItem({
           return
         }
         triggerSelect(event)
+      }}
+      onAuxClick={(event: React.MouseEvent<HTMLDivElement>) => {
+        onAuxClick?.(event)
+        // A middle-click on a disabled link item must not open the link.
+        if (disabled) event.preventDefault()
       }}
       onKeyDown={(event: React.KeyboardEvent<HTMLDivElement>) => {
         onKeyDown?.(event)

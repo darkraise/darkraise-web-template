@@ -291,6 +291,8 @@ Breaking: `ToggleGroup` sizes to its content. `.dr-toggle-group` is `inline-flex
 - `NavigationMenuIndicator` sits under the open trigger in both directions and follows it when the window resizes. It wrote a physical `left` without being positioned, so it never moved.
 - `useScrollLock` uses the same scroll lock as `Dialog` and `Drawer`: it pads the body by the scrollbar width, and releasing it no longer lets the page scroll while a dialog or drawer still holds the lock.
 - When scroll locks are released in a different order from the one they were taken in, for example a drawer closed before the dialog it opened, the page scrolls again once the last one is released. It used to stay locked.
+- A middle-click on a disabled `DropdownMenuItem`, `ContextMenuItem` or `MenubarItem` rendered as a link with `asChild` no longer opens the link; the item's `onAuxClick` still runs.
+- The `Combobox` list grows from the edge facing its input, like the other popups; it scaled from its centre.
 
 Breaking: `.dr-surface`, its `--flat` modifier and its `dr-surface-{brand,cyan,success,warning,danger,info}` hue classes are removed, with the `--fog-05` … `--fog-50` tokens they alone gave values to. The `glass`, `glass-thin`, `glass-strong` and `card-surface` utilities are removed: outside `.dr-surface` they painted nothing. Replace one with `rounded-[var(--radius)]` and, if you relied on it, `transition-[background-color,color,border-color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-in-out)]`.
 
