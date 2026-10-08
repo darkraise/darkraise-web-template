@@ -163,6 +163,10 @@ npm run lint         # ESLint
 
 This monorepo additionally provides `pnpm storybook` (browse the component library), `pnpm test` (Vitest), and `pnpm typecheck`/`pnpm lint`/`pnpm format` across the workspace.
 
+### Developing against the kit
+
+The demo app imports `darkraise-ui` from `packages/ui/dist`, not from source. Build the kit once (`pnpm build`), then run `pnpm dev` (the kit in watch mode) beside `pnpm --filter darkraise-web-template dev`. The watch rebuilds the JavaScript and `dist/styles.css` on any change under `packages/ui/src`, including CSS that only `theme.css` imports. It does not regenerate the `.d.ts` files: after changing an exported type, run `pnpm --filter darkraise-ui run build:types`.
+
 ## Releasing
 
 Two packages are published, `darkraise-ui` and `create-darkraise-ui`, and
