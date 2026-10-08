@@ -42,10 +42,16 @@
      `bg-accent` tint alone sits at roughly 1.1:1 against the popover, well
      under the 3:1 a focus indicator needs, so the active row gets a real ring.
      Excluded under the pointer: there the cursor already marks the row, and a
-     ring that tracks the mouse reads as noise. */
-  .dr-command-item[data-selected="true"]:not(:hover) {
+     ring that tracks the mouse reads as noise. Only on a device that hovers,
+     though: a touch screen leaves :hover on the last tapped row. */
+  .dr-command-item[data-selected="true"] {
     outline: 2px solid hsl(var(--focus-ring));
     outline-offset: -2px;
+  }
+  @media (hover: hover) {
+    .dr-command-item[data-selected="true"]:hover {
+      outline: none;
+    }
   }
 
   .dr-command-shortcut {

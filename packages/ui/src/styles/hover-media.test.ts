@@ -8,28 +8,7 @@ import { join } from "node:path"
 // `@media (hover: hover)`; press, focus and data-state rules stay outside it.
 
 /** [stylesheet, selector, why it may stay outside the media block] */
-const ALLOWED: Array<[string, string, string]> = [
-  [
-    "src/components/virtualized-dropdown-menu/virtualized-dropdown-menu.css",
-    ".dr-vdm-item[data-active]:not(:hover)",
-    "keyboard highlight that the pointer row takes over",
-  ],
-  [
-    "src/components/listbox/listbox.css",
-    '.dr-listbox-item[data-focused="true"]:not(:hover)',
-    "keyboard highlight that the pointer row takes over",
-  ],
-  [
-    "src/components/command/command.css",
-    '.dr-command-item[data-selected="true"]:not(:hover)',
-    "keyboard highlight that the pointer row takes over",
-  ],
-  [
-    "src/components/combobox/combobox.css",
-    '.dr-combobox-item[data-highlighted="true"]:not(:hover)',
-    "keyboard highlight that the pointer row takes over",
-  ],
-]
+const ALLOWED: Array<[string, string, string]> = []
 
 interface StyleRule {
   path: string

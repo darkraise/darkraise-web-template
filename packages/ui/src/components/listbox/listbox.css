@@ -5,17 +5,21 @@
   .dr-listbox-item {
     @apply cursor-pointer rounded-sm px-2 py-[var(--density-row-py)] text-sm transition-colors select-none;
   }
-  .dr-listbox-item[data-focused="true"] {
-    @apply bg-accent text-accent-foreground;
-  }
   /* The active row is tracked with aria-activedescendant, so DOM focus never
      reaches it and `:focus-visible` cannot match. `bg-accent` alone sits at
      roughly 1.1:1 against the popover, under the 3:1 a focus indicator needs,
      so the active row carries a real ring. Dropped under the pointer, where
-     the cursor already marks the row. */
-  .dr-listbox-item[data-focused="true"]:not(:hover) {
+     the cursor already marks the row, but only on a device that hovers: a
+     touch screen leaves :hover on the last tapped row. */
+  .dr-listbox-item[data-focused="true"] {
+    @apply bg-accent text-accent-foreground;
     outline: 2px solid hsl(var(--focus-ring));
     outline-offset: -2px;
+  }
+  @media (hover: hover) {
+    .dr-listbox-item[data-focused="true"]:hover {
+      outline: none;
+    }
   }
 
   /* Selected — the checked family's fill, matching TreeView's selected

@@ -27,6 +27,26 @@ import { join } from "node:path"
 const RING =
   /outline:\s*2px solid hsl\(var\(--focus-ring\)\);\s*outline-offset:\s*-2px/
 
+/** Rows whose active state is an attribute, so `:focus-visible` never matches. */
+const ACTIVEDESCENDANT: Array<[string, string]> = [
+  [
+    "src/components/command/command.css",
+    '.dr-command-item[data-selected="true"]',
+  ],
+  [
+    "src/components/combobox/combobox.css",
+    '.dr-combobox-item[data-highlighted="true"]',
+  ],
+  [
+    "src/components/listbox/listbox.css",
+    '.dr-listbox-item[data-focused="true"]',
+  ],
+  [
+    "src/components/virtualized-dropdown-menu/virtualized-dropdown-menu.css",
+    ".dr-vdm-item[data-active]",
+  ],
+]
+
 const SELECTORS: Array<[string, string]> = [
   // roving tabindex
   [
@@ -80,23 +100,7 @@ const SELECTORS: Array<[string, string]> = [
     "src/components/tree-view/tree-view.css",
     ".dr-tree-view-item:focus-visible",
   ],
-  // aria-activedescendant
-  [
-    "src/components/command/command.css",
-    '.dr-command-item[data-selected="true"]:not(:hover)',
-  ],
-  [
-    "src/components/combobox/combobox.css",
-    '.dr-combobox-item[data-highlighted="true"]:not(:hover)',
-  ],
-  [
-    "src/components/listbox/listbox.css",
-    '.dr-listbox-item[data-focused="true"]:not(:hover)',
-  ],
-  [
-    "src/components/virtualized-dropdown-menu/virtualized-dropdown-menu.css",
-    ".dr-vdm-item[data-active]:not(:hover)",
-  ],
+  ...ACTIVEDESCENDANT,
 ]
 
 /**
@@ -123,6 +127,19 @@ describe("menu-style rows carry a visible focus indicator", () => {
     expect(body, `no rule found for ${selector}`).not.toBeNull()
     expect(body?.replace(/\s+/g, " ")).toMatch(RING)
   })
+
+  // A touch screen leaves :hover on the last tapped row, so a ring dropped
+  // under any :hover would vanish there for good.
+  it.each(ACTIVEDESCENDANT)(
+    "%s → %s drops the ring under the pointer only where a pointer hovers",
+    (path, selector) => {
+      const css = flat(path)
+      expect(css).toContain(
+        `@media (hover: hover) { ${selector}:hover { outline: none; } }`,
+      )
+      expect(css).not.toContain(":not(:hover)")
+    },
+  )
 
   it("keeps focus-ring utilities out of the rows' @apply, where the class sorter would move them", () => {
     // Each row above draws its ring in a standalone rule placed after its
