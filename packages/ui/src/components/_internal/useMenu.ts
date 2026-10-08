@@ -16,6 +16,16 @@ export interface OpenSubmenuEntry {
   close: () => void
 }
 
+/**
+ * A row hidden by a stylesheet, such as a responsive alternative to another
+ * control, cannot take focus, so navigation passes over it like a disabled row.
+ */
+function isSkipped(item: MenuItemDescriptor | undefined): boolean {
+  if (!item || item.disabled) return true
+  const node = item.ref.current
+  return node !== null && getComputedStyle(node).display === "none"
+}
+
 export interface UseMenuOptions {
   open?: boolean
   defaultOpen?: boolean
@@ -145,7 +155,7 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
           if (!loop) return from === -1 ? -1 : from
           i = 0
         }
-        if (!list[i]?.disabled) return i
+        if (!isSkipped(list[i])) return i
       }
       return -1
     },
@@ -155,7 +165,7 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
   const focusFirst = React.useCallback(() => {
     const list = sortItems()
     for (let i = 0; i < list.length; i += 1) {
-      if (!list[i]?.disabled) {
+      if (!isSkipped(list[i])) {
         setFocusedIndex(i)
         return
       }
@@ -166,7 +176,7 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
   const focusLast = React.useCallback(() => {
     const list = sortItems()
     for (let i = list.length - 1; i >= 0; i -= 1) {
-      if (!list[i]?.disabled) {
+      if (!isSkipped(list[i])) {
         setFocusedIndex(i)
         return
       }
@@ -221,7 +231,7 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
       for (let step = startOffset; step <= len; step += 1) {
         const i = (startIndex + step) % len
         const item = list[i]
-        if (!item || item.disabled) continue
+        if (!item || isSkipped(item)) continue
         if (item.textValue.toLowerCase().startsWith(buffer)) {
           setFocusedIndex(i)
           return i
