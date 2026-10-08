@@ -30,6 +30,7 @@ import {
   type ThemeSeed,
 } from "./helpers/app"
 import { alphaOf, minContrastOver, settle } from "./helpers/measure"
+import { shadowLayers } from "./helpers/showcase"
 
 /** A page that renders enough chrome to prove tokens reach real components. */
 const PROBE = "/components/buttons"
@@ -120,9 +121,7 @@ async function luminanceSpread(page: Page, clip: Box): Promise<number> {
 /** Blur radii of the outset shadow layers that paint, in order. */
 function dropShadowBlurs(shadow: string): number[] {
   if (shadow === "none") return []
-  return shadow
-    .split(/,(?![^(]*\))/)
-    .map((layer) => layer.trim())
+  return shadowLayers(shadow)
     .filter(
       (layer) =>
         !layer.endsWith("inset") &&

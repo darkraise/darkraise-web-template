@@ -9,6 +9,7 @@ import {
   settle,
   type Rgb,
 } from "./helpers/measure"
+import { shadowLayers } from "./helpers/showcase"
 
 /**
  * Style and theme tokens. Each block measures one rule through computed
@@ -207,11 +208,9 @@ test.describe("dark elevation", () => {
 })
 
 function isAllTransparent(shadow: string): boolean {
-  return shadow
-    .split(/,(?![^(]*\))/)
-    .every((layer) =>
-      /rgba\(0, 0, 0, 0\)|transparent|^none$/.test(layer.trim()),
-    )
+  return shadowLayers(shadow).every((layer) =>
+    /rgba\(0, 0, 0, 0\)|transparent|^none$/.test(layer),
+  )
 }
 
 test.describe("tactile surfaces", () => {

@@ -8,6 +8,7 @@ import {
   seedApp,
 } from "./helpers/app"
 import { contrast, pixel, settle } from "./helpers/measure"
+import { shadowLayers } from "./helpers/showcase"
 
 const SHELL_STYLES = [
   "classic",
@@ -97,10 +98,9 @@ const REGION_PAINT: Record<ShellStyle, RegionPaint> = {
 /** Box-shadow layers that paint, leaving out fully transparent ones. */
 function paintedLayers(shadow: string): string[] {
   if (shadow === "none") return []
-  return shadow
-    .split(/,(?![^(]*\))/)
-    .map((layer) => layer.trim())
-    .filter((layer) => !layer.startsWith("rgba(0, 0, 0, 0) "))
+  return shadowLayers(shadow).filter(
+    (layer) => !layer.startsWith("rgba(0, 0, 0, 0) "),
+  )
 }
 
 /** Border widths in top, right, bottom, left order. */
@@ -510,7 +510,7 @@ test.describe("shell style geometry", () => {
     // shell's own background stage, and the regions fill every grid cell, so
     // they cover it completely — present in the computed style, invisible on
     // screen.
-    const rings = geom.shadow.split(/,(?![^(]*\))/).map((r) => r.trim())
+    const rings = shadowLayers(geom.shadow)
     expect(
       rings.some((r) => r.includes("1px") && !r.includes("inset")),
       `frame ring must be outset; got: ${geom.shadow}`,

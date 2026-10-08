@@ -22,6 +22,25 @@ const nav = (page: Page) =>
 const current = (page: Page) => nav(page).locator(".dr-sidebar-nav-current")
 const indicator = (page: Page) => nav(page).locator(".dr-sidebar-nav-indicator")
 
+/**
+ * Each colour value as a child of the element resolves it, so custom
+ * properties set on the element or its ancestors apply.
+ */
+function resolveColours(locator: Locator, values: string[]) {
+  return locator.evaluate(
+    (el, list) =>
+      list.map((value) => {
+        const probe = document.createElement("span")
+        probe.style.color = value
+        el.append(probe)
+        const color = getComputedStyle(probe).color
+        probe.remove()
+        return color
+      }),
+    values,
+  )
+}
+
 async function box(locator: Locator) {
   const found = await locator.boundingBox()
   if (!found) throw new Error("element is not rendered")
@@ -106,21 +125,12 @@ for (const [style, mode] of [
       )
       await expect(entry).toHaveCount(1)
       await settle(page)
-      const seen = await entry.evaluate((el) => {
-        const resolve = (value: string) => {
-          const probe = document.createElement("span")
-          probe.style.color = value
-          el.append(probe)
-          const color = getComputedStyle(probe).color
-          probe.remove()
-          return color
-        }
-        return {
-          label: getComputedStyle(el).color,
-          foreground: resolve("hsl(var(--sidebar-foreground))"),
-          foregroundHover: resolve("hsl(var(--sidebar-foreground-hover))"),
-        }
-      })
+      const label = await entry.evaluate((el) => getComputedStyle(el).color)
+      const [foreground, foregroundHover] = await resolveColours(entry, [
+        "hsl(var(--sidebar-foreground))",
+        "hsl(var(--sidebar-foreground-hover))",
+      ])
+      const seen = { label, foreground, foregroundHover }
       // The plain nav label colours: an entry painted in either carries no cue.
       expect(seen.label, "label against --sidebar-foreground").not.toBe(
         seen.foreground,
@@ -295,15 +305,6 @@ for (const look of ["chip", "tile"] as const) {
         if (!found) throw new Error(`no ${selector}`)
         return getComputedStyle(found)
       }
-      // Resolve a token the way the rail would, from inside the row.
-      const resolve = (value: string) => {
-        const probe = document.createElement("span")
-        probe.style.color = value
-        el.append(probe)
-        const color = getComputedStyle(probe).color
-        probe.remove()
-        return color
-      }
       const moved = el
         .closest(".dr-stacked-layout-rail-nav")
         ?.querySelector(".dr-sidebar-nav-indicator")
@@ -312,18 +313,24 @@ for (const look of ["chip", "tile"] as const) {
         glyph: pick(".dr-sidebar-nav-icon-svg").color,
         tile: pick(".dr-sidebar-nav-icon").backgroundColor,
         chip: getComputedStyle(moved).backgroundColor,
-        primaryText: resolve("hsl(var(--primary-text))"),
-        primaryFill: resolve("hsl(var(--primary-fill))"),
-        primaryForeground: resolve("hsl(var(--primary-foreground))"),
       }
     })
+    // Resolve each token the way the rail would, from inside the row.
+    const [primaryText, primaryFill, primaryForeground] = await resolveColours(
+      item,
+      [
+        "hsl(var(--primary-text))",
+        "hsl(var(--primary-fill))",
+        "hsl(var(--primary-foreground))",
+      ],
+    )
     if (look === "tile") {
-      expect(seen.tile).toBe(seen.primaryFill)
-      expect(seen.glyph).toBe(seen.primaryForeground)
+      expect(seen.tile).toBe(primaryFill)
+      expect(seen.glyph).toBe(primaryForeground)
       // An icon rail shows the tile without the chip around it.
       expect(seen.chip).toBe("rgba(0, 0, 0, 0)")
     } else {
-      expect(seen.glyph).toBe(seen.primaryText)
+      expect(seen.glyph).toBe(primaryText)
       expect(seen.tile).toBe("rgba(0, 0, 0, 0)")
     }
   })

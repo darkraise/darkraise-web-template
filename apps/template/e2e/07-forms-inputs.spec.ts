@@ -1,16 +1,11 @@
 import { test, expect, type Page } from "@playwright/test"
 import { attrOf, boxOf, gotoApp, seedApp, watchConsole } from "./helpers/app"
+import { example } from "./helpers/showcase"
 
 async function open(page: Page, path: string) {
   await seedApp(page)
   await gotoApp(page, path)
   return page.locator("main")
-}
-
-function example(page: Page, title: string) {
-  return page.locator("main [data-showcase-example]").filter({
-    has: page.getByText(title, { exact: true }),
-  })
 }
 
 test.describe("text entry", () => {
