@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test"
+import { generateTokens } from "darkraise-ui/theme"
 import {
   ACCENT_COLORS,
   BACKGROUND_INTENSITIES,
@@ -310,12 +311,45 @@ test.describe("mode axis", () => {
   })
 })
 
+type TokenInput = Parameters<typeof generateTokens>[0]
+
+/**
+ * The --primary the kit token generator gives an accent on a quiet light
+ * page whose other axes are the ones stamped on its <html>.
+ */
+function primaryFor(accent: string, attrs: Record<string, string>) {
+  return generateTokens({
+    accentColor: accent as TokenInput["accentColor"],
+    surfaceColor: attrs["data-surface"] as TokenInput["surfaceColor"],
+    frosted: false,
+    backgroundStyle: attrs[
+      "data-background-style"
+    ] as TokenInput["backgroundStyle"],
+    mode: "light",
+    contrast: attrs["data-contrast"] as TokenInput["contrast"],
+    darkAccentChroma: attrs[
+      "data-dark-accent-chroma"
+    ] as TokenInput["darkAccentChroma"],
+    tintWithAccent: attrs["data-tint-with-accent"] === "on",
+    backgroundIntensity: attrs[
+      "data-background-intensity"
+    ] as TokenInput["backgroundIntensity"],
+  })["--primary"]
+}
+
 test.describe("accent color axis", () => {
   for (const accent of ACCENT_COLORS) {
     test(`accent "${accent}" drives --primary`, async ({ page }) => {
       await seedApp(page, { accent, style: "quiet", mode: "light" })
       await gotoApp(page, PROBE)
-      expect(await readToken(page, "--primary"), accent).not.toBe("")
+      const attrs = await readThemeAttrs(page)
+      const primary = await readToken(page, "--primary")
+      expect(primary, accent).toBe(primaryFor(accent, attrs))
+      if (accent !== "neutral") {
+        expect(primary, `${accent} against neutral`).not.toBe(
+          primaryFor("neutral", attrs),
+        )
+      }
     })
   }
 

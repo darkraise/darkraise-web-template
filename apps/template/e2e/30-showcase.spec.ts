@@ -456,10 +456,22 @@ test.describe("marquee copies cover the container", () => {
       page,
     }) => {
       await openShowcase(page, "/components/marquee", { rtl })
-      await expect(page.locator("#main-content .dr-marquee")).toHaveCount(7)
-      await expect(
-        page.locator('#main-content .dr-marquee[data-reverse="true"]'),
-      ).toHaveCount(2)
+      // At least the demos the page had when this was written, so a lost
+      // demo fails while a new one is simply checked too.
+      await expect
+        .poll(() => page.locator("#main-content .dr-marquee").count(), {
+          message: "marquee demos",
+        })
+        .toBeGreaterThanOrEqual(7)
+      await expect
+        .poll(
+          () =>
+            page
+              .locator('#main-content .dr-marquee[data-reverse="true"]')
+              .count(),
+          { message: "reversed marquee demos" },
+        )
+        .toBeGreaterThanOrEqual(2)
       const failures = await gaps(page)
       expect(failures, failures.join("\n")).toEqual([])
     })

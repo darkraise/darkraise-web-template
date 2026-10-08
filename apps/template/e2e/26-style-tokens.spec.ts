@@ -72,7 +72,9 @@ test.describe("colour scheme", () => {
       input.id = "probe-date"
       input.style.width = "220px"
       input.style.color = "transparent"
-      document.querySelector("#main-content")?.prepend(input)
+      const main = document.querySelector("#main-content")
+      if (!main) throw new Error("no #main-content")
+      main.prepend(input)
     })
     const field = page.locator("#probe-date")
     await field.scrollIntoViewIfNeeded()
@@ -415,20 +417,8 @@ test.describe("sidebar collapsible", () => {
     const toggle = page.locator(
       '.dr-sidebar-nav-chevron-button[aria-label="Products"]',
     )
-    if ((await toggle.getAttribute("aria-expanded")) === "true") {
-      await toggle.click()
-      await expect(toggle).toHaveAttribute("aria-expanded", "false")
-      await expect
-        .poll(() =>
-          page.evaluate(
-            () =>
-              document
-                .querySelector(".dr-sidebar-nav-collapsible-content")
-                ?.getBoundingClientRect().height ?? 0,
-          ),
-        )
-        .toBe(0)
-    }
+    // Products starts collapsed on the dashboard, so the click below opens it.
+    await expect(toggle).toHaveAttribute("aria-expanded", "false")
     const heights = await page.evaluate(async () => {
       const button = document.querySelector<HTMLElement>(
         '.dr-sidebar-nav-chevron-button[aria-label="Products"]',
