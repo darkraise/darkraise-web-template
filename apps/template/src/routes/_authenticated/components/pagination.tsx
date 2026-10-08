@@ -147,7 +147,7 @@ function PaginationPage() {
       <ShowcaseExample
         title="Pagination with ellipsis"
         code={`<Pagination>
-  <PaginationContent className="flex-wrap justify-center">
+  <PaginationContent>
     <PaginationItem><PaginationPrevious href="#" /></PaginationItem>
     <PaginationItem><PaginationLink href="#" isActive>1</PaginationLink></PaginationItem>
     <PaginationItem><PaginationEllipsis /></PaginationItem>
@@ -161,7 +161,7 @@ function PaginationPage() {
 </Pagination>`}
       >
         <Pagination>
-          <PaginationContent className="flex-wrap justify-center">
+          <PaginationContent>
             <PaginationItem>
               <PaginationPrevious
                 href="#"
