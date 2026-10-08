@@ -201,20 +201,31 @@ test.describe("header", () => {
     })
   }
 
+  const BAR_SCALES = [
+    { name: "", theme: {} },
+    {
+      name: " at spacious density and the largest font",
+      theme: { density: "spacious", fontSize: "extra-large" },
+    },
+  ]
   for (const shellStyle of ["floating", "island"]) {
-    test(`the inbox bar fits in the ${shellStyle} shell`, async ({ page }) => {
-      await seedApp(page, { shellStyle })
-      await gotoApp(page, "/inbox")
-      const header = page.locator("header.dr-layout-header").first()
-      await expect(header.locator(".dr-user-menu-trigger")).toBeVisible()
-      const bar = await header.evaluate((el) => ({
-        scrollWidth: el.scrollWidth,
-        clientWidth: el.clientWidth,
-      }))
-      expect(bar.scrollWidth, JSON.stringify(bar)).toBeLessThanOrEqual(
-        bar.clientWidth,
-      )
-    })
+    for (const scale of BAR_SCALES) {
+      test(`the inbox bar fits in the ${shellStyle} shell${scale.name}`, async ({
+        page,
+      }) => {
+        await seedApp(page, { shellStyle, ...scale.theme })
+        await gotoApp(page, "/inbox")
+        const header = page.locator("header.dr-layout-header").first()
+        await expect(header.locator(".dr-user-menu-trigger")).toBeVisible()
+        const bar = await header.evaluate((el) => ({
+          scrollWidth: el.scrollWidth,
+          clientWidth: el.clientWidth,
+        }))
+        expect(bar.scrollWidth, JSON.stringify(bar)).toBeLessThanOrEqual(
+          bar.clientWidth,
+        )
+      })
+    }
   }
 
   test("the layout is chosen from the user menu", async ({ page }) => {
