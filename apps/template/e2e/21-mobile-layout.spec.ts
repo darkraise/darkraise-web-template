@@ -503,3 +503,27 @@ test.describe("sheets", () => {
     })
   }
 })
+
+test.describe("auth language picker", () => {
+  test.beforeEach(async ({ page }) => {
+    await seedApp(
+      page,
+      { style: "quiet", mode: "light" },
+      { authenticated: false },
+    )
+  })
+
+  for (const path of ["/login", "/register"]) {
+    test(`${path} keeps the picker in the corner`, async ({ page }) => {
+      await gotoApp(page, path)
+      const column = await boxOf(page.locator("[data-auth-form-column]"))
+      const picker = await boxOf(page.locator("[data-auth-locale]"))
+      const heading = await boxOf(page.getByRole("heading", { level: 1 }))
+      expect(
+        column.x + column.width - (picker.x + picker.width),
+      ).toBeLessThanOrEqual(32)
+      expect(picker.y - column.y).toBeLessThanOrEqual(32)
+      expect(picker.y + picker.height).toBeLessThanOrEqual(heading.y)
+    })
+  }
+})

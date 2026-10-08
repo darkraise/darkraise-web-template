@@ -384,23 +384,21 @@ test.describe("auth language picker", () => {
     )
   })
 
-  for (const width of [1440, 390]) {
-    for (const path of ["/login", "/register"]) {
-      test(`${path} at ${width}px keeps the picker in the corner`, async ({
-        page,
-      }) => {
-        await page.setViewportSize({ width, height: 900 })
-        await gotoApp(page, path)
-        const column = await boxOf(page.locator("[data-auth-form-column]"))
-        const picker = await boxOf(page.locator("[data-auth-locale]"))
-        const heading = await boxOf(page.getByRole("heading", { level: 1 }))
-        expect(
-          column.x + column.width - (picker.x + picker.width),
-        ).toBeLessThanOrEqual(32)
-        expect(picker.y - column.y).toBeLessThanOrEqual(32)
-        expect(picker.y + picker.height).toBeLessThanOrEqual(heading.y)
-      })
-    }
+  for (const path of ["/login", "/register"]) {
+    test(`${path} at 1440px keeps the picker in the corner`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width: 1440, height: 900 })
+      await gotoApp(page, path)
+      const column = await boxOf(page.locator("[data-auth-form-column]"))
+      const picker = await boxOf(page.locator("[data-auth-locale]"))
+      const heading = await boxOf(page.getByRole("heading", { level: 1 }))
+      expect(
+        column.x + column.width - (picker.x + picker.width),
+      ).toBeLessThanOrEqual(32)
+      expect(picker.y - column.y).toBeLessThanOrEqual(32)
+      expect(picker.y + picker.height).toBeLessThanOrEqual(heading.y)
+    })
   }
 })
 
