@@ -1,5 +1,7 @@
 import { createRoot } from "react-dom/client"
 import { Bold, Italic, Underline } from "lucide-react"
+import { Button } from "darkraise-ui/components/button"
+import { ButtonGroup } from "darkraise-ui/components/button-group"
 import { Listbox, ListboxItem } from "darkraise-ui/components/listbox"
 import {
   ResizableHandle,
@@ -111,6 +113,17 @@ createRoot(root).render(
             </PaginationItem>
           </PaginationContent>
         </Pagination>
+      </div>
+      <div
+        data-probe="button-group"
+        style={{ display: "flex", flexDirection: "column", gap: 8 }}
+      >
+        {(["default", "secondary", "destructive"] as const).map((variant) => (
+          <ButtonGroup key={variant} aria-label={variant}>
+            <Button variant={variant}>Day</Button>
+            <Button variant={variant}>Week</Button>
+          </ButtonGroup>
+        ))}
       </div>
       <div data-probe="resizable" style={{ width: 200, height: 60 }}>
         <ResizablePanelGroup orientation="horizontal">

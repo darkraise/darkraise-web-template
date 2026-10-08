@@ -28,6 +28,29 @@
     border-end-start-radius: 0;
     border-end-end-radius: 0;
   }
+  /* Filled buttons have no edge between them, so a row of them reads as one
+     block. A filled button that follows another child paints its own start
+     border, which already overlaps the neighbour by 1px, as a seam: the page
+     colour at 35% over its fill. Outline keeps its shared edge, and ghost
+     and link paint no fill to separate. */
+  .dr-button-group[data-orientation="horizontal"]
+    > *
+    + .dr-btn:is(
+      [data-variant="default"],
+      [data-variant="secondary"],
+      [data-variant="destructive"]
+    ) {
+    border-inline-start-color: hsl(var(--background) / 0.35);
+  }
+  .dr-button-group[data-orientation="vertical"]
+    > *
+    + .dr-btn:is(
+      [data-variant="default"],
+      [data-variant="secondary"],
+      [data-variant="destructive"]
+    ) {
+    border-block-start-color: hsl(var(--background) / 0.35);
+  }
   /* Z-index lift on focus so adjacent borders don't clip */
   .dr-button-group > *:focus,
   .dr-button-group > *:focus-visible {

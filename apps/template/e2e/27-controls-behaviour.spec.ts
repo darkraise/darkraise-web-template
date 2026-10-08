@@ -163,6 +163,32 @@ test.describe("outline variants", () => {
   }
 })
 
+test.describe("button group", () => {
+  for (const mode of MODES) {
+    for (const variant of ["default", "secondary", "destructive"] as const) {
+      test(`draws a seam between ${variant} buttons · ${mode}`, async ({
+        page,
+      }) => {
+        await openInMode(page, mode)
+        const second = await boxOf(
+          probe(page, "button-group", `.dr-btn[data-variant="${variant}"]`).nth(
+            1,
+          ),
+        )
+        const x = Math.round(second.x)
+        const y = Math.round(second.y + second.height / 2)
+        const seam = await pixel(page, x, y)
+        expect(seam, "against the first fill").not.toEqual(
+          await pixel(page, x - 3, y),
+        )
+        expect(seam, "against the second fill").not.toEqual(
+          await pixel(page, x + 3, y),
+        )
+      })
+    }
+  }
+})
+
 test.describe("resizable", () => {
   test("a handle between full panels keeps its divider", async ({ page }) => {
     await openInMode(page, "light")
