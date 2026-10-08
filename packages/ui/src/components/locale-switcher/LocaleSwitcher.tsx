@@ -37,8 +37,9 @@ export interface LocaleSwitcherProps {
   id?: string
   className?: string
   "aria-label"?: string
-  /** Below 640px the trigger shows only the icon; the name stays readable to
-   * assistive technology. */
+  /** Below 640px the trigger shows only the selected language's icon; the
+   * name stays readable to assistive technology. A language without an icon
+   * keeps its name. */
   compact?: boolean
 }
 export function LocaleSwitcher({
@@ -66,6 +67,9 @@ export function LocaleSwitcher({
         aria-label={label ?? labels.common.language}
         aria-busy={pending || undefined}
         data-compact={compact ? "true" : undefined}
+        data-compact-icon={
+          compact && selected?.icon != null ? "true" : undefined
+        }
       >
         <SelectValue>
           {selected ? <OptionLabel option={selected} /> : undefined}

@@ -25,7 +25,7 @@
   }
 
   @media (width < 40rem) {
-    [data-compact] .dr-locale-option-label {
+    [data-compact-icon] .dr-locale-option-label {
       @apply sr-only;
     }
   }

@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs"
 import { render, screen, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { expect, it, vi } from "vitest"
@@ -101,4 +102,35 @@ it("marks a compact trigger and classes every language name", async () => {
   ).toHaveClass("dr-locale-option-label")
   rerender(view())
   expect(trigger).not.toHaveAttribute("data-compact")
+})
+
+it("hides a compact trigger's name only beside the selected icon", () => {
+  const options = [
+    { locale: "en", label: "English", icon: <svg data-testid="en-flag" /> },
+    { locale: "fr", label: "Français" },
+  ]
+  const view = (value: string) => (
+    <LocaleSwitcher
+      value={value}
+      options={options}
+      onValueChange={vi.fn()}
+      compact
+    />
+  )
+  const { rerender } = render(view("en"))
+  const trigger = screen.getByRole("combobox", { name: "Language" })
+  expect(trigger).toHaveAttribute("data-compact-icon", "true")
+  rerender(view("fr"))
+  expect(trigger).toHaveAttribute("data-compact", "true")
+  expect(trigger).not.toHaveAttribute("data-compact-icon")
+
+  // Paths resolve from the vitest project root, packages/ui.
+  const css = readFileSync(
+    "src/components/locale-switcher/locale-switcher.css",
+    "utf8",
+  ).replace(/\s+/g, " ")
+  expect(css).toContain(
+    "[data-compact-icon] .dr-locale-option-label { @apply sr-only; }",
+  )
+  expect(css).not.toContain("[data-compact] .dr-locale-option-label")
 })
