@@ -56,6 +56,16 @@ host network churn: when Docker adds or removes a container's network
 interface, Chromium aborts in-flight requests with `net::ERR_NETWORK_CHANGED`,
 and a page whose module load was cut never renders. The one retry covers it.
 
+**Traces.** Local runs record a trace only on the retry (`on-first-retry`),
+so a test that fails once and then passes leaves no trace of the failure. Set
+`E2E_TRACE=1` to keep the trace of every first failed attempt instead
+(`retain-on-first-failure`, always on in CI), and open it with
+`pnpm exec playwright show-trace <test-results/.../trace.zip>`:
+
+```bash
+E2E_TRACE=1 TMPDIR=/root/.cache/pw-tmp pnpm test:e2e
+```
+
 ## How the suite talks to the app
 
 - **Auth** is seeded through `localStorage` (`auth-token`, `auth-user`) by

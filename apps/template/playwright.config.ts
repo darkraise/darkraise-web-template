@@ -2,6 +2,10 @@ import { defineConfig, devices } from "@playwright/test"
 
 const baselineIgnore = process.env.BASELINE ? [] : ["**/18-baseline.spec.ts"]
 const mobileSpec = "**/21-mobile-layout.spec.ts"
+/* A flake that passes on retry leaves no trace under on-first-retry, so its
+   cause is lost. E2E_TRACE=1 (and CI) keep the trace of the first failed
+   attempt instead; local runs stay cheap by default. */
+const traceFirstFailure = process.env.E2E_TRACE === "1" || !!process.env.CI
 
 export default defineConfig({
   testDir: "./e2e",
@@ -27,7 +31,7 @@ export default defineConfig({
   expect: { timeout: 10_000 },
   use: {
     baseURL: "http://localhost:5176",
-    trace: "on-first-retry",
+    trace: traceFirstFailure ? "retain-on-first-failure" : "on-first-retry",
     screenshot: "only-on-failure",
   },
   /* A project's testIgnore replaces the top-level one, so the baseline
