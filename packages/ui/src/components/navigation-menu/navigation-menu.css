@@ -8,7 +8,7 @@
   }
 
   .dr-navigation-menu-trigger {
-    @apply focus:bg-accent focus:text-accent-foreground data-[state=open]:text-accent-foreground data-[state=open]:bg-accent/50 data-[state=open]:focus:bg-accent inline-flex w-max cursor-pointer items-center justify-center rounded-md bg-transparent px-[var(--btn-px)] py-[var(--btn-px-tight)] text-sm font-medium transition-colors focus:outline-none disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)];
+    @apply focus:bg-accent focus:text-accent-foreground data-[state=open]:text-accent-foreground data-[state=open]:bg-accent/50 data-[state=open]:focus:bg-accent inline-flex w-max cursor-pointer items-center justify-center rounded-md bg-transparent px-[var(--btn-px)] py-[var(--btn-py-tight)] text-sm font-medium transition-colors focus:outline-none disabled:cursor-not-allowed disabled:opacity-[var(--disabled-opacity)];
   }
 
   /* Hover as a rule rather than `hover:` utilities: a disabled trigger keeps

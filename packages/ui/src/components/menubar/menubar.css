@@ -1,10 +1,10 @@
 @layer components {
   .dr-menubar {
-    @apply flex items-center space-x-1 rounded-md border bg-transparent p-1 py-[var(--btn-px-tight)];
+    @apply flex items-center space-x-1 rounded-md border bg-transparent p-1 py-[var(--btn-py-tight)];
   }
 
   .dr-menubar-trigger {
-    @apply focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex cursor-pointer items-center rounded-sm px-[var(--btn-px)] py-[var(--btn-px-tight)] text-sm font-medium transition-colors outline-none select-none;
+    @apply focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground flex cursor-pointer items-center rounded-sm px-[var(--btn-px)] py-[var(--btn-py-tight)] text-sm font-medium transition-colors outline-none select-none;
   }
   @media (hover: hover) {
     .dr-menubar-trigger:hover {

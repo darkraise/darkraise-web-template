@@ -70,10 +70,26 @@ describe("button family tokens", () => {
     ["compact", "0.5rem", "0.25rem"],
     ["comfortable", "1rem", "0.5rem"],
     ["spacious", "1.25rem", "0.625rem"],
-  ])("%s sets --btn-px %s and --btn-px-tight %s", (step, px, tight) => {
+  ])("%s sets --btn-px %s and both tight paddings %s", (step, px, tight) => {
     const block = step === ":root" ? flat(THEME) : densityBlock(step)
     expect(block).toContain(`--btn-px: ${px};`)
     expect(block).toContain(`--btn-px-tight: ${tight};`)
+    expect(block).toContain(`--btn-py-tight: ${tight};`)
+  })
+
+  it("reads --btn-px-tight only as inline padding", () => {
+    expect(
+      readersOf(
+        /(?<![\w-])py-\[[^\]]*--btn-px-tight|padding-block[^;]*--btn-px-tight/,
+      ),
+    ).toEqual([])
+  })
+
+  it("gives menubar and navigation-menu the vertical tight padding", () => {
+    expect(readersOf(/(?<![\w-])py-\[var\(--btn-py-tight\)\]/).sort()).toEqual([
+      "src/components/menubar/menubar.css",
+      "src/components/navigation-menu/navigation-menu.css",
+    ])
   })
 
   it("leaves no reader of --density-button-px or --density-button-py", () => {
