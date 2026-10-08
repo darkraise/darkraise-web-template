@@ -142,7 +142,7 @@ test.describe("coarse pointer", () => {
         ).toBeGreaterThanOrEqual(floor - 0.5)
       }
       // Calendar days are buttons but must not take the floor: they would
-      // overflow their density-sized cells (Task 3, Step 7).
+      // overflow their density-sized cells.
       const cell = page
         .locator('[data-probe="calendar"] .dr-calendar-day')
         .nth(10)

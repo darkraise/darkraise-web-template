@@ -301,7 +301,7 @@ test.describe("showcase sweep", () => {
   }
 })
 
-test.describe("row 68 and 76: matrix columns fit their content", () => {
+test.describe("matrix columns fit their content", () => {
   const PAGES = [
     "/components/scroll-area",
     "/components/slider",
@@ -361,7 +361,7 @@ test.describe("row 68 and 76: matrix columns fit their content", () => {
   }
 })
 
-test.describe("row 69: tags input clear trigger fits its label", () => {
+test.describe("tags input clear trigger fits its label", () => {
   test("the clear label sits on one line inside its trigger", async ({
     page,
   }) => {
@@ -395,7 +395,7 @@ test.describe("row 69: tags input clear trigger fits its label", () => {
   })
 })
 
-test.describe("row 75: marquee copies cover the container", () => {
+test.describe("marquee copies cover the container", () => {
   const PROGRESS = [0, 0.5, 0.99]
 
   /** Pauses every marquee at each progress and reports what is left bare. */
@@ -469,7 +469,7 @@ test.describe("row 75: marquee copies cover the container", () => {
   }
 })
 
-test.describe("row 93: toggle bar starts at the content edge", () => {
+test.describe("toggle bar starts at the content edge", () => {
   test("the first toggle sits at its preview card's content start", async ({
     page,
   }) => {
@@ -495,7 +495,7 @@ test.describe("row 93: toggle bar starts at the content edge", () => {
   })
 })
 
-test.describe("row 60: carousel arrows stay inside their card", () => {
+test.describe("carousel arrows stay inside their card", () => {
   test("every arrow lies inside its card and the vertical slide fills its viewport", async ({
     page,
   }) => {
@@ -554,7 +554,7 @@ test.describe("row 60: carousel arrows stay inside their card", () => {
   })
 })
 
-test.describe("row 61: dual-series charts use the plot height", () => {
+test.describe("dual-series charts use the plot height", () => {
   const CHARTS = ["Revenue vs Orders", "Visitors vs Conversions"]
 
   for (const title of CHARTS) {
@@ -592,7 +592,7 @@ test.describe("row 61: dual-series charts use the plot height", () => {
   }
 })
 
-test.describe("row 62: stacked avatars keep their initials whole", () => {
+test.describe("stacked avatars keep their initials whole", () => {
   const GROUPS = ["Avatar group (stacked)", "Group with +N overflow"]
 
   for (const title of GROUPS) {
@@ -625,7 +625,7 @@ test.describe("row 62: stacked avatars keep their initials whole", () => {
   }
 })
 
-test.describe("row 67: the app-scope panel starts closed", () => {
+test.describe("the app-scope panel starts closed", () => {
   test("no app-scope panel covers the title or the sidebar after load", async ({
     page,
   }) => {
@@ -677,7 +677,7 @@ test.describe("row 67: the app-scope panel starts closed", () => {
   })
 })
 
-test.describe("row 73: shell-style previews", () => {
+test.describe("shell-style previews", () => {
   const REGIONS: Record<string, string[]> = {
     sidebar: ["bar", "content", "nav"],
     "top-nav": ["bar", "content"],
@@ -725,7 +725,7 @@ test.describe("row 73: shell-style previews", () => {
   })
 })
 
-test.describe("row 74: signature pad Clear button", () => {
+test.describe("signature pad Clear button", () => {
   test("Clear sits at least 8px below the custom-stroke canvas", async ({
     page,
   }) => {
@@ -744,7 +744,7 @@ test.describe("row 74: signature pad Clear button", () => {
   })
 })
 
-test.describe("row 91: kitchen-sink radio alignment", () => {
+test.describe("kitchen-sink radio alignment", () => {
   test("each radio row centres on a checkbox row", async ({ page }) => {
     await openShowcase(page, "/components/kitchen-sink")
     const choices = page.locator('[data-family="choices"]')
@@ -771,7 +771,7 @@ test.describe("row 91: kitchen-sink radio alignment", () => {
   })
 })
 
-test.describe("row 92: calendar custom cell size", () => {
+test.describe("calendar custom cell size", () => {
   test("custom-size day cells are wider than the basic calendar cells", async ({
     page,
   }) => {
@@ -789,7 +789,7 @@ test.describe("row 92: calendar custom cell size", () => {
   })
 })
 
-test.describe("row 93: showcase nits", () => {
+test.describe("showcase nits", () => {
   const example = (page: Page, title: string) =>
     page.locator("[data-showcase-example]").filter({
       has: page.getByText(title, { exact: true }),
@@ -868,7 +868,7 @@ test.describe("row 93: showcase nits", () => {
   })
 })
 
-test.describe("row 96: menubar matrix cells fit their trigger", () => {
+test.describe("menubar matrix cells fit their trigger", () => {
   test("each side x align Menubar is no wider than its trigger plus 16px", async ({
     page,
   }) => {
@@ -901,7 +901,7 @@ test.describe("row 96: menubar matrix cells fit their trigger", () => {
   })
 })
 
-test.describe("row 98: stock ticker deltas", () => {
+test.describe("stock ticker deltas", () => {
   test("gains and losses use subtle status badges with arrows", async ({
     page,
   }) => {
@@ -929,7 +929,7 @@ test.describe("row 98: stock ticker deltas", () => {
   })
 })
 
-test.describe("row 100: password strength meter", () => {
+test.describe("password strength meter", () => {
   for (const mode of ["light", "dark"] as const) {
     test(`${mode}: the meter shows at rest and its empty segments read against the card`, async ({
       page,
@@ -1015,7 +1015,7 @@ test.describe("row 100: password strength meter", () => {
   })
 })
 
-test.describe("row 197: frame demos follow the colour scheme", () => {
+test.describe("frame demos follow the colour scheme", () => {
   /** The cross-origin External site demo is the only frame with a src. */
   const SAME_ORIGIN_FRAMES = "iframe.dr-frame:not([src])"
 
@@ -1099,7 +1099,7 @@ test.describe("row 197: frame demos follow the colour scheme", () => {
   })
 })
 
-test.describe("row 208: tree-view empty placeholder", () => {
+test.describe("tree-view empty placeholder", () => {
   /** Left edge of the first non-blank text node inside the element. */
   const textStart = (el: Element) => {
     const walker = el.ownerDocument.createTreeWalker(el, NodeFilter.SHOW_TEXT)
@@ -1134,7 +1134,7 @@ test.describe("row 208: tree-view empty placeholder", () => {
   })
 })
 
-test.describe("row 223: rating half star under right-to-left", () => {
+test.describe("rating half star under right-to-left", () => {
   for (const rtl of [true, false]) {
     const [startName, endName] = rtl ? ["right", "left"] : ["left", "right"]
     test(`${rtl ? "rtl" : "ltr"}: the filled half lies on the inline-start (${startName}) side`, async ({

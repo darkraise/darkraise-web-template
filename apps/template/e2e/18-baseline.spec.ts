@@ -5,7 +5,7 @@ import { openControlFixture } from "./helpers/controls"
 import { settle } from "./helpers/measure"
 
 /**
- * The screenshot baseline the phase 3 and 4 restyles are compared against:
+ * The screenshot baseline that style and layout changes are compared against:
  * the app and overlay pages under each baseline style, the showcase pages to
  * full height and the kitchen sink with three accent and surface pairs under
  * every style.
