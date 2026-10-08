@@ -281,7 +281,7 @@ function ContextMenuContentImpl({
   })
 
   const setReferenceFloat = floating.refs.setReference
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     if (ctx.isSubmenu) {
       setReferenceFloat(ctx.submenuReference)
       return
@@ -290,12 +290,17 @@ function ContextMenuContentImpl({
     setReferenceFloat(buildVirtualReference(ctx.point))
   }, [ctx.isSubmenu, ctx.submenuReference, ctx.point, setReferenceFloat])
 
+  // The root menu mounts at the viewport origin before the pointer point is
+  // measured; shown there, a still pointer would hover its rows. A hidden
+  // element cannot take focus, so focus waits until the menu is shown.
+  const shown = ctx.isSubmenu || floating.isPositioned
+
   React.useEffect(() => {
-    if (!ctx.open) return
+    if (!ctx.open || !shown) return
     queueMicrotask(() => {
       ctx.contentRef.current?.focus({ preventScroll: true })
     })
-  }, [ctx.open, ctx.contentRef])
+  }, [ctx.open, shown, ctx.contentRef])
 
   const onCloseAutoFocusRef = React.useRef(onCloseAutoFocus)
   React.useEffect(() => {
@@ -381,6 +386,7 @@ function ContextMenuContentImpl({
           position: floating.strategy,
           top: Math.round(floating.y ?? 0),
           left: Math.round(floating.x ?? 0),
+          ...(!shown && { visibility: "hidden" }),
         }}
         className={cn("dr-menu-content", className)}
         {...rest}
