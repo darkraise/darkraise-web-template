@@ -23,8 +23,10 @@
     user-select: none;
   }
 
-  .dr-rating-group-item:hover {
-    @apply scale-110;
+  @media (hover: hover) {
+    .dr-rating-group-item:hover {
+      @apply scale-110;
+    }
   }
 
   .dr-rating-group-item[data-readonly="true"] {
@@ -35,9 +37,11 @@
     @apply cursor-not-allowed;
   }
 
-  .dr-rating-group-item[data-readonly="true"]:hover,
-  .dr-rating-group-item[data-disabled="true"]:hover {
-    transform: none;
+  @media (hover: hover) {
+    .dr-rating-group-item[data-readonly="true"]:hover,
+    .dr-rating-group-item[data-disabled="true"]:hover {
+      transform: none;
+    }
   }
 
   .dr-rating-group[data-readonly="true"]:not([data-disabled="true"])
@@ -45,8 +49,10 @@
     @apply cursor-default;
   }
 
-  .dr-rating-group[data-readonly="true"]:not([data-disabled="true"])
-    .dr-rating-group-item:hover {
-    transform: none;
+  @media (hover: hover) {
+    .dr-rating-group[data-readonly="true"]:not([data-disabled="true"])
+      .dr-rating-group-item:hover {
+      transform: none;
+    }
   }
 }

@@ -31,15 +31,19 @@
   .dr-date-picker-trigger {
     isolation: isolate;
   }
-  .dr-date-picker-trigger:where(:not(:disabled)):hover {
-    @apply text-foreground;
+  @media (hover: hover) {
+    .dr-date-picker-trigger:where(:not(:disabled)):hover {
+      @apply text-foreground;
+    }
   }
   .dr-date-picker-trigger {
     @apply state-layer;
   }
-  .dr-date-picker-trigger:not(:disabled):hover::before {
-    opacity: var(--state-layer-hover);
-    transition-duration: var(--state-layer-in);
+  @media (hover: hover) {
+    .dr-date-picker-trigger:not(:disabled):hover::before {
+      opacity: var(--state-layer-hover);
+      transition-duration: var(--state-layer-in);
+    }
   }
   .dr-date-picker-trigger:not(:disabled):active::before {
     opacity: var(--state-layer-press);

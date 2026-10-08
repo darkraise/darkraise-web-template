@@ -62,9 +62,11 @@
     );
   }
 
-  .dr-tree-view-branch-control:not([data-disabled]):hover,
-  .dr-tree-view-item:not([data-disabled]):hover {
-    @apply bg-accent text-accent-foreground;
+  @media (hover: hover) {
+    .dr-tree-view-branch-control:not([data-disabled]):hover,
+    .dr-tree-view-item:not([data-disabled]):hover {
+      @apply bg-accent text-accent-foreground;
+    }
   }
 
   .dr-tree-view-branch-control[data-focused="true"],
@@ -82,11 +84,15 @@
     box-shadow: var(--affordance-glow);
   }
 
-  .dr-tree-view-branch-control[data-selected="true"]:not([data-disabled]):hover,
-  .dr-tree-view-item[data-selected="true"]:not([data-disabled]):hover {
-    background-color: var(--selected-check-bg);
-    color: var(--selected-check-fg);
-    box-shadow: var(--affordance-glow);
+  @media (hover: hover) {
+    .dr-tree-view-branch-control[data-selected="true"]:not(
+        [data-disabled]
+      ):hover,
+    .dr-tree-view-item[data-selected="true"]:not([data-disabled]):hover {
+      background-color: var(--selected-check-bg);
+      color: var(--selected-check-fg);
+      box-shadow: var(--affordance-glow);
+    }
   }
 
   /* Outline selects with a ring instead of the fill: an inset ring over the
@@ -95,19 +101,28 @@
   .dr-tree-view[data-variant="outline"]
     .dr-tree-view-branch-control[data-selected="true"],
   .dr-tree-view[data-variant="outline"]
-    .dr-tree-view-item[data-selected="true"],
-  .dr-tree-view[data-variant="outline"]
-    .dr-tree-view-branch-control[data-selected="true"]:not(
-      [data-disabled]
-    ):hover,
-  .dr-tree-view[data-variant="outline"]
-    .dr-tree-view-item[data-selected="true"]:not([data-disabled]):hover {
+    .dr-tree-view-item[data-selected="true"] {
     @apply font-medium;
     background-color: transparent;
     color: hsl(var(--primary-text));
     box-shadow:
       inset 0 0 0 1px hsl(var(--primary-text)),
       var(--affordance-glow);
+  }
+  @media (hover: hover) {
+    .dr-tree-view[data-variant="outline"]
+      .dr-tree-view-branch-control[data-selected="true"]:not(
+        [data-disabled]
+      ):hover,
+    .dr-tree-view[data-variant="outline"]
+      .dr-tree-view-item[data-selected="true"]:not([data-disabled]):hover {
+      @apply font-medium;
+      background-color: transparent;
+      color: hsl(var(--primary-text));
+      box-shadow:
+        inset 0 0 0 1px hsl(var(--primary-text)),
+        var(--affordance-glow);
+    }
   }
 
   .dr-tree-view-branch-control[data-disabled="true"],

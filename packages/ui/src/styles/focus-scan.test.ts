@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest"
 import {
   RULES,
   TSX,
+  type Rule,
   classGroups,
   interactiveClasses,
   resolved,
@@ -175,6 +176,24 @@ const SHADOW_OR_RING =
 const FOCUS_VARIANT_SHADOW_OR_RING =
   /(?<![\w-])(?:focus|focus-visible|focus-within):(?:ring|shadow)-(?!0(?![\w-])|none(?![\w-]))/
 
+const flatBody = (rule: Rule) => rule.body.replace(/\s+/g, " ").trim()
+
+/**
+ * A rule painted the same under the pointer is a highlight, not a focus
+ * indicator. Its hover half is gated by `@media (hover: hover)`, so it is the
+ * next rule, carrying the same body.
+ */
+function sharesHover(rule: Rule): boolean {
+  if (rule.selectors.some((s) => s.includes(":hover"))) return true
+  const next = RULES[RULES.indexOf(rule) + 1]
+  return (
+    next !== undefined &&
+    next.path === rule.path &&
+    next.selectors.every((s) => s.includes(":hover")) &&
+    flatBody(next) === flatBody(rule)
+  )
+}
+
 describe("focus indicators are outlines", () => {
   it("draws no focus indicator with box-shadow or a ring", () => {
     const offenders: string[] = []
@@ -190,7 +209,7 @@ describe("focus indicators are outlines", () => {
       }
       const focused = rule.selectors.filter((s) => FOCUS_STATE.test(s))
       if (focused.length === 0) continue
-      if (rule.selectors.some((s) => s.includes(":hover"))) continue
+      if (sharesHover(rule)) continue
       if (FIELD_INDICATOR.test(drawn)) continue
       if (SHADOW_OR_RING.test(drawn)) {
         offenders.push(`${focused.join(", ")} (${rule.path})`)

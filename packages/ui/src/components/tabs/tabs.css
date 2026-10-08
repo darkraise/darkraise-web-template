@@ -449,8 +449,10 @@
      both modes, where a `bg-accent` fill would match the strip. The label
      rule keeps its guard in :where() so it keeps the specificity the
      `hover:` utility had. */
-  .dr-tabs-trigger:where(:not([data-state="active"]):not(:disabled)):hover {
-    @apply text-foreground;
+  @media (hover: hover) {
+    .dr-tabs-trigger:where(:not([data-state="active"]):not(:disabled)):hover {
+      @apply text-foreground;
+    }
   }
 
   /* `relative z-10` already makes each trigger a stacking context, so the
@@ -458,9 +460,11 @@
   .dr-tabs-trigger {
     @apply state-layer;
   }
-  .dr-tabs-trigger:not([data-state="active"]):not(:disabled):hover::before {
-    opacity: var(--state-layer-hover);
-    transition-duration: var(--state-layer-in);
+  @media (hover: hover) {
+    .dr-tabs-trigger:not([data-state="active"]):not(:disabled):hover::before {
+      opacity: var(--state-layer-hover);
+      transition-duration: var(--state-layer-in);
+    }
   }
   .dr-tabs-trigger:not([data-state="active"]):not(:disabled):active::before {
     opacity: var(--state-layer-press);
@@ -470,12 +474,14 @@
   /* The underline trigger is the only variant with no radius of its own
      (its chrome is a bottom border), so the wash needs one. Top corners
      only, so the fill meets the indicator bar square. */
-  .dr-tabs-trigger[data-variant="underline"]:not([data-state="active"]):where(
-      :not(:disabled)
-    ):hover {
-    /* The `rounded-t-sm` utility rounds only the top corners; the radius
-       aliases are `@theme inline` values, emitted as custom properties
-       only where some rule reads them through var(). */
-    @apply rounded-t-sm;
+  @media (hover: hover) {
+    .dr-tabs-trigger[data-variant="underline"]:not([data-state="active"]):where(
+        :not(:disabled)
+      ):hover {
+      /* The `rounded-t-sm` utility rounds only the top corners; the radius
+         aliases are `@theme inline` values, emitted as custom properties
+         only where some rule reads them through var(). */
+      @apply rounded-t-sm;
+    }
   }
 }

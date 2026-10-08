@@ -39,15 +39,17 @@
 
   /* Hold the selected-state colors on hover so the underlying Button ghost
      variant's `hover:bg-accent` does not override the primary fill. */
-  .dr-calendar-day-btn[data-selected-single="true"]:hover,
-  .dr-calendar-day-btn[data-range-start="true"]:hover,
-  .dr-calendar-day-btn[data-range-end="true"]:hover,
-  .dr-calendar-day-btn[data-range-single="true"]:hover {
-    background-color: var(--selected-check-bg);
-    color: var(--selected-check-fg);
-  }
-  .dr-calendar-day-btn[data-range-middle="true"]:hover {
-    @apply bg-accent text-accent-foreground;
+  @media (hover: hover) {
+    .dr-calendar-day-btn[data-selected-single="true"]:hover,
+    .dr-calendar-day-btn[data-range-start="true"]:hover,
+    .dr-calendar-day-btn[data-range-end="true"]:hover,
+    .dr-calendar-day-btn[data-range-single="true"]:hover {
+      background-color: var(--selected-check-bg);
+      color: var(--selected-check-fg);
+    }
+    .dr-calendar-day-btn[data-range-middle="true"]:hover {
+      @apply bg-accent text-accent-foreground;
+    }
   }
 
   /* Affordance glow on the selected day cells — a style can bind a primary

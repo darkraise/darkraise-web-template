@@ -75,21 +75,25 @@
     position: relative;
     isolation: isolate;
   }
-  .dr-editable-edit-trigger:where(:not(:disabled)):hover,
-  .dr-editable-submit-trigger:where(:not(:disabled)):hover,
-  .dr-editable-cancel-trigger:where(:not(:disabled)):hover {
-    @apply text-foreground;
+  @media (hover: hover) {
+    .dr-editable-edit-trigger:where(:not(:disabled)):hover,
+    .dr-editable-submit-trigger:where(:not(:disabled)):hover,
+    .dr-editable-cancel-trigger:where(:not(:disabled)):hover {
+      @apply text-foreground;
+    }
   }
   .dr-editable-edit-trigger,
   .dr-editable-submit-trigger,
   .dr-editable-cancel-trigger {
     @apply state-layer;
   }
-  .dr-editable-edit-trigger:not(:disabled):hover::before,
-  .dr-editable-submit-trigger:not(:disabled):hover::before,
-  .dr-editable-cancel-trigger:not(:disabled):hover::before {
-    opacity: var(--state-layer-hover);
-    transition-duration: var(--state-layer-in);
+  @media (hover: hover) {
+    .dr-editable-edit-trigger:not(:disabled):hover::before,
+    .dr-editable-submit-trigger:not(:disabled):hover::before,
+    .dr-editable-cancel-trigger:not(:disabled):hover::before {
+      opacity: var(--state-layer-hover);
+      transition-duration: var(--state-layer-in);
+    }
   }
   .dr-editable-edit-trigger:not(:disabled):active::before,
   .dr-editable-submit-trigger:not(:disabled):active::before,

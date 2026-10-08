@@ -84,8 +84,10 @@
   .dr-json-line {
     @apply flex items-center gap-1 rounded-sm py-0.5;
   }
-  .dr-json-line:hover .dr-json-row-actions {
-    opacity: 1;
+  @media (hover: hover) {
+    .dr-json-line:hover .dr-json-row-actions {
+      opacity: 1;
+    }
   }
   .dr-json-row[data-focused="true"] .dr-json-row-actions {
     opacity: 1;
@@ -158,8 +160,10 @@
     border: 0;
     padding: 0;
   }
-  .dr-json-show-more:hover {
-    @apply underline;
+  @media (hover: hover) {
+    .dr-json-show-more:hover {
+      @apply underline;
+    }
   }
 
   /* Inline match highlight — same primary tint as the focused row. */
@@ -189,9 +193,13 @@
   .dr-json-copy {
     @apply text-muted-foreground hover:text-foreground ms-1 opacity-0 transition-opacity;
   }
-  .dr-json-line:hover .dr-json-copy,
   .dr-json-copy:focus-visible {
     @apply opacity-100;
+  }
+  @media (hover: hover) {
+    .dr-json-line:hover .dr-json-copy {
+      @apply opacity-100;
+    }
   }
 
   /* Interaction state layer — see theme.css. Painted by a pseudo-element so
@@ -200,9 +208,11 @@
   .dr-json-show-more {
     @apply state-layer;
   }
-  .dr-json-show-more:hover::before {
-    opacity: var(--state-layer-hover);
-    transition-duration: var(--state-layer-in);
+  @media (hover: hover) {
+    .dr-json-show-more:hover::before {
+      opacity: var(--state-layer-hover);
+      transition-duration: var(--state-layer-in);
+    }
   }
   .dr-json-show-more:active::before {
     opacity: var(--state-layer-press);

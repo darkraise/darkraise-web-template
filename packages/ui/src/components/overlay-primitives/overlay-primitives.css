@@ -33,15 +33,19 @@
   .dr-overlay-close-btn {
     isolation: isolate;
   }
-  .dr-overlay-close-btn:where(:not(:disabled)):hover {
-    @apply text-foreground;
+  @media (hover: hover) {
+    .dr-overlay-close-btn:where(:not(:disabled)):hover {
+      @apply text-foreground;
+    }
   }
   .dr-overlay-close-btn {
     @apply state-layer;
   }
-  .dr-overlay-close-btn:not(:disabled):hover::before {
-    opacity: var(--state-layer-hover);
-    transition-duration: var(--state-layer-in);
+  @media (hover: hover) {
+    .dr-overlay-close-btn:not(:disabled):hover::before {
+      opacity: var(--state-layer-hover);
+      transition-duration: var(--state-layer-in);
+    }
   }
   .dr-overlay-close-btn:not(:disabled):active::before {
     opacity: var(--state-layer-press);

@@ -14,8 +14,10 @@
   .dr-marquee[data-reverse="true"] .dr-marquee-track {
     animation-direction: reverse;
   }
-  .dr-marquee[data-pause-on-hover="true"]:hover .dr-marquee-track {
-    animation-play-state: paused;
+  @media (hover: hover) {
+    .dr-marquee[data-pause-on-hover="true"]:hover .dr-marquee-track {
+      animation-play-state: paused;
+    }
   }
   .dr-marquee-group {
     @apply flex shrink-0 items-center gap-8;

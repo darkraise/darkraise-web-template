@@ -38,8 +38,10 @@
   }
 
   /* Checkbox and radio items render MenubarItem, so they carry this class. */
-  .dr-menubar-item:where(:not([data-disabled])):hover {
-    @apply bg-accent text-accent-foreground;
+  @media (hover: hover) {
+    .dr-menubar-item:where(:not([data-disabled])):hover {
+      @apply bg-accent text-accent-foreground;
+    }
   }
 
   .dr-menubar-label {

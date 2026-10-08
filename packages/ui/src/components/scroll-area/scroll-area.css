@@ -28,8 +28,10 @@
     background-color: hsl(var(--foreground) / 0.25);
   }
 
-  .dr-scroll-thumb:hover {
-    background-color: hsl(var(--foreground) / 0.4);
+  @media (hover: hover) {
+    .dr-scroll-thumb:hover {
+      background-color: hsl(var(--foreground) / 0.4);
+    }
   }
 
   /* Hide native scrollbar tracks inside the in-house ScrollArea viewport. */

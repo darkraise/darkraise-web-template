@@ -33,10 +33,12 @@
     @apply focus-ring-inset border-border bg-background text-foreground inline-flex items-center justify-center gap-1.5 rounded-md border px-3 py-1.5 text-sm font-medium transition-colors;
   }
 
-  .dr-timer-action-trigger:where(:not(:disabled)):where(
-      :not([data-state="disabled"])
-    ):hover {
-    @apply bg-muted;
+  @media (hover: hover) {
+    .dr-timer-action-trigger:where(:not(:disabled)):where(
+        :not([data-state="disabled"])
+      ):hover {
+      @apply bg-muted;
+    }
   }
 
   /* Both: an explicit `disabled` prop sets only the native attribute, and

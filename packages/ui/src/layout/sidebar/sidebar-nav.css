@@ -161,9 +161,11 @@
     color: hsl(var(--sidebar-foreground));
   }
 
-  .dr-sidebar-nav-item:hover {
-    background-color: hsl(var(--sidebar-hover-bg));
-    color: hsl(var(--sidebar-foreground-hover));
+  @media (hover: hover) {
+    .dr-sidebar-nav-item:hover {
+      background-color: hsl(var(--sidebar-hover-bg));
+      color: hsl(var(--sidebar-foreground-hover));
+    }
   }
 
   /* An expanded parent of the current page: its label and icon say "you are

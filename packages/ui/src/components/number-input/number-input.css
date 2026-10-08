@@ -119,9 +119,11 @@
   .dr-number-input-stepper {
     @apply state-layer;
   }
-  .dr-number-input-stepper:not(:disabled):hover::before {
-    opacity: var(--state-layer-hover);
-    transition-duration: var(--state-layer-in);
+  @media (hover: hover) {
+    .dr-number-input-stepper:not(:disabled):hover::before {
+      opacity: var(--state-layer-hover);
+      transition-duration: var(--state-layer-in);
+    }
   }
   .dr-number-input-stepper:not(:disabled):active::before {
     opacity: var(--state-layer-press);

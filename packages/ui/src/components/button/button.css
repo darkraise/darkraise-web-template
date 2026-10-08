@@ -43,11 +43,13 @@
   .dr-btn:not([data-variant="link"]) {
     @apply state-layer;
   }
-  .dr-btn:not([data-variant="link"]):not(:disabled):not(
-      [aria-disabled="true"]
-    ):hover::before {
-    opacity: var(--state-layer-hover);
-    transition-duration: var(--state-layer-in);
+  @media (hover: hover) {
+    .dr-btn:not([data-variant="link"]):not(:disabled):not(
+        [aria-disabled="true"]
+      ):hover::before {
+      opacity: var(--state-layer-hover);
+      transition-duration: var(--state-layer-in);
+    }
   }
   .dr-btn:not([data-variant="link"]):not(:disabled):not(
       [aria-disabled="true"]
@@ -126,10 +128,12 @@
     @apply text-primary-text underline-offset-4;
   }
 
-  .dr-btn[data-variant="link"]:where(
-      :not(:disabled):not([aria-disabled="true"])
-    ):hover {
-    text-decoration-line: underline;
+  @media (hover: hover) {
+    .dr-btn[data-variant="link"]:where(
+        :not(:disabled):not([aria-disabled="true"])
+      ):hover {
+      text-decoration-line: underline;
+    }
   }
 
   /* Under the neutral accent a link shares the text colour, so the underline

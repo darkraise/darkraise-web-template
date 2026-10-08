@@ -243,12 +243,14 @@
   /* 16% toward the fill's own wash, Button's filled-variant hover step:
      toward black under a light label and white under a dark one, so the
      label keeps its contrast. */
-  .dr-toast-action:hover {
-    background-color: color-mix(
-      in srgb,
-      hsl(var(--toast-action, var(--primary-fill))) 84%,
-      hsl(var(--toast-action-wash, var(--primary-fill-wash)))
-    );
+  @media (hover: hover) {
+    .dr-toast-action:hover {
+      background-color: color-mix(
+        in srgb,
+        hsl(var(--toast-action, var(--primary-fill))) 84%,
+        hsl(var(--toast-action-wash, var(--primary-fill-wash)))
+      );
+    }
   }
   .dr-toast-cancel {
     @apply focus-ring bg-muted text-muted-foreground hover:bg-muted/70 cursor-pointer rounded-sm px-2 py-1 text-xs font-medium transition-colors;
@@ -264,14 +266,22 @@
     @apply focus-ring absolute end-1.5 top-1.5 inline-flex size-6 cursor-pointer items-center justify-center rounded-md border-0 bg-transparent p-0 opacity-0 transition-[opacity,background-color,color] duration-150 [&_svg]:size-[var(--icon-size-sm)];
     color: hsl(var(--toast-accent, var(--muted-foreground)));
   }
-  .dr-toast-close:hover {
-    background-color: hsl(var(--toast-accent, var(--muted-foreground)) / 0.12);
-    color: hsl(var(--toast-accent, var(--foreground)));
+  @media (hover: hover) {
+    .dr-toast-close:hover {
+      background-color: hsl(
+        var(--toast-accent, var(--muted-foreground)) / 0.12
+      );
+      color: hsl(var(--toast-accent, var(--foreground)));
+    }
   }
-  .dr-toast:hover .dr-toast-close,
   .dr-toast:focus-within .dr-toast-close,
   .dr-toast-close:focus-visible {
     @apply opacity-100;
+  }
+  @media (hover: hover) {
+    .dr-toast:hover .dr-toast-close {
+      @apply opacity-100;
+    }
   }
 
   /* Persistent close button when the toast opts in via [data-close-button]. */

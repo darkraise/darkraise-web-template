@@ -46,9 +46,11 @@
      both modes, where a `bg-accent` fill would match it. The guard is
      needed: a disabled segment keeps its pointer events, so hover still
      reaches it. */
-  .dr-segment-group
-    .dr-segment-group-item:not([data-state="checked"]):not(:disabled):hover {
-    @apply text-foreground;
+  @media (hover: hover) {
+    .dr-segment-group
+      .dr-segment-group-item:not([data-state="checked"]):not(:disabled):hover {
+      @apply text-foreground;
+    }
   }
 
   /* ::after, because the item's radio-group rule gives ::before to its
@@ -65,12 +67,14 @@
     pointer-events: none;
     transition: opacity var(--state-layer-out) var(--ease-out);
   }
-  .dr-segment-group
-    .dr-segment-group-item:not([data-state="checked"]):not(
-      :disabled
-    ):hover::after {
-    opacity: var(--state-layer-hover);
-    transition-duration: var(--state-layer-in);
+  @media (hover: hover) {
+    .dr-segment-group
+      .dr-segment-group-item:not([data-state="checked"]):not(
+        :disabled
+      ):hover::after {
+      opacity: var(--state-layer-hover);
+      transition-duration: var(--state-layer-in);
+    }
   }
   .dr-segment-group
     .dr-segment-group-item:not([data-state="checked"]):not(

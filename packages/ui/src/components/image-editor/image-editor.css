@@ -81,9 +81,11 @@
     background: hsl(var(--background));
     color: hsl(var(--foreground));
   }
-  .dr-image-editor-preset:hover {
-    border-color: hsl(var(--primary));
-    color: hsl(var(--primary-text));
+  @media (hover: hover) {
+    .dr-image-editor-preset:hover {
+      border-color: hsl(var(--primary));
+      color: hsl(var(--primary-text));
+    }
   }
 
   /* Tool palette — Photoshop / Pixlr style. A bordered card with a
@@ -216,9 +218,11 @@
     background: hsl(var(--background));
     color: hsl(var(--foreground));
   }
-  .dr-image-editor-annotation-clear:hover {
-    border-color: hsl(var(--destructive-edge));
-    color: hsl(var(--destructive-text));
+  @media (hover: hover) {
+    .dr-image-editor-annotation-clear:hover {
+      border-color: hsl(var(--destructive-edge));
+      color: hsl(var(--destructive-text));
+    }
   }
 
   /* Text annotation input — anchored at the click point inside the
@@ -307,9 +311,11 @@
   .dr-image-editor-preset {
     @apply state-layer;
   }
-  .dr-image-editor-preset:hover::before {
-    opacity: var(--state-layer-hover);
-    transition-duration: var(--state-layer-in);
+  @media (hover: hover) {
+    .dr-image-editor-preset:hover::before {
+      opacity: var(--state-layer-hover);
+      transition-duration: var(--state-layer-in);
+    }
   }
   .dr-image-editor-preset:active::before {
     opacity: var(--state-layer-press);

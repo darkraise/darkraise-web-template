@@ -43,18 +43,22 @@
   .dr-combobox-trigger {
     isolation: isolate;
   }
-  .dr-combobox-clear-trigger:where(:not(:disabled)):hover,
-  .dr-combobox-trigger:where(:not(:disabled)):hover {
-    @apply text-foreground;
+  @media (hover: hover) {
+    .dr-combobox-clear-trigger:where(:not(:disabled)):hover,
+    .dr-combobox-trigger:where(:not(:disabled)):hover {
+      @apply text-foreground;
+    }
   }
   .dr-combobox-clear-trigger,
   .dr-combobox-trigger {
     @apply state-layer;
   }
-  .dr-combobox-clear-trigger:not(:disabled):hover::before,
-  .dr-combobox-trigger:not(:disabled):hover::before {
-    opacity: var(--state-layer-hover);
-    transition-duration: var(--state-layer-in);
+  @media (hover: hover) {
+    .dr-combobox-clear-trigger:not(:disabled):hover::before,
+    .dr-combobox-trigger:not(:disabled):hover::before {
+      opacity: var(--state-layer-hover);
+      transition-duration: var(--state-layer-in);
+    }
   }
   .dr-combobox-clear-trigger:not(:disabled):active::before,
   .dr-combobox-trigger:not(:disabled):active::before {

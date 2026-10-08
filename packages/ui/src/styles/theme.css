@@ -1980,8 +1980,10 @@
     background-clip: content-box;
   }
 
-  *::-webkit-scrollbar-thumb:hover {
-    background-color: hsl(var(--foreground) / 0.4);
+  @media (hover: hover) {
+    *::-webkit-scrollbar-thumb:hover {
+      background-color: hsl(var(--foreground) / 0.4);
+    }
   }
 
   *::-webkit-scrollbar-corner {
@@ -2494,12 +2496,16 @@
   .dr-progress,
   .dr-scroll-thumb,
   .dr-resizable-handle,
-  .dr-split-panel-layout-handle:hover,
   .dr-split-panel-layout-handle[data-dragging="true"],
   .dr-navigation-menu-indicator-arrow,
   .dr-steps-separator,
   .dr-timeline-connector {
     background-color: CanvasText;
+  }
+  @media (hover: hover) {
+    .dr-split-panel-layout-handle:hover {
+      background-color: CanvasText;
+    }
   }
 
   /* The scroll bar reserves a transparent edge beside the content. */

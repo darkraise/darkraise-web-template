@@ -197,9 +197,11 @@
      swatches share this class. The keyboard focus ring still wins, since
      `focus-ring-inset` is a Tailwind utility and `@layer utilities` outranks
      `@layer components`. */
-  .dr-contribution-graph-cell[data-date]:hover {
-    outline: 1px solid var(--contrib-cell-outline);
-    outline-offset: -1px;
+  @media (hover: hover) {
+    .dr-contribution-graph-cell[data-date]:hover {
+      outline: 1px solid var(--contrib-cell-outline);
+      outline-offset: -1px;
+    }
   }
 
   .dr-contribution-graph-tooltip {

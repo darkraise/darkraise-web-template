@@ -13,8 +13,10 @@
 
   /* Hover as a rule rather than `hover:` utilities: a disabled trigger keeps
      its pointer events, so the hover has to opt out of :disabled itself. */
-  .dr-navigation-menu-trigger:not(:disabled):hover {
-    @apply bg-accent text-accent-foreground;
+  @media (hover: hover) {
+    .dr-navigation-menu-trigger:not(:disabled):hover {
+      @apply bg-accent text-accent-foreground;
+    }
   }
 
   /* Popover-style panel. Reads the --overlay-* tokens so the

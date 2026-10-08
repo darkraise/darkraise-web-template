@@ -74,18 +74,22 @@
     position: relative;
     isolation: isolate;
   }
-  .dr-tags-input-item-delete-trigger:where(:not(:disabled)):hover,
-  .dr-tags-input-clear-trigger:where(:not(:disabled)):hover {
-    @apply text-foreground;
+  @media (hover: hover) {
+    .dr-tags-input-item-delete-trigger:where(:not(:disabled)):hover,
+    .dr-tags-input-clear-trigger:where(:not(:disabled)):hover {
+      @apply text-foreground;
+    }
   }
   .dr-tags-input-item-delete-trigger,
   .dr-tags-input-clear-trigger {
     @apply state-layer;
   }
-  .dr-tags-input-item-delete-trigger:not(:disabled):hover::before,
-  .dr-tags-input-clear-trigger:not(:disabled):hover::before {
-    opacity: var(--state-layer-hover);
-    transition-duration: var(--state-layer-in);
+  @media (hover: hover) {
+    .dr-tags-input-item-delete-trigger:not(:disabled):hover::before,
+    .dr-tags-input-clear-trigger:not(:disabled):hover::before {
+      opacity: var(--state-layer-hover);
+      transition-duration: var(--state-layer-in);
+    }
   }
   .dr-tags-input-item-delete-trigger:not(:disabled):active::before,
   .dr-tags-input-clear-trigger:not(:disabled):active::before {

@@ -24,12 +24,14 @@
     color: var(--selected-check-fg);
     box-shadow: var(--affordance-glow);
   }
-  .dr-time-column-item[data-selected="true"]:hover {
-    background-color: color-mix(
-      in srgb,
-      hsl(var(--primary-fill)),
-      hsl(var(--primary-fill-wash)) 16%
-    );
+  @media (hover: hover) {
+    .dr-time-column-item[data-selected="true"]:hover {
+      background-color: color-mix(
+        in srgb,
+        hsl(var(--primary-fill)),
+        hsl(var(--primary-fill-wash)) 16%
+      );
+    }
   }
 
   .dr-time-column-item[data-selected="false"] {

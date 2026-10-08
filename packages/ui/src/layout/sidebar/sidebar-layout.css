@@ -63,14 +63,22 @@
 
   /* focus-within, not just hover: the toggle is the only route back to the
      expanded rail, so tabbing to it has to reveal it too. */
-  .dr-sidebar-layout-brand-slot:hover .dr-brand-logo,
   .dr-sidebar-layout-brand-slot:focus-within .dr-brand-logo {
     @apply opacity-0;
   }
+  @media (hover: hover) {
+    .dr-sidebar-layout-brand-slot:hover .dr-brand-logo {
+      @apply opacity-0;
+    }
+  }
 
-  .dr-sidebar-layout-brand-slot:hover .dr-sidebar-layout-toggle,
   .dr-sidebar-layout-brand-slot:focus-within .dr-sidebar-layout-toggle {
     @apply opacity-100;
+  }
+  @media (hover: hover) {
+    .dr-sidebar-layout-brand-slot:hover .dr-sidebar-layout-toggle {
+      @apply opacity-100;
+    }
   }
 
   /* Search sits directly under the brand row, above the nav scroller. It

@@ -10,8 +10,10 @@
   /* The divider itself is a hairline, so the accent tint alone would be
      easy to miss; the ::after strip is the real 4px hit area and washing it
      shows the user how wide the grab target actually is. */
-  .dr-resizable-handle:not([data-disabled]):hover {
-    @apply bg-primary-fill after:bg-primary/20;
+  @media (hover: hover) {
+    .dr-resizable-handle:not([data-disabled]):hover {
+      @apply bg-primary-fill after:bg-primary/20;
+    }
   }
 
   .dr-resizable-handle[data-dragging="true"] {
@@ -31,8 +33,12 @@
     @apply bg-border z-10 flex h-4 w-3 items-center justify-center rounded-sm border transition-colors;
   }
 
-  .dr-resizable-handle:not([data-disabled]):hover .dr-resizable-handle-grip,
   .dr-resizable-handle[data-dragging="true"] .dr-resizable-handle-grip {
     @apply border-primary-fill bg-primary-fill text-primary-foreground;
+  }
+  @media (hover: hover) {
+    .dr-resizable-handle:not([data-disabled]):hover .dr-resizable-handle-grip {
+      @apply border-primary-fill bg-primary-fill text-primary-foreground;
+    }
   }
 }

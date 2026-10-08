@@ -27,28 +27,34 @@
   .dr-badge[data-variant="default"] {
     @apply bg-primary-fill text-primary-foreground border-transparent;
   }
-  .dr-badge:is(a, button, [role="button"])[data-variant="default"]:hover {
-    background-color: color-mix(
-      in srgb,
-      hsl(var(--primary-fill)),
-      hsl(var(--primary-fill-wash)) 16%
-    );
+  @media (hover: hover) {
+    .dr-badge:is(a, button, [role="button"])[data-variant="default"]:hover {
+      background-color: color-mix(
+        in srgb,
+        hsl(var(--primary-fill)),
+        hsl(var(--primary-fill-wash)) 16%
+      );
+    }
   }
   .dr-badge[data-variant="secondary"] {
     @apply bg-secondary text-secondary-foreground border-transparent;
   }
-  .dr-badge:is(a, button, [role="button"])[data-variant="secondary"]:hover {
-    @apply bg-secondary/80;
+  @media (hover: hover) {
+    .dr-badge:is(a, button, [role="button"])[data-variant="secondary"]:hover {
+      @apply bg-secondary/80;
+    }
   }
   .dr-badge[data-variant="destructive"] {
     @apply bg-destructive-solid text-destructive-solid-foreground border-transparent;
   }
-  .dr-badge:is(a, button, [role="button"])[data-variant="destructive"]:hover {
-    background-color: color-mix(
-      in srgb,
-      hsl(var(--destructive-solid)),
-      hsl(var(--destructive-solid-wash)) 16%
-    );
+  @media (hover: hover) {
+    .dr-badge:is(a, button, [role="button"])[data-variant="destructive"]:hover {
+      background-color: color-mix(
+        in srgb,
+        hsl(var(--destructive-solid)),
+        hsl(var(--destructive-solid-wash)) 16%
+      );
+    }
   }
   .dr-badge[data-variant="success"] {
     @apply bg-success-solid text-success-solid-foreground border-transparent;
@@ -59,26 +65,28 @@
   .dr-badge[data-variant="info"] {
     @apply bg-info-solid text-info-solid-foreground border-transparent;
   }
-  .dr-badge:is(a, button, [role="button"])[data-variant="success"]:hover {
-    background-color: color-mix(
-      in srgb,
-      hsl(var(--success-solid)),
-      hsl(var(--success-solid-wash)) 16%
-    );
-  }
-  .dr-badge:is(a, button, [role="button"])[data-variant="warning"]:hover {
-    background-color: color-mix(
-      in srgb,
-      hsl(var(--warning-solid)),
-      hsl(var(--warning-solid-wash)) 16%
-    );
-  }
-  .dr-badge:is(a, button, [role="button"])[data-variant="info"]:hover {
-    background-color: color-mix(
-      in srgb,
-      hsl(var(--info-solid)),
-      hsl(var(--info-solid-wash)) 16%
-    );
+  @media (hover: hover) {
+    .dr-badge:is(a, button, [role="button"])[data-variant="success"]:hover {
+      background-color: color-mix(
+        in srgb,
+        hsl(var(--success-solid)),
+        hsl(var(--success-solid-wash)) 16%
+      );
+    }
+    .dr-badge:is(a, button, [role="button"])[data-variant="warning"]:hover {
+      background-color: color-mix(
+        in srgb,
+        hsl(var(--warning-solid)),
+        hsl(var(--warning-solid-wash)) 16%
+      );
+    }
+    .dr-badge:is(a, button, [role="button"])[data-variant="info"]:hover {
+      background-color: color-mix(
+        in srgb,
+        hsl(var(--info-solid)),
+        hsl(var(--info-solid-wash)) 16%
+      );
+    }
   }
 
   /* Subtle status variants: the opaque status fill with its solved text. */
@@ -158,56 +166,58 @@
   }
 
   /* Hover — interactive badges only. */
-  .dr-badge:is(a, button, [role="button"])[data-variant="red"]:hover {
-    @apply bg-red-700;
-  }
-  .dr-badge:is(a, button, [role="button"])[data-variant="orange"]:hover {
-    @apply bg-orange-400;
-  }
-  .dr-badge:is(a, button, [role="button"])[data-variant="amber"]:hover {
-    @apply bg-amber-400;
-  }
-  .dr-badge:is(a, button, [role="button"])[data-variant="yellow"]:hover {
-    @apply bg-yellow-400;
-  }
-  .dr-badge:is(a, button, [role="button"])[data-variant="lime"]:hover {
-    @apply bg-lime-400;
-  }
-  .dr-badge:is(a, button, [role="button"])[data-variant="green"]:hover {
-    @apply bg-green-400;
-  }
-  .dr-badge:is(a, button, [role="button"])[data-variant="emerald"]:hover {
-    @apply bg-emerald-400;
-  }
-  .dr-badge:is(a, button, [role="button"])[data-variant="teal"]:hover {
-    @apply bg-teal-400;
-  }
-  .dr-badge:is(a, button, [role="button"])[data-variant="cyan"]:hover {
-    @apply bg-cyan-400;
-  }
-  .dr-badge:is(a, button, [role="button"])[data-variant="sky"]:hover {
-    @apply bg-sky-400;
-  }
-  .dr-badge:is(a, button, [role="button"])[data-variant="blue"]:hover {
-    @apply bg-blue-700;
-  }
-  .dr-badge:is(a, button, [role="button"])[data-variant="indigo"]:hover {
-    @apply bg-indigo-600;
-  }
-  .dr-badge:is(a, button, [role="button"])[data-variant="violet"]:hover {
-    @apply bg-violet-700;
-  }
-  .dr-badge:is(a, button, [role="button"])[data-variant="purple"]:hover {
-    @apply bg-purple-700;
-  }
-  .dr-badge:is(a, button, [role="button"])[data-variant="fuchsia"]:hover {
-    @apply bg-fuchsia-700;
-  }
-  .dr-badge:is(a, button, [role="button"])[data-variant="pink"]:hover {
-    @apply bg-pink-700;
-  }
-  .dr-badge:is(a, button, [role="button"])[data-variant="rose"]:hover {
-    @apply bg-rose-700;
+  @media (hover: hover) {
+    .dr-badge:is(a, button, [role="button"])[data-variant="red"]:hover {
+      @apply bg-red-700;
+    }
+    .dr-badge:is(a, button, [role="button"])[data-variant="orange"]:hover {
+      @apply bg-orange-400;
+    }
+    .dr-badge:is(a, button, [role="button"])[data-variant="amber"]:hover {
+      @apply bg-amber-400;
+    }
+    .dr-badge:is(a, button, [role="button"])[data-variant="yellow"]:hover {
+      @apply bg-yellow-400;
+    }
+    .dr-badge:is(a, button, [role="button"])[data-variant="lime"]:hover {
+      @apply bg-lime-400;
+    }
+    .dr-badge:is(a, button, [role="button"])[data-variant="green"]:hover {
+      @apply bg-green-400;
+    }
+    .dr-badge:is(a, button, [role="button"])[data-variant="emerald"]:hover {
+      @apply bg-emerald-400;
+    }
+    .dr-badge:is(a, button, [role="button"])[data-variant="teal"]:hover {
+      @apply bg-teal-400;
+    }
+    .dr-badge:is(a, button, [role="button"])[data-variant="cyan"]:hover {
+      @apply bg-cyan-400;
+    }
+    .dr-badge:is(a, button, [role="button"])[data-variant="sky"]:hover {
+      @apply bg-sky-400;
+    }
+    .dr-badge:is(a, button, [role="button"])[data-variant="blue"]:hover {
+      @apply bg-blue-700;
+    }
+    .dr-badge:is(a, button, [role="button"])[data-variant="indigo"]:hover {
+      @apply bg-indigo-600;
+    }
+    .dr-badge:is(a, button, [role="button"])[data-variant="violet"]:hover {
+      @apply bg-violet-700;
+    }
+    .dr-badge:is(a, button, [role="button"])[data-variant="purple"]:hover {
+      @apply bg-purple-700;
+    }
+    .dr-badge:is(a, button, [role="button"])[data-variant="fuchsia"]:hover {
+      @apply bg-fuchsia-700;
+    }
+    .dr-badge:is(a, button, [role="button"])[data-variant="pink"]:hover {
+      @apply bg-pink-700;
+    }
+    .dr-badge:is(a, button, [role="button"])[data-variant="rose"]:hover {
+      @apply bg-rose-700;
+    }
   }
 
   /* Material-style anchored indicator. The wrapper sits inline-flex around
