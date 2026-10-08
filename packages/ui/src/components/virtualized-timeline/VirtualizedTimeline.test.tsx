@@ -249,11 +249,11 @@ describe("VirtualizedTimeline", () => {
     expect(screen.queryByRole("slider")).not.toBeInTheDocument()
   })
 
-  it("defaults the rail to the right", () => {
+  it("defaults the rail to the end side", () => {
     const { container } = renderTimeline()
     expect(container.querySelector(".dr-virtualized-timeline")).toHaveAttribute(
       "data-scrubber-side",
-      "right",
+      "end",
     )
   })
 
@@ -265,27 +265,34 @@ describe("VirtualizedTimeline", () => {
     )
   })
 
-  it("resolves the default end side to the left under RTL", () => {
-    const { container } = render(<div dir="rtl">{timelineElement()}</div>)
-    expect(container.querySelector(".dr-virtualized-timeline")).toHaveAttribute(
-      "data-scrubber-side",
-      "left",
-    )
-  })
-
-  it("resolves the start side from the direction", () => {
-    const ltr = renderTimeline({ scrubberSide: "start" })
-    expect(
-      ltr.container.querySelector(".dr-virtualized-timeline"),
-    ).toHaveAttribute("data-scrubber-side", "left")
-    ltr.unmount()
+  it("carries a logical side as given under RTL", () => {
     const { container } = render(
       <div dir="rtl">{timelineElement({ scrubberSide: "start" })}</div>,
     )
     expect(container.querySelector(".dr-virtualized-timeline")).toHaveAttribute(
       "data-scrubber-side",
-      "right",
+      "start",
     )
+  })
+
+  it("moves the end rail when the direction changes after mount", () => {
+    // The stylesheet places a logical side by the direction of the root.
+    const physicalSide = (root: Element) => {
+      const side = root.getAttribute("data-scrubber-side")
+      const rtl = getComputedStyle(root).direction === "rtl"
+      if (side === "end") return rtl ? "left" : "right"
+      if (side === "start") return rtl ? "right" : "left"
+      return side
+    }
+    const view = (dir: "ltr" | "rtl") => (
+      <div dir={dir}>{timelineElement()}</div>
+    )
+    const { container, rerender } = render(view("ltr"))
+    const root = container.querySelector(".dr-virtualized-timeline")
+    if (!root) throw new Error("timeline root missing")
+    expect(physicalSide(root)).toBe("right")
+    rerender(view("rtl"))
+    expect(physicalSide(root)).toBe("left")
   })
 
   it("keeps a physical side under RTL", () => {

@@ -243,21 +243,6 @@ const ALLOWED: readonly (readonly [string, string, readonly string[]])[] = [
     ["left: 0"],
   ],
   [
-    "src/components/virtualized-timeline/virtualized-timeline.css",
-    "data-scrubber-side always carries the resolved physical side",
-    [
-      ".dr-virtualized-timeline-scrubber-tick { right-0 }",
-      ".dr-virtualized-timeline-scrubber-label { right-4 }",
-      ".dr-virtualized-timeline-scrubber-bracket { left-0 }",
-      '.dr-virtualized-timeline[data-scrubber-side="left"] .dr-virtualized-timeline-scrubber-tick { right-auto }',
-      '.dr-virtualized-timeline[data-scrubber-side="left"] .dr-virtualized-timeline-scrubber-tick { left-0 }',
-      '.dr-virtualized-timeline[data-scrubber-side="left"] .dr-virtualized-timeline-scrubber-bracket { right-0 }',
-      '.dr-virtualized-timeline[data-scrubber-side="left"] .dr-virtualized-timeline-scrubber-bracket { left-auto }',
-      '.dr-virtualized-timeline[data-scrubber-side="left"] .dr-virtualized-timeline-scrubber-label { right-auto }',
-      '.dr-virtualized-timeline[data-scrubber-side="left"] .dr-virtualized-timeline-scrubber-label { left-4 }',
-    ],
-  ],
-  [
     "src/layout/sidebar/sidebar-selection.css",
     "the indicator is pinned at the left and moved by a measured transform",
     [".dr-sidebar-nav-indicator { left: 0 }"],

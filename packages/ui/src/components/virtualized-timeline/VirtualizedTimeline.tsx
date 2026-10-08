@@ -8,7 +8,7 @@ import { useUiLabels } from "../../labels"
 
 import { ChevronDown } from "lucide-react"
 
-import { getDirection, inlineArrow, type Direction } from "@lib/direction"
+import { inlineArrow } from "@lib/direction"
 import { cn } from "@lib/utils"
 import { Button } from "@components/button"
 import { Checkbox } from "@components/checkbox"
@@ -218,22 +218,6 @@ export function VirtualizedTimeline<T>({
 
   const scrollRef = React.useRef<HTMLDivElement | null>(null)
   const scrollAreaRef = React.useRef<HTMLDivElement | null>(null)
-  const rootRef = React.useRef<HTMLDivElement | null>(null)
-  // Read once after mount: the rail CSS is keyed on a physical side.
-  const [direction, setDirection] = React.useState<Direction>("ltr")
-  React.useLayoutEffect(() => {
-    setDirection(getDirection(rootRef.current))
-  }, [])
-  const physicalScrubberSide =
-    scrubberSide === "start"
-      ? direction === "rtl"
-        ? "right"
-        : "left"
-      : scrubberSide === "end"
-        ? direction === "rtl"
-          ? "left"
-          : "right"
-        : scrubberSide
   const idBase = useId()
   const [contentWidth, setContentWidth] = React.useState(0)
   const [viewportHeight, setViewportHeight] = React.useState(0)
@@ -1078,9 +1062,8 @@ export function VirtualizedTimeline<T>({
 
   return (
     <div
-      ref={rootRef}
       className={cn("dr-virtualized-timeline", className)}
-      data-scrubber-side={physicalScrubberSide}
+      data-scrubber-side={scrubberSide}
       // The consumer's style spreads after the variables, but must never
       // replace the object wholesale: the tile CSS resolves its size from
       // these variables, and a plain `style={{ height: 500 }}` would

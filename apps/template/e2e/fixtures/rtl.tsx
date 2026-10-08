@@ -349,7 +349,7 @@ createRoot(root).render(
           <CarouselNext />
         </Carousel>
       </div>
-      {(["end", "start"] as const).map((side) => (
+      {(["end", "start", "left", "right"] as const).map((side) => (
         <div key={side} data-probe={`timeline-${side}`} style={{ width: 560 }}>
           <VirtualizedTimeline
             style={{ height: 280 }}

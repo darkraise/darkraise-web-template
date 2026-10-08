@@ -19,11 +19,15 @@ describe("timeline rail ticks", () => {
     expect(tick).toContain("flex-row-reverse")
   })
 
-  it("mirrors the mark column to the left edge on a left-hand rail", () => {
+  it("mirrors the mark column to the inline-start edge on a start rail", () => {
     const tick = body(
-      '.dr-virtualized-timeline[data-scrubber-side="left"] .dr-virtualized-timeline-scrubber-tick',
+      [
+        '.dr-virtualized-timeline[data-scrubber-side="start"] .dr-virtualized-timeline-scrubber-tick',
+        '.dr-virtualized-timeline[data-scrubber-side="left"] .dr-virtualized-timeline-scrubber-tick:dir(ltr)',
+        '.dr-virtualized-timeline[data-scrubber-side="right"] .dr-virtualized-timeline-scrubber-tick:dir(rtl)',
+      ].join(", "),
     )
-    expect(tick).toContain("left-0")
+    expect(tick).toContain("start-0")
     expect(tick).toMatch(/\bflex-row(?!-reverse)/)
   })
 })

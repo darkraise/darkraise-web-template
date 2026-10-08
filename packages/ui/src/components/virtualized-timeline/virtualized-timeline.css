@@ -154,7 +154,7 @@
      tick centres on it. The tick mark is the ::before; reversed, every mark
      sits in one column at the rail's edge and a label sits before it. */
   .dr-virtualized-timeline-scrubber-tick {
-    @apply absolute right-0 flex -translate-y-1/2 flex-row-reverse items-center gap-1;
+    @apply absolute end-0 flex -translate-y-1/2 flex-row-reverse items-center gap-1;
   }
 
   .dr-virtualized-timeline-scrubber-tick::before {
@@ -185,7 +185,7 @@
   }
 
   .dr-virtualized-timeline-scrubber-label {
-    @apply text-popover-foreground pointer-events-none absolute right-4 w-max rounded-[var(--radius-sm)] border px-2 py-1 text-xs;
+    @apply text-popover-foreground pointer-events-none absolute end-4 w-max rounded-[var(--radius-sm)] border px-2 py-1 text-xs;
     @apply overlay-surface;
     box-shadow: var(--overlay-shadow);
     transform: translateY(-50%);
@@ -214,7 +214,7 @@
      pixels at that extreme, which is the right trade against an invisible
      indicator, and it leaves the JavaScript arithmetic exact. */
   .dr-virtualized-timeline-scrubber-bracket {
-    @apply pointer-events-none absolute left-0 w-0.5;
+    @apply pointer-events-none absolute start-0 w-0.5;
     min-height: 2px;
     background-color: hsl(var(--primary) / 0.3);
   }
@@ -232,57 +232,59 @@
     background-color: hsl(var(--primary) / 0.08);
   }
 
-  /* The rail flips by flex order, so none of the tick, caret, or bracket
-     arithmetic changes -- only which edge the row starts from. Flex order
-     does not reorder the DOM, so keyboard focus still reaches the viewport
-     before the rail on both sides; that is consistent with the rail being a
-     supplementary control, not a bug to fix here. */
+  /* The rules above place the rail at the inline end in either direction:
+     the scroll area's flex row puts it after the viewport, and every offset
+     is logical. A start rail flips the row by flex order, so none of the
+     tick, caret, or bracket arithmetic changes -- only which edge the row
+     starts from. Flex order does not reorder the DOM, so keyboard focus
+     still reaches the viewport before the rail on both sides; that is
+     consistent with the rail being a supplementary control, not a bug to
+     fix here. A physical side takes the start rules in the direction where
+     it is the start, and :dir() follows a direction change at any time. */
+  .dr-virtualized-timeline[data-scrubber-side="start"]
+    .dr-virtualized-timeline-scroll-area,
   .dr-virtualized-timeline[data-scrubber-side="left"]
-    .dr-virtualized-timeline-scroll-area {
+    .dr-virtualized-timeline-scroll-area:dir(ltr),
+  .dr-virtualized-timeline[data-scrubber-side="right"]
+    .dr-virtualized-timeline-scroll-area:dir(rtl) {
     @apply flex-row-reverse;
   }
 
-  /* Mirrors the right rail: every mark sits in one column at the rail's
+  /* Mirrors the end rail: every mark sits in one column at the rail's
      outer edge and a label sits inboard of it. */
+  .dr-virtualized-timeline[data-scrubber-side="start"]
+    .dr-virtualized-timeline-scrubber-tick,
   .dr-virtualized-timeline[data-scrubber-side="left"]
-    .dr-virtualized-timeline-scrubber-tick {
-    @apply right-auto left-0 flex-row;
+    .dr-virtualized-timeline-scrubber-tick:dir(ltr),
+  .dr-virtualized-timeline[data-scrubber-side="right"]
+    .dr-virtualized-timeline-scrubber-tick:dir(rtl) {
+    @apply start-0 end-auto flex-row;
   }
 
   /* The caret needs no mirror rule: its only child is the ::before hairline
      at flex-1, spanning the rail's full width, so it is symmetric already. */
 
   /* The bracket sits on the rail's content-facing edge on purpose, so it
-     does not collide with the tick labels; on a left-hand rail that edge is
-     the right one. */
+     does not collide with the tick labels; on a start rail that edge is the
+     inline-end one. */
+  .dr-virtualized-timeline[data-scrubber-side="start"]
+    .dr-virtualized-timeline-scrubber-bracket,
   .dr-virtualized-timeline[data-scrubber-side="left"]
-    .dr-virtualized-timeline-scrubber-bracket {
-    @apply right-0 left-auto;
+    .dr-virtualized-timeline-scrubber-bracket:dir(ltr),
+  .dr-virtualized-timeline[data-scrubber-side="right"]
+    .dr-virtualized-timeline-scrubber-bracket:dir(rtl) {
+    @apply start-auto end-0;
   }
 
   /* The drag bubble opens toward the content so it cannot run off screen; on
-     a left-hand rail an outboard bubble would overflow the container's left
-     edge instead. */
+     a start rail an outboard bubble would overflow the container's
+     inline-start edge instead. */
+  .dr-virtualized-timeline[data-scrubber-side="start"]
+    .dr-virtualized-timeline-scrubber-label,
   .dr-virtualized-timeline[data-scrubber-side="left"]
-    .dr-virtualized-timeline-scrubber-label {
-    @apply right-auto left-4;
-  }
-
-  /* data-scrubber-side is physical, but a flex row starts at the right under
-     RTL. Each side therefore takes the opposite flex direction there, which
-     keeps the rail on its named edge and each tick's mark at the rail's
-     outer edge. */
+    .dr-virtualized-timeline-scrubber-label:dir(ltr),
   .dr-virtualized-timeline[data-scrubber-side="right"]
-    .dr-virtualized-timeline-scroll-area:dir(rtl),
-  .dr-virtualized-timeline[data-scrubber-side="left"]
-    .dr-virtualized-timeline-scrubber-tick:dir(rtl) {
-    @apply flex-row-reverse;
-  }
-
-  .dr-virtualized-timeline[data-scrubber-side="left"]
-    .dr-virtualized-timeline-scroll-area:dir(rtl),
-  .dr-virtualized-timeline[data-scrubber-side="right"]
-    .dr-virtualized-timeline-scrubber-tick:dir(rtl) {
-    @apply flex-row;
+    .dr-virtualized-timeline-scrubber-label:dir(rtl) {
+    @apply start-4 end-auto;
   }
 }

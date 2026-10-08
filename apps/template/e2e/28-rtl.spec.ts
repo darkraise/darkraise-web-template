@@ -386,7 +386,23 @@ test.describe("virtualized timeline", () => {
     expect(await computed(collapsed, "rotate")).toBe("90deg")
   })
 
-  for (const side of ["end", "start"] as const) {
+  test("moves the end rail when the page turns left-to-right", async ({
+    page,
+  }) => {
+    await openFixture(page)
+    const probe = page.locator('[data-probe="timeline-end"]')
+    await page.evaluate(() => {
+      document.documentElement.dir = "ltr"
+    })
+    const viewport = await boxOf(
+      probe.locator(".dr-virtualized-timeline-viewport"),
+    )
+    const rail = await boxOf(probe.getByRole("slider"))
+    expect(rail.x).toBeGreaterThanOrEqual(viewport.x + viewport.width - 1)
+  })
+
+  // Under RTL the end side and the physical left share the left edge.
+  for (const side of ["end", "start", "left", "right"] as const) {
     test(`puts the ${side} rail on its edge with marks outboard`, async ({
       page,
     }) => {
@@ -401,7 +417,7 @@ test.describe("virtualized timeline", () => {
         .first()
       const tickBox = await boxOf(tick)
       const label = await boxOf(tick.locator("span"))
-      if (side === "end") {
+      if (side === "end" || side === "left") {
         expect(rail.x + rail.width).toBeLessThanOrEqual(viewport.x + 1)
         expect(Math.abs(tickBox.x - rail.x)).toBeLessThanOrEqual(1)
         expect(label.x - tickBox.x).toBeGreaterThanOrEqual(5)
