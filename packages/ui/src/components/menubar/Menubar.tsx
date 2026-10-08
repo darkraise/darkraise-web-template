@@ -667,7 +667,7 @@ function MenubarItem({
   children,
   ...rest
 }: MenubarItemProps) {
-  const { composedRef, isFocused, myIndex, ctx } = useMenuItem({
+  const { localRef, composedRef, isFocused, myIndex, ctx } = useMenuItem({
     ref,
     disabled,
     textValue,
@@ -697,6 +697,9 @@ function MenubarItem({
       aria-disabled={disabled || undefined}
       onPointerEnter={(event: React.PointerEvent<HTMLDivElement>) => {
         onPointerEnter?.(event)
+        // Moving onto any item collapses the submenu this menu was holding
+        // open, unless this item is the sub-trigger holding it.
+        ctx.closeOpenSubmenu(localRef.current)
         if (disabled) return
         if (myIndex >= 0) ctx.setFocusedIndex(myIndex)
       }}
@@ -928,48 +931,62 @@ function MenubarSubTrigger({
     setReference(localRef.current)
   }, [setReference])
 
+  const parent = ctx.parent
+  const openSelf = () => {
+    parent?.closeOpenSubmenu(localRef.current)
+    parent?.registerOpenSubmenu({
+      trigger: localRef.current,
+      close: ctx.closeSelf,
+    })
+    ctx.setOpen(true)
+  }
+
+  // The row is an item of the parent menu: registered there, the arrow keys
+  // of the parent reach it and the submenu lists only its own items.
   return (
-    <MenubarItem
-      ref={composeRefs(localRef, ref ?? undefined)}
-      aria-haspopup="menu"
-      disabled={disabled}
-      aria-expanded={ctx.open}
-      data-state={ctx.state}
-      onPointerEnter={(event) => {
-        onPointerEnter?.(event)
-        if (event.defaultPrevented || disabled) return
-        if (!ctx.open) ctx.setOpen(true)
-      }}
-      onClick={(event) => {
-        onClick?.(event)
-        if (event.defaultPrevented || disabled) return
-        if (!ctx.open) ctx.setOpen(true)
-      }}
-      onKeyDown={(event) => {
-        onKeyDown?.(event)
-        if (event.defaultPrevented || disabled) return
-        if (
-          inlineArrow(event.key, event.currentTarget) === "next" ||
-          event.key === "Enter" ||
-          event.key === " "
-        ) {
-          event.preventDefault()
-          ctx.setOpen(true)
-          requestAnimationFrame(() => ctx.focusFirst())
-        }
-      }}
-      onSelect={(event) => {
-        ;(event as Event & { preventDefault: () => void }).preventDefault?.()
-      }}
-      className={cn("dr-menubar-sub-trigger", inset && "ps-8", className)}
-      {...rest}
-    >
-      {children}
-      <ChevronRight
-        className="dr-icon-inline ms-auto size-[var(--icon-size)]"
-        aria-hidden="true"
-      />
-    </MenubarItem>
+    <MenubarMenuContext.Provider value={parent ?? ctx}>
+      <MenubarItem
+        ref={composeRefs(localRef, ref ?? undefined)}
+        aria-haspopup="menu"
+        disabled={disabled}
+        aria-expanded={ctx.open}
+        data-state={ctx.state}
+        onPointerEnter={(event) => {
+          onPointerEnter?.(event)
+          if (event.defaultPrevented || disabled) return
+          if (!ctx.open) openSelf()
+        }}
+        onClick={(event) => {
+          onClick?.(event)
+          if (event.defaultPrevented || disabled) return
+          if (!ctx.open) openSelf()
+        }}
+        onKeyDown={(event) => {
+          onKeyDown?.(event)
+          if (event.defaultPrevented || disabled) return
+          if (
+            inlineArrow(event.key, event.currentTarget) === "next" ||
+            event.key === "Enter" ||
+            event.key === " "
+          ) {
+            event.preventDefault()
+            openSelf()
+            requestAnimationFrame(() => ctx.focusFirst())
+          }
+        }}
+        onSelect={(event) => {
+          ;(event as Event & { preventDefault: () => void }).preventDefault?.()
+        }}
+        className={cn("dr-menubar-sub-trigger", inset && "ps-8", className)}
+        {...rest}
+      >
+        {children}
+        <ChevronRight
+          className="dr-icon-inline ms-auto size-[var(--icon-size)]"
+          aria-hidden="true"
+        />
+      </MenubarItem>
+    </MenubarMenuContext.Provider>
   )
 }
 

@@ -473,3 +473,44 @@ describe("DropdownMenu submenus under RTL", () => {
     expect(submenu).toHaveAttribute("dir", "rtl")
   })
 })
+
+describe("DropdownMenu sub-trigger keys", () => {
+  function Menu() {
+    return (
+      <DropdownMenu defaultOpen>
+        <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem>Copy</DropdownMenuItem>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>Share</DropdownMenuSubTrigger>
+            <DropdownMenuSubContent>
+              <DropdownMenuItem>Email</DropdownMenuItem>
+              <DropdownMenuItem>Link</DropdownMenuItem>
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
+          <DropdownMenuItem>Last</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    )
+  }
+
+  it("ArrowDown from the item before a sub-trigger focuses the sub-trigger", async () => {
+    render(<Menu />)
+    const copy = await screen.findByRole("menuitem", { name: "Copy" })
+    fireEvent.keyDown(screen.getByRole("menu"), { key: "Home" })
+    await waitFor(() => expect(copy).toHaveFocus())
+    fireEvent.keyDown(copy, { key: "ArrowDown" })
+    await waitFor(() =>
+      expect(screen.getByRole("menuitem", { name: "Share" })).toHaveFocus(),
+    )
+  })
+
+  it("ArrowRight on a sub-trigger focuses the first submenu item", async () => {
+    render(<Menu />)
+    const share = await screen.findByRole("menuitem", { name: "Share" })
+    share.focus()
+    fireEvent.keyDown(share, { key: "ArrowRight" })
+    const email = await screen.findByRole("menuitem", { name: "Email" })
+    await waitFor(() => expect(email).toHaveFocus())
+  })
+})

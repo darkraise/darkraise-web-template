@@ -1,4 +1,10 @@
-import { createEvent, render, screen, fireEvent } from "@testing-library/react"
+import {
+  createEvent,
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+} from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi } from "vitest"
 import {
@@ -391,5 +397,51 @@ describe("ContextMenu submenus under RTL", () => {
     const nested = await screen.findByRole("menuitem", { name: "Nested" })
     fireEvent.keyDown(nested, { key: "ArrowRight" })
     expect(more).toHaveAttribute("aria-expanded", "false")
+  })
+})
+
+describe("ContextMenu sub-trigger keys", () => {
+  async function openMenu() {
+    render(
+      <ContextMenu>
+        <ContextMenuTrigger>Right-click here</ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuItem>Copy</ContextMenuItem>
+          <ContextMenuSub>
+            <ContextMenuSubTrigger>Share</ContextMenuSubTrigger>
+            <ContextMenuSubContent>
+              <ContextMenuItem>Email</ContextMenuItem>
+              <ContextMenuItem>Link</ContextMenuItem>
+            </ContextMenuSubContent>
+          </ContextMenuSub>
+          <ContextMenuItem>Last</ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>,
+    )
+    fireEvent.contextMenu(screen.getByText("Right-click here"), {
+      clientX: 10,
+      clientY: 10,
+    })
+    return screen.findByRole("menu")
+  }
+
+  it("ArrowDown from the item before a sub-trigger focuses the sub-trigger", async () => {
+    const menu = await openMenu()
+    const copy = screen.getByRole("menuitem", { name: "Copy" })
+    fireEvent.keyDown(menu, { key: "Home" })
+    await waitFor(() => expect(copy).toHaveFocus())
+    fireEvent.keyDown(copy, { key: "ArrowDown" })
+    await waitFor(() =>
+      expect(screen.getByRole("menuitem", { name: "Share" })).toHaveFocus(),
+    )
+  })
+
+  it("ArrowRight on a sub-trigger focuses the first submenu item", async () => {
+    await openMenu()
+    const share = screen.getByRole("menuitem", { name: "Share" })
+    share.focus()
+    fireEvent.keyDown(share, { key: "ArrowRight" })
+    const email = await screen.findByRole("menuitem", { name: "Email" })
+    await waitFor(() => expect(email).toHaveFocus())
   })
 })

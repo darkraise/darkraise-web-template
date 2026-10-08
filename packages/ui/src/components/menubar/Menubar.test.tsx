@@ -315,3 +315,92 @@ describe("Menubar keys under RTL", () => {
     expect(more).toHaveAttribute("aria-expanded", "false")
   })
 })
+
+describe("Menubar submenus", () => {
+  function Nested() {
+    return (
+      <Menubar>
+        <MenubarMenu value="file">
+          <MenubarTrigger>File</MenubarTrigger>
+          <MenubarContent>
+            <MenubarItem>Copy</MenubarItem>
+            <MenubarSub>
+              <MenubarSubTrigger>Share</MenubarSubTrigger>
+              <MenubarSubContent>
+                <MenubarItem>Email</MenubarItem>
+                <MenubarItem>Link</MenubarItem>
+              </MenubarSubContent>
+            </MenubarSub>
+            <MenubarSub>
+              <MenubarSubTrigger>Export</MenubarSubTrigger>
+              <MenubarSubContent>
+                <MenubarItem>PDF</MenubarItem>
+              </MenubarSubContent>
+            </MenubarSub>
+            <MenubarItem>Last</MenubarItem>
+          </MenubarContent>
+        </MenubarMenu>
+      </Menubar>
+    )
+  }
+
+  async function openFile() {
+    const user = userEvent.setup()
+    render(<Nested />)
+    await user.click(screen.getByRole("menuitem", { name: "File" }))
+    return screen.findByRole("menu")
+  }
+
+  // A closed submenu may still be in the DOM (Presence holds it for the
+  // exit animation) or already gone. Both mean "not showing".
+  function stateOf(text: string) {
+    const node = screen.queryByText(text)
+    if (!node) return "closed"
+    return node.closest("[role='menu']")?.getAttribute("data-state")
+  }
+
+  it("ArrowDown from the item before a sub-trigger focuses the sub-trigger", async () => {
+    const menu = await openFile()
+    const copy = screen.getByRole("menuitem", { name: "Copy" })
+    fireEvent.keyDown(menu, { key: "Home" })
+    await waitFor(() => expect(copy).toHaveFocus())
+    fireEvent.keyDown(copy, { key: "ArrowDown" })
+    await waitFor(() =>
+      expect(screen.getByRole("menuitem", { name: "Share" })).toHaveFocus(),
+    )
+  })
+
+  it("ArrowRight on a sub-trigger focuses the first submenu item", async () => {
+    await openFile()
+    const share = screen.getByRole("menuitem", { name: "Share" })
+    share.focus()
+    fireEvent.keyDown(share, { key: "ArrowRight" })
+    const email = await screen.findByRole("menuitem", { name: "Email" })
+    await waitFor(() => expect(email).toHaveFocus())
+  })
+
+  it("opens a submenu on sub-trigger hover", async () => {
+    await openFile()
+    fireEvent.pointerEnter(screen.getByText("Share"))
+    await screen.findByText("Email")
+    expect(stateOf("Email")).toBe("open")
+  })
+
+  it("hovering a sibling sub-trigger closes the open submenu", async () => {
+    await openFile()
+    fireEvent.pointerEnter(screen.getByText("Share"))
+    await screen.findByText("Email")
+    fireEvent.pointerEnter(screen.getByText("Export"))
+    await screen.findByText("PDF")
+    expect(stateOf("PDF")).toBe("open")
+    expect(stateOf("Email")).toBe("closed")
+  })
+
+  it("hovering a plain item closes the open submenu", async () => {
+    await openFile()
+    fireEvent.pointerEnter(screen.getByText("Share"))
+    await screen.findByText("Email")
+    fireEvent.pointerEnter(screen.getByText("Last"))
+    expect(stateOf("Email")).toBe("closed")
+  })
+})
