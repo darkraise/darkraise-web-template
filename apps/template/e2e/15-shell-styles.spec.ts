@@ -437,7 +437,6 @@ test.describe("flat light chrome tone", () => {
       await reloadApp(page)
       const flat = await measure("flat")
       const report = `${style}: flat fill ${flat.fill.toFixed(3)}:1, classic edge ${classic.edge.toFixed(3)}:1`
-      console.log(report)
       expect(flat.fill, report).toBeGreaterThanOrEqual(1.2)
       expect(flat.fill, report).toBeLessThan(classic.edge)
     })

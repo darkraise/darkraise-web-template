@@ -469,7 +469,7 @@ const renderNode = (node: TreeNode, depth: number) =>
               // Kit leaf row padding, then the leaf icon (1rem) and gap (0.5rem).
               paddingInlineStart:
                 "calc(0.5rem + var(--tree-depth) * var(--tree-view-indent, 1rem) + var(--icon-size) + 0.5rem + 1rem + 0.5rem)",
-            }}
+            } as CSSProperties}
           >
             Empty
           </li>
