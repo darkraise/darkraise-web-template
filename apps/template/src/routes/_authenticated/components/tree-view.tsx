@@ -245,12 +245,18 @@ function LazyLoadExample() {
           <TreeViewBranchContent>
             {node.children.length === 0 && !isLoading ? (
               <li
+                role="none"
                 className="text-muted-foreground py-1 text-xs"
                 style={
                   {
                     "--tree-depth": depth + 1,
-                    // The item padding plus the leaf icon (size-4) and the
-                    // item gap (gap-2), so the text lines up with leaf text.
+                    // The kit leaf row padding (.dr-tree-view-item: a 0.5rem
+                    // inset, depth times --tree-view-indent, the --icon-size
+                    // indicator slot and its 0.5rem gap), then this demo leaf
+                    // icon (size-4, 1rem) and the row gap (gap-2, 0.5rem), so
+                    // the text lines up with leaf text. The kit has no
+                    // variables for the insets, icon or gap; these sizes
+                    // follow tree-view.css.
                     paddingInlineStart:
                       "calc(0.5rem + var(--tree-depth) * var(--tree-view-indent, 1rem) + var(--icon-size) + 0.5rem + 1rem + 0.5rem)",
                   } as CSSProperties
@@ -425,11 +431,63 @@ function TreeViewPage() {
 
       <ShowcaseExample
         title="Lazy-load children"
-        code={`const handleExpandedChange = (next) => {
+        code={`// Children load the first time a branch opens. Until they arrive the
+// branch holds an empty array, and an empty branch shows a placeholder.
+const ensureLoaded = async (id: string) => {
+  const node = findNode(data, id)
+  if (!node?.children || node.children.length > 0) return
+  setLoadingId(id)
+  const children = await fetchChildren(id)
+  setData((prev) => fillChildren(prev, id, children))
+  setLoadingId(null)
+}
+
+const handleExpandedChange = (next: string[]) => {
   const newlyOpened = next.find((v) => !expanded.includes(v))
   setExpanded(next)
   if (newlyOpened) void ensureLoaded(newlyOpened)
-}`}
+}
+
+// Each level passes depth + 1 down, so the placeholder indents like a leaf.
+const renderNode = (node: TreeNode, depth: number) =>
+  node.children ? (
+    <TreeViewBranch key={node.id} value={node.id}>
+      <TreeViewBranchControl>
+        <TreeViewBranchIndicator>
+          <ChevronRight className="size-3.5" />
+        </TreeViewBranchIndicator>
+        <Folder className="size-4 shrink-0" />
+        <TreeViewBranchText>{node.name}</TreeViewBranchText>
+      </TreeViewBranchControl>
+      <TreeViewBranchContent>
+        {node.children.length === 0 && loadingId !== node.id ? (
+          <li
+            role="none"
+            className="text-muted-foreground py-1 text-xs"
+            style={{
+              "--tree-depth": depth + 1,
+              // Kit leaf row padding, then the leaf icon (1rem) and gap (0.5rem).
+              paddingInlineStart:
+                "calc(0.5rem + var(--tree-depth) * var(--tree-view-indent, 1rem) + var(--icon-size) + 0.5rem + 1rem + 0.5rem)",
+            }}
+          >
+            Empty
+          </li>
+        ) : (
+          node.children.map((child) => renderNode(child, depth + 1))
+        )}
+      </TreeViewBranchContent>
+    </TreeViewBranch>
+  ) : (
+    <TreeViewItem key={node.id} value={node.id}>
+      <File className="size-4 shrink-0" />
+      <span className="truncate">{node.name}</span>
+    </TreeViewItem>
+  )
+
+<TreeView data={data} expanded={expanded} onExpandedChange={(d) => handleExpandedChange(d.value)}>
+  <TreeViewTree>{data.children?.map((node) => renderNode(node, 0))}</TreeViewTree>
+</TreeView>`}
       >
         <LazyLoadExample />
       </ShowcaseExample>

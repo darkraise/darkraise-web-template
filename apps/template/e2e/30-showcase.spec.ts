@@ -1294,3 +1294,46 @@ test.describe("select side x align triggers show their whole label", () => {
     })
   }
 })
+
+test.describe("dual-axis charts name each series", () => {
+  const CHARTS = [
+    { title: "Revenue vs Orders", series: ["Revenue", "Orders"] },
+    { title: "Visitors vs Conversions", series: ["Visitors", "Conversions"] },
+  ]
+
+  for (const { title, series } of CHARTS) {
+    test(`${title}: a legend entry and a Y axis label per series`, async ({
+      page,
+    }) => {
+      await openShowcase(page, "/components/charts")
+      const chart = page
+        .locator(".dr-card")
+        .filter({ has: page.getByText(title, { exact: true }) })
+        .filter({ has: page.locator(".recharts-surface") })
+        .last()
+      // The legend lists its entries in the order Recharts sorts them.
+      const legend = chart.locator(".dr-chart-legend > div")
+      await expect(legend).toHaveCount(2)
+      expect((await legend.allTextContents()).sort()).toEqual(
+        [...series].sort(),
+      )
+      await expect(chart.locator("text.recharts-label")).toHaveText(series)
+    })
+  }
+})
+
+test.describe("tree-view lazy placeholder", () => {
+  test("an expanded empty branch holds no list item", async ({ page }) => {
+    await openShowcase(page, "/components/tree-view")
+    const demo = page
+      .locator("[data-showcase-example]")
+      .filter({ has: page.getByText("Lazy-load children", { exact: true }) })
+    await demo.getByText("archive", { exact: true }).click()
+    const group = demo
+      .getByRole("group")
+      .filter({ has: page.getByText("Empty", { exact: true }) })
+    await expect(group).toHaveCount(1)
+    await expect(group.getByText("Empty", { exact: true })).toBeVisible()
+    await expect(group.getByRole("listitem")).toHaveCount(0)
+  })
+})

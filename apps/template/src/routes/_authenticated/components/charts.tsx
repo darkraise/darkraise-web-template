@@ -17,6 +17,8 @@ import {
 import {
   ChartCard,
   ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
@@ -273,7 +275,7 @@ const ordersConfig = {
         code={`// Multiple dataKey Lines renders multiple series. Series with different
 // ranges each get their own Y axis (yAxisId), or the smaller one draws flat.
 import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts"
-import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/features/charts"
+import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/features/charts"
 
 const revenueOrdersConfig = {
   revenue: { label: "Revenue", color: "var(--chart-1)" },
@@ -285,9 +287,10 @@ const revenueOrdersConfig = {
     <LineChart data={data}>
       <CartesianGrid vertical={false} strokeDasharray="3 3" />
       <XAxis dataKey="month" tickLine={false} axisLine={false} />
-      <YAxis yAxisId="revenue" tickLine={false} axisLine={false} />
-      <YAxis yAxisId="orders" orientation="right" tickLine={false} axisLine={false} />
+      <YAxis yAxisId="revenue" tickLine={false} axisLine={false} label={{ value: "Revenue", angle: -90, position: "insideLeft" }} />
+      <YAxis yAxisId="orders" orientation="right" tickLine={false} axisLine={false} label={{ value: "Orders", angle: 90, position: "insideRight" }} />
       <ChartTooltip content={<ChartTooltipContent />} />
+      <ChartLegend content={<ChartLegendContent />} />
       <Line yAxisId="revenue" type="monotone" dataKey="revenue" stroke="var(--color-revenue)" strokeWidth={2} dot={false} />
       <Line yAxisId="orders" type="monotone" dataKey="orders" stroke="var(--color-orders)" strokeWidth={2} dot={false} />
     </LineChart>
@@ -315,6 +318,11 @@ const revenueOrdersConfig = {
                 tickLine={false}
                 axisLine={false}
                 className="text-xs"
+                label={{
+                  value: "Revenue",
+                  angle: -90,
+                  position: "insideLeft",
+                }}
               />
               <YAxis
                 yAxisId="orders"
@@ -322,8 +330,14 @@ const revenueOrdersConfig = {
                 tickLine={false}
                 axisLine={false}
                 className="text-xs"
+                label={{
+                  value: "Orders",
+                  angle: 90,
+                  position: "insideRight",
+                }}
               />
               <ChartTooltip content={<ChartTooltipContent />} />
+              <ChartLegend content={<ChartLegendContent />} />
               <Line
                 yAxisId="revenue"
                 type="monotone"
@@ -455,9 +469,10 @@ const coloredPieData = pieData.map((entry, i) => ({ ...entry, fill: pieColors[i 
       <LineChart data={weeklyData}>
         <CartesianGrid vertical={false} strokeDasharray="3 3" />
         <XAxis dataKey="day" tickLine={false} axisLine={false} />
-        <YAxis yAxisId="visitors" tickLine={false} axisLine={false} />
-        <YAxis yAxisId="conversions" orientation="right" tickLine={false} axisLine={false} />
+        <YAxis yAxisId="visitors" tickLine={false} axisLine={false} label={{ value: "Visitors", angle: -90, position: "insideLeft" }} />
+        <YAxis yAxisId="conversions" orientation="right" tickLine={false} axisLine={false} label={{ value: "Conversions", angle: 90, position: "insideRight" }} />
         <ChartTooltip content={<ChartTooltipContent />} />
+        <ChartLegend content={<ChartLegendContent />} />
         <Line yAxisId="visitors" type="monotone" dataKey="visitors" stroke="var(--color-visitors)" strokeWidth={2} dot={false} />
         <Line yAxisId="conversions" type="monotone" dataKey="conversions" stroke="var(--color-conversions)" strokeWidth={2} dot={false} />
       </LineChart>
@@ -543,6 +558,11 @@ const coloredPieData = pieData.map((entry, i) => ({ ...entry, fill: pieColors[i 
                   tickLine={false}
                   axisLine={false}
                   className="text-xs"
+                  label={{
+                    value: "Visitors",
+                    angle: -90,
+                    position: "insideLeft",
+                  }}
                 />
                 <YAxis
                   yAxisId="conversions"
@@ -550,8 +570,14 @@ const coloredPieData = pieData.map((entry, i) => ({ ...entry, fill: pieColors[i 
                   tickLine={false}
                   axisLine={false}
                   className="text-xs"
+                  label={{
+                    value: "Conversions",
+                    angle: 90,
+                    position: "insideRight",
+                  }}
                 />
                 <ChartTooltip content={<ChartTooltipContent />} />
+                <ChartLegend content={<ChartLegendContent />} />
                 <Line
                   yAxisId="visitors"
                   type="monotone"

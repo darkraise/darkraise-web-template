@@ -37,21 +37,24 @@ function CarouselPage() {
     >
       <ShowcaseExample
         title="Horizontal card slider"
-        code={`<Carousel className="w-full max-w-sm">
-  <CarouselContent>
-    {Array.from({ length: 5 }, (_, i) => (
-      <CarouselItem key={i}>
-        <Card>
-          <CardContent className="flex aspect-square items-center justify-center p-6">
-            <span className="text-4xl font-semibold">{i + 1}</span>
-          </CardContent>
-        </Card>
-      </CarouselItem>
-    ))}
-  </CarouselContent>
-  <CarouselPrevious />
-  <CarouselNext />
-</Carousel>`}
+        code={`// The arrows sit 48px outside the carousel; mx-12 keeps that room.
+<div className="mx-12">
+  <Carousel className="w-full max-w-sm">
+    <CarouselContent>
+      {Array.from({ length: 5 }, (_, i) => (
+        <CarouselItem key={i}>
+          <Card>
+            <CardContent className="flex aspect-square items-center justify-center p-6">
+              <span className="text-4xl font-semibold">{i + 1}</span>
+            </CardContent>
+          </Card>
+        </CarouselItem>
+      ))}
+    </CarouselContent>
+    <CarouselPrevious />
+    <CarouselNext />
+  </Carousel>
+</div>`}
       >
         <div className="mx-12">
           <Carousel className="w-full max-w-sm">
@@ -77,26 +80,29 @@ function CarouselPage() {
         code={`// IndicatorGroup holds one Indicator per slide. Each Indicator takes the
 // matching index — clicking it scrolls the carousel to that slide. The
 // active dot widens into a pill via the data-current attribute.
-<Carousel className="w-full max-w-sm">
-  <CarouselContent>
-    {Array.from({ length: 5 }, (_, i) => (
-      <CarouselItem key={i}>
-        <Card>
-          <CardContent className="flex aspect-square items-center justify-center p-6">
-            <span className="text-4xl font-semibold">{i + 1}</span>
-          </CardContent>
-        </Card>
-      </CarouselItem>
-    ))}
-  </CarouselContent>
-  <CarouselPrevious />
-  <CarouselNext />
-  <CarouselIndicatorGroup>
-    {Array.from({ length: 5 }, (_, i) => (
-      <CarouselIndicator key={i} index={i} />
-    ))}
-  </CarouselIndicatorGroup>
-</Carousel>`}
+// The arrows sit 48px outside the carousel; mx-12 keeps that room.
+<div className="mx-12">
+  <Carousel className="w-full max-w-sm">
+    <CarouselContent>
+      {Array.from({ length: 5 }, (_, i) => (
+        <CarouselItem key={i}>
+          <Card>
+            <CardContent className="flex aspect-square items-center justify-center p-6">
+              <span className="text-4xl font-semibold">{i + 1}</span>
+            </CardContent>
+          </Card>
+        </CarouselItem>
+      ))}
+    </CarouselContent>
+    <CarouselPrevious />
+    <CarouselNext />
+    <CarouselIndicatorGroup>
+      {Array.from({ length: 5 }, (_, i) => (
+        <CarouselIndicator key={i} index={i} />
+      ))}
+    </CarouselIndicatorGroup>
+  </Carousel>
+</div>`}
       >
         <div className="mx-12">
           <Carousel className="w-full max-w-sm">
@@ -163,21 +169,24 @@ function CarouselPage() {
         code={`// One representative cell: every align value renders above. Items are
 // narrower than the viewport and startIndex begins mid-track, so the
 // snap position of the active card visibly differs by align.
-<Carousel opts={{ align: "center", startIndex: 2 }} className="w-full max-w-sm">
-  <CarouselContent>
-    {Array.from({ length: 6 }, (_, i) => (
-      <CarouselItem key={i} className="basis-2/5">
-        <Card>
-          <CardContent className="flex aspect-square items-center justify-center p-6">
-            <span className="text-4xl font-semibold">{i + 1}</span>
-          </CardContent>
-        </Card>
-      </CarouselItem>
-    ))}
-  </CarouselContent>
-  <CarouselPrevious />
-  <CarouselNext />
-</Carousel>`}
+// The arrows sit 48px outside the carousel; mx-12 keeps that room.
+<div className="mx-12">
+  <Carousel opts={{ align: "center", startIndex: 2 }} className="w-full max-w-sm">
+    <CarouselContent>
+      {Array.from({ length: 6 }, (_, i) => (
+        <CarouselItem key={i} className="basis-2/5">
+          <Card>
+            <CardContent className="flex aspect-square items-center justify-center p-6">
+              <span className="text-4xl font-semibold">{i + 1}</span>
+            </CardContent>
+          </Card>
+        </CarouselItem>
+      ))}
+    </CarouselContent>
+    <CarouselPrevious />
+    <CarouselNext />
+  </Carousel>
+</div>`}
       >
         <VariantMatrix
           rows={{ label: "align", values: CAROUSEL_ALIGNS }}

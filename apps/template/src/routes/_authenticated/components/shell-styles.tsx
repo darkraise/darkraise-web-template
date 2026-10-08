@@ -13,21 +13,29 @@ const STRUCTURES = [
     id: "sidebar",
     label: "Sidebar",
     blurb: "Rail plus app bar over content. The most gutter-sensitive shape.",
+    layout: "SidebarLayout",
+    props: "nav={nav}",
   },
   {
     id: "top-nav",
     label: "Top navigation",
     blurb: "App bar carries the nav; content runs full width.",
+    layout: "TopNavLayout",
+    props: "nav={nav}",
   },
   {
     id: "stacked",
     label: "Stacked",
     blurb: "Icon rail, contextual sub-nav, app bar, content — four regions.",
+    layout: "StackedLayout",
+    props: "nav={nav}",
   },
   {
     id: "split-panel",
     label: "Split panel",
     blurb: "Full-width bar over a resizable record list and content.",
+    layout: "SplitPanelLayout",
+    props: "nav={nav} panel={<MessageList />}",
   },
 ] as const
 
@@ -136,21 +144,21 @@ function ShellStylesPage() {
       title="Shell Styles"
       description="Six chrome treatments, each composing with all four shell structures. Pick one under Shell style in the layout switcher to move every shell in the app at once, set the app's starting style with the defaultShellStyle prop, or pin one shell with the shellStyle prop."
     >
-      {STRUCTURES.map(({ id, label, blurb }) => (
+      {STRUCTURES.map(({ id, label, blurb, layout, props }) => (
         <ShowcaseExample
           key={id}
           title={label}
-          code={`import { SidebarLayout } from "darkraise-ui/layout"
+          code={`import { ${layout} } from "darkraise-ui/layout"
 
 // Follows the user's pick in the layout switcher, else the default:
-<SidebarLayout nav={nav} showLayoutSwitcher defaultShellStyle="inset">
+<${layout} ${props} showLayoutSwitcher defaultShellStyle="inset">
   <Outlet />
-</SidebarLayout>
+</${layout}>
 
 // Or pin one shell, ignoring the user's pick:
-<SidebarLayout nav={nav} shellStyle="island">
+<${layout} ${props} shellStyle="island">
   <Outlet />
-</SidebarLayout>`}
+</${layout}>`}
         >
           <Stack gap="sm">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
