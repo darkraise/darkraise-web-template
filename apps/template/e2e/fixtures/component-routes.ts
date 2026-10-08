@@ -53,6 +53,10 @@ export const COMPONENT_ROUTES: ComponentRoute[] = [
   { path: "/components/icons", title: "Icons" },
   { path: "/components/image-cropper", title: "Image Cropper" },
   { path: "/components/image-editor", title: "Image Editor" },
+  {
+    path: "/components/image-editor-playground",
+    title: "Image Editor Playground",
+  },
   { path: "/components/input-otp", title: "Input OTP" },
   { path: "/components/inputs", title: "Inputs" },
   { path: "/components/json-tree-view", title: "JSON Tree View" },

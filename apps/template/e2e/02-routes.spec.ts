@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test"
+import { APP_ROUTES } from "./fixtures/app-routes"
 import { COMPONENT_ROUTES } from "./fixtures/component-routes"
 import {
   expectNoErrorBoundary,
@@ -8,28 +9,38 @@ import {
   watchConsole,
 } from "./helpers/app"
 
-const APP_ROUTES: { path: string; heading: RegExp }[] = [
-  { path: "/", heading: /Dashboard/ },
-  { path: "/analytics", heading: /Analytics/ },
-  { path: "/products", heading: /Products/ },
-  { path: "/products/new", heading: /Product/ },
-  { path: "/categories", heading: /Categories/ },
-  { path: "/orders", heading: /Orders/ },
-  { path: "/customers", heading: /Customers/ },
-  { path: "/settings", heading: /Settings/ },
-  { path: "/components", heading: /Component Library/ },
-]
+/** The heading each app route renders; the inbox has none until a message opens. */
+const HEADINGS: Record<string, RegExp | null> = {
+  "/": /Dashboard/,
+  "/analytics": /Analytics/,
+  "/products": /Products/,
+  "/products/new": /Product/,
+  "/products/prod-1/edit": /Edit iPhone 15 Pro/,
+  "/categories": /Categories/,
+  "/orders": /Orders/,
+  "/orders/ord-1": /ORD-2025-001/,
+  "/customers": /Customers/,
+  "/customers/cust-1": /Emma Thompson/,
+  "/settings": /Settings/,
+  "/inbox": null,
+  "/components": /Component Library/,
+}
 
 /** The error-pages showcase renders error-boundary copy on purpose. */
 const ERROR_COPY_BY_DESIGN = new Set(["/components/error-pages"])
 
 test.describe("application routes render", () => {
-  for (const route of APP_ROUTES) {
-    test(`app route ${route.path}`, async ({ page }) => {
+  for (const path of APP_ROUTES) {
+    test(`app route ${path}`, async ({ page }) => {
+      const heading = HEADINGS[path]
+      if (heading === undefined)
+        throw new Error(`no heading listed for ${path}`)
       const consoleWatch = watchConsole(page)
       await seedApp(page)
-      await gotoApp(page, route.path)
-      await expect(page.locator("main h1").first()).toHaveText(route.heading)
+      await gotoApp(page, path)
+      if (heading) {
+        await expect(page.locator("main h1").first()).toHaveText(heading)
+      }
       await expectNoErrorBoundary(page)
       await expectNoHorizontalOverflow(page)
       consoleWatch.assertClean()
@@ -94,17 +105,6 @@ test.describe("kitchen sink", () => {
   })
 })
 
-test.describe("routes without a showcase header", () => {
-  test("image editor playground renders", async ({ page }) => {
-    const consoleWatch = watchConsole(page)
-    await seedApp(page)
-    await gotoApp(page, "/components/image-editor-playground")
-    await expect(page.locator("main")).toBeVisible()
-    await expectNoErrorBoundary(page)
-    consoleWatch.assertClean()
-  })
-})
-
 test.describe("split-panel routes render", () => {
   test("inbox lists messages and opens one", async ({ page }) => {
     const consoleWatch = watchConsole(page)
@@ -155,9 +155,7 @@ test.describe("sidebar navigation", () => {
 
     const known = new Set([
       ...COMPONENT_ROUTES.map((r) => r.path),
-      ...APP_ROUTES.map((r) => r.path),
-      "/components/image-editor-playground",
-      "/inbox",
+      ...APP_ROUTES,
     ])
     const unknown = hrefs.filter((h) => !known.has(h))
     expect(unknown, `sidebar links without a fixture route`).toEqual([])

@@ -62,10 +62,7 @@ async function openShowcase(
 }
 
 test.describe("showcase sweep", () => {
-  const routes = [
-    ...COMPONENT_ROUTES.map((route) => route.path),
-    "/components/image-editor-playground",
-  ]
+  const routes = COMPONENT_ROUTES.map((route) => route.path)
 
   /** Controls inside these are exempt from rule B. */
   const ALLOWLIST: { selector: string; reason: string }[] = [

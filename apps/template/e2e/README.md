@@ -46,9 +46,11 @@ temporary directory has less than 1 GiB free.
 it, so on a cold server the first tests spend their time compiling. `pnpm
 test:e2e` sets `E2E_WARM=1`, and `e2e/global-setup.ts` then drives one page
 through every guest route, app route, showcase route and standalone fixture
-before the tests start. Runs that call `playwright test` directly, such as a
-single spec, skip the warm-up unless `E2E_WARM=1` is set; `18` warms the
-routes it captures in its own `beforeAll`.
+before the tests start. The route lists come from `fixtures/app-routes.ts` and
+`fixtures/component-routes.ts`, the fixtures from every `fixtures/*.html` file,
+and the setup logs the fixtures it warms. Runs that call `playwright test`
+directly, such as a single spec, skip the warm-up unless `E2E_WARM=1` is set;
+`18` warms the routes it captures in its own `beforeAll`.
 
 **Projects.** `21-mobile-layout.spec.ts` runs only in the `mobile` project
 (390×844, touch); every other spec runs in `chromium`.
@@ -115,12 +117,13 @@ E2E_TRACE=1 TMPDIR=/root/.cache/pw-tmp pnpm test:e2e
 
 ### 02 · Route inventory (`02-routes.spec.ts`)
 
-- All 9 application routes render with the expected `h1`, no error boundary and
-  no horizontal overflow.
-- All 100 component showcase routes, driven from `fixtures/component-routes.ts`
-  (regenerate it when pages are added — see _Maintenance_).
-- `/components/image-editor-playground` and `/inbox`, which have no showcase
-  header, get their own shape-specific checks.
+- All 13 application routes in `fixtures/app-routes.ts` render with the
+  expected `h1` (`/inbox` has none until a message opens), no error boundary
+  and no horizontal overflow.
+- All 100 component routes, driven from `fixtures/component-routes.ts`
+  (regenerate it when pages are added — see _Maintenance_), including
+  `/components/image-editor-playground`.
+- `/inbox` gets its own shape-specific check.
 - `/components/kitchen-sink` fits one 1440×900 viewport with its focused text
   field still focused, because the style screenshots in `18` capture it whole.
 - Detail routes are reached the way a user reaches them: the row-action menu on
@@ -713,8 +716,12 @@ it is fixed, which is the cue to remove the marker.
   for f in *.tsx; do … done > ../../../../e2e/fixtures/component-routes.ts
   ```
 
-  Or add the `{ path, title }` entry by hand. `02` and `05` pick it up
-  automatically, and the sidebar-integrity test fails if a link has no entry.
+  Or add the `{ path, title }` entry by hand. `02`, `05`, `30` and the
+  warm-up pick it up automatically, and the sidebar-integrity test fails if a
+  link has no entry.
+
+- **New app or guest route** → add it to `e2e/fixtures/app-routes.ts`, and an
+  app route's heading to `HEADINGS` in `02-routes.spec.ts`.
 
 - **New theme axis or style** → add it to `e2e/fixtures/theme.ts`. `03`, `04`,
   `05`, `09`, `10`, `11-card-accordion-variants`, `12-settings-preset-matrix`,

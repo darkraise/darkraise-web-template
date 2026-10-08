@@ -1,43 +1,15 @@
-import { statfsSync } from "node:fs"
+import { readdirSync, statfsSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { chromium, type FullConfig, type Page } from "@playwright/test"
+import { APP_ROUTES, GUEST_ROUTES } from "./fixtures/app-routes"
 import { COMPONENT_ROUTES } from "./fixtures/component-routes"
 import { collectGarbage, seedApp } from "./helpers/app"
 
-const GUEST_ROUTES = [
-  "/login",
-  "/register",
-  "/forgot-password",
-  "/reset-password",
-]
-
-const APP_ROUTES = [
-  "/",
-  "/analytics",
-  "/products",
-  "/products/new",
-  "/products/prod-1/edit",
-  "/categories",
-  "/orders",
-  "/orders/ord-1",
-  "/customers",
-  "/customers/cust-1",
-  "/settings",
-  "/inbox",
-  "/components",
-]
-
-const FIXTURES = [
-  "baseline-overlays",
-  "control-contract",
-  "controls-behaviour",
-  "forced-colors",
-  "overlay-geometry",
-  "rtl",
-  "selection-overlays",
-  "split-panel",
-  "virtual-table",
-].map((name) => `/e2e/fixtures/${name}.html`)
+/** Every standalone fixture page, so a new one is warmed without a list edit. */
+const FIXTURES = readdirSync(new URL("./fixtures/", import.meta.url))
+  .filter((name) => name.endsWith(".html"))
+  .sort()
+  .map((name) => `/e2e/fixtures/${name}`)
 
 /**
  * Chromium writes its temporary files under TMPDIR and crashes on every
@@ -79,6 +51,7 @@ export default async function globalSetup(config: FullConfig) {
   if (process.env.E2E_WARM !== "1") return
   const baseURL = config.projects[0]?.use.baseURL
   if (!baseURL) throw new Error("globalSetup: no baseURL in the config")
+  console.log(`globalSetup: warming fixtures ${FIXTURES.join(", ")}`)
   const browser = await chromium.launch()
   try {
     const page = await browser.newPage({ baseURL })

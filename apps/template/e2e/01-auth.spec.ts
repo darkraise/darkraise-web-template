@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test"
+import { GUEST_ROUTES } from "./fixtures/app-routes"
 import { gotoApp, seedApp, watchConsole } from "./helpers/app"
 
 test.describe("authentication", () => {
@@ -19,13 +20,9 @@ test.describe("authentication", () => {
     await expect(page).toHaveURL(/\/login$/)
   })
 
-  for (const [path, heading] of [
-    ["/login", /Welcome back/],
-    ["/register", /.+/],
-    ["/forgot-password", /.+/],
-    ["/reset-password", /.+/],
-  ] as const) {
+  for (const path of GUEST_ROUTES) {
     test(`guest route ${path} renders`, async ({ page }) => {
+      const heading = path === "/login" ? /Welcome back/ : /.+/
       const consoleWatch = watchConsole(page)
       await seedApp(page, {}, { authenticated: false })
       await gotoApp(page, path)
