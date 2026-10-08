@@ -5,6 +5,7 @@ import {
   interactiveClasses,
   parseRules,
   splitToken,
+  type Rule,
 } from "./interactive-classes"
 
 // Forced colours drop backgrounds and box-shadows, so a control drawn by its
@@ -738,5 +739,42 @@ describe("forced colours restate every state", () => {
         .map((property) => `${rule.selectors.join(", ")} { ${property} }`),
     )
     expect(outlines).toEqual([])
+  })
+})
+
+/**
+ * The third forced-colours block: focus rings drawn inside a Highlight fill,
+ * which take the fill's text colour instead.
+ */
+const RINGS = parseRules(
+  blockAfter(
+    THEME.slice(THEME.lastIndexOf("@media (forced-colors: active) {")),
+    /@media \(forced-colors: active\) \{/,
+  ),
+)
+
+const selectorsOf = (rules: Rule[], body: string) =>
+  rules
+    .filter((rule) => rule.body.replace(/\s+/g, " ").includes(body))
+    .flatMap((rule) => rule.selectors.map((s) => s.replace(/\s+/g, " ")))
+
+describe("forced-colours details", () => {
+  it("rings a focused checked segment in the fill's text colour", () => {
+    expect(selectorsOf(RINGS, "outline-color: HighlightText;")).toContain(
+      '.dr-segment-group-item[data-state="checked"]:focus-visible',
+    )
+  })
+
+  it("keeps a checked choice card's field in the row colour", () => {
+    expect(selectorsOf(STATES, "color: inherit;")).toContain(
+      '.dr-field-label:has(> [data-slot="field"]):has([data-state="checked"]) > .dr-field',
+    )
+  })
+
+  it("paints the OTP caret through its kit class", () => {
+    expect(selectorsOf(STATES, "background-color: CanvasText;")).toContain(
+      ".dr-input-otp-slot .dr-input-otp-caret",
+    )
+    expect(THEME).not.toContain("animate-caret-blink")
   })
 })

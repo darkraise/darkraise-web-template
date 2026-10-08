@@ -2387,7 +2387,9 @@
   .dr-menubar-sub-trigger:is(:focus, [data-state="open"]) .dr-menubar-shortcut,
   .dr-sidebar-nav-current .dr-sidebar-nav-badge,
   .dr-field-label:has(> [data-slot="field"]):has([data-state="checked"])
-    .dr-field-description {
+    .dr-field-description,
+  .dr-field-label:has(> [data-slot="field"]):has([data-state="checked"])
+    > .dr-field {
     color: inherit;
   }
 
@@ -2459,8 +2461,8 @@
     border-style: dashed;
   }
 
-  /* The overlay variant's fake caret has no kit class of its own. */
-  .dr-input-otp-slot .animate-caret-blink {
+  /* The overlay variant's fake caret is a bg-foreground fill. */
+  .dr-input-otp-slot .dr-input-otp-caret {
     background-color: CanvasText;
   }
 
@@ -2565,6 +2567,7 @@
       [data-range-single="true"]
     ):not([data-range-preview="true"]):focus-visible,
   .dr-toggle[data-state="on"]:focus-visible,
+  .dr-segment-group-item[data-state="checked"]:focus-visible,
   .dr-tabs-trigger[data-variant="enclosed"][data-state="active"]:focus-visible,
   .dr-time-column-item[data-selected="true"]:focus-visible,
   .dr-carousel-indicator[data-current="true"]:focus-visible,

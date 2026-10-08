@@ -607,6 +607,11 @@ test.describe("chosen items under focus and with children", () => {
       focusItem,
     ],
     ["toggle", '.dr-toggle[data-state="on"]', focusItem],
+    [
+      "segment-group",
+      '.dr-segment-group-item[data-state="checked"]',
+      focusItem,
+    ],
     ["sidebar", ".dr-sidebar-nav-current", focusItem],
     ["tabs-enclosed", '.dr-tabs-trigger[data-state="active"]', focusItem],
     [

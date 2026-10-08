@@ -308,6 +308,7 @@ Breaking: `ToggleGroup` sizes to its content. `.dr-toggle-group` is `inline-flex
 - `DateInput` moves to the next segment when one is full, so a whole date can be typed without Tab, and Backspace removes one digit; it moves back to the previous segment only from an empty one.
 - `QrCode` treats a `margin` of `NaN` or `Infinity` as the default four-module quiet zone instead of breaking its viewBox.
 - With `syncDocument`, `AppI18nProvider` leaves `<html dir>` as it found it for a locale pack without `dir`, instead of writing `ltr`, so such a pack inherits the page direction.
+- Forced colours: a focused checked `SegmentGroup` item rings in HighlightText, as a focused pressed toggle does, instead of Highlight on its Highlight indicator; the field inside a checked choice card takes the row's HighlightText even when invalid; and the `InputOtp` fake caret carries `dr-input-otp-caret`, which the forced-colours rule now targets instead of a Tailwind animation class.
 
 Breaking: `.dr-surface`, its `--flat` modifier and its `dr-surface-{brand,cyan,success,warning,danger,info}` hue classes are removed, with the `--fog-05` … `--fog-50` tokens they alone gave values to. The `glass`, `glass-thin`, `glass-strong` and `card-surface` utilities are removed: outside `.dr-surface` they painted nothing. Replace one with `rounded-[var(--radius)]` and, if you relied on it, `transition-[background-color,color,border-color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-in-out)]`.
 
