@@ -31,7 +31,12 @@ export async function settle(page: Page) {
     const deadline = performance.now() + timeout
     let quiet = 0
     while (quiet < 2) {
-      await new Promise((resolve) => requestAnimationFrame(resolve))
+      // A page that stops producing frames would otherwise never reach the
+      // deadline check below.
+      await new Promise((resolve) => {
+        requestAnimationFrame(resolve)
+        setTimeout(resolve, 100)
+      })
       const animations = busy()
       if (animations.length === 0) {
         quiet += 1

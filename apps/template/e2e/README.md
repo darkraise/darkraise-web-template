@@ -94,6 +94,14 @@ E2E_TRACE=1 TMPDIR=/root/.cache/pw-tmp pnpm test:e2e
 
 ## Coverage
 
+### 00 · Helpers (`00-helpers.spec.ts`)
+
+| Helper         | Checks                                                                              |
+| -------------- | ----------------------------------------------------------------------------------- |
+| `settle`       | Throws at its 5,000 ms deadline even when the page produces no frames               |
+| `watchConsole` | Records a `[vite]` console error, ignores a `[vite]` debug message                  |
+| `seedApp`      | Seeds once per tab, so a sign-out survives a reload; a failing iframe is not seeded |
+
 ### 01 · Authentication (`01-auth.spec.ts`)
 
 | Area           | Checks                                                                   |
