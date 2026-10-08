@@ -1,9 +1,66 @@
-import { render, screen } from "@testing-library/react"
-import { describe, it, expect } from "vitest"
+import { act, render, screen } from "@testing-library/react"
+import { afterEach, beforeEach, describe, it, expect, vi } from "vitest"
 import { VariantMatrix } from "./-variant-matrix"
 
 const VARIANTS = ["default", "outline"] as const
 const SIZES = ["sm", "lg"] as const
+
+const observed = new Set<() => void>()
+
+class StubResizeObserver {
+  private readonly notify: () => void
+
+  constructor(callback: ResizeObserverCallback) {
+    this.notify = () => callback([], this)
+  }
+
+  observe() {
+    observed.add(this.notify)
+  }
+
+  unobserve() {
+    observed.delete(this.notify)
+  }
+
+  disconnect() {
+    observed.delete(this.notify)
+  }
+}
+
+const layout = { wrapper: 600, wrapperSpill: 0, cellSpill: 0 }
+
+function resize(changes: Partial<typeof layout>) {
+  Object.assign(layout, changes)
+  act(() => {
+    for (const notify of [...observed]) notify()
+  })
+}
+
+function stubSize(name: "clientWidth" | "scrollWidth") {
+  vi.spyOn(HTMLElement.prototype, name, "get").mockImplementation(function (
+    this: HTMLElement,
+  ) {
+    const spill = name === "scrollWidth"
+    if (this.hasAttribute("data-showcase-matrix")) {
+      return layout.wrapper + (spill ? layout.wrapperSpill : 0)
+    }
+    if (this.tagName === "TD") return 100 + (spill ? layout.cellSpill : 0)
+    return 0
+  })
+}
+
+beforeEach(() => {
+  Object.assign(layout, { wrapper: 600, wrapperSpill: 0, cellSpill: 0 })
+  vi.stubGlobal("ResizeObserver", StubResizeObserver)
+  stubSize("clientWidth")
+  stubSize("scrollWidth")
+})
+
+afterEach(() => {
+  observed.clear()
+  vi.unstubAllGlobals()
+  vi.restoreAllMocks()
+})
 
 describe("VariantMatrix", () => {
   it("renders one cell per row and column pair", () => {
@@ -128,5 +185,94 @@ describe("VariantMatrix", () => {
     const singleWrapper = single.container.firstElementChild
     expect(singleWrapper).toHaveAttribute("data-showcase-matrix", "")
     expect(singleWrapper).not.toHaveClass("overflow-x-auto")
+  })
+
+  it("stays a table while every cell fits", () => {
+    const { container } = render(
+      <VariantMatrix
+        rows={{ label: "variant", values: VARIANTS }}
+        cols={{ label: "size", values: SIZES }}
+        render={(variant, size) => <span>{`${variant}/${size}`}</span>}
+      />,
+    )
+    resize({ wrapper: 600 })
+    expect(container.querySelector("table")).toBeInTheDocument()
+    expect(container.querySelector("dl")).not.toBeInTheDocument()
+  })
+
+  it("reflows into a labelled list when a cell spills", () => {
+    const { container } = render(
+      <VariantMatrix
+        rows={{ label: "variant", values: VARIANTS }}
+        cols={{ label: "size", values: SIZES }}
+        render={(variant, size) => <span>{`${variant}/${size}`}</span>}
+      />,
+    )
+    resize({ wrapper: 300, cellSpill: 4 })
+    expect(container.querySelector("table")).not.toBeInTheDocument()
+    const items = [...container.querySelectorAll("dl > div")].map((item) => [
+      item.querySelector("dt")?.textContent,
+      item.querySelector("dd")?.textContent,
+    ])
+    expect(items).toEqual([
+      ["default · sm", "default/sm"],
+      ["default · lg", "default/lg"],
+      ["outline · sm", "outline/sm"],
+      ["outline · lg", "outline/lg"],
+    ])
+    expect(container.firstElementChild).toHaveAttribute(
+      "data-showcase-matrix",
+      "",
+    )
+  })
+
+  it("reflows when the table outgrows its wrapper", () => {
+    const { container } = render(
+      <VariantMatrix
+        rows={{ label: "variant", values: VARIANTS }}
+        cols={{ label: "size", values: SIZES }}
+        render={(variant, size) => <span>{`${variant}/${size}`}</span>}
+      />,
+    )
+    resize({ wrapper: 300, wrapperSpill: 7 })
+    expect(container.querySelector("table")).not.toBeInTheDocument()
+    expect(container.querySelectorAll("dl > div")).toHaveLength(4)
+  })
+
+  it("returns to the table only 16px past the width that forced the list", () => {
+    const { container } = render(
+      <VariantMatrix
+        rows={{ label: "variant", values: VARIANTS }}
+        cols={{ label: "size", values: SIZES }}
+        render={(variant, size) => <span>{`${variant}/${size}`}</span>}
+      />,
+    )
+    resize({ wrapper: 300, cellSpill: 4 })
+    expect(container.querySelector("dl")).toBeInTheDocument()
+
+    resize({ wrapper: 315, cellSpill: 0 })
+    expect(container.querySelector("dl")).toBeInTheDocument()
+
+    resize({ wrapper: 316 })
+    expect(container.querySelector("table")).toBeInTheDocument()
+    expect(container.querySelector("dl")).not.toBeInTheDocument()
+
+    resize({ wrapper: 316 })
+    expect(container.querySelector("table")).toBeInTheDocument()
+  })
+
+  it("labels each list item with its row when cols is omitted", () => {
+    const { container } = render(
+      <VariantMatrix
+        rows={{ label: "orientation", values: ["horizontal", "vertical"] }}
+        render={(orientation) => <span>{`sample-${orientation}`}</span>}
+      />,
+    )
+    resize({ wrapper: 200, cellSpill: 3 })
+    expect(container.querySelector("table")).not.toBeInTheDocument()
+    expect(
+      [...container.querySelectorAll("dt")].map((dt) => dt.textContent),
+    ).toEqual(["horizontal", "vertical"])
+    expect(screen.getByText("sample-vertical").closest("dd")).not.toBeNull()
   })
 })

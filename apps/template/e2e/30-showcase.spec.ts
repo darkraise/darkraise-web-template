@@ -32,10 +32,15 @@ const SKELETON_DEMOS = new Set([
 async function openShowcase(
   page: Page,
   path: string,
-  options: { mode?: "light" | "dark"; rtl?: boolean } = {},
+  options: {
+    mode?: "light" | "dark"
+    rtl?: boolean
+    /** A fixed window; without it the desktop window grows to the page. */
+    viewport?: { width: number; height: number }
+  } = {},
 ): Promise<void> {
   await seedApp(page, { style: "quiet", mode: options.mode ?? "light" })
-  await page.setViewportSize(DESKTOP)
+  await page.setViewportSize(options.viewport ?? DESKTOP)
   await gotoApp(page, path)
   if (!SKELETON_DEMOS.has(path)) {
     await expect(page.locator(".dr-skeleton")).toHaveCount(0)
@@ -46,9 +51,11 @@ async function openShowcase(
     })
   }
   await page.mouse.move(0, 0)
-  const overflow = await page
-    .locator("#main-content")
-    .evaluate((main) => main.scrollHeight - main.clientHeight)
+  const overflow = options.viewport
+    ? 0
+    : await page
+        .locator("#main-content")
+        .evaluate((main) => main.scrollHeight - main.clientHeight)
   if (overflow > 0) {
     const height = DESKTOP.height + overflow
     if (height > MAX_HEIGHT) {
@@ -1184,4 +1191,32 @@ test.describe("rating half star under right-to-left", () => {
       ).toBeLessThan(40)
     })
   }
+})
+
+test.describe("matrices reflow into a list when a cell spills", () => {
+  test("the tabs bordered-strip matrix renders a list without spill at 1024px", async ({
+    page,
+  }) => {
+    await openShowcase(page, "/components/tabs", {
+      viewport: { width: 1024, height: 900 },
+    })
+    const matrix = page
+      .locator("[data-showcase-example]")
+      .filter({
+        has: page.getByText("Bordered strip — border prop", { exact: true }),
+      })
+      .locator("[data-showcase-matrix]")
+    const spills = await matrix.evaluate((wrapper) =>
+      [wrapper, ...wrapper.querySelectorAll("td, dd")]
+        .filter((el) => el.scrollWidth > el.clientWidth + 1)
+        .map(
+          (el) =>
+            `${el.tagName.toLowerCase()} scrollWidth ${el.scrollWidth} > clientWidth ${el.clientWidth}`,
+        ),
+    )
+    expect(spills, spills.join("\n")).toEqual([])
+    await expect(matrix.locator("table")).toHaveCount(0)
+    await expect(matrix.locator(":scope > dl > div")).toHaveCount(16)
+    await expect(matrix.locator("dt").first()).toHaveText("default · default")
+  })
 })
