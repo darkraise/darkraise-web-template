@@ -124,8 +124,11 @@
     @apply text-muted-foreground;
   }
 
+  /* A flex item keeps its min-content width by default, so an unbroken URL
+   * would push the row actions past the tree. */
   .dr-json-string {
-    @apply text-success-text;
+    @apply text-success-text min-w-0;
+    overflow-wrap: anywhere;
   }
   .dr-json-number {
     @apply text-info-text;
