@@ -217,6 +217,40 @@ test.describe("dashboard", () => {
     expect(returning.y).toBeGreaterThanOrEqual(average.y + average.height)
     expect(feed.x).toBeGreaterThan(target.x + target.width)
   })
+
+  test("the skeleton keeps the loaded columns", async ({ page }) => {
+    await page.setViewportSize({ width: 700, height: 900 })
+    // A paused clock holds the simulated data latency, so the skeleton
+    // stays until the clock runs.
+    await page.clock.install()
+    await page.clock.pauseAt(Date.now() + 1000)
+    await gotoApp(page, "/")
+    // The chart row and the KPI and activity row: the second and third
+    // children of the block below the page header.
+    const columns = () =>
+      page.evaluate(() => {
+        const header = document.querySelector("#main-content .dr-page-header")
+        const rows = header?.nextElementSibling?.children
+        if (!rows || rows.length !== 3) {
+          throw new Error("the dashboard does not show three rows")
+        }
+        return [...rows]
+          .slice(1)
+          .map((row) =>
+            [...row.children].map((cell) =>
+              Math.round(cell.getBoundingClientRect().left),
+            ),
+          )
+      })
+    await expect(page.locator(".dr-skeleton").first()).toBeVisible()
+    const loading = await columns()
+    await page.clock.runFor(1000)
+    await expect(page.locator(".dr-skeleton")).toHaveCount(0)
+    await expect(page.locator(".dr-chart").first()).toBeVisible()
+    expect(loading, "chart and KPI row column edges while loading").toEqual(
+      await columns(),
+    )
+  })
 })
 
 test.describe("KPI sparkline", () => {

@@ -318,10 +318,10 @@ function DashboardSkeleton() {
             <Skeleton key={i} className="h-[110px] w-full rounded-xl" />
           ))}
         </MetricGrid>
-        <div className="grid gap-4 md:grid-cols-2">
+        <Grid cols={2} gap="md">
           <Skeleton className="h-[360px] w-full rounded-xl" />
           <Skeleton className="h-[360px] w-full rounded-xl" />
-        </div>
+        </Grid>
         <div className="grid gap-4 md:grid-cols-3">
           <div className="flex flex-col gap-4">
             <Skeleton className="h-[96px] w-full rounded-xl" />
