@@ -89,7 +89,7 @@
     "write:scaffold-axes": "tsx scripts/write-scaffold-axes.ts",
     "build": "pnpm run generate:imports && tsup && pnpm run build:types && pnpm run build:css",
     "build:types": "tsc -p tsconfig.build.json && tsx scripts/rewrite-dts-imports.ts",
-    "dev": "pnpm run generate:imports && tsup --watch --onSuccess \"pnpm run build:css\"",
+    "dev": "pnpm run generate:imports && tsup --watch src --onSuccess \"pnpm run build:css\"",
     "prepublishOnly": "pnpm run build",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
