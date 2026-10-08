@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs"
+import { existsSync, readFileSync } from "node:fs"
 import { dirname, relative, resolve } from "node:path"
 import { BANNER, distDir, listEntries } from "./client-entries.mjs"
 
@@ -27,6 +27,28 @@ function reactImports(entryFile) {
   return found
 }
 
+/**
+ * The banner adds one line above the bundled code, so its map must open with
+ * an empty line (";") and can never describe more lines than the file holds.
+ */
+function mapProblems(file, code, path) {
+  const mapFile = `${file}.map`
+  if (!existsSync(mapFile)) return []
+  const { mappings } = JSON.parse(readFileSync(mapFile, "utf8"))
+  const problems = []
+  if (!mappings.startsWith(";")) {
+    problems.push(`${path}.map: mappings do not start with ";"`)
+  }
+  const mapLines = mappings.split(";").length
+  const fileLines = code.split("\n").length
+  if (mapLines > fileLines) {
+    problems.push(
+      `${path}.map: mappings cover ${mapLines} lines but the file has ${fileLines}`,
+    )
+  }
+  return problems
+}
+
 const entries = listEntries()
 const problems = []
 for (const { file, name, client } of entries) {
@@ -35,6 +57,7 @@ for (const { file, name, client } of entries) {
   if (client && !code.startsWith(BANNER)) {
     problems.push(`${path}: client entry does not start with "use client"`)
   }
+  if (client) problems.push(...mapProblems(file, code, path))
   if (!client) {
     if (code.includes('"use client"')) {
       problems.push(`${path}: server-safe entry carries "use client"`)

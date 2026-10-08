@@ -1,14 +1,13 @@
-import { readdirSync } from "node:fs"
+import { existsSync, readdirSync } from "node:fs"
 import { dirname, join, relative, resolve, sep } from "node:path"
 import { fileURLToPath } from "node:url"
 
 export const BANNER = '"use client";\n'
 
-export const distDir = resolve(
-  dirname(fileURLToPath(import.meta.url)),
-  "..",
-  "dist",
-)
+// DIST points the scripts at another build output, which their tests use.
+export const distDir = process.env.DIST
+  ? resolve(process.env.DIST)
+  : resolve(dirname(fileURLToPath(import.meta.url)), "..", "dist")
 
 export const SERVER_SAFE_ENTRIES = new Set([
   "lib/index",
@@ -30,6 +29,7 @@ function walk(dir) {
 }
 
 export function listEntries() {
+  if (!existsSync(distDir)) return []
   return walk(distDir).map((file) => {
     const name = relative(distDir, file).split(sep).join("/").slice(0, -3)
     return { file, name, client: !SERVER_SAFE_ENTRIES.has(name) }
