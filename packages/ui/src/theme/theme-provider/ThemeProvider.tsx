@@ -196,6 +196,9 @@ export function ThemeProvider({
     () => resolveDefaults(JSON.parse(configKey) as ThemeConfig),
     [configKey],
   )
+  // ThemeConfig is plain data, so equal content means an equal config.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const stableConfig = useMemo(() => cfg, [configKey])
 
   // One storage read at mount. knownRef then mirrors every write this provider
   // makes, and the token-cache id is built from it rather than read back, so a
@@ -477,12 +480,12 @@ export function ThemeProvider({
     () => ({
       ...settings,
       resolvedMode,
-      config: cfg,
+      config: stableConfig,
       syncStatus,
       setAxis,
       ...setters,
     }),
-    [settings, resolvedMode, cfg, syncStatus, setAxis, setters],
+    [settings, resolvedMode, stableConfig, syncStatus, setAxis, setters],
   )
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>

@@ -1,5 +1,5 @@
 import { act, render, renderHook } from "@testing-library/react"
-import { StrictMode, type ReactNode } from "react"
+import { StrictMode, memo, type ReactNode } from "react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { ThemeProvider } from "./ThemeProvider"
 import { useTheme } from "@theme/useTheme"
@@ -198,6 +198,28 @@ describe("ThemeProvider on the axis registry", () => {
     const setItem = vi.spyOn(Storage.prototype, "setItem")
     rerender()
     expect(cacheWrites(setItem)).toBe(0)
+  })
+
+  it("does not re-render consumers when an inline config re-renders unchanged", () => {
+    const rendered = vi.fn()
+    const Consumer = memo(function Consumer() {
+      useTheme()
+      rendered()
+      return null
+    })
+    function Parent() {
+      return (
+        <ThemeProvider
+          config={{ ...themeConfig, defaults: { ...themeConfig.defaults } }}
+        >
+          <Consumer />
+        </ThemeProvider>
+      )
+    }
+    const { rerender } = render(<Parent />)
+    const mounted = rendered.mock.calls.length
+    rerender(<Parent />)
+    expect(rendered).toHaveBeenCalledTimes(mounted)
   })
 
   it("reads each stored key once at mount", () => {

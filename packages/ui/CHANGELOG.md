@@ -325,6 +325,7 @@ Breaking: `ToggleGroup` sizes to its content. `.dr-toggle-group` is `inline-flex
 - The root `ContextMenu` is first shown at the pointer. It used to mount at the viewport origin and move to the pointer a few milliseconds later, so a pointer resting there could hover its rows; it now stays hidden until positioned and takes focus once shown.
 - A `UserMenu` given `user` and `layoutSwitcher` but no `onProfile`, `onSettings` or `onLogout` hides the separator under the name and email together with the Layout entry at 48rem and wider, instead of ending the menu with a lone separator.
 - `Pagination` wraps onto centred rows when its links do not fit the width, instead of running past both edges of a narrow screen (`.dr-pagination-content` is `flex-wrap` and `justify-center`; rows keep the 0.25rem gap).
+- A `ThemeProvider` whose parent re-renders it with an inline `config` equal to the previous one keeps the same context value, so `useTheme` consumers no longer re-render with it.
 
 Breaking: `.dr-surface`, its `--flat` modifier and its `dr-surface-{brand,cyan,success,warning,danger,info}` hue classes are removed, with the `--fog-05` … `--fog-50` tokens they alone gave values to. The `glass`, `glass-thin`, `glass-strong` and `card-surface` utilities are removed: outside `.dr-surface` they painted nothing. Replace one with `rounded-[var(--radius)]` and, if you relied on it, `transition-[background-color,color,border-color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-in-out)]`.
 
