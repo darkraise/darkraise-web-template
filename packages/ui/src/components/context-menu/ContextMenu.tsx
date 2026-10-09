@@ -9,8 +9,8 @@ import { Portal } from "@primitives/portal"
 import { Presence } from "@primitives/presence"
 import { Slot, useComposedRefs } from "@primitives/slot"
 import { placementOf, resolveSide, useFloating } from "@primitives/floating"
-import { useId } from "@primitives/state"
 import { useMenu, type UseMenuReturn } from "@components/_internal/useMenu"
+import { useMenuItem } from "@components/_internal/useMenuItem"
 import "@components/menu-primitives/menu-primitives.css"
 
 interface VirtualPoint {
@@ -443,56 +443,6 @@ interface ContextMenuItemProps extends Omit<
   ref?: React.Ref<HTMLDivElement>
 }
 
-function useMenuItem({
-  ref,
-  disabled,
-  textValue,
-  children,
-}: {
-  ref?: React.Ref<HTMLDivElement>
-  disabled?: boolean
-  textValue?: string
-  children?: React.ReactNode
-}) {
-  const ctx = useContextMenuContext("ContextMenuItem")
-  const localRef = React.useRef<HTMLDivElement | null>(null)
-  const id = useId()
-
-  // Replacing a known id's record does not re-render the menu, so syncing a
-  // changed field cannot start a render loop. Removal lives in its own
-  // effect: a field change must not unregister the item, or focus would
-  // leave it.
-  const { registerItem, unregisterItem } = ctx
-  // Without a textValue the typeahead text is the rendered text, so the
-  // record is refreshed whenever the children change.
-  React.useLayoutEffect(() => {
-    registerItem({
-      id,
-      value: id,
-      disabled: !!disabled,
-      textValue: textValue ?? localRef.current?.textContent ?? "",
-      ref: localRef,
-    })
-  }, [registerItem, id, disabled, textValue, children])
-  React.useLayoutEffect(() => () => unregisterItem(id), [unregisterItem, id])
-
-  const isFocused = ctx.focusedId === id
-
-  React.useEffect(() => {
-    if (isFocused) localRef.current?.focus({ preventScroll: true })
-  }, [isFocused])
-
-  const composedRef = useComposedRefs(localRef, ref)
-
-  return {
-    localRef,
-    composedRef,
-    isFocused,
-    id,
-    ctx,
-  }
-}
-
 function ContextMenuItem({
   className,
   inset,
@@ -508,7 +458,11 @@ function ContextMenuItem({
   children,
   ...rest
 }: ContextMenuItemProps) {
-  const { localRef, composedRef, isFocused, id, ctx } = useMenuItem({
+  const ctx = useContextMenuContext("ContextMenuItem")
+  const { localRef, composedRef, isFocused, id } = useMenuItem({
+    registerItem: ctx.registerItem,
+    unregisterItem: ctx.unregisterItem,
+    focusedId: ctx.focusedId,
     ref,
     disabled,
     textValue,

@@ -18,6 +18,7 @@ import {
 } from "@primitives/floating"
 import { useControllableState, useId } from "@primitives/state"
 import { useMenu, type UseMenuReturn } from "@components/_internal/useMenu"
+import { useMenuItem } from "@components/_internal/useMenuItem"
 import "./menubar.css"
 
 type Side = LogicalSide
@@ -589,56 +590,6 @@ interface MenubarItemProps extends Omit<
   ref?: React.Ref<HTMLDivElement>
 }
 
-function useMenuItem({
-  ref,
-  disabled,
-  textValue,
-  children,
-}: {
-  ref?: React.Ref<HTMLDivElement>
-  disabled?: boolean
-  textValue?: string
-  children?: React.ReactNode
-}) {
-  const ctx = useMenubarMenu("MenubarItem")
-  const localRef = React.useRef<HTMLDivElement | null>(null)
-  const id = useId()
-
-  // Replacing a known id's record does not re-render the menu, so syncing a
-  // changed field cannot start a render loop. Removal lives in its own
-  // effect: a field change must not unregister the item, or focus would
-  // leave it.
-  const { registerItem, unregisterItem } = ctx
-  // Without a textValue the typeahead text is the rendered text, so the
-  // record is refreshed whenever the children change.
-  React.useLayoutEffect(() => {
-    registerItem({
-      id,
-      value: id,
-      disabled: !!disabled,
-      textValue: textValue ?? localRef.current?.textContent ?? "",
-      ref: localRef,
-    })
-  }, [registerItem, id, disabled, textValue, children])
-  React.useLayoutEffect(() => () => unregisterItem(id), [unregisterItem, id])
-
-  const isFocused = ctx.focusedId === id
-
-  React.useEffect(() => {
-    if (isFocused) localRef.current?.focus({ preventScroll: true })
-  }, [isFocused])
-
-  const composedRef = useComposedRefs(localRef, ref)
-
-  return {
-    localRef,
-    composedRef,
-    isFocused,
-    id,
-    ctx,
-  }
-}
-
 function MenubarItem({
   className,
   inset,
@@ -654,7 +605,11 @@ function MenubarItem({
   children,
   ...rest
 }: MenubarItemProps) {
-  const { localRef, composedRef, isFocused, id, ctx } = useMenuItem({
+  const ctx = useMenubarMenu("MenubarItem")
+  const { localRef, composedRef, isFocused, id } = useMenuItem({
+    registerItem: ctx.registerItem,
+    unregisterItem: ctx.unregisterItem,
+    focusedId: ctx.focusedId,
     ref,
     disabled,
     textValue,

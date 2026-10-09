@@ -16,9 +16,10 @@ import {
   type PhysicalSide,
   type PopupAlign,
 } from "@primitives/floating"
-import { useControllableState, useId } from "@primitives/state"
+import { useControllableState } from "@primitives/state"
 import { focusProgrammatically } from "@primitives/focus-trap"
 import { useMenu } from "@components/_internal/useMenu"
+import { useMenuItem } from "@components/_internal/useMenuItem"
 import "./select.css"
 
 type Side = LogicalSide
@@ -607,40 +608,22 @@ function SelectItem({
   ...rest
 }: SelectItemProps) {
   const ctx = useSelectContext("SelectItem")
-  const localRef = React.useRef<HTMLDivElement | null>(null)
-  const id = useId()
-
-  // Replacing a known id's record does not re-render the menu, so syncing a
-  // changed field cannot start a render loop. Removal lives in its own
-  // effect: a field change must not unregister the item, or focus would
-  // leave it.
-  const { registerItem, unregisterItem } = ctx
-  // Without a textValue the typeahead text is the rendered text, so the
-  // record is refreshed whenever the children change.
-  React.useLayoutEffect(() => {
-    registerItem({
-      id,
-      value,
-      disabled: !!disabled,
-      textValue: textValue ?? localRef.current?.textContent ?? "",
-      ref: localRef,
-    })
-  }, [registerItem, id, value, disabled, textValue, children])
-  React.useLayoutEffect(() => () => unregisterItem(id), [unregisterItem, id])
-
-  const isFocused = ctx.focusedId === id
+  const { composedRef, isFocused, id } = useMenuItem({
+    registerItem: ctx.registerItem,
+    unregisterItem: ctx.unregisterItem,
+    focusedId: ctx.focusedId,
+    ref,
+    disabled,
+    textValue,
+    children,
+    value,
+  })
   const selected = ctx.value === value
-
-  React.useEffect(() => {
-    if (isFocused) localRef.current?.focus({ preventScroll: true })
-  }, [isFocused])
 
   const itemCtx = React.useMemo<SelectItemContextValue>(
     () => ({ selected, textValue: textValue ?? "" }),
     [selected, textValue],
   )
-
-  const composedRef = useComposedRefs(localRef, ref)
 
   return (
     <div
