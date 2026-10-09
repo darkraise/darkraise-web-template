@@ -10,6 +10,7 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@components/dialog"
+import { useComposedRefs } from "@primitives/slot"
 import { useId } from "@primitives/state"
 import "./command.css"
 
@@ -254,6 +255,7 @@ function CommandInput({
   ...rest
 }: CommandInputProps) {
   const ctx = useCommandContext("CommandInput")
+  const composedRef = useComposedRefs(ctx.inputRef, ref)
 
   // Sync controlled prop.
   React.useEffect(() => {
@@ -304,12 +306,7 @@ function CommandInput({
         aria-hidden="true"
       />
       <input
-        ref={(node) => {
-          ctx.inputRef.current = node
-          if (typeof ref === "function") ref(node)
-          else if (ref)
-            (ref as React.RefObject<HTMLInputElement | null>).current = node
-        }}
+        ref={composedRef}
         cmdk-input=""
         type="text"
         autoComplete="off"

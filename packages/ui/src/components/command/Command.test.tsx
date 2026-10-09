@@ -1,3 +1,4 @@
+import * as React from "react"
 import { fireEvent, render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, it, expect, vi } from "vitest"
@@ -265,5 +266,41 @@ describe("Command item registration", () => {
     await user.type(input, "xyl")
     expect(screen.getAllByRole("option")).toHaveLength(1)
     expect(screen.getByRole("option")).toHaveTextContent("Xylophone")
+  })
+})
+
+describe("CommandInput ref", () => {
+  it("hands the input to an object ref and a callback ref", () => {
+    const objectRef = React.createRef<HTMLInputElement>()
+    const callbackRef = vi.fn()
+    render(
+      <>
+        <Command>
+          <CommandInput aria-label="Object" ref={objectRef} />
+        </Command>
+        <Command>
+          <CommandInput aria-label="Callback" ref={callbackRef} />
+        </Command>
+      </>,
+    )
+    expect(objectRef.current).toBe(
+      screen.getByRole("combobox", { name: "Object" }),
+    )
+    expect(callbackRef).toHaveBeenLastCalledWith(
+      screen.getByRole("combobox", { name: "Callback" }),
+    )
+  })
+
+  it("keeps a callback ref attached while the input re-renders", async () => {
+    const user = userEvent.setup()
+    const callbackRef = vi.fn()
+    render(
+      <Command>
+        <CommandInput aria-label="Search" ref={callbackRef} />
+      </Command>,
+    )
+    await user.type(screen.getByRole("combobox"), "ab")
+    expect(callbackRef).toHaveBeenCalledTimes(1)
+    expect(callbackRef).not.toHaveBeenCalledWith(null)
   })
 })

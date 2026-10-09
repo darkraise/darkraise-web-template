@@ -331,6 +331,7 @@ Breaking: `ToggleGroup` sizes to its content. `.dr-toggle-group` is `inline-flex
 - `Pagination` wraps onto centred rows when its links do not fit the width, instead of running past both edges of a narrow screen (`.dr-pagination-content` is `flex-wrap` and `justify-center`; rows keep the 0.25rem gap).
 - A `ThemeProvider` whose parent re-renders it with an inline `config` equal to the previous one keeps the same context value, so `useTheme` consumers no longer re-render with it.
 - A `ContextMenu` opened through `open` or `defaultOpen` sits below its trigger, aligned to its start edge, and stays hidden until it is placed. It used to open at the pointer of the last right-click, or at the viewport origin when there had been none; the menu now forgets the pointer when it closes.
+- `CommandInput` keeps a callback `ref` attached across renders while the callback stays the same; it used to detach it with `null` and attach it again on every render.
 
 Breaking: `.dr-surface`, its `--flat` modifier and its `dr-surface-{brand,cyan,success,warning,danger,info}` hue classes are removed, with the `--fog-05` … `--fog-50` tokens they alone gave values to. The `glass`, `glass-thin`, `glass-strong` and `card-surface` utilities are removed: outside `.dr-surface` they painted nothing. Replace one with `rounded-[var(--radius)]` and, if you relied on it, `transition-[background-color,color,border-color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-in-out)]`.
 
