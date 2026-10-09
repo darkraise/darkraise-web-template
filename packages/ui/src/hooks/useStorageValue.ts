@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react"
-import { useFirstMountState } from "./useFirstMountState"
 import { useIsomorphicLayoutEffect } from "./useIsomorphicLayoutEffect"
 import { useSyncedRef } from "./useSyncedRef"
 import { useUpdateEffect } from "./useUpdateEffect"
@@ -169,12 +168,18 @@ export function useStorageValue<
     },
   })
 
-  const isFirstMount = useFirstMountState()
-  const [state, setState] = useState<Type | null | undefined>(
-    optionsRef.current?.initializeWithValue && isFirstMount
-      ? storageActions.current.fetch()
-      : undefined,
-  )
+  const [state, setState] = useState<Type | null | undefined>(() => {
+    const initial = { ...DEFAULT_OPTIONS, ...options }
+    if (!initial.initializeWithValue) {
+      return undefined
+    }
+
+    const parseFunction = initial.parse ?? defaultParse
+    return parseFunction(
+      storage.getItem(key),
+      initial.defaultValue as Required<Type> | null,
+    )
+  })
   const stateRef = useSyncedRef(state)
 
   const stateActions = useSyncedRef({

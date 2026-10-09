@@ -1,41 +1,58 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useCallback, useMemo, useRef } from "react"
-import { useSyncedRef } from "./useSyncedRef"
+import { useInsertionEffect, useMemo, useState } from "react"
 import { useUnmountEffect } from "./useUnmountEffect"
 import { isBrowser } from "./util"
 
-export function useRafCallback<T extends (...args: any[]) => any>(
-  cb: T,
-): [(...args: Parameters<T>) => void, () => void] {
-  const cbRef = useSyncedRef(cb)
-  const frame = useRef<number>(0)
+function createFrameScheduler<T extends (...args: any[]) => any>(cb: T) {
+  let latest = cb
+  let frame = 0
 
-  const cancel = useCallback(() => {
+  const cancel = () => {
     if (!isBrowser) {
       return
     }
 
-    if (frame.current) {
-      cancelAnimationFrame(frame.current)
-      frame.current = 0
+    if (frame) {
+      cancelAnimationFrame(frame)
+      frame = 0
     }
-  }, [])
+  }
 
-  useUnmountEffect(cancel)
+  return {
+    cancel,
+    setCallback(next: T) {
+      latest = next
+    },
+    schedule(args: Parameters<T>) {
+      if (!isBrowser) {
+        return
+      }
+
+      cancel()
+
+      frame = requestAnimationFrame(() => {
+        latest(...args)
+        frame = 0
+      })
+    },
+  }
+}
+
+export function useRafCallback<T extends (...args: any[]) => any>(
+  cb: T,
+): [(...args: Parameters<T>) => void, () => void] {
+  const [scheduler] = useState(() => createFrameScheduler(cb))
+
+  useInsertionEffect(() => {
+    scheduler.setCallback(cb)
+  })
+
+  useUnmountEffect(scheduler.cancel)
 
   return [
     useMemo(() => {
       const wrapped = (...args: Parameters<T>) => {
-        if (!isBrowser) {
-          return
-        }
-
-        cancel()
-
-        frame.current = requestAnimationFrame(() => {
-          cbRef.current(...args)
-          frame.current = 0
-        })
+        scheduler.schedule(args)
       }
 
       Object.defineProperties(wrapped, {
@@ -47,6 +64,6 @@ export function useRafCallback<T extends (...args: any[]) => any>(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []),
 
-    cancel,
+    scheduler.cancel,
   ]
 }
