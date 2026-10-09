@@ -222,6 +222,34 @@ describe("ThemeProvider on the axis registry", () => {
     expect(rendered).toHaveBeenCalledTimes(mounted)
   })
 
+  it("keeps every axis setter across setting changes and an equal inline config", () => {
+    function InlineConfig({ children }: { children: ReactNode }) {
+      return (
+        <ThemeProvider
+          config={{ ...themeConfig, defaults: { ...themeConfig.defaults } }}
+        >
+          {children}
+        </ThemeProvider>
+      )
+    }
+    const { result, rerender } = renderHook(() => useTheme(), {
+      wrapper: InlineConfig,
+    })
+    const setterKeys = Object.keys(result.current).filter(
+      (key) => /^set[A-Z]/.test(key) && key !== "setAxis",
+    ) as Array<keyof typeof result.current>
+    const before = setterKeys.map((key) => result.current[key])
+    expect(setterKeys).toContain("setDensity")
+
+    act(() => result.current.setDensity("compact"))
+    rerender()
+
+    expect(result.current.density).toBe("compact")
+    setterKeys.forEach((key, i) => {
+      expect(result.current[key], key).toBe(before[i])
+    })
+  })
+
   it("reads each stored key once at mount", () => {
     localStorage.setItem("mode", "dark")
     const inputs = new Set(cacheInputKeys())
