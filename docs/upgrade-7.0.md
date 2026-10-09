@@ -127,6 +127,8 @@ The `outline` variant of `Listbox` and `TreeView` now rings the selected row ins
 
 `VirtualizedDropdownMenuContent` now takes its trigger's width, never under 8rem, where it used to take the popover's 18rem, so a menu opened from an icon button narrows and clips longer labels. Pass a width class such as `w-72` to keep the old width. The `menuitem` role moved from `VirtualizedDropdownMenuItem` to its row, so a selector or test that queries `[role=menuitem]` now matches the row wrapper.
 
+`useDropdownMenu`, `useContextMenu`, `useMenubar`, `useSelect` and `useNavigationMenu` track focus by item id: read `focusedId` and call `setFocusedId(id)` where you used `focusedIndex` and `setFocusedIndex(index)`, and look an item up in `items()` by its `id` where you called `getItemAt(index)`. Records passed to `registerItem` need a stable `id`, and `typeahead` returns the matched item's id or `null`. Code that only renders the menu components needs no change.
+
 ## Reduced motion
 
 Under `prefers-reduced-motion: reduce` transitions take `0s`, so no transition starts and `transitionend` never fires. Code that waits for `transitionend` to finish a state change must also finish it when the user prefers reduced motion; read the preference with `useReducedMotion` or check `getComputedStyle(element).transitionDuration`. Animations still run for `0.01ms` and fire `animationend`.
