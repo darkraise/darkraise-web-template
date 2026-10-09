@@ -320,4 +320,43 @@ test.describe("tour", () => {
     await expect(popover).toBeHidden()
     await expect(start).toBeFocused()
   })
+
+  test("tour keeps focus in its popover as it moves onto a target", async ({
+    page,
+  }) => {
+    const main = await open(page, "/components/tour")
+    // Without its target the first step is centred, and the second step's
+    // target has not been measured when the tour moves onto it.
+    await main
+      .locator("[data-tour='step-1']")
+      .evaluate((el) => el.removeAttribute("data-tour"))
+    const start = main.getByRole("button", { name: "Start tour" })
+    await start.click()
+    const first = page.getByRole("dialog", { name: "Welcome" })
+    await expect(first).toBeFocused()
+
+    await start.evaluate((el) => {
+      const log = window as unknown as { openerFocus: number }
+      log.openerFocus = 0
+      el.addEventListener("focus", () => {
+        log.openerFocus += 1
+      })
+    })
+    await first.getByRole("button", { name: "Next" }).click()
+
+    const second = page.getByRole("dialog", { name: "Save your work" })
+    await expect(second.locator(".dr-tour-progress")).toHaveText("2 / 3")
+    await expect
+      .poll(() => second.evaluate((el) => (el as HTMLElement).style.transform))
+      .toBe("")
+    await expect(second).toBeVisible()
+    expect(
+      await page.evaluate(
+        () => (window as unknown as { openerFocus: number }).openerFocus,
+      ),
+    ).toBe(0)
+    expect(
+      await second.evaluate((el) => el.contains(document.activeElement)),
+    ).toBe(true)
+  })
 })
