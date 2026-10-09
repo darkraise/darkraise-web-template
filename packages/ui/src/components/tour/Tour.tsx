@@ -108,23 +108,33 @@ function Tour({
     }
   }, [open, step, spotlightPadding, reducedMotion])
 
-  // Move focus to the popover on open so keyboard users can interact with the
-  // controls; restore focus to the previously-focused element on close.
-  // The focus is deferred because the in-house `Portal` defers its content
-  // mount by one effect tick — the popover ref isn't populated synchronously.
+  // The popover mounts at the viewport origin before Floating UI measures the
+  // target, so it stays hidden until positioned. A step whose target is
+  // missing is centred in the viewport and has nothing to wait for.
+  const shown = !targetEl || floating.isPositioned
+
+  // Restore focus to the previously-focused element on close.
   React.useEffect(() => {
     if (!open) return
     previousFocusRef.current =
       (document.activeElement as HTMLElement | null) ?? null
-    const id = window.setTimeout(() => {
-      popoverRef.current?.focus()
-    }, 0)
     return () => {
-      window.clearTimeout(id)
       previousFocusRef.current?.focus?.()
       previousFocusRef.current = null
     }
   }, [open])
+
+  // Move focus to the popover once it is shown, so keyboard users can reach
+  // the controls; a hidden element cannot take focus. The focus is deferred
+  // because the in-house `Portal` defers its content mount by one effect
+  // tick — the popover ref isn't populated synchronously.
+  React.useEffect(() => {
+    if (!open || !shown) return
+    const id = window.setTimeout(() => {
+      popoverRef.current?.focus()
+    }, 0)
+    return () => window.clearTimeout(id)
+  }, [open, shown])
 
   const composedRef = useComposedRefs(popoverRef, floating.refs.setFloating)
 
@@ -146,6 +156,7 @@ function Tour({
         position: floating.strategy,
         top: Math.round(floating.y ?? 0),
         left: Math.round(floating.x ?? 0),
+        ...(!shown && { visibility: "hidden" }),
       }
     : {
         position: "fixed",

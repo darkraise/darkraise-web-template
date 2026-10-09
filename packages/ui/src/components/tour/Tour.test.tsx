@@ -71,7 +71,7 @@ describe("Tour", () => {
       )
     }
     render(<Wrapper />)
-    await userEvent.click(screen.getByRole("button", { name: /next/i }))
+    await userEvent.click(await screen.findByRole("button", { name: /next/i }))
     expect(onChange).toHaveBeenLastCalledWith(1)
   })
 
@@ -89,7 +89,9 @@ describe("Tour", () => {
         />
       </>,
     )
-    expect(screen.getByRole("button", { name: /previous/i })).toBeDisabled()
+    expect(
+      await screen.findByRole("button", { name: /previous/i }),
+    ).toBeDisabled()
   })
 
   it("Skip / Close fires onClose", async () => {
@@ -106,7 +108,9 @@ describe("Tour", () => {
         />
       </>,
     )
-    await userEvent.click(screen.getByRole("button", { name: /skip|close/i }))
+    await userEvent.click(
+      await screen.findByRole("button", { name: /skip|close/i }),
+    )
     expect(onClose).toHaveBeenCalledTimes(1)
   })
 
@@ -145,7 +149,7 @@ describe("Tour", () => {
       )
     }
     render(<Wrapper />)
-    await userEvent.click(screen.getByRole("button", { name: /next/i }))
+    await userEvent.click(await screen.findByRole("button", { name: /next/i }))
     await waitFor(() => expect(scrollIntoView).toHaveBeenCalled())
   })
 

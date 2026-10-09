@@ -423,6 +423,49 @@ test.describe("the tour popover stays on screen", () => {
     const box = await boxOf(popover)
     expect(box.y + box.height).toBeLessThanOrEqual(target.y)
   })
+
+  test("a step is first shown where it settles, not at the origin", async ({
+    page,
+  }) => {
+    await seedApp(page, { style: "quiet", mode: "light" })
+    // The tour opens as the page loads, so the recorder is installed before
+    // any page script runs. Every DOM change is checked, and so is every
+    // animation frame, from the moment the popover is inserted.
+    await page.addInitScript(() => {
+      const shown: Point[] = []
+      ;(window as unknown as { tourLog: Point[] }).tourLog = shown
+      const record = () => {
+        const popover = document.querySelector(".dr-tour-popover")
+        if (!popover || getComputedStyle(popover).visibility === "hidden") {
+          return
+        }
+        const box = popover.getBoundingClientRect()
+        shown.push({ x: box.x, y: box.y })
+      }
+      new MutationObserver(record).observe(document, {
+        subtree: true,
+        childList: true,
+        attributes: true,
+        attributeFilter: ["style"],
+      })
+      const frame = () => {
+        record()
+        requestAnimationFrame(frame)
+      }
+      requestAnimationFrame(frame)
+    })
+    await openOverlayCase(page, "tour")
+    const popover = page.locator(".dr-tour-popover")
+    await expect(popover.getByText("Right edge", { exact: true })).toBeVisible()
+    const settled = await boxOf(popover)
+    const [first] = await page.evaluate(
+      () => (window as unknown as { tourLog: Point[] }).tourLog,
+    )
+    if (!first) throw new Error("the tour popover was never shown")
+    expect(Math.abs(first.x) + Math.abs(first.y)).toBeGreaterThan(1)
+    expect(Math.abs(first.x - settled.x)).toBeLessThanOrEqual(1)
+    expect(Math.abs(first.y - settled.y)).toBeLessThanOrEqual(1)
+  })
 })
 
 test.describe("floating surfaces paint the overlay fill", () => {
