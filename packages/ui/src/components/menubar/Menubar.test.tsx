@@ -436,3 +436,81 @@ describe("Menubar submenus", () => {
     expect(stateOf("Email")).toBe("closed")
   })
 })
+
+describe("Menubar item disabled after mount", () => {
+  function Bar({ disabled }: { disabled: boolean }) {
+    return (
+      <Menubar>
+        <MenubarMenu value="edit">
+          <MenubarTrigger>Edit</MenubarTrigger>
+          <MenubarContent>
+            <MenubarItem>Copy</MenubarItem>
+            <MenubarItem disabled={disabled}>Paste</MenubarItem>
+            <MenubarItem>Delete</MenubarItem>
+          </MenubarContent>
+        </MenubarMenu>
+      </Menubar>
+    )
+  }
+
+  it("arrow keys skip an item disabled after mount and reach it once enabled", async () => {
+    const user = userEvent.setup()
+    const { rerender } = render(<Bar disabled={false} />)
+    await user.click(screen.getByRole("menuitem", { name: "Edit" }))
+    const menu = await screen.findByRole("menu")
+    const copy = screen.getByRole("menuitem", { name: "Copy" })
+    const paste = screen.getByRole("menuitem", { name: "Paste" })
+    const del = screen.getByRole("menuitem", { name: "Delete" })
+
+    fireEvent.keyDown(menu, { key: "Home" })
+    await waitFor(() => expect(copy).toHaveFocus())
+    fireEvent.keyDown(copy, { key: "ArrowDown" })
+    await waitFor(() => expect(paste).toHaveFocus())
+
+    rerender(<Bar disabled />)
+    expect(screen.getByRole("menuitem", { name: "Paste" })).toBe(paste)
+    fireEvent.keyDown(menu, { key: "Home" })
+    await waitFor(() => expect(copy).toHaveFocus())
+    fireEvent.keyDown(copy, { key: "ArrowDown" })
+    await waitFor(() => expect(del).toHaveFocus())
+
+    rerender(<Bar disabled={false} />)
+    expect(screen.getByRole("menuitem", { name: "Paste" })).toBe(paste)
+    fireEvent.keyDown(menu, { key: "Home" })
+    await waitFor(() => expect(copy).toHaveFocus())
+    fireEvent.keyDown(copy, { key: "ArrowDown" })
+    await waitFor(() => expect(paste).toHaveFocus())
+  })
+})
+
+describe("Menubar item text changed after mount", () => {
+  function Bar({ label }: { label: string }) {
+    return (
+      <Menubar>
+        <MenubarMenu value="edit">
+          <MenubarTrigger>Edit</MenubarTrigger>
+          <MenubarContent>
+            <MenubarItem>Copy</MenubarItem>
+            <MenubarItem>{label}</MenubarItem>
+          </MenubarContent>
+        </MenubarMenu>
+      </Menubar>
+    )
+  }
+
+  it("typeahead finds an item by its new text, not its old one", async () => {
+    const user = userEvent.setup()
+    const { rerender } = render(<Bar label="Paste" />)
+    await user.click(screen.getByRole("menuitem", { name: "Edit" }))
+    const menu = await screen.findByRole("menu")
+    await waitFor(() => expect(menu).toHaveFocus())
+    rerender(<Bar label="Rename" />)
+    const renamed = screen.getByRole("menuitem", { name: "Rename" })
+
+    fireEvent.keyDown(menu, { key: "p" })
+    expect(renamed).not.toHaveFocus()
+    await new Promise((resolve) => setTimeout(resolve, 600))
+    fireEvent.keyDown(menu, { key: "r" })
+    await waitFor(() => expect(renamed).toHaveFocus())
+  })
+})
