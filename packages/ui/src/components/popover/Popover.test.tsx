@@ -270,6 +270,22 @@ describe("PopoverArrow", () => {
     expect(arrow.style.position).toBe("absolute")
     await waitFor(() => expect(arrow.style.left).toMatch(/^-?\d+(\.\d+)?px$/))
   })
+
+  it("takes the kit's arrow class beside a consumer class", async () => {
+    render(
+      <Popover defaultOpen>
+        <PopoverTrigger>Toggle</PopoverTrigger>
+        <PopoverContent>
+          Arrow content
+          <PopoverArrow data-testid="arrow" className="custom-arrow" />
+        </PopoverContent>
+      </Popover>,
+    )
+    expect(await screen.findByTestId("arrow")).toHaveClass(
+      "dr-popover-arrow",
+      "custom-arrow",
+    )
+  })
 })
 
 describe("Popover portal forceMount", () => {

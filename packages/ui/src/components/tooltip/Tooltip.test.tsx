@@ -409,4 +409,20 @@ describe("TooltipArrow", () => {
     expect(arrow.style.position).toBe("absolute")
     await waitFor(() => expect(arrow.style.left).toMatch(/^-?\d+(\.\d+)?px$/))
   })
+
+  it("takes the kit's arrow class beside a consumer class", async () => {
+    render(
+      <Tooltip defaultOpen>
+        <TooltipTrigger>Hover me</TooltipTrigger>
+        <TooltipContent>
+          Tip text
+          <TooltipArrow data-testid="arrow" className="custom-arrow" />
+        </TooltipContent>
+      </Tooltip>,
+    )
+    expect(await screen.findByTestId("arrow")).toHaveClass(
+      "dr-tooltip-arrow",
+      "custom-arrow",
+    )
+  })
 })

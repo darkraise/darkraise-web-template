@@ -12,4 +12,26 @@
   .dr-tooltip-body {
     @apply overflow-hidden;
   }
+
+  /* The arrow overlaps the content's border: its fill hides the border under
+     its base and its stroke carries the border along its two outer edges.
+     A presentation attribute loses to any rule, so a consumer's `fill`
+     attribute is honoured by skipping the rule. */
+  .dr-tooltip-arrow {
+    stroke: var(--overlay-border);
+    stroke-width: 1px;
+  }
+
+  .dr-tooltip-arrow:not([fill]) {
+    fill: var(--surface-overlay-base);
+  }
+
+  /* A dark popup's tonal lift is an inset box-shadow, which an svg cannot
+     take, so the arrow's middle path lays the same tint over its fill.
+     Forced colours drop the shadow, so the tint goes with it. */
+  @media (forced-colors: none) {
+    .dr-tooltip-arrow:not([fill]) > path:nth-child(2) {
+      fill: var(--elevation-lift-tint-medium);
+    }
+  }
 }

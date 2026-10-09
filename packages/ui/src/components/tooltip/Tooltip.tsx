@@ -363,7 +363,13 @@ interface TooltipArrowProps extends React.SVGAttributes<SVGSVGElement> {
   ref?: React.Ref<SVGSVGElement>
 }
 
-function TooltipArrow({ ref, style, height = 4, ...props }: TooltipArrowProps) {
+function TooltipArrow({
+  ref,
+  className,
+  style,
+  height = 4,
+  ...props
+}: TooltipArrowProps) {
   const floating = React.useContext(TooltipFloatingContext)
   const arrowData = floating?.middlewareData.arrow
   const side = floating ? sideOfPlacement(floating.placement) : "top"
@@ -376,6 +382,7 @@ function TooltipArrow({ ref, style, height = 4, ...props }: TooltipArrowProps) {
     <FloatingArrow
       ref={composedRef}
       {...props}
+      className={cn("dr-tooltip-arrow", className)}
       height={height}
       side={side}
       style={{

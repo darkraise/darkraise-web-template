@@ -2222,6 +2222,14 @@
     outline-offset: -1px;
   }
 
+  /* A popup arrow is an svg, painted by fill and stroke rather than by a
+     background and a border. */
+  .dr-popover-arrow,
+  .dr-tooltip-arrow {
+    fill: Canvas;
+    stroke: CanvasText;
+  }
+
   /* No outline-offset: each control's own layered offset applies (outside
      for a standalone control, inside where a packed row or a clipping
      wrapper would cover the ring). An unlayered offset here overrode them
