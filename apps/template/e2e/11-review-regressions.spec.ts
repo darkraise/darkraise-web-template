@@ -26,7 +26,7 @@ test("settings submit controls follow validation and submission", async ({
   page,
 }) => {
   await gotoApp(page, "/settings")
-  const name = page.getByRole("textbox", { name: "Store Name", exact: true })
+  const name = page.getByRole("textbox", { name: "Store name", exact: true })
   const save = page.getByRole("button", { name: "Save changes", exact: true })
   await name.clear()
   await expect(save).toBeDisabled()

@@ -70,7 +70,7 @@ function FloatingPanelPage() {
 >
   <FloatingPanelHeader>
     <FloatingPanelDragHandle />
-    <FloatingPanelTitle>Floating Panel</FloatingPanelTitle>
+    <FloatingPanelTitle>Floating panel</FloatingPanelTitle>
     <FloatingPanelMinimizeTrigger />
     <FloatingPanelMaximizeTrigger />
     <FloatingPanelCloseTrigger />
@@ -88,7 +88,7 @@ function FloatingPanelPage() {
             >
               <FloatingPanelHeader>
                 <FloatingPanelDragHandle />
-                <FloatingPanelTitle>Floating Panel</FloatingPanelTitle>
+                <FloatingPanelTitle>Floating panel</FloatingPanelTitle>
                 <FloatingPanelMinimizeTrigger />
                 <FloatingPanelMaximizeTrigger />
                 <FloatingPanelCloseTrigger />

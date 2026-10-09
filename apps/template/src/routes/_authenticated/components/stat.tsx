@@ -42,7 +42,7 @@ function StatPage() {
     <StatChange direction="up">+12.5%</StatChange>
   </Stat>
   <Stat>
-    <StatLabel>Active Users</StatLabel>
+    <StatLabel>Active users</StatLabel>
     <StatValue>1,284</StatValue>
     <StatChange direction="up">+3.1%</StatChange>
   </Stat>
@@ -60,7 +60,7 @@ function StatPage() {
             <StatChange direction="up">+12.5%</StatChange>
           </Stat>
           <Stat>
-            <StatLabel>Active Users</StatLabel>
+            <StatLabel>Active users</StatLabel>
             <StatValue>1,284</StatValue>
             <StatChange direction="up">+3.1%</StatChange>
           </Stat>

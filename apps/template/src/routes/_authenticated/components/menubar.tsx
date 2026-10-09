@@ -68,7 +68,7 @@ function MenubarPage() {
       </ShowcaseExample>
 
       <ShowcaseExample
-        title="File / Edit / View"
+        title="File, edit and view menus"
         code={`<Menubar>
   <MenubarMenu>
     <MenubarTrigger>File</MenubarTrigger>

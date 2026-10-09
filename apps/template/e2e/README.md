@@ -282,7 +282,7 @@ Under quiet and glass × both modes, on `/components/cards` and
 
 - The layout menu offers no Split Panel, and a chosen Stacked layout is still
   marked active after reload.
-- Settings: Save changes is disabled while Store Name is empty and while saving
+- Settings: Save changes is disabled while Store name is empty and while saving
   (`Saving…`), then enabled again.
 - On the virtual-table fixture (long cell content, spacious density): rows are
   40px tall, scrolling reaches item 490 and the last row, and filtering to one
@@ -558,14 +558,14 @@ Each case is its own load of the overlay-geometry fixture.
 
 ### 25 · Demo app (`25-demo-app.spec.ts`)
 
-- Customers: the Orders column aligns like Total Spent.
+- Customers: the Orders column aligns like Total spent.
 - Status badges on orders, an order, products, categories and a customer follow
   one status-to-variant map.
-- Charts: Orders & Visitors has a two-item legend; Revenue Trend is the same
+- Charts: Orders & visitors has a two-item legend; Revenue trend is the same
   area chart in the same colour on the dashboard and on analytics; revenue
   keeps one colour across charts and quantity another.
 - Dashboard: at 1440px the sales target card keeps its natural height, the
-  other KPI cards stack below it and Recent Orders sits beside them; the
+  other KPI cards stack below it and Recent orders sits beside them; the
   average order value sparkline has a translucent area and one baseline.
 - Products: thumbnails are local two-character initials at 12px or more, with
   no placeholder-image request.

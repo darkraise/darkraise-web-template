@@ -14,7 +14,7 @@ interface ActivityFeedProps {
 
 export function ActivityFeed({
   items,
-  title = "Recent Activity",
+  title = "Recent activity",
 }: ActivityFeedProps) {
   return (
     <Card>

@@ -32,13 +32,13 @@ export const Route = createFileRoute("/_authenticated/analytics")({
 })
 
 const trafficConfig = {
-  "Organic Search": {
-    label: <AppText text="Organic Search" />,
+  "Organic search": {
+    label: <AppText text="Organic search" />,
     color: "var(--chart-1)",
   },
   Direct: { label: <AppText text="Direct" />, color: "var(--chart-2)" },
-  "Social Media": {
-    label: <AppText text="Social Media" />,
+  "Social media": {
+    label: <AppText text="Social media" />,
     color: "var(--chart-3)",
   },
   Email: { label: <AppText text="Email" />, color: "var(--chart-4)" },
@@ -80,9 +80,9 @@ function AnalyticsPage() {
     : []
 
   const trafficSources = [
-    { name: "Organic Search", value: 42 },
+    { name: "Organic search", value: 42 },
     { name: "Direct", value: 28 },
-    { name: "Social Media", value: 18 },
+    { name: "Social media", value: 18 },
     { name: "Email", value: 8 },
     { name: "Referral", value: 4 },
   ].map((entry, i) => ({
@@ -129,13 +129,13 @@ function AnalyticsPage() {
       <Stack gap="lg">
         <Grid cols={2} gap="md" responsive>
           <ChartCard
-            title={t("Revenue Trend")}
+            title={t("Revenue trend")}
             description={t("Daily revenue over the last 30 days")}
           >
             <RevenueTrendChart data={revenueData} />
           </ChartCard>
           <ChartCard
-            title={t("Traffic Sources")}
+            title={t("Traffic sources")}
             description={t("Visitor acquisition breakdown")}
           >
             <ChartContainer
@@ -164,7 +164,7 @@ function AnalyticsPage() {
 
         <Grid cols={2} gap="md" responsive>
           <ChartCard
-            title={t("Orders & Visitors")}
+            title={t("Orders & visitors")}
             description={t("Daily orders and scaled visitor count")}
           >
             <ChartContainer
@@ -202,7 +202,7 @@ function AnalyticsPage() {
             </ChartContainer>
           </ChartCard>
           <ChartCard
-            title={t("Top Products by Revenue")}
+            title={t("Top products by revenue")}
             description={t("Highest revenue-generating products")}
           >
             <ChartContainer

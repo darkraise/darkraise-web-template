@@ -65,7 +65,7 @@ function LayoutsPage() {
       description="Full-page layout shells for structuring your application. Each variant suits different navigation complexity and content patterns."
     >
       <ShowcaseExample
-        title="Sidebar Layout"
+        title="Sidebar layout"
         code={`import { SidebarLayout } from "darkraise-ui/layout"
 
 const nav: NavGroup[] = [
@@ -119,7 +119,7 @@ export const Route = createFileRoute("/_authenticated")({
       </ShowcaseExample>
 
       <ShowcaseExample
-        title="Nested Navigation"
+        title="Nested navigation"
         code={`const nav: NavGroup[] = [
   { label: "Library", items: [
     {
@@ -171,7 +171,7 @@ export const Route = createFileRoute("/_authenticated")({
       </ShowcaseExample>
 
       <ShowcaseExample
-        title="Top Navigation Layout"
+        title="Top navigation layout"
         code={`import { TopNavLayout } from "darkraise-ui/layout"
 
 export const Route = createFileRoute("/_authenticated")({
@@ -210,7 +210,7 @@ export const Route = createFileRoute("/_authenticated")({
       </ShowcaseExample>
 
       <ShowcaseExample
-        title="Stacked Layout"
+        title="Stacked layout"
         code={`import { StackedLayout } from "darkraise-ui/layout"
 
 export const Route = createFileRoute("/_authenticated")({
@@ -266,7 +266,7 @@ export const Route = createFileRoute("/_authenticated")({
       </ShowcaseExample>
 
       <ShowcaseExample
-        title="Split Panel Layout"
+        title="Split panel layout"
         code={`import { SplitPanelLayout } from "darkraise-ui/layout"
 
 export const Route = createFileRoute("/_authenticated")({

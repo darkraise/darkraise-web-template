@@ -166,7 +166,7 @@ function ComponentsIndexPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title={t("Component Library")}
+        title={t("Component library")}
         description={t(
           "{{count}} UI components, each with live demos and copyable code snippets.",
           { count: componentItems.length },

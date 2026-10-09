@@ -60,7 +60,7 @@ function CustomersPage() {
       accessorKey: "totalSpent",
       meta: { align: "end" },
       header: ({ column }) => (
-        <ColumnHeader column={column} title={t("Total Spent")} />
+        <ColumnHeader column={column} title={t("Total spent")} />
       ),
       cell: ({ row }) =>
         `$${row.original.totalSpent.toLocaleString(uiLocale.locale)}`,

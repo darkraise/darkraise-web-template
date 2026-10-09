@@ -37,7 +37,7 @@ test.describe("dialogs", () => {
     const main = await open(page, "/components/dialogs")
     await main.getByRole("button", { name: "Open dialog" }).first().click()
 
-    const dialog = page.getByRole("dialog", { name: "Dialog Title" })
+    const dialog = page.getByRole("dialog", { name: "Dialog title" })
     await expect(dialog).toBeVisible()
     const buttons = dialog.getByRole("button")
     await expect(buttons.first()).toBeFocused()

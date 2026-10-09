@@ -8,6 +8,33 @@ import { capitalisedWords } from "@/test/sentence-case"
 const ACTION_TAG =
   /^(Button|Link|AlertDialogAction|AlertDialogCancel|FileUploadTrigger|DownloadTrigger|CommandItem|MenubarItem|\w*Menu(Checkbox|Radio)?Item|\w*SubTrigger)$/
 
+/** Which elements and attributes hold one kind of label. */
+interface LabelKind {
+  /** Elements whose text children are labels. */
+  tag: RegExp
+  /** Attributes whose string values are labels... */
+  attribute: RegExp
+  /** ...on the elements this matches. */
+  on: RegExp
+}
+
+const ACTIONS: LabelKind = {
+  tag: ACTION_TAG,
+  attribute: /^aria-label$/,
+  on: ACTION_TAG,
+}
+
+/**
+ * Titles (dialog, sheet, drawer, card and example headings), accordion
+ * triggers and field labels. A page's own name, its ShowcasePage title or
+ * h1, is what the navigation lists, so it is left out.
+ */
+const TITLES: LabelKind = {
+  tag: /^(\w*Title|AccordionTrigger|\w*Label|\w*Legend|h[2-6])$/,
+  attribute: /^(title|label)$/,
+  on: /^(?!ShowcasePage$)/,
+}
+
 interface Label {
   text: string
   where: string
@@ -43,10 +70,11 @@ function sampleText(node: ts.Expression): string | null {
 }
 
 /**
- * Action labels in a TSX source and in its `code=` samples. `line` maps a
- * zero-based line of `text` to the place it is reported at.
+ * Labels of one kind in a TSX source and in its `code=` samples. `line` maps
+ * a zero-based line of `text` to the place it is reported at.
  */
-function actionLabels(
+function labelsOf(
+  kind: LabelKind,
   file: string,
   text: string,
   line: (index: number) => number,
@@ -62,11 +90,12 @@ function actionLabels(
   const at = (node: ts.Node) =>
     `${file}:${line(source.getLineAndCharacterOfPosition(node.getStart(source)).line)}`
   const labels: Label[] = []
-  const ariaLabel = (attributes: ts.JsxAttributes) => {
+  const attributeLabels = (tag: string, attributes: ts.JsxAttributes) => {
+    if (!kind.on.test(tag)) return
     for (const attribute of attributes.properties) {
       if (
         ts.isJsxAttribute(attribute) &&
-        attribute.name.getText(source) === "aria-label" &&
+        kind.attribute.test(attribute.name.getText(source)) &&
         attribute.initializer
       )
         for (const literal of literalsIn(attribute.initializer))
@@ -76,8 +105,9 @@ function actionLabels(
   const visit = (node: ts.Node) => {
     if (ts.isJsxElement(node)) {
       const opening = node.openingElement
-      if (ACTION_TAG.test(opening.tagName.getText(source))) {
-        ariaLabel(opening.attributes)
+      const tag = opening.tagName.getText(source)
+      attributeLabels(tag, opening.attributes)
+      if (kind.tag.test(tag)) {
         const text = node.children
           .filter(ts.isJsxText)
           .map((child) => child.text)
@@ -91,11 +121,8 @@ function actionLabels(
               labels.push({ text: literal.text, where: at(literal), sample })
       }
     }
-    if (
-      ts.isJsxSelfClosingElement(node) &&
-      ACTION_TAG.test(node.tagName.getText(source))
-    )
-      ariaLabel(node.attributes)
+    if (ts.isJsxSelfClosingElement(node))
+      attributeLabels(node.tagName.getText(source), node.attributes)
     if (
       ts.isJsxAttribute(node) &&
       node.name.getText(source) === "code" &&
@@ -110,7 +137,7 @@ function actionLabels(
           expression.getStart(source),
         ).line
         labels.push(
-          ...actionLabels(file, code, (index) => line(start + index), true),
+          ...labelsOf(kind, file, code, (index) => line(start + index), true),
         )
       }
     }
@@ -120,14 +147,15 @@ function actionLabels(
   return labels
 }
 
-/** Action labels of every showcase route and its shared parts. */
-function showcaseLabels(): Label[] {
+/** Labels of one kind in every showcase route and its shared parts. */
+function showcaseLabels(kind: LabelKind): Label[] {
   const directory = new URL("./", import.meta.url)
   return readdirSync(directory, { recursive: true, encoding: "utf8" })
     .map((file) => file.split("\\").join("/"))
     .filter((file) => file.endsWith(".tsx") && !file.includes(".test."))
     .flatMap((file) =>
-      actionLabels(
+      labelsOf(
+        kind,
         file,
         readFileSync(new URL(file, directory), "utf8"),
         (index) => index + 1,
@@ -136,7 +164,7 @@ function showcaseLabels(): Label[] {
 }
 
 describe("showcase action labels", () => {
-  const labels = showcaseLabels()
+  const labels = showcaseLabels(ACTIONS)
 
   it("finds button, menu and aria labels in pages and samples", () => {
     const found = (text: string, sample: boolean) =>
@@ -153,6 +181,31 @@ describe("showcase action labels", () => {
   })
 
   it("writes every action label in sentence case", () => {
+    const capitalised = labels
+      .filter((label) => capitalisedWords(label.text).length > 0)
+      .map((label) => `${label.where}: "${label.text}"`)
+    expect(capitalised).toEqual([])
+  })
+})
+
+describe("showcase titles, accordion triggers and field labels", () => {
+  const labels = showcaseLabels(TITLES)
+
+  it("finds titles, triggers and field labels in pages and samples", () => {
+    const found = (text: string, sample: boolean) =>
+      labels.some(
+        (label) =>
+          label.sample === sample &&
+          label.text.toLowerCase() === text.toLowerCase(),
+      )
+    for (const text of ["Edit profile", "Section one", "Display name"]) {
+      expect(found(text, false), `${text} on a page`).toBe(true)
+      expect(found(text, true), `${text} in a sample`).toBe(true)
+    }
+    expect(labels.length).toBeGreaterThan(400)
+  })
+
+  it("writes every title, trigger and field label in sentence case", () => {
     const capitalised = labels
       .filter((label) => capitalisedWords(label.text).length > 0)
       .map((label) => `${label.where}: "${label.text}"`)

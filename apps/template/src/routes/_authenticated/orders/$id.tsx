@@ -243,7 +243,7 @@ function OrderDetailPage() {
               <TabsContent value="shipping" className="mt-4">
                 <Card>
                   <CardHeader>
-                    <CardTitle>{t("Shipping Address")}</CardTitle>
+                    <CardTitle>{t("Shipping address")}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <p className="text-muted-foreground text-sm">
@@ -256,7 +256,7 @@ function OrderDetailPage() {
               <TabsContent value="notes" className="mt-4">
                 <Card>
                   <CardHeader>
-                    <CardTitle>{t("Order Notes")}</CardTitle>
+                    <CardTitle>{t("Order notes")}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <p className="text-muted-foreground text-sm">

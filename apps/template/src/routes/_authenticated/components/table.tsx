@@ -103,7 +103,7 @@ const manyProducts = Array.from({ length: 50 }, (_, i) => ({
 
 const wideColumns = [
   { key: "id", label: "ID" },
-  { key: "name", label: "Product Name" },
+  { key: "name", label: "Product name" },
   { key: "category", label: "Category" },
   { key: "price", label: "Price" },
   { key: "stock", label: "Stock" },
@@ -467,7 +467,7 @@ function TablePage() {
   </TableBody>
   <TableFooter>
     <TableRow>
-      <TableCell colSpan={3}>Total Items</TableCell>
+      <TableCell colSpan={3}>Total items</TableCell>
       <TableCell className="text-right">{total}</TableCell>
     </TableRow>
   </TableFooter>
@@ -497,7 +497,7 @@ function TablePage() {
           </TableBody>
           <TableFooter>
             <TableRow>
-              <TableCell colSpan={3}>Total Items</TableCell>
+              <TableCell colSpan={3}>Total items</TableCell>
               <TableCell className="text-right">
                 {products.reduce((sum, r) => sum + r.stock, 0)}
               </TableCell>
@@ -650,7 +650,7 @@ function TablePage() {
             <tfoot className="dr-table-footer sticky bottom-0 z-10">
               <tr>
                 <td className="p-4" colSpan={4}>
-                  Total Items
+                  Total items
                 </td>
                 <td className="p-4 text-right">
                   {manyProducts.slice(0, 25).reduce((s, r) => s + r.stock, 0)}

@@ -93,7 +93,7 @@ function ScrollAreaPage() {
 
 <ScrollArea className="h-64 rounded-md border">
   <div className="p-4">
-    <h4 className="mb-4 text-sm font-medium">Team Members</h4>
+    <h4 className="mb-4 text-sm font-medium">Team members</h4>
     {contacts.map((contact) => (
       <div key={contact.name}>
         <div className="py-2">
@@ -109,7 +109,7 @@ function ScrollAreaPage() {
         <ScrollArea className="border-border h-64 rounded-md border">
           <div className="p-4">
             <h4 className="mb-4 text-sm leading-none font-medium">
-              Team Members
+              Team members
             </h4>
             {[
               {

@@ -142,7 +142,7 @@ function ErrorPagesShowcase() {
       description="Full-screen error states for 404, 500, error boundaries, and maintenance mode. Built on a shared ErrorLayout component."
     >
       <ShowcaseExample
-        title="404 — Not found"
+        title="Not found (404)"
         code={`import { NotFoundPage } from "darkraise-ui/errors"
 
 // Wired automatically via TanStack Router:
@@ -202,7 +202,7 @@ export function ErrorPage({ error, reset }: ErrorComponentProps) {
       </ShowcaseExample>
 
       <ShowcaseExample
-        title="500 — Server error"
+        title="Server error (500)"
         code={`import { ServerErrorPage } from "darkraise-ui/errors"
 
 // Use in route loaders when the API returns a server error:

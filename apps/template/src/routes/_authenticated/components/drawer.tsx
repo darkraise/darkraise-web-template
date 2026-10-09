@@ -33,7 +33,7 @@ function DrawerPage() {
   </DrawerTrigger>
   <DrawerContent>
     <DrawerHeader>
-      <DrawerTitle>Drawer Title</DrawerTitle>
+      <DrawerTitle>Drawer title</DrawerTitle>
       <DrawerDescription>
         This is a basic bottom drawer. Drag it down or click outside to close.
       </DrawerDescription>
@@ -55,7 +55,7 @@ function DrawerPage() {
           </DrawerTrigger>
           <DrawerContent>
             <DrawerHeader>
-              <DrawerTitle>Drawer Title</DrawerTitle>
+              <DrawerTitle>Drawer title</DrawerTitle>
               <DrawerDescription>
                 This is a basic bottom drawer. Drag it down or click outside to
                 close.
@@ -83,12 +83,12 @@ function DrawerPage() {
   </DrawerTrigger>
   <DrawerContent>
     <DrawerHeader>
-      <DrawerTitle>Edit Profile</DrawerTitle>
+      <DrawerTitle>Edit profile</DrawerTitle>
       <DrawerDescription>Update your display name and email address.</DrawerDescription>
     </DrawerHeader>
     <div className="space-y-4 p-4">
       <div className="space-y-2">
-        <Label htmlFor="name">Display Name</Label>
+        <Label htmlFor="name">Display name</Label>
         <Input id="name" placeholder="Your name" />
       </div>
       <div className="space-y-2">
@@ -113,14 +113,14 @@ function DrawerPage() {
           </DrawerTrigger>
           <DrawerContent>
             <DrawerHeader>
-              <DrawerTitle>Edit Profile</DrawerTitle>
+              <DrawerTitle>Edit profile</DrawerTitle>
               <DrawerDescription>
                 Update your display name and email address.
               </DrawerDescription>
             </DrawerHeader>
             <div className="space-y-4 p-4">
               <div className="space-y-2">
-                <Label htmlFor="drawer-name">Display Name</Label>
+                <Label htmlFor="drawer-name">Display name</Label>
                 <Input id="drawer-name" placeholder="Your name" />
               </div>
               <div className="space-y-2">
@@ -159,7 +159,7 @@ function DrawerPage() {
   </DrawerTrigger>
   <DrawerContent className="max-h-[80vh]">
     <DrawerHeader>
-      <DrawerTitle>Terms of Service</DrawerTitle>
+      <DrawerTitle>Terms of service</DrawerTitle>
       <DrawerDescription>Please read and accept the terms below.</DrawerDescription>
     </DrawerHeader>
     <div className="flex-1 min-h-0 overflow-y-auto p-4">
@@ -180,7 +180,7 @@ function DrawerPage() {
           </DrawerTrigger>
           <DrawerContent className="max-h-[80vh]">
             <DrawerHeader>
-              <DrawerTitle>Terms of Service</DrawerTitle>
+              <DrawerTitle>Terms of service</DrawerTitle>
               <DrawerDescription>
                 Please read and accept the terms below.
               </DrawerDescription>

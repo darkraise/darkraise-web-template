@@ -14,7 +14,7 @@ const HEADINGS: Record<string, RegExp | null> = {
   "/": /Dashboard/,
   "/analytics": /Analytics/,
   "/products": /Products/,
-  "/products/new": /Product/,
+  "/products/new": /New product/,
   "/products/prod-1/edit": /Edit iPhone 15 Pro/,
   "/categories": /Categories/,
   "/orders": /Orders/,
@@ -23,7 +23,7 @@ const HEADINGS: Record<string, RegExp | null> = {
   "/customers/cust-1": /Emma Thompson/,
   "/settings": /Settings/,
   "/inbox": null,
-  "/components": /Component Library/,
+  "/components": /Component library/,
 }
 
 /** The error-pages showcase renders error-boundary copy on purpose. */

@@ -91,7 +91,7 @@ function SheetPage() {
   </SheetTrigger>
   <SheetContent>
     <SheetHeader>
-      <SheetTitle>Edit Profile</SheetTitle>
+      <SheetTitle>Edit profile</SheetTitle>
       <SheetDescription>Update your public profile information.</SheetDescription>
     </SheetHeader>
     <div className="space-y-4 py-4">
@@ -119,7 +119,7 @@ function SheetPage() {
           </SheetTrigger>
           <SheetContent>
             <SheetHeader>
-              <SheetTitle>Edit Profile</SheetTitle>
+              <SheetTitle>Edit profile</SheetTitle>
               <SheetDescription>
                 Update your public profile information.
               </SheetDescription>

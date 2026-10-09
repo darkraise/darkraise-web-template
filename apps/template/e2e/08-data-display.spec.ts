@@ -384,7 +384,7 @@ test.describe("content components", () => {
       .click()
     await expect(page).toHaveURL(/\/components$/)
     await expect(
-      page.getByRole("heading", { level: 1, name: "Component Library" }),
+      page.getByRole("heading", { level: 1, name: "Component library" }),
     ).toBeVisible()
   })
 

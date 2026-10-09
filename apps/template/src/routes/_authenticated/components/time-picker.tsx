@@ -52,22 +52,22 @@ const [end, setEnd] = useState("17:00")
 
 <div className="space-y-2">
   <div className="flex items-center justify-between gap-2">
-    <Label className="text-xs">Start Time</Label>
+    <Label className="text-xs">Start time</Label>
     <TimePicker value={start} onValueChange={setStart} />
   </div>
   <div className="flex items-center justify-between gap-2">
-    <Label className="text-xs">End Time</Label>
+    <Label className="text-xs">End time</Label>
     <TimePicker value={end} onValueChange={setEnd} />
   </div>
 </div>`}
       >
         <div className="max-w-xs space-y-2 rounded-md border p-3">
           <div className="flex items-center justify-between gap-2">
-            <Label className="text-xs">Start Time</Label>
+            <Label className="text-xs">Start time</Label>
             <TimePicker value={start} onValueChange={setStart} />
           </div>
           <div className="flex items-center justify-between gap-2">
-            <Label className="text-xs">End Time</Label>
+            <Label className="text-xs">End time</Label>
             <TimePicker value={end} onValueChange={setEnd} />
           </div>
         </div>

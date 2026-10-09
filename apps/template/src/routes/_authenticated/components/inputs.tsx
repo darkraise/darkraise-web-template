@@ -356,7 +356,7 @@ function InputsPage() {
       </ShowcaseExample>
 
       <ShowcaseExample
-        title="Radio Group"
+        title="Radio group"
         code={`<Field>
   <FieldLabel>Vertical group</FieldLabel>
   <RadioGroup value={value} onValueChange={setValue}>

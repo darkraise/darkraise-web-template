@@ -437,7 +437,7 @@ function BadgesPage() {
                 <Badge variant="default">Medium</Badge>
               </TableCell>
               <TableCell>
-                <Badge variant="default">In Progress</Badge>
+                <Badge variant="default">In progress</Badge>
               </TableCell>
             </TableRow>
             <TableRow>
@@ -446,7 +446,7 @@ function BadgesPage() {
                 <Badge variant="secondary">Low</Badge>
               </TableCell>
               <TableCell>
-                <Badge variant="secondary">To Do</Badge>
+                <Badge variant="secondary">To do</Badge>
               </TableCell>
             </TableRow>
             <TableRow>

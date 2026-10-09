@@ -133,7 +133,7 @@ function PeriodToggleChartExample() {
   const [period, setPeriod] = useState<Period>("30D")
 
   return (
-    <ChartCard title="Revenue by Period">
+    <ChartCard title="Revenue by period">
       <div className="mb-4 flex gap-2">
         {(["7D", "30D", "90D"] as Period[]).map((p) => (
           <Button
@@ -282,7 +282,7 @@ const revenueOrdersConfig = {
   orders: { label: "Orders", color: "var(--chart-2)" },
 } satisfies ChartConfig
 
-<ChartCard title="Revenue vs Orders" description="Dual-series line comparison">
+<ChartCard title="Revenue vs orders" description="Dual-series line comparison">
   <ChartContainer config={revenueOrdersConfig} className="min-h-[200px] w-full">
     <LineChart data={data}>
       <CartesianGrid vertical={false} strokeDasharray="3 3" />
@@ -298,7 +298,7 @@ const revenueOrdersConfig = {
 </ChartCard>`}
       >
         <ChartCard
-          title="Revenue vs Orders"
+          title="Revenue vs orders"
           description="Dual-series line comparison"
         >
           <ChartContainer
@@ -375,7 +375,7 @@ const pieConfig = {
 const pieColors = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--chart-4)"]
 const coloredPieData = pieData.map((entry, i) => ({ ...entry, fill: pieColors[i % pieColors.length] }))
 
-<ChartCard title="Category Breakdown" description="Revenue by category">
+<ChartCard title="Category breakdown" description="Revenue by category">
   <ChartContainer config={pieConfig} className="min-h-[200px] w-full">
     <PieChart>
       <Pie data={coloredPieData} cx="50%" cy="50%" innerRadius={40} outerRadius={80} dataKey="value" nameKey="name" />
@@ -385,7 +385,7 @@ const coloredPieData = pieData.map((entry, i) => ({ ...entry, fill: pieColors[i 
 </ChartCard>
 
 // Filled pie (no innerRadius)
-<ChartCard title="Category Breakdown">
+<ChartCard title="Category breakdown">
   <ChartContainer config={pieConfig} className="min-h-[200px] w-full">
     <PieChart>
       <Pie data={coloredPieData} cx="50%" cy="50%" outerRadius={80} dataKey="value" nameKey="name" />
@@ -396,7 +396,7 @@ const coloredPieData = pieData.map((entry, i) => ({ ...entry, fill: pieColors[i 
       >
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
           <ChartCard
-            title="Category Breakdown (donut)"
+            title="Category breakdown (donut)"
             description="Revenue by category"
           >
             <ChartContainer config={pieConfig} className="min-h-[200px] w-full">
@@ -417,7 +417,7 @@ const coloredPieData = pieData.map((entry, i) => ({ ...entry, fill: pieColors[i 
             </ChartContainer>
           </ChartCard>
           <ChartCard
-            title="Category Breakdown (filled)"
+            title="Category breakdown (filled)"
             description="Revenue by category"
           >
             <ChartContainer config={pieConfig} className="min-h-[200px] w-full">
@@ -464,7 +464,7 @@ const coloredPieData = pieData.map((entry, i) => ({ ...entry, fill: pieColors[i 
       </BarChart>
     </ChartContainer>
   </ChartCard>
-  <ChartCard title="Visitors vs Conversions">
+  <ChartCard title="Visitors vs conversions">
     <ChartContainer config={visitorsConversionsConfig} className="min-h-[200px] w-full">
       <LineChart data={weeklyData}>
         <CartesianGrid vertical={false} strokeDasharray="3 3" />
@@ -478,7 +478,7 @@ const coloredPieData = pieData.map((entry, i) => ({ ...entry, fill: pieColors[i 
       </LineChart>
     </ChartContainer>
   </ChartCard>
-  <ChartCard title="Category Breakdown">
+  <ChartCard title="Category breakdown">
     <ChartContainer config={pieConfig} className="min-h-[200px] w-full">
       <PieChart>
         <Pie data={pieData.map((entry, i) => ({ ...entry, fill: pieColors[i % pieColors.length] }))} cx="50%" cy="50%" innerRadius={40} outerRadius={80} dataKey="value" nameKey="name" />
@@ -538,7 +538,7 @@ const coloredPieData = pieData.map((entry, i) => ({ ...entry, fill: pieColors[i 
             </ChartContainer>
           </ChartCard>
           <ChartCard
-            title="Visitors vs Conversions"
+            title="Visitors vs conversions"
             description="Weekly site traffic"
           >
             <ChartContainer
@@ -598,7 +598,7 @@ const coloredPieData = pieData.map((entry, i) => ({ ...entry, fill: pieColors[i 
             </ChartContainer>
           </ChartCard>
           <ChartCard
-            title="Category Breakdown"
+            title="Category breakdown"
             description="Revenue by category"
           >
             <ChartContainer config={pieConfig} className="min-h-[200px] w-full">
@@ -631,7 +631,7 @@ const coloredPieData = pieData.map((entry, i) => ({ ...entry, fill: pieColors[i 
   } satisfies ChartConfig
 
   return (
-    <ChartCard title="Revenue by Period">
+    <ChartCard title="Revenue by period">
       <div className="mb-4 flex gap-2">
         {(["7D", "30D", "90D"] as const).map((p) => (
           <Button
@@ -662,7 +662,7 @@ const coloredPieData = pieData.map((entry, i) => ({ ...entry, fill: pieColors[i 
 
       <ShowcaseExample
         title="Chart loading skeleton"
-        code={`<ChartCard title="Loading Chart">
+        code={`<ChartCard title="Loading chart">
   <Skeleton className="h-4 w-32 mb-4" />
   <Skeleton className="h-[250px] w-full" />
   <div className="mt-4 flex gap-3">
@@ -672,7 +672,7 @@ const coloredPieData = pieData.map((entry, i) => ({ ...entry, fill: pieColors[i 
   </div>
 </ChartCard>`}
       >
-        <ChartCard title="Loading Chart">
+        <ChartCard title="Loading chart">
           <Skeleton className="mb-4 h-4 w-32" />
           <Skeleton className="h-[250px] w-full" />
           <div className="mt-4 flex gap-3">
@@ -685,7 +685,7 @@ const coloredPieData = pieData.map((entry, i) => ({ ...entry, fill: pieColors[i 
 
       <ShowcaseExample
         title="Chart empty state"
-        code={`<ChartCard title="Sales Overview">
+        code={`<ChartCard title="Sales overview">
   <div className="flex min-h-[250px] flex-col items-center justify-center">
     <BarChart3 className="h-12 w-12 text-muted-foreground" />
     <p className="mt-4 text-base font-medium">No data available</p>
@@ -695,7 +695,7 @@ const coloredPieData = pieData.map((entry, i) => ({ ...entry, fill: pieColors[i 
   </div>
 </ChartCard>`}
       >
-        <ChartCard title="Sales Overview">
+        <ChartCard title="Sales overview">
           <div className="flex min-h-[250px] flex-col items-center justify-center">
             <BarChartIcon className="text-muted-foreground h-12 w-12" />
             <p className="mt-4 text-base font-medium">No data available</p>

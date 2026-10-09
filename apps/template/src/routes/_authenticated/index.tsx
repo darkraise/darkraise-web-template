@@ -139,12 +139,12 @@ function DashboardPage() {
   const handleDownloadReport = () => {
     const rows = [
       ["Metric", "Value"],
-      ["Total Revenue", String(totalRevenue)],
-      ["Total Orders", String(totalOrders)],
-      ["Total Customers", String(totalCustomers)],
-      ["Conversion Rate", `${conversionRate}%`],
-      ["Average Order Value", avgOrderValue.toFixed(2)],
-      ["Returning Customers", `${returningPct}%`],
+      ["Total revenue", String(totalRevenue)],
+      ["Total orders", String(totalOrders)],
+      ["Total customers", String(totalCustomers)],
+      ["Conversion rate", `${conversionRate}%`],
+      ["Average order value", avgOrderValue.toFixed(2)],
+      ["Returning customers", `${returningPct}%`],
     ]
     const csv = rows.map((r) => r.join(",")).join("\n")
     const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }))
@@ -193,25 +193,25 @@ function DashboardPage() {
       <div className="space-y-6">
         <MetricGrid columns={4}>
           <StatCard
-            label={t("Total Revenue")}
+            label={t("Total revenue")}
             value={`$${totalRevenue.toLocaleString(uiLocale.locale)}`}
             icon={DollarSign}
             trend={revenueTrend}
           />
           <StatCard
-            label={t("Total Orders")}
+            label={t("Total orders")}
             value={totalOrders}
             icon={ShoppingCart}
             trend={ordersTrend}
           />
           <StatCard
-            label={t("Total Customers")}
+            label={t("Total customers")}
             value={totalCustomers}
             icon={Users}
             trend={customersTrend}
           />
           <StatCard
-            label={t("Conversion Rate")}
+            label={t("Conversion rate")}
             value={`${conversionRate}%`}
             icon={TrendingUp}
             trend={conversionTrend}
@@ -220,13 +220,13 @@ function DashboardPage() {
 
         <Grid cols={2} gap="md">
           <ChartCard
-            title={t("Revenue Trend")}
+            title={t("Revenue trend")}
             description={t("Daily revenue over the last 30 days")}
           >
             <RevenueTrendChart data={revenueChartData} />
           </ChartCard>
           <ChartCard
-            title={t("Top Products by Quantity")}
+            title={t("Top products by quantity")}
             description={t("Most ordered products")}
           >
             <ChartContainer
@@ -257,13 +257,13 @@ function DashboardPage() {
         <div className="grid gap-4 md:grid-cols-3">
           <div data-dashboard-kpis className="flex flex-col gap-4">
             <ProgressCard
-              label={t("Monthly Sales Target")}
+              label={t("Monthly sales target")}
               value={currentMonthRevenue}
               target={monthlySalesTarget}
               formatValue={currency}
             />
             <KPICard
-              label={t("Average Order Value")}
+              label={t("Average order value")}
               value={`${avgOrderValue.toLocaleString(uiLocale.locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
               comparison={
                 priorAov > 0
@@ -275,7 +275,7 @@ function DashboardPage() {
               sparklineData={aovSparkline}
             />
             <KPICard
-              label={t("Returning Customers")}
+              label={t("Returning customers")}
               value={`${returningPct}%`}
               comparison={t("{{returning}} of {{total}} customers", {
                 returning: returningCustomers,
@@ -284,7 +284,7 @@ function DashboardPage() {
             />
           </div>
           <div className="md:col-span-2">
-            <ActivityFeed items={recentActivity} title={t("Recent Orders")} />
+            <ActivityFeed items={recentActivity} title={t("Recent orders")} />
           </div>
         </div>
       </div>

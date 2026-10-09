@@ -571,7 +571,7 @@ test.describe("carousel arrows stay inside their card", () => {
 })
 
 test.describe("dual-series charts use the plot height", () => {
-  const CHARTS = ["Revenue vs Orders", "Visitors vs Conversions"]
+  const CHARTS = ["Revenue vs orders", "Visitors vs conversions"]
 
   for (const title of CHARTS) {
     test(`${title}: each series spans at least a quarter of the plot`, async ({
@@ -1297,8 +1297,8 @@ test.describe("select side x align triggers show their whole label", () => {
 
 test.describe("dual-axis charts name each series", () => {
   const CHARTS = [
-    { title: "Revenue vs Orders", series: ["Revenue", "Orders"] },
-    { title: "Visitors vs Conversions", series: ["Visitors", "Conversions"] },
+    { title: "Revenue vs orders", series: ["Revenue", "Orders"] },
+    { title: "Visitors vs conversions", series: ["Visitors", "Conversions"] },
   ]
 
   for (const { title, series } of CHARTS) {

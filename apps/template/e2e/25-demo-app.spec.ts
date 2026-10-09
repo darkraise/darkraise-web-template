@@ -44,11 +44,11 @@ test.describe("customers table", () => {
     await seedApp(page, { style: "quiet", mode: "light" })
   })
 
-  test("the Orders column aligns like Total Spent", async ({ page }) => {
+  test("the Orders column aligns like Total spent", async ({ page }) => {
     await gotoApp(page, "/customers")
     await expect(page.locator("#main-content tbody tr").first()).toBeVisible()
     const orders = await endGaps(page, "Orders")
-    const spent = await endGaps(page, "Total Spent")
+    const spent = await endGaps(page, "Total spent")
     expect(orders.length).toBeGreaterThan(1)
     expect(orders.length).toBe(spent.length)
     orders.forEach((gap, row) => {
@@ -124,19 +124,19 @@ test.describe("charts", () => {
       has: page.getByText(title, { exact: true }),
     })
 
-  test("Orders & Visitors has a two-item legend", async ({ page }) => {
+  test("Orders & visitors has a two-item legend", async ({ page }) => {
     await gotoApp(page, "/analytics")
-    const items = chartCard(page, "Orders & Visitors").locator(
+    const items = chartCard(page, "Orders & visitors").locator(
       ".dr-chart-legend > div",
     )
     await expect(items).toHaveText(["Orders", "Visitors"])
   })
 
-  test("Revenue Trend is the same area chart on both pages", async ({
+  test("Revenue trend is the same area chart on both pages", async ({
     page,
   }) => {
     const revenueStroke = async () => {
-      const card = chartCard(page, "Revenue Trend")
+      const card = chartCard(page, "Revenue trend")
       const curve = card.locator(".recharts-area-curve").first()
       await expect(curve).toBeVisible()
       await expect(card.locator(".recharts-line-curve")).toHaveCount(0)
@@ -155,17 +155,17 @@ test.describe("charts", () => {
       return settledStyle(mark, "fill")
     }
     await gotoApp(page, "/analytics")
-    const revenue = await firstFill("Revenue Trend", ".recharts-area-area")
+    const revenue = await firstFill("Revenue trend", ".recharts-area-area")
     expect(
       await firstFill(
-        "Top Products by Revenue",
+        "Top products by revenue",
         ".recharts-bar-rectangle path",
       ),
     ).toBe(revenue)
     await gotoApp(page, "/")
     expect(
       await firstFill(
-        "Top Products by Quantity",
+        "Top products by quantity",
         ".recharts-bar-rectangle path",
       ),
     ).not.toBe(revenue)
@@ -177,20 +177,20 @@ test.describe("dashboard", () => {
     await seedApp(page, { style: "quiet", mode: "light" })
   })
 
-  test("the sales target keeps its height beside Recent Orders", async ({
+  test("the sales target keeps its height beside Recent orders", async ({
     page,
   }) => {
     await page.setViewportSize({ width: 1440, height: 900 })
     await gotoApp(page, "/")
     const cards = page.locator("[data-dashboard-kpis] > .dr-card")
     await expect(cards).toHaveCount(3)
-    await expect(cards.nth(0)).toContainText("Monthly Sales Target")
+    await expect(cards.nth(0)).toContainText("Monthly sales target")
     const target = await boxOf(cards.nth(0))
     const average = await boxOf(cards.nth(1))
     const returning = await boxOf(cards.nth(2))
     const feed = await boxOf(
       page.locator(".dr-card", {
-        has: page.getByText("Recent Orders", { exact: true }),
+        has: page.getByText("Recent orders", { exact: true }),
       }),
     )
     const fit = await cards.nth(0).evaluate((card) => {
@@ -263,7 +263,7 @@ test.describe("KPI sparkline", () => {
   }) => {
     await gotoApp(page, "/")
     const spark = page
-      .locator(".dr-card", { hasText: "Average Order Value" })
+      .locator(".dr-card", { hasText: "Average order value" })
       .locator("[data-sparkline]")
     await expect(spark).toBeVisible()
     expect((await boxOf(spark)).height).toBeGreaterThanOrEqual(40)
@@ -324,9 +324,9 @@ test.describe("product form", () => {
   test("every section's fields sit in a card", async ({ page }) => {
     await gotoApp(page, "/products/new")
     const fields: [string, string][] = [
-      ["Basic Information", "Product Name"],
-      ["Pricing", "Compare-at Price"],
-      ["Inventory", "Stock Quantity"],
+      ["Basic information", "Product name"],
+      ["Pricing", "Compare-at price"],
+      ["Inventory", "Stock quantity"],
       ["Status", "Active"],
     ]
     for (const [section, label] of fields) {
@@ -343,7 +343,7 @@ test.describe("product form", () => {
     await gotoApp(page, "/products/new")
     const price = await boxOf(page.getByLabel("Price", { exact: true }))
     const compare = await boxOf(
-      page.getByLabel("Compare-at Price", { exact: true }),
+      page.getByLabel("Compare-at price", { exact: true }),
     )
     expect(Math.abs(price.y - compare.y)).toBeLessThanOrEqual(1)
     expect(compare.x).toBeGreaterThan(price.x + price.width)

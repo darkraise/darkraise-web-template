@@ -86,7 +86,7 @@ function MultiStepDialogExample() {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create Account</DialogTitle>
+          <DialogTitle>Create account</DialogTitle>
           <DialogDescription>
             Step {step} of {totalSteps}
           </DialogDescription>
@@ -253,7 +253,7 @@ function DialogsPage() {
   </DialogTrigger>
   <DialogContent>
     <DialogHeader>
-      <DialogTitle>Dialog Title</DialogTitle>
+      <DialogTitle>Dialog title</DialogTitle>
       <DialogDescription>
         This is the dialog description.
       </DialogDescription>
@@ -275,7 +275,7 @@ function DialogsPage() {
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Dialog Title</DialogTitle>
+                <DialogTitle>Dialog title</DialogTitle>
                 <DialogDescription>
                   This is the dialog description. Use it to give context about
                   what the user is confirming or interacting with.
@@ -317,7 +317,7 @@ function DialogsPage() {
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Edit Profile</DialogTitle>
+                <DialogTitle>Edit profile</DialogTitle>
                 <DialogDescription>
                   Update your profile details below.
                 </DialogDescription>
@@ -354,7 +354,7 @@ function DialogsPage() {
   </SheetTrigger>
   <SheetContent>
     <SheetHeader>
-      <SheetTitle>Sheet Panel</SheetTitle>
+      <SheetTitle>Sheet panel</SheetTitle>
       <SheetDescription>
         A side panel for contextual actions or detail views.
       </SheetDescription>
@@ -375,7 +375,7 @@ function DialogsPage() {
             </SheetTrigger>
             <SheetContent>
               <SheetHeader>
-                <SheetTitle>Sheet Panel</SheetTitle>
+                <SheetTitle>Sheet panel</SheetTitle>
                 <SheetDescription>
                   A side panel for contextual actions or detailed views.
                 </SheetDescription>
@@ -396,7 +396,7 @@ function DialogsPage() {
             </SheetTrigger>
             <SheetContent side="left">
               <SheetHeader>
-                <SheetTitle>Left Sheet</SheetTitle>
+                <SheetTitle>Left sheet</SheetTitle>
                 <SheetDescription>
                   This panel slides in from the left.
                 </SheetDescription>
@@ -521,7 +521,7 @@ function DialogsPage() {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create Account</DialogTitle>
+          <DialogTitle>Create account</DialogTitle>
           <DialogDescription>Step {step} of 3</DialogDescription>
         </DialogHeader>
         {/* Step indicator */}
@@ -580,7 +580,7 @@ function DialogsPage() {
   </DialogTrigger>
   <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
     <DialogHeader>
-      <DialogTitle>Terms of Service</DialogTitle>
+      <DialogTitle>Terms of service</DialogTitle>
       <DialogDescription>Last updated January 1, 2025</DialogDescription>
     </DialogHeader>
     {/* Long content */}
@@ -597,7 +597,7 @@ function DialogsPage() {
           </DialogTrigger>
           <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
             <DialogHeader>
-              <DialogTitle>Terms of Service</DialogTitle>
+              <DialogTitle>Terms of service</DialogTitle>
               <DialogDescription>
                 Last updated January 1, 2025
               </DialogDescription>
@@ -605,7 +605,7 @@ function DialogsPage() {
             <div className="text-muted-foreground space-y-4 text-sm">
               <p>
                 By accessing or using this platform, you agree to be bound by
-                these Terms of Service and all applicable laws and regulations.
+                these Terms of service and all applicable laws and regulations.
                 If you do not agree with any of these terms, you are prohibited
                 from using or accessing this site. The materials contained
                 herein are protected by applicable copyright and trademark law.
@@ -707,7 +707,7 @@ function DialogsPage() {
   </SheetTrigger>
   <SheetContent side="right">
     <SheetHeader>
-      <SheetTitle>Edit Profile</SheetTitle>
+      <SheetTitle>Edit profile</SheetTitle>
     </SheetHeader>
     <div className="space-y-4 py-4">
       <Field>
@@ -736,7 +736,7 @@ function DialogsPage() {
           </SheetTrigger>
           <SheetContent side="right">
             <SheetHeader>
-              <SheetTitle>Edit Profile</SheetTitle>
+              <SheetTitle>Edit profile</SheetTitle>
               <SheetDescription>
                 Update your public profile information.
               </SheetDescription>
@@ -833,7 +833,7 @@ function DialogsPage() {
   </SheetTrigger>
   <SheetContent>
     <SheetHeader>
-      <SheetTitle>Terms of Service</SheetTitle>
+      <SheetTitle>Terms of service</SheetTitle>
       <SheetDescription>Scroll through the agreement.</SheetDescription>
     </SheetHeader>
     <SheetBody className="-mx-6 px-6">
@@ -854,7 +854,7 @@ function DialogsPage() {
           </SheetTrigger>
           <SheetContent>
             <SheetHeader>
-              <SheetTitle>Terms of Service</SheetTitle>
+              <SheetTitle>Terms of service</SheetTitle>
               <SheetDescription>
                 Scroll through the agreement. Header and footer stay pinned.
               </SheetDescription>

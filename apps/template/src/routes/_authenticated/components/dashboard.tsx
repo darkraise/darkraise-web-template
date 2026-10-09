@@ -65,7 +65,7 @@ function DashboardPage() {
         title="StatCard — metric with icon and trend"
         code={`<MetricGrid columns={4}>
   <StatCard
-    label="Total Revenue"
+    label="Total revenue"
     value="$34,200"
     icon={DollarSign}
     trend={{ value: 12.5, isPositive: true }}
@@ -92,7 +92,7 @@ function DashboardPage() {
       >
         <MetricGrid columns={4}>
           <StatCard
-            label="Total Revenue"
+            label="Total revenue"
             value="$34,200"
             icon={DollarSign}
             trend={{ value: 12.5, isPositive: true }}
@@ -121,7 +121,7 @@ function DashboardPage() {
       <ShowcaseExample
         title="KPICard — value with sparkline and comparison"
         code={`<KPICard
-  label="Monthly Revenue"
+  label="Monthly revenue"
   value="$7,200"
   comparison="vs $6,100 last month"
   sparklineData={[4200, 5800, 4900, 6700, 7200, 6100]}
@@ -129,13 +129,13 @@ function DashboardPage() {
       >
         <div className="grid gap-4 sm:grid-cols-2">
           <KPICard
-            label="Monthly Revenue"
+            label="Monthly revenue"
             value="$7,200"
             comparison="vs $6,100 last month"
             sparklineData={[4200, 5800, 4900, 6700, 7200, 6100]}
           />
           <KPICard
-            label="Active Users"
+            label="Active users"
             value="2,840"
             comparison="vs 2,100 last month"
             sparklineData={[1200, 1500, 1800, 2100, 2400, 2840]}
@@ -150,25 +150,25 @@ const currency = (n: number) =>
   \`$\${Math.round(n).toLocaleString(uiLocale.locale)}\`
 
 <ProgressCard
-  label="Sales Target"
+  label="Sales target"
   value={72000}
   target={100000}
   formatValue={currency}
 />
 <ProgressCard
-  label="New Users"
+  label="New users"
   value={840}
   target={1000}
 />`}
       >
         <div className="grid gap-4 sm:grid-cols-2">
           <ProgressCard
-            label="Sales Target"
+            label="Sales target"
             value={72000}
             target={100000}
             formatValue={currency}
           />
-          <ProgressCard label="New Users" value={840} target={1000} />
+          <ProgressCard label="New users" value={840} target={1000} />
         </div>
       </ShowcaseExample>
 
@@ -184,17 +184,17 @@ const currency = (n: number) =>
     },
     // ...
   ]}
-  title="Recent Activity"
+  title="Recent activity"
 />`}
       >
-        <ActivityFeed items={activityItems} title="Recent Activity" />
+        <ActivityFeed items={activityItems} title="Recent activity" />
       </ShowcaseExample>
 
       <ShowcaseExample
         title="Metric comparison — period-over-period with badges"
         code={`<Card>
   <CardHeader>
-    <CardTitle>Period Comparison</CardTitle>
+    <CardTitle>Period comparison</CardTitle>
   </CardHeader>
   <CardContent>
     <div className="flex items-center justify-between py-3">
@@ -231,7 +231,7 @@ const currency = (n: number) =>
       >
         <Card>
           <CardHeader>
-            <CardTitle>Period Comparison</CardTitle>
+            <CardTitle>Period comparison</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between py-3">

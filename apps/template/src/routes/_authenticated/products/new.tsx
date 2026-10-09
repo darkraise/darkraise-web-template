@@ -27,9 +27,9 @@ function ProductCreatePage() {
         breadcrumbs={[
           { label: t("Dashboard"), href: "/" },
           { label: t("Products"), href: "/products" },
-          { label: t("New Product") },
+          { label: t("New product") },
         ]}
-        title={t("New Product")}
+        title={t("New product")}
         description={t("Add a new product to your catalog")}
       />
       <ProductForm

@@ -138,12 +138,12 @@ function CustomerDetailPage() {
 
         <div className="grid gap-4 md:grid-cols-3">
           <KPICard
-            label={t("Lifetime Value")}
+            label={t("Lifetime value")}
             value={`$${customer.totalSpent.toLocaleString(uiLocale.locale)}`}
           />
-          <KPICard label={t("Total Orders")} value={customer.totalOrders} />
+          <KPICard label={t("Total orders")} value={customer.totalOrders} />
           <KPICard
-            label={t("Average Order Value")}
+            label={t("Average order value")}
             value={`$${avgOrderValue.toLocaleString(uiLocale.locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
           />
         </div>
@@ -164,7 +164,7 @@ function CustomerDetailPage() {
           <TabsContent value="profile" className="mt-4">
             <Card>
               <CardHeader>
-                <CardTitle>{t("Contact Information")}</CardTitle>
+                <CardTitle>{t("Contact information")}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div>
@@ -180,7 +180,7 @@ function CustomerDetailPage() {
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium">{t("Member Since")}</p>
+                  <p className="text-sm font-medium">{t("Member since")}</p>
                   <p className="text-muted-foreground text-sm">
                     {new Date(customer.createdAt).toLocaleDateString(
                       uiLocale.locale,

@@ -71,14 +71,14 @@ function FullShowcaseForm() {
       className="space-y-6"
     >
       <FormSection
-        title="Basic Info"
+        title="Basic info"
         description="Personal details with inline validation."
       >
         <form.Field name="name">
           {(field) => (
             <TextField
               {...fieldProps<string>(field)}
-              label="Full Name"
+              label="Full name"
               placeholder="Jane Doe"
             />
           )}
@@ -186,7 +186,7 @@ function ConditionalFieldsExample() {
     <div className="space-y-4">
       <SelectField
         name="accountType"
-        label="Account Type"
+        label="Account type"
         value={accountType}
         onChange={(v) => setAccountType(v as "personal" | "business")}
         options={[
@@ -198,7 +198,7 @@ function ConditionalFieldsExample() {
         <>
           <TextField
             name="companyName"
-            label="Company Name"
+            label="Company name"
             placeholder="Acme Corp"
             value={companyName}
             onChange={setCompanyName}
@@ -302,9 +302,9 @@ const form = useForm({
 })
 
 <form onSubmit={(e) => { e.preventDefault(); void form.handleSubmit() }}>
-  <FormSection title="Basic Info" description="Personal details">
+  <FormSection title="Basic info" description="Personal details">
     <form.Field name="name" validators={{ onBlur: schema.shape.name }}>
-      {(field) => <TextField field={field} label="Full Name" placeholder="Jane Doe" />}
+      {(field) => <TextField field={field} label="Full name" placeholder="Jane Doe" />}
     </form.Field>
     <form.Field name="role">
       {(field) => (
@@ -336,7 +336,7 @@ const form = useForm({
       </ShowcaseExample>
 
       <ShowcaseExample
-        title="Conditional Fields"
+        title="Conditional fields"
         code={`function ConditionalFieldsExample() {
   const [accountType, setAccountType] = useState<"personal" | "business">("personal")
   const [companyName, setCompanyName] = useState("")
@@ -346,7 +346,7 @@ const form = useForm({
     <div className="space-y-4">
       <SelectField
         name="accountType"
-        label="Account Type"
+        label="Account type"
         value={accountType}
         onChange={(v) => setAccountType(v as "personal" | "business")}
         options={[
@@ -358,7 +358,7 @@ const form = useForm({
         <>
           <TextField
             name="companyName"
-            label="Company Name"
+            label="Company name"
             placeholder="Acme Corp"
             value={companyName}
             onChange={setCompanyName}
@@ -380,7 +380,7 @@ const form = useForm({
       </ShowcaseExample>
 
       <ShowcaseExample
-        title="Inline Edit"
+        title="Inline edit"
         code={`function InlineEditExample() {
   const [value, setValue] = useState("Jane Doe")
 
@@ -408,7 +408,7 @@ const form = useForm({
       </ShowcaseExample>
 
       <ShowcaseExample
-        title="Dependent Selects"
+        title="Dependent selects"
         code={`const CITY_OPTIONS = {
   USA: ["New York", "Los Angeles", "Chicago"],
   Canada: ["Toronto", "Vancouver", "Montreal"],

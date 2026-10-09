@@ -182,18 +182,18 @@ function AccordionPage() {
         title='type="multiple" — any number of items open simultaneously'
         code={`<Accordion type="multiple" className="w-full">
   <AccordionItem value="item-1">
-    <AccordionTrigger>Section One</AccordionTrigger>
+    <AccordionTrigger>Section one</AccordionTrigger>
     <AccordionContent>Content for section one.</AccordionContent>
   </AccordionItem>
   <AccordionItem value="item-2">
-    <AccordionTrigger>Section Two</AccordionTrigger>
+    <AccordionTrigger>Section two</AccordionTrigger>
     <AccordionContent>Content for section two.</AccordionContent>
   </AccordionItem>
 </Accordion>`}
       >
         <Accordion type="multiple" className="w-full">
           <AccordionItem value="item-1">
-            <AccordionTrigger>Section One</AccordionTrigger>
+            <AccordionTrigger>Section one</AccordionTrigger>
             <AccordionContent>
               Content for section one. With{" "}
               <code className="font-mono text-xs">type="multiple"</code> you can
@@ -201,14 +201,14 @@ function AccordionPage() {
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="item-2">
-            <AccordionTrigger>Section Two</AccordionTrigger>
+            <AccordionTrigger>Section two</AccordionTrigger>
             <AccordionContent>
               Content for section two. Both section one and two can be open at
               the same time.
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="item-3">
-            <AccordionTrigger>Section Three</AccordionTrigger>
+            <AccordionTrigger>Section three</AccordionTrigger>
             <AccordionContent>
               Content for section three. All three panels can be expanded
               simultaneously.

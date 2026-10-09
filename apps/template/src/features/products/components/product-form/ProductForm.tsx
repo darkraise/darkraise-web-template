@@ -64,7 +64,7 @@ export function ProductForm({
       }}
       className="max-w-2xl space-y-8"
     >
-      <FormSection title={t("Basic Information")}>
+      <FormSection title={t("Basic information")}>
         <Card>
           <CardContent className="space-y-4 pt-6">
             <form.Field
@@ -72,7 +72,7 @@ export function ProductForm({
               children={(field) => (
                 <TextField
                   {...fieldProps<string>(field, t)}
-                  label={t("Product Name")}
+                  label={t("Product name")}
                   placeholder={t("Enter product name")}
                 />
               )}
@@ -124,7 +124,7 @@ export function ProductForm({
                 children={(field) => (
                   <NumberField
                     {...fieldProps<number | undefined>(field, t)}
-                    label={t("Compare-at Price")}
+                    label={t("Compare-at price")}
                     placeholder="0.00"
                     min={0}
                     step={0.01}
@@ -155,7 +155,7 @@ export function ProductForm({
                 children={(field) => (
                   <NumberField
                     {...fieldProps<number | undefined>(field, t)}
-                    label={t("Stock Quantity")}
+                    label={t("Stock quantity")}
                     placeholder="0"
                     min={0}
                     step={1}

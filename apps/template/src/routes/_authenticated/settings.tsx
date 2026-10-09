@@ -136,7 +136,7 @@ function GeneralSettings() {
       >
         <SettingsCard
           icon={<Store />}
-          title={t("Store Information")}
+          title={t("Store information")}
           action={
             <form.Subscribe
               selector={(state) => [state.canSubmit, state.isSubmitting]}
@@ -158,7 +158,7 @@ function GeneralSettings() {
             children={(field) => (
               <TextField
                 {...fieldProps<string>(field, t)}
-                label={t("Store Name")}
+                label={t("Store name")}
                 placeholder={t("Your store name")}
               />
             )}
@@ -168,7 +168,7 @@ function GeneralSettings() {
             children={(field) => (
               <TextareaField
                 {...fieldProps<string>(field, t)}
-                label={t("Store Description")}
+                label={t("Store description")}
                 placeholder={t("Describe your store")}
                 rows={3}
               />
@@ -258,7 +258,7 @@ function NotificationSettings() {
       >
         <SettingsCard
           icon={<Bell />}
-          title={t("Email Preferences")}
+          title={t("Email preferences")}
           action={
             <form.Subscribe
               selector={(state) => [state.canSubmit, state.isSubmitting]}
@@ -280,7 +280,7 @@ function NotificationSettings() {
             children={(field) => (
               <SwitchField
                 {...fieldProps<boolean>(field, t)}
-                label={t("Email Notifications")}
+                label={t("Email notifications")}
                 description={t(
                   "Receive email notifications for important events",
                 )}
@@ -292,7 +292,7 @@ function NotificationSettings() {
             children={(field) => (
               <SwitchField
                 {...fieldProps<boolean>(field, t)}
-                label={t("Order Alerts")}
+                label={t("Order alerts")}
                 description={t("Get notified when new orders are placed")}
               />
             )}
@@ -302,7 +302,7 @@ function NotificationSettings() {
             children={(field) => (
               <CheckboxField
                 {...fieldProps<boolean>(field, t)}
-                label={t("Marketing Emails")}
+                label={t("Marketing emails")}
                 description={t(
                   "Receive promotional emails and product updates",
                 )}
@@ -319,7 +319,7 @@ function NotificationSettings() {
               children={(field) => (
                 <RadioGroupField
                   {...fieldProps<string>(field, t)}
-                  label={t("Notification Frequency")}
+                  label={t("Notification frequency")}
                   options={[
                     { label: t("Instant"), value: "instant" },
                     { label: t("Daily digest"), value: "daily" },
@@ -353,7 +353,7 @@ function BillingSettings() {
     <div className="max-w-2xl space-y-6">
       <SettingsCard
         icon={<CreditCard />}
-        title={t("Pro Plan")}
+        title={t("Pro plan")}
         action={
           <Button variant="outline" size="sm">
             {t("Upgrade plan")}
@@ -361,7 +361,7 @@ function BillingSettings() {
         }
       >
         <StatValue
-          label={t("Monthly Price")}
+          label={t("Monthly price")}
           value="$49"
           badge={<CheckCircle2 className="text-success-text size-5" />}
         />
@@ -392,10 +392,10 @@ function BillingSettings() {
         />
       </SettingsCard>
 
-      <SettingsCard icon={<Wallet />} title={t("Billing Information")}>
+      <SettingsCard icon={<Wallet />} title={t("Billing information")}>
         <div className="space-y-4">
           <SettingRow
-            label={t("Billing Email")}
+            label={t("Billing email")}
             description={t("Invoices and receipts are sent here")}
             control={
               <span className="text-muted-foreground text-sm">
@@ -404,7 +404,7 @@ function BillingSettings() {
             }
           />
           <SettingRow
-            label={t("Payment Method")}
+            label={t("Payment method")}
             description={t("Charged automatically each cycle")}
             control={
               <span className="text-muted-foreground text-sm">
@@ -413,7 +413,7 @@ function BillingSettings() {
             }
           />
           <SettingRow
-            label={t("Billing Address")}
+            label={t("Billing address")}
             description={t("Used on every invoice")}
             control={
               <span className="text-muted-foreground max-w-56 text-right text-sm">

@@ -142,7 +142,7 @@ function CategoriesPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {editingCategory ? t("Edit Category") : t("New Category")}
+              {editingCategory ? t("Edit category") : t("New category")}
             </DialogTitle>
           </DialogHeader>
           <CategoryForm
@@ -260,7 +260,7 @@ function CategoryForm({
         children={(field) => (
           <NumberField
             {...fieldProps<number | undefined>(field, t)}
-            label={t("Product Count")}
+            label={t("Product count")}
             min={0}
             step={1}
           />

@@ -31,7 +31,7 @@ function OrdersPage() {
     exportToCsv(orders as unknown as Record<string, unknown>[], "orders", [
       {
         key: "orderNumber" as keyof Record<string, unknown>,
-        header: t("Order Number"),
+        header: t("Order number"),
       },
       { key: "total" as keyof Record<string, unknown>, header: t("Total") },
       { key: "status" as keyof Record<string, unknown>, header: t("Status") },

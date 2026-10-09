@@ -55,7 +55,7 @@ function CardsPage() {
         title="Default card"
         code={`<Card>
   <CardHeader>
-    <CardTitle>Card Title</CardTitle>
+    <CardTitle>Card title</CardTitle>
     <CardDescription>A short description of the card content.</CardDescription>
   </CardHeader>
   <CardContent>
@@ -71,7 +71,7 @@ function CardsPage() {
         <div className="max-w-sm">
           <Card>
             <CardHeader>
-              <CardTitle>Card Title</CardTitle>
+              <CardTitle>Card title</CardTitle>
               <CardDescription>
                 A short description of the card content.
               </CardDescription>
@@ -228,7 +228,7 @@ function CardsPage() {
         code={`<Card>
   <CardHeader>
     <div className="flex items-start justify-between">
-      <CardTitle>Product Feature</CardTitle>
+      <CardTitle>Product feature</CardTitle>
       <Badge variant="secondary">New</Badge>
     </div>
     <CardDescription>Released in the latest update.</CardDescription>
@@ -240,7 +240,7 @@ function CardsPage() {
           <Card>
             <CardHeader>
               <div className="flex items-start justify-between">
-                <CardTitle>Product Feature</CardTitle>
+                <CardTitle>Product feature</CardTitle>
                 <Badge variant="secondary">New</Badge>
               </div>
               <CardDescription>Released in the latest update.</CardDescription>
@@ -298,7 +298,7 @@ function CardsPage() {
         title="Stat summary"
         code={`<Card>
   <CardHeader>
-    <p className="text-xs text-muted-foreground">Total Revenue</p>
+    <p className="text-xs text-muted-foreground">Total revenue</p>
     <div className="flex items-center gap-3">
       <span className="text-3xl font-semibold">$45,231</span>
       <Badge className="gap-1 bg-success-subtle text-success-text">
@@ -316,7 +316,7 @@ function CardsPage() {
       >
         <Card className="max-w-sm">
           <CardHeader>
-            <p className="text-muted-foreground text-xs">Total Revenue</p>
+            <p className="text-muted-foreground text-xs">Total revenue</p>
             <div className="flex items-center gap-3">
               <span className="text-3xl font-semibold">$45,231</span>
               <Badge className="bg-success-subtle text-success-text gap-1">
@@ -534,7 +534,7 @@ function CardsPage() {
     <Image className="h-12 w-12 text-muted-foreground" />
   </div>
   <CardHeader>
-    <CardTitle>Beautiful Landscape</CardTitle>
+    <CardTitle>Beautiful landscape</CardTitle>
     <CardDescription>A stunning view of the mountains at dawn.</CardDescription>
   </CardHeader>
   <CardFooter className="gap-2">
@@ -548,7 +548,7 @@ function CardsPage() {
             <Image className="text-muted-foreground h-12 w-12" />
           </div>
           <CardHeader>
-            <CardTitle>Beautiful Landscape</CardTitle>
+            <CardTitle>Beautiful landscape</CardTitle>
             <CardDescription>
               A stunning view of the mountains at dawn.
             </CardDescription>

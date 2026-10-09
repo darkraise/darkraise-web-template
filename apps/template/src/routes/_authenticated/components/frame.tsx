@@ -320,7 +320,7 @@ function TailwindInFrameExample() {
         className="bg-background text-foreground flex h-full items-center justify-center p-6"
       >
         <div className="border-border bg-card rounded-lg border p-6 text-center shadow-sm">
-          <h3 className="text-base font-semibold">Inside the Frame</h3>
+          <h3 className="text-base font-semibold">Inside the frame</h3>
           <p className="text-muted-foreground mt-1 text-sm">
             Same design-system utilities, fully isolated document.
           </p>
@@ -563,7 +563,7 @@ function TailwindInFrameExample() {
     <Frame style={{ width: "100%", height: 280 }} head={parentStyles}>
       <div ref={setRoot} className="bg-background text-foreground flex h-full items-center justify-center p-6">
         <div className="border-border bg-card rounded-lg border p-6 shadow-sm">
-          <h3 className="font-semibold">Inside the Frame</h3>
+          <h3 className="font-semibold">Inside the frame</h3>
           <button className="bg-primary-fill text-primary-foreground rounded-md px-4 py-2">Action</button>
         </div>
       </div>
