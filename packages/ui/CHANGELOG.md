@@ -354,6 +354,7 @@ Breaking: `ToggleGroup` sizes to its content. `.dr-toggle-group` is `inline-flex
 - A `ContextMenu` reopened while its content is still mounted, during its exit animation or under `forceMount`, stays hidden until it is placed at the new pointer, and one opened through `open` after a right-click sits at its trigger. It used to show for a frame at the previous pointer, or stay there. A closing menu stays visible through its exit animation.
 - `Command` moves the active item to the first enabled visible item when the active one becomes disabled, and to none when every item is disabled. It used to stay on the disabled item until the item was filtered out.
 - `useListbox` clears its pending typeahead timer when it unmounts, as the menu hooks do.
+- A `Tour` that moves from a step without a target onto one with a target keeps its popover shown, centred, until the new target is measured, so focus stays in the popover. It used to hide the popover for that moment, which turned its focus trap off and sent focus back to the opener.
 
 Breaking: `.dr-surface`, its `--flat` modifier and its `dr-surface-{brand,cyan,success,warning,danger,info}` hue classes are removed, with the `--fog-05` … `--fog-50` tokens they alone gave values to. The `glass`, `glass-thin`, `glass-strong` and `card-surface` utilities are removed: outside `.dr-surface` they painted nothing. Replace one with `rounded-[var(--radius)]` and, if you relied on it, `transition-[background-color,color,border-color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-in-out)]`.
 

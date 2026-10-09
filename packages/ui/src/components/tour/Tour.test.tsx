@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest"
+import { afterEach, describe, expect, it, vi } from "vitest"
 import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import * as React from "react"
@@ -302,5 +302,133 @@ describe("Tour", () => {
     await waitFor(() =>
       expect(screen.getByRole("dialog").style.visibility).toBe(""),
     )
+  })
+})
+
+describe("Tour moving onto a targeted step", () => {
+  const INTRO_FIRST: TourStep[] = [
+    {
+      targetSelector: "[data-tour='missing']",
+      title: "Intro",
+      description: "Centred",
+    },
+    STEPS[1] as TourStep,
+  ]
+
+  it("keeps focus and visibility while the new target is measured", async () => {
+    const user = userEvent.setup()
+    function Wrapper() {
+      const [open, setOpen] = React.useState(false)
+      const [current, setCurrent] = React.useState(0)
+      return (
+        <>
+          <Targets />
+          <button type="button" onClick={() => setOpen(true)}>
+            Open
+          </button>
+          <Tour
+            open={open}
+            steps={INTRO_FIRST}
+            current={current}
+            onChange={setCurrent}
+            onClose={() => setOpen(false)}
+          />
+        </>
+      )
+    }
+    render(<Wrapper />)
+    const opener = screen.getByRole("button", { name: "Open" })
+    await user.click(opener)
+    const popover = screen.getByRole("dialog")
+    await waitFor(() => expect(popover).toHaveFocus())
+
+    const openerFocus = vi.fn()
+    opener.addEventListener("focus", openerFocus)
+    const visibility: string[] = []
+    const observer = new MutationObserver(() => {
+      visibility.push(popover.style.visibility)
+    })
+    observer.observe(popover, { attributes: true, attributeFilter: ["style"] })
+
+    await user.click(screen.getByRole("button", { name: /next/i }))
+    await screen.findByText("Step 2")
+    await waitFor(() => expect(popover.style.transform).toBe(""))
+    observer.disconnect()
+
+    expect(openerFocus).not.toHaveBeenCalled()
+    expect(visibility).not.toContain("hidden")
+    expect(popover.contains(document.activeElement)).toBe(true)
+  })
+})
+
+describe("Tour returning to a targeted step", () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  const GAP_IN_MIDDLE: TourStep[] = [
+    STEPS[0] as TourStep,
+    {
+      targetSelector: "[data-tour='missing']",
+      title: "Between",
+      description: "Centred",
+    },
+    STEPS[2] as TourStep,
+  ]
+
+  it("stays centred until the new target is measured", async () => {
+    const user = userEvent.setup()
+    function Wrapper() {
+      const [current, setCurrent] = React.useState(0)
+      return (
+        <>
+          <Targets />
+          <Tour
+            open
+            steps={GAP_IN_MIDDLE}
+            current={current}
+            onChange={setCurrent}
+            onClose={() => {}}
+          />
+        </>
+      )
+    }
+    const place = (selector: string, x: number, y: number) =>
+      vi
+        .spyOn(
+          document.querySelector(selector) as HTMLElement,
+          "getBoundingClientRect",
+        )
+        .mockReturnValue(DOMRect.fromRect({ x, y, width: 40, height: 20 }))
+    // jsdom's viewport has no size, so collision handling would pin both
+    // steps to the same edge.
+    const html = document.documentElement
+    vi.spyOn(html, "clientWidth", "get").mockReturnValue(1280)
+    vi.spyOn(html, "clientHeight", "get").mockReturnValue(800)
+    render(<Wrapper />)
+    place("[data-tour='one']", 100, 100)
+    place("[data-tour='three']", 300, 200)
+
+    const popover = await screen.findByRole("dialog")
+    await waitFor(() => expect(popover.style.left).not.toBe("0px"))
+    const first = { left: popover.style.left, top: popover.style.top }
+
+    await user.click(screen.getByRole("button", { name: /next/i }))
+    await waitFor(() => expect(popover.style.transform).not.toBe(""))
+
+    const anchored: { left: string; top: string }[] = []
+    const observer = new MutationObserver(() => {
+      if (popover.style.transform === "") {
+        anchored.push({ left: popover.style.left, top: popover.style.top })
+      }
+    })
+    observer.observe(popover, { attributes: true, attributeFilter: ["style"] })
+    await user.click(screen.getByRole("button", { name: /next/i }))
+    await screen.findByText("Step 3")
+    await waitFor(() => expect(popover.style.transform).toBe(""))
+    await waitFor(() => expect(popover.style.left).not.toBe(first.left))
+    observer.disconnect()
+
+    expect(anchored).not.toContainEqual(first)
   })
 })

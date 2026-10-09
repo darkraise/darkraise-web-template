@@ -47,6 +47,9 @@ function Tour({
 
   const [rect, setRect] = React.useState<Rect | null>(null)
   const [targetEl, setTargetEl] = React.useState<HTMLElement | null>(null)
+  // The selector last looked up, so a step is centred as targetless only once
+  // its lookup has run, not on the render before it.
+  const [lookedUp, setLookedUp] = React.useState<string | null>(null)
   // The popover sits 12px outside the spotlight ring, aligned with the
   // ring's start edge.
   const floating = useFloating({
@@ -55,7 +58,9 @@ function Tour({
     alignOffset: -spotlightPadding,
     collisionPadding: 16,
     strategy: "fixed",
-    open,
+    // A targetless step counts as closed, so the next target starts unmeasured
+    // instead of reusing the coordinates of the last one.
+    open: open && targetEl !== null,
   })
   const setReference = floating.refs.setReference
   React.useLayoutEffect(() => {
@@ -72,6 +77,7 @@ function Tour({
   React.useEffect(() => {
     if (!open || !step) return
     const target = document.querySelector<HTMLElement>(step.targetSelector)
+    setLookedUp(step.targetSelector)
     if (!target) {
       setRect(null)
       setTargetEl(null)
@@ -102,8 +108,16 @@ function Tour({
 
   // The popover mounts at the viewport origin before Floating UI measures the
   // target, so it stays hidden until positioned. A step whose target is
-  // missing is centred in the viewport and has nothing to wait for.
-  const shown = !targetEl || floating.isPositioned
+  // missing is centred in the viewport and has nothing to wait for. Once
+  // shown, the popover stays shown until the Tour closes: hiding it again
+  // would drop focus and turn the focus trap off, so a step whose target is
+  // not measured yet stays centred until it is.
+  const positioned = targetEl !== null && floating.isPositioned
+  const targetless = targetEl === null && lookedUp === step?.targetSelector
+  const [shownOnce, setShownOnce] = React.useState(false)
+  const shown = targetless || positioned || shownOnce
+  if (open && shown && !shownOnce) setShownOnce(true)
+  if (!open && shownOnce) setShownOnce(false)
 
   // Tour popover is modal in intent — the backdrop blocks pointer events
   // on the page beneath, but without a focus trap a keyboard user can Tab
@@ -137,19 +151,21 @@ function Tour({
       )`
     : "none"
 
-  const popoverStyle: React.CSSProperties = targetEl
-    ? {
-        position: floating.strategy,
-        top: Math.round(floating.y ?? 0),
-        left: Math.round(floating.x ?? 0),
-        ...(!shown && { visibility: "hidden" }),
-      }
-    : {
-        position: "fixed",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-      }
+  const popoverStyle: React.CSSProperties = {
+    ...(positioned || (targetEl && !shown)
+      ? {
+          position: floating.strategy,
+          top: Math.round(floating.y ?? 0),
+          left: Math.round(floating.x ?? 0),
+        }
+      : {
+          position: "fixed",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+        }),
+    ...(!shown && { visibility: "hidden" }),
+  }
 
   return (
     <Portal>
