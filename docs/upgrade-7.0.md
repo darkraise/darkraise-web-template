@@ -111,6 +111,8 @@ The `outline` variant of `Listbox` and `TreeView` now rings the selected row ins
 
 `useListbox` returns `focusedId` and `setFocusedId(id)` instead of `focusedIndex` and `setFocusedIndex(index)`. Where you read the focused index, look the item up instead: `items().find((item) => item.id === focusedId)`. Where you set it, pass the item's `id`, or `null` to clear focus.
 
+The cleanup that `useListbox`'s `registerItem` returns now removes the item at once and moves focus off it if it was focused. A custom item that returned that cleanup from an effect which re-runs when its fields change should instead unregister with `unregisterItem(id)` in a separate effect keyed on its `id`, and pass its node as `element` so `items()` follows document order.
+
 `TreeView` rows indent through `--tree-depth`; a `style` prop that set `paddingInlineStart` on a row to indent it should set `--tree-view-indent` on the tree instead. Remove spacer elements added to line leaves up with branches. A tree of leaves only now indents each leaf by an indicator's width plus its gap, even with no branch beside it.
 
 `TagsInputClearTrigger` carries `.dr-tags-input-clear-trigger` instead of `.dr-tags-input-item-delete-trigger`. Move any rule that styled the clear trigger through the delete trigger's class to the new class; rules on `.dr-tags-input-item-delete-trigger` now reach only the delete buttons inside tags.

@@ -97,7 +97,7 @@ function indexOf(list: MenuItemDescriptor[], id: string | null): number {
   return id === null ? -1 : list.findIndex((it) => it.id === id)
 }
 
-function compareNodeOrder(a: Element, b: Element): number {
+export function compareNodeOrder(a: Element, b: Element): number {
   if (a === b) return 0
   const cmp = a.compareDocumentPosition(b)
   if (cmp & Node.DOCUMENT_POSITION_FOLLOWING) return -1

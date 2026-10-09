@@ -92,22 +92,25 @@ function ListboxItem({
   ...rest
 }: ListboxItemProps) {
   const ctx = useListboxContext("ListboxItem")
-  const { registerItem } = ctx
+  const { registerItem, unregisterItem } = ctx
   const id = useId()
   const localRef = React.useRef<HTMLDivElement | null>(null)
 
+  // Unregistering is its own effect so a field change replaces the record in
+  // place instead of removing the item, which would move focus off it.
+  React.useLayoutEffect(() => () => unregisterItem(id), [unregisterItem, id])
+
   // `children` is a dependency because, without `textValue`, typeahead
   // matches the rendered text.
-  React.useLayoutEffect(
-    () =>
-      registerItem({
-        id,
-        value,
-        disabled,
-        textValue: textValue ?? localRef.current?.textContent ?? "",
-      }),
-    [registerItem, id, value, disabled, textValue, children],
-  )
+  React.useLayoutEffect(() => {
+    registerItem({
+      id,
+      value,
+      disabled,
+      textValue: textValue ?? localRef.current?.textContent ?? "",
+      element: localRef.current,
+    })
+  }, [registerItem, id, value, disabled, textValue, children])
 
   const isFocused = ctx.focusedId === id
   const selected = ctx.isSelected(value)

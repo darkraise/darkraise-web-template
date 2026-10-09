@@ -1,11 +1,12 @@
 import { describe, expect, it, vi } from "vitest"
-import { fireEvent, render, screen } from "@testing-library/react"
+import { fireEvent, render, renderHook, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import * as React from "react"
 import { readFileSync } from "node:fs"
 import { dirname, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 import { Listbox, ListboxItem } from "./Listbox"
+import { useListbox } from "./useListbox"
 import { stripCssComments } from "../../test/strip-css-comments"
 
 describe("Listbox single mode", () => {
@@ -332,5 +333,118 @@ describe("Listbox focus tracking", () => {
     screen.getByRole("listbox").focus()
     await user.keyboard("m")
     expect(activeOption()).toHaveTextContent("Mango")
+  })
+})
+
+describe("Listbox registry", () => {
+  function Fruits({
+    names,
+    textValues = {},
+  }: {
+    names: string[]
+    textValues?: Record<string, string>
+  }) {
+    return (
+      <Listbox aria-label="Fruit">
+        {names.map((name) => (
+          <ListboxItem
+            key={name}
+            value={name.toLowerCase()}
+            textValue={textValues[name]}
+          >
+            {name}
+          </ListboxItem>
+        ))}
+      </Listbox>
+    )
+  }
+
+  function activeId() {
+    return screen.getByRole("listbox").getAttribute("aria-activedescendant")
+  }
+
+  function optionId(name: string) {
+    return screen.getByRole("option", { name }).id
+  }
+
+  it("reaches an item mounted between two others in document order", async () => {
+    const user = userEvent.setup()
+    const { rerender } = render(<Fruits names={["Apple", "Cherry"]} />)
+    rerender(<Fruits names={["Apple", "Banana", "Cherry"]} />)
+    screen.getByRole("listbox").focus()
+    await user.keyboard("{Home}{ArrowDown}")
+    expect(activeId()).toBe(optionId("Banana"))
+    await user.keyboard("{ArrowDown}")
+    expect(activeId()).toBe(optionId("Cherry"))
+  })
+
+  it("hands focus to the item that takes a removed focused item's position", async () => {
+    const user = userEvent.setup()
+    const { rerender } = render(
+      <Fruits names={["Apple", "Banana", "Cherry"]} />,
+    )
+    const cherry = optionId("Cherry")
+    screen.getByRole("listbox").focus()
+    await user.keyboard("{Home}{ArrowDown}")
+    expect(activeId()).toBe(optionId("Banana"))
+
+    rerender(<Fruits names={["Apple", "Cherry"]} />)
+    expect(activeId()).toBe(cherry)
+  })
+
+  it("falls back to the last item, then to no focus, as focused items unmount", async () => {
+    const user = userEvent.setup()
+    const { rerender } = render(<Fruits names={["Apple", "Banana"]} />)
+    const apple = optionId("Apple")
+    screen.getByRole("listbox").focus()
+    await user.keyboard("{End}")
+    expect(activeId()).toBe(optionId("Banana"))
+
+    rerender(<Fruits names={["Apple"]} />)
+    expect(activeId()).toBe(apple)
+
+    rerender(<Fruits names={[]} />)
+    expect(screen.getByRole("listbox")).not.toHaveAttribute(
+      "aria-activedescendant",
+    )
+  })
+
+  it("keeps an item focused while its textValue changes", async () => {
+    const user = userEvent.setup()
+    const names = ["Apple", "Banana", "Cherry"]
+    const { rerender } = render(
+      <Fruits names={names} textValues={{ Banana: "banana" }} />,
+    )
+    const banana = optionId("Banana")
+    screen.getByRole("listbox").focus()
+    await user.keyboard("{Home}{ArrowDown}")
+    expect(activeId()).toBe(banana)
+
+    rerender(<Fruits names={names} textValues={{ Banana: "plantain" }} />)
+    expect(activeId()).toBe(banana)
+    await user.keyboard("{ArrowDown}")
+    expect(activeId()).toBe(optionId("Cherry"))
+  })
+
+  it("sorts by document position only while every record has an element", () => {
+    const { result } = renderHook(() => useListbox({}))
+    const first = document.createElement("div")
+    const second = document.createElement("div")
+    document.body.append(first, second)
+    const record = (id: string, element?: HTMLElement) => ({
+      id,
+      value: id,
+      disabled: false,
+      textValue: id,
+      element,
+    })
+    result.current.registerItem(record("b", second))
+    result.current.registerItem(record("a", first))
+    expect(result.current.items().map((it) => it.id)).toEqual(["a", "b"])
+
+    result.current.registerItem(record("c"))
+    expect(result.current.items().map((it) => it.id)).toEqual(["b", "a", "c"])
+    first.remove()
+    second.remove()
   })
 })
