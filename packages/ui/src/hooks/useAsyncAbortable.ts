@@ -1,4 +1,4 @@
-import { useMemo, useRef } from "react"
+import { useMemo, useRef, useState } from "react"
 import type { AsyncState, UseAsyncActions, UseAsyncMeta } from "./useAsync"
 import { useAsync } from "./useAsync"
 import { useSyncedRef } from "./useSyncedRef"
@@ -48,7 +48,8 @@ export function useAsyncAbortable<Result, Args extends unknown[] = unknown[]>(
   UseAsyncAbortableActions<Result, Args>,
   UseAsyncAbortableMeta<Result, Args>,
 ] {
-  const abortController = useRef<AbortController>(undefined)
+  const abortControllerRef = useRef<AbortController>(undefined)
+  const [abortController, setAbortController] = useState<AbortController>()
   // Sync the caller's `asyncFn` into a ref so each invocation uses the
   // latest version. Without this, `useAsync` captures `fn` once (via its
   // own internal ref) at first render and never picks up later prop
@@ -57,14 +58,16 @@ export function useAsyncAbortable<Result, Args extends unknown[] = unknown[]>(
   const asyncFnRef = useSyncedRef(asyncFn)
 
   const fn = async (...args: Args): Promise<Result> => {
-    abortController.current?.abort()
+    abortControllerRef.current?.abort()
 
     const ac = new AbortController()
-    abortController.current = ac
+    abortControllerRef.current = ac
+    setAbortController(ac)
 
     return asyncFnRef.current(ac.signal, ...args).finally(() => {
-      if (abortController.current === ac) {
-        abortController.current = undefined
+      if (abortControllerRef.current === ac) {
+        abortControllerRef.current = undefined
+        setAbortController(undefined)
       }
     })
   }
@@ -83,7 +86,7 @@ export function useAsyncAbortable<Result, Args extends unknown[] = unknown[]>(
           asyncActions.reset()
         },
         abort() {
-          abortController.current?.abort()
+          abortControllerRef.current?.abort()
         },
       }
 
@@ -93,6 +96,6 @@ export function useAsyncAbortable<Result, Args extends unknown[] = unknown[]>(
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []),
-    { ...asyncMeta, abortController: abortController.current },
+    { ...asyncMeta, abortController },
   ]
 }

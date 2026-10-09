@@ -65,14 +65,20 @@ export function useAsync<Result, Args extends unknown[] = unknown[]>(
     error: undefined,
     result: initialValue,
   })
+  const [meta, setMeta] = useState<UseAsyncMeta<Result, Args>>({
+    promise: undefined,
+    lastArgs: undefined,
+  })
   const promiseRef = useRef<Promise<Result>>(undefined)
-  const argsRef = useRef<Args>(undefined)
 
   const methods = useSyncedRef({
     async execute(...params: Args) {
-      argsRef.current = params
+      // The arguments are recorded before the call, so they are reported even
+      // when `asyncFn` throws instead of returning a promise.
+      setMeta((previous) => ({ ...previous, lastArgs: params }))
       const promise = asyncFn(...params)
       promiseRef.current = promise
+      setMeta({ promise, lastArgs: params })
 
       setState((s) => ({ ...s, status: "loading" }))
 
@@ -107,8 +113,8 @@ export function useAsync<Result, Args extends unknown[] = unknown[]>(
         error: undefined,
         result: initialValue,
       })
+      setMeta({ promise: undefined, lastArgs: undefined })
       promiseRef.current = undefined
-      argsRef.current = undefined
     },
   })
 
@@ -124,6 +130,6 @@ export function useAsync<Result, Args extends unknown[] = unknown[]>(
       // eslint-disable-next-line react-hooks/exhaustive-deps
       [],
     ),
-    { promise: promiseRef.current, lastArgs: argsRef.current },
+    meta,
   ]
 }
