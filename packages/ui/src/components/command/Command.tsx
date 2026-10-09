@@ -142,16 +142,18 @@ function Command({
 
   const [activeId, setActiveId] = React.useState<string | null>(null)
 
-  // Keep active item valid as visible set changes.
+  // Keep the active item visible and enabled as items change.
   React.useEffect(() => {
     const list = visibleItems
     if (list.length === 0) {
       if (activeId !== null) setActiveId(null)
       return
     }
-    if (!activeId || !list.find((it) => it.id === activeId)) {
+    const active = list.find((it) => it.id === activeId)
+    if (!active || active.disabled) {
       const first = list.find((it) => !it.disabled)
-      setActiveId(first?.id ?? null)
+      const next = first?.id ?? null
+      if (next !== activeId) setActiveId(next)
     }
   }, [activeId, visibleItems])
 

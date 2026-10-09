@@ -179,12 +179,10 @@ describe("Command keyboard navigation", () => {
   function Fruits({
     disabledAt = [],
     loop,
-    onItemClick,
     onSelect,
   }: {
     disabledAt?: number[]
     loop?: boolean
-    onItemClick?: () => void
     onSelect?: (value: string) => void
   }) {
     return (
@@ -196,7 +194,6 @@ describe("Command keyboard navigation", () => {
               key={name}
               value={name.toLowerCase()}
               disabled={disabledAt.includes(n)}
-              onClick={onItemClick}
               onSelect={onSelect}
             >
               {name}
@@ -274,23 +271,18 @@ describe("Command keyboard navigation", () => {
     }
   })
 
-  it("ignores Enter while the active item is disabled", async () => {
+  it("never confirms an active item that becomes disabled", async () => {
     const user = userEvent.setup()
-    const onItemClick = vi.fn()
     const onSelect = vi.fn()
-    const { rerender } = render(
-      <Fruits onItemClick={onItemClick} onSelect={onSelect} />,
-    )
+    const { rerender } = render(<Fruits onSelect={onSelect} />)
     await user.click(screen.getByRole("combobox"))
     await user.keyboard("{ArrowDown}")
     expect(activeText()).toBe("Banana")
-    rerender(
-      <Fruits disabledAt={[1]} onItemClick={onItemClick} onSelect={onSelect} />,
-    )
-    expect(activeText()).toBe("Banana")
+    rerender(<Fruits disabledAt={[1]} onSelect={onSelect} />)
+    expect(activeText()).toBe("Apple")
     await user.keyboard("{Enter}")
-    expect(onItemClick).not.toHaveBeenCalled()
-    expect(onSelect).not.toHaveBeenCalled()
+    expect(onSelect).toHaveBeenCalledTimes(1)
+    expect(onSelect).toHaveBeenCalledWith("apple")
   })
 
   it("wraps at both ends by default", async () => {
@@ -374,6 +366,33 @@ describe("Command item registration", () => {
     expect(activeOption()).toHaveTextContent("Banana")
     await user.keyboard("{End}a")
     expect(activeOption()).toHaveTextContent("Banana")
+  })
+
+  it("moves off the active item when it becomes disabled", () => {
+    function Pair({ disabled }: { disabled: "none" | "apple" | "both" }) {
+      return (
+        <Command>
+          <CommandInput aria-label="Search" />
+          <CommandList>
+            <CommandItem value="apple" disabled={disabled !== "none"}>
+              Apple
+            </CommandItem>
+            <CommandItem value="banana" disabled={disabled === "both"}>
+              Banana
+            </CommandItem>
+          </CommandList>
+        </Command>
+      )
+    }
+
+    const { rerender } = render(<Pair disabled="none" />)
+    expect(activeOption()).toHaveTextContent("Apple")
+
+    rerender(<Pair disabled="apple" />)
+    expect(activeOption()).toHaveTextContent("Banana")
+
+    rerender(<Pair disabled="both" />)
+    expect(activeOption()).toBeNull()
   })
 
   it("filters an item without a value by its current text", async () => {
