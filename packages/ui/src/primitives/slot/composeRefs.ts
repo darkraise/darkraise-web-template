@@ -27,6 +27,6 @@ export function composeRefs<T>(...refs: Array<Ref<T>>): React.RefCallback<T> {
 export function useComposedRefs<T>(
   ...refs: Array<React.Ref<T> | undefined>
 ): React.RefCallback<T> {
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo -- the refs are the memo's dependencies, compared one by one; a variable number of them cannot be written as an array literal.
   return React.useMemo(() => composeRefs(...refs), refs)
 }
