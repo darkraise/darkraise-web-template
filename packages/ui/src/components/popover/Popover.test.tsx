@@ -9,7 +9,14 @@ import {
   PopoverContent,
   PopoverClose,
   PopoverArrow,
+  PopoverPortal,
 } from "@components/popover"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuPortal,
+  DropdownMenuTrigger,
+} from "@components/dropdown-menu"
 
 function Basic({ onChange }: { onChange?: (open: boolean) => void } = {}) {
   return (
@@ -262,5 +269,55 @@ describe("PopoverArrow", () => {
     expect(arrow.style.color).toBe("red")
     expect(arrow.style.position).toBe("absolute")
     await waitFor(() => expect(arrow.style.left).toMatch(/^-?\d+(\.\d+)?px$/))
+  })
+})
+
+describe("Popover portal forceMount", () => {
+  function Pop({ forceMount }: { forceMount?: boolean }) {
+    return (
+      <Popover>
+        <PopoverTrigger>Toggle</PopoverTrigger>
+        <PopoverPortal forceMount={forceMount}>
+          <PopoverContent data-testid="outer">
+            <Popover>
+              <PopoverTrigger>Inner toggle</PopoverTrigger>
+              <PopoverContent data-testid="inner">Inner</PopoverContent>
+            </Popover>
+          </PopoverContent>
+        </PopoverPortal>
+      </Popover>
+    )
+  }
+
+  it("keeps the closed content mounted, but not a nested popover's", () => {
+    render(<Pop forceMount />)
+    expect(screen.getByTestId("outer")).toHaveAttribute("data-state", "closed")
+    expect(screen.queryByTestId("inner")).toBeNull()
+  })
+
+  it("unmounts the closed content without forceMount", () => {
+    render(<Pop />)
+    expect(screen.queryByTestId("outer")).toBeNull()
+  })
+
+  it("is not forced by a dropdown menu portal around it", () => {
+    render(
+      <DropdownMenu>
+        <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+        <DropdownMenuPortal forceMount>
+          <DropdownMenuContent>
+            <Popover>
+              <PopoverTrigger>Toggle</PopoverTrigger>
+              <PopoverContent data-testid="popover">Popover</PopoverContent>
+            </Popover>
+          </DropdownMenuContent>
+        </DropdownMenuPortal>
+      </DropdownMenu>,
+    )
+    expect(screen.getByRole("menu", { hidden: true })).toHaveAttribute(
+      "data-state",
+      "closed",
+    )
+    expect(screen.queryByTestId("popover")).toBeNull()
   })
 })

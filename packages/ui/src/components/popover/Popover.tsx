@@ -26,7 +26,13 @@ import {
   usePopoverContext,
   type PopoverContextValue,
 } from "./Popover.context"
+import { createForceMountScope } from "@components/_internal/forceMountScope"
 import "./popover.css"
+
+const {
+  ForceMountProvider: PopoverForceMount,
+  useResolvedForceMount: usePopoverForceMount,
+} = createForceMountScope()
 
 interface PopoverProps {
   open?: boolean
@@ -58,7 +64,9 @@ function Popover({
   )
 
   return (
-    <PopoverContext.Provider value={ctx}>{children}</PopoverContext.Provider>
+    <PopoverContext.Provider value={ctx}>
+      <PopoverForceMount>{children}</PopoverForceMount>
+    </PopoverContext.Provider>
   )
 }
 
@@ -129,8 +137,11 @@ function PopoverPortal({
   children,
 }: PopoverPortalProps) {
   void usePopoverContext("PopoverPortal")
-  void forceMount
-  return <Portal container={container}>{children}</Portal>
+  return (
+    <PopoverForceMount forceMount={forceMount}>
+      <Portal container={container}>{children}</Portal>
+    </PopoverForceMount>
+  )
 }
 
 interface PopoverContentProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -348,8 +359,12 @@ function PopoverFloatingProvider({
   )
 }
 
-function PopoverContent({ forceMount, ...props }: PopoverContentProps) {
+function PopoverContent({
+  forceMount: forceMountProp,
+  ...props
+}: PopoverContentProps) {
   const ctx = usePopoverContext("PopoverContent")
+  const forceMount = usePopoverForceMount(forceMountProp)
   return (
     <PopoverPortal forceMount={forceMount}>
       <Presence present={ctx.open} forceMount={forceMount}>

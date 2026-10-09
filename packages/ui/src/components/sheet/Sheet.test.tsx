@@ -1,6 +1,12 @@
 import { render, screen } from "@testing-library/react"
 import { describe, it, expect } from "vitest"
-import { Sheet, SheetBody, SheetContent } from "@components/sheet"
+import {
+  Sheet,
+  SheetBody,
+  SheetContent,
+  SheetPortal,
+  SheetTitle,
+} from "@components/sheet"
 
 describe("Sheet", () => {
   it("forwards surface to the content surface", () => {
@@ -45,5 +51,32 @@ describe("Sheet", () => {
       </Sheet>,
     )
     expect(screen.getByRole("dialog")).toHaveAttribute("data-side", "end")
+  })
+})
+
+describe("Sheet portal forceMount", () => {
+  function Panel({ forceMount }: { forceMount?: boolean }) {
+    return (
+      <Sheet>
+        <SheetPortal forceMount={forceMount}>
+          <SheetContent>
+            <SheetTitle>Panel</SheetTitle>
+          </SheetContent>
+        </SheetPortal>
+      </Sheet>
+    )
+  }
+
+  it("keeps the closed content mounted", () => {
+    render(<Panel forceMount />)
+    expect(screen.getByRole("dialog", { hidden: true })).toHaveAttribute(
+      "data-state",
+      "closed",
+    )
+  })
+
+  it("unmounts the closed content without forceMount", () => {
+    render(<Panel />)
+    expect(screen.queryByRole("dialog", { hidden: true })).toBeNull()
   })
 })

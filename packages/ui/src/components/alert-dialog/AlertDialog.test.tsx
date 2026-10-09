@@ -9,6 +9,7 @@ import {
   AlertDialogDescription,
   AlertDialogTitle,
   AlertDialogTrigger,
+  AlertDialogPortal,
 } from "@components/alert-dialog"
 
 function Basic({ onOpenChange }: { onOpenChange?: (open: boolean) => void }) {
@@ -130,5 +131,32 @@ describe("AlertDialog", () => {
       "data-surface-fill",
       "card",
     )
+  })
+})
+
+describe("AlertDialog portal forceMount", () => {
+  function Confirm({ forceMount }: { forceMount?: boolean }) {
+    return (
+      <AlertDialog>
+        <AlertDialogPortal forceMount={forceMount}>
+          <AlertDialogContent>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+          </AlertDialogContent>
+        </AlertDialogPortal>
+      </AlertDialog>
+    )
+  }
+
+  it("keeps the closed content mounted", () => {
+    render(<Confirm forceMount />)
+    expect(screen.getByRole("alertdialog", { hidden: true })).toHaveAttribute(
+      "data-state",
+      "closed",
+    )
+  })
+
+  it("unmounts the closed content without forceMount", () => {
+    render(<Confirm />)
+    expect(screen.queryByRole("alertdialog", { hidden: true })).toBeNull()
   })
 })

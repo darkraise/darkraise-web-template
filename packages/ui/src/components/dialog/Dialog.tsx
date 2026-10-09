@@ -12,6 +12,7 @@ import { useDialog, type DialogRole, type UseDialogReturn } from "./useDialog"
 
 export type DialogSize = "sm" | "default" | "lg" | "xl" | "full"
 import { lockScroll, unlockScroll } from "./scrollLock"
+import { createForceMountScope } from "@components/_internal/forceMountScope"
 
 interface DialogContextValue extends UseDialogReturn {
   closeOnOutsidePointerDown: boolean
@@ -25,6 +26,11 @@ function useDialogContext(consumer: string): DialogContextValue {
   if (!ctx) throw new Error(`${consumer} must be used within <Dialog>`)
   return ctx
 }
+
+const {
+  ForceMountProvider: DialogForceMount,
+  useResolvedForceMount: useDialogForceMount,
+} = createForceMountScope()
 
 interface DialogProps {
   open?: boolean
@@ -61,7 +67,11 @@ function Dialog({
     [dialog, closeOnOutsidePointerDown, closeOnEscape],
   )
 
-  return <DialogContext.Provider value={ctx}>{children}</DialogContext.Provider>
+  return (
+    <DialogContext.Provider value={ctx}>
+      <DialogForceMount>{children}</DialogForceMount>
+    </DialogContext.Provider>
+  )
 }
 
 interface DialogTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -106,8 +116,11 @@ interface DialogPortalProps {
 
 function DialogPortal({ container, forceMount, children }: DialogPortalProps) {
   void useDialogContext("DialogPortal")
-  void forceMount
-  return <Portal container={container}>{children}</Portal>
+  return (
+    <DialogForceMount forceMount={forceMount}>
+      <Portal container={container}>{children}</Portal>
+    </DialogForceMount>
+  )
 }
 
 interface DialogOverlayProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -117,11 +130,12 @@ interface DialogOverlayProps extends React.HTMLAttributes<HTMLDivElement> {
 
 function DialogOverlay({
   className,
-  forceMount,
+  forceMount: forceMountProp,
   ref,
   ...props
 }: DialogOverlayProps) {
   const ctx = useDialogContext("DialogOverlay")
+  const forceMount = useDialogForceMount(forceMountProp)
   return (
     <Presence present={ctx.open} forceMount={forceMount}>
       <div
@@ -221,8 +235,12 @@ function DialogContentImpl({
   )
 }
 
-function DialogContent({ forceMount, ...props }: DialogContentProps) {
+function DialogContent({
+  forceMount: forceMountProp,
+  ...props
+}: DialogContentProps) {
   const ctx = useDialogContext("DialogContent")
+  const forceMount = useDialogForceMount(forceMountProp)
   return (
     <DialogPortal forceMount={forceMount}>
       <DialogOverlay forceMount={forceMount} />

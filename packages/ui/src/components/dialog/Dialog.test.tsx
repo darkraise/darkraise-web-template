@@ -10,6 +10,8 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogClose,
+  DialogOverlay,
+  DialogPortal,
 } from "@components/dialog"
 import {
   Select,
@@ -234,5 +236,44 @@ describe("overflow and sizing", () => {
     const body = screen.getByText("Long body")
     expect(body).toHaveClass("dr-dialog-body")
     expect(body.parentElement).toBe(screen.getByRole("dialog"))
+  })
+})
+
+describe("Dialog portal forceMount", () => {
+  function Modal({ forceMount }: { forceMount?: boolean }) {
+    return (
+      <Dialog>
+        <DialogTrigger>Open</DialogTrigger>
+        <DialogPortal forceMount={forceMount}>
+          <DialogOverlay data-testid="overlay" />
+          <DialogContent>
+            <DialogTitle>Outer</DialogTitle>
+            <Dialog>
+              <DialogContent data-testid="inner">
+                <DialogTitle>Inner</DialogTitle>
+              </DialogContent>
+            </Dialog>
+          </DialogContent>
+        </DialogPortal>
+      </Dialog>
+    )
+  }
+
+  it("keeps the closed content and overlay mounted, but not a nested dialog's", () => {
+    render(<Modal forceMount />)
+    const dialogs = screen.getAllByRole("dialog", { hidden: true })
+    expect(dialogs).toHaveLength(1)
+    expect(dialogs[0]).toHaveAttribute("data-state", "closed")
+    expect(screen.getByTestId("overlay")).toHaveAttribute(
+      "data-state",
+      "closed",
+    )
+    expect(screen.queryByTestId("inner")).toBeNull()
+  })
+
+  it("unmounts the closed content and overlay without forceMount", () => {
+    render(<Modal />)
+    expect(screen.queryByRole("dialog", { hidden: true })).toBeNull()
+    expect(screen.queryByTestId("overlay")).toBeNull()
   })
 })
