@@ -292,8 +292,9 @@ function ContextMenuContentImpl({
 
   // The root menu mounts at the viewport origin before the pointer point is
   // measured; shown there, a still pointer would hover its rows. A hidden
-  // element cannot take focus, so focus waits until the menu is shown.
-  const shown = ctx.isSubmenu || floating.isPositioned
+  // element cannot take focus, so focus waits until the menu is shown. A menu
+  // opened through its props has no point to wait for.
+  const shown = ctx.isSubmenu || !ctx.point || floating.isPositioned
 
   React.useEffect(() => {
     if (!ctx.open || !shown) return

@@ -53,6 +53,20 @@ describe("ContextMenu", () => {
     expect(onOpenChange).toHaveBeenCalledWith(true)
   })
 
+  it("shows a menu opened without a pointer", async () => {
+    render(
+      <ContextMenu defaultOpen>
+        <ContextMenuTrigger>Right-click here</ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuItem>Edit</ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>,
+    )
+    const menu = await screen.findByRole("menu")
+    expect(menu).not.toHaveStyle({ visibility: "hidden" })
+    await waitFor(() => expect(menu).toHaveFocus())
+  })
+
   it("escape closes the menu", async () => {
     const user = userEvent.setup()
     const onOpenChange = vi.fn()
