@@ -3,6 +3,7 @@ import { describe, it, expect } from "vitest"
 import { globSync, readdirSync, readFileSync } from "node:fs"
 import { fileURLToPath } from "node:url"
 import { dirname, relative, resolve } from "node:path"
+import { stripCssComments } from "../test/strip-css-comments"
 
 const thisDir = dirname(fileURLToPath(import.meta.url))
 const srcDir = resolve(thisDir, "..")
@@ -281,7 +282,7 @@ describe("density and font-size composition", () => {
   })
 
   it("raises the floor on coarse pointers, after :root inside @layer base", () => {
-    const css = themeCss.replace(/\/\*[\s\S]*?\*\//g, "")
+    const css = stripCssComments(themeCss)
     const closing = (text: string, open: number): number => {
       let depth = 0
       for (let i = open; i < text.length; i++) {

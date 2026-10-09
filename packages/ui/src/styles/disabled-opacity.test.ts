@@ -3,6 +3,7 @@ import { readFileSync, readdirSync } from "node:fs"
 import { join } from "node:path"
 import { splitToken } from "./interactive-classes"
 import { resolveFieldTrigger } from "../test/fieldTrigger"
+import { stripCssComments } from "../test/strip-css-comments"
 
 // Disabled controls faded by three amounts — 0.5 on most, 0.6 on compound
 // roots, 0.7 on the label and Editable — so two unavailable controls side by
@@ -450,7 +451,7 @@ function filesUnder(dir: string, pattern: RegExp): string[] {
 
 /** Comments blanked out, keeping every newline so line numbers still match. */
 function withoutComments(css: string): string {
-  return css.replace(/\/\*[\s\S]*?\*\//g, (c) => c.replace(/[^\n]/g, " "))
+  return stripCssComments(css, { keepNewlines: true })
 }
 
 interface Rule {

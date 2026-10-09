@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync, readdirSync } from "node:fs"
 import { join } from "node:path"
+import { stripCssComments } from "../test/strip-css-comments"
 
 // The kit had token axes for colour, density, radius, elevation, font size,
 // glow and surface intensity — and none for motion. Durations were written as
@@ -70,7 +71,7 @@ describe("motion ladder", () => {
   it("has no raw duration literal in a transition or animation", () => {
     const offenders: string[] = []
     for (const path of everyStylesheet()) {
-      const css = readFileSync(path, "utf8").replace(/\/\*[\s\S]*?\*\//g, "")
+      const css = stripCssComments(readFileSync(path, "utf8"))
       for (const decl of css.matchAll(
         /(?<![\w-])(?:transition|transition-duration|animation|animation-duration)\s*:\s*([^;]+);/g,
       )) {
@@ -92,7 +93,7 @@ describe("motion ladder", () => {
   it("uses no duration utilities, timed arbitrary animations or transition-all", () => {
     const offenders: string[] = []
     for (const path of everyStylesheet()) {
-      const css = readFileSync(path, "utf8").replace(/\/\*[\s\S]*?\*\//g, "")
+      const css = stripCssComments(readFileSync(path, "utf8"))
       for (const match of css.matchAll(
         /(?<![\w-])duration-\d+(?![\w-])|animate-\[[^\]]*\d+m?s[^\]]*\]|(?<![\w-])transition-all(?![\w-])|(?<![\w-])transition\s*:\s*all(?![\w-])/g,
       )) {
@@ -110,7 +111,7 @@ describe("motion ladder", () => {
     // is constant-rate on purpose.
     const offenders: string[] = []
     for (const path of everyStylesheet()) {
-      const css = readFileSync(path, "utf8").replace(/\/\*[\s\S]*?\*\//g, "")
+      const css = stripCssComments(readFileSync(path, "utf8"))
       for (const decl of css.matchAll(
         /(?<![\w-])(?:transition|transition-timing-function|animation|animation-timing-function)\s*:\s*([^;]+);/g,
       )) {

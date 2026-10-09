@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
+import { stripCssComments } from "../test/strip-css-comments"
 
 // jsdom never parses CSS, so the rules themselves are what this asserts.
 // Every `surface` value must redeclare the whole fill family: a fill left out
@@ -37,9 +38,7 @@ interface Rule {
 }
 
 function rules(): Rule[] {
-  const flat = source()
-    .replace(/\/\*[\s\S]*?\*\//g, "")
-    .replace(/\s+/g, " ")
+  const flat = stripCssComments(source()).replace(/\s+/g, " ")
   return [...flat.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map(
     ([, selector, body]) => {
       if (selector === undefined || body === undefined) {

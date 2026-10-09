@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from "node:fs"
 import { resolve } from "node:path"
 import { describe, it, expect } from "vitest"
 import { SHELL_STYLES } from "./types"
+import { stripCssComments } from "../test/strip-css-comments"
 
 // vitest runs with the package root as cwd; import.meta.url is not a file URL
 // under this config.
@@ -70,7 +71,7 @@ function block(source: string, opener: RegExp): string {
   return source.slice(start, end - 1).replace(/\s+/g, " ")
 }
 
-const uncommented = css.replace(/\/\*[\s\S]*?\*\//g, "")
+const uncommented = stripCssComments(css)
 
 const CHROME_TOKENS: Array<[string, string]> = [
   ["--chrome-rail-bg", "hsl(var(--surface-sidebar))"],
@@ -225,7 +226,7 @@ interface Rule {
 
 /** Innermost rules, whitespace collapsed; @layer and @media are transparent. */
 function rulesOf(source: string): Rule[] {
-  const text = source.replace(/\/\*[\s\S]*?\*\//g, "")
+  const text = stripCssComments(source)
   return [...text.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((m) => ({
     // Prettier wraps long :is() lists, leaving spaces inside the parens.
     selector: (m[1] as string)
@@ -340,10 +341,9 @@ describe("region chrome", () => {
 
 /** A layout stylesheet with its comments dropped. */
 function layoutCss(path: string): string {
-  return readFileSync(
-    resolve(process.cwd(), "src/layout", path),
-    "utf8",
-  ).replace(/\/\*[\s\S]*?\*\//g, "")
+  return stripCssComments(
+    readFileSync(resolve(process.cwd(), "src/layout", path), "utf8"),
+  )
 }
 
 const LAYOUT_SHEETS = [

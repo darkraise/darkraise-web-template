@@ -1,10 +1,12 @@
 import { readFileSync } from "node:fs"
 import { describe, expect, it } from "vitest"
+import { stripCssComments } from "../../test/strip-css-comments"
 
 // Paths resolve from the vitest project root, packages/ui. Comments go and
 // whitespace collapses, so prettier's line breaks never change a match.
-const CSS = readFileSync("src/layout/sidebar/sidebar-selection.css", "utf8")
-  .replace(/\/\*[\s\S]*?\*\//g, "")
+const CSS = stripCssComments(
+  readFileSync("src/layout/sidebar/sidebar-selection.css", "utf8"),
+)
   .replace(/\s+/g, " ")
   .replace(/\(\s/g, "(")
   .replace(/\s\)/g, ")")

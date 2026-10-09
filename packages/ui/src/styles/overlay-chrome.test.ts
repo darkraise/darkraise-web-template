@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { readdirSync, readFileSync } from "node:fs"
+import { stripCssComments } from "../test/strip-css-comments"
 
 // One rule for every floating surface and severity message: Alert, Banner
 // and Toast paint the opaque status pairs, toasts read the
@@ -21,7 +22,7 @@ function normalise(text: string): string {
 }
 
 function source(path: string): string {
-  return readFileSync(path, "utf8").replace(/\/\*[\s\S]*?\*\//g, "")
+  return stripCssComments(readFileSync(path, "utf8"))
 }
 
 /** Innermost rules; wrappers such as @layer and @media are transparent. */

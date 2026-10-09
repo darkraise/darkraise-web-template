@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { globSync, readFileSync } from "node:fs"
+import { stripCssComments } from "../test/strip-css-comments"
 
 // Lightning CSS treats `backdrop-filter` and `-webkit-backdrop-filter` as one
 // prefixed group. When the UNPREFIXED declaration comes first it collapses the
@@ -17,7 +18,7 @@ import { globSync, readFileSync } from "node:fs"
  * are never read as adjacent.
  */
 function declaredProperties(css: string): string[] {
-  const withoutComments = css.replace(/\/\*[\s\S]*?\*\//g, "")
+  const withoutComments = stripCssComments(css)
   return [
     ...withoutComments.matchAll(/(?:(^|[;{}])\s*(-?[\w-]+)\s*:)|(\})/g),
   ].map((match) => {

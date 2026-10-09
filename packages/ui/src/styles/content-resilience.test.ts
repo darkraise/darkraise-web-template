@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
+import { stripCssComments } from "../test/strip-css-comments"
 
 // Two failure modes that only show up with real content in a real app:
 //
@@ -41,7 +42,7 @@ describe("long-token wrapping", () => {
   it("does not reach for word-break, which would chop ordinary prose", () => {
     // Comments stripped first: the explanation above the rule names the thing
     // it is avoiding, and matching that would be a false positive.
-    const declarations = theme.replace(/\/\*[\s\S]*?\*\//g, "")
+    const declarations = stripCssComments(theme)
     expect(declarations).not.toContain("word-break: break-all")
   })
 })

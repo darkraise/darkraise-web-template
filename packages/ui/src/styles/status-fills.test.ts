@@ -1,10 +1,9 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
+import { stripCssComments } from "../test/strip-css-comments"
 
 const read = (path: string) =>
-  readFileSync(path, "utf8")
-    .replace(/\/\*[\s\S]*?\*\//g, "")
-    .replace(/\s+/g, " ")
+  stripCssComments(readFileSync(path, "utf8")).replace(/\s+/g, " ")
 
 describe("destructive fills use the solid pair", () => {
   it("destructive button", () => {

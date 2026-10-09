@@ -6,6 +6,7 @@ import {
   finalTokens,
   reachableCombos,
 } from "../test/contrast-matrix"
+import { stripCssComments } from "../test/strip-css-comments"
 
 // Fills are solved to a 4.5:1 label at rest, so any hover that moves the fill
 // toward its label (a translucent fill letting a light page through, or a wash
@@ -74,7 +75,7 @@ function componentStylesheets(): Array<[string, string]> {
     })
   return walk("src/components").map((path) => [
     path,
-    readFileSync(path, "utf8").replace(/\/\*[\s\S]*?\*\//g, ""),
+    stripCssComments(readFileSync(path, "utf8")),
   ])
 }
 

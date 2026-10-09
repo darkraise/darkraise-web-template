@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync, readdirSync } from "node:fs"
 import { join } from "node:path"
+import { stripCssComments } from "../test/strip-css-comments"
 
 // jsdom never parses CSS, so the rules themselves are what this asserts.
 //
@@ -17,8 +18,7 @@ import { join } from "node:path"
 // Timing is deliberately asymmetric: instant in, short fade out.
 function flat(path: string): string {
   // Prettier wraps long selectors inside :not( … ); undo that too.
-  return readFileSync(path, "utf8")
-    .replace(/\/\*[\s\S]*?\*\//g, "")
+  return stripCssComments(readFileSync(path, "utf8"))
     .replace(/\s+/g, " ")
     .replace(/\(\s+/g, "(")
     .replace(/\s+\)/g, ")")

@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
 import { GLASS_BLURS, GLASS_OPACITIES } from "@theme/types"
+import { stripCssComments } from "../../../test/strip-css-comments"
 
 // jsdom never parses CSS, so the stylesheet text is what this asserts. The
 // fog alphas and edge speculars are pinned value by value: nothing else
@@ -24,7 +25,7 @@ function normalise(text: string): string {
 
 /** Innermost rules; the media query wrapper is transparent. */
 const RULES: Rule[] = [
-  ...GLASS.replace(/\/\*[\s\S]*?\*\//g, "").matchAll(/([^{}]+)\{([^{}]*)\}/g),
+  ...stripCssComments(GLASS).matchAll(/([^{}]+)\{([^{}]*)\}/g),
 ].map((match) => ({
   selector: normalise(match[1] as string),
   body: normalise(match[2] as string),

@@ -7,6 +7,7 @@ import {
   splitToken,
   type Rule,
 } from "./interactive-classes"
+import { stripCssComments } from "../test/strip-css-comments"
 
 // Forced colours drop backgrounds and box-shadows, so a control drawn by its
 // fill vanishes unless theme.css restates its boundary; and without
@@ -14,10 +15,7 @@ import {
 // Both lists in theme.css are kept by hand, so this ties them to the classes
 // the focus scan already treats as interactive.
 
-const THEME = readFileSync("src/styles/theme.css", "utf8").replace(
-  /\/\*[\s\S]*?\*\//g,
-  "",
-)
+const THEME = stripCssComments(readFileSync("src/styles/theme.css", "utf8"))
 
 /** Interactive classes with no boundary to restate, each with the reason. */
 const FORCED_COLORS_EXEMPT = new Map<string, string>([

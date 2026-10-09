@@ -2,6 +2,7 @@ import { readFileSync, readdirSync } from "node:fs"
 import { join } from "node:path"
 import ts from "typescript"
 import { resolveFieldTrigger } from "../test/fieldTrigger"
+import { stripCssComments } from "../test/strip-css-comments"
 
 // Shared by the focus scan and the forced-colours / touch-action coverage
 // test. Paths are relative to packages/ui, where Vitest runs.
@@ -31,7 +32,7 @@ export interface Rule {
 
 /** Innermost rules of a stylesheet's text; wrappers such as @layer and @media are transparent. */
 export function parseRules(css: string, path = ""): Rule[] {
-  const text = css.replace(/\/\*[\s\S]*?\*\//g, "")
+  const text = stripCssComments(css)
   return [...text.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((match) => ({
     path,
     // Top-level commas only: `:is(a, b)` is one selector, not two.

@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
 import { resolveFieldTrigger } from "../test/fieldTrigger"
+import { stripCssComments } from "../test/strip-css-comments"
 
 // A field keeps its faint --input border on the sides and top and draws the
 // 3:1 --field-edge along its bottom; an unchecked checkbox, radio or switch
@@ -12,9 +13,9 @@ interface Rule {
 }
 
 function rulesOf(file: string): Rule[] {
-  const css = readFileSync(`src/components/${file}`, "utf8")
-    .replace(/\/\*[\s\S]*?\*\//g, "")
-    .replace(/\s+/g, " ")
+  const css = stripCssComments(
+    readFileSync(`src/components/${file}`, "utf8"),
+  ).replace(/\s+/g, " ")
   return [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((m) => ({
     // Prettier wraps long :is() lists, leaving spaces inside the parens.
     selector: (m[1] as string)

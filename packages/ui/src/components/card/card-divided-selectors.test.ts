@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
+import { stripCssComments } from "../../test/strip-css-comments"
 
 // The divided-Card rules must stay in lockstep: padding-top is restored only
 // where a rule is actually drawn above. Guarding the borders but not the
@@ -10,7 +11,7 @@ import { readFileSync } from "node:fs"
 
 function dividedSelectors(): string[] {
   const css = readFileSync("src/components/card/card.css", "utf8")
-  const withoutComments = css.replace(/\/\*[\s\S]*?\*\//g, "")
+  const withoutComments = stripCssComments(css)
   return [...withoutComments.matchAll(/([^{}]*\[data-divided[^{}]*)\{/g)]
     .map((match) => {
       const selector = match[1]

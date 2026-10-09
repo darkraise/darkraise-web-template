@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url"
 import { dirname, join, resolve } from "node:path"
 import ts from "typescript"
 import { splitToken } from "./interactive-classes"
+import { stripCssComments } from "../test/strip-css-comments"
 
 const thisDir = dirname(fileURLToPath(import.meta.url))
 const themeCssPath = resolve(thisDir, "theme.css")
@@ -112,7 +113,7 @@ function scriptClasses(source: string): string[] {
 
 /** Class selectors and @apply utilities of a stylesheet. */
 function stylesheetClasses(css: string): string[] {
-  const text = css.replace(/\/\*[\s\S]*?\*\//g, "")
+  const text = stripCssComments(css)
   const applied = [...text.matchAll(/@apply\s+([^;]+);/g)].flatMap((m) =>
     (m[1] as string)
       .trim()

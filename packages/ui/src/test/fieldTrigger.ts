@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs"
+import { stripCssComments } from "./strip-css-comments"
 
 const THEME = "src/styles/theme.css"
 
@@ -15,7 +16,7 @@ const OVERRIDING_UTILITY = /^-?(?:h|min-h|max-h|size|bg|border|rounded)(?:-|$)/
  * collapsed, trimmed. Nested rules stay in it.
  */
 export function fieldTriggerBodyOf(css: string): string {
-  const text = css.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\s+/g, " ")
+  const text = stripCssComments(css).replace(/\s+/g, " ")
   const head = text.indexOf("@utility field-trigger {")
   if (head === -1)
     throw new Error("no @utility field-trigger in the stylesheet")

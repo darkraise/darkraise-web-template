@@ -18,6 +18,7 @@ import { SidebarProvider } from "./SidebarContext"
 import { ThemeProvider, themeConfig } from "@theme"
 import type { SidebarSelection } from "@theme"
 import type { NavGroup } from "@layout/types"
+import { stripCssComments } from "../../test/strip-css-comments"
 
 const thisDir = dirname(fileURLToPath(import.meta.url))
 const sidebarNavCss = readFileSync(
@@ -67,7 +68,7 @@ const nav: NavGroup[] = [
 // read from the stylesheet itself so the test tracks the real CSS rather
 // than a hard-coded copy of it.
 function collapsedSquareSelector(): string {
-  const withoutComments = sidebarNavCss.replace(/\/\*[\s\S]*?\*\//g, "")
+  const withoutComments = stripCssComments(sidebarNavCss)
   const rule = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)].find(
     ([, selector = "", body = ""]) =>
       selector.includes(".dr-sidebar-nav-link") &&

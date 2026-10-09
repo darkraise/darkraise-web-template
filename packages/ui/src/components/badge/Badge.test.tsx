@@ -5,6 +5,7 @@ import { dirname, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 import { Badge, BadgeAnchor } from "@components/badge"
 import { ACCENT_HUES } from "@lib/accent-hues"
+import { stripCssComments } from "../../test/strip-css-comments"
 
 const thisDir = dirname(fileURLToPath(import.meta.url))
 
@@ -144,9 +145,9 @@ describe("badge.css", () => {
 
   // The warning solid misses the 3:1 mark floor on a light surface.
   it("paints the warning anchor dot from warning-edge", () => {
-    const css = readFileSync(resolve(thisDir, "./badge.css"), "utf8")
-      .replace(/\/\*[\s\S]*?\*\//g, "")
-      .replace(/\s+/g, " ")
+    const css = stripCssComments(
+      readFileSync(resolve(thisDir, "./badge.css"), "utf8"),
+    ).replace(/\s+/g, " ")
     expect(css).toContain(
       '.dr-badge-anchor-dot[data-variant="warning"] { @apply bg-warning-edge; }',
     )

@@ -1,13 +1,14 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
+import { stripCssComments } from "../test/strip-css-comments"
 
 // Progress and slider tracks share one thickness, so a form that shows both
 // draws them alike.
 
 function bodyOf(file: string, selector: string): string {
-  const css = readFileSync(`src/components/${file}`, "utf8")
-    .replace(/\/\*[\s\S]*?\*\//g, "")
-    .replace(/\s+/g, " ")
+  const css = stripCssComments(
+    readFileSync(`src/components/${file}`, "utf8"),
+  ).replace(/\s+/g, " ")
   const rule = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].find(
     (m) => (m[1] as string).trim() === selector,
   )

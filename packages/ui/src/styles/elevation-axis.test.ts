@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest"
 import { globSync, readFileSync } from "node:fs"
+import { stripCssComments } from "../test/strip-css-comments"
 
 function withoutComments(source: string): string {
-  return source.replace(/\/\*[\s\S]*?\*\//g, "")
+  return stripCssComments(source)
 }
 
 const sheets = globSync("src/**/*.css", { cwd: process.cwd() }).map((file) => ({

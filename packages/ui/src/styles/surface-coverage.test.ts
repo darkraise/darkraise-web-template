@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync, readdirSync } from "node:fs"
 import { join } from "node:path"
+import { stripCssComments } from "../test/strip-css-comments"
 
 // The `surface` prop moves four fill tokens. A component that paints a
 // surface from the raw `--card` / `--popover` token instead of the fill bypasses
@@ -24,7 +25,7 @@ function everyComponentStylesheet(): string[] {
 }
 
 function withoutComments(css: string): string {
-  return css.replace(/\/\*[\s\S]*?\*\//g, "")
+  return stripCssComments(css)
 }
 
 describe("surface prop coverage", () => {

@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest"
 import { readFileSync, readdirSync } from "node:fs"
 import { join } from "node:path"
 import { resolveFieldTrigger } from "../test/fieldTrigger"
+import { stripCssComments } from "../test/strip-css-comments"
 
 // Two axes own every corner: --radius for surfaces and --radius-control for
 // buttons and single-line fields. A literal radius follows neither, and
@@ -135,7 +136,7 @@ interface Rule {
 
 /** Innermost rules; wrappers such as @layer and @media are transparent. */
 function rulesOf(path: string): Rule[] {
-  const css = readFileSync(path, "utf8").replace(/\/\*[\s\S]*?\*\//g, "")
+  const css = stripCssComments(readFileSync(path, "utf8"))
   return [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((match) => ({
     path,
     selectors: (match[1] as string)
@@ -153,9 +154,9 @@ function subjectClasses(selector: string): string[] {
 }
 
 const RULES = ROOTS.flatMap(filesUnder).flatMap(rulesOf)
-const THEME = readFileSync("src/styles/theme.css", "utf8")
-  .replace(/\/\*[\s\S]*?\*\//g, "")
-  .replace(/\s+/g, " ")
+const THEME = stripCssComments(
+  readFileSync("src/styles/theme.css", "utf8"),
+).replace(/\s+/g, " ")
 
 /** The declarations of theme.css's :root block. */
 const ROOT = /:root \{([^}]*)\}/.exec(THEME)?.[1] ?? ""
@@ -409,9 +410,8 @@ describe("overlay family", () => {
   it.each(OVERLAY_SURFACES)(
     "%s reads the surface through --overlay-*",
     (file) => {
-      const css = readFileSync(`src/components/${file}`, "utf8").replace(
-        /\/\*[\s\S]*?\*\//g,
-        "",
+      const css = stripCssComments(
+        readFileSync(`src/components/${file}`, "utf8"),
       )
       expect(css).not.toMatch(/var\(--surface-overlay-(?:bg|border|shadow)\)/)
       expect(css).toMatch(/@apply overlay-surface;/)

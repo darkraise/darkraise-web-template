@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs"
 import { generateTokens } from "@theme/engine/generateTokens"
 import { AXES } from "@theme/axes/registry"
 import { STYLES } from "@theme/styles"
+import { stripCssComments } from "../test/strip-css-comments"
 
 /**
  * The `:root` block the page paints before the provider hydrates. Every
@@ -10,10 +11,7 @@ import { STYLES } from "@theme/styles"
  * each load flashes stale colours.
  */
 function fallbackDeclarations(): Map<string, string> {
-  const css = readFileSync("src/styles/theme.css", "utf8").replace(
-    /\/\*[\s\S]*?\*\//g,
-    "",
-  )
+  const css = stripCssComments(readFileSync("src/styles/theme.css", "utf8"))
   const layer = css.indexOf("@layer base {")
   const open = css.indexOf("{", css.indexOf(":root", layer))
   let depth = 0

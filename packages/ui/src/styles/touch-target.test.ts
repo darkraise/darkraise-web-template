@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync, readdirSync } from "node:fs"
 import { join } from "node:path"
+import { stripCssComments } from "../test/strip-css-comments"
 
 // WCAG 2.2 AA puts the floor for a pointer target at 24x24 CSS px. Several
 // controls in the kit render well below it with no padding — Checkbox at
@@ -41,7 +42,7 @@ interface ClassFacts {
 function collectClassFacts(): Map<string, ClassFacts> {
   const facts = new Map<string, ClassFacts>()
   for (const file of everyStylesheet()) {
-    const css = readFileSync(file, "utf8").replace(/\/\*[\s\S]*?\*\//g, "")
+    const css = stripCssComments(readFileSync(file, "utf8"))
     for (const rule of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
       const selectorText = rule[1]
       const body = rule[2]

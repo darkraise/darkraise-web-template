@@ -20,6 +20,7 @@ import {
   reachableCombos,
   type ThemeCombo,
 } from "../../test/contrast-matrix"
+import { stripCssComments } from "../../test/strip-css-comments"
 
 // Every ground a field, checkbox, radio or switch can sit on. The edge is
 // one value per theme, so it has to hold against all of them at once.
@@ -277,7 +278,7 @@ describe("--field-edge-lifted-color", () => {
       /shadow-\[var\(--(?:card-elevation|elevation|shadow)-(?:low|medium|high)\)\]|box-shadow:[^;]*var\(--(?:card-elevation|elevation|shadow)-(?:low|medium|high)\)/
     const missing: string[] = []
     for (const path of componentStylesheets()) {
-      const css = readFileSync(path, "utf8").replace(/\/\*[\s\S]*?\*\//g, "")
+      const css = stripCssComments(readFileSync(path, "utf8"))
       for (const [, selector, body] of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
         if (!lifted.test(body as string)) continue
         if (/@apply[^;]*\boverlay-surface\b/.test(body as string)) continue

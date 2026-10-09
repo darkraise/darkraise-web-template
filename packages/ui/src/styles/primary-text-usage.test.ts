@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync, readdirSync } from "node:fs"
 import { join } from "node:path"
+import { stripCssComments } from "../test/strip-css-comments"
 
 /**
  * `text-primary` paints `--primary`, which only clears 3:1: fine for a
@@ -46,7 +47,7 @@ describe("primary-coloured text", () => {
       ...stylesheets("src/layout"),
     ]) {
       if (GRAPHICS.has(path)) continue
-      const css = readFileSync(path, "utf8").replace(/\/\*[\s\S]*?\*\//g, "")
+      const css = stripCssComments(readFileSync(path, "utf8"))
       for (const match of css.matchAll(/(?<![\w-])text-primary(?![\w-])/g)) {
         offenders.push(`${path} at ${match.index}`)
       }
@@ -61,7 +62,7 @@ describe("primary-coloured text", () => {
       ...stylesheets("src/layout"),
       ...stylesheets("src/theme/styles"),
     ]) {
-      const css = readFileSync(path, "utf8").replace(/\/\*[\s\S]*?\*\//g, "")
+      const css = stripCssComments(readFileSync(path, "utf8"))
       for (const rule of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
         if (
           !/(?<![\w-])color:\s*hsl\(var\(--primary\)/.test(rule[2] as string)
@@ -89,7 +90,7 @@ describe("primary-coloured text", () => {
       ...stylesheets("src/layout"),
       ...stylesheets("src/theme/styles"),
     ]) {
-      const css = readFileSync(path, "utf8").replace(/\/\*[\s\S]*?\*\//g, "")
+      const css = stripCssComments(readFileSync(path, "utf8"))
       for (const match of css.matchAll(
         /(?<![\w-])color:\s*hsl\(var\(--(?:primary-text|primary|success|warning|info|destructive)\)\s*\/\s*[\d.]+\)/g,
       )) {

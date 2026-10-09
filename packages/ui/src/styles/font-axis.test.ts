@@ -2,11 +2,9 @@ import { describe, expect, it } from "vitest"
 import { readFileSync } from "node:fs"
 import { AXES } from "@theme/axes/registry"
 import type { Font } from "@theme/types"
+import { stripCssComments } from "../test/strip-css-comments"
 
-const css = readFileSync("src/styles/theme.css", "utf8").replace(
-  /\/\*[\s\S]*?\*\//g,
-  "",
-)
+const css = stripCssComments(readFileSync("src/styles/theme.css", "utf8"))
 
 const FALLBACKS = "ui-sans-serif, system-ui, -apple-system, sans-serif"
 const FAMILIES: Record<Font, string> = {

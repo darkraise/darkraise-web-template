@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync, readdirSync } from "node:fs"
 import { join } from "node:path"
+import { stripCssComments } from "../test/strip-css-comments"
 
 // Menu-style rows mark their active item with `bg-accent`, which the engine
 // resolves to surface[100] on a white popover in light mode and surface[800]
@@ -152,7 +153,7 @@ describe("menu-style rows carry a visible focus indicator", () => {
     for (const [path, selector] of SELECTORS) {
       const row = /\.(dr-[\w-]+)/.exec(selector)?.[1] ?? ""
       const onRow = new RegExp(`\\.${row}(?![\\w-])`)
-      const css = readFileSync(path, "utf8").replace(/\/\*[\s\S]*?\*\//g, "")
+      const css = stripCssComments(readFileSync(path, "utf8"))
       for (const match of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
         const stylesRow = (match[1] as string)
           .split(",")
@@ -238,7 +239,7 @@ const APPLIED: Array<[string, string, string]> = [
 
 describe("controls that had no focus indicator", () => {
   it.each(APPLIED)("%s → %s applies %s", (path, selector, utility) => {
-    const css = readFileSync(path, "utf8").replace(/\/\*[\s\S]*?\*\//g, "")
+    const css = stripCssComments(readFileSync(path, "utf8"))
     const bodies = allRuleBodiesFor(css, selector)
     expect(bodies).toMatch(
       new RegExp(`@apply[^;]*(?<![\\w-])${utility}(?![\\w-])`),
@@ -255,7 +256,7 @@ describe("controls that had no focus indicator", () => {
 })
 
 function withoutComments(css: string): string {
-  return css.replace(/\/\*[\s\S]*?\*\//g, "")
+  return stripCssComments(css)
 }
 
 /** The body of the first rule whose selector list contains exactly `selector`. */

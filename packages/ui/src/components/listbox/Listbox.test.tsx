@@ -6,6 +6,7 @@ import { readFileSync } from "node:fs"
 import { dirname, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 import { Listbox, ListboxItem } from "./Listbox"
+import { stripCssComments } from "../../test/strip-css-comments"
 
 describe("Listbox single mode", () => {
   it("renders role=listbox with options", () => {
@@ -176,7 +177,7 @@ describe("Listbox variant", () => {
   })
 
   it("selects with the checked fill when filled and a ring when outline", () => {
-    const css = listboxCss.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\s+/g, " ")
+    const css = stripCssComments(listboxCss).replace(/\s+/g, " ")
     expect(css).toMatch(
       /\.dr-listbox-item\[data-selected="true"\] \{[^}]*background-color: var\(--selected-check-bg\);/,
     )

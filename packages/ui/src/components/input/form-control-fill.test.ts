@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
 import { resolveFieldTrigger } from "../../test/fieldTrigger"
+import { stripCssComments } from "../../test/strip-css-comments"
 
 // Form controls are deliberately outside the `surface` prop: fields
 // should hold still while panels move around them. They therefore must not
@@ -26,18 +27,16 @@ describe("form control fills", () => {
   it.each(CONTROLS.map(([file]) => file))(
     "%s does not paint through bg-card",
     (file) => {
-      const css = readFileSync(`src/${file}`, "utf8").replace(
-        /\/\*[\s\S]*?\*\//g,
-        "",
-      )
+      const css = stripCssComments(readFileSync(`src/${file}`, "utf8"))
       expect(css).not.toMatch(/@apply[^;]*\bbg-card\b/)
     },
   )
 
   it.each(CONTROLS)("%s pins an unwashed fill on %s", (file, selector) => {
-    const css = readFileSync(`src/${file}`, "utf8")
-      .replace(/\/\*[\s\S]*?\*\//g, "")
-      .replace(/\s+/g, " ")
+    const css = stripCssComments(readFileSync(`src/${file}`, "utf8")).replace(
+      /\s+/g,
+      " ",
+    )
     const rule = new RegExp(
       `[{}] ${selector.replace(/\./g, "\\.")} \\{([^}]*)\\}`,
     ).exec(css)
@@ -53,9 +52,10 @@ describe("form control fills", () => {
     ["components/input-otp/input-otp.css", ".dr-input-otp-slot"],
     ["components/input-otp/input-otp.css", ".dr-input-otp-slot-separate"],
   ])("%s → %s paints no page or transparent fill", (file, selector) => {
-    const css = readFileSync(`src/${file}`, "utf8")
-      .replace(/\/\*[\s\S]*?\*\//g, "")
-      .replace(/\s+/g, " ")
+    const css = stripCssComments(readFileSync(`src/${file}`, "utf8")).replace(
+      /\s+/g,
+      " ",
+    )
     const rule = new RegExp(
       `[{}] ${selector.replace(/\./g, "\\.")} \\{([^}]*)\\}`,
     ).exec(css)

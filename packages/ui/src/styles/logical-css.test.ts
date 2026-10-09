@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest"
 import { readFileSync, readdirSync } from "node:fs"
 import { join } from "node:path"
 import { splitToken } from "./interactive-classes"
+import { stripCssComments } from "../test/strip-css-comments"
 
 // Physical left/right styling does not mirror under dir="rtl". Every such use
 // in the kit is either logical or listed in ALLOWED with the reason it stays
@@ -300,7 +301,7 @@ function declarationFindings(where: string, declaration: string): string[] {
  * Wrappers such as @layer and @media are left out of the label.
  */
 function cssFindings(css: string): string[] {
-  const text = css.replace(/\/\*[\s\S]*?\*\//g, "")
+  const text = stripCssComments(css)
   const found: string[] = []
   const blocks: string[] = []
   let pending = ""

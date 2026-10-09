@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync, readdirSync } from "node:fs"
 import { join } from "node:path"
+import { stripCssComments } from "../test/strip-css-comments"
 
 // Every overlay in the kit animates through tw-animate-css, which ships no
 // reduced-motion guard, so the preference has to be honoured centrally. The
@@ -22,7 +23,7 @@ function everyStylesheet(): string[] {
 }
 
 function withoutComments(css: string): string {
-  return css.replace(/\/\*[\s\S]*?\*\//g, "")
+  return stripCssComments(css)
 }
 
 describe("reduced motion", () => {

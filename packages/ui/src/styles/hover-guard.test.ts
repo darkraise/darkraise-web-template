@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync, readdirSync } from "node:fs"
 import { join } from "node:path"
+import { stripCssComments } from "../test/strip-css-comments"
 
 // These controls share the `.dr-btn` state layer (button.css), and every
 // hover or press rule on them is guarded so a disabled control stays inert
@@ -77,7 +78,7 @@ const RULES: Rule[] = [
   ...["src/components", "src/layout", "src/theme"].flatMap(stylesheets),
   "src/styles/theme.css",
 ].flatMap((path) => {
-  const css = readFileSync(path, "utf8").replace(/\/\*[\s\S]*?\*\//g, "")
+  const css = stripCssComments(readFileSync(path, "utf8"))
   return [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((match) => ({
     path,
     selectors: (match[1] as string)

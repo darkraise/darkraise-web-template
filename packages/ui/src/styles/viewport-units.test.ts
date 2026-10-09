@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync, statSync } from "node:fs"
 import { join, relative, resolve } from "node:path"
 import { describe, it, expect } from "vitest"
+import { stripCssComments } from "../test/strip-css-comments"
 
 const SRC = resolve(process.cwd(), "src")
 
@@ -15,9 +16,7 @@ function cssFiles(dir: string): string[] {
 // Blanks out block comments while preserving the line count, so prose that
 // names the unit it is warning about does not trip the rule.
 function stripComments(css: string): string {
-  return css.replace(/\/\*[\s\S]*?\*\//g, (match) =>
-    "\n".repeat((match.match(/\n/g) ?? []).length),
-  )
+  return stripCssComments(css, { keepNewlines: true })
 }
 
 describe("viewport height units", () => {

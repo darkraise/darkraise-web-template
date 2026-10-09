@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
+import { stripCssComments } from "../../test/strip-css-comments"
 
 // jsdom never parses CSS, so the rules themselves are what this asserts.
 //
@@ -10,9 +11,9 @@ import { readFileSync } from "node:fs"
 // Prettier wraps long values across lines on commit, so every assertion is
 // made against whitespace-collapsed source.
 function flatCss(): string {
-  return readFileSync("src/components/card/card.css", "utf8")
-    .replace(/\/\*[\s\S]*?\*\//g, "")
-    .replace(/\s+/g, " ")
+  return stripCssComments(
+    readFileSync("src/components/card/card.css", "utf8"),
+  ).replace(/\s+/g, " ")
 }
 
 function bodyOf(selector: string): string {

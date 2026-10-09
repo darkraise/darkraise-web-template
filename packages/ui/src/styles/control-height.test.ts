@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { globSync, readFileSync } from "node:fs"
 import { resolveFieldTrigger } from "../test/fieldTrigger"
+import { stripCssComments } from "../test/strip-css-comments"
 
 // jsdom never lays anything out, so the height contract is asserted on the
 // stylesheet text. Controls take a fixed border-box height from their family
@@ -15,8 +16,7 @@ const TOGGLE = "src/components/toggle/toggle.css"
 /** Comments stripped, whitespace collapsed, and no padding inside parens, so
  *  a prettier-wrapped `max(\n  a,\n  b\n)` reads as `max(a, b)`. */
 function flat(path: string): string {
-  return readFileSync(path, "utf8")
-    .replace(/\/\*[\s\S]*?\*\//g, "")
+  return stripCssComments(readFileSync(path, "utf8"))
     .replace(/\s+/g, " ")
     .replace(/\(\s+/g, "(")
     .replace(/\s+\)/g, ")")

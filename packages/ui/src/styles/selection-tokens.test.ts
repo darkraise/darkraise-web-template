@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest"
 import { readFileSync, readdirSync } from "node:fs"
 import { join } from "node:path"
 import { splitToken } from "./interactive-classes"
+import { stripCssComments } from "../test/strip-css-comments"
 
 // Selection reads from four families instead of six visual languages: a
 // neutral raised pill for view switches, an accent fill for checked and
@@ -9,10 +10,7 @@ import { splitToken } from "./interactive-classes"
 // tint for the active navigation row. A family token defaults at :root only
 // to variables bound on <html>.
 
-const THEME = readFileSync("src/styles/theme.css", "utf8").replace(
-  /\/\*[\s\S]*?\*\//g,
-  "",
-)
+const THEME = stripCssComments(readFileSync("src/styles/theme.css", "utf8"))
 
 /** The contents of the first block `opener` opens, braces balanced. */
 function block(css: string, opener: RegExp): string {
@@ -45,7 +43,7 @@ function normalise(text: string): string {
 
 /** Innermost rules; wrappers such as @layer and @media are transparent. */
 function rulesOf(path: string): Rule[] {
-  const css = readFileSync(path, "utf8").replace(/\/\*[\s\S]*?\*\//g, "")
+  const css = stripCssComments(readFileSync(path, "utf8"))
   return [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((match) => ({
     selectors: (match[1] as string)
       .split(/,(?![^(]*\))/)
@@ -359,7 +357,7 @@ function accentStateUtilities(
   css: string,
 ): Array<[string, string]> {
   const found: Array<[string, string]> = []
-  const text = css.replace(/\/\*[\s\S]*?\*\//g, "")
+  const text = stripCssComments(css)
   for (const match of text.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
     const selector = normalise(match[1] as string)
     for (const apply of (match[2] as string).matchAll(/@apply([^;]*);/g)) {
