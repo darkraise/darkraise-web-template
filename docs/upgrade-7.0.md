@@ -137,6 +137,8 @@ The cleanup that `useListbox`'s `registerItem` returns now removes the item at o
 
 A `PopoverContent` or `TooltipContent` that holds a `PopoverArrow` or `TooltipArrow` sits further from its trigger by the arrow's `height` less the popup's border width (3px for the default arrow), since the side offset now adds it. To keep a popup where it was, subtract that from `sideOffset`.
 
+`DialogContent`, `DrawerContent`, `SheetContent` and `AlertDialogContent` placed inside their own `XPortal` render no backdrop and no second portal; the content lands in the portal's `container`. Content used alone is unchanged. If you wrap content in a portal, to pick a `container` or set `forceMount`, add the overlay yourself: `<DialogPortal container={el}><DialogOverlay /><DialogContent>…</DialogContent></DialogPortal>`.
+
 ## Hooks
 
 `usePreviousDistinct` returns the previous distinct value in the render where the value changes, not one render later. Remove any extra render or effect you added to wait for it.

@@ -277,3 +277,70 @@ describe("Dialog portal forceMount", () => {
     expect(screen.queryByTestId("overlay")).toBeNull()
   })
 })
+
+describe("Dialog explicit composition", () => {
+  const overlays = () => document.querySelectorAll(".dr-overlay-backdrop")
+
+  it("renders only the overlay and portal it composes", () => {
+    const host = document.createElement("div")
+    document.body.append(host)
+    try {
+      render(
+        <Dialog defaultOpen>
+          <DialogPortal container={host}>
+            <DialogOverlay />
+            <DialogContent>
+              <DialogTitle>Composed</DialogTitle>
+            </DialogContent>
+          </DialogPortal>
+        </Dialog>,
+      )
+      expect(overlays()).toHaveLength(1)
+      expect(host).toContainElement(screen.getByRole("dialog"))
+    } finally {
+      host.remove()
+    }
+  })
+
+  it("keeps one overlay mounted under a forcing portal", () => {
+    const host = document.createElement("div")
+    document.body.append(host)
+    try {
+      render(
+        <Dialog>
+          <DialogPortal forceMount container={host}>
+            <DialogOverlay />
+            <DialogContent>
+              <DialogTitle>Composed</DialogTitle>
+            </DialogContent>
+          </DialogPortal>
+        </Dialog>,
+      )
+      expect(overlays()).toHaveLength(1)
+      expect(host).toContainElement(
+        screen.getByRole("dialog", { hidden: true }),
+      )
+    } finally {
+      host.remove()
+    }
+  })
+
+  it("gives content alone, and a dialog nested in a portal, their own overlay", () => {
+    render(
+      <Dialog defaultOpen>
+        <DialogPortal>
+          <DialogOverlay />
+          <DialogContent>
+            <DialogTitle>Outer</DialogTitle>
+            <Dialog defaultOpen>
+              <DialogContent>
+                <DialogTitle>Inner</DialogTitle>
+              </DialogContent>
+            </Dialog>
+          </DialogContent>
+        </DialogPortal>
+      </Dialog>,
+    )
+    expect(overlays()).toHaveLength(2)
+  })
+})

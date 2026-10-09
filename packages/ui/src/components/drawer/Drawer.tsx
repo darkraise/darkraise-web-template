@@ -52,6 +52,7 @@ function useDrawerContext(consumer: string): DrawerContextValue {
 const {
   ForceMountProvider: DrawerForceMount,
   useResolvedForceMount: useDrawerForceMount,
+  useInsidePortal: useInsideDrawerPortal,
 } = createForceMountScope()
 
 interface DrawerProps {
@@ -260,7 +261,7 @@ interface DrawerPortalProps {
 function DrawerPortal({ container, forceMount, children }: DrawerPortalProps) {
   void useDrawerContext("DrawerPortal")
   return (
-    <DrawerForceMount forceMount={forceMount}>
+    <DrawerForceMount forceMount={forceMount} portal>
       <Portal container={container}>{children}</Portal>
     </DrawerForceMount>
   )
@@ -382,12 +383,18 @@ function DrawerContent({
 }: DrawerContentProps) {
   const ctx = useDrawerContext("DrawerContent")
   const forceMount = useDrawerForceMount(forceMountProp)
+  const insidePortal = useInsideDrawerPortal()
+  const content = (
+    <Presence present={ctx.open} forceMount={forceMount}>
+      <DrawerContentImpl {...props} />
+    </Presence>
+  )
+  // Inside an explicit portal the consumer composes the overlay, as in Radix.
+  if (insidePortal) return content
   return (
     <DrawerPortal forceMount={forceMount}>
       <DrawerOverlay forceMount={forceMount} />
-      <Presence present={ctx.open} forceMount={forceMount}>
-        <DrawerContentImpl {...props} />
-      </Presence>
+      {content}
     </DrawerPortal>
   )
 }

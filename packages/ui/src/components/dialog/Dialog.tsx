@@ -30,6 +30,7 @@ function useDialogContext(consumer: string): DialogContextValue {
 const {
   ForceMountProvider: DialogForceMount,
   useResolvedForceMount: useDialogForceMount,
+  useInsidePortal: useInsideDialogPortal,
 } = createForceMountScope()
 
 interface DialogProps {
@@ -117,7 +118,7 @@ interface DialogPortalProps {
 function DialogPortal({ container, forceMount, children }: DialogPortalProps) {
   void useDialogContext("DialogPortal")
   return (
-    <DialogForceMount forceMount={forceMount}>
+    <DialogForceMount forceMount={forceMount} portal>
       <Portal container={container}>{children}</Portal>
     </DialogForceMount>
   )
@@ -241,12 +242,18 @@ function DialogContent({
 }: DialogContentProps) {
   const ctx = useDialogContext("DialogContent")
   const forceMount = useDialogForceMount(forceMountProp)
+  const insidePortal = useInsideDialogPortal()
+  const content = (
+    <Presence present={ctx.open} forceMount={forceMount}>
+      <DialogContentImpl {...props} />
+    </Presence>
+  )
+  // Inside an explicit portal the consumer composes the overlay, as in Radix.
+  if (insidePortal) return content
   return (
     <DialogPortal forceMount={forceMount}>
       <DialogOverlay forceMount={forceMount} />
-      <Presence present={ctx.open} forceMount={forceMount}>
-        <DialogContentImpl {...props} />
-      </Presence>
+      {content}
     </DialogPortal>
   )
 }

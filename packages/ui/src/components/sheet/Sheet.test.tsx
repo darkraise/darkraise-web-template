@@ -4,6 +4,7 @@ import {
   Sheet,
   SheetBody,
   SheetContent,
+  SheetOverlay,
   SheetPortal,
   SheetTitle,
 } from "@components/sheet"
@@ -78,5 +79,51 @@ describe("Sheet portal forceMount", () => {
   it("unmounts the closed content without forceMount", () => {
     render(<Panel />)
     expect(screen.queryByRole("dialog", { hidden: true })).toBeNull()
+  })
+})
+
+describe("Sheet explicit composition", () => {
+  it("renders only the overlay and portal it composes", () => {
+    const host = document.createElement("div")
+    document.body.append(host)
+    try {
+      render(
+        <Sheet defaultOpen>
+          <SheetPortal container={host}>
+            <SheetOverlay />
+            <SheetContent>
+              <SheetTitle>Composed</SheetTitle>
+            </SheetContent>
+          </SheetPortal>
+        </Sheet>,
+      )
+      expect(document.querySelectorAll(".dr-overlay-backdrop")).toHaveLength(1)
+      expect(host).toContainElement(screen.getByRole("dialog"))
+    } finally {
+      host.remove()
+    }
+  })
+
+  it("keeps one overlay mounted under a forcing portal", () => {
+    const host = document.createElement("div")
+    document.body.append(host)
+    try {
+      render(
+        <Sheet>
+          <SheetPortal forceMount container={host}>
+            <SheetOverlay />
+            <SheetContent>
+              <SheetTitle>Composed</SheetTitle>
+            </SheetContent>
+          </SheetPortal>
+        </Sheet>,
+      )
+      expect(document.querySelectorAll(".dr-overlay-backdrop")).toHaveLength(1)
+      expect(host).toContainElement(
+        screen.getByRole("dialog", { hidden: true }),
+      )
+    } finally {
+      host.remove()
+    }
   })
 })

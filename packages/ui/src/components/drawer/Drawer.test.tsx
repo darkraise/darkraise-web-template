@@ -250,3 +250,70 @@ describe("Drawer portal forceMount", () => {
     expect(screen.queryByTestId("overlay")).toBeNull()
   })
 })
+
+describe("Drawer explicit composition", () => {
+  const overlays = () => document.querySelectorAll(".dr-drawer-overlay")
+
+  it("renders only the overlay and portal it composes", () => {
+    const host = document.createElement("div")
+    document.body.append(host)
+    try {
+      render(
+        <Drawer defaultOpen>
+          <DrawerPortal container={host}>
+            <DrawerOverlay />
+            <DrawerContent>
+              <DrawerTitle>Composed</DrawerTitle>
+            </DrawerContent>
+          </DrawerPortal>
+        </Drawer>,
+      )
+      expect(overlays()).toHaveLength(1)
+      expect(host).toContainElement(screen.getByRole("dialog"))
+    } finally {
+      host.remove()
+    }
+  })
+
+  it("keeps one overlay mounted under a forcing portal", () => {
+    const host = document.createElement("div")
+    document.body.append(host)
+    try {
+      render(
+        <Drawer>
+          <DrawerPortal forceMount container={host}>
+            <DrawerOverlay />
+            <DrawerContent>
+              <DrawerTitle>Composed</DrawerTitle>
+            </DrawerContent>
+          </DrawerPortal>
+        </Drawer>,
+      )
+      expect(overlays()).toHaveLength(1)
+      expect(host).toContainElement(
+        screen.getByRole("dialog", { hidden: true }),
+      )
+    } finally {
+      host.remove()
+    }
+  })
+
+  it("gives content alone, and a drawer nested in a portal, their own overlay", () => {
+    render(
+      <Drawer defaultOpen>
+        <DrawerPortal>
+          <DrawerOverlay />
+          <DrawerContent>
+            <DrawerTitle>Outer</DrawerTitle>
+            <Drawer defaultOpen>
+              <DrawerContent>
+                <DrawerTitle>Inner</DrawerTitle>
+              </DrawerContent>
+            </Drawer>
+          </DrawerContent>
+        </DrawerPortal>
+      </Drawer>,
+    )
+    expect(overlays()).toHaveLength(2)
+  })
+})

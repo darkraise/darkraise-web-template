@@ -7,6 +7,7 @@ import {
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
+  AlertDialogOverlay,
   AlertDialogTitle,
   AlertDialogTrigger,
   AlertDialogPortal,
@@ -158,5 +159,51 @@ describe("AlertDialog portal forceMount", () => {
   it("unmounts the closed content without forceMount", () => {
     render(<Confirm />)
     expect(screen.queryByRole("alertdialog", { hidden: true })).toBeNull()
+  })
+})
+
+describe("AlertDialog explicit composition", () => {
+  it("renders only the overlay and portal it composes", () => {
+    const host = document.createElement("div")
+    document.body.append(host)
+    try {
+      render(
+        <AlertDialog defaultOpen>
+          <AlertDialogPortal container={host}>
+            <AlertDialogOverlay />
+            <AlertDialogContent>
+              <AlertDialogTitle>Composed</AlertDialogTitle>
+            </AlertDialogContent>
+          </AlertDialogPortal>
+        </AlertDialog>,
+      )
+      expect(document.querySelectorAll(".dr-overlay-backdrop")).toHaveLength(1)
+      expect(host).toContainElement(screen.getByRole("alertdialog"))
+    } finally {
+      host.remove()
+    }
+  })
+
+  it("keeps one overlay mounted under a forcing portal", () => {
+    const host = document.createElement("div")
+    document.body.append(host)
+    try {
+      render(
+        <AlertDialog>
+          <AlertDialogPortal forceMount container={host}>
+            <AlertDialogOverlay />
+            <AlertDialogContent>
+              <AlertDialogTitle>Composed</AlertDialogTitle>
+            </AlertDialogContent>
+          </AlertDialogPortal>
+        </AlertDialog>,
+      )
+      expect(document.querySelectorAll(".dr-overlay-backdrop")).toHaveLength(1)
+      expect(host).toContainElement(
+        screen.getByRole("alertdialog", { hidden: true }),
+      )
+    } finally {
+      host.remove()
+    }
   })
 })
