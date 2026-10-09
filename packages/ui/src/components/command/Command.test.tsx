@@ -175,6 +175,158 @@ describe("Command disabled item", () => {
   })
 })
 
+describe("Command keyboard navigation", () => {
+  function Fruits({
+    disabledAt = [],
+    loop,
+    onItemClick,
+    onSelect,
+  }: {
+    disabledAt?: number[]
+    loop?: boolean
+    onItemClick?: () => void
+    onSelect?: (value: string) => void
+  }) {
+    return (
+      <Command loop={loop}>
+        <CommandInput aria-label="Search" />
+        <CommandList>
+          {["Apple", "Banana", "Cherry"].map((name, n) => (
+            <CommandItem
+              key={name}
+              value={name.toLowerCase()}
+              disabled={disabledAt.includes(n)}
+              onClick={onItemClick}
+              onSelect={onSelect}
+            >
+              {name}
+            </CommandItem>
+          ))}
+        </CommandList>
+      </Command>
+    )
+  }
+
+  function activeText() {
+    const id = screen
+      .getByRole("combobox")
+      .getAttribute("aria-activedescendant")
+    return id ? document.getElementById(id)?.textContent : null
+  }
+
+  it.each([
+    {
+      position: "first",
+      disabledAt: 0,
+      start: "Banana",
+      steps: [
+        ["{ArrowUp}", "Cherry"],
+        ["{ArrowDown}", "Banana"],
+        ["{End}", "Cherry"],
+        ["{Home}", "Banana"],
+      ],
+    },
+    {
+      position: "middle",
+      disabledAt: 1,
+      start: "Apple",
+      steps: [
+        ["{ArrowDown}", "Cherry"],
+        ["{ArrowUp}", "Apple"],
+        ["{End}", "Cherry"],
+        ["{Home}", "Apple"],
+      ],
+    },
+    {
+      position: "last",
+      disabledAt: 2,
+      start: "Apple",
+      steps: [
+        ["{ArrowUp}", "Banana"],
+        ["{ArrowDown}", "Apple"],
+        ["{End}", "Banana"],
+        ["{Home}", "Apple"],
+      ],
+    },
+  ])(
+    "skips a disabled $position item with the arrows, Home and End",
+    async ({ disabledAt, start, steps }) => {
+      const user = userEvent.setup()
+      render(<Fruits disabledAt={[disabledAt]} />)
+      await user.click(screen.getByRole("combobox"))
+      expect(activeText()).toBe(start)
+      for (const [key, expected] of steps) {
+        await user.keyboard(key as string)
+        expect(activeText()).toBe(expected)
+      }
+    },
+  )
+
+  it("moves nothing when every item is disabled", async () => {
+    const user = userEvent.setup()
+    render(<Fruits disabledAt={[0, 1, 2]} />)
+    await user.click(screen.getByRole("combobox"))
+    for (const key of ["{ArrowDown}", "{ArrowUp}", "{Home}", "{End}"]) {
+      await user.keyboard(key)
+      expect(screen.getByRole("combobox")).not.toHaveAttribute(
+        "aria-activedescendant",
+      )
+    }
+  })
+
+  it("ignores Enter while the active item is disabled", async () => {
+    const user = userEvent.setup()
+    const onItemClick = vi.fn()
+    const onSelect = vi.fn()
+    const { rerender } = render(
+      <Fruits onItemClick={onItemClick} onSelect={onSelect} />,
+    )
+    await user.click(screen.getByRole("combobox"))
+    await user.keyboard("{ArrowDown}")
+    expect(activeText()).toBe("Banana")
+    rerender(
+      <Fruits disabledAt={[1]} onItemClick={onItemClick} onSelect={onSelect} />,
+    )
+    expect(activeText()).toBe("Banana")
+    await user.keyboard("{Enter}")
+    expect(onItemClick).not.toHaveBeenCalled()
+    expect(onSelect).not.toHaveBeenCalled()
+  })
+
+  it("wraps at both ends by default", async () => {
+    const user = userEvent.setup()
+    render(<Fruits />)
+    await user.click(screen.getByRole("combobox"))
+    await user.keyboard("{ArrowUp}")
+    expect(activeText()).toBe("Cherry")
+    await user.keyboard("{ArrowDown}")
+    expect(activeText()).toBe("Apple")
+  })
+
+  it("stops at the first and last enabled item when loop is false", async () => {
+    const user = userEvent.setup()
+    const { unmount } = render(<Fruits loop={false} />)
+    await user.click(screen.getByRole("combobox"))
+    await user.keyboard("{ArrowUp}")
+    expect(activeText()).toBe("Apple")
+    await user.keyboard("{End}{ArrowDown}")
+    expect(activeText()).toBe("Cherry")
+    unmount()
+
+    render(<Fruits loop={false} disabledAt={[0, 2]} />)
+    await user.click(screen.getByRole("combobox"))
+    await user.keyboard("{ArrowDown}")
+    expect(activeText()).toBe("Banana")
+    await user.keyboard("{ArrowUp}")
+    expect(activeText()).toBe("Banana")
+  })
+
+  it.each([true, false])("keeps loop=%s off the root element", (loop) => {
+    const { container } = render(<Fruits loop={loop} />)
+    expect(container.firstChild).not.toHaveAttribute("loop")
+  })
+})
+
 describe("Command item registration", () => {
   function Fruits({ appleDisabled = false }: { appleDisabled?: boolean }) {
     return (
@@ -219,7 +371,7 @@ describe("Command item registration", () => {
     await user.keyboard("{Backspace}")
     rerender(<Fruits appleDisabled />)
     await user.keyboard("{Home}")
-    expect(activeOption()).toHaveAttribute("id", appleId)
+    expect(activeOption()).toHaveTextContent("Banana")
     await user.keyboard("{End}a")
     expect(activeOption()).toHaveTextContent("Banana")
   })

@@ -41,6 +41,8 @@ interface CommandContextValue {
   /** Filter predicate. Defaults to substring on textValue. */
   filter?: (value: string, search: string, keywords?: string[]) => number
   shouldFilter: boolean
+  /** Whether the arrow keys wrap from the last enabled item to the first. */
+  loop: boolean
   inputId: string
   listId: string
   labelId: string
@@ -76,6 +78,7 @@ function Command({
   defaultValue,
   value,
   onValueChange,
+  loop = true,
   surface,
   ref,
   ...rest
@@ -168,6 +171,7 @@ function Command({
       allItemsCount,
       filter,
       shouldFilter,
+      loop,
       inputId,
       listId,
       labelId,
@@ -184,6 +188,7 @@ function Command({
       allItemsCount,
       filter,
       shouldFilter,
+      loop,
       inputId,
       listId,
       labelId,
@@ -265,12 +270,20 @@ function CommandInput({
 
   const moveActive = (delta: 1 | -1) => {
     const list = ctx.visibleItems
-    if (list.length === 0) return
-    const idx = list.findIndex((it) => it.id === ctx.activeId)
-    let next = idx === -1 ? (delta === 1 ? 0 : list.length - 1) : idx + delta
-    if (next < 0) next = list.length - 1
-    if (next >= list.length) next = 0
-    ctx.setActiveId(list[next]?.id ?? null)
+    const at = list.findIndex((it) => it.id === ctx.activeId)
+    const start = at === -1 ? (delta === 1 ? -1 : list.length) : at
+    for (let step = 1; step <= list.length; step++) {
+      let next = start + delta * step
+      if (next < 0 || next >= list.length) {
+        if (!ctx.loop) return
+        next = (next + list.length) % list.length
+      }
+      const item = list[next]
+      if (item && !item.disabled) {
+        ctx.setActiveId(item.id)
+        return
+      }
+    }
   }
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -284,17 +297,17 @@ function CommandInput({
       moveActive(-1)
     } else if (event.key === "Home") {
       event.preventDefault()
-      const list = ctx.visibleItems
-      if (list.length > 0) ctx.setActiveId(list[0]?.id ?? null)
+      const first = ctx.visibleItems.find((it) => !it.disabled)
+      if (first) ctx.setActiveId(first.id)
     } else if (event.key === "End") {
       event.preventDefault()
-      const list = ctx.visibleItems
-      if (list.length > 0) ctx.setActiveId(list[list.length - 1]?.id ?? null)
+      const last = [...ctx.visibleItems].reverse().find((it) => !it.disabled)
+      if (last) ctx.setActiveId(last.id)
     } else if (event.key === "Enter") {
       event.preventDefault()
-      if (ctx.activeId) {
-        const node = document.getElementById(ctx.activeId)
-        node?.click()
+      const active = ctx.visibleItems.find((it) => it.id === ctx.activeId)
+      if (active && !active.disabled) {
+        document.getElementById(active.id)?.click()
       }
     }
   }
