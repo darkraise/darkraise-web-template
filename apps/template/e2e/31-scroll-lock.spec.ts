@@ -45,4 +45,47 @@ for (const [name, dir] of [
       }
     })
   }
+
+  // A transform on html or body makes it the containing block of fixed
+  // descendants, so a probe placed under it measures that box's offset
+  // instead of the scrollbar.
+  for (const [element, style] of [
+    ["body", "transform: translateX(0); margin-left: 16px"],
+    ["html", "transform: translateX(10px)"],
+  ] as const) {
+    test(`a transform on ${element} leaves the padded side alone · ${dir}`, async ({
+      page,
+    }) => {
+      await seedApp(page, { style: "quiet", mode: "light" })
+      await openOverlayCase(page, name)
+      await page.evaluate(
+        ([tag, css]) => {
+          const target =
+            tag === "html" ? document.documentElement : document.body
+          target.style.cssText += `; ${css}`
+        },
+        [element, style] as const,
+      )
+      const controls = [
+        page.getByRole("button", { name: "Open dialog" }),
+        page.getByTestId("inline-end"),
+      ]
+      const inlinePositions = () =>
+        Promise.all(controls.map(async (control) => (await boxOf(control)).x))
+      const before = await inlinePositions()
+      await page.getByRole("button", { name: "Open dialog" }).click()
+      await expect(page.getByRole("dialog")).toBeVisible()
+      await expect
+        .poll(() => page.evaluate(() => document.body.style.overflow))
+        .toBe("hidden")
+      await settle(page)
+      expect(await page.evaluate(() => document.body.style.paddingLeft)).toBe(
+        "",
+      )
+      const after = await inlinePositions()
+      for (const [i, x] of after.entries()) {
+        expect(Math.abs(x - (before[i] ?? Number.NaN))).toBeLessThanOrEqual(1)
+      }
+    })
+  }
 }

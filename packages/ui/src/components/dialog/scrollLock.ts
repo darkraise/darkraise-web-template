@@ -25,13 +25,26 @@ let original: LockToken | null = null
  * box pinned to the left edge starts after a left-side scrollbar. Read it
  * before the page's overflow is hidden, since the probe reads 0 once the
  * scrollbar is gone.
+ *
+ * A transform, filter or contain on html or body makes that element the
+ * containing block of its fixed descendants, so a probe placed under it
+ * reads that box's offset as a scrollbar. The probe is therefore shown as a
+ * popover: the top layer always takes the viewport as its containing block.
+ * Without the popover API it falls back to a body child, which those
+ * properties can still skew.
  */
 export function isScrollbarOnLeft(): boolean {
   const probe = document.createElement("div")
   probe.style.cssText =
-    "position: fixed; left: 0; top: 0; width: 0; height: 0; visibility: hidden"
+    "position: fixed; left: 0; top: 0; right: auto; bottom: auto; width: 0; height: 0; margin: 0; padding: 0; border: 0; visibility: hidden"
   document.body.appendChild(probe)
+  const topLayer = typeof probe.showPopover === "function"
+  if (topLayer) {
+    probe.popover = "manual"
+    probe.showPopover()
+  }
   const onLeft = probe.getBoundingClientRect().left > 0
+  if (topLayer) probe.hidePopover()
   probe.remove()
   return onLeft
 }
