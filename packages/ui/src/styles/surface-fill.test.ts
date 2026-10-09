@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
+import { cssRules } from "../test/css-rules"
 import { stripCssComments } from "../test/strip-css-comments"
 
 // jsdom never parses CSS, so the rules themselves are what this asserts.
@@ -39,14 +40,10 @@ interface Rule {
 
 function rules(): Rule[] {
   const flat = stripCssComments(source()).replace(/\s+/g, " ")
-  return [...flat.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map(
-    ([, selector, body]) => {
-      if (selector === undefined || body === undefined) {
-        throw new Error("rule match is missing a group")
-      }
-      return { selector: selector.trim(), body: body.trim() }
-    },
-  )
+  return cssRules(flat).map(({ selector, body }) => ({
+    selector: selector.trim(),
+    body: body.trim(),
+  }))
 }
 
 function bodyOf(selector: string): string {

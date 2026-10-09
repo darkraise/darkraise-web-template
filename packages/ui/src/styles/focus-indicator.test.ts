@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync, readdirSync } from "node:fs"
 import { join } from "node:path"
+import { cssRules } from "../test/css-rules"
 import { stripCssComments } from "../test/strip-css-comments"
 
 // Menu-style rows mark their active item with `bg-accent`, which the engine
@@ -154,14 +155,11 @@ describe("menu-style rows carry a visible focus indicator", () => {
       const row = /\.(dr-[\w-]+)/.exec(selector)?.[1] ?? ""
       const onRow = new RegExp(`\\.${row}(?![\\w-])`)
       const css = stripCssComments(readFileSync(path, "utf8"))
-      for (const match of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
-        const stylesRow = (match[1] as string)
+      for (const rule of cssRules(css)) {
+        const stylesRow = rule.selector
           .split(",")
           .some((s) => onRow.test(s.trim().split(/\s+/).pop() ?? ""))
-        if (
-          stylesRow &&
-          /@apply[^;]*(?<![\w-])focus-ring/.test(match[2] as string)
-        ) {
+        if (stylesRow && /@apply[^;]*(?<![\w-])focus-ring/.test(rule.body)) {
           offenders.push(`${row} (${path})`)
         }
       }
@@ -261,11 +259,11 @@ function withoutComments(css: string): string {
 
 /** The body of the first rule whose selector list contains exactly `selector`. */
 function exactRuleBody(css: string, selector: string): string | null {
-  for (const match of withoutComments(css).matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
-    const selectors = (match[1] as string)
+  for (const rule of cssRules(withoutComments(css))) {
+    const selectors = rule.selector
       .split(",")
       .map((s) => s.trim().replace(/\s+/g, " "))
-    if (selectors.includes(selector)) return match[2] as string
+    if (selectors.includes(selector)) return rule.body
   }
   return null
 }
@@ -369,11 +367,10 @@ describe("one focus outline pair", () => {
     expect(css).toMatch(
       /\.dr-cascade-item\[data-active="true"\] \{ @apply bg-accent text-accent-foreground; \} @media \(hover: hover\) \{ \.dr-cascade-item:not\(\[aria-disabled="true"\]\):hover \{ @apply bg-accent text-accent-foreground; \} \}/,
     )
-    const active = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].filter(
-      ([, selector]) =>
-        selector?.includes('.dr-cascade-item[data-active="true"]'),
+    const active = cssRules(css).filter(({ selector }) =>
+      selector.includes('.dr-cascade-item[data-active="true"]'),
     )
-    for (const [, , body] of active) {
+    for (const { body } of active) {
       expect(body).not.toMatch(/outline|box-shadow|affordance-glow/)
     }
   })

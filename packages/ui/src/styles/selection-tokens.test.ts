@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest"
 import { readFileSync, readdirSync } from "node:fs"
 import { join } from "node:path"
 import { splitToken } from "./interactive-classes"
+import { cssRules } from "../test/css-rules"
 import { stripCssComments } from "../test/strip-css-comments"
 
 // Selection reads from four families instead of six visual languages: a
@@ -44,12 +45,12 @@ function normalise(text: string): string {
 /** Innermost rules; wrappers such as @layer and @media are transparent. */
 function rulesOf(path: string): Rule[] {
   const css = stripCssComments(readFileSync(path, "utf8"))
-  return [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((match) => ({
-    selectors: (match[1] as string)
+  return cssRules(css).map((rule) => ({
+    selectors: rule.selector
       .split(/,(?![^(]*\))/)
       .map(normalise)
       .filter(Boolean),
-    body: normalise(match[2] as string),
+    body: normalise(rule.body),
   }))
 }
 
@@ -358,9 +359,9 @@ function accentStateUtilities(
 ): Array<[string, string]> {
   const found: Array<[string, string]> = []
   const text = stripCssComments(css)
-  for (const match of text.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
-    const selector = normalise(match[1] as string)
-    for (const apply of (match[2] as string).matchAll(/@apply([^;]*);/g)) {
+  for (const rule of cssRules(text)) {
+    const selector = normalise(rule.selector)
+    for (const apply of rule.body.matchAll(/@apply([^;]*);/g)) {
       for (const token of (apply[1] as string).trim().split(/\s+/)) {
         const { variants, utility } = splitToken(token)
         if (

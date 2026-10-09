@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from "node:fs"
 import { resolve } from "node:path"
 import { describe, it, expect } from "vitest"
 import { SHELL_STYLES } from "./types"
+import { cssRules } from "../test/css-rules"
 import { stripCssComments } from "../test/strip-css-comments"
 
 // vitest runs with the package root as cwd; import.meta.url is not a file URL
@@ -227,14 +228,14 @@ interface Rule {
 /** Innermost rules, whitespace collapsed; @layer and @media are transparent. */
 function rulesOf(source: string): Rule[] {
   const text = stripCssComments(source)
-  return [...text.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((m) => ({
+  return cssRules(text).map((rule) => ({
     // Prettier wraps long :is() lists, leaving spaces inside the parens.
-    selector: (m[1] as string)
+    selector: rule.selector
       .replace(/\s+/g, " ")
       .replace(/\(\s+/g, "(")
       .replace(/\s+\)/g, ")")
       .trim(),
-    body: (m[2] as string).replace(/\s+/g, " ").trim(),
+    body: rule.body.replace(/\s+/g, " ").trim(),
   }))
 }
 

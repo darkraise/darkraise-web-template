@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync, readdirSync } from "node:fs"
 import { join } from "node:path"
+import { cssRules } from "../test/css-rules"
 import { stripCssComments } from "../test/strip-css-comments"
 
 /**
@@ -63,13 +64,11 @@ describe("primary-coloured text", () => {
       ...stylesheets("src/theme/styles"),
     ]) {
       const css = stripCssComments(readFileSync(path, "utf8"))
-      for (const rule of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
-        if (
-          !/(?<![\w-])color:\s*hsl\(var\(--primary\)/.test(rule[2] as string)
-        ) {
+      for (const rule of cssRules(css)) {
+        if (!/(?<![\w-])color:\s*hsl\(var\(--primary\)/.test(rule.body)) {
           continue
         }
-        const selector = (rule[1] as string).trim()
+        const selector = rule.selector.trim()
         const exempt =
           selector.split(",").every((part) => PSEUDO.test(part.trim())) ||
           GRAPHIC_DECLARATIONS.some(

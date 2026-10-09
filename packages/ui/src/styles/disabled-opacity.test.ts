@@ -3,6 +3,7 @@ import { readFileSync, readdirSync } from "node:fs"
 import { join } from "node:path"
 import { splitToken } from "./interactive-classes"
 import { resolveFieldTrigger } from "../test/fieldTrigger"
+import { cssRules } from "../test/css-rules"
 import { stripCssComments } from "../test/strip-css-comments"
 
 // Disabled controls faded by three amounts — 0.5 on most, 0.6 on compound
@@ -462,13 +463,13 @@ interface Rule {
 
 function rulesOf(path: string): Rule[] {
   const css = withoutComments(readFileSync(path, "utf8"))
-  return [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((match) => {
-    // The match starts right after the previous brace.
-    const start = (match.index as number) + (match[1] as string).search(/\S/)
+  return cssRules(css).map((rule) => {
+    // The selector text starts right after the previous brace.
+    const start = rule.start + rule.selector.search(/\S/)
     return {
       where: `${path}:${css.slice(0, start).split("\n").length}`,
-      selector: (match[1] as string).trim().replace(/\s+/g, " "),
-      body: match[2] as string,
+      selector: rule.selector.trim().replace(/\s+/g, " "),
+      body: rule.body,
     }
   })
 }

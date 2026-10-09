@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest"
 import { readFileSync, readdirSync } from "node:fs"
 import { join } from "node:path"
 import { resolveFieldTrigger } from "../test/fieldTrigger"
+import { cssRules } from "../test/css-rules"
 import { stripCssComments } from "../test/strip-css-comments"
 
 // Two axes own every corner: --radius for surfaces and --radius-control for
@@ -137,13 +138,13 @@ interface Rule {
 /** Innermost rules; wrappers such as @layer and @media are transparent. */
 function rulesOf(path: string): Rule[] {
   const css = stripCssComments(readFileSync(path, "utf8"))
-  return [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((match) => ({
+  return cssRules(css).map((rule) => ({
     path,
-    selectors: (match[1] as string)
+    selectors: rule.selector
       .split(",")
       .map((s) => s.replace(/\s+/g, " ").trim())
       .filter(Boolean),
-    body: match[2] as string,
+    body: rule.body,
   }))
 }
 

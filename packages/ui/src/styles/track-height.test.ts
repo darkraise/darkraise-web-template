@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
+import { cssRules } from "../test/css-rules"
 import { stripCssComments } from "../test/strip-css-comments"
 
 // Progress and slider tracks share one thickness, so a form that shows both
@@ -9,11 +10,9 @@ function bodyOf(file: string, selector: string): string {
   const css = stripCssComments(
     readFileSync(`src/components/${file}`, "utf8"),
   ).replace(/\s+/g, " ")
-  const rule = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].find(
-    (m) => (m[1] as string).trim() === selector,
-  )
+  const rule = cssRules(css).find((r) => r.selector.trim() === selector)
   if (!rule) throw new Error(`no rule ${selector} in ${file}`)
-  return rule[2] as string
+  return rule.body
 }
 
 describe("track height", () => {

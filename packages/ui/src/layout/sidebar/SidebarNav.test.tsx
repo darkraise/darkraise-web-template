@@ -18,6 +18,7 @@ import { SidebarProvider } from "./SidebarContext"
 import { ThemeProvider, themeConfig } from "@theme"
 import type { SidebarSelection } from "@theme"
 import type { NavGroup } from "@layout/types"
+import { cssRules } from "../../test/css-rules"
 import { stripCssComments } from "../../test/strip-css-comments"
 
 const thisDir = dirname(fileURLToPath(import.meta.url))
@@ -69,17 +70,15 @@ const nav: NavGroup[] = [
 // than a hard-coded copy of it.
 function collapsedSquareSelector(): string {
   const withoutComments = stripCssComments(sidebarNavCss)
-  const rule = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)].find(
-    ([, selector = "", body = ""]) =>
+  const rule = cssRules(withoutComments).find(
+    ({ selector, body }) =>
       selector.includes(".dr-sidebar-nav-link") &&
       body.includes("w-[var(--control-height)]"),
   )
   if (!rule) {
     throw new Error("no collapsed square rule found in sidebar-nav.css")
   }
-  const selector = rule[1]
-  if (!selector) throw new Error("collapsed square rule has no selector")
-  return selector.trim()
+  return rule.selector.trim()
 }
 
 function renderNav(collapsed: boolean) {

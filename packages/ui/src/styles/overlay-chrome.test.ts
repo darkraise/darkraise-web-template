@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { readdirSync, readFileSync } from "node:fs"
+import { cssRules } from "../test/css-rules"
 import { stripCssComments } from "../test/strip-css-comments"
 
 // One rule for every floating surface and severity message: Alert, Banner
@@ -27,12 +28,12 @@ function source(path: string): string {
 
 /** Innermost rules; wrappers such as @layer and @media are transparent. */
 function rulesOf(path: string): Rule[] {
-  return [...source(path).matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((match) => ({
-    selectors: (match[1] as string)
+  return cssRules(source(path)).map((rule) => ({
+    selectors: rule.selector
       .split(/,(?![^(]*\))/)
       .map(normalise)
       .filter(Boolean),
-    body: normalise(match[2] as string),
+    body: normalise(rule.body),
   }))
 }
 

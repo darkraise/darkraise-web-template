@@ -2,6 +2,7 @@ import { readFileSync, readdirSync } from "node:fs"
 import { join } from "node:path"
 import ts from "typescript"
 import { resolveFieldTrigger } from "../test/fieldTrigger"
+import { cssRules } from "../test/css-rules"
 import { stripCssComments } from "../test/strip-css-comments"
 
 // Shared by the focus scan and the forced-colours / touch-action coverage
@@ -33,14 +34,14 @@ export interface Rule {
 /** Innermost rules of a stylesheet's text; wrappers such as @layer and @media are transparent. */
 export function parseRules(css: string, path = ""): Rule[] {
   const text = stripCssComments(css)
-  return [...text.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((match) => ({
+  return cssRules(text).map((rule) => ({
     path,
     // Top-level commas only: `:is(a, b)` is one selector, not two.
-    selectors: (match[1] as string)
+    selectors: rule.selector
       .split(/,(?![^(]*\))/)
       .map((s) => s.trim())
       .filter(Boolean),
-    body: match[2] as string,
+    body: rule.body,
   }))
 }
 

@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
+import { cssRules } from "../test/css-rules"
 import { stripCssComments } from "../test/strip-css-comments"
 
 // Accent marks action, focus, checked and selected states. Controls at rest
@@ -23,12 +24,12 @@ function normalise(text: string): string {
 /** Innermost rules; wrappers such as @layer and @media are transparent. */
 function rulesOf(path: string): Rule[] {
   const css = stripCssComments(readFileSync(path, "utf8"))
-  return [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((match) => ({
-    selectors: (match[1] as string)
+  return cssRules(css).map((rule) => ({
+    selectors: rule.selector
       .split(/,(?![^(]*\))/)
       .map(normalise)
       .filter(Boolean),
-    body: normalise(match[2] as string),
+    body: normalise(rule.body),
   }))
 }
 

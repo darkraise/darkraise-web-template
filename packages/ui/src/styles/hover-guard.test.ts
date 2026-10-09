@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync, readdirSync } from "node:fs"
 import { join } from "node:path"
+import { cssRules } from "../test/css-rules"
 import { stripCssComments } from "../test/strip-css-comments"
 
 // These controls share the `.dr-btn` state layer (button.css), and every
@@ -79,13 +80,13 @@ const RULES: Rule[] = [
   "src/styles/theme.css",
 ].flatMap((path) => {
   const css = stripCssComments(readFileSync(path, "utf8"))
-  return [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((match) => ({
+  return cssRules(css).map((rule) => ({
     path,
-    selectors: (match[1] as string)
+    selectors: rule.selector
       .split(/,(?![^(]*\))/)
       .map(normalise)
       .filter(Boolean),
-    body: match[2] as string,
+    body: rule.body,
   }))
 })
 

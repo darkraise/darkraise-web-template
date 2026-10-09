@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { globSync, readFileSync } from "node:fs"
 import { resolveFieldTrigger } from "../test/fieldTrigger"
+import { cssRules } from "../test/css-rules"
 import { stripCssComments } from "../test/strip-css-comments"
 
 // jsdom never lays anything out, so the height contract is asserted on the
@@ -25,8 +26,8 @@ function flat(path: string): string {
 /** Every declaration block whose selector list is exactly `selector`. */
 function body(path: string, selector: string): string {
   const bodies: string[] = []
-  for (const [, sel, decls] of flat(path).matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
-    if (sel?.trim() === selector) bodies.push((decls ?? "").trim())
+  for (const rule of cssRules(flat(path))) {
+    if (rule.selector.trim() === selector) bodies.push(rule.body.trim())
   }
   if (bodies.length === 0) throw new Error(`no ${selector} rule in ${path}`)
   return bodies.join(" ")
@@ -404,12 +405,12 @@ describe("tabs, segment and pagination heights", () => {
   })
 
   it("sizes every tab strip from its triggers", () => {
-    const offenders = [...flat(TABS).matchAll(/([^{}]+)\{([^{}]*)\}/g)]
-      .filter(([, sel]) => /^\.dr-tabs-list[^\s:]*$/.test(sel?.trim() ?? ""))
-      .filter(([, , decls]) =>
-        /(?<![\w-])(?:height:|(?:min-h|h)-[[\d]|h-full)/.test(decls ?? ""),
+    const offenders = cssRules(flat(TABS))
+      .filter(({ selector }) => /^\.dr-tabs-list[^\s:]*$/.test(selector.trim()))
+      .filter(({ body }) =>
+        /(?<![\w-])(?:height:|(?:min-h|h)-[[\d]|h-full)/.test(body),
       )
-      .map(([, sel]) => sel?.trim())
+      .map(({ selector }) => selector.trim())
     expect(offenders).toEqual([])
   })
 
@@ -427,13 +428,13 @@ describe("tabs, segment and pagination heights", () => {
       readFileSync("src/components/pagination/Pagination.tsx", "utf8"),
     ).toContain('cn("dr-btn", "dr-pagination-link", className)')
     const css = flat("src/components/pagination/pagination.css")
-    const linkRules = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].filter(
-      ([sel]) => sel?.includes(".dr-pagination-link"),
+    const linkRules = cssRules(css).filter(({ selector }) =>
+      selector.includes(".dr-pagination-link"),
     )
     expect(linkRules.length).toBeGreaterThan(0)
-    for (const [, , decls] of linkRules) {
-      expect(decls).not.toMatch(/(?<![\w-])height:/)
-      expect(decls).not.toMatch(LEGACY_HEIGHT)
+    for (const { body } of linkRules) {
+      expect(body).not.toMatch(/(?<![\w-])height:/)
+      expect(body).not.toMatch(LEGACY_HEIGHT)
     }
   })
 })

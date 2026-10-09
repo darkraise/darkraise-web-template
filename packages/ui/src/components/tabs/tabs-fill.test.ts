@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
+import { cssRules } from "../../test/css-rules"
 import { stripCssComments } from "../../test/strip-css-comments"
 
 // The enclosed-tab indicator must stay OPAQUE — a translucent fill cannot
@@ -26,12 +27,11 @@ describe("tabs enclosed fill", () => {
   // An elevated dark card lifts its face with an overlay tint; the opaque
   // fill paints the same tint so the panel does not read as recessed.
   it("paints the card lift over every enclosed fill", () => {
-    const fills = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].filter(
-      ([, , body]) =>
-        body?.includes("background-color: var(--surface-card-fill-opaque);"),
+    const fills = cssRules(css).filter(({ body }) =>
+      body.includes("background-color: var(--surface-card-fill-opaque);"),
     )
     expect(fills).toHaveLength(4)
-    for (const [, selector, body] of fills) {
+    for (const { selector, body } of fills) {
       expect(body, selector).toContain(
         "background-image: linear-gradient( var(--card-lift-tint, transparent), var(--card-lift-tint, transparent) );",
       )

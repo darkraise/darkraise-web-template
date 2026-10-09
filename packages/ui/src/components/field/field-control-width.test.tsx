@@ -15,6 +15,8 @@ import { Switch } from "@components/switch"
 import { Checkbox } from "@components/checkbox"
 import { RadioGroup, RadioGroupItem } from "@components/radio-group"
 import { Input } from "@components/input"
+import { cssRules } from "../../test/css-rules"
+import { stripCssComments } from "../../test/strip-css-comments"
 
 // A Field stretches (or, in a wide responsive group, un-stretches) its direct
 // children. Written as `.dr-field[data-orientation=…] > *` that selector sits
@@ -49,11 +51,8 @@ async function compiledRules(): Promise<Rule[]> {
     code: Buffer.from(compiler.build([])),
     targets: { chrome: 100 << 16 },
   })
-  return [...code.toString().matchAll(/([^{}]+)\{([^{}]*)\}/g)].map(
-    ([, selector = "", declarations = ""]) => ({
-      selector: selector.trim(),
-      declarations,
-    }),
+  return cssRules(stripCssComments(code.toString())).map(
+    ({ selector, body }) => ({ selector: selector.trim(), declarations: body }),
   )
 }
 

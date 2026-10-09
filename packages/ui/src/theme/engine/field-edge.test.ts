@@ -20,6 +20,7 @@ import {
   reachableCombos,
   type ThemeCombo,
 } from "../../test/contrast-matrix"
+import { cssRules } from "../../test/css-rules"
 import { stripCssComments } from "../../test/strip-css-comments"
 
 // Every ground a field, checkbox, radio or switch can sit on. The edge is
@@ -279,14 +280,11 @@ describe("--field-edge-lifted-color", () => {
     const missing: string[] = []
     for (const path of componentStylesheets()) {
       const css = stripCssComments(readFileSync(path, "utf8"))
-      for (const [, selector, body] of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
-        if (!lifted.test(body as string)) continue
-        if (/@apply[^;]*\boverlay-surface\b/.test(body as string)) continue
-        if (
-          (body as string).includes("--field-edge: var(--field-edge-lifted);")
-        )
-          continue
-        missing.push(`${path}: ${(selector as string).trim()}`)
+      for (const { selector, body } of cssRules(css)) {
+        if (!lifted.test(body)) continue
+        if (/@apply[^;]*\boverlay-surface\b/.test(body)) continue
+        if (body.includes("--field-edge: var(--field-edge-lifted);")) continue
+        missing.push(`${path}: ${selector.trim()}`)
       }
     }
     expect(missing).toEqual([])

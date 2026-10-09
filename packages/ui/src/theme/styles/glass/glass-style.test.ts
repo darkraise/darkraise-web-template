@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
 import { GLASS_BLURS, GLASS_OPACITIES } from "@theme/types"
+import { cssRules } from "../../../test/css-rules"
 import { stripCssComments } from "../../../test/strip-css-comments"
 
 // jsdom never parses CSS, so the stylesheet text is what this asserts. The
@@ -24,11 +25,9 @@ function normalise(text: string): string {
 }
 
 /** Innermost rules; the media query wrapper is transparent. */
-const RULES: Rule[] = [
-  ...stripCssComments(GLASS).matchAll(/([^{}]+)\{([^{}]*)\}/g),
-].map((match) => ({
-  selector: normalise(match[1] as string),
-  body: normalise(match[2] as string),
+const RULES: Rule[] = cssRules(stripCssComments(GLASS)).map((rule) => ({
+  selector: normalise(rule.selector),
+  body: normalise(rule.body),
 }))
 
 /** The value `name` takes in the rule whose selector is exactly `selector`. */

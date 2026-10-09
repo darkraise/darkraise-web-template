@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync } from "node:fs"
 import { resolveFieldTrigger } from "../test/fieldTrigger"
+import { cssRules } from "../test/css-rules"
 import { stripCssComments } from "../test/strip-css-comments"
 
 // A field keeps its faint --input border on the sides and top and draws the
@@ -16,13 +17,13 @@ function rulesOf(file: string): Rule[] {
   const css = stripCssComments(
     readFileSync(`src/components/${file}`, "utf8"),
   ).replace(/\s+/g, " ")
-  return [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((m) => ({
+  return cssRules(css).map((rule) => ({
     // Prettier wraps long :is() lists, leaving spaces inside the parens.
-    selector: (m[1] as string)
+    selector: rule.selector
       .trim()
       .replace(/\(\s+/g, "(")
       .replace(/\s+\)/g, ")"),
-    body: (m[2] as string).trim(),
+    body: rule.body.trim(),
   }))
 }
 

@@ -2,6 +2,7 @@ export interface CssRule {
   selector: string
   body: string
   wrappers: string[]
+  start: number
 }
 
 /**
@@ -9,8 +10,9 @@ export interface CssRule {
  * block that holds no other block, with the raw text since the brace before
  * it as its selector, so wrappers such as @layer and @media are transparent.
  * `wrappers` holds the preludes of the blocks around the rule, outermost
- * first, whitespace collapsed. A brace inside a string is text, and a
- * backslash in a string escapes the character after it.
+ * first, whitespace collapsed. `start` is the offset of the selector text in
+ * `css`. A brace inside a string is text, and a backslash in a string
+ * escapes the character after it.
  */
 export function cssRules(css: string): CssRule[] {
   const rules: CssRule[] = []
@@ -42,6 +44,7 @@ export function cssRules(css: string): CssRule[] {
           selector: css.slice(selectorStart, open),
           body: css.slice(open + 1, i),
           wrappers: [...preludes],
+          start: selectorStart,
         })
       }
       open = -1

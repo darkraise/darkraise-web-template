@@ -1,3 +1,4 @@
+import { globSync, readFileSync } from "node:fs"
 import { describe, expect, it } from "vitest"
 import { cssRules } from "./css-rules"
 
@@ -45,5 +46,56 @@ describe("cssRules", () => {
     expect(cssRules(css).map((rule) => rule.wrappers)).toEqual([
       ["@layer components", ".a", "@media (hover: hover)"],
     ])
+  })
+
+  it("gives the offset its selector text starts at", () => {
+    const css =
+      "@media (hover: hover) {\n  .a { color: red; }\n}\n.b { color: blue; }"
+    expect(cssRules(css).map((rule) => rule.start)).toEqual([
+      css.indexOf("{") + 1,
+      css.lastIndexOf("}", css.indexOf(".b")) + 1,
+    ])
+  })
+})
+
+const GUARD = "src/test/css-rules.test.ts"
+
+/**
+ * Whether source text holds the brace-blind rule splitter, which reads a
+ * brace inside a string as the end of a rule: as a regex literal with any
+ * flags, or as the string a RegExp is built from.
+ */
+function splitsRulesByRegex(source: string): boolean {
+  return /\(\[\^\{\}\]\+\)\\*\{\(\[\^\{\}\]\*\)\\*\}/.test(source)
+}
+
+describe("the brace-blind rule splitter", () => {
+  it.each([
+    String.raw`css.matchAll(/([^{}]+)\{([^{}]*)\}/g)`,
+    String.raw`const RULE = /([^{}]+)\{([^{}]*)\}/`,
+    String.raw`css.matchAll(/([^{}]+)\{([^{}]*)\}/gu)`,
+    String.raw`new RegExp("([^{}]+)\\{([^{}]*)\\}", "g")`,
+    String.raw`new RegExp('([^{}]+)\\{([^{}]*)\\}')`,
+  ])("is found in %s", (source) => {
+    expect(splitsRulesByRegex(source)).toBe(true)
+  })
+
+  it.each([
+    "cssRules(css)",
+    String.raw`/\{([^}]*)\}/`,
+    String.raw`/([^{}]+)\{/`,
+  ])("is not found in %s", (source) => {
+    expect(splitsRulesByRegex(source)).toBe(false)
+  })
+
+  it("is in no kit source: cssRules splits rules", () => {
+    const files = globSync("src/**/*.{ts,tsx}")
+      .map((file) => file.replace(/\\/g, "/"))
+      .filter((file) => file !== GUARD)
+    expect(files.length).toBeGreaterThan(0)
+    const offenders = files.filter((file) =>
+      splitsRulesByRegex(readFileSync(file, "utf8")),
+    )
+    expect(offenders).toEqual([])
   })
 })

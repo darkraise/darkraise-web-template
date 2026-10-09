@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync, readdirSync } from "node:fs"
 import { join } from "node:path"
+import { cssRules } from "../test/css-rules"
 import { stripCssComments } from "../test/strip-css-comments"
 
 // WCAG 2.2 AA puts the floor for a pointer target at 24x24 CSS px. Several
@@ -43,12 +44,7 @@ function collectClassFacts(): Map<string, ClassFacts> {
   const facts = new Map<string, ClassFacts>()
   for (const file of everyStylesheet()) {
     const css = stripCssComments(readFileSync(file, "utf8"))
-    for (const rule of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
-      const selectorText = rule[1]
-      const body = rule[2]
-      if (selectorText === undefined || body === undefined) {
-        throw new Error("rule match is missing a group")
-      }
+    for (const { selector: selectorText, body } of cssRules(css)) {
       // A style override (`[data-style="glass"] .dr-x`) restyles a control
       // rather than declaring a new one; attributing its sizes to the class is
       // still correct, so no special case is needed here.
