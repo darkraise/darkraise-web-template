@@ -32,6 +32,14 @@ export default tseslint.config(
       // diagnostics (e.g. TanStack Table/Virtual returning non-memoizable
       // functions) are not actionable here.
       "react-hooks/incompatible-library": "off",
+      // eslint-plugin-react-hooks 7.1 reports existing kit code under these
+      // compiler rules, which 7.0 passed. They warn until each finding has
+      // been reviewed, so the upgrade does not fail lint on unreviewed code.
+      "react-hooks/refs": "warn",
+      "react-hooks/purity": "warn",
+      "react-hooks/use-memo": "warn",
+      "react-hooks/immutability": "warn",
+      "react-hooks/preserve-manual-memoization": "warn",
       "react-refresh/only-export-components": [
         "warn",
         { allowConstantExport: true },
