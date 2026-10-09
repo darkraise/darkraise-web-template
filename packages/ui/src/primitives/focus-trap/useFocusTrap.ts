@@ -66,7 +66,10 @@ export function useFocusTrap(
       const first = tabbables[0]
       const last = tabbables[tabbables.length - 1]
       const active = document.activeElement as HTMLElement | null
-      if (event.shiftKey && active === first) {
+      // `getTabbables` leaves the container out, so a container given the
+      // initial focus is before the first tabbable: Shift+Tab from it would
+      // otherwise leave the trap.
+      if (event.shiftKey && (active === first || active === container)) {
         if (loopRef.current) {
           event.preventDefault()
           last?.focus()

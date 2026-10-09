@@ -305,6 +305,9 @@ test.describe("tour", () => {
     const skip = popover.getByRole("button", { name: "Skip" })
     const next = popover.getByRole("button", { name: "Next" })
 
+    await page.keyboard.press("Shift+Tab")
+    await expect(next).toBeFocused()
+
     await next.focus()
     await page.keyboard.press("Tab")
     await expect(skip).toBeFocused()

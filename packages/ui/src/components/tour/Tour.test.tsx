@@ -234,6 +234,26 @@ describe("Tour", () => {
     await waitFor(() => expect(opener).toHaveFocus())
   })
 
+  it("sends the first Shift+Tab after opening to the last control", async () => {
+    const user = userEvent.setup()
+    render(
+      <>
+        <Targets />
+        <button type="button">Behind</button>
+        <Tour
+          open
+          steps={STEPS}
+          current={1}
+          onChange={() => {}}
+          onClose={() => {}}
+        />
+      </>,
+    )
+    await waitFor(() => expect(screen.getByRole("dialog")).toHaveFocus())
+    await user.tab({ shift: true })
+    expect(screen.getByRole("button", { name: /next/i })).toHaveFocus()
+  })
+
   it("hides the popover until positioned again after a reopen", async () => {
     function Wrapper({ open, current }: { open: boolean; current: number }) {
       return (

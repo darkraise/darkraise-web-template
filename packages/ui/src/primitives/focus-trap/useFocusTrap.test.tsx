@@ -109,6 +109,29 @@ describe("useFocusTrap", () => {
     expect((document.activeElement as HTMLElement)?.dataset.testid).toBe("a")
   })
 
+  it("Shift+Tab from the container itself wraps to last when loop is true", async () => {
+    function ContainerFirst() {
+      const ref = React.useRef<HTMLDivElement | null>(null)
+      useFocusTrap(ref, { loop: true, initialFocus: ref })
+      return (
+        <div ref={ref} tabIndex={-1} data-testid="trap">
+          <button data-testid="a">a</button>
+          <button data-testid="c">c</button>
+        </div>
+      )
+    }
+    const { findByTestId } = render(
+      <>
+        <button data-testid="outside">o</button>
+        <ContainerFirst />
+      </>,
+    )
+    const trap = await findByTestId("trap")
+    expect(document.activeElement).toBe(trap)
+    await userEvent.tab({ shift: true })
+    expect((document.activeElement as HTMLElement)?.dataset.testid).toBe("c")
+  })
+
   it("does nothing when disabled", async () => {
     const { findByTestId } = render(
       <>
