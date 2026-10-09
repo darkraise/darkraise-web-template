@@ -342,6 +342,7 @@ export const showcaseVietnamese: Record<keyof typeof showcaseEnglish, string> =
     "Async search results": "Kết quả tìm kiếm bất đồng bộ",
     "Basic actions": "Thao tác cơ bản",
     "Complex nested menu": "Menu lồng nhau nhiều cấp",
+    "Opened through its props": "Mở qua thuộc tính",
     Default: "Mặc định",
     "Week starts on Monday": "Tuần bắt đầu vào thứ Hai",
     "Grid only": "Chỉ có lưới",

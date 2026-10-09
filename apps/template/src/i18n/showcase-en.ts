@@ -340,6 +340,7 @@ export const showcaseEnglish = {
   "Async search results": "Async search results",
   "Basic actions": "Basic actions",
   "Complex nested menu": "Complex nested menu",
+  "Opened through its props": "Opened through its props",
   Default: "Default",
   "Week starts on Monday": "Week starts on Monday",
   "Grid only": "Grid only",

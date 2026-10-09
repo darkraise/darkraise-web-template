@@ -1,5 +1,5 @@
 import { test, expect, type Locator, type Page } from "@playwright/test"
-import { boxOf, seedApp } from "./helpers/app"
+import { boxOf, gotoApp, seedApp } from "./helpers/app"
 import { computed, settle } from "./helpers/measure"
 import { expectInViewport, hitsAt, openOverlayCase } from "./helpers/overlays"
 
@@ -193,6 +193,34 @@ test.describe("context menus open at the pointer", () => {
     if (!first) throw new Error("the menu was never shown")
     expect(Math.abs(first.x - pointer.x)).toBeLessThanOrEqual(1)
     expect(Math.abs(first.y - pointer.y)).toBeLessThanOrEqual(1)
+  })
+})
+
+test.describe("context menus opened through their props", () => {
+  test("anchor to their trigger, not the pointer of an earlier right-click", async ({
+    page,
+  }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" })
+    await seedApp(page, { style: "quiet", mode: "light" })
+    await gotoApp(page, "/components/context-menu")
+    const area = page.getByTestId("prop-opened-area")
+    await area.scrollIntoViewIfNeeded()
+    await area.click({ button: "right", position: { x: 40, y: 40 } })
+    const menu = page.getByRole("menu")
+    await expect(menu).toBeVisible()
+    await page.keyboard.press("Escape")
+    await expect(menu).toBeHidden()
+
+    await page.getByRole("button", { name: "Open menu", exact: true }).click()
+    await expect(menu).toBeVisible()
+    await settle(page)
+    const anchor = await boxOf(area)
+    const box = await boxOf(menu)
+    expect(Math.abs(box.x - anchor.x)).toBeLessThanOrEqual(1)
+    // Below the trigger, or above it when the viewport flips the menu.
+    const below = Math.abs(box.y - (anchor.y + anchor.height))
+    const above = Math.abs(box.y + box.height - anchor.y)
+    expect(Math.min(below, above)).toBeLessThanOrEqual(1)
   })
 })
 

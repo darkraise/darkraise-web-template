@@ -36,6 +36,7 @@ import {
   ContextMenuSubTrigger,
   ContextMenuTrigger,
 } from "darkraise-ui/components/context-menu"
+import { Button } from "darkraise-ui/components/button"
 import { ShowcaseExample } from "./_components/-showcase-example"
 import { ShowcasePage } from "./_components/-showcase-page"
 
@@ -429,6 +430,48 @@ function ComplexFileMenu() {
   )
 }
 
+const PROP_OPENED_CODE = `const [open, setOpen] = useState(false)
+
+<Button variant="outline" onClick={() => setOpen(true)}>
+  Open menu
+</Button>
+<ContextMenu open={open} onOpenChange={setOpen}>
+  <ContextMenuTrigger asChild>
+    <div className="flex min-h-[150px] items-center justify-center rounded-lg border border-dashed text-sm text-muted-foreground">
+      Opened by the button, the menu sits below this area
+    </div>
+  </ContextMenuTrigger>
+  <ContextMenuContent>
+    <ContextMenuItem>Copy</ContextMenuItem>
+    <ContextMenuItem>Paste</ContextMenuItem>
+  </ContextMenuContent>
+</ContextMenu>`
+
+function PropOpenedMenu() {
+  const [open, setOpen] = useState(false)
+  return (
+    <div className="space-y-3">
+      <Button variant="outline" onClick={() => setOpen(true)}>
+        Open menu
+      </Button>
+      <ContextMenu open={open} onOpenChange={setOpen}>
+        <ContextMenuTrigger asChild>
+          <div
+            data-testid="prop-opened-area"
+            className="text-muted-foreground flex min-h-[150px] items-center justify-center rounded-lg border border-dashed text-sm"
+          >
+            Opened by the button, the menu sits below this area
+          </div>
+        </ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuItem>Copy</ContextMenuItem>
+          <ContextMenuItem>Paste</ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
+    </div>
+  )
+}
+
 function ContextMenuPage() {
   return (
     <ShowcasePage
@@ -474,6 +517,10 @@ function ContextMenuPage() {
 
       <ShowcaseExample title="Complex nested menu" code={COMPLEX_CODE}>
         <ComplexFileMenu />
+      </ShowcaseExample>
+
+      <ShowcaseExample title="Opened through its props" code={PROP_OPENED_CODE}>
+        <PropOpenedMenu />
       </ShowcaseExample>
     </ShowcasePage>
   )
