@@ -502,15 +502,15 @@ test.describe("popup arrows point at their trigger", () => {
             content.y + content.height,
           )
         }
-        // Its tip reaches toward the trigger without crossing into it.
+        // Its tip stops the fixture's side offset, 4px, short of the trigger.
         const gap = {
           top: trigger.y - (arrow.y + arrow.height),
           bottom: arrow.y - (trigger.y + trigger.height),
           left: trigger.x - (arrow.x + arrow.width),
           right: arrow.x - (trigger.x + trigger.width),
         }[side]
-        expect(gap).toBeGreaterThanOrEqual(-1)
-        expect(gap).toBeLessThanOrEqual(1)
+        expect(gap).toBeGreaterThanOrEqual(3)
+        expect(gap).toBeLessThanOrEqual(5)
         // A box is measured even where an ancestor clips it; a hit test is not.
         expect(
           await hitsAt(

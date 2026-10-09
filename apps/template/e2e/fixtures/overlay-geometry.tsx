@@ -638,7 +638,7 @@ function ArrowCase({
           <PopoverTrigger asChild>{trigger}</PopoverTrigger>
           <PopoverContent
             side={side}
-            sideOffset={12}
+            sideOffset={4}
             data-testid="arrow-content"
           >
             Popover with an arrow
@@ -650,7 +650,7 @@ function ArrowCase({
           <TooltipTrigger asChild>{trigger}</TooltipTrigger>
           <TooltipContent
             side={side}
-            sideOffset={12}
+            sideOffset={4}
             data-testid="arrow-content"
           >
             Tooltip with an arrow
