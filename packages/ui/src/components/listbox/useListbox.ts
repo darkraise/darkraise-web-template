@@ -50,7 +50,7 @@ export function useListbox(options: UseListboxOptions): UseListboxReturn {
   )
 
   const itemsRef = React.useRef<ListboxItemDescriptor[]>([])
-  const [focusedId, setFocusedId] = React.useState<string | null>(null)
+  const [focusedId, setFocusedIdState] = React.useState<string | null>(null)
 
   const items = React.useCallback((): ListboxItemDescriptor[] => {
     const list = itemsRef.current
@@ -60,7 +60,14 @@ export function useListbox(options: UseListboxOptions): UseListboxReturn {
     )
   }, [])
 
+  // Written when focus is set, not only after the commit: an item that is
+  // focused and removed in one batch is unregistered before any layout effect
+  // of this hook has run.
   const focusedIdRef = React.useRef<string | null>(null)
+  const setFocusedId = React.useCallback((id: string | null) => {
+    focusedIdRef.current = id
+    setFocusedIdState(id)
+  }, [])
   React.useLayoutEffect(() => {
     focusedIdRef.current = focusedId
   }, [focusedId])
@@ -91,7 +98,7 @@ export function useListbox(options: UseListboxOptions): UseListboxReturn {
       rest.slice(vacancy.at).find((i) => !i.disabled) ??
       [...rest].reverse().find((i) => !i.disabled)
     const nextId = successor?.id ?? null
-    setFocusedId((current) => (current === vacancy.id ? nextId : current))
+    setFocusedIdState((current) => (current === vacancy.id ? nextId : current))
     setVacancy(null)
   }, [vacancy, items])
 

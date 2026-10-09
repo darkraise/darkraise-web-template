@@ -1,5 +1,11 @@
 import { describe, expect, it, vi } from "vitest"
-import { fireEvent, render, renderHook, screen } from "@testing-library/react"
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+} from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import * as React from "react"
 import { readFileSync } from "node:fs"
@@ -484,6 +490,30 @@ describe("Listbox registry", () => {
       ])
     } finally {
       compare.mockRestore()
+      for (const element of elements) element.remove()
+    }
+  })
+
+  it("hands focus on when an item is focused and removed in one batch", () => {
+    const { result } = renderHook(() => useListbox({}))
+    const elements = ["a", "b", "c"].map(() => document.createElement("div"))
+    document.body.append(...elements)
+    const cleanups = elements.map((element, n) =>
+      result.current.registerItem({
+        id: `item-${n}`,
+        value: `item-${n}`,
+        disabled: false,
+        textValue: `item-${n}`,
+        element,
+      }),
+    )
+    try {
+      act(() => {
+        result.current.setFocusedId("item-1")
+        cleanups[1]?.()
+      })
+      expect(result.current.focusedId).toBe("item-2")
+    } finally {
       for (const element of elements) element.remove()
     }
   })
