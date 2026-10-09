@@ -67,14 +67,14 @@ function contrast(a: Rgb, b: Rgb): number {
   return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05)
 }
 
-function componentStylesheets(): Array<[string, string]> {
+function stylesheets(root: string): Array<[string, string]> {
   const walk = (dir: string): string[] =>
     readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
       const path = join(dir, entry.name)
       if (entry.isDirectory()) return walk(path)
       return entry.name.endsWith(".css") ? [path] : []
     })
-  return walk("src/components").map((path) => [
+  return walk(root).map((path) => [
     path,
     stripCssComments(readFileSync(path, "utf8")),
   ])
@@ -83,7 +83,7 @@ function componentStylesheets(): Array<[string, string]> {
 /** Every `color-mix(in srgb, <fill>, <fill>-wash N%)` hover in the kit. */
 function washMixes(): Array<{ file: string; fill: Fill; amount: number }> {
   const found: Array<{ file: string; fill: Fill; amount: number }> = []
-  for (const [file, css] of componentStylesheets()) {
+  for (const [file, css] of stylesheets("src/components")) {
     for (const hit of css.matchAll(
       /color-mix\(\s*in srgb,\s*hsl\(var\(--(primary-fill|destructive-solid|success-solid|warning-solid|info-solid)\)\),\s*hsl\(var\(--\1-wash\)\)\s+(\d+)%\s*\)/g,
     )) {
@@ -93,12 +93,77 @@ function washMixes(): Array<{ file: string; fill: Fill; amount: number }> {
   return found
 }
 
+const LABELLED_FILL = "(?:primary-fill|destructive-solid)"
+
+/** A rule body that paints a labelled fill, by utility or by value. */
+const PAINTS_FILL = new RegExp(
+  String.raw`(?<![\w-])bg-${LABELLED_FILL}(?![\w-])|:\s*hsl\(\s*var\(--${LABELLED_FILL}\)\s*\)`,
+)
+
+/** The last compound of each selector in a list. */
+function subjects(selector: string): string[] {
+  return selector
+    .replace(/\s+/g, " ")
+    .replace(/\(\s+/g, "(")
+    .replace(/\s+\)/g, ")")
+    .split(/,(?![^(]*\))/)
+    .map(
+      (one) =>
+        one
+          .trim()
+          .split(/\s*[>+~]\s*|\s(?![^(]*\))/)
+          .pop() ?? "",
+    )
+}
+
+function classesOf(compound: string): string[] {
+  return [...compound.matchAll(/\.(dr-[\w-]+)/g)].map((m) => m[1] as string)
+}
+
+/** `opacity` strictly between 0 and 1, as a declaration or a utility. */
+function translucentOpacity(declaration: string): boolean {
+  const value = /^opacity:\s*([\d.]+)(%?)$/.exec(declaration)
+  const amounts = value
+    ? [Number(value[1]) / (value[2] ? 100 : 1)]
+    : [...declaration.matchAll(/(?<![\w-])opacity-(\d+)(?![\w-])/g)].map(
+        (m) => Number(m[1]) / 100,
+      )
+  return amounts.some((amount) => amount > 0 && amount < 1)
+}
+
+/**
+ * Declarations of a hover rule that paint a labelled fill translucent: an
+ * alpha utility or value, a mix with transparent, or, on an element the
+ * stylesheet fills, a partial opacity.
+ */
+function translucentFills(body: string, onFilledElement: boolean): string[] {
+  const alphaUtility = new RegExp(
+    String.raw`(?<![\w-])(?:[\w-]+:)*bg-${LABELLED_FILL}\/`,
+  )
+  const alphaValue = new RegExp(
+    String.raw`hsl\(\s*var\(--${LABELLED_FILL}\)\s*\/`,
+  )
+  const fillVar = new RegExp(String.raw`--${LABELLED_FILL}\)`)
+  return body
+    .split(";")
+    .map((declaration) => declaration.replace(/\s+/g, " ").trim())
+    .filter(
+      (declaration) =>
+        alphaUtility.test(declaration) ||
+        alphaValue.test(declaration) ||
+        (declaration.includes("color-mix(") &&
+          fillVar.test(declaration) &&
+          /\btransparent\b/.test(declaration)) ||
+        (onFilledElement && translucentOpacity(declaration)),
+    )
+}
+
 describe("filled hover states", () => {
   const combos = reachableCombos()
 
   it("no labelled fill hovers by turning translucent", () => {
     const offenders: string[] = []
-    for (const [file, css] of componentStylesheets()) {
+    for (const [file, css] of stylesheets("src/components")) {
       for (const { body } of cssRules(css)) {
         if (
           !/text-(primary-foreground|destructive-solid-foreground)/.test(body)
@@ -112,6 +177,40 @@ describe("filled hover states", () => {
         }
       }
     }
+    expect(offenders).toEqual([])
+  })
+
+  it("no gated :hover rule turns a labelled fill translucent", () => {
+    const offenders: string[] = []
+    let gated = 0
+    for (const [file, css] of stylesheets("src")) {
+      const rules = cssRules(css)
+      const filled = new Set(
+        rules
+          .filter((rule) => PAINTS_FILL.test(rule.body))
+          .flatMap((rule) => subjects(rule.selector))
+          .filter((subject) => !subject.includes("::"))
+          .flatMap(classesOf),
+      )
+      for (const rule of rules) {
+        if (
+          !rule.selector.includes(":hover") ||
+          !rule.wrappers.some((w) => /^@media\b.*\(hover: ?hover\)/.test(w))
+        ) {
+          continue
+        }
+        gated++
+        const onFilledElement = subjects(rule.selector).some(
+          (subject) =>
+            !subject.includes("::") &&
+            classesOf(subject).some((name) => filled.has(name)),
+        )
+        for (const found of translucentFills(rule.body, onFilledElement)) {
+          offenders.push(`${found} in ${file}`)
+        }
+      }
+    }
+    expect(gated).toBeGreaterThan(0)
     expect(offenders).toEqual([])
   })
 
