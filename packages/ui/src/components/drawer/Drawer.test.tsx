@@ -12,6 +12,8 @@ import {
   DrawerTitle,
   DrawerDescription,
   type DrawerDirection,
+  DrawerOverlay,
+  DrawerPortal,
 } from "@components/drawer"
 
 function Basic({
@@ -207,5 +209,44 @@ describe("Drawer", () => {
       expect(dialog.style.transform).toBe("translateX(-40px)")
       fireEvent.pointerUp(window, { pointerId: 1, clientX: 100, clientY: 0 })
     })
+  })
+})
+
+describe("Drawer portal forceMount", () => {
+  function Panel({ forceMount }: { forceMount?: boolean }) {
+    return (
+      <Drawer>
+        <DrawerTrigger>Open</DrawerTrigger>
+        <DrawerPortal forceMount={forceMount}>
+          <DrawerOverlay data-testid="overlay" />
+          <DrawerContent>
+            <DrawerTitle>Outer</DrawerTitle>
+            <Drawer>
+              <DrawerContent data-testid="inner">
+                <DrawerTitle>Inner</DrawerTitle>
+              </DrawerContent>
+            </Drawer>
+          </DrawerContent>
+        </DrawerPortal>
+      </Drawer>
+    )
+  }
+
+  it("keeps the closed content and overlay mounted, but not a nested drawer's", () => {
+    render(<Panel forceMount />)
+    const dialogs = screen.getAllByRole("dialog", { hidden: true })
+    expect(dialogs).toHaveLength(1)
+    expect(dialogs[0]).toHaveAttribute("data-state", "closed")
+    expect(screen.getByTestId("overlay")).toHaveAttribute(
+      "data-state",
+      "closed",
+    )
+    expect(screen.queryByTestId("inner")).toBeNull()
+  })
+
+  it("unmounts the closed content and overlay without forceMount", () => {
+    render(<Panel />)
+    expect(screen.queryByRole("dialog", { hidden: true })).toBeNull()
+    expect(screen.queryByTestId("overlay")).toBeNull()
   })
 })

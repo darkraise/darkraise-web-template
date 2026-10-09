@@ -11,6 +11,7 @@ import { Presence } from "@primitives/presence"
 import { Slot, useComposedRefs } from "@primitives/slot"
 import { useDialog, type UseDialogReturn } from "@components/dialog/useDialog"
 import { lockScroll, unlockScroll } from "@components/dialog/scrollLock"
+import { createForceMountScope } from "@components/_internal/forceMountScope"
 import "./drawer.css"
 
 export type DrawerDirection =
@@ -47,6 +48,11 @@ function useDrawerContext(consumer: string): DrawerContextValue {
   if (!ctx) throw new Error(`${consumer} must be used within <Drawer>`)
   return ctx
 }
+
+const {
+  ForceMountProvider: DrawerForceMount,
+  useResolvedForceMount: useDrawerForceMount,
+} = createForceMountScope()
 
 interface DrawerProps {
   open?: boolean
@@ -203,7 +209,11 @@ function Drawer({
     [dialog, direction, beginDrag, closeOnOutsidePointerDown, closeOnEscape],
   )
 
-  return <DrawerContext.Provider value={ctx}>{children}</DrawerContext.Provider>
+  return (
+    <DrawerContext.Provider value={ctx}>
+      <DrawerForceMount>{children}</DrawerForceMount>
+    </DrawerContext.Provider>
+  )
 }
 Drawer.displayName = "Drawer"
 
@@ -249,8 +259,11 @@ interface DrawerPortalProps {
 
 function DrawerPortal({ container, forceMount, children }: DrawerPortalProps) {
   void useDrawerContext("DrawerPortal")
-  void forceMount
-  return <Portal container={container}>{children}</Portal>
+  return (
+    <DrawerForceMount forceMount={forceMount}>
+      <Portal container={container}>{children}</Portal>
+    </DrawerForceMount>
+  )
 }
 
 interface DrawerOverlayProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -260,11 +273,12 @@ interface DrawerOverlayProps extends React.HTMLAttributes<HTMLDivElement> {
 
 function DrawerOverlay({
   className,
-  forceMount,
+  forceMount: forceMountProp,
   ref,
   ...props
 }: DrawerOverlayProps) {
   const ctx = useDrawerContext("DrawerOverlay")
+  const forceMount = useDrawerForceMount(forceMountProp)
   return (
     <Presence present={ctx.open} forceMount={forceMount}>
       <div
@@ -362,8 +376,12 @@ function DrawerContentImpl({
   )
 }
 
-function DrawerContent({ forceMount, ...props }: DrawerContentProps) {
+function DrawerContent({
+  forceMount: forceMountProp,
+  ...props
+}: DrawerContentProps) {
   const ctx = useDrawerContext("DrawerContent")
+  const forceMount = useDrawerForceMount(forceMountProp)
   return (
     <DrawerPortal forceMount={forceMount}>
       <DrawerOverlay forceMount={forceMount} />
