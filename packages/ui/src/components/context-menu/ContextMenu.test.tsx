@@ -703,3 +703,93 @@ describe("ContextMenu portal forceMount", () => {
     expect(screen.queryByRole("menu", { hidden: true })).toBeNull()
   })
 })
+
+describe("ContextMenu reopened while still mounted", () => {
+  function Harness() {
+    const [open, setOpen] = useState(false)
+    return (
+      <>
+        <button type="button" onClick={() => setOpen(true)}>
+          Show menu
+        </button>
+        <ContextMenu open={open} onOpenChange={setOpen}>
+          <ContextMenuTrigger>Right-click here</ContextMenuTrigger>
+          <ContextMenuPortal forceMount>
+            {/* jsdom's viewport has no size, so collision handling would move the menu. */}
+            <ContextMenuContent avoidCollisions={false}>
+              <ContextMenuItem>Edit</ContextMenuItem>
+            </ContextMenuContent>
+          </ContextMenuPortal>
+        </ContextMenu>
+      </>
+    )
+  }
+
+  function setup() {
+    render(<Harness />)
+    const trigger = screen.getByText("Right-click here")
+    vi.spyOn(trigger, "getBoundingClientRect").mockReturnValue(
+      DOMRect.fromRect({ x: 200, y: 100, width: 80, height: 20 }),
+    )
+    const menu = screen.getByRole("menu", { hidden: true })
+    return { trigger, menu }
+  }
+
+  async function openAt(trigger: HTMLElement, menu: HTMLElement, x: number) {
+    fireEvent.contextMenu(trigger, { clientX: x, clientY: x })
+    await waitFor(() =>
+      expect(menu).toHaveStyle({ left: `${x}px`, top: `${x}px` }),
+    )
+  }
+
+  async function close(menu: HTMLElement) {
+    fireEvent.keyDown(menu, { key: "Escape" })
+    await waitFor(() => expect(menu).toHaveAttribute("data-state", "closed"))
+  }
+
+  it("stays visible while it closes", async () => {
+    const { trigger, menu } = setup()
+    await openAt(trigger, menu, 10)
+    await close(menu)
+    expect(menu).not.toHaveStyle({ visibility: "hidden" })
+  })
+
+  it("hides until positioned when reopened at another pointer", async () => {
+    const { trigger, menu } = setup()
+    await openAt(trigger, menu, 10)
+    await close(menu)
+
+    fireEvent.contextMenu(trigger, { clientX: 50, clientY: 50 })
+    expect(menu).toHaveStyle({ visibility: "hidden" })
+    await waitFor(() => expect(menu).toHaveStyle({ left: "50px", top: "50px" }))
+    expect(menu).not.toHaveStyle({ visibility: "hidden" })
+  })
+
+  it("anchors to its trigger when reopened through its props", async () => {
+    const user = userEvent.setup()
+    const { trigger, menu } = setup()
+    await openAt(trigger, menu, 10)
+    await close(menu)
+
+    await user.click(screen.getByRole("button", { name: "Show menu" }))
+    await waitFor(() =>
+      expect(menu).toHaveStyle({ left: "200px", top: "120px" }),
+    )
+    expect(menu).not.toHaveStyle({ visibility: "hidden" })
+  })
+
+  it("shows again when opened through its props a second time", async () => {
+    const user = userEvent.setup()
+    const { menu } = setup()
+    const show = screen.getByRole("button", { name: "Show menu" })
+
+    await user.click(show)
+    await waitFor(() => expect(menu).not.toHaveStyle({ visibility: "hidden" }))
+    await close(menu)
+
+    await user.click(show)
+    await waitFor(() => expect(menu).toHaveAttribute("data-state", "open"))
+    await waitFor(() => expect(menu).not.toHaveStyle({ visibility: "hidden" }))
+    expect(menu).toHaveStyle({ left: "200px", top: "120px" })
+  })
+})

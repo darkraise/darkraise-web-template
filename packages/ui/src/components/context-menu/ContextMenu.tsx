@@ -292,19 +292,23 @@ function ContextMenuContentImpl({
     alignOffset: 0,
     avoidCollisions,
     collisionPadding,
+    open: ctx.open,
   })
 
   // The root menu anchors to the pointer of the right-click that opened it.
   // Opened through its props there is no pointer, so it anchors to its
   // trigger. A closing menu keeps its anchor through the exit animation.
-  const setReferenceFloat = floating.refs.setReference
+  // `setReference` ignores a DOM element once a virtual pointer has been set,
+  // so every anchor goes through `setPositionReference`, whose fresh wrapper
+  // on each open also makes a still-mounted menu measure again.
+  const setPositionReference = floating.refs.setPositionReference
   React.useLayoutEffect(() => {
     if (ctx.isSubmenu) {
-      setReferenceFloat(ctx.submenuReference)
+      setPositionReference(ctx.submenuReference)
       return
     }
     if (!ctx.open) return
-    setReferenceFloat(
+    setPositionReference(
       ctx.point ? buildVirtualReference(ctx.point) : ctx.triggerArea,
     )
   }, [
@@ -313,15 +317,16 @@ function ContextMenuContentImpl({
     ctx.open,
     ctx.point,
     ctx.triggerArea,
-    setReferenceFloat,
+    setPositionReference,
   ])
 
   // The root menu mounts at the viewport origin before its anchor is
   // measured; shown there, a still pointer would hover its rows. A hidden
   // element cannot take focus, so focus waits until the menu is shown. A menu
-  // with neither a point nor a trigger has nothing to wait for.
+  // with neither a point nor a trigger has nothing to wait for. A closing
+  // menu stays shown where it was, through its exit animation.
   const anchored = ctx.point !== null || ctx.triggerArea !== null
-  const shown = ctx.isSubmenu || !anchored || floating.isPositioned
+  const shown = ctx.isSubmenu || !anchored || !ctx.open || floating.isPositioned
 
   React.useEffect(() => {
     if (!ctx.open || !shown) return
