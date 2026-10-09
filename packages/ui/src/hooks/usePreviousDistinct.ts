@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react"
+import { useRef } from "react"
 
 export function usePreviousDistinct<T>(
   value: T,
@@ -8,16 +8,14 @@ export function usePreviousDistinct<T>(
   const current = useRef<T | undefined>(undefined)
   const initialized = useRef<boolean>(false)
 
-  useEffect(() => {
-    if (!initialized.current) {
-      current.current = value
-      initialized.current = true
-    } else if (!compare(current.current, value)) {
-      prev.current = current.current
-      current.current = value
-    }
-  })
-
-  // eslint-disable-next-line react-hooks/refs -- `prev` holds the previous distinct value, and reading it during render is this hook's contract.
+  /* eslint-disable react-hooks/refs -- the hook stores the last distinct values and reads them during render by contract. A render that repeats the current value leaves both refs unchanged, so a Strict Mode double render returns the same value. */
+  if (!initialized.current) {
+    current.current = value
+    initialized.current = true
+  } else if (!compare(current.current, value)) {
+    prev.current = current.current
+    current.current = value
+  }
   return prev.current
+  /* eslint-enable react-hooks/refs */
 }

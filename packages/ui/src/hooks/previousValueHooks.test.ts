@@ -1,4 +1,5 @@
 import { renderHook } from "@testing-library/react"
+import { StrictMode } from "react"
 import { describe, expect, it } from "vitest"
 import { useFirstMountState } from "./useFirstMountState"
 import { usePrevious } from "./usePrevious"
@@ -31,13 +32,13 @@ describe("usePrevious", () => {
 })
 
 describe("usePreviousDistinct", () => {
-  it("returns undefined until a second distinct value has committed", () => {
+  it("returns the previous distinct value in the render that changes it", () => {
     const { result, rerender } = renderHook(({ v }) => usePreviousDistinct(v), {
       initialProps: { v: "a" },
     })
     expect(result.current).toBeUndefined()
     rerender({ v: "b" })
-    expect(result.current).toBeUndefined()
+    expect(result.current).toBe("a")
     rerender({ v: "b" })
     expect(result.current).toBe("a")
   })
@@ -51,6 +52,20 @@ describe("usePreviousDistinct", () => {
     rerender({ v: "b" })
     expect(result.current).toBe("a")
     rerender({ v: "c" })
+    expect(result.current).toBe("b")
+    rerender({ v: "c" })
+    expect(result.current).toBe("b")
+  })
+
+  it("gives the same answer when Strict Mode renders twice", () => {
+    const { result, rerender } = renderHook(({ v }) => usePreviousDistinct(v), {
+      initialProps: { v: "a" },
+      wrapper: StrictMode,
+    })
+    expect(result.current).toBeUndefined()
+    rerender({ v: "b" })
+    expect(result.current).toBe("a")
+    rerender({ v: "b" })
     expect(result.current).toBe("a")
     rerender({ v: "c" })
     expect(result.current).toBe("b")

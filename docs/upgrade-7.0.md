@@ -135,6 +135,10 @@ The cleanup that `useListbox`'s `registerItem` returns now removes the item at o
 
 `TooltipContent` wraps its children in a `<div class="dr-tooltip-body">`, so a layout class on `TooltipContent`, such as `flex items-center gap-1`, now lays out that single wrapper instead of the children. Move layout classes to an element inside `TooltipContent`; padding, width and colour classes still apply on `TooltipContent`.
 
+## Hooks
+
+`usePreviousDistinct` returns the previous distinct value in the render where the value changes, not one render later. Remove any extra render or effect you added to wait for it.
+
 ## Reduced motion
 
 Under `prefers-reduced-motion: reduce` transitions take `0s`, so no transition starts and `transitionend` never fires. Code that waits for `transitionend` to finish a state change must also finish it when the user prefers reduced motion; read the preference with `useReducedMotion` or check `getComputedStyle(element).transitionDuration`. Animations still run for `0.01ms` and fire `animationend`.
