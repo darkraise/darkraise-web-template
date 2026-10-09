@@ -425,4 +425,51 @@ describe("TooltipArrow", () => {
       "custom-arrow",
     )
   })
+
+  it.each([
+    ["top", "bottom"],
+    ["right", "left"],
+    ["bottom", "top"],
+    ["left", "right"],
+  ] as const)(
+    "on the %s side, reaches its height out past the %s edge",
+    async (side, edge) => {
+      render(
+        <Tooltip defaultOpen>
+          <TooltipTrigger>Hover me</TooltipTrigger>
+          <TooltipContent side={side} avoidCollisions={false}>
+            Tip text
+            <TooltipArrow data-testid="arrow" height={12} />
+          </TooltipContent>
+        </Tooltip>,
+      )
+      const arrow = await screen.findByTestId("arrow")
+      expect(arrow.style.getPropertyValue(edge)).toBe("-12px")
+    },
+  )
+
+  it("adds its reach past the facing border to the side offset while it is mounted", async () => {
+    function Harness({ arrow }: { arrow: boolean }) {
+      return (
+        <Tooltip defaultOpen>
+          <TooltipTrigger>Hover me</TooltipTrigger>
+          <TooltipContent
+            side="bottom"
+            sideOffset={4}
+            avoidCollisions={false}
+            style={{ borderTopWidth: "2px", borderBottomWidth: "5px" }}
+            data-testid="content"
+          >
+            Tip text
+            {arrow ? <TooltipArrow height={12} /> : null}
+          </TooltipContent>
+        </Tooltip>
+      )
+    }
+    const { rerender } = render(<Harness arrow />)
+    const content = await screen.findByTestId("content")
+    await waitFor(() => expect(content.style.top).toBe("14px"))
+    rerender(<Harness arrow={false} />)
+    await waitFor(() => expect(content.style.top).toBe("4px"))
+  })
 })

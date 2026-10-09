@@ -31,6 +31,9 @@ export interface UseFloatingProps {
 export interface UseFloatingReturnExtended extends UseFloatingReturn {
   arrowRef: (node: SVGSVGElement | null) => void
   arrowEl: SVGSVGElement | null
+  /** A mounted arrow publishes how far it reaches past the popup's edge,
+   *  which the side offset adds. */
+  setArrowReach: (reach: number) => void
 }
 
 export function useFloating(
@@ -48,11 +51,12 @@ export function useFloating(
   } = props
 
   const [arrowEl, setArrowEl] = React.useState<SVGSVGElement | null>(null)
+  const [arrowReach, setArrowReach] = React.useState(0)
 
   const middleware = React.useMemo(
     () =>
       [
-        offset({ mainAxis: sideOffset, crossAxis: alignOffset }),
+        offset({ mainAxis: sideOffset + arrowReach, crossAxis: alignOffset }),
         avoidCollisions ? flip({ padding: collisionPadding }) : undefined,
         avoidCollisions ? shift({ padding: collisionPadding }) : undefined,
         // Written inline so the popup's own stylesheet can cap its height to
@@ -85,6 +89,7 @@ export function useFloating(
     [
       alignOffset,
       arrowEl,
+      arrowReach,
       arrowPadding,
       avoidCollisions,
       collisionPadding,
@@ -104,5 +109,6 @@ export function useFloating(
     ...floating,
     arrowRef: setArrowEl,
     arrowEl,
+    setArrowReach,
   }
 }

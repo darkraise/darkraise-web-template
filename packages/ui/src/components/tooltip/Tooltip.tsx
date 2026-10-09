@@ -14,6 +14,7 @@ import {
   placementOf,
   resolveSide,
   sideOfPlacement,
+  useArrowReach,
   useFloating,
   type LogicalSide,
   type PopupAlign,
@@ -376,6 +377,12 @@ function TooltipArrow({
   const composedRef = useComposedRefs(
     floating?.arrowRef as React.Ref<SVGSVGElement>,
     ref,
+  )
+  useArrowReach(
+    floating?.setArrowReach,
+    floating?.elements.floating ?? null,
+    side,
+    height,
   )
 
   return (

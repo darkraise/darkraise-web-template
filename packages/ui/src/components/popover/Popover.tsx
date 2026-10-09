@@ -13,6 +13,7 @@ import {
   FloatingArrow,
   resolveSide,
   sideOfPlacement,
+  useArrowReach,
   useFloating,
 } from "@primitives/floating"
 import {
@@ -393,6 +394,12 @@ function PopoverArrow({
   const composedRef = useComposedRefs(
     floating?.arrowRef as React.Ref<SVGSVGElement>,
     ref,
+  )
+  useArrowReach(
+    floating?.setArrowReach,
+    floating?.elements.floating ?? null,
+    side,
+    height,
   )
 
   return (

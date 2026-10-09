@@ -135,6 +135,8 @@ The cleanup that `useListbox`'s `registerItem` returns now removes the item at o
 
 `TooltipContent` wraps its children in a `<div class="dr-tooltip-body">`, so a layout class on `TooltipContent`, such as `flex items-center gap-1`, now lays out that single wrapper instead of the children. Move layout classes to an element inside `TooltipContent`; padding, width and colour classes still apply on `TooltipContent`.
 
+A `PopoverContent` or `TooltipContent` that holds a `PopoverArrow` or `TooltipArrow` sits further from its trigger by the arrow's `height` less the popup's border width (3px for the default arrow), since the side offset now adds it. To keep a popup where it was, subtract that from `sideOffset`.
+
 ## Hooks
 
 `usePreviousDistinct` returns the previous distinct value in the render where the value changes, not one render later. Remove any extra render or effect you added to wait for it.

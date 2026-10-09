@@ -286,6 +286,53 @@ describe("PopoverArrow", () => {
       "custom-arrow",
     )
   })
+
+  it.each([
+    ["top", "bottom"],
+    ["right", "left"],
+    ["bottom", "top"],
+    ["left", "right"],
+  ] as const)(
+    "on the %s side, reaches its height out past the %s edge",
+    async (side, edge) => {
+      render(
+        <Popover defaultOpen>
+          <PopoverTrigger>Toggle</PopoverTrigger>
+          <PopoverContent side={side} avoidCollisions={false}>
+            Arrow content
+            <PopoverArrow data-testid="arrow" height={12} />
+          </PopoverContent>
+        </Popover>,
+      )
+      const arrow = await screen.findByTestId("arrow")
+      expect(arrow.style.getPropertyValue(edge)).toBe("-12px")
+    },
+  )
+
+  it("adds its reach past the facing border to the side offset while it is mounted", async () => {
+    function Harness({ arrow }: { arrow: boolean }) {
+      return (
+        <Popover defaultOpen>
+          <PopoverTrigger>Toggle</PopoverTrigger>
+          <PopoverContent
+            side="bottom"
+            sideOffset={4}
+            avoidCollisions={false}
+            style={{ borderTopWidth: "2px", borderBottomWidth: "5px" }}
+            data-testid="content"
+          >
+            Arrow content
+            {arrow ? <PopoverArrow height={12} /> : null}
+          </PopoverContent>
+        </Popover>
+      )
+    }
+    const { rerender } = render(<Harness arrow />)
+    const content = await screen.findByTestId("content")
+    await waitFor(() => expect(content.style.top).toBe("14px"))
+    rerender(<Harness arrow={false} />)
+    await waitFor(() => expect(content.style.top).toBe("4px"))
+  })
 })
 
 describe("Popover portal forceMount", () => {
