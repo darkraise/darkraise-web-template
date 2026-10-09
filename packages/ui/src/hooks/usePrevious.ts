@@ -7,6 +7,6 @@ export function usePrevious<T>(value?: T): T | undefined {
     previous.current = value
   })
 
-  // eslint-disable-next-line react-hooks/refs
+  // eslint-disable-next-line react-hooks/refs -- `previous` holds the previous render's value, and reading it during render is this hook's contract.
   return previous.current
 }

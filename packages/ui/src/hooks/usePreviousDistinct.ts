@@ -18,6 +18,6 @@ export function usePreviousDistinct<T>(
     }
   })
 
-  // eslint-disable-next-line react-hooks/refs
+  // eslint-disable-next-line react-hooks/refs -- `prev` holds the previous distinct value, and reading it during render is this hook's contract.
   return prev.current
 }
