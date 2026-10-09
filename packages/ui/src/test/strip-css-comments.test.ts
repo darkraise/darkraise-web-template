@@ -6,14 +6,6 @@ import { stripCssComments } from "./strip-css-comments"
 // inside a CSS string.
 const QUOTE_BLIND = /\/\\\/\\\*\[\\s\\S\]\*\?\\\*\\\/\//g
 
-// These strip comments from TypeScript source, where stripCssComments would
-// read an apostrophe in a line comment as the start of a string.
-const SCRIPT_STRIPPERS = new Map([
-  ["src/styles/elevation-attribute.test.ts", 1],
-  ["src/styles/logical-css.test.ts", 1],
-  ["src/theme/engine/primary-fill-migration.test.ts", 1],
-])
-
 describe("stripCssComments", () => {
   it("keeps a comment's newlines when asked, so line numbers still match", () => {
     expect(
@@ -28,9 +20,7 @@ describe("stripCssComments", () => {
     expect(files.length).toBeGreaterThan(0)
     const offenders = files.flatMap((file) => {
       const uses = [...readFileSync(file, "utf8").matchAll(QUOTE_BLIND)].length
-      return uses > (SCRIPT_STRIPPERS.get(file) ?? 0)
-        ? [`${file}: ${uses}`]
-        : []
+      return uses > 0 ? [`${file}: ${uses}`] : []
     })
     expect(offenders).toEqual([])
   })

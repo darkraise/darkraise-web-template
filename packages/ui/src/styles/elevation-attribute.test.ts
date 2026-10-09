@@ -1,5 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { globSync, readFileSync } from "node:fs"
+import { stripCssComments } from "../test/strip-css-comments"
+import { stripScriptComments } from "../test/strip-script-comments"
 
 // `data-elevation` is the theme axis on <html>. A component that reuses the
 // name matches theme.css's unscoped [data-elevation="…"] ramps and redefines
@@ -11,8 +13,10 @@ const OWNERS = new Set([
   "src/theme/axes/registry.ts",
 ])
 
-function withoutComments(source: string): string {
-  return source.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "")
+function withoutComments(file: string, source: string): string {
+  return file.endsWith(".css")
+    ? stripCssComments(source)
+    : stripScriptComments(source)
 }
 
 describe("data-elevation attribute", () => {
@@ -24,7 +28,9 @@ describe("data-elevation attribute", () => {
     const offenders = files.filter(
       (file) =>
         !OWNERS.has(file) &&
-        /data-elevation\b/.test(withoutComments(readFileSync(file, "utf8"))),
+        /data-elevation\b/.test(
+          withoutComments(file, readFileSync(file, "utf8")),
+        ),
     )
     expect(offenders).toEqual([])
   })

@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest"
 import { readdirSync, readFileSync } from "node:fs"
 import { join } from "node:path"
+import { stripCssComments } from "../../test/strip-css-comments"
+import { stripScriptComments } from "../../test/strip-script-comments"
 
 const UI_SRC = join(import.meta.dirname, "..", "..")
 const TEMPLATE_SRC = join(UI_SRC, "..", "..", "..", "apps", "template", "src")
@@ -24,9 +26,14 @@ const OPAQUE_FILL = new RegExp(
     String.raw`background(?:-color)?:\s*hsl\(\s*${PRIMARY_VAR}\s*(?:\/\s*${CSS_FILL_ALPHA}\s*)?\)`,
   ].join("|"),
 )
-// Stripping block comments wholesale is the only reliable way to tell a
+// Stripping comments wholesale is the only reliable way to tell a
 // declaration from a sentence about one.
-const BLOCK_COMMENT = /\/\*[\s\S]*?\*\//g
+function withoutComments(file: string): string {
+  const source = readFileSync(file, "utf8")
+  return file.endsWith(".css")
+    ? stripCssComments(source)
+    : stripScriptComments(source)
+}
 
 function sourceFiles(): string[] {
   return [UI_SRC, TEMPLATE_SRC].flatMap((root) =>
@@ -42,7 +49,7 @@ describe("primary-fill migration", () => {
   // contrast guarantee: white measures 1.98:1 on dark yellow.
   it("paints no opaque background from --primary", () => {
     const offenders = sourceFiles().filter((file) =>
-      OPAQUE_FILL.test(readFileSync(file, "utf8").replace(BLOCK_COMMENT, " ")),
+      OPAQUE_FILL.test(withoutComments(file)),
     )
 
     expect(offenders).toEqual([])

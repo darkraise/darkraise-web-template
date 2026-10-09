@@ -3,6 +3,7 @@ import { readFileSync, readdirSync } from "node:fs"
 import { join } from "node:path"
 import { splitToken } from "./interactive-classes"
 import { stripCssComments } from "../test/strip-css-comments"
+import { stripScriptComments } from "../test/strip-script-comments"
 
 // Physical left/right styling does not mirror under dir="rtl". Every such use
 // in the kit is either logical or listed in ALLOWED with the reason it stays
@@ -330,13 +331,10 @@ function cssFindings(css: string): string[] {
 
 /**
  * Comments go first: the literal reader pairs quote characters, so an
- * apostrophe in a comment would shift every pair after it. A line comment
- * starts at a line start or after whitespace, which leaves "https://" alone.
+ * apostrophe in a comment would shift every pair after it.
  */
 function withoutComments(source: string): string {
-  return source
-    .replace(/\/\*[\s\S]*?\*\//g, " ")
-    .replace(/(^|\s)\/\/.*$/gm, "$1")
+  return stripScriptComments(source)
 }
 
 /** Physical utilities among the whitespace-split tokens of string literals. */
