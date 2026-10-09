@@ -456,3 +456,31 @@ describe("CommandInput ref", () => {
     expect(callbackRef).not.toHaveBeenCalledWith(null)
   })
 })
+
+describe("Command refs", () => {
+  it("keeps callback refs on the root and an item attached across re-renders", () => {
+    const rootRef = vi.fn()
+    const itemRef = vi.fn()
+    function Palette({ tick }: { tick: number }) {
+      return (
+        <Command ref={rootRef} data-tick={tick}>
+          <CommandInput aria-label="Search" />
+          <CommandList>
+            <CommandItem value="apple" ref={itemRef}>
+              Apple
+            </CommandItem>
+          </CommandList>
+        </Command>
+      )
+    }
+    const { container, rerender } = render(<Palette tick={0} />)
+    for (const tick of [1, 2, 3]) rerender(<Palette tick={tick} />)
+    expect(container.firstChild).toHaveAttribute("data-tick", "3")
+    expect(rootRef).toHaveBeenCalledTimes(1)
+    expect(rootRef).toHaveBeenCalledWith(container.firstChild)
+    expect(itemRef).toHaveBeenCalledTimes(1)
+    expect(itemRef).toHaveBeenCalledWith(
+      screen.getByRole("option", { name: "Apple" }),
+    )
+  })
+})

@@ -46,8 +46,6 @@ interface CommandContextValue {
   inputId: string
   listId: string
   labelId: string
-  rootRef: React.RefObject<HTMLDivElement | null>
-  inputRef: React.RefObject<HTMLInputElement | null>
 }
 
 const CommandContext = React.createContext<CommandContextValue | null>(null)
@@ -100,8 +98,6 @@ function Command({
   const inputId = useId()
   const listId = useId()
   const labelId = useId()
-  const rootRef = React.useRef<HTMLDivElement | null>(null)
-  const inputRef = React.useRef<HTMLInputElement | null>(null)
 
   const [items, setItems] = React.useState<CommandItemRecord[]>([])
 
@@ -175,8 +171,6 @@ function Command({
       inputId,
       listId,
       labelId,
-      rootRef,
-      inputRef,
     }),
     [
       search,
@@ -198,12 +192,7 @@ function Command({
   return (
     <CommandContext.Provider value={ctx}>
       <div
-        ref={(node) => {
-          rootRef.current = node
-          if (typeof ref === "function") ref(node)
-          else if (ref)
-            (ref as React.RefObject<HTMLDivElement | null>).current = node
-        }}
+        ref={ref}
         cmdk-root=""
         data-surface-fill={surface}
         className={cn("dr-command", className)}
@@ -260,7 +249,6 @@ function CommandInput({
   ...rest
 }: CommandInputProps) {
   const ctx = useCommandContext("CommandInput")
-  const composedRef = useComposedRefs(ctx.inputRef, ref)
 
   // Sync controlled prop.
   React.useEffect(() => {
@@ -319,7 +307,7 @@ function CommandInput({
         aria-hidden="true"
       />
       <input
-        ref={composedRef}
+        ref={ref}
         cmdk-input=""
         type="text"
         autoComplete="off"
@@ -474,6 +462,7 @@ function CommandItem({
   const { registerItem, unregisterItem } = ctx
   const group = React.useContext(CommandGroupContext)
   const localRef = React.useRef<HTMLDivElement | null>(null)
+  const composedRef = useComposedRefs(localRef, ref)
   const textRef = React.useRef("")
   const id = useId()
 
@@ -506,12 +495,7 @@ function CommandItem({
 
   return (
     <div
-      ref={(node) => {
-        localRef.current = node
-        if (typeof ref === "function") ref(node)
-        else if (ref)
-          (ref as React.RefObject<HTMLDivElement | null>).current = node
-      }}
+      ref={composedRef}
       id={id}
       role="option"
       aria-selected={selected}
