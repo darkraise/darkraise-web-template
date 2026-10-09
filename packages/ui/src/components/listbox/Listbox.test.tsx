@@ -448,3 +448,34 @@ describe("Listbox registry", () => {
     second.remove()
   })
 })
+
+describe("ListboxItem pointer enter", () => {
+  it("runs a consumer onPointerEnter and still focuses the item", async () => {
+    const onPointerEnter = vi.fn()
+    render(
+      <Listbox aria-label="Fruit">
+        <ListboxItem value="a" onPointerEnter={onPointerEnter}>
+          Apple
+        </ListboxItem>
+      </Listbox>,
+    )
+    await userEvent.hover(screen.getByRole("option"))
+    expect(onPointerEnter).toHaveBeenCalledTimes(1)
+    expect(screen.getByRole("option")).toHaveAttribute("data-focused", "true")
+  })
+
+  it("leaves focus alone when the consumer prevents the default", async () => {
+    render(
+      <Listbox aria-label="Fruit">
+        <ListboxItem
+          value="a"
+          onPointerEnter={(event) => event.preventDefault()}
+        >
+          Apple
+        </ListboxItem>
+      </Listbox>,
+    )
+    await userEvent.hover(screen.getByRole("option"))
+    expect(screen.getByRole("option")).not.toHaveAttribute("data-focused")
+  })
+})

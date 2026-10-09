@@ -89,6 +89,7 @@ function ListboxItem({
   textValue,
   children,
   onClick,
+  onPointerEnter,
   ...rest
 }: ListboxItemProps) {
   const ctx = useListboxContext("ListboxItem")
@@ -131,7 +132,9 @@ function ListboxItem({
         if (disabled) return
         ctx.toggle(value)
       }}
-      onPointerEnter={() => {
+      onPointerEnter={(event) => {
+        onPointerEnter?.(event)
+        if (event.defaultPrevented) return
         if (!disabled && !ctx.disabled) ctx.setFocusedId(id)
       }}
       className={cn("dr-listbox-item", className)}
