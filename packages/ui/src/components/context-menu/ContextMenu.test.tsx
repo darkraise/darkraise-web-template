@@ -488,3 +488,81 @@ describe("ContextMenu sub-trigger keys", () => {
     await waitFor(() => expect(email).toHaveFocus())
   })
 })
+
+describe("ContextMenu item disabled after mount", () => {
+  function Menu({ disabled }: { disabled: boolean }) {
+    return (
+      <ContextMenu>
+        <ContextMenuTrigger>Right-click here</ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuItem>Copy</ContextMenuItem>
+          <ContextMenuItem disabled={disabled}>Paste</ContextMenuItem>
+          <ContextMenuItem>Delete</ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
+    )
+  }
+
+  it("arrow keys skip an item disabled after mount and reach it once enabled", async () => {
+    const { rerender } = render(<Menu disabled={false} />)
+    fireEvent.contextMenu(screen.getByText("Right-click here"), {
+      clientX: 10,
+      clientY: 10,
+    })
+    const menu = await screen.findByRole("menu")
+    const copy = screen.getByRole("menuitem", { name: "Copy" })
+    const paste = screen.getByRole("menuitem", { name: "Paste" })
+    const del = screen.getByRole("menuitem", { name: "Delete" })
+
+    fireEvent.keyDown(menu, { key: "Home" })
+    await waitFor(() => expect(copy).toHaveFocus())
+    fireEvent.keyDown(copy, { key: "ArrowDown" })
+    await waitFor(() => expect(paste).toHaveFocus())
+
+    rerender(<Menu disabled />)
+    expect(screen.getByRole("menuitem", { name: "Paste" })).toBe(paste)
+    fireEvent.keyDown(menu, { key: "Home" })
+    await waitFor(() => expect(copy).toHaveFocus())
+    fireEvent.keyDown(copy, { key: "ArrowDown" })
+    await waitFor(() => expect(del).toHaveFocus())
+
+    rerender(<Menu disabled={false} />)
+    expect(screen.getByRole("menuitem", { name: "Paste" })).toBe(paste)
+    fireEvent.keyDown(menu, { key: "Home" })
+    await waitFor(() => expect(copy).toHaveFocus())
+    fireEvent.keyDown(copy, { key: "ArrowDown" })
+    await waitFor(() => expect(paste).toHaveFocus())
+  })
+})
+
+describe("ContextMenu item text changed after mount", () => {
+  function Menu({ label }: { label: string }) {
+    return (
+      <ContextMenu>
+        <ContextMenuTrigger>Right-click here</ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuItem>Copy</ContextMenuItem>
+          <ContextMenuItem>{label}</ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
+    )
+  }
+
+  it("typeahead finds an item by its new text, not its old one", async () => {
+    const { rerender } = render(<Menu label="Paste" />)
+    fireEvent.contextMenu(screen.getByText("Right-click here"), {
+      clientX: 10,
+      clientY: 10,
+    })
+    const menu = await screen.findByRole("menu")
+    await waitFor(() => expect(menu).toHaveFocus())
+    rerender(<Menu label="Rename" />)
+    const renamed = screen.getByRole("menuitem", { name: "Rename" })
+
+    fireEvent.keyDown(menu, { key: "p" })
+    expect(renamed).not.toHaveFocus()
+    await new Promise((resolve) => setTimeout(resolve, 600))
+    fireEvent.keyDown(menu, { key: "r" })
+    await waitFor(() => expect(renamed).toHaveFocus())
+  })
+})

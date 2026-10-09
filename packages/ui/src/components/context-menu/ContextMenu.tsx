@@ -9,11 +9,8 @@ import { Portal } from "@primitives/portal"
 import { Presence } from "@primitives/presence"
 import { Slot, useComposedRefs } from "@primitives/slot"
 import { placementOf, resolveSide, useFloating } from "@primitives/floating"
-import {
-  useMenu,
-  type MenuItemDescriptor,
-  type UseMenuReturn,
-} from "@components/_internal/useMenu"
+import { useId } from "@primitives/state"
+import { useMenu, type UseMenuReturn } from "@components/_internal/useMenu"
 import "@components/menu-primitives/menu-primitives.css"
 
 interface VirtualPoint {
@@ -430,52 +427,36 @@ function useMenuItem({
   ref,
   disabled,
   textValue,
+  children,
 }: {
   ref?: React.Ref<HTMLDivElement>
   disabled?: boolean
   textValue?: string
+  children?: React.ReactNode
 }) {
   const ctx = useContextMenuContext("ContextMenuItem")
   const localRef = React.useRef<HTMLDivElement | null>(null)
+  const id = useId()
 
-  const descriptorRef = React.useRef<MenuItemDescriptor | null>(null)
-  if (descriptorRef.current === null) {
-    const id = Math.random().toString(36).slice(2)
-    descriptorRef.current = {
+  // Replacing a known id's record does not re-render the menu, so syncing a
+  // changed field cannot start a render loop. Removal lives in its own
+  // effect: a field change must not unregister the item, or focus would
+  // leave it.
+  const { registerItem, unregisterItem } = ctx
+  // Without a textValue the typeahead text is the rendered text, so the
+  // record is refreshed whenever the children change.
+  React.useLayoutEffect(() => {
+    registerItem({
       id,
       value: id,
-      textValue: textValue ?? "",
       disabled: !!disabled,
+      textValue: textValue ?? localRef.current?.textContent ?? "",
       ref: localRef,
-    }
-  }
-  if (descriptorRef.current) {
-    descriptorRef.current.disabled = !!disabled
-    if (textValue !== undefined) {
-      descriptorRef.current.textValue = textValue
-    }
-  }
+    })
+  }, [registerItem, id, disabled, textValue, children])
+  React.useLayoutEffect(() => () => unregisterItem(id), [unregisterItem, id])
 
-  const registerItem = ctx.registerItem
-  React.useEffect(() => {
-    const descriptor = descriptorRef.current
-    if (!descriptor) return
-    return registerItem(descriptor)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  React.useEffect(() => {
-    if (textValue !== undefined) return
-    const node = localRef.current
-    const descriptor = descriptorRef.current
-    if (node && descriptor) {
-      descriptor.textValue = node.textContent ?? ""
-    }
-  })
-
-  const sortedItems = ctx.items()
-  const myIndex = sortedItems.findIndex((it) => it === descriptorRef.current)
-  const isFocused = myIndex >= 0 && ctx.focusedIndex === myIndex
+  const isFocused = ctx.focusedId === id
 
   React.useEffect(() => {
     if (isFocused) localRef.current?.focus({ preventScroll: true })
@@ -487,7 +468,7 @@ function useMenuItem({
     localRef,
     composedRef,
     isFocused,
-    myIndex,
+    id,
     ctx,
   }
 }
@@ -507,10 +488,11 @@ function ContextMenuItem({
   children,
   ...rest
 }: ContextMenuItemProps) {
-  const { localRef, composedRef, isFocused, myIndex, ctx } = useMenuItem({
+  const { localRef, composedRef, isFocused, id, ctx } = useMenuItem({
     ref,
     disabled,
     textValue,
+    children,
   })
   const Comp = asChild ? Slot : "div"
 
@@ -541,7 +523,7 @@ function ContextMenuItem({
         // open, unless this item is the sub-trigger holding it.
         ctx.closeOpenSubmenu(localRef.current)
         if (disabled) return
-        if (myIndex >= 0) ctx.setFocusedIndex(myIndex)
+        ctx.setFocusedId(id)
       }}
       onClick={(event: React.MouseEvent<HTMLDivElement>) => {
         onClick?.(event)
