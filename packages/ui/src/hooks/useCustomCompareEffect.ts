@@ -18,6 +18,9 @@ export function useCustomCompareEffect<
 ): void {
   const dependencies = useRef<Deps>(undefined)
 
+  /* eslint-disable react-hooks/refs
+     -- `dependencies` is this hook's compare cache: it holds the dependencies
+     of the last change and is read and replaced during render by contract. */
   if (
     dependencies.current === undefined ||
     (isBrowser && !comparator(dependencies.current, deps))
@@ -26,4 +29,5 @@ export function useCustomCompareEffect<
   }
 
   effectHook(callback, dependencies.current, ...effectHookRestArgs)
+  /* eslint-enable react-hooks/refs */
 }
