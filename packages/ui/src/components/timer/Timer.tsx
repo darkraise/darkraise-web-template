@@ -69,6 +69,43 @@ function isEnabled(state: TimerState, action: TimerAction): boolean {
   }
 }
 
+interface TimerClock {
+  state: TimerState
+  startedAt: number
+  accumulated: number
+  now: number
+}
+
+function elapsedOf(clock: TimerClock): number {
+  return clock.state === "running"
+    ? clock.accumulated + (clock.now - clock.startedAt)
+    : clock.accumulated
+}
+
+function transition(
+  clock: TimerClock,
+  action: TimerAction,
+  at: number,
+): TimerClock {
+  if (!isEnabled(clock.state, action)) return clock
+  switch (action) {
+    case "start":
+    case "restart":
+      return { state: "running", startedAt: at, accumulated: 0, now: at }
+    case "pause":
+      return {
+        state: "paused",
+        startedAt: 0,
+        accumulated: clock.accumulated + (at - clock.startedAt),
+        now: at,
+      }
+    case "resume":
+      return { ...clock, state: "running", startedAt: at, now: at }
+    case "reset":
+      return { state: "idle", startedAt: 0, accumulated: 0, now: at }
+  }
+}
+
 export interface TimerProps extends Omit<
   React.HTMLAttributes<HTMLDivElement>,
   "onChange"
@@ -96,15 +133,19 @@ function Timer({
   const initialState: TimerState =
     autoStart && (!countdown || targetMs > 0) ? "running" : "idle"
 
-  const [state, setState] = React.useState<TimerState>(initialState)
-  const [now, setNow] = React.useState<number>(() => Date.now())
-  const startedAtMsRef = React.useRef<number>(
-    initialState === "running" ? Date.now() : 0,
-  )
-  const accumulatedMsRef = React.useRef<number>(0)
+  const [clock, setClock] = React.useState<TimerClock>(() => {
+    const at = Date.now()
+    return {
+      state: initialState,
+      startedAt: initialState === "running" ? at : 0,
+      accumulated: 0,
+      now: at,
+    }
+  })
+  const { state } = clock
   const onTickRef = React.useRef(onTick)
   const onCompleteRef = React.useRef(onComplete)
-  const completedFiredRef = React.useRef(false)
+  const completedOnMountRef = React.useRef(false)
 
   React.useEffect(() => {
     onTickRef.current = onTick
@@ -114,109 +155,70 @@ function Timer({
     onCompleteRef.current = onComplete
   }, [onComplete])
 
-  const computeElapsed = React.useCallback(
-    (currentNow: number): number => {
-      if (state === "running") {
-        return accumulatedMsRef.current + (currentNow - startedAtMsRef.current)
-      }
-      return accumulatedMsRef.current
-    },
-    [state],
-  )
-
   // Schedule ticks while running. Cleaned up on state change, interval change,
   // and unmount. Effect intentionally re-keys on interval so we honor changes
   // without callback identity churn.
   React.useEffect(() => {
     if (state !== "running") return
     const id = setInterval(() => {
-      setNow(Date.now())
+      const at = Date.now()
+      setClock((prev) => ({ ...prev, now: at }))
     }, interval)
     return () => clearInterval(id)
   }, [state, interval])
 
-  // Drive tick callback + completion detection from `now` updates.
+  // Drive tick callback + completion detection from clock updates.
   React.useEffect(() => {
-    const elapsed = computeElapsed(now)
+    const elapsed = elapsedOf(clock)
     const display = countdown ? Math.max(0, targetMs - elapsed) : elapsed
     onTickRef.current?.(display)
     if (
       countdown &&
-      state === "running" &&
+      clock.state === "running" &&
       targetMs > 0 &&
-      elapsed >= targetMs &&
-      !completedFiredRef.current
+      elapsed >= targetMs
     ) {
-      completedFiredRef.current = true
       // Freeze accumulated at the target so display reads exactly 0.
-      accumulatedMsRef.current = targetMs
-      startedAtMsRef.current = 0
-      setState("completed")
+      setClock({
+        state: "completed",
+        startedAt: 0,
+        accumulated: targetMs,
+        now: clock.now,
+      })
       onCompleteRef.current?.()
     }
-  }, [now, countdown, targetMs, state, computeElapsed])
+  }, [clock, countdown, targetMs])
 
-  // Handle the immediate-complete case for autoStart with targetMs <= 0.
+  // Handle the immediate-complete case for autoStart with targetMs <= 0. The
+  // ref keeps StrictMode's second mount from firing onComplete again.
   React.useEffect(() => {
-    if (countdown && autoStart && targetMs <= 0 && !completedFiredRef.current) {
-      completedFiredRef.current = true
-      accumulatedMsRef.current = 0
-      setState("completed")
+    if (
+      countdown &&
+      autoStart &&
+      targetMs <= 0 &&
+      !completedOnMountRef.current
+    ) {
+      completedOnMountRef.current = true
+      setClock((prev) => ({
+        ...prev,
+        state: "completed",
+        startedAt: 0,
+        accumulated: 0,
+      }))
       onCompleteRef.current?.()
     }
     // run-once on mount
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // The timestamp is taken here, not in the updater, so StrictMode's second
+  // updater call computes the same transition.
   const dispatch = React.useCallback((action: TimerAction) => {
-    setState((prev) => {
-      if (!isEnabled(prev, action)) return prev
-      const current = Date.now()
-      switch (action) {
-        case "start": {
-          accumulatedMsRef.current = 0
-          startedAtMsRef.current = current
-          completedFiredRef.current = false
-          setNow(current)
-          return "running"
-        }
-        case "pause": {
-          // StrictMode dev-mode invokes setState updaters twice. The math
-          // here is non-idempotent on its own (it depends on the prior
-          // `startedAtMsRef` and then zeroes it), so gate it on the ref's
-          // sentinel value: only apply when we're still mid-run.
-          if (startedAtMsRef.current !== 0) {
-            accumulatedMsRef.current += current - startedAtMsRef.current
-            startedAtMsRef.current = 0
-          }
-          setNow(current)
-          return "paused"
-        }
-        case "resume": {
-          startedAtMsRef.current = current
-          setNow(current)
-          return "running"
-        }
-        case "reset": {
-          accumulatedMsRef.current = 0
-          startedAtMsRef.current = 0
-          completedFiredRef.current = false
-          setNow(current)
-          return "idle"
-        }
-        case "restart": {
-          accumulatedMsRef.current = 0
-          startedAtMsRef.current = current
-          completedFiredRef.current = false
-          setNow(current)
-          return "running"
-        }
-      }
-    })
+    const at = Date.now()
+    setClock((prev) => transition(prev, action, at))
   }, [])
 
-  // Compute display synchronously each render based on `now`.
-  const elapsedMs = computeElapsed(now)
+  const elapsedMs = elapsedOf(clock)
   const displayMs = countdown ? Math.max(0, targetMs - elapsedMs) : elapsedMs
   const parts = React.useMemo(() => toParts(displayMs), [displayMs])
 
