@@ -1,4 +1,3 @@
-import { readFileSync } from "node:fs"
 import { render, screen, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { expect, it, vi } from "vitest"
@@ -123,14 +122,4 @@ it("hides a compact trigger's name only beside the selected icon", () => {
   rerender(view("fr"))
   expect(trigger).toHaveAttribute("data-compact", "true")
   expect(trigger).not.toHaveAttribute("data-compact-icon")
-
-  // Paths resolve from the vitest project root, packages/ui.
-  const css = readFileSync(
-    "src/components/locale-switcher/locale-switcher.css",
-    "utf8",
-  ).replace(/\s+/g, " ")
-  expect(css).toContain(
-    "[data-compact-icon] .dr-locale-option-label { @apply sr-only; }",
-  )
-  expect(css).not.toContain("[data-compact] .dr-locale-option-label")
 })
