@@ -9,9 +9,11 @@ import { Portal } from "@primitives/portal"
 import { Presence } from "@primitives/presence"
 import { Slot, useComposedRefs } from "@primitives/slot"
 import {
+  arrowEdge,
   FloatingArrow,
   placementOf,
   resolveSide,
+  sideOfPlacement,
   useFloating,
   type LogicalSide,
   type PopupAlign,
@@ -337,7 +339,7 @@ function TooltipContentImpl({
         {...rest}
       >
         <TooltipFloatingContext.Provider value={floating}>
-          {children}
+          <div className="dr-tooltip-body">{children}</div>
         </TooltipFloatingContext.Provider>
       </div>
     </DismissableLayer>
@@ -361,9 +363,10 @@ interface TooltipArrowProps extends React.SVGAttributes<SVGSVGElement> {
   ref?: React.Ref<SVGSVGElement>
 }
 
-function TooltipArrow({ ref, style, ...props }: TooltipArrowProps) {
+function TooltipArrow({ ref, style, height = 4, ...props }: TooltipArrowProps) {
   const floating = React.useContext(TooltipFloatingContext)
   const arrowData = floating?.middlewareData.arrow
+  const side = floating ? sideOfPlacement(floating.placement) : "top"
   const composedRef = useComposedRefs(
     floating?.arrowRef as React.Ref<SVGSVGElement>,
     ref,
@@ -373,11 +376,14 @@ function TooltipArrow({ ref, style, ...props }: TooltipArrowProps) {
     <FloatingArrow
       ref={composedRef}
       {...props}
+      height={height}
+      side={side}
       style={{
         ...style,
         position: "absolute",
         left: arrowData?.x,
         top: arrowData?.y,
+        [arrowEdge(side)]: -height,
       }}
     />
   )

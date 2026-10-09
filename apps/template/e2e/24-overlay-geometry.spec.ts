@@ -468,6 +468,63 @@ test.describe("the tour popover stays on screen", () => {
   })
 })
 
+test.describe("popup arrows point at their trigger", () => {
+  for (const kind of ["popover", "tooltip"] as const) {
+    for (const side of ["top", "right", "bottom", "left"] as const) {
+      test(`a ${kind} arrow on the ${side} side sits on the edge facing the trigger`, async ({
+        page,
+      }) => {
+        await seedApp(page, { style: "quiet", mode: "light" })
+        await openOverlayCase(page, `arrow-${kind}-${side}`)
+        const content = await boxOf(page.getByTestId("arrow-content"))
+        const arrow = await boxOf(page.getByTestId("arrow"))
+        const trigger = await boxOf(page.getByTestId("arrow-trigger"))
+        const vertical = side === "top" || side === "bottom"
+        // The arrow overlaps the content's 1px border and no more.
+        const facing = {
+          top: arrow.y - (content.y + content.height),
+          bottom: content.y - (arrow.y + arrow.height),
+          left: arrow.x - (content.x + content.width),
+          right: content.x - (arrow.x + arrow.width),
+        }[side]
+        expect(facing).toBeGreaterThanOrEqual(-1)
+        expect(facing).toBeLessThanOrEqual(0)
+        if (vertical) {
+          expect(arrow.width).toBeGreaterThan(arrow.height)
+          expect(arrow.x).toBeGreaterThanOrEqual(content.x)
+          expect(arrow.x + arrow.width).toBeLessThanOrEqual(
+            content.x + content.width,
+          )
+        } else {
+          expect(arrow.height).toBeGreaterThan(arrow.width)
+          expect(arrow.y).toBeGreaterThanOrEqual(content.y)
+          expect(arrow.y + arrow.height).toBeLessThanOrEqual(
+            content.y + content.height,
+          )
+        }
+        // Its tip reaches toward the trigger without crossing into it.
+        const gap = {
+          top: trigger.y - (arrow.y + arrow.height),
+          bottom: arrow.y - (trigger.y + trigger.height),
+          left: trigger.x - (arrow.x + arrow.width),
+          right: arrow.x - (trigger.x + trigger.width),
+        }[side]
+        expect(gap).toBeGreaterThanOrEqual(-1)
+        expect(gap).toBeLessThanOrEqual(1)
+        // A box is measured even where an ancestor clips it; a hit test is not.
+        expect(
+          await hitsAt(
+            page,
+            arrow.x + arrow.width / 2,
+            arrow.y + arrow.height / 2,
+            '[data-testid="arrow"]',
+          ),
+        ).toBe(true)
+      })
+    }
+  }
+})
+
 test.describe("floating surfaces paint the overlay fill", () => {
   for (const mode of ["light", "dark"] as const) {
     test(`every surface matches a popover · glass · ${mode}`, async ({

@@ -8,7 +8,13 @@ import { focusProgrammatically, useFocusTrap } from "@primitives/focus-trap"
 import { Portal } from "@primitives/portal"
 import { Presence } from "@primitives/presence"
 import { Slot, useComposedRefs } from "@primitives/slot"
-import { useFloating, FloatingArrow, resolveSide } from "@primitives/floating"
+import {
+  arrowEdge,
+  FloatingArrow,
+  resolveSide,
+  sideOfPlacement,
+  useFloating,
+} from "@primitives/floating"
 import {
   usePopover,
   placementFromSideAlign,
@@ -359,9 +365,10 @@ interface PopoverArrowProps extends React.SVGAttributes<SVGSVGElement> {
   ref?: React.Ref<SVGSVGElement>
 }
 
-function PopoverArrow({ ref, style, ...props }: PopoverArrowProps) {
+function PopoverArrow({ ref, style, height = 4, ...props }: PopoverArrowProps) {
   const floating = React.useContext(FloatingContext)
   const arrowData = floating?.middlewareData.arrow
+  const side = floating ? sideOfPlacement(floating.placement) : "top"
   const composedRef = useComposedRefs(
     floating?.arrowRef as React.Ref<SVGSVGElement>,
     ref,
@@ -371,11 +378,14 @@ function PopoverArrow({ ref, style, ...props }: PopoverArrowProps) {
     <FloatingArrow
       ref={composedRef}
       {...props}
+      height={height}
+      side={side}
       style={{
         ...style,
         position: "absolute",
         left: arrowData?.x,
         top: arrowData?.y,
+        [arrowEdge(side)]: -height,
       }}
     />
   )

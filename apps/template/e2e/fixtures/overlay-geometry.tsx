@@ -68,6 +68,7 @@ import {
 } from "darkraise-ui/components/navigation-menu"
 import {
   Popover,
+  PopoverArrow,
   PopoverContent,
   PopoverTrigger,
 } from "darkraise-ui/components/popover"
@@ -87,6 +88,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "darkraise-ui/components/sheet"
+import {
+  Tooltip,
+  TooltipArrow,
+  TooltipContent,
+  TooltipTrigger,
+} from "darkraise-ui/components/tooltip"
 import { Tour } from "darkraise-ui/components/tour"
 import {
   VirtualizedDropdownMenu,
@@ -611,6 +618,50 @@ function PanelsCase() {
   )
 }
 
+type ArrowSide = "top" | "right" | "bottom" | "left"
+
+// One open popup per page load. The trigger sits near the centre, so no side
+// flips, and on whole pixels, so the popup and its arrow do too.
+function ArrowCase({
+  kind,
+  side,
+}: {
+  kind: "popover" | "tooltip"
+  side: ArrowSide
+}) {
+  const trigger = <Button data-testid="arrow-trigger">Anchor</Button>
+  return (
+    <div style={{ position: "fixed", left: 560, top: 320 }}>
+      {kind === "popover" ? (
+        <Popover defaultOpen>
+          <PopoverTrigger asChild>{trigger}</PopoverTrigger>
+          <PopoverContent side={side} data-testid="arrow-content">
+            Popover with an arrow
+            <PopoverArrow data-testid="arrow" />
+          </PopoverContent>
+        </Popover>
+      ) : (
+        <Tooltip defaultOpen>
+          <TooltipTrigger asChild>{trigger}</TooltipTrigger>
+          <TooltipContent side={side} data-testid="arrow-content">
+            Tooltip with an arrow
+            <TooltipArrow data-testid="arrow" />
+          </TooltipContent>
+        </Tooltip>
+      )}
+    </div>
+  )
+}
+
+const ARROW_CASES = Object.fromEntries(
+  (["popover", "tooltip"] as const).flatMap((kind) =>
+    (["top", "right", "bottom", "left"] as const).map((side) => [
+      `arrow-${kind}-${side}`,
+      () => <ArrowCase kind={kind} side={side} />,
+    ]),
+  ),
+)
+
 // One scenario per page load, chosen by ?case=, so a case's fixed triggers
 // and open overlays never shift another case's geometry.
 const CASES: Record<string, () => ReactElement> = {
@@ -628,6 +679,7 @@ const CASES: Record<string, () => ReactElement> = {
   tour: TourCase,
   recipe: RecipeCase,
   sheets: SheetsCase,
+  ...ARROW_CASES,
 }
 
 const name = new URLSearchParams(window.location.search).get("case") ?? ""
