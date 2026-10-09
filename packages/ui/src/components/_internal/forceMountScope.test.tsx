@@ -15,7 +15,12 @@ function Probe({
   scope: ReturnType<typeof createForceMountScope>
 }) {
   const resolved = scope.useResolvedForceMount(own)
-  return <span data-testid={name}>{String(resolved)}</span>
+  const insidePortal = scope.useInsidePortal()
+  return (
+    <span data-testid={name} data-inside-portal={String(insidePortal)}>
+      {String(resolved)}
+    </span>
+  )
 }
 
 describe("createForceMountScope", () => {
@@ -53,5 +58,26 @@ describe("createForceMountScope", () => {
       </first.ForceMountProvider>,
     )
     expect(screen.getByTestId("reset")).toHaveTextContent("undefined")
+  })
+
+  it("reports a portal below a portal provider until a root provider resets it", () => {
+    render(
+      <>
+        <Probe name="bare" scope={first} />
+        <first.ForceMountProvider portal>
+          <Probe name="portalled" scope={first} />
+          <Probe name="other" scope={second} />
+          <first.ForceMountProvider>
+            <Probe name="reset" scope={first} />
+          </first.ForceMountProvider>
+        </first.ForceMountProvider>
+      </>,
+    )
+    const inside = (name: string) =>
+      screen.getByTestId(name).getAttribute("data-inside-portal")
+    expect(inside("bare")).toBe("false")
+    expect(inside("portalled")).toBe("true")
+    expect(inside("other")).toBe("false")
+    expect(inside("reset")).toBe("false")
   })
 })

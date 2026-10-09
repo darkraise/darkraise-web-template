@@ -2,6 +2,8 @@ import * as React from "react"
 
 export interface ForceMountProviderProps {
   forceMount?: boolean
+  /** Set by the component's portal, so its content knows one is present. */
+  portal?: boolean
   children?: React.ReactNode
 }
 
@@ -14,6 +16,8 @@ export interface ForceMountScope {
   ForceMountProvider: (props: ForceMountProviderProps) => React.ReactElement
   /** The content's own `forceMount`, or the nearest provider's when unset. */
   useResolvedForceMount: (own?: boolean) => boolean | undefined
+  /** Whether the nearest provider is the component's portal. */
+  useInsidePortal: () => boolean
 }
 
 /**
@@ -22,14 +26,18 @@ export interface ForceMountScope {
  */
 export function createForceMountScope(): ForceMountScope {
   const ForceMountContext = React.createContext<boolean | undefined>(undefined)
+  const PortalContext = React.createContext(false)
 
   function ForceMountProvider({
     forceMount,
+    portal = false,
     children,
   }: ForceMountProviderProps) {
     return (
       <ForceMountContext.Provider value={forceMount}>
-        {children}
+        <PortalContext.Provider value={portal}>
+          {children}
+        </PortalContext.Provider>
       </ForceMountContext.Provider>
     )
   }
@@ -39,5 +47,9 @@ export function createForceMountScope(): ForceMountScope {
     return own ?? inherited
   }
 
-  return { ForceMountProvider, useResolvedForceMount }
+  function useInsidePortal(): boolean {
+    return React.useContext(PortalContext)
+  }
+
+  return { ForceMountProvider, useResolvedForceMount, useInsidePortal }
 }
