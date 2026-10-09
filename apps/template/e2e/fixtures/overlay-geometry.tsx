@@ -621,7 +621,8 @@ function PanelsCase() {
 type ArrowSide = "top" | "right" | "bottom" | "left"
 
 // One open popup per page load. The trigger sits near the centre, so no side
-// flips, and on whole pixels, so the popup and its arrow do too.
+// flips, and on whole pixels, so the popup and its arrow do too. The arrow is
+// large enough to read a pixel inside it clear of its anti-aliased edges.
 function ArrowCase({
   kind,
   side,
@@ -635,17 +636,25 @@ function ArrowCase({
       {kind === "popover" ? (
         <Popover defaultOpen>
           <PopoverTrigger asChild>{trigger}</PopoverTrigger>
-          <PopoverContent side={side} data-testid="arrow-content">
+          <PopoverContent
+            side={side}
+            sideOffset={12}
+            data-testid="arrow-content"
+          >
             Popover with an arrow
-            <PopoverArrow data-testid="arrow" />
+            <PopoverArrow width={24} height={12} data-testid="arrow" />
           </PopoverContent>
         </Popover>
       ) : (
         <Tooltip defaultOpen>
           <TooltipTrigger asChild>{trigger}</TooltipTrigger>
-          <TooltipContent side={side} data-testid="arrow-content">
+          <TooltipContent
+            side={side}
+            sideOffset={12}
+            data-testid="arrow-content"
+          >
             Tooltip with an arrow
-            <TooltipArrow data-testid="arrow" />
+            <TooltipArrow width={24} height={12} data-testid="arrow" />
           </TooltipContent>
         </Tooltip>
       )}

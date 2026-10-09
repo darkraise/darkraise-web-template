@@ -1,6 +1,6 @@
 import { test, expect, type Locator, type Page } from "@playwright/test"
 import { boxOf, gotoApp, seedApp } from "./helpers/app"
-import { computed, settle } from "./helpers/measure"
+import { computed, contrast, pixel, settle, type Rgb } from "./helpers/measure"
 import { expectInViewport, hitsAt, openOverlayCase } from "./helpers/overlays"
 
 /**
@@ -523,6 +523,113 @@ test.describe("popup arrows point at their trigger", () => {
       })
     }
   }
+})
+
+/**
+ * Per-channel tolerance for anti-aliasing and colour conversion, the value
+ * 29-forced-colours.spec.ts uses.
+ */
+const PIXEL_TOLERANCE = 8
+
+function near(actual: Rgb, expected: Rgb): boolean {
+  return actual.every(
+    (channel, i) => Math.abs(channel - (expected[i] ?? 0)) <= PIXEL_TOLERANCE,
+  )
+}
+
+/** The highest contrast with `ground` among the pixels at `points`. */
+async function peakContrast(
+  page: Page,
+  points: [number, number][],
+  ground: Rgb,
+): Promise<number> {
+  let peak = 1
+  for (const [x, y] of points) {
+    peak = Math.max(peak, contrast(ground, await pixel(page, x, y)))
+  }
+  return peak
+}
+
+/**
+ * The arrow of a popup below its trigger stands on the popup's top edge and
+ * points up. A pixel inside it paints what a pixel inside the popup paints,
+ * and its slanted edge stands out from the page at least as much as the
+ * popup's top border does.
+ */
+async function expectArrowPaintsPopup(page: Page) {
+  const content = await boxOf(page.getByTestId("arrow-content"))
+  const arrow = await boxOf(page.getByTestId("arrow"))
+  // The triangle's widest clear point lies 0.6 of its height below the tip.
+  const centre = Math.floor(arrow.x + arrow.width / 2)
+  const inside = await pixel(
+    page,
+    centre,
+    Math.floor(arrow.y + arrow.height * 0.6),
+  )
+  const surface = await pixel(page, centre, Math.floor(content.y) + 3)
+  expect(
+    near(inside, surface),
+    `arrow rgb(${inside.join(",")}) against popup rgb(${surface.join(",")})`,
+  ).toBe(true)
+  // Halfway up, the left edge crosses a quarter of the way across the box.
+  const row = Math.floor(arrow.y + arrow.height / 2)
+  const edgeX = Math.floor(arrow.x + arrow.width / 4)
+  const edge = await peakContrast(
+    page,
+    [-2, -1, 0, 1].map((dx) => [edgeX + dx, row]),
+    await pixel(page, Math.floor(arrow.x) - 8, row),
+  )
+  // Clear of the arrow and of the rounded corner.
+  const column = Math.floor(content.x + content.width) - 12
+  const top = Math.floor(content.y)
+  const border = await peakContrast(
+    page,
+    [-1, 0, 1].map((dy) => [column, top + dy]),
+    await pixel(page, column, top - 6),
+  )
+  expect(
+    edge,
+    `arrow edge ${edge.toFixed(2)}:1 against border ${border.toFixed(2)}:1`,
+  ).toBeGreaterThanOrEqual(border)
+}
+
+test.describe("popup arrows paint the popup's surface", () => {
+  for (const kind of ["popover", "tooltip"] as const) {
+    for (const mode of ["light", "dark"] as const) {
+      test(`a ${kind} arrow takes the popup's fill and border · quiet · ${mode}`, async ({
+        page,
+      }) => {
+        await seedApp(page, { style: "quiet", mode })
+        await openOverlayCase(page, `arrow-${kind}-bottom`)
+        await expectArrowPaintsPopup(page)
+      })
+
+      test(`a ${kind} arrow takes the popup's fill and border · forced colours · ${mode}`, async ({
+        page,
+      }) => {
+        await seedApp(page, { style: "quiet", mode })
+        await page.emulateMedia({ forcedColors: "active", colorScheme: mode })
+        await openOverlayCase(page, `arrow-${kind}-bottom`)
+        await expectArrowPaintsPopup(page)
+      })
+    }
+  }
+
+  test("a consumer fill still paints the arrow", async ({ page }) => {
+    await seedApp(page, { style: "quiet", mode: "light" })
+    await openOverlayCase(page, "arrow-popover-bottom")
+    const locator = page.getByTestId("arrow")
+    await locator.evaluate((element) =>
+      element.setAttribute("fill", "rgb(255, 0, 0)"),
+    )
+    const arrow = await boxOf(locator)
+    const inside = await pixel(
+      page,
+      Math.floor(arrow.x + arrow.width / 2),
+      Math.floor(arrow.y + arrow.height * 0.6),
+    )
+    expect(near(inside, [255, 0, 0]), `rgb(${inside.join(",")})`).toBe(true)
+  })
 })
 
 test.describe("floating surfaces paint the overlay fill", () => {
