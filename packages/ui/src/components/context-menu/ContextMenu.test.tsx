@@ -747,6 +747,11 @@ describe("ContextMenu reopened while still mounted", () => {
     await waitFor(() => expect(menu).toHaveAttribute("data-state", "closed"))
   }
 
+  it("stays hidden before its first open", () => {
+    const { menu } = setup()
+    expect(menu).toHaveStyle({ visibility: "hidden" })
+  })
+
   it("stays visible while it closes", async () => {
     const { trigger, menu } = setup()
     await openAt(trigger, menu, 10)

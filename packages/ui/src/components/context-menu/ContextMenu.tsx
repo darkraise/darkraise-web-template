@@ -323,10 +323,17 @@ function ContextMenuContentImpl({
   // The root menu mounts at the viewport origin before its anchor is
   // measured; shown there, a still pointer would hover its rows. A hidden
   // element cannot take focus, so focus waits until the menu is shown. A menu
-  // with neither a point nor a trigger has nothing to wait for. A closing
-  // menu stays shown where it was, through its exit animation.
+  // with neither a point nor a trigger has nothing to wait for. A menu that
+  // has been placed and then closes stays shown where it was, through its
+  // exit animation; one that was never opened stays hidden.
   const anchored = ctx.point !== null || ctx.triggerArea !== null
-  const shown = ctx.isSubmenu || !anchored || !ctx.open || floating.isPositioned
+  const [placedOnce, setPlacedOnce] = React.useState(false)
+  if (floating.isPositioned && !placedOnce) setPlacedOnce(true)
+  const shown =
+    ctx.isSubmenu ||
+    !anchored ||
+    floating.isPositioned ||
+    (!ctx.open && placedOnce)
 
   React.useEffect(() => {
     if (!ctx.open || !shown) return
