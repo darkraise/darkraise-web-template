@@ -44,9 +44,6 @@ export interface UseMenuReturn {
   state: "open" | "closed"
   triggerId: string
   contentId: string
-  /** index of currently focused item (-1 = none) */
-  focusedIndex: number
-  setFocusedIndex: (next: number) => void
   /** id of the currently focused item, or null when none is focused */
   focusedId: string | null
   setFocusedId: (id: string | null) => void
@@ -57,8 +54,6 @@ export interface UseMenuReturn {
    */
   registerItem: (item: MenuItemDescriptor) => () => void
   unregisterItem: (id: string) => void
-  /** Get item descriptor by index. */
-  getItemAt: (index: number) => MenuItemDescriptor | undefined
   /** Sorted list of all currently registered items in DOM order. */
   items: () => MenuItemDescriptor[]
   /** Move focus to first/last enabled item. */
@@ -67,8 +62,8 @@ export interface UseMenuReturn {
   /** Move focus to next/previous enabled item. */
   focusNext: () => void
   focusPrev: () => void
-  /** Process a typeahead character; returns the matched index or -1. */
-  typeahead: (char: string) => number
+  /** Process a typeahead character; returns the matched item's id or null. */
+  typeahead: (char: string) => string | null
   /** Record which submenu this menu currently holds open. */
   registerOpenSubmenu: (entry: OpenSubmenuEntry) => void
   /**
@@ -81,7 +76,11 @@ export interface UseMenuReturn {
 
 interface FocusState {
   id: string | null
-  /** Position of `id` among the rows in document order, or -1. */
+  /**
+   * Position of `id` among the rows in document order, or -1. Kept so focus
+   * can pass to the row that takes a removed row's place, whose position can
+   * no longer be measured once its node has left the document.
+   */
   index: number
 }
 
@@ -120,7 +119,6 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
   const toggle = useEvent(() => setOpen(!open))
 
   const [focus, setFocus] = React.useState<FocusState>(NO_FOCUS)
-  const focusedIndex = focus.index
   const focusedId = focus.id
 
   // Items are stored in a ref to allow imperative reads without re-renders.
@@ -149,10 +147,10 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
     [sortItems],
   )
 
-  const setFocusedIndex = React.useCallback(
-    (next: number) => {
+  const focusAt = React.useCallback(
+    (index: number) => {
       const list = sortItems()
-      setFocus({ id: list[next]?.id ?? null, index: next })
+      setFocus({ id: list[index]?.id ?? null, index })
     },
     [sortItems],
   )
@@ -170,8 +168,8 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
   )
 
   // After a row is added or removed the focused row may sit at another
-  // position. A focused row that left hands focus to the row that took its
-  // position, which is where an index-tracked focus used to land.
+  // position. A focused row that leaves hands focus to the row that takes
+  // its position, so the keyboard user stays at the same place in the list.
   const settleFocus = React.useCallback(() => {
     const list = sortItems()
     setFocus((prev) => {
@@ -207,14 +205,6 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
     [settleFocus, unregisterItem],
   )
 
-  const getItemAt = React.useCallback(
-    (index: number): MenuItemDescriptor | undefined => {
-      const list = sortItems()
-      return list[index]
-    },
-    [sortItems],
-  )
-
   const moveFocus = React.useCallback(
     (from: number, direction: 1 | -1, list: MenuItemDescriptor[]): number => {
       if (list.length === 0) return -1
@@ -240,26 +230,26 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
     const list = sortItems()
     for (let i = 0; i < list.length; i += 1) {
       if (!isSkipped(list[i])) {
-        setFocusedIndex(i)
+        focusAt(i)
         return
       }
     }
     if (list.length === 0) pendingFocusRef.current = "first"
     setFocus(NO_FOCUS)
-  }, [setFocusedIndex, sortItems])
+  }, [focusAt, sortItems])
 
   const focusLast = React.useCallback(() => {
     pendingFocusRef.current = null
     const list = sortItems()
     for (let i = list.length - 1; i >= 0; i -= 1) {
       if (!isSkipped(list[i])) {
-        setFocusedIndex(i)
+        focusAt(i)
         return
       }
     }
     if (list.length === 0) pendingFocusRef.current = "last"
     setFocus(NO_FOCUS)
-  }, [setFocusedIndex, sortItems])
+  }, [focusAt, sortItems])
 
   React.useEffect(() => {
     const pending = pendingFocusRef.current
@@ -272,21 +262,21 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
   const focusNext = React.useCallback(() => {
     const list = sortItems()
     const next = moveFocus(indexOf(list, focusedId), 1, list)
-    if (next !== -1) setFocusedIndex(next)
-  }, [focusedId, moveFocus, setFocusedIndex, sortItems])
+    if (next !== -1) focusAt(next)
+  }, [focusAt, focusedId, moveFocus, sortItems])
 
   const focusPrev = React.useCallback(() => {
     const list = sortItems()
     const next = moveFocus(indexOf(list, focusedId), -1, list)
-    if (next !== -1) setFocusedIndex(next)
-  }, [focusedId, moveFocus, setFocusedIndex, sortItems])
+    if (next !== -1) focusAt(next)
+  }, [focusAt, focusedId, moveFocus, sortItems])
 
   // Typeahead buffer + timer in refs to avoid re-renders.
   const typeBufferRef = React.useRef("")
   const typeTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const typeahead = React.useCallback(
-    (char: string): number => {
+    (char: string): string | null => {
       if (typeTimerRef.current) clearTimeout(typeTimerRef.current)
       typeBufferRef.current = (typeBufferRef.current + char).toLowerCase()
       typeTimerRef.current = setTimeout(() => {
@@ -294,7 +284,7 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
       }, typeaheadDuration)
 
       const list = sortItems()
-      if (list.length === 0) return -1
+      if (list.length === 0) return null
       const buffer = typeBufferRef.current
       const len = list.length
       const focusedIndex = indexOf(list, focusedId)
@@ -319,13 +309,13 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
         const item = list[i]
         if (!item || isSkipped(item)) continue
         if (item.textValue.toLowerCase().startsWith(buffer)) {
-          setFocusedIndex(i)
-          return i
+          focusAt(i)
+          return item.id
         }
       }
-      return -1
+      return null
     },
-    [focusedId, setFocusedIndex, sortItems, typeaheadDuration],
+    [focusAt, focusedId, sortItems, typeaheadDuration],
   )
 
   const openSubmenuRef = React.useRef<OpenSubmenuEntry | null>(null)
@@ -373,13 +363,10 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuReturn {
     state: open ? "open" : "closed",
     triggerId,
     contentId,
-    focusedIndex,
-    setFocusedIndex,
     focusedId,
     setFocusedId,
     registerItem,
     unregisterItem,
-    getItemAt,
     items,
     focusFirst,
     focusLast,

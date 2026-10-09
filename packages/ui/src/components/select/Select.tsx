@@ -61,7 +61,7 @@ interface SelectContextValue {
   focusLast: () => void
   focusNext: () => void
   focusPrev: () => void
-  typeahead: (char: string) => number
+  typeahead: (char: string) => string | null
   /** Selected item label (cached) */
   selectedLabel: string | null
   /** Disabled flag from root */
