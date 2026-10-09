@@ -339,6 +339,8 @@ Breaking: `ToggleGroup` sizes to its content. `.dr-toggle-group` is `inline-flex
 
 Breaking: `.dr-surface`, its `--flat` modifier and its `dr-surface-{brand,cyan,success,warning,danger,info}` hue classes are removed, with the `--fog-05` … `--fog-50` tokens they alone gave values to. The `glass`, `glass-thin`, `glass-strong` and `card-surface` utilities are removed: outside `.dr-surface` they painted nothing. Replace one with `rounded-[var(--radius)]` and, if you relied on it, `transition-[background-color,color,border-color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-in-out)]`.
 
+Breaking: `TooltipContent` wraps its children in a `<div class="dr-tooltip-body">`, so a layout class passed to `TooltipContent` (for example `flex items-center gap-1`) now lays out that single wrapper instead of the children. Put layout classes on an element inside `TooltipContent`; padding, width and colour classes still apply on `TooltipContent`.
+
 Breaking: `.overlay-surface` is now a utility that applies the overlay recipe (`background: var(--overlay-bg)`, its blend mode, `border-color: var(--overlay-border)` and the overlay backdrop filter). It no longer sets a border width, radius or shadow. Every kit popup applies it.
 
 Breaking: the `collapsible-down` and `collapsible-up` keyframes are removed; use Collapsible, whose `dr-collapsible-*` animation reads `--collapsible-content-height`.
