@@ -131,6 +131,8 @@ The `outline` variant of `Listbox` and `TreeView` now rings the selected row ins
 
 `useDropdownMenu`, `useContextMenu`, `useMenubar`, `useSelect` and `useNavigationMenu` track focus by item id: read `focusedId` and call `setFocusedId(id)` where you used `focusedIndex` and `setFocusedIndex(index)`, and look an item up in `items()` by its `id` where you called `getItemAt(index)`. Records passed to `registerItem` need a stable `id`, and `typeahead` returns the matched item's id or `null`. Code that only renders the menu components needs no change.
 
+`TooltipContent` wraps its children in a `<div class="dr-tooltip-body">`, so a layout class on `TooltipContent`, such as `flex items-center gap-1`, now lays out that single wrapper instead of the children. Move layout classes to an element inside `TooltipContent`; padding, width and colour classes still apply on `TooltipContent`.
+
 ## Reduced motion
 
 Under `prefers-reduced-motion: reduce` transitions take `0s`, so no transition starts and `transitionend` never fires. Code that waits for `transitionend` to finish a state change must also finish it when the user prefers reduced motion; read the preference with `useReducedMotion` or check `getComputedStyle(element).transitionDuration`. Animations still run for `0.01ms` and fire `animationend`.
