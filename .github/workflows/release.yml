@@ -161,7 +161,8 @@ jobs:
             (cd "$dir" && npm version "$VERSION" --no-git-tag-version --allow-same-version)
           done
 
-      # Both builds run before the gates, not after, because a fresh clone is
+      # The package build, its client-banner check and the demo build run
+      # before the typecheck, lint and test gates, because a fresh clone is
       # missing packages/ui/dist, which .gitignore excludes and which is where
       # the template resolves darkraise-ui's types from. The template typecheck
       # generates src/routeTree.gen.ts itself.
