@@ -14,9 +14,9 @@ export const Basic: Story = {
   render: () => (
     <Tabs defaultValue="tab1" className="w-80">
       <TabsList>
-        <TabsTrigger value="tab1">Tab One</TabsTrigger>
-        <TabsTrigger value="tab2">Tab Two</TabsTrigger>
-        <TabsTrigger value="tab3">Tab Three</TabsTrigger>
+        <TabsTrigger value="tab1">Tab one</TabsTrigger>
+        <TabsTrigger value="tab2">Tab two</TabsTrigger>
+        <TabsTrigger value="tab3">Tab three</TabsTrigger>
       </TabsList>
     </Tabs>
   ),
@@ -130,8 +130,8 @@ export const BorderedStrip: Story = {
           className="w-80"
         >
           <TabsList>
-            <TabsTrigger value="tab1">Tab One</TabsTrigger>
-            <TabsTrigger value="tab2">Tab Two</TabsTrigger>
+            <TabsTrigger value="tab1">Tab one</TabsTrigger>
+            <TabsTrigger value="tab2">Tab two</TabsTrigger>
           </TabsList>
           <TabsContent value="tab1">
             <p className="text-muted-foreground text-sm">border={border}</p>

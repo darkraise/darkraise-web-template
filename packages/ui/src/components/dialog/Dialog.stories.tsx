@@ -25,11 +25,11 @@ export const Basic: Story = {
   render: () => (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">Open Dialog</Button>
+        <Button variant="outline">Open dialog</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Dialog Title</DialogTitle>
+          <DialogTitle>Dialog title</DialogTitle>
           <DialogDescription>
             This is the dialog description. It provides additional context.
           </DialogDescription>
@@ -49,11 +49,11 @@ export const WithForm: Story = {
   render: () => (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>Edit Profile</Button>
+        <Button>Edit profile</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Edit Profile</DialogTitle>
+          <DialogTitle>Edit profile</DialogTitle>
           <DialogDescription>
             Make changes to your profile here. Click save when done.
           </DialogDescription>
@@ -74,7 +74,7 @@ export const WithForm: Story = {
         </div>
         <DialogFooter>
           <Button variant="outline">Cancel</Button>
-          <Button>Save Changes</Button>
+          <Button>Save changes</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

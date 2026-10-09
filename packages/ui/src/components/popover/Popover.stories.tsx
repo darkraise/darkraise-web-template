@@ -23,7 +23,7 @@ export const Basic: Story = {
   render: () => (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline">Open Popover</Button>
+        <Button variant="outline">Open popover</Button>
       </PopoverTrigger>
       <PopoverContent>
         <p className="text-sm">Popover content. Close with Escape.</p>

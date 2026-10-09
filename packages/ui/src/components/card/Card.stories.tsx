@@ -34,7 +34,7 @@ export const WithHeaderAndFooter: Story = {
   render: () => (
     <Card className="w-80">
       <CardHeader>
-        <CardTitle>Card Title</CardTitle>
+        <CardTitle>Card title</CardTitle>
         <CardDescription>Card description goes here.</CardDescription>
       </CardHeader>
       <CardContent>
@@ -56,7 +56,7 @@ export const WithForm: Story = {
   render: () => (
     <Card className="w-96">
       <CardHeader>
-        <CardTitle>Create Account</CardTitle>
+        <CardTitle>Create account</CardTitle>
         <CardDescription>Enter your details to get started.</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
@@ -70,7 +70,7 @@ export const WithForm: Story = {
         </div>
       </CardContent>
       <CardFooter>
-        <Button className="w-full">Create Account</Button>
+        <Button className="w-full">Create account</Button>
       </CardFooter>
     </Card>
   ),

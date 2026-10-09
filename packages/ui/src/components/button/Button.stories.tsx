@@ -82,7 +82,7 @@ export const WithIcon: Story = {
     children: (
       <>
         <Mail />
-        Send Email
+        Send email
       </>
     ),
   },

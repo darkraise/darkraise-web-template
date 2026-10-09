@@ -47,19 +47,19 @@ export const Multiple: Story = {
   render: () => (
     <Accordion type="multiple" className="w-full max-w-md">
       <AccordionItem value="item-1">
-        <AccordionTrigger>Section One</AccordionTrigger>
+        <AccordionTrigger>Section one</AccordionTrigger>
         <AccordionContent>
           Content for section one. Multiple items can be open simultaneously.
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="item-2">
-        <AccordionTrigger>Section Two</AccordionTrigger>
+        <AccordionTrigger>Section two</AccordionTrigger>
         <AccordionContent>
           Content for section two. This item is independent of the others.
         </AccordionContent>
       </AccordionItem>
       <AccordionItem value="item-3">
-        <AccordionTrigger>Section Three</AccordionTrigger>
+        <AccordionTrigger>Section three</AccordionTrigger>
         <AccordionContent>
           Content for section three. Open as many sections as you like at once.
         </AccordionContent>

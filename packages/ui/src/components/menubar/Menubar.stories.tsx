@@ -26,10 +26,10 @@ export const Basic: Story = {
         <MenubarTrigger>File</MenubarTrigger>
         <MenubarContent>
           <MenubarItem>
-            New File <MenubarShortcut>Ctrl+N</MenubarShortcut>
+            New file <MenubarShortcut>Ctrl+N</MenubarShortcut>
           </MenubarItem>
           <MenubarItem>
-            New Window <MenubarShortcut>Ctrl+Shift+N</MenubarShortcut>
+            New window <MenubarShortcut>Ctrl+Shift+N</MenubarShortcut>
           </MenubarItem>
           <MenubarSeparator />
           <MenubarItem>Open…</MenubarItem>
