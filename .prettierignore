@@ -1,6 +1,6 @@
 dist
 node_modules
-src/routeTree.gen.ts
+**/routeTree.gen.ts
 coverage
 storybook-static
 pnpm-lock.yaml
