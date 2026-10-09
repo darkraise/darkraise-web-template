@@ -173,3 +173,97 @@ describe("Command disabled item", () => {
     expect(onSelect).not.toHaveBeenCalled()
   })
 })
+
+describe("Command item registration", () => {
+  function Fruits({ appleDisabled = false }: { appleDisabled?: boolean }) {
+    return (
+      <Command>
+        <CommandInput aria-label="Search" />
+        <CommandList>
+          <CommandItem value="apple" disabled={appleDisabled}>
+            Apple
+          </CommandItem>
+          <CommandItem value="banana">Banana</CommandItem>
+          <CommandItem value="cherry">Cherry</CommandItem>
+        </CommandList>
+      </Command>
+    )
+  }
+
+  function activeOption() {
+    const id = screen
+      .getByRole("combobox")
+      .getAttribute("aria-activedescendant")
+    return id ? document.getElementById(id) : null
+  }
+
+  it("follows an item's disabled state when it changes after mount", async () => {
+    const user = userEvent.setup()
+    const { rerender } = render(<Fruits appleDisabled />)
+    const appleId = screen.getByRole("option", { name: "Apple" }).id
+    expect(activeOption()).toHaveTextContent("Banana")
+
+    rerender(<Fruits />)
+    await user.click(screen.getByRole("combobox"))
+    await user.keyboard("{Home}")
+    expect(activeOption()).toHaveAttribute("id", appleId)
+    await user.keyboard("{ArrowDown}")
+    expect(activeOption()).toHaveTextContent("Banana")
+    await user.keyboard("{ArrowDown}")
+    expect(activeOption()).toHaveTextContent("Cherry")
+    // "a" hides only Cherry, so the first enabled match becomes active.
+    await user.keyboard("a")
+    expect(activeOption()).toHaveAttribute("id", appleId)
+
+    await user.keyboard("{Backspace}")
+    rerender(<Fruits appleDisabled />)
+    await user.keyboard("{Home}")
+    expect(activeOption()).toHaveAttribute("id", appleId)
+    await user.keyboard("{End}a")
+    expect(activeOption()).toHaveTextContent("Banana")
+  })
+
+  it("filters an item without a value by its current text", async () => {
+    const user = userEvent.setup()
+    function Labelled({ label }: { label: string }) {
+      return (
+        <Command>
+          <CommandInput aria-label="Search" />
+          <CommandList>
+            <CommandItem value="apple">Apple</CommandItem>
+            <CommandItem>{label}</CommandItem>
+          </CommandList>
+        </Command>
+      )
+    }
+    const { rerender } = render(<Labelled label="Banana" />)
+    rerender(<Labelled label="Mango" />)
+    await user.type(screen.getByRole("combobox"), "man")
+    expect(screen.getAllByRole("option")).toHaveLength(1)
+    expect(screen.getByRole("option")).toHaveTextContent("Mango")
+  })
+
+  it("reads the text of an item that mounts while filtered out once shown", async () => {
+    const user = userEvent.setup()
+    function Dynamic({ withExtra }: { withExtra: boolean }) {
+      return (
+        <Command>
+          <CommandInput aria-label="Search" />
+          <CommandList>
+            <CommandItem value="apple">Apple</CommandItem>
+            {withExtra ? <CommandItem>Xylophone</CommandItem> : null}
+          </CommandList>
+        </Command>
+      )
+    }
+    const { rerender } = render(<Dynamic withExtra={false} />)
+    const input = screen.getByRole("combobox")
+    await user.type(input, "app")
+    rerender(<Dynamic withExtra />)
+    await user.clear(input)
+    expect(screen.getAllByRole("option")).toHaveLength(2)
+    await user.type(input, "xyl")
+    expect(screen.getAllByRole("option")).toHaveLength(1)
+    expect(screen.getByRole("option")).toHaveTextContent("Xylophone")
+  })
+})

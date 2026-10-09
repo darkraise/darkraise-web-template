@@ -30,11 +30,13 @@ interface CommandContextValue {
   /** Active selected item id. */
   activeId: string | null
   setActiveId: (id: string | null) => void
-  /** Item registry, keyed by id, ordered by registration. */
-  registerItem: (item: CommandItemRecord) => () => void
-  visibleItems: () => CommandItemRecord[]
+  /** Adds an item, or replaces the registered item with the same id in place. */
+  registerItem: (item: CommandItemRecord) => void
+  unregisterItem: (id: string) => void
+  /** Registered items that match the search, in registration order. */
+  visibleItems: CommandItemRecord[]
   /** Total registered items, used to gate first-render group hiding. */
-  allItemsCount: () => number
+  allItemsCount: number
   /** Filter predicate. Defaults to substring on textValue. */
   filter?: (value: string, search: string, keywords?: string[]) => number
   shouldFilter: boolean
@@ -97,16 +99,28 @@ function Command({
   const rootRef = React.useRef<HTMLDivElement | null>(null)
   const inputRef = React.useRef<HTMLInputElement | null>(null)
 
-  const itemsRef = React.useRef<CommandItemRecord[]>([])
-  const [, setNonce] = React.useState(0)
+  const [items, setItems] = React.useState<CommandItemRecord[]>([])
 
   const registerItem = React.useCallback((item: CommandItemRecord) => {
-    itemsRef.current = [...itemsRef.current, item]
-    setNonce((n) => n + 1)
-    return () => {
-      itemsRef.current = itemsRef.current.filter((it) => it.id !== item.id)
-      setNonce((n) => n + 1)
-    }
+    setItems((list) => {
+      const at = list.findIndex((it) => it.id === item.id)
+      if (at === -1) return [...list, item]
+      const cur = list[at]
+      if (
+        cur &&
+        cur.value === item.value &&
+        cur.textValue === item.textValue &&
+        cur.disabled === item.disabled &&
+        cur.group === item.group
+      ) {
+        return list
+      }
+      return list.map((it, n) => (n === at ? item : it))
+    })
+  }, [])
+
+  const unregisterItem = React.useCallback((id: string) => {
+    setItems((list) => list.filter((it) => it.id !== id))
   }, [])
 
   const defaultFilter = React.useCallback((val: string, query: string) => {
@@ -116,21 +130,21 @@ function Command({
 
   const filterFn = filter ?? defaultFilter
 
-  const visibleItems = React.useCallback((): CommandItemRecord[] => {
-    if (!shouldFilter || !search) return itemsRef.current
-    return itemsRef.current.filter((it) => {
+  const visibleItems = React.useMemo((): CommandItemRecord[] => {
+    if (!shouldFilter || !search) return items
+    return items.filter((it) => {
       const score = filterFn(it.textValue, search)
       return score > 0
     })
-  }, [shouldFilter, search, filterFn])
+  }, [items, shouldFilter, search, filterFn])
 
-  const allItemsCount = React.useCallback(() => itemsRef.current.length, [])
+  const allItemsCount = items.length
 
   const [activeId, setActiveId] = React.useState<string | null>(null)
 
   // Keep active item valid as visible set changes.
   React.useEffect(() => {
-    const list = visibleItems()
+    const list = visibleItems
     if (list.length === 0) {
       if (activeId !== null) setActiveId(null)
       return
@@ -148,6 +162,7 @@ function Command({
       activeId,
       setActiveId,
       registerItem,
+      unregisterItem,
       visibleItems,
       allItemsCount,
       filter,
@@ -163,6 +178,7 @@ function Command({
       setSearchExternal,
       activeId,
       registerItem,
+      unregisterItem,
       visibleItems,
       allItemsCount,
       filter,
@@ -246,7 +262,7 @@ function CommandInput({
   }, [value])
 
   const moveActive = (delta: 1 | -1) => {
-    const list = ctx.visibleItems()
+    const list = ctx.visibleItems
     if (list.length === 0) return
     const idx = list.findIndex((it) => it.id === ctx.activeId)
     let next = idx === -1 ? (delta === 1 ? 0 : list.length - 1) : idx + delta
@@ -266,11 +282,11 @@ function CommandInput({
       moveActive(-1)
     } else if (event.key === "Home") {
       event.preventDefault()
-      const list = ctx.visibleItems()
+      const list = ctx.visibleItems
       if (list.length > 0) ctx.setActiveId(list[0]?.id ?? null)
     } else if (event.key === "End") {
       event.preventDefault()
-      const list = ctx.visibleItems()
+      const list = ctx.visibleItems
       if (list.length > 0) ctx.setActiveId(list[list.length - 1]?.id ?? null)
     } else if (event.key === "Enter") {
       event.preventDefault()
@@ -343,7 +359,7 @@ interface CommandEmptyProps extends React.HTMLAttributes<HTMLDivElement> {
 
 function CommandEmpty({ className, ref, ...rest }: CommandEmptyProps) {
   const ctx = useCommandContext("CommandEmpty")
-  if (ctx.visibleItems().length > 0) return null
+  if (ctx.visibleItems.length > 0) return null
   return (
     <div
       ref={ref}
@@ -376,14 +392,14 @@ function CommandGroup({
   const groupValue =
     value ?? (typeof heading === "string" ? heading : undefined)
   // Hide the group entirely once we know no descendant items are visible.
-  // On the first render itemsRef.current is empty, but children must mount
+  // On the first render no item has registered yet, but children must mount
   // so they can register; we fall back to rendering when no items have
   // been registered yet so the first frame doesn't drop them.
-  const list = ctx.visibleItems()
+  const list = ctx.visibleItems
   const someWithGroup = list.some((it) => it.group === groupValue)
   const itemsKnown = list.length > 0 || ctx.search === ""
   // Don't hide on the very first render (items not yet registered).
-  const allRegistered = ctx.allItemsCount() > 0
+  const allRegistered = ctx.allItemsCount > 0
   const shouldHide =
     allRegistered && !someWithGroup && groupValue !== undefined && itemsKnown
   if (shouldHide) return null
@@ -445,53 +461,36 @@ function CommandItem({
   ...rest
 }: CommandItemProps) {
   const ctx = useCommandContext("CommandItem")
+  const { registerItem, unregisterItem } = ctx
   const group = React.useContext(CommandGroupContext)
   const localRef = React.useRef<HTMLDivElement | null>(null)
+  const textRef = React.useRef("")
   const id = useId()
 
-  const recordRef = React.useRef<CommandItemRecord | null>(null)
-  if (recordRef.current === null) {
-    recordRef.current = {
-      id,
-      value: value ?? "",
-      textValue: value ?? "",
-      disabled: !!disabled,
-      group,
-    }
-  }
-  if (recordRef.current) {
-    recordRef.current.value = value ?? recordRef.current.value
-    recordRef.current.disabled = !!disabled
-    recordRef.current.group = group
-  }
-
-  const registerItem = ctx.registerItem
-  React.useEffect(() => {
-    const rec = recordRef.current
-    if (!rec) return
-    return registerItem(rec)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  React.useEffect(() => {
-    const node = localRef.current
-    const rec = recordRef.current
-    if (!node || !rec) return
-    if (value === undefined) {
-      const text = node.textContent ?? ""
-      rec.value = text
-      rec.textValue = text
-    } else {
-      rec.textValue = value
-    }
-  })
-
-  const list = ctx.visibleItems()
-  const allCount = ctx.allItemsCount()
   // Render until registration completes; afterwards, hide if filtered out.
   const visible =
-    allCount === 0 || list.find((it) => it.id === id) !== undefined
+    ctx.allItemsCount === 0 ||
+    ctx.visibleItems.find((it) => it.id === id) !== undefined
   const selected = ctx.activeId === id
+
+  // Unregistering is its own effect so a field change replaces the record in
+  // place instead of removing it and appending it at the end of the order.
+  React.useLayoutEffect(() => () => unregisterItem(id), [unregisterItem, id])
+
+  // Without `value` the item is matched by its rendered text, so `children`
+  // and `visible` are dependencies. While filtered out it renders nothing and
+  // keeps the text it last rendered.
+  React.useLayoutEffect(() => {
+    if (localRef.current) textRef.current = localRef.current.textContent ?? ""
+    const text = value ?? textRef.current
+    registerItem({
+      id,
+      value: text,
+      textValue: text,
+      disabled: !!disabled,
+      group,
+    })
+  }, [registerItem, id, value, disabled, group, children, visible])
 
   if (!visible) return null
 
@@ -519,7 +518,7 @@ function CommandItem({
         onClick?.(event)
         if (event.defaultPrevented) return
         if (disabled) return
-        onSelect?.(value ?? recordRef.current?.value ?? "")
+        onSelect?.(value ?? localRef.current?.textContent ?? "")
       }}
       className={cn("dr-command-item", className)}
       {...rest}
