@@ -135,7 +135,9 @@ export function BackgroundCanvas({
   // Read speed through a ref so changing it scales motion live without tearing
   // down the canvas; density is in the effect deps since it rebuilds counts.
   const speedRef = React.useRef(speed)
-  speedRef.current = speed
+  React.useInsertionEffect(() => {
+    speedRef.current = speed
+  })
 
   React.useEffect(() => {
     const canvas = canvasRef.current

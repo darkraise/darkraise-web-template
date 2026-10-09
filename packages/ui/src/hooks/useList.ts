@@ -37,7 +37,7 @@ export function useList<T>(
   initialList: InitialState<T[]>,
 ): [T[], ListActions<T>] {
   const initial = useSyncedRef(initialList)
-  const list = useRef(resolveHookState(initial.current))
+  const list = useRef(resolveHookState(initialList))
   const rerender = useRerender()
 
   const actions = useMemo(
