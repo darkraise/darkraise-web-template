@@ -53,9 +53,10 @@ interface SelectContextValue {
   setTrigger: (node: HTMLButtonElement | null) => void
   dir: "ltr" | "rtl" | undefined
   registerItem: (item: SelectItemRecord) => () => void
+  unregisterItem: (id: string) => void
   items: () => SelectItemRecord[]
-  focusedIndex: number
-  setFocusedIndex: (next: number) => void
+  focusedId: string | null
+  setFocusedId: (id: string | null) => void
   focusFirst: () => void
   focusLast: () => void
   focusNext: () => void
@@ -181,9 +182,10 @@ function Select({
       registerItem: menu.registerItem as unknown as (
         item: SelectItemRecord,
       ) => () => void,
+      unregisterItem: menu.unregisterItem,
       items: menu.items as unknown as () => SelectItemRecord[],
-      focusedIndex: menu.focusedIndex,
-      setFocusedIndex: menu.setFocusedIndex,
+      focusedId: menu.focusedId,
+      setFocusedId: menu.setFocusedId,
       focusFirst: menu.focusFirst,
       focusLast: menu.focusLast,
       focusNext: menu.focusNext,
@@ -470,8 +472,7 @@ function SelectContentImpl({
       ctx.focusLast()
     } else if (event.key === "Enter" || event.key === " ") {
       event.preventDefault()
-      const list = ctx.items()
-      const item = list[ctx.focusedIndex]
+      const item = ctx.items().find((it) => it.id === ctx.focusedId)
       if (item && !item.disabled) {
         ctx.setValue(item.value)
       }
@@ -609,40 +610,25 @@ function SelectItem({
   const localRef = React.useRef<HTMLDivElement | null>(null)
   const id = useId()
 
-  const recordRef = React.useRef<SelectItemRecord | null>(null)
-  if (recordRef.current === null) {
-    recordRef.current = {
+  // Replacing a known id's record does not re-render the menu, so syncing a
+  // changed field cannot start a render loop. Removal lives in its own
+  // effect: a field change must not unregister the item, or focus would
+  // leave it.
+  const { registerItem, unregisterItem } = ctx
+  // Without a textValue the typeahead text is the rendered text, so the
+  // record is refreshed whenever the children change.
+  React.useLayoutEffect(() => {
+    registerItem({
       id,
       value,
-      textValue: textValue ?? "",
       disabled: !!disabled,
+      textValue: textValue ?? localRef.current?.textContent ?? "",
       ref: localRef,
-    }
-  }
-  if (recordRef.current) {
-    recordRef.current.value = value
-    recordRef.current.disabled = !!disabled
-    if (textValue !== undefined) recordRef.current.textValue = textValue
-  }
+    })
+  }, [registerItem, id, value, disabled, textValue, children])
+  React.useLayoutEffect(() => () => unregisterItem(id), [unregisterItem, id])
 
-  const registerItem = ctx.registerItem
-  React.useEffect(() => {
-    const rec = recordRef.current
-    if (!rec) return
-    return registerItem(rec)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  React.useEffect(() => {
-    if (textValue !== undefined) return
-    const node = localRef.current
-    const rec = recordRef.current
-    if (node && rec) rec.textValue = node.textContent ?? ""
-  })
-
-  const list = ctx.items()
-  const myIndex = list.findIndex((it) => it === recordRef.current)
-  const isFocused = myIndex >= 0 && ctx.focusedIndex === myIndex
+  const isFocused = ctx.focusedId === id
   const selected = ctx.value === value
 
   React.useEffect(() => {
@@ -669,7 +655,7 @@ function SelectItem({
       onPointerEnter={(event) => {
         onPointerEnter?.(event)
         if (disabled) return
-        if (myIndex >= 0) ctx.setFocusedIndex(myIndex)
+        ctx.setFocusedId(id)
       }}
       onClick={(event) => {
         onClick?.(event)

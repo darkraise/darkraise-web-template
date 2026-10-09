@@ -239,3 +239,106 @@ describe("Select direction", () => {
     expect(await screen.findByRole("listbox")).toHaveAttribute("dir", "rtl")
   })
 })
+
+describe("Select keyboard", () => {
+  function Fruit({
+    disabled,
+    onChange,
+  }: {
+    disabled: boolean
+    onChange?: (value: string) => void
+  }) {
+    return (
+      <Select onValueChange={onChange}>
+        <SelectTrigger>
+          <SelectValue placeholder="Pick one" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="apple">Apple</SelectItem>
+          <SelectItem value="banana" disabled={disabled}>
+            Banana
+          </SelectItem>
+          <SelectItem value="cherry">Cherry</SelectItem>
+        </SelectContent>
+      </Select>
+    )
+  }
+
+  it("arrow keys skip an option disabled after mount and reach it once enabled", async () => {
+    const user = userEvent.setup()
+    const { rerender } = render(<Fruit disabled={false} />)
+    await user.click(screen.getByRole("combobox"))
+    const listbox = await screen.findByRole("listbox")
+    const apple = screen.getByRole("option", { name: "Apple" })
+    const banana = screen.getByRole("option", { name: "Banana" })
+    const cherry = screen.getByRole("option", { name: "Cherry" })
+
+    fireEvent.keyDown(listbox, { key: "Home" })
+    await waitFor(() => expect(apple).toHaveFocus())
+    fireEvent.keyDown(apple, { key: "ArrowDown" })
+    await waitFor(() => expect(banana).toHaveFocus())
+
+    rerender(<Fruit disabled />)
+    expect(screen.getByRole("option", { name: "Banana" })).toBe(banana)
+    fireEvent.keyDown(listbox, { key: "Home" })
+    await waitFor(() => expect(apple).toHaveFocus())
+    fireEvent.keyDown(apple, { key: "ArrowDown" })
+    await waitFor(() => expect(cherry).toHaveFocus())
+
+    rerender(<Fruit disabled={false} />)
+    expect(screen.getByRole("option", { name: "Banana" })).toBe(banana)
+    fireEvent.keyDown(listbox, { key: "Home" })
+    await waitFor(() => expect(apple).toHaveFocus())
+    fireEvent.keyDown(apple, { key: "ArrowDown" })
+    await waitFor(() => expect(banana).toHaveFocus())
+  })
+
+  it("Enter commits the focused option", async () => {
+    const user = userEvent.setup()
+    const onChange = vi.fn()
+    render(<Fruit disabled={false} onChange={onChange} />)
+    await user.click(screen.getByRole("combobox"))
+    const listbox = await screen.findByRole("listbox")
+    const apple = screen.getByRole("option", { name: "Apple" })
+    const banana = screen.getByRole("option", { name: "Banana" })
+
+    fireEvent.keyDown(listbox, { key: "Home" })
+    await waitFor(() => expect(apple).toHaveFocus())
+    fireEvent.keyDown(apple, { key: "ArrowDown" })
+    await waitFor(() => expect(banana).toHaveFocus())
+    fireEvent.keyDown(banana, { key: "Enter" })
+    expect(onChange).toHaveBeenCalledWith("banana")
+  })
+})
+
+describe("Select option text changed after mount", () => {
+  function Fruit({ label }: { label: string }) {
+    return (
+      <Select>
+        <SelectTrigger>
+          <SelectValue placeholder="Pick one" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="apple">Apple</SelectItem>
+          <SelectItem value="other">{label}</SelectItem>
+        </SelectContent>
+      </Select>
+    )
+  }
+
+  it("typeahead finds an option by its new text, not its old one", async () => {
+    const user = userEvent.setup()
+    const { rerender } = render(<Fruit label="Pear" />)
+    await user.click(screen.getByRole("combobox"))
+    const listbox = await screen.findByRole("listbox")
+    await waitFor(() => expect(listbox).toHaveFocus())
+    rerender(<Fruit label="Quince" />)
+    const quince = screen.getByRole("option", { name: "Quince" })
+
+    fireEvent.keyDown(listbox, { key: "p" })
+    expect(quince).not.toHaveFocus()
+    await new Promise((resolve) => setTimeout(resolve, 600))
+    fireEvent.keyDown(listbox, { key: "q" })
+    await waitFor(() => expect(quince).toHaveFocus())
+  })
+})
