@@ -1,6 +1,5 @@
 import type { SetStateAction } from "react"
-import { useMemo, useRef } from "react"
-import { useRerender } from "./useRerender"
+import { useMemo, useRef, useState } from "react"
 import { useSyncedRef } from "./useSyncedRef"
 import type { InitialState } from "./util"
 import { resolveHookState } from "./util"
@@ -37,14 +36,16 @@ export function useList<T>(
   initialList: InitialState<T[]>,
 ): [T[], ListActions<T>] {
   const initial = useSyncedRef(initialList)
-  const list = useRef(resolveHookState(initialList))
-  const rerender = useRerender()
+  const [list, setList] = useState(() => resolveHookState(initialList))
+  // Mirrors the list synchronously, so several actions in one handler each
+  // see the result of the one before.
+  const latest = useRef(list)
 
   const actions = useMemo(
     () => ({
       set(newList: SetStateAction<T[]>) {
-        list.current = resolveHookState(newList, list.current)
-        rerender()
+        latest.current = resolveHookState(newList, latest.current)
+        setList(latest.current)
       },
 
       push(...items: T[]) {
@@ -85,7 +86,7 @@ export function useList<T>(
         predicate: (iteratedItem: T, newItem: T) => boolean,
         newItem: T,
       ) {
-        const indexOfMatch = list.current.findIndex((item: T) =>
+        const indexOfMatch = latest.current.findIndex((item: T) =>
           predicate(item, newItem),
         )
         const NO_MATCH = -1
@@ -95,7 +96,7 @@ export function useList<T>(
       },
 
       upsert(predicate: (iteratedItem: T, newItem: T) => boolean, newItem: T) {
-        const indexOfMatch = list.current.findIndex((item: T) =>
+        const indexOfMatch = latest.current.findIndex((item: T) =>
           predicate(item, newItem),
         )
         const NO_MATCH = -1
@@ -137,9 +138,8 @@ export function useList<T>(
         actions.set([...resolveHookState(initial.current)])
       },
     }),
-    [initial, rerender],
+    [initial],
   )
 
-  // eslint-disable-next-line react-hooks/refs
-  return [list.current, actions]
+  return [list, actions]
 }
