@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { readFileSync, readdirSync } from "node:fs"
 import { join } from "node:path"
+import { stripCssComments } from "../test/strip-css-comments"
 
 // A touch screen reports :hover on whatever was last tapped and keeps it
 // until the next tap elsewhere, so an ungated hover wash sticks to a tapped
@@ -46,7 +47,7 @@ function splitSelectors(prelude: string): string[] {
 
 /** Style rules at any depth, each with the at-rules and rules around it. */
 function parse(path: string, source: string): StyleRule[] {
-  const css = source.replace(/\/\*[\s\S]*?\*\//g, "")
+  const css = stripCssComments(source)
   const rules: StyleRule[] = []
   const stack: Array<{ prelude: string; rule: StyleRule | null }> = []
   let buffer = ""
