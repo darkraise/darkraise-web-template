@@ -17,11 +17,8 @@ import {
   type PopupAlign,
 } from "@primitives/floating"
 import { focusProgrammatically } from "@primitives/focus-trap"
-import {
-  useMenu,
-  type MenuItemDescriptor,
-  type UseMenuReturn,
-} from "@components/_internal/useMenu"
+import { useId } from "@primitives/state"
+import { useMenu, type UseMenuReturn } from "@components/_internal/useMenu"
 import "@components/menu-primitives/menu-primitives.css"
 
 type Side = LogicalSide
@@ -468,59 +465,36 @@ function useMenuItem({
   ref,
   disabled,
   textValue,
+  children,
 }: {
   ref?: React.Ref<HTMLDivElement>
   disabled?: boolean
   textValue?: string
+  children?: React.ReactNode
 }) {
   const ctx = useDropdownContext("DropdownMenuItem")
   const localRef = React.useRef<HTMLDivElement | null>(null)
+  const id = useId()
 
-  // Hold a single stable descriptor for this item; mutate fields in place so
-  // re-registering does not bounce useMenu state and trigger re-render loops.
-  const descriptorRef = React.useRef<MenuItemDescriptor | null>(null)
-  if (descriptorRef.current === null) {
-    const id = Math.random().toString(36).slice(2)
-    descriptorRef.current = {
+  // Replacing a known id's record does not re-render the menu, so syncing a
+  // changed field cannot start a render loop. Removal lives in its own
+  // effect: a field change must not unregister the item, or focus would
+  // leave it.
+  const { registerItem, unregisterItem } = ctx
+  // Without a textValue the typeahead text is the rendered text, so the
+  // record is refreshed whenever the children change.
+  React.useLayoutEffect(() => {
+    registerItem({
       id,
       value: id,
-      textValue: textValue ?? "",
       disabled: !!disabled,
+      textValue: textValue ?? localRef.current?.textContent ?? "",
       ref: localRef,
-    }
-  }
-  // Keep descriptor fields in sync with current props every render.
-  if (descriptorRef.current) {
-    descriptorRef.current.disabled = !!disabled
-    if (textValue !== undefined) {
-      descriptorRef.current.textValue = textValue
-    }
-  }
+    })
+  }, [registerItem, id, disabled, textValue, children])
+  React.useLayoutEffect(() => () => unregisterItem(id), [unregisterItem, id])
 
-  // Register on mount, deregister on unmount only.
-  const registerItem = ctx.registerItem
-  React.useEffect(() => {
-    const descriptor = descriptorRef.current
-    if (!descriptor) return
-    return registerItem(descriptor)
-    // Stable: registerItem is wrapped in useCallback with [] deps.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  // Sync auto-derived textValue from DOM after mount.
-  React.useEffect(() => {
-    if (textValue !== undefined) return
-    const node = localRef.current
-    const descriptor = descriptorRef.current
-    if (node && descriptor) {
-      descriptor.textValue = node.textContent ?? ""
-    }
-  })
-
-  // Read items each render so myIndex stays current.
-  const sortedItems = ctx.items()
-  const myIndex = sortedItems.findIndex((it) => it === descriptorRef.current)
-  const isFocused = myIndex >= 0 && ctx.focusedIndex === myIndex
+  const isFocused = ctx.focusedId === id
 
   // Apply focus when this is the focused item and menu is open.
   React.useEffect(() => {
@@ -533,7 +507,7 @@ function useMenuItem({
     localRef,
     composedRef,
     isFocused,
-    myIndex,
+    id,
     ctx,
   }
 }
@@ -553,10 +527,11 @@ function DropdownMenuItem({
   children,
   ...rest
 }: DropdownMenuItemProps) {
-  const { localRef, composedRef, isFocused, myIndex, ctx } = useMenuItem({
+  const { localRef, composedRef, isFocused, id, ctx } = useMenuItem({
     ref,
     disabled,
     textValue,
+    children,
   })
   const Comp = asChild ? Slot : "div"
 
@@ -587,7 +562,7 @@ function DropdownMenuItem({
         // open, unless this item is the sub-trigger holding it.
         ctx.closeOpenSubmenu(localRef.current)
         if (disabled) return
-        if (myIndex >= 0) ctx.setFocusedIndex(myIndex)
+        ctx.setFocusedId(id)
       }}
       onClick={(event: React.MouseEvent<HTMLDivElement>) => {
         onClick?.(event)

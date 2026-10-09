@@ -542,3 +542,73 @@ describe("DropdownMenu sub-trigger keys", () => {
     await waitFor(() => expect(email).toHaveFocus())
   })
 })
+
+describe("DropdownMenu item disabled after mount", () => {
+  function Menu({ disabled }: { disabled: boolean }) {
+    return (
+      <DropdownMenu defaultOpen>
+        <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem>Copy</DropdownMenuItem>
+          <DropdownMenuItem disabled={disabled}>Paste</DropdownMenuItem>
+          <DropdownMenuItem>Delete</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    )
+  }
+
+  it("arrow keys skip an item disabled after mount and reach it once enabled", async () => {
+    const { rerender } = render(<Menu disabled={false} />)
+    const copy = await screen.findByRole("menuitem", { name: "Copy" })
+    const paste = screen.getByRole("menuitem", { name: "Paste" })
+    const del = screen.getByRole("menuitem", { name: "Delete" })
+    const menu = screen.getByRole("menu")
+
+    fireEvent.keyDown(menu, { key: "Home" })
+    await waitFor(() => expect(copy).toHaveFocus())
+    fireEvent.keyDown(copy, { key: "ArrowDown" })
+    await waitFor(() => expect(paste).toHaveFocus())
+
+    rerender(<Menu disabled />)
+    expect(screen.getByRole("menuitem", { name: "Paste" })).toBe(paste)
+    fireEvent.keyDown(menu, { key: "Home" })
+    await waitFor(() => expect(copy).toHaveFocus())
+    fireEvent.keyDown(copy, { key: "ArrowDown" })
+    await waitFor(() => expect(del).toHaveFocus())
+
+    rerender(<Menu disabled={false} />)
+    expect(screen.getByRole("menuitem", { name: "Paste" })).toBe(paste)
+    fireEvent.keyDown(menu, { key: "Home" })
+    await waitFor(() => expect(copy).toHaveFocus())
+    fireEvent.keyDown(copy, { key: "ArrowDown" })
+    await waitFor(() => expect(paste).toHaveFocus())
+  })
+})
+
+describe("DropdownMenu item text changed after mount", () => {
+  function Menu({ label }: { label: string }) {
+    return (
+      <DropdownMenu defaultOpen>
+        <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem>Copy</DropdownMenuItem>
+          <DropdownMenuItem>{label}</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    )
+  }
+
+  it("typeahead finds an item by its new text, not its old one", async () => {
+    const { rerender } = render(<Menu label="Paste" />)
+    const menu = await screen.findByRole("menu")
+    await waitFor(() => expect(menu).toHaveFocus())
+    rerender(<Menu label="Rename" />)
+    const renamed = screen.getByRole("menuitem", { name: "Rename" })
+
+    fireEvent.keyDown(menu, { key: "p" })
+    expect(renamed).not.toHaveFocus()
+    await new Promise((resolve) => setTimeout(resolve, 600))
+    fireEvent.keyDown(menu, { key: "r" })
+    await waitFor(() => expect(renamed).toHaveFocus())
+  })
+})
