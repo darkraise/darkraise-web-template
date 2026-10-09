@@ -199,14 +199,11 @@ describe("Listbox disabled", () => {
   })
 
   it("does not highlight an option under the pointer", async () => {
-    const tree = () => (
+    render(
       <Listbox disabled aria-label="x">
         <ListboxItem value="a">Apple</ListboxItem>
-      </Listbox>
+      </Listbox>,
     )
-    const { rerender } = render(tree())
-    // An item learns its index on the render after it registers.
-    rerender(tree())
     await userEvent.hover(screen.getByText("Apple"))
     expect(screen.getByRole("option")).not.toHaveAttribute("data-focused")
   })
@@ -224,5 +221,115 @@ describe("Listbox disabled", () => {
     fireEvent.keyDown(listbox, { key: "Enter" })
     fireEvent.keyDown(listbox, { key: " " })
     expect(onValueChange).not.toHaveBeenCalled()
+  })
+})
+
+describe("Listbox focus tracking", () => {
+  function Fruits({
+    bananaDisabled = false,
+    withCherry = true,
+    onValueChange,
+  }: {
+    bananaDisabled?: boolean
+    withCherry?: boolean
+    onValueChange?: (value: string | string[]) => void
+  }) {
+    return (
+      <Listbox aria-label="Fruit" onValueChange={onValueChange}>
+        <ListboxItem value="apple">Apple</ListboxItem>
+        <ListboxItem value="banana" disabled={bananaDisabled}>
+          Banana
+        </ListboxItem>
+        {withCherry ? <ListboxItem value="cherry">Cherry</ListboxItem> : null}
+      </Listbox>
+    )
+  }
+
+  function activeOption() {
+    const id = screen.getByRole("listbox").getAttribute("aria-activedescendant")
+    return id ? document.getElementById(id) : null
+  }
+
+  it("skips an item disabled after mount, and stops skipping it once enabled", async () => {
+    const user = userEvent.setup()
+    const { rerender } = render(<Fruits bananaDisabled />)
+    const banana = screen.getByRole("option", { name: "Banana" })
+    screen.getByRole("listbox").focus()
+    await user.keyboard("{ArrowDown}{ArrowDown}")
+    expect(activeOption()).toHaveTextContent("Cherry")
+
+    rerender(<Fruits />)
+    await user.keyboard("{Home}{ArrowDown}")
+    expect(activeOption()).toBe(banana)
+    expect(banana).toHaveAttribute("data-focused", "true")
+
+    rerender(<Fruits bananaDisabled />)
+    await user.keyboard("{Home}{ArrowDown}")
+    expect(activeOption()).toHaveTextContent("Cherry")
+    expect(screen.getByRole("option", { name: "Banana" })).toBe(banana)
+  })
+
+  it("restarts from the first enabled item when the focused one is disabled", async () => {
+    const user = userEvent.setup()
+    const onValueChange = vi.fn()
+    const { rerender } = render(<Fruits onValueChange={onValueChange} />)
+    screen.getByRole("listbox").focus()
+    await user.keyboard("{ArrowDown}{ArrowDown}")
+    expect(activeOption()).toHaveTextContent("Banana")
+
+    rerender(<Fruits bananaDisabled onValueChange={onValueChange} />)
+    await user.keyboard("{Enter}")
+    expect(onValueChange).not.toHaveBeenCalled()
+    await user.keyboard("{ArrowDown}")
+    expect(activeOption()).toHaveTextContent("Apple")
+  })
+
+  it("continues from the item that took a removed focused item's place", async () => {
+    const user = userEvent.setup()
+    function Four({
+      withBanana,
+      withDate,
+    }: {
+      withBanana: boolean
+      withDate: boolean
+    }) {
+      return (
+        <Listbox aria-label="Fruit">
+          <ListboxItem value="apple">Apple</ListboxItem>
+          {withBanana ? <ListboxItem value="banana">Banana</ListboxItem> : null}
+          <ListboxItem value="cherry">Cherry</ListboxItem>
+          {withDate ? <ListboxItem value="date">Date</ListboxItem> : null}
+        </Listbox>
+      )
+    }
+    const { rerender } = render(<Four withBanana withDate />)
+    screen.getByRole("listbox").focus()
+    await user.keyboard("{Home}{ArrowDown}")
+    expect(activeOption()).toHaveTextContent("Banana")
+
+    rerender(<Four withBanana={false} withDate />)
+    await user.keyboard("{ArrowDown}")
+    expect(activeOption()).toHaveTextContent("Date")
+
+    rerender(<Four withBanana={false} withDate={false} />)
+    await user.keyboard("{ArrowDown}")
+    expect(activeOption()).toHaveTextContent("Apple")
+  })
+
+  it("matches typeahead against an item's current text", async () => {
+    const user = userEvent.setup()
+    function Labelled({ label }: { label: string }) {
+      return (
+        <Listbox aria-label="Fruit">
+          <ListboxItem value="a">Apple</ListboxItem>
+          <ListboxItem value="b">{label}</ListboxItem>
+        </Listbox>
+      )
+    }
+    const { rerender } = render(<Labelled label="Banana" />)
+    rerender(<Labelled label="Mango" />)
+    screen.getByRole("listbox").focus()
+    await user.keyboard("m")
+    expect(activeOption()).toHaveTextContent("Mango")
   })
 })

@@ -109,6 +109,8 @@ A disabled compound control fades once, at its root; its parts, and the controls
 
 The `outline` variant of `Listbox` and `TreeView` now rings the selected row instead of filling it, and `Pagination`'s outline variant edges its links. Use `variant="filled"` (the default) for the checked fill.
 
+`useListbox` returns `focusedId` and `setFocusedId(id)` instead of `focusedIndex` and `setFocusedIndex(index)`. Where you read the focused index, look the item up instead: `items().find((item) => item.id === focusedId)`. Where you set it, pass the item's `id`, or `null` to clear focus.
+
 `TreeView` rows indent through `--tree-depth`; a `style` prop that set `paddingInlineStart` on a row to indent it should set `--tree-view-indent` on the tree instead. Remove spacer elements added to line leaves up with branches. A tree of leaves only now indents each leaf by an indicator's width plus its gap, even with no branch beside it.
 
 `TagsInputClearTrigger` carries `.dr-tags-input-clear-trigger` instead of `.dr-tags-input-item-delete-trigger`. Move any rule that styled the clear trigger through the delete trigger's class to the new class; rules on `.dr-tags-input-item-delete-trigger` now reach only the delete buttons inside tags.

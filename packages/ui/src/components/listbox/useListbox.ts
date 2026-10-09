@@ -24,8 +24,8 @@ export interface UseListboxReturn {
   disabled: boolean
   isSelected: (val: string) => boolean
   toggle: (val: string) => void
-  focusedIndex: number
-  setFocusedIndex: (i: number) => void
+  focusedId: string | null
+  setFocusedId: (id: string | null) => void
   registerItem: (descriptor: ListboxItemDescriptor) => () => void
   items: () => ListboxItemDescriptor[]
   handleKeyDown: (event: React.KeyboardEvent) => void
@@ -46,13 +46,31 @@ export function useListbox(options: UseListboxOptions): UseListboxReturn {
   )
 
   const itemsRef = React.useRef<ListboxItemDescriptor[]>([])
-  const items = React.useCallback(() => itemsRef.current, [])
+  // An item's effect cleanup runs before it re-registers with changed fields,
+  // so removing it at once would move it to the end of the order. Removal
+  // waits for the next read instead, and re-registering the id cancels it.
+  const removedIdsRef = React.useRef(new Set<string>())
+
+  const items = React.useCallback(() => {
+    const removed = removedIdsRef.current
+    if (removed.size > 0) {
+      itemsRef.current = itemsRef.current.filter((i) => !removed.has(i.id))
+      removed.clear()
+    }
+    return itemsRef.current
+  }, [])
 
   const registerItem = React.useCallback(
     (descriptor: ListboxItemDescriptor) => {
-      itemsRef.current = [...itemsRef.current, descriptor]
+      removedIdsRef.current.delete(descriptor.id)
+      const list = itemsRef.current
+      const at = list.findIndex((i) => i.id === descriptor.id)
+      itemsRef.current =
+        at === -1
+          ? [...list, descriptor]
+          : list.map((i, n) => (n === at ? descriptor : i))
       return () => {
-        itemsRef.current = itemsRef.current.filter((i) => i !== descriptor)
+        removedIdsRef.current.add(descriptor.id)
       }
     },
     [],
@@ -64,7 +82,7 @@ export function useListbox(options: UseListboxOptions): UseListboxReturn {
   }
 
   const toggle = (val: string) => {
-    const target = itemsRef.current.find((i) => i.value === val)
+    const target = items().find((i) => i.value === val)
     if (disabled || !target || target.disabled) return
     if (mode === "multi") {
       const cur = (value as string[] | undefined) ?? []
@@ -77,35 +95,48 @@ export function useListbox(options: UseListboxOptions): UseListboxReturn {
     }
   }
 
-  const [focusedIndex, setFocusedIndex] = React.useState(-1)
+  // The focused item's position is kept beside its id: when that item is
+  // removed, the arrow keys continue from the item that took its position.
+  const [focus, setFocus] = React.useState<{
+    id: string | null
+    index: number
+  }>({ id: null, index: -1 })
+  const focusedId = focus.id
 
-  const enabledIndexes = () =>
-    itemsRef.current
-      .map((it, idx) => (it.disabled ? -1 : idx))
-      .filter((i) => i >= 0)
+  const setFocusedId = (id: string | null) => {
+    setFocus({
+      id,
+      index: id === null ? -1 : items().findIndex((i) => i.id === id),
+    })
+  }
+
+  const enabledItems = () => items().filter((it) => !it.disabled)
 
   const moveFocus = (direction: 1 | -1) => {
-    const enabled = enabledIndexes()
+    const list = items()
+    const enabled = list.flatMap((it, n) => (it.disabled ? [] : [n]))
     if (enabled.length === 0) return
-    const cur = enabled.indexOf(focusedIndex)
-    const nextIdx =
+    const at = list.findIndex((it) => it.id === focus.id)
+    const cur = enabled.indexOf(at === -1 ? focus.index : at)
+    const next =
       cur < 0
         ? direction === 1
           ? enabled[0]
           : enabled[enabled.length - 1]
         : enabled[(cur + direction + enabled.length) % enabled.length]
-    if (nextIdx !== undefined) setFocusedIndex(nextIdx)
+    if (next === undefined) return
+    const item = list[next]
+    if (item) setFocus({ id: item.id, index: next })
   }
 
   const focusFirst = () => {
-    const enabled = enabledIndexes()
-    const first = enabled[0]
-    if (first !== undefined) setFocusedIndex(first)
+    const first = enabledItems()[0]
+    if (first) setFocusedId(first.id)
   }
   const focusLast = () => {
-    const enabled = enabledIndexes()
+    const enabled = enabledItems()
     const last = enabled[enabled.length - 1]
-    if (last !== undefined) setFocusedIndex(last)
+    if (last) setFocusedId(last.id)
   }
 
   const typeaheadBufferRef = React.useRef("")
@@ -117,10 +148,10 @@ export function useListbox(options: UseListboxOptions): UseListboxReturn {
     if (typeaheadTimerRef.current) clearTimeout(typeaheadTimerRef.current)
     typeaheadBufferRef.current += char.toLowerCase()
     const needle = typeaheadBufferRef.current
-    const match = itemsRef.current.findIndex(
+    const match = items().find(
       (i) => !i.disabled && i.textValue.toLowerCase().startsWith(needle),
     )
-    if (match >= 0) setFocusedIndex(match)
+    if (match) setFocusedId(match.id)
     typeaheadTimerRef.current = setTimeout(() => {
       typeaheadBufferRef.current = ""
     }, 500)
@@ -141,7 +172,7 @@ export function useListbox(options: UseListboxOptions): UseListboxReturn {
       focusLast()
     } else if (event.key === "Enter" || event.key === " ") {
       event.preventDefault()
-      const item = itemsRef.current[focusedIndex]
+      const item = items().find((i) => i.id === focusedId)
       if (item) toggle(item.value)
     } else if (
       event.key.length === 1 &&
@@ -159,8 +190,8 @@ export function useListbox(options: UseListboxOptions): UseListboxReturn {
     disabled,
     isSelected,
     toggle,
-    focusedIndex,
-    setFocusedIndex,
+    focusedId,
+    setFocusedId,
     registerItem,
     items,
     handleKeyDown,

@@ -53,14 +53,13 @@ function Listbox({
     onValueChange,
     disabled,
   })
-  const focusedItem = ctx.items()[ctx.focusedIndex]
   return (
     <ListboxContext.Provider value={ctx}>
       <div
         role="listbox"
         tabIndex={disabled ? -1 : 0}
         aria-multiselectable={ctx.mode === "multi" || undefined}
-        aria-activedescendant={focusedItem?.id}
+        aria-activedescendant={ctx.focusedId ?? undefined}
         aria-disabled={disabled || undefined}
         data-disabled={disabled || undefined}
         data-variant={variant}
@@ -93,35 +92,24 @@ function ListboxItem({
   ...rest
 }: ListboxItemProps) {
   const ctx = useListboxContext("ListboxItem")
+  const { registerItem } = ctx
   const id = useId()
   const localRef = React.useRef<HTMLDivElement | null>(null)
-  const descriptorRef = React.useRef({
-    id,
-    value,
-    disabled,
-    textValue: textValue ?? "",
-  })
 
-  // Keep descriptor fields fresh.
-  descriptorRef.current.id = id
-  descriptorRef.current.disabled = disabled
-  descriptorRef.current.value = value
-  if (textValue !== undefined) descriptorRef.current.textValue = textValue
+  // `children` is a dependency because, without `textValue`, typeahead
+  // matches the rendered text.
+  React.useLayoutEffect(
+    () =>
+      registerItem({
+        id,
+        value,
+        disabled,
+        textValue: textValue ?? localRef.current?.textContent ?? "",
+      }),
+    [registerItem, id, value, disabled, textValue, children],
+  )
 
-  React.useEffect(() => {
-    return ctx.registerItem(descriptorRef.current)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  // Pick up DOM textContent as fallback for typeahead.
-  React.useEffect(() => {
-    if (textValue !== undefined) return
-    descriptorRef.current.textValue = localRef.current?.textContent ?? ""
-  })
-
-  const items = ctx.items()
-  const myIndex = items.findIndex((d) => d === descriptorRef.current)
-  const isFocused = myIndex >= 0 && ctx.focusedIndex === myIndex
+  const isFocused = ctx.focusedId === id
   const selected = ctx.isSelected(value)
 
   return (
@@ -141,9 +129,7 @@ function ListboxItem({
         ctx.toggle(value)
       }}
       onPointerEnter={() => {
-        if (myIndex >= 0 && !disabled && !ctx.disabled) {
-          ctx.setFocusedIndex(myIndex)
-        }
+        if (!disabled && !ctx.disabled) ctx.setFocusedId(id)
       }}
       className={cn("dr-listbox-item", className)}
       {...rest}
