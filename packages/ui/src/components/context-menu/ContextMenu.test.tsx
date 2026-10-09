@@ -18,6 +18,7 @@ import {
   ContextMenuSub,
   ContextMenuSubContent,
   ContextMenuSubTrigger,
+  ContextMenuPortal,
 } from "@components/context-menu"
 
 function Basic({
@@ -668,4 +669,37 @@ describe("ContextMenu content loop", () => {
       expect(menu).not.toHaveAttribute("loop")
     },
   )
+})
+
+describe("ContextMenu portal forceMount", () => {
+  function Menu({ forceMount }: { forceMount?: boolean }) {
+    return (
+      <ContextMenu>
+        <ContextMenuTrigger>Right-click here</ContextMenuTrigger>
+        <ContextMenuPortal forceMount={forceMount}>
+          <ContextMenuContent>
+            <ContextMenuItem>Copy</ContextMenuItem>
+            <ContextMenuSub>
+              <ContextMenuSubTrigger>Share</ContextMenuSubTrigger>
+              <ContextMenuSubContent>
+                <ContextMenuItem>Email</ContextMenuItem>
+              </ContextMenuSubContent>
+            </ContextMenuSub>
+          </ContextMenuContent>
+        </ContextMenuPortal>
+      </ContextMenu>
+    )
+  }
+
+  it("keeps the closed content mounted, but not its submenu", () => {
+    render(<Menu forceMount />)
+    const menus = screen.getAllByRole("menu", { hidden: true })
+    expect(menus).toHaveLength(1)
+    expect(menus[0]).toHaveAttribute("data-state", "closed")
+  })
+
+  it("unmounts the closed content without forceMount", () => {
+    render(<Menu />)
+    expect(screen.queryByRole("menu", { hidden: true })).toBeNull()
+  })
 })

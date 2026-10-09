@@ -19,6 +19,7 @@ import {
 import { focusProgrammatically } from "@primitives/focus-trap"
 import { useMenu, type UseMenuReturn } from "@components/_internal/useMenu"
 import { useMenuItem } from "@components/_internal/useMenuItem"
+import { createForceMountScope } from "@components/_internal/forceMountScope"
 import "@components/menu-primitives/menu-primitives.css"
 
 type Side = LogicalSide
@@ -49,6 +50,11 @@ function useDropdownContext(consumer: string): DropdownMenuContextValue {
   if (!ctx) throw new Error(`${consumer} must be used within <DropdownMenu>`)
   return ctx
 }
+
+const {
+  ForceMountProvider: DropdownMenuForceMount,
+  useResolvedForceMount: useDropdownMenuForceMount,
+} = createForceMountScope()
 
 interface RadioGroupContextValue {
   value?: string
@@ -150,7 +156,7 @@ function DropdownMenuRoot({
 
   return (
     <DropdownMenuContext.Provider value={value}>
-      {children}
+      <DropdownMenuForceMount>{children}</DropdownMenuForceMount>
     </DropdownMenuContext.Provider>
   )
 }
@@ -176,8 +182,11 @@ function DropdownMenuPortal({
   children,
 }: DropdownMenuPortalProps) {
   void useDropdownContext("DropdownMenuPortal")
-  void forceMount
-  return <Portal container={container}>{children}</Portal>
+  return (
+    <DropdownMenuForceMount forceMount={forceMount}>
+      <Portal container={container}>{children}</Portal>
+    </DropdownMenuForceMount>
+  )
 }
 
 interface DropdownMenuTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -437,10 +446,11 @@ function DropdownMenuContentImpl({
 }
 
 function DropdownMenuContent({
-  forceMount,
+  forceMount: forceMountProp,
   ...props
 }: DropdownMenuContentProps) {
   const ctx = useDropdownContext("DropdownMenuContent")
+  const forceMount = useDropdownMenuForceMount(forceMountProp)
   return (
     <DropdownMenuPortal forceMount={forceMount}>
       <Presence present={ctx.open} forceMount={forceMount}>

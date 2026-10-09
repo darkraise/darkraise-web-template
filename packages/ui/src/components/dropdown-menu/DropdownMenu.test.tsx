@@ -20,7 +20,14 @@ import {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
+  DropdownMenuPortal,
 } from "@components/dropdown-menu"
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@components/context-menu"
 
 function Basic({ onChange }: { onChange?: (open: boolean) => void } = {}) {
   return (
@@ -661,4 +668,58 @@ describe("DropdownMenu content loop", () => {
       expect(menu).not.toHaveAttribute("loop")
     },
   )
+})
+
+describe("DropdownMenu portal forceMount", () => {
+  function Menu({ forceMount }: { forceMount?: boolean }) {
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+        <DropdownMenuPortal forceMount={forceMount}>
+          <DropdownMenuContent>
+            <DropdownMenuItem>Copy</DropdownMenuItem>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>Share</DropdownMenuSubTrigger>
+              <DropdownMenuSubContent>
+                <DropdownMenuItem>Email</DropdownMenuItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+          </DropdownMenuContent>
+        </DropdownMenuPortal>
+      </DropdownMenu>
+    )
+  }
+
+  it("keeps the closed content mounted, but not its submenu", () => {
+    render(<Menu forceMount />)
+    const menus = screen.getAllByRole("menu", { hidden: true })
+    expect(menus).toHaveLength(1)
+    expect(menus[0]).toHaveAttribute("data-state", "closed")
+  })
+
+  it("unmounts the closed content without forceMount", () => {
+    render(<Menu />)
+    expect(screen.queryByRole("menu", { hidden: true })).toBeNull()
+  })
+
+  it("does not force the content of another component inside it", () => {
+    render(
+      <DropdownMenu>
+        <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+        <DropdownMenuPortal forceMount>
+          <DropdownMenuContent aria-label="Outer">
+            <ContextMenu>
+              <ContextMenuTrigger>Right-click here</ContextMenuTrigger>
+              <ContextMenuContent>
+                <ContextMenuItem>Inner</ContextMenuItem>
+              </ContextMenuContent>
+            </ContextMenu>
+          </DropdownMenuContent>
+        </DropdownMenuPortal>
+      </DropdownMenu>,
+    )
+    const menus = screen.getAllByRole("menu", { hidden: true })
+    expect(menus).toHaveLength(1)
+    expect(menus[0]).toHaveAttribute("aria-label", "Outer")
+  })
 })

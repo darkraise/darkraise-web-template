@@ -19,6 +19,7 @@ import {
 import { useControllableState, useId } from "@primitives/state"
 import { useMenu, type UseMenuReturn } from "@components/_internal/useMenu"
 import { useMenuItem } from "@components/_internal/useMenuItem"
+import { createForceMountScope } from "@components/_internal/forceMountScope"
 import "./menubar.css"
 
 type Side = LogicalSide
@@ -145,6 +146,11 @@ function useMenubarMenu(consumer: string): MenubarMenuContextValue {
   return ctx
 }
 
+const {
+  ForceMountProvider: MenubarForceMount,
+  useResolvedForceMount: useMenubarForceMount,
+} = createForceMountScope()
+
 interface RadioGroupContextValue {
   value?: string
   onValueChange?: (value: string) => void
@@ -263,7 +269,7 @@ function MenubarMenuRoot({
 
   return (
     <MenubarMenuContext.Provider value={value}>
-      {children}
+      <MenubarForceMount>{children}</MenubarForceMount>
     </MenubarMenuContext.Provider>
   )
 }
@@ -289,8 +295,11 @@ function MenubarPortal({
   children,
 }: MenubarPortalProps) {
   void useMenubarMenu("MenubarPortal")
-  void forceMount
-  return <Portal container={container}>{children}</Portal>
+  return (
+    <MenubarForceMount forceMount={forceMount}>
+      <Portal container={container}>{children}</Portal>
+    </MenubarForceMount>
+  )
 }
 
 interface MenubarTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -568,8 +577,12 @@ function MenubarContentImpl({
   )
 }
 
-function MenubarContent({ forceMount, ...props }: MenubarContentProps) {
+function MenubarContent({
+  forceMount: forceMountProp,
+  ...props
+}: MenubarContentProps) {
   const ctx = useMenubarMenu("MenubarContent")
+  const forceMount = useMenubarForceMount(forceMountProp)
   return (
     <MenubarPortal forceMount={forceMount}>
       <Presence present={ctx.open} forceMount={forceMount}>

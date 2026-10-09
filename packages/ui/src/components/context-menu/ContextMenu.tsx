@@ -11,6 +11,7 @@ import { Slot, useComposedRefs } from "@primitives/slot"
 import { placementOf, resolveSide, useFloating } from "@primitives/floating"
 import { useMenu, type UseMenuReturn } from "@components/_internal/useMenu"
 import { useMenuItem } from "@components/_internal/useMenuItem"
+import { createForceMountScope } from "@components/_internal/forceMountScope"
 import "@components/menu-primitives/menu-primitives.css"
 
 interface VirtualPoint {
@@ -44,6 +45,11 @@ function useContextMenuContext(consumer: string): ContextMenuContextValue {
   if (!ctx) throw new Error(`${consumer} must be used within <ContextMenu>`)
   return ctx
 }
+
+const {
+  ForceMountProvider: ContextMenuForceMount,
+  useResolvedForceMount: useContextMenuForceMount,
+} = createForceMountScope()
 
 interface RadioGroupContextValue {
   value?: string
@@ -159,7 +165,7 @@ function ContextMenuRoot({
 
   return (
     <ContextMenuContext.Provider value={value}>
-      {children}
+      <ContextMenuForceMount>{children}</ContextMenuForceMount>
     </ContextMenuContext.Provider>
   )
 }
@@ -221,8 +227,11 @@ function ContextMenuPortal({
   children,
 }: ContextMenuPortalProps) {
   void useContextMenuContext("ContextMenuPortal")
-  void forceMount
-  return <Portal container={container}>{children}</Portal>
+  return (
+    <ContextMenuForceMount forceMount={forceMount}>
+      <Portal container={container}>{children}</Portal>
+    </ContextMenuForceMount>
+  )
 }
 
 interface ContextMenuContentProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -421,8 +430,12 @@ function ContextMenuContentImpl({
   )
 }
 
-function ContextMenuContent({ forceMount, ...props }: ContextMenuContentProps) {
+function ContextMenuContent({
+  forceMount: forceMountProp,
+  ...props
+}: ContextMenuContentProps) {
   const ctx = useContextMenuContext("ContextMenuContent")
+  const forceMount = useContextMenuForceMount(forceMountProp)
   return (
     <ContextMenuPortal forceMount={forceMount}>
       <Presence present={ctx.open} forceMount={forceMount}>

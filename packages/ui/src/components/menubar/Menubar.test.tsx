@@ -17,6 +17,7 @@ import {
   MenubarSub,
   MenubarSubContent,
   MenubarSubTrigger,
+  MenubarPortal,
 } from "@components/menubar"
 
 function Basic({
@@ -572,4 +573,39 @@ describe("Menubar content loop", () => {
       expect(menu).not.toHaveAttribute("loop")
     },
   )
+})
+
+describe("Menubar portal forceMount", () => {
+  function Bar({ forceMount }: { forceMount?: boolean }) {
+    return (
+      <Menubar>
+        <MenubarMenu value="edit">
+          <MenubarTrigger>Edit</MenubarTrigger>
+          <MenubarPortal forceMount={forceMount}>
+            <MenubarContent>
+              <MenubarItem>Copy</MenubarItem>
+              <MenubarSub>
+                <MenubarSubTrigger>Share</MenubarSubTrigger>
+                <MenubarSubContent>
+                  <MenubarItem>Email</MenubarItem>
+                </MenubarSubContent>
+              </MenubarSub>
+            </MenubarContent>
+          </MenubarPortal>
+        </MenubarMenu>
+      </Menubar>
+    )
+  }
+
+  it("keeps the closed content mounted, but not its submenu", () => {
+    render(<Bar forceMount />)
+    const menus = screen.getAllByRole("menu", { hidden: true })
+    expect(menus).toHaveLength(1)
+    expect(menus[0]).toHaveAttribute("data-state", "closed")
+  })
+
+  it("unmounts the closed content without forceMount", () => {
+    render(<Bar />)
+    expect(screen.queryByRole("menu", { hidden: true })).toBeNull()
+  })
 })
