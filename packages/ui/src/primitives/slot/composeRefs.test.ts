@@ -1,4 +1,5 @@
-import { renderHook } from "@testing-library/react"
+import { render, renderHook } from "@testing-library/react"
+import * as React from "react"
 import { describe, expect, it, vi } from "vitest"
 import { composeRefs, useComposedRefs } from "./composeRefs"
 
@@ -75,5 +76,60 @@ describe("useComposedRefs", () => {
     result.current(node)
     expect(next).toHaveBeenCalledWith(node)
     expect(b.current).toBe(node)
+  })
+
+  it("moves the node to a ref that changes between renders and detaches the old one", () => {
+    function Probe({
+      extra,
+      local,
+    }: {
+      extra: React.Ref<HTMLDivElement>
+      local: React.RefObject<HTMLDivElement | null>
+    }) {
+      return React.createElement("div", {
+        ref: useComposedRefs<HTMLDivElement>(local, extra),
+        "data-testid": "probe",
+      })
+    }
+
+    const local: React.RefObject<HTMLDivElement | null> = { current: null }
+    const firstCallback = vi.fn()
+    const { rerender, getByTestId } = render(
+      React.createElement(Probe, { extra: firstCallback, local }),
+    )
+    const node = getByTestId("probe")
+    expect(firstCallback).toHaveBeenLastCalledWith(node)
+
+    const secondCallback = vi.fn()
+    rerender(React.createElement(Probe, { extra: secondCallback, local }))
+    expect(firstCallback).toHaveBeenLastCalledWith(null)
+    expect(secondCallback).toHaveBeenLastCalledWith(node)
+    expect(local.current).toBe(node)
+
+    const objectRef: React.RefObject<HTMLDivElement | null> = { current: null }
+    rerender(React.createElement(Probe, { extra: objectRef, local }))
+    expect(secondCallback).toHaveBeenLastCalledWith(null)
+    expect(objectRef.current).toBe(node)
+    expect(local.current).toBe(node)
+  })
+
+  it("accepts a callback ref recreated on every render", () => {
+    const seen: Array<HTMLDivElement | null> = []
+    function Probe({ count }: { count: number }) {
+      return React.createElement("div", {
+        ref: useComposedRefs<HTMLDivElement>((node) => {
+          seen.push(node)
+        }),
+        "data-count": count,
+      })
+    }
+
+    const { rerender, container } = render(
+      React.createElement(Probe, { count: 1 }),
+    )
+    rerender(React.createElement(Probe, { count: 2 }))
+    rerender(React.createElement(Probe, { count: 3 }))
+    const node = container.firstElementChild
+    expect(seen).toEqual([node, null, node, null, node])
   })
 })
