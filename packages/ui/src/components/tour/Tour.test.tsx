@@ -191,6 +191,49 @@ describe("Tour", () => {
     await waitFor(() => expect(opener).toHaveFocus())
   })
 
+  it("keeps Tab inside the popover and returns focus to the opener", async () => {
+    const user = userEvent.setup()
+    function Wrapper() {
+      const [open, setOpen] = React.useState(false)
+      return (
+        <>
+          <Targets />
+          <button
+            data-testid="opener"
+            type="button"
+            onClick={() => setOpen(true)}
+          >
+            Open
+          </button>
+          <Tour
+            open={open}
+            steps={STEPS}
+            current={1}
+            onChange={() => {}}
+            onClose={() => setOpen(false)}
+          />
+        </>
+      )
+    }
+    render(<Wrapper />)
+    const opener = screen.getByTestId("opener")
+    await user.click(opener)
+    await waitFor(() => expect(screen.getByRole("dialog")).toHaveFocus())
+
+    const skip = screen.getByRole("button", { name: /skip/i })
+    const next = screen.getByRole("button", { name: /next/i })
+    next.focus()
+    await user.tab()
+    expect(skip).toHaveFocus()
+    await user.tab({ shift: true })
+    expect(next).toHaveFocus()
+
+    await user.tab()
+    await user.keyboard("{Enter}")
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
+    await waitFor(() => expect(opener).toHaveFocus())
+  })
+
   it("hides the popover until positioned again after a reopen", async () => {
     function Wrapper({ open, current }: { open: boolean; current: number }) {
       return (

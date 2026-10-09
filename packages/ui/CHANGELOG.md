@@ -345,6 +345,7 @@ Breaking: `ToggleGroup` sizes to its content. `.dr-toggle-group` is `inline-flex
 - `Command` and `CommandItem` keep a callback `ref` attached across renders while the callback stays the same; they used to detach it with `null` and attach it again on every render.
 - A consumer `onPointerEnter` on `ListboxItem` runs, and hovering still focuses the item unless the handler calls `preventDefault()`; the consumer's handler used to replace the item's own, so hovering stopped focusing it.
 - `Tour` reopened at another step stays hidden until it is placed beside the new target. It used to show for a frame at the position it had when it closed.
+- `Tour` keeps Tab and Shift+Tab inside its popover, wrapping from the last control to the first and back. Its focus trap used to start before the popover was mounted, so it never trapped.
 
 Breaking: `.dr-surface`, its `--flat` modifier and its `dr-surface-{brand,cyan,success,warning,danger,info}` hue classes are removed, with the `--fog-05` … `--fog-50` tokens they alone gave values to. The `glass`, `glass-thin`, `glass-strong` and `card-surface` utilities are removed: outside `.dr-surface` they painted nothing. Replace one with `rounded-[var(--radius)]` and, if you relied on it, `transition-[background-color,color,border-color,box-shadow] duration-[var(--duration-fast)] ease-[var(--ease-in-out)]`.
 

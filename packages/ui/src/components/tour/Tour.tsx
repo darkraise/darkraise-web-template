@@ -62,19 +62,10 @@ function Tour({
     setReference(targetEl)
   }, [targetEl, setReference])
   const popoverRef = React.useRef<HTMLDivElement | null>(null)
-  const previousFocusRef = React.useRef<HTMLElement | null>(null)
+  const [popoverEl, setPopoverEl] = React.useState<HTMLDivElement | null>(null)
   const titleId = useId()
   const descriptionId = useId()
   const step = steps[current]
-
-  // Tour popover is modal in intent — the backdrop blocks pointer events
-  // on the page beneath, but without a focus trap a keyboard user can Tab
-  // straight out of the popover into the (visually-blocked) page chrome.
-  useFocusTrap(popoverRef, {
-    disabled: !open,
-    loop: true,
-    restoreFocus: true,
-  })
 
   const reducedMotion = useReducedMotion()
 
@@ -114,30 +105,24 @@ function Tour({
   // missing is centred in the viewport and has nothing to wait for.
   const shown = !targetEl || floating.isPositioned
 
-  // Restore focus to the previously-focused element on close.
-  React.useEffect(() => {
-    if (!open) return
-    previousFocusRef.current =
-      (document.activeElement as HTMLElement | null) ?? null
-    return () => {
-      previousFocusRef.current?.focus?.()
-      previousFocusRef.current = null
-    }
-  }, [open])
+  // Tour popover is modal in intent — the backdrop blocks pointer events
+  // on the page beneath, but without a focus trap a keyboard user can Tab
+  // straight out of the popover into the (visually-blocked) page chrome.
+  // The trap waits for the popover element, which the in-house `Portal`
+  // mounts one effect after `open` turns true, and for it to be shown,
+  // since a hidden element cannot take focus.
+  useFocusTrap(popoverRef, {
+    disabled: !(open && shown && popoverEl),
+    initialFocus: popoverRef,
+    loop: true,
+    restoreFocus: true,
+  })
 
-  // Move focus to the popover once it is shown, so keyboard users can reach
-  // the controls; a hidden element cannot take focus. The focus is deferred
-  // because the in-house `Portal` defers its content mount by one effect
-  // tick — the popover ref isn't populated synchronously.
-  React.useEffect(() => {
-    if (!open || !shown) return
-    const id = window.setTimeout(() => {
-      popoverRef.current?.focus()
-    }, 0)
-    return () => window.clearTimeout(id)
-  }, [open, shown])
-
-  const composedRef = useComposedRefs(popoverRef, floating.refs.setFloating)
+  const composedRef = useComposedRefs<HTMLDivElement>(
+    popoverRef,
+    setPopoverEl,
+    floating.refs.setFloating,
+  )
 
   if (!open || !step) return null
 
