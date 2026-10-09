@@ -98,6 +98,13 @@ function ContextMenuRoot({
   const menu = useMenu({ open, defaultOpen, onOpenChange })
   const parent = React.useContext(ContextMenuContext)
   const [point, setPoint] = React.useState<VirtualPoint | null>(null)
+  // Cleared during the closing render rather than in an effect, so a
+  // right-click that reopens the menu before an effect ran keeps its point.
+  const [pointOpen, setPointOpen] = React.useState(menu.open)
+  if (pointOpen !== menu.open) {
+    setPointOpen(menu.open)
+    if (!menu.open) setPoint(null)
+  }
   const [submenuReference, setSubmenuReferenceState] =
     React.useState<HTMLElement | null>(null)
   const [triggerArea, setTriggerArea] = React.useState<HTMLElement | null>(null)
@@ -277,21 +284,34 @@ function ContextMenuContentImpl({
     collisionPadding,
   })
 
+  // The root menu anchors to the pointer of the right-click that opened it.
+  // Opened through its props there is no pointer, so it anchors to its
+  // trigger. A closing menu keeps its anchor through the exit animation.
   const setReferenceFloat = floating.refs.setReference
   React.useLayoutEffect(() => {
     if (ctx.isSubmenu) {
       setReferenceFloat(ctx.submenuReference)
       return
     }
-    if (!ctx.point) return
-    setReferenceFloat(buildVirtualReference(ctx.point))
-  }, [ctx.isSubmenu, ctx.submenuReference, ctx.point, setReferenceFloat])
+    if (!ctx.open) return
+    setReferenceFloat(
+      ctx.point ? buildVirtualReference(ctx.point) : ctx.triggerArea,
+    )
+  }, [
+    ctx.isSubmenu,
+    ctx.submenuReference,
+    ctx.open,
+    ctx.point,
+    ctx.triggerArea,
+    setReferenceFloat,
+  ])
 
-  // The root menu mounts at the viewport origin before the pointer point is
+  // The root menu mounts at the viewport origin before its anchor is
   // measured; shown there, a still pointer would hover its rows. A hidden
   // element cannot take focus, so focus waits until the menu is shown. A menu
-  // opened through its props has no point to wait for.
-  const shown = ctx.isSubmenu || !ctx.point || floating.isPositioned
+  // with neither a point nor a trigger has nothing to wait for.
+  const anchored = ctx.point !== null || ctx.triggerArea !== null
+  const shown = ctx.isSubmenu || !anchored || floating.isPositioned
 
   React.useEffect(() => {
     if (!ctx.open || !shown) return

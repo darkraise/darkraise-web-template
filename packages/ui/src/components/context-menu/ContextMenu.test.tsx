@@ -6,6 +6,7 @@ import {
   waitFor,
 } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
+import { useState } from "react"
 import { describe, it, expect, vi } from "vitest"
 import {
   ContextMenu,
@@ -564,5 +565,48 @@ describe("ContextMenu item text changed after mount", () => {
     await new Promise((resolve) => setTimeout(resolve, 600))
     fireEvent.keyDown(menu, { key: "r" })
     await waitFor(() => expect(renamed).toHaveFocus())
+  })
+})
+
+describe("ContextMenu opened through its props", () => {
+  function Harness() {
+    const [open, setOpen] = useState(false)
+    return (
+      <>
+        <button type="button" onClick={() => setOpen(true)}>
+          Show menu
+        </button>
+        <ContextMenu open={open} onOpenChange={setOpen}>
+          <ContextMenuTrigger>Right-click here</ContextMenuTrigger>
+          {/* jsdom's viewport has no size, so collision handling would move the menu. */}
+          <ContextMenuContent avoidCollisions={false}>
+            <ContextMenuItem>Edit</ContextMenuItem>
+          </ContextMenuContent>
+        </ContextMenu>
+      </>
+    )
+  }
+
+  it("anchors to its trigger, not the pointer of an earlier right-click", async () => {
+    const user = userEvent.setup()
+    render(<Harness />)
+    const trigger = screen.getByText("Right-click here")
+    vi.spyOn(trigger, "getBoundingClientRect").mockReturnValue(
+      DOMRect.fromRect({ x: 200, y: 100, width: 80, height: 20 }),
+    )
+
+    fireEvent.contextMenu(trigger, { clientX: 10, clientY: 10 })
+    const atPointer = await screen.findByRole("menu")
+    await waitFor(() =>
+      expect(atPointer).toHaveStyle({ left: "10px", top: "10px" }),
+    )
+    await user.keyboard("{Escape}")
+    await waitFor(() => expect(screen.queryByRole("menu")).toBeNull())
+
+    await user.click(screen.getByRole("button", { name: "Show menu" }))
+    const atTrigger = await screen.findByRole("menu")
+    await waitFor(() =>
+      expect(atTrigger).toHaveStyle({ left: "200px", top: "120px" }),
+    )
   })
 })
