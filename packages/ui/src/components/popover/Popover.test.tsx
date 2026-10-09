@@ -333,6 +333,26 @@ describe("PopoverArrow", () => {
     rerender(<Harness arrow={false} />)
     await waitFor(() => expect(content.style.top).toBe("4px"))
   })
+
+  it("reaches 3px past a 1px border with the default height", async () => {
+    render(
+      <Popover defaultOpen>
+        <PopoverTrigger>Toggle</PopoverTrigger>
+        <PopoverContent
+          side="bottom"
+          sideOffset={4}
+          avoidCollisions={false}
+          style={{ borderTopWidth: "1px" }}
+          data-testid="content"
+        >
+          Arrow content
+          <PopoverArrow />
+        </PopoverContent>
+      </Popover>,
+    )
+    const content = await screen.findByTestId("content")
+    await waitFor(() => expect(content.style.top).toBe("7px"))
+  })
 })
 
 describe("Popover portal forceMount", () => {

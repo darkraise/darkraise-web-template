@@ -472,4 +472,24 @@ describe("TooltipArrow", () => {
     rerender(<Harness arrow={false} />)
     await waitFor(() => expect(content.style.top).toBe("4px"))
   })
+
+  it("reaches 3px past a 1px border with the default height", async () => {
+    render(
+      <Tooltip defaultOpen>
+        <TooltipTrigger>Hover me</TooltipTrigger>
+        <TooltipContent
+          side="bottom"
+          sideOffset={4}
+          avoidCollisions={false}
+          style={{ borderTopWidth: "1px" }}
+          data-testid="content"
+        >
+          Tip text
+          <TooltipArrow />
+        </TooltipContent>
+      </Tooltip>,
+    )
+    const content = await screen.findByTestId("content")
+    await waitFor(() => expect(content.style.top).toBe("7px"))
+  })
 })
