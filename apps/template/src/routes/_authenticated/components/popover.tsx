@@ -4,6 +4,7 @@ import { Field, FieldLabel } from "darkraise-ui/components/field"
 import { Input } from "darkraise-ui/components/input"
 import {
   Popover,
+  PopoverArrow,
   PopoverContent,
   PopoverTrigger,
 } from "darkraise-ui/components/popover"
@@ -93,6 +94,29 @@ function PopoverPage() {
                 content.
               </p>
             </div>
+          </PopoverContent>
+        </Popover>
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="With arrow"
+        code={`<Popover>
+  <PopoverTrigger asChild>
+    <Button variant="outline">Open with arrow</Button>
+  </PopoverTrigger>
+  <PopoverContent side="top" className="w-64">
+    <p className="text-sm">The arrow points at the trigger.</p>
+    <PopoverArrow />
+  </PopoverContent>
+</Popover>`}
+      >
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline">Open with arrow</Button>
+          </PopoverTrigger>
+          <PopoverContent side="top" className="w-64">
+            <p className="text-sm">The arrow points at the trigger.</p>
+            <PopoverArrow />
           </PopoverContent>
         </Popover>
       </ShowcaseExample>

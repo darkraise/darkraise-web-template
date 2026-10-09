@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import { Button } from "darkraise-ui/components/button"
 import {
   Tooltip,
+  TooltipArrow,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
@@ -53,6 +54,33 @@ function TooltipPage() {
             </TooltipTrigger>
             <TooltipContent>
               <p>This is a tooltip</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </ShowcaseExample>
+
+      <ShowcaseExample
+        title="With arrow"
+        code={`<TooltipProvider>
+  <Tooltip>
+    <TooltipTrigger asChild>
+      <Button variant="outline">Hover for an arrow</Button>
+    </TooltipTrigger>
+    <TooltipContent>
+      Points at its trigger
+      <TooltipArrow />
+    </TooltipContent>
+  </Tooltip>
+</TooltipProvider>`}
+      >
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="outline">Hover for an arrow</Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              Points at its trigger
+              <TooltipArrow />
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>

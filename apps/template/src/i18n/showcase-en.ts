@@ -566,6 +566,7 @@ export const showcaseEnglish = {
   "Basic password field": "Basic password field",
   "With strength meter": "With strength meter",
   "With min-length validation": "With min-length validation",
+  "With arrow": "With arrow",
   "With inline form": "With inline form",
   "Basic progress": "Basic progress",
   "Animated progress": "Animated progress",

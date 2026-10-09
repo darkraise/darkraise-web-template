@@ -569,6 +569,7 @@ export const showcaseVietnamese: Record<keyof typeof showcaseEnglish, string> =
     "Basic password field": "Ô mật khẩu cơ bản",
     "With strength meter": "Có chỉ báo độ mạnh",
     "With min-length validation": "Có kiểm tra độ dài tối thiểu",
+    "With arrow": "Có mũi tên",
     "With inline form": "Có biểu mẫu tại chỗ",
     "Basic progress": "Tiến trình cơ bản",
     "Animated progress": "Tiến trình có chuyển động",
