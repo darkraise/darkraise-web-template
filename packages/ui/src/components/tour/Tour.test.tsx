@@ -190,4 +190,54 @@ describe("Tour", () => {
 
     await waitFor(() => expect(opener).toHaveFocus())
   })
+
+  it("hides the popover until positioned again after a reopen", async () => {
+    function Wrapper({ open, current }: { open: boolean; current: number }) {
+      return (
+        <>
+          <Targets />
+          <Tour
+            open={open}
+            steps={STEPS}
+            current={current}
+            onChange={() => {}}
+            onClose={() => {}}
+          />
+        </>
+      )
+    }
+    const { rerender } = render(<Wrapper open current={0} />)
+    await waitFor(() =>
+      expect(screen.getByRole("dialog").style.visibility).toBe(""),
+    )
+
+    rerender(<Wrapper open={false} current={0} />)
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
+
+    // A mutation record is delivered before Floating UI's asynchronous
+    // measurement settles, so it reads the popover as first committed.
+    const firstVisibility: string[] = []
+    const observer = new MutationObserver((records) => {
+      for (const record of records) {
+        for (const node of record.addedNodes) {
+          const dialog =
+            node instanceof HTMLElement
+              ? node.matches("[role='dialog']")
+                ? node
+                : node.querySelector<HTMLElement>("[role='dialog']")
+              : null
+          if (dialog) firstVisibility.push(dialog.style.visibility)
+        }
+      }
+    })
+    observer.observe(document.body, { childList: true, subtree: true })
+    rerender(<Wrapper open current={1} />)
+    await screen.findByText("Step 2")
+    observer.disconnect()
+
+    expect(firstVisibility[0]).toBe("hidden")
+    await waitFor(() =>
+      expect(screen.getByRole("dialog").style.visibility).toBe(""),
+    )
+  })
 })

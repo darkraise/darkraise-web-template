@@ -55,6 +55,7 @@ function Tour({
     alignOffset: -spotlightPadding,
     collisionPadding: 16,
     strategy: "fixed",
+    open,
   })
   const setReference = floating.refs.setReference
   React.useLayoutEffect(() => {

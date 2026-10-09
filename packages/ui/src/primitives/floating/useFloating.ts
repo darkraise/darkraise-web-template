@@ -24,6 +24,8 @@ export interface UseFloatingProps {
   collisionPadding?: number
   avoidCollisions?: boolean
   sticky?: "always" | "partial"
+  /** Lets Floating UI reset `isPositioned` when the popup closes. */
+  open?: boolean
 }
 
 export interface UseFloatingReturnExtended extends UseFloatingReturn {
@@ -42,6 +44,7 @@ export function useFloating(
     arrowPadding = 4,
     collisionPadding = 8,
     avoidCollisions = true,
+    open,
   } = props
 
   const [arrowEl, setArrowEl] = React.useState<SVGSVGElement | null>(null)
@@ -94,6 +97,7 @@ export function useFloating(
     strategy,
     middleware,
     whileElementsMounted: autoUpdate,
+    open,
   })
 
   return {
