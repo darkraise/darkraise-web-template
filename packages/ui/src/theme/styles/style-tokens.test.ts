@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest"
 import { readFileSync, readdirSync } from "node:fs"
 import { join, sep } from "node:path"
 import { stripCssComments } from "../../test/strip-css-comments"
+import { cssRules } from "../../test/css-rules"
 
 // Every control and chrome token has its base value in @layer base, and only
 // the unlayered style files under theme/styles/ override it, so a style file
@@ -285,12 +286,12 @@ interface Rule {
 /** Innermost rules; @layer and @media are transparent. */
 function rulesOf(path: string): Rule[] {
   const css = stripCssComments(readFileSync(path, "utf8"))
-  return [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((match) => ({
-    selectors: (match[1] as string)
+  return cssRules(css).map((rule) => ({
+    selectors: rule.selector
       .split(/,(?![^(]*\))/)
       .map(normalise)
       .filter(Boolean),
-    body: normalise(match[2] as string),
+    body: normalise(rule.body),
   }))
 }
 

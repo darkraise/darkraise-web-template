@@ -7,6 +7,7 @@ import {
   reachableCombos,
 } from "../test/contrast-matrix"
 import { stripCssComments } from "../test/strip-css-comments"
+import { cssRules } from "../test/css-rules"
 
 // Fills are solved to a 4.5:1 label at rest, so any hover that moves the fill
 // toward its label (a translucent fill letting a light page through, or a wash
@@ -98,8 +99,7 @@ describe("filled hover states", () => {
   it("no labelled fill hovers by turning translucent", () => {
     const offenders: string[] = []
     for (const [file, css] of componentStylesheets()) {
-      for (const rule of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
-        const body = rule[2] as string
+      for (const { body } of cssRules(css)) {
         if (
           !/text-(primary-foreground|destructive-solid-foreground)/.test(body)
         ) {
