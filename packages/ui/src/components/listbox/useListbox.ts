@@ -60,22 +60,40 @@ export function useListbox(options: UseListboxOptions): UseListboxReturn {
     )
   }, [])
 
+  const focusedIdRef = React.useRef<string | null>(null)
+  React.useLayoutEffect(() => {
+    focusedIdRef.current = focusedId
+  }, [focusedId])
+
   // A focused item that leaves hands focus to the enabled item that takes its
-  // position, so `aria-activedescendant` never names a removed node.
+  // position, so `aria-activedescendant` never names a removed node. The
+  // successor is chosen in the next layout pass, because an item mounting in
+  // the removal's commit registers after the removed item's cleanup has run.
+  const [vacancy, setVacancy] = React.useState<{
+    id: string
+    at: number
+  } | null>(null)
+
   const unregisterItem = React.useCallback(
     (id: string) => {
-      const at = items().findIndex((i) => i.id === id)
-      if (at === -1) return
+      const at =
+        id === focusedIdRef.current ? items().findIndex((i) => i.id === id) : -1
       itemsRef.current = itemsRef.current.filter((i) => i.id !== id)
-      const rest = items()
-      const successor =
-        rest.slice(at).find((i) => !i.disabled) ??
-        [...rest].reverse().find((i) => !i.disabled)
-      const nextId = successor?.id ?? null
-      setFocusedId((current) => (current === id ? nextId : current))
+      if (at !== -1) setVacancy({ id, at })
     },
     [items],
   )
+
+  React.useLayoutEffect(() => {
+    if (!vacancy) return
+    const rest = items()
+    const successor =
+      rest.slice(vacancy.at).find((i) => !i.disabled) ??
+      [...rest].reverse().find((i) => !i.disabled)
+    const nextId = successor?.id ?? null
+    setFocusedId((current) => (current === vacancy.id ? nextId : current))
+    setVacancy(null)
+  }, [vacancy, items])
 
   const registerItem = React.useCallback(
     (descriptor: ListboxItemDescriptor) => {

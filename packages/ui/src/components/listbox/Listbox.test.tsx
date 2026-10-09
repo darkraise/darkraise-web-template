@@ -392,6 +392,19 @@ describe("Listbox registry", () => {
     expect(activeId()).toBe(cherry)
   })
 
+  it("hands focus to an item that replaces the focused one in the same render", async () => {
+    const user = userEvent.setup()
+    const { rerender } = render(
+      <Fruits names={["Apple", "Banana", "Cherry"]} />,
+    )
+    screen.getByRole("listbox").focus()
+    await user.keyboard("{Home}{ArrowDown}")
+    expect(activeId()).toBe(optionId("Banana"))
+
+    rerender(<Fruits names={["Apple", "Blueberry", "Cherry"]} />)
+    expect(activeId()).toBe(optionId("Blueberry"))
+  })
+
   it("falls back to the last item, then to no focus, as focused items unmount", async () => {
     const user = userEvent.setup()
     const { rerender } = render(<Fruits names={["Apple", "Banana"]} />)
@@ -446,6 +459,33 @@ describe("Listbox registry", () => {
     expect(result.current.items().map((it) => it.id)).toEqual(["b", "a", "c"])
     first.remove()
     second.remove()
+  })
+
+  it("sorts nothing to remove an item that is not focused", () => {
+    const { result } = renderHook(() => useListbox({}))
+    const elements = ["a", "b", "c"].map(() => document.createElement("div"))
+    document.body.append(...elements)
+    const cleanups = elements.map((element, n) =>
+      result.current.registerItem({
+        id: `item-${n}`,
+        value: `item-${n}`,
+        disabled: false,
+        textValue: `item-${n}`,
+        element,
+      }),
+    )
+    const compare = vi.spyOn(Node.prototype, "compareDocumentPosition")
+    try {
+      cleanups[1]?.()
+      expect(compare).not.toHaveBeenCalled()
+      expect(result.current.items().map((it) => it.id)).toEqual([
+        "item-0",
+        "item-2",
+      ])
+    } finally {
+      compare.mockRestore()
+      for (const element of elements) element.remove()
+    }
   })
 
   it("clears its typeahead timer on unmount", () => {
