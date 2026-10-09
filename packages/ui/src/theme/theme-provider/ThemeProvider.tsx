@@ -468,13 +468,16 @@ export function ThemeProvider({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const setters = useMemo(() => {
-    const out: Record<string, (value: string) => void> = {}
-    for (const key of AXIS_KEYS) {
-      out[setterName(key)] = (value) => setAxis(key, value as never)
-    }
-    return out as unknown as AxisSetters
-  }, [setAxis])
+  const setters = useMemo(
+    () =>
+      Object.fromEntries(
+        AXIS_KEYS.map((key) => [
+          setterName(key),
+          (value: string) => setAxis(key, value as never),
+        ]),
+      ) as unknown as AxisSetters,
+    [setAxis],
+  )
 
   const value = useMemo<ThemeContextValue>(
     () => ({
