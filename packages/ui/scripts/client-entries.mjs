@@ -4,9 +4,10 @@ import { fileURLToPath } from "node:url"
 
 export const BANNER = '"use client";\n'
 
-// DIST points the scripts at another build output, which their tests use.
-export const distDir = process.env.DIST
-  ? resolve(process.env.DIST)
+// DARKRAISE_UI_DIST points the scripts at another build output, which their
+// tests use. The name is namespaced because the build shares this module.
+export const distDir = process.env.DARKRAISE_UI_DIST
+  ? resolve(process.env.DARKRAISE_UI_DIST)
   : resolve(dirname(fileURLToPath(import.meta.url)), "..", "dist")
 
 export const SERVER_SAFE_ENTRIES = new Set([

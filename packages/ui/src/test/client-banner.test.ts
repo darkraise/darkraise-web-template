@@ -29,7 +29,7 @@ function check(dist: string): Promise<Run> {
     execFile(
       process.execPath,
       [SCRIPT],
-      { env: { ...process.env, DIST: dist }, timeout: 30_000 },
+      { env: { ...process.env, DARKRAISE_UI_DIST: dist }, timeout: 30_000 },
       (error, stdout, stderr) => {
         const code =
           error === null ? 0 : typeof error.code === "number" ? error.code : -1
