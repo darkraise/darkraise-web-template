@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest"
-import { render, screen } from "@testing-library/react"
+import { act, fireEvent, render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import * as React from "react"
 import { UiI18nProvider } from "../../i18n"
@@ -166,5 +166,35 @@ describe("DateInput", () => {
     expect(screen.getByRole("group")).not.toHaveAttribute("data-disabled")
     rerender(<DateInput disabled aria-label="dob" />)
     expect(screen.getByRole("group")).toHaveAttribute("data-disabled", "true")
+  })
+
+  it("keeps a typed segment when a new value lands in the same render", () => {
+    const changes: Array<number | null> = []
+    let setOuter: (next: Date | null) => void = () => {}
+    function Wrapper() {
+      const [d, setD] = React.useState<Date | null>(new Date(2024, 9, 8))
+      setOuter = setD
+      return (
+        <DateInput
+          value={d}
+          onValueChange={(next) => {
+            changes.push(next ? next.getFullYear() : null)
+            // A ping-pong between two dates never settles under act; the
+            // cap stops it so the assertion can report it.
+            if (changes.length < 20) setD(next ?? null)
+          }}
+          aria-label="dob"
+        />
+      )
+    }
+    render(<Wrapper />)
+    const [year] = screen.getAllByRole("spinbutton") as HTMLInputElement[]
+    if (!year) throw new Error("year segment missing")
+    act(() => {
+      setOuter(new Date(2025, 9, 8))
+      fireEvent.change(year, { target: { value: "2026" } })
+    })
+    expect(changes).toEqual([2026])
+    expect(year.value).toBe("2026")
   })
 })

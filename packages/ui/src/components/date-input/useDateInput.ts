@@ -96,20 +96,18 @@ export function useDateInput(options: UseDateInputOptions) {
     })
   }, [value])
 
-  // Propagate parts changes back to the controlled value. This effect is the
-  // single side-effect path so that consumer onValueChange always observes a
-  // committed React state.
-  React.useEffect(() => {
-    const next = partsToDate(parts)
-    if (datesEqual(next, value ?? null)) return
-    setValue(next)
-    // setValue identity is stable for our purposes; intentionally leaving it
-    // out keeps the effect from re-firing on every render of the consumer.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parts])
+  // Committing from the handler, not from an effect on `parts`, orders the
+  // edit after any parent update already queued. Two effects syncing in
+  // opposite directions swap their states forever when both change in one
+  // render.
+  const commitParts = (next: Parts) => {
+    setParts(next)
+    const date = partsToDate(next)
+    if (!datesEqual(date, value ?? null)) setValue(date)
+  }
 
   const setSegment = (key: keyof Parts, raw: string) => {
-    setParts((prev) => ({ ...prev, [key]: raw }))
+    commitParts({ ...parts, [key]: raw })
   }
 
   const adjustSegment = (key: keyof Parts, delta: number) => {
@@ -117,7 +115,7 @@ export function useDateInput(options: UseDateInputOptions) {
     const y = date.getFullYear() + (key === "year" ? delta : 0)
     const m = date.getMonth() + (key === "month" ? delta : 0)
     const d = date.getDate() + (key === "day" ? delta : 0)
-    setParts(partsFromDate(new Date(y, m, d)))
+    commitParts(partsFromDate(new Date(y, m, d)))
   }
 
   const order: Array<keyof Parts> = (() => {
