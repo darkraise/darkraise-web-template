@@ -447,6 +447,19 @@ describe("Listbox registry", () => {
     first.remove()
     second.remove()
   })
+
+  it("clears its typeahead timer on unmount", () => {
+    vi.useFakeTimers()
+    try {
+      const { result, unmount } = renderHook(() => useListbox({}))
+      result.current.typeahead("a")
+      expect(vi.getTimerCount()).toBe(1)
+      unmount()
+      expect(vi.getTimerCount()).toBe(0)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
 })
 
 describe("ListboxItem pointer enter", () => {

@@ -152,6 +152,12 @@ export function useListbox(options: UseListboxOptions): UseListboxReturn {
     }, 500)
   }
 
+  React.useEffect(() => {
+    return () => {
+      if (typeaheadTimerRef.current) clearTimeout(typeaheadTimerRef.current)
+    }
+  }, [])
+
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "ArrowDown") {
       event.preventDefault()
